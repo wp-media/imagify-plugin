@@ -40,8 +40,8 @@ function _imagify_display_options_page() { ?>
 					</p>
 					<form action="." method="post">
 						<p>
-							<label for="imagify-email" class="screen-reader-text"><?php esc_attr_e( 'Your email address', 'imagify' ); ?></label>
-							<input type="email" name="imagify-email" id="imagify-email" placeholder="<?php _e( 'Your email address', 'imagify' ); ?>" />
+							<label for="imagify-email" class="screen-reader-text"><?php _e( 'Your email address', 'imagify' ); ?></label>
+							<input type="email" name="imagify-email" id="imagify-email" placeholder="<?php esc_attr_e( 'Your email address', 'imagify' ); ?>" />
 						</p>
 						<p>
 							<button type="submit" class="button button-primary button-mini"><?php _e( 'Subscribe', 'imagify' ); ?></button>
