@@ -202,7 +202,7 @@ function _imagify_display_bulk_page() {
 					<!-- No image uploaded yet -->
 					<tr class="imagify-no-uploaded-yet">
 						<td colspan="7">
-							<p><?php echo sprintf( __( '%sClick here%s to start the bulk optimization', 'imagify' ), '<a href="">', '</a>' ); ?></p>
+							<p><?php echo sprintf( __( '%sClick here%s to start the bulk optimization', 'imagify' ), '<a id="imagify-simulate-bulk-action" href="#">', '</a>' ); ?></p>
 						</td>
 					</tr>
 					<!-- The Success/Complete bar -->

@@ -39,7 +39,13 @@ jQuery(function($){
 		//and append it to your page somewhere
 		document.getElementById("imagify-overview-chart-legend").innerHTML = overviewLegend;
 	}
-
+	
+	// Simulate a click on the "Imagif'em all" button
+	$('#imagify-simulate-bulk-action').click(function(e){
+		e.preventDefault();
+		$('#imagify-bulk-action').trigger('click');
+	});
+	
 	$('#imagify-bulk-action').click(function(){
 		var $obj = $(this);
 		
