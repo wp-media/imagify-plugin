@@ -176,11 +176,15 @@ function _imagify_display_options_page() { ?>
 									<?php
 									global $_wp_additional_image_sizes;
 
-								    $sizes = array( 'full' => false );
-								    $get_intermediate_image_sizes = get_intermediate_image_sizes();
+								    $sizes = array( 'full' => array( 'name' => __( 'Full Size' ) ), 
+								    				'thumbnail' => array( 'name' => __( 'Thumbnail' ) ),
+								    				'medium' => array( 'name' => __( 'Medium' ) ),
+								    				'large' => array( 'name' => __( 'Large' ) ),
+							    				);
+								    $get_intermediate_image_sizes = apply_filters( 'image_size_names_choose', get_intermediate_image_sizes() );
 
 								    // Create the full array with sizes and crop info
-								    foreach ( $get_intermediate_image_sizes as $size ) {
+								    foreach ( $get_intermediate_image_sizes as $key => $size ) {
 								        if ( in_array( $size, array( 'thumbnail', 'medium', 'large' ) ) ) {
 								            $sizes[ $size ]['width']  = get_option( $size . '_size_w' );
 								            $sizes[ $size ]['height'] = get_option( $size . '_size_h' );
@@ -189,14 +193,20 @@ function _imagify_display_options_page() { ?>
 								                    'width'  => $_wp_additional_image_sizes[ $size ]['width'],
 								                    'height' => $_wp_additional_image_sizes[ $size ]['height']
 								            );
+								        } else {
+							            	$sizes[ $key ]['name'] = $get_intermediate_image_sizes[ $key ];
 								        }
 								    }
 
 									foreach( $sizes as $size_key => $size_data ) {
-										$label  = $size_key;
+										if ( ! isset( $size_data['name'] ) ) {
+											$label = $size_key;
+										} else {
+											$label = esc_html( stripslashes( $size_data['name'] ) );
+										}
 
 										if ( 'full' != $size_key ) {
-											$label .= ' - ' . $size_data['width'] . 'x' . $size_data['height'];
+											$label = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
 										}
 									?>
 
