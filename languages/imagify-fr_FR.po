@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
 "POT-Creation-Date: 2015-09-24 23:55+0200\n"
-"PO-Revision-Date: 2015-09-24 23:56+0200\n"
+"PO-Revision-Date: 2015-09-25 01:47+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -78,7 +78,7 @@ msgid ""
 "Your API key is valid. You can now configure the Imagify settings to "
 "optimize your images."
 msgstr ""
-"Votre clé API est valide. Vous pouvez maintenant configurer les règlages "
+"Votre clé API est valide. Vous pouvez maintenant configurer les réglages "
 "d’Imagify pour optimiser vos images."
 
 #: inc/admin/enqueue.php:110 inc/admin/ui/options.php:94
@@ -120,7 +120,7 @@ msgstr "Clé API invalide"
 
 #: inc/admin/meta-boxes.php:22 inc/admin/upload.php:33
 msgid "Check your Settings"
-msgstr "Vérifiez vos règlages"
+msgstr "Vérifiez vos réglages"
 
 #: inc/admin/options.php:95
 msgid "Cheatin&#8217; uh?"
@@ -133,7 +133,7 @@ msgstr "<strong>Erreur</strong> : page d’options introuvable."
 #: inc/admin/plugins.php:17 inc/admin/ui/options.php:79
 #: inc/common/admin-bar.php:30
 msgid "Settings"
-msgstr "Règlages"
+msgstr "Réglages"
 
 #: inc/admin/ui/bulk.php:16
 msgid "Account status"
@@ -185,7 +185,7 @@ msgstr ""
 #, php-format
 msgid "Don't forget to check %syour settings%s before bulk optimization."
 msgstr ""
-"N’oubliez pas de vérifier %svos règlages%s avant l’optimisation en masse."
+"N’oubliez pas de vérifier %svos réglages%s avant l’optimisation en masse."
 
 #: inc/admin/ui/bulk.php:102
 msgid "Imagif'em all"
@@ -343,7 +343,7 @@ msgstr ""
 
 #: inc/admin/ui/notices.php:54
 msgid "Go to Settings"
-msgstr "Aller aux règlages"
+msgstr "Aller aux réglages"
 
 #: inc/admin/ui/notices.php:85 inc/admin/ui/options.php:100
 msgid "Your API key isn't valid!"
@@ -357,7 +357,7 @@ msgid ""
 "have one yet."
 msgstr ""
 "Allez sur votre page de compte Imagify pour récupérer votre clé API et la "
-"renseigner dans %1$svos règlages%3$s ou %2$scréez un compte gratuitement%3$s "
+"renseigner dans %1$svos réglages%3$s ou %2$scréez un compte gratuitement%3$s "
 "si vous n’en avez pas encore un."
 
 #: inc/admin/ui/notices.php:137
@@ -493,7 +493,7 @@ msgid ""
 "you want to optimize it."
 msgstr ""
 "Cette taille n’est pas autorisée à être optimisée. Mettez à jour les "
-"règlages d’Imagify si vous souhaitez l’optimiser."
+"réglages d’Imagify si vous souhaitez l’optimiser."
 
 #: inc/classes/class-user.php:72
 msgid "Free"
