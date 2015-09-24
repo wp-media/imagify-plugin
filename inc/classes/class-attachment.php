@@ -460,7 +460,16 @@ class Imagify_Attachment {
 		$id              = $this->id;
 		$backup_path     = $this->get_backup_path();
 		$attachment_path = get_attached_file( $id );
-
+		
+		/**
+		 * Fires before restoring an attachment.
+		 *
+		 * @since 1.0
+		 *
+		 * @param int $id The attachment ID
+		*/
+		add_action( 'before_imagify_restore_attachment', $id );
+		
 		// Create the original image from the backup
 		@copy( $backup_path, $attachment_path );
 		
@@ -475,7 +484,7 @@ class Imagify_Attachment {
 
 		remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', PHP_INT_MAX );
 		wp_generate_attachment_metadata( $id, $attachment_path );
-
+		
 		// Regenerate all retina versions
 		if ( function_exists( 'wr2x_generate_images' ) ) {
 			$metadata = wp_get_attachment_metadata( $this->id );
@@ -485,5 +494,14 @@ class Imagify_Attachment {
 		// Remove old optimization data
 		delete_post_meta( $id, '_imagify_data' );
 		delete_post_meta( $id, '_imagify_status' );
+		
+		/**
+		 * Fires after restoring an attachment.
+		 *
+		 * @since 1.0
+		 *
+		 * @param int $id The attachment ID
+		*/
+		add_action( 'after_imagify_restore_attachment', $id );
 	}
 }
