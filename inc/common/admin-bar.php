@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 add_action( 'admin_bar_menu', '_imagify_admin_bar', PHP_INT_MAX );
 function _imagify_admin_bar( $wp_admin_bar )
 {
-	if( ! current_user_can( 'upload_files' ) ) {
+	if ( ! current_user_can( 'upload_files' ) ) {
 		return;
 	}
 	
