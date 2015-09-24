@@ -176,11 +176,12 @@ function _imagify_display_options_page() { ?>
 									<?php
 									global $_wp_additional_image_sizes;
 
-								    $sizes = array( 'full' => array( 'name' => __( 'Full Size' ) ), 
-								    				'thumbnail' => array( 'name' => __( 'Thumbnail' ) ),
-								    				'medium' => array( 'name' => __( 'Medium' ) ),
-								    				'large' => array( 'name' => __( 'Large' ) ),
-							    				);
+								    $sizes = array( 
+								    	'full' 		=> array( 'name' => __( 'Full Size' ) ), 
+					    				'thumbnail' => array( 'name' => __( 'Thumbnail' ) ),
+					    				'medium' 	=> array( 'name' => __( 'Medium' ) ),
+					    				'large' 	=> array( 'name' => __( 'Large' ) ),
+							    	);
 								    $get_intermediate_image_sizes = apply_filters( 'image_size_names_choose', get_intermediate_image_sizes() );
 
 								    // Create the full array with sizes and crop info
