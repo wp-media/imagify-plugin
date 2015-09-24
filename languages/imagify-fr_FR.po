@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-09-24 11:56+0200\n"
-"PO-Revision-Date: 2015-09-24 12:02+0200\n"
+"POT-Creation-Date: 2015-09-24 23:55+0200\n"
+"PO-Revision-Date: 2015-09-24 23:56+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -20,15 +20,107 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: inc/admin/ajax.php:91 inc/admin/ui/upload.php:40
-#: inc/functions/admin-ui.php:98 inc/functions/admin-ui.php:122
+#: inc/admin/ajax.php:91 inc/admin/upload.php:40 inc/functions/admin-ui.php:98
+#: inc/functions/admin-ui.php:122
 msgid "Optimizing..."
 msgstr "En cours d’optimisation…"
 
-#: inc/admin/ajax.php:91 inc/admin/ui/meta-boxes.php:29
-#: inc/admin/ui/upload.php:40
+#: inc/admin/ajax.php:91 inc/admin/meta-boxes.php:29 inc/admin/upload.php:40
 msgid "Optimize"
 msgstr "Optimiser"
+
+#: inc/admin/enqueue.php:98
+msgid "Let's get you started!"
+msgstr "C’est parti !"
+
+#: inc/admin/enqueue.php:99
+msgid "Enter your email to get an API key:"
+msgstr "Indiquez votre e-mail pour recevoir votre clé API :"
+
+#: inc/admin/enqueue.php:100
+msgid "Sign Up"
+msgstr "S’inscrire"
+
+#: inc/admin/enqueue.php:101
+msgid "You need to specify an email!"
+msgstr "Vous devez indiquer un e-mail !"
+
+#: inc/admin/enqueue.php:102 inc/admin/enqueue.php:108
+msgid "Congratulations!"
+msgstr "Félicitations !"
+
+#: inc/admin/enqueue.php:103
+msgid ""
+"Your account has been succesfully created. Please check your mailbox, you "
+"are going to receive an email with API key."
+msgstr ""
+"Votre compte a été créé avec succès. Vérifiez votre boîte de réception, vous "
+"allez recevoir un e-mail avec votre clé API."
+
+#: inc/admin/enqueue.php:104
+msgid "Connect to Imagify!"
+msgstr "Se connecter à Imagify !"
+
+#: inc/admin/enqueue.php:105
+msgid "Paste your API key below:"
+msgstr "Copiez votre clé API ci-dessous :"
+
+#: inc/admin/enqueue.php:106
+msgid "Connect me"
+msgstr "Connectez-moi"
+
+#: inc/admin/enqueue.php:107
+msgid "Checking in process..."
+msgstr "Vérification en cours…"
+
+#: inc/admin/enqueue.php:109
+msgid ""
+"Your API key is valid. You can now configure the Imagify settings to "
+"optimize your images."
+msgstr ""
+"Votre clé API est valide. Vous pouvez maintenant configurer les règlages "
+"d’Imagify pour optimiser vos images."
+
+#: inc/admin/enqueue.php:110 inc/admin/ui/options.php:94
+msgid "Your API key is valid."
+msgstr "Votre clé API est valide."
+
+#: inc/admin/enqueue.php:117
+msgid "Hold on!"
+msgstr "Halte là !"
+
+#: inc/admin/enqueue.php:118
+msgid "All your images have been optimized by Imagify. Congratulations!"
+msgstr "Toutes vos images ont été optimisées par Imagify. Félicitations !"
+
+#: inc/admin/enqueue.php:120
+#, php-format
+msgid ""
+"Discover @imagify, the new compression tool to optimize your images for "
+"free. I saved %1$s out of %2$s!"
+msgstr ""
+"Découvrez @imagify, le nouvel outil de compression pour optimiser vos images "
+"gratuitement. J’ai optimisé %1$s sur %2$s !"
+
+#: inc/admin/menu.php:25 inc/admin/plugins.php:14 inc/admin/ui/bulk.php:78
+#: inc/common/admin-bar.php:40
+msgid "Bulk Optimization"
+msgstr "Optimisation en masse"
+
+#. Plugin Name of the plugin/theme
+#. Author of the plugin/theme
+#: inc/admin/meta-boxes.php:18 inc/admin/meta-boxes.php:25
+#: inc/admin/upload.php:11
+msgid "Imagify"
+msgstr "Imagify"
+
+#: inc/admin/meta-boxes.php:20 inc/admin/upload.php:31
+msgid "Invalid API key"
+msgstr "Clé API invalide"
+
+#: inc/admin/meta-boxes.php:22 inc/admin/upload.php:33
+msgid "Check your Settings"
+msgstr "Vérifiez vos règlages"
 
 #: inc/admin/options.php:95
 msgid "Cheatin&#8217; uh?"
@@ -37,6 +129,11 @@ msgstr "Cheatin&#8217; uh?"
 #: inc/admin/options.php:103
 msgid "<strong>ERROR</strong>: options page not found."
 msgstr "<strong>Erreur</strong> : page d’options introuvable."
+
+#: inc/admin/plugins.php:17 inc/admin/ui/options.php:79
+#: inc/common/admin-bar.php:30
+msgid "Settings"
+msgstr "Règlages"
 
 #: inc/admin/ui/bulk.php:16
 msgid "Account status"
@@ -62,11 +159,6 @@ msgstr "Mettez à niveau votre compte pour continuer à optimiser vos images"
 #: inc/admin/ui/bulk.php:63
 msgid "More info"
 msgstr "Plus d’infos"
-
-#: inc/admin/ui/bulk.php:78 inc/admin/ui/menu.php:25
-#: inc/admin/ui/plugins.php:14 inc/common/admin-bar.php:36
-msgid "Bulk Optimization"
-msgstr "Optimisation en masse"
 
 #: inc/admin/ui/bulk.php:88
 msgid "Informations"
@@ -145,7 +237,7 @@ msgstr "Statut"
 msgid "Original"
 msgstr "Original"
 
-#: inc/admin/ui/bulk.php:177 inc/admin/ui/upload.php:65
+#: inc/admin/ui/bulk.php:177 inc/admin/upload.php:65
 msgid "Optimized"
 msgstr "Optimisé"
 
@@ -194,94 +286,6 @@ msgstr "vous avez économisé %1$s sur %2$s"
 #: inc/admin/ui/bulk.php:227
 msgid "Share your awesome result"
 msgstr "Partagez votre résultat"
-
-#: inc/admin/ui/enqueue.php:98
-msgid "Let's get you started!"
-msgstr "C’est parti !"
-
-#: inc/admin/ui/enqueue.php:99
-msgid "Enter your email to get an API key:"
-msgstr "Indiquez votre e-mail pour recevoir votre clé API :"
-
-#: inc/admin/ui/enqueue.php:100
-msgid "Sign Up"
-msgstr "S’inscrire"
-
-#: inc/admin/ui/enqueue.php:101
-msgid "You need to specify an email!"
-msgstr "Vous devez indiquer un e-mail !"
-
-#: inc/admin/ui/enqueue.php:102 inc/admin/ui/enqueue.php:108
-msgid "Congratulations!"
-msgstr "Félicitations !"
-
-#: inc/admin/ui/enqueue.php:103
-msgid ""
-"Your account has been succesfully created. Please check your mailbox, you "
-"are going to receive an email with API key."
-msgstr ""
-"Votre compte a été créé avec succès. Vérifiez votre boîte de réception, vous "
-"allez recevoir un e-mail avec votre clé API."
-
-#: inc/admin/ui/enqueue.php:104
-msgid "Connect to Imagify!"
-msgstr "Se connecter à Imagify !"
-
-#: inc/admin/ui/enqueue.php:105
-msgid "Paste your API key below:"
-msgstr "Copiez votre clé API ci-dessous :"
-
-#: inc/admin/ui/enqueue.php:106
-msgid "Connect me"
-msgstr "Connectez-moi"
-
-#: inc/admin/ui/enqueue.php:107
-msgid "Checking in process..."
-msgstr "Vérification en cours…"
-
-#: inc/admin/ui/enqueue.php:109
-msgid ""
-"Your API key is valid. You can now configure the Imagify settings to "
-"optimize your images."
-msgstr ""
-"Votre clé API est valide. Vous pouvez maintenant configurer les règlages "
-"d’Imagify pour optimiser vos images."
-
-#: inc/admin/ui/enqueue.php:110 inc/admin/ui/options.php:92
-msgid "Your API key is valid."
-msgstr "Votre clé API est valide."
-
-#: inc/admin/ui/enqueue.php:117
-msgid "Hold on!"
-msgstr "Halte là !"
-
-#: inc/admin/ui/enqueue.php:118
-msgid "All your images have been optimized by Imagify. Congratulations!"
-msgstr "Toutes vos images ont été optimisées par Imagify. Félicitations !"
-
-#: inc/admin/ui/enqueue.php:120
-#, php-format
-msgid ""
-"Discover @imagify, the new compression tool to optimize your images for "
-"free. I saved %1$s out of %2$s!"
-msgstr ""
-"Découvrez @imagify, le nouvel outil de compression pour optimiser vos images "
-"gratuitement. J’ai optimisé %1$s sur %2$s !"
-
-#. Plugin Name of the plugin/theme
-#. Author of the plugin/theme
-#: inc/admin/ui/meta-boxes.php:18 inc/admin/ui/meta-boxes.php:25
-#: inc/admin/ui/upload.php:11
-msgid "Imagify"
-msgstr "Imagify"
-
-#: inc/admin/ui/meta-boxes.php:20 inc/admin/ui/upload.php:31
-msgid "Invalid API key"
-msgstr "Clé API invalide"
-
-#: inc/admin/ui/meta-boxes.php:22 inc/admin/ui/upload.php:33
-msgid "Check your Settings"
-msgstr "Vérifiez vos règlages"
 
 #: inc/admin/ui/notices.php:23
 msgid "Welcome to Imagify, the best way to easily optimize your images!"
@@ -341,7 +345,7 @@ msgstr ""
 msgid "Go to Settings"
 msgstr "Aller aux règlages"
 
-#: inc/admin/ui/notices.php:85 inc/admin/ui/options.php:98
+#: inc/admin/ui/notices.php:85 inc/admin/ui/options.php:100
 msgid "Your API key isn't valid!"
 msgstr "Votre clé API n’est pas valide !"
 
@@ -398,93 +402,92 @@ msgstr "Votre site WordPress est lent ?"
 msgid "Discover the best caching plugin to speed up your website."
 msgstr "Découvrer le meilleur plugin de cache pour accélérer votre site."
 
-#: inc/admin/ui/options.php:79 inc/admin/ui/plugins.php:17
-#: inc/common/admin-bar.php:27
-msgid "Settings"
-msgstr "Règlages"
+#: inc/admin/ui/options.php:87
+msgid "API Key"
+msgstr "Clé API"
 
-#: inc/admin/ui/options.php:105
+#: inc/admin/ui/options.php:107
 #, php-format
 msgid "Don't have an API Key yet? %sCreate one, it's FREE%s."
 msgstr "Vous n’avez pas encore de clé API ? %sCréez en une, c’est GRATUIT%s."
 
-#: inc/admin/ui/options.php:118
+#: inc/admin/ui/options.php:123
 msgid "Optimization Level"
 msgstr "Niveau d’optimisation"
 
-#: inc/admin/ui/options.php:123 inc/functions/admin-ui.php:26
+#: inc/admin/ui/options.php:128 inc/functions/admin-ui.php:26
 #: inc/functions/admin-ui.php:121
 msgid "Aggressive"
 msgstr "Agressif"
 
-#: inc/admin/ui/options.php:128 inc/functions/admin-ui.php:26
+#: inc/admin/ui/options.php:133 inc/functions/admin-ui.php:26
 #: inc/functions/admin-ui.php:121
 msgid "Normal"
 msgstr "Normal"
 
-#: inc/admin/ui/options.php:133
+#: inc/admin/ui/options.php:138
 msgid "More info?"
 msgstr "Plus d’infos ?"
 
-#: inc/admin/ui/options.php:139 inc/admin/ui/options.php:143
+#: inc/admin/ui/options.php:144 inc/admin/ui/options.php:148
 msgid "Auto-Optimize images on upload"
 msgstr "Optimiser automatiquement les images envoyées"
 
-#: inc/admin/ui/options.php:147
+#: inc/admin/ui/options.php:152
 msgid "Optimize automatically every image you will upload to WordPress."
 msgstr "Optimisez automatiquement chaque image que vous enverrez à WordPress."
 
-#: inc/admin/ui/options.php:152 inc/admin/ui/options.php:155
+#: inc/admin/ui/options.php:157 inc/admin/ui/options.php:160
 msgid "Backup original images"
 msgstr "​Conserver une copie des images d'origine"
 
-#: inc/admin/ui/options.php:159
+#: inc/admin/ui/options.php:164
 msgid ""
 "Keep your original images in a secure place before optimization process."
 msgstr ""
 "Gardez vos images d’origine dans un endroit sûr avant le processus "
 "d’optimisation."
 
-#: inc/admin/ui/options.php:167
+#: inc/admin/ui/options.php:172
 msgid "Files optimization"
 msgstr "Tailles à optimiser"
 
-#: inc/admin/ui/options.php:169
+#: inc/admin/ui/options.php:174
 msgid ""
 "You can choose to compress different image sizes created by WordPress here."
 msgstr ""
 "Vous pouvez choisir d’optimiser les différents formats générés par WordPress "
 "ici."
 
-#: inc/admin/ui/options.php:169
+#: inc/admin/ui/options.php:174
 msgid ""
 "Remember each additional image size will affect your Imagify monthly usage!"
 msgstr ""
 "Pour rappel, chaque format d’image additionnel affectera votre quota d’usage "
 "mensuel d’Imagify."
 
-#: inc/admin/ui/upload.php:24
+#: inc/admin/upload.php:24
 #, php-format
 msgid "%s can't be optimized"
 msgstr "%s ne peut pas être optimisé"
 
-#: inc/admin/ui/upload.php:66
+#: inc/admin/upload.php:66
 msgid "Unoptimized"
 msgstr "Non-optimisé"
 
-#: inc/admin/ui/upload.php:67
+#: inc/admin/upload.php:67
 msgid "Errors"
 msgstr "Erreurs"
 
-#: inc/admin/ui/upload.php:70
+#: inc/admin/upload.php:70
 msgid "Filter by status"
 msgstr "Filtrer par statut"
 
-#: inc/admin/ui/upload.php:73
+#: inc/admin/upload.php:73
 msgid "All images"
 msgstr "Toutes les images"
 
-#: inc/classes/class-attachment.php:412
+#: inc/classes/class-attachment.php:413
 msgid ""
 "This size isn't authorized to be optimized. Update your Imagify settings if "
 "you want to optimize it."
