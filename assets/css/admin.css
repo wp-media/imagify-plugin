@@ -343,18 +343,21 @@ td .imagify-chart {
 	bottom: 50%;
 	right: 20px;
 	text-align: right;
-	margin-bottom: -2.7em;
+	margin-bottom: -2.4em;
 	color: #FFF;
 }
 .imagify-rate-us a {
 	color: #40B1D0;
 }
 .imagify-rate-us .stars {
-	margin-left: 10px;
+	display: inline-block;
+	margin: 2px 0 0 10px;
 	text-decoration: none;
-	font-size: 20px;
 	letter-spacing: .2em;
 	vertical-align: -1px;
+}
+.imagify-rate-us .stars .dashicons:before {
+	font-size: 18px;
 }
 .imagify-rate-us a:hover,
 .imagify-rate-us a:focus {
