@@ -178,7 +178,7 @@ class Imagify_Attachment {
 	 * @return string
 	 */
 	public function get_retina_path( $file ) {
-		if ( 'wr2x_get_retina' ) {
+		if ( function_exists( 'wr2x_get_retina' ) ) {
 			return wr2x_get_retina( $file );
 		}
 		
