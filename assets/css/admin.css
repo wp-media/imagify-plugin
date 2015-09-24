@@ -805,12 +805,13 @@ ul.imagify-datas-list .imagify-data-item strong {
 }
 .imagify-datas-more-action a {
 	display: inline-block;
-	padding: 0 5px;
+	padding: 1px 5px 3px;
 	background: #40B1D0;
 	color: #FFF;
 	text-transform: uppercase;
 	font-size: 9px;
 	font-weight: bold;
+	line-height: 1.9;
 	text-decoration: none;
 }
 .imagify-datas-more-action a.is-open {
@@ -821,13 +822,19 @@ ul.imagify-datas-list .imagify-data-item strong {
 }
 .imagify-datas-more-action a .dashicons {
 	font-size: 14px;
+	height: auto;
+	vertical-align: middle;
+	line-height: .8;
 }
 .imagify-datas-more-action a .dashicons:before {
-	vertical-align: -4px;
+	vertical-align: middle;
+	height: auto;
+	line-height: 1;
 }
 .imagify-datas-more-action .the-text {
 	display: inline-block;
 	vertical-align: middle;
+	line-height: 1;
 }
 
 ul.imagify-datas-details.imagify-datas-details {
