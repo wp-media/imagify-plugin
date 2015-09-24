@@ -73,8 +73,8 @@ function _imagify_display_options_page() { ?>
 				<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
 				<?php wp_nonce_field( 'imagify-check-api-key', 'imagifycheckapikeynonce', false ); ?>
 
-				<input id="check_api_key" type="hidden" value="<?php echo get_imagify_option( 'api_key' ); ?>" name="check_api_key">
-				<input id="version" type="hidden" value="<?php echo get_imagify_option( 'version' ); ?>" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[version]">
+				<input id="check_api_key" type="hidden" value="<?php echo esc_attr( get_imagify_option( 'api_key' ) ); ?>" name="check_api_key">
+				<input id="version" type="hidden" value="<?php echo esc_attr( get_imagify_option( 'version' ) ); ?>" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[version]">
 
 				<h3 class="screen-reader-text"><?php _e( 'Settings', 'imagify' ); ?></h3>
 				
