@@ -83,12 +83,9 @@ class Imagify_User {
 	 */
 	public function get_percent_consumed_quota() {
 		$percent = 0;
-
-		if( ! is_wp_error( $user ) ) {
-			$percent = 100 - ( ( $this->quota - $this->consumed_current_month ) / $this->quota ) * 100;
-			$percent = ceil( $percent );
-		}
-
+		$percent = 100 - ( ( $this->quota - $this->consumed_current_month ) / $this->quota ) * 100;
+		$percent = ceil( $percent );
+		
 		return $percent;
 	}
 
