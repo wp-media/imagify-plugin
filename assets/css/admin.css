@@ -805,7 +805,7 @@ ul.imagify-datas-list .imagify-data-item strong {
 }
 .imagify-datas-more-action a {
 	display: inline-block;
-	padding: 1px 5px 3px;
+	padding: 0 5px;
 	background: #40B1D0;
 	color: #FFF;
 	text-transform: uppercase;
@@ -822,19 +822,18 @@ ul.imagify-datas-list .imagify-data-item strong {
 }
 .imagify-datas-more-action a .dashicons {
 	font-size: 14px;
-	height: auto;
 	vertical-align: middle;
 	line-height: .8;
 }
 .imagify-datas-more-action a .dashicons:before {
 	vertical-align: middle;
-	height: auto;
-	line-height: 1;
+	line-height: 20px;
 }
 .imagify-datas-more-action .the-text {
 	display: inline-block;
 	vertical-align: middle;
-	line-height: 1;
+	height: 20px;
+	line-height: 20px;
 }
 
 ul.imagify-datas-details.imagify-datas-details {
