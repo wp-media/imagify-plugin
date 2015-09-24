@@ -86,7 +86,7 @@ function _imagify_display_options_page() { ?>
 							<tr>
 								<th scope="row"><label for="api_key">API Key</label></th>
 								<td>
-									<input type="text" size="35" value="<?php echo get_imagify_option( 'api_key' ); ?>" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[api_key]" id="api_key">
+									<input type="text" size="35" value="<?php echo esc_attr( get_imagify_option( 'api_key' ) ); ?>" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[api_key]" id="api_key">
 									<?php
 									if ( imagify_valid_key() ) {
 									?>
