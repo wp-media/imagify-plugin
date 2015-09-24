@@ -35,12 +35,12 @@ function _imagify_display_options_page() { ?>
 				<div class="imagify-sidebar-content">
 					<p>
 					<?php
-					_e( 'Join our mailing list to receive countless amount of cat pictures, discount codes and awesome stuf.', 'imagify' );
+					_e( 'Join our mailing list to receive countless amount of cat pictures, discount codes and awesome stuff.', 'imagify' );
 					?>
 					</p>
 					<form action="." method="post">
 						<p>
-							<label for="imagify-email" class="screen-reader-text"><?php _e( 'Your email address', 'imagify' ); ?></label>
+							<label for="imagify-email" class="screen-reader-text"><?php esc_attr_e( 'Your email address', 'imagify' ); ?></label>
 							<input type="email" name="imagify-email" id="imagify-email" placeholder="<?php _e( 'Your email address', 'imagify' ); ?>" />
 						</p>
 						<p>
@@ -61,7 +61,7 @@ function _imagify_display_options_page() { ?>
 
 				<?php $imagify_rate_url =  'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform'; ?>
 				<p class="imagify-rate-us">
-					<?php echo sprintf( __( '%sDo you like this plugin?%s Please take a few seconds to %srate it on WordPress.org%s!', 'imagify' ), '<strong>', '</strong><br />', '<a href="' . $imagify_rate_url . '">', '</a>' ); ?>
+					<?php printf( __( '%sDo you like this plugin?%s Please take a few seconds to %srate it on WordPress.org%s!', 'imagify' ), '<strong>', '</strong><br />', '<a href="' . $imagify_rate_url . '">', '</a>' ); ?>
 					<br>
 					<a class="stars" href="<?php echo $imagify_rate_url; ?>"><?php echo str_repeat( '<span class="dashicons dashicons-star-filled"></span>', 5 ); ?></a>
 				</p>
@@ -76,7 +76,7 @@ function _imagify_display_options_page() { ?>
 				<input id="check_api_key" type="hidden" value="<?php echo esc_attr( get_imagify_option( 'api_key' ) ); ?>" name="check_api_key">
 				<input id="version" type="hidden" value="<?php echo esc_attr( get_imagify_option( 'version' ) ); ?>" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[version]">
 
-				<h3 class="screen-reader-text"><?php _e( 'Settings', 'imagify' ); ?></h3>
+				<h3 class="screen-reader-text"><?php _e( 'Settings' ); ?></h3>
 				
 				<?php
 				if ( ! defined( 'IMAGIFY_API_KEY' ) || ! IMAGIFY_API_KEY ) { ?>
@@ -84,7 +84,7 @@ function _imagify_display_options_page() { ?>
 					<table class="form-table">
 						<tbody>
 							<tr>
-								<th scope="row"><label for="api_key">API Key</label></th>
+								<th scope="row"><label for="api_key"><?php _e( 'API Key', 'imagify' ); ?></label></th>
 								<td>
 									<input type="text" size="35" value="<?php echo esc_attr( get_imagify_option( 'api_key' ) ); ?>" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[api_key]" id="api_key">
 									<?php
