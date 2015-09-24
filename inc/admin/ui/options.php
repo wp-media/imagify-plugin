@@ -63,7 +63,7 @@ function _imagify_display_options_page() { ?>
 				<p class="imagify-rate-us">
 					<?php echo sprintf( __( '%sDo you like this plugin?%s Please take a few seconds to %srate it on WordPress.org%s!', 'imagify' ), '<strong>', '</strong><br />', '<a href="' . $imagify_rate_url . '">', '</a>' ); ?>
 					<br>
-					<a class="stars" href="<?php echo $imagify_rate_url; ?>">☆☆☆☆☆</a>
+					<a class="stars" href="<?php echo $imagify_rate_url; ?>"><?php echo str_repeat( '<span class="dashicons dashicons-star-filled"></span>', 5 ); ?></a>
 				</p>
 			</div>
 			<?php $form_action = ( imagify_is_active_for_network() ) ? admin_url( 'admin-post.php' ) : admin_url( 'options.php' ); ?>
