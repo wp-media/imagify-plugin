@@ -8,11 +8,13 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', PHP_INT_MAX, 2 );
 function _imagify_optimize_attachment( $metadata, $attachment_id ) {
-	if ( get_imagify_option( 'auto_optimize', false ) ) {
+	$api_key = get_imagify_option( 'api_key', false );
+	
+	if ( ! empty( $api_key ) && get_imagify_option( 'auto_optimize', false ) ) {
 		$attachment = new Imagify_Attachment( $attachment_id );
 		
 		// Optimize it!!!!!
-		$attachment->optimize();
+		$attachment->optimize( null, $metadata );
 	}
 
 	return $metadata;

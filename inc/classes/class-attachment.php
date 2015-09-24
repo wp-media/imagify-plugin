@@ -364,13 +364,14 @@ class Imagify_Attachment {
 	 * Optimize all sizes with Imagify.
 	 *
 	 * @access public
-	 * @param  int 	   $is_aggressive   The optimization level (1=aggressive, 0=normal).
-	 * @return array   $optimized_data  The optimization data
+	 * @param  int 	  $is_aggressive   The optimization level (1=aggressive, 0=normal)
+	 * @param  array  $metadata   	   The attachment meta data
+	 * @return array  $optimized_data  The optimization data
 	 */
-	public function optimize( $is_aggressive = null ) {
+	public function optimize( $is_aggressive = null, $metadata = array() ) {		
 		$is_aggressive = ( is_null( $is_aggressive ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $is_aggressive;
 
-		$sizes = $this->get_sizes();
+		$sizes = ( isset( $metadata['sizes'] ) ) ? $metadata['sizes'] : $this->get_sizes();
 		$data  = array(
 			'stats' => array(
 				'aggressive'     => $is_aggressive,
