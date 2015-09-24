@@ -1,0 +1,193 @@
+<?php
+defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
+
+/**
+ * This warning is displayed when the API key is empty
+ *
+ * @since 1.0
+ */
+add_action( 'all_admin_notices', '_imagify_warning_empty_api_key_notice' );
+function _imagify_warning_empty_api_key_notice() {
+	$current_screen = get_current_screen();
+	$notices 		= get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+	$cap			= ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
+	
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'welcome-steps', (array) $notices ) || get_imagify_option( 'api_key', false ) || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
+		return;
+	}
+	?>
+	<div class="imagify-welcome">
+		<div class="imagify-title">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="225" height="26" alt="Imagify" /> <small><sup><?php echo IMAGIFY_VERSION; ?></sup></small>
+			<span class="baseline">
+				<?php _e( 'Welcome to Imagify, the best way to easily optimize your images!', 'imagify' ); ?>
+			</span>
+			<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'welcome-steps' ); ?>" class="imagify-notice-dismiss imagify-welcome-remove" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="dashicons dashicons-dismiss"></span><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+		</div>
+		<div class="imagify-settings-section">
+			<div class="imagify-columns counter">
+				<div class="col-1-3">
+					<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>user.svg" width="48" height="48" alt="">
+					<div class="imagify-col-content">
+						<p class="imagify-col-title"><?php _e( 'Create an Account', 'imagify' ); ?></p>
+						<p class="imagify-col-desc"><?php _e( 'Don\'t have an Imagify account yet? Optimize your images by creating an account in a few seconds!', 'imagify' ); ?></p>
+						<p>
+							<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
+							<a id="imagify-signup" href="<?php echo IMAGIFY_WEB_MAIN; ?>" class="button button-primary"><?php _e( 'Sign up, It\'s FREE!', 'imagify' ); ?></a></p>
+					</div>
+				</div>
+				<div class="col-1-3">
+					<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>key.svg" width="48" height="48" alt="">
+					<div class="imagify-col-content">
+						<p class="imagify-col-title"><?php _e( 'Enter your API Key', 'imagify' ); ?></p>
+						<p class="imagify-col-desc"><?php echo sprintf( __( 'Save your API Key you have received by email or you can get it on your %sImagify account page%s.', 'imagify' ), '<a href="#">', '</a>' ); ?></p>
+						<p>
+							<?php wp_nonce_field( 'imagify-check-api-key', 'imagifycheckapikeynonce', false ); ?>
+							<a id="imagify-save-api-key" href="<?php echo get_imagify_admin_url(); ?>" class="button button-primary"><?php _e( 'I have my API key', 'imagify' ); ?></a></p>
+					</div>
+				</div>
+				<div class="col-1-3">
+					<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>gear.svg" width="48" height="48" alt="">
+					<div class="imagify-col-content">
+						<p class="imagify-col-title"><?php _e( 'Configure it', 'imagify' ); ?></p>
+						<p class="imagify-col-desc"><?php _e( 'It’s almost done! You have just to configure your optimization settings.', 'imagify' ); ?></p>
+						<p><a href="<?php echo get_imagify_admin_url(); ?>" class="button button-primary"><?php _e( 'Go to Settings', 'imagify' ); ?></a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * This warning is displayed when the API key is empty
+ *
+ * @since 1.0
+ */
+add_action( 'all_admin_notices', '_imagify_warning_wrong_api_key_notice' );
+function _imagify_warning_wrong_api_key_notice() {
+	$current_screen = get_current_screen();
+	$notices 		= get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+	$api_key		= get_imagify_option( 'api_key', false );
+	$cap			= ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
+
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'wrong-api-key', (array) $notices ) || empty( $api_key ) || imagify_valid_key() || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
+		return;
+	}
+	?>
+	<div class="clear"></div>
+	<div class="error imagify-notice below-h2">
+		<div class="imagify-notice-logo">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
+		</div>
+		<div class="imagify-notice-content">
+			<p><strong><?php _e( 'Your API key isn\'t valid!', 'imagify' ); ?></strong></p>
+			<p>
+			<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
+			<?php echo sprintf( __( 'Go to your Imagify account page to get your API Key and specify it on %1$syour settings%3$s or %2$screate an account for free%3$s if you don\'t have one yet.', 'imagify' ), '<a href="' . get_imagify_admin_url() . '">', '<a id="imagify-signup" href="' . IMAGIFY_WEB_MAIN . '">', '</a>' ); ?></p>
+		</div>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'wrong-api-key' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	</div>
+
+	<?php
+}
+
+/**
+ * This warning is displayed when some plugins may conflict with Imagify
+ *
+ * @since 1.0
+ */
+add_action( 'all_admin_notices', '_imagify_warning_plugins_to_deactivate_notice' );
+function _imagify_warning_plugins_to_deactivate_notice() {
+	$plugins_to_deactivate = array();
+
+	// Deactivate all plugins who can cause conflicts with Imagify
+	$plugins = array(
+		'wp-smush'     => 'wp-smushit/wp-smush.php', // WP Smush
+		'kraken'       => 'kraken-image-optimizer/kraken.php', // Kraken.io
+		'tinypng'      => 'tiny-compress-images/tiny-compress-images.php', // TinyPNG
+		'shortpixel'   => 'shortpixel-image-optimiser/wp-shortpixel.php', // Shortpixel
+		'ewww'         => 'ewww-image-optimizer/ewww-image-optimizer.php', // EWWW Image Optimizer
+		'ewww-cloud'   => 'ewww-image-optimizer-cloud/ewww-image-optimizer-cloud.php', // EWWW Image Optimizer Cloud
+		'imagerecycle' => 'imagerecycle-pdf-image-compression/wp-image-recycle.php', // ImageRecycle 
+	);
+
+	/**
+	 * Filter the recommended plugins to deactivate to prevent conflicts
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $plugins List of recommended plugins to deactivate
+	*/
+	$plugins = apply_filters( 'imagify_plugins_to_deactivate', $plugins );
+	$plugins = array_filter( $plugins, 'is_plugin_active' );
+
+	/** This filter is documented in inc/admin/options.php */
+	if (  ! (bool) $plugins || ! imagify_valid_key() || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
+		return;
+	} 
+	?>
+	<div class="clear"></div>
+	<div class="imagify-notice error below-h2">
+		<div class="imagify-notice-logo">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
+		</div>
+		<div class="imagify-notice-content">
+			<p><?php _e( 'The following plugins are not compatible with this plugin and may cause unexpected results:', 'imagify' ); ?></p>
+
+			<ul class="imagify-plugins-error">
+			<?php
+			foreach ( $plugins as $plugin ) {
+				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . $plugin );
+				echo '<li>' . $plugin_data['Name'] . '</span> <a href="' . wp_nonce_url( admin_url( 'admin-post.php?action=deactivate_plugin&plugin=' . urlencode( $plugin ) ), 'deactivate_plugin' ) . '" class="button button-mini alignright">' . __( 'Deactivate', 'imagify' ) . '</a></li>';
+			}
+			?>
+			</ul>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * This notice is displayed to rate the plugin after 100 optimization & 7 days after the first installation
+ *
+ * @since 1.0
+ */
+add_action( 'all_admin_notices', '_imagify_rating_notice' );
+function _imagify_rating_notice() {
+	$current_screen = get_current_screen();
+	$notices 		= get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'rating', (array) $notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
+		return;
+	}
+
+	$optimized_attachments = imagify_count_optimized_attachments();
+	$saving_data 		   = imagify_count_saving_data();
+
+	if ( $optimized_attachments < 100 || $saving_data['percent'] < 30 || ! get_site_transient( 'imagify_seen_rating_notice' ) ) {
+		return;
+	}
+	?>
+	<div class="clear"></div>
+	<div class="updated imagify-notice below-h2">
+		<div class="imagify-notice-logo">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
+		</div>
+		<div class="imagify-notice-content">
+			<?php
+			$imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
+			?>
+			<p><?php echo sprintf( __( '%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and reduced by %1$s%4$s%2$s%% your images size.', 'imagify' ), '<strong>', '</strong>', $optimized_attachments, $saving_data['percent'] ); ?></p>
+			<p class="imagify-rate-us">
+				<?php echo sprintf( __( '%sDo you like this plugin?%s Please take a few seconds to %srate it on WordPress.org%s!', 'imagify' ), '<strong>', '</strong><br />', '<a href="' . $imagify_rate_url . '">', '</a>' ); ?>
+				<br>
+				<a class="stars" href="<?php echo $imagify_rate_url; ?>">☆☆☆☆☆</a>
+			</p>
+		</div>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'rating' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	</div>
+
+	<?php
+}
