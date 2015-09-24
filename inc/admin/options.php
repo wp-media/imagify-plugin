@@ -61,7 +61,7 @@ function _imagify_after_save_options( $oldvalue, $value )
 		return;
 	}
 
-	if ( $oldvalue['api_key'] != $value['api_key'] )  {
+	if ( ! isset( $oldvalue['api_key'] ) || $oldvalue['api_key'] != $value['api_key'] )  {
 		$api  = new Imagify();
 
 		if ( is_wp_error( $api->getUser() ) ) {
