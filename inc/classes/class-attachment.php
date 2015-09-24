@@ -395,7 +395,16 @@ class Imagify_Attachment {
 		if ( $this->is_optimized() && ( $this->get_optimization_level() == $is_aggressive ) ) {
 			return;
 		}
-
+		
+		/**
+		 * Fires before optimizing an attachment.
+		 *
+		 * @since 1.0
+		 *
+		 * @param int $id The attachment ID
+		*/
+		add_action( 'before_imagify_optimize_attachment', $id );
+		
 		// Optimize the original size
 		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $is_aggressive );
 		$data 	  = $this->fill_data( $data, $response, $attachment_url );
@@ -445,6 +454,17 @@ class Imagify_Attachment {
 		update_post_meta( $this->id, '_imagify_status', 'success' );
 
 		$optimized_data = $this->get_data();
+		
+		/**
+		 * Fires after optimizing an attachment.
+		 *
+		 * @since 1.0
+		 *
+		 * @param int    $id 			  The attachment ID
+		 * @param array  $optimized_data  The optimization data
+		*/
+		add_action( 'after_imagify_optimize_attachment', $id, $optimized_data );
+		
 		return $optimized_data;
 	}
 
