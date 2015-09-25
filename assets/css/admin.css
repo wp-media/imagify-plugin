@@ -1344,6 +1344,9 @@ ul.imagify-datas-details.imagify-datas-details {
 	float: left;
 	margin: 0 20px 0 10px;
 }
+.imagify-ac-report-text {
+	overflow: hidden;
+}
 .imagify-ac-report-text p {
 	line-height: 1.3;
 }
