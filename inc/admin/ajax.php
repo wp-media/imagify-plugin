@@ -9,10 +9,18 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 add_action( 'wp_ajax_imagify_manual_upload'		, '_do_admin_post_imagify_manual_upload' );
 add_action( 'admin_post_imagify_manual_upload'	, '_do_admin_post_imagify_manual_upload' );
 function _do_admin_post_imagify_manual_upload() {
-	check_admin_referer( 'imagify-manual-upload' );
+	if ( defined( 'DOING_AJAX' ) ) {
+		check_ajax_referer( 'imagify-manual-upload' );
+	} else {
+		check_admin_referer( 'imagify-manual-upload' );
+	}
 	
 	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
-		wp_nonce_ays( '' );
+		if ( defined( 'DOING_AJAX' ) ) {
+			wp_send_json_error();
+		} else {
+			wp_nonce_ays( '' );
+		}
 	}
 
 	$attachment = new Imagify_Attachment( $_GET['attachment_id'] );
@@ -27,7 +35,7 @@ function _do_admin_post_imagify_manual_upload() {
 
 	// Return the optimization statistics
 	$output = get_imagify_attachment_optimization_text( $attachment->id );
-	wp_send_json( $output );
+	wp_send_json_success( $output );
 }
 
 /**
@@ -38,10 +46,18 @@ function _do_admin_post_imagify_manual_upload() {
 add_action( 'wp_ajax_imagify_manual_override_upload', '_do_admin_post_imagify_manual_override_upload' );
 add_action( 'admin_post_imagify_manual_override_upload', '_do_admin_post_imagify_manual_override_upload' );
 function _do_admin_post_imagify_manual_override_upload() {
-	check_admin_referer( 'imagify-manual-override-upload' );
+	if ( defined( 'DOING_AJAX' ) ) {
+		check_ajax_referer( 'imagify-manual-override-upload' );
+	} else {
+		check_admin_referer( 'imagify-manual-override-upload' );
+	}
 
 	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
-		wp_nonce_ays( '' );
+		if ( defined( 'DOING_AJAX' ) ) {
+			wp_send_json_error();
+		} else {
+			wp_nonce_ays( '' );
+		}
 	}
 	
 	$attachment    = new Imagify_Attachment( $_GET['attachment_id'] );
@@ -60,7 +76,7 @@ function _do_admin_post_imagify_manual_override_upload() {
 
 	// Return the optimization statistics
 	$output = get_imagify_attachment_optimization_text( $attachment->id );
-	wp_send_json( $output );
+	wp_send_json_success( $output );
 }
 
 /**
@@ -71,10 +87,18 @@ function _do_admin_post_imagify_manual_override_upload() {
 add_action( 'wp_ajax_imagify_restore_upload', '_do_admin_post_imagify_restore_upload' );
 add_action( 'admin_post_imagify_restore_upload', '_do_admin_post_imagify_restore_upload' );
 function _do_admin_post_imagify_restore_upload() {
-	check_admin_referer( 'imagify-restore-upload' );
+	if ( defined( 'DOING_AJAX' ) ) {
+		check_ajax_referer( 'imagify-restore-upload' );
+	} else {
+		check_admin_referer( 'imagify-restore-upload' );
+	}
 
 	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
-		wp_nonce_ays( '' );
+		if ( defined( 'DOING_AJAX' ) ) {
+			wp_send_json_error();
+		} else {
+			wp_nonce_ays( '' );
+		}
 	}
 	
 	$attachment = new Imagify_Attachment( $_GET['attachment_id'] );
@@ -89,7 +113,7 @@ function _do_admin_post_imagify_restore_upload() {
 
 	// Return the optimization button
 	$output = '<a id="imagify-attachment-' . $attachment->id . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment->id ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . __( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
-	wp_send_json( $output );
+	wp_send_json_success( $output );
 }
 
 /**
