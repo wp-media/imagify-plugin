@@ -104,48 +104,50 @@ jQuery(function($){
 					draw_me_a_chart( $('#attachment-'+data.image+' .imagify-cell-percentage').find('canvas') );
 						$('#attachment-'+data.image+' .imagify-cell-thumbnails').html(data.thumbnails);
 						$('#attachment-'+data.image+' .imagify-cell-savings').html(Optimizer.toHumanSize(data.overall_saving, 1));
-					
+						
+						// The overview chart percent
+						$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent+"%");
+						// The total optimized images
+						$('#imagify-total-optimized-attachments').html(data.global_optimized_attachments);
+						
+						// The comsuption bar
+						$('.imagify-progress-value, .imagify-unconsumed-percent').html(data.global_unconsumed_quota+'%');
+						$('.imagify-space-left').find('.imagify-progress')
+												.animate({'width': data.global_unconsumed_quota+'%'});
+						
+						// The original bar
+						$('.imagify-bar-negative').find('.imagify-barnb')
+												  .html(data.global_original_human);
+						
+						// The optimized bar
+						$('.imagify-bar-positive').find('.imagify-progress')
+												  .animate({'width': data.global_optimized_percent+"%"})
+						$('.imagify-bar-positive').find('.imagify-barnb')
+												  .html(data.global_optimized_human);
+						
+						// The table footer total optimized files
 				    	files = files + data.thumbnails + 1;
-						$('.imagify-cell-nb-files').html(files + ' file(s)');  
+						$('.imagify-cell-nb-files').html(files + ' file(s)'); 
+						
+						// The table footer original size
+						original_overall_size = original_overall_size + data.original_overall_size;
+						$('.imagify-total-original').html(Optimizer.toHumanSize(original_overall_size, 1));
+					
+						// The table footer overall saving
+						overall_saving = overall_saving + data.overall_saving;
+						$('.imagify-total-gain').html(Optimizer.toHumanSize(overall_saving, 1));
+			        
 			        } else {
 				        $('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-error"><span class="dashicons dashicons-dismiss"></span>Error</span>');
 						
 						errors++;
-						$('.imagify-cell-errors').html(errors + ' file(s)'); 
+						$('.imagify-cell-errors').html(errors + ' error(s)'); 
 			        }
 					
 			        overviewDoughnut.segments[0].value = data.global_unoptimized_attachments;
 					overviewDoughnut.segments[1].value = data.global_optimized_attachments;
 					overviewDoughnut.segments[2].value = data.global_errors_attachments;
 					overviewDoughnut.update();
-					
-					// The overview chart percent
-					$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent+"%");
-					// The total optimized images
-					$('#imagify-total-optimized-attachments').html(data.global_optimized_attachments);
-					
-					// The comsuption bar
-					$('.imagify-progress-value, .imagify-unconsumed-percent').html(data.global_unconsumed_quota+'%');
-					$('.imagify-space-left').find('.imagify-progress')
-											.animate({'width': data.global_unconsumed_quota+'%'});
-					
-					// The original bar
-					$('.imagify-bar-negative').find('.imagify-barnb')
-											  .html(data.global_original_human);
-					
-					// The optimized bar
-					$('.imagify-bar-positive').find('.imagify-progress')
-											  .animate({'width': data.global_optimized_percent+"%"})
-					$('.imagify-bar-positive').find('.imagify-barnb')
-											  .html(data.global_optimized_human);
-											  
-					// The table footer original size
-					original_overall_size = original_overall_size + data.original_overall_size;
-					$('.imagify-total-original').html(Optimizer.toHumanSize(original_overall_size, 1));
-					
-					// The table footer overall saving
-					overall_saving = overall_saving + data.overall_saving;
-					$('.imagify-total-gain').html(Optimizer.toHumanSize(overall_saving, 1));
 			    })
 			    // after all attachments optimization 
 			    .done(function (data) {
@@ -155,22 +157,23 @@ jQuery(function($){
 					// Hide the progress bar
 					$('.imagify-row-progress').slideUp();
 					
-					// Display the complete section
-					$('.imagify-row-complete').removeClass('hidden')
-											  .addClass( 'done' );
-					
-					$('.imagify-ac-rt-total-gain').html(data.global_gain_human);
-					$('.imagify-ac-rt-total-original').html(data.global_original_size_human);
-					
-					text2share = imagifyBulk.textToShare;
-					text2share = text2share.replace( '%1$s', data.global_gain_human );
-					text2share = text2share.replace( '%2$s', data.global_original_size_human );
-					text2share = encodeURIComponent(text2share);
-					
-					$('.imagify-sn-twitter').attr( 'href', 'https://twitter.com/intent/tweet?source=webclient&amp;original_referer=' + imagifyBulk.pluginURL + '&amp;text=' + text2share + '&amp;url=' + imagifyBulk.pluginURL + '&amp;related=imagify&amp;hastags=performance,web,wordpress' );
-					
-					draw_me_complete_chart( $('.imagify-ac-chart').data('percent', data.global_percent).find('canvas') );
- 					
+					if ( data.global_percent !== 'NaN' ) {
+						// Display the complete section
+						$('.imagify-row-complete').removeClass('hidden')
+												  .addClass( 'done' );
+						
+						$('.imagify-ac-rt-total-gain').html(data.global_gain_human);
+						$('.imagify-ac-rt-total-original').html(data.global_original_size_human);
+						
+						text2share = imagifyBulk.textToShare;
+						text2share = text2share.replace( '%1$s', data.global_gain_human );
+						text2share = text2share.replace( '%2$s', data.global_original_size_human );
+						text2share = encodeURIComponent(text2share);
+						
+						$('.imagify-sn-twitter').attr( 'href', 'https://twitter.com/intent/tweet?source=webclient&amp;original_referer=' + imagifyBulk.pluginURL + '&amp;text=' + text2share + '&amp;url=' + imagifyBulk.pluginURL + '&amp;related=imagify&amp;hastags=performance,web,wordpress' );
+						
+						draw_me_complete_chart( $('.imagify-ac-chart').data('percent', data.global_percent).find('canvas') );	
+					}
 			    })
 			    .error(function (id) {
 			        console.log('Can\'t optimize image with id ' + id);

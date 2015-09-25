@@ -390,7 +390,7 @@ class Imagify_Attachment {
 		 * @param int $id The attachment ID
 		*/
 		do_action( 'before_imagify_optimize_attachment', $id );
-
+		
 		// Optimize the original size
 		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $is_aggressive );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );

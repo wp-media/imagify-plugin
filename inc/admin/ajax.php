@@ -105,12 +105,18 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		'post_status'    => 'any',
 		'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
 		'posts_per_page' => - 1,
-		'meta_query'     => array(
-			array(
-				'key'     => '_imagify_data',
-				'compare' => 'NOT EXISTS'
-			)
-		)
+		 'meta_query'      => array(
+            'relation'    => 'or',
+            array(
+                'key'     => '_imagify_data',
+                'compare' => 'NOT EXISTS'
+            ),
+            array(
+                'key'     => '_imagify_status',
+                'value'   => 'error',
+                'compare' => '='
+            )
+        )
 	);
 
 	$data  = array();
