@@ -99,6 +99,12 @@ function _do_admin_post_imagify_restore_upload() {
  */
 add_action( 'wp_ajax_imagify_get_unoptimized_attachment_ids', '_do_wp_ajax_imagify_get_unoptimized_attachment_ids' );
 function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
+	check_ajax_referer( 'imagify-bulk-upload', '_imagify_bulk_upload' );
+
+	if ( ! current_user_can( 'upload_files' ) ) {
+		wp_send_json_error();
+	}
+
 	$args = array(
 		'fields'          => 'ids',
 		'post_type'       => 'attachment',
