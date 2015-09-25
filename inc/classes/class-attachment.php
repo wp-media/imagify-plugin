@@ -373,7 +373,7 @@ class Imagify_Attachment {
 
 		// TO DO: use wp_attachment_is_image when we can optimize all image formats
 		//if ( ( $id || wp_attachment_is_image( $id ) === false ) {
-		if ( ! $id || ! in_array( $this->get_extension(), array( 'png', 'jpg', 'jpeg', 'jpe' ) )  ) {
+		if ( ! $id || ! in_array( $this->get_extension(), array( 'png', 'jpg', 'jpeg' ) )  ) {
 			return;
 		}
 
