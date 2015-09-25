@@ -389,13 +389,8 @@ class Imagify_Attachment {
 		 *
 		 * @param int $this->id The attachment ID
 		*/
-<<<<<<< HEAD
 		do_action( 'before_imagify_optimize_attachment', $this->id );
-		
-=======
-		do_action( 'before_imagify_optimize_attachment', $id );
 
->>>>>>> origin/1.0
 		// Optimize the original size
 		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $is_aggressive );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
@@ -452,19 +447,11 @@ class Imagify_Attachment {
 		 *
 		 * @since 1.0
 		 *
-<<<<<<< HEAD
 		 * @param int    $this->id        The attachment ID
 		 * @param array  $optimized_data  The optimization data
 		*/
 		do_action( 'after_imagify_optimize_attachment', $this->id, $optimized_data );
 		
-=======
-		 * @param int    $id   			  The attachment ID
-		 * @param array  $optimized_data  The optimization data
-		*/
-		do_action( 'after_imagify_optimize_attachment', $id, $optimized_data );
-
->>>>>>> origin/1.0
 		return $optimized_data;
 	}
 
