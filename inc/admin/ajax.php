@@ -100,23 +100,23 @@ function _do_admin_post_imagify_restore_upload() {
 add_action( 'wp_ajax_imagify_get_unoptimized_attachment_ids', '_do_wp_ajax_imagify_get_unoptimized_attachment_ids' );
 function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$args = array(
-		'fields'         => 'ids',
-		'post_type'      => 'attachment',
-		'post_status'    => 'any',
-		'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
-		'posts_per_page' => - 1,
-		 'meta_query'      => array(
-            'relation'    => 'or',
-            array(
-                'key'     => '_imagify_data',
-                'compare' => 'NOT EXISTS'
-            ),
-            array(
-                'key'     => '_imagify_status',
-                'value'   => 'error',
-                'compare' => '='
-            )
-        )
+		'fields'          => 'ids',
+		'post_type'       => 'attachment',
+		'post_status'     => 'any',
+		'post_mime_type'  => array( 'image/jpeg', 'image/gif', 'image/png' ), // add gif later
+		'posts_per_page'  => -1,
+		'meta_query'      => array(
+			'relation'    => 'or',
+			array(
+				'key'     => '_imagify_data',
+				'compare' => 'NOT EXISTS'
+			),
+			array(
+				'key'     => '_imagify_status',
+				'value'   => 'error',
+				'compare' => '='
+			)
+		)
 	);
 
 	$data  = array();
@@ -126,7 +126,6 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	foreach( $ids as $id ) {
 		$data[ $id ] = wp_get_attachment_url( $id );
 	}
-	
 	if ( (bool) $data ) {
 		wp_send_json_success( $data );
 	}
@@ -141,10 +140,10 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
  */
 add_action( 'wp_ajax_imagify_bulk_upload', '_do_wp_ajax_imagify_bulk_upload' );
 function _do_wp_ajax_imagify_bulk_upload() {
-	check_admin_referer( 'imagify-bulk-upload' );
+	check_ajax_referer( 'imagify-bulk-upload', '_imagify_bulk_upload' );
 	
 	if ( ! isset( $_POST['image'] ) || ! current_user_can( 'upload_files' ) ) {
-		wp_nonce_ays( '' );
+		wp_send_json_error();
 	}
 	
 	$attachment_id = (int) $_POST['image'];
@@ -172,7 +171,7 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	if ( ! $attachment->is_optimized() ) {
 		$data['success'] = false;
 		$data['error']   = $fullsize_data['error'];
-		
+
 		wp_send_json_error( $data );
 	}
 	
@@ -185,7 +184,7 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	$data['new_overall_size']      = $stats_data['optimized_size'];
 	$data['thumbnails']            = $attachment->get_optimized_sizes_count();
 		
-	wp_send_json( $data );
+	wp_send_json_success( $data );
 }
 
 /**
@@ -195,10 +194,10 @@ function _do_wp_ajax_imagify_bulk_upload() {
  */
 add_action( 'wp_ajax_imagify_signup', '_do_wp_ajax_imagify_signup' );
 function _do_wp_ajax_imagify_signup() {
-	check_admin_referer( 'imagify-signup', 'imagifysignupnonce' );
+	check_ajax_referer( 'imagify-signup', 'imagifysignupnonce' );
 
 	if ( ! isset( $_GET['email'] ) ) {
-		wp_nonce_ays( '' );
+		wp_send_json_error();
 	}
 
 	$data = array(
@@ -222,10 +221,10 @@ function _do_wp_ajax_imagify_signup() {
  */
 add_action( 'wp_ajax_imagify_check_api_key_validity', '_do_wp_ajax_imagify_check_api_key_validity' );
 function _do_wp_ajax_imagify_check_api_key_validity() {
-	check_admin_referer( 'imagify-check-api-key', 'imagifycheckapikeynonce' );
+	check_ajax_referer( 'imagify-check-api-key', 'imagifycheckapikeynonce' );
 
 	if ( ! isset( $_GET['api_key'] ) ) {
-		wp_nonce_ays( '' );
+		wp_send_json_error();
 	}
 
 	$response = get_imagify_status( $_GET['api_key'] );
@@ -235,7 +234,7 @@ function _do_wp_ajax_imagify_check_api_key_validity() {
 	}
 
 	$options            = get_site_option( IMAGIFY_SETTINGS_SLUG );
-	$options['api_key'] = $_GET['api_key'];
+	$options['api_key'] = sanitize_key( $_GET['api_key'] );
 
 	update_site_option( IMAGIFY_SETTINGS_SLUG, $options );
 
@@ -249,12 +248,19 @@ function _do_wp_ajax_imagify_check_api_key_validity() {
  */
 add_action( 'wp_ajax_imagify_dismiss_notice', '_do_admin_post_imagify_dismiss_notice' );
 add_action( 'admin_post_imagify_dismiss_notice', '_do_admin_post_imagify_dismiss_notice' );
-function _do_admin_post_imagify_dismiss_notice()
-{
-	check_ajax_referer( 'imagify-dismiss-notice' );
+function _do_admin_post_imagify_dismiss_notice() {
+	if ( defined( 'DOING_AJAX' ) ) {
+		check_ajax_referer( 'imagify-dismiss-notice' );
+	} else {
+		check_admin_referer( 'imagify-dismiss-notice' );
+	}
 
 	if ( ! isset( $_GET['notice'] ) || ! current_user_can( 'manage_options' ) ) {
-		wp_nonce_ays( '' );
+		if ( defined( 'DOING_AJAX' ) ) {
+			wp_send_json_error();
+		} else {
+			wp_nonce_ays( '' );
+		}
 	}
 
 	imagify_dismiss_notice( $_GET['notice'] );
