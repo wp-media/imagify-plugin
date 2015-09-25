@@ -48,7 +48,7 @@ jQuery(function($){
 
 		$.get( $href.replace( 'admin-post.php', 'admin-ajax.php' ) )
 		.done( function(response){
-			$parent.html(response);
+			$parent.html(response.data);
 			$parent.find('.imagify-datas-more-action a').addClass('is-open').find('.the-text').text( $parent.find('.imagify-datas-more-action a').data('close') );
 			$parent.find('.imagify-datas-details').addClass('is-open');
 			
