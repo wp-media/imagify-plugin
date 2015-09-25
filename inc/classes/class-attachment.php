@@ -401,9 +401,9 @@ class Imagify_Attachment {
 		 *
 		 * @since 1.0
 		 *
-		 * @param int $id The attachment ID
+		 * @param int $this->id The attachment ID
 		*/
-		do_action( 'before_imagify_optimize_attachment', $id );
+		do_action( 'before_imagify_optimize_attachment', $this->id );
 		
 		// Optimize the original size
 		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $is_aggressive );
@@ -460,10 +460,10 @@ class Imagify_Attachment {
 		 *
 		 * @since 1.0
 		 *
-		 * @param int    $id 			  The attachment ID
+		 * @param int    $this->id        The attachment ID
 		 * @param array  $optimized_data  The optimization data
 		*/
-		do_action( 'after_imagify_optimize_attachment', $id, $optimized_data );
+		do_action( 'after_imagify_optimize_attachment', $this->id, $optimized_data );
 		
 		return $optimized_data;
 	}
