@@ -31,6 +31,7 @@ define( 'IMAGIFY_ADMIN_UI_PATH'     , realpath( IMAGIFY_ADMIN_PATH . 'ui' ) . '/
 define( 'IMAGIFY_COMMON_PATH'    	, realpath( IMAGIFY_INC_PATH . 'common' ) . '/' );
 define( 'IMAGIFY_FUNCTIONS_PATH'    , realpath( IMAGIFY_INC_PATH . 'functions' ) . '/' );
 define( 'IMAGIFY_CLASSES_PATH'    	, realpath( IMAGIFY_INC_PATH . 'classes' ) . '/' );
+define( 'IMAGIFY_3RD_PARTY_PATH'  	, realpath( IMAGIFY_INC_PATH . '3rd-party' ) . '/' );
 define( 'IMAGIFY_URL'               , plugin_dir_url( IMAGIFY_FILE ) );
 define( 'IMAGIFY_INC_URL'         	, IMAGIFY_URL . 'inc/' );
 define( 'IMAGIFY_ADMIN_URL'         , IMAGIFY_INC_URL . 'admin/' );
@@ -66,6 +67,7 @@ function _imagify_init() {
     require( IMAGIFY_FUNCTIONS_PATH . 'admin.php' );
     require( IMAGIFY_COMMON_PATH 	. 'attachment.php' );
     require( IMAGIFY_COMMON_PATH 	. 'admin-bar.php' );
+    require( IMAGIFY_3RD_PARTY_PATH . '3rd-party.php' );
 
     if ( is_admin() ) {
         require( IMAGIFY_ADMIN_PATH 	. 'upgrader.php' );
