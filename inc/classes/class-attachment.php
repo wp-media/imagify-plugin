@@ -373,7 +373,7 @@ class Imagify_Attachment {
 
 		// TO DO: use wp_attachment_is_image when we can optimize all image formats
 		//if ( ( $id || wp_attachment_is_image( $id ) === false ) {
-		if ( ! $id || ! in_array( $this->get_extension(), array( 'png', 'jpg', 'jpeg' ) )  ) {
+		if ( ! $id || ! in_array( $this->get_extension(), array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
 			return;
 		}
 
@@ -390,7 +390,7 @@ class Imagify_Attachment {
 		 * @param int $id The attachment ID
 		*/
 		do_action( 'before_imagify_optimize_attachment', $id );
-		
+
 		// Optimize the original size
 		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $is_aggressive );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
@@ -447,11 +447,11 @@ class Imagify_Attachment {
 		 *
 		 * @since 1.0
 		 *
-		 * @param int    $id 			  The attachment ID
+		 * @param int    $id   			  The attachment ID
 		 * @param array  $optimized_data  The optimization data
 		*/
 		do_action( 'after_imagify_optimize_attachment', $id, $optimized_data );
-		
+
 		return $optimized_data;
 	}
 

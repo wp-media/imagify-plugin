@@ -42,7 +42,7 @@ function imagify_count_exceeding_attachments() {
 
 		// Check if the attachment extension is allowed
 		// TO DO: use wp_attachment_is_image when we can optimize all formats
-		if ( ! in_array( $attachment->get_extension() , array( 'png', 'jpg', 'jpeg' ) )  ) {
+		if ( ! in_array( $attachment->get_extension() , array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
 			continue;
 		}
 		
@@ -163,7 +163,7 @@ function imagify_count_saving_data( $key = '' ) {
 
 		// Check if the attachment extension is allowed
 		// TO DO: use wp_attachment_is_image when we can optimize all formats
-		if ( ! in_array( $attachment->get_extension() , array( 'png', 'jpg', 'jpeg' ) )  ) {
+		if ( ! in_array( $attachment->get_extension() , array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
 			continue;
 		}
 
