@@ -403,7 +403,7 @@ class Imagify_Attachment {
 		 *
 		 * @param int $id The attachment ID
 		*/
-		add_action( 'before_imagify_optimize_attachment', $id );
+		do_action( 'before_imagify_optimize_attachment', $id );
 		
 		// Optimize the original size
 		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $is_aggressive );
@@ -463,7 +463,7 @@ class Imagify_Attachment {
 		 * @param int    $id 			  The attachment ID
 		 * @param array  $optimized_data  The optimization data
 		*/
-		add_action( 'after_imagify_optimize_attachment', $id, $optimized_data );
+		do_action( 'after_imagify_optimize_attachment', $id, $optimized_data );
 		
 		return $optimized_data;
 	}
@@ -488,7 +488,7 @@ class Imagify_Attachment {
 		 *
 		 * @param int $id The attachment ID
 		*/
-		add_action( 'before_imagify_restore_attachment', $id );
+		do_action( 'before_imagify_restore_attachment', $id );
 		
 		// Create the original image from the backup
 		@copy( $backup_path, $attachment_path );
@@ -522,6 +522,6 @@ class Imagify_Attachment {
 		 *
 		 * @param int $id The attachment ID
 		*/
-		add_action( 'after_imagify_restore_attachment', $id );
+		do_action( 'after_imagify_restore_attachment', $id );
 	}
 }
