@@ -27,7 +27,7 @@ function _imagify_admin_bar( $wp_admin_bar )
 		$wp_admin_bar->add_menu(array(
 			'parent' => 'imagify',
 			'id' 	 => 'imagify-settings',
-			'title'  => __( 'Settings', 'imagify' ),
+			'title'  => __( 'Settings' ),
 		    'href'   => get_imagify_admin_url(),
 		));	
 	}
