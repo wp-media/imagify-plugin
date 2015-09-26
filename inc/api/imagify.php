@@ -65,7 +65,7 @@ class Imagify {
     /**
      * The Imagify API endpoint
      */
-    private $apiEndpoint = 'http://alpha.imagify.io/api/';
+    private $apiEndpoint = 'http://app.imagify.io/api/';
 
     /**
      * The Imagify API key
@@ -143,7 +143,7 @@ class Imagify {
      **/
     public function getUser()
     {
-		return self::httpCall( 'users/me/?format=json' );
+		return self::httpCall( 'users/me/' );
     }
 
     /**
@@ -155,7 +155,7 @@ class Imagify {
 	    unset( $this->headers['Accept'], $this->headers['Content-Type'] );
         $this->headers['Authorization'] = 'Authorization: token ' . $data;
 
-        return self::httpCall( 'status/?format=json' );
+        return self::httpCall( 'status/' );
     }
 
     /**
@@ -180,7 +180,7 @@ class Imagify {
 	        unset( $this->headers['Accept'], $this->headers['Content-Type'] );
         }
 
-		return self::httpCall( 'upload/?format=json', 'POST', $data );
+		return self::httpCall( 'upload/', 'POST', $data );
     }
 
     /**
@@ -190,7 +190,7 @@ class Imagify {
      * @return object
      **/
     public function fetchImage( $data ) {
-		return self::httpCall( 'fetch/?format=json', 'POST', json_encode( $data ) );
+		return self::httpCall( 'fetch/', 'POST', json_encode( $data ) );
     }
 
 	/**
