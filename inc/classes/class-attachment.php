@@ -38,7 +38,7 @@ class Imagify_Attachment {
 	 * @return string|false
 	 */
 	public function get_backup_path() {
-		$file_path 	 = get_attached_file( $this->id );
+		$file_path 	 = $this->get_original_path();
 		$backup_path = get_imagify_attachment_backup_path( $file_path );
 
 		if( file_exists( $backup_path ) ) {
@@ -57,7 +57,7 @@ class Imagify_Attachment {
 	 * @return string
 	 */
 	public function get_extension() {
-		$fullsize_path = get_attached_file( $this->id );
+		$fullsize_path = $this->get_original_path();
 		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
 	}
 
@@ -464,7 +464,7 @@ class Imagify_Attachment {
 	public function restore() {
 		$id              = $this->id;
 		$backup_path     = $this->get_backup_path();
-		$attachment_path = get_attached_file( $id );
+		$attachment_path = $this->get_original_path();
 
 		/**
 		 * Fires before restoring an attachment.
