@@ -75,10 +75,8 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null ) {
 	}
 
 	// Create a backup file
-	if ( $backup ) {
-		$upload_dir       = wp_upload_dir();
-		$upload_basedir   = trailingslashit( $upload_dir['basedir'] );
-		$backup_path      = str_replace( $upload_basedir, $upload_basedir . 'backup/' , $file_path );
+	if ( $backup ) {		
+		$backup_path      = get_imagify_attachment_backup_path( $file_path );
 		$backup_path_info = pathinfo( $backup_path );
 
 		wp_mkdir_p( $backup_path_info['dirname'] );

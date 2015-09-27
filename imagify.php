@@ -59,6 +59,7 @@ function _imagify_init() {
     require( IMAGIFY_INC_PATH 		. 'compat.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'options.php' );
     require( IMAGIFY_API_PATH 		. 'imagify.php' );
+    require( IMAGIFY_FUNCTIONS_PATH . 'attachments.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'process.php' );
     require( IMAGIFY_CLASSES_PATH 	. 'class-user.php' );
     require( IMAGIFY_CLASSES_PATH 	. 'class-attachment.php' );

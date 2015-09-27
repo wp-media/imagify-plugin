@@ -38,10 +38,8 @@ class Imagify_Attachment {
 	 * @return string|false
 	 */
 	public function get_backup_path() {
-		$file_path 		 = get_attached_file( $this->id );
-		$upload_dir      = wp_upload_dir();
-		$upload_basedir  = trailingslashit( $upload_dir['basedir'] );
-		$backup_path     = str_replace( $upload_basedir, $upload_basedir . 'backup/' , $file_path );
+		$file_path 	 = get_attached_file( $this->id );
+		$backup_path = get_imagify_attachment_backup_path( $file_path );
 
 		if( file_exists( $backup_path ) ) {
 			return $backup_path;
@@ -353,7 +351,7 @@ class Imagify_Attachment {
 	 * @param  array  $metadata   	   The attachment meta data
 	 * @return array  $optimized_data  The optimization data
 	 */
-	public function optimize( $is_aggressive = null, $metadata = array() ) {
+	public function optimize( $is_aggressive = null, $metadata = array() ) {		
 		$is_aggressive = ( is_null( $is_aggressive ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $is_aggressive;
 
 		$id = $this->id;
