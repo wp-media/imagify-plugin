@@ -354,10 +354,6 @@ class Imagify_Attachment {
 	 * @return array  $optimized_data  The optimization data
 	 */
 	public function optimize( $is_aggressive = null, $metadata = array() ) {
-		// Users has block external HTTP request, avoid sending the images.
-		if ( defined( 'WP_HTTP_BLOCK_EXTERNAL' ) && WP_HTTP_BLOCK_EXTERNAL ) {
-			return;
-		}
 		$is_aggressive = ( is_null( $is_aggressive ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $is_aggressive;
 
 		$id = $this->id;
