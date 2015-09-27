@@ -66,7 +66,7 @@ function _imagify_init() {
     require( IMAGIFY_FUNCTIONS_PATH . 'admin-ui.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'admin-stats.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'admin.php' );
-    require( IMAGIFY_COMMON_PATH 	. 'attachment.php' );
+    require( IMAGIFY_COMMON_PATH 	. 'attachments.php' );
     require( IMAGIFY_COMMON_PATH 	. 'admin-bar.php' );
     require( IMAGIFY_3RD_PARTY_PATH . '3rd-party.php' );
 
