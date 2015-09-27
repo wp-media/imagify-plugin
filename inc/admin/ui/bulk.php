@@ -96,7 +96,7 @@ function _imagify_display_bulk_page() {
 							<strong><?php echo sprintf( __( 'Don\'t forget to check %syour settings%s before bulk optimization.', 'imagify' ), '<a href="' . get_admin_url( get_current_blog_id(), 'options-general.php?page=' . IMAGIFY_SLUG ) . '">', '</a>' ); ?></strong>
 						</p>
 						<p>
-							<?php wp_nonce_field( 'imagify-bulk-upload', '_imagify_bulk_upload' ); ?>
+							<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
 							<button id="imagify-bulk-action" type="button" class="button button-primary">
 								<span class="dashicons dashicons-admin-generic"></span>
 								<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify'); ?></span>

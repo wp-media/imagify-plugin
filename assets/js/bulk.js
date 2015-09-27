@@ -56,7 +56,7 @@ jQuery(function($){
 	    $obj.attr('disabled', 'disabled');
 	    $obj.find('.dashicons').addClass('rotate');
 		
-		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&_imagify_bulk_upload="+$('#_imagify_bulk_upload').val())
+		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
 		.done(function(response) {
 			if( !response.success ) {
 				$obj.removeAttr('disabled');
@@ -72,7 +72,7 @@ jQuery(function($){
 				
 			} else {
 				var config = {
-					'lib': ajaxurl+"?action=imagify_bulk_upload&_imagify_bulk_upload="+$('#_imagify_bulk_upload').val(),
+					'lib': ajaxurl+"?action=imagify_bulk_upload&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val(),
 					'images': response.data
 				}
 				

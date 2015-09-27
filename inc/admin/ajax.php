@@ -123,7 +123,7 @@ function _do_admin_post_imagify_restore_upload() {
  */
 add_action( 'wp_ajax_imagify_get_unoptimized_attachment_ids', '_do_wp_ajax_imagify_get_unoptimized_attachment_ids' );
 function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
-	check_ajax_referer( 'imagify-bulk-upload', '_imagify_bulk_upload' );
+	check_ajax_referer( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
 
 	if ( ! current_user_can( 'upload_files' ) ) {
 		wp_send_json_error();
@@ -170,7 +170,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
  */
 add_action( 'wp_ajax_imagify_bulk_upload', '_do_wp_ajax_imagify_bulk_upload' );
 function _do_wp_ajax_imagify_bulk_upload() {
-	check_ajax_referer( 'imagify-bulk-upload', '_imagify_bulk_upload' );
+	check_ajax_referer( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
 	
 	if ( ! isset( $_POST['image'] ) || ! current_user_can( 'upload_files' ) ) {
 		wp_send_json_error();
