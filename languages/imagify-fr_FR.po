@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
 "POT-Creation-Date: 2015-09-24 23:55+0200\n"
-"PO-Revision-Date: 2015-09-25 01:47+0200\n"
+"PO-Revision-Date: 2015-09-28 00:29+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -215,7 +215,7 @@ msgstr "c’est le nombre d’images %sque vous avez optimisé"
 
 #: inc/admin/ui/bulk.php:153
 msgid "Original size"
-msgstr "Poids de l’originale"
+msgstr "Poids de l’original"
 
 #: inc/admin/ui/bulk.php:158
 msgid "Optimized size"
@@ -332,7 +332,7 @@ msgstr "J’ai récupéré ma clé API"
 
 #: inc/admin/ui/notices.php:52
 msgid "Configure it"
-msgstr "Configurer-le"
+msgstr "Configurer le"
 
 #: inc/admin/ui/notices.php:53
 msgid ""
@@ -473,7 +473,7 @@ msgstr "%s ne peut pas être optimisé"
 
 #: inc/admin/upload.php:66
 msgid "Unoptimized"
-msgstr "Non-optimisé"
+msgstr "Non optimisé"
 
 #: inc/admin/upload.php:67
 msgid "Errors"
@@ -509,7 +509,7 @@ msgstr "Nouveau poids :"
 
 #: inc/functions/admin-ui.php:44
 msgid "Original Saving:"
-msgstr "Gain sur l’originale :"
+msgstr "Gain sur l’original :"
 
 #: inc/functions/admin-ui.php:51
 msgid "Close details"
@@ -521,7 +521,7 @@ msgstr "Voir les détails"
 
 #: inc/functions/admin-ui.php:55
 msgid "Original Filesize:"
-msgstr "Poids de l’originale :"
+msgstr "Poids de l’original :"
 
 #: inc/functions/admin-ui.php:58
 msgid "Level:"
@@ -541,16 +541,16 @@ msgstr "En restauration…"
 
 #: inc/functions/admin-ui.php:74
 msgid "Restore Original"
-msgstr "Restaurer l’originale"
+msgstr "Restaurer l’original"
 
 #: inc/functions/admin-ui.php:98
 msgid "Try again"
-msgstr "Ré-essayer"
+msgstr "Réessayer"
 
 #: inc/functions/admin-ui.php:122
 #, php-format
 msgid "Re-Optimize to %s"
-msgstr "Ré-optimiser en %s"
+msgstr "Réoptimiser en %s"
 
 #: inc/functions/process.php:19
 msgid "File path is empty"
