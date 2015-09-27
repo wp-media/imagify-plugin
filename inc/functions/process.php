@@ -13,7 +13,13 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 function do_imagify( $file_path, $backup = false, $is_aggressive = null ) {
 	$errors = new WP_Error();
-
+	
+	// Check if external HTTP requests are blocked.
+	if ( defined( 'WP_HTTP_BLOCK_EXTERNAL' ) && WP_HTTP_BLOCK_EXTERNAL ) {
+		$errors->add( 'http_block_external', __( 'External requests are blocked', 'imagify' ) );
+		return $errors;
+	}
+	
 	// Check that file path isn't empty
 	if ( empty( $file_path ) ) {
 		$errors->add( 'empty_path', __( 'File path is empty', 'imagify' ) );
