@@ -58,13 +58,13 @@ function _imagify_init() {
     require( IMAGIFY_INC_PATH 		. 'compat.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'options.php' );
     require( IMAGIFY_API_PATH 		. 'imagify.php' );
+    require( IMAGIFY_FUNCTIONS_PATH . 'admin.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'attachments.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'process.php' );
     require( IMAGIFY_CLASSES_PATH 	. 'class-user.php' );
     require( IMAGIFY_CLASSES_PATH 	. 'class-attachment.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'admin-ui.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'admin-stats.php' );
-    require( IMAGIFY_FUNCTIONS_PATH . 'admin.php' );
     require( IMAGIFY_COMMON_PATH 	. 'attachments.php' );
     require( IMAGIFY_COMMON_PATH 	. 'admin-bar.php' );
     require( IMAGIFY_3RD_PARTY_PATH . '3rd-party.php' );

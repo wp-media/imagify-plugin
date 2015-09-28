@@ -15,7 +15,7 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null ) {
 	$errors = new WP_Error();
 	
 	// Check if external HTTP requests are blocked.
-	if ( defined( 'WP_HTTP_BLOCK_EXTERNAL' ) && WP_HTTP_BLOCK_EXTERNAL ) {
+	if ( is_imagify_blocked() ) {
 		$errors->add( 'http_block_external', __( 'External HTTP requests are blocked', 'imagify' ) );
 		return $errors;
 	}

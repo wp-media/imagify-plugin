@@ -2,6 +2,30 @@
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 /**
+ * Check if external requests are blocked for Imagify.
+ *
+ * @since 1.0
+ *
+ * return bool True if Imagify API can't be called
+ */
+function is_imagify_blocked() {
+	if ( ! defined( 'WP_HTTP_BLOCK_EXTERNAL' ) || ! WP_HTTP_BLOCK_EXTERNAL ) {
+		return false;
+	}
+	
+	if ( defined( 'WP_ACCESSIBLE_HOSTS' ) ) {
+		$accessible_hosts = explode( ',', WP_ACCESSIBLE_HOSTS );
+		$accessible_hosts = array_map( 'trim', $accessible_hosts );
+		
+		if ( in_array( '*.imagify.io', $accessible_hosts ) ) {
+			return false;	
+		}
+	}
+	
+	return true;
+}
+
+/**
  * Check if Imagify is activated on the network.
  *
  * @since 1.0

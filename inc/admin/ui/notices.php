@@ -82,7 +82,7 @@ function _imagify_warning_wrong_api_key_notice() {
 			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
 		</div>
 		<div class="imagify-notice-content">
-			<p><strong><?php _e( 'Your API key isn\'t valid!', 'imagify' ); ?></strong></p>
+			<p class="imagify-notice-title"><strong><?php _e( 'Your API key isn\'t valid!', 'imagify' ); ?></strong></p>
 			<p>
 			<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
 			<?php echo sprintf( __( 'Go to your Imagify account page to get your API Key and specify it on %1$syour settings%3$s or %2$screate an account for free%3$s if you don\'t have one yet.', 'imagify' ), '<a href="' . get_imagify_admin_url() . '">', '<a id="imagify-signup" href="' . IMAGIFY_WEB_MAIN . '">', '</a>' ); ?></p>
@@ -188,6 +188,38 @@ function _imagify_rating_notice() {
 		</div>
 		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'rating' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>
+	<?php
+}
 
+/**
+ * This notice is displayed when external HTTP requests are blocked vie the WP_HTTP_BLOCK_EXTERNAL constant
+ *
+ * @since 1.0
+ */
+add_action( 'all_admin_notices', '_imagify_http_block_external_notice' );
+function _imagify_http_block_external_notice() {
+	$current_screen = get_current_screen();
+	$notices 		= get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'http-block-external', (array) $notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) || !imagify_valid_key() || ! is_imagify_blocked() ) {
+		return;
+	}
+	?>	
+	<div class="clear"></div>
+	<div class="error imagify-notice below-h2">
+		<div class="imagify-notice-logo">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
+		</div>
+		<div class="imagify-notice-content">
+			<p class="imagify-notice-title"><strong><?php _e( 'The external HTTP requests are blocked!', 'imagify' ); ?></strong></p>
+			<p><?php _e( 'You defined the <code>WP_HTTP_BLOCK_EXTERNAL</code> constant in the <code>wp-config.php</code> to block all external HTTP requests.', 'imagify' ); ?></p>
+			<p>
+			<?php _e( 'To optimize your images, you have to put the following code in your <code>wp-config.php</code> file so that it works correctly.', 'imagify' ); ?><br/>
+			<?php _e( 'Click on the field and press Ctrl-A to select all.', 'imagify' ); ?>
+			</p>
+			<p><textarea readonly="readonly" class="large-text readonly" rows="1">define( 'WP_ACCESSIBLE_HOSTS', '*.imagify.io' );</textarea></p>
+		</div>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'http-block-external' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	</div>	
 	<?php
 }
