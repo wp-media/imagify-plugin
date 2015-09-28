@@ -738,6 +738,11 @@ label + .imagify-info {
 .error .imagify-notice-logo {
 	background: #D0021B;
 }
+
+.imagify-notice-title {
+	font-size: 15px;
+}
+
 .imagify-notice-content {
 	padding: 5px 23px;
 }
@@ -750,6 +755,10 @@ label + .imagify-info {
 .imagify-notice a:hover,
 .imagify-notice a:focus {
 	color: #FEE102;
+}
+
+.imagify-notice code {
+	background: rgba(0, 0, 0, 0.4) none repeat scroll 0 0;
 }
 
 /*
