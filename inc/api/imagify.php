@@ -203,25 +203,29 @@ class Imagify {
      **/
     private function httpCall( $url, $method = 'GET', $post_data = null )
     {
-        $ch = curl_init();
+        try {
+	    	$ch = curl_init();
 
-        if ( 'POST' == $method ) {
-	        curl_setopt( $ch, CURLOPT_POST, true );
-			curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+	        if ( 'POST' == $method ) {
+		        curl_setopt( $ch, CURLOPT_POST, true );
+				curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+	        }
+	
+			curl_setopt( $ch, CURLOPT_URL, self::API_ENDPOINT . $url );
+			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
+			curl_setopt( $ch, CURLOPT_TIMEOUT, 60 );
+			// TO DO - SSL verifier
+	
+			$response  = json_decode( curl_exec( $ch ) );
+	        $error     = curl_error( $ch );
+	        $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+	
+			curl_close( $ch );    
+        } catch( Exception $e ) {
+	        return new WP_Error( $http_code, 'Unknown error occurred' );
         }
-
-		curl_setopt( $ch, CURLOPT_URL, self::API_ENDPOINT . $url );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 60 );
-		// TO DO - SSL verifier
-
-		$response  = json_decode( curl_exec( $ch ) );
-        $error     = curl_error( $ch );
-        $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-
-		curl_close( $ch );
-
+        
 		if ( 200 != $http_code && isset( $response->code, $response->detail ) ) {
 			return new WP_Error( $http_code, $response->detail );
 		} elseif ( 200 != $http_code ) {
