@@ -133,7 +133,7 @@ class Imagify {
 
 		$data['from_plugin'] = true;
 
-        return self::httpCall( 'users/', 'POST', $data );
+        return $this->httpCall( 'users/', 'POST', $data );
     }
 
 	/**
@@ -143,7 +143,7 @@ class Imagify {
      **/
     public function getUser()
     {
-		return self::httpCall( 'users/me/' );
+		return $this->httpCall( 'users/me/' );
     }
 
     /**
@@ -155,7 +155,7 @@ class Imagify {
 	    unset( $this->headers['Accept'], $this->headers['Content-Type'] );
         $this->headers['Authorization'] = 'Authorization: token ' . $data;
 
-        return self::httpCall( 'status/' );
+        return $this->httpCall( 'status/' );
     }
 
     /**
@@ -166,7 +166,7 @@ class Imagify {
      **/
     public function updateUser( $data )
     {
-        return self::httpCall( 'users/me/format=json', 'PUT', $data );
+        return $this->httpCall( 'users/me/format=json', 'PUT', $data );
     }
 
     /**
@@ -180,7 +180,7 @@ class Imagify {
 	        unset( $this->headers['Accept'], $this->headers['Content-Type'] );
         }
 
-		return self::httpCall( 'upload/', 'POST', $data );
+		return $this->httpCall( 'upload/', 'POST', $data );
     }
 
     /**
@@ -190,7 +190,7 @@ class Imagify {
      * @return object
      **/
     public function fetchImage( $data ) {
-		return self::httpCall( 'fetch/', 'POST', json_encode( $data ) );
+		return $this->httpCall( 'fetch/', 'POST', json_encode( $data ) );
     }
 
 	/**
