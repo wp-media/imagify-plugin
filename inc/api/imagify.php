@@ -65,7 +65,7 @@ class Imagify {
     /**
      * The Imagify API endpoint
      */
-    private $apiEndpoint = 'http://app.imagify.io/api/';
+    const API_ENDPOINT = 'http://app.imagify.io/api/';
 
     /**
      * The Imagify API key
@@ -210,7 +210,7 @@ class Imagify {
 			curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
         }
 
-		curl_setopt( $ch, CURLOPT_URL, $this->apiEndpoint . $url );
+		curl_setopt( $ch, CURLOPT_URL, self::API_ENDPOINT . $url );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
 		curl_setopt( $ch, CURLOPT_TIMEOUT, 60 );
