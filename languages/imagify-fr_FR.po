@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-09-24 23:55+0200\n"
-"PO-Revision-Date: 2015-09-28 00:29+0200\n"
+"POT-Creation-Date: 2015-09-30 20:15+0200\n"
+"PO-Revision-Date: 2015-09-30 20:22+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -20,12 +20,12 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: inc/admin/ajax.php:91 inc/admin/upload.php:40 inc/functions/admin-ui.php:98
+#: inc/admin/ajax.php:115 inc/admin/upload.php:40 inc/functions/admin-ui.php:98
 #: inc/functions/admin-ui.php:122
 msgid "Optimizing..."
 msgstr "En cours d’optimisation…"
 
-#: inc/admin/ajax.php:91 inc/admin/meta-boxes.php:29 inc/admin/upload.php:40
+#: inc/admin/ajax.php:115 inc/admin/meta-boxes.php:29 inc/admin/upload.php:40
 msgid "Optimize"
 msgstr "Optimiser"
 
@@ -85,15 +85,27 @@ msgstr ""
 msgid "Your API key is valid."
 msgstr "Votre clé API est valide."
 
-#: inc/admin/enqueue.php:117
+#: inc/admin/enqueue.php:118 inc/admin/ui/bulk.php:173 inc/admin/upload.php:65
+msgid "Optimized"
+msgstr "Optimisé"
+
+#: inc/admin/enqueue.php:119 inc/admin/upload.php:66
+msgid "Unoptimized"
+msgstr "Non optimisé"
+
+#: inc/admin/enqueue.php:120
+msgid "Error"
+msgstr "Erreur"
+
+#: inc/admin/enqueue.php:122
 msgid "Hold on!"
 msgstr "Halte là !"
 
-#: inc/admin/enqueue.php:118
+#: inc/admin/enqueue.php:123
 msgid "All your images have been optimized by Imagify. Congratulations!"
 msgstr "Toutes vos images ont été optimisées par Imagify. Félicitations !"
 
-#: inc/admin/enqueue.php:120
+#: inc/admin/enqueue.php:125
 #, php-format
 msgid ""
 "Discover @imagify, the new compression tool to optimize your images for "
@@ -108,7 +120,6 @@ msgid "Bulk Optimization"
 msgstr "Optimisation en masse"
 
 #. Plugin Name of the plugin/theme
-#. Author of the plugin/theme
 #: inc/admin/meta-boxes.php:18 inc/admin/meta-boxes.php:25
 #: inc/admin/upload.php:11
 msgid "Imagify"
@@ -204,86 +215,82 @@ msgstr ""
 msgid "Overview"
 msgstr "Vue d'ensemble"
 
-#: inc/admin/ui/bulk.php:136
+#: inc/admin/ui/bulk.php:132
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: inc/admin/ui/bulk.php:141
+#: inc/admin/ui/bulk.php:137
 #, php-format
 msgid "that's the number %sof images you optimized"
 msgstr "c’est le nombre d’images %sque vous avez optimisé"
 
-#: inc/admin/ui/bulk.php:153
+#: inc/admin/ui/bulk.php:149
 msgid "Original size"
 msgstr "Poids de l’original"
 
-#: inc/admin/ui/bulk.php:158
+#: inc/admin/ui/bulk.php:154
 msgid "Optimized size"
 msgstr "Poids optimisé"
 
-#: inc/admin/ui/bulk.php:171
+#: inc/admin/ui/bulk.php:167
 msgid "Compression process results"
 msgstr "Résultats du processus de compression"
 
-#: inc/admin/ui/bulk.php:174
+#: inc/admin/ui/bulk.php:170
 msgid "Filename"
 msgstr "Nom du fichier"
 
-#: inc/admin/ui/bulk.php:175
+#: inc/admin/ui/bulk.php:171
 msgid "Status"
 msgstr "Statut"
 
-#: inc/admin/ui/bulk.php:176
+#: inc/admin/ui/bulk.php:172
 msgid "Original"
 msgstr "Original"
 
-#: inc/admin/ui/bulk.php:177 inc/admin/upload.php:65
-msgid "Optimized"
-msgstr "Optimisé"
-
-#: inc/admin/ui/bulk.php:178
+#: inc/admin/ui/bulk.php:174
 msgid "Percentage"
 msgstr "Pourcentage"
 
-#: inc/admin/ui/bulk.php:179
+#: inc/admin/ui/bulk.php:175
 msgid "Thumbnails optimized"
 msgstr "Miniatures optimisées"
 
-#: inc/admin/ui/bulk.php:180
+#: inc/admin/ui/bulk.php:176
 msgid "Overall saving"
 msgstr "Gain total"
 
-#: inc/admin/ui/bulk.php:185
+#: inc/admin/ui/bulk.php:181
 msgid "file"
 msgstr "fichier"
 
-#: inc/admin/ui/bulk.php:186
+#: inc/admin/ui/bulk.php:182
 msgid "error"
 msgstr "erreur"
 
-#: inc/admin/ui/bulk.php:187
+#: inc/admin/ui/bulk.php:183
 msgid "Total:"
 msgstr "Total :"
 
-#: inc/admin/ui/bulk.php:188
+#: inc/admin/ui/bulk.php:184
 msgid "Gain:"
 msgstr "Gain :"
 
-#: inc/admin/ui/bulk.php:205
+#: inc/admin/ui/bulk.php:201
 #, php-format
 msgid "%sClick here%s to start the bulk optimization"
 msgstr "%sCliquez ici%s pour démarrer l’optimisation en masse"
 
-#: inc/admin/ui/bulk.php:221
+#: inc/admin/ui/bulk.php:217
 msgid "Well done!"
 msgstr "Bien joué !"
 
-#: inc/admin/ui/bulk.php:222
+#: inc/admin/ui/bulk.php:218
 #, php-format
 msgid "you saved %1$s out of %2$s"
 msgstr "vous avez économisé %1$s sur %2$s"
 
-#: inc/admin/ui/bulk.php:227
+#: inc/admin/ui/bulk.php:223
 msgid "Share your awesome result"
 msgstr "Partagez votre résultat"
 
@@ -293,7 +300,7 @@ msgstr ""
 "Bienvenue sur Imagify, la meilleure façon d'optimiser facilement vos images !"
 
 #: inc/admin/ui/notices.php:25 inc/admin/ui/notices.php:90
-#: inc/admin/ui/notices.php:189
+#: inc/admin/ui/notices.php:189 inc/admin/ui/notices.php:222
 msgid "Dismiss this notice"
 msgstr "Fermer ce message"
 
@@ -390,6 +397,31 @@ msgstr ""
 "%sVous aimez ce plugin ?%s Prenez quelques secondes pour le %snoter sur "
 "WordPress.org%s !"
 
+#: inc/admin/ui/notices.php:214
+msgid "The external HTTP requests are blocked!"
+msgstr "Les requêtes HTTP externes sont bloquées !"
+
+#: inc/admin/ui/notices.php:215
+msgid ""
+"You defined the <code>WP_HTTP_BLOCK_EXTERNAL</code> constant in the <code>wp-"
+"config.php</code> to block all external HTTP requests."
+msgstr ""
+"Vous avez défini la constante <code>WP_HTTP_BLOCK_EXTERNAL</code> dans le "
+"fichier <code>wp-config.php</code> pour bloquer toutes les requêtes HTTP "
+"externes."
+
+#: inc/admin/ui/notices.php:217
+msgid ""
+"To optimize your images, you have to put the following code in your <code>wp-"
+"config.php</code> file so that it works correctly."
+msgstr ""
+"Pour optimiser vos images, vous devez insérer le code suivant dans le "
+"fichier <code>wp-config.php</code> afin que cela fonctionne correctement."
+
+#: inc/admin/ui/notices.php:218
+msgid "Click on the field and press Ctrl-A to select all."
+msgstr "Cliquez sur le champ et appuyez sur Ctrl-A pour tout s électionner."
+
 #: inc/admin/ui/options.php:15
 msgid "Discover our other products"
 msgstr "Découvrez nos autres produits"
@@ -466,14 +498,26 @@ msgstr ""
 "Pour rappel, chaque format d’image additionnel affectera votre quota d’usage "
 "mensuel d’Imagify."
 
+#: inc/admin/ui/options.php:180
+msgid "Full Size"
+msgstr ""
+
+#: inc/admin/ui/options.php:181
+msgid "Thumbnail"
+msgstr ""
+
+#: inc/admin/ui/options.php:182
+msgid "Medium"
+msgstr ""
+
+#: inc/admin/ui/options.php:183
+msgid "Large"
+msgstr ""
+
 #: inc/admin/upload.php:24
 #, php-format
 msgid "%s can't be optimized"
 msgstr "%s ne peut pas être optimisé"
-
-#: inc/admin/upload.php:66
-msgid "Unoptimized"
-msgstr "Non optimisé"
 
 #: inc/admin/upload.php:67
 msgid "Errors"
@@ -487,7 +531,7 @@ msgstr "Filtrer par statut"
 msgid "All images"
 msgstr "Toutes les images"
 
-#: inc/classes/class-attachment.php:413
+#: inc/classes/class-attachment.php:406
 msgid ""
 "This size isn't authorized to be optimized. Update your Imagify settings if "
 "you want to optimize it."
@@ -495,11 +539,11 @@ msgstr ""
 "Cette taille n’est pas autorisée à être optimisée. Mettez à jour les "
 "réglages d’Imagify si vous souhaitez l’optimiser."
 
-#: inc/classes/class-user.php:72
+#: inc/classes/class-user.php:83
 msgid "Free"
 msgstr "Gratuit"
 
-#: inc/classes/class-user.php:72
+#: inc/classes/class-user.php:83
 msgid "Pro"
 msgstr "Pro"
 
@@ -553,20 +597,24 @@ msgid "Re-Optimize to %s"
 msgstr "Réoptimiser en %s"
 
 #: inc/functions/process.php:19
+msgid "External HTTP requests are blocked"
+msgstr "Les requêtes HTTP externes sont bloquées"
+
+#: inc/functions/process.php:25
 msgid "File path is empty"
 msgstr "Le chemin du fichier est vide"
 
-#: inc/functions/process.php:25
+#: inc/functions/process.php:31
 #, php-format
 msgid "Could not find %s"
 msgstr "Impossible de trouver %s"
 
-#: inc/functions/process.php:30
+#: inc/functions/process.php:36
 #, php-format
 msgid "%s is not writable"
 msgstr "%s n’est pas accessible en écriture"
 
-#: inc/functions/process.php:39
+#: inc/functions/process.php:45
 #, php-format
 msgid "Skipped (%s), image not found."
 msgstr "Ignoré (%s), image introuvable."
@@ -586,9 +634,16 @@ msgstr ""
 "l’argent sur votre bande passante en utilisant Imagify, le nouvel outil le "
 "plus avancé d’optimisation des images."
 
+#. Author of the plugin/theme
+msgid "WP Media"
+msgstr ""
+
 #. Author URI of the plugin/theme
-msgid "https://imagify.io"
-msgstr "https://imagify.io"
+msgid "http://wp-media.me"
+msgstr ""
+
+#~ msgid "https://imagify.io"
+#~ msgstr "https://imagify.io"
 
 #~ msgid "Your email address"
 #~ msgstr "Votre adresse e-mail"

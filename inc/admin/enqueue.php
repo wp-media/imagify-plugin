@@ -114,6 +114,11 @@ function _imagify_admin_print_styles()
 	wp_enqueue_script( 'imagify-js-admin' );
 
 	$data = array(
+		'overviewChartLabels'			=> array( 
+			'optimized'   => __( 'Optimized', 'imagify' ),
+			'unoptimized' => __( 'Unoptimized', 'imagify' ),
+			'error'       => __( 'Error', 'imagify' ),
+		),
 		'noAttachmentToOptimizeTitle'	=> __( 'Hold on!', 'imagify' ),
 		'noAttachmentToOptimizeText'	=> __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
 		'pluginURL'						=> 'https://wordpress.org/plugins/imagify',

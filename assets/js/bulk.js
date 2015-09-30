@@ -5,19 +5,19 @@ jQuery(function($){
 	        value: imagifyBulk.totalUnoptimizedAttachments,
 	        color:"#D9E4EB",
 	        highlight: "#D9E4EB",
-	        label: "Unoptimized" // TODO: translate
+	        label: imagifyBulk.overviewChartLabels.unoptimized
 	    },
 	    {
 	        value: imagifyBulk.totalOptimizedAttachments,
 	        color: "#46B1CE",
 	        highlight: "#46B1CE",
-	        label: "Optimized" // TODO: translate
+	        label: imagifyBulk.overviewChartLabels.optimized
 	    },
 	    {
 	        value: imagifyBulk.totalErrorsAttachments,
 	        color: "#2E3242",
 	        highlight: "#2E3242",
-	        label: "Errors" // TODO: translate
+	        label: imagifyBulk.overviewChartLabels.error
 	    }
 	]
 
@@ -93,8 +93,8 @@ jQuery(function($){
 			    }) 
 			    // after the attachment optimization
 			    .each(function (data) {		        			        
-			        $('.media-item .bar').animate({'width': data.progress + '%'});
-			        $('.media-item .percent').html(data.progress + '%');
+			        $('#imagify-progress-bar').animate({'width': data.progress + '%'});
+			        $('#imagify-progress-bar').find('.percent').html(data.progress + '%');
 
 					if ( data.success ) {
 						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>Complete</span>');
