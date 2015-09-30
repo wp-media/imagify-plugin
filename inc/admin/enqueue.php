@@ -52,7 +52,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-upload',
-		IMAGIFY_ASSETS_JS_URL . 'upload.js',
+		IMAGIFY_ASSETS_JS_URL . 'upload.min.js',
 		array( 'jquery' ),
 		IMAGIFY_VERSION,
 		true
