@@ -31,6 +31,16 @@ class Imagify_User {
 	 * @access public
 	 */
 	public $quota;
+	
+	/**
+	 * The total extra quota (Imagify Pack)
+	 *
+	 * @since 1.0
+	 *
+	 * @var    int
+	 * @access public
+	 */
+	public $extra_quota;
 
 	/**
 	 * The current month consumed quota
@@ -56,6 +66,7 @@ class Imagify_User {
 			$this->email                  = $user->email;
 			$this->plan_id                = $user->plan_id;
 			$this->quota                  = $user->quota;
+			$this->extra_quota            = $user->extra_quota;
 			$this->consumed_current_month = $user->consumed_current_month;
 		}
 	}
