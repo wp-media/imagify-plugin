@@ -95,7 +95,7 @@ jQuery(function($){
 			    .each(function (data) {		        			        
 			        $('.media-item .bar').animate({'width': data.progress + '%'});
 			        $('.media-item .percent').html(data.progress + '%');
-
+					
 					if ( data.success ) {
 						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>Complete</span>');
 						$('#attachment-'+data.image+' .imagify-cell-original').html(data.original_size_human);
@@ -111,17 +111,19 @@ jQuery(function($){
 						$('#imagify-total-optimized-attachments').html(data.global_optimized_attachments);
 						
 						// The comsuption bar
-						$('#imagify-unconsumed-percent').html(data.global_unconsumed_quota+'%');
-						$('#imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota+'%'});
+						$('.imagify-progress-value, .imagify-unconsumed-percent').html(data.global_unconsumed_quota+'%');
+						$('.imagify-space-left').find('.imagify-progress')
+												.animate({'width': data.global_unconsumed_quota+'%'});
 						
 						// The original bar
-						$('#imagify-original-bar').find('.imagify-barnb')
+						$('.imagify-bar-negative').find('.imagify-barnb')
 												  .html(data.global_original_human);
 						
 						// The optimized bar
-						$('#imagify-optimized-bar').animate({'width': data.global_optimized_percent+"%"})
-						$('#imagify-optimized-bar').find('.imagify-barnb')
-												   .html(data.global_optimized_human);
+						$('.imagify-bar-positive').find('.imagify-progress')
+												  .animate({'width': data.global_optimized_percent+"%"})
+						$('.imagify-bar-positive').find('.imagify-barnb')
+												  .html(data.global_optimized_human);
 						
 						// The table footer total optimized files
 				    	files = files + data.thumbnails + 1;
