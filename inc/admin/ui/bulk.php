@@ -60,7 +60,7 @@ function _imagify_display_bulk_page() {
 							</div>
 							<div class="cell-sep"></div>
 							<div class="cell-cta">
-								<a href="#"><?php _e( 'More info', 'imagify' ); ?></a>
+								<a href="<?php echo IMAGIFY_WEB_MAIN; ?>/#/subscription"><?php _e( 'More info', 'imagify' ); ?></a>
 							</div>
 						</div>
 					</div>
