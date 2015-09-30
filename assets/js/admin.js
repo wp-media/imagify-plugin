@@ -28,8 +28,8 @@ jQuery(function($){
 					swal.showInputError(response.data);
 				} else {
 					swal({
-						title:imagify.ApiKeyCheckSuccessTitle,
-						text: imagify.ApiKeyCheckSuccessText,
+						title:imagify.signupSuccessTitle,
+						text: imagify.signupSuccessText,
 						type: "success",
 						customClass: "imagify-sweet-alert"
 					});
@@ -67,8 +67,8 @@ jQuery(function($){
 					swal.showInputError(response.data);
 				} else {
 					swal({
-						title:imagify.signupSuccessTitle,
-						text: imagify.signupSuccessText,
+						title:imagify.ApiKeyCheckSuccessTitle,
+						text: imagify.ApiKeyCheckSuccessText,
 						type: "success",
 						customClass: "imagify-sweet-alert"
 					});
