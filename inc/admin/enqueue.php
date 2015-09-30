@@ -94,7 +94,7 @@ function _imagify_admin_print_styles()
 	wp_enqueue_script( 'imagify-js-sweetalert' );
 	wp_enqueue_script( 'imagify-js-admin' );
 
-	$translations = array(
+	$admin_data = array(
 		'signupTitle'             	    => __( 'Let\'s get you started!', 'imagify' ),
 		'signupText'              	    => __( 'Enter your email to get an API key:', 'imagify' ),
 		'signupConfirmButtonText' 	    => __( 'Sign Up', 'imagify' ),
@@ -110,10 +110,10 @@ function _imagify_admin_print_styles()
 		'ValidApiKeyText'  		  	    => __( 'Your API key is valid.', 'imagify' )
 
 	);
-	wp_localize_script( 'imagify-js-admin', 'imagify', $translations );
+	wp_localize_script( 'imagify-js-admin', 'imagify', $admin_data );
 	wp_enqueue_script( 'imagify-js-admin' );
 
-	$data = array(
+	$bulk_data = array(
 		'overviewChartLabels'			=> array( 
 			'optimized'   => __( 'Optimized', 'imagify' ),
 			'unoptimized' => __( 'Unoptimized', 'imagify' ),
@@ -127,7 +127,15 @@ function _imagify_admin_print_styles()
 		'totalUnoptimizedAttachments'   => imagify_count_unoptimized_attachments(),
 		'totalErrorsAttachments' 	    => imagify_count_error_attachments()
 	);
-	wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $data );
+	wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
+	
+	$upload_data = array(
+		'bulkActionsLabels' => array( 
+			'optimize' => __( 'Optimize', 'imagify' ),
+			'restore'  => __( 'Restore Original', 'imagify' ),
+		),
+	);
+	wp_localize_script( 'imagify-js-upload', 'imagifyUpload', $upload_data );
 
 	/*
 	 * Scripts loaded in /wp-admin/options-general.php?page=imagify

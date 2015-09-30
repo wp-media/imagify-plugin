@@ -2,8 +2,8 @@ jQuery(function($){
 	/*
 	 * Add a "Imagify'em all" in the select list	 
 	 */
-	var bulk_opt = '<option value="imagify-bulk-upload">'+"Optimize"+'</option>';
-	 	bulk_opt += '<option value="imagify-bulk-restore">'+"Restore"+'</option>';
+	var bulk_opt = '<option value="imagify-bulk-upload">'+imagifyUpload.bulkActionsLabels.optimize+'</option>';
+	 	bulk_opt += '<option value="imagify-bulk-restore">'+imagifyUpload.bulkActionsLabels.restore+'</option>';
 	$(".bulkactions select[name='action']").find("option:last-child").before(bulk_opt);
     $(".bulkactions select[name='action2']").find("option:last-child").before(bulk_opt);
 	
