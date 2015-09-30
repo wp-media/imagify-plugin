@@ -36,7 +36,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-admin',
-		IMAGIFY_ASSETS_JS_URL . 'admin.js',
+		IMAGIFY_ASSETS_JS_URL . 'admin.min.js',
 		array(),
 		IMAGIFY_VERSION,
 		true
