@@ -44,7 +44,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-options',
-		IMAGIFY_ASSETS_JS_URL . 'options.js',
+		IMAGIFY_ASSETS_JS_URL . 'options.min.js',
 		array(),
 		IMAGIFY_VERSION,
 		true
