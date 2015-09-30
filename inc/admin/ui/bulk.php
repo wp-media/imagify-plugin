@@ -44,10 +44,10 @@ function _imagify_display_bulk_page() {
 					<span class="imagify-meteo-icon"><?php echo $meteo_icon; ?></span>
 					<div class="imagify-space-left">
 						
-						<p><?php echo sprintf( __( 'You have %s space credit left' , 'imagify' ), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ); ?></p>
+						<p><?php echo sprintf( __( 'You have %s space credit left' , 'imagify' ), '<span id="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ); ?></p>
 						
 						<div class="imagify-bar-<?php echo $bar_class; ?>">
-							<div class="imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
+							<div id="imagify-unconsumed-bar" class="imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
 						</div>
 					</div>
 					<div class="imagify-space-tooltips imagify-tooltips <?php echo ( ! $is_display_bubble ) ? 'hidden' : ''; ?>">
@@ -148,13 +148,13 @@ function _imagify_display_bulk_page() {
 						?>
 						<p><?php _e( 'Original size', 'imagify' ); ?></p>
 						<div class="imagify-bar-negative base-transparent right-outside-number">
-							<div class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo size_format( $original_nb, 1 ); ?></span></div>
+							<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo size_format( $original_nb, 1 ); ?></span></div>
 						</div>
 
 						<p><?php _e( 'Optimized size', 'imagify' ); ?></p>
 						<div class="imagify-bar-positive base-transparent right-outside-number">
 							
-							<div class="imagify-progress" style="width: <?php echo $optimized_percent; ?>%"><span class="imagify-barnb"><?php echo size_format( $optimized_nb, 1 ); ?></span></div>
+							<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo $optimized_percent; ?>%"><span class="imagify-barnb"><?php echo size_format( $optimized_nb, 1 ); ?></span></div>
 						</div>
 
 					</div>
