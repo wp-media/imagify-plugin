@@ -83,7 +83,7 @@ jQuery(function($){
 					overall_saving = 0;
 				
 				$('.imagify-row-progress').slideDown();
-				$('.imagify-no-uploaded-yet').toggle();
+				$('.imagify-no-uploaded-yet, .imagify-row-complete').hide(200);
 				
 				Optimizer = new ImagifyGulp(config);
 				
