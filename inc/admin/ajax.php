@@ -232,7 +232,8 @@ function _do_wp_ajax_imagify_signup() {
 
 	$data = array(
 		'email'    => $_GET['email'],
-		'password' => wp_generate_password()
+		'password' => wp_generate_password(),
+		'lang'	   => get_locale()
 	);
 
 	$response = add_imagify_user( $data );
