@@ -104,7 +104,7 @@ function _imagify_display_options_page() { ?>
 									}
 
 									if ( ! get_imagify_option( 'api_key', false ) ) {
-										echo '<p class="description desc api_key">' . sprintf( __( 'Don\'t have an API Key yet? %sCreate one, it\'s FREE%s.', 'imagify' ), '<a id="imagify-signup" href="' . IMAGIFY_WEB_MAIN . '">', '</a>' ) . '</p>';
+										echo '<p class="description desc api_key">' . sprintf( __( 'Don\'t have an API Key yet? %sCreate one, it\'s FREE%s.', 'imagify' ), '<a id="imagify-signup" href="' . IMAGIFY_APP_MAIN . '/#/register">', '</a>' ) . '</p>';
 									}
 									?>
 								</td>

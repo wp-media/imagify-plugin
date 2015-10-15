@@ -33,7 +33,7 @@ function _imagify_warning_empty_api_key_notice() {
 						<p class="imagify-col-desc"><?php _e( 'Don\'t have an Imagify account yet? Optimize your images by creating an account in a few seconds!', 'imagify' ); ?></p>
 						<p>
 							<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
-							<a id="imagify-signup" href="<?php echo IMAGIFY_WEB_MAIN; ?>" class="button button-primary"><?php _e( 'Sign up, It\'s FREE!', 'imagify' ); ?></a></p>
+							<a id="imagify-signup" href="<?php echo IMAGIFY_APP_MAIN; ?>/#/register" class="button button-primary"><?php _e( 'Sign up, It\'s FREE!', 'imagify' ); ?></a></p>
 					</div>
 				</div>
 				<div class="col-1-3">
