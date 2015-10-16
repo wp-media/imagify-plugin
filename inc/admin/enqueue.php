@@ -14,14 +14,14 @@ function _imagify_admin_print_styles()
 
 	wp_register_style(
 		'imagify-css-admin',
-		IMAGIFY_ASSETS_CSS_URL . 'admin.css',
+		IMAGIFY_ASSETS_CSS_URL . 'admin.min.css',
 		array(),
 		IMAGIFY_VERSION
 	);
 
 	wp_register_style(
 		'imagify-css-sweetalert',
-		IMAGIFY_ASSETS_CSS_URL . 'sweetalert.css',
+		IMAGIFY_ASSETS_CSS_URL . 'sweetalert.min.css',
 		array(),
 		IMAGIFY_VERSION
 	);
