@@ -244,17 +244,17 @@ jQuery(function($){
 
 var width = 700, height = 290;
 if(window.innerWidth) {
-    var left = (window.innerWidth-width)/2;
-	var top = (window.innerHeight-height)/2;
+    var clientLeft = (window.innerWidth-width)/2;
+	var clientTop = (window.innerHeight-height)/2;
 }
 else {
-    var left = (document.body.clientWidth-width)/2;
-    var top = (document.body.clientHeight-height)/2;
+    var clientLeft = (document.body.clientWidth-width)/2;
+    var clientTop = (document.body.clientHeight-height)/2;
 }
 
 [].forEach.call( document.querySelectorAll('.imagify-share-networks a'), function(el) {
    el.addEventListener('click', function(evt) {
-        window.open(this.href,'',"status=no, scrollbars=no, menubar=no, top="+top+", left="+left+", width="+width+", height="+height);
+        window.open(this.href,'',"status=no, scrollbars=no, menubar=no, top="+clientTop+", left="+clientLeft+", width="+width+", height="+height);
 	    evt.preventDefault();
   }, false);
 });
