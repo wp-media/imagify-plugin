@@ -52,7 +52,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-upload',
-		IMAGIFY_ASSETS_JS_URL . 'upload.min.js',
+		IMAGIFY_ASSETS_JS_URL . 'upload.js',
 		array( 'jquery' ),
 		IMAGIFY_VERSION,
 		true
@@ -76,7 +76,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-bulk',
-		IMAGIFY_ASSETS_JS_URL . 'bulk.js',
+		IMAGIFY_ASSETS_JS_URL . 'bulk.min.js',
 		array( 'jquery', 'imagify-js-chart' ),
 		IMAGIFY_VERSION,
 		true
