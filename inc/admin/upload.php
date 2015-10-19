@@ -37,7 +37,7 @@ function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
 
 		// Check if the image was optimized
 		if ( ! $attachment->is_optimized() && ! $attachment->has_error() ) {
-			echo '<a id="imagify-upload-' . $attachment->id . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment->id ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . __( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+			echo '<a id="imagify-upload-' . $attachment->id . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment->id ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
 
 			return false;
 		}
