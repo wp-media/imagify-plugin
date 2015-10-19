@@ -123,7 +123,7 @@ function _imagify_display_bulk_page() {
 				
 					<div class="imagify-chart-container">
 						<canvas id="imagify-overview-chart" width="180" height="180"></canvas>
-						<?php echo '<div id="imagify-overview-chart-percent" class="imagify-chart-percent">' . imagify_percent_optimized_attachments() . '<span>%</span></div>'; ?>
+						<div id="imagify-overview-chart-percent" class="imagify-chart-percent"><?php echo imagify_percent_optimized_attachments(); ?><span>%</span></div>
 					</div>
 					<div id="imagify-overview-chart-legend"></div>
 				</div>
