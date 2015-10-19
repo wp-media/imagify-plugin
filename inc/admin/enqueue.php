@@ -11,24 +11,26 @@ function _imagify_admin_print_styles()
 {
 	global $pagenow;
 	$current_screen = get_current_screen();
+	$css_ext        = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.css' : '.min.css';
+	$js_ext         = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.js' : '.min.js';
 
 	wp_register_style(
 		'imagify-css-admin',
-		IMAGIFY_ASSETS_CSS_URL . 'admin.min.css',
+		IMAGIFY_ASSETS_CSS_URL . 'admin' . $css_ext,
 		array(),
 		IMAGIFY_VERSION
 	);
 
 	wp_register_style(
 		'imagify-css-sweetalert',
-		IMAGIFY_ASSETS_CSS_URL . 'sweetalert.min.css',
+		IMAGIFY_ASSETS_CSS_URL . 'sweetalert' . $css_ext,
 		array(),
 		IMAGIFY_VERSION
 	);
 
 	wp_register_script(
 		'imagify-js-async',
-		IMAGIFY_ASSETS_JS_URL . 'imagify.min.js',
+		IMAGIFY_ASSETS_JS_URL . 'imagify' . $js_ext,
 		array(),
 		IMAGIFY_VERSION,
 		true
@@ -36,7 +38,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-admin',
-		IMAGIFY_ASSETS_JS_URL . 'admin.min.js',
+		IMAGIFY_ASSETS_JS_URL . 'admin' . $js_ext,
 		array(),
 		IMAGIFY_VERSION,
 		true
@@ -44,7 +46,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-options',
-		IMAGIFY_ASSETS_JS_URL . 'options.min.js',
+		IMAGIFY_ASSETS_JS_URL . 'options' . $js_ext,
 		array(),
 		IMAGIFY_VERSION,
 		true
@@ -52,7 +54,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-upload',
-		IMAGIFY_ASSETS_JS_URL . 'upload.js',
+		IMAGIFY_ASSETS_JS_URL . 'upload' . $js_ext,
 		array( 'jquery' ),
 		IMAGIFY_VERSION,
 		true
@@ -60,7 +62,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-sweetalert',
-		IMAGIFY_ASSETS_JS_URL . 'sweetalert.min.js',
+		IMAGIFY_ASSETS_JS_URL . 'sweetalert.min.j',
 		array( 'jquery' ),
 		IMAGIFY_VERSION,
 		true
@@ -76,7 +78,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-bulk',
-		IMAGIFY_ASSETS_JS_URL . 'bulk.min.js',
+		IMAGIFY_ASSETS_JS_URL . 'bulk' . $js_ext,
 		array( 'jquery', 'imagify-js-chart' ),
 		IMAGIFY_VERSION,
 		true
