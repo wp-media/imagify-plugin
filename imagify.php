@@ -59,6 +59,7 @@ function _imagify_init() {
     require( IMAGIFY_INC_PATH 		. 'compat.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'options.php' );
     require( IMAGIFY_API_PATH 		. 'imagify.php' );
+    require( IMAGIFY_API_PATH 		. 'wp-updates-plugin.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'admin.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'attachments.php' );
     require( IMAGIFY_FUNCTIONS_PATH . 'process.php' );
@@ -83,7 +84,10 @@ function _imagify_init() {
         require( IMAGIFY_ADMIN_UI_PATH  . 'bulk.php' );
         require( IMAGIFY_ADMIN_UI_PATH  . 'notices.php' );
     }
-
+	
+	// Manage updates during the alpha/beta test
+	new WPUpdatesPluginUpdater_1336( 'http://wp-updates.com/api/2/plugin', plugin_basename(__FILE__) );
+	
     /**
 	 * Fires when Imagify is correctly loaded
 	 *
