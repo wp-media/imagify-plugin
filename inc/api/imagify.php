@@ -210,12 +210,12 @@ class Imagify {
 		        curl_setopt( $ch, CURLOPT_POST, true );
 				curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
 	        }
-	
+			
 			curl_setopt( $ch, CURLOPT_URL, self::API_ENDPOINT . $url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
 			curl_setopt( $ch, CURLOPT_TIMEOUT, 60 );
-			// TO DO - SSL verifier
+			//curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
 	
 			$response  = json_decode( curl_exec( $ch ) );
 	        $error     = curl_error( $ch );
@@ -223,7 +223,7 @@ class Imagify {
 	
 			curl_close( $ch );    
         } catch( Exception $e ) {
-	        return new WP_Error( $http_code, 'Unknown error occurred' );
+	        return new WP_Error( 'curl', 'Unknown error occurred' );
         }
         
 		if ( 200 != $http_code && isset( $response->code, $response->detail ) ) {
