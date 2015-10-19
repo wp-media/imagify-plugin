@@ -62,7 +62,7 @@ function _imagify_admin_print_styles()
 
 	wp_register_script(
 		'imagify-js-sweetalert',
-		IMAGIFY_ASSETS_JS_URL . 'sweetalert.min.j',
+		IMAGIFY_ASSETS_JS_URL . 'sweetalert.min.js',
 		array( 'jquery' ),
 		IMAGIFY_VERSION,
 		true
