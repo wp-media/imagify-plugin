@@ -95,7 +95,7 @@ function get_imagify_attachment_error_text( $attachment_id ) {
 
 	if ( isset( $data['sizes']['full']['success'] ) && ! $data['sizes']['full']['success'] ) {
 		$class   = ( 'post.php' !== $pagenow  ) ? 'button-imagify-manual-upload' : '';
-		$output .= '<strong>' . $data['sizes']['full']['error'] . '</strong><br/><a id="imagify-attachment-' . $attachment_id . '" class="button ' . $class . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment_id ) . '" data-waiting-label="' . __( 'Optimizing...', 'imagify' ) . '">' . __( 'Try again', 'imagify' ) . '</a>';
+		$output .= '<strong>' . $data['sizes']['full']['error'] . '</strong><br/><a id="imagify-upload-' . $attachment_id . '" class="button ' . $class . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment_id ) . '" data-waiting-label="' . __( 'Optimizing...', 'imagify' ) . '">' . __( 'Try again', 'imagify' ) . '</a>';
 	}
 
 	return $output;
