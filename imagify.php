@@ -86,7 +86,7 @@ function _imagify_init() {
     }
 	
 	// Manage updates during the alpha/beta test
-	new WPUpdatesPluginUpdater_1336( 'http://wp-updates.com/api/2/plugin', plugin_basename(__FILE__) );
+	new WPUpdatesPluginUpdater_1336( 'http://wp-updates.com/api/2/plugin', plugin_basename(__FILE__), '2aae36aa17d19dfb7d67ce86c526a5e1dbea8bba' );
 	
     /**
 	 * Fires when Imagify is correctly loaded
