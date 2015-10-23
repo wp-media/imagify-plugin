@@ -106,7 +106,7 @@ jQuery(function($){
 						$('#attachment-'+data.image+' .imagify-cell-savings').html(Optimizer.toHumanSize(data.overall_saving, 1));
 						
 						// The overview chart percent
-						$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent+"%");
+						$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent+"<span>%</span>");
 						// The total optimized images
 						$('#imagify-total-optimized-attachments').html(data.global_optimized_attachments);
 						
