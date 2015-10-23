@@ -8,11 +8,11 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 add_action( 'all_admin_notices', '_imagify_warning_empty_api_key_notice' );
 function _imagify_warning_empty_api_key_notice() {
-	$current_screen = get_current_screen();
-	$notices 		= get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
-	$cap			= ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
+	$current_screen  = get_current_screen();
+	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+	$cap			 = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
 	
-	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'welcome-steps', (array) $notices ) || get_imagify_option( 'api_key', false ) || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'welcome-steps', (array) $ignored_notices ) || get_imagify_option( 'api_key', false ) || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
 		return;
 	}
 	?>
@@ -67,12 +67,12 @@ function _imagify_warning_empty_api_key_notice() {
  */
 add_action( 'all_admin_notices', '_imagify_warning_wrong_api_key_notice' );
 function _imagify_warning_wrong_api_key_notice() {
-	$current_screen = get_current_screen();
-	$notices 		= get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
-	$api_key		= get_imagify_option( 'api_key', false );
-	$cap			= ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
+	$current_screen  = get_current_screen();
+	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+	$api_key		 = get_imagify_option( 'api_key', false );
+	$cap			 = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
 
-	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'wrong-api-key', (array) $notices ) || empty( $api_key ) || imagify_valid_key() || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'wrong-api-key', (array) $ignored_notices ) || empty( $api_key ) || imagify_valid_key() || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
 		return;
 	}
 	?>
@@ -156,10 +156,10 @@ function _imagify_warning_plugins_to_deactivate_notice() {
  */
 add_action( 'all_admin_notices', '_imagify_rating_notice' );
 function _imagify_rating_notice() {
-	$current_screen = get_current_screen();
-	$notices 		= get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+	$current_screen  = get_current_screen();
+	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 
-	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'rating', (array) $notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'rating', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
 		return;
 	}
 
@@ -198,10 +198,10 @@ function _imagify_rating_notice() {
  */
 add_action( 'all_admin_notices', '_imagify_http_block_external_notice' );
 function _imagify_http_block_external_notice() {
-	$current_screen = get_current_screen();
-	$notices 		= get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+	$current_screen  = get_current_screen();
+	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 
-	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'http-block-external', (array) $notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) || !imagify_valid_key() || ! is_imagify_blocked() ) {
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'http-block-external', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) || !imagify_valid_key() || ! is_imagify_blocked() ) {
 		return;
 	}
 	?>	
