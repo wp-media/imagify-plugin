@@ -5,3 +5,4 @@ Developers:
 	Jonathan Buttigieg <jonathan@imagify.io>
 	Geoffrey Crofte <geoffrey@wp-media.me>
 	Sébastien Decamme <sebastien@wp-media.me>
+	Julio Potier <julio@wp-media.me>

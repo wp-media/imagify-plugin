@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="15px" height="16px" viewBox="0 0 15 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+    <title>Path</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Imagify-Settings-Page" sketch:type="MSArtboardGroup" transform="translate(-411.000000, -355.000000)" fill="#8BA6B4">
+            <g id="checkboxes" sketch:type="MSLayerGroup" transform="translate(403.000000, 347.000000)">
+                <path d="M22.027,9.07 C21.548,8.79 20.937,8.96 20.661,9.43 L14.266,20.51 L10.688,17.21 C10.31,16.81 9.677,16.79 9.274,17.17 C8.871,17.54 8.85,18.18 9.228,18.58 L13.8,22.8 C14.177,23.2 14.81,23.22 15.213,22.84 C15.335,22.73 22.393,10.43 22.393,10.43 C22.669,9.96 22.505,9.34 22.027,9.07 L22.027,9.07 Z" id="Path" sketch:type="MSShapeGroup"></path>
+            </g>
+        </g>
+    </g>
+</svg>

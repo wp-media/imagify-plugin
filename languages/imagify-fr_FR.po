@@ -1,0 +1,697 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Imagify\n"
+"POT-Creation-Date: 2015-10-19 22:58+0200\n"
+"PO-Revision-Date: 2015-10-19 22:58+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.5\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: imagify.php\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: inc/admin/ajax.php:115 inc/admin/upload.php:40 inc/functions/admin-ui.php:98
+#: inc/functions/admin-ui.php:122
+msgid "Optimizing..."
+msgstr "En cours d’optimisation…"
+
+#: inc/admin/ajax.php:115 inc/admin/enqueue.php:136 inc/admin/meta-boxes.php:29
+#: inc/admin/upload.php:40
+msgid "Optimize"
+msgstr "Optimiser"
+
+#: inc/admin/enqueue.php:100
+msgid "Let's get you started!"
+msgstr "C’est parti&nbsp;!"
+
+#: inc/admin/enqueue.php:101
+msgid "Enter your email to get an API key:"
+msgstr "Indiquez votre e-mail pour recevoir votre clé API&nbsp;:"
+
+#: inc/admin/enqueue.php:102
+msgid "Sign Up"
+msgstr "S’inscrire"
+
+#: inc/admin/enqueue.php:103
+msgid "You need to specify an email!"
+msgstr "Vous devez indiquer un e-mail&nbsp;!"
+
+#: inc/admin/enqueue.php:104 inc/admin/enqueue.php:110
+msgid "Congratulations!"
+msgstr "Félicitations&nbsp;!"
+
+#: inc/admin/enqueue.php:105
+msgid ""
+"Your account has been succesfully created. Please check your mailbox, you "
+"are going to receive an email with API key."
+msgstr ""
+"Votre compte a été créé avec succès. Vérifiez votre boîte de réception, vous "
+"allez recevoir un e-mail avec votre clé API."
+
+#: inc/admin/enqueue.php:106
+msgid "Connect to Imagify!"
+msgstr "Se connecter à Imagify&nbsp;!"
+
+#: inc/admin/enqueue.php:107
+msgid "Paste your API key below:"
+msgstr "Copiez votre clé API ci-dessous&nbsp;:"
+
+#: inc/admin/enqueue.php:108
+msgid "Connect me"
+msgstr "Connectez-moi"
+
+#: inc/admin/enqueue.php:109
+msgid "Checking in process..."
+msgstr "Vérification en cours…"
+
+#: inc/admin/enqueue.php:111
+msgid ""
+"Your API key is valid. You can now configure the Imagify settings to "
+"optimize your images."
+msgstr ""
+"Votre clé API est valide. Vous pouvez maintenant configurer les réglages "
+"d’Imagify pour optimiser vos images."
+
+#: inc/admin/enqueue.php:112 inc/admin/ui/options.php:94
+msgid "Your API key is valid."
+msgstr "Votre clé API est valide."
+
+#: inc/admin/enqueue.php:120 inc/admin/ui/bulk.php:173 inc/admin/upload.php:65
+msgid "Optimized"
+msgstr "Optimisé"
+
+#: inc/admin/enqueue.php:121 inc/admin/upload.php:66
+msgid "Unoptimized"
+msgstr "Non optimisé"
+
+#: inc/admin/enqueue.php:122
+msgid "Error"
+msgstr "Erreur"
+
+#: inc/admin/enqueue.php:124
+msgid "Hold on!"
+msgstr "Halte là&nbsp;!"
+
+#: inc/admin/enqueue.php:125
+msgid "All your images have been optimized by Imagify. Congratulations!"
+msgstr "Toutes vos images ont été optimisées par Imagify. Félicitations&nbsp;!"
+
+#: inc/admin/enqueue.php:127
+#, php-format
+msgid ""
+"Discover @imagify, the new compression tool to optimize your images for "
+"free. I saved %1$s out of %2$s!"
+msgstr ""
+"Découvrez @imagify, le nouvel outil de compression pour optimiser vos images "
+"gratuitement. J’ai optimisé %1$s sur %2$s !"
+
+#: inc/admin/enqueue.php:137 inc/functions/admin-ui.php:74
+msgid "Restore Original"
+msgstr "Restaurer l’original"
+
+#: inc/admin/menu.php:25 inc/admin/plugins.php:14 inc/admin/ui/bulk.php:78
+#: inc/common/admin-bar.php:40
+msgid "Bulk Optimization"
+msgstr "Optimisation en masse"
+
+#. Plugin Name of the plugin/theme
+#: inc/admin/meta-boxes.php:18 inc/admin/meta-boxes.php:25
+#: inc/admin/upload.php:11
+msgid "Imagify"
+msgstr "Imagify"
+
+#: inc/admin/meta-boxes.php:20 inc/admin/upload.php:31
+msgid "Invalid API key"
+msgstr "Clé API invalide"
+
+#: inc/admin/meta-boxes.php:22 inc/admin/upload.php:33
+msgid "Check your Settings"
+msgstr "Vérifiez vos réglages"
+
+#: inc/admin/options.php:95
+msgid "Cheatin&#8217; uh?"
+msgstr "Cheatin&#8217; uh?"
+
+#: inc/admin/options.php:103
+msgid "<strong>ERROR</strong>: options page not found."
+msgstr "<strong>Erreur</strong> : page d’options introuvable."
+
+#: inc/admin/plugins.php:17 inc/admin/ui/options.php:79
+#: inc/common/admin-bar.php:30
+msgid "Settings"
+msgstr "Réglages"
+
+#: inc/admin/ui/bulk.php:16
+msgid "Account status"
+msgstr "Type de compte"
+
+#: inc/admin/ui/bulk.php:17
+msgid "Your subscription:"
+msgstr "Votre abonnement&nbsp;:"
+
+#: inc/admin/ui/bulk.php:22
+msgid "View my subscription"
+msgstr "Voir mon abonnement"
+
+#: inc/admin/ui/bulk.php:47
+#, php-format
+msgid "You have %s space credit left"
+msgstr "Il vous reste %s de crédit"
+
+#: inc/admin/ui/bulk.php:59
+msgid "Upgrade your account to continue to optimize your images"
+msgstr "Mettez à niveau votre compte pour continuer à optimiser vos images"
+
+#: inc/admin/ui/bulk.php:63
+msgid "More info"
+msgstr "Plus d’infos"
+
+#: inc/admin/ui/bulk.php:88
+msgid "Informations"
+msgstr "Informations"
+
+#: inc/admin/ui/bulk.php:90
+msgid ""
+"Please be aware that optimizing a large number of images can take a while "
+"depends on your server and network speed."
+msgstr ""
+"Prenez conscience que l’optimisation d’un grand nombre d’images peut prendre "
+"du temps en fonction de la rapidité de votre serveur et de votre connexion."
+
+#: inc/admin/ui/bulk.php:91
+msgid ""
+"You must keep this page open while the bulk optimizaton is processing. If "
+"you leave you can come back to continue where it left off."
+msgstr ""
+"Vous devez garder cette page ouverte pendant que l’optimation en masse est "
+"en cours. Si vous la quittez, vous pouvez revenir pour continuer là où vous "
+"en étiez."
+
+#: inc/admin/ui/bulk.php:96
+#, php-format
+msgid "Don't forget to check %syour settings%s before bulk optimization."
+msgstr ""
+"N’oubliez pas de vérifier %svos réglages%s avant l’optimisation en masse."
+
+#: inc/admin/ui/bulk.php:102
+msgid "Imagif'em all"
+msgstr "Imagif'em all"
+
+#: inc/admin/ui/bulk.php:110
+#, php-format
+msgid ""
+"%s images are over %s and will be skipped using the free version of the "
+"plugin"
+msgstr ""
+"%s images font plus de %s et seront ignorées en utilisant la version "
+"gratuite du plugin"
+
+#: inc/admin/ui/bulk.php:122
+msgid "Overview"
+msgstr "Vue d'ensemble"
+
+#: inc/admin/ui/bulk.php:132
+msgid "Statistics"
+msgstr "Statistiques"
+
+#: inc/admin/ui/bulk.php:137
+#, php-format
+msgid "that's the number %sof images you optimized"
+msgstr "c’est le nombre d’images %sque vous avez optimisé"
+
+#: inc/admin/ui/bulk.php:149
+msgid "Original size"
+msgstr "Poids de l’original"
+
+#: inc/admin/ui/bulk.php:154
+msgid "Optimized size"
+msgstr "Poids optimisé"
+
+#: inc/admin/ui/bulk.php:167
+msgid "Compression process results"
+msgstr "Résultats du processus de compression"
+
+#: inc/admin/ui/bulk.php:170
+msgid "Filename"
+msgstr "Nom du fichier"
+
+#: inc/admin/ui/bulk.php:171
+msgid "Status"
+msgstr "Statut"
+
+#: inc/admin/ui/bulk.php:172
+msgid "Original"
+msgstr "Original"
+
+#: inc/admin/ui/bulk.php:174
+msgid "Percentage"
+msgstr "Pourcentage"
+
+#: inc/admin/ui/bulk.php:175
+msgid "Thumbnails optimized"
+msgstr "Miniatures optimisées"
+
+#: inc/admin/ui/bulk.php:176
+msgid "Overall saving"
+msgstr "Gain total"
+
+#: inc/admin/ui/bulk.php:181
+msgid "file"
+msgstr "fichier"
+
+#: inc/admin/ui/bulk.php:182
+msgid "error"
+msgstr "erreur"
+
+#: inc/admin/ui/bulk.php:183
+msgid "Total:"
+msgstr "Total&nbsp;:"
+
+#: inc/admin/ui/bulk.php:184
+msgid "Gain:"
+msgstr "Gain&nbsp;:"
+
+#: inc/admin/ui/bulk.php:201
+#, php-format
+msgid "%sStart the bulk optimization%s"
+msgstr "%sDémarrer l’optimisation en masse%s"
+
+#: inc/admin/ui/bulk.php:217
+msgid "Well done!"
+msgstr "Bien joué&nbsp;!"
+
+#: inc/admin/ui/bulk.php:218
+#, php-format
+msgid "you saved %1$s out of %2$s"
+msgstr "vous avez économisé %1$s sur %2$s"
+
+#: inc/admin/ui/bulk.php:223
+msgid "Share your awesome result"
+msgstr "Partagez votre résultat"
+
+#: inc/admin/ui/notices.php:23
+msgid "Welcome to Imagify, the best way to easily optimize your images!"
+msgstr ""
+"Bienvenue sur Imagify, la meilleure façon d'optimiser facilement vos "
+"images&nbsp;!"
+
+#: inc/admin/ui/notices.php:25 inc/admin/ui/notices.php:90
+#: inc/admin/ui/notices.php:189 inc/admin/ui/notices.php:222
+msgid "Dismiss this notice"
+msgstr "Fermer ce message"
+
+#: inc/admin/ui/notices.php:32
+msgid "Create an Account"
+msgstr "Créer un compte"
+
+#: inc/admin/ui/notices.php:33
+msgid ""
+"Don't have an Imagify account yet? Optimize your images by creating an "
+"account in a few seconds!"
+msgstr ""
+"Vous n’avez pas encore de compte Imagify&nbsp;? Optimisez vos images en "
+"créant un compte en quelques secondes&nbsp;!"
+
+#: inc/admin/ui/notices.php:36
+msgid "Sign up, It's FREE!"
+msgstr "Incrivez-vous, c’est GRATUIT&nbsp;!"
+
+#: inc/admin/ui/notices.php:42
+msgid "Enter your API Key"
+msgstr "Entrer la clé API"
+
+#: inc/admin/ui/notices.php:43
+#, php-format
+msgid ""
+"Save your API Key you have received by email or you can get it on your "
+"%sImagify account page%s."
+msgstr ""
+"Enregistrez la clé API que vous avez reçu par email ou que vous pouvez "
+"récupérer sur votre %spage de compte Imagify%s."
+
+#: inc/admin/ui/notices.php:46
+msgid "I have my API key"
+msgstr "J’ai récupéré ma clé API"
+
+#: inc/admin/ui/notices.php:52
+msgid "Configure it"
+msgstr "Configurer le"
+
+#: inc/admin/ui/notices.php:53
+msgid ""
+"It’s almost done! You have just to configure your optimization settings."
+msgstr ""
+"C’est bientôt terminé&nbsp;! Vous avez juste à configurer vos paramètres "
+"d'optimisation."
+
+#: inc/admin/ui/notices.php:54
+msgid "Go to Settings"
+msgstr "Aller aux réglages"
+
+#: inc/admin/ui/notices.php:85 inc/admin/ui/options.php:100
+msgid "Your API key isn't valid!"
+msgstr "Votre clé API n’est pas valide&nbsp;!"
+
+#: inc/admin/ui/notices.php:88
+#, php-format
+msgid ""
+"Go to your Imagify account page to get your API Key and specify it on "
+"%1$syour settings%3$s or %2$screate an account for free%3$s if you don't "
+"have one yet."
+msgstr ""
+"Allez sur votre page de compte Imagify pour récupérer votre clé API et la "
+"renseigner dans %1$svos réglages%3$s ou %2$scréez un compte gratuitement%3$s "
+"si vous n’en avez pas encore un."
+
+#: inc/admin/ui/notices.php:137
+msgid ""
+"The following plugins are not compatible with this plugin and may cause "
+"unexpected results:"
+msgstr ""
+"Les extensions suivantes ne sont pas compatibles avec ce plugin et peuvent "
+"générer des résultats inattendus :"
+
+#: inc/admin/ui/notices.php:143
+msgid "Deactivate"
+msgstr "Désactiver"
+
+#: inc/admin/ui/notices.php:182
+#, php-format
+msgid ""
+"%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and reduced "
+"by %1$s%4$s%2$s%% your images size."
+msgstr ""
+"%1$sFélicitations%2$s, vous avez optimisé %1$s%3$d images %2$s et réduit de "
+"%1$s%4$s%2$s%% le poids de vos images."
+
+#: inc/admin/ui/notices.php:184 inc/admin/ui/options.php:64
+#, php-format
+msgid ""
+"%sDo you like this plugin?%s Please take a few seconds to %srate it on "
+"WordPress.org%s!"
+msgstr ""
+"%sVous aimez ce plugin&nbsp;?%s Prenez quelques secondes pour le %snoter sur "
+"WordPress.org%s&nbsp;!"
+
+#: inc/admin/ui/notices.php:214
+msgid "The external HTTP requests are blocked!"
+msgstr "Les requêtes HTTP externes sont bloquées&nbsp;!"
+
+#: inc/admin/ui/notices.php:215
+msgid ""
+"You defined the <code>WP_HTTP_BLOCK_EXTERNAL</code> constant in the <code>wp-"
+"config.php</code> to block all external HTTP requests."
+msgstr ""
+"Vous avez défini la constante <code>WP_HTTP_BLOCK_EXTERNAL</code> dans le "
+"fichier <code>wp-config.php</code> pour bloquer toutes les requêtes HTTP "
+"externes."
+
+#: inc/admin/ui/notices.php:217
+msgid ""
+"To optimize your images, you have to put the following code in your <code>wp-"
+"config.php</code> file so that it works correctly."
+msgstr ""
+"Pour optimiser vos images, vous devez insérer le code suivant dans le "
+"fichier <code>wp-config.php</code> afin que cela fonctionne correctement."
+
+#: inc/admin/ui/notices.php:218
+msgid "Click on the field and press Ctrl-A to select all."
+msgstr "Cliquez sur le champ et appuyez sur Ctrl-A pour tout sélectionner."
+
+#: inc/admin/ui/options.php:15
+msgid "Discover our other products"
+msgstr "Découvrez nos autres produits"
+
+#: inc/admin/ui/options.php:20
+msgid "Is your WordPress website too slow?"
+msgstr "Votre site WordPress est lent&nbsp;?"
+
+#: inc/admin/ui/options.php:22
+msgid "Discover the best caching plugin to speed up your website."
+msgstr "Découvrer le meilleur plugin de cache pour accélérer votre site."
+
+#: inc/admin/ui/options.php:87
+msgid "API Key"
+msgstr "Clé API"
+
+#: inc/admin/ui/options.php:107
+#, php-format
+msgid "Don't have an API Key yet? %sCreate one, it's FREE%s."
+msgstr "Vous n’avez pas encore de clé API ? %sCréez en une, c’est GRATUIT%s."
+
+#: inc/admin/ui/options.php:123
+msgid "Optimization Level"
+msgstr "Niveau d’optimisation"
+
+#: inc/admin/ui/options.php:128 inc/functions/admin-ui.php:26
+#: inc/functions/admin-ui.php:121
+msgid "Aggressive"
+msgstr "Agressif"
+
+#: inc/admin/ui/options.php:133 inc/functions/admin-ui.php:26
+#: inc/functions/admin-ui.php:121
+msgid "Normal"
+msgstr "Normal"
+
+#: inc/admin/ui/options.php:138
+msgid "More info?"
+msgstr "Plus d’infos&nbsp;?"
+
+#: inc/admin/ui/options.php:144 inc/admin/ui/options.php:148
+msgid "Auto-Optimize images on upload"
+msgstr "Optimiser automatiquement les images envoyées"
+
+#: inc/admin/ui/options.php:152
+msgid "Optimize automatically every image you will upload to WordPress."
+msgstr "Optimisez automatiquement chaque image que vous enverrez à WordPress."
+
+#: inc/admin/ui/options.php:157 inc/admin/ui/options.php:160
+msgid "Backup original images"
+msgstr "​Conserver une copie des images d'origine"
+
+#: inc/admin/ui/options.php:164
+msgid ""
+"Keep your original images in a secure place before optimization process."
+msgstr ""
+"Gardez vos images d’origine dans un endroit sûr avant le processus "
+"d’optimisation."
+
+#: inc/admin/ui/options.php:172
+msgid "Files optimization"
+msgstr "Tailles à optimiser"
+
+#: inc/admin/ui/options.php:174
+msgid ""
+"You can choose to compress different image sizes created by WordPress here."
+msgstr ""
+"Vous pouvez choisir d’optimiser les différents formats générés par WordPress "
+"ici."
+
+#: inc/admin/ui/options.php:174
+msgid ""
+"Remember each additional image size will affect your Imagify monthly usage!"
+msgstr ""
+"Pour rappel, chaque format d’image additionnel affectera votre quota d’usage "
+"mensuel d’Imagify."
+
+#: inc/admin/ui/options.php:180
+msgid "Full Size"
+msgstr ""
+
+#: inc/admin/ui/options.php:181
+msgid "Thumbnail"
+msgstr ""
+
+#: inc/admin/ui/options.php:182
+msgid "Medium"
+msgstr ""
+
+#: inc/admin/ui/options.php:183
+msgid "Large"
+msgstr ""
+
+#: inc/admin/upload.php:24
+#, php-format
+msgid "%s can't be optimized"
+msgstr "%s ne peut pas être optimisé"
+
+#: inc/admin/upload.php:67
+msgid "Errors"
+msgstr "Erreurs"
+
+#: inc/admin/upload.php:70
+msgid "Filter by status"
+msgstr "Filtrer par statut"
+
+#: inc/admin/upload.php:73
+msgid "All images"
+msgstr "Toutes les images"
+
+#: inc/api/wp-updates-plugin.php:87
+msgid ""
+"An Unexpected HTTP Error occurred during the API request.</p> <p><a href=\"?"
+"\" onclick=\"document.location.reload(); return false;\">Try again</a>"
+msgstr ""
+
+#: inc/api/wp-updates-plugin.php:91
+msgid "An unknown error occurred"
+msgstr ""
+
+#: inc/classes/class-attachment.php:406
+msgid ""
+"This size isn't authorized to be optimized. Update your Imagify settings if "
+"you want to optimize it."
+msgstr ""
+"Cette taille n’est pas autorisée à être optimisée. Mettez à jour les "
+"réglages d’Imagify si vous souhaitez l’optimiser."
+
+#: inc/classes/class-user.php:83
+msgid "Free"
+msgstr "Gratuit"
+
+#: inc/classes/class-user.php:83
+msgid "Pro"
+msgstr "Pro"
+
+#: inc/functions/admin-ui.php:35
+msgid "New Filesize:"
+msgstr "Nouveau poids&nbsp;:"
+
+#: inc/functions/admin-ui.php:44
+msgid "Original Saving:"
+msgstr "Gain sur l’original&nbsp;:"
+
+#: inc/functions/admin-ui.php:51
+msgid "Close details"
+msgstr "Fermer les détails"
+
+#: inc/functions/admin-ui.php:51
+msgid "View details"
+msgstr "Voir les détails"
+
+#: inc/functions/admin-ui.php:55
+msgid "Original Filesize:"
+msgstr "Poids de l’original&nbsp;:"
+
+#: inc/functions/admin-ui.php:58
+msgid "Level:"
+msgstr "Niveau&nbsp;:"
+
+#: inc/functions/admin-ui.php:61
+msgid "Thumbnails Optimized:"
+msgstr "Miniatures optimisées&nbsp;:"
+
+#: inc/functions/admin-ui.php:62
+msgid "Overall Saving:"
+msgstr "Gain total&nbsp;:"
+
+#: inc/functions/admin-ui.php:74
+msgid "Restoring..."
+msgstr "En restauration…"
+
+#: inc/functions/admin-ui.php:98
+msgid "Try again"
+msgstr "Réessayer"
+
+#: inc/functions/admin-ui.php:122
+#, php-format
+msgid "Re-Optimize to %s"
+msgstr "Réoptimiser en %s"
+
+#: inc/functions/process.php:19
+msgid "External HTTP requests are blocked"
+msgstr "Les requêtes HTTP externes sont bloquées"
+
+#: inc/functions/process.php:25
+msgid "File path is empty"
+msgstr "Le chemin du fichier est vide"
+
+#: inc/functions/process.php:31
+#, php-format
+msgid "Could not find %s"
+msgstr "Impossible de trouver %s"
+
+#: inc/functions/process.php:36
+#, php-format
+msgid "%s is not writable"
+msgstr "%s n’est pas accessible en écriture"
+
+#: inc/functions/process.php:45
+#, php-format
+msgid "Skipped (%s), image not found."
+msgstr "Ignoré (%s), image introuvable."
+
+#. Plugin URI of the plugin/theme
+msgid "https://wordpress.org/plugins/imagify/"
+msgstr "https://fr.wordpress.org/plugins/imagify/"
+
+#. Description of the plugin/theme
+msgid ""
+"Dramaticaly reduce image file sizes without loosing quality, make your "
+"website load faster, boost your SEO and save money on your bandwith using "
+"Imagify, the new most advanced image optimization tool."
+msgstr ""
+"Réduisez drastiquement le poids de vos images sans perte de qualité, "
+"accélérez la rapidité de votre site, boostez votre SEO and économisez de "
+"l’argent sur votre bande passante en utilisant Imagify, le nouvel outil le "
+"plus avancé d’optimisation des images."
+
+#. Author of the plugin/theme
+msgid "WP Media"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://wp-media.me"
+msgstr ""
+
+#~ msgid "%sClick here%s to start the bulk optimization"
+#~ msgstr "%sCliquez ici%s pour démarrer l’optimisation en masse"
+
+#~ msgid "https://imagify.io"
+#~ msgstr "https://imagify.io"
+
+#~ msgid "Your email address"
+#~ msgstr "Votre adresse e-mail"
+
+#~ msgid "Subscribe"
+#~ msgstr "S’abonner"
+
+#~ msgid "You haven't uploaded images yet."
+#~ msgstr "Vous n’avez pas encore uploadé d’images."
+
+#~ msgid "Overall savings"
+#~ msgstr "Gain total"
+
+#~ msgid "Invalid API key."
+#~ msgstr "Clé API invalide."
+
+#~ msgid "Invalid API Key. %sCheck your Settings%s"
+#~ msgstr "Clé API invalide. %sVérifiez vos règlages%s"
+
+#~ msgid ""
+#~ "Is your WordPress website too slow? Discover the best caching plugin  to "
+#~ "speed up your website."
+#~ msgstr ""
+#~ "Votre site WordPress est lent ? Découvrer le meilleur plugin de cache "
+#~ "pour accélérer votre site."
+
+#~ msgid ""
+#~ "Please be aware that optimizing a large number of images can take a whil "
+#~ "depends on your server and network speed."
+#~ msgstr ""
+#~ "Soyez conscient que l’optimisation d’une grand nombre d’images peut "
+#~ "prendre du temps en fonction de la rapidité de votre serveur et de votre "
+#~ "connexion."
+
+#~ msgid "Your API key isn't valid."
+#~ msgstr "Votre clé API n’est pas valide."
