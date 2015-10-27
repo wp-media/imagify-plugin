@@ -41,6 +41,16 @@ class Imagify_User {
 	 * @access public
 	 */
 	public $extra_quota;
+	
+	/**
+	 * The extra quota consumed
+	 *
+	 * @since 1.0
+	 *
+	 * @var    int
+	 * @access public
+	 */
+	public $extra_quota_consumed;
 
 	/**
 	 * The current month consumed quota
@@ -50,7 +60,7 @@ class Imagify_User {
 	 * @var    int
 	 * @access public
 	 */
-	public $consumed_current_month;
+	public $consumed_current_month_quota;
 
 	 /**
      * The constructor
@@ -63,11 +73,12 @@ class Imagify_User {
 		$user = get_imagify_user();
 
 		if ( ! is_wp_error( $user ) ) {
-			$this->email                  = $user->email;
-			$this->plan_id                = $user->plan_id;
-			$this->quota                  = $user->quota;
-			$this->extra_quota            = $user->extra_quota;
-			$this->consumed_current_month = $user->consumed_current_month;
+			$this->email                        = $user->email;
+			$this->plan_id                      = $user->plan_id;
+			$this->quota                        = $user->quota;
+			$this->extra_quota                  = $user->extra_quota;
+			$this->extra_quota_consumed         = $user->extra_quota_consumed;
+			$this->consumed_current_month_quota = $user->consumed_current_month_quota;
 		}
 	}
 
@@ -93,9 +104,21 @@ class Imagify_User {
 	 * @return int
 	 */
 	public function get_percent_consumed_quota() {
-		$percent = 0;
-		$percent = 100 - ( ( $this->quota - $this->consumed_current_month ) / $this->quota ) * 100;
-		$percent = ceil( $percent );
+		$percent        = 0;
+		$quota          = $this->quota;
+		$consumed_quota = $this->consumed_current_month_quota;
+		
+		if ( ( $this->quota + $this->extra_quota ) - ( $this->consumed_current_month_quota + $this->extra_quota_consumed ) <= 0 ) {
+			return 100;
+		}
+		
+		if( imagify_round_half_five( $this->extra_quota_consumed ) < $this->extra_quota ) {
+			$quota          = $this->extra_quota + $quota;
+			$consumed_quota = $consumed_quota + $this->extra_quota_consumed;
+		}
+	
+		$percent = 100 - ( ( $quota - $consumed_quota ) / $quota ) * 100;
+		$percent = min ( round( $percent, 1 ), 100 );
 		
 		return $percent;
 	}
