@@ -135,7 +135,7 @@ function _imagify_display_options_page() { ?>
 
 										<span class="imagify-info">
 											<span class="dashicons dashicons-info"></span>
-											<a href="#"><?php _e( 'More info?', 'imagify' ); ?></a>
+											<a href="#imagify-more-info" class="imagify-modal-trigger"><?php _e( 'More info?', 'imagify' ); ?></a>
 										</span>
 									</p>
 								</td>
@@ -230,6 +230,35 @@ function _imagify_display_options_page() { ?>
 				</div>
 				<?php submit_button(); ?>
 			</form>
+		</div>
+
+		<div id="imagify-more-info" class="imagify-modal">
+			<div class="imagify-modal-content">
+				<h2><?php _e('You can choose two levels of compression', 'imagify'); ?></h2>
+				<div class="imagify-columns">
+					<div class="col-1-2">
+						<h3><?php _e('Aggressive', 'imagify'); ?></h3>
+						<p class="text-justify">
+							<?php _e( 'This mode will apply all optimizations available to compress furthermore the image. This imply a drastic save on the initial weight, by reducing a small amount of the image quality. Most of the time it\'s even not noticeable.', 'imagify' ); ?><br>
+							<?php _e( 'If you want the highest weight reduction, we recommend you this mode.' , 'imagify' ); ?>
+						</p>
+					</div>
+
+					<div class="col-1-2">
+						<h3><?php _e('Normal', 'imagify'); ?></h3>
+						<p class="text-justify">
+							<?php _e( 'This mode is a lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?><br>
+							<?php _e( 'If you want the perfect quality for your images, we recommend you that mode.', 'imagify' ); ?><br>
+							<em><?php _e( 'Note: you will save less size compare to aggressive.', 'imagify' ); ?></em>
+						</p>
+					</div>
+				</div>
+
+				<button type="button" class="close-btn">
+					<i class="dashicons dashicons-no-alt" aria-hidden="true"></i>
+					<span class="screen-reader-text"><?php _e( 'Close' ); ?></span>
+				</button>
+			</div>
 		</div>
 
 	</div>

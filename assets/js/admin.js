@@ -97,4 +97,33 @@ jQuery(function($){
 			// Save the dismiss notice
 			$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ) );		
 	});
+
+
+	/*
+	 * Imagify Light modal
+	 */
+	
+	if ( $('.imagify-modal-trigger').length > 0 ) {
+		
+		// accessibility
+		$('.imagify-modal').attr('aria-hidden', 'true');
+
+		// on click on modal trigger
+		$('.imagify-modal-trigger').on('click', function(){
+			$( $(this).attr('href') ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex');
+			return false;
+		});
+
+		// on click on close button
+		$('.imagify-modal').find('.close-btn').on('click', function(){
+			$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true');
+		})
+		.on('blur', function(){
+			var $modal = $(this).closest('.imagify-modal');
+			if ( $modal.attr('aria-hidden') === 'false' ) {
+				$modal.attr('tabindex', '0').focus().removeAttr('tabindex');
+			}
+		});
+
+	}
 });
