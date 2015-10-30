@@ -237,18 +237,28 @@ function _imagify_display_options_page() { ?>
 				<h2><?php _e('You can choose two levels of compression', 'imagify'); ?></h2>
 				<div class="imagify-columns">
 					<div class="col-1-2">
-						<h3><?php _e('Aggressive', 'imagify'); ?></h3>
-						<p class="text-justify">
-							<?php _e( 'This mode will apply all optimizations available to compress furthermore the image. This imply a drastic save on the initial weight, by reducing a small amount of the image quality. Most of the time it\'s even not noticeable.', 'imagify' ); ?><br>
+						<h3><?php _e( 'Aggressive', 'imagify' ); ?></h3>
+						<p>
+							<?php _e( 'This mode will apply all optimizations available to compress furthermore the image.', 'imagify' ); ?>
+						</p>
+						<p>
+							<?php _e( 'This imply a drastic save on the initial weight, by reducing a small amount of the image quality. Most of the time it\'s even not noticeable.', 'imagify' ); ?>
+						</p>
+						<p>
 							<?php _e( 'If you want the highest weight reduction, we recommend you this mode.' , 'imagify' ); ?>
 						</p>
+						
 					</div>
 
 					<div class="col-1-2">
-						<h3><?php _e('Normal', 'imagify'); ?></h3>
-						<p class="text-justify">
-							<?php _e( 'This mode is a lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?><br>
-							<?php _e( 'If you want the perfect quality for your images, we recommend you that mode.', 'imagify' ); ?><br>
+						<h3><?php _e( 'Normal', 'imagify' ); ?></h3>
+						<p>
+							<?php _e( 'This mode is a lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?>
+						</p>
+						<p>
+							<?php _e( 'If you want the perfect quality for your images, we recommend you that mode.', 'imagify' ); ?>
+						</p>
+						<p>
 							<em><?php _e( 'Note: you will save less size compare to aggressive.', 'imagify' ); ?></em>
 						</p>
 					</div>
