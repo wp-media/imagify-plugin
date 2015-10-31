@@ -149,7 +149,7 @@ function _imagify_display_options_page() { ?>
 
 									<span id="describe-auto-optimize" class="imagify-info">
 										<span class="dashicons dashicons-info"></span>
-										<?php _e( 'Optimize automatically every image you will upload to WordPress.', 'imagify' ); ?>
+										<?php _e( 'Automatically optimize every image you upload to WordPress.', 'imagify' ); ?>
 									</span>
 								</td>
 							</tr>
@@ -239,13 +239,13 @@ function _imagify_display_options_page() { ?>
 					<div class="col-1-2">
 						<h3><?php _e( 'Aggressive', 'imagify' ); ?></h3>
 						<p>
-							<?php _e( 'This mode will apply all optimizations available to compress furthermore the image.', 'imagify' ); ?>
+							<?php _e( 'This mode will apply all available optimizations for maximum image compression. ', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'This imply a drastic save on the initial weight, by reducing a small amount of the image quality. Most of the time it\'s even not noticeable.', 'imagify' ); ?>
+							<?php _e( 'This will provide a drastic savings on the initial weight, with a small reduction in image quality. Most of the time it\'s not even noticeable.', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'If you want the highest weight reduction, we recommend you this mode.' , 'imagify' ); ?>
+							<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.' , 'imagify' ); ?>
 						</p>
 						
 					</div>
@@ -253,13 +253,13 @@ function _imagify_display_options_page() { ?>
 					<div class="col-1-2">
 						<h3><?php _e( 'Normal', 'imagify' ); ?></h3>
 						<p>
-							<?php _e( 'This mode is a lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?>
+							<?php _e( 'This mode provides lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?>
 						</p>
 						<p>
 							<?php _e( 'If you want the perfect quality for your images, we recommend you that mode.', 'imagify' ); ?>
 						</p>
 						<p>
-							<em><?php _e( 'Note: you will save less size compare to aggressive.', 'imagify' ); ?></em>
+							<em><?php _e( 'Note: the file size reduction will be less, compared to aggressive mode.', 'imagify' ); ?></em>
 						</p>
 					</div>
 				</div>

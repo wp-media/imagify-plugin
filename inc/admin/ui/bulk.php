@@ -85,9 +85,9 @@ function _imagify_display_bulk_page() {
 			<div class="imagify-columns">
 				
 				<div class="col-1-3 col-informations">
-					<h3><?php _e( 'Informations', 'imagify' ); ?></h3>
+					<h3><?php _e( 'Information', 'imagify' ); ?></h3>
 					<ul class="imagify-list-dash">
-						<li><strong><?php _e( 'Please be aware that optimizing a large number of images can take a while depends on your server and network speed.', 'imagify' ); ?></strong></li>
+						<li><strong><?php _e( 'Please be aware that optimizing a large number of images can take a while depending on your server and network speed.', 'imagify' ); ?></strong></li>
 						<li><?php _e( 'You must keep this page open while the bulk optimizaton is processing. If you leave you can come back to continue where it left off.', 'imagify' ); ?></li>
 					</ul>
 					
