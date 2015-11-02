@@ -163,3 +163,24 @@ function _imagify_admin_print_styles()
 		wp_enqueue_script( 'imagify-js-bulk' );
 	}
 }
+
+/**
+ * Add Intercom on Options page an Bulk Optimization
+ *
+ * @since 1.0
+ */
+add_action( 'admin_footer-media_page_imagify-bulk-optimization', '_imagify_admin_print_intercom' );
+add_action( 'admin_footer-settings_page_imagify', '_imagify_admin_print_intercom' );
+function _imagify_admin_print_intercom() { 
+	$user = new Imagify_User();
+	?>	
+	<script>
+	window.intercomSettings = {
+		app_id: "cd6nxj3z",
+		user_id: <?php echo $user->id; ?>,
+		email: "<?php echo $user->email; ?>",
+	};
+	</script>
+	<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/cd6nxj3z';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
+<?php
+}
