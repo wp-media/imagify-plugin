@@ -4,10 +4,10 @@
 	list-style-type:disc
 }
 
-	.imagify-plugins-error li {
-		width:300px;
-		line-height:30px
-	}
+.imagify-plugins-error li {
+	width:300px;
+	line-height:30px
+}
 @media (max-width:570px) {
 	.imagify-plugins-error li {
 		width: auto;
@@ -1512,16 +1512,18 @@ td.imagify-cell-filename {
 	box-shadow: 1px 1px 4px rgba(0,0,0,.7);
 	border-radius: 3px;
 }
-.imagify-modal h2 {
+.imagify-modal .h2 {
 	margin: .5em 0;
 	color: #8ba6b4;
 	font-weight: normal;
+	font-size: 24px;
 	letter-spacing: 0.075em;
 	text-align: center;
 }
-.imagify-modal h3 {
+.imagify-modal .h3 {
 	color: #40b1d0;
 	font-weight: normal;
+	font-size: 18px;
 	letter-spacing: 0.075em;
 	text-align: center;
 }
@@ -1538,6 +1540,7 @@ td.imagify-cell-filename {
 	border: 0;
 	background: transparent none;
 	border-radius: 0;
+	cursor: pointer;
 }
 .imagify-modal .close-btn:hover,
 .imagify-modal .close-btn:focus {

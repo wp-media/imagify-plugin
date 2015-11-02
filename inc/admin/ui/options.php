@@ -234,10 +234,10 @@ function _imagify_display_options_page() { ?>
 
 		<div id="imagify-more-info" class="imagify-modal">
 			<div class="imagify-modal-content">
-				<h2><?php _e('You can choose two levels of compression', 'imagify'); ?></h2>
+				<p class="h2"><?php _e('You can choose two levels of compression', 'imagify'); ?></p>
 				<div class="imagify-columns">
 					<div class="col-1-2">
-						<h3><?php _e( 'Aggressive', 'imagify' ); ?></h3>
+						<p class="h3"><?php _e( 'Aggressive', 'imagify' ); ?></p>
 						<p>
 							<?php _e( 'This mode will apply all available optimizations for maximum image compression. ', 'imagify' ); ?>
 						</p>
@@ -251,7 +251,7 @@ function _imagify_display_options_page() { ?>
 					</div>
 
 					<div class="col-1-2">
-						<h3><?php _e( 'Normal', 'imagify' ); ?></h3>
+						<p class="h3"><?php _e( 'Normal', 'imagify' ); ?></p>
 						<p>
 							<?php _e( 'This mode provides lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?>
 						</p>
