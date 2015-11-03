@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-10-31 12:12+0100\n"
-"PO-Revision-Date: 2015-10-31 12:13+0100\n"
+"POT-Creation-Date: 2015-11-03 09:45+0100\n"
+"PO-Revision-Date: 2015-11-03 09:46+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.5\n"
+"X-Generator: Poedit 1.8.6\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-WPHeader: imagify.php\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -86,7 +86,7 @@ msgstr ""
 msgid "Your API key is valid."
 msgstr "Votre clé API est valide."
 
-#: inc/admin/enqueue.php:120 inc/admin/ui/bulk.php:181 inc/admin/upload.php:65
+#: inc/admin/enqueue.php:120 inc/admin/ui/bulk.php:173 inc/admin/upload.php:65
 msgid "Optimized"
 msgstr "Optimisé"
 
@@ -119,7 +119,7 @@ msgstr ""
 msgid "Restore Original"
 msgstr "Restaurer l’original"
 
-#: inc/admin/menu.php:25 inc/admin/plugins.php:14 inc/admin/ui/bulk.php:86
+#: inc/admin/menu.php:25 inc/admin/plugins.php:14 inc/admin/ui/bulk.php:78
 #: inc/common/admin-bar.php:40
 msgid "Bulk Optimization"
 msgstr "Optimisation en masse"
@@ -151,36 +151,36 @@ msgstr "<strong>Erreur</strong> : page d’options introuvable."
 msgid "Settings"
 msgstr "Réglages"
 
-#: inc/admin/ui/bulk.php:24
+#: inc/admin/ui/bulk.php:16
 msgid "Account status"
 msgstr "Type de compte"
 
-#: inc/admin/ui/bulk.php:25
+#: inc/admin/ui/bulk.php:17
 msgid "Your subscription:"
 msgstr "Votre abonnement&nbsp;:"
 
-#: inc/admin/ui/bulk.php:30
+#: inc/admin/ui/bulk.php:22
 msgid "View my subscription"
 msgstr "Voir mon abonnement"
 
-#: inc/admin/ui/bulk.php:55
+#: inc/admin/ui/bulk.php:47
 #, php-format
 msgid "You have %s space credit left"
 msgstr "Il vous reste %s de crédit"
 
-#: inc/admin/ui/bulk.php:67
+#: inc/admin/ui/bulk.php:59
 msgid "Upgrade your account to continue to optimize your images"
 msgstr "Mettez à niveau votre compte pour continuer à optimiser vos images"
 
-#: inc/admin/ui/bulk.php:71
+#: inc/admin/ui/bulk.php:63
 msgid "More info"
 msgstr "Plus d’infos"
 
-#: inc/admin/ui/bulk.php:96
+#: inc/admin/ui/bulk.php:88
 msgid "Information"
 msgstr "Informations"
 
-#: inc/admin/ui/bulk.php:98
+#: inc/admin/ui/bulk.php:90
 msgid ""
 "Please be aware that optimizing a large number of images can take a while "
 "depending on your server and network speed."
@@ -188,7 +188,7 @@ msgstr ""
 "Prenez conscience que l’optimisation d’un grand nombre d’images peut prendre "
 "du temps en fonction de la rapidité de votre serveur et de votre connexion."
 
-#: inc/admin/ui/bulk.php:99
+#: inc/admin/ui/bulk.php:91
 msgid ""
 "You must keep this page open while the bulk optimizaton is processing. If "
 "you leave you can come back to continue where it left off."
@@ -197,17 +197,17 @@ msgstr ""
 "en cours. Si vous la quittez, vous pouvez revenir pour continuer là où vous "
 "en étiez."
 
-#: inc/admin/ui/bulk.php:104
+#: inc/admin/ui/bulk.php:96
 #, php-format
 msgid "Don't forget to check %syour settings%s before bulk optimization."
 msgstr ""
 "N’oubliez pas de vérifier %svos réglages%s avant l’optimisation en masse."
 
-#: inc/admin/ui/bulk.php:110
+#: inc/admin/ui/bulk.php:102
 msgid "Imagif'em all"
 msgstr "Imagif'em all"
 
-#: inc/admin/ui/bulk.php:118
+#: inc/admin/ui/bulk.php:110
 #, php-format
 msgid ""
 "%s images are over %s and will be skipped using the free version of the "
@@ -216,86 +216,86 @@ msgstr ""
 "%s images font plus de %s et seront ignorées en utilisant la version "
 "gratuite du plugin"
 
-#: inc/admin/ui/bulk.php:130
+#: inc/admin/ui/bulk.php:122
 msgid "Overview"
 msgstr "Vue d'ensemble"
 
-#: inc/admin/ui/bulk.php:140
+#: inc/admin/ui/bulk.php:132
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: inc/admin/ui/bulk.php:145
+#: inc/admin/ui/bulk.php:137
 #, php-format
 msgid "that's the number %sof images you optimized"
 msgstr "c’est le nombre d’images %sque vous avez optimisées"
 
-#: inc/admin/ui/bulk.php:157
+#: inc/admin/ui/bulk.php:149
 msgid "Original size"
 msgstr "Poids de l’original"
 
-#: inc/admin/ui/bulk.php:162
+#: inc/admin/ui/bulk.php:154
 msgid "Optimized size"
 msgstr "Poids optimisé"
 
-#: inc/admin/ui/bulk.php:175
+#: inc/admin/ui/bulk.php:167
 msgid "Compression process results"
 msgstr "Résultats du processus de compression"
 
-#: inc/admin/ui/bulk.php:178
+#: inc/admin/ui/bulk.php:170
 msgid "Filename"
 msgstr "Nom du fichier"
 
-#: inc/admin/ui/bulk.php:179
+#: inc/admin/ui/bulk.php:171
 msgid "Status"
 msgstr "Statut"
 
-#: inc/admin/ui/bulk.php:180
+#: inc/admin/ui/bulk.php:172
 msgid "Original"
 msgstr "Original"
 
-#: inc/admin/ui/bulk.php:182
+#: inc/admin/ui/bulk.php:174
 msgid "Percentage"
 msgstr "Pourcentage"
 
-#: inc/admin/ui/bulk.php:183
+#: inc/admin/ui/bulk.php:175
 msgid "Thumbnails optimized"
 msgstr "Miniatures optimisées"
 
-#: inc/admin/ui/bulk.php:184
+#: inc/admin/ui/bulk.php:176
 msgid "Overall saving"
 msgstr "Gain total"
 
-#: inc/admin/ui/bulk.php:189
+#: inc/admin/ui/bulk.php:181
 msgid "file"
 msgstr "fichier"
 
-#: inc/admin/ui/bulk.php:190
+#: inc/admin/ui/bulk.php:182
 msgid "error"
 msgstr "erreur"
 
-#: inc/admin/ui/bulk.php:191
+#: inc/admin/ui/bulk.php:183
 msgid "Total:"
 msgstr "Total&nbsp;:"
 
-#: inc/admin/ui/bulk.php:192
+#: inc/admin/ui/bulk.php:184
 msgid "Gain:"
 msgstr "Gain&nbsp;:"
 
-#: inc/admin/ui/bulk.php:209
+#: inc/admin/ui/bulk.php:201
 #, php-format
 msgid "%sStart the bulk optimization%s"
 msgstr "%sDémarrer l’optimisation en masse%s"
 
-#: inc/admin/ui/bulk.php:225
+#: inc/admin/ui/bulk.php:217
 msgid "Well done!"
 msgstr "Bien joué&nbsp;!"
 
-#: inc/admin/ui/bulk.php:226
+#: inc/admin/ui/bulk.php:218
 #, php-format
 msgid "you saved %1$s out of %2$s"
 msgstr "vous avez économisé %1$s sur %2$s"
 
-#: inc/admin/ui/bulk.php:231
+#: inc/admin/ui/bulk.php:223
 msgid "Share your awesome result"
 msgstr "Partagez votre résultat"
 
@@ -481,9 +481,9 @@ msgstr "​Conserver une copie des images d'origine"
 
 #: inc/admin/ui/options.php:164
 msgid ""
-"Keep your original images in a secure place before optimization process."
+"Keep your original images in a separate folder before optimization process."
 msgstr ""
-"Gardez vos images d’origine dans un endroit sûr avant le processus "
+"Gardez vos images d’origine dans un dossier séparé avant le processus "
 "d’optimisation."
 
 #: inc/admin/ui/options.php:172
@@ -607,11 +607,11 @@ msgstr ""
 "Cette taille n’est pas autorisée à être optimisée. Mettez à jour les "
 "réglages d’Imagify si vous souhaitez l’optimiser."
 
-#: inc/classes/class-user.php:105
+#: inc/classes/class-user.php:127
 msgid "Free"
 msgstr "Gratuit"
 
-#: inc/classes/class-user.php:105
+#: inc/classes/class-user.php:127
 msgid "Pro"
 msgstr "Pro"
 
@@ -705,6 +705,12 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid ""
+#~ "Keep your original images in a secure place before optimization process."
+#~ msgstr ""
+#~ "Gardez vos images d’origine dans un endroit sûr avant le processus "
+#~ "d’optimisation."
 
 #~ msgid ""
 #~ "This mode is a lossless optimization, your images will be optimized "

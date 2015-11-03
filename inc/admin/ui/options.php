@@ -161,7 +161,7 @@ function _imagify_display_options_page() { ?>
 
 									<span id="describe-backup" class="imagify-info">
 										<span class="dashicons dashicons-info"></span>
-										<?php _e( 'Keep your original images in a secure place before optimization process.', 'imagify' ); ?>
+										<?php _e( 'Keep your original images in a separate folder before optimization process.', 'imagify' ); ?>
 									</span>
 								</td>
 							</tr>
