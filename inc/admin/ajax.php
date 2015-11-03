@@ -233,8 +233,7 @@ function _do_wp_ajax_imagify_signup() {
 	$data = array(
 		'email'    => $_GET['email'],
 		'password' => wp_generate_password(),
-		'lang'	   => get_locale(),
-		'url'	   => home_url()
+		'lang'	   => get_locale()
 	);
 
 	$response = add_imagify_user( $data );
@@ -264,7 +263,7 @@ function _do_wp_ajax_imagify_check_api_key_validity() {
 	if ( is_wp_error( $response ) ) {
 		wp_send_json_error( $response->get_error_message() );
 	}
-
+	
 	$options            = get_site_option( IMAGIFY_SETTINGS_SLUG );
 	$options['api_key'] = sanitize_key( $_GET['api_key'] );
 
