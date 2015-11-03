@@ -433,7 +433,7 @@ class Imagify_Attachment {
 			}
 		}
 
-		$data['stats']['percent'] = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2, PHP_ROUND_HALF_UP );
+		$data['stats']['percent'] = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
 
 		update_post_meta( $id, '_imagify_data', $data );
 		update_post_meta( $id, '_imagify_status', 'success' );
