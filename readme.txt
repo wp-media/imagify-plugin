@@ -28,7 +28,10 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 
 = 1.0.1 =
 * Interface
+ * Add Intercom Live Chat on Imagify Settings and Bulk Optimization pages
  * Better user informations
+* Bug Fix
+ * PHP 5.2+ compatibility
 
 = 1.0 =
 * Initial release.
