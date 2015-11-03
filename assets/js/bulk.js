@@ -136,6 +136,7 @@ jQuery(function($){
 						$('.imagify-total-gain').html(Optimizer.toHumanSize(overall_saving, 1));
 			        
 			        } else {
+				        $('#attachment-'+data.image).after('<tr><td colspan="7"><span class="status-error">'+data.error+'</span></td></tr>');
 				        $('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-error"><span class="dashicons dashicons-dismiss"></span>Error</span>');
 						
 						errors++;
