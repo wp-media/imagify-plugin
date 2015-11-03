@@ -26,6 +26,10 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 
 == Changelog ==
 
+= 1.0.2 =
+* Interface
+ * Add error descriptions on the Bulk Optimization results
+
 = 1.0.1 =
 * Interface
  * Add Intercom Live Chat on Imagify Settings and Bulk Optimization pages
