@@ -116,7 +116,7 @@ function _imagify_display_options_page() { ?>
 				}
 				?>
 							
-				<div class="imagify-settings-section <?php echo ( imagify_valid_key() ) ?: 'hidden'; ?>">
+				<div class="imagify-settings-section <?php echo ( ! imagify_valid_key() ) ? 'hidden' : ''; ?>">
 					<table class="form-table">
 						<tbody>
 							<tr class="imagify-middle">
