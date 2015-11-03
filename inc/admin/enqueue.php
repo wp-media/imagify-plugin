@@ -173,6 +173,10 @@ add_action( 'admin_footer-media_page_imagify-bulk-optimization', '_imagify_admin
 add_action( 'admin_footer-settings_page_imagify', '_imagify_admin_print_intercom' );
 function _imagify_admin_print_intercom() { 
 	$user = new Imagify_User();
+
+	if ( ! imagify_valid_key() ) {
+		return;
+	}
 	?>	
 	<script>
 	window.intercomSettings = {
