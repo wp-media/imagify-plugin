@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-11-03 18:08+0100\n"
-"PO-Revision-Date: 2015-11-03 18:14+0100\n"
+"POT-Creation-Date: 2015-11-04 18:24+0100\n"
+"PO-Revision-Date: 2015-11-04 18:24+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -120,7 +120,7 @@ msgid "Restore Original"
 msgstr "Restaurer l’original"
 
 #: inc/admin/menu.php:25 inc/admin/plugins.php:14 inc/admin/ui/bulk.php:78
-#: inc/common/admin-bar.php:40
+#: inc/common/admin-bar.php:41
 msgid "Bulk Optimization"
 msgstr "Optimisation en masse"
 
@@ -138,16 +138,16 @@ msgstr "Clé API invalide"
 msgid "Check your Settings"
 msgstr "Vérifiez vos réglages"
 
-#: inc/admin/options.php:95
+#: inc/admin/options.php:101
 msgid "Cheatin&#8217; uh?"
 msgstr "Cheatin&#8217; uh?"
 
-#: inc/admin/options.php:103
+#: inc/admin/options.php:109
 msgid "<strong>ERROR</strong>: options page not found."
 msgstr "<strong>Erreur</strong> : page d’options introuvable."
 
 #: inc/admin/plugins.php:17 inc/admin/ui/options.php:79
-#: inc/common/admin-bar.php:30
+#: inc/common/admin-bar.php:31
 msgid "Settings"
 msgstr "Réglages"
 
@@ -466,12 +466,12 @@ msgstr "Vous n’avez pas encore de clé API ? %sCréez en une, c’est GRATUIT%
 msgid "Optimization Level"
 msgstr "Niveau d’optimisation"
 
-#: inc/admin/ui/options.php:128 inc/admin/ui/options.php:240
+#: inc/admin/ui/options.php:128 inc/admin/ui/options.php:268
 #: inc/functions/admin-ui.php:26 inc/functions/admin-ui.php:121
 msgid "Aggressive"
 msgstr "Agressif"
 
-#: inc/admin/ui/options.php:133 inc/admin/ui/options.php:254
+#: inc/admin/ui/options.php:133 inc/admin/ui/options.php:282
 #: inc/functions/admin-ui.php:26 inc/functions/admin-ui.php:121
 msgid "Normal"
 msgstr "Normal"
@@ -499,45 +499,66 @@ msgstr ""
 "Gardez vos images d’origine dans un dossier séparé avant le processus "
 "d’optimisation."
 
-#: inc/admin/ui/options.php:172
+#: inc/admin/ui/options.php:169 inc/admin/ui/options.php:172
+msgid "Resize larger images"
+msgstr "Redimentionner les images trop grandes"
+
+#: inc/admin/ui/options.php:177
+#, php-format
+msgid "to maximum %s pixels width"
+msgstr "au maximum %s pixels de large"
+
+#: inc/admin/ui/options.php:189
+#, php-format
+msgid ""
+"This option is recommended to reduce larger images. You can save size can go "
+"up to 80%% after resizing. The new width should not be less than your "
+"largest thumbnail width, which is actually %spx."
+msgstr ""
+"Cette option est recommendée pour réduire les images trop grandes. Vous "
+"pouvez économiser jusqu'à 80%% du poids après le redimensionnement. La "
+"nouvelle largeur ne doit pas être inférieure à la plus grande largeur de vos "
+"miniatures qui est actuellement de %spx."
+
+#: inc/admin/ui/options.php:200
 msgid "Files optimization"
 msgstr "Tailles à optimiser"
 
-#: inc/admin/ui/options.php:174
+#: inc/admin/ui/options.php:202
 msgid ""
 "You can choose to compress different image sizes created by WordPress here."
 msgstr ""
 "Vous pouvez choisir d’optimiser les différents formats générés par WordPress "
 "ici."
 
-#: inc/admin/ui/options.php:174
+#: inc/admin/ui/options.php:202
 msgid ""
 "Remember each additional image size will affect your Imagify monthly usage!"
 msgstr ""
 "Pour rappel, chaque format d’image additionnel affectera votre quota d’usage "
 "mensuel d’Imagify."
 
-#: inc/admin/ui/options.php:180
+#: inc/admin/ui/options.php:208
 msgid "Full Size"
 msgstr ""
 
-#: inc/admin/ui/options.php:181
+#: inc/admin/ui/options.php:209
 msgid "Thumbnail"
 msgstr ""
 
-#: inc/admin/ui/options.php:182
+#: inc/admin/ui/options.php:210
 msgid "Medium"
 msgstr ""
 
-#: inc/admin/ui/options.php:183
+#: inc/admin/ui/options.php:211
 msgid "Large"
 msgstr ""
 
-#: inc/admin/ui/options.php:237
+#: inc/admin/ui/options.php:265
 msgid "You can choose two levels of compression"
 msgstr "Vous pouvez choisir entre deux niveaux de compression"
 
-#: inc/admin/ui/options.php:242
+#: inc/admin/ui/options.php:270
 msgid ""
 "This mode will apply all available optimizations for maximum image "
 "compression. "
@@ -545,7 +566,7 @@ msgstr ""
 "Ce niveau appliquera toutes les optimisations disponibles pour une "
 "compression des images maximale."
 
-#: inc/admin/ui/options.php:245
+#: inc/admin/ui/options.php:273
 msgid ""
 "This will provide a drastic savings on the initial weight, with a small "
 "reduction in image quality. Most of the time it's not even noticeable."
@@ -553,13 +574,13 @@ msgstr ""
 "Cela permettra une réduction importante du poids initial avec une légère "
 "perte de la qualité d'image qui n’est pas perceptible à l’oeil humain."
 
-#: inc/admin/ui/options.php:248
+#: inc/admin/ui/options.php:276
 msgid "If you want the maximum weight reduction, we recommend using this mode."
 msgstr ""
 "Si vous souhaitez une réduction du poids plus performante, nous vous "
 "recommandons ce niveau."
 
-#: inc/admin/ui/options.php:256
+#: inc/admin/ui/options.php:284
 msgid ""
 "This mode provides lossless optimization, your images will be optimized "
 "without any visible change."
@@ -567,21 +588,21 @@ msgstr ""
 "Ce mode permet d'optimiser sans perte, vos images seront optimisées sans "
 "aucun changement visible."
 
-#: inc/admin/ui/options.php:259
+#: inc/admin/ui/options.php:287
 msgid ""
 "If you want the perfect quality for your images, we recommend you that mode."
 msgstr ""
 "Si vous souhaitez des images d’une qualité parfaite, nous vous recommandons "
 "ce niveau."
 
-#: inc/admin/ui/options.php:262
+#: inc/admin/ui/options.php:290
 msgid ""
 "Note: the file size reduction will be less, compared to aggressive mode."
 msgstr ""
 "Remarque: la réduction du poids des images sera moins importante par rapport "
 "au mode agressif."
 
-#: inc/admin/ui/options.php:269
+#: inc/admin/ui/options.php:297
 msgid "Close"
 msgstr "Fermer"
 
@@ -602,7 +623,7 @@ msgstr "Filtrer par statut"
 msgid "All images"
 msgstr "Toutes les images"
 
-#: inc/classes/class-attachment.php:406
+#: inc/classes/class-attachment.php:405
 msgid ""
 "This size isn't authorized to be optimized. Update your Imagify settings if "
 "you want to optimize it."
@@ -610,11 +631,11 @@ msgstr ""
 "Cette taille n’est pas autorisée à être optimisée. Mettez à jour les "
 "réglages d’Imagify si vous souhaitez l’optimiser."
 
-#: inc/classes/class-user.php:127
+#: inc/classes/class-user.php:116
 msgid "Free"
 msgstr "Gratuit"
 
-#: inc/classes/class-user.php:127
+#: inc/classes/class-user.php:116
 msgid "Pro"
 msgstr "Pro"
 
@@ -663,25 +684,25 @@ msgstr "Réessayer"
 msgid "Re-Optimize to %s"
 msgstr "Réoptimiser en %s"
 
-#: inc/functions/process.php:19
+#: inc/functions/process.php:21
 msgid "External HTTP requests are blocked"
 msgstr "Les requêtes HTTP externes sont bloquées"
 
-#: inc/functions/process.php:25
+#: inc/functions/process.php:27
 msgid "File path is empty"
 msgstr "Le chemin du fichier est vide"
 
-#: inc/functions/process.php:31
+#: inc/functions/process.php:33
 #, php-format
 msgid "Could not find %s"
 msgstr "Impossible de trouver %s"
 
-#: inc/functions/process.php:36
+#: inc/functions/process.php:38
 #, php-format
 msgid "%s is not writable"
 msgstr "%s n’est pas accessible en écriture"
 
-#: inc/functions/process.php:45
+#: inc/functions/process.php:47
 #, php-format
 msgid "Skipped (%s), image not found."
 msgstr "Ignoré (%s), image introuvable."
@@ -708,6 +729,26 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid ""
+#~ "This option is recommended to reduce larger images. You can save size can "
+#~ "go up to 80%% after resizing. The new width should not be less than your "
+#~ "largest thumbnail width, which is actually %s px."
+#~ msgstr ""
+#~ "Cette option est recommendée pour réduire les images trop grandes. Vous "
+#~ "pouvez économiser jusqu'à 80%% du poids après le redimensionnement. La "
+#~ "nouvelle largeur ne doit pas être inférieure à la plus grande largeur de "
+#~ "vos miniatures qui est actuellement de %s px."
+
+#~ msgid ""
+#~ "This option is recommended to reduce larger images. You can save size can "
+#~ "go up to 80%% after resizing. The new width should not be less than your "
+#~ "largest thumbnail size, which is actually %s px."
+#~ msgstr ""
+#~ "Cette option est recommendée pour réduire les images trop grandes. Vous "
+#~ "pouvez économiser jusqu'à 80%% du poids après le redimensionnement. La "
+#~ "nouvelle largeur ne doit pas être inférieure à la plus grande largeur de "
+#~ "vos miniatures qui est actuellement de %s px."
 
 #~ msgid "An unknown error occurred"
 #~ msgstr "Une erreur inconnue est survenue"

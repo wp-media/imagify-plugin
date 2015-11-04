@@ -80,6 +80,36 @@ function get_imagify_admin_url( $action = 'options-general', $arg = '' ) {
 	return $url;
 }
 
+/*
+ * Get maximal width and height from all thumbnails.
+ *
+ * @since 1.1
+ *
+ * @return array An array containing the max with and height.
+ */
+function get_imagify_max_intermediate_image_size() {
+	global $_wp_additional_image_sizes;
+	
+	$width                        = 0;
+	$height                       = 0;
+	$get_intermediate_image_sizes = get_intermediate_image_sizes();
+	
+	// Create the full array with sizes and crop info
+	foreach( $get_intermediate_image_sizes as $_size ) {
+	    if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ) ) ) {
+	        $width  = max( $width, get_option( $_size . '_size_w' ) );
+	        $height = max( $height, get_option( $_size . '_size_h' ) );
+	    } elseif ( isset( $_wp_additional_image_sizes[ $_size ] ) ) {
+	        $width  = max( $width, $_wp_additional_image_sizes[ $_size ]['width'] );
+	        $height = max( $height, $_wp_additional_image_sizes[ $_size ]['height'] );
+	    }
+	}
+	return array( 
+		'width'  => $width, 
+		'height' => $height
+	);
+}
+
 /**
  * Renew a dismissed Imagify notice.
  *

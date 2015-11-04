@@ -44,6 +44,18 @@ function _imagify_pre_update_option( $value, $old_value ) {
 		}
 	}
 	
+	// The max width for the "Resize larger images" option can't be 0
+	if ( (bool) ! $value['resize_larger_w'] ) {
+		$value['resize_larger_w'] = '';
+		$value['resize_larger']   = 0;
+	}
+	
+	// The max width for the "Resize larger images" option can't be less than the largest thumbnail width 
+	$max_sizes = get_imagify_max_intermediate_image_size();
+	if ( (bool) $value['resize_larger_w'] && $value['resize_larger_w'] <  $max_sizes['width'] ) {
+		$value['resize_larger_w'] = $max_sizes['width'];
+	}
+	
 	unset( $value['sizes'] );
 	return $value;
 }

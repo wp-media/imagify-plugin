@@ -174,9 +174,8 @@ function _imagify_display_options_page() { ?>
 									<p id="describe-resize-larger" class="imagify-options-line">
 										<?php
 											echo sprintf( 
-												__( 'to maximum %s pixels wide 𝗑 %s pixel high', 'imagify' ),
-												'<input type="text" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_w]" value="' . get_imagify_option( 'resize_larger_w', 0 ). '" size="5">',
-												'<input type="text" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_h]" value="' . get_imagify_option( 'resize_larger_h', 0 ). '" size="5">'
+												__( 'to maximum %s pixels width', 'imagify' ),
+												'<input type="text" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_w]" value="' . get_imagify_option( 'resize_larger_w', false ). '" size="5">'
 											);
 										?>
 									</p>
@@ -186,8 +185,8 @@ function _imagify_display_options_page() { ?>
 											<span class="dashicons dashicons-info"></span>
 
 											<?php
-												// TODO: make 1024 x 1024 values dynamic 
-												_e( 'Recommended for large photos, like ones taken with your phone. Saved space can go up to 80% after resizing. The new resolution should not be less than your largest thumbnail size, which is actually 1024 x 1024', 'imagify' );
+												$max_sizes = get_imagify_max_intermediate_image_size();
+												echo sprintf( __( 'This option is recommended to reduce larger images. You can save size can go up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %spx.', 'imagify' ), $max_sizes['width'] );
 											?>
 										</span>
 									</p>
