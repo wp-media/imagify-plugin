@@ -154,8 +154,11 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$ids   = $query->posts;
 	
 	foreach( $ids as $id ) {
-		$data[ $id ] = wp_get_attachment_url( $id );
+		if ( file_exists( get_attached_file( $id ) ) ) {
+			$data[ $id ] = wp_get_attachment_url( $id );	
+		}
 	}
+	
 	if ( (bool) $data ) {
 		wp_send_json_success( $data );
 	}
