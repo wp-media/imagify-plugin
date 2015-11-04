@@ -29,6 +29,8 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 = 1.1 =
 * Interface
  * Add new option "Resize larger Images"
+ * Bulk optimization: results table is not shrinkable to the infinite anymore (scrollable)
+ * Better visual in options page
 * Bug Fix
  * Really Fix PHP Notice: Undefined offset: 1 in imagify/inc/functions/formatting.php on line 17
  * Double animation in Progress Bar

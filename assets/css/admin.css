@@ -404,12 +404,20 @@ td .imagify-chart {
 	color: #40B1D0;
 	font-size: 12px;
 }
+.imagify-info {
+	position: relative;
+	display: inline-block;
+	padding-left: 25px;
+	vertical-align: top;
+}
 .imagify-info .dashicons {
-	vertical-align: -5px;
+	position: absolute;
+	left: 0; top: -1px;
 }
 label + .imagify-info,
 label + .imagify-options-line {
 	display: inline-block;
+	max-width: 70%;
 	margin-left: 15px;
 	-webkit-transition: opacity .3s;
 	transition: opacity .3s;
@@ -472,6 +480,12 @@ label + .imagify-options-line {
 	-ms-transition: all .2s;
 	transition: all .2s;
 }
+/* disabled aspect */
+.imagify-settings [type="checkbox"][disabled]:not(:checked) + label:before,
+.imagify-settings [type="checkbox"][disabled]:checked + label:before {
+	border-color: #ccc;
+	background: #ddd;
+}
 /* checked mark aspect changes */
 .imagify-settings [type="checkbox"]:not(:checked) + label:after {
 	opacity: 0;
@@ -486,6 +500,9 @@ label + .imagify-options-line {
 	-moz-transform: scale(1);
 	-ms-transform: scale(1);
 	transform: scale(1);
+}
+input[id^="imagify_sizes_"]:checked + label {
+	font-weight: bold;
 }
 
 /* mini version */
@@ -1252,7 +1269,10 @@ ul.imagify-datas-details.imagify-datas-details {
  * == Bulk table
  */
 .imagify-bulk-table {
-	padding-top: 2em;
+	margin-top: 2em;
+	max-height: 600px;
+	max-height: 60vh;
+	overflow: auto;
 }
 .imagify-bulk-table table {
 	width: 100%;
