@@ -3,6 +3,16 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 class Imagify_User {
 	/**
+	 * The Imagify user ID
+	 *
+	 * @since 1.0
+	 *
+	 * @var    string
+	 * @access public
+	 */
+	public $id;
+	
+	/**
 	 * The user email
 	 *
 	 * @since 1.0
@@ -61,7 +71,17 @@ class Imagify_User {
 	 * @access public
 	 */
 	public $consumed_current_month_quota;
-
+	
+	/**
+	 * If the account is activate or not
+	 *
+	 * @since 1.0.1
+	 *
+	 * @var    bool
+	 * @access public
+	 */
+	public $is_active;
+	
 	 /**
      * The constructor
      *
@@ -73,12 +93,14 @@ class Imagify_User {
 		$user = get_imagify_user();
 
 		if ( ! is_wp_error( $user ) ) {
+			$this->id                           = $user->id;
 			$this->email                        = $user->email;
 			$this->plan_id                      = $user->plan_id;
 			$this->quota                        = $user->quota;
 			$this->extra_quota                  = $user->extra_quota;
 			$this->extra_quota_consumed         = $user->extra_quota_consumed;
 			$this->consumed_current_month_quota = $user->consumed_current_month_quota;
+			$this->is_active                    = $user->is_active;
 		}
 	}
 
