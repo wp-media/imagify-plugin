@@ -407,10 +407,26 @@ td .imagify-chart {
 .imagify-info .dashicons {
 	vertical-align: -5px;
 }
-label + .imagify-info {
+label + .imagify-info,
+label + .imagify-options-line {
 	display: inline-block;
 	margin-left: 15px;
+	-webkit-transition: opacity .3s;
+	transition: opacity .3s;
 }
+
+.imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label + .imagify-options-line {
+	opacity: .5;
+}
+.imagify-settings.imagify-settings [type="checkbox"]:checked + label + .imagify-options-line {
+	opacity: 1;
+}
+
+.imagify-checkbox-marged {
+	max-width: 500px;
+	margin-left: 45px;
+}
+
 
 
 /* Custom checkboxes in CSS */

@@ -165,6 +165,35 @@ function _imagify_display_options_page() { ?>
 									</span>
 								</td>
 							</tr>
+							<tr>
+								<th scope="row"><?php _e( 'Resize larger images', 'imagify' ); ?></th>
+								<td>
+									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[resize_larger]" id="resize_larger" <?php checked( get_imagify_option( 'resize_larger', 0 ), 1 ); ?> aria-describedby="describe-resize-larger" />
+									<label for="resize_larger" onclick=""><span class="screen-reader-text"><?php _e( 'Resize larger images', 'imagify' ); ?></span></label>
+
+									<p id="describe-resize-larger" class="imagify-options-line">
+										<?php
+											echo sprintf( 
+												__( 'to maximum %s pixels wide 𝗑 %s pixel high', 'imagify' ),
+												'<input type="text" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_w]" value="' . get_imagify_option( 'resize_larger_w', 0 ). '" size="5">',
+												'<input type="text" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_h]" value="' . get_imagify_option( 'resize_larger_h', 0 ). '" size="5">'
+											);
+										?>
+									</p>
+
+									<p class="imagify-checkbox-marged">
+										<span class="imagify-info">
+											<span class="dashicons dashicons-info"></span>
+
+											<?php
+												// TODO: make 1024 x 1024 values dynamic 
+												_e( 'Recommended for large photos, like ones taken with your phone. Saved space can go up to 80% after resizing. The new resolution should not be less than your largest thumbnail size, which is actually 1024 x 1024', 'imagify' );
+											?>
+										</span>
+									</p>
+								</td>
+							</tr>
+
 							<?php
 							if ( ! imagify_is_active_for_network() ) { ?>
 

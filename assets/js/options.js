@@ -47,4 +47,18 @@ jQuery(function($){
 			busy = false;
 		});
 	});
+
+	/**
+	 * Auto check on options-line input focus
+	 */
+	if ( $('.imagify-options-line').length > 0 ) {
+
+		$('.imagify-options-line').find('input').on('focus', function(){
+			var $checkbox = $(this).closest('.imagify-options-line').prev('label').prev('input');
+			if ( ! $checkbox[0].checked ) {
+				$checkbox.prop('checked', true);
+			}
+		});
+
+	}
 });
