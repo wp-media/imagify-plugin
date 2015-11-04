@@ -26,6 +26,10 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 
 == Changelog ==
 
+= 1.0.3 =
+* Bug Fix
+ * Fix PHP Notice: Undefined offset: 1 in ../inc/functions/formatting.php on line 16
+
 = 1.0.2 =
 * Interface
  * Add error descriptions on the Bulk Optimization results
