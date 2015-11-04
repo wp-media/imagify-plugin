@@ -71,7 +71,7 @@ function _imagify_warning_wrong_api_key_notice() {
 	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 	$api_key		 = get_imagify_option( 'api_key', false );
 	$cap			 = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
-
+	
 	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'wrong-api-key', (array) $ignored_notices ) || empty( $api_key ) || imagify_valid_key() || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
 		return;
 	}
@@ -192,7 +192,7 @@ function _imagify_rating_notice() {
 }
 
 /**
- * This notice is displayed when external HTTP requests are blocked vie the WP_HTTP_BLOCK_EXTERNAL constant
+ * This notice is displayed when external HTTP requests are blocked via the WP_HTTP_BLOCK_EXTERNAL constant
  *
  * @since 1.0
  */
@@ -201,7 +201,7 @@ function _imagify_http_block_external_notice() {
 	$current_screen  = get_current_screen();
 	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 
-	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'http-block-external', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) || !imagify_valid_key() || ! is_imagify_blocked() ) {
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'http-block-external', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) || ! imagify_valid_key() || ! is_imagify_blocked() ) {
 		return;
 	}
 	?>	
@@ -220,6 +220,36 @@ function _imagify_http_block_external_notice() {
 			<p><textarea readonly="readonly" class="large-text readonly" rows="1">define( 'WP_ACCESSIBLE_HOSTS', '*.imagify.io' );</textarea></p>
 		</div>
 		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'http-block-external' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	</div>	
+	<?php
+}
+
+/**
+ * This warning is displayed when the grid view is active on the library
+ *
+ * @since 1.0.2
+ */
+add_action( 'all_admin_notices', '_imagify_warning_grid_view' );
+function _imagify_warning_grid_view() {
+	$current_screen     = get_current_screen();
+	$ignored_notices    = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+	$media_library_mode = get_user_option( 'media_library_mode', get_current_user_id() );
+
+	if ( ( isset( $current_screen ) && 'upload' !== $current_screen->base ) || in_array( 'grid-view', (array) $ignored_notices ) || ! current_user_can( 'upload_files' ) || ! imagify_valid_key() || $media_library_mode == 'list' ) {
+		return;
+	}
+	?>
+	<div class="clear"></div>
+	<div class="error imagify-notice below-h2">
+		<div class="imagify-notice-logo">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
+		</div>
+		<div class="imagify-notice-content">
+			<p class="imagify-notice-title"><strong><?php _e( 'You\'re missing out!', 'imagify' ); ?></strong></p>
+			<p><?php _e( 'Use the List view to optimize images with Imagify.', 'imagify' ); ?></p>
+			<p><a href="<?php echo admin_url( 'upload.php?mode=list' ); ?>"><?php _e( 'Switch to the List View', 'imagify' ); ?></a></p>
+		</div>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'grid-view' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>	
 	<?php
 }

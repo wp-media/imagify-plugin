@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-11-03 09:45+0100\n"
-"PO-Revision-Date: 2015-11-03 09:46+0100\n"
+"POT-Creation-Date: 2015-11-03 18:08+0100\n"
+"PO-Revision-Date: 2015-11-03 18:14+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -307,6 +307,7 @@ msgstr ""
 
 #: inc/admin/ui/notices.php:25 inc/admin/ui/notices.php:90
 #: inc/admin/ui/notices.php:189 inc/admin/ui/notices.php:222
+#: inc/admin/ui/notices.php:252
 msgid "Dismiss this notice"
 msgstr "Fermer ce message"
 
@@ -427,6 +428,18 @@ msgstr ""
 #: inc/admin/ui/notices.php:218
 msgid "Click on the field and press Ctrl-A to select all."
 msgstr "Cliquez sur le champ et appuyez sur Ctrl-A pour tout sélectionner."
+
+#: inc/admin/ui/notices.php:248
+msgid "You're missing out!"
+msgstr "Vous passez à côté de quelque chose !"
+
+#: inc/admin/ui/notices.php:249
+msgid "Use the List view to optimize images with Imagify."
+msgstr "Utilisez la vue liste pour optimiser vos images avec Imagify."
+
+#: inc/admin/ui/notices.php:250
+msgid "Switch to the List View"
+msgstr "Basculer en vue liste"
 
 #: inc/admin/ui/options.php:15
 msgid "Discover our other products"
@@ -589,16 +602,6 @@ msgstr "Filtrer par statut"
 msgid "All images"
 msgstr "Toutes les images"
 
-#: inc/api/wp-updates-plugin.php:87
-msgid ""
-"An Unexpected HTTP Error occurred during the API request.</p> <p><a href=\"?"
-"\" onclick=\"document.location.reload(); return false;\">Try again</a>"
-msgstr ""
-
-#: inc/api/wp-updates-plugin.php:91
-msgid "An unknown error occurred"
-msgstr "Une erreur inconnue est survenue"
-
 #: inc/classes/class-attachment.php:406
 msgid ""
 "This size isn't authorized to be optimized. Update your Imagify settings if "
@@ -705,6 +708,9 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid "An unknown error occurred"
+#~ msgstr "Une erreur inconnue est survenue"
 
 #~ msgid ""
 #~ "Keep your original images in a secure place before optimization process."
