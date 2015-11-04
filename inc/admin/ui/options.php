@@ -177,7 +177,6 @@ function _imagify_display_options_page() { ?>
 									global $_wp_additional_image_sizes;
 
 								    $sizes = array( 
-								    	'full' 		=> array( 'name' => __( 'Full Size' ) ), 
 					    				'thumbnail' => array( 'name' => __( 'Thumbnail' ) ),
 					    				'medium' 	=> array( 'name' => __( 'Medium' ) ),
 					    				'large' 	=> array( 'name' => __( 'Large' ) ),
