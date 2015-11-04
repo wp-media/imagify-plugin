@@ -32,6 +32,7 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
  * Bulk optimization: results table is not shrinkable to the infinite anymore (scrollable)
  * Better visual in options page
 * Bug Fix
+ * Check if an attachment exists to avoid an issue which is stopped the Bulk Optimization
  * Really Fix PHP Notice: Undefined offset: 1 in imagify/inc/functions/formatting.php on line 17
  * Double animation in Progress Bar
 
