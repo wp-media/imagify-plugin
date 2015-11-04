@@ -30,7 +30,7 @@ jQuery(function($){
 					ids.forEach( function( id, index ) {
 						setTimeout(function(){
 							$('#imagify-' + action + '-' + id ).trigger('click');
-						}, index*1000);
+						}, index*300);
 					});
 						
 				});
