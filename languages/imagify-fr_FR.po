@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-11-04 18:24+0100\n"
-"PO-Revision-Date: 2015-11-04 18:24+0100\n"
+"POT-Creation-Date: 2015-11-04 23:47+0100\n"
+"PO-Revision-Date: 2015-11-04 23:48+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.7.3\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-WPHeader: imagify.php\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -20,13 +20,13 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: inc/admin/ajax.php:115 inc/admin/upload.php:40 inc/functions/admin-ui.php:98
-#: inc/functions/admin-ui.php:122
+#: inc/admin/ajax.php:115 inc/admin/upload.php:40
+#: inc/functions/admin-ui.php:98 inc/functions/admin-ui.php:122
 msgid "Optimizing..."
 msgstr "En cours d’optimisation…"
 
-#: inc/admin/ajax.php:115 inc/admin/enqueue.php:136 inc/admin/meta-boxes.php:29
-#: inc/admin/upload.php:40
+#: inc/admin/ajax.php:115 inc/admin/enqueue.php:136
+#: inc/admin/meta-boxes.php:29 inc/admin/upload.php:40
 msgid "Optimize"
 msgstr "Optimiser"
 
@@ -124,7 +124,6 @@ msgstr "Restaurer l’original"
 msgid "Bulk Optimization"
 msgstr "Optimisation en masse"
 
-#. Plugin Name of the plugin/theme
 #: inc/admin/meta-boxes.php:18 inc/admin/meta-boxes.php:25
 #: inc/admin/upload.php:11
 msgid "Imagify"
@@ -138,11 +137,11 @@ msgstr "Clé API invalide"
 msgid "Check your Settings"
 msgstr "Vérifiez vos réglages"
 
-#: inc/admin/options.php:101
+#: inc/admin/options.php:107
 msgid "Cheatin&#8217; uh?"
 msgstr "Cheatin&#8217; uh?"
 
-#: inc/admin/options.php:109
+#: inc/admin/options.php:115
 msgid "<strong>ERROR</strong>: options page not found."
 msgstr "<strong>Erreur</strong> : page d’options introuvable."
 
@@ -466,12 +465,12 @@ msgstr "Vous n’avez pas encore de clé API ? %sCréez en une, c’est GRATUIT%
 msgid "Optimization Level"
 msgstr "Niveau d’optimisation"
 
-#: inc/admin/ui/options.php:128 inc/admin/ui/options.php:268
+#: inc/admin/ui/options.php:128 inc/admin/ui/options.php:276
 #: inc/functions/admin-ui.php:26 inc/functions/admin-ui.php:121
 msgid "Aggressive"
 msgstr "Agressif"
 
-#: inc/admin/ui/options.php:133 inc/admin/ui/options.php:282
+#: inc/admin/ui/options.php:133 inc/admin/ui/options.php:290
 #: inc/functions/admin-ui.php:26 inc/functions/admin-ui.php:121
 msgid "Normal"
 msgstr "Normal"
@@ -540,25 +539,29 @@ msgstr ""
 
 #: inc/admin/ui/options.php:208
 msgid "Full Size"
-msgstr ""
+msgstr "Taille originale"
 
 #: inc/admin/ui/options.php:209
 msgid "Thumbnail"
-msgstr ""
+msgstr "Miniature"
 
 #: inc/admin/ui/options.php:210
 msgid "Medium"
-msgstr ""
+msgstr "Moyenne"
 
 #: inc/admin/ui/options.php:211
 msgid "Large"
-msgstr ""
+msgstr "Grande"
 
-#: inc/admin/ui/options.php:265
+#: inc/admin/ui/options.php:249
+msgid "We automatically optimize this size"
+msgstr "Nous optimisons automatiquement cette taille"
+
+#: inc/admin/ui/options.php:273
 msgid "You can choose two levels of compression"
 msgstr "Vous pouvez choisir entre deux niveaux de compression"
 
-#: inc/admin/ui/options.php:270
+#: inc/admin/ui/options.php:278
 msgid ""
 "This mode will apply all available optimizations for maximum image "
 "compression. "
@@ -566,7 +569,7 @@ msgstr ""
 "Ce niveau appliquera toutes les optimisations disponibles pour une "
 "compression des images maximale."
 
-#: inc/admin/ui/options.php:273
+#: inc/admin/ui/options.php:281
 msgid ""
 "This will provide a drastic savings on the initial weight, with a small "
 "reduction in image quality. Most of the time it's not even noticeable."
@@ -574,13 +577,13 @@ msgstr ""
 "Cela permettra une réduction importante du poids initial avec une légère "
 "perte de la qualité d'image qui n’est pas perceptible à l’oeil humain."
 
-#: inc/admin/ui/options.php:276
+#: inc/admin/ui/options.php:284
 msgid "If you want the maximum weight reduction, we recommend using this mode."
 msgstr ""
 "Si vous souhaitez une réduction du poids plus performante, nous vous "
 "recommandons ce niveau."
 
-#: inc/admin/ui/options.php:284
+#: inc/admin/ui/options.php:292
 msgid ""
 "This mode provides lossless optimization, your images will be optimized "
 "without any visible change."
@@ -588,21 +591,21 @@ msgstr ""
 "Ce mode permet d'optimiser sans perte, vos images seront optimisées sans "
 "aucun changement visible."
 
-#: inc/admin/ui/options.php:287
+#: inc/admin/ui/options.php:295
 msgid ""
 "If you want the perfect quality for your images, we recommend you that mode."
 msgstr ""
 "Si vous souhaitez des images d’une qualité parfaite, nous vous recommandons "
 "ce niveau."
 
-#: inc/admin/ui/options.php:290
+#: inc/admin/ui/options.php:298
 msgid ""
 "Note: the file size reduction will be less, compared to aggressive mode."
 msgstr ""
 "Remarque: la réduction du poids des images sera moins importante par rapport "
 "au mode agressif."
 
-#: inc/admin/ui/options.php:297
+#: inc/admin/ui/options.php:305
 msgid "Close"
 msgstr "Fermer"
 
@@ -684,51 +687,41 @@ msgstr "Réessayer"
 msgid "Re-Optimize to %s"
 msgstr "Réoptimiser en %s"
 
-#: inc/functions/process.php:21
+#: inc/functions/process.php:20
 msgid "External HTTP requests are blocked"
 msgstr "Les requêtes HTTP externes sont bloquées"
 
-#: inc/functions/process.php:27
+#: inc/functions/process.php:26
 msgid "File path is empty"
 msgstr "Le chemin du fichier est vide"
 
-#: inc/functions/process.php:33
+#: inc/functions/process.php:32
 #, php-format
 msgid "Could not find %s"
 msgstr "Impossible de trouver %s"
 
-#: inc/functions/process.php:38
+#: inc/functions/process.php:37
 #, php-format
 msgid "%s is not writable"
 msgstr "%s n’est pas accessible en écriture"
 
-#: inc/functions/process.php:47
+#: inc/functions/process.php:46
 #, php-format
 msgid "Skipped (%s), image not found."
 msgstr "Ignoré (%s), image introuvable."
 
-#. Plugin URI of the plugin/theme
-msgid "https://wordpress.org/plugins/imagify/"
-msgstr "https://fr.wordpress.org/plugins/imagify/"
+#~ msgid "https://wordpress.org/plugins/imagify/"
+#~ msgstr "https://fr.wordpress.org/plugins/imagify/"
 
-#. Description of the plugin/theme
-msgid ""
-"Dramaticaly reduce image file sizes without loosing quality, make your "
-"website load faster, boost your SEO and save money on your bandwith using "
-"Imagify, the new most advanced image optimization tool."
-msgstr ""
-"Réduisez drastiquement le poids de vos images sans perte de qualité, "
-"accélérez la rapidité de votre site, boostez votre SEO and économisez de "
-"l’argent sur votre bande passante en utilisant Imagify, le nouvel outil le "
-"plus avancé d’optimisation des images."
-
-#. Author of the plugin/theme
-msgid "WP Media"
-msgstr ""
-
-#. Author URI of the plugin/theme
-msgid "http://wp-media.me"
-msgstr ""
+#~ msgid ""
+#~ "Dramaticaly reduce image file sizes without loosing quality, make your "
+#~ "website load faster, boost your SEO and save money on your bandwith using "
+#~ "Imagify, the new most advanced image optimization tool."
+#~ msgstr ""
+#~ "Réduisez drastiquement le poids de vos images sans perte de qualité, "
+#~ "accélérez la rapidité de votre site, boostez votre SEO and économisez de "
+#~ "l’argent sur votre bande passante en utilisant Imagify, le nouvel outil "
+#~ "le plus avancé d’optimisation des images."
 
 #~ msgid ""
 #~ "This option is recommended to reduce larger images. You can save size can "
