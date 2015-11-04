@@ -422,6 +422,9 @@ label + .imagify-options-line {
 	-webkit-transition: opacity .3s;
 	transition: opacity .3s;
 }
+label[for="imagify_sizes_full"] + .imagify-info {
+	vertical-align: middle;
+}
 
 .imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label + .imagify-options-line {
 	opacity: .5;

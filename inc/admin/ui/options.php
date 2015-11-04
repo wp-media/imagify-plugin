@@ -240,8 +240,16 @@ function _imagify_display_options_page() { ?>
 									?>
 
 										<input type="hidden" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
-										<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php echo ( ! array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) ) ? 'checked="checked"' : '' ?> <?php echo ( 'full' === $size_key ) ? 'disabled="disabled"' : ''; ?> />
+										<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php echo ( ! array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) ) ? 'checked="checked"' : '' ?> <?php echo ( 'full' === $size_key ) ? 'disabled="disabled" aria-describedby="describe-full-checked"' : ''; ?> />
 										<label for="imagify_sizes_<?php echo $size_key; ?>" onclick=""><?php echo $label; ?></label>
+
+										<?php if ( 'full' === $size_key) { ?>
+										<span id="describe-full-checked" class="imagify-info">
+											<span class="dashicons dashicons-info"></span>
+											<?php _e( 'We automatically optimize this size', 'imagify' ); ?>
+										</span>
+										<?php } ?>
+
 										<br class="imagify-br">
 
 									<?php
