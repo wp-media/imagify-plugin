@@ -18,7 +18,7 @@ function _imagify_warning_empty_api_key_notice() {
 	?>
 	<div class="imagify-welcome">
 		<div class="imagify-title">
-			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="225" height="26" alt="Imagify" /> <small><sup><?php echo IMAGIFY_VERSION; ?></sup></small>
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="225" height="26" alt="Imagify" /> <small><sup><?php echo IMAGIFY_VERSION; ?></sup></small>
 			<span class="baseline">
 				<?php _e( 'Welcome to Imagify, the best way to easily optimize your images!', 'imagify' ); ?>
 			</span>
@@ -79,7 +79,7 @@ function _imagify_warning_wrong_api_key_notice() {
 	<div class="clear"></div>
 	<div class="error imagify-notice below-h2">
 		<div class="imagify-notice-logo">
-			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
 		</div>
 		<div class="imagify-notice-content">
 			<p class="imagify-notice-title"><strong><?php _e( 'Your API key isn\'t valid!', 'imagify' ); ?></strong></p>
@@ -131,7 +131,7 @@ function _imagify_warning_plugins_to_deactivate_notice() {
 	<div class="clear"></div>
 	<div class="imagify-notice error below-h2">
 		<div class="imagify-notice-logo">
-			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
 		</div>
 		<div class="imagify-notice-content">
 			<p><?php _e( 'The following plugins are not compatible with this plugin and may cause unexpected results:', 'imagify' ); ?></p>
@@ -173,7 +173,7 @@ function _imagify_rating_notice() {
 	<div class="clear"></div>
 	<div class="updated imagify-notice below-h2">
 		<div class="imagify-notice-logo">
-			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
 		</div>
 		<div class="imagify-notice-content">
 			<?php
@@ -208,7 +208,7 @@ function _imagify_http_block_external_notice() {
 	<div class="clear"></div>
 	<div class="error imagify-notice below-h2">
 		<div class="imagify-notice-logo">
-			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
 		</div>
 		<div class="imagify-notice-content">
 			<p class="imagify-notice-title"><strong><?php _e( 'The external HTTP requests are blocked!', 'imagify' ); ?></strong></p>
@@ -242,7 +242,7 @@ function _imagify_warning_grid_view() {
 	<div class="clear"></div>
 	<div class="error imagify-notice below-h2">
 		<div class="imagify-notice-logo">
-			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" width="138" height="16" alt="Imagify" />
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
 		</div>
 		<div class="imagify-notice-content">
 			<p class="imagify-notice-title"><strong><?php _e( 'You\'re missing out!', 'imagify' ); ?></strong></p>
