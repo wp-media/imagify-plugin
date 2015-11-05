@@ -199,7 +199,17 @@ function _imagify_display_options_page() { ?>
 							<tr>
 								<th scope="row"><?php _e( 'Files optimization', 'imagify' ); ?></th>
 								<td>
-									<p><?php _e( 'You can choose to compress different image sizes created by WordPress here.', 'imagify' ); ?><br/><span class="imagify-important"><?php _e( 'Remember each additional image size will affect your Imagify monthly usage!', 'imagify' ); ?></span></p><br>
+									<p>
+										<?php _e( 'You can choose to compress different image sizes created by WordPress here.', 'imagify' ); ?>
+										<br/>
+										<?php echo sprintf( __( 'The %soriginal size%s is %sautomatically optimized%s by Imagify.', 'imagify' ), '<strong>', '</strong>', '<strong>', '</strong>' ); ?>
+										<br>
+										<span class="imagify-important">
+											<?php _e( 'Remember each additional image size will affect your Imagify monthly usage!', 'imagify' ); ?>
+										</span>
+									</p>
+
+									<br>
 
 									<?php
 									global $_wp_additional_image_sizes;
@@ -236,23 +246,14 @@ function _imagify_display_options_page() { ?>
 
 										if ( 'full' != $size_key ) {
 											$label = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
-										}
 									?>
-
 										<input type="hidden" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
-										<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php echo ( ! array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) ) ? 'checked="checked"' : '' ?> <?php echo ( 'full' === $size_key ) ? 'disabled="disabled" aria-describedby="describe-full-checked"' : ''; ?> />
+										<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php echo ( ! array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) ) ? 'checked="checked"' : '' ?> />
 										<label for="imagify_sizes_<?php echo $size_key; ?>" onclick=""><?php echo $label; ?></label>
-
-										<?php if ( 'full' === $size_key) { ?>
-										<span id="describe-full-checked" class="imagify-info">
-											<span class="dashicons dashicons-info"></span>
-											<?php _e( 'We automatically optimize this size', 'imagify' ); ?>
-										</span>
-										<?php } ?>
-
 										<br class="imagify-br">
 
 									<?php
+										}
 									}
 									?>
 								</td>
