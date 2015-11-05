@@ -14,7 +14,7 @@ function imagify_round_half_five( $number ) {
     $number = strval( $number );
     $number = explode( '.', $number );
       
-    if ( (bool) ! $number[1] ) {
+    if ( ! isset( $number[1] ) ) {
 	    return $number[0];
     }
     

@@ -13,14 +13,15 @@ function _imagify_admin_bar( $wp_admin_bar )
 		return;
 	}
 	
+	$cap = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
+	
 	// Parent
     $wp_admin_bar->add_menu( array(
 	    'id'    => 'imagify',
 	    'title' => 'Imagify',
-	    'href'  => get_imagify_admin_url(),
+	    'href'  => ( current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) ? get_imagify_admin_url() : '#',
 	));
 	
-	$cap = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
 	/** This filter is documented in inc/admin/options.php */
 	if (  current_user_can( apply_filters( 'imagify_capacity', $cap ) ) )  {
 		// Settings

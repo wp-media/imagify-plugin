@@ -1,24 +1,24 @@
 jQuery(function($){
 	var overviewCanvas = document.getElementById("imagify-overview-chart");
 	var overviewData = [
-	    {
-	        value: imagifyBulk.totalUnoptimizedAttachments,
-	        color:"#D9E4EB",
-	        highlight: "#D9E4EB",
-	        label: imagifyBulk.overviewChartLabels.unoptimized
-	    },
-	    {
-	        value: imagifyBulk.totalOptimizedAttachments,
-	        color: "#46B1CE",
-	        highlight: "#46B1CE",
-	        label: imagifyBulk.overviewChartLabels.optimized
-	    },
-	    {
-	        value: imagifyBulk.totalErrorsAttachments,
-	        color: "#2E3242",
-	        highlight: "#2E3242",
-	        label: imagifyBulk.overviewChartLabels.error
-	    }
+		{
+			value: imagifyBulk.totalUnoptimizedAttachments,
+			color:"#D9E4EB",
+			highlight: "#D9E4EB",
+			label: imagifyBulk.overviewChartLabels.unoptimized
+		},
+		{
+			value: imagifyBulk.totalOptimizedAttachments,
+			color: "#46B1CE",
+			highlight: "#46B1CE",
+			label: imagifyBulk.overviewChartLabels.optimized
+		},
+		{
+			value: imagifyBulk.totalErrorsAttachments,
+			color: "#2E3242",
+			highlight: "#2E3242",
+			label: imagifyBulk.overviewChartLabels.error
+		}
 	]
 
 	// to avoid JS error
@@ -50,11 +50,11 @@ jQuery(function($){
 		var $obj = $(this);
 		
 		if ( $obj.attr('disabled') ) {
-        	return false;
-	    }
+			return false;
+		}
 	
-	    $obj.attr('disabled', 'disabled');
-	    $obj.find('.dashicons').addClass('rotate');
+		$obj.attr('disabled', 'disabled');
+		$obj.find('.dashicons').addClass('rotate');
 		
 		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
 		.done(function(response) {
@@ -88,13 +88,14 @@ jQuery(function($){
 				Optimizer = new ImagifyGulp(config);
 				
 				// before the attachment optimization
-			    Optimizer.before(function(data) {
-				    table.append('<tr id="attachment-'+data.id+'"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="'+data.thumbnail+'"/>"</span><span class="imagifilename">'+data.filename+'</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>Compressing<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>');
-			    }) 
-			    // after the attachment optimization
-			    .each(function (data) {		        			        
-			        $('#imagify-progress-bar').animate({'width': data.progress + '%'});
-			        $('#imagify-progress-bar').find('.percent').html(data.progress + '%');
+				Optimizer.before(function(data) {
+					table.append('<tr id="attachment-'+data.id+'"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="'+data.thumbnail+'"/>"</span><span class="imagifilename">'+data.filename+'</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>Compressing<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>');
+				}) 
+				// after the attachment optimization
+				.each(function (data) {
+					var $progress = $('#imagify-progress-bar');
+					$progress.css({'width': data.progress + '%'});
+					$progress.find('.percent').html(data.progress + '%');
 
 					if ( data.success ) {
 						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>Complete</span>');
@@ -124,7 +125,7 @@ jQuery(function($){
 												   .html(data.global_optimized_human);
 						
 						// The table footer total optimized files
-				    	files = files + data.thumbnails + 1;
+						files = files + data.thumbnails + 1;
 						$('.imagify-cell-nb-files').html(files + ' file(s)'); 
 						
 						// The table footer original size
@@ -134,22 +135,22 @@ jQuery(function($){
 						// The table footer overall saving
 						overall_saving = overall_saving + data.overall_saving;
 						$('.imagify-total-gain').html(Optimizer.toHumanSize(overall_saving, 1));
-			        
-			        } else {
-				        $('#attachment-'+data.image).after('<tr><td colspan="7"><span class="status-error">'+data.error+'</span></td></tr>');
-				        $('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-error"><span class="dashicons dashicons-dismiss"></span>Error</span>');
+					
+					} else {
+						$('#attachment-'+data.image).after('<tr><td colspan="7"><span class="status-error">'+data.error+'</span></td></tr>');
+						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-error"><span class="dashicons dashicons-dismiss"></span>Error</span>');
 						
 						errors++;
 						$('.imagify-cell-errors').html(errors + ' error(s)'); 
-			        }
+					}
 					
-			        overviewDoughnut.segments[0].value = data.global_unoptimized_attachments;
+					overviewDoughnut.segments[0].value = data.global_unoptimized_attachments;
 					overviewDoughnut.segments[1].value = data.global_optimized_attachments;
 					overviewDoughnut.segments[2].value = data.global_errors_attachments;
 					overviewDoughnut.update();
-			    })
-			    // after all attachments optimization 
-			    .done(function (data) {
+				})
+				// after all attachments optimization 
+				.done(function (data) {
 					$obj.removeAttr('disabled');
 					$obj.find('.dashicons').removeClass('rotate');
 					
@@ -173,11 +174,11 @@ jQuery(function($){
 						
 						draw_me_complete_chart( $('.imagify-ac-chart').data('percent', data.global_percent).find('canvas') );	
 					}
-			    })
-			    .error(function (id) {
-			        console.log('Can\'t optimize image with id ' + id);
-			    })
-			    .run();
+				})
+				.error(function (id) {
+					console.log('Can\'t optimize image with id ' + id);
+				})
+				.run();
 			}
 		});
 	});
@@ -244,18 +245,18 @@ jQuery(function($){
 });
 
 var width = 700, height = 290;
-if(window.innerWidth) {
-    var clientLeft = (window.innerWidth-width)/2;
+if ( window.innerWidth ) {
+	var clientLeft = (window.innerWidth-width)/2;
 	var clientTop = (window.innerHeight-height)/2;
 }
 else {
-    var clientLeft = (document.body.clientWidth-width)/2;
-    var clientTop = (document.body.clientHeight-height)/2;
+	var clientLeft = (document.body.clientWidth-width)/2;
+	var clientTop = (document.body.clientHeight-height)/2;
 }
 
 [].forEach.call( document.querySelectorAll('.imagify-share-networks a'), function(el) {
-   el.addEventListener('click', function(evt) {
-        window.open(this.href,'',"status=no, scrollbars=no, menubar=no, top="+clientTop+", left="+clientLeft+", width="+width+", height="+height);
-	    evt.preventDefault();
-  }, false);
+	el.addEventListener('click', function(evt) {
+		window.open(this.href,'',"status=no, scrollbars=no, menubar=no, top="+clientTop+", left="+clientLeft+", width="+width+", height="+height);
+		evt.preventDefault();
+	}, false);
 });

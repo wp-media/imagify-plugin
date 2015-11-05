@@ -166,19 +166,6 @@ class Imagify_Attachment {
 		return wp_get_attachment_url( $this->id );
 	}
 
-	/**
-	 * Get all metadata sizes.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @return array
-	 */
-	public function get_sizes() {
-		$metadata = wp_get_attachment_metadata( $this->id );
-		return (array) $metadata['sizes'];
-	}
-
 	/*
 	 * Get the statistics of a specific size.
 	 *
@@ -346,16 +333,18 @@ class Imagify_Attachment {
 	/**
 	 * Optimize all sizes with Imagify.
 	 *
+	 * @since 1.0
+	 *
 	 * @access public
 	 * @param  int 	  $is_aggressive   The optimization level (1=aggressive, 0=normal)
-	 * @param  array  $metadata   	   The attachment meta data
 	 * @return array  $optimized_data  The optimization data
 	 */
-	public function optimize( $is_aggressive = null, $metadata = array() ) {		
+	public function optimize( $is_aggressive = null ) {		
 		$is_aggressive = ( is_null( $is_aggressive ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $is_aggressive;
 
 		$id = $this->id;
-		$sizes         = ( isset( $metadata['sizes'] ) ) ? $metadata['sizes'] : $this->get_sizes();
+		$metadata      = wp_get_attachment_metadata( $id );
+		$sizes         = (array) $metadata['sizes'];
 		$data          = array(
 			'stats' => array(
 				'aggressive'     => $is_aggressive,
@@ -388,9 +377,19 @@ class Imagify_Attachment {
 		 * @param int $id The attachment ID
 		*/
 		do_action( 'before_imagify_optimize_attachment', $id );
+		
+		// Get the resize values for the original size
+		$resize           = array();
+		$do_resize        = get_imagify_option( 'resize_larger', false );
+		$resize_width     = get_imagify_option( 'resize_larger_w' );
+		$attachment_size  = @getimagesize( $attachment_path );
 
-		// Optimize the original size
-		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $is_aggressive );
+		if ( $do_resize && isset( $attachment_size[0] ) && $resize_width < $attachment_size[0] ) {
+			$resize['width'] = $resize_width;
+		}
+		
+		// Optimize the original size 
+		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $is_aggressive, $resize );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
 
 		if( (bool) ! $data ) {

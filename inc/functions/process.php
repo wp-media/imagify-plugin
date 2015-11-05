@@ -9,9 +9,10 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @param   string 	  $file_path 	  Absolute path to the image file.
  * @param   bool   	  $backup 		  Force a backup of the original file.
  * @param   int 	  $is_aggressive  The optimization level (1=aggressive, 0=normal).
+ * @param   array 	  $resize  		  The resize parameters (with & height).
  * @return obj|array  Error message | Optimized image data
  */
-function do_imagify( $file_path, $backup = false, $is_aggressive = null ) {
+function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize = array() ) {
 	$errors = new WP_Error();
 	
 	// Check if external HTTP requests are blocked.
@@ -62,7 +63,8 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null ) {
 			'image' => curl_file_create( $file_path ),
 			'data' 	=> json_encode(
 				array(
-					'aggressive' => ( is_null( $is_aggressive ) ) ? get_imagify_option( 'optimization_level', 1 ) : $is_aggressive
+					'aggressive' => ( is_null( $is_aggressive ) ) ? get_imagify_option( 'optimization_level', 1 ) : $is_aggressive,
+					'resize' => $resize
 				)
 			)
 		)

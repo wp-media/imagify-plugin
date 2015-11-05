@@ -172,9 +172,9 @@ function _imagify_admin_print_styles()
 add_action( 'admin_footer-media_page_imagify-bulk-optimization', '_imagify_admin_print_intercom' );
 add_action( 'admin_footer-settings_page_imagify', '_imagify_admin_print_intercom' );
 function _imagify_admin_print_intercom() { 
-	$user = new Imagify_User();
+	$user = get_imagify_user();
 
-	if ( ! imagify_valid_key() ) {
+	if ( ! imagify_valid_key() || empty( $user->is_intercom ) ) {
 		return;
 	}
 	?>	

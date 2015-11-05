@@ -69,7 +69,7 @@ function _imagify_display_bulk_page() {
 
 			</div>
 
-			<img width="225" height="26" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo-mini.png" class="imagify-logo" />
+			<img width="225" height="26" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" />
 		</div>
 		
 		<div class="imagify-sub-title">

@@ -57,7 +57,7 @@ function _imagify_display_options_page() { ?>
 		<div class="imagify-col">
 			<?php $heading_tag = version_compare( $GLOBALS['wp_version'], '4.3' ) >= 0 ? 'h1' : 'h2'; ?>
 			<div class="imagify-title">
-				<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="255" height="50" alt="Imagify" /> <small><sup><?php echo IMAGIFY_VERSION; ?></sup></small>
+				<img width="225" height="26" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" /> <small><sup><?php echo IMAGIFY_VERSION; ?></sup></small>
 
 				<?php $imagify_rate_url =  'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform'; ?>
 				<p class="imagify-rate-us">
@@ -165,13 +165,51 @@ function _imagify_display_options_page() { ?>
 									</span>
 								</td>
 							</tr>
+							<tr>
+								<th scope="row"><?php _e( 'Resize larger images', 'imagify' ); ?></th>
+								<td>
+									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[resize_larger]" id="resize_larger" <?php checked( get_imagify_option( 'resize_larger', 0 ), 1 ); ?> aria-describedby="describe-resize-larger" />
+									<label for="resize_larger" onclick=""><span class="screen-reader-text"><?php _e( 'Resize larger images', 'imagify' ); ?></span></label>
+
+									<p id="describe-resize-larger" class="imagify-options-line">
+										<?php
+											echo sprintf( 
+												__( 'to maximum %s pixels width', 'imagify' ),
+												'<input type="text" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_w]" value="' . get_imagify_option( 'resize_larger_w', false ). '" size="5">'
+											);
+										?>
+									</p>
+
+									<p class="imagify-checkbox-marged">
+										<span class="imagify-info">
+											<span class="dashicons dashicons-info"></span>
+
+											<?php
+												$max_sizes = get_imagify_max_intermediate_image_size();
+												echo sprintf( __( 'This option is recommended to reduce larger images. You can save size can go up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %spx.', 'imagify' ), $max_sizes['width'] );
+											?>
+										</span>
+									</p>
+								</td>
+							</tr>
+
 							<?php
 							if ( ! imagify_is_active_for_network() ) { ?>
 
 							<tr>
 								<th scope="row"><?php _e( 'Files optimization', 'imagify' ); ?></th>
 								<td>
-									<p><?php _e( 'You can choose to compress different image sizes created by WordPress here.', 'imagify' ); ?><br/><span class="imagify-important"><?php _e( 'Remember each additional image size will affect your Imagify monthly usage!', 'imagify' ); ?></span></p><br>
+									<p>
+										<?php _e( 'You can choose to compress different image sizes created by WordPress here.', 'imagify' ); ?>
+										<br/>
+										<?php echo sprintf( __( 'The %soriginal size%s is %sautomatically optimized%s by Imagify.', 'imagify' ), '<strong>', '</strong>', '<strong>', '</strong>' ); ?>
+										<br>
+										<span class="imagify-important">
+											<?php _e( 'Remember each additional image size will affect your Imagify monthly usage!', 'imagify' ); ?>
+										</span>
+									</p>
+
+									<br>
 
 									<?php
 									global $_wp_additional_image_sizes;
@@ -208,15 +246,14 @@ function _imagify_display_options_page() { ?>
 
 										if ( 'full' != $size_key ) {
 											$label = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
-										}
 									?>
-
 										<input type="hidden" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
 										<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php echo ( ! array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) ) ? 'checked="checked"' : '' ?> />
 										<label for="imagify_sizes_<?php echo $size_key; ?>" onclick=""><?php echo $label; ?></label>
 										<br class="imagify-br">
 
 									<?php
+										}
 									}
 									?>
 								</td>

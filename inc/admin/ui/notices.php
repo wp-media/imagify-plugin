@@ -87,7 +87,7 @@ function _imagify_warning_wrong_api_key_notice() {
 			<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
 			<?php echo sprintf( __( 'Go to your Imagify account page to get your API Key and specify it on %1$syour settings%3$s or %2$screate an account for free%3$s if you don\'t have one yet.', 'imagify' ), '<a href="' . get_imagify_admin_url() . '">', '<a id="imagify-signup" href="' . IMAGIFY_WEB_MAIN . '">', '</a>' ); ?></p>
 		</div>
-		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'wrong-api-key' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'wrong-api-key' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>
 
 	<?php
@@ -186,7 +186,7 @@ function _imagify_rating_notice() {
 				<a class="stars" href="<?php echo $imagify_rate_url; ?>">☆☆☆☆☆</a>
 			</p>
 		</div>
-		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'rating' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'rating' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>
 	<?php
 }
@@ -219,7 +219,7 @@ function _imagify_http_block_external_notice() {
 			</p>
 			<p><textarea readonly="readonly" class="large-text readonly" rows="1">define( 'WP_ACCESSIBLE_HOSTS', '*.imagify.io' );</textarea></p>
 		</div>
-		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'http-block-external' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'http-block-external' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>	
 	<?php
 }
@@ -249,7 +249,7 @@ function _imagify_warning_grid_view() {
 			<p><?php _e( 'Use the List view to optimize images with Imagify.', 'imagify' ); ?></p>
 			<p><a href="<?php echo admin_url( 'upload.php?mode=list' ); ?>"><?php _e( 'Switch to the List View', 'imagify' ); ?></a></p>
 		</div>
-		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'grid-view' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php _e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'grid-view' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>	
 	<?php
 }

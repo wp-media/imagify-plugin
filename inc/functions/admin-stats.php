@@ -175,8 +175,9 @@ function imagify_count_saving_data( $key = '' ) {
 			$original_size  += $original_data['original_size'];
 			$optimized_size += $original_data['optimized_size'];
 		}
-
-		$sizes = $attachment->get_sizes();
+		
+		$metadata = wp_get_attachment_metadata( $attachment_id );
+		$sizes    = (array) $metadata['sizes'];
 
 		// Incremente the thumbnails sizes
 		foreach ( $sizes as $size_key => $size_data ) {
