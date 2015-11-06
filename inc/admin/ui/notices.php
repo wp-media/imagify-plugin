@@ -40,7 +40,7 @@ function _imagify_warning_empty_api_key_notice() {
 					<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>key.svg" width="48" height="48" alt="">
 					<div class="imagify-col-content">
 						<p class="imagify-col-title"><?php _e( 'Enter your API Key', 'imagify' ); ?></p>
-						<p class="imagify-col-desc"><?php echo sprintf( __( 'Save your API Key you have received by email or you can get it on your %sImagify account page%s.', 'imagify' ), '<a href="#">', '</a>' ); ?></p>
+						<p class="imagify-col-desc"><?php echo sprintf( __( 'Save your API Key you have received by email or you can get it on your %sImagify account page%s.', 'imagify' ), '<a href="' . <?php echo IMAGIFY_APP_MAIN; ?> . '/#/api">', '</a>' ); ?></p>
 						<p>
 							<?php wp_nonce_field( 'imagify-check-api-key', 'imagifycheckapikeynonce', false ); ?>
 							<a id="imagify-save-api-key" href="<?php echo get_imagify_admin_url(); ?>" class="button button-primary"><?php _e( 'I have my API key', 'imagify' ); ?></a></p>
