@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-11-05 01:14+0100\n"
-"PO-Revision-Date: 2015-11-05 01:15+0100\n"
+"POT-Creation-Date: 2015-11-06 17:28+0100\n"
+"PO-Revision-Date: 2015-11-06 17:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -25,32 +25,32 @@ msgstr ""
 msgid "Optimizing..."
 msgstr "En cours d’optimisation…"
 
-#: inc/admin/ajax.php:115 inc/admin/enqueue.php:136 inc/admin/meta-boxes.php:29
+#: inc/admin/ajax.php:115 inc/admin/enqueue.php:139 inc/admin/meta-boxes.php:29
 #: inc/admin/upload.php:40
 msgid "Optimize"
 msgstr "Optimiser"
 
-#: inc/admin/enqueue.php:100
+#: inc/admin/enqueue.php:101
 msgid "Let's get you started!"
 msgstr "C’est parti&nbsp;!"
 
-#: inc/admin/enqueue.php:101
+#: inc/admin/enqueue.php:102
 msgid "Enter your email to get an API key:"
 msgstr "Indiquez votre e-mail pour recevoir votre clé API&nbsp;:"
 
-#: inc/admin/enqueue.php:102
+#: inc/admin/enqueue.php:103
 msgid "Sign Up"
 msgstr "S’inscrire"
 
-#: inc/admin/enqueue.php:103
+#: inc/admin/enqueue.php:104
 msgid "You need to specify an email!"
 msgstr "Vous devez indiquer un e-mail&nbsp;!"
 
-#: inc/admin/enqueue.php:104 inc/admin/enqueue.php:110
+#: inc/admin/enqueue.php:105 inc/admin/enqueue.php:111
 msgid "Congratulations!"
 msgstr "Félicitations&nbsp;!"
 
-#: inc/admin/enqueue.php:105
+#: inc/admin/enqueue.php:106
 msgid ""
 "Your account has been succesfully created. Please check your mailbox, you "
 "are going to receive an email with API key."
@@ -58,23 +58,23 @@ msgstr ""
 "Votre compte a été créé avec succès. Vérifiez votre boîte de réception, vous "
 "allez recevoir un e-mail avec votre clé API."
 
-#: inc/admin/enqueue.php:106
+#: inc/admin/enqueue.php:107
 msgid "Connect to Imagify!"
 msgstr "Se connecter à Imagify&nbsp;!"
 
-#: inc/admin/enqueue.php:107
+#: inc/admin/enqueue.php:108
 msgid "Paste your API key below:"
 msgstr "Copiez votre clé API ci-dessous&nbsp;:"
 
-#: inc/admin/enqueue.php:108
+#: inc/admin/enqueue.php:109
 msgid "Connect me"
 msgstr "Connectez-moi"
 
-#: inc/admin/enqueue.php:109
+#: inc/admin/enqueue.php:110
 msgid "Checking in process..."
 msgstr "Vérification en cours…"
 
-#: inc/admin/enqueue.php:111
+#: inc/admin/enqueue.php:112
 msgid ""
 "Your API key is valid. You can now configure the Imagify settings to "
 "optimize your images."
@@ -82,31 +82,53 @@ msgstr ""
 "Votre clé API est valide. Vous pouvez maintenant configurer les réglages "
 "d’Imagify pour optimiser vos images."
 
-#: inc/admin/enqueue.php:112 inc/admin/ui/options.php:94
+#: inc/admin/enqueue.php:113 inc/admin/ui/options.php:94
 msgid "Your API key is valid."
 msgstr "Votre clé API est valide."
 
-#: inc/admin/enqueue.php:120 inc/admin/ui/bulk.php:173 inc/admin/upload.php:65
+#: inc/admin/enqueue.php:121 inc/admin/ui/bulk.php:173 inc/admin/upload.php:65
 msgid "Optimized"
 msgstr "Optimisé"
 
-#: inc/admin/enqueue.php:121 inc/admin/upload.php:66
+#: inc/admin/enqueue.php:122 inc/admin/upload.php:66
 msgid "Unoptimized"
 msgstr "Non optimisé"
 
-#: inc/admin/enqueue.php:122
+#: inc/admin/enqueue.php:123
 msgid "Error"
 msgstr "Erreur"
 
-#: inc/admin/enqueue.php:124
+#: inc/admin/enqueue.php:125 inc/admin/ui/notices.php:279
+msgid "Oops, It's Over!"
+msgstr "Oops, c’est fini !"
+
+#: inc/admin/enqueue.php:126 inc/admin/ui/notices.php:281
+#, php-format
+msgid ""
+"You have consumed all your credit for this month. You will have <strong>%s "
+"back on %s</strong>."
+msgstr ""
+"Vous avez consommé tout votre crédit pour ce mois. Vous aurez à nouveau "
+"<strong>%s le %s</strong>."
+
+#: inc/admin/enqueue.php:126 inc/admin/ui/notices.php:281
+#, php-format
+msgid ""
+"To continue to optimize your images, log in to your Imagify account to %sbuy "
+"a pack or subscribe to a plan%s."
+msgstr ""
+"Pour continuer à optimiser vos images, connectez-vous à votre compte Imagify "
+"pour %sacheter un pack ou souscrire à un plan%s."
+
+#: inc/admin/enqueue.php:127
 msgid "Hold on!"
 msgstr "Halte là&nbsp;!"
 
-#: inc/admin/enqueue.php:125
+#: inc/admin/enqueue.php:128
 msgid "All your images have been optimized by Imagify. Congratulations!"
 msgstr "Toutes vos images ont été optimisées par Imagify. Félicitations&nbsp;!"
 
-#: inc/admin/enqueue.php:127
+#: inc/admin/enqueue.php:130
 #, php-format
 msgid ""
 "Discover @imagify, the new compression tool to optimize your images for "
@@ -115,7 +137,7 @@ msgstr ""
 "Découvrez @imagify, le nouvel outil de compression pour optimiser vos images "
 "gratuitement. J’ai optimisé %1$s sur %2$s !"
 
-#: inc/admin/enqueue.php:137 inc/functions/admin-ui.php:74
+#: inc/admin/enqueue.php:140 inc/functions/admin-ui.php:74
 msgid "Restore Original"
 msgstr "Restaurer l’original"
 
@@ -307,7 +329,7 @@ msgstr ""
 
 #: inc/admin/ui/notices.php:25 inc/admin/ui/notices.php:90
 #: inc/admin/ui/notices.php:189 inc/admin/ui/notices.php:222
-#: inc/admin/ui/notices.php:252
+#: inc/admin/ui/notices.php:252 inc/admin/ui/notices.php:284
 msgid "Dismiss this notice"
 msgstr "Fermer ce message"
 
@@ -734,6 +756,20 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid ""
+#~ "You can log in to your Imagify account to %sbuy a pack or subscribe to a "
+#~ "plan%s."
+#~ msgstr ""
+#~ "Vous pouvez vous connecter à votre compte Imagify pour %sacheter un pack "
+#~ "ou souscrire à un plan%s."
+
+#~ msgid ""
+#~ "You have consumed all your credits for this month. You will have <strong>"
+#~ "%s back on %s</strong>."
+#~ msgstr ""
+#~ "Vous avez consommé tous les crédits pour ce mois. Vous aurez à nouveau "
+#~ "<strong>%s le %s</strong>."
 
 #~ msgid "We automatically optimize this size"
 #~ msgstr "Nous optimisons automatiquement cette taille"

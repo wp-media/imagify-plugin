@@ -40,7 +40,7 @@ function _imagify_warning_empty_api_key_notice() {
 					<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>key.svg" width="48" height="48" alt="">
 					<div class="imagify-col-content">
 						<p class="imagify-col-title"><?php _e( 'Enter your API Key', 'imagify' ); ?></p>
-						<p class="imagify-col-desc"><?php echo sprintf( __( 'Save your API Key you have received by email or you can get it on your %sImagify account page%s.', 'imagify' ), '<a href="#">', '</a>' ); ?></p>
+						<p class="imagify-col-desc"><?php echo sprintf( __( 'Save your API Key you have received by email or you can get it on your %sImagify account page%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/api">', '</a>' ); ?></p>
 						<p>
 							<?php wp_nonce_field( 'imagify-check-api-key', 'imagifycheckapikeynonce', false ); ?>
 							<a id="imagify-save-api-key" href="<?php echo get_imagify_admin_url(); ?>" class="button button-primary"><?php _e( 'I have my API key', 'imagify' ); ?></a></p>
@@ -229,8 +229,8 @@ function _imagify_http_block_external_notice() {
  *
  * @since 1.0.2
  */
-add_action( 'all_admin_notices', '_imagify_warning_grid_view' );
-function _imagify_warning_grid_view() {
+add_action( 'all_admin_notices', '_imagify_warning_grid_view_notice' );
+function _imagify_warning_grid_view_notice() {
 	$current_screen     = get_current_screen();
 	$ignored_notices    = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 	$media_library_mode = get_user_option( 'media_library_mode', get_current_user_id() );
@@ -250,6 +250,38 @@ function _imagify_warning_grid_view() {
 			<p><a href="<?php echo admin_url( 'upload.php?mode=list' ); ?>"><?php _e( 'Switch to the List View', 'imagify' ); ?></a></p>
 		</div>
 		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'grid-view' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	</div>	
+	<?php
+}
+
+/**
+ * This warning is displayed when a user has consumed its monthly free quota.
+ *
+ * @since 1.1.1
+ */
+add_action( 'all_admin_notices', '_imagify_warning_over_quota_notice' );
+function _imagify_warning_over_quota_notice() {
+	$current_screen     = get_current_screen();
+	$ignored_notices    = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+	$user 				= new Imagify_User();
+	$cap			    = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
+
+	if ( ( isset( $current_screen ) && ( 'media_page_imagify-bulk-optimization' !== $current_screen->base && 'settings_page_imagify' !== $current_screen->base && 'settings_page_imagify-network' !== $current_screen->base ) ) || in_array( 'free-over-quota', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) || ! imagify_valid_key() || ! $user->is_over_quota() ) {
+		return;
+	}
+	?>
+	<div class="clear"></div>
+	<div class="error imagify-notice below-h2">
+		<div class="imagify-notice-logo">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
+		</div>
+		<div class="imagify-notice-content">
+			<p class="imagify-notice-title"><strong><?php _e( 'Oops, It\'s Over!', 'imagify' ); ?></strong></p>
+			<p>
+			<?php echo sprintf( __( 'You have consumed all your credit for this month. You will have <strong>%s back on %s</strong>.', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) ) ) . '<br/><br/>' . sprintf( __( 'To continue to optimize your images, log in to your Imagify account to %sbuy a pack or subscribe to a plan%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/subscription' . '">', '</a>' ); ?>
+			</p>
+		</div>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'free-over-quota' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>	
 	<?php
 }
