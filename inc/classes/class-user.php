@@ -73,6 +73,16 @@ class Imagify_User {
 	public $consumed_current_month_quota;
 	
 	/**
+	 * The next month date to credit the account
+	 *
+	 * @since 1.1.1
+	 *
+	 * @var    date
+	 * @access public
+	 */
+	public $next_date_update;
+	
+	/**
 	 * If the account is activate or not
 	 *
 	 * @since 1.0.1
@@ -100,6 +110,7 @@ class Imagify_User {
 			$this->extra_quota                  = $user->extra_quota;
 			$this->extra_quota_consumed         = $user->extra_quota_consumed;
 			$this->consumed_current_month_quota = $user->consumed_current_month_quota;
+			$this->next_date_update 			= $user->next_date_update;
 			$this->is_active                    = $user->is_active;
 		}
 	}
@@ -156,5 +167,37 @@ class Imagify_User {
 	public function get_percent_unconsumed_quota() {
 		$percent = 100 - $this->get_percent_consumed_quota();
 		return $percent;
+	}
+	
+	/**
+	 * Check if the user has a free account.
+	 *
+	 * @since 1.1.1
+	 *
+	 * @access public
+	 * @return bool
+	 */
+	public function is_free() {
+		if ( 1 == $this->plan_id ) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Check if the user has consumed its quota.
+	 *
+	 * @since 1.1.1
+	 *
+	 * @access public
+	 * @return bool
+	 */
+	public function is_over_quota() {
+		if ( $this->is_free() && 100 == $this->get_percent_consumed_quota() ) {
+			return true;
+		}
+		
+		return false;
 	}
 }

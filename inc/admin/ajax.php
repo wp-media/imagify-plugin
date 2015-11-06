@@ -128,7 +128,12 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	if ( ! current_user_can( 'upload_files' ) ) {
 		wp_send_json_error();
 	}
-
+	
+	$user = new Imagify_User();
+	if ( $user->is_over_quota() ) {
+		wp_send_json_error( array( 'message' => 'over-quota' ) );
+	}
+	
 	$args = array(
 		'fields'          => 'ids',
 		'post_type'       => 'attachment',
@@ -163,7 +168,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		wp_send_json_success( $data );
 	}
 		
-	wp_send_json_error();
+	wp_send_json_error( array( 'message' => 'no-images' ) );
 }
 
 /**

@@ -39,58 +39,70 @@ jQuery(function($){
 		//and append it to your page somewhere
 		document.getElementById("imagify-overview-chart-legend").innerHTML = overviewLegend;
 	}
-	
+
 	// Simulate a click on the "Imagif'em all" button
 	$('#imagify-simulate-bulk-action').click(function(e){
 		e.preventDefault();
 		$('#imagify-bulk-action').trigger('click');
 	});
-	
+
 	$('#imagify-bulk-action').click(function(){
 		var $obj = $(this);
-		
+
 		if ( $obj.attr('disabled') ) {
 			return false;
 		}
-	
+
 		$obj.attr('disabled', 'disabled');
 		$obj.find('.dashicons').addClass('rotate');
-		
+
 		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
 		.done(function(response) {
 			if( !response.success ) {
 				$obj.removeAttr('disabled');
 				$obj.find('.dashicons').removeClass('rotate');
+				console.log(response);
+				if ( response.data.message == 'over-quota' ) {
+					// Display an alert to warn that the monthly quota is consumed
+					swal({
+						title:imagifyBulk.overQuotaTitle,
+						text: imagifyBulk.overQuotaText,
+						type: "error",
+						customClass: "imagify-sweet-alert",
+						html: true
+					});
+				}
 				
-				// Display an alert to warn that all images has been optimized
-				swal({
-					title:imagifyBulk.noAttachmentToOptimizeTitle,
-					text: imagifyBulk.noAttachmentToOptimizeText,
-					type: "info",
-					customClass: "imagify-sweet-alert"
-				});
-				
-			} else {
+				if ( response.data.message == 'no-images' ) {
+					// Display an alert to warn that all images has been optimized
+					swal({
+						title:imagifyBulk.noAttachmentToOptimizeTitle,
+						text: imagifyBulk.noAttachmentToOptimizeText,
+						type: "info",
+						customClass: "imagify-sweet-alert"
+					});	
+				}
+			} else {				
 				var config = {
 					'lib': ajaxurl+"?action=imagify_bulk_upload&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val(),
 					'images': response.data
 				}
-				
+
 				var table  = $('.imagify-bulk-table table tbody'),
 					files  = 0,
 					errors = 0,
 					original_overall_size = 0,
 					overall_saving = 0;
-				
+
 				$('.imagify-row-progress').slideDown();
 				$('.imagify-no-uploaded-yet, .imagify-row-complete').hide(200);
-				
+
 				Optimizer = new ImagifyGulp(config);
-				
+
 				// before the attachment optimization
 				Optimizer.before(function(data) {
 					table.append('<tr id="attachment-'+data.id+'"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="'+data.thumbnail+'"/>"</span><span class="imagifilename">'+data.filename+'</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>Compressing<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>');
-				}) 
+				})
 				// after the attachment optimization
 				.each(function (data) {
 					var $progress = $('#imagify-progress-bar');
@@ -101,78 +113,78 @@ jQuery(function($){
 						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>Complete</span>');
 						$('#attachment-'+data.image+' .imagify-cell-original').html(data.original_size_human);
 						$('#attachment-'+data.image+' .imagify-cell-optimized').html(data.new_size_human);
-						$('#attachment-'+data.image+' .imagify-cell-percentage').html('<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart" style="width: 18px; height: 18px;"></canvas></span></span><span class="imagipercent">'+data.percent+'</span>%');	
+						$('#attachment-'+data.image+' .imagify-cell-percentage').html('<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart" style="width: 18px; height: 18px;"></canvas></span></span><span class="imagipercent">'+data.percent+'</span>%');
 					draw_me_a_chart( $('#attachment-'+data.image+' .imagify-cell-percentage').find('canvas') );
 						$('#attachment-'+data.image+' .imagify-cell-thumbnails').html(data.thumbnails);
 						$('#attachment-'+data.image+' .imagify-cell-savings').html(Optimizer.toHumanSize(data.overall_saving, 1));
-						
+
 						// The overview chart percent
 						$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent+"<span>%</span>");
 						// The total optimized images
 						$('#imagify-total-optimized-attachments').html(data.global_optimized_attachments);
-						
+
 						// The comsuption bar
 						$('#imagify-unconsumed-percent').html(data.global_unconsumed_quota+'%');
 						$('#imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota+'%'});
-						
+
 						// The original bar
 						$('#imagify-original-bar').find('.imagify-barnb')
 												  .html(data.global_original_human);
-						
+
 						// The optimized bar
 						$('#imagify-optimized-bar').animate({'width': data.global_optimized_percent+"%"})
 						$('#imagify-optimized-bar').find('.imagify-barnb')
 												   .html(data.global_optimized_human);
-						
+
 						// The table footer total optimized files
 						files = files + data.thumbnails + 1;
-						$('.imagify-cell-nb-files').html(files + ' file(s)'); 
-						
+						$('.imagify-cell-nb-files').html(files + ' file(s)');
+
 						// The table footer original size
 						original_overall_size = original_overall_size + data.original_overall_size;
 						$('.imagify-total-original').html(Optimizer.toHumanSize(original_overall_size, 1));
-					
+
 						// The table footer overall saving
 						overall_saving = overall_saving + data.overall_saving;
 						$('.imagify-total-gain').html(Optimizer.toHumanSize(overall_saving, 1));
-					
+
 					} else {
 						$('#attachment-'+data.image).after('<tr><td colspan="7"><span class="status-error">'+data.error+'</span></td></tr>');
 						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-error"><span class="dashicons dashicons-dismiss"></span>Error</span>');
-						
+
 						errors++;
-						$('.imagify-cell-errors').html(errors + ' error(s)'); 
+						$('.imagify-cell-errors').html(errors + ' error(s)');
 					}
-					
+
 					overviewDoughnut.segments[0].value = data.global_unoptimized_attachments;
 					overviewDoughnut.segments[1].value = data.global_optimized_attachments;
 					overviewDoughnut.segments[2].value = data.global_errors_attachments;
 					overviewDoughnut.update();
 				})
-				// after all attachments optimization 
+				// after all attachments optimization
 				.done(function (data) {
 					$obj.removeAttr('disabled');
 					$obj.find('.dashicons').removeClass('rotate');
-					
+
 					// Hide the progress bar
 					$('.imagify-row-progress').slideUp();
-					
+
 					if ( data.global_percent !== 'NaN' ) {
 						// Display the complete section
 						$('.imagify-row-complete').removeClass('hidden')
 												  .addClass( 'done' );
-						
+
 						$('.imagify-ac-rt-total-gain').html(data.global_gain_human);
 						$('.imagify-ac-rt-total-original').html(data.global_original_size_human);
-						
+
 						text2share = imagifyBulk.textToShare;
 						text2share = text2share.replace( '%1$s', data.global_gain_human );
 						text2share = text2share.replace( '%2$s', data.global_original_size_human );
 						text2share = encodeURIComponent(text2share);
-						
+
 						$('.imagify-sn-twitter').attr( 'href', 'https://twitter.com/intent/tweet?source=webclient&amp;original_referer=' + imagifyBulk.pluginURL + '&amp;text=' + text2share + '&amp;url=' + imagifyBulk.pluginURL + '&amp;related=imagify&amp;hastags=performance,web,wordpress' );
-						
-						draw_me_complete_chart( $('.imagify-ac-chart').data('percent', data.global_percent).find('canvas') );	
+
+						draw_me_complete_chart( $('.imagify-ac-chart').data('percent', data.global_percent).find('canvas') );
 					}
 				})
 				.error(function (id) {
@@ -188,10 +200,10 @@ jQuery(function($){
 	 * You can use draw_me_a_chart() function with AJAX calls
 	 *
 	 * @param {element} canvas
-	 */	
+	 */
 	function draw_me_a_chart( canvas ) {
 		canvas.each(function(){
-		
+
 			var the_value = parseInt( $(this).closest('.imagify-chart').next('.imagipercent').text() ),
 				overviewData = [
 				{
@@ -217,10 +229,10 @@ jQuery(function($){
 	 * You can use draw_me_complete_chart() function with AJAX calls
 	 *
 	 * @param {element} canvas
-	 */	
+	 */
 	function draw_me_complete_chart( canvas ) {
 		canvas.each(function(){
-		
+
 			var the_value = parseInt( $(this).closest('.imagify-ac-chart').data('percent') ),
 				overviewData = [
 				{
