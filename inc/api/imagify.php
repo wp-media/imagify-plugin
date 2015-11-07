@@ -215,7 +215,7 @@ class Imagify {
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
 			curl_setopt( $ch, CURLOPT_TIMEOUT, 60 );
-			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
 	
 			$response  = json_decode( curl_exec( $ch ) );
 	        $error     = curl_error( $ch );
