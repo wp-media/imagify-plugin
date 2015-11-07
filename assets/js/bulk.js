@@ -183,8 +183,9 @@ jQuery(function($){
 						text2share = encodeURIComponent(text2share);
 
 						$('.imagify-sn-twitter').attr( 'href', 'https://twitter.com/intent/tweet?source=webclient&amp;original_referer=' + imagifyBulk.pluginURL + '&amp;text=' + text2share + '&amp;url=' + imagifyBulk.pluginURL + '&amp;related=imagify&amp;hastags=performance,web,wordpress' );
-
-						draw_me_complete_chart( $('.imagify-ac-chart').data('percent', data.global_percent).find('canvas') );
+						
+						$('.imagify-ac-chart').attr('data-percent', data.global_percent);
+						draw_me_complete_chart( $('.imagify-ac-chart').find('canvas') );
 					}
 				})
 				.error(function (id) {
@@ -233,7 +234,7 @@ jQuery(function($){
 	function draw_me_complete_chart( canvas ) {
 		canvas.each(function(){
 
-			var the_value = parseInt( $(this).closest('.imagify-ac-chart').data('percent') ),
+			var the_value = parseInt( $(this).closest('.imagify-ac-chart').attr('data-percent') ),
 				overviewData = [
 				{
 					value: the_value,
