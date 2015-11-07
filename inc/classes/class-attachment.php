@@ -337,13 +337,14 @@ class Imagify_Attachment {
 	 *
 	 * @access public
 	 * @param  int 	  $is_aggressive   The optimization level (1=aggressive, 0=normal)
+	 * @param  array  $metadata   	   The attachment meta data
 	 * @return array  $optimized_data  The optimization data
 	 */
-	public function optimize( $is_aggressive = null ) {		
+	public function optimize( $is_aggressive = null, $metadata = array() ) {		
 		$is_aggressive = ( is_null( $is_aggressive ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $is_aggressive;
 
 		$id = $this->id;
-		$metadata      = wp_get_attachment_metadata( $id );
+		$metadata      = ( (bool) $metadata ) ? $metadata : wp_get_attachment_metadata( $id );
 		$sizes         = (array) $metadata['sizes'];
 		$data          = array(
 			'stats' => array(

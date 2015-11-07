@@ -14,7 +14,7 @@ function _imagify_optimize_attachment( $metadata, $attachment_id ) {
 		$attachment = new Imagify_Attachment( $attachment_id );
 		
 		// Optimize it!!!!!
-		$attachment->optimize();
+		$attachment->optimize( null, $metadata );
 	}
 
 	return $metadata;
