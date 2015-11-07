@@ -122,9 +122,8 @@ function _imagify_admin_print_styles()
 			'unoptimized' => __( 'Unoptimized', 'imagify' ),
 			'error'       => __( 'Error', 'imagify' ),
 		),
-		'overQuotaTitle'              => __( 'Oops, It\'s Over!', 'imagify' ),
-		'overQuotaText'               => sprintf( __( 'You have consumed all your credit for this month. You will have <strong>%s back on %s</strong>.', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) ) ) . '<br/><br/>' . sprintf( __( 'To continue to optimize your images, log in to your Imagify account to %sbuy a pack or subscribe to a plan%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/subscription' . '">', '</a>' ),
-		'noAttachmentToOptimizeTitle' => __( 'Hold on!', 'imagify' ),
+		'overQuotaTitle'              	=> __( 'Oops, It\'s Over!', 'imagify' ),
+		'noAttachmentToOptimizeTitle' 	=> __( 'Hold on!', 'imagify' ),
 		'noAttachmentToOptimizeText'	=> __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
 		'pluginURL'						=> 'https://wordpress.org/plugins/imagify',
 		'textToShare'					=> __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
@@ -132,6 +131,11 @@ function _imagify_admin_print_styles()
 		'totalUnoptimizedAttachments'   => imagify_count_unoptimized_attachments(),
 		'totalErrorsAttachments' 	    => imagify_count_error_attachments()
 	);
+	
+	if ( imagify_valid_key() ) {
+		$bulk_data['overQuotaText'] = sprintf( __( 'You have consumed all your credit for this month. You will have <strong>%s back on %s</strong>.', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) ) ) . '<br/><br/>' . sprintf( __( 'To continue to optimize your images, log in to your Imagify account to %sbuy a pack or subscribe to a plan%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/subscription' . '">', '</a>' );
+	}
+	
 	wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
 	
 	$upload_data = array(
