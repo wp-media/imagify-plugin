@@ -8,51 +8,27 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 function _imagify_display_options_page() { ?>
 	<div class="wrap imagify-settings">
-
-		<div class="imagify-col imagify-sidebar">
-			<div class="imagify-sidebar-section">
-				<span class="imagify-sidebar-title">
-					<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>phone.svg" width="19" height="16" alt=""> <?php _e( 'Discover our other products', 'imagify' ); ?>
-				</span>
-				<ul class="wp-media-products">
-					<li>
-						<a tabindex="1" class="wprocket-link" href="http://wp-rocket.me?utm_source=imagify-plugin">
-							<?php _e( 'Is your WordPress website too slow?', 'imagify' ); ?>
-							<br/>
-							<?php _e( 'Discover the best caching plugin to speed up your website.', 'imagify' ); ?>
-						</a>
-					</li>
-				</ul>
-			</div>
-			
-			<?php
-			/*
-			?>
-			<div class="imagify-sidebar-section">
-				<span class="imagify-sidebar-title">
-					<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mail.svg" width="21" height="18" alt=""> <?php _e( 'Join our mailing list', 'imagify' ); ?>
-				</span>
-				<div class="imagify-sidebar-content">
-					<p>
-					<?php
-					_e( 'Join our mailing list to receive countless amount of cat pictures, discount codes and awesome stuff.', 'imagify' );
-					?>
-					</p>
-					<form action="." method="post">
-						<p>
-							<label for="imagify-email" class="screen-reader-text"><?php _e( 'Your email address', 'imagify' ); ?></label>
-							<input type="email" name="imagify-email" id="imagify-email" placeholder="<?php esc_attr_e( 'Your email address', 'imagify' ); ?>" />
-						</p>
-						<p>
-							<button type="submit" class="button button-primary button-mini"><?php _e( 'Subscribe', 'imagify' ); ?></button>
-						</p>
-					</form>
+		<?php
+		if ( ! defined( 'WP_ROCKET_VERSION' ) ) { ?>
+			<div class="imagify-col imagify-sidebar">
+				<div class="imagify-sidebar-section">
+					<span class="imagify-sidebar-title">
+						<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>phone.svg" width="19" height="16" alt=""> <?php _e( 'Discover our other products', 'imagify' ); ?>
+					</span>
+					<ul class="wp-media-products">
+						<li>
+							<a tabindex="1" class="wprocket-link" href="http://wp-rocket.me?utm_source=imagify-plugin">
+								<?php _e( 'Is your WordPress website too slow?', 'imagify' ); ?>
+								<br/>
+								<?php _e( 'Discover the best caching plugin to speed up your website.', 'imagify' ); ?>
+							</a>
+						</li>
+					</ul>
 				</div>
 			</div>
-			<?php
-			*/
-			?>
-		</div>
+		<?php
+		}
+		?>
 
 		<div class="imagify-col">
 			<?php $heading_tag = version_compare( $GLOBALS['wp_version'], '4.3' ) >= 0 ? 'h1' : 'h2'; ?>
