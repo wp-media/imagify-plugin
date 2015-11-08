@@ -138,7 +138,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		'fields'          => 'ids',
 		'post_type'       => 'attachment',
 		'post_status'     => 'any',
-		'post_mime_type'  => array( 'image/jpeg', 'image/png' ), // add gif later
+		'post_mime_type'  => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
 		'posts_per_page'  => -1,
 		'meta_query'      => array(
 			'relation'    => 'or',
@@ -240,7 +240,7 @@ function _do_wp_ajax_imagify_signup() {
 
 	$data = array(
 		'email'    => $_GET['email'],
-		'password' => wp_generate_password(),
+		'password' => wp_generate_password( 12, false ),
 		'lang'	   => get_locale()
 	);
 
