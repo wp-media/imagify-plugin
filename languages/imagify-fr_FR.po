@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
 "POT-Creation-Date: 2015-11-07 12:03+0100\n"
-"PO-Revision-Date: 2015-11-07 12:03+0100\n"
+"PO-Revision-Date: 2015-11-08 10:08+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -523,7 +523,7 @@ msgstr ""
 
 #: inc/admin/ui/options.php:169 inc/admin/ui/options.php:172
 msgid "Resize larger images"
-msgstr "Redimentionner les images trop grandes"
+msgstr "Redimensionner les images trop grandes"
 
 #: inc/admin/ui/options.php:177
 #, php-format
