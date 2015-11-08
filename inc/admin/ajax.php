@@ -160,14 +160,21 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	
 	foreach( $ids as $id ) {
 		if ( file_exists( get_attached_file( $id ) ) ) {
-			$attachment       = new Imagify_Attachment( $id );
-			$attachment_error = $attachment->get_optimized_error();  
+			$attachment         = new Imagify_Attachment( $id );
+			$attachment_error   = $attachment->get_optimized_error();  
+			$attachment_error   = trim( $attachment_error );
+			$attachment_status	= get_post_meta( $id, '_imagify_status', true );
 			
-			// Don't try to re-optimize optimized images
-			if ( strpos( $attachment_error , 'This image is already compressed' )  ) {
-				continue;	
+			// Don't try to re-optimize images with an empty error message
+			if ( $attachment_status == 'error' && empty( $attachment_error ) ) {
+				continue;
 			}
 			
+			// Don't try to re-optimize images already compressed
+			if ( strstr( $attachment_error, 'This image is already compressed' ) ) {
+				continue;	
+			}
+						
 			$data[ '_' . $id ] = wp_get_attachment_url( $id );	
 		}
 	}
