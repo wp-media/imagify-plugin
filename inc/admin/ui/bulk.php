@@ -106,7 +106,7 @@ function _imagify_display_bulk_page() {
 								<span class="imagify-tooltips">
 									<span class="tooltip-content">
 										<span class="icon icon-round" aria-hidden="true">i</span>
-										<?php echo sprintf( __( 'All images which are over to %s will be skipped using the free version of the plugin.', 'imagify' ), size_format( IMAGIFY_MAX_BYTES , 0 ) ); ?>
+										<?php echo sprintf( __( 'All images which are over to %s will be skipped using the free version.', 'imagify' ), size_format( IMAGIFY_MAX_BYTES , 0 ) ); ?>
 									</span>
 								</span>	
 							<?php
