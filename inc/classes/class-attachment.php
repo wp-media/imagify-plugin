@@ -49,6 +49,18 @@ class Imagify_Attachment {
 	}
 
 	/**
+	 * Get the attachment optimization data.
+	 *
+	 * @since 1.0
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function get_data() {
+		return get_post_meta( $this->id, '_imagify_data', true );
+	}
+	
+	/**
 	 * Get the attachment extension.
 	 *
 	 * @since 1.0
@@ -60,19 +72,25 @@ class Imagify_Attachment {
 		$fullsize_path = $this->get_original_path();
 		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
 	}
-
+	
 	/**
-	 * Get the attachment optimization data.
+	 * Get the attachment error if there is one.
 	 *
-	 * @since 1.0
+	 * @since 1.1.5
 	 *
 	 * @access public
-	 * @return array
+	 * @return string The message error
 	 */
-	public function get_data() {
-		return get_post_meta( $this->id, '_imagify_data', true );
+	public function get_optimized_error() {
+		$error = $this->get_size_data( 'full', 'error' );
+		
+		if ( is_string( $error ) ) {
+			return $error;
+		}
+		
+		return false;
 	}
-
+	
 	/**
 	 * Get the attachment optimization level.
 	 *
