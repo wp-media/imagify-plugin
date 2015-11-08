@@ -25,6 +25,15 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 3. Optional: find the settings page through `Settings > Imagify`
 
 == Changelog ==
+
+= 1.1.5 =
+* Interface
+ * Display a default preview to avoid issues with 404 images and a security restriction on SSL websites on the Bulk Optimization page
+ * Don't count all exceeded images to avoid lack of speed on the Bulk Optimization page
+* Bug Fix
+ * Don't try to re-optimize images with an empty error message or with an already optimized message on the Bulk Optimization
+ * Don't generate special chars in the password to avoid issue on the Imagify app log in
+
 = 1.1.4 =
 * Interface
  * Don't add the WP Rocket ads if this plugin is activated

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-11-07 12:03+0100\n"
-"PO-Revision-Date: 2015-11-08 10:08+0100\n"
+"POT-Creation-Date: 2015-11-08 19:55+0100\n"
+"PO-Revision-Date: 2015-11-08 19:57+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -82,11 +82,11 @@ msgstr ""
 "Votre clé API est valide. Vous pouvez maintenant configurer les réglages "
 "d’Imagify pour optimiser vos images."
 
-#: inc/admin/enqueue.php:113 inc/admin/ui/options.php:94
+#: inc/admin/enqueue.php:113 inc/admin/ui/options.php:70
 msgid "Your API key is valid."
 msgstr "Votre clé API est valide."
 
-#: inc/admin/enqueue.php:121 inc/admin/ui/bulk.php:173 inc/admin/upload.php:65
+#: inc/admin/enqueue.php:121 inc/admin/ui/bulk.php:166 inc/admin/upload.php:65
 msgid "Optimized"
 msgstr "Optimisé"
 
@@ -168,7 +168,7 @@ msgstr "Cheatin&#8217; uh?"
 msgid "<strong>ERROR</strong>: options page not found."
 msgstr "<strong>Erreur</strong> : page d’options introuvable."
 
-#: inc/admin/plugins.php:17 inc/admin/ui/options.php:79
+#: inc/admin/plugins.php:17 inc/admin/ui/options.php:55
 #: inc/common/admin-bar.php:31
 msgid "Settings"
 msgstr "Réglages"
@@ -229,95 +229,95 @@ msgstr ""
 msgid "Imagif'em all"
 msgstr "Imagif'em all"
 
-#: inc/admin/ui/bulk.php:110
+#: inc/admin/ui/bulk.php:107
 #, php-format
 msgid ""
-"%s images are over %s and will be skipped using the free version of the "
-"plugin"
+"All images which are over to %s will be skipped using the free version of "
+"the plugin."
 msgstr ""
-"%s images font plus de %s et seront ignorées en utilisant la version "
-"gratuite du plugin"
+"Toutes les images qui font plus de %s seront ignorées en utilisant la "
+"version gratuite du plugin. "
 
-#: inc/admin/ui/bulk.php:122
+#: inc/admin/ui/bulk.php:115
 msgid "Overview"
 msgstr "Vue d'ensemble"
 
-#: inc/admin/ui/bulk.php:132
+#: inc/admin/ui/bulk.php:125
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: inc/admin/ui/bulk.php:137
+#: inc/admin/ui/bulk.php:130
 #, php-format
 msgid "that's the number %sof images you optimized"
 msgstr "c’est le nombre d’images %sque vous avez optimisé"
 
-#: inc/admin/ui/bulk.php:149
+#: inc/admin/ui/bulk.php:142
 msgid "Original size"
 msgstr "Poids de l’original"
 
-#: inc/admin/ui/bulk.php:154
+#: inc/admin/ui/bulk.php:147
 msgid "Optimized size"
 msgstr "Poids optimisé"
 
-#: inc/admin/ui/bulk.php:167
+#: inc/admin/ui/bulk.php:160
 msgid "Compression process results"
 msgstr "Résultats du processus de compression"
 
-#: inc/admin/ui/bulk.php:170
+#: inc/admin/ui/bulk.php:163
 msgid "Filename"
 msgstr "Nom du fichier"
 
-#: inc/admin/ui/bulk.php:171
+#: inc/admin/ui/bulk.php:164
 msgid "Status"
 msgstr "Statut"
 
-#: inc/admin/ui/bulk.php:172
+#: inc/admin/ui/bulk.php:165
 msgid "Original"
 msgstr "Original"
 
-#: inc/admin/ui/bulk.php:174
+#: inc/admin/ui/bulk.php:167
 msgid "Percentage"
 msgstr "Pourcentage"
 
-#: inc/admin/ui/bulk.php:175
+#: inc/admin/ui/bulk.php:168
 msgid "Thumbnails optimized"
 msgstr "Miniatures optimisées"
 
-#: inc/admin/ui/bulk.php:176
+#: inc/admin/ui/bulk.php:169
 msgid "Overall saving"
 msgstr "Gain total"
 
-#: inc/admin/ui/bulk.php:181
+#: inc/admin/ui/bulk.php:174
 msgid "file"
 msgstr "fichier"
 
-#: inc/admin/ui/bulk.php:182
+#: inc/admin/ui/bulk.php:175
 msgid "error"
 msgstr "erreur"
 
-#: inc/admin/ui/bulk.php:183
+#: inc/admin/ui/bulk.php:176
 msgid "Total:"
 msgstr "Total&nbsp;:"
 
-#: inc/admin/ui/bulk.php:184
+#: inc/admin/ui/bulk.php:177
 msgid "Gain:"
 msgstr "Gain&nbsp;:"
 
-#: inc/admin/ui/bulk.php:201
+#: inc/admin/ui/bulk.php:194
 #, php-format
 msgid "%sStart the bulk optimization%s"
 msgstr "%sDémarrer l’optimisation en masse%s"
 
-#: inc/admin/ui/bulk.php:217
+#: inc/admin/ui/bulk.php:210
 msgid "Well done!"
 msgstr "Bien joué&nbsp;!"
 
-#: inc/admin/ui/bulk.php:218
+#: inc/admin/ui/bulk.php:211
 #, php-format
 msgid "you saved %1$s out of %2$s"
 msgstr "vous avez économisé %1$s sur %2$s"
 
-#: inc/admin/ui/bulk.php:223
+#: inc/admin/ui/bulk.php:216
 msgid "Share your awesome result"
 msgstr "Partagez votre résultat"
 
@@ -381,7 +381,7 @@ msgstr ""
 msgid "Go to Settings"
 msgstr "Aller aux réglages"
 
-#: inc/admin/ui/notices.php:85 inc/admin/ui/options.php:100
+#: inc/admin/ui/notices.php:85 inc/admin/ui/options.php:76
 msgid "Your API key isn't valid!"
 msgstr "Votre clé API n’est pas valide&nbsp;!"
 
@@ -417,7 +417,7 @@ msgstr ""
 "%1$sFélicitations%2$s, vous avez optimisé %1$s%3$d images %2$s et réduit de "
 "%1$s%4$s%2$s%% le poids de vos images."
 
-#: inc/admin/ui/notices.php:184 inc/admin/ui/options.php:64
+#: inc/admin/ui/notices.php:184 inc/admin/ui/options.php:40
 #, php-format
 msgid ""
 "%sDo you like this plugin?%s Please take a few seconds to %srate it on "
@@ -463,74 +463,74 @@ msgstr "Utilisez la vue liste pour optimiser vos images avec Imagify."
 msgid "Switch to the List View"
 msgstr "Basculer en vue liste"
 
-#: inc/admin/ui/options.php:15
+#: inc/admin/ui/options.php:16
 msgid "Discover our other products"
 msgstr "Découvrez nos autres produits"
 
-#: inc/admin/ui/options.php:20
+#: inc/admin/ui/options.php:21
 msgid "Is your WordPress website too slow?"
 msgstr "Votre site WordPress est lent&nbsp;?"
 
-#: inc/admin/ui/options.php:22
+#: inc/admin/ui/options.php:23
 msgid "Discover the best caching plugin to speed up your website."
 msgstr "Découvrez le meilleur plugin de cache pour accélérer votre site."
 
-#: inc/admin/ui/options.php:87
+#: inc/admin/ui/options.php:63
 msgid "API Key"
 msgstr "Clé API"
 
-#: inc/admin/ui/options.php:107
+#: inc/admin/ui/options.php:83
 #, php-format
 msgid "Don't have an API Key yet? %sCreate one, it's FREE%s."
 msgstr "Vous n’avez pas encore de clé API ? %sCréez en une, c’est GRATUIT%s."
 
-#: inc/admin/ui/options.php:123
+#: inc/admin/ui/options.php:99
 msgid "Optimization Level"
 msgstr "Niveau d’optimisation"
 
-#: inc/admin/ui/options.php:128 inc/admin/ui/options.php:277
+#: inc/admin/ui/options.php:104 inc/admin/ui/options.php:253
 #: inc/functions/admin-ui.php:26 inc/functions/admin-ui.php:121
 msgid "Aggressive"
 msgstr "Agressif"
 
-#: inc/admin/ui/options.php:133 inc/admin/ui/options.php:291
+#: inc/admin/ui/options.php:109 inc/admin/ui/options.php:267
 #: inc/functions/admin-ui.php:26 inc/functions/admin-ui.php:121
 msgid "Normal"
 msgstr "Normal"
 
-#: inc/admin/ui/options.php:138
+#: inc/admin/ui/options.php:114
 msgid "More info?"
 msgstr "Plus d’infos&nbsp;?"
 
-#: inc/admin/ui/options.php:144 inc/admin/ui/options.php:148
+#: inc/admin/ui/options.php:120 inc/admin/ui/options.php:124
 msgid "Auto-Optimize images on upload"
 msgstr "Optimiser automatiquement les images envoyées"
 
-#: inc/admin/ui/options.php:152
+#: inc/admin/ui/options.php:128
 msgid "Automatically optimize every image you upload to WordPress."
 msgstr "Optimisez automatiquement chaque image que vous enverrez à WordPress. "
 
-#: inc/admin/ui/options.php:157 inc/admin/ui/options.php:160
+#: inc/admin/ui/options.php:133 inc/admin/ui/options.php:136
 msgid "Backup original images"
 msgstr "​Conserver une copie des images d'origine"
 
-#: inc/admin/ui/options.php:164
+#: inc/admin/ui/options.php:140
 msgid ""
 "Keep your original images in a separate folder before optimization process."
 msgstr ""
 "Gardez vos images d’origine dans un dossier séparé avant le processus "
 "d’optimisation."
 
-#: inc/admin/ui/options.php:169 inc/admin/ui/options.php:172
+#: inc/admin/ui/options.php:145 inc/admin/ui/options.php:148
 msgid "Resize larger images"
 msgstr "Redimensionner les images trop grandes"
 
-#: inc/admin/ui/options.php:177
+#: inc/admin/ui/options.php:153
 #, php-format
 msgid "to maximum %s pixels width"
 msgstr "au maximum %s pixels de large"
 
-#: inc/admin/ui/options.php:189
+#: inc/admin/ui/options.php:165
 #, php-format
 msgid ""
 "This option is recommended to reduce larger images. You can save size can go "
@@ -542,50 +542,50 @@ msgstr ""
 "nouvelle largeur ne doit pas être inférieure à la plus grande largeur de vos "
 "miniatures qui est actuellement de %spx."
 
-#: inc/admin/ui/options.php:200
+#: inc/admin/ui/options.php:176
 msgid "Files optimization"
 msgstr "Tailles à optimiser"
 
-#: inc/admin/ui/options.php:203
+#: inc/admin/ui/options.php:179
 msgid ""
 "You can choose to compress different image sizes created by WordPress here."
 msgstr ""
 "Vous pouvez choisir d’optimiser les différents formats générés par WordPress "
 "ici."
 
-#: inc/admin/ui/options.php:205
+#: inc/admin/ui/options.php:181
 #, php-format
 msgid "The %soriginal size%s is %sautomatically optimized%s by Imagify."
 msgstr "La %staille d’origine%s est %sautomatiquement optimisée%s par Imagify."
 
-#: inc/admin/ui/options.php:208
+#: inc/admin/ui/options.php:184
 msgid ""
 "Remember each additional image size will affect your Imagify monthly usage!"
 msgstr ""
 "Pour rappel, chaque format d’image additionnel affectera votre quota d’usage "
 "mensuel d’Imagify."
 
-#: inc/admin/ui/options.php:218
+#: inc/admin/ui/options.php:194
 msgid "Full Size"
 msgstr "Taille originale"
 
-#: inc/admin/ui/options.php:219
+#: inc/admin/ui/options.php:195
 msgid "Thumbnail"
 msgstr "Miniature"
 
-#: inc/admin/ui/options.php:220
+#: inc/admin/ui/options.php:196
 msgid "Medium"
 msgstr "Moyenne"
 
-#: inc/admin/ui/options.php:221
+#: inc/admin/ui/options.php:197
 msgid "Large"
 msgstr "Grande"
 
-#: inc/admin/ui/options.php:274
+#: inc/admin/ui/options.php:250
 msgid "You can choose two levels of compression"
 msgstr "Vous pouvez choisir entre deux niveaux de compression"
 
-#: inc/admin/ui/options.php:279
+#: inc/admin/ui/options.php:255
 msgid ""
 "This mode will apply all available optimizations for maximum image "
 "compression. "
@@ -593,7 +593,7 @@ msgstr ""
 "Ce niveau appliquera toutes les optimisations disponibles pour une "
 "compression des images maximale."
 
-#: inc/admin/ui/options.php:282
+#: inc/admin/ui/options.php:258
 msgid ""
 "This will provide a drastic savings on the initial weight, with a small "
 "reduction in image quality. Most of the time it's not even noticeable."
@@ -601,13 +601,13 @@ msgstr ""
 "Cela permettra une réduction importante du poids initial avec une légère "
 "perte de la qualité d'image qui n’est pas perceptible à l’oeil humain."
 
-#: inc/admin/ui/options.php:285
+#: inc/admin/ui/options.php:261
 msgid "If you want the maximum weight reduction, we recommend using this mode."
 msgstr ""
 "Si vous souhaitez une réduction du poids plus performante, nous vous "
 "recommandons ce niveau."
 
-#: inc/admin/ui/options.php:293
+#: inc/admin/ui/options.php:269
 msgid ""
 "This mode provides lossless optimization, your images will be optimized "
 "without any visible change."
@@ -615,21 +615,21 @@ msgstr ""
 "Ce mode permet d'optimiser sans perte, vos images seront optimisées sans "
 "aucun changement visible."
 
-#: inc/admin/ui/options.php:296
+#: inc/admin/ui/options.php:272
 msgid ""
 "If you want the perfect quality for your images, we recommend you that mode."
 msgstr ""
 "Si vous souhaitez des images d’une qualité parfaite, nous vous recommandons "
 "ce niveau."
 
-#: inc/admin/ui/options.php:299
+#: inc/admin/ui/options.php:275
 msgid ""
 "Note: the file size reduction will be less, compared to aggressive mode."
 msgstr ""
 "Remarque: la réduction du poids des images sera moins importante par rapport "
 "au mode agressif."
 
-#: inc/admin/ui/options.php:306
+#: inc/admin/ui/options.php:282
 msgid "Close"
 msgstr "Fermer"
 
@@ -650,7 +650,7 @@ msgstr "Filtrer par statut"
 msgid "All images"
 msgstr "Toutes les images"
 
-#: inc/classes/class-attachment.php:406
+#: inc/classes/class-attachment.php:424
 msgid ""
 "This size isn't authorized to be optimized. Update your Imagify settings if "
 "you want to optimize it."
@@ -756,6 +756,13 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid ""
+#~ "%s images are over %s and will be skipped using the free version of the "
+#~ "plugin"
+#~ msgstr ""
+#~ "%s images font plus de %s et seront ignorées en utilisant la version "
+#~ "gratuite du plugin"
 
 #~ msgid ""
 #~ "You can log in to your Imagify account to %sbuy a pack or subscribe to a "

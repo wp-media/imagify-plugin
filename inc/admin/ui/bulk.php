@@ -101,19 +101,17 @@ function _imagify_display_bulk_page() {
 								<span class="dashicons dashicons-admin-generic"></span>
 								<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify'); ?></span>
 							</button>
-							<?php 
-							$exceeded_attachments = imagify_count_exceeding_attachments();
-							if ( (bool) $exceeded_attachments ) { ?>
+							<?php
+							if ( $user->is_free() ) { ?>
 								<span class="imagify-tooltips">
 									<span class="tooltip-content">
 										<span class="icon icon-round" aria-hidden="true">i</span>
-										<?php echo sprintf( __( '%s images are over %s and will be skipped using the free version of the plugin', 'imagify' ), $exceeded_attachments, size_format( IMAGIFY_MAX_BYTES , 0 ) ); ?>
+										<?php echo sprintf( __( 'All images which are over to %s will be skipped using the free version.', 'imagify' ), size_format( IMAGIFY_MAX_BYTES , 0 ) ); ?>
 									</span>
-								</span>
+								</span>	
 							<?php
 							}
-							?>
-							
+							?>						
 						</p>
 					</div>
 				</div>
