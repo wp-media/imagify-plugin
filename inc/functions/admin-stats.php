@@ -177,7 +177,7 @@ function imagify_count_saving_data( $key = '' ) {
 		}
 		
 		$metadata = wp_get_attachment_metadata( $attachment_id );
-		$sizes    = (array) $metadata['sizes'];
+		$sizes    = ( isset( $metadata['sizes'] ) ) ? (array) $metadata['sizes'] : array();
 
 		// Incremente the thumbnails sizes
 		foreach ( $sizes as $size_key => $size_data ) {
