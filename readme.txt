@@ -33,6 +33,7 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
  * To quit the bulk optimization processing you have to confirm your action
 * Bug Fix
  * JS: `console` undefined on some IE browsers
+ * PHP Warning: Illegal string offset 'sizes' in ../inc/functions/admin-stats.php  on line 180
 
 = 1.1.5 =
 * Interface
