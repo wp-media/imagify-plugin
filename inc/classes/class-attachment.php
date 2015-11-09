@@ -363,7 +363,7 @@ class Imagify_Attachment {
 
 		$id = $this->id;
 		$metadata      = ( (bool) $metadata ) ? $metadata : wp_get_attachment_metadata( $id );
-		$sizes         = (array) $metadata['sizes'];
+		$sizes         = ( isset( $metadata['sizes'] ) ) ? (array) $metadata['sizes'] : array();
 		$data          = array(
 			'stats' => array(
 				'aggressive'     => $is_aggressive,
