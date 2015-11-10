@@ -35,6 +35,7 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 * Bug Fix
  * JS: `console` undefined on some IE browsers
  * PHP Warning: Illegal string offset 'sizes' in ../inc/functions/admin-stats.php  on line 180
+ * Don't count GIF & SVG in the Imagify statistics
 
 = 1.1.5 =
 * Interface
