@@ -51,6 +51,7 @@ function _imagify_admin_bar( $wp_admin_bar )
 		$unconsumed_quota	= $user->get_percent_unconsumed_quota();
 		$meteo_icon			=  '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="37" height="38" alt="" />'; 
 		$bar_class			= 'positive';
+		$message			= '';
 		
 		if ( $unconsumed_quota >= 21 && $unconsumed_quota <= 50 ) {
 			$bar_class	= 'neutral';
@@ -59,6 +60,26 @@ function _imagify_admin_bar( $wp_admin_bar )
 		elseif ( $unconsumed_quota <= 20 ) {
 			$bar_class	= 'negative';
 			$meteo_icon	= '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="38" height="36" alt="" />';
+		}
+
+		if ( $unconsumed_quota <= 20 && $unconsumed_quota > 0 ) {
+			$message = '
+				<div class="imagify-error">
+					<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops! It\'s almost over', 'imagify' ) . '</strong></p>
+					<p>' . __( 'Your quota is about to expire. Would you be interested in a pack or other plan?', 'imagify' ) . '</p>
+					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_WEB_MAIN . '/#/subscription">' . __( 'View my subscription', 'imagify' ) . '</a></p>
+				</div>
+			';
+		}
+
+		if ( $unconsumed_quota === 0 ) {
+			$message = '
+				<div class="imagify-error">
+					<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops! It\'s over', 'imagify' ) . '</strong></p>
+					<p>' . sprintf( __( 'You\'ll have %s back on %s', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) ) ) . '</p>
+					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_WEB_MAIN . '/#/subscription">' . __( 'Upgrade my subscription', 'imagify' ) . '</a></p>
+				</div>
+			';
 		}
 
 		// custom HTML
@@ -99,7 +120,8 @@ function _imagify_admin_bar( $wp_admin_bar )
 						<span class="button-text">' . __( 'View my subscription', 'imagify' ) . '</span>
 					</a>
 				</p>
-			</div>';
+			</div>
+			' . $message;
 
 		// insert custom HTML
 		$wp_admin_bar->add_menu(array(

@@ -1106,6 +1106,7 @@ ul.imagify-datas-details.imagify-datas-details {
 /* admin bar version */
 #wpadminbar #wp-admin-bar-imagify-profile * {
 	line-height: 1.5;
+	white-space: initial;
 }
 #wpadminbar #wp-admin-bar-imagify .ab-submenu {
 	padding-bottom: 0;
@@ -1123,7 +1124,7 @@ ul.imagify-datas-details.imagify-datas-details {
 	font-family: "dashicons";
 	font-size: 18px;
 	vertical-align: middle;
-	margin: 0 5px;
+	margin: 0 5px 0 0;
 }
 #wp-admin-bar-imagify .button-text {
 	display: inline-block;
@@ -1151,7 +1152,7 @@ ul.imagify-datas-details.imagify-datas-details {
 #wp-admin-bar-imagify-profile .imagify-meteo-subs {
 	color: #72889F;
 }
-#wpadminbar #wp-admin-bar-imagify-profile .imagify-user-plan {
+#wpadminbar #wp-admin-bar-imagify-profile strong {
 	font-weight: bold;
 }
 #wpadminbar #wp-admin-bar-imagify-profile .imagify-user-plan,
@@ -1166,6 +1167,44 @@ ul.imagify-datas-details.imagify-datas-details {
 }
 #wpadminbar #wp-admin-bar-imagify-profile .imagify-space-left p {
 	font-size: 12px;
+}
+#wp-admin-bar-imagify-profile .imagify-error,
+#wp-admin-bar-imagify-profile .imagify-warning {
+	padding: 10px;
+	margin: 0 -13px -13px;
+}
+#wp-admin-bar-imagify-profile .imagify-error p + p,
+#wp-admin-bar-imagify-profile .imagify-warning p + p {
+	margin-top: .5em;
+}
+#wp-admin-bar-imagify-profile .imagify-error p + p + p,
+#wp-admin-bar-imagify-profile .imagify-warning p + p + p {
+	margin-top: 1em;
+}
+
+.btn-ghost,
+#wpadminbar #wp-admin-bar-imagify-profile .btn-ghost {
+	display: inline-block;
+	height: auto;
+	padding: 7px 10px;
+	border: 1px solid #FFF;
+	text-align: center;
+	background: transparent;
+	color: #FFF;
+	border-radius: 3px;
+	transition: all .275s;
+}
+
+.btn-ghost:hover,
+.btn-ghost:focus,
+#wpadminbar #wp-admin-bar-imagify-profile .btn-ghost:hover,
+#wpadminbar #wp-admin-bar-imagify-profile .btn-ghost:focus {
+	background: #FFF;
+	color: #888;
+}
+
+.txt-center {
+	text-align: center;
 }
 
 .imagify-list-dash li {
@@ -1574,6 +1613,16 @@ td.imagify-cell-filename {
 }
 .status-complete {
 	color: #8CC152;
+}
+.imagify-error {
+	background: #D0021B;
+	color: #FFF;
+}
+.imagify-warning,
+#wpadminbar .imagify-warning * {
+	background: #f5a623;
+	color: #FFF;
+	text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
 }
 .imagify-bulk-table .imagify-cell-thumbnails {
 	text-align: center;
