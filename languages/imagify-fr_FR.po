@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-11-08 19:55+0100\n"
-"PO-Revision-Date: 2015-11-08 19:57+0100\n"
+"POT-Creation-Date: 2015-11-10 15:32+0100\n"
+"PO-Revision-Date: 2015-11-10 15:33+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -86,7 +86,7 @@ msgstr ""
 msgid "Your API key is valid."
 msgstr "Votre clé API est valide."
 
-#: inc/admin/enqueue.php:121 inc/admin/ui/bulk.php:166 inc/admin/upload.php:65
+#: inc/admin/enqueue.php:121 inc/admin/ui/bulk.php:210 inc/admin/upload.php:65
 msgid "Optimized"
 msgstr "Optimisé"
 
@@ -229,97 +229,100 @@ msgstr ""
 msgid "Imagif'em all"
 msgstr "Imagif'em all"
 
-#: inc/admin/ui/bulk.php:107
+#: inc/admin/ui/bulk.php:109
 #, php-format
 msgid ""
-"All images which are over to %s will be skipped using the free version of "
-"the plugin."
+"All images which are over to %s could be optimized using the pro version."
 msgstr ""
-"Toutes les images qui font plus de %s seront ignorées en utilisant la "
-"version gratuite du plugin. "
+"Toutes les images qui font plus de %s pourront être optimisées avec la "
+"version pro."
 
-#: inc/admin/ui/bulk.php:115
+#: inc/admin/ui/bulk.php:120
 msgid "Overview"
 msgstr "Vue d'ensemble"
 
-#: inc/admin/ui/bulk.php:125
+#: inc/admin/ui/bulk.php:130
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: inc/admin/ui/bulk.php:130
-#, php-format
-msgid "that's the number %sof images you optimized"
-msgstr "c’est le nombre d’images %sque vous avez optimisé"
+#: inc/admin/ui/bulk.php:135
+msgid "that's the number of images you optimized with Imagify"
+msgstr "c’est le nombre d’images que %svous avez optimisé avec Imagify"
 
-#: inc/admin/ui/bulk.php:142
+#: inc/admin/ui/bulk.php:147
 msgid "Original size"
 msgstr "Poids de l’original"
 
-#: inc/admin/ui/bulk.php:147
+#: inc/admin/ui/bulk.php:152
 msgid "Optimized size"
 msgstr "Poids optimisé"
 
-#: inc/admin/ui/bulk.php:160
-msgid "Compression process results"
-msgstr "Résultats du processus de compression"
-
 #: inc/admin/ui/bulk.php:163
-msgid "Filename"
-msgstr "Nom du fichier"
-
-#: inc/admin/ui/bulk.php:164
-msgid "Status"
-msgstr "Statut"
-
-#: inc/admin/ui/bulk.php:165
-msgid "Original"
-msgstr "Original"
-
-#: inc/admin/ui/bulk.php:167
-msgid "Percentage"
-msgstr "Pourcentage"
-
-#: inc/admin/ui/bulk.php:168
-msgid "Thumbnails optimized"
-msgstr "Miniatures optimisées"
-
-#: inc/admin/ui/bulk.php:169
-msgid "Overall saving"
-msgstr "Gain total"
-
-#: inc/admin/ui/bulk.php:174
-msgid "file"
-msgstr "fichier"
-
-#: inc/admin/ui/bulk.php:175
-msgid "error"
-msgstr "erreur"
-
-#: inc/admin/ui/bulk.php:176
-msgid "Total:"
-msgstr "Total&nbsp;:"
-
-#: inc/admin/ui/bulk.php:177
-msgid "Gain:"
-msgstr "Gain&nbsp;:"
-
-#: inc/admin/ui/bulk.php:194
 #, php-format
-msgid "%sStart the bulk optimization%s"
-msgstr "%sDémarrer l’optimisation en masse%s"
+msgid "that's the size you saved %sby using Imagify"
+msgstr "c’est le poids que vous avez économisé en utilisant Imagify"
 
-#: inc/admin/ui/bulk.php:210
+#: inc/admin/ui/bulk.php:183
 msgid "Well done!"
 msgstr "Bien joué&nbsp;!"
 
-#: inc/admin/ui/bulk.php:211
+#: inc/admin/ui/bulk.php:184
 #, php-format
 msgid "you saved %1$s out of %2$s"
 msgstr "vous avez économisé %1$s sur %2$s"
 
-#: inc/admin/ui/bulk.php:216
+#: inc/admin/ui/bulk.php:189
 msgid "Share your awesome result"
 msgstr "Partagez votre résultat"
+
+#: inc/admin/ui/bulk.php:204
+msgid "Compression process results"
+msgstr "Résultats du processus de compression"
+
+#: inc/admin/ui/bulk.php:207
+msgid "Filename"
+msgstr "Nom du fichier"
+
+#: inc/admin/ui/bulk.php:208
+msgid "Status"
+msgstr "Statut"
+
+#: inc/admin/ui/bulk.php:209
+msgid "Original"
+msgstr "Original"
+
+#: inc/admin/ui/bulk.php:211
+msgid "Percentage"
+msgstr "Pourcentage"
+
+#: inc/admin/ui/bulk.php:212
+msgid "Thumbnails optimized"
+msgstr "Miniatures optimisées"
+
+#: inc/admin/ui/bulk.php:213
+msgid "Overall saving"
+msgstr "Gain total"
+
+#: inc/admin/ui/bulk.php:218
+msgid "file"
+msgstr "fichier"
+
+#: inc/admin/ui/bulk.php:219
+msgid "error"
+msgstr "erreur"
+
+#: inc/admin/ui/bulk.php:220
+msgid "Total:"
+msgstr "Total&nbsp;:"
+
+#: inc/admin/ui/bulk.php:221
+msgid "Gain:"
+msgstr "Gain&nbsp;:"
+
+#: inc/admin/ui/bulk.php:238
+#, php-format
+msgid "%sStart the bulk optimization%s"
+msgstr "%sDémarrer l’optimisation en masse%s"
 
 #: inc/admin/ui/notices.php:23
 msgid "Welcome to Imagify, the best way to easily optimize your images!"
@@ -756,6 +759,22 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid ""
+#~ "All images which are over to %s will be skipped using the free version."
+#~ msgstr ""
+#~ "Toutes les images qui font plus de %s seront ignorées en utilisant la "
+#~ "version gratuite. "
+
+#~ msgid "that's the number %sof images you optimized"
+#~ msgstr "c’est le nombre d’images %sque vous avez optimisé"
+
+#~ msgid ""
+#~ "All images which are over to %s will be skipped using the free version of "
+#~ "the plugin."
+#~ msgstr ""
+#~ "Toutes les images qui font plus de %s seront ignorées en utilisant la "
+#~ "version gratuite du plugin. "
 
 #~ msgid ""
 #~ "%s images are over %s and will be skipped using the free version of the "

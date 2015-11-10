@@ -106,7 +106,7 @@ function _imagify_display_bulk_page() {
 								<span class="imagify-tooltips">
 									<span class="tooltip-content">
 										<span class="icon icon-round" aria-hidden="true">i</span>
-										<?php echo sprintf( __( 'All images which are over to %s will be skipped using the free version.', 'imagify' ), size_format( IMAGIFY_MAX_BYTES , 0 ) ); ?>
+										<?php echo sprintf( __( 'All images which are over to %s could be optimized using the pro version.', 'imagify' ), size_format( IMAGIFY_MAX_BYTES , 0 ) ); ?>
 									</span>
 								</span>	
 							<?php
@@ -132,7 +132,7 @@ function _imagify_display_bulk_page() {
 					<div class="imagify-number-you-optimized">
 						<p>
 							<span id="imagify-total-optimized-attachments" class="number"><?php echo number_format_i18n( imagify_count_optimized_attachments() ); ?></span>
-							<span class="text"><?php echo sprintf( __( 'that\'s the number %sof images you optimized', 'imagify' ), '<br>' ); ?></span>
+							<span class="text"><?php echo sprintf( __( 'that\'s the number of images you optimized with Imagify', 'imagify' ), '<br>' ); ?></span>
 						</p>
 					</div>
 
@@ -160,7 +160,7 @@ function _imagify_display_bulk_page() {
 					<div class="imagify-number-you-optimized">
 						<p>
 							<span id="imagify-total-optimized-attachments-pct" class="number"><?php echo number_format_i18n( imagify_count_saving_data('percent') ); ?>%</span>
-							<span class="text"><?php echo sprintf( __( 'that\'s the space you saved %sby using Imagify', 'imagify' ), '<br>' ); ?></span>
+							<span class="text"><?php echo sprintf( __( 'that\'s the size you saved %sby using Imagify', 'imagify' ), '<br>' ); ?></span>
 						</p>
 					</div>
 				</div>
