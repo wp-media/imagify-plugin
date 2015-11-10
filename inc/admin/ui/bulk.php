@@ -19,7 +19,7 @@ function _imagify_display_bulk_page() {
 				<div class="imagify-account-link">
 					<a href="<?php echo IMAGIFY_APP_MAIN; ?>/#/subscription" class="button button-ghost">
 						<span class="dashicons dashicons-admin-users"></span>
-						<span class="button-text"><?php _e( 'View my subscription', 'imagify' ); ?></span>
+						<span class="button-text"><?php _e( 'View My Subscription', 'imagify' ); ?></span>
 					</a>
 				</div>
 
@@ -56,7 +56,7 @@ function _imagify_display_bulk_page() {
 								<span aria-hidden="true" class="icon icon-round">i</span>
 							</div>
 							<div class="cell-text">
-								<?php _e( 'Upgrade your account to continue to optimize your images', 'imagify' ); ?>
+								<?php _e( 'Upgrade your account to continue optimizing your images', 'imagify' ); ?>
 							</div>
 							<div class="cell-sep"></div>
 							<div class="cell-cta">

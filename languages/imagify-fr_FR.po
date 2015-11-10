@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-11-10 15:32+0100\n"
-"PO-Revision-Date: 2015-11-10 15:33+0100\n"
+"POT-Creation-Date: 2015-11-10 18:39+0100\n"
+"PO-Revision-Date: 2015-11-10 18:39+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -99,8 +99,9 @@ msgid "Error"
 msgstr "Erreur"
 
 #: inc/admin/enqueue.php:125 inc/admin/ui/notices.php:279
+#: inc/common/admin-bar.php:77
 msgid "Oops, It's Over!"
-msgstr "Oops, c’est fini !"
+msgstr "Oups, c’est fini !"
 
 #: inc/admin/enqueue.php:126
 msgid "Hold on!"
@@ -120,6 +121,7 @@ msgstr ""
 "images. J’ai optimisé %1$s sur %2$s !"
 
 #: inc/admin/enqueue.php:136 inc/admin/ui/notices.php:281
+#: inc/common/admin-bar.php:78
 #, php-format
 msgid ""
 "You have consumed all your credit for this month. You will have <strong>%s "
@@ -173,25 +175,25 @@ msgstr "<strong>Erreur</strong> : page d’options introuvable."
 msgid "Settings"
 msgstr "Réglages"
 
-#: inc/admin/ui/bulk.php:16
+#: inc/admin/ui/bulk.php:16 inc/common/admin-bar.php:98
 msgid "Account status"
 msgstr "Type de compte"
 
-#: inc/admin/ui/bulk.php:17
+#: inc/admin/ui/bulk.php:17 inc/common/admin-bar.php:99
 msgid "Your subscription:"
 msgstr "Votre abonnement&nbsp;:"
 
-#: inc/admin/ui/bulk.php:22
-msgid "View my subscription"
+#: inc/admin/ui/bulk.php:22 inc/common/admin-bar.php:69
+msgid "View My Subscription"
 msgstr "Voir mon abonnement"
 
-#: inc/admin/ui/bulk.php:47
+#: inc/admin/ui/bulk.php:47 inc/common/admin-bar.php:107
 #, php-format
 msgid "You have %s space credit left"
 msgstr "Il vous reste %s de crédit"
 
 #: inc/admin/ui/bulk.php:59
-msgid "Upgrade your account to continue to optimize your images"
+msgid "Upgrade your account to continue optimizing your images"
 msgstr "Mettez à niveau votre compte pour continuer à optimiser vos images"
 
 #: inc/admin/ui/bulk.php:63
@@ -653,7 +655,7 @@ msgstr "Filtrer par statut"
 msgid "All images"
 msgstr "Toutes les images"
 
-#: inc/classes/class-attachment.php:424
+#: inc/classes/class-attachment.php:444
 msgid ""
 "This size isn't authorized to be optimized. Update your Imagify settings if "
 "you want to optimize it."
@@ -668,6 +670,27 @@ msgstr "Gratuit"
 #: inc/classes/class-user.php:127
 msgid "Pro"
 msgstr "Pro"
+
+#: inc/common/admin-bar.php:67
+msgid "Oops, It's almost over!"
+msgstr "Oups, c’est bientôt fini !"
+
+#: inc/common/admin-bar.php:68
+#, php-format
+msgid ""
+"You have almost used all your credit.%sDon't forget to upgrade your "
+"subscription to continue optimizing your images."
+msgstr ""
+"Vous avez bientôt utilisé tout votre crédit.%sN’oubliez pas de mettre à "
+"niveau votre abonnement pour continuer à optimiser vos images."
+
+#: inc/common/admin-bar.php:79
+msgid "Upgrade My Subscription"
+msgstr "Mettre à niveau mon abonnement"
+
+#: inc/common/admin-bar.php:119
+msgid "View my subscription"
+msgstr "Voir mon abonnement"
 
 #: inc/functions/admin-ui.php:35
 msgid "New Filesize:"
@@ -759,6 +782,23 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid ""
+#~ "You have almost used all your credit. Don't forget to upgrade your "
+#~ "subscription to continue optimizing your images."
+#~ msgstr ""
+#~ "Vous avez bientôt utilisé tout votre crédit. N’oubliez pas de mettre à "
+#~ "niveau votre abonnement pour continuer à optimiser vos images."
+
+#~ msgid ""
+#~ "You have almost used all your credit. Don't forget to upgrade your "
+#~ "account to continue optimizing your images."
+#~ msgstr ""
+#~ "Vous avez bientôt utilisé tout votre crédit. N’oubliez pas de mettre à "
+#~ "niveau votre abonnement pour continuer à optimiser vos images."
+
+#~ msgid "Upgrade your account to continue to optimize your images"
+#~ msgstr "Mettez à niveau votre compte pour continuer à optimiser vos images"
 
 #~ msgid ""
 #~ "All images which are over to %s will be skipped using the free version."

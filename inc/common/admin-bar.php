@@ -44,8 +44,7 @@ function _imagify_admin_bar( $wp_admin_bar )
 	}
 
 	// Quota & Profile informations
-	if (  current_user_can( apply_filters( 'imagify_capacity', $cap ) ) )  {
-		
+	if (  current_user_can( apply_filters( 'imagify_capacity', $cap ) ) )  {		
 		$user = new Imagify_User();
 
 		$unconsumed_quota	= $user->get_percent_unconsumed_quota();
@@ -65,9 +64,9 @@ function _imagify_admin_bar( $wp_admin_bar )
 		if ( $unconsumed_quota <= 20 && $unconsumed_quota > 0 ) {
 			$message = '
 				<div class="imagify-error">
-					<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops! It\'s almost over', 'imagify' ) . '</strong></p>
-					<p>' . __( 'Your quota is about to expire. Would you be interested in a pack or other plan?', 'imagify' ) . '</p>
-					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_WEB_MAIN . '/#/subscription">' . __( 'View my subscription', 'imagify' ) . '</a></p>
+					<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s almost over!', 'imagify' ) . '</strong></p>
+ 					<p>' . sprintf( __( 'You have almost used all your credit.%sDon\'t forget to upgrade your subscription to continue optimizing your images.', 'imagify' ), '<br/><br/>' ) . '</p>
+					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_WEB_MAIN . '/#/subscription">' . __( 'View My Subscription', 'imagify' ) . '</a></p>
 				</div>
 			';
 		}
@@ -75,9 +74,9 @@ function _imagify_admin_bar( $wp_admin_bar )
 		if ( $unconsumed_quota === 0 ) {
 			$message = '
 				<div class="imagify-error">
-					<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops! It\'s over', 'imagify' ) . '</strong></p>
-					<p>' . sprintf( __( 'You\'ll have %s back on %s', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) ) ) . '</p>
-					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_WEB_MAIN . '/#/subscription">' . __( 'Upgrade my subscription', 'imagify' ) . '</a></p>
+					<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s Over!', 'imagify' ) . '</strong></p>
+					<p>' . sprintf( __( 'You have consumed all your credit for this month. You will have <strong>%s back on %s</strong>.', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) ) ) . '</p>
+					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_WEB_MAIN . '/#/subscription">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>
 				</div>
 			';
 		}
