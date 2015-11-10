@@ -171,7 +171,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 			}
 			
 			// Don't try to re-optimize images already compressed
-			if ( strstr( $attachment_error, 'This image is already compressed' ) ) {
+			if ( false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
 				continue;	
 			}
 						
