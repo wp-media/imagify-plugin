@@ -19,13 +19,13 @@
 }
 
 .imagify-spinner {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
-    vertical-align: middle;
-    background: rgba(0, 0, 0, 0) url("../images/spinner.gif") no-repeat scroll 0 0 / 20px 20px;
-    opacity: 0.7;
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	margin-right: 5px;
+	vertical-align: middle;
+	background: rgba(0, 0, 0, 0) url("../images/spinner.gif") no-repeat scroll 0 0 / 20px 20px;
+	opacity: 0.7;
 }
 
 .misc-pub-section.misc-pub-imagify h4 {
@@ -37,11 +37,11 @@
 .imagify-sweet-alert button {
 	margin-top: 17px !important;
 	height: 45px !important;
-    letter-spacing: 3px;
-    text-transform: uppercase !important;
-    border-radius: 3px !important;
-    background-color: #40b1d0  !important;
-    box-shadow: 0 3px 0 #338ea6  !important;
+	letter-spacing: 3px;
+	text-transform: uppercase !important;
+	border-radius: 3px !important;
+	background-color: #40b1d0  !important;
+	box-shadow: 0 3px 0 #338ea6  !important;
 }
 
 .imagify-sweet-alert-signup .sa-confirm-button-container {
@@ -94,28 +94,28 @@
 }
 
 .imagify-doughnut-legend li {
-    display: block;
-    padding-left: 30px;
-    position: relative;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    padding: 3px 8px 2px 31px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: default;
-    -webkit-transition: background-color 200ms ease-in-out;
-    -moz-transition: background-color 200ms ease-in-out;
-    -o-transition: background-color 200ms ease-in-out;
-    transition: background-color 200ms ease-in-out;
+	display: block;
+	padding-left: 30px;
+	position: relative;
+	margin-bottom: 15px;
+	border-radius: 5px;
+	padding: 3px 8px 2px 31px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: default;
+	-webkit-transition: background-color 200ms ease-in-out;
+	-moz-transition: background-color 200ms ease-in-out;
+	-o-transition: background-color 200ms ease-in-out;
+	transition: background-color 200ms ease-in-out;
 }
 
 .imagify-doughnut-legend li span {
-    display: block;
-    position: absolute;
-    left: 0; top: 0;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
+	display: block;
+	position: absolute;
+	left: 0; top: 0;
+	width: 25px;
+	height: 25px;
+	border-radius: 50%;
 }
 		
 .imagify-chart {
@@ -150,8 +150,8 @@ td .imagify-chart {
 	margin-top: -14px;
 	text-align: center;
 	font-size: 55px;
-    font-weight: bold;
-    color: #46B1CE;
+	font-weight: bold;
+	color: #46B1CE;
 }
 .imagify-chart-percent span {
 	font-size: 20px;
@@ -161,7 +161,7 @@ td .imagify-chart {
 .media_page_imagify-bulk-optimization .media-item {
 	margin: 0;
 }
-		
+
 .media_page_imagify-bulk-optimization .media-item .progress {
 	float: none;
 	width: 100%;
@@ -1048,7 +1048,8 @@ ul.imagify-datas-details.imagify-datas-details {
 .imagify-space-left > p {
 	color: #FFF;
 }
-[class^="imagify-bar-"] {
+[class^="imagify-bar-"],
+#wp-admin-bar-imagify-profile [class^="imagify-bar-"] {
 	position: relative;
 	height: 15px;
 	width: 100%;
@@ -1071,14 +1072,16 @@ ul.imagify-datas-details.imagify-datas-details {
 	font-weight: bold;
 	line-height: 15px;
 }
-.imagify-progress-value {
+.imagify-progress-value,
+#wp-admin-bar-imagify-profile .imagify-progress-value {
 	position: absolute;
 	top: 0; right: 0; left: 0; bottom: 0;
 	text-align: center;
 	line-height: 13px;
 	font-weight: bold;
 }
-.imagify-progress {
+.imagify-progress,
+#wp-admin-bar-imagify-profile .imagify-progress {
 	height: 15px;
 }
 .imagify-bar-positive .imagify-progress {
@@ -1098,6 +1101,71 @@ ul.imagify-datas-details.imagify-datas-details {
 }
 .imagify-space-left .imagify-bar-negative .imagify-progress {
 	background: #D0021B;
+}
+
+/* admin bar version */
+#wpadminbar #wp-admin-bar-imagify-profile * {
+	line-height: 1.5;
+}
+#wpadminbar #wp-admin-bar-imagify .ab-submenu {
+	padding-bottom: 0;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .ab-item {
+	height: auto;
+	padding: 0 13px;
+}
+#wpadminbar #wp-admin-bar-imagify-profile {
+	padding: 15px 0 10px;
+	margin-top: 0.7em;
+	background: #222;
+}
+#wp-admin-bar-imagify .dashicons {
+	font-family: "dashicons";
+	font-size: 18px;
+	vertical-align: middle;
+	margin: 0 5px;
+}
+#wp-admin-bar-imagify .button-text {
+	display: inline-block;
+	vertical-align: middle;
+}
+#wp-admin-bar-imagify .imagify-abq-row {
+	display: table;
+	width: 100%;
+}
+#wp-admin-bar-imagify .imagify-abq-row + .imagify-abq-row {
+	margin-top: .75em;
+}
+#wp-admin-bar-imagify .imagify-abq-row > * {
+	display: table-cell;
+}
+#wp-admin-bar-imagify-profile .imagify-meteo-icon {
+	padding-right: 7px;
+}
+#wp-admin-bar-imagify-profile .imagify-meteo-icon img {
+	width: 37px;
+}
+#wp-admin-bar-imagify-profile .imagify-meteo-title {
+	font-size: 17px;
+}
+#wp-admin-bar-imagify-profile .imagify-meteo-subs {
+	color: #72889F;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-user-plan {
+	font-weight: bold;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-user-plan,
+#wpadminbar #wp-admin-bar-imagify-profile a {
+	padding: 0;
+	color: #40B1D0;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-space-left {
+	max-width: 210px;
+	min-width: 210px;
+	width: 210px;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-space-left p {
+	font-size: 12px;
 }
 
 .imagify-list-dash li {
@@ -1155,9 +1223,9 @@ ul.imagify-datas-details.imagify-datas-details {
 	display: block;
 }
 .imagify-title .imagify-tooltips {
-    position: absolute;
-    top: 100%;
-    left: 0;
+	position: absolute;
+	top: 100%;
+	left: 0;
 }
 .imagify-tooltips .icon-round {
 	float: left;
@@ -1358,31 +1426,31 @@ ul.imagify-datas-details.imagify-datas-details {
 
 @-webkit-keyframes congrate {
   0% {
-    opacity: 0;
-    -webkit-transform: scale(1);
+	opacity: 0;
+	-webkit-transform: scale(1);
   }
   50% {
-    -webkit-transform: scale(1.05);
-    opacity: 1;
+	-webkit-transform: scale(1.05);
+	opacity: 1;
   }
   100% {
-    -webkit-transform: scale(1);
-    opacity: 1;
+	-webkit-transform: scale(1);
+	opacity: 1;
   }
 }
 ​
 @keyframes congrate {
   0% {
-    opacity: 0;
+	opacity: 0;
 	transform: scale(1);
   }
   50% {
-    transform: scale(1.05);
-    opacity: 1;
+	transform: scale(1.05);
+	opacity: 1;
   }
   100% {
-    transform: scale(1);
-    opacity: 1;
+	transform: scale(1);
+	opacity: 1;
   }
 }
 
