@@ -138,22 +138,25 @@ jQuery(function($){
 						$('#attachment-'+data.image+' .imagify-cell-savings').html(Optimizer.toHumanSize(data.overall_saving, 1));
 
 						// The overview chart percent
-						$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent+"<span>%</span>");
+						$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent + '<span>%</span>');
 						// The total optimized images
 						$('#imagify-total-optimized-attachments').html(data.global_optimized_attachments);
 
 						// The comsuption bar
-						$('#imagify-unconsumed-percent').html(data.global_unconsumed_quota+'%');
-						$('#imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota+'%'});
+						$('#imagify-unconsumed-percent').html(data.global_unconsumed_quota + '%');
+						$('#imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota + '%'});
 
 						// The original bar
 						$('#imagify-original-bar').find('.imagify-barnb')
 												  .html(data.global_original_human);
 
 						// The optimized bar
-						$('#imagify-optimized-bar').animate({'width': data.global_optimized_percent+"%"})
+						$('#imagify-optimized-bar').animate({'width': data.global_optimized_percent + '%'})
 						$('#imagify-optimized-bar').find('.imagify-barnb')
 												   .html(data.global_optimized_human);
+
+						// The Percent data
+						$('#imagify-total-optimized-attachments-pct').html( data.global_optimized_percent + '%' );
 
 						// The table footer total optimized files
 						files = files + data.thumbnails + 1;

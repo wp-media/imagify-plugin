@@ -28,7 +28,7 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 
 = 1.1.6 =
 * Interface
- * Quick access to your profile informations in Admin Bar > Imagify
+ * Quick access to your profile informations (quota) in Admin Bar > Imagify
  * More precise information about global size saved using Imagify (bulk optimization page)
  * When your bulk optimization is over, success message isn't inside the table anymore
  * To quit the bulk optimization processing you have to confirm your action
