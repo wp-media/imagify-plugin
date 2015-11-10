@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @return int The number of attachments.
  */
 function imagify_count_attachments() {
-	$count = wp_count_attachments( 'image' );
+	$count = wp_count_attachments( array( 'image/jpeg', 'image/png' ) ); // TO DO - add gif later
 	$count = get_object_vars( $count );
 	$count = array_sum( $count );
 	return (int) $count;
@@ -28,7 +28,7 @@ function imagify_count_exceeding_attachments() {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => 'image',
+			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
 			'posts_per_page'         => -1,
 			'update_post_term_cache' => false,
 			'no_found_rows'          => true,
@@ -66,7 +66,7 @@ function imagify_count_error_attachments() {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => 'image',
+			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
 			'meta_key'				 => '_imagify_status',
 			'meta_value'			 => 'error',
 			'posts_per_page'         => -1,
@@ -91,7 +91,7 @@ function imagify_count_optimized_attachments() {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => 'image',
+			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
 			'meta_key'				 => '_imagify_status',
 			'meta_value'			 => 'success',
 			'posts_per_page'         => -1,
@@ -148,7 +148,7 @@ function imagify_count_saving_data( $key = '' ) {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => 'image',
+			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
 			'meta_key'				 => '_imagify_data',
 			'posts_per_page'         => -1,
 			'update_post_term_cache' => false,
