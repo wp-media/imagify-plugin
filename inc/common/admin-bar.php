@@ -7,8 +7,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @since 1.0
  */
 add_action( 'admin_bar_menu', '_imagify_admin_bar', PHP_INT_MAX );
-function _imagify_admin_bar( $wp_admin_bar )
-{
+function _imagify_admin_bar( $wp_admin_bar ) {
 	if ( ! current_user_can( 'upload_files' ) ) {
 		return;
 	}
@@ -44,7 +43,7 @@ function _imagify_admin_bar( $wp_admin_bar )
 	}
 
 	// Quota & Profile informations
-	if (  current_user_can( apply_filters( 'imagify_capacity', $cap ) ) )  {		
+	if ( current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {		
 		$user = new Imagify_User();
 
 		$unconsumed_quota	= $user->get_percent_unconsumed_quota();
@@ -123,12 +122,25 @@ function _imagify_admin_bar( $wp_admin_bar )
 			' . $message;
 
 		// insert custom HTML
-		$wp_admin_bar->add_menu(array(
+		$wp_admin_bar->add_menu( array(
 			'parent' => 'imagify',
 			'id' 	 => 'imagify-profile',
 			'title'  => $quota_section
-		));	
+		) );	
 	}
 
 	// TO DO - Rate it & Support
+}
+
+/**
+ * Include Admin Bar Profile informations styles in front
+ * 
+ * @since  1.1.7
+ */
+add_action( 'admin_bar_init', '_imagify_admin_bar_styles' );
+function _imagify_admin_bar_styles() {
+	if ( ! is_admin() ) {
+		$css_ext = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.css' : '.min.css';
+		wp_enqueue_style( 'imagify_admin_bar', IMAGIFY_ASSETS_CSS_URL . 'admin-bar' . $css_ext, array(), IMAGIFY_VERSION, 'all' );
+	}
 }
