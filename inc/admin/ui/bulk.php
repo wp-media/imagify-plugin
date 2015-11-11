@@ -17,7 +17,7 @@ function _imagify_display_bulk_page() {
 					<p class="imagify-meteo-subs"><?php _e( 'Your subscription:', 'imagify' ); ?>&nbsp;<strong class="imagify-user-plan"><?php echo $user->get_plan_label(); ?></strong></p>
 				</div>
 				<div class="imagify-account-link">
-					<a href="<?php echo IMAGIFY_APP_MAIN; ?>/#/subscription" class="button button-ghost">
+					<a href="<?php echo IMAGIFY_APP_MAIN; ?>/#/subscription" class="button button-ghost" target="_blank">
 						<span class="dashicons dashicons-admin-users"></span>
 						<span class="button-text"><?php _e( 'View My Subscription', 'imagify' ); ?></span>
 					</a>
@@ -60,7 +60,7 @@ function _imagify_display_bulk_page() {
 							</div>
 							<div class="cell-sep"></div>
 							<div class="cell-cta">
-								<a href="<?php echo IMAGIFY_APP_MAIN; ?>/#/subscription"><?php _e( 'More info', 'imagify' ); ?></a>
+								<a href="<?php echo IMAGIFY_APP_MAIN; ?>/#/subscription" target="_blank"><?php _e( 'More info', 'imagify' ); ?></a>
 							</div>
 						</div>
 					</div>
