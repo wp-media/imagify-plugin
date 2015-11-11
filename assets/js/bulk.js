@@ -1,4 +1,12 @@
 jQuery(function($){
+
+	// avoid error on IE
+	var imagify = {
+			log: function (content) {
+				if (console !== 'undefined') console.log(content);
+			}
+	};
+
 	var overviewCanvas = document.getElementById("imagify-overview-chart");
 	var overviewData = [
 		{
@@ -56,12 +64,22 @@ jQuery(function($){
 		$obj.attr('disabled', 'disabled');
 		$obj.find('.dashicons').addClass('rotate');
 
+		confirmMessage =  function(){
+			return "Imagify is processing. Are your sure you want to quit this page?";
+		};
+		$(window).on('beforeunload', confirmMessage);
+
 		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
 		.done(function(response) {
 			if( !response.success ) {
 				$obj.removeAttr('disabled');
 				$obj.find('.dashicons').removeClass('rotate');
-				console.log(response);
+
+				// remove confirm dialog before quit the page
+				$(window).off('beforeunload', confirmMessage);
+				
+				imagify.log(response);
+
 				if ( response.data.message == 'over-quota' ) {
 					// Display an alert to warn that the monthly quota is consumed
 					swal({
@@ -80,8 +98,9 @@ jQuery(function($){
 						text: imagifyBulk.noAttachmentToOptimizeText,
 						type: "info",
 						customClass: "imagify-sweet-alert"
-					});	
+					});
 				}
+
 			} else {				
 				var config = {
 					'lib': ajaxurl+"?action=imagify_bulk_upload&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val(),
@@ -119,22 +138,25 @@ jQuery(function($){
 						$('#attachment-'+data.image+' .imagify-cell-savings').html(Optimizer.toHumanSize(data.overall_saving, 1));
 
 						// The overview chart percent
-						$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent+"<span>%</span>");
+						$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent + '<span>%</span>');
 						// The total optimized images
 						$('#imagify-total-optimized-attachments').html(data.global_optimized_attachments);
 
 						// The comsuption bar
-						$('#imagify-unconsumed-percent').html(data.global_unconsumed_quota+'%');
-						$('#imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota+'%'});
+						$('#imagify-unconsumed-percent').html(data.global_unconsumed_quota + '%');
+						$('#imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota + '%'});
 
 						// The original bar
 						$('#imagify-original-bar').find('.imagify-barnb')
 												  .html(data.global_original_human);
 
 						// The optimized bar
-						$('#imagify-optimized-bar').animate({'width': data.global_optimized_percent+"%"})
+						$('#imagify-optimized-bar').animate({'width': data.global_optimized_percent + '%'})
 						$('#imagify-optimized-bar').find('.imagify-barnb')
 												   .html(data.global_optimized_human);
+
+						// The Percent data
+						$('#imagify-total-optimized-attachments-pct').html( data.global_optimized_percent + '%' );
 
 						// The table footer total optimized files
 						files = files + data.thumbnails + 1;
@@ -166,13 +188,20 @@ jQuery(function($){
 					$obj.removeAttr('disabled');
 					$obj.find('.dashicons').removeClass('rotate');
 
+					// remove confirm dialog before quit the page
+					$(window).off('beforeunload', confirmMessage);
+
 					// Hide the progress bar
 					$('.imagify-row-progress').slideUp();
 
 					if ( data.global_percent !== 'NaN' ) {
 						// Display the complete section
 						$('.imagify-row-complete').removeClass('hidden')
-												  .addClass( 'done' );
+												  .addClass( 'done' )
+												  .attr('aria-hidden', 'false');
+						$('html, body').animate({
+							scrollTop: $('.imagify-row-complete').offset().top
+						}, 200);
 
 						$('.imagify-ac-rt-total-gain').html(data.global_gain_human);
 						$('.imagify-ac-rt-total-original').html(data.global_original_size_human);
@@ -189,7 +218,7 @@ jQuery(function($){
 					}
 				})
 				.error(function (id) {
-					console.log('Can\'t optimize image with id ' + id);
+					imagify.log('Can\'t optimize image with id ' + id);
 				})
 				.run();
 			}

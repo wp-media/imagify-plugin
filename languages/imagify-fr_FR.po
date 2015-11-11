@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-11-08 19:55+0100\n"
-"PO-Revision-Date: 2015-11-08 19:57+0100\n"
+"POT-Creation-Date: 2015-11-10 18:39+0100\n"
+"PO-Revision-Date: 2015-11-10 18:39+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -86,7 +86,7 @@ msgstr ""
 msgid "Your API key is valid."
 msgstr "Votre clé API est valide."
 
-#: inc/admin/enqueue.php:121 inc/admin/ui/bulk.php:166 inc/admin/upload.php:65
+#: inc/admin/enqueue.php:121 inc/admin/ui/bulk.php:210 inc/admin/upload.php:65
 msgid "Optimized"
 msgstr "Optimisé"
 
@@ -99,8 +99,9 @@ msgid "Error"
 msgstr "Erreur"
 
 #: inc/admin/enqueue.php:125 inc/admin/ui/notices.php:279
+#: inc/common/admin-bar.php:77
 msgid "Oops, It's Over!"
-msgstr "Oops, c’est fini !"
+msgstr "Oups, c’est fini !"
 
 #: inc/admin/enqueue.php:126
 msgid "Hold on!"
@@ -120,6 +121,7 @@ msgstr ""
 "images. J’ai optimisé %1$s sur %2$s !"
 
 #: inc/admin/enqueue.php:136 inc/admin/ui/notices.php:281
+#: inc/common/admin-bar.php:78
 #, php-format
 msgid ""
 "You have consumed all your credit for this month. You will have <strong>%s "
@@ -173,25 +175,25 @@ msgstr "<strong>Erreur</strong> : page d’options introuvable."
 msgid "Settings"
 msgstr "Réglages"
 
-#: inc/admin/ui/bulk.php:16
+#: inc/admin/ui/bulk.php:16 inc/common/admin-bar.php:98
 msgid "Account status"
 msgstr "Type de compte"
 
-#: inc/admin/ui/bulk.php:17
+#: inc/admin/ui/bulk.php:17 inc/common/admin-bar.php:99
 msgid "Your subscription:"
 msgstr "Votre abonnement&nbsp;:"
 
-#: inc/admin/ui/bulk.php:22
-msgid "View my subscription"
+#: inc/admin/ui/bulk.php:22 inc/common/admin-bar.php:69
+msgid "View My Subscription"
 msgstr "Voir mon abonnement"
 
-#: inc/admin/ui/bulk.php:47
+#: inc/admin/ui/bulk.php:47 inc/common/admin-bar.php:107
 #, php-format
 msgid "You have %s space credit left"
 msgstr "Il vous reste %s de crédit"
 
 #: inc/admin/ui/bulk.php:59
-msgid "Upgrade your account to continue to optimize your images"
+msgid "Upgrade your account to continue optimizing your images"
 msgstr "Mettez à niveau votre compte pour continuer à optimiser vos images"
 
 #: inc/admin/ui/bulk.php:63
@@ -229,97 +231,100 @@ msgstr ""
 msgid "Imagif'em all"
 msgstr "Imagif'em all"
 
-#: inc/admin/ui/bulk.php:107
+#: inc/admin/ui/bulk.php:109
 #, php-format
 msgid ""
-"All images which are over to %s will be skipped using the free version of "
-"the plugin."
+"All images which are over to %s could be optimized using the pro version."
 msgstr ""
-"Toutes les images qui font plus de %s seront ignorées en utilisant la "
-"version gratuite du plugin. "
+"Toutes les images qui font plus de %s pourront être optimisées avec la "
+"version pro."
 
-#: inc/admin/ui/bulk.php:115
+#: inc/admin/ui/bulk.php:120
 msgid "Overview"
 msgstr "Vue d'ensemble"
 
-#: inc/admin/ui/bulk.php:125
+#: inc/admin/ui/bulk.php:130
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: inc/admin/ui/bulk.php:130
-#, php-format
-msgid "that's the number %sof images you optimized"
-msgstr "c’est le nombre d’images %sque vous avez optimisé"
+#: inc/admin/ui/bulk.php:135
+msgid "that's the number of images you optimized with Imagify"
+msgstr "c’est le nombre d’images que %svous avez optimisé avec Imagify"
 
-#: inc/admin/ui/bulk.php:142
+#: inc/admin/ui/bulk.php:147
 msgid "Original size"
 msgstr "Poids de l’original"
 
-#: inc/admin/ui/bulk.php:147
+#: inc/admin/ui/bulk.php:152
 msgid "Optimized size"
 msgstr "Poids optimisé"
 
-#: inc/admin/ui/bulk.php:160
-msgid "Compression process results"
-msgstr "Résultats du processus de compression"
-
 #: inc/admin/ui/bulk.php:163
-msgid "Filename"
-msgstr "Nom du fichier"
-
-#: inc/admin/ui/bulk.php:164
-msgid "Status"
-msgstr "Statut"
-
-#: inc/admin/ui/bulk.php:165
-msgid "Original"
-msgstr "Original"
-
-#: inc/admin/ui/bulk.php:167
-msgid "Percentage"
-msgstr "Pourcentage"
-
-#: inc/admin/ui/bulk.php:168
-msgid "Thumbnails optimized"
-msgstr "Miniatures optimisées"
-
-#: inc/admin/ui/bulk.php:169
-msgid "Overall saving"
-msgstr "Gain total"
-
-#: inc/admin/ui/bulk.php:174
-msgid "file"
-msgstr "fichier"
-
-#: inc/admin/ui/bulk.php:175
-msgid "error"
-msgstr "erreur"
-
-#: inc/admin/ui/bulk.php:176
-msgid "Total:"
-msgstr "Total&nbsp;:"
-
-#: inc/admin/ui/bulk.php:177
-msgid "Gain:"
-msgstr "Gain&nbsp;:"
-
-#: inc/admin/ui/bulk.php:194
 #, php-format
-msgid "%sStart the bulk optimization%s"
-msgstr "%sDémarrer l’optimisation en masse%s"
+msgid "that's the size you saved %sby using Imagify"
+msgstr "c’est le poids que vous avez économisé en utilisant Imagify"
 
-#: inc/admin/ui/bulk.php:210
+#: inc/admin/ui/bulk.php:183
 msgid "Well done!"
 msgstr "Bien joué&nbsp;!"
 
-#: inc/admin/ui/bulk.php:211
+#: inc/admin/ui/bulk.php:184
 #, php-format
 msgid "you saved %1$s out of %2$s"
 msgstr "vous avez économisé %1$s sur %2$s"
 
-#: inc/admin/ui/bulk.php:216
+#: inc/admin/ui/bulk.php:189
 msgid "Share your awesome result"
 msgstr "Partagez votre résultat"
+
+#: inc/admin/ui/bulk.php:204
+msgid "Compression process results"
+msgstr "Résultats du processus de compression"
+
+#: inc/admin/ui/bulk.php:207
+msgid "Filename"
+msgstr "Nom du fichier"
+
+#: inc/admin/ui/bulk.php:208
+msgid "Status"
+msgstr "Statut"
+
+#: inc/admin/ui/bulk.php:209
+msgid "Original"
+msgstr "Original"
+
+#: inc/admin/ui/bulk.php:211
+msgid "Percentage"
+msgstr "Pourcentage"
+
+#: inc/admin/ui/bulk.php:212
+msgid "Thumbnails optimized"
+msgstr "Miniatures optimisées"
+
+#: inc/admin/ui/bulk.php:213
+msgid "Overall saving"
+msgstr "Gain total"
+
+#: inc/admin/ui/bulk.php:218
+msgid "file"
+msgstr "fichier"
+
+#: inc/admin/ui/bulk.php:219
+msgid "error"
+msgstr "erreur"
+
+#: inc/admin/ui/bulk.php:220
+msgid "Total:"
+msgstr "Total&nbsp;:"
+
+#: inc/admin/ui/bulk.php:221
+msgid "Gain:"
+msgstr "Gain&nbsp;:"
+
+#: inc/admin/ui/bulk.php:238
+#, php-format
+msgid "%sStart the bulk optimization%s"
+msgstr "%sDémarrer l’optimisation en masse%s"
 
 #: inc/admin/ui/notices.php:23
 msgid "Welcome to Imagify, the best way to easily optimize your images!"
@@ -650,7 +655,7 @@ msgstr "Filtrer par statut"
 msgid "All images"
 msgstr "Toutes les images"
 
-#: inc/classes/class-attachment.php:424
+#: inc/classes/class-attachment.php:444
 msgid ""
 "This size isn't authorized to be optimized. Update your Imagify settings if "
 "you want to optimize it."
@@ -665,6 +670,27 @@ msgstr "Gratuit"
 #: inc/classes/class-user.php:127
 msgid "Pro"
 msgstr "Pro"
+
+#: inc/common/admin-bar.php:67
+msgid "Oops, It's almost over!"
+msgstr "Oups, c’est bientôt fini !"
+
+#: inc/common/admin-bar.php:68
+#, php-format
+msgid ""
+"You have almost used all your credit.%sDon't forget to upgrade your "
+"subscription to continue optimizing your images."
+msgstr ""
+"Vous avez bientôt utilisé tout votre crédit.%sN’oubliez pas de mettre à "
+"niveau votre abonnement pour continuer à optimiser vos images."
+
+#: inc/common/admin-bar.php:79
+msgid "Upgrade My Subscription"
+msgstr "Mettre à niveau mon abonnement"
+
+#: inc/common/admin-bar.php:119
+msgid "View my subscription"
+msgstr "Voir mon abonnement"
 
 #: inc/functions/admin-ui.php:35
 msgid "New Filesize:"
@@ -756,6 +782,39 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid ""
+#~ "You have almost used all your credit. Don't forget to upgrade your "
+#~ "subscription to continue optimizing your images."
+#~ msgstr ""
+#~ "Vous avez bientôt utilisé tout votre crédit. N’oubliez pas de mettre à "
+#~ "niveau votre abonnement pour continuer à optimiser vos images."
+
+#~ msgid ""
+#~ "You have almost used all your credit. Don't forget to upgrade your "
+#~ "account to continue optimizing your images."
+#~ msgstr ""
+#~ "Vous avez bientôt utilisé tout votre crédit. N’oubliez pas de mettre à "
+#~ "niveau votre abonnement pour continuer à optimiser vos images."
+
+#~ msgid "Upgrade your account to continue to optimize your images"
+#~ msgstr "Mettez à niveau votre compte pour continuer à optimiser vos images"
+
+#~ msgid ""
+#~ "All images which are over to %s will be skipped using the free version."
+#~ msgstr ""
+#~ "Toutes les images qui font plus de %s seront ignorées en utilisant la "
+#~ "version gratuite. "
+
+#~ msgid "that's the number %sof images you optimized"
+#~ msgstr "c’est le nombre d’images %sque vous avez optimisé"
+
+#~ msgid ""
+#~ "All images which are over to %s will be skipped using the free version of "
+#~ "the plugin."
+#~ msgstr ""
+#~ "Toutes les images qui font plus de %s seront ignorées en utilisant la "
+#~ "version gratuite du plugin. "
 
 #~ msgid ""
 #~ "%s images are over %s and will be skipped using the free version of the "
