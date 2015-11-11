@@ -66,7 +66,7 @@ function _imagify_admin_bar( $wp_admin_bar )
 				<div class="imagify-error">
 					<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s almost over!', 'imagify' ) . '</strong></p>
  					<p>' . sprintf( __( 'You have almost used all your credit.%sDon\'t forget to upgrade your subscription to continue optimizing your images.', 'imagify' ), '<br/><br/>' ) . '</p>
-					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription">' . __( 'View My Subscription', 'imagify' ) . '</a></p>
+					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">' . __( 'View My Subscription', 'imagify' ) . '</a></p>
 				</div>
 			';
 		}
@@ -76,7 +76,7 @@ function _imagify_admin_bar( $wp_admin_bar )
 				<div class="imagify-error">
 					<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s Over!', 'imagify' ) . '</strong></p>
 					<p>' . sprintf( __( 'You have consumed all your credit for this month. You will have <strong>%s back on %s</strong>.', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) ) ) . '</p>
-					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>
+					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>
 				</div>
 			';
 		}
@@ -114,7 +114,7 @@ function _imagify_admin_bar( $wp_admin_bar )
 
 		$quota_section .= '
 				<p class="imagify-abq-row">
-					<a class="" href="' . IMAGIFY_APP_MAIN . '/#/subscription">
+					<a class="" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">
 						<span class="dashicons dashicons-admin-users"></span>
 						<span class="button-text">' . __( 'View my subscription', 'imagify' ) . '</span>
 					</a>
