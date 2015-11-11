@@ -7,8 +7,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @since 1.0
  */
 add_action( 'admin_print_styles', '_imagify_admin_print_styles' );
-function _imagify_admin_print_styles()
-{
+function _imagify_admin_print_styles() {
 	global $pagenow;
 	$user			= get_imagify_user();
 	$current_screen = get_current_screen();
