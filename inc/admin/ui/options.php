@@ -149,7 +149,7 @@ function _imagify_display_options_page() { ?>
 
 									<p id="describe-resize-larger" class="imagify-options-line">
 										<?php
-											echo sprintf( 
+											printf( 
 												__( 'to maximum %s pixels width', 'imagify' ),
 												'<input type="text" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_w]" value="' . get_imagify_option( 'resize_larger_w', false ). '" size="5">'
 											);
@@ -162,7 +162,7 @@ function _imagify_display_options_page() { ?>
 
 											<?php
 												$max_sizes = get_imagify_max_intermediate_image_size();
-												echo sprintf( __( 'This option is recommended to reduce larger images. You can save size can go up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %spx.', 'imagify' ), $max_sizes['width'] );
+												printf( __( 'This option is recommended to reduce larger images. You can save size can go up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %spx.', 'imagify' ), $max_sizes['width'] );
 											?>
 										</span>
 									</p>
@@ -178,7 +178,7 @@ function _imagify_display_options_page() { ?>
 									<p>
 										<?php _e( 'You can choose to compress different image sizes created by WordPress here.', 'imagify' ); ?>
 										<br/>
-										<?php echo sprintf( __( 'The %soriginal size%s is %sautomatically optimized%s by Imagify.', 'imagify' ), '<strong>', '</strong>', '<strong>', '</strong>' ); ?>
+										<?php printf( __( 'The %soriginal size%s is %sautomatically optimized%s by Imagify.', 'imagify' ), '<strong>', '</strong>', '<strong>', '</strong>' ); ?>
 										<br>
 										<span class="imagify-important">
 											<?php _e( 'Remember each additional image size will affect your Imagify monthly usage!', 'imagify' ); ?>

@@ -21,7 +21,7 @@ function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
 		// Check if the attachment extension is allowed
 		// TO DO: use wp_attachment_is_image when we can optimize all formats
 		if ( ! in_array( $attachment_ext , array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
-			echo sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
+			printf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
 
 			return false;
 		}

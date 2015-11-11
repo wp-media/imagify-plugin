@@ -40,7 +40,7 @@ function _imagify_warning_empty_api_key_notice() {
 					<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>key.svg" width="48" height="48" alt="">
 					<div class="imagify-col-content">
 						<p class="imagify-col-title"><?php _e( 'Enter your API Key', 'imagify' ); ?></p>
-						<p class="imagify-col-desc"><?php echo sprintf( __( 'Save your API Key you have received by email or you can get it on your %sImagify account page%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/api">', '</a>' ); ?></p>
+						<p class="imagify-col-desc"><?php printf( __( 'Save your API Key you have received by email or you can get it on your %sImagify account page%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/api">', '</a>' ); ?></p>
 						<p>
 							<?php wp_nonce_field( 'imagify-check-api-key', 'imagifycheckapikeynonce', false ); ?>
 							<a id="imagify-save-api-key" href="<?php echo get_imagify_admin_url(); ?>" class="button button-primary"><?php _e( 'I have my API key', 'imagify' ); ?></a></p>
@@ -85,7 +85,7 @@ function _imagify_warning_wrong_api_key_notice() {
 			<p class="imagify-notice-title"><strong><?php _e( 'Your API key isn\'t valid!', 'imagify' ); ?></strong></p>
 			<p>
 			<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
-			<?php echo sprintf( __( 'Go to your Imagify account page to get your API Key and specify it on %1$syour settings%3$s or %2$screate an account for free%3$s if you don\'t have one yet.', 'imagify' ), '<a href="' . get_imagify_admin_url() . '">', '<a id="imagify-signup" href="' . IMAGIFY_WEB_MAIN . '">', '</a>' ); ?></p>
+			<?php printf( __( 'Go to your Imagify account page to get your API Key and specify it on %1$syour settings%3$s or %2$screate an account for free%3$s if you don\'t have one yet.', 'imagify' ), '<a href="' . get_imagify_admin_url() . '">', '<a id="imagify-signup" href="' . IMAGIFY_WEB_MAIN . '">', '</a>' ); ?></p>
 		</div>
 		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'wrong-api-key' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>
@@ -179,9 +179,9 @@ function _imagify_rating_notice() {
 			<?php
 			$imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
 			?>
-			<p><?php echo sprintf( __( '%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and reduced by %1$s%4$s%2$s%% your images size.', 'imagify' ), '<strong>', '</strong>', $optimized_attachments, $saving_data['percent'] ); ?></p>
+			<p><?php printf( __( '%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and reduced by %1$s%4$s%2$s%% your images size.', 'imagify' ), '<strong>', '</strong>', $optimized_attachments, $saving_data['percent'] ); ?></p>
 			<p class="imagify-rate-us">
-				<?php echo sprintf( __( '%sDo you like this plugin?%s Please take a few seconds to %srate it on WordPress.org%s!', 'imagify' ), '<strong>', '</strong><br />', '<a href="' . $imagify_rate_url . '">', '</a>' ); ?>
+				<?php printf( __( '%sDo you like this plugin?%s Please take a few seconds to %srate it on WordPress.org%s!', 'imagify' ), '<strong>', '</strong><br />', '<a href="' . $imagify_rate_url . '">', '</a>' ); ?>
 				<br>
 				<a class="stars" href="<?php echo $imagify_rate_url; ?>">☆☆☆☆☆</a>
 			</p>
@@ -278,7 +278,7 @@ function _imagify_warning_over_quota_notice() {
 		<div class="imagify-notice-content">
 			<p class="imagify-notice-title"><strong><?php _e( 'Oops, It\'s Over!', 'imagify' ); ?></strong></p>
 			<p>
-			<?php echo sprintf( __( 'You have consumed all your credit for this month. You will have <strong>%s back on %s</strong>.', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) ) ) . '<br/><br/>' . sprintf( __( 'To continue to optimize your images, log in to your Imagify account to %sbuy a pack or subscribe to a plan%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/subscription' . '">', '</a>' ); ?>
+			<?php printf( __( 'You have consumed all your credit for this month. You will have <strong>%s back on %s</strong>.', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) ) ) . '<br/><br/>' . sprintf( __( 'To continue to optimize your images, log in to your Imagify account to %sbuy a pack or subscribe to a plan%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/subscription' . '">', '</a>' ); ?>
 			</p>
 		</div>
 		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'free-over-quota' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
