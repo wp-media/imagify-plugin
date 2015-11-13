@@ -114,6 +114,29 @@ function _imagify_display_options_page() { ?>
 											<a href="#imagify-more-info" class="imagify-modal-trigger"><?php _e( 'More info?', 'imagify' ); ?></a>
 										</span>
 									</p>
+
+									<p class="imagify-visual-comparison-text">
+										<?php 
+										printf(
+											__( 'To see the differences, %sopen a visual comparison%s', 'imagify' ),
+											'<button type="button" class="button button-primary button-mini-flat imagify-visual-comparison-btn">',
+											'</button>'
+										);
+										?>
+									</p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><span class="imagify-important"><?php _e( 'About backups', 'imagify' ); ?></span></th>
+								<td>
+									<p><?php _e('In case of need we backup all your original images on your server in this directory:') ?><br>
+									<strong class="imagify-important"><em>
+										<?php 
+											$upload_url = wp_upload_dir()['baseurl'];
+											$siteurl = get_option( 'siteurl' );
+											echo explode( $siteurl, $upload_url )[1] . '/backup/';
+										?>
+									</em></strong></p>
 								</td>
 							</tr>
 							<tr>
@@ -126,18 +149,6 @@ function _imagify_display_options_page() { ?>
 									<span id="describe-auto-optimize" class="imagify-info">
 										<span class="dashicons dashicons-info"></span>
 										<?php _e( 'Automatically optimize every image you upload to WordPress.', 'imagify' ); ?>
-									</span>
-								</td>
-							</tr>
-							<tr>
-								<th scope="row"><?php _e( 'Backup original images', 'imagify' ); ?></th>
-								<td>
-									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[backup]" id="backup" <?php checked( get_imagify_option( 'backup', 0 ), 1 ); ?> aria-describedby="describe-backup" />
-									<label for="backup" onclick=""><span class="screen-reader-text"><?php _e( 'Backup original images', 'imagify' ); ?></span></label>
-
-									<span id="describe-backup" class="imagify-info">
-										<span class="dashicons dashicons-info"></span>
-										<?php _e( 'Keep your original images in a separate folder before optimization process.', 'imagify' ); ?>
 									</span>
 								</td>
 							</tr>
@@ -240,8 +251,35 @@ function _imagify_display_options_page() { ?>
 							?>
 						</tbody>
 					</table>
+
+					<h3 class="imagify-options-title"><?php _e( 'Display options', 'Imagify' ); ?></h3>
+
+					<table class="form-table">
+						<tbody>
+							<tr>
+								<th scope="row"><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></th>
+								<td>
+									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[admin_bar_menu]" id="admin_bar_menu" <?php checked( get_imagify_option( 'admin_bar_menu', 0 ), 1 ); ?> aria-describedby="describe-admin-bar-menu" />
+									<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
+									<label for="admin_bar_menu" onclick=""><span class="screen-reader-text"><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></span></label>
+
+									<p id="describe-admin-bar-menu" class="imagify-options-line">
+										<?php _e( 'I want this awesome quick access menu on my menu bar.', 'imagify' ); ?>
+										<br>
+										<img class="imagify-menu-bar-img" src="<?php echo IMAGIFY_ASSETS_IMG_URL . 'imagify-menu-bar.jpg'; ?>" width="300" height="225" alt="">
+									</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
 				</div>
-				<?php submit_button(); ?>
+				<div class="submit">
+					<?php submit_button(); ?>
+					<div class="imagify-bulk-info">
+						<p><?php printf( __( 'When you have saved your settings, you can optimize all your images using %sImagify Bulk Optimization%s feature.', 'imagify' ), '<a href="' . get_admin_url() . 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization">', '</a>' ); ?></p>
+					</div>
+				</div>
 			</form>
 		</div>
 
