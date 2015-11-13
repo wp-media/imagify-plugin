@@ -113,7 +113,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 
 		$quota_section .= '
 				<p class="imagify-abq-row">
-					<a class="" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">
+					<a class="imagify-account-link" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">
 						<span class="dashicons dashicons-admin-users"></span>
 						<span class="button-text">' . __( 'View my subscription', 'imagify' ) . '</span>
 					</a>

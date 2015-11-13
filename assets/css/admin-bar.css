@@ -10,6 +10,7 @@
 	padding: 0 13px;
 }
 #wpadminbar #wp-admin-bar-imagify-profile {
+	min-width: 200px;
 	padding: 15px 0 10px;
 	margin-top: 0.7em;
 	background: #222;
@@ -53,6 +54,12 @@
 #wpadminbar #wp-admin-bar-imagify-profile a {
 	padding: 0;
 	color: #40B1D0;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-account-link {
+	display: table;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-account-link > *  {
+	display: table-cell;
 }
 #wpadminbar #wp-admin-bar-imagify-profile .imagify-space-left {
 	max-width: 210px;
