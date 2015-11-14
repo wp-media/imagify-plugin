@@ -119,7 +119,7 @@ function _imagify_display_options_page() { ?>
 										<?php 
 										printf(
 											__( 'To see the differences, %sopen a visual comparison%s', 'imagify' ),
-											'<button type="button" class="button button-primary button-mini-flat imagify-visual-comparison-btn">',
+											'<button type="button" class="button button-primary button-mini-flat imagify-visual-comparison-btn imagify-modal-trigger" data-target="#imagify-visual-comparison">',
 											'</button>'
 										);
 										?>
@@ -314,6 +314,40 @@ function _imagify_display_options_page() { ?>
 						</p>
 					</div>
 				</div>
+
+				<button type="button" class="close-btn">
+					<i class="dashicons dashicons-no-alt" aria-hidden="true"></i>
+					<span class="screen-reader-text"><?php _e( 'Close' ); ?></span>
+				</button>
+			</div>
+		</div>
+
+
+		<div class="imagify-modal" id="imagify-visual-comparison">
+			<div class="imagify-modal-content">
+				
+				<p class="h2"><?php _e( 'Visual Comparison', 'imagify'); ?></p>
+
+				<div class="twentytwenty-container"
+									data-loader="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>spinner.gif"
+									data-label-original="<?php _e( 'Original', 'imagify' ); ?>"
+									data-label-normal="<?php _e( 'Normal', 'imagify' ); ?>"
+									data-label-aggressive="<?php _e( 'Aggressive', 'imagify' ); ?>"
+
+									data-original-label="Original: **1.2mb**"
+									data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-original.jpg"
+									data-original-dim="1220x350"
+									data-original-alt="Bear photography about 1.2 Mb"
+
+									data-optimized-label="Optimized (Normal): **1.1mb**"
+									data-optimized-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-optimized.jpg"
+									data-optimized-dim="1220x350"
+									data-optimized-alt="Imagified Bear photography about 1.1 Mb"
+
+									data-aggressive-label="Optimized (Aggressive): **0.39mb**"
+									data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-aggressive.jpg"
+									data-aggressive-dim="1220x350"
+									data-aggressive-alt="Imagified Bear photography about 0.39 Mb"></div>
 
 				<button type="button" class="close-btn">
 					<i class="dashicons dashicons-no-alt" aria-hidden="true"></i>
