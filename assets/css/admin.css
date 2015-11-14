@@ -1766,6 +1766,9 @@ td.imagify-cell-filename {
 	box-shadow: 1px 1px 4px rgba(0,0,0,.7);
 	border-radius: 3px;
 }
+#imagify-visual-comparison .imagify-modal-content {
+	max-width: 1400px;
+}
 .imagify-modal .h2 {
 	margin: .5em 0;
 	color: #8ba6b4;
@@ -1831,10 +1834,22 @@ td.imagify-cell-filename {
 /**
  * Visual Comparison
  */
+.imagify-modal .loader {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -10px 0 0 -10px;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity .4s;
+}
+.imagify-modal .loading .loader {
+	visibility: visible;
+	opacity: 1;
+}
 
 .imagify-settings .imagify-visual-comparison-text {
 	margin-top: 1em;
 	color: #40b1d0;
 	font-weight: bold;
 }
-
