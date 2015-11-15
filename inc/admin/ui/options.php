@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @since 1.0
  */
 function _imagify_display_options_page() {
-	global $_wp_additional_image_sizes;
+	global $_wp_additional_image_sizes, $wp_version;
 	?>
 	<div class="wrap imagify-settings">
 		<?php
@@ -201,15 +201,17 @@ function _imagify_display_options_page() {
 									<br>
 
 									<?php
-									$sizes = array();
+									$sizes   = array();
+									$is_wp44 = version_compare( $wp_version, '4.0-alpha' ) >= 0;
 									$all_intermediate_image_sizes = get_intermediate_image_sizes();
 									$intermediate_image_sizes     = apply_filters( 'image_size_names_choose', $all_intermediate_image_sizes );
 									$all_intermediate_image_sizes = array_combine( $all_intermediate_image_sizes, $all_intermediate_image_sizes );
 									$intermediate_image_sizes     = array_merge( $all_intermediate_image_sizes, $intermediate_image_sizes );
+									$wp_image_sizes               = $is_wp44 ? array( 'thumbnail', 'medium', 'medium_large', 'large' ) : array( 'thumbnail', 'medium', 'large' );
 
 									// Create the full array with sizes and crop info
 									foreach ( $intermediate_image_sizes as $size => $size_name ) {
-										if ( in_array( $size, array( 'thumbnail', 'medium', 'medium_large', 'large' ) ) ) {
+										if ( in_array( $size, $wp_image_sizes ) ) {
 											$sizes[ $size ] = array(
 												'width'  => get_option( $size . '_size_w' ),
 												'height' => get_option( $size . '_size_h' ),
