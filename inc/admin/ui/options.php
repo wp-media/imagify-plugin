@@ -6,7 +6,9 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  *
  * @since 1.0
  */
-function _imagify_display_options_page() { ?>
+function _imagify_display_options_page() {
+	global $_wp_additional_image_sizes;
+	?>
 	<div class="wrap imagify-settings">
 		<?php
 		if ( ! defined( 'WP_ROCKET_VERSION' ) ) { ?>
@@ -53,7 +55,7 @@ function _imagify_display_options_page() { ?>
 				<input id="version" type="hidden" value="<?php echo esc_attr( get_imagify_option( 'version' ) ); ?>" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[version]">
 
 				<h3 class="screen-reader-text"><?php _e( 'Settings' ); ?></h3>
-				
+
 				<?php
 				if ( ! defined( 'IMAGIFY_API_KEY' ) || ! IMAGIFY_API_KEY ) { ?>
 				<div class="imagify-sub-header">
@@ -91,7 +93,7 @@ function _imagify_display_options_page() { ?>
 				<?php
 				}
 				?>
-							
+
 				<div class="imagify-settings-section <?php echo ( ! imagify_valid_key() ) ? 'hidden' : ''; ?>">
 					<table class="form-table">
 						<tbody>
@@ -116,7 +118,7 @@ function _imagify_display_options_page() { ?>
 									</p>
 
 									<p class="imagify-visual-comparison-text">
-										<?php 
+										<?php
 										printf(
 											__( 'To see the differences, %sopen a visual comparison%s', 'imagify' ),
 											'<button type="button" class="button button-primary button-mini-flat imagify-visual-comparison-btn imagify-modal-trigger" data-target="#imagify-visual-comparison">',
@@ -131,7 +133,7 @@ function _imagify_display_options_page() { ?>
 								<td>
 									<p><?php _e('In case of need we backup all your original images on your server in this directory:') ?><br>
 									<strong class="imagify-important"><em>
-										<?php 
+										<?php
 											$upload_url = wp_upload_dir()['baseurl'];
 											$siteurl = get_option( 'siteurl' );
 											echo explode( $siteurl, $upload_url )[1] . '/backup/';
@@ -160,7 +162,7 @@ function _imagify_display_options_page() { ?>
 
 									<p id="describe-resize-larger" class="imagify-options-line">
 										<?php
-											printf( 
+											printf(
 												__( 'to maximum %s pixels width', 'imagify' ),
 												'<input type="text" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_w]" value="' . get_imagify_option( 'resize_larger_w', false ). '" size="5">'
 											);
@@ -199,30 +201,25 @@ function _imagify_display_options_page() { ?>
 									<br>
 
 									<?php
-									global $_wp_additional_image_sizes;
+									$sizes = array();
+									$intermediate_image_sizes = apply_filters( 'image_size_names_choose', get_intermediate_image_sizes() );
 
-								    $sizes = array( 
-								    	'full' 		=> array( 'name' => __( 'Full Size' ) ), 
-					    				'thumbnail' => array( 'name' => __( 'Thumbnail' ) ),
-					    				'medium' 	=> array( 'name' => __( 'Medium' ) ),
-					    				'large' 	=> array( 'name' => __( 'Large' ) ),
-							    	);
-								    $get_intermediate_image_sizes = apply_filters( 'image_size_names_choose', get_intermediate_image_sizes() );
-
-								    // Create the full array with sizes and crop info
-								    foreach ( $get_intermediate_image_sizes as $key => $size ) {
-								        if ( in_array( $size, array( 'thumbnail', 'medium', 'large' ) ) ) {
-								            $sizes[ $size ]['width']  = get_option( $size . '_size_w' );
-								            $sizes[ $size ]['height'] = get_option( $size . '_size_h' );
-								        } elseif ( isset( $_wp_additional_image_sizes[ $size ] ) ) {
-								            $sizes[ $size ] = array(
-								                    'width'  => $_wp_additional_image_sizes[ $size ]['width'],
-								                    'height' => $_wp_additional_image_sizes[ $size ]['height']
-								            );
-								        } else {
-							            	$sizes[ $key ]['name'] = $get_intermediate_image_sizes[ $key ];
-								        }
-								    }
+									// Create the full array with sizes and crop info
+									foreach ( $intermediate_image_sizes as $size => $size_name ) {
+										if ( in_array( $size, array( 'thumbnail', 'medium', 'large' ) ) ) {
+											$sizes[ $size ] = array(
+												'width'  => get_option( $size . '_size_w' ),
+												'height' => get_option( $size . '_size_h' ),
+												'name'   => $size_name,
+											);
+										} elseif ( isset( $_wp_additional_image_sizes[ $size ] ) ) {
+											$sizes[ $size ] = array(
+												'width'  => $_wp_additional_image_sizes[ $size ]['width'],
+												'height' => $_wp_additional_image_sizes[ $size ]['height'],
+												'name'   => $size_name,
+											);
+										}
+									}
 
 									foreach( $sizes as $size_key => $size_data ) {
 										if ( ! isset( $size_data['name'] ) ) {
@@ -231,16 +228,14 @@ function _imagify_display_options_page() { ?>
 											$label = esc_html( stripslashes( $size_data['name'] ) );
 										}
 
-										if ( 'full' != $size_key ) {
-											$label = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
-									?>
+										$label = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
+										?>
 										<input type="hidden" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
 										<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php echo ( ! array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) ) ? 'checked="checked"' : '' ?> />
 										<label for="imagify_sizes_<?php echo $size_key; ?>" onclick=""><?php echo $label; ?></label>
 										<br class="imagify-br">
 
-									<?php
-										}
+										<?php
 									}
 									?>
 								</td>
@@ -298,7 +293,7 @@ function _imagify_display_options_page() { ?>
 						<p>
 							<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.' , 'imagify' ); ?>
 						</p>
-						
+
 					</div>
 
 					<div class="col-1-2">
@@ -325,7 +320,7 @@ function _imagify_display_options_page() { ?>
 
 		<div class="imagify-modal" id="imagify-visual-comparison">
 			<div class="imagify-modal-content">
-				
+
 				<p class="h2"><?php _e( 'Visual Comparison', 'imagify'); ?></p>
 
 				<div class="twentytwenty-container"
