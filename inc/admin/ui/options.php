@@ -202,11 +202,14 @@ function _imagify_display_options_page() {
 
 									<?php
 									$sizes = array();
-									$intermediate_image_sizes = apply_filters( 'image_size_names_choose', get_intermediate_image_sizes() );
+									$all_intermediate_image_sizes = get_intermediate_image_sizes();
+									$intermediate_image_sizes     = apply_filters( 'image_size_names_choose', $all_intermediate_image_sizes );
+									$all_intermediate_image_sizes = array_combine( $all_intermediate_image_sizes, $all_intermediate_image_sizes );
+									$intermediate_image_sizes     = array_merge( $all_intermediate_image_sizes, $intermediate_image_sizes );
 
 									// Create the full array with sizes and crop info
 									foreach ( $intermediate_image_sizes as $size => $size_name ) {
-										if ( in_array( $size, array( 'thumbnail', 'medium', 'large' ) ) ) {
+										if ( in_array( $size, array( 'thumbnail', 'medium', 'medium_large', 'large' ) ) ) {
 											$sizes[ $size ] = array(
 												'width'  => get_option( $size . '_size_w' ),
 												'height' => get_option( $size . '_size_h' ),
@@ -222,12 +225,7 @@ function _imagify_display_options_page() {
 									}
 
 									foreach( $sizes as $size_key => $size_data ) {
-										if ( ! isset( $size_data['name'] ) ) {
-											$label = $size_key;
-										} else {
-											$label = esc_html( stripslashes( $size_data['name'] ) );
-										}
-
+										$label = esc_html( stripslashes( $size_data['name'] ) );
 										$label = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
 										?>
 										<input type="hidden" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
