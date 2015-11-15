@@ -173,7 +173,7 @@ function _imagify_display_options_page() { ?>
 
 											<?php
 												$max_sizes = get_imagify_max_intermediate_image_size();
-												printf( __( 'This option is recommended to reduce larger images. You can save size can go up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %spx.', 'imagify' ), $max_sizes['width'] );
+												printf( __( 'This option is recommended to reduce larger images. You can save up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %spx.', 'imagify' ), $max_sizes['width'] );
 											?>
 										</span>
 									</p>
