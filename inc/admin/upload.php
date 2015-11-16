@@ -13,7 +13,6 @@ function _imagify_manage_media_columns( $columns ) {
 }
 
 add_filter( 'manage_media_custom_column', '_imagify_manage_media_custom_column', 10, 2 );
-add_filter( 'attachment_fields_to_edit', '_imagify_manage_media_custom_column', 10, 2 );
 function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
 	if ( 'imagify_optimized_file' == $column_name ) {
 		echo get_imagify_media_column_content( $attachment_id );
