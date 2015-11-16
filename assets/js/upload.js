@@ -42,7 +42,7 @@ jQuery(function($){
 		e.preventDefault();
 
 		var $obj 	= $(this);
-		var	$parent = $obj.parents('.column-imagify_optimized_file');
+		var	$parent = $obj.parents('.column-imagify_optimized_file, .compat-field-imagify .field');
 		var href 	= $obj.attr('href');
 
 		$parent.html('<div class="button"><span class="imagify-spinner"></span>' + $obj.data('waiting-label') + '</div>');
@@ -62,14 +62,14 @@ jQuery(function($){
 	 */
 	$('.imagify-datas-details').hide();
 
-	$('.column-imagify_optimized_file').on('click', '.imagify-datas-more-action a', function(){
+	$('.column-imagify_optimized_file, .compat-field-imagify .field').on('click', '.imagify-datas-more-action a', function(){
 		if ( $(this).hasClass('is-open') ) {
 			$( $(this).attr('href') ).slideUp('300').removeClass('is-open');
 			$(this).removeClass('is-open').find('.the-text').text( $(this).data('open') );
 		}
 		else {
 			$( $(this).attr('href') ).slideDown('300').addClass('is-open');
-			$(this).addClass('is-open').find('.the-text').text( $(this).data('close') );;
+			$(this).addClass('is-open').find('.the-text').text( $(this).data('close') );
 		}
 		return false;
 	});

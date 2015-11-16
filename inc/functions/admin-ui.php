@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 /*
- * Get the optimization data list for a specific attachement.
+ * Get the optimization data list for a specific attachment.
  *
  * @since 1.0
  *
@@ -122,5 +122,43 @@ function get_imagify_attachment_reoptimize_link( $attachment_id ) {
 		$output = '<a href="' . get_imagify_admin_url( 'manual-override-upload', $attachment_id ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), $level ) . '</a>';
 	}
 
+	return $output;
+}
+
+/*
+ * Get all data to diplay for a specific attachment.
+ *
+ * @since 1.1.7
+ *
+ * @param 	int     $attachment_id  The attachement ID.
+ * @return  string  The output to print.
+ */
+function get_imagify_media_column_content( $attachment_id ) {
+	$output      	= '';
+	$attachment     = new Imagify_Attachment( $attachment_id );
+	$attachment_ext = $attachment->get_extension();
+
+	// Check if the attachment extension is allowed
+	// TO DO: use wp_attachment_is_image when we can optimize all formats
+	if ( ! in_array( $attachment_ext , array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
+		$output = sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
+		return $output;
+	}
+
+	// Check if the API key is valid
+	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
+		$output .= __( 'Invalid API key', 'imagify' );
+		$output .= '<br/>';
+		$output .= '<a href="' . get_imagify_admin_url( 'options-general' ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
+		return $output;
+	}
+
+	// Check if the image was optimized
+	if ( ! $attachment->is_optimized() && ! $attachment->has_error() ) {
+		$output .= '<a id="imagify-upload-' . $attachment_id . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment_id ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+		return $output;
+	}
+
+	$output .= get_imagify_attachment_optimization_text( $attachment_id );
 	return $output;
 }

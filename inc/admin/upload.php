@@ -13,36 +13,10 @@ function _imagify_manage_media_columns( $columns ) {
 }
 
 add_filter( 'manage_media_custom_column', '_imagify_manage_media_custom_column', 10, 2 );
+add_filter( 'attachment_fields_to_edit', '_imagify_manage_media_custom_column', 10, 2 );
 function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
 	if ( 'imagify_optimized_file' == $column_name ) {
-		$attachment      = new Imagify_Attachment( $attachment_id );
-		$attachment_ext  = $attachment->get_extension();
-
-		// Check if the attachment extension is allowed
-		// TO DO: use wp_attachment_is_image when we can optimize all formats
-		if ( ! in_array( $attachment_ext , array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
-			printf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
-
-			return false;
-		}
-
-		// Check if the API key is valid
-		if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
-			echo __( 'Invalid API key', 'imagify' );
-			echo '<br/>';
-			echo '<a href="' . get_imagify_admin_url( 'options-general' ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
-
-			return false;
-		}
-
-		// Check if the image was optimized
-		if ( ! $attachment->is_optimized() && ! $attachment->has_error() ) {
-			echo '<a id="imagify-upload-' . $attachment->id . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment->id ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
-
-			return false;
-		}
-
-		echo get_imagify_attachment_optimization_text( $attachment->id );
+		echo get_imagify_media_column_content( $attachment_id );
 	}
 }
 

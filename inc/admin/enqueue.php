@@ -178,9 +178,9 @@ function _imagify_admin_print_styles() {
 	}
 
 	/*
-	 * Scripts loaded in /wp-admin/upload.php
+	 * Scripts loaded in /wp-admin/upload.php and post.php
 	*/
-	if ( isset( $current_screen ) && 'upload' === $current_screen->base ) {
+	if ( isset( $current_screen ) && ( 'upload' === $current_screen->base || 'post' === $current_screen->base ) ) {
 		wp_enqueue_script( 'imagify-js-chart' );
 		wp_enqueue_script( 'imagify-js-upload' );
 	}
