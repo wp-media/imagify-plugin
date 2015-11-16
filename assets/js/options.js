@@ -52,11 +52,14 @@ jQuery(function($){
 	 * Check the boxes by clicking "labels" (aria-describedby items)
 	 */
 	$('.imagify-options-line').css('cursor', 'pointer').on('click', function(e){
+		if ( e.target.nodeName === 'INPUT' ) {
+			return;
+		}
 		$('input[aria-describedby="' + $(this).attr('id') + '"]').trigger('click');
 		return false;
 	});
 
-	$('.imagify-settings th span').on('click', function(){
+	$('.imagify-settings th span').on('click', function(e){
 		if ( $(this).parent().next('td').find('input:checkbox').length === 1 ) {
 			$(this).parent().next('td').find('input:checkbox').trigger('click');
 		}
