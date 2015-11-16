@@ -322,7 +322,15 @@ function _imagify_display_options_page() {
 		<div class="imagify-modal" id="imagify-visual-comparison">
 			<div class="imagify-modal-content">
 
-				<p class="h2"><?php _e( 'Visual Comparison', 'imagify'); ?></p>
+				<p class="imagify-comparison-title">
+					<?php
+						printf (
+							__( 'I want to compare%s and%s', 'imagify'),
+							'<span class="twentytwenty-left-buttons"></span>',
+							'<span class="twentytwenty-right-buttons"></span>'
+						);
+					?>
+				</p>
 
 				<div class="twentytwenty-container"
 									data-loader="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>spinner.gif"
@@ -330,20 +338,73 @@ function _imagify_display_options_page() {
 									data-label-normal="<?php _e( 'Normal', 'imagify' ); ?>"
 									data-label-aggressive="<?php _e( 'Aggressive', 'imagify' ); ?>"
 
-									data-original-label="Original: **1.2mb**"
+									data-original-label="<?php _e( 'Original', 'imagify' ); ?>"
 									data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-original.jpg"
 									data-original-dim="1220x350"
 									data-original-alt="Bear photography about 1.2 Mb"
 
-									data-optimized-label="Optimized (Normal): **1.1mb**"
+									data-optimized-label="<?php _e( 'Normal', 'imagify' ); ?>"
 									data-optimized-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-optimized.jpg"
 									data-optimized-dim="1220x350"
 									data-optimized-alt="Imagified Bear photography about 1.1 Mb"
 
-									data-aggressive-label="Optimized (Aggressive): **0.39mb**"
+									data-aggressive-label="<?php _e( 'Aggressive', 'imagify' ); ?>"
 									data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-aggressive.jpg"
 									data-aggressive-dim="1220x350"
 									data-aggressive-alt="Imagified Bear photography about 0.39 Mb"></div>
+
+				<div class="imagify-comparison-levels">
+					<div class="imagify-c-level imagify-level-original imagify-level-left">
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'Level:', 'imagify' ); ?></span>
+							<span class="value level"><?php _e( 'Original', 'imagify' ); ?></span>
+						</p>
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
+							<span class="value">1.4mb</span>
+						</p>
+					</div>
+					<div class="imagify-c-level imagify-level-optimized imagify-level-left imagify-level-right" aria-hidden="true">
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'Level:', 'imagify' ); ?></span>
+							<span class="value level"><?php _e( 'Normal', 'imagify' ); ?></span>
+						</p>
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
+							<span class="value size">1.1mb</span>
+						</p>
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
+							<span class="value">
+								<span class="imagify-chart">
+									<span class="imagify-chart-container">
+										<canvas id="imagify-consumption-chart" width="15" height="15"></canvas>
+									</span>
+								</span><span class="imagify-chart-value">8</span>%
+							</span>
+						</p>
+					</div>
+					<div class="imagify-c-level imagify-level-aggressive imagify-level-right">
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'Level:', 'imagify' ); ?></span>
+							<span class="value level"><?php _e( 'Aggressive', 'imagify' ); ?></span>
+						</p>
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
+							<span class="value size">0.39mb</span>
+						</p>
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
+							<span class="value">
+								<span class="imagify-chart">
+									<span class="imagify-chart-container">
+										<canvas id="imagify-consumption-chart" width="15" height="15"></canvas>
+									</span>
+								</span><span class="imagify-chart-value">67.5</span>%
+							</span>
+						</p>
+					</div>
+				</div>
 
 				<button type="button" class="close-btn">
 					<i class="dashicons dashicons-no-alt" aria-hidden="true"></i>

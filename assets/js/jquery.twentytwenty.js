@@ -2,10 +2,10 @@
 
 	$.fn.twentytwenty = function(options, callback) {
 		var options = $.extend({
-			handlePosition:		0.5,
-			orientation:		'horizontal',
-			labelBefore: 		'Before',
-			labelAfter: 		'After'
+			handlePosition		: 0.5,
+			orientation			: 'horizontal',
+			labelBefore			: 'Before',
+			labelAfter			: 'After'
 		}
 		, options);
 		return this.each(function() {
@@ -129,6 +129,10 @@
 (function(window, $, undefined){
 
 	$('.imagify-visual-comparison-btn').on('click', function(){
+
+		if ( $('.twentytwenty-wrapper').length === 1) {
+			return;
+		}
 		
 		$( $(this).data('target') ).find('.imagify-modal-content').css('width', ($(window).outerWidth()*0.95) + 'px');
 
@@ -154,24 +158,33 @@
 				aggressive_label 	= $tt.data('aggressive-label').replace(/\*\*/, '<strong>').replace(/\*\*/, '</strong>'),
 				aggressive_alt 		= $tt.data('aggressive-alt'),
 				aggressive_src 		= $tt.data('aggressive-img'),
-				aggressive_dim 		= $tt.data('aggressive-dim').split('x');
+				aggressive_dim 		= $tt.data('aggressive-dim').split('x'),
+
+				tt_before_buttons	= '<span class="twentytwenty-duo-buttons twentytwenty-duo-left">' +
+										'<button type="button" class="imagify-comparison-original selected" data-img="original">' + label_original + '</button>' +
+										'<button type="button" class="imagify-comparison-normal" data-img="optimized">' + label_normal + '</button>' +
+									'</span>',
+				tt_after_buttons	= '<span class="twentytwenty-duo-buttons twentytwenty-duo-right">' +
+										'<button type="button" class="imagify-comparison-normal" data-img="optimized">' + label_normal + '</button>' +
+										'<button type="button" class="imagify-comparison-aggressive selected" data-img="aggressive">' + label_aggressive + '</button>' +
+									'</span>';
 
 			// loader
 			$tt.before('<img class="loader" src="' + loader + '" alt="Loading…" width="20" height="20">')
+
+			// add switchers button only if needed
+			// should be more locally integrate...
+			var duo_buttons = ( $('.twentytwenty-left-buttons').lenght ) ? tt_before_buttons + tt_after_buttons : '';
+			// should be more locally integrate...
+			$('.twentytwenty-left-buttons').append(tt_before_buttons);		
+			$('.twentytwenty-right-buttons').append(tt_after_buttons);		
 
 			// add images to 50/50 area
 			$tt.closest('.imagify-modal-content').addClass('loading').find('.twentytwenty-container').append(
 					'<img class="img-original" alt="' + original_alt + '" width="' + original_dim[0] + '" height="' + original_dim[1] + '">' +
 					'<img class="img-optimized" alt="' + optimized_alt + '" width="' + optimized_dim[0] + '" height="' + optimized_dim[1] + '">' + 
 					'<img class="img-aggressive" alt="' + aggressive_alt + '" width="' + aggressive_dim[0] + '" height="' + aggressive_dim[1] + '">' +
-					'<span class="twentytwenty-duo-buttons twentytwenty-duo-left">' +
-						'<button type="button" class="imagify-comparison-original selected" data-img="original">' + label_original + '</button>' +
-						'<button type="button" class="imagify-comparison-normal" data-img="optimized">' + label_normal + '</button>' +
-					'</span>' +
-					'<span class="twentytwenty-duo-buttons twentytwenty-duo-right">' +
-						'<button type="button" class="imagify-comparison-normal" data-img="optimized">' + label_normal + '</button>' +
-						'<button type="button" class="imagify-comparison-aggressive selected" data-img="aggressive">' + label_aggressive + '</button>' +
-					'</span>'
+					duo_buttons
 			);
 
 			// load image original
@@ -205,14 +218,15 @@
 			}, 75);
 
 			// on click on button choices
-			$tt.on('click', '.twentytwenty-duo-buttons button:not(.selected)', function(e){
+			
+			$('.imagify-comparison-title').on('click', '.twentytwenty-duo-buttons button:not(.selected)', function(e){
 
 				e.stopPropagation();
 
 				var $_this 		= $(this),
-					$container 	= $_this.closest('.twentytwenty-container'),
+					$container 	= $_this.closest('.imagify-comparison-title').nextAll('.twentytwenty-wrapper').find('.twentytwenty-container'),
 					side		= $_this.closest('.twentytwenty-duo-buttons').hasClass('twentytwenty-duo-left') ? 'left' : 'right',
-					$other_side	= side === 'left' ? $container.find('.twentytwenty-duo-right') : $container.find('.twentytwenty-duo-left'),
+					$other_side	= side === 'left' ? $_this.closest('.imagify-comparison-title').find('.twentytwenty-duo-right') : $_this.closest('.imagify-comparison-title').find('.twentytwenty-duo-left'),
 					$duo 		= $_this.closest('.twentytwenty-duo-buttons').find('button'),
 					$img_before	= $container.find('.twentytwenty-before'),
 					$img_after	= $container.find('.twentytwenty-after'),
@@ -233,12 +247,16 @@
 					$img_before.attr('style', '');
 					$img_before.removeClass('twentytwenty-before');
 					$container.find( '.img-' + image ).addClass('twentytwenty-before').css('clip', clip_styles);
+					$('.twentytwenty-before-label').find('.twentytwenty-label-content').text( $container.data( image + '-label' ) );
+					$('.imagify-level-left').hide().attr('aria-hidden', 'true').filter('.imagify-level-' + image).show().attr('aria-hidden', 'false');
 				}
 
 				// right buttons
 				if ( side === 'right' ) {
 					$img_after.removeClass('twentytwenty-after')
 					$container.find( '.img-' + image ).addClass('twentytwenty-after');
+					$('.twentytwenty-after-label').find('.twentytwenty-label-content').text( $container.data( image + '-label' ) );
+					$('.imagify-level-right').hide().attr('aria-hidden', 'true').filter('.imagify-level-' + image).show().attr('aria-hidden', 'false');
 				}
 
 				return false;
