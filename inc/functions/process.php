@@ -13,8 +13,17 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @return obj|array  Error message | Optimized image data
  */
 function do_imagify( $file_path, $backup = true, $is_aggressive = null, $resize = array() ) {
-	$errors = new WP_Error();
-		
+	$errors    = new WP_Error();
+	
+	/**
+	 * Filter the attachment path
+	 *
+	 * @since 1.1.7
+	 *
+	 * @param string $file_path The attachment path
+	 */
+	$file_path = apply_filters( 'imagify_file_path', $file_path );
+	
 	// Check if external HTTP requests are blocked.
 	if ( is_imagify_blocked() ) {
 		$errors->add( 'http_block_external', __( 'External HTTP requests are blocked', 'imagify' ) );

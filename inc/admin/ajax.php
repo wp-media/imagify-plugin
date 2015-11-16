@@ -158,8 +158,11 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$query = new WP_Query( $args );
 	$ids   = $query->posts;
 	
-	foreach( $ids as $id ) {	
-		if ( file_exists( get_attached_file( $id ) ) ) {
+	foreach( $ids as $id ) {
+		/** This filter is documented in inc/functions/process.php */
+		$file_path = apply_filters( 'imagify_file_path', get_attached_file( $id ) );
+		
+		if ( file_exists( $file_path ) ) {
 			$attachment         = new Imagify_Attachment( $id );
 			$attachment_error   = $attachment->get_optimized_error();  
 			$attachment_error   = trim( $attachment_error );
