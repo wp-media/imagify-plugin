@@ -647,6 +647,11 @@ input[id^="imagify_sizes_"]:checked + label {
 	margin-top: 15px;
 }
 
+/* Some inputs */
+#describe-resize-larger input {
+	width: 5em;
+}
+
 /* Ads & columns */
 .imagify-col {
 	overflow: hidden;

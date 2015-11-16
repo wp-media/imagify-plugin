@@ -49,16 +49,27 @@ jQuery(function($){
 	});
 
 	/**
-	 * Auto check on options-line input focus
+	 * Check the boxes by clicking "labels" (aria-describedby items)
 	 */
-	if ( $('.imagify-options-line').length > 0 ) {
+	$('.imagify-options-line').css('cursor', 'pointer').on('click', function(e){
+		$('input[aria-describedby="' + $(this).attr('id') + '"]').trigger('click');
+		return false;
+	});
 
-		$('.imagify-options-line').find('input').on('focus', function(){
-			var $checkbox = $(this).closest('.imagify-options-line').prev('label').prev('input');
-			if ( ! $checkbox[0].checked ) {
-				$checkbox.prop('checked', true);
-			}
-		});
+	$('.imagify-settings th').on('click', function(){
+		if ( $(this).next('td').find('input:checkbox').length === 1 ) {
+			$(this).next('td').find('input:checkbox').trigger('click');
+		}
+	})
 
-	}
+	/**
+	 * Auto check on options-line input value change
+	 */
+	$('.imagify-options-line').find('input').on('change focus', function(){
+		var $checkbox = $(this).closest('.imagify-options-line').prev('label').prev('input');
+		if ( ! $checkbox[0].checked ) {
+			$checkbox.prop('checked', true);
+		}
+	});
+
 });

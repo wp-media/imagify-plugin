@@ -162,9 +162,10 @@ function _imagify_display_options_page() {
 
 									<p id="describe-resize-larger" class="imagify-options-line">
 										<?php
+											$max_sizes = get_imagify_max_intermediate_image_size();
 											printf(
 												__( 'to maximum %s pixels width', 'imagify' ),
-												'<input type="text" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_w]" value="' . get_imagify_option( 'resize_larger_w', false ). '" size="5">'
+												'<input type="number" min="' . $max_sizes['width'] . '" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_w]" value="' . get_imagify_option( 'resize_larger_w', false ). '" size="5">'
 											);
 										?>
 									</p>
@@ -174,7 +175,6 @@ function _imagify_display_options_page() {
 											<span class="dashicons dashicons-info"></span>
 
 											<?php
-												$max_sizes = get_imagify_max_intermediate_image_size();
 												printf( __( 'This option is recommended to reduce larger images. You can save up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %spx.', 'imagify' ), $max_sizes['width'] );
 											?>
 										</span>
