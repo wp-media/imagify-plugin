@@ -1826,9 +1826,9 @@ td.imagify-cell-filename {
 #imagify-visual-comparison .close-btn {
 	top: 50px;
 	right: 5px;
-	width: 27px;
-	height: 27px;
-	padding: 2px 0 0 2px;
+	width: 33px;
+	height: 33px;
+	padding: 1px 0 0 2px;
 	border: 1px solid #F2F2F2;
 	color: #F2F2F2;
 	line-height: 19px;
