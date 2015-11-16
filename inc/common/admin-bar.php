@@ -8,7 +8,12 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 add_action( 'admin_bar_menu', '_imagify_admin_bar', PHP_INT_MAX );
 function _imagify_admin_bar( $wp_admin_bar ) {
+	// if wrong user rights
 	if ( ! current_user_can( 'upload_files' ) ) {
+		return;
+	}
+	// if user deactivate the menu by himself
+	if ( get_imagify_option( 'admin_bar_menu', 0 ) !== '1' ) {
 		return;
 	}
 	
@@ -139,7 +144,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
  */
 add_action( 'admin_bar_init', '_imagify_admin_bar_styles' );
 function _imagify_admin_bar_styles() {
-	if ( ! is_admin() ) {
+	if ( ! is_admin() && get_imagify_option( 'admin_bar_menu', 0 ) === '1' ) {
 		$css_ext = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.css' : '.min.css';
 		wp_enqueue_style( 'imagify_admin_bar', IMAGIFY_ASSETS_CSS_URL . 'admin-bar' . $css_ext, array(), IMAGIFY_VERSION, 'all' );
 	}
