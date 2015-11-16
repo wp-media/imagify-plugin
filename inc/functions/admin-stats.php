@@ -80,7 +80,7 @@ function imagify_count_error_attachments() {
 }
 
 /*
- * Count number of optimized attachments (with errors too).
+ * Count number of optimized attachments (by Imagify or an other tool before).
  *
  * @since 1.0
  *
@@ -92,8 +92,19 @@ function imagify_count_optimized_attachments() {
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
 			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
-			'meta_key'				 => '_imagify_status',
-			'meta_value'			 => 'success',
+			'meta_query'      => array(
+			'relation'    => 'or',
+				array(
+					'key'     => '_imagify_status',
+					'value'   => 'success',
+					'compare' => '='
+				),
+				array(
+					'key'     => '_imagify_status',
+					'value'   => 'already_optimized',
+					'compare' => '='
+				)
+			),
 			'posts_per_page'         => -1,
 			'update_post_term_cache' => false,
 			'no_found_rows'          => true,
@@ -133,11 +144,11 @@ function imagify_percent_optimized_attachments() {
 }
 
 /*
- * Count percent, original & optimized size of an attachment.
+ * Count percent, original & optimized size of all images optimized by Imagify.
  *
  * @since 1.0
  *
- * @return array An array containing the optimization attachment data.
+ * @return array An array containing the optimization data.
  */
 function imagify_count_saving_data( $key = '' ) {
 	global $wpdb;
@@ -149,7 +160,8 @@ function imagify_count_saving_data( $key = '' ) {
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
 			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
-			'meta_key'				 => '_imagify_data',
+			'meta_key'				 => '_imagify_status',
+			'meta_value'			 => 'success',
 			'posts_per_page'         => -1,
 			'update_post_term_cache' => false,
 			'no_found_rows'          => true,
@@ -163,7 +175,7 @@ function imagify_count_saving_data( $key = '' ) {
 
 		// Check if the attachment extension is allowed
 		// TO DO: use wp_attachment_is_image when we can optimize all formats
-		if ( ! in_array( $attachment->get_extension() , array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
+		if ( ! in_array( $attachment->get_extension(), array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
 			continue;
 		}
 
@@ -190,6 +202,7 @@ function imagify_count_saving_data( $key = '' ) {
 	}
 
 	$data = array(
+		'count'			 => $query->post_count,
 		'original_size'  => (int) $original_size,
 		'optimized_size' => (int) $optimized_size,
 		'percent'		 => ( 0 !== $optimized_size ) ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0

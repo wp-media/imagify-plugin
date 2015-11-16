@@ -158,7 +158,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$query = new WP_Query( $args );
 	$ids   = $query->posts;
 	
-	foreach( $ids as $id ) {
+	foreach( $ids as $id ) {	
 		if ( file_exists( get_attached_file( $id ) ) ) {
 			$attachment         = new Imagify_Attachment( $id );
 			$attachment_error   = $attachment->get_optimized_error();  
@@ -174,7 +174,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 			if ( false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
 				continue;	
 			}
-						
+									
 			$data[ '_' . $id ] = wp_get_attachment_url( $id );	
 		}
 	}
@@ -207,10 +207,11 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	$attachment->optimize();
 
 	// Return the optimization statistics
-	$fullsize_data  = $attachment->get_size_data();
-	$stats_data     = $attachment->get_stats_data();
-	$saving_data    = imagify_count_saving_data();
-	$data 			= array(
+	$fullsize_data         = $attachment->get_size_data();
+	$stats_data            = $attachment->get_stats_data();
+	$saving_data           = imagify_count_saving_data();
+	$data                  = array(
+		'global_already_optimized_attachments' => $saving_data['count'],
 		'global_optimized_attachments'         => imagify_count_optimized_attachments(),
 		'global_unoptimized_attachments'       => imagify_count_unoptimized_attachments(),
 		'global_errors_attachments'            => imagify_count_error_attachments(),
@@ -222,9 +223,9 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	);
 	
 	if ( ! $attachment->is_optimized() ) {
-		$data['success'] = false;
-		$data['error']   = $fullsize_data['error'];
-
+		$data['success'] 		= false;
+		$data['error']   		= $fullsize_data['error'];
+		
 		wp_send_json_error( $data );
 	}
 	

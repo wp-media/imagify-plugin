@@ -128,22 +128,22 @@ function _imagify_display_bulk_page() {
 
 				<div class="col-1-3 col-statistics">
 					<h3><?php _e( 'Statistics', 'imagify' ); ?></h3>
-
+					
+					<?php
+					$total_saving_data  = imagify_count_saving_data();
+					$optimized_percent 	= $total_saving_data['percent'];
+					$optimized_nb 		= $total_saving_data['optimized_size'];
+					$original_nb 		= $total_saving_data['original_size'];
+					?>
+					
 					<div class="imagify-number-you-optimized">
 						<p>
-							<span id="imagify-total-optimized-attachments" class="number"><?php echo number_format_i18n( imagify_count_optimized_attachments() ); ?></span>
+							<span id="imagify-total-optimized-attachments" class="number"><?php echo number_format_i18n( $total_saving_data['count'] ); ?></span>
 							<span class="text"><?php printf( __( 'that\'s the number of images you optimized with Imagify', 'imagify' ), '<br>' ); ?></span>
 						</p>
 					</div>
 
 					<div class="imagify-bars">
-						<?php
-							$total_saving_datas = imagify_count_saving_data();
-							$optimized_percent 	= $total_saving_datas['percent'];
-							$optimized_nb 		= $total_saving_datas['optimized_size'];
-							$original_nb 		= $total_saving_datas['original_size'];
-
-						?>
 						<p><?php _e( 'Original size', 'imagify' ); ?></p>
 						<div class="imagify-bar-negative base-transparent right-outside-number">
 							<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo size_format( $original_nb, 1 ); ?></span></div>

@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 function do_imagify( $file_path, $backup = true, $is_aggressive = null, $resize = array() ) {
 	$errors = new WP_Error();
-	
+		
 	// Check if external HTTP requests are blocked.
 	if ( is_imagify_blocked() ) {
 		$errors->add( 'http_block_external', __( 'External HTTP requests are blocked', 'imagify' ) );

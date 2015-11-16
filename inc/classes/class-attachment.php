@@ -234,6 +234,18 @@ class Imagify_Attachment {
 	}
 
 	/**
+	 * Check if the attachment is already optimized (before Imagify).
+	 *
+	 * @since 1.1.6
+	 *
+	 * @access public
+	 * @return bool   True if the attachment is optimized.
+	 */
+	public function is_already_optimized() {
+		return ( 'already_optimized' === $this->get_status() ) > 0;
+	}
+	
+	/**
 	 * Check if the attachment is optimized.
 	 *
 	 * @since 1.0
@@ -321,15 +333,23 @@ class Imagify_Attachment {
 	 */
 	static public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
 		if ( is_wp_error( $response ) ) {
+			$error        = $response->get_error_message();
+			$error_status = 'error';
+			
 			$data['sizes'][ $size ] = array(
 				'success' => false,
-				'error'   => $response->get_error_message()
+				'error'   => $error
 			);
 
 			if ( 'full' === $size ) {
 				update_post_meta( $id, '_imagify_data', $data );
-				update_post_meta( $id, '_imagify_status', 'error' );
-
+				
+				if ( false !== strpos( $error, 'This image is already compressed' ) ) {
+					$error_status = 'already_optimized';	
+				}
+				
+				update_post_meta( $id, '_imagify_status', $error_status );
+				
 				return false;
 			}
 		} else {

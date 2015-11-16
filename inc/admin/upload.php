@@ -95,6 +95,7 @@ function _imagify_sort_attachments_by_status( $vars ) {
 	$status       = $_GET['imagify-status'];
 	$meta_key     = '_imagify_status';
 	$meta_compare = '=';
+	$relation     = array();
 	
 	switch( $status ) {
 		case 'unoptimized':
@@ -103,7 +104,12 @@ function _imagify_sort_attachments_by_status( $vars ) {
 		break;
 		
 		case 'optimized':
-			$status = 'success';
+			$status   = 'success';
+			$relation = array(
+				'key'     => $meta_key,
+				'value'   => 'already_optimized',
+				'compare' => $meta_compare,
+			);
 		break;
 		
 		case 'errors':
@@ -111,16 +117,18 @@ function _imagify_sort_attachments_by_status( $vars ) {
 		break;
 	}
 	
-	$vars['post_mime_type'] = array( 'image/jpeg', 'image/png' ); // TO DO - add gif later;
+	$vars['post_mime_type'] = array( 'image/jpeg', 'image/png' ); // TO DO - add gif later; 
 	$vars = array_merge(
 		$vars,
 		array(
 			'meta_query' => array(
+				'relation' => 'or',
 				array(
 					'key'     => $meta_key,
 					'value'   => $status,
 					'compare' => $meta_compare,
 				),
+				$relation
 			),
 		)
 	);
