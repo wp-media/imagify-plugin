@@ -45,7 +45,6 @@ function _imagify_first_install() {
 			'api_key'            => '',
 			'optimization_level' => 1,
 			'auto_optimize'      => 1,
-			'backup'             => 1,
 			'resize_larger'		 => '',
 			'resize_larger_w'	 => '',
 			'disallowed-sizes'	 => array(),

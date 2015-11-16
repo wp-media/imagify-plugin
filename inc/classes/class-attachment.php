@@ -408,7 +408,7 @@ class Imagify_Attachment {
 		}
 		
 		// Optimize the original size 
-		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $is_aggressive, $resize );
+		$response = do_imagify( $attachment_path, true, $is_aggressive, $resize );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
 
 		if( (bool) ! $data ) {

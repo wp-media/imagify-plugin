@@ -119,7 +119,7 @@ function get_imagify_attachment_reoptimize_link( $attachment_id ) {
 	if ( $attachment->has_backup() ) {
 		$class  = ( 'post.php' !== $pagenow  ) ? 'button-imagify-manual-override-upload' : '';
 		$level  = ( (bool) ! $level ) ? __( 'Aggressive', 'imagify' ) : __( 'Normal', 'imagify' );
-		$output = ( get_imagify_option( 'backup' ) ) ? '<a href="' . get_imagify_admin_url( 'manual-override-upload', $attachment_id ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), $level ) . '</a>' : '';
+		$output = '<a href="' . get_imagify_admin_url( 'manual-override-upload', $attachment_id ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), $level ) . '</a>';
 	}
 
 	return $output;
