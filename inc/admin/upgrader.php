@@ -48,7 +48,8 @@ function _imagify_first_install() {
 			'backup'             => 1,
 			'resize_larger'		 => '',
 			'resize_larger_w'	 => '',
-			'disallowed-sizes'	 => array()
+			'disallowed-sizes'	 => array(),
+			'admin_bar_menu'	 => 1
 		)
 	);
 }
@@ -61,5 +62,12 @@ function _imagify_first_install() {
 add_action( 'imagify_upgrade', '_imagify_new_upgrade', 10, 2 );
 function _imagify_new_upgrade( $imagify_version, $current_version )
 {
-	// Not yet
+	$actual_version = get_imagify_option( 'version' );
+	
+	if ( version_compare( $actual_version, '1.1.7', '<' ) ) {
+		// Auto-activate the Admin Bar option
+		$options                   = get_site_option( IMAGIFY_SETTINGS_SLUG );
+		$options['admin_bar_menu'] = 1;
+		update_site_option( IMAGIFY_SETTINGS_SLUG, $options );
+	}
 }
