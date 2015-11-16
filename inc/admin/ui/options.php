@@ -202,7 +202,7 @@ function _imagify_display_options_page() {
 
 									<?php
 									$sizes   = array();
-									$is_wp44 = version_compare( $wp_version, '4.4-alpha' ) >= 0;
+									$is_wp44 = version_compare( $wp_version, '4.4-beta3' ) >= 0;
 									$all_intermediate_image_sizes = get_intermediate_image_sizes();
 									$intermediate_image_sizes     = apply_filters( 'image_size_names_choose', $all_intermediate_image_sizes );
 									$all_intermediate_image_sizes = array_combine( $all_intermediate_image_sizes, $all_intermediate_image_sizes );
