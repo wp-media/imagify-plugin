@@ -483,7 +483,8 @@ td .imagify-chart {
 	left: 0; top: -1px;
 }
 label + .imagify-info,
-label + .imagify-options-line {
+label + .imagify-options-line,
+.imagify-visual-label {
 	display: inline-block;
 	max-width: 70%;
 	margin-left: 15px;
@@ -491,14 +492,19 @@ label + .imagify-options-line {
 	-webkit-transition: opacity .3s;
 	transition: opacity .3s;
 }
+.imagify-visual-label {
+	vertical-align: -5px;
+}
 label[for="imagify_sizes_full"] + .imagify-info {
 	vertical-align: middle;
 }
 
-.imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label + .imagify-options-line {
+.imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label + .imagify-options-line,
+.imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label .imagify-visual-label {
 	opacity: .5;
 }
-.imagify-settings.imagify-settings [type="checkbox"]:checked + label + .imagify-options-line {
+.imagify-settings.imagify-settings [type="checkbox"]:checked + label + .imagify-options-line,
+.imagify-settings.imagify-settings [type="checkbox"]:checked + label .imagify-visual-label {
 	opacity: 1;
 }
 

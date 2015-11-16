@@ -56,9 +56,9 @@ jQuery(function($){
 		return false;
 	});
 
-	$('.imagify-settings th').on('click', function(){
-		if ( $(this).next('td').find('input:checkbox').length === 1 ) {
-			$(this).next('td').find('input:checkbox').trigger('click');
+	$('.imagify-settings th span').on('click', function(){
+		if ( $(this).parent().next('td').find('input:checkbox').length === 1 ) {
+			$(this).parent().next('td').find('input:checkbox').trigger('click');
 		}
 	})
 

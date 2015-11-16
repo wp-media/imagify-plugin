@@ -142,7 +142,7 @@ function _imagify_display_options_page() {
 								</td>
 							</tr>
 							<tr>
-								<th scope="row"><?php _e( 'Auto-Optimize images on upload', 'imagify' ); ?></th>
+								<th scope="row"><span><?php _e( 'Auto-Optimize images on upload', 'imagify' ); ?></span></th>
 								<td>
 									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[auto_optimize]" id="auto_optimize" <?php checked( get_imagify_option( 'auto_optimize', 0 ), 1 ); ?> aria-describedby="describe-auto-optimize" />
 									<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
@@ -155,7 +155,7 @@ function _imagify_display_options_page() {
 								</td>
 							</tr>
 							<tr>
-								<th scope="row"><?php _e( 'Resize larger images', 'imagify' ); ?></th>
+								<th scope="row"><span><?php _e( 'Resize larger images', 'imagify' ); ?></span></th>
 								<td>
 									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[resize_larger]" id="resize_larger" <?php checked( get_imagify_option( 'resize_larger', 0 ), 1 ); ?> aria-describedby="describe-resize-larger" />
 									<label for="resize_larger" onclick=""><span class="screen-reader-text"><?php _e( 'Resize larger images', 'imagify' ); ?></span></label>
@@ -252,15 +252,16 @@ function _imagify_display_options_page() {
 					<table class="form-table">
 						<tbody>
 							<tr>
-								<th scope="row"><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></th>
+								<th scope="row"><span><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></span></th>
 								<td>
 									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[admin_bar_menu]" id="admin_bar_menu" <?php checked( get_imagify_option( 'admin_bar_menu', 0 ), 1 ); ?> aria-describedby="describe-admin-bar-menu" />
 									<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
-									<label for="admin_bar_menu" onclick=""><span class="screen-reader-text"><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></span></label>
+									<label for="admin_bar_menu" onclick="">
+										<span class="screen-reader-text"><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></span>
+										<span class="imagify-visual-label"><?php _e( 'I want this awesome quick access menu on my menu bar.', 'imagify' ); ?></span>
+									</label>
 
-									<p id="describe-admin-bar-menu" class="imagify-options-line">
-										<?php _e( 'I want this awesome quick access menu on my menu bar.', 'imagify' ); ?>
-										<br>
+									<p>
 										<img class="imagify-menu-bar-img" src="<?php echo IMAGIFY_ASSETS_IMG_URL . 'imagify-menu-bar.jpg'; ?>" width="300" height="225" alt="">
 									</p>
 								</td>
