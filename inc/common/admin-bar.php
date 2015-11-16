@@ -44,7 +44,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 	}
 
 	// Quota & Profile informations
-	if ( current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
+	if ( imagify_valid_key() && current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
 		$user = new Imagify_User();
 
 		$unconsumed_quota = $user->get_percent_unconsumed_quota();
