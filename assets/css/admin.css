@@ -876,6 +876,7 @@ input[id^="imagify_sizes_"]:checked + label {
  * == Custom column & Metabox
  */
 .column-imagify_optimized_file.column-imagify_optimized_file {
+	width: 300px;
 	text-align: center;
 	vertical-align: middle;
 }
