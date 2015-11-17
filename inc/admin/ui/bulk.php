@@ -44,10 +44,10 @@ function _imagify_display_bulk_page() {
 					<span class="imagify-meteo-icon"><?php echo $meteo_icon; ?></span>
 					<div class="imagify-space-left">
 						
-						<p><?php printf( __( 'You have %s space credit left' , 'imagify' ), '<span id="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ); ?></p>
+						<p><?php printf( __( 'You have %s space credit left' , 'imagify' ), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ); ?></p>
 						
 						<div class="imagify-bar-<?php echo $bar_class; ?>">
-							<div id="imagify-unconsumed-bar" class="imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
+							<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
 						</div>
 					</div>
 					<div class="imagify-space-tooltips imagify-tooltips <?php echo ( ! $is_display_bubble ) ? 'hidden' : ''; ?>">

@@ -143,8 +143,8 @@ jQuery(function($){
 						$('#imagify-total-optimized-attachments').html(data.global_already_optimized_attachments);
 
 						// The comsuption bar
-						$('#imagify-unconsumed-percent').html(data.global_unconsumed_quota + '%');
-						$('#imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota + '%'});
+						$('.imagify-unconsumed-percent').html(data.global_unconsumed_quota + '%');
+						$('.imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota + '%'});
 
 						// The original bar
 						$('#imagify-original-bar').find('.imagify-barnb')

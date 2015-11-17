@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 add_action( 'admin_bar_menu', '_imagify_admin_bar', PHP_INT_MAX );
 function _imagify_admin_bar( $wp_admin_bar ) {
-
 	if ( ! current_user_can( 'upload_files' ) || ! get_imagify_option( 'admin_bar_menu', 0 ) ) {
 		return;
 	}
@@ -104,9 +103,9 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 			$quota_section .= '
 				<div class="imagify-abq-row">
 					<div class="imagify-space-left">
-						<p>' . sprintf( __( 'You have %s space credit left', 'imagify'), '<span id="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ) . '</p>
+						<p>' . sprintf( __( 'You have %s space credit left', 'imagify'), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ) . '</p>
 						<div class="imagify-bar-' . $bar_class . '">
-							<div style="width: ' . $unconsumed_quota . '%;" class="imagify-progress" id="imagify-unconsumed-bar"></div>
+							<div style="width: ' . $unconsumed_quota . '%;" class="imagify-unconsumed-bar imagify-progress"></div>
 						</div>
 					</div>
 				</div>';
