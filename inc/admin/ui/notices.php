@@ -101,6 +101,7 @@ function _imagify_warning_wrong_api_key_notice() {
 add_action( 'all_admin_notices', '_imagify_warning_plugins_to_deactivate_notice' );
 function _imagify_warning_plugins_to_deactivate_notice() {
 	$plugins_to_deactivate = array();
+	$cap			       = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
 
 	// Deactivate all plugins who can cause conflicts with Imagify
 	$plugins = array(
@@ -124,7 +125,7 @@ function _imagify_warning_plugins_to_deactivate_notice() {
 	$plugins = array_filter( $plugins, 'is_plugin_active' );
 
 	/** This filter is documented in inc/admin/options.php */
-	if (  ! (bool) $plugins || ! imagify_valid_key() || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
+	if (  ! (bool) $plugins || ! imagify_valid_key() || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
 		return;
 	} 
 	?>
