@@ -129,19 +129,6 @@ function _imagify_display_options_page() {
 								</td>
 							</tr>
 							<tr>
-								<th scope="row"><span class="imagify-important"><?php _e( 'About backups', 'imagify' ); ?></span></th>
-								<td>
-									<p><?php _e('In case of need we backup all your original images on your server in this directory:') ?><br>
-									<strong class="imagify-important"><em>
-										<?php
-											$upload_url = wp_upload_dir()['baseurl'];
-											$siteurl = get_option( 'siteurl' );
-											echo explode( $siteurl, $upload_url )[1] . '/backup/';
-										?>
-									</em></strong></p>
-								</td>
-							</tr>
-							<tr>
 								<th scope="row"><span><?php _e( 'Auto-Optimize images on upload', 'imagify' ); ?></span></th>
 								<td>
 									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[auto_optimize]" id="auto_optimize" <?php checked( get_imagify_option( 'auto_optimize', 0 ), 1 ); ?> aria-describedby="describe-auto-optimize" />
@@ -151,6 +138,18 @@ function _imagify_display_options_page() {
 									<span id="describe-auto-optimize" class="imagify-info">
 										<span class="dashicons dashicons-info"></span>
 										<?php _e( 'Automatically optimize every image you upload to WordPress.', 'imagify' ); ?>
+									</span>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><?php _e( 'Backup original images', 'imagify' ); ?></th>
+								<td>
+									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[backup]" id="backup" <?php checked( get_imagify_option( 'backup', 0 ), 1 ); ?> aria-describedby="describe-backup" />
+									<label for="backup" onclick=""><span class="screen-reader-text"><?php _e( 'Backup original images', 'imagify' ); ?></span></label>
+
+									<span id="describe-backup" class="imagify-info">
+										<span class="dashicons dashicons-info"></span>
+										<?php _e( 'Keep your original images in a separate folder before optimization process.', 'imagify' ); ?>
 									</span>
 								</td>
 							</tr>
