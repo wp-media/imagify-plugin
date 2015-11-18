@@ -432,7 +432,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size">56kb</span>
+							<span class="value size">106kb</span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -441,7 +441,7 @@ function _imagify_display_options_page() {
 									<span class="imagify-chart-container">
 										<canvas id="imagify-consumption-chart-ultra" width="15" height="15"></canvas>
 									</span>
-								</span><span class="imagify-chart-value">86.5</span>%
+								</span><span class="imagify-chart-value">74.16</span>%
 							</span>
 						</p>
 					</div>
