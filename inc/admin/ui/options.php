@@ -147,7 +147,7 @@ function _imagify_display_options_page() {
 								</td>
 							</tr>
 							<tr>
-								<th scope="row"><?php _e( 'Backup original images', 'imagify' ); ?></th>
+								<th scope="row"><span><?php _e( 'Backup original images', 'imagify' ); ?></span></th>
 								<td>
 									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[backup]" id="backup" <?php checked( get_imagify_option( 'backup', 0 ), 1 ); ?> aria-describedby="describe-backup" />
 									<label for="backup" onclick=""><span class="screen-reader-text"><?php _e( 'Backup original images', 'imagify' ); ?></span></label>
