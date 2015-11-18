@@ -162,7 +162,6 @@
 	border: 0;
 	background: #1f2332;
 	color: #FFF;
-	border-radius: 3px 0 0 3px;
 	transition: all .3s;
 	cursor: pointer;
 }
@@ -170,7 +169,10 @@
 .twentytwenty-duo-buttons button:focus {
 	background: #444;
 }
-.twentytwenty-duo-buttons button + button {
+.twentytwenty-duo-buttons button:first-child {
+	border-radius: 3px 0 0 3px;
+}
+.twentytwenty-duo-buttons button:last-child {
 	border-radius: 0 3px 3px 0;
 }
 .twentytwenty-duo-buttons button.selected {

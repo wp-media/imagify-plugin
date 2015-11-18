@@ -101,6 +101,11 @@ function _imagify_display_options_page() {
 								<th scope="row"><?php _e( 'Optimization Level', 'imagify' ); ?></th>
 								<td>
 									<p class="imagify-inline-options">
+										<input type="radio" id="imagify-optimization_level_ultra" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[optimization_level]" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
+										<label for="imagify-optimization_level_ultra">
+											<?php _e( 'Ultra', 'imagify' ); ?>
+										</label>
+
 										<input type="radio" id="imagify-optimization_level_aggro" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[optimization_level]" value="1" <?php checked( get_imagify_option( 'optimization_level' ), 1 ); ?>>
 										<label for="imagify-optimization_level_aggro">
 											<?php _e( 'Aggressive', 'imagify' ); ?>
@@ -210,7 +215,7 @@ function _imagify_display_options_page() {
 
 									// Create the full array with sizes and crop info
 									foreach ( $intermediate_image_sizes as $size => $size_name ) {
-										if ( in_array( $size, $wp_image_sizes ) ) {
+										if ( in_array( $size, $wp_image_sizes ) && ! is_int( $size ) ) {
 											$sizes[ $size ] = array(
 												'width'  => get_option( $size . '_size_w' ),
 												'height' => get_option( $size . '_size_h' ),
@@ -280,8 +285,18 @@ function _imagify_display_options_page() {
 
 		<div id="imagify-more-info" class="imagify-modal">
 			<div class="imagify-modal-content">
-				<p class="h2"><?php _e('You can choose two levels of compression', 'imagify'); ?></p>
+				<p class="h2"><?php _e('You can choose three levels of compression', 'imagify'); ?></p>
 				<div class="imagify-columns">
+					<div class="col-1-1">
+						<p class="h3"><?php _e( 'Normal', 'imagify' ); ?></p>
+						<p>
+							<?php _e( 'This mode provides lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?>
+							<?php _e( 'If you want the perfect quality for your images, we recommend you that mode.', 'imagify' ); ?>
+						</p>
+						<p>
+							<em><?php _e( 'Note: the file size reduction will be less, compared to aggressive mode.', 'imagify' ); ?></em>
+						</p>
+					</div>
 					<div class="col-1-2">
 						<p class="h3"><?php _e( 'Aggressive', 'imagify' ); ?></p>
 						<p>
@@ -297,15 +312,15 @@ function _imagify_display_options_page() {
 					</div>
 
 					<div class="col-1-2">
-						<p class="h3"><?php _e( 'Normal', 'imagify' ); ?></p>
+						<p class="h3"><?php _e( 'Ultra', 'imagify' ); ?></p>
 						<p>
-							<?php _e( 'This mode provides lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?>
+							<?php _e( 'This mode will apply all available optimizations for maximum image compression. ', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'If you want the perfect quality for your images, we recommend you that mode.', 'imagify' ); ?>
+							<?php _e( 'This will provide a drastic savings on the initial weight, with a small reduction in image quality. Most of the time it\'s not even noticeable.', 'imagify' ); ?>
 						</p>
 						<p>
-							<em><?php _e( 'Note: the file size reduction will be less, compared to aggressive mode.', 'imagify' ); ?></em>
+							<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.' , 'imagify' ); ?>
 						</p>
 					</div>
 				</div>
@@ -332,74 +347,101 @@ function _imagify_display_options_page() {
 				</p>
 
 				<div class="twentytwenty-container"
-									data-loader="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>spinner.gif"
+									data-loader="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>loader-balls.svg"
 									data-label-original="<?php _e( 'Original', 'imagify' ); ?>"
 									data-label-normal="<?php _e( 'Normal', 'imagify' ); ?>"
 									data-label-aggressive="<?php _e( 'Aggressive', 'imagify' ); ?>"
+									data-label-ultra="<?php _e( 'Ultra', 'imagify' ); ?>"
 
 									data-original-label="<?php _e( 'Original', 'imagify' ); ?>"
 									data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-original.jpg"
 									data-original-dim="1220x350"
-									data-original-alt="Bear photography about 1.2 Mb"
+									data-original-alt="Bear photography about 396kb"
 
 									data-optimized-label="<?php _e( 'Normal', 'imagify' ); ?>"
 									data-optimized-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-optimized.jpg"
 									data-optimized-dim="1220x350"
-									data-optimized-alt="Imagified Bear photography about 1.1 Mb"
+									data-optimized-alt="Imagified Bear photography about 363kb"
 
 									data-aggressive-label="<?php _e( 'Aggressive', 'imagify' ); ?>"
 									data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-aggressive.jpg"
 									data-aggressive-dim="1220x350"
-									data-aggressive-alt="Imagified Bear photography about 0.39 Mb"></div>
+									data-aggressive-alt="Imagified Bear photography about 140kb"
+
+									data-ultra-label="<?php _e( 'Ultra', 'imagify' ); ?>"
+									data-ultra-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-ultra.jpg"
+									data-ultra-dim="1220x350"
+									data-ultra-alt="Imagified Bear photography about 56kb"></div>
 
 				<div class="imagify-comparison-levels">
-					<div class="imagify-c-level imagify-level-original imagify-level-left">
+					<div class="imagify-c-level imagify-level-original go-left">
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Level:', 'imagify' ); ?></span>
 							<span class="value level"><?php _e( 'Original', 'imagify' ); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value">1.4mb</span>
+							<span class="value">396kb</span>
 						</p>
 					</div>
-					<div class="imagify-c-level imagify-level-optimized imagify-level-left imagify-level-right" aria-hidden="true">
+					<div class="imagify-c-level imagify-level-optimized" aria-hidden="true">
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Level:', 'imagify' ); ?></span>
 							<span class="value level"><?php _e( 'Normal', 'imagify' ); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size">1.1mb</span>
+							<span class="value size">363kb</span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
 							<span class="value">
 								<span class="imagify-chart">
 									<span class="imagify-chart-container">
-										<canvas id="imagify-consumption-chart" width="15" height="15"></canvas>
+										<canvas id="imagify-consumption-chart-normal" width="15" height="15"></canvas>
 									</span>
-								</span><span class="imagify-chart-value">8</span>%
+								</span><span class="imagify-chart-value">10,44</span>%
 							</span>
 						</p>
 					</div>
-					<div class="imagify-c-level imagify-level-aggressive imagify-level-right">
+					<div class="imagify-c-level imagify-level-aggressive">
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Level:', 'imagify' ); ?></span>
 							<span class="value level"><?php _e( 'Aggressive', 'imagify' ); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size">0.39mb</span>
+							<span class="value size">140kb</span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
 							<span class="value">
 								<span class="imagify-chart">
 									<span class="imagify-chart-container">
-										<canvas id="imagify-consumption-chart" width="15" height="15"></canvas>
+										<canvas id="imagify-consumption-chart-aggressive" width="15" height="15"></canvas>
 									</span>
-								</span><span class="imagify-chart-value">67.5</span>%
+								</span><span class="imagify-chart-value">65.53</span>%
+							</span>
+						</p>
+					</div>
+
+					<div class="imagify-c-level imagify-level-ultra go-right">
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'Level:', 'imagify' ); ?></span>
+							<span class="value level"><?php _e( 'Ultra', 'imagify' ); ?></span>
+						</p>
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
+							<span class="value size">56kb</span>
+						</p>
+						<p class="imagify-c-level-row">
+							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
+							<span class="value">
+								<span class="imagify-chart">
+									<span class="imagify-chart-container">
+										<canvas id="imagify-consumption-chart-ultra" width="15" height="15"></canvas>
+									</span>
+								</span><span class="imagify-chart-value">86.5</span>%
 							</span>
 						</p>
 					</div>
