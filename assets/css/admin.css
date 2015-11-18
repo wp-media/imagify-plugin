@@ -649,9 +649,6 @@ input[id^="imagify_sizes_"]:checked + label {
 .imagify-inline-options input[type="radio"]:checked + label {
 	background: #8BC34A
 }
-.imagify-inline-options input[type="radio"]:checked + label[for="imagify-optimization_level_ultra"] {
-	background: #D0021B;
-}
 
 .imagify-inline-options .imagify-info {
 	margin-top: 15px;

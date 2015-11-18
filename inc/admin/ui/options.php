@@ -287,17 +287,19 @@ function _imagify_display_options_page() {
 			<div class="imagify-modal-content">
 				<p class="h2"><?php _e('You can choose three levels of compression', 'imagify'); ?></p>
 				<div class="imagify-columns">
-					<div class="col-1-1">
-						<p class="h3"><?php _e( 'Normal', 'imagify' ); ?></p>
+					<div class="col-1-3">
+						<p class="h3"><?php _e( 'Ultra', 'imagify' ); ?></p>
 						<p>
-							<?php _e( 'This mode provides lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?>
-							<?php _e( 'If you want the perfect quality for your images, we recommend you that mode.', 'imagify' ); ?>
+							<?php _e( 'This mode will apply all available optimizations for maximum image compression. ', 'imagify' ); ?>
 						</p>
 						<p>
-							<em><?php _e( 'Note: the file size reduction will be less, compared to aggressive mode.', 'imagify' ); ?></em>
+							<?php _e( 'This will provide a drastic savings on the initial weight, with a small reduction in image quality. Most of the time it\'s not even noticeable.', 'imagify' ); ?>
+						</p>
+						<p>
+							<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.' , 'imagify' ); ?>
 						</p>
 					</div>
-					<div class="col-1-2">
+					<div class="col-1-3">
 						<p class="h3"><?php _e( 'Aggressive', 'imagify' ); ?></p>
 						<p>
 							<?php _e( 'This mode will apply all available optimizations for maximum image compression. ', 'imagify' ); ?>
@@ -308,19 +310,17 @@ function _imagify_display_options_page() {
 						<p>
 							<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.' , 'imagify' ); ?>
 						</p>
-
 					</div>
-
-					<div class="col-1-2">
-						<p class="h3"><?php _e( 'Ultra', 'imagify' ); ?></p>
+					<div class="col-1-3">
+						<p class="h3"><?php _e( 'Normal', 'imagify' ); ?></p>
 						<p>
-							<?php _e( 'This mode will apply all available optimizations for maximum image compression. ', 'imagify' ); ?>
+							<?php _e( 'This mode provides lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'This will provide a drastic savings on the initial weight, with a small reduction in image quality. Most of the time it\'s not even noticeable.', 'imagify' ); ?>
+							<?php _e( 'If you want the perfect quality for your images, we recommend you that mode.', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.' , 'imagify' ); ?>
+							<em><?php _e( 'Note: the file size reduction will be less, compared to aggressive mode.', 'imagify' ); ?></em>
 						</p>
 					</div>
 				</div>
