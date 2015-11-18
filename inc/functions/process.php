@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @param   array 	  $resize  		  The resize parameters (with & height).
  * @return obj|array  Error message | Optimized image data
  */
-function do_imagify( $file_path, $backup = true, $is_aggressive = null, $resize = array() ) {
+function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize = array() ) {
 	$errors    = new WP_Error();
 	
 	/**
