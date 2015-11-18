@@ -547,6 +547,7 @@ class Imagify_Attachment {
 
 		// Create the original image from the backup
 		@copy( $backup_path, $attachment_path );
+		imagify_chmod_file( $attachment_path );
 
 		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
 			require_once( ABSPATH . 'wp-admin/includes/image.php' );

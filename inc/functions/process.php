@@ -96,7 +96,7 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize
 
 		// TO DO - check and send a error message if the backup can't be created
 		@copy( $file_path, $backup_path );
-		@chmod( $file_path, FS_CHMOD_FILE );
+		imagify_chmod_file( $backup_path );
 	}
 
 	if ( ! function_exists( 'download_url' ) ) {
@@ -111,7 +111,7 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize
 	}
 
 	@rename( $temp_file, $file_path );
-	@chmod( $file_path, FS_CHMOD_FILE );
+	imagify_chmod_file( $file_path );
 
 	// If temp file still exists, delete it
 	if ( file_exists( $temp_file ) ) {
