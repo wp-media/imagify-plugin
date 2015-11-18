@@ -14,7 +14,9 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize = array() ) {
 	$errors    = new WP_Error();
-	
+	if ( ! defined( 'FS_CHMOD_FILE' ) ) {
+		define( 'FS_CHMOD_FILE', ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) );
+	}	
 	/**
 	 * Filter the attachment path
 	 *
@@ -94,6 +96,7 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize
 
 		// TO DO - check and send a error message if the backup can't be created
 		@copy( $file_path, $backup_path );
+		@chmod( $file_path, FS_CHMOD_FILE );
 	}
 
 	if ( ! function_exists( 'download_url' ) ) {
@@ -108,6 +111,7 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize
 	}
 
 	@rename( $temp_file, $file_path );
+	@chmod( $file_path, FS_CHMOD_FILE );
 
 	// If temp file still exists, delete it
 	if ( file_exists( $temp_file ) ) {
