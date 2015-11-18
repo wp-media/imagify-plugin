@@ -28,8 +28,9 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 
 = 1.1.7 =
 * Interface
- * NEW options : You can now choose to display Admin Bar Imagify's menu, or not.
- * See the differences between Agressive and Normal option inside Imagify Options page.
+ * NEW compression level: Ultra
+ * NEW options: You can now choose to display Admin Bar Imagify's menu, or not.
+ * See the differences between Ultra, Agressive and Normal option inside Imagify Options page.
 * Bug Fix
  * Admin Bar: Styles are now included in front-end too.
  * Admin Bar: Better styles in certain cases.
