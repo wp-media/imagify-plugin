@@ -300,6 +300,30 @@ class Imagify_Attachment {
 		$has_error = $this->get_size_data( 'full', 'error' );
 		return ( is_string( $has_error ) ) > 0;
 	}
+	
+	/**
+	 * Update the metadata size of the attachment
+	 *
+	 * @since 1.1.7
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function update_metadata_size() {
+		if ( ! wp_attachment_is_image( $this->id ) ) {
+			return false;
+		}
+		
+		$size = @getimagesize( $this->get_original_path() );
+		
+		if ( isset( $size[0], $size[1] ) ) {
+			$metadata           = wp_get_attachment_metadata( $this->id );
+			$metadata['width']  = $size[0];
+			$metadata['height'] = $size[1];
+			
+			wp_update_attachment_metadata( $this->id, $metadata );
+		}
+	}
 
 	/**
 	 * Delete the backup file.
@@ -340,7 +364,8 @@ class Imagify_Attachment {
 				'success' => false,
 				'error'   => $error
 			);
-
+			
+			// Update the error status for the original size
 			if ( 'full' === $size ) {
 				update_post_meta( $id, '_imagify_data', $data );
 				
@@ -352,7 +377,7 @@ class Imagify_Attachment {
 				
 				return false;
 			}
-		} else {
+		} else {			
 			$data['sizes'][ $size ] = array(
 				'success' 		 => true,
 				'file_url'		 => $url,
@@ -434,7 +459,14 @@ class Imagify_Attachment {
 		if( (bool) ! $data ) {
 			return;
 		}
-
+		
+		// If we resized the original with success, we have to update the attachment metadata
+		// If not, WordPress keeps the old attachment size.		
+		if ( $do_resize && isset( $resize['width'] ) ) {
+			$this->update_metadata_size();
+		}
+		
+		// Optimize all thumbnails
 		if ( (bool) $sizes ) {
 			foreach ( $sizes as $size_key => $size_data ) {
 				// Check if this size has to be optimized
@@ -526,7 +558,10 @@ class Imagify_Attachment {
 		// Remove old optimization data
 		delete_post_meta( $id, '_imagify_data' );
 		delete_post_meta( $id, '_imagify_status' );
-
+		
+		// Restore the original size in the metadata
+		$this->update_metadata_size();
+		
 		/**
 		 * Fires after restoring an attachment.
 		 *
