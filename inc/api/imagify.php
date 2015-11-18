@@ -203,6 +203,11 @@ class Imagify {
      **/
     private function httpCall( $url, $method = 'GET', $post_data = null )
     {
+        // Check if php-curl is enabled
+		if ( ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ) ) {
+			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
+		}
+		
         try {
 	    	$ch = curl_init();
 			$is_ssl = ( isset( $_SERVER['HTTPS'] ) && ( 'on' == strtolower( $_SERVER['HTTPS'] ) || '1' == $_SERVER['HTTPS'] ) ) || ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) );
