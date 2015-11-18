@@ -204,7 +204,6 @@ function _do_wp_ajax_imagify_bulk_upload() {
 
 	$attachment_id = (int) $_POST['image'];
 	$attachment    = new Imagify_Attachment( $_POST['image'] );
-	$user		   = new Imagify_User();
 
 	// Optimize it!!!!!
 	$attachment->optimize();
@@ -213,6 +212,7 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	$fullsize_data         = $attachment->get_size_data();
 	$stats_data            = $attachment->get_stats_data();
 	$saving_data           = imagify_count_saving_data();
+	$user		   		   = new Imagify_User();
 	$data                  = array(
 		'global_already_optimized_attachments' => $saving_data['count'],
 		'global_optimized_attachments'         => imagify_count_optimized_attachments(),
@@ -329,4 +329,21 @@ function _do_admin_post_imagify_dismiss_notice() {
 	}
 	
 	wp_send_json_success();
+}
+
+/**
+ * Disable a plugin which can be in conflict with Imagify
+ *
+ * @since 1.1.7
+ */
+add_action( 'admin_post_imagify_deactivate_plugin', '_imagify_deactivate_plugin' );
+function _imagify_deactivate_plugin() {
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'imagifydeactivatepluginnonce' ) ) {
+		wp_nonce_ays( '' );
+	}
+
+	deactivate_plugins( $_GET['plugin'] );
+
+	wp_safe_redirect( wp_get_referer() );
+	die();
 }

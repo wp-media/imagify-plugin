@@ -140,7 +140,7 @@ function _imagify_warning_plugins_to_deactivate_notice() {
 			<?php
 			foreach ( $plugins as $plugin ) {
 				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . DIRECTORY_SEPARATOR . $plugin );
-				echo '<li>' . $plugin_data['Name'] . '</span> <a href="' . wp_nonce_url( admin_url( 'admin-post.php?action=deactivate_plugin&plugin=' . urlencode( $plugin ) ), 'deactivate_plugin' ) . '" class="button button-mini alignright">' . __( 'Deactivate', 'imagify' ) . '</a></li>';
+				echo '<li>' . $plugin_data['Name'] . '</span> <a href="' . wp_nonce_url( admin_url( 'admin-post.php?action=imagify_deactivate_plugin&plugin=' . urlencode( $plugin ) ), 'imagifydeactivatepluginnonce' ) . '" class="button button-mini alignright">' . __( 'Deactivate', 'imagify' ) . '</a></li>';
 			}
 			?>
 			</ul>
