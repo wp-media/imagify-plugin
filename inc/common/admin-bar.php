@@ -135,7 +135,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 /**
  * Include Admin Bar Profile informations styles in front
  *
- * @since  1.1.7
+ * @since  1.2
  */
 add_action( 'admin_bar_init', '_imagify_admin_bar_styles' );
 function _imagify_admin_bar_styles() {

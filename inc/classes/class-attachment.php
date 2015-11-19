@@ -304,7 +304,7 @@ class Imagify_Attachment {
 	/**
 	 * Update the metadata size of the attachment
 	 *
-	 * @since 1.1.7
+	 * @since 1.2
 	 *
 	 * @access public
 	 * @return void

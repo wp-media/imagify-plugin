@@ -64,7 +64,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version )
 {
 	$actual_version = get_imagify_option( 'version' );
 	
-	if ( version_compare( $actual_version, '1.1.7', '<' ) ) {
+	if ( version_compare( $actual_version, '1.2', '<' ) ) {
 		// Update all already optimized images status from 'error' to 'already_optimized'
 		$query = new WP_Query(
 			array(

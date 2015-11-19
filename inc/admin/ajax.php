@@ -334,7 +334,7 @@ function _do_admin_post_imagify_dismiss_notice() {
 /**
  * Disable a plugin which can be in conflict with Imagify
  *
- * @since 1.1.7
+ * @since 1.2
  */
 add_action( 'admin_post_imagify_deactivate_plugin', '_imagify_deactivate_plugin' );
 function _imagify_deactivate_plugin() {

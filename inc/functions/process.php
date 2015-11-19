@@ -20,7 +20,7 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize
 	/**
 	 * Filter the attachment path
 	 *
-	 * @since 1.1.7
+	 * @since 1.2
 	 *
 	 * @param string $file_path The attachment path
 	 */

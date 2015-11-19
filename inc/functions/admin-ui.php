@@ -128,7 +128,7 @@ function get_imagify_attachment_reoptimize_link( $attachment_id ) {
 /*
  * Get all data to diplay for a specific attachment.
  *
- * @since 1.1.7
+ * @since 1.2
  *
  * @param 	int     $attachment_id  The attachement ID.
  * @return  string  The output to print.
