@@ -14,7 +14,7 @@ function _imagify_display_bulk_page() {
 			<div class="imagify-title-right">
 				<div class="imagify-account">
 					<p class="imagify-meteo-title"><?php _e( 'Account status', 'imagify' ); ?></p>
-					<p class="imagify-meteo-subs"><?php _e( 'Your subscription:', 'imagify' ); ?>&nbsp;<strong class="imagify-user-plan"><?php echo $user->get_plan_label(); ?></strong></p>
+					<p class="imagify-meteo-subs"><?php _e( 'Your subscription:', 'imagify' ); ?>&nbsp;<strong class="imagify-user-plan"><?php echo $user->plan_label; ?></strong></p>
 				</div>
 				<div class="imagify-account-link">
 					<a href="<?php echo IMAGIFY_APP_MAIN; ?>/#/subscription" class="button button-ghost" target="_blank">

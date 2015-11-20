@@ -95,7 +95,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 		$quota_section .= '
 					<div class="imagify-account">
 						<p class="imagify-meteo-title">' . __( 'Account status', 'imagify' ) . '</p>
-						<p class="imagify-meteo-subs">' . __( 'Your subscription:', 'imagify' ) . '&nbsp;<strong class="imagify-user-plan">' . $user->get_plan_label() . '</strong></p>
+						<p class="imagify-meteo-subs">' . __( 'Your subscription:', 'imagify' ) . '&nbsp;<strong class="imagify-user-plan">' . $user->plan_label . '</strong></p>
 					</div>
 				</div>';
 
