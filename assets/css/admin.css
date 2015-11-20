@@ -640,6 +640,10 @@ input[id^="imagify_sizes_"]:checked + label {
 	-webkit-transition: all .275s;
 	transition: all .275s;
 }
+.imagify-bulk-submit .imagify-inline-options input[type="radio"]:not(:checked) + label,
+.imagify-bulk-submit .imagify-inline-options input[type="radio"]:checked + label {
+	margin-bottom: 1.75em;
+}
 .imagify-inline-options input[type="radio"]:not(:checked) + label:first-of-type,
 .imagify-inline-options input[type="radio"]:checked + label:first-of-type {
 	border-radius: 3px 0 0 3px;
@@ -1411,19 +1415,42 @@ ul.imagify-datas-details.imagify-datas-details {
 	position: relative;
 	max-width: 250px;
 	padding: 7px 15px 8px;
-	margin-left: 12px;
 	background: #2e3242;
 	color: #FFF;
 	font-size: 10px;
 	border-radius: 3px;
 }
+.imagify-tooltips.right .tooltip-content {
+	margin-left: 12px;
+}
+.imagify-tooltips.bottom .tooltip-content {
+	margin-top: 4px;
+}
+.imagify-inline-options label .tooltip-content {
+	position: absolute;
+	left: 0; right: 0;
+	top: 100%;
+	text-transform: none;
+	font-size: 10px;
+	letter-spacing: 0;
+	text-align: center;
+}
 .imagify-tooltips .tooltip-content:after {
 	content: "";
 	position: absolute;
+}
+.imagify-tooltips.right .tooltip-content:after {
 	top: 16px; left: -6px;
 	border-right: 8px solid #2e3242;
 	border-top: 6px solid transparent;
 	border-bottom: 6px solid transparent;
+}
+.imagify-tooltips.bottom .tooltip-content:after {
+	top: -5px; left: 50%;
+	margin-left: -3px;
+	border-bottom: 6px solid #2e3242;
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
 }
 .imagify-space-tooltips .tooltip-content {
 	max-width: 280px;

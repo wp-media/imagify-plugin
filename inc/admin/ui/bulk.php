@@ -92,9 +92,53 @@ function _imagify_display_bulk_page() {
 					</ul>
 					
 					<div class="imagify-bulk-submit">
+						
+					<?php if ( get_imagify_option( 'backup', 0 ) == "1" ) { ?>
+
+						<p>
+							<strong><?php _e( 'Select your compression level', 'imagify' ); ?></strong>
+						</p>
+
+						<p class="imagify-inline-options">
+							<?php 
+								$info_default = '<span class="imagify-tooltips bottom"><span class="tooltip-content">' . __( 'your default setting', 'imagify' ) . '</span></span>';
+							?>
+							<input type="radio" id="imagify-optimization_level_ultra" name="optimization_level" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
+							<label for="imagify-optimization_level_ultra">
+								<?php 
+									_e( 'Ultra', 'imagify' );
+									echo get_imagify_option( 'optimization_level' ) == '2' ? $info_default : '';
+								?>
+							</label>
+
+							<input type="radio" id="imagify-optimization_level_aggro" name="optimization_level" value="1" <?php checked( get_imagify_option( 'optimization_level' ), 1 ); ?>>
+							<label for="imagify-optimization_level_aggro">
+								<?php
+									_e( 'Aggressive', 'imagify' );
+									echo get_imagify_option( 'optimization_level' ) == '1' ? $info_default : '';
+								?>
+							</label>
+
+							<input type="radio" id="imagify-optimization_level_normal" name="optimization_level" value="0" <?php checked( get_imagify_option( 'optimization_level' ), 0 ); ?>>
+							<label for="imagify-optimization_level_normal">
+								<?php
+									_e( 'Normal', 'imagify' );
+									echo get_imagify_option( 'optimization_level' ) == '0' ? $info_default : '';
+								?>
+							</label>
+						</p>
+
+					<?php 
+					}
+					else {
+					?>
 						<p>
 							<strong><?php printf( __( 'Don\'t forget to check %syour settings%s before bulk optimization.', 'imagify' ), '<a href="' . get_admin_url( get_current_blog_id(), 'options-general.php?page=' . IMAGIFY_SLUG ) . '">', '</a>' ); ?></strong>
 						</p>
+					<?php
+					}
+					?>
+
 						<p>
 							<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
 							<button id="imagify-bulk-action" type="button" class="button button-primary">
@@ -103,7 +147,7 @@ function _imagify_display_bulk_page() {
 							</button>
 							<?php
 							if ( $user->is_free() ) { ?>
-								<span class="imagify-tooltips">
+								<span class="imagify-tooltips right">
 									<span class="tooltip-content">
 										<span class="icon icon-round" aria-hidden="true">i</span>
 										<?php printf( __( 'All images which are over to %s could be optimized using the pro version.', 'imagify' ), size_format( IMAGIFY_MAX_BYTES , 0 ) ); ?>
