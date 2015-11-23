@@ -34,8 +34,10 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 * Bug Fix
  * Admin Bar: Styles are now included in front-end too.
  * Admin Bar: Better styles in certain cases.
-* Gears
- * Your bear automatically keeps safe your original images in its little home-cave.
+ * Deactivate a conflict plugin doesn't return a blank page anymore!
+ * Display the right original image size after a resize (meta data)
+* Regression Fix
+ * Bulk Optimization: update in live the unconsumed credit during a bulk optimization.
 
 = 1.1.6 =
 * Interface
