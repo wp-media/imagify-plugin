@@ -55,7 +55,8 @@ jQuery(function($){
 	});
 
 	$('#imagify-bulk-action').click(function(){
-		var $obj = $(this);
+		var $obj = $(this),
+			$optimization_level = $('[name="optimization_level"]:checked').val();
 
 		if ( $obj.attr('disabled') ) {
 			return false;
@@ -69,7 +70,7 @@ jQuery(function($){
 		};
 		$(window).on('beforeunload', confirmMessage);
 
-		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
+		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&optimization_level="+$optimization_level+"&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
 		.done(function(response) {
 			if( !response.success ) {
 				$obj.removeAttr('disabled');
@@ -140,24 +141,24 @@ jQuery(function($){
 						// The overview chart percent
 						$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent + '<span>%</span>');
 						// The total optimized images
-						$('#imagify-total-optimized-attachments').html(data.global_optimized_attachments);
+						$('#imagify-total-optimized-attachments').html(data.global_already_optimized_attachments);
 
 						// The comsuption bar
-						$('#imagify-unconsumed-percent').html(data.global_unconsumed_quota + '%');
-						$('#imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota + '%'});
+						$('.imagify-unconsumed-percent').html(data.global_unconsumed_quota + '%');
+						$('.imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota + '%'});
 
 						// The original bar
 						$('#imagify-original-bar').find('.imagify-barnb')
 												  .html(data.global_original_human);
 
 						// The optimized bar
-						$('#imagify-optimized-bar').animate({'width': data.global_optimized_percent + '%'})
+						$('#imagify-optimized-bar').animate({'width': data.global_optimized_percent+"%"})
 						$('#imagify-optimized-bar').find('.imagify-barnb')
 												   .html(data.global_optimized_human);
-
+						
 						// The Percent data
 						$('#imagify-total-optimized-attachments-pct').html( data.global_optimized_percent + '%' );
-
+						
 						// The table footer total optimized files
 						files = files + data.thumbnails + 1;
 						$('.imagify-cell-nb-files').html(files + ' file(s)');
@@ -171,11 +172,24 @@ jQuery(function($){
 						$('.imagify-total-gain').html(Optimizer.toHumanSize(overall_saving, 1));
 
 					} else {
-						$('#attachment-'+data.image).after('<tr><td colspan="7"><span class="status-error">'+data.error+'</span></td></tr>');
-						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-error"><span class="dashicons dashicons-dismiss"></span>Error</span>');
+						error_class     = 'error';
+						error_dashincon = 'dismiss';
+						error_message   = 'Error';
 
-						errors++;
-						$('.imagify-cell-errors').html(errors + ' error(s)');
+						if ( data.error.indexOf("This image is already compressed") ) {
+							error_class    = 'warning';
+							error_dashicon = 'warning';
+							error_message  = 'Notice';
+						} else {
+							errors++;
+							$('.imagify-cell-errors').html(errors + ' error(s)');
+						}
+						
+						$('#attachment-'+data.image).after('<tr><td colspan="7"><span class="status-'+error_class+'">'+data.error+'</span></td></tr>');
+						
+						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-'+error_class+'"><span class="dashicons dashicons-'+error_dashicon+'"></span>'+error_message+'</span>');
+						
+						
 					}
 
 					overviewDoughnut.segments[0].value = data.global_unoptimized_attachments;

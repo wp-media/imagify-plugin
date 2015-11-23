@@ -7,58 +7,57 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @since 1.0
  */
 add_action( 'admin_bar_menu', '_imagify_admin_bar', PHP_INT_MAX );
-function _imagify_admin_bar( $wp_admin_bar )
-{
-	if ( ! current_user_can( 'upload_files' ) ) {
+function _imagify_admin_bar( $wp_admin_bar ) {
+	if ( ! current_user_can( 'upload_files' ) || ! get_imagify_option( 'admin_bar_menu', 0 ) ) {
 		return;
 	}
-	
-	$cap = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
-	
+
+	$cap = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
+
 	// Parent
-    $wp_admin_bar->add_menu( array(
-	    'id'    => 'imagify',
-	    'title' => 'Imagify',
-	    'href'  => ( current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) ? get_imagify_admin_url() : '#',
-	));
-	
+	$wp_admin_bar->add_menu( array(
+		'id'    => 'imagify',
+		'title' => 'Imagify',
+		'href'  => ( current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) ? get_imagify_admin_url() : '#',
+	) );
+
 	/** This filter is documented in inc/admin/options.php */
-	if (  current_user_can( apply_filters( 'imagify_capacity', $cap ) ) )  {
+	if (  current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
 		// Settings
 		$wp_admin_bar->add_menu(array(
 			'parent' => 'imagify',
-			'id' 	 => 'imagify-settings',
+			'id'     => 'imagify-settings',
 			'title'  => __( 'Settings' ),
-		    'href'   => get_imagify_admin_url(),
-		));	
+			'href'   => get_imagify_admin_url(),
+		) );
 	}
-	
+
 	// Bulk Optimization
 	if ( imagify_valid_key() && ! is_network_admin() && current_user_can( 'upload_files' ) ) {
 		$wp_admin_bar->add_menu(array(
 			'parent' => 'imagify',
-			'id' 	 => 'imagify-bulk-optimization',
+			'id'     => 'imagify-bulk-optimization',
 			'title'  => __( 'Bulk Optimization', 'imagify' ),
-		    'href'   => get_imagify_admin_url( 'bulk-optimization' ),
-		));
+			'href'   => get_imagify_admin_url( 'bulk-optimization' ),
+		) );
 	}
 
 	// Quota & Profile informations
-	if (  current_user_can( apply_filters( 'imagify_capacity', $cap ) ) )  {		
+	if ( imagify_valid_key() && current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
 		$user = new Imagify_User();
 
-		$unconsumed_quota	= $user->get_percent_unconsumed_quota();
-		$meteo_icon			=  '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="37" height="38" alt="" />'; 
-		$bar_class			= 'positive';
-		$message			= '';
-		
+		$unconsumed_quota = $user->get_percent_unconsumed_quota();
+		$meteo_icon       =  '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="37" height="38" alt="" />';
+		$bar_class        = 'positive';
+		$message          = '';
+
 		if ( $unconsumed_quota >= 21 && $unconsumed_quota <= 50 ) {
-			$bar_class	= 'neutral';
-			$meteo_icon	= '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="37" height="38" alt="" />';
+			$bar_class  = 'neutral';
+			$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="37" height="38" alt="" />';
 		}
 		elseif ( $unconsumed_quota <= 20 ) {
-			$bar_class	= 'negative';
-			$meteo_icon	= '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="38" height="36" alt="" />';
+			$bar_class  = 'negative';
+			$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="38" height="36" alt="" />';
 		}
 
 		if ( $unconsumed_quota <= 20 && $unconsumed_quota > 0 ) {
@@ -96,7 +95,7 @@ function _imagify_admin_bar( $wp_admin_bar )
 		$quota_section .= '
 					<div class="imagify-account">
 						<p class="imagify-meteo-title">' . __( 'Account status', 'imagify' ) . '</p>
-						<p class="imagify-meteo-subs">' . __( 'Your subscription:', 'imagify' ) . '&nbsp;<strong class="imagify-user-plan">' . $user->get_plan_label() . '</strong></p>
+						<p class="imagify-meteo-subs">' . __( 'Your subscription:', 'imagify' ) . '&nbsp;<strong class="imagify-user-plan">' . $user->plan_label . '</strong></p>
 					</div>
 				</div>';
 
@@ -104,9 +103,9 @@ function _imagify_admin_bar( $wp_admin_bar )
 			$quota_section .= '
 				<div class="imagify-abq-row">
 					<div class="imagify-space-left">
-						<p>' . sprintf( __( 'You have %s space credit left', 'imagify'), '<span id="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ) . '</p>
+						<p>' . sprintf( __( 'You have %s space credit left', 'imagify'), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ) . '</p>
 						<div class="imagify-bar-' . $bar_class . '">
-							<div style="width: ' . $unconsumed_quota . '%;" class="imagify-progress" id="imagify-unconsumed-bar"></div>
+							<div style="width: ' . $unconsumed_quota . '%;" class="imagify-unconsumed-bar imagify-progress"></div>
 						</div>
 					</div>
 				</div>';
@@ -114,7 +113,7 @@ function _imagify_admin_bar( $wp_admin_bar )
 
 		$quota_section .= '
 				<p class="imagify-abq-row">
-					<a class="" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">
+					<a class="imagify-account-link" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">
 						<span class="dashicons dashicons-admin-users"></span>
 						<span class="button-text">' . __( 'View my subscription', 'imagify' ) . '</span>
 					</a>
@@ -123,12 +122,25 @@ function _imagify_admin_bar( $wp_admin_bar )
 			' . $message;
 
 		// insert custom HTML
-		$wp_admin_bar->add_menu(array(
+		$wp_admin_bar->add_menu( array(
 			'parent' => 'imagify',
-			'id' 	 => 'imagify-profile',
-			'title'  => $quota_section
-		));	
+			'id'     => 'imagify-profile',
+			'title'  => $quota_section,
+		) );
 	}
 
 	// TO DO - Rate it & Support
+}
+
+/**
+ * Include Admin Bar Profile informations styles in front
+ *
+ * @since  1.2
+ */
+add_action( 'admin_bar_init', '_imagify_admin_bar_styles' );
+function _imagify_admin_bar_styles() {
+	if ( ! is_admin() && get_imagify_option( 'admin_bar_menu', 0 ) ) {
+		$css_ext = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.css' : '.min.css';
+		wp_enqueue_style( 'imagify-css-admin-bar', IMAGIFY_ASSETS_CSS_URL . 'admin-bar' . $css_ext, array(), IMAGIFY_VERSION, 'all' );
+	}
 }

@@ -110,19 +110,36 @@ jQuery(function($){
 
 		// on click on modal trigger
 		$('.imagify-modal-trigger').on('click', function(){
-			$( $(this).attr('href') ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex');
+			var the_target = $(this).attr('href') || $(this).data('target');
+
+			$( the_target ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex').addClass('modal-is-open');
+
 			return false;
 		});
 
 		// on click on close button
 		$('.imagify-modal').find('.close-btn').on('click', function(){
-			$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true');
+			$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true').removeClass('modal-is-open');
 		})
 		.on('blur', function(){
 			var $modal = $(this).closest('.imagify-modal');
 			if ( $modal.attr('aria-hidden') === 'false' ) {
 				$modal.attr('tabindex', '0').focus().removeAttr('tabindex');
 			}
+		});
+
+		// `Esc` key binding
+		$(window).on('keydown', function(e){
+			if ( e.keyCode == 27 && $('.imagify-modal.modal-is-open').length > 0 ) {
+
+				e.preventDefault();
+				
+				// trigger the event
+				$('.imagify-modal.modal-is-open').find('.close-btn').trigger('click');
+
+				return false;
+			}
+
 		});
 
 	}

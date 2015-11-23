@@ -14,7 +14,7 @@ function _imagify_display_bulk_page() {
 			<div class="imagify-title-right">
 				<div class="imagify-account">
 					<p class="imagify-meteo-title"><?php _e( 'Account status', 'imagify' ); ?></p>
-					<p class="imagify-meteo-subs"><?php _e( 'Your subscription:', 'imagify' ); ?>&nbsp;<strong class="imagify-user-plan"><?php echo $user->get_plan_label(); ?></strong></p>
+					<p class="imagify-meteo-subs"><?php _e( 'Your subscription:', 'imagify' ); ?>&nbsp;<strong class="imagify-user-plan"><?php echo $user->plan_label; ?></strong></p>
 				</div>
 				<div class="imagify-account-link">
 					<a href="<?php echo IMAGIFY_APP_MAIN; ?>/#/subscription" class="button button-ghost" target="_blank">
@@ -44,10 +44,10 @@ function _imagify_display_bulk_page() {
 					<span class="imagify-meteo-icon"><?php echo $meteo_icon; ?></span>
 					<div class="imagify-space-left">
 						
-						<p><?php echo sprintf( __( 'You have %s space credit left' , 'imagify' ), '<span id="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ); ?></p>
+						<p><?php printf( __( 'You have %s space credit left' , 'imagify' ), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ); ?></p>
 						
 						<div class="imagify-bar-<?php echo $bar_class; ?>">
-							<div id="imagify-unconsumed-bar" class="imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
+							<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
 						</div>
 					</div>
 					<div class="imagify-space-tooltips imagify-tooltips <?php echo ( ! $is_display_bubble ) ? 'hidden' : ''; ?>">
@@ -92,9 +92,56 @@ function _imagify_display_bulk_page() {
 					</ul>
 					
 					<div class="imagify-bulk-submit">
+						
+					<?php if ( get_imagify_option( 'backup', 0 ) == "1" ) { ?>
+
 						<p>
-							<strong><?php echo sprintf( __( 'Don\'t forget to check %syour settings%s before bulk optimization.', 'imagify' ), '<a href="' . get_admin_url( get_current_blog_id(), 'options-general.php?page=' . IMAGIFY_SLUG ) . '">', '</a>' ); ?></strong>
+							<strong><?php _e( 'Select Your Compression Level', 'imagify' ); ?></strong>
+							<br>
+							<?php 
+								$default_set = __( 'Ultra', 'imagify' );
+								switch( get_imagify_option( 'optimization_level' ) ) {
+									case '1':
+										$default_set = __( 'Aggressive', 'imagify' );
+										break;
+									case '0':
+										$default_set = __( 'Normal', 'imagify' );
+										break;
+								}
+
+								_e( 'Your default setting:', 'imagify' ); 
+								echo '&nbsp;<strong class="imagify-primary">' . $default_set . '</strong>';
+							?>
 						</p>
+
+						<p class="imagify-inline-options">
+							<input type="radio" id="imagify-optimization_level_ultra" name="optimization_level" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
+							<label for="imagify-optimization_level_ultra">
+								<?php _e( 'Ultra', 'imagify' ); ?>
+							</label>
+
+							<input type="radio" id="imagify-optimization_level_aggro" name="optimization_level" value="1" <?php checked( get_imagify_option( 'optimization_level' ), 1 ); ?>>
+							<label for="imagify-optimization_level_aggro">
+								<?php _e( 'Aggressive', 'imagify' ); ?>
+							</label>
+
+							<input type="radio" id="imagify-optimization_level_normal" name="optimization_level" value="0" <?php checked( get_imagify_option( 'optimization_level' ), 0 ); ?>>
+							<label for="imagify-optimization_level_normal">
+								<?php _e( 'Normal', 'imagify' ); ?>
+							</label>
+						</p>
+
+					<?php 
+					}
+					else {
+					?>
+						<p>
+							<strong><?php printf( __( 'Don\'t forget to check %syour settings%s before bulk optimization.', 'imagify' ), '<a href="' . get_admin_url( get_current_blog_id(), 'options-general.php?page=' . IMAGIFY_SLUG ) . '">', '</a>' ); ?></strong>
+						</p>
+					<?php
+					}
+					?>
+
 						<p>
 							<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
 							<button id="imagify-bulk-action" type="button" class="button button-primary">
@@ -103,10 +150,10 @@ function _imagify_display_bulk_page() {
 							</button>
 							<?php
 							if ( $user->is_free() ) { ?>
-								<span class="imagify-tooltips">
+								<span class="imagify-tooltips right">
 									<span class="tooltip-content">
 										<span class="icon icon-round" aria-hidden="true">i</span>
-										<?php echo sprintf( __( 'All images which are over to %s could be optimized using the pro version.', 'imagify' ), size_format( IMAGIFY_MAX_BYTES , 0 ) ); ?>
+										<?php printf( __( 'All images which are over to %s could be optimized using the pro version.', 'imagify' ), size_format( IMAGIFY_MAX_BYTES , 0 ) ); ?>
 									</span>
 								</span>	
 							<?php
@@ -128,22 +175,22 @@ function _imagify_display_bulk_page() {
 
 				<div class="col-1-3 col-statistics">
 					<h3><?php _e( 'Statistics', 'imagify' ); ?></h3>
-
+					
+					<?php
+					$total_saving_data  = imagify_count_saving_data();
+					$optimized_percent 	= $total_saving_data['percent'];
+					$optimized_nb 		= $total_saving_data['optimized_size'];
+					$original_nb 		= $total_saving_data['original_size'];
+					?>
+					
 					<div class="imagify-number-you-optimized">
 						<p>
-							<span id="imagify-total-optimized-attachments" class="number"><?php echo number_format_i18n( imagify_count_optimized_attachments() ); ?></span>
-							<span class="text"><?php echo sprintf( __( 'that\'s the number of images you optimized with Imagify', 'imagify' ), '<br>' ); ?></span>
+							<span id="imagify-total-optimized-attachments" class="number"><?php echo number_format_i18n( $total_saving_data['count'] ); ?></span>
+							<span class="text"><?php printf( __( 'that\'s the number of images you optimized with Imagify', 'imagify' ), '<br>' ); ?></span>
 						</p>
 					</div>
 
 					<div class="imagify-bars">
-						<?php
-							$total_saving_datas = imagify_count_saving_data();
-							$optimized_percent 	= $total_saving_datas['percent'];
-							$optimized_nb 		= $total_saving_datas['optimized_size'];
-							$original_nb 		= $total_saving_datas['original_size'];
-
-						?>
 						<p><?php _e( 'Original size', 'imagify' ); ?></p>
 						<div class="imagify-bar-negative base-transparent right-outside-number">
 							<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo size_format( $original_nb, 1 ); ?></span></div>
@@ -160,7 +207,7 @@ function _imagify_display_bulk_page() {
 					<div class="imagify-number-you-optimized">
 						<p>
 							<span id="imagify-total-optimized-attachments-pct" class="number"><?php echo number_format_i18n( imagify_count_saving_data('percent') ); ?>%</span>
-							<span class="text"><?php echo sprintf( __( 'that\'s the size you saved %sby using Imagify', 'imagify' ), '<br>' ); ?></span>
+							<span class="text"><?php printf( __( 'that\'s the size you saved %sby using Imagify', 'imagify' ), '<br>' ); ?></span>
 						</p>
 					</div>
 				</div>
@@ -181,7 +228,7 @@ function _imagify_display_bulk_page() {
 					</div>
 					<div class="imagify-ac-report-text">
 						<p class="imagify-ac-rt-big"><?php _e( 'Well done!', 'imagify' ); ?></p>
-						<p><?php echo sprintf( __( 'you saved %1$s out of %2$s', 'imagify' ), '<strong class="imagify-ac-rt-total-gain"></strong>', '<strong class="imagify-ac-rt-total-original"></strong>' ); ?></p>
+						<p><?php printf( __( 'you saved %1$s out of %2$s', 'imagify' ), '<strong class="imagify-ac-rt-total-gain"></strong>', '<strong class="imagify-ac-rt-total-original"></strong>' ); ?></p>
 					</div>
 				</div>
 				<div class="imagify-ac-share">
@@ -235,7 +282,7 @@ function _imagify_display_bulk_page() {
 					<!-- No image uploaded yet -->
 					<tr class="imagify-no-uploaded-yet">
 						<td colspan="7">
-							<p><?php echo sprintf( __( '%sStart the bulk optimization%s', 'imagify' ), '<a id="imagify-simulate-bulk-action" href="#">', '</a>' ); ?></p>
+							<p><?php printf( __( '%sStart the bulk optimization%s', 'imagify' ), '<a id="imagify-simulate-bulk-action" href="#">', '</a>' ); ?></p>
 						</td>
 					</tr>
 				</tbody>

@@ -42,7 +42,7 @@ jQuery(function($){
 		e.preventDefault();
 
 		var $obj 	= $(this);
-		var	$parent = $obj.parents('.column-imagify_optimized_file');
+		var	$parent = $obj.parents('.column-imagify_optimized_file, .compat-field-imagify .field');
 		var href 	= $obj.attr('href');
 
 		$parent.html('<div class="button"><span class="imagify-spinner"></span>' + $obj.data('waiting-label') + '</div>');
@@ -62,17 +62,57 @@ jQuery(function($){
 	 */
 	$('.imagify-datas-details').hide();
 
-	$('.column-imagify_optimized_file').on('click', '.imagify-datas-more-action a', function(){
+	$(document).on('click', '.imagify-datas-more-action a', function(){
 		if ( $(this).hasClass('is-open') ) {
 			$( $(this).attr('href') ).slideUp('300').removeClass('is-open');
 			$(this).removeClass('is-open').find('.the-text').text( $(this).data('open') );
 		}
 		else {
 			$( $(this).attr('href') ).slideDown('300').addClass('is-open');
-			$(this).addClass('is-open').find('.the-text').text( $(this).data('close') );;
+			$(this).addClass('is-open').find('.the-text').text( $(this).data('close') );
 		}
 		return false;
 	});
+
+	
+	// Some usefull functions to help us with media modal
+
+	var get_var = function (param) {
+			var vars = {};
+			window.location.href.replace( 
+				/[?&]+([^=&]+)=?([^&]*)?/gi, // regexp
+				function( m, key, value ) { // callback
+					vars[key] = value !== undefined ? value : '';
+				}
+			);
+
+			if ( param ) {
+				return vars[param] ? vars[param] : null;	
+			}
+			return vars;
+		},
+		check_modal = function() {
+			var tempTimer = setInterval( function(){
+				if ( $('.media-modal').find('.imagify-datas-details').length ) {
+					$('.media-modal').find('.imagify-datas-details').hide();
+					draw_me_a_chart( $('.media-modal').find('#imagify-consumption-chart') );
+					clearInterval(tempTimer);
+					tempTimer = null;
+				}
+			}, 20 );
+		};
+	
+	// Intercept the right moment if media details is clicked (mode grid)
+	// Bear Feint
+	 
+	$('.upload-php').find('.media-frame.mode-grid').on('click', '.attachment', function(){
+		check_modal();
+	});
+
+	// On page load in upload.php check if item param exists
+	if ( $('.upload-php').length > 0 && get_var('item') ) {
+		check_modal();
+	}
 
 	/*
 	 * Mini chart
