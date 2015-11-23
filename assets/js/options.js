@@ -75,4 +75,18 @@ jQuery(function($){
 		}
 	});
 
+	/**
+	 * Imagify Backup alert
+	 */
+	$('.imagify-settings-section').find('#backup').on('change', function(){
+		if ( ! $(this).is(':checked') ) {
+			swal({
+				title: imagifyOptions.noBackupTitle,
+				text: imagifyOptions.noBackupText,
+				type: "info",
+				customClass: "imagify-sweet-alert"
+			});
+		}
+	});
+
 });

@@ -34,6 +34,7 @@
 	margin-bottom: 0;
 }
 
+/* Some Sweet alert styles */
 .imagify-sweet-alert button {
 	margin-top: 17px !important;
 	height: 45px !important;
@@ -43,20 +44,27 @@
 	background-color: #40b1d0  !important;
 	box-shadow: 0 3px 0 #338ea6  !important;
 }
-
 .imagify-sweet-alert-signup .sa-confirm-button-container {
 	width: 40%;
 }
-
 .imagify-sweet-alert-signup button {
 	width: 100%;
 	padding: 0 !important;
 }
-
 .imagify-sweet-alert .sa-input-error:before, 
 .imagify-sweet-alert .sa-input-error:after,
 .imagify-sweet-alert .la-ball-fall {
 	top: 25% !important;
+}
+
+#wpwrap {
+	transition: all .4s;
+}
+.stop-scrolling #wpwrap {
+	filter: blur(2px);
+}
+.stop-scrolling #wpwrap #wpadminbar {
+	top: -32px;
 }
 
 

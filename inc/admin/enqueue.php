@@ -180,6 +180,13 @@ function _imagify_admin_print_styles() {
 		wp_enqueue_script( 'imagify-js-twentytwenty' );
 		wp_enqueue_script( 'imagify-js-options' );
 		wp_enqueue_style( 'imagify-css-twentytwenty' );
+
+		$options_data = array(
+			'noBackupTitle'	=> __( 'Don\'t need a parachute?', 'imagify' ),
+			'noBackupText'	=> __( 'With this option deactivated, we won\'t be able to re-optimize your images to another compression level, and restore your original images in case of need.', 'imagify' )
+		);
+
+		wp_localize_script( 'imagify-js-options', 'imagifyOptions', $options_data );
 	}
 
 	/*
