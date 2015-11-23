@@ -80,11 +80,17 @@ jQuery(function($){
 	 */
 	$('.imagify-settings-section').find('#backup').on('change', function(){
 		if ( ! $(this).is(':checked') ) {
+			var $_this = $(this);
 			swal({
 				title: imagifyOptions.noBackupTitle,
 				text: imagifyOptions.noBackupText,
 				type: "info",
-				customClass: "imagify-sweet-alert"
+				customClass: "imagify-sweet-alert",
+				showCancelButton: true
+			}, function(isConfirm){
+				if ( ! isConfirm ) {
+					$_this.prop('checked', true);
+				}
 			});
 		}
 	});
