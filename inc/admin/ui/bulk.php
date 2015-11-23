@@ -96,7 +96,7 @@ function _imagify_display_bulk_page() {
 					<?php if ( get_imagify_option( 'backup', 0 ) == "1" ) { ?>
 
 						<p>
-							<strong><?php _e( 'Select Your Compression Level', 'imagify' ); ?></strong>
+							<strong><?php _e( 'Select your compression level', 'imagify' ); ?></strong>
 							<br>
 							<?php 
 								$default_set = __( 'Ultra', 'imagify' );
@@ -109,7 +109,7 @@ function _imagify_display_bulk_page() {
 										break;
 								}
 
-								_e( 'Your default setting:', 'imagify' ) . '&nbsp;<strong class="imagify-primary">' . $default_set . '</strong>';
+								echo __( 'Your default setting:', 'imagify' ) . '&nbsp;<strong class="imagify-primary">' . $default_set . '</strong>';
 							?>
 						</p>
 
