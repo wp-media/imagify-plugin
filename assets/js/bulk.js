@@ -55,7 +55,8 @@ jQuery(function($){
 	});
 
 	$('#imagify-bulk-action').click(function(){
-		var $obj = $(this);
+		var $obj = $(this),
+			$optimization_level = $('[name="optimization_level"]:checked').val();
 
 		if ( $obj.attr('disabled') ) {
 			return false;
@@ -69,7 +70,7 @@ jQuery(function($){
 		};
 		$(window).on('beforeunload', confirmMessage);
 
-		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
+		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&optimization_level="+$optimization_level+"&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
 		.done(function(response) {
 			if( !response.success ) {
 				$obj.removeAttr('disabled');

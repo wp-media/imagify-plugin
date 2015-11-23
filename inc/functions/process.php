@@ -6,17 +6,15 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  *
  * @since 1.0
  *
- * @param   string 	  $file_path 	  Absolute path to the image file.
- * @param   bool   	  $backup 		  Force a backup of the original file.
- * @param   int 	  $is_aggressive  The optimization level (1=aggressive, 0=normal).
- * @param   array 	  $resize  		  The resize parameters (with & height).
+ * @param   string 	  $file_path 	  	   Absolute path to the image file.
+ * @param   bool   	  $backup 		  	   Force a backup of the original file.
+ * @param   int 	  $optimization_level  The optimization level (2=ultra, 1=aggressive, 0=normal).
+ * @param   array 	  $resize  		  	   The resize parameters (with & height).
  * @return obj|array  Error message | Optimized image data
  */
-function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize = array() ) {
+function do_imagify( $file_path, $backup, $optimization_level, $resize = array() ) {
 	$errors    = new WP_Error();
-	if ( ! defined( 'FS_CHMOD_FILE' ) ) {
-		define( 'FS_CHMOD_FILE', ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) );
-	}	
+	
 	/**
 	 * Filter the attachment path
 	 *
@@ -74,8 +72,9 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize
 			'image' => curl_file_create( $file_path ),
 			'data' 	=> json_encode(
 				array(
-					'aggressive' => ( is_null( $is_aggressive ) ) ? get_imagify_option( 'optimization_level', 1 ) : $is_aggressive,
-					'resize' => $resize
+					'aggressive' => ( 1 === (int) $optimization_level ) ? true : false,
+					'ultra'  	 => ( 2 === (int) $optimization_level ) ? true : false,
+					'resize' 	 => $resize
 				)
 			)
 		)

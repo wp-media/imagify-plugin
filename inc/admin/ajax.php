@@ -60,14 +60,13 @@ function _do_admin_post_imagify_manual_override_upload() {
 		}
 	}
 	
-	$attachment    = new Imagify_Attachment( $_GET['attachment_id'] );
-	$is_aggressive = ( $attachment->get_optimization_level() ) ? 0 : 1;
+	$attachment = new Imagify_Attachment( $_GET['attachment_id'] );
 		
 	// Restore the backup file
 	$attachment->restore();
 
 	// Optimize it!!!!!
-	$attachment->optimize( $is_aggressive );
+	$attachment->optimize( (int) $_GET['optimization_level'] );
 
 	if ( ! defined( 'DOING_AJAX' ) ) {
 		wp_safe_redirect( wp_get_referer() );
@@ -130,6 +129,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	}
 	
 	$user = new Imagify_User();
+	
 	if ( $user->is_over_quota() ) {
 		wp_send_json_error( array( 'message' => 'over-quota' ) );
 	}
@@ -137,47 +137,51 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	set_time_limit( 0 );
 	
 	$args = array(
-		'fields'          => 'ids',
-		'post_type'       => 'attachment',
-		'post_status'     => 'any',
-		'post_mime_type'  => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
-		'posts_per_page'  => -1,
-		'meta_query'      => array(
-			'relation'    => 'or',
-			array(
-				'key'     => '_imagify_data',
-				'compare' => 'NOT EXISTS'
-			),
-			array(
-				'key'     => '_imagify_status',
-				'value'   => 'error',
-				'compare' => '='
-			)
-		)
+		'fields'                 => 'ids',
+		'post_type'              => 'attachment',
+		'post_status'            => 'any',
+		'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
+		'posts_per_page'         => -1,
+		'no_found_rows'          => true,
+		'update_post_term_cache' => false,
 	);
-
-	$data  = array();
-	$query = new WP_Query( $args );
-	$ids   = $query->posts;
+	
+	$data                       = array();
+	$query                      = new WP_Query( $args );
+	$ids                        = $query->posts;
+	$optimization_level         = (int) $_GET['optimization_level'];
+	
+	// Save the optimization level in a transient to retrieve it later during the process
+	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
 	
 	foreach( $ids as $id ) {
 		/** This filter is documented in inc/functions/process.php */
 		$file_path = apply_filters( 'imagify_file_path', get_attached_file( $id ) );
 		
 		if ( file_exists( $file_path ) ) {
-			$attachment         = new Imagify_Attachment( $id );
-			$attachment_error   = $attachment->get_optimized_error();  
-			$attachment_error   = trim( $attachment_error );
-			$attachment_status	= get_post_meta( $id, '_imagify_status', true );
+			$attachment        = new Imagify_Attachment( $id );
+			$attachment_error  = $attachment->get_optimized_error();  
+			$attachment_error  = trim( $attachment_error );
+			$attachment_status = get_post_meta( $id, '_imagify_status', true );
+			
+			// Don't try to re-optimize if the optimization level is still the same
+			if ( $optimization_level === $attachment->get_optimization_level() ) {
+				continue;					
+			}
+			
+			// Don't try to re-optimize if there is no backup file
+			if ( $optimization_level !== $attachment->get_optimization_level() && ! $attachment->has_backup() ) {
+				continue;					
+			}
+			
+			// Don't try to re-optimize images already compressed
+			if ( $attachment->get_optimization_level() > $optimization_level && false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
+				continue;	
+			}
 			
 			// Don't try to re-optimize images with an empty error message
 			if ( $attachment_status == 'error' && empty( $attachment_error ) ) {
 				continue;
-			}
-			
-			// Don't try to re-optimize images already compressed
-			if ( false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
-				continue;	
 			}
 									
 			$data[ '_' . $id ] = wp_get_attachment_url( $id );	
@@ -204,11 +208,17 @@ function _do_wp_ajax_imagify_bulk_upload() {
 		wp_send_json_error();
 	}
 
-	$attachment_id = (int) $_POST['image'];
-	$attachment    = new Imagify_Attachment( $_POST['image'] );
-
+	$attachment_id      = (int) $_POST['image'];
+	$attachment         = new Imagify_Attachment( $_POST['image'] );
+	$optimization_level = get_transient( 'imagify_bulk_optimization_level' );
+	
+	// Restore it if the optimization level is updated
+	if ( $optimization_level !== $attachment->get_optimization_level() ) {
+		$attachment->restore();
+	}
+	
 	// Optimize it!!!!!
-	$attachment->optimize();
+	$attachment->optimize( $optimization_level );
 
 	// Return the optimization statistics
 	$fullsize_data         = $attachment->get_size_data();
