@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-11-23 16:13+0100\n"
-"PO-Revision-Date: 2015-11-23 16:42+0100\n"
+"POT-Creation-Date: 2015-11-23 19:11+0100\n"
+"PO-Revision-Date: 2015-11-23 19:11+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -87,7 +87,7 @@ msgstr ""
 msgid "Your API key is valid."
 msgstr "Votre clé API est valide."
 
-#: inc/admin/enqueue.php:142 inc/admin/ui/bulk.php:254 inc/admin/upload.php:38
+#: inc/admin/enqueue.php:142 inc/admin/ui/bulk.php:257 inc/admin/upload.php:38
 msgid "Optimized"
 msgstr "Optimisé"
 
@@ -140,6 +140,10 @@ msgid ""
 msgstr ""
 "Vous avez consommé tout votre crédit pour ce mois. Vous aurez à nouveau "
 "<strong>%s le %s</strong>."
+
+#: inc/admin/enqueue.php:161
+msgid "F j, Y"
+msgstr ""
 
 #: inc/admin/enqueue.php:170 inc/functions/admin-ui.php:74
 msgid "Restore Original"
@@ -241,42 +245,45 @@ msgstr ""
 msgid "Select Your Compression Level"
 msgstr "Sélectionnez votre niveau de compression"
 
-#: inc/admin/ui/bulk.php:104
-msgid "your default setting"
-msgstr "votre réglage par défaut"
-
-#: inc/admin/ui/bulk.php:109 inc/admin/ui/options.php:106
-#: inc/admin/ui/options.php:291 inc/admin/ui/options.php:354
-#: inc/admin/ui/options.php:371 inc/admin/ui/options.php:431
-#: inc/classes/class-attachment.php:123 inc/functions/admin-ui.php:124
+#: inc/admin/ui/bulk.php:102 inc/admin/ui/bulk.php:120
+#: inc/admin/ui/options.php:106 inc/admin/ui/options.php:291
+#: inc/admin/ui/options.php:354 inc/admin/ui/options.php:371
+#: inc/admin/ui/options.php:431 inc/classes/class-attachment.php:123
+#: inc/functions/admin-ui.php:124
 msgid "Ultra"
 msgstr "Ultra"
 
-#: inc/admin/ui/bulk.php:117 inc/admin/ui/options.php:111
-#: inc/admin/ui/options.php:303 inc/admin/ui/options.php:353
-#: inc/admin/ui/options.php:366 inc/admin/ui/options.php:410
-#: inc/classes/class-attachment.php:126 inc/functions/admin-ui.php:129
+#: inc/admin/ui/bulk.php:105 inc/admin/ui/bulk.php:125
+#: inc/admin/ui/options.php:111 inc/admin/ui/options.php:303
+#: inc/admin/ui/options.php:353 inc/admin/ui/options.php:366
+#: inc/admin/ui/options.php:410 inc/classes/class-attachment.php:126
+#: inc/functions/admin-ui.php:129
 msgid "Aggressive"
 msgstr "Agressif"
 
-#: inc/admin/ui/bulk.php:125 inc/admin/ui/options.php:116
-#: inc/admin/ui/options.php:315 inc/admin/ui/options.php:352
-#: inc/admin/ui/options.php:361 inc/admin/ui/options.php:390
-#: inc/classes/class-attachment.php:129 inc/functions/admin-ui.php:134
+#: inc/admin/ui/bulk.php:108 inc/admin/ui/bulk.php:130
+#: inc/admin/ui/options.php:116 inc/admin/ui/options.php:315
+#: inc/admin/ui/options.php:352 inc/admin/ui/options.php:361
+#: inc/admin/ui/options.php:390 inc/classes/class-attachment.php:129
+#: inc/functions/admin-ui.php:134
 msgid "Normal"
 msgstr "Normal"
 
-#: inc/admin/ui/bulk.php:136
+#: inc/admin/ui/bulk.php:112
+msgid "Your default setting:"
+msgstr "Votre réglage par défaut :"
+
+#: inc/admin/ui/bulk.php:139
 #, php-format
 msgid "Don't forget to check %syour settings%s before bulk optimization."
 msgstr ""
 "N’oubliez pas de vérifier %svos réglages%s avant l’optimisation en masse."
 
-#: inc/admin/ui/bulk.php:146
+#: inc/admin/ui/bulk.php:149
 msgid "Imagif'em all"
 msgstr "Imagif'em all"
 
-#: inc/admin/ui/bulk.php:153
+#: inc/admin/ui/bulk.php:156
 #, php-format
 msgid ""
 "All images which are over to %s could be optimized using the pro version."
@@ -284,90 +291,90 @@ msgstr ""
 "Toutes les images qui font plus de %s pourront être optimisées avec la "
 "version pro."
 
-#: inc/admin/ui/bulk.php:164
+#: inc/admin/ui/bulk.php:167
 msgid "Overview"
 msgstr "Vue d'ensemble"
 
-#: inc/admin/ui/bulk.php:174
+#: inc/admin/ui/bulk.php:177
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: inc/admin/ui/bulk.php:186
+#: inc/admin/ui/bulk.php:189
 msgid "that's the number of images you optimized with Imagify"
 msgstr "c’est le nombre d’images que %svous avez optimisé avec Imagify"
 
-#: inc/admin/ui/bulk.php:191
+#: inc/admin/ui/bulk.php:194
 msgid "Original size"
 msgstr "Poids de l’original"
 
-#: inc/admin/ui/bulk.php:196
+#: inc/admin/ui/bulk.php:199
 msgid "Optimized size"
 msgstr "Poids optimisé"
 
-#: inc/admin/ui/bulk.php:207
+#: inc/admin/ui/bulk.php:210
 #, php-format
 msgid "that's the size you saved %sby using Imagify"
 msgstr "c’est le poids que vous avez économisé en utilisant Imagify"
 
-#: inc/admin/ui/bulk.php:227
+#: inc/admin/ui/bulk.php:230
 msgid "Well done!"
 msgstr "Bien joué&nbsp;!"
 
-#: inc/admin/ui/bulk.php:228
+#: inc/admin/ui/bulk.php:231
 #, php-format
 msgid "you saved %1$s out of %2$s"
 msgstr "vous avez économisé %1$s sur %2$s"
 
-#: inc/admin/ui/bulk.php:233
+#: inc/admin/ui/bulk.php:236
 msgid "Share your awesome result"
 msgstr "Partagez votre résultat"
 
-#: inc/admin/ui/bulk.php:248
+#: inc/admin/ui/bulk.php:251
 msgid "Compression process results"
 msgstr "Résultats du processus de compression"
 
-#: inc/admin/ui/bulk.php:251
+#: inc/admin/ui/bulk.php:254
 msgid "Filename"
 msgstr "Nom du fichier"
 
-#: inc/admin/ui/bulk.php:252
+#: inc/admin/ui/bulk.php:255
 msgid "Status"
 msgstr "Statut"
 
-#: inc/admin/ui/bulk.php:253 inc/admin/ui/options.php:351
+#: inc/admin/ui/bulk.php:256 inc/admin/ui/options.php:351
 #: inc/admin/ui/options.php:356 inc/admin/ui/options.php:380
 msgid "Original"
 msgstr "Original"
 
-#: inc/admin/ui/bulk.php:255
+#: inc/admin/ui/bulk.php:258
 msgid "Percentage"
 msgstr "Pourcentage"
 
-#: inc/admin/ui/bulk.php:256
+#: inc/admin/ui/bulk.php:259
 msgid "Thumbnails optimized"
 msgstr "Miniatures optimisées"
 
-#: inc/admin/ui/bulk.php:257
+#: inc/admin/ui/bulk.php:260
 msgid "Overall saving"
 msgstr "Gain total"
 
-#: inc/admin/ui/bulk.php:262
+#: inc/admin/ui/bulk.php:265
 msgid "file"
 msgstr "fichier"
 
-#: inc/admin/ui/bulk.php:263
+#: inc/admin/ui/bulk.php:266
 msgid "error"
 msgstr "erreur"
 
-#: inc/admin/ui/bulk.php:264
+#: inc/admin/ui/bulk.php:267
 msgid "Total:"
 msgstr "Total&nbsp;:"
 
-#: inc/admin/ui/bulk.php:265
+#: inc/admin/ui/bulk.php:268
 msgid "Gain:"
 msgstr "Gain&nbsp;:"
 
-#: inc/admin/ui/bulk.php:282
+#: inc/admin/ui/bulk.php:285
 #, php-format
 msgid "%sStart the bulk optimization%s"
 msgstr "%sDémarrer l’optimisation en masse%s"
@@ -834,6 +841,9 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid "your default setting"
+#~ msgstr "votre réglage par défaut"
 
 #~ msgid "Medium"
 #~ msgstr "Moyenne"
