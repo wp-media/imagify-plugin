@@ -125,7 +125,7 @@ function _imagify_display_options_page() {
 									<p class="imagify-visual-comparison-text">
 										<?php
 										printf(
-											__( 'To see the differences, %sopen a visual comparison%s', 'imagify' ),
+											__( 'Need help to choose? %sTry the Visual Comparison%s', 'imagify' ),
 											'<button type="button" class="button button-primary button-mini-flat imagify-visual-comparison-btn imagify-modal-trigger" data-target="#imagify-visual-comparison">',
 											'</button>'
 										);
@@ -262,7 +262,7 @@ function _imagify_display_options_page() {
 									<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
 									<label for="admin_bar_menu" onclick="">
 										<span class="screen-reader-text"><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></span>
-										<span class="imagify-visual-label"><?php _e( 'I want this awesome quick access menu on my menu bar.', 'imagify' ); ?></span>
+										<span class="imagify-visual-label"><?php _e( 'I want this awesome quick access menu on my admin bar.', 'imagify' ); ?></span>
 									</label>
 
 									<p>
@@ -277,7 +277,7 @@ function _imagify_display_options_page() {
 				<div class="submit">
 					<?php submit_button(); ?>
 					<div class="imagify-bulk-info">
-						<p><?php printf( __( 'When you have saved your settings, you can optimize all your images using %sImagify Bulk Optimization%s feature.', 'imagify' ), '<a href="' . get_admin_url() . 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization">', '</a>' ); ?></p>
+						<p><?php printf( __( 'Once your settings saved, optimize all your images by using the %sImagify Bulk Optimization%s feature.', 'imagify' ), '<a href="' . get_admin_url() . 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization">', '</a>' ); ?></p>
 					</div>
 				</div>
 			</form>
