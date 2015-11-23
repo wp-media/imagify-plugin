@@ -94,7 +94,7 @@ function _imagify_admin_print_styles() {
 	wp_register_script(
 		'imagify-js-twentytwenty',
 		IMAGIFY_ASSETS_JS_URL . 'jquery.twentytwenty' . $js_ext,
-		array( 'jquery', 'imagify-js-event-move' ),
+		array( 'jquery', 'imagify-js-event-move', 'imagify-js-chart' ),
 		IMAGIFY_VERSION,
 		true
 	);
@@ -176,6 +176,7 @@ function _imagify_admin_print_styles() {
 	 * Scripts loaded in /wp-admin/options-general.php?page=imagify
 	*/
 	if ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) {
+		wp_enqueue_script( 'imagify-js-chart' );
 		wp_enqueue_script( 'imagify-js-event-move' );
 		wp_enqueue_script( 'imagify-js-twentytwenty' );
 		wp_enqueue_script( 'imagify-js-options' );

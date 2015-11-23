@@ -400,7 +400,7 @@ function _imagify_display_options_page() {
 									<span class="imagify-chart-container">
 										<canvas id="imagify-consumption-chart-normal" width="15" height="15"></canvas>
 									</span>
-								</span><span class="imagify-chart-value">10,44</span>%
+								</span><span class="imagify-chart-value">10.44</span>%
 							</span>
 						</p>
 					</div>

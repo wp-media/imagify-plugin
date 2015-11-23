@@ -1989,6 +1989,7 @@ td.imagify-cell-filename {
 }
 .imagify-c-level-row .value {
 	text-align: right;
+	padding-left: 5px;
 }
 .imagify-c-level-row .value.level {
 	color: #40b1d0;
@@ -1996,6 +1997,9 @@ td.imagify-cell-filename {
 .imagify-c-level-row .value.size {
 	color: #8bc34a;
 	font-weight: bold;
+}
+.imagify-c-level-row .value .imagify-chart {
+	top: 1px;
 }
 
 @-webkit-keyframes icon-rotate {

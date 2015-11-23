@@ -128,6 +128,34 @@
  */
 (function(window, $, undefined){
 
+	/*
+	 * Mini chart
+	 *
+	 * @param {element} canvas
+	 */	
+	var draw_me_a_chart = function ( canvas ) {
+		canvas.each(function(){
+			var the_value = parseInt( $(this).closest('.imagify-chart').next('.imagify-chart-value').text() ),
+				overviewData = [
+				{
+					value: the_value,
+					color: '#00B3D3'
+				},
+				{
+					value: 100 - the_value,
+					color: '#D8D8D8'
+				}
+				],
+				overviewDoughnut = new Chart( $(this)[0].getContext('2d')).Doughnut(overviewData, {
+					segmentStrokeColor	: '#2A2E3C',
+					segmentStrokeWidth	: 1,
+					animateRotate		: true,
+					percentageInnerCutout: 60,
+					tooltipEvents		: []
+				});
+		});
+	};
+
 	$('.imagify-visual-comparison-btn').on('click', function(){
 
 		if ( $('.twentytwenty-wrapper').length === 1) {
@@ -225,6 +253,7 @@
 						labelAfter: 	ultra_label
 					}, function(){
 						$tt.closest('.imagify-modal-content').removeClass('loading').addClass('loaded');
+						draw_me_a_chart( $('.imagify-level-ultra').find('.imagify-chart').find('canvas') );
 					});
 					clearInterval( twenty_me );
 					twenty_me = null;
@@ -274,6 +303,8 @@
 					$('.imagify-c-level.go-right').attr('aria-hidden', 'true').removeClass('go-left go-right');
 					$('.imagify-level-' + image).attr('aria-hidden', 'false').addClass('go-right');
 				}
+
+				draw_me_a_chart( $('.imagify-level-' + image).find('.imagify-chart').find('canvas') );
 
 				return false;
 
