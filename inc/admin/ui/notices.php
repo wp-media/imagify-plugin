@@ -232,11 +232,12 @@ function _imagify_http_block_external_notice() {
  */
 add_action( 'all_admin_notices', '_imagify_warning_grid_view_notice' );
 function _imagify_warning_grid_view_notice() {
+	global $wp_version;
 	$current_screen     = get_current_screen();
 	$ignored_notices    = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 	$media_library_mode = get_user_option( 'media_library_mode', get_current_user_id() );
 
-	if ( ( isset( $current_screen ) && 'upload' !== $current_screen->base ) || in_array( 'grid-view', (array) $ignored_notices ) || ! current_user_can( 'upload_files' ) || ! imagify_valid_key() || $media_library_mode == 'list' ) {
+	if ( ( isset( $current_screen ) && 'upload' !== $current_screen->base ) || in_array( 'grid-view', (array) $ignored_notices ) || ! current_user_can( 'upload_files' ) || ! imagify_valid_key() || $media_library_mode == 'list' || version_compare( $wp_version, '4.0' ) < 0 ) {
 		return;
 	}
 	?>

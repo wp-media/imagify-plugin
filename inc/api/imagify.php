@@ -207,24 +207,24 @@ class Imagify {
 		if ( ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ) ) {
 			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
 		}
-		
+        
         try {
 	    	$ch = curl_init();
 			$is_ssl = ( isset( $_SERVER['HTTPS'] ) && ( 'on' == strtolower( $_SERVER['HTTPS'] ) || '1' == $_SERVER['HTTPS'] ) ) || ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) );
-
+			
 	        if ( 'POST' == $method ) {
 		        curl_setopt( $ch, CURLOPT_POST, true );
 				curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
 	        }
+			
 			curl_setopt( $ch, CURLOPT_URL, self::API_ENDPOINT . $url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
 			curl_setopt( $ch, CURLOPT_TIMEOUT, 60 );
 			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, $is_ssl );
-
+	
 			$response  = json_decode( curl_exec( $ch ) );
-
 	        $error     = curl_error( $ch );
 	        $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 	

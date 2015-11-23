@@ -47,7 +47,7 @@ jQuery(function($){
 
 		$parent.html('<div class="button"><span class="imagify-spinner"></span>' + $obj.data('waiting-label') + '</div>');
 
-		$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ) )
+		$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ), {optimization_level: $obj.attr('data-optimization-level')} )
 		.done( function( response ){
 			$parent.html( response.data );
 			$parent.find('.imagify-datas-more-action a').addClass('is-open').find('.the-text').text( $parent.find('.imagify-datas-more-action a').data('close') );
