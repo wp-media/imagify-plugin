@@ -44,6 +44,10 @@
 	background-color: #40b1d0  !important;
 	box-shadow: 0 3px 0 #338ea6  !important;
 }
+.imagify-sweet-alert button.cancel {
+	background: #777 !important;
+	box-shadow: 0 3px 0 #444 !important;
+}
 .imagify-sweet-alert-signup .sa-confirm-button-container {
 	width: 40%;
 }
@@ -67,6 +71,13 @@
 	top: -32px;
 }
 
+/* Some basic colors */
+.imagify-primary {
+	color: #40b1d0;
+}
+.imagify-secondary {
+	color: #8cc152;
+}
 
 #imagify-check-api-container {
 	font-weight: bold;	
@@ -678,6 +689,13 @@ input[id^="imagify_sizes_"]:checked + label {
 
 .imagify-inline-options .imagify-info {
 	margin-top: 15px;
+}
+.imagify-btn-info {
+	display: block;
+	font-size: 0.7em;
+	letter-spacing: 0;
+	line-height: 1;
+	text-transform: none;
 }
 
 /* Some inputs */

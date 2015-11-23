@@ -97,34 +97,36 @@ function _imagify_display_bulk_page() {
 
 						<p>
 							<strong><?php _e( 'Select your compression level', 'imagify' ); ?></strong>
+							<br>
+							<?php 
+								$default_set = __( 'Ultra', 'imagify' );
+								switch( get_imagify_option( 'optimization_level' ) ) {
+									case '1':
+										$default_set = __( 'Aggressive', 'imagify' );
+										break;
+									case '0':
+										$default_set = __( 'Normal', 'imagify' );
+										break;
+								}
+
+								echo __( 'Your default setting:', 'imagify' ) . '&nbsp;<strong class="imagify-primary">' . $default_set . '</strong>';
+							?>
 						</p>
 
 						<p class="imagify-inline-options">
-							<?php 
-								$info_default = '<span class="imagify-tooltips bottom"><span class="tooltip-content">' . __( 'your default setting', 'imagify' ) . '</span></span>';
-							?>
 							<input type="radio" id="imagify-optimization_level_ultra" name="optimization_level" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
 							<label for="imagify-optimization_level_ultra">
-								<?php 
-									_e( 'Ultra', 'imagify' );
-									echo get_imagify_option( 'optimization_level' ) == '2' ? $info_default : '';
-								?>
+								<?php _e( 'Ultra', 'imagify' ); ?>
 							</label>
 
 							<input type="radio" id="imagify-optimization_level_aggro" name="optimization_level" value="1" <?php checked( get_imagify_option( 'optimization_level' ), 1 ); ?>>
 							<label for="imagify-optimization_level_aggro">
-								<?php
-									_e( 'Aggressive', 'imagify' );
-									echo get_imagify_option( 'optimization_level' ) == '1' ? $info_default : '';
-								?>
+								<?php _e( 'Aggressive', 'imagify' ); ?>
 							</label>
 
 							<input type="radio" id="imagify-optimization_level_normal" name="optimization_level" value="0" <?php checked( get_imagify_option( 'optimization_level' ), 0 ); ?>>
 							<label for="imagify-optimization_level_normal">
-								<?php
-									_e( 'Normal', 'imagify' );
-									echo get_imagify_option( 'optimization_level' ) == '0' ? $info_default : '';
-								?>
+								<?php _e( 'Normal', 'imagify' ); ?>
 							</label>
 						</p>
 
