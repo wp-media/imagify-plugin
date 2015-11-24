@@ -356,22 +356,22 @@ function _imagify_display_options_page() {
 									data-original-label="<?php _e( 'Original', 'imagify' ); ?>"
 									data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-original.jpg"
 									data-original-dim="1220x350"
-									data-original-alt="Bear photography about 396kb"
+									data-original-alt="<?php printf( __( 'Original photography about %skb', 'imagify' ), '396'); ?>"
 
 									data-optimized-label="<?php _e( 'Normal', 'imagify' ); ?>"
 									data-optimized-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-optimized.jpg"
 									data-optimized-dim="1220x350"
-									data-optimized-alt="Imagified Bear photography about 363kb"
+									data-optimized-alt="<?php printf( __( 'Optimized photography about %skb', 'imagify' ), '363' ); ?>"
 
 									data-aggressive-label="<?php _e( 'Aggressive', 'imagify' ); ?>"
 									data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-aggressive.jpg"
 									data-aggressive-dim="1220x350"
-									data-aggressive-alt="Imagified Bear photography about 140kb"
+									data-aggressive-alt="<?php printf( __( 'Optimized photography about %skb', 'imagify' ), '140' ); ?>"
 
 									data-ultra-label="<?php _e( 'Ultra', 'imagify' ); ?>"
 									data-ultra-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-ultra.jpg"
 									data-ultra-dim="1220x350"
-									data-ultra-alt="Imagified Bear photography about 56kb"></div>
+									data-ultra-alt="<?php printf( __( 'Optimized photography about %skb', 'imagify' ), '102' ); ?>"></div>
 
 				<div class="imagify-comparison-levels">
 					<div class="imagify-c-level imagify-level-original go-left">
