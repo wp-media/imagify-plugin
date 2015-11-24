@@ -348,30 +348,30 @@ function _imagify_display_options_page() {
 
 				<div class="twentytwenty-container"
 									data-loader="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>loader-balls.svg"
-									data-label-original="<?php _e( 'Original', 'imagify' ); ?>"
-									data-label-normal="<?php _e( 'Normal', 'imagify' ); ?>"
-									data-label-aggressive="<?php _e( 'Aggressive', 'imagify' ); ?>"
-									data-label-ultra="<?php _e( 'Ultra', 'imagify' ); ?>"
+									data-label-original="<?php esc_attr_e( 'Original', 'imagify' ); ?>"
+									data-label-normal="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
+									data-label-aggressive="<?php esc_attr_e( 'Aggressive', 'imagify' ); ?>"
+									data-label-ultra="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
 
-									data-original-label="<?php _e( 'Original', 'imagify' ); ?>"
+									data-original-label="<?php esc_attr_e( 'Original', 'imagify' ); ?>"
 									data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-original.jpg"
 									data-original-dim="1220x350"
-									data-original-alt="<?php printf( __( 'Original photography about %skb', 'imagify' ), '396'); ?>"
+									data-original-alt="<?php printf( esc_attr__( 'Original photography about %s', 'imagify' ), size_format(405000)); ?>"
 
-									data-optimized-label="<?php _e( 'Normal', 'imagify' ); ?>"
+									data-optimized-label="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
 									data-optimized-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-optimized.jpg"
 									data-optimized-dim="1220x350"
-									data-optimized-alt="<?php printf( __( 'Optimized photography about %skb', 'imagify' ), '363' ); ?>"
+									data-optimized-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(371712) ); ?>"
 
-									data-aggressive-label="<?php _e( 'Aggressive', 'imagify' ); ?>"
+									data-aggressive-label="<?php esc_attr_e( 'Aggressive', 'imagify' ); ?>"
 									data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-aggressive.jpg"
 									data-aggressive-dim="1220x350"
-									data-aggressive-alt="<?php printf( __( 'Optimized photography about %skb', 'imagify' ), '140' ); ?>"
+									data-aggressive-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(143360) ); ?>"
 
-									data-ultra-label="<?php _e( 'Ultra', 'imagify' ); ?>"
+									data-ultra-label="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
 									data-ultra-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-ultra.jpg"
 									data-ultra-dim="1220x350"
-									data-ultra-alt="<?php printf( __( 'Optimized photography about %skb', 'imagify' ), '102' ); ?>"></div>
+									data-ultra-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(108544) ); ?>"></div>
 
 				<div class="imagify-comparison-levels">
 					<div class="imagify-c-level imagify-level-original go-left">
@@ -381,7 +381,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value">396kb</span>
+							<span class="value"><?php echo size_format(405000); ?></span>
 						</p>
 					</div>
 					<div class="imagify-c-level imagify-level-optimized" aria-hidden="true">
@@ -391,7 +391,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size">363kb</span>
+							<span class="value size"><?php echo size_format(371712); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -411,7 +411,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size">140kb</span>
+							<span class="value size"><?php echo size_format(143360); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -432,7 +432,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size">106kb</span>
+							<span class="value size"><?php echo size_format(108544); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
