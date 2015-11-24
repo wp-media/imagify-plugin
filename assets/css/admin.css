@@ -1957,18 +1957,15 @@ td.imagify-cell-filename {
 	border: 1px solid #40B1D0;
 	color: #888899;
 	letter-spacing: 0;
-
+}
+.imagify-comparison-title .twentytwenty-duo-buttons button:focus {
+	outline: none;
+	box-shadow: none;
 }
 .imagify-comparison-title .twentytwenty-duo-buttons .selected {
 	border: 1px solid #40B1D0;
 	color: #FFF;
 	background: #40B1D0;
-}
-.imagify-comparison-title .twentytwenty-duo-buttons.twentytwenty-duo-buttons button:first-child {
-	border-right: 0 none;
-}
-.imagify-comparison-title .twentytwenty-duo-buttons.twentytwenty-duo-buttons button + button {
-	border-left: 0 none;
 }
 
 .imagify-comparison-levels {
