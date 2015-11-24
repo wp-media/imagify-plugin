@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2015-11-23 19:11+0100\n"
-"PO-Revision-Date: 2015-11-23 19:11+0100\n"
+"POT-Creation-Date: 2015-11-24 18:10+0100\n"
+"PO-Revision-Date: 2015-11-24 18:16+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -99,7 +99,7 @@ msgstr "Non optimisé"
 msgid "Error"
 msgstr "Erreur"
 
-#: inc/admin/enqueue.php:146 inc/admin/ui/notices.php:280
+#: inc/admin/enqueue.php:146 inc/admin/ui/notices.php:281
 #: inc/common/admin-bar.php:76
 msgid "Oops, It's Over!"
 msgstr "Oups, c’est fini !"
@@ -122,7 +122,7 @@ msgstr ""
 "images. J’ai optimisé %1$s sur %2$s !"
 
 #: inc/admin/enqueue.php:158 inc/admin/enqueue.php:161
-#: inc/admin/ui/notices.php:282
+#: inc/admin/ui/notices.php:283
 #, php-format
 msgid ""
 "To continue to optimize your images, log in to your Imagify account to %sbuy "
@@ -131,7 +131,7 @@ msgstr ""
 "Pour continuer à optimiser vos images, connectez-vous à votre compte Imagify "
 "pour %sacheter un pack ou souscrire à un plan%s."
 
-#: inc/admin/enqueue.php:161 inc/admin/ui/notices.php:282
+#: inc/admin/enqueue.php:161 inc/admin/ui/notices.php:283
 #: inc/common/admin-bar.php:77
 #, php-format
 msgid ""
@@ -387,7 +387,7 @@ msgstr ""
 
 #: inc/admin/ui/notices.php:25 inc/admin/ui/notices.php:90
 #: inc/admin/ui/notices.php:190 inc/admin/ui/notices.php:223
-#: inc/admin/ui/notices.php:253 inc/admin/ui/notices.php:285
+#: inc/admin/ui/notices.php:254 inc/admin/ui/notices.php:286
 msgid "Dismiss this notice"
 msgstr "Fermer ce message"
 
@@ -509,15 +509,15 @@ msgstr ""
 msgid "Click on the field and press Ctrl-A to select all."
 msgstr "Cliquez sur le champ et appuyez sur Ctrl-A pour tout sélectionner."
 
-#: inc/admin/ui/notices.php:249
+#: inc/admin/ui/notices.php:250
 msgid "You're missing out!"
 msgstr "Vous passez à côté de quelque chose !"
 
-#: inc/admin/ui/notices.php:250
+#: inc/admin/ui/notices.php:251
 msgid "Use the List view to optimize images with Imagify."
 msgstr "Utilisez la vue liste pour optimiser vos images avec Imagify."
 
-#: inc/admin/ui/notices.php:251
+#: inc/admin/ui/notices.php:252
 msgid "Switch to the List View"
 msgstr "Basculer en vue liste"
 
@@ -643,15 +643,39 @@ msgstr ""
 msgid "You can choose three levels of compression"
 msgstr "Vous pouvez choisir entre trois niveaux de compression"
 
-#: inc/admin/ui/options.php:293 inc/admin/ui/options.php:305
+#: inc/admin/ui/options.php:293
 msgid ""
 "This mode will apply all available optimizations for maximum image "
-"compression. "
+"compression."
 msgstr ""
 "Ce niveau appliquera toutes les optimisations disponibles pour une "
 "compression des images maximale."
 
-#: inc/admin/ui/options.php:296 inc/admin/ui/options.php:308
+#: inc/admin/ui/options.php:296
+msgid ""
+"This will provide a huge savings on the initial weight. Sometimes the image "
+"quality could be degraded a little."
+msgstr ""
+"Cela permettra de considérablement réduire le poids initial. Parfois, la "
+"qualité de l’image pourra être légèrement dégradée."
+
+#: inc/admin/ui/options.php:299
+msgid ""
+"If you want the maximum weight reduction, and you agree to lose some quality "
+"on the images we recommend using this mode."
+msgstr ""
+"Si vous souhaitez une réduction du poids optimale et que vous tolérez une "
+"baisse de qualité sur vos images, nous vous recommandons ce niveau."
+
+#: inc/admin/ui/options.php:305
+msgid ""
+"This mode provides perfect optimization of your images without any "
+"significant quality loss."
+msgstr ""
+"Ce niveau permet une optimisation idéale de vos images sans perte de qualité "
+"notable."
+
+#: inc/admin/ui/options.php:308
 msgid ""
 "This will provide a drastic savings on the initial weight, with a small "
 "reduction in image quality. Most of the time it's not even noticeable."
@@ -659,7 +683,7 @@ msgstr ""
 "Cela permettra une réduction importante du poids initial avec une légère "
 "perte de la qualité d'image qui n’est pas perceptible à l’oeil humain."
 
-#: inc/admin/ui/options.php:299 inc/admin/ui/options.php:311
+#: inc/admin/ui/options.php:311
 msgid "If you want the maximum weight reduction, we recommend using this mode."
 msgstr ""
 "Si vous souhaitez une réduction du poids plus performante, nous vous "
@@ -670,7 +694,7 @@ msgid ""
 "This mode provides lossless optimization, your images will be optimized "
 "without any visible change."
 msgstr ""
-"Ce mode permet d'optimiser sans perte, vos images seront optimisées sans "
+"Ce niveau permet d'optimiser sans perte, vos images seront optimisées sans "
 "aucun changement visible."
 
 #: inc/admin/ui/options.php:320
@@ -841,6 +865,27 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid ""
+#~ "This will provide a huge savings on the initial weight. Sometimes the "
+#~ "image quality could be degraded."
+#~ msgstr ""
+#~ "Cela permettra de considérablement réduire le poids initial. Parfois, la "
+#~ "qualité de l’image pourra être légèrement dégradée."
+
+#~ msgid ""
+#~ "This mode will apply an ultra agressive compression algorithm to your "
+#~ "images."
+#~ msgstr ""
+#~ "Ce niveau appliquera toutes les optimisations disponibles pour une "
+#~ "compression des images maximale."
+
+#~ msgid ""
+#~ "This mode will apply all available optimizations for maximum image "
+#~ "compression. "
+#~ msgstr ""
+#~ "Ce niveau appliquera toutes les optimisations disponibles pour une "
+#~ "compression des images maximale."
 
 #~ msgid "your default setting"
 #~ msgstr "votre réglage par défaut"

@@ -290,19 +290,19 @@ function _imagify_display_options_page() {
 					<div class="col-1-3">
 						<p class="h3"><?php _e( 'Ultra', 'imagify' ); ?></p>
 						<p>
-							<?php _e( 'This mode will apply all available optimizations for maximum image compression. ', 'imagify' ); ?>
+							<?php _e( 'This mode will apply all available optimizations for maximum image compression.', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'This will provide a drastic savings on the initial weight, with a small reduction in image quality. Most of the time it\'s not even noticeable.', 'imagify' ); ?>
+							<?php _e( 'This will provide a huge savings on the initial weight. Sometimes the image quality could be degraded a little.', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.' , 'imagify' ); ?>
+							<?php _e( 'If you want the maximum weight reduction, and you agree to lose some quality on the images we recommend using this mode.' , 'imagify' ); ?>
 						</p>
 					</div>
 					<div class="col-1-3">
 						<p class="h3"><?php _e( 'Aggressive', 'imagify' ); ?></p>
 						<p>
-							<?php _e( 'This mode will apply all available optimizations for maximum image compression. ', 'imagify' ); ?>
+							<?php _e( 'This mode provides perfect optimization of your images without any significant quality loss.', 'imagify' ); ?>
 						</p>
 						<p>
 							<?php _e( 'This will provide a drastic savings on the initial weight, with a small reduction in image quality. Most of the time it\'s not even noticeable.', 'imagify' ); ?>
