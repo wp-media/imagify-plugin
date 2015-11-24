@@ -256,7 +256,6 @@
 						if ( ! $tt.closest('.imagify-modal-content').hasClass('loaded') ) {
 							$tt.closest('.imagify-modal-content').removeClass('loading').addClass('loaded');
 							draw_me_a_chart( $('.imagify-level-ultra').find('.imagify-chart').find('canvas') );
-							console.log('initialised');
 						}
 					});
 					clearInterval( twenty_me );
