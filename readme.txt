@@ -26,6 +26,10 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 
 == Changelog ==
 
+= 1.2.1 =
+* Regression Fix
+ * Fix the Bulk Optimization issue when you never optimized any images and avoid the message "All your images have been optimized by Imagify. Congratulations!".
+
 = 1.2 =
 * Interface
  * NEW compression level: Ultra

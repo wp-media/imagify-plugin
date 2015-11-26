@@ -101,9 +101,9 @@ class Imagify_Attachment {
 	 */
 	public function get_optimization_level() {
 		$stats  = $this->get_stats_data();
-		$level  = ( isset( $stats['aggressive'] ) ) ? $stats['aggressive'] : get_imagify_option( 'optimization_level', 1 );
+		$level  = ( isset( $stats['aggressive'] ) ) ? (int) $stats['aggressive'] : false;
 
-		return (int) $level;
+		return $level;
 	}
 	
 	/**
