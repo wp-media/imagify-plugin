@@ -21,7 +21,7 @@ function _imagify_attachment_submitbox_misc_actions()
 				echo '<br/>';
 				echo '<a href="' . get_imagify_admin_url( 'options-general' ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
 			echo '</div>';
-		} elseif ( $attachment->is_optimized() ) {
+		} elseif ( $attachment->is_optimized() || $attachment->has_error() ) {
 			echo '<div class="misc-pub-section misc-pub-imagify"><h4>' . __( 'Imagify', 'imagify' ) . '</h4></div>';
 			echo get_imagify_attachment_optimization_text( $post->ID );
 		} else {

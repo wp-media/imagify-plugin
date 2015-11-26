@@ -101,9 +101,9 @@ function _imagify_display_options_page() {
 								<th scope="row"><?php _e( 'Optimization Level', 'imagify' ); ?></th>
 								<td>
 									<p class="imagify-inline-options">
-										<input type="radio" id="imagify-optimization_level_ultra" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[optimization_level]" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
-										<label for="imagify-optimization_level_ultra">
-											<?php _e( 'Ultra', 'imagify' ); ?>
+										<input type="radio" id="imagify-optimization_level_normal" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[optimization_level]" value="0" <?php checked( get_imagify_option( 'optimization_level' ), 0 ); ?>>
+										<label for="imagify-optimization_level_normal">
+											<?php _e( 'Normal', 'imagify' ); ?>
 										</label>
 
 										<input type="radio" id="imagify-optimization_level_aggro" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[optimization_level]" value="1" <?php checked( get_imagify_option( 'optimization_level' ), 1 ); ?>>
@@ -111,9 +111,9 @@ function _imagify_display_options_page() {
 											<?php _e( 'Aggressive', 'imagify' ); ?>
 										</label>
 
-										<input type="radio" id="imagify-optimization_level_normal" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[optimization_level]" value="0" <?php checked( get_imagify_option( 'optimization_level' ), 0 ); ?>>
-										<label for="imagify-optimization_level_normal">
-											<?php _e( 'Normal', 'imagify' ); ?>
+										<input type="radio" id="imagify-optimization_level_ultra" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[optimization_level]" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
+										<label for="imagify-optimization_level_ultra">
+											<?php _e( 'Ultra', 'imagify' ); ?>
 										</label>
 
 										<span class="imagify-info">
@@ -290,19 +290,19 @@ function _imagify_display_options_page() {
 					<div class="col-1-3">
 						<p class="h3"><?php _e( 'Ultra', 'imagify' ); ?></p>
 						<p>
-							<?php _e( 'This mode will apply all available optimizations for maximum image compression. ', 'imagify' ); ?>
+							<?php _e( 'This mode will apply all available optimizations for maximum image compression.', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'This will provide a drastic savings on the initial weight, with a small reduction in image quality. Most of the time it\'s not even noticeable.', 'imagify' ); ?>
+							<?php _e( 'This will provide a huge savings on the initial weight. Sometimes the image quality could be degraded a little.', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.' , 'imagify' ); ?>
+							<?php _e( 'If you want the maximum weight reduction, and you agree to lose some quality on the images we recommend using this mode.' , 'imagify' ); ?>
 						</p>
 					</div>
 					<div class="col-1-3">
 						<p class="h3"><?php _e( 'Aggressive', 'imagify' ); ?></p>
 						<p>
-							<?php _e( 'This mode will apply all available optimizations for maximum image compression. ', 'imagify' ); ?>
+							<?php _e( 'This mode provides perfect optimization of your images without any significant quality loss.', 'imagify' ); ?>
 						</p>
 						<p>
 							<?php _e( 'This will provide a drastic savings on the initial weight, with a small reduction in image quality. Most of the time it\'s not even noticeable.', 'imagify' ); ?>
@@ -348,30 +348,30 @@ function _imagify_display_options_page() {
 
 				<div class="twentytwenty-container"
 									data-loader="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>loader-balls.svg"
-									data-label-original="<?php _e( 'Original', 'imagify' ); ?>"
-									data-label-normal="<?php _e( 'Normal', 'imagify' ); ?>"
-									data-label-aggressive="<?php _e( 'Aggressive', 'imagify' ); ?>"
-									data-label-ultra="<?php _e( 'Ultra', 'imagify' ); ?>"
+									data-label-original="<?php esc_attr_e( 'Original', 'imagify' ); ?>"
+									data-label-normal="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
+									data-label-aggressive="<?php esc_attr_e( 'Aggressive', 'imagify' ); ?>"
+									data-label-ultra="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
 
-									data-original-label="<?php _e( 'Original', 'imagify' ); ?>"
+									data-original-label="<?php esc_attr_e( 'Original', 'imagify' ); ?>"
 									data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-original.jpg"
 									data-original-dim="1220x350"
-									data-original-alt="Bear photography about 396kb"
+									data-original-alt="<?php printf( esc_attr__( 'Original photography about %s', 'imagify' ), size_format(405000)); ?>"
 
-									data-optimized-label="<?php _e( 'Normal', 'imagify' ); ?>"
+									data-optimized-label="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
 									data-optimized-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-optimized.jpg"
 									data-optimized-dim="1220x350"
-									data-optimized-alt="Imagified Bear photography about 363kb"
+									data-optimized-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(371712) ); ?>"
 
-									data-aggressive-label="<?php _e( 'Aggressive', 'imagify' ); ?>"
+									data-aggressive-label="<?php esc_attr_e( 'Aggressive', 'imagify' ); ?>"
 									data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-aggressive.jpg"
 									data-aggressive-dim="1220x350"
-									data-aggressive-alt="Imagified Bear photography about 140kb"
+									data-aggressive-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(143360) ); ?>"
 
-									data-ultra-label="<?php _e( 'Ultra', 'imagify' ); ?>"
+									data-ultra-label="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
 									data-ultra-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-ultra.jpg"
 									data-ultra-dim="1220x350"
-									data-ultra-alt="Imagified Bear photography about 56kb"></div>
+									data-ultra-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(108544) ); ?>"></div>
 
 				<div class="imagify-comparison-levels">
 					<div class="imagify-c-level imagify-level-original go-left">
@@ -381,7 +381,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value">396kb</span>
+							<span class="value"><?php echo size_format(405000); ?></span>
 						</p>
 					</div>
 					<div class="imagify-c-level imagify-level-optimized" aria-hidden="true">
@@ -391,7 +391,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size">363kb</span>
+							<span class="value size"><?php echo size_format(371712); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -411,7 +411,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size">140kb</span>
+							<span class="value size"><?php echo size_format(143360); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -432,7 +432,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size">106kb</span>
+							<span class="value size"><?php echo size_format(108544); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>

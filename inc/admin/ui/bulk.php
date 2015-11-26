@@ -115,9 +115,9 @@ function _imagify_display_bulk_page() {
 						</p>
 
 						<p class="imagify-inline-options">
-							<input type="radio" id="imagify-optimization_level_ultra" name="optimization_level" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
-							<label for="imagify-optimization_level_ultra">
-								<?php _e( 'Ultra', 'imagify' ); ?>
+							<input type="radio" id="imagify-optimization_level_normal" name="optimization_level" value="0" <?php checked( get_imagify_option( 'optimization_level' ), 0 ); ?>>
+							<label for="imagify-optimization_level_normal">
+								<?php _e( 'Normal', 'imagify' ); ?>
 							</label>
 
 							<input type="radio" id="imagify-optimization_level_aggro" name="optimization_level" value="1" <?php checked( get_imagify_option( 'optimization_level' ), 1 ); ?>>
@@ -125,9 +125,9 @@ function _imagify_display_bulk_page() {
 								<?php _e( 'Aggressive', 'imagify' ); ?>
 							</label>
 
-							<input type="radio" id="imagify-optimization_level_normal" name="optimization_level" value="0" <?php checked( get_imagify_option( 'optimization_level' ), 0 ); ?>>
-							<label for="imagify-optimization_level_normal">
-								<?php _e( 'Normal', 'imagify' ); ?>
+							<input type="radio" id="imagify-optimization_level_ultra" name="optimization_level" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
+							<label for="imagify-optimization_level_ultra">
+								<?php _e( 'Ultra', 'imagify' ); ?>
 							</label>
 						</p>
 

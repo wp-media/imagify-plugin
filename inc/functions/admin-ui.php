@@ -20,6 +20,7 @@ function get_imagify_attachment_optimization_text( $attachment_id ) {
 	$reoptimize_output = '';
 
 	if ( $error = get_imagify_attachment_error_text( $attachment_id ) ) {
+		$error = ( 'post.php' === $pagenow ) ? $output_before . $error . $output_after : $error;
 		return $error;
 	}
 
@@ -114,6 +115,7 @@ function get_imagify_attachment_reoptimize_link( $attachment_id ) {
 	
 	$attachment = new Imagify_Attachment( $attachment_id );
 	$level      = (int) $attachment->get_optimization_level();
+	$args		= array( 'attachment_id' => $attachment_id );
 	$output     = '';
 
 	if ( $attachment->has_backup() ) {
@@ -121,17 +123,20 @@ function get_imagify_attachment_reoptimize_link( $attachment_id ) {
 		
 		// Re-optimize to Ultra
 		if ( 1 === $level || 0 === $level ) {
-			$output .= '<a href="' . get_imagify_admin_url( 'manual-override-upload', $attachment_id ) . '" class="' . $class . '" data-optimization-level="2" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Ultra', 'imagify' ) ) . '</a>';
+			$args['optimization_level'] = 2;
+			$output .= '<a href="' . get_imagify_admin_url( 'manual-override-upload', $args ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Ultra', 'imagify' ) ) . '</a>';
 		}
 		
 		// Re-optimize to Aggressive
 		if ( 2 === $level || 0 === $level ) {
-			$output .= '<a href="' . get_imagify_admin_url( 'manual-override-upload', $attachment_id ) . '" class="' . $class . '" data-optimization-level="1" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Aggressive', 'imagify' ) ) . '</a>';
+			$args['optimization_level'] = 1;
+			$output .= '<a href="' . get_imagify_admin_url( 'manual-override-upload', $args ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Aggressive', 'imagify' ) ) . '</a>';
 		}
 		
 		// Re-optimize to Normal
 		if ( 2 === $level || 1 === $level ) {
-			$output .= '<a href="' . get_imagify_admin_url( 'manual-override-upload', $attachment_id ) . '" class="' . $class . '" data-optimization-level="0" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Normal', 'imagify' ) ) . '</a>';
+			$args['optimization_level'] = 0;
+			$output .= '<a href="' . get_imagify_admin_url( 'manual-override-upload', $args ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Normal', 'imagify' ) ) . '</a>';
 		}
 		
 	}
