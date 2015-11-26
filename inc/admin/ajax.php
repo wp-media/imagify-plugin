@@ -170,7 +170,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 			}
 			
 			// Don't try to re-optimize if there is no backup file
-			if ( $optimization_level !== $attachment->get_optimization_level() && ! $attachment->has_backup() ) {
+			if ( $optimization_level !== $attachment->get_optimization_level() && ! $attachment->has_backup() && $attachment->is_optimized() ) {
 				continue;					
 			}
 			
