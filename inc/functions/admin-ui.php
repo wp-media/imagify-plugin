@@ -20,6 +20,7 @@ function get_imagify_attachment_optimization_text( $attachment_id ) {
 	$reoptimize_output = '';
 
 	if ( $error = get_imagify_attachment_error_text( $attachment_id ) ) {
+		$error = ( 'post.php' === $pagenow ) ? $output_before . $error . $output_after : $error;
 		return $error;
 	}
 
