@@ -165,7 +165,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 			$attachment_status = get_post_meta( $id, '_imagify_status', true );
 			
 			// Don't try to re-optimize if the optimization level is still the same
-			if ( $optimization_level === $attachment->get_optimization_level() ) {
+			if ( $optimization_level === $attachment->get_optimization_level() && ! $attachment->has_error() ) {
 				continue;					
 			}
 			
