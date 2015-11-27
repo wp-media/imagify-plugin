@@ -8,33 +8,31 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 add_action( 'admin_bar_menu', '_imagify_admin_bar', PHP_INT_MAX );
 function _imagify_admin_bar( $wp_admin_bar ) {
-	if ( ! current_user_can( 'upload_files' ) || ! get_imagify_option( 'admin_bar_menu', 0 ) ) {
-		return;
-	}
-
 	$cap = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
 	/** This filter is documented in inc/admin/options.php */
 	$cap = apply_filters( 'imagify_capacity', $cap );
+	
+	if ( ! current_user_can( $cap ) || ! get_imagify_option( 'admin_bar_menu', 0 ) ) {
+		return;
+	}
 
 	// Parent
 	$wp_admin_bar->add_menu( array(
 		'id'    => 'imagify',
 		'title' => 'Imagify',
-		'href'  => ( current_user_can( $cap ) ) ? get_imagify_admin_url() : '#',
+		'href'  => get_imagify_admin_url(),
 	) );
 
-	if (  current_user_can( $cap ) ) {
-		// Settings
-		$wp_admin_bar->add_menu(array(
-			'parent' => 'imagify',
-			'id'     => 'imagify-settings',
-			'title'  => __( 'Settings' ),
-			'href'   => get_imagify_admin_url(),
-		) );
-	}
-
+	// Settings
+	$wp_admin_bar->add_menu(array(
+		'parent' => 'imagify',
+		'id'     => 'imagify-settings',
+		'title'  => __( 'Settings' ),
+		'href'   => get_imagify_admin_url(),
+	) );
+	
 	// Bulk Optimization
-	if ( imagify_valid_key() && ! is_network_admin() && current_user_can( $cap ) ) {
+	if ( imagify_valid_key() && ! is_network_admin() ) {
 		$wp_admin_bar->add_menu(array(
 			'parent' => 'imagify',
 			'id'     => 'imagify-bulk-optimization',
@@ -44,7 +42,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 	}
 
 	// Quota & Profile informations
-	if ( imagify_valid_key() && current_user_can( $cap ) ) {
+	if ( imagify_valid_key() ) {
 		$user = new Imagify_User();
 
 		$unconsumed_quota = $user->get_percent_unconsumed_quota();
