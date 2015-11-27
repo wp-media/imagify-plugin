@@ -354,22 +354,22 @@ function _imagify_display_options_page() {
 									data-label-ultra="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
 
 									data-original-label="<?php esc_attr_e( 'Original', 'imagify' ); ?>"
-									data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-original.jpg"
+									data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>penseur-original.jpg"
 									data-original-dim="1220x350"
 									data-original-alt="<?php printf( esc_attr__( 'Original photography about %s', 'imagify' ), size_format(405000)); ?>"
 
-									data-optimized-label="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
-									data-optimized-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-optimized.jpg"
-									data-optimized-dim="1220x350"
-									data-optimized-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(371712) ); ?>"
+									data-normal-label="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
+									data-normal-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>penseur-normal.jpg"
+									data-normal-dim="1220x350"
+									data-normal-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(371712) ); ?>"
 
 									data-aggressive-label="<?php esc_attr_e( 'Aggressive', 'imagify' ); ?>"
-									data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-aggressive.jpg"
+									data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>penseur-aggressive.jpg"
 									data-aggressive-dim="1220x350"
 									data-aggressive-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(143360) ); ?>"
 
 									data-ultra-label="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
-									data-ultra-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>bear-ultra.jpg"
+									data-ultra-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>penseur-ultra.jpg"
 									data-ultra-dim="1220x350"
 									data-ultra-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(108544) ); ?>"></div>
 

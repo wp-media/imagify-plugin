@@ -179,10 +179,10 @@
 				original_src 		= $tt.data('original-img'),
 				original_dim 		= $tt.data('original-dim').split('x'),
 
-				optimized_label 	= $tt.data('optimized-label').replace(/\*\*/, '<strong>').replace(/\*\*/, '</strong>'),
-				optimized_alt 		= $tt.data('optimized-alt'),
-				optimized_src 		= $tt.data('optimized-img'),
-				optimized_dim 		= $tt.data('optimized-dim').split('x'),
+				normal_label 		= $tt.data('normal-label').replace(/\*\*/, '<strong>').replace(/\*\*/, '</strong>'),
+				normal_alt 			= $tt.data('normal-alt'),
+				normal_src 			= $tt.data('normal-img'),
+				normal_dim 			= $tt.data('normal-dim').split('x'),
 
 				aggressive_label 	= $tt.data('aggressive-label').replace(/\*\*/, '<strong>').replace(/\*\*/, '</strong>'),
 				aggressive_alt 		= $tt.data('aggressive-alt'),
@@ -196,11 +196,11 @@
 
 				tt_before_buttons	= '<span class="twentytwenty-duo-buttons twentytwenty-duo-left">' +
 										'<button type="button" class="imagify-comparison-original selected" data-img="original">' + label_original + '</button>' +
-										'<button type="button" class="imagify-comparison-normal" data-img="optimized">' + label_normal + '</button>' +
+										'<button type="button" class="imagify-comparison-normal" data-img="normal">' + label_normal + '</button>' +
 										'<button type="button" class="imagify-comparison-aggressive" data-img="aggressive">' + label_aggressive + '</button>' +
 									'</span>',
 				tt_after_buttons	= '<span class="twentytwenty-duo-buttons twentytwenty-duo-right">' +
-										'<button type="button" class="imagify-comparison-normal" data-img="optimized">' + label_normal + '</button>' +
+										'<button type="button" class="imagify-comparison-normal" data-img="normal">' + label_normal + '</button>' +
 										'<button type="button" class="imagify-comparison-aggressive" data-img="aggressive">' + label_aggressive + '</button>' +
 										'<button type="button" class="imagify-comparison-ultra selected" data-img="ultra">' + label_ultra + '</button>' +
 									'</span>';
@@ -218,7 +218,7 @@
 			// add images to 50/50 area
 			$tt.closest('.imagify-modal-content').addClass('loading').find('.twentytwenty-container').append(
 					'<img class="img-original" alt="' + original_alt + '" width="' + original_dim[0] + '" height="' + original_dim[1] + '">' +
-					'<img class="img-optimized" alt="' + optimized_alt + '" width="' + optimized_dim[0] + '" height="' + optimized_dim[1] + '">' + 
+					'<img class="img-normal" alt="' + normal_alt + '" width="' + normal_dim[0] + '" height="' + normal_dim[1] + '">' + 
 					'<img class="img-aggressive" alt="' + aggressive_alt + '" width="' + aggressive_dim[0] + '" height="' + aggressive_dim[1] + '">' +
 					'<img class="img-ultra" alt="' + ultra_alt + '" width="' + ultra_dim[0] + '" height="' + ultra_dim[1] + '">' +
 					duo_buttons
@@ -229,10 +229,10 @@
 				imgs_loaded++;
 			}).attr('src', original_src);
 
-			// load image optimized
-			$('.img-optimized').on('load', function(){
+			// load image normal
+			$('.img-normal').on('load', function(){
 				imgs_loaded++;
-			}).attr('src', optimized_src);
+			}).attr('src', normal_src);
 
 			// load image aggressive
 			$('.img-aggressive').on('load', function(){
