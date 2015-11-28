@@ -146,11 +146,13 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		'update_post_term_cache' => false,
 	);
 	
-	$data                       = array();
-	$query                      = new WP_Query( $args );
-	$ids                        = $query->posts;
-	$optimization_level         = (int) $_GET['optimization_level'];
-	
+	$data               = array();
+	$query              = new WP_Query( $args );
+	$ids                = $query->posts;
+	$optimization_level = $_GET['optimization_level'];
+	$optimization_level = ( -1 != $optimization_level ) ? $optimization_level : get_imagify_option( 'optimization_level', 1 );
+	$optimization_level = (int) $optimization_level;
+
 	// Save the optimization level in a transient to retrieve it later during the process
 	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
 	
@@ -175,7 +177,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 			}
 			
 			// Don't try to re-optimize images already compressed
-			if ( $attachment->get_optimization_level() > $optimization_level && false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
+			if ( $attachment->get_optimization_level() >= $optimization_level && false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
 				continue;	
 			}
 			

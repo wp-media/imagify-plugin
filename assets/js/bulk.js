@@ -58,6 +58,10 @@ jQuery(function($){
 		var $obj = $(this),
 			$optimization_level = $('[name="optimization_level"]:checked').val();
 
+		if (typeof $optimization_level === "undefined") {
+		    $optimization_level = -1;
+		}
+		
 		if ( $obj.attr('disabled') ) {
 			return false;
 		}
