@@ -26,6 +26,11 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 
 == Changelog ==
 
+= 1.2.2 =
+* Bug Fix
+ * Bulk Optimization: Fix issue when the backup option isn't activated. The compression level applied was "Normal" instead the one saved in the settings.
+ * Bulk Optimization: Don't try to re-optimize an image already optimized which has the same compression level than the one saved in the settings.
+ 
 = 1.2.1 =
 * Regression Fix
  * Fix the Bulk Optimization issue when you never optimized any images and avoid the message "All your images have been optimized by Imagify. Congratulations!".
