@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
 "POT-Creation-Date: 2015-12-08 19:27+0100\n"
-"PO-Revision-Date: 2015-12-08 19:27+0100\n"
+"PO-Revision-Date: 2015-12-08 23:29+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -33,7 +33,7 @@ msgstr "Optimiser"
 
 #: inc/admin/ajax.php:392
 msgid "Oops, It's almost over!"
-msgstr "Oups, c’est bientôt fini !"
+msgstr "Oups, c’est bientôt fini&nbsp;!"
 
 #: inc/admin/ajax.php:393
 #, php-format
@@ -142,7 +142,7 @@ msgstr "Votre clé API est valide."
 
 #: inc/admin/enqueue.php:150
 msgid "Don't Need a Parachute?"
-msgstr "Pas besoin d’un parachute ?"
+msgstr "Pas besoin d’un parachute&nbsp;?"
 
 #: inc/admin/enqueue.php:151
 msgid ""
