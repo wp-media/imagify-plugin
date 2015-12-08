@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 add_action( 'admin_print_styles', '_imagify_admin_print_styles' );
 function _imagify_admin_print_styles() {
 	global $pagenow;
-	$user			= get_imagify_user();
 	$current_screen = get_current_screen();
 	$css_ext        = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.css' : '.min.css';
 	$js_ext         = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.js' : '.min.js';
@@ -137,41 +136,6 @@ function _imagify_admin_print_styles() {
 	wp_localize_script( 'imagify-js-admin', 'imagify', $admin_data );
 	wp_enqueue_script( 'imagify-js-admin' );
 
-	$bulk_data = array(
-		'overviewChartLabels'			=> array( 
-			'optimized'   => __( 'Optimized', 'imagify' ),
-			'unoptimized' => __( 'Unoptimized', 'imagify' ),
-			'error'       => __( 'Error', 'imagify' ),
-		),
-		'overQuotaTitle'              	=> __( 'Oops, It\'s Over!', 'imagify' ),
-		'noAttachmentToOptimizeTitle' 	=> __( 'Hold on!', 'imagify' ),
-		'noAttachmentToOptimizeText'	=> __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
-		'pluginURL'						=> 'https://wordpress.org/plugins/imagify',
-		'textToShare'					=> __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
-		'totalOptimizedAttachments'	    => imagify_count_optimized_attachments(),
-		'totalUnoptimizedAttachments'   => imagify_count_unoptimized_attachments(),
-		'totalErrorsAttachments' 	    => imagify_count_error_attachments()
-	);
-	
-	if ( imagify_valid_key() ) {
-		if ( is_wp_error( $user ) ) {
-			$bulk_data['overQuotaText'] = sprintf( __( 'To continue to optimize your images, log in to your Imagify account to %sbuy a pack or subscribe to a plan%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/subscription' . '">', '</a>' );
-		}
-		else {
-			$bulk_data['overQuotaText'] = sprintf( __( 'You have consumed all your credit for this month. You will have <strong>%s back on %s</strong>.', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( __( 'F j, Y' ), strtotime( $user->next_date_update ) ) ) . '<br/><br/>' . sprintf( __( 'To continue to optimize your images, log in to your Imagify account to %sbuy a pack or subscribe to a plan%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/subscription' . '">', '</a>' );
-		}
-	}
-	
-	wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
-	
-	$upload_data = array(
-		'bulkActionsLabels' => array( 
-			'optimize' => __( 'Optimize', 'imagify' ),
-			'restore'  => __( 'Restore Original', 'imagify' ),
-		),
-	);
-	wp_localize_script( 'imagify-js-upload', 'imagifyUpload', $upload_data );
-
 	/*
 	 * Scripts loaded in /wp-admin/options-general.php?page=imagify
 	*/
@@ -194,6 +158,13 @@ function _imagify_admin_print_styles() {
 	 * Scripts loaded in /wp-admin/upload.php and post.php
 	*/
 	if ( isset( $current_screen ) && ( 'upload' === $current_screen->base || 'post' === $current_screen->base ) ) {
+		$upload_data = array(
+			'bulkActionsLabels' => array( 
+				'optimize' => __( 'Optimize', 'imagify' ),
+				'restore'  => __( 'Restore Original', 'imagify' ),
+			),
+		);
+		wp_localize_script( 'imagify-js-upload', 'imagifyUpload', $upload_data );		
 		wp_enqueue_script( 'imagify-js-chart' );
 		wp_enqueue_script( 'imagify-js-upload' );
 	}
@@ -202,6 +173,33 @@ function _imagify_admin_print_styles() {
 	 * Scripts loaded in /wp-admin/upload.php?page=imagify-bulk-optimization
 	*/
 	if ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' === $current_screen->base ) {
+		$user	   = get_imagify_user();
+		$bulk_data = array(
+			'overviewChartLabels'			=> array( 
+				'optimized'   => __( 'Optimized', 'imagify' ),
+				'unoptimized' => __( 'Unoptimized', 'imagify' ),
+				'error'       => __( 'Error', 'imagify' ),
+			),
+			'overQuotaTitle'              	=> __( 'Oops, It\'s Over!', 'imagify' ),
+			'noAttachmentToOptimizeTitle' 	=> __( 'Hold on!', 'imagify' ),
+			'noAttachmentToOptimizeText'	=> __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
+			'pluginURL'						=> 'https://wordpress.org/plugins/imagify',
+			'textToShare'					=> __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
+			'totalOptimizedAttachments'	    => imagify_count_optimized_attachments(),
+			'totalUnoptimizedAttachments'   => imagify_count_unoptimized_attachments(),
+			'totalErrorsAttachments' 	    => imagify_count_error_attachments()
+		);
+		
+		if ( imagify_valid_key() ) {
+			if ( is_wp_error( $user ) ) {
+				$bulk_data['overQuotaText'] = sprintf( __( 'To continue to optimize your images, log in to your Imagify account to %sbuy a pack or subscribe to a plan%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/subscription' . '">', '</a>' );
+			}
+			else {
+				$bulk_data['overQuotaText'] = sprintf( __( 'You have consumed all your credit for this month. You will have <strong>%s back on %s</strong>.', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( __( 'F j, Y' ), strtotime( $user->next_date_update ) ) ) . '<br/><br/>' . sprintf( __( 'To continue to optimize your images, log in to your Imagify account to %sbuy a pack or subscribe to a plan%s.', 'imagify' ), '<a href="' . IMAGIFY_APP_MAIN . '/#/subscription' . '">', '</a>' );
+			}
+		}
+		
+		wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
 		wp_enqueue_script( 'imagify-js-chart' );
 		wp_enqueue_script( 'imagify-js-async' );
 		wp_enqueue_script( 'imagify-js-bulk' );
