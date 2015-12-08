@@ -127,8 +127,7 @@ class Imagify {
      * @param  array $data All user data. Details here: --
      * @return object
      **/
-    public function createUser( $data )
-    {
+    public function createUser( $data ) {
 	    unset( $this->headers['Authorization'], $this->headers['Accept'], $this->headers['Content-Type'] );
 
 		$data['from_plugin'] = true;
@@ -141,9 +140,14 @@ class Imagify {
      *
      * @return object
      **/
-    public function getUser()
-    {
-		return $this->httpCall( 'users/me/' );
+    public function getUser() {
+		static $user;
+        
+        if ( ! isset( $user ) ) {
+            $user = $this->httpCall( 'users/me/' );
+        }
+        
+        return $user;
     }
 
     /**
@@ -152,10 +156,16 @@ class Imagify {
      * @return object
      **/
     public function getStatus( $data ) {
-	    unset( $this->headers['Accept'], $this->headers['Content-Type'] );
-        $this->headers['Authorization'] = 'Authorization: token ' . $data;
-
-        return $this->httpCall( 'status/' );
+	    static $status;
+	    
+	    if ( ! isset( $status ) ) {
+		 	unset( $this->headers['Accept'], $this->headers['Content-Type'] );
+	        $this->headers['Authorization'] = 'Authorization: token ' . $data;
+	
+	        $status = $this->httpCall( 'status/' );   
+	    }
+	    
+	    return $status;
     }
 
     /**

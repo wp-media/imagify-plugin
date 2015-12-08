@@ -139,8 +139,28 @@ jQuery(function($){
 
 				return false;
 			}
-
 		});
-
 	}
+	
+	var busy = false,
+		xhr	 = false;
+		
+	$('#wp-admin-bar-imagify').hover( function() {
+		if ( true === busy ) {
+			xhr.abort();
+		}
+		
+		busy = true;
+		
+		var $adminBarProfile = $('#wp-admin-bar-imagify-profile-content');
+		
+		if( $adminBarProfile.is(':empty') ) {
+			xhr = $.get(ajaxurl + "?action=imagify_get_admin_bar_profile&imagifygetadminbarprofilenonce="+ $('#imagifygetadminbarprofilenonce').val())
+			.done(function(response){
+				$adminBarProfile.html(response.data);
+				$('#wp-admin-bar-imagify-profile-loading').remove();
+				busy = false;
+			});	
+		}
+	});
 });
