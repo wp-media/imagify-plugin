@@ -43,88 +43,11 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 
 	// Quota & Profile informations
 	if ( imagify_valid_key() ) {
-		$user = new Imagify_User();
-
-		$unconsumed_quota = $user->get_percent_unconsumed_quota();
-		$meteo_icon       =  '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="37" height="38" alt="" />';
-		$bar_class        = 'positive';
-		$message          = '';
-
-		if ( $unconsumed_quota >= 21 && $unconsumed_quota <= 50 ) {
-			$bar_class  = 'neutral';
-			$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="37" height="38" alt="" />';
-		}
-		elseif ( $unconsumed_quota <= 20 ) {
-			$bar_class  = 'negative';
-			$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="38" height="36" alt="" />';
-		}
-
-		if ( $unconsumed_quota <= 20 && $unconsumed_quota > 0 ) {
-			$message = '
-				<div class="imagify-error">
-					<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s almost over!', 'imagify' ) . '</strong></p>
- 					<p>' . sprintf( __( 'You have almost used all your credit.%sDon\'t forget to upgrade your subscription to continue optimizing your images.', 'imagify' ), '<br/><br/>' ) . '</p>
-					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">' . __( 'View My Subscription', 'imagify' ) . '</a></p>
-				</div>
-			';
-		}
-
-		if ( $unconsumed_quota === 0 ) {
-			$message = '
-				<div class="imagify-error">
-					<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s Over!', 'imagify' ) . '</strong></p>
-					<p>' . sprintf( __( 'You have consumed all your credit for this month. You will have <strong>%s back on %s</strong>.', 'imagify' ), size_format( $user->quota * 1048576 ), date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) ) ) . '</p>
-					<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>
-				</div>
-			';
-		}
-
-		// custom HTML
-		$quota_section = '
-			<div class="imagify-admin-bar-quota">
-				<div class="imagify-abq-row">';
-
-		if ( 1 === $user->plan_id ) {
-			$quota_section .= '
-					<div class="imagify-meteo-icon">
-						' . $meteo_icon . '
-					</div>';
-		}
-
-		$quota_section .= '
-					<div class="imagify-account">
-						<p class="imagify-meteo-title">' . __( 'Account status', 'imagify' ) . '</p>
-						<p class="imagify-meteo-subs">' . __( 'Your subscription:', 'imagify' ) . '&nbsp;<strong class="imagify-user-plan">' . $user->plan_label . '</strong></p>
-					</div>
-				</div>';
-
-		if ( 1 === $user->plan_id ) {
-			$quota_section .= '
-				<div class="imagify-abq-row">
-					<div class="imagify-space-left">
-						<p>' . sprintf( __( 'You have %s space credit left', 'imagify'), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ) . '</p>
-						<div class="imagify-bar-' . $bar_class . '">
-							<div style="width: ' . $unconsumed_quota . '%;" class="imagify-unconsumed-bar imagify-progress"></div>
-						</div>
-					</div>
-				</div>';
-		}
-
-		$quota_section .= '
-				<p class="imagify-abq-row">
-					<a class="imagify-account-link" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">
-						<span class="dashicons dashicons-admin-users"></span>
-						<span class="button-text">' . __( 'View my subscription', 'imagify' ) . '</span>
-					</a>
-				</p>
-			</div>
-			' . $message;
-
 		// insert custom HTML
 		$wp_admin_bar->add_menu( array(
 			'parent' => 'imagify',
 			'id'     => 'imagify-profile',
-			'title'  => $quota_section,
+			'title'  => wp_nonce_field( 'imagify-get-admin-bar-profile', 'imagifygetadminbarprofilenonce', false, false ) . '<div id="wp-admin-bar-imagify-profile-loading">' . __( 'Loading...' ) . '</div><div id="wp-admin-bar-imagify-profile-content"></div>',
 		) );
 	}
 
