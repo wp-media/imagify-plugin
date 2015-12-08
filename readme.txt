@@ -26,6 +26,10 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 
 == Changelog ==
 
+= 1.2.3 =
+* Improvement
+ * Use AJAX to display the quota in the admin bar to avoid a call to our API on each pages.
+ 
 = 1.2.2 =
 * Bug Fix
  * Bulk Optimization: Fix issue when the backup option isn't activated. The compression level applied was "Normal" instead the one saved in the settings.
