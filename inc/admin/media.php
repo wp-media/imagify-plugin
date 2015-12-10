@@ -7,7 +7,12 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @since 1.2
  */
 add_filter( 'attachment_fields_to_edit', '_imagify_attachment_fields_to_edit', PHP_INT_MAX, 2 );
-function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
+function _imagify_attachment_fields_to_edit( $form_fields, $post ) {    
+    $current_screen = get_current_screen();
+    if ( (bool) $current_screen && 'post' === $current_screen->base ) {
+	    return $form_fields;
+    }
+    
     $form_fields['imagify'] = array(
         'label'         => 'Imagify',
         'input'         => 'html',
