@@ -26,6 +26,10 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 
 == Changelog ==
 
+= 1.2.4 =
+* Bug Fix
+ * Don't duplicate Imagify data in the attachment edit screen (wp-admin/post.php)
+
 = 1.2.3 =
 * Improvement
  * Use AJAX to display the quota in the admin bar to avoid a call to our API on each pages.
