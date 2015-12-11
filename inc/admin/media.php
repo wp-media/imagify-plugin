@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 add_filter( 'attachment_fields_to_edit', '_imagify_attachment_fields_to_edit', PHP_INT_MAX, 2 );
 function _imagify_attachment_fields_to_edit( $form_fields, $post ) {    
-    $current_screen = get_current_screen();
-    if ( (bool) $current_screen && 'post' === $current_screen->base ) {
+    global $pagenow;
+    if ( 'post.php' == $pagenow ) {
 	    return $form_fields;
     }
     
