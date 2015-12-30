@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @return int The number of attachments.
  */
 function imagify_count_attachments() {
-	$count = wp_count_attachments( array( 'image/jpeg', 'image/png' ) ); // TO DO - add gif later
+	$count = wp_count_attachments( get_imagify_mime_type() );
 	$count = get_object_vars( $count );
 	$count = array_sum( $count );
 	return (int) $count;
@@ -28,7 +28,7 @@ function imagify_count_exceeding_attachments() {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
+			'post_mime_type'         => get_imagify_mime_type(),
 			'posts_per_page'         => -1,
 			'update_post_term_cache' => false,
 			'no_found_rows'          => true,
@@ -41,8 +41,7 @@ function imagify_count_exceeding_attachments() {
 		$attachment = new Imagify_Attachment( $attachment_id );
 
 		// Check if the attachment extension is allowed
-		// TO DO: use wp_attachment_is_image when we can optimize all formats
-		if ( ! in_array( $attachment->get_extension() , array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
+		if ( ! wp_attachment_is_image( $attachment_id ) ) {
 			continue;
 		}
 		
@@ -66,7 +65,7 @@ function imagify_count_error_attachments() {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
+			'post_mime_type'         => get_imagify_mime_type(),
 			'meta_key'				 => '_imagify_status',
 			'meta_value'			 => 'error',
 			'posts_per_page'         => -1,
@@ -91,7 +90,7 @@ function imagify_count_optimized_attachments() {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
+			'post_mime_type'         => get_imagify_mime_type(),
 			'meta_query'      => array(
 			'relation'    => 'or',
 				array(
@@ -159,7 +158,7 @@ function imagify_count_saving_data( $key = '' ) {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
+			'post_mime_type'         => get_imagify_mime_type(),
 			'meta_key'				 => '_imagify_status',
 			'meta_value'			 => 'success',
 			'posts_per_page'         => -1,
@@ -174,8 +173,7 @@ function imagify_count_saving_data( $key = '' ) {
 		$attachment = new Imagify_Attachment( $attachment_id );
 
 		// Check if the attachment extension is allowed
-		// TO DO: use wp_attachment_is_image when we can optimize all formats
-		if ( ! in_array( $attachment->get_extension(), array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
+		if ( ! wp_attachment_is_image( $attachment_id ) ) {
 			continue;
 		}
 

@@ -448,10 +448,9 @@ class Imagify_Attachment {
 		// Get file path & URL for original image
 		$attachment_path = $this->get_original_path();
 		$attachment_url  = $this->get_original_url();
-
-		// TO DO: use wp_attachment_is_image when we can optimize all image formats
-		//if ( ( $id || wp_attachment_is_image( $id ) === false ) {
-		if ( ! $id || ! in_array( $this->get_extension(), array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
+		
+		// Check if the attachment extension is allowed
+		if ( ! $id || ! wp_attachment_is_image( $id ) ) {
 			return;
 		}
 
