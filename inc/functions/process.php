@@ -10,10 +10,11 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @param   bool   	  $backup 		  	   Force a backup of the original file.
  * @param   int 	  $optimization_level  The optimization level (2=ultra, 1=aggressive, 0=normal).
  * @param   array 	  $resize  		  	   The resize parameters (with & height).
+ * @param   bool 	  $keep_exif  		   To keep exif data or not
  * @return obj|array  Error message | Optimized image data
  */
-function do_imagify( $file_path, $backup, $optimization_level, $resize = array() ) {
-	$errors    = new WP_Error();
+function do_imagify( $file_path, $backup, $optimization_level, $resize = array(), $keep_exif = false ) {
+	$errors = new WP_Error();
 	
 	/**
 	 * Filter the attachment path
@@ -74,7 +75,8 @@ function do_imagify( $file_path, $backup, $optimization_level, $resize = array()
 				array(
 					'aggressive' => ( 1 === (int) $optimization_level ) ? true : false,
 					'ultra'  	 => ( 2 === (int) $optimization_level ) ? true : false,
-					'resize' 	 => $resize
+					'resize' 	 => $resize,
+					'keep_exif'  => $keep_exif
 				)
 			)
 		)

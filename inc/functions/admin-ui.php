@@ -158,8 +158,7 @@ function get_imagify_media_column_content( $attachment_id ) {
 	$attachment_ext = $attachment->get_extension();
 
 	// Check if the attachment extension is allowed
-	// TO DO: use wp_attachment_is_image when we can optimize all formats
-	if ( ! in_array( $attachment_ext , array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
+	if ( ! wp_attachment_is_image( $attachment_id )  ) {
 		$output = sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
 		return $output;
 	}

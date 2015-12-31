@@ -48,6 +48,7 @@ function _imagify_first_install() {
 			'backup'             => 1,
 			'resize_larger'		 => '',
 			'resize_larger_w'	 => '',
+			'exif'				 => 0,
 			'disallowed-sizes'	 => array(),
 			'admin_bar_menu'	 => 1
 		)

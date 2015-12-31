@@ -140,7 +140,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		'fields'                 => 'ids',
 		'post_type'              => 'attachment',
 		'post_status'            => 'any',
-		'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
+		'post_mime_type'         => get_imagify_mime_type(),
 		'posts_per_page'         => -1,
 		'no_found_rows'          => true,
 		'update_post_term_cache' => false,

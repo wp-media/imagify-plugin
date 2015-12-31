@@ -90,7 +90,7 @@ function _imagify_sort_attachments_by_status( $vars ) {
 		break;
 	}
 	
-	$vars['post_mime_type'] = array( 'image/jpeg', 'image/png' ); // TO DO - add gif later; 
+	$vars['post_mime_type'] = get_imagify_mime_type();
 	$vars = array_merge(
 		$vars,
 		array(

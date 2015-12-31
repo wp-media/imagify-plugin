@@ -185,7 +185,22 @@ function _imagify_display_options_page() {
 									</p>
 								</td>
 							</tr>
+							<tr>
+								<th scope="row"><span><?php _e( 'EXIF Data', 'imagify' ); ?></span></th>
+								<td>
+									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[exif]" id="exif" <?php checked( get_imagify_option( 'exif', 0 ), 1 ); ?> aria-describedby="describe-exif" />
+									<label for="exif" onclick=""><span class="screen-reader-text"><?php _e( 'EXIF Data', 'imagify' ); ?></span></label>
 
+									<span id="describe-exif" class="imagify-info">
+										<span class="dashicons dashicons-info"></span>
+										<?php _e( 'Keep all EXIF data from your images. EXIF are informations stored in your pictures like shutter speed, exposure compensation, ISO, etc...', 'imagify' ); ?>
+										<a href="https://en.wikipedia.org/wiki/Exchangeable_image_file_format" target="_blank"><?php _e( 'Learn more', 'imagify' ); ?></a>
+										<br/><br/>
+										<?php _e( 'If you are a photographer, you may be interested in by this option if you are displaying some infos like your the model of your camera on your pages.', 'imagify' ); ?>
+										
+									</span>
+								</td>
+							</tr>
 							<?php
 							if ( ! imagify_is_active_for_network() ) { ?>
 
