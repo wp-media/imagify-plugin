@@ -151,48 +151,6 @@ function _imagify_warning_plugins_to_deactivate_notice() {
 }
 
 /**
- * This notice is displayed to rate the plugin after 100 optimization & 7 days after the first installation
- *
- * @since 1.0
- */
-add_action( 'all_admin_notices', '_imagify_rating_notice' );
-function _imagify_rating_notice() {
-	$current_screen  = get_current_screen();
-	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
-
-	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'rating', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
-		return;
-	}
-
-	$optimized_attachments = imagify_count_optimized_attachments();
-	$saving_data 		   = imagify_count_saving_data();
-
-	if ( $optimized_attachments < 100 || $saving_data['percent'] < 30 || ! get_site_transient( 'imagify_seen_rating_notice' ) ) {
-		return;
-	}
-	?>
-	<div class="clear"></div>
-	<div class="updated imagify-notice below-h2">
-		<div class="imagify-notice-logo">
-			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
-		</div>
-		<div class="imagify-notice-content">
-			<?php
-			$imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
-			?>
-			<p><?php printf( __( '%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and reduced by %1$s%4$s%2$s%% your images size.', 'imagify' ), '<strong>', '</strong>', $optimized_attachments, $saving_data['percent'] ); ?></p>
-			<p class="imagify-rate-us">
-				<?php printf( __( '%sDo you like this plugin?%s Please take a few seconds to %srate it on WordPress.org%s!', 'imagify' ), '<strong>', '</strong><br />', '<a href="' . $imagify_rate_url . '">', '</a>' ); ?>
-				<br>
-				<a class="stars" href="<?php echo $imagify_rate_url; ?>">☆☆☆☆☆</a>
-			</p>
-		</div>
-		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'rating' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
-	</div>
-	<?php
-}
-
-/**
  * This notice is displayed when external HTTP requests are blocked via the WP_HTTP_BLOCK_EXTERNAL constant
  *
  * @since 1.0
@@ -257,7 +215,7 @@ function _imagify_warning_grid_view_notice() {
 }
 
 /**
- * This warning is displayed when a user has consumed its monthly free quota.
+ * 
  *
  * @since 1.1.1
  */
