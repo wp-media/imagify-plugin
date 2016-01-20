@@ -61,7 +61,7 @@ function _imagify_warning_empty_api_key_notice() {
 }
 
 /**
- * This warning is displayed when the API key isn't valid
+ * This warning is displayed when the API key is empty
  *
  * @since 1.0
  */
@@ -72,7 +72,7 @@ function _imagify_warning_wrong_api_key_notice() {
 	$api_key		 = get_imagify_option( 'api_key', false );
 	$cap			 = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
 	
-	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'wrong-api-key', (array) $ignored_notices ) || empty( $api_key ) || imagify_valid_key() || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
+	if ( ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' !== $current_screen->base ) || in_array( 'wrong-api-key', (array) $ignored_notices ) || empty( $api_key ) || imagify_valid_key() || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
 		return;
 	}
 	?>
@@ -125,7 +125,7 @@ function _imagify_warning_plugins_to_deactivate_notice() {
 	$plugins = array_filter( $plugins, 'is_plugin_active' );
 
 	/** This filter is documented in inc/admin/options.php */
-	if (  ! (bool) $plugins || ! imagify_valid_key() || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
+	if (  ! (bool) $plugins || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
 		return;
 	} 
 	?>
@@ -160,7 +160,7 @@ function _imagify_http_block_external_notice() {
 	$current_screen  = get_current_screen();
 	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 
-	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'http-block-external', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) || ! imagify_valid_key() || ! is_imagify_blocked() ) {
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'http-block-external', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) || ! is_imagify_blocked() ) {
 		return;
 	}
 	?>	
@@ -195,7 +195,12 @@ function _imagify_warning_grid_view_notice() {
 	$ignored_notices    = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 	$media_library_mode = get_user_option( 'media_library_mode', get_current_user_id() );
 
-	if ( ( isset( $current_screen ) && 'upload' !== $current_screen->base ) || in_array( 'grid-view', (array) $ignored_notices ) || ! current_user_can( 'upload_files' ) || ! imagify_valid_key() || $media_library_mode == 'list' || version_compare( $wp_version, '4.0' ) < 0 ) {
+	if ( ( isset( $current_screen ) && 'upload' !== $current_screen->base ) || in_array( 'grid-view', (array) $ignored_notices ) || ! current_user_can( 'upload_files' ) || $media_library_mode == 'list' || version_compare( $wp_version, '4.0' ) < 0 ) {
+		return;
+	}
+	
+	// Don't display the notice if the API key isn't valid
+	if ( ! imagify_valid_key() ) {
 		return;
 	}
 	?>
@@ -225,12 +230,14 @@ function _imagify_warning_over_quota_notice() {
 	$ignored_notices    = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 	$cap			    = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
 
-	if ( ( isset( $current_screen ) && ( 'media_page_imagify-bulk-optimization' !== $current_screen->base && 'settings_page_imagify' !== $current_screen->base && 'settings_page_imagify-network' !== $current_screen->base ) ) || in_array( 'free-over-quota', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) || ! imagify_valid_key() ) {
+	if ( ( isset( $current_screen ) && ( 'media_page_imagify-bulk-optimization' !== $current_screen->base && 'settings_page_imagify' !== $current_screen->base && 'settings_page_imagify-network' !== $current_screen->base ) ) || in_array( 'free-over-quota', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) ) {
 		return;
 	}
 	
 	$user = new Imagify_User();
-	if ( ! $user->is_over_quota() ) {
+	
+	// Don't display the notice if the user doesn't use all his quota or the API key isn't valid
+	if ( ! $user->is_over_quota() || ! imagify_valid_key() ) {
 		return;
 	}
 	

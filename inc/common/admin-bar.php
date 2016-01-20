@@ -32,7 +32,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 	) );
 	
 	// Bulk Optimization
-	if ( imagify_valid_key() && ! is_network_admin() ) {
+	if ( ! is_network_admin() ) {
 		$wp_admin_bar->add_menu(array(
 			'parent' => 'imagify',
 			'id'     => 'imagify-bulk-optimization',
@@ -42,8 +42,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 	}
 
 	// Quota & Profile informations
-	if ( imagify_valid_key() ) {
-		// insert custom HTML
+	if ( ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key', false ) ) {
 		$wp_admin_bar->add_menu( array(
 			'parent' => 'imagify',
 			'id'     => 'imagify-profile',
