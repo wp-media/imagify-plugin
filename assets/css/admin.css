@@ -311,11 +311,12 @@ td .imagify-chart {
 	margin-right: 5px;
 	vertical-align: middle;
 }
-.imagify-settings .button-primary,
-.imagify-welcome .button-primary {
+.imagify-settings .button-primary.button-primary,
+.imagify-welcome .button-primary.button-primary {
 	background: #40B1D0;
 	color: #FFF;
 	box-shadow: 0 3px 0 rgba(51, 142, 166, 1);
+	text-shadow: 0 -1px 1px #006799, 1px 0 1px #006799, 0 1px 1px #006799, -1px 0 1px #006799
 }
 .imagify-settings .button-primary:hover,
 .imagify-settings .button-primary:focus,
