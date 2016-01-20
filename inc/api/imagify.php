@@ -30,6 +30,15 @@ function get_imagify_user() {
 }
 
 /**
+ * Get the Imagify API version.
+ *
+ * @return object
+ **/
+function get_imagify_api_version() {
+	return Imagify()->getApiVersion();
+}
+
+/**
  * Check your Imagify API key status.
  *
  * @return bool
@@ -142,11 +151,11 @@ class Imagify {
      **/
     public function getUser() {
 		static $user;
-        
+
         if ( ! isset( $user ) ) {
-            $user = $this->httpCall( 'users/me/' );
+            $user = $this->httpCall( 'users/me/', 'GET', null, 10 );
         }
-        
+
         return $user;
     }
 
@@ -157,15 +166,32 @@ class Imagify {
      **/
     public function getStatus( $data ) {
 	    static $status;
-	    
+
 	    if ( ! isset( $status ) ) {
-		 	unset( $this->headers['Accept'], $this->headers['Content-Type'] );
+			unset( $this->headers['Accept'], $this->headers['Content-Type'] );
 	        $this->headers['Authorization'] = 'Authorization: token ' . $data;
-	
-	        $status = $this->httpCall( 'status/' );   
+
+	        $status = $this->httpCall( 'status/', 'GET', null, 10 );
 	    }
-	    
+
 	    return $status;
+    }
+
+    /**
+     * Get the Imagify API version.
+     *
+     * @return object
+     **/
+    public function getApiVersion() {
+	    static $api_version;
+
+	    if ( ! isset( $api_version ) ) {
+            unset( $this->headers['Accept'], $this->headers['Content-Type'] );
+
+            $api_version = $this->httpCall( 'version/', 'GET', null, 5 );
+        }
+
+	    return $api_version;
     }
 
     /**
@@ -176,7 +202,7 @@ class Imagify {
      **/
     public function updateUser( $data )
     {
-        return $this->httpCall( 'users/me/format=json', 'PUT', $data );
+        return $this->httpCall( 'users/me/', 'PUT', $data, 10 );
     }
 
     /**
@@ -211,38 +237,38 @@ class Imagify {
      * @param  string $post_data The data to send on an HTTP POST (optional)
      * @return object
      **/
-    private function httpCall( $url, $method = 'GET', $post_data = null )
+    private function httpCall( $url, $method = 'GET', $post_data = null, $timeout = 45 )
     {
         // Check if php-curl is enabled
 		if ( ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ) ) {
 			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
 		}
-        
+
         try {
-	    	$ch = curl_init();
-			$is_ssl = ( isset( $_SERVER['HTTPS'] ) && ( 'on' == strtolower( $_SERVER['HTTPS'] ) || '1' == $_SERVER['HTTPS'] ) ) || ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) );
-			
+	    	$ch 	 = curl_init();
+			$is_ssl  = ( isset( $_SERVER['HTTPS'] ) && ( 'on' == strtolower( $_SERVER['HTTPS'] ) || '1' == $_SERVER['HTTPS'] ) ) || ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) );
+
 	        if ( 'POST' == $method ) {
 		        curl_setopt( $ch, CURLOPT_POST, true );
 				curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
 	        }
-			
+
 			curl_setopt( $ch, CURLOPT_URL, self::API_ENDPOINT . $url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
-			curl_setopt( $ch, CURLOPT_TIMEOUT, 60 );
+			curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
 			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, $is_ssl );
-	
+
 			$response  = json_decode( curl_exec( $ch ) );
 	        $error     = curl_error( $ch );
 	        $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-	
-			curl_close( $ch );    
+
+			curl_close( $ch );
         } catch( Exception $e ) {
 	        return new WP_Error( 'curl', 'Unknown error occurred' );
         }
-        
+
 		if ( 200 != $http_code && isset( $response->code, $response->detail ) ) {
 			return new WP_Error( $http_code, $response->detail );
 		} elseif ( 200 != $http_code ) {
