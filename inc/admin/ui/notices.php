@@ -61,7 +61,7 @@ function _imagify_warning_empty_api_key_notice() {
 }
 
 /**
- * This warning is displayed when the API key is empty
+ * This warning is displayed when the API key isn't valid
  *
  * @since 1.0
  */
@@ -223,12 +223,17 @@ add_action( 'all_admin_notices', '_imagify_warning_over_quota_notice' );
 function _imagify_warning_over_quota_notice() {
 	$current_screen     = get_current_screen();
 	$ignored_notices    = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
-	$user 				= new Imagify_User();
 	$cap			    = ( imagify_is_active_for_network() ) ? 'manage_network_options' : 'manage_options';
 
-	if ( ( isset( $current_screen ) && ( 'media_page_imagify-bulk-optimization' !== $current_screen->base && 'settings_page_imagify' !== $current_screen->base && 'settings_page_imagify-network' !== $current_screen->base ) ) || in_array( 'free-over-quota', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) || ! imagify_valid_key() || ! $user->is_over_quota() ) {
+	if ( ( isset( $current_screen ) && ( 'media_page_imagify-bulk-optimization' !== $current_screen->base && 'settings_page_imagify' !== $current_screen->base && 'settings_page_imagify-network' !== $current_screen->base ) ) || in_array( 'free-over-quota', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', $cap ) ) || ! imagify_valid_key() ) {
 		return;
 	}
+	
+	$user = new Imagify_User();
+	if ( ! $user->is_over_quota() ) {
+		return;
+	}
+	
 	?>
 	<div class="clear"></div>
 	<div class="error imagify-notice below-h2">
