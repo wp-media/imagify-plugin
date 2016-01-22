@@ -136,7 +136,7 @@ function _imagify_display_bulk_page() {
 					else {
 					?>
 						<p>
-							<strong><?php printf( __( 'Don\'t forget to check %syour settings%s before bulk optimization.', 'imagify' ), '<a href="' . get_admin_url( get_current_blog_id(), 'options-general.php?page=' . IMAGIFY_SLUG ) . '">', '</a>' ); ?></strong>
+							<strong><?php printf( __( 'Don\'t forget to check %syour settings%s before bulk optimization.', 'imagify' ), '<a href="' . get_imagify_admin_url() . '">', '</a>' ); ?></strong>
 						</p>
 					<?php
 					}
