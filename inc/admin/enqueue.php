@@ -127,7 +127,7 @@ function _imagify_admin_print_styles() {
 		'saveApiKeyTitle'   	  	    => __( 'Connect to Imagify!', 'imagify' ),
 		'saveApiKeyText'   	  	    	=> __( 'Paste your API key below:', 'imagify' ),
 		'saveApiKeyConfirmButtonText'   => __( 'Connect me', 'imagify' ),
-		'waitApiKeyCheckText'     	    => __( 'Checking in process...', 'imagify' ),
+		'waitApiKeyCheckText'     	    => __( 'Check in progress...', 'imagify' ),
 		'ApiKeyCheckSuccessTitle' 	    => __( 'Congratulations!', 'imagify' ),
 		'ApiKeyCheckSuccessText'  	    => __( 'Your API key is valid. You can now configure the Imagify settings to optimize your images.', 'imagify' ),
 		'ValidApiKeyText'  		  	    => __( 'Your API key is valid.', 'imagify' )

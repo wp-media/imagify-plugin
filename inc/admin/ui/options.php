@@ -196,7 +196,7 @@ function _imagify_display_options_page() {
 										<?php _e( 'Keep all EXIF data from your images. EXIF are informations stored in your pictures like shutter speed, exposure compensation, ISO, etc...', 'imagify' ); ?>
 										<a href="https://en.wikipedia.org/wiki/Exchangeable_image_file_format" target="_blank"><?php _e( 'Learn more', 'imagify' ); ?></a>
 										<br/><br/>
-										<?php _e( 'If you are a photographer, you may be interested in by this option if you are displaying some infos like your the model of your camera on your pages.', 'imagify' ); ?>
+										<?php _e( 'If you are a photographer, you may be interested in this option if you are displaying on your pages some info like the model of your camera.', 'imagify' ); ?>
 										
 									</span>
 								</td>
