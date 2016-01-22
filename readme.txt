@@ -3,7 +3,7 @@ Contributors: wp_media
 Tags: image optimizer, image optimiser, optimize, optimise, images, media, performance, seo, faster loading times, smushit, smush.it, compress, kraken-image-optimizer, tinypng, tinyjpeg, pngquant, jpegmini, ewww, pagespeed, pagespeed insights, sitespeed, optimize gif, optimize jpeg, optimize png, optimize animated gif, svg, improve pagerank, gtmetrix speed test, picture,  optimization, image editor, pngout, upload speed, imagify, compression, compression image, webp, lossless, cwebp, media, jpegtran, image, image optimisation, image optimization, shrink, picture, photo, photos, optimize photos, compress, crunch, attachment, pictures, fast, image files, image quality, lossy, upload, kraken, resize, optipng, kraken image optimizer, photo optimization, gifsicle, krakenio, png, gmagick, image optimize, pdf, pdf optimisation, pdf optimization, optimize pdf, optimise pdf, shrink pdf, jpg, jpeg, jpg optimisation, jpg optimization, optimize jpg, optimise jpg, shrink jpg, gif, animated gif, optimize gif, optimise gif, optimizer, optimiser, compresion, cruncher, image cruncher, compress png, compress jpg, compress jpeg, compress pdf, faster loading times, image optimiser, improve pagerank, optimise, optimize animated gif,  optimise jpeg, optimize jpeg, optimize, optimise png, optimise pdf, optimize pdf, tinyjpg, short pixel, shortpixel, woocommerce compatible, reduce image size, wordpress compression, wordpress image tool, yahoo, yahoo smush.it
 Requires at least: 3.7.0
 Tested up to: 4.4
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,36 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Optional: find the settings page through `Settings > Imagify`
 
+== Frequently Asked Questions ==
+
+= Can I use the plugin with a free account? =
+
+Absolutely. You are limited to a quota of 25 MB of images per month with a free account. Once this quota is reached, you cannot optimize new images until your quota is renewed or you purchase credits.
+
+= On how many websites can I use the plugin? =
+
+You can use the plugin on as many sites as you wish. The only limit is the optimization quota of your account.
+
+= I used Kraken, Optimus, EWWW or WP Smush, will Imagify further optimize my images? =
+
+Absolutely. Most of the time, Imagify will still be able to optimize your images even if you have already compressed them with another tool.
+
+= Will the original images be deleted? =
+
+No. Imagify automatically replaces the images with an optimized image. The backup option allows you to keep the original images and restore them with one click.
+
+= Is it possible to re-optimize images with a different level? =
+
+Yes. By activating the backup option in the plugin, you can re-optimize each image with a different compression level.
+
+= What happens when the plugin is disabled? =
+
+When the plugin is disabled, your existing images remain optimized. Backups of the original images are still available if you have enabled the images backup option.
+
 == Changelog ==
+
+= 1.3.2 =
+* NEW: Add Spanish translation
 
 = 1.3.1 =
 * Bug Fix
