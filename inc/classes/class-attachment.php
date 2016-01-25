@@ -100,10 +100,7 @@ class Imagify_Attachment {
 	 * @return int
 	 */
 	public function get_optimization_level() {
-		$stats  = $this->get_stats_data();
-		$level  = ( isset( $stats['aggressive'] ) ) ? (int) $stats['aggressive'] : false;
-
-		return $level;
+		return get_post_meta( $this->id, '_imagify_optimization_level', true );
 	}
 	
 	/**
@@ -438,7 +435,6 @@ class Imagify_Attachment {
 		$sizes         = ( isset( $metadata['sizes'] ) ) ? (array) $metadata['sizes'] : array();
 		$data          = array(
 			'stats' => array(
-				'aggressive' 		 => $optimization_level,
 				'original_size'      => 0,
 				'optimized_size'     => 0,
 				'percent'            => 0,
@@ -481,7 +477,10 @@ class Imagify_Attachment {
 		// Optimize the original size 
 		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $optimization_level, $resize, get_imagify_option( 'exif', false ) );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
-
+		
+		// Save the optimization level
+		update_post_meta( $id, '_imagify_optimization_level', $optimization_level );
+		
 		if( (bool) ! $data ) {
 			return;
 		}
@@ -590,6 +589,7 @@ class Imagify_Attachment {
 		// Remove old optimization data
 		delete_post_meta( $id, '_imagify_data' );
 		delete_post_meta( $id, '_imagify_status' );
+		delete_post_meta( $id, '_imagify_optimization_level' );
 		
 		// Restore the original size in the metadata
 		$this->update_metadata_size();
