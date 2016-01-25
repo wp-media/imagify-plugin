@@ -68,12 +68,22 @@ jQuery(function($){
 
 		$obj.attr('disabled', 'disabled');
 		$obj.find('.dashicons').addClass('rotate');
-
+		
+		
 		confirmMessage =  function(){
 			return "Imagify is processing. Are your sure you want to quit this page?";
 		};
 		$(window).on('beforeunload', confirmMessage);
-
+		
+		// Display an alert to wait
+		swal({
+			title:imagifyBulk.waitTitle,
+			text: imagifyBulk.waitText,
+			closeOnConfirm: false,
+			showConfirmButton: false,
+			imageUrl: imagifyBulk.waitImageUrl
+		});
+		
 		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&optimization_level="+$optimization_level+"&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
 		.done(function(response) {
 			if( !response.success ) {

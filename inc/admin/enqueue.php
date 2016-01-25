@@ -175,6 +175,9 @@ function _imagify_admin_print_styles() {
 	if ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' === $current_screen->base ) {
 		$user	   = get_imagify_user();
 		$bulk_data = array(
+			'waitTitle' 	=> __( 'Please wait...', 'imagify' ),
+			'waitText'  	=> __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
+			'waitImageUrl'  => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
 			'overviewChartLabels'			=> array( 
 				'optimized'   => __( 'Optimized', 'imagify' ),
 				'unoptimized' => __( 'Unoptimized', 'imagify' ),
