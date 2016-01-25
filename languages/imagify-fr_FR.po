@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2016-01-22 19:15+0100\n"
-"PO-Revision-Date: 2016-01-22 19:15+0100\n"
+"POT-Creation-Date: 2016-01-25 12:06+0100\n"
+"PO-Revision-Date: 2016-01-25 12:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -31,11 +31,11 @@ msgstr "En cours d’optimisation…"
 msgid "Optimize"
 msgstr "Optimiser"
 
-#: inc/admin/ajax.php:392
+#: inc/admin/ajax.php:407
 msgid "Oops, It's almost over!"
 msgstr "Oups, c’est bientôt fini&nbsp;!"
 
-#: inc/admin/ajax.php:393
+#: inc/admin/ajax.php:408
 #, php-format
 msgid ""
 "You have almost used all your credit.%sDon't forget to upgrade your "
@@ -44,15 +44,15 @@ msgstr ""
 "Vous avez bientôt utilisé tout votre crédit.%sN’oubliez pas de mettre à niveau "
 "votre abonnement pour continuer à optimiser vos images."
 
-#: inc/admin/ajax.php:394 inc/admin/ui/bulk.php:22
+#: inc/admin/ajax.php:409 inc/admin/ui/bulk.php:22
 msgid "View My Subscription"
 msgstr "Voir mon abonnement"
 
-#: inc/admin/ajax.php:402 inc/admin/enqueue.php:183 inc/admin/ui/notices.php:251
+#: inc/admin/ajax.php:417 inc/admin/enqueue.php:186 inc/admin/ui/notices.php:251
 msgid "Oops, It's Over!"
 msgstr "Oups, c’est fini !"
 
-#: inc/admin/ajax.php:403 inc/admin/enqueue.php:198 inc/admin/ui/notices.php:253
+#: inc/admin/ajax.php:418 inc/admin/enqueue.php:201 inc/admin/ui/notices.php:253
 #, php-format
 msgid ""
 "You have consumed all your credit for this month. You will have <strong>%s "
@@ -61,24 +61,24 @@ msgstr ""
 "Vous avez consommé tout votre crédit pour ce mois. Vous aurez à nouveau "
 "<strong>%s le %s</strong>."
 
-#: inc/admin/ajax.php:404
+#: inc/admin/ajax.php:419
 msgid "Upgrade My Subscription"
 msgstr "Mettre à niveau mon abonnement"
 
-#: inc/admin/ajax.php:423 inc/admin/ui/bulk.php:16
+#: inc/admin/ajax.php:438 inc/admin/ui/bulk.php:16
 msgid "Account status"
 msgstr "Type de compte"
 
-#: inc/admin/ajax.php:424 inc/admin/ui/bulk.php:17
+#: inc/admin/ajax.php:439 inc/admin/ui/bulk.php:17
 msgid "Your subscription:"
 msgstr "Votre abonnement&nbsp;:"
 
-#: inc/admin/ajax.php:432 inc/admin/ui/bulk.php:47
+#: inc/admin/ajax.php:447 inc/admin/ui/bulk.php:47
 #, php-format
 msgid "You have %s space credit left"
 msgstr "Il vous reste %s de crédit"
 
-#: inc/admin/ajax.php:444
+#: inc/admin/ajax.php:459
 msgid "View my subscription"
 msgstr "Voir mon abonnement"
 
@@ -156,27 +156,39 @@ msgstr ""
 msgid "Restore Original"
 msgstr "Restaurer l’original"
 
-#: inc/admin/enqueue.php:179 inc/admin/ui/bulk.php:257 inc/admin/upload.php:38
+#: inc/admin/enqueue.php:178
+msgid "Please wait..."
+msgstr "Un peu d’attente…"
+
+#: inc/admin/enqueue.php:179
+msgid ""
+"We are trying to get your unoptimized images, it may take time depending on "
+"the number of images."
+msgstr ""
+"Nous sommes en train de récupérer vos images non-optimisées, cela peut prendre "
+"du temps en fonction du nombre d’images."
+
+#: inc/admin/enqueue.php:182 inc/admin/ui/bulk.php:257 inc/admin/upload.php:38
 msgid "Optimized"
 msgstr "Optimisé"
 
-#: inc/admin/enqueue.php:180 inc/admin/upload.php:39
+#: inc/admin/enqueue.php:183 inc/admin/upload.php:39
 msgid "Unoptimized"
 msgstr "Non optimisé"
 
-#: inc/admin/enqueue.php:181
+#: inc/admin/enqueue.php:184
 msgid "Error"
 msgstr "Erreur"
 
-#: inc/admin/enqueue.php:184
+#: inc/admin/enqueue.php:187
 msgid "Hold on!"
 msgstr "Halte là&nbsp;!"
 
-#: inc/admin/enqueue.php:185
+#: inc/admin/enqueue.php:188
 msgid "All your images have been optimized by Imagify. Congratulations!"
 msgstr "Toutes vos images ont été optimisées par Imagify. Félicitations&nbsp;!"
 
-#: inc/admin/enqueue.php:187
+#: inc/admin/enqueue.php:190
 #, php-format
 msgid ""
 "Discover @imagify, the new compression tool to optimize your images for free. "
@@ -185,7 +197,7 @@ msgstr ""
 "Découvrez @imagify, le nouvel outil de compression pour optimiser vos images. "
 "J’ai optimisé %1$s sur %2$s !"
 
-#: inc/admin/enqueue.php:195 inc/admin/enqueue.php:198
+#: inc/admin/enqueue.php:198 inc/admin/enqueue.php:201
 #: inc/admin/ui/notices.php:253
 #, php-format
 msgid ""
@@ -195,7 +207,7 @@ msgstr ""
 "Pour continuer à optimiser vos images, connectez-vous à votre compte Imagify "
 "pour %sacheter un pack ou souscrire à un plan%s."
 
-#: inc/admin/enqueue.php:198
+#: inc/admin/enqueue.php:201
 msgid "F j, Y"
 msgstr ""
 
@@ -267,7 +279,7 @@ msgstr "Sélectionnez votre niveau de compression"
 #: inc/admin/ui/bulk.php:102 inc/admin/ui/bulk.php:130
 #: inc/admin/ui/options.php:116 inc/admin/ui/options.php:306
 #: inc/admin/ui/options.php:369 inc/admin/ui/options.php:386
-#: inc/admin/ui/options.php:446 inc/classes/class-attachment.php:123
+#: inc/admin/ui/options.php:446 inc/classes/class-attachment.php:120
 #: inc/functions/admin-ui.php:127
 msgid "Ultra"
 msgstr "Ultra"
@@ -275,7 +287,7 @@ msgstr "Ultra"
 #: inc/admin/ui/bulk.php:105 inc/admin/ui/bulk.php:125
 #: inc/admin/ui/options.php:111 inc/admin/ui/options.php:318
 #: inc/admin/ui/options.php:368 inc/admin/ui/options.php:381
-#: inc/admin/ui/options.php:425 inc/classes/class-attachment.php:126
+#: inc/admin/ui/options.php:425 inc/classes/class-attachment.php:123
 #: inc/functions/admin-ui.php:133
 msgid "Aggressive"
 msgstr "Agressif"
@@ -283,7 +295,7 @@ msgstr "Agressif"
 #: inc/admin/ui/bulk.php:108 inc/admin/ui/bulk.php:120
 #: inc/admin/ui/options.php:106 inc/admin/ui/options.php:330
 #: inc/admin/ui/options.php:367 inc/admin/ui/options.php:376
-#: inc/admin/ui/options.php:405 inc/classes/class-attachment.php:129
+#: inc/admin/ui/options.php:405 inc/classes/class-attachment.php:126
 #: inc/functions/admin-ui.php:139
 msgid "Normal"
 msgstr "Normal"
@@ -790,7 +802,7 @@ msgstr "Filtrer par statut"
 msgid "All images"
 msgstr "Toutes les images"
 
-#: inc/classes/class-attachment.php:502
+#: inc/classes/class-attachment.php:501
 msgid ""
 "This size isn't authorized to be optimized. Update your Imagify settings if "
 "you want to optimize it."
