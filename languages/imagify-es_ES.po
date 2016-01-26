@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2016-01-25 12:17+0100\n"
-"PO-Revision-Date: 2016-01-25 12:37+0100\n"
+"POT-Creation-Date: 2016-01-26 16:45+0100\n"
+"PO-Revision-Date: 2016-01-26 16:45+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -810,7 +810,11 @@ msgstr ""
 "No tienes autorización para optimizar a este tamaño. Actualiza tu "
 "configuración de Imagify si quieres optimizarlo."
 
-#: inc/common/admin-bar.php:49
+#: inc/common/admin-bar.php:48
+msgid "Rate Imagify on WordPress.org"
+msgstr "Valora Imagify en WordPress.org"
+
+#: inc/common/admin-bar.php:57
 msgid "Loading..."
 msgstr "Cargando…"
 

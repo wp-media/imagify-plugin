@@ -40,6 +40,14 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 			'href'   => get_imagify_admin_url( 'bulk-optimization' ),
 		) );
 	}
+	
+	// Rate it
+	$wp_admin_bar->add_menu(array(
+		'parent' => 'imagify',
+		'id'     => 'imagify-rate-it',
+		'title'  => __( 'Rate Imagify on WordPress.org', 'imagify' ),
+		'href'   => 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform',
+	) );
 
 	// Quota & Profile informations
 	if ( ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key', false ) ) {
@@ -49,8 +57,6 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 			'title'  => wp_nonce_field( 'imagify-get-admin-bar-profile', 'imagifygetadminbarprofilenonce', false, false ) . '<div id="wp-admin-bar-imagify-profile-loading">' . __( 'Loading...' ) . '</div><div id="wp-admin-bar-imagify-profile-content"></div>',
 		) );
 	}
-
-	// TO DO - Rate it & Support
 }
 
 /**

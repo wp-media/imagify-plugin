@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2016-01-25 12:06+0100\n"
-"PO-Revision-Date: 2016-01-25 12:06+0100\n"
+"POT-Creation-Date: 2016-01-26 16:45+0100\n"
+"PO-Revision-Date: 2016-01-26 16:45+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -810,7 +810,11 @@ msgstr ""
 "Cette taille n’est pas autorisée à être optimisée. Mettez à jour les réglages "
 "d’Imagify si vous souhaitez l’optimiser."
 
-#: inc/common/admin-bar.php:49
+#: inc/common/admin-bar.php:48
+msgid "Rate Imagify on WordPress.org"
+msgstr "Notez Imagify sur WordPress.org"
+
+#: inc/common/admin-bar.php:57
 msgid "Loading..."
 msgstr "Chargement…"
 
@@ -862,6 +866,8 @@ msgid ""
 "Sorry, our servers are temporally unaccessible. Please, try again in a couple "
 "of minutes"
 msgstr ""
+"Désolé, nos serveurs sont temporairement inacessibles. Nous vous recommandons "
+"de ré-essayer dans quelques minutes"
 
 #: inc/functions/process.php:36
 msgid "External HTTP requests are blocked"
