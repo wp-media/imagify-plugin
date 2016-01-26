@@ -285,12 +285,12 @@ td .imagify-chart {
 .imagify-settings .button.button-mini-flat {
 	padding: 3px 6px 5px;
 	font-size: 12px;
-	box-shadow: none;
+	box-shadow: none!important;
 	line-height: 1.2;	
 }
 .imagify-settings .button.button-mini-flat:hover,
 .imagify-settings .button.button-mini-flat:focus {
-	box-shadow: none;
+	box-shadow: none!important;
 }
 
 .imagify-title .button-ghost.button-ghost {
@@ -759,25 +759,79 @@ input[id^="imagify_sizes_"]:checked + label {
 	margin-top: 0;
 	margin-bottom: -.5em;
 }
-.imagify-sidebar .wp-media-products a {
+.imagify-sidebar .wp-media-products .links {
 	display: block;
-	padding: 115px 10px 24px;
+	padding: 85px 25px 24px;
 	text-align: center;
-	color: #FFF;
 	background-color: #2E3243;
-	background-size: cover;
-	background-repeat: none;
-	background-position: 50%;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: 50% 0;
 	text-decoration: none;
 }
-.wprocket-link {
-	background-image: url("../images/sidebar-wp-rocket.jpg");
+.imagify-sidebar .wp-media-products .links p {
+	margin: 1.5em auto;
+	color: #FFF;
+}
+.imagify-sidebar .wp-media-products .wprocket-link {
+	background-image: linear-gradient(to bottom, rgba(59, 30, 78 ,0), rgba(59, 30, 78 ,0) 130px, rgba(59 ,30 ,78 , 1) 210px), url("../images/sidebar-wp-rocket.jpg");
+	background-color: #3B1E4E;
+	background-repeat: repeat-x, no-repeat;
 }
 
 .imagify-sidebar-content {
 	padding: 10px 20px;
 }
 
+.imagify-mark-styled {
+	display: inline-block;
+	padding: 1px 2px 1px 4px;
+	line-height: 1.3;
+	font-weight: bold;
+	background: #F7A933;
+	transform-origine: 50% 50%;
+	transform: rotateZ(-2deg) rotateX(-10deg) skewX(-2deg) skewY(-3deg);
+	text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+}
+.imagify-mark-styled span {
+	display: inline-block;
+	transform: rotateZ(2deg) rotateX(10deg) skewX(2deg) skewY(3deg);
+}
+
+.imagify-discount-code {
+	margin: 0.25em 0 .5em;
+	display: block;
+	font-size: 2.4em;
+	letter-spacing: .05em;
+	font-weight: bolder;
+	text-align: center;
+	text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+}
+.imagify-big-text {
+	font-size: 15px;
+	font-weight: bold;
+}
+.imagify-big-text strong {
+	font-size: 20px;
+}
+a.btn-rocket {
+	display: block;
+	font-size: 1.15em;
+	padding: 12px;
+	background: #F7A933;
+	box-shadow: 0 3px 0 #D69626;
+	border-radius: 3px;
+	color: #FFF;
+	text-transform: uppercase;
+	font-weight: bold;
+	text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+	text-decoration: none;
+}
+a.btn-rocket:hover,
+a.btn-rocket:focus {
+	background: darkorange;
+	box-shadow: 0 3px 0 darkorange;
+}
 
 
 /* 
