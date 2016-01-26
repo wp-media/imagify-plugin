@@ -15,7 +15,7 @@ function _imagify_display_options_page() {
 			<div class="imagify-col imagify-sidebar">
 				<div class="imagify-sidebar-section">
 					<span class="imagify-sidebar-title">
-						<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>phone.svg" width="19" height="16" alt=""> <?php _e( 'Is your WordPress website too slow?', 'imagify' ); ?>
+						<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>phone.svg" width="19" height="16" alt=""> <?php _e( 'Is your website too slow?', 'imagify' ); ?>
 					</span>
 					<ul class="wp-media-products">
 						<li>

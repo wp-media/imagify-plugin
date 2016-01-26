@@ -743,11 +743,10 @@ input[id^="imagify_sizes_"]:checked + label {
 }
 .imagify-sidebar-title {
 	display: block;
-	padding: 20px 6px;
+	padding: 20px 15px;
 	border-bottom: 1px solid #BBB;
 	font-size: 14px;
 	font-weight: bold;
-	text-align: center;
 	color: #23282d;
 	background: #F2F5F7;
 }
@@ -799,11 +798,11 @@ input[id^="imagify_sizes_"]:checked + label {
 }
 
 .imagify-discount-code {
-	margin: 0.25em 0 .5em;
+	margin: 0.35em 0 .5em;
 	display: block;
-	font-size: 2.4em;
+	font-size: 2em;
 	letter-spacing: .05em;
-	font-weight: bolder;
+	font-weight: bold;
 	text-align: center;
 	text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
 }
