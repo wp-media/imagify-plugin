@@ -24,7 +24,8 @@ function get_imagify_option( $option, $default = false ) {
 		return $value;
 	}
 
-	$options = get_site_option( IMAGIFY_SETTINGS_SLUG );
+	$plugins = get_site_option( 'active_sitewide_plugins');
+	$options = isset( $plugins[ IMAGIFY_SLUG . '/imagify.php' ] ) ? get_site_option( IMAGIFY_SETTINGS_SLUG ) : get_option( IMAGIFY_SETTINGS_SLUG );
 	$value 	 = isset( $options[ $option ] ) && $options[ $option ] !== '' ? $options[ $option ] : $default;
 	
 	if ( 'api_key' === $option && ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) ) {
