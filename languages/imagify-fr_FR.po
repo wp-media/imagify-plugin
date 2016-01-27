@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2016-01-26 18:24+0100\n"
-"PO-Revision-Date: 2016-01-26 19:30+0100\n"
+"POT-Creation-Date: 2016-01-27 14:27+0100\n"
+"PO-Revision-Date: 2016-01-27 14:27+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -816,8 +816,9 @@ msgstr ""
 "d’Imagify si vous souhaitez l’optimiser."
 
 #: inc/common/admin-bar.php:48
-msgid "Rate Imagify on WordPress.org"
-msgstr "Notez Imagify sur WordPress.org"
+#, php-format
+msgid "Rate Imagify on %s"
+msgstr "Notez Imafify sur %s"
 
 #: inc/common/admin-bar.php:57
 msgid "Loading..."
@@ -868,11 +869,11 @@ msgstr "%s ne peut pas être optimisé"
 
 #: inc/functions/process.php:30
 msgid ""
-"Sorry, our servers are temporally unaccessible. Please, try again in a couple "
-"of minutes"
+"Sorry, our servers are temporarily unaccessible. Please, try again in a couple "
+"of minutes."
 msgstr ""
 "Désolé, nos serveurs sont temporairement inaccessibles. Nous vous recommandons "
-"de ré-essayer dans quelques minutes"
+"de ré-essayer dans quelques minutes."
 
 #: inc/functions/process.php:36
 msgid "External HTTP requests are blocked"
@@ -919,6 +920,16 @@ msgstr ""
 #. Author URI of the plugin/theme
 msgid "http://wp-media.me"
 msgstr ""
+
+#~ msgid ""
+#~ "Sorry, our servers are temporally unaccessible. Please, try again in a "
+#~ "couple of minutes"
+#~ msgstr ""
+#~ "Désolé, nos serveurs sont temporairement inaccessibles. Nous vous "
+#~ "recommandons de ré-essayer dans quelques minutes"
+
+#~ msgid "Rate Imagify on WordPress.org"
+#~ msgstr "Notez Imagify sur WordPress.org"
 
 #~ msgid "Discover our other products"
 #~ msgstr "Découvrez nos autres produits"

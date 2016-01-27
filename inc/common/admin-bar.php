@@ -45,7 +45,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 	$wp_admin_bar->add_menu(array(
 		'parent' => 'imagify',
 		'id'     => 'imagify-rate-it',
-		'title'  => __( 'Rate Imagify on WordPress.org', 'imagify' ),
+		'title'  => sprintf( __( 'Rate Imagify on %s', 'imagify' ), 'WordPress.org' ),
 		'href'   => 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform',
 	) );
 
