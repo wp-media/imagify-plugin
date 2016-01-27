@@ -140,8 +140,12 @@ class Imagify {
 	    unset( $this->headers['Authorization'], $this->headers['Accept'], $this->headers['Content-Type'] );
 
 		$data['from_plugin'] = true;
-
-        return $this->httpCall( 'users/', 'POST', $data );
+		$args = array(
+			'method'    => 'POST',
+			'post_data' => $data
+		);
+		
+        return $this->httpCall( 'users/', $args );
     }
 
 	/**
@@ -153,7 +157,7 @@ class Imagify {
 		static $user;
 
         if ( ! isset( $user ) ) {
-            $user = $this->httpCall( 'users/me/', 'GET', null, 10 );
+            $user = $this->httpCall( 'users/me/', array( 'timeout' => 10 ) );
         }
 
         return $user;
@@ -171,7 +175,7 @@ class Imagify {
 			unset( $this->headers['Accept'], $this->headers['Content-Type'] );
 	        $this->headers['Authorization'] = 'Authorization: token ' . $data;
 
-	        $status = $this->httpCall( 'status/', 'GET', null, 10 );
+	        $status = $this->httpCall( 'status/', array( 'timeout' => 10 ) );
 	    }
 
 	    return $status;
@@ -188,7 +192,7 @@ class Imagify {
 	    if ( ! isset( $api_version ) ) {
             unset( $this->headers['Accept'], $this->headers['Content-Type'] );
 
-            $api_version = $this->httpCall( 'version/', 'GET', null, 5 );
+            $api_version = $this->httpCall( 'version/', array( 'timeout' => 5 ) );
         }
 
 	    return $api_version;
@@ -200,9 +204,14 @@ class Imagify {
      * @param  string $data All user data. Details here: --
      * @return object
      **/
-    public function updateUser( $data )
-    {
-        return $this->httpCall( 'users/me/', 'PUT', $data, 10 );
+    public function updateUser( $data ) {
+        $args = array(
+	    	'method'    => 'PUT',
+	    	'post_data' => $data,
+	    	'timeout'   => 10  
+        );
+        
+        return $this->httpCall( 'users/me/', $args );
     }
 
     /**
@@ -215,8 +224,13 @@ class Imagify {
 		if ( isset( $this->headers['Accept'], $this->headers['Content-Type'] ) ) {
 	        unset( $this->headers['Accept'], $this->headers['Content-Type'] );
         }
-
-		return $this->httpCall( 'upload/', 'POST', $data );
+		
+		$args = array(
+			'method'    => 'POST',
+			'post_data' => $data
+		);
+		
+		return $this->httpCall( 'upload/', $args );
     }
 
     /**
@@ -226,19 +240,28 @@ class Imagify {
      * @return object
      **/
     public function fetchImage( $data ) {
-		return $this->httpCall( 'fetch/', 'POST', json_encode( $data ) );
+		$args = array(
+			'method'    => 'POST',
+			'post_data' => json_encode( $data )
+		);
+		return $this->httpCall( 'fetch/', $args );
     }
 
 	/**
      * Make an HTTP call using curl.
      *
-     * @param  string $url       The URL to call
-     * @param  string $method    The HTTP method to use, by default GET
-     * @param  string $post_data The data to send on an HTTP POST (optional)
+     * @param  string $url  The URL to call
+     * @param  array $args  The request args
      * @return object
      **/
-    private function httpCall( $url, $method = 'GET', $post_data = null, $timeout = 45 )
-    {
+    private function httpCall( $url, $args = array() ) {
+        $default = array( 
+        	'method'    => 'GET', 
+        	'post_data' => null, 
+        	'timeout'   => 45 
+        );
+		$args = array_merge( $default, $args );
+
         // Check if php-curl is enabled
 		if ( ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ) ) {
 			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
@@ -248,15 +271,15 @@ class Imagify {
 	    	$ch 	 = curl_init();
 			$is_ssl  = ( isset( $_SERVER['HTTPS'] ) && ( 'on' == strtolower( $_SERVER['HTTPS'] ) || '1' == $_SERVER['HTTPS'] ) ) || ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) );
 
-	        if ( 'POST' == $method ) {
+	        if ( 'POST' == $args['method'] ) {
 		        curl_setopt( $ch, CURLOPT_POST, true );
-				curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] );
 	        }
 
 			curl_setopt( $ch, CURLOPT_URL, self::API_ENDPOINT . $url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
-			curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
+			curl_setopt( $ch, CURLOPT_TIMEOUT, $args['timeout'] );
 			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, $is_ssl );
 
