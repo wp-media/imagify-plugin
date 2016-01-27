@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
 "POT-Creation-Date: 2016-01-27 14:27+0100\n"
-"PO-Revision-Date: 2016-01-27 14:27+0100\n"
+"PO-Revision-Date: 2016-01-27 15:27+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.5\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-WPHeader: imagify.php\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -170,11 +170,11 @@ msgstr ""
 
 #: inc/admin/enqueue.php:182 inc/admin/ui/bulk.php:257 inc/admin/upload.php:38
 msgid "Optimized"
-msgstr "Optimisé"
+msgstr "Optimisées"
 
 #: inc/admin/enqueue.php:183 inc/admin/upload.php:39
 msgid "Unoptimized"
-msgstr "Non optimisé"
+msgstr "Non optimisées"
 
 #: inc/admin/enqueue.php:184
 msgid "Error"
@@ -344,7 +344,7 @@ msgstr "Poids optimisé"
 #: inc/admin/ui/bulk.php:210
 #, php-format
 msgid "that's the size you saved %sby using Imagify"
-msgstr "c’est le poids que vous avez économisé en utilisant Imagify"
+msgstr "c’est le poids que vous avez économisé %sen utilisant Imagify"
 
 #: inc/admin/ui/bulk.php:230
 msgid "Well done!"
@@ -818,7 +818,7 @@ msgstr ""
 #: inc/common/admin-bar.php:48
 #, php-format
 msgid "Rate Imagify on %s"
-msgstr "Notez Imafify sur %s"
+msgstr "Notez Imagify sur %s"
 
 #: inc/common/admin-bar.php:57
 msgid "Loading..."
