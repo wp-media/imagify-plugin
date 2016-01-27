@@ -24,6 +24,12 @@ function do_imagify( $file_path, $backup, $optimization_level, $resize = array()
 	 * @param string $file_path The attachment path
 	 */
 	$file_path = apply_filters( 'imagify_file_path', $file_path );
+		
+	// Check if the Imagify servers & the API are accessible
+	if ( ! is_imagify_servers_up() ) {
+		$errors->add( 'api_server_down', __( 'Sorry, our servers are temporarily unaccessible. Please, try again in a couple of minutes.', 'imagify' ) );
+		return $errors;	
+	}
 	
 	// Check if external HTTP requests are blocked.
 	if ( is_imagify_blocked() ) {

@@ -32,7 +32,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 	) );
 	
 	// Bulk Optimization
-	if ( imagify_valid_key() && ! is_network_admin() ) {
+	if ( ! is_network_admin() ) {
 		$wp_admin_bar->add_menu(array(
 			'parent' => 'imagify',
 			'id'     => 'imagify-bulk-optimization',
@@ -40,18 +40,23 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 			'href'   => get_imagify_admin_url( 'bulk-optimization' ),
 		) );
 	}
+	
+	// Rate it
+	$wp_admin_bar->add_menu(array(
+		'parent' => 'imagify',
+		'id'     => 'imagify-rate-it',
+		'title'  => sprintf( __( 'Rate Imagify on %s', 'imagify' ), 'WordPress.org' ),
+		'href'   => 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform',
+	) );
 
 	// Quota & Profile informations
-	if ( imagify_valid_key() ) {
-		// insert custom HTML
+	if ( ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key', false ) ) {
 		$wp_admin_bar->add_menu( array(
 			'parent' => 'imagify',
 			'id'     => 'imagify-profile',
 			'title'  => wp_nonce_field( 'imagify-get-admin-bar-profile', 'imagifygetadminbarprofilenonce', false, false ) . '<div id="wp-admin-bar-imagify-profile-loading">' . __( 'Loading...' ) . '</div><div id="wp-admin-bar-imagify-profile-content"></div>',
 		) );
 	}
-
-	// TO DO - Rate it & Support
 }
 
 /**

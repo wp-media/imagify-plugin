@@ -71,7 +71,7 @@ function imagify_valid_key() {
 	}
 	
 	$imagify_valid_key = true;
-	set_site_transient( 'imagify_check_licence_1', true, DAY_IN_SECONDS );
+	set_site_transient( 'imagify_check_licence_1', true, YEAR_IN_SECONDS );
 	
 	return true;
 }

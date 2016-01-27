@@ -136,11 +136,29 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	
 	set_time_limit( 0 );
 	
+	$optimization_level = $_GET['optimization_level'];
+	$optimization_level = ( -1 != $optimization_level ) ? $optimization_level : get_imagify_option( 'optimization_level', 1 );
+	$optimization_level = (int) $optimization_level;
+	
+	$meta_query = array(
+		'relation' => 'OR',
+		array(
+			'key'     => '_imagify_optimization_level',
+			'value'   => $optimization_level,
+			'compare' => '!='
+		),
+		array(
+			'key'     => '_imagify_optimization_level',
+			'compare' => 'NOT EXISTS'
+		)
+	);
+	
 	$args = array(
 		'fields'                 => 'ids',
 		'post_type'              => 'attachment',
 		'post_status'            => 'any',
 		'post_mime_type'         => get_imagify_mime_type(),
+		'meta_query'			 => $meta_query,
 		'posts_per_page'         => -1,
 		'no_found_rows'          => true,
 		'update_post_term_cache' => false,
@@ -149,10 +167,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$data               = array();
 	$query              = new WP_Query( $args );
 	$ids                = $query->posts;
-	$optimization_level = $_GET['optimization_level'];
-	$optimization_level = ( -1 != $optimization_level ) ? $optimization_level : get_imagify_option( 'optimization_level', 1 );
-	$optimization_level = (int) $optimization_level;
-
+	
 	// Save the optimization level in a transient to retrieve it later during the process
 	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
 	
@@ -164,7 +179,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 			$attachment        = new Imagify_Attachment( $id );
 			$attachment_error  = $attachment->get_optimized_error();  
 			$attachment_error  = trim( $attachment_error );
-			$attachment_status = get_post_meta( $id, '_imagify_status', true );
+			$attachment_status = $attachment->get_status();
 			
 			// Don't try to re-optimize if the optimization level is still the same
 			if ( $optimization_level === $attachment->get_optimization_level() && ! $attachment->has_error() ) {
@@ -177,7 +192,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 			}
 			
 			// Don't try to re-optimize images already compressed
-			if ( $attachment->get_optimization_level() >= $optimization_level && false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
+			if ( $attachment->get_optimization_level() >= $optimization_level && $attachment_status == 'already_optimized' ) {
 				continue;	
 			}
 			
