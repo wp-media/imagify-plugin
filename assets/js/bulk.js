@@ -71,7 +71,7 @@ jQuery(function($){
 		
 		
 		confirmMessage =  function(){
-			return imagifyBulk.processing;
+			return "Imagify is processing. Are your sure you want to quit this page?";
 		};
 		$(window).on('beforeunload', confirmMessage);
 		
