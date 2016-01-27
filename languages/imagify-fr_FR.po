@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
 "POT-Creation-Date: 2016-01-27 14:27+0100\n"
-"PO-Revision-Date: 2016-01-27 14:27+0100\n"
+"PO-Revision-Date: 2016-01-27 15:08+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -818,7 +818,7 @@ msgstr ""
 #: inc/common/admin-bar.php:48
 #, php-format
 msgid "Rate Imagify on %s"
-msgstr "Notez Imafify sur %s"
+msgstr "Notez Imagify sur %s"
 
 #: inc/common/admin-bar.php:57
 msgid "Loading..."
