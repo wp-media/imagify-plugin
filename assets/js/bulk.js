@@ -117,8 +117,6 @@ jQuery(function($){
 				}
 
 			} else {				
-				swal.close();
-				
 				var config = {
 					'lib': ajaxurl+"?action=imagify_bulk_upload&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val(),
 					'images': response.data
