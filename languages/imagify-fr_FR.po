@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2016-01-27 14:27+0100\n"
-"PO-Revision-Date: 2016-01-27 15:27+0100\n"
+"POT-Creation-Date: 2016-01-27 23:00+0100\n"
+"PO-Revision-Date: 2016-01-27 23:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -52,7 +52,7 @@ msgstr "Voir mon abonnement"
 msgid "Oops, It's Over!"
 msgstr "Oups, c’est fini !"
 
-#: inc/admin/ajax.php:418 inc/admin/enqueue.php:201 inc/admin/ui/notices.php:253
+#: inc/admin/ajax.php:418 inc/admin/enqueue.php:202 inc/admin/ui/notices.php:253
 #, php-format
 msgid ""
 "You have consumed all your credit for this month. You will have <strong>%s "
@@ -197,7 +197,12 @@ msgstr ""
 "Découvrez @imagify, le nouvel outil de compression pour optimiser vos images. "
 "J’ai optimisé %1$s sur %2$s !"
 
-#: inc/admin/enqueue.php:198 inc/admin/enqueue.php:201
+#: inc/admin/enqueue.php:194
+msgid "Imagify is still processing. Are you sure you want to leave this page?"
+msgstr ""
+"Imagify travaille encore. Êtes-vous sûr(e) de vouloir quitter cette page ?"
+
+#: inc/admin/enqueue.php:199 inc/admin/enqueue.php:202
 #: inc/admin/ui/notices.php:253
 #, php-format
 msgid ""
@@ -207,7 +212,7 @@ msgstr ""
 "Pour continuer à optimiser vos images, connectez-vous à votre compte Imagify "
 "pour %sacheter un pack ou souscrire à un plan%s."
 
-#: inc/admin/enqueue.php:201
+#: inc/admin/enqueue.php:202
 msgid "F j, Y"
 msgstr ""
 
@@ -771,13 +776,13 @@ msgstr "Je veux comparer%s et%s"
 #: inc/admin/ui/options.php:387
 #, php-format
 msgid "Original photography about %s"
-msgstr ""
+msgstr "Photographie originale, environ %s"
 
 #: inc/admin/ui/options.php:392 inc/admin/ui/options.php:397
 #: inc/admin/ui/options.php:402
 #, php-format
 msgid "Optimized photography about %s"
-msgstr ""
+msgstr "Photographie optimisée, environ %s"
 
 #: inc/admin/ui/options.php:407 inc/admin/ui/options.php:417
 #: inc/admin/ui/options.php:437 inc/admin/ui/options.php:458

@@ -71,7 +71,7 @@ jQuery(function($){
 		
 		
 		confirmMessage =  function(){
-			return "Imagify is processing. Are your sure you want to quit this page?";
+			return imagifyBulk.processing;
 		};
 		$(window).on('beforeunload', confirmMessage);
 		
@@ -117,6 +117,8 @@ jQuery(function($){
 				}
 
 			} else {				
+				swal.close;
+				
 				var config = {
 					'lib': ajaxurl+"?action=imagify_bulk_upload&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val(),
 					'images': response.data
