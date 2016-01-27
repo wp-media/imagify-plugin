@@ -175,22 +175,23 @@ function _imagify_admin_print_styles() {
 	if ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' === $current_screen->base ) {
 		$user	   = get_imagify_user();
 		$bulk_data = array(
-			'waitTitle' 	=> __( 'Please wait...', 'imagify' ),
-			'waitText'  	=> __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
-			'waitImageUrl'  => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
-			'overviewChartLabels'			=> array( 
+			'waitTitle'       => __( 'Please wait...', 'imagify' ),
+			'waitText'        => __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
+			'waitImageUrl'    => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
+			'overviewChartLabels' => array( 
 				'optimized'   => __( 'Optimized', 'imagify' ),
 				'unoptimized' => __( 'Unoptimized', 'imagify' ),
 				'error'       => __( 'Error', 'imagify' ),
-			),
-			'overQuotaTitle'              	=> __( 'Oops, It\'s Over!', 'imagify' ),
-			'noAttachmentToOptimizeTitle' 	=> __( 'Hold on!', 'imagify' ),
-			'noAttachmentToOptimizeText'	=> __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
-			'pluginURL'						=> 'https://wordpress.org/plugins/imagify',
-			'textToShare'					=> __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
-			'totalOptimizedAttachments'	    => imagify_count_optimized_attachments(),
-			'totalUnoptimizedAttachments'   => imagify_count_unoptimized_attachments(),
-			'totalErrorsAttachments' 	    => imagify_count_error_attachments()
+				),
+			'overQuotaTitle'              => __( 'Oops, It\'s Over!', 'imagify' ),
+			'noAttachmentToOptimizeTitle' => __( 'Hold on!', 'imagify' ),
+			'noAttachmentToOptimizeText'  => __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
+			'pluginURL'                   => 'https://wordpress.org/plugins/imagify',
+			'textToShare'                 => __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
+			'totalOptimizedAttachments'   => imagify_count_optimized_attachments(),
+			'totalUnoptimizedAttachments' => imagify_count_unoptimized_attachments(),
+			'totalErrorsAttachments'      => imagify_count_error_attachments(),
+			'processing'                  => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
 		);
 		
 		if ( imagify_valid_key() ) {
