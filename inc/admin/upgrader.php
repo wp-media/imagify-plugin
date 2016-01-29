@@ -104,7 +104,17 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 				'post_type'              => 'attachment',
 				'post_status'			 => 'inherit',
 				'post_mime_type'         => 'image',
-				'meta_key'				 => '_imagify_data',
+				'meta_query'			 => array(
+					'relation' => 'AND',
+					array(
+						'key'     => '_imagify_data',
+						'compare' => 'EXISTS'
+					),
+					array(
+						'key'     => '_imagify_optimization_level',
+						'compare' => 'NOT EXISTS'
+					),
+				),
 				'posts_per_page'         => -1,
 				'update_post_term_cache' => false,
 				'no_found_rows'          => true,
