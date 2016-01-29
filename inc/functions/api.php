@@ -26,11 +26,11 @@ function is_imagify_blocked() {
 }
 
 /**
- * Determine if the Imagify servers are available by checking the API version.
+ * Determine if the Imagify API is available by checking the API version.
  *
  * @since 1.0
  *
- * @return bool True if the Imagify servers are available.
+ * @return bool True if the Imagify API is available.
  */
 function is_imagify_servers_up() {
 	static $imagify_api_version = null;

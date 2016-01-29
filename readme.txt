@@ -3,11 +3,11 @@ Contributors: wp_media
 Tags: image optimizer, image optimiser, optimize, optimise, images, media, performance, seo, faster loading times, smushit, smush.it, compress, kraken-image-optimizer, tinypng, tinyjpeg, pngquant, jpegmini, ewww, pagespeed, pagespeed insights, sitespeed, optimize gif, optimize jpeg, optimize png, optimize animated gif, svg, improve pagerank, gtmetrix speed test, picture,  optimization, image editor, pngout, upload speed, imagify, compression, compression image, webp, lossless, cwebp, media, jpegtran, image, image optimisation, image optimization, shrink, picture, photo, photos, optimize photos, compress, crunch, attachment, pictures, fast, image files, image quality, lossy, upload, kraken, resize, optipng, kraken image optimizer, photo optimization, gifsicle, krakenio, png, gmagick, image optimize, pdf, pdf optimisation, pdf optimization, optimize pdf, optimise pdf, shrink pdf, jpg, jpeg, jpg optimisation, jpg optimization, optimize jpg, optimise jpg, shrink jpg, gif, animated gif, optimize gif, optimise gif, optimizer, optimiser, compression, cruncher, image cruncher, compress png, compress jpg, compress jpeg, compress pdf, faster loading times, image optimiser, improve pagerank, optimise, optimize animated gif,  optimise jpeg, optimize jpeg, optimize, optimise png, optimise pdf, optimize pdf, tinyjpg, short pixel, shortpixel, woocommerce compatible, reduce image size, wordpress compression, wordpress image tool, yahoo, yahoo smush.it, retina, wp retina, wp retina x2
 Requires at least: 3.7.0
 Tested up to: 4.4.1
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Dramaticaly reduce image file sizes without loosing quality, make your website load faster, boost your SEO and save money on your bandwith using Imagify, the new most advanced image optimization tool.
+Dramaticaly reduce image file sizes without loosing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
 == Description ==
 
@@ -22,20 +22,20 @@ Learn more about image compression, check that: <a href="https://imagify.io/imag
 
 = Why use Imagify to optimize you images? =
 
-You already have a lots of unoptimized images? Not a problem, you will love the Bulk Optimizer to optimize all your existing images in one click. 
-​
-Imagify can directly resize your images, *you won't have to lose time anymore on resizing your images before uploading them*.
-​
-Three level of compression are available: 
-​
-* Normal, a losseless compression algorithm. The image quality won't be altered at all.
-* Agressive, a lossy compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all
-* Ultra, our strongest compression method using a lossy algorithm.
+You already have a lots of unoptimized images? Not a problem, you will love the Bulk Optimizer to optimize all your existing images in one click.  
+​  
+Imagify can directly resize your images, **you won't have to lose time anymore on resizing your images before uploading them**.  
+​  
+Three level of compression are available:  
+​  
+- Normal, a losseless compression algorithm. The image quality won't be altered at all.  
+- Agressive, a lossy compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all.  
+- Ultra, our strongest compression method using a lossy algorithm.  
 ​
 With the backup option, you can change your mind whenever you want by restoring your images to their original version or optimize them to another compression level.
 
 = What our users think of Imagify? =
-
+  
 > "Imagify is an awesome tool that is powerful & easy to use. It's fast, rivals and surpasses other established plugins/software. Awesome!" — [Simon Harper](https://twitter.com/SRHDesign/status/663758140505235456)
 >
 > "If you want to "squeeze" your images as much as possible and "trim out" your website on the highest professional level... Imagify" — [Ivica Delic](https://twitter.com/Free_LanceTools/status/685503950909476865)
@@ -47,7 +47,7 @@ With the backup option, you can change your mind whenever you want by restoring 
 
 You can optimize for free 25mb of images (about 150 images) every month and you will receive a 75mb bonus upon registration.
 
-Need more? Have a look at our plans: <a href="https://imagify.io/plans">https://imagify.io/plans</a>
+Need more? Have a look at our plans: <a href="https://imagify.io/pricing">https://imagify.io/pricing</a>
 ​
 = What's next? =
 
@@ -117,6 +117,10 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 
+= 1.3.3 =
+* Bug Fix
+ * Fixed behavior in multisite networks where Imagify options would not get saved when the plugin wasn't network-activated, but only activated for specific sites within the network.
+ 
 = 1.3.2 =
 * NEW: Add Spanish translation
 * Bug Fix
