@@ -4,8 +4,9 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 /**
  * Set the default file permissions using FS_CHMOD_FILE from WP
  *
- * @param string $file The path to file 
  * @since 1.2
+ *
+ * @param string $file The path to file 
  * @return bool
  **/
 function imagify_chmod_file( $file ) {

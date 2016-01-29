@@ -190,7 +190,8 @@ function _imagify_admin_print_styles() {
 			'textToShare'					=> __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
 			'totalOptimizedAttachments'	    => imagify_count_optimized_attachments(),
 			'totalUnoptimizedAttachments'   => imagify_count_unoptimized_attachments(),
-			'totalErrorsAttachments' 	    => imagify_count_error_attachments()
+			'totalErrorsAttachments' 	    => imagify_count_error_attachments(),
+			'processing'                    => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
 		);
 		
 		if ( imagify_valid_key() ) {
