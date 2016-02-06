@@ -574,7 +574,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 /* checked mark aspect */
 .imagify-settings [type="checkbox"]:not(:checked) + label:after,
 .imagify-settings [type="checkbox"]:checked + label:after {
-	content: url('../images/check.svg');
+	content: url('../images/check-1.svg');
 	position: absolute;
 	top: 8px; left: -16px;
 	-webkit-transition: all .2s;
@@ -618,7 +618,7 @@ input[id^="imagify_sizes_"]:checked + label {
 }
 .imagify-settings .mini[type="checkbox"]:not(:checked) + label:after,
 .imagify-settings .mini[type="checkbox"]:checked + label:after {
-	content: url("../images/check-mini.svg");
+	content: url("../images/check-mini-1.svg");
 	left: -19px;
 	top: -1px;
 }
