@@ -150,7 +150,12 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		array(
 			'key'     => '_imagify_optimization_level',
 			'compare' => 'NOT EXISTS'
-		)
+		),
+		array(
+			'key'     => '_imagify_status',
+			'value'   => 'error',
+			'compare' => '='
+		),
 	);
 	
 	$args = array(
@@ -167,7 +172,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$data               = array();
 	$query              = new WP_Query( $args );
 	$ids                = $query->posts;
-	
+
 	// Save the optimization level in a transient to retrieve it later during the process
 	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
 	
