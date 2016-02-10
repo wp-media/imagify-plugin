@@ -1,13 +1,13 @@
 === Imagify Image Optimizer ===
 Contributors: wp_media
-Tags: image optimizer, image optimiser, optimize, optimise, images, media, performance, seo, faster loading times, smushit, smush.it, compress, kraken-image-optimizer, tinypng, tinyjpeg, pngquant, jpegmini, ewww, pagespeed, pagespeed insights, sitespeed, optimize gif, optimize jpeg, optimize png, optimize animated gif, svg, improve pagerank, gtmetrix speed test, picture,  optimization, image editor, pngout, upload speed, imagify, compression, compression image, webp, lossless, cwebp, media, jpegtran, image, image optimisation, image optimization, shrink, picture, photo, photos, optimize photos, compress, crunch, attachment, pictures, fast, image files, image quality, lossy, upload, kraken, resize, optipng, kraken image optimizer, photo optimization, gifsicle, krakenio, png, gmagick, image optimize, pdf, pdf optimisation, pdf optimization, optimize pdf, optimise pdf, shrink pdf, jpg, jpeg, jpg optimisation, jpg optimization, optimize jpg, optimise jpg, shrink jpg, gif, animated gif, optimize gif, optimise gif, optimizer, optimiser, compression, cruncher, image cruncher, compress png, compress jpg, compress jpeg, compress pdf, faster loading times, image optimiser, improve pagerank, optimise, optimize animated gif,  optimise jpeg, optimize jpeg, optimize, optimise png, optimise pdf, optimize pdf, tinyjpg, short pixel, shortpixel, woocommerce compatible, reduce image size, wordpress compression, wordpress image tool, yahoo, yahoo smush.it, retina, wp retina, wp retina x2
+Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.4.1
-Stable tag: 1.3.4
+Tested up to: 4.4.2
+Stable tag: 1.3.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Dramaticaly reduce image file sizes without loosing quality, make your website load faster, boost your SEO and save money on your bandwidth.
+Dramatically reduce image file sizes without loosing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
 == Description ==
 
@@ -28,7 +28,7 @@ Imagify can directly resize your images, **you won't have to lose time anymore o
 ​  
 Three level of compression are available:  
 ​  
-- Normal, a losseless compression algorithm. The image quality won't be altered at all.  
+- Normal, a lossless compression algorithm. The image quality won't be altered at all.  
 - Agressive, a lossy compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all.  
 - Ultra, our strongest compression method using a lossy algorithm.  
 ​
@@ -67,6 +67,7 @@ Our mission is to improve the web, we are making it faster with <a href="http://
 
 = Related Plugins =
 * <a href="http://wp-rocket.me">WP Rocket</a>: Best caching plugin to speed-up your WordPress website.
+* <a href="https://wordpress.org/plugins/rocket-lazy-load/">Rocket Lazy Load</a>: Best Lazy Load script to reduce the number of HTTP requests and improves the websites loading time.
 
 == Installation ==
 
@@ -83,6 +84,10 @@ Our mission is to improve the web, we are making it faster with <a href="http://
 
 == Frequently Asked Questions ==
 
+= Which formats can be optimized? =
+
+Imagify can optimize jpg, png and gif (whether animated or not) formats.
+
 = Can I use the plugin with a free account? =
 
 Absolutely. You are limited to a quota of 25 MB of images per month with a free account. Once this quota is reached, you cannot optimize new images until your quota is renewed or you purchase credits.
@@ -95,6 +100,14 @@ You can use the plugin on as many sites as you wish. The only limit is the optim
 
 Absolutely. Most of the time, Imagify will still be able to optimize your images even if you have already compressed them with another tool.
 
+= What is the difference between the Normal, Aggressive and Ultra compression levels? =
+
+Normal compression is a "lossless" optimization. This means there is no loss of image quality. Aggressive and Ultra compression are more powerful, so the picture quality will be somewhat reduced. The weight of the image will be much less.
+
+= Is the EXIF data of images removes? =
+
+By default EXIF data is removed. It is however possible to keep it by enabling the option.
+
 = Will the original images be deleted? =
 
 No. Imagify automatically replaces the images with an optimized image. The backup option allows you to keep the original images and restore them with one click.
@@ -102,6 +115,10 @@ No. Imagify automatically replaces the images with an optimized image. The backu
 = Is it possible to re-optimize images with a different level? =
 
 Yes. By activating the backup option in the plugin, you can re-optimize each image with a different compression level.
+
+= If I use Imagify, do I need to continue optimizing and resizinf my images with Photoshop? =
+
+Do not waste your time resizing and optimizing your images in Photoshop. Imagify takes care of everything!
 
 = What happens when the plugin is disabled? =
 
@@ -116,6 +133,14 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+
+= 1.3.5.2 =
+* Regression Fix
+ * Check mark displayed better on certain settings pages
+
+= 1.3.5 =
+* Bug Fix
+ * Check box display issue fixed on Imagify settings page: SVG Icons cleaning
 
 = 1.3.4 =
 * NEW: Add Italian translation
