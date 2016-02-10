@@ -252,6 +252,17 @@ jQuery(function($){
 				})
 				.run();
 			}
+		})
+		.fail(function () {
+			swal({
+				title: imagifyBulk.getUnoptimizedImagesErrorTitle,
+				text: imagifyBulk.getUnoptimizedImagesErrorText,
+				type: "error",
+				customClass: "imagify-sweet-alert"
+			},
+			function(){
+				location.reload();
+			});
 		});
 	});
 
