@@ -134,6 +134,19 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 
+= 1.3.6 =
+
+* Improvement
+ * Optimize attachments resized with the WordPress editor tool
+ * Compatibility with the "Replace the file, use new file name and update all links" option from "Enable Media Replace" plugin
+ * Add a notice message during the Bulk Optimization if the quota is consumed
+* Bug Fix
+ * No freeze anymore during the Bulk Optimization if an unknown error occurred with an image
+ * Add a notice message if we can't get all unoptimized images during the Bulk Optimization process
+ * Fix PHP Warning: set_time_limit(): Cannot set time limit in safe mode in ../inc/admin/ajax.php on line 137
+* Regression Fix 
+ * Get all attachments with the message "You've consumed all your data" during the Bulk Optimization process to be able to optimize them
+ 
 = 1.3.5.2 =
 * Regression Fix
  * Check mark displayed better on certain settings pages
