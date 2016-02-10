@@ -189,10 +189,10 @@ jQuery(function($){
 
 					} else {
 						error_class     = 'error';
-						error_dashincon = 'dismiss';
+						error_dashicon  = 'dismiss';
 						error_message   = 'Error';
 
-						if ( data.error.indexOf("You've consumed all your data") ) {
+						if ( data.error.indexOf("You've consumed all your data") >= 0 ) {
 							swal({
 								title: imagifyBulk.overQuotaTitle,
 								text: imagifyBulk.overQuotaText,
@@ -205,7 +205,7 @@ jQuery(function($){
 							});
 						}
 						
-						if ( data.error.indexOf("This image is already compressed") ) {
+						if ( data.error.indexOf("This image is already compressed") >=0 ) {
 							error_class    = 'warning';
 							error_dashicon = 'warning';
 							error_message  = 'Notice';
