@@ -7,8 +7,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @since 1.0
  */
 add_action( 'attachment_submitbox_misc_actions', '_imagify_attachment_submitbox_misc_actions', PHP_INT_MAX );
-function _imagify_attachment_submitbox_misc_actions()
-{
+function _imagify_attachment_submitbox_misc_actions() {
 	/** This filter is documented in inc/admin/options.php */
 	if ( current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
 		global $post;
@@ -27,6 +26,11 @@ function _imagify_attachment_submitbox_misc_actions()
 		} else {
 			$url = get_imagify_admin_url( 'manual-upload', $post->ID );
 		printf( '<div class="misc-pub-section misc-pub-imagify"><a class="button-primary" href="%s">%s</a></div>', $url, __( 'Optimize', 'imagify' ) );
+		}
+
+		if ( $attachment->is_optimized() ) {
+			echo '<input id="imagify-full-original" type="hidden" value="' . $attachment->get_backup_url() . '">';
+			echo '<input id="imagify-full-original-size" type="hidden" value="' . $attachment->get_original_size() . '">';
 		}
 	}
 }

@@ -113,6 +113,7 @@ jQuery(function($){
 			var the_target = $(this).attr('href') || $(this).data('target');
 
 			$( the_target ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex').addClass('modal-is-open');
+			$('body').addClass('imagify-modal-is-open');
 
 			return false;
 		});
@@ -120,6 +121,7 @@ jQuery(function($){
 		// on click on close button
 		$('.imagify-modal').find('.close-btn').on('click', function(){
 			$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true').removeClass('modal-is-open');
+			$('body').removeClass('imagify-modal-is-open');
 		})
 		.on('blur', function(){
 			var $modal = $(this).closest('.imagify-modal');

@@ -47,6 +47,21 @@ class Imagify_Attachment {
 
 		return false;
 	}
+	
+	/**
+	 * Get the attachment backup URL.
+	 *
+	 * @since 1.4
+	 *
+	 * @access public
+	 * @return string|false
+	 */
+	public function get_backup_url() {
+		$backup_path = $this->get_backup_path();
+		$backup_url  = str_replace( ABSPATH, site_url( '/' ), $backup_path );
+		
+		return $backup_url;
+	}
 
 	/**
 	 * Get the attachment optimization data.

@@ -1,3 +1,6 @@
+body.imagify-modal-is-open {
+	overflow: hidden;
+}
 .imagify-plugins-error {
 	overflow:hidden;
 	padding-left:20px;
@@ -267,7 +270,8 @@ td .imagify-chart {
 }
 .imagify-settings .button,
 .imagify-welcome .button,
-.imagify-notice .button {
+.imagify-notice .button,
+.imagify-button-primary.imagify-button-primary {
 	height: auto;
 	padding: 8px 20px;
 	border: 0 none;
@@ -275,6 +279,7 @@ td .imagify-chart {
 	font-weight: 600;
 	box-shadow: 0 3px 0 rgba(0, 0, 0, .15);
 }
+
 .imagify-notice .button-mini {
 	padding: 2px 10px;
 	font-size: 13px;
@@ -312,19 +317,33 @@ td .imagify-chart {
 	vertical-align: middle;
 }
 .imagify-settings .button-primary.button-primary,
-.imagify-welcome .button-primary.button-primary {
+.imagify-welcome .button-primary.button-primary,
+.imagify-button-primary.imagify-button-primary {
 	background: #40B1D0;
 	color: #FFF;
 	box-shadow: 0 3px 0 rgba(51, 142, 166, 1);
-	text-shadow: 0 -1px 1px #006799, 1px 0 1px #006799, 0 1px 1px #006799, -1px 0 1px #006799
+	text-shadow: 0 -1px 1px #006799, 1px 0 1px #006799, 0 1px 1px #006799!important;
 }
 .imagify-settings .button-primary:hover,
 .imagify-settings .button-primary:focus,
 .imagify-welcome .button-primary:hover,
-.imagify-welcome .button-primary:focus {
+.imagify-welcome .button-primary:focus,
+.imagify-button-primary.imagify-button-primary:hover,
+.imagify-button-primary.imagify-button-primary:focus {
 	background: rgb(51, 142, 166);
 	box-shadow: 0 3px 0 rgb(31, 122, 146);
 }
+
+/* exception */
+.wp_attachment_image .imagify-button-primary {
+	float: left;
+	padding: 0 10px 1px;
+	margin: 0 5px 2px 0;
+	font-size: 13px;
+	line-height: 26px;
+	box-shadow: 0 3px 0 rgba(51, 142, 166, 1);
+}
+
 .imagify-settings input[type="text"] {
 	color: #4A4A4A;
 	font-weight: 600;

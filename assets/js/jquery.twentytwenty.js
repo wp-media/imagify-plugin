@@ -316,4 +316,100 @@
 
 	});
 
+	// Imagify comparison inside Media post visualization
+	
+	if ( $('.post-php').find('.wp_attachment_image').find('.thumbnail').length > 0 ) {
+		var $ori_parent = $('.post-php').find('.wp_attachment_image'),
+			$thumbnail	= $ori_parent.find('.thumbnail'),
+			thumb		= { src: $thumbnail.prop('src'), width: $thumbnail.width(), height: $thumbnail.height() },
+			ori_source	= { src: $('#imagify-full-original').val(), size: $('#imagify-full-original-size').val() };
+
+		// if shown image > 300, use twentytwenty
+		if ( thumb.width > 300 && $('#imagify-full-original').length > 0 ) {
+
+			var imgs_loaded = 0,
+				filesize	= $('.misc-pub-filesize').find('strong').text(),
+				saving		= $('.imagify-data-item').find('.imagify-chart-value').text();
+
+			// create button to trigger
+			$('[id^="imgedit-open-btn-"]').before('<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-visual-comparison" id="imagify-start-comparison">' + imagifyTTT.labels.compare + '</button>')
+
+			// create modal box
+			$ori_parent.append(''
+				+ '<div id="imagify-visual-comparison" class="imagify-modal" aria-hidden="true">'
+					+ '<div class="imagify-modal-content loading">'
+						+ '<p class="imagify-comparison-title">' + imagifyTTT.title + '</p>'
+						+ '<div class="twentytwenty-container">'
+							+ '<img class="imagify-img-before" alt="" width="' + thumb.width + '" height="' + thumb.height + '">'
+							+ '<img class="imagify-img-after" alt="" width="' + thumb.width + '" height="' + thumb.height + '">'
+						+ '</div>'
+						+ '<div class="imagify-comparison-levels">'
+							+ '<div class="imagify-c-level imagify-level-original go-left">'
+								+ '<p class="imagify-c-level-row">'
+									+ '<span class="label">' + imagifyTTT.labels.filesize + '</span>'
+									+ '<span class="value level">' + ori_source.size + '</span>'
+								+ '</p>'
+							+ '</div>'
+							+ '<div class="imagify-c-level imagify-level-optimized go-right">'
+								+ '<p class="imagify-c-level-row">'
+									+ '<span class="label">' + imagifyTTT.labels.filesize + '</span>'
+									+ '<span class="value level">' + filesize + '</span>'
+								+ '</p>'
+								+ '<p class="imagify-c-level-row">'
+									+ '<span class="label">' + imagifyTTT.labels.saving + '</span>'
+									+ '<span class="value"><span class="imagify-chart"><span class="imagify-chart-container"><canvas id="imagify-consumption-chart-normal" width="15" height="15"></canvas></span></span><span class="imagify-chart-value">' + saving + '</span>%</span>'
+								+ '</p>'
+							+'</div>'
+						+ '</div>'
+						+ '<button class="close-btn absolute" type="button"><i aria-hidden="true" class="dashicons dashicons-no-alt"></i><span class="screen-reader-text">' + imagifyTTT.labels.compare + '</span></button>'
+					+ '</div>'
+				+ '</div>'
+			);
+
+			$('#imagify-start-comparison').on('click.imagify', function(){
+
+				$( $(this).data('target') ).find('.imagify-modal-content').css({
+					'width'		: ($(window).outerWidth()*0.95) + 'px',
+					'max-width'	: thumb.width
+				});
+
+				// load before img
+				$('.imagify-img-before').on('load', function(){
+					imgs_loaded++;
+				}).attr('src', ori_source.src);
+
+				// load after img
+				$('.imagify-img-after').on('load', function(){
+					imgs_loaded++;
+				}).attr('src', thumb.src);
+
+				var $tt = $('.twentytwenty-container'),
+					check_load = setInterval( function(){
+
+						if ( imgs_loaded === 2 ) {
+							$tt.twentytwenty({
+								handlePosition: 0.3,
+								orientation: 	'horizontal',
+								labelBefore: 	imagifyTTT.labels.original_l,
+								labelAfter: 	imagifyTTT.labels.optimized_l
+							}, function(){
+								if ( ! $tt.closest('.imagify-modal-content').hasClass('loaded') ) {
+									$tt.closest('.imagify-modal-content').removeClass('loading').addClass('loaded');
+									draw_me_a_chart( $('.imagify-level-optimized').find('.imagify-chart').find('canvas') );
+								}
+							});
+							clearInterval( check_load );
+							check_load = null;
+						}
+					}, 75 );
+
+			});
+		}
+		// else put images next to next
+		else {
+
+		}
+
+	}
+
 })(window, jQuery);
