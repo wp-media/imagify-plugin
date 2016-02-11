@@ -114,6 +114,18 @@ jQuery(function($){
 		check_modal();
 	}
 
+	// On media clicked
+	$('#insert-media-button').on('click.imagify', function() {
+		var waitContent = setInterval( function() {
+			if ( $('.media-frame-content').find('.attachments').length > 0 ) {
+				$('.media-frame-content').find('.attachments').on('click.imagify', '.attachment', function(){
+					check_modal();
+				});
+				clearInterval(waitContent);
+			}
+		}, 100);
+	});
+
 	/*
 	 * Mini chart
 	 *
