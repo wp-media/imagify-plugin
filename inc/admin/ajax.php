@@ -134,7 +134,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		wp_send_json_error( array( 'message' => 'over-quota' ) );
 	}
 	
-	set_time_limit( 0 );
+	@set_time_limit( 0 );
 	
 	$optimization_level = $_GET['optimization_level'];
 	$optimization_level = ( -1 != $optimization_level ) ? $optimization_level : get_imagify_option( 'optimization_level', 1 );
@@ -150,7 +150,12 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		array(
 			'key'     => '_imagify_optimization_level',
 			'compare' => 'NOT EXISTS'
-		)
+		),
+		array(
+			'key'     => '_imagify_status',
+			'value'   => 'error',
+			'compare' => '='
+		),
 	);
 	
 	$args = array(
@@ -167,7 +172,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$data               = array();
 	$query              = new WP_Query( $args );
 	$ids                = $query->posts;
-	
+
 	// Save the optimization level in a transient to retrieve it later during the process
 	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
 	

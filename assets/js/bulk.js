@@ -189,10 +189,23 @@ jQuery(function($){
 
 					} else {
 						error_class     = 'error';
-						error_dashincon = 'dismiss';
+						error_dashicon  = 'dismiss';
 						error_message   = 'Error';
 
-						if ( data.error.indexOf("This image is already compressed") ) {
+						if ( data.error.indexOf("You've consumed all your data") >= 0 ) {
+							swal({
+								title: imagifyBulk.overQuotaTitle,
+								text: imagifyBulk.overQuotaText,
+								type: "error",
+								customClass: "imagify-sweet-alert",
+								html: true,
+							},
+							function(){
+								location.reload();
+							});
+						}
+						
+						if ( data.error.indexOf("This image is already compressed") >=0 ) {
 							error_class    = 'warning';
 							error_dashicon = 'warning';
 							error_message  = 'Notice';
@@ -203,9 +216,7 @@ jQuery(function($){
 						
 						$('#attachment-'+data.image).after('<tr><td colspan="7"><span class="status-'+error_class+'">'+data.error+'</span></td></tr>');
 						
-						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-'+error_class+'"><span class="dashicons dashicons-'+error_dashicon+'"></span>'+error_message+'</span>');
-						
-						
+						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-'+error_class+'"><span class="dashicons dashicons-'+error_dashicon+'"></span>'+error_message+'</span>');			
 					}
 
 					overviewDoughnut.segments[0].value = data.global_unoptimized_attachments;
@@ -252,6 +263,17 @@ jQuery(function($){
 				})
 				.run();
 			}
+		})
+		.fail(function () {
+			swal({
+				title: imagifyBulk.getUnoptimizedImagesErrorTitle,
+				text: imagifyBulk.getUnoptimizedImagesErrorText,
+				type: "error",
+				customClass: "imagify-sweet-alert"
+			},
+			function(){
+				location.reload();
+			});
 		});
 	});
 

@@ -178,6 +178,8 @@ function _imagify_admin_print_styles() {
 			'waitTitle' 	=> __( 'Please wait...', 'imagify' ),
 			'waitText'  	=> __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
 			'waitImageUrl'  => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
+			'getUnoptimizedImagesErrorTitle'    => __( 'Oops, There is something wrong!', 'imagify' ),
+			'getUnoptimizedImagesErrorText'     => __( 'An unknow error occurred when we tried to get all your unoptimized images. Try again and if the issue still persist, please contact us!', 'imagify' ),
 			'overviewChartLabels'			=> array( 
 				'optimized'   => __( 'Optimized', 'imagify' ),
 				'unoptimized' => __( 'Unoptimized', 'imagify' ),
