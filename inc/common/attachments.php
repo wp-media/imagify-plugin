@@ -37,11 +37,12 @@ function _imagify_delete_backup_file( $post_id ) {
  * @since 1.3.6
  */
 add_action( 'shutdown', '_imagify_optimize_save_image_editor_file' );
-function _imagify_optimize_save_image_editor_file() {
+function _imagify_optimize_save_image_editor_file() {	
 	if ( isset( $_POST['action'], $_POST['do'], $_POST['postid'] )
 	   && 'image-editor' === $_POST['action']
 	   && check_ajax_referer( 'image_editor-' . $_POST['postid'] )
 	   && get_post_meta( $_POST['postid'], '_imagify_data', true )
+	   && 'open' !== $_POST['do']
 	) {
 		$attachment_id      = $_POST['postid'];
 		$optimization_level = get_post_meta( $attachment_id, '_imagify_optimization_level', true );
