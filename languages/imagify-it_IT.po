@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2016-01-29 11:40+0100\n"
-"PO-Revision-Date: 2016-01-29 12:20+0100\n"
+"POT-Creation-Date: 2016-02-11 09:40+0100\n"
+"PO-Revision-Date: 2016-02-11 09:46+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -31,11 +31,11 @@ msgstr "Ottimizzando…"
 msgid "Optimize"
 msgstr "Ottimizza"
 
-#: inc/admin/ajax.php:407
+#: inc/admin/ajax.php:412
 msgid "Oops, It's almost over!"
 msgstr "Ops, quasi finito!"
 
-#: inc/admin/ajax.php:408
+#: inc/admin/ajax.php:413
 #, php-format
 msgid ""
 "You have almost used all your credit.%sDon't forget to upgrade your "
@@ -44,16 +44,16 @@ msgstr ""
 "Hai usato quasi tutto il tuo credito.%sNon dimenticare di aggiornare il tuo "
 "abbonamento per continuare a ottimizzare le tue immagini."
 
-#: inc/admin/ajax.php:409 inc/admin/ui/bulk.php:22
+#: inc/admin/ajax.php:414 inc/admin/ui/bulk.php:22
 msgid "View My Subscription"
 msgstr "Vedere il mio abbonamento"
 
-#: inc/admin/ajax.php:417 inc/admin/enqueue.php:186
+#: inc/admin/ajax.php:422 inc/admin/enqueue.php:188
 #: inc/admin/ui/notices.php:251
 msgid "Oops, It's Over!"
 msgstr "Ops, finito!"
 
-#: inc/admin/ajax.php:418 inc/admin/enqueue.php:201
+#: inc/admin/ajax.php:423 inc/admin/enqueue.php:204
 #: inc/admin/ui/notices.php:253
 #, php-format
 msgid ""
@@ -63,24 +63,24 @@ msgstr ""
 "Hai consumato tutto il tuo credito per questo mese. Avrai di nuovo <strong>"
 "%s il %s</strong>."
 
-#: inc/admin/ajax.php:419
+#: inc/admin/ajax.php:424
 msgid "Upgrade My Subscription"
 msgstr "Aggiornare il mio abbonamento"
 
-#: inc/admin/ajax.php:438 inc/admin/ui/bulk.php:16
+#: inc/admin/ajax.php:443 inc/admin/ui/bulk.php:16
 msgid "Account status"
 msgstr "Stato del mio account"
 
-#: inc/admin/ajax.php:439 inc/admin/ui/bulk.php:17
+#: inc/admin/ajax.php:444 inc/admin/ui/bulk.php:17
 msgid "Your subscription:"
 msgstr "Il tuo abbonamento:"
 
-#: inc/admin/ajax.php:447 inc/admin/ui/bulk.php:47
+#: inc/admin/ajax.php:452 inc/admin/ui/bulk.php:47
 #, php-format
 msgid "You have %s space credit left"
 msgstr "Ti rimangono %s di spazio"
 
-#: inc/admin/ajax.php:459
+#: inc/admin/ajax.php:464
 msgid "View my subscription"
 msgstr "Vedere il mio abbonamento"
 
@@ -170,28 +170,41 @@ msgstr ""
 "Stiamo cercando di ottenere le immagini non ottimizzate, il che potrebbe "
 "richiedere del tempo in base al numero di immagini."
 
-#: inc/admin/enqueue.php:182 inc/admin/ui/bulk.php:257 inc/admin/upload.php:38
+#: inc/admin/enqueue.php:181
+msgid "Oops, There is something wrong!"
+msgstr "Ups, qualcosa è andato storto!"
+
+#: inc/admin/enqueue.php:182
+msgid ""
+"An unknow error occurred when we tried to get all your unoptimized images. "
+"Try again and if the issue still persist, please contact us!"
+msgstr ""
+"C’è stato un errore inaspettato mentre cercavamo di raccogliere tutte le tue "
+"immagini non ottimizzate. Prova di nuovo e, se il problema persiste, "
+"contattaci per favore!"
+
+#: inc/admin/enqueue.php:184 inc/admin/ui/bulk.php:257 inc/admin/upload.php:38
 msgid "Optimized"
 msgstr "Ottimizzato"
 
-#: inc/admin/enqueue.php:183 inc/admin/upload.php:39
+#: inc/admin/enqueue.php:185 inc/admin/upload.php:39
 msgid "Unoptimized"
 msgstr "Non ottimizzato"
 
-#: inc/admin/enqueue.php:184
+#: inc/admin/enqueue.php:186
 msgid "Error"
 msgstr "Errore"
 
-#: inc/admin/enqueue.php:187
+#: inc/admin/enqueue.php:189
 msgid "Hold on!"
 msgstr "Resisti!"
 
-#: inc/admin/enqueue.php:188
+#: inc/admin/enqueue.php:190
 msgid "All your images have been optimized by Imagify. Congratulations!"
 msgstr ""
 "Tutte le tue immagini sono state ottimizzate da Imagify. Congratulazioni!"
 
-#: inc/admin/enqueue.php:190
+#: inc/admin/enqueue.php:192
 #, php-format
 msgid ""
 "Discover @imagify, the new compression tool to optimize your images for "
@@ -200,7 +213,11 @@ msgstr ""
 "Scopri @imagify, il nuovo strumento di compressione per ottimizzare le tue "
 "immagini gratuitamente. Ho risparmiato %1$s di %2$s!"
 
-#: inc/admin/enqueue.php:198 inc/admin/enqueue.php:201
+#: inc/admin/enqueue.php:196
+msgid "Imagify is still processing. Are you sure you want to leave this page?"
+msgstr ""
+
+#: inc/admin/enqueue.php:201 inc/admin/enqueue.php:204
 #: inc/admin/ui/notices.php:253
 #, php-format
 msgid ""
@@ -210,7 +227,7 @@ msgstr ""
 "Per continuare a ottimizzare le tue immagini, entra nel tuo account Imagify "
 "per %scomprare un pack o sottoscrivere un abbonamento %s."
 
-#: inc/admin/enqueue.php:201
+#: inc/admin/enqueue.php:204
 msgid "F j, Y"
 msgstr "F j, Y"
 
@@ -911,6 +928,11 @@ msgstr "%s non è riscrivibile"
 #, php-format
 msgid "Skipped (%s), image not found."
 msgstr "Abbiamo saltato (%s), immagine non trovata."
+
+#: inc/vendors/wp-background-process.php:395
+#, php-format
+msgid "Every %d Minutes"
+msgstr ""
 
 #. Plugin URI of the plugin/theme
 msgid "https://wordpress.org/plugins/imagify/"
