@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 /*
- * Get the optimization data list for a specific attachement.
+ * Get the optimization data list for a specific attachment.
  *
  * @since 1.0
  *
@@ -20,11 +20,11 @@ function get_imagify_attachment_optimization_text( $attachment_id ) {
 	$reoptimize_output = '';
 
 	if ( $error = get_imagify_attachment_error_text( $attachment_id ) ) {
+		$error = ( 'post.php' === $pagenow ) ? $output_before . $error . $output_after : $error;
 		return $error;
 	}
 
-	$optimization_level = ( 1 == $data['stats']['aggressive'] ) ? __( 'Aggressive', 'imagify' ) : __( 'Normal', 'imagify' );
-
+	$optimization_level = $attachment->get_optimization_level_label();
 
 	if ( imagify_valid_key() && $attachment->has_backup() ) {
 		$reoptimize_link   = get_imagify_attachment_reoptimize_link( $attachment_id );
@@ -68,12 +68,13 @@ function get_imagify_attachment_optimization_text( $attachment_id ) {
 	// actions section
 	$output .= ( 'post.php' != $pagenow ) ? '' : $output_before;
 	$output .= '<div class="imagify-datas-actions-links">';
-
+	$output .= $reoptimize_output;
+	
 	if ( $attachment->has_backup() ) {
 		$class   = ( 'post.php' !== $pagenow  ) ? 'button-imagify-restore' : '';
 		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', $attachment_id ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Restoring...', 'imagify' ) . '"><span class="dashicons dashicons-image-rotate"></span>' . __( 'Restore Original', 'imagify' ) . '</a>';	
 	}
-	$output .= $reoptimize_output;
+	
 	$output .= '</div><!-- .imagify-datas-actions-links -->';
 	$output .= ( 'post.php' != $pagenow ) ? '' : $output_after;
 
@@ -113,14 +114,69 @@ function get_imagify_attachment_reoptimize_link( $attachment_id ) {
 	global $pagenow;
 	
 	$attachment = new Imagify_Attachment( $attachment_id );
-	$level      = $attachment->get_optimization_level();
+	$level      = (int) $attachment->get_optimization_level();
+	$args		= array( 'attachment_id' => $attachment_id );
 	$output     = '';
 
 	if ( $attachment->has_backup() ) {
 		$class  = ( 'post.php' !== $pagenow  ) ? 'button-imagify-manual-override-upload' : '';
-		$level  = ( (bool) ! $level ) ? __( 'Aggressive', 'imagify' ) : __( 'Normal', 'imagify' );
-		$output = ( get_imagify_option( 'backup' ) ) ? '<a href="' . get_imagify_admin_url( 'manual-override-upload', $attachment_id ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), $level ) . '</a>' : '';
+		
+		// Re-optimize to Ultra
+		if ( 1 === $level || 0 === $level ) {
+			$args['optimization_level'] = 2;
+			$output .= '<a href="' . get_imagify_admin_url( 'manual-override-upload', $args ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Ultra', 'imagify' ) ) . '</a>';
+		}
+		
+		// Re-optimize to Aggressive
+		if ( 2 === $level || 0 === $level ) {
+			$args['optimization_level'] = 1;
+			$output .= '<a href="' . get_imagify_admin_url( 'manual-override-upload', $args ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Aggressive', 'imagify' ) ) . '</a>';
+		}
+		
+		// Re-optimize to Normal
+		if ( 2 === $level || 1 === $level ) {
+			$args['optimization_level'] = 0;
+			$output .= '<a href="' . get_imagify_admin_url( 'manual-override-upload', $args ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"><span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Normal', 'imagify' ) ) . '</a>';
+		}
+		
 	}
 
+	return $output;
+}
+
+/*
+ * Get all data to diplay for a specific attachment.
+ *
+ * @since 1.2
+ *
+ * @param 	int     $attachment_id  The attachement ID.
+ * @return  string  The output to print.
+ */
+function get_imagify_media_column_content( $attachment_id ) {
+	$output      	= '';
+	$attachment     = new Imagify_Attachment( $attachment_id );
+	$attachment_ext = $attachment->get_extension();
+
+	// Check if the attachment extension is allowed
+	if ( ! wp_attachment_is_image( $attachment_id )  ) {
+		$output = sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
+		return $output;
+	}
+
+	// Check if the API key is valid
+	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
+		$output .= __( 'Invalid API key', 'imagify' );
+		$output .= '<br/>';
+		$output .= '<a href="' . get_imagify_admin_url( 'options-general' ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
+		return $output;
+	}
+
+	// Check if the image was optimized
+	if ( ! $attachment->is_optimized() && ! $attachment->has_error() ) {
+		$output .= '<a id="imagify-upload-' . $attachment_id . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment_id ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+		return $output;
+	}
+
+	$output .= get_imagify_attachment_optimization_text( $attachment_id );
 	return $output;
 }

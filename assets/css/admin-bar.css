@@ -1,0 +1,108 @@
+#wpadminbar #wp-admin-bar-imagify-profile * {
+	line-height: 1.5;
+	white-space: initial;
+}
+#wpadminbar #wp-admin-bar-imagify .ab-submenu {
+	padding-bottom: 0;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .ab-item {
+	height: auto;
+	padding: 0 13px;
+}
+#wpadminbar #wp-admin-bar-imagify-profile {
+	min-width: 200px;
+	padding: 15px 0 10px;
+	margin-top: 0.7em;
+	background: #222;
+}
+#wp-admin-bar-imagify .dashicons {
+	font-family: "dashicons";
+	font-size: 18px;
+	vertical-align: middle;
+	margin: 0 5px 0 0;
+}
+#wp-admin-bar-imagify .button-text {
+	display: inline-block;
+	vertical-align: middle;
+}
+#wp-admin-bar-imagify .imagify-abq-row {
+	display: table;
+	width: 100%;
+}
+#wp-admin-bar-imagify .imagify-abq-row + .imagify-abq-row {
+	margin-top: .75em;
+}
+#wp-admin-bar-imagify .imagify-abq-row > * {
+	display: table-cell;
+}
+#wp-admin-bar-imagify-profile .imagify-meteo-icon {
+	padding-right: 7px;
+}
+#wp-admin-bar-imagify-profile .imagify-meteo-icon img {
+	width: 37px;
+}
+#wp-admin-bar-imagify-profile .imagify-meteo-title {
+	font-size: 17px;
+}
+#wp-admin-bar-imagify-profile .imagify-meteo-subs {
+	color: #72889F;
+}
+#wpadminbar #wp-admin-bar-imagify-profile strong {
+	font-weight: bold;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-user-plan,
+#wpadminbar #wp-admin-bar-imagify-profile a {
+	padding: 0;
+	color: #40B1D0;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-account-link {
+	display: table;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-account-link > *  {
+	display: table-cell;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-space-left {
+	max-width: 210px;
+	min-width: 210px;
+	width: 210px;
+}
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-space-left p {
+	font-size: 12px;
+}
+#wp-admin-bar-imagify-profile .imagify-error,
+#wp-admin-bar-imagify-profile .imagify-warning {
+	padding: 10px;
+	margin: 0 -13px -13px;
+}
+#wp-admin-bar-imagify-profile .imagify-error p + p,
+#wp-admin-bar-imagify-profile .imagify-warning p + p {
+	margin-top: .5em;
+}
+#wp-admin-bar-imagify-profile .imagify-error p + p + p,
+#wp-admin-bar-imagify-profile .imagify-warning p + p + p {
+	margin-top: 1em;
+}
+
+#wpadminbar #wp-admin-bar-imagify-profile .btn-ghost {
+	display: inline-block;
+	height: auto;
+	padding: 7px 10px;
+	border: 1px solid #FFF;
+	text-align: center;
+	background: transparent;
+	color: #FFF;
+	border-radius: 3px;
+	transition: all .275s;
+}
+
+#wpadminbar #wp-admin-bar-imagify-profile .btn-ghost:hover,
+#wpadminbar #wp-admin-bar-imagify-profile .btn-ghost:focus {
+	background: #FFF;
+	color: #888;
+}
+
+#wpadminbar .imagify-warning * {
+	background: #f5a623;
+	color: #FFF;
+	text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}

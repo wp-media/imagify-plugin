@@ -49,16 +49,50 @@ jQuery(function($){
 	});
 
 	/**
-	 * Auto check on options-line input focus
+	 * Check the boxes by clicking "labels" (aria-describedby items)
 	 */
-	if ( $('.imagify-options-line').length > 0 ) {
+	$('.imagify-options-line').css('cursor', 'pointer').on('click', function(e){
+		if ( e.target.nodeName === 'INPUT' ) {
+			return;
+		}
+		$('input[aria-describedby="' + $(this).attr('id') + '"]').trigger('click');
+		return false;
+	});
 
-		$('.imagify-options-line').find('input').on('focus', function(){
-			var $checkbox = $(this).closest('.imagify-options-line').prev('label').prev('input');
-			if ( ! $checkbox[0].checked ) {
-				$checkbox.prop('checked', true);
-			}
-		});
+	$('.imagify-settings th span').on('click', function(e){
+		if ( $(this).parent().next('td').find('input:checkbox').length === 1 ) {
+			$(this).parent().next('td').find('input:checkbox').trigger('click');
+		}
+	})
 
-	}
+	/**
+	 * Auto check on options-line input value change
+	 */
+	$('.imagify-options-line').find('input').on('change focus', function(){
+		var $checkbox = $(this).closest('.imagify-options-line').prev('label').prev('input');
+		if ( ! $checkbox[0].checked ) {
+			$checkbox.prop('checked', true);
+		}
+	});
+
+	/**
+	 * Imagify Backup alert
+	 */
+	$('.imagify-settings-section').find('#backup').on('change', function(){
+		if ( ! $(this).is(':checked') ) {
+			var $_this = $(this);
+			swal({
+				title: imagifyOptions.noBackupTitle,
+				text: imagifyOptions.noBackupText,
+				type: "info",
+				customClass: "imagify-sweet-alert",
+				showCancelButton: true
+			}, function(isConfirm){
+				if ( ! isConfirm ) {
+					$_this.prop('checked', true);
+				}
+			});
+		}
+	});
+
 });

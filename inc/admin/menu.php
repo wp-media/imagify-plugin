@@ -21,7 +21,5 @@ function _imagify_settings_menu() {
  */
 add_action( 'admin_menu', '_imagify_bulk_optimization_menu' );
 function _imagify_bulk_optimization_menu() {
-	if ( imagify_valid_key() ) {
-		add_media_page( __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), apply_filters( 'imagify_capacity', 'manage_options' ), IMAGIFY_SLUG . '-bulk-optimization', '_imagify_display_bulk_page' );
-	}
+	add_media_page( __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), apply_filters( 'imagify_capacity', 'manage_options' ), IMAGIFY_SLUG . '-bulk-optimization', '_imagify_display_bulk_page' );
 }

@@ -100,10 +100,34 @@ class Imagify_Attachment {
 	 * @return int
 	 */
 	public function get_optimization_level() {
-		$stats  = $this->get_stats_data();
-		$level  = ( isset( $stats['aggressive'] ) ) ? $stats['aggressive'] : get_imagify_option( 'optimization_level', 1 );
+		return get_post_meta( $this->id, '_imagify_optimization_level', true );
+	}
+	
+	/**
+	 * Get the attachment optimization level label.
+	 *
+	 * @since 1.2
+	 *
+	 * @access public
+	 * @return string
+	 */
+	public function get_optimization_level_label() {
+		$label = '';
+		$level = $this->get_optimization_level();
+		
+		switch( $level ) {
+			case 2:
+				$label = __( 'Ultra', 'imagify' );
+			break;
+			case 1:
+				$label = __( 'Aggressive', 'imagify' );
+			break;
+			case 0:
+				$label = __( 'Normal', 'imagify' );
+			break;
+		}
 
-		return (int) $level;
+		return $label;
 	}
 
 	/**
@@ -234,6 +258,18 @@ class Imagify_Attachment {
 	}
 
 	/**
+	 * Check if the attachment is already optimized (before Imagify).
+	 *
+	 * @since 1.1.6
+	 *
+	 * @access public
+	 * @return bool   True if the attachment is optimized.
+	 */
+	public function is_already_optimized() {
+		return ( 'already_optimized' === $this->get_status() ) > 0;
+	}
+	
+	/**
 	 * Check if the attachment is optimized.
 	 *
 	 * @since 1.0
@@ -288,6 +324,30 @@ class Imagify_Attachment {
 		$has_error = $this->get_size_data( 'full', 'error' );
 		return ( is_string( $has_error ) ) > 0;
 	}
+	
+	/**
+	 * Update the metadata size of the attachment
+	 *
+	 * @since 1.2
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function update_metadata_size() {
+		if ( ! wp_attachment_is_image( $this->id ) ) {
+			return false;
+		}
+		
+		$size = @getimagesize( $this->get_original_path() );
+		
+		if ( isset( $size[0], $size[1] ) ) {
+			$metadata           = wp_get_attachment_metadata( $this->id );
+			$metadata['width']  = $size[0];
+			$metadata['height'] = $size[1];
+			
+			wp_update_attachment_metadata( $this->id, $metadata );
+		}
+	}
 
 	/**
 	 * Delete the backup file.
@@ -321,18 +381,27 @@ class Imagify_Attachment {
 	 */
 	static public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
 		if ( is_wp_error( $response ) ) {
+			$error        = $response->get_error_message();
+			$error_status = 'error';
+			
 			$data['sizes'][ $size ] = array(
 				'success' => false,
-				'error'   => $response->get_error_message()
+				'error'   => $error
 			);
-
+			
+			// Update the error status for the original size
 			if ( 'full' === $size ) {
 				update_post_meta( $id, '_imagify_data', $data );
-				update_post_meta( $id, '_imagify_status', 'error' );
-
+				
+				if ( false !== strpos( $error, 'This image is already compressed' ) ) {
+					$error_status = 'already_optimized';	
+				}
+				
+				update_post_meta( $id, '_imagify_status', $error_status );
+				
 				return false;
 			}
-		} else {
+		} else {			
 			$data['sizes'][ $size ] = array(
 				'success' 		 => true,
 				'file_url'		 => $url,
@@ -354,37 +423,35 @@ class Imagify_Attachment {
 	 * @since 1.0
 	 *
 	 * @access public
-	 * @param  int 	  $is_aggressive   The optimization level (1=aggressive, 0=normal)
-	 * @param  array  $metadata   	   The attachment meta data
-	 * @return array  $optimized_data  The optimization data
+	 * @param  int 	  $optimization_level   The optimization level (2=ultra, 1=aggressive, 0=normal)
+	 * @param  array  $metadata   	   		The attachment meta data
+	 * @return array  $optimized_data  		The optimization data
 	 */
-	public function optimize( $is_aggressive = null, $metadata = array() ) {		
-		$is_aggressive = ( is_null( $is_aggressive ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $is_aggressive;
+	public function optimize( $optimization_level = null, $metadata = array() ) {		
+		$optimization_level = ( is_null( $optimization_level ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
 
 		$id = $this->id;
 		$metadata      = ( (bool) $metadata ) ? $metadata : wp_get_attachment_metadata( $id );
 		$sizes         = ( isset( $metadata['sizes'] ) ) ? (array) $metadata['sizes'] : array();
 		$data          = array(
 			'stats' => array(
-				'aggressive'     => $is_aggressive,
-				'original_size'  => 0,
-				'optimized_size' => 0,
-				'percent'    	 => 0,
+				'original_size'      => 0,
+				'optimized_size'     => 0,
+				'percent'            => 0,
 			)
 		);
 
 		// Get file path & URL for original image
 		$attachment_path = $this->get_original_path();
 		$attachment_url  = $this->get_original_url();
-
-		// TO DO: use wp_attachment_is_image when we can optimize all image formats
-		//if ( ( $id || wp_attachment_is_image( $id ) === false ) {
-		if ( ! $id || ! in_array( $this->get_extension(), array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
+		
+		// Check if the attachment extension is allowed
+		if ( ! $id || ! wp_attachment_is_image( $id ) ) {
 			return;
 		}
 
 		// Check if the full size is already optimized
-		if ( $this->is_optimized() && ( $this->get_optimization_level() == $is_aggressive ) ) {
+		if ( $this->is_optimized() && ( $this->get_optimization_level() == $optimization_level ) ) {
 			return;
 		}
 
@@ -408,13 +475,23 @@ class Imagify_Attachment {
 		}
 		
 		// Optimize the original size 
-		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $is_aggressive, $resize );
+		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $optimization_level, $resize, get_imagify_option( 'exif', false ) );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
-
+		
+		// Save the optimization level
+		update_post_meta( $id, '_imagify_optimization_level', $optimization_level );
+		
 		if( (bool) ! $data ) {
 			return;
 		}
-
+		
+		// If we resized the original with success, we have to update the attachment metadata
+		// If not, WordPress keeps the old attachment size.		
+		if ( $do_resize && isset( $resize['width'] ) ) {
+			$this->update_metadata_size();
+		}
+		
+		// Optimize all thumbnails
 		if ( (bool) $sizes ) {
 			foreach ( $sizes as $size_key => $size_data ) {
 				// Check if this size has to be optimized
@@ -430,7 +507,7 @@ class Imagify_Attachment {
 				$thumbnail_url  = trailingslashit( dirname( $attachment_url ) ) . $size_data['file'];
 
 				// Optimize the thumbnail size
-				$response = do_imagify( $thumbnail_path, false, $is_aggressive );
+				$response = do_imagify( $thumbnail_path, false, $optimization_level );
 				$data     = $this->fill_data( $data, $response, $id, $thumbnail_url, $size_key );
 
 				/**
@@ -447,7 +524,7 @@ class Imagify_Attachment {
 				* @param bool    $is_aggressive   The optimization level
 				* @return array  $data  		  The new optimization data
 				*/
-				$data = apply_filters( 'imagify_fill_thumbnail_data', $data, $response, $id, $thumbnail_path, $thumbnail_url, $size_key, $is_aggressive );
+				$data = apply_filters( 'imagify_fill_thumbnail_data', $data, $response, $id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
 			}
 		}
 
@@ -480,6 +557,11 @@ class Imagify_Attachment {
 	 * @return void
 	 */
 	public function restore() {
+		// Stop the process if there is no backup file to restore
+		if ( ! $this->has_backup() ) {
+			return;
+		}
+		
 		$id              = $this->id;
 		$backup_path     = $this->get_backup_path();
 		$attachment_path = $this->get_original_path();
@@ -495,6 +577,7 @@ class Imagify_Attachment {
 
 		// Create the original image from the backup
 		@copy( $backup_path, $attachment_path );
+		imagify_chmod_file( $attachment_path );
 
 		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
 			require_once( ABSPATH . 'wp-admin/includes/image.php' );
@@ -506,7 +589,11 @@ class Imagify_Attachment {
 		// Remove old optimization data
 		delete_post_meta( $id, '_imagify_data' );
 		delete_post_meta( $id, '_imagify_status' );
-
+		delete_post_meta( $id, '_imagify_optimization_level' );
+		
+		// Restore the original size in the metadata
+		$this->update_metadata_size();
+		
 		/**
 		 * Fires after restoring an attachment.
 		 *

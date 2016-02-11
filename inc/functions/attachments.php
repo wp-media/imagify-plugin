@@ -2,6 +2,23 @@
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 /*
+ * Get all mime type which could be optimized by Imagify.
+ *
+ * @since 1.3
+ *
+ * @return array $mime_type  The mime type.
+ */
+function get_imagify_mime_type() {
+	$mime_type = array(
+		'image/jpeg', 
+		'image/png', 
+		'image/gif' 	
+	);
+	
+	return $mime_type;
+}
+
+/*
  * Get the backup path of a specific attachement.
  *
  * @since 1.0

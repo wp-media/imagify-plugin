@@ -110,13 +110,16 @@ jQuery(function($){
 
 		// on click on modal trigger
 		$('.imagify-modal-trigger').on('click', function(){
-			$( $(this).attr('href') ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex');
+			var the_target = $(this).attr('href') || $(this).data('target');
+
+			$( the_target ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex').addClass('modal-is-open');
+
 			return false;
 		});
 
 		// on click on close button
 		$('.imagify-modal').find('.close-btn').on('click', function(){
-			$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true');
+			$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true').removeClass('modal-is-open');
 		})
 		.on('blur', function(){
 			var $modal = $(this).closest('.imagify-modal');
@@ -125,5 +128,39 @@ jQuery(function($){
 			}
 		});
 
+		// `Esc` key binding
+		$(window).on('keydown', function(e){
+			if ( e.keyCode == 27 && $('.imagify-modal.modal-is-open').length > 0 ) {
+
+				e.preventDefault();
+				
+				// trigger the event
+				$('.imagify-modal.modal-is-open').find('.close-btn').trigger('click');
+
+				return false;
+			}
+		});
 	}
+	
+	var busy = false,
+		xhr	 = false;
+		
+	$('#wp-admin-bar-imagify').hover( function() {
+		if ( true === busy ) {
+			xhr.abort();
+		}
+		
+		busy = true;
+		
+		var $adminBarProfile = $('#wp-admin-bar-imagify-profile-content');
+		
+		if( $adminBarProfile.is(':empty') ) {
+			xhr = $.get(ajaxurl + "?action=imagify_get_admin_bar_profile&imagifygetadminbarprofilenonce="+ $('#imagifygetadminbarprofilenonce').val())
+			.done(function(response){
+				$adminBarProfile.html(response.data);
+				$('#wp-admin-bar-imagify-profile-loading').remove();
+				busy = false;
+			});	
+		}
+	});
 });

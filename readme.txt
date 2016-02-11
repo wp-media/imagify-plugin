@@ -1,15 +1,73 @@
-=== Imagify ===
+=== Imagify Image Optimizer ===
 Contributors: wp_media
-Tags: image optimizer, image optimiser, optimize, optimise, images, media, performance, seo, faster loading times, smushit, smush.it, compress, kraken-image-optimizer, tinypng, tinyjpeg, pngquant, jpegmini, ewww, pagespeed, pagespeed insights, sitespeed, optimize gif, optimize jpeg, optimize png, optimize animated gif, svg, improve pagerank, gtmetrix speed test, picture,  optimization, image editor, pngout, upload speed, imagify, compression, compression image, webp, lossless, cwebp, media, jpegtran, image, image optimisation, image optimization, shrink, picture, photo, photos, optimize photos, compress, crunch, attachment, pictures, fast, image files, image quality, lossy, upload, kraken, resize, optipng, kraken image optimizer, photo optimization, gifsicle, krakenio, png, gmagick, image optimize, pdf, pdf optimisation, pdf optimization, optimize pdf, optimise pdf, shrink pdf, jpg, jpeg, jpg optimisation, jpg optimization, optimize jpg, optimise jpg, shrink jpg, gif, animated gif, optimize gif, optimise gif, optimizer, optimiser, compresion, cruncher, image cruncher, compress png, compress jpg, compress jpeg, compress pdf, faster loading times, image optimiser, improve pagerank, optimise, optimize animated gif,  optimise jpeg, optimize jpeg, optimize, optimise png, optimise pdf, optimize pdf, tinyjpg, short pixel, shortpixel, woocommerce compatible, reduce image size, wordpress compression, wordpress image tool, yahoo, yahoo smush.it
+Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.3.1
-Stable tag: 1.1.6
+Tested up to: 4.4.2
+Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
+Dramatically reduce image file sizes without loosing quality, make your website load faster, boost your SEO and save money on your bandwidth.
+
 == Description ==
 
-Dramaticaly reduce image file sizes without loosing quality, make your website load faster, boost your SEO and save money on your bandwith using Imagify, the new most advanced image optimization tool.
+Speed up your website with lighter images without losing quality.
+
+Imagify is the most advanced image compression tool, you can now use this power directly in WordPress. 
+After enabling it all your images including thumbnails and retina images from WP Retina x2  will be automatically optimized on the fly when you will add in into WordPress. 
+​
+= What is Image Compression? =
+
+Learn more about image compression, check that: <a href="https://imagify.io/images-compression">https://imagify.io/images-compression</a>
+
+= Why use Imagify to optimize you images? =
+
+You already have a lots of unoptimized images? Not a problem, you will love the Bulk Optimizer to optimize all your existing images in one click.  
+​  
+Imagify can directly resize your images, **you won't have to lose time anymore on resizing your images before uploading them**.  
+​  
+Three level of compression are available:  
+​  
+- Normal, a lossless compression algorithm. The image quality won't be altered at all.  
+- Agressive, a lossy compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all.  
+- Ultra, our strongest compression method using a lossy algorithm.  
+​
+With the backup option, you can change your mind whenever you want by restoring your images to their original version or optimize them to another compression level.
+
+= What our users think of Imagify? =
+  
+> "Imagify is an awesome tool that is powerful & easy to use. It's fast, rivals and surpasses other established plugins/software. Awesome!" — [Simon Harper](https://twitter.com/SRHDesign/status/663758140505235456)
+>
+> "If you want to "squeeze" your images as much as possible and "trim out" your website on the highest professional level... Imagify" — [Ivica Delic](https://twitter.com/Free_LanceTools/status/685503950909476865)
+>
+> "Clearly Imagify is the most awesome WordPress plugin to compress images on your website! A must try" — [Eric Walter](https://twitter.com/EricWaltR/status/679053496382038016)
+>
+
+= Does Imagify is Free? =
+
+You can optimize for free 25mb of images (about 150 images) every month and you will receive a 75mb bonus upon registration.
+
+Need more? Have a look at our plans: <a href="https://imagify.io/pricing">https://imagify.io/pricing</a>
+​
+= What's next? =
+
+Have a look at our upcoming features by following our development roadmap: <a href="https://trello.com/b/3Q8ZnSN6/imagify-roadmap">https://trello.com/b/3Q8ZnSN6/imagify-roadmap</a>
+
+= Who we are? =
+​
+We are <a href="http://wp-media.me">WP Media</a>, the startup behind WP Rocket the best caching plugin for WordPress. 
+
+Our mission is to improve the web, we are making it faster with <a href="http://wp-rocket.me/">WP Rocket</a> we want to make it lighter with Imagify.
+
+= Get in touch! =
+
+* Website: <a href="https://imagify.io">Imagify.io</a>
+* Contact Us: <a href="https://imagify.io/contact">https://imagify.io/contact</a>
+* Twitter: <a href="https://twitter.com/imagify">https://twitter.com/imagify</a>
+
+= Related Plugins =
+* <a href="http://wp-rocket.me">WP Rocket</a>: Best caching plugin to speed-up your WordPress website.
+* <a href="https://wordpress.org/plugins/rocket-lazy-load/">Rocket Lazy Load</a>: Best Lazy Load script to reduce the number of HTTP requests and improves the websites loading time.
 
 == Installation ==
 
@@ -24,7 +82,130 @@ Dramaticaly reduce image file sizes without loosing quality, make your website l
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Optional: find the settings page through `Settings > Imagify`
 
+== Frequently Asked Questions ==
+
+= Which formats can be optimized? =
+
+Imagify can optimize jpg, png and gif (whether animated or not) formats.
+
+= Can I use the plugin with a free account? =
+
+Absolutely. You are limited to a quota of 25 MB of images per month with a free account. Once this quota is reached, you cannot optimize new images until your quota is renewed or you purchase credits.
+
+= On how many websites can I use the plugin? =
+
+You can use the plugin on as many sites as you wish. The only limit is the optimization quota of your account.
+
+= I used Kraken, Optimus, EWWW or WP Smush, will Imagify further optimize my images? =
+
+Absolutely. Most of the time, Imagify will still be able to optimize your images even if you have already compressed them with another tool.
+
+= What is the difference between the Normal, Aggressive and Ultra compression levels? =
+
+Normal compression is a "lossless" optimization. This means there is no loss of image quality. Aggressive and Ultra compression are more powerful, so the picture quality will be somewhat reduced. The weight of the image will be much less.
+
+= Is the EXIF data of images removes? =
+
+By default EXIF data is removed. It is however possible to keep it by enabling the option.
+
+= Will the original images be deleted? =
+
+No. Imagify automatically replaces the images with an optimized image. The backup option allows you to keep the original images and restore them with one click.
+
+= Is it possible to re-optimize images with a different level? =
+
+Yes. By activating the backup option in the plugin, you can re-optimize each image with a different compression level.
+
+= If I use Imagify, do I need to continue optimizing and resizinf my images with Photoshop? =
+
+Do not waste your time resizing and optimizing your images in Photoshop. Imagify takes care of everything!
+
+= What happens when the plugin is disabled? =
+
+When the plugin is disabled, your existing images remain optimized. Backups of the original images are still available if you have enabled the images backup option.
+
+== Screenshots ==
+
+1. Bulk Optimization
+
+2. Settings Page
+
+3. Media Page
+
 == Changelog ==
+
+= 1.3.6 =
+* Improvement
+ * Optimize attachments resized with the WordPress editor tool
+ * Compatibility with the "Replace the file, use new file name and update all links" option from "Enable Media Replace" plugin
+ * Add a notice message during the Bulk Optimization if the quota is consumed
+* Interface
+ * Better styles for compression details next to your images
+* Bug Fix
+ * No freeze anymore during the Bulk Optimization if an unknown error occurred with an image
+ * Add a notice message if we can't get all unoptimized images during the Bulk Optimization process
+ * Fix PHP Warning: set_time_limit(): Cannot set time limit in safe mode in ../inc/admin/ajax.php on line 137
+ * Details about compressed images in modal media box are now closed by default
+* Regression Fix 
+ * Get all attachments with the message "You've consumed all your data" during the Bulk Optimization process to be able to optimize them
+ 
+= 1.3.5.2 =
+* Regression Fix
+ * Check mark displayed better on certain settings pages
+
+= 1.3.5 =
+* Bug Fix
+ * Check box display issue fixed on Imagify settings page: SVG Icons cleaning
+
+= 1.3.4 =
+* NEW: Add Italian translation
+
+= 1.3.3 =
+* Bug Fix
+ * Fixed behavior in multisite networks where Imagify options would not get saved when the plugin wasn't network-activated, but only activated for specific sites within the network.
+ 
+= 1.3.2 =
+* NEW: Add Spanish translation
+* Bug Fix
+ * Avoid lack of performance in the WordPress administration if the Imagify's servers are down.
+ 
+= 1.3.1 =
+* Bug Fix
+ * Remove a notice message which causes a lack of performance in the administration. (thanks Kevin Gauthier to warn us)
+ 
+= 1.3 =
+* NEW: Add GIF support
+* NEW option: You can now decide to keep EXIF data on your images
+
+= 1.2.4 =
+* Bug Fix
+ * Don't duplicate Imagify data in the attachment edit screen (wp-admin/post.php)
+
+= 1.2.3 =
+* Improvement
+ * Use AJAX to display the quota in the admin bar to avoid a call to our API on each pages.
+ 
+= 1.2.2 =
+* Bug Fix
+ * Bulk Optimization: Fix issue when the backup option isn't activated. The compression level applied was "Normal" instead the one saved in the settings.
+ * Bulk Optimization: Don't try to re-optimize an image already optimized which has the same compression level than the one saved in the settings.
+ 
+= 1.2.1 =
+* Regression Fix
+ * Fix the Bulk Optimization issue when you never optimized any images and avoid the message "All your images have been optimized by Imagify. Congratulations!".
+
+= 1.2 =
+* Interface
+ * NEW compression level: Ultra
+ * NEW options: You can now choose to display Admin Bar Imagify's menu, or not.
+ * See the differences between Ultra, Agressive and Normal option inside Imagify Options page.
+* Bug Fix
+ * Admin Bar: Styles are now included in front-end too.
+ * Admin Bar: Better styles in certain cases.
+ * Deactivate a conflict plugin doesn't return a blank page anymore!
+ * Display the right original image size after a resize (meta data)
+* Regression Fix
+ * Bulk Optimization: update in live the unconsumed credit during a bulk optimization.
 
 = 1.1.6 =
 * Interface

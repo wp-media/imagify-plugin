@@ -48,7 +48,9 @@ function _imagify_first_install() {
 			'backup'             => 1,
 			'resize_larger'		 => '',
 			'resize_larger_w'	 => '',
-			'disallowed-sizes'	 => array()
+			'exif'				 => 0,
+			'disallowed-sizes'	 => array(),
+			'admin_bar_menu'	 => 1
 		)
 	);
 }
@@ -59,7 +61,76 @@ function _imagify_first_install() {
  * @since 1.0
  */
 add_action( 'imagify_upgrade', '_imagify_new_upgrade', 10, 2 );
-function _imagify_new_upgrade( $imagify_version, $current_version )
-{
-	// Not yet
+function _imagify_new_upgrade( $imagify_version, $current_version ) {	
+	if ( version_compare( $current_version, '1.2', '<' ) ) {
+		// Update all already optimized images status from 'error' to 'already_optimized'
+		$query = new WP_Query(
+			array(
+				'post_type'              => 'attachment',
+				'post_status'			 => 'inherit',
+				'post_mime_type'         => 'image',
+				'meta_key'				 => '_imagify_status',
+				'meta_value'			 => 'error',
+				'posts_per_page'         => -1,
+				'update_post_term_cache' => false,
+				'no_found_rows'          => true,
+				'fields'                 => 'ids'
+			)
+		);
+		
+		$ids = (array) $query->posts;
+		
+		foreach ( $ids as $id ) {
+			$attachment         = new Imagify_Attachment( $id );
+			$attachment_error   = $attachment->get_optimized_error();  
+			$attachment_error   = trim( $attachment_error );
+			$attachment_status	= get_post_meta( $id, '_imagify_status', true );
+			
+			if ( false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
+				update_post_meta( $id, '_imagify_status', 'already_optimized' );	
+			}
+		}
+		
+		// Auto-activate the Admin Bar option
+		$options                   = get_site_option( IMAGIFY_SETTINGS_SLUG );
+		$options['admin_bar_menu'] = 1;
+		update_site_option( IMAGIFY_SETTINGS_SLUG, $options );
+	}
+	
+	if ( version_compare( $current_version, '1.3.2', '<' ) ) {
+		// Update all already optimized images status from 'error' to 'already_optimized'
+		$query = new WP_Query(
+			array(
+				'post_type'              => 'attachment',
+				'post_status'			 => 'inherit',
+				'post_mime_type'         => 'image',
+				'meta_query'			 => array(
+					'relation' => 'AND',
+					array(
+						'key'     => '_imagify_data',
+						'compare' => 'EXISTS'
+					),
+					array(
+						'key'     => '_imagify_optimization_level',
+						'compare' => 'NOT EXISTS'
+					),
+				),
+				'posts_per_page'         => -1,
+				'update_post_term_cache' => false,
+				'no_found_rows'          => true,
+				'fields'                 => 'ids'
+			)
+		);
+		
+		$ids = (array) $query->posts;
+		
+		foreach ( $ids as $id ) {
+			$attachment         = new Imagify_Attachment( $id );
+			$attachment_stats   = $attachment->get_stats_data();  
+			
+			if ( isset( $attachment_stats['aggressive'] ) ) {
+				update_post_meta( $id, '_imagify_optimization_level', (int) $attachment_stats['aggressive'] );
+			}		
+		}
+	}
 }

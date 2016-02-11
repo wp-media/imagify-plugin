@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @return int The number of attachments.
  */
 function imagify_count_attachments() {
-	$count = wp_count_attachments( array( 'image/jpeg', 'image/png' ) ); // TO DO - add gif later
+	$count = wp_count_attachments( get_imagify_mime_type() );
 	$count = get_object_vars( $count );
 	$count = array_sum( $count );
 	return (int) $count;
@@ -28,7 +28,7 @@ function imagify_count_exceeding_attachments() {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
+			'post_mime_type'         => get_imagify_mime_type(),
 			'posts_per_page'         => -1,
 			'update_post_term_cache' => false,
 			'no_found_rows'          => true,
@@ -41,8 +41,7 @@ function imagify_count_exceeding_attachments() {
 		$attachment = new Imagify_Attachment( $attachment_id );
 
 		// Check if the attachment extension is allowed
-		// TO DO: use wp_attachment_is_image when we can optimize all formats
-		if ( ! in_array( $attachment->get_extension() , array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
+		if ( ! wp_attachment_is_image( $attachment_id ) ) {
 			continue;
 		}
 		
@@ -66,7 +65,7 @@ function imagify_count_error_attachments() {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
+			'post_mime_type'         => get_imagify_mime_type(),
 			'meta_key'				 => '_imagify_status',
 			'meta_value'			 => 'error',
 			'posts_per_page'         => -1,
@@ -80,7 +79,7 @@ function imagify_count_error_attachments() {
 }
 
 /*
- * Count number of optimized attachments (with errors too).
+ * Count number of optimized attachments (by Imagify or an other tool before).
  *
  * @since 1.0
  *
@@ -91,9 +90,20 @@ function imagify_count_optimized_attachments() {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
-			'meta_key'				 => '_imagify_status',
-			'meta_value'			 => 'success',
+			'post_mime_type'         => get_imagify_mime_type(),
+			'meta_query'      => array(
+			'relation'    => 'or',
+				array(
+					'key'     => '_imagify_status',
+					'value'   => 'success',
+					'compare' => '='
+				),
+				array(
+					'key'     => '_imagify_status',
+					'value'   => 'already_optimized',
+					'compare' => '='
+				)
+			),
 			'posts_per_page'         => -1,
 			'update_post_term_cache' => false,
 			'no_found_rows'          => true,
@@ -133,11 +143,11 @@ function imagify_percent_optimized_attachments() {
 }
 
 /*
- * Count percent, original & optimized size of an attachment.
+ * Count percent, original & optimized size of all images optimized by Imagify.
  *
  * @since 1.0
  *
- * @return array An array containing the optimization attachment data.
+ * @return array An array containing the optimization data.
  */
 function imagify_count_saving_data( $key = '' ) {
 	global $wpdb;
@@ -148,8 +158,9 @@ function imagify_count_saving_data( $key = '' ) {
 		array(
 			'post_type'              => 'attachment',
 			'post_status'			 => 'inherit',
-			'post_mime_type'         => array( 'image/jpeg', 'image/png' ), // TO DO - add gif later
-			'meta_key'				 => '_imagify_data',
+			'post_mime_type'         => get_imagify_mime_type(),
+			'meta_key'				 => '_imagify_status',
+			'meta_value'			 => 'success',
 			'posts_per_page'         => -1,
 			'update_post_term_cache' => false,
 			'no_found_rows'          => true,
@@ -162,8 +173,7 @@ function imagify_count_saving_data( $key = '' ) {
 		$attachment = new Imagify_Attachment( $attachment_id );
 
 		// Check if the attachment extension is allowed
-		// TO DO: use wp_attachment_is_image when we can optimize all formats
-		if ( ! in_array( $attachment->get_extension() , array( 'png', 'jpg', 'jpe', 'jpeg' ) )  ) {
+		if ( ! wp_attachment_is_image( $attachment_id ) ) {
 			continue;
 		}
 
@@ -190,6 +200,7 @@ function imagify_count_saving_data( $key = '' ) {
 	}
 
 	$data = array(
+		'count'			 => $query->post_count,
 		'original_size'  => (int) $original_size,
 		'optimized_size' => (int) $optimized_size,
 		'percent'		 => ( 0 !== $optimized_size ) ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0

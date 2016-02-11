@@ -31,6 +31,16 @@ class Imagify_User {
 	 * @access public
 	 */
 	public $plan_id;
+	
+	/**
+	 * The plan label
+	 *
+	 * @since 1.2
+	 *
+	 * @var    string
+	 * @access public
+	 */
+	public $plan_label;
 
 	/**
 	 * The total quota
@@ -106,6 +116,7 @@ class Imagify_User {
 			$this->id                           = $user->id;
 			$this->email                        = $user->email;
 			$this->plan_id                      = $user->plan_id;
+			$this->plan_label                   = ucfirst( $user->plan_label );
 			$this->quota                        = $user->quota;
 			$this->extra_quota                  = $user->extra_quota;
 			$this->extra_quota_consumed         = $user->extra_quota_consumed;
@@ -113,19 +124,6 @@ class Imagify_User {
 			$this->next_date_update 			= $user->next_date_update;
 			$this->is_active                    = $user->is_active;
 		}
-	}
-
-	/**
-	 * Get the plan label
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @return int
-	 */
-	public function get_plan_label() {
-		$label = ( 1 === $this->plan_id ) ? __( 'Free', 'imagify' ) : __( 'Pro', 'imagify' );
-		return $label;
 	}
 
 	/**

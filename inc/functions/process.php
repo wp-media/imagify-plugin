@@ -6,14 +6,30 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  *
  * @since 1.0
  *
- * @param   string 	  $file_path 	  Absolute path to the image file.
- * @param   bool   	  $backup 		  Force a backup of the original file.
- * @param   int 	  $is_aggressive  The optimization level (1=aggressive, 0=normal).
- * @param   array 	  $resize  		  The resize parameters (with & height).
+ * @param   string 	  $file_path 	  	   Absolute path to the image file.
+ * @param   bool   	  $backup 		  	   Force a backup of the original file.
+ * @param   int 	  $optimization_level  The optimization level (2=ultra, 1=aggressive, 0=normal).
+ * @param   array 	  $resize  		  	   The resize parameters (with & height).
+ * @param   bool 	  $keep_exif  		   To keep exif data or not
  * @return obj|array  Error message | Optimized image data
  */
-function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize = array() ) {
+function do_imagify( $file_path, $backup, $optimization_level, $resize = array(), $keep_exif = false ) {
 	$errors = new WP_Error();
+	
+	/**
+	 * Filter the attachment path
+	 *
+	 * @since 1.2
+	 *
+	 * @param string $file_path The attachment path
+	 */
+	$file_path = apply_filters( 'imagify_file_path', $file_path );
+		
+	// Check if the Imagify servers & the API are accessible
+	if ( ! is_imagify_servers_up() ) {
+		$errors->add( 'api_server_down', __( 'Sorry, our servers are temporarily unaccessible. Please, try again in a couple of minutes.', 'imagify' ) );
+		return $errors;	
+	}
 	
 	// Check if external HTTP requests are blocked.
 	if ( is_imagify_blocked() ) {
@@ -63,8 +79,10 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize
 			'image' => curl_file_create( $file_path ),
 			'data' 	=> json_encode(
 				array(
-					'aggressive' => ( is_null( $is_aggressive ) ) ? get_imagify_option( 'optimization_level', 1 ) : $is_aggressive,
-					'resize' => $resize
+					'aggressive' => ( 1 === (int) $optimization_level ) ? true : false,
+					'ultra'  	 => ( 2 === (int) $optimization_level ) ? true : false,
+					'resize' 	 => $resize,
+					'keep_exif'  => $keep_exif
 				)
 			)
 		)
@@ -85,6 +103,7 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize
 
 		// TO DO - check and send a error message if the backup can't be created
 		@copy( $file_path, $backup_path );
+		imagify_chmod_file( $backup_path );
 	}
 
 	if ( ! function_exists( 'download_url' ) ) {
@@ -99,6 +118,7 @@ function do_imagify( $file_path, $backup = false, $is_aggressive = null, $resize
 	}
 
 	@rename( $temp_file, $file_path );
+	imagify_chmod_file( $file_path );
 
 	// If temp file still exists, delete it
 	if ( file_exists( $temp_file ) ) {

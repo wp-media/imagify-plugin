@@ -30,6 +30,15 @@ function get_imagify_user() {
 }
 
 /**
+ * Get the Imagify API version.
+ *
+ * @return object
+ **/
+function get_imagify_api_version() {
+	return Imagify()->getApiVersion();
+}
+
+/**
  * Check your Imagify API key status.
  *
  * @return bool
@@ -127,13 +136,16 @@ class Imagify {
      * @param  array $data All user data. Details here: --
      * @return object
      **/
-    public function createUser( $data )
-    {
+    public function createUser( $data ) {
 	    unset( $this->headers['Authorization'], $this->headers['Accept'], $this->headers['Content-Type'] );
 
 		$data['from_plugin'] = true;
-
-        return $this->httpCall( 'users/', 'POST', $data );
+		$args = array(
+			'method'    => 'POST',
+			'post_data' => $data
+		);
+		
+        return $this->httpCall( 'users/', $args );
     }
 
 	/**
@@ -141,9 +153,14 @@ class Imagify {
      *
      * @return object
      **/
-    public function getUser()
-    {
-		return $this->httpCall( 'users/me/' );
+    public function getUser() {
+		static $user;
+
+        if ( ! isset( $user ) ) {
+            $user = $this->httpCall( 'users/me/', array( 'timeout' => 10 ) );
+        }
+
+        return $user;
     }
 
     /**
@@ -152,10 +169,33 @@ class Imagify {
      * @return object
      **/
     public function getStatus( $data ) {
-	    unset( $this->headers['Accept'], $this->headers['Content-Type'] );
-        $this->headers['Authorization'] = 'Authorization: token ' . $data;
+	    static $status;
 
-        return $this->httpCall( 'status/' );
+	    if ( ! isset( $status ) ) {
+			unset( $this->headers['Accept'], $this->headers['Content-Type'] );
+	        $this->headers['Authorization'] = 'Authorization: token ' . $data;
+
+	        $status = $this->httpCall( 'status/', array( 'timeout' => 10 ) );
+	    }
+
+	    return $status;
+    }
+
+    /**
+     * Get the Imagify API version.
+     *
+     * @return object
+     **/
+    public function getApiVersion() {
+	    static $api_version;
+
+	    if ( ! isset( $api_version ) ) {
+            unset( $this->headers['Accept'], $this->headers['Content-Type'] );
+
+            $api_version = $this->httpCall( 'version/', array( 'timeout' => 5 ) );
+        }
+
+	    return $api_version;
     }
 
     /**
@@ -164,9 +204,14 @@ class Imagify {
      * @param  string $data All user data. Details here: --
      * @return object
      **/
-    public function updateUser( $data )
-    {
-        return $this->httpCall( 'users/me/format=json', 'PUT', $data );
+    public function updateUser( $data ) {
+        $args = array(
+	    	'method'    => 'PUT',
+	    	'post_data' => $data,
+	    	'timeout'   => 10  
+        );
+        
+        return $this->httpCall( 'users/me/', $args );
     }
 
     /**
@@ -179,8 +224,13 @@ class Imagify {
 		if ( isset( $this->headers['Accept'], $this->headers['Content-Type'] ) ) {
 	        unset( $this->headers['Accept'], $this->headers['Content-Type'] );
         }
-
-		return $this->httpCall( 'upload/', 'POST', $data );
+		
+		$args = array(
+			'method'    => 'POST',
+			'post_data' => $data
+		);
+		
+		return $this->httpCall( 'upload/', $args );
     }
 
     /**
@@ -190,42 +240,58 @@ class Imagify {
      * @return object
      **/
     public function fetchImage( $data ) {
-		return $this->httpCall( 'fetch/', 'POST', json_encode( $data ) );
+		$args = array(
+			'method'    => 'POST',
+			'post_data' => json_encode( $data )
+		);
+		return $this->httpCall( 'fetch/', $args );
     }
 
 	/**
      * Make an HTTP call using curl.
      *
-     * @param  string $url       The URL to call
-     * @param  string $method    The HTTP method to use, by default GET
-     * @param  string $post_data The data to send on an HTTP POST (optional)
+     * @param  string $url  The URL to call
+     * @param  array $args  The request args
      * @return object
      **/
-    private function httpCall( $url, $method = 'GET', $post_data = null )
-    {
-        try {
-	    	$ch = curl_init();
+    private function httpCall( $url, $args = array() ) {
+        $default = array( 
+        	'method'    => 'GET', 
+        	'post_data' => null, 
+        	'timeout'   => 45 
+        );
+		$args = array_merge( $default, $args );
 
-	        if ( 'POST' == $method ) {
+        // Check if php-curl is enabled
+		if ( ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ) ) {
+			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
+		}
+
+        try {
+	    	$ch 	 = curl_init();
+			$is_ssl  = ( isset( $_SERVER['HTTPS'] ) && ( 'on' == strtolower( $_SERVER['HTTPS'] ) || '1' == $_SERVER['HTTPS'] ) ) || ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) );
+
+	        if ( 'POST' == $args['method'] ) {
 		        curl_setopt( $ch, CURLOPT_POST, true );
-				curl_setopt( $ch, CURLOPT_POSTFIELDS, $post_data );
+				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] );
 	        }
-			
+
 			curl_setopt( $ch, CURLOPT_URL, self::API_ENDPOINT . $url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
-			curl_setopt( $ch, CURLOPT_TIMEOUT, 60 );
+			curl_setopt( $ch, CURLOPT_TIMEOUT, $args['timeout'] );
 			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-	
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, $is_ssl );
+
 			$response  = json_decode( curl_exec( $ch ) );
 	        $error     = curl_error( $ch );
 	        $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-	
-			curl_close( $ch );    
+
+			curl_close( $ch );
         } catch( Exception $e ) {
 	        return new WP_Error( 'curl', 'Unknown error occurred' );
         }
-        
+
 		if ( 200 != $http_code && isset( $response->code, $response->detail ) ) {
 			return new WP_Error( $http_code, $response->detail );
 		} elseif ( 200 != $http_code ) {

@@ -2,30 +2,6 @@
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 /**
- * Check if external requests are blocked for Imagify.
- *
- * @since 1.0
- *
- * return bool True if Imagify API can't be called
- */
-function is_imagify_blocked() {
-	if ( ! defined( 'WP_HTTP_BLOCK_EXTERNAL' ) || ! WP_HTTP_BLOCK_EXTERNAL ) {
-		return false;
-	}
-	
-	if ( defined( 'WP_ACCESSIBLE_HOSTS' ) ) {
-		$accessible_hosts = explode( ',', WP_ACCESSIBLE_HOSTS );
-		$accessible_hosts = array_map( 'trim', $accessible_hosts );
-		
-		if ( in_array( '*.imagify.io', $accessible_hosts ) ) {
-			return false;	
-		}
-	}
-	
-	return true;
-}
-
-/**
  * Check if Imagify is activated on the network.
  *
  * @since 1.0
@@ -46,12 +22,14 @@ function imagify_is_active_for_network() {
  *
  * @return string The URL of the specific admin page or action
  */
-function get_imagify_admin_url( $action = 'options-general', $arg = '' ) {
+function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 	$url = '';
 
 	switch( $action ) {
 		case 'manual-override-upload':
-			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_override_upload&attachment_id=' . $arg ), 'imagify-manual-override-upload' );
+			$id    = ( isset( $arg['attachment_id'] ) ) ? $arg['attachment_id'] : 0;
+			$level = ( isset( $arg['optimization_level'] ) ) ? $arg['optimization_level'] : 0;
+			$url   = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_override_upload&attachment_id=' . $id . '&optimization_level=' . $level ), 'imagify-manual-override-upload' );
 		break;
 
 		case 'manual-upload':

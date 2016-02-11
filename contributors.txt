@@ -6,3 +6,4 @@ Developers:
 	Geoffrey Crofte <geoffrey@wp-media.me>
 	Sébastien Decamme <sebastien@wp-media.me>
 	Julio Potier <julio@wp-media.me>
+	Caspar Huebinger <caspar@wp-rocket.me>
