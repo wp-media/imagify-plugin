@@ -513,21 +513,3 @@ function _do_admin_post_async_optimize_save_image_editor_file() {
 	}
 
 }
-
-/**
- * Optimize image on upload with async request
- *
- * @since 1.4
- **/
-add_action( 'wp_ajax_imagify_async_optimize_uploaded_image', '_do_admin_post_imagify_async_optimize_uploaded_image' );
-function _do_admin_post_imagify_async_optimize_uploaded_image() {
-	if ( isset( $_POST['metadata'], $_POST['attachment_id'] ) && check_ajax_referer( 'imagify_async_optimize_uploaded_image' ) ) {
-
-		$attachment = new Imagify_Attachment( (int) $_POST['attachment_id'] );
-
-		// Optimize it!!!!!
-		$attachment->optimize( null, $_POST['metadata'] );
-
-		die( 1 );
-	}
-}
