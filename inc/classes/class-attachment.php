@@ -559,6 +559,7 @@ class Imagify_Attachment {
 		 * @param array  $optimized_data  The optimization data
 		*/
 		do_action( 'after_imagify_optimize_attachment', $id, $optimized_data );
+		delete_transient( 'imagify-async-in-progress-' . $id );
 
 		return $optimized_data;
 	}

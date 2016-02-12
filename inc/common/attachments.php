@@ -5,16 +5,25 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * Auto-optimize when a new attachment is generated
  *
  * @since 1.0
+ * @since 1.4 Async job
  */
-add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', PHP_INT_MAX, 2 );
-function _imagify_optimize_attachment( $metadata, $attachment_id ) {
+add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment_queue', 0, 2 );
+function _imagify_optimize_attachment_queue( $metadata, $attachment_id ) {
+
 	$api_key = get_imagify_option( 'api_key', false );
 
 	if ( ! empty( $api_key ) && get_imagify_option( 'auto_optimize', false ) ) {
-		$attachment = new Imagify_Attachment( $attachment_id );
 
-		// Optimize it!!!!!
-		$attachment->optimize( null, $metadata );
+		$body = array( 
+			'action'        => 'imagify_async_optimize_uploaded_image',
+			'attachment_id' => $attachment_id,
+			'transient_id'  => $attachment_id,
+			'metadata'      => $metadata,
+			'_ajax_nonce'   => wp_create_nonce( 'imagify_async_optimize_uploaded_image' ),
+		);
+
+		imagify_do_async_job( $body );
+
 	}
 
 	return $metadata;
