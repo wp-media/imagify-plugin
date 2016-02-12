@@ -177,12 +177,11 @@ function _imagify_admin_print_styles() {
 			'labels' => array(
 				'original_l'	=> __( 'Original Image', 'imagify' ),
 				'optimized_l'	=> __( 'Optimized Image', 'imagify' ),
-				'compare'		=> __( 'Compare Images', 'imagify' ),
+				'compare'		=> __( 'Compare Original VS Optimized', 'imagify' ),
 				'close'			=> __( 'Close', 'imagify' ),
 				'filesize'		=> __( 'File Size:', 'imagify' ),
 				'saving'		=> __( 'Original Saving:', 'imagify' ),
-			),
-			'title' => _x( 'Compare Original and Optimized', 'Modal title', 'imagify' )
+			)
 		));
 		wp_enqueue_script( 'imagify-js-chart' );
 		wp_enqueue_script( 'imagify-js-event-move' );

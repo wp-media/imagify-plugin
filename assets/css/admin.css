@@ -2027,6 +2027,15 @@ td.imagify-cell-filename {
 	border-radius: 50%;
 }
 
+/* Attachment page exception */
+.wp_attachment_image #imagify-visual-comparison .close-btn {
+	top: 0;
+}
+/* Attachment page exception */
+.wp_attachment_image #imagify-visual-comparison .imagify-modal-content {
+	padding-top: 40px;
+}
+
 .imagify-modal .imagify-comparison-title {
 	font-size: 28px;
 	margin-bottom: 1em;

@@ -338,7 +338,6 @@
 			$ori_parent.append(''
 				+ '<div id="imagify-visual-comparison" class="imagify-modal" aria-hidden="true">'
 					+ '<div class="imagify-modal-content loading">'
-						+ '<p class="imagify-comparison-title">' + imagifyTTT.title + '</p>'
 						+ '<div class="twentytwenty-container">'
 							+ '<img class="imagify-img-before" alt="" width="' + thumb.width + '" height="' + thumb.height + '">'
 							+ '<img class="imagify-img-after" alt="" width="' + thumb.width + '" height="' + thumb.height + '">'
@@ -361,7 +360,7 @@
 								+ '</p>'
 							+'</div>'
 						+ '</div>'
-						+ '<button class="close-btn absolute" type="button"><i aria-hidden="true" class="dashicons dashicons-no-alt"></i><span class="screen-reader-text">' + imagifyTTT.labels.compare + '</span></button>'
+						+ '<button class="close-btn absolute" type="button"><i aria-hidden="true" class="dashicons dashicons-no-alt"></i><span class="screen-reader-text">' + imagifyTTT.labels.close + '</span></button>'
 					+ '</div>'
 				+ '</div>'
 			);
