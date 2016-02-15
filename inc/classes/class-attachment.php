@@ -467,6 +467,8 @@ class Imagify_Attachment {
 
 		// Check if the full size is already optimized
 		if ( $this->is_optimized() && ( $this->get_optimization_level() == $optimization_level ) ) {
+			delete_transient( 'imagify-async-in-progress-' . $id );
+
 			return;
 		}
 
@@ -497,6 +499,8 @@ class Imagify_Attachment {
 		update_post_meta( $id, '_imagify_optimization_level', $optimization_level );
 		
 		if( (bool) ! $data ) {
+			delete_transient( 'imagify-async-in-progress-' . $id );
+
 			return;
 		}
 		
@@ -559,6 +563,7 @@ class Imagify_Attachment {
 		 * @param array  $optimized_data  The optimization data
 		*/
 		do_action( 'after_imagify_optimize_attachment', $id, $optimized_data );
+		
 		delete_transient( 'imagify-async-in-progress-' . $id );
 
 		return $optimized_data;
