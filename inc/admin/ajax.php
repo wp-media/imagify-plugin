@@ -22,19 +22,23 @@ function _do_admin_post_imagify_manual_upload() {
 			wp_nonce_ays( '' );
 		}
 	}
-
-	$attachment = new Imagify_Attachment( $_GET['attachment_id'] );
+	
+	$attachment_id = $_GET['attachment_id'];
+	
+	set_transient( 'imagify-async-in-progress-' . $attachment_id, true );
+	
+	$attachment = new Imagify_Attachment( $attachment_id );
 	
 	// Optimize it!!!!!
 	$attachment->optimize();
-
+	
 	if ( ! defined( 'DOING_AJAX' ) ) {
 		wp_safe_redirect( wp_get_referer() );
 		die();
 	}
-
+	
 	// Return the optimization statistics
-	$output = get_imagify_attachment_optimization_text( $attachment->id );
+	$output = get_imagify_attachment_optimization_text( $attachment_id );
 	wp_send_json_success( $output );
 }
 
