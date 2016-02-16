@@ -25,7 +25,9 @@ function _imagify_attachment_submitbox_misc_actions() {
 			echo get_imagify_attachment_optimization_text( $post->ID );
 		} elseif ( false !== get_transient( 'imagify-async-in-progress-' . $post->ID ) ) {
 			echo '<div class="misc-pub-section misc-pub-imagify">';
-			_e( 'Optimizing...', 'imagify' ); //// TODO
+				echo '<div class="button"><span class="imagify-spinner"></span>';
+					_e( 'Optimizing...', 'imagify' );
+				echo '</div>';
 			echo '</div>';
 		} else {
 			$url = get_imagify_admin_url( 'manual-upload', $post->ID );

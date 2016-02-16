@@ -172,7 +172,7 @@ function get_imagify_media_column_content( $attachment_id ) {
 	}
 
 	if ( false !== get_transient( 'imagify-async-in-progress-' . $attachment_id ) ) {
-		$output = __( 'Optimizing...', 'imagify' ); //// TODO
+		$output = '<div class="button"><span class="imagify-spinner"></span>' . __( 'Optimizing...', 'imagify' ) . '</div>';
 		return $output;
 	}
 
