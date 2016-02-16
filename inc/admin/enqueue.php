@@ -175,12 +175,13 @@ function _imagify_admin_print_styles() {
 	if ( isset( $current_screen ) && 'post' === $current_screen->base && 'attachment' === $current_screen->post_type ) {
 		wp_localize_script( 'imagify-js-twentytwenty', 'imagifyTTT', array(
 			'labels' => array(
-				'original_l'	=> __( 'Original Image', 'imagify' ),
-				'optimized_l'	=> __( 'Optimized Image', 'imagify' ),
-				'compare'		=> __( 'Compare Original VS Optimized', 'imagify' ),
-				'close'			=> __( 'Close', 'imagify' ),
-				'filesize'		=> __( 'File Size:', 'imagify' ),
-				'saving'		=> __( 'Original Saving:', 'imagify' ),
+				'original_l'	=> esc_html__( 'Original Image', 'imagify' ),
+				'optimized_l'	=> esc_html__( 'Optimized Image', 'imagify' ),
+				'compare'		=> esc_html__( 'Compare Original VS Optimized', 'imagify' ),
+				'close'			=> esc_html__( 'Close', 'imagify' ),
+				'filesize'		=> esc_html__( 'File Size:', 'imagify' ),
+				'saving'		=> esc_html__( 'Original Saving:', 'imagify' ),
+				'optimize'		=> esc_html__( 'Optimize', 'imagify' )
 			)
 		));
 		wp_enqueue_script( 'imagify-js-chart' );
