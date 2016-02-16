@@ -154,9 +154,9 @@ function _imagify_admin_print_styles() {
 		wp_localize_script( 'imagify-js-options', 'imagifyOptions', $options_data );
 	}
 
-	/*
+	/**
 	 * Scripts loaded in /wp-admin/upload.php and post.php
-	*/
+	 */
 	if ( isset( $current_screen ) && ( 'upload' === $current_screen->base || 'post' === $current_screen->base ) ) {
 		$upload_data = array(
 			'bulkActionsLabels' => array( 
@@ -169,9 +169,29 @@ function _imagify_admin_print_styles() {
 		wp_enqueue_script( 'imagify-js-upload' );
 	}
 
-	/*
+	/**
+	 * Scripts loaded in /wp-admin/post.php (for attachment post type) 
+	 */
+	if ( isset( $current_screen ) && 'post' === $current_screen->base && 'attachment' === $current_screen->post_type ) {
+		wp_localize_script( 'imagify-js-twentytwenty', 'imagifyTTT', array(
+			'labels' => array(
+				'original_l'	=> __( 'Original Image', 'imagify' ),
+				'optimized_l'	=> __( 'Optimized Image', 'imagify' ),
+				'compare'		=> __( 'Compare Original VS Optimized', 'imagify' ),
+				'close'			=> __( 'Close', 'imagify' ),
+				'filesize'		=> __( 'File Size:', 'imagify' ),
+				'saving'		=> __( 'Original Saving:', 'imagify' ),
+			)
+		));
+		wp_enqueue_script( 'imagify-js-chart' );
+		wp_enqueue_script( 'imagify-js-event-move' );
+		wp_enqueue_script( 'imagify-js-twentytwenty' );
+		wp_enqueue_style( 'imagify-css-twentytwenty' );
+	}
+
+	/**
 	 * Scripts loaded in /wp-admin/upload.php?page=imagify-bulk-optimization
-	*/
+	 */
 	if ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' === $current_screen->base ) {
 		$user	   = get_imagify_user();
 		$bulk_data = array(

@@ -22,19 +22,23 @@ function _do_admin_post_imagify_manual_upload() {
 			wp_nonce_ays( '' );
 		}
 	}
-
-	$attachment = new Imagify_Attachment( $_GET['attachment_id'] );
+	
+	$attachment_id = $_GET['attachment_id'];
+	
+	set_transient( 'imagify-async-in-progress-' . $attachment_id, true );
+	
+	$attachment = new Imagify_Attachment( $attachment_id );
 	
 	// Optimize it!!!!!
 	$attachment->optimize();
-
+	
 	if ( ! defined( 'DOING_AJAX' ) ) {
 		wp_safe_redirect( wp_get_referer() );
 		die();
 	}
-
+	
 	// Return the optimization statistics
-	$output = get_imagify_attachment_optimization_text( $attachment->id );
+	$output = get_imagify_attachment_optimization_text( $attachment_id );
 	wp_send_json_success( $output );
 }
 
@@ -468,4 +472,48 @@ function _do_wp_ajax_imagify_get_admin_bar_profile() {
 		' . $message;
 	
 	wp_send_json_success( $quota_section );
+}
+
+/**
+ * Optimize image on picture editing with async request
+ *
+ * @since 1.4
+ **/
+add_action( 'wp_ajax_imagify_async_optimize_save_image_editor_file', '_do_admin_post_async_optimize_save_image_editor_file' );
+function _do_admin_post_async_optimize_save_image_editor_file() {
+	if ( isset( $_POST['do'], $_POST['postid'] )
+		&& check_ajax_referer( 'image_editor-' . $_POST['postid'] )
+		&& get_post_meta( $_POST['postid'], '_imagify_data', true )
+	) {
+		
+		$attachment_id      = $_POST['postid'];
+		$optimization_level = get_post_meta( $attachment_id, '_imagify_optimization_level', true );
+		$attachment         = new Imagify_Attachment( $attachment_id );
+		$metadata			= wp_get_attachment_metadata( $attachment_id );
+		
+		// Remove old optimization data
+		delete_post_meta( $attachment_id, '_imagify_data' );
+		delete_post_meta( $attachment_id, '_imagify_status' );
+		delete_post_meta( $attachment_id, '_imagify_optimization_level' );
+
+		if ( 'restore' === $_POST['do'] ) {
+			// Restore the backup file
+			$attachment->restore();
+			
+			// Get old metadata to regenerate all thumbnails
+			$metadata 	  = array( 'sizes' => array() );
+			$backup_sizes = (array) get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
+			
+			foreach ( $backup_sizes as $size_key => $size_data ) {
+				$size_key = str_replace( '-origin', '' , $size_key );
+				$metadata['sizes'][ $size_key ] = $size_data;
+			}
+		}
+
+		// Optimize it!!!!!
+		$attachment->optimize( $optimization_level, $metadata );
+
+		die( 1 );
+	}
+
 }

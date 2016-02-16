@@ -47,6 +47,21 @@ class Imagify_Attachment {
 
 		return false;
 	}
+	
+	/**
+	 * Get the attachment backup URL.
+	 *
+	 * @since 1.4
+	 *
+	 * @access public
+	 * @return string|false
+	 */
+	public function get_backup_url() {
+		$backup_path = $this->get_backup_path();
+		$backup_url  = str_replace( ABSPATH, site_url( '/' ), $backup_path );
+		
+		return $backup_url;
+	}
 
 	/**
 	 * Get the attachment optimization data.
@@ -452,6 +467,8 @@ class Imagify_Attachment {
 
 		// Check if the full size is already optimized
 		if ( $this->is_optimized() && ( $this->get_optimization_level() == $optimization_level ) ) {
+			delete_transient( 'imagify-async-in-progress-' . $id );
+
 			return;
 		}
 
@@ -482,6 +499,8 @@ class Imagify_Attachment {
 		update_post_meta( $id, '_imagify_optimization_level', $optimization_level );
 		
 		if( (bool) ! $data ) {
+			delete_transient( 'imagify-async-in-progress-' . $id );
+
 			return;
 		}
 		
@@ -544,6 +563,8 @@ class Imagify_Attachment {
 		 * @param array  $optimized_data  The optimization data
 		*/
 		do_action( 'after_imagify_optimize_attachment', $id, $optimized_data );
+		
+		delete_transient( 'imagify-async-in-progress-' . $id );
 
 		return $optimized_data;
 	}

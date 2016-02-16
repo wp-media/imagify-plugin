@@ -171,6 +171,11 @@ function get_imagify_media_column_content( $attachment_id ) {
 		return $output;
 	}
 
+	if ( false !== get_transient( 'imagify-async-in-progress-' . $attachment_id ) ) {
+		$output = '<div class="button"><span class="imagify-spinner"></span>' . __( 'Optimizing...', 'imagify' ) . '</div>';
+		return $output;
+	}
+
 	// Check if the image was optimized
 	if ( ! $attachment->is_optimized() && ! $attachment->has_error() ) {
 		$output .= '<a id="imagify-upload-' . $attachment_id . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment_id ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
