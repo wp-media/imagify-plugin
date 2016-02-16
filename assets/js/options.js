@@ -5,6 +5,8 @@ jQuery(function($){
 	var busy = false,
 		xhr	 = false;
 
+	var concat = ajaxurl.indexOf("?") > 0 ? "&" : "?";
+
 	$('#imagify-settings #api_key').blur(function(){
 		var obj   = $(this),
 			value = obj.val();
@@ -27,7 +29,7 @@ jQuery(function($){
 
 		busy = true;
 
-		xhr = $.get(ajaxurl+"?action=imagify_check_api_key_validity&api_key="+obj.val()+"&imagifycheckapikeynonce="+$('#imagifycheckapikeynonce').val())
+		xhr = $.get(ajaxurl+concat+"action=imagify_check_api_key_validity&api_key="+obj.val()+"&imagifycheckapikeynonce="+$('#imagifycheckapikeynonce').val())
 		.done(function(response){
 			if( !response.success ) {
 				$('#imagify-check-api-container').html( '<span class="dashicons dashicons-no"></span> ' + response.data);

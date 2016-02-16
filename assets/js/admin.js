@@ -1,4 +1,7 @@
 jQuery(function($){
+
+	var concat = ajaxurl.indexOf("?") > 0 ? "&" : "?";
+
 	/*
 	 * Create a new Imagify account
 	 */
@@ -22,7 +25,7 @@ jQuery(function($){
 				return false;
 			} 
 			
-			$.get(ajaxurl + "?action=imagify_signup&email=" +inputValue + "&imagifysignupnonce="+ $('#imagifysignupnonce').val())
+			$.get(ajaxurl + concat + "action=imagify_signup&email=" +inputValue + "&imagifysignupnonce="+ $('#imagifysignupnonce').val())
 			.done(function(response){
 				if( !response.success ) {
 					swal.showInputError(response.data);
@@ -61,7 +64,7 @@ jQuery(function($){
 				return false;
 			} 
 			
-			$.get(ajaxurl + "?action=imagify_check_api_key_validity&api_key=" +inputValue + "&imagifycheckapikeynonce="+ $('#imagifycheckapikeynonce').val())
+			$.get(ajaxurl + concat + "action=imagify_check_api_key_validity&api_key=" +inputValue + "&imagifycheckapikeynonce="+ $('#imagifycheckapikeynonce').val())
 			.done(function(response){
 				if( !response.success ) {
 					swal.showInputError(response.data);
@@ -157,7 +160,7 @@ jQuery(function($){
 		var $adminBarProfile = $('#wp-admin-bar-imagify-profile-content');
 		
 		if( $adminBarProfile.is(':empty') ) {
-			xhr = $.get(ajaxurl + "?action=imagify_get_admin_bar_profile&imagifygetadminbarprofilenonce="+ $('#imagifygetadminbarprofilenonce').val())
+			xhr = $.get(ajaxurl + concat + "action=imagify_get_admin_bar_profile&imagifygetadminbarprofilenonce="+ $('#imagifygetadminbarprofilenonce').val())
 			.done(function(response){
 				$adminBarProfile.html(response.data);
 				$('#wp-admin-bar-imagify-profile-loading').remove();

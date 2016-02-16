@@ -1,5 +1,7 @@
 jQuery(function($){
 
+	var concat = ajaxurl.indexOf("?") > 0 ? "&" : "?";
+
 	// avoid error on IE
 	var imagify = {
 			log: function (content) {
@@ -84,7 +86,7 @@ jQuery(function($){
 			imageUrl: imagifyBulk.waitImageUrl
 		});
 		
-		$.get(ajaxurl+"?action=imagify_get_unoptimized_attachment_ids&optimization_level="+$optimization_level+"&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
+		$.get(ajaxurl+concat+"action=imagify_get_unoptimized_attachment_ids&optimization_level="+$optimization_level+"&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val())
 		.done(function(response) {
 			if( !response.success ) {
 				$obj.removeAttr('disabled');
@@ -120,7 +122,7 @@ jQuery(function($){
 				swal.close();
 				
 				var config = {
-					'lib': ajaxurl+"?action=imagify_bulk_upload&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val(),
+					'lib': ajaxurl+concat+"action=imagify_bulk_upload&imagifybulkuploadnonce="+$('#imagifybulkuploadnonce').val(),
 					'images': response.data
 				}
 
