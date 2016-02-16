@@ -44,26 +44,3 @@ function get_imagify_attachment_backup_path( $file_path ) {
 	$backup_path = str_replace( $upload_basedir, $backup_dir, $file_path );
 	return $backup_path;
 }
-
-/**
- * Run an async job to optimize images in background
- *
- * @param $body (array) Contains the usual $_POST
- *
- * @since 1.4
- **/
-function imagify_do_async_job( $body ) {
-	if ( isset( $body['transient_id'] ) ) {
-		set_transient( 'imagify-async-in-progress-' . $body['transient_id'], true );
-	}
-
-	$args = array(
-		'timeout'   => 0.01,
-		'blocking'  => false,
-		'body'      => $body,
-		'cookies'   => $_COOKIE,
-		'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
-	);
-
-	wp_remote_post( admin_url( 'admin-ajax.php' ), $args );
-}

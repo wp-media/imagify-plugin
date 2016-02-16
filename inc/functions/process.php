@@ -137,3 +137,26 @@ function do_imagify( $file_path, $backup, $optimization_level, $resize = array()
 
 	return $response;
 }
+
+/**
+ * Run an async job to optimize images in background
+ *
+ * @param $body (array) Contains the usual $_POST
+ *
+ * @since 1.4
+ **/
+function imagify_do_async_job( $body ) {
+	if ( isset( $body['transient_id'] ) ) {
+		set_transient( 'imagify-async-in-progress-' . $body['transient_id'], true );
+	}
+
+	$args = array(
+		'timeout'   => 0.01,
+		'blocking'  => false,
+		'body'      => $body,
+		'cookies'   => $_COOKIE,
+		'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+	);
+
+	wp_remote_post( admin_url( 'admin-ajax.php' ), $args );
+}
