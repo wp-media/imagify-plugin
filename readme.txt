@@ -137,6 +137,8 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.4 =
 * Interface
  * Medias: Click a button to open images comparison between Original and Optimized (available for big enought images)
+* Improvement
+ * Add async method to optimize resized images
 
 = 1.3.6 =
 * Improvement
