@@ -438,10 +438,6 @@
 											bottom: - ( $(this).scrollTop() )
 										});
 									});
-
-									console.log(windowH);
-									console.log(ttH);
-									console.log(ttTop);
 								}
 
 							});
