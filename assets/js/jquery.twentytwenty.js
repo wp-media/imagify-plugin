@@ -322,10 +322,11 @@
 		var $ori_parent = $('.post-php').find('.wp_attachment_image'),
 			$thumbnail	= $ori_parent.find('.thumbnail'),
 			thumb		= { src: $thumbnail.prop('src'), width: $thumbnail.width(), height: $thumbnail.height() },
-			ori_source	= { src: $('#imagify-full-original').val(), size: $('#imagify-full-original-size').val() };
+			ori_source	= { src: $('#imagify-full-original').val(), size: $('#imagify-full-original-size').val() },
+			$optimize_btn = $('#misc-publishing-actions').find('.misc-pub-imagify').find('.button-primary');
 
 		// if shown image > 300, use twentytwenty
-		if ( thumb.width > 300 && $('#imagify-full-original').length > 0 ) {
+		if ( thumb.width > 300 && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
 
 			var imgs_loaded = 0,
 				filesize	= $('.misc-pub-filesize').find('strong').text(),
@@ -366,8 +367,10 @@
 			);
 
 			$('#imagify-start-comparison').on('click.imagify', function(){
+				
+				var $modal = $( $(this).data('target') );
 
-				$( $(this).data('target') ).find('.imagify-modal-content').css({
+				$modal.find('.imagify-modal-content').css({
 					'width'		: ($(window).outerWidth()*0.95) + 'px',
 					'max-width'	: thumb.width
 				});
@@ -392,10 +395,51 @@
 								labelBefore: 	imagifyTTT.labels.original_l,
 								labelAfter: 	imagifyTTT.labels.optimized_l
 							}, function(){
+
+								var windowH	= $(window).height(),
+									ttH 	= $('.twentytwenty-container').height(),
+									ttTop	= $('.twentytwenty-wrapper').position().top;
+
 								if ( ! $tt.closest('.imagify-modal-content').hasClass('loaded') ) {
 									$tt.closest('.imagify-modal-content').removeClass('loading').addClass('loaded');
 									draw_me_a_chart( $('.imagify-level-optimized').find('.imagify-chart').find('canvas') );
 								}
+
+								// check if image height is to big
+								if ( windowH < ttH && ! $modal.hasClass('modal-is-too-high') ) {
+									$modal.addClass('modal-is-too-high');
+
+									var $handle		= $modal.find('.twentytwenty-handle'),
+										$labels		= $modal.find('.twentytwenty-label-content'),
+										$datas		= $modal.find('.imagify-comparison-levels'),
+										datasH		= $datas.outerHeight(),
+										handle_pos	= ( windowH - ttTop - $handle.height() ) / 2,
+										labels_pos	= ( windowH - ttTop * 3 - datasH );
+
+									$handle.css({
+										top: handle_pos
+									});
+									$labels.css({
+										top: labels_pos,
+										bottom: 'auto'
+									});
+									$modal.find('.twentytwenty-wrapper').css({
+										paddingBottom: datasH
+									});
+
+									$modal.find('.imagify-modal-content').on('scroll.imagify', function(){
+										$handle.css({
+											top: handle_pos + $(this).scrollTop()
+										});
+										$labels.css({
+											top: labels_pos + $(this).scrollTop()
+										});
+										$datas.css({
+											bottom: - ( $(this).scrollTop() )
+										});
+									});
+								}
+
 							});
 							clearInterval( check_load );
 							check_load = null;
@@ -405,8 +449,20 @@
 			});
 		}
 		// else put images next to next
-		else {
+		else if ( thumb.width < 300 && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
 
+		}
+		// if image has no backup
+		else if ( $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() === '' ) {
+			// do nothing ?
+		}
+		// in case image is not optimized
+		else {
+			$('[id^="imgedit-open-btn-"]').before('<span class="spinner imagify-hidden"></span><a class="imagify-button-primary button-primary imagify-optimize-trigger" id="imagify-optimize-trigger" href="' + $optimize_btn.attr('href') + '">' + imagifyTTT.labels.optimize + '</a>');
+
+			$('#imagify-optimize-trigger').on('click', function(){
+				$(this).prev('.spinner').removeClass('imagify-hidden').addClass('is-active');
+			});
 		}
 
 	}

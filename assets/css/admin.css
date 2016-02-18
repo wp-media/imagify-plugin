@@ -30,6 +30,10 @@ body.imagify-modal-is-open {
 	background: rgba(0, 0, 0, 0) url("../images/spinner.gif") no-repeat scroll 0 0 / 20px 20px;
 	opacity: 0.7;
 }
+.spinner.imagify-hidden {
+	width: 0;
+	margin: 4px 0 0 0;
+}
 
 .misc-pub-section.misc-pub-imagify h4 {
 	font-size: 14px;
@@ -1151,7 +1155,8 @@ ul.imagify-datas-details.imagify-datas-details {
 	float: left;
 	width: 50%;
 }
-.media-sidebar .compat-field-imagify .imagify-datas-actions-links a {
+.media-sidebar .compat-field-imagify .imagify-datas-actions-links a,
+.submitbox .misc-pub-imagify .imagify-datas-actions-links a {
 	display: block;
 	width: auto;
 	float: none;
@@ -1632,16 +1637,24 @@ ul.imagify-datas-details.imagify-datas-details {
 }
 
 .imagify-number-you-optimized .number {
-	float: left;
-	margin-right: 15px;
+	display: table-cell;
+	padding-right: 15px;
 	font-size: 36px;
 	font-weight: bold;
 	line-height: 1.1;
+	vertical-align: middle;
 }
 .imagify-number-you-optimized .text {
-	display: block;
+	display: table-cell;
+	vertical-align: middle;
 	overflow: hidden;
 	font-size: 12px;
+}
+.imagify-number-you-optimized .text br {
+	display: none;
+}
+.imagify-number-you-optimized > p {
+	display: table;
 }
 .imagify-number-you-optimized {
 	padding-bottom: 0.85em;

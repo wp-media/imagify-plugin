@@ -3,7 +3,7 @@ Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.4.2
-Stable tag: 1.4
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -133,6 +133,15 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+
+= 1.4.1 =
+* Interface
+ * Medias: better comparison for big portrait images
+ * Medias: Don't display the "Compare Original VS Optimized" button for images without backup
+
+* Bug Fix
+ * WPML: Fix AJAX error caused by WPML to avoid issue during the API key validation process
+ * Yoast: Remove JS error caused by Yoast SEO on the attachment edit screen to avoid issue with our "Compare Original VS Optimized"
 
 = 1.4 =
 * Interface
