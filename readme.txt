@@ -137,6 +137,11 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.4.1 =
 * Interface
  * Medias: better comparison for big portrait images
+ * Medias: Don't display the "Compare Original VS Optimized" button for images without backup
+
+* Bug Fix
+ * WPML: Fix AJAX error caused by WPML to avoid issue during the API key validation process
+ * Yoast: Remove JS error caused by Yoast SEO on the attachment edit screen to avoid issue with our "Compare Original VS Optimized"
 
 = 1.4 =
 * Interface
