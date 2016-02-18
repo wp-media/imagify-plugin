@@ -326,7 +326,7 @@
 			$optimize_btn = $('#misc-publishing-actions').find('.misc-pub-imagify').find('.button-primary');
 
 		// if shown image > 300, use twentytwenty
-		if ( thumb.width > 300 && $('#imagify-full-original').length > 0 ) {
+		if ( thumb.width > 300 && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
 
 			var imgs_loaded = 0,
 				filesize	= $('.misc-pub-filesize').find('strong').text(),
@@ -449,8 +449,12 @@
 			});
 		}
 		// else put images next to next
-		else if ( thumb.width < 300 && $('#imagify-full-original').length > 0 ) {
+		else if ( thumb.width < 300 && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
 
+		}
+		// if image has no backup
+		else if ( $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() === '' ) {
+			// do nothing ?
 		}
 		// in case image is not optimized
 		else {
