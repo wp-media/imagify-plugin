@@ -48,8 +48,12 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 		'title'  => sprintf( __( 'Rate Imagify on %s', 'imagify' ), 'WordPress.org' ),
 		'href'   => 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform',
 	) );
-
+	
 	// Quota & Profile informations
+	if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
+		return;
+	}
+	
 	if ( ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key', false ) ) {
 		$wp_admin_bar->add_menu( array(
 			'parent' => 'imagify',
