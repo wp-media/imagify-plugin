@@ -510,6 +510,16 @@ td .imagify-chart {
 	color: #FFF;
 	background: #412355;
 }
+.media_page_imagify-bulk-optimization .imagify-rkt-notice {
+	margin-left: 2px;
+	margin-right: 20px;
+}
+@media (max-width: 782px) {
+	.media_page_imagify-bulk-optimization .imagify-rkt-notice {
+		margin-left: 0;
+		margin-right: 12px;
+	}
+}
 .imagify-rkt-notice .imagify-cross {
 	position: absolute;
 	right: 8px; top: 50%;
