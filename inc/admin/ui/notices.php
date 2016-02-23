@@ -257,3 +257,73 @@ function _imagify_warning_over_quota_notice() {
 	</div>	
 	<?php
 }
+
+add_action( 'admin_notices', '__imagify_rocket_notice' );
+function __imagify_rocket_notice() {
+	$current_screen  = get_current_screen();
+	
+	// Don't duplicate the notice on the "Upload New Media" screen
+	if ( 'admin_notices' === current_filter() && ( isset( $current_screen ) && 'media' === $current_screen->base ) ) {
+		return;
+	}
+
+	if ( 'admin_notices' === current_filter() && ( isset( $current_screen ) && 'settings_page_imagify' === $current_screen->base ) ) {
+		return;
+	}
+	
+	$boxes = get_user_meta( $GLOBALS['current_user']->ID, 'imagify_boxes', true );
+	
+	if ( defined( 'WP_ROCKET_VERSION' ) || in_array( __FUNCTION__, (array) $boxes ) ) {
+		return;
+	}
+
+	$dismiss_url = wp_nonce_url(
+		admin_url( 'admin-post.php?action=imagify_ignore&box=' . __FUNCTION__ ),
+		'imagify_ignore_' . __FUNCTION__
+	);
+
+	$coupon_code = 'IMAGIFY20';
+	$wprocket_url = 'http://wp-rocket.me/pricing';
+	
+	switch( get_locale() ) {
+		case 'fr_FR' :
+			$wprocket_url = 'http://wp-rocket.me/fr/offres/';
+			break;
+		case 'es_ES' :
+			$wprocket_url = 'http://wp-rocket.me/es/precios/';
+			break;
+		case 'it_IT' :
+			$wprocket_url = 'http://wp-rocket.me/it/offerte/';
+			break;
+		case 'de_DE' :
+			$wprocket_url = 'http://wp-rocket.me/de/preise/';
+			break;
+	}
+	?>
+
+	<div class="updated imagify-rkt-notice">
+		<a href="<?php echo $dismiss_url; ?>" class="imagify-cross"><span class="dashicons dashicons-no"></span></a>
+		
+		<p class="logo">
+			<img src="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket2x.png 2x" alt="WP Rocket" width="118" height="32">
+		</p>
+		<p class="msg">
+			<?php
+				esc_html_e( 'Discover the best caching plugin to speed up your website.', 'imagify');
+				echo '<br>';
+				printf(
+					esc_html__( '%sGet %s off%s with this coupon code:%s', 'imagify' ),
+					'<strong>', '20%', '</strong>', ' ' . $coupon_code
+				);
+			?>
+		</p>
+		<p class="coupon">
+			<span class="coupon-code"><?php echo $coupon_code; ?></span>
+		</p>
+		<p class="cta">
+			<a href="<?php echo $wprocket_url; ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket now', 'imagify' ); ?></a>
+		</p>
+	</div>
+
+	<?php
+}
