@@ -327,3 +327,52 @@ function __imagify_rocket_notice() {
 
 	<?php
 }
+
+/**
+ * This notice is displayed to rate the plugin after 100 optimization & 7 days after the first installation
+ *
+ * @since 1.4.2
+ */
+add_action( 'all_admin_notices', '_imagify_rating_notice' );
+function _imagify_rating_notice() {
+	$user_images_count = get_site_transient( 'imagify_user_images_count' );
+	
+	if ( ! $user_images_count || get_site_transient( 'imagify_seen_rating_notice' ) ) {
+		return;
+	}
+	
+	$current_screen  = get_current_screen();
+	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'rating', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
+		return;
+	}
+	?>
+	<div class="clear"></div>
+	<div class="updated imagify-notice below-h2">
+		<div class="imagify-notice-logo">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
+		</div>
+		<div class="imagify-notice-content">
+			<?php
+			$imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
+			?>
+			<p><?php printf( __( '%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and speed up your website by reducing your images size.', 'imagify' ), '<strong>', '</strong>', $user_images_count ); ?></p>
+			<p class="imagify-rate-us">
+				<?php printf( __( '%sDo you like this plugin?%s Please take a few seconds to %srate it on WordPress.org%s!', 'imagify' ), '<strong>', '</strong><br />', '<a href="' . $imagify_rate_url . '">', '</a>' ); ?>
+				<br>
+				<a class="stars" href="<?php echo $imagify_rate_url; ?>">☆☆☆☆☆</a>
+			</p>
+		</div>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'rating' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	</div>
+	<?php
+}
+
+add_action( 'imagify_dismiss_notice', '_imagify_clear_scheduled_rating' );
+function _imagify_clear_scheduled_rating( $notice ) {
+	if ( 'rating' === $notice ) {
+		set_site_transient( 'do_imagify_rating_cron', 'no' );
+		wp_clear_scheduled_hook( 'imagify_rating_event' );
+	}
+}

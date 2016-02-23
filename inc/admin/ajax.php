@@ -358,8 +358,19 @@ function _do_admin_post_imagify_dismiss_notice() {
 			wp_nonce_ays( '' );
 		}
 	}
+	
+	$notice = $_GET['notice'];
 
-	imagify_dismiss_notice( $_GET['notice'] );
+	imagify_dismiss_notice( $notice );
+	
+	/**
+	 * Fires when a notice is dismissed.
+	 *
+	 * @since 1.4.2
+	 *
+	 * @param int $notice The notice slug
+	*/
+	do_action( 'imagify_dismiss_notice', $notice );
 	
 	if ( ! defined( 'DOING_AJAX' ) ) {
 		wp_safe_redirect( wp_get_referer() );
