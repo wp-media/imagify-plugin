@@ -220,7 +220,7 @@ function _imagify_warning_grid_view_notice() {
 }
 
 /**
- * 
+ * This warning is displayed to warn the user that its quota is consumed for the current month
  *
  * @since 1.1.1
  */
@@ -258,29 +258,16 @@ function _imagify_warning_over_quota_notice() {
 	<?php
 }
 
-add_action( 'admin_notices', '__imagify_rocket_notice' );
-function __imagify_rocket_notice() {
+add_action( 'admin_notices', '_imagify_rocket_notice' );
+function _imagify_rocket_notice() {
 	$current_screen  = get_current_screen();
-	
-	// Don't duplicate the notice on the "Upload New Media" screen
-	if ( 'admin_notices' === current_filter() && ( isset( $current_screen ) && 'media' === $current_screen->base ) ) {
+	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+		
+	if ( ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' !== $current_screen->base ) || in_array( 'wp-rocket', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
 		return;
 	}
 
-	if ( 'admin_notices' === current_filter() && ( isset( $current_screen ) && 'settings_page_imagify' === $current_screen->base ) ) {
-		return;
-	}
-	
-	$boxes = get_user_meta( $GLOBALS['current_user']->ID, 'imagify_boxes', true );
-	
-	if ( defined( 'WP_ROCKET_VERSION' ) || in_array( __FUNCTION__, (array) $boxes ) ) {
-		return;
-	}
-
-	$dismiss_url = wp_nonce_url(
-		admin_url( 'admin-post.php?action=imagify_ignore&box=' . __FUNCTION__ ),
-		'imagify_ignore_' . __FUNCTION__
-	);
+	$dismiss_url = get_imagify_admin_url( 'dismiss-notice', 'wp-rocket' );
 
 	$coupon_code = 'IMAGIFY20';
 	$wprocket_url = 'http://wp-rocket.me/pricing';
