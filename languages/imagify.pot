@@ -1,0 +1,919 @@
+# Loco Gettext template
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Imagify\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: Fri Feb 12 2016 15:00:09 GMT+0100 (CET)\n"
+"POT-Revision-Date: Fri Feb 19 2016 11:04:48 GMT+0100 (CET)\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: ..\n"
+"X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
+"__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;__ngettext_noop:1,2;"
+"_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
+"esc_attr__:1;esc_html__:1;esc_attr_e:1;esc_html_e:1;esc_attr_x:1,2c;"
+"esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;transChoice:1,2\n"
+"X-Generator: Loco - https://localise.biz/"
+
+# @todo Is translation of plugin URI necessary/desirable?
+#. URI of the plugin
+msgid "https://wordpress.org/plugins/imagify"
+msgstr ""
+
+# @todo Superlatives like “most advanced” usually indicate lack of argument and immediately bring up suspicion of low quality.
+#. Description of the plugin
+msgid ""
+"Dramaticaly reduce image file sizes without loosing quality, make your "
+"website load faster, boost your SEO and save money on your bandwith using "
+"Imagify, the new most advanced image optimization tool."
+msgstr ""
+
+# @todo Context should be provided for translators. Also, use ellipsis (https://en.wikipedia.org/wiki/Ellipsis) as 1 character (http://unicode.org/cldr/utility/character.jsp?a=2026)
+#: ../inc/admin/ajax.php:118 ../inc/admin/meta-boxes.php:29 ..
+#: /inc/functions/admin-ui.php:99 ../inc/functions/admin-ui.php:127 ..
+#: /inc/functions/admin-ui.php:133 ../inc/functions/admin-ui.php:139 ..
+#: /inc/functions/admin-ui.php:175 ../inc/functions/admin-ui.php:181
+msgid "Optimizing..."
+msgstr ""
+
+# @todo Context should be provided for translators.
+#: ../inc/admin/ajax.php:118 ../inc/admin/enqueue.php:163 ../inc/admin/meta-boxes.
+#: php:34 ../inc/functions/admin-ui.php:181
+msgid "Optimize"
+msgstr ""
+
+# @todo Typo (capitalization). Also let’s use exclamation marks sparely, they’re not as common in English as they are in French or German.
+#: ../inc/admin/ajax.php:416
+msgid "Oops, It's almost over!"
+msgstr ""
+
+# @todo %s = 2 new lines. Problem: May not be suitable in all languages, should be inline HTML.
+#: ../inc/admin/ajax.php:417
+#, php-format
+msgid ""
+"You have almost used all your credit.%sDon't forget to upgrade your "
+"subscription to continue optimizing your images."
+msgstr ""
+
+# @todo Is this a heading? Otherwise don’t capitalize.
+#: ../inc/admin/ajax.php:418 ../inc/admin/ui/bulk.php:22
+msgid "View My Subscription"
+msgstr ""
+
+# @todo Typo (capitalization). Also let’s use exclamation marks sparely, they’re not as common in English as they are in French or German.
+#: ../inc/admin/ajax.php:426 ../inc/admin/enqueue.php:208 ../inc/admin/ui/notices.
+#: php:251
+msgid "Oops, It's Over!"
+msgstr ""
+
+# @todo Inappropriate use of %s. Translators should be able to switch order of arguments, therefore should be %1$s and %2$s.
+#: ../inc/admin/ajax.php:427 ../inc/admin/enqueue.php:224 ../inc/admin/ui/notices.
+#: php:253
+#, php-format
+msgid ""
+"You have consumed all your credit for this month. You will have <strong>%s "
+"back on %s</strong>."
+msgstr ""
+
+# @todo Is this a heading? Otherwise don’t capitalize.
+#: ../inc/admin/ajax.php:428
+msgid "Upgrade My Subscription"
+msgstr ""
+
+# @todo Is this a heading? Then capitalize.
+#: ../inc/admin/ajax.php:447 ../inc/admin/ui/bulk.php:16
+msgid "Account status"
+msgstr ""
+
+#: ../inc/admin/ajax.php:448 ../inc/admin/ui/bulk.php:17
+msgid "Your subscription:"
+msgstr ""
+
+#: ../inc/admin/ajax.php:456 ../inc/admin/ui/bulk.php:47
+#, php-format
+msgid "You have %s space credit left"
+msgstr ""
+
+#: ../inc/admin/ajax.php:468
+msgid "View my subscription"
+msgstr ""
+
+# @todo The use of typographic apostrophes is recommended, use U+2019 (https://en.wikipedia.org/wiki/Apostrophe#Typographic_form)
+#: ../inc/admin/enqueue.php:121
+msgid "Let's get you started!"
+msgstr ""
+
+# @todo WordPress spells email as “e-mail”. Also “e-mail address” would be more appropriate here.
+#: ../inc/admin/enqueue.php:122
+msgid "Enter your email to get an API key:"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:123
+msgid "Sign Up"
+msgstr ""
+
+# @todo WordPress spells email as “e-mail”. Also “e-mail address” would be more appropriate here. Use period instead of exclamation mark.
+#: ../inc/admin/enqueue.php:124
+msgid "You need to specify an email!"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:125 ../inc/admin/enqueue.php:131
+msgid "Congratulations!"
+msgstr ""
+
+# @todo WordPress spells email as “e-mail”. Also “with your private API key” would add meaning.
+#: ../inc/admin/enqueue.php:126
+msgid ""
+"Your account has been succesfully created. Please check your mailbox, you "
+"are going to receive an email with API key."
+msgstr ""
+
+# @todo Exclamation mark needed? Context for translators?
+#: ../inc/admin/enqueue.php:127
+msgid "Connect to Imagify!"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:128
+msgid "Paste your API key below:"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:129
+msgid "Connect me"
+msgstr ""
+
+# @todo Should rather be something like “Validating…” to be consistent with “Optimizing…”
+#: ../inc/admin/enqueue.php:130
+msgid "Check in progress..."
+msgstr ""
+
+#: ../inc/admin/enqueue.php:132
+msgid ""
+"Your API key is valid. You can now configure the Imagify settings to "
+"optimize your images."
+msgstr ""
+
+#: ../inc/admin/enqueue.php:133 ../inc/admin/ui/options.php:85
+msgid "Your API key is valid."
+msgstr ""
+
+#: ../inc/admin/enqueue.php:150
+msgid "Don't Need a Parachute?"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:151
+msgid ""
+"If you keep this option deactivated, you won't be able to re-optimize your "
+"images to another compression level and restore your original images in case "
+"of need."
+msgstr ""
+
+#: ../inc/admin/enqueue.php:164 ../inc/functions/admin-ui.php:75
+msgid "Restore Original"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:178
+msgid "Original Image"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:179
+msgid "Optimized Image"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:180
+msgid "Compare Original VS Optimized"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:181 ../inc/admin/ui/options.php:358 ..
+#: /inc/admin/ui/options.php:480
+msgid "Close"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:182 ../inc/admin/ui/options.php:411 ..
+#: /inc/admin/ui/options.php:421 ../inc/admin/ui/options.php:441 ..
+#: /inc/admin/ui/options.php:462
+msgid "File Size:"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:183 ../inc/admin/ui/options.php:425 ..
+#: /inc/admin/ui/options.php:445 ../inc/admin/ui/options.php:466 ..
+#: /inc/functions/admin-ui.php:44
+msgid "Original Saving:"
+msgstr ""
+
+# @todo use ellipsis as 1 character (http://unicode.org/cldr/utility/character.jsp?a=2026)
+#: ../inc/admin/enqueue.php:198
+msgid "Please wait..."
+msgstr ""
+
+#: ../inc/admin/enqueue.php:199
+msgid ""
+"We are trying to get your unoptimized images, it may take time depending on "
+"the number of images."
+msgstr ""
+
+# @todo Remove capitalization + exclamation mark.
+#: ../inc/admin/enqueue.php:201
+msgid "Oops, There is something wrong!"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:202
+msgid ""
+"An unknow error occurred when we tried to get all your unoptimized images. "
+"Try again and if the issue still persist, please contact us!"
+msgstr ""
+
+# @todo Context for translators should be provided.
+#: ../inc/admin/enqueue.php:204 ../inc/admin/upload.php:38 ../inc/admin/ui/bulk.
+#: php:257
+msgid "Optimized"
+msgstr ""
+
+# @todo Context for translators should be provided.
+#: ../inc/admin/enqueue.php:205 ../inc/admin/upload.php:39
+msgid "Unoptimized"
+msgstr ""
+
+# @todo Context for translators should be provided.
+#: ../inc/admin/enqueue.php:206
+msgid "Error"
+msgstr ""
+
+# @todo Context for translators should be provided.
+#: ../inc/admin/enqueue.php:209
+msgid "Hold on!"
+msgstr ""
+
+#: ../inc/admin/enqueue.php:210
+msgid "All your images have been optimized by Imagify. Congratulations!"
+msgstr ""
+
+# @todo Context for translators should be provided of what %1$s and %2$s represent.
+#: ../inc/admin/enqueue.php:212
+#, php-format
+msgid ""
+"Discover @imagify, the new compression tool to optimize your images for free."
+" I saved %1$s out of %2$s!"
+msgstr ""
+
+# @todo What is going to happen when user does leave the page?
+#: ../inc/admin/enqueue.php:216
+msgid "Imagify is still processing. Are you sure you want to leave this page?"
+msgstr ""
+
+# @todo Better: “To continue optimizing your images”. Also, the link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position.
+#: ../inc/admin/enqueue.php:221 ../inc/admin/enqueue.php:224 ..
+#: /inc/admin/ui/notices.php:253
+#, php-format
+msgid ""
+"To continue to optimize your images, log in to your Imagify account to %sbuy "
+"a pack or subscribe to a plan%s."
+msgstr ""
+
+#: ../inc/admin/enqueue.php:224
+msgid "F j, Y"
+msgstr ""
+
+#: ../inc/admin/menu.php:24 ../inc/admin/menu.php:24 ../inc/admin/plugins.php:13 .
+#: ./inc/admin/ui/bulk.php:78 ../inc/common/admin-bar.php:39
+msgid "Bulk Optimization"
+msgstr ""
+
+#: ../inc/admin/meta-boxes.php:19 ../inc/functions/admin-ui.php:168
+msgid "Invalid API key"
+msgstr ""
+
+#: ../inc/admin/meta-boxes.php:21 ../inc/functions/admin-ui.php:170
+msgid "Check your Settings"
+msgstr ""
+
+#: ../inc/admin/options.php:107
+msgid "Cheatin&#8217; uh?"
+msgstr ""
+
+# @todo Add meaning for users. is it important to know what an options page is? Why? Is there any action required?
+#: ../inc/admin/options.php:115
+msgid "<strong>ERROR</strong>: options page not found."
+msgstr ""
+
+#: ../inc/admin/plugins.php:14 ../inc/admin/ui/options.php:70 ../inc/common/admin-
+#: bar.php:30
+msgid "Settings"
+msgstr ""
+
+#: ../inc/admin/upload.php:40
+msgid "Errors"
+msgstr ""
+
+#: ../inc/admin/upload.php:43
+msgid "Filter by status"
+msgstr ""
+
+#: ../inc/admin/upload.php:46
+msgid "All images"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:59
+msgid "Upgrade your account to continue optimizing your images"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:63
+msgid "More info"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:88
+msgid "Information"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:90
+msgid ""
+"Please be aware that optimizing a large number of images can take a while "
+"depending on your server and network speed."
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:91
+msgid ""
+"You must keep this page open while the bulk optimizaton is processing. If "
+"you leave you can come back to continue where it left off."
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:99
+msgid "Select Your Compression Level"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:102 ../inc/admin/ui/bulk.php:130 ..
+#: /inc/admin/ui/options.php:129 ../inc/admin/ui/options.php:319 ..
+#: /inc/admin/ui/options.php:382 ../inc/admin/ui/options.php:399 ..
+#: /inc/admin/ui/options.php:459 ../inc/classes/class-attachment.php:135 ..
+#: /inc/functions/admin-ui.php:127
+msgid "Ultra"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:105 ../inc/admin/ui/bulk.php:125 ..
+#: /inc/admin/ui/options.php:124 ../inc/admin/ui/options.php:331 ..
+#: /inc/admin/ui/options.php:381 ../inc/admin/ui/options.php:394 ..
+#: /inc/admin/ui/options.php:438 ../inc/classes/class-attachment.php:138 ..
+#: /inc/functions/admin-ui.php:133
+msgid "Aggressive"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:108 ../inc/admin/ui/bulk.php:120 ..
+#: /inc/admin/ui/options.php:119 ../inc/admin/ui/options.php:343 ..
+#: /inc/admin/ui/options.php:380 ../inc/admin/ui/options.php:389 ..
+#: /inc/admin/ui/options.php:418 ../inc/classes/class-attachment.php:141 ..
+#: /inc/functions/admin-ui.php:139
+msgid "Normal"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:112
+msgid "Your default setting:"
+msgstr ""
+
+# @todo Use typographical apostrophe. Also, the link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position.
+#: ../inc/admin/ui/bulk.php:139
+#, php-format
+msgid "Don't forget to check %syour settings%s before bulk optimization."
+msgstr ""
+
+# @todo Use typographical apostrophe.
+#: ../inc/admin/ui/bulk.php:149
+msgid "Imagif'em all"
+msgstr ""
+
+# @todo Context for translators. Also, “over to”?
+#: ../inc/admin/ui/bulk.php:156
+#, php-format
+msgid "All images which are over to %s could be optimized using the pro version."
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:167
+msgid "Overview"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:177
+msgid "Statistics"
+msgstr ""
+
+# @todo Use typographical apostrophe. Why isn’t the string constructed with an argument (%s) that represents a value?
+#: ../inc/admin/ui/bulk.php:189
+msgid "that's the number of images you optimized with Imagify"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:194
+msgid "Original size"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:199
+msgid "Optimized size"
+msgstr ""
+
+# @todo New lines should not be added via argument, but via inline HTML.
+#: ../inc/admin/ui/bulk.php:210
+#, php-format
+msgid "that's the size you saved %sby using Imagify"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:230
+msgid "Well done!"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:231
+#, php-format
+msgid "you saved %1$s out of %2$s"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:236
+msgid "Share your awesome result"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:251
+msgid "Compression process results"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:254
+msgid "Filename"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:255
+msgid "Status"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:256 ../inc/admin/ui/options.php:379 ..
+#: /inc/admin/ui/options.php:384 ../inc/admin/ui/options.php:408
+msgid "Original"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:258
+msgid "Percentage"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:259
+msgid "Thumbnails optimized"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:260
+msgid "Overall saving"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:265
+msgid "file"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:266
+msgid "error"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:267
+msgid "Total:"
+msgstr ""
+
+#: ../inc/admin/ui/bulk.php:268
+msgid "Gain:"
+msgstr ""
+
+# @todo The link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position.
+#: ../inc/admin/ui/bulk.php:285
+#, php-format
+msgid "%sStart the bulk optimization%s"
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:23
+msgid "Welcome to Imagify, the best way to easily optimize your images!"
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:25 ../inc/admin/ui/notices.php:25 ..
+#: /inc/admin/ui/notices.php:90 ../inc/admin/ui/notices.php:90 ..
+#: /inc/admin/ui/notices.php:181 ../inc/admin/ui/notices.php:181 ..
+#: /inc/admin/ui/notices.php:217 ../inc/admin/ui/notices.php:217 ..
+#: /inc/admin/ui/notices.php:256 ../inc/admin/ui/notices.php:256
+msgid "Dismiss this notice"
+msgstr ""
+
+# @todo Probably don’t capitalize.
+#: ../inc/admin/ui/notices.php:32
+msgid "Create an Account"
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:33
+msgid ""
+"Don't have an Imagify account yet? Optimize your images by creating an "
+"account in a few seconds!"
+msgstr ""
+
+# @todo “it’s” should not be capitalized.
+#: ../inc/admin/ui/notices.php:36
+msgid "Sign up, It's FREE!"
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:42
+msgid "Enter your API Key"
+msgstr ""
+
+# @todo The link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position. Also, “e-mail”.
+#: ../inc/admin/ui/notices.php:43
+#, php-format
+msgid ""
+"Save your API Key you have received by email or you can get it on your "
+"%sImagify account page%s."
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:46
+msgid "I have my API key"
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:52
+msgid "Configure it"
+msgstr ""
+
+# @todo “You just have to”. Better “Just configure a few optimization settings.”
+#: ../inc/admin/ui/notices.php:53
+msgid "It’s almost done! You have just to configure your optimization settings."
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:54
+msgid "Go to Settings"
+msgstr ""
+
+# @todo . instead of !
+#: ../inc/admin/ui/notices.php:85 ../inc/admin/ui/options.php:91
+msgid "Your API key isn't valid!"
+msgstr ""
+
+# @todo The links should be implemented as inline HTML with a placeholders for URLs, in order for translators to be able to switch their positions.
+#: ../inc/admin/ui/notices.php:88
+#, php-format
+msgid ""
+"Go to your Imagify account page to get your API Key and specify it on "
+"%1$syour settings%3$s or %2$screate an account for free%3$s if you don't "
+"have one yet."
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:138
+msgid ""
+"The following plugins are not compatible with this plugin and may cause "
+"unexpected results:"
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:144
+msgid "Deactivate"
+msgstr ""
+
+# @todo . instead of !
+#: ../inc/admin/ui/notices.php:173
+msgid "The external HTTP requests are blocked!"
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:174
+msgid ""
+"You defined the <code>WP_HTTP_BLOCK_EXTERNAL</code> constant in the <code>wp-"
+"config.php</code> to block all external HTTP requests."
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:176
+msgid ""
+"To optimize your images, you have to put the following code in your <code>wp-"
+"config.php</code> file so that it works correctly."
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:177
+msgid "Click on the field and press Ctrl-A to select all."
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:213
+msgid "You're missing out!"
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:214
+msgid "Use the List view to optimize images with Imagify."
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:215
+msgid "Switch to the List View"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:18
+msgid "Is your website too slow?"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:24
+msgid "Discover the best caching plugin to speed up your website."
+msgstr ""
+
+# @todo Links should be implemented as inline HTML with placeholders for URLs.
+#: ../inc/admin/ui/options.php:32
+#, php-format
+msgid "%sGet %s off%s with this coupon code:%s"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:37
+msgid "Get WP Rocket now"
+msgstr ""
+
+# @todo Links should be implemented as inline HTML with placeholders for URLs.
+#: ../inc/admin/ui/options.php:55
+#, php-format
+msgid ""
+"%sDo you like this plugin?%s Please take a few seconds to %srate it on "
+"WordPress.org%s!"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:78
+msgid "API Key"
+msgstr ""
+
+# @todo Links should be implemented as inline HTML with placeholders for URLs.
+#: ../inc/admin/ui/options.php:98
+#, php-format
+msgid "Don't have an API Key yet? %sCreate one, it's FREE%s."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:114
+msgid "Optimization Level"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:134
+msgid "More info?"
+msgstr ""
+
+# @todo Links should be implemented as inline HTML with placeholders for URLs.
+#: ../inc/admin/ui/options.php:141
+#, php-format
+msgid "Need help to choose? %sTry the Visual Comparison%s"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:150 ../inc/admin/ui/options.php:154
+msgid "Auto-Optimize images on upload"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:158
+msgid "Automatically optimize every image you upload to WordPress."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:163 ../inc/admin/ui/options.php:166
+msgid "Backup original images"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:170
+msgid "Keep your original images in a separate folder before optimization process."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:175 ../inc/admin/ui/options.php:178
+msgid "Resize larger images"
+msgstr ""
+
+# @todo Always keep messages intact. This message looks split up.
+#: ../inc/admin/ui/options.php:184
+#, php-format
+msgid "to maximum %s pixels width"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:195
+#, php-format
+msgid ""
+"This option is recommended to reduce larger images. You can save up to 80%% "
+"after resizing. The new width should not be less than your largest thumbnail "
+"width, which is actually %spx."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:202 ../inc/admin/ui/options.php:205
+msgid "EXIF Data"
+msgstr ""
+
+# @todo Use typographical ellipisis
+#: ../inc/admin/ui/options.php:209
+msgid ""
+"Keep all EXIF data from your images. EXIF are informations stored in your "
+"pictures like shutter speed, exposure compensation, ISO, etc..."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:210
+msgid "Learn more"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:212
+msgid ""
+"If you are a photographer, you may be interested in this option if you are "
+"displaying on your pages some info like the model of your camera."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:221
+msgid "Files optimization"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:224
+msgid "You can choose to compress different image sizes created by WordPress here."
+msgstr ""
+
+# @todo Links should be implemented as inline HTML with placeholders for URLs.
+#: ../inc/admin/ui/options.php:226
+#, php-format
+msgid "The %soriginal size%s is %sautomatically optimized%s by Imagify."
+msgstr ""
+
+# @todo . instead of !
+#: ../inc/admin/ui/options.php:229
+msgid "Remember each additional image size will affect your Imagify monthly usage!"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:282
+msgid "Display options"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:287 ../inc/admin/ui/options.php:292
+msgid "Show Admin Bar menu"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:293
+msgid "I want this awesome quick access menu on my admin bar."
+msgstr ""
+
+# @todo Links should be implemented as inline HTML with placeholders for URLs.
+#: ../inc/admin/ui/options.php:308
+#, php-format
+msgid ""
+"Once your settings saved, optimize all your images by using the %sImagify "
+"Bulk Optimization%s feature."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:316
+msgid "You can choose three levels of compression"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:321
+msgid ""
+"This mode will apply all available optimizations for maximum image "
+"compression."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:324
+msgid ""
+"This will provide a huge savings on the initial weight. Sometimes the image "
+"quality could be degraded a little."
+msgstr ""
+
+# @todo Always keep messages intact. This message looks split up.
+#: ../inc/admin/ui/options.php:327
+msgid ""
+"If you want the maximum weight reduction, and you agree to lose some quality "
+"on the images we recommend using this mode."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:333
+msgid ""
+"This mode provides perfect optimization of your images without any "
+"significant quality loss."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:336
+msgid ""
+"This will provide a drastic savings on the initial weight, with a small "
+"reduction in image quality. Most of the time it's not even noticeable."
+msgstr ""
+
+# @todo Always keep messages intact. This message looks split up.
+#: ../inc/admin/ui/options.php:339
+msgid "If you want the maximum weight reduction, we recommend using this mode."
+msgstr ""
+
+#: ../inc/admin/ui/options.php:345
+msgid ""
+"This mode provides lossless optimization, your images will be optimized "
+"without any visible change."
+msgstr ""
+
+# @todo Always keep messages intact. This message looks split up.
+#: ../inc/admin/ui/options.php:348
+msgid "If you want the perfect quality for your images, we recommend you that mode."
+msgstr ""
+
+# @todo Always keep messages intact. This message looks split up.
+#: ../inc/admin/ui/options.php:351
+msgid "Note: the file size reduction will be less, compared to aggressive mode."
+msgstr ""
+
+# @todo Should be numerated arguments + context for translators.
+#: ../inc/admin/ui/options.php:370
+#, php-format
+msgid "I want to compare%s and%s"
+msgstr ""
+
+# @todo %s is what?
+#: ../inc/admin/ui/options.php:387
+#, php-format
+msgid "Original photography about %s"
+msgstr ""
+
+# @todo %s is what?
+#: ../inc/admin/ui/options.php:392 ../inc/admin/ui/options.php:397 ..
+#: /inc/admin/ui/options.php:402
+#, php-format
+msgid "Optimized photography about %s"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:407 ../inc/admin/ui/options.php:417 ..
+#: /inc/admin/ui/options.php:437 ../inc/admin/ui/options.php:458 ..
+#: /inc/functions/admin-ui.php:58
+msgid "Level:"
+msgstr ""
+
+# @todo Use typographical apostrophe.
+#: ../inc/classes/class-attachment.php:520
+msgid ""
+"This size isn't authorized to be optimized. Update your Imagify settings if "
+"you want to optimize it."
+msgstr ""
+
+# @todo %s is what?
+#: ../inc/common/admin-bar.php:48
+#, php-format
+msgid "Rate Imagify on %s"
+msgstr ""
+
+# @todo Use typographical ellipsis.
+#: ../inc/common/admin-bar.php:57
+msgid "Loading..."
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:35
+msgid "New Filesize:"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:51
+msgid "Close details"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:51 ../inc/functions/admin-ui.php:51
+msgid "View details"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:55
+msgid "Original Filesize:"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:61
+msgid "Thumbnails Optimized:"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:62
+msgid "Overall Saving:"
+msgstr ""
+
+# @todo Use typographical ellipsis.
+#: ../inc/functions/admin-ui.php:75
+msgid "Restoring..."
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:99
+msgid "Try again"
+msgstr ""
+
+# @todo %s is what? Also “Re-optimize” (not capitalized)
+#: ../inc/functions/admin-ui.php:127 ../inc/functions/admin-ui.php:133 ..
+#: /inc/functions/admin-ui.php:139
+#, php-format
+msgid "Re-Optimize to %s"
+msgstr ""
+
+# @todo %s is what?
+#: ../inc/functions/admin-ui.php:162
+#, php-format
+msgid "%s can't be optimized"
+msgstr ""
+
+#: ../inc/functions/process.php:30
+msgid ""
+"Sorry, our servers are temporarily unaccessible. Please, try again in a "
+"couple of minutes."
+msgstr ""
+
+#: ../inc/functions/process.php:36
+msgid "External HTTP requests are blocked"
+msgstr ""
+
+#: ../inc/functions/process.php:42
+msgid "File path is empty"
+msgstr ""
+
+#: ../inc/functions/process.php:48
+#, php-format
+msgid "Could not find %s"
+msgstr ""
+
+#: ../inc/functions/process.php:53
+#, php-format
+msgid "%s is not writable"
+msgstr ""
+
+# @todo %s is what?
+#: ../inc/functions/process.php:62
+#, php-format
+msgid "Skipped (%s), image not found."
+msgstr ""
