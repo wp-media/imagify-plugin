@@ -25,7 +25,7 @@ function _do_admin_post_imagify_manual_upload() {
 	
 	$attachment_id = $_GET['attachment_id'];
 	
-	set_transient( 'imagify-async-in-progress-' . $attachment_id, true );
+	set_transient( 'imagify-async-in-progress-' . $attachment_id, true, 10 * MINUTE_IN_SECONDS );
 	
 	$attachment = new Imagify_Attachment( $attachment_id );
 	
