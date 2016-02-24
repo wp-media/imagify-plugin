@@ -310,7 +310,7 @@ function _imagify_rocket_notice() {
 			<span class="coupon-code"><?php echo $coupon_code; ?></span>
 		</p>
 		<p class="cta">
-			<a href="<?php echo $wprocket_url; ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket Now', 'imagify' ); ?></a>
+			<a href="<?php echo $wprocket_url; ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket now', 'imagify' ); ?></a>
 		</p>
 	</div>
 
