@@ -270,22 +270,24 @@ function _imagify_rocket_notice() {
 	$dismiss_url = get_imagify_admin_url( 'dismiss-notice', 'wp-rocket' );
 
 	$coupon_code = 'IMAGIFY20';
-	$wprocket_url = 'http://wp-rocket.me/pricing';
+	$wprocket_url = 'http://wp-rocket.me/';
 	
 	switch( get_locale() ) {
 		case 'fr_FR' :
-			$wprocket_url = 'http://wp-rocket.me/fr/offres/';
+			$wprocket_url = 'http://wp-rocket.me/fr/';
 			break;
 		case 'es_ES' :
-			$wprocket_url = 'http://wp-rocket.me/es/precios/';
+			$wprocket_url = 'http://wp-rocket.me/es/';
 			break;
 		case 'it_IT' :
-			$wprocket_url = 'http://wp-rocket.me/it/offerte/';
+			$wprocket_url = 'http://wp-rocket.me/it/';
 			break;
 		case 'de_DE' :
-			$wprocket_url = 'http://wp-rocket.me/de/preise/';
+			$wprocket_url = 'http://wp-rocket.me/de/';
 			break;
 	}
+	
+	$wprocket_url .=  '?utm_source=imagify-coupon&utm_medium=plugin&utm_campaign=imagify';
 	?>
 
 	<div class="updated imagify-rkt-notice">
@@ -308,7 +310,7 @@ function _imagify_rocket_notice() {
 			<span class="coupon-code"><?php echo $coupon_code; ?></span>
 		</p>
 		<p class="cta">
-			<a href="<?php echo $wprocket_url; ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket now', 'imagify' ); ?></a>
+			<a href="<?php echo $wprocket_url; ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket Now', 'imagify' ); ?></a>
 		</p>
 	</div>
 
