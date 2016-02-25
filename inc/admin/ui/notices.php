@@ -346,7 +346,7 @@ function _imagify_rating_notice() {
 			<?php
 			$imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
 			?>
-			<p><?php printf( __( '%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and speed up your website by reducing your images size.', 'imagify' ), '<strong>', '</strong>', $user_images_count ); ?></p>
+			<p><?php printf( __( '%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and improved your website\'s speed by reducing your images size.', 'imagify' ), '<strong>', '</strong>', $user_images_count ); ?></p>
 			<p class="imagify-rate-us">
 				<?php printf( __( '%sDo you like this plugin?%s Please take a few seconds to %srate it on WordPress.org%s!', 'imagify' ), '<strong>', '</strong><br />', '<a href="' . $imagify_rate_url . '">', '</a>' ); ?>
 				<br>
