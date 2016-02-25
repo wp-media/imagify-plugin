@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Imagify\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: Fri Feb 12 2016 15:00:09 GMT+0100 (CET)\n"
-"POT-Revision-Date: Fri Feb 19 2016 11:04:48 GMT+0100 (CET)\n"
+"POT-Revision-Date: Thu Feb 25 2016 11:18:01 GMT+0100 (CET)\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -46,18 +46,18 @@ msgid "Optimizing..."
 msgstr ""
 
 # @todo Context should be provided for translators.
-#: ../inc/admin/ajax.php:118 ../inc/admin/enqueue.php:163 ../inc/admin/meta-boxes.
-#: php:34 ../inc/functions/admin-ui.php:181
+#: ../inc/admin/ajax.php:118 ../inc/admin/enqueue.php:163 ../inc/admin/enqueue.
+#: php:184 ../inc/admin/meta-boxes.php:34 ../inc/functions/admin-ui.php:181
 msgid "Optimize"
 msgstr ""
 
 # @todo Typo (capitalization). Also let’s use exclamation marks sparely, they’re not as common in English as they are in French or German.
-#: ../inc/admin/ajax.php:416
+#: ../inc/admin/ajax.php:427
 msgid "Oops, It's almost over!"
 msgstr ""
 
 # @todo %s = 2 new lines. Problem: May not be suitable in all languages, should be inline HTML.
-#: ../inc/admin/ajax.php:417
+#: ../inc/admin/ajax.php:428
 #, php-format
 msgid ""
 "You have almost used all your credit.%sDon't forget to upgrade your "
@@ -65,18 +65,18 @@ msgid ""
 msgstr ""
 
 # @todo Is this a heading? Otherwise don’t capitalize.
-#: ../inc/admin/ajax.php:418 ../inc/admin/ui/bulk.php:22
+#: ../inc/admin/ajax.php:429 ../inc/admin/ui/bulk.php:23
 msgid "View My Subscription"
 msgstr ""
 
 # @todo Typo (capitalization). Also let’s use exclamation marks sparely, they’re not as common in English as they are in French or German.
-#: ../inc/admin/ajax.php:426 ../inc/admin/enqueue.php:208 ../inc/admin/ui/notices.
+#: ../inc/admin/ajax.php:437 ../inc/admin/enqueue.php:209 ../inc/admin/ui/notices.
 #: php:251
 msgid "Oops, It's Over!"
 msgstr ""
 
 # @todo Inappropriate use of %s. Translators should be able to switch order of arguments, therefore should be %1$s and %2$s.
-#: ../inc/admin/ajax.php:427 ../inc/admin/enqueue.php:224 ../inc/admin/ui/notices.
+#: ../inc/admin/ajax.php:438 ../inc/admin/enqueue.php:225 ../inc/admin/ui/notices.
 #: php:253
 #, php-format
 msgid ""
@@ -85,25 +85,25 @@ msgid ""
 msgstr ""
 
 # @todo Is this a heading? Otherwise don’t capitalize.
-#: ../inc/admin/ajax.php:428
+#: ../inc/admin/ajax.php:439
 msgid "Upgrade My Subscription"
 msgstr ""
 
 # @todo Is this a heading? Then capitalize.
-#: ../inc/admin/ajax.php:447 ../inc/admin/ui/bulk.php:16
+#: ../inc/admin/ajax.php:458 ../inc/admin/ui/bulk.php:17
 msgid "Account status"
 msgstr ""
 
-#: ../inc/admin/ajax.php:448 ../inc/admin/ui/bulk.php:17
+#: ../inc/admin/ajax.php:459 ../inc/admin/ui/bulk.php:18
 msgid "Your subscription:"
 msgstr ""
 
-#: ../inc/admin/ajax.php:456 ../inc/admin/ui/bulk.php:47
+#: ../inc/admin/ajax.php:467 ../inc/admin/ui/bulk.php:48
 #, php-format
 msgid "You have %s space credit left"
 msgstr ""
 
-#: ../inc/admin/ajax.php:468
+#: ../inc/admin/ajax.php:479
 msgid "View my subscription"
 msgstr ""
 
@@ -210,54 +210,54 @@ msgid "Original Saving:"
 msgstr ""
 
 # @todo use ellipsis as 1 character (http://unicode.org/cldr/utility/character.jsp?a=2026)
-#: ../inc/admin/enqueue.php:198
+#: ../inc/admin/enqueue.php:199
 msgid "Please wait..."
 msgstr ""
 
-#: ../inc/admin/enqueue.php:199
+#: ../inc/admin/enqueue.php:200
 msgid ""
 "We are trying to get your unoptimized images, it may take time depending on "
 "the number of images."
 msgstr ""
 
 # @todo Remove capitalization + exclamation mark.
-#: ../inc/admin/enqueue.php:201
+#: ../inc/admin/enqueue.php:202
 msgid "Oops, There is something wrong!"
 msgstr ""
 
-#: ../inc/admin/enqueue.php:202
+#: ../inc/admin/enqueue.php:203
 msgid ""
 "An unknow error occurred when we tried to get all your unoptimized images. "
 "Try again and if the issue still persist, please contact us!"
 msgstr ""
 
 # @todo Context for translators should be provided.
-#: ../inc/admin/enqueue.php:204 ../inc/admin/upload.php:38 ../inc/admin/ui/bulk.
-#: php:257
+#: ../inc/admin/enqueue.php:205 ../inc/admin/upload.php:38 ../inc/admin/ui/bulk.
+#: php:258
 msgid "Optimized"
 msgstr ""
 
 # @todo Context for translators should be provided.
-#: ../inc/admin/enqueue.php:205 ../inc/admin/upload.php:39
+#: ../inc/admin/enqueue.php:206 ../inc/admin/upload.php:39
 msgid "Unoptimized"
 msgstr ""
 
 # @todo Context for translators should be provided.
-#: ../inc/admin/enqueue.php:206
+#: ../inc/admin/enqueue.php:207
 msgid "Error"
 msgstr ""
 
 # @todo Context for translators should be provided.
-#: ../inc/admin/enqueue.php:209
+#: ../inc/admin/enqueue.php:210
 msgid "Hold on!"
 msgstr ""
 
-#: ../inc/admin/enqueue.php:210
+#: ../inc/admin/enqueue.php:211
 msgid "All your images have been optimized by Imagify. Congratulations!"
 msgstr ""
 
 # @todo Context for translators should be provided of what %1$s and %2$s represent.
-#: ../inc/admin/enqueue.php:212
+#: ../inc/admin/enqueue.php:213
 #, php-format
 msgid ""
 "Discover @imagify, the new compression tool to optimize your images for free."
@@ -265,12 +265,12 @@ msgid ""
 msgstr ""
 
 # @todo What is going to happen when user does leave the page?
-#: ../inc/admin/enqueue.php:216
+#: ../inc/admin/enqueue.php:217
 msgid "Imagify is still processing. Are you sure you want to leave this page?"
 msgstr ""
 
 # @todo Better: “To continue optimizing your images”. Also, the link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position.
-#: ../inc/admin/enqueue.php:221 ../inc/admin/enqueue.php:224 ..
+#: ../inc/admin/enqueue.php:222 ../inc/admin/enqueue.php:225 ..
 #: /inc/admin/ui/notices.php:253
 #, php-format
 msgid ""
@@ -278,12 +278,12 @@ msgid ""
 "a pack or subscribe to a plan%s."
 msgstr ""
 
-#: ../inc/admin/enqueue.php:224
+#: ../inc/admin/enqueue.php:225
 msgid "F j, Y"
 msgstr ""
 
 #: ../inc/admin/menu.php:24 ../inc/admin/menu.php:24 ../inc/admin/plugins.php:13 .
-#: ./inc/admin/ui/bulk.php:78 ../inc/common/admin-bar.php:39
+#: ./inc/admin/ui/bulk.php:79 ../inc/common/admin-bar.php:39
 msgid "Bulk Optimization"
 msgstr ""
 
@@ -321,35 +321,35 @@ msgstr ""
 msgid "All images"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:59
+#: ../inc/admin/ui/bulk.php:60
 msgid "Upgrade your account to continue optimizing your images"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:63
+#: ../inc/admin/ui/bulk.php:64
 msgid "More info"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:88
+#: ../inc/admin/ui/bulk.php:89
 msgid "Information"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:90
+#: ../inc/admin/ui/bulk.php:91
 msgid ""
 "Please be aware that optimizing a large number of images can take a while "
 "depending on your server and network speed."
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:91
+#: ../inc/admin/ui/bulk.php:92
 msgid ""
 "You must keep this page open while the bulk optimizaton is processing. If "
 "you leave you can come back to continue where it left off."
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:99
+#: ../inc/admin/ui/bulk.php:100
 msgid "Select Your Compression Level"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:102 ../inc/admin/ui/bulk.php:130 ..
+#: ../inc/admin/ui/bulk.php:103 ../inc/admin/ui/bulk.php:131 ..
 #: /inc/admin/ui/options.php:129 ../inc/admin/ui/options.php:319 ..
 #: /inc/admin/ui/options.php:382 ../inc/admin/ui/options.php:399 ..
 #: /inc/admin/ui/options.php:459 ../inc/classes/class-attachment.php:135 ..
@@ -357,7 +357,7 @@ msgstr ""
 msgid "Ultra"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:105 ../inc/admin/ui/bulk.php:125 ..
+#: ../inc/admin/ui/bulk.php:106 ../inc/admin/ui/bulk.php:126 ..
 #: /inc/admin/ui/options.php:124 ../inc/admin/ui/options.php:331 ..
 #: /inc/admin/ui/options.php:381 ../inc/admin/ui/options.php:394 ..
 #: /inc/admin/ui/options.php:438 ../inc/classes/class-attachment.php:138 ..
@@ -365,7 +365,7 @@ msgstr ""
 msgid "Aggressive"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:108 ../inc/admin/ui/bulk.php:120 ..
+#: ../inc/admin/ui/bulk.php:109 ../inc/admin/ui/bulk.php:121 ..
 #: /inc/admin/ui/options.php:119 ../inc/admin/ui/options.php:343 ..
 #: /inc/admin/ui/options.php:380 ../inc/admin/ui/options.php:389 ..
 #: /inc/admin/ui/options.php:418 ../inc/classes/class-attachment.php:141 ..
@@ -373,114 +373,114 @@ msgstr ""
 msgid "Normal"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:112
+#: ../inc/admin/ui/bulk.php:113
 msgid "Your default setting:"
 msgstr ""
 
 # @todo Use typographical apostrophe. Also, the link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position.
-#: ../inc/admin/ui/bulk.php:139
+#: ../inc/admin/ui/bulk.php:140
 #, php-format
 msgid "Don't forget to check %syour settings%s before bulk optimization."
 msgstr ""
 
 # @todo Use typographical apostrophe.
-#: ../inc/admin/ui/bulk.php:149
+#: ../inc/admin/ui/bulk.php:150
 msgid "Imagif'em all"
 msgstr ""
 
 # @todo Context for translators. Also, “over to”?
-#: ../inc/admin/ui/bulk.php:156
+#: ../inc/admin/ui/bulk.php:157
 #, php-format
 msgid "All images which are over to %s could be optimized using the pro version."
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:167
+#: ../inc/admin/ui/bulk.php:168
 msgid "Overview"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:177
+#: ../inc/admin/ui/bulk.php:178
 msgid "Statistics"
 msgstr ""
 
 # @todo Use typographical apostrophe. Why isn’t the string constructed with an argument (%s) that represents a value?
-#: ../inc/admin/ui/bulk.php:189
+#: ../inc/admin/ui/bulk.php:190
 msgid "that's the number of images you optimized with Imagify"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:194
+#: ../inc/admin/ui/bulk.php:195
 msgid "Original size"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:199
+#: ../inc/admin/ui/bulk.php:200
 msgid "Optimized size"
 msgstr ""
 
 # @todo New lines should not be added via argument, but via inline HTML.
-#: ../inc/admin/ui/bulk.php:210
+#: ../inc/admin/ui/bulk.php:211
 #, php-format
 msgid "that's the size you saved %sby using Imagify"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:230
+#: ../inc/admin/ui/bulk.php:231
 msgid "Well done!"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:231
+#: ../inc/admin/ui/bulk.php:232
 #, php-format
 msgid "you saved %1$s out of %2$s"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:236
+#: ../inc/admin/ui/bulk.php:237
 msgid "Share your awesome result"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:251
+#: ../inc/admin/ui/bulk.php:252
 msgid "Compression process results"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:254
+#: ../inc/admin/ui/bulk.php:255
 msgid "Filename"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:255
+#: ../inc/admin/ui/bulk.php:256
 msgid "Status"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:256 ../inc/admin/ui/options.php:379 ..
+#: ../inc/admin/ui/bulk.php:257 ../inc/admin/ui/options.php:379 ..
 #: /inc/admin/ui/options.php:384 ../inc/admin/ui/options.php:408
 msgid "Original"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:258
+#: ../inc/admin/ui/bulk.php:259
 msgid "Percentage"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:259
+#: ../inc/admin/ui/bulk.php:260
 msgid "Thumbnails optimized"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:260
+#: ../inc/admin/ui/bulk.php:261
 msgid "Overall saving"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:265
+#: ../inc/admin/ui/bulk.php:266
 msgid "file"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:266
+#: ../inc/admin/ui/bulk.php:267
 msgid "error"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:267
+#: ../inc/admin/ui/bulk.php:268
 msgid "Total:"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:268
+#: ../inc/admin/ui/bulk.php:269
 msgid "Gain:"
 msgstr ""
 
 # @todo The link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position.
-#: ../inc/admin/ui/bulk.php:285
+#: ../inc/admin/ui/bulk.php:286
 #, php-format
 msgid "%sStart the bulk optimization%s"
 msgstr ""
@@ -493,7 +493,8 @@ msgstr ""
 #: /inc/admin/ui/notices.php:90 ../inc/admin/ui/notices.php:90 ..
 #: /inc/admin/ui/notices.php:181 ../inc/admin/ui/notices.php:181 ..
 #: /inc/admin/ui/notices.php:217 ../inc/admin/ui/notices.php:217 ..
-#: /inc/admin/ui/notices.php:256 ../inc/admin/ui/notices.php:256
+#: /inc/admin/ui/notices.php:256 ../inc/admin/ui/notices.php:256 ..
+#: /inc/admin/ui/notices.php:356 ../inc/admin/ui/notices.php:356
 msgid "Dismiss this notice"
 msgstr ""
 
@@ -599,30 +600,37 @@ msgstr ""
 msgid "Switch to the List View"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:18
-msgid "Is your website too slow?"
-msgstr ""
-
-#: ../inc/admin/ui/options.php:24
+#: ../inc/admin/ui/notices.php:301 ../inc/admin/ui/options.php:24
 msgid "Discover the best caching plugin to speed up your website."
 msgstr ""
 
 # @todo Links should be implemented as inline HTML with placeholders for URLs.
-#: ../inc/admin/ui/options.php:32
+#: ../inc/admin/ui/notices.php:304 ../inc/admin/ui/options.php:32
 #, php-format
 msgid "%sGet %s off%s with this coupon code:%s"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:37
+#: ../inc/admin/ui/notices.php:313 ../inc/admin/ui/options.php:37
 msgid "Get WP Rocket now"
 msgstr ""
 
+#: ../inc/admin/ui/notices.php:349
+#, php-format
+msgid ""
+"%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and improved "
+"your website's speed by reducing your images size."
+msgstr ""
+
 # @todo Links should be implemented as inline HTML with placeholders for URLs.
-#: ../inc/admin/ui/options.php:55
+#: ../inc/admin/ui/notices.php:351 ../inc/admin/ui/options.php:55
 #, php-format
 msgid ""
 "%sDo you like this plugin?%s Please take a few seconds to %srate it on "
 "WordPress.org%s!"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:18
+msgid "Is your website too slow?"
 msgstr ""
 
 #: ../inc/admin/ui/options.php:78
@@ -838,7 +846,7 @@ msgid "Rate Imagify on %s"
 msgstr ""
 
 # @todo Use typographical ellipsis.
-#: ../inc/common/admin-bar.php:57
+#: ../inc/common/admin-bar.php:61
 msgid "Loading..."
 msgstr ""
 
