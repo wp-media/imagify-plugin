@@ -220,7 +220,7 @@ function _imagify_warning_grid_view_notice() {
 }
 
 /**
- * 
+ * This warning is displayed to warn the user that its quota is consumed for the current month
  *
  * @since 1.1.1
  */
@@ -256,4 +256,112 @@ function _imagify_warning_over_quota_notice() {
 		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'free-over-quota' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>	
 	<?php
+}
+
+add_action( 'admin_notices', '_imagify_rocket_notice' );
+function _imagify_rocket_notice() {
+	$current_screen  = get_current_screen();
+	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+		
+	if ( ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' !== $current_screen->base ) || in_array( 'wp-rocket', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
+		return;
+	}
+
+	$dismiss_url = get_imagify_admin_url( 'dismiss-notice', 'wp-rocket' );
+
+	$coupon_code = 'IMAGIFY20';
+	$wprocket_url = 'http://wp-rocket.me/';
+	
+	switch( get_locale() ) {
+		case 'fr_FR' :
+			$wprocket_url = 'http://wp-rocket.me/fr/';
+			break;
+		case 'es_ES' :
+			$wprocket_url = 'http://wp-rocket.me/es/';
+			break;
+		case 'it_IT' :
+			$wprocket_url = 'http://wp-rocket.me/it/';
+			break;
+		case 'de_DE' :
+			$wprocket_url = 'http://wp-rocket.me/de/';
+			break;
+	}
+	
+	$wprocket_url .=  '?utm_source=imagify-coupon&utm_medium=plugin&utm_campaign=imagify';
+	?>
+
+	<div class="updated imagify-rkt-notice">
+		<a href="<?php echo $dismiss_url; ?>" class="imagify-cross"><span class="dashicons dashicons-no"></span></a>
+		
+		<p class="logo">
+			<img src="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket2x.png 2x" alt="WP Rocket" width="118" height="32">
+		</p>
+		<p class="msg">
+			<?php
+				esc_html_e( 'Discover the best caching plugin to speed up your website.', 'imagify');
+				echo '<br>';
+				printf(
+					esc_html__( '%sGet %s off%s with this coupon code:%s', 'imagify' ),
+					'<strong>', '20%', '</strong>', ' ' . $coupon_code
+				);
+			?>
+		</p>
+		<p class="coupon">
+			<span class="coupon-code"><?php echo $coupon_code; ?></span>
+		</p>
+		<p class="cta">
+			<a href="<?php echo $wprocket_url; ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket now', 'imagify' ); ?></a>
+		</p>
+	</div>
+
+	<?php
+}
+
+/**
+ * This notice is displayed to rate the plugin after 100 optimization & 7 days after the first installation
+ *
+ * @since 1.4.2
+ */
+add_action( 'all_admin_notices', '_imagify_rating_notice' );
+function _imagify_rating_notice() {
+	$user_images_count = get_site_transient( 'imagify_user_images_count' );
+	
+	if ( ! $user_images_count || get_site_transient( 'imagify_seen_rating_notice' ) ) {
+		return;
+	}
+	
+	$current_screen  = get_current_screen();
+	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
+
+	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'rating', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
+		return;
+	}
+	?>
+	<div class="clear"></div>
+	<div class="updated imagify-notice below-h2">
+		<div class="imagify-notice-logo">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
+		</div>
+		<div class="imagify-notice-content">
+			<?php
+			$imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
+			?>
+			<p><?php printf( __( '%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and improved your website\'s speed by reducing your images size.', 'imagify' ), '<strong>', '</strong>', $user_images_count ); ?></p>
+			<p class="imagify-rate-us">
+				<?php printf( __( '%sDo you like this plugin?%s Please take a few seconds to %srate it on WordPress.org%s!', 'imagify' ), '<strong>', '</strong><br />', '<a href="' . $imagify_rate_url . '">', '</a>' ); ?>
+				<br>
+				<a class="stars" href="<?php echo $imagify_rate_url; ?>">☆☆☆☆☆</a>
+			</p>
+		</div>
+		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'rating' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	</div>
+	<?php
+}
+
+add_action( 'imagify_dismiss_notice', '_imagify_clear_scheduled_rating' );
+function _imagify_clear_scheduled_rating( $notice ) {
+	if ( 'rating' === $notice ) {
+		set_site_transient( 'do_imagify_rating_cron', 'no' );
+		wp_clear_scheduled_hook( 'imagify_rating_event' );
+	}
 }

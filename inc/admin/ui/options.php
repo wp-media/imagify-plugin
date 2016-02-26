@@ -34,7 +34,7 @@ function _imagify_display_options_page() {
 								</p>
 
 								<p>
-									<a class="btn btn-rocket"  href="http://wp-rocket.me/?utm_source=imagify&amp;utm_medium=plugin&amp;utm_campaign=coupon-code"><?php _e( 'Get WP Rocket now', 'imagify' ); ?></a>
+									<a class="btn btn-rocket"  href="http://wp-rocket.me/?utm_source=imagify-coupon&amp;utm_medium=plugin&amp;utm_campaign=imagify"><?php _e( 'Get WP Rocket now', 'imagify' ); ?></a>
 								</p>
 							</div>
 						</li>

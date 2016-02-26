@@ -25,7 +25,7 @@ function _do_admin_post_imagify_manual_upload() {
 	
 	$attachment_id = $_GET['attachment_id'];
 	
-	set_transient( 'imagify-async-in-progress-' . $attachment_id, true );
+	set_transient( 'imagify-async-in-progress-' . $attachment_id, true, 10 * MINUTE_IN_SECONDS );
 	
 	$attachment = new Imagify_Attachment( $attachment_id );
 	
@@ -358,8 +358,19 @@ function _do_admin_post_imagify_dismiss_notice() {
 			wp_nonce_ays( '' );
 		}
 	}
+	
+	$notice = $_GET['notice'];
 
-	imagify_dismiss_notice( $_GET['notice'] );
+	imagify_dismiss_notice( $notice );
+	
+	/**
+	 * Fires when a notice is dismissed.
+	 *
+	 * @since 1.4.2
+	 *
+	 * @param int $notice The notice slug
+	*/
+	do_action( 'imagify_dismiss_notice', $notice );
 	
 	if ( ! defined( 'DOING_AJAX' ) ) {
 		wp_safe_redirect( wp_get_referer() );

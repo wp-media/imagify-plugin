@@ -3,7 +3,7 @@ Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.4.2
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,17 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 
+= 1.4.2 =
+* Translation
+ * NEW: Add German translation
+
+* Interface
+ * NEW: You can define the IMAGIFY_HIDDEN_ACCOUNT constant in wp-config.php to hide all your Imagify account infos in the Admin Bar and Bulk Optimization
+
+* Bug Fix
+ * Fix PHP Notice: Undefined index original_size in /inc/functions/admin-stats.php on line 185
+ * Fix PHP Notice: Undefined index optimized_size in /inc/functions/admin-stats.php on line 186
+ 
 = 1.4.1 =
 * Interface
  * Medias: better comparison for big portrait images

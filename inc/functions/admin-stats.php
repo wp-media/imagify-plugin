@@ -182,8 +182,8 @@ function imagify_count_saving_data( $key = '' ) {
 
 		// Incremente the original sizes
 		if ( $attachment->is_optimized() ) {
-			$original_size  += $original_data['original_size'];
-			$optimized_size += $original_data['optimized_size'];
+			$original_size  += ( $original_data['original_size'] ) ? $original_data['original_size'] : 0;
+			$optimized_size += ( $original_data['optimized_size'] ) ? $original_data['optimized_size'] : 0;
 		}
 		
 		$metadata = wp_get_attachment_metadata( $attachment_id );
@@ -193,8 +193,8 @@ function imagify_count_saving_data( $key = '' ) {
 		foreach ( $sizes as $size_key => $size_data ) {
 			$size_data = $attachment->get_size_data( $size_key );
 			if ( ! empty( $size_data['success'] ) ) {
-				$original_size  += $size_data['original_size'];
-				$optimized_size += $size_data['optimized_size'];
+				$original_size  += ( $size_data['original_size'] ) ? $size_data['original_size'] : 0;
+				$optimized_size += ( $size_data['optimized_size'] ) ? $size_data['optimized_size'] : 0;
 			}
 		}
 	}

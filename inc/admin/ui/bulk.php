@@ -10,7 +10,8 @@ function _imagify_display_bulk_page() {
 	$user = new Imagify_User();
 	?>
 	<div class="wrap imagify-settings imagify-bulk">
-		<div class="imagify-title">			
+		<div class="imagify-title">
+			<?php if ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || false === IMAGIFY_HIDDEN_ACCOUNT ) { ?>	
 			<div class="imagify-title-right">
 				<div class="imagify-account">
 					<p class="imagify-meteo-title"><?php _e( 'Account status', 'imagify' ); ?></p>
@@ -22,7 +23,7 @@ function _imagify_display_bulk_page() {
 						<span class="button-text"><?php _e( 'View My Subscription', 'imagify' ); ?></span>
 					</a>
 				</div>
-
+				
 				<?php if ( 1 === $user->plan_id ) { ?>
 				<div class="imagify-sep-v"></div>
 				<div class="imagify-credit-left">
@@ -66,9 +67,9 @@ function _imagify_display_bulk_page() {
 					</div>
 				</div>
 				<?php } ?>
-
 			</div>
-
+			<?php } ?>
+			
 			<img width="225" height="26" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" />
 		</div>
 		

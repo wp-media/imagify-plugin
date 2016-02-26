@@ -492,6 +492,115 @@ td .imagify-chart {
 	}
 }
 
+/* WP Rocket notice */
+.imagify-rkt-notice.imagify-rkt-notice {
+	position: relative;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	-ms-flex-align: center;
+	-ms-grid-row-align: center;
+	align-items: center;
+	padding: 10px 45px 10px 0;
+	border: 0 none;
+	box-shadow: none;
+	color: #FFF;
+	background: #412355;
+}
+.media_page_imagify-bulk-optimization .imagify-rkt-notice {
+	margin-left: 2px;
+	margin-right: 20px;
+}
+@media (max-width: 782px) {
+	.media_page_imagify-bulk-optimization .imagify-rkt-notice {
+		margin-left: 0;
+		margin-right: 12px;
+	}
+}
+.imagify-rkt-notice .imagify-cross {
+	position: absolute;
+	right: 8px; top: 50%;
+	width: 22px; height: 22px;
+	padding: 0;
+	margin-top: -11px;
+	background: transparent;
+	color: #FD7300;
+	border-radius: 50%;
+	transition: all .275s;
+}
+.imagify-rkt-notice .imagify-cross .dashicons {
+	position: relative;
+	top: 2px; left: 1px;
+	transition: all .275s;
+}
+.imagify-rkt-notice .imagify-cross:hover {
+	background: #FFF;
+}
+.imagify-rkt-notice .imagify-cross:hover .dashicons {
+	color: #412355;
+}
+.imagify-rkt-notice .logo {
+	width: 150px;
+	text-align: right;
+	padding: 0 25px 0 30px;
+	line-height: 0.8;
+}
+.imagify-rkt-notice .msg {
+	width: 100%;
+	padding: 0 15px;
+	font-size: 14px;
+	line-height: 1.6;
+}
+.imagify-rkt-notice .coupon {
+	width: 150px;
+	padding: 0 15px;
+}
+.imagify-rkt-notice .coupon-code {
+	padding: 5px 10px;
+	font-size: 23px;
+	font-weight: bold;
+	border: 1px dashed #F7A933;
+	color: #F7A933;
+}
+.imagify-rkt-notice .cta {
+	width: 200px;
+}
+.imagify-rkt-notice .button.button {
+	position: relative;
+	top: -1px;
+	height: auto;
+	font-weight: 600;
+	font-size: 14px;
+	box-shadow: 0 4px 0 #B27A27;
+	border: 0 none;
+	padding: 9px 18px 9px;
+	background: #F7A933;
+	text-shadow: 1px 1px 1px rgba(0,0,0,.2);
+}
+@media (max-width: 880px) {
+	.imagify-rkt-notice {
+		-webkit-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+	}
+	.imagify-rkt-notice .msg,
+	.imagify-rkt-notice .cta,
+	.imagify-rkt-notice .logo {
+		text-align: left;
+		padding: 5px 15px;
+	}
+	.imagify-cross.imagify-cross {
+		top: 8px;
+		margin-top: 0;
+	}
+	.imagify-rkt-notice .imagify-cross .dashicons {
+		top: 1px;
+	}
+}
+
 
 /* Sections */
 
