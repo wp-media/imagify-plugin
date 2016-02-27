@@ -542,9 +542,16 @@ td .imagify-chart {
 .imagify-rkt-notice .imagify-cross:hover .dashicons {
 	color: #412355;
 }
+.imagify-rkt-notice .cta,
+.imagify-rkt-notice .logo,
+.imagify-rkt-notice .coupon {
+	-webkit-flex-shrink: 0;
+	-ms-flex-negative: 0;
+	flex-shrink: 0;
+}
 .imagify-rkt-notice .logo {
 	width: 150px;
-	text-align: right;
+	text-align: center;
 	padding: 0 25px 0 30px;
 	line-height: 0.8;
 }
