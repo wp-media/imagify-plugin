@@ -545,6 +545,8 @@ td .imagify-chart {
 .imagify-rkt-notice .cta,
 .imagify-rkt-notice .logo,
 .imagify-rkt-notice .coupon {
+	-webkit-flex-shrink: 0;
+	-ms-flex-negative: 0;
 	flex-shrink: 0;
 }
 .imagify-rkt-notice .logo {
