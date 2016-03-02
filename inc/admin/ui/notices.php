@@ -293,10 +293,10 @@ function _imagify_rocket_notice() {
 	<div class="updated imagify-rkt-notice">
 		<a href="<?php echo $dismiss_url; ?>" class="imagify-cross"><span class="dashicons dashicons-no"></span></a>
 		
-		<p class="logo">
+		<p class="imagify-rkt-logo">
 			<img src="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket2x.png 2x" alt="WP Rocket" width="118" height="32">
 		</p>
-		<p class="msg">
+		<p class="imagify-rkt-msg">
 			<?php
 				esc_html_e( 'Discover the best caching plugin to speed up your website.', 'imagify');
 				echo '<br>';
@@ -306,10 +306,10 @@ function _imagify_rocket_notice() {
 				);
 			?>
 		</p>
-		<p class="coupon">
-			<span class="coupon-code"><?php echo $coupon_code; ?></span>
+		<p class="imagify-rkt-coupon">
+			<span class="imagify-rkt-coupon-code"><?php echo $coupon_code; ?></span>
 		</p>
-		<p class="cta">
+		<p class="imagify-rkt-cta">
 			<a href="<?php echo $wprocket_url; ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket now', 'imagify' ); ?></a>
 		</p>
 	</div>

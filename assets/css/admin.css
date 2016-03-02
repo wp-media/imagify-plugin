@@ -542,37 +542,37 @@ td .imagify-chart {
 .imagify-rkt-notice .imagify-cross:hover .dashicons {
 	color: #412355;
 }
-.imagify-rkt-notice .cta,
-.imagify-rkt-notice .logo,
-.imagify-rkt-notice .coupon {
+.imagify-rkt-notice .imagify-rkt-cta,
+.imagify-rkt-notice .imagify-rkt-logo,
+.imagify-rkt-notice .imagify-rkt-coupon {
 	-webkit-flex-shrink: 0;
 	-ms-flex-negative: 0;
 	flex-shrink: 0;
 }
-.imagify-rkt-notice .logo {
+.imagify-rkt-notice .imagify-rkt-logo {
 	width: 150px;
 	text-align: center;
 	padding: 0 25px 0 30px;
 	line-height: 0.8;
 }
-.imagify-rkt-notice .msg {
+.imagify-rkt-notice .imagify-rkt-msg {
 	width: 100%;
 	padding: 0 15px;
 	font-size: 14px;
 	line-height: 1.6;
 }
-.imagify-rkt-notice .coupon {
+.imagify-rkt-notice .imagify-rkt-coupon {
 	width: 150px;
 	padding: 0 15px;
 }
-.imagify-rkt-notice .coupon-code {
+.imagify-rkt-notice .imagify-rkt-coupon-code {
 	padding: 5px 10px;
 	font-size: 23px;
 	font-weight: bold;
 	border: 1px dashed #F7A933;
 	color: #F7A933;
 }
-.imagify-rkt-notice .cta {
+.imagify-rkt-notice .imagify-rkt-cta {
 	width: 200px;
 }
 .imagify-rkt-notice .button.button {
@@ -593,9 +593,9 @@ td .imagify-chart {
 		-ms-flex-wrap: wrap;
 		flex-wrap: wrap;
 	}
-	.imagify-rkt-notice .msg,
-	.imagify-rkt-notice .cta,
-	.imagify-rkt-notice .logo {
+	.imagify-rkt-notice .imagify-rkt-msg,
+	.imagify-rkt-notice .imagify-rkt-cta,
+	.imagify-rkt-notice .imagify-rkt-logo {
 		text-align: left;
 		padding: 5px 15px;
 	}
