@@ -170,9 +170,12 @@ function _imagify_admin_print_styles() {
 	}
 
 	/**
-	 * Scripts loaded in /wp-admin/post.php (for attachment post type) 
+	 * Scripts loaded in:
+	 * 		/wp-admin/post.php (for attachment post type)
+	 * 		/wp-admin/upload.php (for attachments list)
+	 * 
 	 */
-	if ( isset( $current_screen ) && 'post' === $current_screen->base && 'attachment' === $current_screen->post_type ) {
+	if ( isset( $current_screen ) && ( ('post' === $current_screen -> base && 'attachment' === $current_screen -> post_type ) || 'upload' === $current_screen -> base ) ) {
 		wp_localize_script( 'imagify-js-twentytwenty', 'imagifyTTT', array(
 			'labels' => array(
 				'original_l'	=> esc_html__( 'Original Image', 'imagify' ),
