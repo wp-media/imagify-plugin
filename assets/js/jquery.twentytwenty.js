@@ -126,7 +126,7 @@
 /**
  * Twentytwenty Imagify Init
  */
-(function(window, $, undefined){
+(function($, window, document, undefined){
 
 	/*
 	 * Mini chart
@@ -156,6 +156,152 @@
 		});
 	};
 
+	/**
+	 * Dynamic modal
+	 *
+	 * @param {object}	Parameters to build modal with datas
+	 */
+	var imagify_twenty_modal = function( options ) {
+		
+		var defaults = {
+				width: 0, //px
+				height: 0, //px
+				original_url: '', //url
+				optimized_url: '', //url
+				original_size: 0, //mb
+				optimized_size: 0, // mb
+				saving: 0, //percent
+				modal_append_to: $('body'), // jQuery element
+				trigger: $('[data-target="imagify-visual-comparison"]'), // jQuery element (button, link) with data-target="modal_id"
+				modal_id: 'imagify-visual-comparison', // should be dynamic if multiple modals
+			},
+			settings = $.extend({}, defaults, options);
+
+		if ( settings.width === 0 || settings.height === 0 || settings.original_url === ''|| settings.optimized_url === '' || settings.original_size === 0 || settings.optimized_size === 0 || settings.saving === 0 ) {
+			return 'error';
+		}
+
+		// create modal box
+		settings.modal_append_to.append(''
+			+ '<div id="' + settings.modal_id + '" class="imagify-modal imagify-visual-comparison" aria-hidden="true">'
+				+ '<div class="imagify-modal-content loading">'
+					+ '<div class="twentytwenty-container">'
+						+ '<img class="imagify-img-before" alt="" width="' + settings.width + '" height="' + settings.height + '">'
+						+ '<img class="imagify-img-after" alt="" width="' + settings.width + '" height="' + settings.height + '">'
+					+ '</div>'
+					+ '<div class="imagify-comparison-levels">'
+						+ '<div class="imagify-c-level imagify-level-original go-left">'
+							+ '<p class="imagify-c-level-row">'
+								+ '<span class="label">' + imagifyTTT.labels.filesize + '</span>'
+								+ '<span class="value level">' + settings.original_size + '</span>'
+							+ '</p>'
+						+ '</div>'
+						+ '<div class="imagify-c-level imagify-level-optimized go-right">'
+							+ '<p class="imagify-c-level-row">'
+								+ '<span class="label">' + imagifyTTT.labels.filesize + '</span>'
+								+ '<span class="value level">' + settings.optimized_size + '</span>'
+							+ '</p>'
+							+ '<p class="imagify-c-level-row">'
+								+ '<span class="label">' + imagifyTTT.labels.saving + '</span>'
+								+ '<span class="value"><span class="imagify-chart"><span class="imagify-chart-container"><canvas id="imagify-consumption-chart-normal" width="15" height="15"></canvas></span></span><span class="imagify-chart-value">' + settings.saving + '</span>%</span>'
+							+ '</p>'
+						+'</div>'
+					+ '</div>'
+					+ '<button class="close-btn absolute" type="button"><i aria-hidden="true" class="dashicons dashicons-no-alt"></i><span class="screen-reader-text">' + imagifyTTT.labels.close + '</span></button>'
+				+ '</div>'
+			+ '</div>'
+		);
+
+		settings.trigger.on('click.imagify', function(){
+			
+			var $modal = $( $(this).data('target') ),
+				imgs_loaded = 0;
+
+			$modal.find('.imagify-modal-content').css({
+				'width'		: ($(window).outerWidth()*0.95) + 'px',
+				'max-width'	: settings.width
+			});
+
+			// load before img
+			$modal.find('.imagify-img-before').on('load', function(){
+				imgs_loaded++;
+			}).attr('src', settings.original_url);
+
+			// load after img
+			$modal.find('.imagify-img-after').on('load', function(){
+				imgs_loaded++;
+			}).attr('src', settings.optimized_url);
+
+			var $tt = $modal.find('.twentytwenty-container'),
+				check_load = setInterval( function(){
+
+					if ( imgs_loaded === 2 ) {
+						$tt.twentytwenty({
+							handlePosition: 0.3,
+							orientation: 	'horizontal',
+							labelBefore: 	imagifyTTT.labels.original_l,
+							labelAfter: 	imagifyTTT.labels.optimized_l
+						}, function(){
+
+							var windowH	= $(window).height(),
+								ttH 	= $modal.find('.twentytwenty-container').height(),
+								ttTop	= $modal.find('.twentytwenty-wrapper').position().top;
+
+							if ( ! $tt.closest('.imagify-modal-content').hasClass('loaded') ) {
+								$tt.closest('.imagify-modal-content').removeClass('loading').addClass('loaded');
+								draw_me_a_chart( $modal.find('.imagify-level-optimized').find('.imagify-chart').find('canvas') );
+							}
+
+							// check if image height is to big
+							if ( windowH < ttH && ! $modal.hasClass('modal-is-too-high') ) {
+								$modal.addClass('modal-is-too-high');
+
+								var $handle		= $modal.find('.twentytwenty-handle'),
+									$labels		= $modal.find('.twentytwenty-label-content'),
+									$datas		= $modal.find('.imagify-comparison-levels'),
+									datasH		= $datas.outerHeight(),
+									handle_pos	= ( windowH - ttTop - $handle.height() ) / 2,
+									labels_pos	= ( windowH - ttTop * 3 - datasH );
+
+								$handle.css({
+									top: handle_pos
+								});
+								$labels.css({
+									top: labels_pos,
+									bottom: 'auto'
+								});
+								$modal.find('.twentytwenty-wrapper').css({
+									paddingBottom: datasH
+								});
+
+								$modal.find('.imagify-modal-content').on('scroll.imagify', function(){
+									$handle.css({
+										top: handle_pos + $(this).scrollTop()
+									});
+									$labels.css({
+										top: labels_pos + $(this).scrollTop()
+									});
+									$datas.css({
+										bottom: - ( $(this).scrollTop() )
+									});
+								});
+							}
+
+						});
+						clearInterval( check_load );
+						check_load = null;
+						return 'done';
+					}
+				}, 75 );
+
+			return false;
+		});
+	}; // imagify_twenty_modal( options );
+
+
+	/**
+	 * The complexe visual comparison
+	 */
 	$('.imagify-visual-comparison-btn').on('click', function(){
 
 		if ( $('.twentytwenty-wrapper').length === 1) {
@@ -316,17 +462,21 @@
 
 	});
 
-	// Imagify comparison inside Media post visualization
-	
+
+	/**
+	 * Imagify comparison inside Media post visualization
+	 */
 	if ( $('.post-php').find('.wp_attachment_image').find('.thumbnail').length > 0 ) {
+		
 		var $ori_parent = $('.post-php').find('.wp_attachment_image'),
 			$thumbnail	= $ori_parent.find('.thumbnail'),
 			thumb		= { src: $thumbnail.prop('src'), width: $thumbnail.width(), height: $thumbnail.height() },
 			ori_source	= { src: $('#imagify-full-original').val(), size: $('#imagify-full-original-size').val() },
-			$optimize_btn = $('#misc-publishing-actions').find('.misc-pub-imagify').find('.button-primary');
+			$optimize_btn = $('#misc-publishing-actions').find('.misc-pub-imagify').find('.button-primary'),
+			width_limit = 360;
 
-		// if shown image > 300, use twentytwenty
-		if ( thumb.width > 300 && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
+		// if shown image > 360, use twentytwenty
+		if ( thumb.width > width_limit && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
 
 			var imgs_loaded = 0,
 				filesize	= $('.misc-pub-filesize').find('strong').text(),
@@ -335,121 +485,22 @@
 			// create button to trigger
 			$('[id^="imgedit-open-btn-"]').before('<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-visual-comparison" id="imagify-start-comparison">' + imagifyTTT.labels.compare + '</button>')
 
-			// create modal box
-			$ori_parent.append(''
-				+ '<div id="imagify-visual-comparison" class="imagify-modal" aria-hidden="true">'
-					+ '<div class="imagify-modal-content loading">'
-						+ '<div class="twentytwenty-container">'
-							+ '<img class="imagify-img-before" alt="" width="' + thumb.width + '" height="' + thumb.height + '">'
-							+ '<img class="imagify-img-after" alt="" width="' + thumb.width + '" height="' + thumb.height + '">'
-						+ '</div>'
-						+ '<div class="imagify-comparison-levels">'
-							+ '<div class="imagify-c-level imagify-level-original go-left">'
-								+ '<p class="imagify-c-level-row">'
-									+ '<span class="label">' + imagifyTTT.labels.filesize + '</span>'
-									+ '<span class="value level">' + ori_source.size + '</span>'
-								+ '</p>'
-							+ '</div>'
-							+ '<div class="imagify-c-level imagify-level-optimized go-right">'
-								+ '<p class="imagify-c-level-row">'
-									+ '<span class="label">' + imagifyTTT.labels.filesize + '</span>'
-									+ '<span class="value level">' + filesize + '</span>'
-								+ '</p>'
-								+ '<p class="imagify-c-level-row">'
-									+ '<span class="label">' + imagifyTTT.labels.saving + '</span>'
-									+ '<span class="value"><span class="imagify-chart"><span class="imagify-chart-container"><canvas id="imagify-consumption-chart-normal" width="15" height="15"></canvas></span></span><span class="imagify-chart-value">' + saving + '</span>%</span>'
-								+ '</p>'
-							+'</div>'
-						+ '</div>'
-						+ '<button class="close-btn absolute" type="button"><i aria-hidden="true" class="dashicons dashicons-no-alt"></i><span class="screen-reader-text">' + imagifyTTT.labels.close + '</span></button>'
-					+ '</div>'
-				+ '</div>'
-			);
-
-			$('#imagify-start-comparison').on('click.imagify', function(){
-				
-				var $modal = $( $(this).data('target') );
-
-				$modal.find('.imagify-modal-content').css({
-					'width'		: ($(window).outerWidth()*0.95) + 'px',
-					'max-width'	: thumb.width
-				});
-
-				// load before img
-				$('.imagify-img-before').on('load', function(){
-					imgs_loaded++;
-				}).attr('src', ori_source.src);
-
-				// load after img
-				$('.imagify-img-after').on('load', function(){
-					imgs_loaded++;
-				}).attr('src', thumb.src);
-
-				var $tt = $('.twentytwenty-container'),
-					check_load = setInterval( function(){
-
-						if ( imgs_loaded === 2 ) {
-							$tt.twentytwenty({
-								handlePosition: 0.3,
-								orientation: 	'horizontal',
-								labelBefore: 	imagifyTTT.labels.original_l,
-								labelAfter: 	imagifyTTT.labels.optimized_l
-							}, function(){
-
-								var windowH	= $(window).height(),
-									ttH 	= $('.twentytwenty-container').height(),
-									ttTop	= $('.twentytwenty-wrapper').position().top;
-
-								if ( ! $tt.closest('.imagify-modal-content').hasClass('loaded') ) {
-									$tt.closest('.imagify-modal-content').removeClass('loading').addClass('loaded');
-									draw_me_a_chart( $('.imagify-level-optimized').find('.imagify-chart').find('canvas') );
-								}
-
-								// check if image height is to big
-								if ( windowH < ttH && ! $modal.hasClass('modal-is-too-high') ) {
-									$modal.addClass('modal-is-too-high');
-
-									var $handle		= $modal.find('.twentytwenty-handle'),
-										$labels		= $modal.find('.twentytwenty-label-content'),
-										$datas		= $modal.find('.imagify-comparison-levels'),
-										datasH		= $datas.outerHeight(),
-										handle_pos	= ( windowH - ttTop - $handle.height() ) / 2,
-										labels_pos	= ( windowH - ttTop * 3 - datasH );
-
-									$handle.css({
-										top: handle_pos
-									});
-									$labels.css({
-										top: labels_pos,
-										bottom: 'auto'
-									});
-									$modal.find('.twentytwenty-wrapper').css({
-										paddingBottom: datasH
-									});
-
-									$modal.find('.imagify-modal-content').on('scroll.imagify', function(){
-										$handle.css({
-											top: handle_pos + $(this).scrollTop()
-										});
-										$labels.css({
-											top: labels_pos + $(this).scrollTop()
-										});
-										$datas.css({
-											bottom: - ( $(this).scrollTop() )
-										});
-									});
-								}
-
-							});
-							clearInterval( check_load );
-							check_load = null;
-						}
-					}, 75 );
-
+			// Modal and trigger event creation
+			var is_modalified = imagify_twenty_modal({
+				width:				thumb.width,
+				height:				thumb.height,
+				original_url:		ori_source.src,
+				optimized_url:		thumb.src,
+				original_size:		ori_source.size,
+				optimized_size:		filesize,
+				saving:				saving,
+				modal_append_to:	$ori_parent,
+				trigger:			$('#imagify-start-comparison'),
+				modal_id:			'imagify-visual-comparison'
 			});
 		}
 		// else put images next to next
-		else if ( thumb.width < 300 && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
+		else if ( thumb.width < width_limit && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
 
 		}
 		// if image has no backup
@@ -467,4 +518,33 @@
 
 	}
 
-})(window, jQuery);
+	/**
+	 * Comparison images in attachments list page (upload.php)
+	 */
+	if ( $('.upload-php').find('.imagify-compare-images').length > 0 ) {
+
+		$('.imagify-compare-images').each(function(){
+
+			var $_this = $(this),
+				id = $_this.data('id'),
+				$datas = $_this.closest('#post-' + id ).find('.column-imagify_optimized_file'),
+				
+				// Modal and trigger event creation
+				is_modalified = imagify_twenty_modal({
+					width:				$_this.data('full-width'),
+					height:				$_this.data('full-height'),
+					original_url:		$_this.data('backup-src'),
+					optimized_url:		$_this.data('full-src'),
+					original_size:		$datas.find('.original').text(),
+					optimized_size:		$datas.find('.imagify-data-item').find('.big').text(),
+					saving:				$datas.find('.imagify-chart-value').text(),
+					modal_append_to:	$_this.closest('.column-primary'),
+					trigger:			$_this,
+					modal_id:			'imagify-comparison-' + id
+				});
+
+		});
+
+	}
+
+})(jQuery, window, document);

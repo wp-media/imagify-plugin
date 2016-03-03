@@ -113,7 +113,7 @@ jQuery(function($){
 
 		// on click on modal trigger
 		$('.imagify-modal-trigger').on('click', function(){
-			var the_target = $(this).attr('href') || $(this).data('target');
+			var the_target = $(this).data('target') || $(this).attr('href');
 
 			$( the_target ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex').addClass('modal-is-open');
 			$('body').addClass('imagify-modal-is-open');

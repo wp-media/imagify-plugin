@@ -2098,7 +2098,8 @@ td.imagify-cell-filename {
 	box-shadow: 1px 1px 4px rgba(0,0,0,.7);
 	border-radius: 3px;
 }
-#imagify-visual-comparison .imagify-modal-content {
+#imagify-visual-comparison .imagify-modal-content,
+.imagify-visual-comparison .imagify-modal-content {
 	max-width: 1400px;
 	background: transparent;
 	padding: 5px;
@@ -2135,6 +2136,9 @@ td.imagify-cell-filename {
 	border-radius: 0;
 	cursor: pointer;
 }
+.imagify-modal .close-btn i {
+	margin-left: -2px;
+}
 .imagify-modal .close-btn:hover,
 .imagify-modal .close-btn:focus {
 	color: #40b1d0;
@@ -2143,7 +2147,8 @@ td.imagify-cell-filename {
 	display: block;
 	visibility: visible;
 }
-#imagify-visual-comparison .close-btn {
+#imagify-visual-comparison .close-btn,
+.imagify-visual-comparison .close-btn {
 	top: 50px;
 	right: 5px;
 	width: 33px;
@@ -2157,11 +2162,13 @@ td.imagify-cell-filename {
 }
 
 /* Attachment page exception */
-.wp_attachment_image #imagify-visual-comparison .close-btn {
+.wp_attachment_image #imagify-visual-comparison .close-btn,
+.column-primary .imagify-visual-comparison .close-btn {
 	top: 0;
 }
 /* Attachment page exception */
-.wp_attachment_image #imagify-visual-comparison .imagify-modal-content {
+.wp_attachment_image #imagify-visual-comparison .imagify-modal-content,
+.column-primary .imagify-visual-comparison .imagify-modal-content {
 	padding-top: 40px;
 }
 
