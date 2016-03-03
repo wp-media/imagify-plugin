@@ -137,6 +137,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.4.3 =
 * Interface
  * Visual fix: CSS prefixed in notices to avoid class conflicts
+ * Medias: new "Compare Original VS Optimized" action link in list view
+ * Medias: comparison are now available for image from 36Opx wide
+ * Settings: new sample images for visual comparison of compression levels
 
 = 1.4.2 =
 * Translation
