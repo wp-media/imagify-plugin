@@ -258,12 +258,17 @@ function _imagify_warning_over_quota_notice() {
 	<?php
 }
 
+/**
+ * Add a message about WP Rocket on the "Bulk Optimization" screen.
+ *
+ * @since 2.7
+ */
 add_action( 'admin_notices', '_imagify_rocket_notice' );
 function _imagify_rocket_notice() {
 	$current_screen  = get_current_screen();
 	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 		
-	if ( ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' !== $current_screen->base ) || in_array( 'wp-rocket', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
+	if ( ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' !== $current_screen->base ) || in_array( 'wp-rocket', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) || defined( 'WP_ROCKET_VERSION' ) ) {
 		return;
 	}
 
