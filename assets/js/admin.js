@@ -67,10 +67,10 @@ jQuery(function($){
 			$.get(ajaxurl + concat + "action=imagify_check_api_key_validity&api_key=" +inputValue + "&imagifycheckapikeynonce="+ $('#imagifycheckapikeynonce').val())
 			.done(function(response){
 				if( !response.success ) {
-					swal.showInputError(response.data);
+					swal.showInputError( response.data );
 				} else {
 					swal({
-						title:imagify.ApiKeyCheckSuccessTitle,
+						title: imagify.ApiKeyCheckSuccessTitle,
 						text: imagify.ApiKeyCheckSuccessText,
 						type: "success",
 						customClass: "imagify-sweet-alert"
@@ -105,47 +105,50 @@ jQuery(function($){
 	/*
 	 * Imagify Light modal
 	 */
-	
-	if ( $('.imagify-modal-trigger').length > 0 ) {
-		
-		// accessibility
-		$('.imagify-modal').attr('aria-hidden', 'true');
+	var imagify_open_modal = function( $the_link ){
 
-		// on click on modal trigger
-		$('.imagify-modal-trigger').on('click', function(){
-			var the_target = $(this).data('target') || $(this).attr('href');
+		var the_target = $the_link.data('target') || $the_link.attr('href');
 
-			$( the_target ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex').addClass('modal-is-open');
-			$('body').addClass('imagify-modal-is-open');
+		$( the_target ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex').addClass('modal-is-open');
+		$('body').addClass('imagify-modal-is-open');
+
+	};
+
+	// accessibility
+	$('.imagify-modal').attr('aria-hidden', 'true');
+
+	// on click on modal trigger
+	$('.imagify-modal-trigger').on('click', function(){
+
+		imagify_open_modal( $(this) );
+
+		return false;
+	});
+
+	// on click on close button
+	$(document).on('click', '.imagify-modal .close-btn', function(){
+		$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true').removeClass('modal-is-open');
+		$('body').removeClass('imagify-modal-is-open');
+	})
+	.on('blur', '.imagify-modal .close-btn', function(){
+		var $modal = $(this).closest('.imagify-modal');
+		if ( $modal.attr('aria-hidden') === 'false' ) {
+			$modal.attr('tabindex', '0').focus().removeAttr('tabindex');
+		}
+	});
+
+	// `Esc` key binding
+	$(window).on('keydown', function(e){
+		if ( e.keyCode == 27 && $('.imagify-modal.modal-is-open').length > 0 ) {
+
+			e.preventDefault();
+			
+			// trigger the event
+			$('.imagify-modal.modal-is-open').find('.close-btn').trigger('click');
 
 			return false;
-		});
-
-		// on click on close button
-		$('.imagify-modal').find('.close-btn').on('click', function(){
-			$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true').removeClass('modal-is-open');
-			$('body').removeClass('imagify-modal-is-open');
-		})
-		.on('blur', function(){
-			var $modal = $(this).closest('.imagify-modal');
-			if ( $modal.attr('aria-hidden') === 'false' ) {
-				$modal.attr('tabindex', '0').focus().removeAttr('tabindex');
-			}
-		});
-
-		// `Esc` key binding
-		$(window).on('keydown', function(e){
-			if ( e.keyCode == 27 && $('.imagify-modal.modal-is-open').length > 0 ) {
-
-				e.preventDefault();
-				
-				// trigger the event
-				$('.imagify-modal.modal-is-open').find('.close-btn').trigger('click');
-
-				return false;
-			}
-		});
-	}
+		}
+	});
 	
 	var busy = false,
 		xhr	 = false;

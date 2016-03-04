@@ -339,7 +339,8 @@ td .imagify-chart {
 }
 
 /* exception */
-.wp_attachment_image .imagify-button-primary {
+.wp_attachment_image .imagify-button-primary,
+.media-frame-content .imagify-button-primary {
 	float: left;
 	padding: 0 10px 1px;
 	margin: 0 5px 2px 0;
@@ -2163,12 +2164,12 @@ td.imagify-cell-filename {
 
 /* Attachment page exception */
 .wp_attachment_image #imagify-visual-comparison .close-btn,
-.column-primary .imagify-visual-comparison .close-btn {
+.imagify-visual-comparison .close-btn {
 	top: 0;
 }
 /* Attachment page exception */
 .wp_attachment_image #imagify-visual-comparison .imagify-modal-content,
-.column-primary .imagify-visual-comparison .imagify-modal-content {
+.imagify-visual-comparison .imagify-modal-content {
 	padding-top: 40px;
 }
 
