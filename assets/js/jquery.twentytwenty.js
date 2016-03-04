@@ -161,7 +161,15 @@
 	 *
 	 * @param {object}	Parameters to build modal with datas
 	 */
-	var imagify_twenty_modal = function( options ) {
+	var imagify_open_modal = function( $the_link ){
+
+			var the_target = $the_link.data('target') || $the_link.attr('href');
+
+			$( the_target ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex').addClass('modal-is-open');
+			$('body').addClass('imagify-modal-is-open');
+
+		},
+		imagify_twenty_modal = function( options ) {
 		
 		var defaults = {
 				width: 0, //px
@@ -174,6 +182,7 @@
 				modal_append_to: $('body'), // jQuery element
 				trigger: $('[data-target="imagify-visual-comparison"]'), // jQuery element (button, link) with data-target="modal_id"
 				modal_id: 'imagify-visual-comparison', // should be dynamic if multiple modals
+				open_modal: false
 			},
 			settings = $.extend({}, defaults, options);
 
@@ -213,12 +222,16 @@
 		);
 
 		settings.trigger.on('click.imagify', function(){
-			
+
 			var $modal = $( $(this).data('target') ),
 				imgs_loaded = 0;
 
+			if ( typeof imagify_open_modal === 'function' && settings.open_modal ) {
+				imagify_open_modal( $(this) );
+			}
+
 			$modal.find('.imagify-modal-content').css({
-				'width'		: ($(window).outerWidth()*0.95) + 'px',
+				'width'		: ($(window).outerWidth()*0.85) + 'px',
 				'max-width'	: settings.width
 			});
 
@@ -249,7 +262,7 @@
 
 							if ( ! $tt.closest('.imagify-modal-content').hasClass('loaded') ) {
 								$tt.closest('.imagify-modal-content').removeClass('loading').addClass('loaded');
-								draw_me_a_chart( $modal.find('.imagify-level-optimized').find('.imagify-chart').find('canvas') );
+								//draw_me_a_chart( $modal.find('.imagify-level-optimized').find('.imagify-chart').find('canvas') );
 							}
 
 							// check if image height is to big
@@ -519,7 +532,7 @@
 	}
 
 	/**
-	 * Comparison images in attachments list page (upload.php)
+	 * Images comparison in attachments list page (upload.php)
 	 */
 	if ( $('.upload-php').find('.imagify-compare-images').length > 0 ) {
 
@@ -544,7 +557,53 @@
 				});
 
 		});
+	}
 
+	/**
+	 * Images Comparison in Grid View modal
+	 */
+	if ( $('.upload-php').length > 0 ) {
+
+		var waitContent = setInterval( function() {
+
+			if ( $('.upload-php').find('.media-frame.mode-grid').find('.attachments').length > 0 ) {
+
+				$('.upload-php').find('.media-frame.mode-grid').on('click', '.attachment', function(){
+					var tempTimer = setInterval( function(){
+							if ( $('.media-modal').find('.imagify-datas-details').length ) {
+								if ( $('#imagify-original-src').length > 0 && $('#imagify-original-src') !== '' ) {
+
+									// trigger creation
+									$('.media-frame-content').find('.attachment-actions').prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
+
+									// get datas
+									var $datas = $('.media-frame-content').find('.compat-field-imagify');
+
+									// Modal and trigger event creation
+									is_modalified = imagify_twenty_modal({
+										width:				$('#imagify-full-width').val(),
+										height:				$('#imagify-full-height').val(),
+										original_url:		$('#imagify-original-src').val(),
+										optimized_url:		$('#imagify-full-src').val(),
+										original_size:		$('#imagify-original-size').val(),
+										optimized_size:		$datas.find('.imagify-data-item').find('.big').text(),
+										saving:				$datas.find('.imagify-chart-value').text(),
+										modal_append_to:	$('.media-frame-content').find('.thumbnail-image'),
+										trigger:			$('#imagify-media-frame-comparison-btn'),
+										modal_id:			'imagify-comparison-modal',
+										open_modal: true
+									});
+								}
+
+								clearInterval(tempTimer);
+								tempTimer = null;
+							}
+						}, 20 );
+				});
+
+				clearInterval(waitContent);
+			}
+		}, 100);
 	}
 
 })(jQuery, window, document);
