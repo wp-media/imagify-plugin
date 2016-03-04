@@ -258,12 +258,17 @@ function _imagify_warning_over_quota_notice() {
 	<?php
 }
 
+/**
+ * Add a message about WP Rocket on the "Bulk Optimization" screen.
+ *
+ * @since 2.7
+ */
 add_action( 'admin_notices', '_imagify_rocket_notice' );
 function _imagify_rocket_notice() {
 	$current_screen  = get_current_screen();
 	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 		
-	if ( ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' !== $current_screen->base ) || in_array( 'wp-rocket', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
+	if ( ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' !== $current_screen->base ) || in_array( 'wp-rocket', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) || defined( 'WP_ROCKET_VERSION' ) ) {
 		return;
 	}
 
@@ -293,10 +298,10 @@ function _imagify_rocket_notice() {
 	<div class="updated imagify-rkt-notice">
 		<a href="<?php echo $dismiss_url; ?>" class="imagify-cross"><span class="dashicons dashicons-no"></span></a>
 		
-		<p class="logo">
+		<p class="imagify-rkt-logo">
 			<img src="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket2x.png 2x" alt="WP Rocket" width="118" height="32">
 		</p>
-		<p class="msg">
+		<p class="imagify-rkt-msg">
 			<?php
 				esc_html_e( 'Discover the best caching plugin to speed up your website.', 'imagify');
 				echo '<br>';
@@ -306,10 +311,10 @@ function _imagify_rocket_notice() {
 				);
 			?>
 		</p>
-		<p class="coupon">
-			<span class="coupon-code"><?php echo $coupon_code; ?></span>
+		<p class="imagify-rkt-coupon">
+			<span class="imagify-rkt-coupon-code"><?php echo $coupon_code; ?></span>
 		</p>
-		<p class="cta">
+		<p class="imagify-rkt-cta">
 			<a href="<?php echo $wprocket_url; ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket now', 'imagify' ); ?></a>
 		</p>
 	</div>
@@ -333,7 +338,7 @@ function _imagify_rating_notice() {
 	$current_screen  = get_current_screen();
 	$ignored_notices = get_user_meta( $GLOBALS['current_user']->ID, '_imagify_ignore_notices', true );
 
-	if ( ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) || in_array( 'rating', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
+	if ( ( isset( $current_screen ) && ( 'media_page_imagify-bulk-optimization' !== $current_screen->base && 'upload' !== $current_screen->base && 'media' !== $current_screen->base ) ) || in_array( 'rating', (array) $ignored_notices ) || ! current_user_can( apply_filters( 'imagify_capacity', 'manage_options' ) ) ) {
 		return;
 	}
 	?>
