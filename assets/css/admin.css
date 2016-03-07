@@ -184,6 +184,12 @@ td .imagify-chart {
 	vertical-align: super;
 }
 
+.media_page_imagify-bulk-optimization .notice,
+.settings_page_imagify .notice {
+	margin-right: 20px;
+	margin-left: 2px;
+}
+
 .media_page_imagify-bulk-optimization .media-item {
 	margin: 0;
 }
@@ -551,19 +557,19 @@ td .imagify-chart {
 	flex-shrink: 0;
 }
 .imagify-rkt-notice .imagify-rkt-logo {
-	width: 150px;
+	width: 150px!important; /* !important because of a dirtugly WP Engine code */
 	text-align: center;
 	padding: 0 25px 0 30px;
 	line-height: 0.8;
 }
 .imagify-rkt-notice .imagify-rkt-msg {
-	width: 100%;
+	width: 100%!important; /* !important because of a dirtugly WP Engine code */
 	padding: 0 15px;
 	font-size: 14px;
 	line-height: 1.6;
 }
 .imagify-rkt-notice .imagify-rkt-coupon {
-	width: 150px;
+	width: 150px!important; /* !important because of a dirtugly WP Engine code */
 	padding: 0 15px;
 }
 .imagify-rkt-notice .imagify-rkt-coupon-code {
@@ -574,7 +580,7 @@ td .imagify-chart {
 	color: #F7A933;
 }
 .imagify-rkt-notice .imagify-rkt-cta {
-	width: 200px;
+	width: 200px!important; /* !important because of a dirtugly WP Engine code */
 }
 .imagify-rkt-notice .button.button {
 	position: relative;
