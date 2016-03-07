@@ -564,46 +564,73 @@
 	 */
 	if ( $('.upload-php').length > 0 ) {
 
-		var waitContent = setInterval( function() {
 
-			if ( $('.upload-php').find('.media-frame.mode-grid').find('.attachments').length > 0 ) {
+		var get_var = function (param) {
+				var vars = {};
+				window.location.href.replace( 
+					/[?&]+([^=&]+)=?([^&]*)?/gi, // regexp
+					function( m, key, value ) { // callback
+						vars[key] = value !== undefined ? value : '';
+					}
+				);
 
-				$('.upload-php').find('.media-frame.mode-grid').on('click', '.attachment', function(){
-					var tempTimer = setInterval( function(){
-							if ( $('.media-modal').find('.imagify-datas-details').length ) {
-								if ( $('#imagify-original-src').length > 0 && $('#imagify-original-src') !== '' ) {
+				if ( param ) {
+					return vars[param] ? vars[param] : null;	
+				}
+				return vars;
+			},
+			imagify_content_in_modal = function() {
+			
+				var tempTimer = setInterval( function(){
+						if ( $('.media-modal').find('.imagify-datas-details').length ) {
+							if ( $('#imagify-original-src').length > 0 && $('#imagify-original-src') !== '' ) {
 
-									// trigger creation
-									$('.media-frame-content').find('.attachment-actions').prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
+								// trigger creation
+								$('.media-frame-content').find('.attachment-actions').prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
 
-									// get datas
-									var $datas = $('.media-frame-content').find('.compat-field-imagify');
+								// get datas
+								var $datas = $('.media-frame-content').find('.compat-field-imagify');
 
-									// Modal and trigger event creation
-									is_modalified = imagify_twenty_modal({
-										width:				$('#imagify-full-width').val(),
-										height:				$('#imagify-full-height').val(),
-										original_url:		$('#imagify-original-src').val(),
-										optimized_url:		$('#imagify-full-src').val(),
-										original_size:		$('#imagify-original-size').val(),
-										optimized_size:		$datas.find('.imagify-data-item').find('.big').text(),
-										saving:				$datas.find('.imagify-chart-value').text(),
-										modal_append_to:	$('.media-frame-content').find('.thumbnail-image'),
-										trigger:			$('#imagify-media-frame-comparison-btn'),
-										modal_id:			'imagify-comparison-modal',
-										open_modal: true
-									});
-								}
-
-								clearInterval(tempTimer);
-								tempTimer = null;
+								// Modal and trigger event creation
+								is_modalified = imagify_twenty_modal({
+									width:				$('#imagify-full-width').val(),
+									height:				$('#imagify-full-height').val(),
+									original_url:		$('#imagify-original-src').val(),
+									optimized_url:		$('#imagify-full-src').val(),
+									original_size:		$('#imagify-original-size').val(),
+									optimized_size:		$datas.find('.imagify-data-item').find('.big').text(),
+									saving:				$datas.find('.imagify-chart-value').text(),
+									modal_append_to:	$('.media-frame-content').find('.thumbnail-image'),
+									trigger:			$('#imagify-media-frame-comparison-btn'),
+									modal_id:			'imagify-comparison-modal',
+									open_modal: true
+								});
 							}
-						}, 20 );
-				});
 
-				clearInterval(waitContent);
-			}
-		}, 100);
+							clearInterval(tempTimer);
+							tempTimer = null;
+						}
+					}, 20 );
+			},
+			waitContent = setInterval( function() {
+				if ( $('.upload-php').find('.media-frame.mode-grid').find('.attachments').length > 0 ) {
+					
+					// if attachment is clicked, build the modal inside the modal
+					$('.upload-php').find('.media-frame.mode-grid').on('click', '.attachment', function(){
+						imagify_content_in_modal();
+					});
+
+					// if attachment is mentionned in URL, build the modal inside the modal
+					if ( get_var('item') ){
+						imagify_content_in_modal();
+					}
+
+					clearInterval(waitContent);
+					waitContent = null;
+				}
+			}, 100);
+
+		// if URL contain item, that will open the WP Modal View
 	}
 
 })(jQuery, window, document);
