@@ -316,17 +316,18 @@ function _imagify_display_options_page() {
 				<p class="h2"><?php _e('You can choose three levels of compression', 'imagify'); ?></p>
 				<div class="imagify-columns">
 					<div class="col-1-3">
-						<p class="h3"><?php _e( 'Ultra', 'imagify' ); ?></p>
+						<p class="h3"><?php _e( 'Normal', 'imagify' ); ?></p>
 						<p>
-							<?php _e( 'This mode will apply all available optimizations for maximum image compression.', 'imagify' ); ?>
+							<?php _e( 'This mode provides lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'This will provide a huge savings on the initial weight. Sometimes the image quality could be degraded a little.', 'imagify' ); ?>
+							<?php _e( 'If you want the perfect quality for your images, we recommend you that mode.', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'If you want the maximum weight reduction, and you agree to lose some quality on the images we recommend using this mode.' , 'imagify' ); ?>
+							<em><?php _e( 'Note: the file size reduction will be less, compared to aggressive mode.', 'imagify' ); ?></em>
 						</p>
 					</div>
+					
 					<div class="col-1-3">
 						<p class="h3"><?php _e( 'Aggressive', 'imagify' ); ?></p>
 						<p>
@@ -339,16 +340,17 @@ function _imagify_display_options_page() {
 							<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.' , 'imagify' ); ?>
 						</p>
 					</div>
+
 					<div class="col-1-3">
-						<p class="h3"><?php _e( 'Normal', 'imagify' ); ?></p>
+						<p class="h3"><?php _e( 'Ultra', 'imagify' ); ?></p>
 						<p>
-							<?php _e( 'This mode provides lossless optimization, your images will be optimized without any visible change.', 'imagify' ); ?>
+							<?php _e( 'This mode will apply all available optimizations for maximum image compression.', 'imagify' ); ?>
 						</p>
 						<p>
-							<?php _e( 'If you want the perfect quality for your images, we recommend you that mode.', 'imagify' ); ?>
+							<?php _e( 'This will provide a huge savings on the initial weight. Sometimes the image quality could be degraded a little.', 'imagify' ); ?>
 						</p>
 						<p>
-							<em><?php _e( 'Note: the file size reduction will be less, compared to aggressive mode.', 'imagify' ); ?></em>
+							<?php _e( 'If you want the maximum weight reduction, and you agree to lose some quality on the images we recommend using this mode.' , 'imagify' ); ?>
 						</p>
 					</div>
 				</div>
@@ -382,24 +384,24 @@ function _imagify_display_options_page() {
 									data-label-ultra="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
 
 									data-original-label="<?php esc_attr_e( 'Original', 'imagify' ); ?>"
-									data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>penseur-original.jpg"
+									data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-original.jpg"
 									data-original-dim="1220x350"
-									data-original-alt="<?php printf( esc_attr__( 'Original photography about %s', 'imagify' ), size_format(405000)); ?>"
+									data-original-alt="<?php printf( esc_attr__( 'Original photography about %s', 'imagify' ), size_format(343040)); ?>"
 
 									data-normal-label="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
-									data-normal-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>penseur-normal.jpg"
+									data-normal-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-normal.jpg"
 									data-normal-dim="1220x350"
-									data-normal-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(371712) ); ?>"
+									data-normal-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(301056) ); ?>"
 
 									data-aggressive-label="<?php esc_attr_e( 'Aggressive', 'imagify' ); ?>"
-									data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>penseur-aggressive.jpg"
+									data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-aggressive.jpg"
 									data-aggressive-dim="1220x350"
-									data-aggressive-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(143360) ); ?>"
+									data-aggressive-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(108544) ); ?>"
 
 									data-ultra-label="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
-									data-ultra-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>penseur-ultra.jpg"
+									data-ultra-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-ultra.jpg"
 									data-ultra-dim="1220x350"
-									data-ultra-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(108544) ); ?>"></div>
+									data-ultra-alt="<?php printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format(46080) ); ?>"></div>
 
 				<div class="imagify-comparison-levels">
 					<div class="imagify-c-level imagify-level-original go-left">
@@ -409,17 +411,17 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value"><?php echo size_format(405000); ?></span>
+							<span class="value"><?php echo size_format(343040); ?></span>
 						</p>
 					</div>
-					<div class="imagify-c-level imagify-level-optimized" aria-hidden="true">
+					<div class="imagify-c-level imagify-level-optimized imagify-level-normal" aria-hidden="true">
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Level:', 'imagify' ); ?></span>
 							<span class="value level"><?php _e( 'Normal', 'imagify' ); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size"><?php echo size_format(371712); ?></span>
+							<span class="value size"><?php echo size_format(301056); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -428,7 +430,7 @@ function _imagify_display_options_page() {
 									<span class="imagify-chart-container">
 										<canvas id="imagify-consumption-chart-normal" width="15" height="15"></canvas>
 									</span>
-								</span><span class="imagify-chart-value">10.44</span>%
+								</span><span class="imagify-chart-value">12.24</span>%
 							</span>
 						</p>
 					</div>
@@ -439,7 +441,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size"><?php echo size_format(143360); ?></span>
+							<span class="value size"><?php echo size_format(108544); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -448,7 +450,7 @@ function _imagify_display_options_page() {
 									<span class="imagify-chart-container">
 										<canvas id="imagify-consumption-chart-aggressive" width="15" height="15"></canvas>
 									</span>
-								</span><span class="imagify-chart-value">65.53</span>%
+								</span><span class="imagify-chart-value">68.36</span>%
 							</span>
 						</p>
 					</div>
@@ -460,7 +462,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size"><?php echo size_format(108544); ?></span>
+							<span class="value size"><?php echo size_format(46080); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -469,7 +471,7 @@ function _imagify_display_options_page() {
 									<span class="imagify-chart-container">
 										<canvas id="imagify-consumption-chart-ultra" width="15" height="15"></canvas>
 									</span>
-								</span><span class="imagify-chart-value">74.16</span>%
+								</span><span class="imagify-chart-value">86.57</span>%
 							</span>
 						</p>
 					</div>
