@@ -207,7 +207,7 @@ function _imagify_display_bulk_page() {
 
 					<div class="imagify-number-you-optimized">
 						<p>
-							<span id="imagify-total-optimized-attachments-pct" class="number"><?php echo number_format_i18n( imagify_count_saving_data('percent') ); ?>%</span>
+							<span id="imagify-total-optimized-attachments-pct" class="number"><?php echo number_format_i18n( $total_saving_data['percent'] ); ?>%</span>
 							<span class="text"><?php printf( __( 'that\'s the size you saved %sby using Imagify', 'imagify' ), '<br>' ); ?></span>
 						</p>
 					</div>
