@@ -88,7 +88,13 @@ function _imagify_display_bulk_page() {
 				<div class="col-1-3 col-informations">
 					<h3><?php _e( 'Information', 'imagify' ); ?></h3>
 					<ul class="imagify-list-dash">
-						<li><strong><?php _e( 'Please be aware that optimizing a large number of images can take a while depending on your server and network speed.', 'imagify' ); ?></strong></li>
+						<li><strong><?php _e( 'Please be aware that optimizing a large number of images can take a while depending on your server and network speed.', 'imagify' ); ?></strong>
+						<?php
+						if ( get_transient( IMAGIFY_SLUG . '_large_library' ) ) {
+							printf( __( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ), number_format_i18n( apply_filters( 'imagify_unoptimized_attachment_limit', 10000 ) ) );
+						}
+						?>
+						</li>
 						<li><?php _e( 'You must keep this page open while the bulk optimizaton is processing. If you leave you can come back to continue where it left off.', 'imagify' ); ?></li>
 					</ul>
 					
@@ -207,7 +213,7 @@ function _imagify_display_bulk_page() {
 
 					<div class="imagify-number-you-optimized">
 						<p>
-							<span id="imagify-total-optimized-attachments-pct" class="number"><?php echo number_format_i18n( imagify_count_saving_data('percent') ); ?>%</span>
+							<span id="imagify-total-optimized-attachments-pct" class="number"><?php echo number_format_i18n( $optimized_percent ); ?>%</span>
 							<span class="text"><?php printf( __( 'that\'s the size you saved %sby using Imagify', 'imagify' ), '<br>' ); ?></span>
 						</p>
 					</div>

@@ -3,7 +3,7 @@ Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.4.2
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -133,6 +133,13 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+
+= 1.4.4 =
+* Interface
+ * Visual fix: CSS prefixed in notices to avoid class conflicts
+ * Visual fix: improve Imagify Notices CSS  because of WP Engine CSS dirty coding
+ * Medias: new "Compare Original VS Optimized" action link in grid view mode
+ * Settings: new sample images for visual comparison of compression levels (removes unused sample images)
 
 = 1.4.3 =
 * Interface

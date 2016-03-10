@@ -12,6 +12,11 @@ function imagify_count_attachments() {
 	$count = wp_count_attachments( get_imagify_mime_type() );
 	$count = get_object_vars( $count );
 	$count = array_sum( $count );
+	
+	if ( $count > apply_filters( 'imagify_unoptimized_attachment_limit', 10000 ) ) {
+		set_transient( IMAGIFY_SLUG . '_large_library', 1 );	
+	}
+	
 	return (int) $count;
 }
 
@@ -74,7 +79,7 @@ function imagify_count_error_attachments() {
 			'fields'                 => 'ids'
 		)
 	);
-
+	
 	return (int) $query->post_count;
 }
 
@@ -110,7 +115,7 @@ function imagify_count_optimized_attachments() {
 			'fields'                 => 'ids'
 		)
 	);
-
+			
 	return (int) $query->post_count;
 }
 
@@ -205,7 +210,7 @@ function imagify_count_saving_data( $key = '' ) {
 		'optimized_size' => (int) $optimized_size,
 		'percent'		 => ( 0 !== $optimized_size ) ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0
 	);
-
+	
 	if ( ! empty( $key ) ) {
 		return $data[ $key ];
 	}

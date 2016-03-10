@@ -73,6 +73,16 @@ function get_imagify_attachment_optimization_text( $attachment_id ) {
 	if ( $attachment->has_backup() ) {
 		$class   = ( 'post.php' !== $pagenow  ) ? 'button-imagify-restore' : '';
 		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', $attachment_id ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Restoring...', 'imagify' ) . '"><span class="dashicons dashicons-image-rotate"></span>' . __( 'Restore Original', 'imagify' ) . '</a>';	
+
+		if ( 'upload.php' != $pagenow  ) {
+			$image = wp_get_attachment_image_src( $attachment_id, 'full' );
+
+			$output .= '<input id="imagify-original-src" type="hidden" value="' . $attachment->get_backup_url() . '">';
+			$output .= '<input id="imagify-original-size" type="hidden" value="' . $attachment->get_original_size() . '">';
+			$output .= '<input id="imagify-full-src" type="hidden" value="' . $image[0] . '">';
+			$output .= '<input id="imagify-full-width" type="hidden" value="' . $image[1] . '">';
+			$output .= '<input id="imagify-full-height" type="hidden" value="' . $image[2] . '">';
+		}
 	}
 	
 	$output .= '</div><!-- .imagify-datas-actions-links -->';

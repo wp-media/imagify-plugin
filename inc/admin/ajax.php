@@ -162,13 +162,22 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		),
 	);
 	
+	/**
+	 * Filter the unoptimized attachments limit query
+	 *
+	 * @since 1.4.4
+	 *
+	 * @param int The limit (-1 for unlimited)
+	 */
+	$unoptimized_attachment_limit = apply_filters( 'imagify_unoptimized_attachment_limit', 10000 );
+	
 	$args = array(
 		'fields'                 => 'ids',
 		'post_type'              => 'attachment',
 		'post_status'            => 'any',
 		'post_mime_type'         => get_imagify_mime_type(),
 		'meta_query'			 => $meta_query,
-		'posts_per_page'         => -1,
+		'posts_per_page'         => $unoptimized_attachment_limit,
 		'no_found_rows'          => true,
 		'update_post_term_cache' => false,
 	);
