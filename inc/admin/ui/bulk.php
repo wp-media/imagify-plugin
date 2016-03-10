@@ -91,7 +91,7 @@ function _imagify_display_bulk_page() {
 						<li><strong><?php _e( 'Please be aware that optimizing a large number of images can take a while depending on your server and network speed.', 'imagify' ); ?></strong>
 						<?php
 						if ( get_transient( IMAGIFY_SLUG . '_large_library' ) ) {
-							printf( __( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ), number_format( 10000 ) );
+							printf( __( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ), number_format_i18n( 10000 ) );
 						}
 						?>
 						</li>
