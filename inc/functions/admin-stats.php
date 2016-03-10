@@ -12,6 +12,11 @@ function imagify_count_attachments() {
 	$count = wp_count_attachments( get_imagify_mime_type() );
 	$count = get_object_vars( $count );
 	$count = array_sum( $count );
+	
+	if ( $count > 10000 ) {
+		set_transient( IMAGIFY_SLUG . '_large_library', 1 );	
+	}
+	
 	return (int) $count;
 }
 
