@@ -9,10 +9,16 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @return int The number of attachments.
  */
 function imagify_count_attachments() {
-	$count = wp_count_attachments( get_imagify_mime_type() );
-	$count = get_object_vars( $count );
-	$count = array_sum( $count );
+	global $wpdb;
 	
+	$count = $wpdb->get_var( 
+		"SELECT COUNT($wpdb->posts.ID) 
+		 FROM $wpdb->posts 
+		 WHERE post_type = 'attachment' 
+		 	AND post_status != 'trash' 
+		 	AND ($wpdb->posts.post_mime_type = 'image/jpeg' OR $wpdb->posts.post_mime_type = 'image/png' OR $wpdb->posts.post_mime_type = 'image/gif')" 
+	);
+		
 	if ( $count > apply_filters( 'imagify_unoptimized_attachment_limit', 10000 ) ) {
 		set_transient( IMAGIFY_SLUG . '_large_library', 1 );	
 	}
@@ -27,22 +33,22 @@ function imagify_count_attachments() {
  *
  * @return int The number of attachments.
  */
-function imagify_count_error_attachments() {
-	$query = new WP_Query(
-		array(
-			'post_type'              => 'attachment',
-			'post_status'			 => 'inherit',
-			'post_mime_type'         => get_imagify_mime_type(),
-			'meta_key'				 => '_imagify_status',
-			'meta_value'			 => 'error',
-			'posts_per_page'         => -1,
-			'update_post_term_cache' => false,
-			'no_found_rows'          => true,
-			'fields'                 => 'ids'
-		)
+function imagify_count_error_attachments() {	
+	global $wpdb;
+	
+	$count = $wpdb->get_var( 
+		"SELECT COUNT($wpdb->posts.ID) 
+		 FROM $wpdb->posts 
+		 INNER JOIN $wpdb->postmeta 
+		 	ON $wpdb->posts.ID = $wpdb->postmeta.post_id
+		 WHERE ($wpdb->posts.post_mime_type = 'image/jpeg' OR $wpdb->posts.post_mime_type = 'image/png' OR $wpdb->posts.post_mime_type = 'image/gif') 
+		 	AND ( ( $wpdb->postmeta.meta_key = '_imagify_status' AND CAST($wpdb->postmeta.meta_value AS CHAR) = 'error' )
+) 
+			AND $wpdb->posts.post_type = 'attachment' 
+			AND $wpdb->posts.post_status = 'inherit'" 
 	);
 	
-	return (int) $query->post_count;
+	return (int) $count;
 }
 
 /*
@@ -52,33 +58,21 @@ function imagify_count_error_attachments() {
  *
  * @return int The number of attachments.
  */
-function imagify_count_optimized_attachments() {
-	$query = new WP_Query(
-		array(
-			'post_type'              => 'attachment',
-			'post_status'			 => 'inherit',
-			'post_mime_type'         => get_imagify_mime_type(),
-			'meta_query'      => array(
-			'relation'    => 'or',
-				array(
-					'key'     => '_imagify_status',
-					'value'   => 'success',
-					'compare' => '='
-				),
-				array(
-					'key'     => '_imagify_status',
-					'value'   => 'already_optimized',
-					'compare' => '='
-				)
-			),
-			'posts_per_page'         => -1,
-			'update_post_term_cache' => false,
-			'no_found_rows'          => true,
-			'fields'                 => 'ids'
-		)
+function imagify_count_optimized_attachments() {	
+	global $wpdb;
+	
+	$count = $wpdb->get_var( 
+		"SELECT COUNT($wpdb->posts.ID) 
+		 FROM $wpdb->posts 
+		 INNER JOIN $wpdb->postmeta 
+		 	ON $wpdb->posts.ID = $wpdb->postmeta.post_id
+		 WHERE ($wpdb->posts.post_mime_type = 'image/jpeg' OR $wpdb->posts.post_mime_type = 'image/png' OR $wpdb->posts.post_mime_type = 'image/gif') 
+		 	AND ( ( $wpdb->postmeta.meta_key = '_imagify_status' AND CAST($wpdb->postmeta.meta_value AS CHAR) = 'success' ) OR ( $wpdb->postmeta.meta_key = '_imagify_status' AND CAST($wpdb->postmeta.meta_value AS CHAR) = 'already_optimized' ) ) 
+		 	AND $wpdb->posts.post_type = 'attachment' 
+		 	AND $wpdb->posts.post_status = 'inherit'" 
 	);
 			
-	return (int) $query->post_count;
+	return (int) $count;
 }
 
 /*
