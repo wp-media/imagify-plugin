@@ -21,44 +21,6 @@ function imagify_count_attachments() {
 }
 
 /*
- * Count number of execeed attachments (size > 5MB).
- *
- * @since 1.0
- *
- * @return int The number of exceeded attachments.
- */
-function imagify_count_exceeding_attachments() {
-	$count = 0;
-	$query = new WP_Query(
-		array(
-			'post_type'              => 'attachment',
-			'post_status'			 => 'inherit',
-			'post_mime_type'         => get_imagify_mime_type(),
-			'posts_per_page'         => -1,
-			'update_post_term_cache' => false,
-			'no_found_rows'          => true,
-			'fields'                 => 'ids'
-		)
-	);
-	$attachments = (array) $query->posts;
-
-	foreach( $attachments as $attachment_id ) {
-		$attachment = new Imagify_Attachment( $attachment_id );
-
-		// Check if the attachment extension is allowed
-		if ( ! wp_attachment_is_image( $attachment_id ) ) {
-			continue;
-		}
-		
-		if ( $attachment->is_exceeded() ) {
-			$count++;
-		}
-	}
-	
-	return (int) $count;
-}
-
-/*
  * Count number of optimized attachments with an error.
  *
  * @since 1.0
