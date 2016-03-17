@@ -76,7 +76,7 @@ function _imagify_admin_print_styles() {
 
 	wp_register_script(
 		'imagify-js-chart',
-		IMAGIFY_ASSETS_JS_URL . 'chart.min.js',
+		IMAGIFY_ASSETS_JS_URL . 'chart' . $js_ext,
 		array(),
 		IMAGIFY_VERSION,
 		true
