@@ -122,12 +122,12 @@ function imagify_count_saving_data( $key = '' ) {
 		       AND ( pm2.meta_key= '_imagify_status' AND pm2.meta_value= 'success' )"
 	); 
 	
-	$attachments 	= array_map( 'maybe_unserialize', $attachments );
+	$attachments 	= array_map( 'maybe_unserialize', (array) $attachments );
 	$original_size  = 0;
 	$optimized_size = 0;
 	$count			= 0;
 		
-	foreach( $attachments as $key => $attachment_data ) {
+	foreach( $attachments as $k => $attachment_data ) {
 		$stats_data    = $attachment_data['stats'];
 		$original_data = $attachment_data['sizes']['full'];
 		
@@ -144,18 +144,16 @@ function imagify_count_saving_data( $key = '' ) {
 				$optimized_size += ( $size_data['optimized_size'] ) ? $size_data['optimized_size'] : 0;
 			}
 		}
-		
-		$count++;
 	}
 	
 	$data = array(
-		'count'			 => $count,
+		'count'			 => count( $attachments ),
 		'original_size'  => (int) $original_size,
 		'optimized_size' => (int) $optimized_size,
 		'percent'		 => ( 0 !== $optimized_size ) ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0
 	);
 	
-	if ( ! empty( $key ) && isset( $data[ $key ] ) ) {
+	if ( ! empty( $key ) ) {
 		return $data[ $key ];
 	}
 
