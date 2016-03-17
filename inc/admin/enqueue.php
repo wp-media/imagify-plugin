@@ -130,7 +130,8 @@ function _imagify_admin_print_styles() {
 		'waitApiKeyCheckText'     	    => __( 'Check in progress...', 'imagify' ),
 		'ApiKeyCheckSuccessTitle' 	    => __( 'Congratulations!', 'imagify' ),
 		'ApiKeyCheckSuccessText'  	    => __( 'Your API key is valid. You can now configure the Imagify settings to optimize your images.', 'imagify' ),
-		'ValidApiKeyText'  		  	    => __( 'Your API key is valid.', 'imagify' )
+		'ValidApiKeyText'  		  	    => __( 'Your API key is valid.', 'imagify' ),
+		'swalCancel'					=> __( 'Cancel' )
 
 	);
 	wp_localize_script( 'imagify-js-admin', 'imagify', $admin_data );
