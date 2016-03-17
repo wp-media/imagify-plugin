@@ -127,7 +127,7 @@ function imagify_count_saving_data( $key = '' ) {
 	$optimized_size = 0;
 	$count			= 0;
 		
-	foreach( $attachments as $k => $attachment_data ) {
+	foreach( $attachments as $attachment_data ) {
 		$stats_data    = $attachment_data['stats'];
 		$original_data = $attachment_data['sizes']['full'];
 		
