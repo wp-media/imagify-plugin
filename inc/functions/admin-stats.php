@@ -112,62 +112,50 @@ function imagify_percent_optimized_attachments() {
  */
 function imagify_count_saving_data( $key = '' ) {
 	global $wpdb;
-
+	
+	$attachments = $wpdb->get_col( 
+		"SELECT pm1.meta_value
+		 FROM $wpdb->postmeta as pm1
+		 INNER JOIN $wpdb->postmeta as pm2
+		 	ON pm1.post_id = pm2.post_id
+		 WHERE pm1.meta_key= '_imagify_data'
+		       AND ( pm2.meta_key= '_imagify_status' AND pm2.meta_value= 'success' )"
+	); 
+	
+	$attachments 	= array_map( 'maybe_unserialize', $attachments );
 	$original_size  = 0;
 	$optimized_size = 0;
-	$query = new WP_Query(
-		array(
-			'post_type'              => 'attachment',
-			'post_status'			 => 'inherit',
-			'post_mime_type'         => get_imagify_mime_type(),
-			'meta_key'				 => '_imagify_status',
-			'meta_value'			 => 'success',
-			'posts_per_page'         => -1,
-			'update_post_term_cache' => false,
-			'no_found_rows'          => true,
-			'fields'                 => 'ids'
-		)
-	);
-	$attachments = (array) $query->posts;
-
-	foreach( $attachments as $attachment_id ) {
-		$attachment = new Imagify_Attachment( $attachment_id );
-
-		// Check if the attachment extension is allowed
-		if ( ! wp_attachment_is_image( $attachment_id ) ) {
-			continue;
-		}
-
-		$stats_data    = $attachment->get_stats_data();
-		$original_data = $attachment->get_size_data( 'full' );
-
-		// Incremente the original sizes
-		if ( $attachment->is_optimized() ) {
-			$original_size  += ( $original_data['original_size'] ) ? $original_data['original_size'] : 0;
-			$optimized_size += ( $original_data['optimized_size'] ) ? $original_data['optimized_size'] : 0;
-		}
+	$count			= 0;
 		
-		$metadata = wp_get_attachment_metadata( $attachment_id );
-		$sizes    = ( isset( $metadata['sizes'] ) ) ? (array) $metadata['sizes'] : array();
-
+	foreach( $attachments as $key => $attachment_data ) {
+		$stats_data    = $attachment_data['stats'];
+		$original_data = $attachment_data['sizes']['full'];
+		
+		// Incremente the original sizes
+		$original_size  += ( $original_data['original_size'] ) ? $original_data['original_size'] : 0;
+		$optimized_size += ( $original_data['optimized_size'] ) ? $original_data['optimized_size'] : 0;
+		
+		unset( $attachment_data['sizes']['full'] );
+		
 		// Incremente the thumbnails sizes
-		foreach ( $sizes as $size_key => $size_data ) {
-			$size_data = $attachment->get_size_data( $size_key );
+		foreach ( $attachment_data['sizes'] as $size_key => $size_data ) {
 			if ( ! empty( $size_data['success'] ) ) {
 				$original_size  += ( $size_data['original_size'] ) ? $size_data['original_size'] : 0;
 				$optimized_size += ( $size_data['optimized_size'] ) ? $size_data['optimized_size'] : 0;
 			}
 		}
+		
+		$count++;
 	}
-
+	
 	$data = array(
-		'count'			 => $query->post_count,
+		'count'			 => $count,
 		'original_size'  => (int) $original_size,
 		'optimized_size' => (int) $optimized_size,
 		'percent'		 => ( 0 !== $optimized_size ) ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0
 	);
 	
-	if ( ! empty( $key ) ) {
+	if ( ! empty( $key ) && isset( $data[ $key ] ) ) {
 		return $data[ $key ];
 	}
 
