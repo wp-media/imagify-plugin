@@ -581,6 +581,13 @@ td .imagify-chart {
 }
 .imagify-rkt-notice .imagify-rkt-cta {
 	width: 200px!important; /* !important because of a dirtugly WP Engine code */
+	-webkit-box-flex: 1;
+	-webkit-flex-grow: 1;
+	-ms-flex-positive: 1;
+	flex-grow: 1;
+	-webkit-flex-basis: 200px;
+	-ms-flex-preferred-size: 200px;
+	flex-basis: 200px;
 }
 .imagify-rkt-notice .button.button {
 	position: relative;
