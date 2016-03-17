@@ -262,7 +262,7 @@
 
 							if ( ! $tt.closest('.imagify-modal-content').hasClass('loaded') ) {
 								$tt.closest('.imagify-modal-content').removeClass('loading').addClass('loaded');
-								//draw_me_a_chart( $modal.find('.imagify-level-optimized').find('.imagify-chart').find('canvas') );
+								draw_me_a_chart( $modal.find('.imagify-level-optimized').find('.imagify-chart').find('canvas') );
 							}
 
 							// check if image height is to big

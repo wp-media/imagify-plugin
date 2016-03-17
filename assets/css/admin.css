@@ -2230,6 +2230,11 @@ td.imagify-cell-filename {
 	float: none;
 	margin: 0;
 }
+.imagify-visual-comparison .imagify-chart-container canvas {
+	width: 15px!important;
+	height: 15px!important;
+	margin-right: 5px;
+}
 .imagify-c-level.go-left {
 	float: left;
 }
