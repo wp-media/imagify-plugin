@@ -9,8 +9,8 @@ jQuery(function($){
 			}
 	};
 
-	var overviewCanvas = document.getElementById("imagify-overview-chart");
-	var overviewData = [
+	var overviewCanvas = document.getElementById("imagify-overview-chart"),
+		overviewData = [
 		{
 			value: imagifyBulk.totalUnoptimizedAttachments,
 			color:"#D9E4EB",
@@ -29,7 +29,7 @@ jQuery(function($){
 			highlight: "#2E3242",
 			label: imagifyBulk.overviewChartLabels.error
 		}
-	]
+	];
 
 	// to avoid JS error
 	if ( overviewCanvas ) {
@@ -43,10 +43,20 @@ jQuery(function($){
 			tooltipTemplate: "<%= value %>"
 		});
 
-		//then you just need to generate the legend
-		var overviewLegend = overviewDoughnut.generateLegend();
+		//then you just need to generate the legend 
+		//var overviewLegend = overviewDoughnut.generateLegend();
+		//bugged `segments undefined` ?
 
 		//and append it to your page somewhere
+		overviewLegend = '<ul class="imagify-doughnut-legend">';
+		
+		$(overviewData).each(function(i){
+			console.log(overviewData[i]);
+			overviewLegend += '<li><span style="background-color:' + overviewData[i].color + '"></span>' + overviewData[i].label + '</li>';
+		});
+
+		overviewLegend += '</ul>';
+		
 		document.getElementById("imagify-overview-chart-legend").innerHTML = overviewLegend;
 	}
 
