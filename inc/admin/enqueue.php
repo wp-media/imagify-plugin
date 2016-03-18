@@ -76,7 +76,7 @@ function _imagify_admin_print_styles() {
 
 	wp_register_script(
 		'imagify-js-chart',
-		IMAGIFY_ASSETS_JS_URL . 'chart' . $js_ext,
+		IMAGIFY_ASSETS_JS_URL . 'chart'  . $js_ext,
 		array(),
 		IMAGIFY_VERSION,
 		true
@@ -198,6 +198,8 @@ function _imagify_admin_print_styles() {
 	 * Scripts loaded in /wp-admin/upload.php?page=imagify-bulk-optimization
 	 */
 	if ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' === $current_screen->base ) {
+		wp_enqueue_script( 'heartbeat' );
+		
 		$user	   = get_imagify_user();
 		$bulk_data = array(
 			'waitTitle' 	=> __( 'Please wait...', 'imagify' ),

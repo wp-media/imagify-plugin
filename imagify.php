@@ -76,6 +76,7 @@ function _imagify_init() {
 
     if ( is_admin() ) {
         require( IMAGIFY_ADMIN_PATH 	. 'upgrader.php' );
+        require( IMAGIFY_ADMIN_PATH 	. 'heartbeat.php' );
         require( IMAGIFY_ADMIN_PATH 	. 'ajax.php' );
         require( IMAGIFY_ADMIN_PATH 	. 'options.php' );
         require( IMAGIFY_ADMIN_PATH  	. 'menu.php' );
