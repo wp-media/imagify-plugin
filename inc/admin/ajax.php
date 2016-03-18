@@ -258,19 +258,8 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	// Return the optimization statistics
 	$fullsize_data         = $attachment->get_size_data();
 	$stats_data            = $attachment->get_stats_data();
-	$saving_data           = imagify_count_saving_data();
 	$user		   		   = new Imagify_User();
-	$data                  = array(
-		'global_already_optimized_attachments' => $saving_data['count'],
-		'global_optimized_attachments'         => imagify_count_optimized_attachments(),
-		'global_unoptimized_attachments'       => imagify_count_unoptimized_attachments(),
-		'global_errors_attachments'            => imagify_count_error_attachments(),
-		'global_optimized_attachments_percent' => imagify_percent_optimized_attachments(),
-		'global_optimized_percent'             => $saving_data['percent'],
-		'global_original_human'                => size_format( $saving_data['original_size'], 1 ),
-		'global_optimized_human'               => size_format( $saving_data['optimized_size'], 1 ),
-		'global_unconsumed_quota'              => $user->get_percent_unconsumed_quota(),
-	);
+	$data                  = array();
 	
 	if ( ! $attachment->is_optimized() ) {
 		$data['success'] 		= false;
