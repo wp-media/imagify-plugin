@@ -3,11 +3,11 @@ Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.4.2
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Dramatically reduce image file sizes without loosing quality, make your website load faster, boost your SEO and save money on your bandwidth.
+Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
 == Description ==
 
