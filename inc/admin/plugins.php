@@ -12,6 +12,6 @@ function _imagify_plugin_action_links( $actions )
 {
 	array_unshift( $actions, sprintf( '<a href="%s">%s</a>', get_imagify_admin_url( 'bulk-optimization' ), __( 'Bulk Optimization', 'imagify' ) ) );
 	array_unshift( $actions, sprintf( '<a href="%s">%s</a>', get_imagify_admin_url(), __( 'Settings' ) ) );
-
+	
     return $actions;
 }
