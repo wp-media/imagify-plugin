@@ -44,3 +44,51 @@ function get_imagify_attachment_backup_path( $file_path ) {
 	$backup_path = str_replace( $upload_basedir, $backup_dir, $file_path );
 	return $backup_path;
 }
+
+/*
+ * Retrieve file path for an attachment based on filename.
+ *
+ * @since 1.4.5
+ *
+ * @param  int           $filename   The filename.
+ * @return string|false  $file_path  The file path to where the attached file should be, false otherwise.
+ */
+function get_imagify_attached_file( $filename ) {		
+	$file_path = false;
+	
+	// If the file is relative, prepend upload dir.
+	if ( $filename && 0 !== strpos( $filename, '/' ) && ! preg_match( '|^.:\\\|', $filename ) && ( ( $uploads = wp_upload_dir() ) && false === $uploads['error'] ) ) {
+		$file_path = $uploads['basedir'] . "/$filename";
+	}
+	
+	return $file_path;
+}
+
+/*
+ * Retrieve the URL for an attachment based on filename.
+ *
+ * @since 1.4.5
+ *
+ * @param  int           $filename  The filename.
+ * @return string|false  $url       Attachment URL, otherwise false.
+ */
+function get_imagify_attachment_url( $filename ) {	
+	$url = '';
+	
+	// Get upload directory.
+	if ( ( $uploads = wp_upload_dir() ) && false === $uploads['error'] ) {
+		// Check that the upload base exists in the file location.
+		if ( 0 === strpos( $filename, $uploads['basedir'] ) ) {
+			// Replace file location with url location.
+			$url = str_replace( $uploads['basedir'], $uploads['baseurl'], $filename );
+		} elseif ( false !== strpos( $filename, 'wp-content/uploads' ) ) {
+			// Get the directory name relative to the basedir (back compat for pre-2.7 uploads)
+			$url = trailingslashit( $uploads['baseurl'] . '/' . _wp_get_attachment_relative_path( $filename ) ) . basename( $filename );
+		} else {
+			// It's a newly-uploaded file, therefore $file is relative to the basedir.
+			$url = $uploads['baseurl'] . "/$filename";
+		}
+	}
+	
+	return $url;
+}
