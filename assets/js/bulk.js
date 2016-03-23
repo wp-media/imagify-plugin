@@ -51,7 +51,6 @@ jQuery(function($){
 		overviewLegend = '<ul class="imagify-doughnut-legend">';
 		
 		$(overviewData).each(function(i){
-			console.log(overviewData[i]);
 			overviewLegend += '<li><span style="background-color:' + overviewData[i].color + '"></span>' + overviewData[i].label + '</li>';
 		});
 
@@ -205,7 +204,7 @@ jQuery(function($){
 						$('#attachment-'+data.image+' .imagify-cell-percentage').html('<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart" style="width: 18px; height: 18px;"></canvas></span></span><span class="imagipercent">'+data.percent+'</span>%');
 					draw_me_a_chart( $('#attachment-'+data.image+' .imagify-cell-percentage').find('canvas') );
 						$('#attachment-'+data.image+' .imagify-cell-thumbnails').html(data.thumbnails);
-						$('#attachment-'+data.image+' .imagify-cell-savings').html(Optimizer.toHumanSize(data.overall_saving, 1));
+						$('#attachment-'+data.image+' .imagify-cell-savings').html(Optimizer.humanSize(data.overall_saving, 1));
 
 						// The table footer total optimized files
 						files = files + data.thumbnails + 1;
@@ -213,17 +212,17 @@ jQuery(function($){
 
 						// The table footer original size
 						original_overall_size = original_overall_size + data.original_overall_size;
-						$('.imagify-total-original').html(Optimizer.toHumanSize(original_overall_size, 1));
+						$('.imagify-total-original').html(Optimizer.humanSize(original_overall_size, 1));
 
 						// The table footer overall saving
 						overall_saving = overall_saving + data.overall_saving;
-						$('.imagify-total-gain').html(Optimizer.toHumanSize(overall_saving, 1));
+						$('.imagify-total-gain').html(Optimizer.humanSize(overall_saving, 1));
 
 					} else {
 						error_class     = 'error';
 						error_dashicon  = 'dismiss';
 						error_message   = 'Error';
-
+												
 						if ( data.error.indexOf("You've consumed all your data") >= 0 ) {
 							swal({
 								title: imagifyBulk.overQuotaTitle,
