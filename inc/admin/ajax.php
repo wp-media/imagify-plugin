@@ -190,7 +190,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$attachments = new WP_Query( $args );
 	$ids         = $attachments->posts;
 	$sql_ids 	 = implode( ',' , (array) $ids );
-	
+
 	if ( empty( $sql_ids ) ) {
 		wp_send_json_error( array( 'message' => 'no-images' ) );
 	}
@@ -207,38 +207,41 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$attachments_filename = array_combine( $ids, $attachments_filename );
 	
 	// Get attachments data
-	$attachments_data = $wpdb->get_col( 
-		"SELECT pm.meta_value
+	$attachments_data = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
 		 FROM $wpdb->postmeta as pm
 		 WHERE pm.meta_key= '_imagify_data'
 		 	   AND pm.post_id IN ($sql_ids)
-		 ORDER BY pm.post_id DESC"		
+		 ORDER BY pm.post_id DESC"
+		 , ARRAY_A	
 	);
 	
-	$attachments_data = array_combine( $ids, $attachments_data );
+	$attachments_data = imagify_query_results_combine( $ids, $attachments_data );	
 	$attachments_data = array_map( 'maybe_unserialize', $attachments_data );
 	
 	// Get attachments optimization level
-	$attachments_optimization_level = $wpdb->get_col( 
-		"SELECT pm.meta_value
+	$attachments_optimization_level = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
 		 FROM $wpdb->postmeta as pm
 		 WHERE pm.meta_key= '_imagify_optimization_level'
 		 	   AND pm.post_id IN ($sql_ids)
-		 ORDER BY pm.post_id DESC"		
+		 ORDER BY pm.post_id DESC"
+		, ARRAY_A		
 	);
 	
-	$attachments_optimization_level = array_combine( $ids, $attachments_optimization_level );
+	$attachments_optimization_level = imagify_query_results_combine( $ids, $attachments_optimization_level );
 	
 	// Get attachments status
-	$attachments_status = $wpdb->get_col( 
-		"SELECT pm.meta_value
+	$attachments_status = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
 		 FROM $wpdb->postmeta as pm
 		 WHERE pm.meta_key= '_imagify_status'
 		 	   AND pm.post_id IN ($sql_ids)
-		 ORDER BY pm.post_id DESC"		
+		 ORDER BY pm.post_id DESC"
+		, ARRAY_A		
 	);
 	
-	$attachments_status = array_combine( $ids, $attachments_status );
+	$attachments_status = imagify_query_results_combine( $ids, $attachments_status );
 	
 	// Save the optimization level in a transient to retrieve it later during the process
 	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
@@ -248,7 +251,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		$file_path = apply_filters( 'imagify_file_path', get_imagify_attached_file( $attachments_filename[ $id ] ) );
 		
 		if ( file_exists( $file_path ) ) {
-			$attachment_data  = $attachments_data[ $id ];
+			$attachment_data  = ( isset( $attachments_data[ $id ] ) ) ? $attachments_data[ $id ] : false;
 			$attachment_error = '';
 
 			if ( isset( $attachment_data['sizes']['full']['error'] ) ) {
@@ -256,8 +259,8 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 			}
 			
 			$attachment_error              = trim( $attachment_error );
-			$attachment_status             = $attachments_status[ $id ];
-			$attachment_optimization_level = $attachments_optimization_level[ $id ];
+			$attachment_status             = ( isset( $attachments_status[ $id ] ) ) ? $attachments_status[ $id ] : false;
+			$attachment_optimization_level = ( isset( $attachments_optimization_level[ $id ] ) ) ? $attachments_optimization_level[ $id ] : false;
 			$attachment_backup_path 	   = get_imagify_attachment_backup_path( $file_path );
 			
 			// Don't try to re-optimize if the optimization level is still the same
