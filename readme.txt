@@ -134,6 +134,13 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 
+= 1.4.5 =
+* Interface
+ * Bulk Optimization: optimize all SQL queries and improve by 65% the process time \o/
+* Misc 
+ * Chart.js library updated
+ * Media List JS notice removed
+
 = 1.4.4 =
 * Interface
  * Visual fix: CSS prefixed in notices to avoid class conflicts
