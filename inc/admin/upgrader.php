@@ -134,7 +134,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 		}
 	}
 	
-	if ( version_compare( $current_version, '1.4.2', '<' ) ) {
+	if ( version_compare( $current_version, '1.4.5', '<' ) ) {
 		// Delete all transients used for async optimization
 		global $wpdb;
 		$wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "_transient_imagify-async-in-progress-%"' );
