@@ -147,9 +147,10 @@ function imagify_dismiss_notice( $notice, $user_id = 0 ) {
  */
 function imagify_query_results_combine( $keys, $values ) {
 	$result = array();
+	$keys   = array_flip( $keys );
 	
 	foreach ( $values as $v ) {
-		if ( in_array( $v['id'], $keys ) ) {
+		if ( isset( $keys[ $v['id'] ] ) ) {
 			$result[ $v['id'] ] = $v['value'];
 		}
 	}
