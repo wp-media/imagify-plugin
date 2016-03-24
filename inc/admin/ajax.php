@@ -189,7 +189,11 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$data        = array();
 	$attachments = new WP_Query( $args );
 	$ids         = $attachments->posts;
-	$sql_ids 	 = implode( ',' , $ids );
+	$sql_ids 	 = implode( ',' , (array) $ids );
+	
+	if ( empty( $sql_ids ) ) {
+		wp_send_json_error( array( 'message' => 'no-images' ) );
+	}
 	
 	// Get attachments filename
 	$attachments_filename = $wpdb->get_col( 
