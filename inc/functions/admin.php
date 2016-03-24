@@ -146,6 +146,10 @@ function imagify_dismiss_notice( $notice, $user_id = 0 ) {
  * @return array $result The combined array
  */
 function imagify_query_results_combine( $keys, $values ) {
+	if ( ! $values ) {
+		return array();
+	}
+	
 	$result = array();
 	$keys   = array_flip( $keys );
 	
