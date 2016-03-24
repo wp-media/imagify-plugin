@@ -7,3 +7,4 @@ Developers:
 	Sébastien Decamme <sebastien@wp-media.me>
 	Julio Potier <julio@wp-media.me>
 	Caspar Huebinger <caspar@wp-rocket.me>
+	Grégory Viguier <gregory@wp-rocket.me>
