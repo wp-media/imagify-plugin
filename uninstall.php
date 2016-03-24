@@ -7,6 +7,11 @@ delete_site_option( 'imagify_settings' );
 
 // Delete all transients
 delete_site_transient( 'imagify_check_licence_1' );
+delete_site_transient( 'imagify_bulk_optimization_level' );
+delete_site_transient( 'imagify_large_library' );
+
+global $wpdb;
+$wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "_transient_imagify-async-in-progress-%"' );
 
 // Delete all user meta related to Imagify
 delete_metadata( 'user', '', '_imagify_ignore_notices', '', true );

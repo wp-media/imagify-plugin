@@ -136,3 +136,28 @@ function imagify_dismiss_notice( $notice, $user_id = 0 ) {
 
 	update_user_meta( $user_id, '_imagify_ignore_notices', $notices );
 }
+
+/**
+ * Combine two arrays with some specific keys.
+ * We use this function to combine the result of 2 SQL queries.
+ *
+ * @since 1.4.5
+ *
+ * @return array $result The combined array
+ */
+function imagify_query_results_combine( $keys, $values ) {
+	if ( ! $values ) {
+		return array();
+	}
+	
+	$result = array();
+	$keys   = array_flip( $keys );
+	
+	foreach ( $values as $v ) {
+		if ( isset( $keys[ $v['id'] ] ) ) {
+			$result[ $v['id'] ] = $v['value'];
+		}
+	}
+	
+	return $result;
+}

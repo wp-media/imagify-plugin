@@ -88,7 +88,8 @@ jQuery(function($){
 				text: imagifyOptions.noBackupText,
 				type: "info",
 				customClass: "imagify-sweet-alert",
-				showCancelButton: true
+				showCancelButton: true,
+				cancelButtonText: imagify.swalCancel
 			}, function(isConfirm){
 				if ( ! isConfirm ) {
 					$_this.prop('checked', true);

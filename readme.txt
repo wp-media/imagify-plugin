@@ -3,11 +3,11 @@ Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.4.2
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Dramatically reduce image file sizes without loosing quality, make your website load faster, boost your SEO and save money on your bandwidth.
+Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
 == Description ==
 
@@ -134,10 +134,17 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 
+= 1.4.5 =
+* Interface
+ * Bulk Optimization: optimize all SQL queries and improve by 65% the process time \o/
+* Misc 
+ * Chart.js library updated
+ * Media List JS notice removed
+
 = 1.4.4 =
 * Interface
  * Visual fix: CSS prefixed in notices to avoid class conflicts
- * Visual fix: improve Imagify Notices CSS  because of WP Engine CSS dirty coding
+ * Visual fix: improve Imagify Notices CSS to avoid issue with WP Engine CSS
  * Medias: new "Compare Original VS Optimized" action link in grid view mode
  * Settings: new sample images for visual comparison of compression levels (removes unused sample images)
 

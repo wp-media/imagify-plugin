@@ -14,7 +14,7 @@ function _do_admin_post_imagify_manual_upload() {
 	} else {
 		check_admin_referer( 'imagify-manual-upload' );
 	}
-	
+
 	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
@@ -178,39 +178,104 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		'post_mime_type'         => get_imagify_mime_type(),
 		'meta_query'			 => $meta_query,
 		'posts_per_page'         => $unoptimized_attachment_limit,
+		'orderby'				 => 'ID',
+		'order'					 => 'DESC',
 		'no_found_rows'          => true,
 		'update_post_term_cache' => false,
 	);
 	
-	$data               = array();
-	$query              = new WP_Query( $args );
-	$ids                = $query->posts;
+	global $wpdb;
+	
+	$data        = array();
+	$attachments = new WP_Query( $args );
+	$ids         = $attachments->posts;
+	$ids 		 = array_filter( (array) $ids );
+	$sql_ids 	 = implode( ',', $ids );
 
+	if ( empty( $sql_ids ) ) {
+		wp_send_json_error( array( 'message' => 'no-images' ) );
+	}
+	
+	// Get attachments filename
+	$attachments_filename = $wpdb->get_col( 
+		"SELECT pm.meta_value
+		 FROM $wpdb->postmeta as pm
+		 WHERE pm.meta_key= '_wp_attached_file'
+		 	   AND pm.post_id IN ($sql_ids)
+		 ORDER BY pm.post_id DESC"		
+	);
+	
+	$attachments_filename = array_combine( $ids, $attachments_filename );
+	
+	// Get attachments data
+	$attachments_data = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
+		 FROM $wpdb->postmeta as pm
+		 WHERE pm.meta_key= '_imagify_data'
+		 	   AND pm.post_id IN ($sql_ids)
+		 ORDER BY pm.post_id DESC"
+		 , ARRAY_A	
+	);
+	
+	$attachments_data = imagify_query_results_combine( $ids, $attachments_data );	
+	$attachments_data = array_map( 'maybe_unserialize', $attachments_data );
+	
+	// Get attachments optimization level
+	$attachments_optimization_level = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
+		 FROM $wpdb->postmeta as pm
+		 WHERE pm.meta_key= '_imagify_optimization_level'
+		 	   AND pm.post_id IN ($sql_ids)
+		 ORDER BY pm.post_id DESC"
+		, ARRAY_A		
+	);
+	
+	$attachments_optimization_level = imagify_query_results_combine( $ids, $attachments_optimization_level );
+	
+	// Get attachments status
+	$attachments_status = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
+		 FROM $wpdb->postmeta as pm
+		 WHERE pm.meta_key= '_imagify_status'
+		 	   AND pm.post_id IN ($sql_ids)
+		 ORDER BY pm.post_id DESC"
+		, ARRAY_A		
+	);
+	
+	$attachments_status = imagify_query_results_combine( $ids, $attachments_status );
+	
 	// Save the optimization level in a transient to retrieve it later during the process
 	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
 	
 	foreach( $ids as $id ) {
 		/** This filter is documented in inc/functions/process.php */
-		$file_path = apply_filters( 'imagify_file_path', get_attached_file( $id ) );
+		$file_path = apply_filters( 'imagify_file_path', get_imagify_attached_file( $attachments_filename[ $id ] ) );
 		
 		if ( file_exists( $file_path ) ) {
-			$attachment        = new Imagify_Attachment( $id );
-			$attachment_error  = $attachment->get_optimized_error();  
-			$attachment_error  = trim( $attachment_error );
-			$attachment_status = $attachment->get_status();
+			$attachment_data  = ( isset( $attachments_data[ $id ] ) ) ? $attachments_data[ $id ] : false;
+			$attachment_error = '';
+
+			if ( isset( $attachment_data['sizes']['full']['error'] ) ) {
+				$attachment_error = $attachment_data['sizes']['full']['error'];
+			}
+			
+			$attachment_error              = trim( $attachment_error );
+			$attachment_status             = ( isset( $attachments_status[ $id ] ) ) ? $attachments_status[ $id ] : false;
+			$attachment_optimization_level = ( isset( $attachments_optimization_level[ $id ] ) ) ? $attachments_optimization_level[ $id ] : false;
+			$attachment_backup_path 	   = get_imagify_attachment_backup_path( $file_path );
 			
 			// Don't try to re-optimize if the optimization level is still the same
-			if ( $optimization_level === $attachment->get_optimization_level() && ! $attachment->has_error() ) {
+			if ( $optimization_level === $attachment_optimization_level && is_string( $attachment_error ) ) {
 				continue;					
 			}
 			
 			// Don't try to re-optimize if there is no backup file
-			if ( $optimization_level !== $attachment->get_optimization_level() && ! $attachment->has_backup() && $attachment->is_optimized() ) {
+			if ( $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) && $attachment_status == 'success' ) {
 				continue;					
 			}
 			
 			// Don't try to re-optimize images already compressed
-			if ( $attachment->get_optimization_level() >= $optimization_level && $attachment_status == 'already_optimized' ) {
+			if ( $attachment_optimization_level >= $optimization_level && $attachment_status == 'already_optimized' ) {
 				continue;	
 			}
 			
@@ -219,8 +284,8 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 				continue;
 			}
 									
-			$data[ '_' . $id ] = wp_get_attachment_url( $id );	
-		}
+			$data[ '_' . $id ] = get_imagify_attachment_url( $attachments_filename[ $id ] );
+		}		
 	}
 	
 	if ( (bool) $data ) {
@@ -258,19 +323,8 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	// Return the optimization statistics
 	$fullsize_data         = $attachment->get_size_data();
 	$stats_data            = $attachment->get_stats_data();
-	$saving_data           = imagify_count_saving_data();
 	$user		   		   = new Imagify_User();
-	$data                  = array(
-		'global_already_optimized_attachments' => $saving_data['count'],
-		'global_optimized_attachments'         => imagify_count_optimized_attachments(),
-		'global_unoptimized_attachments'       => imagify_count_unoptimized_attachments(),
-		'global_errors_attachments'            => imagify_count_error_attachments(),
-		'global_optimized_attachments_percent' => imagify_percent_optimized_attachments(),
-		'global_optimized_percent'             => $saving_data['percent'],
-		'global_original_human'                => size_format( $saving_data['original_size'], 1 ),
-		'global_optimized_human'               => size_format( $saving_data['optimized_size'], 1 ),
-		'global_unconsumed_quota'              => $user->get_percent_unconsumed_quota(),
-	);
+	$data                  = array();
 	
 	if ( ! $attachment->is_optimized() ) {
 		$data['success'] 		= false;
@@ -535,5 +589,4 @@ function _do_admin_post_async_optimize_save_image_editor_file() {
 
 		die( 1 );
 	}
-
 }

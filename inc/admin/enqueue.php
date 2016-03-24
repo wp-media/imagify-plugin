@@ -76,7 +76,7 @@ function _imagify_admin_print_styles() {
 
 	wp_register_script(
 		'imagify-js-chart',
-		IMAGIFY_ASSETS_JS_URL . 'chart.min.js',
+		IMAGIFY_ASSETS_JS_URL . 'chart'  . $js_ext,
 		array(),
 		IMAGIFY_VERSION,
 		true
@@ -130,7 +130,8 @@ function _imagify_admin_print_styles() {
 		'waitApiKeyCheckText'     	    => __( 'Check in progress...', 'imagify' ),
 		'ApiKeyCheckSuccessTitle' 	    => __( 'Congratulations!', 'imagify' ),
 		'ApiKeyCheckSuccessText'  	    => __( 'Your API key is valid. You can now configure the Imagify settings to optimize your images.', 'imagify' ),
-		'ValidApiKeyText'  		  	    => __( 'Your API key is valid.', 'imagify' )
+		'ValidApiKeyText'  		  	    => __( 'Your API key is valid.', 'imagify' ),
+		'swalCancel'					=> __( 'Cancel' )
 
 	);
 	wp_localize_script( 'imagify-js-admin', 'imagify', $admin_data );
@@ -197,6 +198,8 @@ function _imagify_admin_print_styles() {
 	 * Scripts loaded in /wp-admin/upload.php?page=imagify-bulk-optimization
 	 */
 	if ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' === $current_screen->base ) {
+		wp_enqueue_script( 'heartbeat' );
+		
 		$user	   = get_imagify_user();
 		$bulk_data = array(
 			'waitTitle' 	=> __( 'Please wait...', 'imagify' ),

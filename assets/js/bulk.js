@@ -9,8 +9,8 @@ jQuery(function($){
 			}
 	};
 
-	var overviewCanvas = document.getElementById("imagify-overview-chart");
-	var overviewData = [
+	var overviewCanvas = document.getElementById("imagify-overview-chart"),
+		overviewData = [
 		{
 			value: imagifyBulk.totalUnoptimizedAttachments,
 			color:"#D9E4EB",
@@ -29,7 +29,7 @@ jQuery(function($){
 			highlight: "#2E3242",
 			label: imagifyBulk.overviewChartLabels.error
 		}
-	]
+	];
 
 	// to avoid JS error
 	if ( overviewCanvas ) {
@@ -43,12 +43,62 @@ jQuery(function($){
 			tooltipTemplate: "<%= value %>"
 		});
 
-		//then you just need to generate the legend
-		var overviewLegend = overviewDoughnut.generateLegend();
+		//then you just need to generate the legend 
+		//var overviewLegend = overviewDoughnut.generateLegend();
+		//bugged `segments undefined` ?
 
 		//and append it to your page somewhere
+		overviewLegend = '<ul class="imagify-doughnut-legend">';
+		
+		$(overviewData).each(function(i){
+			overviewLegend += '<li><span style="background-color:' + overviewData[i].color + '"></span>' + overviewData[i].label + '</li>';
+		});
+
+		overviewLegend += '</ul>';
+		
 		document.getElementById("imagify-overview-chart-legend").innerHTML = overviewLegend;
 	}
+	
+	// Heartbeat
+	$(document).on('heartbeat-send', function(e, data) {
+        data['imagify_heartbeat'] = 'update_bulk_data';
+    });
+	
+	// Listen for the custom event "heartbeat-tick" on $(document).
+    $(document).on( 'heartbeat-tick', function(e, data) {
+        if ( ! data['imagify_bulk_data'] ) {
+            return;
+        }
+        
+        data = data['imagify_bulk_data'];
+        
+        // The overview chart percent
+		$('#imagify-overview-chart-percent').html(data.optimized_attachments_percent + '<span>%</span>');
+		
+		// The comsuption bar
+		$('.imagify-unconsumed-percent').html(data.unconsumed_quota + '%');
+		$('.imagify-unconsumed-bar').animate({'width': data.unconsumed_quota + '%'});
+
+		// The total optimized images
+		$('#imagify-total-optimized-attachments').html(data.already_optimized_attachments);
+		
+		// The original bar
+		$('#imagify-original-bar').find('.imagify-barnb')
+								  .html(data.original_human);
+
+		// The optimized bar
+		$('#imagify-optimized-bar').animate({'width': data.optimized_percent+"%"})
+		$('#imagify-optimized-bar').find('.imagify-barnb')
+								   .html(data.optimized_human);
+								   
+		// The Percent data
+		$('#imagify-total-optimized-attachments-pct').html( data.optimized_percent + '%' );
+		
+		overviewDoughnut.segments[0].value = data.unoptimized_attachments;
+		overviewDoughnut.segments[1].value = data.optimized_attachments;
+		overviewDoughnut.segments[2].value = data.errors_attachments;
+		overviewDoughnut.update();
+    });
 
 	// Simulate a click on the "Imagif'em all" button
 	$('#imagify-simulate-bulk-action').click(function(e){
@@ -154,46 +204,25 @@ jQuery(function($){
 						$('#attachment-'+data.image+' .imagify-cell-percentage').html('<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart" style="width: 18px; height: 18px;"></canvas></span></span><span class="imagipercent">'+data.percent+'</span>%');
 					draw_me_a_chart( $('#attachment-'+data.image+' .imagify-cell-percentage').find('canvas') );
 						$('#attachment-'+data.image+' .imagify-cell-thumbnails').html(data.thumbnails);
-						$('#attachment-'+data.image+' .imagify-cell-savings').html(Optimizer.toHumanSize(data.overall_saving, 1));
+						$('#attachment-'+data.image+' .imagify-cell-savings').html(Optimizer.humanSize(data.overall_saving, 1));
 
-						// The overview chart percent
-						$('#imagify-overview-chart-percent').html(data.global_optimized_attachments_percent + '<span>%</span>');
-						// The total optimized images
-						$('#imagify-total-optimized-attachments').html(data.global_already_optimized_attachments);
-
-						// The comsuption bar
-						$('.imagify-unconsumed-percent').html(data.global_unconsumed_quota + '%');
-						$('.imagify-unconsumed-bar').animate({'width': data.global_unconsumed_quota + '%'});
-
-						// The original bar
-						$('#imagify-original-bar').find('.imagify-barnb')
-												  .html(data.global_original_human);
-
-						// The optimized bar
-						$('#imagify-optimized-bar').animate({'width': data.global_optimized_percent+"%"})
-						$('#imagify-optimized-bar').find('.imagify-barnb')
-												   .html(data.global_optimized_human);
-						
-						// The Percent data
-						$('#imagify-total-optimized-attachments-pct').html( data.global_optimized_percent + '%' );
-						
 						// The table footer total optimized files
 						files = files + data.thumbnails + 1;
 						$('.imagify-cell-nb-files').html(files + ' file(s)');
 
 						// The table footer original size
 						original_overall_size = original_overall_size + data.original_overall_size;
-						$('.imagify-total-original').html(Optimizer.toHumanSize(original_overall_size, 1));
+						$('.imagify-total-original').html(Optimizer.humanSize(original_overall_size, 1));
 
 						// The table footer overall saving
 						overall_saving = overall_saving + data.overall_saving;
-						$('.imagify-total-gain').html(Optimizer.toHumanSize(overall_saving, 1));
+						$('.imagify-total-gain').html(Optimizer.humanSize(overall_saving, 1));
 
 					} else {
 						error_class     = 'error';
 						error_dashicon  = 'dismiss';
 						error_message   = 'Error';
-
+												
 						if ( data.error.indexOf("You've consumed all your data") >= 0 ) {
 							swal({
 								title: imagifyBulk.overQuotaTitle,
@@ -220,11 +249,6 @@ jQuery(function($){
 						
 						$('#attachment-'+data.image+' .imagify-cell-status').html('<span class="imagistatus status-'+error_class+'"><span class="dashicons dashicons-'+error_dashicon+'"></span>'+error_message+'</span>');			
 					}
-
-					overviewDoughnut.segments[0].value = data.global_unoptimized_attachments;
-					overviewDoughnut.segments[1].value = data.global_optimized_attachments;
-					overviewDoughnut.segments[2].value = data.global_errors_attachments;
-					overviewDoughnut.update();
 				})
 				// after all attachments optimization
 				.done(function (data) {

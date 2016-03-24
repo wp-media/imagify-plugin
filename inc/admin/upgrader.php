@@ -37,7 +37,7 @@ function _imagify_upgrader() {
 add_action( 'imagify_first_install', '_imagify_first_install' );
 function _imagify_first_install() {	
 	// Set a transient to know when we will have to display a notice to ask the user to rate the plugin.
-	set_site_transient( 'imagify_seen_rating_notice', true, DAY_IN_SECONDS * 7 );
+	set_site_transient( 'imagify_seen_rating_notice', true, DAY_IN_SECONDS * 3 );
 	
 	// Create Options
 	add_site_option( IMAGIFY_SETTINGS_SLUG,
@@ -134,7 +134,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 		}
 	}
 	
-	if ( version_compare( $current_version, '1.4.2', '<' ) ) {
+	if ( version_compare( $current_version, '1.4.5', '<' ) ) {
 		// Delete all transients used for async optimization
 		global $wpdb;
 		$wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "_transient_imagify-async-in-progress-%"' );
