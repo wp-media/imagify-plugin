@@ -197,15 +197,17 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	}
 	
 	// Get attachments filename
-	$attachments_filename = $wpdb->get_col( 
-		"SELECT pm.meta_value
+	// Get attachments filename
+	$attachments_filename = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
 		 FROM $wpdb->postmeta as pm
 		 WHERE pm.meta_key= '_wp_attached_file'
 		 	   AND pm.post_id IN ($sql_ids)
-		 ORDER BY pm.post_id DESC"		
+		 ORDER BY pm.post_id DESC"
+		 , ARRAY_A	
 	);
 	
-	$attachments_filename = array_combine( $ids, $attachments_filename );
+	$attachments_filename = imagify_query_results_combine( $ids, $attachments_filename );	
 	
 	// Get attachments data
 	$attachments_data = $wpdb->get_results( 

@@ -3,7 +3,7 @@ Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.4.2
-Stable tag: 1.4.5
+Stable tag: 1.4.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -133,6 +133,10 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+
+= 1.4.6 =
+* Bulk Optimization
+ * Fix the "All your images have been optimized by Imagify" issue when images still need to be optimized. This issue occurred only since 1.4.5 for some users. Sorry for the inconvenience!
 
 = 1.4.5 =
 * Interface
