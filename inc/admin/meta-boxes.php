@@ -22,7 +22,7 @@ function _imagify_attachment_submitbox_misc_actions() {
 			echo '</div>';
 		} elseif ( $attachment->is_optimized() || $attachment->has_error() ) {
 			echo '<div class="misc-pub-section misc-pub-imagify"><h4>' . __( 'Imagify', 'imagify' ) . '</h4></div>';
-			echo get_imagify_attachment_optimization_text( $post->ID );
+			echo get_imagify_attachment_optimization_text( $attachment );
 		} elseif ( false !== get_transient( 'imagify-async-in-progress-' . $post->ID ) ) {
 			echo '<div class="misc-pub-section misc-pub-imagify">';
 				echo '<div class="button"><span class="imagify-spinner"></span>';

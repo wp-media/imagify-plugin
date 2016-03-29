@@ -1,4 +1,4 @@
-<?php 
+<?php
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 /*
@@ -7,12 +7,12 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @since 1.2
  */
 add_filter( 'attachment_fields_to_edit', '_imagify_attachment_fields_to_edit', PHP_INT_MAX, 2 );
-function _imagify_attachment_fields_to_edit( $form_fields, $post ) {    
+function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
 	global $pagenow;
 	if ( 'post.php' == $pagenow ) {
 		return $form_fields;
 	}
-	
+
 	$form_fields['imagify'] = array(
 		'label'         => 'Imagify',
 		'input'         => 'html',
@@ -20,7 +20,7 @@ function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
 		'show_in_edit'  => true,
 		'show_in_modal' => true,
 	);
-	
+
 	return $form_fields;
 }
 
@@ -28,11 +28,10 @@ function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
  * Add "Compare Original VS Optimized" link to the media row action
  *
  * @since  1.4.3
- * @author  Geoffrey Crofte
+ * @author Geoffrey Crofte
  */
 add_filter( 'media_row_actions', '_imagify_add_actions_to_media_list_row', PHP_INT_MAX, 2 );
 function _imagify_add_actions_to_media_list_row( $actions, $post ) {
-
 	// if this attachment is not an image, do nothing
 	if ( ! wp_attachment_is_image( $post->ID ) ) {
 		return $actions;
@@ -44,7 +43,7 @@ function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 	if ( ! imagify_valid_key() || ! $attachment->is_optimized() ) {
 		return $actions;
 	}
-	
+
 	// if was not activated for that image, do nothing
 	if ( '' === $attachment->get_backup_url() ) {
 		return $actions;

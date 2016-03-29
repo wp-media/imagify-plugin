@@ -38,7 +38,7 @@ function _do_admin_post_imagify_manual_upload() {
 	}
 	
 	// Return the optimization statistics
-	$output = get_imagify_attachment_optimization_text( $attachment_id );
+	$output = get_imagify_attachment_optimization_text( $attachment );
 	wp_send_json_success( $output );
 }
 
@@ -78,7 +78,7 @@ function _do_admin_post_imagify_manual_override_upload() {
 	}
 
 	// Return the optimization statistics
-	$output = get_imagify_attachment_optimization_text( $attachment->id );
+	$output = get_imagify_attachment_optimization_text( $attachment );
 	wp_send_json_success( $output );
 }
 
@@ -196,7 +196,6 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		wp_send_json_error( array( 'message' => 'no-images' ) );
 	}
 	
-	// Get attachments filename
 	// Get attachments filename
 	$attachments_filename = $wpdb->get_results( 
 		"SELECT pm.post_id as id, pm.meta_value as value
