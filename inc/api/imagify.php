@@ -268,8 +268,7 @@ class Imagify {
 		}
 
         try {
-	    	$ch 	 = curl_init();
-			$is_ssl  = ( isset( $_SERVER['HTTPS'] ) && ( 'on' == strtolower( $_SERVER['HTTPS'] ) || '1' == $_SERVER['HTTPS'] ) ) || ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) );
+	    	$ch = curl_init();
 
 	        if ( 'POST' == $args['method'] ) {
 		        curl_setopt( $ch, CURLOPT_POST, true );
@@ -281,7 +280,8 @@ class Imagify {
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
 			curl_setopt( $ch, CURLOPT_TIMEOUT, $args['timeout'] );
 			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, $is_ssl );
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
 
 			$response  = json_decode( curl_exec( $ch ) );
 	        $error     = curl_error( $ch );
