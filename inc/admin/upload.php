@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * Add "Imagify" column in upload.php
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_filter( 'manage_media_columns', '_imagify_manage_media_columns' );
 function _imagify_manage_media_columns( $columns ) {
@@ -15,7 +16,8 @@ function _imagify_manage_media_columns( $columns ) {
 add_filter( 'manage_media_custom_column', '_imagify_manage_media_custom_column', 10, 2 );
 function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
 	if ( 'imagify_optimized_file' == $column_name ) {
-		echo get_imagify_media_column_content( $attachment_id );
+		$attachment = new Imagify_Attachment( $attachment_id );
+		echo get_imagify_media_column_content( $attachment );
 	}
 }
 
@@ -23,6 +25,7 @@ function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
  * Adds a dropdown that allows filtering on the attachments Imagify status.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'restrict_manage_posts', '_imagify_attachments_filter_dropdown' );
 function _imagify_attachments_filter_dropdown() {
@@ -58,6 +61,7 @@ function _imagify_attachments_filter_dropdown() {
  * Modify the query based on the imagify-status variable in $_GET
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_filter( 'request', '_imagify_sort_attachments_by_status' );
 function _imagify_sort_attachments_by_status( $vars ) {

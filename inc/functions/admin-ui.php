@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * Get the optimization data list for a specific attachment.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  *
  * @param   object  $attachment  The attachment object.
  * @return  string  The output to print.
@@ -95,6 +96,7 @@ function get_imagify_attachment_optimization_text( $attachment ) {
  * Get the error message for a specific attachment.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  *
  * @param 	object  $attachment  The attachement object.
  * @return  string  The output to print.
@@ -118,6 +120,7 @@ function get_imagify_attachment_error_text( $attachment ) {
  * Get the re-optimize link for a specific attachment.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  *
  * @param 	int     $attachment_id  The attachement ID.
  * @return  string  The output to print.
@@ -160,21 +163,22 @@ function get_imagify_attachment_reoptimize_link( $attachment ) {
  * Get all data to diplay for a specific attachment.
  *
  * @since 1.2
+ * @author Jonathan Buttigieg
  *
- * @param 	int     $attachment_id  The attachement ID.
+ * @param 	object  $attachment  The attachement object.
  * @return  string  The output to print.
  */
-function get_imagify_media_column_content( $attachment_id ) {
-	$attachment     = new Imagify_Attachment( $attachment_id );
+function get_imagify_media_column_content( $attachment, $type = 'wordpress' ) {
+	$attachment_id  = $attachment->id; 
 	$attachment_ext = $attachment->get_extension();
 	$output      	= '';
 
 	// Check if the attachment extension is allowed
-	if ( ! wp_attachment_is_image( $attachment_id )  ) {
+	if ( 'wp' === $type && ! wp_attachment_is_image( $attachment_id )  ) {
 		$output = sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
 		return $output;
 	}
-
+	
 	// Check if the API key is valid
 	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
 		$output .= __( 'Invalid API key', 'imagify' );
