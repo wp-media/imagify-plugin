@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @param   object  $attachment  The attachment object.
  * @return  string  The output to print.
  */
-function get_imagify_attachment_optimization_text( $attachment ) {
+function get_imagify_attachment_optimization_text( $attachment, $type = 'wp' ) {
 	global $pagenow;
 	
 	$attachment_id     = $attachment->id;
@@ -28,7 +28,7 @@ function get_imagify_attachment_optimization_text( $attachment ) {
 	$optimization_level = $attachment->get_optimization_level_label();
 
 	if ( imagify_valid_key() && $attachment->has_backup() ) {
-		$reoptimize_link   = get_imagify_attachment_reoptimize_link( $attachment );
+		$reoptimize_link   = get_imagify_attachment_reoptimize_link( $attachment, $type );
 		$reoptimize_output = ( $reoptimize_link ) ? $reoptimize_link : '';
 	}
 
@@ -72,8 +72,12 @@ function get_imagify_attachment_optimization_text( $attachment ) {
 	$output .= $reoptimize_output;
 	
 	if ( $attachment->has_backup() ) {
+		$args    = array( 
+			'attachment_id' => $attachment_id,
+			'type' 			=> $type
+		);
 		$class   = ( 'post.php' !== $pagenow  ) ? 'button-imagify-restore' : '';
-		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', array( 'attachment_id' => $attachment_id ) ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Restoring...', 'imagify' ) . '"><span class="dashicons dashicons-image-rotate"></span>' . __( 'Restore Original', 'imagify' ) . '</a>';
+		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', $args ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Restoring...', 'imagify' ) . '"><span class="dashicons dashicons-image-rotate"></span>' . __( 'Restore Original', 'imagify' ) . '</a>';
 		
 		if ( 'upload.php' != $pagenow  ) {
 			$image = wp_get_attachment_image_src( $attachment_id, 'full' );
@@ -101,16 +105,20 @@ function get_imagify_attachment_optimization_text( $attachment ) {
  * @param 	object  $attachment  The attachement object.
  * @return  string  The output to print.
  */
-function get_imagify_attachment_error_text( $attachment ) {
+function get_imagify_attachment_error_text( $attachment, $type = 'wp' ) {
 	global $pagenow;
 	
 	$attachment_id = $attachment->id;
 	$data   	   = get_post_meta( $attachment_id, '_imagify_data', true );
 	$output 	   = '';
+	$args 		   = array(
+		'attachment_id' => $attachment_id,
+		'type'			=> $type
+	);
 
 	if ( isset( $data['sizes']['full']['success'] ) && ! $data['sizes']['full']['success'] ) {
 		$class   = ( 'post.php' !== $pagenow  ) ? 'button-imagify-manual-upload' : '';
-		$output .= '<strong>' . $data['sizes']['full']['error'] . '</strong><br/><a id="imagify-upload-' . $attachment_id . '" class="button ' . $class . '" href="' . get_imagify_admin_url( 'manual-upload', array( 'attachment_id' => $attachment_id ) ) . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Try again', 'imagify' ) . '</a>';
+		$output .= '<strong>' . $data['sizes']['full']['error'] . '</strong><br/><a id="imagify-upload-' . $attachment_id . '" class="button ' . $class . '" href="' . get_imagify_admin_url( 'manual-upload', $args ) . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Try again', 'imagify' ) . '</a>';
 	}
 
 	return $output;
@@ -125,12 +133,15 @@ function get_imagify_attachment_error_text( $attachment ) {
  * @param 	int     $attachment_id  The attachement ID.
  * @return  string  The output to print.
  */
-function get_imagify_attachment_reoptimize_link( $attachment ) {
+function get_imagify_attachment_reoptimize_link( $attachment, $type = 'wp' ) {
 	global $pagenow;
 	
 	$attachment_id = $attachment->id;
 	$level         = (int) $attachment->get_optimization_level();
-	$args		   = array( 'attachment_id' => $attachment_id );
+	$args		   = array( 
+		'attachment_id' => $attachment_id,
+		'type'			=> $type
+	);
 	$output        = '';
 
 	if ( $attachment->has_backup() ) {
@@ -168,7 +179,7 @@ function get_imagify_attachment_reoptimize_link( $attachment ) {
  * @param 	object  $attachment  The attachement object.
  * @return  string  The output to print.
  */
-function get_imagify_media_column_content( $attachment, $type = 'wordpress' ) {
+function get_imagify_media_column_content( $attachment, $type = 'wp' ) {
 	$attachment_id  = $attachment->id; 
 	$attachment_ext = $attachment->get_extension();
 	$output      	= '';
@@ -194,10 +205,14 @@ function get_imagify_media_column_content( $attachment, $type = 'wordpress' ) {
 
 	// Check if the image was optimized
 	if ( ! $attachment->is_optimized() && ! $attachment->has_error() ) {
-		$output .= '<a id="imagify-upload-' . $attachment_id . '" href="' . get_imagify_admin_url( 'manual-upload', array( 'attachment_id' => $attachment_id ) ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+		$args = array(
+			'attachment_id' => $attachment_id,
+			'type'			=> $type
+		);
+		$output .= '<a id="imagify-upload-' . $attachment_id . '" href="' . get_imagify_admin_url( 'manual-upload', $args ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
 		return $output;
 	}
 
-	$output .= get_imagify_attachment_optimization_text( $attachment );
+	$output .= get_imagify_attachment_optimization_text( $attachment, $type );
 	return $output;
 }

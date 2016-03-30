@@ -25,20 +25,20 @@ function imagify_is_active_for_network() {
 function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 	$url  = '';
 	$id   = ( isset( $arg['attachment_id'] ) ) ? $arg['attachment_id'] : 0;
-	$type = ( isset( $arg['type'] ) ) ? '_' . $arg['type'] : '';
+	$type = ( isset( $arg['type'] ) && 'wp' !== $arg['type'] ) ? $arg['type'] . '_' : '';
 
 	switch( $action ) {
 		case 'manual-override-upload':
 			$level = ( isset( $arg['optimization_level'] ) ) ? $arg['optimization_level'] : 0;
-			$url   = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_override_upload' . $type . '&attachment_id=' . $id . '&optimization_level=' . $level ), 'imagify-manual-override-upload' );
+			$url   = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_' . $type . 'manual_override_upload&attachment_id=' . $id . '&optimization_level=' . $level ), 'imagify-manual-override-upload' );
 		break;
 
 		case 'manual-upload':
-			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_upload' . $type . '&attachment_id=' . $id ), 'imagify-manual-upload' );
+			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_' . $type . 'manual_upload&attachment_id=' . $id ), 'imagify-manual-upload' );
 		break;
 
 		case 'restore-upload' :
-			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_restore_upload' . $type . '&attachment_id=' . $id ), 'imagify-restore-upload' );
+			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_' . $type . 'restore_upload&attachment_id=' . $id ), 'imagify-restore-upload' );
 		break;
 
 		case 'dismiss-notice':
