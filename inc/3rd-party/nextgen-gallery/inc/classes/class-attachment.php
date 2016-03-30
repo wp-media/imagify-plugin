@@ -582,6 +582,13 @@ class Imagify_NGG_Attachment {
 	 * @return void
 	 */
 	public function restore() {
+		$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
+		
+		// Stop the process if we can't find the NGG admin functions
+		if ( ! file_exists( $ngg_admin_functions_path ) ) {
+			return;
+		}
+		
 		// Stop the process if there is no backup file to restore
 		if ( ! $this->has_backup() ) {
 			return;
@@ -599,19 +606,15 @@ class Imagify_NGG_Attachment {
 		 * @param int $id The attachment ID
 		*/
 		do_action( 'before_imagify_ngg_restore_attachment', $id );
-
-		// Create the original image from the backup
-		@copy( $backup_path, $attachment_path );
-		imagify_chmod_file( $attachment_path );
-
+		
 		// Bring back the old image
+		require_once( $ngg_admin_functions_path );
+		
 		nggAdmin::recover_image( $id );
 		
-		// TO DO - Delete Imagify data in the custom database
-		
-		// Restore the original size in the metadata
-		$this->update_metadata_size();
-		
+		// Remove Imagify data
+		Imagify_NGG_DB()->delete( $id );	
+				
 		/**
 		 * Fires after restoring an attachment.
 		 *
