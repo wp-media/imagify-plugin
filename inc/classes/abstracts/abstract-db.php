@@ -98,7 +98,7 @@ abstract class Imagify_DB {
 	public function get_column( $column, $row_id ) {
 		global $wpdb;
 		$column = esc_sql( $column );
-		return $wpdb->get_var( $wpdb->prepare( "SELECT $column FROM $this->table_name WHERE $this->primary_key = %s LIMIT 1;", $row_id ), ARRAY_A );
+		return $wpdb->get_var( $wpdb->prepare( "SELECT $column FROM $this->table_name WHERE $this->primary_key = %s LIMIT 1;", $row_id ) );
 	}
 
 	/**
@@ -112,7 +112,7 @@ abstract class Imagify_DB {
 		global $wpdb;
 		$column_where = esc_sql( $column_where );
 		$column       = esc_sql( $column );
-		return $wpdb->get_var( $wpdb->prepare( "SELECT $column FROM $this->table_name WHERE $column_where = %s LIMIT 1;", $column_value ), ARRAY_A );
+		return $wpdb->get_var( $wpdb->prepare( "SELECT $column FROM $this->table_name WHERE $column_where = %s LIMIT 1;", $column_value ) );
 	}
 
 	/**
@@ -179,7 +179,12 @@ abstract class Imagify_DB {
 		// Reorder $column_formats to match the order of columns given in $data
 		$data_keys = array_keys( $data );
 		$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
-
+		
+		if ( false === (bool) $this->get_column( $this->primary_key, $row_id ) ) {
+			$this->insert( $data );
+			return true;
+		}
+		
 		if ( false === $wpdb->update( $this->table_name, $data, array( $where => $row_id ), $column_formats ) ) {
 			return false;
 		}
