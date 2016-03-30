@@ -14,8 +14,10 @@ define( 'IMAGIFY_NGG_CLASSES_PATH'    	, realpath( IMAGIFY_NGG_INC_PATH . 'class
 
 require( IMAGIFY_NGG_CLASSES_PATH . 'class-db.php' );
 require( IMAGIFY_NGG_CLASSES_PATH . 'class-attachment.php' );
+require( IMAGIFY_NGG_COMMON_PATH  . 'attachments.php' );
 
 if ( is_admin() ) {
+	require( IMAGIFY_NGG_ADMIN_PATH . 'ajax.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'db.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'gallery.php' );
 }
