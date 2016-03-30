@@ -31,12 +31,12 @@ class Imagify_NGG_Attachment {
      * @return void
      **/
 	function __construct( $id ) {
-		if ( is_int( $id ) ) {
-			$this->image = nggdb::find_image( $id );
-			$this->id    = $this->image->pid;
-		} else {
+		if ( is_object( $id ) ) {
 			$this->image = $id;
 			$this->id    = $id->pid;
+		} else {
+			$this->image = nggdb::find_image( (int) $id );
+			$this->id    = $this->image->pid;
 		}
 	}
 
@@ -85,7 +85,8 @@ class Imagify_NGG_Attachment {
 	 * @return array
 	 */
 	public function get_data() {
-		return Imagify_NGG_DB()->get( $this->id );
+		$data = Imagify_NGG_DB()->get_column( 'data', $this->id );
+		return unserialize( $data ) ;
 	}
 	
 	/**
@@ -131,8 +132,7 @@ class Imagify_NGG_Attachment {
 	 * @return int
 	 */
 	public function get_optimization_level() {
-		$data = $this->get_data();
-		return isset( $data['optimization_level'] ) ? $data['optimization_level'] : 0;
+		return Imagify_NGG_DB()->get_column( 'optimization_level', $this->id );
 	}
 	
 	/**
@@ -200,8 +200,7 @@ class Imagify_NGG_Attachment {
 	 * @return string
 	 */
 	public function get_status() {
-		$data = $this->get_data();
-		return isset( $data['status'] ) ? $data['status'] : 0;
+		return Imagify_NGG_DB()->get_column( 'status', $this->id );
 	}
 
 	/**
@@ -414,14 +413,19 @@ class Imagify_NGG_Attachment {
 			);
 			
 			// Update the error status for the original size
-			if ( 'full' === $size ) {
-				update_post_meta( $id, '_imagify_data', $data );
-				
+			if ( 'full' === $size ) {				
 				if ( false !== strpos( $error, 'This image is already compressed' ) ) {
 					$error_status = 'already_optimized';	
 				}
 				
-				update_post_meta( $id, '_imagify_status', $error_status );
+				IMAGIFY_NGG_DB()->update( 
+					$id, 
+					array(
+						'pid'    => $id,
+						'status' => $error_status,
+						'data'   => $data 
+					) 
+				);
 				
 				return false;
 			}
@@ -456,7 +460,6 @@ class Imagify_NGG_Attachment {
 		$optimization_level = ( is_null( $optimization_level ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
 
 		$id = $this->id;
-		$metadata      = ( (bool) $metadata ) ? $metadata : wp_get_attachment_metadata( $id );
 		$sizes         = ( isset( $metadata['sizes'] ) ) ? (array) $metadata['sizes'] : array();
 		$data          = array(
 			'stats' => array(
@@ -470,17 +473,12 @@ class Imagify_NGG_Attachment {
 		$attachment_path = $this->get_original_path();
 		$attachment_url  = $this->get_original_url();
 		
-		// Check if the attachment extension is allowed
-		if ( ! $id || ! wp_attachment_is_image( $id ) ) {
-			return;
-		}
-
 		// Check if the full size is already optimized
 		if ( $this->is_optimized() && ( $this->get_optimization_level() == $optimization_level ) ) {
 			delete_transient( 'imagify-ngg-async-in-progress-' . $id );
 			return;
 		}
-
+		
 		/**
 		 * Fires before optimizing an attachment.
 		 *
@@ -505,7 +503,13 @@ class Imagify_NGG_Attachment {
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
 		
 		// Save the optimization level
-		update_post_meta( $id, '_imagify_optimization_level', $optimization_level );
+		IMAGIFY_NGG_DB()->update( 
+			$id, 
+			array( 
+				'pid'                => $id,
+				'optimization_level' => $optimization_level 
+			) 
+		);
 		
 		if( (bool) ! $data ) {
 			delete_transient( 'imagify-ngg-async-in-progress-' . $id );
@@ -515,15 +519,6 @@ class Imagify_NGG_Attachment {
 		// Optimize all thumbnails
 		if ( (bool) $sizes ) {
 			foreach ( $sizes as $size_key => $size_data ) {
-				// Check if this size has to be optimized
-				if ( array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) && ! imagify_is_active_for_network() ) {
-					$data['sizes'][ $size_key ] = array(
-						'success' => false,
-						'error'   => __( 'This size isn\'t authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' )
-					);
-					continue;
-				}
-
 				$thumbnail_path = trailingslashit( dirname( $attachment_path ) ) . $size_data['file'];
 				$thumbnail_url  = trailingslashit( dirname( $attachment_url ) ) . $size_data['file'];
 
@@ -550,9 +545,15 @@ class Imagify_NGG_Attachment {
 		}
 
 		$data['stats']['percent'] = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
-
-		update_post_meta( $id, '_imagify_data', $data );
-		update_post_meta( $id, '_imagify_status', 'success' );
+		
+		IMAGIFY_NGG_DB()->update( 
+			$id, 
+			array(
+				'pid'    => $id,
+				'status' => 'success',
+				'data'   => serialize( $data )
+			)
+		);
 
 		$optimized_data = $this->get_data();
 
