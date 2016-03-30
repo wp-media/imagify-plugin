@@ -15,7 +15,7 @@ function _do_admin_post_imagify_ngg_manual_upload() {
 	} else {
 		check_admin_referer( 'imagify-manual-upload' );
 	}
-
+	
 	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
@@ -46,10 +46,11 @@ function _do_admin_post_imagify_ngg_manual_upload() {
 /**
  * Process a manual upload by overriding the optimization level.
  *
- * @since 1.0
+ * @since 1.5
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_ngg_manual_override_upload', '_do_admin_post_imagify_ngg_manual_override_upload' );
-add_action( 'admin_post_imagify_manual_override_upload', '_do_admin_post_imagify_ngg_manual_override_upload' );
+add_action( 'admin_post_imagify_ngg_manual_override_upload', '_do_admin_post_imagify_ngg_manual_override_upload' );
 function _do_admin_post_imagify_ngg_manual_override_upload() {
 	if ( defined( 'DOING_AJAX' ) ) {
 		check_ajax_referer( 'imagify-manual-override-upload' );
@@ -86,7 +87,8 @@ function _do_admin_post_imagify_ngg_manual_override_upload() {
 /**
  * Process a restoration to the original attachment.
  *
- * @since 1.0
+ * @since 1.5
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_ngg_restore_upload', '_do_admin_post_imagify_ngg_restore_upload' );
 add_action( 'admin_post_imagify_ngg_restore_upload', '_do_admin_post_imagify_ngg_restore_upload' );
