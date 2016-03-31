@@ -423,7 +423,7 @@ class Imagify_NGG_Attachment {
 					array(
 						'pid'    => $id,
 						'status' => $error_status,
-						'data'   => $data 
+						'data'   => serialize( $data )
 					) 
 				);
 				
