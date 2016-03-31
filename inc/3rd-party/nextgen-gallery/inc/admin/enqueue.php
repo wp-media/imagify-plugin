@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 add_action( 'admin_print_styles', '_imagify_ngg_admin_print_styles', PHP_INT_MAX );
 function _imagify_ngg_admin_print_styles() {
-	global $pagenow;
 	$current_screen = get_current_screen();
 		
 	if ( isset( $current_screen ) && ( 'nggallery-manage-images' === $current_screen->base ) ) {
