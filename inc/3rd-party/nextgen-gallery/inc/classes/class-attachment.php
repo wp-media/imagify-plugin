@@ -74,7 +74,7 @@ class Imagify_NGG_Attachment {
 		
 		return $backup_url;
 	}
-
+	
 	/**
 	 * Get the attachment optimization data.
 	 *
@@ -85,8 +85,8 @@ class Imagify_NGG_Attachment {
 	 * @return array
 	 */
 	public function get_data() {
-		$data = Imagify_NGG_DB()->get_column( 'data', $this->id );
-		return unserialize( $data ) ;
+		$result = $this->get_row();
+		return isset( $result['data'] ) ? unserialize( $result['data'] ) : false;
 	}
 	
 	/**
@@ -132,7 +132,8 @@ class Imagify_NGG_Attachment {
 	 * @return int
 	 */
 	public function get_optimization_level() {
-		return Imagify_NGG_DB()->get_column( 'optimization_level', $this->id );
+		$result = $this->get_row();
+		return isset( $result['optimization_level'] ) ? $result['optimization_level'] : false;
 	}
 	
 	/**
@@ -189,6 +190,25 @@ class Imagify_NGG_Attachment {
 
 		return (int) $count;
 	}
+	
+	/**
+	 * Get the attachment SQL data row.
+	 *
+	 * @since 1.5
+	 * @author Jonathan Buttigieg
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function get_row() {
+		static $result;
+		
+		if ( ! isset( $result ) ) {
+			$result = Imagify_NGG_DB()->get( $this->id );
+		}
+		
+		return $result;
+	}
 
 	/**
 	 * Get the attachment optimization status (success or error).
@@ -200,7 +220,8 @@ class Imagify_NGG_Attachment {
 	 * @return string
 	 */
 	public function get_status() {
-		return Imagify_NGG_DB()->get_column( 'status', $this->id );
+		$result = $this->get_row();
+		return isset( $result['status'] ) ? $result['status'] : false;
 	}
 
 	/**
