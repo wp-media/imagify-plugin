@@ -17,6 +17,7 @@ require( IMAGIFY_NGG_CLASSES_PATH . 'class-attachment.php' );
 require( IMAGIFY_NGG_COMMON_PATH  . 'attachments.php' );
 
 if ( is_admin() ) {
+	require( IMAGIFY_NGG_ADMIN_PATH . 'enqueue.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'ajax.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'db.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'gallery.php' );
