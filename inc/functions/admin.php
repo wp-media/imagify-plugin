@@ -23,22 +23,22 @@ function imagify_is_active_for_network() {
  * @return string The URL of the specific admin page or action
  */
 function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
-	$url  = '';
-	$id   = ( isset( $arg['attachment_id'] ) ) ? $arg['attachment_id'] : 0;
-	$type = ( isset( $arg['type'] ) && 'wp' !== $arg['type'] ) ? $arg['type'] . '_' : '';
+	$url     = '';
+	$id      = ( isset( $arg['attachment_id'] ) ) ? $arg['attachment_id'] : 0;
+	$context = ( isset( $arg['context'] ) ) ? $arg['context'] : 'wp';
 
 	switch( $action ) {
 		case 'manual-override-upload':
 			$level = ( isset( $arg['optimization_level'] ) ) ? $arg['optimization_level'] : 0;
-			$url   = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_' . $type . 'manual_override_upload&attachment_id=' . $id . '&optimization_level=' . $level ), 'imagify-manual-override-upload' );
+			$url   = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_override_upload&attachment_id=' . $id . '&optimization_level=' . $level . '&context=' . $context ), 'imagify-manual-override-upload' );
 		break;
 
 		case 'manual-upload':
-			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_' . $type . 'manual_upload&attachment_id=' . $id ), 'imagify-manual-upload' );
+			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-manual-upload' );
 		break;
 
 		case 'restore-upload' :
-			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_' . $type . 'restore_upload&attachment_id=' . $id ), 'imagify-restore-upload' );
+			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_restore_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-restore-upload' );
 		break;
 
 		case 'dismiss-notice':

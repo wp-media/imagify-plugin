@@ -146,10 +146,6 @@ function do_imagify( $file_path, $backup, $optimization_level, $resize = array()
  * @since 1.4
  **/
 function imagify_do_async_job( $body ) {
-	if ( isset( $body['transient_id'] ) ) {
-		set_transient( 'imagify-async-in-progress-' . $body['transient_id'], true, 10 * MINUTE_IN_SECONDS );
-	}
-
 	$args = array(
 		'timeout'   => 0.01,
 		'blocking'  => false,

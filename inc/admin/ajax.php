@@ -16,7 +16,7 @@ function _do_admin_post_imagify_manual_upload() {
 		check_admin_referer( 'imagify-manual-upload' );
 	}
 
-	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( ! isset( $_GET['attachment_id'], $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
@@ -25,10 +25,8 @@ function _do_admin_post_imagify_manual_upload() {
 	}
 	
 	$attachment_id = $_GET['attachment_id'];
-	
-	set_transient( 'imagify-async-in-progress-' . $attachment_id, true, 10 * MINUTE_IN_SECONDS );
-	
-	$attachment = new Imagify_Attachment( $attachment_id );
+	$class_name    = get_imagify_attachment_class_name( $_GET['context'] );
+	$attachment    = new $class_name( $attachment_id );
 	
 	// Optimize it!!!!!
 	$attachment->optimize();
@@ -58,7 +56,7 @@ function _do_admin_post_imagify_manual_override_upload() {
 		check_admin_referer( 'imagify-manual-override-upload' );
 	}
 
-	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( ! isset( $_GET['attachment_id'], $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
@@ -66,7 +64,8 @@ function _do_admin_post_imagify_manual_override_upload() {
 		}
 	}
 	
-	$attachment = new Imagify_Attachment( $_GET['attachment_id'] );
+	$class_name = get_imagify_attachment_class_name( $_GET['context'] );
+	$attachment  = new $class_name( $_GET['attachment_id'] );
 		
 	// Restore the backup file
 	$attachment->restore();
@@ -80,7 +79,7 @@ function _do_admin_post_imagify_manual_override_upload() {
 	}
 
 	// Return the optimization statistics
-	$output = get_imagify_attachment_optimization_text( $attachment );
+	$output = get_imagify_attachment_optimization_text( $attachment, $_GET['context'] );
 	wp_send_json_success( $output );
 }
 
@@ -99,7 +98,7 @@ function _do_admin_post_imagify_restore_upload() {
 		check_admin_referer( 'imagify-restore-upload' );
 	}
 
-	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( ! isset( $_GET['attachment_id'], $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
@@ -107,7 +106,8 @@ function _do_admin_post_imagify_restore_upload() {
 		}
 	}
 	
-	$attachment = new Imagify_Attachment( $_GET['attachment_id'] );
+	$class_name = get_imagify_attachment_class_name( $_GET['context'] );
+	$attachment = new $class_name( $_GET['attachment_id'] );
 	
 	// Restore the backup file
 	$attachment->restore();

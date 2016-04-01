@@ -102,7 +102,7 @@ class Imagify_NGG_Attachment {
 		$fullsize_path = $this->get_original_path();
 		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
 	}
-	
+		
 	/**
 	 * Get the attachment error if there is one.
 	 *
@@ -496,7 +496,7 @@ class Imagify_NGG_Attachment {
 		
 		// Check if the full size is already optimized
 		if ( $this->is_optimized() && ( $this->get_optimization_level() == $optimization_level ) ) {
-			delete_transient( 'imagify-ngg-async-in-progress-' . $id );
+
 			return;
 		}
 		
@@ -508,6 +508,8 @@ class Imagify_NGG_Attachment {
 		 * @param int $id The attachment ID
 		*/
 		do_action( 'before_imagify_ngg_optimize_attachment', $id );
+		
+		set_transient( 'imagify-ngg-async-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
 		
 		// Get the resize values for the original size
 		$resize           = array();

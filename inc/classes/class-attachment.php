@@ -467,7 +467,6 @@ class Imagify_Attachment {
 
 		// Check if the full size is already optimized
 		if ( $this->is_optimized() && ( $this->get_optimization_level() == $optimization_level ) ) {
-			delete_transient( 'imagify-async-in-progress-' . $id );
 			return;
 		}
 
@@ -479,6 +478,8 @@ class Imagify_Attachment {
 		 * @param int $id The attachment ID
 		*/
 		do_action( 'before_imagify_optimize_attachment', $id );
+		
+		set_transient( 'imagify-async-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
 		
 		// Get the resize values for the original size
 		$resize           = array();

@@ -22,5 +22,5 @@ function _imagify_ngg_manage_media_columns() {
 
 function _imagify_ngg_manage_media_custom_column( $output, $image ) {
 	$attachment = new Imagify_NGG_Attachment( $image );
-	echo get_imagify_media_column_content( $attachment, 'ngg' );
+	echo get_imagify_media_column_content( $attachment, 'NGG' );
 }
