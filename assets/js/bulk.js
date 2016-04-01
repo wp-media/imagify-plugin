@@ -61,7 +61,7 @@ jQuery(function($){
 	
 	// Heartbeat
 	$(document).on('heartbeat-send', function(e, data) {
-        data['imagify_heartbeat'] = 'update_bulk_data';
+        data['imagify_heartbeat'] = imagifyBulkHearbeat.id;
     });
 	
 	// Listen for the custom event "heartbeat-tick" on $(document).
