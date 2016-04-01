@@ -76,7 +76,7 @@ function imagify_ngg_percent_optimized_attachments() {
 /*
  * Count percent, original & optimized size of all images optimized by Imagify.
  *
- * @since 1.0
+ * @since 1.5
  * @author Jonathan Buttigieg
  *
  * @return array An array containing the optimization data.

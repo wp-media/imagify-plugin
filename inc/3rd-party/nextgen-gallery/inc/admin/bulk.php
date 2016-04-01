@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 add_action( 'load-galerie_page_imagify-ngg-bulk-optimization', '_imagify_ngg_update_bulk_stats' );
 function _imagify_ngg_update_bulk_stats() {
-	add_filter( 'imagify_count_optimized_attachments' 	, 'imagify_ngg_count_attachments' );	
+	add_filter( 'imagify_count_attachments' 			, 'imagify_ngg_count_attachments' );	
 	add_filter( 'imagify_count_optimized_attachments' 	, 'imagify_ngg_count_optimized_attachments' );	
 	add_filter( 'imagify_count_error_attachments'	  	, 'imagify_ngg_count_error_attachments' );
 	add_filter( 'imagify_count_unoptimized_attachments'	, 'imagify_ngg_count_unoptimized_attachments' );

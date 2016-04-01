@@ -25,4 +25,5 @@ if ( is_admin() ) {
 	require( IMAGIFY_NGG_ADMIN_PATH . 'menu.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'gallery.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'bulk.php' );
+	require( IMAGIFY_NGG_ADMIN_PATH . 'heartbeat.php' );
 }
