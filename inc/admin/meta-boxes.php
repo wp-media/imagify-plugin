@@ -30,7 +30,7 @@ function _imagify_attachment_submitbox_misc_actions() {
 				echo '</div>';
 			echo '</div>';
 		} else {
-			$url = get_imagify_admin_url( 'manual-upload', $post->ID );
+			$url = get_imagify_admin_url( 'manual-upload', array( 'attachment_id' => $post->ID ) );
 		printf( '<div class="misc-pub-section misc-pub-imagify"><a class="button-primary" href="%s">%s</a></div>', $url, __( 'Optimize', 'imagify' ) );
 		}
 
