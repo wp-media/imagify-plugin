@@ -23,7 +23,7 @@ class Imagify_NGG {
      * @return void
      **/
     function add_mixin() {
-        include_once('class-ngg-storage.php');
+        include_once( 'class-ngg-storage.php' );
         $storage = C_Gallery_Storage::get_instance();
         $storage->get_wrapped_instance()->add_mixin( 'Imagify_NGG_Storage' );
     }
