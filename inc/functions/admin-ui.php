@@ -19,8 +19,8 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 	$output_before     = ( 'post.php' != $pagenow ) ? '<li class="imagify-data-item">' : '<div class="misc-pub-section misc-pub-imagify imagify-data-item">';
 	$output_after  	   = ( 'post.php' != $pagenow ) ? '</li>' : '</div>';
 	$reoptimize_output = '';
-
-	if ( $error = get_imagify_attachment_error_text( $attachment ) ) {
+	
+	if ( $error = get_imagify_attachment_error_text( $attachment, $context ) ) {
 		$error = ( 'post.php' === $pagenow ) ? $output_before . $error . $output_after : $error;
 		return $error;
 	}
@@ -109,7 +109,7 @@ function get_imagify_attachment_error_text( $attachment, $context = 'wp' ) {
 	global $pagenow;
 	
 	$attachment_id = $attachment->id;
-	$data   	   = get_post_meta( $attachment_id, '_imagify_data', true );
+	$data   	   = $attachment->get_data();
 	$output 	   = '';
 	$args 		   = array(
 		'attachment_id' => $attachment_id,
@@ -183,7 +183,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	$attachment_id  = $attachment->id; 
 	$attachment_ext = $attachment->get_extension();
 	$output      	= '';
-
+	
 	// Check if the attachment extension is allowed
 	if ( 'wp' === $context && ! wp_attachment_is_image( $attachment_id )  ) {
 		$output = sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
