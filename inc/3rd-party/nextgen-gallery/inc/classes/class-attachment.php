@@ -38,6 +38,8 @@ class Imagify_NGG_Attachment {
 			$this->image = nggdb::find_image( (int) $id );
 			$this->id    = $this->image->pid;
 		}
+		
+		$this->row = $this->get_row();	
 	}
 
 	/**
@@ -85,8 +87,7 @@ class Imagify_NGG_Attachment {
 	 * @return array
 	 */
 	public function get_data() {
-		$result = $this->get_row();
-		return isset( $result['data'] ) ? unserialize( $result['data'] ) : false;
+		return isset( $this->row['data'] ) ? unserialize( $this->row['data'] ) : false;
 	}
 	
 	/**
@@ -132,8 +133,7 @@ class Imagify_NGG_Attachment {
 	 * @return int
 	 */
 	public function get_optimization_level() {
-		$result = $this->get_row();
-		return isset( $result['optimization_level'] ) ? $result['optimization_level'] : false;
+		return isset( $this->row['optimization_level'] ) ? $this->row['optimization_level'] : false;
 	}
 	
 	/**
@@ -201,12 +201,7 @@ class Imagify_NGG_Attachment {
 	 * @return array
 	 */
 	public function get_row() {
-		static $result;
-		
-		if ( ! isset( $result ) ) {
-			$result = Imagify_NGG_DB()->get( $this->id );
-		}
-		
+		$result = Imagify_NGG_DB()->get( $this->id );
 		return $result;
 	}
 
@@ -220,8 +215,7 @@ class Imagify_NGG_Attachment {
 	 * @return string
 	 */
 	public function get_status() {
-		$result = $this->get_row();
-		return isset( $result['status'] ) ? $result['status'] : false;
+		return isset( $this->row['status'] ) ? $this->row['status'] : false;
 	}
 
 	/**
