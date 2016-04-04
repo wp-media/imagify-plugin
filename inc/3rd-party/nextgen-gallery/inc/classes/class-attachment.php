@@ -87,7 +87,8 @@ class Imagify_NGG_Attachment {
 	 * @return array
 	 */
 	public function get_data() {
-		return isset( $this->row['data'] ) ? unserialize( $this->row['data'] ) : false;
+		$row = ( (bool) $this->row ) ? $this->row : $this->get_row();	
+		return isset( $row['data'] ) ? unserialize( $row['data'] ) : false;
 	}
 	
 	/**
