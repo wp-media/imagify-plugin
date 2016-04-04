@@ -13,6 +13,7 @@ define( 'IMAGIFY_NGG_COMMON_PATH'    	, realpath( IMAGIFY_NGG_INC_PATH . 'common
 define( 'IMAGIFY_NGG_FUNCTIONS_PATH'    , realpath( IMAGIFY_NGG_INC_PATH . 'functions' ) . '/' );
 define( 'IMAGIFY_NGG_CLASSES_PATH'    	, realpath( IMAGIFY_NGG_INC_PATH . 'classes' ) . '/' );
 
+require( IMAGIFY_NGG_CLASSES_PATH 	. 'class-ngg.php' );
 require( IMAGIFY_NGG_CLASSES_PATH 	. 'class-db.php' );
 require( IMAGIFY_NGG_CLASSES_PATH 	. 'class-attachment.php' );
 require( IMAGIFY_NGG_FUNCTIONS_PATH . 'admin-stats.php' );
