@@ -599,14 +599,7 @@ class Imagify_NGG_Attachment {
 	 * @access public
 	 * @return void
 	 */
-	public function restore() {
-		$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
-		
-		// Stop the process if we can't find the NGG admin functions
-		if ( ! file_exists( $ngg_admin_functions_path ) ) {
-			return;
-		}
-		
+	public function restore() {		
 		// Stop the process if there is no backup file to restore
 		if ( ! $this->has_backup() ) {
 			return;
@@ -625,10 +618,7 @@ class Imagify_NGG_Attachment {
 		*/
 		do_action( 'before_imagify_ngg_restore_attachment', $id );
 		
-		// Bring back the old image
-		require_once( $ngg_admin_functions_path );
-		
-		nggAdmin::recover_image( $id );
+		C_Gallery_Storage::get_instance()->recover_image( $id );
 		
 		// Remove Imagify data
 		Imagify_NGG_DB()->delete( $id );	
