@@ -87,7 +87,7 @@ class Imagify_NGG_Attachment {
 	 * @return array
 	 */
 	public function get_data() {
-		$row = ( (bool) $this->row ) ? $this->row : $this->get_row();	
+		$row = ( (bool) $this->row ) ? $this->row : $this->get_row();
 		return isset( $row['data'] ) ? unserialize( $row['data'] ) : false;
 	}
 	
@@ -475,8 +475,9 @@ class Imagify_NGG_Attachment {
 	public function optimize( $optimization_level = null, $metadata = array() ) {		
 		$optimization_level = ( is_null( $optimization_level ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
 
-		$id = $this->id;
-		$sizes         = ( isset( $metadata['sizes'] ) ) ? (array) $metadata['sizes'] : array();
+		$id 		   = $this->id;
+		$storage       = C_Gallery_Storage::get_instance();
+		$sizes         = $storage->get_image_sizes();
 		$data          = array(
 			'stats' => array(
 				'original_size'      => 0,
@@ -491,7 +492,6 @@ class Imagify_NGG_Attachment {
 		
 		// Check if the full size is already optimized
 		if ( $this->is_optimized() && ( $this->get_optimization_level() == $optimization_level ) ) {
-
 			return;
 		}
 		
@@ -536,9 +536,13 @@ class Imagify_NGG_Attachment {
 				
 		// Optimize all thumbnails
 		if ( (bool) $sizes ) {
-			foreach ( $sizes as $size_key => $size_data ) {
-				$thumbnail_path = trailingslashit( dirname( $attachment_path ) ) . $size_data['file'];
-				$thumbnail_url  = trailingslashit( dirname( $attachment_url ) ) . $size_data['file'];
+			foreach ( $sizes as $size_key ) {
+				if ( 'full' == $size_key ) {
+					continue;
+				}
+				
+				$thumbnail_path = $storage->get_image_abspath( $this->image, $size_key );
+				$thumbnail_url  = $storage->get_image_url( $this->image, $size_key );
 
 				// Optimize the thumbnail size
 				$response = do_imagify( $thumbnail_path, false, $optimization_level );
@@ -617,10 +621,11 @@ class Imagify_NGG_Attachment {
 		 * @param int $id The attachment ID
 		*/
 		do_action( 'before_imagify_ngg_restore_attachment', $id );
-		
+				
+		// Create the original image from the backup
 		C_Gallery_Storage::get_instance()->recover_image( $id );
 		
-		// Remove Imagify data
+		// Remove old optimization data
 		Imagify_NGG_DB()->delete( $id );	
 				
 		/**
