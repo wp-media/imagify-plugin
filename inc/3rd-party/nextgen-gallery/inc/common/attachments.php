@@ -63,5 +63,8 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 				'data'				 => maybe_serialize( $data )
 			)
 		);
+		
+		$image = new Imagify_NGG_Attachment( $image->pid );
+		$image->optimize_thumbnails();
 	}
 }

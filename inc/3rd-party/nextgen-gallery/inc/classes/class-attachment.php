@@ -387,22 +387,25 @@ class Imagify_NGG_Attachment {
 	}
 	
 	/**
-	 * Delete the backup file.
+	 * Update the metadata size of the attachment
 	 *
 	 * @since 1.5
-	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
 	 * @return void
 	 */
-	public function delete_backup() {
-		$backup_path = $this->get_backup_path();
-
-		if ( ! empty( $backup_path ) ) {
-			@unlink( $backup_path );
+	public function update_metadata_size() {		
+		$size = @getimagesize( $this->get_original_path() );
+		
+		if ( isset( $size[0], $size[1] ) ) {
+			$metadata           = $this->image->meta_data;
+			$metadata['width']  = $metadata['full']['width']  = $size[0];
+			$metadata['height'] = $metadata['full']['height'] = $size[1];
+			
+			nggdb::update_image_meta( $this->id , $metadata );
 		}
 	}
-
+	
 	/**
 	 * Fills statistics data with values from $data array
 	 *
@@ -456,6 +459,7 @@ class Imagify_NGG_Attachment {
 
 			$data['stats']['original_size']  += ( isset( $response->original_size ) ) ? $response->original_size : 0;
 			$data['stats']['optimized_size'] += ( isset( $response->new_size ) ) ? $response->new_size : 0;
+			$data['stats']['percent'] = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
 		}
 
 		return $data;
@@ -468,16 +472,13 @@ class Imagify_NGG_Attachment {
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
-	 * @param  int 	  $optimization_level   The optimization level (2=ultra, 1=aggressive, 0=normal)
-	 * @param  array  $metadata   	   		The attachment meta data
-	 * @return array  $optimized_data  		The optimization data
+	 * @param  int 	  $optimization_level  The optimization level (2=ultra, 1=aggressive, 0=normal)
+	 * @return array  $data  			   The optimization data
 	 */
-	public function optimize( $optimization_level = null, $metadata = array() ) {		
+	public function optimize( $optimization_level = null ) {		
 		$optimization_level = ( is_null( $optimization_level ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
 
 		$id 		   = $this->id;
-		$storage       = C_Gallery_Storage::get_instance();
-		$sizes         = $storage->get_image_sizes();
 		$data          = array(
 			'stats' => array(
 				'original_size'      => 0,
@@ -529,69 +530,113 @@ class Imagify_NGG_Attachment {
 			) 
 		);
 		
-		if( (bool) ! $data ) {
+		if ( (bool) ! $data ) {
 			delete_transient( 'imagify-ngg-async-in-progress-' . $id );
 			return;
 		}
-				
-		// Optimize all thumbnails
-		if ( (bool) $sizes ) {
-			foreach ( $sizes as $size_key ) {
-				if ( 'full' == $size_key ) {
-					continue;
-				}
-				
-				$thumbnail_path = $storage->get_image_abspath( $this->image, $size_key );
-				$thumbnail_url  = $storage->get_image_url( $this->image, $size_key );
-
-				// Optimize the thumbnail size
-				$response = do_imagify( $thumbnail_path, false, $optimization_level );
-				$data     = $this->fill_data( $data, $response, $id, $thumbnail_url, $size_key );
-
-				/**
-				* Filter the optimization data of a specific thumbnail
-				*
-				* @since 1.5
-				*
-				* @param array   $data   		  The statistics data
-				* @param object  $response   	  The API response
-				* @param int     $id   			  The attachment ID
-				* @param string  $thumbnail_path  The attachment path
-				* @param string  $thumbnail_url   The attachment URL
-				* @param string  $size_key   	  The attachment size key
-				* @param bool    $is_aggressive   The optimization level
-				* @return array  $data  		  The new optimization data
-				*/
-				$data = apply_filters( 'imagify_fill_thumbnail_data', $data, $response, $id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
-			}
-		}
-
-		$data['stats']['percent'] = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
 		
+		// If we resized the original with success, we have to update the attachment metadata
+		// If not, WordPress keeps the old attachment size.		
+		if ( $do_resize && isset( $resize['width'] ) ) {
+			$this->update_metadata_size();
+		}
+				
+		// Optimize thumbnails
+		$data = $this->optimize_thumbnails( $optimization_level, $data );
+		
+		// Save the status to success
 		IMAGIFY_NGG_DB()->update( 
 			$id, 
 			array(
 				'pid'    => $id,
 				'status' => 'success',
-				'data'   => serialize( $data )
 			)
 		);
-
-		$optimized_data = $this->get_data();
 
 		/**
 		 * Fires after optimizing an attachment.
 		 *
 		 * @since 1.5
 		 *
-		 * @param int    $id   			  The attachment ID
-		 * @param array  $optimized_data  The optimization data
+		 * @param int    $id   	The attachment ID
+		 * @param array  $data  The optimization data
 		*/
-		do_action( 'after_imagify_ngg_optimize_attachment', $id, $optimized_data );
+		do_action( 'after_imagify_ngg_optimize_attachment', $id, $data );
 		
 		delete_transient( 'imagify-ngg-async-in-progress-' . $id );
 
-		return $optimized_data;
+		return $data;
+	}
+	
+	/**
+	 * Optimize all thumbnails of an image
+	 *
+	 * @since 1.5
+	 * @author Jonathan Buttigieg
+	 *
+	 * @access public
+	 * @param  int 	  $optimization_level   The optimization level (2=ultra, 1=aggressive, 0=normal)
+	 * @return array  $data  				The optimization data
+	 */
+	public function optimize_thumbnails( $optimization_level = null, $data = array() ) {
+		$id 	 = $this->id;
+		$storage = C_Gallery_Storage::get_instance();
+		$sizes   = $storage->get_image_sizes();
+		$data    = ( (bool) $data ) ? $data : $this->get_data();
+		
+		// Stop if the original image has an error
+		if ( $this->has_error() ) {
+			return $data;
+		}
+		
+		$optimization_level = ( is_null( $optimization_level ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+
+		/**
+		 * Fires before optimizing all thumbnails.
+		 *
+		 * @since 1.5
+		 *
+		 * @param int $id The image ID
+		*/
+		do_action( 'before_imagify_ngg_optimize_thumbnails', $id );
+		
+		if ( (bool) $sizes ) {
+			foreach ( $sizes as $size_key )  {
+				if ( 'full' == $size_key || isset( $data['sizes'][ $size_key ]['success'] ) ) {
+					continue;
+				}
+								
+				$thumbnail_path = $storage->get_image_abspath( $this->image, $size_key );
+				$thumbnail_url  = $storage->get_image_url( $this->image, $size_key );
+	
+				// Optimize the thumbnail size
+				$response = do_imagify( $thumbnail_path, false, $optimization_level );
+				$data     = $this->fill_data( $data, $response, $id, $thumbnail_url, $size_key );
+				
+				/** This filter is documented in /inc/classes/class-attachment.php */
+				$data = apply_filters( 'imagify_fill_ngg_thumbnail_data', $data, $response, $id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
+			}
+			
+			IMAGIFY_NGG_DB()->update( 
+				$id, 
+				array(
+					'pid'    => $id,
+					'data'   => serialize( $data )
+				)
+			);
+		}
+		
+		/**
+		 * Fires after optimizing all thumbnails.
+		 *
+		 * @since 1.5
+		 *
+		 * @param int    $id       The image ID
+		 * @param array  $data     The optimization data
+		*/
+		do_action( 'after_imagify_ngg_optimize_thumbnails', $id, $data );
+		
+		return $data;
 	}
 
 	/**
