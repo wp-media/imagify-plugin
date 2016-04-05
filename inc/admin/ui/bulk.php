@@ -295,6 +295,9 @@ function _imagify_display_bulk_page() {
 				</tbody>
 			</table>
 		</div>
+
+		<?php imagify_payment_modal(); ?>
+		
 	</div>
 	<?php
 }
