@@ -1,12 +1,66 @@
+/**
+ * === Utilities Classes
+ */
+
+/* Util: float */
+.imagify-start {
+	float: left;
+}
+.imagify-end {
+	float: right;
+}
+
+/* Util: text-align */
+.imagify-txt-start.imagify-txt-start.imagify-txt-start {
+	text-align: left;
+}
+.imagify-txt-center.imagify-txt-center.imagify-txt-center {
+	text-align: center;
+}
+.imagify-txt-end.imagify-txt-end.imagify-txt-end {
+	text-align: right;
+}
+
+/* Util: margin/padding */
+.imagify-mt1.imagify-mt1 {
+	margin-top: 1em;
+}
+.imagify-mb1.imagify-mb1 {
+	margin-bottom: 1em;
+}
+.imagify-mr1.imagify-mr1 {
+	margin-right: 1em;
+}
+.imagify-ml2.imagify-ml2 {
+	margin-left: 2em;
+}
+.imagify-mr2.imagify-mr2 {
+	margin-right: 2em;
+}
+
+.imagify-pr1.imagify-pr1 {
+	padding-right: 1em;
+}
+
+/* Util: Overflow */
+.imagify-oh {
+	overflow: hidden;
+}
+.imagify-clearfix:after,
+.imagify-inline-options:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
 body.imagify-modal-is-open {
 	overflow: hidden;
 }
 .imagify-plugins-error {
-	overflow:hidden;
-	padding-left:20px;
-	list-style-type:disc
+	overflow: hidden;
+	padding-left: 20px;
+	list-style-type: disc
 }
-
 .imagify-plugins-error li {
 	width:300px;
 	line-height:30px
@@ -33,30 +87,6 @@ body.imagify-modal-is-open {
 .spinner.imagify-hidden {
 	width: 0;
 	margin: 4px 0 0 0;
-}
-
-.imagify-txt-start.imagify-txt-start.imagify-txt-start {
-	text-align: left;
-}
-.imagify-txt-center.imagify-txt-center.imagify-txt-center {
-	text-align: center;
-}
-.imagify-txt-end.imagify-txt-end.imagify-txt-end {
-	text-align: right;
-}
-
-.imagify-mt1.imagify-mt1 {
-	margin-top: 1em;
-}
-.imagify-mb1.imagify-mb1 {
-	margin-bottom: 1em;
-}
-.imagify-mr1.imagify-mr1 {
-	margin-right: 1em;
-}
-
-.imagify-pr1.imagify-pr1 {
-	padding-right: 1em;
 }
 
 .misc-pub-section.misc-pub-imagify h4 {
@@ -305,6 +335,7 @@ td .imagify-chart {
 .imagify-settings .button,
 .imagify-welcome .button,
 .imagify-notice .button,
+.imagify-button.imagify-button,
 .imagify-button-primary.imagify-button-primary,
 .imagify-button-secondary.imagify-button-secondary {
 	height: auto;
@@ -313,6 +344,7 @@ td .imagify-chart {
 	font-size: 14px;
 	font-weight: 600;
 	box-shadow: 0 3px 0 rgba(0, 0, 0, .15);
+	border-radius: 3px;
 }
 
 .imagify-notice .button-mini {
@@ -397,6 +429,21 @@ td .imagify-chart {
 	color: #FFF;
 }
 
+.imagify-button-light.imagify-button-light {
+	background: #FFF;
+	color: #4a4a4a;
+	box-shadow: 0 2px 0 rgba(0,0,0,.2)
+}
+
+/* Modifier */
+.imagify-section-positive .imagify-button-light {
+	color: #709A41;
+}
+.imagify-button.imagify-button-big {
+	font-size: 15px;
+	padding: 11px 30px;
+}
+
 /* exception */
 .wp_attachment_image .imagify-button-primary,
 .media-frame-content .imagify-button-primary {
@@ -445,11 +492,35 @@ td .imagify-chart {
 	vertical-align: top;
 }
 .imagify-sub-header,
-.imagify-sub-title.imagify-sub-title,
-.imagify-settings div.submit { /* heavier is better */
+.imagify-sub-title.imagify-sub-title, /* heavier is better */
+.imagify-settings div.submit,
+.imagify-section {
 	margin: 0;
 	padding: 20px;
 	background: #F2F5F7;
+}
+.imagify-sub-title.imagify-sub-title,
+.imagify-section-positive {
+	padding-left: 40px;
+}
+.imagify-section-positive {
+	background: #8cc152;
+	color: #FFF;
+}
+.imagify-section-positive p {
+	color: #FFF
+}
+
+.imagify-section p:first-child {
+	margin-top: 0;
+}
+.imagify-section p:last-child {
+	margin-bottom: 0;
+}
+p.imagify-section-title.imagify-section-title {
+	font-size: 20px;
+	margin-top: -.3em;
+	margin-bottom: -.6em;
 }
 
 .imagify-bulk-info {
@@ -885,11 +956,6 @@ input[id^="imagify_sizes_"]:checked + label {
 	margin: 1em auto .5em;
 	background: #338EA6;
 	border-radius: 4px;
-}
-.imagify-inline-options:after {
-	content: "";
-	display: table;
-	clear: both;
 }
 .imagify-inline-options input[type="radio"]:not(:checked),
 .imagify-inline-options input[type="radio"]:checked {
