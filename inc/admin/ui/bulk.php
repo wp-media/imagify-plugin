@@ -86,93 +86,8 @@ function _imagify_display_bulk_page() {
 		<div class="imagify-settings-section">
 
 			<div class="imagify-columns">
-				
-				<div class="col-1-3 col-informations">
-					<h3><?php _e( 'Information', 'imagify' ); ?></h3>
-					<ul class="imagify-list-dash">
-						<li><strong><?php _e( 'Please be aware that optimizing a large number of images can take a while depending on your server and network speed.', 'imagify' ); ?></strong>
-						<?php
-						if ( get_transient( IMAGIFY_SLUG . '_large_library' ) ) {
-							printf( __( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ), number_format_i18n( apply_filters( 'imagify_unoptimized_attachment_limit', 10000 ) ) );
-						}
-						?>
-						</li>
-						<li><?php _e( 'You must keep this page open while the bulk optimizaton is processing. If you leave you can come back to continue where it left off.', 'imagify' ); ?></li>
-					</ul>
-					
-					<div class="imagify-bulk-submit">
-						
-					<?php if ( get_imagify_option( 'backup', 0 ) == "1" ) { ?>
 
-						<p>
-							<strong><?php _e( 'Select Your Compression Level', 'imagify' ); ?></strong>
-							<br>
-							<?php 
-								$default_set = __( 'Ultra', 'imagify' );
-								switch( get_imagify_option( 'optimization_level' ) ) {
-									case '1':
-										$default_set = __( 'Aggressive', 'imagify' );
-										break;
-									case '0':
-										$default_set = __( 'Normal', 'imagify' );
-										break;
-								}
-
-								_e( 'Your default setting:', 'imagify' ); 
-								echo '&nbsp;<strong class="imagify-primary">' . $default_set . '</strong>';
-							?>
-						</p>
-
-						<p class="imagify-inline-options">
-							<input type="radio" id="imagify-optimization_level_normal" name="optimization_level" value="0" <?php checked( get_imagify_option( 'optimization_level' ), 0 ); ?>>
-							<label for="imagify-optimization_level_normal">
-								<?php _e( 'Normal', 'imagify' ); ?>
-							</label>
-
-							<input type="radio" id="imagify-optimization_level_aggro" name="optimization_level" value="1" <?php checked( get_imagify_option( 'optimization_level' ), 1 ); ?>>
-							<label for="imagify-optimization_level_aggro">
-								<?php _e( 'Aggressive', 'imagify' ); ?>
-							</label>
-
-							<input type="radio" id="imagify-optimization_level_ultra" name="optimization_level" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
-							<label for="imagify-optimization_level_ultra">
-								<?php _e( 'Ultra', 'imagify' ); ?>
-							</label>
-						</p>
-
-					<?php 
-					}
-					else {
-					?>
-						<p>
-							<strong><?php printf( __( 'Don\'t forget to check %syour settings%s before bulk optimization.', 'imagify' ), '<a href="' . get_imagify_admin_url() . '">', '</a>' ); ?></strong>
-						</p>
-					<?php
-					}
-					?>
-
-						<p>
-							<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
-							<button id="imagify-bulk-action" type="button" class="button button-primary">
-								<span class="dashicons dashicons-admin-generic"></span>
-								<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify'); ?></span>
-							</button>
-							<?php
-							if ( $user->is_free() ) { ?>
-								<span class="imagify-tooltips right">
-									<span class="tooltip-content">
-										<span class="icon icon-round" aria-hidden="true">i</span>
-										<?php printf( __( 'All images which are over to %s could be optimized using the pro version.', 'imagify' ), size_format( IMAGIFY_MAX_BYTES , 0 ) ); ?>
-									</span>
-								</span>	
-							<?php
-							}
-							?>						
-						</p>
-					</div>
-				</div>
-
-				<div class="col-1-3">
+				<div class="col-1-3 col-overview">
 					<h3><?php _e( 'Overview', 'imagify' ); ?></h3>
 				
 					<div class="imagify-chart-container">
@@ -180,6 +95,8 @@ function _imagify_display_bulk_page() {
 						<div id="imagify-overview-chart-percent" class="imagify-chart-percent"><?php echo imagify_percent_optimized_attachments(); ?><span>%</span></div>
 					</div>
 					<div id="imagify-overview-chart-legend"></div>
+
+					<p class="imagify-global-optim-phrase imagify-clear"><?php printf( esc_html__( 'You optimized %s of images on your web site', 'imagify' ), '<span class="imagify-total-percent">' . imagify_percent_optimized_attachments() . '%</span>' ); ?></p>
 				</div>
 
 				<div class="col-1-3 col-statistics">
@@ -221,8 +138,91 @@ function _imagify_display_bulk_page() {
 					</div>
 				</div>
 
-			</div>
+				<div class="col-1-3 col-informations">
+					<h3><?php _e( 'Information', 'imagify' ); ?></h3>
+					<ul class="imagify-list-infos">
+						<li>
+						<?php
+						esc_html_e( 'Please be aware that optimizing a large number of images can take a while depending on your server and network speed.', 'imagify' );
+
+						if ( get_transient( IMAGIFY_SLUG . '_large_library' ) ) {
+							printf( __( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ), number_format_i18n( apply_filters( 'imagify_unoptimized_attachment_limit', 10000 ) ) );
+						}
+						?>
+						</li>
+						<li><?php esc_html_e( 'You must keep this page open while the bulk optimizaton is processing. If you leave you can come back to continue where it left off.', 'imagify' ); ?></li>
+					</ul>
+				</div><!-- .col-1-2 -->
+			</div><!-- .imagify-columns -->
 		</div><!-- .imagify-settings-section -->
+
+		<div class="imagify-section imagify-section-gray">
+			<div class="imagify-bulk-submit imagify-columns imagify-count">
+				<div class="col-1-2">
+				<?php if ( get_imagify_option( 'backup', 0 ) == "1" ) { ?>
+
+					<p class="imagify-count-title"><?php esc_html_e( 'Select Your Compression Level', 'imagify' ); ?>
+						<?php 
+							$default_set = esc_html__( 'Ultra', 'imagify' );
+							switch( get_imagify_option( 'optimization_level' ) ) {
+								case '1':
+									$default_set = esc_html__( 'Aggressive', 'imagify' );
+									break;
+								case '0':
+									$default_set = esc_html__( 'Normal', 'imagify' );
+									break;
+							}
+
+							echo '<em class="imagify-default-settings">(' . sprintf( esc_html__( 'Your default setting: %s', 'imagify' ), '&nbsp;<strong class="imagify-primary">' . $default_set . '</strong>' ) . ')</em>';
+						?>
+					</p>
+					<p class="imagify-inline-options">
+						<input type="radio" id="imagify-optimization_level_normal" name="optimization_level" value="0" <?php checked( get_imagify_option( 'optimization_level' ), 0 ); ?>>
+						<label for="imagify-optimization_level_normal">
+							<?php esc_html_e( 'Normal', 'imagify' ); ?>
+						</label>
+
+						<input type="radio" id="imagify-optimization_level_aggro" name="optimization_level" value="1" <?php checked( get_imagify_option( 'optimization_level' ), 1 ); ?>>
+						<label for="imagify-optimization_level_aggro">
+							<?php esc_html_e( 'Aggressive', 'imagify' ); ?>
+						</label>
+
+						<input type="radio" id="imagify-optimization_level_ultra" name="optimization_level" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
+						<label for="imagify-optimization_level_ultra">
+							<?php esc_html_e( 'Ultra', 'imagify' ); ?>
+						</label>
+					</p>
+
+				<?php 
+				}
+				else {
+				?>
+					<p>
+						<strong><?php printf( __( 'Don\'t forget to check %syour settings%s before bulk optimization.', 'imagify' ), '<a href="' . get_imagify_admin_url() . '">', '</a>' ); ?></strong>
+					</p>
+				<?php
+				}
+				?>
+				</div>
+				<div class="col-1-2">
+					<p class="imagify-count-title"><?php esc_html_e( 'Let\'s go!', 'imagify' ); ?></p>
+					<div class="imagify-table">
+						<div class="imagify-cell imagify-pl0">
+							<p>
+								<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
+								<button id="imagify-bulk-action" type="button" class="button button-primary">
+									<span class="dashicons dashicons-admin-generic"></span>
+									<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify'); ?></span>
+								</button>
+							</p>
+						</div>
+						<div class="imagify-cell imagify-pl0">
+							<p class="imagify-info-block"><?php esc_html_e( 'Images greater than 5 MB will be optimized when using a paying monthly plan.', 'imagify' ); ?></p>
+						</div>
+					</div>
+				</div>
+			</div><!-- .imagify-bulk-submit -->
+		</div>
 		
 		<!-- The Success/Complete bar -->
 		<div class="imagify-row-complete hidden" aria-hidden="true">

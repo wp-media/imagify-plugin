@@ -74,6 +74,7 @@ jQuery(function($){
         
         // The overview chart percent
 		$('#imagify-overview-chart-percent').html(data.optimized_attachments_percent + '<span>%</span>');
+		$('.imagify-total-percent').html(data.optimized_attachments_percent);
 		
 		// The comsuption bar
 		$('.imagify-unconsumed-percent').html(data.unconsumed_quota + '%');

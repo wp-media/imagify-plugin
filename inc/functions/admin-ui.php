@@ -211,7 +211,7 @@ function get_imagify_new_to_imagify() {
 		return '
 		<div class="imagify-section imagify-section-positive">
 			<div class="imagify-start imagify-mr2">
-				<button type="button" class="imagify-button imagify-button-light imagify-button-big">
+				<button id="imagify-get-modal" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-button-big">
 					<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
 					<span class="button-text">' . esc_html__( 'What plan do I need?', 'imagify' ) . '</span>
 				</button>

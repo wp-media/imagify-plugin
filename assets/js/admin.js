@@ -116,7 +116,7 @@ jQuery(function($){
 	var imagify_open_modal = function( $the_link ){
 
 		var the_target = $the_link.data('target') || $the_link.attr('href');
-
+		
 		$( the_target ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex').addClass('modal-is-open');
 		$('body').addClass('imagify-modal-is-open');
 
@@ -126,7 +126,7 @@ jQuery(function($){
 	$('.imagify-modal').attr('aria-hidden', 'true');
 
 	// on click on modal trigger
-	$('.imagify-modal-trigger').on('click', function(){
+	$('.imagify-modal-trigger').on('click.imagify', function(){
 
 		imagify_open_modal( $(this) );
 
@@ -134,11 +134,11 @@ jQuery(function($){
 	});
 
 	// on click on close button
-	$(document).on('click', '.imagify-modal .close-btn', function(){
+	$(document).on('click.imagify', '.imagify-modal .close-btn', function(){
 		$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true').removeClass('modal-is-open');
 		$('body').removeClass('imagify-modal-is-open');
 	})
-	.on('blur', '.imagify-modal .close-btn', function(){
+	.on('blur.imagify', '.imagify-modal .close-btn', function(){
 		var $modal = $(this).closest('.imagify-modal');
 		if ( $modal.attr('aria-hidden') === 'false' ) {
 			$modal.attr('tabindex', '0').focus().removeAttr('tabindex');
@@ -152,7 +152,7 @@ jQuery(function($){
 			e.preventDefault();
 			
 			// trigger the event
-			$('.imagify-modal.modal-is-open').find('.close-btn').trigger('click');
+			$('.imagify-modal.modal-is-open').find('.close-btn').trigger('click.imagify');
 
 			return false;
 		}
