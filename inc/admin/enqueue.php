@@ -165,11 +165,12 @@ function _imagify_admin_print_styles() {
 	if ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' === $current_screen->base ) {
 		wp_enqueue_script( 'heartbeat' );
 		
-		$user	   = get_imagify_user();
 		$bulk_data = get_imagify_localize_script_translations( 'bulk' );
+		$bulk_data['heartbeat_id'] = 'update_bulk_data';
+		$bulk_data['ajax_action']  = 'imagify_get_unoptimized_attachment_ids';
+		$bulk_data['ajax_context'] = 'wp';
 				
 		wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
-		wp_localize_script( 'imagify-js-bulk', 'imagifyBulkHearbeat', array( 'id' => 'update_bulk_data' ) );
 		wp_enqueue_script( 'imagify-js-chart' );
 		wp_enqueue_script( 'imagify-js-async' );
 		wp_enqueue_script( 'imagify-js-bulk' );

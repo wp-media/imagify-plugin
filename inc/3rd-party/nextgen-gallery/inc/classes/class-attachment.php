@@ -39,7 +39,14 @@ class Imagify_NGG_Attachment {
 			$this->id    = $this->image->pid;
 		}
 		
-		$this->row = $this->get_row();	
+		$this->row = $this->get_row();
+		
+		// Load nggAdmin classe
+		$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
+		
+		if ( ! class_exists( 'nggAdmin' ) && file_exists( $ngg_admin_functions_path ) ) {
+			require_once( $ngg_admin_functions_path );
+		}
 	}
 
 	/**
@@ -134,7 +141,8 @@ class Imagify_NGG_Attachment {
 	 * @return int
 	 */
 	public function get_optimization_level() {
-		return isset( $this->row['optimization_level'] ) ? $this->row['optimization_level'] : false;
+		$row = ( (bool) $this->row ) ? $this->row : $this->get_row();
+		return isset( $row['optimization_level'] ) ? $row['optimization_level'] : false;
 	}
 	
 	/**
@@ -216,7 +224,8 @@ class Imagify_NGG_Attachment {
 	 * @return string
 	 */
 	public function get_status() {
-		return isset( $this->row['status'] ) ? $this->row['status'] : false;
+		$row = ( (bool) $this->row ) ? $this->row : $this->get_row();
+		return isset( $row['status'] ) ? $row['status'] : false;
 	}
 
 	/**

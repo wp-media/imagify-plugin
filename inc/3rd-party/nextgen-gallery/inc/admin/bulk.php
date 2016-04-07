@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @since 1.5
  * @author Jonathan Buttigieg
  */
-add_action( 'load-galerie_page_imagify-ngg-bulk-optimization', '_imagify_ngg_update_bulk_stats' );
+add_action( 'load-gallery_page_imagify-ngg-bulk-optimization', '_imagify_ngg_update_bulk_stats' );
 function _imagify_ngg_update_bulk_stats() {
 	add_filter( 'imagify_count_attachments' 			, 'imagify_ngg_count_attachments' );	
 	add_filter( 'imagify_count_optimized_attachments' 	, 'imagify_ngg_count_optimized_attachments' );	

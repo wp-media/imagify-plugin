@@ -24,10 +24,11 @@ function _do_admin_post_imagify_manual_upload() {
 		}
 	}
 	
+	$context	   = $_GET['context'];
 	$attachment_id = $_GET['attachment_id'];
 	$class_name    = get_imagify_attachment_class_name( $_GET['context'] );
 	$attachment    = new $class_name( $attachment_id );
-	
+		
 	// Optimize it!!!!!
 	$attachment->optimize();
 	
@@ -37,7 +38,7 @@ function _do_admin_post_imagify_manual_upload() {
 	}
 	
 	// Return the optimization statistics
-	$output = get_imagify_attachment_optimization_text( $attachment );
+	$output = get_imagify_attachment_optimization_text( $attachment, $context );
 	wp_send_json_success( $output );
 }
 
@@ -64,7 +65,8 @@ function _do_admin_post_imagify_manual_override_upload() {
 		}
 	}
 	
-	$class_name = get_imagify_attachment_class_name( $_GET['context'] );
+	$context     = $_GET['context'];
+	$class_name  = get_imagify_attachment_class_name( $context );
 	$attachment  = new $class_name( $_GET['attachment_id'] );
 		
 	// Restore the backup file
@@ -79,7 +81,7 @@ function _do_admin_post_imagify_manual_override_upload() {
 	}
 
 	// Return the optimization statistics
-	$output = get_imagify_attachment_optimization_text( $attachment, $_GET['context'] );
+	$output = get_imagify_attachment_optimization_text( $attachment, $context );
 	wp_send_json_success( $output );
 }
 
@@ -310,12 +312,12 @@ add_action( 'wp_ajax_imagify_bulk_upload', '_do_wp_ajax_imagify_bulk_upload' );
 function _do_wp_ajax_imagify_bulk_upload() {
 	check_ajax_referer( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
 	
-	if ( ! isset( $_POST['image'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( ! isset( $_POST['image'], $_POST['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		wp_send_json_error();
 	}
-
-	$attachment_id      = (int) $_POST['image'];
-	$attachment         = new Imagify_Attachment( $_POST['image'] );
+	
+	$class_name         = get_imagify_attachment_class_name( $_POST['context'] );
+	$attachment         = new $class_name( $_POST['image'] );
 	$optimization_level = get_transient( 'imagify_bulk_optimization_level' );
 	
 	// Restore it if the optimization level is updated
@@ -333,8 +335,8 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	$data                  = array();
 	
 	if ( ! $attachment->is_optimized() ) {
-		$data['success'] 		= false;
-		$data['error']   		= $fullsize_data['error'];
+		$data['success'] = false;
+		$data['error']   = $fullsize_data['error'];
 		
 		wp_send_json_error( $data );
 	}

@@ -41,7 +41,7 @@ function get_imagify_localize_script_translations( $context ) {
 		break;
 		
 		case 'upload':
-			$translations = = array(
+			$translations = array(
 				'bulkActionsLabels' => array( 
 					'optimize' => __( 'Optimize', 'imagify' ),
 					'restore'  => __( 'Restore Original', 'imagify' ),
@@ -64,26 +64,29 @@ function get_imagify_localize_script_translations( $context ) {
 		break;
 		
 		case 'bulk':
+			$user	      = get_imagify_user();
 			$translations = array(
-				'waitTitle' 	=> __( 'Please wait...', 'imagify' ),
-				'waitText'  	=> __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
-				'waitImageUrl'  => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
-				'getUnoptimizedImagesErrorTitle'    => __( 'Oops, There is something wrong!', 'imagify' ),
-				'getUnoptimizedImagesErrorText'     => __( 'An unknow error occurred when we tried to get all your unoptimized images. Try again and if the issue still persist, please contact us!', 'imagify' ),
-				'overviewChartLabels'			=> array( 
-					'optimized'   => __( 'Optimized', 'imagify' ),
-					'unoptimized' => __( 'Unoptimized', 'imagify' ),
-					'error'       => __( 'Error', 'imagify' ),
-				),
-				'overQuotaTitle'              	=> __( 'Oops, It\'s Over!', 'imagify' ),
-				'noAttachmentToOptimizeTitle' 	=> __( 'Hold on!', 'imagify' ),
-				'noAttachmentToOptimizeText'	=> __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
-				'pluginURL'						=> 'https://wordpress.org/plugins/imagify',
-				'textToShare'					=> __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
-				'totalOptimizedAttachments'	    => imagify_count_optimized_attachments(),
-				'totalUnoptimizedAttachments'   => imagify_count_unoptimized_attachments(),
-				'totalErrorsAttachments' 	    => imagify_count_error_attachments(),
-				'processing'                    => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
+				'labels' => array(
+					'waitTitle' 	=> __( 'Please wait...', 'imagify' ),
+					'waitText'  	=> __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
+					'waitImageUrl'  => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
+					'getUnoptimizedImagesErrorTitle'    => __( 'Oops, There is something wrong!', 'imagify' ),
+					'getUnoptimizedImagesErrorText'     => __( 'An unknow error occurred when we tried to get all your unoptimized images. Try again and if the issue still persist, please contact us!', 'imagify' ),
+					'overviewChartLabels'			=> array( 
+						'optimized'   => __( 'Optimized', 'imagify' ),
+						'unoptimized' => __( 'Unoptimized', 'imagify' ),
+						'error'       => __( 'Error', 'imagify' ),
+					),
+					'overQuotaTitle'              	=> __( 'Oops, It\'s Over!', 'imagify' ),
+					'noAttachmentToOptimizeTitle' 	=> __( 'Hold on!', 'imagify' ),
+					'noAttachmentToOptimizeText'	=> __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
+					'pluginURL'						=> 'https://wordpress.org/plugins/imagify',
+					'textToShare'					=> __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
+					'totalOptimizedAttachments'	    => imagify_count_optimized_attachments(),
+					'totalUnoptimizedAttachments'   => imagify_count_unoptimized_attachments(),
+					'totalErrorsAttachments' 	    => imagify_count_error_attachments(),
+					'processing'                    => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' )
+				)
 			);
 			
 			if ( imagify_valid_key() ) {
