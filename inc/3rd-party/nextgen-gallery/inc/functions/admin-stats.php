@@ -84,7 +84,7 @@ function imagify_ngg_percent_optimized_attachments() {
 function imagify_ngg_count_saving_data() {
 	global $wpdb;
 	
-	$table_name  = $wpdb->prefix . "ngg_imagify_data";
+	$table_name  = $wpdb->ngg_imagify_data;
 	$attachments = $wpdb->get_col( "SELECT $table_name.data FROM $table_name WHERE status = 'success'" );
 	
 	return $attachments;

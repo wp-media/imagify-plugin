@@ -4,10 +4,10 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 /**
  * DB base class
  *
- * @source      https://gist.github.com/pippinsplugins/e220a7f0f0f2fbe64608
- * @since       1.5
+ * @source  https://gist.github.com/pippinsplugins/e220a7f0f0f2fbe64608
+ * @since   1.5
 */
-abstract class Imagify_DB {
+abstract class Imagify_Abstract_DB {
 
 	/**
 	 * The name of our database table

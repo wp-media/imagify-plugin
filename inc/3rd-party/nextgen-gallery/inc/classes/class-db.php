@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @since 1.5
  * @author Jonathan Buttigieg
 */
-class Imagify_NGG_DB extends Imagify_DB {
+class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	/**
 	 * The single instance of the class
 	 *
@@ -29,6 +29,12 @@ class Imagify_NGG_DB extends Imagify_DB {
 		$this->table_name  = $wpdb->prefix . 'ngg_imagify_data';
 		$this->primary_key = 'pid'; // instead of data_id
 		$this->version     = '1.0';
+		
+		// Database declaration
+		$wpdb->ngg_imagify_data = $this->table_name;
+		
+		// Add table to the index of WordPress tables
+		$wpdb->tables[] = 'ngg_imagify_data';
 	}
 	
 	/**
@@ -86,7 +92,7 @@ class Imagify_NGG_DB extends Imagify_DB {
 			'data'               => '',
 		);
 	}
-	
+		
 	/**
 	 * Create the table
 	 *
@@ -97,6 +103,14 @@ class Imagify_NGG_DB extends Imagify_DB {
 	public function create_table() {
 		global $wpdb;
 		
+		if ( ! empty( $wpdb->charset ) ) {
+			$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
+		}
+		
+		if ( ! empty( $wpdb->collate ) ) {
+			$charset_collate .= " COLLATE $wpdb->collate";
+		}
+		
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		
 		$sql = "CREATE TABLE " . $this->table_name . " (
@@ -106,9 +120,9 @@ class Imagify_NGG_DB extends Imagify_DB {
 		  status varchar(30) NOT NULL,
 		  data longtext NOT NULL,
 		  PRIMARY KEY (data_id)
-		) CHARACTER SET utf8 COLLATE utf8_general_ci;";
+		) $charset_collate;";
 		
-		dbDelta( $sql );
+		maybe_create_table( $this->table_name, $sql );
 		
 		update_option( $this->table_name . '_db_version', $this->version );
 	}
