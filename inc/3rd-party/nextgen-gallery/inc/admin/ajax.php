@@ -47,7 +47,7 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 		 LEFT JOIN $wpdb->ngg_imagify_data as idata
 		 ON picture.pid = idata.pid
 		 WHERE idata.pid IS NULL
-			OR idata.optimization_level != 1
+			OR idata.optimization_level != $optimization_level
 			OR idata.status = 'error'
 		LIMIT $unoptimized_attachment_limit"
 		, ARRAY_A
