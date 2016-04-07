@@ -1,17 +1,7 @@
 <?php
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
-class Imagify_NGG_Attachment {
-	/**
-	 * The image ID
-	 *
-	 * @since 1.5
-	 *
-	 * @var    int
-	 * @access public
-	 */
-	public $id;
-	
+class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {	
 	/**
 	 * The image object
 	 *
@@ -69,22 +59,6 @@ class Imagify_NGG_Attachment {
 	}
 	
 	/**
-	 * Get the attachment backup URL.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return string|false
-	 */
-	public function get_backup_url() {
-		$backup_path = $this->get_backup_path();
-		$backup_url  = str_replace( ABSPATH, site_url( '/' ), $backup_path );
-		
-		return $backup_url;
-	}
-	
-	/**
 	 * Get the attachment optimization data.
 	 *
 	 * @since 1.5
@@ -99,39 +73,6 @@ class Imagify_NGG_Attachment {
 	}
 	
 	/**
-	 * Get the attachment extension.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return string
-	 */
-	public function get_extension() {
-		$fullsize_path = $this->get_original_path();
-		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
-	}
-		
-	/**
-	 * Get the attachment error if there is one.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return string The message error
-	 */
-	public function get_optimized_error() {
-		$error = $this->get_size_data( 'full', 'error' );
-		
-		if ( is_string( $error ) ) {
-			return $error;
-		}
-		
-		return false;
-	}
-	
-	/**
 	 * Get the attachment optimization level.
 	 *
 	 * @since 1.5
@@ -143,61 +84,6 @@ class Imagify_NGG_Attachment {
 	public function get_optimization_level() {
 		$row = ( (bool) $this->row ) ? $this->row : $this->get_row();
 		return isset( $row['optimization_level'] ) ? $row['optimization_level'] : false;
-	}
-	
-	/**
-	 * Get the attachment optimization level label.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return string
-	 */
-	public function get_optimization_level_label() {
-		$label = '';
-		$level = $this->get_optimization_level();
-		
-		switch( $level ) {
-			case 2:
-				$label = __( 'Ultra', 'imagify' );
-			break;
-			case 1:
-				$label = __( 'Aggressive', 'imagify' );
-			break;
-			case 0:
-				$label = __( 'Normal', 'imagify' );
-			break;
-		}
-
-		return $label;
-	}
-
-	/**
-	 * Count number of optimized sizes.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return int
-	 */
-	public function get_optimized_sizes_count() {
-		$data  = $this->get_data();
-		$sizes = (array) $data['sizes'];
-		$count = 0;
-
-		if ( isset( $sizes['full'] ) ) {
-			unset( $sizes['full'] );
-		}
-
-		foreach ( $sizes as $size ) {
-			if ( $size['success'] ) {
-				$count++;
-			}
-		}
-
-		return (int) $count;
 	}
 	
 	/**
@@ -242,23 +128,6 @@ class Imagify_NGG_Attachment {
 	}
 
 	/**
-	 * Get the original attachment size.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return string
-	 */
-	public function get_original_size() {
-		$original_size = $this->get_size_data( 'full', 'original_size' );
-		$original_size = ( empty( $original_size ) ) ? @filesize( $this->get_original_path() ) : $original_size;
-		$original_size = size_format( $original_size, 2 );
-
-		return $original_size;
-	}
-
-	/**
 	 * Get the original attachment URL.
 	 *
 	 * @since 1.5
@@ -271,130 +140,6 @@ class Imagify_NGG_Attachment {
 		return $this->image->imageURL;
 	}
 
-	/*
-	 * Get the statistics of a specific size.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @param  string  $size  The thumbnail slug.
-	 * @param  string  $key   The specific data slug.
-	 * @return array|string
-	 */
-	public function get_size_data( $size = 'full', $key = '' ) {
-		$data  = $this->get_data();
-		$stats = array();
-
-		if ( isset( $data['sizes'][ $size ] ) ) {
-			$stats = $data['sizes'][ $size ];
-		}
-
-		if ( isset( $stats[ $key ] ) ) {
-			$stats = $stats[ $key ];
-		}
-
-		return $stats;
-	}
-	
-	/**
-	 * Get the global statistics data or a specific one.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @param  string $key  The specific data slug.
-	 * @return array|string
-	 */
-	public function get_stats_data( $key = '' ) {
-		$data  = $this->get_data();
-		$stats = '';
-
-		if ( isset( $data['stats'] ) ) {
-			$stats = $data['stats'];
-		}
-
-		if ( isset( $stats[ $key ] ) ) {
-			$stats = $stats[ $key ];
-		}
-
-		return $stats;
-	}
-
-	/**
-	 * Check if the attachment is already optimized (before Imagify).
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return bool   True if the attachment is optimized.
-	 */
-	public function is_already_optimized() {
-		return ( 'already_optimized' === $this->get_status() ) > 0;
-	}
-	
-	/**
-	 * Check if the attachment is optimized.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return bool   True if the attachment is optimized.
-	 */
-	public function is_optimized() {
-		return ( 'success' === $this->get_status() ) > 0;
-	}
-
-	/**
-	 * Check if the attachment exceeding the limit size (> 5mo).
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return bool   True if the attachment is skipped.
-	 */
-	public function is_exceeded() {
-		$filepath = $this->get_original_path();
-		$size     = 0;
-
-		if ( file_exists( $filepath ) ) {
-			$size = filesize( $filepath );
-		}
-
-		return ( $size > IMAGIFY_MAX_BYTES ) > 0;
-	}
-
-	/**
-	 * Check if the attachment has a backup of the original size.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return bool   True if the attachment has a backup.
-	 */
-	public function has_backup() {
-		return (bool) $this->get_backup_path();
-	}
-
-	/**
-	 * Check if the attachment has an error.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return bool   True if the attachment has an error.
-	 */
-	public function has_error() {
-		$has_error = $this->get_size_data( 'full', 'error' );
-		return ( is_string( $has_error ) ) > 0;
-	}
-	
 	/**
 	 * Update the metadata size of the attachment
 	 *

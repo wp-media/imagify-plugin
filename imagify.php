@@ -67,6 +67,7 @@ function _imagify_init() {
     require( IMAGIFY_FUNCTIONS_PATH 		 . 'attachments.php' );
     require( IMAGIFY_FUNCTIONS_PATH 		 . 'process.php' );
     require( IMAGIFY_CLASSES_ABSTRACTS_PATH  . 'abstract-db.php' );
+    require( IMAGIFY_CLASSES_ABSTRACTS_PATH  . 'abstract-attachment.php' );
     require( IMAGIFY_CLASSES_PATH 			 . 'class-user.php' );
     require( IMAGIFY_CLASSES_PATH 			 . 'class-attachment.php' );
     require( IMAGIFY_FUNCTIONS_PATH 		 . 'admin-ui.php' );
