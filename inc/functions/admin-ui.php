@@ -197,9 +197,42 @@ function get_imagify_media_column_content( $attachment_id ) {
 }
 
 /**
+ * Add a small section with button
+ *
+ * @return string HTML
+ *
+ * @since  1.5
+ * @author  Geoffrey
+ * 
+ * @todo add only for no-payable users?
+ */
+function get_imagify_new_to_imagify() {
+	if ( apply_filters( 'imagify_show_new_to_imagify', true ) ) {
+		return '
+		<div class="imagify-section imagify-section-positive">
+			<div class="imagify-start imagify-mr2">
+				<button id="imagify-get-modal" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-button-big">
+					<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
+					<span class="button-text">' . esc_html__( 'What plan do I need?', 'imagify' ) . '</span>
+				</button>
+			</div>
+			<div class="imagify-oh">
+				<p class="imagify-section-title">' . esc_html__( 'You\'re new to Imagify?', 'imagify' ) . '</p>
+				<p>' . esc_html__( 'Let us help you by analyzing your existing images and determinate the best plan for you', 'imagify' ) . '</p>
+			</div>
+		</div>
+		';
+	}
+}
+
+/**
  * Return the formatted price present in pricing tables
+ * 
  * @param  float	$value	the price value
  * @return string			the markuped price
+ *
+ * @since  1.5
+ * @author  Geoffrey
  */
 function get_imagify_price_table_format( $value ) {
 	$v = explode( '.', (string) $value );
@@ -210,6 +243,9 @@ function get_imagify_price_table_format( $value ) {
 /**
  * Return the payment modal HTML
  * @return string HTML code for payement modal
+ *
+ * @since  1.5
+ * @author  Geoffrey
  */
 function imagify_payment_modal() {
 	// TODO: should get this array from Imagify Price API
@@ -307,7 +343,7 @@ function imagify_payment_modal() {
 
 	$img_monthly_size = 370000000;
 ?>
-	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal" aria-hidden="false" role="dialog" aria-labelledby="imagify-pricing-step-1" style="display: flex;">
+	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal" aria-hidden="false" role="dialog" aria-labelledby="imagify-pricing-step-1">
 		<div class="imagify-modal-content">
 			<div class="imagify-modal-main">
 				<ol class="imagify-payment-steps">

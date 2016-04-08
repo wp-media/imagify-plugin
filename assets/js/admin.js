@@ -126,7 +126,7 @@ jQuery(function($){
 	$('.imagify-modal').attr('aria-hidden', 'true');
 
 	// on click on modal trigger
-	$('.imagify-modal-trigger').on('click', function(){
+	$('.imagify-modal-trigger').on('click.imagify', function(){
 
 		imagify_open_modal( $(this) );
 
@@ -134,11 +134,11 @@ jQuery(function($){
 	});
 
 	// on click on close button
-	$(document).on('click', '.imagify-modal .close-btn', function(){
+	$(document).on('click.imagify', '.imagify-modal .close-btn', function(){
 		$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true').removeClass('modal-is-open');
 		$('body').removeClass('imagify-modal-is-open');
 	})
-	.on('blur', '.imagify-modal .close-btn', function(){
+	.on('blur.imagify', '.imagify-modal .close-btn', function(){
 		var $modal = $(this).closest('.imagify-modal');
 		if ( $modal.attr('aria-hidden') === 'false' ) {
 			$modal.attr('tabindex', '0').focus().removeAttr('tabindex');
@@ -152,7 +152,7 @@ jQuery(function($){
 			e.preventDefault();
 			
 			// trigger the event
-			$('.imagify-modal.modal-is-open').find('.close-btn').trigger('click');
+			$('.imagify-modal.modal-is-open').find('.close-btn').trigger('click.imagify');
 
 			return false;
 		}
@@ -354,17 +354,19 @@ jQuery(function($){
 
 			// hide current
 			$_this.closest('.imagify-modal-views').hide().attr('aria-hidden', 'true');
+			// hide the checkout view (click could be a triggered action ;p)
+			$payment_view.hide().attr('aria-hidden', 'true');
 
 			// show choices
 			$plans_view.fadeIn(speedFadeIn).attr('aria-hidden', 'false');
 			
-			if ( type === 'onetime' ) {
-				var temp = setInterval(function(){
-					$plans_view.find('a[href="#imagify-pricing-tab-onetime"]').trigger('click.imagify');
+			// trigger on tab
+			var temp = setInterval(function(){
+					var tab = type == 'plan' ? 'monthly' : 'onetime';
+					$plans_view.find('a[href="#imagify-pricing-tab-' + tab + '"]').trigger('click.imagify');
 					clearInterval( temp );
 					temp = null;
 				}, 60 );
-			}
 
 			return false;
 		});
