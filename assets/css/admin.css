@@ -774,7 +774,7 @@ p.imagify-section-title.imagify-section-title {
 	color: #F7A933;
 }
 .imagify-rkt-notice .imagify-rkt-cta {
-	width: 200px!important; /* !important because of a dirtugly WP Engine code */
+	width: 250px!important; /* !important because of a dirtugly WP Engine code */
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	-ms-flex-positive: 1;

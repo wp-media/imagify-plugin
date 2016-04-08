@@ -116,7 +116,7 @@ jQuery(function($){
 	var imagify_open_modal = function( $the_link ){
 
 		var the_target = $the_link.data('target') || $the_link.attr('href');
-		
+
 		$( the_target ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex').addClass('modal-is-open');
 		$('body').addClass('imagify-modal-is-open');
 
@@ -354,17 +354,19 @@ jQuery(function($){
 
 			// hide current
 			$_this.closest('.imagify-modal-views').hide().attr('aria-hidden', 'true');
+			// hide the checkout view (click could be a triggered action ;p)
+			$payment_view.hide().attr('aria-hidden', 'true');
 
 			// show choices
 			$plans_view.fadeIn(speedFadeIn).attr('aria-hidden', 'false');
 			
-			if ( type === 'onetime' ) {
-				var temp = setInterval(function(){
-					$plans_view.find('a[href="#imagify-pricing-tab-onetime"]').trigger('click.imagify');
+			// trigger on tab
+			var temp = setInterval(function(){
+					var tab = type == 'plan' ? 'monthly' : 'onetime';
+					$plans_view.find('a[href="#imagify-pricing-tab-' + tab + '"]').trigger('click.imagify');
 					clearInterval( temp );
 					temp = null;
 				}, 60 );
-			}
 
 			return false;
 		});
