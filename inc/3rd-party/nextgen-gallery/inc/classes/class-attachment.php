@@ -272,7 +272,12 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		}
 		
 		// Optimize the original size 
-		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $optimization_level, $resize, get_imagify_option( 'exif', false ) );
+		$response = do_imagify( $attachment_path, array(
+			'optimization_level' => $optimization_level,
+			'resize'             => $resize,
+			'context'            => 'ngg',
+			'original_size'		 => $this->get_original_size( false )
+		) );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
 		
 		// Save the optimization level
@@ -364,7 +369,11 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 				$thumbnail_url  = $storage->get_image_url( $this->image, $size_key );
 	
 				// Optimize the thumbnail size
-				$response = do_imagify( $thumbnail_path, false, $optimization_level );
+				$response = do_imagify( $thumbnail_path, array(
+					'backup'             => false,
+					'optimization_level' => $optimization_level,
+					'context'            => 'wp'
+				) );
 				$data     = $this->fill_data( $data, $response, $id, $thumbnail_url, $size_key );
 				
 				/** This filter is documented in /inc/classes/class-attachment.php */

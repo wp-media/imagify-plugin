@@ -221,7 +221,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		*/
 		do_action( 'before_imagify_optimize_attachment', $id );
 		
-		set_transient( 'imagify-async-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
+		//set_transient( 'imagify-async-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
 		
 		// Get the resize values for the original size
 		$resize           = array();
@@ -234,7 +234,12 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		}
 		
 		// Optimize the original size 
-		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $optimization_level, $resize, get_imagify_option( 'exif', false ) );
+		$response = do_imagify( $attachment_path, array(
+			'optimization_level' => $optimization_level,
+			'resize'             => $resize,
+			'context'            => 'wp',
+			'original_size'		 => $this->get_original_size( false )
+		) );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
 		
 		// Save the optimization level
@@ -265,9 +270,13 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 				$thumbnail_path = trailingslashit( dirname( $attachment_path ) ) . $size_data['file'];
 				$thumbnail_url  = trailingslashit( dirname( $attachment_url ) ) . $size_data['file'];
-
+				
 				// Optimize the thumbnail size
-				$response = do_imagify( $thumbnail_path, false, $optimization_level );
+				$response = do_imagify( $thumbnail_path, array(
+					'backup'             => false,
+					'optimization_level' => $optimization_level,
+					'context'            => 'wp'
+				) );
 				$data     = $this->fill_data( $data, $response, $id, $thumbnail_url, $size_key );
 
 				/**
