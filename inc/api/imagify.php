@@ -68,6 +68,28 @@ function upload_imagify_image( $data ) {
 }
 
 /**
+ * Get Imagify Plans Prices
+ *
+ * @return object
+ * @since 1.5
+ * @author Geoffrey
+ **/
+function get_imagify_plans_prices() {
+	return Imagify()->getPlansPrices();
+}
+
+/**
+ * Get Imagify Plans Prices
+ *
+ * @return object
+ * @since 1.5
+ * @author Geoffrey
+ **/
+function get_imagify_packs_prices() {
+	return Imagify()->getPacksPrices();
+}
+
+/**
  * Imagify.io API for WordPress
  */
 class Imagify {
@@ -245,6 +267,24 @@ class Imagify {
 			'post_data' => json_encode( $data )
 		);
 		return $this->httpCall( 'fetch/', $args );
+    }
+
+    /**
+     * Get prices for plans
+     *
+     * @return object
+     */
+    public function getPlansPrices() {
+        return $this->httpCall( 'pricing/plan/' );
+    }
+
+    /**
+     * Get prices for packs (one time)
+     *
+     * @return object
+     */
+    public function getPacksPrices() {
+        return $this->httpCall( 'pricing/pack/' );
     }
 
 	/**

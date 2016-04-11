@@ -189,7 +189,21 @@ jQuery(function($){
 	
 	if ( $('.imagify-offer-line').length ) {
 
-		var imagify_check_check = function( $checkbox ) {
+		var imagify_get_pricing = function( $button ){
+				var data = {
+					action: 'imagify_get_prices',
+					imagifynonce: $button.data('nonce')
+				};
+				$.post( ajaxurl, data, function( response ) {
+					if ( response.success ) {
+						return response.data;
+					}
+					else {
+						return false;
+					}
+				});
+			},
+			imagify_check_check = function( $checkbox ) {
 				var sel_class = 'imagify-offer-selected';
 
 				$checkbox.each(function(){
@@ -248,7 +262,22 @@ jQuery(function($){
 		$radios.on('change.imagify', function(){
 			imagify_check_radio( $(this) );
 		});
-			
+
+		/**
+		 * Get pricings on modal opening
+		 * Build the pricing tables inside modal
+		 */
+		$('#imagify-get-pricing-modal').on('click.imagify-ajax', function(){
+			var pricing = imagify_get_pricing( $(this) );
+
+			if ( pricing ) {
+				// TODO: build products list
+			}
+			else {
+				// TODO: replace modal content by any information
+				// an error occurred
+			}
+		});
 	}
 
 	/**
