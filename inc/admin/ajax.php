@@ -592,3 +592,24 @@ function _do_admin_post_async_optimize_save_image_editor_file() {
 		die( 1 );
 	}
 }
+
+/**
+ * Get pricings from API for Onetime and Plans at the same time
+ *
+ * @since 1.5
+ * @author Geoffrey
+ */
+add_action( 'wp_ajax_imagify_get_prices', '_imagify_get_prices_from_api' );
+function _imagify_get_prices_from_api() {
+	if ( check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false) ) {
+		
+		$data = array();
+		$data['onetimes'] = get_imagify_packs_prices();
+		$data['monthlies'] = get_imagify_plans_prices();
+		
+		wp_send_json_success( $data );
+	}
+	else {
+		wp_send_json_error( 'check_ajax_referer failed' );
+	}
+}

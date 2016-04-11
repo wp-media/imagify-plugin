@@ -8,6 +8,10 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 function _imagify_display_options_page() {
 	global $_wp_additional_image_sizes, $wp_version;
+
+	if ( isset( $_POST['submit-goto-bulk'] ) ) {
+		wp_safe_redirect( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) );
+	}
 	?>
 	<div class="wrap imagify-settings">
 		<?php
@@ -108,6 +112,8 @@ function _imagify_display_options_page() {
 				?>
 
 				<div class="imagify-settings-section <?php echo ( ! imagify_valid_key() ) ? 'hidden' : ''; ?>">
+
+					<?php echo get_imagify_new_to_imagify(); ?>
 					<table class="form-table">
 						<tbody>
 							<tr class="imagify-middle">
@@ -303,7 +309,20 @@ function _imagify_display_options_page() {
 
 				</div>
 				<div class="submit">
-					<?php submit_button(); ?>
+					<?php
+						// classical submit
+						submit_button();
+
+						// submit and go to bulk page
+						submit_button(
+							esc_html__( 'Save &amp; Go to Bulk Optimizer', 'imagify' ),
+							'secondary imagify-button-secondary', // type/classes
+							'submit-goto-bulk', // name (id)
+							true, // wrap
+							array() //other attributes
+						);
+					?>
+
 					<div class="imagify-bulk-info">
 						<p><?php printf( __( 'Once your settings saved, optimize all your images by using the %sImagify Bulk Optimization%s feature.', 'imagify' ), '<a href="' . get_admin_url() . 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization">', '</a>' ); ?></p>
 					</div>
@@ -483,6 +502,8 @@ function _imagify_display_options_page() {
 				</button>
 			</div>
 		</div>
+
+		<?php imagify_payment_modal(); ?>
 
 	</div>
 	<?php

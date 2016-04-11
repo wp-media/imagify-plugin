@@ -66,6 +66,10 @@
 .imagify-count .imagify-count-title {
 	font-weight: bold;
 }
+.imagify-default-settings {
+    color: #73818c;
+    font-weight: normal;
+}
 .imagify-count .imagify-count-title:before {
 	counter-increment: num 1;
 	content: counter(num) ". ";
@@ -524,12 +528,20 @@ td .imagify-chart {
 	font-weight: 600;
 	box-shadow: none;
 }
-.imagify-settings p.submit .button-primary {
-	margin-left: 240px;
+.imagify-settings div.submit.submit {
+	padding-left: 235px;
+	padding-top: 40px;
+}
+.imagify-settings p.submit {
+	float: left;
+	margin-top: 0;
+}
+.imagify-settings p.submit .button {
+	margin: 0 5px;
 }
 @media (max-width: 850px) {
-	.imagify-settings p.submit .button-primary {
-		margin-left: 0px;
+	.imagify-settings div.submit {
+		padding-left: 0;
 	}
 	.imagify-settings p.submit {
 		text-align: center;
@@ -594,7 +606,7 @@ p.imagify-section-title.imagify-section-title {
 }
 
 .imagify-bulk-info {
-	margin: 1em 1em 1em 240px;
+	margin: 1em 1em 1em 5px;
 	transition: margin .3s;
 }
 @media (max-width: 850px) {
