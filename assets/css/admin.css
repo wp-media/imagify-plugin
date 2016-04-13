@@ -2661,6 +2661,12 @@ td.imagify-cell-filename {
 .imagify-payment-modal * {
 	box-sizing: border-box;
 }
+.imagify-modal-loader {
+	position: absolute;
+	top: 0; left: 0; right: 0; bottom: 0;
+	background: #fff url('../images/loader-balls.svg') center no-repeat;
+	z-index: 10;
+}
 .imagify-payment-modal .imagify-modal-content {
 	width: 980px;
 	max-width: 100%;
@@ -3200,6 +3206,7 @@ div.imagify-col-price {
 
 /* we recommend line */
 .imagify-recommend {
+	display: none;
 	position: absolute;
 	left: -20px; bottom: 100%;
 	padding: 0;
@@ -3207,6 +3214,9 @@ div.imagify-col-price {
 	color: #1F2332;
 	font-weight: bold;
 	font-style: italic;
+}
+.imagify-offer-selected .imagify-recommend {
+	display: block;
 }
 [class*="imagify-onetime-"] .imagify-recommend {
 	left: 65px;

@@ -73,6 +73,8 @@ function _imagify_display_options_page() {
 
 				<h3 class="screen-reader-text"><?php _e( 'Settings' ); ?></h3>
 
+				<?php echo get_imagify_new_to_imagify(); ?>
+
 				<?php
 				if ( ! defined( 'IMAGIFY_API_KEY' ) || ! IMAGIFY_API_KEY ) { ?>
 				<div class="imagify-sub-header">
@@ -113,7 +115,6 @@ function _imagify_display_options_page() {
 
 				<div class="imagify-settings-section <?php echo ( ! imagify_valid_key() ) ? 'hidden' : ''; ?>">
 
-					<?php echo get_imagify_new_to_imagify(); ?>
 					<table class="form-table">
 						<tbody>
 							<tr class="imagify-middle">

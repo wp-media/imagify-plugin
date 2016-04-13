@@ -525,50 +525,36 @@ function imagify_payment_modal() {
 							</div><!-- .imagify-radio-line -->
 
 							<div class="imagify-pricing-table imagify-month-selected">
-								
-								<?php
-								foreach ( $prices as $k => $price ) {
-								?>
-
-								<div class="imagify-offer-line imagify-flex-table imagify-offer-<?php echo $k . ( $k === $recommended_offer ? ' imagify-offer-selected' : '' ); ?>">
+							
+							<script type="text/template" id="imagify-offer-monthly-template"><div class="imagify-offer-line imagify-offer-monthlies imagify-flex-table">
 									<div class="imagify-col-details">
 										<p class="imagify-label">	
 											<span class="imagify-the-offer">
-												<span class="imagify-offer-size"><?php echo $price['dataf']; ?></span>
+												<span class="imagify-offer-size"></span>
 												<span class="imagify-offer-by"><?php esc_html_e( '/month', 'imagify' ); ?></span>
 											</span>
-											<span class="imagify-approx"><?php printf( __( 'approx: %s images', 'imagify' ), '<span class="imagify-approx-nb">' . number_format_i18n( $price['imgs'] ) . '</span>' ); ?></span>
+											<span class="imagify-approx"><?php printf( __( 'approx: %s images', 'imagify' ), '<span class="imagify-approx-nb"></span>' ); ?></span>
 										</p>
 									</div>
 									<div class="imagify-col-price imagify-flex-table">
 										<span class="imagify-price-block">
 											<span class="imagify-dollars">$</span>
 											<span class="imagify-number-block">
-												<span class="imagify-switch-my">
-													<span class="imagify-monthly" aria-hidden="false">
-														<?php echo get_imagify_price_table_format( $price['prices']['monthly'] );  ?>
-													</span>
-													<span class="imagify-yearly" aria-hidden="true">
-														<?php echo $yearly = get_imagify_price_table_format( $price['prices']['yearly'] ); ?>
-													</span>
-												</span>
+												<span class="imagify-switch-my"></span>
 												<span class="imagify-price-by"><?php esc_html_e( '/month', 'imagify' ); ?></span>
 											</span>
 										</span>
-										<?php echo ( $k === $recommended_offer ? '<span class="imagify-recommend">' . esc_html__( 'we recommend for you', 'imagify' ) . '</span>' : '' ); ?>
 
-										<p class="imagify-price-complement"><?php printf( __( '%s per<br> additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data">$' . $price['prices']['add'] . '</span>' ); ?></p>
+										<span class="imagify-recommend" aria-hidden="true"><?php esc_html_e( 'we recommend for you', 'imagify' ); ?></span>
+
+										<p class="imagify-price-complement"><?php printf( __( '%s per<br> additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); ?></p>
 
 									</div><!-- .imagify-col-price -->
 
 									<div class="imagify-col-other-actions">
-										<button data-offer='<?php echo json_encode( array( $k  => $price ) ); ?>' type="button" class="button imagify-button-secondary mini imagify-payment-btn-select-plan"><?php esc_html_e( 'Choose plan', 'imagify' ); ?></button>
+										<button type="button" class="button imagify-button-secondary mini imagify-payment-btn-select-plan"><?php esc_html_e( 'Choose plan', 'imagify' ); ?></button>
 									</div>
-								</div><!-- .imagify-offer-line -->
-
-								<?php
-								}
-								?>
+								</div><!-- .imagify-offer-line --></script>
 							</div><!-- .imagify-pricing-table -->
 							
 							<div class="imagify-cols">
@@ -591,44 +577,27 @@ function imagify_payment_modal() {
 							
 
 							<div class="imagify-pricing-table imagify-month-selected">
-								
-								<?php
-								$onetimes['suggested'] = $suggested_one_time;
-								$onetimes = $onetimes + $default_onetimes;
-
-								// TODO: make it dynamic
-								$recommended_plan = 'suggested';
-
-								foreach ( $onetimes as $k => $offer ) {
-								?>
-
-								<div class="imagify-offer-line imagify-flex-table imagify-onetime-<?php echo $k . ( $k === $recommended_plan ? ' imagify-offer-selected' : '' ); ?>">
+							<script type="text/template" id="imagify-offer-onetime-template"><div class="imagify-offer-line imagify-flex-table imagify-offer-onetimes">
 									<div class="imagify-col-details">
 										<p class="imagify-label">	
 											<span class="imagify-the-offer">
-												<span class="imagify-offer-size"><?php echo $offer['dataf']; ?></span>
+												<span class="imagify-offer-size"></span>
 											</span>
-											<span class="imagify-approx"><?php printf( __( 'approx: %s images', 'imagify' ), '<span class="imagify-approx-nb">' . number_format_i18n( $offer['imgs'] ) . '</span>' ); ?></span>
+											<span class="imagify-approx"><?php printf( __( 'approx: %s images', 'imagify' ), '<span class="imagify-approx-nb"></span>' ); ?></span>
 										</p>
 									</div>
 									<div class="imagify-col-price">
 										<span class="imagify-price-block">
 											<span class="imagify-dollars">$</span>
-											<span class="imagify-number-block">
-												<?php echo get_imagify_price_table_format( $offer['price'] );  ?>
-											</span>
+											<span class="imagify-number-block"></span>
 										</span>
-										<?php echo ( $k === $recommended_plan ? '<span class="imagify-recommend">' . esc_html__( 'we recommend for you', 'imagify' ) . '</span>' : '' ); ?>
+										<span class="imagify-recommend"><?php esc_html__( 'we recommend for you', 'imagify' ); ?></span>
 									</div><!-- .imagify-col-price -->
 
 									<div class="imagify-col-other-actions">
-										<button data-offer='<?php echo json_encode( array( $k  => $offer ) ); ?>' type="button" class="button imagify-button-secondary mini imagify-payment-btn-select-plan"><?php esc_html_e( 'Choose plan', 'imagify' ); ?></button>
+										<button type="button" class="button imagify-button-secondary mini imagify-payment-btn-select-plan"><?php esc_html_e( 'Choose plan', 'imagify' ); ?></button>
 									</div>
-								</div><!-- .imagify-offer-line -->
-
-								<?php
-								}
-								?>
+								</div><!-- .imagify-offer-line --></script>
 							</div><!-- .imagify-pricing-table -->
 
 						</div><!-- .imagify-tab-content -->
@@ -807,6 +776,8 @@ function imagify_payment_modal() {
 					</div>
 				</div>
 			</div>
+
+			<div class="imagify-modal-loader"></div>
 		</div><!-- .imagify-modal-content-->
 	</div><!-- .imagify-payment-modal -->
 <?php
