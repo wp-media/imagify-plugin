@@ -46,9 +46,8 @@ function _imagify_optimize_save_image_editor_file() {
 		&& 'open' != $_POST['do']
 	) {
 
-		$body                 = $_POST;
-		$body['action']       = 'imagify_async_optimize_save_image_editor_file';
-		$body['transient_id'] = $body['postid'];
+		$body           = $_POST;
+		$body['action'] = 'imagify_async_optimize_save_image_editor_file';
 
 		imagify_do_async_job( $body );
 	}

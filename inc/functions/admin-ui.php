@@ -5,21 +5,22 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * Get the optimization data list for a specific attachment.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  *
- * @param 	int    $attachment_id  The attachment ID.
- * @return string  The output to print.
+ * @param   object  $attachment  The attachment object.
+ * @return  string  The output to print.
  */
-function get_imagify_attachment_optimization_text( $attachment_id ) {
+function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' ) {
 	global $pagenow;
 	
-	$attachment        = new Imagify_Attachment( $attachment_id );
+	$attachment_id     = $attachment->id;
 	$data   	   	   = $attachment->get_data();
 	$output 	   	   = ( 'post.php' != $pagenow ) ? '<ul class="imagify-datas-list">' : '';
 	$output_before     = ( 'post.php' != $pagenow ) ? '<li class="imagify-data-item">' : '<div class="misc-pub-section misc-pub-imagify imagify-data-item">';
 	$output_after  	   = ( 'post.php' != $pagenow ) ? '</li>' : '</div>';
 	$reoptimize_output = '';
-
-	if ( $error = get_imagify_attachment_error_text( $attachment_id ) ) {
+	
+	if ( $error = get_imagify_attachment_error_text( $attachment, $context ) ) {
 		$error = ( 'post.php' === $pagenow ) ? $output_before . $error . $output_after : $error;
 		return $error;
 	}
@@ -27,7 +28,7 @@ function get_imagify_attachment_optimization_text( $attachment_id ) {
 	$optimization_level = $attachment->get_optimization_level_label();
 
 	if ( imagify_valid_key() && $attachment->has_backup() ) {
-		$reoptimize_link   = get_imagify_attachment_reoptimize_link( $attachment_id );
+		$reoptimize_link   = get_imagify_attachment_reoptimize_link( $attachment, $context );
 		$reoptimize_output = ( $reoptimize_link ) ? $reoptimize_link : '';
 	}
 
@@ -71,12 +72,16 @@ function get_imagify_attachment_optimization_text( $attachment_id ) {
 	$output .= $reoptimize_output;
 	
 	if ( $attachment->has_backup() ) {
+		$args    = array( 
+			'attachment_id' => $attachment_id,
+			'context' 		=> $context
+		);
 		$class   = ( 'post.php' !== $pagenow  ) ? 'button-imagify-restore' : '';
-		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', $attachment_id ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Restoring...', 'imagify' ) . '"><span class="dashicons dashicons-image-rotate"></span>' . __( 'Restore Original', 'imagify' ) . '</a>';	
-
+		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', $args ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Restoring...', 'imagify' ) . '"><span class="dashicons dashicons-image-rotate"></span>' . __( 'Restore Original', 'imagify' ) . '</a>';
+		
 		if ( 'upload.php' != $pagenow  ) {
 			$image = wp_get_attachment_image_src( $attachment_id, 'full' );
-
+	
 			$output .= '<input id="imagify-original-src" type="hidden" value="' . $attachment->get_backup_url() . '">';
 			$output .= '<input id="imagify-original-size" type="hidden" value="' . $attachment->get_original_size() . '">';
 			$output .= '<input id="imagify-full-src" type="hidden" value="' . $image[0] . '">';
@@ -95,18 +100,25 @@ function get_imagify_attachment_optimization_text( $attachment_id ) {
  * Get the error message for a specific attachment.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  *
- * @param 	int    $attachment_id  The attachement ID.
- * @return string  The output to print.
+ * @param 	object  $attachment  The attachement object.
+ * @return  string  The output to print.
  */
-function get_imagify_attachment_error_text( $attachment_id ) {
+function get_imagify_attachment_error_text( $attachment, $context = 'wp' ) {
 	global $pagenow;
-	$data   = get_post_meta( $attachment_id, '_imagify_data', true );
-	$output = '';
+	
+	$attachment_id = $attachment->id;
+	$data   	   = $attachment->get_data();
+	$output 	   = '';
+	$args 		   = array(
+		'attachment_id' => $attachment_id,
+		'context'		=> $context
+	);
 
 	if ( isset( $data['sizes']['full']['success'] ) && ! $data['sizes']['full']['success'] ) {
 		$class   = ( 'post.php' !== $pagenow  ) ? 'button-imagify-manual-upload' : '';
-		$output .= '<strong>' . $data['sizes']['full']['error'] . '</strong><br/><a id="imagify-upload-' . $attachment_id . '" class="button ' . $class . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment_id ) . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Try again', 'imagify' ) . '</a>';
+		$output .= '<strong>' . $data['sizes']['full']['error'] . '</strong><br/><a id="imagify-upload-' . $attachment_id . '" class="button ' . $class . '" href="' . get_imagify_admin_url( 'manual-upload', $args ) . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Try again', 'imagify' ) . '</a>';
 	}
 
 	return $output;
@@ -116,17 +128,21 @@ function get_imagify_attachment_error_text( $attachment_id ) {
  * Get the re-optimize link for a specific attachment.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  *
- * @param 	int    $attachment_id  The attachement ID.
- * @return string  The output to print.
+ * @param 	int     $attachment_id  The attachement ID.
+ * @return  string  The output to print.
  */
-function get_imagify_attachment_reoptimize_link( $attachment_id ) {
+function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) {
 	global $pagenow;
 	
-	$attachment = new Imagify_Attachment( $attachment_id );
-	$level      = (int) $attachment->get_optimization_level();
-	$args		= array( 'attachment_id' => $attachment_id );
-	$output     = '';
+	$attachment_id = $attachment->id;
+	$level         = (int) $attachment->get_optimization_level();
+	$args		   = array( 
+		'attachment_id' => $attachment_id,
+		'context'		=> $context
+	);
+	$output        = '';
 
 	if ( $attachment->has_backup() ) {
 		$class  = ( 'post.php' !== $pagenow  ) ? 'button-imagify-manual-override-upload' : '';
@@ -158,21 +174,22 @@ function get_imagify_attachment_reoptimize_link( $attachment_id ) {
  * Get all data to diplay for a specific attachment.
  *
  * @since 1.2
+ * @author Jonathan Buttigieg
  *
- * @param 	int     $attachment_id  The attachement ID.
+ * @param 	object  $attachment  The attachement object.
  * @return  string  The output to print.
  */
-function get_imagify_media_column_content( $attachment_id ) {
-	$output      	= '';
-	$attachment     = new Imagify_Attachment( $attachment_id );
+function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
+	$attachment_id  = $attachment->id; 
 	$attachment_ext = $attachment->get_extension();
-
+	$output      	= '';
+	
 	// Check if the attachment extension is allowed
-	if ( ! wp_attachment_is_image( $attachment_id )  ) {
+	if ( 'wp' === $context && ! wp_attachment_is_image( $attachment_id )  ) {
 		$output = sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
 		return $output;
 	}
-
+	
 	// Check if the API key is valid
 	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
 		$output .= __( 'Invalid API key', 'imagify' );
@@ -188,11 +205,15 @@ function get_imagify_media_column_content( $attachment_id ) {
 
 	// Check if the image was optimized
 	if ( ! $attachment->is_optimized() && ! $attachment->has_error() ) {
-		$output .= '<a id="imagify-upload-' . $attachment_id . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment_id ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+		$args = array(
+			'attachment_id' => $attachment_id,
+			'context'		=> $context
+		);
+		$output .= '<a id="imagify-upload-' . $attachment_id . '" href="' . get_imagify_admin_url( 'manual-upload', $args ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
 		return $output;
 	}
 
-	$output .= get_imagify_attachment_optimization_text( $attachment_id );
+	$output .= get_imagify_attachment_optimization_text( $attachment, $context );
 	return $output;
 }
 
