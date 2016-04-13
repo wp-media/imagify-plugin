@@ -13,8 +13,19 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @param   bool 	  $keep_exif  		   To keep exif data or not
  * @return obj|array  Error message | Optimized image data
  */
-function do_imagify( $file_path, $backup, $optimization_level, $resize = array(), $keep_exif = false ) {
+function do_imagify( $file_path, $args = array() ) {
 	$errors = new WP_Error();
+	$args   = array_merge( 
+		array(
+			'backup'             => get_imagify_option( 'backup', false ),
+			'optimization_level' => get_imagify_option( 'optimization_level', 1 ),
+			'resize'             => array(),
+			'keep_exif'          => get_imagify_option( 'exif', false ),
+			'context'			 => 'wp',
+			'original_size'		 => 0
+		), 
+		$args
+	);
 	
 	/**
 	 * Filter the attachment path
@@ -71,7 +82,7 @@ function do_imagify( $file_path, $backup, $optimization_level, $resize = array()
 	 * @param   string 	$file_path 	Absolute path to the image file.
 	 * @param   bool   	$backup 	Force a backup of the original file.
 	*/
-	do_action( 'before_do_imagify', $file_path, $backup );
+	do_action( 'before_do_imagify', $file_path, $args['backup'] );
 
 	// Send image for optimization and fetch the response
 	$response = upload_imagify_image(
@@ -79,10 +90,12 @@ function do_imagify( $file_path, $backup, $optimization_level, $resize = array()
 			'image' => curl_file_create( $file_path ),
 			'data' 	=> json_encode(
 				array(
-					'aggressive' => ( 1 === (int) $optimization_level ) ? true : false,
-					'ultra'  	 => ( 2 === (int) $optimization_level ) ? true : false,
-					'resize' 	 => $resize,
-					'keep_exif'  => $keep_exif
+					'aggressive' 	=> ( 1 === (int) $args['optimization_level'] ) ? true : false,
+					'ultra'  	 	=> ( 2 === (int) $args['optimization_level'] ) ? true : false,
+					'resize' 	 	=> $args['resize'],
+					'keep_exif'  	=> $args['keep_exif'],
+					'context' 	 	=> $args['context'],
+					'original_size' => $args['original_size']
 				)
 			)
 		)
@@ -95,7 +108,7 @@ function do_imagify( $file_path, $backup, $optimization_level, $resize = array()
 	}
 
 	// Create a backup file
-	if ( $backup ) {		
+	if ( 'wp' === $args['context'] && $args['backup'] ) {		
 		$backup_path      = get_imagify_attachment_backup_path( $file_path );
 		$backup_path_info = pathinfo( $backup_path );
 
@@ -133,7 +146,7 @@ function do_imagify( $file_path, $backup, $optimization_level, $resize = array()
 	 * @param   string 	$file_path 	Absolute path to the image file.
 	 * @param   bool   	$backup 	Force a backup of the original file.
 	*/
-	do_action( 'after_do_imagify', $file_path, $backup );
+	do_action( 'after_do_imagify', $file_path, $args['backup'] );
 
 	return $response;
 }
@@ -146,10 +159,6 @@ function do_imagify( $file_path, $backup, $optimization_level, $resize = array()
  * @since 1.4
  **/
 function imagify_do_async_job( $body ) {
-	if ( isset( $body['transient_id'] ) ) {
-		set_transient( 'imagify-async-in-progress-' . $body['transient_id'], true, 10 * MINUTE_IN_SECONDS );
-	}
-
 	$args = array(
 		'timeout'   => 0.01,
 		'blocking'  => false,

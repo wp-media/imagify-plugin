@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * Process all thumbnails of a specific image with Imagify with the manual method.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_manual_upload'		, '_do_admin_post_imagify_manual_upload' );
 add_action( 'admin_post_imagify_manual_upload'	, '_do_admin_post_imagify_manual_upload' );
@@ -15,7 +16,7 @@ function _do_admin_post_imagify_manual_upload() {
 		check_admin_referer( 'imagify-manual-upload' );
 	}
 
-	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( ! isset( $_GET['attachment_id'], $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
@@ -23,12 +24,11 @@ function _do_admin_post_imagify_manual_upload() {
 		}
 	}
 	
+	$context	   = $_GET['context'];
 	$attachment_id = $_GET['attachment_id'];
-	
-	set_transient( 'imagify-async-in-progress-' . $attachment_id, true, 10 * MINUTE_IN_SECONDS );
-	
-	$attachment = new Imagify_Attachment( $attachment_id );
-	
+	$class_name    = get_imagify_attachment_class_name( $_GET['context'] );
+	$attachment    = new $class_name( $attachment_id );
+		
 	// Optimize it!!!!!
 	$attachment->optimize();
 	
@@ -38,7 +38,7 @@ function _do_admin_post_imagify_manual_upload() {
 	}
 	
 	// Return the optimization statistics
-	$output = get_imagify_attachment_optimization_text( $attachment_id );
+	$output = get_imagify_attachment_optimization_text( $attachment, $context );
 	wp_send_json_success( $output );
 }
 
@@ -46,6 +46,7 @@ function _do_admin_post_imagify_manual_upload() {
  * Process a manual upload by overriding the optimization level.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_manual_override_upload', '_do_admin_post_imagify_manual_override_upload' );
 add_action( 'admin_post_imagify_manual_override_upload', '_do_admin_post_imagify_manual_override_upload' );
@@ -56,7 +57,7 @@ function _do_admin_post_imagify_manual_override_upload() {
 		check_admin_referer( 'imagify-manual-override-upload' );
 	}
 
-	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( ! isset( $_GET['attachment_id'], $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
@@ -64,7 +65,9 @@ function _do_admin_post_imagify_manual_override_upload() {
 		}
 	}
 	
-	$attachment = new Imagify_Attachment( $_GET['attachment_id'] );
+	$context     = $_GET['context'];
+	$class_name  = get_imagify_attachment_class_name( $context );
+	$attachment  = new $class_name( $_GET['attachment_id'] );
 		
 	// Restore the backup file
 	$attachment->restore();
@@ -78,7 +81,7 @@ function _do_admin_post_imagify_manual_override_upload() {
 	}
 
 	// Return the optimization statistics
-	$output = get_imagify_attachment_optimization_text( $attachment->id );
+	$output = get_imagify_attachment_optimization_text( $attachment, $context );
 	wp_send_json_success( $output );
 }
 
@@ -86,6 +89,7 @@ function _do_admin_post_imagify_manual_override_upload() {
  * Process a restoration to the original attachment.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_restore_upload', '_do_admin_post_imagify_restore_upload' );
 add_action( 'admin_post_imagify_restore_upload', '_do_admin_post_imagify_restore_upload' );
@@ -96,7 +100,7 @@ function _do_admin_post_imagify_restore_upload() {
 		check_admin_referer( 'imagify-restore-upload' );
 	}
 
-	if ( ! isset( $_GET['attachment_id'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( ! isset( $_GET['attachment_id'], $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
@@ -104,7 +108,8 @@ function _do_admin_post_imagify_restore_upload() {
 		}
 	}
 	
-	$attachment = new Imagify_Attachment( $_GET['attachment_id'] );
+	$class_name = get_imagify_attachment_class_name( $_GET['context'] );
+	$attachment = new $class_name( $_GET['attachment_id'] );
 	
 	// Restore the backup file
 	$attachment->restore();
@@ -115,7 +120,7 @@ function _do_admin_post_imagify_restore_upload() {
 	}
 
 	// Return the optimization button
-	$output = '<a id="imagify-upload-' . $attachment->id . '" href="' . get_imagify_admin_url( 'manual-upload', $attachment->id ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+	$output = '<a id="imagify-upload-' . $attachment->id . '" href="' . get_imagify_admin_url( 'manual-upload', array( 'attachment_id' => $attachment->id ) ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
 	wp_send_json_success( $output );
 }
 
@@ -123,6 +128,7 @@ function _do_admin_post_imagify_restore_upload() {
  * Get all unoptimized attachment ids.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_get_unoptimized_attachment_ids', '_do_wp_ajax_imagify_get_unoptimized_attachment_ids' );
 function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
@@ -196,7 +202,6 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		wp_send_json_error( array( 'message' => 'no-images' ) );
 	}
 	
-	// Get attachments filename
 	// Get attachments filename
 	$attachments_filename = $wpdb->get_results( 
 		"SELECT pm.post_id as id, pm.meta_value as value
@@ -301,17 +306,18 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
  * Process all thumbnails of a specific image with Imagify with the bulk method.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_bulk_upload', '_do_wp_ajax_imagify_bulk_upload' );
 function _do_wp_ajax_imagify_bulk_upload() {
 	check_ajax_referer( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
 	
-	if ( ! isset( $_POST['image'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( ! isset( $_POST['image'], $_POST['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		wp_send_json_error();
 	}
-
-	$attachment_id      = (int) $_POST['image'];
-	$attachment         = new Imagify_Attachment( $_POST['image'] );
+	
+	$class_name         = get_imagify_attachment_class_name( $_POST['context'] );
+	$attachment         = new $class_name( $_POST['image'] );
 	$optimization_level = get_transient( 'imagify_bulk_optimization_level' );
 	
 	// Restore it if the optimization level is updated
@@ -329,8 +335,8 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	$data                  = array();
 	
 	if ( ! $attachment->is_optimized() ) {
-		$data['success'] 		= false;
-		$data['error']   		= $fullsize_data['error'];
+		$data['success'] = false;
+		$data['error']   = $fullsize_data['error'];
 		
 		wp_send_json_error( $data );
 	}
@@ -351,6 +357,7 @@ function _do_wp_ajax_imagify_bulk_upload() {
  * Create a new Imagify account.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_signup', '_do_wp_ajax_imagify_signup' );
 function _do_wp_ajax_imagify_signup() {
@@ -379,6 +386,7 @@ function _do_wp_ajax_imagify_signup() {
  * Process an API key check validity.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_check_api_key_validity', '_do_wp_ajax_imagify_check_api_key_validity' );
 function _do_wp_ajax_imagify_check_api_key_validity() {
@@ -406,6 +414,7 @@ function _do_wp_ajax_imagify_check_api_key_validity() {
  * Process a dismissed notice.
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_dismiss_notice', '_do_admin_post_imagify_dismiss_notice' );
 add_action( 'admin_post_imagify_dismiss_notice', '_do_admin_post_imagify_dismiss_notice' );
@@ -449,6 +458,7 @@ function _do_admin_post_imagify_dismiss_notice() {
  * Disable a plugin which can be in conflict with Imagify
  *
  * @since 1.2
+ * @author Jonathan Buttigieg
  */
 add_action( 'admin_post_imagify_deactivate_plugin', '_imagify_deactivate_plugin' );
 function _imagify_deactivate_plugin() {
@@ -466,6 +476,7 @@ function _imagify_deactivate_plugin() {
  * Get admin bar profile output
  *
  * @since 1.2.3
+ * @author Jonathan Buttigieg
  */
 add_action( 'wp_ajax_imagify_get_admin_bar_profile', '_do_wp_ajax_imagify_get_admin_bar_profile' );
 function _do_wp_ajax_imagify_get_admin_bar_profile() {
@@ -554,6 +565,7 @@ function _do_wp_ajax_imagify_get_admin_bar_profile() {
  * Optimize image on picture editing with async request
  *
  * @since 1.4
+ * @author Julio Potier
  **/
 add_action( 'wp_ajax_imagify_async_optimize_save_image_editor_file', '_do_admin_post_async_optimize_save_image_editor_file' );
 function _do_admin_post_async_optimize_save_image_editor_file() {

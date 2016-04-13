@@ -29,3 +29,19 @@ function imagify_round_half_five( $number ) {
         return floatval( $number );
     }
 }
+
+/**
+ * Get the Imagify attachment class name depending to a context
+ *
+ * @since 1.5
+ * @source Jonathan Buttigieg
+ *
+ * @param  string $context     The context to determine the class name
+ * @return string $class_name  The Imagify attachment class name
+ */
+function get_imagify_attachment_class_name( $context = 'wp' ) {
+	$class_name  = 'Imagify_';
+	$class_name .= 'wp' !== $context ? $context . '_Attachment' : 'Attachment';
+	
+	return $class_name;
+}
