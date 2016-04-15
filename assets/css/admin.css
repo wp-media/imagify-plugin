@@ -515,6 +515,19 @@ td .imagify-chart {
     margin-left: -4px;
 }
 
+.imagify-settings .button .dashicons,
+.imagify-welcome .button .dashicons,
+.imagify-notice .button .dashicons,
+.imagify-button.imagify-button .dashicons,
+.imagify-button-primary.imagify-button-primary .dashicons,
+.imagify-button-secondary.imagify-button-secondary .dashicons {
+	vertical-align: middle;
+}
+.button-text {
+	display: inline-block;
+	vertical-align: middle;
+}
+
 
 /* exception */
 #imagify-bulk-action {
