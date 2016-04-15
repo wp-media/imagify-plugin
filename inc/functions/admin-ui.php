@@ -269,100 +269,6 @@ function get_imagify_price_table_format( $value ) {
  * @author  Geoffrey
  */
 function imagify_payment_modal() {
-	// TODO: should get this array from Imagify Price API
-	$prices = array(
-		'micro' => array(
-			'id' 	=> 2,
-			'name'	=> 'Micro',
-			'data'	=> 524288000, // 500Mo
-			'dataf' => size_format(524288000),
-			'imgs'	=> 2500,
-			'prices'=> array(
-				'monthly'	=> 3.49,
-				'yearly'	=> 2.90,
-				'add'		=> 6.00
-			)
-		),
-		'lite' => array(
-			'id' 	=> 3,
-			'name'	=> 'Lite',
-			'data'	=> 1073741824, // 1Gb
-			'dataf' => size_format(1073741824),
-			'imgs'	=> 5000,
-			'prices'=> array(
-				'monthly'	=> 4.99,
-				'yearly'	=> 4.16,
-				'add'		=> 4.00
-			)
-		),
-		'standard' => array(
-			'id' 	=> 4,
-			'name'	=> 'Standard',
-			'data'	=> 5368709120, // 5Gb
-			'dataf' => size_format(5368709120),
-			'imgs'	=> 25000,
-			'prices'=> array(
-				'monthly'	=> 19.99,
-				'yearly'	=> 16.65,
-				'add'		=> 3.00
-			)
-		),
-		'plus' => array(
-			'id' 	=> 5,
-			'name'	=> 'Plus',
-			'data'	=> 16106127360, // 15Gb
-			'dataf' => size_format(16106127360),
-			'imgs'	=> 75000,
-			'prices'=> array(
-				'monthly'	=> 39.99,
-				'yearly'	=> 33.32,
-				'add'		=> 2.00
-			)
-		)
-	);
-
-	// TODO: make it dynamic
-	$recommended_offer = 'lite';
-
-	// TODO: should get this array from Imagify Price API
-	$default_onetimes = array(
-		'ot250mb' => array(
-			'id' 	=> 1,
-			'name'	=> '250Mb',
-			'data'	=> 262144000, // 250Mo
-			'dataf' => size_format(262144000),
-			'imgs'	=> 1250,
-			'price'=> 3.49
-		),
-		'ot500mb' => array(
-			'id' 	=> 2,
-			'name'	=> 'Lite',
-			'data'	=> 524288000, // 500Mo
-			'dataf' => size_format(524288000),
-			'imgs'	=> 2500,
-			'price'=> 5.99
-		),
-		'ot1gb' => array(
-			'id' 	=> 3,
-			'name'	=> 'Standard',
-			'data'	=> 1073741824, // 1Gb
-			'dataf' => size_format(1073741824),
-			'imgs'	=> 5000,
-			'price'=> 9.99
-		)
-	);
-
-	// TODO: make it dynamic
-	$suggested_one_time = array(
-		'id'	=> 999,
-		'name'	=> 'Customized',
-		'data'	=> 3000001337,
-		'dataf' => size_format(3000001337),
-		'imgs'	=> 54634,
-		'price'=> 28.98
-	);
-
-	$img_monthly_size = 370000000;
 ?>
 	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal" aria-hidden="false" role="dialog" aria-labelledby="imagify-pricing-step-1">
 		<div class="imagify-modal-content">
@@ -380,17 +286,17 @@ function imagify_payment_modal() {
 							<div class="imagify-col">
 								<p>
 									<span class="imagify-border-styled"><?php 
-										printf( esc_html__( 'You have %s images', 'imagify' ), '</span><span class="imagify-big-number">' . number_format_i18n( $suggested_one_time['imgs'] ) . '</span><span class="imagify-border-styled">' ); ?></span>
+										printf( esc_html__( 'You have %s images', 'imagify' ), '</span><span class="imagify-big-number">58000</span><span class="imagify-border-styled">' ); ?></span>
 								</p>
 							</div>
 							<div class="imagify-col">
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-images-alt2" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'You actually have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark">' . $suggested_one_time['dataf'] . '</strong>' ); ?>
+									<?php printf( esc_html__( 'You actually have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark">3 GB</strong>' ); ?>
 								</p>
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-cloud" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'You upload around %s of images per month.', 'imagify' ), '<strong class="imagify-dark">' . size_format( $img_monthly_size ) . '</strong>' ); ?>
+									<?php printf( esc_html__( 'You upload around %s of images per month.', 'imagify' ), '<strong class="imagify-dark">353 MB</strong>' ); ?>
 								</p>
 							</div>
 						</div>
@@ -399,7 +305,7 @@ function imagify_payment_modal() {
 					<div class="imagify-modal-section">
 						<p class="imagify-modal-title"><?php esc_html_e( 'We recommend you this plan', 'imagify' ); ?></p>
 
-						<div class="imagify-offer-line imagify-offer-monthly imagify-offer-selected imagify-month-selected" data-offer='<?php echo json_encode( array( $recommended_offer => $prices[ $recommended_offer ] ) ); ?>'>
+						<div class="imagify-offer-line imagify-offer-monthly imagify-offer-selected imagify-month-selected" data-offer='{"lite":{"id":3,"name":"Lite","data":1073741824,"dataf":"1 GB","imgs":5000,"prices":{"monthly":4.99,"yearly":4.16,"add":4}}}'>
 							<div class="imagify-offer-header">
 								<p class="imagify-offer-title imagify-switch-my">
 									<span aria-hidden="false" class="imagify-monthly"><?php esc_html_e( 'Subscribe a monthly plan', 'imagify' ); ?></span>
@@ -420,10 +326,10 @@ function imagify_payment_modal() {
 									<input type="checkbox" name="imagify-offer" id="imagify-offer-1gb" value="1Gb" checked="checked" class="imagify-checkbox medium">
 									<label for="imagify-offer-1gb">
 										<span class="imagify-the-offer">
-											<span class="imagify-offer-size"><?php echo $prices[ $recommended_offer ]['dataf']; ?></span>
+											<span class="imagify-offer-size">1 GB</span>
 											<span class="imagify-offer-by"><?php esc_html_e( '/month', 'imagify' ); ?></span>
 										</span>
-										<span class="imagify-approx"><?php printf( esc_html__( 'approx: %s images', 'imagify' ), '<span class="imagify-approx-nb">' . number_format_i18n( $prices[ $recommended_offer ]['imgs'] ) . '</span>' ); ?></span>
+										<span class="imagify-approx"><?php printf( esc_html__( 'approx: %s images', 'imagify' ), '<span class="imagify-approx-nb">5&nbsp;000</span>' ); ?></span>
 									</label>
 								</div>
 								<div class="imagify-col-price imagify-flex-table">
@@ -432,17 +338,19 @@ function imagify_payment_modal() {
 										<span class="imagify-number-block">
 											<span class="imagify-switch-my">
 												<span class="imagify-monthly" aria-hidden="false">
-													<?php echo get_imagify_price_table_format( $prices[ $recommended_offer ]['prices']['monthly']); ?>
+													<span class="imagify-price-big">3</span>
+													<span class="imagify-price-mini">.99</span>
 												</span>
 												<span class="imagify-yearly" aria-hidden="true">
-													<?php echo get_imagify_price_table_format( $prices[ $recommended_offer ]['prices']['yearly']); ?>
+													<span class="imagify-price-big">3</span>
+													<span class="imagify-price-mini">.16</span>
 												</span>
 											</span>
 											<span class="imagify-price-by"><?php esc_html_e( '/month', 'imagify' ); ?></span>
 										</span>
 									</span>
 
-									<p class="imagify-price-complement"><?php printf( __( '%s per<br> additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data">$' . $prices[ $recommended_offer ]['prices']['add'] . '</span>' ); ?></p>
+									<p class="imagify-price-complement"><?php printf( __( '%s per<br> additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); ?></p>
 
 								</div>
 								<div class="imagify-col-other-actions">
@@ -453,7 +361,7 @@ function imagify_payment_modal() {
 
 						</div><!-- .imagify-offer-line -->
 
-						<div class="imagify-offer-line imagify-offer-onetime" data-offer='<?php echo json_encode( array( 'recommended' => $suggested_one_time ) ); ?>'>
+						<div class="imagify-offer-line imagify-offer-onetime" data-offer='{"recommended":{"id":999,"name":"Customized","data":3000001337,"dataf":"3 GB","imgs":54634,"price":28.98}}'>
 							<div class="imagify-offer-header">
 								<p class="imagify-offer-title">
 									<?php esc_html_e( 'Optimize the images you already have, buy a one-time plan', 'imagify' ); ?>
@@ -466,16 +374,17 @@ function imagify_payment_modal() {
 									<input type="checkbox" name="imagify-offer" id="imagify-offer-custom" value="1Gb" class="imagify-checkbox medium">
 									<label for="imagify-offer-custom">
 										<span class="imagify-the-offer">
-											<span class="imagify-offer-size"><?php echo $suggested_one_time['dataf']; ?></span>
+											<span class="imagify-offer-size">3 GB</span>
 										</span>
-										<span class="imagify-approx"><?php printf( esc_html__( 'approx: %s images', 'imagify' ), '<span class="imagify-approx-nb">' . number_format_i18n( $suggested_one_time['imgs'] ) . '</span>' ); ?></span>
+										<span class="imagify-approx"><?php printf( esc_html__( 'approx: %s images', 'imagify' ), '<span class="imagify-approx-nb">54000</span>' ); ?></span>
 									</label>
 								</div>
 								<div class="imagify-col-price imagify-flex-table">
 									<span class="imagify-price-block">
 										<span class="imagify-dollars">$</span>
 										<span class="imagify-number-block">
-											<?php echo get_imagify_price_table_format( $suggested_one_time['price'] ); ?>
+											<span class="imagify-price-big">60</span>
+											<span class="imagify-price-mini">.99</span>
 										</span>
 									</span>
 								</div>
@@ -672,12 +581,6 @@ function imagify_payment_modal() {
 										<span class="imagify-dollars">$</span>
 											<span class="imagify-number-block">
 												<span class="imagify-switch-my">
-													<!--span class="imagify-monthly" aria-hidden="false">
-														<?php echo get_imagify_price_table_format( $price['prices']['monthly'] );  ?>
-													</span>
-													<span class="imagify-yearly" aria-hidden="true">
-														<?php echo $yearly = get_imagify_price_table_format( $price['prices']['yearly'] ); ?>
-													</span-->
 												</span>
 											</span>
 									</div>
@@ -698,7 +601,6 @@ function imagify_payment_modal() {
 									<div class="imagify-cl-price imagify-price-block">
 										<span class="imagify-dollars">$</span>
 										<span class="imagify-number-block">
-											<!--<?php echo get_imagify_price_table_format( $price['prices']['monthly'] );  ?>-->
 										</span>
 									</div>
 								</div><!-- .imagify-cart-item -->
