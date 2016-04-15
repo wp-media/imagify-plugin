@@ -221,7 +221,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		*/
 		do_action( 'before_imagify_optimize_attachment', $id );
 		
-		//set_transient( 'imagify-async-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
+		set_transient( 'imagify-async-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
 		
 		// Get the resize values for the original size
 		$resize           = array();
