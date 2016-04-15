@@ -5,16 +5,19 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * Auto-optimize when a new attachment is generated
  *
  * @since 1.0
+ * @since 1.5 Async job
  */
 add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', PHP_INT_MAX, 2 );
 function _imagify_optimize_attachment( $metadata, $attachment_id ) {
 	$api_key = get_imagify_option( 'api_key', false );
 
 	if ( ! empty( $api_key ) && get_imagify_option( 'auto_optimize', false ) ) {		
-		$attachment = new Imagify_Attachment( $attachment_id );		
-		
-		// Optimize it!!!!!
-		$attachment->optimize( null, $metadata );
+
+		$action      = 'imagify_async_optimize_upload_new_media';
+		$_ajax_nonce = wp_create_nonce( 'new_media-' . $attachment_id );
+
+		imagify_do_async_job( compact( 'action', '_ajax_nonce', 'metadata', 'attachment_id' ) );
+
 	}
 
 	return $metadata;

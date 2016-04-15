@@ -335,7 +335,9 @@ class Imagify {
 		if ( 200 != $http_code && isset( $response->code, $response->detail ) ) {
 			return new WP_Error( $http_code, $response->detail );
 		} elseif ( 200 != $http_code ) {
-			return new WP_Error( $http_code, 'Unknown error occurred' );
+            $http_code = (int) $http_code;
+            $error     = '' != $error ? ' - ' . htmlentities( $error ) : '';
+			return new WP_Error( $http_code, "Unknown error occurred ({$http_code}{$error}) " );
 		} else {
 			return $response;
         }
