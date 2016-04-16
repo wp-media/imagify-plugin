@@ -163,7 +163,7 @@ jQuery(function($){
 		
 	$('#wp-admin-bar-imagify').hover( function() {
 		if ( true === busy ) {
-			xhr.abort();
+			return;
 		}
 		
 		busy = true;
