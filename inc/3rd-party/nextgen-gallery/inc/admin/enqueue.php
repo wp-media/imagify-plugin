@@ -30,7 +30,7 @@ function _imagify_ngg_admin_print_styles() {
 	/**
 	 * Scripts loaded in /wp-admin/admin.php?page=imagify-ngg-bulk-optimization
 	 */
-	if ( isset( $current_screen ) && 'gallery_page_imagify-ngg-bulk-optimization' === $current_screen->base ) {
+	if ( isset( $current_screen ) && false !== strpos( $current_screen->base, '_page_imagify-ngg-bulk-optimization' ) ) {
 		wp_enqueue_script( 'heartbeat' );
 		
 		$user	   = get_imagify_user();
