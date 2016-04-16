@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 function imagify_count_attachments() {
 	global $wpdb;
-
+	
 	/**
 	 * Filter the number of attachments
 	 * 3rd party will be able to override the result
@@ -19,8 +19,14 @@ function imagify_count_attachments() {
 	 * @since 1.5
 	*/
 	$count = apply_filters( 'imagify_count_attachments', false );
-
-	if ( false === $count ) {
+	
+	if ( false !== $count ) {
+		return $count;
+	}
+	
+	static $count;
+	
+	if ( ! $count ) {
 		$count = $wpdb->get_var(
 			"SELECT COUNT($wpdb->posts.ID)
 			 FROM $wpdb->posts
@@ -55,8 +61,14 @@ function imagify_count_error_attachments() {
 	 * @since 1.5
 	*/
 	$count = apply_filters( 'imagify_count_error_attachments', false );
-
-	if ( false === $count ) {
+	
+	if ( false !== $count ) {
+		return $count;
+	}
+	
+	static $count;
+	
+	if ( ! $count ) {
 		$count = $wpdb->get_var(
 			"SELECT COUNT($wpdb->posts.ID)
 			 FROM $wpdb->posts
@@ -91,8 +103,14 @@ function imagify_count_optimized_attachments() {
 	 * @since 1.5
 	*/
 	$count = apply_filters( 'imagify_count_optimized_attachments', false );
-
-	if ( false === $count ) {
+	
+	if ( false !== $count ) {
+		return $count;
+	}
+	
+	static $count;
+	
+	if ( ! $count ) {
 		$count = $wpdb->get_var(
 			"SELECT COUNT($wpdb->posts.ID)
 			 FROM $wpdb->posts
@@ -124,8 +142,14 @@ function imagify_count_unoptimized_attachments() {
 	 * @since 1.5
 	*/
 	$count = apply_filters( 'imagify_count_unoptimized_attachments', false );
-
-	if ( false === $count ) {
+	
+	if ( false !== $count ) {
+		return $count;
+	}
+	
+	static $count;
+	
+	if ( ! $count ) {
 		$count = imagify_count_attachments() - imagify_count_optimized_attachments() - imagify_count_error_attachments();
 	}
 
