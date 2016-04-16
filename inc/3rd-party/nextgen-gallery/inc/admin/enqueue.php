@@ -52,4 +52,13 @@ function _imagify_ngg_admin_print_styles() {
  * @since 1.5
  * @author Jonathan Buttigieg
  */
-add_action( 'admin_footer-galerie_page_nggallery-manage-gallery', '_imagify_admin_print_intercom' );
+add_action( 'admin_footer', '_imagify_ngg_admin_print_intercom' );
+function _imagify_ngg_admin_print_intercom() {
+	global $pagenow;
+	
+	$current_screen = get_current_screen();
+	
+	if ( isset( $current_screen ) && false !== strpos( $current_screen->base, '_page_imagify-ngg-bulk-optimization' ) ) {
+		_imagify_admin_print_intercom();	
+	}
+}
