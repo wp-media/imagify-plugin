@@ -54,8 +54,6 @@ function _imagify_ngg_admin_print_styles() {
  */
 add_action( 'admin_footer', '_imagify_ngg_admin_print_intercom' );
 function _imagify_ngg_admin_print_intercom() {
-	global $pagenow;
-	
 	$current_screen = get_current_screen();
 	
 	if ( isset( $current_screen ) && false !== strpos( $current_screen->base, '_page_imagify-ngg-bulk-optimization' ) ) {
