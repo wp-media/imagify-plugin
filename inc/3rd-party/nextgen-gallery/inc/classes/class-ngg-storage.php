@@ -1,6 +1,10 @@
 <?php 
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
+if ( ! class_exists( 'Mixin' )  ) {
+	return;
+}
+
 class Imagify_NGG_Storage extends Mixin {
      /**
      * Generates a specific size for an image
