@@ -96,7 +96,7 @@ function _imagify_display_bulk_page() {
 					</div>
 					<div id="imagify-overview-chart-legend"></div>
 
-					<p class="imagify-global-optim-phrase imagify-clear"><?php printf( esc_html__( 'You optimized %s of images on your web site', 'imagify' ), '<span class="imagify-total-percent">' . imagify_percent_optimized_attachments() . '%</span>' ); ?></p>
+					<p class="imagify-global-optim-phrase imagify-clear"><?php printf( esc_html__( 'You optimized %s images of your website', 'imagify' ), '<span class="imagify-total-percent">' . imagify_percent_optimized_attachments() . '%</span>' ); ?></p>
 				</div>
 
 				<div class="col-1-3 col-statistics">
@@ -217,7 +217,7 @@ function _imagify_display_bulk_page() {
 							</p>
 						</div>
 						<div class="imagify-cell imagify-pl0">
-							<p class="imagify-info-block"><?php esc_html_e( 'Images greater than 5 MB will be optimized when using a paying monthly plan.', 'imagify' ); ?></p>
+							<p class="imagify-info-block"><?php printf( __( 'All images greater than %s will be optimized when using a paying monthly plan.', 'imagify' ), size_format( 5000000 ) ); ?></p>
 						</div>
 					</div>
 				</div>
