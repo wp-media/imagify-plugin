@@ -11,13 +11,12 @@ add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', P
 function _imagify_optimize_attachment( $metadata, $attachment_id ) {
 	$api_key = get_imagify_option( 'api_key', false );
 
-	if ( ! empty( $api_key ) && get_imagify_option( 'auto_optimize', false ) ) {		
-
+	if ( ! empty( $api_key ) && get_imagify_option( 'auto_optimize', false ) ) {
+		$context	 = 'wp';
 		$action      = 'imagify_async_optimize_upload_new_media';
 		$_ajax_nonce = wp_create_nonce( 'new_media-' . $attachment_id );
 
-		imagify_do_async_job( compact( 'action', '_ajax_nonce', 'metadata', 'attachment_id' ) );
-
+		imagify_do_async_job( compact( 'action', '_ajax_nonce', 'metadata', 'attachment_id', 'context' ) );
 	}
 
 	return $metadata;

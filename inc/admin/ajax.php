@@ -569,15 +569,14 @@ function _do_wp_ajax_imagify_get_admin_bar_profile() {
  **/
 add_action( 'wp_ajax_imagify_async_optimize_upload_new_media', '_do_admin_post_async_optimize_upload_new_media' );
 function _do_admin_post_async_optimize_upload_new_media() {
-	if ( isset( $_POST['_ajax_nonce'], $_POST['attachment_id'], $_POST['metadata'] )
+	if ( isset( $_POST['_ajax_nonce'], $_POST['attachment_id'], $_POST['metadata'], $_POST['context'] )
 		&& check_ajax_referer( 'new_media-' . $_POST['attachment_id'] )
-	) {
-		
-		$optimization_level = get_imagify_option( 'optimization_level', 1 );
-		$attachment         = new Imagify_Attachment( $_POST['attachment_id'] );
+	) {		
+		$class_name = get_imagify_attachment_class_name( $_POST['context'] );
+		$attachment = new $class_name( $_POST['attachment_id'] );
 		
 		// Optimize it!!!!!
-		$attachment->optimize( $optimization_level, $_POST['metadata'] );
+		$attachment->optimize( null, $_POST['metadata'] );
 
 		die( 1 );
 	}
