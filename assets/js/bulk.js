@@ -74,7 +74,7 @@ jQuery(function($){
         
         // The overview chart percent
 		$('#imagify-overview-chart-percent').html(data.optimized_attachments_percent + '<span>%</span>');
-		$('.imagify-total-percent').html(data.optimized_attachments_percent);
+		$('.imagify-total-percent').html(data.optimized_attachments_percent + '%' );
 		
 		// The comsuption bar
 		$('.imagify-unconsumed-percent').html(data.unconsumed_quota + '%');
@@ -191,7 +191,7 @@ jQuery(function($){
 
 				// before the attachment optimization
 				Optimizer.before(function(data) {
-					table.append('<tr id="attachment-'+data.id+'"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="'+data.thumbnail+'"/>"</span><span class="imagifilename">'+data.filename+'</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>Compressing<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>');
+					table.find('.imagify-row-progress').after('<tr id="attachment-'+data.id+'"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="'+data.thumbnail+'"/>"</span><span class="imagifilename">'+data.filename+'</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>Compressing<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>');
 				})
 				// after the attachment optimization
 				.each(function (data) {
