@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
 "POT-Creation-Date: 2016-04-18 15:16+0200\n"
-"PO-Revision-Date: 2016-04-18 15:17+0200\n"
+"PO-Revision-Date: 2016-04-19 17:31+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -790,7 +790,7 @@ msgstr "Gain total&nbsp;:"
 
 #: inc/functions/admin-ui.php:80
 msgid "Restoring..."
-msgstr "En restauration…"
+msgstr "En restoration…"
 
 #: inc/functions/admin-ui.php:121
 msgid "Try again"
