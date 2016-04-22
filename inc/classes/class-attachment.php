@@ -1,17 +1,7 @@
 <?php
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
-class Imagify_Attachment {
-	/**
-	 * The attachment ID
-	 *
-	 * @since 1.0
-	 *
-	 * @var    int
-	 * @access public
-	 */
-	public $id;
-
+class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 /**
      * The constructor
      *
@@ -28,7 +18,7 @@ class Imagify_Attachment {
 			$this->id = (int) $id;
 		}
 	}
-
+	
 	/**
 	 * Get the attachment backup filepath.
 	 *
@@ -49,21 +39,6 @@ class Imagify_Attachment {
 	}
 	
 	/**
-	 * Get the attachment backup URL.
-	 *
-	 * @since 1.4
-	 *
-	 * @access public
-	 * @return string|false
-	 */
-	public function get_backup_url() {
-		$backup_path = $this->get_backup_path();
-		$backup_url  = str_replace( ABSPATH, site_url( '/' ), $backup_path );
-		
-		return $backup_url;
-	}
-
-	/**
 	 * Get the attachment optimization data.
 	 *
 	 * @since 1.0
@@ -74,38 +49,7 @@ class Imagify_Attachment {
 	public function get_data() {
 		return get_post_meta( $this->id, '_imagify_data', true );
 	}
-	
-	/**
-	 * Get the attachment extension.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @return string
-	 */
-	public function get_extension() {
-		$fullsize_path = $this->get_original_path();
-		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
-	}
-	
-	/**
-	 * Get the attachment error if there is one.
-	 *
-	 * @since 1.1.5
-	 *
-	 * @access public
-	 * @return string The message error
-	 */
-	public function get_optimized_error() {
-		$error = $this->get_size_data( 'full', 'error' );
 		
-		if ( is_string( $error ) ) {
-			return $error;
-		}
-		
-		return false;
-	}
-	
 	/**
 	 * Get the attachment optimization level.
 	 *
@@ -118,59 +62,6 @@ class Imagify_Attachment {
 		return get_post_meta( $this->id, '_imagify_optimization_level', true );
 	}
 	
-	/**
-	 * Get the attachment optimization level label.
-	 *
-	 * @since 1.2
-	 *
-	 * @access public
-	 * @return string
-	 */
-	public function get_optimization_level_label() {
-		$label = '';
-		$level = $this->get_optimization_level();
-		
-		switch( $level ) {
-			case 2:
-				$label = __( 'Ultra', 'imagify' );
-			break;
-			case 1:
-				$label = __( 'Aggressive', 'imagify' );
-			break;
-			case 0:
-				$label = __( 'Normal', 'imagify' );
-			break;
-		}
-
-		return $label;
-	}
-
-	/**
-	 * Count number of optimized sizes.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @return int
-	 */
-	public function get_optimized_sizes_count() {
-		$data  = $this->get_data();
-		$sizes = (array) $data['sizes'];
-		$count = 0;
-
-		if ( isset( $sizes['full'] ) ) {
-			unset( $sizes['full'] );
-		}
-
-		foreach ( $sizes as $size ) {
-			if ( $size['success'] ) {
-				$count++;
-			}
-		}
-
-		return (int) $count;
-	}
-
 	/**
 	 * Get the attachment optimization status (success or error).
 	 *
@@ -196,22 +87,6 @@ class Imagify_Attachment {
 	}
 
 	/**
-	 * Get the original attachment size.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @return string
-	 */
-	public function get_original_size() {
-		$original_size = $this->get_size_data( 'full', 'original_size' );
-		$original_size = ( empty( $original_size ) ) ? @filesize( $this->get_original_path() ) : $original_size;
-		$original_size = size_format( $original_size, 2 );
-
-		return $original_size;
-	}
-
-	/**
 	 * Get the original attachment URL.
 	 *
 	 * @since 1.0
@@ -223,123 +98,6 @@ class Imagify_Attachment {
 		return wp_get_attachment_url( $this->id );
 	}
 
-	/*
-	 * Get the statistics of a specific size.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @param  string  $size  The thumbnail slug.
-	 * @param  string  $key   The specific data slug.
-	 * @return array|string
-	 */
-	public function get_size_data( $size = 'full', $key = '' ) {
-		$data  = $this->get_data();
-		$stats = array();
-
-		if ( isset( $data['sizes'][ $size ] ) ) {
-			$stats = $data['sizes'][ $size ];
-		}
-
-		if ( isset( $stats[ $key ] ) ) {
-			$stats = $stats[ $key ];
-		}
-
-		return $stats;
-	}
-	
-	/**
-	 * Get the global statistics data or a specific one.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @param  string $key  The specific data slug.
-	 * @return array|string
-	 */
-	public function get_stats_data( $key = '' ) {
-		$data  = $this->get_data();
-		$stats = '';
-
-		if ( isset( $data['stats'] ) ) {
-			$stats = $data['stats'];
-		}
-
-		if ( isset( $stats[ $key ] ) ) {
-			$stats = $stats[ $key ];
-		}
-
-		return $stats;
-	}
-
-	/**
-	 * Check if the attachment is already optimized (before Imagify).
-	 *
-	 * @since 1.1.6
-	 *
-	 * @access public
-	 * @return bool   True if the attachment is optimized.
-	 */
-	public function is_already_optimized() {
-		return ( 'already_optimized' === $this->get_status() ) > 0;
-	}
-	
-	/**
-	 * Check if the attachment is optimized.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @return bool   True if the attachment is optimized.
-	 */
-	public function is_optimized() {
-		return ( 'success' === $this->get_status() ) > 0;
-	}
-
-	/**
-	 * Check if the attachment exceeding the limit size (> 5mo).
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @return bool   True if the attachment is skipped.
-	 */
-	public function is_exceeded() {
-		$filepath = $this->get_original_path();
-		$size     = 0;
-
-		if ( file_exists( $filepath ) ) {
-			$size = filesize( $filepath );
-		}
-
-		return ( $size > IMAGIFY_MAX_BYTES ) > 0;
-	}
-
-	/**
-	 * Check if the attachment has a backup of the original size.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @return bool   True if the attachment has a backup.
-	 */
-	public function has_backup() {
-		return (bool) $this->get_backup_path();
-	}
-
-	/**
-	 * Check if the attachment has an error.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @return bool   True if the attachment has an error.
-	 */
-	public function has_error() {
-		$has_error = $this->get_size_data( 'full', 'error' );
-		return ( is_string( $has_error ) ) > 0;
-	}
-	
 	/**
 	 * Update the metadata size of the attachment
 	 *
@@ -361,22 +119,6 @@ class Imagify_Attachment {
 			$metadata['height'] = $size[1];
 			
 			wp_update_attachment_metadata( $this->id, $metadata );
-		}
-	}
-
-	/**
-	 * Delete the backup file.
-	 *
-	 * @since 1.0
-	 *
-	 * @access public
-	 * @return void
-	 */
-	public function delete_backup() {
-		$backup_path = $this->get_backup_path();
-
-		if ( ! empty( $backup_path ) ) {
-			@unlink( $backup_path );
 		}
 	}
 
@@ -467,7 +209,6 @@ class Imagify_Attachment {
 
 		// Check if the full size is already optimized
 		if ( $this->is_optimized() && ( $this->get_optimization_level() == $optimization_level ) ) {
-			delete_transient( 'imagify-async-in-progress-' . $id );
 			return;
 		}
 
@@ -480,6 +221,8 @@ class Imagify_Attachment {
 		*/
 		do_action( 'before_imagify_optimize_attachment', $id );
 		
+		set_transient( 'imagify-async-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
+		
 		// Get the resize values for the original size
 		$resize           = array();
 		$do_resize        = get_imagify_option( 'resize_larger', false );
@@ -491,13 +234,18 @@ class Imagify_Attachment {
 		}
 		
 		// Optimize the original size 
-		$response = do_imagify( $attachment_path, get_imagify_option( 'backup', false ), $optimization_level, $resize, get_imagify_option( 'exif', false ) );
+		$response = do_imagify( $attachment_path, array(
+			'optimization_level' => $optimization_level,
+			'resize'             => $resize,
+			'context'            => 'wp',
+			'original_size'		 => $this->get_original_size( false )
+		) );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
 		
 		// Save the optimization level
 		update_post_meta( $id, '_imagify_optimization_level', $optimization_level );
 		
-		if( (bool) ! $data ) {
+		if ( (bool) ! $data ) {
 			delete_transient( 'imagify-async-in-progress-' . $id );
 			return;
 		}
@@ -522,9 +270,13 @@ class Imagify_Attachment {
 
 				$thumbnail_path = trailingslashit( dirname( $attachment_path ) ) . $size_data['file'];
 				$thumbnail_url  = trailingslashit( dirname( $attachment_url ) ) . $size_data['file'];
-
+				
 				// Optimize the thumbnail size
-				$response = do_imagify( $thumbnail_path, false, $optimization_level );
+				$response = do_imagify( $thumbnail_path, array(
+					'backup'             => false,
+					'optimization_level' => $optimization_level,
+					'context'            => 'wp'
+				) );
 				$data     = $this->fill_data( $data, $response, $id, $thumbnail_url, $size_key );
 
 				/**

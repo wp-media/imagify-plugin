@@ -3,7 +3,8 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 /**
  * Fix the capability for our capacity filter hook
- *
+ * 
+ * @author  Jonathan
  * @since 1.0
  */
 add_filter( 'option_page_capability_imagify', '_imagify_correct_capability_for_options_page' );
@@ -14,18 +15,19 @@ function _imagify_correct_capability_for_options_page( $capability ) {
 
 /**
  * Tell to WordPress to be confident with our setting, we are clean!
- *
+ * 
+ * @author Jonathan
  * @since 1.0
  */
 add_action( 'admin_init', '_imagify_register_setting' );
-function _imagify_register_setting()
-{
+function _imagify_register_setting() {
 	register_setting( 'imagify', 'imagify_settings' );
 }
 
 /**
  * Filter specific options before its value is (maybe) serialized and updated.
  *
+ * @author Jonathan
  * @since 1.0
  */
 add_filter( 'pre_update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_pre_update_option', 10, 2 );
@@ -63,12 +65,14 @@ function _imagify_pre_update_option( $value, $old_value ) {
 /**
  * Used to launch some actions after saving the options
  *
+ * @author Jonathan
  * @since 1.0
+ * @since 1.5 Used to redirect user to Bulk Optimizer (if requested)
  */
 add_action( 'update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_options', 10, 2 );
 add_action( 'update_site_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_options', 10, 2 );
-function _imagify_after_save_options( $oldvalue, $value )
-{
+function _imagify_after_save_options( $oldvalue, $value ) {
+
 	if ( ! ( (bool) $oldvalue && (bool) $value ) ) {
 		return;
 	}
@@ -82,6 +86,15 @@ function _imagify_after_save_options( $oldvalue, $value )
 		} else {
 			imagify_dismiss_notice( 'wrong-api-key' );
 		}
+	}
+
+	/**
+	 * @author Geoffrey
+	 * @since  1.5
+	 */
+	if ( isset( $_POST['submit-goto-bulk'] ) ) {
+		wp_safe_redirect( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) );
+		exit; 
 	}
 }
 

@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * This warning is displayed when the API key is empty
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'all_admin_notices', '_imagify_warning_empty_api_key_notice' );
 function _imagify_warning_empty_api_key_notice() {
@@ -64,6 +65,7 @@ function _imagify_warning_empty_api_key_notice() {
  * This warning is displayed when the API key is empty
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'all_admin_notices', '_imagify_warning_wrong_api_key_notice' );
 function _imagify_warning_wrong_api_key_notice() {
@@ -97,6 +99,7 @@ function _imagify_warning_wrong_api_key_notice() {
  * This warning is displayed when some plugins may conflict with Imagify
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'all_admin_notices', '_imagify_warning_plugins_to_deactivate_notice' );
 function _imagify_warning_plugins_to_deactivate_notice() {
@@ -106,6 +109,7 @@ function _imagify_warning_plugins_to_deactivate_notice() {
 	// Deactivate all plugins who can cause conflicts with Imagify
 	$plugins = array(
 		'wp-smush'     => 'wp-smushit/wp-smush.php', // WP Smush
+		'wp-smush-pro' => 'wp-smush-pro/wp-smush.php', // WP Smush Pro
 		'kraken'       => 'kraken-image-optimizer/kraken.php', // Kraken.io
 		'tinypng'      => 'tiny-compress-images/tiny-compress-images.php', // TinyPNG
 		'shortpixel'   => 'shortpixel-image-optimiser/wp-shortpixel.php', // Shortpixel
@@ -154,6 +158,7 @@ function _imagify_warning_plugins_to_deactivate_notice() {
  * This notice is displayed when external HTTP requests are blocked via the WP_HTTP_BLOCK_EXTERNAL constant
  *
  * @since 1.0
+ * @author Jonathan Buttigieg
  */
 add_action( 'all_admin_notices', '_imagify_http_block_external_notice' );
 function _imagify_http_block_external_notice() {
@@ -187,6 +192,7 @@ function _imagify_http_block_external_notice() {
  * This warning is displayed when the grid view is active on the library
  *
  * @since 1.0.2
+ * @author Jonathan Buttigieg
  */
 add_action( 'all_admin_notices', '_imagify_warning_grid_view_notice' );
 function _imagify_warning_grid_view_notice() {
@@ -223,6 +229,7 @@ function _imagify_warning_grid_view_notice() {
  * This warning is displayed to warn the user that its quota is consumed for the current month
  *
  * @since 1.1.1
+ * @author Jonathan Buttigieg
  */
 add_action( 'all_admin_notices', '_imagify_warning_over_quota_notice' );
 function _imagify_warning_over_quota_notice() {
@@ -262,6 +269,7 @@ function _imagify_warning_over_quota_notice() {
  * Add a message about WP Rocket on the "Bulk Optimization" screen.
  *
  * @since 2.7
+ * @author Jonathan Buttigieg
  */
 add_action( 'admin_notices', '_imagify_rocket_notice' );
 function _imagify_rocket_notice() {
@@ -326,6 +334,7 @@ function _imagify_rocket_notice() {
  * This notice is displayed to rate the plugin after 100 optimization & 7 days after the first installation
  *
  * @since 1.4.2
+ * @author Jonathan Buttigieg
  */
 add_action( 'all_admin_notices', '_imagify_rating_notice' );
 function _imagify_rating_notice() {

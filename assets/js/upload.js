@@ -42,7 +42,7 @@ jQuery(function($){
 		e.preventDefault();
 
 		var $obj 	= $(this);
-		var	$parent = $obj.parents('.column-imagify_optimized_file, .compat-field-imagify .field');
+		var $parent = ( $obj.parents('.column-imagify_optimized_file, .compat-field-imagify .field').length ) ? $obj.parents('.column-imagify_optimized_file, .compat-field-imagify .field') : $obj.closest('.column');
 		var href 	= $obj.attr('href');
 
 		$parent.html('<div class="button"><span class="imagify-spinner"></span>' + $obj.data('waiting-label') + '</div>');

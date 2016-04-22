@@ -68,6 +68,28 @@ function upload_imagify_image( $data ) {
 }
 
 /**
+ * Get Imagify Plans Prices
+ *
+ * @return object
+ * @since 1.5
+ * @author Geoffrey Crofte
+ **/
+function get_imagify_plans_prices() {
+	return Imagify()->getPlansPrices();
+}
+
+/**
+ * Get Imagify Plans Prices
+ *
+ * @return object
+ * @since 1.5
+ * @author Geoffrey Crofte
+ **/
+function get_imagify_packs_prices() {
+	return Imagify()->getPacksPrices();
+}
+
+/**
  * Imagify.io API for WordPress
  */
 class Imagify {
@@ -247,6 +269,24 @@ class Imagify {
 		return $this->httpCall( 'fetch/', $args );
     }
 
+    /**
+     * Get prices for plans
+     *
+     * @return object
+     */
+    public function getPlansPrices() {
+        return $this->httpCall( 'pricing/plan/' );
+    }
+
+    /**
+     * Get prices for packs (one time)
+     *
+     * @return object
+     */
+    public function getPacksPrices() {
+        return $this->httpCall( 'pricing/pack/' );
+    }
+
 	/**
      * Make an HTTP call using curl.
      *
@@ -295,7 +335,9 @@ class Imagify {
 		if ( 200 != $http_code && isset( $response->code, $response->detail ) ) {
 			return new WP_Error( $http_code, $response->detail );
 		} elseif ( 200 != $http_code ) {
-			return new WP_Error( $http_code, 'Unknown error occurred' );
+            $http_code = (int) $http_code;
+            $error     = '' != $error ? ' - ' . htmlentities( $error ) : '';
+			return new WP_Error( $http_code, "Unknown error occurred ({$http_code}{$error}) " );
 		} else {
 			return $response;
         }
