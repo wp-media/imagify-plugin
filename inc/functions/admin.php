@@ -42,7 +42,7 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 		break;
 
 		case 'dismiss-notice':
-			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $id ), 'imagify-dismiss-notice' );
+			$url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), 'imagify-dismiss-notice' );
 		break;
 
 		case 'bulk-optimization':
