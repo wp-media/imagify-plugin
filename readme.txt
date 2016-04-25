@@ -2,8 +2,8 @@
 Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.4.2
-Stable tag: 1.4.7
+Tested up to: 4.4
+Stable tag: 1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,9 @@ Dramatically reduce image file sizes without losing quality, make your website l
 Speed up your website with lighter images without losing quality.
 
 Imagify is the most advanced image compression tool, you can now use this power directly in WordPress. 
-After enabling it all your images including thumbnails and retina images from WP Retina x2  will be automatically optimized on the fly when you will add in into WordPress. 
+After enabling it all your images including thumbnails and retina images from WP Retina x2 will be automatically optimized on the fly when you will add in into WordPress.
+
+WooCommerce and NextGen Gallery compatible.
 ​
 = What is Image Compression? =
 
@@ -133,6 +135,14 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+
+= 1.5 =
+
+* NEW Features:
+ * NextGen Gallery compatibility - Optimize all your images uploaded with NextGen Gallery
+ * Asynchronous Optimization - No more latency when you upload new images, Imagify will optimize them in background!
+* Interface:
+ * Bulk Optimization: Improvements for a better experience
 
 = 1.4.7 =
 * Bug Fix
