@@ -1,10 +1,6 @@
 <?php 
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
-if ( ! class_exists( 'Mixin' )  ) {
-	return;
-}
-
 class Imagify_NGG_Storage extends Mixin {     
      /**
      * Delete a gallery AND all the pictures associated to this gallery!

@@ -138,6 +138,10 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		wp_send_json_error();
 	}
 	
+	if ( ! imagify_valid_key() ) {
+		wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
+	}
+	
 	$user = new Imagify_User();
 	
 	if ( $user->is_over_quota() ) {

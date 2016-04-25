@@ -142,32 +142,34 @@ jQuery(function($){
 			if( !response.success ) {
 				$obj.removeAttr('disabled');
 				$obj.find('.dashicons').removeClass('rotate');
-
+				
+				swal_title = '';
+				swal_text  = '';
+				
 				// remove confirm dialog before quit the page
 				$(window).off('beforeunload', confirmMessage);
+								
+				if ( response.data.message == 'invalid-api-key' ) {
+					swal_title = imagifyBulk.labels.invalidAPIKeyTitle;
+				}
 				
-				imagify.log(response);
-
 				if ( response.data.message == 'over-quota' ) {
-					// Display an alert to warn that the monthly quota is consumed
-					swal({
-						title:imagifyBulk.labels.overQuotaTitle,
-						text: imagifyBulk.labels.overQuotaText,
-						type: "error",
-						customClass: "imagify-sweet-alert",
-						html: true
-					});
+					swal_title = imagifyBulk.labels.overQuotaTitle;
+					text  = imagifyBulk.labels.overQuotaText;
 				}
 				
 				if ( response.data.message == 'no-images' ) {
-					// Display an alert to warn that all images has been optimized
-					swal({
-						title:imagifyBulk.labels.noAttachmentToOptimizeTitle,
-						text: imagifyBulk.labels.noAttachmentToOptimizeText,
-						type: "info",
-						customClass: "imagify-sweet-alert"
-					});
+					swal_title = imagifyBulk.labels.noAttachmentToOptimizeTitle;
+					swal_text  = imagifyBulk.labels.noAttachmentToOptimizeText;
 				}
+				
+				// Display an alert to warn that all images has been optimized
+				swal({
+					title		: swal_title,
+					text 		: swal_text,
+					type	    : "info",
+					customClass : "imagify-sweet-alert"
+				});
 
 			} else {				
 				swal.close();

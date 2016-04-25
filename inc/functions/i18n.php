@@ -16,20 +16,22 @@ function get_imagify_localize_script_translations( $context ) {
 	switch( $context ) {
 		case 'admin':
 			$translations = array(
-				'signupTitle'             	    => __( 'Let\'s get you started!', 'imagify' ),
-				'signupText'              	    => __( 'Enter your email to get an API key:', 'imagify' ),
-				'signupConfirmButtonText' 	    => __( 'Sign Up', 'imagify' ),
-				'signupErrorEmptyEmail'   	    => __( 'You need to specify an email!', 'imagify' ),
-				'signupSuccessTitle'   	  	    => __( 'Congratulations!', 'imagify' ),
-				'signupSuccessText'   	  	    => __( 'Your account has been succesfully created. Please check your mailbox, you are going to receive an email with API key.', 'imagify' ),
-				'saveApiKeyTitle'   	  	    => __( 'Connect to Imagify!', 'imagify' ),
-				'saveApiKeyText'   	  	    	=> __( 'Paste your API key below:', 'imagify' ),
-				'saveApiKeyConfirmButtonText'   => __( 'Connect me', 'imagify' ),
-				'waitApiKeyCheckText'     	    => __( 'Check in progress...', 'imagify' ),
-				'ApiKeyCheckSuccessTitle' 	    => __( 'Congratulations!', 'imagify' ),
-				'ApiKeyCheckSuccessText'  	    => __( 'Your API key is valid. You can now configure the Imagify settings to optimize your images.', 'imagify' ),
-				'ValidApiKeyText'  		  	    => __( 'Your API key is valid.', 'imagify' ),
-				'swalCancel'					=> __( 'Cancel' )
+				'labels' => array(
+					'signupTitle'             	    => __( 'Let\'s get you started!', 'imagify' ),
+					'signupText'              	    => __( 'Enter your email to get an API key:', 'imagify' ),
+					'signupConfirmButtonText' 	    => __( 'Sign Up', 'imagify' ),
+					'signupErrorEmptyEmail'   	    => __( 'You need to specify an email!', 'imagify' ),
+					'signupSuccessTitle'   	  	    => __( 'Congratulations!', 'imagify' ),
+					'signupSuccessText'   	  	    => __( 'Your account has been succesfully created. Please check your mailbox, you are going to receive an email with API key.', 'imagify' ),
+					'saveApiKeyTitle'   	  	    => __( 'Connect to Imagify!', 'imagify' ),
+					'saveApiKeyText'   	  	    	=> __( 'Paste your API key below:', 'imagify' ),
+					'saveApiKeyConfirmButtonText'   => __( 'Connect me', 'imagify' ),
+					'waitApiKeyCheckText'     	    => __( 'Check in progress...', 'imagify' ),
+					'ApiKeyCheckSuccessTitle' 	    => __( 'Congratulations!', 'imagify' ),
+					'ApiKeyCheckSuccessText'  	    => __( 'Your API key is valid. You can now configure the Imagify settings to optimize your images.', 'imagify' ),
+					'ValidApiKeyText'  		  	    => __( 'Your API key is valid.', 'imagify' ),
+					'swalCancel'					=> __( 'Cancel' )		
+				)
 			);
 		break;
 
@@ -72,6 +74,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'waitImageUrl'  => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
 					'getUnoptimizedImagesErrorTitle'    => __( 'Oops, There is something wrong!', 'imagify' ),
 					'getUnoptimizedImagesErrorText'     => __( 'An unknow error occurred when we tried to get all your unoptimized images. Try again and if the issue still persist, please contact us!', 'imagify' ),
+					'invalidAPIKeyTitle' => __( 'Your API key isn\'t valid!', 'imagify' ),
 					'overviewChartLabels'			=> array( 
 						'optimized'   => __( 'Optimized', 'imagify' ),
 						'unoptimized' => __( 'Unoptimized', 'imagify' ),

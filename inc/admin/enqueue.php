@@ -118,7 +118,7 @@ function _imagify_admin_print_styles() {
 	wp_enqueue_script( 'imagify-js-admin' );
 
 	$admin_data = get_imagify_localize_script_translations( 'admin' );
-	wp_localize_script( 'imagify-js-admin', 'imagify', $admin_data );
+	wp_localize_script( 'imagify-js-admin', 'imagifyAdmin', $admin_data );
 	wp_enqueue_script( 'imagify-js-admin' );
 
 	/*
