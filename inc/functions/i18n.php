@@ -72,6 +72,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'waitImageUrl'  => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
 					'getUnoptimizedImagesErrorTitle'    => __( 'Oops, There is something wrong!', 'imagify' ),
 					'getUnoptimizedImagesErrorText'     => __( 'An unknow error occurred when we tried to get all your unoptimized images. Try again and if the issue still persist, please contact us!', 'imagify' ),
+					'invalidAPIKeyTitle' => __( 'Your API key isn\'t valid!', 'imagify' ),
 					'overviewChartLabels'			=> array( 
 						'optimized'   => __( 'Optimized', 'imagify' ),
 						'unoptimized' => __( 'Unoptimized', 'imagify' ),
