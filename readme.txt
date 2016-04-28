@@ -2,8 +2,8 @@
 Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.5
-Stable tag: 1.5
+Tested up to: 4.5.1
+Stable tag: 1.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,7 +47,7 @@ With the backup option, you can change your mind whenever you want by restoring 
 
 = Does Imagify is Free? =
 
-You can optimize for free 25mb of images (about 150 images) every month and you will receive a 75mb bonus upon registration.
+You can optimize for free 25MB of images (about 250 images) every month and you will receive a 25MB bonus upon registration.
 
 Need more? Have a look at our plans: <a href="https://imagify.io/pricing">https://imagify.io/pricing</a>
 ​
@@ -136,6 +136,12 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 
+= 1.5.1 =
+* Bug Fix
+ * Thumbnail sizes in settings page aren't reset anymore on plugin update
+ * Fix PHP Warning: Cannot unset offset in a non-array variable in /inc/functions/admin-stats.php on line 23
+ * Fix PHP Warning: Invalid argument supplied for foreach() in /inc/functions/admin-stats.php on line 233
+ 
 = 1.5 =
 
 * NEW Features:

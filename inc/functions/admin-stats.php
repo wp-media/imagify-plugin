@@ -220,6 +220,10 @@ function imagify_count_saving_data( $key = '' ) {
 	$count			= 0;
 
 	foreach( $attachments as $attachment_data ) {
+		if ( ! $attachment_data ) {
+			continue;
+		}
+		
 		$stats_data    = $attachment_data['stats'];
 		$original_data = $attachment_data['sizes']['full'];
 

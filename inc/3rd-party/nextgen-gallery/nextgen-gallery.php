@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
-if ( ! class_exists( 'C_NextGEN_Bootstrap' ) || ! get_site_option( 'ngg_options' ) ) {
+if ( ! class_exists( 'C_NextGEN_Bootstrap' ) || ! class_exists( 'Mixin' ) || ! get_site_option( 'ngg_options' ) ) {
 	return;
 }
 
