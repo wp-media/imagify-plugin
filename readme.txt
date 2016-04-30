@@ -3,7 +3,7 @@ Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.5.1
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -136,6 +136,11 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 
+= 1.5.2 =
+* Bug Fix
+ * Fix JS error: Uncaught ReferenceError: imagify is not defined in /assets/options.min.js
+ * Don't show "Optimize" button during optimizing process in "Edit Media" screen
+  
 = 1.5.1 =
 * Bug Fix
  * Thumbnail sizes in settings page aren't reset anymore on plugin update
@@ -143,7 +148,6 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
  * Fix PHP Warning: Invalid argument supplied for foreach() in /inc/functions/admin-stats.php on line 233
  
 = 1.5 =
-
 * NEW Features:
  * NextGen Gallery compatibility - Optimize all your images uploaded with NextGen Gallery
  * Asynchronous Optimization - No more latency when you upload new images, Imagify will optimize them in background!
