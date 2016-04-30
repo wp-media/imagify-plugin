@@ -16,7 +16,7 @@ jQuery(function($){
 		}
 
 		if( $('#check_api_key').val() === value ) {
-			$('#imagify-check-api-container').html('<span class="dashicons dashicons-yes"></span> ' + imagify.ValidApiKeyText);
+			$('#imagify-check-api-container').html('<span class="dashicons dashicons-yes"></span> ' + imagifyAdmin.labels.ValidApiKeyText);
 			return false;
 		}
 
@@ -24,7 +24,7 @@ jQuery(function($){
 			xhr.abort();
 		} else {
 			$('#imagify-check-api-container').remove();
-			obj.after( '<span id="imagify-check-api-container"><span class="imagify-spinner"></span>' + imagify.waitApiKeyCheckText + "</span>" );
+			obj.after( '<span id="imagify-check-api-container"><span class="imagify-spinner"></span>' + imagifyAdmin.labels.waitApiKeyCheckText + "</span>" );
 		}
 
 		busy = true;
@@ -36,8 +36,8 @@ jQuery(function($){
 			} else {
 				$('#imagify-check-api-container').remove();
 				swal({
-					title: imagify.ApiKeyCheckSuccessTitle,
-					text: imagify.ApiKeyCheckSuccessText,
+					title: imagifyAdmin.labels.ApiKeyCheckSuccessTitle,
+					text: imagifyAdmin.labels.ApiKeyCheckSuccessText,
 					type: "success",
 					customClass: "imagify-sweet-alert"
 				},
@@ -89,7 +89,7 @@ jQuery(function($){
 				type: "info",
 				customClass: "imagify-sweet-alert",
 				showCancelButton: true,
-				cancelButtonText: imagify.swalCancel
+				cancelButtonText: imagifyAdmin.labels.swalCancel
 			}, function(isConfirm){
 				if ( ! isConfirm ) {
 					$_this.prop('checked', true);
