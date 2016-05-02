@@ -134,6 +134,7 @@ jQuery(function($){
 			text: imagifyBulk.labels.waitText,
 			closeOnConfirm: false,
 			showConfirmButton: false,
+			html: true,
 			imageUrl: imagifyBulk.labels.waitImageUrl
 		});
 		
