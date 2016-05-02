@@ -181,12 +181,12 @@ class Imagify_Abstract_Attachment {
 	 */
 	public function get_original_size( $human_format = true ) {
 		$original_size = $this->get_size_data( 'full', 'original_size' );
-		$original_size = ( empty( $original_size ) ) ? @filesize( $this->get_original_path() ) : 0;
+		$original_size = ( empty( $original_size ) ) ? @filesize( $this->get_original_path() ) : (int) $original_size;
 		
 		if ( true === $human_format ) {
 			$original_size = @size_format( $original_size, 2 );	
 		}
-
+		
 		return $original_size;
 	}
 
