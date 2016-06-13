@@ -139,7 +139,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.5.4 =
 * Improvement
  * Increase to 4 the number of parallel queries during a bulk optimization
- * Don't display Intercom chat if the user turned on the option in the web app
+ * Don't display Intercom chat if the user turned off the option in the web app
  
 = 1.5.3 =
 * Regression Fix
