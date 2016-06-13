@@ -32,12 +32,14 @@ function _imagify_ngg_admin_print_styles() {
 	 */
 	if ( isset( $current_screen ) && false !== strpos( $current_screen->base, '_page_imagify-ngg-bulk-optimization' ) ) {
 		wp_enqueue_script( 'heartbeat' );
-		
-		$user	   = get_imagify_user();
+
 		$bulk_data = get_imagify_localize_script_translations( 'bulk' );
 		$bulk_data['heartbeat_id'] = 'update_ngg_bulk_data';
 		$bulk_data['ajax_action']  = 'imagify_ngg_get_unoptimized_attachment_ids';
 		$bulk_data['ajax_context'] = 'NGG';
+		
+		/** This filter is documented in inc/admin/enqueue.php */
+		$bulk_data['buffer_size']  = apply_filters( 'imagify_bulk_buffer_size', 4 );
 				
 		wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
 		wp_enqueue_script( 'imagify-js-chart' );

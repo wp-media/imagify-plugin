@@ -2,8 +2,8 @@
 Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.5.1
-Stable tag: 1.5.3
+Tested up to: 4.5.2
+Stable tag: 1.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,7 +98,7 @@ Absolutely. You are limited to a quota of 25 MB of images per month with a free 
 
 You can use the plugin on as many sites as you wish. The only limit is the optimization quota of your account.
 
-= I used Kraken, Optimus, EWWW or WP Smush, will Imagify further optimize my images? =
+= I used Kraken, Shortpixel, Optimus, EWWW or WP Smush, will Imagify further optimize my images? =
 
 Absolutely. Most of the time, Imagify will still be able to optimize your images even if you have already compressed them with another tool.
 
@@ -118,7 +118,7 @@ No. Imagify automatically replaces the images with an optimized image. The backu
 
 Yes. By activating the backup option in the plugin, you can re-optimize each image with a different compression level.
 
-= If I use Imagify, do I need to continue optimizing and resizinf my images with Photoshop? =
+= If I use Imagify, do I need to continue optimizing and resizing my images with Photoshop? =
 
 Do not waste your time resizing and optimizing your images in Photoshop. Imagify takes care of everything!
 
@@ -136,6 +136,11 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 
+= 1.5.4 =
+* Improvement
+ * Increase to 4 the number of parallel queries during a bulk optimization
+ * Don't display Intercom chat if the user turned off the option in the web app
+ 
 = 1.5.3 =
 * Regression Fix
  * Display the Original Filesize in "View Details" section
