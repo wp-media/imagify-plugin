@@ -38,6 +38,9 @@ function _imagify_ngg_admin_print_styles() {
 		$bulk_data['heartbeat_id'] = 'update_ngg_bulk_data';
 		$bulk_data['ajax_action']  = 'imagify_ngg_get_unoptimized_attachment_ids';
 		$bulk_data['ajax_context'] = 'NGG';
+		
+		/** This filter is documented in inc/admin/enqueue.php */
+		$bulk_data['buffer_size']  = apply_filters( 'imagify_bulk_buffer_size', 4 );
 				
 		wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
 		wp_enqueue_script( 'imagify-js-chart' );
