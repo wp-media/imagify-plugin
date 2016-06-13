@@ -194,7 +194,7 @@ add_action( 'admin_footer-settings_page_imagify', '_imagify_admin_print_intercom
 function _imagify_admin_print_intercom() { 
 	$user = get_imagify_user();
 	
-	if ( ! imagify_valid_key() || empty( $user->is_intercom ) ) {
+	if ( ! imagify_valid_key() || empty( $user->is_intercom ) || false === $user->display_support ) {
 		return;
 	}
 	?>	
