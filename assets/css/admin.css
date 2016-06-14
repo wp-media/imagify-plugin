@@ -1770,6 +1770,9 @@ ul.imagify-datas-details.imagify-datas-details {
 #wp-admin-bar-imagify-profile .imagify-progress {
 	height: 15px;
 }
+.imagify-progress {
+	transition: width .3s;
+}
 .imagify-bar-positive .imagify-progress {
 	background: #8CC152;
 }

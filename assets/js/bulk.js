@@ -78,7 +78,7 @@ jQuery(function($){
 		
 		// The comsuption bar
 		$('.imagify-unconsumed-percent').html(data.unconsumed_quota + '%');
-		$('.imagify-unconsumed-bar').animate({'width': data.unconsumed_quota + '%'});
+		$('.imagify-unconsumed-bar').css('width', data.unconsumed_quota + '%');
 
 		// The total optimized images
 		$('#imagify-total-optimized-attachments').html(data.already_optimized_attachments);
@@ -88,13 +88,13 @@ jQuery(function($){
 								  .html(data.original_human);
 
 		// The optimized bar
-		$('#imagify-optimized-bar').animate({'width': data.optimized_percent+"%"})
-		$('#imagify-optimized-bar').find('.imagify-barnb')
+		$('#imagify-optimized-bar').css('width', data.optimized_percent + '%')
+								   .find('.imagify-barnb')
 								   .html(data.optimized_human);
-								   
+
 		// The Percent data
 		$('#imagify-total-optimized-attachments-pct').html( data.optimized_percent + '%' );
-		
+
 		overviewDoughnut.segments[0].value = data.unoptimized_attachments;
 		overviewDoughnut.segments[1].value = data.optimized_attachments;
 		overviewDoughnut.segments[2].value = data.errors_attachments;
