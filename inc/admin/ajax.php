@@ -632,18 +632,27 @@ function _do_admin_post_async_optimize_save_image_editor_file() {
 /**
  * Get pricings from API for Onetime and Plans at the same time
  *
- * @since 1.5
+ * @return  JSON WP formatted answer
+ *
+ * @since  1.5
  * @author Geoffrey
  */
 add_action( 'wp_ajax_imagify_get_prices', '_imagify_get_prices_from_api' );
 function _imagify_get_prices_from_api() {
 	if ( check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false) ) {
 		
-		$data = array();
-		$data['onetimes'] = get_imagify_packs_prices();
-		$data['monthlies'] = get_imagify_plans_prices();
-		
-		wp_send_json_success( $data );
+		$prices = array();
+		$prices_all = get_imagify_all_prices();
+
+		if ( is_object( $prices_all ) ) {
+			$prices['onetimes']  = $prices_all -> Packs;
+			$prices['monthlies'] = $prices_all -> Plans;
+
+			wp_send_json_success( $prices );
+		}
+		else {
+			wp_send_json_error( 'Prices variable is not a object' );
+		}
 	}
 	else {
 		wp_send_json_error( 'check_ajax_referer failed' );
