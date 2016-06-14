@@ -17,30 +17,31 @@ Copyright 2015 WP Media
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 // Imagify defines
-define( 'IMAGIFY_VERSION'	 			 , '1.5.4' );
-define( 'IMAGIFY_SLUG'		 			 , 'imagify' );
-define( 'IMAGIFY_SETTINGS_SLUG'			 , IMAGIFY_SLUG . '_settings' );
-define( 'IMAGIFY_WEB_MAIN'	 			 , 'https://imagify.io' );
-define( 'IMAGIFY_APP_MAIN'	 			 , 'https://app.imagify.io' );
-define( 'IMAGIFY_FILE'            		 , __FILE__ );
-define( 'IMAGIFY_PATH'       			 , realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
-define( 'IMAGIFY_INC_PATH'   			 , realpath( IMAGIFY_PATH . 'inc/' ) . '/' );
-define( 'IMAGIFY_API_PATH'   			 , realpath( IMAGIFY_INC_PATH . 'api/' ) . '/' );
-define( 'IMAGIFY_ADMIN_PATH' 			 , realpath( IMAGIFY_INC_PATH . 'admin' ) . '/' );
-define( 'IMAGIFY_ADMIN_UI_PATH'     	 , realpath( IMAGIFY_ADMIN_PATH . 'ui' ) . '/' );
-define( 'IMAGIFY_COMMON_PATH'    		 , realpath( IMAGIFY_INC_PATH . 'common' ) . '/' );
-define( 'IMAGIFY_FUNCTIONS_PATH'    	 , realpath( IMAGIFY_INC_PATH . 'functions' ) . '/' );
-define( 'IMAGIFY_CLASSES_PATH'    		 , realpath( IMAGIFY_INC_PATH . 'classes' ) . '/' );
+define( 'IMAGIFY_VERSION'                , '1.5.4' );
+define( 'IMAGIFY_SLUG'                   , 'imagify' );
+define( 'IMAGIFY_SETTINGS_SLUG'          , IMAGIFY_SLUG . '_settings' );
+define( 'IMAGIFY_WEB_MAIN'               , 'https://imagify.io' );
+define( 'IMAGIFY_APP_MAIN'               , 'https://app.imagify.io' );
+define( 'IMAGIFY_PAYMENT_URL'            , IMAGIFY_APP_MAIN . '/plugin-payment/' );
+define( 'IMAGIFY_FILE'                   , __FILE__ );
+define( 'IMAGIFY_PATH'                   , realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
+define( 'IMAGIFY_INC_PATH'               , realpath( IMAGIFY_PATH . 'inc/' ) . '/' );
+define( 'IMAGIFY_API_PATH'               , realpath( IMAGIFY_INC_PATH . 'api/' ) . '/' );
+define( 'IMAGIFY_ADMIN_PATH'             , realpath( IMAGIFY_INC_PATH . 'admin' ) . '/' );
+define( 'IMAGIFY_ADMIN_UI_PATH'          , realpath( IMAGIFY_ADMIN_PATH . 'ui' ) . '/' );
+define( 'IMAGIFY_COMMON_PATH'            , realpath( IMAGIFY_INC_PATH . 'common' ) . '/' );
+define( 'IMAGIFY_FUNCTIONS_PATH'         , realpath( IMAGIFY_INC_PATH . 'functions' ) . '/' );
+define( 'IMAGIFY_CLASSES_PATH'           , realpath( IMAGIFY_INC_PATH . 'classes' ) . '/' );
 define( 'IMAGIFY_CLASSES_ABSTRACTS_PATH' , realpath( IMAGIFY_CLASSES_PATH . 'abstracts' ) . '/' );
-define( 'IMAGIFY_3RD_PARTY_PATH'  		 , realpath( IMAGIFY_INC_PATH . '3rd-party' ) . '/' );
-define( 'IMAGIFY_URL'               	 , plugin_dir_url( IMAGIFY_FILE ) );
-define( 'IMAGIFY_INC_URL'         		 , IMAGIFY_URL . 'inc/' );
-define( 'IMAGIFY_ADMIN_URL'         	 , IMAGIFY_INC_URL . 'admin/' );
-define( 'IMAGIFY_ASSETS_URL'      		 , IMAGIFY_URL . 'assets/' );
-define( 'IMAGIFY_ASSETS_JS_URL'     	 , IMAGIFY_ASSETS_URL . 'js/' );
-define( 'IMAGIFY_ASSETS_CSS_URL'    	 , IMAGIFY_ASSETS_URL . 'css/' );
-define( 'IMAGIFY_ASSETS_IMG_URL'    	 , IMAGIFY_ASSETS_URL . 'images/' );
-define( 'IMAGIFY_MAX_BYTES'  			 , 5242880 );
+define( 'IMAGIFY_3RD_PARTY_PATH'         , realpath( IMAGIFY_INC_PATH . '3rd-party' ) . '/' );
+define( 'IMAGIFY_URL'                    , plugin_dir_url( IMAGIFY_FILE ) );
+define( 'IMAGIFY_INC_URL'                , IMAGIFY_URL . 'inc/' );
+define( 'IMAGIFY_ADMIN_URL'              , IMAGIFY_INC_URL . 'admin/' );
+define( 'IMAGIFY_ASSETS_URL'             , IMAGIFY_URL . 'assets/' );
+define( 'IMAGIFY_ASSETS_JS_URL'          , IMAGIFY_ASSETS_URL . 'js/' );
+define( 'IMAGIFY_ASSETS_CSS_URL'         , IMAGIFY_ASSETS_URL . 'css/' );
+define( 'IMAGIFY_ASSETS_IMG_URL'         , IMAGIFY_ASSETS_URL . 'images/' );
+define( 'IMAGIFY_MAX_BYTES'              , 5242880 );
 
 /*
  * Tell WP what to do when plugin is loaded
@@ -93,7 +94,7 @@ function _imagify_init() {
         require( IMAGIFY_ADMIN_UI_PATH  . 'bulk.php' );
         require( IMAGIFY_ADMIN_UI_PATH  . 'notices.php' );
     }
-			
+
     /**
 	 * Fires when Imagify is correctly loaded
 	 *

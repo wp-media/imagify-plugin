@@ -437,9 +437,12 @@ jQuery(function($){
 					}
 				*/
 				var $iframe		= $('#imagify-payment-iframe'),
-					iframe_src	= $iframe.attr('src'),
+					iframe_src  = $iframe.attr('src'),
+					pay_src     = $iframe.data('src'),
 					monthly_id	= 0,
 					onetime_id	= 0;
+
+				// if we get new informations about products
 				if ( typeof params === 'object' ) {
 					if ( params.monthly ) {
 						monthly_id = params.monthly[ Object.keys( params.monthly )[0] ].id;
@@ -451,16 +454,32 @@ jQuery(function($){
 					}
 					
 					if ( params.period ) {
-						iframe_src = iframe_src.split('?')[0] + '?monthly=' + monthly_id + '&onetime=' + onetime_id + '&api=' + imagify_get_api_key() + '&period=' + params.period;
+						var coma = onetime_id !== 0 && monthly_id !== 0 ? ',' : '',
+							key = imagify_get_api_key();
 
-						$iframe.attr( 'src', iframe_src );
+// https://app.imagify.io/plugin-payment/onetimeplan,monthlyplan_or_yearlyplan/1,4/[token]
+						 
+						// onetimeplan,monthlyplan_or_yearlyplan
+						iframe_plans  = onetime_id !== 0 ? 'onetimeplan' : '';
+						iframe_plans += coma;
+						iframe_plans += monthly_id !== 0 ? params.period + 'plan' : '';
+
+						// id,id
+						iframe_ids  = onetime_id !== 0 ? onetime_id : '';
+						iframe_ids += coma;
+						iframe_ids += monthly_id !== 0 ? monthly_id : '';
+
+						$iframe.attr( 'src', pay_src + iframe_plans + '/' + iframe_ids + '/' + key );
 
 					} else {
 						imagifyAdmin.labels.info('No period defined');
 					}
-				} else if ( typeof params === 'string' ) {
-					iframe_src = iframe_src.split('&period=');
-					$iframe.attr( 'src', iframe_src[0] + '&period=' + params );
+				}
+				// if we only change monthly/yearly payment mode
+				else if ( typeof params === 'string' && iframe_src !== '' ) {
+					tofind = params === 'monthly' ? 'yearly' : 'monthly';
+					iframe_src = iframe_src.replace( tofind, params );
+					$iframe.attr( 'src', iframe_src );
 				}
 			},
 			imagify_get_period = function() {
