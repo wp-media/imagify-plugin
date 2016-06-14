@@ -2,8 +2,8 @@
 Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.4.2
-Stable tag: 1.4.6
+Tested up to: 4.5.2
+Stable tag: 1.5.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,9 @@ Dramatically reduce image file sizes without losing quality, make your website l
 Speed up your website with lighter images without losing quality.
 
 Imagify is the most advanced image compression tool, you can now use this power directly in WordPress. 
-After enabling it all your images including thumbnails and retina images from WP Retina x2  will be automatically optimized on the fly when you will add in into WordPress. 
+After enabling it all your images including thumbnails and retina images from WP Retina x2 will be automatically optimized on the fly when you will add in into WordPress.
+
+WooCommerce and NextGen Gallery compatible.
 ​
 = What is Image Compression? =
 
@@ -45,7 +47,7 @@ With the backup option, you can change your mind whenever you want by restoring 
 
 = Does Imagify is Free? =
 
-You can optimize for free 25mb of images (about 150 images) every month and you will receive a 75mb bonus upon registration.
+You can optimize for free 25MB of images (about 250 images) every month and you will receive a 25MB bonus upon registration.
 
 Need more? Have a look at our plans: <a href="https://imagify.io/pricing">https://imagify.io/pricing</a>
 ​
@@ -96,7 +98,7 @@ Absolutely. You are limited to a quota of 25 MB of images per month with a free 
 
 You can use the plugin on as many sites as you wish. The only limit is the optimization quota of your account.
 
-= I used Kraken, Optimus, EWWW or WP Smush, will Imagify further optimize my images? =
+= I used Kraken, Shortpixel, Optimus, EWWW or WP Smush, will Imagify further optimize my images? =
 
 Absolutely. Most of the time, Imagify will still be able to optimize your images even if you have already compressed them with another tool.
 
@@ -116,7 +118,7 @@ No. Imagify automatically replaces the images with an optimized image. The backu
 
 Yes. By activating the backup option in the plugin, you can re-optimize each image with a different compression level.
 
-= If I use Imagify, do I need to continue optimizing and resizinf my images with Photoshop? =
+= If I use Imagify, do I need to continue optimizing and resizing my images with Photoshop? =
 
 Do not waste your time resizing and optimizing your images in Photoshop. Imagify takes care of everything!
 
@@ -133,6 +135,38 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+
+= 1.5.4 =
+* Improvement
+ * Increase to 4 the number of parallel queries during a bulk optimization
+ * Don't display Intercom chat if the user turned off the option in the web app
+ 
+= 1.5.3 =
+* Regression Fix
+ * Display the Original Filesize in "View Details" section
+
+= 1.5.2.1 =
+* Bug Fix
+ * Fix JS error: Uncaught ReferenceError: imagify is not defined in /assets/options.min.js
+ * Don't show "Optimize" button during optimizing process in "Edit Media" screen
+  
+= 1.5.1 =
+* Bug Fix
+ * Thumbnail sizes in settings page aren't reset anymore on plugin update
+ * Fix PHP Warning: Cannot unset offset in a non-array variable in /inc/functions/admin-stats.php on line 23
+ * Fix PHP Warning: Invalid argument supplied for foreach() in /inc/functions/admin-stats.php on line 233
+ 
+= 1.5 =
+* NEW Features:
+ * NextGen Gallery compatibility - Optimize all your images uploaded with NextGen Gallery
+ * Asynchronous Optimization - No more latency when you upload new images, Imagify will optimize them in background!
+* Interface:
+ * Bulk Optimization: Improvements for a better experience
+
+= 1.4.7 =
+* Bug Fix
+ * Fix issue between Bulk Optimization & WP Engine. The query to get unoptimized images is limited to 2500 images to be able to use the Bulk Optimization on this hosting.
+ * Fix SSL certificate problem: unable to get local issuer certificate
 
 = 1.4.6 =
 * Bulk Optimization

@@ -12,8 +12,12 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 function imagify_ngg_count_attachments() {
 	global $wpdb;
 	
-	$table_name = $wpdb->prefix . "ngg_pictures"; 
-	$count 		= $wpdb->get_var( "SELECT COUNT($table_name.pid) FROM $table_name" );
+	static $count;
+	
+	if ( ! $count ) {
+		$table_name = $wpdb->prefix . "ngg_pictures"; 
+		$count 		= $wpdb->get_var( "SELECT COUNT($table_name.pid) FROM $table_name" );	
+	}
 	
 	return (int) $count;
 }
@@ -27,7 +31,13 @@ function imagify_ngg_count_attachments() {
  * @return int The number of attachments.
  */
 function imagify_ngg_count_error_attachments() {
-	return (int) Imagify_NGG_DB()->get_column_by( 'COUNT(*)', 'status', 'error' );
+	static $count;
+	
+	if ( ! $count ) {
+		$count = (int) Imagify_NGG_DB()->get_column_by( 'COUNT(*)', 'status', 'error' );
+	}
+	
+	return $count;
 }
 
 /*
@@ -39,7 +49,13 @@ function imagify_ngg_count_error_attachments() {
  * @return int The number of attachments.
  */
 function imagify_ngg_count_optimized_attachments() {
-	return (int) Imagify_NGG_DB()->get_column_by( 'COUNT(*)', 'status', 'success' );
+	static $count;
+	
+	if ( ! $count ) {
+		$count = (int) Imagify_NGG_DB()->get_column_by( 'COUNT(*)', 'status', 'success' );
+	}
+	
+	return $count;
 }
 
 /*
@@ -51,7 +67,11 @@ function imagify_ngg_count_optimized_attachments() {
  * @return int The number of attachments.
  */
 function imagify_ngg_count_unoptimized_attachments() {
-	$count = imagify_ngg_count_attachments() - imagify_ngg_count_optimized_attachments() - imagify_ngg_count_error_attachments();
+	static $count;
+	
+	if ( ! $count ) {
+		$count = imagify_ngg_count_attachments() - imagify_ngg_count_optimized_attachments() - imagify_ngg_count_error_attachments();	
+	}
 	
 	return (int) $count;
 }

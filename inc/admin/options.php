@@ -33,9 +33,8 @@ function _imagify_register_setting() {
 add_filter( 'pre_update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_pre_update_option', 10, 2 );
 function _imagify_pre_update_option( $value, $old_value ) {
 	// Store all sizes even if one of them isn't checked
-	$value['disallowed-sizes'] = array();
-	
 	if ( isset( $value['sizes'] ) ) {
+		$value['disallowed-sizes'] = array();
 		foreach( $value['sizes'] as $size_key => $size_value ) {
 			if ( strpos( $size_key , '-hidden' ) ) {
 				$key = str_replace( '-hidden', '', $size_key );

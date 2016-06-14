@@ -514,7 +514,7 @@
 		}
 		// else put images next to next
 		else if ( thumb.width < width_limit && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
-
+			// TODO
 		}
 		// if image has no backup
 		else if ( $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() === '' ) {
@@ -522,11 +522,14 @@
 		}
 		// in case image is not optimized
 		else {
-			$('[id^="imgedit-open-btn-"]').before('<span class="spinner imagify-hidden"></span><a class="imagify-button-primary button-primary imagify-optimize-trigger" id="imagify-optimize-trigger" href="' + $optimize_btn.attr('href') + '">' + imagifyTTT.labels.optimize + '</a>');
+			// if is not in optimizing process, propose the Optimize button trigger
+			if ( $('#misc-publishing-actions').find('.misc-pub-imagify').find('.button-primary').length === 1 ) {
+				$('[id^="imgedit-open-btn-"]').before('<span class="spinner imagify-hidden"></span><a class="imagify-button-primary button-primary imagify-optimize-trigger" id="imagify-optimize-trigger" href="' + $optimize_btn.attr('href') + '">' + imagifyTTT.labels.optimize + '</a>');
 
-			$('#imagify-optimize-trigger').on('click', function(){
-				$(this).prev('.spinner').removeClass('imagify-hidden').addClass('is-active');
-			});
+				$('#imagify-optimize-trigger').on('click', function(){
+					$(this).prev('.spinner').removeClass('imagify-hidden').addClass('is-active');
+				});
+			}
 		}
 
 	}

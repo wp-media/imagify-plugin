@@ -227,9 +227,10 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 	 *
 	 * @access public
 	 * @param  int 	  $optimization_level  The optimization level (2=ultra, 1=aggressive, 0=normal)
+	 * @param  array  $metadata   	   	   The attachment meta data (not used here)
 	 * @return array  $data  			   The optimization data
 	 */
-	public function optimize( $optimization_level = null ) {		
+	public function optimize( $optimization_level = null, $metadata = array() ) {		
 		$optimization_level = ( is_null( $optimization_level ) ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
 
 		$id 		   = $this->id;

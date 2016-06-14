@@ -18,9 +18,9 @@ jQuery(function($){
 
 		// Display the sign up form
 		swal({
-			title: imagify.signupTitle,
-			text: imagify.signupText,
-			confirmButtonText: imagify.signupConfirmButtonText,
+			title: imagifyAdmin.labels.signupTitle,
+			text: imagifyAdmin.labels.signupText,
+			confirmButtonText: imagifyAdmin.labels.signupConfirmButtonText,
 			type: "input",
 			closeOnConfirm: false,
 			allowOutsideClick: true,
@@ -29,7 +29,7 @@ jQuery(function($){
 		},
 		function(inputValue){
 			if ($.trim(inputValue) == "" || ! inputValue) {
-				swal.showInputError(imagify.signupErrorEmptyEmail);
+				swal.showInputError(imagifyAdmin.labels.signupErrorEmptyEmail);
 				return false;
 			} 
 			
@@ -39,8 +39,8 @@ jQuery(function($){
 					swal.showInputError(response.data);
 				} else {
 					swal({
-						title:imagify.signupSuccessTitle,
-						text: imagify.signupSuccessText,
+						title:imagifyAdmin.labels.signupSuccessTitle,
+						text: imagifyAdmin.labels.signupSuccessText,
 						type: "success",
 						customClass: "imagify-sweet-alert"
 					});
@@ -57,9 +57,9 @@ jQuery(function($){
 
 		// Display the sign up form
 		swal({
-			title: imagify.saveApiKeyTitle,
-			text: imagify.saveApiKeyText,
-			confirmButtonText: imagify.saveApiKeyConfirmButtonText,
+			title: imagifyAdmin.labels.saveApiKeyTitle,
+			text: imagifyAdmin.labels.saveApiKeyText,
+			confirmButtonText: imagifyAdmin.labels.saveApiKeyConfirmButtonText,
 			type: "input",
 			closeOnConfirm: false,
 			allowOutsideClick: true,
@@ -68,7 +68,7 @@ jQuery(function($){
 		},
 		function(inputValue){
 			if ($.trim(inputValue) == "" || ! inputValue) {
-				swal.showInputError(imagify.signupErrorEmptyEmail);
+				swal.showInputError(imagifyAdmin.labels.signupErrorEmptyEmail);
 				return false;
 			} 
 			
@@ -78,8 +78,8 @@ jQuery(function($){
 					swal.showInputError( response.data );
 				} else {
 					swal({
-						title: imagify.ApiKeyCheckSuccessTitle,
-						text: imagify.ApiKeyCheckSuccessText,
+						title: imagifyAdmin.labels.ApiKeyCheckSuccessTitle,
+						text: imagifyAdmin.labels.ApiKeyCheckSuccessText,
 						type: "success",
 						customClass: "imagify-sweet-alert"
 					});
@@ -163,7 +163,7 @@ jQuery(function($){
 		
 	$('#wp-admin-bar-imagify').hover( function() {
 		if ( true === busy ) {
-			xhr.abort();
+			return;
 		}
 		
 		busy = true;
@@ -456,7 +456,7 @@ jQuery(function($){
 						$iframe.attr( 'src', iframe_src );
 
 					} else {
-						imagify.info('No period defined');
+						imagifyAdmin.labels.info('No period defined');
 					}
 				} else if ( typeof params === 'string' ) {
 					iframe_src = iframe_src.split('&period=');
@@ -660,10 +660,10 @@ jQuery(function($){
 					imagify_iframe_set_src( datas_to_send );
 				}
 				else {
-					imagify.info('No offers selected');
+					imagifyAdmin.labels.info('No offers selected');
 				}
 			} else {
-				imagify.info('imagify_iframe_set_src seems to be not declared');
+				imagifyAdmin.labels.info('imagify_iframe_set_src seems to be not declared');
 			}
 			return false;
 		});
@@ -695,7 +695,7 @@ jQuery(function($){
 			if ( typeof imagify_iframe_set_src === 'function' ) {
 				imagify_iframe_set_src( new_datas );
 			} else {
-				imagify.info('imagify_iframe_set_src seems to be not declared…');
+				imagifyAdmin.labels.info('imagify_iframe_set_src seems to be not declared…');
 			}				
 
 			return false;

@@ -1,7 +1,26 @@
 <?php 
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
-class Imagify_NGG_Storage extends Mixin {
+class Imagify_NGG_Storage extends Mixin {     
+     /**
+     * Delete a gallery AND all the pictures associated to this gallery!
+     *
+     * @since 1.5
+	 * @author Jonathan Buttigieg
+	 *
+     * @return parent
+     */ 
+    public function delete_gallery( $gallery ) {
+	    $gallery_id = is_numeric( $gallery ) ? $gallery : $gallery->{$gallery->id_field};
+	    $images_id  = nggdb::get_ids_from_gallery( $gallery_id );
+	    
+	    foreach( $images_id as $pid ) {
+		    Imagify_NGG_DB()->delete( $pid );
+	    }
+	    
+	    return $this->call_parent( 'delete_gallery', $gallery );
+     }
+     
      /**
      * Generates a specific size for an image
      *
@@ -49,5 +68,5 @@ class Imagify_NGG_Storage extends Mixin {
 		}
 		
 		return $this->call_parent( 'recover_image', $image );
-    }    
+    } 
 }

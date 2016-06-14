@@ -47,7 +47,7 @@ function _imagify_optimize_wr2x( $data, $response, $id, $path, $url, $size_key, 
 		$response = do_imagify( $retina_path, array(
 			'backup'             => false,
 			'optimization_level' => $optimization_level,
-			'context'			 => 'wp-retina-x2'
+			'context'			 => 'wp-retina'
 		) );
 		$data     = Imagify_Attachment::fill_data( $data, $response, $id, $url, $size_key . '@2x' );
 	}

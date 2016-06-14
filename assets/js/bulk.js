@@ -74,7 +74,7 @@ jQuery(function($){
         
         // The overview chart percent
 		$('#imagify-overview-chart-percent').html(data.optimized_attachments_percent + '<span>%</span>');
-		$('.imagify-total-percent').html(data.optimized_attachments_percent);
+		$('.imagify-total-percent').html(data.optimized_attachments_percent + '%' );
 		
 		// The comsuption bar
 		$('.imagify-unconsumed-percent').html(data.unconsumed_quota + '%');
@@ -134,6 +134,7 @@ jQuery(function($){
 			text: imagifyBulk.labels.waitText,
 			closeOnConfirm: false,
 			showConfirmButton: false,
+			html: true,
 			imageUrl: imagifyBulk.labels.waitImageUrl
 		});
 		
@@ -142,32 +143,34 @@ jQuery(function($){
 			if( !response.success ) {
 				$obj.removeAttr('disabled');
 				$obj.find('.dashicons').removeClass('rotate');
-
+				
+				swal_title = '';
+				swal_text  = '';
+				
 				// remove confirm dialog before quit the page
 				$(window).off('beforeunload', confirmMessage);
+								
+				if ( response.data.message == 'invalid-api-key' ) {
+					swal_title = imagifyBulk.labels.invalidAPIKeyTitle;
+				}
 				
-				imagify.log(response);
-
 				if ( response.data.message == 'over-quota' ) {
-					// Display an alert to warn that the monthly quota is consumed
-					swal({
-						title:imagifyBulk.labels.overQuotaTitle,
-						text: imagifyBulk.labels.overQuotaText,
-						type: "error",
-						customClass: "imagify-sweet-alert",
-						html: true
-					});
+					swal_title = imagifyBulk.labels.overQuotaTitle;
+					text  = imagifyBulk.labels.overQuotaText;
 				}
 				
 				if ( response.data.message == 'no-images' ) {
-					// Display an alert to warn that all images has been optimized
-					swal({
-						title:imagifyBulk.labels.noAttachmentToOptimizeTitle,
-						text: imagifyBulk.labels.noAttachmentToOptimizeText,
-						type: "info",
-						customClass: "imagify-sweet-alert"
-					});
+					swal_title = imagifyBulk.labels.noAttachmentToOptimizeTitle;
+					swal_text  = imagifyBulk.labels.noAttachmentToOptimizeText;
 				}
+				
+				// Display an alert to warn that all images has been optimized
+				swal({
+					title		: swal_title,
+					text 		: swal_text,
+					type	    : "info",
+					customClass : "imagify-sweet-alert"
+				});
 
 			} else {				
 				swal.close();
@@ -191,7 +194,7 @@ jQuery(function($){
 
 				// before the attachment optimization
 				Optimizer.before(function(data) {
-					table.append('<tr id="attachment-'+data.id+'"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="'+data.thumbnail+'"/>"</span><span class="imagifilename">'+data.filename+'</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>Compressing<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>');
+					table.find('.imagify-row-progress').after('<tr id="attachment-'+data.id+'"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="'+data.thumbnail+'"/>"</span><span class="imagifilename">'+data.filename+'</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>Compressing<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>');
 				})
 				// after the attachment optimization
 				.each(function (data) {

@@ -72,7 +72,7 @@ function upload_imagify_image( $data ) {
  *
  * @return object
  * @since 1.5
- * @author Geoffrey
+ * @author Geoffrey Crofte
  **/
 function get_imagify_plans_prices() {
 	return Imagify()->getPlansPrices();
@@ -83,7 +83,7 @@ function get_imagify_plans_prices() {
  *
  * @return object
  * @since 1.5
- * @author Geoffrey
+ * @author Geoffrey Crofte
  **/
 function get_imagify_packs_prices() {
 	return Imagify()->getPacksPrices();
@@ -308,8 +308,7 @@ class Imagify {
 		}
 
         try {
-	    	$ch 	 = curl_init();
-			$is_ssl  = ( isset( $_SERVER['HTTPS'] ) && ( 'on' == strtolower( $_SERVER['HTTPS'] ) || '1' == $_SERVER['HTTPS'] ) ) || ( isset( $_SERVER['SERVER_PORT'] ) && ( '443' == $_SERVER['SERVER_PORT'] ) );
+	    	$ch = curl_init();
 
 	        if ( 'POST' == $args['method'] ) {
 		        curl_setopt( $ch, CURLOPT_POST, true );
@@ -321,7 +320,8 @@ class Imagify {
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
 			curl_setopt( $ch, CURLOPT_TIMEOUT, $args['timeout'] );
 			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, $is_ssl );
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
 
 			$response  = json_decode( curl_exec( $ch ) );
 	        $error     = curl_error( $ch );
@@ -335,7 +335,9 @@ class Imagify {
 		if ( 200 != $http_code && isset( $response->code, $response->detail ) ) {
 			return new WP_Error( $http_code, $response->detail );
 		} elseif ( 200 != $http_code ) {
-			return new WP_Error( $http_code, 'Unknown error occurred' );
+            $http_code = (int) $http_code;
+            $error     = '' != $error ? ' - ' . htmlentities( $error ) : '';
+			return new WP_Error( $http_code, "Unknown error occurred ({$http_code}{$error}) " );
 		} else {
 			return $response;
         }

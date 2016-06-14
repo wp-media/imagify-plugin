@@ -63,13 +63,13 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 		$file_path = apply_filters( 'imagify_file_path', $storage->get_image_abspath( $id ) );
 		
 		if ( file_exists( $file_path ) ) {
-			$attachment_data  = maybe_serialize( $image['data'] );
+			$attachment_data  = maybe_unserialize( $image['data'] );
 			$attachment_error = '';
 
 			if ( isset( $attachment_data['sizes']['full']['error'] ) ) {
 				$attachment_error = $attachment_data['sizes']['full']['error'];
 			}
-			
+
 			$attachment_error              = trim( $attachment_error );
 			$attachment_status             = $image['status'];
 			$attachment_optimization_level = $image['optimization_level'];

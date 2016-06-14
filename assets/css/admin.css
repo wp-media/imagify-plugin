@@ -291,19 +291,19 @@ td .imagify-chart {
 }
 
 .media_page_imagify-bulk-optimization .notice,
-.gallery_page_imagify-ngg-bulk-optimization .notice,
+body[class*="_imagify-ngg-bulk-optimization"] .notice,
 .settings_page_imagify .notice {
 	margin-right: 20px;
 	margin-left: 2px;
 }
 
 .media_page_imagify-bulk-optimization .media-item,
-.gallery_page_imagify-ngg-bulk-optimization .media-item {
+body[class*="_imagify-ngg-bulk-optimization"] .media-item {
 	margin: 0;
 }
 
 .media_page_imagify-bulk-optimization .media-item .progress,
-.gallery_page_imagify-ngg-bulk-optimization .media-item .progress {
+body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress {
 	float: none;
 	width: 100%;
 	margin: 0;
@@ -313,7 +313,7 @@ td .imagify-chart {
 }
 
 .media_page_imagify-bulk-optimization .media-item .percent,
-.gallery_page_imagify-ngg-bulk-optimization .media-item .percent {
+body[class*="_imagify-ngg-bulk-optimization"] .media-item .percent {
 	width: auto;
 	padding: 0 5px;
 	line-height: 1.85;
@@ -321,13 +321,13 @@ td .imagify-chart {
 }
 
 .media_page_imagify-bulk-optimization .media-item .progress,
-.gallery_page_imagify-ngg-bulk-optimization .media-item .progress,
-.gallery_page_imagify-ngg-bulk-optimization .media-item .percent,
+body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress,
+body[class*="_imagify-ngg-bulk-optimization"] .media-item .percent,
 .media_page_imagify-bulk-optimization .media-item .percent {
 	text-align: right;
 }
 .media_page_imagify-bulk-optimization .media-item .progress .bar,
-.gallery_page_imagify-ngg-bulk-optimization .media-item .progress .bar {
+body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	width: 1px;
 	height: 22px;
 	margin-top: 0;

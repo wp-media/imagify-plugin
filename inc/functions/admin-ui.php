@@ -197,8 +197,11 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 		$output .= '<a href="' . get_imagify_admin_url( 'options-general' ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
 		return $output;
 	}
-
-	if ( false !== get_transient( 'imagify-async-in-progress-' . $attachment_id ) ) {
+	
+	$transient_context = ( 'wp' !== $context ) ? strtolower( $context ) . '-' : '';
+	$transient_name    = 'imagify-' . $transient_context . 'async-in-progress-' . $attachment_id;
+	
+	if ( false !== get_transient( $transient_name ) ) {
 		$output = '<div class="button"><span class="imagify-spinner"></span>' . __( 'Optimizing...', 'imagify' ) . '</div>';
 		return $output;
 	}
@@ -350,7 +353,8 @@ function imagify_payment_modal() {
 										</span>
 									</span>
 
-									<p class="imagify-price-complement"><?php printf( __( '%s per<br> additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); ?></p>
+									<p class="imagify-price-complement"><?php printf( __( '%s per<br>
+additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); ?></p>
 
 								</div>
 								<div class="imagify-col-other-actions">
@@ -477,7 +481,8 @@ function imagify_payment_modal() {
 
 										<span class="imagify-recommend" aria-hidden="true"><?php esc_html_e( 'we recommend for you', 'imagify' ); ?></span>
 
-										<p class="imagify-price-complement"><?php printf( __( '%s per<br> additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); ?></p>
+										<p class="imagify-price-complement"><?php printf( __( '%s per<br>
+additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); ?></p>
 
 									</div><!-- .imagify-col-price -->
 
@@ -628,7 +633,7 @@ function imagify_payment_modal() {
 
 					<?php $imagify_api_key = get_imagify_option( 'api_key', false ); ?>
 
-					<iframe data-imagify-api="<?php echo $imagify_api_key; ?>" id="imagify-payment-iframe" src="<?php echo get_theme_root_uri(); ?>/fake-form-iframe.php?api=<?php echo $imagify_api_key; ?>" frameborder="0"></iframe>
+					<iframe data-imagify-api="<?php echo $imagify_api_key; ?>" id="imagify-payment-iframe" src="" frameborder="0"></iframe>
 
 				</div><!-- .imagify-modal-views -->
 				

@@ -37,7 +37,7 @@ function _imagify_admin_print_styles() {
 	wp_register_script(
 		'imagify-js-async',
 		IMAGIFY_ASSETS_JS_URL . 'imagify.min.js',
-		array(),
+		array( 'imagify-js-bulk' ),
 		IMAGIFY_VERSION,
 		true
 	);
@@ -118,7 +118,7 @@ function _imagify_admin_print_styles() {
 	wp_enqueue_script( 'imagify-js-admin' );
 
 	$admin_data = get_imagify_localize_script_translations( 'admin' );
-	wp_localize_script( 'imagify-js-admin', 'imagify', $admin_data );
+	wp_localize_script( 'imagify-js-admin', 'imagifyAdmin', $admin_data );
 	wp_enqueue_script( 'imagify-js-admin' );
 
 	/*
@@ -169,7 +169,14 @@ function _imagify_admin_print_styles() {
 		$bulk_data['heartbeat_id'] = 'update_bulk_data';
 		$bulk_data['ajax_action']  = 'imagify_get_unoptimized_attachment_ids';
 		$bulk_data['ajax_context'] = 'wp';
-				
+		
+		/**
+		 * Filter the number of parallel queries during the Bulk Optimization
+		 *
+		 * @since 1.5.4
+		*/
+		$bulk_data['buffer_size']  = apply_filters( 'imagify_bulk_buffer_size', 4 );
+		
 		wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
 		wp_enqueue_script( 'imagify-js-chart' );
 		wp_enqueue_script( 'imagify-js-async' );
@@ -186,8 +193,8 @@ add_action( 'admin_footer-media_page_imagify-bulk-optimization', '_imagify_admin
 add_action( 'admin_footer-settings_page_imagify', '_imagify_admin_print_intercom' );
 function _imagify_admin_print_intercom() { 
 	$user = get_imagify_user();
-
-	if ( ! imagify_valid_key() || empty( $user->is_intercom ) ) {
+	
+	if ( ! imagify_valid_key() || empty( $user->is_intercom ) || false === $user->display_support ) {
 		return;
 	}
 	?>	
