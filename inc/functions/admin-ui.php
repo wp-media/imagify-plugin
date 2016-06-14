@@ -226,7 +226,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
  * @return string HTML
  *
  * @since  1.5
- * @author  Geoffrey
+ * @author Geoffrey
  * 
  * @todo add only for no-payable users?
  */
@@ -256,7 +256,7 @@ function get_imagify_new_to_imagify() {
  * @return string			the markuped price
  *
  * @since  1.5
- * @author  Geoffrey
+ * @author Geoffrey
  */
 function get_imagify_price_table_format( $value ) {
 	$v = explode( '.', (string) $value );
@@ -269,7 +269,9 @@ function get_imagify_price_table_format( $value ) {
  * @return string HTML code for payement modal
  *
  * @since  1.5
- * @author  Geoffrey
+ * @author Geoffrey
+ *
+ * @todo Make first offers dynamic thanks to consumption estimation
  */
 function imagify_payment_modal() {
 ?>
@@ -414,8 +416,6 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				
 				<?php
 
-				
-
 				/**
 				* 
 				*
@@ -423,8 +423,6 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				*
 				* 
 				*/
-
-				
 
 				?>
 
@@ -543,8 +541,6 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 
 				<?php
 
-				
-
 				/**
 				* 
 				*
@@ -552,8 +548,6 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				*
 				* 
 				*/
-
-				
 
 				?>
 
@@ -637,9 +631,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 
 				</div><!-- .imagify-modal-views -->
 				
-
 				<?php
-
 
 				/**
 				* 
@@ -648,7 +640,6 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				*
 				* 
 				*/
-				
 
 				?>
 
