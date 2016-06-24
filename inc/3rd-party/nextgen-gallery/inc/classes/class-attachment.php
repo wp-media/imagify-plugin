@@ -251,6 +251,12 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 			return;
 		}
 		
+		// To avoid issue with "original_size" at 0 in "_imagify_data"
+		if ( 0 === $this->get_stats_data( 'original_size' ) ) {
+			delete_post_meta( $id, '_imagify_data' );
+			delete_post_meta( $id, '_imagify_status' );
+		}
+		
 		/**
 		 * Fires before optimizing an attachment.
 		 *

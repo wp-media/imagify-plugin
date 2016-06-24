@@ -211,6 +211,12 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		if ( $this->is_optimized() && ( $this->get_optimization_level() == $optimization_level ) ) {
 			return;
 		}
+		
+		// To avoid issue with "original_size" at 0 in "_imagify_data"
+		if ( 0 === $this->get_stats_data( 'original_size' ) ) {
+			delete_post_meta( $id, '_imagify_data' );
+			delete_post_meta( $id, '_imagify_status' );
+		}
 
 		/**
 		 * Fires before optimizing an attachment.
