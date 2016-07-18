@@ -90,6 +90,17 @@ function get_imagify_packs_prices() {
 }
 
 /**
+ * Get Maximum image size for free plan
+ *
+ * @return string
+ * @since 1.5.6
+ * @author Remy Perona
+ **/
+function get_imagify_max_image_size() {
+    return Imagify()->getPublicInfo()->max_image_size;
+}
+
+/**
  * Imagify.io API for WordPress
  */
 class Imagify {
@@ -285,6 +296,15 @@ class Imagify {
      */
     public function getPacksPrices() {
         return $this->httpCall( 'pricing/pack/' );
+    }
+
+    /**
+     * Get Public Info
+     *
+     * @return object
+     */
+    public function getPublicInfo() {
+        return $this->httpCall( 'public-info' );
     }
 
 	/**
