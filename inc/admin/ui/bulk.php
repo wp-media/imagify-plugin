@@ -217,7 +217,7 @@ function _imagify_display_bulk_page() {
 							</p>
 						</div>
 						<div class="imagify-cell imagify-pl0">
-							<p class="imagify-info-block"><?php printf( __( 'All images greater than %s will be optimized when using a paying monthly plan.', 'imagify' ), size_format( 5000000 ) ); ?></p>
+							<p class="imagify-info-block"><?php printf( __( 'All images greater than %s will be optimized when using a paying monthly plan.', 'imagify' ), size_format( get_imagify_max_image_size() ) ); ?></p>
 						</div>
 					</div>
 				</div>

@@ -9,6 +9,7 @@ delete_site_option( 'imagify_settings' );
 delete_site_transient( 'imagify_check_licence_1' );
 delete_site_transient( 'imagify_bulk_optimization_level' );
 delete_site_transient( 'imagify_large_library' );
+delete_site_transient( 'imagify_max_image_size' );
 
 global $wpdb;
 // WP transients
