@@ -131,10 +131,9 @@ jQuery(function($){
 		// Display an alert to wait
 		swal({
 			title:imagifyBulk.labels.waitTitle,
-			text: imagifyBulk.labels.waitText,
+			html: imagifyBulk.labels.waitText,
 			closeOnConfirm: false,
 			showConfirmButton: false,
-			html: true,
 			imageUrl: imagifyBulk.labels.waitImageUrl
 		});
 		
@@ -166,10 +165,10 @@ jQuery(function($){
 				
 				// Display an alert to warn that all images has been optimized
 				swal({
-					title		: swal_title,
-					text 		: swal_text,
-					type	    : "info",
-					customClass : "imagify-sweet-alert"
+					title: swal_title,
+					html: swal_text,
+					type: "info",
+					customClass: "imagify-sweet-alert"
 				});
 
 			} else {				
@@ -231,10 +230,9 @@ jQuery(function($){
 						if ( data.error.indexOf("You've consumed all your data") >= 0 ) {
 							swal({
 								title: imagifyBulk.labels.overQuotaTitle,
-								text: imagifyBulk.labels.overQuotaText,
+								html: imagifyBulk.labels.overQuotaText,
 								type: "error",
 								customClass: "imagify-sweet-alert",
-								html: true,
 							},
 							function(){
 								location.reload();
@@ -298,7 +296,7 @@ jQuery(function($){
 		.fail(function () {
 			swal({
 				title: imagifyBulk.labels.getUnoptimizedImagesErrorTitle,
-				text: imagifyBulk.labels.getUnoptimizedImagesErrorText,
+				html: imagifyBulk.labels.getUnoptimizedImagesErrorText,
 				type: "error",
 				customClass: "imagify-sweet-alert"
 			},

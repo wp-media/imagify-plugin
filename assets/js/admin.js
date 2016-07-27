@@ -19,15 +19,14 @@ jQuery(function($){
 		// Display the sign up form
 		swal({
 			title: imagifyAdmin.labels.signupTitle,
-			text: imagifyAdmin.labels.signupText,
+			html: imagifyAdmin.labels.signupText,
 			confirmButtonText: imagifyAdmin.labels.signupConfirmButtonText,
-			type: "input",
+			input: 'email',
 			closeOnConfirm: false,
 			allowOutsideClick: true,
 			showLoaderOnConfirm: true,
 			customClass: "imagify-sweet-alert imagify-sweet-alert-signup"
-		},
-		function(inputValue){
+		}).then(function(inputValue){
 			if ($.trim(inputValue) == "" || ! inputValue) {
 				swal.showInputError(imagifyAdmin.labels.signupErrorEmptyEmail);
 				return false;
@@ -40,7 +39,7 @@ jQuery(function($){
 				} else {
 					swal({
 						title:imagifyAdmin.labels.signupSuccessTitle,
-						text: imagifyAdmin.labels.signupSuccessText,
+						html: imagifyAdmin.labels.signupSuccessText,
 						type: "success",
 						customClass: "imagify-sweet-alert"
 					});
@@ -58,15 +57,14 @@ jQuery(function($){
 		// Display the sign up form
 		swal({
 			title: imagifyAdmin.labels.saveApiKeyTitle,
-			text: imagifyAdmin.labels.saveApiKeyText,
+			html: imagifyAdmin.labels.saveApiKeyText,
 			confirmButtonText: imagifyAdmin.labels.saveApiKeyConfirmButtonText,
-			type: "input",
+			input: 'text',
 			closeOnConfirm: false,
 			allowOutsideClick: true,
 			showLoaderOnConfirm: true,
 			customClass: "imagify-sweet-alert imagify-sweet-alert-signup"
-		},
-		function(inputValue){
+		}).then(function(inputValue){
 			if ($.trim(inputValue) == "" || ! inputValue) {
 				swal.showInputError(imagifyAdmin.labels.signupErrorEmptyEmail);
 				return false;
@@ -79,7 +77,7 @@ jQuery(function($){
 				} else {
 					swal({
 						title: imagifyAdmin.labels.ApiKeyCheckSuccessTitle,
-						text: imagifyAdmin.labels.ApiKeyCheckSuccessText,
+						html: imagifyAdmin.labels.ApiKeyCheckSuccessText,
 						type: "success",
 						customClass: "imagify-sweet-alert"
 					});
