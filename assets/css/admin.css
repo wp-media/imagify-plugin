@@ -147,7 +147,7 @@ body.imagify-modal-is-open {
 	background-color: #40b1d0  !important;
 	box-shadow: 0 3px 0 #338ea6  !important;
 }
-.imagify-sweet-alert button.cancel {
+.imagify-sweet-alert button.swal2-cancel {
 	background: #777 !important;
 	box-shadow: 0 3px 0 #444 !important;
 }
@@ -1160,8 +1160,13 @@ input[id^="imagify_sizes_"]:checked + label {
 	margin-top: 2em;
 }
 @media (max-width: 820px) {
-	.imagify-settings {
+	.imagify-settings {	
+		display: -webkit-box;
+		display: -ms-flexbox;
 		display: flex;
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-ms-flex-direction: column;
 		flex-direction: column;
 	}
 	.imagify-main {
@@ -2410,9 +2415,18 @@ td.imagify-cell-filename {
 
 /* Imagify Modal */
 .imagify-modal {
+	display: -webkit-box;
+	display: -ms-flexbox;
 	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: column;
 	flex-direction: column;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
 	align-items: center;
+	-webkit-box-pack: center;
+	-ms-flex-pack: center;
 	justify-content: center;
 }
 .js .imagify-modal {
