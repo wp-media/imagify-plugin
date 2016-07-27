@@ -40,7 +40,7 @@ jQuery(function($){
 					html: imagifyAdmin.labels.ApiKeyCheckSuccessText,
 					type: "success",
 					customClass: "imagify-sweet-alert"
-				},
+				}).then(
 				function(){
 					location.reload();
 				});
