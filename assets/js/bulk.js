@@ -132,7 +132,6 @@ jQuery(function($){
 		swal({
 			title:imagifyBulk.labels.waitTitle,
 			html: imagifyBulk.labels.waitText,
-			closeOnConfirm: false,
 			showConfirmButton: false,
 			imageUrl: imagifyBulk.labels.waitImageUrl
 		});
@@ -233,8 +232,7 @@ jQuery(function($){
 								html: imagifyBulk.labels.overQuotaText,
 								type: "error",
 								customClass: "imagify-sweet-alert",
-							},
-							function(){
+							}).then( function() {
 								location.reload();
 							});
 						}
@@ -299,8 +297,7 @@ jQuery(function($){
 				html: imagifyBulk.labels.getUnoptimizedImagesErrorText,
 				type: "error",
 				customClass: "imagify-sweet-alert"
-			},
-			function(){
+			}).then(function(){
 				location.reload();
 			});
 		});

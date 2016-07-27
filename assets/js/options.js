@@ -86,13 +86,13 @@ jQuery(function($){
 			swal({
 				title: imagifyOptions.noBackupTitle,
 				html: imagifyOptions.noBackupText,
-				type: "info",
+				type: "warning",
 				customClass: "imagify-sweet-alert",
 				showCancelButton: true,
-				cancelButtonText: imagifyAdmin.labels.swalCancel
+				cancelButtonText: imagifyAdmin.labels.swalCancel,
+				reverseButtons: true,
 			}).then(
     			function() {
-        			
     			},
 			    function(dismiss){
 					$_this.prop('checked', true);
