@@ -138,6 +138,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.5.6 =
 * Improvement
  * Dynamically update from the API the maximum image size allowed in bulk optimization
+ * Updated SweetAlert to SweetAlert2
 
 = 1.5.5 =
 * Bug Fix
