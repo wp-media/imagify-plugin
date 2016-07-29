@@ -22,7 +22,7 @@ function _imagify_admin_print_styles() {
 
 	wp_register_style(
 		'imagify-css-sweetalert',
-		IMAGIFY_ASSETS_CSS_URL . 'sweetalert' . $css_ext,
+		IMAGIFY_ASSETS_CSS_URL . 'sweetalert2' . $css_ext,
 		array(),
 		IMAGIFY_VERSION
 	);
@@ -68,7 +68,7 @@ function _imagify_admin_print_styles() {
 
 	wp_register_script(
 		'imagify-js-sweetalert',
-		IMAGIFY_ASSETS_JS_URL . 'sweetalert.min.js',
+		IMAGIFY_ASSETS_JS_URL . 'sweetalert2' . $js_ext,
 		array( 'jquery' ),
 		IMAGIFY_VERSION,
 		true
