@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @param   string 	  $file_path 	  	   Absolute path to the image file.
  * @param   bool   	  $backup 		  	   Force a backup of the original file.
  * @param   int 	  $optimization_level  The optimization level (2=ultra, 1=aggressive, 0=normal).
- * @param   array 	  $resize  		  	   The resize parameters (with & height).
  * @param   bool 	  $keep_exif  		   To keep exif data or not
  * @return obj|array  Error message | Optimized image data
  */
@@ -19,10 +18,10 @@ function do_imagify( $file_path, $args = array() ) {
 		array(
 			'backup'             => get_imagify_option( 'backup', false ),
 			'optimization_level' => get_imagify_option( 'optimization_level', 1 ),
-			'resize'             => array(),
 			'keep_exif'          => get_imagify_option( 'exif', false ),
 			'context'			 => 'wp',
-			'original_size'		 => 0
+			'resized'            => false,
+			'original_size'		 => 0,
 		), 
 		$args
 	);
@@ -92,7 +91,6 @@ function do_imagify( $file_path, $args = array() ) {
 				array(
 					'aggressive' 	=> ( 1 === (int) $args['optimization_level'] ) ? true : false,
 					'ultra'  	 	=> ( 2 === (int) $args['optimization_level'] ) ? true : false,
-					'resize' 	 	=> $args['resize'],
 					'keep_exif'  	=> $args['keep_exif'],
 					'context' 	 	=> $args['context'],
 					'original_size' => $args['original_size']
@@ -108,7 +106,7 @@ function do_imagify( $file_path, $args = array() ) {
 	}
 
 	// Create a backup file
-	if ( 'wp' === $args['context'] && $args['backup'] ) {		
+	if ( 'wp' === $args['context'] && $args['backup'] && ! $args['resized'] ) {		
 		$backup_path      = get_imagify_attachment_backup_path( $file_path );
 		$backup_path_info = pathinfo( $backup_path );
 
