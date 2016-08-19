@@ -199,8 +199,9 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		);
 
 		// Get file path & URL for original image
-		$attachment_path = $this->get_original_path();
-		$attachment_url  = $this->get_original_url();
+		$attachment_path          = $this->get_original_path();
+		$attachment_url           = $this->get_original_url();
+		$attachment_original_size = $this->get_original_size( false );
 		
 		// Check if the attachment extension is allowed
 		if ( ! $id || ! wp_attachment_is_image( $id ) ) {
@@ -236,7 +237,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		$attachment_size  = @getimagesize( $attachment_path );
 
 		if ( $do_resize && isset( $attachment_size[0] ) && $resize_width < $attachment_size[0] ) {
-            $resized_attachment_path = $this->resize_attachment( $attachment_path, $attachment_size, $resize_width );
+            $resized_attachment_path = $this->resize( $attachment_path, $attachment_size, $resize_width );
             
             if ( ! is_wp_error( $resized_attachment_path ) ) {
                 $backup_path      = get_imagify_attachment_backup_path( $attachment_path );
@@ -265,7 +266,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			'optimization_level' => $optimization_level,
 			'context'            => 'wp',
 			'resized'            => $resized,
-			'original_size'		 => $this->get_original_size( false )
+			'original_size'		 => $$attachment_original_size,
 		) );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
 		
