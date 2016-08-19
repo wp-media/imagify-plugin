@@ -392,7 +392,7 @@ class Imagify_Abstract_Attachment {
      * @param int $max_width Maximum width defined in the settings
      * @return string Path the the resized image or the original image if the resize failed
      */
-    function resize_attachment( $attachment_path, $attachment_sizes, $max_width ) {
+    function resize( $attachment_path, $attachment_sizes, $max_width ) {
     	$new_sizes = wp_constrain_dimensions( $attachment_sizes[0], $attachment_sizes[1], $max_width );
     
         $editor = wp_get_image_editor( $attachment_path );
