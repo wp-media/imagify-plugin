@@ -266,7 +266,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			'optimization_level' => $optimization_level,
 			'context'            => 'wp',
 			'resized'            => $resized,
-			'original_size'		 => $$attachment_original_size,
+			'original_size'		 => $attachment_original_size,
 		) );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
 		
