@@ -380,4 +380,61 @@ class Imagify_Abstract_Attachment {
 	 * @return void
 	 */
 	public function restore() {}
+
+    /**
+     * Resize an image if bigger than the maximum width defined in the settings.
+     *
+     * @since 1.5.7
+     * @author Remy Perona
+     *
+     * @param string $attachment_path Path to the image
+     * @param array $attachment_sizes Array of original image dimensions
+     * @param int $max_width Maximum width defined in the settings
+     * @return string Path the the resized image or the original image if the resize failed
+     */
+    function resize( $attachment_path, $attachment_sizes, $max_width ) {
+    	$new_sizes = wp_constrain_dimensions( $attachment_sizes[0], $attachment_sizes[1], $max_width );
+    
+        $editor = wp_get_image_editor( $attachment_path );
+    
+        if ( is_wp_error( $editor ) ) {
+    		return $editor;
+        }
+        
+        $image_type = pathinfo( $attachment_path, PATHINFO_EXTENSION );
+    
+        // try to correct for auto-rotation if the info is available
+        if ( function_exists( 'exif_read_data' ) && ( $image_type == 'jpg' || $image_type == 'jpeg' ) ) {
+        	$exif = @exif_read_data( $attachment_path );
+        	$orientation = is_array( $exif ) && array_key_exists( 'Orientation', $exif ) ? $exif['Orientation'] : 0;
+    
+        	switch( $orientation ) {
+        		case 3:
+        			$editor->rotate( 180 );
+        			break;
+        		case 6:
+        			$editor->rotate( -90 );
+        			break;
+        		case 8:
+        			$editor->rotate( 90 );
+        			break;
+        	}
+        }
+        
+        $resized = $editor->resize( $new_sizes[0], $new_sizes[1], false );
+    
+        if ( is_wp_error( $resized ) ) {
+    		return $resized;
+        }
+    
+        $resized_image_path = $editor->generate_filename( null );
+        
+        $resized_image_saved = $editor->save( $resized_image_path );
+    
+        if ( is_wp_error( $resized_image_saved ) ) {
+    		return $resized_image_saved;
+        }
+    
+        return $resized_image_path;
+    }
 }
