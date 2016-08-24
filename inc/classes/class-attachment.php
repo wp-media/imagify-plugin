@@ -240,14 +240,16 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
             $resized_attachment_path = $this->resize( $attachment_path, $attachment_size, $resize_width );
             
             if ( ! is_wp_error( $resized_attachment_path ) ) {
-                $backup_path      = get_imagify_attachment_backup_path( $attachment_path );
-                $backup_path_info = pathinfo( $backup_path );
+                if ( get_imagify_option( 'backup', false ) ) {
+                    $backup_path      = get_imagify_attachment_backup_path( $attachment_path );
+                    $backup_path_info = pathinfo( $backup_path );
             
-                wp_mkdir_p( $backup_path_info['dirname'] );
+                    wp_mkdir_p( $backup_path_info['dirname'] );
             
-                // TO DO - check and send a error message if the backup can't be created
-                @copy( $attachment_path, $backup_path );
-                imagify_chmod_file( $backup_path );
+                    // TO DO - check and send a error message if the backup can't be created
+                    @copy( $attachment_path, $backup_path );
+                    imagify_chmod_file( $backup_path );
+                }
             
                 @rename( $resized_attachment_path, $attachment_path );
                 imagify_chmod_file( $attachment_path );
