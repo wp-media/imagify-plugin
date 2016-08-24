@@ -136,7 +136,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 = 1.5.8 =
-* Bug fix
+* Regression fix
  * Check if the backup option is active before doing a backup when an image is resized
 
 = 1.5.7 =
