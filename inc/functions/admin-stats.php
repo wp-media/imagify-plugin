@@ -255,3 +255,175 @@ function imagify_count_saving_data( $key = '' ) {
 
 	return $data;
 }
+
+/**
+ * Returns the estimated total size of the images not optimized
+ *
+ * We estimate the total size of the images in the library by getting the latest 250 images and their thumbnails
+ * add up their filesizes, and doing some maths to get the total size
+ * 
+ * @return string the current estimated total size of images not optimized
+ *
+ * @since  X.X.X
+ * @author Remy Perona
+ */
+function imagify_calculate_total_size_images_library() {
+    global $wpdb;
+
+    $images_id = $wpdb->get_results( "
+        SELECT ID FROM $wpdb->posts
+        WHERE (post_mime_type LIKE 'image/%')
+        AND post_type = 'attachment' AND (post_status = 'inherit')
+        LIMIT 250
+    ", ARRAY_A );
+
+    $images_id = wp_list_pluck( $images_id, 'ID' );
+
+    if ( ! (bool)$images_id ) {
+        return size_format( 0 );
+    }
+
+    $partial_total_images = count( $images_id );
+    $total_images         = imagify_count_attachments();
+    $total_size_images    = imagify_calculate_total_image_size( $images_id, $partial_total_images, $total_images );
+
+    return size_format( $total_size_images );
+ }
+
+/**
+ * Returns the estimated average size of the images uploaded per month
+ *
+ * We estimate the average size of the images uploaded in the library per month by getting the latest 250 images and their thumbnails
+ * for the 3 latest months, add up their filesizes, and doing some maths to get the total average size
+ * 
+ * @return string the current estimated average size of images uploaded per month
+ *
+ * @since  X.X.X
+ * @author Remy Perona
+ */
+function imagify_calculate_average_size_images_per_month() {
+    $partial_images_uploaded_last_month = new WP_Query( array(
+        'post_type'      => 'attachment',
+        'post_status'    => 'inherit',
+        'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+        'posts_per_page' => 250,
+        'date_query'     => array(
+            array(
+                'before' => 'now',
+                'after'  => '1 month ago'
+            )            
+        ),
+        'fields'         => 'ids'
+    ) );
+
+    $partial_images_uploaded_two_months_ago = new WP_Query( array(
+        'post_type'      => 'attachment',
+        'post_status'    => 'inherit',
+        'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+        'posts_per_page' => 250,
+        'date_query'     => array(
+            array(
+                'before' => '1 month ago',
+                'after'  => '2 months ago'
+            )            
+        ),
+        'fields'         => 'ids'
+    ) );
+
+    $partial_images_uploaded_three_months_ago = new WP_Query( array(
+        'post_type'      => 'attachment',
+        'post_status'    => 'inherit',
+        'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+        'posts_per_page' => 250,
+        'date_query'     => array(
+            array(
+                'before' => '2 months ago',
+                'after'  => '3 months ago'
+            )            
+        ),
+        'fields'         => 'ids'
+    ) );
+
+    $images_uploaded_id = new WP_Query( array(
+        'post_type'      => 'attachment',
+        'post_status'    => 'inherit',
+        'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+        'posts_per_page' => -1,
+        'date_query'     => array(
+            array(
+                'before' => 'now',
+                'after'  => '3 months ago'
+            )            
+        ),
+        'fields'         => 'ids'
+    ) );
+
+    $partial_images_uploaded_id = array_merge( $partial_images_uploaded_last_month->posts, $partial_images_uploaded_two_months_ago->posts, $partial_images_uploaded_three_months_ago->posts );
+
+    if ( ! (bool)$partial_images_uploaded_id ) {
+        return size_format( 0 );
+    }
+
+    if ( ! (bool)$images_uploaded_id->posts ) {
+        return size_format( 0 );
+    }
+
+    $partial_total_images_uploaded = count( $partial_images_uploaded_id );
+    $total_images_uploaded         = $images_uploaded_id->post_count;
+    $average_size_images_per_month = imagify_calculate_total_image_size( $partial_images_uploaded_id, $partial_total_images_uploaded, $total_images_uploaded ) / 3;
+    
+    return size_format( $average_size_images_per_month );
+}
+
+/**
+ * Returns the estimated total size of images
+ * 
+ * @param array $images_id Array of images ID
+ * @param int $partial_total_images The number of images we're doing the calculation with
+ * @param int $total_images The total number of images
+ * @return int The estimated total size of images
+ *
+ * @since  X.X.X
+ * @author Remy Perona
+ */
+function imagify_calculate_total_image_size( $images_id, $partial_total_images, $total_images ) {
+    $partial_size_images               = '';
+    $partial_total_intermediate_images = '';
+
+    foreach( $images_id as $image_id ) {
+        $image_metadata = wp_get_attachment_metadata( $image_id );
+        $sizes          = ( isset( $image_metadata['sizes'] ) ) ? (array) $image_metadata['sizes'] : array();
+        $imagify_data   = get_post_meta( $image_id, '_imagify_data', true );
+        $imagify_status = get_post_meta( $image_id, '_imagify_status', true );
+
+        if ( $imagify_status === 'success' ) {
+            $partial_size_images += $imagify_data['stats']['original_size'];
+            foreach ( $imagify_data['sizes'] as $size ) {
+                $partial_total_intermediate_images++;
+            }
+            continue;
+        }
+
+        $full_image           = get_attached_file( $image_id );
+        $partial_size_images += filesize( $full_image );
+
+        if ( (bool)$sizes ) {
+            foreach( $sizes as $size_key => $size_data ) {
+                if (  array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) && ! imagify_is_active_for_network() ) {
+                    continue;
+                }
+
+                $thumbnail_path = trailingslashit( dirname( $full_image ) ) . $size_data['file'];
+
+                $partial_size_images += filesize( $thumbnail_path );
+                $partial_total_intermediate_images++;
+            }
+        }
+    }
+
+    $intermediate_images_per_image  = $partial_total_intermediate_images / $partial_total_images;
+    $average_size_images            = $partial_size_images / ( $partial_total_images + $partial_total_intermediate_images );
+    $total_size_images              = $average_size_images * ( $total_images + ( $intermediate_images_per_image * $total_images ) );
+
+    return $total_size_images;
+}
