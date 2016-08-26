@@ -292,7 +292,7 @@ function imagify_payment_modal() {
 							<div class="imagify-col">
 								<p>
 									<span class="imagify-border-styled"><?php 
-										printf( esc_html__( 'You have %s images', 'imagify' ), '</span><span class="imagify-big-number">' . imagify_count_attachments() . '</span><span class="imagify-border-styled">' ); ?></span>
+										printf( esc_html__( 'You have %s images', 'imagify' ), '</span><span class="imagify-big-number">' . $attachments_number . '</span><span class="imagify-border-styled">' ); ?></span>
 								</p>
 							</div>
 							<div class="imagify-col">
