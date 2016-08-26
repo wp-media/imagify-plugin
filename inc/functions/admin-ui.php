@@ -282,7 +282,8 @@ function imagify_payment_modal() {
 					<li id="imagify-pricing-step-1" class="active"><?php esc_html_e( 'Choose Plan', 'imagify' ); ?></li>
 					<li id="imagify-pricing-step-2"><?php esc_html_e( 'Payment Info', 'imagify' ); ?></li>
 				</ol>
-				
+				<?php $attachments_number = imagify_count_attachments();
+                if ( $attachments_number > 50 ) : ?>
 				<div class="imagify-modal-views imagify-pre-checkout-view" id="imagify-pre-checkout-view" aria-hidden="false">
 					<div class="imagify-modal-section section-gray">
 						<p class="imagify-modal-title"><?php esc_html_e( 'We analysed your images', 'imagify' ); ?></p>
@@ -291,22 +292,22 @@ function imagify_payment_modal() {
 							<div class="imagify-col">
 								<p>
 									<span class="imagify-border-styled"><?php 
-										printf( esc_html__( 'You have %s images', 'imagify' ), '</span><span class="imagify-big-number">58000</span><span class="imagify-border-styled">' ); ?></span>
+										printf( esc_html__( 'You have %s images', 'imagify' ), '</span><span class="imagify-big-number">' . imagify_count_attachments() . '</span><span class="imagify-border-styled">' ); ?></span>
 								</p>
 							</div>
 							<div class="imagify-col">
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-images-alt2" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'You actually have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark">3 GB</strong>' ); ?>
+									<?php printf( esc_html__( 'You currently have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark">' . get_imagify_option( 'total_size_images_library', 0 ) . '</strong>' ); ?>
 								</p>
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-cloud" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'You upload around %s of images per month.', 'imagify' ), '<strong class="imagify-dark">353 MB</strong>' ); ?>
+									<?php printf( esc_html__( 'You upload around %s of images per month.', 'imagify' ), '<strong class="imagify-dark">' . get_imagify_option( 'average_size_images_per_month', 0 ) . '</strong>' ); ?>
 								</p>
 							</div>
 						</div>
 					</div>
-
+                    <?php endif; ?>
 					<div class="imagify-modal-section">
 						<p class="imagify-modal-title"><?php esc_html_e( 'We recommend you this plan', 'imagify' ); ?></p>
 
