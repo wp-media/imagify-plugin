@@ -302,10 +302,12 @@ function imagify_calculate_total_size_images_library() {
  * @author Remy Perona
  */
 function imagify_calculate_average_size_images_per_month() {
+    $imagify_mime_types = get_imagify_mime_type();
+
     $partial_images_uploaded_last_month = new WP_Query( array(
         'post_type'      => 'attachment',
         'post_status'    => 'inherit',
-        'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+        'post_mime_type' => $imagify_mime_types,
         'posts_per_page' => 250,
         'date_query'     => array(
             array(
@@ -319,7 +321,7 @@ function imagify_calculate_average_size_images_per_month() {
     $partial_images_uploaded_two_months_ago = new WP_Query( array(
         'post_type'      => 'attachment',
         'post_status'    => 'inherit',
-        'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+        'post_mime_type' => $imagify_mime_types,
         'posts_per_page' => 250,
         'date_query'     => array(
             array(
@@ -333,7 +335,7 @@ function imagify_calculate_average_size_images_per_month() {
     $partial_images_uploaded_three_months_ago = new WP_Query( array(
         'post_type'      => 'attachment',
         'post_status'    => 'inherit',
-        'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+        'post_mime_type' => $imagify_mime_types,
         'posts_per_page' => 250,
         'date_query'     => array(
             array(
@@ -347,7 +349,7 @@ function imagify_calculate_average_size_images_per_month() {
     $images_uploaded_id = new WP_Query( array(
         'post_type'      => 'attachment',
         'post_status'    => 'inherit',
-        'post_mime_type' => array( 'image/jpeg', 'image/gif', 'image/png' ),
+        'post_mime_type' => $imagify_mime_types,
         'posts_per_page' => -1,
         'date_query'     => array(
             array(
