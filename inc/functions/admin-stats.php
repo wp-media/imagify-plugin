@@ -395,10 +395,10 @@ function imagify_calculate_total_image_size( $images_id, $partial_total_images, 
     foreach( $images_id as $image_id ) {
         $image_metadata = wp_get_attachment_metadata( $image_id );
         $sizes          = ( isset( $image_metadata['sizes'] ) ) ? (array) $image_metadata['sizes'] : array();
-        $imagify_data   = get_post_meta( $image_id, '_imagify_data', true );
         $imagify_status = get_post_meta( $image_id, '_imagify_status', true );
 
         if ( $imagify_status === 'success' ) {
+            $imagify_data         = get_post_meta( $image_id, '_imagify_data', true );
             $partial_size_images += $imagify_data['stats']['original_size'];
             foreach ( $imagify_data['sizes'] as $size ) {
                 $partial_total_intermediate_images++;
