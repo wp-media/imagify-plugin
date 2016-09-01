@@ -389,24 +389,78 @@ function imagify_calculate_average_size_images_per_month() {
  * @author Remy Perona
  */
 function imagify_calculate_total_image_size( $images_id, $partial_total_images, $total_images ) {
+    global $wpdb;
     $partial_size_images               = '';
     $partial_total_intermediate_images = '';
+    $sql_ids                           = implode( ',', $images_id );
+
+    // Get attachments filename
+	$attachments_filename = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
+		 FROM $wpdb->postmeta as pm
+		 WHERE pm.meta_key= '_wp_attached_file'
+		 	   AND pm.post_id IN ($sql_ids)
+		 ORDER BY pm.post_id DESC"
+		 , ARRAY_A	
+	);
+
+    $attachments_filename = imagify_query_results_combine( $images_id, $attachments_filename );
+
+    // Get attachments data
+	$attachments_data = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
+		 FROM $wpdb->postmeta as pm
+		 WHERE pm.meta_key= '_wp_attachment_metadata'
+		 	   AND pm.post_id IN ($sql_ids)
+		 ORDER BY pm.post_id DESC"
+		 , ARRAY_A	
+	);
+	
+	$attachments_data = imagify_query_results_combine( $images_id, $attachments_data );	
+	$attachments_data = array_map( 'maybe_unserialize', $attachments_data );
+
+    // Get imagify data
+	$imagify_data = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
+		 FROM $wpdb->postmeta as pm
+		 WHERE pm.meta_key= '_imagify_data'
+		 	   AND pm.post_id IN ($sql_ids)
+		 ORDER BY pm.post_id DESC"
+		 , ARRAY_A	
+	);
+	
+	$imagify_data = imagify_query_results_combine( $images_id, $imagify_data );	
+	$imagify_data = array_map( 'maybe_unserialize', $imagify_data );
+	
+	// Get attachments status
+	$attachments_status = $wpdb->get_results( 
+		"SELECT pm.post_id as id, pm.meta_value as value
+		 FROM $wpdb->postmeta as pm
+		 WHERE pm.meta_key= '_imagify_status'
+		 	   AND pm.post_id IN ($sql_ids)
+		 ORDER BY pm.post_id DESC"
+		, ARRAY_A		
+	);
+	
+	$attachments_status = imagify_query_results_combine( $images_id, $attachments_status );
 
     foreach( $images_id as $image_id ) {
-        $image_metadata = wp_get_attachment_metadata( $image_id );
-        $sizes          = ( isset( $image_metadata['sizes'] ) ) ? (array) $image_metadata['sizes'] : array();
-        $imagify_status = get_post_meta( $image_id, '_imagify_status', true );
+        $attachment_status = ( isset( $attachments_status[ $image_id ] ) ) ? $attachments_status[ $image_id ] : false;
 
-        if ( $imagify_status === 'success' ) {
-            $imagify_data         = get_post_meta( $image_id, '_imagify_data', true );
+        if ( $attachments_status === 'success' ) {
+            $imagify_data      = ( isset( $imagify_data[ $image_id ] ) ) ? $imagify_data[ $image_id ] : false;
             $partial_size_images += $imagify_data['stats']['original_size'];
-            foreach ( $imagify_data['sizes'] as $size ) {
+            foreach ( $attachment_data['sizes'] as $size ) {
                 $partial_total_intermediate_images++;
             }
             continue;
         }
 
-        $full_image           = get_attached_file( $image_id );
+        $attachment_metadata = ( isset( $attachments_data[ $image_id ] ) ) ? $attachments_data[ $image_id ] : false;
+        $sizes               = ( isset( $attachment_metadata['sizes'] ) ) ? (array) $attachment_metadata['sizes'] : array();
+
+        /** This filter is documented in inc/functions/process.php */
+		$full_image = apply_filters( 'imagify_file_path', get_imagify_attached_file( $attachments_filename[ $image_id ] ) );
         $partial_size_images += filesize( $full_image );
 
         if ( (bool)$sizes ) {
