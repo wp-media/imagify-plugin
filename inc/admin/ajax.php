@@ -658,3 +658,26 @@ function _imagify_get_prices_from_api() {
 		wp_send_json_error( 'check_ajax_referer failed' );
 	}
 }
+
+/**
+ * Estimate sizes and update the options values for them
+ *
+ *
+ * @since  X.X.X
+ * @author Remy Perona
+ */
+add_action( 'wp_ajax_imagify_update_estimate_sizes', '_imagify_update_estimate_sizes' );
+function _imagify_update_estimate_sizes() {
+    if ( ! isset( $_POST['_ajax_nonce'] ) ) {
+        die();
+    }
+
+    if ( ! check_ajax_referer( 'update_estimate_sizes' ) ) {
+       die(); 
+    }
+
+    update_imagify_option( 'total_size_images_library', imagify_calculate_total_size_images_library() );
+    update_imagify_option( 'average_size_images_per_month', imagify_calculate_average_size_images_per_month() );
+
+    die( 1 );
+}
