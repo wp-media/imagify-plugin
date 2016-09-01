@@ -84,6 +84,8 @@ function _imagify_update_library_size_calculations_scheduled() {
  */
 add_action( 'imagify_update_library_size_calculations_event', '_do_imagify_update_library_size_calculations' );
 function _do_imagify_update_library_size_calculations() {
-    update_imagify_option( 'total_size_images_library', imagify_calculate_total_size_images_library() );
-    update_imagify_option( 'average_size_images_per_month', imagify_calculate_average_size_images_per_month() );
+    imagify_do_async_job( array( 
+        'action' => 'imagify_update_estimate_sizes',
+        '_ajax_nonce' => wp_create_nonce( 'update_estimate_sizes' ),
+    ) );
 }
