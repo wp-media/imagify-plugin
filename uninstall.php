@@ -10,6 +10,10 @@ delete_site_transient( 'imagify_check_licence_1' );
 delete_site_transient( 'imagify_bulk_optimization_level' );
 delete_site_transient( 'imagify_large_library' );
 
+// Clear scheduled hooks
+wp_clear_scheduled_hook( 'imagify_rating_event' );
+wp_clear_scheduled_hook( 'imagify_update_library_size_calculations_event' );
+
 global $wpdb;
 // WP transients
 $wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "_transient_imagify-async-in-progress-%"' );
