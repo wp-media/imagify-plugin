@@ -219,7 +219,7 @@ function imagify_count_saving_data( $key = '' ) {
 	$optimized_size = 0;
 	$count			= 0;
 
-	foreach( $attachments as $attachment_data ) {
+	foreach ( $attachments as $attachment_data ) {
 		if ( ! $attachment_data ) {
 			continue;
 		}
@@ -279,7 +279,7 @@ function imagify_calculate_total_size_images_library() {
 
     $images_id = wp_list_pluck( $images_id, 'ID' );
 
-    if ( ! (bool)$images_id ) {
+    if ( ! (bool) $images_id ) {
         return size_format( 0 );
     }
 
@@ -362,11 +362,11 @@ function imagify_calculate_average_size_images_per_month() {
 
     $partial_images_uploaded_id = array_merge( $partial_images_uploaded_last_month->posts, $partial_images_uploaded_two_months_ago->posts, $partial_images_uploaded_three_months_ago->posts );
 
-    if ( ! (bool)$partial_images_uploaded_id ) {
+    if ( ! (bool) $partial_images_uploaded_id ) {
         return size_format( 0 );
     }
 
-    if ( ! (bool)$images_uploaded_id->posts ) {
+    if ( ! (bool) $images_uploaded_id->posts ) {
         return size_format( 0 );
     }
 
@@ -463,16 +463,18 @@ function imagify_calculate_total_image_size( $images_id, $partial_total_images, 
 		$full_image = apply_filters( 'imagify_file_path', get_imagify_attached_file( $attachments_filename[ $image_id ] ) );
         $partial_size_images += filesize( $full_image );
 
-        if ( (bool)$sizes ) {
-            foreach( $sizes as $size_key => $size_data ) {
+        if ( (bool) $sizes ) {
+            foreach ( $sizes as $size_key => $size_data ) {
                 if (  array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) && ! imagify_is_active_for_network() ) {
                     continue;
                 }
-
+				
                 $thumbnail_path = trailingslashit( dirname( $full_image ) ) . $size_data['file'];
-
-                $partial_size_images += filesize( $thumbnail_path );
-                $partial_total_intermediate_images++;
+				
+				if ( file_exists( $thumbnail_path ) ) {
+					$partial_size_images += filesize( $thumbnail_path );
+					$partial_total_intermediate_images++;	
+				}
             }
         }
     }
