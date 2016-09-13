@@ -14,7 +14,7 @@ function _imagify_rating_scheduled() {
 	}
 }
 
-/*
+/**
  * Saved the user images count to display it later
  * in a notice message to ask him to rate Imagify on WordPress.org
  *
@@ -62,7 +62,7 @@ function imagify_purge_cron_schedule( $schedules ) {
 	return $schedules;
 }
 
-/*
+/**
  * Planning cron task to update weekly the size of the images and the size of images uploaded by month
  * If the task is not programmed, it is automatically triggered
  *
@@ -76,7 +76,7 @@ function _imagify_update_library_size_calculations_scheduled() {
     }
 }
 
-/*
+/**
  * Cron task to update weekly the size of the images and the size of images uploaded by month
  *
  * @since X.X.X
