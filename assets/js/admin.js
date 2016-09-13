@@ -244,8 +244,6 @@ jQuery(function($){
 								ot_suggested = false,
 								mo_suggested = false;
 
-							console.log(images_datas);
-
 							// Do the MONTHLIES Markup
 							// TODO: remove offers from monthlies depending on mo_user_cons
 							if ( monthlies === null || onetimes === null ) {
