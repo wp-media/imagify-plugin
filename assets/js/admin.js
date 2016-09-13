@@ -235,6 +235,12 @@ jQuery(function($){
 
 						// Do the MONTHLIES Markup
 						// TODO: remove offers from monthlies depending on mo_user_cons
+						if ( monthlies === null || onetimes === null ) {
+							var $offers_block = $( '.imagify-pre-checkout-offers' );
+							$offers_block.hide().attr( 'aria-hidden', true );
+							$offers_block.closest('.imagify-modal-views').find('.imagify-popin-message').remove();
+							$offers_block.after('<div class="imagify-popin-message imagify-error"><p>' + imagifyAdmin.labels.errorPriceAPI + '</p></div>');
+						}
 
 						$.each( monthlies, function( index, value ) {
 							if ( value.label === 'free' ) {
@@ -457,7 +463,7 @@ jQuery(function($){
 						var coma = onetime_id !== 0 && monthly_id !== 0 ? ',' : '',
 							key = imagify_get_api_key();
 
-// https://app.imagify.io/plugin-payment/onetimeplan,monthlyplan_or_yearlyplan/1,4/[token]
+						// https://app.imagify.io/plugin-payment/onetimeplan,monthlyplan_or_yearlyplan/1,4/[token]
 						 
 						// onetimeplan,monthlyplan_or_yearlyplan
 						iframe_plans  = onetime_id !== 0 ? 'onetimeplan' : '';
@@ -490,10 +496,10 @@ jQuery(function($){
 			};
 
 		// init views
+		//$pre_view.hide();
 		$plans_view.hide();
 		$payment_view.hide();
 		$success_view.hide();
-		//$pre_view.hide();
 
 		// 1) when you decide to choose another plan
 		
@@ -601,7 +607,7 @@ jQuery(function($){
 			$pre_view.hide().attr('aria-hidden', 'true');
 			$payment_view.fadeIn(speedFadeIn).attr('aria-hidden', 'false');
 
-			// hide "Cancel you removing" blocks
+			// hide "Cancel your removing" blocks
 			$('.imagify-cart-emptied-item').hide().attr('aria-hidden', 'true');
 
 			// Step 2 active

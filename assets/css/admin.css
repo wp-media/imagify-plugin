@@ -1418,6 +1418,14 @@ a.btn-rocket:focus {
 	background: #D0021B;
 }
 
+.imagify-popin-message {
+	padding: 5px 15px;
+	text-align: left;
+}
+.imagify-popin-message.imagify-error p {
+	color: #FFF;
+}
+
 .imagify-notice-title {
 	font-size: 15px;
 }
@@ -2845,7 +2853,7 @@ td.imagify-cell-filename {
 }
 .imagify-payment-modal .close-btn i {
 	margin-left: -3.5px;
-	margin-top: 1px;
+	margin-top: -1.5px;
 }
 .imagify-payment-modal .close-btn:hover {
 	background: #F6F7FB;
