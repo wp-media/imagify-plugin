@@ -2853,7 +2853,7 @@ td.imagify-cell-filename {
 }
 .imagify-payment-modal .close-btn i {
 	margin-left: -3.5px;
-	margin-top: -1.5px;
+	margin-top: -0.5px;
 }
 .imagify-payment-modal .close-btn:hover {
 	background: #F6F7FB;
