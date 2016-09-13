@@ -210,131 +210,154 @@ jQuery(function($){
 				return output;
 			},
 			imagify_get_pricing = function( $button ){
-				var data = {
+				var nonce = $button.data('nonce'),
+					prices_rq_datas = {
 						action: 'imagify_get_prices',
-						imagifynonce: $button.data('nonce')
+						imagifynonce: nonce
+					},
+					imgs_rq_datas = {
+						action: 'imagify_get_images_counts',
+						imagifynonce: nonce
 					};
 
 				$modal.find('.imagify-modal-loader').hide().show();
 
-				$.post( ajaxurl, data, function( response ) {
-					if ( response.success ) {
-						var datas		= response.data,
-							monthlies	= datas.monthlies,
-							onetimes	= datas.onetimes,
-							mo_user_cons= 1000, // TODO: dynamic, in MB,
-							ot_user_cons= 51000, // TODO: dynamic, in MB,
-							$mo_tpl		= $('#imagify-offer-monthly-template'),
-							$ot_tpl 	= $('#imagify-offer-onetime-template'),
-							ot_clone 	= $ot_tpl.html(),
-							mo_clone 	= $mo_tpl.html(),
-							ot_html		= '',
-							mo_html		= '',
-							ot_suggested= false,
-							mo_suggested= false;
+				// get the true prices
+				$.post( ajaxurl, prices_rq_datas, function( prices_response ) {
+					if ( prices_response.success ) {
 
-						// Do the MONTHLIES Markup
-						// TODO: remove offers from monthlies depending on mo_user_cons
-						if ( monthlies === null || onetimes === null ) {
-							var $offers_block = $( '.imagify-pre-checkout-offers' );
-							$offers_block.hide().attr( 'aria-hidden', true );
-							$offers_block.closest('.imagify-modal-views').find('.imagify-popin-message').remove();
-							$offers_block.after('<div class="imagify-popin-message imagify-error"><p>' + imagifyAdmin.labels.errorPriceAPI + '</p></div>');
-						}
+						// get the image estimates sizes
+						$.post( ajaxurl, imgs_rq_datas, function( imgs_response ) {
+							
+							var images_datas = imgs_response.data
+								prices_datas = prices_response.data,
+								monthlies    = prices_datas.monthlies,
+								onetimes     = prices_datas.onetimes,
+								mo_user_cons = images_datas.average_month_size.raw / 1000, // in MB,
+								ot_user_cons = images_datas.total_library_size.raw / 1000, // in MB,
+								$mo_tpl      = $('#imagify-offer-monthly-template'),
+								$ot_tpl      = $('#imagify-offer-onetime-template'),
+								ot_clone     = $ot_tpl.html(),
+								mo_clone     = $mo_tpl.html(),
+								ot_html      = '',
+								mo_html      = '',
+								ot_suggested = false,
+								mo_suggested = false;
 
-						$.each( monthlies, function( index, value ) {
-							if ( value.label === 'free' ) {
-								return true; // continue like (but $.each is not a loop… so)
+							console.log(images_datas);
+
+							// Do the MONTHLIES Markup
+							// TODO: remove offers from monthlies depending on mo_user_cons
+							if ( monthlies === null || onetimes === null ) {
+								var $offers_block = $( '.imagify-pre-checkout-offers' );
+								
+								// hide main content
+								$offers_block.hide().attr( 'aria-hidden', true );
+
+								// show error message
+								$offers_block.closest('.imagify-modal-views').find('.imagify-popin-message').remove();
+								$offers_block.after('<div class="imagify-popin-message imagify-error"><p>' + imagifyAdmin.labels.errorPriceAPI + '</p></div>');
+
+								// show the modal content
+								$modal.find('.imagify-modal-loader').fadeOut(300);
+
+								return;
 							}
-							var add = value.additional_gb,	// 4
-								ann = value.annual_cost,	// 49.9
-								id  = value.id,				// 3
-								lab = value.label,			// 'lite'
-								mon = value.monthly_cost,	// 4.99
-								quo = value.quota,			// 1000 (MB) - 5000 images
-								name= ( quo >= 1000 ? quo/1000 + ' GB' : quo + ' MB' ),
-								$tpl= $( mo_clone ).clone(),
-								pcs = { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 };
 
-							// parent classes
-							classes = '';
-							if ( ( mo_user_cons < quo && mo_suggested === false ) ) {
-								classes = ' imagify-offer-selected';
-								mo_suggested = true;
+							$.each( monthlies, function( index, value ) {
+								if ( value.label === 'free' ) {
+									return true; // continue-like (but $.each is not a loop… so)
+								}
+								var add = value.additional_gb,	// 4
+									ann = value.annual_cost,	// 49.9
+									id  = value.id,				// 3
+									lab = value.label,			// 'lite'
+									mon = value.monthly_cost,	// 4.99
+									quo = value.quota,			// 1000 (MB) - 5000 images
+									name= ( quo >= 1000 ? quo/1000 + ' GB' : quo + ' MB' ),
+									$tpl= $( mo_clone ).clone(),
+									pcs = { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 };
+
+								// parent classes
+								classes = '';
+								if ( ( mo_user_cons < quo && mo_suggested === false ) ) {
+									classes = ' imagify-offer-selected';
+									mo_suggested = true;
+								}
+								$tpl.addClass( 'imagify-monthly-' + lab + classes);
+
+								// name
+								$tpl.find('.imagify-offer-size').text( name );
+
+								// nb images
+								$tpl.find('.imagify-approx-nb').text( quo * 5 );
+
+								// additionnal price
+								$tpl.find('.imagify-price-add-data').text( '$' + add );
+
+								// main prices
+								$tpl.find('.imagify-number-block').html( imagify_get_html_price( pcs, 'monthly' ) );
+
+								// button data-offer attr
+								$tpl.find('.imagify-payment-btn-select-plan').attr('data-offer', '{"' + lab + '":{"id":' + id + ',"name":"' + name + '","data":' + quo + ',"dataf":"' + name + '","imgs":' + ( quo * 5 ) + ',"prices":{"monthly":' + pcs.monthly + ',"yearly":' + pcs.yearly + ',"add":' + add + '}}}');
+
+								// complete Monthlies HTML
+								mo_html += $tpl[0].outerHTML;
+
+							});
+
+							// Do the ONETIMES Markup
+							// TODO: add custom estimation in onetimes table based on ot_user_cons
+							$.each( onetimes, function( index, value ) {
+								var id = value.id, // 1
+									co = value.cost, // 3.49
+									la = value.label, // "250MB"
+									qu = value.quota, // 250
+									name = ( qu >= 1000 ? qu / 1000 + ' GB' : qu + ' MB' ),
+									$tpl = $( ot_clone ).clone();
+
+								// parent classes
+								classes = '';
+								if ( ( ot_user_cons < qu && ot_suggested === false ) ) {
+									classes = ' imagify-offer-selected';
+									ot_suggested = true;
+								}
+								$tpl.addClass( 'imagify-onetime-' + la + classes);
+
+								// name
+								$tpl.find('.imagify-offer-size').text( name );
+
+								// nb images
+								$tpl.find('.imagify-approx-nb').text( qu * 5 );
+
+								// main prices
+								$tpl.find('.imagify-number-block').html( imagify_get_html_price( co, 'monthly' ) );
+
+								// button data-offer attr
+								$tpl.find('.imagify-payment-btn-select-plan').attr('data-offer', '{"ot' + la + '":{"id":' + id + ',"name":"' + name + '","data":' + qu + ',"dataf":"' + name + '","imgs":' + ( qu * 5 ) + ',"price":' + co + '}}');
+
+								// complete Monthlies HTML
+								ot_html += $tpl[0].outerHTML;
+							});
+
+							// Fill pricing tables
+							if ( $mo_tpl.parent().find('.imagify-offer-line') ) {
+								$mo_tpl.parent().find('.imagify-offer-line').remove();
 							}
-							$tpl.addClass( 'imagify-monthly-' + lab + classes);
+							$mo_tpl.before( mo_html );
 
-							// name
-							$tpl.find('.imagify-offer-size').text( name );
-
-							// nb images
-							$tpl.find('.imagify-approx-nb').text( quo * 5 );
-
-							// additionnal price
-							$tpl.find('.imagify-price-add-data').text( '$' + add );
-
-							// main prices
-							$tpl.find('.imagify-number-block').html( imagify_get_html_price( pcs, 'monthly' ) );
-
-							// button data-offer attr
-							$tpl.find('.imagify-payment-btn-select-plan').attr('data-offer', '{"' + lab + '":{"id":' + id + ',"name":"' + name + '","data":' + quo + ',"dataf":"' + name + '","imgs":' + ( quo * 5 ) + ',"prices":{"monthly":' + pcs.monthly + ',"yearly":' + pcs.yearly + ',"add":' + add + '}}}');
-
-							// complete Monthlies HTML
-							mo_html += $tpl[0].outerHTML;
-
-						});
-
-						// Do the ONETIMES Markup
-						// TODO: add custom estimation in onetimes table based on ot_user_cons
-						$.each( onetimes, function( index, value ) {
-							var id = value.id, // 1
-								co = value.cost, // 3.49
-								la = value.label, // "250MB"
-								qu = value.quota, // 250
-								name = ( qu >= 1000 ? qu / 1000 + ' GB' : qu + ' MB' ),
-								$tpl = $( ot_clone ).clone();
-
-							// parent classes
-							classes = '';
-							if ( ( ot_user_cons < qu && ot_suggested === false ) ) {
-								classes = ' imagify-offer-selected';
-								ot_suggested = true;
+							if ( $ot_tpl.parent().find('.imagify-offer-line') ) {
+								$ot_tpl.parent().find('.imagify-offer-line').remove();
 							}
-							$tpl.addClass( 'imagify-onetime-' + la + classes);
+							$ot_tpl.before( ot_html );
 
-							// name
-							$tpl.find('.imagify-offer-size').text( name );
+							// Fill the Pre-checkout view
+							// (depending on user_cons)
 
-							// nb images
-							$tpl.find('.imagify-approx-nb').text( qu * 5 );
+							// Show the content 
+							$modal.find('.imagify-modal-loader').fadeOut(300);
 
-							// main prices
-							$tpl.find('.imagify-number-block').html( imagify_get_html_price( co, 'monthly' ) );
-
-							// button data-offer attr
-							$tpl.find('.imagify-payment-btn-select-plan').attr('data-offer', '{"ot' + la + '":{"id":' + id + ',"name":"' + name + '","data":' + qu + ',"dataf":"' + name + '","imgs":' + ( qu * 5 ) + ',"price":' + co + '}}');
-
-							// complete Monthlies HTML
-							ot_html += $tpl[0].outerHTML;
-						});
-
-						// Fill pricing tables
-						if ( $mo_tpl.parent().find('.imagify-offer-line') ) {
-							$mo_tpl.parent().find('.imagify-offer-line').remove();
-						}
-						$mo_tpl.before( mo_html );
-
-						if ( $ot_tpl.parent().find('.imagify-offer-line') ) {
-							$ot_tpl.parent().find('.imagify-offer-line').remove();
-						}
-						$ot_tpl.before( ot_html );
-
-						// Fill the Pre-checkout view
-						// (depending on user_cons)
-
-						// Show the content 
-						$modal.find('.imagify-modal-loader').fadeOut(300);
-
+						}); // second AJAX request for image estimation sizes
 
 					} else {
 						// TODO: replace modal content by any information
