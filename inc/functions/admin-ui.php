@@ -300,13 +300,17 @@ function imagify_payment_modal() {
 								</p>
 							</div>
 							<div class="imagify-col">
+								<?php
+								$total_size = get_imagify_option( 'total_size_images_library', 0 );
+								$per_month  = get_imagify_option( 'average_size_images_per_month', 0 );
+								?>
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-images-alt2" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'You currently have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark">' . get_imagify_option( 'total_size_images_library', 0 ) . '</strong>' ); ?>
+									<?php printf( esc_html__( 'You currently have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark">' . ( isset( $total_size['human'] ) ? $total_size['human'] : $total_size ) . '</strong>' ); ?>
 								</p>
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-cloud" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'You upload around %s of images per month.', 'imagify' ), '<strong class="imagify-dark">' . get_imagify_option( 'average_size_images_per_month', 0 ) . '</strong>' ); ?>
+									<?php printf( esc_html__( 'You upload around %s of images per month.', 'imagify' ), '<strong class="imagify-dark">' . ( isset( $per_month['human'] ) ? $per_month['human'] : $per_month ) . '</strong>' ); ?>
 								</p>
 							</div>
 						</div>

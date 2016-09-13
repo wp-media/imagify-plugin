@@ -262,7 +262,7 @@ function imagify_count_saving_data( $key = '' ) {
  * We estimate the total size of the images in the library by getting the latest 250 images and their thumbnails
  * add up their filesizes, and doing some maths to get the total size
  * 
- * @return string the current estimated total size of images not optimized
+ * @return (int) the current estimated total size of images not optimized
  *
  * @since  X.X.X
  * @author Remy Perona
@@ -280,14 +280,14 @@ function imagify_calculate_total_size_images_library() {
     $images_id = wp_list_pluck( $images_id, 'ID' );
 
     if ( ! (bool) $images_id ) {
-        return size_format( 0 );
+        return 0;
     }
 
     $partial_total_images = count( $images_id );
     $total_images         = imagify_count_attachments();
     $total_size_images    = imagify_calculate_total_image_size( $images_id, $partial_total_images, $total_images );
 
-    return size_format( $total_size_images );
+    return (int) $total_size_images;
  }
 
 /**
@@ -296,7 +296,7 @@ function imagify_calculate_total_size_images_library() {
  * We estimate the average size of the images uploaded in the library per month by getting the latest 250 images and their thumbnails
  * for the 3 latest months, add up their filesizes, and doing some maths to get the total average size
  * 
- * @return string the current estimated average size of images uploaded per month
+ * @return (int) the current estimated average size of images uploaded per month
  *
  * @since  X.X.X
  * @author Remy Perona
@@ -363,18 +363,18 @@ function imagify_calculate_average_size_images_per_month() {
     $partial_images_uploaded_id = array_merge( $partial_images_uploaded_last_month->posts, $partial_images_uploaded_two_months_ago->posts, $partial_images_uploaded_three_months_ago->posts );
 
     if ( ! (bool) $partial_images_uploaded_id ) {
-        return size_format( 0 );
+        return 0;
     }
 
     if ( ! (bool) $images_uploaded_id->posts ) {
-        return size_format( 0 );
+        return 0;
     }
 
     $partial_total_images_uploaded = count( $partial_images_uploaded_id );
     $total_images_uploaded         = $images_uploaded_id->post_count;
     $average_size_images_per_month = imagify_calculate_total_image_size( $partial_images_uploaded_id, $partial_total_images_uploaded, $total_images_uploaded ) / 3;
     
-    return size_format( $average_size_images_per_month );
+    return $average_size_images_per_month;
 }
 
 /**
