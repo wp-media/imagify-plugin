@@ -282,10 +282,14 @@ function imagify_payment_modal() {
 					<li id="imagify-pricing-step-1" class="active"><?php esc_html_e( 'Choose Plan', 'imagify' ); ?></li>
 					<li id="imagify-pricing-step-2"><?php esc_html_e( 'Payment Info', 'imagify' ); ?></li>
 				</ol>
-				<?php $attachments_number = imagify_count_attachments();
-                if ( $attachments_number > 50 ) : ?>
 				<div class="imagify-modal-views imagify-pre-checkout-view" id="imagify-pre-checkout-view" aria-hidden="false">
-					<div class="imagify-modal-section section-gray">
+
+					<?php
+					$attachments_number = imagify_count_attachments();
+                	if ( $attachments_number > 50 ) :
+                	?>
+
+					<div class="imagify-modal-section section-gray imagify-estimation-block">
 						<p class="imagify-modal-title"><?php esc_html_e( 'We analysed your images', 'imagify' ); ?></p>
 
 						<div class="imagify-modal-cols">
@@ -306,9 +310,11 @@ function imagify_payment_modal() {
 								</p>
 							</div>
 						</div>
-					</div>
+					</div><!-- .imagify-modal-section -->
+
                     <?php endif; ?>
-					<div class="imagify-modal-section">
+
+					<div class="imagify-modal-section imagify-pre-checkout-offers">
 						<p class="imagify-modal-title"><?php esc_html_e( 'We recommend you this plan', 'imagify' ); ?></p>
 
 						<div class="imagify-offer-line imagify-offer-monthly imagify-offer-selected imagify-month-selected" data-offer='{"lite":{"id":3,"name":"Lite","data":1073741824,"dataf":"1 GB","imgs":5000,"prices":{"monthly":4.99,"yearly":4.16,"add":4}}}'>
@@ -417,7 +423,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				
 				<?php
 
-				/**
+			   /**
 				* 
 				*
 				* SECOND MODAL VIEW
@@ -653,6 +659,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 					<i aria-hidden="true" class="dashicons dashicons-no-alt"></i>
 					<span class="screen-reader-text"><?php esc_html_e( 'Close', 'imagify' ); ?></span>
 				</button>
+
 			</div><!-- .imagify-modal-main -->
 
 			<div class="imagify-modal-sidebar">
@@ -695,7 +702,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 						<p><?php esc_html_e( 'This is secure 128-bits SSL encrypted payment', 'imagify' ); ?></p>
 					</div>
 				</div>
-			</div>
+			</div><!-- .imagify-modal-sidebar -->
 
 			<div class="imagify-modal-loader"></div>
 		</div><!-- .imagify-modal-content-->
