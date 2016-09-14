@@ -184,7 +184,7 @@ jQuery(function($){
 	 * Payment Modal
 	 * 
 	 * @since  1.5
-	 * @author  Geoffrey
+	 * @author Geoffrey
 	 */
 	
 	if ( $('#imagify-pricing-modal').length ) {
@@ -233,8 +233,8 @@ jQuery(function($){
 								prices_datas = prices_response.data,
 								monthlies    = prices_datas.monthlies,
 								onetimes     = prices_datas.onetimes,
-								mo_user_cons = images_datas.average_month_size.raw / 1000, // in MB,
-								ot_user_cons = images_datas.total_library_size.raw / 1000, // in MB,
+								mo_user_cons = images_datas.average_month_size.raw / 1000000, // in MB,
+								ot_user_cons = images_datas.total_library_size.raw / 1000000, // in MB,
 								$mo_tpl      = $('#imagify-offer-monthly-template'),
 								$ot_tpl      = $('#imagify-offer-onetime-template'),
 								ot_clone     = $ot_tpl.html(),
@@ -244,8 +244,7 @@ jQuery(function($){
 								ot_suggested = false,
 								mo_suggested = false;
 
-							// Do the MONTHLIES Markup
-							// TODO: remove offers from monthlies depending on mo_user_cons
+							// Don't create prices table if something went wrong during request
 							if ( monthlies === null || onetimes === null ) {
 								var $offers_block = $( '.imagify-pre-checkout-offers' );
 								
@@ -262,10 +261,14 @@ jQuery(function($){
 								return;
 							}
 
+							// Now, do the MONTHLIES Markup
 							$.each( monthlies, function( index, value ) {
+								
+								// if it's free, don't show it
 								if ( value.label === 'free' ) {
 									return true; // continue-like (but $.each is not a loop… so)
 								}
+
 								var add = value.additional_gb,	// 4
 									ann = value.annual_cost,	// 49.9
 									id  = value.id,				// 3
@@ -276,11 +279,16 @@ jQuery(function($){
 									$tpl= $( mo_clone ).clone(),
 									pcs = { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 };
 
+								// if offer is too big (far) than estimated needs, don't show the offer
+								if ( mo_suggested !== false && ( index - mo_suggested ) > 2 ) {
+									return true;
+								}
+
 								// parent classes
 								classes = '';
 								if ( ( mo_user_cons < quo && mo_suggested === false ) ) {
 									classes = ' imagify-offer-selected';
-									mo_suggested = true;
+									mo_suggested = index;
 								}
 								$tpl.addClass( 'imagify-monthly-' + lab + classes);
 

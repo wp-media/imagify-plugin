@@ -3179,6 +3179,9 @@ div.imagify-col-details {
 .imagify-pricing-table .imagify-offer-line:first-child {
 	margin-top: .75em;
 }
+.imagify-pricing-table .imagify-offer-line.imagify-offer-selected:first-child {
+	margin-top: 1.75em;
+}
 .imagify-pricing-table .imagify-offer-line + .imagify-offer-line {
 	margin-top: -2px;
 }
