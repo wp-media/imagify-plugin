@@ -535,7 +535,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 											<span class="imagify-dollars">$</span>
 											<span class="imagify-number-block"></span>
 										</span>
-										<span class="imagify-recommend"><?php esc_html__( 'we recommend for you', 'imagify' ); ?></span>
+										<span class="imagify-recommend"><?php esc_html_e( 'we recommend for you', 'imagify' ); ?></span>
 									</div><!-- .imagify-col-price -->
 
 									<div class="imagify-col-other-actions">
