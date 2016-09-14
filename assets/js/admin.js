@@ -127,9 +127,7 @@ jQuery(function($){
 
 	// on click on modal trigger
 	$('.imagify-modal-trigger').on('click.imagify', function(){
-
 		imagify_open_modal( $(this) );
-
 		return false;
 	});
 
@@ -143,6 +141,11 @@ jQuery(function($){
 		if ( $modal.attr('aria-hidden') === 'false' ) {
 			$modal.attr('tabindex', '0').focus().removeAttr('tabindex');
 		}
+	});
+
+	// On click on dropped layer of modal
+	$(document).on('click.imagify', '.imagify-modal', function(e){
+		$( e.target ).filter( '.modal-is-open' ).find( '.close-btn' ).trigger( 'click.imagify' );
 	});
 
 	// `Esc` key binding
