@@ -315,8 +315,27 @@ jQuery(function($){
 
 							});
 
+							// Deal with the case of too much small offers (before recommanded one)
+							var prev_offers = $( mo_html ).filter('.imagify-offer-selected').prevAll();
+
+							// if we have more than 1 previous offer
+							if ( prev_offers.length > 1 ) {
+								var nb_to_remove  = prev_offers.length - 1,
+									$total_offers = $( mo_html );
+
+								// remove too far previous offer
+								for ( i = 0; i < nb_to_remove; i++ ) {
+									delete $total_offers[ i ]
+								}
+
+								// rebuild mo_html with removed items
+								mo_html = '';
+								for ( j = 0; j < $total_offers.length; j++) {
+									mo_html += $('<div/>').append($total_offers[j]).html();
+								}
+							}
+
 							// Do the ONETIMES Markup
-							// TODO: add custom estimation in onetimes table based on ot_user_cons
 							$.each( onetimes, function( index, value ) {
 								var id = value.id, // 1
 									co = value.cost, // 3.49
