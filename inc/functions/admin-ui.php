@@ -231,7 +231,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
  * @todo add only for no-payable users?
  */
 function get_imagify_new_to_imagify() {
-	if ( apply_filters( 'imagify_show_new_to_imagify', true ) ) {
+	if ( apply_filters( 'imagify_show_new_to_imagify', true ) && imagify_valid_key() ) {
 		return '
 		<div class="imagify-section imagify-section-positive">
 			<div class="imagify-start imagify-mr2">
