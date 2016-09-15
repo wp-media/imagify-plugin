@@ -286,7 +286,9 @@ function imagify_payment_modal() {
 
 					<?php
 					$attachments_number = imagify_count_attachments();
-                	if ( $attachments_number > 50 ) :
+					$total_size         = get_imagify_option( 'total_size_images_library', 0 );
+                    $per_month          = get_imagify_option( 'average_size_images_per_month', 0 );
+                	if ( $attachments_number > 50 && $total_size !== 0 && $per_month !== 0  ) :
                 	?>
 
 					<div class="imagify-modal-section section-gray imagify-estimation-block">
@@ -300,10 +302,6 @@ function imagify_payment_modal() {
 								</p>
 							</div>
 							<div class="imagify-col">
-								<?php
-								$total_size = get_imagify_option( 'total_size_images_library', 0 );
-								$per_month  = get_imagify_option( 'average_size_images_per_month', 0 );
-								?>
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-images-alt2" aria-hidden="true"></i>
 									<?php printf( esc_html__( 'You currently have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark">' . ( isset( $total_size['human'] ) ? $total_size['human'] : $total_size ) . '</strong>' ); ?>
