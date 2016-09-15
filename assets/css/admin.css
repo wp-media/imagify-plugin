@@ -1237,7 +1237,7 @@ input[id^="imagify_sizes_"]:checked + label {
 	line-height: 1.3;
 	font-weight: bold;
 	background: #F7A933;
-	transform-origine: 50% 50%;
+	transform-origin: 50% 50%;
 	transform: rotateZ(-2deg) rotateX(-10deg) skewX(-2deg) skewY(-3deg);
 	text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
 }
