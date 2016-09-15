@@ -73,9 +73,7 @@ function _imagify_display_options_page() {
 
 				<h3 class="screen-reader-text"><?php _e( 'Settings' ); ?></h3>
 
-				<?php if ( imagify_valid_key() ) {
-    				echo get_imagify_new_to_imagify();
-                } ?>
+				<?php echo get_imagify_new_to_imagify(); ?>
 
 				<?php
 				if ( ! defined( 'IMAGIFY_API_KEY' ) || ! IMAGIFY_API_KEY ) { ?>
