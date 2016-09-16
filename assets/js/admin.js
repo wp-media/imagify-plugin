@@ -212,6 +212,38 @@ jQuery(function($){
 
 				return output;
 			},
+			imagify_populate_offer = function ( $offer, datas, classes ) {
+				var add = datas.additional_gb,	// 4
+					ann = datas.annual_cost,	// 49.9
+					id  = datas.id,				// 3
+					lab = datas.label,			// 'lite'
+					mon = datas.monthly_cost,	// 4.99
+					quo = datas.quota,			// 1000 (MB) - 5000 images
+					name= ( quo >= 1000 ? quo/1000 + ' GB' : quo + ' MB' ),
+					pcs = { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 };
+
+				if ( typeof classes !== undefined ) {
+					$offer.addClass( 'imagify-monthly-' + lab + classes);
+				}
+
+				// name
+				$offer.find('.imagify-offer-size').text( name );
+
+				// nb images
+				$offer.find('.imagify-approx-nb').text( quo * 5 );
+
+				// additionnal price
+				$offer.find('.imagify-price-add-data').text( '$' + add );
+
+				// main prices
+				$offer.find('.imagify-number-block').html( imagify_get_html_price( pcs, 'monthly' ) );
+
+				// button data-offer attr
+				$datas_c = ( $offer.find('.imagify-payment-btn-select-plan').length ? $offer.find('.imagify-payment-btn-select-plan') : $offer );
+				$datas_c.attr('data-offer', '{"' + lab + '":{"id":' + id + ',"name":"' + name + '","data":' + quo + ',"dataf":"' + name + '","imgs":' + ( quo * 5 ) + ',"prices":{"monthly":' + pcs.monthly + ',"yearly":' + pcs.yearly + ',"add":' + add + '}}}');
+
+				return $offer;
+			},
 			imagify_get_pricing = function( $button ){
 				var nonce = $button.data('nonce'),
 					prices_rq_datas = {
@@ -236,8 +268,8 @@ jQuery(function($){
 								prices_datas = prices_response.data,
 								monthlies    = prices_datas.monthlies,
 								onetimes     = prices_datas.onetimes,
-								mo_user_cons = images_datas.average_month_size.raw / 1000000, // in MB,
-								ot_user_cons = images_datas.total_library_size.raw / 1000000, // in MB,
+								mo_user_cons = images_datas.average_month_size.raw / 1000, // in MB,
+								ot_user_cons = images_datas.total_library_size.raw / 1000, // in MB,
 								$mo_tpl      = $('#imagify-offer-monthly-template'),
 								$ot_tpl      = $('#imagify-offer-onetime-template'),
 								ot_clone     = $ot_tpl.html(),
@@ -264,6 +296,11 @@ jQuery(function($){
 								return;
 							}
 
+							/**
+							 * Below lines will build Plan and Onetime offers lists
+							 * It will also pre-select a Plan and Onetime in both of views: pre-checkout and pricing tables
+							 */
+
 							// Now, do the MONTHLIES Markup
 							$.each( monthlies, function( index, value ) {
 								
@@ -272,15 +309,7 @@ jQuery(function($){
 									return true; // continue-like (but $.each is not a loop… so)
 								}
 
-								var add = value.additional_gb,	// 4
-									ann = value.annual_cost,	// 49.9
-									id  = value.id,				// 3
-									lab = value.label,			// 'lite'
-									mon = value.monthly_cost,	// 4.99
-									quo = value.quota,			// 1000 (MB) - 5000 images
-									name= ( quo >= 1000 ? quo/1000 + ' GB' : quo + ' MB' ),
-									$tpl= $( mo_clone ).clone(),
-									pcs = { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 };
+								var $tpl= $( mo_clone ).clone();
 
 								// if offer is too big (far) than estimated needs, don't show the offer
 								if ( mo_suggested !== false && ( index - mo_suggested ) > 2 ) {
@@ -289,26 +318,19 @@ jQuery(function($){
 
 								// parent classes
 								classes = '';
-								if ( ( mo_user_cons < quo && mo_suggested === false ) ) {
+								if ( ( mo_user_cons < value.quota && mo_suggested === false ) ) {
 									classes = ' imagify-offer-selected';
 									mo_suggested = index;
+
+									// add this offer as pre-selected item in pre-checkout view
+									var $offer = $('.imagify-pre-checkout-offers').find('.imagify-offer-monthly');
+
+									// populate the pre-selected offer
+									imagify_populate_offer( $offer, value );
 								}
-								$tpl.addClass( 'imagify-monthly-' + lab + classes);
 
-								// name
-								$tpl.find('.imagify-offer-size').text( name );
-
-								// nb images
-								$tpl.find('.imagify-approx-nb').text( quo * 5 );
-
-								// additionnal price
-								$tpl.find('.imagify-price-add-data').text( '$' + add );
-
-								// main prices
-								$tpl.find('.imagify-number-block').html( imagify_get_html_price( pcs, 'monthly' ) );
-
-								// button data-offer attr
-								$tpl.find('.imagify-payment-btn-select-plan').attr('data-offer', '{"' + lab + '":{"id":' + id + ',"name":"' + name + '","data":' + quo + ',"dataf":"' + name + '","imgs":' + ( quo * 5 ) + ',"prices":{"monthly":' + pcs.monthly + ',"yearly":' + pcs.yearly + ',"add":' + add + '}}}');
+								// populate each offer
+								$tpl = imagify_populate_offer( $tpl, value, classes );
 
 								// complete Monthlies HTML
 								mo_html += $tpl[0].outerHTML;
