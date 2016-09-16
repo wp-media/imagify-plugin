@@ -2995,14 +2995,14 @@ div.imagify-col-checkbox {
 .imagify-col-checkbox .imagify-checkbox.imagify-checkbox:not(:checked) + label:before,
 .imagify-col-checkbox .imagify-checkbox.imagify-checkbox:checked + label:before {
 	margin: 0;
-	top: -3px;
+	top: -2px;
 	left: 6px;
 	-webkit-transition: all .275s;
 	transition: all .275s;
 }
 .imagify-col-checkbox .imagify-checkbox.imagify-checkbox:not(:checked) + label:after,
 .imagify-col-checkbox .imagify-checkbox.imagify-checkbox:checked + label:after {
-	top: 0;
+	top: 1px;
 	left: 13px;
 }
 .imagify-col-checkbox label {
@@ -3036,6 +3036,10 @@ div.imagify-col-price {
 .imagify-flex-table .imagify-price-block {
 	padding-left: 0;
 	padding-right: 0;
+}
+.imagify-offer-monthly .imagify-flex-table .imagify-price-block,
+.imagify-offer-monthlies .imagify-price-block {
+	padding-top: 0;
 }
 .imagify-flex-table .imagify-price-complement {
 	padding-right: 0;
