@@ -427,7 +427,7 @@ class Imagify_Abstract_Attachment {
     		return $resized;
         }
     
-        $resized_image_path = $editor->generate_filename( null );
+        $resized_image_path = $editor->generate_filename( 'imagifyresized' );
         
         $resized_image_saved = $editor->save( $resized_image_path );
     
