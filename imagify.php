@@ -17,7 +17,7 @@ Copyright 2016 WP Media
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 // Imagify defines
-define( 'IMAGIFY_VERSION'	 			 , '1.5.8' );
+define( 'IMAGIFY_VERSION'	 			 , '1.5.9' );
 define( 'IMAGIFY_SLUG'		 			 , 'imagify' );
 define( 'IMAGIFY_SETTINGS_SLUG'			 , IMAGIFY_SLUG . '_settings' );
 define( 'IMAGIFY_WEB_MAIN'	 			 , 'https://imagify.io' );
