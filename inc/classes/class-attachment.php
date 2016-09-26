@@ -197,7 +197,14 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 				'percent'            => 0,
 			)
 		);
-
+		
+		// To avoid issue with "original_size" at 0 in "_imagify_data"
+		if ( 0 === $this->get_stats_data( 'original_size' ) ) {
+			delete_post_meta( $id, '_imagify_data' );
+			delete_post_meta( $id, '_imagify_status' );
+			delete_post_meta( $id, '_imagify_optimization_level' );
+		}
+		
 		// Get file path & URL for original image
 		$attachment_path          = $this->get_original_path();
 		$attachment_url           = $this->get_original_url();
@@ -213,12 +220,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			return;
 		}
 		
-		// To avoid issue with "original_size" at 0 in "_imagify_data"
-		if ( 0 === $this->get_stats_data( 'original_size' ) ) {
-			delete_post_meta( $id, '_imagify_data' );
-			delete_post_meta( $id, '_imagify_status' );
-		}
-
 		/**
 		 * Fires before optimizing an attachment.
 		 *

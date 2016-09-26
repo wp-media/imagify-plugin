@@ -393,6 +393,9 @@ class Imagify_Abstract_Attachment {
      * @return string Path the the resized image or the original image if the resize failed
      */
     function resize( $attachment_path, $attachment_sizes, $max_width ) {
+        // Prevent removal of the exif/meta data when resizing (only works with Imagick)
+        add_filter( 'image_strip_meta', '__return_false' );
+
     	$new_sizes = wp_constrain_dimensions( $attachment_sizes[0], $attachment_sizes[1], $max_width );
     
         $editor = wp_get_image_editor( $attachment_path );
@@ -427,14 +430,17 @@ class Imagify_Abstract_Attachment {
     		return $resized;
         }
     
-        $resized_image_path = $editor->generate_filename( null );
+        $resized_image_path = $editor->generate_filename( 'imagifyresized' );
         
         $resized_image_saved = $editor->save( $resized_image_path );
     
         if ( is_wp_error( $resized_image_saved ) ) {
     		return $resized_image_saved;
         }
-    
+
+        // Remove the filter when we're done to prevent any conflict
+        remove_filter( 'image_strip_meta', '__return_false' );
+
         return $resized_image_path;
     }
 }
