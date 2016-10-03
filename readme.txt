@@ -3,7 +3,7 @@ Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.6
-Stable tag: 1.5.10
+Stable tag: 1.5.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -135,11 +135,14 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.5.10 =
+* Improvement
+ * Set to 1 the Bulk buffer size when there are more than 10 thumbnails to avoid "Unkown error" on the Bulk Optimization
+ 
 = 1.5.9 =
 * Bug fix
  * Don't delete the thumbnail when the maximum file size is set to one of the thumbnail size
  * Don't strip the image meta data if possible (only with Imagick)
- * Fix persistent "WELL DONE" message because of "original_size" meta value was 0
 
 = 1.5.8 =
 * Regression fix
