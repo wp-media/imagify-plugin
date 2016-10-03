@@ -240,31 +240,8 @@ function _imagify_display_options_page() {
 									<br>
 
 									<?php
-									$sizes   = array();
-									$is_wp44 = version_compare( $wp_version, '4.4-beta3' ) >= 0;
-									$all_intermediate_image_sizes = get_intermediate_image_sizes();
-									$intermediate_image_sizes     = apply_filters( 'image_size_names_choose', $all_intermediate_image_sizes );
-									$all_intermediate_image_sizes = array_combine( $all_intermediate_image_sizes, $all_intermediate_image_sizes );
-									$intermediate_image_sizes     = array_merge( $all_intermediate_image_sizes, $intermediate_image_sizes );
-									$wp_image_sizes               = $is_wp44 ? array( 'thumbnail', 'medium', 'medium_large', 'large' ) : array( 'thumbnail', 'medium', 'large' );
-
-									// Create the full array with sizes and crop info
-									foreach ( $intermediate_image_sizes as $size => $size_name ) {
-										if ( in_array( $size, $wp_image_sizes ) && ! is_int( $size ) ) {
-											$sizes[ $size ] = array(
-												'width'  => get_option( $size . '_size_w' ),
-												'height' => get_option( $size . '_size_h' ),
-												'name'   => $size_name,
-											);
-										} elseif ( isset( $_wp_additional_image_sizes[ $size ] ) ) {
-											$sizes[ $size ] = array(
-												'width'  => $_wp_additional_image_sizes[ $size ]['width'],
-												'height' => $_wp_additional_image_sizes[ $size ]['height'],
-												'name'   => $size_name,
-											);
-										}
-									}
-
+									$sizes = get_imagify_thumbnail_sizes();
+									
 									foreach( $sizes as $size_key => $size_data ) {
 										$label = esc_html( stripslashes( $size_data['name'] ) );
 										$label = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );

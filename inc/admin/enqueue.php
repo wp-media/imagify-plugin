@@ -175,7 +175,7 @@ function _imagify_admin_print_styles() {
 		 *
 		 * @since 1.5.4
 		*/
-		$bulk_data['buffer_size']  = apply_filters( 'imagify_bulk_buffer_size', 4 );
+		$bulk_data['buffer_size']  = apply_filters( 'imagify_bulk_buffer_size', get_imagify_bulk_buffer_size() );
 		
 		wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
 		wp_enqueue_script( 'imagify-js-chart' );

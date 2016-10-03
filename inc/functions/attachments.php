@@ -92,3 +92,42 @@ function get_imagify_attachment_url( $filename ) {
 	
 	return $url;
 }
+
+/*
+ * Get size information for all currently-registered thumbnail sizes.
+ *
+ * @since 1.5.10
+ * @author Jonathan Buttigieg
+ *
+ * @return array Data for all currently-registered thumbnail sizes.
+ */
+function get_imagify_thumbnail_sizes() {
+	global $_wp_additional_image_sizes;
+	
+	$sizes   = array();
+	$is_wp44 = version_compare( $wp_version, '4.4-beta3' ) >= 0;
+	$all_intermediate_image_sizes = get_intermediate_image_sizes();
+	$intermediate_image_sizes     = apply_filters( 'image_size_names_choose', $all_intermediate_image_sizes );
+	$all_intermediate_image_sizes = array_combine( $all_intermediate_image_sizes, $all_intermediate_image_sizes );
+	$intermediate_image_sizes     = array_merge( $all_intermediate_image_sizes, $intermediate_image_sizes );
+	$wp_image_sizes               = $is_wp44 ? array( 'thumbnail', 'medium', 'medium_large', 'large' ) : array( 'thumbnail', 'medium', 'large' );
+
+	// Create the full array with sizes and crop info
+	foreach ( $intermediate_image_sizes as $size => $size_name ) {
+		if ( in_array( $size, $wp_image_sizes ) && ! is_int( $size ) ) {
+			$sizes[ $size ] = array(
+				'width'  => get_option( $size . '_size_w' ),
+				'height' => get_option( $size . '_size_h' ),
+				'name'   => $size_name,
+			);
+		} elseif ( isset( $_wp_additional_image_sizes[ $size ] ) ) {
+			$sizes[ $size ] = array(
+				'width'  => $_wp_additional_image_sizes[ $size ]['width'],
+				'height' => $_wp_additional_image_sizes[ $size ]['height'],
+				'name'   => $size_name,
+			);
+		}
+	}
+	
+	return $sizes;
+}

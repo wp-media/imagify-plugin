@@ -162,3 +162,29 @@ function imagify_query_results_combine( $keys, $values ) {
 	
 	return $result;
 }
+
+/**
+ * Get the default Bulk Optimization buffer size.
+ *
+ * @since  1.5.10
+ * @author Jonathan Buttigieg
+ *
+ * @return int The buffer size
+ */
+function get_imagify_bulk_buffer_size() {
+	$sizes = count( get_imagify_thumbnail_sizes() );
+	
+	switch (true) {
+	    case  ( $sizes >= 10 ) : 
+	    	return 1; 
+	    	break;
+	    case ( $sizes >= 8 ) : 
+	    	return 2; 
+	    	break;
+	    case ( $sizes >= 6 ) : 
+	    	return 3; 
+	    	break;
+	    default: 
+	    	return 4;
+	}
+}
