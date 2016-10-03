@@ -174,7 +174,7 @@ function imagify_query_results_combine( $keys, $values ) {
 function get_imagify_bulk_buffer_size() {
 	$sizes = count( get_imagify_thumbnail_sizes() );
 	
-	switch (true) {
+	switch ( true ) {
 	    case  ( $sizes >= 10 ) : 
 	    	return 1; 
 	    	break;
