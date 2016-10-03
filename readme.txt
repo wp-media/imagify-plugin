@@ -135,6 +135,10 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.5.10 =
+* Improvement
+ * Set to 1 the Bulk buffer size when there are more than 10 thumbnails to avoid "Unkown error" on the Bulk Optimization
+ 
 = 1.5.9 =
 * Bug fix
  * Don't delete the thumbnail when the maximum file size is set to one of the thumbnail size
