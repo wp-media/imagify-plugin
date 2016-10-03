@@ -143,6 +143,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Bug fix
  * Don't delete the thumbnail when the maximum file size is set to one of the thumbnail size
  * Don't strip the image meta data if possible (only with Imagick)
+ * Fix persistent "WELL DONE" message because of "original_size" meta value was 0
 
 = 1.5.8 =
 * Regression fix
