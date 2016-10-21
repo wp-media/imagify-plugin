@@ -254,6 +254,17 @@ jQuery(function($){
 
 				return $offer;
 			},
+			imagify_populate_pay_btn = function() {
+				var pl_datas = JSON.parse( $('.imagify-offer-monthly').attr( 'data-offer' ) ),
+					    ot_datas = JSON.parse( $('.imagify-offer-onetime').attr( 'data-offer' ) ),
+					    price    = 0;
+
+				price_pl = $('#imagify-subscription-monthly').filter(':checked').length ? pl_datas[ Object.keys( pl_datas )[0] ].prices.monthly : pl_datas[ Object.keys( pl_datas )[0] ].prices.yearly * 12;
+				price_ot = ot_datas[ Object.keys( ot_datas )[0] ].price;
+				price = parseFloat( price_ot + price_pl ).toFixed(2);
+
+				$( '.imagify-global-amount' ).text( price );
+			},
 			imagify_get_pricing = function( $button ){
 				var nonce = $button.data('nonce'),
 					prices_rq_datas = {
@@ -412,6 +423,8 @@ jQuery(function($){
 						// an error occurred
 					}
 
+					// populate Pay button
+					imagify_populate_pay_btn();
 				}); // end $.post
 			},
 			imagify_check_check = function( $checkbox ) {
@@ -455,6 +468,10 @@ jQuery(function($){
 						$to_switch.find('.imagify-yearly').attr('aria-hidden', 'true');
 					}
 				});
+
+				// update Pay button information
+				imagify_populate_pay_btn();
+
 				return $radio;
 			},
 			imagify_check_coupon = function() {
@@ -473,9 +490,9 @@ jQuery(function($){
 							} else {
 								imagify.info('An error with Coupons API occurred.');
 							}
-						} ).
-						fail( function( response ) {
-							imagify.log( 'Imagify:' + response.detail );
+						} )
+						.fail( function( response ) {
+							imagify.info( 'Imagify: ' + response.responseJSON.detail );
 							$label.text( imagifyAdmin.labels.errorCouponAPI );
 							$section.removeClass( 'validated' ).addClass( 'invalid' );
 						});
@@ -487,6 +504,10 @@ jQuery(function($){
 		// check all boxes on load
 		imagify_check_check( $checkboxes );
 		imagify_check_radio( $radios.filter(':checked') );
+
+		var populate_btn_price = setInterval( function() {
+			imagify_populate_pay_btn();
+		}, 1000 );
 
 		// check the changed box
 		$checkboxes.on('change.imagify', function(){
@@ -555,25 +576,19 @@ jQuery(function($){
 					}
 					
 					if ( params.period ) {
-						var coma = onetime_id !== 0 && monthly_id !== 0 ? ',' : '',
-							key = imagify_get_api_key();
+						var key = imagify_get_api_key();
 
-						// https://app.imagify.io/plugin-payment/onetimeplan,monthlyplan_or_yearlyplan/1,4/[token]
-						 
-						// onetimeplan,monthlyplan_or_yearlyplan
-						iframe_plans  = onetime_id !== 0 ? 'onetimeplan' : '';
-						iframe_plans += coma;
-						iframe_plans += monthly_id !== 0 ? params.period + 'plan' : '';
+						$( '#item_ot' ).val( onetime_id );
+						$( '#item_yp' ).val( params.period === 'yearly' ? monthly_id : 0 );
+						$( '#item_mp' ).val( params.period === 'monthly' ? monthly_id : 0 );
+						$( '#coupon' ).val( $('#imagify-coupon-code').val() );
+						$( '#amount' ).val( parseFloat( $( '.imagify-global-amount' ).text() ).toFixed(2)  );
 
-						// id,id
-						iframe_ids  = onetime_id !== 0 ? onetime_id : '';
-						iframe_ids += coma;
-						iframe_ids += monthly_id !== 0 ? monthly_id : '';
-
-						$iframe.attr( 'src', pay_src + iframe_plans + '/' + iframe_ids + '/' + key );
+						$( '#imagify-payment-form' ).attr( 'action', pay_src ).submit();
+						//$iframe.attr( 'src', pay_src );
 
 					} else {
-						imagifyAdmin.labels.info('No period defined');
+						imagify.info( 'No period defined' );
 					}
 				}
 				// if we only change monthly/yearly payment mode
@@ -676,6 +691,9 @@ jQuery(function($){
 				$target_line.find('.imagify-inline-options').find('input:radio:checked').trigger('change.imagify');
 			}
 
+			// update price information in button
+			imagify_populate_pay_btn();
+
 			return false;
 		});
 
@@ -686,9 +704,8 @@ jQuery(function($){
 			var $monthly_offer = $('.imagify-offer-monthly'),
 				$onetime_offer = $('.imagify-offer-onetime'),
 				checkout_datas = {},
-				period_choosen = ( $monthly_offer.hasClass('imagify-year-selected') ? 'year' : 'month' );
+				period_choosen = $monthly_offer.hasClass('imagify-year-selected') ? 'year' : 'month';
 
-			// TODO: new full iframe step
 			// if user choose a monthly plan
 			if ( $monthly_offer.hasClass('imagify-offer-selected') ) {
 				
@@ -710,57 +727,9 @@ jQuery(function($){
 			}
 
 			// change views to go to checkout/payment view
-			$pre_view.hide().attr('aria-hidden', 'true');
-			$payment_view.fadeIn(speedFadeIn).attr('aria-hidden', 'false');
-
-			// hide "Cancel your removing" blocks
-			$('.imagify-cart-emptied-item').hide().attr('aria-hidden', 'true');
-
-			// Step 2 active
-			$('#imagify-pricing-step-2').addClass('active');
-			
-			// Car item emptyfied & hidden
-			$payment_view.find('.imagify-cart-item').hide()
-													.attr('data-offer', '');
-
-			// Then completion of those items
-			$.each( checkout_datas, function( index, value ) {
-
-				var $line = $payment_view.find('.imagify-cart-item-' + index ),
-					offer = value[Object.keys(value)[0]],
-					$cart = $('.imagify-cart');
-				
-				$line.show();
-
-				// product datas
-				$line.attr('data-offer', JSON.stringify( value ) );
-
-				// product name
-				$line.find('.imagify-the-product-name').text( offer.name );
-
-				// datas provide
-				$line.find('.imagify-cart-offer-data').text( offer.dataf );
-
-				// prices
-				if ( index === 'onetime') {
-					$line.find('.imagify-number-block').html( imagify_get_html_price( offer.price ) );
-				} else {
-					$line.find('.imagify-number-block').find('.imagify-switch-my').html( imagify_get_html_price( offer.prices, period_choosen + 'ly' ) );
-				}
-
-				// right class on Cart List depending on period selected
-				$cart.removeClass( 'imagify-month-selected imagify-year-selected' )
-								  .addClass( 'imagify-' + period_choosen + '-selected' );
-
-				// trigger period choosen
-				if ( period_choosen === 'month' ) {
-					$cart.find('#imagify-checkout-monthly').trigger('click.imagify');
-				} else {
-					$cart.find('#imagify-checkout-yearly').trigger('click.imagify');
-				}
-				$cart.find('.imagify-inline-options').find('input:radio:checked').trigger('change.imagify');
-
-			});
+			$pre_view.hide().attr( 'aria-hidden', 'true' );
+			$payment_view.fadeIn( speedFadeIn ).attr( 'aria-hidden', 'false' )
+						 .closest( '.imagify-modal-content' ).addClass( 'imagify-iframe-viewing' );
 
 			checkout_datas.period = imagify_get_period();
 
@@ -830,11 +799,6 @@ jQuery(function($){
 			}				
 
 			return false;
-		});
-
-		// on Yearly/Monthly payment change on checkout...
-		$('.imagify-cart-list-my-choice').find('input[type="radio"]').on('change.imagify', function(){
-			imagify_iframe_set_src( $(this).val() );
 		});
 		
 		/**
