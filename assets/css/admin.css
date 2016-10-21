@@ -2704,8 +2704,20 @@ td.imagify-cell-filename {
 	min-width: 925px;
 	padding: 0;
 }
+.imagify-modal-content.imagify-iframe-viewing {
+	width: 980px;
+	height: 602px;
+	overflow: hidden;
+}
+.imagify-iframe-viewing #imagify-payment-process-view {
+	width: 980px;
+	height: 598px;
+}
 .imagify-payment-modal .imagify-modal-main {
 	width: 70%;
+}
+.imagify-iframe-viewing .imagify-modal-main {
+	width: auto;
 }
 .imagify-payment-modal .imagify-modal-sidebar {
 	width: 30%;
@@ -2713,12 +2725,18 @@ td.imagify-cell-filename {
 	background: #1F2332;
 	color: #FFF;
 }
+.imagify-modal-content.imagify-iframe-viewing .imagify-modal-sidebar {
+	display: none;
+}
 .imagify-payment-steps {
 	padding-top: 15px;
 	margin-top: 0;
 	margin-left: 0;
 	list-style: none;
 	counter-reset: steps;
+}
+.imagify-iframe-viewing .imagify-payment-steps {
+	display: none;
 }
 .imagify-payment-steps li {
 	position: relative;
@@ -3589,10 +3607,9 @@ p.imagify-modal-sidebar-title {
 }
 
 #imagify-payment-iframe {
-	width: 100%;
-	height: 375px;
-	margin-top: 1em;
-	background: #f6f7fb url(../images/loader-balls.svg) 50% 175px no-repeat;
+	width: 980px;
+	height: 598px;
+	background: #f6f7fb url(../images/loader-balls.svg) 50% 50% no-repeat;
 }
 
 .imagify-success-view {
