@@ -457,6 +457,30 @@ jQuery(function($){
 				});
 				return $radio;
 			},
+			imagify_check_coupon = function() {
+				var code = $( '#imagify-coupon-code' ).val();
+				
+				imagify.log( 'Checking Coupon' );
+
+				if ( code !== '' ) {
+					var $label   = $( '.imagify-coupon-text label' ),
+						$section = $( '.imagify-coupon-section' );
+
+					$.post( 'https://app.imagify.io/api/coupons/' + code + '/', { 'token' : imagify_get_api_key() } )
+						.done( function( response ) {
+							if ( ! response.success ) {
+								imagify.info('Good');
+							} else {
+								imagify.info('An error with Coupons API occurred.');
+							}
+						} ).
+						fail( function( response ) {
+							imagify.log( 'Imagify:' + response.detail );
+							$label.text( imagifyAdmin.labels.errorCouponAPI );
+							$section.removeClass( 'validated' ).addClass( 'invalid' );
+						});
+				}
+			},
 			$checkboxes = $('.imagify-offer-line').find('.imagify-checkbox'),
 			$radios		= $('.imagify-payment-modal').find('.imagify-radio-line').find('input');
 		
@@ -566,6 +590,16 @@ jQuery(function($){
 				return $('#imagify-payment-iframe').data('imagify-api');
 			};
 
+		/**
+		 * Get validation for Coupon Code
+		 */
+		$( '#imagify-coupon-code' ).on( 'blur.imagify', function() {
+			imagify_check_coupon();
+		} );
+
+		/**
+		 * View game, step by step
+		 */
 		// init views
 		//$pre_view.hide();
 		$plans_view.hide();
@@ -654,6 +688,7 @@ jQuery(function($){
 				checkout_datas = {},
 				period_choosen = ( $monthly_offer.hasClass('imagify-year-selected') ? 'year' : 'month' );
 
+			// TODO: new full iframe step
 			// if user choose a monthly plan
 			if ( $monthly_offer.hasClass('imagify-offer-selected') ) {
 				
@@ -817,6 +852,22 @@ jQuery(function($){
 
 			return false;
 		});
+
+		/**
+		 * Public function triggered by payement iframe
+		 */
+		var paymentClose = function() {
+				console.log( 'paymentClose triggered' );
+				return false;
+			},
+			paymentBack = function() {
+				console.log( 'paymentBack triggered' );
+				return false;
+			},
+			paymentSuccess = function() {
+				console.log( 'paymentSuccess triggered' );
+				return false;
+			};
 
 	}
 
