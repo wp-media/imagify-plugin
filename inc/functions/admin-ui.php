@@ -424,7 +424,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 							<div class="imagify-submit-section">
 								<button type="button" class="button button-secondary imagify-button-secondary" id="imagify-modal-checkout-btn">
 									<i class="dashicons dashicons-cart" aria-hidden="true"></i>
-									<?php esc_html_e( 'Checkout', 'imagify' ); ?>
+									<?php printf( esc_html__( 'Pay %s', 'imagify' ), '$<span class="imagify-global-amount">0.00</span>'); ?>
 								</button>
 							</div>
 						</div>
@@ -571,82 +571,18 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				?>
 
 				<div class="imagify-modal-views imagify-payment-process-view" id="imagify-payment-process-view" aria-hidden="true">
-					<div class="imagify-modal-section section-gray">
-						<div class="imagify-cart imagify-month-selected">
-							<p class="imagify-cart-label"><?php esc_html_e( 'Your order', 'imagify' ); ?></p>
-
-							<div class="imagify-cart-list">
-								<?php
-								$emptied_item = '<div class="imagify-cart-emptied-item">
-									<p>' . sprintf( esc_html__( '%scancel%sYou just removed %s', 'imagify' ), '<a href="#cancel" class="imagify-cancel-removing">', '</a>', '<span class="imagify-removed-name"></span>' ) . '</p>
-								</div>';
-								?>
-
-								<!-- JS stuff will complete the datas of list item -->
-
-								<div class="imagify-cart-item imagify-cart-item-monthly imagify-flex-table imagify-align-top" data-offer="">
-									<div class="imagify-cl-remove">
-										<button type="button" class="imagify-remove-from-cart" title="<?php esc_html_e( 'Remove this item', 'imagify' ); ?>"><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></button>
-									</div>
-									<div class="imagify-cl-name">
-										<p class="imagify-cart-product-name"><span class="imagify-the-product-name"></span> Monthly plan</p>
-										<p class="imagify-cart-suggestion"><a href="#step1" class="imagify-back-to-plans"><?php esc_html_e( 'Choose another plan', 'imagify' ); ?></a></p>
-									</div>
-									<div class="imagify-cl-description">
-										<p><?php printf( esc_html__( '%s per month', 'imagify' ), '<span class="imagify-cart-offer-data"></span>') ?></p>
-									</div>
-									<div class="imagify-cl-price imagify-price-block">
-										<span class="imagify-dollars">$</span>
-											<span class="imagify-number-block">
-												<span class="imagify-switch-my">
-												</span>
-											</span>
-									</div>
-								</div><!-- .imagify-cart-item -->
-								<?php echo $emptied_item; ?>
-
-								<div class="imagify-cart-item imagify-cart-item-onetime imagify-flex-table imagify-align-top" data-offer="">
-									<div class="imagify-cl-remove">
-										<button type="button" class="imagify-remove-from-cart" title="<?php esc_html_e( 'Remove this item', 'imagify' ); ?>"><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></button>
-									</div>
-									<div class="imagify-cl-name">
-										<p class="imagify-cart-product-name"><span class="imagify-the-product-name"></span> One Time Plan</p>
-										<p class="imagify-cart-suggestion"><a href="#step1" class="imagify-back-to-plans"><?php esc_html_e( 'Choose another plan', 'imagify' ); ?></a></p>
-									</div>
-									<div class="imagify-cl-description">
-										<p><?php printf( esc_html__( 'one time %s', 'imagify' ), '<span class="imagify-cart-offer-data"></span>') ?></p>
-									</div>
-									<div class="imagify-cl-price imagify-price-block">
-										<span class="imagify-dollars">$</span>
-										<span class="imagify-number-block">
-										</span>
-									</div>
-								</div><!-- .imagify-cart-item -->
-								<?php echo $emptied_item; ?>
-							</div><!-- .imagify-cart-list -->
-							
-							<div class="imagify-cols imagify-cart-list-my-choice">
-								<div class="imagify-col imagify-switch-my imagify-pr1">
-									<p class="imagify-monthly"><?php printf( __( 'Switch to yearly subscription and <br><strong class="imagify-dark">save %s per year!</strong>', 'imagify' ), '<span class="imagify-nb-save-per-year"></span>' ); ?></p>
-									<p class="imagify-yearly"><?php printf( __( 'Perfect!<br>You\'re <strong class="imagify-dark">saving %s per year!</strong>', 'imagify' ), '<span class="imagify-nb-save-per-year"></span>' ); ?></p>
-								</div>
-								<div class="imagify-col">
-									<div class="imagify-inline-options imagify-small-options imagify-radio-line imagify-cart-list-switcher">
-										<input type="radio" checked="checked" name="plan-checkout" value="monthly" id="imagify-checkout-monthly">
-										<label for="imagify-checkout-monthly"><?php esc_html_e('Monthly', 'imagify' ); ?></label>
-
-										<input type="radio" name="plan-checkout" value="yearly" id="imagify-checkout-yearly">
-										<label for="imagify-checkout-yearly"><?php esc_html_e('Yearly', 'imagify' ); ?><span class="imagify-2-free imagify-b-bottom"><?php esc_html_e('2 months free', 'imagify' ); ?></span></label>
-									</div>
-								</div>
-							</div>
-
-						</div><!-- .imagify-cart.imagify-month-selected -->
-					</div><!-- .imagify-section-gray -->
-
+					<div class="imagify-iframe-datas">
+						<form name="imagify-payment-form" id="imagify-payment-form" method="post" target="imagify-payment-iframe" action="">
+							<input type="hidden" name="item_ot" id="item_ot" value="0">
+							<input type="hidden" name="item_mp" id="item_mp" value="0">
+							<input type="hidden" name="item_yp" id="item_yp" value="0">
+							<input type="hidden" name="coupon" id="coupon" value="">
+							<input type="hidden" name="amount" id="amount" value="">
+						</form>
+					</div>
 					<?php $imagify_api_key = get_imagify_option( 'api_key', false ); ?>
 
-					<iframe data-imagify-api="<?php echo $imagify_api_key; ?>" id="imagify-payment-iframe" data-src="<?php echo IMAGIFY_PAYMENT_URL; ?>" src="" frameborder="0"></iframe>
+					<iframe data-imagify-api="<?php echo $imagify_api_key; ?>" id="imagify-payment-iframe" data-src="<?php echo IMAGIFY_PAYMENT_URL; ?>" name="imagify-payment-iframe" src="" frameborder="0"></iframe>
 
 				</div><!-- .imagify-modal-views -->
 				
