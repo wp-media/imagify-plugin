@@ -412,12 +412,22 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 						</div><!-- .imagify-offer-line -->
 
 
-						<p class="imagify-submit-line">
-							<button type="button" class="button button-secondary imagify-button-secondary" id="imagify-modal-checkout-btn">
-								<i class="dashicons dashicons-cart" aria-hidden="true"></i>
-								<?php esc_html_e( 'Checkout', 'imagify' ); ?>
-							</button>
-						</p>
+						<div class="imagify-submit-line">
+							<div class="imagify-coupon-section">
+								<p class="imagify-coupon-text">
+									<label for="imagify-coupon-code"><?php _e( 'If you have a <strong>coupon code</strong><br> use it there:', 'imagify' ); ?></label>
+								</p>
+								<p class="imagify-coupon-input">
+									<input type="text" class="imagify-coupon-code" name="imagify-coupon-code" id="imagify-coupon-code" value="" placeholder="<?php _e( 'Coupon Code', 'imagify' ) ?>">
+								</p>
+							</div>
+							<div class="imagify-submit-section">
+								<button type="button" class="button button-secondary imagify-button-secondary" id="imagify-modal-checkout-btn">
+									<i class="dashicons dashicons-cart" aria-hidden="true"></i>
+									<?php esc_html_e( 'Checkout', 'imagify' ); ?>
+								</button>
+							</div>
+						</div>
 
 						<p class="imagify-footer-lines"><?php esc_html_e( 'Monthly plans comes with credits which is renewed every months. The billing happens automatically each month or year depending the billing period you choose.', 'imagify' ); ?></p>
 					</div>
