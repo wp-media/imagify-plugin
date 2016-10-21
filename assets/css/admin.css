@@ -3119,18 +3119,65 @@ span.imagify-price-by {
 }
 
 .imagify-submit-line {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
 	margin: 2em 0;
+	text-align: left;
 }
+.imagify-coupon-section {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+.imagify-coupon-section p {
+	margin: 0;
+	line-height: 1.3;
+}
+.imagify-coupon-text {
+	width: 200px;
+	max-width: 100%;
+	padding-right: 15px;
+}
+
 .imagify-submit-line button {
 	font-size: 16px;
 }
-
+input.imagify-coupon-code {
+	padding: 10px;
+	border: 2px solid #7A8996;
+	font-size: 0.875em;
+	font-weight: bold;
+	border-radius: 3px;
+}
+.validated.imagify-coupon-section .imagify-coupon-text,
+.validated.imagify-coupon-section strong {
+	color: #8BC34A;
+}
+.validated.imagify-coupon-section .imagify-coupon-code {
+	color: #8BC34A;
+	border-color: #8BC34A;
+}
+.invalid.imagify-coupon-section .imagify-coupon-text,
+.invalid.imagify-coupon-section strong {
+	color: #d0021b;
+}
+.invalid.imagify-coupon-section .imagify-coupon-code {
+	color: #d0021b;
+	border-color: #d0021b;
+}
 .imagify-footer-lines {
 	width: 500px;
 	max-width: 100%;
-	margin: 2em auto 1em;
-	font-size: 0.85em;
-	line-height: 1.6;
+	margin: 2em auto 1.5em;
+	font-size: 0.825em;
+	line-height: 1.5;
 }
 
 /* Year selected */
