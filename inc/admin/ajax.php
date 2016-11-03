@@ -659,6 +659,26 @@ function _imagify_get_prices_from_api() {
 }
 
 /**
+ * Check Coupon code on modal popin
+ *
+ * @return  JSON WP formatted answer
+ *
+ * @since  X.X.X
+ * @author Geoffrey Crofte
+ */
+add_action( 'wp_ajax_imagify_check_coupon', '_imagify_check_coupon_code' );
+function _imagify_check_coupon_code() {
+	if ( check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false) ) {
+		
+		$coupon_response = check_imagify_coupon_code( $_POST[ 'coupon' ] );
+
+		wp_send_json_success( $coupon_response );
+	} else {
+		wp_send_json_error( 'check_ajax_referer for coupon code checking failed' );
+	}
+}
+
+/**
  * Get estimated sizes from the WordPress library
  *
  * @return  JSON WP formatted answer

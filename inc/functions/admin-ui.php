@@ -582,7 +582,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 					</div>
 					<?php $imagify_api_key = get_imagify_option( 'api_key', false ); ?>
 
-					<iframe data-imagify-api="<?php echo $imagify_api_key; ?>" id="imagify-payment-iframe" data-src="<?php echo IMAGIFY_PAYMENT_URL; ?>" name="imagify-payment-iframe" src="" frameborder="0"></iframe>
+					<iframe data-imagify-api="<?php echo $imagify_api_key; ?>" id="imagify-payment-iframe" data-src="<?php echo IMAGIFY_PAYMENT_URL; ?>" name="imagify-payment-iframe" src="<?php echo IMAGIFY_PAYMENT_URL; ?>" frameborder="0"></iframe>
 
 				</div><!-- .imagify-modal-views -->
 				

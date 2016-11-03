@@ -255,15 +255,27 @@ jQuery(function($){
 				return $offer;
 			},
 			imagify_populate_pay_btn = function() {
-				var pl_datas = JSON.parse( $('.imagify-offer-monthly').attr( 'data-offer' ) ),
-					    ot_datas = JSON.parse( $('.imagify-offer-onetime').attr( 'data-offer' ) ),
-					    price    = 0;
+				var pl_datas = JSON.parse( $( '.imagify-offer-monthly' ).attr( 'data-offer' ) ),
+					ot_datas = JSON.parse( $( '.imagify-offer-onetime' ).attr( 'data-offer' ) ),
+					price    = 0,
+					price_pl = 0,
+					price_ot = 0;
 
-				price_pl = $('#imagify-subscription-monthly').filter(':checked').length ? pl_datas[ Object.keys( pl_datas )[0] ].prices.monthly : pl_datas[ Object.keys( pl_datas )[0] ].prices.yearly * 12;
-				price_ot = ot_datas[ Object.keys( ot_datas )[0] ].price;
+				// calculate price_pl only if that offer is selected
+				if ( $( '.imagify-offer-monthly' ).hasClass( 'imagify-offer-selected' ) ) {
+					price_pl = $('#imagify-subscription-monthly').filter(':checked').length ? pl_datas[ Object.keys( pl_datas )[0] ].prices.monthly : pl_datas[ Object.keys( pl_datas )[0] ].prices.yearly * 12;
+				}
+				// calculate price_ot only if that offer is selected
+				if ( $( '.imagify-offer-onetime' ).hasClass( 'imagify-offer-selected' ) ) {
+					price_ot = ot_datas[ Object.keys( ot_datas )[0] ].price;
+				}
+
+				// calculate price
 				price = parseFloat( price_ot + price_pl ).toFixed(2);
 
+				// edit button price
 				$( '.imagify-global-amount' ).text( price );
+
 			},
 			imagify_get_pricing = function( $button ){
 				var nonce = $button.data('nonce'),
@@ -438,6 +450,9 @@ jQuery(function($){
 						$(this).closest('.imagify-offer-line').removeClass( sel_class );	
 					}
 				});
+
+				// Update pay button
+				imagify_populate_pay_btn();
 			},
 			imagify_check_radio = function( $radio ) {
 				var year_class = 'imagify-year-selected',
@@ -476,26 +491,33 @@ jQuery(function($){
 			},
 			imagify_check_coupon = function() {
 				var code = $( '#imagify-coupon-code' ).val();
-				
-				imagify.log( 'Checking Coupon' );
 
 				if ( code !== '' ) {
 					var $label   = $( '.imagify-coupon-text label' ),
 						$section = $( '.imagify-coupon-section' );
+					// TODO: AJAX WP method
 
-					$.post( 'https://app.imagify.io/api/coupons/' + code + '/', { 'token' : imagify_get_api_key() } )
-						.done( function( response ) {
-							if ( ! response.success ) {
-								imagify.info('Good');
-							} else {
-								imagify.info('An error with Coupons API occurred.');
-							}
-						} )
-						.fail( function( response ) {
-							imagify.info( 'Imagify: ' + response.responseJSON.detail );
+					var nonce = $( '#imagify-get-pricing-modal' ).data( 'nonce' );
+
+					// get the true prices
+					$.post( ajaxurl, {action: 'imagify_check_coupon', coupon: code, imagifynonce: nonce }, function( response ) {
+						
+						imagify.log( response );
+
+						// error during the requestion
+						if ( response.success === 'false' ) {
 							$label.text( imagifyAdmin.labels.errorCouponAPI );
 							$section.removeClass( 'validated' ).addClass( 'invalid' );
-						});
+						} else {
+							$label.text( response.data.detail );
+							if ( response.data.success ) {
+								$section.removeClass( 'invalid' ).addClass( 'validated' );
+							} else {
+								$section.removeClass( 'validated' ).addClass( 'invalid' );
+							}
+						}
+					});
+
 				}
 			},
 			$checkboxes = $('.imagify-offer-line').find('.imagify-checkbox'),
@@ -734,70 +756,6 @@ jQuery(function($){
 			checkout_datas.period = imagify_get_period();
 
 			imagify_iframe_set_src( checkout_datas );
-			return false;
-		});
-
-
-		// Removing an item
-		$('.imagify-remove-from-cart').on('click.imagify', function(){
-			var $_this		= $(this),
-				$line		= $_this.closest('.imagify-cart-item'),
-				is_monthly	= $line.hasClass('imagify-cart-item-monthly'),
-				$other_line = ( is_monthly ? $('.imagify-cart-item-onetime') : $('.imagify-cart-item-monthly') ),
-				is_empty	= $other_line.hasClass('imagify-temporary-removed'),
-				offer_datas	= $line.attr('data-offer'), // string
-				still_datas	= ( is_empty ? null : $other_line.data('offer') ); // object
-
-			$line.hide().attr('aria-hidden', 'true').attr('data-offer', '').addClass('imagify-temporary-removed');
-			$line.next('.imagify-cart-emptied-item').fadeIn(300).attr('aria-hidden', 'false').attr('data-offer', offer_datas )
-				 .find('.imagify-removed-name').html( $line.find('.imagify-cart-product-name').html() );
-
-			if ( typeof imagify_iframe_set_src === 'function' ) {
-				if ( still_datas !== null ) {
-					var datas_to_send = {};
-					datas_to_send[ ( is_monthly ? 'onetime' : 'monthly' )] = still_datas;
-					datas_to_send.period = imagify_get_period();
-					imagify_iframe_set_src( datas_to_send );
-				}
-				else {
-					imagifyAdmin.labels.info('No offers selected');
-				}
-			} else {
-				imagifyAdmin.labels.info('imagify_iframe_set_src seems to be not declared');
-			}
-			return false;
-		});
-
-		// cancel action
-		$('.imagify-cancel-removing').on('click.imagify', function(){
-			
-			var $_this		= $(this),
-				$msg_block	= $_this.closest('.imagify-cart-emptied-item'),
-				$line		= $msg_block.prev('.imagify-cart-item'),
-				is_monthly	= $line.hasClass('imagify-cart-item-monthly'),
-				$other_line = ( is_monthly ? $('.imagify-cart-item-onetime') : $('.imagify-cart-item-monthly') ),
-				other_empty	= $other_line.hasClass('imagify-temporary-removed'),
-				offer_datas	= $msg_block.attr('data-offer'), // string
-				still_datas	= ( other_empty ? null : $other_line.data('offer') ); // object
-
-
-			$msg_block.hide().attr('aria-hidden', 'true').attr('data-offer', '')
-					  .prev('.imagify-cart-item').fadeIn(300).attr('aria-hidden', 'true').attr('data-offer', offer_datas ).removeClass('imagify-temporary-removed');
-
-			// if new_datas === {} that is because both offers been cancelled
-			var new_datas = {};
-			
-			new_datas.monthly = ( is_monthly ? JSON.parse( offer_datas ) : still_datas );
-			new_datas.onetime = ( is_monthly ? still_datas : JSON.parse( offer_datas ) );
-			new_datas.period  = imagify_get_period();
-			
-
-			if ( typeof imagify_iframe_set_src === 'function' ) {
-				imagify_iframe_set_src( new_datas );
-			} else {
-				imagifyAdmin.labels.info('imagify_iframe_set_src seems to be not declared…');
-			}				
-
 			return false;
 		});
 		

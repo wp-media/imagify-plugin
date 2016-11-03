@@ -2706,12 +2706,12 @@ td.imagify-cell-filename {
 }
 .imagify-modal-content.imagify-iframe-viewing {
 	width: 980px;
-	height: 602px;
+	height: 672px;
 	overflow: hidden;
 }
 .imagify-iframe-viewing #imagify-payment-process-view {
 	width: 980px;
-	height: 598px;
+	height: 668px;
 }
 .imagify-payment-modal .imagify-modal-main {
 	width: 70%;

@@ -101,6 +101,17 @@ function get_imagify_all_prices() {
 }
 
 /**
+ * Check Coupon Code
+ *
+ * @return object
+ * @since  X.X.X
+ * @author Geoffrey Crofte
+ **/
+function check_imagify_coupon_code( $coupon ) {
+    return Imagify()->checkCouponCode( $coupon );
+}
+
+/**
  * Imagify.io API for WordPress
  */
 class Imagify {
@@ -305,6 +316,15 @@ class Imagify {
      */
     public function getAllPrices() {
         return $this->httpCall( 'pricing/all/' );
+    }
+
+    /**
+     * Get all prices (packs & plans included)
+     *
+     * @return object
+     */
+    public function checkCouponCode( $coupon ) {
+        return $this->httpCall( 'coupons/' . $coupon . '/' );
     }
 
 	/**
