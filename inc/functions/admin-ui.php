@@ -571,15 +571,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				?>
 
 				<div class="imagify-modal-views imagify-payment-process-view" id="imagify-payment-process-view" aria-hidden="true">
-					<div class="imagify-iframe-datas">
-						<form name="imagify-payment-form" id="imagify-payment-form" method="post" target="imagify-payment-iframe" action="">
-							<input type="hidden" name="item_ot" id="item_ot" value="0">
-							<input type="hidden" name="item_mp" id="item_mp" value="0">
-							<input type="hidden" name="item_yp" id="item_yp" value="0">
-							<input type="hidden" name="coupon" id="coupon" value="">
-							<input type="hidden" name="amount" id="amount" value="">
-						</form>
-					</div>
+
 					<?php $imagify_api_key = get_imagify_option( 'api_key', false ); ?>
 
 					<iframe data-imagify-api="<?php echo $imagify_api_key; ?>" id="imagify-payment-iframe" data-src="<?php echo IMAGIFY_PAYMENT_URL; ?>" name="imagify-payment-iframe" src="<?php echo IMAGIFY_PAYMENT_URL; ?>" frameborder="0"></iframe>

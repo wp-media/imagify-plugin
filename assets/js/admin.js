@@ -132,11 +132,25 @@ jQuery(function($){
 	});
 
 	// on click on close button
-	$(document).on('click.imagify', '.imagify-modal .close-btn', function(){
-		$(this).closest('.imagify-modal').fadeOut(400).attr('aria-hidden', 'true').removeClass('modal-is-open');
-		$('body').removeClass('imagify-modal-is-open');
+	$( document ).on( 'click.imagify', '.imagify-modal .close-btn', function(){
+		$(this).closest( '.imagify-modal' ).fadeOut( 400 ).attr( 'aria-hidden', 'true' ).removeClass( 'modal-is-open' );
+		// in Payment modal case
+		if ( $(this).closest( '.imagify-modal' ).hasClass( 'imagify-payment-modal' ) ) {
+			
+			// reset viewing class & aria-labelledby
+			$(this).closest( '.imagify-modal-content' ).removeClass( 'imagify-success-viewing' )
+				   .closest( '.imagify-modal' ).attr( 'aria-labelledby', 'imagify-pricing-step-1' );
+			
+			// reset first view after fadeout ~= 300 ms
+			setTimeout( function() {
+				$( '#imagify-pre-checkout-view' ).show();
+				$( '#imagify-success-view' ).hide();
+			}, 300 );
+		}
+
+		$( 'body' ).removeClass( 'imagify-modal-is-open' );
 	})
-	.on('blur.imagify', '.imagify-modal .close-btn', function(){
+	.on( 'blur.imagify', '.imagify-modal .close-btn', function(){
 		var $modal = $(this).closest('.imagify-modal');
 		if ( $modal.attr('aria-hidden') === 'false' ) {
 			$modal.attr('tabindex', '0').focus().removeAttr('tabindex');
@@ -598,16 +612,26 @@ jQuery(function($){
 					}
 					
 					if ( params.period ) {
-						var key = imagify_get_api_key();
 
-						$( '#item_ot' ).val( onetime_id );
-						$( '#item_yp' ).val( params.period === 'yearly' ? monthly_id : 0 );
-						$( '#item_mp' ).val( params.period === 'monthly' ? monthly_id : 0 );
-						$( '#coupon' ).val( $('#imagify-coupon-code').val() );
-						$( '#amount' ).val( parseFloat( $( '.imagify-global-amount' ).text() ).toFixed(2)  );
+						console.log( params.period );
+						console.log( monthly_id );
 
-						$( '#imagify-payment-form' ).attr( 'action', pay_src ).submit();
-						//$iframe.attr( 'src', pay_src );
+						var key        = imagify_get_api_key(),
+							rt_onetime = onetime_id,
+							rt_yearly  = params.period === 'yearly' ? monthly_id : 0,
+							rt_monthly = params.period === 'monthly' ? monthly_id : 0,
+							coupon     = $('#imagify-coupon-code').val(),
+							rt_coupon  = coupon === '' ? 'none' : coupon,
+							// not used but…
+							amount     = parseFloat( $( '.imagify-global-amount' ).text() ).toFixed(2);
+
+						// compose route
+						// pay_src + :ontimeplan(0)/:monthlyplan(0)/:yearlyplan(0)/:coupon(none)/
+						pay_src = pay_src + rt_onetime + '/' + rt_monthly + '/' + rt_yearly + '/' + rt_coupon + '/';
+
+						console.log( pay_src );
+
+						$iframe.attr( 'src', pay_src );
 
 					} else {
 						imagify.info( 'No period defined' );
@@ -621,7 +645,7 @@ jQuery(function($){
 				}
 			},
 			imagify_get_period = function() {
-				return ( $('.imagify-cart').hasClass('imagify-month-selected') ? 'monthly' : 'yearly' );
+				return ( $('.imagify-offer-monthly').hasClass('imagify-month-selected') ? 'monthly' : 'yearly' );
 			},
 			imagify_get_api_key = function(){
 				return $('#imagify-payment-iframe').data('imagify-api');
@@ -778,18 +802,42 @@ jQuery(function($){
 		/**
 		 * Public function triggered by payement iframe
 		 */
+		//$pre_view.hide();
+		//$plans_view.hide();
+		//$payment_view.hide();
+		//$success_view.hide();
 		var paymentClose = function() {
-				console.log( 'paymentClose triggered' );
+				$( '.imagify-iframe-viewing' ).removeClass( 'imagify-iframe-viewing' );
+				$payment_view.hide();
+				$pre_view.fadeIn(200);
 				return false;
 			},
 			paymentBack = function() {
-				console.log( 'paymentBack triggered' );
+				paymentClose();
 				return false;
 			},
 			paymentSuccess = function() {
-				console.log( 'paymentSuccess triggered' );
+				$( '.imagify-iframe-viewing' ).removeClass( 'imagify-iframe-viewing' );
+				$payment_view.hide();
+				$success_view.closest( '.imagify-modal-content' ).addClass( 'imagify-success-viewing' );
+				$success_view.closest( '.imagify-modal' ).attr( 'aria-labelledby', 'imagify-success-view' );
+				$success_view.fadeIn(200);
 				return false;
+			},
+			checkPluginMessage = function(event) {
+				var origin = event.origin || event.originalEvent.origin;
+
+				if ( origin === 'https://app.imagify.io' || origin === 'http://dapp.imagify.io' ) {
+					switch (event.data) {
+						case 'cancel': paymentClose(); break;
+						case 'back': paymentBack(); break;
+						case 'success': paymentSuccess(); break;
+					}
+				}
 			};
+
+		// message/communication API
+		window.addEventListener( 'message', checkPluginMessage, true );
 
 	}
 

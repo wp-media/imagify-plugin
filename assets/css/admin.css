@@ -2498,6 +2498,9 @@ td.imagify-cell-filename {
 	display: block;
 	visibility: visible;
 }
+.js .imagify-iframe-viewing .close-btn {
+	display: none;
+}
 #imagify-visual-comparison .close-btn,
 .imagify-visual-comparison .close-btn {
 	top: 50px;
@@ -2719,13 +2722,22 @@ td.imagify-cell-filename {
 .imagify-iframe-viewing .imagify-modal-main {
 	width: auto;
 }
+.imagify-payment-modal .imagify-modal-content.imagify-success-viewing {
+	min-width: auto;
+	width: 450px;
+	min-height: 300px;
+}
+.imagify-success-viewing .imagify-modal-main {
+	width: 100%;
+}
 .imagify-payment-modal .imagify-modal-sidebar {
 	width: 30%;
 	padding: 15px 20px;
 	background: #1F2332;
 	color: #FFF;
 }
-.imagify-modal-content.imagify-iframe-viewing .imagify-modal-sidebar {
+.imagify-modal-content.imagify-iframe-viewing .imagify-modal-sidebar,
+.imagify-modal-content.imagify-success-viewing .imagify-modal-sidebar {
 	display: none;
 }
 .imagify-payment-steps {
@@ -2735,7 +2747,8 @@ td.imagify-cell-filename {
 	list-style: none;
 	counter-reset: steps;
 }
-.imagify-iframe-viewing .imagify-payment-steps {
+.imagify-iframe-viewing .imagify-payment-steps,
+.imagify-success-viewing .imagify-payment-steps {
 	display: none;
 }
 .imagify-payment-steps li {
@@ -3608,7 +3621,7 @@ p.imagify-modal-sidebar-title {
 
 #imagify-payment-iframe {
 	width: 980px;
-	height: 598px;
+	height: 672px;
 	background: #f6f7fb url(../images/loader-balls.svg) 50% 50% no-repeat;
 }
 
