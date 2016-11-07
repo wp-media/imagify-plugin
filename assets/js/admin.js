@@ -515,8 +515,6 @@ jQuery(function($){
 
 					// get the true prices
 					$.post( ajaxurl, {action: 'imagify_check_coupon', coupon: code, imagifynonce: nonce }, function( response ) {
-						
-						imagify.log( response );
 
 						// error during the requestion
 						if ( response.success === 'false' ) {
@@ -612,10 +610,6 @@ jQuery(function($){
 					}
 					
 					if ( params.period ) {
-
-						console.log( params.period );
-						console.log( monthly_id );
-
 						var key        = imagify_get_api_key(),
 							rt_onetime = onetime_id,
 							rt_yearly  = params.period === 'yearly' ? monthly_id : 0,
@@ -628,8 +622,6 @@ jQuery(function($){
 						// compose route
 						// pay_src + :ontimeplan(0)/:monthlyplan(0)/:yearlyplan(0)/:coupon(none)/
 						pay_src = pay_src + rt_onetime + '/' + rt_monthly + '/' + rt_yearly + '/' + rt_coupon + '/';
-
-						console.log( pay_src );
 
 						$iframe.attr( 'src', pay_src );
 
