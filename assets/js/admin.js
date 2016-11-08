@@ -134,6 +134,7 @@ jQuery(function($){
 	// on click on close button
 	$( document ).on( 'click.imagify', '.imagify-modal .close-btn', function(){
 		$(this).closest( '.imagify-modal' ).fadeOut( 400 ).attr( 'aria-hidden', 'true' ).removeClass( 'modal-is-open' );
+
 		// in Payment modal case
 		if ( $(this).closest( '.imagify-modal' ).hasClass( 'imagify-payment-modal' ) ) {
 			
@@ -143,8 +144,8 @@ jQuery(function($){
 			
 			// reset first view after fadeout ~= 300 ms
 			setTimeout( function() {
+				$( '.imagify-modal-views' ).hide();
 				$( '#imagify-pre-checkout-view' ).show();
-				$( '#imagify-success-view' ).hide();
 			}, 300 );
 		}
 
