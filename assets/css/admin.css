@@ -2812,6 +2812,19 @@ td.imagify-cell-filename {
 	font-size: 1.8em;
 	font-weight: lighter;
 }
+.imagify-analyzing .imagify-numbers-calc,
+.imagify-numbers-notcalc,
+.imagify-modal-section.imagify-analyzing .imagify-modal-cols,
+.imagify-modal-section .imagify-loader {
+	display: none;
+}
+.imagify-analyzing .imagify-numbers-notcalc,
+.imagify-modal-section.imagify-analyzing .imagify-loader {
+	display: block;
+} 
+.imagify-modal-section .imagify-loader {
+	margin: 2em auto;
+}
 
 .imagify-border-styled {
 	width: 200px;

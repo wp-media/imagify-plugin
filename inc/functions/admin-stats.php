@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 function imagify_count_attachments() {
 	global $wpdb;
-	
+
 	/**
 	 * Filter the number of attachments
 	 * 3rd party will be able to override the result
@@ -23,9 +23,9 @@ function imagify_count_attachments() {
 	if ( false !== $count ) {
 		return $count;
 	}
-	
+
 	static $count;
-	
+
 	if ( ! $count ) {
 		$count = $wpdb->get_var(
 			"SELECT COUNT($wpdb->posts.ID)

@@ -284,21 +284,25 @@ function imagify_payment_modal() {
 				</ol>
 				<div class="imagify-modal-views imagify-pre-checkout-view" id="imagify-pre-checkout-view" aria-hidden="false">
 
-					<?php
+				<?php
 					$attachments_number = imagify_count_attachments();
-					$total_size         = get_imagify_option( 'total_size_images_library', 0 );
-                    $per_month          = get_imagify_option( 'average_size_images_per_month', 0 );
-                	if ( $attachments_number > 50 && $total_size !== 0 && $per_month !== 0  ) :
-                	?>
+					$total_size         = get_imagify_option( 'total_size_images_library', false );
+					$per_month          = get_imagify_option( 'average_size_images_per_month', false );
+				?>
 
-					<div class="imagify-modal-section section-gray imagify-estimation-block">
-						<p class="imagify-modal-title"><?php esc_html_e( 'We analysed your images', 'imagify' ); ?></p>
+					<div class="imagify-modal-section section-gray imagify-estimation-block<?php echo $total_size === false ? ' imagify-analyzing' : ''; ?>">
+						<p class="imagify-modal-title">
+							<span class="imagify-numbers-calc"><?php esc_html_e( 'We analysed your images', 'imagify' ); ?></span>
+							<span class="imagify-numbers-notcalc"><?php esc_html_e( 'We are analysing your images', 'imagify' ); ?></span>
+						</p>
+						
+						<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>loader-balls.svg" width="77" height="48" alt="<?php esc_attr_e( 'Analyzing', 'imagify' ); ?>" class="imagify-loader">
 
 						<div class="imagify-modal-cols">
 							<div class="imagify-col">
 								<p>
 									<span class="imagify-border-styled"><?php 
-										printf( esc_html__( 'You have %s images', 'imagify' ), '</span><span class="imagify-big-number">' . $attachments_number . '</span><span class="imagify-border-styled">' ); ?></span>
+										printf( _n( 'You have %s image', 'You have %s images', $attachments_number, 'imagify' ), '</span><span class="imagify-big-number">' . $attachments_number . '</span><span class="imagify-border-styled">' ); ?></span>
 								</p>
 							</div>
 							<div class="imagify-col">
@@ -314,10 +318,10 @@ function imagify_payment_modal() {
 						</div>
 					</div><!-- .imagify-modal-section -->
 
-                    <?php endif; ?>
-
 					<div class="imagify-modal-section imagify-pre-checkout-offers">
-						<p class="imagify-modal-title"><?php esc_html_e( 'We recommend you this plan', 'imagify' ); ?></p>
+						<p class="imagify-modal-title">
+							<?php esc_html_e( 'We recommend you this plan', 'imagify' ); ?>	
+						</p>
 
 						<div class="imagify-offer-line imagify-offer-monthly imagify-offer-selected imagify-month-selected" data-offer='{"lite":{"id":3,"name":"Lite","data":1073741824,"dataf":"1 GB","imgs":5000,"prices":{"monthly":4.99,"yearly":4.16,"add":4}}}'>
 							<div class="imagify-offer-header">
@@ -386,7 +390,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 							<div class="imagify-offer-content imagify-flex-table">
 
 								<div class="imagify-col-checkbox">
-									<input type="checkbox" name="imagify-offer" id="imagify-offer-custom" value="1Gb" class="imagify-checkbox medium">
+									<input type="checkbox" name="imagify-offer" id="imagify-offer-custom" value="1Gb" checked="checked" class="imagify-checkbox medium">
 									<label for="imagify-offer-custom">
 										<span class="imagify-the-offer">
 											<span class="imagify-offer-size">3 GB</span>
