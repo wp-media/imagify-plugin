@@ -3067,7 +3067,7 @@ div.imagify-col-checkbox {
 	transition: all .275s;
 }
 .imagify-approx {
-	display: block;
+	display: none;
 	font-size: 11px;
 	line-height: 1.2;
 	-webkit-transition: all .275s;
