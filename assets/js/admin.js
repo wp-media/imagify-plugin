@@ -630,7 +630,12 @@ jQuery(function($){
 						// pay_src + :ontimeplan(0)/:monthlyplan(0)/:yearlyplan(0)/:coupon(none)/
 						pay_src = pay_src + rt_onetime + '/' + rt_monthly + '/' + rt_yearly + '/' + rt_coupon + '/';
 
-						$iframe.attr( 'src', pay_src );
+						// iFrame sort of cache fix
+						$iframeClone = $iframe.clone();
+						$iframe.remove();
+
+						$iframeClone.attr( 'src', pay_src );
+						$payment_view.html( $iframeClone );
 
 					} else {
 						imagify.info( 'No period defined' );
@@ -811,13 +816,14 @@ jQuery(function($){
 		//$payment_view.hide();
 		//$success_view.hide();
 		var paymentClose = function() {
+				$( '.imagify-iframe-viewing .close-btn' ).trigger( 'click.imagify' );
 				$( '.imagify-iframe-viewing' ).removeClass( 'imagify-iframe-viewing' );
-				$payment_view.hide();
-				$pre_view.fadeIn(200);
 				return false;
 			},
 			paymentBack = function() {
-				paymentClose();
+				$( '.imagify-iframe-viewing' ).removeClass( 'imagify-iframe-viewing' );
+				$payment_view.hide();
+				$pre_view.fadeIn(200);
 				return false;
 			},
 			paymentSuccess = function() {
