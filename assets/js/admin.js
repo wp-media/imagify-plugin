@@ -291,6 +291,12 @@ jQuery(function($){
 				// edit button price
 				$( '.imagify-global-amount' ).text( price );
 
+				if ( price == '0.00' || price === 0 ) {
+					$( '#imagify-modal-checkout-btn' ).attr( 'disabled', 'disabled' ).addClass( 'imagify-button-disabled' );
+				} else {
+					$( '#imagify-modal-checkout-btn' ).removeAttr( 'disabled' ).removeClass( 'imagify-button-disabled' );
+				}
+
 			},
 			imagify_get_pricing = function( $button ){
 				var nonce = $button.data('nonce'),
@@ -401,7 +407,7 @@ jQuery(function($){
 								// rebuild mo_html with removed items
 								mo_html = '';
 								for ( j = 0; j < $total_offers.length; j++) {
-									mo_html += $('<div/>').append($total_offers[j]).html();
+									mo_html += $( '<div/>' ).append($total_offers[j]).html();
 								}
 							}
 
@@ -416,7 +422,7 @@ jQuery(function($){
 									ot_suggested = true;
 
 									// add this offer as pre-selected item in pre-checkout view
-									var $offer = $('.imagify-pre-checkout-offers').find('.imagify-offer-onetime');
+									var $offer = $( '.imagify-pre-checkout-offers' ).find( '.imagify-offer-onetime' );
 
 									// populate the Pre-checkout view depending on user_cons
 									imagify_populate_offer( $offer, value, 'onetime' );
@@ -430,18 +436,18 @@ jQuery(function($){
 							});
 
 							// Fill pricing tables
-							if ( $mo_tpl.parent().find('.imagify-offer-line') ) {
-								$mo_tpl.parent().find('.imagify-offer-line').remove();
+							if ( $mo_tpl.parent().find( '.imagify-offer-line' ) ) {
+								$mo_tpl.parent().find( '.imagify-offer-line' ).remove();
 							}
 							$mo_tpl.before( mo_html );
 
-							if ( $ot_tpl.parent().find('.imagify-offer-line') ) {
-								$ot_tpl.parent().find('.imagify-offer-line').remove();
+							if ( $ot_tpl.parent().find( '.imagify-offer-line' ) ) {
+								$ot_tpl.parent().find( '.imagify-offer-line' ).remove();
 							}
 							$ot_tpl.before( ot_html );
 
 							// Show the content 
-							$modal.find('.imagify-modal-loader').fadeOut(300);
+							$modal.find( '.imagify-modal-loader' ).fadeOut( 300 );
 
 						}); // second AJAX request for image estimation sizes
 
@@ -738,26 +744,31 @@ jQuery(function($){
 
 
 		// 2) when you checkout
-		$('#imagify-modal-checkout-btn').on('click.imagify', function(){
+		$( '#imagify-modal-checkout-btn' ).on( 'click.imagify', function() {
 
-			var $monthly_offer = $('.imagify-offer-monthly'),
-				$onetime_offer = $('.imagify-offer-onetime'),
+			// do nothing if button disabled
+			if ( $( this ).hasClass( 'imagify-button-disabled' ) ) {
+				return;
+			} 
+
+			var $monthly_offer = $( '.imagify-offer-monthly' ),
+				$onetime_offer = $( '.imagify-offer-onetime' ),
 				checkout_datas = {},
-				period_choosen = $monthly_offer.hasClass('imagify-year-selected') ? 'year' : 'month';
+				period_choosen = $monthly_offer.hasClass( 'imagify-year-selected' ) ? 'year' : 'month';
 
 			// if user choose a monthly plan
-			if ( $monthly_offer.hasClass('imagify-offer-selected') ) {
+			if ( $monthly_offer.hasClass( 'imagify-offer-selected' ) ) {
 				
-				checkout_datas.monthly = JSON.parse( $monthly_offer.attr('data-offer') );
-				$('.imagify-cart-list-my-choice').show();
+				checkout_datas.monthly = JSON.parse( $monthly_offer.attr( 'data-offer' ) );
+				$( '.imagify-cart-list-my-choice' ).show();
 
 				// price calculation
 				prices = checkout_datas.monthly[Object.keys(checkout_datas.monthly)[0]].prices;
 				save_price = Math.round( ( ( prices.monthly - prices.yearly ) * 12 ) * 100 ) / 100;
-				$('.imagify-nb-save-per-year').text( '$' + save_price );
+				$( '.imagify-nb-save-per-year' ).text( '$' + save_price );
 
 			} else {
-				$('.imagify-cart-list-my-choice').hide();
+				$( '.imagify-cart-list-my-choice' ).hide();
 			}
 
 			// if user choose a one time plan
