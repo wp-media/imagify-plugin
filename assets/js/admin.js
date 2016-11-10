@@ -155,7 +155,7 @@ jQuery(function($){
 		if ( $(this).closest( '.imagify-modal' ).hasClass( 'imagify-payment-modal' ) ) {
 			
 			// reset viewing class & aria-labelledby
-			$(this).closest( '.imagify-modal-content' ).removeClass( 'imagify-success-viewing' )
+			$(this).closest( '.imagify-modal-content' ).removeClass( 'imagify-success-viewing imagify-iframe-viewing' )
 				   .closest( '.imagify-modal' ).attr( 'aria-labelledby', 'imagify-pricing-step-1' );
 			
 			// reset first view after fadeout ~= 300 ms
