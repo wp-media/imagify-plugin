@@ -241,10 +241,18 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 				'percent'            => 0,
 			)
 		);
-
+		
+		// To avoid issue with "original_size" at 0 in "_imagify_data"
+		if ( 0 === $this->get_stats_data( 'original_size' ) ) {
+			delete_post_meta( $id, '_imagify_data' );
+			delete_post_meta( $id, '_imagify_status' );
+			delete_post_meta( $id, '_imagify_optimization_level' );
+		}
+		
 		// Get file path & URL for original image
-		$attachment_path = $this->get_original_path();
-		$attachment_url  = $this->get_original_url();
+		$attachment_path          = $this->get_original_path();
+		$attachment_url           = $this->get_original_url();
+		$attachment_original_size = $this->get_original_size( false );
 		
 		// Check if the full size is already optimized
 		if ( $this->is_optimized() && ( $this->get_optimization_level() == $optimization_level ) ) {
@@ -263,21 +271,44 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		set_transient( 'imagify-ngg-async-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
 		
 		// Get the resize values for the original size
-		$resize           = array();
+		$resized          = false;
 		$do_resize        = get_imagify_option( 'resize_larger', false );
 		$resize_width     = get_imagify_option( 'resize_larger_w' );
 		$attachment_size  = @getimagesize( $attachment_path );
 
 		if ( $do_resize && isset( $attachment_size[0] ) && $resize_width < $attachment_size[0] ) {
-			$resize['width'] = $resize_width;
-		}
+            $resized_attachment_path = $this->resize( $attachment_path, $attachment_size, $resize_width );
+            
+            if ( ! is_wp_error( $resized_attachment_path ) ) {
+                if ( get_imagify_option( 'backup', false ) ) {
+                    $backup_path      = get_imagify_attachment_backup_path( $attachment_path );
+                    $backup_path_info = pathinfo( $backup_path );
+            
+                    wp_mkdir_p( $backup_path_info['dirname'] );
+            
+                    // TO DO - check and send a error message if the backup can't be created
+                    @copy( $attachment_path, $backup_path );
+                    imagify_chmod_file( $backup_path );
+                }
+            
+                @rename( $resized_attachment_path, $attachment_path );
+                imagify_chmod_file( $attachment_path );
+            
+                // If resized temp file still exists, delete it
+                if ( file_exists( $resized_attachment_path ) ) {
+                    unlink( $resized_attachment_path );
+                }
+            
+                $resized = true;
+            }
+        }
 		
 		// Optimize the original size 
 		$response = do_imagify( $attachment_path, array(
 			'optimization_level' => $optimization_level,
-			'resize'             => $resize,
 			'context'            => 'ngg',
-			'original_size'		 => $this->get_original_size( false )
+			'resized'            => $resized,
+			'original_size'		 => $attachment_original_size,
 		) );
 		$data 	  = $this->fill_data( $data, $response, $id, $attachment_url );
 		
@@ -297,7 +328,7 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		
 		// If we resized the original with success, we have to update the attachment metadata
 		// If not, WordPress keeps the old attachment size.		
-		if ( $do_resize && isset( $resize['width'] ) ) {
+		if ( $do_resize && $resized ) {
 			$this->update_metadata_size();
 		}
 				

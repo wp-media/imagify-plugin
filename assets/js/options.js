@@ -37,10 +37,10 @@ jQuery(function($){
 				$('#imagify-check-api-container').remove();
 				swal({
 					title: imagifyAdmin.labels.ApiKeyCheckSuccessTitle,
-					text: imagifyAdmin.labels.ApiKeyCheckSuccessText,
+					html: imagifyAdmin.labels.ApiKeyCheckSuccessText,
 					type: "success",
 					customClass: "imagify-sweet-alert"
-				},
+				}).then(
 				function(){
 					location.reload();
 				});
@@ -85,15 +85,17 @@ jQuery(function($){
 			var $_this = $(this);
 			swal({
 				title: imagifyOptions.noBackupTitle,
-				text: imagifyOptions.noBackupText,
-				type: "info",
+				html: imagifyOptions.noBackupText,
+				type: "warning",
 				customClass: "imagify-sweet-alert",
 				showCancelButton: true,
-				cancelButtonText: imagifyAdmin.labels.swalCancel
-			}, function(isConfirm){
-				if ( ! isConfirm ) {
+				cancelButtonText: imagifyAdmin.labels.swalCancel,
+				reverseButtons: true,
+			}).then(
+    			function() {
+    			},
+			    function(dismiss){
 					$_this.prop('checked', true);
-				}
 			});
 		}
 	});

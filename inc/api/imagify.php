@@ -111,6 +111,22 @@ function check_imagify_coupon_code( $coupon ) {
     return Imagify()->checkCouponCode( $coupon );
 }
 
+/*
+ * Get Maximum image size for free plan
+ *
+ * @return string
+ * @since 1.5.6
+ * @author Remy Perona
+ **/
+function get_imagify_max_image_size() {
+    if ( false === ( $max_image_size = get_transient( 'imagify_max_image_size' ) ) ) {
+        $max_image_size = Imagify()->getPublicInfo()->max_image_size;
+        set_transient( 'imagify_max_image_size', $max_image_size, 6 * HOUR_IN_SECONDS );
+    }
+
+    return $max_image_size;
+}
+
 /**
  * Imagify.io API for WordPress
  */
@@ -325,6 +341,15 @@ class Imagify {
      */
     public function checkCouponCode( $coupon ) {
         return $this->httpCall( 'coupons/' . $coupon . '/' );
+    }
+
+    /*
+     * Get Public Info
+     *
+     * @return object
+     */
+    public function getPublicInfo() {
+        return $this->httpCall( 'public-info' );
     }
 
 	/**
