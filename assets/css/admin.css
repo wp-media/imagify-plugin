@@ -147,6 +147,12 @@ body.imagify-modal-is-open {
 	background-color: #40b1d0  !important;
 	box-shadow: 0 3px 0 #338ea6  !important;
 }
+.imagify-sweet-alert button.loading {
+	border-radius: 100% !important;
+	height: 40px !important;
+	padding:0!important;
+	box-shadow: none!important;
+}
 .imagify-sweet-alert button.swal2-cancel {
 	background: #777 !important;
 	box-shadow: 0 3px 0 #444 !important;
