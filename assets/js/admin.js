@@ -347,7 +347,13 @@ jQuery(function($){
 								ot_html      = '',
 								mo_html      = '',
 								ot_suggested = false,
-								mo_suggested = false;
+								mo_suggested = false,
+								$estim_block = $( '.imagify-estimation-block' );
+
+							// Refresh Analyzing block
+							$estim_block.removeClass( 'imagify-analyzing' );
+							$estim_block.find( '.average-month-size' ).text( images_datas.average_month_size.human );
+							$estim_block.find( '.total-library-size' ).text( images_datas.total_library_size.human );
 
 							// Don't create prices table if something went wrong during request
 							if ( monthlies === null || onetimes === null ) {

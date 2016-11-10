@@ -308,11 +308,11 @@ function imagify_payment_modal() {
 							<div class="imagify-col">
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-images-alt2" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'You currently have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark">' . ( isset( $total_size['human'] ) ? $total_size['human'] : $total_size ) . '</strong>' ); ?>
+									<?php printf( esc_html__( 'You currently have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark total-library-size">' . ( isset( $total_size['human'] ) ? $total_size['human'] : $total_size ) . '</strong>' ); ?>
 								</p>
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-cloud" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'You upload around %s of images per month.', 'imagify' ), '<strong class="imagify-dark">' . ( isset( $per_month['human'] ) ? $per_month['human'] : $per_month ) . '</strong>' ); ?>
+									<?php printf( esc_html__( 'You upload around %s of images per month.', 'imagify' ), '<strong class="imagify-dark average-month-size">' . ( isset( $per_month['human'] ) ? $per_month['human'] : $per_month ) . '</strong>' ); ?>
 								</p>
 							</div>
 						</div>
