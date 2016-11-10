@@ -102,7 +102,7 @@ function get_imagify_attachment_url( $filename ) {
  * @return array Data for all currently-registered thumbnail sizes.
  */
 function get_imagify_thumbnail_sizes() {
-	global $_wp_additional_image_sizes;
+	global $_wp_additional_image_sizes, $wp_version;
 	
 	$sizes   = array();
 	$is_wp44 = version_compare( $wp_version, '4.4-beta3' ) >= 0;
