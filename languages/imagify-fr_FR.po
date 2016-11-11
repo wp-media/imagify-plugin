@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2016-11-10 18:41+0100\n"
-"PO-Revision-Date: 2016-11-10 18:45+0100\n"
+"POT-Creation-Date: 2016-11-11 21:13+0100\n"
+"PO-Revision-Date: 2016-11-11 21:14+0100\n"
 "Last-Translator: Rémy Perona <remperona@gmail.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -22,12 +22,12 @@ msgstr ""
 
 #: inc/3rd-party/nextgen-gallery/inc/admin/enqueue.php:20 inc/admin/ajax.php:123
 #: inc/admin/meta-boxes.php:34 inc/functions/admin-ui.php:215
-#: inc/functions/i18n.php:51 inc/functions/i18n.php:66
+#: inc/functions/i18n.php:52 inc/functions/i18n.php:67
 msgid "Optimize"
 msgstr "Optimiser"
 
 #: inc/3rd-party/nextgen-gallery/inc/admin/enqueue.php:21
-#: inc/functions/admin-ui.php:80 inc/functions/i18n.php:52
+#: inc/functions/admin-ui.php:80 inc/functions/i18n.php:53
 msgid "Restore Original"
 msgstr "Restaurer l’original"
 
@@ -60,11 +60,11 @@ msgstr ""
 msgid "View My Subscription"
 msgstr "Voir mon abonnement"
 
-#: inc/admin/ajax.php:517 inc/admin/ui/notices.php:258 inc/functions/i18n.php:86
+#: inc/admin/ajax.php:517 inc/admin/ui/notices.php:258 inc/functions/i18n.php:87
 msgid "Oops, It's Over!"
 msgstr "Oups, c’est fini !"
 
-#: inc/admin/ajax.php:518 inc/admin/ui/notices.php:260 inc/functions/i18n.php:103
+#: inc/admin/ajax.php:518 inc/admin/ui/notices.php:260 inc/functions/i18n.php:104
 #, php-format
 msgid ""
 "You have consumed all your credit for this month. You will have <strong>%s "
@@ -94,7 +94,7 @@ msgstr "Il vous reste %s de crédit"
 msgid "View my subscription"
 msgstr "Voir mon abonnement"
 
-#: inc/admin/media.php:63 inc/functions/i18n.php:62
+#: inc/admin/media.php:63 inc/functions/i18n.php:63
 msgid "Compare Original VS Optimized"
 msgstr "Comparer Originale VS Optimisée"
 
@@ -277,7 +277,7 @@ msgstr "Statut"
 msgid "Original"
 msgstr "Original"
 
-#: inc/admin/ui/bulk.php:266 inc/admin/upload.php:41 inc/functions/i18n.php:82
+#: inc/admin/ui/bulk.php:266 inc/admin/upload.php:41 inc/functions/i18n.php:83
 msgid "Optimized"
 msgstr "Optimisées"
 
@@ -374,7 +374,7 @@ msgid "Go to Settings"
 msgstr "Aller aux réglages"
 
 #: inc/admin/ui/notices.php:87 inc/admin/ui/options.php:97
-#: inc/functions/i18n.php:80
+#: inc/functions/i18n.php:81
 msgid "Your API key isn't valid!"
 msgstr "Votre clé API n’est pas valide&nbsp;!"
 
@@ -437,8 +437,8 @@ msgstr "Utilisez la vue liste pour optimiser vos images avec Imagify."
 msgid "Switch to the List View"
 msgstr "Basculer en vue liste"
 
-#: inc/admin/ui/notices.php:260 inc/functions/i18n.php:100
-#: inc/functions/i18n.php:103
+#: inc/admin/ui/notices.php:260 inc/functions/i18n.php:101
+#: inc/functions/i18n.php:104
 #, php-format
 msgid ""
 "To continue to optimize your images, log in to your Imagify account to %sbuy a "
@@ -693,7 +693,7 @@ msgstr ""
 "baisse de qualité sur vos images, nous vous recommandons ce niveau."
 
 #: inc/admin/ui/options.php:357 inc/admin/ui/options.php:479
-#: inc/functions/admin-ui.php:604 inc/functions/i18n.php:63
+#: inc/functions/admin-ui.php:607 inc/functions/i18n.php:64
 msgid "Close"
 msgstr "Fermer"
 
@@ -721,17 +721,17 @@ msgstr "Niveau&nbsp;:"
 
 #: inc/admin/ui/options.php:410 inc/admin/ui/options.php:420
 #: inc/admin/ui/options.php:440 inc/admin/ui/options.php:461
-#: inc/functions/i18n.php:64
+#: inc/functions/i18n.php:65
 msgid "File Size:"
 msgstr "Poids du fichier:"
 
 #: inc/admin/ui/options.php:424 inc/admin/ui/options.php:444
 #: inc/admin/ui/options.php:465 inc/functions/admin-ui.php:45
-#: inc/functions/i18n.php:65
+#: inc/functions/i18n.php:66
 msgid "Original Saving:"
 msgstr "Gain sur l’original&nbsp;:"
 
-#: inc/admin/upload.php:42 inc/functions/i18n.php:83
+#: inc/admin/upload.php:42 inc/functions/i18n.php:84
 msgid "Unoptimized"
 msgstr "Non optimisées"
 
@@ -876,30 +876,30 @@ msgstr "Souscrire un plan mensuel"
 msgid "Subscribe a yearly plan"
 msgstr "Souscrire un plan annuel"
 
-#: inc/functions/admin-ui.php:334 inc/functions/admin-ui.php:476
+#: inc/functions/admin-ui.php:334 inc/functions/admin-ui.php:479
 msgid "Monthly"
 msgstr "Mensuel"
 
-#: inc/functions/admin-ui.php:337 inc/functions/admin-ui.php:479
+#: inc/functions/admin-ui.php:337 inc/functions/admin-ui.php:482
 msgid "Yearly"
 msgstr "Annuel"
 
-#: inc/functions/admin-ui.php:337 inc/functions/admin-ui.php:479
+#: inc/functions/admin-ui.php:337 inc/functions/admin-ui.php:482
 msgid "2 months free"
 msgstr "2 mois gratuits"
 
 #: inc/functions/admin-ui.php:348 inc/functions/admin-ui.php:367
-#: inc/functions/admin-ui.php:489 inc/functions/admin-ui.php:499
+#: inc/functions/admin-ui.php:492 inc/functions/admin-ui.php:502
 msgid "/month"
 msgstr "/mois"
 
 #: inc/functions/admin-ui.php:350 inc/functions/admin-ui.php:398
-#: inc/functions/admin-ui.php:491 inc/functions/admin-ui.php:542
+#: inc/functions/admin-ui.php:494 inc/functions/admin-ui.php:545
 #, php-format
 msgid "approx: %s images"
 msgstr "approx&nbsp;: %s images"
 
-#: inc/functions/admin-ui.php:371 inc/functions/admin-ui.php:505
+#: inc/functions/admin-ui.php:371 inc/functions/admin-ui.php:508
 #, php-format
 msgid ""
 "%s per<br>\n"
@@ -916,20 +916,24 @@ msgstr "Choisir un autre plan"
 msgid "Optimize the images you already have, buy a one-time plan"
 msgstr "Optimisez les images que vous avez déjà, achetez un plan « One Time » "
 
-#: inc/functions/admin-ui.php:422
+#: inc/functions/admin-ui.php:423
+msgid "Checking Coupon"
+msgstr "Vérification du coupon"
+
+#: inc/functions/admin-ui.php:425
 msgid "If you have a <strong>coupon code</strong><br> use it there:"
 msgstr "Si vous avez un <strong>code coupon</strong><br> utilisez-le ici&nbsp;:"
 
-#: inc/functions/admin-ui.php:425
+#: inc/functions/admin-ui.php:428
 msgid "Coupon Code"
 msgstr "Code coupon"
 
-#: inc/functions/admin-ui.php:431
+#: inc/functions/admin-ui.php:434
 #, php-format
 msgid "Pay %s"
 msgstr "Payer %s"
 
-#: inc/functions/admin-ui.php:436
+#: inc/functions/admin-ui.php:439
 msgid ""
 "Monthly plans comes with credits which is renewed every months. The billing "
 "happens automatically each month or year depending the billing period you "
@@ -939,15 +943,15 @@ msgstr ""
 "facturation arrive automatiquement tous les mois ou années dépendamment de "
 "votre choix de période de facturation."
 
-#: inc/functions/admin-ui.php:456
+#: inc/functions/admin-ui.php:459
 msgid "Monthly Plans"
 msgstr "Plans Mensuels"
 
-#: inc/functions/admin-ui.php:461
+#: inc/functions/admin-ui.php:464
 msgid "One Time Plans"
 msgstr "Plans « One Time »"
 
-#: inc/functions/admin-ui.php:471
+#: inc/functions/admin-ui.php:474
 msgid ""
 "Monthly plans come with credits which is renewed every months. The billing "
 "happens automatically each month or year depending the billing period you "
@@ -957,27 +961,27 @@ msgstr ""
 "facturation arrive automatiquement tous les mois ou années dépendamment de "
 "votre choix de période de facturation."
 
-#: inc/functions/admin-ui.php:503 inc/functions/admin-ui.php:550
+#: inc/functions/admin-ui.php:506 inc/functions/admin-ui.php:553
 msgid "we recommend for you"
 msgstr "nous vous recommandons"
 
-#: inc/functions/admin-ui.php:511 inc/functions/admin-ui.php:554
+#: inc/functions/admin-ui.php:514 inc/functions/admin-ui.php:557
 msgid "Choose plan"
 msgstr "Choisir ce plan"
 
-#: inc/functions/admin-ui.php:519
+#: inc/functions/admin-ui.php:522
 msgid "Need more?"
 msgstr "Besoin de plus&nbsp;?"
 
-#: inc/functions/admin-ui.php:520
+#: inc/functions/admin-ui.php:523
 msgid "for special needs"
 msgstr "pour les besoins particuliers"
 
-#: inc/functions/admin-ui.php:524
+#: inc/functions/admin-ui.php:527
 msgid "Contact Us"
 msgstr "Nous contacter"
 
-#: inc/functions/admin-ui.php:531
+#: inc/functions/admin-ui.php:534
 msgid ""
 "One time plans are useful if you have a lots of existing images which need to "
 "be optimized. You can use it for bulk optimizing all your past images. You "
@@ -987,19 +991,19 @@ msgstr ""
 "qui ont besoin d’être optimisées. Vous pouvez l’utiliser pour une optimisation "
 "en masse de vos images passées. Vous ne paierez qu’une fois."
 
-#: inc/functions/admin-ui.php:599
+#: inc/functions/admin-ui.php:602
 msgid "Thank you for being awesome!"
 msgstr "Merci à vous d’être aussi fabuleux&nbsp;!"
 
-#: inc/functions/admin-ui.php:611
+#: inc/functions/admin-ui.php:614
 msgid "What do our user think about Imagify"
 msgstr "Ce que nos utilisateurs pensent d’Imagify"
 
-#: inc/functions/admin-ui.php:645
+#: inc/functions/admin-ui.php:648
 msgid "Secure Credit Card Payment"
 msgstr "Paiement par carte sécurisé"
 
-#: inc/functions/admin-ui.php:646
+#: inc/functions/admin-ui.php:649
 msgid "This is secure 128-bits SSL encrypted payment"
 msgstr "Paiement sécurisé par cryptage SSL 128-bits"
 
@@ -1076,11 +1080,17 @@ msgstr ""
 msgid "Error with checking this coupon."
 msgstr "Erreur en vérifiant ce coupon."
 
-#: inc/functions/i18n.php:43
+#: inc/functions/i18n.php:37
+#, php-format
+msgctxt "coupon validated"
+msgid "%s off with %s"
+msgstr "%s de réduction avec %s"
+
+#: inc/functions/i18n.php:44
 msgid "Don't Need a Parachute?"
 msgstr "Pas besoin d’un parachute&nbsp;?"
 
-#: inc/functions/i18n.php:44
+#: inc/functions/i18n.php:45
 msgid ""
 "If you keep this option deactivated, you won't be able to re-optimize your "
 "images to another compression level and restore your original images in case "
@@ -1090,19 +1100,19 @@ msgstr ""
 "réoptimiser vos images à un autre niveau de compression et de restaurer vos "
 "images originales en cas de besoin."
 
-#: inc/functions/i18n.php:60
+#: inc/functions/i18n.php:61
 msgid "Original Image"
 msgstr "Image d’origine"
 
-#: inc/functions/i18n.php:61
+#: inc/functions/i18n.php:62
 msgid "Optimized Image"
 msgstr "Image optimisée"
 
-#: inc/functions/i18n.php:75
+#: inc/functions/i18n.php:76
 msgid "Please wait..."
 msgstr "Un peu d’attente…"
 
-#: inc/functions/i18n.php:76
+#: inc/functions/i18n.php:77
 msgid ""
 "We are trying to get your unoptimized images, it may take time depending on "
 "the number of images."
@@ -1110,11 +1120,11 @@ msgstr ""
 "Nous sommes en train de récupérer vos images non-optimisées, cela peut prendre "
 "du temps en fonction du nombre d’images."
 
-#: inc/functions/i18n.php:78
+#: inc/functions/i18n.php:79
 msgid "Oops, There is something wrong!"
 msgstr "Oups, une erreur est survenue !"
 
-#: inc/functions/i18n.php:79
+#: inc/functions/i18n.php:80
 msgid ""
 "An unknow error occurred when we tried to get all your unoptimized images. Try "
 "again and if the issue still persist, please contact us!"
@@ -1123,19 +1133,19 @@ msgstr ""
 "vos images non optimisées. Essayez encore et si le problème persiste, "
 "contactez-nous !"
 
-#: inc/functions/i18n.php:84
+#: inc/functions/i18n.php:85
 msgid "Error"
 msgstr "Erreur"
 
-#: inc/functions/i18n.php:87
+#: inc/functions/i18n.php:88
 msgid "Hold on!"
 msgstr "Halte là&nbsp;!"
 
-#: inc/functions/i18n.php:88
+#: inc/functions/i18n.php:89
 msgid "All your images have been optimized by Imagify. Congratulations!"
 msgstr "Toutes vos images ont été optimisées par Imagify. Félicitations&nbsp;!"
 
-#: inc/functions/i18n.php:90
+#: inc/functions/i18n.php:91
 #, php-format
 msgid ""
 "Discover @imagify, the new compression tool to optimize your images for free. "
@@ -1144,12 +1154,12 @@ msgstr ""
 "Découvrez @imagify, le nouvel outil de compression pour optimiser vos images. "
 "J’ai optimisé %1$s sur %2$s !"
 
-#: inc/functions/i18n.php:94
+#: inc/functions/i18n.php:95
 msgid "Imagify is still processing. Are you sure you want to leave this page?"
 msgstr ""
 "Imagify travaille encore. Êtes-vous sûr(e) de vouloir quitter cette page ?"
 
-#: inc/functions/i18n.php:103
+#: inc/functions/i18n.php:104
 msgid "F j, Y"
 msgstr "j F Y"
 

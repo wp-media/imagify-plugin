@@ -3209,6 +3209,18 @@ span.imagify-price-by {
 	max-width: 100%;
 	padding-right: 15px;
 }
+.imagify-coupon-loader {
+	display: none;
+}
+.imagify-coupon-text.checking {
+	text-align: right;
+}
+.imagify-coupon-text.checking .imagify-coupon-loader {
+	display: inline;
+}
+.imagify-coupon-text.checking label {
+	display: none;
+}
 
 .imagify-submit-line button {
 	font-size: 16px;

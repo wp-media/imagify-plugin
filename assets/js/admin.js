@@ -536,26 +536,36 @@ jQuery(function($){
 				var code = $( '#imagify-coupon-code' ).val();
 
 				if ( code !== '' ) {
-					var $label   = $( '.imagify-coupon-text label' ),
-						$section = $( '.imagify-coupon-section' );
-					// TODO: AJAX WP method
+					var $cptext  = $( '.imagify-coupon-text' ),
+						$label   = $cptext.find( 'label' ),
+						$section = $( '.imagify-coupon-section' ),
+						nonce    = $( '#imagify-get-pricing-modal' ).data( 'nonce' );
 
-					var nonce = $( '#imagify-get-pricing-modal' ).data( 'nonce' );
+					$cptext.addClass( 'checking' );
 
 					// get the true prices
 					$.post( ajaxurl, {action: 'imagify_check_coupon', coupon: code, imagifynonce: nonce }, function( response ) {
 
-						// error during the requestion
+						$cptext.removeClass( 'checking' );
+
+						// error during the request
 						if ( response.success === 'false' ) {
+
 							$label.text( imagifyAdmin.labels.errorCouponAPI );
 							$section.removeClass( 'validated' ).addClass( 'invalid' );
+
 						} else {
-							$label.text( response.data.detail );
 							if ( response.data.success ) {
+								var coupon_value  = response.data.coupon_type === 'pourcentage' ? response.data.value + '%' : '$' + response.data.value;
 								$section.removeClass( 'invalid' ).addClass( 'validated' );
+								$label.html( imagifyAdmin.labels.successCouponAPI );
+								$label.find( '.imagify-coupon-offer' ).text( coupon_value );
+								$label.find( '.imagify-coupon-word' ).text( code );
 							} else {
 								$section.removeClass( 'validated' ).addClass( 'invalid' );
+								$label.text( response.data.detail );
 							}
+
 						}
 					});
 
@@ -567,6 +577,9 @@ jQuery(function($){
 		// check all boxes on load
 		imagify_check_check( $checkboxes );
 		imagify_check_radio( $radios.filter(':checked') );
+
+		// check coupon onload
+		imagify_check_coupon();
 
 		var populate_btn_price = setInterval( function() {
 			imagify_populate_pay_btn();
@@ -679,9 +692,16 @@ jQuery(function($){
 
 		/**
 		 * Get validation for Coupon Code
+		 * - On blur
+		 * - On Enter or Spacebar press
 		 */
 		$( '#imagify-coupon-code' ).on( 'blur.imagify', function() {
 			imagify_check_coupon();
+		} ).on( 'keydown.imagify', function( e ) {
+			if ( e.keyCode === 13 || e.keyCode === 32 ) {
+				imagify_check_coupon();
+				return false;
+			}
 		} );
 
 		/**

@@ -34,6 +34,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'swalCancel'					=> __( 'Cancel' ),
 					'errorPriceAPI'					=> __( 'Something went wrong with getting our updated offers. Please retry later.', 'imagify' ),
 					'errorCouponAPI'				=> __( 'Error with checking this coupon.', 'imagify' ),
+					'successCouponAPI'              => sprintf( _x( '%s off with %s', 'coupon validated', 'imagify' ), '<span class="imagify-coupon-offer"></span>', '<strong class="imagify-coupon-word"></strong>' )
 				)
 			);
 		break;

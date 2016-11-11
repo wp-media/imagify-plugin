@@ -419,6 +419,9 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 						<div class="imagify-submit-line">
 							<div class="imagify-coupon-section">
 								<p class="imagify-coupon-text">
+									
+									<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>loader-balls.svg" width="60" height="36" alt="<?php esc_attr_e( 'Checking Coupon', 'imagify' ); ?>" class="imagify-coupon-loader">
+
 									<label for="imagify-coupon-code"><?php _e( 'If you have a <strong>coupon code</strong><br> use it there:', 'imagify' ); ?></label>
 								</p>
 								<p class="imagify-coupon-input">
