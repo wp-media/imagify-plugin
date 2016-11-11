@@ -355,6 +355,13 @@ jQuery(function($){
 							$estim_block.find( '.average-month-size' ).text( images_datas.average_month_size.human );
 							$estim_block.find( '.total-library-size' ).text( images_datas.total_library_size.human );
 
+							// Switch offers title is < 25mb
+							if ( mo_user_cons < 25 &&  ot_user_cons < 25 ) {
+								$( '.imagify-pre-checkout-offers .imagify-modal-title' ).addClass( '.imagify-enough-free' );
+							} else {
+								$( '.imagify-enough-free' ).removeClass( '.imagify-enough-free' );
+							}
+
 							// Don't create prices table if something went wrong during request
 							if ( monthlies === null || onetimes === null ) {
 								var $offers_block = $( '.imagify-pre-checkout-offers' );

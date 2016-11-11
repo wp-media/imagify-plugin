@@ -320,7 +320,9 @@ function imagify_payment_modal() {
 
 					<div class="imagify-modal-section imagify-pre-checkout-offers">
 						<p class="imagify-modal-title">
-							<?php esc_html_e( 'We recommend you this plan', 'imagify' ); ?>	
+							<span class="imagify-not-enough-title"><?php esc_html_e( 'We recommend you this plan', 'imagify' ); ?></span>
+							<span class="imagify-enough-title"><?php esc_html_e( 'The free plan is enough to optimize your images', 'imagify' ); ?></span>
+
 						</p>
 
 						<div class="imagify-offer-line imagify-offer-monthly imagify-offer-selected imagify-month-selected" data-offer='{"lite":{"id":3,"name":"Lite","data":1073741824,"dataf":"1 GB","imgs":5000,"prices":{"monthly":4.99,"yearly":4.16,"add":4}}}'>

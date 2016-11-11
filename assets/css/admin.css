@@ -3182,6 +3182,16 @@ span.imagify-price-by {
 	color: #2E3243;
 }
 
+.imagify-not-enough-title {
+	display: none;
+}
+.imagify-enough-free .imagify-not-enough-title {
+	display: block;
+}
+.imagify-enough-free .imagify-enough-title {
+	display: none;
+}
+
 .imagify-submit-line {
 	display: -webkit-box;
 	display: -ms-flexbox;
