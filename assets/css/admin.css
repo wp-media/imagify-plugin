@@ -2760,64 +2760,11 @@ td.imagify-cell-filename {
 .imagify-modal-content.imagify-success-viewing .imagify-modal-sidebar {
 	display: none;
 }
-.imagify-payment-steps {
-	padding-top: 15px;
-	margin-top: 0;
-	margin-left: 0;
-	list-style: none;
-	counter-reset: steps;
-}
-.imagify-iframe-viewing .imagify-payment-steps,
-.imagify-success-viewing .imagify-payment-steps {
-	display: none;
-}
-.imagify-payment-steps li {
-	position: relative;
-	display: inline-block;
-	counter-increment: steps;
-	font-weight: bold;
-}
-.imagify-payment-steps li + li {
-	margin-left: 35px;
-}
-.imagify-payment-steps li + li:after {
-	content: "";
-	position: absolute;
-	top: 19px;
-	left: -90px;
-	z-index: 1;
-	width: 150px;
-	height: 2px;
-	background: #E5EBEF;
-}
-.imagify-payment-steps li + li.active:after {
-	background: #40B1D0;
-}
-.imagify-payment-steps li:before {
-	display: block;
-	position: relative;
-	content: counter( steps, decimal );
-	width: 36px;
-	height: 36px;
-	margin: 0 auto .3em;
-	border: 2px solid #E5EBEF;
-	text-align: center;
-	line-height: 34px;
-	font-size: 1.4em;
-	color: #E5EBEF;
-	background: #FFF;
-	border-radius: 50%;
-	z-index: 2;
-}
-.imagify-payment-steps .active:before {
-	color: #40B1D0;
-	border-color: #40B1D0;
-}
 .imagify-modal-section {
 	padding: 0 25px;
 }
 .imagify-modal-section.section-gray {
-	margin: 1em 0;
+	margin: 0 0 1em;
 	padding: 10px 25px 15px;
 	background: #F6F7FB;
 }
@@ -2825,12 +2772,15 @@ td.imagify-cell-filename {
 	padding: 8px 25px 10px;
 }
 .imagify-modal-section .imagify-modal-title:first-child {
-	margin-top: .3em;
+	margin-top: 1em;
+	margin-bottom: 1.5em;
+}
+.imagify-modal-section.section-gray .imagify-modal-title {
+	margin-top: .5em;
 	margin-bottom: .5em;
 }
 .imagify-modal-title {
 	font-size: 1.8em;
-	font-weight: lighter;
 }
 .imagify-analyzing .imagify-numbers-calc,
 .imagify-numbers-notcalc,
@@ -2888,6 +2838,9 @@ td.imagify-cell-filename {
 }
 .imagify-modal .imagify-cols {
 	padding: 0 20px;
+}
+.imagify-payment-modal .imagify-iconed {
+	margin: 1.5em 5em 1.5em 0;
 }
 .imagify-iconed {
 	position: relative;
@@ -2961,6 +2914,10 @@ td.imagify-cell-filename {
 .imagify-offer-onetime .imagify-offer-header {
 	padding-top:8px;
 	padding-bottom: 8px;
+}
+.imagify-offer-onetimes > div {
+	padding-top: 15px;
+	padding-bottom: 15px;
 }
 .imagify-offer-header .imagify-inline-options input[type="radio"]:not(:checked) + label,
 .imagify-offer-header .imagify-inline-options input[type="radio"]:checked + label {
@@ -3261,8 +3218,8 @@ input.imagify-coupon-code {
 .imagify-footer-lines {
 	width: 500px;
 	max-width: 100%;
-	margin: 2em auto 1.5em;
-	font-size: 0.825em;
+	margin: 2em auto 2.5em;
+	font-size: 0.85em;
 	line-height: 1.5;
 }
 

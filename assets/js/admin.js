@@ -139,10 +139,10 @@ jQuery(function($){
 	};
 
 	// accessibility
-	$('.imagify-modal').attr('aria-hidden', 'true');
+	$( '.imagify-modal' ).attr( 'aria-hidden', 'true' );
 
 	// on click on modal trigger
-	$('.imagify-modal-trigger').on('click.imagify', function(){
+	$( '.imagify-modal-trigger' ).on('click.imagify', function(){
 		imagify_open_modal( $(this) );
 		return false;
 	});
@@ -155,8 +155,7 @@ jQuery(function($){
 		if ( $(this).closest( '.imagify-modal' ).hasClass( 'imagify-payment-modal' ) ) {
 			
 			// reset viewing class & aria-labelledby
-			$(this).closest( '.imagify-modal-content' ).removeClass( 'imagify-success-viewing imagify-iframe-viewing' )
-				   .closest( '.imagify-modal' ).attr( 'aria-labelledby', 'imagify-pricing-step-1' );
+			$(this).closest( '.imagify-modal-content' ).removeClass( 'imagify-success-viewing imagify-iframe-viewing' );
 			
 			// reset first view after fadeout ~= 300 ms
 			setTimeout( function() {
@@ -175,12 +174,12 @@ jQuery(function($){
 	});
 
 	// On click on dropped layer of modal
-	$(document).on('click.imagify', '.imagify-modal', function(e){
+	$( document ).on('click.imagify', '.imagify-modal', function( e ) {
 		$( e.target ).filter( '.modal-is-open' ).find( '.close-btn' ).trigger( 'click.imagify' );
 	});
 
 	// `Esc` key binding
-	$(window).on('keydown', function(e){
+	$( window ).on( 'keydown.imagify', function( e ) {
 		if ( e.keyCode == 27 && $('.imagify-modal.modal-is-open').length > 0 ) {
 
 			e.preventDefault();
@@ -195,7 +194,7 @@ jQuery(function($){
 	var busy = false,
 		xhr	 = false;
 		
-	$('#wp-admin-bar-imagify').hover( function() {
+	$( '#wp-admin-bar-imagify' ).hover( function() {
 		if ( true === busy ) {
 			return;
 		}

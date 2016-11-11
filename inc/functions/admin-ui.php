@@ -275,13 +275,9 @@ function get_imagify_price_table_format( $value ) {
  */
 function imagify_payment_modal() {
 ?>
-	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal" aria-hidden="false" role="dialog" aria-labelledby="imagify-pricing-step-1">
+	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal" aria-hidden="false" role="dialog">
 		<div class="imagify-modal-content">
 			<div class="imagify-modal-main">
-				<ol class="imagify-payment-steps">
-					<li id="imagify-pricing-step-1" class="active"><?php esc_html_e( 'Choose Plan', 'imagify' ); ?></li>
-					<li id="imagify-pricing-step-2"><?php esc_html_e( 'Payment Info', 'imagify' ); ?></li>
-				</ol>
 				<div class="imagify-modal-views imagify-pre-checkout-view" id="imagify-pre-checkout-view" aria-hidden="false">
 
 				<?php
