@@ -451,6 +451,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				?>
 
 				<div class="imagify-modal-views imagify-plans-selection-view" id="imagify-plans-selection-view" aria-hidden="true">
+					<p class="imagify-modal-title"><?php _e( 'Choose a plan', 'imagify' ); ?></p>
 					<ul class="imagify-tabs" role="tablist">
 						<li class="imagify-tab imagify-current">
 							<a href="#imagify-pricing-tab-monthly" role="tab" aria-controls="imagify-pricing-tab-monthly" aria-selected="true">
