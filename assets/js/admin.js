@@ -357,8 +357,10 @@ jQuery(function($){
 							// Switch offers title is < 25mb
 							if ( mo_user_cons < 25 &&  ot_user_cons < 25 ) {
 								$( '.imagify-pre-checkout-offers .imagify-modal-title' ).addClass( '.imagify-enough-free' );
+								$('.imagify-offer-selected' ).removeClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).removeAttr( 'checked' );
 							} else {
 								$( '.imagify-enough-free' ).removeClass( '.imagify-enough-free' );
+								$('.imagify-offer-selected' ).addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).attr( 'checked', 'checked' );
 							}
 
 							// Don't create prices table if something went wrong during request
