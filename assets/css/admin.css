@@ -3166,6 +3166,9 @@ span.imagify-price-by {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
 }
 .imagify-coupon-section p {
 	margin: 0;
@@ -3188,6 +3191,27 @@ span.imagify-price-by {
 .imagify-coupon-text.checking label {
 	display: none;
 }
+.imagify-coupon-input {
+	position: relative;
+}
+.imagify-coupon-input input {
+	position: relative;
+	z-index: 1;
+}
+[id="imagify-coupon-validate"].button-secondary {
+	position: absolute;
+	top: 1px;
+	right: 3px;
+	bottom: 2px;
+	box-shadow: none;
+	padding: 4px 10px;
+	z-index: 0;
+	transition: transform .275s;
+}
+.imagify-canbe-validate [id="imagify-coupon-validate"] {
+	transform: translateX(45px);
+}
+
 
 .imagify-submit-line button {
 	font-size: 16px;

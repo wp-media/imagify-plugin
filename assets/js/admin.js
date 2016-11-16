@@ -564,7 +564,7 @@ jQuery(function($){
 
 						} else {
 							if ( response.data.success ) {
-								var coupon_value  = response.data.coupon_type === 'pourcentage' ? response.data.value + '%' : '$' + response.data.value;
+								var coupon_value  = response.data.coupon_type === 'percentage' ? response.data.value + '%' : '$' + response.data.value;
 								$section.removeClass( 'invalid' ).addClass( 'validated' );
 								$label.html( imagifyAdmin.labels.successCouponAPI );
 								$label.find( '.imagify-coupon-offer' ).text( coupon_value );
@@ -702,6 +702,7 @@ jQuery(function($){
 		 * Get validation for Coupon Code
 		 * - On blur
 		 * - On Enter or Spacebar press
+		 * - On click OK button
 		 */
 		$( '#imagify-coupon-code' ).on( 'blur.imagify', function() {
 			imagify_check_coupon();
@@ -710,8 +711,17 @@ jQuery(function($){
 				imagify_check_coupon();
 				return false;
 			}
+			if ( $(this).val().length >= 3 ) {
+				$(this).closest( '.imagify-coupon-input' ).addClass( 'imagify-canbe-validate' );
+			} else {
+				$(this).closest( '.imagify-coupon-input' ).removeClass( 'imagify-canbe-validate' );
+			}
 		} );
 
+		$( '#imagify-coupon-validate' ).on( 'click.imagify', function() {
+			imagify_check_coupon();
+			$(this).closest( '.imagify-canbe-validate' ).removeClass( 'imagify-canbe-validate' );
+		} );
 		/**
 		 * View game, step by step
 		 */

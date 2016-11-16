@@ -424,6 +424,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 								</p>
 								<p class="imagify-coupon-input">
 									<input type="text" class="imagify-coupon-code" name="imagify-coupon-code" id="imagify-coupon-code" value="" placeholder="<?php _e( 'Coupon Code', 'imagify' ) ?>">
+									<button type="button" class="button button-secondary imagify-button-secondary" id="imagify-coupon-validate"><?php _e( 'OK' ); ?></button>
 								</p>
 							</div>
 							<div class="imagify-submit-section">
