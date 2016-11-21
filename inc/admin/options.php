@@ -56,7 +56,15 @@ function _imagify_pre_update_option( $value, $old_value ) {
 	if ( (bool) $value['resize_larger_w'] && $value['resize_larger_w'] <  $max_sizes['width'] ) {
 		$value['resize_larger_w'] = $max_sizes['width'];
 	}
-	
+
+    if ( ! isset( $value['total_size_images_library'] ) && isset( $old_value['total_size_images_library'] ) ) {
+        $value['total_size_images_library'] = $old_value['total_size_images_library'];
+    }
+
+    if ( ! isset( $value['average_size_images_per_month'] ) && isset( $old_value['average_size_images_per_month'] ) ) {
+        $value['average_size_images_per_month'] = $old_value['average_size_images_per_month'];
+    }
+
 	unset( $value['sizes'] );
 	return $value;
 }

@@ -2,8 +2,8 @@
 Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.6
-Stable tag: 1.5.10
+Tested up to: 4.6.1
+Stable tag: 1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -135,6 +135,13 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6 =
+* NEW Features:
+ * Knowing how many MB/GB you need to optimize your existing and future images is complicated. We love to make things easiers, so Imagify will do it and advise you the best plan. 
+ * You can now buy all the plans without leaving your WordPress administration
+* Improvement
+ * Some styles fixed in the interface
+
 = 1.5.10 =
 * Improvement
  * Set to 1 the Bulk buffer size when there are more than 10 thumbnails to avoid "Unkown error" on the Bulk Optimization

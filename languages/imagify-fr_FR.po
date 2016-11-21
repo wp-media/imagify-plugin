@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2016-09-23 11:27-0500\n"
-"PO-Revision-Date: 2016-09-23 14:54-0500\n"
+"POT-Creation-Date: 2016-11-11 21:28+0100\n"
+"PO-Revision-Date: 2016-11-11 21:28+0100\n"
 "Last-Translator: Rémy Perona <remperona@gmail.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.4\n"
+"X-Generator: Poedit 1.8.6\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-WPHeader: imagify.php\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -17,24 +17,22 @@ msgstr ""
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
 "_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
-"X-Poedit-SearchPathExcluded-0: *.js\n"
 "X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: inc/3rd-party/nextgen-gallery/inc/admin/enqueue.php:20
-#: inc/admin/ajax.php:123 inc/admin/meta-boxes.php:34
-#: inc/functions/admin-ui.php:215 inc/functions/i18n.php:49
-#: inc/functions/i18n.php:64
+#: inc/3rd-party/nextgen-gallery/inc/admin/enqueue.php:20 inc/admin/ajax.php:123
+#: inc/admin/meta-boxes.php:34 inc/functions/admin-ui.php:215
+#: inc/functions/i18n.php:52 inc/functions/i18n.php:67
 msgid "Optimize"
 msgstr "Optimiser"
 
 #: inc/3rd-party/nextgen-gallery/inc/admin/enqueue.php:21
-#: inc/functions/admin-ui.php:80 inc/functions/i18n.php:50
+#: inc/functions/admin-ui.php:80 inc/functions/i18n.php:53
 msgid "Restore Original"
 msgstr "Restaurer l’original"
 
 #: inc/3rd-party/nextgen-gallery/inc/admin/menu.php:16 inc/admin/menu.php:24
-#: inc/admin/plugins.php:13 inc/admin/ui/bulk.php:81
-#: inc/common/admin-bar.php:39
+#: inc/admin/plugins.php:13 inc/admin/ui/bulk.php:81 inc/common/admin-bar.php:39
 msgid "Bulk Optimization"
 msgstr "Optimisation en masse"
 
@@ -55,20 +53,18 @@ msgid ""
 "You have almost used all your credit.%sDon't forget to upgrade your "
 "subscription to continue optimizing your images."
 msgstr ""
-"Vous avez bientôt utilisé tout votre crédit.%sN’oubliez pas de mettre à "
-"niveau votre abonnement pour continuer à optimiser vos images."
+"Vous avez bientôt utilisé tout votre crédit.%sN’oubliez pas de mettre à niveau "
+"votre abonnement pour continuer à optimiser vos images."
 
 #: inc/admin/ajax.php:509 inc/admin/ui/bulk.php:23
 msgid "View My Subscription"
 msgstr "Voir mon abonnement"
 
-#: inc/admin/ajax.php:517 inc/admin/ui/notices.php:258
-#: inc/functions/i18n.php:84
+#: inc/admin/ajax.php:517 inc/admin/ui/notices.php:258 inc/functions/i18n.php:87
 msgid "Oops, It's Over!"
 msgstr "Oups, c’est fini !"
 
-#: inc/admin/ajax.php:518 inc/admin/ui/notices.php:260
-#: inc/functions/i18n.php:101
+#: inc/admin/ajax.php:518 inc/admin/ui/notices.php:260 inc/functions/i18n.php:104
 #, php-format
 msgid ""
 "You have consumed all your credit for this month. You will have <strong>%s "
@@ -98,10 +94,11 @@ msgstr "Il vous reste %s de crédit"
 msgid "View my subscription"
 msgstr "Voir mon abonnement"
 
-#: inc/admin/media.php:63 inc/functions/i18n.php:60
+#: inc/admin/media.php:63 inc/functions/i18n.php:63
 msgid "Compare Original VS Optimized"
 msgstr "Comparer Originale VS Optimisée"
 
+#. Plugin Name of the plugin/theme
 #: inc/admin/meta-boxes.php:17 inc/admin/meta-boxes.php:24
 #: inc/admin/upload.php:12
 msgid "Imagify"
@@ -115,11 +112,11 @@ msgstr "Clé API invalide"
 msgid "Check your Settings"
 msgstr "Vérifiez vos réglages"
 
-#: inc/admin/options.php:119
+#: inc/admin/options.php:127
 msgid "Cheatin&#8217; uh?"
 msgstr "Cheatin&#8217; uh?"
 
-#: inc/admin/options.php:127
+#: inc/admin/options.php:135
 msgid "<strong>ERROR</strong>: options page not found."
 msgstr "<strong>Erreur</strong> : page d’options introuvable."
 
@@ -181,48 +178,45 @@ msgstr ""
 #: inc/admin/ui/bulk.php:149
 #, php-format
 msgid ""
-"If you have more than %s images, you will need to launch the bulk "
-"optimization several times."
+"If you have more than %s images, you will need to launch the bulk optimization "
+"several times."
 msgstr ""
 "Si vous avez plus de %s images, vous devrez lancer l’optimisation en masse "
 "plusieurs fois."
 
 #: inc/admin/ui/bulk.php:153
 msgid ""
-"You must keep this page open while the bulk optimizaton is processing. If "
-"you leave you can come back to continue where it left off."
+"You must keep this page open while the bulk optimizaton is processing. If you "
+"leave you can come back to continue where it left off."
 msgstr ""
 "Vous devez garder cette page ouverte pendant que l’optimisation en masse est "
-"en cours. Si vous la quittez, vous pouvez revenir pour continuer là où vous "
-"en étiez."
+"en cours. Si vous la quittez, vous pouvez revenir pour continuer là où vous en "
+"étiez."
 
 #: inc/admin/ui/bulk.php:164
 msgid "Select Your Compression Level"
 msgstr "Sélectionnez votre niveau de compression"
 
 #: inc/admin/ui/bulk.php:166 inc/admin/ui/bulk.php:192
-#: inc/admin/ui/options.php:136 inc/admin/ui/options.php:365
-#: inc/admin/ui/options.php:404 inc/admin/ui/options.php:421
-#: inc/admin/ui/options.php:481
-#: inc/classes/abstracts/abstract-attachment.php:114
+#: inc/admin/ui/options.php:136 inc/admin/ui/options.php:342
+#: inc/admin/ui/options.php:381 inc/admin/ui/options.php:398
+#: inc/admin/ui/options.php:458 inc/classes/abstracts/abstract-attachment.php:114
 #: inc/functions/admin-ui.php:153
 msgid "Ultra"
 msgstr "Ultra"
 
 #: inc/admin/ui/bulk.php:169 inc/admin/ui/bulk.php:187
-#: inc/admin/ui/options.php:131 inc/admin/ui/options.php:352
-#: inc/admin/ui/options.php:403 inc/admin/ui/options.php:416
-#: inc/admin/ui/options.php:460
-#: inc/classes/abstracts/abstract-attachment.php:117
+#: inc/admin/ui/options.php:131 inc/admin/ui/options.php:329
+#: inc/admin/ui/options.php:380 inc/admin/ui/options.php:393
+#: inc/admin/ui/options.php:437 inc/classes/abstracts/abstract-attachment.php:117
 #: inc/functions/admin-ui.php:159
 msgid "Aggressive"
 msgstr "Agressif"
 
 #: inc/admin/ui/bulk.php:172 inc/admin/ui/bulk.php:182
-#: inc/admin/ui/options.php:126 inc/admin/ui/options.php:339
-#: inc/admin/ui/options.php:402 inc/admin/ui/options.php:411
-#: inc/admin/ui/options.php:440
-#: inc/classes/abstracts/abstract-attachment.php:120
+#: inc/admin/ui/options.php:126 inc/admin/ui/options.php:316
+#: inc/admin/ui/options.php:379 inc/admin/ui/options.php:388
+#: inc/admin/ui/options.php:417 inc/classes/abstracts/abstract-attachment.php:120
 #: inc/functions/admin-ui.php:165
 msgid "Normal"
 msgstr "Normal"
@@ -278,12 +272,12 @@ msgstr "Nom du fichier"
 msgid "Status"
 msgstr "Statut"
 
-#: inc/admin/ui/bulk.php:265 inc/admin/ui/options.php:401
-#: inc/admin/ui/options.php:406 inc/admin/ui/options.php:430
+#: inc/admin/ui/bulk.php:265 inc/admin/ui/options.php:378
+#: inc/admin/ui/options.php:383 inc/admin/ui/options.php:407
 msgid "Original"
 msgstr "Original"
 
-#: inc/admin/ui/bulk.php:266 inc/admin/upload.php:41 inc/functions/i18n.php:80
+#: inc/admin/ui/bulk.php:266 inc/admin/upload.php:41 inc/functions/i18n.php:83
 msgid "Optimized"
 msgstr "Optimisées"
 
@@ -338,11 +332,11 @@ msgstr "Créer un compte"
 
 #: inc/admin/ui/notices.php:34
 msgid ""
-"Don't have an Imagify account yet? Optimize your images by creating an "
-"account in a few seconds!"
+"Don't have an Imagify account yet? Optimize your images by creating an account "
+"in a few seconds!"
 msgstr ""
-"Vous n’avez pas encore de compte Imagify&nbsp;? Optimiser vos images en "
-"créant un compte en quelques secondes&nbsp;!"
+"Vous n’avez pas encore de compte Imagify&nbsp;? Optimiser vos images en créant "
+"un compte en quelques secondes&nbsp;!"
 
 #: inc/admin/ui/notices.php:37
 msgid "Sign up, It's FREE!"
@@ -370,8 +364,7 @@ msgid "Configure it"
 msgstr "Configurer le"
 
 #: inc/admin/ui/notices.php:54
-msgid ""
-"It’s almost done! You have just to configure your optimization settings."
+msgid "It’s almost done! You have just to configure your optimization settings."
 msgstr ""
 "C’est bientôt terminé&nbsp;! Vous avez juste à configurer vos paramètres "
 "d'optimisation."
@@ -381,16 +374,15 @@ msgid "Go to Settings"
 msgstr "Aller aux réglages"
 
 #: inc/admin/ui/notices.php:87 inc/admin/ui/options.php:97
-#: inc/functions/i18n.php:78
+#: inc/functions/i18n.php:81
 msgid "Your API key isn't valid!"
 msgstr "Votre clé API n’est pas valide&nbsp;!"
 
 #: inc/admin/ui/notices.php:90
 #, php-format
 msgid ""
-"Go to your Imagify account page to get your API Key and specify it on "
-"%1$syour settings%3$s or %2$screate an account for free%3$s if you don't "
-"have one yet."
+"Go to your Imagify account page to get your API Key and specify it on %1$syour "
+"settings%3$s or %2$screate an account for free%3$s if you don't have one yet."
 msgstr ""
 "Allez sur votre page de compte Imagify pour récupérer votre clé API et la "
 "renseigner dans %1$svos réglages%3$s ou %2$scréez un compte gratuitement%3$s "
@@ -426,8 +418,8 @@ msgid ""
 "To optimize your images, you have to put the following code in your <code>wp-"
 "config.php</code> file so that it works correctly."
 msgstr ""
-"Pour optimiser vos images, vous devez insérer le code suivant dans le "
-"fichier <code>wp-config.php</code> afin que cela fonctionne correctement."
+"Pour optimiser vos images, vous devez insérer le code suivant dans le fichier "
+"<code>wp-config.php</code> afin que cela fonctionne correctement."
 
 #: inc/admin/ui/notices.php:182
 msgid "Click on the field and press Ctrl-A to select all."
@@ -445,12 +437,12 @@ msgstr "Utilisez la vue liste pour optimiser vos images avec Imagify."
 msgid "Switch to the List View"
 msgstr "Basculer en vue liste"
 
-#: inc/admin/ui/notices.php:260 inc/functions/i18n.php:98
-#: inc/functions/i18n.php:101
+#: inc/admin/ui/notices.php:260 inc/functions/i18n.php:101
+#: inc/functions/i18n.php:104
 #, php-format
 msgid ""
-"To continue to optimize your images, log in to your Imagify account to %sbuy "
-"a pack or subscribe to a plan%s."
+"To continue to optimize your images, log in to your Imagify account to %sbuy a "
+"pack or subscribe to a plan%s."
 msgstr ""
 "Pour continuer à optimiser vos images, connectez-vous à votre compte Imagify "
 "pour %sacheter un pack ou souscrire à un plan%s."
@@ -474,8 +466,8 @@ msgid ""
 "%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and improved "
 "your website's speed by reducing your images size."
 msgstr ""
-"%1$sFélicitations%2$s ! Vous avez optimisé %1$s%3$d images%2$s et améliorez "
-"le temps de chargement de votre site en réduisant le poids de vos images."
+"%1$sFélicitations%2$s ! Vous avez optimisé %1$s%3$d images%2$s et améliorez le "
+"temps de chargement de votre site en réduisant le poids de vos images."
 
 #: inc/admin/ui/notices.php:365 inc/admin/ui/options.php:59
 #, php-format
@@ -551,10 +543,10 @@ msgid ""
 "after resizing. The new width should not be less than your largest thumbnail "
 "width, which is actually %spx."
 msgstr ""
-"Cette option est recommendée pour réduire les images trop grandes. Vous "
-"pouvez économiser jusqu'à 80%% du poids après le redimensionnement. La "
-"nouvelle largeur ne doit pas être inférieure à la plus grande largeur de vos "
-"miniatures qui est actuellement de %spx."
+"Cette option est recommendée pour réduire les images trop grandes. Vous pouvez "
+"économiser jusqu'à 80%% du poids après le redimensionnement. La nouvelle "
+"largeur ne doit pas être inférieure à la plus grande largeur de vos miniatures "
+"qui est actuellement de %spx."
 
 #: inc/admin/ui/options.php:209 inc/admin/ui/options.php:212
 msgid "EXIF Data"
@@ -578,9 +570,9 @@ msgid ""
 "If you are a photographer, you may be interested in this option if you are "
 "displaying on your pages some info like the model of your camera."
 msgstr ""
-"Si vous êtes un photographe, vous pourriez être intéressé par cette option "
-"si vous affichez quelques infos comme votre le modèle de votre appareil "
-"photo sur vos pages."
+"Si vous êtes un photographe, vous pourriez être intéressé par cette option si "
+"vous affichez quelques infos comme votre le modèle de votre appareil photo sur "
+"vos pages."
 
 #: inc/admin/ui/options.php:228
 msgid "Files optimization"
@@ -605,36 +597,36 @@ msgstr ""
 "Pour rappel, chaque format d’image additionnel affectera votre quota d’usage "
 "mensuel d’Imagify."
 
-#: inc/admin/ui/options.php:289
+#: inc/admin/ui/options.php:266
 msgid "Display options"
 msgstr "Options d’affichage"
 
-#: inc/admin/ui/options.php:294 inc/admin/ui/options.php:299
+#: inc/admin/ui/options.php:271 inc/admin/ui/options.php:276
 msgid "Show Admin Bar menu"
 msgstr "Afficher le menu dans la barre d'administration"
 
-#: inc/admin/ui/options.php:300
+#: inc/admin/ui/options.php:277
 msgid "I want this awesome quick access menu on my admin bar."
 msgstr "Je veux ce menu d'accès rapide génial sur ma barre d'administration."
 
-#: inc/admin/ui/options.php:319
+#: inc/admin/ui/options.php:296
 msgid "Save &amp; Go to Bulk Optimizer"
 msgstr "Enregistrer &amp; Aller à l’optimisation en masse"
 
-#: inc/admin/ui/options.php:328
+#: inc/admin/ui/options.php:305
 #, php-format
 msgid ""
-"Once your settings saved, optimize all your images by using the %sImagify "
-"Bulk Optimization%s feature."
+"Once your settings saved, optimize all your images by using the %sImagify Bulk "
+"Optimization%s feature."
 msgstr ""
-"Une fois vos paramètres enregistrés, optimisez toutes vos images en "
-"utilisant la fonctionnalité d’%soptimisation en masse%s d’Imagify."
+"Une fois vos paramètres enregistrés, optimisez toutes vos images en utilisant "
+"la fonctionnalité d’%soptimisation en masse%s d’Imagify."
 
-#: inc/admin/ui/options.php:336
+#: inc/admin/ui/options.php:313
 msgid "You can choose three levels of compression"
 msgstr "Vous pouvez choisir entre trois niveaux de compression"
 
-#: inc/admin/ui/options.php:341
+#: inc/admin/ui/options.php:318
 msgid ""
 "This mode provides lossless optimization, your images will be optimized "
 "without any visible change."
@@ -642,51 +634,49 @@ msgstr ""
 "Ce niveau permet d'optimiser sans perte, vos images seront optimisées sans "
 "aucun changement visible."
 
-#: inc/admin/ui/options.php:344
+#: inc/admin/ui/options.php:321
 msgid ""
 "If you want the perfect quality for your images, we recommend you that mode."
 msgstr ""
-"Si vous souhaitez des images d’une qualité parfaite, nous vous recommandons "
-"ce niveau."
+"Si vous souhaitez des images d’une qualité parfaite, nous vous recommandons ce "
+"niveau."
 
-#: inc/admin/ui/options.php:347
-msgid ""
-"Note: the file size reduction will be less, compared to aggressive mode."
+#: inc/admin/ui/options.php:324
+msgid "Note: the file size reduction will be less, compared to aggressive mode."
 msgstr ""
 "Remarque: la réduction du poids des images sera moins importante par rapport "
 "au mode agressif."
 
-#: inc/admin/ui/options.php:354
+#: inc/admin/ui/options.php:331
 msgid ""
-"This mode provides perfect optimization of your images without any "
-"significant quality loss."
+"This mode provides perfect optimization of your images without any significant "
+"quality loss."
 msgstr ""
 "Ce niveau permet une optimisation idéale de vos images sans perte de qualité "
 "notable."
 
-#: inc/admin/ui/options.php:357
+#: inc/admin/ui/options.php:334
 msgid ""
 "This will provide a drastic savings on the initial weight, with a small "
 "reduction in image quality. Most of the time it's not even noticeable."
 msgstr ""
-"Cela permettra une réduction importante du poids initial avec une légère "
-"perte de la qualité d'image qui n’est pas perceptible à l’oeil humain."
+"Cela permettra une réduction importante du poids initial avec une légère perte "
+"de la qualité d'image qui n’est pas perceptible à l’oeil humain."
 
-#: inc/admin/ui/options.php:360
+#: inc/admin/ui/options.php:337
 msgid "If you want the maximum weight reduction, we recommend using this mode."
 msgstr ""
 "Si vous souhaitez une réduction du poids plus performante, nous vous "
 "recommandons ce niveau."
 
-#: inc/admin/ui/options.php:367
+#: inc/admin/ui/options.php:344
 msgid ""
-"This mode will apply all available optimizations for maximum image "
-"compression."
+"This mode will apply all available optimizations for maximum image compression."
 msgstr ""
-"Ce niveau appliquera toutes les optimisations disponibles pour une "
-"compression des images maximale."
+"Ce niveau appliquera toutes les optimisations disponibles pour une compression "
+"des images maximale."
 
-#: inc/admin/ui/options.php:370
+#: inc/admin/ui/options.php:347
 msgid ""
 "This will provide a huge savings on the initial weight. Sometimes the image "
 "quality could be degraded a little."
@@ -694,7 +684,7 @@ msgstr ""
 "Cela permettra de considérablement réduire le poids initial. Parfois, la "
 "qualité de l’image pourra être légèrement dégradée."
 
-#: inc/admin/ui/options.php:373
+#: inc/admin/ui/options.php:350
 msgid ""
 "If you want the maximum weight reduction, and you agree to lose some quality "
 "on the images we recommend using this mode."
@@ -702,46 +692,46 @@ msgstr ""
 "Si vous souhaitez une réduction du poids optimale et que vous tolérez une "
 "baisse de qualité sur vos images, nous vous recommandons ce niveau."
 
-#: inc/admin/ui/options.php:380 inc/admin/ui/options.php:502
-#: inc/functions/admin-ui.php:662 inc/functions/i18n.php:61
+#: inc/admin/ui/options.php:357 inc/admin/ui/options.php:479
+#: inc/functions/admin-ui.php:609 inc/functions/i18n.php:64
 msgid "Close"
 msgstr "Fermer"
 
-#: inc/admin/ui/options.php:392
+#: inc/admin/ui/options.php:369
 #, php-format
 msgid "I want to compare%s and%s"
 msgstr "Je veux comparer%s et%s"
 
-#: inc/admin/ui/options.php:409
+#: inc/admin/ui/options.php:386
 #, php-format
 msgid "Original photography about %s"
 msgstr "Photographie originale, environ %s"
 
-#: inc/admin/ui/options.php:414 inc/admin/ui/options.php:419
-#: inc/admin/ui/options.php:424
+#: inc/admin/ui/options.php:391 inc/admin/ui/options.php:396
+#: inc/admin/ui/options.php:401
 #, php-format
 msgid "Optimized photography about %s"
 msgstr "Photographie optimisée, environ %s"
 
-#: inc/admin/ui/options.php:429 inc/admin/ui/options.php:439
-#: inc/admin/ui/options.php:459 inc/admin/ui/options.php:480
+#: inc/admin/ui/options.php:406 inc/admin/ui/options.php:416
+#: inc/admin/ui/options.php:436 inc/admin/ui/options.php:457
 #: inc/functions/admin-ui.php:59
 msgid "Level:"
 msgstr "Niveau&nbsp;:"
 
-#: inc/admin/ui/options.php:433 inc/admin/ui/options.php:443
-#: inc/admin/ui/options.php:463 inc/admin/ui/options.php:484
-#: inc/functions/i18n.php:62
+#: inc/admin/ui/options.php:410 inc/admin/ui/options.php:420
+#: inc/admin/ui/options.php:440 inc/admin/ui/options.php:461
+#: inc/functions/i18n.php:65
 msgid "File Size:"
 msgstr "Poids du fichier:"
 
-#: inc/admin/ui/options.php:447 inc/admin/ui/options.php:467
-#: inc/admin/ui/options.php:488 inc/functions/admin-ui.php:45
-#: inc/functions/i18n.php:63
+#: inc/admin/ui/options.php:424 inc/admin/ui/options.php:444
+#: inc/admin/ui/options.php:465 inc/functions/admin-ui.php:45
+#: inc/functions/i18n.php:66
 msgid "Original Saving:"
 msgstr "Gain sur l’original&nbsp;:"
 
-#: inc/admin/upload.php:42 inc/functions/i18n.php:81
+#: inc/admin/upload.php:42 inc/functions/i18n.php:84
 msgid "Unoptimized"
 msgstr "Non optimisées"
 
@@ -762,8 +752,8 @@ msgid ""
 "This size isn't authorized to be optimized. Update your Imagify settings if "
 "you want to optimize it."
 msgstr ""
-"Cette taille n’est pas autorisée à être optimisée. Mettez à jour les "
-"réglages d’Imagify si vous souhaitez l’optimiser."
+"Cette taille n’est pas autorisée à être optimisée. Mettez à jour les réglages "
+"d’Imagify si vous souhaitez l’optimiser."
 
 #: inc/common/admin-bar.php:48
 #, php-format
@@ -773,6 +763,10 @@ msgstr "Notez Imagify sur %s"
 #: inc/common/admin-bar.php:61
 msgid "Loading..."
 msgstr "Chargement…"
+
+#: inc/common/cron.php:59
+msgid "weekly"
+msgstr ""
 
 #: inc/functions/admin-ui.php:36
 msgid "New Filesize:"
@@ -833,72 +827,83 @@ msgstr ""
 "Laissez-nous vous aider en analysant vos images existantes et déterminer le "
 "meilleur plan pour vous"
 
-#: inc/functions/admin-ui.php:280
+#: inc/functions/admin-ui.php:282
 msgid "Choose Plan"
 msgstr "Choisissez un plan"
 
-#: inc/functions/admin-ui.php:281
+#: inc/functions/admin-ui.php:283
 msgid "Payment Info"
 msgstr "Information de paiement"
 
-#: inc/functions/admin-ui.php:286
+#: inc/functions/admin-ui.php:295
 msgid "We analysed your images"
 msgstr "Nous avons analysé vos images"
 
-#: inc/functions/admin-ui.php:292
-#, php-format
-msgid "You have %s images"
-msgstr "Vous avez %s images"
+#: inc/functions/admin-ui.php:296
+msgid "We are analysing your images"
+msgstr "Nous analysons vos images"
 
-#: inc/functions/admin-ui.php:298
-#, php-format
-msgid "You actually have %s of images in your library."
-msgstr "Vous avez actuellement %s d’images dans votre bibliothèque."
+#: inc/functions/admin-ui.php:299
+msgid "Analyzing"
+msgstr "Analyse en cours"
 
-#: inc/functions/admin-ui.php:302
+#: inc/functions/admin-ui.php:305
+#, php-format
+msgid "You have %s image"
+msgid_plural "You have %s images"
+msgstr[0] "Vous avez %s image"
+msgstr[1] "Vous avez %s images"
+
+#: inc/functions/admin-ui.php:311
+#, php-format
+msgid "You currently have %s of images in your library."
+msgstr "Vous avez actuellement %s d’images dans votre médiathèque."
+
+#: inc/functions/admin-ui.php:315
 #, php-format
 msgid "You upload around %s of images per month."
 msgstr "Vous chargez environ %s d’images par mois."
 
-#: inc/functions/admin-ui.php:309
+#: inc/functions/admin-ui.php:323
 msgid "We recommend you this plan"
 msgstr "Nous vous recommandons ce plan"
 
-#: inc/functions/admin-ui.php:314
+#: inc/functions/admin-ui.php:324
+msgid "The free plan is enough to optimize your images"
+msgstr "L’offre gratuite est suffisante pour optimiser vos images"
+
+#: inc/functions/admin-ui.php:331
 msgid "Subscribe a monthly plan"
 msgstr "Souscrire un plan mensuel"
 
-#: inc/functions/admin-ui.php:315
+#: inc/functions/admin-ui.php:332
 msgid "Subscribe a yearly plan"
 msgstr "Souscrire un plan annuel"
 
-#: inc/functions/admin-ui.php:319 inc/functions/admin-ui.php:455
-#: inc/functions/admin-ui.php:623
+#: inc/functions/admin-ui.php:336 inc/functions/admin-ui.php:481
 msgid "Monthly"
 msgstr "Mensuel"
 
-#: inc/functions/admin-ui.php:322 inc/functions/admin-ui.php:458
-#: inc/functions/admin-ui.php:626
+#: inc/functions/admin-ui.php:339 inc/functions/admin-ui.php:484
 msgid "Yearly"
 msgstr "Annuel"
 
-#: inc/functions/admin-ui.php:322 inc/functions/admin-ui.php:458
-#: inc/functions/admin-ui.php:626
+#: inc/functions/admin-ui.php:339 inc/functions/admin-ui.php:484
 msgid "2 months free"
 msgstr "2 mois gratuits"
 
-#: inc/functions/admin-ui.php:333 inc/functions/admin-ui.php:352
-#: inc/functions/admin-ui.php:468 inc/functions/admin-ui.php:478
+#: inc/functions/admin-ui.php:350 inc/functions/admin-ui.php:369
+#: inc/functions/admin-ui.php:494 inc/functions/admin-ui.php:504
 msgid "/month"
 msgstr "/mois"
 
-#: inc/functions/admin-ui.php:335 inc/functions/admin-ui.php:383
-#: inc/functions/admin-ui.php:470 inc/functions/admin-ui.php:521
+#: inc/functions/admin-ui.php:352 inc/functions/admin-ui.php:400
+#: inc/functions/admin-ui.php:496 inc/functions/admin-ui.php:547
 #, php-format
 msgid "approx: %s images"
 msgstr "approx&nbsp;: %s images"
 
-#: inc/functions/admin-ui.php:356 inc/functions/admin-ui.php:484
+#: inc/functions/admin-ui.php:373 inc/functions/admin-ui.php:510
 #, php-format
 msgid ""
 "%s per<br>\n"
@@ -907,20 +912,32 @@ msgstr ""
 "%s par<br>\n"
 "Go additionnel"
 
-#: inc/functions/admin-ui.php:361 inc/functions/admin-ui.php:396
-#: inc/functions/admin-ui.php:580 inc/functions/admin-ui.php:601
+#: inc/functions/admin-ui.php:378 inc/functions/admin-ui.php:413
 msgid "Choose another plan"
 msgstr "Choisir un autre plan"
 
-#: inc/functions/admin-ui.php:371
+#: inc/functions/admin-ui.php:388
 msgid "Optimize the images you already have, buy a one-time plan"
 msgstr "Optimisez les images que vous avez déjà, achetez un plan « One Time » "
 
-#: inc/functions/admin-ui.php:407
-msgid "Checkout"
-msgstr "Commander"
+#: inc/functions/admin-ui.php:425
+msgid "Checking Coupon"
+msgstr "Vérification du coupon"
 
-#: inc/functions/admin-ui.php:411
+#: inc/functions/admin-ui.php:427
+msgid "If you have a <strong>coupon code</strong><br> use it there:"
+msgstr "Si vous avez un <strong>code coupon</strong><br> utilisez-le ici&nbsp;:"
+
+#: inc/functions/admin-ui.php:430
+msgid "Coupon Code"
+msgstr "Code coupon"
+
+#: inc/functions/admin-ui.php:436
+#, php-format
+msgid "Pay %s"
+msgstr "Payer %s"
+
+#: inc/functions/admin-ui.php:441
 msgid ""
 "Monthly plans comes with credits which is renewed every months. The billing "
 "happens automatically each month or year depending the billing period you "
@@ -930,15 +947,15 @@ msgstr ""
 "facturation arrive automatiquement tous les mois ou années dépendamment de "
 "votre choix de période de facturation."
 
-#: inc/functions/admin-ui.php:435
+#: inc/functions/admin-ui.php:461
 msgid "Monthly Plans"
 msgstr "Plans Mensuels"
 
-#: inc/functions/admin-ui.php:440
+#: inc/functions/admin-ui.php:466
 msgid "One Time Plans"
 msgstr "Plans « One Time »"
 
-#: inc/functions/admin-ui.php:450
+#: inc/functions/admin-ui.php:476
 msgid ""
 "Monthly plans come with credits which is renewed every months. The billing "
 "happens automatically each month or year depending the billing period you "
@@ -948,90 +965,49 @@ msgstr ""
 "facturation arrive automatiquement tous les mois ou années dépendamment de "
 "votre choix de période de facturation."
 
-#: inc/functions/admin-ui.php:482 inc/functions/admin-ui.php:529
+#: inc/functions/admin-ui.php:508 inc/functions/admin-ui.php:555
 msgid "we recommend for you"
 msgstr "nous vous recommandons"
 
-#: inc/functions/admin-ui.php:490 inc/functions/admin-ui.php:533
+#: inc/functions/admin-ui.php:516 inc/functions/admin-ui.php:559
 msgid "Choose plan"
 msgstr "Choisir ce plan"
 
-#: inc/functions/admin-ui.php:498
+#: inc/functions/admin-ui.php:524
 msgid "Need more?"
 msgstr "Besoin de plus&nbsp;?"
 
-#: inc/functions/admin-ui.php:499
+#: inc/functions/admin-ui.php:525
 msgid "for special needs"
 msgstr "pour les besoins particuliers"
 
-#: inc/functions/admin-ui.php:503
+#: inc/functions/admin-ui.php:529
 msgid "Contact Us"
 msgstr "Nous contacter"
 
-#: inc/functions/admin-ui.php:510
+#: inc/functions/admin-ui.php:536
 msgid ""
-"One time plans are useful if you have a lots of existing images which need "
-"to be optimized. You can use it for bulk optimizing all your past images. "
-"You will pay only once."
+"One time plans are useful if you have a lots of existing images which need to "
+"be optimized. You can use it for bulk optimizing all your past images. You "
+"will pay only once."
 msgstr ""
 "Les plans « One Time » sont utiles si vous avez beaucoup d’images existantes "
-"qui ont besoin d’être optimisées. Vous pouvez l’utiliser pour une "
-"optimisation en masse de vos images passées. Vous ne paierez qu’une fois."
-
-#: inc/functions/admin-ui.php:563
-msgid "Your order"
-msgstr "Votre commande"
-
-#: inc/functions/admin-ui.php:568
-#, php-format
-msgid "%scancel%sYou just removed %s"
-msgstr "%sannuler%sVous venez de supprimer %s"
-
-#: inc/functions/admin-ui.php:576 inc/functions/admin-ui.php:597
-msgid "Remove this item"
-msgstr "Retirer cet item"
-
-#: inc/functions/admin-ui.php:583
-#, php-format
-msgid "%s per month"
-msgstr "%s par mois"
+"qui ont besoin d’être optimisées. Vous pouvez l’utiliser pour une optimisation "
+"en masse de vos images passées. Vous ne paierez qu’une fois."
 
 #: inc/functions/admin-ui.php:604
-#, php-format
-msgid "one time %s"
-msgstr "« One Time » %s"
-
-#: inc/functions/admin-ui.php:617
-#, php-format
-msgid ""
-"Switch to yearly subscription and <br><strong class=\"imagify-dark\">save %s "
-"per year!</strong>"
-msgstr ""
-"Passez à la souscription annuelle et <br><strong class=\"imagify-dark"
-"\">économisez %s par an&nbsp;!</strong>"
-
-#: inc/functions/admin-ui.php:618
-#, php-format
-msgid ""
-"Perfect!<br>You're <strong class=\"imagify-dark\">saving %s per year!</"
-"strong>"
-msgstr ""
-"Parfait&nbsp;!<br>Vous <strong class=\"imagify-dark\">économisez %s par "
-"an&nbsp;!</strong>"
-
-#: inc/functions/admin-ui.php:657
 msgid "Thank you for being awesome!"
 msgstr "Merci à vous d’être aussi fabuleux&nbsp;!"
 
-#: inc/functions/admin-ui.php:668
+#: inc/functions/admin-ui.php:616
 msgid "What do our user think about Imagify"
 msgstr "Ce que nos utilisateurs pensent d’Imagify"
 
-#: inc/functions/admin-ui.php:702
+#: inc/functions/admin-ui.php:650
 msgid "Secure Credit Card Payment"
 msgstr "Paiement par carte sécurisé"
 
-#: inc/functions/admin-ui.php:703
+#: inc/functions/admin-ui.php:651
 msgid "This is secure 128-bits SSL encrypted payment"
 msgstr "Paiement sécurisé par cryptage SSL 128-bits"
 
@@ -1059,8 +1035,8 @@ msgstr "Félicitations !"
 
 #: inc/functions/i18n.php:25
 msgid ""
-"Your account has been succesfully created. Please check your mailbox, you "
-"are going to receive an email with API key."
+"Your account has been succesfully created. Please check your mailbox, you are "
+"going to receive an email with API key."
 msgstr ""
 "Votre compte a été créé avec succès. Vérifiez votre boîte de réception, vous "
 "allez recevoir un e-mail avec votre clé API."
@@ -1088,8 +1064,8 @@ msgstr "Vous devez indiquer une clé api&nbsp;!"
 
 #: inc/functions/i18n.php:32
 msgid ""
-"Your API key is valid. You can now configure the Imagify settings to "
-"optimize your images."
+"Your API key is valid. You can now configure the Imagify settings to optimize "
+"your images."
 msgstr ""
 "Votre clé API est valide. Vous pouvez maintenant configurer les réglages "
 "d’Imagify pour optimiser vos images."
@@ -1098,11 +1074,27 @@ msgstr ""
 msgid "Cancel"
 msgstr "Annuler"
 
-#: inc/functions/i18n.php:41
+#: inc/functions/i18n.php:35
+msgid "Something went wrong with getting our updated offers. Please retry later."
+msgstr ""
+"Quelque chose s’est mal déroulé en tentant de récupérer les offres à jour. "
+"Merci de réessayer plus tard."
+
+#: inc/functions/i18n.php:36
+msgid "Error with checking this coupon."
+msgstr "Erreur en vérifiant ce coupon."
+
+#: inc/functions/i18n.php:37
+#, php-format
+msgctxt "coupon validated"
+msgid "%s off with %s"
+msgstr "%s de réduction avec %s"
+
+#: inc/functions/i18n.php:44
 msgid "Don't Need a Parachute?"
 msgstr "Pas besoin d’un parachute&nbsp;?"
 
-#: inc/functions/i18n.php:42
+#: inc/functions/i18n.php:45
 msgid ""
 "If you keep this option deactivated, you won't be able to re-optimize your "
 "images to another compression level and restore your original images in case "
@@ -1112,76 +1104,76 @@ msgstr ""
 "réoptimiser vos images à un autre niveau de compression et de restaurer vos "
 "images originales en cas de besoin."
 
-#: inc/functions/i18n.php:58
+#: inc/functions/i18n.php:61
 msgid "Original Image"
 msgstr "Image d’origine"
 
-#: inc/functions/i18n.php:59
+#: inc/functions/i18n.php:62
 msgid "Optimized Image"
 msgstr "Image optimisée"
 
-#: inc/functions/i18n.php:73
+#: inc/functions/i18n.php:76
 msgid "Please wait..."
 msgstr "Un peu d’attente…"
 
-#: inc/functions/i18n.php:74
+#: inc/functions/i18n.php:77
 msgid ""
 "We are trying to get your unoptimized images, it may take time depending on "
 "the number of images."
 msgstr ""
-"Nous sommes en train de récupérer vos images non-optimisées, cela peut "
-"prendre du temps en fonction du nombre d’images."
+"Nous sommes en train de récupérer vos images non-optimisées, cela peut prendre "
+"du temps en fonction du nombre d’images."
 
-#: inc/functions/i18n.php:76
+#: inc/functions/i18n.php:79
 msgid "Oops, There is something wrong!"
 msgstr "Oups, une erreur est survenue !"
 
-#: inc/functions/i18n.php:77
+#: inc/functions/i18n.php:80
 msgid ""
-"An unknow error occurred when we tried to get all your unoptimized images. "
-"Try again and if the issue still persist, please contact us!"
+"An unknow error occurred when we tried to get all your unoptimized images. Try "
+"again and if the issue still persist, please contact us!"
 msgstr ""
 "Une erreur inconnue est survenue lorsque nous avons essayé d’obtenir toutes "
 "vos images non optimisées. Essayez encore et si le problème persiste, "
 "contactez-nous !"
 
-#: inc/functions/i18n.php:82
+#: inc/functions/i18n.php:85
 msgid "Error"
 msgstr "Erreur"
 
-#: inc/functions/i18n.php:85
+#: inc/functions/i18n.php:88
 msgid "Hold on!"
 msgstr "Halte là&nbsp;!"
 
-#: inc/functions/i18n.php:86
+#: inc/functions/i18n.php:89
 msgid "All your images have been optimized by Imagify. Congratulations!"
 msgstr "Toutes vos images ont été optimisées par Imagify. Félicitations&nbsp;!"
 
-#: inc/functions/i18n.php:88
+#: inc/functions/i18n.php:91
 #, php-format
 msgid ""
-"Discover @imagify, the new compression tool to optimize your images for "
-"free. I saved %1$s out of %2$s!"
+"Discover @imagify, the new compression tool to optimize your images for free. "
+"I saved %1$s out of %2$s!"
 msgstr ""
-"Découvrez @imagify, le nouvel outil de compression pour optimiser vos "
-"images. J’ai optimisé %1$s sur %2$s !"
+"Découvrez @imagify, le nouvel outil de compression pour optimiser vos images. "
+"J’ai optimisé %1$s sur %2$s !"
 
-#: inc/functions/i18n.php:92
+#: inc/functions/i18n.php:95
 msgid "Imagify is still processing. Are you sure you want to leave this page?"
 msgstr ""
 "Imagify travaille encore. Êtes-vous sûr(e) de vouloir quitter cette page ?"
 
-#: inc/functions/i18n.php:101
+#: inc/functions/i18n.php:104
 msgid "F j, Y"
 msgstr "j F Y"
 
 #: inc/functions/process.php:40
 msgid ""
-"Sorry, our servers are temporarily unaccessible. Please, try again in a "
-"couple of minutes."
+"Sorry, our servers are temporarily unaccessible. Please, try again in a couple "
+"of minutes."
 msgstr ""
-"Désolé, nos serveurs sont temporairement inaccessibles. Nous vous "
-"recommandons de ré-essayer dans quelques minutes."
+"Désolé, nos serveurs sont temporairement inaccessibles. Nous vous recommandons "
+"de ré-essayer dans quelques minutes."
 
 #: inc/functions/process.php:46
 msgid "External HTTP requests are blocked"
@@ -1206,41 +1198,82 @@ msgstr "%s n’est pas accessible en écriture"
 msgid "Skipped (%s), image not found."
 msgstr "Ignoré (%s), image introuvable."
 
-#~ msgid "https://wordpress.org/plugins/imagify/"
-#~ msgstr "https://fr.wordpress.org/plugins/imagify/"
+#. Plugin URI of the plugin/theme
+msgid "https://wordpress.org/plugins/imagify/"
+msgstr "https://fr.wordpress.org/plugins/imagify/"
+
+#. Description of the plugin/theme
+msgid ""
+"Dramaticaly reduce image file sizes without losing quality, make your website "
+"load faster, boost your SEO and save money on your bandwith using Imagify, the "
+"new most advanced image optimization tool."
+msgstr ""
+"Réduisez drastiquement la taille de vos images sans perte de qualité, "
+"améliorez la vitesse de chargement de votre site web, boostez votre SEO et "
+"économisez de la bande passante (et de l’argent) en utilisant Imagify, l’outil "
+"le plus avancé pour optimiser vos images."
+
+#. Author of the plugin/theme
+msgid "WP Media"
+msgstr "WP Media"
+
+#. Author URI of the plugin/theme
+msgid "http://wp-media.me"
+msgstr "http://wp-media.me"
+
+#~ msgid "You have %s images"
+#~ msgstr "Vous avez %s images"
+
+#~ msgid "You actually have %s of images in your library."
+#~ msgstr "Vous avez actuellement %s d’images dans votre bibliothèque."
+
+#~ msgid "Checkout"
+#~ msgstr "Commander"
+
+#~ msgid "Your order"
+#~ msgstr "Votre commande"
+
+#~ msgid "%scancel%sYou just removed %s"
+#~ msgstr "%sannuler%sVous venez de supprimer %s"
+
+#~ msgid "Remove this item"
+#~ msgstr "Retirer cet item"
+
+#~ msgid "%s per month"
+#~ msgstr "%s par mois"
+
+#~ msgid "one time %s"
+#~ msgstr "« One Time » %s"
 
 #~ msgid ""
-#~ "Dramaticaly reduce image file sizes without losing quality, make your "
-#~ "website load faster, boost your SEO and save money on your bandwith using "
-#~ "Imagify, the new most advanced image optimization tool."
+#~ "Switch to yearly subscription and <br><strong class=\"imagify-dark\">save "
+#~ "%s per year!</strong>"
 #~ msgstr ""
-#~ "Réduisez drastiquement la taille de vos images sans perte de qualité, "
-#~ "améliorez la vitesse de chargement de votre site web, boostez votre SEO "
-#~ "et économisez de la bande passante (et de l’argent) en utilisant Imagify, "
-#~ "l’outil le plus avancé pour optimiser vos images."
-
-#~ msgid "WP Media"
-#~ msgstr "WP Media"
-
-#~ msgid "http://wp-media.me"
-#~ msgstr "http://wp-media.me"
+#~ "Passez à la souscription annuelle et <br><strong class=\"imagify-dark"
+#~ "\">économisez %s par an&nbsp;!</strong>"
 
 #~ msgid ""
-#~ "All images greater than %s%% will be optimized when using a paying "
-#~ "monthly plan."
+#~ "Perfect!<br>You're <strong class=\"imagify-dark\">saving %s per year!</"
+#~ "strong>"
 #~ msgstr ""
-#~ "Toutes les images de plus de %s %% seront optimisées lors de "
-#~ "l'utilisation d'un abonnement mensuel payant."
+#~ "Parfait&nbsp;!<br>Vous <strong class=\"imagify-dark\">économisez %s par "
+#~ "an&nbsp;!</strong>"
+
+#~ msgid ""
+#~ "All images greater than %s%% will be optimized when using a paying monthly "
+#~ "plan."
+#~ msgstr ""
+#~ "Toutes les images de plus de %s %% seront optimisées lors de l'utilisation "
+#~ "d'un abonnement mensuel payant."
 
 #~ msgid "You optimized %s of images on your website"
 #~ msgstr "Vous avez optimisé %s des images de votre site"
 
 #~ msgid ""
-#~ "Images greater than 5 MB will be optimized when using a paying monthly "
-#~ "plan."
+#~ "Images greater than 5 MB will be optimized when using a paying monthly plan."
 #~ msgstr ""
-#~ "Les images supérieures à 5 Mo seront optimisées lors de l'utilisation "
-#~ "d'un forfait mensuel payant."
+#~ "Les images supérieures à 5 Mo seront optimisées lors de l'utilisation d'un "
+#~ "forfait mensuel payant."
 
 #~ msgid "Your default setting:"
 #~ msgstr "Votre réglage par défaut :"
@@ -1258,16 +1291,15 @@ msgstr "Ignoré (%s), image introuvable."
 #~ msgstr ""
 #~ "Réduisez drastiquement le poids de vos images sans perte de qualité, "
 #~ "accélérez la rapidité de votre site, boostez votre SEO et économisez de "
-#~ "l’argent sur votre bande passante en utilisant Imagify, le nouvel outil "
-#~ "le plus avancé d’optimisation des images."
+#~ "l’argent sur votre bande passante en utilisant Imagify, le nouvel outil le "
+#~ "plus avancé d’optimisation des images."
 
 #~ msgid ""
 #~ "%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and "
 #~ "improved your website's by reducing your images size."
 #~ msgstr ""
-#~ "%1$Félicitations%2$s ! Vous avez optimisé %1$s%3$d images%2$s et "
-#~ "améliorez le temps de chargement de votre site en réduisant le poids de "
-#~ "vos images."
+#~ "%1$Félicitations%2$s ! Vous avez optimisé %1$s%3$d images%2$s et améliorez "
+#~ "le temps de chargement de votre site en réduisant le poids de vos images."
 
 #~ msgid ""
 #~ "Sorry, our servers are temporally unaccessible. Please, try again in a "
@@ -1287,22 +1319,21 @@ msgstr "Ignoré (%s), image introuvable."
 
 #~ msgid ""
 #~ "If you are a photographer, you may be interested in by this option if you "
-#~ "are displaying some infos like your the model of your camera on your "
-#~ "pages."
+#~ "are displaying some infos like your the model of your camera on your pages."
 #~ msgstr ""
-#~ "Si vous êtes un photographe, vous pourriez être intéressé par cette "
-#~ "option si vous affichez quelques infos comme votre le modèle de votre "
-#~ "appareil photo sur vos pages."
+#~ "Si vous êtes un photographe, vous pourriez être intéressé par cette option "
+#~ "si vous affichez quelques infos comme votre le modèle de votre appareil "
+#~ "photo sur vos pages."
 
 #~ msgid "Checking in process..."
 #~ msgstr "Vérification en cours…"
 
 #~ msgid ""
-#~ "%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and "
-#~ "reduced by %1$s%4$s%2$s%% your images size."
+#~ "%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and reduced "
+#~ "by %1$s%4$s%2$s%% your images size."
 #~ msgstr ""
-#~ "%1$sFélicitations%2$s, vous avez optimisé %1$s%3$d images %2$s et réduit "
-#~ "de %1$s%4$s%2$s%% le poids de vos images."
+#~ "%1$sFélicitations%2$s, vous avez optimisé %1$s%3$d images %2$s et réduit de "
+#~ "%1$s%4$s%2$s%% le poids de vos images."
 
 #~ msgid ""
 #~ "Keep all EXIF data from your images. Exif are informations stored in your "
@@ -1313,8 +1344,8 @@ msgstr "Ignoré (%s), image introuvable."
 #~ "d’exposition, ISO, etc …"
 
 #~ msgid ""
-#~ "This will provide a huge savings on the initial weight. Sometimes the "
-#~ "image quality could be degraded."
+#~ "This will provide a huge savings on the initial weight. Sometimes the image "
+#~ "quality could be degraded."
 #~ msgstr ""
 #~ "Cela permettra de considérablement réduire le poids initial. Parfois, la "
 #~ "qualité de l’image pourra être légèrement dégradée."
@@ -1375,8 +1406,8 @@ msgstr "Ignoré (%s), image introuvable."
 #~ "niveau votre abonnement pour continuer à optimiser vos images."
 
 #~ msgid ""
-#~ "You have almost used all your credit. Don't forget to upgrade your "
-#~ "account to continue optimizing your images."
+#~ "You have almost used all your credit. Don't forget to upgrade your account "
+#~ "to continue optimizing your images."
 #~ msgstr ""
 #~ "Vous avez bientôt utilisé tout votre crédit. N’oubliez pas de mettre à "
 #~ "niveau votre abonnement pour continuer à optimiser vos images."
@@ -1411,12 +1442,12 @@ msgstr "Ignoré (%s), image introuvable."
 #~ "You can log in to your Imagify account to %sbuy a pack or subscribe to a "
 #~ "plan%s."
 #~ msgstr ""
-#~ "Vous pouvez vous connecter à votre compte Imagify pour %sacheter un pack "
-#~ "ou souscrire à un plan%s."
+#~ "Vous pouvez vous connecter à votre compte Imagify pour %sacheter un pack ou "
+#~ "souscrire à un plan%s."
 
 #~ msgid ""
-#~ "You have consumed all your credits for this month. You will have <strong>"
-#~ "%s back on %s</strong>."
+#~ "You have consumed all your credits for this month. You will have <strong>%s "
+#~ "back on %s</strong>."
 #~ msgstr ""
 #~ "Vous avez consommé tous les crédits pour ce mois. Vous aurez à nouveau "
 #~ "<strong>%s le %s</strong>."
@@ -1454,11 +1485,11 @@ msgstr "Ignoré (%s), image introuvable."
 #~ "d’optimisation."
 
 #~ msgid ""
-#~ "This mode is a lossless optimization, your images will be optimized "
-#~ "without any visible change."
+#~ "This mode is a lossless optimization, your images will be optimized without "
+#~ "any visible change."
 #~ msgstr ""
-#~ "Ce niveau permet d'optimiser sans perte, vos images seront optimisées "
-#~ "sans aucun changement visible."
+#~ "Ce niveau permet d'optimiser sans perte, vos images seront optimisées sans "
+#~ "aucun changement visible."
 
 #~ msgid ""
 #~ "This mode will apply all optimizations available to compress furthermore "
@@ -1467,15 +1498,13 @@ msgstr "Ignoré (%s), image introuvable."
 #~ "Ce niveau appliquera toutes les optimisations disponibles pour compresser "
 #~ "les images."
 
-#~ msgid ""
-#~ "If you want the highest weight reduction, we recommend you this mode."
+#~ msgid "If you want the highest weight reduction, we recommend you this mode."
 #~ msgstr ""
 #~ "Si vous souhaitez une réduction du poids plus performante, nous vous "
 #~ "recommandons ce niveau."
 
 #~ msgid "Optimize automatically every image you will upload to WordPress."
-#~ msgstr ""
-#~ "Optimisez automatiquement chaque image que vous enverrez à WordPress."
+#~ msgstr "Optimisez automatiquement chaque image que vous enverrez à WordPress."
 
 #~ msgid ""
 #~ "Please be aware that optimizing a large number of images can take a while "
@@ -1516,16 +1545,15 @@ msgstr "Ignoré (%s), image introuvable."
 #~ "Is your WordPress website too slow? Discover the best caching plugin  to "
 #~ "speed up your website."
 #~ msgstr ""
-#~ "Votre site WordPress est lent ? Découvrer le meilleur plugin de cache "
-#~ "pour accélérer votre site."
+#~ "Votre site WordPress est lent ? Découvrer le meilleur plugin de cache pour "
+#~ "accélérer votre site."
 
 #~ msgid ""
 #~ "Please be aware that optimizing a large number of images can take a whil "
 #~ "depends on your server and network speed."
 #~ msgstr ""
-#~ "Soyez conscient que l’optimisation d’une grand nombre d’images peut "
-#~ "prendre du temps en fonction de la rapidité de votre serveur et de votre "
-#~ "connexion."
+#~ "Soyez conscient que l’optimisation d’une grand nombre d’images peut prendre "
+#~ "du temps en fonction de la rapidité de votre serveur et de votre connexion."
 
 #~ msgid "Your API key isn't valid."
 #~ msgstr "Votre clé API n’est pas valide."

@@ -71,7 +71,7 @@ function upload_imagify_image( $data ) {
  * Get Imagify Plans Prices
  *
  * @return object
- * @since 1.5
+ * @since  1.5
  * @author Geoffrey Crofte
  **/
 function get_imagify_plans_prices() {
@@ -82,7 +82,7 @@ function get_imagify_plans_prices() {
  * Get Imagify Plans Prices
  *
  * @return object
- * @since 1.5
+ * @since  1.5
  * @author Geoffrey Crofte
  **/
 function get_imagify_packs_prices() {
@@ -90,6 +90,28 @@ function get_imagify_packs_prices() {
 }
 
 /**
+ * Get Imagify All Prices (plan & packs)
+ *
+ * @return object
+ * @since  1.5.4
+ * @author Geoffrey Crofte
+ **/
+function get_imagify_all_prices() {
+    return Imagify()->getAllPrices();
+}
+
+/**
+ * Check Coupon Code
+ *
+ * @return object
+ * @since  1.6
+ * @author Geoffrey Crofte
+ **/
+function check_imagify_coupon_code( $coupon ) {
+    return Imagify()->checkCouponCode( $coupon );
+}
+
+/*
  * Get Maximum image size for free plan
  *
  * @return string
@@ -304,6 +326,24 @@ class Imagify {
     }
 
     /**
+     * Get all prices (packs & plans included)
+     *
+     * @return object
+     */
+    public function getAllPrices() {
+        return $this->httpCall( 'pricing/all/' );
+    }
+
+    /**
+     * Get all prices (packs & plans included)
+     *
+     * @return object
+     */
+    public function checkCouponCode( $coupon ) {
+        return $this->httpCall( 'coupons/' . $coupon . '/' );
+    }
+
+    /*
      * Get Public Info
      *
      * @return object

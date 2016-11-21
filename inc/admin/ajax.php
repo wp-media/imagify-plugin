@@ -632,20 +632,101 @@ function _do_admin_post_async_optimize_save_image_editor_file() {
 /**
  * Get pricings from API for Onetime and Plans at the same time
  *
- * @since 1.5
- * @author Geoffrey
+ * @return  JSON WP formatted answer
+ *
+ * @since  1.6
+ * @author Geoffrey Crofte
  */
 add_action( 'wp_ajax_imagify_get_prices', '_imagify_get_prices_from_api' );
 function _imagify_get_prices_from_api() {
 	if ( check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false) ) {
 		
-		$data = array();
-		$data['onetimes'] = get_imagify_packs_prices();
-		$data['monthlies'] = get_imagify_plans_prices();
+		$prices = array();
+		$prices_all = get_imagify_all_prices();
+
+		if ( is_object( $prices_all ) ) {
+			$prices['onetimes']  = $prices_all -> Packs;
+			$prices['monthlies'] = $prices_all -> Plans;
+
+			wp_send_json_success( $prices );
+		}
+		else {
+			wp_send_json_error( 'Prices variable is not an object' );
+		}
+	} else {
+		wp_send_json_error( 'check_ajax_referer for prices failed' );
+	}
+}
+
+/**
+ * Check Coupon code on modal popin
+ *
+ * @return  JSON WP formatted answer
+ *
+ * @since  1.6
+ * @author Geoffrey Crofte
+ */
+add_action( 'wp_ajax_imagify_check_coupon', '_imagify_check_coupon_code' );
+function _imagify_check_coupon_code() {
+	if ( check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false) ) {
 		
-		wp_send_json_success( $data );
+		$coupon_response = check_imagify_coupon_code( $_POST[ 'coupon' ] );
+
+		wp_send_json_success( $coupon_response );
+	} else {
+		wp_send_json_error( 'check_ajax_referer for coupon code checking failed' );
 	}
-	else {
-		wp_send_json_error( 'check_ajax_referer failed' );
+}
+
+/**
+ * Get estimated sizes from the WordPress library
+ *
+ * @return  JSON WP formatted answer
+ *
+ * @since  1.6
+ * @author Geoffrey Crofte
+ */
+add_action( 'wp_ajax_imagify_get_images_counts', '_imagify_get_estimated_sizes' );
+function _imagify_get_estimated_sizes() {
+	if ( check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false) ) {
+
+		$raw_total_size_in_library = imagify_calculate_total_size_images_library();
+    	$raw_average_per_month     = imagify_calculate_average_size_images_per_month();
+		update_imagify_option( 'total_size_images_library', array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ) );
+    	update_imagify_option( 'average_size_images_per_month', array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ) );
+
+		$images = array(
+			'total_library_size' => get_imagify_option( 'total_size_images_library', null ),
+			'average_month_size' => get_imagify_option( 'average_size_images_per_month', null )
+		);
+
+		wp_send_json_success( $images );
+	} else {
+		wp_send_json_error( 'check_ajax_referer for estimated image sizes failed' );
 	}
+}
+
+/**
+ * Estimate sizes and update the options values for them
+ *
+ * @since  1.6
+ * @author Remy Perona
+ */
+add_action( 'wp_ajax_imagify_update_estimate_sizes', '_imagify_update_estimate_sizes' );
+function _imagify_update_estimate_sizes() {
+    if ( ! isset( $_POST['_ajax_nonce'] ) ) {
+        die();
+    }
+
+    if ( ! check_ajax_referer( 'update_estimate_sizes' ) ) {
+       die(); 
+    }
+
+    $raw_total_size_in_library = imagify_calculate_total_size_images_library();
+    $raw_average_per_month     = imagify_calculate_average_size_images_per_month();
+
+    update_imagify_option( 'total_size_images_library', array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ) );
+    update_imagify_option( 'average_size_images_per_month', array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ) );
+
+    die( 1 );
 }

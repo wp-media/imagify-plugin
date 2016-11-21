@@ -10,9 +10,10 @@ Developers:
 	Grégory Viguier <gregory@wp-rocket.me>
 
 Interface Design:
-	Matthieu <matthieu@wp-media.me>
+	Matthieu Bousendorfer <matthieu@wp-media.me>
+	Geoffrey Crofte <geoffrey@wp-media.me>
 
 Translation:
-	Alice (Italian & Spanish) <alice@wp-rocket.me>
-	Caspar (German) <caspar@wp-rocket.me>
-	Lucy (English) <lucy@wp-rocket.me>
+	Alice Orrù (Italian & Spanish) <alice@wp-rocket.me>
+	Caspar Hübinger (German) <caspar@wp-rocket.me>
+	Lucy Beer (English) <lucy@wp-rocket.me>

@@ -43,6 +43,23 @@ function get_imagify_option( $option, $default = false ) {
 }
 
 /**
+ * Update an Imagify option.
+ *
+ * @since  1.6
+ * @author Remy Perona
+ *
+ * @param  string  $key    The option name
+ * @param  string  $value  The value of the option
+ * @return void
+ */
+function update_imagify_option( $key, $value ) {
+	$options         = get_option( IMAGIFY_SETTINGS_SLUG );
+	$options[ $key ] = $value;
+	
+	update_option( IMAGIFY_SETTINGS_SLUG, $options );
+}
+
+/**
  * Determine if the Imagify API key is valid
  *
  * @since 1.0
