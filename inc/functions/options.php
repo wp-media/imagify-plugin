@@ -45,7 +45,7 @@ function get_imagify_option( $option, $default = false ) {
 /**
  * Update an Imagify option.
  *
- * @since X.X.X
+ * @since  1.6
  * @author Remy Perona
  *
  * @param  string  $key    The option name

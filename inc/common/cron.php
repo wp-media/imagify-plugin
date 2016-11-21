@@ -42,7 +42,7 @@ function _do_imagify_rating_cron() {
 /**
  * Adds weekly interval for cron jobs
  *
- * @since X.X.X
+ * @since 1.6
  * @author Remy Perona
  *
  * @param Array $schedules An array of intervals used by cron jobs
@@ -66,7 +66,7 @@ function imagify_purge_cron_schedule( $schedules ) {
  * Planning cron task to update weekly the size of the images and the size of images uploaded by month
  * If the task is not programmed, it is automatically triggered
  *
- * @since X.X.X
+ * @since 1.6
  * @author Remy Perona
  */
 add_action( 'init', '_imagify_update_library_size_calculations_scheduled' );
@@ -79,7 +79,7 @@ function _imagify_update_library_size_calculations_scheduled() {
 /**
  * Cron task to update weekly the size of the images and the size of images uploaded by month
  *
- * @since X.X.X
+ * @since 1.6
  * @author Remy Perona
  */
 add_action( 'imagify_update_library_size_calculations_event', '_do_imagify_update_library_size_calculations' );

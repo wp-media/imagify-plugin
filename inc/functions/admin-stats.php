@@ -264,7 +264,7 @@ function imagify_count_saving_data( $key = '' ) {
  * 
  * @return (int) the current estimated total size of images not optimized
  *
- * @since  X.X.X
+ * @since  1.6
  * @author Remy Perona
  */
 function imagify_calculate_total_size_images_library() {
@@ -298,7 +298,7 @@ function imagify_calculate_total_size_images_library() {
  * 
  * @return (int) the current estimated average size of images uploaded per month
  *
- * @since  X.X.X
+ * @since  1.6
  * @author Remy Perona
  */
 function imagify_calculate_average_size_images_per_month() {
@@ -385,7 +385,7 @@ function imagify_calculate_average_size_images_per_month() {
  * @param int $total_images The total number of images
  * @return int The estimated total size of images
  *
- * @since  X.X.X
+ * @since  1.6
  * @author Remy Perona
  */
 function imagify_calculate_total_image_size( $images_id, $partial_total_images, $total_images ) {

@@ -104,7 +104,7 @@ function get_imagify_all_prices() {
  * Check Coupon Code
  *
  * @return object
- * @since  X.X.X
+ * @since  1.6
  * @author Geoffrey Crofte
  **/
 function check_imagify_coupon_code( $coupon ) {

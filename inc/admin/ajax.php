@@ -634,7 +634,7 @@ function _do_admin_post_async_optimize_save_image_editor_file() {
  *
  * @return  JSON WP formatted answer
  *
- * @since  X.X.X
+ * @since  1.6
  * @author Geoffrey Crofte
  */
 add_action( 'wp_ajax_imagify_get_prices', '_imagify_get_prices_from_api' );
@@ -663,7 +663,7 @@ function _imagify_get_prices_from_api() {
  *
  * @return  JSON WP formatted answer
  *
- * @since  X.X.X
+ * @since  1.6
  * @author Geoffrey Crofte
  */
 add_action( 'wp_ajax_imagify_check_coupon', '_imagify_check_coupon_code' );
@@ -683,7 +683,7 @@ function _imagify_check_coupon_code() {
  *
  * @return  JSON WP formatted answer
  *
- * @since  X.X.X
+ * @since  1.6
  * @author Geoffrey Crofte
  */
 add_action( 'wp_ajax_imagify_get_images_counts', '_imagify_get_estimated_sizes' );
@@ -709,7 +709,7 @@ function _imagify_get_estimated_sizes() {
 /**
  * Estimate sizes and update the options values for them
  *
- * @since  X.X.X
+ * @since  1.6
  * @author Remy Perona
  */
 add_action( 'wp_ajax_imagify_update_estimate_sizes', '_imagify_update_estimate_sizes' );
