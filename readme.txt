@@ -137,8 +137,8 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 == Changelog ==
 = 1.6 =
 * NEW Features:
- * Estimate your needs directly in your WordPress administration (calculation of data consumption)
- * Buy a One Time Plan or a Monthly Plan directly from your WordPress administration
+ * Knowing how many MB/GB you need to optimize your existing and future images is complicated. We love to make things easiers, so Imagify will do it and advise you the best plan. 
+ * You can now buy all the plans without leaving your WordPress administration
 * Improvement
  * Some styles fixed in the interface
 
