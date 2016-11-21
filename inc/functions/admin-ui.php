@@ -226,12 +226,12 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
  * @return string HTML
  *
  * @since  1.5
- * @author  Geoffrey
+ * @author Geoffrey
  * 
  * @todo add only for no-payable users?
  */
 function get_imagify_new_to_imagify() {
-	if ( apply_filters( 'imagify_show_new_to_imagify', true ) ) {
+	if ( apply_filters( 'imagify_show_new_to_imagify', true ) && imagify_valid_key() ) {
 		return '
 		<div class="imagify-section imagify-section-positive">
 			<div class="imagify-start imagify-mr2">
@@ -256,7 +256,7 @@ function get_imagify_new_to_imagify() {
  * @return string			the markuped price
  *
  * @since  1.5
- * @author  Geoffrey
+ * @author Geoffrey
  */
 function get_imagify_price_table_format( $value ) {
 	$v = explode( '.', (string) $value );
@@ -269,44 +269,57 @@ function get_imagify_price_table_format( $value ) {
  * @return string HTML code for payement modal
  *
  * @since  1.5
- * @author  Geoffrey
+ * @author Geoffrey
+ *
+ * @todo Make first offers dynamic thanks to consumption estimation
  */
 function imagify_payment_modal() {
 ?>
-	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal" aria-hidden="false" role="dialog" aria-labelledby="imagify-pricing-step-1">
+	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal" aria-hidden="false" role="dialog">
 		<div class="imagify-modal-content">
 			<div class="imagify-modal-main">
-				<ol class="imagify-payment-steps">
-					<li id="imagify-pricing-step-1" class="active"><?php esc_html_e( 'Choose Plan', 'imagify' ); ?></li>
-					<li id="imagify-pricing-step-2"><?php esc_html_e( 'Payment Info', 'imagify' ); ?></li>
-				</ol>
-				
 				<div class="imagify-modal-views imagify-pre-checkout-view" id="imagify-pre-checkout-view" aria-hidden="false">
-					<div class="imagify-modal-section section-gray">
-						<p class="imagify-modal-title"><?php esc_html_e( 'We analysed your images', 'imagify' ); ?></p>
+
+				<?php
+					$attachments_number = imagify_count_attachments();
+					$total_size         = get_imagify_option( 'total_size_images_library', false );
+					$per_month          = get_imagify_option( 'average_size_images_per_month', false );
+				?>
+
+					<div class="imagify-modal-section section-gray imagify-estimation-block<?php echo $total_size === false ? ' imagify-analyzing' : ''; ?>">
+						<p class="imagify-modal-title">
+							<span class="imagify-numbers-calc"><?php esc_html_e( 'We analysed your images', 'imagify' ); ?></span>
+							<span class="imagify-numbers-notcalc"><?php esc_html_e( 'We are analysing your images', 'imagify' ); ?></span>
+						</p>
+						
+						<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>loader-balls.svg" width="77" height="48" alt="<?php esc_attr_e( 'Analyzing', 'imagify' ); ?>" class="imagify-loader">
 
 						<div class="imagify-modal-cols">
 							<div class="imagify-col">
 								<p>
 									<span class="imagify-border-styled"><?php 
-										printf( esc_html__( 'You have %s images', 'imagify' ), '</span><span class="imagify-big-number">58000</span><span class="imagify-border-styled">' ); ?></span>
+										printf( _n( 'You have %s image', 'You have %s images', $attachments_number, 'imagify' ), '</span><span class="imagify-big-number">' . $attachments_number . '</span><span class="imagify-border-styled">' ); ?></span>
 								</p>
 							</div>
 							<div class="imagify-col">
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-images-alt2" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'You actually have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark">3 GB</strong>' ); ?>
+									<?php printf( esc_html__( 'You currently have %s of images in your library.', 'imagify' ), '<strong class="imagify-dark total-library-size">' . ( isset( $total_size['human'] ) ? $total_size['human'] : $total_size ) . '</strong>' ); ?>
 								</p>
 								<p class="imagify-iconed">
 									<i class="dashicons dashicons-cloud" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'You upload around %s of images per month.', 'imagify' ), '<strong class="imagify-dark">353 MB</strong>' ); ?>
+									<?php printf( esc_html__( 'You upload around %s of images per month.', 'imagify' ), '<strong class="imagify-dark average-month-size">' . ( isset( $per_month['human'] ) ? $per_month['human'] : $per_month ) . '</strong>' ); ?>
 								</p>
 							</div>
 						</div>
-					</div>
+					</div><!-- .imagify-modal-section -->
 
-					<div class="imagify-modal-section">
-						<p class="imagify-modal-title"><?php esc_html_e( 'We recommend you this plan', 'imagify' ); ?></p>
+					<div class="imagify-modal-section imagify-pre-checkout-offers">
+						<p class="imagify-modal-title">
+							<span class="imagify-not-enough-title"><?php esc_html_e( 'We recommend you this plan', 'imagify' ); ?></span>
+							<span class="imagify-enough-title"><?php esc_html_e( 'The free plan is enough to optimize your images', 'imagify' ); ?></span>
+
+						</p>
 
 						<div class="imagify-offer-line imagify-offer-monthly imagify-offer-selected imagify-month-selected" data-offer='{"lite":{"id":3,"name":"Lite","data":1073741824,"dataf":"1 GB","imgs":5000,"prices":{"monthly":4.99,"yearly":4.16,"add":4}}}'>
 							<div class="imagify-offer-header">
@@ -375,7 +388,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 							<div class="imagify-offer-content imagify-flex-table">
 
 								<div class="imagify-col-checkbox">
-									<input type="checkbox" name="imagify-offer" id="imagify-offer-custom" value="1Gb" class="imagify-checkbox medium">
+									<input type="checkbox" name="imagify-offer" id="imagify-offer-custom" value="1Gb" checked="checked" class="imagify-checkbox medium">
 									<label for="imagify-offer-custom">
 										<span class="imagify-the-offer">
 											<span class="imagify-offer-size">3 GB</span>
@@ -401,12 +414,31 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 						</div><!-- .imagify-offer-line -->
 
 
-						<p class="imagify-submit-line">
-							<button type="button" class="button button-secondary imagify-button-secondary" id="imagify-modal-checkout-btn">
-								<i class="dashicons dashicons-cart" aria-hidden="true"></i>
-								<?php esc_html_e( 'Checkout', 'imagify' ); ?>
-							</button>
-						</p>
+						<div class="imagify-submit-line">
+							<div class="imagify-coupon-section">
+								<p class="imagify-coupon-text">
+									
+									<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>loader-balls.svg" width="60" height="36" alt="<?php esc_attr_e( 'Checking Coupon', 'imagify' ); ?>" class="imagify-coupon-loader">
+
+									<label for="imagify-coupon-code"><?php _e( 'If you have a <strong>coupon code</strong><br> use it there:', 'imagify' ); ?></label>
+								</p>
+								<p class="imagify-coupon-input">
+									<input type="text" class="imagify-coupon-code" name="imagify-coupon-code" id="imagify-coupon-code" value="" placeholder="<?php _e( 'Coupon Code', 'imagify' ) ?>" autocomplete="off">
+									<button type="button" class="button button-secondary imagify-button-secondary" id="imagify-coupon-validate"><?php _e( 'OK' ); ?></button>
+								</p>
+							</div>
+							<div class="imagify-submit-section">
+								<button type="button" class="button button-secondary imagify-button-secondary" id="imagify-modal-checkout-btn">
+									<i class="dashicons dashicons-cart" aria-hidden="true"></i>
+									<?php
+										_e( 'Checkout', 'imagify' );
+										/*
+										 printf( esc_html__( 'Pay %s', 'imagify' ), '$<span class="imagify-global-amount">0.00</span>');
+										 */
+									?>
+								</button>
+							</div>
+						</div>
 
 						<p class="imagify-footer-lines"><?php esc_html_e( 'Monthly plans comes with credits which is renewed every months. The billing happens automatically each month or year depending the billing period you choose.', 'imagify' ); ?></p>
 					</div>
@@ -414,9 +446,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				
 				<?php
 
-				
-
-				/**
+			   /**
 				* 
 				*
 				* SECOND MODAL VIEW
@@ -424,11 +454,10 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				* 
 				*/
 
-				
-
 				?>
 
 				<div class="imagify-modal-views imagify-plans-selection-view" id="imagify-plans-selection-view" aria-hidden="true">
+					<p class="imagify-modal-title"><?php _e( 'Choose a plan', 'imagify' ); ?></p>
 					<ul class="imagify-tabs" role="tablist">
 						<li class="imagify-tab imagify-current">
 							<a href="#imagify-pricing-tab-monthly" role="tab" aria-controls="imagify-pricing-tab-monthly" aria-selected="true">
@@ -526,7 +555,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 											<span class="imagify-dollars">$</span>
 											<span class="imagify-number-block"></span>
 										</span>
-										<span class="imagify-recommend"><?php esc_html__( 'we recommend for you', 'imagify' ); ?></span>
+										<span class="imagify-recommend"><?php esc_html_e( 'we recommend for you', 'imagify' ); ?></span>
 									</div><!-- .imagify-col-price -->
 
 									<div class="imagify-col-other-actions">
@@ -543,8 +572,6 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 
 				<?php
 
-				
-
 				/**
 				* 
 				*
@@ -553,93 +580,17 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				* 
 				*/
 
-				
-
 				?>
 
 				<div class="imagify-modal-views imagify-payment-process-view" id="imagify-payment-process-view" aria-hidden="true">
-					<div class="imagify-modal-section section-gray">
-						<div class="imagify-cart imagify-month-selected">
-							<p class="imagify-cart-label"><?php esc_html_e( 'Your order', 'imagify' ); ?></p>
-
-							<div class="imagify-cart-list">
-								<?php
-								$emptied_item = '<div class="imagify-cart-emptied-item">
-									<p>' . sprintf( esc_html__( '%scancel%sYou just removed %s', 'imagify' ), '<a href="#cancel" class="imagify-cancel-removing">', '</a>', '<span class="imagify-removed-name"></span>' ) . '</p>
-								</div>';
-								?>
-
-								<!-- JS stuff will complete the datas of list item -->
-
-								<div class="imagify-cart-item imagify-cart-item-monthly imagify-flex-table imagify-align-top" data-offer="">
-									<div class="imagify-cl-remove">
-										<button type="button" class="imagify-remove-from-cart" title="<?php esc_html_e( 'Remove this item', 'imagify' ); ?>"><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></button>
-									</div>
-									<div class="imagify-cl-name">
-										<p class="imagify-cart-product-name"><span class="imagify-the-product-name"></span> Monthly plan</p>
-										<p class="imagify-cart-suggestion"><a href="#step1" class="imagify-back-to-plans"><?php esc_html_e( 'Choose another plan', 'imagify' ); ?></a></p>
-									</div>
-									<div class="imagify-cl-description">
-										<p><?php printf( esc_html__( '%s per month', 'imagify' ), '<span class="imagify-cart-offer-data"></span>') ?></p>
-									</div>
-									<div class="imagify-cl-price imagify-price-block">
-										<span class="imagify-dollars">$</span>
-											<span class="imagify-number-block">
-												<span class="imagify-switch-my">
-												</span>
-											</span>
-									</div>
-								</div><!-- .imagify-cart-item -->
-								<?php echo $emptied_item; ?>
-
-								<div class="imagify-cart-item imagify-cart-item-onetime imagify-flex-table imagify-align-top" data-offer="">
-									<div class="imagify-cl-remove">
-										<button type="button" class="imagify-remove-from-cart" title="<?php esc_html_e( 'Remove this item', 'imagify' ); ?>"><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></button>
-									</div>
-									<div class="imagify-cl-name">
-										<p class="imagify-cart-product-name"><span class="imagify-the-product-name"></span> One Time Plan</p>
-										<p class="imagify-cart-suggestion"><a href="#step1" class="imagify-back-to-plans"><?php esc_html_e( 'Choose another plan', 'imagify' ); ?></a></p>
-									</div>
-									<div class="imagify-cl-description">
-										<p><?php printf( esc_html__( 'one time %s', 'imagify' ), '<span class="imagify-cart-offer-data"></span>') ?></p>
-									</div>
-									<div class="imagify-cl-price imagify-price-block">
-										<span class="imagify-dollars">$</span>
-										<span class="imagify-number-block">
-										</span>
-									</div>
-								</div><!-- .imagify-cart-item -->
-								<?php echo $emptied_item; ?>
-							</div><!-- .imagify-cart-list -->
-							
-							<div class="imagify-cols imagify-cart-list-my-choice">
-								<div class="imagify-col imagify-switch-my imagify-pr1">
-									<p class="imagify-monthly"><?php printf( __( 'Switch to yearly subscription and <br><strong class="imagify-dark">save %s per year!</strong>', 'imagify' ), '<span class="imagify-nb-save-per-year"></span>' ); ?></p>
-									<p class="imagify-yearly"><?php printf( __( 'Perfect!<br>You\'re <strong class="imagify-dark">saving %s per year!</strong>', 'imagify' ), '<span class="imagify-nb-save-per-year"></span>' ); ?></p>
-								</div>
-								<div class="imagify-col">
-									<div class="imagify-inline-options imagify-small-options imagify-radio-line imagify-cart-list-switcher">
-										<input type="radio" checked="checked" name="plan-checkout" value="monthly" id="imagify-checkout-monthly">
-										<label for="imagify-checkout-monthly"><?php esc_html_e('Monthly', 'imagify' ); ?></label>
-
-										<input type="radio" name="plan-checkout" value="yearly" id="imagify-checkout-yearly">
-										<label for="imagify-checkout-yearly"><?php esc_html_e('Yearly', 'imagify' ); ?><span class="imagify-2-free imagify-b-bottom"><?php esc_html_e('2 months free', 'imagify' ); ?></span></label>
-									</div>
-								</div>
-							</div>
-
-						</div><!-- .imagify-cart.imagify-month-selected -->
-					</div><!-- .imagify-section-gray -->
 
 					<?php $imagify_api_key = get_imagify_option( 'api_key', false ); ?>
 
-					<iframe data-imagify-api="<?php echo $imagify_api_key; ?>" id="imagify-payment-iframe" src="" frameborder="0"></iframe>
+					<iframe data-imagify-api="<?php echo $imagify_api_key; ?>" id="imagify-payment-iframe" data-src="<?php echo IMAGIFY_PAYMENT_URL; ?>" name="imagify-payment-iframe" src="" frameborder="0"></iframe>
 
 				</div><!-- .imagify-modal-views -->
 				
-
 				<?php
-
 
 				/**
 				* 
@@ -648,7 +599,6 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 				*
 				* 
 				*/
-				
 
 				?>
 
@@ -661,6 +611,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 					<i aria-hidden="true" class="dashicons dashicons-no-alt"></i>
 					<span class="screen-reader-text"><?php esc_html_e( 'Close', 'imagify' ); ?></span>
 				</button>
+
 			</div><!-- .imagify-modal-main -->
 
 			<div class="imagify-modal-sidebar">
@@ -703,7 +654,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 						<p><?php esc_html_e( 'This is secure 128-bits SSL encrypted payment', 'imagify' ); ?></p>
 					</div>
 				</div>
-			</div>
+			</div><!-- .imagify-modal-sidebar -->
 
 			<div class="imagify-modal-loader"></div>
 		</div><!-- .imagify-modal-content-->

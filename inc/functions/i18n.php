@@ -27,10 +27,14 @@ function get_imagify_localize_script_translations( $context ) {
 					'saveApiKeyText'   	  	    	=> __( 'Paste your API key below:', 'imagify' ),
 					'saveApiKeyConfirmButtonText'   => __( 'Connect me', 'imagify' ),
 					'waitApiKeyCheckText'     	    => __( 'Check in progress...', 'imagify' ),
+                    'ApiKeyErrorEmpty'   	        => __( 'You need to specify your api key!', 'imagify' ),
 					'ApiKeyCheckSuccessTitle' 	    => __( 'Congratulations!', 'imagify' ),
 					'ApiKeyCheckSuccessText'  	    => __( 'Your API key is valid. You can now configure the Imagify settings to optimize your images.', 'imagify' ),
 					'ValidApiKeyText'  		  	    => __( 'Your API key is valid.', 'imagify' ),
-					'swalCancel'					=> __( 'Cancel' )		
+					'swalCancel'					=> __( 'Cancel' ),
+					'errorPriceAPI'					=> __( 'Something went wrong with getting our updated offers. Please retry later.', 'imagify' ),
+					'errorCouponAPI'				=> __( 'Error with checking this coupon.', 'imagify' ),
+					'successCouponAPI'              => sprintf( _x( '%s off with %s', 'coupon validated', 'imagify' ), '<span class="imagify-coupon-offer"></span>', '<strong class="imagify-coupon-word"></strong>' )
 				)
 			);
 		break;

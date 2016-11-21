@@ -78,7 +78,7 @@ jQuery(function($){
 		
 		// The comsuption bar
 		$('.imagify-unconsumed-percent').html(data.unconsumed_quota + '%');
-		$('.imagify-unconsumed-bar').animate({'width': data.unconsumed_quota + '%'});
+		$('.imagify-unconsumed-bar').css('width', data.unconsumed_quota + '%');
 
 		// The total optimized images
 		$('#imagify-total-optimized-attachments').html(data.already_optimized_attachments);
@@ -88,13 +88,13 @@ jQuery(function($){
 								  .html(data.original_human);
 
 		// The optimized bar
-		$('#imagify-optimized-bar').animate({'width': data.optimized_percent+"%"})
-		$('#imagify-optimized-bar').find('.imagify-barnb')
+		$('#imagify-optimized-bar').css('width', data.optimized_percent + '%')
+								   .find('.imagify-barnb')
 								   .html(data.optimized_human);
-								   
+
 		// The Percent data
 		$('#imagify-total-optimized-attachments-pct').html( data.optimized_percent + '%' );
-		
+
 		overviewDoughnut.segments[0].value = data.unoptimized_attachments;
 		overviewDoughnut.segments[1].value = data.optimized_attachments;
 		overviewDoughnut.segments[2].value = data.errors_attachments;
@@ -131,10 +131,8 @@ jQuery(function($){
 		// Display an alert to wait
 		swal({
 			title:imagifyBulk.labels.waitTitle,
-			text: imagifyBulk.labels.waitText,
-			closeOnConfirm: false,
+			html: imagifyBulk.labels.waitText,
 			showConfirmButton: false,
-			html: true,
 			imageUrl: imagifyBulk.labels.waitImageUrl
 		});
 		
@@ -166,10 +164,10 @@ jQuery(function($){
 				
 				// Display an alert to warn that all images has been optimized
 				swal({
-					title		: swal_title,
-					text 		: swal_text,
-					type	    : "info",
-					customClass : "imagify-sweet-alert"
+					title: swal_title,
+					html: swal_text,
+					type: "info",
+					customClass: "imagify-sweet-alert"
 				});
 
 			} else {				
@@ -231,12 +229,10 @@ jQuery(function($){
 						if ( data.error.indexOf("You've consumed all your data") >= 0 ) {
 							swal({
 								title: imagifyBulk.labels.overQuotaTitle,
-								text: imagifyBulk.labels.overQuotaText,
+								html: imagifyBulk.labels.overQuotaText,
 								type: "error",
 								customClass: "imagify-sweet-alert",
-								html: true,
-							},
-							function(){
+							}).then( function() {
 								location.reload();
 							});
 						}
@@ -298,11 +294,10 @@ jQuery(function($){
 		.fail(function () {
 			swal({
 				title: imagifyBulk.labels.getUnoptimizedImagesErrorTitle,
-				text: imagifyBulk.labels.getUnoptimizedImagesErrorText,
+				html: imagifyBulk.labels.getUnoptimizedImagesErrorText,
 				type: "error",
 				customClass: "imagify-sweet-alert"
-			},
-			function(){
+			}).then(function(){
 				location.reload();
 			});
 		});
