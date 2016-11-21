@@ -423,14 +423,19 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 									<label for="imagify-coupon-code"><?php _e( 'If you have a <strong>coupon code</strong><br> use it there:', 'imagify' ); ?></label>
 								</p>
 								<p class="imagify-coupon-input">
-									<input type="text" class="imagify-coupon-code" name="imagify-coupon-code" id="imagify-coupon-code" value="" placeholder="<?php _e( 'Coupon Code', 'imagify' ) ?>">
+									<input type="text" class="imagify-coupon-code" name="imagify-coupon-code" id="imagify-coupon-code" value="" placeholder="<?php _e( 'Coupon Code', 'imagify' ) ?>" autocomplete="off">
 									<button type="button" class="button button-secondary imagify-button-secondary" id="imagify-coupon-validate"><?php _e( 'OK' ); ?></button>
 								</p>
 							</div>
 							<div class="imagify-submit-section">
 								<button type="button" class="button button-secondary imagify-button-secondary" id="imagify-modal-checkout-btn">
 									<i class="dashicons dashicons-cart" aria-hidden="true"></i>
-									<?php printf( esc_html__( 'Pay %s', 'imagify' ), '$<span class="imagify-global-amount">0.00</span>'); ?>
+									<?php
+										_e( 'Checkout', 'imagify' );
+										/*
+										 printf( esc_html__( 'Pay %s', 'imagify' ), '$<span class="imagify-global-amount">0.00</span>');
+										 */
+									?>
 								</button>
 							</div>
 						</div>
