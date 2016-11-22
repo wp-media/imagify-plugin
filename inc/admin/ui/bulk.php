@@ -298,7 +298,7 @@ function _imagify_display_bulk_page() {
 			</table>
 		</div>
 
-		<?php //imagify_payment_modal(); ?>
+		<?php imagify_payment_modal(); ?>
 		
 	</div>
 	<?php
