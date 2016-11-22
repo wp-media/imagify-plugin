@@ -400,8 +400,8 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 									<span class="imagify-price-block">
 										<span class="imagify-dollars">$</span>
 										<span class="imagify-number-block">
-											<span class="imagify-price-big">60</span>
-											<span class="imagify-price-mini">.99</span>
+											<span class="imagify-price-big"></span>
+											<span class="imagify-price-mini"></span>
 										</span>
 									</span>
 								</div>
