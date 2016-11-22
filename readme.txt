@@ -3,7 +3,7 @@ Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.6.1
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -135,6 +135,10 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.1 =
+* Bug Fix
+ * Correctly display the modal when clicking on the plan suggestion button on bulk optimisation page
+ 
 = 1.6.1 =
 * Bug Fix
  * Better offer suggestion when your medias library is bigger than 3GB
