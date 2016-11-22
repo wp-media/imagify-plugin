@@ -443,7 +443,8 @@ jQuery(function($){
 
 							// Do the ONETIMES Markup
 							$.each( onetimes, function( index, value ) {
-								var $tpl = $( ot_clone ).clone();
+								var $tpl   = $( ot_clone ).clone(),
+									$offer = $( '.imagify-pre-checkout-offers' ).find( '.imagify-offer-onetime' );
 
 								// parent classes
 								classes = '';
@@ -451,11 +452,16 @@ jQuery(function($){
 									classes = ' imagify-offer-selected';
 									ot_suggested = true;
 
-									// add this offer as pre-selected item in pre-checkout view
-									var $offer = $( '.imagify-pre-checkout-offers' ).find( '.imagify-offer-onetime' );
-
 									// populate the Pre-checkout view depending on user_cons
 									imagify_populate_offer( $offer, value, 'onetime' );
+								}
+								
+								// if too big, populate with the biggest offer available
+								// TODO: create custom offers at this point
+								if ( index === onetimes.length-1 && ot_suggested === false ) {
+									// populate the Pre-checkout view depending on user_cons
+									var tvalue = onetimes[ onetimes.length - 1 ];
+									imagify_populate_offer( $offer, tvalue, 'onetime' );
 								}
 
 								// populate each offer
