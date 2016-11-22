@@ -135,7 +135,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
-= 1.6.1 =
+= 1.6.2 =
 * Bug Fix
  * Correctly display the modal when clicking on the plan suggestion button on bulk optimisation page
  
