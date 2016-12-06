@@ -225,7 +225,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
  *
  * @return string HTML
  *
- * @since  1.5
+ * @since  1.6
  * @author Geoffrey
  * 
  * @todo add only for no-payable users?
@@ -255,7 +255,7 @@ function get_imagify_new_to_imagify() {
  * @param  float	$value	the price value
  * @return string			the markuped price
  *
- * @since  1.5
+ * @since  1.6
  * @author Geoffrey
  */
 function get_imagify_price_table_format( $value ) {
@@ -268,7 +268,8 @@ function get_imagify_price_table_format( $value ) {
  * Return the payment modal HTML
  * @return string HTML code for payement modal
  *
- * @since  1.5
+ * @since 1.6
+ * @since 1.6.3 Include discount banners
  * @author Geoffrey
  *
  * @todo Make first offers dynamic thanks to consumption estimation
@@ -313,6 +314,8 @@ function imagify_payment_modal() {
 							</div>
 						</div>
 					</div><!-- .imagify-modal-section -->
+
+					<?php imagify_print_discount_banner(); ?>
 
 					<div class="imagify-modal-section imagify-pre-checkout-offers">
 						<p class="imagify-modal-title">
@@ -479,6 +482,8 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 								<p><?php esc_html_e( 'Monthly plans come with credits which is renewed every months. The billing happens automatically each month or year depending the billing period you choose.', 'imagify' ); ?></p>
 							</div>
 
+							<?php imagify_print_discount_banner(); ?>
+
 							<div class="imagify-inline-options imagify-small-options imagify-radio-line">
 								<input id="imagify-pricing-montly" type="radio" value="monthly" name="plan-pricing" checked="checked">
 								<label for="imagify-pricing-montly"><?php esc_html_e( 'Monthly' , 'imagify' ); ?></label>
@@ -486,6 +491,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 								<input id="imagify-pricing-yearly" type="radio" value="yearly" name="plan-pricing">
 								<label for="imagify-pricing-yearly"><?php esc_html_e( 'Yearly' , 'imagify' ); ?><span class="imagify-2-free imagify-b-right"><?php esc_html_e( '2 months free', 'imagify' ) ?></span></label>
 							</div><!-- .imagify-radio-line -->
+
 
 							<div class="imagify-pricing-table imagify-month-selected">
 							
@@ -539,6 +545,7 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 								<p><?php esc_html_e( 'One time plans are useful if you have a lots of existing images which need to be optimized. You can use it for bulk optimizing all your past images. You will pay only once.', 'imagify' ); ?></p>
 							</div>
 							
+							<?php imagify_print_discount_banner(); ?>
 
 							<div class="imagify-pricing-table imagify-month-selected">
 							<script type="text/template" id="imagify-offer-onetime-template"><div class="imagify-offer-line imagify-flex-table imagify-offer-onetimes">
@@ -659,5 +666,25 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 			<div class="imagify-modal-loader"></div>
 		</div><!-- .imagify-modal-content-->
 	</div><!-- .imagify-payment-modal -->
+<?php
+}
+
+/**
+ * Print the discount banner used inside Payment Modal
+ * 
+ * @return void
+ * @author Geoffrey Crofte
+ * @since  1.6.3
+ */
+function imagify_print_discount_banner() {
+?>
+
+	<div class="imagify-modal-promotion" aria-hidden="true">
+		<p class="imagify-promo-title"><?php printf( __( '%s OFF on all the subscriptions', 'secupress' ), '<span class="imagify-promotion-number"></span>' ); ?></p>
+		<p class="imagify-until-date">
+			<?php printf( __( 'Special Offer<br><strong>Until %s</strong>', 'secupress' ), '<span class="imagify-promotion-date"></span>' ); ?>
+		</p>
+	</div>
+
 <?php
 }
