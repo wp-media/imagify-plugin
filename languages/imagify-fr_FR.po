@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2016-11-11 21:28+0100\n"
-"PO-Revision-Date: 2016-11-11 21:28+0100\n"
+"POT-Creation-Date: 2016-12-06 18:45+0100\n"
+"PO-Revision-Date: 2016-12-06 18:46+0100\n"
 "Last-Translator: Rémy Perona <remperona@gmail.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -693,7 +693,7 @@ msgstr ""
 "baisse de qualité sur vos images, nous vous recommandons ce niveau."
 
 #: inc/admin/ui/options.php:357 inc/admin/ui/options.php:479
-#: inc/functions/admin-ui.php:609 inc/functions/i18n.php:64
+#: inc/functions/admin-ui.php:619 inc/functions/i18n.php:64
 msgid "Close"
 msgstr "Fermer"
 
@@ -827,83 +827,75 @@ msgstr ""
 "Laissez-nous vous aider en analysant vos images existantes et déterminer le "
 "meilleur plan pour vous"
 
-#: inc/functions/admin-ui.php:282
-msgid "Choose Plan"
-msgstr "Choisissez un plan"
-
-#: inc/functions/admin-ui.php:283
-msgid "Payment Info"
-msgstr "Information de paiement"
-
-#: inc/functions/admin-ui.php:295
+#: inc/functions/admin-ui.php:292
 msgid "We analysed your images"
 msgstr "Nous avons analysé vos images"
 
-#: inc/functions/admin-ui.php:296
+#: inc/functions/admin-ui.php:293
 msgid "We are analysing your images"
 msgstr "Nous analysons vos images"
 
-#: inc/functions/admin-ui.php:299
+#: inc/functions/admin-ui.php:296
 msgid "Analyzing"
 msgstr "Analyse en cours"
 
-#: inc/functions/admin-ui.php:305
+#: inc/functions/admin-ui.php:302
 #, php-format
 msgid "You have %s image"
 msgid_plural "You have %s images"
 msgstr[0] "Vous avez %s image"
 msgstr[1] "Vous avez %s images"
 
-#: inc/functions/admin-ui.php:311
+#: inc/functions/admin-ui.php:308
 #, php-format
 msgid "You currently have %s of images in your library."
 msgstr "Vous avez actuellement %s d’images dans votre médiathèque."
 
-#: inc/functions/admin-ui.php:315
+#: inc/functions/admin-ui.php:312
 #, php-format
 msgid "You upload around %s of images per month."
 msgstr "Vous chargez environ %s d’images par mois."
 
-#: inc/functions/admin-ui.php:323
+#: inc/functions/admin-ui.php:322
 msgid "We recommend you this plan"
 msgstr "Nous vous recommandons ce plan"
 
-#: inc/functions/admin-ui.php:324
+#: inc/functions/admin-ui.php:323
 msgid "The free plan is enough to optimize your images"
 msgstr "L’offre gratuite est suffisante pour optimiser vos images"
 
-#: inc/functions/admin-ui.php:331
+#: inc/functions/admin-ui.php:330
 msgid "Subscribe a monthly plan"
 msgstr "Souscrire un plan mensuel"
 
-#: inc/functions/admin-ui.php:332
+#: inc/functions/admin-ui.php:331
 msgid "Subscribe a yearly plan"
 msgstr "Souscrire un plan annuel"
 
-#: inc/functions/admin-ui.php:336 inc/functions/admin-ui.php:481
+#: inc/functions/admin-ui.php:335 inc/functions/admin-ui.php:489
 msgid "Monthly"
 msgstr "Mensuel"
 
-#: inc/functions/admin-ui.php:339 inc/functions/admin-ui.php:484
+#: inc/functions/admin-ui.php:338 inc/functions/admin-ui.php:492
 msgid "Yearly"
 msgstr "Annuel"
 
-#: inc/functions/admin-ui.php:339 inc/functions/admin-ui.php:484
+#: inc/functions/admin-ui.php:338 inc/functions/admin-ui.php:492
 msgid "2 months free"
 msgstr "2 mois gratuits"
 
-#: inc/functions/admin-ui.php:350 inc/functions/admin-ui.php:369
-#: inc/functions/admin-ui.php:494 inc/functions/admin-ui.php:504
+#: inc/functions/admin-ui.php:349 inc/functions/admin-ui.php:368
+#: inc/functions/admin-ui.php:503 inc/functions/admin-ui.php:513
 msgid "/month"
 msgstr "/mois"
 
-#: inc/functions/admin-ui.php:352 inc/functions/admin-ui.php:400
-#: inc/functions/admin-ui.php:496 inc/functions/admin-ui.php:547
+#: inc/functions/admin-ui.php:351 inc/functions/admin-ui.php:399
+#: inc/functions/admin-ui.php:505 inc/functions/admin-ui.php:557
 #, php-format
 msgid "approx: %s images"
 msgstr "approx&nbsp;: %s images"
 
-#: inc/functions/admin-ui.php:373 inc/functions/admin-ui.php:510
+#: inc/functions/admin-ui.php:372 inc/functions/admin-ui.php:519
 #, php-format
 msgid ""
 "%s per<br>\n"
@@ -912,32 +904,35 @@ msgstr ""
 "%s par<br>\n"
 "Go additionnel"
 
-#: inc/functions/admin-ui.php:378 inc/functions/admin-ui.php:413
+#: inc/functions/admin-ui.php:377 inc/functions/admin-ui.php:412
 msgid "Choose another plan"
 msgstr "Choisir un autre plan"
 
-#: inc/functions/admin-ui.php:388
+#: inc/functions/admin-ui.php:387
 msgid "Optimize the images you already have, buy a one-time plan"
 msgstr "Optimisez les images que vous avez déjà, achetez un plan « One Time » "
 
-#: inc/functions/admin-ui.php:425
+#: inc/functions/admin-ui.php:424
 msgid "Checking Coupon"
 msgstr "Vérification du coupon"
 
-#: inc/functions/admin-ui.php:427
+#: inc/functions/admin-ui.php:426
 msgid "If you have a <strong>coupon code</strong><br> use it there:"
 msgstr "Si vous avez un <strong>code coupon</strong><br> utilisez-le ici&nbsp;:"
 
-#: inc/functions/admin-ui.php:430
+#: inc/functions/admin-ui.php:429
 msgid "Coupon Code"
 msgstr "Code coupon"
 
-#: inc/functions/admin-ui.php:436
-#, php-format
-msgid "Pay %s"
-msgstr "Payer %s"
+#: inc/functions/admin-ui.php:430
+msgid "OK"
+msgstr ""
 
-#: inc/functions/admin-ui.php:441
+#: inc/functions/admin-ui.php:437
+msgid "Checkout"
+msgstr "Commander"
+
+#: inc/functions/admin-ui.php:446
 msgid ""
 "Monthly plans comes with credits which is renewed every months. The billing "
 "happens automatically each month or year depending the billing period you "
@@ -947,15 +942,19 @@ msgstr ""
 "facturation arrive automatiquement tous les mois ou années dépendamment de "
 "votre choix de période de facturation."
 
-#: inc/functions/admin-ui.php:461
+#: inc/functions/admin-ui.php:463
+msgid "Choose a plan"
+msgstr ""
+
+#: inc/functions/admin-ui.php:467
 msgid "Monthly Plans"
 msgstr "Plans Mensuels"
 
-#: inc/functions/admin-ui.php:466
+#: inc/functions/admin-ui.php:472
 msgid "One Time Plans"
 msgstr "Plans « One Time »"
 
-#: inc/functions/admin-ui.php:476
+#: inc/functions/admin-ui.php:482
 msgid ""
 "Monthly plans come with credits which is renewed every months. The billing "
 "happens automatically each month or year depending the billing period you "
@@ -965,27 +964,27 @@ msgstr ""
 "facturation arrive automatiquement tous les mois ou années dépendamment de "
 "votre choix de période de facturation."
 
-#: inc/functions/admin-ui.php:508 inc/functions/admin-ui.php:555
+#: inc/functions/admin-ui.php:517 inc/functions/admin-ui.php:565
 msgid "we recommend for you"
 msgstr "nous vous recommandons"
 
-#: inc/functions/admin-ui.php:516 inc/functions/admin-ui.php:559
+#: inc/functions/admin-ui.php:525 inc/functions/admin-ui.php:569
 msgid "Choose plan"
 msgstr "Choisir ce plan"
 
-#: inc/functions/admin-ui.php:524
+#: inc/functions/admin-ui.php:533
 msgid "Need more?"
 msgstr "Besoin de plus&nbsp;?"
 
-#: inc/functions/admin-ui.php:525
+#: inc/functions/admin-ui.php:534
 msgid "for special needs"
 msgstr "pour les besoins particuliers"
 
-#: inc/functions/admin-ui.php:529
+#: inc/functions/admin-ui.php:538
 msgid "Contact Us"
 msgstr "Nous contacter"
 
-#: inc/functions/admin-ui.php:536
+#: inc/functions/admin-ui.php:545
 msgid ""
 "One time plans are useful if you have a lots of existing images which need to "
 "be optimized. You can use it for bulk optimizing all your past images. You "
@@ -995,21 +994,31 @@ msgstr ""
 "qui ont besoin d’être optimisées. Vous pouvez l’utiliser pour une optimisation "
 "en masse de vos images passées. Vous ne paierez qu’une fois."
 
-#: inc/functions/admin-ui.php:604
+#: inc/functions/admin-ui.php:614
 msgid "Thank you for being awesome!"
 msgstr "Merci à vous d’être aussi fabuleux&nbsp;!"
 
-#: inc/functions/admin-ui.php:616
+#: inc/functions/admin-ui.php:626
 msgid "What do our user think about Imagify"
 msgstr "Ce que nos utilisateurs pensent d’Imagify"
 
-#: inc/functions/admin-ui.php:650
+#: inc/functions/admin-ui.php:660
 msgid "Secure Credit Card Payment"
 msgstr "Paiement par carte sécurisé"
 
-#: inc/functions/admin-ui.php:651
+#: inc/functions/admin-ui.php:661
 msgid "This is secure 128-bits SSL encrypted payment"
 msgstr "Paiement sécurisé par cryptage SSL 128-bits"
+
+#: inc/functions/admin-ui.php:683
+#, php-format
+msgid "%s OFF on all the subscriptions"
+msgstr "%s de remise sur tous les abonnements"
+
+#: inc/functions/admin-ui.php:685
+#, php-format
+msgid "Special Offer<br><strong>Until %s</strong>"
+msgstr "Offre spéciale<br><strong>Jusqu’au %s</strong>"
 
 # SWAL : ne pas utiliser d’entité HTML échapée (ex: &nbsp;)
 #: inc/functions/i18n.php:20
@@ -1221,14 +1230,20 @@ msgstr "WP Media"
 msgid "http://wp-media.me"
 msgstr "http://wp-media.me"
 
+#~ msgid "Choose Plan"
+#~ msgstr "Choisissez un plan"
+
+#~ msgid "Payment Info"
+#~ msgstr "Information de paiement"
+
+#~ msgid "Pay %s"
+#~ msgstr "Payer %s"
+
 #~ msgid "You have %s images"
 #~ msgstr "Vous avez %s images"
 
 #~ msgid "You actually have %s of images in your library."
 #~ msgstr "Vous avez actuellement %s d’images dans votre bibliothèque."
-
-#~ msgid "Checkout"
-#~ msgstr "Commander"
 
 #~ msgid "Your order"
 #~ msgstr "Votre commande"
