@@ -3000,7 +3000,7 @@ td.imagify-cell-filename {
 /* Checkboxes adjustment */
 div.imagify-col-checkbox {
 	position: relative;
-	width: 35.5%;
+	width: 25.5%;
 	padding-top: 10px;
 	padding-bottom: 7px;
 }
@@ -3052,7 +3052,7 @@ div.imagify-col-checkbox {
 }
 
 div.imagify-col-price {
-	width: 30%;
+	width: 35%;
 }
 .imagify-flex-table .imagify-price-block {
 	padding-left: 0;
@@ -3067,9 +3067,42 @@ div.imagify-col-price {
 	font-size: 10px;
 	font-weight: bold;
 }
-.imagify-price-block span {
+.imagify-price-block,
+.imagify-price-discount {
+	white-space: nowrap;
+}
+.imagify-price-block span,
+.imagify-price-discount span {
 	display: inline-block;
 	vertical-align: middle;
+}
+.imagify-price-discount.imagify-price-discount {
+	position: relative;
+	flex-grow: 0;
+	padding-top: 15px;
+	font-weight: bold;
+	width: 70px;
+}
+.imagify-price-discount:before {
+	content: "";
+	position: absolute;
+	top: 25px;
+	width: 62%;
+	height: 2px;
+	background: #2E3243;
+	transform: rotate(-15deg);
+}
+.imagify-offer-onetimes .imagify-price-discount:before {
+	width: 100%;
+}
+.imagify-price-discount-dollar {
+	color: #2E3243;
+}
+.imagify-price-discount-number {
+	color: #8BA6B4;
+}
+.imagify-offer-selected .imagify-price-discount-number {
+	color: #FFF;
 }
 span.imagify-dollars {
 	color: #1F2332;
@@ -3081,7 +3114,7 @@ span.imagify-dollars {
 	padding-top: 0;
 }
 .imagify-offer-onetime .imagify-dollars {
-	vertical-align: -7px;
+	vertical-align: -1px;
 }
 .imagify-price-big,
 .imagify-price-mini {
@@ -3210,6 +3243,59 @@ span.imagify-price-by {
 }
 .imagify-canbe-validate [id="imagify-coupon-validate"] {
 	transform: translateX(45px);
+}
+
+/* Promotion/Discount section */
+.imagify-modal-section + .imagify-modal-promotion {
+	margin-top: -1em;
+}
+.imagify-modal-promotion {
+	position: relative;
+	overflow: hidden;
+	display: none;
+	align-items: center;
+	padding: 15px 25px;
+	background: #604D90;
+	text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+.imagify-modal-promotion.active {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+[id="imagify-pricing-tab-onetime"] .imagify-modal-promotion {
+	margin-bottom: 4em;
+}
+.imagify-modal-promotion:before {
+	content: "\f488";
+	position: absolute;
+	top: 28px;
+	left: 8%;
+	font-family: "dashicons";
+	font-size: 90px;
+	color: #8476A9;
+	text-shadow: none;
+}
+.imagify-modal-promotion p {
+	position: relative;
+	margin: .2em 0;
+	color: #FFF;
+}
+.imagify-promo-title {
+	-ms-flex-preferred-size: 100%;
+	flex-basis: 100%;
+	text-transform: uppercase;
+	font-size: 20px;
+	font-weight: bold;
+	letter-spacing: 0.125em;
+}
+.imagify-until-date {
+	-ms-flex-preferred-size: 200px;
+	flex-basis: 200px;
+	text-align: right;
+}
+.imagify-until-date strong {
+	color: #FFF;
 }
 
 
