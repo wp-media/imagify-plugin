@@ -443,13 +443,13 @@ jQuery(function($){
 										}
 
 										// Autofill coupon code & Show banner if discount is active
+										window.imagify_discount_datas = promo_datas;
+										
 										if ( promo_datas.is_active ) {
 											var $banners = $( '.imagify-modal-promotion' ),
 												date_end = promo_datas.date_end.split('T')[0],
 												promo    = promo_datas.coupon_value;
 												discount = promo_datas.coupon_type === 'percentage' ? promo + '%' : '$' + promo;
-
-											window.imagify_discount_datas = promo_datas;
 
 											// fill coupon code
 											$( '#imagify-coupon-code' ).val( promo_datas.label ).attr( 'readonly', true );
