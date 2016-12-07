@@ -402,8 +402,8 @@ jQuery(function($){
 											promo_datas  = discount_response.data,
 											monthlies    = prices_datas.monthlies,
 											onetimes     = prices_datas.onetimes,
-											mo_user_cons = images_datas.average_month_size.raw / 1000000, // 1000000 in MB,
-											ot_user_cons = images_datas.total_library_size.raw / 1000000, // in MB,
+											mo_user_cons = Math.round( images_datas.average_month_size.raw / 1000000 ), // 1000000 in MB,
+											ot_user_cons = Math.round( images_datas.total_library_size.raw / 1000000 ), // in MB,
 											$mo_tpl      = $('#imagify-offer-monthly-template'),
 											$ot_tpl      = $('#imagify-offer-onetime-template'),
 											ot_clone     = $ot_tpl.html(),
@@ -421,10 +421,10 @@ jQuery(function($){
 
 										// Switch offers title is < 25mb
 										if ( mo_user_cons < 25 &&  ot_user_cons < 25 ) {
-											$( '.imagify-pre-checkout-offers .imagify-modal-title' ).addClass( '.imagify-enough-free' );
+											$( '.imagify-pre-checkout-offers .imagify-modal-title' ).addClass( 'imagify-enough-free' );
 											$('.imagify-offer-selected' ).removeClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).removeAttr( 'checked' );
 										} else {
-											$( '.imagify-enough-free' ).removeClass( '.imagify-enough-free' );
+											$( '.imagify-enough-free' ).removeClass( 'imagify-enough-free' );
 											$('.imagify-offer-selected' ).addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).attr( 'checked', 'checked' );
 										}
 
