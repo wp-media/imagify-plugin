@@ -544,8 +544,6 @@ additionnal Gb', 'imagify' ), '<span class="imagify-price-add-data"></span>' ); 
 							<div class="imagify-modal-section section-gray">
 								<p><?php esc_html_e( 'One time plans are useful if you have a lots of existing images which need to be optimized. You can use it for bulk optimizing all your past images. You will pay only once.', 'imagify' ); ?></p>
 							</div>
-							
-							<?php imagify_print_discount_banner(); ?>
 
 							<div class="imagify-pricing-table imagify-month-selected">
 							<script type="text/template" id="imagify-offer-onetime-template"><div class="imagify-offer-line imagify-flex-table imagify-offer-onetimes">
