@@ -23,6 +23,7 @@ define( 'IMAGIFY_SETTINGS_SLUG'			 , IMAGIFY_SLUG . '_settings' );
 define( 'IMAGIFY_WEB_MAIN'	 			 , 'https://imagify.io' );
 define( 'IMAGIFY_APP_MAIN'	 			 , 'https://app.imagify.io' );
 define( 'IMAGIFY_PAYMENT_URL'            , IMAGIFY_APP_MAIN . '/#/plugin/' );
+define( 'IMAGIFY_API_URL'                , IMAGIFY_APP_MAIN . '/api/' );
 define( 'IMAGIFY_FILE'            		 , __FILE__ );
 define( 'IMAGIFY_PATH'       			 , realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
 define( 'IMAGIFY_INC_PATH'   			 , realpath( IMAGIFY_PATH . 'inc/' ) . '/' );

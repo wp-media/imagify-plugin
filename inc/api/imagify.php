@@ -147,7 +147,7 @@ class Imagify {
     /**
      * The Imagify API endpoint
      */
-    const API_ENDPOINT = 'https://app.imagify.io/api/';
+    const API_ENDPOINT = IMAGIFY_API_URL;
 
     /**
      * The Imagify API key
