@@ -305,6 +305,8 @@ jQuery(function($){
 				
 				// discount prices
 				if ( promo.is_active && promo.coupon_type === 'percentage' && type === 'monthly' ) {
+					
+					$offer.find('.imagify-price-block').prev( '.imagify-price-discount' ).remove();
 					$offer.find('.imagify-price-block').before( imagify_get_html_discount_price( pcsd, 'monthly' ) );
 				}
 
