@@ -287,7 +287,8 @@ jQuery(function($){
 					pcsd  = pcs; // used if discount is active
 
 				// change pricing value only if discount in percentage is active
-				if ( promo.is_active && promo.coupon_type === 'percentage' ) {
+				// and if offer is a monthly and not a onetime
+				if ( promo.is_active && promo.coupon_type === 'percentage' && type === 'monthly' ) {
 					var percent = ( 100 - promo.coupon_value ) / 100;
 					pcs = type === 'monthly' ? { monthly: mon * percent, yearly: Math.round( ( ann * percent ) / 12 * 100 ) / 100 } : cos * percent;
 				}
@@ -303,7 +304,7 @@ jQuery(function($){
 				$offer.find('.imagify-number-block').html( imagify_get_html_price( pcs, 'monthly' ) );
 				
 				// discount prices
-				if ( promo.is_active && promo.coupon_type === 'percentage' ) {
+				if ( promo.is_active && promo.coupon_type === 'percentage' && type === 'monthly' ) {
 					$offer.find('.imagify-price-block').before( imagify_get_html_discount_price( pcsd, 'monthly' ) );
 				}
 
@@ -444,7 +445,7 @@ jQuery(function($){
 
 										// Autofill coupon code & Show banner if discount is active
 										window.imagify_discount_datas = promo_datas;
-										
+
 										if ( promo_datas.is_active ) {
 											var $banners = $( '.imagify-modal-promotion' ),
 												date_end = promo_datas.date_end.split('T')[0],
