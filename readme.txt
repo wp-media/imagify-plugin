@@ -3,7 +3,7 @@ Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.6.1
-Stable tag: 1.6.2
+Stable tag: 1.6.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,7 +45,7 @@ With the backup option, you can change your mind whenever you want by restoring 
 > "Clearly Imagify is the most awesome WordPress plugin to compress images on your website! A must try" — [Eric Walter](https://twitter.com/EricWaltR/status/679053496382038016)
 >
 
-= Does Imagify is Free? =
+= Is Imagify Free? =
 
 You can optimize for free 25MB of images (about 250 images) every month and you will receive a 25MB bonus upon registration.
 
@@ -135,6 +135,10 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.3 =
+* Improvement
+ * The discount is now automatically applied in when you buy from the plugin and a promotion is active
+
 = 1.6.2 =
 * Bug Fix
  * Correctly display the modal when clicking on the plan suggestion button on bulk optimisation page
