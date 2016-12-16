@@ -706,6 +706,25 @@ function _imagify_get_estimated_sizes() {
 	}
 }
 
+
+/**
+ * Get current discount promotion to display information on payment modal
+ *
+ * @return  JSON WP formatted answer
+ *
+ * @since  1.6.3
+ * @author Geoffrey Crofte
+ */
+add_action( 'wp_ajax_imagify_get_discount', '_imagify_get_discount' );
+function _imagify_get_discount() {
+	if ( check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false) ) {
+		$discount = check_imagify_discount();
+		wp_send_json_success( $discount );
+	} else {
+		wp_send_json_error( 'check_ajax_referer for getting discount failed' );
+	}
+}
+
 /**
  * Estimate sizes and update the options values for them
  *
