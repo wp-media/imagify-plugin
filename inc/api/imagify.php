@@ -101,14 +101,27 @@ function get_imagify_all_prices() {
 }
 
 /**
- * Check Coupon Code
- *
+ * Check if Coupon Code exists
+ * 
+ * @param  string $coupon the coupon code to check
  * @return object
+ * 
  * @since  1.6
  * @author Geoffrey Crofte
  **/
 function check_imagify_coupon_code( $coupon ) {
     return Imagify()->checkCouponCode( $coupon );
+}
+
+/**
+ * Check if Discount/Promotion is available
+ *
+ * @return object
+ * @since  1.6.3
+ * @author Geoffrey Crofte
+ **/
+function check_imagify_discount() {
+    return Imagify()->checkDiscount();
 }
 
 /*
@@ -341,6 +354,15 @@ class Imagify {
      */
     public function checkCouponCode( $coupon ) {
         return $this->httpCall( 'coupons/' . $coupon . '/' );
+    }
+
+    /**
+     * Get information about current discount
+     *
+     * @return object
+     */
+    public function checkDiscount() {
+        return $this->httpCall( 'pricing/discount/' );
     }
 
     /*

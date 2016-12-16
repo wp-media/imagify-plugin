@@ -216,7 +216,8 @@ jQuery(function($){
 	/**
 	 * Payment Modal
 	 * 
-	 * @since  1.5
+	 * @since  1.6
+	 * @since  1.6.3 include discount campaign
 	 * @author Geoffrey
 	 */
 	
@@ -232,26 +233,65 @@ jQuery(function($){
 						m = monthly.split('.'),
 						y = yearly.split('.');
 
-					output += '<span class="imagify-switch-my"><span aria-hidden="' + ( period === 'monthly' ? 'false' : 'true' ) + '" class="imagify-monthly"><span class="imagify-price-big">' + m[0] + '</span> <span class="imagify-price-mini">.' + ( m[1].length === 1 ? m[1] + '0' : m[1] ) + '</span></span> <span aria-hidden="' + ( period === 'yearly' ? 'false' : 'true' ) + '" class="imagify-yearly"><span class="imagify-price-big">' + y[0] + '</span> <span class="imagify-price-mini">.' + ( y[1].length === 1 ? y[1] + '0' : y[1] ) + '</span></span></span>';
+					output += '<span class="imagify-switch-my"><span aria-hidden="' + ( period === 'monthly' ? 'false' : 'true' ) + '" class="imagify-monthly"><span class="imagify-price-big">' + m[0] + '</span> <span class="imagify-price-mini">.' + ( m[1].length === 1 ? m[1] + '0' : ( '' + m[1] ).substring( 0, 2 )  ) + '</span></span> <span aria-hidden="' + ( period === 'yearly' ? 'false' : 'true' ) + '" class="imagify-yearly"><span class="imagify-price-big">' + y[0] + '</span> <span class="imagify-price-mini">.' + ( y[1].length === 1 ? y[1] + '0' : ( '' + y[1] ).substring( 0, 2 ) ) + '</span></span></span>';
 				} else {
 					var content = content + "", // be sure content is a string
 						v = content.split('.');
 
-					output += '<span class="imagify-price-big">' + v[0] + '</span> <span class="imagify-price-mini">.' + ( v[1].length === 1 ? v[1] + '0' : v[1] ) + '</span>';
+					output += '<span class="imagify-price-big">' + v[0] + '</span> <span class="imagify-price-mini">.' + ( v[1].length === 1 ? v[1] + '0' : ( '' + v[1] ).substring( 0, 2 ) ) + '</span>';
+				}
+
+				return output;
+			},
+			imagify_get_html_discount_price = function( content, period ) {
+				if ( ! period ) period = null;
+				output = '';
+
+				if ( typeof content === 'object' ) {
+					var monthly = content.monthly + "",
+						yearly = content.yearly + "";
+
+					output += '<span class="imagify-price-discount">'
+								+ '<span class="imagify-price-discount-dollar">$</span>'
+								+ '<span class="imagify-switch-my">'
+									+ '<span aria-hidden="' + ( period === 'monthly' ? 'false' : 'true' ) + '" class="imagify-monthly">'
+										+ '<span class="imagify-price-discount-number">' + monthly + '</span>'
+									+ '</span>'
+									+ '<span aria-hidden="' + ( period === 'yearly' ? 'false' : 'true' ) + '" class="imagify-yearly">'
+										+ '<span class="imagify-price-discount-number">' + yearly + '</span>'
+									+ '</span>'
+								+ '</span>'
+							+ '</span>';
+				} else {
+					var content = content + ""; // be sure content is a string
+
+					output += '<span class="imagify-price-discount">'
+								+ '<span class="imagify-price-discount-dollar">$</span>'
+								+ '<span class="imagify-price-discount-number">' + content + '</span>'
+							+ '</span>';
 				}
 
 				return output;
 			},
 			imagify_populate_offer = function ( $offer, datas, type, classes ) {
-				var add = datas.additional_gb,	// 4 (monthly)
-					ann = datas.annual_cost,	// 49.9 (monthly)
-					id  = datas.id,				// 3 (monthly/onetime)
-					lab = datas.label,			// 'lite' (monthly/onetime)
-					mon = datas.monthly_cost,	// 4.99 (monthly)
-					quo = datas.quota,			// 1000 (MB) - 5000 images (monthly/onetime)
-					cos = datas.cost,           // 3.49 (onetime)
-					name= ( quo >= 1000 ? quo/1000 + ' GB' : quo + ' MB' ),
-					pcs = type === 'monthly' ? { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 } : cos;
+				var promo = window.imagify_discount_datas,
+					add   = datas.additional_gb,   // 4 (monthly)
+					ann   = datas.annual_cost,	   // 49.9 (monthly)
+					id    = datas.id,			   // 3 (monthly/onetime)
+					lab   = datas.label,		   // 'lite' (monthly/onetime)
+					mon   = datas.monthly_cost,	   // 4.99 (monthly)
+					quo   = datas.quota,		   // 1000 (MB) - 5000 images (monthly/onetime)
+					cos   = datas.cost,            // 3.49 (onetime)
+					name  = ( quo >= 1000 ? quo/1000 + ' GB' : quo + ' MB' ),
+					pcs   = type === 'monthly' ? { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 } : cos,
+					pcsd  = pcs; // used if discount is active
+
+				// change pricing value only if discount in percentage is active
+				// and if offer is a monthly and not a onetime
+				if ( promo.is_active && promo.coupon_type === 'percentage' && type === 'monthly' ) {
+					var percent = ( 100 - promo.coupon_value ) / 100;
+					pcs = type === 'monthly' ? { monthly: mon * percent, yearly: Math.round( ( ann * percent ) / 12 * 100 ) / 100 } : cos * percent;
+				}
 
 				if ( typeof classes !== 'undefined' ) {
 					$offer.addClass( 'imagify-' + type + '-' + lab + classes);
@@ -262,6 +302,13 @@ jQuery(function($){
 
 				// main prices (pcs can be an object or a string)
 				$offer.find('.imagify-number-block').html( imagify_get_html_price( pcs, 'monthly' ) );
+				
+				// discount prices
+				if ( promo.is_active && promo.coupon_type === 'percentage' && type === 'monthly' ) {
+					
+					$offer.find('.imagify-price-block').prev( '.imagify-price-discount' ).remove();
+					$offer.find('.imagify-price-block').before( imagify_get_html_discount_price( pcsd, 'monthly' ) );
+				}
 
 				// nb images
 				$offer.find('.imagify-approx-nb').text( quo * 5 );
@@ -322,168 +369,222 @@ jQuery(function($){
 					imgs_rq_datas = {
 						action: 'imagify_get_images_counts',
 						imagifynonce: nonce
+					},
+					prices_rq_discount = {
+						action: 'imagify_get_discount',
+						imagifynonce: nonce
 					};
 
 				$modal.find('.imagify-modal-loader').hide().show();
 
+				/*
+					TODO: change the way to waterfall requests
+					Use setInterval + counter instead
+				 */
+
 				// get the true prices
 				$.post( ajaxurl, prices_rq_datas, function( prices_response ) {
+
 					if ( prices_response.success ) {
 
 						// get the image estimates sizes
 						$.post( ajaxurl, imgs_rq_datas, function( imgs_response ) {
+
+							if ( imgs_response.success ) {
+
+								// get the discount informations
+								$.post( ajaxurl, prices_rq_discount, function( discount_response ) {
+
+									if ( discount_response.success ) {
 							
-							var images_datas = imgs_response.data
-								prices_datas = prices_response.data,
-								monthlies    = prices_datas.monthlies,
-								onetimes     = prices_datas.onetimes,
-								mo_user_cons = images_datas.average_month_size.raw / 1000000, // 1000000 in MB,
-								ot_user_cons = images_datas.total_library_size.raw / 1000000, // in MB,
-								$mo_tpl      = $('#imagify-offer-monthly-template'),
-								$ot_tpl      = $('#imagify-offer-onetime-template'),
-								ot_clone     = $ot_tpl.html(),
-								mo_clone     = $mo_tpl.html(),
-								ot_html      = '',
-								mo_html      = '',
-								ot_suggested = false,
-								mo_suggested = false,
-								$estim_block = $( '.imagify-estimation-block' );
+										var images_datas = imgs_response.data
+											prices_datas = prices_response.data,
+											promo_datas  = discount_response.data,
+											monthlies    = prices_datas.monthlies,
+											onetimes     = prices_datas.onetimes,
+											mo_user_cons = Math.round( images_datas.average_month_size.raw / 1000000 ), // 1000000 in MB,
+											ot_user_cons = Math.round( images_datas.total_library_size.raw / 1000000 ), // in MB,
+											$mo_tpl      = $('#imagify-offer-monthly-template'),
+											$ot_tpl      = $('#imagify-offer-onetime-template'),
+											ot_clone     = $ot_tpl.html(),
+											mo_clone     = $mo_tpl.html(),
+											ot_html      = '',
+											mo_html      = '',
+											ot_suggested = false,
+											mo_suggested = false,
+											$estim_block = $( '.imagify-estimation-block' );
 
-							// Refresh Analyzing block
-							$estim_block.removeClass( 'imagify-analyzing' );
-							$estim_block.find( '.average-month-size' ).text( images_datas.average_month_size.human );
-							$estim_block.find( '.total-library-size' ).text( images_datas.total_library_size.human );
+										// Refresh Analyzing block
+										$estim_block.removeClass( 'imagify-analyzing' );
+										$estim_block.find( '.average-month-size' ).text( images_datas.average_month_size.human );
+										$estim_block.find( '.total-library-size' ).text( images_datas.total_library_size.human );
 
-							// Switch offers title is < 25mb
-							if ( mo_user_cons < 25 &&  ot_user_cons < 25 ) {
-								$( '.imagify-pre-checkout-offers .imagify-modal-title' ).addClass( '.imagify-enough-free' );
-								$('.imagify-offer-selected' ).removeClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).removeAttr( 'checked' );
+										// Switch offers title is < 25mb
+										if ( mo_user_cons < 25 &&  ot_user_cons < 25 ) {
+											$( '.imagify-pre-checkout-offers .imagify-modal-title' ).addClass( 'imagify-enough-free' );
+											$('.imagify-offer-selected' ).removeClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).removeAttr( 'checked' );
+										} else {
+											$( '.imagify-enough-free' ).removeClass( 'imagify-enough-free' );
+											$('.imagify-offer-selected' ).addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).attr( 'checked', 'checked' );
+										}
+
+										// Don't create prices table if something went wrong during request
+										if ( monthlies === null || onetimes === null ) {
+											var $offers_block = $( '.imagify-pre-checkout-offers' );
+											
+											// hide main content
+											$offers_block.hide().attr( 'aria-hidden', true );
+
+											// show error message
+											$offers_block.closest('.imagify-modal-views').find('.imagify-popin-message').remove();
+											$offers_block.after('<div class="imagify-popin-message imagify-error"><p>' + imagifyAdmin.labels.errorPriceAPI + '</p></div>');
+
+											// show the modal content
+											$modal.find('.imagify-modal-loader').fadeOut(300);
+
+											return;
+										}
+
+										// Autofill coupon code & Show banner if discount is active
+										window.imagify_discount_datas = promo_datas;
+
+										if ( promo_datas.is_active ) {
+											var $banners = $( '.imagify-modal-promotion' ),
+												date_end = promo_datas.date_end.split('T')[0],
+												promo    = promo_datas.coupon_value;
+												discount = promo_datas.coupon_type === 'percentage' ? promo + '%' : '$' + promo;
+
+											// fill coupon code
+											$( '#imagify-coupon-code' ).val( promo_datas.label ).attr( 'readonly', true );
+
+											// show banners
+											$banners.addClass( 'active' ).attr( 'aria-hidden', 'false' );
+
+											// populate banners
+											$banners.find( '.imagify-promotion-number' ).text( discount );
+											$banners.find( '.imagify-promotion-date' ).text( date_end );
+											
+
+											// auto validate coupon
+											imagify_check_coupon();
+										}
+
+										/**
+										 * Below lines will build Plan and Onetime offers lists
+										 * It will also pre-select a Plan and Onetime in both of views: pre-checkout and pricing tables
+										 */
+
+										// Now, do the MONTHLIES Markup
+										$.each( monthlies, function( index, value ) {
+											
+											// if it's free, don't show it
+											if ( value.label === 'free' ) {
+												return true; // continue-like (but $.each is not a loop… so)
+											}
+
+											var $tpl= $( mo_clone ).clone();
+
+											// if offer is too big (far) than estimated needs, don't show the offer
+											if ( mo_suggested !== false && ( index - mo_suggested ) > 2 ) {
+												return true;
+											}
+
+											// parent classes
+											classes = '';
+											if ( ( mo_user_cons < value.quota && mo_suggested === false ) ) {
+												classes = ' imagify-offer-selected';
+												mo_suggested = index;
+
+												// add this offer as pre-selected item in pre-checkout view
+												var $offer = $('.imagify-pre-checkout-offers').find('.imagify-offer-monthly');
+
+												// populate the Pre-checkout view depending on user_cons
+												imagify_populate_offer( $offer, value, 'monthly' );
+											}
+
+											// populate each offer
+											$tpl = imagify_populate_offer( $tpl, value, 'monthly', classes );
+
+											// complete Monthlies HTML
+											mo_html += $tpl[0].outerHTML;
+
+										});
+
+										// Deal with the case of too much small offers (before recommanded one)
+										var prev_offers = $( mo_html ).filter('.imagify-offer-selected').prevAll();
+
+										// if we have more than 1 previous offer
+										if ( prev_offers.length > 1 ) {
+											var nb_to_remove  = prev_offers.length - 1,
+												$total_offers = $( mo_html );
+
+											// remove too far previous offer
+											for ( i = 0; i < nb_to_remove; i++ ) {
+												delete $total_offers[ i ]
+											}
+
+											// rebuild mo_html with removed items
+											mo_html = '';
+											for ( j = 0; j < $total_offers.length; j++) {
+												mo_html += $( '<div/>' ).append($total_offers[j]).html();
+											}
+										}
+
+										// Do the ONETIMES Markup
+										$.each( onetimes, function( index, value ) {
+											var $tpl   = $( ot_clone ).clone(),
+												$offer = $( '.imagify-pre-checkout-offers' ).find( '.imagify-offer-onetime' );
+
+											// parent classes
+											classes = '';
+											if ( ( ot_user_cons < value.quota && ot_suggested === false ) ) {
+												classes = ' imagify-offer-selected';
+												ot_suggested = true;
+
+												// populate the Pre-checkout view depending on user_cons
+												imagify_populate_offer( $offer, value, 'onetime' );
+											}
+											
+											// if too big, populate with the biggest offer available
+											// TODO: create custom offers at this point
+											if ( index === onetimes.length-1 && ot_suggested === false ) {
+												// populate the Pre-checkout view depending on user_cons
+												var tvalue = onetimes[ onetimes.length - 1 ];
+												imagify_populate_offer( $offer, tvalue, 'onetime' );
+											}
+
+											// populate each offer
+											$tpl = imagify_populate_offer( $tpl, value, 'onetime', classes );
+
+											// complete Onetimes HTML
+											ot_html += $tpl[0].outerHTML;
+										});
+
+										// Fill pricing tables
+										if ( $mo_tpl.parent().find( '.imagify-offer-line' ) ) {
+											$mo_tpl.parent().find( '.imagify-offer-line' ).remove();
+										}
+										$mo_tpl.before( mo_html );
+
+										if ( $ot_tpl.parent().find( '.imagify-offer-line' ) ) {
+											$ot_tpl.parent().find( '.imagify-offer-line' ).remove();
+										}
+										$ot_tpl.before( ot_html );
+
+										// Show the content 
+										$modal.find( '.imagify-modal-loader' ).fadeOut( 300 );
+
+									} else {
+										// TODO: replace modal content by any information
+										// an error occurred
+									}
+
+								}); // third AJAX request to get discount information
+
 							} else {
-								$( '.imagify-enough-free' ).removeClass( '.imagify-enough-free' );
-								$('.imagify-offer-selected' ).addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).attr( 'checked', 'checked' );
+								// TODO: replace modal content by any information
+								// an error occurred
 							}
-
-							// Don't create prices table if something went wrong during request
-							if ( monthlies === null || onetimes === null ) {
-								var $offers_block = $( '.imagify-pre-checkout-offers' );
-								
-								// hide main content
-								$offers_block.hide().attr( 'aria-hidden', true );
-
-								// show error message
-								$offers_block.closest('.imagify-modal-views').find('.imagify-popin-message').remove();
-								$offers_block.after('<div class="imagify-popin-message imagify-error"><p>' + imagifyAdmin.labels.errorPriceAPI + '</p></div>');
-
-								// show the modal content
-								$modal.find('.imagify-modal-loader').fadeOut(300);
-
-								return;
-							}
-
-							/**
-							 * Below lines will build Plan and Onetime offers lists
-							 * It will also pre-select a Plan and Onetime in both of views: pre-checkout and pricing tables
-							 */
-
-							// Now, do the MONTHLIES Markup
-							$.each( monthlies, function( index, value ) {
-								
-								// if it's free, don't show it
-								if ( value.label === 'free' ) {
-									return true; // continue-like (but $.each is not a loop… so)
-								}
-
-								var $tpl= $( mo_clone ).clone();
-
-								// if offer is too big (far) than estimated needs, don't show the offer
-								if ( mo_suggested !== false && ( index - mo_suggested ) > 2 ) {
-									return true;
-								}
-
-								// parent classes
-								classes = '';
-								if ( ( mo_user_cons < value.quota && mo_suggested === false ) ) {
-									classes = ' imagify-offer-selected';
-									mo_suggested = index;
-
-									// add this offer as pre-selected item in pre-checkout view
-									var $offer = $('.imagify-pre-checkout-offers').find('.imagify-offer-monthly');
-
-									// populate the Pre-checkout view depending on user_cons
-									imagify_populate_offer( $offer, value, 'monthly' );
-								}
-
-								// populate each offer
-								$tpl = imagify_populate_offer( $tpl, value, 'monthly', classes );
-
-								// complete Monthlies HTML
-								mo_html += $tpl[0].outerHTML;
-
-							});
-
-							// Deal with the case of too much small offers (before recommanded one)
-							var prev_offers = $( mo_html ).filter('.imagify-offer-selected').prevAll();
-
-							// if we have more than 1 previous offer
-							if ( prev_offers.length > 1 ) {
-								var nb_to_remove  = prev_offers.length - 1,
-									$total_offers = $( mo_html );
-
-								// remove too far previous offer
-								for ( i = 0; i < nb_to_remove; i++ ) {
-									delete $total_offers[ i ]
-								}
-
-								// rebuild mo_html with removed items
-								mo_html = '';
-								for ( j = 0; j < $total_offers.length; j++) {
-									mo_html += $( '<div/>' ).append($total_offers[j]).html();
-								}
-							}
-
-							// Do the ONETIMES Markup
-							$.each( onetimes, function( index, value ) {
-								var $tpl   = $( ot_clone ).clone(),
-									$offer = $( '.imagify-pre-checkout-offers' ).find( '.imagify-offer-onetime' );
-
-								// parent classes
-								classes = '';
-								if ( ( ot_user_cons < value.quota && ot_suggested === false ) ) {
-									classes = ' imagify-offer-selected';
-									ot_suggested = true;
-
-									// populate the Pre-checkout view depending on user_cons
-									imagify_populate_offer( $offer, value, 'onetime' );
-								}
-								
-								// if too big, populate with the biggest offer available
-								// TODO: create custom offers at this point
-								if ( index === onetimes.length-1 && ot_suggested === false ) {
-									// populate the Pre-checkout view depending on user_cons
-									var tvalue = onetimes[ onetimes.length - 1 ];
-									imagify_populate_offer( $offer, tvalue, 'onetime' );
-								}
-
-								// populate each offer
-								$tpl = imagify_populate_offer( $tpl, value, 'onetime', classes );
-
-								// complete Onetimes HTML
-								ot_html += $tpl[0].outerHTML;
-							});
-
-							// Fill pricing tables
-							if ( $mo_tpl.parent().find( '.imagify-offer-line' ) ) {
-								$mo_tpl.parent().find( '.imagify-offer-line' ).remove();
-							}
-							$mo_tpl.before( mo_html );
-
-							if ( $ot_tpl.parent().find( '.imagify-offer-line' ) ) {
-								$ot_tpl.parent().find( '.imagify-offer-line' ).remove();
-							}
-							$ot_tpl.before( ot_html );
-
-							// Show the content 
-							$modal.find( '.imagify-modal-loader' ).fadeOut( 300 );
 
 						}); // second AJAX request for image estimation sizes
 
@@ -709,18 +810,24 @@ jQuery(function($){
 		 * - On blur
 		 * - On Enter or Spacebar press
 		 * - On click OK button
+		 *
+		 * @since  1.6.3 Only if field hasn't readonly attribute (discount auto-applied)
 		 */
 		$( '#imagify-coupon-code' ).on( 'blur.imagify', function() {
-			imagify_check_coupon();
-		} ).on( 'keydown.imagify', function( e ) {
-			if ( e.keyCode === 13 || e.keyCode === 32 ) {
+			if ( ! $(this).attr('readonly') ) {
 				imagify_check_coupon();
-				return false;
 			}
-			if ( $(this).val().length >= 3 ) {
-				$(this).closest( '.imagify-coupon-input' ).addClass( 'imagify-canbe-validate' );
-			} else {
-				$(this).closest( '.imagify-coupon-input' ).removeClass( 'imagify-canbe-validate' );
+		} ).on( 'keydown.imagify', function( e ) {
+			if ( ! $(this).attr('readonly') ) {
+				if ( e.keyCode === 13 || e.keyCode === 32 ) {
+					imagify_check_coupon();
+					return false;
+				}
+				if ( $(this).val().length >= 3 ) {
+					$(this).closest( '.imagify-coupon-input' ).addClass( 'imagify-canbe-validate' );
+				} else {
+					$(this).closest( '.imagify-coupon-input' ).removeClass( 'imagify-canbe-validate' );
+				}
 			}
 		} );
 
@@ -774,6 +881,7 @@ jQuery(function($){
 				$target_line	= ( is_onetime ? $pre_view.find('.imagify-offer-onetime') : $pre_view.find('.imagify-offer-monthly') ),
 				period		= ( is_onetime ? null : ( ( $_this.closest('.imagify-pricing-table').hasClass('imagify-month-selected') ) ? 'monthly' : 'yearly') ),
 				price		= ( is_onetime ? imagify_get_html_price( datas[ Object.keys( datas )[0] ].price ) : imagify_get_html_price ( datas[ Object.keys( datas )[0] ].prices, period ) ),
+				discount    = $offer_line.find('.imagify-price-discount').html(),
 				imgs		= $offer_line.find('.imagify-approx-nb').text(),
 				offer_size	= $offer_line.find('.imagify-offer-size').text(),
 				monthly_txt = ( ! is_onetime ? '<span class="imagify-price-by">' + $offer_line.find('.imagify-price-by').text() + '</span>' : '' );
@@ -784,6 +892,9 @@ jQuery(function($){
 
 			// change price (+ "/month" if found in monthly plans)
 			$target_line.find('.imagify-number-block').html( price + monthly_txt )
+
+			// change discount
+			$target_line.find('.imagify-price-discount').html( discount );
 
 			// change approx images nb
 			$target_line.find('.imagify-approx-nb').text( imgs );
