@@ -138,7 +138,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 == Changelog ==
 = 1.6.4 =
 * Improvement
- * Provide a link to optimize in higher level when an image eis already optimized.
+ * Provide a link to optimize in higher level when an image is already optimized.
  * Add a dedicated message for 413 HTTP error when the image is too big to be uploaded on our servers.
 
 = 1.6.3 =
