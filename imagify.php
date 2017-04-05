@@ -3,7 +3,7 @@
 Plugin Name: Imagify
 Plugin URI: https://wordpress.org/plugins/imagify/
 Description: Dramaticaly reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwith using Imagify, the new most advanced image optimization tool.
-Version: 1.6.3
+Version: 1.6.4
 Author: WP Media
 Author URI: http://wp-media.me
 Licence: GPLv2
@@ -17,7 +17,7 @@ Copyright 2016 WP Media
 defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
 
 // Imagify defines
-define( 'IMAGIFY_VERSION'	 			 , '1.6.3' );
+define( 'IMAGIFY_VERSION'	 			 , '1.6.4' );
 define( 'IMAGIFY_SLUG'		 			 , 'imagify' );
 define( 'IMAGIFY_SETTINGS_SLUG'			 , IMAGIFY_SLUG . '_settings' );
 define( 'IMAGIFY_WEB_MAIN'	 			 , 'https://imagify.io' );
