@@ -140,6 +140,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Improvement
  * Provide a link to optimize in higher level when an image eis already optimized.
  * Add a dedicated message for 413 HTTP error when the image is too big to be uploaded on our servers.
+
 = 1.6.3 =
 * Improvement
  * The discount is now automatically applied in when you buy from the plugin and a promotion is active
