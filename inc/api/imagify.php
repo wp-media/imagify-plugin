@@ -102,10 +102,10 @@ function get_imagify_all_prices() {
 
 /**
  * Check if Coupon Code exists
- * 
+ *
  * @param  string $coupon the coupon code to check
  * @return object
- * 
+ *
  * @since  1.6
  * @author Geoffrey Crofte
  **/
@@ -217,7 +217,7 @@ class Imagify {
 			'method'    => 'POST',
 			'post_data' => $data
 		);
-		
+
         return $this->httpCall( 'users/', $args );
     }
 
@@ -281,9 +281,9 @@ class Imagify {
         $args = array(
 	    	'method'    => 'PUT',
 	    	'post_data' => $data,
-	    	'timeout'   => 10  
+	    	'timeout'   => 10
         );
-        
+
         return $this->httpCall( 'users/me/', $args );
     }
 
@@ -297,12 +297,12 @@ class Imagify {
 		if ( isset( $this->headers['Accept'], $this->headers['Content-Type'] ) ) {
 	        unset( $this->headers['Accept'], $this->headers['Content-Type'] );
         }
-		
+
 		$args = array(
 			'method'    => 'POST',
 			'post_data' => $data
 		);
-		
+
 		return $this->httpCall( 'upload/', $args );
     }
 
@@ -382,10 +382,10 @@ class Imagify {
      * @return object
      **/
     private function httpCall( $url, $args = array() ) {
-        $default = array( 
-        	'method'    => 'GET', 
-        	'post_data' => null, 
-        	'timeout'   => 45 
+        $default = array(
+        	'method'    => 'GET',
+        	'post_data' => null,
+        	'timeout'   => 45
         );
 		$args = array_merge( $default, $args );
 
@@ -421,6 +421,8 @@ class Imagify {
 
 		if ( 200 != $http_code && isset( $response->code, $response->detail ) ) {
 			return new WP_Error( $http_code, $response->detail );
+		} elseif ( 413 == $http_code ) {
+			return new WP_Error( $http_code, 'Your image is too big to be uploaded on our server.' );
 		} elseif ( 200 != $http_code ) {
             $http_code = (int) $http_code;
             $error     = '' != $error ? ' - ' . htmlentities( $error ) : '';

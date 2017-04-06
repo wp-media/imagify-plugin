@@ -2,8 +2,8 @@
 Contributors: wp_media
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.7
-Stable tag: 1.6.3
+Tested up to: 4.7.3
+Stable tag: 1.6.4
 
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -14,31 +14,31 @@ Dramatically reduce image file sizes without losing quality, make your website l
 
 Speed up your website with lighter images without losing quality.
 
-Imagify is the most advanced image compression tool, you can now use this power directly in WordPress. 
+Imagify is the most advanced image compression tool, you can now use this power directly in WordPress.
 After enabling it all your images including thumbnails and retina images from WP Retina x2 will be automatically optimized on the fly when you will add in into WordPress.
 
 WooCommerce and NextGen Gallery compatible.
-​
+
 = What is Image Compression? =
 
 Learn more about image compression, check that: <a href="https://imagify.io/images-compression">https://imagify.io/images-compression</a>
 
 = Why use Imagify to optimize you images? =
 
-You already have a lots of unoptimized images? Not a problem, you will love the Bulk Optimizer to optimize all your existing images in one click.  
-​  
-Imagify can directly resize your images, **you won't have to lose time anymore on resizing your images before uploading them**.  
-​  
-Three level of compression are available:  
-​  
-- Normal, a lossless compression algorithm. The image quality won't be altered at all.  
-- Agressive, a lossy compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all.  
-- Ultra, our strongest compression method using a lossy algorithm.  
-​
+You already have a lots of unoptimized images? Not a problem, you will love the Bulk Optimizer to optimize all your existing images in one click.
+
+Imagify can directly resize your images, **you won't have to lose time anymore on resizing your images before uploading them**.
+
+Three level of compression are available:
+
+- Normal, a lossless compression algorithm. The image quality won't be altered at all.
+- Agressive, a lossy compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all.
+- Ultra, our strongest compression method using a lossy algorithm.
+
 With the backup option, you can change your mind whenever you want by restoring your images to their original version or optimize them to another compression level.
 
 = What our users think of Imagify? =
-  
+
 > "Imagify is an awesome tool that is powerful & easy to use. It's fast, rivals and surpasses other established plugins/software. Awesome!" — [Simon Harper](https://twitter.com/SRHDesign/status/663758140505235456)
 >
 > "If you want to "squeeze" your images as much as possible and "trim out" your website on the highest professional level... Imagify" — [Ivica Delic](https://twitter.com/Free_LanceTools/status/685503950909476865)
@@ -51,14 +51,14 @@ With the backup option, you can change your mind whenever you want by restoring 
 You can optimize for free 25MB of images (about 250 images) every month and you will receive a 25MB bonus upon registration.
 
 Need more? Have a look at our plans: <a href="https://imagify.io/pricing">https://imagify.io/pricing</a>
-​
+
 = What's next? =
 
 Have a look at our upcoming features by following our development roadmap: <a href="https://trello.com/b/3Q8ZnSN6/imagify-roadmap">https://trello.com/b/3Q8ZnSN6/imagify-roadmap</a>
 
 = Who we are? =
-​
-We are <a href="http://wp-media.me">WP Media</a>, the startup behind WP Rocket the best caching plugin for WordPress. 
+
+We are <a href="http://wp-media.me">WP Media</a>, the startup behind WP Rocket the best caching plugin for WordPress.
 
 Our mission is to improve the web, we are making it faster with <a href="http://wp-rocket.me/">WP Rocket</a> we want to make it lighter with Imagify.
 
@@ -136,6 +136,11 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.4 =
+* Improvement
+ * Provide a link to optimize in higher level when an image is already optimized.
+ * Add a dedicated message for 413 HTTP error when the image is too big to be uploaded on our servers.
+
 = 1.6.3 =
 * Improvement
  * The discount is now automatically applied in when you buy from the plugin and a promotion is active
@@ -143,14 +148,14 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.6.2 =
 * Bug Fix
  * Correctly display the modal when clicking on the plan suggestion button on bulk optimisation page
- 
+
 = 1.6.1 =
 * Bug Fix
  * Better offer suggestion when your medias library is bigger than 3GB
 
 = 1.6 =
 * NEW Features:
- * Knowing how many MB/GB you need to optimize your existing and future images is complicated. We love to make things easiers, so Imagify will do it and advise you the best plan. 
+ * Knowing how many MB/GB you need to optimize your existing and future images is complicated. We love to make things easiers, so Imagify will do it and advise you the best plan.
  * You can now buy all the plans without leaving your WordPress administration
 * Improvement
  * Some styles fixed in the interface
@@ -158,7 +163,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.5.10 =
 * Improvement
  * Set to 1 the Bulk buffer size when there are more than 10 thumbnails to avoid "Unkown error" on the Bulk Optimization
- 
+
 = 1.5.9 =
 * Bug fix
  * Don't delete the thumbnail when the maximum file size is set to one of the thumbnail size
@@ -181,12 +186,12 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.5.5 =
 * Bug Fix
  * Fix issue with "original_size" at 0 in "_imagify_data" to be able to re-optimize an image with a "Forbidden" error.
- 
+
 = 1.5.4 =
 * Improvement
  * Increase to 4 the number of parallel queries during a bulk optimization
  * Don't display Intercom chat if the user turned off the option in the web app
- 
+
 = 1.5.3 =
 * Regression Fix
  * Display the Original Filesize in "View Details" section
@@ -195,13 +200,13 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Bug Fix
  * Fix JS error: Uncaught ReferenceError: imagify is not defined in /assets/options.min.js
  * Don't show "Optimize" button during optimizing process in "Edit Media" screen
-  
+
 = 1.5.1 =
 * Bug Fix
  * Thumbnail sizes in settings page aren't reset anymore on plugin update
  * Fix PHP Warning: Cannot unset offset in a non-array variable in /inc/functions/admin-stats.php on line 23
  * Fix PHP Warning: Invalid argument supplied for foreach() in /inc/functions/admin-stats.php on line 233
- 
+
 = 1.5 =
 * NEW Features:
  * NextGen Gallery compatibility - Optimize all your images uploaded with NextGen Gallery
@@ -221,7 +226,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.4.5 =
 * Interface
  * Bulk Optimization: optimize all SQL queries and improve by 65% the process time \o/
-* Misc 
+* Misc
  * Chart.js library updated
  * Media List JS notice removed
 
@@ -249,7 +254,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Bug Fix
  * Fix PHP Notice: Undefined index original_size in /inc/functions/admin-stats.php on line 185
  * Fix PHP Notice: Undefined index optimized_size in /inc/functions/admin-stats.php on line 186
- 
+
 = 1.4.1 =
 * Interface
  * Medias: better comparison for big portrait images
@@ -277,9 +282,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
  * Add a notice message if we can't get all unoptimized images during the Bulk Optimization process
  * Fix PHP Warning: set_time_limit(): Cannot set time limit in safe mode in ../inc/admin/ajax.php on line 137
  * Details about compressed images in modal media box are now closed by default
-* Regression Fix 
+* Regression Fix
  * Get all attachments with the message "You've consumed all your data" during the Bulk Optimization process to be able to optimize them
- 
+
 = 1.3.5.2 =
 * Regression Fix
  * Check mark displayed better on certain settings pages
@@ -294,16 +299,16 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.3.3 =
 * Bug Fix
  * Fixed behavior in multisite networks where Imagify options would not get saved when the plugin wasn't network-activated, but only activated for specific sites within the network.
- 
+
 = 1.3.2 =
 * NEW: Add Spanish translation
 * Bug Fix
  * Avoid lack of performance in the WordPress administration if the Imagify's servers are down.
- 
+
 = 1.3.1 =
 * Bug Fix
  * Remove a notice message which causes a lack of performance in the administration. (thanks Kevin Gauthier to warn us)
- 
+
 = 1.3 =
 * NEW: Add GIF support
 * NEW option: You can now decide to keep EXIF data on your images
@@ -315,12 +320,12 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.2.3 =
 * Improvement
  * Use AJAX to display the quota in the admin bar to avoid a call to our API on each pages.
- 
+
 = 1.2.2 =
 * Bug Fix
  * Bulk Optimization: Fix issue when the backup option isn't activated. The compression level applied was "Normal" instead the one saved in the settings.
  * Bulk Optimization: Don't try to re-optimize an image already optimized which has the same compression level than the one saved in the settings.
- 
+
 = 1.2.1 =
 * Regression Fix
  * Fix the Bulk Optimization issue when you never optimized any images and avoid the message "All your images have been optimized by Imagify. Congratulations!".
@@ -365,7 +370,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 = 1.1.3 =
 * Bug Fix
- * Fix PHP Warning: curl_setopt() [function.curl-setopt]: CURLOPT_FOLLOWLOCATION cannot be activated when safe_mode is enabled or an open_basedir is set in ../inc/api/imagify.php on line 218 
+ * Fix PHP Warning: curl_setopt() [function.curl-setopt]: CURLOPT_FOLLOWLOCATION cannot be activated when safe_mode is enabled or an open_basedir is set in ../inc/api/imagify.php on line 218
 
 = 1.1.2 =
 * Regression Fix
@@ -373,7 +378,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
  * Fix PHP Warning: Illegal string offset 'sizes' in ../inc/classes/class-attachment.php on line 347
  * Fix PHP Notice: Uninitialized string offset: 0 in ../inc/classes/class-attachment.php on line 347
  * Fix PHP Warning: Illegal string offset 'file' in ../inc/classes/class-attachment.php on line 410
- 
+
 = 1.1.1 =
 * Interface
  * Add a notice on the Bulk Optimization & Imagify Settings page when the monthly free quota is consumed

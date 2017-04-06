@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
-"POT-Creation-Date: 2016-12-06 18:45+0100\n"
-"PO-Revision-Date: 2016-12-06 18:46+0100\n"
+"POT-Creation-Date: 2017-04-05 12:25+0200\n"
+"PO-Revision-Date: 2017-04-05 12:25+0200\n"
 "Last-Translator: Rémy Perona <remperona@gmail.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 2.0\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-WPHeader: imagify.php\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -466,7 +466,7 @@ msgid ""
 "%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and improved "
 "your website's speed by reducing your images size."
 msgstr ""
-"%1$sFélicitations%2$s ! Vous avez optimisé %1$s%3$d images%2$s et améliorez le "
+"%1$sFélicitations%2$s ! Vous avez optimisé %1$s%3$d images%2$s et amélioré le "
 "temps de chargement de votre site en réduisant le poids de vos images."
 
 #: inc/admin/ui/notices.php:365 inc/admin/ui/options.php:59
@@ -693,7 +693,7 @@ msgstr ""
 "baisse de qualité sur vos images, nous vous recommandons ce niveau."
 
 #: inc/admin/ui/options.php:357 inc/admin/ui/options.php:479
-#: inc/functions/admin-ui.php:619 inc/functions/i18n.php:64
+#: inc/functions/admin-ui.php:617 inc/functions/i18n.php:64
 msgid "Close"
 msgstr "Fermer"
 
@@ -890,7 +890,7 @@ msgid "/month"
 msgstr "/mois"
 
 #: inc/functions/admin-ui.php:351 inc/functions/admin-ui.php:399
-#: inc/functions/admin-ui.php:505 inc/functions/admin-ui.php:557
+#: inc/functions/admin-ui.php:505 inc/functions/admin-ui.php:555
 #, php-format
 msgid "approx: %s images"
 msgstr "approx&nbsp;: %s images"
@@ -964,11 +964,11 @@ msgstr ""
 "facturation arrive automatiquement tous les mois ou années dépendamment de "
 "votre choix de période de facturation."
 
-#: inc/functions/admin-ui.php:517 inc/functions/admin-ui.php:565
+#: inc/functions/admin-ui.php:517 inc/functions/admin-ui.php:563
 msgid "we recommend for you"
 msgstr "nous vous recommandons"
 
-#: inc/functions/admin-ui.php:525 inc/functions/admin-ui.php:569
+#: inc/functions/admin-ui.php:525 inc/functions/admin-ui.php:567
 msgid "Choose plan"
 msgstr "Choisir ce plan"
 
@@ -994,28 +994,28 @@ msgstr ""
 "qui ont besoin d’être optimisées. Vous pouvez l’utiliser pour une optimisation "
 "en masse de vos images passées. Vous ne paierez qu’une fois."
 
-#: inc/functions/admin-ui.php:614
+#: inc/functions/admin-ui.php:612
 msgid "Thank you for being awesome!"
 msgstr "Merci à vous d’être aussi fabuleux&nbsp;!"
 
-#: inc/functions/admin-ui.php:626
+#: inc/functions/admin-ui.php:624
 msgid "What do our user think about Imagify"
 msgstr "Ce que nos utilisateurs pensent d’Imagify"
 
-#: inc/functions/admin-ui.php:660
+#: inc/functions/admin-ui.php:658
 msgid "Secure Credit Card Payment"
 msgstr "Paiement par carte sécurisé"
 
-#: inc/functions/admin-ui.php:661
+#: inc/functions/admin-ui.php:659
 msgid "This is secure 128-bits SSL encrypted payment"
 msgstr "Paiement sécurisé par cryptage SSL 128-bits"
 
-#: inc/functions/admin-ui.php:683
+#: inc/functions/admin-ui.php:681
 #, php-format
 msgid "%s OFF on all the subscriptions"
 msgstr "%s de remise sur tous les abonnements"
 
-#: inc/functions/admin-ui.php:685
+#: inc/functions/admin-ui.php:683
 #, php-format
 msgid "Special Offer<br><strong>Until %s</strong>"
 msgstr "Offre spéciale<br><strong>Jusqu’au %s</strong>"
