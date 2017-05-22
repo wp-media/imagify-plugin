@@ -36,7 +36,7 @@ function _imagify_admin_print_styles() {
 
 	wp_register_script(
 		'imagify-js-async',
-		IMAGIFY_ASSETS_JS_URL . 'imagify.min.js',
+		IMAGIFY_ASSETS_JS_URL . 'imagify' . $js_ext,
 		array( 'imagify-js-bulk' ),
 		IMAGIFY_VERSION,
 		true
@@ -140,7 +140,7 @@ function _imagify_admin_print_styles() {
 	 */
 	if ( isset( $current_screen ) && ( 'upload' === $current_screen->base || 'post' === $current_screen->base ) ) {
 		$upload_data = get_imagify_localize_script_translations( 'upload' );
-		wp_localize_script( 'imagify-js-upload', 'imagifyUpload', $upload_data );		
+		wp_localize_script( 'imagify-js-upload', 'imagifyUpload', $upload_data );
 		wp_enqueue_script( 'imagify-js-chart' );
 		wp_enqueue_script( 'imagify-js-upload' );
 	}
@@ -149,7 +149,7 @@ function _imagify_admin_print_styles() {
 	 * Scripts loaded in:
 	 * 		/wp-admin/post.php (for attachment post type)
 	 * 		/wp-admin/upload.php (for attachments list)
-	 * 
+	 *
 	 */
 	if ( isset( $current_screen ) && ( ('post' === $current_screen->base && 'attachment' === $current_screen->post_type ) || 'upload' === $current_screen->base ) ) {
 		wp_localize_script( 'imagify-js-twentytwenty', 'imagifyTTT', get_imagify_localize_script_translations( 'twentytwenty' ) );
@@ -164,19 +164,19 @@ function _imagify_admin_print_styles() {
 	 */
 	if ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' === $current_screen->base ) {
 		wp_enqueue_script( 'heartbeat' );
-		
+
 		$bulk_data = get_imagify_localize_script_translations( 'bulk' );
 		$bulk_data['heartbeat_id'] = 'update_bulk_data';
 		$bulk_data['ajax_action']  = 'imagify_get_unoptimized_attachment_ids';
 		$bulk_data['ajax_context'] = 'wp';
-		
+
 		/**
 		 * Filter the number of parallel queries during the Bulk Optimization
 		 *
 		 * @since 1.5.4
 		*/
 		$bulk_data['buffer_size']  = apply_filters( 'imagify_bulk_buffer_size', get_imagify_bulk_buffer_size() );
-		
+
 		wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
 		wp_enqueue_script( 'imagify-js-chart' );
 		wp_enqueue_script( 'imagify-js-async' );
@@ -191,13 +191,13 @@ function _imagify_admin_print_styles() {
  */
 add_action( 'admin_footer-media_page_imagify-bulk-optimization', '_imagify_admin_print_intercom' );
 add_action( 'admin_footer-settings_page_imagify', '_imagify_admin_print_intercom' );
-function _imagify_admin_print_intercom() { 
+function _imagify_admin_print_intercom() {
 	$user = get_imagify_user();
-	
+
 	if ( ! imagify_valid_key() || empty( $user->is_intercom ) || false === $user->display_support ) {
 		return;
 	}
-	?>	
+	?>
 	<script>
 	window.intercomSettings = {
 		app_id: "cd6nxj3z",
