@@ -59,7 +59,7 @@ function _imagify_init() {
 	}
 
 	require( IMAGIFY_INC_PATH . 'compat.php' );
-	require( IMAGIFY_API_PATH . 'imagify.php' );
+	require( IMAGIFY_FUNCTIONS_PATH . 'deprecated.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'options.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'formatting.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'files.php' );
@@ -70,6 +70,7 @@ function _imagify_init() {
 	require( IMAGIFY_FUNCTIONS_PATH . 'admin-ui.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'admin-stats.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'i18n.php' );
+	require( IMAGIFY_API_PATH . 'imagify.php' );
 	require( IMAGIFY_CLASSES_ABSTRACTS_PATH . 'abstract-db.php' );
 	require( IMAGIFY_CLASSES_ABSTRACTS_PATH . 'abstract-attachment.php' );
 	require( IMAGIFY_CLASSES_PATH . 'class-user.php' );

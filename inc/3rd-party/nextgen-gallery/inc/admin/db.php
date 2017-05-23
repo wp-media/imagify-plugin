@@ -1,18 +1,17 @@
-<?php 
-defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
+<?php
+defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
+add_action( 'admin_init' , '_imagify_create_ngg_table' );
 /**
- * Create the Imagify table needed for NGG compatibility
+ * Create the Imagify table needed for NGG compatibility.
  *
  * @since 1.5
  * @author Jonathan Buttigieg
  */
-add_action( 'admin_init' , '_imagify_create_ngg_table' );
 function _imagify_create_ngg_table() {
 	global $wpdb;
-	
+
 	if ( ! get_option( $wpdb->prefix . 'ngg_imagify_data_db_version' ) ) {
-		$db = new Imagify_NGG_DB();
-		$db->create_table();
+		imagify_ngg_db()->create_table();
 	}
 }
