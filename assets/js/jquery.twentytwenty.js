@@ -382,7 +382,7 @@ window.imagify = window.imagify || {
 			ttBeforeButtons += '<button type="button" class="imagify-comparison-normal" data-img="normal">' + labelNormal + '</button>';
 			ttBeforeButtons += '<button type="button" class="imagify-comparison-aggressive" data-img="aggressive">' + labelAggressive + '</button>';
 		ttBeforeButtons += '</span>';
-		ttAfterButtons  += '<span class="twentytwenty-duo-buttons twentytwenty-duo-right">';
+		ttAfterButtons   = '<span class="twentytwenty-duo-buttons twentytwenty-duo-right">';
 			ttAfterButtons  += '<button type="button" class="imagify-comparison-normal" data-img="normal">' + labelNormal + '</button>';
 			ttAfterButtons  += '<button type="button" class="imagify-comparison-aggressive" data-img="aggressive">' + labelAggressive + '</button>';
 			ttAfterButtons  += '<button type="button" class="imagify-comparison-ultra selected" data-img="ultra">' + labelUltra + '</button>';
