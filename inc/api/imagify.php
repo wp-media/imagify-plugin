@@ -132,12 +132,16 @@ function check_imagify_discount() {
  * @author Remy Perona
  **/
 function get_imagify_max_image_size() {
-    if ( false === ( $max_image_size = get_transient( 'imagify_max_image_size' ) ) ) {
-        $max_image_size = Imagify()->getPublicInfo()->max_image_size;
-        set_transient( 'imagify_max_image_size', $max_image_size, 6 * HOUR_IN_SECONDS );
-    }
+	if ( false === ( $max_image_size = get_transient( 'imagify_max_image_size' ) ) ) {
+		$max_image_size = Imagify()->getPublicInfo();
 
-    return $max_image_size;
+		if ( ! is_wp_error( $max_image_size ) ) {
+			$max_image_size = $max_image_size->max_image_size;
+			set_transient( 'imagify_max_image_size', $max_image_size, 6 * HOUR_IN_SECONDS );
+		}
+	}
+
+	return $max_image_size;
 }
 
 /**
