@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  * @return string
  */
 function imagify_get_capacity( $force_mono = false ) {
-	if ( $for_mono || ! is_multisite() ) {
+	if ( $force_mono || ! is_multisite() ) {
 		$capacity = 'manage_options';
 	} else {
 		$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
