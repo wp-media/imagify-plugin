@@ -1,25 +1,27 @@
 <?php
-defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
+add_action( 'admin_bar_menu', '_imagify_admin_bar', PHP_INT_MAX );
 /**
- * Add Imagify menu in the admin bar
+ * Add Imagify menu in the admin bar.
  *
  * @since 1.0
+ *
+ * @param object $wp_admin_bar WP_Admin_Bar instance, passed by reference.
  */
-add_action( 'admin_bar_menu', '_imagify_admin_bar', PHP_INT_MAX );
 function _imagify_admin_bar( $wp_admin_bar ) {
 	if ( ! current_user_can( imagify_get_capacity() ) || ! get_imagify_option( 'admin_bar_menu', 0 ) ) {
 		return;
 	}
 
-	// Parent
+	// Parent.
 	$wp_admin_bar->add_menu( array(
 		'id'    => 'imagify',
 		'title' => 'Imagify',
 		'href'  => get_imagify_admin_url(),
 	) );
 
-	// Settings
+	// Settings.
 	$wp_admin_bar->add_menu(array(
 		'parent' => 'imagify',
 		'id'     => 'imagify-settings',
@@ -27,7 +29,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 		'href'   => get_imagify_admin_url(),
 	) );
 
-	// Bulk Optimization
+	// Bulk Optimization.
 	if ( ! is_network_admin() ) {
 		$wp_admin_bar->add_menu(array(
 			'parent' => 'imagify',
@@ -37,15 +39,16 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 		) );
 	}
 
-	// Rate it
+	// Rate it.
 	$wp_admin_bar->add_menu(array(
 		'parent' => 'imagify',
 		'id'     => 'imagify-rate-it',
+		/* translators: %s is WordPress.org. */
 		'title'  => sprintf( __( 'Rate Imagify on %s', 'imagify' ), 'WordPress.org' ),
 		'href'   => 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform',
 	) );
 
-	// Quota & Profile informations
+	// Quota & Profile informations.
 	if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
 		return;
 	}
@@ -59,15 +62,17 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 	}
 }
 
+add_action( 'admin_bar_init', '_imagify_admin_bar_styles' );
 /**
- * Include Admin Bar Profile informations styles in front
+ * Include Admin Bar Profile informations styles in front.
  *
  * @since  1.2
  */
-add_action( 'admin_bar_init', '_imagify_admin_bar_styles' );
 function _imagify_admin_bar_styles() {
-	if ( ! is_admin() && get_imagify_option( 'admin_bar_menu', 0 ) ) {
-		$css_ext = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '.css' : '.min.css';
-		wp_enqueue_style( 'imagify-css-admin-bar', IMAGIFY_ASSETS_CSS_URL . 'admin-bar' . $css_ext, array(), IMAGIFY_VERSION, 'all' );
+	if ( is_admin() || ! get_imagify_option( 'admin_bar_menu', 0 ) ) {
+		return;
 	}
+
+	$css_ext = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.css' : '.min.css';
+	wp_enqueue_style( 'imagify-css-admin-bar', IMAGIFY_ASSETS_CSS_URL . 'admin-bar' . $css_ext, array(), IMAGIFY_VERSION, 'all' );
 }
