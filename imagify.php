@@ -59,7 +59,6 @@ function _imagify_init() {
 	}
 
 	require( IMAGIFY_INC_PATH . 'compat.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'deprecated.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'common.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'options.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'formatting.php' );
