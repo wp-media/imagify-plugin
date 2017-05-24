@@ -68,36 +68,36 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
  */
 function get_imagify_max_intermediate_image_size() {
 	global $_wp_additional_image_sizes;
-	
+
 	$width  = 0;
 	$height = 0;
 	$limit	= 9999;
 	$get_intermediate_image_sizes = get_intermediate_image_sizes();
-	
+
 	// Create the full array with sizes and crop info
 	foreach( $get_intermediate_image_sizes as $_size ) {
 	    if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ) ) ) {
 	        $_size_width  = get_option( $_size . '_size_w' );
-	        $_size_height = get_option( $_size . '_size_h' );     
+	        $_size_height = get_option( $_size . '_size_h' );
 	    } elseif ( isset( $_wp_additional_image_sizes[ $_size ] ) ) {
 	        $_size_width  = $_wp_additional_image_sizes[ $_size ]['width'];
 	        $_size_height = $_wp_additional_image_sizes[ $_size ]['height'];
 	    }
-	    
+
 	    if ( ! isset( $_size_width, $_size_height ) ) {
 		    continue;
 	    }
-	    
+
 	    if ( $_size_width < $limit ) {
-	       $width = max( $width, $_size_width ); 
+	       $width = max( $width, $_size_width );
         }
-        
+
         if ( $_size_height < $limit ) {
         	$height = max( $height, $_size_height );
-        } 
+        }
 	}
-	return array( 
-		'width'  => $width, 
+	return array(
+		'width'  => $width,
 		'height' => $height
 	);
 }
@@ -139,6 +139,29 @@ function imagify_dismiss_notice( $notice, $user_id = 0 ) {
 }
 
 /**
+ * Tell if an Imagify notice is dismissed.
+ *
+ * @since 1.6.5
+ * @author Grégory Viguier
+ *
+ * @param  string $notice  A notice ID.
+ * @param  int    $user_id A user ID.
+ * @return bool
+ */
+function imagify_notice_is_dismissed( $notice, $user_id = 0 ) {
+	$user_id = $user_id ? (int) $user_id : get_current_user_id();
+
+	$ignored_notices = get_user_meta( $user_id, '_imagify_ignore_notices', true );
+
+	if ( ! $ignored_notices || ! is_array( $ignored_notices ) ) {
+		return false;
+	}
+
+	$ignored_notices = array_flip( $ignored_notices );
+	return isset( $ignored_notices[ $notice ] );
+}
+
+/**
  * Combine two arrays with some specific keys.
  * We use this function to combine the result of 2 SQL queries.
  *
@@ -150,16 +173,16 @@ function imagify_query_results_combine( $keys, $values ) {
 	if ( ! $values ) {
 		return array();
 	}
-	
+
 	$result = array();
 	$keys   = array_flip( $keys );
-	
+
 	foreach ( $values as $v ) {
 		if ( isset( $keys[ $v['id'] ] ) ) {
 			$result[ $v['id'] ] = $v['value'];
 		}
 	}
-	
+
 	return $result;
 }
 
@@ -173,18 +196,18 @@ function imagify_query_results_combine( $keys, $values ) {
  */
 function get_imagify_bulk_buffer_size() {
 	$sizes = count( get_imagify_thumbnail_sizes() );
-	
+
 	switch ( true ) {
-	    case  ( $sizes >= 10 ) : 
-	    	return 1; 
+	    case  ( $sizes >= 10 ) :
+	    	return 1;
 	    	break;
-	    case ( $sizes >= 8 ) : 
-	    	return 2; 
+	    case ( $sizes >= 8 ) :
+	    	return 2;
 	    	break;
-	    case ( $sizes >= 6 ) : 
-	    	return 3; 
+	    case ( $sizes >= 6 ) :
+	    	return 3;
 	    	break;
-	    default: 
+	    default:
 	    	return 4;
 	}
 }

@@ -8,11 +8,7 @@ defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
  */
 add_action( 'admin_bar_menu', '_imagify_admin_bar', PHP_INT_MAX );
 function _imagify_admin_bar( $wp_admin_bar ) {
-	$cap = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
-	/** This filter is documented in inc/admin/options.php */
-	$cap = apply_filters( 'imagify_capacity', $cap );
-	
-	if ( ! current_user_can( $cap ) || ! get_imagify_option( 'admin_bar_menu', 0 ) ) {
+	if ( ! current_user_can( imagify_get_capacity() ) || ! get_imagify_option( 'admin_bar_menu', 0 ) ) {
 		return;
 	}
 
@@ -30,7 +26,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 		'title'  => __( 'Settings' ),
 		'href'   => get_imagify_admin_url(),
 	) );
-	
+
 	// Bulk Optimization
 	if ( ! is_network_admin() ) {
 		$wp_admin_bar->add_menu(array(
@@ -40,7 +36,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 			'href'   => get_imagify_admin_url( 'bulk-optimization' ),
 		) );
 	}
-	
+
 	// Rate it
 	$wp_admin_bar->add_menu(array(
 		'parent' => 'imagify',
@@ -48,12 +44,12 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 		'title'  => sprintf( __( 'Rate Imagify on %s', 'imagify' ), 'WordPress.org' ),
 		'href'   => 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform',
 	) );
-	
+
 	// Quota & Profile informations
 	if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
 		return;
 	}
-	
+
 	if ( ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key', false ) ) {
 		$wp_admin_bar->add_menu( array(
 			'parent' => 'imagify',

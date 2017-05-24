@@ -13,5 +13,5 @@ function _imagify_ngg_bulk_optimization_menu() {
 		return;
 	}
 
-	add_submenu_page( NGGFOLDER, __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), apply_filters( 'imagify_capacity', 'manage_options' ), IMAGIFY_SLUG . '-ngg-bulk-optimization', '_imagify_display_bulk_page' );
+	add_submenu_page( NGGFOLDER, __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), imagify_get_capacity( true ), IMAGIFY_SLUG . '-ngg-bulk-optimization', '_imagify_display_bulk_page' );
 }
