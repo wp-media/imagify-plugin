@@ -147,7 +147,8 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 * @return object Main instance.
 	 */
 	public static function instance() {
-		_deprecated_function( __FUNCTION__, '1.6.5', 'imagify_ngg_db()' );
+		$class_name = get_class( $this );
+		_deprecated_function( $class_name . '::' . __FUNCTION__ . '()', '1.6.5', 'imagify_ngg_db()' );
 		return self::get_instance();
 	}
 }
