@@ -157,7 +157,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
  * Returns the main instance of the Imagify_NGG_DB class.
  *
  * @since 1.6.5
- * @author Grégory Viguier
+ * @author Jonathan Buttigieg
  *
  * @return object The Imagify_NGG_DB instance.
  */

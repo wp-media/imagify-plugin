@@ -107,9 +107,7 @@ add_action( 'update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_optio
 function _imagify_after_save_options( $old_value, $value ) {
 
 	if ( $old_value && $value && ( ! isset( $old_value['api_key'] ) || $old_value['api_key'] !== $value['api_key'] ) ) {
-		$api = new Imagify();
-
-		if ( is_wp_error( $api->getUser() ) ) {
+		if ( is_wp_error( imagify()->get_user() ) ) {
 			imagify_renew_notice( 'wrong-api-key' );
 			delete_site_transient( 'imagify_check_licence_1' );
 		} else {
