@@ -61,7 +61,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return array
 	 */
 	public function get_data() {
-		return get_post_meta( $this->id, '_imagify_data', true );
+		$data = get_post_meta( $this->id, '_imagify_data', true );
+		return is_array( $data ) ? $data : array();
 	}
 
 	/**
@@ -73,7 +74,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return int
 	 */
 	public function get_optimization_level() {
-		return get_post_meta( $this->id, '_imagify_optimization_level', true );
+		return (int) get_post_meta( $this->id, '_imagify_optimization_level', true );
 	}
 
 	/**
@@ -85,7 +86,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return string
 	 */
 	public function get_status() {
-		return get_post_meta( $this->id, '_imagify_status', true );
+		$status = get_post_meta( $this->id, '_imagify_status', true );
+		return is_string( $status ) ? $status : '';
 	}
 
 	/**
@@ -386,6 +388,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		$id              = $this->id;
 		$backup_path     = $this->get_backup_path();
 		$attachment_path = $this->get_original_path();
+		$filesystem      = imagify_get_filesystem();
 
 		/**
 		 * Fires before restoring an attachment.
@@ -397,7 +400,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		do_action( 'before_imagify_restore_attachment', $id );
 
 		// Create the original image from the backup.
-		@copy( $backup_path, $attachment_path );
+		$filesystem->copy( $backup_path, $attachment_path, true );
 		imagify_chmod_file( $attachment_path );
 
 		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
