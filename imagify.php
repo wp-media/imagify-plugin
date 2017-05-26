@@ -51,7 +51,7 @@ add_action( 'plugins_loaded', '_imagify_init' );
  */
 function _imagify_init() {
 	// Load translations.
-	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
 
 	// Nothing to do if autosave.
 	if ( defined( 'DOING_AUTOSAVE' ) ) {
