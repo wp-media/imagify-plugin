@@ -68,36 +68,36 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
  */
 function get_imagify_max_intermediate_image_size() {
 	global $_wp_additional_image_sizes;
-	
+
 	$width  = 0;
 	$height = 0;
 	$limit	= 9999;
 	$get_intermediate_image_sizes = get_intermediate_image_sizes();
-	
+
 	// Create the full array with sizes and crop info
 	foreach( $get_intermediate_image_sizes as $_size ) {
 	    if ( in_array( $_size, array( 'thumbnail', 'medium', 'large' ) ) ) {
 	        $_size_width  = get_option( $_size . '_size_w' );
-	        $_size_height = get_option( $_size . '_size_h' );     
+	        $_size_height = get_option( $_size . '_size_h' );
 	    } elseif ( isset( $_wp_additional_image_sizes[ $_size ] ) ) {
 	        $_size_width  = $_wp_additional_image_sizes[ $_size ]['width'];
 	        $_size_height = $_wp_additional_image_sizes[ $_size ]['height'];
 	    }
-	    
+
 	    if ( ! isset( $_size_width, $_size_height ) ) {
 		    continue;
 	    }
-	    
+
 	    if ( $_size_width < $limit ) {
-	       $width = max( $width, $_size_width ); 
+	       $width = max( $width, $_size_width );
         }
-        
+
         if ( $_size_height < $limit ) {
         	$height = max( $height, $_size_height );
-        } 
+        }
 	}
-	return array( 
-		'width'  => $width, 
+	return array(
+		'width'  => $width,
 		'height' => $height
 	);
 }
@@ -131,7 +131,11 @@ function imagify_dismiss_notice( $notice, $user_id = 0 ) {
 	global $current_user;
 	$user_id   = ( 0 === $user_id ) ? $current_user->ID : $user_id;
 	$notices   = get_user_meta( $user_id, '_imagify_ignore_notices', true );
-	$notices[] = $notice;
+  if( ! is_array( $notices ) ){ // When being set for the first time.
+    $notices = array( $notice );
+  }else{
+    array_push( $notices, $notice );
+  }
 	$notices   = array_filter( $notices );
 	$notices   = array_unique( $notices );
 
@@ -150,16 +154,16 @@ function imagify_query_results_combine( $keys, $values ) {
 	if ( ! $values ) {
 		return array();
 	}
-	
+
 	$result = array();
 	$keys   = array_flip( $keys );
-	
+
 	foreach ( $values as $v ) {
 		if ( isset( $keys[ $v['id'] ] ) ) {
 			$result[ $v['id'] ] = $v['value'];
 		}
 	}
-	
+
 	return $result;
 }
 
@@ -173,18 +177,18 @@ function imagify_query_results_combine( $keys, $values ) {
  */
 function get_imagify_bulk_buffer_size() {
 	$sizes = count( get_imagify_thumbnail_sizes() );
-	
+
 	switch ( true ) {
-	    case  ( $sizes >= 10 ) : 
-	    	return 1; 
+	    case  ( $sizes >= 10 ) :
+	    	return 1;
 	    	break;
-	    case ( $sizes >= 8 ) : 
-	    	return 2; 
+	    case ( $sizes >= 8 ) :
+	    	return 2;
 	    	break;
-	    case ( $sizes >= 6 ) : 
-	    	return 3; 
+	    case ( $sizes >= 6 ) :
+	    	return 3;
 	    	break;
-	    default: 
+	    default:
 	    	return 4;
 	}
 }

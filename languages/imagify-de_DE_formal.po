@@ -145,7 +145,7 @@ msgstr "Übersicht"
 
 #: ../inc/admin/ui/bulk.php:99
 #, php-format
-msgid "You optimized %s images of your website"
+msgid "You optimized %s of the images on your website"
 msgstr "Sie haben %s Bilder Ihrer Website optimiert"
 
 #: ../inc/admin/ui/bulk.php:103
