@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 /**
  * Get WP Direct filesystem object. Also define chmod constants if not done yet.

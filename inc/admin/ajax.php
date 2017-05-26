@@ -1,8 +1,8 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-add_action( 'wp_ajax_imagify_manual_upload'		, '_do_admin_post_imagify_manual_upload' );
-add_action( 'admin_post_imagify_manual_upload'	, '_do_admin_post_imagify_manual_upload' );
+add_action( 'wp_ajax_imagify_manual_upload',     '_do_admin_post_imagify_manual_upload' );
+add_action( 'admin_post_imagify_manual_upload' , '_do_admin_post_imagify_manual_upload' );
 /**
  * Process all thumbnails of a specific image with Imagify with the manual method.
  *
@@ -65,9 +65,9 @@ function _do_admin_post_imagify_manual_override_upload() {
 		}
 	}
 
-	$context     = $_GET['context'];
-	$class_name  = get_imagify_attachment_class_name( $context );
-	$attachment  = new $class_name( $_GET['attachment_id'] );
+	$context    = $_GET['context'];
+	$class_name = get_imagify_attachment_class_name( $context );
+	$attachment = new $class_name( $_GET['attachment_id'] );
 
 	// Restore the backup file.
 	$attachment->restore();
@@ -132,6 +132,8 @@ add_action( 'wp_ajax_imagify_get_unoptimized_attachment_ids', '_do_wp_ajax_imagi
  * @author Jonathan Buttigieg
  */
 function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
+	global $wpdb;
+
 	check_ajax_referer( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
 
 	if ( ! current_user_can( 'upload_files' ) ) {
@@ -194,13 +196,11 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		'update_post_term_cache' => false,
 	);
 
-	global $wpdb;
-
 	$data        = array();
 	$attachments = new WP_Query( $args );
 	$ids         = $attachments->posts;
-	$ids 		 = array_filter( (array) $ids );
-	$sql_ids 	 = implode( ',', $ids );
+	$ids         = array_filter( (array) $ids );
+	$sql_ids     = implode( ',', $ids );
 
 	if ( empty( $sql_ids ) ) {
 		wp_send_json_error( array( 'message' => 'no-images' ) );

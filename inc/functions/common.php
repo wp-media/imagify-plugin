@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) or die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 /**
  * Get user capacity to operate Imagify.
