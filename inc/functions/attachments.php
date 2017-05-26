@@ -74,7 +74,7 @@ function get_imagify_attached_file( $filename ) {
 function get_imagify_attachment_url( $filename ) {
 	$uploads = wp_upload_dir();
 
-	if ( false === $uploads['error'] ) {
+	if ( false !== $uploads['error'] ) {
 		return '';
 	}
 

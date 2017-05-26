@@ -360,7 +360,7 @@ function imagify_payment_modal() {
 									printf(
 										/* translators: %s is a formatted file size. */
 										esc_html__( 'You currently have %s of images in your library.', 'imagify' ),
-										'<strong class="imagify-dark total-library-size">' . number_format_i18n( isset( $total_size['human'] ) ? $total_size['human'] : $total_size ) . '</strong>'
+										'<strong class="imagify-dark total-library-size">' . ( isset( $total_size['human'] ) ? $total_size['human'] : $total_size ) . '</strong>'
 									);
 									?>
 								</p>

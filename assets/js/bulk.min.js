@@ -176,11 +176,11 @@ window.imagify = window.imagify || {
 
 	$( '#imagify-bulk-action' ).on( 'click', function() {
 		var $obj = $( this ),
-			optimization_level = $( '[name="optimization_level"]:checked' ).val(),
+			optimizationLevel = $( '[name="optimization_level"]:checked' ).val(),
 			confirmMessage;
 
-		if ( optimization_level === undefined ) {
-			optimization_level = -1;
+		if ( optimizationLevel === undefined ) {
+			optimizationLevel = -1;
 		}
 
 		if ( $obj.attr( 'disabled' ) ) {
@@ -190,7 +190,7 @@ window.imagify = window.imagify || {
 		$obj.attr( 'disabled', 'disabled' );
 		$obj.find( '.dashicons' ).addClass( 'rotate' );
 
-		confirmMessage =  function() {
+		confirmMessage = function() {
 			return imagifyBulk.labels.processing;
 		};
 
@@ -204,7 +204,7 @@ window.imagify = window.imagify || {
 			imageUrl:          imagifyBulk.labels.waitImageUrl
 		} );
 
-		$.get( ajaxurl + imagify.concat + 'action=' + imagifyBulk.ajax_action + '&optimization_level=' + optimization_level + '&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val() )
+		$.get( ajaxurl + imagify.concat + 'action=' + imagifyBulk.ajax_action + '&optimization_level=' + optimizationLevel + '&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val() )
 		.done( function( response ) {
 			var swal_title = '',
 				swal_text  = '',
@@ -264,10 +264,10 @@ window.imagify = window.imagify || {
 			} )
 			// After the attachment optimization.
 			.each( function( data ) {
-				var $progress      = $( '#imagify-progress-bar' ),
-					error_class    = 'error',
-					error_dashicon = 'dismiss',
-					error_message  = 'Error';
+				var $progress     = $( '#imagify-progress-bar' ),
+					errorClass    = 'error',
+					errorDashicon = 'dismiss',
+					errorMessage  = 'Error';
 
 				$progress.css( { 'width': data.progress + '%' } );
 				$progress.find( '.percent' ).html( data.progress + '%' );
@@ -308,17 +308,17 @@ window.imagify = window.imagify || {
 				}
 
 				if ( data.error.indexOf( 'This image is already compressed' ) >= 0 ) {
-					error_class    = 'warning';
-					error_dashicon = 'warning';
-					error_message  = 'Notice';
+					errorClass    = 'warning';
+					errorDashicon = 'warning';
+					errorMessage  = 'Notice';
 				} else {
 					errors++;
 					$( '.imagify-cell-errors' ).html( errors + ' error(s)' );
 				}
 
-				$( '#attachment-' + data.image ).after( '<tr><td colspan="7"><span class="status-' + error_class + '">' + data.error + '</span></td></tr>' );
+				$( '#attachment-' + data.image ).after( '<tr><td colspan="7"><span class="status-' + errorClass + '">' + data.error + '</span></td></tr>' );
 
-				$( '#attachment-' + data.image + ' .imagify-cell-status' ).html( '<span class="imagistatus status-' + error_class + '"><span class="dashicons dashicons-' + error_dashicon + '"></span>' + error_message + '</span>' );
+				$( '#attachment-' + data.image + ' .imagify-cell-status' ).html( '<span class="imagistatus status-' + errorClass + '"><span class="dashicons dashicons-' + errorDashicon + '"></span>' + errorMessage + '</span>' );
 			} )
 			// After all attachments optimization.
 			.done( function( data ) {

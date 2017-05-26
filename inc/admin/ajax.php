@@ -210,7 +210,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$attachments_filename = $wpdb->get_results( // WPCS: unprepared SQL ok.
 		"SELECT pm.post_id as id, pm.meta_value as value
 		 FROM $wpdb->postmeta as pm
-		 WHERE pm.meta_key= '_wp_attached_file'
+		 WHERE pm.meta_key = '_wp_attached_file'
 			 AND pm.post_id IN ($sql_ids)
 		 ORDER BY pm.post_id DESC",
 		ARRAY_A
@@ -222,7 +222,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$attachments_data = $wpdb->get_results( // WPCS: unprepared SQL ok.
 		"SELECT pm.post_id as id, pm.meta_value as value
 		 FROM $wpdb->postmeta as pm
-		 WHERE pm.meta_key= '_imagify_data'
+		 WHERE pm.meta_key = '_imagify_data'
 			 AND pm.post_id IN ($sql_ids)
 		 ORDER BY pm.post_id DESC",
 		ARRAY_A
@@ -235,7 +235,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$attachments_optimization_level = $wpdb->get_results( // WPCS: unprepared SQL ok.
 		"SELECT pm.post_id as id, pm.meta_value as value
 		 FROM $wpdb->postmeta as pm
-		 WHERE pm.meta_key= '_imagify_optimization_level'
+		 WHERE pm.meta_key = '_imagify_optimization_level'
 			 AND pm.post_id IN ($sql_ids)
 		 ORDER BY pm.post_id DESC",
 		ARRAY_A
@@ -247,7 +247,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$attachments_status = $wpdb->get_results( // WPCS: unprepared SQL ok.
 		"SELECT pm.post_id as id, pm.meta_value as value
 		 FROM $wpdb->postmeta as pm
-		 WHERE pm.meta_key= '_imagify_status'
+		 WHERE pm.meta_key = '_imagify_status'
 			 AND pm.post_id IN ($sql_ids)
 		 ORDER BY pm.post_id DESC",
 		ARRAY_A
