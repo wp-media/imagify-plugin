@@ -150,7 +150,7 @@ msgstr ""
 
 #: ../inc/admin/ui/bulk.php:99
 #, php-format
-msgid "You optimized %s of the images on your site"
+msgid "You optimized %s of the images on your website"
 msgstr ""
 
 #: ../inc/admin/ui/bulk.php:103
