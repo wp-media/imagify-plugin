@@ -96,7 +96,7 @@ function _imagify_display_bulk_page() {
 					</div>
 					<div id="imagify-overview-chart-legend"></div>
 
-					<p class="imagify-global-optim-phrase imagify-clear"><?php printf( esc_html__( 'You optimized %s images of your website', 'imagify' ), '<span class="imagify-total-percent">' . imagify_percent_optimized_attachments() . '%</span>' ); ?></p>
+					<p class="imagify-global-optim-phrase imagify-clear"><?php printf( esc_html__( 'You optimized %s of the images on your site', 'imagify' ), '<span class="imagify-total-percent">' . imagify_percent_optimized_attachments() . '%</span>' ); ?></p>
 				</div>
 
 				<div class="col-1-3 col-statistics">
