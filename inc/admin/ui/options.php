@@ -213,8 +213,8 @@ function _imagify_display_options_page() {
 										<?php
 										$max_sizes = get_imagify_max_intermediate_image_size();
 										printf(
-											/* translators: 1 is a number of pixels. */
-											__( 'to maximum %d pixels width', 'imagify' ),
+											/* translators: 1 is a text input for a number of pixels (don't use %d). */
+											__( 'to maximum %s pixels width', 'imagify' ),
 											'<input type="number" min="' . $max_sizes['width'] . '" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_w]" value="' . get_imagify_option( 'resize_larger_w', false ) . '" size="5">'
 										);
 										?>
