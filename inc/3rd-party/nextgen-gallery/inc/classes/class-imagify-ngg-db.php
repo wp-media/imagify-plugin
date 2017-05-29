@@ -48,6 +48,23 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	}
 
 	/**
+	 * Get the main Instance.
+	 *
+	 * @access  public
+	 * @since   1.6.5
+	 * @author  Grégory Viguier
+	 *
+	 * @return object Main instance.
+	 */
+	public static function get_instance() {
+		if ( ! isset( self::$_instance ) ) {
+			self::$_instance = new self();
+		}
+
+		return self::$_instance;
+	}
+
+	/**
 	 * Whitelist of columns.
 	 *
 	 * @access  public

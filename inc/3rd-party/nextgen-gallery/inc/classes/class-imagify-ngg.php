@@ -17,6 +17,16 @@ class Imagify_NGG {
 	const VERSION = '1.0.1';
 
 	/**
+	 * The single instance of the class.
+	 *
+	 * @access  protected
+	 * @since   1.5
+	 *
+	 * @var object
+	 */
+	protected static $_instance;
+
+	/**
 	 * The constructor.
 	 *
 	 * @since 1.5
