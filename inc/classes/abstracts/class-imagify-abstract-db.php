@@ -17,6 +17,16 @@ abstract class Imagify_Abstract_DB {
 	const VERSION = '1.0.1';
 
 	/**
+	 * The single instance of the class.
+	 *
+	 * @access  protected
+	 * @since   1.5
+	 *
+	 * @var object
+	 */
+	protected static $_instance;
+
+	/**
 	 * The name of our database table.
 	 *
 	 * @var     string
@@ -49,7 +59,24 @@ abstract class Imagify_Abstract_DB {
 	 * @access  public
 	 * @since   1.5
 	 */
-	public function __construct() {}
+	protected function __construct() {}
+
+	/**
+	 * Get the main Instance.
+	 *
+	 * @access  public
+	 * @since   1.6.5
+	 * @author  Grégory Viguier
+	 *
+	 * @return object Main instance.
+	 */
+	public static function get_instance() {
+		if ( ! isset( self::$_instance ) ) {
+			self::$_instance = new self();
+		}
+
+		return self::$_instance;
+	}
 
 	/**
 	 * Whitelist of columns.
