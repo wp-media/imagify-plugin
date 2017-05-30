@@ -32,7 +32,7 @@ class Imagify_Deprecated {
 	public static function instance() {
 		$class_name = get_class( $this );
 		_deprecated_function( $class_name . '::' . __FUNCTION__ . '()', '1.6.5', 'imagify()' );
-		return static::get_instance();
+		return Imagify::get_instance();
 	}
 
 	/**
