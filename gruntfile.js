@@ -25,10 +25,15 @@ module.exports = function( grunt ) {
 				'files': [ {
 					'expand': true,
 					'cwd':    'assets/js',
-					'src':    [ '*.js', '!*.min.js' ],
+					'src':    [ '*.js', '!*.min.js', '!jquery.twentytwenty.js', '!chart.js', '!jquery.event.move.js', '!sweetalert2.js' ],
 					'dest':   'assets/js',
 					'ext':    '.min.js'
 				} ]
+			},
+			'bugfix': {
+				'files': {
+					'assets/js/jquery.twentytwenty.min.js': [ 'assets/js/jquery.twentytwenty.js' ]
+				}
 			}
 		},
 		// PostCSS: Autoprefixer.
