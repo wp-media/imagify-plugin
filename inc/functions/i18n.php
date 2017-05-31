@@ -78,7 +78,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'waitText'                       => __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
 					'waitImageUrl'                   => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
 					'getUnoptimizedImagesErrorTitle' => __( 'Oops, There is something wrong!', 'imagify' ),
-					'getUnoptimizedImagesErrorText'  => __( 'An unknown error occurred when we tried to get all your unoptimized images. Try again and if the issue still persist, please contact us!', 'imagify' ),
+					'getUnoptimizedImagesErrorText'  => __( 'An unknown error occurred when we tried to get all your unoptimized images. Try again and if the issue still persists, please contact us!', 'imagify' ),
 					'invalidAPIKeyTitle'             => __( 'Your API key isn\'t valid!', 'imagify' ),
 					'overviewChartLabels'            => array(
 						'optimized'   => __( 'Optimized', 'imagify' ),
@@ -88,8 +88,8 @@ function get_imagify_localize_script_translations( $context ) {
 					'overQuotaTitle'                 => __( 'Oops, It\'s Over!', 'imagify' ),
 					'noAttachmentToOptimizeTitle'    => __( 'Hold on!', 'imagify' ),
 					'noAttachmentToOptimizeText'     => __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
-					/* translators: this is the plugin URL on the repository, make sure there is one in your language. */
-					'pluginURL'                      => __( 'https://wordpress.org/plugins/imagify', 'imagify' ),
+					/* translators: Plugin URI of the plugin/theme */
+					'pluginURL'                      => __( 'https://wordpress.org/plugins/imagify/', 'imagify' ),
 					/* translators: 1 and 2 are file sizes. */
 					'textToShare'                    => __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
 					'totalOptimizedAttachments'      => imagify_count_optimized_attachments(),
@@ -110,7 +110,7 @@ function get_imagify_localize_script_translations( $context ) {
 				}
 				else {
 					$translations['overQuotaText']  = sprintf(
-						/* translators: %s is a formatted file size, 2 is a date. */
+						/* translators: 1 is a data quota, 2 is a date. */
 						__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
 						size_format( $user->quota * 1048576 ),
 						date_i18n( __( 'F j, Y' ), strtotime( $user->next_date_update ) )

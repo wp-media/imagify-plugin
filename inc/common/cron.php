@@ -56,7 +56,7 @@ function imagify_purge_cron_schedule( $schedules ) {
 
 	$schedules['weekly'] = array(
 		'interval' => 604800,
-		'display'  => __( 'weekly', 'imagify' ),
+		'display'  => __( 'Once Weekly', 'imagify' ),
 	);
 
 	return $schedules;

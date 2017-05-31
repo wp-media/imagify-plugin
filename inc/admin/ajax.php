@@ -516,7 +516,7 @@ function _do_wp_ajax_imagify_get_admin_bar_profile() {
 		$message  = '<div class="imagify-error">';
 			$message .= '<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s Over!', 'imagify' ) . '</strong></p>';
 			$message .= '<p>' . sprintf(
-				/* translators: 1 a data quota, 2 is a date. */
+				/* translators: 1 is a data quota, 2 is a date. */
 				__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
 				size_format( $user->quota * 1048576 ),
 				date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) )
@@ -542,7 +542,7 @@ function _do_wp_ajax_imagify_get_admin_bar_profile() {
 	if ( 1 === $user->plan_id ) {
 		$quota_section .= '<div class="imagify-abq-row">';
 			$quota_section .= '<div class="imagify-space-left">';
-				/* translators: %s a data quota. */
+				/* translators: %s is a data quota. */
 				$quota_section .= '<p>' . sprintf( __( 'You have %s space credit left', 'imagify' ), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ) . '</p>';
 				$quota_section .= '<div class="imagify-bar-' . $bar_class . '">';
 					$quota_section .= '<div style="width: ' . $unconsumed_quota . '%;" class="imagify-unconsumed-bar imagify-progress"></div>';

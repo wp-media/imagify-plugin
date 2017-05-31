@@ -51,7 +51,7 @@ function _imagify_display_bulk_page() {
 								<p>
 									<?php
 									printf(
-										/* translators: %s is a percentage. */
+										/* translators: %s is a data quota. */
 										__( 'You have %s space credit left' , 'imagify' ),
 										'<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>'
 									);
