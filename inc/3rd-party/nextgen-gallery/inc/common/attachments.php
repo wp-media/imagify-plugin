@@ -14,17 +14,19 @@ add_action( 'ngg_after_new_images_added', '_imagify_ngg_optimize_attachment', PH
 function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 	$api_key = get_imagify_option( 'api_key', false );
 
-	if ( ! empty( $api_key ) && get_imagify_option( 'auto_optimize', false ) ) {
-		foreach ( $image_ids as $id ) {
-			$body                  = array();
-			$body['metadata']	   = 1;
-			$body['context']       = 'NGG';
-			$body['attachment_id'] = $id;
-			$body['action']        = 'imagify_async_optimize_upload_new_media';
-			$body['_ajax_nonce']   = wp_create_nonce( 'new_media-' . $id );
+	if ( ! $api_key || ! get_imagify_option( 'auto_optimize', false ) ) {
+		return;
+	}
 
-			imagify_do_async_job( $body );
-		}
+	foreach ( $image_ids as $id ) {
+		$body                  = array();
+		$body['metadata']	   = 1;
+		$body['context']       = 'NGG';
+		$body['attachment_id'] = $id;
+		$body['action']        = 'imagify_async_optimize_upload_new_media';
+		$body['_ajax_nonce']   = wp_create_nonce( 'new_media-' . $id );
+
+		imagify_do_async_job( $body );
 	}
 }
 

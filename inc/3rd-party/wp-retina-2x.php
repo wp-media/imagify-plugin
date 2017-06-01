@@ -76,7 +76,8 @@ if ( function_exists( 'wr2x_get_retina' ) ) :
 				'optimization_level' => $optimization_level,
 				'context'            => 'wp-retina',
 			) );
-			$data     = Imagify_Attachment::fill_data( $data, $response, $id, $url, $size_key . '@2x' );
+			$instance = new Imagify_Attachment( $id );
+			$data     = $instance->fill_data( $data, $response, $id, $url, $size_key . '@2x' );
 		}
 
 		return $data;

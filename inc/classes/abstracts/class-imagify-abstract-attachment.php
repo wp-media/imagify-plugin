@@ -371,8 +371,8 @@ class Imagify_Abstract_Attachment {
 	 * Fills statistics data with values from $data array.
 	 *
 	 * @since 1.0
+	 * @since 1.6.6 Not static anymore.
 	 * @access public
-	 * @static
 	 *
 	 * @param  array  $data     The statistics data.
 	 * @param  object $response The API response.
@@ -381,7 +381,7 @@ class Imagify_Abstract_Attachment {
 	 * @param  string $size     The attachment size key.
 	 * @return bool|array False if the original size has an error or an array contains the data for other result.
 	 */
-	static public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
+	public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
 		return array();
 	}
 

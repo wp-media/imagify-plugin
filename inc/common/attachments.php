@@ -7,6 +7,7 @@ add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', P
  *
  * @since 1.0
  * @since 1.5 Async job.
+ * @see _do_admin_post_async_optimize_upload_new_media()
  *
  * @param  array $metadata      An array of attachment meta data.
  * @param  int   $attachment_id Current attachment ID.
@@ -15,11 +16,11 @@ add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', P
 function _imagify_optimize_attachment( $metadata, $attachment_id ) {
 	$api_key = get_imagify_option( 'api_key', false );
 
-	if ( empty( $api_key ) || get_imagify_option( 'auto_optimize', false ) ) {
+	if ( ! $api_key || ! get_imagify_option( 'auto_optimize', false ) ) {
 		return $metadata;
 	}
 
-	$context	 = 'wp';
+	$context     = 'wp';
 	$action      = 'imagify_async_optimize_upload_new_media';
 	$_ajax_nonce = wp_create_nonce( 'new_media-' . $attachment_id );
 
@@ -37,7 +38,7 @@ add_action( 'delete_attachment', '_imagify_delete_backup_file' );
  * @param int $post_id Attachment ID.
  */
 function _imagify_delete_backup_file( $post_id ) {
-	$attachment  = new Imagify_Attachment( $post_id );
+	$attachment = new Imagify_Attachment( $post_id );
 	$attachment->delete_backup();
 }
 

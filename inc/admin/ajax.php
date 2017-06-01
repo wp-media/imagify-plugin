@@ -569,7 +569,8 @@ add_action( 'wp_ajax_imagify_async_optimize_upload_new_media', '_do_admin_post_a
  *
  * @since 1.5
  * @author Julio Potier
- **/
+ * @see _imagify_optimize_attachment()
+ */
 function _do_admin_post_async_optimize_upload_new_media() {
 	if ( ! isset( $_POST['_ajax_nonce'], $_POST['attachment_id'], $_POST['metadata'], $_POST['context'] ) ) { // WPCS: CSRF ok.
 		return;
@@ -592,7 +593,7 @@ add_action( 'wp_ajax_imagify_async_optimize_save_image_editor_file', '_do_admin_
  *
  * @since 1.4
  * @author Julio Potier
- **/
+ */
 function _do_admin_post_async_optimize_save_image_editor_file() {
 	if ( ! isset( $_POST['do'], $_POST['postid'] ) ) { // WPCS: CSRF ok.
 		return;
@@ -619,7 +620,7 @@ function _do_admin_post_async_optimize_save_image_editor_file() {
 		$attachment->restore();
 
 		// Get old metadata to regenerate all thumbnails.
-		$metadata 	  = array( 'sizes' => array() );
+		$metadata     = array( 'sizes' => array() );
 		$backup_sizes = (array) get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
 
 		foreach ( $backup_sizes as $size_key => $size_data ) {

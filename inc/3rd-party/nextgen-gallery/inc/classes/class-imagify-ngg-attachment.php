@@ -21,7 +21,7 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 	 *
 	 * @since 1.5
 	 *
-	 * @var    object
+	 * @var    object A nggImage object.
 	 * @access public
 	 */
 	public $image;
@@ -200,10 +200,10 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 	 * Fills statistics data with values from $data array.
 	 *
 	 * @since 1.5
+	 * @since 1.6.6 Not static anymore.
 	 * @author Jonathan Buttigieg
-	 *
 	 * @access public
-	 * @static
+	 *
 	 * @param  array  $data      The statistics data.
 	 * @param  object $response  The API response.
 	 * @param  int    $id        The attachment ID.
@@ -211,7 +211,9 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 	 * @param  string $size      The attachment size key.
 	 * @return bool|array        False if the original size has an error or an array contains the data for other result.
 	 */
-	static public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
+	public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
+		$data['sizes'] = ! empty( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
+
 		if ( is_wp_error( $response ) ) {
 			$error        = $response->get_error_message();
 			$error_status = 'error';
@@ -236,6 +238,12 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 				return false;
 			}
 		} else {
+			$response = (object) array_merge( array(
+				'original_size' => 0,
+				'new_size'      => 0,
+				'percent'       => 0,
+			), (array) $response );
+
 			$data['sizes'][ $size ] = array(
 				'success'        => true,
 				'file_url'       => $url,
@@ -246,7 +254,7 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 
 			$data['stats']['original_size']  += ( isset( $response->original_size ) ) ? $response->original_size : 0;
 			$data['stats']['optimized_size'] += ( isset( $response->new_size ) ) ? $response->new_size : 0;
-			$data['stats']['percent'] = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
+			$data['stats']['percent']         = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
 		} // End if().
 
 		return $data;
@@ -347,16 +355,16 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		) );
 		$data     = $this->fill_data( $data, $response, $id, $attachment_url );
 
+		if ( ! $data ) {
+			delete_transient( 'imagify-ngg-async-in-progress-' . $id );
+			return;
+		}
+
 		// Save the optimization level.
 		imagify_ngg_db()->update( $id, array(
 			'pid'                => $id,
 			'optimization_level' => $optimization_level,
 		) );
-
-		if ( ! $data ) {
-			delete_transient( 'imagify-ngg-async-in-progress-' . $id );
-			return;
-		}
 
 		// If we resized the original with success, we have to update the attachment metadata.
 		// If not, WordPress keeps the old attachment size.

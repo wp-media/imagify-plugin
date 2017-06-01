@@ -23,7 +23,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @param  int $id The attachment ID.
 	 * @return void
 	 */
-	function __construct( $id = 0 ) {
+	public function __construct( $id = 0 ) {
 		global $post;
 
 		if ( is_object( $post ) && ! $id ) {
@@ -145,8 +145,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * Fills statistics data with values from $data array.
 	 *
 	 * @since 1.0
+	 * @since 1.6.6 Not static anymore.
 	 * @access public
-	 * @static
 	 *
 	 * @param  array  $data      The statistics data.
 	 * @param  object $response  The API response.
@@ -155,7 +155,9 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @param  string $size      The attachment size key.
 	 * @return bool|array        False if the original size has an error or an array contains the data for other result.
 	 */
-	static public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
+	public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
+		$data['sizes'] = ! empty( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
+
 		if ( is_wp_error( $response ) ) {
 			$error        = $response->get_error_message();
 			$error_status = 'error';
@@ -178,6 +180,12 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 				return false;
 			}
 		} else {
+			$response = (object) array_merge( array(
+				'original_size' => 0,
+				'new_size'      => 0,
+				'percent'       => 0,
+			), (array) $response );
+
 			$data['sizes'][ $size ] = array(
 				'success'        => true,
 				'file_url'       => $url,
@@ -186,8 +194,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 				'percent'        => $response->percent,
 			);
 
-			$data['stats']['original_size']  += isset( $response->original_size ) ? $response->original_size : 0;
-			$data['stats']['optimized_size'] += isset( $response->new_size )      ? $response->new_size      : 0;
+			$data['stats']['original_size']  += $response->original_size;
+			$data['stats']['optimized_size'] += $response->new_size;
 		}
 
 		return $data;
@@ -218,7 +226,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		);
 
 		// To avoid issue with "original_size" at 0 in "_imagify_data".
-		if ( 0 === $this->get_stats_data( 'original_size' ) ) {
+		if ( 0 === (int) $this->get_stats_data( 'original_size' ) ) {
 			delete_post_meta( $id, '_imagify_data' );
 			delete_post_meta( $id, '_imagify_status' );
 			delete_post_meta( $id, '_imagify_optimization_level' );
@@ -294,13 +302,13 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		) );
 		$data     = $this->fill_data( $data, $response, $id, $attachment_url );
 
-		// Save the optimization level.
-		update_post_meta( $id, '_imagify_optimization_level', $optimization_level );
-
 		if ( ! $data ) {
 			delete_transient( 'imagify-async-in-progress-' . $id );
 			return;
 		}
+
+		// Save the optimization level.
+		update_post_meta( $id, '_imagify_optimization_level', $optimization_level );
 
 		// If we resized the original with success, we have to update the attachment metadata.
 		// If not, WordPress keeps the old attachment size.

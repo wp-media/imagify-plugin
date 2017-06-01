@@ -57,6 +57,7 @@ function do_imagify( $file_path, $args = array() ) {
 	if ( ! $filesystem->exists( $file_path ) || ! $filesystem->is_file( $file_path ) ) {
 		/* translators: %s is a file path. */
 		$errors->add( 'file_not_found', sprintf( __( 'Could not find %s', 'imagify' ), $file_path ) );
+		return $errors;
 	}
 
 	// Check that the file is writable.
@@ -67,7 +68,7 @@ function do_imagify( $file_path, $args = array() ) {
 	}
 
 	// Get file size.
-	$file_size = $filesystem->exists( $file_path ) ? $filesystem->size( $file_path ) : 0;
+	$file_size = $filesystem->size( $file_path );
 
 	// Check that file exists.
 	if ( 0 === $file_size ) {
