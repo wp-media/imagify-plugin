@@ -252,8 +252,8 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 				'percent'        => $response->percent,
 			);
 
-			$data['stats']['original_size']  += ( isset( $response->original_size ) ) ? $response->original_size : 0;
-			$data['stats']['optimized_size'] += ( isset( $response->new_size ) ) ? $response->new_size : 0;
+			$data['stats']['original_size']  += $response->original_size;
+			$data['stats']['optimized_size'] += $response->new_size;
 			$data['stats']['percent']         = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
 		} // End if().
 
