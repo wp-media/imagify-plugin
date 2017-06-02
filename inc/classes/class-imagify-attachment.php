@@ -196,7 +196,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 			$data['stats']['original_size']  += $response->original_size;
 			$data['stats']['optimized_size'] += $response->new_size;
-		}
+		} // End if().
 
 		return $data;
 	}

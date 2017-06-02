@@ -349,7 +349,7 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		// Optimize the original size.
 		$response = do_imagify( $attachment_path, array(
 			'optimization_level' => $optimization_level,
-			'context'            => 'ngg',
+			'context'            => 'NGG',
 			'resized'            => $resized,
 			'original_size'      => $attachment_original_size,
 		) );
