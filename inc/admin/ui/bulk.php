@@ -185,7 +185,7 @@ function _imagify_display_bulk_page() {
 
 							if ( get_transient( IMAGIFY_SLUG . '_large_library' ) ) {
 								printf(
-									/* translators: %s is a formated number. Don't use %d. */
+									/* translators: %s is a formatted number. Don't use %d. */
 									__( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ),
 									/**
 									 * Filter the unoptimized attachments limit.

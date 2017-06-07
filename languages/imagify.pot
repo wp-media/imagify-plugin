@@ -5,7 +5,6 @@ msgstr ""
 "Project-Id-Version: Imagify\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-31 12:44+0200\n"
-"PO-Revision-Date: 2016-09-23 10:02-0500\n"
 "Last-Translator: Rémy Perona <remperona@gmail.com>\n"
 "Language-Team: WP Media <contact@imagify.io>\n"
 "MIME-Version: 1.0\n"
@@ -180,7 +179,7 @@ msgid ""
 "depending on your server and network speed."
 msgstr ""
 
-#. translators: %s is a formated number. Don't use %d.
+#. translators: %s is a formatted number. Don't use %d.
 #: ../inc/admin/ui/bulk.php:189
 #, php-format
 msgid ""
@@ -428,7 +427,7 @@ msgstr ""
 msgid "Switch to the List View"
 msgstr ""
 
-#. translators: 1 is a "bold" tag start, 2 is a formated data quota, 3 is a date, 4 is the "bold" tag end.
+#. translators: 1 is a "bold" tag start, 2 is a formatted data quota, 3 is a date, 4 is the "bold" tag end.
 #: ../inc/admin/ui/notices.php:297
 #, php-format
 msgid ""
@@ -459,7 +458,7 @@ msgstr ""
 msgid "Get WP Rocket now"
 msgstr ""
 
-#. translators: 1 is a "bold" tag start, 2 is the "bold" tag end, 3 is a formated number (don't use %3$d).
+#. translators: 1 is a "bold" tag start, 2 is the "bold" tag end, 3 is a formatted number (don't use %3$d).
 #: ../inc/admin/ui/notices.php:418
 #, php-format
 msgid ""
@@ -992,6 +991,7 @@ msgstr ""
 msgid "Special Offer<br><strong>Until %s</strong>"
 msgstr ""
 
+#. translators: Don't use escaped HTML entities here (like &nbsp;).
 #: ../inc/functions/i18n.php:20
 msgid "Let's get you started!"
 msgstr ""
@@ -1008,6 +1008,7 @@ msgstr ""
 msgid "You need to specify an email!"
 msgstr ""
 
+#. translators: Don't use escaped HTML entities here (like &nbsp;).
 #: ../inc/functions/i18n.php:24 ../inc/functions/i18n.php:31
 msgid "Congratulations!"
 msgstr ""
@@ -1018,6 +1019,7 @@ msgid ""
 "are going to receive an email with API key."
 msgstr ""
 
+#. translators: Don't use escaped HTML entities here (like &nbsp;).
 #: ../inc/functions/i18n.php:26
 msgid "Connect to Imagify!"
 msgstr ""

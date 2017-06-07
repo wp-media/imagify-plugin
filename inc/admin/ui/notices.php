@@ -293,7 +293,7 @@ function _imagify_warning_over_quota_notice() {
 			<p class="imagify-notice-title"><strong><?php _e( 'Oops, It\'s Over!', 'imagify' ); ?></strong></p>
 			<p><?php
 				printf(
-					/* translators: 1 is a "bold" tag start, 2 is a formated data quota, 3 is a date, 4 is the "bold" tag end. */
+					/* translators: 1 is a "bold" tag start, 2 is a formatted data quota, 3 is a date, 4 is the "bold" tag end. */
 					__( 'You have consumed all your credit for this month. You will have %1$s%2$s back on %3$s%4$s.', 'imagify' ),
 					'<strong>',
 					size_format( $user->quota * 1048576 ),
@@ -414,7 +414,7 @@ function _imagify_rating_notice() {
 		<div class="imagify-notice-content">
 			<p><?php
 				printf(
-					/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end, 3 is a formated number (don't use %3$d). */
+					/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end, 3 is a formatted number (don't use %3$d). */
 					__( '%1$sCongratulations%2$s, you have optimized %1$s%3$s images%2$s and improved your website\'s speed by reducing your images size.', 'imagify' ),
 					'<strong>',
 					'</strong>',

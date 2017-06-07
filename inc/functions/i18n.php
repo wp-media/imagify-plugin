@@ -17,12 +17,15 @@ function get_imagify_localize_script_translations( $context ) {
 		case 'admin':
 			$translations = array(
 				'labels' => array(
+					/* translators: Don't use escaped HTML entities here (like &nbsp;). */
 					'signupTitle'                 => __( 'Let\'s get you started!', 'imagify' ),
 					'signupText'                  => __( 'Enter your email to get an API key:', 'imagify' ),
 					'signupConfirmButtonText'     => __( 'Sign Up', 'imagify' ),
 					'signupErrorEmptyEmail'       => __( 'You need to specify an email!', 'imagify' ),
+					/* translators: Don't use escaped HTML entities here (like &nbsp;). */
 					'signupSuccessTitle'          => __( 'Congratulations!', 'imagify' ),
 					'signupSuccessText'           => __( 'Your account has been succesfully created. Please check your mailbox, you are going to receive an email with API key.', 'imagify' ),
+					/* translators: Don't use escaped HTML entities here (like &nbsp;). */
 					'saveApiKeyTitle'             => __( 'Connect to Imagify!', 'imagify' ),
 					'saveApiKeyText'              => __( 'Paste your API key below:', 'imagify' ),
 					'saveApiKeyConfirmButtonText' => __( 'Connect me', 'imagify' ),
