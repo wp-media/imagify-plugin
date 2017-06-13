@@ -44,8 +44,12 @@
 		<exclude name="WordPress.XSS.EscapeOutput"/>
 	</rule>
 
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>inc/functions/deprecated.php</exclude-pattern>
+	</rule>
+
 	<rule ref="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid">
-		<exclude-pattern>inc/classes/class-imagify-deprecated.php</exclude-pattern>
+		<exclude-pattern>inc/functions/deprecated.php</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.NamingConventions.ValidVariableName">
