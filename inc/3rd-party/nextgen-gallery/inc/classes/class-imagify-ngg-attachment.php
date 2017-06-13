@@ -200,19 +200,27 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 	 * Fills statistics data with values from $data array.
 	 *
 	 * @since 1.5
-	 * @since 1.6.6 Not static anymore.
+	 * @since 1.6.6 Not static anymore, removed the attachment ID parameter.
 	 * @author Jonathan Buttigieg
 	 * @access public
 	 *
 	 * @param  array  $data      The statistics data.
 	 * @param  object $response  The API response.
-	 * @param  int    $id        The attachment ID.
 	 * @param  int    $url       The attachment URL.
 	 * @param  string $size      The attachment size key.
 	 * @return bool|array        False if the original size has an error or an array contains the data for other result.
 	 */
-	public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
+	public function fill_data( $data, $response, $url, $size = 'full' ) {
+		$data          = is_array( $data ) ? $data : array();
 		$data['sizes'] = ! empty( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
+
+		if ( empty( $data['stats'] ) ) {
+			$data['stats'] = array(
+				'original_size'  => 0,
+				'optimized_size' => 0,
+				'percent'        => 0,
+			);
+		}
 
 		if ( is_wp_error( $response ) ) {
 			$error        = $response->get_error_message();
@@ -229,8 +237,8 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 					$error_status = 'already_optimized';
 				}
 
-				imagify_ngg_db()->update( $id, array(
-					'pid'    => $id,
+				imagify_ngg_db()->update( $this->id, array(
+					'pid'    => $this->id,
 					'status' => $error_status,
 					'data'   => serialize( $data ),
 				) );
@@ -274,20 +282,9 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 	public function optimize( $optimization_level = null, $metadata = array() ) {
 		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
 
-		$id   = $this->id;
-		$data = array(
-			'stats' => array(
-				'original_size'  => 0,
-				'optimized_size' => 0,
-				'percent'        => 0,
-			),
-		);
-
 		// To avoid issue with "original_size" at 0 in "_imagify_data".
-		if ( 0 === $this->get_stats_data( 'original_size' ) ) {
-			delete_post_meta( $id, '_imagify_data' );
-			delete_post_meta( $id, '_imagify_status' );
-			delete_post_meta( $id, '_imagify_optimization_level' );
+		if ( 0 === (int) $this->get_stats_data( 'original_size' ) ) {
+			$this->delete_imagify_data();
 		}
 
 		// Get file path & URL for original image.
@@ -307,9 +304,9 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		 *
 		 * @param int $id The attachment ID
 		*/
-		do_action( 'before_imagify_ngg_optimize_attachment', $id );
+		do_action( 'before_imagify_ngg_optimize_attachment', $this->id );
 
-		set_transient( 'imagify-ngg-async-in-progress-' . $id, true, 10 * MINUTE_IN_SECONDS );
+		set_transient( 'imagify-ngg-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
 
 		// Get the resize values for the original size.
 		$resized         = false;
@@ -353,16 +350,17 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 			'resized'            => $resized,
 			'original_size'      => $attachment_original_size,
 		) );
-		$data     = $this->fill_data( $data, $response, $id, $attachment_url );
+
+		$data = $this->fill_data( null, $response, $attachment_url );
 
 		if ( ! $data ) {
-			delete_transient( 'imagify-ngg-async-in-progress-' . $id );
+			delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
 			return;
 		}
 
 		// Save the optimization level.
-		imagify_ngg_db()->update( $id, array(
-			'pid'                => $id,
+		imagify_ngg_db()->update( $this->id, array(
+			'pid'                => $this->id,
 			'optimization_level' => $optimization_level,
 		) );
 
@@ -376,8 +374,8 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		$data = $this->optimize_thumbnails( $optimization_level, $data );
 
 		// Save the status to success.
-		imagify_ngg_db()->update( $id, array(
-			'pid'    => $id,
+		imagify_ngg_db()->update( $this->id, array(
+			'pid'    => $this->id,
 			'status' => 'success',
 		) );
 
@@ -389,9 +387,9 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		 * @param int    $id    The attachment ID.
 		 * @param array  $data  The optimization data.
 		*/
-		do_action( 'after_imagify_ngg_optimize_attachment', $id, $data );
+		do_action( 'after_imagify_ngg_optimize_attachment', $this->id, $data );
 
-		delete_transient( 'imagify-ngg-async-in-progress-' . $id );
+		delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
 
 		return $data;
 	}
@@ -408,7 +406,6 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 	 * @return array $data                The optimization data.
 	 */
 	public function optimize_thumbnails( $optimization_level = null, $data = array() ) {
-		$id      = $this->id;
 		$storage = C_Gallery_Storage::get_instance();
 		$sizes   = $storage->get_image_sizes();
 		$data    = $data ? $data : $this->get_data();
@@ -427,7 +424,7 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		 *
 		 * @param int $id The image ID.
 		*/
-		do_action( 'before_imagify_ngg_optimize_thumbnails', $id );
+		do_action( 'before_imagify_ngg_optimize_thumbnails', $this->id );
 
 		if ( $sizes ) {
 			foreach ( $sizes as $size_key ) {
@@ -444,7 +441,7 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 					'optimization_level' => $optimization_level,
 					'context'            => 'wp',
 				) );
-				$data     = $this->fill_data( $data, $response, $id, $thumbnail_url, $size_key );
+				$data     = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
 
 				/**
 				* Filter the optimization data of a specific thumbnail.
@@ -460,11 +457,11 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 				* @param  bool   $is_aggressive   The optimization level.
 				* @return array  $data            The new optimization data.
 				*/
-				$data = apply_filters( 'imagify_fill_ngg_thumbnail_data', $data, $response, $id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
+				$data = apply_filters( 'imagify_fill_ngg_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
 			}
 
-			imagify_ngg_db()->update( $id, array(
-				'pid'  => $id,
+			imagify_ngg_db()->update( $this->id, array(
+				'pid'  => $this->id,
 				'data' => serialize( $data ),
 			) );
 		} // End if().
@@ -477,7 +474,7 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		 * @param int   $id    The image ID.
 		 * @param array $data  The optimization data.
 		*/
-		do_action( 'after_imagify_ngg_optimize_thumbnails', $id, $data );
+		do_action( 'after_imagify_ngg_optimize_thumbnails', $this->id, $data );
 
 		return $data;
 	}
@@ -497,7 +494,6 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 			return;
 		}
 
-		$id              = $this->id;
 		$backup_path     = $this->get_backup_path();
 		$attachment_path = $this->get_original_path();
 
@@ -508,13 +504,13 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		 *
 		 * @param int $id The attachment ID.
 		*/
-		do_action( 'before_imagify_ngg_restore_attachment', $id );
+		do_action( 'before_imagify_ngg_restore_attachment', $this->id );
 
 		// Create the original image from the backup.
-		C_Gallery_Storage::get_instance()->recover_image( $id );
+		C_Gallery_Storage::get_instance()->recover_image( $this->id );
 
 		// Remove old optimization data.
-		imagify_ngg_db()->delete( $id );
+		imagify_ngg_db()->delete( $this->id );
 
 		/**
 		 * Fires after restoring an attachment.
@@ -523,6 +519,6 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 		 *
 		 * @param int $id The attachment ID.
 		*/
-		do_action( 'after_imagify_ngg_restore_attachment', $id );
+		do_action( 'after_imagify_ngg_restore_attachment', $this->id );
 	}
 }

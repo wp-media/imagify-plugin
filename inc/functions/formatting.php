@@ -37,14 +37,27 @@ function imagify_round_half_five( $number ) {
  * Get the Imagify attachment class name depending to a context.
  *
  * @since 1.5
+ * @since 1.6.6 $attachment_id and $identifier have been added.
  * @source Jonathan Buttigieg
  *
- * @param  string $context     The context to determine the class name.
- * @return string $class_name  The Imagify attachment class name.
+ * @param  string $context       The context to determine the class name.
+ * @param  int    $attachment_id The attachment ID.
+ * @param  string $identifier    An identifier.
+ * @return string                The Imagify attachment class name.
  */
-function get_imagify_attachment_class_name( $context = 'wp' ) {
-	$class_name  = 'Imagify_';
-	$class_name .= 'wp' !== $context ? $context . '_Attachment' : 'Attachment';
+function get_imagify_attachment_class_name( $context, $attachment_id, $identifier ) {
+	$context = $context ? $context : 'wp';
+	/**
+	 * Filter the context used for the optimization.
+	 *
+	 * @since 1.6.6
+	 * @author Grégory Viguier
+	 *
+	 * @param string $context       The context.
+	 * @param int    $attachment_id The attachment ID.
+	 * @param string $identifier    An identifier.
+	 */
+	$context = apply_filters( 'imagify_optimize_attachment_context', $context, $attachment_id, $identifier );
 
-	return $class_name;
+	return 'Imagify_' . ( 'wp' !== $context ? $context . '_' : '' ) . 'Attachment';
 }
