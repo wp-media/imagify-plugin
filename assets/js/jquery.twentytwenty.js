@@ -1,13 +1,29 @@
-(function(window, $, undefined){
+/* globals ajaxurl: false, console: false, imagifyTTT: true */
+
+window.imagify = window.imagify || {
+	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
+	log:    function( content ) {
+		if ( undefined !== console ) {
+			console.log( content );
+		}
+	},
+	info:   function( content ) {
+		if ( undefined !== console ) {
+			console.info( content );
+		}
+	}
+};
+
+(function($, d, w, undefined) {
 
 	$.fn.twentytwenty = function(options, callback) {
-		var options = $.extend({
+		options = $.extend({
 			handlePosition		: 0.5,
 			orientation			: 'horizontal',
 			labelBefore			: 'Before',
 			labelAfter			: 'After'
-		}
-		, options);
+		}, options);
+
 		return this.each(function() {
 
 			var sliderPct			= options.handlePosition,
@@ -17,12 +33,12 @@
 				afterDirection		= (sliderOrientation === 'vertical') ? 'up' : 'right',
 				$beforeImg			= $container.find('img:first'),
 				$afterImg			= $container.find('img:last');
-			
-			
+
+
 			$container.wrap('<div class="twentytwenty-wrapper twentytwenty-' + sliderOrientation + '"></div>');
 			$container.append('<div class="twentytwenty-overlay"></div>');
 			$container.append('<div class="twentytwenty-handle"></div>');
-			
+
 			var $slider = $container.find('.twentytwenty-handle');
 
 			$slider.append('<span class="twentytwenty-' + beforeDirection + '-arrow"></span>');
@@ -30,7 +46,7 @@
 			$container.addClass('twentytwenty-container');
 			$beforeImg.addClass('twentytwenty-before');
 			$afterImg.addClass('twentytwenty-after');
-			
+
 			var $overlay = $container.find('.twentytwenty-overlay');
 
 			$overlay.append('<div class="twentytwenty-labels twentytwenty-before-label"><span class="twentytwenty-label-content">' + options.labelBefore + '</span></div>');
@@ -38,7 +54,7 @@
 
 
 			// some usefull function and vars declarations
-			
+
 			var calcOffset = function(dimensionPct) {
 					var w = $beforeImg.width();
 					var h = $beforeImg.height();
@@ -76,10 +92,10 @@
 				imgWidth = 0,
 				imgHeight = 0;
 
-			$(window).on('resize.twentytwenty', function(e) {
+			$(window).on('resize.twentytwenty', function() {
 				adjustSlider( sliderPct );
 			});
-			
+
 			$slider.on('movestart', function(e) {
 				if ( ( ( e.distX > e.distY && e.distX < -e.distY ) || ( e.distX < e.distY && e.distX > -e.distY ) ) && sliderOrientation !== 'vertical' ) {
 					e.preventDefault();
@@ -90,11 +106,11 @@
 				$container.addClass('active');
 				offsetX 	= $container.offset().left;
 				offsetY 	= $container.offset().top;
-				imgWidth 	= $beforeImg.width(); 
-				imgHeight 	= $beforeImg.height();          
+				imgWidth 	= $beforeImg.width();
+				imgHeight 	= $beforeImg.height();
 			});
 
-			$slider.on('moveend', function(e) {
+			$slider.on('moveend', function() {
 				$container.removeClass('active');
 			});
 
@@ -121,519 +137,524 @@
 		});
 	};
 
-})(window, jQuery);
+} )(jQuery, document, window);
 
 /**
  * Twentytwenty Imagify Init
  */
-(function($, window, document, undefined){
+(function($, d, w, undefined) {
 
 	/*
 	 * Mini chart
 	 *
 	 * @param {element} canvas
-	 */	
-	var draw_me_a_chart = function ( canvas ) {
-		canvas.each(function(){
-			var the_value = parseInt( $(this).closest('.imagify-chart').next('.imagify-chart-value').text() ),
-				overviewData = [
-				{
-					value: the_value,
-					color: '#00B3D3'
-				},
-				{
-					value: 100 - the_value,
-					color: '#D8D8D8'
-				}
-				],
-				overviewDoughnut = new Chart( $(this)[0].getContext('2d')).Doughnut(overviewData, {
-					segmentStrokeColor	: '#2A2E3C',
-					segmentStrokeWidth	: 1,
-					animateRotate		: true,
-					percentageInnerCutout: 60,
-					tooltipEvents		: []
-				});
-		});
-	};
-
-	/**
-	 * Dynamic modal
-	 *
-	 * @param {object}	Parameters to build modal with datas
 	 */
-	var imagify_open_modal = function( $the_link ){
+	var drawMeAChart = function ( canvas ) {
+			canvas.each( function() {
+				var $this        = $( this ),
+					theValue     = parseInt( $this.closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() ),
+					overviewData = [
+						{
+							value: theValue,
+							color: '#00B3D3'
+						},
+						{
+							value: 100 - theValue,
+							color: '#D8D8D8'
+						}
+					];
 
-			var the_target = $the_link.data('target') || $the_link.attr('href');
-
-			$( the_target ).css('display', 'flex').hide().fadeIn(400).attr('aria-hidden', 'false').attr('tabindex', '0').focus().removeAttr('tabindex').addClass('modal-is-open');
-			$('body').addClass('imagify-modal-is-open');
-
+				new Chart( $this[0].getContext( '2d' ) ).Doughnut( overviewData, {
+					segmentStrokeColor   : '#2A2E3C',
+					segmentStrokeWidth   : 1,
+					animateRotate        : true,
+					percentageInnerCutout: 60,
+					tooltipEvents        : []
+				} );
+			} );
 		},
-		imagify_twenty_modal = function( options ) {
-		
-		var defaults = {
-				width: 0, //px
-				height: 0, //px
-				original_url: '', //url
-				optimized_url: '', //url
-				original_size: 0, //mb
-				optimized_size: 0, // mb
-				saving: 0, //percent
-				modal_append_to: $('body'), // jQuery element
-				trigger: $('[data-target="imagify-visual-comparison"]'), // jQuery element (button, link) with data-target="modal_id"
-				modal_id: 'imagify-visual-comparison', // should be dynamic if multiple modals
-				open_modal: false
-			},
-			settings = $.extend({}, defaults, options);
+		/**
+		 * Dynamic modal
+		 *
+		 * @param {object}	Parameters to build modal with datas
+		 */
+		imagifyOpenModal = function( $theLink ) {
+			var theTarget = $theLink.data( 'target' ) || $theLink.attr( 'href' );
 
-		if ( settings.width === 0 || settings.height === 0 || settings.original_url === ''|| settings.optimized_url === '' || settings.original_size === 0 || settings.optimized_size === 0 || settings.saving === 0 ) {
-			return 'error';
-		}
+			$( theTarget ).css( 'display', 'flex' ).hide().fadeIn( 400 ).attr( 'aria-hidden', 'false' ).attr( 'tabindex', '0' ).focus().removeAttr( 'tabindex' ).addClass( 'modal-is-open' );
+			$( 'body' ).addClass( 'imagify-modal-is-open' );
+		},
+		imagifyTwentyModal = function( options ) {
+			var defaults = {
+					width:         0, //px
+					height:        0, //px
+					originalUrl:   '', //url
+					optimizedUrl:  '', //url
+					originalSize:  0, //mb
+					optimizedSize: 0, // mb
+					saving:        0, //percent
+					modalAppendTo: $( 'body' ), // jQuery element
+					trigger:       $( '[data-target="imagify-visual-comparison"]' ), // jQuery element (button, link) with data-target="modalId"
+					modalId:       'imagify-visual-comparison', // should be dynamic if multiple modals
+					openModal:     false
+				},
+				settings = $.extend( {}, defaults, options ),
+				modalHtml;
 
-		// create modal box
-		settings.modal_append_to.append(''
-			+ '<div id="' + settings.modal_id + '" class="imagify-modal imagify-visual-comparison" aria-hidden="true">'
-				+ '<div class="imagify-modal-content loading">'
-					+ '<div class="twentytwenty-container">'
-						+ '<img class="imagify-img-before" alt="" width="' + settings.width + '" height="' + settings.height + '">'
-						+ '<img class="imagify-img-after" alt="" width="' + settings.width + '" height="' + settings.height + '">'
-					+ '</div>'
-					+ '<div class="imagify-comparison-levels">'
-						+ '<div class="imagify-c-level imagify-level-original go-left">'
-							+ '<p class="imagify-c-level-row">'
-								+ '<span class="label">' + imagifyTTT.labels.filesize + '</span>'
-								+ '<span class="value level">' + settings.original_size + '</span>'
-							+ '</p>'
-						+ '</div>'
-						+ '<div class="imagify-c-level imagify-level-optimized go-right">'
-							+ '<p class="imagify-c-level-row">'
-								+ '<span class="label">' + imagifyTTT.labels.filesize + '</span>'
-								+ '<span class="value level">' + settings.optimized_size + '</span>'
-							+ '</p>'
-							+ '<p class="imagify-c-level-row">'
-								+ '<span class="label">' + imagifyTTT.labels.saving + '</span>'
-								+ '<span class="value"><span class="imagify-chart"><span class="imagify-chart-container"><canvas id="imagify-consumption-chart-normal" width="15" height="15"></canvas></span></span><span class="imagify-chart-value">' + settings.saving + '</span>%</span>'
-							+ '</p>'
-						+'</div>'
-					+ '</div>'
-					+ '<button class="close-btn absolute" type="button"><i aria-hidden="true" class="dashicons dashicons-no-alt"></i><span class="screen-reader-text">' + imagifyTTT.labels.close + '</span></button>'
-				+ '</div>'
-			+ '</div>'
-		);
-
-		settings.trigger.on('click.imagify', function(){
-
-			var $modal = $( $(this).data('target') ),
-				imgs_loaded = 0;
-
-			if ( typeof imagify_open_modal === 'function' && settings.open_modal ) {
-				imagify_open_modal( $(this) );
+			if ( 0 === settings.width || 0 === settings.height || '' === settings.originalUrl || '' === settings.optimizedUrl || 0 === settings.originalSize || 0 === settings.optimizedSize || 0 === settings.saving ) {
+				return 'error';
 			}
 
-			$modal.find('.imagify-modal-content').css({
-				'width'		: ($(window).outerWidth()*0.85) + 'px',
-				'max-width'	: settings.width
-			});
+			// create modal box
+			modalHtml  = '<div id="' + settings.modalId + '" class="imagify-modal imagify-visual-comparison" aria-hidden="true">';
+				modalHtml += '<div class="imagify-modal-content loading">';
+					modalHtml += '<div class="twentytwenty-container">';
+						modalHtml += '<img class="imagify-img-before" alt="" width="' + settings.width + '" height="' + settings.height + '">';
+						modalHtml += '<img class="imagify-img-after" alt="" width="' + settings.width + '" height="' + settings.height + '">';
+					modalHtml += '</div>';
+					modalHtml += '<div class="imagify-comparison-levels">';
+						modalHtml += '<div class="imagify-c-level imagify-level-original go-left">';
+							modalHtml += '<p class="imagify-c-level-row">';
+								modalHtml += '<span class="label">' + imagifyTTT.labels.filesize + '</span>';
+								modalHtml += '<span class="value level">' + settings.originalSize + '</span>';
+							modalHtml += '</p>';
+						modalHtml += '</div>';
+						modalHtml += '<div class="imagify-c-level imagify-level-optimized go-right">';
+							modalHtml += '<p class="imagify-c-level-row">';
+								modalHtml += '<span class="label">' + imagifyTTT.labels.filesize + '</span>';
+								modalHtml += '<span class="value level">' + settings.optimizedSize + '</span>';
+							modalHtml += '</p>';
+							modalHtml += '<p class="imagify-c-level-row">';
+								modalHtml += '<span class="label">' + imagifyTTT.labels.saving + '</span>';
+								modalHtml += '<span class="value"><span class="imagify-chart"><span class="imagify-chart-container"><canvas id="imagify-consumption-chart-normal" width="15" height="15"></canvas></span></span><span class="imagify-chart-value">' + settings.saving + '</span>%</span>';
+							modalHtml += '</p>';
+						modalHtml += '</div>';
+					modalHtml += '</div>';
+					modalHtml += '<button class="close-btn absolute" type="button"><i aria-hidden="true" class="dashicons dashicons-no-alt"></i><span class="screen-reader-text">' + imagifyTTT.labels.close + '</span></button>';
+				modalHtml += '</div>';
+			modalHtml += '</div>';
 
-			// load before img
-			$modal.find('.imagify-img-before').on('load', function(){
-				imgs_loaded++;
-			}).attr('src', settings.original_url);
+			settings.modalAppendTo.append( modalHtml );
 
-			// load after img
-			$modal.find('.imagify-img-after').on('load', function(){
-				imgs_loaded++;
-			}).attr('src', settings.optimized_url);
+			settings.trigger.on( 'click.imagify', function() {
+				var $modal     = $( $( this ).data( 'target' ) ),
+					imgsLoaded = 0,
+					$tt, checkLoad;
 
-			var $tt = $modal.find('.twentytwenty-container'),
-				check_load = setInterval( function(){
+				if ( typeof imagifyOpenModal === 'function' && settings.openModal ) {
+					imagifyOpenModal( $( this ) );
+				}
 
-					if ( imgs_loaded === 2 ) {
-						$tt.twentytwenty({
-							handlePosition: 0.3,
-							orientation: 	'horizontal',
-							labelBefore: 	imagifyTTT.labels.original_l,
-							labelAfter: 	imagifyTTT.labels.optimized_l
-						}, function(){
+				$modal.find( '.imagify-modal-content').css( {
+					'width'    : ( $( w ).outerWidth() * 0.85 ) + 'px',
+					'max-width': settings.width
+				} );
 
-							var windowH	= $(window).height(),
-								ttH 	= $modal.find('.twentytwenty-container').height(),
-								ttTop	= $modal.find('.twentytwenty-wrapper').position().top;
+				// Load before img.
+				$modal.find( '.imagify-img-before').on( 'load', function() {
+					imgsLoaded++;
+				} ).attr( 'src', settings.originalUrl );
 
-							if ( ! $tt.closest('.imagify-modal-content').hasClass('loaded') ) {
-								$tt.closest('.imagify-modal-content').removeClass('loading').addClass('loaded');
-								draw_me_a_chart( $modal.find('.imagify-level-optimized').find('.imagify-chart').find('canvas') );
-							}
+				// Load after img.
+				$modal.find( '.imagify-img-after' ).on( 'load', function() {
+					imgsLoaded++;
+				} ).attr( 'src', settings.optimizedUrl );
 
-							// check if image height is to big
-							if ( windowH < ttH && ! $modal.hasClass('modal-is-too-high') ) {
-								$modal.addClass('modal-is-too-high');
-
-								var $handle		= $modal.find('.twentytwenty-handle'),
-									$labels		= $modal.find('.twentytwenty-label-content'),
-									$datas		= $modal.find('.imagify-comparison-levels'),
-									datasH		= $datas.outerHeight(),
-									handle_pos	= ( windowH - ttTop - $handle.height() ) / 2,
-									labels_pos	= ( windowH - ttTop * 3 - datasH );
-
-								$handle.css({
-									top: handle_pos
-								});
-								$labels.css({
-									top: labels_pos,
-									bottom: 'auto'
-								});
-								$modal.find('.twentytwenty-wrapper').css({
-									paddingBottom: datasH
-								});
-
-								$modal.find('.imagify-modal-content').on('scroll.imagify', function(){
-									$handle.css({
-										top: handle_pos + $(this).scrollTop()
-									});
-									$labels.css({
-										top: labels_pos + $(this).scrollTop()
-									});
-									$datas.css({
-										bottom: - ( $(this).scrollTop() )
-									});
-								});
-							}
-
-						});
-						clearInterval( check_load );
-						check_load = null;
-						return 'done';
+				$tt       = $modal.find( '.twentytwenty-container' );
+				checkLoad = setInterval( function() {
+					if ( 2 !== imgsLoaded ) {
+						return;
 					}
+
+					$tt.twentytwenty( {
+						handlePosition: 0.3,
+						orientation:    'horizontal',
+						labelBefore:    imagifyTTT.labels.original_l,
+						labelAfter:     imagifyTTT.labels.optimized_l
+					}, function() {
+						var windowH = $( w ).height(),
+							ttH     = $modal.find( '.twentytwenty-container' ).height(),
+							ttTop   = $modal.find( '.twentytwenty-wrapper' ).position().top,
+							$handle, $labels, $datas, datasH, handlePos, labelsPos;
+
+						if ( ! $tt.closest( '.imagify-modal-content' ).hasClass( 'loaded' ) ) {
+							$tt.closest( '.imagify-modal-content' ).removeClass( 'loading' ).addClass( 'loaded' );
+							drawMeAChart( $modal.find( '.imagify-level-optimized' ).find( '.imagify-chart' ).find( 'canvas' ) );
+						}
+
+						// Check if image height is to big.
+						if ( windowH < ttH && ! $modal.hasClass( 'modal-is-too-high' ) ) {
+							$modal.addClass( 'modal-is-too-high' );
+
+							$handle   = $modal.find( '.twentytwenty-handle' );
+							$labels   = $modal.find( '.twentytwenty-label-content' );
+							$datas    = $modal.find( '.imagify-comparison-levels' );
+							datasH    = $datas.outerHeight();
+							handlePos = ( windowH - ttTop - $handle.height() ) / 2;
+							labelsPos = ( windowH - ttTop * 3 - datasH );
+
+							$handle.css( {
+								top: handlePos
+							} );
+							$labels.css( {
+								top:    labelsPos,
+								bottom: 'auto'
+							} );
+							$modal.find( '.twentytwenty-wrapper' ).css( {
+								paddingBottom: datasH
+							} );
+							$modal.find( '.imagify-modal-content' ).on( 'scroll.imagify', function() {
+								var scrollTop = $( this ).scrollTop();
+
+								$handle.css( {
+									top: handlePos + scrollTop
+								} );
+								$labels.css( {
+									top: labelsPos + scrollTop
+								} );
+								$datas.css( {
+									bottom: - scrollTop
+								} );
+							} );
+						}
+					} );
+
+					clearInterval( checkLoad );
+					checkLoad = null;
+					return 'done';
 				}, 75 );
 
-			return false;
-		});
-	}; // imagify_twenty_modal( options );
+				return false;
+			} );
+		}; // imagifyTwentyModal( options );
 
 
 	/**
 	 * The complexe visual comparison
 	 */
-	$('.imagify-visual-comparison-btn').on('click', function(){
+	$( '.imagify-visual-comparison-btn' ).on( 'click', function() {
+		var $tt, imgsLoaded, loader,
+			labelOriginal, labelNormal, labelAggressive, labelUltra,
+			originalLabel, originalAlt, originalSrc, originalDim,
+			normalAlt, normalSrc, normalDim,
+			aggressiveAlt, aggressiveSrc, aggressiveDim,
+			ultraLabel, ultraAlt, ultraSrc, ultraDim,
+			ttBeforeButtons, ttAfterButtons, image50, twentyMe;
 
-		if ( $('.twentytwenty-wrapper').length === 1) {
+		if ( $( '.twentytwenty-wrapper' ).length === 1 ) {
 			return;
 		}
-		
-		$( $(this).data('target') ).find('.imagify-modal-content').css('width', ($(window).outerWidth()*0.95) + 'px');
 
-		if ( $('.twentytwenty-container').length > 0 && $(window).outerWidth() > 800 ) {
+		$( $( this ).data( 'target' ) ).find( '.imagify-modal-content' ).css( 'width', ( $( w ).outerWidth() * 0.95 ) + 'px' );
 
-			var $tt 				= $('.twentytwenty-container'),
-				imgs_loaded			= 0,
-				loader 				= $tt.data('loader'),
-				label_original		= $tt.data('label-original'),
-				label_normal		= $tt.data('label-normal'),
-				label_aggressive	= $tt.data('label-aggressive'),
-				label_ultra			= $tt.data('label-ultra'),
-
-				original_label 		= $tt.data('original-label').replace(/\*\*/, '<strong>').replace(/\*\*/, '</strong>'),
-				original_alt 		= $tt.data('original-alt'),
-				original_src 		= $tt.data('original-img'),
-				original_dim 		= $tt.data('original-dim').split('x'),
-
-				normal_label 		= $tt.data('normal-label').replace(/\*\*/, '<strong>').replace(/\*\*/, '</strong>'),
-				normal_alt 			= $tt.data('normal-alt'),
-				normal_src 			= $tt.data('normal-img'),
-				normal_dim 			= $tt.data('normal-dim').split('x'),
-
-				aggressive_label 	= $tt.data('aggressive-label').replace(/\*\*/, '<strong>').replace(/\*\*/, '</strong>'),
-				aggressive_alt 		= $tt.data('aggressive-alt'),
-				aggressive_src 		= $tt.data('aggressive-img'),
-				aggressive_dim 		= $tt.data('aggressive-dim').split('x'),
-
-				ultra_label 		= $tt.data('ultra-label').replace(/\*\*/, '<strong>').replace(/\*\*/, '</strong>'),
-				ultra_alt 			= $tt.data('ultra-alt'),
-				ultra_src 			= $tt.data('ultra-img'),
-				ultra_dim 			= $tt.data('ultra-dim').split('x'),
-
-				tt_before_buttons	= '<span class="twentytwenty-duo-buttons twentytwenty-duo-left">' +
-										'<button type="button" class="imagify-comparison-original selected" data-img="original">' + label_original + '</button>' +
-										'<button type="button" class="imagify-comparison-normal" data-img="normal">' + label_normal + '</button>' +
-										'<button type="button" class="imagify-comparison-aggressive" data-img="aggressive">' + label_aggressive + '</button>' +
-									'</span>',
-				tt_after_buttons	= '<span class="twentytwenty-duo-buttons twentytwenty-duo-right">' +
-										'<button type="button" class="imagify-comparison-normal" data-img="normal">' + label_normal + '</button>' +
-										'<button type="button" class="imagify-comparison-aggressive" data-img="aggressive">' + label_aggressive + '</button>' +
-										'<button type="button" class="imagify-comparison-ultra selected" data-img="ultra">' + label_ultra + '</button>' +
-									'</span>';
-
-			// loader
-			$tt.before('<img class="loader" src="' + loader + '" alt="Loading…" width="64" height="64">')
-
-			// add switchers button only if needed
-			// should be more locally integrate...
-			var duo_buttons = ( $('.twentytwenty-left-buttons').lenght ) ? tt_before_buttons + tt_after_buttons : '';
-			// should be more locally integrate...
-			$('.twentytwenty-left-buttons').append(tt_before_buttons);		
-			$('.twentytwenty-right-buttons').append(tt_after_buttons);		
-
-			// add images to 50/50 area
-			$tt.closest('.imagify-modal-content').addClass('loading').find('.twentytwenty-container').append(
-					'<img class="img-original" alt="' + original_alt + '" width="' + original_dim[0] + '" height="' + original_dim[1] + '">' +
-					'<img class="img-normal" alt="' + normal_alt + '" width="' + normal_dim[0] + '" height="' + normal_dim[1] + '">' + 
-					'<img class="img-aggressive" alt="' + aggressive_alt + '" width="' + aggressive_dim[0] + '" height="' + aggressive_dim[1] + '">' +
-					'<img class="img-ultra" alt="' + ultra_alt + '" width="' + ultra_dim[0] + '" height="' + ultra_dim[1] + '">' +
-					duo_buttons
-			);
-
-			// load image original
-			$('.img-original').on('load', function(){
-				imgs_loaded++;
-			}).attr('src', original_src);
-
-			// load image normal
-			$('.img-normal').on('load', function(){
-				imgs_loaded++;
-			}).attr('src', normal_src);
-
-			// load image aggressive
-			$('.img-aggressive').on('load', function(){
-				imgs_loaded++;
-			}).attr('src', aggressive_src);
-
-			// load image ultra
-			$('.img-ultra').on('load', function(){
-				imgs_loaded++;
-			}).attr('src', ultra_src);
-
-			var twenty_me = setInterval(function(){
-				if ( imgs_loaded === 4 ) {
-					$tt.twentytwenty({
-						handlePosition: 0.6,
-						orientation: 	'horizontal',
-						labelBefore: 	original_label,
-						labelAfter: 	ultra_label
-					}, function(){
-						// fires on initialisation & each time the handle is moving
-						if ( ! $tt.closest('.imagify-modal-content').hasClass('loaded') ) {
-							$tt.closest('.imagify-modal-content').removeClass('loading').addClass('loaded');
-							draw_me_a_chart( $('.imagify-level-ultra').find('.imagify-chart').find('canvas') );
-						}
-					});
-					clearInterval( twenty_me );
-					twenty_me = null;
-				}
-			}, 75);
-
-			// on click on button choices
-			
-			$('.imagify-comparison-title').on('click', '.twentytwenty-duo-buttons button:not(.selected)', function(e){
-
-				e.stopPropagation();
-
-				var $_this 		= $(this),
-					$container 	= $_this.closest('.imagify-comparison-title').nextAll('.twentytwenty-wrapper').find('.twentytwenty-container'),
-					side		= $_this.closest('.twentytwenty-duo-buttons').hasClass('twentytwenty-duo-left') ? 'left' : 'right',
-					$other_side	= side === 'left' ? $_this.closest('.imagify-comparison-title').find('.twentytwenty-duo-right') : $_this.closest('.imagify-comparison-title').find('.twentytwenty-duo-left'),
-					$duo 		= $_this.closest('.twentytwenty-duo-buttons').find('button'),
-					$img_before	= $container.find('.twentytwenty-before'),
-					$img_after	= $container.find('.twentytwenty-after'),
-					image 		= $_this.data('img');
-
-				// button coloration
-				$duo.removeClass('selected');
-				$_this.addClass('selected');
-
-				// other side action (to not compare same images)
-				if ( $other_side.find('.selected').data('img') === image ) {
-					$other_side.find('button:not(.selected)').eq(0).trigger('click');
-				}
-
-				// left buttons
-				if ( side === 'left' ) {
-					var clip_styles = $img_before.css('clip');
-					$img_before.attr('style', '');
-					$img_before.removeClass('twentytwenty-before');
-					$container.find( '.img-' + image ).addClass('twentytwenty-before').css('clip', clip_styles);
-					$('.twentytwenty-before-label').find('.twentytwenty-label-content').text( $container.data( image + '-label' ) );
-					$('.imagify-c-level.go-left').attr('aria-hidden', 'true').removeClass('go-left go-right');
-					$('.imagify-level-' + image).attr('aria-hidden', 'false').addClass('go-left');
-				}
-
-				// right buttons
-				if ( side === 'right' ) {
-					$img_after.removeClass('twentytwenty-after')
-					$container.find( '.img-' + image ).addClass('twentytwenty-after');
-					$('.twentytwenty-after-label').find('.twentytwenty-label-content').text( $container.data( image + '-label' ) );
-					$('.imagify-c-level.go-right').attr('aria-hidden', 'true').removeClass('go-left go-right');
-					$('.imagify-level-' + image).attr('aria-hidden', 'false').addClass('go-right');
-				}
-
-				draw_me_a_chart( $('.imagify-level-' + image).find('.imagify-chart').find('canvas') );
-
-				return false;
-
-			});
+		if ( $( '.twentytwenty-container' ).length > 0 && $( w ).outerWidth() <= 800 ) {
+			return;
 		}
 
-	});
+		$tt              = $( '.twentytwenty-container' );
+		imgsLoaded       = 0;
+		loader           = $tt.data( 'loader' );
+		labelOriginal    = $tt.data( 'label-original' );
+		labelNormal      = $tt.data( 'label-normal' );
+		labelAggressive  = $tt.data( 'label-aggressive' );
+		labelUltra       = $tt.data( 'label-ultra' );
+
+		originalLabel    = $tt.data( 'original-label' ).replace( /\*\*/, '<strong>' ).replace( /\*\*/, '</strong>' );
+		originalAlt      = $tt.data( 'original-alt' );
+		originalSrc      = $tt.data( 'original-img' );
+		originalDim      = $tt.data( 'original-dim' ).split( 'x' );
+
+		normalAlt        = $tt.data( 'normal-alt' );
+		normalSrc        = $tt.data( 'normal-img' );
+		normalDim        = $tt.data( 'normal-dim' ).split( 'x' );
+
+		aggressiveAlt    = $tt.data( 'aggressive-alt' );
+		aggressiveSrc    = $tt.data( 'aggressive-img' );
+		aggressiveDim    = $tt.data( 'aggressive-dim' ).split( 'x' );
+
+		ultraLabel       = $tt.data( 'ultra-label' ).replace( /\*\*/, '<strong>' ).replace( /\*\*/, '</strong>' );
+		ultraAlt         = $tt.data( 'ultra-alt' );
+		ultraSrc         = $tt.data( 'ultra-img' );
+		ultraDim         = $tt.data( 'ultra-dim' ).split( 'x' );
+
+		ttBeforeButtons  = '<span class="twentytwenty-duo-buttons twentytwenty-duo-left">';
+			ttBeforeButtons += '<button type="button" class="imagify-comparison-original selected" data-img="original">' + labelOriginal + '</button>';
+			ttBeforeButtons += '<button type="button" class="imagify-comparison-normal" data-img="normal">' + labelNormal + '</button>';
+			ttBeforeButtons += '<button type="button" class="imagify-comparison-aggressive" data-img="aggressive">' + labelAggressive + '</button>';
+		ttBeforeButtons += '</span>';
+		ttAfterButtons   = '<span class="twentytwenty-duo-buttons twentytwenty-duo-right">';
+			ttAfterButtons  += '<button type="button" class="imagify-comparison-normal" data-img="normal">' + labelNormal + '</button>';
+			ttAfterButtons  += '<button type="button" class="imagify-comparison-aggressive" data-img="aggressive">' + labelAggressive + '</button>';
+			ttAfterButtons  += '<button type="button" class="imagify-comparison-ultra selected" data-img="ultra">' + labelUltra + '</button>';
+		ttAfterButtons  += '</span>';
+
+		// Loader.
+		$tt.before( '<img class="loader" src="' + loader + '" alt="Loading…" width="64" height="64">' );
+
+		// Should be more locally integrated...
+		$( '.twentytwenty-left-buttons' ).append( ttBeforeButtons );
+		$( '.twentytwenty-right-buttons' ).append( ttAfterButtons );
+
+		image50    = '<img class="img-original" alt="' + originalAlt + '" width="' + originalDim[0] + '" height="' + originalDim[1] + '">';
+		image50   += '<img class="img-normal" alt="' + normalAlt + '" width="' + normalDim[0] + '" height="' + normalDim[1] + '">';
+		image50   += '<img class="img-aggressive" alt="' + aggressiveAlt + '" width="' + aggressiveDim[0] + '" height="' + aggressiveDim[1] + '">';
+		image50   += '<img class="img-ultra" alt="' + ultraAlt + '" width="' + ultraDim[0] + '" height="' + ultraDim[1] + '">';
+		// Add switchers button only if needed.
+		// Should be more locally integrated...
+		image50   += $( '.twentytwenty-left-buttons' ).lenght ? ttBeforeButtons + ttAfterButtons : '';
+
+		// Add images to 50/50 area.
+		$tt.closest( '.imagify-modal-content' ).addClass( 'loading' ).find( '.twentytwenty-container' ).append( image50 );
+
+		// Load image original.
+		$( '.img-original' ).on( 'load', function() {
+			imgsLoaded++;
+		} ).attr( 'src', originalSrc );
+
+		// Load image normal.
+		$( '.img-normal' ).on( 'load', function() {
+			imgsLoaded++;
+		} ).attr( 'src', normalSrc );
+
+		// Load image aggressive.
+		$( '.img-aggressive' ).on( 'load', function() {
+			imgsLoaded++;
+		} ).attr( 'src', aggressiveSrc );
+
+		// Load image ultra.
+		$( '.img-ultra' ).on( 'load', function() {
+			imgsLoaded++;
+		} ).attr( 'src', ultraSrc );
+
+		twentyMe = setInterval( function() {
+			if ( 4 !== imgsLoaded ) {
+				return;
+			}
+
+			$tt.twentytwenty({
+				handlePosition: 0.6,
+				orientation:    'horizontal',
+				labelBefore:    originalLabel,
+				labelAfter:     ultraLabel
+			}, function() {
+				// Fires on initialisation & each time the handle is moving.
+				if ( ! $tt.closest( '.imagify-modal-content' ).hasClass( 'loaded' ) ) {
+					$tt.closest( '.imagify-modal-content' ).removeClass( 'loading' ).addClass( 'loaded' );
+					drawMeAChart( $( '.imagify-level-ultra' ).find( '.imagify-chart' ).find( 'canvas' ) );
+				}
+			} );
+
+			clearInterval( twentyMe );
+			twentyMe = null;
+		}, 75);
+
+		// On click on button choices.
+		$( '.imagify-comparison-title' ).on( 'click', '.twentytwenty-duo-buttons button:not(.selected)', function( e ) {
+			var $this      = $( this ),
+				$container = $this.closest( '.imagify-comparison-title' ).nextAll( '.twentytwenty-wrapper' ).find( '.twentytwenty-container' ),
+				side       = $this.closest( '.twentytwenty-duo-buttons' ).hasClass( 'twentytwenty-duo-left' ) ? 'left' : 'right',
+				$otherSide = 'left' === side ? $this.closest( '.imagify-comparison-title' ).find( '.twentytwenty-duo-right' ) : $this.closest( '.imagify-comparison-title' ).find( '.twentytwenty-duo-left' ),
+				$duo       = $this.closest( '.twentytwenty-duo-buttons' ).find( 'button' ),
+				$imgBefore = $container.find( '.twentytwenty-before' ),
+				$imgAfter  = $container.find( '.twentytwenty-after' ),
+				image      = $this.data( 'img' ),
+				clipStyles;
+
+			e.stopPropagation();
+
+			// Button coloration.
+			$duo.removeClass( 'selected' );
+			$this.addClass( 'selected' );
+
+			// Other side action (to not compare same images).
+			if ( $otherSide.find( '.selected' ).data( 'img' ) === image ) {
+				$otherSide.find( 'button:not(.selected)' ).eq( 0 ).trigger( 'click' );
+			}
+
+			// Left buttons.
+			if ( 'left' === side ) {
+				clipStyles = $imgBefore.css( 'clip' );
+				$imgBefore.attr( 'style', '' );
+				$imgBefore.removeClass( 'twentytwenty-before' );
+				$container.find( '.img-' + image ).addClass( 'twentytwenty-before' ).css( 'clip', clipStyles );
+				$( '.twentytwenty-before-label' ).find( '.twentytwenty-label-content' ).text( $container.data( image + '-label' ) );
+				$( '.imagify-c-level.go-left' ).attr( 'aria-hidden', 'true' ).removeClass( 'go-left go-right' );
+				$( '.imagify-level-' + image ).attr( 'aria-hidden', 'false' ).addClass( 'go-left' );
+			}
+
+			// Right buttons.
+			if ( 'right' === side ) {
+				$imgAfter.removeClass( 'twentytwenty-after' );
+				$container.find( '.img-' + image ).addClass( 'twentytwenty-after' );
+				$( '.twentytwenty-after-label' ).find( '.twentytwenty-label-content' ).text( $container.data( image + '-label' ) );
+				$( '.imagify-c-level.go-right' ).attr( 'aria-hidden', 'true' ).removeClass( 'go-left go-right' );
+				$( '.imagify-level-' + image ).attr( 'aria-hidden', 'false' ).addClass( 'go-right' );
+			}
+
+			drawMeAChart( $( '.imagify-level-' + image ).find( '.imagify-chart' ).find( 'canvas' ) );
+			return false;
+		} );
+	} );
 
 
 	/**
-	 * Imagify comparison inside Media post visualization
+	 * Imagify comparison inside Media post visualization.
 	 */
-	if ( $('.post-php').find('.wp_attachment_image').find('.thumbnail').length > 0 ) {
-		
-		var $ori_parent = $('.post-php').find('.wp_attachment_image'),
-			$thumbnail	= $ori_parent.find('.thumbnail'),
-			thumb		= { src: $thumbnail.prop('src'), width: $thumbnail.width(), height: $thumbnail.height() },
-			ori_source	= { src: $('#imagify-full-original').val(), size: $('#imagify-full-original-size').val() },
-			$optimize_btn = $('#misc-publishing-actions').find('.misc-pub-imagify').find('.button-primary'),
-			width_limit = 360;
+	if ( $( '.post-php' ).find( '.wp_attachment_image' ).find( '.thumbnail' ).length > 0 ) {
 
-		// if shown image > 360, use twentytwenty
-		if ( thumb.width > width_limit && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
+		var $oriParent   = $( '.post-php' ).find( '.wp_attachment_image' ),
+			$thumbnail   = $oriParent.find( '.thumbnail' ),
+			thumb        = { src: $thumbnail.prop( 'src' ), width: $thumbnail.width(), height: $thumbnail.height() },
+			oriSource    = { src: $( '#imagify-full-original' ).val(), size: $( '#imagify-full-original-size' ).val() },
+			$optimizeBtn = $( '#misc-publishing-actions' ).find( '.misc-pub-imagify' ).find( '.button-primary' ),
+			widthLimit   = 360,
+			filesize, saving;
 
-			var imgs_loaded = 0,
-				filesize	= $('.misc-pub-filesize').find('strong').text(),
-				saving		= $('.imagify-data-item').find('.imagify-chart-value').text();
+		// If shown image > 360, use twentytwenty.
+		if ( thumb.width > widthLimit && $( '#imagify-full-original' ).length > 0 && $( '#imagify-full-original' ).val() !== '' ) {
 
-			// create button to trigger
-			$('[id^="imgedit-open-btn-"]').before('<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-visual-comparison" id="imagify-start-comparison">' + imagifyTTT.labels.compare + '</button>')
+			filesize = $( '.misc-pub-filesize' ).find( 'strong' ).text();
+			saving   = $( '.imagify-data-item' ).find( '.imagify-chart-value' ).text();
 
-			// Modal and trigger event creation
-			var is_modalified = imagify_twenty_modal({
-				width:				thumb.width,
-				height:				thumb.height,
-				original_url:		ori_source.src,
-				optimized_url:		thumb.src,
-				original_size:		ori_source.size,
-				optimized_size:		filesize,
-				saving:				saving,
-				modal_append_to:	$ori_parent,
-				trigger:			$('#imagify-start-comparison'),
-				modal_id:			'imagify-visual-comparison'
-			});
+			// Create button to trigger.
+			$( '[id^="imgedit-open-btn-"]' ).before( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-visual-comparison" id="imagify-start-comparison">' + imagifyTTT.labels.compare + '</button>' );
+
+			// Modal and trigger event creation.
+			imagifyTwentyModal( {
+				width:         thumb.width,
+				height:        thumb.height,
+				originalUrl:   oriSource.src,
+				optimizedUrl:  thumb.src,
+				originalSize:  oriSource.size,
+				optimizedSize: filesize,
+				saving:        saving,
+				modalAppendTo: $oriParent,
+				trigger:       $( '#imagify-start-comparison' ),
+				modalId:       'imagify-visual-comparison'
+			} );
 		}
-		// else put images next to next
-		else if ( thumb.width < width_limit && $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() !== '' ) {
+		// Else put images next to next.
+		else if ( thumb.width < widthLimit && $( '#imagify-full-original' ).length > 0 && $( '#imagify-full-original' ).val() !== '' ) {
 			// TODO
 		}
-		// if image has no backup
-		else if ( $('#imagify-full-original').length > 0 && $('#imagify-full-original').val() === '' ) {
+		// If image has no backup.
+		else if ( $( '#imagify-full-original' ).length > 0 && $( '#imagify-full-original' ).val() === '' ) {
 			// do nothing ?
 		}
-		// in case image is not optimized
+		// In case image is not optimized.
 		else {
-			// if is not in optimizing process, propose the Optimize button trigger
-			if ( $('#misc-publishing-actions').find('.misc-pub-imagify').find('.button-primary').length === 1 ) {
-				$('[id^="imgedit-open-btn-"]').before('<span class="spinner imagify-hidden"></span><a class="imagify-button-primary button-primary imagify-optimize-trigger" id="imagify-optimize-trigger" href="' + $optimize_btn.attr('href') + '">' + imagifyTTT.labels.optimize + '</a>');
+			// If is not in optimizing process, propose the Optimize button trigger.
+			if ( $( '#misc-publishing-actions' ).find( '.misc-pub-imagify' ).find( '.button-primary' ).length === 1 ) {
+				$( '[id^="imgedit-open-btn-"]' ).before( '<span class="spinner imagify-hidden"></span><a class="imagify-button-primary button-primary imagify-optimize-trigger" id="imagify-optimize-trigger" href="' + $optimizeBtn.attr( 'href' ) + '">' + imagifyTTT.labels.optimize + '</a>' );
 
-				$('#imagify-optimize-trigger').on('click', function(){
-					$(this).prev('.spinner').removeClass('imagify-hidden').addClass('is-active');
-				});
+				$( '#imagify-optimize-trigger' ).on('click', function() {
+					$( this ).prev( '.spinner' ).removeClass( 'imagify-hidden' ).addClass( 'is-active' );
+				} );
 			}
 		}
 
 	}
 
 	/**
-	 * Images comparison in attachments list page (upload.php)
+	 * Images comparison in attachments list page (upload.php).
 	 */
-	if ( $('.upload-php').find('.imagify-compare-images').length > 0 ) {
+	if ( $( '.upload-php' ).find( '.imagify-compare-images' ).length > 0 ) {
 
-		$('.imagify-compare-images').each(function(){
+		$( '.imagify-compare-images' ).each( function() {
+			var $this  = $( this ),
+				id     = $this.data( 'id' ),
+				$datas = $this.closest( '#post-' + id ).find( '.column-imagify_optimized_file' );
 
-			var $_this = $(this),
-				id = $_this.data('id'),
-				$datas = $_this.closest('#post-' + id ).find('.column-imagify_optimized_file'),
-				
-				// Modal and trigger event creation
-				is_modalified = imagify_twenty_modal({
-					width:				$_this.data('full-width'),
-					height:				$_this.data('full-height'),
-					original_url:		$_this.data('backup-src'),
-					optimized_url:		$_this.data('full-src'),
-					original_size:		$datas.find('.original').text(),
-					optimized_size:		$datas.find('.imagify-data-item').find('.big').text(),
-					saving:				$datas.find('.imagify-chart-value').text(),
-					modal_append_to:	$_this.closest('.column-primary'),
-					trigger:			$_this,
-					modal_id:			'imagify-comparison-' + id
-				});
-
-		});
+			// Modal and trigger event creation.
+			imagifyTwentyModal( {
+				width:         $this.data( 'full-width' ),
+				height:        $this.data( 'full-height' ),
+				originalUrl:   $this.data( 'backup-src' ),
+				optimizedUrl:  $this.data( 'full-src' ),
+				originalSize:  $datas.find( '.original' ).text(),
+				optimizedSize: $datas.find( '.imagify-data-item' ).find( '.big' ).text(),
+				saving:        $datas.find( '.imagify-chart-value' ).text(),
+				modalAppendTo: $this.closest( '.column-primary' ),
+				trigger:       $this,
+				modalId:       'imagify-comparison-' + id
+			} );
+		} );
 	}
 
 	/**
-	 * Images Comparison in Grid View modal
+	 * Images Comparison in Grid View modal.
 	 */
 	if ( $('.upload-php').length > 0 ) {
 
-
-		var get_var = function (param) {
+		var getVar = function ( param ) {
 				var vars = {};
-				window.location.href.replace( 
-					/[?&]+([^=&]+)=?([^&]*)?/gi, // regexp
-					function( m, key, value ) { // callback
-						vars[key] = value !== undefined ? value : '';
+
+				w.location.href.replace(
+					/[?&]+([^=&]+)=?([^&]*)?/gi,//
+					function( m, key, value ) {
+						vars[ key ] = undefined !== value ? value : '';
 					}
 				);
 
 				if ( param ) {
-					return vars[param] ? vars[param] : null;	
+					return vars[ param ] ? vars[ param ] : null;
 				}
 				return vars;
 			},
-			imagify_content_in_modal = function() {
-			
-				var tempTimer = setInterval( function(){
-						if ( $('.media-modal').find('.imagify-datas-details').length ) {
-							if ( $('#imagify-original-src').length > 0 && $('#imagify-original-src') !== '' ) {
+			imagifyContentInModal = function() {
+				var tempTimer = setInterval( function() {
+						var $datas;
 
-								// trigger creation
-								$('.media-frame-content').find('.attachment-actions').prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
-
-								// get datas
-								var $datas = $('.media-frame-content').find('.compat-field-imagify');
-
-								// Modal and trigger event creation
-								is_modalified = imagify_twenty_modal({
-									width:				$('#imagify-full-width').val(),
-									height:				$('#imagify-full-height').val(),
-									original_url:		$('#imagify-original-src').val(),
-									optimized_url:		$('#imagify-full-src').val(),
-									original_size:		$('#imagify-original-size').val(),
-									optimized_size:		$datas.find('.imagify-data-item').find('.big').text(),
-									saving:				$datas.find('.imagify-chart-value').text(),
-									modal_append_to:	$('.media-frame-content').find('.thumbnail-image'),
-									trigger:			$('#imagify-media-frame-comparison-btn'),
-									modal_id:			'imagify-comparison-modal',
-									open_modal: true
-								});
-							}
-
-							clearInterval(tempTimer);
-							tempTimer = null;
+						if ( ! $( '.media-modal' ).find( '.imagify-datas-details' ).length ) {
+							return;
 						}
+
+						if ( $( '#imagify-original-src' ).length > 0 && $( '#imagify-original-src' ) !== '' ) {
+							// Trigger creation.
+							$( '.media-frame-content' ).find( '.attachment-actions' ).prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
+
+							// Get datas.
+							$datas = $( '.media-frame-content' ).find( '.compat-field-imagify' );
+
+							// Modal and trigger event creation.
+							imagifyTwentyModal( {
+								width:         $( '#imagify-full-width' ).val(),
+								height:        $( '#imagify-full-height' ).val(),
+								originalUrl:   $( '#imagify-original-src' ).val(),
+								optimizedUrl:  $( '#imagify-full-src' ).val(),
+								originalSize:  $( '#imagify-original-size' ).val(),
+								optimizedSize: $datas.find( '.imagify-data-item' ).find( '.big' ).text(),
+								saving:        $datas.find( '.imagify-chart-value' ).text(),
+								modalAppendTo: $( '.media-frame-content' ).find( '.thumbnail-image' ),
+								trigger:       $( '#imagify-media-frame-comparison-btn' ),
+								modalId:       'imagify-comparison-modal',
+								openModal:     true
+							} );
+						}
+
+						clearInterval( tempTimer );
+						tempTimer = null;
 					}, 20 );
 			},
 			waitContent = setInterval( function() {
-				if ( $('.upload-php').find('.media-frame.mode-grid').find('.attachments').length > 0 ) {
-					
-					// if attachment is clicked, build the modal inside the modal
-					$('.upload-php').find('.media-frame.mode-grid').on('click', '.attachment', function(){
-						imagify_content_in_modal();
-					});
-
-					// if attachment is mentionned in URL, build the modal inside the modal
-					if ( get_var('item') ){
-						imagify_content_in_modal();
-					}
-
-					clearInterval(waitContent);
-					waitContent = null;
+				if ( ! $('.upload-php').find('.media-frame.mode-grid').find('.attachments').length ) {
+					return;
 				}
-			}, 100);
 
-		// if URL contain item, that will open the WP Modal View
+				// If attachment is clicked, build the modal inside the modal.
+				$( '.upload-php' ).find( '.media-frame.mode-grid' ).on( 'click', '.attachment', function() {
+					imagifyContentInModal();
+				} );
+
+				// If attachment is mentionned in URL, build the modal inside the modal.
+				if ( getVar( 'item' ) ) {
+					imagifyContentInModal();
+				}
+
+				clearInterval( waitContent );
+				waitContent = null;
+			}, 100 );
+		// If URL contain item, that will open the WP Modal View.
 	}
 
-})(jQuery, window, document);
+} )(jQuery, document, window);

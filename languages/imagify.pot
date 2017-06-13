@@ -1,12 +1,12 @@
 # Loco Gettext template
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Imagify\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-23 10:02-0500\n"
-"PO-Revision-Date: 2016-09-23 10:02-0500\n"
+"POT-Creation-Date: 2017-05-31 12:44+0200\n"
 "Last-Translator: Rémy Perona <remperona@gmail.com>\n"
-"Language-Team: \n"
+"Language-Team: WP Media <contact@imagify.io>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,376 +19,365 @@ msgstr ""
 "_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;_nx_js:1,2,3c;"
 "esc_attr__:1;esc_html__:1;esc_attr_e:1;esc_html_e:1;esc_attr_x:1,2c;"
 "esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;transChoice:1,2\n"
-"X-Generator: Poedit 1.6.4\n"
+"X-Generator: Poedit 1.8.12\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-# @todo Context should be provided for translators.
 #: ../inc/3rd-party/nextgen-gallery/inc/admin/enqueue.php:20
-#: ../inc/admin/ajax.php:123 ../inc/admin/meta-boxes.php:34
-#: ../inc/functions/admin-ui.php:215 ../inc/functions/i18n.php:49
-#: ../inc/functions/i18n.php:64
+#: ../inc/admin/ajax.php:123 ../inc/admin/meta-boxes.php:45
+#: ../inc/functions/admin-ui.php:247 ../inc/functions/i18n.php:53
+#: ../inc/functions/i18n.php:68
 msgid "Optimize"
 msgstr ""
 
 #: ../inc/3rd-party/nextgen-gallery/inc/admin/enqueue.php:21
-#: ../inc/functions/admin-ui.php:80 ../inc/functions/i18n.php:50
+#: ../inc/functions/admin-ui.php:91 ../inc/functions/i18n.php:54
 msgid "Restore Original"
 msgstr ""
 
 #: ../inc/3rd-party/nextgen-gallery/inc/admin/menu.php:16
-#: ../inc/admin/menu.php:24 ../inc/admin/plugins.php:13
-#: ../inc/admin/ui/bulk.php:81 ../inc/common/admin-bar.php:39
+#: ../inc/admin/menu.php:23 ../inc/admin/plugins.php:15
+#: ../inc/admin/ui/bulk.php:95 ../inc/common/admin-bar.php:37
 msgid "Bulk Optimization"
 msgstr ""
 
-# @todo Context should be provided for translators. Also, use ellipsis (https://en.wikipedia.org/wiki/Ellipsis) as 1 character (http://unicode.org/cldr/utility/character.jsp?a=2026)
-#: ../inc/admin/ajax.php:123 ../inc/admin/meta-boxes.php:29
-#: ../inc/functions/admin-ui.php:121 ../inc/functions/admin-ui.php:153
-#: ../inc/functions/admin-ui.php:159 ../inc/functions/admin-ui.php:165
-#: ../inc/functions/admin-ui.php:205 ../inc/functions/admin-ui.php:215
+#: ../inc/admin/ajax.php:123 ../inc/admin/meta-boxes.php:38
+#: ../inc/functions/admin-ui.php:135 ../inc/functions/admin-ui.php:178
+#: ../inc/functions/admin-ui.php:187 ../inc/functions/admin-ui.php:196
+#: ../inc/functions/admin-ui.php:238 ../inc/functions/admin-ui.php:247
 msgid "Optimizing..."
 msgstr ""
 
-# @todo Typo (capitalization). Also let’s use exclamation marks sparely, they’re not as common in English as they are in French or German.
-#: ../inc/admin/ajax.php:507
+#: ../inc/admin/ajax.php:508
 msgid "Oops, It's almost over!"
 msgstr ""
 
-# @todo %s = 2 new lines. Problem: May not be suitable in all languages, should be inline HTML.
-#: ../inc/admin/ajax.php:508
+#. translators: %s is a line break.
+#: ../inc/admin/ajax.php:510
 #, php-format
 msgid ""
 "You have almost used all your credit.%sDon't forget to upgrade your "
 "subscription to continue optimizing your images."
 msgstr ""
 
-# @todo Is this a heading? Otherwise don’t capitalize.
-#: ../inc/admin/ajax.php:509 ../inc/admin/ui/bulk.php:23
+#: ../inc/admin/ajax.php:511 ../inc/admin/ui/bulk.php:25
 msgid "View My Subscription"
 msgstr ""
 
-# @todo Typo (capitalization). Also let’s use exclamation marks sparely, they’re not as common in English as they are in French or German.
-#: ../inc/admin/ajax.php:517 ../inc/admin/ui/notices.php:258
-#: ../inc/functions/i18n.php:84
+#: ../inc/admin/ajax.php:517 ../inc/admin/ui/notices.php:293
+#: ../inc/functions/i18n.php:88
 msgid "Oops, It's Over!"
 msgstr ""
 
-# @todo Inappropriate use of %s. Translators should be able to switch order of arguments, therefore should be %1$s and %2$s.
-#: ../inc/admin/ajax.php:518 ../inc/admin/ui/notices.php:260
-#: ../inc/functions/i18n.php:101
+#. translators: 1 is a data quota, 2 is a date.
+#: ../inc/admin/ajax.php:520 ../inc/functions/i18n.php:114
 #, php-format
 msgid ""
-"You have consumed all your credit for this month. You will have <strong>%s "
-"back on %s</strong>."
+"You have consumed all your credit for this month. You will have <strong>%1$s "
+"back on %2$s</strong>."
 msgstr ""
 
-# @todo Is this a heading? Otherwise don’t capitalize.
-#: ../inc/admin/ajax.php:519
+#: ../inc/admin/ajax.php:524
 msgid "Upgrade My Subscription"
 msgstr ""
 
-# @todo Is this a heading? Then capitalize.
-#: ../inc/admin/ajax.php:538 ../inc/admin/ui/bulk.php:17
+#: ../inc/admin/ajax.php:537 ../inc/admin/ui/bulk.php:19
 msgid "Account status"
 msgstr ""
 
-#: ../inc/admin/ajax.php:539 ../inc/admin/ui/bulk.php:18
+#: ../inc/admin/ajax.php:538 ../inc/admin/ui/bulk.php:20
 msgid "Your subscription:"
 msgstr ""
 
-#: ../inc/admin/ajax.php:547 ../inc/admin/ui/bulk.php:48
+#. translators: %s is a data quota.
+#: ../inc/admin/ajax.php:546 ../inc/admin/ui/bulk.php:55
 #, php-format
 msgid "You have %s space credit left"
 msgstr ""
 
-#: ../inc/admin/ajax.php:559
+#: ../inc/admin/ajax.php:557
 msgid "View my subscription"
 msgstr ""
 
-#: ../inc/admin/media.php:63 ../inc/functions/i18n.php:60
+#: ../inc/admin/media.php:80 ../inc/functions/i18n.php:64
 msgid "Compare Original VS Optimized"
 msgstr ""
 
-#: ../inc/admin/meta-boxes.php:17 ../inc/admin/meta-boxes.php:24
-#: ../inc/admin/upload.php:12
+#: ../inc/admin/meta-boxes.php:21 ../inc/admin/meta-boxes.php:30
+#: ../inc/admin/upload.php:15
 msgid "Imagify"
 msgstr ""
 
-#: ../inc/admin/meta-boxes.php:19 ../inc/functions/admin-ui.php:195
+#: ../inc/admin/meta-boxes.php:23 ../inc/functions/admin-ui.php:228
 msgid "Invalid API key"
 msgstr ""
 
-#: ../inc/admin/meta-boxes.php:21 ../inc/functions/admin-ui.php:197
+#: ../inc/admin/meta-boxes.php:25 ../inc/functions/admin-ui.php:230
 msgid "Check your Settings"
 msgstr ""
 
-#: ../inc/admin/options.php:119
+#: ../inc/admin/options.php:148
 msgid "Cheatin&#8217; uh?"
 msgstr ""
 
-# @todo Add meaning for users. is it important to know what an options page is? Why? Is there any action required?
-#: ../inc/admin/options.php:127
+#: ../inc/admin/options.php:156
 msgid "<strong>ERROR</strong>: options page not found."
 msgstr ""
 
-#: ../inc/admin/plugins.php:14 ../inc/admin/ui/options.php:74
-#: ../inc/common/admin-bar.php:30
+#: ../inc/admin/plugins.php:16 ../inc/admin/ui/options.php:90
+#: ../inc/common/admin-bar.php:28
 msgid "Settings"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:60
+#: ../inc/admin/ui/bulk.php:71
 msgid "Upgrade your account to continue optimizing your images"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:64
+#: ../inc/admin/ui/bulk.php:75
 msgid "More info"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:91
+#: ../inc/admin/ui/bulk.php:105
 msgid "Overview"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:99
+#. translators: %s is a percentage.
+#: ../inc/admin/ui/bulk.php:117
 #, php-format
 msgid "You optimized %s images of your website"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:103
+#: ../inc/admin/ui/bulk.php:125
 msgid "Statistics"
 msgstr ""
 
-# @todo Use typographical apostrophe. Why isn’t the string constructed with an argument (%s) that represents a value?
-#: ../inc/admin/ui/bulk.php:115
+#. translators: you can use %s to include a line break.
+#: ../inc/admin/ui/bulk.php:141
 msgid "that's the number of images you optimized with Imagify"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:120
+#: ../inc/admin/ui/bulk.php:150
 msgid "Original size"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:125
+#: ../inc/admin/ui/bulk.php:155
 msgid "Optimized size"
 msgstr ""
 
-# @todo New lines should not be added via argument, but via inline HTML.
-#: ../inc/admin/ui/bulk.php:136
+#. translators: %s is a line break.
+#: ../inc/admin/ui/bulk.php:170
 #, php-format
 msgid "that's the size you saved %sby using Imagify"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:142
+#: ../inc/admin/ui/bulk.php:180
 msgid "Information"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:146
+#: ../inc/admin/ui/bulk.php:184
 msgid ""
 "Please be aware that optimizing a large number of images can take a while "
 "depending on your server and network speed."
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:149
+#. translators: %s is a formatted number. Don't use %d.
+#: ../inc/admin/ui/bulk.php:189
 #, php-format
 msgid ""
 "If you have more than %s images, you will need to launch the bulk "
 "optimization several times."
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:153
+#: ../inc/admin/ui/bulk.php:200
 msgid ""
-"You must keep this page open while the bulk optimizaton is processing. If "
+"You must keep this page open while the bulk optimization is processing. If "
 "you leave you can come back to continue where it left off."
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:164
+#: ../inc/admin/ui/bulk.php:212
 msgid "Select Your Compression Level"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:166 ../inc/admin/ui/bulk.php:192
-#: ../inc/admin/ui/options.php:136 ../inc/admin/ui/options.php:365
-#: ../inc/admin/ui/options.php:404 ../inc/admin/ui/options.php:421
-#: ../inc/admin/ui/options.php:481
-#: ../inc/classes/abstracts/abstract-attachment.php:114
-#: ../inc/functions/admin-ui.php:153
+#: ../inc/admin/ui/bulk.php:214 ../inc/admin/ui/bulk.php:241
+#: ../inc/admin/ui/options.php:160 ../inc/admin/ui/options.php:378
+#: ../inc/admin/ui/options.php:418 ../inc/admin/ui/options.php:444
+#: ../inc/admin/ui/options.php:507
+#: ../inc/classes/abstracts/class-imagify-abstract-attachment.php:134
+#: ../inc/functions/admin-ui.php:180
 msgid "Ultra"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:169 ../inc/admin/ui/bulk.php:187
-#: ../inc/admin/ui/options.php:131 ../inc/admin/ui/options.php:352
-#: ../inc/admin/ui/options.php:403 ../inc/admin/ui/options.php:416
-#: ../inc/admin/ui/options.php:460
-#: ../inc/classes/abstracts/abstract-attachment.php:117
-#: ../inc/functions/admin-ui.php:159
+#: ../inc/admin/ui/bulk.php:218 ../inc/admin/ui/bulk.php:236
+#: ../inc/admin/ui/options.php:155 ../inc/admin/ui/options.php:365
+#: ../inc/admin/ui/options.php:417 ../inc/admin/ui/options.php:436
+#: ../inc/admin/ui/options.php:486
+#: ../inc/classes/abstracts/class-imagify-abstract-attachment.php:137
+#: ../inc/functions/admin-ui.php:189
 msgid "Aggressive"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:172 ../inc/admin/ui/bulk.php:182
-#: ../inc/admin/ui/options.php:126 ../inc/admin/ui/options.php:339
-#: ../inc/admin/ui/options.php:402 ../inc/admin/ui/options.php:411
-#: ../inc/admin/ui/options.php:440
-#: ../inc/classes/abstracts/abstract-attachment.php:120
-#: ../inc/functions/admin-ui.php:165
+#: ../inc/admin/ui/bulk.php:221 ../inc/admin/ui/bulk.php:231
+#: ../inc/admin/ui/options.php:150 ../inc/admin/ui/options.php:352
+#: ../inc/admin/ui/options.php:416 ../inc/admin/ui/options.php:428
+#: ../inc/admin/ui/options.php:466
+#: ../inc/classes/abstracts/class-imagify-abstract-attachment.php:140
+#: ../inc/functions/admin-ui.php:198
 msgid "Normal"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:176
+#. translators: %s is an optimization level.
+#: ../inc/admin/ui/bulk.php:225
 #, php-format
 msgid "Your default setting: %s"
 msgstr ""
 
-# @todo Use typographical apostrophe. Also, the link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position.
-#: ../inc/admin/ui/bulk.php:201
+#. translators: 1 is the opening of a link, 2 is the closing of this link.
+#: ../inc/admin/ui/bulk.php:252
 #, php-format
-msgid "Don't forget to check %syour settings%s before bulk optimization."
+msgid "Don't forget to check %1$syour settings%2$s before bulk optimization."
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:208
+#: ../inc/admin/ui/bulk.php:264
 msgid "Let's go!"
 msgstr ""
 
-# @todo Use typographical apostrophe.
-#: ../inc/admin/ui/bulk.php:215
+#: ../inc/admin/ui/bulk.php:271
 msgid "Imagif'em all"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:220
+#. translators: %s is a file size.
+#: ../inc/admin/ui/bulk.php:280
 #, php-format
 msgid "All images greater than %s will be optimized when using a paid plan."
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:239
+#: ../inc/admin/ui/bulk.php:303
 msgid "Well done!"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:240
+#. translators: 1 and 2 are data sizes.
+#: ../inc/admin/ui/bulk.php:308
 #, php-format
 msgid "you saved %1$s out of %2$s"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:245
+#: ../inc/admin/ui/bulk.php:318
 msgid "Share your awesome result"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:260
+#: ../inc/admin/ui/bulk.php:333
 msgid "Compression process results"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:263
+#: ../inc/admin/ui/bulk.php:336
 msgid "Filename"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:264
+#: ../inc/admin/ui/bulk.php:337
 msgid "Status"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:265 ../inc/admin/ui/options.php:401
-#: ../inc/admin/ui/options.php:406 ../inc/admin/ui/options.php:430
+#: ../inc/admin/ui/bulk.php:338 ../inc/admin/ui/options.php:415
+#: ../inc/admin/ui/options.php:420 ../inc/admin/ui/options.php:456
 msgid "Original"
 msgstr ""
 
-# @todo Context for translators should be provided.
-#: ../inc/admin/ui/bulk.php:266 ../inc/admin/upload.php:41
-#: ../inc/functions/i18n.php:80
+#: ../inc/admin/ui/bulk.php:339 ../inc/admin/upload.php:53
+#: ../inc/functions/i18n.php:84
 msgid "Optimized"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:267
+#: ../inc/admin/ui/bulk.php:340
 msgid "Percentage"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:268
+#: ../inc/admin/ui/bulk.php:341
 msgid "Thumbnails optimized"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:269
+#: ../inc/admin/ui/bulk.php:342
 msgid "Overall saving"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:274
+#: ../inc/admin/ui/bulk.php:347
 msgid "file"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:275
+#: ../inc/admin/ui/bulk.php:348
 msgid "error"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:276
+#: ../inc/admin/ui/bulk.php:349
 msgid "Total:"
 msgstr ""
 
-#: ../inc/admin/ui/bulk.php:277
+#: ../inc/admin/ui/bulk.php:350
 msgid "Gain:"
 msgstr ""
 
-# @todo The link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position.
-#: ../inc/admin/ui/bulk.php:294
-#, php-format
-msgid "%sStart the bulk optimization%s"
+#: ../inc/admin/ui/bulk.php:367
+msgid "Start the bulk optimization"
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:24
+#: ../inc/admin/ui/notices.php:26
 msgid "Welcome to Imagify, the best way to easily optimize your images!"
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:26 ../inc/admin/ui/notices.php:92
-#: ../inc/admin/ui/notices.php:186 ../inc/admin/ui/notices.php:223
-#: ../inc/admin/ui/notices.php:263 ../inc/admin/ui/notices.php:370
+#: ../inc/admin/ui/notices.php:28 ../inc/admin/ui/notices.php:116
+#: ../inc/admin/ui/notices.php:214 ../inc/admin/ui/notices.php:256
+#: ../inc/admin/ui/notices.php:312 ../inc/admin/ui/notices.php:441
 msgid "Dismiss this notice"
 msgstr ""
 
-# @todo Probably don’t capitalize.
-#: ../inc/admin/ui/notices.php:33
+#: ../inc/admin/ui/notices.php:35
 msgid "Create an Account"
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:34
+#: ../inc/admin/ui/notices.php:36
 msgid ""
 "Don't have an Imagify account yet? Optimize your images by creating an "
 "account in a few seconds!"
 msgstr ""
 
-# @todo “it’s” should not be capitalized.
-#: ../inc/admin/ui/notices.php:37
+#: ../inc/admin/ui/notices.php:39
 msgid "Sign up, It's FREE!"
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:43
+#: ../inc/admin/ui/notices.php:45
 msgid "Enter your API Key"
 msgstr ""
 
-# @todo The link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position. Also, “e-mail”.
-#: ../inc/admin/ui/notices.php:44
+#. translators: 1 is a link tag start, 2 is the link tag end.
+#: ../inc/admin/ui/notices.php:50
 #, php-format
 msgid ""
 "Save your API Key you have received by email or you can get it on your "
-"%sImagify account page%s."
+"%1$sImagify account page%2$s."
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:47
+#: ../inc/admin/ui/notices.php:58
 msgid "I have my API key"
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:53
+#: ../inc/admin/ui/notices.php:65
 msgid "Configure it"
 msgstr ""
 
-# @todo “You just have to”. Better “Just configure a few optimization settings.”
-#: ../inc/admin/ui/notices.php:54
+#: ../inc/admin/ui/notices.php:66
 msgid ""
 "It’s almost done! You have just to configure your optimization settings."
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:55
+#: ../inc/admin/ui/notices.php:67
 msgid "Go to Settings"
 msgstr ""
 
-# @todo . instead of !
-#: ../inc/admin/ui/notices.php:87 ../inc/admin/ui/options.php:97
-#: ../inc/functions/i18n.php:78
+#: ../inc/admin/ui/notices.php:102 ../inc/admin/ui/options.php:115
+#: ../inc/functions/i18n.php:82
 msgid "Your API key isn't valid!"
 msgstr ""
 
-# @todo The links should be implemented as inline HTML with a placeholders for URLs, in order for translators to be able to switch their positions.
-#: ../inc/admin/ui/notices.php:90
+#. translators: 1 and 2 are link tag starts, 3 is a link tag end.
+#: ../inc/admin/ui/notices.php:108
 #, php-format
 msgid ""
 "Go to your Imagify account page to get your API Key and specify it on "
@@ -396,608 +385,617 @@ msgid ""
 "have one yet."
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:142
+#: ../inc/admin/ui/notices.php:164
 msgid ""
 "The following plugins are not compatible with this plugin and may cause "
 "unexpected results:"
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:148
+#: ../inc/admin/ui/notices.php:171
 msgid "Deactivate"
 msgstr ""
 
-# @todo . instead of !
-#: ../inc/admin/ui/notices.php:178
+#: ../inc/admin/ui/notices.php:204
 msgid "The external HTTP requests are blocked!"
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:179
+#: ../inc/admin/ui/notices.php:206
 msgid ""
 "You defined the <code>WP_HTTP_BLOCK_EXTERNAL</code> constant in the <code>wp-"
 "config.php</code> to block all external HTTP requests."
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:181
+#: ../inc/admin/ui/notices.php:209
 msgid ""
 "To optimize your images, you have to put the following code in your <code>wp-"
 "config.php</code> file so that it works correctly."
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:182
+#: ../inc/admin/ui/notices.php:210
 msgid "Click on the field and press Ctrl-A to select all."
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:219
+#: ../inc/admin/ui/notices.php:252
 msgid "You're missing out!"
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:220
+#: ../inc/admin/ui/notices.php:253
 msgid "Use the List view to optimize images with Imagify."
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:221
+#: ../inc/admin/ui/notices.php:254
 msgid "Switch to the List View"
 msgstr ""
 
-# @todo Better: “To continue optimizing your images”. Also, the link should be implemented as inline HTML with a placeholder for the URL, in order for translators to be able to switch its position.
-#: ../inc/admin/ui/notices.php:260 ../inc/functions/i18n.php:98
-#: ../inc/functions/i18n.php:101
+#. translators: 1 is a "bold" tag start, 2 is a formatted data quota, 3 is a date, 4 is the "bold" tag end.
+#: ../inc/admin/ui/notices.php:297
 #, php-format
 msgid ""
-"To continue to optimize your images, log in to your Imagify account to %sbuy "
-"a pack or subscribe to a plan%s."
+"You have consumed all your credit for this month. You will have %1$s%2$s "
+"back on %3$s%4$s."
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:314 ../inc/admin/ui/options.php:28
+#. translators: 1 is a link tag start, 2 is the link tag end.
+#: ../inc/admin/ui/notices.php:306 ../inc/functions/i18n.php:106
+#: ../inc/functions/i18n.php:121
+#, php-format
+msgid ""
+"To continue to optimize your images, log in to your Imagify account to "
+"%1$sbuy a pack or subscribe to a plan%2$s."
+msgstr ""
+
+#: ../inc/admin/ui/notices.php:365 ../inc/admin/ui/options.php:29
 msgid "Discover the best caching plugin to speed up your website."
 msgstr ""
 
-# @todo Links should be implemented as inline HTML with placeholders for URLs.
-#: ../inc/admin/ui/notices.php:317 ../inc/admin/ui/options.php:36
+#. translators: 1 is a "bold" tag start, 2 is a pourcentage, 3 is the "bold" tag end, 4 is a coupon code.
+#: ../inc/admin/ui/notices.php:369
 #, php-format
-msgid "%sGet %s off%s with this coupon code:%s"
+msgid "%1$sGet %2$s off%3$s with this coupon code: %4$s"
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:326 ../inc/admin/ui/options.php:41
+#: ../inc/admin/ui/notices.php:378 ../inc/admin/ui/options.php:51
 msgid "Get WP Rocket now"
 msgstr ""
 
-#: ../inc/admin/ui/notices.php:363
+#. translators: 1 is a "bold" tag start, 2 is the "bold" tag end, 3 is a formatted number (don't use %3$d).
+#: ../inc/admin/ui/notices.php:418
 #, php-format
 msgid ""
-"%1$sCongratulations%2$s, you have optimized %1$s%3$d images%2$s and improved "
+"%1$sCongratulations%2$s, you have optimized %1$s%3$s images%2$s and improved "
 "your website's speed by reducing your images size."
 msgstr ""
 
-# @todo Links should be implemented as inline HTML with placeholders for URLs.
-#: ../inc/admin/ui/notices.php:365 ../inc/admin/ui/options.php:59
+#. translators: 1 is a "bold" tag start, 2 is the "bold" tag end + a line break tag, 3 is a link tag start, 4 is the link tag end.
+#: ../inc/admin/ui/notices.php:430 ../inc/admin/ui/options.php:70
 #, php-format
 msgid ""
-"%sDo you like this plugin?%s Please take a few seconds to %srate it on "
-"WordPress.org%s!"
+"%1$sDo you like this plugin?%2$s Please take a few seconds to %3$srate it on "
+"WordPress.org%4$s!"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:22
+#: ../inc/admin/ui/options.php:23
 msgid "Is your website too slow?"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:84
+#. translators: 1 is the start of a styled wrapper, 2 is a "bold" tag start, 3 is a percentage, 4 is the "bold" tag end, 5 is the styled wrapper end, 6 is a discount code.
+#: ../inc/admin/ui/options.php:39
+#, php-format
+msgid "%1$sGet %2$s%3$s off%4$s%5$s with this coupon code: %6$s"
+msgstr ""
+
+#: ../inc/admin/ui/options.php:100
 msgid "API Key"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:91 ../inc/functions/i18n.php:33
+#: ../inc/admin/ui/options.php:108 ../inc/functions/i18n.php:33
 msgid "Your API key is valid."
 msgstr ""
 
-# @todo Links should be implemented as inline HTML with placeholders for URLs.
-#: ../inc/admin/ui/options.php:104
+#. translators: 1 is a link tag start, 2 is the link tag end.
+#: ../inc/admin/ui/options.php:125
 #, php-format
-msgid "Don't have an API Key yet? %sCreate one, it's FREE%s."
+msgid "Don't have an API Key yet? %1$sCreate one, it's FREE%2$s."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:121
+#: ../inc/admin/ui/options.php:145
 msgid "Optimization Level"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:141
+#: ../inc/admin/ui/options.php:165
 msgid "More info?"
 msgstr ""
 
-# @todo Links should be implemented as inline HTML with placeholders for URLs.
-#: ../inc/admin/ui/options.php:148
+#. translators: 1 is a button tag start, 2 is the button tag end.
+#: ../inc/admin/ui/options.php:173
 #, php-format
-msgid "Need help to choose? %sTry the Visual Comparison%s"
+msgid "Need help to choose? %1$sTry the Visual Comparison%2$s"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:157 ../inc/admin/ui/options.php:161
+#: ../inc/admin/ui/options.php:182 ../inc/admin/ui/options.php:186
 msgid "Auto-Optimize images on upload"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:165
+#: ../inc/admin/ui/options.php:190
 msgid "Automatically optimize every image you upload to WordPress."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:170 ../inc/admin/ui/options.php:173
+#: ../inc/admin/ui/options.php:195 ../inc/admin/ui/options.php:198
 msgid "Backup original images"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:177
+#: ../inc/admin/ui/options.php:202
 msgid ""
 "Keep your original images in a separate folder before optimization process."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:182 ../inc/admin/ui/options.php:185
+#: ../inc/admin/ui/options.php:207 ../inc/admin/ui/options.php:210
 msgid "Resize larger images"
 msgstr ""
 
-# @todo Always keep messages intact. This message looks split up.
-#: ../inc/admin/ui/options.php:191
+#. translators: 1 is a text input for a number of pixels (don't use %d).
+#: ../inc/admin/ui/options.php:217
 #, php-format
 msgid "to maximum %s pixels width"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:202
+#. translators: 1 is a number of pixels.
+#: ../inc/admin/ui/options.php:228
 #, php-format
 msgid ""
 "This option is recommended to reduce larger images. You can save up to 80%% "
 "after resizing. The new width should not be less than your largest thumbnail "
-"width, which is actually %spx."
+"width, which is actually %dpx."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:209 ../inc/admin/ui/options.php:212
+#: ../inc/admin/ui/options.php:236 ../inc/admin/ui/options.php:239
 msgid "EXIF Data"
 msgstr ""
 
-# @todo Use typographical ellipisis
-#: ../inc/admin/ui/options.php:216
+#: ../inc/admin/ui/options.php:243
 msgid ""
 "Keep all EXIF data from your images. EXIF are informations stored in your "
 "pictures like shutter speed, exposure compensation, ISO, etc..."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:217
+#: ../inc/admin/ui/options.php:244
 msgid "Learn more"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:219
+#: ../inc/admin/ui/options.php:246
 msgid ""
 "If you are a photographer, you may be interested in this option if you are "
 "displaying on your pages some info like the model of your camera."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:228
+#: ../inc/admin/ui/options.php:255
 msgid "Files optimization"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:231
+#: ../inc/admin/ui/options.php:258
 msgid ""
 "You can choose to compress different image sizes created by WordPress here."
 msgstr ""
 
-# @todo Links should be implemented as inline HTML with placeholders for URLs.
-#: ../inc/admin/ui/options.php:233
+#. translators: 1 is a "bold" tag start, 2 is the "bold" tag end.
+#: ../inc/admin/ui/options.php:262
 #, php-format
-msgid "The %soriginal size%s is %sautomatically optimized%s by Imagify."
+msgid ""
+"The %1$soriginal size%2$s is %1$sautomatically optimized%2$s by Imagify."
 msgstr ""
 
-# @todo . instead of !
-#: ../inc/admin/ui/options.php:236
+#: ../inc/admin/ui/options.php:267
 msgid ""
 "Remember each additional image size will affect your Imagify monthly usage!"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:289
+#: ../inc/admin/ui/options.php:295
 msgid "Display options"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:294 ../inc/admin/ui/options.php:299
+#: ../inc/admin/ui/options.php:300 ../inc/admin/ui/options.php:305
 msgid "Show Admin Bar menu"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:300
+#: ../inc/admin/ui/options.php:306
 msgid "I want this awesome quick access menu on my admin bar."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:319
+#: ../inc/admin/ui/options.php:325
 msgid "Save &amp; Go to Bulk Optimizer"
 msgstr ""
 
-# @todo Links should be implemented as inline HTML with placeholders for URLs.
-#: ../inc/admin/ui/options.php:328
+#. translators: 1 is a link tag start, 2 is the link tag end.
+#: ../inc/admin/ui/options.php:337
 #, php-format
 msgid ""
-"Once your settings saved, optimize all your images by using the %sImagify "
-"Bulk Optimization%s feature."
+"Once your settings saved, optimize all your images by using the %1$sImagify "
+"Bulk Optimization%2$s feature."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:336
+#: ../inc/admin/ui/options.php:349
 msgid "You can choose three levels of compression"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:341
+#: ../inc/admin/ui/options.php:354
 msgid ""
 "This mode provides lossless optimization, your images will be optimized "
 "without any visible change."
 msgstr ""
 
-# @todo Always keep messages intact. This message looks split up.
-#: ../inc/admin/ui/options.php:344
+#: ../inc/admin/ui/options.php:357
 msgid ""
 "If you want the perfect quality for your images, we recommend you that mode."
 msgstr ""
 
-# @todo Always keep messages intact. This message looks split up.
-#: ../inc/admin/ui/options.php:347
+#: ../inc/admin/ui/options.php:360
 msgid ""
 "Note: the file size reduction will be less, compared to aggressive mode."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:354
+#: ../inc/admin/ui/options.php:367
 msgid ""
 "This mode provides perfect optimization of your images without any "
 "significant quality loss."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:357
+#: ../inc/admin/ui/options.php:370
 msgid ""
 "This will provide a drastic savings on the initial weight, with a small "
 "reduction in image quality. Most of the time it's not even noticeable."
 msgstr ""
 
-# @todo Always keep messages intact. This message looks split up.
-#: ../inc/admin/ui/options.php:360
+#: ../inc/admin/ui/options.php:373
 msgid "If you want the maximum weight reduction, we recommend using this mode."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:367
+#: ../inc/admin/ui/options.php:380
 msgid ""
 "This mode will apply all available optimizations for maximum image "
 "compression."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:370
+#: ../inc/admin/ui/options.php:383
 msgid ""
 "This will provide a huge savings on the initial weight. Sometimes the image "
 "quality could be degraded a little."
 msgstr ""
 
-# @todo Always keep messages intact. This message looks split up.
-#: ../inc/admin/ui/options.php:373
+#: ../inc/admin/ui/options.php:386
 msgid ""
 "If you want the maximum weight reduction, and you agree to lose some quality "
 "on the images we recommend using this mode."
 msgstr ""
 
-#: ../inc/admin/ui/options.php:380 ../inc/admin/ui/options.php:502
-#: ../inc/functions/admin-ui.php:662 ../inc/functions/i18n.php:61
+#: ../inc/admin/ui/options.php:393 ../inc/admin/ui/options.php:528
+#: ../inc/functions/admin-ui.php:703 ../inc/functions/i18n.php:65
 msgid "Close"
 msgstr ""
 
-# @todo Should be numerated arguments + context for translators.
-#: ../inc/admin/ui/options.php:392
+#. translators: 1 and 2 are optimization levels: "Original", "Normal", "Aggressive", or "Ultra".
+#: ../inc/admin/ui/options.php:406
 #, php-format
-msgid "I want to compare%s and%s"
+msgid "I want to compare %1$s and %2$s"
 msgstr ""
 
-# @todo %s is what?
-#: ../inc/admin/ui/options.php:409
+#. translators: %s is a formatted file size.
+#: ../inc/admin/ui/options.php:425
 #, php-format
 msgid "Original photography about %s"
 msgstr ""
 
-# @todo %s is what?
-#: ../inc/admin/ui/options.php:414 ../inc/admin/ui/options.php:419
-#: ../inc/admin/ui/options.php:424
+#. translators: %s is a formatted file size.
+#: ../inc/admin/ui/options.php:433 ../inc/admin/ui/options.php:441
+#: ../inc/admin/ui/options.php:449
 #, php-format
 msgid "Optimized photography about %s"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:429 ../inc/admin/ui/options.php:439
-#: ../inc/admin/ui/options.php:459 ../inc/admin/ui/options.php:480
-#: ../inc/functions/admin-ui.php:59
+#: ../inc/admin/ui/options.php:455 ../inc/admin/ui/options.php:465
+#: ../inc/admin/ui/options.php:485 ../inc/admin/ui/options.php:506
+#: ../inc/functions/admin-ui.php:67
 msgid "Level:"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:433 ../inc/admin/ui/options.php:443
-#: ../inc/admin/ui/options.php:463 ../inc/admin/ui/options.php:484
-#: ../inc/functions/i18n.php:62
+#: ../inc/admin/ui/options.php:459 ../inc/admin/ui/options.php:469
+#: ../inc/admin/ui/options.php:489 ../inc/admin/ui/options.php:510
+#: ../inc/functions/i18n.php:66
 msgid "File Size:"
 msgstr ""
 
-#: ../inc/admin/ui/options.php:447 ../inc/admin/ui/options.php:467
-#: ../inc/admin/ui/options.php:488 ../inc/functions/admin-ui.php:45
-#: ../inc/functions/i18n.php:63
+#: ../inc/admin/ui/options.php:473 ../inc/admin/ui/options.php:493
+#: ../inc/admin/ui/options.php:514 ../inc/functions/admin-ui.php:47
+#: ../inc/functions/i18n.php:67
 msgid "Original Saving:"
 msgstr ""
 
-# @todo Context for translators should be provided.
-#: ../inc/admin/upload.php:42 ../inc/functions/i18n.php:81
+#: ../inc/admin/upload.php:54 ../inc/functions/i18n.php:85
 msgid "Unoptimized"
 msgstr ""
 
-#: ../inc/admin/upload.php:43
+#: ../inc/admin/upload.php:55
 msgid "Errors"
 msgstr ""
 
-#: ../inc/admin/upload.php:46
+#: ../inc/admin/upload.php:58
 msgid "Filter by status"
 msgstr ""
 
-#: ../inc/admin/upload.php:49
+#: ../inc/admin/upload.php:60
 msgid "All images"
 msgstr ""
 
-# @todo Use typographical apostrophe.
-#: ../inc/classes/class-attachment.php:297
+#: ../inc/classes/class-imagify-attachment.php:318
 msgid ""
 "This size isn't authorized to be optimized. Update your Imagify settings if "
 "you want to optimize it."
 msgstr ""
 
-# @todo %s is what?
-#: ../inc/common/admin-bar.php:48
+#. translators: %s is WordPress.org.
+#: ../inc/common/admin-bar.php:47
 #, php-format
 msgid "Rate Imagify on %s"
 msgstr ""
 
-# @todo Use typographical ellipsis.
-#: ../inc/common/admin-bar.php:61
+#: ../inc/common/admin-bar.php:60
 msgid "Loading..."
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:36
+#: ../inc/common/cron.php:59
+msgid "Once Weekly"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:37
 msgid "New Filesize:"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:52
+#: ../inc/functions/admin-ui.php:56
 msgid "Close details"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:52
+#: ../inc/functions/admin-ui.php:56 ../inc/functions/admin-ui.php:57
 msgid "View details"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:56
+#: ../inc/functions/admin-ui.php:64
 msgid "Original Filesize:"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:62
+#: ../inc/functions/admin-ui.php:72
 msgid "Thumbnails Optimized:"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:63
+#: ../inc/functions/admin-ui.php:73
 msgid "Overall Saving:"
 msgstr ""
 
-# @todo Use typographical ellipsis.
-#: ../inc/functions/admin-ui.php:80
+#: ../inc/functions/admin-ui.php:90
 msgid "Restoring..."
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:121
+#: ../inc/functions/admin-ui.php:135
 msgid "Try again"
 msgstr ""
 
-# @todo %s is what? Also “Re-optimize” (not capitalized)
-#: ../inc/functions/admin-ui.php:153 ../inc/functions/admin-ui.php:159
-#: ../inc/functions/admin-ui.php:165
+#. translators: %s is an optimization level.
+#: ../inc/functions/admin-ui.php:180 ../inc/functions/admin-ui.php:189
+#: ../inc/functions/admin-ui.php:198
 #, php-format
 msgid "Re-Optimize to %s"
 msgstr ""
 
-# @todo %s is what?
-#: ../inc/functions/admin-ui.php:189
+#. translators: %s is a file extension.
+#: ../inc/functions/admin-ui.php:223
 #, php-format
 msgid "%s can't be optimized"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:240
+#: ../inc/functions/admin-ui.php:286
 msgid "What plan do I need?"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:244
+#: ../inc/functions/admin-ui.php:290
 msgid "You're new to Imagify?"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:245
+#: ../inc/functions/admin-ui.php:291
 msgid ""
 "Let us help you by analyzing your existing images and determinate the best "
 "plan for you"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:280
-msgid "Choose Plan"
-msgstr ""
-
-#: ../inc/functions/admin-ui.php:281
-msgid "Payment Info"
-msgstr ""
-
-#: ../inc/functions/admin-ui.php:286
+#: ../inc/functions/admin-ui.php:336
 msgid "We analysed your images"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:292
-#, php-format
-msgid "You have %s images"
+#: ../inc/functions/admin-ui.php:337
+msgid "We are analysing your images"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:298
-#, php-format
-msgid "You actually have %s of images in your library."
+#: ../inc/functions/admin-ui.php:340
+msgid "Analyzing"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:302
+#. translators: %s is a formatted number (don't use %d).
+#: ../inc/functions/admin-ui.php:349
+#, php-format
+msgid "You have %s image"
+msgid_plural "You have %s images"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s is a formatted file size.
+#: ../inc/functions/admin-ui.php:362
+#, php-format
+msgid "You currently have %s of images in your library."
+msgstr ""
+
+#. translators: %s is a formatted file size.
+#: ../inc/functions/admin-ui.php:372
 #, php-format
 msgid "You upload around %s of images per month."
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:309
+#: ../inc/functions/admin-ui.php:385
 msgid "We recommend you this plan"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:314
+#: ../inc/functions/admin-ui.php:386
+msgid "The free plan is enough to optimize your images"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:393
 msgid "Subscribe a monthly plan"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:315
+#: ../inc/functions/admin-ui.php:394
 msgid "Subscribe a yearly plan"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:319 ../inc/functions/admin-ui.php:455
-#: ../inc/functions/admin-ui.php:623
+#: ../inc/functions/admin-ui.php:398 ../inc/functions/admin-ui.php:564
 msgid "Monthly"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:322 ../inc/functions/admin-ui.php:458
-#: ../inc/functions/admin-ui.php:626
+#: ../inc/functions/admin-ui.php:401 ../inc/functions/admin-ui.php:567
 msgid "Yearly"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:322 ../inc/functions/admin-ui.php:458
-#: ../inc/functions/admin-ui.php:626
+#: ../inc/functions/admin-ui.php:401 ../inc/functions/admin-ui.php:567
 msgid "2 months free"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:333 ../inc/functions/admin-ui.php:352
-#: ../inc/functions/admin-ui.php:468 ../inc/functions/admin-ui.php:478
+#: ../inc/functions/admin-ui.php:412 ../inc/functions/admin-ui.php:439
+#: ../inc/functions/admin-ui.php:578 ../inc/functions/admin-ui.php:596
 msgid "/month"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:335 ../inc/functions/admin-ui.php:383
-#: ../inc/functions/admin-ui.php:470 ../inc/functions/admin-ui.php:521
+#. translators: %s is a formatted number (don't use %d).
+#: ../inc/functions/admin-ui.php:418 ../inc/functions/admin-ui.php:481
+#: ../inc/functions/admin-ui.php:584 ../inc/functions/admin-ui.php:649
 #, php-format
 msgid "approx: %s images"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:356 ../inc/functions/admin-ui.php:484
+#. translators: %s is a formatted price.
+#: ../inc/functions/admin-ui.php:447 ../inc/functions/admin-ui.php:606
 #, php-format
-msgid ""
-"%s per<br>\n"
-"additionnal Gb"
+msgid "%s per<br>additionnal Gb"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:361 ../inc/functions/admin-ui.php:396
-#: ../inc/functions/admin-ui.php:580 ../inc/functions/admin-ui.php:601
+#: ../inc/functions/admin-ui.php:455 ../inc/functions/admin-ui.php:498
 msgid "Choose another plan"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:371
+#: ../inc/functions/admin-ui.php:465
 msgid "Optimize the images you already have, buy a one-time plan"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:407
+#: ../inc/functions/admin-ui.php:510
+msgid "Checking Coupon"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:512
+msgid "If you have a <strong>coupon code</strong><br> use it there:"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:515
+msgid "Coupon Code"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:516
+msgid "OK"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:522
 msgid "Checkout"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:411
+#: ../inc/functions/admin-ui.php:527
 msgid ""
 "Monthly plans comes with credits which is renewed every months. The billing "
 "happens automatically each month or year depending the billing period you "
 "choose."
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:435
+#: ../inc/functions/admin-ui.php:538
+msgid "Choose a plan"
+msgstr ""
+
+#: ../inc/functions/admin-ui.php:542
 msgid "Monthly Plans"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:440
+#: ../inc/functions/admin-ui.php:547
 msgid "One Time Plans"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:450
+#: ../inc/functions/admin-ui.php:557
 msgid ""
 "Monthly plans come with credits which is renewed every months. The billing "
 "happens automatically each month or year depending the billing period you "
 "choose."
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:482 ../inc/functions/admin-ui.php:529
+#: ../inc/functions/admin-ui.php:600 ../inc/functions/admin-ui.php:661
 msgid "we recommend for you"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:490 ../inc/functions/admin-ui.php:533
+#: ../inc/functions/admin-ui.php:615 ../inc/functions/admin-ui.php:665
 msgid "Choose plan"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:498
+#: ../inc/functions/admin-ui.php:623
 msgid "Need more?"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:499
+#: ../inc/functions/admin-ui.php:624
 msgid "for special needs"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:503
+#: ../inc/functions/admin-ui.php:628
 msgid "Contact Us"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:510
+#: ../inc/functions/admin-ui.php:635
 msgid ""
 "One time plans are useful if you have a lots of existing images which need "
 "to be optimized. You can use it for bulk optimizing all your past images. "
 "You will pay only once."
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:563
-msgid "Your order"
-msgstr ""
-
-#: ../inc/functions/admin-ui.php:568
-#, php-format
-msgid "%scancel%sYou just removed %s"
-msgstr ""
-
-#: ../inc/functions/admin-ui.php:576 ../inc/functions/admin-ui.php:597
-msgid "Remove this item"
-msgstr ""
-
-#: ../inc/functions/admin-ui.php:583
-#, php-format
-msgid "%s per month"
-msgstr ""
-
-#: ../inc/functions/admin-ui.php:604
-#, php-format
-msgid "one time %s"
-msgstr ""
-
-#: ../inc/functions/admin-ui.php:617
-#, php-format
-msgid ""
-"Switch to yearly subscription and <br><strong class=\"imagify-dark\">save %s "
-"per year!</strong>"
-msgstr ""
-
-#: ../inc/functions/admin-ui.php:618
-#, php-format
-msgid ""
-"Perfect!<br>You're <strong class=\"imagify-dark\">saving %s per year!</"
-"strong>"
-msgstr ""
-
-#: ../inc/functions/admin-ui.php:657
+#: ../inc/functions/admin-ui.php:698
 msgid "Thank you for being awesome!"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:668
+#: ../inc/functions/admin-ui.php:710
 msgid "What do our user think about Imagify"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:702
+#: ../inc/functions/admin-ui.php:744
 msgid "Secure Credit Card Payment"
 msgstr ""
 
-#: ../inc/functions/admin-ui.php:703
+#: ../inc/functions/admin-ui.php:745
 msgid "This is secure 128-bits SSL encrypted payment"
 msgstr ""
 
-# @todo The use of typographic apostrophes is recommended, use U+2019 (https://en.wikipedia.org/wiki/Apostrophe#Typographic_form)
+#. translators: %s is a formatted percentage.
+#: ../inc/functions/admin-ui.php:771
+#, php-format
+msgid "%s OFF on all the subscriptions"
+msgstr ""
+
+#. translators: %s is a formatted date.
+#: ../inc/functions/admin-ui.php:780
+#, php-format
+msgid "Special Offer<br><strong>Until %s</strong>"
+msgstr ""
+
+#. translators: Don't use escaped HTML entities here (like &nbsp;).
 #: ../inc/functions/i18n.php:20
 msgid "Let's get you started!"
 msgstr ""
 
-# @todo WordPress spells email as “e-mail”. Also “e-mail address” would be more appropriate here.
 #: ../inc/functions/i18n.php:21
 msgid "Enter your email to get an API key:"
 msgstr ""
@@ -1006,23 +1004,22 @@ msgstr ""
 msgid "Sign Up"
 msgstr ""
 
-# @todo WordPress spells email as “e-mail”. Also “e-mail address” would be more appropriate here. Use period instead of exclamation mark.
 #: ../inc/functions/i18n.php:23
 msgid "You need to specify an email!"
 msgstr ""
 
+#. translators: Don't use escaped HTML entities here (like &nbsp;).
 #: ../inc/functions/i18n.php:24 ../inc/functions/i18n.php:31
 msgid "Congratulations!"
 msgstr ""
 
-# @todo WordPress spells email as “e-mail”. Also “with your private API key” would add meaning.
 #: ../inc/functions/i18n.php:25
 msgid ""
 "Your account has been succesfully created. Please check your mailbox, you "
 "are going to receive an email with API key."
 msgstr ""
 
-# @todo Exclamation mark needed? Context for translators?
+#. translators: Don't use escaped HTML entities here (like &nbsp;).
 #: ../inc/functions/i18n.php:26
 msgid "Connect to Imagify!"
 msgstr ""
@@ -1035,7 +1032,6 @@ msgstr ""
 msgid "Connect me"
 msgstr ""
 
-# @todo Should rather be something like “Validating…” to be consistent with “Optimizing…”
 #: ../inc/functions/i18n.php:29
 msgid "Check in progress..."
 msgstr ""
@@ -1054,104 +1050,122 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: ../inc/functions/i18n.php:41
+#: ../inc/functions/i18n.php:35
+msgid ""
+"Something went wrong with getting our updated offers. Please retry later."
+msgstr ""
+
+#: ../inc/functions/i18n.php:36
+msgid "Error with checking this coupon."
+msgstr ""
+
+#. translators: 1 is a percentage, 2 is a coupon code.
+#: ../inc/functions/i18n.php:38
+#, php-format
+msgctxt "coupon validated"
+msgid "%1$s off with %2$s"
+msgstr ""
+
+#: ../inc/functions/i18n.php:45
 msgid "Don't Need a Parachute?"
 msgstr ""
 
-#: ../inc/functions/i18n.php:42
+#: ../inc/functions/i18n.php:46
 msgid ""
 "If you keep this option deactivated, you won't be able to re-optimize your "
 "images to another compression level and restore your original images in case "
 "of need."
 msgstr ""
 
-#: ../inc/functions/i18n.php:58
+#: ../inc/functions/i18n.php:62
 msgid "Original Image"
 msgstr ""
 
-#: ../inc/functions/i18n.php:59
+#: ../inc/functions/i18n.php:63
 msgid "Optimized Image"
 msgstr ""
 
-# @todo use ellipsis as 1 character (http://unicode.org/cldr/utility/character.jsp?a=2026)
-#: ../inc/functions/i18n.php:73
+#: ../inc/functions/i18n.php:77
 msgid "Please wait..."
 msgstr ""
 
-#: ../inc/functions/i18n.php:74
+#: ../inc/functions/i18n.php:78
 msgid ""
 "We are trying to get your unoptimized images, it may take time depending on "
 "the number of images."
 msgstr ""
 
-# @todo Remove capitalization + exclamation mark.
-#: ../inc/functions/i18n.php:76
+#: ../inc/functions/i18n.php:80
 msgid "Oops, There is something wrong!"
 msgstr ""
 
-#: ../inc/functions/i18n.php:77
+#: ../inc/functions/i18n.php:81
 msgid ""
-"An unknow error occurred when we tried to get all your unoptimized images. "
-"Try again and if the issue still persist, please contact us!"
-msgstr ""
-
-# @todo Context for translators should be provided.
-#: ../inc/functions/i18n.php:82
-msgid "Error"
-msgstr ""
-
-# @todo Context for translators should be provided.
-#: ../inc/functions/i18n.php:85
-msgid "Hold on!"
+"An unknown error occurred when we tried to get all your unoptimized images. "
+"Try again and if the issue still persists, please contact us!"
 msgstr ""
 
 #: ../inc/functions/i18n.php:86
+msgid "Error"
+msgstr ""
+
+#: ../inc/functions/i18n.php:89
+msgid "Hold on!"
+msgstr ""
+
+#: ../inc/functions/i18n.php:90
 msgid "All your images have been optimized by Imagify. Congratulations!"
 msgstr ""
 
-# @todo Context for translators should be provided of what %1$s and %2$s represent.
-#: ../inc/functions/i18n.php:88
+#. translators: Plugin URI of the plugin/theme
+#: ../inc/functions/i18n.php:92
+msgid "https://wordpress.org/plugins/imagify/"
+msgstr ""
+
+#. translators: 1 and 2 are file sizes.
+#: ../inc/functions/i18n.php:94
 #, php-format
 msgid ""
 "Discover @imagify, the new compression tool to optimize your images for "
 "free. I saved %1$s out of %2$s!"
 msgstr ""
 
-# @todo What is going to happen when user does leave the page?
-#: ../inc/functions/i18n.php:92
+#: ../inc/functions/i18n.php:98
 msgid "Imagify is still processing. Are you sure you want to leave this page?"
 msgstr ""
 
-#: ../inc/functions/i18n.php:101
+#: ../inc/functions/i18n.php:116
 msgid "F j, Y"
 msgstr ""
 
-#: ../inc/functions/process.php:40
+#: ../inc/functions/process.php:38
 msgid ""
 "Sorry, our servers are temporarily unaccessible. Please, try again in a "
 "couple of minutes."
 msgstr ""
 
-#: ../inc/functions/process.php:46
+#: ../inc/functions/process.php:44
 msgid "External HTTP requests are blocked"
 msgstr ""
 
-#: ../inc/functions/process.php:52
+#: ../inc/functions/process.php:50
 msgid "File path is empty"
 msgstr ""
 
-#: ../inc/functions/process.php:58
+#. translators: %s is a file path.
+#: ../inc/functions/process.php:59
 #, php-format
 msgid "Could not find %s"
 msgstr ""
 
-#: ../inc/functions/process.php:63
+#. translators: %s is a file path.
+#: ../inc/functions/process.php:65
 #, php-format
 msgid "%s is not writable"
 msgstr ""
 
-# @todo %s is what?
-#: ../inc/functions/process.php:72
+#. translators: %s is a file size.
+#: ../inc/functions/process.php:75
 #, php-format
 msgid "Skipped (%s), image not found."
 msgstr ""

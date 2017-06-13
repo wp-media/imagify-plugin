@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<ruleset name="Imagify">
+	<description>Image optimization plugin for WordPress by WP Media.</description>
+
+	<arg name="extensions" value="php"/>
+	<!--<arg value="s"/>-->
+
+	<file>.</file>
+
+	<exclude-pattern>*.js</exclude-pattern>
+
+	<rule ref="WordPress">
+		<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/ -->
+		<exclude name="Generic.PHP.NoSilencedErrors.Discouraged"/>
+		<exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace"/>
+		<exclude name="Squiz.Commenting.BlockComment.NoEmptyLineBefore"/>
+		<exclude name="Squiz.Commenting.FileComment.Missing"/>
+		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
+		<exclude name="Squiz.PHP.CommentedOutCode.Found"/>
+		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.AssociativeKeyFound"/>
+		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize"/>
+		<exclude name="WordPress.VIP.DirectDatabaseQuery.DirectQuery"/>
+		<exclude name="WordPress.VIP.DirectDatabaseQuery.NoCaching"/>
+		<exclude name="WordPress.VIP.DirectDatabaseQuery.SchemaChange"/>
+		<exclude name="WordPress.VIP.PostsPerPage.posts_per_page"/><!-- Temporarily excluded -->
+		<exclude name="WordPress.VIP.PostsPerPage.posts_per_page_posts_per_page"/><!-- Temporarily excluded -->
+		<exclude name="WordPress.VIP.RestrictedFunctions.get_intermediate_image_sizes_get_intermediate_image_sizes"/>
+		<exclude name="WordPress.VIP.RestrictedFunctions.user_meta_get_user_meta"/>
+		<exclude name="WordPress.VIP.RestrictedFunctions.user_meta_update_user_meta"/>
+		<exclude name="WordPress.VIP.RestrictedFunctions.wp_redirect"/>
+		<exclude name="WordPress.VIP.RestrictedVariables.cache_constraints___COOKIE"/><!-- Temporarily excluded -->
+		<exclude name="WordPress.VIP.SlowDBQuery.slow_db_query"/><!-- Temporarily excluded -->
+		<exclude name="WordPress.VIP.SlowDBQuery.slow_db_query_meta_key"/><!-- Temporarily excluded -->
+		<exclude name="WordPress.VIP.SlowDBQuery.slow_db_query_meta_query"/><!-- Temporarily excluded -->
+		<exclude name="WordPress.VIP.SlowDBQuery.slow_db_query_meta_value"/><!-- Temporarily excluded -->
+		<exclude name="WordPress.VIP.SuperGlobalInputUsage.AccessDetected"/>
+		<exclude name="WordPress.VIP.ValidatedSanitizedInput"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_close"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_error"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_exec"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_file_create"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_getinfo"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_init"/>
+		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_setopt"/>
+		<exclude name="WordPress.XSS.EscapeOutput"/>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>inc/functions/deprecated.php</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid">
+		<exclude-pattern>inc/functions/deprecated.php</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.ValidVariableName">
+		<properties>
+			<property name="customPropertiesWhitelist" value="Packs,Plans" type="array"/>
+		</properties>
+	</rule>
+</ruleset>

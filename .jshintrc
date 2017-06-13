@@ -1,0 +1,30 @@
+{
+	"curly":     true,
+	"eqeqeq":    true,
+	"eqnull":    true,
+	"forin":     true,
+	"funcscope": true,
+	"indent":    4,
+	"nonbsp":    true,
+	"nonew":     true,
+	"undef":     true,
+	"unused":    true,
+	"browser":   true,
+	"onevar":    true,
+	"trailing":  true,
+	"latedef":   true,
+	"maxparams": 4,
+	"globals":   {
+		"jQuery":         false,
+		"ajaxurl":        false,
+		"console":        false,
+		"Promise":        false,
+		"Chart":          false,
+		"swal":           false,
+		"imagifyAdmin":   true,
+		"imagifyBulk":    true,
+		"imagifyOptions": true,
+		"imagifyTTT":     true,
+		"imagifyUpload":  true
+	}
+}
