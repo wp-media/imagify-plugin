@@ -19,7 +19,8 @@ function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
 		return $form_fields;
 	}
 
-	$attachment = new Imagify_Attachment( $post->ID );
+	$class_name = get_imagify_attachment_class_name( 'wp', $post->ID, 'attachment_fields_to_edit' );
+	$attachment = new $class_name( $post->ID );
 
 	$form_fields['imagify'] = array(
 		'label'         => 'Imagify',
@@ -49,7 +50,8 @@ function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 		return $actions;
 	}
 
-	$attachment = new Imagify_Attachment();
+	$class_name = get_imagify_attachment_class_name( 'wp', $post->ID, 'media_row_actions' );
+	$attachment = new $class_name( $post->ID );
 
 	// If Imagify license not valid, or image is not optimized, do nothing.
 	if ( ! imagify_valid_key() || ! $attachment->is_optimized() ) {
