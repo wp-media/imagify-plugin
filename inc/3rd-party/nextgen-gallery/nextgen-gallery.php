@@ -19,7 +19,7 @@ require( IMAGIFY_NGG_CLASSES_PATH . 'class-imagify-ngg-attachment.php' );
 require( IMAGIFY_NGG_FUNCTIONS_PATH . 'admin-stats.php' );
 require( IMAGIFY_NGG_COMMON_PATH . 'attachments.php' );
 
-imagify_ngg();
+imagify_ngg()->init();
 imagify_ngg_db();
 
 if ( is_admin() ) {

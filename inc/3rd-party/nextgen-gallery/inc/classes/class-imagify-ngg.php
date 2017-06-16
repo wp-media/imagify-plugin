@@ -14,7 +14,7 @@ class Imagify_NGG {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * The single instance of the class.
@@ -29,12 +29,28 @@ class Imagify_NGG {
 	/**
 	 * The constructor.
 	 *
-	 * @since 1.5
+	 * @since  1.5
+	 * @since  1.6.6 Doesn't launch the hooks anymore.
 	 * @author Jonathan Buttigieg
 	 *
 	 * @return void
 	 */
-	protected function __construct() {
+	protected function __construct() {}
+
+	/**
+	 * Launch the hooks.
+	 *
+	 * @since  1.6.6
+	 * @author Grégory Viguier
+	 */
+	public function init() {
+		static $done = false;
+
+		if ( $done ) {
+			return;
+		}
+		$done = true;
+
 		add_action( 'init', array( $this, 'add_mixin' ) );
 	}
 
