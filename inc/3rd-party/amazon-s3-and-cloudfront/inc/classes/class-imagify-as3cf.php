@@ -62,7 +62,22 @@ class Imagify_AS3CF {
 	 * @since  1.6.6
 	 * @author Grégory Viguier
 	 */
-	protected function __construct() {
+	protected function __construct() {}
+
+	/**
+	 * Launch the hooks.
+	 *
+	 * @since  1.6.6
+	 * @author Grégory Viguier
+	 */
+	public function init() {
+		static $done = false;
+
+		if ( $done ) {
+			return;
+		}
+		$done = true;
+
 		/**
 		 * One context to rule 'em all.
 		 */
