@@ -227,7 +227,7 @@ function _do_admin_post_async_optimize_save_image_editor_file() {
 
 	check_ajax_referer( 'image_editor-' . $_POST['postid'] );
 
-	$attachment_id = (int) $_POST['postid'];
+	$attachment_id = absint( $_POST['postid'] );
 
 	if ( ! get_post_meta( $attachment_id, '_imagify_data', true ) ) {
 		return;
