@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @since 1.5
  * @author Jonathan Buttigieg
  */
-class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
+class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 	/**
 	 * Class version.
@@ -27,16 +27,6 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 	public $image;
 
 	/**
-	 * The image id.
-	 *
-	 * @since 1.5
-	 *
-	 * @var    int
-	 * @access public
-	 */
-	public $id;
-
-	/**
 	 * The attachment SQL data row.
 	 *
 	 * @since 1.5
@@ -52,7 +42,7 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 	 * @since 1.5
 	 * @author Jonathan Buttigieg
 	 *
-	 * @param int|object $id An image attachment ID.
+	 * @param int|object $id An image attachment ID or a NGG object.
 	 * @return void
 	 */
 	public function __construct( $id ) {
@@ -66,7 +56,7 @@ class Imagify_NGG_Attachment extends Imagify_Abstract_Attachment {
 
 		$this->row = $this->get_row();
 
-		// Load nggAdmin classe.
+		// Load nggAdmin class.
 		$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
 
 		if ( ! class_exists( 'nggAdmin' ) && file_exists( $ngg_admin_functions_path ) ) {
