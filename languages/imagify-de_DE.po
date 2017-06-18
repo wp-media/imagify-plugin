@@ -823,7 +823,7 @@ msgstr ""
 
 #: ../inc/functions/admin-ui.php:245
 msgid ""
-"Let us help you by analyzing your existing images and determinate the best "
+"Let us help you by analyzing your existing images and determine the best "
 "plan for you"
 msgstr ""
 

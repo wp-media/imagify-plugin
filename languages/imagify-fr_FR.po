@@ -855,7 +855,7 @@ msgstr "Vous êtes nouveau sur Imagify&nbsp;?"
 
 #: inc/functions/admin-ui.php:291
 msgid ""
-"Let us help you by analyzing your existing images and determinate the best plan "
+"Let us help you by analyzing your existing images and determine the best plan "
 "for you"
 msgstr ""
 "Laissez-nous vous aider en analysant vos images existantes et déterminer le "
