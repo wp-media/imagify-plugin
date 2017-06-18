@@ -142,7 +142,7 @@ msgstr "Resumen"
 
 #: inc/admin/ui/bulk.php:99
 #, php-format
-msgid "You optimized %s images of your website"
+msgid "You optimized %s of your website's images"
 msgstr "Has optimizado el %s de imágenes de tu sitio"
 
 #: inc/admin/ui/bulk.php:103

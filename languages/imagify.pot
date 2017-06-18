@@ -143,7 +143,7 @@ msgstr ""
 #. translators: %s is a percentage.
 #: ../inc/admin/ui/bulk.php:117
 #, php-format
-msgid "You optimized %s images of your website"
+msgid "You optimized %s of your website's images"
 msgstr ""
 
 #: ../inc/admin/ui/bulk.php:125

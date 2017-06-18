@@ -114,7 +114,7 @@ function _imagify_display_bulk_page() {
 						<?php
 						printf(
 							/* translators: %s is a percentage. */
-							esc_html__( 'You optimized %s images of your website', 'imagify' ),
+							esc_html__( 'You optimized %s of your website\'s images', 'imagify' ),
 							'<span class="imagify-total-percent">' . imagify_percent_optimized_attachments() . '%</span>'
 						);
 						?>
