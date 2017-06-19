@@ -30,7 +30,7 @@ class Imagify_NGG {
 	 * The constructor.
 	 *
 	 * @since  1.5
-	 * @since  1.6.6 Doesn't launch the hooks anymore.
+	 * @since  1.6.5 Doesn't launch the hooks anymore.
 	 * @author Jonathan Buttigieg
 	 *
 	 * @return void
@@ -40,7 +40,7 @@ class Imagify_NGG {
 	/**
 	 * Launch the hooks.
 	 *
-	 * @since  1.6.6
+	 * @since  1.6.5
 	 * @author Grégory Viguier
 	 */
 	public function init() {

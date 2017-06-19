@@ -190,7 +190,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * Fills statistics data with values from $data array.
 	 *
 	 * @since 1.5
-	 * @since 1.6.6 Not static anymore.
+	 * @since 1.6.5 Not static anymore.
 	 * @author Jonathan Buttigieg
 	 * @access public
 	 *

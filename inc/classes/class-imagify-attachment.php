@@ -145,7 +145,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * Fills statistics data with values from $data array.
 	 *
 	 * @since 1.0
-	 * @since 1.6.6 Not static anymore.
+	 * @since 1.6.5 Not static anymore.
 	 * @access public
 	 *
 	 * @param  array  $data      The statistics data.
