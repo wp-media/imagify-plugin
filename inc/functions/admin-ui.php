@@ -288,7 +288,7 @@ function get_imagify_new_to_imagify() {
 			</div>
 			<div class="imagify-oh">
 				<p class="imagify-section-title">' . esc_html__( 'You\'re new to Imagify?', 'imagify' ) . '</p>
-				<p>' . esc_html__( 'Let us help you by analyzing your existing images and determinate the best plan for you', 'imagify' ) . '</p>
+				<p>' . esc_html__( 'Let us help you by analyzing your existing images and determine the best plan for you', 'imagify' ) . '</p>
 			</div>
 		</div>
 	';
