@@ -145,26 +145,18 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * Fills statistics data with values from $data array.
 	 *
 	 * @since 1.0
-	 * @since 1.6.6 Not static anymore, removed the attachment ID parameter.
+	 * @since 1.6.6 Not static anymore.
 	 * @access public
 	 *
 	 * @param  array  $data      The statistics data.
 	 * @param  object $response  The API response.
+	 * @param  int    $id        The attachment ID.
 	 * @param  int    $url       The attachment URL.
 	 * @param  string $size      The attachment size key.
 	 * @return bool|array        False if the original size has an error or an array contains the data for other result.
 	 */
-	public function fill_data( $data, $response, $url, $size = 'full' ) {
-		$data          = is_array( $data ) ? $data : array();
+	public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
 		$data['sizes'] = ! empty( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
-
-		if ( empty( $data['stats'] ) ) {
-			$data['stats'] = array(
-				'original_size'  => 0,
-				'optimized_size' => 0,
-				'percent'        => 0,
-			);
-		}
 
 		if ( is_wp_error( $response ) ) {
 			$error        = $response->get_error_message();
@@ -177,13 +169,13 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 			// Update the error status for the original size.
 			if ( 'full' === $size ) {
-				update_post_meta( $this->id, '_imagify_data', $data );
+				update_post_meta( $id, '_imagify_data', $data );
 
 				if ( false !== strpos( $error, 'This image is already compressed' ) ) {
 					$error_status = 'already_optimized';
 				}
 
-				update_post_meta( $this->id, '_imagify_status', $error_status );
+				update_post_meta( $id, '_imagify_status', $error_status );
 
 				return false;
 			}
@@ -224,10 +216,19 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		$metadata = $metadata ? $metadata : wp_get_attachment_metadata( $this->id );
 		$sizes    = isset( $metadata['sizes'] ) ? (array) $metadata['sizes'] : array();
+		$data     = array(
+			'stats' => array(
+				'original_size'  => 0,
+				'optimized_size' => 0,
+				'percent'        => 0,
+			),
+		);
 
 		// To avoid issue with "original_size" at 0 in "_imagify_data".
 		if ( 0 === (int) $this->get_stats_data( 'original_size' ) ) {
-			$this->delete_imagify_data();
+			delete_post_meta( $this->id, '_imagify_data' );
+			delete_post_meta( $this->id, '_imagify_status' );
+			delete_post_meta( $this->id, '_imagify_optimization_level' );
 		}
 
 		// Get file path & URL for original image.
@@ -298,8 +299,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			'resized'            => $resized,
 			'original_size'      => $attachment_original_size,
 		) );
-
-		$data = $this->fill_data( null, $response, $attachment_url );
+		$data     = $this->fill_data( $data, $response, $this->id, $attachment_url );
 
 		if ( ! $data ) {
 			delete_transient( 'imagify-async-in-progress-' . $this->id );
@@ -336,7 +336,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 					'optimization_level' => $optimization_level,
 					'context'            => 'wp',
 				) );
-				$data     = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
+				$data     = $this->fill_data( $data, $response, $this->id, $thumbnail_url, $size_key );
 
 				/**
 				* Filter the optimization data of a specific thumbnail.
@@ -417,7 +417,9 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		wp_generate_attachment_metadata( $this->id, $attachment_path );
 
 		// Remove old optimization data.
-		$this->delete_imagify_data();
+		delete_post_meta( $this->id, '_imagify_data' );
+		delete_post_meta( $this->id, '_imagify_status' );
+		delete_post_meta( $this->id, '_imagify_optimization_level' );
 
 		// Restore the original size in the metadata.
 		$this->update_metadata_size();

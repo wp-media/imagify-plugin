@@ -27,14 +27,10 @@ add_action( 'manage_media_custom_column', '_imagify_manage_media_custom_column',
  * @param int    $attachment_id Attachment ID.
  */
 function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
-	if ( 'imagify_optimized_file' !== $column_name ) {
-		return;
+	if ( 'imagify_optimized_file' === $column_name ) {
+		$attachment = new Imagify_Attachment( $attachment_id );
+		echo get_imagify_media_column_content( $attachment );
 	}
-
-	$class_name = get_imagify_attachment_class_name( 'wp', $attachment_id, 'manage_media_custom_column' );
-	$attachment = new $class_name( $attachment_id );
-
-	echo get_imagify_media_column_content( $attachment );
 }
 
 add_action( 'restrict_manage_posts', '_imagify_attachments_filter_dropdown' );

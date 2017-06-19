@@ -14,8 +14,9 @@ add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', P
  * @return array
  */
 function _imagify_optimize_attachment( $metadata, $attachment_id ) {
+	$api_key = get_imagify_option( 'api_key', false );
 
-	if ( ! get_imagify_option( 'api_key' ) || ! get_imagify_option( 'auto_optimize' ) ) {
+	if ( ! $api_key || ! get_imagify_option( 'auto_optimize', false ) ) {
 		return $metadata;
 	}
 
@@ -37,14 +38,13 @@ add_action( 'delete_attachment', '_imagify_delete_backup_file' );
  * @param int $post_id Attachment ID.
  */
 function _imagify_delete_backup_file( $post_id ) {
-	$class_name = get_imagify_attachment_class_name( 'wp', $post_id, 'delete_attachment' );
-	$attachment = new $class_name( $post_id );
+	$attachment = new Imagify_Attachment( $post_id );
 	$attachment->delete_backup();
 }
 
 add_action( 'shutdown', '_imagify_optimize_save_image_editor_file' );
 /**
- * Optimize an attachment after being resized.
+ * Optimize a resized attachment.
  *
  * @since 1.3.6
  * @since 1.4 Async job.
