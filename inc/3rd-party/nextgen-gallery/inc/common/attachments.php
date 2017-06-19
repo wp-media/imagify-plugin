@@ -55,7 +55,8 @@ add_filter( 'ngg_medialibrary_imported_image', '_imagify_ngg_media_library_impor
  * @return object
  */
 function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
-	$attachment = new Imagify_Attachment( $attachment->ID );
+	$class_name = get_imagify_attachment_class_name( 'wp' );
+	$attachment = new $class_name( $attachment->ID );
 
 	if ( ! $attachment->is_optimized() ) {
 		return $image;

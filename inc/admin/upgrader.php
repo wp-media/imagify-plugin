@@ -82,10 +82,11 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 
 		if ( $query->posts ) {
 			foreach ( (array) $query->posts as $id ) {
-				$attachment         = new Imagify_Attachment( $id );
-				$attachment_error   = $attachment->get_optimized_error();
-				$attachment_error   = trim( $attachment_error );
-				$attachment_status	= get_post_meta( $id, '_imagify_status', true );
+				$class_name        = get_imagify_attachment_class_name( 'wp' );
+				$attachment        = new $class_name( $id );
+				$attachment_error  = $attachment->get_optimized_error();
+				$attachment_error  = trim( $attachment_error );
+				$attachment_status = get_post_meta( $id, '_imagify_status', true );
 
 				if ( false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
 					update_post_meta( $id, '_imagify_status', 'already_optimized' );
@@ -125,7 +126,8 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 
 		if ( $query->posts ) {
 			foreach ( (array) $query->posts as $id ) {
-				$attachment       = new Imagify_Attachment( $id );
+				$class_name       = get_imagify_attachment_class_name( 'wp' );
+				$attachment       = new $class_name( $id );
 				$attachment_stats = $attachment->get_stats_data();
 
 				if ( isset( $attachment_stats['aggressive'] ) ) {

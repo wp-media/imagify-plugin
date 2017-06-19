@@ -70,17 +70,19 @@ if ( function_exists( 'wr2x_get_retina' ) ) :
 		$do_retina   = apply_filters( 'do_imagify_optimize_retina', true );
 		$retina_path = wr2x_get_retina( $path );
 
-		if ( ! empty( $retina_path ) && $do_retina ) {
-			$response = do_imagify( $retina_path, array(
-				'backup'             => false,
-				'optimization_level' => $optimization_level,
-				'context'            => 'wp-retina',
-			) );
-			$instance = new Imagify_Attachment( $id );
-			$data     = $instance->fill_data( $data, $response, $id, $url, $size_key . '@2x' );
+		if ( empty( $retina_path )|| ! $do_retina ) {
+			return $data;
 		}
 
-		return $data;
+		$response = do_imagify( $retina_path, array(
+			'backup'             => false,
+			'optimization_level' => $optimization_level,
+			'context'            => 'wp-retina',
+		) );
+		$class_name = get_imagify_attachment_class_name( 'wp' );
+		$attachment = new $class_name( $id );
+
+		return $attachment->fill_data( $data, $response, $id, $url, $size_key . '@2x' );
 	}
 
 endif;

@@ -14,7 +14,8 @@ function _imagify_attachment_submitbox_misc_actions() {
 		return;
 	}
 
-	$attachment = new Imagify_Attachment();
+	$class_name = get_imagify_attachment_class_name( 'wp' );
+	$attachment = new $class_name( $post->ID );
 
 	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
 
