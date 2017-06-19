@@ -6,7 +6,8 @@ Developers:
 	Geoffrey Crofte <geoffrey@wp-media.me>
 	Sébastien Decamme <sebastien@wp-media.me>
 	Julio Potier <julio@wp-media.me>
-	Caspar Huebinger <caspar@wp-rocket.me>
+	Caspar Hübinger <caspar@wp-rocket.me>
+	Remy Perona <remy@wp-rocket.me>
 	Grégory Viguier <gregory@wp-rocket.me>
 
 Interface Design:
