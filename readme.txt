@@ -1,8 +1,8 @@
 === Imagify Image Optimizer ===
-Contributors: wp_media
+Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.7.5
+Tested up to: 4.8.0
 Stable tag: 1.6.5
 
 License: GPLv2 or later
@@ -136,6 +136,13 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.5 =
+* Improvement
+ * Code quality of the whole plugin has been improved to fit more WordPress coding standards.
+ * Lots of internationalisation improvements. Now the plugin's internationalisation fully rely on the repository system.
+* Bug Fix
+ * Fixed an error with php 7.1: `Uncaught Error: [] operator not supported for strings in /wp-content/plugins/imagify/inc/functions/admin.php:134`.
+ 
 = 1.6.4 =
 * Improvement
  * Provide a link to optimize in higher level when an image is already optimized.
@@ -155,14 +162,14 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 = 1.6 =
 * NEW Features:
- * Knowing how many MB/GB you need to optimize your existing and future images is complicated. We love to make things easiers, so Imagify will do it and advise you the best plan.
+ * Knowing how many MB/GB you need to optimize your existing and future images is complicated. We love to make things easier, so Imagify will do it and advise you the best plan.
  * You can now buy all the plans without leaving your WordPress administration
 * Improvement
  * Some styles fixed in the interface
 
 = 1.5.10 =
 * Improvement
- * Set to 1 the Bulk buffer size when there are more than 10 thumbnails to avoid "Unkown error" on the Bulk Optimization
+ * Set to 1 the Bulk buffer size when there are more than 10 thumbnails to avoid "Unknown error" on the Bulk Optimization
 
 = 1.5.9 =
 * Bug fix
@@ -194,7 +201,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 = 1.5.3 =
 * Regression Fix
- * Display the Original Filesize in "View Details" section
+ * Display the Original File size in "View Details" section
 
 = 1.5.2.1 =
 * Bug Fix
@@ -266,7 +273,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 = 1.4 =
 * Interface
- * Medias: Click a button to open images comparison between Original and Optimized (available for big enought images)
+ * Medias: Click a button to open images comparison between Original and Optimized (available for big enough images)
 * Improvement
  * Add async method to optimize resized images
 
