@@ -21,7 +21,7 @@ WooCommerce and NextGen Gallery compatible.
 
 = What is Image Compression? =
 
-Learn more about image compression, check that: <a href="https://imagify.io/images-compression">https://imagify.io/images-compression</a>
+Learn more about image compression, check that: [https://imagify.io/images-compression](https://imagify.io/images-compression)
 
 = Why use Imagify to optimize you images? =
 
@@ -50,27 +50,27 @@ With the backup option, you can change your mind whenever you want by restoring 
 
 You can optimize for free 25MB of images (about 250 images) every month and you will receive a 25MB bonus upon registration.
 
-Need more? Have a look at our plans: <a href="https://imagify.io/pricing">https://imagify.io/pricing</a>
+Need more? Have a look at our plans: [https://imagify.io/pricing](https://imagify.io/pricing)
 
 = What's next? =
 
-Have a look at our upcoming features by following our development roadmap: <a href="https://trello.com/b/3Q8ZnSN6/imagify-roadmap">https://trello.com/b/3Q8ZnSN6/imagify-roadmap</a>
+Have a look at our upcoming features by following our development roadmap: [https://trello.com/b/3Q8ZnSN6/imagify-roadmap](https://trello.com/b/3Q8ZnSN6/imagify-roadmap)
 
 = Who we are? =
 
-We are <a href="http://wp-media.me">WP Media</a>, the startup behind WP Rocket the best caching plugin for WordPress.
+We are [WP Media](https://wp-media.me/), the startup behind WP Rocket the best caching plugin for WordPress.
 
-Our mission is to improve the web, we are making it faster with <a href="http://wp-rocket.me/">WP Rocket</a> we want to make it lighter with Imagify.
+Our mission is to improve the web, we are making it faster with [WP Rocket](https://wp-rocket.me/) we want to make it lighter with Imagify.
 
 = Get in touch! =
 
-* Website: <a href="https://imagify.io">Imagify.io</a>
-* Contact Us: <a href="https://imagify.io/contact">https://imagify.io/contact</a>
-* Twitter: <a href="https://twitter.com/imagify">https://twitter.com/imagify</a>
+* Website: [Imagify.io](https://imagify.io)
+* Contact Us: [https://imagify.io/contact](https://imagify.io/contact)
+* Twitter: [https://twitter.com/imagify](https://twitter.com/imagify)
 
 = Related Plugins =
-* <a href="http://wp-rocket.me">WP Rocket</a>: Best caching plugin to speed-up your WordPress website.
-* <a href="https://wordpress.org/plugins/rocket-lazy-load/">Rocket Lazy Load</a>: Best Lazy Load script to reduce the number of HTTP requests and improves the websites loading time.
+* [WP Rocket](https://wp-rocket.me/): Best caching plugin to speed-up your WordPress website.
+* [Rocket Lazy Load](https://wordpress.org/plugins/rocket-lazy-load/): Best Lazy Load script to reduce the number of HTTP requests and improves the websites loading time.
 
 == Installation ==
 
