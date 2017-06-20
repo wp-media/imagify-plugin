@@ -524,7 +524,7 @@ function imagify_payment_modal() {
 							</div>
 						</div>
 
-						<p class="imagify-footer-lines"><?php esc_html_e( 'Monthly plans comes with credits which is renewed every months. The billing happens automatically each month or year depending the billing period you choose.', 'imagify' ); ?></p>
+						<p class="imagify-footer-lines"><?php esc_html_e( 'Monthly plans come with credits which is renewed every months. The billing happens automatically each month or year depending the billing period you choose.', 'imagify' ); ?></p>
 					</div>
 				</div><!-- .imagify-pre-checkout-view -->
 
