@@ -5,9 +5,6 @@ Requires at least: 3.7.0
 Tested up to: 4.8.0
 Stable tag: 1.6.5
 
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
-
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
 == Description ==
@@ -23,16 +20,16 @@ WooCommerce and NextGen Gallery compatible.
 
 Learn more about image compression, check that: [https://imagify.io/images-compression](https://imagify.io/images-compression)
 
-= Why use Imagify to optimize you images? =
+= Why use Imagify to optimize your images? =
 
-You already have a lots of unoptimized images? Not a problem, you will love the Bulk Optimizer to optimize all your existing images in one click.
+You already have lots of unoptimized images? Not a problem, you will love the Bulk Optimizer to optimize all your existing images in one click.
 
 Imagify can directly resize your images, **you won't have to lose time anymore on resizing your images before uploading them**.
 
 Three level of compression are available:
 
 - Normal, a lossless compression algorithm. The image quality won't be altered at all.
-- Agressive, a lossy compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all.
+- Aggressive, a lossy compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all.
 - Ultra, our strongest compression method using a lossy algorithm.
 
 With the backup option, you can change your mind whenever you want by restoring your images to their original version or optimize them to another compression level.
@@ -71,6 +68,9 @@ Our mission is to improve the web, we are making it faster with [WP Rocket](http
 = Related Plugins =
 * [WP Rocket](https://wp-rocket.me/): Best caching plugin to speed-up your WordPress website.
 * [Rocket Lazy Load](https://wordpress.org/plugins/rocket-lazy-load/): Best Lazy Load script to reduce the number of HTTP requests and improves the websites loading time.
+
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Installation ==
 
@@ -291,7 +291,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 = 1.2 =
 * New: compression level: Ultra
 * New: You can now choose to display Admin Bar Imagify's menu, or not.
-* New: See the differences between Ultra, Agressive and Normal option inside Imagify Options page.
+* New: See the differences between Ultra, Aggressive and Normal option inside Imagify Options page.
 * Bug Fix: Admin Bar: Styles are now included in front-end too.
 * Bug Fix: Admin Bar: Better styles in certain cases.
 * Bug Fix: Deactivate a conflict plugin doesn't return a blank page anymore!
