@@ -101,5 +101,7 @@ function imagify_ngg_percent_optimized_attachments() {
 function imagify_ngg_count_saving_data() {
 	global $wpdb;
 
+	$table_name = $wpdb->ngg_imagify_data;
+
 	return $wpdb->get_col( "SELECT $table_name.data FROM {$wpdb->ngg_imagify_data} WHERE status = 'success'" ); // WPCS: unprepared SQL ok.
 }
