@@ -23,7 +23,7 @@ function _imagify_ngg_heartbeat_received( $response, $data ) {
 	$user        = new Imagify_User();
 
 	$response['imagify_bulk_data'] = array(
-		'already_optimized_attachments' => $saving_data['count'],
+		'already_optimized_attachments' => number_format_i18n( $saving_data['count'] ),
 		'optimized_attachments'         => imagify_ngg_count_optimized_attachments(),
 		'unoptimized_attachments'       => imagify_ngg_count_unoptimized_attachments(),
 		'errors_attachments'            => imagify_ngg_count_error_attachments(),
