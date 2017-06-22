@@ -165,5 +165,15 @@ function imagify_do_async_job( $body ) {
 		'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
 	);
 
+	/**
+	 * Filter the arguments used to launch an async job.
+	 *
+	 * @since  1.6.6
+	 * @author Grégory Viguier
+	 *
+	 * @param array $args An array of arguments passed to wp_remote_post().
+	 */
+	$args = apply_filters( 'imagify_do_async_job_args', $args );
+
 	wp_remote_post( admin_url( 'admin-ajax.php' ), $args );
 }
