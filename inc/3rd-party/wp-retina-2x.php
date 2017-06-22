@@ -79,10 +79,10 @@ if ( function_exists( 'wr2x_get_retina' ) ) :
 			'optimization_level' => $optimization_level,
 			'context'            => 'wp-retina',
 		) );
-		$class_name = get_imagify_attachment_class_name( 'wp' );
+		$class_name = get_imagify_attachment_class_name( 'wp', $id, 'imagify_fill_thumbnail_data' );
 		$attachment = new $class_name( $id );
 
-		return $attachment->fill_data( $data, $response, $id, $url, $size_key . '@2x' );
+		return $attachment->fill_data( $data, $response, $url, $size_key . '@2x' );
 	}
 
 endif;

@@ -30,7 +30,7 @@ function _do_admin_post_imagify_manual_upload() {
 
 	$context       = esc_html( $_GET['context'] );
 	$attachment_id = absint( $_GET['attachment_id'] );
-	$class_name    = get_imagify_attachment_class_name( $context );
+	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_manual_upload' );
 	$attachment    = new $class_name( $attachment_id );
 
 	// Optimize it!!!!!
@@ -71,7 +71,7 @@ function _do_admin_post_imagify_manual_override_upload() {
 
 	$context       = esc_html( $_GET['context'] );
 	$attachment_id = absint( $_GET['attachment_id'] );
-	$class_name    = get_imagify_attachment_class_name( $context );
+	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_manual_override_upload' );
 	$attachment    = new $class_name( $attachment_id );
 
 	// Restore the backup file.
@@ -115,7 +115,7 @@ function _do_admin_post_imagify_restore_upload() {
 
 	$context       = esc_html( $_GET['context'] );
 	$attachment_id = absint( $_GET['attachment_id'] );
-	$class_name    = get_imagify_attachment_class_name( $context );
+	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_restore_upload' );
 	$attachment    = new $class_name( $attachment_id );
 
 	// Restore the backup file.
@@ -147,7 +147,7 @@ function _do_wp_ajax_imagify_bulk_upload() {
 
 	$context            = esc_html( $_POST['context'] );
 	$attachment_id      = absint( $_POST['image'] );
-	$class_name         = get_imagify_attachment_class_name( $context );
+	$class_name         = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_bulk_upload' );
 	$attachment         = new $class_name( $attachment_id );
 	$optimization_level = get_transient( 'imagify_bulk_optimization_level' );
 
@@ -205,7 +205,7 @@ function _do_admin_post_async_optimize_upload_new_media() {
 
 	$context       = esc_html( $_POST['context'] );
 	$attachment_id = absint( $_POST['attachment_id'] );
-	$class_name    = get_imagify_attachment_class_name( $context );
+	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_async_optimize_upload_new_media' );
 	$attachment    = new $class_name( $attachment_id );
 
 	// Optimize it!!!!!
@@ -234,14 +234,12 @@ function _do_admin_post_async_optimize_save_image_editor_file() {
 	}
 
 	$optimization_level = (int) get_post_meta( $attachment_id, '_imagify_optimization_level', true );
-	$class_name         = get_imagify_attachment_class_name( 'wp' );
+	$class_name         = get_imagify_attachment_class_name( 'wp', $attachment_id, 'wp_ajax_imagify_async_optimize_save_image_editor_file' );
 	$attachment         = new $class_name( $attachment_id );
 	$metadata           = wp_get_attachment_metadata( $attachment_id );
 
 	// Remove old optimization data.
-	delete_post_meta( $attachment_id, '_imagify_data' );
-	delete_post_meta( $attachment_id, '_imagify_status' );
-	delete_post_meta( $attachment_id, '_imagify_optimization_level' );
+	$attachment->delete_imagify_data();
 
 	if ( 'restore' === $_POST['do'] ) {
 		// Restore the backup file.

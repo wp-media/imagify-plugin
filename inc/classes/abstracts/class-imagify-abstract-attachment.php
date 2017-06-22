@@ -13,7 +13,7 @@ class Imagify_Abstract_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * The attachment ID.
@@ -115,6 +115,19 @@ class Imagify_Abstract_Attachment {
 	 */
 	public function get_optimization_level() {
 		return -1;
+	}
+
+	/**
+	 * Delete the 3 metas used by Imagify.
+	 *
+	 * @since  1.6.6
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function delete_imagify_data() {
+		delete_post_meta( $this->id, '_imagify_data' );
+		delete_post_meta( $this->id, '_imagify_status' );
+		delete_post_meta( $this->id, '_imagify_optimization_level' );
 	}
 
 	/**
@@ -372,16 +385,16 @@ class Imagify_Abstract_Attachment {
 	 *
 	 * @since 1.0
 	 * @since 1.6.5 Not static anymore.
+	 * @since 1.6.6 Removed the attachment ID parameter.
 	 * @access public
 	 *
 	 * @param  array  $data     The statistics data.
 	 * @param  object $response The API response.
-	 * @param  int    $id       The attachment ID.
 	 * @param  int    $url      The attachment URL.
 	 * @param  string $size     The attachment size key.
 	 * @return bool|array False if the original size has an error or an array contains the data for other result.
 	 */
-	public function fill_data( $data, $response, $id, $url, $size = 'full' ) {
+	public function fill_data( $data, $response, $url, $size = 'full' ) {
 		return array();
 	}
 
