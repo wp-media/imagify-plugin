@@ -138,7 +138,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 == Changelog ==
 = 1.6.5 =
 * Improvement: Code quality of the whole plugin has been improved to fit more WordPress coding standards.
-* Improvement: Lots of internationalisation improvements. Now the plugin's internationalisation fully rely on the repository system.
+* Improvement: Lots of internationalization improvements. Now the plugin's internationalization fully rely on the repository system.
 * Bug Fix: Fixed an error with php 7.1: `Uncaught Error: [] operator not supported for strings in /wp-content/plugins/imagify/inc/functions/admin.php:134`.
  
 = 1.6.4 =
