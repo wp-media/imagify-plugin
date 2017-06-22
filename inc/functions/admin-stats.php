@@ -231,7 +231,7 @@ function imagify_count_saving_data( $key = '' ) {
 			continue;
 		}
 
-		$stats_data    = $attachment_data['stats'];
+		++$count;
 		$original_data = $attachment_data['sizes']['full'];
 
 		// Increment the original sizes.
@@ -241,7 +241,7 @@ function imagify_count_saving_data( $key = '' ) {
 		unset( $attachment_data['sizes']['full'] );
 
 		// Increment the thumbnails sizes.
-		foreach ( $attachment_data['sizes'] as $size_key => $size_data ) {
+		foreach ( $attachment_data['sizes'] as $size_data ) {
 			if ( ! empty( $size_data['success'] ) ) {
 				$original_size  += $size_data['original_size'];
 				$optimized_size += $size_data['optimized_size'];
@@ -250,7 +250,7 @@ function imagify_count_saving_data( $key = '' ) {
 	}
 
 	$data = array(
-		'count'          => count( $attachments ),
+		'count'          => $count,
 		'original_size'  => $original_size,
 		'optimized_size' => $optimized_size,
 		'percent'        => $optimized_size ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0,
