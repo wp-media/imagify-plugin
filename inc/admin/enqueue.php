@@ -13,6 +13,9 @@ function _imagify_admin_print_styles() {
 	$css_ext        = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.css' : '.min.css';
 	$js_ext         = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.js'  : '.min.js';
 
+	/**
+	 * Styles.
+	 */
 	wp_register_style(
 		'imagify-css-admin',
 		IMAGIFY_ASSETS_CSS_URL . 'admin' . $css_ext,
@@ -24,7 +27,7 @@ function _imagify_admin_print_styles() {
 		'imagify-css-sweetalert',
 		IMAGIFY_ASSETS_CSS_URL . 'sweetalert2' . $css_ext,
 		array(),
-		IMAGIFY_VERSION
+		'4.0.15'
 	);
 
 	wp_register_style(
@@ -34,6 +37,9 @@ function _imagify_admin_print_styles() {
 		IMAGIFY_VERSION
 	);
 
+	/**
+	 * Scripts.
+	 */
 	wp_register_script(
 		'imagify-js-async',
 		IMAGIFY_ASSETS_JS_URL . 'imagify' . $js_ext,
@@ -78,7 +84,7 @@ function _imagify_admin_print_styles() {
 		'imagify-js-sweetalert',
 		IMAGIFY_ASSETS_JS_URL . 'sweetalert2' . $js_ext,
 		array( 'jquery', 'imagify-js-promise-polyfill' ),
-		IMAGIFY_VERSION,
+		'4.0.15',
 		true
 	);
 
@@ -86,7 +92,7 @@ function _imagify_admin_print_styles() {
 		'imagify-js-chart',
 		IMAGIFY_ASSETS_JS_URL . 'chart' . $js_ext,
 		array(),
-		IMAGIFY_VERSION,
+		'1.0.2',
 		true
 	);
 
@@ -105,11 +111,12 @@ function _imagify_admin_print_styles() {
 		IMAGIFY_VERSION,
 		true
 	);
+
 	wp_register_script(
 		'imagify-js-event-move',
 		IMAGIFY_ASSETS_JS_URL . 'jquery.event.move' . $js_ext,
 		array( 'jquery' ),
-		IMAGIFY_VERSION,
+		'1.3.6',
 		true
 	);
 
