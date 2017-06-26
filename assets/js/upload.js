@@ -112,8 +112,10 @@ window.imagify = window.imagify || {
 	 */
 	$( '.imagify-datas-details' ).hide();
 
-	$( d ).on( 'click', '.imagify-datas-more-action a', function() {
+	$( d ).on( 'click', '.imagify-datas-more-action a', function( e ) {
 		var $this = $( this );
+
+		e.preventDefault();
 
 		if ( $this.hasClass( 'is-open' ) ) {
 			$( $this.attr( 'href' ) ).slideUp( 300 ).removeClass( 'is-open' );
@@ -122,7 +124,6 @@ window.imagify = window.imagify || {
 			$( $this.attr( 'href' ) ).slideDown( 300 ).addClass( 'is-open' );
 			$this.addClass( 'is-open' ).find( '.the-text' ).text( $this.data( 'close' ) );
 		}
-		return false;
 	} );
 
 	/**

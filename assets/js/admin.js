@@ -169,7 +169,7 @@ window.imagify = window.imagify || {
 // Imagify light modal =============================================================================
 (function($, d, w, undefined) {
 
-	var imagify_open_modal = function( $the_link ) {
+	var imagifyOpenModal = function( $the_link ) {
 		var the_target = $the_link.data( 'target' ) || $the_link.attr( 'href' );
 
 		$( the_target ).css( 'display', 'flex' ).hide().fadeIn( 400 ).attr( 'aria-hidden', 'false' ).attr( 'tabindex', '0' ).focus().removeAttr( 'tabindex' ).addClass( 'modal-is-open' );
@@ -181,9 +181,9 @@ window.imagify = window.imagify || {
 
 	$( d )
 	// On click on modal trigger.
-	.on( 'click.imagify', '.imagify-modal-trigger', function() {
-		imagify_open_modal( $( this ) );
-		return false;
+	.on( 'click.imagify', '.imagify-modal-trigger', function( e ) {
+		e.preventDefault();
+		imagifyOpenModal( $( this ) );
 	} )
 	// On click on close button.
 	.on( 'click.imagify', '.imagify-modal .close-btn', function() {
@@ -211,8 +211,6 @@ window.imagify = window.imagify || {
 			e.preventDefault();
 			// Trigger the event.
 			$( '.imagify-modal.modal-is-open' ).find( '.close-btn' ).trigger( 'click.imagify' );
-
-			return false;
 		}
 	} );
 
@@ -1027,13 +1025,13 @@ window.imagify = window.imagify || {
 	 *
 	 * @uses imagifyModal.switchToView()
 	 */
-	imagifyModal.$anotherBtn.on( 'click.imagify', function() {
+	imagifyModal.$anotherBtn.on( 'click.imagify', function( e ) {
 		var type = $( this ).data( 'imagify-choose' ),
 			tab  = 'imagify-pricing-tab-' + ( 'plan' === type ? 'monthly' : 'onetime' );
 
-		imagifyModal.switchToView( imagifyModal.$plansView, { tab: tab } );
+		e.preventDefault();
 
-		return false;
+		imagifyModal.switchToView( imagifyModal.$plansView, { tab: tab } );
 	} );
 
 	/**
@@ -1043,7 +1041,7 @@ window.imagify = window.imagify || {
 	 * @uses imagifyModal.switchToView()
 	 * @uses imagifyModal.populatePayBtn()
 	 */
-	imagifyModal.$modal.on( 'click.imagify', '.imagify-payment-btn-select-plan', function() {
+	imagifyModal.$modal.on( 'click.imagify', '.imagify-payment-btn-select-plan', function( e ) {
 		var $_this       = $( this ),
 			$offer_line  = $_this.closest( '.imagify-offer-line' ),
 			datas        = $_this.data( 'offer' ),
@@ -1056,6 +1054,8 @@ window.imagify = window.imagify || {
 			discount     = $offer_line.find( '.imagify-price-discount' ).html(),
 			imgs         = $offer_line.find( '.imagify-approx-nb' ).text(),
 			offer_size   = $offer_line.find( '.imagify-offer-size' ).text();
+
+		e.preventDefault();
 
 		// Change views to go back pre-checkout.
 		imagifyModal.switchToView( imagifyModal.$preView );
@@ -1089,7 +1089,6 @@ window.imagify = window.imagify || {
 
 		// Update price information in button.
 		imagifyModal.populatePayBtn();
-		return false;
 	} );
 
 	/**
@@ -1099,8 +1098,10 @@ window.imagify = window.imagify || {
 	 * @uses imagifyModal.getPeriod()
 	 * @uses imagifyModal.iframeSetSrc()
 	 */
-	$( '#imagify-modal-checkout-btn' ).on( 'click.imagify', function() {
+	$( '#imagify-modal-checkout-btn' ).on( 'click.imagify', function( e ) {
 		var $monthly_offer, $onetime_offer, checkout_datas;
+
+		e.preventDefault();
 
 		// Do nothing if button disabled.
 		if ( $( this ).hasClass( 'imagify-button-disabled' ) ) {
@@ -1127,23 +1128,22 @@ window.imagify = window.imagify || {
 		checkout_datas.period = imagifyModal.getPeriod();
 
 		imagifyModal.iframeSetSrc( checkout_datas );
-		return false;
 	} );
 
 	/**
 	 * Go back to previous step ("Choose Another Plan" links).
 	 */
-	$( '.imagify-back-to-plans' ).on( 'click.imagify', function() {
+	$( '.imagify-back-to-plans' ).on( 'click.imagify', function( e ) {
 		var $_this     = $( this ),
 			is_onetime = $_this.closest( '.imagify-cart-item' ).hasClass( 'imagify-cart-item-onetime' );
+
+		e.preventDefault();
 
 		if ( is_onetime ) {
 			$( '.imagify-offer-onetime' ).find( '.imagify-choose-another-plan' ).trigger( 'click.imagify' );
 		} else {
 			$( '.imagify-offer-monthly' ).find( '.imagify-choose-another-plan' ).trigger( 'click.imagify' );
 		}
-
-		return false;
 	} );
 
 	// Message/communication API.

@@ -236,10 +236,12 @@ window.imagify = window.imagify || {
 
 			settings.modalAppendTo.append( modalHtml );
 
-			settings.trigger.on( 'click.imagify', function() {
+			settings.trigger.on( 'click.imagify', function( e ) {
 				var $modal     = $( $( this ).data( 'target' ) ),
 					imgsLoaded = 0,
 					$tt, checkLoad;
+
+				e.preventDefault();
 
 				if ( typeof imagifyOpenModal === 'function' && settings.openModal ) {
 					imagifyOpenModal( $( this ) );
@@ -323,8 +325,6 @@ window.imagify = window.imagify || {
 					checkLoad = null;
 					return 'done';
 				}, 75 );
-
-				return false;
 			} );
 		}; // imagifyTwentyModal( options );
 
@@ -461,6 +461,7 @@ window.imagify = window.imagify || {
 				clipStyles;
 
 			e.stopPropagation();
+			e.preventDefault();
 
 			// Button coloration.
 			$duo.removeClass( 'selected' );
@@ -492,7 +493,6 @@ window.imagify = window.imagify || {
 			}
 
 			drawMeAChart( $( '.imagify-level-' + image ).find( '.imagify-chart' ).find( 'canvas' ) );
-			return false;
 		} );
 	} );
 

@@ -1,4 +1,4 @@
-/* globals ajaxurl: false, console: false, imagify: true, ImagifyGulp: false, swal: false */
+/* globals ajaxurl: false, console: false, imagify: true, Chart: false, ImagifyGulp: false, swal: false */
 
 window.imagify = window.imagify || {
 	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
@@ -174,17 +174,19 @@ window.imagify = window.imagify || {
 		$( '#imagify-bulk-action' ).trigger( 'click' );
 	} );
 
-	$( '#imagify-bulk-action' ).on( 'click', function() {
+	$( '#imagify-bulk-action' ).on( 'click', function( e ) {
 		var $obj = $( this ),
 			optimizationLevel = $( '[name="optimization_level"]:checked' ).val(),
 			confirmMessage;
+
+		e.preventDefault();
 
 		if ( optimizationLevel === undefined ) {
 			optimizationLevel = -1;
 		}
 
 		if ( $obj.attr( 'disabled' ) ) {
-			return false;
+			return;
 		}
 
 		$obj.attr( 'disabled', 'disabled' );
