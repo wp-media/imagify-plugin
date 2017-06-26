@@ -67,9 +67,17 @@ function _imagify_admin_print_styles() {
 	);
 
 	wp_register_script(
+		'imagify-js-promise-polyfill',
+		IMAGIFY_ASSETS_JS_URL . 'es6-promise.auto' . $js_ext,
+		array(),
+		'4.1.0',
+		true
+	);
+
+	wp_register_script(
 		'imagify-js-sweetalert',
 		IMAGIFY_ASSETS_JS_URL . 'sweetalert2' . $js_ext,
-		array( 'jquery' ),
+		array( 'jquery', 'imagify-js-promise-polyfill' ),
 		IMAGIFY_VERSION,
 		true
 	);

@@ -12,7 +12,7 @@ module.exports = function( grunt ) {
 			},
 			'all': {
 				'options': {
-					'ignores': [ '**/*.min.js', 'assets/js/chart.js', 'assets/js/jquery.event.move.js', 'assets/js/sweetalert2.js' ]
+					'ignores': [ '**/*.min.js', 'assets/js/chart.js', 'assets/js/jquery.event.move.js', 'assets/js/sweetalert2.js', 'assets/js/es6-promise.auto.js' ]
 				},
 				'files': {
 					'src': [ 'gruntfile.js', 'assets/js/*.js' ]
@@ -25,7 +25,7 @@ module.exports = function( grunt ) {
 				'files': [ {
 					'expand': true,
 					'cwd':    'assets/js',
-					'src':    [ '*.js', '!*.min.js', '!jquery.twentytwenty.js', '!chart.js', '!jquery.event.move.js', '!sweetalert2.js' ],
+					'src':    [ '*.js', '!*.min.js', '!jquery.twentytwenty.js', '!chart.js', '!jquery.event.move.js', '!sweetalert2.js', '!es6-promise.auto.js' ],
 					'dest':   'assets/js',
 					'ext':    '.min.js'
 				} ]
