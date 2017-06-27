@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.8.0
-Stable tag: 1.6.5
+Stable tag: 1.6.6
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -136,11 +136,17 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.6 =
+* New: Compatibility with the plugin WP Offload S3 Lite. Your images now will be sent to Amazon S3 after being optimized. Also works when you store your images only on S3, not locally.
+* Improvement: Added a filter to the asynchronous job arguments.
+* Bug fix: Compatibility with Internet Explorer 9 to 11.
+* Regression fix: The comparison tool stopped working in the medias list since the previous version.
+
 = 1.6.5 =
 * Improvement: Code quality of the whole plugin has been improved to fit more WordPress coding standards.
 * Improvement: Lots of internationalization improvements. Now the plugin's internationalization fully rely on the repository system.
 * Bug Fix: Fixed an error with php 7.1: `Uncaught Error: [] operator not supported for strings in /wp-content/plugins/imagify/inc/functions/admin.php:134`.
- 
+
 = 1.6.4 =
 * Improvement: Provide a link to optimize in higher level when an image is already optimized.
 * Improvement: Add a dedicated message for 413 HTTP error when the image is too big to be uploaded on our servers.
@@ -304,7 +310,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Improvement: When your bulk optimization is over, success message isn't inside the table anymore
 * Improvement: To quit the bulk optimization processing you have to confirm your action
 * Bug Fix: JS: `console` undefined on some IE browsers
-* Bug Fix: PHP Warning: Illegal string offset 'sizes' in ../inc/functions/admin-stats.php  on line 180
+* Bug Fix: PHP Warning: `Illegal string offset 'sizes' in ../inc/functions/admin-stats.php on line 180`
 * Bug Fix: Don't count GIF & SVG in the Imagify statistics
 
 = 1.1.5 =
