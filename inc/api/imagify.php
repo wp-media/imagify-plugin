@@ -62,6 +62,8 @@ function fetch_imagify_image( $data ) {
 /**
  * Optimize an image by sharing its URL on Imagify.
  *
+ * @since 1.6.7 $data['image'] can contain the file path (prefered) or the result of `curl_file_create()`.
+ *
  * @param  array $data All image data.
  * @return object
  */

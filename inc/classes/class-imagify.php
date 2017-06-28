@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -199,10 +199,11 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Optimize an image from its binary content.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
+	 * @since  1.6.7 $data['image'] can contain the file path (prefered) or the result of `curl_file_create()`.
 	 *
-	 * @param  string $data All options. Details here: --.
+	 * @param  string $data All options.
 	 * @return object
 	 */
 	public function upload_image( $data ) {
@@ -294,8 +295,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Make an HTTP call using curl.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access private
+	 * @since  1.6.5
 	 *
 	 * @param  string $url  The URL to call.
 	 * @param  array  $args The request args.
@@ -315,6 +316,10 @@ class Imagify extends Imagify_Deprecated {
 
 		try {
 			$ch = curl_init();
+
+			if ( ! empty( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && file_exists( $args['post_data']['image'] ) ) {
+				$args['post_data']['image'] = curl_file_create( $args['post_data']['image'] );
+			}
 
 			if ( 'POST' === $args['method'] ) {
 				curl_setopt( $ch, CURLOPT_POST, true );
@@ -348,7 +353,7 @@ class Imagify extends Imagify_Deprecated {
 
 		if ( 200 !== $http_code ) {
 			$error = '' !== $error ? ' - ' . htmlentities( $error ) : '';
-			return new WP_Error( $http_code, "Unknown error occurred ({$http_code}{$error}) " );
+			return new WP_Error( $http_code, "Unknown error occurred ({$http_code} {$error})" );
 		}
 
 		return $response;

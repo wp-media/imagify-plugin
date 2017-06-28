@@ -89,7 +89,7 @@ function do_imagify( $file_path, $args = array() ) {
 
 	// Send image for optimization and fetch the response.
 	$response = upload_imagify_image( array(
-		'image' => curl_file_create( $file_path ),
+		'image' => $file_path,
 		'data'  => wp_json_encode( array(
 			'aggressive'    => ( 1 === (int) $args['optimization_level'] ),
 			'ultra'         => ( 2 === (int) $args['optimization_level'] ),
