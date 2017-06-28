@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.4';
+	const VERSION = '1.0.5';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -326,6 +326,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @access private
 	 * @since  1.6.5
+	 * @since  1.6.7 Use `wp_remote_request()` when possible (when we don't need to send an image).
 	 *
 	 * @param  string $url  The URL to call.
 	 * @param  array  $args The request args.
@@ -338,6 +339,52 @@ class Imagify extends Imagify_Deprecated {
 			'timeout'   => 45,
 		), $args );
 
+		// We need to send an image: we must use cURL directly.
+		if ( isset( $args['post_data']['image'] ) ) {
+			return $this->curl_http_call( $url, $args );
+		}
+
+		$args = array_merge( array(
+			'headers'   => array(),
+			'body'      => $args['post_data'],
+			'sslverify' => apply_filters( 'https_ssl_verify', false ),
+		), $args );
+
+		unset( $args['post_data'] );
+
+		if ( $this->headers ) {
+			foreach ( $this->headers as $name => $value ) {
+				$value = explode( ':', $value, 2 );
+				$value = end( $value );
+
+				$args['headers'][ $name ] = trim( $value );
+			}
+		}
+
+		$response = wp_remote_request( self::API_ENDPOINT . $url, $args );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$http_code = wp_remote_retrieve_response_code( $response );
+		$response  = wp_remote_retrieve_body( $response );
+
+		return $this->handle_response( $response, $http_code );
+	}
+
+	/**
+	 * Make an HTTP call using curl.
+	 *
+	 * @access private
+	 * @since  1.6.7
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $url  The URL to call.
+	 * @param  array  $args The request args.
+	 * @return object
+	 */
+	private function curl_http_call( $url, $args = array() ) {
 		// Check if php-curl is enabled.
 		if ( ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ) ) {
 			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
@@ -346,7 +393,7 @@ class Imagify extends Imagify_Deprecated {
 		try {
 			$ch = curl_init();
 
-			if ( ! empty( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && file_exists( $args['post_data']['image'] ) ) {
+			if ( isset( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && file_exists( $args['post_data']['image'] ) ) {
 				$args['post_data']['image'] = curl_file_create( $args['post_data']['image'] );
 			}
 
@@ -366,7 +413,7 @@ class Imagify extends Imagify_Deprecated {
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
 
-			$response  = json_decode( curl_exec( $ch ) );
+			$response  = curl_exec( $ch );
 			$error     = curl_error( $ch );
 			$http_code = (int) curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 
@@ -374,6 +421,24 @@ class Imagify extends Imagify_Deprecated {
 		} catch ( Exception $e ) {
 			return new WP_Error( 'curl', 'Unknown error occurred' );
 		}
+
+		return $this->handle_response( $response, $http_code, $error );
+	}
+
+	/**
+	 * Handle the request response and maybe trigger an error.
+	 *
+	 * @access private
+	 * @since  1.6.7
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $response  The request response.
+	 * @param  int    $http_code The request HTTP code.
+	 * @param  string $error     An error message.
+	 * @return object
+	 */
+	private function handle_response( $response, $http_code, $error = '' ) {
+		$response = json_decode( $response );
 
 		if ( 200 !== $http_code && isset( $response->code, $response->detail ) ) {
 			return new WP_Error( $http_code, $response->detail );
