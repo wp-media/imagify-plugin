@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.0.3';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -323,6 +323,9 @@ class Imagify extends Imagify_Deprecated {
 
 			if ( 'POST' === $args['method'] ) {
 				curl_setopt( $ch, CURLOPT_POST, true );
+				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] );
+			} elseif ( 'PUT' === $args['method'] ) {
+				curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'PUT' );
 				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] );
 			}
 
