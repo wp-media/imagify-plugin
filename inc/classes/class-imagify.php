@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.3';
+	const VERSION = '1.0.4';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -27,11 +27,18 @@ class Imagify extends Imagify_Deprecated {
 	private $api_key = '';
 
 	/**
-	 * HTTP headers.
+	 * HTTP headers. Each http call must fill it (even if it's with an empty array).
 	 *
 	 * @var array
 	 */
 	private $headers = array();
+
+	/**
+	 * All (default) HTTP headers. They must not be modified once the class is instanciated, or it will affect any following HTTP calls.
+	 *
+	 * @var array
+	 */
+	private $all_headers = array();
 
 	/**
 	 * The single instance of the class.
@@ -59,9 +66,9 @@ class Imagify extends Imagify_Deprecated {
 			$this->api_key = IMAGIFY_API_KEY;
 		}
 
-		$this->headers['Accept']        = 'Accept: application/json';
-		$this->headers['Content-Type']  = 'Content-Type: application/json';
-		$this->headers['Authorization'] = 'Authorization: token ' . $this->api_key;
+		$this->all_headers['Accept']        = 'Accept: application/json';
+		$this->all_headers['Content-Type']  = 'Content-Type: application/json';
+		$this->all_headers['Authorization'] = 'Authorization: token ' . $this->api_key;
 	}
 
 	/**
@@ -93,6 +100,8 @@ class Imagify extends Imagify_Deprecated {
 		static $user;
 
 		if ( ! isset( $user ) ) {
+			$this->headers = $this->all_headers;
+
 			$user = $this->http_call( 'users/me/', array(
 				'timeout' => 10,
 			) );
@@ -111,8 +120,7 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	public function create_user( $data ) {
-		unset( $this->headers['Authorization'], $this->headers['Accept'], $this->headers['Content-Type'] );
-
+		$this->headers       = array();
 		$data['from_plugin'] = true;
 
 		return $this->http_call( 'users/', array(
@@ -131,6 +139,8 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	public function update_user( $data ) {
+		$this->headers = $this->all_headers;
+
 		return $this->http_call( 'users/me/', array(
 			'method'    => 'PUT',
 			'post_data' => $data,
@@ -151,8 +161,9 @@ class Imagify extends Imagify_Deprecated {
 		static $status = array();
 
 		if ( ! isset( $status[ $data ] ) ) {
-			unset( $this->headers['Accept'], $this->headers['Content-Type'] );
-			$this->headers['Authorization'] = 'Authorization: token ' . $data;
+			$this->headers = array(
+				'Authorization' => 'Authorization: token ' . $data,
+			);
 
 			$status[ $data ] = $this->http_call( 'status/', array(
 				'timeout' => 10,
@@ -174,7 +185,9 @@ class Imagify extends Imagify_Deprecated {
 		static $api_version;
 
 		if ( ! isset( $api_version ) ) {
-			unset( $this->headers['Accept'], $this->headers['Content-Type'] );
+			$this->headers = array(
+				'Authorization' => $this->all_headers['Authorization'],
+			);
 
 			$api_version = $this->http_call( 'version/', array(
 				'timeout' => 5,
@@ -193,6 +206,8 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	public function get_public_info() {
+		$this->headers = $this->all_headers;
+
 		return $this->http_call( 'public-info' );
 	}
 
@@ -207,7 +222,9 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	public function upload_image( $data ) {
-		unset( $this->headers['Accept'], $this->headers['Content-Type'] );
+		$this->headers = array(
+			'Authorization' => $this->all_headers['Authorization'],
+		);
 
 		return $this->http_call( 'upload/', array(
 			'method'    => 'POST',
@@ -225,6 +242,8 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	public function fetch_image( $data ) {
+		$this->headers = $this->all_headers;
+
 		return $this->http_call( 'fetch/', array(
 			'method'    => 'POST',
 			'post_data' => wp_json_encode( $data ),
@@ -240,6 +259,8 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	public function get_plans_prices() {
+		$this->headers = $this->all_headers;
+
 		return $this->http_call( 'pricing/plan/' );
 	}
 
@@ -252,6 +273,8 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	public function get_packs_prices() {
+		$this->headers = $this->all_headers;
+
 		return $this->http_call( 'pricing/pack/' );
 	}
 
@@ -264,6 +287,8 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	public function get_all_prices() {
+		$this->headers = $this->all_headers;
+
 		return $this->http_call( 'pricing/all/' );
 	}
 
@@ -277,6 +302,8 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	public function check_coupon_code( $coupon ) {
+		$this->headers = $this->all_headers;
+
 		return $this->http_call( 'coupons/' . $coupon . '/' );
 	}
 
@@ -289,6 +316,8 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	public function check_discount() {
+		$this->headers = $this->all_headers;
+
 		return $this->http_call( 'pricing/discount/' );
 	}
 
