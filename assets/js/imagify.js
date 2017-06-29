@@ -1,6 +1,8 @@
-/*
+/**
  * imagify-gulpjs - version 0.0.1 - 2016-04-07
  * WP Media <contact@wp-media.me>
+ *
+ * Note: when updating this file, don't forget to replace `this.buffer_size = 1;` by `this.buffer_size = imagifyBulk.buffer_size;`.
  */
 (function () {
 'use strict';
@@ -41,7 +43,7 @@ window.ImagifyGulp = function () {
 	function ImagifyGulp( settings ) {
 		_classCallCheck( this, ImagifyGulp );
 
-		this.buffer_size           = 1;
+		this.buffer_size           = imagifyBulk.buffer_size;
 		this.lib_url               = settings.lib;
 		this.default_thumb         = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAIAAACRuyQOAAACy0lEQVRIx+1XS1PTUBTuT/MB1NGF3bhyhys3Pv+Ai8pCF6Bb3bsWq8xAh8441I2TSlKwPIKQJsI40IbSV0pJ6qe3OeZ1b9PaYViQyaJzc+757j3nO985TVx5v3o+b+IS6XyQUgtrj/NqWtJmZf3lavnpl53bC2vjRLqRUV4pxqbZcnrBx3F6G2ZzTjFg879IMwWtanV7g56K1Z2RtBGRpj7IWb0a8HhqOz9O2rjHfrOD34GvWcPEruGQkhmlcFgnF7bjABVJmvA4uj4vY2VJr545/yClw/okBywaadF/m63j1gT/sNO5DbXW8t4sLtJzSQtnAme/ys/BrU9FpdIgY2R3MBLidtQ+ZRt2T9qZvQrtf/N9X5BwbEQKmSVIFGZjEGlWNojB93KbCBolDNl49nVPAIYwUs5QGAOQwCtmuuyGG5ExGhZbtM7s+5+3BGC5nyazhB8RElSAePRwRaX1u9nScadfVYjtncV1HtKDlW0KQMqvID4kCAydHST2fgKhu24B7dTaSY4oYBf2MjN44yK9+FZmRnrdCnuhr3jyB7Vr89G8L9f7oU77VSPhp4POjNarzUgv77Z/ERh+R9oUXbqDXFyktFtJ5ag74cU9cBsCwy3DNoht5Fcf0pO8ysuTt27IFzKH/Hm/Qopi5ekP99zzgkU8goF7VN21ThfM9BKHylHEPbzoQ8wUlSGoG1QVnR3Vhppj66hCtgg/Ayr3tdLXCFQ7al4ABr2gAEBHoCbQFDu+RkCvqPVBx5LCZvq2dEDsgELuDqV7rM/SfvmocfNjkYcEdV8Kdcu4Wh6QLzzoPQKtQ9DQvQL9ZYhOiCYteXougo/9UEIv9YHxKK+iZ9qenouE8QIunCMMMzxHYIIomU2ksBOaI5ZHmCO8OavEnI0K2hjmvTnevPe3bjBlTvKvMsoMi4kVAgO/qBXMGvidGu8Me/lf4yIg/QYbLcmjDg4bKwAAAABJRU5ErkJggg==";
 		this.images                = settings.images;
