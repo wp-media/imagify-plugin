@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.5';
+	const VERSION = '1.0.6';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -338,6 +338,18 @@ class Imagify extends Imagify_Deprecated {
 			'post_data' => null,
 			'timeout'   => 45,
 		), $args );
+
+		$endpoint = trim( $url, '/' );
+		/**
+		 * Filter the timeout value for any request to the API.
+		 *
+		 * @since  1.6.7
+		 * @author Grégory Viguier
+		 *
+		 * @param int    $timeout  Timeout value in seconds.
+		 * @param string $endpoint The targetted endpoint. It's basically URI without heading nor trailing slash.
+		 */
+		$args['timeout'] = apply_filters( 'imagify_api_http_request_timeout', $args['timeout'], $endpoint );
 
 		// We need to send an image: we must use cURL directly.
 		if ( isset( $args['post_data']['image'] ) ) {
