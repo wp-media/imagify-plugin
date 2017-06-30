@@ -186,13 +186,14 @@ function imagify_percent_optimized_attachments() {
 	$total_attachments           = imagify_count_attachments();
 	$total_optimized_attachments = imagify_count_optimized_attachments();
 
-	return ( 0 !== $total_attachments ) ? round( ( 100 - ( ( $total_attachments - $total_optimized_attachments ) / $total_attachments ) * 100 ) ) : 0;
+	return $total_attachments && $total_optimized_attachments ? round( 100 - ( ( $total_attachments - $total_optimized_attachments ) / $total_attachments ) * 100 ) : 0;
 }
 
 /**
  * Count percent, original & optimized size of all images optimized by Imagify.
  *
- * @since 1.0
+ * @since  1.0
+ * @since  1.6.7 Revamped to handle huge libraries.
  * @author Jonathan Buttigieg
  *
  * @param  string $key What data to return. Choices are between 'count', 'original_size', 'optimized_size', and 'percent'. If left empty, the whole array is returned.
@@ -206,54 +207,137 @@ function imagify_count_saving_data( $key = '' ) {
 	 * 3rd party will be able to override the result.
 	 *
 	 * @since 1.5
+	 * @since 1.6.7 This filter should return an array containing the following keys: 'count', 'original_size', and 'optimized_size'.
+	 *
+	 * @param bool|array $attachments An array containing the keys ('count', 'original_size', and 'optimized_size'), or an array of attachments (back compat', deprecated), or false.
 	 */
 	$attachments = apply_filters( 'imagify_count_saving_data', false );
-
-	if ( false === $attachments ) {
-		$attachments = $wpdb->get_col( "
-			SELECT pm1.meta_value
-			FROM $wpdb->postmeta as pm1
-			INNER JOIN $wpdb->postmeta as pm2
-				ON pm1.post_id = pm2.post_id
-			WHERE pm1.meta_key = '_imagify_data'
-				AND ( pm2.meta_key = '_imagify_status' AND pm2.meta_value = 'success' )"
-		);
-	}
-
-	$attachments = array_map( 'maybe_unserialize', (array) $attachments );
 
 	$original_size  = 0;
 	$optimized_size = 0;
 	$count          = 0;
 
-	foreach ( $attachments as $attachment_data ) {
-		if ( ! $attachment_data ) {
-			continue;
+	if ( is_array( $attachments ) ) {
+		/**
+		 * Bypass.
+		 */
+		if ( isset( $attachments['count'], $attachments['original_size'], $attachments['optimized_size'] ) ) {
+			/**
+			 * We have the results we need.
+			 */
+			$attachments['percent'] = $attachments['optimized_size'] && $attachments['original_size'] ? ceil( ( ( $attachments['original_size'] - $attachments['optimized_size'] ) / $attachments['original_size'] ) * 100 ) : 0;
+
+			return $attachments;
 		}
 
-		++$count;
-		$original_data = $attachment_data['sizes']['full'];
+		/**
+		 * Back compat'.
+		 * The following shouldn't be used. Sites with a huge library won't like it.
+		 */
+		$attachments = array_map( 'maybe_unserialize', (array) $attachments );
 
-		// Increment the original sizes.
-		$original_size  += $original_data['original_size'];
-		$optimized_size += $original_data['optimized_size'];
+		if ( $attachments ) {
+			foreach ( $attachments as $attachment_data ) {
+				if ( ! $attachment_data ) {
+					continue;
+				}
 
-		unset( $attachment_data['sizes']['full'] );
+				++$count;
+				$original_data = $attachment_data['sizes']['full'];
 
-		// Increment the thumbnails sizes.
-		foreach ( $attachment_data['sizes'] as $size_data ) {
-			if ( ! empty( $size_data['success'] ) ) {
-				$original_size  += $size_data['original_size'];
-				$optimized_size += $size_data['optimized_size'];
+				// Increment the original sizes.
+				$original_size  += $original_data['original_size']  ? $original_data['original_size']  : 0;
+				$optimized_size += $original_data['optimized_size'] ? $original_data['optimized_size'] : 0;
+
+				unset( $attachment_data['sizes']['full'] );
+
+				// Increment the thumbnails sizes.
+				foreach ( $attachment_data['sizes'] as $size_data ) {
+					if ( ! empty( $size_data['success'] ) ) {
+						$original_size  += $size_data['original_size']  ? $size_data['original_size']  : 0;
+						$optimized_size += $size_data['optimized_size'] ? $size_data['optimized_size'] : 0;
+					}
+				}
 			}
 		}
-	}
+	} else {
+
+		/**
+		 * Filter the chunk size of the requests fetching the data.
+		 * 15,000 seems to be a good balance between memory used, speed, and number of DB hits.
+		 *
+		 * @param int $limit The maximum number of elements per chunk.
+		 */
+		$limit = apply_filters( 'imagify_count_saving_data_limit', 15000 );
+		$limit = absint( $limit );
+
+		$attachment_ids = $wpdb->get_col(
+			"SELECT post_id
+			 FROM $wpdb->postmeta
+			 WHERE meta_key = '_imagify_status'
+			     AND meta_value = 'success'
+			 ORDER BY CAST( post_id AS UNSIGNED )"
+		);
+		$wpdb->flush();
+
+		$attachment_ids = array_map( 'absint', $attachment_ids );
+		$attachment_ids = array_chunk( $attachment_ids, $limit );
+
+		while ( $attachment_ids ) {
+			$limit_ids = array_shift( $attachment_ids );
+			$limit_ids = implode( ',', $limit_ids );
+
+			$attachments = $wpdb->get_col( // WPCS: unprepared SQL ok.
+				"SELECT meta_value
+				 FROM $wpdb->postmeta
+				 WHERE post_id IN ( $limit_ids )
+				    AND meta_key = '_imagify_data'"
+			);
+			$wpdb->flush();
+
+			unset( $limit_ids );
+
+			if ( ! $attachments ) {
+				// Uh?!
+				continue;
+			}
+
+			$attachments = array_map( 'maybe_unserialize', $attachments );
+
+			foreach ( $attachments as $attachment_data ) {
+				if ( ! $attachment_data ) {
+					continue;
+				}
+
+				++$count;
+				$original_data = $attachment_data['sizes']['full'];
+
+				// Increment the original sizes.
+				$original_size  += $original_data['original_size']  ? $original_data['original_size']  : 0;
+				$optimized_size += $original_data['optimized_size'] ? $original_data['optimized_size'] : 0;
+
+				unset( $attachment_data['sizes']['full'], $original_data );
+
+				// Increment the thumbnails sizes.
+				foreach ( $attachment_data['sizes'] as $size_data ) {
+					if ( ! empty( $size_data['success'] ) ) {
+						$original_size  += $size_data['original_size']  ? $size_data['original_size']  : 0;
+						$optimized_size += $size_data['optimized_size'] ? $size_data['optimized_size'] : 0;
+					}
+				}
+
+				unset( $size_data );
+			}
+
+			unset( $attachments, $attachment_data );
+		} // End while().
+	} // End if().
 
 	$data = array(
 		'count'          => $count,
 		'original_size'  => $original_size,
 		'optimized_size' => $optimized_size,
-		'percent'        => $optimized_size ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0,
+		'percent'        => $original_size && $optimized_size ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0,
 	);
 
 	if ( ! empty( $key ) ) {
