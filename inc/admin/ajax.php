@@ -292,27 +292,9 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 
 	@set_time_limit( 0 );
 
+	// Get (ordered) IDs.
 	$optimization_level = (int) $_GET['optimization_level'];
-	$optimization_level = ( -1 !== $optimization_level ) ? $optimization_level : get_imagify_option( 'optimization_level', 1 );
-	$optimization_level = (int) $optimization_level;
-
-	$meta_query = array(
-		'relation' => 'OR',
-		array(
-			'key'     => '_imagify_optimization_level',
-			'value'   => $optimization_level,
-			'compare' => '!=',
-		),
-		array(
-			'key'     => '_imagify_optimization_level',
-			'compare' => 'NOT EXISTS',
-		),
-		array(
-			'key'     => '_imagify_status',
-			'value'   => 'error',
-			'compare' => '=',
-		),
-	);
+	$optimization_level = ( -1 !== $optimization_level ) ? $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
 
 	/**
 	 * Filter the unoptimized attachments limit query.
@@ -321,101 +303,101 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	 *
 	 * @param int The limit (-1 for unlimited).
 	 */
-	$unoptimized_attachment_limit = apply_filters( 'imagify_unoptimized_attachment_limit', 10000 );
+	$unoptimized_attachment_limit = (int) apply_filters( 'imagify_unoptimized_attachment_limit', 10000 );
+	$unoptimized_attachment_limit = -1 === $unoptimized_attachment_limit ? PHP_INT_MAX : $unoptimized_attachment_limit;
 
-	$args = array(
-		'fields'                 => 'ids',
-		'post_type'              => 'attachment',
-		'post_status'            => 'any',
-		'post_mime_type'         => get_imagify_mime_type(),
-		'meta_query'             => $meta_query,
-		'posts_per_page'         => $unoptimized_attachment_limit,
-		'orderby'                => 'ID',
-		'order'                  => 'DESC',
-		'no_found_rows'          => true,
-		'update_post_term_cache' => false,
-	);
+	$mime_types = get_imagify_mime_type();
+	$mime_types = esc_sql( $mime_types );
+	$mime_types = "'" . implode( "','", $mime_types ) . "'";
 
-	$data        = array();
-	$attachments = new WP_Query( $args );
-	$ids         = $attachments->posts;
-	$ids         = array_filter( (array) $ids );
-	$sql_ids     = implode( ',', $ids );
+	$ids = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
+		"SELECT $wpdb->posts.ID
+		FROM $wpdb->posts
+			LEFT JOIN $wpdb->postmeta
+				ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '_imagify_optimization_level' )
+			LEFT JOIN $wpdb->postmeta AS mt1
+				ON ( $wpdb->posts.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+		WHERE
+			$wpdb->posts.post_mime_type IN ( $mime_types )
+			AND (
+				$wpdb->postmeta.meta_value != '%d'
+				OR
+				$wpdb->postmeta.post_id IS NULL
+				OR
+				mt1.meta_value = 'error'
+			)
+			AND $wpdb->posts.post_type = 'attachment'
+			AND $wpdb->posts.post_status <> 'trash'
+			AND $wpdb->posts.post_status <> 'auto-draft'
+		GROUP BY $wpdb->posts.ID
+		ORDER BY
+			CASE mt1.meta_value
+				WHEN 'already_optimized' THEN 2
+				ELSE 1
+			END ASC,
+			$wpdb->posts.ID DESC
+		LIMIT 0, %d",
+		$optimization_level,
+		$unoptimized_attachment_limit
+	) );
 
-	if ( empty( $sql_ids ) ) {
+	$wpdb->flush();
+	$ids = array_filter( array_map( 'absint', $ids ) );
+
+	if ( ! $ids ) {
 		wp_send_json_error( array( 'message' => 'no-images' ) );
 	}
 
-	// Get attachments filename.
-	$attachments_filename = $wpdb->get_results( // WPCS: unprepared SQL ok.
-		"SELECT pm.post_id as id, pm.meta_value as value
-		 FROM $wpdb->postmeta as pm
-		 WHERE pm.meta_key = '_wp_attached_file'
-			 AND pm.post_id IN ($sql_ids)
-		 ORDER BY pm.post_id DESC",
-		ARRAY_A
+	// Get the data we need.
+	$sql_ids = implode( ',', $ids );
+	$results = array(
+		// Get attachments filename.
+		'filenames'           => '_wp_attached_file',
+		// Get attachments data.
+		'data'                => '_imagify_data',
+		// Get attachments optimization level.
+		'optimization_levels' => '_imagify_optimization_level',
+		// Get attachments status.
+		'statuses'            => '_imagify_status',
 	);
 
-	$attachments_filename = imagify_query_results_combine( $ids, $attachments_filename );
+	foreach ( $results as $result_name => $meta_name ) {
+		$results[ $result_name ] = $wpdb->get_results( // WPCS: unprepared SQL ok.
+			"SELECT pm.post_id as id, pm.meta_value as value
+			FROM $wpdb->postmeta as pm
+			WHERE pm.meta_key = '$meta_name'
+				AND pm.post_id IN ( $sql_ids )
+			ORDER BY pm.post_id DESC",
+			ARRAY_A
+		);
 
-	// Get attachments data.
-	$attachments_data = $wpdb->get_results( // WPCS: unprepared SQL ok.
-		"SELECT pm.post_id as id, pm.meta_value as value
-		 FROM $wpdb->postmeta as pm
-		 WHERE pm.meta_key = '_imagify_data'
-			 AND pm.post_id IN ($sql_ids)
-		 ORDER BY pm.post_id DESC",
-		ARRAY_A
-	);
+		$wpdb->flush();
+		$results[ $result_name ] = imagify_query_results_combine( $ids, $results[ $result_name ], true );
+	}
 
-	$attachments_data = imagify_query_results_combine( $ids, $attachments_data );
-	$attachments_data = array_map( 'maybe_unserialize', $attachments_data );
-
-	// Get attachments optimization level.
-	$attachments_optimization_level = $wpdb->get_results( // WPCS: unprepared SQL ok.
-		"SELECT pm.post_id as id, pm.meta_value as value
-		 FROM $wpdb->postmeta as pm
-		 WHERE pm.meta_key = '_imagify_optimization_level'
-			 AND pm.post_id IN ($sql_ids)
-		 ORDER BY pm.post_id DESC",
-		ARRAY_A
-	);
-
-	$attachments_optimization_level = imagify_query_results_combine( $ids, $attachments_optimization_level );
-
-	// Get attachments status.
-	$attachments_status = $wpdb->get_results( // WPCS: unprepared SQL ok.
-		"SELECT pm.post_id as id, pm.meta_value as value
-		 FROM $wpdb->postmeta as pm
-		 WHERE pm.meta_key = '_imagify_status'
-			 AND pm.post_id IN ($sql_ids)
-		 ORDER BY pm.post_id DESC",
-		ARRAY_A
-	);
-
-	$attachments_status = imagify_query_results_combine( $ids, $attachments_status );
+	$results['data'] = array_map( 'maybe_unserialize', $results['data'] );
 
 	// Save the optimization level in a transient to retrieve it later during the process.
 	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
 
+	$data = array();
+
 	foreach ( $ids as $id ) {
 		/** This filter is documented in inc/functions/process.php. */
-		$file_path = apply_filters( 'imagify_file_path', get_imagify_attached_file( $attachments_filename[ $id ] ) );
+		$file_path = apply_filters( 'imagify_file_path', get_imagify_attached_file( $results['filenames'][ $id ] ) );
 
 		if ( ! file_exists( $file_path ) ) {
 			continue;
 		}
 
-		$attachment_data  = isset( $attachments_data[ $id ] ) ? $attachments_data[ $id ] : false;
 		$attachment_error = '';
 
-		if ( isset( $attachment_data['sizes']['full']['error'] ) ) {
-			$attachment_error = $attachment_data['sizes']['full']['error'];
+		if ( isset( $results['data'][ $id ]['sizes']['full']['error'] ) ) {
+			$attachment_error = $results['data'][ $id ]['sizes']['full']['error'];
 		}
 
-		$attachment_error              = trim( $attachment_error );
-		$attachment_status             = isset( $attachments_status[ $id ] ) ? $attachments_status[ $id ] : false;
-		$attachment_optimization_level = isset( $attachments_optimization_level[ $id ] ) ? $attachments_optimization_level[ $id ] : false;
+		$attachment_status             = isset( $results['statuses'][ $id ] )            ? $results['statuses'][ $id ]            : false;
+		$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
 		$attachment_backup_path        = get_imagify_attachment_backup_path( $file_path );
 
 		// Don't try to re-optimize if the optimization level is still the same.
@@ -433,12 +415,14 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 			continue;
 		}
 
+		$attachment_error = trim( $attachment_error );
+
 		// Don't try to re-optimize images with an empty error message.
 		if ( 'error' === $attachment_status && empty( $attachment_error ) ) {
 			continue;
 		}
 
-		$data[ '_' . $id ] = get_imagify_attachment_url( $attachments_filename[ $id ] );
+		$data[ '_' . $id ] = get_imagify_attachment_url( $results['filenames'][ $id ] );
 	} // End foreach().
 
 	if ( $data ) {
