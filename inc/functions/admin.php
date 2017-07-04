@@ -214,7 +214,7 @@ function get_imagify_bulk_buffer_size() {
 	$sizes = count( get_imagify_thumbnail_sizes() );
 
 	switch ( true ) {
-		case  ( $sizes >= 10 ) :
+		case ( $sizes >= 10 ) :
 			return 1;
 
 		case ( $sizes >= 8 ) :

@@ -18,7 +18,7 @@ function _imagify_ngg_heartbeat_received( $response, $data ) {
 		return $response;
 	}
 
-	add_filter( 'imagify_count_saving_data', 'imagify_ngg_count_saving_data' );
+	add_filter( 'imagify_count_saving_data', 'imagify_ngg_count_saving_data', 8 );
 	$saving_data = imagify_count_saving_data();
 	$user        = new Imagify_User();
 

@@ -183,3 +183,22 @@ class Imagify_Deprecated {
 		return $this->http_call( $url, $args );
 	}
 }
+
+
+if ( class_exists( 'WpeCommon' ) ) :
+
+	/**
+	 * Change the limit for the number of posts: WP Engine limits SQL queries size to 2048 octets (16384 characters).
+	 *
+	 * @since  1.4.7
+	 * @since  1.6.7 Deprecated.
+	 * @author Jonathan Buttigieg
+	 *
+	 * @return int
+	 */
+	function _imagify_wengine_unoptimized_attachment_limit() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.7', '_imagify_wpengine_unoptimized_attachment_limit()' );
+		return _imagify_wpengine_unoptimized_attachment_limit();
+	}
+
+endif;
