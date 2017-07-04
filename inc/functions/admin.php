@@ -180,12 +180,14 @@ function imagify_notice_is_dismissed( $notice, $user_id = 0 ) {
  * We use this function to combine the result of 2 SQL queries.
  *
  * @since 1.4.5
+ * @since 1.6.7 Added the $keep_keys_order parameter.
  *
- * @param  array $keys   An array of keys.
- * @param  array $values An array of arrays like array( 'id' => id, 'value' => value ).
- * @return array $result The combined arrays.
+ * @param  array $keys            An array of keys.
+ * @param  array $values          An array of arrays like array( 'id' => id, 'value' => value ).
+ * @param  int   $keep_keys_order Set to true to return an array ordered like $keys instead of $values.
+ * @return array                  The combined arrays.
  */
-function imagify_query_results_combine( $keys, $values ) {
+function imagify_query_results_combine( $keys, $values, $keep_keys_order = false ) {
 	if ( ! $keys || ! $values ) {
 		return array();
 	}
@@ -197,6 +199,11 @@ function imagify_query_results_combine( $keys, $values ) {
 		if ( isset( $keys[ $v['id'] ] ) ) {
 			$result[ $v['id'] ] = $v['value'];
 		}
+	}
+
+	if ( $keep_keys_order ) {
+		$keys = array_intersect_key( $keys, $result );
+		return array_replace( $keys, $result );
 	}
 
 	return $result;
