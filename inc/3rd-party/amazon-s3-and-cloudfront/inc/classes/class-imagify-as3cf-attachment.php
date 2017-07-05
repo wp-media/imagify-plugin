@@ -675,7 +675,9 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		}
 
 		$filesystem       = imagify_get_filesystem();
-		$s3_object['key'] = dirname( $s3_object['key'] ) . '/' . basename( $file_path );
+		$directory        = dirname( $s3_object['key'] );
+		$directory        = '.' === $directory || '' === $directory ? '' : $directory . '/';
+		$s3_object['key'] = $directory . wp_basename( $file_path );
 
 		// Retrieve file from S3.
 		$as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $file_path );
