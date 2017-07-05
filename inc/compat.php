@@ -30,9 +30,9 @@ if ( ! function_exists( 'wp_json_encode' ) ) :
 	 * @since 1.6.5
 	 * @since WP 4.1.0
 	 *
-	 * @param mixed $data    Variable (usually an array or object) to encode as JSON.
-	 * @param int   $options Optional. Options to be passed to json_encode(). Default 0.
-	 * @param int   $depth   Optional. Maximum depth to walk through $data. Must be greater than 0. Default 512.
+	 * @param  mixed $data    Variable (usually an array or object) to encode as JSON.
+	 * @param  int   $options Optional. Options to be passed to json_encode(). Default 0.
+	 * @param  int   $depth   Optional. Maximum depth to walk through $data. Must be greater than 0. Default 512.
 	 * @return string|false  The JSON encoded string, or false if it cannot be encoded.
 	 */
 	function wp_json_encode( $data, $options = 0, $depth = 512 ) {
@@ -83,7 +83,7 @@ if ( ! function_exists( '_wp_json_prepare_data' ) ) :
 	 * @since WP 4.4.0
 	 * @access private
 	 *
-	 * @param mixed $data Native representation.
+	 * @param  mixed $data Native representation.
 	 * @return bool|int|float|null|string|array Data ready for `json_encode()`.
 	 */
 	function _wp_json_prepare_data( $data ) {
@@ -207,7 +207,7 @@ if ( ! function_exists( '_wp_json_convert_string' ) ) :
 	 *
 	 * @staticvar bool $use_mb
 	 *
-	 * @param string $string The string which is to be converted.
+	 * @param  string $string The string which is to be converted.
 	 * @return string The checked string.
 	 */
 	function _wp_json_convert_string( $string ) {
@@ -226,6 +226,35 @@ if ( ! function_exists( '_wp_json_convert_string' ) ) :
 		} else {
 			return wp_check_invalid_utf8( $string, true );
 		}
+	}
+
+endif;
+
+if ( ! function_exists( 'wp_normalize_path' ) ) :
+
+	/**
+	 * Normalize a filesystem path.
+	 *
+	 * On windows systems, replaces backslashes with forward slashes
+	 * and forces upper-case drive letters.
+	 * Allows for two leading slashes for Windows network shares, but
+	 * ensures that all other duplicate slashes are reduced to a single.
+	 *
+	 * @since 1.6.7
+	 * @since WP 3.9.0
+	 * @since WP 4.4.0 Ensures upper-case drive letters on Windows systems.
+	 * @since WP 4.5.0 Allows for Windows network shares.
+	 *
+	 * @param  string $path Path to normalize.
+	 * @return string Normalized path.
+	 */
+	function wp_normalize_path( $path ) {
+		$path = str_replace( '\\', '/', $path );
+		$path = preg_replace( '|(?<=.)/+|', '/', $path );
+		if ( ':' === substr( $path, 1, 1 ) ) {
+			$path = ucfirst( $path );
+		}
+		return $path;
 	}
 
 endif;

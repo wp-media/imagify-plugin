@@ -78,19 +78,23 @@ function get_imagify_attachment_url( $filename ) {
 		return '';
 	}
 
-	// Check that the upload base exists in the file location.
-	if ( 0 === strpos( $filename, $uploads['basedir'] ) ) {
+	$filename = wp_normalize_path( $filename );
+	$basedir  = wp_normalize_path( $uploads['basedir'] ) . '/';
+	$baseurl  = trailingslashit( $uploads['baseurl'] );
+
+	// Check that the upload base exists in the (absolute) file location.
+	if ( 0 === strpos( $filename, $basedir ) ) {
 		// Replace file location with url location.
-		return str_replace( $uploads['basedir'], $uploads['baseurl'], $filename );
+		return str_replace( $basedir, $baseurl, $filename );
 	}
 
-	if ( false !== strpos( $filename, 'wp-content/uploads' ) ) {
+	if ( false !== strpos( '/' . $filename, '/wp-content/uploads/' ) ) {
 		// Get the directory name relative to the basedir (back compat for pre-2.7 uploads).
-		return trailingslashit( $uploads['baseurl'] . '/' . _wp_get_attachment_relative_path( $filename ) ) . basename( $filename );
+		return trailingslashit( $baseurl . _wp_get_attachment_relative_path( $filename ) ) . basename( $filename );
 	}
 
 	// It's a newly-uploaded file, therefore $file is relative to the basedir.
-	return $uploads['baseurl'] . "/$filename";
+	return $baseurl . $filename;
 }
 
 /**
