@@ -592,7 +592,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			 * This means we'll follow AS3CF settings to know if the local files must be sent to S3 and/or deleted.
 			 */
 			$this->use_s3_settings = true;
-			$this->delete_files    = $as3cf->get_setting( 'copy-to-s3' ) && $as3cf->get_setting( 'remove-local-file' );
+			$this->delete_files    = $as3cf->get_setting( 'remove-local-file' ) && $this->can_send_to_s3();
 
 			return $metadata;
 		}
@@ -605,7 +605,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		 */
 		$metadata              = wp_get_attachment_metadata( $this->id, true );
 		$this->use_s3_settings = false;
-		$this->delete_files    = isset( $metadata['filesize'] );
+		$this->delete_files    = isset( $metadata['filesize'] ) && $this->can_send_to_s3();
 
 		return $metadata;
 	}
