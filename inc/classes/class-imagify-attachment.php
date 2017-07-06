@@ -298,6 +298,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			'context'            => 'wp',
 			'resized'            => $resized,
 			'original_size'      => $attachment_original_size,
+			'attachment_id'      => $this->id,
 		) );
 
 		$data = $this->fill_data( null, $response, $attachment_url );
@@ -336,6 +337,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 					'backup'             => false,
 					'optimization_level' => $optimization_level,
 					'context'            => 'wp',
+					'attachment_id'      => $this->id,
 				) );
 
 				$data = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
