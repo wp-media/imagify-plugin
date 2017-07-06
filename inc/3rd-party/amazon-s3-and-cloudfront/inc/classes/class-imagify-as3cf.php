@@ -235,7 +235,7 @@ class Imagify_AS3CF {
 
 		// Some specifics for the image editor.
 		if ( ! empty( $_POST['data']['do'] ) ) {
-			$optimization_level = (int) get_post_meta( $attachment_id, '_imagify_optimization_level', true );
+			$optimization_level = $attachment->get_optimization_level();
 
 			// Remove old optimization data.
 			$attachment->delete_imagify_data();
