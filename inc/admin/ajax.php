@@ -386,7 +386,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
 
 		/** This filter is documented in inc/functions/process.php. */
-		$file_path = apply_filters( 'imagify_file_path', $file_path );
+		$file_path = apply_filters( 'imagify_file_path', $file_path, $id, 'get_unoptimized_attachment_ids' );
 
 		if ( ! $file_path || ! file_exists( $file_path ) ) {
 			continue;

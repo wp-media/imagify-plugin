@@ -481,9 +481,16 @@ function imagify_calculate_average_size_images_per_month() {
  */
 function imagify_calculate_total_image_size( $images_id, $partial_total_images, $total_images ) {
 	global $wpdb;
-	$partial_size_images               = '';
-	$partial_total_intermediate_images = '';
-	$sql_ids                           = implode( ',', $images_id );
+
+	$partial_size_images               = 0;
+	$partial_total_intermediate_images = 0;
+
+	$images_id = array_filter( array_map( 'absint', $images_id ) );
+	$sql_ids   = implode( ',', $images_id );
+
+	if ( ! $images_id ) {
+		return 0;
+	}
 
 	// Get attachments filename.
 	$attachments_filename = $wpdb->get_results( // WPCS: unprepared SQL ok.
@@ -551,9 +558,10 @@ function imagify_calculate_total_image_size( $images_id, $partial_total_images, 
 
 		$attachment_metadata = isset( $attachments_data[ $image_id ] ) ? $attachments_data[ $image_id ]        : false;
 		$sizes               = isset( $attachment_metadata['sizes'] )  ? (array) $attachment_metadata['sizes'] : array();
+		$full_image          = get_imagify_attached_file( $attachments_filename[ $image_id ] );
 
 		/** This filter is documented in inc/functions/process.php. */
-		$full_image           = apply_filters( 'imagify_file_path', get_imagify_attached_file( $attachments_filename[ $image_id ] ) );
+		$full_image           = apply_filters( 'imagify_file_path', $full_image, $image_id, 'calculate_total_image_size' );
 		$partial_size_images += filesize( $full_image );
 
 		if ( ! $sizes ) {
