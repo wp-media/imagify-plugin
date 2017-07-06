@@ -383,10 +383,12 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$data = array();
 
 	foreach ( $ids as $id ) {
-		/** This filter is documented in inc/functions/process.php. */
-		$file_path = apply_filters( 'imagify_file_path', get_imagify_attached_file( $results['filenames'][ $id ] ) );
+		$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
 
-		if ( ! file_exists( $file_path ) ) {
+		/** This filter is documented in inc/functions/process.php. */
+		$file_path = apply_filters( 'imagify_file_path', $file_path );
+
+		if ( ! $file_path || ! file_exists( $file_path ) ) {
 			continue;
 		}
 
