@@ -23,7 +23,7 @@ class Imagify_Abstract_Attachment {
 	 * @var int
 	 * @access public
 	 */
-	public $id;
+	public $id = 0;
 
 	/**
 	 * The constructor.
@@ -33,7 +33,21 @@ class Imagify_Abstract_Attachment {
 	 * @param  int $id The attachment ID.
 	 * @return void
 	 */
-	public function __construct( $id = 0 ) {}
+	public function __construct( $id = 0 ) {
+		global $post;
+
+		if ( $id ) {
+			if ( is_a( $id, 'WP_Post' ) ) {
+				$this->id = $id->ID;
+			} elseif ( is_numeric( $id ) ) {
+				$this->id = $id;
+			}
+		} elseif ( $post && is_a( $post, 'WP_Post' ) ) {
+			$this->id = $post->ID;
+		}
+
+		$this->id = absint( $this->id );
+	}
 
 	/**
 	 * Get the attachment backup filepath.

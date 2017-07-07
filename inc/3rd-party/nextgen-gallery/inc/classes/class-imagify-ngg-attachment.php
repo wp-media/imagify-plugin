@@ -50,10 +50,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			$this->image = $id;
 			$this->id    = $id->pid;
 		} else {
-			$this->image = nggdb::find_image( (int) $id );
+			$this->image = nggdb::find_image( absint( $id ) );
 			$this->id    = $this->image->pid;
 		}
 
+		$this->id  = absint( $this->id );
 		$this->row = $this->get_row();
 
 		// Load nggAdmin class.

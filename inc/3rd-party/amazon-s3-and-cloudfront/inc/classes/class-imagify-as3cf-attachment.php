@@ -46,15 +46,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 * @param int $id The attachment ID.
 	 */
 	public function __construct( $id = 0 ) {
-		global $post;
-
-		if ( $id && is_a( $id, 'WP_Post' ) ) {
-			$id = $id->ID;
-		} elseif ( ! $id && is_object( $post ) ) {
-			$this->id = $post->ID;
-		} else {
-			$this->id = absint( $id );
-		}
+		parent::__construct( $id );
 
 		$this->optimization_state_transient = 'imagify-async-in-progress-' . $this->id;
 	}
