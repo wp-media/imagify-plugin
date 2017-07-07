@@ -383,32 +383,16 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	$data = array();
 
 	foreach ( $ids as $id ) {
-		$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
-
-		/** This filter is documented in inc/functions/process.php. */
-		$file_path = apply_filters( 'imagify_file_path', $file_path, $id, 'get_unoptimized_attachment_ids' );
-
-		if ( ! $file_path || ! file_exists( $file_path ) ) {
-			continue;
-		}
-
-		$attachment_error = '';
+		$attachment_status             = isset( $results['statuses'][ $id ] )            ? $results['statuses'][ $id ]            : false;
+		$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
+		$attachment_error              = '';
 
 		if ( isset( $results['data'][ $id ]['sizes']['full']['error'] ) ) {
 			$attachment_error = $results['data'][ $id ]['sizes']['full']['error'];
 		}
 
-		$attachment_status             = isset( $results['statuses'][ $id ] )            ? $results['statuses'][ $id ]            : false;
-		$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
-		$attachment_backup_path        = get_imagify_attachment_backup_path( $file_path );
-
 		// Don't try to re-optimize if the optimization level is still the same.
 		if ( $optimization_level === $attachment_optimization_level && is_string( $attachment_error ) ) {
-			continue;
-		}
-
-		// Don't try to re-optimize if there is no backup file.
-		if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) ) {
 			continue;
 		}
 
@@ -421,6 +405,22 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 
 		// Don't try to re-optimize images with an empty error message.
 		if ( 'error' === $attachment_status && empty( $attachment_error ) ) {
+			continue;
+		}
+
+		$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
+
+		/** This filter is documented in inc/functions/process.php. */
+		$file_path = apply_filters( 'imagify_file_path', $file_path, $id, 'get_unoptimized_attachment_ids' );
+
+		if ( ! $file_path || ! file_exists( $file_path ) ) {
+			continue;
+		}
+
+		$attachment_backup_path = get_imagify_attachment_backup_path( $file_path );
+
+		// Don't try to re-optimize if there is no backup file.
+		if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) ) {
 			continue;
 		}
 
