@@ -361,22 +361,22 @@ function imagify_count_saving_data( $key = '' ) {
 function imagify_calculate_total_size_images_library() {
 	global $wpdb;
 
-	$images_id = $wpdb->get_results( "
+	$image_ids = $wpdb->get_results( "
 		SELECT ID FROM $wpdb->posts
 		WHERE ( post_mime_type LIKE 'image/%' )
 		AND post_type = 'attachment' AND ( post_status = 'inherit' )
 		LIMIT 250
 	", ARRAY_A );
 
-	$images_id = wp_list_pluck( $images_id, 'ID' );
+	$image_ids = wp_list_pluck( $image_ids, 'ID' );
 
-	if ( ! $images_id ) {
+	if ( ! $image_ids ) {
 		return 0;
 	}
 
-	$partial_total_images = count( $images_id );
+	$partial_total_images = count( $image_ids );
 	$total_images         = imagify_count_attachments();
-	$total_size_images    = imagify_calculate_total_image_size( $images_id, $partial_total_images, $total_images );
+	$total_size_images    = imagify_calculate_total_image_size( $image_ids, $partial_total_images, $total_images );
 
 	return $total_size_images;
 }
@@ -474,21 +474,21 @@ function imagify_calculate_average_size_images_per_month() {
  * @since  1.6
  * @author Remy Perona
  *
- * @param  array $images_id            Array of images ID.
+ * @param  array $image_ids            Array of image IDs.
  * @param  int   $partial_total_images The number of images we're doing the calculation with.
  * @param  int   $total_images         The total number of images.
  * @return int                         The estimated total size of images.
  */
-function imagify_calculate_total_image_size( $images_id, $partial_total_images, $total_images ) {
+function imagify_calculate_total_image_size( $image_ids, $partial_total_images, $total_images ) {
 	global $wpdb;
 
 	$partial_size_images               = 0;
 	$partial_total_intermediate_images = 0;
 
-	$images_id = array_filter( array_map( 'absint', $images_id ) );
-	$sql_ids   = implode( ',', $images_id );
+	$image_ids = array_filter( array_map( 'absint', $image_ids ) );
+	$sql_ids   = implode( ',', $image_ids );
 
-	if ( ! $images_id ) {
+	if ( ! $image_ids ) {
 		return 0;
 	}
 
@@ -503,7 +503,7 @@ function imagify_calculate_total_image_size( $images_id, $partial_total_images, 
 		", ARRAY_A
 	);
 
-	$attachments_filename = imagify_query_results_combine( $images_id, $attachments_filename );
+	$attachments_filename = imagify_query_results_combine( $image_ids, $attachments_filename );
 
 	// Get attachments data.
 	$attachments_data = $wpdb->get_results( // WPCS: unprepared SQL ok.
@@ -516,7 +516,7 @@ function imagify_calculate_total_image_size( $images_id, $partial_total_images, 
 		", ARRAY_A
 	);
 
-	$attachments_data = imagify_query_results_combine( $images_id, $attachments_data );
+	$attachments_data = imagify_query_results_combine( $image_ids, $attachments_data );
 	$attachments_data = array_map( 'maybe_unserialize', $attachments_data );
 
 	// Get imagify data.
@@ -530,7 +530,7 @@ function imagify_calculate_total_image_size( $images_id, $partial_total_images, 
 		", ARRAY_A
 	);
 
-	$imagify_data = imagify_query_results_combine( $images_id, $imagify_data );
+	$imagify_data = imagify_query_results_combine( $image_ids, $imagify_data );
 	$imagify_data = array_map( 'maybe_unserialize', $imagify_data );
 
 	// Get attachments status.
@@ -544,9 +544,9 @@ function imagify_calculate_total_image_size( $images_id, $partial_total_images, 
 		", ARRAY_A
 	);
 
-	$attachments_status = imagify_query_results_combine( $images_id, $attachments_status );
+	$attachments_status = imagify_query_results_combine( $image_ids, $attachments_status );
 
-	foreach ( $images_id as $image_id ) {
+	foreach ( $image_ids as $image_id ) {
 		$attachment_status = isset( $attachments_status[ $image_id ] ) ? $attachments_status[ $image_id ] : false;
 
 		if ( 'success' === $attachments_status ) {
