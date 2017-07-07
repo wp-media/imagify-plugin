@@ -33,7 +33,7 @@ function do_imagify( $file_path, $args = array() ) {
 	 * @since 1.2
 	 * @since 1.6.7 Added $attachment_id and $context paramaters.
 	 *
-	 * @param string $file_path     The attachment path.
+	 * @param string $file_path     The file path.
 	 * @param int    $attachment_id The corresponding attachment ID.
 	 * @param string $context       A context concerning this hook.
 	 */
