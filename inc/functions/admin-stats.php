@@ -482,104 +482,94 @@ function imagify_calculate_average_size_images_per_month() {
 function imagify_calculate_total_image_size( $image_ids, $partial_total_images, $total_images ) {
 	global $wpdb;
 
-	$partial_size_images               = 0;
-	$partial_total_intermediate_images = 0;
-
 	$image_ids = array_filter( array_map( 'absint', $image_ids ) );
-	$sql_ids   = implode( ',', $image_ids );
 
 	if ( ! $image_ids ) {
 		return 0;
 	}
 
-	// Get attachments filename.
-	$attachments_filename = $wpdb->get_results( // WPCS: unprepared SQL ok.
-		"
-		SELECT pm.post_id as id, pm.meta_value as value
-		FROM $wpdb->postmeta as pm
-		WHERE pm.meta_key = '_wp_attached_file'
-			AND pm.post_id IN ($sql_ids)
-		ORDER BY pm.post_id DESC
-		", ARRAY_A
-	);
+	$results = imagify_get_wpdb_metas( array(
+		// Get attachments filename.
+		'filenames'    => '_wp_attached_file',
+		// Get attachments data.
+		'data'         => '_wp_attachment_metadata',
+		// Get Imagify data.
+		'imagify_data' => '_imagify_data',
+		// Get attachments status.
+		'statuses'     => '_imagify_status',
+	), $image_ids );
 
-	$attachments_filename = imagify_query_results_combine( $image_ids, $attachments_filename );
+	// Total unoptimized size.
+	$partial_size_images               = 0;
+	// Total number of thumbnails.
+	$partial_total_intermediate_images = 0;
 
-	// Get attachments data.
-	$attachments_data = $wpdb->get_results( // WPCS: unprepared SQL ok.
-		"
-		SELECT pm.post_id as id, pm.meta_value as value
-		FROM $wpdb->postmeta as pm
-		WHERE pm.meta_key = '_wp_attachment_metadata'
-			AND pm.post_id IN ($sql_ids)
-		ORDER BY pm.post_id DESC
-		", ARRAY_A
-	);
+	$is_active_for_network = imagify_is_active_for_network();
+	$disallowed_sizes      = array_filter( (array) get_imagify_option( 'disallowed-sizes', array() ) );
 
-	$attachments_data = imagify_query_results_combine( $image_ids, $attachments_data );
-	$attachments_data = array_map( 'maybe_unserialize', $attachments_data );
+	foreach ( $image_ids as $i => $image_id ) {
+		$attachment_status = isset( $results['statuses'][ $image_id ] ) ? $results['statuses'][ $image_id ] : false;
 
-	// Get imagify data.
-	$imagify_data = $wpdb->get_results( // WPCS: unprepared SQL ok.
-		"
-		SELECT pm.post_id as id, pm.meta_value as value
-		FROM $wpdb->postmeta as pm
-		WHERE pm.meta_key = '_imagify_data'
-			AND pm.post_id IN ($sql_ids)
-		ORDER BY pm.post_id DESC
-		", ARRAY_A
-	);
-
-	$imagify_data = imagify_query_results_combine( $image_ids, $imagify_data );
-	$imagify_data = array_map( 'maybe_unserialize', $imagify_data );
-
-	// Get attachments status.
-	$attachments_status = $wpdb->get_results( // WPCS: unprepared SQL ok.
-		"
-		SELECT pm.post_id as id, pm.meta_value as value
-		FROM $wpdb->postmeta as pm
-		WHERE pm.meta_key = '_imagify_status'
-			AND pm.post_id IN ($sql_ids)
-		ORDER BY pm.post_id DESC
-		", ARRAY_A
-	);
-
-	$attachments_status = imagify_query_results_combine( $image_ids, $attachments_status );
-
-	foreach ( $image_ids as $image_id ) {
-		$attachment_status = isset( $attachments_status[ $image_id ] ) ? $attachments_status[ $image_id ] : false;
-
-		if ( 'success' === $attachments_status ) {
-			$imagify_data                       = isset( $imagify_data[ $image_id ] ) ? $imagify_data[ $image_id ] : false;
-			$partial_size_images               += $imagify_data['stats']['original_size'];
-			$partial_total_intermediate_images += count( $attachment_data['sizes'] );
+		if ( 'success' === $attachment_status ) {
+			$partial_size_images               += isset( $results['imagify_data'][ $image_id ]['stats']['original_size'] ) ? $results['imagify_data'][ $image_id ]['stats']['original_size'] : 0;
+			$partial_total_intermediate_images += count( $results['imagify_data'][ $image_id ]['sizes'] );
+			unset( $image_ids[ $i ], $results['filenames'][ $image_id ], $results['data'][ $image_id ], $results['imagify_data'][ $image_id ], $results['statuses'][ $image_id ] );
 			continue;
 		}
 
-		$attachment_metadata = isset( $attachments_data[ $image_id ] ) ? $attachments_data[ $image_id ]        : false;
-		$sizes               = isset( $attachment_metadata['sizes'] )  ? (array) $attachment_metadata['sizes'] : array();
-		$full_image          = get_imagify_attached_file( $attachments_filename[ $image_id ] );
+		// Create an array containing all this attachment files.
+		$files = array(
+			'full' => get_imagify_attached_file( $results['filenames'][ $image_id ] ),
+		);
 
 		/** This filter is documented in inc/functions/process.php. */
-		$full_image           = apply_filters( 'imagify_file_path', $full_image, $image_id, 'calculate_total_image_size' );
-		$partial_size_images += filesize( $full_image );
+		$files['full'] = apply_filters( 'imagify_file_path', $files['full'], $image_id, 'calculate_total_image_size' );
 
-		if ( ! $sizes ) {
-			continue;
-		}
+		$sizes = isset( $results['data'][ $image_id ]['sizes'] ) ? $results['data'][ $image_id ]['sizes'] : array();
 
-		foreach ( $sizes as $size_key => $size_data ) {
-			if ( array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) && ! imagify_is_active_for_network() ) {
-				continue;
+		if ( $sizes && is_array( $sizes ) ) {
+			$full_dirname = trailingslashit( dirname( $files['full'] ) );
+
+			if ( ! $is_active_for_network ) {
+				$sizes = array_intersect_key( $sizes, $disallowed_sizes );
 			}
 
-			$thumbnail_path = trailingslashit( dirname( $full_image ) ) . $size_data['file'];
-
-			if ( file_exists( $thumbnail_path ) ) {
-				$partial_size_images += filesize( $thumbnail_path );
-				$partial_total_intermediate_images++;
+			if ( $sizes ) {
+				foreach ( $sizes as $size_key => $size_data ) {
+					$files[ $size_key ] = $full_dirname . $size_data['file'];
+				}
 			}
 		}
+
+		/**
+		 * Allow to provide all files size and the number of thumbnails.
+		 *
+		 * @since  1.6.7
+		 * @author Grégory Viguier
+		 *
+		 * @param  bool  $size_and_count False by default.
+		 * @param  int   $image_id       The attachment ID.
+		 * @param  array $files          An array of file paths with thumbnail sizes as keys.
+		 * @param  array $image_ids      An array of all attachment IDs.
+		 * @return bool|array            False by default. Provide an array with the keys 'filesize' (containing the total filesize) and 'thumbnails' (containing the number of thumbnails).
+		 */
+		$size_and_count = apply_filters( 'imagify_total_attachment_filesize', false, $image_id, $files, $image_ids );
+
+		if ( is_array( $size_and_count ) ) {
+			$partial_size_images               += $size_and_count['filesize'];
+			$partial_total_intermediate_images += $size_and_count['thumbnails'];
+		} else {
+			foreach ( $files as $file ) {
+				if ( file_exists( $file ) ) {
+					$partial_size_images += filesize( $file );
+				}
+			}
+
+			unset( $files['full'] );
+			$partial_total_intermediate_images += count( $files );
+		}
+
+		unset( $image_ids[ $i ], $results['filenames'][ $image_id ], $results['data'][ $image_id ], $results['imagify_data'][ $image_id ], $results['statuses'][ $image_id ] );
 	}
 
 	$intermediate_images_per_image = $partial_total_intermediate_images / $partial_total_images;
