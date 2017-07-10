@@ -234,3 +234,53 @@ function get_imagify_bulk_buffer_size() {
 			return 4;
 	}
 }
+
+/**
+ * A helper to retrieve all values from one or several post metas, given a list of post IDs.
+ * The $wpdb cache is flushed to save memory.
+ *
+ * @since  1.6.7
+ * @author Grégory Viguier
+ *
+ * @param  array $metas An array of meta names like:
+ *                      array(
+ *                          'key1' => 'meta_name_1',
+ *                          'key2' => 'meta_name_2',
+ *                          'key3' => 'meta_name_3',
+ *                      )
+ *                      If a key contains 'data', the results will be unserialized.
+ * @param  array $ids   An array of post IDs.
+ * @return array        An array of arrays of results like:
+ *                      array(
+ *                          'key1' => array( post_id_1 => 'result_1', post_id_2 => 'result_2', post_id_3 => 'result_3' ),
+ *                          'key2' => array( post_id_1 => 'result_4', post_id_3 => 'result_5' ),
+ *                          'key3' => array( post_id_1 => 'result_6', post_id_2 => 'result_7' ),
+ *                      )
+ */
+function imagify_get_wpdb_metas( $metas, $ids ) {
+	if ( ! $ids ) {
+		return array_fill_keys( array_keys( $metas ), array() );
+	}
+
+	$sql_ids = implode( ',', $ids );
+
+	foreach ( $metas as $result_name => $meta_name ) {
+		$metas[ $result_name ] = $wpdb->get_results( // WPCS: unprepared SQL ok.
+			"SELECT pm.post_id as id, pm.meta_value as value
+			FROM $wpdb->postmeta as pm
+			WHERE pm.meta_key = '$meta_name'
+				AND pm.post_id IN ( $sql_ids )
+			ORDER BY pm.post_id DESC",
+			ARRAY_A
+		);
+
+		$wpdb->flush();
+		$metas[ $result_name ] = imagify_query_results_combine( $ids, $metas[ $result_name ], true );
+
+		if ( strpos( $result_name, 'data' ) !== false ) {
+			$metas[ $result_name ] = array_map( 'maybe_unserialize', $metas[ $result_name ] );
+		}
+	}
+
+	return $metas;
+}

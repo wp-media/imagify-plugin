@@ -349,9 +349,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		wp_send_json_error( array( 'message' => 'no-images' ) );
 	}
 
-	// Get the data we need.
-	$sql_ids = implode( ',', $ids );
-	$results = array(
+	$results = imagify_get_wpdb_metas( array(
 		// Get attachments filename.
 		'filenames'           => '_wp_attached_file',
 		// Get attachments data.
@@ -360,24 +358,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		'optimization_levels' => '_imagify_optimization_level',
 		// Get attachments status.
 		'statuses'            => '_imagify_status',
-	);
-
-	foreach ( $results as $result_name => $meta_name ) {
-		$results[ $result_name ] = $wpdb->get_results( // WPCS: unprepared SQL ok.
-			"SELECT pm.post_id as id, pm.meta_value as value
-			FROM $wpdb->postmeta as pm
-			WHERE pm.meta_key = '$meta_name'
-				AND pm.post_id IN ( $sql_ids )
-			ORDER BY pm.post_id DESC",
-			ARRAY_A
-		);
-
-		$wpdb->flush();
-		$results[ $result_name ] = imagify_query_results_combine( $ids, $results[ $result_name ], true );
-	}
-
-	unset( $sql_ids, $result_name, $meta_name );
-	$results['data'] = array_map( 'maybe_unserialize', $results['data'] );
+	), $ids );
 
 	// Save the optimization level in a transient to retrieve it later during the process.
 	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
