@@ -84,9 +84,14 @@ class Imagify_AS3CF {
 		add_filter( 'imagify_optimize_attachment_context', array( $this, 'optimize_attachment_context' ), 10, 2 );
 
 		/**
-		 * Bulk optimization (mainly).
+		 * Bulk optimization.
 		 */
 		add_action( 'imagify_bulk_optimize_before_file_existence_tests', array( $this, 'maybe_copy_files_from_s3' ), 8, 3 );
+
+		/**
+		 * Stats.
+		 */
+		add_filter( 'imagify_total_attachment_filesize', array( $this, 'add_stats_for_s3_files' ), 8, 4 );
 
 		/**
 		 * Automatic optimisation.
@@ -215,6 +220,51 @@ class Imagify_AS3CF {
 
 			unset( $s3_data[ $id ], $ids[ $id ] );
 		}
+	}
+
+	/**
+	 * Provide the file sizes and the number of thumbnails for files that are only on S3.
+	 *
+	 * @since  1.6.7
+	 * @author Grégory Viguier
+	 *
+	 * @param  bool  $size_and_count False by default.
+	 * @param  int   $image_id       The attachment ID.
+	 * @param  array $files          An array of file paths with thumbnail sizes as keys.
+	 * @param  array $image_ids      An array of all attachment IDs.
+	 * @return bool|array            False by default. Provide an array with the keys 'filesize' (containing the total filesize) and 'thumbnails' (containing the number of thumbnails).
+	 */
+	function add_stats_for_s3_files( $size_and_count, $image_id, $files, $image_ids ) {
+		static $data;
+
+		if ( is_array( $size_and_count ) ) {
+			return $size_and_count;
+		}
+
+		if ( file_exists( $files['full'] ) ) {
+			// If the full size is on the server, that probably means all files are on the server too.
+			return $size_and_count;
+		}
+
+		if ( ! isset( $data ) ) {
+			$data = imagify_get_wpdb_metas( array(
+				// Get the filesizes.
+				's3_filesize' => 'wpos3_filesize_total',
+			), $image_ids );
+
+			$data = array_map( 'absint', $data['s3_filesize'] );
+		}
+
+		if ( empty( $data[ $image_id ] ) ) {
+			// The file is not on S3.
+			return $size_and_count;
+		}
+
+		// We can't take the disallowed sizes into account here.
+		return array(
+			'filesize'   => (int) $data[ $image_id ],
+			'thumbnails' => count( $files ) - 1,
+		);
 	}
 
 
