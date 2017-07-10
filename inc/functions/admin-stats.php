@@ -523,7 +523,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 		);
 
 		/** This filter is documented in inc/functions/process.php. */
-		$files['full'] = apply_filters( 'imagify_file_path', $files['full'], $image_id, 'calculate_total_image_size' );
+		$files['full'] = apply_filters( 'imagify_file_path', $files['full'] );
 
 		$sizes = isset( $results['data'][ $image_id ]['sizes'] ) ? $results['data'][ $image_id ]['sizes'] : array();
 

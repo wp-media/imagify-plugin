@@ -22,22 +22,16 @@ function do_imagify( $file_path, $args = array() ) {
 		'context'            => 'wp',
 		'resized'            => false,
 		'original_size'      => 0,
-		'attachment_id'      => 0,
 	), $args );
-
-	$attachment_id = absint( $args['attachment_id'] );
 
 	/**
 	 * Filter the attachment path.
 	 *
 	 * @since 1.2
-	 * @since 1.6.7 Added $attachment_id and $context paramaters.
 	 *
-	 * @param string $file_path     The file path.
-	 * @param int    $attachment_id The corresponding attachment ID.
-	 * @param string $context       A context concerning this hook.
+	 * @param string $file_path The attachment path.
 	 */
-	$file_path = apply_filters( 'imagify_file_path', $file_path, $attachment_id, 'do_imagify' );
+	$file_path = apply_filters( 'imagify_file_path', $file_path );
 
 	// Check if the Imagify servers & the API are accessible.
 	if ( ! is_imagify_servers_up() ) {

@@ -58,13 +58,12 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
 
 	foreach ( $images as $image ) {
-		$id        = absint( $image['id'] );
-		$file_path = $storage->get_image_abspath( $id );
+		$id = $image['id'];
 
 		/** This filter is documented in inc/functions/process.php. */
-		$file_path = apply_filters( 'imagify_file_path', $file_path, $id, 'ngg_get_unoptimized_attachment_ids' );
+		$file_path = apply_filters( 'imagify_file_path', $storage->get_image_abspath( $id ) );
 
-		if ( ! $file_path || ! file_exists( $file_path ) ) {
+		if ( ! file_exists( $file_path ) ) {
 			continue;
 		}
 
