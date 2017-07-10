@@ -78,7 +78,6 @@ if ( function_exists( 'wr2x_get_retina' ) ) :
 			'backup'             => false,
 			'optimization_level' => $optimization_level,
 			'context'            => 'wp-retina',
-			'attachment_id'      => $id,
 		) );
 		$class_name = get_imagify_attachment_class_name( 'wp', $id, 'imagify_fill_thumbnail_data' );
 		$attachment = new $class_name( $id );

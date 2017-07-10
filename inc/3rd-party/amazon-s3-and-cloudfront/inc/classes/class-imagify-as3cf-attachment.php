@@ -217,7 +217,6 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			'context'            => 'wp',
 			'resized'            => $resized,
 			'original_size'      => $this->get_original_size( false ),
-			'attachment_id'      => $this->id,
 		) );
 
 		$data = $this->fill_data( null, $response, $this->get_original_url() );
@@ -297,7 +296,6 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 					'backup'             => false,
 					'optimization_level' => $optimization_level,
 					'context'            => 'wp',
-					'attachment_id'      => $this->id,
 				) );
 
 				$data = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
