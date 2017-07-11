@@ -570,7 +570,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 		}
 
 		unset( $image_ids[ $i ], $results['filenames'][ $image_id ], $results['data'][ $image_id ], $results['imagify_data'][ $image_id ], $results['statuses'][ $image_id ] );
-	}
+	} // End foreach().
 
 	$intermediate_images_per_image = $partial_total_intermediate_images / $partial_total_images;
 	$average_size_images           = $partial_size_images / ( $partial_total_images + $partial_total_intermediate_images );
