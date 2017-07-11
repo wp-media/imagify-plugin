@@ -145,7 +145,6 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Regression fix: Fixed the buffer size on the bulk optimization page.
 * Dev stuff: Added a hook allowing to filter arguments when doing a request to our API. It can be used to increate the timeout value for example.
 
-== Changelog ==
 = 1.6.6 =
 * New: Compatibility with the plugin WP Offload S3 Lite. Your images now will be sent to Amazon S3 after being optimized. Also works when you store your images only on S3, not locally.
 * Improvement: Added a filter to the asynchronous job arguments.
