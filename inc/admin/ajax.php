@@ -342,15 +342,14 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	) );
 
 	$wpdb->flush();
+	unset( $unoptimized_attachment_limit, $mime_types );
 	$ids = array_filter( array_map( 'absint', $ids ) );
 
 	if ( ! $ids ) {
 		wp_send_json_error( array( 'message' => 'no-images' ) );
 	}
 
-	// Get the data we need.
-	$sql_ids = implode( ',', $ids );
-	$results = array(
+	$results = imagify_get_wpdb_metas( array(
 		// Get attachments filename.
 		'filenames'           => '_wp_attached_file',
 		// Get attachments data.
@@ -359,59 +358,30 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 		'optimization_levels' => '_imagify_optimization_level',
 		// Get attachments status.
 		'statuses'            => '_imagify_status',
-	);
-
-	foreach ( $results as $result_name => $meta_name ) {
-		$results[ $result_name ] = $wpdb->get_results( // WPCS: unprepared SQL ok.
-			"SELECT pm.post_id as id, pm.meta_value as value
-			FROM $wpdb->postmeta as pm
-			WHERE pm.meta_key = '$meta_name'
-				AND pm.post_id IN ( $sql_ids )
-			ORDER BY pm.post_id DESC",
-			ARRAY_A
-		);
-
-		$wpdb->flush();
-		$results[ $result_name ] = imagify_query_results_combine( $ids, $results[ $result_name ], true );
-	}
-
-	$results['data'] = array_map( 'maybe_unserialize', $results['data'] );
+	), $ids );
 
 	// Save the optimization level in a transient to retrieve it later during the process.
 	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
 
-	$data = array();
-
-	foreach ( $ids as $id ) {
-		/** This filter is documented in inc/functions/process.php. */
-		$file_path = apply_filters( 'imagify_file_path', get_imagify_attached_file( $results['filenames'][ $id ] ) );
-
-		if ( ! file_exists( $file_path ) ) {
-			continue;
-		}
-
-		$attachment_error = '';
+	// First run.
+	foreach ( $ids as $i => $id ) {
+		$attachment_status             = isset( $results['statuses'][ $id ] )            ? $results['statuses'][ $id ]            : false;
+		$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
+		$attachment_error              = '';
 
 		if ( isset( $results['data'][ $id ]['sizes']['full']['error'] ) ) {
 			$attachment_error = $results['data'][ $id ]['sizes']['full']['error'];
 		}
 
-		$attachment_status             = isset( $results['statuses'][ $id ] )            ? $results['statuses'][ $id ]            : false;
-		$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
-		$attachment_backup_path        = get_imagify_attachment_backup_path( $file_path );
-
 		// Don't try to re-optimize if the optimization level is still the same.
 		if ( $optimization_level === $attachment_optimization_level && is_string( $attachment_error ) ) {
-			continue;
-		}
-
-		// Don't try to re-optimize if there is no backup file.
-		if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) ) {
+			unset( $ids[ $i ] );
 			continue;
 		}
 
 		// Don't try to re-optimize images already compressed.
 		if ( 'already_optimized' === $attachment_status && $attachment_optimization_level >= $optimization_level ) {
+			unset( $ids[ $i ] );
 			continue;
 		}
 
@@ -419,17 +389,57 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 
 		// Don't try to re-optimize images with an empty error message.
 		if ( 'error' === $attachment_status && empty( $attachment_error ) ) {
+			unset( $ids[ $i ] );
+		}
+	}
+
+	if ( ! $ids ) {
+		wp_send_json_error( array( 'message' => 'no-images' ) );
+	}
+
+	$ids = array_values( $ids );
+
+	/**
+	 * Triggered before testing for file existence.
+	 *
+	 * @since  1.6.7
+	 * @author Grégory Viguier
+	 *
+	 * @param array $ids                An array of attachment IDs.
+	 * @param array $results            An array of the data fetched from the database.
+	 * @param int   $optimization_level The optimization level that will be used for the optimization.
+	 */
+	do_action( 'imagify_bulk_optimize_before_file_existence_tests', $ids, $results, $optimization_level );
+
+	$data = array();
+
+	foreach ( $ids as $i => $id ) {
+		$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
+
+		/** This filter is documented in inc/functions/process.php. */
+		$file_path = apply_filters( 'imagify_file_path', $file_path );
+
+		if ( ! $file_path || ! file_exists( $file_path ) ) {
+			continue;
+		}
+
+		$attachment_backup_path        = get_imagify_attachment_backup_path( $file_path );
+		$attachment_status             = isset( $results['statuses'][ $id ] )            ? $results['statuses'][ $id ]            : false;
+		$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
+
+		// Don't try to re-optimize if there is no backup file.
+		if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) ) {
 			continue;
 		}
 
 		$data[ '_' . $id ] = get_imagify_attachment_url( $results['filenames'][ $id ] );
 	} // End foreach().
 
-	if ( $data ) {
-		wp_send_json_success( $data );
+	if ( ! $data ) {
+		wp_send_json_error( array( 'message' => 'no-images' ) );
 	}
 
-	wp_send_json_error( array( 'message' => 'no-images' ) );
+	wp_send_json_success( $data );
 }
 
 /** --------------------------------------------------------------------------------------------- */

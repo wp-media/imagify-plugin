@@ -84,6 +84,16 @@ class Imagify_AS3CF {
 		add_filter( 'imagify_optimize_attachment_context', array( $this, 'optimize_attachment_context' ), 10, 2 );
 
 		/**
+		 * Bulk optimization.
+		 */
+		add_action( 'imagify_bulk_optimize_before_file_existence_tests', array( $this, 'maybe_copy_files_from_s3' ), 8, 3 );
+
+		/**
+		 * Stats.
+		 */
+		add_filter( 'imagify_total_attachment_filesize', array( $this, 'add_stats_for_s3_files' ), 8, 4 );
+
+		/**
 		 * Automatic optimisation.
 		 */
 		// Remove some of our hooks: let S3 work first in these cases.
@@ -121,6 +131,140 @@ class Imagify_AS3CF {
 			return self::CONTEXT;
 		}
 		return $context;
+	}
+
+	/**
+	 * When getting all unoptimized attachment ids before performing a bulk optimization, download the missing files from S3.
+	 *
+	 * @since 1.6.7
+	 * @author Grégory Viguier
+	 *
+	 * @param array $ids                An array of attachment IDs.
+	 * @param array $results            An array of the data fetched from the database.
+	 * @param int   $optimization_level The optimization level that will be used for the optimization.
+	 */
+	public function maybe_copy_files_from_s3( $ids, $results, $optimization_level ) {
+		global $wpdb, $as3cf;
+
+		if ( ! $as3cf->is_plugin_setup() ) {
+			return;
+		}
+
+		// Remove from the list files that exist.
+		$ids = array_flip( $ids );
+
+		foreach ( $ids as $id => $i ) {
+			$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
+
+			/** This filter is documented in inc/functions/process.php. */
+			$file_path = apply_filters( 'imagify_file_path', $file_path, $id, 'as3cf_maybe_copy_files_from_s3' );
+
+			if ( ! $file_path || file_exists( $file_path ) ) {
+				// The file exists, no need to retrieve it from S3.
+				unset( $ids[ $id ] );
+			} else {
+				$ids[ $id ] = $file_path;
+			}
+		}
+
+		if ( ! $ids ) {
+			// All files are already on the server.
+			return;
+		}
+
+		// Determine which files are on S3.
+		$ids     = array_flip( $ids );
+		$sql_ids = implode( ',', $ids );
+
+		$s3_data = $wpdb->get_results( // WPCS: unprepared SQL ok.
+			"SELECT pm.post_id as id, pm.meta_value as value
+			FROM $wpdb->postmeta as pm
+			WHERE pm.meta_key = 'amazonS3_info'
+				AND pm.post_id IN ( $sql_ids )
+			ORDER BY pm.post_id DESC",
+			ARRAY_A
+		);
+
+		$wpdb->flush();
+
+		if ( ! $s3_data ) {
+			return;
+		}
+
+		unset( $sql_ids );
+		$s3_data = imagify_query_results_combine( $ids, $s3_data, true );
+
+		// Retrieve the missing files from S3.
+		$ids = array_flip( $ids );
+
+		foreach ( $s3_data as $id => $s3_object ) {
+			$s3_object = maybe_unserialize( $s3_object );
+			$file_path = $ids[ $id ];
+
+			$attachment_backup_path        = get_imagify_attachment_backup_path( $file_path );
+			$attachment_status             = isset( $results['statuses'][ $id ] )            ? $results['statuses'][ $id ]            : false;
+			$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
+
+			// Don't try to re-optimize if there is no backup file.
+			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) ) {
+				unset( $s3_data[ $id ], $ids[ $id ] );
+				continue;
+			}
+
+			$directory        = dirname( $s3_object['key'] );
+			$directory        = '.' === $directory || '' === $directory ? '' : $directory . '/';
+			$s3_object['key'] = $directory . wp_basename( $file_path );
+
+			// Retrieve file from S3.
+			$as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $file_path );
+
+			unset( $s3_data[ $id ], $ids[ $id ] );
+		}
+	}
+
+	/**
+	 * Provide the file sizes and the number of thumbnails for files that are only on S3.
+	 *
+	 * @since  1.6.7
+	 * @author Grégory Viguier
+	 *
+	 * @param  bool  $size_and_count False by default.
+	 * @param  int   $image_id       The attachment ID.
+	 * @param  array $files          An array of file paths with thumbnail sizes as keys.
+	 * @param  array $image_ids      An array of all attachment IDs.
+	 * @return bool|array            False by default. Provide an array with the keys 'filesize' (containing the total filesize) and 'thumbnails' (containing the number of thumbnails).
+	 */
+	function add_stats_for_s3_files( $size_and_count, $image_id, $files, $image_ids ) {
+		static $data;
+
+		if ( is_array( $size_and_count ) ) {
+			return $size_and_count;
+		}
+
+		if ( file_exists( $files['full'] ) ) {
+			// If the full size is on the server, that probably means all files are on the server too.
+			return $size_and_count;
+		}
+
+		if ( ! isset( $data ) ) {
+			$data = imagify_get_wpdb_metas( array(
+				// Get the filesizes.
+				's3_filesize' => 'wpos3_filesize_total',
+			), $image_ids );
+
+			$data = array_map( 'absint', $data['s3_filesize'] );
+		}
+
+		if ( empty( $data[ $image_id ] ) ) {
+			// The file is not on S3.
+			return $size_and_count;
+		}
+
+		// We can't take the disallowed sizes into account here.
+		return array(
+			'filesize'   => (int) $data[ $image_id ],
+			'thumbnails' => count( $files ) - 1,
+		);
 	}
 
 
@@ -235,7 +379,7 @@ class Imagify_AS3CF {
 
 		// Some specifics for the image editor.
 		if ( ! empty( $_POST['data']['do'] ) ) {
-			$optimization_level = (int) get_post_meta( $attachment_id, '_imagify_optimization_level', true );
+			$optimization_level = $attachment->get_optimization_level();
 
 			// Remove old optimization data.
 			$attachment->delete_imagify_data();

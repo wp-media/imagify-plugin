@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-if ( function_exists( 'as3cf_init' ) && is_admin() ) :
+if ( is_admin() && ( function_exists( 'as3cf_init' ) || function_exists( 'as3cf_pro_init' ) ) ) :
 
 	require( dirname( __FILE__ ) . '/inc/classes/class-imagify-as3cf.php' );
 	require( dirname( __FILE__ ) . '/inc/classes/class-imagify-as3cf-attachment.php' );

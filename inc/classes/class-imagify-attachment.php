@@ -16,24 +16,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	const VERSION = '1.0.2';
 
 	/**
-	 * The constructor
-	 *
-	 * @since 1.0
-	 *
-	 * @param  int $id The attachment ID.
-	 * @return void
-	 */
-	public function __construct( $id = 0 ) {
-		global $post;
-
-		if ( is_object( $post ) && ! $id ) {
-			$this->id = $post->ID;
-		} else {
-			$this->id = (int) $id;
-		}
-	}
-
-	/**
 	 * Get the attachment backup filepath.
 	 *
 	 * @since 1.0
