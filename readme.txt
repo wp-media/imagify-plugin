@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.8.0
-Stable tag: 1.6.6
+Stable tag: 1.6.7
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -136,6 +136,16 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.7 =
+* Improvement: Compatibility with the plugin WP Offload S3 Pro, and fixed a few things for both Lite and Pro versions.
+* Improvement: Improved performance on the bulk optimization page for huge image libraries.
+* Improvement: When performing a bulk optimization, moved the attachments with the "WELL DONE" message at the end of the queue, it helps to speed up things.
+* Improvement: Use cURL directly only to optimize an image. It helps when cURL is not available: less things will break in that case.
+* Bug Fix: Fixed a bug with the plugin Screets Live Chat, prior to version 2.2.8.
+* Regression fix: Fixed the buffer size on the bulk optimization page.
+* Dev stuff: Added a hook allowing to filter arguments when doing a request to our API. It can be used to increate the timeout value for example.
+
+== Changelog ==
 = 1.6.6 =
 * New: Compatibility with the plugin WP Offload S3 Lite. Your images now will be sent to Amazon S3 after being optimized. Also works when you store your images only on S3, not locally.
 * Improvement: Added a filter to the asynchronous job arguments.
@@ -155,7 +165,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Improvement: The discount is now automatically applied in when you buy from the plugin and a promotion is active
 
 = 1.6.2 =
-* Bug Fix: Correctly display the modal when clicking on the plan suggestion button on bulk optimisation page
+* Bug Fix: Correctly display the modal when clicking on the plan suggestion button on bulk optimization page
 
 = 1.6.1 =
 * Bug Fix: Better offer suggestion when your medias library is bigger than 3GB
