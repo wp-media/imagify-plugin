@@ -151,7 +151,14 @@ function _imagify_admin_print_styles() {
 	 */
 	if ( isset( $current_screen ) && ( 'upload' === $current_screen->base || 'post' === $current_screen->base ) ) {
 		wp_enqueue_script( 'imagify-js-upload' );
-		wp_localize_script( 'imagify-js-upload', 'imagifyUpload', get_imagify_localize_script_translations( 'upload' ) );
+
+		$upload_data = get_imagify_localize_script_translations( 'upload' );
+
+		if ( 'upload' === $current_screen->base && get_imagify_option( 'backup' ) ) {
+			$upload_data['backup_option'] = 1;
+		}
+
+		wp_localize_script( 'imagify-js-upload', 'imagifyUpload', $upload_data );
 	}
 
 	/**
