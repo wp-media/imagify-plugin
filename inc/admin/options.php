@@ -93,7 +93,11 @@ function _imagify_after_save_network_options( $option, $value, $old_value ) {
 	_imagify_after_save_options( $old_value, $value );
 }
 
-add_filter( 'pre_update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_maybe_set_redirection_before_save_options', 10, 2 );
+if ( imagify_is_active_for_network() ) {
+	add_filter( 'pre_update_site_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_maybe_set_redirection_before_save_options', 10, 2 );
+} else {
+	add_filter( 'pre_update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_maybe_set_redirection_before_save_options', 10, 2 );
+}
 /**
  * If the user clicked the "Save & Go to Bulk Optimizer" button, set a redirection to the bulk optimizer.
  * We use this hook because it can be triggered even if the option value hasn't changed.
