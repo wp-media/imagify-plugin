@@ -78,21 +78,6 @@ function _imagify_pre_update_option( $value, $old_value ) {
 	return $value;
 }
 
-add_action( 'update_site_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_network_options', 10, 3 );
-/**
- * Used to launch some actions after saving the network options.
- *
- * @author Grégory Viguier
- * @since 1.6.5
- *
- * @param string $option     Name of the network option.
- * @param mixed  $value      Current value of the network option.
- * @param mixed  $old_value  Old value of the network option.
- */
-function _imagify_after_save_network_options( $option, $value, $old_value ) {
-	_imagify_after_save_options( $old_value, $value );
-}
-
 if ( imagify_is_active_for_network() ) {
 	add_filter( 'pre_update_site_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_maybe_set_redirection_before_save_options', 10, 2 );
 } else {
@@ -120,7 +105,26 @@ function _imagify_maybe_set_redirection_before_save_options( $value, $old_value 
 	return $value;
 }
 
-add_action( 'update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_options', 10, 2 );
+if ( imagify_is_active_for_network() ) {
+	add_action( 'update_site_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_network_options', 10, 3 );
+}
+/**
+ * Used to launch some actions after saving the network options.
+ *
+ * @author Grégory Viguier
+ * @since 1.6.5
+ *
+ * @param string $option     Name of the network option.
+ * @param mixed  $value      Current value of the network option.
+ * @param mixed  $old_value  Old value of the network option.
+ */
+function _imagify_after_save_network_options( $option, $value, $old_value ) {
+	_imagify_after_save_options( $old_value, $value );
+}
+
+if ( ! imagify_is_active_for_network() ) {
+	add_action( 'update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_options', 10, 2 );
+}
 /**
  * Used to launch some actions after saving the options.
  *
