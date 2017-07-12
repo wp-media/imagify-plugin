@@ -143,7 +143,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Improvement: Use cURL directly only to optimize an image. It helps when cURL is not available: less things will break in that case.
 * Bug Fix: Fixed a bug with the plugin Screets Live Chat, prior to version 2.2.8.
 * Regression fix: Fixed the buffer size on the bulk optimization page.
-* Dev stuff: Added a hook allowing to filter arguments when doing a request to our API. It can be used to increate the timeout value for example.
+* Dev stuff: Added a hook allowing to filter arguments when doing a request to our API. It can be used to increase the timeout value for example.
 
 = 1.6.6 =
 * New: Compatibility with the plugin WP Offload S3 Lite. Your images now will be sent to Amazon S3 after being optimized. Also works when you store your images only on S3, not locally.
