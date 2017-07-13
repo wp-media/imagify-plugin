@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.8.0
-Stable tag: 1.6.7
+Stable tag: 1.6.7.1
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -136,6 +136,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.7.1 =
+* Bug Fix: Fixed the "Unknown error" during a bulk optimization.
+
 = 1.6.7 =
 * Improvement: Compatibility with the plugin WP Offload S3 Pro, and fixed a few things for both Lite and Pro versions.
 * Improvement: Improved performance on the bulk optimization page for huge image libraries.

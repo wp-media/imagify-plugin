@@ -258,6 +258,8 @@ function get_imagify_bulk_buffer_size() {
  *                      )
  */
 function imagify_get_wpdb_metas( $metas, $ids ) {
+	global $wpdb;
+
 	if ( ! $ids ) {
 		return array_fill_keys( array_keys( $metas ), array() );
 	}
