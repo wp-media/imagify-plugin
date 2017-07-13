@@ -21,9 +21,13 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 	$reoptimize_output        = $reoptimize_link ? $reoptimize_link : '';
 	$reoptimize_output_before = '<div class="imagify-datas-actions-links">';
 	$reoptimize_output_after  = '</div><!-- .imagify-datas-actions-links -->';
-	$error = get_imagify_attachment_error_text( $attachment, $context );
+	$error                    = get_imagify_attachment_error_text( $attachment, $context );
 
 	if ( $error ) {
+		if ( $attachment->has_backup() ) {
+			$reoptimize_output .= '<span class="attachment-has-backup hidden"></span>';
+		}
+
 		$reoptimize_output = $reoptimize_output_before . $reoptimize_output . $reoptimize_output_after;
 
 		return 'post.php' === $pagenow ? $output_before . $error . $reoptimize_output . $output_after : $error . $reoptimize_output;
@@ -86,7 +90,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 			'attachment_id' => $attachment_id,
 			'context'       => $context,
 		);
-		$class   = ( 'post.php' !== $pagenow ) ? 'button-imagify-restore' : '';
+		$class   = ( 'post.php' !== $pagenow ) ? 'button-imagify-restore attachment-has-backup' : '';
 		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', $args ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Restoring...', 'imagify' ) . '">';
 			$output .= '<span class="dashicons dashicons-image-rotate"></span>' . __( 'Restore Original', 'imagify' );
 		$output .= '</a>';
@@ -245,6 +249,11 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 			'context'       => $context,
 		);
 		$output .= '<a id="imagify-upload-' . $attachment_id . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+
+		if ( $attachment->has_backup() ) {
+			$output .= '<span class="attachment-has-backup hidden"></span>';
+		}
+
 		return $output;
 	}
 
