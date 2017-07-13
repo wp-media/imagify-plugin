@@ -105,7 +105,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return bool
 	 */
 	public function update_metadata_size() {
-		if ( ! wp_attachment_is_image( $this->id ) ) {
+		// Check if the attachment extension is allowed.
+		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
 			return false;
 		}
 
@@ -203,30 +204,29 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return array $optimized_data      The optimization data.
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
-		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		// Check if the attachment extension is allowed.
+		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+			return;
+		}
 
-		$metadata = $metadata ? $metadata : wp_get_attachment_metadata( $this->id );
-		$sizes    = isset( $metadata['sizes'] ) ? (array) $metadata['sizes'] : array();
+		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		$metadata           = $metadata ? $metadata : wp_get_attachment_metadata( $this->id );
+		$sizes              = isset( $metadata['sizes'] ) ? (array) $metadata['sizes'] : array();
 
 		// To avoid issue with "original_size" at 0 in "_imagify_data".
 		if ( 0 === (int) $this->get_stats_data( 'original_size' ) ) {
 			$this->delete_imagify_data();
 		}
 
-		// Get file path & URL for original image.
-		$attachment_path          = $this->get_original_path();
-		$attachment_url           = $this->get_original_url();
-		$attachment_original_size = $this->get_original_size( false );
-
-		// Check if the attachment extension is allowed.
-		if ( ! $this->id || ! wp_attachment_is_image( $this->id ) ) {
-			return;
-		}
-
 		// Check if the full size is already optimized.
 		if ( $this->is_optimized() && ( $this->get_optimization_level() === $optimization_level ) ) {
 			return;
 		}
+
+		// Get file path & URL for original image.
+		$attachment_path          = $this->get_original_path();
+		$attachment_url           = $this->get_original_url();
+		$attachment_original_size = $this->get_original_size( false );
 
 		/**
 		 * Fires before optimizing an attachment.
@@ -371,6 +371,11 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return void
 	 */
 	public function restore() {
+		// Check if the attachment extension is allowed.
+		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+			return;
+		}
+
 		// Stop the process if there is no backup file to restore.
 		if ( ! $this->has_backup() ) {
 			return;

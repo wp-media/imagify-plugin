@@ -17,6 +17,34 @@ function get_imagify_mime_type() {
 }
 
 /**
+ * Tell if an attachment has a supported mime type.
+ * Was previously Imagify_AS3CF::is_mime_type_supported() since 1.6.6.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ *
+ * @param  int $attachment_id The attachment ID.
+ * @return bool
+ */
+function imagify_is_attachment_mime_type_supported( $attachment_id ) {
+	static $is = array( false );
+
+	$attachment_id = absint( $attachment_id );
+
+	if ( isset( $is[ $attachment_id ] ) ) {
+		return $is[ $attachment_id ];
+	}
+
+	$mime_types = get_imagify_mime_type();
+	$mime_types = array_flip( $mime_types );
+	$mime_type  = (string) get_post_mime_type( $attachment_id );
+
+	$is[ $attachment_id ] = isset( $mime_types[ $mime_type ] );
+
+	return $is[ $attachment_id ];
+}
+
+/**
  * Get the backup path of a specific attachement.
  *
  * @since 1.0
