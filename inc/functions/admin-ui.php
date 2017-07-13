@@ -218,7 +218,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	$output         = '';
 
 	// Check if the attachment extension is allowed.
-	if ( 'wp' === $context && ! wp_attachment_is_image( $attachment_id ) ) {
+	if ( 'wp' === $context && ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 		/* translators: %s is a file extension. */
 		return sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
 	}

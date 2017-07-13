@@ -820,6 +820,6 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 * @return bool
 	 */
 	public function is_mime_type_supported() {
-		return $this->id && imagify_as3cf()->is_mime_type_supported( $this->id );
+		return imagify_is_attachment_mime_type_supported( $this->id );
 	}
 }
