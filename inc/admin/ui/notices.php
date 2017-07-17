@@ -338,7 +338,7 @@ function _imagify_rocket_notice() {
 	?>
 
 	<div class="updated imagify-rkt-notice">
-		<a href="<?php echo esc_url( $dismiss_url ); ?>" class="imagify-cross"><span class="dashicons dashicons-no"></span></a>
+		<a href="<?php echo esc_url( $dismiss_url ); ?>" class="imagify-cross" target="_blank"><span class="dashicons dashicons-no"></span></a>
 
 		<p class="imagify-rkt-logo">
 			<img src="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket2x.png 2x" alt="WP Rocket" width="118" height="32">

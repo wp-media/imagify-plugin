@@ -48,7 +48,7 @@ function _imagify_display_options_page() {
 								</p>
 
 								<p>
-									<a class="btn btn-rocket" href="<?php echo esc_url( imagify_get_wp_rocket_url() ); ?>"><?php _e( 'Get WP Rocket now', 'imagify' ); ?></a>
+									<a class="btn btn-rocket" href="<?php echo esc_url( imagify_get_wp_rocket_url() ); ?>" target="_blank"><?php _e( 'Get WP Rocket now', 'imagify' ); ?></a>
 								</p>
 							</div>
 						</li>
