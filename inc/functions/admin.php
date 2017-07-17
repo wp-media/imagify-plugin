@@ -286,3 +286,31 @@ function imagify_get_wpdb_metas( $metas, $ids ) {
 
 	return $metas;
 }
+
+/**
+ * Simple helper to get the WP Rocket's site URL.
+ * The URL is localized and contains some utm_*** parameters.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ *
+ * @return string The URL.
+ */
+function imagify_get_wp_rocket_url() {
+	$wprocket_url = 'https://wp-rocket.me/';
+	$locale       = get_locale();
+	$suffixes     = array(
+		'fr_FR' => 'fr',
+		'es_ES' => 'es',
+		'it_IT' => 'it',
+		'de_DE' => 'de',
+	);
+
+	if ( isset( $suffixes[ $locale ] ) ) {
+		$wprocket_url .= $suffixes[ $locale ] . '/';
+	}
+
+	$wprocket_url .= '?utm_source=imagify-coupon&utm_medium=plugin&utm_campaign=imagify';
+
+	return $wprocket_url;
+}

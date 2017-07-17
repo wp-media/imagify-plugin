@@ -5,7 +5,7 @@
  * Description: Dramaticaly reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool.
  * Version: 1.6.8
  * Author: WP Media
- * Author URI: http://wp-media.me
+ * Author URI: https://wp-media.me/
  * Licence: GPLv2
  *
  * Text Domain: imagify

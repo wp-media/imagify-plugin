@@ -334,28 +334,11 @@ function _imagify_rocket_notice() {
 
 	$dismiss_url  = get_imagify_admin_url( 'dismiss-notice', 'wp-rocket' );
 	$coupon_code  = 'IMAGIFY20';
-	$wprocket_url = 'http://wp-rocket.me/';
-
-	switch ( get_locale() ) {
-		case 'fr_FR' :
-			$wprocket_url = 'http://wp-rocket.me/fr/';
-			break;
-		case 'es_ES' :
-			$wprocket_url = 'http://wp-rocket.me/es/';
-			break;
-		case 'it_IT' :
-			$wprocket_url = 'http://wp-rocket.me/it/';
-			break;
-		case 'de_DE' :
-			$wprocket_url = 'http://wp-rocket.me/de/';
-			break;
-	}
-
-	$wprocket_url .= '?utm_source=imagify-coupon&utm_medium=plugin&utm_campaign=imagify';
+	$wprocket_url = imagify_get_wp_rocket_url();
 	?>
 
 	<div class="updated imagify-rkt-notice">
-		<a href="<?php echo $dismiss_url; ?>" class="imagify-cross"><span class="dashicons dashicons-no"></span></a>
+		<a href="<?php echo esc_url( $dismiss_url ); ?>" class="imagify-cross"><span class="dashicons dashicons-no"></span></a>
 
 		<p class="imagify-rkt-logo">
 			<img src="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket2x.png 2x" alt="WP Rocket" width="118" height="32">
@@ -375,7 +358,7 @@ function _imagify_rocket_notice() {
 			<span class="imagify-rkt-coupon-code"><?php echo $coupon_code; ?></span>
 		</p>
 		<p class="imagify-rkt-cta">
-			<a href="<?php echo $wprocket_url; ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket now', 'imagify' ); ?></a>
+			<a href="<?php echo esc_url( $wprocket_url ); ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket now', 'imagify' ); ?></a>
 		</p>
 	</div>
 
