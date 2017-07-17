@@ -45,6 +45,57 @@ function imagify_is_attachment_mime_type_supported( $attachment_id ) {
 }
 
 /**
+ * Get the path to the backups directory.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ *
+ * @return string|bool Path to the backups directory. False on failure.
+ */
+function get_imagify_backup_dir_path() {
+	static $backup_dir;
+
+	if ( isset( $backup_dir ) ) {
+		return $backup_dir;
+	}
+
+	$upload_basedir = get_imagify_upload_basedir();
+
+	if ( ! $upload_basedir ) {
+		return false;
+	}
+
+	$backup_dir = $upload_basedir . 'backup/';
+
+	/**
+	 * Filter the backup directory path.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $backup_dir The backup directory path.
+	*/
+	$backup_dir = apply_filters( 'imagify_backup_directory', $backup_dir );
+	$backup_dir = trailingslashit( wp_normalize_path( $backup_dir ) );
+
+	return $backup_dir;
+}
+
+/**
+ * Tell if the folder containing the backups is writable.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ *
+ * @return bool
+ */
+function imagify_backup_dir_is_writable() {
+	$filesystem     = imagify_get_filesystem();
+	$has_backup_dir = wp_mkdir_p( get_imagify_backup_dir_path() );
+
+	return $has_backup_dir && $filesystem->is_writable( get_imagify_backup_dir_path() );
+}
+
+/**
  * Get the backup path of a specific attachement.
  *
  * @since 1.0
@@ -53,27 +104,12 @@ function imagify_is_attachment_mime_type_supported( $attachment_id ) {
  * @return string|bool    The backup path. False on failure.
  */
 function get_imagify_attachment_backup_path( $file_path ) {
-	static $backup_dir;
-
 	$file_path      = wp_normalize_path( (string) $file_path );
 	$upload_basedir = get_imagify_upload_basedir();
+	$backup_dir     = get_imagify_backup_dir_path();
 
 	if ( ! $file_path || ! $upload_basedir ) {
 		return false;
-	}
-
-	if ( ! isset( $backup_dir ) ) {
-		$backup_dir = $upload_basedir . 'backup/';
-
-		/**
-		 * Filter the backup directory path.
-		 *
-		 * @since 1.0
-		 *
-		 * @param string $backup_dir The backup directory path.
-		*/
-		$backup_dir = apply_filters( 'imagify_backup_directory', $backup_dir );
-		$backup_dir = trailingslashit( wp_normalize_path( $backup_dir ) );
 	}
 
 	return str_replace( $upload_basedir, $backup_dir, $file_path );

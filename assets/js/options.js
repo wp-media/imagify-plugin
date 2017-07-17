@@ -98,9 +98,26 @@ window.imagify = window.imagify || {
 	 * Imagify Backup alert.
 	 */
 	$( '.imagify-settings-section' ).find( '#backup' ).on( 'change', function() {
-		var $_this = $( this );
+		var $_this         = $( this ),
+			$backupMessage = $_this.siblings( '#backup-dir-is-writable' ),
+			params         = {
+				'action':   'imagify_check_backup_dir_is_writable',
+				'_wpnonce': $backupMessage.data( 'nonce' )
+			};
 
 		if ( $_this.is( ':checked' ) ) {
+			$.getJSON( ajaxurl, params )
+				.done( function( r ) {
+					if ( $.isPlainObject( r ) && r.success ) {
+						if ( r.data.is_writable ) {
+							// Hide the error message.
+							$backupMessage.addClass( 'hidden' );
+						} else {
+							// Show the error message.
+							$backupMessage.removeClass( 'hidden' );
+						}
+					}
+				} );
 			return;
 		}
 
@@ -113,8 +130,12 @@ window.imagify = window.imagify || {
 			cancelButtonText: imagifyAdmin.labels.swalCancel,
 			reverseButtons:   true
 		} ).then(
-			function() {},
 			function() {
+				// Leave it unchecked, hide the error message.
+				$backupMessage.addClass( 'hidden' );
+			},
+			function() {
+				// Re-check.
 				$_this.prop( 'checked', true );
 			}
 		);
