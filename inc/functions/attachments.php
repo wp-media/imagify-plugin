@@ -89,6 +89,10 @@ function get_imagify_backup_dir_path() {
  * @return bool
  */
 function imagify_backup_dir_is_writable() {
+	if ( ! get_imagify_backup_dir_path() ) {
+		return false;
+	}
+
 	$filesystem     = imagify_get_filesystem();
 	$has_backup_dir = wp_mkdir_p( get_imagify_backup_dir_path() );
 
