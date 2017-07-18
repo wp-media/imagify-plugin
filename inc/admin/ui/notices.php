@@ -9,13 +9,13 @@ add_action( 'all_admin_notices', '_imagify_warning_empty_api_key_notice' );
  * @author Jonathan Buttigieg
  */
 function _imagify_warning_empty_api_key_notice() {
-	$current_screen  = get_current_screen();
+	$current_screen = get_current_screen();
 
 	if ( ! empty( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) {
 		return;
 	}
 
-	if ( imagify_notice_is_dismissed( 'welcome-steps' ) || get_imagify_option( 'api_key', false ) || ! current_user_can( imagify_get_capacity() ) ) {
+	if ( imagify_notice_is_dismissed( 'welcome-steps' ) || get_imagify_option( 'api_key' ) || ! current_user_can( imagify_get_capacity() ) ) {
 		return;
 	}
 	?>
@@ -121,7 +121,7 @@ function _imagify_warning_wrong_api_key_notice() {
 
 add_action( 'all_admin_notices', '_imagify_warning_plugins_to_deactivate_notice' );
 /**
- * This warning is displayed when some plugins may conflict with Imagify
+ * This warning is displayed when some plugins may conflict with Imagify.
  *
  * @since 1.0
  * @author Jonathan Buttigieg
@@ -310,6 +310,69 @@ function _imagify_warning_over_quota_notice() {
 			?></p>
 		</div>
 		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'free-over-quota' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	</div>
+	<?php
+}
+
+add_action( 'all_admin_notices', '_imagify_warning_backup_folder_not_writable_notice' );
+/**
+ * This warning is displayed if the backup folder is not writable.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ */
+function _imagify_warning_backup_folder_not_writable_notice() {
+	global $post_id;
+	$current_screen = get_current_screen();
+
+	if ( empty( $current_screen ) ) {
+		return;
+	}
+
+	// If the automatic optimization is enabled, we'll display the notice only on some pages.
+	$auto  = get_imagify_option( 'auto_optimize' );
+	$bases = array(
+		'settings_page_' . IMAGIFY_SLUG                         => 1,
+		'settings_page_' . IMAGIFY_SLUG . '-network'            => 1,
+		'media_page_' . IMAGIFY_SLUG . '-bulk-optimization'     => 1,
+		'media_page_' . IMAGIFY_SLUG . '-ngg-bulk-optimization' => 1,
+		'upload'                                                => 1,
+		'media'                                                 => 1,
+		'attachment'                                            => 1,
+	);
+
+	if ( ! $auto && empty( $bases[ $current_screen->id ] ) ) {
+		return;
+	}
+
+	if ( ! $auto && 'attachment' === $current_screen->id && $post_id && ! imagify_is_attachment_mime_type_supported( $post_id ) ) {
+		return;
+	}
+
+	if ( ! get_imagify_option( 'backup' ) || ! current_user_can( imagify_get_capacity( true ) ) ) {
+		return;
+	}
+
+	$filesystem     = imagify_get_filesystem();
+	$has_backup_dir = wp_mkdir_p( get_imagify_backup_dir_path() );
+
+	if ( $has_backup_dir && $filesystem->is_writable( get_imagify_backup_dir_path() ) ) {
+		return;
+	}
+
+	$backup_path = str_replace( wp_normalize_path( ABSPATH ), '', get_imagify_backup_dir_path() );
+	?>
+	<div class="clear"></div>
+	<div class="imagify-notice error below-h2">
+		<div class="imagify-notice-logo">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
+		</div>
+		<div class="imagify-notice-content">
+			<p><?php
+			/* translators: %s is a file path. */
+			printf( __( 'The backup folder %s can\'t be created, original images can\'t be saved!', 'imagify' ), "<code>$backup_path</code>" );
+			?></p>
+		</div>
 	</div>
 	<?php
 }
