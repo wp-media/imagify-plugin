@@ -344,10 +344,16 @@ function _imagify_display_bulk_page() {
 				</thead>
 				<tfoot>
 					<tr>
-						<td class="imagify-cell-nb-files"><span class="imagify-nb-files">0</span> <?php _e( 'file', 'imagify' ); ?></td>
-						<td class="imagify-cell-errors"><span class="imagify-nb-errors">0</span> <?php _e( 'error', 'imagify' ); ?></td>
-						<td class="imagify-cell-totaloriginal" colspan="4"><?php _e( 'Total:', 'imagify' ); ?> <strong><span class="imagify-total-original">0Mb</span></strong></td>
-						<td class="imagify-cell-totalgain"><?php _e( 'Gain:', 'imagify' ); ?> <strong><span class="imagify-total-gain">0Mb</span></strong></td>
+						<td class="imagify-cell-nb-files"> <?php
+							/* translators: %s is a number. Don't use %d. */
+							printf( _n( '%s file', '%s files', 0, 'imagify' ), '<span class="imagify-nb-files">0</span>' );
+							?></td>
+						<td class="imagify-cell-errors"> <?php
+							/* translators: %s is a number. Don't use %d. */
+							printf( _n( '%s error', '%s errors', 0, 'imagify' ), '<span class="imagify-nb-errors">0</span>' );
+							?></td>
+						<td class="imagify-cell-totaloriginal" colspan="4"><?php _e( 'Total:', 'imagify' ); ?><strong> <span class="imagify-total-original">0&nbsp;kB</span></strong></td>
+						<td class="imagify-cell-totalgain"><?php _e( 'Gain:', 'imagify' ); ?><strong> <span class="imagify-total-gain">0&nbsp;kB</span></strong></td>
 					</tr>
 				</tfoot>
 				<tbody>
