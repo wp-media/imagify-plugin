@@ -104,8 +104,8 @@ function imagify_backup_dir_is_writable() {
  *
  * @since 1.0
  *
- * @param  int $file_path The file path.
- * @return string|bool    The backup path. False on failure.
+ * @param  string $file_path The file path.
+ * @return string|bool       The backup path. False on failure.
  */
 function get_imagify_attachment_backup_path( $file_path ) {
 	$file_path      = wp_normalize_path( (string) $file_path );
