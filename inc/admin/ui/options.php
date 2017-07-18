@@ -270,20 +270,45 @@ function _imagify_display_options_page() {
 
 										<br>
 
-										<?php
-										$sizes = get_imagify_thumbnail_sizes();
-
-										foreach ( $sizes as $size_key => $size_data ) {
-											$label = esc_html( stripslashes( $size_data['name'] ) );
-											$label = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
-											?>
-											<input type="hidden" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
-											<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php echo ( ! array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) ) ? 'checked="checked"' : '' ?> />
-											<label for="imagify_sizes_<?php echo $size_key; ?>" onclick=""><?php echo $label; ?></label>
-											<br class="imagify-br">
+										<fieldset class="imagify-check-group">
+											<legend class="screen-reader-text"><?php _e( 'Choose the sizes to optimize', 'imagify' ); ?></legend>
 											<?php
-										}
-										?>
+											$sizes      = get_imagify_thumbnail_sizes();
+											$select_all = count( $sizes ) > 3;
+											$disallowed = (array) get_imagify_option( 'disallowed-sizes', array() );
+
+											if ( $select_all ) {
+												$has_disallowed = ! empty( array_intersect_key( $disallowed, $sizes ) );
+												?>
+												<em class="hide-if-no-js">
+													<input id="imagify-toggle-check-thumbnail-sizes-1" type="checkbox" class="mini imagify-toggle-check" <?php checked( ! $has_disallowed ); ?>>
+													<label for="imagify-toggle-check-thumbnail-sizes-1" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
+												</em>
+												<br class="imagify-br">
+												<?php
+											}
+
+											foreach ( $sizes as $size_key => $size_data ) {
+												$label   = esc_html( stripslashes( $size_data['name'] ) );
+												$label   = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
+												$checked = ! isset( $disallowed[ $size_key ] );
+												?>
+												<input type="hidden" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
+												<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini imagify-row-check" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php checked( $checked ); ?>/>
+												<label for="imagify_sizes_<?php echo $size_key; ?>" onclick=""><?php echo $label; ?></label>
+												<br class="imagify-br">
+												<?php
+											}
+
+											if ( $select_all ) { ?>
+												<em class="hide-if-no-js">
+													<input id="imagify-toggle-check-thumbnail-sizes-2" type="checkbox" class="mini imagify-toggle-check" <?php checked( ! $has_disallowed ); ?>>
+													<label for="imagify-toggle-check-thumbnail-sizes-2" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
+												</em>
+												<?php
+											}
+											?>
+										</fieldset>
 									</td>
 								</tr>
 
