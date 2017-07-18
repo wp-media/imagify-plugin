@@ -329,7 +329,7 @@ function get_imagify_price_table_format( $value ) {
  */
 function imagify_payment_modal() {
 	?>
-	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal" aria-hidden="false" role="dialog">
+	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal hide-if-no-js" aria-hidden="false" role="dialog">
 		<div class="imagify-modal-content">
 			<div class="imagify-modal-main">
 				<div class="imagify-modal-views imagify-pre-checkout-view" id="imagify-pre-checkout-view" aria-hidden="false">
