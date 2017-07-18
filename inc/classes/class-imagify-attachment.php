@@ -241,7 +241,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		// Get the resize values for the original size.
 		$resized         = false;
-		$do_resize       = get_imagify_option( 'resize_larger', false );
+		$do_resize       = get_imagify_option( 'resize_larger' );
 		$resize_width    = get_imagify_option( 'resize_larger_w' );
 		$attachment_size = @getimagesize( $attachment_path );
 
@@ -249,18 +249,10 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			$resized_attachment_path = $this->resize( $attachment_path, $attachment_size, $resize_width );
 
 			if ( ! is_wp_error( $resized_attachment_path ) ) {
+				// TODO (@Greg): Send an error message if the backup fails.
+				imagify_backup_file( $attachment_path );
+
 				$filesystem = imagify_get_filesystem();
-
-				if ( get_imagify_option( 'backup', false ) ) {
-					$backup_path      = get_imagify_attachment_backup_path( $attachment_path );
-					$backup_path_info = pathinfo( $backup_path );
-
-					wp_mkdir_p( $backup_path_info['dirname'] );
-
-					// TO DO - check and send a error message if the backup can't be created.
-					$filesystem->copy( $attachment_path, $backup_path, true );
-					imagify_chmod_file( $backup_path );
-				}
 
 				$filesystem->move( $resized_attachment_path, $attachment_path, true );
 				imagify_chmod_file( $attachment_path );

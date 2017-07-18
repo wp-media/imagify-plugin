@@ -107,14 +107,8 @@ function do_imagify( $file_path, $args = array() ) {
 
 	// Create a backup file.
 	if ( 'wp' === $args['context'] && $args['backup'] && ! $args['resized'] ) {
-		$backup_path      = get_imagify_attachment_backup_path( $file_path );
-		$backup_path_info = pathinfo( $backup_path );
-
-		wp_mkdir_p( $backup_path_info['dirname'] );
-
-		// TO DO - check and send a error message if the backup can't be created.
-		$filesystem->copy( $file_path, $backup_path, true );
-		imagify_chmod_file( $backup_path );
+		// TODO (@Greg): Send an error message if the backup fails.
+		imagify_backup_file( $file_path );
 	}
 
 	if ( ! function_exists( 'download_url' ) ) {
@@ -176,4 +170,48 @@ function imagify_do_async_job( $body ) {
 	$args = apply_filters( 'imagify_do_async_job_args', $args );
 
 	wp_remote_post( admin_url( 'admin-ajax.php' ), $args );
+}
+
+/**
+ * Backup a file.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ *
+ * @param  string $file_path The file path.
+ * @return bool|object       True on success. False if the backup option is not enabled. A WP_Error object on failure.
+ */
+function imagify_backup_file( $file_path ) {
+	if ( ! get_imagify_option( 'backup' ) ) {
+		return false;
+	}
+
+	if ( ! $file_path ) {
+		return new WP_Error( 'empty_path', __( 'The file path is empty.', 'imagify' ) );
+	}
+
+	if ( ! imagify_backup_dir_is_writable() ) {
+		return new WP_Error( 'backup_dir_not_writable', __( 'The backup directory is not writable.', 'imagify' ) );
+	}
+
+	$backup_path = get_imagify_attachment_backup_path( $file_path );
+
+	if ( ! $backup_path ) {
+		return new WP_Error( 'wp_upload_error', __( 'Error while retrieving the uploads directory path.', 'imagify' ) );
+	}
+
+	$filesystem = imagify_get_filesystem();
+
+	if ( ! empty( $filesystem->errors->errors ) ) {
+		return new WP_Error( 'filesystem_error', __( 'Filesystem error.', 'imagify' ), $filesystem->errors );
+	}
+
+	$filesystem->copy( $file_path, $backup_path, true );
+	imagify_chmod_file( $backup_path );
+
+	if ( ! $filesystem->exists( $backup_path ) ) {
+		return new WP_Error( 'backup_doesnt_exist', __( 'The file could not be saved.', 'imagify' ) );
+	}
+
+	return true;
 }

@@ -2398,6 +2398,18 @@ td.imagify-cell-filename {
 	background: #D0021B;
 	color: #FFF;
 }
+.imagify-settings-section .imagify-error {
+	display: inline-block;
+	padding: 7px 10px;
+	margin: 10px 0 0 45px;
+	border-radius: 3px;
+}
+.imagify-settings-section .imagify-error code {
+	font-weight: normal;
+}
+.imagify-settings-section .imagify-error.hidden {
+	display: none;
+}
 .imagify-warning,
 #wpadminbar .imagify-warning * {
 	background: #f5a623;

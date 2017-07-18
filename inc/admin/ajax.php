@@ -442,6 +442,26 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	wp_send_json_success( $data );
 }
 
+add_action( 'wp_ajax_imagify_check_backup_dir_is_writable', '_do_wp_ajax_imagify_check_backup_dir_is_writable' );
+/**
+ * Check if the backup directory is writable.
+ * This is used to display an error message in the plugin's settings page.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ */
+function _do_wp_ajax_imagify_check_backup_dir_is_writable() {
+	check_ajax_referer( 'imagify_check_backup_dir_is_writable' );
+
+	if ( ! current_user_can( imagify_get_capacity() ) ) {
+		wp_send_json_error();
+	}
+
+	wp_send_json_success( array(
+		'is_writable' => (int) imagify_backup_dir_is_writable(),
+	) );
+}
+
 /** --------------------------------------------------------------------------------------------- */
 /** IMAGIFY ACCOUNT ============================================================================= */
 /** --------------------------------------------------------------------------------------------- */

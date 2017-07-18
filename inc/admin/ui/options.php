@@ -194,13 +194,29 @@ function _imagify_display_options_page() {
 							<tr>
 								<th scope="row"><span><?php _e( 'Backup original images', 'imagify' ); ?></span></th>
 								<td>
-									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[backup]" id="backup" <?php checked( get_imagify_option( 'backup', 0 ), 1 ); ?> aria-describedby="describe-backup" />
+									<?php
+									$backup_enabled     = (int) get_imagify_option( 'backup', 0 );
+									$backup_error_class = ' hidden';
+
+									if ( $backup_enabled && ! imagify_backup_dir_is_writable() ) {
+										$backup_error_class = '';
+									}
+									?>
+									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[backup]" id="backup" <?php checked( $backup_enabled, 1 ); ?> aria-describedby="describe-backup" />
 									<label for="backup" onclick=""><span class="screen-reader-text"><?php _e( 'Backup original images', 'imagify' ); ?></span></label>
 
 									<span id="describe-backup" class="imagify-info">
 										<span class="dashicons dashicons-info"></span>
 										<?php _e( 'Keep your original images in a separate folder before optimization process.', 'imagify' ); ?>
 									</span>
+
+									<br/><strong id="backup-dir-is-writable" class="imagify-error<?php echo $backup_error_class; ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_check_backup_dir_is_writable' ) ); ?>">
+										<?php
+										$backup_path = str_replace( wp_normalize_path( ABSPATH ), '', get_imagify_backup_dir_path() );
+										/* translators: %s is a file path. */
+										printf( __( 'The backup folder %s can\'t be created, original images can\'t be saved!', 'imagify' ), "<code>$backup_path</code>" );
+										?>
+									</strong>
 								</td>
 							</tr>
 							<tr>
