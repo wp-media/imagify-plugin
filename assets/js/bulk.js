@@ -181,7 +181,7 @@ window.imagify = window.imagify || {
 
 		e.preventDefault();
 
-		if ( optimizationLevel === undefined ) {
+		if ( undefined === optimizationLevel ) {
 			optimizationLevel = -1;
 		}
 
@@ -262,20 +262,20 @@ window.imagify = window.imagify || {
 
 			// Before the attachment optimization.
 			Optimizer.before( function( data ) {
-				table.find( '.imagify-row-progress' ).after( '<tr id="attachment-' + data.id + '"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="' + data.thumbnail + '"/>"</span><span class="imagifilename">' + data.filename + '</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>Compressing<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>' );
+				table.find( '.imagify-row-progress' ).after( '<tr id="attachment-' + data.id + '"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="' + data.thumbnail + '" alt=""/></span><span class="imagifilename">' + data.filename + '</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>' + imagifyBulk.labels.optimizing + '<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>' );
 			} )
 			// After the attachment optimization.
 			.each( function( data ) {
 				var $progress     = $( '#imagify-progress-bar' ),
 					errorClass    = 'error',
 					errorDashicon = 'dismiss',
-					errorMessage  = 'Error';
+					errorMessage  = imagifyBulk.labels.error;
 
 				$progress.css( { 'width': data.progress + '%' } );
 				$progress.find( '.percent' ).html( data.progress + '%' );
 
 				if ( data.success ) {
-					$( '#attachment-' + data.image + ' .imagify-cell-status' ).html( '<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>Complete</span>' );
+					$( '#attachment-' + data.image + ' .imagify-cell-status' ).html( '<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>' + imagifyBulk.labels.complete + '</span>' );
 					$( '#attachment-' + data.image + ' .imagify-cell-original' ).html( data.original_size_human );
 					$( '#attachment-' + data.image + ' .imagify-cell-optimized' ).html( data.new_size_human );
 					$( '#attachment-' + data.image + ' .imagify-cell-percentage' ).html( '<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart" style="width: 18px; height: 18px;"></canvas></span></span><span class="imagipercent">' + data.percent + '</span>%' );
@@ -285,7 +285,7 @@ window.imagify = window.imagify || {
 
 					// The table footer total optimized files.
 					files = files + data.thumbnails + 1;
-					$( '.imagify-cell-nb-files' ).html( files + ' file(s)' );
+					$( '.imagify-cell-nb-files' ).html( imagifyBulk.labels.nbrFiles.replace( '%s', files ) );
 
 					// The table footer original size.
 					original_overall_size = original_overall_size + data.original_overall_size;
@@ -312,10 +312,10 @@ window.imagify = window.imagify || {
 				if ( data.error.indexOf( 'This image is already compressed' ) >= 0 ) {
 					errorClass    = 'warning';
 					errorDashicon = 'warning';
-					errorMessage  = 'Notice';
+					errorMessage  = imagifyBulk.labels.notice;
 				} else {
 					errors++;
-					$( '.imagify-cell-errors' ).html( errors + ' error(s)' );
+					$( '.imagify-cell-errors' ).html( imagifyBulk.labels.nbrErrors.replace( '%s', errors ) );
 				}
 
 				$( '#attachment-' + data.image ).after( '<tr><td colspan="7"><span class="status-' + errorClass + '">' + data.error + '</span></td></tr>' );
@@ -356,7 +356,7 @@ window.imagify = window.imagify || {
 				}
 			} )
 			.error( function( id ) {
-				imagify.log( 'Can\'t optimize image with id ' + id );
+				imagify.log( "Can't optimize image with id " + id + "." );
 			} )
 			.run();
 		} )
