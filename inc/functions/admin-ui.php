@@ -219,7 +219,6 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	$attachment_id  = $attachment->id;
 	$attachment_ext = $attachment->get_extension();
-	$output         = '';
 
 	// Check if the attachment extension is allowed.
 	if ( 'wp' === $context && ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
@@ -229,7 +228,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 
 	// Check if the API key is valid.
 	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
-		$output .= __( 'Invalid API key', 'imagify' );
+		$output  = __( 'Invalid API key', 'imagify' );
 		$output .= '<br/>';
 		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'options-general' ) ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
 		return $output;
@@ -248,7 +247,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 			'attachment_id' => $attachment_id,
 			'context'       => $context,
 		);
-		$output .= '<a id="imagify-upload-' . $attachment_id . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+		$output = '<a id="imagify-upload-' . $attachment_id . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
 
 		if ( $attachment->has_backup() ) {
 			$output .= '<span class="attachment-has-backup hidden"></span>';
@@ -257,8 +256,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 		return $output;
 	}
 
-	$output .= get_imagify_attachment_optimization_text( $attachment, $context );
-	return $output;
+	return get_imagify_attachment_optimization_text( $attachment, $context );
 }
 
 /**
