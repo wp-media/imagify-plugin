@@ -186,31 +186,56 @@ function imagify_backup_file( $file_path ) {
 		return false;
 	}
 
+	// Make sure the source path is not empty.
 	if ( ! $file_path ) {
 		return new WP_Error( 'empty_path', __( 'The file path is empty.', 'imagify' ) );
 	}
 
+	$filesystem = imagify_get_filesystem();
+
+	// Make sure the source file exists.
+	if ( ! $filesystem->exists( $file_path ) ) {
+		$abspath   = wp_normalize_path( ABSPATH );
+		$file_path = str_replace( $abspath, '', wp_normalize_path( $file_path ) );
+
+		return new WP_Error( 'source_doesnt_exist', __( 'The file to backup does not exist.', 'imagify' ), array(
+			'file_path' => $file_path,
+		) );
+	}
+
+	// Make sure the backup directory is writable.
 	if ( ! imagify_backup_dir_is_writable() ) {
 		return new WP_Error( 'backup_dir_not_writable', __( 'The backup directory is not writable.', 'imagify' ) );
 	}
 
 	$backup_path = get_imagify_attachment_backup_path( $file_path );
 
+	// Make sure the uploads directory has no errors.
 	if ( ! $backup_path ) {
 		return new WP_Error( 'wp_upload_error', __( 'Error while retrieving the uploads directory path.', 'imagify' ) );
 	}
 
-	$filesystem = imagify_get_filesystem();
-
+	// Make sure the filesystem has no errors.
 	if ( ! empty( $filesystem->errors->errors ) ) {
 		return new WP_Error( 'filesystem_error', __( 'Filesystem error.', 'imagify' ), $filesystem->errors );
 	}
 
-	$filesystem->copy( $file_path, $backup_path, true );
-	imagify_chmod_file( $backup_path );
+	// Create sub-directories.
+	wp_mkdir_p( dirname( $backup_path ) );
 
+	// Copy the file.
+	$filesystem->copy( $file_path, $backup_path, false, FS_CHMOD_FILE );
+
+	// Make sure the backup copy exists.
 	if ( ! $filesystem->exists( $backup_path ) ) {
-		return new WP_Error( 'backup_doesnt_exist', __( 'The file could not be saved.', 'imagify' ) );
+		$abspath     = wp_normalize_path( ABSPATH );
+		$file_path   = str_replace( $abspath, '', wp_normalize_path( $file_path ) );
+		$backup_path = str_replace( $abspath, '', wp_normalize_path( $backup_path ) );
+
+		return new WP_Error( 'backup_doesnt_exist', __( 'The file could not be saved.', 'imagify' ), array(
+			'file_path'   => $file_path,
+			'backup_path' => $backup_path,
+		) );
 	}
 
 	return true;
