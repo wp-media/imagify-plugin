@@ -92,7 +92,7 @@ function imagify_get_abspath() {
 
 /**
  * Make an absolute path relative to WordPress' root folder.
- * Also works on registered symlinked plugins.
+ * Also works for files from registered symlinked plugins.
  *
  * @since  1.6.8
  * @author Grégory Viguier
@@ -109,8 +109,9 @@ function imagify_make_file_path_replative( $file_path ) {
 	}
 
 	$file_path = wp_normalize_path( $file_path );
+	$pos       = strpos( $file_path, $abspath );
 
-	if ( strpos( $file_path, $abspath ) === false && $wp_plugin_paths && is_array( $wp_plugin_paths ) ) {
+	if ( false === $pos && $wp_plugin_paths && is_array( $wp_plugin_paths ) ) {
 		// The file is probably part of a symlinked plugin.
 		arsort( $wp_plugin_paths );
 
@@ -119,9 +120,9 @@ function imagify_make_file_path_replative( $file_path ) {
 				$file_path = wp_normalize_path( $dir . substr( $file_path, strlen( $realdir ) ) );
 			}
 		}
-	}
 
-	$pos = strpos( $file_path, $abspath );
+		$pos = strpos( $file_path, $abspath );
+	}
 
 	if ( false === $pos ) {
 		// We're in trouble.
