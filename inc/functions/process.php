@@ -195,11 +195,8 @@ function imagify_backup_file( $file_path ) {
 
 	// Make sure the source file exists.
 	if ( ! $filesystem->exists( $file_path ) ) {
-		$abspath   = wp_normalize_path( ABSPATH );
-		$file_path = str_replace( $abspath, '', wp_normalize_path( $file_path ) );
-
 		return new WP_Error( 'source_doesnt_exist', __( 'The file to backup does not exist.', 'imagify' ), array(
-			'file_path' => $file_path,
+			'file_path' => imagify_make_file_path_replative( $file_path ),
 		) );
 	}
 
@@ -228,13 +225,9 @@ function imagify_backup_file( $file_path ) {
 
 	// Make sure the backup copy exists.
 	if ( ! $filesystem->exists( $backup_path ) ) {
-		$abspath     = wp_normalize_path( ABSPATH );
-		$file_path   = str_replace( $abspath, '', wp_normalize_path( $file_path ) );
-		$backup_path = str_replace( $abspath, '', wp_normalize_path( $backup_path ) );
-
 		return new WP_Error( 'backup_doesnt_exist', __( 'The file could not be saved.', 'imagify' ), array(
-			'file_path'   => $file_path,
-			'backup_path' => $backup_path,
+			'file_path'   => imagify_make_file_path_replative( $file_path ),
+			'backup_path' => imagify_make_file_path_replative( $backup_path ),
 		) );
 	}
 
