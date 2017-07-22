@@ -128,9 +128,5 @@ function imagify_make_file_path_replative( $file_path ) {
 		return $file_path;
 	}
 
-	if ( 0 === $pos ) {
-		return str_replace( $abspath, '', $file_path );
-	}
-
 	return substr_replace( $file_path, '', 0, $pos + strlen( $abspath ) );
 }
