@@ -294,7 +294,8 @@ function _imagify_display_options_page() {
 											$disallowed = (array) get_imagify_option( 'disallowed-sizes', array() );
 
 											if ( $select_all ) {
-												$has_disallowed = ! empty( array_intersect_key( $disallowed, $sizes ) );
+												$has_disallowed = array_intersect_key( $disallowed, $sizes );
+												$has_disallowed = ! empty( $has_disallowed );
 												?>
 												<em class="hide-if-no-js">
 													<input id="imagify-toggle-check-thumbnail-sizes-1" type="checkbox" class="mini imagify-toggle-check" <?php checked( ! $has_disallowed ); ?>>
