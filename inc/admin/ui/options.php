@@ -212,7 +212,7 @@ function _imagify_display_options_page() {
 
 									<br/><strong id="backup-dir-is-writable" class="imagify-error<?php echo $backup_error_class; ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_check_backup_dir_is_writable' ) ); ?>">
 										<?php
-										$backup_path = str_replace( wp_normalize_path( ABSPATH ), '', get_imagify_backup_dir_path() );
+										$backup_path = imagify_make_file_path_replative( get_imagify_backup_dir_path() );
 										/* translators: %s is a file path. */
 										printf( __( 'The backup folder %s can\'t be created, original images can\'t be saved!', 'imagify' ), "<code>$backup_path</code>" );
 										?>

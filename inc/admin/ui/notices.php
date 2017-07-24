@@ -360,7 +360,7 @@ function _imagify_warning_backup_folder_not_writable_notice() {
 		return;
 	}
 
-	$backup_path = str_replace( wp_normalize_path( ABSPATH ), '', get_imagify_backup_dir_path() );
+	$backup_path = imagify_make_file_path_replative( get_imagify_backup_dir_path() );
 	?>
 	<div class="clear"></div>
 	<div class="imagify-notice error below-h2">
