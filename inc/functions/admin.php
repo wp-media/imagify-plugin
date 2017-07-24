@@ -34,18 +34,19 @@ function imagify_is_active_for_network() {
  *
  * @since 1.0
  *
- * @param  string $action An action.
- * @param  array  $arg    An array of arguments. It can contain an attachment ID and/or a context.
- * @return string The URL of the specific admin page or action.
+ * @param  string       $action An action.
+ * @param  array|string $arg    An array of arguments. It can contain an attachment ID and/or a context.
+ * @return string               The URL of the specific admin page or action.
  */
 function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
-	$url     = '';
-	$id      = isset( $arg['attachment_id'] ) ? $arg['attachment_id'] : 0;
-	$context = isset( $arg['context'] )       ? $arg['context']       : 'wp';
+	if ( is_array( $arg ) ) {
+		$id      = isset( $arg['attachment_id'] )      ? $arg['attachment_id']      : 0;
+		$context = isset( $arg['context'] )            ? $arg['context']            : 'wp';
+		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : 0;
+	}
 
 	switch ( $action ) {
 		case 'manual-override-upload':
-			$level = ( isset( $arg['optimization_level'] ) ) ? $arg['optimization_level'] : 0;
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_override_upload&attachment_id=' . $id . '&optimization_level=' . $level . '&context=' . $context ), 'imagify-manual-override-upload' );
 
 		case 'manual-upload':
