@@ -85,6 +85,18 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
+	 * Get the attachment backup URL.
+	 *
+	 * @since 1.6.8
+	 * @author Grégory Viguier
+	 *
+	 * @return string|false
+	 */
+	public function get_backup_url() {
+		return site_url( '/' ) . imagify_make_file_path_replative( $this->get_backup_path() );
+	}
+
+	/**
 	 * Get the attachment optimization data.
 	 *
 	 * @since 1.5

@@ -149,7 +149,7 @@ function get_imagify_attached_file( $file_path ) {
  *
  * @since 1.4.5
  *
- * @param  string $file_path A relative of absolute file path.
+ * @param  string $file_path A relative or absolute file path.
  * @return string|bool       File URL, otherwise false.
  */
 function get_imagify_attachment_url( $file_path ) {
