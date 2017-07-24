@@ -75,7 +75,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return string|bool The path. False on failure.
 	 */
 	public function get_backup_path() {
-		$backup_path = $this->get_original_path() . '_backup';
+		$file_path   = $this->get_original_path();
+		$backup_path = get_imagify_ngg_attachment_backup_path( $file_path );
 
 		if ( file_exists( $backup_path ) ) {
 			return $backup_path;
@@ -323,7 +324,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 			if ( ! is_wp_error( $resized_attachment_path ) ) {
 				// TODO (@Greg): Send an error message if the backup fails.
-				imagify_backup_file( $attachment_path );
+				imagify_backup_file( $attachment_path, $this->get_backup_path() );
 
 				$filesystem = imagify_get_filesystem();
 
@@ -490,9 +491,6 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		if ( ! $this->has_backup() ) {
 			return;
 		}
-
-		$backup_path     = $this->get_backup_path();
-		$attachment_path = $this->get_original_path();
 
 		/**
 		 * Fires before restoring an attachment.
