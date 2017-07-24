@@ -147,8 +147,7 @@ window.imagify = window.imagify || {
 // "Select all" checkboxes =========================================================================
 (function( w, d, $, undefined ) {
 
-	var lastClicked = {},
-		jqPropHookChecked = $.propHooks.checked;
+	var jqPropHookChecked = $.propHooks.checked;
 
 	// Force `.prop()` to trigger a `change` event.
 	$.propHooks.checked = {
@@ -168,7 +167,7 @@ window.imagify = window.imagify || {
 	};
 
 	// Check all checkboxes.
-	$( '.imagify-check-group .imagify-row-check' ).on( 'click', function( e ) {
+	$( '.imagify-check-group .imagify-row-check' ).on( 'click', function() {
 		var $group     = $( this ).closest( '.imagify-check-group' ),
 			allChecked = 0 === $group.find( '.imagify-row-check' ).filter( ':visible:enabled' ).not( ':checked' ).length;
 
