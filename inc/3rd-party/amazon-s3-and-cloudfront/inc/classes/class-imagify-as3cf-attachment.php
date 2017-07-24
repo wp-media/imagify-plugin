@@ -235,6 +235,9 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			}
 		}
 
+		// Save the optimization level.
+		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
+
 		if ( ! $data ) {
 			// The optimization failed.
 			$metadata = $metadata_changed ? $metadata : false;
@@ -309,7 +312,6 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		update_post_meta( $this->id, '_imagify_data', $data );
 		update_post_meta( $this->id, '_imagify_status', 'success' );
-		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
 
 		if ( $this->delete_files && $filesize_total ) {
 			// Add the total file size for all image sizes. This is a meta used by AS3CF.

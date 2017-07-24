@@ -285,6 +285,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return array $data                The optimization data.
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
+		// Check if the attachment extension is allowed.
+		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+			return;
+		}
+
 		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
 
 		// To avoid issue with "original_size" at 0 in "_imagify_data".
@@ -292,15 +297,15 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			$this->delete_imagify_data();
 		}
 
+		// Check if the full size is already optimized.
+		if ( $this->is_optimized() && $this->get_optimization_level() === $optimization_level ) {
+			return;
+		}
+
 		// Get file path & URL for original image.
 		$attachment_path          = $this->get_original_path();
 		$attachment_url           = $this->get_original_url();
 		$attachment_original_size = $this->get_original_size( false );
-
-		// Check if the full size is already optimized.
-		if ( $this->is_optimized() && ( $this->get_optimization_level() === $optimization_level ) ) {
-			return;
-		}
 
 		/**
 		 * Fires before optimizing an attachment.
@@ -350,16 +355,16 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		$data = $this->fill_data( null, $response, $attachment_url );
 
-		if ( ! $data ) {
-			delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
-			return;
-		}
-
 		// Save the optimization level.
 		imagify_ngg_db()->update( $this->id, array(
 			'pid'                => $this->id,
 			'optimization_level' => $optimization_level,
 		) );
+
+		if ( ! $data ) {
+			delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
+			return;
+		}
 
 		// If we resized the original with success, we have to update the attachment metadata.
 		// If not, WordPress keeps the old attachment size.
@@ -487,6 +492,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return void
 	 */
 	public function restore() {
+		// Check if the attachment extension is allowed.
+		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+			return;
+		}
+
 		// Stop the process if there is no backup file to restore.
 		if ( ! $this->has_backup() ) {
 			return;

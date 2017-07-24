@@ -276,13 +276,13 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		$data = $this->fill_data( null, $response, $attachment_url );
 
+		// Save the optimization level.
+		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
+
 		if ( ! $data ) {
 			delete_transient( 'imagify-async-in-progress-' . $this->id );
 			return;
 		}
-
-		// Save the optimization level.
-		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
 
 		// If we resized the original with success, we have to update the attachment metadata.
 		// If not, WordPress keeps the old attachment size.
