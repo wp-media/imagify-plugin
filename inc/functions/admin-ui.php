@@ -24,7 +24,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 	$error                    = get_imagify_attachment_error_text( $attachment, $context );
 
 	if ( $error ) {
-		if ( $attachment->has_backup() ) {
+		if ( 'post.php' !== $pagenow && $reoptimize_link && $attachment->has_backup() ) {
 			$reoptimize_output .= '<span class="attachment-has-backup hidden"></span>';
 		}
 
