@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.8.0
-Stable tag: 1.6.7.1
+Stable tag: 1.6.8
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -136,6 +136,14 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.8 =
+* Improvement: don't display the restore bulk action in the medias list if there is nothing to restore.
+* Improvement: you can know select and unselect all image sizes at once in the settings page.
+* Improvement: detect when the backup directory is not writable. A warning is displayed dynamically under the backup setting, a notice is also displayed on some pages.
+* Improvement: some strings were still not translated in the bulk optimization page.
+* Bug Fix: the "Save & Go to Bulk Optimizer" button now redirects you even if no settings have been changed.
+* Lots of various small fixes and code improvements.
+
 = 1.6.7.1 =
 * Bug Fix: Fixed the "Unknown error" during a bulk optimization.
 
