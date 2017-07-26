@@ -20,8 +20,12 @@ window.imagify = window.imagify || {
 	 */
 	var bulk_opt, get_var, check_modal;
 
-	bulk_opt  = '<option value="imagify-bulk-upload">' + imagifyUpload.bulkActionsLabels.optimize + '</option>';
-	bulk_opt += '<option value="imagify-bulk-restore">' + imagifyUpload.bulkActionsLabels.restore + '</option>';
+	bulk_opt = '<option value="imagify-bulk-upload">' + imagifyUpload.bulkActionsLabels.optimize + '</option>';
+
+	if ( imagifyUpload.backup_option || $( '.attachment-has-backup' ).length ) {
+		// If the backup option is enabled, or if we have items that can be restored.
+		bulk_opt += '<option value="imagify-bulk-restore">' + imagifyUpload.bulkActionsLabels.restore + '</option>';
+	}
 
 	$( '.bulkactions select[name="action"]' ).find( 'option:last-child' ).before( bulk_opt );
 	$( '.bulkactions select[name="action2"]' ).find( 'option:last-child' ).before( bulk_opt );

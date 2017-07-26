@@ -78,7 +78,7 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 		$attachment_error              = trim( $attachment_error );
 		$attachment_status             = $image['status'];
 		$attachment_optimization_level = $image['optimization_level'];
-		$attachment_backup_path        = get_imagify_attachment_backup_path( $file_path );
+		$attachment_backup_path        = get_imagify_ngg_attachment_backup_path( $file_path );
 
 		// Don't try to re-optimize if the optimization level is still the same.
 		if ( $optimization_level === $attachment_optimization_level && is_string( $attachment_error ) ) {

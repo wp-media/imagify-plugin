@@ -21,9 +21,13 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 	$reoptimize_output        = $reoptimize_link ? $reoptimize_link : '';
 	$reoptimize_output_before = '<div class="imagify-datas-actions-links">';
 	$reoptimize_output_after  = '</div><!-- .imagify-datas-actions-links -->';
-	$error = get_imagify_attachment_error_text( $attachment, $context );
+	$error                    = get_imagify_attachment_error_text( $attachment, $context );
 
 	if ( $error ) {
+		if ( 'post.php' !== $pagenow && $reoptimize_link && $attachment->has_backup() ) {
+			$reoptimize_output .= '<span class="attachment-has-backup hidden"></span>';
+		}
+
 		$reoptimize_output = $reoptimize_output_before . $reoptimize_output . $reoptimize_output_after;
 
 		return 'post.php' === $pagenow ? $output_before . $error . $reoptimize_output . $output_after : $error . $reoptimize_output;
@@ -86,7 +90,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 			'attachment_id' => $attachment_id,
 			'context'       => $context,
 		);
-		$class   = ( 'post.php' !== $pagenow ) ? 'button-imagify-restore' : '';
+		$class   = ( 'post.php' !== $pagenow ) ? 'button-imagify-restore attachment-has-backup' : '';
 		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', $args ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Restoring...', 'imagify' ) . '">';
 			$output .= '<span class="dashicons dashicons-image-rotate"></span>' . __( 'Restore Original', 'imagify' );
 		$output .= '</a>';
@@ -215,17 +219,16 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	$attachment_id  = $attachment->id;
 	$attachment_ext = $attachment->get_extension();
-	$output         = '';
 
 	// Check if the attachment extension is allowed.
-	if ( 'wp' === $context && ! wp_attachment_is_image( $attachment_id ) ) {
+	if ( 'wp' === $context && ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 		/* translators: %s is a file extension. */
 		return sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
 	}
 
 	// Check if the API key is valid.
 	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
-		$output .= __( 'Invalid API key', 'imagify' );
+		$output  = __( 'Invalid API key', 'imagify' );
 		$output .= '<br/>';
 		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'options-general' ) ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
 		return $output;
@@ -244,12 +247,16 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 			'attachment_id' => $attachment_id,
 			'context'       => $context,
 		);
-		$output .= '<a id="imagify-upload-' . $attachment_id . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+		$output = '<a id="imagify-upload-' . $attachment_id . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+
+		if ( $attachment->has_backup() ) {
+			$output .= '<span class="attachment-has-backup hidden"></span>';
+		}
+
 		return $output;
 	}
 
-	$output .= get_imagify_attachment_optimization_text( $attachment, $context );
-	return $output;
+	return get_imagify_attachment_optimization_text( $attachment, $context );
 }
 
 /**
@@ -320,7 +327,7 @@ function get_imagify_price_table_format( $value ) {
  */
 function imagify_payment_modal() {
 	?>
-	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal" aria-hidden="false" role="dialog">
+	<div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal hide-if-no-js" aria-hidden="false" role="dialog">
 		<div class="imagify-modal-content">
 			<div class="imagify-modal-main">
 				<div class="imagify-modal-views imagify-pre-checkout-view" id="imagify-pre-checkout-view" aria-hidden="false">

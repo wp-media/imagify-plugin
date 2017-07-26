@@ -105,7 +105,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return bool
 	 */
 	public function update_metadata_size() {
-		if ( ! wp_attachment_is_image( $this->id ) ) {
+		// Check if the attachment extension is allowed.
+		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
 			return false;
 		}
 
@@ -203,30 +204,29 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return array $optimized_data      The optimization data.
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
-		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		// Check if the attachment extension is allowed.
+		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+			return;
+		}
 
-		$metadata = $metadata ? $metadata : wp_get_attachment_metadata( $this->id );
-		$sizes    = isset( $metadata['sizes'] ) ? (array) $metadata['sizes'] : array();
+		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		$metadata           = $metadata ? $metadata : wp_get_attachment_metadata( $this->id );
+		$sizes              = isset( $metadata['sizes'] ) ? (array) $metadata['sizes'] : array();
 
 		// To avoid issue with "original_size" at 0 in "_imagify_data".
 		if ( 0 === (int) $this->get_stats_data( 'original_size' ) ) {
 			$this->delete_imagify_data();
 		}
 
-		// Get file path & URL for original image.
-		$attachment_path          = $this->get_original_path();
-		$attachment_url           = $this->get_original_url();
-		$attachment_original_size = $this->get_original_size( false );
-
-		// Check if the attachment extension is allowed.
-		if ( ! $this->id || ! wp_attachment_is_image( $this->id ) ) {
-			return;
-		}
-
 		// Check if the full size is already optimized.
 		if ( $this->is_optimized() && ( $this->get_optimization_level() === $optimization_level ) ) {
 			return;
 		}
+
+		// Get file path & URL for original image.
+		$attachment_path          = $this->get_original_path();
+		$attachment_url           = $this->get_original_url();
+		$attachment_original_size = $this->get_original_size( false );
 
 		/**
 		 * Fires before optimizing an attachment.
@@ -241,7 +241,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		// Get the resize values for the original size.
 		$resized         = false;
-		$do_resize       = get_imagify_option( 'resize_larger', false );
+		$do_resize       = get_imagify_option( 'resize_larger' );
 		$resize_width    = get_imagify_option( 'resize_larger_w' );
 		$attachment_size = @getimagesize( $attachment_path );
 
@@ -249,18 +249,10 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			$resized_attachment_path = $this->resize( $attachment_path, $attachment_size, $resize_width );
 
 			if ( ! is_wp_error( $resized_attachment_path ) ) {
+				// TODO (@Greg): Send an error message if the backup fails.
+				imagify_backup_file( $attachment_path );
+
 				$filesystem = imagify_get_filesystem();
-
-				if ( get_imagify_option( 'backup', false ) ) {
-					$backup_path      = get_imagify_attachment_backup_path( $attachment_path );
-					$backup_path_info = pathinfo( $backup_path );
-
-					wp_mkdir_p( $backup_path_info['dirname'] );
-
-					// TO DO - check and send a error message if the backup can't be created.
-					$filesystem->copy( $attachment_path, $backup_path, true );
-					imagify_chmod_file( $backup_path );
-				}
 
 				$filesystem->move( $resized_attachment_path, $attachment_path, true );
 				imagify_chmod_file( $attachment_path );
@@ -284,13 +276,13 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		$data = $this->fill_data( null, $response, $attachment_url );
 
+		// Save the optimization level.
+		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
+
 		if ( ! $data ) {
 			delete_transient( 'imagify-async-in-progress-' . $this->id );
 			return;
 		}
-
-		// Save the optimization level.
-		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
 
 		// If we resized the original with success, we have to update the attachment metadata.
 		// If not, WordPress keeps the old attachment size.
@@ -371,6 +363,11 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return void
 	 */
 	public function restore() {
+		// Check if the attachment extension is allowed.
+		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+			return;
+		}
+
 		// Stop the process if there is no backup file to restore.
 		if ( ! $this->has_backup() ) {
 			return;

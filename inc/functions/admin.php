@@ -34,18 +34,19 @@ function imagify_is_active_for_network() {
  *
  * @since 1.0
  *
- * @param  string $action An action.
- * @param  array  $arg    An array of arguments. It can contain an attachment ID and/or a context.
- * @return string The URL of the specific admin page or action.
+ * @param  string       $action An action.
+ * @param  array|string $arg    An array of arguments. It can contain an attachment ID and/or a context.
+ * @return string               The URL of the specific admin page or action.
  */
 function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
-	$url     = '';
-	$id      = isset( $arg['attachment_id'] ) ? $arg['attachment_id'] : 0;
-	$context = isset( $arg['context'] )       ? $arg['context']       : 'wp';
+	if ( is_array( $arg ) ) {
+		$id      = isset( $arg['attachment_id'] )      ? $arg['attachment_id']      : 0;
+		$context = isset( $arg['context'] )            ? $arg['context']            : 'wp';
+		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : 0;
+	}
 
 	switch ( $action ) {
 		case 'manual-override-upload':
-			$level = ( isset( $arg['optimization_level'] ) ) ? $arg['optimization_level'] : 0;
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_override_upload&attachment_id=' . $id . '&optimization_level=' . $level . '&context=' . $context ), 'imagify-manual-override-upload' );
 
 		case 'manual-upload':
@@ -107,72 +108,6 @@ function get_imagify_max_intermediate_image_size() {
 		'width'  => $width,
 		'height' => $height,
 	);
-}
-
-/**
- * Renew a dismissed Imagify notice.
- *
- * @since 1.0
- *
- * @param  string $notice  A notice ID.
- * @param  int    $user_id A user ID.
- * @return void
- */
-function imagify_renew_notice( $notice, $user_id = 0 ) {
-	$user_id = $user_id ? (int) $user_id : get_current_user_id();
-	$notices = get_user_meta( $user_id, '_imagify_ignore_notices', true );
-	$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
-
-	if ( ! isset( $notices[ $notice ] ) ) {
-		return;
-	}
-
-	unset( $notices[ $notice ] );
-	$notices = array_flip( $notices );
-	$notices = array_values( $notices );
-	update_user_meta( $user_id, '_imagify_ignore_notices', $notices );
-}
-
-/**
- * Dismiss an Imagify notice.
- *
- * @since 1.0
- *
- * @param  string $notice  A notice ID.
- * @param  int    $user_id A user ID.
- * @return void
- */
-function imagify_dismiss_notice( $notice, $user_id = 0 ) {
-	$user_id   = $user_id ? (int) $user_id : get_current_user_id();
-	$notices   = get_user_meta( $user_id, '_imagify_ignore_notices', true );
-	$notices   = is_array( $notices ) ? $notices : array();
-	$notices[] = $notice;
-	$notices   = array_filter( $notices );
-	$notices   = array_unique( $notices );
-
-	update_user_meta( $user_id, '_imagify_ignore_notices', $notices );
-}
-
-/**
- * Tell if an Imagify notice is dismissed.
- *
- * @since 1.6.5
- * @author Grégory Viguier
- *
- * @param  string $notice  A notice ID.
- * @param  int    $user_id A user ID.
- * @return bool
- */
-function imagify_notice_is_dismissed( $notice, $user_id = 0 ) {
-	$user_id = $user_id ? (int) $user_id : get_current_user_id();
-	$notices = get_user_meta( $user_id, '_imagify_ignore_notices', true );
-
-	if ( ! $notices || ! is_array( $notices ) ) {
-		return false;
-	}
-
-	$notices = array_flip( $notices );
-	return isset( $notices[ $notice ] );
 }
 
 /**
@@ -285,4 +220,32 @@ function imagify_get_wpdb_metas( $metas, $ids ) {
 	}
 
 	return $metas;
+}
+
+/**
+ * Simple helper to get the WP Rocket's site URL.
+ * The URL is localized and contains some utm_*** parameters.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ *
+ * @return string The URL.
+ */
+function imagify_get_wp_rocket_url() {
+	$wprocket_url = 'https://wp-rocket.me/';
+	$locale       = get_locale();
+	$suffixes     = array(
+		'fr_FR' => 'fr',
+		'es_ES' => 'es',
+		'it_IT' => 'it',
+		'de_DE' => 'de',
+	);
+
+	if ( isset( $suffixes[ $locale ] ) ) {
+		$wprocket_url .= $suffixes[ $locale ] . '/';
+	}
+
+	$wprocket_url .= '?utm_source=imagify-coupon&utm_medium=plugin&utm_campaign=imagify';
+
+	return $wprocket_url;
 }

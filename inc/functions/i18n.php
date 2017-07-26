@@ -99,6 +99,14 @@ function get_imagify_localize_script_translations( $context ) {
 					'totalUnoptimizedAttachments'    => imagify_count_unoptimized_attachments(),
 					'totalErrorsAttachments'         => imagify_count_error_attachments(),
 					'processing'                     => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
+					'optimizing'                     => __( 'Optimizing', 'imagify' ),
+					'complete'                       => _x( 'Complete', 'adjective', 'imagify' ),
+					'error'                          => __( 'Error', 'imagify' ),
+					'notice'                         => _x( 'Notice', 'noun', 'imagify' ),
+					/* translators: %s is a number. Don't use %d. */
+					'nbrFiles'                       => __( '%s file(s)', 'imagify' ),
+					/* translators: %s is a number. Don't use %d. */
+					'nbrErrors'                      => __( '%s error(s)', 'imagify' ),
 				),
 			);
 

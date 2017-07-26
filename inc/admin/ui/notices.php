@@ -9,13 +9,13 @@ add_action( 'all_admin_notices', '_imagify_warning_empty_api_key_notice' );
  * @author Jonathan Buttigieg
  */
 function _imagify_warning_empty_api_key_notice() {
-	$current_screen  = get_current_screen();
+	$current_screen = get_current_screen();
 
 	if ( ! empty( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) {
 		return;
 	}
 
-	if ( imagify_notice_is_dismissed( 'welcome-steps' ) || get_imagify_option( 'api_key', false ) || ! current_user_can( imagify_get_capacity() ) ) {
+	if ( imagify_notice_is_dismissed( 'welcome-steps' ) || get_imagify_option( 'api_key' ) || ! current_user_can( imagify_get_capacity() ) ) {
 		return;
 	}
 	?>
@@ -121,7 +121,7 @@ function _imagify_warning_wrong_api_key_notice() {
 
 add_action( 'all_admin_notices', '_imagify_warning_plugins_to_deactivate_notice' );
 /**
- * This warning is displayed when some plugins may conflict with Imagify
+ * This warning is displayed when some plugins may conflict with Imagify.
  *
  * @since 1.0
  * @author Jonathan Buttigieg
@@ -314,6 +314,73 @@ function _imagify_warning_over_quota_notice() {
 	<?php
 }
 
+add_action( 'all_admin_notices', '_imagify_warning_backup_folder_not_writable_notice' );
+/**
+ * This warning is displayed if the backup folder is not writable.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ */
+function _imagify_warning_backup_folder_not_writable_notice() {
+	global $post_id;
+	$current_screen = get_current_screen();
+
+	if ( empty( $current_screen ) ) {
+		return;
+	}
+
+	// If the automatic optimization is enabled, we'll display the notice only on some pages.
+	$auto  = get_imagify_option( 'auto_optimize' );
+	$bases = array(
+		'settings_page_' . IMAGIFY_SLUG                         => 1,
+		'settings_page_' . IMAGIFY_SLUG . '-network'            => 1,
+		'media_page_' . IMAGIFY_SLUG . '-bulk-optimization'     => 1,
+		'media_page_' . IMAGIFY_SLUG . '-ngg-bulk-optimization' => 1,
+		'upload'                                                => 1,
+		'media'                                                 => 1,
+		'attachment'                                            => 1,
+	);
+
+	if ( ! $auto && empty( $bases[ $current_screen->id ] ) ) {
+		return;
+	}
+
+	if ( ! $auto && 'attachment' === $current_screen->id && $post_id && ! imagify_is_attachment_mime_type_supported( $post_id ) ) {
+		return;
+	}
+
+	if ( ! get_imagify_option( 'backup' ) || ! current_user_can( imagify_get_capacity( true ) ) ) {
+		return;
+	}
+
+	if ( imagify_backup_dir_is_writable() ) {
+		return;
+	}
+
+	$filesystem = imagify_get_filesystem();
+
+	if ( $filesystem->exists( get_imagify_backup_dir_path() ) ) {
+		/* translators: %s is a file path. */
+		$message = __( 'The backup folder %s is not writable by the server, original images cannot be saved!', 'imagify' );
+	} else {
+		/* translators: %s is a file path. */
+		$message = __( 'The backup folder %s cannot be created. Is its parent directory writable by the server? Original images cannot be saved!', 'imagify' );
+	}
+
+	$backup_path = imagify_make_file_path_replative( get_imagify_backup_dir_path( true ) );
+	?>
+	<div class="clear"></div>
+	<div class="imagify-notice error below-h2">
+		<div class="imagify-notice-logo">
+			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
+		</div>
+		<div class="imagify-notice-content">
+			<p><?php printf( $message, "<code>$backup_path</code>" ); ?></p>
+		</div>
+	</div>
+	<?php
+}
+
 add_action( 'admin_notices', '_imagify_rocket_notice' );
 /**
  * Add a message about WP Rocket on the "Bulk Optimization" screen.
@@ -334,28 +401,11 @@ function _imagify_rocket_notice() {
 
 	$dismiss_url  = get_imagify_admin_url( 'dismiss-notice', 'wp-rocket' );
 	$coupon_code  = 'IMAGIFY20';
-	$wprocket_url = 'http://wp-rocket.me/';
-
-	switch ( get_locale() ) {
-		case 'fr_FR' :
-			$wprocket_url = 'http://wp-rocket.me/fr/';
-			break;
-		case 'es_ES' :
-			$wprocket_url = 'http://wp-rocket.me/es/';
-			break;
-		case 'it_IT' :
-			$wprocket_url = 'http://wp-rocket.me/it/';
-			break;
-		case 'de_DE' :
-			$wprocket_url = 'http://wp-rocket.me/de/';
-			break;
-	}
-
-	$wprocket_url .= '?utm_source=imagify-coupon&utm_medium=plugin&utm_campaign=imagify';
+	$wprocket_url = imagify_get_wp_rocket_url();
 	?>
 
 	<div class="updated imagify-rkt-notice">
-		<a href="<?php echo $dismiss_url; ?>" class="imagify-cross"><span class="dashicons dashicons-no"></span></a>
+		<a href="<?php echo esc_url( $dismiss_url ); ?>" class="imagify-cross" target="_blank"><span class="dashicons dashicons-no"></span></a>
 
 		<p class="imagify-rkt-logo">
 			<img src="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket2x.png 2x" alt="WP Rocket" width="118" height="32">
@@ -375,7 +425,7 @@ function _imagify_rocket_notice() {
 			<span class="imagify-rkt-coupon-code"><?php echo $coupon_code; ?></span>
 		</p>
 		<p class="imagify-rkt-cta">
-			<a href="<?php echo $wprocket_url; ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket now', 'imagify' ); ?></a>
+			<a href="<?php echo esc_url( $wprocket_url ); ?>" class="button button-primary tgm-plugin-update-modal"><?php esc_html_e( 'Get WP Rocket now', 'imagify' ); ?></a>
 		</p>
 	</div>
 

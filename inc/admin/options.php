@@ -78,7 +78,36 @@ function _imagify_pre_update_option( $value, $old_value ) {
 	return $value;
 }
 
-add_action( 'update_site_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_network_options', 10, 3 );
+if ( imagify_is_active_for_network() ) {
+	add_filter( 'pre_update_site_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_maybe_set_redirection_before_save_options', 10, 2 );
+} else {
+	add_filter( 'pre_update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_maybe_set_redirection_before_save_options', 10, 2 );
+}
+/**
+ * If the user clicked the "Save & Go to Bulk Optimizer" button, set a redirection to the bulk optimizer.
+ * We use this hook because it can be triggered even if the option value hasn't changed.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ *
+ * @param  mixed $value     The new, unserialized option value.
+ * @param  mixed $old_value The old option value.
+ * @return mixed            The option value.
+ */
+function _imagify_maybe_set_redirection_before_save_options( $value, $old_value ) {
+
+	if ( ! is_admin() || ! isset( $_POST['submit-goto-bulk'] ) ) { // WPCS: CSRF ok.
+		return $value;
+	}
+
+	$_REQUEST['_wp_http_referer'] = esc_url_raw( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) );
+
+	return $value;
+}
+
+if ( imagify_is_active_for_network() ) {
+	add_action( 'update_site_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_network_options', 10, 3 );
+}
 /**
  * Used to launch some actions after saving the network options.
  *
@@ -93,37 +122,31 @@ function _imagify_after_save_network_options( $option, $value, $old_value ) {
 	_imagify_after_save_options( $old_value, $value );
 }
 
-add_action( 'update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_options', 10, 2 );
+if ( ! imagify_is_active_for_network() ) {
+	add_action( 'update_option_' . IMAGIFY_SETTINGS_SLUG, '_imagify_after_save_options', 10, 2 );
+}
 /**
  * Used to launch some actions after saving the options.
  *
  * @author Jonathan
- * @since 1.0
- * @since 1.5 Used to redirect user to Bulk Optimizer (if requested).
+ * @since  1.0
+ * @since  1.5   Used to redirect user to Bulk Optimizer (if requested).
+ * @since  1.6.8 Not used to redirect user to Bulk Optimizer anymore: see _imagify_maybe_set_redirection_before_save_options().
  *
  * @param mixed $old_value The old option value.
  * @param mixed $value     The new option value.
  */
 function _imagify_after_save_options( $old_value, $value ) {
 
-	if ( $old_value && $value && ( ! isset( $old_value['api_key'] ) || $old_value['api_key'] !== $value['api_key'] ) ) {
-		if ( is_wp_error( get_imagify_user() ) ) {
-			imagify_renew_notice( 'wrong-api-key' );
-			delete_site_transient( 'imagify_check_licence_1' );
-		} else {
-			imagify_dismiss_notice( 'wrong-api-key' );
-		}
+	if ( ! $old_value || ! $value || isset( $old_value['api_key'], $value['api_key'] ) && $old_value['api_key'] === $value['api_key'] ) {
+		return;
 	}
 
-	/**
-	 * Redirect the user to the bulk optimization.
-	 *
-	 * @author Geoffrey
-	 * @since  1.5
-	 */
-	if ( isset( $_POST['submit-goto-bulk'] ) ) { // WPCS: CSRF ok.
-		wp_safe_redirect( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) );
-		exit;
+	if ( is_wp_error( get_imagify_user() ) ) {
+		imagify_renew_notice( 'wrong-api-key' );
+		delete_site_transient( 'imagify_check_licence_1' );
+	} else {
+		imagify_dismiss_notice( 'wrong-api-key' );
 	}
 }
 

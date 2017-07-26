@@ -48,7 +48,7 @@ function _imagify_display_options_page() {
 								</p>
 
 								<p>
-									<a class="btn btn-rocket"  href="http://wp-rocket.me/?utm_source=imagify-coupon&amp;utm_medium=plugin&amp;utm_campaign=imagify"><?php _e( 'Get WP Rocket now', 'imagify' ); ?></a>
+									<a class="btn btn-rocket" href="<?php echo esc_url( imagify_get_wp_rocket_url() ); ?>" target="_blank"><?php _e( 'Get WP Rocket now', 'imagify' ); ?></a>
 								</p>
 							</div>
 						</li>
@@ -194,13 +194,29 @@ function _imagify_display_options_page() {
 							<tr>
 								<th scope="row"><span><?php _e( 'Backup original images', 'imagify' ); ?></span></th>
 								<td>
-									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[backup]" id="backup" <?php checked( get_imagify_option( 'backup', 0 ), 1 ); ?> aria-describedby="describe-backup" />
+									<?php
+									$backup_enabled     = (int) get_imagify_option( 'backup', 0 );
+									$backup_error_class = ' hidden';
+
+									if ( $backup_enabled && ! imagify_backup_dir_is_writable() ) {
+										$backup_error_class = '';
+									}
+									?>
+									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[backup]" id="backup" <?php checked( $backup_enabled, 1 ); ?> aria-describedby="describe-backup" />
 									<label for="backup" onclick=""><span class="screen-reader-text"><?php _e( 'Backup original images', 'imagify' ); ?></span></label>
 
 									<span id="describe-backup" class="imagify-info">
 										<span class="dashicons dashicons-info"></span>
 										<?php _e( 'Keep your original images in a separate folder before optimization process.', 'imagify' ); ?>
 									</span>
+
+									<br/><strong id="backup-dir-is-writable" class="imagify-error<?php echo $backup_error_class; ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_check_backup_dir_is_writable' ) ); ?>">
+										<?php
+										$backup_path = imagify_make_file_path_replative( get_imagify_backup_dir_path( true ) );
+										/* translators: %s is a file path. */
+										printf( __( 'The backup folder %s cannot be created or is not writable by the server, original images cannot be saved!', 'imagify' ), "<code>$backup_path</code>" );
+										?>
+									</strong>
 								</td>
 							</tr>
 							<tr>
@@ -270,20 +286,46 @@ function _imagify_display_options_page() {
 
 										<br>
 
-										<?php
-										$sizes = get_imagify_thumbnail_sizes();
-
-										foreach ( $sizes as $size_key => $size_data ) {
-											$label = esc_html( stripslashes( $size_data['name'] ) );
-											$label = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
-											?>
-											<input type="hidden" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
-											<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php echo ( ! array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) ) ? 'checked="checked"' : '' ?> />
-											<label for="imagify_sizes_<?php echo $size_key; ?>" onclick=""><?php echo $label; ?></label>
-											<br class="imagify-br">
+										<fieldset class="imagify-check-group">
+											<legend class="screen-reader-text"><?php _e( 'Choose the sizes to optimize', 'imagify' ); ?></legend>
 											<?php
-										}
-										?>
+											$sizes      = get_imagify_thumbnail_sizes();
+											$select_all = count( $sizes ) > 3;
+											$disallowed = (array) get_imagify_option( 'disallowed-sizes', array() );
+
+											if ( $select_all ) {
+												$has_disallowed = array_intersect_key( $disallowed, $sizes );
+												$has_disallowed = ! empty( $has_disallowed );
+												?>
+												<em class="hide-if-no-js">
+													<input id="imagify-toggle-check-thumbnail-sizes-1" type="checkbox" class="mini imagify-toggle-check" <?php checked( ! $has_disallowed ); ?>>
+													<label for="imagify-toggle-check-thumbnail-sizes-1" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
+												</em>
+												<br class="imagify-br">
+												<?php
+											}
+
+											foreach ( $sizes as $size_key => $size_data ) {
+												$label   = esc_html( stripslashes( $size_data['name'] ) );
+												$label   = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
+												$checked = ! isset( $disallowed[ $size_key ] );
+												?>
+												<input type="hidden" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
+												<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini imagify-row-check" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php checked( $checked ); ?>/>
+												<label for="imagify_sizes_<?php echo $size_key; ?>" onclick=""><?php echo $label; ?></label>
+												<br class="imagify-br">
+												<?php
+											}
+
+											if ( $select_all ) { ?>
+												<em class="hide-if-no-js">
+													<input id="imagify-toggle-check-thumbnail-sizes-2" type="checkbox" class="mini imagify-toggle-check" <?php checked( ! $has_disallowed ); ?>>
+													<label for="imagify-toggle-check-thumbnail-sizes-2" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
+												</em>
+												<?php
+											}
+											?>
+										</fieldset>
 									</td>
 								</tr>
 

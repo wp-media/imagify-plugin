@@ -70,10 +70,7 @@ class Imagify_Abstract_Attachment {
 	 * @return string|false
 	 */
 	public function get_backup_url() {
-		$backup_path = $this->get_backup_path();
-		$backup_url  = str_replace( ABSPATH, site_url( '/' ), $backup_path );
-
-		return $backup_url;
+		return get_imagify_attachment_url( $this->get_backup_path() );
 	}
 
 	/**

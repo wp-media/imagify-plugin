@@ -17,35 +17,104 @@ function get_imagify_mime_type() {
 }
 
 /**
+ * Tell if an attachment has a supported mime type.
+ * Was previously Imagify_AS3CF::is_mime_type_supported() since 1.6.6.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ *
+ * @param  int $attachment_id The attachment ID.
+ * @return bool
+ */
+function imagify_is_attachment_mime_type_supported( $attachment_id ) {
+	static $is = array( false );
+
+	$attachment_id = absint( $attachment_id );
+
+	if ( isset( $is[ $attachment_id ] ) ) {
+		return $is[ $attachment_id ];
+	}
+
+	$mime_types = get_imagify_mime_type();
+	$mime_types = array_flip( $mime_types );
+	$mime_type  = (string) get_post_mime_type( $attachment_id );
+
+	$is[ $attachment_id ] = isset( $mime_types[ $mime_type ] );
+
+	return $is[ $attachment_id ];
+}
+
+/**
+ * Get the path to the backups directory.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ *
+ * @param  bool $bypass_error True to return the path even if there is an error. This is used when we want to display this path in a message for example.
+ * @return string|bool        Path to the backups directory. False on failure.
+ */
+function get_imagify_backup_dir_path( $bypass_error = false ) {
+	static $backup_dir;
+
+	if ( isset( $backup_dir ) ) {
+		return $backup_dir;
+	}
+
+	$upload_basedir = get_imagify_upload_basedir( $bypass_error );
+
+	if ( ! $upload_basedir ) {
+		return false;
+	}
+
+	$backup_dir = $upload_basedir . 'backup/';
+
+	/**
+	 * Filter the backup directory path.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $backup_dir The backup directory path.
+	*/
+	$backup_dir = apply_filters( 'imagify_backup_directory', $backup_dir );
+	$backup_dir = trailingslashit( wp_normalize_path( $backup_dir ) );
+
+	return $backup_dir;
+}
+
+/**
+ * Tell if the folder containing the backups is writable.
+ *
+ * @since  1.6.8
+ * @author Grégory Viguier
+ *
+ * @return bool
+ */
+function imagify_backup_dir_is_writable() {
+	if ( ! get_imagify_backup_dir_path() ) {
+		return false;
+	}
+
+	$filesystem     = imagify_get_filesystem();
+	$has_backup_dir = wp_mkdir_p( get_imagify_backup_dir_path() );
+
+	return $has_backup_dir && $filesystem->is_writable( get_imagify_backup_dir_path() );
+}
+
+/**
  * Get the backup path of a specific attachement.
  *
  * @since 1.0
  *
- * @param  int $file_path The file path.
- * @return string|bool    The backup path. False on failure.
+ * @param  string $file_path The file path.
+ * @return string|bool       The backup path. False on failure.
  */
 function get_imagify_attachment_backup_path( $file_path ) {
-	static $backup_dir;
-
 	$file_path      = wp_normalize_path( (string) $file_path );
 	$upload_basedir = get_imagify_upload_basedir();
+	$backup_dir     = get_imagify_backup_dir_path();
 
 	if ( ! $file_path || ! $upload_basedir ) {
 		return false;
-	}
-
-	if ( ! isset( $backup_dir ) ) {
-		$backup_dir = $upload_basedir . 'backup/';
-
-		/**
-		 * Filter the backup directory path.
-		 *
-		 * @since 1.0
-		 *
-		 * @param string $backup_dir The backup directory path.
-		*/
-		$backup_dir = apply_filters( 'imagify_backup_directory', $backup_dir );
-		$backup_dir = trailingslashit( wp_normalize_path( $backup_dir ) );
 	}
 
 	return str_replace( $upload_basedir, $backup_dir, $file_path );
@@ -81,7 +150,7 @@ function get_imagify_attached_file( $file_path ) {
  *
  * @since 1.4.5
  *
- * @param  string $file_path A relative of absolute file path.
+ * @param  string $file_path A relative or absolute file path.
  * @return string|bool       File URL, otherwise false.
  */
 function get_imagify_attachment_url( $file_path ) {
@@ -155,27 +224,30 @@ function get_imagify_thumbnail_sizes() {
  * A simple helper to get the upload basedir.
  *
  * @since  1.6.7
+ * @since  1.6.8 Added the $bypass_error parameter.
  * @author Grégory Viguier
  *
- * @return string|bool The path. False on failure.
+ * @param  bool $bypass_error True to return the path even if there is an error. This is used when we want to display this path in a message for example.
+ * @return string|bool        The path. False on failure.
  */
-function get_imagify_upload_basedir() {
+function get_imagify_upload_basedir( $bypass_error = false ) {
 	static $upload_basedir;
+	static $upload_basedir_or_error;
 
 	if ( isset( $upload_basedir ) ) {
-		return $upload_basedir;
+		return $bypass_error ? $upload_basedir : $upload_basedir_or_error;
 	}
 
-	$uploads = wp_upload_dir();
-
-	if ( false !== $uploads['error'] ) {
-		$upload_basedir = false;
-		return $upload_basedir;
-	}
-
+	$uploads        = wp_upload_dir();
 	$upload_basedir = trailingslashit( wp_normalize_path( $uploads['basedir'] ) );
 
-	return $upload_basedir;
+	if ( false !== $uploads['error'] ) {
+		$upload_basedir_or_error = false;
+	} else {
+		$upload_basedir_or_error = $upload_basedir;
+	}
+
+	return $bypass_error ? $upload_basedir : $upload_basedir_or_error;
 }
 
 /**

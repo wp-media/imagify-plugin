@@ -235,6 +235,9 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			}
 		}
 
+		// Save the optimization level.
+		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
+
 		if ( ! $data ) {
 			// The optimization failed.
 			$metadata = $metadata_changed ? $metadata : false;
@@ -309,7 +312,6 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		update_post_meta( $this->id, '_imagify_data', $data );
 		update_post_meta( $this->id, '_imagify_status', 'success' );
-		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
 
 		if ( $this->delete_files && $filesize_total ) {
 			// Add the total file size for all image sizes. This is a meta used by AS3CF.
@@ -519,9 +521,9 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		$backed_up = $this->maybe_backup( $attachment_path );
+		$backuped = imagify_backup_file( $attachment_path );
 
-		if ( false === $backed_up ) {
+		if ( is_wp_error( $backuped ) ) {
 			return false;
 		}
 
@@ -542,27 +544,23 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 * Maybe backup a file.
 	 *
 	 * @since  1.6.6
+	 * @since  1.6.8 Deprecated.
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $attachment_path  The file path.
 	 * @return bool|null                True on success. False on failure. Null if backup is not needed.
 	 */
 	protected function maybe_backup( $attachment_path ) {
-		if ( ! get_imagify_option( 'backup' ) ) {
+		$class_name = get_class( $this );
+		_deprecated_function( $class_name . '::' . __FUNCTION__ . '()', '1.6.8', 'imagify_backup_file()' );
+
+		$result = imagify_backup_file( $attachment_path );
+
+		if ( false === $result ) {
 			return null;
 		}
 
-		$filesystem       = imagify_get_filesystem();
-		$backup_path      = get_imagify_attachment_backup_path( $attachment_path );
-		$backup_path_info = pathinfo( $backup_path );
-
-		wp_mkdir_p( $backup_path_info['dirname'] );
-
-		// TO DO - check and send a error message if the backup can't be created.
-		$filesystem->copy( $attachment_path, $backup_path, true );
-		imagify_chmod_file( $backup_path );
-
-		return $filesystem->exists( $backup_path );
+		return ! is_wp_error( $result );
 	}
 
 	/**
@@ -820,6 +818,6 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 * @return bool
 	 */
 	public function is_mime_type_supported() {
-		return $this->id && imagify_as3cf()->is_mime_type_supported( $this->id );
+		return imagify_is_attachment_mime_type_supported( $this->id );
 	}
 }

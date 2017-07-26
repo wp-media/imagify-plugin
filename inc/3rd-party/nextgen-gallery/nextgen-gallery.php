@@ -17,6 +17,7 @@ require( IMAGIFY_NGG_CLASSES_PATH . 'class-imagify-ngg.php' );
 require( IMAGIFY_NGG_CLASSES_PATH . 'class-imagify-ngg-db.php' );
 require( IMAGIFY_NGG_CLASSES_PATH . 'class-imagify-ngg-attachment.php' );
 require( IMAGIFY_NGG_FUNCTIONS_PATH . 'admin-stats.php' );
+require( IMAGIFY_NGG_FUNCTIONS_PATH . 'attachments.php' );
 require( IMAGIFY_NGG_COMMON_PATH . 'attachments.php' );
 
 imagify_ngg()->init();

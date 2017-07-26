@@ -2,7 +2,7 @@
  * imagify-gulpjs - version 0.0.1 - 2016-04-07
  * WP Media <contact@wp-media.me>
  *
- * Note: when updating this file, don't forget to replace `this.buffer_size = 1;` by `this.buffer_size = imagifyBulk.buffer_size;`.
+ * Note: when updating this file, don't forget to replace `this.buffer_size = 1;` by `this.buffer_size = imagifyBulk.buffer_size;`. Also, humanSize() has been edited to use a correct format.
  */
 (function () {
 'use strict';
@@ -94,13 +94,13 @@ window.ImagifyGulp = function () {
 		key:   'humanSize',
 		value: function humanSize( bytes ) {
 			if ( 0 === bytes ) {
-				return '0kb';
+				return '0\u00A0kB';
 			}
 
-			var sizes = [ 'b', 'kb', 'mb' ],
+			var sizes = [ 'B', 'kB', 'MB' ],
 			    i     = parseInt( Math.floor( Math.log( bytes ) / Math.log( 1024 ) ) );
 
-			return ( bytes / Math.pow( 1024, i ) ).toFixed( 2 ) + sizes[ i ];
+			return ( bytes / Math.pow( 1024, i ) ).toFixed( 2 ) + '\u00A0' + sizes[ i ];
 		}
 	}, {
 		key:   'run',

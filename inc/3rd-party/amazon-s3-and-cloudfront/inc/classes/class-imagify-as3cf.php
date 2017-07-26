@@ -127,7 +127,7 @@ class Imagify_AS3CF {
 	 * @return string                The new context.
 	 */
 	public function optimize_attachment_context( $context, $attachment_id ) {
-		if ( self::CONTEXT === $context || $this->is_mime_type_supported( $attachment_id ) ) {
+		if ( self::CONTEXT === $context || imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 			return self::CONTEXT;
 		}
 		return $context;
@@ -287,7 +287,7 @@ class Imagify_AS3CF {
 	 */
 	public function store_upload_ids( $metadata, $attachment_id ) {
 
-		if ( $this->is_mime_type_supported( $attachment_id ) ) {
+		if ( imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 			$this->uploads[ $attachment_id ] = 1;
 		}
 
@@ -311,7 +311,7 @@ class Imagify_AS3CF {
 		$is_new_upload = ! empty( $this->uploads[ $attachment_id ] );
 		unset( $this->uploads[ $attachment_id ] );
 
-		if ( ! $metadata || ! $this->is_mime_type_supported( $attachment_id ) ) {
+		if ( ! $metadata || ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 			return $metadata;
 		}
 
@@ -369,7 +369,7 @@ class Imagify_AS3CF {
 			die();
 		}
 
-		if ( ! $this->is_mime_type_supported( $attachment_id ) ) {
+		if ( ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 			die();
 		}
 
@@ -403,26 +403,17 @@ class Imagify_AS3CF {
 	 * Tell if the attachment has a supported mime type.
 	 *
 	 * @since  1.6.6
+	 * @since  1.6.8 Deprecated.
+	 * @see    imagify_is_attachment_mime_type_supported()
 	 * @author Grégory Viguier
 	 *
 	 * @param  int $post_id The attachment ID.
 	 * @return bool
 	 */
 	public function is_mime_type_supported( $post_id ) {
-		static $is = array( false );
+		_deprecated_function( 'Imagify_AS3CF::is_mime_type_supported()', '1.6.8', 'imagify_is_attachment_mime_type_supported()' );
 
-		$post_id = absint( $post_id );
-
-		if ( isset( $is[ $post_id ] ) ) {
-			return $is[ $post_id ];
-		}
-
-		$mime_types     = get_imagify_mime_type();
-		$mime_types     = array_flip( $mime_types );
-		$mime_type      = get_post_mime_type( $post_id );
-		$is[ $post_id ] = isset( $mime_types[ $mime_type ] );
-
-		return $is[ $post_id ];
+		return imagify_is_attachment_mime_type_supported( $post_id );
 	}
 }
 

@@ -46,7 +46,7 @@ add_filter( 'media_row_actions', '_imagify_add_actions_to_media_list_row', PHP_I
  */
 function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 	// If this attachment is not an image, do nothing.
-	if ( ! wp_attachment_is_image( $post->ID ) ) {
+	if ( ! imagify_is_attachment_mime_type_supported( $post->ID ) ) {
 		return $actions;
 	}
 

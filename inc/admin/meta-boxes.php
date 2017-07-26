@@ -14,6 +14,10 @@ function _imagify_attachment_submitbox_misc_actions() {
 		return;
 	}
 
+	if ( ! imagify_is_attachment_mime_type_supported( $post->ID ) ) {
+		return;
+	}
+
 	$class_name = get_imagify_attachment_class_name( 'wp', $post->ID, 'attachment_submitbox_misc_actions' );
 	$attachment = new $class_name( $post->ID );
 
