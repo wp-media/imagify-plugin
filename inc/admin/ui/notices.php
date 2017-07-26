@@ -353,14 +353,21 @@ function _imagify_warning_backup_folder_not_writable_notice() {
 		return;
 	}
 
-	$filesystem     = imagify_get_filesystem();
-	$has_backup_dir = wp_mkdir_p( get_imagify_backup_dir_path() );
-
-	if ( $has_backup_dir && $filesystem->is_writable( get_imagify_backup_dir_path() ) ) {
+	if ( imagify_backup_dir_is_writable() ) {
 		return;
 	}
 
-	$backup_path = imagify_make_file_path_replative( get_imagify_backup_dir_path() );
+	$filesystem = imagify_get_filesystem();
+
+	if ( $filesystem->exists( get_imagify_backup_dir_path() ) ) {
+		/* translators: %s is a file path. */
+		$message = __( 'The backup folder %s is not writable by the server, original images cannot be saved!', 'imagify' );
+	} else {
+		/* translators: %s is a file path. */
+		$message = __( 'The backup folder %s cannot be created. Is its parent directory writable by the server? Original images cannot be saved!', 'imagify' );
+	}
+
+	$backup_path = imagify_make_file_path_replative( get_imagify_backup_dir_path( true ) );
 	?>
 	<div class="clear"></div>
 	<div class="imagify-notice error below-h2">
@@ -368,10 +375,7 @@ function _imagify_warning_backup_folder_not_writable_notice() {
 			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
 		</div>
 		<div class="imagify-notice-content">
-			<p><?php
-			/* translators: %s is a file path. */
-			printf( __( 'The backup folder %s can\'t be created, original images can\'t be saved!', 'imagify' ), "<code>$backup_path</code>" );
-			?></p>
+			<p><?php printf( $message, "<code>$backup_path</code>" ); ?></p>
 		</div>
 	</div>
 	<?php

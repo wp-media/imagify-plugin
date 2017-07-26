@@ -50,16 +50,17 @@ function imagify_is_attachment_mime_type_supported( $attachment_id ) {
  * @since  1.6.8
  * @author Grégory Viguier
  *
- * @return string|bool Path to the backups directory. False on failure.
+ * @param  bool $bypass_error True to return the path even if there is an error. This is used when we want to display this path in a message for example.
+ * @return string|bool        Path to the backups directory. False on failure.
  */
-function get_imagify_backup_dir_path() {
+function get_imagify_backup_dir_path( $bypass_error = false ) {
 	static $backup_dir;
 
 	if ( isset( $backup_dir ) ) {
 		return $backup_dir;
 	}
 
-	$upload_basedir = get_imagify_upload_basedir();
+	$upload_basedir = get_imagify_upload_basedir( $bypass_error );
 
 	if ( ! $upload_basedir ) {
 		return false;
@@ -223,27 +224,30 @@ function get_imagify_thumbnail_sizes() {
  * A simple helper to get the upload basedir.
  *
  * @since  1.6.7
+ * @since  1.6.8 Added the $bypass_error parameter.
  * @author Grégory Viguier
  *
- * @return string|bool The path. False on failure.
+ * @param  bool $bypass_error True to return the path even if there is an error. This is used when we want to display this path in a message for example.
+ * @return string|bool        The path. False on failure.
  */
-function get_imagify_upload_basedir() {
+function get_imagify_upload_basedir( $bypass_error = false ) {
 	static $upload_basedir;
+	static $upload_basedir_or_error;
 
 	if ( isset( $upload_basedir ) ) {
-		return $upload_basedir;
+		return $bypass_error ? $upload_basedir : $upload_basedir_or_error;
 	}
 
-	$uploads = wp_upload_dir();
-
-	if ( false !== $uploads['error'] ) {
-		$upload_basedir = false;
-		return $upload_basedir;
-	}
-
+	$uploads        = wp_upload_dir();
 	$upload_basedir = trailingslashit( wp_normalize_path( $uploads['basedir'] ) );
 
-	return $upload_basedir;
+	if ( false !== $uploads['error'] ) {
+		$upload_basedir_or_error = false;
+	} else {
+		$upload_basedir_or_error = $upload_basedir;
+	}
+
+	return $bypass_error ? $upload_basedir : $upload_basedir_or_error;
 }
 
 /**
