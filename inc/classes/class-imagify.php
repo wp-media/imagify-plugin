@@ -393,7 +393,7 @@ class Imagify extends Imagify_Deprecated {
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $url  The URL to call.
-	 * @param  array  $args The request args.
+	 * @param  array  $args The request arguments.
 	 * @return object
 	 */
 	private function curl_http_call( $url, $args = array() ) {
@@ -401,6 +401,8 @@ class Imagify extends Imagify_Deprecated {
 		if ( ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ) ) {
 			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
 		}
+
+		$url = self::API_ENDPOINT . $url;
 
 		try {
 			$ch = curl_init();
@@ -417,7 +419,7 @@ class Imagify extends Imagify_Deprecated {
 				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] );
 			}
 
-			curl_setopt( $ch, CURLOPT_URL, self::API_ENDPOINT . $url );
+			curl_setopt( $ch, CURLOPT_URL, $url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
 			curl_setopt( $ch, CURLOPT_TIMEOUT, $args['timeout'] );
@@ -431,8 +433,37 @@ class Imagify extends Imagify_Deprecated {
 
 			curl_close( $ch );
 		} catch ( Exception $e ) {
+			$args['headers'] = $this->headers;
+			/**
+			 * Fires after a failed curl request.
+			 *
+			 * @since  1.6.9
+			 * @author Grégory Viguier
+			 *
+			 * @param string $url  The requested URL.
+			 * @param array  $args The request arguments.
+			 * @param object $e    The raised Exception.
+			 */
+			do_action( 'imagify_curl_http_response', $url, $args, $e );
+
 			return new WP_Error( 'curl', 'Unknown error occurred' );
-		}
+		} // End try().
+
+		$args['headers'] = $this->headers;
+
+		/**
+		 * Fires after a successful curl request.
+		 *
+		 * @since  1.6.9
+		 * @author Grégory Viguier
+		 *
+		 * @param string $url       The requested URL.
+		 * @param array  $args      The request arguments.
+		 * @param string $response  The request response.
+		 * @param int    $http_code The request HTTP code.
+		 * @param string $error     An error message.
+		 */
+		do_action( 'imagify_curl_http_response', $url, $args, $response, $http_code, $error );
 
 		return $this->handle_response( $response, $http_code, $error );
 	}
