@@ -115,6 +115,13 @@ window.ImagifyGulp = function () {
 			return this;
 		}
 	}, {
+		key:   'stopProcess',
+		value: function stopProcess() {
+			this.total_images = this.total_images - this.images_ids.length;
+			this.images_ids   = [];
+			return this;
+		}
+	}, {
 		key:   'process',
 		value: function process( id ) {
 			this.inprocess_images++;
