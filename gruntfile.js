@@ -25,13 +25,14 @@ module.exports = function( grunt ) {
 				'files': [ {
 					'expand': true,
 					'cwd':    'assets/js',
-					'src':    [ '*.js', '!*.min.js', '!chart.js', '!es6-promise.auto.js', '!imagify-gulp.js', '!jquery.event.move.js', '!sweetalert2.js', '!jquery.twentytwenty.js' ],
+					'src':    [ '*.js', '!*.min.js', '!chart.js', '!es6-promise.auto.js', '!imagify-gulp.js', '!jquery.event.move.js', '!jquery.twentytwenty.js', '!sweetalert2.js' ],
 					'dest':   'assets/js',
 					'ext':    '.min.js'
 				} ]
 			},
 			'bugfix': {
 				'files': {
+					'assets/js/jquery.event.move.min.js': [ 'assets/js/jquery.event.move.js' ],
 					'assets/js/jquery.twentytwenty.min.js': [ 'assets/js/jquery.twentytwenty.js' ]
 				}
 			}
