@@ -80,7 +80,7 @@ function _imagify_admin_print_styles() {
 	 */
 	wp_register_script(
 		'imagify-js-async',
-		IMAGIFY_ASSETS_JS_URL . 'imagify' . $js_ext,
+		IMAGIFY_ASSETS_JS_URL . 'imagify-gulp' . $js_ext,
 		array(),
 		IMAGIFY_VERSION,
 		true
