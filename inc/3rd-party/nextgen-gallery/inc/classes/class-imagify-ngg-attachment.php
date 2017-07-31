@@ -667,7 +667,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			}
 
 			$thumbnails_data[ $named_size ] = $size_meta;
-		}
+		} // End foreach().
 
 		do_action( 'ngg_recovered_image', $image );
 
