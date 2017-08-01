@@ -217,7 +217,7 @@ window.imagify = window.imagify || {
 		.done( function( response ) {
 			var swal_title = '',
 				swal_text  = '',
-				text, Optimizer, table,
+				Optimizer, table,
 				files  = 0,
 				errors = 0,
 				original_overall_size = 0,
@@ -233,14 +233,10 @@ window.imagify = window.imagify || {
 
 				if ( 'invalid-api-key' === response.data.message ) {
 					swal_title = imagifyBulk.labels.invalidAPIKeyTitle;
-				}
-
-				if ( 'over-quota' === response.data.message ) {
+				} else if ( 'over-quota' === response.data.message ) {
 					swal_title = imagifyBulk.labels.overQuotaTitle;
-					text       = imagifyBulk.labels.overQuotaText;
-				}
-
-				if ( 'no-images' === response.data.message ) {
+					swal_text  = imagifyBulk.labels.overQuotaText;
+				} else if ( 'no-images' === response.data.message ) {
 					swal_title = imagifyBulk.labels.noAttachmentToOptimizeTitle;
 					swal_text  = imagifyBulk.labels.noAttachmentToOptimizeText;
 				}
@@ -310,6 +306,7 @@ window.imagify = window.imagify || {
 				}
 
 				if ( data.error.indexOf( "You've consumed all your data" ) >= 0 ) {
+					// Display an alert to warn that all data is consumed.
 					swal( {
 						title:       imagifyBulk.labels.overQuotaTitle,
 						html:        imagifyBulk.labels.overQuotaText,
@@ -372,6 +369,7 @@ window.imagify = window.imagify || {
 			.run();
 		} )
 		.fail( function() {
+			// Display an error alert.
 			swal( {
 				title:       imagifyBulk.labels.getUnoptimizedImagesErrorTitle,
 				html:        imagifyBulk.labels.getUnoptimizedImagesErrorText,

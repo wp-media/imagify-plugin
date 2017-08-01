@@ -20,7 +20,7 @@ function _imagify_admin_print_styles() {
 		'imagify-css-sweetalert',
 		IMAGIFY_ASSETS_CSS_URL . 'sweetalert2' . $css_ext,
 		array(),
-		'4.0.15'
+		'4.6.6'
 	);
 
 	/**
@@ -55,7 +55,7 @@ function _imagify_admin_print_styles() {
 		'imagify-js-sweetalert',
 		IMAGIFY_ASSETS_JS_URL . 'sweetalert2' . $js_ext,
 		array( 'jquery', 'imagify-js-promise-polyfill' ),
-		'4.0.15',
+		'4.6.6',
 		true
 	);
 

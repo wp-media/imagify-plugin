@@ -60,7 +60,6 @@ window.imagify = window.imagify || {
 			html:                imagifyAdmin.labels.signupText,
 			confirmButtonText:   imagifyAdmin.labels.signupConfirmButtonText,
 			input:               'email',
-			allowOutsideClick:   true,
 			showLoaderOnConfirm: true,
 			customClass:         'imagify-sweet-alert imagify-sweet-alert-signup',
 			inputValidator:      function( inputValue ) {
@@ -108,7 +107,6 @@ window.imagify = window.imagify || {
 			html:                imagifyAdmin.labels.saveApiKeyText,
 			confirmButtonText:   imagifyAdmin.labels.saveApiKeyConfirmButtonText,
 			input:               'text',
-			allowOutsideClick:   true,
 			showLoaderOnConfirm: true,
 			customClass:         'imagify-sweet-alert imagify-sweet-alert-signup',
 			inputValidator:      function( inputValue ) {

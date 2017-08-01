@@ -48,6 +48,7 @@ window.imagify = window.imagify || {
 			if ( ! response.success ) {
 				$( '#imagify-check-api-container' ).html( '<span class="dashicons dashicons-no"></span> ' + response.data );
 			} else {
+				// Success, the API key is valid.
 				$( '#imagify-check-api-container' ).remove();
 				swal( {
 					title:       imagifyAdmin.labels.ApiKeyCheckSuccessTitle,
@@ -121,6 +122,7 @@ window.imagify = window.imagify || {
 			return;
 		}
 
+		// Are you sure? No backup?
 		swal( {
 			title:            imagifyOptions.noBackupTitle,
 			html:             imagifyOptions.noBackupText,
