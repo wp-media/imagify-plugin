@@ -18,21 +18,20 @@ window.imagify = window.imagify || {
 
 	$.fn.twentytwenty = function(options, callback) {
 		options = $.extend({
-			handlePosition		: 0.5,
-			orientation			: 'horizontal',
-			labelBefore			: 'Before',
-			labelAfter			: 'After'
+			handlePosition: 0.5,
+			orientation:    'horizontal',
+			labelBefore:    'Before',
+			labelAfter:     'After'
 		}, options);
 
 		return this.each(function() {
-
-			var sliderPct			= options.handlePosition,
-				$container			= $(this),
-				sliderOrientation	= options.orientation,
-				beforeDirection		= (sliderOrientation === 'vertical') ? 'down' : 'left',
-				afterDirection		= (sliderOrientation === 'vertical') ? 'up' : 'right',
-				$beforeImg			= $container.find('img:first'),
-				$afterImg			= $container.find('img:last');
+			var sliderPct         = options.handlePosition,
+				$container        = $(this),
+				sliderOrientation = options.orientation,
+				beforeDirection   = (sliderOrientation === 'vertical') ? 'down' : 'left',
+				afterDirection    = (sliderOrientation === 'vertical') ? 'up' : 'right',
+				$beforeImg        = $container.find('img:first'),
+				$afterImg         = $container.find('img:last');
 
 
 			$container.wrap('<div class="twentytwenty-wrapper twentytwenty-' + sliderOrientation + '"></div>');
@@ -92,7 +91,7 @@ window.imagify = window.imagify || {
 				imgWidth = 0,
 				imgHeight = 0;
 
-			$(window).on('resize.twentytwenty', function() {
+			$( w ).on('resize.twentytwenty', function() {
 				adjustSlider( sliderPct );
 			});
 
@@ -133,7 +132,7 @@ window.imagify = window.imagify || {
 				event.preventDefault();
 			});
 
-			$(window).trigger('resize.twentytwenty');
+			$( w ).trigger('resize.twentytwenty');
 		});
 	};
 
@@ -152,7 +151,7 @@ window.imagify = window.imagify || {
 	var drawMeAChart = function ( canvas ) {
 			canvas.each( function() {
 				var $this        = $( this ),
-					theValue     = parseInt( $this.closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() ),
+					theValue     = parseInt( $this.closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text(), 10 ),
 					overviewData = [
 						{
 							value: theValue,

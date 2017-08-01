@@ -136,11 +136,18 @@ window.imagify = window.imagify || {
 
 	// Listen for the custom event "heartbeat-tick" on $(document).
 	$( d ).on( 'heartbeat-tick', function( e, data ) {
+		var donutData;
+
 		if ( ! data.imagify_bulk_data ) {
 			return;
 		}
 
-		data = data.imagify_bulk_data;
+		data      = data.imagify_bulk_data;
+		donutData = overviewDoughnut.segments;
+
+		if ( data.unoptimized_attachments === donutData[0].value && data.optimized_attachments === donutData[1].value && data.errors_attachments === donutData[2].value ) {
+			return;
+		}
 
 		// The overview chart percent.
 		$( '#imagify-overview-chart-percent' ).html( data.optimized_attachments_percent + '<span>%</span>' );
@@ -214,7 +221,8 @@ window.imagify = window.imagify || {
 				files  = 0,
 				errors = 0,
 				original_overall_size = 0,
-				overall_saving = 0;
+				overall_saving = 0,
+				incr = 0;
 
 			if ( ! response.success ) {
 				$obj.removeAttr( 'disabled' );
@@ -269,19 +277,21 @@ window.imagify = window.imagify || {
 				var $progress     = $( '#imagify-progress-bar' ),
 					errorClass    = 'error',
 					errorDashicon = 'dismiss',
-					errorMessage  = imagifyBulk.labels.error;
+					errorMessage  = imagifyBulk.labels.error,
+					$attachment   = $( '#attachment-' + data.image );
 
 				$progress.css( { 'width': data.progress + '%' } );
 				$progress.find( '.percent' ).html( data.progress + '%' );
 
 				if ( data.success ) {
-					$( '#attachment-' + data.image + ' .imagify-cell-status' ).html( '<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>' + imagifyBulk.labels.complete + '</span>' );
-					$( '#attachment-' + data.image + ' .imagify-cell-original' ).html( data.original_size_human );
-					$( '#attachment-' + data.image + ' .imagify-cell-optimized' ).html( data.new_size_human );
-					$( '#attachment-' + data.image + ' .imagify-cell-percentage' ).html( '<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart" style="width: 18px; height: 18px;"></canvas></span></span><span class="imagipercent">' + data.percent + '</span>%' );
-					drawMeAChart( $( '#attachment-' + data.image + ' .imagify-cell-percentage' ).find( 'canvas' ) );
-					$( '#attachment-' + data.image + ' .imagify-cell-thumbnails' ).html( data.thumbnails );
-					$( '#attachment-' + data.image + ' .imagify-cell-savings' ).html( Optimizer.humanSize( data.overall_saving, 1 ) );
+					++incr;
+					$attachment.find( '.imagify-cell-status' ).html( '<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>' + imagifyBulk.labels.complete + '</span>' );
+					$attachment.find( '.imagify-cell-original' ).html( data.original_size_human );
+					$attachment.find( '.imagify-cell-optimized' ).html( data.new_size_human );
+					$attachment.find( '.imagify-cell-percentage' ).html( '<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart-' + data.image + '-' + incr + '" style="width: 18px; height: 18px;"></canvas></span></span><span class="imagipercent">' + data.percent + '</span>%' );
+					drawMeAChart( $attachment.find( '.imagify-cell-percentage canvas' ) );
+					$attachment.find( '.imagify-cell-thumbnails' ).html( data.thumbnails );
+					$attachment.find( '.imagify-cell-savings' ).html( Optimizer.humanSize( data.overall_saving, 1 ) );
 
 					// The table footer total optimized files.
 					files = files + data.thumbnails + 1;
@@ -318,9 +328,9 @@ window.imagify = window.imagify || {
 					$( '.imagify-cell-errors' ).html( imagifyBulk.labels.nbrErrors.replace( '%s', errors ) );
 				}
 
-				$( '#attachment-' + data.image ).after( '<tr><td colspan="7"><span class="status-' + errorClass + '">' + data.error + '</span></td></tr>' );
+				$attachment.after( '<tr><td colspan="7"><span class="status-' + errorClass + '">' + data.error + '</span></td></tr>' );
 
-				$( '#attachment-' + data.image + ' .imagify-cell-status' ).html( '<span class="imagistatus status-' + errorClass + '"><span class="dashicons dashicons-' + errorDashicon + '"></span>' + errorMessage + '</span>' );
+				$attachment.find( '.imagify-cell-status' ).html( '<span class="imagistatus status-' + errorClass + '"><span class="dashicons dashicons-' + errorDashicon + '"></span>' + errorMessage + '</span>' );
 			} )
 			// After all attachments optimization.
 			.done( function( data ) {

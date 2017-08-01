@@ -37,23 +37,24 @@ window.imagify = window.imagify || {
 	 */
 	function draw_me_a_chart( canvas ) {
 		canvas.each( function() {
-			var the_value    = parseInt( $( this ).closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() ),
+			var $this        = $( this ),
+				theValue     = parseInt( $this.closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() ),
 				overviewData = [
 					{
-						value: the_value,
+						value: theValue,
 						color: '#00B3D3'
 					},
 					{
-						value: 100 - the_value,
+						value: 100 - theValue,
 						color: '#D8D8D8'
 					}
 				];
 
-			new Chart( $( this )[0].getContext( '2d' ) ).Doughnut( overviewData, {
-				segmentStrokeColor : '#FFF',
-				segmentStrokeWidth : 1,
-				animateRotate      : true,
-				tooltipEvents      : []
+			new Chart( $this[0].getContext( '2d' ) ).Doughnut( overviewData, {
+				segmentStrokeColor: '#FFF',
+				segmentStrokeWidth: 1,
+				animateRotate     : true,
+				tooltipEvents     : []
 			} );
 		} );
 	}
