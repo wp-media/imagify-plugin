@@ -263,9 +263,10 @@ window.imagify = window.imagify || {
 
 			table     = $( '.imagify-bulk-table table tbody' );
 			Optimizer = new ImagifyGulp( {
-				'lib':     ajaxurl + imagify.concat + 'action=imagify_bulk_upload&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val(),
-				'images':  response.data,
-				'context': imagifyBulk.ajax_context
+				'buffer_size': imagifyBulk.buffer_size,
+				'lib':         ajaxurl + imagify.concat + 'action=imagify_bulk_upload&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val(),
+				'images':      response.data,
+				'context':     imagifyBulk.ajax_context
 			} );
 
 			// Before the attachment optimization.
