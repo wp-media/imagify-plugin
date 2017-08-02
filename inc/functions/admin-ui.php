@@ -181,7 +181,7 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 		$args['optimization_level'] = 2;
 		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'manual-override-upload', $args ) ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">';
 			/* translators: %s is an optimization level. */
-			$output .= '<span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Ultra', 'imagify' ) );
+			$output .= '<span class="dashicons dashicons-admin-generic"></span><span class="imagify-hide-if-small">' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), '</span>' . __( 'Ultra', 'imagify' ) . '<span class="imagify-hide-if-small">' ) . '</span>';
 		$output .= '</a>';
 	}
 
@@ -190,7 +190,7 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 		$args['optimization_level'] = 1;
 		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'manual-override-upload', $args ) ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">';
 			/* translators: %s is an optimization level. */
-			$output .= '<span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Aggressive', 'imagify' ) );
+			$output .= '<span class="dashicons dashicons-admin-generic"></span><span class="imagify-hide-if-small">' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), '</span>' . __( 'Aggressive', 'imagify' ) . '<span class="imagify-hide-if-small">' ) . '</span>';
 		$output .= '</a>';
 	}
 
@@ -199,7 +199,7 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 		$args['optimization_level'] = 0;
 		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'manual-override-upload', $args ) ) . '" class="' . $class . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">';
 			/* translators: %s is an optimization level. */
-			$output .= '<span class="dashicons dashicons-admin-generic"></span>' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), __( 'Normal', 'imagify' ) );
+			$output .= '<span class="dashicons dashicons-admin-generic"></span><span class="imagify-hide-if-small">' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), '</span>' . __( 'Normal', 'imagify' ) . '<span class="imagify-hide-if-small">' ) . '</span>';
 		$output .= '</a>';
 	}
 

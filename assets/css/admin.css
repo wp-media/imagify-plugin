@@ -1476,6 +1476,57 @@ ul.imagify-datas-list.imagify-datas-list {
 	color: #555;
 	font-size: 10px;
 }
+@media (min-width: 1151px) and (max-width: 1800px) {
+	.column-imagify_optimized_file.column-imagify_optimized_file {
+		width: 235px;
+	}
+}
+@media (min-width: 783px) and (max-width: 1150px) {
+	.column-imagify_optimized_file.column-imagify_optimized_file {
+		width: 13em;
+	}
+	table.media .imagify-hide-if-small {
+		position: absolute;
+		margin: -1px;
+		padding: 0;
+		height: 1px;
+		width: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		border: 0;
+		word-wrap: normal !important; /* many screen reader and browser combinations announce broken words as they would appear visually */
+	}
+	table.media .column-title .has-media-icon ~ .row-actions.row-actions {
+		margin-left: 0;
+	}
+}
+@media (max-width: 782px) {
+	table.media .column-imagify_optimized_file.column-imagify_optimized_file {
+		text-align: left;
+	}
+	table.media .imagify-datas-more-action,
+	table.media .imagify-datas-actions-links {
+		text-align: center;
+	}
+	table.media .column-imagify_optimized_file > *,
+	table.media .column-imagify_optimized_file .imagify-datas-actions-links a {
+		max-width: 100%;
+		margin-left: 0;
+	}
+}
+@media (max-width: 360px) {
+	table.media .imagify-hide-if-small {
+		position: absolute;
+		margin: -1px;
+		padding: 0;
+		height: 1px;
+		width: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		border: 0;
+		word-wrap: normal !important; /* many screen reader and browser combinations announce broken words as they would appear visually */
+	}
+}
 .compat-field-imagify .label {
 	vertical-align: top;
 }
