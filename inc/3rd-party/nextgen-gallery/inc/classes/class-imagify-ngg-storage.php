@@ -68,7 +68,7 @@ class Imagify_NGG_Storage extends Mixin {
 	}
 
 	/**
-	 * Recover image from backup copy and reprocess it.
+	 * Recover image from backup.
 	 *
 	 * @since 1.5
 	 * @author Jonathan Buttigieg
@@ -80,6 +80,10 @@ class Imagify_NGG_Storage extends Mixin {
 		// $image could be an object or an (int) image ID.
 		if ( is_numeric( $image ) ) {
 			$image = $this->object->_image_mapper->find( $image );
+		}
+
+		if ( ! $image ) {
+			return false;
 		}
 
 		// Remove Imagify data.

@@ -55,7 +55,7 @@
 
 	<rule ref="WordPress.NamingConventions.ValidVariableName">
 		<properties>
-			<property name="customPropertiesWhitelist" value="Packs,Plans" type="array"/>
+			<property name="customPropertiesWhitelist" value="Packs,Plans,fileName" type="array"/>
 		</properties>
 	</rule>
 </ruleset>

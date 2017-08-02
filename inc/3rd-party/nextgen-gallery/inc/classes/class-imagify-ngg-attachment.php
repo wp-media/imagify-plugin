@@ -14,7 +14,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.1';
 
 	/**
 	 * The image object.
@@ -485,21 +485,45 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Process an attachment restoration from the backup file.
 	 *
-	 * @since 1.5
+	 * @since  1.5
+	 * @since  1.6.9 Doesn't use NGG's recover_image() anymore, these are fundamentally not the same things. This also prevents alt text, description, and tags deletion.
+	 * @since  1.6.9 Return true or a WP_Error object.
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
-	 * @return void
+	 * @return bool|object True on success, a WP_Error object on error.
 	 */
 	public function restore() {
 		// Check if the attachment extension is allowed.
 		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
-			return;
+			return new WP_Error( 'mime_not_type_supported', __( 'Mime type not supported.', 'imagify' ) );
 		}
 
 		// Stop the process if there is no backup file to restore.
 		if ( ! $this->has_backup() ) {
-			return;
+			return new WP_Error( 'no_backup', __( 'Backup image not found.', 'imagify' ) );
+		}
+
+		$storage = C_Gallery_Storage::get_instance()->object;
+		$image   = $storage->_image_mapper->find( $this->id );
+
+		if ( ! $image ) {
+			return new WP_Error( 'no_image', __( 'Image not found in NextGen Gallery data.', 'imagify' ) );
+		}
+
+		/**
+		 * Make some more tests before restoring the backup.
+		 */
+		$filesystem     = imagify_get_filesystem();
+		$full_abspath   = $storage->get_image_abspath( $image );
+		$backup_abspath = $storage->get_image_abspath( $image, 'backup' );
+
+		if ( $backup_abspath === $full_abspath ) {
+			return new WP_Error( 'same_path', __( 'Image path and backup path are identical.', 'imagify' ) );
+		}
+
+		if ( ! $filesystem->is_writable( $full_abspath ) || ! $filesystem->is_writable( dirname( $full_abspath ) ) ) {
+			return new WP_Error( 'destination_not_writable', __( 'The image to replace is not writable.', 'imagify' ) );
 		}
 
 		/**
@@ -511,11 +535,160 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		*/
 		do_action( 'before_imagify_ngg_restore_attachment', $this->id );
 
-		// Create the original image from the backup.
-		C_Gallery_Storage::get_instance()->recover_image( $this->id );
+		if ( ! $filesystem->copy( $backup_abspath, $full_abspath, true, FS_CHMOD_FILE ) ) {
+			return new WP_Error( 'copy_failed', __( 'Restoration failed.', 'imagify' ) );
+		}
 
-		// Remove old optimization data.
-		imagify_ngg_db()->delete( $this->id );
+		/**
+		 * Remove Imagify data.
+		 */
+		imagify_ngg_db()->delete( $image->pid );
+
+		/**
+		 * Fill in the NGG meta data.
+		 */
+		// 1- Meta data for the backup file.
+		$dimensions  = getimagesize( $backup_abspath );
+		$backup_data = array(
+			'backup' => array(
+				'filename'  => basename( $full_abspath ), // Yes, $full_abspath.
+				'width'     => 0,
+				'height'    => 0,
+				'generated' => microtime(),
+			),
+		);
+
+		if ( $dimensions ) {
+			$backup_data['backup']['width']  = $dimensions[0];
+			$backup_data['backup']['height'] = $dimensions[1];
+		}
+
+		// 2- Meta data for the full sized image.
+		$full_data  = array(
+			'width'  => 0,
+			'height' => 0,
+			'md5'    => '',
+			'full'   => array(
+				'width'  => 0,
+				'height' => 0,
+				'md5'    => '',
+			),
+		);
+
+		$dimensions = getimagesize( $full_abspath );
+
+		if ( $dimensions ) {
+			$full_data['width']  = $dimensions[0];
+			$full_data['height'] = $dimensions[1];
+			$full_data['full']['width']  = $dimensions[0];
+			$full_data['full']['height'] = $dimensions[1];
+		}
+
+		$md5 = md5_file( $full_abspath );
+
+		if ( $md5 ) {
+			$full_data['md5'] = $md5;
+			$full_data['full']['md5'] = $md5;
+		}
+
+		// 3- Thumbnails meta data.
+		$thumbnails_data = array();
+
+		// 4- Common meta data.
+		require_once( NGGALLERY_ABSPATH . '/lib/meta.php' );
+		$meta_obj    = new nggMeta( $image );
+		$common_data = $meta_obj->get_common_meta();
+
+		if ( $common_data ) {
+			unset( $common_data['width'], $common_data['height'] );
+		} else {
+			$common_data = array(
+				'aperture'          => 0,
+				'credit'            => '',
+				'camera'            => '',
+				'caption'           => '',
+				'created_timestamp' => 0,
+				'copyright'         => '',
+				'focal_length'      => 0,
+				'iso'               => 0,
+				'shutter_speed'     => 0,
+				'flash'             => 0,
+				'title'             => '',
+				'keywords'          => '',
+			);
+
+			if ( ! empty( $image->meta_data ) && is_array( $image->meta_data ) ) {
+				$image->meta_data = array_merge( $common_data, $image->meta_data );
+				$common_data      = array_intersect_key( $image->meta_data, $common_data );
+			}
+		}
+
+		$common_data['saved'] = true;
+
+		/**
+		 * Re-create non-fullsize image sizes and add related data.
+		 */
+		$failed = array();
+
+		foreach ( $storage->get_image_sizes( $image ) as $named_size ) {
+			if ( 'full' === $named_size ) {
+				continue;
+			}
+
+			$params    = $storage->get_image_size_params( $image, $named_size );
+			$thumbnail = $storage->generate_image_clone(
+				$backup_abspath,
+				$storage->get_image_abspath( $image, $named_size ),
+				$params
+			);
+
+			if ( ! $thumbnail ) {
+				// Failed.
+				$failed[] = $named_size;
+				continue;
+			}
+
+			$size_meta = array(
+				'width'     => 0,
+				'height'    => 0,
+				'filename'  => M_I18n::mb_basename( $thumbnail->fileName ),
+				'generated' => microtime(),
+			);
+
+			$dimensions = getimagesize( $thumbnail->fileName );
+
+			if ( $dimensions ) {
+				$size_meta['width']  = $dimensions[0];
+				$size_meta['height'] = $dimensions[1];
+			}
+
+			if ( isset( $params['crop_frame'] ) ) {
+				$size_meta['crop_frame'] = $params['crop_frame'];
+			}
+
+			$thumbnails_data[ $named_size ] = $size_meta;
+		} // End foreach().
+
+		do_action( 'ngg_recovered_image', $image );
+
+		/**
+		 * Save the meta data.
+		 */
+		$image->meta_data = array_merge( $backup_data, $full_data, $thumbnails_data, $common_data );
+
+		$post_id = $storage->_image_mapper->save( $image );
+
+		if ( ! $post_id ) {
+			return new WP_Error( 'meta_data_not_saved', __( 'Related data could not be saved.', 'imagify' ) );
+		}
+
+		if ( $failed ) {
+			return new WP_Error(
+				'thumbnail_restore_failed',
+				sprintf( _n( '%n thumbnail could not be restored.', '%n thumbnails could not be restored.', count( $failed ), 'imagify' ), count( $failed ) ),
+				array( 'failed_thumbnails' => $failed )
+			);
+		}
 
 		/**
 		 * Fires after restoring an attachment.
@@ -525,5 +698,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		 * @param int $id The attachment ID.
 		*/
 		do_action( 'after_imagify_ngg_restore_attachment', $this->id );
+
+		return true;
 	}
 }
