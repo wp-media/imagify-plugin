@@ -213,6 +213,7 @@ window.imagify = window.imagify || {
 				text, Optimizer, table,
 				files  = 0,
 				errors = 0,
+				stopOptimization = 0,
 				original_overall_size = 0,
 				overall_saving = 0;
 
@@ -298,7 +299,10 @@ window.imagify = window.imagify || {
 					return;
 				}
 
-				if ( data.error.indexOf( "You've consumed all your data" ) >= 0 ) {
+				if ( ! stopOptimization && data.error.indexOf( "You've consumed all your data" ) >= 0 ) {
+					stopOptimization = 1;
+					Optimizer.stopProcess();
+
 					swal( {
 						title:       imagifyBulk.labels.overQuotaTitle,
 						html:        imagifyBulk.labels.overQuotaText,
@@ -354,6 +358,8 @@ window.imagify = window.imagify || {
 					$( '.imagify-ac-chart' ).attr( 'data-percent', data.global_percent );
 					drawMeCompleteChart( $( '.imagify-ac-chart' ).find( 'canvas' ) );
 				}
+
+				stopOptimization = 0;
 			} )
 			.error( function( id ) {
 				imagify.log( "Can't optimize image with id " + id + "." );
