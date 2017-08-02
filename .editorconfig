@@ -17,6 +17,5 @@ trim_trailing_whitespace = false
 [{*.txt}]
 end_of_line = crlf
 
-[{*.json}]
+[{*.json,.eslintrc}]
 indent_style = space
-indent_size = 2

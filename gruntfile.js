@@ -3,21 +3,8 @@
 module.exports = function( grunt ) {
 	grunt.initConfig( {
 		// JS linter.
-		'jshint': {
-			'options': {
-				'reporter': require( 'jshint-stylish' ),
-				'jshintrc': '.jshintrc',
-				'force':    true,
-				'ignores':  [ '**/*.min.js' ]
-			},
-			'all': {
-				'options': {
-					'ignores': [ '**/*.min.js', 'assets/js/chart.js', 'assets/js/es6-promise.auto.js', 'assets/js/imagify-gulp.js', 'assets/js/jquery.event.move.js', 'assets/js/sweetalert2.js' ]
-				},
-				'files': {
-					'src': [ 'gruntfile.js', 'assets/js/*.js' ]
-				}
-			}
+		'eslint': {
+			'all': [ 'gruntfile.js', 'assets/js/*.js', '!**/*.min.js', '!assets/js/chart.js', '!assets/js/es6-promise.auto.js', '!assets/js/imagify-gulp.js', '!assets/js/jquery.event.move.js', '!assets/js/sweetalert2.js' ]
 		},
 		// JS minify.
 		'uglify': {
@@ -32,7 +19,7 @@ module.exports = function( grunt ) {
 			},
 			'bugfix': {
 				'files': {
-					'assets/js/jquery.event.move.min.js': [ 'assets/js/jquery.event.move.js' ],
+					'assets/js/jquery.event.move.min.js':   [ 'assets/js/jquery.event.move.js' ],
 					'assets/js/jquery.twentytwenty.min.js': [ 'assets/js/jquery.twentytwenty.js' ]
 				}
 			}
@@ -60,7 +47,7 @@ module.exports = function( grunt ) {
 		'cssmin': {
 			'options': {
 				'shorthandCompacting': false,
-				'roundingPrecision': -1
+				'roundingPrecision':   -1
 			},
 			'target': {
 				'files': [ {
@@ -88,14 +75,15 @@ module.exports = function( grunt ) {
 		grunt.config.merge( grunt.file.readJSON( 'gruntlocalconf.json' ) );
 	}
 
-	grunt.loadNpmTasks( 'grunt-contrib-jshint' );
-	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
 	grunt.loadNpmTasks( 'grunt-contrib-cssmin' );
+	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
+	grunt.loadNpmTasks( 'grunt-eslint' );
 	grunt.loadNpmTasks( 'grunt-postcss' );
 
 	// Our custom tasks.
 	grunt.registerTask( 'css',    [ 'postcss', 'cssmin' ] );
-	grunt.registerTask( 'js',     [ 'jshint', 'uglify' ] );
-	grunt.registerTask( 'jsh',    [ 'jshint' ] );
-	grunt.registerTask( 'minify', [ 'jshint', 'uglify', 'postcss', 'cssmin' ] );
+	grunt.registerTask( 'js',     [ 'eslint', 'uglify' ] );
+	grunt.registerTask( 'jsh',    [ 'eslint' ] );
+	grunt.registerTask( 'esl',    [ 'eslint' ] );
+	grunt.registerTask( 'minify', [ 'eslint', 'uglify', 'postcss', 'cssmin' ] );
 };
