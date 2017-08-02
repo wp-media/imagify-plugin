@@ -1,20 +1,18 @@
-/* globals ajaxurl: false, console: false, imagifyUpload: true, Chart: false */
-
 window.imagify = window.imagify || {
 	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
 	log:    function( content ) {
 		if ( undefined !== console ) {
-			console.log( content );
+			console.log( content ); // eslint-disable-line no-console
 		}
 	},
 	info:   function( content ) {
 		if ( undefined !== console ) {
-			console.info( content );
+			console.info( content ); // eslint-disable-line no-console
 		}
 	}
 };
 
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 	/**
 	 * Add a "Imagify'em all" in the select list.
 	 */
@@ -35,7 +33,7 @@ window.imagify = window.imagify || {
 	 *
 	 * @param {element} canvas
 	 */
-	function draw_me_a_chart( canvas ) {
+	function drawMeAChart( canvas ) {
 		canvas.each( function() {
 			var $this        = $( this ),
 				theValue     = parseInt( $this.closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() ),
@@ -50,11 +48,11 @@ window.imagify = window.imagify || {
 					}
 				];
 
-			new Chart( $this[0].getContext( '2d' ) ).Doughnut( overviewData, {
+			new Chart( $this[0].getContext( '2d' ) ).Doughnut( overviewData, { // eslint-disable-line new-cap
 				segmentStrokeColor: '#FFF',
 				segmentStrokeWidth: 1,
-				animateRotate     : true,
-				tooltipEvents     : []
+				animateRotate:      true,
+				tooltipEvents:      []
 			} );
 		} );
 	}
@@ -68,7 +66,7 @@ window.imagify = window.imagify || {
 			var value = $( this ).prev( 'select' ).val().split( '-' ),
 				action, ids;
 
-			if ( value[0] !== 'imagify' ) {
+			if ( 'imagify' !== value[0] ) {
 				return;
 			}
 
@@ -103,13 +101,13 @@ window.imagify = window.imagify || {
 		$parent.html( '<div class="button"><span class="imagify-spinner"></span>' + $obj.data( 'waiting-label' ) + '</div>' );
 
 		$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ) )
-		.done( function( response ){
-			$parent.html( response.data );
-			$parent.find( '.imagify-datas-more-action a' ).addClass( 'is-open' ).find( '.the-text' ).text( $parent.find( '.imagify-datas-more-action a' ).data( 'close' ) );
-			$parent.find( '.imagify-datas-details' ).addClass( 'is-open' );
+			.done( function( response ){
+				$parent.html( response.data );
+				$parent.find( '.imagify-datas-more-action a' ).addClass( 'is-open' ).find( '.the-text' ).text( $parent.find( '.imagify-datas-more-action a' ).data( 'close' ) );
+				$parent.find( '.imagify-datas-details' ).addClass( 'is-open' );
 
-			draw_me_a_chart( $parent.find( '.imagify-chart-container' ).find( 'canvas' ) );
-		} );
+				drawMeAChart( $parent.find( '.imagify-chart-container' ).find( 'canvas' ) );
+			} );
 	} );
 
 	/**
@@ -154,7 +152,7 @@ window.imagify = window.imagify || {
 
 			if ( $details.length ) {
 				$details.hide();
-				draw_me_a_chart( $( '#imagify-consumption-chart' ) );
+				drawMeAChart( $( '#imagify-consumption-chart' ) );
 				clearInterval( tempTimer );
 				tempTimer = null;
 			}
@@ -189,6 +187,6 @@ window.imagify = window.imagify || {
 		}, 100);
 	} );
 
-	draw_me_a_chart( $( '.imagify-chart-container' ).find( 'canvas' ) );
+	drawMeAChart( $( '.imagify-chart-container' ).find( 'canvas' ) );
 
 } )(jQuery, document, window);

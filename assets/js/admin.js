@@ -1,21 +1,19 @@
-/* globals ajaxurl: false, console: false, imagify: true, imagifyAdmin: true, swal: false, Promise: false */
-
 window.imagify = window.imagify || {
 	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
 	log:    function( content ) {
 		if ( undefined !== console ) {
-			console.log( content );
+			console.log( content ); // eslint-disable-line no-console
 		}
 	},
 	info:   function( content ) {
 		if ( undefined !== console ) {
-			console.info( content );
+			console.info( content ); // eslint-disable-line no-console
 		}
 	}
 };
 
 // Admin bar =======================================================================================
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	var busy = false;
 
@@ -35,18 +33,18 @@ window.imagify = window.imagify || {
 		}
 
 		$.get( ajaxurl + imagify.concat + 'action=imagify_get_admin_bar_profile&imagifygetadminbarprofilenonce=' + $( '#imagifygetadminbarprofilenonce' ).val() )
-		.done( function( response ) {
-			$adminBarProfile.html( response.data );
-			$( '#wp-admin-bar-imagify-profile-loading' ).remove();
-			busy = false;
-		} );
+			.done( function( response ) {
+				$adminBarProfile.html( response.data );
+				$( '#wp-admin-bar-imagify-profile-loading' ).remove();
+				busy = false;
+			} );
 	} );
 
 } )(jQuery, document, window);
 
 
 // The big welcome notice ==========================================================================
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	/**
 	 * 1. Create a new Imagify account.
@@ -75,13 +73,13 @@ window.imagify = window.imagify || {
 				return new Promise( function( resolve, reject ) {
 					setTimeout( function() {
 						$.get( ajaxurl + imagify.concat + 'action=imagify_signup&email=' + inputValue + '&imagifysignupnonce=' + $( '#imagifysignupnonce' ).val() )
-						.done( function( response ) {
-							if ( ! response.success ) {
-								reject( response.data );
-							} else {
-								resolve();
-							}
-						} );
+							.done( function( response ) {
+								if ( ! response.success ) {
+									reject( response.data );
+								} else {
+									resolve();
+								}
+							} );
 					}, 2000 );
 				} );
 			},
@@ -121,13 +119,13 @@ window.imagify = window.imagify || {
 			preConfirm:          function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
 					$.get( ajaxurl + imagify.concat + 'action=imagify_check_api_key_validity&api_key=' + inputValue + '&imagifycheckapikeynonce=' + $( '#imagifycheckapikeynonce' ).val() )
-					.done( function( response ) {
-						if ( ! response.success ) {
-							reject( response.data );
-						} else {
-							resolve();
-						}
-					} );
+						.done( function( response ) {
+							if ( ! response.success ) {
+								reject( response.data );
+							} else {
+								resolve();
+							}
+						} );
 				} );
 			},
 		} ).then( function() {
@@ -165,7 +163,7 @@ window.imagify = window.imagify || {
 
 
 // Imagify light modal =============================================================================
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	var imagifyOpenModal = function( $the_link ) {
 		var the_target = $the_link.data( 'target' ) || $the_link.attr( 'href' );
@@ -178,45 +176,45 @@ window.imagify = window.imagify || {
 	$( '.imagify-modal' ).attr( 'aria-hidden', 'true' );
 
 	$( d )
-	// On click on modal trigger.
-	.on( 'click.imagify', '.imagify-modal-trigger', function( e ) {
-		e.preventDefault();
-		imagifyOpenModal( $( this ) );
-	} )
-	// On click on close button.
-	.on( 'click.imagify', '.imagify-modal .close-btn', function() {
-		var $modal = $( this ).closest( '.imagify-modal' );
-
-		$modal.fadeOut( 400 ).attr( 'aria-hidden', 'true' ).removeClass( 'modal-is-open' ).trigger( 'modalClosed.imagify' );
-
-		$( 'body' ).removeClass( 'imagify-modal-is-open' );
-	} )
-	// On close button blur, improve accessibility.
-	.on( 'blur.imagify', '.imagify-modal .close-btn', function() {
-		var $modal = $( this ).closest( '.imagify-modal' );
-
-		if ( $modal.attr( 'aria-hidden' ) === 'false' ) {
-			$modal.attr( 'tabindex', '0' ).focus().removeAttr( 'tabindex' );
-		}
-	} )
-	// On click on dropped layer of modal.
-	.on( 'click.imagify', '.imagify-modal', function( e ) {
-		$( e.target ).filter( '.modal-is-open' ).find( '.close-btn' ).trigger( 'click.imagify' );
-	} )
-	// `Esc` key binding.
-	.on( 'keydown.imagify', function( e ) {
-		if ( 27 === e.keyCode && $( '.imagify-modal.modal-is-open' ).length > 0 ) {
+		// On click on modal trigger.
+		.on( 'click.imagify', '.imagify-modal-trigger', function( e ) {
 			e.preventDefault();
-			// Trigger the event.
-			$( '.imagify-modal.modal-is-open' ).find( '.close-btn' ).trigger( 'click.imagify' );
-		}
-	} );
+			imagifyOpenModal( $( this ) );
+		} )
+		// On click on close button.
+		.on( 'click.imagify', '.imagify-modal .close-btn', function() {
+			var $modal = $( this ).closest( '.imagify-modal' );
+
+			$modal.fadeOut( 400 ).attr( 'aria-hidden', 'true' ).removeClass( 'modal-is-open' ).trigger( 'modalClosed.imagify' );
+
+			$( 'body' ).removeClass( 'imagify-modal-is-open' );
+		} )
+		// On close button blur, improve accessibility.
+		.on( 'blur.imagify', '.imagify-modal .close-btn', function() {
+			var $modal = $( this ).closest( '.imagify-modal' );
+
+			if ( $modal.attr( 'aria-hidden' ) === 'false' ) {
+				$modal.attr( 'tabindex', '0' ).focus().removeAttr( 'tabindex' );
+			}
+		} )
+		// On click on dropped layer of modal.
+		.on( 'click.imagify', '.imagify-modal', function( e ) {
+			$( e.target ).filter( '.modal-is-open' ).find( '.close-btn' ).trigger( 'click.imagify' );
+		} )
+		// `Esc` key binding.
+		.on( 'keydown.imagify', function( e ) {
+			if ( 27 === e.keyCode && $( '.imagify-modal.modal-is-open' ).length > 0 ) {
+				e.preventDefault();
+				// Trigger the event.
+				$( '.imagify-modal.modal-is-open' ).find( '.close-btn' ).trigger( 'click.imagify' );
+			}
+		} );
 
 } )(jQuery, document, window);
 
 
 // Imagify payment modal ===========================================================================
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	/**
 	 * Payment Modal.
@@ -266,6 +264,7 @@ window.imagify = window.imagify || {
 			m       = monthly.split( '.' );
 			y       = yearly.split( '.' );
 			output  = '<span class="imagify-switch-my">';
+			/* eslint-disable indent */
 				output += '<span aria-hidden="' + ( period === 'monthly' ? 'false' : 'true' ) + '" class="imagify-monthly">';
 					output += '<span class="imagify-price-big">' + m[0] + '</span> ';
 					output += '<span class="imagify-price-mini">.' + ( m[1].length === 1 ? m[1] + '0' : ( '' + m[1] ).substring( 0, 2 )  ) + '</span>';
@@ -274,6 +273,7 @@ window.imagify = window.imagify || {
 					output += '<span class="imagify-price-big">' + y[0] + '</span> ';
 					output += '<span class="imagify-price-mini">.' + ( y[1].length === 1 ? y[1] + '0' : ( '' + y[1] ).substring( 0, 2 ) ) + '</span>';
 				output += '</span>';
+				/* eslint-enable indent */
 			output += '</span>';
 
 			return output;
@@ -292,6 +292,7 @@ window.imagify = window.imagify || {
 				yearly  = content.yearly + '';
 
 				output += '<span class="imagify-price-discount">';
+				/* eslint-disable indent */
 					output += '<span class="imagify-price-discount-dollar">$</span>';
 					output += '<span class="imagify-switch-my">';
 						output += '<span aria-hidden="' + ( period === 'monthly' ? 'false' : 'true' ) + '" class="imagify-monthly">';
@@ -301,12 +302,15 @@ window.imagify = window.imagify || {
 							output += '<span class="imagify-price-discount-number">' + yearly + '</span>';
 						output += '</span>';
 					output += '</span>';
+					/* eslint-enable indent */
 				output += '</span>';
 			} else {
 				content += ''; // Be sure content is a string.
 				output  += '<span class="imagify-price-discount">';
+				/* eslint-disable indent */
 					output  += '<span class="imagify-price-discount-dollar">$</span>';
 					output  += '<span class="imagify-price-discount-number">' + content + '</span>';
+					/* eslint-enable indent */
 				output  += '</span>';
 			}
 
@@ -326,7 +330,7 @@ window.imagify = window.imagify || {
 				mon   = datas.monthly_cost,    // 4.99 (monthly)
 				quo   = datas.quota,           // 1000 (MB) - 5000 images (monthly/onetime)
 				cos   = datas.cost,            // 3.49 (onetime)
-				name  = ( quo >= 1000 ? quo/1000 + ' GB' : quo + ' MB' ),
+				name  = ( quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB' ),
 				pcs   = type === 'monthly' ? { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 } : cos,
 				pcsd  = pcs, // Used if discount is active.
 				percent, $datas_c, datas_content;
@@ -838,7 +842,9 @@ window.imagify = window.imagify || {
 				pay_src    = $iframe.data( 'src' ),
 				monthly_id = 0,
 				onetime_id = 0,
-				key, rt_onetime, rt_yearly, rt_monthly, coupon, rt_coupon, amount, $iframeClone, tofind;
+				// Stop it ESLint, you're drunk.
+				key, amount, // eslint-disable-line no-unused-vars
+				rt_onetime, rt_yearly, rt_monthly, coupon, rt_coupon, $iframeClone, tofind;
 
 			// If we only change monthly/yearly payment mode.
 			if ( typeof params === 'string' && '' !== iframe_src ) {
@@ -914,14 +920,14 @@ window.imagify = window.imagify || {
 		 * @uses imagifyModal.paymentBack()
 		 * @uses imagifyModal.paymentSuccess()
 		 */
-		checkPluginMessage: function( event ) {
-			var origin = event.origin || event.originalEvent.origin;
+		checkPluginMessage: function( e ) {
+			var origin = e.origin || e.originalEvent.origin;
 
 			if ( 'https://app.imagify.io' !== origin && 'http://dapp.imagify.io' !== origin ) {
 				return;
 			}
 
-			switch ( event.data ) {
+			switch ( e.data ) {
 				case 'cancel':
 					imagifyModal.paymentClose();
 					break;
@@ -1047,7 +1053,7 @@ window.imagify = window.imagify || {
 			is_onetime   = $_this.closest( '.imagify-tab-content' ).attr( 'id' ) !== 'imagify-pricing-tab-monthly',
 			$target_line = is_onetime ? imagifyModal.$preView.find( '.imagify-offer-onetime' ) : imagifyModal.$preView.find( '.imagify-offer-monthly' ),
 			period       = is_onetime ? null : ( $_this.closest( '.imagify-pricing-table' ).hasClass( 'imagify-month-selected' ) ? 'monthly' : 'yearly' ),
-			price        = is_onetime ? imagifyModal.getHtmlPrice( datas[ Object.keys( datas )[0] ].price ) : imagifyModal.getHtmlPrice ( datas[ Object.keys( datas )[0] ].prices, period ),
+			price        = is_onetime ? imagifyModal.getHtmlPrice( datas[ Object.keys( datas )[0] ].price ) : imagifyModal.getHtmlPrice( datas[ Object.keys( datas )[0] ].prices, period ),
 			monthly_txt  = is_onetime ? '' : '<span class="imagify-price-by">' + $offer_line.find( '.imagify-price-by' ).text() + '</span>',
 			discount     = $offer_line.find( '.imagify-price-discount' ).html(),
 			imgs         = $offer_line.find( '.imagify-approx-nb' ).text(),
@@ -1150,7 +1156,7 @@ window.imagify = window.imagify || {
 } )(jQuery, document, window);
 
 
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	/**
 	 * Tabs.
