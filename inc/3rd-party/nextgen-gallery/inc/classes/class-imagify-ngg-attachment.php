@@ -391,6 +391,39 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		*/
 		do_action( 'after_imagify_ngg_optimize_attachment', $this->id, $data );
 
+		/**
+		 * Update NGG meta data.
+		 */
+		$storage = C_Gallery_Storage::get_instance()->object;
+		$image   = $storage->_image_mapper->find( $this->id );
+
+		if ( $image ) {
+			$dimensions = getimagesize( $attachment_path );
+			$md5        = md5_file( $attachment_path );
+
+			if ( ( $dimensions || $md5 ) && ( empty( $image->meta_data['full'] ) || ! is_array( $image->meta_data['full'] ) ) ) {
+				$image->meta_data['full'] = array(
+					'width'  => 0,
+					'height' => 0,
+					'md5'    => '',
+				);
+			}
+
+			if ( $dimensions ) {
+				$image->meta_data['width']  = $dimensions[0];
+				$image->meta_data['height'] = $dimensions[1];
+				$image->meta_data['full']['width']  = $dimensions[0];
+				$image->meta_data['full']['height'] = $dimensions[1];
+			}
+
+			if ( $md5 ) {
+				$image->meta_data['md5'] = $md5;
+				$image->meta_data['full']['md5'] = $md5;
+			}
+
+			$storage->_image_mapper->save( $image );
+		}
+
 		delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
 
 		return $data;
