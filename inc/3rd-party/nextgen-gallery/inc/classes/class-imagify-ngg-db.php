@@ -79,7 +79,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 			'pid'                => '%d',
 			'optimization_level' => '%s',
 			'status'             => '%s',
-			'data'         		 => '%s',
+			'data'               => '%s',
 		);
 	}
 

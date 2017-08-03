@@ -65,14 +65,16 @@ function _imagify_display_options_page() {
 
 				<?php $imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform'; ?>
 				<p class="imagify-rate-us">
-					<?php printf(
+					<?php
+					printf(
 						/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end + a line break tag, 3 is a link tag start, 4 is the link tag end. */
 						__( '%1$sDo you like this plugin?%2$s Please take a few seconds to %3$srate it on WordPress.org%4$s!', 'imagify' ),
 						'<strong>',
 						'</strong><br />',
 						'<a href="' . $imagify_rate_url . '">',
 						'</a>'
-					); ?>
+					);
+					?>
 					<br>
 					<a class="stars" href="<?php echo $imagify_rate_url; ?>"><?php echo str_repeat( '<span class="dashicons dashicons-star-filled"></span>', 5 ); ?></a>
 				</p>
@@ -109,7 +111,8 @@ function _imagify_display_options_page() {
 											</span>
 
 											<?php
-										} elseif ( ! imagify_valid_key() && get_imagify_option( 'api_key', false ) ) { ?>
+										} elseif ( ! imagify_valid_key() && get_imagify_option( 'api_key', false ) ) {
+											?>
 
 											<span id="imagify-check-api-container">
 												<span class="dashicons dashicons-no"></span> <?php _e( 'Your API key isn\'t valid!', 'imagify' ); ?>
@@ -239,11 +242,13 @@ function _imagify_display_options_page() {
 									<p class="imagify-checkbox-marged">
 										<span class="imagify-info">
 											<span class="dashicons dashicons-info"></span>
-											<?php printf(
+											<?php
+											printf(
 												/* translators: 1 is a number of pixels. */
 												__( 'This option is recommended to reduce larger images. You can save up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %dpx.', 'imagify' ),
 												$max_sizes['width']
-											); ?>
+											);
+											?>
 										</span>
 									</p>
 								</td>
@@ -273,11 +278,13 @@ function _imagify_display_options_page() {
 										<p>
 											<?php _e( 'You can choose to compress different image sizes created by WordPress here.', 'imagify' ); ?>
 											<br/>
-											<?php printf(
+											<?php
+											printf(
 												/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end. */
 												__( 'The %1$soriginal size%2$s is %1$sautomatically optimized%2$s by Imagify.', 'imagify' ),
 												'<strong>', '</strong>'
-											); ?>
+											);
+											?>
 											<br>
 											<span class="imagify-important">
 												<?php _e( 'Remember each additional image size will affect your Imagify monthly usage!', 'imagify' ); ?>
@@ -317,7 +324,8 @@ function _imagify_display_options_page() {
 												<?php
 											}
 
-											if ( $select_all ) { ?>
+											if ( $select_all ) {
+												?>
 												<em class="hide-if-no-js">
 													<input id="imagify-toggle-check-thumbnail-sizes-2" type="checkbox" class="mini imagify-toggle-check" <?php checked( ! $has_disallowed ); ?>>
 													<label for="imagify-toggle-check-thumbnail-sizes-2" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
@@ -373,14 +381,16 @@ function _imagify_display_options_page() {
 					?>
 
 					<div class="imagify-bulk-info">
-						<p><?php
+						<p>
+							<?php
 							printf(
 								/* translators: 1 is a link tag start, 2 is the link tag end. */
 								__( 'Once your settings saved, optimize all your images by using the %1$sImagify Bulk Optimization%2$s feature.', 'imagify' ),
 								'<a href="' . esc_url( get_admin_url() ) . 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization">',
 								'</a>'
 							);
-						?></p>
+							?>
+						</p>
 					</div>
 				</div>
 			</form>

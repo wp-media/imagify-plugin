@@ -405,7 +405,7 @@ function imagify_payment_modal() {
 									<label for="imagify-subscription-monthly"><?php esc_html_e( 'Monthly' , 'imagify' ); ?></label>
 
 									<input id="imagify-subscription-yearly" type="radio" value="yearly" name="plan-subscription">
-									<label for="imagify-subscription-yearly"><?php esc_html_e( 'Yearly' , 'imagify' ); ?><span class="imagify-2-free"><?php esc_html_e( '2 months free', 'imagify' ) ?></span></label>
+									<label for="imagify-subscription-yearly"><?php esc_html_e( 'Yearly' , 'imagify' ); ?><span class="imagify-2-free"><?php esc_html_e( '2 months free', 'imagify' ); ?></span></label>
 								</div><!-- .imagify-radio-line -->
 							</div><!-- .imagify-offer-header -->
 
@@ -519,7 +519,7 @@ function imagify_payment_modal() {
 									<label for="imagify-coupon-code"><?php _e( 'If you have a <strong>coupon code</strong><br> use it there:', 'imagify' ); ?></label>
 								</p>
 								<p class="imagify-coupon-input">
-									<input type="text" class="imagify-coupon-code" name="imagify-coupon-code" id="imagify-coupon-code" value="" placeholder="<?php _e( 'Coupon Code', 'imagify' ) ?>" autocomplete="off">
+									<input type="text" class="imagify-coupon-code" name="imagify-coupon-code" id="imagify-coupon-code" value="" placeholder="<?php _e( 'Coupon Code', 'imagify' ); ?>" autocomplete="off">
 									<button type="button" class="button button-secondary imagify-button-secondary" id="imagify-coupon-validate"><?php _e( 'OK' ); ?></button>
 								</p>
 							</div>
@@ -571,7 +571,7 @@ function imagify_payment_modal() {
 								<label for="imagify-pricing-montly"><?php esc_html_e( 'Monthly' , 'imagify' ); ?></label>
 
 								<input id="imagify-pricing-yearly" type="radio" value="yearly" name="plan-pricing">
-								<label for="imagify-pricing-yearly"><?php esc_html_e( 'Yearly' , 'imagify' ); ?><span class="imagify-2-free imagify-b-right"><?php esc_html_e( '2 months free', 'imagify' ) ?></span></label>
+								<label for="imagify-pricing-yearly"><?php esc_html_e( 'Yearly' , 'imagify' ); ?><span class="imagify-2-free imagify-b-right"><?php esc_html_e( '2 months free', 'imagify' ); ?></span></label>
 							</div><!-- .imagify-radio-line -->
 
 
@@ -632,7 +632,7 @@ function imagify_payment_modal() {
 									</p>
 								</div>
 								<div class="imagify-col imagify-txt-end">
-									<p><a class="button imagify-button-ghost imagify-button-medium imagify-mt1 imagify-mb1 imagify-mr1" href="https://imagify.io/<?php echo ( get_locale() === 'fr_FR' ? 'fr/' : '' ) ?>contact" target="_blank"><i class="dashicons dashicons-email" aria-hidden="true"></i>&nbsp;<?php esc_html_e( 'Contact Us', 'imagify' ); ?></a></p>
+									<p><a class="button imagify-button-ghost imagify-button-medium imagify-mt1 imagify-mb1 imagify-mr1" href="https://imagify.io/<?php echo ( get_locale() === 'fr_FR' ? 'fr/' : '' ); ?>contact" target="_blank"><i class="dashicons dashicons-email" aria-hidden="true"></i>&nbsp;<?php esc_html_e( 'Contact Us', 'imagify' ); ?></a></p>
 								</div>
 							</div>
 
@@ -714,7 +714,7 @@ function imagify_payment_modal() {
 
 			<div class="imagify-modal-sidebar">
 				<div class="imagify-modal-sidebar-content imagify-txt-start">
-					<p class="imagify-modal-sidebar-title"><?php esc_html_e( 'What do our user think about Imagify', 'imagify' ) ?></p>
+					<p class="imagify-modal-sidebar-title"><?php esc_html_e( 'What do our user think about Imagify', 'imagify' ); ?></p>
 
 					<div class="imagify-modal-testimony">
 						<div class="imagify-modal-testimony-person">

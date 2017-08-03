@@ -167,7 +167,7 @@ if ( ! function_exists( '_wp_json_sanity_check' ) ) :
 				}
 			}
 		} elseif ( is_object( $data ) ) {
-			$output = new stdClass;
+			$output = new stdClass();
 			foreach ( $data as $id => $el ) {
 				if ( is_string( $id ) ) {
 					$clean_id = _wp_json_convert_string( $id );

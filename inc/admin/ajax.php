@@ -176,7 +176,7 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	$data['original_size']         = $fullsize_data['original_size'];
 	$data['new_size']              = $fullsize_data['optimized_size'];
 	$data['percent']               = $fullsize_data['percent'];
-	$data['overall_saving'] 	   = $stats_data['original_size'] - $stats_data['optimized_size'];
+	$data['overall_saving']        = $stats_data['original_size'] - $stats_data['optimized_size'];
 	$data['original_overall_size'] = $stats_data['original_size'];
 	$data['new_overall_size']      = $stats_data['optimized_size'];
 	$data['thumbnails']            = $attachment->get_optimized_sizes_count();

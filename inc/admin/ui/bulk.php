@@ -344,14 +344,18 @@ function _imagify_display_bulk_page() {
 				</thead>
 				<tfoot>
 					<tr>
-						<td class="imagify-cell-nb-files"> <?php
+						<td class="imagify-cell-nb-files">
+							<?php
 							/* translators: %s is a number. Don't use %d. */
 							printf( _n( '%s file', '%s files', 0, 'imagify' ), '<span class="imagify-nb-files">0</span>' );
-							?></td>
-						<td class="imagify-cell-errors"> <?php
+							?>
+						</td>
+						<td class="imagify-cell-errors">
+							<?php
 							/* translators: %s is a number. Don't use %d. */
 							printf( _n( '%s error', '%s errors', 0, 'imagify' ), '<span class="imagify-nb-errors">0</span>' );
-							?></td>
+							?>
+						</td>
 						<td class="imagify-cell-totaloriginal" colspan="4"><?php _e( 'Total:', 'imagify' ); ?><strong> <span class="imagify-total-original">0&nbsp;kB</span></strong></td>
 						<td class="imagify-cell-totalgain"><?php _e( 'Gain:', 'imagify' ); ?><strong> <span class="imagify-total-gain">0&nbsp;kB</span></strong></td>
 					</tr>

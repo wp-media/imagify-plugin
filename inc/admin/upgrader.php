@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) ||	die( 'Cheatin&#8217; uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin&#8217; uh?' );
 
 add_action( 'admin_init', '_imagify_upgrader' );
 /**

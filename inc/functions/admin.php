@@ -52,7 +52,7 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 		case 'manual-upload':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-manual-upload' );
 
-		case 'restore-upload' :
+		case 'restore-upload':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_restore_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-restore-upload' );
 
 		case 'dismiss-notice':
@@ -61,7 +61,7 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 		case 'bulk-optimization':
 			return admin_url( 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization' );
 
-		default :
+		default:
 			$page = imagify_is_active_for_network() ? network_admin_url( 'settings.php' ) : admin_url( 'options-general.php' );
 			return $page . '?page=' . IMAGIFY_SLUG;
 	}
@@ -156,13 +156,13 @@ function get_imagify_bulk_buffer_size() {
 	$sizes = count( get_imagify_thumbnail_sizes() );
 
 	switch ( true ) {
-		case ( $sizes >= 10 ) :
+		case ( $sizes >= 10 ):
 			return 1;
 
-		case ( $sizes >= 8 ) :
+		case ( $sizes >= 8 ):
 			return 2;
 
-		case ( $sizes >= 6 ) :
+		case ( $sizes >= 6 ):
 			return 3;
 
 		default:

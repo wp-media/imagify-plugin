@@ -20,7 +20,7 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 
 	foreach ( $image_ids as $id ) {
 		$body                  = array();
-		$body['metadata']	   = 1;
+		$body['metadata']      = 1;
 		$body['context']       = 'NGG';
 		$body['attachment_id'] = $id;
 		$body['action']        = 'imagify_async_optimize_upload_new_media';

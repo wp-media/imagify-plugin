@@ -291,7 +291,8 @@ function _imagify_warning_over_quota_notice() {
 		</div>
 		<div class="imagify-notice-content">
 			<p class="imagify-notice-title"><strong><?php _e( 'Oops, It\'s Over!', 'imagify' ); ?></strong></p>
-			<p><?php
+			<p>
+				<?php
 				printf(
 					/* translators: 1 is a "bold" tag start, 2 is a formatted data quota, 3 is a date, 4 is the "bold" tag end. */
 					__( 'You have consumed all your credit for this month. You will have %1$s%2$s back on %3$s%4$s.', 'imagify' ),
@@ -307,7 +308,8 @@ function _imagify_warning_over_quota_notice() {
 					'<a href="' . IMAGIFY_APP_MAIN . '/#/subscription">',
 					'</a>'
 				);
-			?></p>
+				?>
+			</p>
 		</div>
 		<a href="<?php echo get_imagify_admin_url( 'dismiss-notice', 'free-over-quota' ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>
@@ -408,7 +410,7 @@ function _imagify_rocket_notice() {
 		<a href="<?php echo esc_url( $dismiss_url ); ?>" class="imagify-cross" target="_blank"><span class="dashicons dashicons-no"></span></a>
 
 		<p class="imagify-rkt-logo">
-			<img src="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL ?>logo-wprocket2x.png 2x" alt="WP Rocket" width="118" height="32">
+			<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket2x.png 2x" alt="WP Rocket" width="118" height="32">
 		</p>
 		<p class="imagify-rkt-msg">
 			<?php
@@ -462,7 +464,8 @@ function _imagify_rating_notice() {
 			<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="138" height="16" alt="Imagify" />
 		</div>
 		<div class="imagify-notice-content">
-			<p><?php
+			<p>
+				<?php
 				printf(
 					/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end, 3 is a formatted number (don't use %3$d). */
 					__( '%1$sCongratulations%2$s, you have optimized %1$s%3$s images%2$s and improved your website\'s speed by reducing your images size.', 'imagify' ),
@@ -470,7 +473,8 @@ function _imagify_rating_notice() {
 					'</strong>',
 					number_format_i18n( $user_images_count )
 				);
-			?></p>
+				?>
+			</p>
 			<p class="imagify-rate-us">
 				<?php
 				$imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';

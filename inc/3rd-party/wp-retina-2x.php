@@ -70,7 +70,7 @@ if ( function_exists( 'wr2x_get_retina' ) ) :
 		$do_retina   = apply_filters( 'do_imagify_optimize_retina', true );
 		$retina_path = wr2x_get_retina( $path );
 
-		if ( empty( $retina_path )|| ! $do_retina ) {
+		if ( empty( $retina_path ) || ! $do_retina ) {
 			return $data;
 		}
 
