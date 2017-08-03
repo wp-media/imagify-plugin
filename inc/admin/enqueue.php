@@ -20,7 +20,7 @@ function _imagify_admin_print_styles() {
 		'imagify-css-sweetalert',
 		IMAGIFY_ASSETS_CSS_URL . 'sweetalert2' . $css_ext,
 		array(),
-		'4.0.15'
+		'4.6.6'
 	);
 
 	/**
@@ -47,7 +47,7 @@ function _imagify_admin_print_styles() {
 		'imagify-js-promise-polyfill',
 		IMAGIFY_ASSETS_JS_URL . 'es6-promise.auto' . $js_ext,
 		array(),
-		'4.1.0',
+		'4.1.1',
 		true
 	);
 
@@ -55,7 +55,7 @@ function _imagify_admin_print_styles() {
 		'imagify-js-sweetalert',
 		IMAGIFY_ASSETS_JS_URL . 'sweetalert2' . $js_ext,
 		array( 'jquery', 'imagify-js-promise-polyfill' ),
-		'4.0.15',
+		'4.6.6',
 		true
 	);
 
@@ -71,7 +71,7 @@ function _imagify_admin_print_styles() {
 		'imagify-js-event-move',
 		IMAGIFY_ASSETS_JS_URL . 'jquery.event.move' . $js_ext,
 		array( 'jquery' ),
-		'1.3.6',
+		'2.0.1',
 		true
 	);
 
@@ -80,9 +80,9 @@ function _imagify_admin_print_styles() {
 	 */
 	wp_register_script(
 		'imagify-js-async',
-		IMAGIFY_ASSETS_JS_URL . 'imagify' . $js_ext,
+		IMAGIFY_ASSETS_JS_URL . 'imagify-gulp' . $js_ext,
 		array(),
-		IMAGIFY_VERSION,
+		'2017-07-28',
 		true
 	);
 

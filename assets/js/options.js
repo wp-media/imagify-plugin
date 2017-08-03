@@ -1,20 +1,18 @@
-/* globals ajaxurl: false, console: false, imagify: true, imagifyAdmin: true, imagifyOptions: true, swal: false */
-
 window.imagify = window.imagify || {
 	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
 	log:    function( content ) {
 		if ( undefined !== console ) {
-			console.log( content );
+			console.log( content ); // eslint-disable-line no-console
 		}
 	},
 	info:   function( content ) {
 		if ( undefined !== console ) {
-			console.info( content );
+			console.info( content ); // eslint-disable-line no-console
 		}
 	}
 };
 
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 	/*
 	 * Process an API key check validity.
 	 */
@@ -44,24 +42,24 @@ window.imagify = window.imagify || {
 		busy = true;
 
 		xhr = $.get( ajaxurl + imagify.concat + 'action=imagify_check_api_key_validity&api_key=' + obj.val() + '&imagifycheckapikeynonce=' + $( '#imagifycheckapikeynonce' ).val() )
-		.done( function( response ) {
-			if ( ! response.success ) {
-				$( '#imagify-check-api-container' ).html( '<span class="dashicons dashicons-no"></span> ' + response.data );
-			} else {
-				$( '#imagify-check-api-container' ).remove();
-				swal( {
-					title:       imagifyAdmin.labels.ApiKeyCheckSuccessTitle,
-					html:        imagifyAdmin.labels.ApiKeyCheckSuccessText,
-					type:        'success',
-					customClass: 'imagify-sweet-alert'
-				} ).then(
-				function() {
-					location.reload();
-				} );
-			}
+			.done( function( response ) {
+				if ( ! response.success ) {
+					$( '#imagify-check-api-container' ).html( '<span class="dashicons dashicons-no"></span> ' + response.data );
+				} else {
+					// Success, the API key is valid.
+					$( '#imagify-check-api-container' ).remove();
+					swal( {
+						title:       imagifyAdmin.labels.ApiKeyCheckSuccessTitle,
+						html:        imagifyAdmin.labels.ApiKeyCheckSuccessText,
+						type:        'success',
+						customClass: 'imagify-sweet-alert'
+					} ).then( function() {
+						location.reload();
+					} );
+				}
 
-			busy = false;
-		} );
+				busy = false;
+			} );
 	} );
 
 	/**
@@ -78,7 +76,7 @@ window.imagify = window.imagify || {
 	$( '.imagify-settings th span' ).on( 'click', function() {
 		var $input = $( this ).parent().next( 'td' ).find( 'input:checkbox' );
 
-		if ( $input.length === 1 ) {
+		if ( 1 === $input.length ) {
 			$input.trigger( 'click' );
 		}
 	} );
@@ -121,6 +119,7 @@ window.imagify = window.imagify || {
 			return;
 		}
 
+		// Are you sure? No backup?
 		swal( {
 			title:            imagifyOptions.noBackupTitle,
 			html:             imagifyOptions.noBackupText,
@@ -145,7 +144,7 @@ window.imagify = window.imagify || {
 
 
 // "Select all" checkboxes =========================================================================
-(function( w, d, $, undefined ) {
+(function(w, d, $, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	var jqPropHookChecked = $.propHooks.checked;
 
@@ -173,8 +172,7 @@ window.imagify = window.imagify || {
 
 		// Toggle "check all" checkboxes.
 		$group.find( '.imagify-toggle-check' ).prop( 'checked', allChecked );
-	} )
-	.first().trigger( 'change.imagify' );
+	} ).first().trigger( 'change.imagify' );
 
 	$( '.imagify-check-group .imagify-toggle-check' ).on( 'click.wp-toggle-checkboxes', function( e ) {
 		var $this          = $( this ),

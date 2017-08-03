@@ -1,20 +1,18 @@
-/* globals ajaxurl: false, console: false, imagify: true, Chart: false, ImagifyGulp: false, swal: false */
-
 window.imagify = window.imagify || {
 	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
 	log:    function( content ) {
 		if ( undefined !== console ) {
-			console.log( content );
+			console.log( content ); // eslint-disable-line no-console
 		}
 	},
 	info:   function( content ) {
 		if ( undefined !== console ) {
-			console.info( content );
+			console.info( content ); // eslint-disable-line no-console
 		}
 	}
 };
 
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 	var overviewCanvas = d.getElementById( 'imagify-overview-chart' ),
 		overviewData   = [
 			{
@@ -46,20 +44,20 @@ window.imagify = window.imagify || {
 	 */
 	function drawMeAChart( canvas ) {
 		canvas.each( function() {
-			var $this        = $( this ),
-				theValue     = parseInt( $this.closest( '.imagify-chart' ).next( '.imagipercent' ).text(), 10 ),
-				overviewData = [
+			var $this    = $( this ),
+				theValue = parseInt( $this.closest( '.imagify-chart' ).next( '.imagipercent' ).text(), 10 ),
+				data     = [
 					{
 						value: theValue,
 						color: '#00B3D3'
 					},
 					{
 						value: 100 - theValue,
-						color:'#D8D8D8'
+						color: '#D8D8D8'
 					}
 				];
 
-			new Chart( $this[0].getContext( '2d' ) ).Doughnut( overviewData, {
+			new Chart( $this[0].getContext( '2d' ) ).Doughnut( data, { // eslint-disable-line new-cap
 				segmentStrokeColor: '#FFF',
 				segmentStrokeWidth: 1,
 				animateRotate:      true,
@@ -76,9 +74,9 @@ window.imagify = window.imagify || {
 	 */
 	function drawMeCompleteChart( canvas ) {
 		canvas.each( function() {
-			var $this        = $( this ),
-				theValue     = parseInt( $this.closest( '.imagify-ac-chart' ).attr( 'data-percent' ), 10 ),
-				overviewData = [
+			var $this    = $( this ),
+				theValue = parseInt( $this.closest( '.imagify-ac-chart' ).attr( 'data-percent' ), 10 ),
+				data     = [
 					{
 						value: theValue,
 						color: '#40B1D0'
@@ -89,7 +87,7 @@ window.imagify = window.imagify || {
 					}
 				];
 
-			new Chart( $this[0].getContext( '2d' ) ).Doughnut( overviewData, {
+			new Chart( $this[0].getContext( '2d' ) ).Doughnut( data, { // eslint-disable-line new-cap
 				segmentStrokeColor:    'transparent',
 				segmentStrokeWidth:    0,
 				animateRotate:         true,
@@ -101,7 +99,7 @@ window.imagify = window.imagify || {
 	}
 
 	if ( overviewCanvas ) {
-		overviewDoughnut = new Chart( overviewCanvas.getContext( '2d' ) ).Doughnut( overviewData, {
+		overviewDoughnut = new Chart( overviewCanvas.getContext( '2d' ) ).Doughnut( overviewData, { // eslint-disable-line new-cap
 			segmentStrokeColor:    'transparent',
 			segmentStrokeWidth:    0,
 			animateRotate:         true,
@@ -136,11 +134,18 @@ window.imagify = window.imagify || {
 
 	// Listen for the custom event "heartbeat-tick" on $(document).
 	$( d ).on( 'heartbeat-tick', function( e, data ) {
+		var donutData;
+
 		if ( ! data.imagify_bulk_data ) {
 			return;
 		}
 
-		data = data.imagify_bulk_data;
+		data      = data.imagify_bulk_data;
+		donutData = overviewDoughnut.segments;
+
+		if ( data.unoptimized_attachments === donutData[0].value && data.optimized_attachments === donutData[1].value && data.errors_attachments === donutData[2].value ) {
+			return;
+		}
 
 		// The overview chart percent.
 		$( '#imagify-overview-chart-percent' ).html( data.optimized_attachments_percent + '<span>%</span>' );
@@ -207,181 +212,183 @@ window.imagify = window.imagify || {
 		} );
 
 		$.get( ajaxurl + imagify.concat + 'action=' + imagifyBulk.ajax_action + '&optimization_level=' + optimizationLevel + '&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val() )
-		.done( function( response ) {
-			var swal_title = '',
-				swal_text  = '',
-				text, Optimizer, table,
-				files  = 0,
-				errors = 0,
-				stopOptimization = 0,
-				original_overall_size = 0,
-				overall_saving = 0;
+			.done( function( response ) {
+				var swal_title = '',
+					swal_text  = '',
+					Optimizer, table,
+					files  = 0,
+					errors = 0,
+					stopOptimization = 0,
+					original_overall_size = 0,
+					overall_saving = 0,
+					incr = 0;
 
-			if ( ! response.success ) {
-				$obj.removeAttr( 'disabled' );
-				$obj.find( '.dashicons' ).removeClass( 'rotate' );
+				if ( ! response.success ) {
+					$obj.removeAttr( 'disabled' );
+					$obj.find( '.dashicons' ).removeClass( 'rotate' );
 
-				// Remove confirm dialog before quit the page.
-				$( w ).off( 'beforeunload', confirmMessage );
+					// Remove confirm dialog before quit the page.
+					$( w ).off( 'beforeunload', confirmMessage );
 
-				if ( 'invalid-api-key' === response.data.message ) {
-					swal_title = imagifyBulk.labels.invalidAPIKeyTitle;
-				}
+					if ( 'invalid-api-key' === response.data.message ) {
+						swal_title = imagifyBulk.labels.invalidAPIKeyTitle;
+					} else if ( 'over-quota' === response.data.message ) {
+						swal_title = imagifyBulk.labels.overQuotaTitle;
+						swal_text  = imagifyBulk.labels.overQuotaText;
+					} else if ( 'no-images' === response.data.message ) {
+						swal_title = imagifyBulk.labels.noAttachmentToOptimizeTitle;
+						swal_text  = imagifyBulk.labels.noAttachmentToOptimizeText;
+					}
 
-				if ( 'over-quota' === response.data.message ) {
-					swal_title = imagifyBulk.labels.overQuotaTitle;
-					text       = imagifyBulk.labels.overQuotaText;
-				}
-
-				if ( 'no-images' === response.data.message ) {
-					swal_title = imagifyBulk.labels.noAttachmentToOptimizeTitle;
-					swal_text  = imagifyBulk.labels.noAttachmentToOptimizeText;
-				}
-
-				// Display an alert to warn that all images has been optimized.
-				swal( {
-					title:       swal_title,
-					html:        swal_text,
-					type:        'info',
-					customClass: 'imagify-sweet-alert'
-				} );
-
-				return;
-			}
-
-			swal.close();
-
-			$( '.imagify-row-progress' ).slideDown();
-			$( '.imagify-no-uploaded-yet, .imagify-row-complete' ).hide( 200 );
-
-			table     = $( '.imagify-bulk-table table tbody' );
-			Optimizer = new ImagifyGulp( {
-				'lib':     ajaxurl + imagify.concat + 'action=imagify_bulk_upload&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val(),
-				'images':  response.data,
-				'context': imagifyBulk.ajax_context
-			} );
-
-			// Before the attachment optimization.
-			Optimizer.before( function( data ) {
-				table.find( '.imagify-row-progress' ).after( '<tr id="attachment-' + data.id + '"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="' + data.thumbnail + '" alt=""/></span><span class="imagifilename">' + data.filename + '</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>' + imagifyBulk.labels.optimizing + '<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>' );
-			} )
-			// After the attachment optimization.
-			.each( function( data ) {
-				var $progress     = $( '#imagify-progress-bar' ),
-					errorClass    = 'error',
-					errorDashicon = 'dismiss',
-					errorMessage  = imagifyBulk.labels.error;
-
-				$progress.css( { 'width': data.progress + '%' } );
-				$progress.find( '.percent' ).html( data.progress + '%' );
-
-				if ( data.success ) {
-					$( '#attachment-' + data.image + ' .imagify-cell-status' ).html( '<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>' + imagifyBulk.labels.complete + '</span>' );
-					$( '#attachment-' + data.image + ' .imagify-cell-original' ).html( data.original_size_human );
-					$( '#attachment-' + data.image + ' .imagify-cell-optimized' ).html( data.new_size_human );
-					$( '#attachment-' + data.image + ' .imagify-cell-percentage' ).html( '<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart" style="width: 18px; height: 18px;"></canvas></span></span><span class="imagipercent">' + data.percent + '</span>%' );
-					drawMeAChart( $( '#attachment-' + data.image + ' .imagify-cell-percentage' ).find( 'canvas' ) );
-					$( '#attachment-' + data.image + ' .imagify-cell-thumbnails' ).html( data.thumbnails );
-					$( '#attachment-' + data.image + ' .imagify-cell-savings' ).html( Optimizer.humanSize( data.overall_saving, 1 ) );
-
-					// The table footer total optimized files.
-					files = files + data.thumbnails + 1;
-					$( '.imagify-cell-nb-files' ).html( imagifyBulk.labels.nbrFiles.replace( '%s', files ) );
-
-					// The table footer original size.
-					original_overall_size = original_overall_size + data.original_overall_size;
-					$( '.imagify-total-original' ).html( Optimizer.humanSize( original_overall_size, 1 ) );
-
-					// The table footer overall saving.
-					overall_saving = overall_saving + data.overall_saving;
-					$( '.imagify-total-gain' ).html( Optimizer.humanSize( overall_saving, 1 ) );
+					// Display an alert to warn that all images has been optimized.
+					swal( {
+						title:       swal_title,
+						html:        swal_text,
+						type:        'info',
+						customClass: 'imagify-sweet-alert'
+					} );
 
 					return;
 				}
 
-				if ( ! stopOptimization && data.error.indexOf( "You've consumed all your data" ) >= 0 ) {
-					stopOptimization = 1;
-					Optimizer.stopProcess();
+				swal.close();
 
-					swal( {
-						title:       imagifyBulk.labels.overQuotaTitle,
-						html:        imagifyBulk.labels.overQuotaText,
-						type:        'error',
-						customClass: 'imagify-sweet-alert',
-					} ).then( function() {
-						location.reload();
-					} );
-				}
+				$( '.imagify-row-progress' ).slideDown();
+				$( '.imagify-no-uploaded-yet, .imagify-row-complete' ).hide( 200 );
 
-				if ( data.error.indexOf( 'This image is already compressed' ) >= 0 ) {
-					errorClass    = 'warning';
-					errorDashicon = 'warning';
-					errorMessage  = imagifyBulk.labels.notice;
-				} else {
-					errors++;
-					$( '.imagify-cell-errors' ).html( imagifyBulk.labels.nbrErrors.replace( '%s', errors ) );
-				}
+				table     = $( '.imagify-bulk-table table tbody' );
+				Optimizer = new ImagifyGulp( {
+					'buffer_size': imagifyBulk.buffer_size,
+					'lib':         ajaxurl + imagify.concat + 'action=imagify_bulk_upload&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val(),
+					'images':      response.data,
+					'context':     imagifyBulk.ajax_context
+				} );
 
-				$( '#attachment-' + data.image ).after( '<tr><td colspan="7"><span class="status-' + errorClass + '">' + data.error + '</span></td></tr>' );
+				// Before the attachment optimization.
+				Optimizer.before( function( data ) {
+					table.find( '.imagify-row-progress' ).after( '<tr id="attachment-' + data.id + '"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="' + data.thumbnail + '" alt=""/></span><span class="imagifilename">' + data.filename + '</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>' + imagifyBulk.labels.optimizing + '<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>' );
+				} )
+				// After the attachment optimization.
+					.each( function( data ) {
+						var $progress     = $( '#imagify-progress-bar' ),
+							errorClass    = 'error',
+							errorDashicon = 'dismiss',
+							errorMessage  = imagifyBulk.labels.error,
+							$attachment   = $( '#attachment-' + data.image );
 
-				$( '#attachment-' + data.image + ' .imagify-cell-status' ).html( '<span class="imagistatus status-' + errorClass + '"><span class="dashicons dashicons-' + errorDashicon + '"></span>' + errorMessage + '</span>' );
+						$progress.css( { 'width': data.progress + '%' } );
+						$progress.find( '.percent' ).html( data.progress + '%' );
+
+						if ( data.success ) {
+							++incr;
+							$attachment.find( '.imagify-cell-status' ).html( '<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>' + imagifyBulk.labels.complete + '</span>' );
+							$attachment.find( '.imagify-cell-original' ).html( data.original_size_human );
+							$attachment.find( '.imagify-cell-optimized' ).html( data.new_size_human );
+							$attachment.find( '.imagify-cell-percentage' ).html( '<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart-' + data.image + '-' + incr + '" style="width: 18px; height: 18px;"></canvas></span></span><span class="imagipercent">' + data.percent + '</span>%' );
+							drawMeAChart( $attachment.find( '.imagify-cell-percentage canvas' ) );
+							$attachment.find( '.imagify-cell-thumbnails' ).html( data.thumbnails );
+							$attachment.find( '.imagify-cell-savings' ).html( Optimizer.humanSize( data.overall_saving, 1 ) );
+
+							// The table footer total optimized files.
+							files = files + data.thumbnails + 1;
+							$( '.imagify-cell-nb-files' ).html( imagifyBulk.labels.nbrFiles.replace( '%s', files ) );
+
+							// The table footer original size.
+							original_overall_size = original_overall_size + data.original_overall_size;
+							$( '.imagify-total-original' ).html( Optimizer.humanSize( original_overall_size, 1 ) );
+
+							// The table footer overall saving.
+							overall_saving = overall_saving + data.overall_saving;
+							$( '.imagify-total-gain' ).html( Optimizer.humanSize( overall_saving, 1 ) );
+
+							return;
+						}
+
+						if ( ! stopOptimization && data.error.indexOf( "You've consumed all your data" ) >= 0 ) {
+							stopOptimization = 1;
+							Optimizer.stopProcess();
+
+							// Display an alert to warn that all data is consumed.
+							swal( {
+								title:       imagifyBulk.labels.overQuotaTitle,
+								html:        imagifyBulk.labels.overQuotaText,
+								type:        'error',
+								customClass: 'imagify-sweet-alert',
+							} ).then( function() {
+								location.reload();
+							} );
+						}
+
+						if ( data.error.indexOf( 'This image is already compressed' ) >= 0 ) {
+							errorClass    = 'warning';
+							errorDashicon = 'warning';
+							errorMessage  = imagifyBulk.labels.notice;
+						} else {
+							errors++;
+							$( '.imagify-cell-errors' ).html( imagifyBulk.labels.nbrErrors.replace( '%s', errors ) );
+						}
+
+						$attachment.after( '<tr><td colspan="7"><span class="status-' + errorClass + '">' + data.error + '</span></td></tr>' );
+
+						$attachment.find( '.imagify-cell-status' ).html( '<span class="imagistatus status-' + errorClass + '"><span class="dashicons dashicons-' + errorDashicon + '"></span>' + errorMessage + '</span>' );
+					} )
+					// After all attachments optimization.
+					.done( function( data ) {
+						var text2share;
+
+						$obj.removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
+
+						// Remove confirm dialog before quit the page.
+						$( w ).off( 'beforeunload', confirmMessage );
+
+						// Hide the progress bar.
+						$( '.imagify-row-progress' ).slideUp();
+
+						if ( 'NaN' !== data.global_percent ) {
+							// Display the complete section.
+							$( '.imagify-row-complete' ).removeClass( 'hidden' ).addClass( 'done' ).attr( 'aria-hidden', 'false' );
+							$( 'html, body' ).animate( {
+								scrollTop: $( '.imagify-row-complete' ).offset().top
+							}, 200 );
+
+							$( '.imagify-ac-rt-total-gain' ).html( data.global_gain_human );
+							$( '.imagify-ac-rt-total-original' ).html( data.global_original_size_human );
+
+							text2share = imagifyBulk.labels.textToShare;
+							text2share = text2share.replace( '%1$s', data.global_gain_human );
+							text2share = text2share.replace( '%2$s', data.global_original_size_human );
+							text2share = encodeURIComponent( text2share );
+
+							$( '.imagify-sn-twitter' ).attr( 'href', 'https://twitter.com/intent/tweet?source=webclient&amp;original_referer=' + imagifyBulk.labels.pluginURL + '&amp;text=' + text2share + '&amp;url=' + imagifyBulk.labels.pluginURL + '&amp;related=imagify&amp;hastags=performance,web,wordpress' );
+
+							$( '.imagify-ac-chart' ).attr( 'data-percent', data.global_percent );
+							drawMeCompleteChart( $( '.imagify-ac-chart' ).find( 'canvas' ) );
+						}
+
+						stopOptimization = 0;
+					} )
+					.error( function( id ) {
+						imagify.log( "Can't optimize image with id " + id + "." );
+					} )
+					.run();
 			} )
-			// After all attachments optimization.
-			.done( function( data ) {
-				var text2share;
-
-				$obj.removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
-
-				// Remove confirm dialog before quit the page.
-				$( w ).off( 'beforeunload', confirmMessage );
-
-				// Hide the progress bar.
-				$( '.imagify-row-progress' ).slideUp();
-
-				if ( 'NaN' !== data.global_percent ) {
-					// Display the complete section.
-					$( '.imagify-row-complete' ).removeClass( 'hidden' ).addClass( 'done' ).attr( 'aria-hidden', 'false' );
-					$( 'html, body' ).animate( {
-						scrollTop: $( '.imagify-row-complete' ).offset().top
-					}, 200 );
-
-					$( '.imagify-ac-rt-total-gain' ).html( data.global_gain_human );
-					$( '.imagify-ac-rt-total-original' ).html( data.global_original_size_human );
-
-					text2share = imagifyBulk.labels.textToShare;
-					text2share = text2share.replace( '%1$s', data.global_gain_human );
-					text2share = text2share.replace( '%2$s', data.global_original_size_human );
-					text2share = encodeURIComponent( text2share );
-
-					$( '.imagify-sn-twitter' ).attr( 'href', 'https://twitter.com/intent/tweet?source=webclient&amp;original_referer=' + imagifyBulk.labels.pluginURL + '&amp;text=' + text2share + '&amp;url=' + imagifyBulk.labels.pluginURL + '&amp;related=imagify&amp;hastags=performance,web,wordpress' );
-
-					$( '.imagify-ac-chart' ).attr( 'data-percent', data.global_percent );
-					drawMeCompleteChart( $( '.imagify-ac-chart' ).find( 'canvas' ) );
-				}
-
-				stopOptimization = 0;
-			} )
-			.error( function( id ) {
-				imagify.log( "Can't optimize image with id " + id + "." );
-			} )
-			.run();
-		} )
-		.fail( function() {
-			swal( {
-				title:       imagifyBulk.labels.getUnoptimizedImagesErrorTitle,
-				html:        imagifyBulk.labels.getUnoptimizedImagesErrorText,
-				type:        'error',
-				customClass: 'imagify-sweet-alert'
-			} ).then( function() {
-				location.reload();
+			.fail( function() {
+				// Display an error alert.
+				swal( {
+					title:       imagifyBulk.labels.getUnoptimizedImagesErrorTitle,
+					html:        imagifyBulk.labels.getUnoptimizedImagesErrorText,
+					type:        'error',
+					customClass: 'imagify-sweet-alert'
+				} ).then( function() {
+					location.reload();
+				} );
 			} );
-		} );
 	} );
 
 } )(jQuery, document, window);
 
 
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	var width  = 700,
 		height = 290,

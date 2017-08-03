@@ -19,4 +19,3 @@ end_of_line = crlf
 
 [{*.json}]
 indent_style = space
-indent_size = 2

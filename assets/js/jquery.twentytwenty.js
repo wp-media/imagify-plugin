@@ -1,38 +1,36 @@
-/* globals ajaxurl: false, console: false, imagifyTTT: true */
-
 window.imagify = window.imagify || {
 	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
 	log:    function( content ) {
 		if ( undefined !== console ) {
-			console.log( content );
+			console.log( content ); // eslint-disable-line no-console
 		}
 	},
 	info:   function( content ) {
 		if ( undefined !== console ) {
-			console.info( content );
+			console.info( content ); // eslint-disable-line no-console
 		}
 	}
 };
 
+/* eslint-disable */
 (function($, d, w, undefined) {
 
 	$.fn.twentytwenty = function(options, callback) {
 		options = $.extend({
-			handlePosition		: 0.5,
-			orientation			: 'horizontal',
-			labelBefore			: 'Before',
-			labelAfter			: 'After'
+			handlePosition: 0.5,
+			orientation:    'horizontal',
+			labelBefore:    'Before',
+			labelAfter:     'After'
 		}, options);
 
 		return this.each(function() {
-
-			var sliderPct			= options.handlePosition,
-				$container			= $(this),
-				sliderOrientation	= options.orientation,
-				beforeDirection		= (sliderOrientation === 'vertical') ? 'down' : 'left',
-				afterDirection		= (sliderOrientation === 'vertical') ? 'up' : 'right',
-				$beforeImg			= $container.find('img:first'),
-				$afterImg			= $container.find('img:last');
+			var sliderPct         = options.handlePosition,
+				$container        = $(this),
+				sliderOrientation = options.orientation,
+				beforeDirection   = (sliderOrientation === 'vertical') ? 'down' : 'left',
+				afterDirection    = (sliderOrientation === 'vertical') ? 'up' : 'right',
+				$beforeImg        = $container.find('img:first'),
+				$afterImg         = $container.find('img:last');
 
 
 			$container.wrap('<div class="twentytwenty-wrapper twentytwenty-' + sliderOrientation + '"></div>');
@@ -92,7 +90,7 @@ window.imagify = window.imagify || {
 				imgWidth = 0,
 				imgHeight = 0;
 
-			$(window).on('resize.twentytwenty', function() {
+			$( w ).on('resize.twentytwenty', function() {
 				adjustSlider( sliderPct );
 			});
 
@@ -133,16 +131,17 @@ window.imagify = window.imagify || {
 				event.preventDefault();
 			});
 
-			$(window).trigger('resize.twentytwenty');
+			$( w ).trigger('resize.twentytwenty');
 		});
 	};
 
 } )(jQuery, document, window);
+/* eslint-enable */
 
 /**
  * Twentytwenty Imagify Init
  */
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	/*
 	 * Mini chart
@@ -152,7 +151,7 @@ window.imagify = window.imagify || {
 	var drawMeAChart = function ( canvas ) {
 			canvas.each( function() {
 				var $this        = $( this ),
-					theValue     = parseInt( $this.closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() ),
+					theValue     = parseInt( $this.closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text(), 10 ),
 					overviewData = [
 						{
 							value: theValue,
@@ -164,12 +163,12 @@ window.imagify = window.imagify || {
 						}
 					];
 
-				new Chart( $this[0].getContext( '2d' ) ).Doughnut( overviewData, {
-					segmentStrokeColor   : '#2A2E3C',
-					segmentStrokeWidth   : 1,
-					animateRotate        : true,
+				new Chart( $this[0].getContext( '2d' ) ).Doughnut( overviewData, { // eslint-disable-line new-cap
+					segmentStrokeColor:    '#2A2E3C',
+					segmentStrokeWidth:    1,
+					animateRotate:         true,
 					percentageInnerCutout: 60,
-					tooltipEvents        : []
+					tooltipEvents:         []
 				} );
 			} );
 		},
@@ -207,6 +206,7 @@ window.imagify = window.imagify || {
 
 			// create modal box
 			modalHtml  = '<div id="' + settings.modalId + '" class="imagify-modal imagify-visual-comparison" aria-hidden="true">';
+			/* eslint-disable indent */
 				modalHtml += '<div class="imagify-modal-content loading">';
 					modalHtml += '<div class="twentytwenty-container">';
 						modalHtml += '<img class="imagify-img-before" alt="" width="' + settings.width + '" height="' + settings.height + '">';
@@ -232,6 +232,7 @@ window.imagify = window.imagify || {
 					modalHtml += '</div>';
 					modalHtml += '<button class="close-btn absolute" type="button"><i aria-hidden="true" class="dashicons dashicons-no-alt"></i><span class="screen-reader-text">' + imagifyTTT.labels.close + '</span></button>';
 				modalHtml += '</div>';
+				/* eslint-enable indent */
 			modalHtml += '</div>';
 
 			settings.modalAppendTo.append( modalHtml );
@@ -248,7 +249,7 @@ window.imagify = window.imagify || {
 				}
 
 				$modal.find( '.imagify-modal-content').css( {
-					'width'    : ( $( w ).outerWidth() * 0.85 ) + 'px',
+					'width':     ( $( w ).outerWidth() * 0.85 ) + 'px',
 					'max-width': settings.width
 				} );
 
@@ -315,7 +316,7 @@ window.imagify = window.imagify || {
 									top: labelsPos + scrollTop
 								} );
 								$datas.css( {
-									bottom: - scrollTop
+									bottom: -scrollTop
 								} );
 							} );
 						}
@@ -378,14 +379,18 @@ window.imagify = window.imagify || {
 		ultraDim         = $tt.data( 'ultra-dim' ).split( 'x' );
 
 		ttBeforeButtons  = '<span class="twentytwenty-duo-buttons twentytwenty-duo-left">';
+		/* eslint-disable indent */
 			ttBeforeButtons += '<button type="button" class="imagify-comparison-original selected" data-img="original">' + labelOriginal + '</button>';
 			ttBeforeButtons += '<button type="button" class="imagify-comparison-normal" data-img="normal">' + labelNormal + '</button>';
 			ttBeforeButtons += '<button type="button" class="imagify-comparison-aggressive" data-img="aggressive">' + labelAggressive + '</button>';
+			/* eslint-enable indent */
 		ttBeforeButtons += '</span>';
 		ttAfterButtons   = '<span class="twentytwenty-duo-buttons twentytwenty-duo-right">';
+		/* eslint-disable indent */
 			ttAfterButtons  += '<button type="button" class="imagify-comparison-normal" data-img="normal">' + labelNormal + '</button>';
 			ttAfterButtons  += '<button type="button" class="imagify-comparison-aggressive" data-img="aggressive">' + labelAggressive + '</button>';
 			ttAfterButtons  += '<button type="button" class="imagify-comparison-ultra selected" data-img="ultra">' + labelUltra + '</button>';
+			/* eslint-enable indent */
 		ttAfterButtons  += '</span>';
 
 		// Loader.
@@ -603,38 +608,38 @@ window.imagify = window.imagify || {
 			},
 			imagifyContentInModal = function() {
 				var tempTimer = setInterval( function() {
-						var $datas;
+					var $datas;
 
-						if ( ! $( '.media-modal' ).find( '.imagify-datas-details' ).length ) {
-							return;
-						}
+					if ( ! $( '.media-modal' ).find( '.imagify-datas-details' ).length ) {
+						return;
+					}
 
-						if ( $( '#imagify-original-src' ).length > 0 && $( '#imagify-original-src' ) !== '' ) {
-							// Trigger creation.
-							$( '.media-frame-content' ).find( '.attachment-actions' ).prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
+					if ( $( '#imagify-original-src' ).length > 0 && $( '#imagify-original-src' ) !== '' ) {
+						// Trigger creation.
+						$( '.media-frame-content' ).find( '.attachment-actions' ).prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
 
-							// Get datas.
-							$datas = $( '.media-frame-content' ).find( '.compat-field-imagify' );
+						// Get datas.
+						$datas = $( '.media-frame-content' ).find( '.compat-field-imagify' );
 
-							// Modal and trigger event creation.
-							imagifyTwentyModal( {
-								width:         $( '#imagify-full-width' ).val(),
-								height:        $( '#imagify-full-height' ).val(),
-								originalUrl:   $( '#imagify-original-src' ).val(),
-								optimizedUrl:  $( '#imagify-full-src' ).val(),
-								originalSize:  $( '#imagify-original-size' ).val(),
-								optimizedSize: $datas.find( '.imagify-data-item' ).find( '.big' ).text(),
-								saving:        $datas.find( '.imagify-chart-value' ).text(),
-								modalAppendTo: $( '.media-frame-content' ).find( '.thumbnail-image' ),
-								trigger:       $( '#imagify-media-frame-comparison-btn' ),
-								modalId:       'imagify-comparison-modal',
-								openModal:     true
-							} );
-						}
+						// Modal and trigger event creation.
+						imagifyTwentyModal( {
+							width:         $( '#imagify-full-width' ).val(),
+							height:        $( '#imagify-full-height' ).val(),
+							originalUrl:   $( '#imagify-original-src' ).val(),
+							optimizedUrl:  $( '#imagify-full-src' ).val(),
+							originalSize:  $( '#imagify-original-size' ).val(),
+							optimizedSize: $datas.find( '.imagify-data-item' ).find( '.big' ).text(),
+							saving:        $datas.find( '.imagify-chart-value' ).text(),
+							modalAppendTo: $( '.media-frame-content' ).find( '.thumbnail-image' ),
+							trigger:       $( '#imagify-media-frame-comparison-btn' ),
+							modalId:       'imagify-comparison-modal',
+							openModal:     true
+						} );
+					}
 
-						clearInterval( tempTimer );
-						tempTimer = null;
-					}, 20 );
+					clearInterval( tempTimer );
+					tempTimer = null;
+				}, 20 );
 			},
 			waitContent = setInterval( function() {
 				if ( ! $('.upload-php').find('.media-frame.mode-grid').find('.attachments').length ) {
