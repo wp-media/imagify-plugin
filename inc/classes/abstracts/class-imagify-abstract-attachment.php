@@ -50,12 +50,12 @@ class Imagify_Abstract_Attachment {
 	}
 
 	/**
-	 * Get the attachment backup filepath.
+	 * Get the attachment backup file path.
 	 *
-	 * @since 1.0
+	 * @since  1.0
 	 * @access public
 	 *
-	 * @return string|false
+	 * @return string|false The file path. False if it doesn't exist.
 	 */
 	public function get_backup_path() {
 		return '';

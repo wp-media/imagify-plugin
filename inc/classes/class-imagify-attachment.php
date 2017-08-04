@@ -16,18 +16,18 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	const VERSION = '1.0.2';
 
 	/**
-	 * Get the attachment backup filepath.
+	 * Get the attachment backup file path.
 	 *
-	 * @since 1.0
+	 * @since  1.0
 	 * @access public
 	 *
-	 * @return string|bool
+	 * @return string|false The file path. False if it doesn't exist.
 	 */
 	public function get_backup_path() {
 		$file_path   = $this->get_original_path();
 		$backup_path = get_imagify_attachment_backup_path( $file_path );
 
-		if ( file_exists( $backup_path ) ) {
+		if ( $backup_path && file_exists( $backup_path ) ) {
 			return $backup_path;
 		}
 
@@ -56,7 +56,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return int
 	 */
 	public function get_optimization_level() {
-		return (int) get_post_meta( $this->id, '_imagify_optimization_level', true );
+		$level = get_post_meta( $this->id, '_imagify_optimization_level', true );
+		return false !== $level ? (int) $level : false;
 	}
 
 	/**

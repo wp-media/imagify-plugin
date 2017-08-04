@@ -66,19 +66,19 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Get the attachment backup filepath.
+	 * Get the attachment backup file path.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
-	 *
 	 * @access public
-	 * @return string|bool The path. False on failure.
+	 *
+	 * @return string|false The file path. False if it doesn't exist.
 	 */
 	public function get_backup_path() {
 		$file_path   = $this->get_original_path();
 		$backup_path = get_imagify_ngg_attachment_backup_path( $file_path );
 
-		if ( file_exists( $backup_path ) ) {
+		if ( $backup_path && file_exists( $backup_path ) ) {
 			return $backup_path;
 		}
 
