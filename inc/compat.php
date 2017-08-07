@@ -42,13 +42,13 @@ if ( ! function_exists( 'array_replace' ) ) :
 		array_shift( $replacements );
 
 		foreach ( $replacements as $i => $add ) {
-			if ( is_array( $add ) ) {
-				foreach ( $add as $k => $v ) {
-					$target[ $k ] = $v;
-				}
-			} else {
+			if ( ! is_array( $add ) ) {
 				trigger_error( __FUNCTION__ . '(): Argument #' . ( $i + 2 ) . ' is not an array', E_USER_WARNING );
 				return null;
+			}
+
+			foreach ( $add as $k => $v ) {
+				$target[ $k ] = $v;
 			}
 		}
 
