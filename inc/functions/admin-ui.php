@@ -18,6 +18,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 	$output_before            = ( 'post.php' !== $pagenow ) ? '<li class="imagify-data-item">' : '<div class="misc-pub-section misc-pub-imagify imagify-data-item">';
 	$output_after             = ( 'post.php' !== $pagenow ) ? '</li>' : '</div>';
 	$reoptimize_link          = get_imagify_attachment_reoptimize_link( $attachment, $context );
+	$reoptimize_link         .= get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $context );
 	$reoptimize_output        = $reoptimize_link ? $reoptimize_link : '';
 	$reoptimize_output_before = '<div class="imagify-datas-actions-links">';
 	$reoptimize_output_after  = '</div><!-- .imagify-datas-actions-links -->';
@@ -202,6 +203,41 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 			$output .= '<span class="dashicons dashicons-admin-generic"></span><span class="imagify-hide-if-small">' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), '</span>' . __( 'Normal', 'imagify' ) . '<span class="imagify-hide-if-small">' ) . '</span>';
 		$output .= '</a>';
 	}
+
+	return $output;
+}
+
+/**
+ * Get the link to optimize missing thumbnail sizes for a specific attachment.
+ *
+ * @since  1.6.10
+ * @author Grégory Viguier
+ *
+ * @param  object $attachment The attachement object.
+ * @param  string $context    A context.
+ * @return string             The output to print.
+ */
+function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $context = 'wp' ) {
+	// Stop the process if the API key isn't valid.
+	if ( ! imagify_valid_key() ) {
+		return '';
+	}
+
+	$missing_sizes = $attachment->get_unoptimized_sizes();
+
+	if ( ! $missing_sizes ) {
+		return '';
+	}
+
+	$url = get_imagify_admin_url( 'optimize-missing-sizes', array(
+		'attachment_id' => $attachment->id,
+		'context'       => $context,
+	) );
+
+	$output  = '<a href="' . esc_url( $url ) . '" class="button-imagify-optimize-missing-sizes" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">';
+		/* translators: 1 is the number of thumbnails to optimize, 2 is the opening of a HTML tag that will be hidden on small screens, 3 is the closing tag. */
+		$output .= '<span class="dashicons dashicons-admin-generic"></span>' . sprintf( _n( '%2$sOptimize %3$s%1$d missing thumbnail', '%2$sOptimize %3$s%1$d missing thumbnails', count( $missing_sizes ), 'imagify' ), count( $missing_sizes ), '<span class="imagify-hide-if-small">', '</span>' );
+	$output .= '</a>';
 
 	return $output;
 }

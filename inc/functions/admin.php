@@ -49,6 +49,9 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 		case 'manual-override-upload':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_override_upload&attachment_id=' . $id . '&optimization_level=' . $level . '&context=' . $context ), 'imagify-manual-override-upload' );
 
+		case 'optimize-missing-sizes':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_optimize_missing_sizes&attachment_id=' . $id . '&context=' . $context ), 'imagify-optimize-missing-sizes' );
+
 		case 'manual-upload':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-manual-upload' );
 
