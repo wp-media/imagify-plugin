@@ -1485,17 +1485,6 @@ ul.imagify-datas-list.imagify-datas-list {
 	.column-imagify_optimized_file.column-imagify_optimized_file {
 		width: 13em;
 	}
-	table.media .imagify-hide-if-small {
-		position: absolute;
-		margin: -1px;
-		padding: 0;
-		height: 1px;
-		width: 1px;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		border: 0;
-		word-wrap: normal !important; /* many screen reader and browser combinations announce broken words as they would appear visually */
-	}
 	table.media .column-title .has-media-icon ~ .row-actions.row-actions {
 		margin-left: 0;
 	}
@@ -1514,7 +1503,7 @@ ul.imagify-datas-list.imagify-datas-list {
 		margin-left: 0;
 	}
 }
-@media (max-width: 360px) {
+@media (min-width: 783px) and (max-width: 1150px), (max-width: 360px) {
 	table.media .imagify-hide-if-small {
 		position: absolute;
 		margin: -1px;
@@ -1524,7 +1513,7 @@ ul.imagify-datas-list.imagify-datas-list {
 		overflow: hidden;
 		clip: rect(0 0 0 0);
 		border: 0;
-		word-wrap: normal !important; /* many screen reader and browser combinations announce broken words as they would appear visually */
+		word-wrap: normal !important; /* Many screen reader and browser combinations announce broken words as they would appear visually. */
 	}
 }
 .compat-field-imagify .label {
