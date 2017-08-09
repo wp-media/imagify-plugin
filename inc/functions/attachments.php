@@ -213,18 +213,18 @@ function get_imagify_thumbnail_sizes() {
 		}
 
 		if ( isset( $additional_image_sizes[ $size_name ]['height'] ) ) {
-			// For theme-added sizes
+			// For theme-added sizes.
 			$intermediate_image_sizes[ $size_name ]['height'] = (int) $additional_image_sizes[ $size_name ]['height'];
 		} else {
-			// For default sizes set in options
+			// For default sizes set in options.
 			$intermediate_image_sizes[ $size_name ]['height'] = (int) get_option( "{$size_name}_size_h" );
 		}
 
 		if ( isset( $additional_image_sizes[ $size_name ]['crop'] ) ) {
-			// For theme-added sizes
+			// For theme-added sizes.
 			$intermediate_image_sizes[ $size_name ]['crop'] = (int) $additional_image_sizes[ $size_name ]['crop'];
 		} else {
-			// For default sizes set in options
+			// For default sizes set in options.
 			$intermediate_image_sizes[ $size_name ]['crop'] = (int) get_option( "{$size_name}_crop" );
 		}
 	}

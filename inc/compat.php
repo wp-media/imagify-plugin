@@ -274,7 +274,7 @@ if ( ! function_exists( 'wp_get_additional_image_sizes' ) ) :
 	function wp_get_additional_image_sizes() {
 		global $_wp_additional_image_sizes;
 		if ( ! $_wp_additional_image_sizes ) {
-			$_wp_additional_image_sizes = array();
+			$_wp_additional_image_sizes = array(); // WPCS: override ok.
 		}
 		return $_wp_additional_image_sizes;
 	}

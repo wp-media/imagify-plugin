@@ -83,12 +83,12 @@ function get_imagify_max_intermediate_image_size() {
 	$limit  = 9999;
 
 	foreach ( get_imagify_thumbnail_sizes() as $_size ) {
-		if ( $_size[ 'width' ] > $width && $_size[ 'width' ] < $limit ) {
-			$width = $_size[ 'width' ];
+		if ( $_size['width'] > $width && $_size['width'] < $limit ) {
+			$width = $_size['width'];
 		}
 
-		if ( $_size[ 'height' ] > $height && $_size[ 'height' ] < $limit ) {
-			$height = $_size[ 'height' ];
+		if ( $_size['height'] > $height && $_size['height'] < $limit ) {
+			$height = $_size['height'];
 		}
 	}
 
