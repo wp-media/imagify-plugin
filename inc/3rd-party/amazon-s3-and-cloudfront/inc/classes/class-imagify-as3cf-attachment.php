@@ -803,21 +803,4 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		return false === $preserve;
 	}
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** VARIOUS TOOLS =========================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Tell if the attachment has a supported mime type.
-	 *
-	 * @since  1.6.6
-	 * @author Grégory Viguier
-	 *
-	 * @return bool
-	 */
-	public function is_mime_type_supported() {
-		return imagify_is_attachment_mime_type_supported( $this->id );
-	}
 }

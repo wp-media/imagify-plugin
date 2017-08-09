@@ -13,7 +13,7 @@ class Imagify_Abstract_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.0.3';
 
 	/**
 	 * The attachment ID.
@@ -96,6 +96,18 @@ class Imagify_Abstract_Attachment {
 	public function get_extension() {
 		$fullsize_path = $this->get_original_path();
 		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
+	}
+
+	/**
+	 * Tell if the current file mime type is supported.
+	 *
+	 * @since  1.6.9
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function is_mime_type_supported() {
+		return imagify_is_attachment_mime_type_supported( $this->id );
 	}
 
 	/**
