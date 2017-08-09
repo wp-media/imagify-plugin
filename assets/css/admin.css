@@ -1604,8 +1604,8 @@ ul.imagify-datas-list .imagify-data-item strong {
 .imagify-datas-more-action .the-text {
 	display: inline-block;
 	vertical-align: middle;
-	height: 20px;
-	line-height: 20px;
+	height: auto;
+	line-height: inherit;
 }
 
 ul.imagify-datas-details.imagify-datas-details {
