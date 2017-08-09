@@ -515,6 +515,20 @@ class Imagify_Abstract_Attachment {
 	}
 
 	/**
+	 * Optimize missing sizes with Imagify.
+	 *
+	 * @since  1.6.10
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  int $optimization_level The optimization level (2=ultra, 1=aggressive, 0=normal).
+	 * @return array|object            An array of thumbnail data, size by size. A WP_Error object on failure.
+	 */
+	public function optimize_missing_thumbnails( $optimization_level = null ) {
+		return array();
+	}
+
+	/**
 	 * Process an attachment restoration from the backup file.
 	 *
 	 * @since 1.0
