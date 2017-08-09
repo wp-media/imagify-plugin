@@ -67,4 +67,8 @@
 			<property name="customPropertiesWhitelist" value="Packs,Plans,fileName" type="array"/>
 		</properties>
 	</rule>
+
+	<rule ref="WordPress.PHP.DevelopmentFunctions.error_log_trigger_error">
+		<exclude-pattern>inc/compat.php</exclude-pattern>
+	</rule>
 </ruleset>
