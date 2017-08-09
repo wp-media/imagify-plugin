@@ -223,8 +223,20 @@ function imagify_backup_file( $file_path, $backup_path = null ) {
 	// Create sub-directories.
 	wp_mkdir_p( dirname( $backup_path ) );
 
+	/**
+	 * Allow to overwrite the backup file if it already exists.
+	 *
+	 * @since  1.6.9
+	 * @author Grégory Viguier
+	 *
+	 * @param bool   $overwrite   Whether to overwrite the backup file.
+	 * @param string $file_path   The file path.
+	 * @param string $backup_path The backup path.
+	 */
+	$overwrite = apply_filters( 'imagify_backup_overwrite_backup', false, $file_path, $backup_path );
+
 	// Copy the file.
-	$filesystem->copy( $file_path, $backup_path, false, FS_CHMOD_FILE );
+	$filesystem->copy( $file_path, $backup_path, $overwrite, FS_CHMOD_FILE );
 
 	// Make sure the backup copy exists.
 	if ( ! $filesystem->exists( $backup_path ) ) {
