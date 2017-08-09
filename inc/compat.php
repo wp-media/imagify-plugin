@@ -4,10 +4,11 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 if ( ! function_exists( 'curl_file_create' ) ) :
 
 	/**
-	 * Create a CURLFile object.
+	 * PHP-agnostic version of curl_file_create(): create a CURLFile object.
 	 *
 	 * @since 1.0
 	 * @since PHP 5.5
+	 * @see   http://dk2.php.net/manual/en/function.curl-file-create.php
 	 *
 	 * @param  string $filename Path to the file which will be uploaded.
 	 * @param  string $mimetype Mimetype of the file.
@@ -20,6 +21,39 @@ if ( ! function_exists( 'curl_file_create' ) ) :
 			. ( $mimetype ? ";type=$mimetype" : '' );
 	}
 
+endif;
+
+if ( ! function_exists( 'array_replace' ) ) :
+	/**
+	 * PHP-agnostic version of array_replace(): replaces elements from passed arrays into the first array.
+	 *
+	 * @since  1.6.9
+	 * @since  PHP 5.3
+	 * @see    http://dk2.php.net/manual/en/function.array-replace.php
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $target       The array in which elements are replaced.
+	 * @param  array $replacements The array from which elements will be extracted.
+	 *                             More arrays from which elements will be extracted. Values from later arrays overwrite the previous values.
+	 * @return array|null          The resulting array. Null if an error occurs.
+	 */
+	function array_replace( $target = array(), $replacements = array() ) {
+		$replacements = func_get_args();
+		array_shift( $replacements );
+
+		foreach ( $replacements as $i => $add ) {
+			if ( ! is_array( $add ) ) {
+				trigger_error( __FUNCTION__ . '(): Argument #' . ( $i + 2 ) . ' is not an array', E_USER_WARNING );
+				return null;
+			}
+
+			foreach ( $add as $k => $v ) {
+				$target[ $k ] = $v;
+			}
+		}
+
+		return $target;
+	}
 endif;
 
 if ( ! function_exists( 'wp_json_encode' ) ) :
