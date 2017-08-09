@@ -179,45 +179,57 @@ function get_imagify_attachment_url( $file_path ) {
 }
 
 /**
- * Get size information for all currently-registered thumbnail sizes.
+ * Get size information for all currently registered thumbnail sizes.
  *
- * @since 1.5.10
- * @author Jonathan Buttigieg
+ * @since  1.5.10
+ * @since  1.6.10 For consistency, revamped the function like WP does with wp_generate_attachment_metadata().
+ *                Removed the filter, added crop value to each size.
+ * @author Grégory Viguier
  *
- * @return array Data for all currently-registered thumbnail sizes.
+ * @return array Data for all currently registered thumbnail sizes (width, height, crop, name).
  */
 function get_imagify_thumbnail_sizes() {
-	global $_wp_additional_image_sizes, $wp_version;
-
-	$sizes                        = array();
-	$all_intermediate_image_sizes = get_intermediate_image_sizes();
-	$intermediate_image_sizes     = apply_filters( 'image_size_names_choose', $all_intermediate_image_sizes );
-	$all_intermediate_image_sizes = array_combine( $all_intermediate_image_sizes, $all_intermediate_image_sizes );
-	$intermediate_image_sizes     = array_merge( $all_intermediate_image_sizes, $intermediate_image_sizes );
-	$wp_image_sizes               = array( 'thumbnail' => 1, 'medium' => 1, 'large' => 1 );
-
-	if ( version_compare( $wp_version, '4.4-beta3' ) >= 0 ) {
-		$wp_image_sizes['medium_large'] = 1;
-	}
+	// All image size names.
+	$intermediate_image_sizes = get_intermediate_image_sizes();
+	$intermediate_image_sizes = array_flip( $intermediate_image_sizes );
+	// Additional image size attributes.
+	$additional_image_sizes   = wp_get_additional_image_sizes();
 
 	// Create the full array with sizes and crop info.
-	foreach ( $intermediate_image_sizes as $size => $size_name ) {
-		if ( isset( $wp_image_sizes[ $size ] ) && ! is_int( $size ) ) {
-			$sizes[ $size ] = array(
-				'width'  => get_option( $size . '_size_w' ),
-				'height' => get_option( $size . '_size_h' ),
-				'name'   => $size_name,
-			);
-		} elseif ( isset( $_wp_additional_image_sizes[ $size ] ) ) {
-			$sizes[ $size ] = array(
-				'width'  => $_wp_additional_image_sizes[ $size ]['width'],
-				'height' => $_wp_additional_image_sizes[ $size ]['height'],
-				'name'   => $size_name,
-			);
+	foreach ( $intermediate_image_sizes as $size_name => $s ) {
+		$intermediate_image_sizes[ $size_name ] = array(
+			'width'  => '',
+			'height' => '',
+			'crop'   => false,
+			'name'   => $size_name,
+		);
+
+		if ( isset( $additional_image_sizes[ $size_name ]['width'] ) ) {
+			// For theme-added sizes.
+			$intermediate_image_sizes[ $size_name ]['width'] = (int) $additional_image_sizes[ $size_name ]['width'];
+		} else {
+			// For default sizes set in options.
+			$intermediate_image_sizes[ $size_name ]['width'] = (int) get_option( "{$size_name}_size_w" );
+		}
+
+		if ( isset( $additional_image_sizes[ $size_name ]['height'] ) ) {
+			// For theme-added sizes
+			$intermediate_image_sizes[ $size_name ]['height'] = (int) $additional_image_sizes[ $size_name ]['height'];
+		} else {
+			// For default sizes set in options
+			$intermediate_image_sizes[ $size_name ]['height'] = (int) get_option( "{$size_name}_size_h" );
+		}
+
+		if ( isset( $additional_image_sizes[ $size_name ]['crop'] ) ) {
+			// For theme-added sizes
+			$intermediate_image_sizes[ $size_name ]['crop'] = (int) $additional_image_sizes[ $size_name ]['crop'];
+		} else {
+			// For default sizes set in options
+			$intermediate_image_sizes[ $size_name ]['crop'] = (int) get_option( "{$size_name}_crop" );
 		}
 	}
 
-	return $sizes;
+	return $intermediate_image_sizes;
 }
 
 /**

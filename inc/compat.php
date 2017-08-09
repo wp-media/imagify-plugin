@@ -258,3 +258,25 @@ if ( ! function_exists( 'wp_normalize_path' ) ) :
 	}
 
 endif;
+
+if ( ! function_exists( 'wp_get_additional_image_sizes' ) ) :
+
+	/**
+	 * Retrieve additional image sizes.
+	 *
+	 * @since 1.6.10
+	 * @since WP 4.7.0
+	 *
+	 * @global array $_wp_additional_image_sizes
+	 *
+	 * @return array Additional images size data.
+	 */
+	function wp_get_additional_image_sizes() {
+		global $_wp_additional_image_sizes;
+		if ( ! $_wp_additional_image_sizes ) {
+			$_wp_additional_image_sizes = array();
+		}
+		return $_wp_additional_image_sizes;
+	}
+
+endif;
