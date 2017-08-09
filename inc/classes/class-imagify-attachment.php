@@ -293,9 +293,14 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		// Optimize all thumbnails.
 		if ( $sizes ) {
+			$disallowed_sizes        = get_imagify_option( 'disallowed-sizes', array() );
+			$is_active_for_network   = imagify_is_active_for_network();
+			$attachment_path_dirname = trailingslashit( dirname( $attachment_path ) );
+			$attachment_url_dirname  = trailingslashit( dirname( $attachment_url ) );
+
 			foreach ( $sizes as $size_key => $size_data ) {
 				// Check if this size has to be optimized.
-				if ( array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) && ! imagify_is_active_for_network() ) {
+				if ( ! $is_active_for_network && isset( $disallowed_sizes[ $size_key ] ) ) {
 					$data['sizes'][ $size_key ] = array(
 						'success' => false,
 						'error'   => __( 'This size isn\'t authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
@@ -303,8 +308,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 					continue;
 				}
 
-				$thumbnail_path = trailingslashit( dirname( $attachment_path ) ) . $size_data['file'];
-				$thumbnail_url  = trailingslashit( dirname( $attachment_url ) ) . $size_data['file'];
+				$thumbnail_path = $attachment_path_dirname . $size_data['file'];
+				$thumbnail_url  = $attachment_url_dirname . $size_data['file'];
 
 				// Optimize the thumbnail size.
 				$response = do_imagify( $thumbnail_path, array(
