@@ -14,7 +14,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 
 	/**
 	 * The image object.
@@ -35,6 +35,17 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @access public
 	 */
 	public $row;
+
+	/**
+	 * Tell if the file mime type can be optimized by Imagify.
+	 *
+	 * @since 1.6.9
+	 *
+	 * @var bool
+	 * @access protected
+	 * see $this->is_mime_type_supported()
+	 */
+	protected $is_mime_type_supported;
 
 	/**
 	 * The constructor.
@@ -179,6 +190,33 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
+	 * Tell if the current file mime type is supported.
+	 *
+	 * @since  1.6.9
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function is_mime_type_supported() {
+		if ( isset( $this->is_mime_type_supported ) ) {
+			return $this->is_mime_type_supported;
+		}
+
+		$mime_type = imagify_get_mime_type_from_file( $this->get_original_path() );
+
+		if ( ! $mime_type ) {
+			$this->is_mime_type_supported = false;
+			return $this->is_mime_type_supported;
+		}
+
+		$mime_types = get_imagify_mime_type();
+		$mime_types = array_flip( $mime_types );
+
+		$this->is_mime_type_supported = isset( $mime_types[ $mime_type ] );
+		return $this->is_mime_type_supported;
+	}
+
+	/**
 	 * Update the metadata size of the attachment.
 	 *
 	 * @since 1.5
@@ -286,7 +324,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
 		// Check if the attachment extension is allowed.
-		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+		if ( ! $this->is_mime_type_supported() ) {
 			return;
 		}
 
@@ -528,7 +566,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 */
 	public function restore() {
 		// Check if the attachment extension is allowed.
-		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+		if ( ! $this->is_mime_type_supported() ) {
 			return new WP_Error( 'mime_not_type_supported', __( 'Mime type not supported.', 'imagify' ) );
 		}
 

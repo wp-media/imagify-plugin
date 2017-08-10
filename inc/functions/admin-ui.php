@@ -221,7 +221,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	$attachment_ext = $attachment->get_extension();
 
 	// Check if the attachment extension is allowed.
-	if ( 'wp' === $context && ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+	if ( ! $attachment->is_mime_type_supported() ) {
 		/* translators: %s is a file extension. */
 		return sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
 	}
