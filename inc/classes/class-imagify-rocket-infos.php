@@ -115,7 +115,14 @@ class Imagify_Rocket_Infos {
 		global $wp_version;
 
 		// Filter the plugin API results to inject WP Rocket.
-		add_filter( 'plugins_api_result', array( $this, 'add_api_result' ), 11, 3 );
+		add_filter( 'plugins_api_result', array( $this, 'add_api_result' ), IMAGIFY_INT_MAX, 3 );
+
+		// Change order for the featured tab.
+		if ( is_network_admin() ) {
+			add_filter( 'views_plugin-install-network', array( $this, 'change_featured_items_order' ), IMAGIFY_INT_MAX );
+		} else {
+			add_filter( 'views_plugin-install', array( $this, 'change_featured_items_order' ), IMAGIFY_INT_MAX );
+		}
 
 		// Filter the iframe src to return WP Rocket's site URL (More Details popup).
 		if ( version_compare( $wp_version, '4.9' ) >= 0 ) {
@@ -142,10 +149,9 @@ class Imagify_Rocket_Infos {
 	 * @since  1.6.9
 	 * @author Grégory Viguier
 	 *
-	 * @param object $result Response object or WP_Error object.
-	 * @param string $action The type of information being requested from the Plugin Install API.
-	 * @param object $args   Plugin API arguments.
-	 *
+	 * @param  object $result Response object or WP_Error object.
+	 * @param  string $action The type of information being requested from the Plugin Install API.
+	 * @param  object $args   Plugin API arguments.
 	 * @return array|object  Updated array of results or WP_Error object.
 	 */
 	public function add_api_result( $result, $action, $args ) {
@@ -171,17 +177,44 @@ class Imagify_Rocket_Infos {
 			return $result;
 		}
 
-		if ( 'featured' === $args->browse ) {
-			array_push( $result->plugins, $plugin_info );
-		} else {
-			array_unshift( $result->plugins, $plugin_info );
-		}
+		array_unshift( $result->plugins, $plugin_info );
 
 		if ( isset( $result->info['results'] ) ) {
 			++$result->info['results'];
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Put WP Rocket back at the first place in the Featured tab.
+	 * In the Featured tab, WP uses `uasort()` to reorder the items. But the order is made on a non-existing property (group), so as a result, the items are ramdomized.
+	 *
+	 * @access public
+	 * @since  1.6.9
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $views An array of available list table views.
+	 * @return array        The same array.
+	 */
+	function change_featured_items_order( $views ) {
+		global $wp_list_table;
+
+		if ( 'group' !== $wp_list_table->orderby ) {
+			return $views;
+		}
+
+		foreach ( $wp_list_table->items as $i => $item ) {
+			$item = (object) $item;
+
+			if ( 'wp-rocket' === $item->slug ) {
+				unset( $wp_list_table->items[ $i ] );
+				array_unshift( $wp_list_table->items, $item );
+				break;
+			}
+		}
+
+		return $views;
 	}
 
 	/**
@@ -238,6 +271,17 @@ class Imagify_Rocket_Infos {
 			return $links;
 		}
 
+		// Remove the "Install Now" button.
+		if ( $links ) {
+			foreach ( $links as $i => $link ) {
+				if ( strpos( $link, 'install-now' ) !== false ) {
+					unset( $links[ $i ] );
+					break;
+				}
+			}
+		}
+
+		// Add the "Buy Now" button.
 		$link = '<a class="button" target="_blank" data-slug="wp-rocket" href="%s" aria-label="%s" data-name="WP Rocket">%s</a>';
 		$url  = imagify_get_wp_rocket_url( false, array(
 			'utm_source'   => 'wpaddplugins',
@@ -362,7 +406,7 @@ class Imagify_Rocket_Infos {
 			return self::$plugin_information;
 		}
 
-		/* translators: %s is a plugin version. */
+		/* translators: %s is a WordPress version. */
 		self::$plugin_information->requires = preg_replace( '@([\d.]+) or higher@', sprintf( __( '%s or higher', 'imagify' ), '$1' ), self::$plugin_information->requires );
 		self::$plugin_information->requires = str_replace( 'Requires PHP:', __( 'Requires PHP:', 'imagify' ), self::$plugin_information->requires );
 		self::$plugin_information->homepage = imagify_get_wp_rocket_url( false, array(

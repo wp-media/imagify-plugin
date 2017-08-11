@@ -42,6 +42,7 @@ define( 'IMAGIFY_ASSETS_JS_URL'          , IMAGIFY_ASSETS_URL . 'js/' );
 define( 'IMAGIFY_ASSETS_CSS_URL'         , IMAGIFY_ASSETS_URL . 'css/' );
 define( 'IMAGIFY_ASSETS_IMG_URL'         , IMAGIFY_ASSETS_URL . 'images/' );
 define( 'IMAGIFY_MAX_BYTES'              , 5242880 );
+define( 'IMAGIFY_INT_MAX'                , PHP_INT_MAX - 30 );
 
 add_action( 'plugins_loaded', '_imagify_init' );
 /**
