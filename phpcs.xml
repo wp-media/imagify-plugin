@@ -28,6 +28,7 @@
 		<exclude name="WordPress.VIP.RestrictedFunctions.user_meta_get_user_meta"/>
 		<exclude name="WordPress.VIP.RestrictedFunctions.user_meta_update_user_meta"/>
 		<exclude name="WordPress.VIP.RestrictedFunctions.wp_redirect"/>
+		<exclude name="WordPress.VIP.RestrictedFunctions.wp_remote_get_wp_remote_get"/>
 		<exclude name="WordPress.VIP.RestrictedVariables.cache_constraints___COOKIE"/><!-- Temporarily excluded -->
 		<exclude name="WordPress.VIP.SlowDBQuery.slow_db_query"/><!-- Temporarily excluded -->
 		<exclude name="WordPress.VIP.SlowDBQuery.slow_db_query_meta_key"/><!-- Temporarily excluded -->
@@ -69,6 +70,10 @@
 	</rule>
 
 	<rule ref="WordPress.PHP.DevelopmentFunctions.error_log_trigger_error">
+		<exclude-pattern>inc/compat.php</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.WP.AlternativeFunctions.parse_url_parse_url">
 		<exclude-pattern>inc/compat.php</exclude-pattern>
 	</rule>
 </ruleset>
