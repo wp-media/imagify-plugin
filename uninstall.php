@@ -11,6 +11,7 @@ delete_site_transient( 'imagify_check_licence_1' );
 delete_site_transient( 'imagify_bulk_optimization_level' );
 delete_site_transient( 'imagify_large_library' );
 delete_site_transient( 'imagify_max_image_size' );
+delete_site_transient( 'imagify_rocket_plugin_info' );
 
 // Clear scheduled hooks.
 wp_clear_scheduled_hook( 'imagify_rating_event' );
