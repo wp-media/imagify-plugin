@@ -98,9 +98,6 @@ function _imagify_init() {
 		require( IMAGIFY_ADMIN_UI_PATH . 'options.php' );
 		require( IMAGIFY_ADMIN_UI_PATH . 'bulk.php' );
 		require( IMAGIFY_ADMIN_UI_PATH . 'notices.php' );
-		require( IMAGIFY_CLASSES_PATH . 'class-imagify-rocket-infos.php' );
-
-		add_action( 'init', array( imagify_rocket_infos(), 'init' ) );
 	}
 
 	/**
