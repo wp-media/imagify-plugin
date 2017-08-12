@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.8.1
-Stable tag: 1.6.9
+Stable tag: 1.6.9.1
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -136,6 +136,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.9.1 =
+* Regression fix: Don't load Imagify SweetAlert files on WP Rocket options screen to avoid conflitcs.
+
 = 1.6.9 =
 * Improvement: the bulk optimization now stops as soon as the quota is fully consumed, instead of trying to optimize more images and getting error messages one after the other.
 * Improvement: updated (almost) all JavaScript libraries we use. SweetAlert won't conflict with new versions anymore. Few code improvements.
