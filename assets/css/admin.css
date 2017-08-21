@@ -704,6 +704,17 @@ p.imagify-section-title.imagify-section-title {
 	margin: -1em -2.4em -1em 0;
 	color: #FFF;
 }
+@media (max-width: 1120px) {
+	.imagify-settings .imagify-title {
+		flex-wrap: wrap;
+	}
+	.imagify-settings .imagify-logo-block {
+		margin-right: 0;
+	}
+	.imagify-settings .imagify-rate-us.imagify-rate-us {
+		margin: 1em 0 -1em;
+	}
+}
 .imagify-rate-us a {
 	color: #40B1D0;
 }
