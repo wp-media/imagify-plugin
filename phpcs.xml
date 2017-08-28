@@ -70,10 +70,10 @@
 	</rule>
 
 	<rule ref="WordPress.PHP.DevelopmentFunctions.error_log_trigger_error">
-		<exclude-pattern>inc/compat.php</exclude-pattern>
+		<exclude-pattern>inc/functions/compat.php</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.WP.AlternativeFunctions.parse_url_parse_url">
-		<exclude-pattern>inc/compat.php</exclude-pattern>
+		<exclude-pattern>inc/functions/compat.php</exclude-pattern>
 	</rule>
 </ruleset>
