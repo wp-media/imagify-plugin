@@ -26,7 +26,6 @@ define( 'IMAGIFY_PAYMENT_URL'            , IMAGIFY_APP_MAIN . '/#/plugin/' );
 define( 'IMAGIFY_FILE'                   , __FILE__ );
 define( 'IMAGIFY_PATH'                   , realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
 define( 'IMAGIFY_INC_PATH'               , realpath( IMAGIFY_PATH . 'inc/' ) . '/' );
-define( 'IMAGIFY_API_PATH'               , realpath( IMAGIFY_INC_PATH . 'api/' ) . '/' );
 define( 'IMAGIFY_ADMIN_PATH'             , realpath( IMAGIFY_INC_PATH . 'admin' ) . '/' );
 define( 'IMAGIFY_ADMIN_UI_PATH'          , realpath( IMAGIFY_ADMIN_PATH . 'ui' ) . '/' );
 define( 'IMAGIFY_COMMON_PATH'            , realpath( IMAGIFY_INC_PATH . 'common' ) . '/' );
@@ -60,7 +59,6 @@ function _imagify_init() {
 	}
 
 	require( IMAGIFY_FUNCTIONS_PATH . 'compat.php' );
-	require( IMAGIFY_API_PATH . 'imagify.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'deprecated.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'common.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'options.php' );
