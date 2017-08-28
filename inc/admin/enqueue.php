@@ -8,7 +8,6 @@ add_action( 'admin_print_styles', '_imagify_admin_print_styles' );
  * @since 1.0
  */
 function _imagify_admin_print_styles() {
-	global $pagenow;
 	$current_screen = get_current_screen();
 	$css_ext        = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.css' : '.min.css';
 	$js_ext         = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.js'  : '.min.js';
@@ -135,10 +134,14 @@ function _imagify_admin_print_styles() {
 	wp_enqueue_script( 'imagify-js-admin' );
 	wp_localize_script( 'imagify-js-admin', 'imagifyAdmin', get_imagify_localize_script_translations( 'admin' ) );
 
+	if ( ! isset( $current_screen ) ) {
+		return;
+	}
+
 	/*
 	 * Loaded in /wp-admin/options-general.php?page=imagify.
 	 */
-	if ( isset( $current_screen ) && ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) ) {
+	if ( 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base ) {
 		wp_enqueue_style( 'imagify-css-twentytwenty' );
 
 		wp_enqueue_script( 'imagify-js-twentytwenty' );
@@ -149,7 +152,7 @@ function _imagify_admin_print_styles() {
 	/**
 	 * Loaded in /wp-admin/upload.php and post.php.
 	 */
-	if ( isset( $current_screen ) && ( 'upload' === $current_screen->base || 'post' === $current_screen->base ) ) {
+	if ( 'upload' === $current_screen->base || 'post' === $current_screen->base ) {
 		wp_enqueue_script( 'imagify-js-upload' );
 
 		$upload_data = get_imagify_localize_script_translations( 'upload' );
@@ -166,7 +169,7 @@ function _imagify_admin_print_styles() {
 	 *     /wp-admin/post.php (for attachment post type),
 	 *     /wp-admin/upload.php (for attachments list).
 	 */
-	if ( isset( $current_screen ) && ( ('post' === $current_screen->base && 'attachment' === $current_screen->post_type ) || 'upload' === $current_screen->base ) ) {
+	if ( ( 'post' === $current_screen->base && 'attachment' === $current_screen->post_type ) || 'upload' === $current_screen->base ) {
 		wp_enqueue_style( 'imagify-css-twentytwenty' );
 
 		wp_enqueue_script( 'imagify-js-twentytwenty' );
@@ -176,7 +179,7 @@ function _imagify_admin_print_styles() {
 	/**
 	 * Loaded in /wp-admin/upload.php?page=imagify-bulk-optimization.
 	 */
-	if ( isset( $current_screen ) && 'media_page_imagify-bulk-optimization' === $current_screen->base ) {
+	if ( 'media_page_imagify-bulk-optimization' === $current_screen->base ) {
 		wp_enqueue_script( 'heartbeat' );
 		wp_enqueue_script( 'imagify-js-bulk' );
 
