@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-add_filter( 'attachment_fields_to_edit', '_imagify_attachment_fields_to_edit', PHP_INT_MAX, 2 );
+add_filter( 'attachment_fields_to_edit', '_imagify_attachment_fields_to_edit', IMAGIFY_INT_MAX, 2 );
 /**
  * Add "Imagify" column in the Media Uploader
  *
@@ -33,7 +33,7 @@ function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
 	return $form_fields;
 }
 
-add_filter( 'media_row_actions', '_imagify_add_actions_to_media_list_row', PHP_INT_MAX, 2 );
+add_filter( 'media_row_actions', '_imagify_add_actions_to_media_list_row', IMAGIFY_INT_MAX, 2 );
 /**
  * Add "Compare Original VS Optimized" link to the media row action
  *

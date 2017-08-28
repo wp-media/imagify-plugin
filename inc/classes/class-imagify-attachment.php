@@ -395,7 +395,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			require_once( ABSPATH . 'wp-admin/includes/image.php' );
 		}
 
-		remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', PHP_INT_MAX );
+		remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', IMAGIFY_INT_MAX );
 		wp_generate_attachment_metadata( $this->id, $attachment_path );
 
 		// Remove old optimization data.

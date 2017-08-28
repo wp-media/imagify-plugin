@@ -97,7 +97,7 @@ class Imagify_AS3CF {
 		 * Automatic optimisation.
 		 */
 		// Remove some of our hooks: let S3 work first in these cases.
-		remove_filter( 'wp_generate_attachment_metadata',                       '_imagify_optimize_attachment', PHP_INT_MAX );
+		remove_filter( 'wp_generate_attachment_metadata',                       '_imagify_optimize_attachment', IMAGIFY_INT_MAX );
 		remove_action( 'wp_ajax_imagify_async_optimize_as3cf',                  '_do_admin_post_async_optimize_upload_new_media' );
 		remove_action( 'shutdown',                                              '_imagify_optimize_save_image_editor_file' );
 		remove_action( 'wp_ajax_imagify_async_optimize_save_image_editor_file', '_do_admin_post_async_optimize_save_image_editor_file' );
