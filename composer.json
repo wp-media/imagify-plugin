@@ -1,5 +1,5 @@
 {
-  "name": "wpmedia/imagify-plugin",
+  "name": "wp-media/imagify-plugin",
   "type": "wordpress-plugin",
   "homepage": "https://imagify.io",
   "license": "GPL-2.0",
