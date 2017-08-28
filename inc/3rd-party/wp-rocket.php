@@ -8,9 +8,9 @@ if ( defined( 'WP_ROCKET_VERSION' ) ) :
 
 	add_action( 'admin_print_styles', 'imagify_dequeue_sweetalert_wprocket', 11 );
 	/**
-	 * Don't load Imagify CSS & JS files on WP Rocket options screen to avoid conflict with older version of SweetAlert..
+	 * Don't load Imagify CSS & JS files on WP Rocket options screen to avoid conflict with older version of SweetAlert.
 	 *
-	 * @since 1.6.9.1
+	 * @since  1.6.9.1
 	 * @author Jonathan Buttigieg
 	 */
 	function imagify_dequeue_sweetalert_wprocket() {
