@@ -1,5 +1,19 @@
 {
-  "name": "wpmedia/imagify-plugin",
+  "name": "wp-media/imagify-plugin",
+  "type": "wordpress-plugin",
+  "homepage": "https://imagify.io",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "WP Media",
+      "homepage": "https://wp-media.me/"
+    },
+    {
+      "name": "Grégory Viguier",
+      "role": "Developer"
+    }
+  ],
+  "description": "Dramaticaly reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool as a WordPress plugin.",
   "require-dev": {
     "squizlabs/php_codesniffer": "*",
     "wp-coding-standards/wpcs": "dev-master"
