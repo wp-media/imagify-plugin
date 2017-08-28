@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-add_action( 'ngg_after_new_images_added', '_imagify_ngg_optimize_attachment', PHP_INT_MAX, 2 );
+add_action( 'ngg_after_new_images_added', '_imagify_ngg_optimize_attachment', IMAGIFY_INT_MAX, 2 );
 /**
  * Auto-optimize when a new attachment is generated.
  *

@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-add_action( 'admin_print_styles', '_imagify_ngg_admin_print_styles', PHP_INT_MAX );
+add_action( 'admin_print_styles', '_imagify_ngg_admin_print_styles', IMAGIFY_INT_MAX );
 /**
  * Add some JS for NGG compatibility.
  *

@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-add_action( 'attachment_submitbox_misc_actions', '_imagify_attachment_submitbox_misc_actions', PHP_INT_MAX );
+add_action( 'attachment_submitbox_misc_actions', '_imagify_attachment_submitbox_misc_actions', IMAGIFY_INT_MAX );
 /**
  * Add a "Optimize It" button or the Imagify optimization data in the attachment submit area.
  *
