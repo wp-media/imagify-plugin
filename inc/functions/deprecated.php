@@ -238,3 +238,31 @@ if ( function_exists( 'emr_delete_current_files' ) ) :
 	}
 
 endif;
+
+if ( is_admin() ) :
+
+	/**
+	 * Add some CSS on the whole administration.
+	 *
+	 * @since 1.0
+	 * @since 1.6.10 Deprecated.
+	 */
+	function _imagify_admin_print_styles() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->enqueue_styles_and_scripts()' );
+
+		Imagify_Assets::get_instance()->enqueue_styles_and_scripts();
+	}
+
+	/**
+	 * Add Intercom on Options page an Bulk Optimization.
+	 *
+	 * @since 1.0
+	 * @since 1.6.10 Deprecated.
+	 */
+	function _imagify_admin_print_intercom() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->print_intercom()' );
+
+		Imagify_Assets::get_instance()->print_intercom();
+	}
+
+endif;
