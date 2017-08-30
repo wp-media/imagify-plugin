@@ -116,6 +116,7 @@ class Imagify_Assets {
 		}
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles_and_scripts' ) );
+		add_action( 'wp_enqueue_media',      array( $this, 'enqueue_media_modal' ) );
 
 		add_action( 'admin_footer-media_page_imagify-bulk-optimization', array( $this, 'print_intercom' ) );
 		add_action( 'admin_footer-settings_page_imagify',                array( $this, 'print_intercom' ) );
@@ -128,6 +129,13 @@ class Imagify_Assets {
 	 * @author Grégory Viguier
 	 */
 	public function register_styles_and_scripts() {
+		static $done = false;
+
+		if ( $done ) {
+			return;
+		}
+		$done = true;
+
 		/**
 		 * 3rd Party Styles.
 		 */
@@ -162,9 +170,11 @@ class Imagify_Assets {
 
 		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'twentytwenty' ) );
 
-		$this->register_script( 'upload', 'upload', array( 'jquery', 'chart' ) );
+		$this->register_script( 'media-modal', 'media-modal', array( 'jquery', 'chart' ) );
 
-		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'chart', 'sweetalert', 'async' ) );
+		$this->register_script( 'library', 'library', array( 'jquery', 'media-modal' ) );
+
+		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'chart', 'sweetalert', 'async' ) );
 	}
 
 	/**
@@ -174,6 +184,13 @@ class Imagify_Assets {
 	 * @author Grégory Viguier
 	 */
 	public function enqueue_styles_and_scripts() {
+		static $done = false;
+
+		if ( $done ) {
+			return;
+		}
+		$done = true;
+
 		/*
 		 * Register stylesheets and scripts.
 		 */
@@ -186,32 +203,6 @@ class Imagify_Assets {
 
 		$this->enqueue_script( 'admin' )->localize( 'imagifyAdmin' );
 
-		/*
-		 * Loaded in settings page.
-		 */
-		if ( $this->is_screen( 'imagify-settings' ) ) {
-			$this->enqueue_style( 'twentytwenty' );
-
-			$this->enqueue_script( 'options' )->localize( 'imagifyOptions' );
-		}
-
-		/**
-		 * Loaded in the library and post.php (any post type).
-		 */
-		if ( $this->is_screen( 'library' ) || $this->is_screen( 'post' ) ) {
-			$this->enqueue_script( 'upload' );
-
-			$upload_data = 'upload';
-
-			if ( $this->is_screen( 'library' ) && get_imagify_option( 'backup' ) ) {
-				$upload_data = $this->get_localization_data( $upload_data, array(
-					'backup_option' => 1,
-				) );
-			}
-
-			$this->localize( 'imagifyUpload', $upload_data );
-		}
-
 		/**
 		 * Loaded in the library and post.php (for attachment post type).
 		 */
@@ -220,11 +211,20 @@ class Imagify_Assets {
 		}
 
 		/**
-		 * Loaded in /wp-admin/upload.php?page=imagify-bulk-optimization.
+		 * Loaded in the library.
+		 */
+		if ( $this->is_screen( 'library' ) ) {
+			$library_data = $this->get_localization_data( 'library', array(
+				'backup_option' => (int) get_imagify_option( 'backup' ),
+			) );
+
+			$this->enqueue_script( 'library' )->localize( 'imagifyUpload', $library_data );
+		}
+
+		/**
+		 * Loaded in the bulk optimization page.
 		 */
 		if ( $this->is_screen( 'bulk-optimization' ) ) {
-			$this->enqueue_script( array( 'heartbeat', 'bulk' ) );
-
 			$bulk_data = $this->get_localization_data( 'bulk', array(
 				'heartbeat_id' => 'update_bulk_data',
 				'ajax_action'  => 'imagify_get_unoptimized_attachment_ids',
@@ -241,8 +241,39 @@ class Imagify_Assets {
 			 */
 			$bulk_data['buffer_size'] = apply_filters( 'imagify_bulk_buffer_size', $bulk_data['buffer_size'] );
 
-			$this->localize( 'imagifyBulk', $bulk_data );
+			$this->enqueue_script( 'bulk' )->localize( 'imagifyBulk', $bulk_data );
 		}
+
+		/*
+		 * Loaded in settings page.
+		 */
+		if ( $this->is_screen( 'imagify-settings' ) ) {
+			$this->enqueue_style( 'twentytwenty' );
+
+			$this->enqueue_script( 'options' )->localize( 'imagifyOptions' );
+		}
+	}
+
+	/**
+	 * Enqueue stylesheets and scripts for the media modal.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 */
+	public function enqueue_media_modal() {
+		static $done = false;
+
+		if ( $done ) {
+			return;
+		}
+		$done = true;
+
+		/*
+		 * Register stylesheets and scripts.
+		 */
+		$this->register_styles_and_scripts();
+
+		$this->enqueue_script( 'media-modal' );
 	}
 
 	/**

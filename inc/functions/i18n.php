@@ -50,7 +50,7 @@ function get_imagify_localize_script_translations( $context ) {
 			);
 			break;
 
-		case 'upload':
+		case 'library':
 			$translations = array(
 				'bulkActionsLabels' => array(
 					'optimize' => __( 'Optimize', 'imagify' ),
