@@ -180,7 +180,6 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 		return '';
 	}
 
-
 	$is_media_page = 'post.php' === $pagenow && 'attachment' === $typenow;
 	$attachment_id = $attachment->id;
 	$level         = $attachment->get_optimization_level();

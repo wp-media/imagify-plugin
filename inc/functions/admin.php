@@ -30,6 +30,63 @@ function imagify_is_active_for_network() {
 }
 
 /**
+ * Tell if the current screen is what we're looking for.
+ *
+ * @since  1.6.10
+ * @author Grégory Viguier
+ *
+ * @param  string $identifier The screen "name".
+ * @return bool
+ */
+function imagify_is_screen( $identifier ) {
+	global $post_id;
+	$current_screen = get_current_screen();
+
+	if ( ! $current_screen ) {
+		return false;
+	}
+
+	switch ( $identifier ) {
+		case 'imagify-settings':
+			// Imagify Settings or Imagify Network Settings.
+			return 'settings_page_' . IMAGIFY_SLUG === $current_screen->id || 'settings_page_' . IMAGIFY_SLUG . '-network' === $current_screen->id;
+
+		case 'imagify-network-settings':
+			// Imagify Network Settings.
+			return 'settings_page_' . IMAGIFY_SLUG . '-network' === $current_screen->id;
+
+		case 'library':
+			// Media Library.
+			return 'upload' === $current_screen->id;
+
+		case 'upload':
+			// Upload New Media.
+			return 'media' === $current_screen->id;
+
+		case 'post':
+			// Edit Post, Page, Attachment, etc.
+			return 'post' === $current_screen->base;
+
+		case 'attachment':
+		case 'post-attachment':
+			// Edit Attachment.
+			return 'post' === $current_screen->base && 'attachment' === $current_screen->id && $post_id && imagify_is_attachment_mime_type_supported( $post_id );
+
+		case 'bulk':
+		case 'bulk-optimization':
+			// Bulk Optimization or NGG Bulk Optimization.
+			return 'media_page_' . IMAGIFY_SLUG . '-bulk-optimization' === $current_screen->id || 'galerie_page_' . IMAGIFY_SLUG . '-ngg-bulk-optimization' === $current_screen->id;
+
+		case 'ngg-bulk-optimization':
+			// NGG Bulk Optimization.
+			return 'galerie_page_' . IMAGIFY_SLUG . '-ngg-bulk-optimization' === $current_screen->id;
+
+		default:
+			return false;
+	}
+}
+
+/**
  * Get the URL related to specific admin page or action.
  *
  * @since 1.0

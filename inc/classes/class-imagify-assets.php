@@ -206,14 +206,14 @@ class Imagify_Assets {
 		/**
 		 * Loaded in the library and post.php (for attachment post type).
 		 */
-		if ( $this->is_screen( 'library' ) || $this->is_screen( 'attachment' ) ) {
+		if ( imagify_is_screen( 'library' ) || imagify_is_screen( 'attachment' ) ) {
 			$this->enqueue_script( 'twentytwenty' )->localize( 'imagifyTTT' );
 		}
 
 		/**
 		 * Loaded in the library.
 		 */
-		if ( $this->is_screen( 'library' ) ) {
+		if ( imagify_is_screen( 'library' ) ) {
 			$library_data = $this->get_localization_data( 'library', array(
 				'backup_option' => (int) get_imagify_option( 'backup' ),
 			) );
@@ -224,7 +224,7 @@ class Imagify_Assets {
 		/**
 		 * Loaded in the bulk optimization page.
 		 */
-		if ( $this->is_screen( 'bulk-optimization' ) ) {
+		if ( imagify_is_screen( 'bulk' ) ) {
 			$bulk_data = $this->get_localization_data( 'bulk', array(
 				'heartbeat_id' => 'update_bulk_data',
 				'ajax_action'  => 'imagify_get_unoptimized_attachment_ids',
@@ -247,7 +247,7 @@ class Imagify_Assets {
 		/*
 		 * Loaded in settings page.
 		 */
-		if ( $this->is_screen( 'imagify-settings' ) ) {
+		if ( imagify_is_screen( 'imagify-settings' ) ) {
 			$this->enqueue_style( 'twentytwenty' );
 
 			$this->enqueue_script( 'options' )->localize( 'imagifyOptions' );
@@ -308,50 +308,6 @@ class Imagify_Assets {
 	/** ----------------------------------------------------------------------------------------- */
 	/** PUBLIC TOOLS ============================================================================ */
 	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Tell if the current screen is what we're looking for.
-	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $identifier The screen "name".
-	 * @return bool
-	 */
-	public function is_screen( $identifier = false ) {
-		$current_screen = get_current_screen();
-
-		if ( ! $current_screen ) {
-			return false;
-		}
-
-		switch ( $identifier ) {
-			case 'imagify-settings':
-				// /wp-admin/options-general.php?page=imagify
-				return 'settings_page_imagify' === $current_screen->base || 'settings_page_imagify-network' === $current_screen->base;
-
-			case 'upload':
-			case 'library':
-				// /wp-admin/upload.php
-				return 'upload' === $current_screen->base;
-
-			case 'post':
-				// /wp-admin/post.php (for any post type)
-				return 'post' === $current_screen->base;
-
-			case 'attachment':
-				// /wp-admin/post.php (for attachment post type)
-				return 'post' === $current_screen->base && 'attachment' === $current_screen->post_type;
-
-			case 'bulk':
-			case 'bulk-optimization':
-				// /wp-admin/upload.php?page=imagify-bulk-optimization
-				return 'media_page_imagify-bulk-optimization' === $current_screen->base;
-
-			default:
-				return ! $identifier;
-		}
-	}
 
 	/**
 	 * Register a style.
