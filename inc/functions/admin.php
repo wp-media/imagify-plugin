@@ -39,12 +39,20 @@ function imagify_is_active_for_network() {
  * @return bool
  */
 function imagify_is_screen( $identifier ) {
-	global $post_id;
+	global $post_id, $admin_page_hooks;
+
 	$current_screen = get_current_screen();
 
-	if ( ! $current_screen ) {
+	if ( ! $current_screen || ! $current_screen->in_admin() ) {
 		return false;
 	}
+
+	/**
+	 * Because WP nonsense:
+	 * The screen ID depends on the menu title, which is translated. So the screen ID changes depending on the administration locale.
+	 */
+	$ngg_menu_slug = defined( 'NGGFOLDER' ) ? plugin_basename( NGGFOLDER ) : 'nextgen-gallery';
+	$ngg_menu_slug = isset( $admin_page_hooks[ $ngg_menu_slug ] ) ? $admin_page_hooks[ $ngg_menu_slug ] : 'gallery';
 
 	switch ( $identifier ) {
 		case 'imagify-settings':
@@ -75,7 +83,7 @@ function imagify_is_screen( $identifier ) {
 		case 'bulk':
 		case 'bulk-optimization':
 			// Bulk Optimization or NGG Bulk Optimization.
-			return 'media_page_' . IMAGIFY_SLUG . '-bulk-optimization' === $current_screen->id || 'galerie_page_' . IMAGIFY_SLUG . '-ngg-bulk-optimization' === $current_screen->id;
+			return 'media_page_' . IMAGIFY_SLUG . '-bulk-optimization' === $current_screen->id || $ngg_menu_slug . '_page_' . IMAGIFY_SLUG . '-ngg-bulk-optimization' === $current_screen->id;
 
 		case 'ngg-bulk-optimization':
 			// NGG Bulk Optimization.
