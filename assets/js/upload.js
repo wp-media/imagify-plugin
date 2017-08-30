@@ -13,25 +13,13 @@ window.imagify = window.imagify || {
 };
 
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
-	/**
-	 * Add a "Imagify'em all" in the select list.
-	 */
-	var bulk_opt, get_var, check_modal;
 
-	bulk_opt = '<option value="imagify-bulk-upload">' + imagifyUpload.bulkActionsLabels.optimize + '</option>';
-
-	if ( imagifyUpload.backup_option || $( '.attachment-has-backup' ).length ) {
-		// If the backup option is enabled, or if we have items that can be restored.
-		bulk_opt += '<option value="imagify-bulk-restore">' + imagifyUpload.bulkActionsLabels.restore + '</option>';
-	}
-
-	$( '.bulkactions select[name="action"]' ).find( 'option:last-child' ).before( bulk_opt );
-	$( '.bulkactions select[name="action2"]' ).find( 'option:last-child' ).before( bulk_opt );
+	var bulkOpt;
 
 	/**
 	 * Mini chart.
 	 *
-	 * @param {element} canvas
+	 * @param {element} canvas The canvas element.
 	 */
 	function drawMeAChart( canvas ) {
 		canvas.each( function() {
@@ -58,31 +46,82 @@ window.imagify = window.imagify || {
 	}
 
 	/**
-	 * Process optimization for all selected images.
+	 * Get a URL param (or all of them).
+	 *
+	 * @param  {string} param Name of the param.
+	 * @return {string|null|object} If param argument provided: the param value or null. The entire object otherwise.
 	 */
-	$( '#doaction' )
-		.add( '#doaction2' )
-		.on( 'click', function( e ) {
-			var value = $( this ).prev( 'select' ).val().split( '-' ),
-				action, ids;
+	function getVar( param ) {
+		var vars = {};
 
-			if ( 'imagify' !== value[0] ) {
-				return;
-			}
-
-			e.preventDefault();
-
-			action = value[2];
-			ids    = $( 'input[name^="media"]:checked' ).map( function() {
-				return this.value;
-			} ).get();
-
-			ids.forEach( function( id, index ) {
-				setTimeout( function() {
-					$( '#imagify-' + action + '-' + id ).trigger( 'click' );
-				}, index * 300 );
-			} );
+		w.location.href.replace( /[?&]+([^=&]+)=?([^&]*)?/gi, function( m, key, value ) {
+			vars[ key ] = undefined !== value ? value : '';
 		} );
+
+		if ( param ) {
+			return vars[ param ] ? vars[ param ] : null;
+		}
+
+		return vars;
+	}
+
+	/**
+	 * Update the chart in the media modal.
+	 */
+	function checkModal() {
+		var tempTimer = setInterval( function() {
+			var $details = $( '.media-modal .imagify-datas-details' );
+
+			if ( $details.length ) {
+				$details.hide();
+				drawMeAChart( $( '.media-modal .imagify-consumption-chart' ) );
+				clearInterval( tempTimer );
+				tempTimer = null;
+			}
+		}, 20 );
+	}
+
+	if ( w.imagifyUpload ) {
+		/**
+		 * In the medias list, add a "Imagify'em all" in the select list.
+		 */
+		bulkOpt = '<option value="imagify-bulk-upload">' + imagifyUpload.bulkActionsLabels.optimize + '</option>';
+
+		if ( imagifyUpload.backup_option || $( '.attachment-has-backup' ).length ) {
+			// If the backup option is enabled, or if we have items that can be restored.
+			bulkOpt += '<option value="imagify-bulk-restore">' + imagifyUpload.bulkActionsLabels.restore + '</option>';
+		}
+
+		$( '.bulkactions select[name="action"]' ).find( 'option:last-child' ).before( bulkOpt );
+		$( '.bulkactions select[name="action2"]' ).find( 'option:last-child' ).before( bulkOpt );
+
+		/**
+		 * Process optimization for all selected images.
+		 */
+		$( '#doaction' )
+			.add( '#doaction2' )
+			.on( 'click', function( e ) {
+				var value = $( this ).prev( 'select' ).val().split( '-' ),
+					action, ids;
+
+				if ( 'imagify' !== value[0] ) {
+					return;
+				}
+
+				e.preventDefault();
+
+				action = value[2];
+				ids    = $( 'input[name^="media"]:checked' ).map( function() {
+					return this.value;
+				} ).get();
+
+				ids.forEach( function( id, index ) {
+					setTimeout( function() {
+						$( '#imagify-' + action + '-' + id ).trigger( 'click' );
+					}, index * 300 );
+				} );
+			} );
+	}
 
 	/**
 	 * Process to one of these actions: restore, optimize or re-optimize.
@@ -106,7 +145,7 @@ window.imagify = window.imagify || {
 				$parent.find( '.imagify-datas-more-action a' ).addClass( 'is-open' ).find( '.the-text' ).text( $parent.find( '.imagify-datas-more-action a' ).data( 'close' ) );
 				$parent.find( '.imagify-datas-details' ).addClass( 'is-open' );
 
-				drawMeAChart( $parent.find( '.imagify-chart-container' ).find( 'canvas' ) );
+				drawMeAChart( $parent.find( '.imagify-consumption-chart' ) );
 			} );
 	} );
 
@@ -130,56 +169,24 @@ window.imagify = window.imagify || {
 	} );
 
 	/**
-	 * Some usefull functions to help us with media modal.
+	 * Update the chart in the media modal.
 	 */
-	get_var = function ( param ) {
-		var vars = {};
-
-		w.location.href.replace( /[?&]+([^=&]+)=?([^&]*)?/gi, function( m, key, value ) {
-			vars[ key ] = undefined !== value ? value : '';
-		} );
-
-		if ( param ) {
-			return vars[ param ] ? vars[ param ] : null;
-		}
-
-		return vars;
-	};
-
-	check_modal = function() {
-		var tempTimer = setInterval( function() {
-			var $details = $( '.media-modal .imagify-datas-details' );
-
-			if ( $details.length ) {
-				$details.hide();
-				drawMeAChart( $( '#imagify-consumption-chart' ) );
-				clearInterval( tempTimer );
-				tempTimer = null;
-			}
-		}, 20 );
-	};
-
-	/**
-	 * Intercept the right moment if media details is clicked (mode grid).
-	 * Bear Feint.
-	 */
-	$( '.upload-php' ).find( '.media-frame.mode-grid' ).on( 'click', '.attachment', function() {
-		check_modal();
-	} );
+	// Intercept the right moment if media details is clicked (mode grid).
+	$( '#wp-media-grid' ).on( 'click', '.attachment', checkModal );
 
 	// On page load in upload.php check if item param exists.
-	if ( $( '.upload-php' ).length && get_var( 'item' ) ) {
-		check_modal();
+	if ( $( '.upload-php' ).length && getVar( 'item' ) ) {
+		checkModal();
 	}
 
-	// On media clicked.
-	$( '#insert-media-button' ).on( 'click.imagify', function() {
+	// When the "Add Media" button is clicked.
+	$( '#insert-media-button, .insert-media, .add_media, .upload-media-button' ).on( 'click.imagify', function() {
 		var waitContent = setInterval( function() {
 			var $attachments = $( '.media-frame-content .attachments' );
 
 			if ( $attachments.length ) {
 				$attachments.on( 'click.imagify', '.attachment', function() {
-					check_modal();
+					checkModal();
 				} );
 				clearInterval( waitContent );
 				waitContent = null;
@@ -187,6 +194,6 @@ window.imagify = window.imagify || {
 		}, 100);
 	} );
 
-	drawMeAChart( $( '.imagify-chart-container' ).find( 'canvas' ) );
+	drawMeAChart( $( '.imagify-consumption-chart' ) );
 
 } )(jQuery, document, window);

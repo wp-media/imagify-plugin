@@ -43,7 +43,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 
 	$chart = '<span class="imagify-chart">
 				<span class="imagify-chart-container">
-					<canvas id="imagify-consumption-chart" width="15" height="15"></canvas>
+					<canvas class="imagify-consumption-chart imagify-consumption-chart-' . $attachment_id . '" width="15" height="15"></canvas>
 				</span>
 			</span>';
 
