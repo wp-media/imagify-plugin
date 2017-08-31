@@ -265,4 +265,163 @@ if ( is_admin() ) :
 		Imagify_Assets::get_instance()->print_intercom();
 	}
 
+	/**
+	 * A helper to deprecate old admin notice functions.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 * @see    Imagify_Notices::notices()
+	 *
+	 * @param string $function  The function to deprecate.
+	 * @param string $notice_id The notice to deprecate.
+	 */
+	function _imagify_deprecate_old_notice( $function, $notice_id ) {
+		_deprecated_function( $function . '()', '1.6.10' );
+
+		$notices  = Imagify_Notices::get_instance();
+		$callback = 'display_' . str_replace( '-', '_', $notice_id );
+		$data     = method_exists( $notices, $callback ) ? call_user_func( array( $notices, $callback ) ) : false;
+
+		if ( $data ) {
+			$this->render_view( str_replace( '_', '-', $notice_id ), $data );
+		}
+	}
+
+	/**
+	 * This warning is displayed when the API key is empty.
+	 *
+	 * @since  1.0
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _imagify_warning_empty_api_key_notice() {
+		_imagify_deprecate_old_notice( __FUNCTION__, 'welcome-steps' );
+	}
+
+	/**
+	 * This warning is displayed when the API key is empty.
+	 *
+	 * @since  1.0
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _imagify_warning_wrong_api_key_notice() {
+		_imagify_deprecate_old_notice( __FUNCTION__, 'wrong-api-key' );
+	}
+
+	/**
+	 * This warning is displayed when some plugins may conflict with Imagify.
+	 *
+	 * @since  1.0
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _imagify_warning_plugins_to_deactivate_notice() {
+		_imagify_deprecate_old_notice( __FUNCTION__, 'plugins-to-deactivate' );
+	}
+
+	/**
+	 * This notice is displayed when external HTTP requests are blocked via the WP_HTTP_BLOCK_EXTERNAL constant.
+	 *
+	 * @since  1.0
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _imagify_http_block_external_notice() {
+		_imagify_deprecate_old_notice( __FUNCTION__, 'http-block-external' );
+	}
+
+	/**
+	 * This warning is displayed when the grid view is active on the library.
+	 *
+	 * @since  1.0.2
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _imagify_warning_grid_view_notice() {
+		_imagify_deprecate_old_notice( __FUNCTION__, 'grid-view' );
+	}
+
+	/**
+	 * This warning is displayed to warn the user that its quota is consumed for the current month.
+	 *
+	 * @since  1.1.1
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _imagify_warning_over_quota_notice() {
+		_imagify_deprecate_old_notice( __FUNCTION__, 'over-quota' );
+	}
+
+	/**
+	 * This warning is displayed if the backup folder is not writable.
+	 *
+	 * @since  1.6.8
+	 * @since  1.6.10 Deprecated.
+	 * @author Grégory Viguier
+	 */
+	function _imagify_warning_backup_folder_not_writable_notice() {
+		_imagify_deprecate_old_notice( __FUNCTION__, 'backup-folder-not-writable' );
+	}
+
+	/**
+	 * Add a message about WP Rocket on the "Bulk Optimization" screen.
+	 *
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _imagify_rocket_notice() {
+		_imagify_deprecate_old_notice( __FUNCTION__, 'rocket' );
+	}
+
+	/**
+	 * This notice is displayed to rate the plugin after 100 optimization & 7 days after the first installation.
+	 *
+	 * @since  1.4.2
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _imagify_rating_notice() {
+		_imagify_deprecate_old_notice( __FUNCTION__, 'rating' );
+	}
+
+	/**
+	 * Stop the rating cron when the notice is dismissed.
+	 *
+	 * @since 1.6.10 Deprecated.
+	 *
+	 * @param string $notice The notice name.
+	 */
+	function _imagify_clear_scheduled_rating( $notice ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Notices::get_instance()->clear_scheduled_rating( $notice )' );
+
+		Imagify_Notices::get_instance()->clear_scheduled_rating( $notice );
+	}
+
+	/**
+	 * Process a dismissed notice.
+	 *
+	 * @since  1.0
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _do_admin_post_imagify_dismiss_notice() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Notices::get_instance()->admin_post_dismiss_notice()' );
+
+		Imagify_Notices::get_instance()->admin_post_dismiss_notice();
+	}
+
+	/**
+	 * Disable a plugin which can be in conflict with Imagify
+	 *
+	 * @since  1.2
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _imagify_deactivate_plugin() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Notices::get_instance()->deactivate_plugin()' );
+
+		Imagify_Notices::get_instance()->deactivate_plugin();
+	}
+
 endif;
