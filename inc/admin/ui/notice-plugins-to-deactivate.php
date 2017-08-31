@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 $this->render_view( 'header' );
 ?>
-<p><?php _en( 'The following plugin is not compatible with this plugin and may cause unexpected results:', 'The following plugins are not compatible with this plugin and may cause unexpected results:', count( $data ), 'imagify' ); ?></p>
+<p><?php echo _n( 'The following plugin is not compatible with this plugin and may cause unexpected results:', 'The following plugins are not compatible with this plugin and may cause unexpected results:', count( $data ), 'imagify' ); ?></p>
 
 <ul class="imagify-plugins-error">
 <?php
