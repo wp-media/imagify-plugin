@@ -94,10 +94,11 @@ function _imagify_init() {
 		require( IMAGIFY_ADMIN_PATH . 'meta-boxes.php' );
 		require( IMAGIFY_ADMIN_UI_PATH . 'options.php' );
 		require( IMAGIFY_ADMIN_UI_PATH . 'bulk.php' );
-		require( IMAGIFY_ADMIN_UI_PATH . 'notices.php' );
 		require( IMAGIFY_CLASSES_PATH . 'class-imagify-assets.php' );
+		require( IMAGIFY_CLASSES_PATH . 'class-imagify-notices.php' );
 
 		Imagify_Assets::get_instance()->init();
+		Imagify_Notices::get_instance()->init();
 	}
 
 	/**

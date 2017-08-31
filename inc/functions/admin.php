@@ -128,7 +128,7 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_restore_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-restore-upload' );
 
 		case 'dismiss-notice':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), 'imagify-dismiss-notice' );
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
 
 		case 'bulk-optimization':
 			return admin_url( 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization' );

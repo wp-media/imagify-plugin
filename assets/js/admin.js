@@ -143,7 +143,7 @@ window.imagify = window.imagify || {
 	 */
 	$( '.imagify-notice-dismiss' ).on( 'click.imagify', function( e ) {
 		var $this   = $( this ),
-			$parent = $this.parents( '.imagify-welcome, .imagify-notice' ),
+			$parent = $this.parents( '.imagify-welcome, .imagify-notice, .imagify-rkt-notice' ),
 			href    = $this.attr( 'href' );
 
 		e.preventDefault();
