@@ -40,6 +40,7 @@ function imagify_is_active_for_network() {
  */
 function imagify_is_screen( $identifier ) {
 	global $post_id, $admin_page_hooks;
+	static $ngg_menu_slug;
 
 	$current_screen = get_current_screen();
 
@@ -47,12 +48,14 @@ function imagify_is_screen( $identifier ) {
 		return false;
 	}
 
-	/**
-	 * Because WP nonsense:
-	 * The screen ID depends on the menu title, which is translated. So the screen ID changes depending on the administration locale.
-	 */
-	$ngg_menu_slug = defined( 'NGGFOLDER' ) ? plugin_basename( NGGFOLDER ) : 'nextgen-gallery';
-	$ngg_menu_slug = isset( $admin_page_hooks[ $ngg_menu_slug ] ) ? $admin_page_hooks[ $ngg_menu_slug ] : 'gallery';
+	if ( ! isset( $ngg_menu_slug ) ) {
+		/**
+		 * Because WP nonsense:
+		 * The screen ID depends on the menu title, which is translated. So the screen ID changes depending on the administration locale.
+		 */
+		$ngg_menu_slug = defined( 'NGGFOLDER' ) ? plugin_basename( NGGFOLDER ) : 'nextgen-gallery';
+		$ngg_menu_slug = isset( $admin_page_hooks[ $ngg_menu_slug ] ) ? $admin_page_hooks[ $ngg_menu_slug ] : 'gallery';
+	}
 
 	switch ( $identifier ) {
 		case 'imagify-settings':
@@ -88,6 +91,10 @@ function imagify_is_screen( $identifier ) {
 		case 'ngg-bulk-optimization':
 			// NGG Bulk Optimization.
 			return 'galerie_page_' . IMAGIFY_SLUG . '-ngg-bulk-optimization' === $current_screen->id;
+
+		case 'media-modal':
+			// Media modal.
+			return did_action( 'wp_enqueue_media' ) || doing_filter( 'wp_enqueue_media' );
 
 		default:
 			return false;
