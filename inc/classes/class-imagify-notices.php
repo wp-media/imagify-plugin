@@ -17,11 +17,11 @@ class Imagify_Notices {
 	const VERSION = '1.0';
 
 	/**
-	 * Name of the transient that stores the dismissed notice IDs.
+	 * Name of the user meta that stores the dismissed notice IDs.
 	 *
 	 * @var string
 	 */
-	const DISMISS_TRANSIENT_NAME = '_imagify_ignore_notices';
+	const DISMISS_META_NAME = '_imagify_ignore_notices';
 
 	/**
 	 * Action used in the nonce to dismiss a notice.
@@ -543,7 +543,7 @@ class Imagify_Notices {
 	 */
 	public static function renew_notice( $notice, $user_id = 0 ) {
 		$user_id = $user_id ? (int) $user_id : get_current_user_id();
-		$notices = get_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, true );
+		$notices = get_user_meta( $user_id, self::DISMISS_META_NAME, true );
 		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
 
 		if ( ! isset( $notices[ $notice ] ) ) {
@@ -555,7 +555,7 @@ class Imagify_Notices {
 		$notices = array_filter( $notices );
 		$notices = array_values( $notices );
 
-		update_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, $notices );
+		update_user_meta( $user_id, self::DISMISS_META_NAME, $notices );
 	}
 
 	/**
@@ -570,7 +570,7 @@ class Imagify_Notices {
 	 */
 	public static function dismiss_notice( $notice, $user_id = 0 ) {
 		$user_id = $user_id ? (int) $user_id : get_current_user_id();
-		$notices = get_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, true );
+		$notices = get_user_meta( $user_id, self::DISMISS_META_NAME, true );
 		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
 
 		if ( isset( $notices[ $notice ] ) ) {
@@ -582,7 +582,7 @@ class Imagify_Notices {
 		$notices   = array_filter( $notices );
 		$notices   = array_values( $notices );
 
-		update_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, $notices );
+		update_user_meta( $user_id, self::DISMISS_META_NAME, $notices );
 	}
 
 	/**
@@ -598,7 +598,7 @@ class Imagify_Notices {
 	 */
 	public static function notice_is_dismissed( $notice, $user_id = 0 ) {
 		$user_id = $user_id ? (int) $user_id : get_current_user_id();
-		$notices = get_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, true );
+		$notices = get_user_meta( $user_id, self::DISMISS_META_NAME, true );
 		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
 
 		return isset( $notices[ $notice ] );
