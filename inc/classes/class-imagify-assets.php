@@ -152,6 +152,8 @@ class Imagify_Assets {
 
 		$this->register_style( 'notices', 'notices', array( 'sweetalert' ) );
 
+		$this->register_style( 'admin-bar' );
+
 		/**
 		 * 3rd Party Scripts.
 		 */
@@ -169,6 +171,8 @@ class Imagify_Assets {
 		$this->register_script( 'async', 'imagify-gulp', array(), '2017-07-28' );
 
 		$this->register_script( 'notices', 'notices', array( 'jquery' ) );
+
+		$this->register_script( 'admin-bar', 'admin-bar', array( 'jquery' ) );
 
 		$this->register_script( 'admin', 'admin', array( 'jquery', 'sweetalert' ) );
 
@@ -208,6 +212,13 @@ class Imagify_Assets {
 		$this->enqueue_style( array( 'admin', 'sweetalert' ) );
 
 		$this->enqueue_script( 'admin' )->localize( 'imagifyAdmin' );
+
+		/**
+		 * Admin bar.
+		 */
+		if ( is_admin_bar_showing() ) {
+			$this->enqueue_assets( 'admin-bar' );
+		}
 
 		/**
 		 * Notices.
