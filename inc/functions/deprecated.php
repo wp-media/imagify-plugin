@@ -424,4 +424,53 @@ if ( is_admin() ) :
 		Imagify_Notices::get_instance()->deactivate_plugin();
 	}
 
+	/**
+	 * Renew a dismissed Imagify notice.
+	 *
+	 * @since 1.0
+	 * @since 1.6.10 Deprecated.
+	 *
+	 * @param  string $notice  A notice ID.
+	 * @param  int    $user_id A user ID.
+	 * @return void
+	 */
+	function imagify_renew_notice( $notice, $user_id = 0 ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Notices::renew_notice( $notice, $user_id )' );
+
+		Imagify_Notices::renew_notice( $notice, $user_id );
+	}
+
+	/**
+	 * Dismiss an Imagify notice.
+	 *
+	 * @since 1.0
+	 * @since 1.6.10 Deprecated.
+	 *
+	 * @param  string $notice  A notice ID.
+	 * @param  int    $user_id A user ID.
+	 * @return void
+	 */
+	function imagify_dismiss_notice( $notice, $user_id = 0 ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Notices::dismiss_notice( $notice, $user_id )' );
+
+		Imagify_Notices::dismiss_notice( $notice, $user_id );
+	}
+
+	/**
+	 * Tell if an Imagify notice is dismissed.
+	 *
+	 * @since  1.6.5
+	 * @since  1.6.10 Deprecated.
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $notice  A notice ID.
+	 * @param  int    $user_id A user ID.
+	 * @return bool
+	 */
+	function imagify_notice_is_dismissed( $notice, $user_id = 0 ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Notices::notice_is_dismissed( $notice, $user_id )' );
+
+		return Imagify_Notices::notice_is_dismissed( $notice, $user_id );
+	}
+
 endif;
