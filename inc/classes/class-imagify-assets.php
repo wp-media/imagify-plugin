@@ -139,7 +139,7 @@ class Imagify_Assets {
 		/**
 		 * 3rd Party Styles.
 		 */
-		$this->register_style( 'sweetalert', 'sweetalert2', array(), '4.6.6' );
+		$this->register_style( 'sweetalert-core', 'sweetalert2', array(), '4.6.6' );
 
 		/**
 		 * Imagify Styles.
@@ -147,6 +147,10 @@ class Imagify_Assets {
 		$this->register_style( 'twentytwenty' );
 
 		$this->register_style( 'admin' );
+
+		$this->register_style( 'sweetalert', 'sweetalert-custom', array( 'sweetalert-core' ) );
+
+		$this->register_style( 'notices', 'notices', array( 'sweetalert' ) );
 
 		/**
 		 * 3rd Party Scripts.
@@ -163,6 +167,8 @@ class Imagify_Assets {
 		 * Imagify Scripts.
 		 */
 		$this->register_script( 'async', 'imagify-gulp', array(), '2017-07-28' );
+
+		$this->register_script( 'notices', 'notices', array( 'jquery' ) );
 
 		$this->register_script( 'admin', 'admin', array( 'jquery', 'sweetalert' ) );
 
@@ -202,6 +208,19 @@ class Imagify_Assets {
 		$this->enqueue_style( array( 'admin', 'sweetalert' ) );
 
 		$this->enqueue_script( 'admin' )->localize( 'imagifyAdmin' );
+
+		/**
+		 * Notices.
+		 */
+		$notices = Imagify_Notices::get_instance();
+
+		if ( $notices->has_notices() ) {
+			if ( $notices->display_welcome_steps() || $notices->display_wrong_api_key() ) {
+				$this->enqueue_assets( 'sweetalert' );
+			}
+
+			$this->enqueue_assets( 'notices' );
+		}
 
 		/**
 		 * Loaded in the library and post.php (for attachment post type).
@@ -248,7 +267,9 @@ class Imagify_Assets {
 		 * Loaded in settings page.
 		 */
 		if ( imagify_is_screen( 'imagify-settings' ) ) {
-			$this->enqueue_style( 'twentytwenty' );
+			$this->enqueue_assets( 'sweetalert' );
+			$this->enqueue_assets( 'notices' );
+			$this->enqueue_assets( 'twentytwenty' );
 
 			$this->enqueue_script( 'options' )->localize( 'imagifyOptions' );
 		}
