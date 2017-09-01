@@ -85,6 +85,22 @@ class Imagify_Notices {
 	);
 
 	/**
+	 * List of plugins that conflict with Imagify.
+	 *
+	 * @var array
+	 */
+	protected static $conflicting_plugins = array(
+		'wp-smush'     => 'wp-smushit/wp-smush.php',                                   // WP Smush.
+		'wp-smush-pro' => 'wp-smush-pro/wp-smush.php',                                 // WP Smush Pro.
+		'kraken'       => 'kraken-image-optimizer/kraken.php',                         // Kraken.io.
+		'tinypng'      => 'tiny-compress-images/tiny-compress-images.php',             // TinyPNG.
+		'shortpixel'   => 'shortpixel-image-optimiser/wp-shortpixel.php',              // Shortpixel.
+		'ewww'         => 'ewww-image-optimizer/ewww-image-optimizer.php',             // EWWW Image Optimizer.
+		'ewww-cloud'   => 'ewww-image-optimizer-cloud/ewww-image-optimizer-cloud.php', // EWWW Image Optimizer Cloud.
+		'imagerecycle' => 'imagerecycle-pdf-image-compression/wp-image-recycle.php',   // ImageRecycle.
+	);
+
+	/**
 	 * The single instance of the class.
 	 *
 	 * @var object
@@ -661,17 +677,6 @@ class Imagify_Notices {
 	 * @return array
 	 */
 	protected function get_conflicting_plugins() {
-		$plugins = array(
-			'wp-smush'     => 'wp-smushit/wp-smush.php', // WP Smush.
-			'wp-smush-pro' => 'wp-smush-pro/wp-smush.php', // WP Smush Pro.
-			'kraken'       => 'kraken-image-optimizer/kraken.php', // Kraken.io.
-			'tinypng'      => 'tiny-compress-images/tiny-compress-images.php', // TinyPNG.
-			'shortpixel'   => 'shortpixel-image-optimiser/wp-shortpixel.php', // Shortpixel.
-			'ewww'         => 'ewww-image-optimizer/ewww-image-optimizer.php', // EWWW Image Optimizer.
-			'ewww-cloud'   => 'ewww-image-optimizer-cloud/ewww-image-optimizer-cloud.php', // EWWW Image Optimizer Cloud.
-			'imagerecycle' => 'imagerecycle-pdf-image-compression/wp-image-recycle.php', // ImageRecycle.
-		);
-
 		/**
 		 * Filter the recommended plugins to deactivate to prevent conflicts.
 		 *
@@ -679,9 +684,8 @@ class Imagify_Notices {
 		 *
 		 * @param string $plugins List of recommended plugins to deactivate.
 		*/
-		$plugins = apply_filters( 'imagify_plugins_to_deactivate', $plugins );
-		$plugins = array_filter( $plugins, 'is_plugin_active' );
+		$plugins = apply_filters( 'imagify_plugins_to_deactivate', self::$conflicting_plugins );
 
-		return $plugins;
+		return array_filter( $plugins, 'is_plugin_active' );
 	}
 }
