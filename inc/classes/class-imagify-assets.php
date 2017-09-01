@@ -154,6 +154,8 @@ class Imagify_Assets {
 
 		$this->register_style( 'admin-bar' );
 
+		$this->register_style( 'pricing-modal' );
+
 		/**
 		 * 3rd Party Scripts.
 		 */
@@ -168,13 +170,15 @@ class Imagify_Assets {
 		/**
 		 * Imagify Scripts.
 		 */
+		$this->register_script( 'admin', 'admin', array( 'jquery' ) );
+
 		$this->register_script( 'async', 'imagify-gulp', array(), '2017-07-28' );
 
 		$this->register_script( 'notices', 'notices', array( 'jquery' ) );
 
 		$this->register_script( 'admin-bar', 'admin-bar', array( 'jquery' ) );
 
-		$this->register_script( 'admin', 'admin', array( 'jquery', 'sweetalert' ) );
+		$this->register_script( 'pricing-modal', 'pricing-modal', array( 'jquery' ) );
 
 		$this->register_script( 'twentytwenty', 'jquery.twentytwenty', array( 'jquery', 'event-move', 'chart' ) );
 
@@ -209,7 +213,7 @@ class Imagify_Assets {
 		/*
 		 * Loaded in the whole admnistration.
 		 */
-		$this->enqueue_style( array( 'admin', 'sweetalert' ) );
+		$this->enqueue_style( array( 'admin' ) );
 
 		$this->enqueue_script( 'admin' )->localize( 'imagifyAdmin' );
 
@@ -255,6 +259,8 @@ class Imagify_Assets {
 		 * Loaded in the bulk optimization page.
 		 */
 		if ( imagify_is_screen( 'bulk' ) ) {
+			$this->enqueue_assets( 'pricing-modal' );
+
 			$bulk_data = $this->get_localization_data( 'bulk', array(
 				'heartbeat_id' => 'update_bulk_data',
 				'ajax_action'  => 'imagify_get_unoptimized_attachment_ids',
@@ -281,6 +287,7 @@ class Imagify_Assets {
 			$this->enqueue_assets( 'sweetalert' );
 			$this->enqueue_assets( 'notices' );
 			$this->enqueue_assets( 'twentytwenty' );
+			$this->enqueue_assets( 'pricing-modal' );
 
 			$this->enqueue_script( 'options' )->localize( 'imagifyOptions' );
 		}
