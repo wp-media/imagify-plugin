@@ -17,6 +17,13 @@ class Imagify_Notices {
 	const VERSION = '1.0';
 
 	/**
+	 * Name of the transient that stores the dismissed notice IDs.
+	 *
+	 * @var string
+	 */
+	const DISMISS_TRANSIENT_NAME = '_imagify_ignore_notices';
+
+	/**
 	 * Action used in the nonce to dismiss a notice.
 	 *
 	 * @var string
@@ -181,7 +188,7 @@ class Imagify_Notices {
 			}
 		}
 
-		imagify_dismiss_notice( $notice );
+		self::dismiss_notice( $notice );
 
 		/**
 		 * Fires when a notice is dismissed.
@@ -266,7 +273,7 @@ class Imagify_Notices {
 			return false;
 		}
 
-		if ( imagify_notice_is_dismissed( 'welcome-steps' ) || get_imagify_option( 'api_key' ) ) {
+		if ( self::notice_is_dismissed( 'welcome-steps' ) || get_imagify_option( 'api_key' ) ) {
 			return false;
 		}
 
@@ -290,7 +297,7 @@ class Imagify_Notices {
 			return false;
 		}
 
-		if ( imagify_notice_is_dismissed( 'wrong-api-key' ) || ! get_imagify_option( 'api_key' ) || imagify_valid_key() ) {
+		if ( self::notice_is_dismissed( 'wrong-api-key' ) || ! get_imagify_option( 'api_key' ) || imagify_valid_key() ) {
 			return false;
 		}
 
@@ -330,7 +337,7 @@ class Imagify_Notices {
 			return false;
 		}
 
-		if ( imagify_notice_is_dismissed( 'http-block-external' ) || ! is_imagify_blocked() ) {
+		if ( self::notice_is_dismissed( 'http-block-external' ) || ! is_imagify_blocked() ) {
 			return false;
 		}
 
@@ -358,7 +365,7 @@ class Imagify_Notices {
 
 		$media_library_mode = get_user_option( 'media_library_mode', get_current_user_id() );
 
-		if ( 'list' === $media_library_mode || imagify_notice_is_dismissed( 'grid-view' ) || version_compare( $wp_version, '4.0' ) < 0 ) {
+		if ( 'list' === $media_library_mode || self::notice_is_dismissed( 'grid-view' ) || version_compare( $wp_version, '4.0' ) < 0 ) {
 			return false;
 		}
 
@@ -387,7 +394,7 @@ class Imagify_Notices {
 			return false;
 		}
 
-		if ( imagify_notice_is_dismissed( 'free-over-quota' ) ) {
+		if ( self::notice_is_dismissed( 'free-over-quota' ) ) {
 			return false;
 		}
 
@@ -449,7 +456,7 @@ class Imagify_Notices {
 			return false;
 		}
 
-		if ( imagify_notice_is_dismissed( 'rating' ) ) {
+		if ( self::notice_is_dismissed( 'rating' ) ) {
 			return false;
 		}
 
@@ -479,7 +486,7 @@ class Imagify_Notices {
 			return false;
 		}
 
-		if ( defined( 'WP_ROCKET_VERSION' ) || imagify_notice_is_dismissed( 'wp-rocket' ) ) {
+		if ( defined( 'WP_ROCKET_VERSION' ) || self::notice_is_dismissed( 'wp-rocket' ) ) {
 			return false;
 		}
 
@@ -522,6 +529,79 @@ class Imagify_Notices {
 	 */
 	public function render_view( $view, $data = array() ) {
 		require self::$views_folder . 'notice-' . $view . '.php';
+	}
+
+	/**
+	 * Renew a dismissed Imagify notice.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 * @see    imagify_renew_notice()
+	 *
+	 * @param  string $notice  A notice ID.
+	 * @param  int    $user_id A user ID.
+	 */
+	public static function renew_notice( $notice, $user_id = 0 ) {
+		$user_id = $user_id ? (int) $user_id : get_current_user_id();
+		$notices = get_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, true );
+		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+
+		if ( ! isset( $notices[ $notice ] ) ) {
+			return;
+		}
+
+		unset( $notices[ $notice ] );
+		$notices = array_flip( $notices );
+		$notices = array_filter( $notices );
+		$notices = array_values( $notices );
+
+		update_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, $notices );
+	}
+
+	/**
+	 * Dismiss an Imagify notice.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 * @see    imagify_dismiss_notice()
+	 *
+	 * @param  string $notice  A notice ID.
+	 * @param  int    $user_id A user ID.
+	 */
+	public static function dismiss_notice( $notice, $user_id = 0 ) {
+		$user_id = $user_id ? (int) $user_id : get_current_user_id();
+		$notices = get_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, true );
+		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+
+		if ( isset( $notices[ $notice ] ) ) {
+			return;
+		}
+
+		$notices[ $notice ] = 1;
+		$notices = array_flip( $notices );
+		$notices = array_filter( $notices );
+		$notices = array_values( $notices );
+
+		update_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, $notices );
+	}
+
+	/**
+	 * Tell if an Imagify notice is dismissed.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 * @see    imagify_notice_is_dismissed()
+	 *
+	 * @param  string $notice  A notice ID.
+	 * @param  int    $user_id A user ID.
+	 * @return bool
+	 */
+	public static function notice_is_dismissed( $notice, $user_id = 0 ) {
+		$user_id = $user_id ? (int) $user_id : get_current_user_id();
+		$notices = get_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, true );
+		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+
+		return isset( $notices[ $notice ] );
 	}
 
 

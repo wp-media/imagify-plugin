@@ -77,6 +77,7 @@ function _imagify_init() {
 	require( IMAGIFY_CLASSES_PATH . 'class-imagify.php' );
 	require( IMAGIFY_CLASSES_PATH . 'class-imagify-user.php' );
 	require( IMAGIFY_CLASSES_PATH . 'class-imagify-attachment.php' );
+	require( IMAGIFY_CLASSES_PATH . 'class-imagify-notices.php' );
 	require( IMAGIFY_COMMON_PATH . 'attachments.php' );
 	require( IMAGIFY_COMMON_PATH . 'admin-bar.php' );
 	require( IMAGIFY_COMMON_PATH . 'cron.php' );
@@ -95,7 +96,6 @@ function _imagify_init() {
 		require( IMAGIFY_ADMIN_UI_PATH . 'options.php' );
 		require( IMAGIFY_ADMIN_UI_PATH . 'bulk.php' );
 		require( IMAGIFY_CLASSES_PATH . 'class-imagify-assets.php' );
-		require( IMAGIFY_CLASSES_PATH . 'class-imagify-notices.php' );
 
 		Imagify_Assets::get_instance()->init();
 		Imagify_Notices::get_instance()->init();
