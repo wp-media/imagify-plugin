@@ -577,10 +577,10 @@ class Imagify_Notices {
 			return;
 		}
 
-		$notices[ $notice ] = 1;
-		$notices = array_flip( $notices );
-		$notices = array_filter( $notices );
-		$notices = array_values( $notices );
+		$notices   = array_flip( $notices );
+		$notices[] = $notice;
+		$notices   = array_filter( $notices );
+		$notices   = array_values( $notices );
 
 		update_user_meta( $user_id, self::DISMISS_TRANSIENT_NAME, $notices );
 	}
