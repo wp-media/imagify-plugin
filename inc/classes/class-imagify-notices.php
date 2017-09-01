@@ -47,6 +47,7 @@ class Imagify_Notices {
 	/**
 	 * List of notice IDs.
 	 * They correspond to method names and IDs stored in the "dismissed" transient.
+	 * Only use "-" character, not "_".
 	 *
 	 * @var array
 	 */
@@ -281,19 +282,28 @@ class Imagify_Notices {
 	 * @return bool
 	 */
 	public function display_welcome_steps() {
+		static $display;
+
+		if ( isset( $display ) ) {
+			return $display;
+		}
+
+		$display = false;
+
 		if ( ! $this->user_can( 'welcome-steps' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( imagify_is_screen( 'imagify-settings' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( self::notice_is_dismissed( 'welcome-steps' ) || get_imagify_option( 'api_key' ) ) {
-			return false;
+			return $display;
 		}
 
-		return true;
+		$display = true;
+		return $display;
 	}
 
 	/**
@@ -305,19 +315,28 @@ class Imagify_Notices {
 	 * @return bool
 	 */
 	public function display_wrong_api_key() {
+		static $display;
+
+		if ( isset( $display ) ) {
+			return $display;
+		}
+
+		$display = false;
+
 		if ( ! $this->user_can( 'wrong-api-key' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( ! imagify_is_screen( 'bulk' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( self::notice_is_dismissed( 'wrong-api-key' ) || ! get_imagify_option( 'api_key' ) || imagify_valid_key() ) {
-			return false;
+			return $display;
 		}
 
-		return true;
+		$display = true;
+		return $display;
 	}
 
 	/**
@@ -329,11 +348,19 @@ class Imagify_Notices {
 	 * @return array An array of plugins to deactivate.
 	 */
 	public function display_plugins_to_deactivate() {
-		if ( ! $this->user_can( 'plugins-to-deactivate' ) ) {
-			return false;
+		static $display;
+
+		if ( isset( $display ) ) {
+			return $display;
 		}
 
-		return $this->get_conflicting_plugins();
+		if ( ! $this->user_can( 'plugins-to-deactivate' ) ) {
+			$display = false;
+			return $display;
+		}
+
+		$display = $this->get_conflicting_plugins();
+		return $display;
 	}
 
 	/**
@@ -345,19 +372,28 @@ class Imagify_Notices {
 	 * @return bool
 	 */
 	public function display_http_block_external() {
+		static $display;
+
+		if ( isset( $display ) ) {
+			return $display;
+		}
+
+		$display = false;
+
 		if ( ! $this->user_can( 'http-block-external' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( imagify_is_screen( 'imagify-settings' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( self::notice_is_dismissed( 'http-block-external' ) || ! is_imagify_blocked() ) {
-			return false;
+			return $display;
 		}
 
-		return true;
+		$display = true;
+		return $display;
 	}
 
 	/**
@@ -370,27 +406,35 @@ class Imagify_Notices {
 	 */
 	public function display_grid_view() {
 		global $wp_version;
+		static $display;
+
+		if ( isset( $display ) ) {
+			return $display;
+		}
+
+		$display = false;
 
 		if ( ! $this->user_can( 'grid-view' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( ! imagify_is_screen( 'library' ) ) {
-			return false;
+			return $display;
 		}
 
 		$media_library_mode = get_user_option( 'media_library_mode', get_current_user_id() );
 
 		if ( 'list' === $media_library_mode || self::notice_is_dismissed( 'grid-view' ) || version_compare( $wp_version, '4.0' ) < 0 ) {
-			return false;
+			return $display;
 		}
 
 		// Don't display the notice if the API key isn't valid.
 		if ( ! imagify_valid_key() ) {
-			return false;
+			return $display;
 		}
 
-		return true;
+		$display = true;
+		return $display;
 	}
 
 	/**
@@ -402,26 +446,35 @@ class Imagify_Notices {
 	 * @return bool|object An Imagify user object. False otherwise.
 	 */
 	public function display_free_over_quota() {
+		static $display;
+
+		if ( isset( $display ) ) {
+			return $display;
+		}
+
+		$display = false;
+
 		if ( ! $this->user_can( 'free-over-quota' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( ! imagify_is_screen( 'imagify-settings' ) && ! imagify_is_screen( 'bulk' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( self::notice_is_dismissed( 'free-over-quota' ) ) {
-			return false;
+			return $display;
 		}
 
 		$user = new Imagify_User();
 
 		// Don't display the notice if the user doesn't use all his quota or the API key isn't valid.
 		if ( ! $user->is_over_quota() || ! imagify_valid_key() ) {
-			return false;
+			return $display;
 		}
 
-		return $user;
+		$display = $user;
+		return $display;
 	}
 
 	/**
@@ -434,25 +487,33 @@ class Imagify_Notices {
 	 */
 	public function display_backup_folder_not_writable() {
 		global $post_id;
+		static $display;
+
+		if ( isset( $display ) ) {
+			return $display;
+		}
+
+		$display = false;
 
 		if ( ! $this->user_can( 'backup-folder-not-writable' ) ) {
-			return false;
+			return $display;
 		}
 
 		// Every places where images can be optimized, automatically or not (+ the settings page).
 		if ( ! imagify_is_screen( 'imagify-settings' ) && ! imagify_is_screen( 'library' ) && ! imagify_is_screen( 'upload' ) && ! imagify_is_screen( 'bulk' ) && ! imagify_is_screen( 'media-modal' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( ! get_imagify_option( 'backup' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( imagify_backup_dir_is_writable() ) {
-			return false;
+			return $display;
 		}
 
-		return true;
+		$display = true;
+		return $display;
 	}
 
 	/**
@@ -464,25 +525,34 @@ class Imagify_Notices {
 	 * @return bool|int
 	 */
 	public function display_rating() {
+		static $display;
+
+		if ( isset( $display ) ) {
+			return $display;
+		}
+
+		$display = false;
+
 		if ( ! $this->user_can( 'rating' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( ! imagify_is_screen( 'bulk' ) && ! imagify_is_screen( 'library' ) && ! imagify_is_screen( 'upload' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( self::notice_is_dismissed( 'rating' ) ) {
-			return false;
+			return $display;
 		}
 
 		$user_images_count = (int) get_site_transient( 'imagify_user_images_count' );
 
 		if ( ! $user_images_count || get_site_transient( 'imagify_seen_rating_notice' ) ) {
-			return false;
+			return $display;
 		}
 
-		return $user_images_count;
+		$display = $user_images_count;
+		return $display;
 	}
 
 	/**
@@ -494,58 +564,34 @@ class Imagify_Notices {
 	 * @return bool
 	 */
 	public function display_wp_rocket() {
+		static $display;
+
+		if ( isset( $display ) ) {
+			return $display;
+		}
+
+		$display = false;
+
 		if ( ! $this->user_can( 'wp-rocket' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( ! imagify_is_screen( 'bulk' ) ) {
-			return false;
+			return $display;
 		}
 
 		if ( defined( 'WP_ROCKET_VERSION' ) || self::notice_is_dismissed( 'wp-rocket' ) ) {
-			return false;
+			return $display;
 		}
 
-		return true;
+		$display = true;
+		return $display;
 	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** PUBLIC TOOLS ============================================================================ */
 	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Tell if one or more notices will be displayed later in the page.
-	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 *
-	 * @return bool
-	 */
-	public function has_notices() {
-		foreach ( self::$notice_ids as $notice_id ) {
-			$callback = 'display_' . str_replace( '-', '_', $notice_id );
-
-			if ( method_exists( $this, $callback ) && call_user_func( array( $this, $callback ) ) ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Include the view file.
-	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 *
-	 * @param string $view The view ID.
-	 * @param mixed  $data Some data to pass to the view.
-	 */
-	public function render_view( $view, $data = array() ) {
-		require self::$views_folder . 'notice-' . $view . '.php';
-	}
 
 	/**
 	 * Renew a dismissed Imagify notice.
@@ -618,6 +664,39 @@ class Imagify_Notices {
 		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
 
 		return isset( $notices[ $notice ] );
+	}
+
+	/**
+	 * Tell if one or more notices will be displayed later in the page.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function has_notices() {
+		foreach ( self::$notice_ids as $notice_id ) {
+			$callback = 'display_' . str_replace( '-', '_', $notice_id );
+
+			if ( method_exists( $this, $callback ) && call_user_func( array( $this, $callback ) ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Include the view file.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @param string $view The view ID.
+	 * @param mixed  $data Some data to pass to the view.
+	 */
+	public function render_view( $view, $data = array() ) {
+		require self::$views_folder . 'notice-' . $view . '.php';
 	}
 
 
