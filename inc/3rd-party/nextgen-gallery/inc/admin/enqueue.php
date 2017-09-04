@@ -34,7 +34,7 @@ function _imagify_ngg_admin_print_styles() {
 		return;
 	}
 
-	$assets->unlocalize_script_when_enqueued( 'bulk', 'imagifyBulk' );
+	$assets->remove_deferred_localization( 'bulk', 'imagifyBulk' );
 
 	$l10n = $assets->get_localization_data( 'bulk', array(
 		'heartbeatId' => 'update_ngg_bulk_data',
