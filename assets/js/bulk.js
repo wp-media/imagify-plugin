@@ -1,34 +1,20 @@
-window.imagify = window.imagify || {
-	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
-	log:    function( content ) {
-		if ( undefined !== console ) {
-			console.log( content ); // eslint-disable-line no-console
-		}
-	},
-	info:   function( content ) {
-		if ( undefined !== console ) {
-			console.info( content ); // eslint-disable-line no-console
-		}
-	}
-};
-
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 	var overviewCanvas = d.getElementById( 'imagify-overview-chart' ),
 		overviewData   = [
 			{
-				value:     imagifyBulk.labels.totalUnoptimizedAttachments,
+				value:     imagifyBulk.totalUnoptimizedAttachments,
 				color:     '#D9E4EB',
 				highlight: '#D9E4EB',
 				label:     imagifyBulk.labels.overviewChartLabels.unoptimized
 			},
 			{
-				value:     imagifyBulk.labels.totalOptimizedAttachments,
+				value:     imagifyBulk.totalOptimizedAttachments,
 				color:     '#46B1CE',
 				highlight: '#46B1CE',
 				label:     imagifyBulk.labels.overviewChartLabels.optimized
 			},
 			{
-				value:     imagifyBulk.labels.totalErrorsAttachments,
+				value:     imagifyBulk.totalErrorsAttachments,
 				color:     '#2E3242',
 				highlight: '#2E3242',
 				label:     imagifyBulk.labels.overviewChartLabels.error
@@ -129,7 +115,7 @@ window.imagify = window.imagify || {
 
 	// Heartbeat.
 	$( d ).on( 'heartbeat-send', function( e, data ) {
-		data.imagify_heartbeat = imagifyBulk.heartbeat_id;
+		data.imagify_heartbeat = imagifyBulk.heartbeatId;
 	} );
 
 	// Listen for the custom event "heartbeat-tick" on $(document).
@@ -208,10 +194,10 @@ window.imagify = window.imagify || {
 			title:             imagifyBulk.labels.waitTitle,
 			html:              imagifyBulk.labels.waitText,
 			showConfirmButton: false,
-			imageUrl:          imagifyBulk.labels.waitImageUrl
+			imageUrl:          imagifyBulk.waitImageUrl
 		} );
 
-		$.get( ajaxurl + imagify.concat + 'action=' + imagifyBulk.ajax_action + '&optimization_level=' + optimizationLevel + '&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val() )
+		$.get( ajaxurl + w.imagify.concat + 'action=' + imagifyBulk.ajaxAction + '&optimization_level=' + optimizationLevel + '&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val() )
 			.done( function( response ) {
 				var swal_title = '',
 					swal_text  = '',
@@ -258,10 +244,10 @@ window.imagify = window.imagify || {
 
 				table     = $( '.imagify-bulk-table table tbody' );
 				Optimizer = new ImagifyGulp( {
-					'buffer_size': imagifyBulk.buffer_size,
-					'lib':         ajaxurl + imagify.concat + 'action=imagify_bulk_upload&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val(),
+					'buffer_size': imagifyBulk.bufferSize,
+					'lib':         ajaxurl + w.imagify.concat + 'action=imagify_bulk_upload&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val(),
 					'images':      response.data,
-					'context':     imagifyBulk.ajax_context
+					'context':     imagifyBulk.ajaxContext
 				} );
 
 				// Before the attachment optimization.
@@ -368,7 +354,7 @@ window.imagify = window.imagify || {
 						stopOptimization = 0;
 					} )
 					.error( function( id ) {
-						imagify.log( "Can't optimize image with id " + id + "." );
+						w.imagify.log( "Can't optimize image with id " + id + "." );
 					} )
 					.run();
 			} )

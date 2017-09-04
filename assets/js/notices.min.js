@@ -1,17 +1,3 @@
-window.imagify = window.imagify || {
-	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
-	log:    function( content ) {
-		if ( undefined !== console ) {
-			console.log( content ); // eslint-disable-line no-console
-		}
-	},
-	info:   function( content ) {
-		if ( undefined !== console ) {
-			console.info( content ); // eslint-disable-line no-console
-		}
-	}
-};
-
 // All notices =====================================================================================
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
@@ -50,16 +36,16 @@ window.imagify = window.imagify || {
 
 		// Display the sign up form.
 		swal( {
-			title:               imagifyAdmin.labels.signupTitle,
-			html:                imagifyAdmin.labels.signupText,
-			confirmButtonText:   imagifyAdmin.labels.signupConfirmButtonText,
+			title:               imagifyNotices.labels.signupTitle,
+			html:                imagifyNotices.labels.signupText,
+			confirmButtonText:   imagifyNotices.labels.signupConfirmButtonText,
 			input:               'email',
 			showLoaderOnConfirm: true,
 			customClass:         'imagify-sweet-alert imagify-sweet-alert-signup',
 			inputValidator:      function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
 					if ( $.trim( inputValue ) === '' || ! inputValue ) {
-						reject( imagifyAdmin.labels.signupErrorEmptyEmail );
+						reject( imagifyNotices.labels.signupErrorEmptyEmail );
 					} else {
 						resolve();
 					}
@@ -68,7 +54,7 @@ window.imagify = window.imagify || {
 			preConfirm:          function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
 					setTimeout( function() {
-						$.get( ajaxurl + imagify.concat + 'action=imagify_signup&email=' + inputValue + '&imagifysignupnonce=' + $( '#imagifysignupnonce' ).val() )
+						$.get( ajaxurl + w.imagify.concat + 'action=imagify_signup&email=' + inputValue + '&imagifysignupnonce=' + $( '#imagifysignupnonce' ).val() )
 							.done( function( response ) {
 								if ( ! response.success ) {
 									reject( response.data );
@@ -81,8 +67,8 @@ window.imagify = window.imagify || {
 			},
 		} ).then( function() {
 			swal( {
-				title:       imagifyAdmin.labels.signupSuccessTitle,
-				html:        imagifyAdmin.labels.signupSuccessText,
+				title:       imagifyNotices.labels.signupSuccessTitle,
+				html:        imagifyNotices.labels.signupSuccessText,
 				type:        'success',
 				customClass: 'imagify-sweet-alert'
 			} );
@@ -97,16 +83,16 @@ window.imagify = window.imagify || {
 
 		// Display the API key form.
 		swal( {
-			title:               imagifyAdmin.labels.saveApiKeyTitle,
-			html:                imagifyAdmin.labels.saveApiKeyText,
-			confirmButtonText:   imagifyAdmin.labels.saveApiKeyConfirmButtonText,
+			title:               imagifyNotices.labels.saveApiKeyTitle,
+			html:                imagifyNotices.labels.saveApiKeyText,
+			confirmButtonText:   imagifyNotices.labels.saveApiKeyConfirmButtonText,
 			input:               'text',
 			showLoaderOnConfirm: true,
 			customClass:         'imagify-sweet-alert imagify-sweet-alert-signup',
 			inputValidator:      function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
 					if ( $.trim( inputValue ) === '' || ! inputValue ) {
-						reject( imagifyAdmin.labels.ApiKeyErrorEmpty );
+						reject( imagifyNotices.labels.ApiKeyErrorEmpty );
 					} else {
 						resolve();
 					}
@@ -114,7 +100,7 @@ window.imagify = window.imagify || {
 			},
 			preConfirm:          function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
-					$.get( ajaxurl + imagify.concat + 'action=imagify_check_api_key_validity&api_key=' + inputValue + '&imagifycheckapikeynonce=' + $( '#imagifycheckapikeynonce' ).val() )
+					$.get( ajaxurl + w.imagify.concat + 'action=imagify_check_api_key_validity&api_key=' + inputValue + '&imagifycheckapikeynonce=' + $( '#imagifycheckapikeynonce' ).val() )
 						.done( function( response ) {
 							if ( ! response.success ) {
 								reject( response.data );
@@ -126,8 +112,8 @@ window.imagify = window.imagify || {
 			},
 		} ).then( function() {
 			swal( {
-				title:       imagifyAdmin.labels.ApiKeyCheckSuccessTitle,
-				html:        imagifyAdmin.labels.ApiKeyCheckSuccessText,
+				title:       imagifyNotices.labels.ApiKeyCheckSuccessTitle,
+				html:        imagifyNotices.labels.ApiKeyCheckSuccessText,
 				type:        'success',
 				customClass: 'imagify-sweet-alert'
 			} );

@@ -1,27 +1,26 @@
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	var bulkOpt;
+	/**
+	 * Add a "Imagify'em all" in the select list.
+	 */
+	bulkOpt = '<option value="imagify-bulk-upload">' + imagifyLibrary.labels.bulkActionsOptimize + '</option>';
 
-	if ( w.imagifyUpload ) {
-		/**
-		 * Add a "Imagify'em all" in the select list.
-		 */
-		bulkOpt = '<option value="imagify-bulk-upload">' + imagifyUpload.bulkActionsLabels.optimize + '</option>';
-
-		if ( imagifyUpload.backup_option || $( '.attachment-has-backup' ).length ) {
-			// If the backup option is enabled, or if we have items that can be restored.
-			bulkOpt += '<option value="imagify-bulk-restore">' + imagifyUpload.bulkActionsLabels.restore + '</option>';
-		}
-
-		$( '.bulkactions select[name="action"] option:last-child' ).before( bulkOpt );
-		$( '.bulkactions select[name="action2"] option:last-child' ).before( bulkOpt );
+	if ( imagifyLibrary.backupOption || $( '.attachment-has-backup' ).length ) {
+		// If the backup option is enabled, or if we have items that can be restored.
+		bulkOpt += '<option value="imagify-bulk-restore">' + imagifyLibrary.labels.bulkActionsRestore + '</option>';
 	}
+
+	$( '.bulkactions select[name="action"] option:last-child' ).before( bulkOpt );
+	$( '.bulkactions select[name="action2"] option:last-child' ).before( bulkOpt );
+	$( '#bulkaction option:last-child' ).after( bulkOpt );
 
 	/**
 	 * Process optimization for all selected images.
 	 */
 	$( '#doaction' )
 		.add( '#doaction2' )
+		.add( '#bulkaction + [name="showThickbox"]' )
 		.on( 'click', function( e ) {
 			var value = $( this ).prev( 'select' ).val().split( '-' ),
 				action, ids;
@@ -33,7 +32,7 @@
 			e.preventDefault();
 
 			action = value[2];
-			ids    = $( 'input[name^="media"]:checked' ).map( function() {
+			ids    = $( 'input[name^="media"]:checked, input[name^="doaction"]:checked' ).map( function() {
 				return this.value;
 			} ).get();
 

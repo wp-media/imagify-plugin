@@ -1,4 +1,4 @@
-window.imagify = window.imagify || {
+window.imagify = {
 	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
 	log:    function( content ) {
 		if ( undefined !== console ) {
@@ -9,19 +9,22 @@ window.imagify = window.imagify || {
 		if ( undefined !== console ) {
 			console.info( content ); // eslint-disable-line no-console
 		}
+	},
+	openModal: function( $link ) {
+		var target = $link.data( 'target' ) || $link.attr( 'href' );
+
+		jQuery( target ).css( 'display', 'flex' ).hide().fadeIn( 400 ).attr( {
+			'aria-hidden': 'false',
+			'tabindex':    '0'
+		} ).focus().removeAttr( 'tabindex' ).addClass( 'modal-is-open' );
+
+		jQuery( 'body' ).addClass( 'imagify-modal-is-open' );
 	}
 };
 
 
 // Imagify light modal =============================================================================
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
-
-	var imagifyOpenModal = function( $theLink ) {
-		var theTarget = $theLink.data( 'target' ) || $theLink.attr( 'href' );
-
-		$( theTarget ).css( 'display', 'flex' ).hide().fadeIn( 400 ).attr( 'aria-hidden', 'false' ).attr( 'tabindex', '0' ).focus().removeAttr( 'tabindex' ).addClass( 'modal-is-open' );
-		$( 'body' ).addClass( 'imagify-modal-is-open' );
-	};
 
 	// Accessibility.
 	$( '.imagify-modal' ).attr( 'aria-hidden', 'true' );
@@ -30,7 +33,7 @@ window.imagify = window.imagify || {
 		// On click on modal trigger, open modal.
 		.on( 'click.imagify', '.imagify-modal-trigger', function( e ) {
 			e.preventDefault();
-			imagifyOpenModal( $( this ) );
+			w.imagify.openModal( $( this ) );
 		} )
 		// On click on close button, close modal.
 		.on( 'click.imagify', '.imagify-modal .close-btn', function() {

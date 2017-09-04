@@ -1,17 +1,3 @@
-window.imagify = window.imagify || {
-	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
-	log:    function( content ) {
-		if ( undefined !== console ) {
-			console.log( content ); // eslint-disable-line no-console
-		}
-	},
-	info:   function( content ) {
-		if ( undefined !== console ) {
-			console.info( content ); // eslint-disable-line no-console
-		}
-	}
-};
-
 /**
  * Mini chart.
  *

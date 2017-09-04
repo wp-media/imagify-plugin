@@ -1,17 +1,3 @@
-window.imagify = window.imagify || {
-	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
-	log:    function( content ) {
-		if ( undefined !== console ) {
-			console.log( content ); // eslint-disable-line no-console
-		}
-	},
-	info:   function( content ) {
-		if ( undefined !== console ) {
-			console.info( content ); // eslint-disable-line no-console
-		}
-	}
-};
-
 /* eslint-disable */
 (function($, d, w, undefined) {
 
@@ -175,14 +161,8 @@ window.imagify = window.imagify || {
 		/**
 		 * Dynamic modal
 		 *
-		 * @param {object}	Parameters to build modal with datas
+		 * @param {object} Parameters to build modal with datas
 		 */
-		imagifyOpenModal = function( $theLink ) {
-			var theTarget = $theLink.data( 'target' ) || $theLink.attr( 'href' );
-
-			$( theTarget ).css( 'display', 'flex' ).hide().fadeIn( 400 ).attr( 'aria-hidden', 'false' ).attr( 'tabindex', '0' ).focus().removeAttr( 'tabindex' ).addClass( 'modal-is-open' );
-			$( 'body' ).addClass( 'imagify-modal-is-open' );
-		},
 		imagifyTwentyModal = function( options ) {
 			var defaults = {
 					width:         0, //px
@@ -244,8 +224,8 @@ window.imagify = window.imagify || {
 
 				e.preventDefault();
 
-				if ( typeof imagifyOpenModal === 'function' && settings.openModal ) {
-					imagifyOpenModal( $( this ) );
+				if ( settings.openModal ) {
+					w.imagify.openModal( $( this ) );
 				}
 
 				$modal.find( '.imagify-modal-content').css( {
@@ -272,8 +252,8 @@ window.imagify = window.imagify || {
 					$tt.twentytwenty( {
 						handlePosition: 0.3,
 						orientation:    'horizontal',
-						labelBefore:    imagifyTTT.labels.original_l,
-						labelAfter:     imagifyTTT.labels.optimized_l
+						labelBefore:    imagifyTTT.labels.originalL,
+						labelAfter:     imagifyTTT.labels.optimizedL
 					}, function() {
 						var windowH = $( w ).height(),
 							ttH     = $modal.find( '.twentytwenty-container' ).height(),

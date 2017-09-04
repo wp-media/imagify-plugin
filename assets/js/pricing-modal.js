@@ -1,18 +1,3 @@
-window.imagify = window.imagify || {
-	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
-	log:    function( content ) {
-		if ( undefined !== console ) {
-			console.log( content ); // eslint-disable-line no-console
-		}
-	},
-	info:   function( content ) {
-		if ( undefined !== console ) {
-			console.info( content ); // eslint-disable-line no-console
-		}
-	}
-};
-
-
 // Imagify tabs ====================================================================================
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
@@ -24,7 +9,7 @@ window.imagify = window.imagify || {
 	 * div.imagify-tabs-contents
 	 *     div.imagify-tab-content#target
 	 */
-	$( '.imagify-tab' ).on( 'click.imagify', function( e ) {
+	$( d ).on( 'click.imagify', '.imagify-tab', function( e ) {
 		var $_this     = $( this ),
 			curr_class = 'imagify-current',
 			target;
@@ -274,11 +259,11 @@ window.imagify = window.imagify || {
 				// Error during the request.
 				if ( ! response.success ) {
 					$section.removeClass( 'validated' ).addClass( 'invalid' );
-					$label.text( imagifyAdmin.labels.errorCouponAPI );
+					$label.text( imagifyPricingModal.labels.errorCouponAPI );
 				} else if ( response.data.success ) {
 					coupon_value = 'percentage' === response.data.coupon_type ? response.data.value + '%' : '$' + response.data.value;
 					$section.removeClass( 'invalid' ).addClass( 'validated' );
-					$label.html( imagifyAdmin.labels.successCouponAPI );
+					$label.html( imagifyPricingModal.labels.successCouponAPI );
 					$label.find( '.imagify-coupon-offer' ).text( coupon_value );
 					$label.find( '.imagify-coupon-word' ).text( code );
 				} else {
@@ -393,7 +378,7 @@ window.imagify = window.imagify || {
 
 							// Show error message.
 							$offers_block.closest( '.imagify-modal-views' ).find( '.imagify-popin-message' ).remove();
-							$offers_block.after( '<div class="imagify-popin-message imagify-error"><p>' + imagifyAdmin.labels.errorPriceAPI + '</p></div>' );
+							$offers_block.after( '<div class="imagify-popin-message imagify-error"><p>' + imagifyPricingModal.labels.errorPriceAPI + '</p></div>' );
 
 							// Show the modal content.
 							imagifyModal.$modal.find( '.imagify-modal-loader' ).fadeOut( 300 );
@@ -706,7 +691,7 @@ window.imagify = window.imagify || {
 			}
 
 			if ( ! params.period ) {
-				imagify.info( 'No period defined' );
+				w.imagify.info( 'No period defined' );
 				return;
 			}
 
