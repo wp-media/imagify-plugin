@@ -185,25 +185,25 @@ class Imagify_Assets {
 		/**
 		 * Imagify Scripts.
 		 */
-		$this->register_script( 'admin-bar', 'admin-bar', array( 'jquery' ) )->localize_when_enqueued( 'imagifyAdminBar' );
+		$this->register_script( 'admin-bar', 'admin-bar', array( 'jquery' ) )->defer_localization( 'imagifyAdminBar' );
 
 		$this->register_script( 'admin', 'admin', array( 'jquery' ) );
 
-		$this->register_script( 'notices', 'notices', array( 'jquery', 'admin' ) )->localize_when_enqueued( 'imagifyNotices' ); // Needs SweetAlert on some cases.
+		$this->register_script( 'notices', 'notices', array( 'jquery', 'admin' ) )->defer_localization( 'imagifyNotices' ); // Needs SweetAlert on some cases.
 
-		$this->register_script( 'twentytwenty', 'jquery.twentytwenty', array( 'jquery', 'event-move', 'chart', 'admin' ) )->localize_when_enqueued( 'imagifyTTT' );
+		$this->register_script( 'twentytwenty', 'jquery.twentytwenty', array( 'jquery', 'event-move', 'chart', 'admin' ) )->defer_localization( 'imagifyTTT' );
 
 		$this->register_script( 'media-modal', 'media-modal', array( 'jquery', 'chart', 'admin' ) );
 
-		$this->register_script( 'pricing-modal', 'pricing-modal', array( 'jquery', 'admin' ) )->localize_when_enqueued( 'imagifyPricingModal' );
+		$this->register_script( 'pricing-modal', 'pricing-modal', array( 'jquery', 'admin' ) )->defer_localization( 'imagifyPricingModal' );
 
-		$this->register_script( 'library', 'library', array( 'jquery', 'media-modal' ) )->localize_when_enqueued( 'imagifyLibrary' );
+		$this->register_script( 'library', 'library', array( 'jquery', 'media-modal' ) )->defer_localization( 'imagifyLibrary' );
 
 		$this->register_script( 'async', 'imagify-gulp', array(), '2017-07-28' );
 
-		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'chart', 'sweetalert', 'async', 'admin' ) )->localize_when_enqueued( 'imagifyBulk' );
+		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
 
-		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'admin' ) )->localize_when_enqueued( 'imagifyOptions' );
+		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'admin' ) )->defer_localization( 'imagifyOptions' );
 	}
 
 	/**
@@ -662,7 +662,7 @@ class Imagify_Assets {
 	 * @param  string $object_name Name for the JavaScript object. Passed directly, so it should be qualified JS variable. Example: '/[a-zA-Z0-9_]+/'.
 	 * @return object              This class instance.
 	 */
-	public function localize_when_enqueued( $object_name ) {
+	public function defer_localization( $object_name ) {
 		if ( ! isset( $this->deferred_localizations[ $this->current_handle ] ) ) {
 			$this->deferred_localizations[ $this->current_handle ] = array();
 		}
@@ -682,7 +682,7 @@ class Imagify_Assets {
 	 * @param  string $object_name Name for the JavaScript object. Passed directly, so it should be qualified JS variable. Example: '/[a-zA-Z0-9_]+/'.
 	 * @return object              This class instance.
 	 */
-	public function unlocalize_script_when_enqueued( $handle, $object_name = null ) {
+	public function remove_deferred_localization( $handle, $object_name = null ) {
 		if ( empty( $this->deferred_localizations[ $handle ] ) ) {
 			return $this;
 		}
