@@ -1,64 +1,51 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-add_action( 'admin_print_styles', '_imagify_ngg_admin_print_styles', IMAGIFY_INT_MAX );
+add_action( 'imagify_assets_enqueued', '_imagify_ngg_admin_print_styles' );
 /**
- * Add some JS for NGG compatibility.
+ * Add some CSS and JS for NGG compatibility.
  *
- * @since 1.5
+ * @since  1.5
+ * @since  1.6.10 Use the new class Imagify_Assets.
  * @author Jonathan Buttigieg
+ * @author Grégory Viguier
  */
 function _imagify_ngg_admin_print_styles() {
-	$current_screen = get_current_screen();
+	global $admin_page_hooks;
+	$assets = Imagify_Assets::get_instance();
 
 	/**
-	 * Scripts loaded in /wp-admin/admin.php?page=nggallery-manage-gallery.
+	 * Manage Gallery Images.
 	 */
-	if ( isset( $current_screen ) && ( 'nggallery-manage-images' === $current_screen->base || 'nggallery-manage-gallery' === $current_screen->base ) ) {
-		$upload_data = array(
-			'bulkActionsLabels' => array(
-				'optimize' => __( 'Optimize', 'imagify' ),
-				'restore'  => __( 'Restore Original', 'imagify' ),
-			),
-		);
-		wp_localize_script( 'imagify-js-upload', 'imagifyUpload', $upload_data );
-
-		wp_enqueue_script( 'imagify-js-chart' );
-		wp_enqueue_script( 'imagify-js-upload' );
+	if ( imagify_is_screen( 'nggallery-manage-images' ) ) {
+		$assets->enqueue_assets( 'library' );
+		return;
 	}
 
 	/**
-	 * Scripts loaded in /wp-admin/admin.php?page=imagify-ngg-bulk-optimization.
+	 * NGG Bulk Optimization.
 	 */
-	if ( isset( $current_screen ) && false !== strpos( $current_screen->base, '_page_imagify-ngg-bulk-optimization' ) ) {
-		wp_enqueue_script( 'heartbeat' );
+	// Because WP nonsense, the screen ID depends on the menu title, which is translated. So the screen ID changes depending on the administration locale.
+	$ngg_menu_slug  = defined( 'NGGFOLDER' ) ? plugin_basename( NGGFOLDER ) : 'nextgen-gallery';
+	$ngg_menu_slug  = isset( $admin_page_hooks[ $ngg_menu_slug ] ) ? $admin_page_hooks[ $ngg_menu_slug ] : 'gallery';
+	$bulk_screen_id = $ngg_menu_slug . '_page_' . IMAGIFY_SLUG . '-ngg-bulk-optimization';
 
-		$bulk_data = get_imagify_localize_script_translations( 'bulk' );
-		$bulk_data['heartbeat_id'] = 'update_ngg_bulk_data';
-		$bulk_data['ajax_action']  = 'imagify_ngg_get_unoptimized_attachment_ids';
-		$bulk_data['ajax_context'] = 'NGG';
-
-		/** This filter is documented in inc/admin/enqueue.php */
-		$bulk_data['buffer_size'] = apply_filters( 'imagify_bulk_buffer_size', 4 );
-
-		wp_localize_script( 'imagify-js-bulk', 'imagifyBulk', $bulk_data );
-		wp_enqueue_script( 'imagify-js-chart' );
-		wp_enqueue_script( 'imagify-js-async' );
-		wp_enqueue_script( 'imagify-js-bulk' );
+	if ( ! imagify_is_screen( $bulk_screen_id ) ) {
+		return;
 	}
-}
 
-add_action( 'admin_footer', '_imagify_ngg_admin_print_intercom' );
-/**
- * Add Intercom on Options page an Bulk Optimization
- *
- * @since 1.5
- * @author Jonathan Buttigieg
- */
-function _imagify_ngg_admin_print_intercom() {
-	$current_screen = get_current_screen();
+	$assets->unlocalize_script_when_enqueued( 'bulk', 'imagifyBulk' );
 
-	if ( isset( $current_screen ) && false !== strpos( $current_screen->base, '_page_imagify-ngg-bulk-optimization' ) ) {
-		_imagify_admin_print_intercom();
-	}
+	$l10n = $assets->get_localization_data( 'bulk', array(
+		'heartbeatId' => 'update_ngg_bulk_data',
+		'ajaxAction'  => 'imagify_ngg_get_unoptimized_attachment_ids',
+		'ajaxContext' => 'NGG',
+		/** This filter is documented in inc/classes/class-imagify-assets.php */
+		'bufferSize'  => apply_filters( 'imagify_bulk_buffer_size', 4 ),
+	) );
+
+	$assets->enqueue_assets( array( 'pricing-modal', 'bulk' ) )->localize( 'imagifyBulk', $l10n );
+
+	// Intercom.
+	add_action( 'admin_footer-' . $bulk_screen_id, array( $assets, 'print_intercom' ) );
 }

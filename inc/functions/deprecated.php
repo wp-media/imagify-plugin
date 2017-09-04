@@ -266,6 +266,23 @@ if ( is_admin() ) :
 	}
 
 	/**
+	 * Add Intercom on Options page an Bulk Optimization
+	 *
+	 * @since  1.5
+	 * @since  1.6.10 Deprecated.
+	 * @author Jonathan Buttigieg
+	 */
+	function _imagify_ngg_admin_print_intercom() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->print_intercom()' );
+
+		$current_screen = get_current_screen();
+
+		if ( isset( $current_screen ) && false !== strpos( $current_screen->base, '_page_imagify-ngg-bulk-optimization' ) ) {
+			Imagify_Assets::get_instance()->print_intercom();
+		}
+	}
+
+	/**
 	 * A helper to deprecate old admin notice functions.
 	 *
 	 * @since  1.6.10
