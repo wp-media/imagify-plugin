@@ -59,6 +59,13 @@ class Imagify_Assets {
 	protected $current_handle_type;
 
 	/**
+	 * Array of scripts that should be localized when they are enqueued.
+	 *
+	 * @var array
+	 */
+	protected $deferred_localizations = array();
+
+	/**
 	 * A "random" script version to use when debug is on.
 	 *
 	 * @var int
@@ -144,24 +151,32 @@ class Imagify_Assets {
 		/**
 		 * Imagify Styles.
 		 */
-		$this->register_style( 'twentytwenty' );
-
-		$this->register_style( 'admin' );
-
 		$this->register_style( 'sweetalert', 'sweetalert-custom', array( 'sweetalert-core' ) );
-
-		$this->register_style( 'notices', 'notices', array( 'sweetalert' ) );
 
 		$this->register_style( 'admin-bar' );
 
-		$this->register_style( 'pricing-modal' );
+		$this->register_style( 'admin' );
+
+		$this->register_style( 'notices', 'notices', array( 'admin' ) ); // Needs SweetAlert on some cases.
+
+		$this->register_style( 'twentytwenty', 'twentytwenty', array( 'admin' ) );
+
+		$this->register_style( 'attachment-data', 'attachment-data', array( 'admin' ) );
+
+		$this->register_style( 'pricing-modal', 'pricing-modal', array( 'admin' ) );
+
+		$this->register_style( 'library', 'library', array( 'attachment-data' ) );
+
+		$this->register_style( 'bulk', 'bulk', array( 'sweetalert', 'admin' ) );
+
+		$this->register_style( 'options', 'options', array( 'sweetalert', 'admin' ) );
 
 		/**
 		 * 3rd Party Scripts.
 		 */
 		$this->register_script( 'promise-polyfill', 'es6-promise.auto', array(), '4.1.1' );
 
-		$this->register_script( 'sweetalert', 'sweetalert2', array( 'jquery', 'promise-polyfill' ), '4.6.6' );
+		$this->register_script( 'sweetalert', 'sweetalert2', array( 'promise-polyfill' ), '4.6.6' )->localize( 'imagifySwal' );
 
 		$this->register_script( 'chart', 'chart', array(), '1.0.2' );
 
@@ -170,25 +185,25 @@ class Imagify_Assets {
 		/**
 		 * Imagify Scripts.
 		 */
+		$this->register_script( 'admin-bar', 'admin-bar', array( 'jquery' ) )->localize_when_enqueued( 'imagifyAdminBar' );
+
 		$this->register_script( 'admin', 'admin', array( 'jquery' ) );
+
+		$this->register_script( 'notices', 'notices', array( 'jquery', 'admin' ) )->localize_when_enqueued( 'imagifyNotices' ); // Needs SweetAlert on some cases.
+
+		$this->register_script( 'twentytwenty', 'jquery.twentytwenty', array( 'jquery', 'event-move', 'chart', 'admin' ) )->localize_when_enqueued( 'imagifyTTT' );
+
+		$this->register_script( 'media-modal', 'media-modal', array( 'jquery', 'chart', 'admin' ) );
+
+		$this->register_script( 'pricing-modal', 'pricing-modal', array( 'jquery', 'admin' ) )->localize_when_enqueued( 'imagifyPricingModal' );
+
+		$this->register_script( 'library', 'library', array( 'jquery', 'media-modal' ) )->localize_when_enqueued( 'imagifyLibrary' );
 
 		$this->register_script( 'async', 'imagify-gulp', array(), '2017-07-28' );
 
-		$this->register_script( 'notices', 'notices', array( 'jquery' ) );
+		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'chart', 'sweetalert', 'async', 'admin' ) )->localize_when_enqueued( 'imagifyBulk' );
 
-		$this->register_script( 'admin-bar', 'admin-bar', array( 'jquery' ) );
-
-		$this->register_script( 'pricing-modal', 'pricing-modal', array( 'jquery' ) );
-
-		$this->register_script( 'twentytwenty', 'jquery.twentytwenty', array( 'jquery', 'event-move', 'chart' ) );
-
-		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'twentytwenty' ) );
-
-		$this->register_script( 'media-modal', 'media-modal', array( 'jquery', 'chart' ) );
-
-		$this->register_script( 'library', 'library', array( 'jquery', 'media-modal' ) );
-
-		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'chart', 'sweetalert', 'async' ) );
+		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'admin' ) )->localize_when_enqueued( 'imagifyOptions' );
 	}
 
 	/**
@@ -210,13 +225,6 @@ class Imagify_Assets {
 		 */
 		$this->register_styles_and_scripts();
 
-		/*
-		 * Loaded in the whole admnistration.
-		 */
-		$this->enqueue_style( array( 'admin' ) );
-
-		$this->enqueue_script( 'admin' )->localize( 'imagifyAdmin' );
-
 		/**
 		 * Admin bar.
 		 */
@@ -231,6 +239,7 @@ class Imagify_Assets {
 
 		if ( $notices->has_notices() ) {
 			if ( $notices->display_welcome_steps() || $notices->display_wrong_api_key() ) {
+				// This is where we display things about the API key.
 				$this->enqueue_assets( 'sweetalert' );
 			}
 
@@ -238,59 +247,40 @@ class Imagify_Assets {
 		}
 
 		/**
-		 * Loaded in the library and post.php (for attachment post type).
+		 * Loaded in the library and attachment edition.
 		 */
 		if ( imagify_is_screen( 'library' ) || imagify_is_screen( 'attachment' ) ) {
-			$this->enqueue_script( 'twentytwenty' )->localize( 'imagifyTTT' );
+			$this->enqueue_assets( 'twentytwenty' );
 		}
 
 		/**
 		 * Loaded in the library.
 		 */
 		if ( imagify_is_screen( 'library' ) ) {
-			$library_data = $this->get_localization_data( 'library', array(
-				'backup_option' => (int) get_imagify_option( 'backup' ),
-			) );
-
-			$this->enqueue_script( 'library' )->localize( 'imagifyUpload', $library_data );
+			$this->enqueue_assets( 'library' );
 		}
 
 		/**
 		 * Loaded in the bulk optimization page.
 		 */
 		if ( imagify_is_screen( 'bulk' ) ) {
-			$this->enqueue_assets( 'pricing-modal' );
-
-			$bulk_data = $this->get_localization_data( 'bulk', array(
-				'heartbeat_id' => 'update_bulk_data',
-				'ajax_action'  => 'imagify_get_unoptimized_attachment_ids',
-				'ajax_context' => 'wp',
-				'buffer_size'  => get_imagify_bulk_buffer_size(),
-			) );
-
-			/**
-			 * Filter the number of parallel queries during the Bulk Optimization.
-			 *
-			 * @since 1.5.4
-			 *
-			 * @param int $buffer_size Number of parallel queries.
-			 */
-			$bulk_data['buffer_size'] = apply_filters( 'imagify_bulk_buffer_size', $bulk_data['buffer_size'] );
-
-			$this->enqueue_script( 'bulk' )->localize( 'imagifyBulk', $bulk_data );
+			$this->enqueue_assets( array( 'pricing-modal', 'bulk' ) );
 		}
 
 		/*
 		 * Loaded in settings page.
 		 */
 		if ( imagify_is_screen( 'imagify-settings' ) ) {
-			$this->enqueue_assets( 'sweetalert' );
-			$this->enqueue_assets( 'notices' );
-			$this->enqueue_assets( 'twentytwenty' );
-			$this->enqueue_assets( 'pricing-modal' );
-
-			$this->enqueue_script( 'options' )->localize( 'imagifyOptions' );
+			$this->enqueue_assets( array( 'sweetalert', 'notices', 'twentytwenty', 'pricing-modal', 'options' ) );
 		}
+
+		/**
+		 * Triggered after Imagify CSS and JS have been enqueued.
+		 *
+		 * @since 1.6.10
+		 * @author Grégory Viguier
+		 */
+		do_action( 'imagify_assets_enqueued' );
 	}
 
 	/**
@@ -312,7 +302,15 @@ class Imagify_Assets {
 		 */
 		$this->register_styles_and_scripts();
 
-		$this->enqueue_script( 'media-modal' );
+		$this->enqueue_style( 'attachment-data' )->enqueue_script( 'media-modal' );
+
+		/**
+		 * Triggered after Imagify CSS and JS have been enqueued for the media modal.
+		 *
+		 * @since 1.6.10
+		 * @author Grégory Viguier
+		 */
+		do_action( 'imagify_media_modal_assets_enqueued' );
 	}
 
 	/**
@@ -411,6 +409,33 @@ class Imagify_Assets {
 	}
 
 	/**
+	 * Dequeue a style.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @param  string|array $handles Name of the stylesheet. Should be unique. Can be an array to dequeue several stylesheets.
+	 * @return object                This class instance.
+	 */
+	public function dequeue_style( $handles ) {
+		$handles = (array) $handles;
+
+		foreach ( $handles as $handle ) {
+			$this->current_handle      = $handle;
+			$this->current_handle_type = 'css';
+
+			if ( ! empty( $this->styles[ $handle ] ) ) {
+				// If we registered it, it's one of our styles.
+				$handle = self::CSS_PREFIX . $handle;
+			}
+
+			wp_dequeue_style( $handle );
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Register a script.
 	 *
 	 * @since  1.6.10
@@ -474,6 +499,44 @@ class Imagify_Assets {
 			}
 
 			wp_enqueue_script( $handle );
+
+			// Deferred localization.
+			if ( ! empty( $this->deferred_localizations[ $this->current_handle ] ) ) {
+				array_map( array( $this, 'localize' ), $this->deferred_localizations[ $this->current_handle ] );
+				unset( $this->deferred_localizations[ $this->current_handle ] );
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Dequeue a script.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @param  string|array $handles Name of the script. Should be unique. Can be an array to dequeue several scripts.
+	 * @return object                This class instance.
+	 */
+	public function dequeue_script( $handles ) {
+		$handles = (array) $handles;
+
+		foreach ( $handles as $handle ) {
+			// Enqueue the corresponding style.
+			if ( ! empty( $this->styles[ $handle ] ) ) {
+				$this->dequeue_style( $handle );
+			}
+
+			$this->current_handle      = $handle;
+			$this->current_handle_type = 'js';
+
+			if ( ! empty( $this->scripts[ $handle ] ) ) {
+				// If we registered it, it's one of our scripts.
+				$handle = self::JS_PREFIX . $handle;
+			}
+
+			wp_dequeue_script( $handle );
 		}
 
 		return $this;
@@ -502,6 +565,10 @@ class Imagify_Assets {
 			$l10n = $this->get_localization_data( $l10n );
 		}
 
+		if ( ! $l10n ) {
+			return $this;
+		}
+
 		if ( ! empty( $this->scripts[ $handle ] ) ) {
 			// If we registered it, it's one of our scripts.
 			$handle = self::JS_PREFIX . $handle;
@@ -527,6 +594,26 @@ class Imagify_Assets {
 		foreach ( $handles as $handle ) {
 			$this->enqueue_style( $handle );
 			$this->enqueue_script( $handle );
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Dequeue a style and a script that have the same handle.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @param  string|array $handles Name of the script. Should be unique. Can be an array to dequeue several scripts.
+	 * @return object                This class instance.
+	 */
+	public function dequeue_assets( $handles ) {
+		$handles = (array) $handles;
+
+		foreach ( $handles as $handle ) {
+			$this->dequeue_style( $handle );
+			$this->dequeue_script( $handle );
 		}
 
 		return $this;
@@ -562,6 +649,51 @@ class Imagify_Assets {
 	 */
 	public function localize( $object_name, $l10n = null ) {
 		return $this->localize_script( $this->current_handle, $object_name, $l10n );
+	}
+
+	/**
+	 * Localize the current script when it is enqueued with `$this->enqueue()` or `$this->enqueue_script()`. This should be used right after `$this->register_script()`.
+	 * Be careful, it won't work if the script is enqueued because it's a dependency.
+	 * This is handy to not forget to localize the script later. It also prevents to localize the script right away, and maybe execute all localizations while the script is not enqueued (so we localize for nothing).
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $object_name Name for the JavaScript object. Passed directly, so it should be qualified JS variable. Example: '/[a-zA-Z0-9_]+/'.
+	 * @return object              This class instance.
+	 */
+	public function localize_when_enqueued( $object_name ) {
+		if ( ! isset( $this->deferred_localizations[ $this->current_handle ] ) ) {
+			$this->deferred_localizations[ $this->current_handle ] = array();
+		}
+
+		$this->deferred_localizations[ $this->current_handle ][ $object_name ] = $object_name;
+
+		return $this;
+	}
+
+	/**
+	 * Remove a deferred localization.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $handle      Name of the script. Should be unique.
+	 * @param  string $object_name Name for the JavaScript object. Passed directly, so it should be qualified JS variable. Example: '/[a-zA-Z0-9_]+/'.
+	 * @return object              This class instance.
+	 */
+	public function unlocalize_script_when_enqueued( $handle, $object_name = null ) {
+		if ( empty( $this->deferred_localizations[ $handle ] ) ) {
+			return $this;
+		}
+
+		if ( $object_name ) {
+			unset( $this->deferred_localizations[ $handle ][ $object_name ] );
+		} else {
+			unset( $this->deferred_localizations[ $handle ] );
+		}
+
+		return $this;
 	}
 
 	/**
