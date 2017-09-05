@@ -250,6 +250,10 @@ class Imagify_Assets {
 		 * Loaded in the library and attachment edition.
 		 */
 		if ( imagify_is_screen( 'library' ) || imagify_is_screen( 'attachment' ) ) {
+			if ( imagify_is_screen( 'attachment' ) ) {
+				$this->enqueue_style( 'attachment-data' );
+			}
+
 			$this->enqueue_assets( 'twentytwenty' );
 		}
 
