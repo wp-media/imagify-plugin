@@ -103,7 +103,8 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 			'context'       => $context,
 		);
 		$class   = $is_media_page ? '' : ' class="button-imagify-restore attachment-has-backup"';
-		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', $args ) . '"' . $class . ' data-waiting-label="' . esc_attr__( 'Restoring...', 'imagify' ) . '">';
+		$waiting = $is_media_page ? '' : ' data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"';
+		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', $args ) . '"' . $class . $waiting . '>';
 			$output .= '<span class="dashicons dashicons-image-rotate"></span>' . __( 'Restore Original', 'imagify' );
 		$output .= '</a>';
 
@@ -148,8 +149,9 @@ function get_imagify_attachment_error_text( $attachment, $context = 'wp' ) {
 
 	if ( isset( $data['sizes']['full']['success'] ) && ! $data['sizes']['full']['success'] ) {
 		$class   = $is_media_page ? '' : ' button-imagify-manual-upload';
+		$waiting = $is_media_page ? '' : ' data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"';
 		$output .= '<strong>' . $data['sizes']['full']['error'] . '</strong><br/>';
-		$output .= '<a id="imagify-upload-' . $attachment_id . '" class="button' . $class . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Try again', 'imagify' ) . '</a>';
+		$output .= '<a id="imagify-upload-' . $attachment_id . '" class="button' . $class . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '"' . $waiting . '>' . __( 'Try again', 'imagify' ) . '</a>';
 	}
 
 	return $output;
@@ -189,11 +191,12 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 	);
 	$output        = '';
 	$class         = $is_media_page ? '' : ' class="button-imagify-manual-override-upload"';
+	$waiting       = $is_media_page ? '' : ' data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"';
 
 	// Re-optimize to Ultra.
 	if ( 1 === $level || 0 === $level ) {
 		$args['optimization_level'] = 2;
-		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'manual-override-upload', $args ) ) . '"' . $class . ' data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">';
+		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'manual-override-upload', $args ) ) . '"' . $class . $waiting . '>';
 			/* translators: %s is an optimization level. */
 			$output .= '<span class="dashicons dashicons-admin-generic"></span><span class="imagify-hide-if-small">' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), '</span>' . __( 'Ultra', 'imagify' ) . '<span class="imagify-hide-if-small">' ) . '</span>';
 		$output .= '</a>';
@@ -202,7 +205,7 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 	// Re-optimize to Aggressive.
 	if ( ( 2 === $level && ! $is_already_optimized ) || 0 === $level ) {
 		$args['optimization_level'] = 1;
-		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'manual-override-upload', $args ) ) . '"' . $class . ' data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">';
+		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'manual-override-upload', $args ) ) . '"' . $class . $waiting . '>';
 			/* translators: %s is an optimization level. */
 			$output .= '<span class="dashicons dashicons-admin-generic"></span><span class="imagify-hide-if-small">' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), '</span>' . __( 'Aggressive', 'imagify' ) . '<span class="imagify-hide-if-small">' ) . '</span>';
 		$output .= '</a>';
@@ -211,7 +214,7 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 	// Re-optimize to Normal.
 	if ( ( 2 === $level || 1 === $level ) && ! $is_already_optimized ) {
 		$args['optimization_level'] = 0;
-		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'manual-override-upload', $args ) ) . '"' . $class . ' data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">';
+		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'manual-override-upload', $args ) ) . '"' . $class . $waiting . '>';
 			/* translators: %s is an optimization level. */
 			$output .= '<span class="dashicons dashicons-admin-generic"></span><span class="imagify-hide-if-small">' . sprintf( __( 'Re-Optimize to %s', 'imagify' ), '</span>' . __( 'Normal', 'imagify' ) . '<span class="imagify-hide-if-small">' ) . '</span>';
 		$output .= '</a>';
