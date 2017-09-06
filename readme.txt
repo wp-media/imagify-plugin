@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.8.0
-Stable tag: 1.6.8
+Tested up to: 4.8.1
+Stable tag: 1.6.9.1
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -136,6 +136,19 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.9.1 =
+* Regression fix: Don't load Imagify SweetAlert files on WP Rocket options screen to avoid conflitcs.
+
+= 1.6.9 =
+* Improvement: the bulk optimization now stops as soon as the quota is fully consumed, instead of trying to optimize more images and getting error messages one after the other.
+* Improvement: updated (almost) all JavaScript libraries we use. SweetAlert won't conflict with new versions anymore. Few code improvements.
+* Improvement: in the medias list, improved the Imagify column behavior on small screens.
+* Improvement: when optimizing in NextGen Gallery, update some NGG data.
+* Bug Fix: revamped the whole Enable Media Replace plugin compatibility. Optimization, restoration, and backup should work properly now.
+* Bug Fix: revamped the way to restore images in NextGen Gallery to prevent deletion of alt text, description, and tags.
+* Regression fix: fixed optimization and restoration not working in NextGen Gallery.
+* Regression fix: fixed the bulk optimization not working with PHP 5.2.
+
 = 1.6.8 =
 * Improvement: don't display the restore bulk action in the medias list if there is nothing to restore.
 * Improvement: you can know select and unselect all image sizes at once in the settings page.

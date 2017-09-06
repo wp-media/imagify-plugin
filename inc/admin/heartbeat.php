@@ -38,7 +38,7 @@ function _imagify_heartbeat_received( $response, $data ) {
 
 
 if ( 'upload.php' === $pagenow && isset( $_GET['page'] ) && 'imagify-bulk-optimization' === $_GET['page'] ) { // WPCS: CSRF ok.
-	add_filter( 'heartbeat_settings', '_imagify_heartbeat_settings', PHP_INT_MAX );
+	add_filter( 'heartbeat_settings', '_imagify_heartbeat_settings', IMAGIFY_INT_MAX );
 }
 /**
  * Update the Heartbeat API settings.

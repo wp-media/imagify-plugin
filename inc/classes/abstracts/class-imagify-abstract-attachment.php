@@ -99,6 +99,18 @@ class Imagify_Abstract_Attachment {
 	}
 
 	/**
+	 * Tell if the current file mime type is supported.
+	 *
+	 * @since  1.6.9
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function is_mime_type_supported() {
+		return imagify_is_attachment_mime_type_supported( $this->id );
+	}
+
+	/**
 	 * Get the attachment error if there is one.
 	 *
 	 * @since 1.1.5

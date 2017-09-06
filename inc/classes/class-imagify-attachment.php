@@ -117,7 +117,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function update_metadata_size() {
 		// Check if the attachment extension is allowed.
-		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+		if ( ! $this->is_mime_type_supported() ) {
 			return false;
 		}
 
@@ -319,7 +319,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
 		// Check if the attachment extension is allowed.
-		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+		if ( ! $this->is_mime_type_supported() ) {
 			return;
 		}
 
@@ -560,7 +560,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function restore() {
 		// Check if the attachment extension is allowed.
-		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+		if ( ! $this->is_mime_type_supported() ) {
 			return;
 		}
 
@@ -590,7 +590,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			require_once( ABSPATH . 'wp-admin/includes/image.php' );
 		}
 
-		remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', PHP_INT_MAX );
+		remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', IMAGIFY_INT_MAX );
 		wp_generate_attachment_metadata( $this->id, $attachment_path );
 
 		// Remove old optimization data.

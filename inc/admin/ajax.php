@@ -20,7 +20,7 @@ function _do_admin_post_imagify_manual_upload() {
 		check_admin_referer( 'imagify-manual-upload' );
 	}
 
-	if ( ! isset( $_GET['attachment_id'], $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
@@ -61,7 +61,7 @@ function _do_admin_post_imagify_manual_override_upload() {
 		check_admin_referer( 'imagify-manual-override-upload' );
 	}
 
-	if ( ! isset( $_GET['attachment_id'], $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
@@ -105,7 +105,7 @@ function _do_admin_post_imagify_restore_upload() {
 		check_admin_referer( 'imagify-restore-upload' );
 	}
 
-	if ( ! isset( $_GET['attachment_id'], $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
@@ -127,7 +127,8 @@ function _do_admin_post_imagify_restore_upload() {
 	}
 
 	// Return the optimization button.
-	$output = '<a id="imagify-upload-' . $attachment->id . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', array( 'attachment_id' => $attachment->id ) ) ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+	$output = get_imagify_admin_url( 'manual-upload', array( 'attachment_id' => $attachment->id, 'context' => $context ) );
+	$output = '<a id="imagify-upload-' . $attachment->id . '" href="' . esc_url( $output ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
 	wp_send_json_success( $output );
 }
 
@@ -141,7 +142,7 @@ add_action( 'wp_ajax_imagify_bulk_upload', '_do_wp_ajax_imagify_bulk_upload' );
 function _do_wp_ajax_imagify_bulk_upload() {
 	check_ajax_referer( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
 
-	if ( ! isset( $_POST['image'], $_POST['context'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( empty( $_POST['image'] ) || empty( $_POST['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		wp_send_json_error();
 	}
 
@@ -167,7 +168,7 @@ function _do_wp_ajax_imagify_bulk_upload() {
 
 	if ( ! $attachment->is_optimized() ) {
 		$data['success'] = false;
-		$data['error']   = $fullsize_data['error'];
+		$data['error']   = imagify_translate_api_message( $fullsize_data['error'] );
 
 		wp_send_json_error( $data );
 	}
@@ -236,7 +237,7 @@ add_action( 'wp_ajax_imagify_async_optimize_upload_new_media', '_do_admin_post_a
  * @see _imagify_optimize_attachment()
  */
 function _do_admin_post_async_optimize_upload_new_media() {
-	if ( ! isset( $_POST['_ajax_nonce'], $_POST['attachment_id'], $_POST['metadata'], $_POST['context'] ) ) { // WPCS: CSRF ok.
+	if ( empty( $_POST['_ajax_nonce'] ) || empty( $_POST['attachment_id'] ) || empty( $_POST['metadata'] ) || empty( $_POST['context'] ) ) { // WPCS: CSRF ok.
 		return;
 	}
 
@@ -260,7 +261,7 @@ add_action( 'wp_ajax_imagify_async_optimize_save_image_editor_file', '_do_admin_
  * @author Julio Potier
  */
 function _do_admin_post_async_optimize_save_image_editor_file() {
-	if ( ! isset( $_POST['do'], $_POST['postid'] ) ) { // WPCS: CSRF ok.
+	if ( empty( $_POST['do'] ) || empty( $_POST['postid'] ) ) { // WPCS: CSRF ok.
 		return;
 	}
 
@@ -515,8 +516,12 @@ add_action( 'wp_ajax_imagify_signup', '_do_wp_ajax_imagify_signup' );
 function _do_wp_ajax_imagify_signup() {
 	check_ajax_referer( 'imagify-signup', 'imagifysignupnonce' );
 
-	if ( ! isset( $_GET['email'] ) ) {
-		wp_send_json_error();
+	if ( empty( $_GET['email'] ) ) {
+		wp_send_json_error( __( 'Empty email address.', 'imagify' ) );
+	}
+
+	if ( ! is_email( $_GET['email'] ) ) {
+		wp_send_json_error( __( 'Not a valid email address.', 'imagify' ) );
 	}
 
 	$data = array(
@@ -528,7 +533,7 @@ function _do_wp_ajax_imagify_signup() {
 	$response = add_imagify_user( $data );
 
 	if ( is_wp_error( $response ) ) {
-		wp_send_json_error( $response->get_error_message() );
+		wp_send_json_error( imagify_translate_api_message( $response->get_error_message() ) );
 	}
 
 	wp_send_json_success();
@@ -544,14 +549,14 @@ add_action( 'wp_ajax_imagify_check_api_key_validity', '_do_wp_ajax_imagify_check
 function _do_wp_ajax_imagify_check_api_key_validity() {
 	check_ajax_referer( 'imagify-check-api-key', 'imagifycheckapikeynonce' );
 
-	if ( ! isset( $_GET['api_key'] ) ) {
-		wp_send_json_error();
+	if ( empty( $_GET['api_key'] ) ) {
+		wp_send_json_error( __( 'Empty API key.', 'imagify' ) );
 	}
 
 	$response = get_imagify_status( $_GET['api_key'] );
 
 	if ( is_wp_error( $response ) ) {
-		wp_send_json_error( $response->get_error_message() );
+		wp_send_json_error( imagify_translate_api_message( $response->get_error_message() ) );
 	}
 
 	$options            = get_site_option( IMAGIFY_SETTINGS_SLUG );
@@ -655,18 +660,16 @@ add_action( 'wp_ajax_imagify_get_prices', '_imagify_get_prices_from_api' );
  * @author Geoffrey Crofte
  */
 function _imagify_get_prices_from_api() {
-	if ( ! check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false ) ) {
-		wp_send_json_error( 'check_ajax_referer for prices failed' );
-	}
+	check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
 
 	$prices_all = get_imagify_all_prices();
 
 	if ( is_wp_error( $prices_all ) ) {
-		wp_send_json_error( 'Prices variable is a WP_Error: ' . $prices_all->get_error_message() );
+		wp_send_json_error( imagify_translate_api_message( $prices_all->get_error_message() ) );
 	}
 
 	if ( ! is_object( $prices_all ) ) {
-		wp_send_json_error( 'Prices variable is not an object' );
+		wp_send_json_error( __( 'Wrongly formatted response from our server.', 'imagify' ) );
 	}
 
 	wp_send_json_success( array(
@@ -683,11 +686,22 @@ add_action( 'wp_ajax_imagify_check_coupon', '_imagify_check_coupon_code' );
  * @author Geoffrey Crofte
  */
 function _imagify_check_coupon_code() {
-	if ( ! check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false ) ) {
-		wp_send_json_error( 'check_ajax_referer for coupon code checking failed' );
+	check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
+
+	if ( empty( $_POST['coupon'] ) ) {
+		wp_send_json_success( array(
+			'success' => false,
+			'detail'  => __( 'Coupon is empty.', 'imagify' ),
+		) );
 	}
 
-	wp_send_json_success( check_imagify_coupon_code( $_POST['coupon'] ) );
+	$coupon = check_imagify_coupon_code( $_POST['coupon'] );
+
+	if ( is_wp_error( $coupon ) ) {
+		wp_send_json_error( imagify_translate_api_message( $coupon->get_error_message() ) );
+	}
+
+	wp_send_json_success( imagify_translate_api_message( $coupon ) );
 }
 
 add_action( 'wp_ajax_imagify_get_discount', '_imagify_get_discount' );
@@ -698,11 +712,9 @@ add_action( 'wp_ajax_imagify_get_discount', '_imagify_get_discount' );
  * @author Geoffrey Crofte
  */
 function _imagify_get_discount() {
-	if ( ! check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false ) ) {
-		wp_send_json_error( 'check_ajax_referer for getting discount failed' );
-	}
+	check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
 
-	wp_send_json_success( check_imagify_discount() );
+	wp_send_json_success( imagify_translate_api_message( check_imagify_discount() ) );
 }
 
 add_action( 'wp_ajax_imagify_get_images_counts', '_imagify_get_estimated_sizes' );
@@ -713,9 +725,7 @@ add_action( 'wp_ajax_imagify_get_images_counts', '_imagify_get_estimated_sizes' 
  * @author Geoffrey Crofte
  */
 function _imagify_get_estimated_sizes() {
-	if ( ! check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce', false ) ) {
-		wp_send_json_error( 'check_ajax_referer for estimated image sizes failed' );
-	}
+	check_ajax_referer( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
 
 	$raw_total_size_in_library = imagify_calculate_total_size_images_library();
 	$raw_average_per_month     = imagify_calculate_average_size_images_per_month();
@@ -766,7 +776,7 @@ function _do_admin_post_imagify_dismiss_notice() {
 		check_admin_referer( 'imagify-dismiss-notice' );
 	}
 
-	if ( ! isset( $_GET['notice'] ) || ! current_user_can( 'manage_options' ) ) {
+	if ( empty( $_GET['notice'] ) || ! current_user_can( 'manage_options' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
@@ -803,11 +813,13 @@ add_action( 'admin_post_imagify_deactivate_plugin', '_imagify_deactivate_plugin'
  * @author Jonathan Buttigieg
  */
 function _imagify_deactivate_plugin() {
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'imagifydeactivatepluginnonce' ) ) {
+	if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'imagifydeactivatepluginnonce' ) ) {
 		wp_nonce_ays( '' );
 	}
 
-	deactivate_plugins( $_GET['plugin'] );
+	if ( ! empty( $_GET['plugin'] ) ) {
+		deactivate_plugins( $_GET['plugin'] );
+	}
 
 	wp_safe_redirect( wp_get_referer() );
 	die();

@@ -136,7 +136,7 @@ function get_imagify_attachment_error_text( $attachment, $context = 'wp' ) {
 
 	if ( isset( $data['sizes']['full']['success'] ) && ! $data['sizes']['full']['success'] ) {
 		$class   = ( 'post.php' !== $pagenow ) ? 'button-imagify-manual-upload' : '';
-		$output .= '<strong>' . $data['sizes']['full']['error'] . '</strong><br/>';
+		$output .= '<strong>' . imagify_translate_api_message( $data['sizes']['full']['error'] ) . '</strong><br/>';
 		$output .= '<a id="imagify-upload-' . $attachment_id . '" class="button ' . $class . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Try again', 'imagify' ) . '</a>';
 	}
 
@@ -257,7 +257,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	$attachment_ext = $attachment->get_extension();
 
 	// Check if the attachment extension is allowed.
-	if ( 'wp' === $context && ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+	if ( ! $attachment->is_mime_type_supported() ) {
 		/* translators: %s is a file extension. */
 		return sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
 	}

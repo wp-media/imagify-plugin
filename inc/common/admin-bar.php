@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-add_action( 'admin_bar_menu', '_imagify_admin_bar', PHP_INT_MAX );
+add_action( 'admin_bar_menu', '_imagify_admin_bar', IMAGIFY_INT_MAX );
 /**
  * Add Imagify menu in the admin bar.
  *

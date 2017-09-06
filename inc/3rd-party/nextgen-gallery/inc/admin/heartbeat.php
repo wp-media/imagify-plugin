@@ -43,5 +43,5 @@ function _imagify_ngg_heartbeat_received( $response, $data ) {
  * @since 1.5
  */
 if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'imagify-ngg-bulk-optimization' === $_GET['page'] ) { // WPCS: CSRF ok.
-	add_filter( 'heartbeat_settings', '_imagify_heartbeat_settings', PHP_INT_MAX );
+	add_filter( 'heartbeat_settings', '_imagify_heartbeat_settings', IMAGIFY_INT_MAX );
 }

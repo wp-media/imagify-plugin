@@ -61,7 +61,12 @@ function _imagify_display_options_page() {
 		<div class="imagify-col imagify-main">
 			<?php $heading_tag = version_compare( $wp_version, '4.3' ) >= 0 ? 'h1' : 'h2'; ?>
 			<div class="imagify-title">
-				<img width="225" height="26" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" /> <small><sup><?php echo IMAGIFY_VERSION; ?></sup></small>
+				<div class="imagify-logo-block">
+					<img width="225" height="26" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" />
+					<small>
+						<sup><?php echo IMAGIFY_VERSION; ?></sup>
+					</small>
+				</div>
 
 				<?php $imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform'; ?>
 				<p class="imagify-rate-us">
