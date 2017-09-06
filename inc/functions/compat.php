@@ -1,8 +1,11 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-if ( ! function_exists( 'curl_file_create' ) ) :
+/** --------------------------------------------------------------------------------------------- */
+/** PHP ========================================================================================= */
+/** --------------------------------------------------------------------------------------------- */
 
+if ( ! function_exists( 'curl_file_create' ) ) :
 	/**
 	 * PHP-agnostic version of curl_file_create(): create a CURLFile object.
 	 *
@@ -20,11 +23,9 @@ if ( ! function_exists( 'curl_file_create' ) ) :
 			. ( $postname ? $postname : basename( $filename ) )
 			. ( $mimetype ? ";type=$mimetype" : '' );
 	}
-
 endif;
 
 if ( ! function_exists( 'array_replace' ) ) :
-
 	/**
 	 * PHP-agnostic version of array_replace(): replaces elements from passed arrays into the first array.
 	 *
@@ -55,11 +56,13 @@ if ( ! function_exists( 'array_replace' ) ) :
 
 		return $target;
 	}
-
 endif;
 
-if ( ! function_exists( 'wp_json_encode' ) ) :
+/** --------------------------------------------------------------------------------------------- */
+/** WORDPRESS =================================================================================== */
+/** --------------------------------------------------------------------------------------------- */
 
+if ( ! function_exists( 'wp_json_encode' ) ) :
 	/**
 	 * Encode a variable into JSON, with some sanity checks.
 	 *
@@ -105,11 +108,9 @@ if ( ! function_exists( 'wp_json_encode' ) ) :
 
 		return call_user_func_array( 'json_encode', $args );
 	}
-
 endif;
 
 if ( ! function_exists( '_wp_json_prepare_data' ) ) :
-
 	/**
 	 * Prepares response data to be serialized to JSON.
 	 *
@@ -159,11 +160,9 @@ if ( ! function_exists( '_wp_json_prepare_data' ) ) :
 				return null;
 		}
 	}
-
 endif;
 
 if ( ! function_exists( '_wp_json_sanity_check' ) ) :
-
 	/**
 	 * Perform sanity checks on data that shall be encoded to JSON.
 	 *
@@ -227,11 +226,9 @@ if ( ! function_exists( '_wp_json_sanity_check' ) ) :
 
 		return $output;
 	}
-
 endif;
 
 if ( ! function_exists( '_wp_json_convert_string' ) ) :
-
 	/**
 	 * Convert a string to UTF-8, so that it can be safely encoded to JSON.
 	 *
@@ -263,11 +260,9 @@ if ( ! function_exists( '_wp_json_convert_string' ) ) :
 			return wp_check_invalid_utf8( $string, true );
 		}
 	}
-
 endif;
 
 if ( ! function_exists( 'wp_normalize_path' ) ) :
-
 	/**
 	 * Normalize a filesystem path.
 	 *
@@ -292,11 +287,9 @@ if ( ! function_exists( 'wp_normalize_path' ) ) :
 		}
 		return $path;
 	}
-
 endif;
 
 if ( ! function_exists( 'wp_get_additional_image_sizes' ) ) :
-
 	/**
 	 * Retrieve additional image sizes.
 	 *
@@ -314,11 +307,9 @@ if ( ! function_exists( 'wp_get_additional_image_sizes' ) ) :
 		}
 		return $_wp_additional_image_sizes;
 	}
-
 endif;
 
 if ( ! function_exists( 'wp_parse_url' ) ) :
-
 	/**
 	 * A wrapper for PHP's parse_url() function that handles consistency in the return
 	 * values across PHP versions.
@@ -378,12 +369,10 @@ if ( ! function_exists( 'wp_parse_url' ) ) :
 
 		return _get_component_from_parsed_url_array( $parts, $component );
 	}
-
 endif;
 
 
 if ( ! function_exists( '_get_component_from_parsed_url_array' ) ) :
-
 	/**
 	 * Retrieve a specific component from a parsed URL array.
 	 *
@@ -414,12 +403,10 @@ if ( ! function_exists( '_get_component_from_parsed_url_array' ) ) :
 			return null;
 		}
 	}
-
 endif;
 
 
 if ( ! function_exists( '_wp_translate_php_url_constant_to_key' ) ) :
-
 	/**
 	 * Translate a PHP_URL_* constant to the named array keys PHP uses.
 	 *
@@ -449,5 +436,4 @@ if ( ! function_exists( '_wp_translate_php_url_constant_to_key' ) ) :
 			return false;
 		}
 	}
-
 endif;
