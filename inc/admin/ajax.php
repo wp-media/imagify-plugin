@@ -200,7 +200,7 @@ function _do_admin_post_imagify_optimize_missing_sizes() {
 		check_admin_referer( 'imagify-optimize-missing-sizes' );
 	}
 
-	if ( ! isset( $_GET['attachment_id'], $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
+	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
 		if ( defined( 'DOING_AJAX' ) ) {
 			wp_send_json_error();
 		} else {
