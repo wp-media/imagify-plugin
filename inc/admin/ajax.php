@@ -126,7 +126,9 @@ function _do_admin_post_imagify_optimize_missing_sizes() {
 		die();
 	}
 
-	wp_send_json_success();
+	// Return the optimization statistics.
+	$output = get_imagify_attachment_optimization_text( $attachment, $context );
+	wp_send_json_success( $output );
 }
 
 add_action( 'wp_ajax_imagify_restore_upload',    '_do_admin_post_imagify_restore_upload' );
