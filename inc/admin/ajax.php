@@ -90,6 +90,45 @@ function _do_admin_post_imagify_manual_override_upload() {
 	wp_send_json_success( $output );
 }
 
+add_action( 'wp_ajax_imagify_optimize_missing_sizes',    '_do_admin_post_imagify_optimize_missing_sizes' );
+add_action( 'admin_post_imagify_optimize_missing_sizes', '_do_admin_post_imagify_optimize_missing_sizes' );
+/**
+ * Process one or some thumbnails that are not optimized yet.
+ *
+ * @since 1.6.10
+ * @author Grégory Viguier
+ */
+function _do_admin_post_imagify_optimize_missing_sizes() {
+	if ( defined( 'DOING_AJAX' ) ) {
+		check_ajax_referer( 'imagify-optimize-missing-sizes' );
+	} else {
+		check_admin_referer( 'imagify-optimize-missing-sizes' );
+	}
+
+	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
+		if ( defined( 'DOING_AJAX' ) ) {
+			wp_send_json_error();
+		} else {
+			wp_nonce_ays( '' );
+		}
+	}
+
+	$context       = esc_html( $_GET['context'] );
+	$attachment_id = absint( $_GET['attachment_id'] );
+	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_optimize_missing_sizes' );
+	$attachment    = new $class_name( $attachment_id );
+
+	// Optimize the missing thumbnails.
+	$attachment->optimize_missing_thumbnails();
+
+	if ( ! defined( 'DOING_AJAX' ) ) {
+		wp_safe_redirect( wp_get_referer() );
+		die();
+	}
+
+	wp_send_json_success();
+}
+
 add_action( 'wp_ajax_imagify_restore_upload',    '_do_admin_post_imagify_restore_upload' );
 add_action( 'admin_post_imagify_restore_upload', '_do_admin_post_imagify_restore_upload' );
 /**
@@ -183,45 +222,6 @@ function _do_wp_ajax_imagify_bulk_upload() {
 	$data['thumbnails']            = $attachment->get_optimized_sizes_count();
 
 	wp_send_json_success( $data );
-}
-
-add_action( 'wp_ajax_imagify_optimize_missing_sizes',    '_do_admin_post_imagify_optimize_missing_sizes' );
-add_action( 'admin_post_imagify_optimize_missing_sizes', '_do_admin_post_imagify_optimize_missing_sizes' );
-/**
- * Process one or some thumbnails that are not optimized yet.
- *
- * @since 1.6.10
- * @author Grégory Viguier
- */
-function _do_admin_post_imagify_optimize_missing_sizes() {
-	if ( defined( 'DOING_AJAX' ) ) {
-		check_ajax_referer( 'imagify-optimize-missing-sizes' );
-	} else {
-		check_admin_referer( 'imagify-optimize-missing-sizes' );
-	}
-
-	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) || ! current_user_can( 'upload_files' ) ) {
-		if ( defined( 'DOING_AJAX' ) ) {
-			wp_send_json_error();
-		} else {
-			wp_nonce_ays( '' );
-		}
-	}
-
-	$context       = esc_html( $_GET['context'] );
-	$attachment_id = absint( $_GET['attachment_id'] );
-	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_optimize_missing_sizes' );
-	$attachment    = new $class_name( $attachment_id );
-
-	// Optimize the missing thumbnails.
-	$attachment->optimize_missing_thumbnails();
-
-	if ( ! defined( 'DOING_AJAX' ) ) {
-		wp_safe_redirect( wp_get_referer() );
-		die();
-	}
-
-	wp_send_json_success();
 }
 
 /** --------------------------------------------------------------------------------------------- */
