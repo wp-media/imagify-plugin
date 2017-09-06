@@ -234,7 +234,7 @@ function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $
 		'context'       => $context,
 	) );
 
-	$output  = '<a href="' . esc_url( $url ) . '" class="button-imagify-optimize-missing-sizes" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">';
+	$output  = '<a href="' . esc_url( $url ) . '" id="imagify-optimize_missing_sizes-' . $attachment->id . '" class="button-imagify-optimize-missing-sizes" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">';
 		/* translators: 1 is the number of thumbnails to optimize, 2 is the opening of a HTML tag that will be hidden on small screens, 3 is the closing tag. */
 		$output .= '<span class="dashicons dashicons-admin-generic"></span>' . sprintf( _n( '%2$sOptimize %3$s%1$d missing thumbnail', '%2$sOptimize %3$s%1$d missing thumbnails', count( $missing_sizes ), 'imagify' ), count( $missing_sizes ), '<span class="imagify-hide-if-small">', '</span>' );
 	$output .= '</a>';
