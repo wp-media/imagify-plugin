@@ -465,7 +465,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		 *
 		 * @param int   $id              The attachment ID.
 		 * @param array $optimized_data  The optimization data.
-		*/
+		 */
 		do_action( 'after_imagify_optimize_attachment', $this->id, $optimized_data );
 
 		delete_transient( 'imagify-async-in-progress-' . $this->id );
@@ -497,6 +497,20 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			return array();
 		}
 
+		/**
+		 * Fires before optimizing the missing thumbnails.
+		 *
+		 * @since  1.6.10
+		 * @author Grégory Viguier
+		 * @see    $this->get_unoptimized_sizes()
+		 *
+		 * @param int   $id            The attachment ID.
+		 * @param array $missing_sizes An array of the missing sizes.
+		*/
+		do_action( 'before_imagify_optimize_missing_thumbnails', $this->id, $missing_sizes );
+
+		set_transient( 'imagify-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+
 		$errors = new WP_Error();
 
 		// Create the missing thumbnails.
@@ -512,6 +526,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		}
 
 		if ( ! $result_sizes ) {
+			delete_transient( 'imagify-async-in-progress-' . $this->id );
 			return $errors;
 		}
 
@@ -541,6 +556,21 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		$imagify_data['stats']['percent'] = round( ( ( $imagify_data['stats']['original_size'] - $imagify_data['stats']['optimized_size'] ) / $imagify_data['stats']['original_size'] ) * 100, 2 );
 
 		update_post_meta( $this->id, '_imagify_data', $imagify_data );
+
+		/**
+		 * Fires after optimizing the missing thumbnails.
+		 *
+		 * @since  1.6.10
+		 * @author Grégory Viguier
+		 * @see    $this->create_missing_thumbnails()
+		 *
+		 * @param int    $id           The attachment ID.
+		 * @param array  $result_sizes An array of created thumbnails.
+		 * @param object $errors       A WP_Error object.
+		 */
+		do_action( 'after_imagify_optimize_missing_thumbnails', $this->id, $result_sizes, $errors );
+
+		delete_transient( 'imagify-async-in-progress-' . $this->id );
 
 		// Return the result.
 		if ( $errors ) {
