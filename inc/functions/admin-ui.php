@@ -218,8 +218,20 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
  * @return string             The output to print.
  */
 function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $context = 'wp' ) {
-	// Stop the process if the API key isn't valid.
-	if ( ! imagify_valid_key() ) {
+	/**
+	 * Allow to not display the "Optimize missing thumbnails" link.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @param bool   $display    True to display the link. False to not display it.
+	 * @param object $attachment The attachement object.
+	 * @param string $context    The context.
+	 */
+	$display = apply_filters( 'imagify_display_missing_thumbnails_link', true, $attachment, $context );
+
+	// Stop the process if the filter is false or if the API key isn't valid.
+	if ( ! $display || ! imagify_valid_key() ) {
 		return '';
 	}
 
