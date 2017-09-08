@@ -119,6 +119,7 @@ class Imagify_Assets {
 	 */
 	public function init() {
 		if ( ! is_admin() ) {
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles_and_scripts_frontend' ) );
 			return;
 		}
 
@@ -130,7 +131,24 @@ class Imagify_Assets {
 	}
 
 	/**
-	 * Register stylesheets and scripts.
+	 * Enqueue stylesheets and scripts for the frontend.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 */
+	public function enqueue_styles_and_scripts_frontend() {
+		if ( ! $this->is_admin_bar_item_showing() ) {
+			return;
+		}
+
+		$this->register_style( 'admin-bar' );
+		$this->register_script( 'admin-bar', 'admin-bar', array( 'jquery' ) );
+
+		$this->enqueue_assets( 'admin-bar' )->localize( 'imagifyAdminBar' );
+	}
+
+	/**
+	 * Register stylesheets and scripts for the administration area.
 	 *
 	 * @since  1.6.10
 	 * @author Grégory Viguier
@@ -207,7 +225,7 @@ class Imagify_Assets {
 	}
 
 	/**
-	 * Enqueue stylesheets and scripts.
+	 * Enqueue stylesheets and scripts for the administration area.
 	 *
 	 * @since  1.6.10
 	 * @author Grégory Viguier
@@ -228,7 +246,7 @@ class Imagify_Assets {
 		/**
 		 * Admin bar.
 		 */
-		if ( is_admin_bar_showing() ) {
+		if ( $this->is_admin_bar_item_showing() ) {
 			$this->enqueue_assets( 'admin-bar' );
 		}
 
@@ -771,5 +789,23 @@ class Imagify_Assets {
 	 */
 	protected function is_debug() {
 		return defined( 'IMAGIFY_DEBUG' ) && IMAGIFY_DEBUG || defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
+	}
+
+	/**
+	 * Tell if the admin bar item is displaying.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	protected function is_admin_bar_item_showing() {
+		if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
+			return false;
+		}
+
+		$has_api_key = ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key' );
+
+		return $has_api_key && is_admin_bar_showing() && current_user_can( imagify_get_capacity() ) && get_imagify_option( 'admin_bar_menu' );
 	}
 }
