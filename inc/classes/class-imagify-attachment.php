@@ -227,10 +227,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			return true;
 		}
 
-		$filesystem        = imagify_get_filesystem();
-		$backup_dirname    = trailingslashit( dirname( $this->get_backup_path() ) );
-		$backup_thumb_path = $backup_dirname . $thumbnail_data['file'];
-
 		// Get the editor.
 		if ( ! isset( $this->editor ) ) {
 			$this->editor = wp_get_image_editor( $this->get_backup_path() );
@@ -246,6 +242,12 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		if ( ! $result ) {
 			return new WP_Error( 'image_resize_error' );
 		}
+
+		$filesystem        = imagify_get_filesystem();
+		// The file name can change from what we expected (1px wider, etc).
+		$backup_dirname    = trailingslashit( dirname( $this->get_backup_path() ) );
+		$backup_thumb_path = $backup_dirname . $result[ $thumbnail_size ]['file'];
+		$thumbnail_path    = $original_dirname . $result[ $thumbnail_size ]['file'];
 
 		// Since we used the backup image as source, the new image is still in the backup folder, we need to move it.
 		$filesystem->move( $backup_thumb_path, $thumbnail_path, true );
@@ -301,7 +303,10 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		if ( $thumbnail_new_datas ) {
 			$metadata['sizes'] = array_merge( $metadata['sizes'], $thumbnail_new_datas );
 
-			wp_update_attachment_metadata( $this->id, $metadata );
+			/**
+			 * Here we don't use wp_update_attachment_metadata() to prevent triggering unwanted hooks.
+			 */
+			update_post_meta( $this->id, '_wp_attachment_metadata', $metadata );
 		}
 
 		return array_merge( $thumbnail_metadatas, $thumbnail_new_datas );
@@ -521,8 +526,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			$failed_count  = count( $failed_sizes );
 			/* translators: %d is a number of thumbnails. */
 			$error_message = _n( '%d thumbnail failed to be created', '%d thumbnails failed to be created', $failed_count, 'imagify' );
-			$error_message = sprintf( $error_message, $missing_count );
-			$errors->add( 'image_resize_error', $error_message, array( 'nbr_failed' => $failed_count ) );
+			$error_message = sprintf( $error_message, $failed_count );
+			$errors->add( 'image_resize_error', $error_message, array( 'nbr_failed' => $failed_count, 'sizes_failed' => $failed_sizes, 'sizes_succeeded' => $result_sizes ) );
 		}
 
 		if ( ! $result_sizes ) {
@@ -566,14 +571,14 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		 *
 		 * @param int    $id           The attachment ID.
 		 * @param array  $result_sizes An array of created thumbnails.
-		 * @param object $errors       A WP_Error object.
+		 * @param object $errors       A WP_Error object that stores thumbnail creation failures.
 		 */
-		do_action( 'after_imagify_optimize_missing_thumbnails', $this->id, $result_sizes, $errors );
+		do_action( 'after_imagify_optimize_missing_thumbnails', $this->id, $result_sizes, $errors );																			error_log( $this->id . ":\n" . print_r( $result_sizes, 1 ) . print_r( $errors, 1 ) );
 
 		delete_transient( 'imagify-async-in-progress-' . $this->id );
 
 		// Return the result.
-		if ( $errors ) {
+		if ( $errors->get_error_codes() ) {
 			return $errors;
 		}
 
