@@ -239,6 +239,20 @@ if ( function_exists( 'emr_delete_current_files' ) ) :
 
 endif;
 
+/**
+ * Include Admin Bar Profile informations styles in front.
+ *
+ * @since 1.2
+ * @since 1.6.10 Deprecated.
+ */
+function _imagify_admin_bar_styles() {
+	_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->enqueue_styles_and_scripts_frontend()' );
+
+	if ( ! is_admin() ) {
+		Imagify_Assets::get_instance()->enqueue_styles_and_scripts_frontend();
+	}
+}
+
 if ( is_admin() ) :
 
 	/**
