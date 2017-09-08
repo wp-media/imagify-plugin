@@ -6,6 +6,11 @@
 	 */
 	bulkOpt = '<option value="imagify-bulk-upload">' + imagifyLibrary.labels.bulkActionsOptimize + '</option>';
 
+	if ( $( '.button-imagify-optimize-missing-sizes' ).length ) {
+		// If we have items that have missing sizes.
+		bulkOpt += '<option value="imagify-bulk-optimize_missing_sizes">' + imagifyLibrary.labels.bulkActionsOptimizeMissingSizes + '</option>';
+	}
+
 	if ( imagifyLibrary.backupOption || $( '.attachment-has-backup' ).length ) {
 		// If the backup option is enabled, or if we have items that can be restored.
 		bulkOpt += '<option value="imagify-bulk-restore">' + imagifyLibrary.labels.bulkActionsRestore + '</option>';

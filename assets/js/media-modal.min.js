@@ -49,9 +49,9 @@ window.imagify.drawMeAChart = function( canvas ) {
 	} );
 
 	/**
-	 * Process one of these actions: restore, optimize or re-optimize.
+	 * Process to one of these actions: restore, optimize, re-optimize, or optimize missing sizes.
 	 */
-	$( d ).on( 'click', '.button-imagify-restore, .button-imagify-manual-upload, .button-imagify-manual-override-upload', function( e ) {
+	$( d ).on( 'click', '.button-imagify-restore, .button-imagify-manual-upload, .button-imagify-manual-override-upload, .button-imagify-optimize-missing-sizes', function( e ) {
 		var $obj    = $( this ),
 			$parent = $obj.parents( '.column-imagify_optimized_file, .compat-field-imagify .field' ),
 			href    = $obj.attr( 'href' );

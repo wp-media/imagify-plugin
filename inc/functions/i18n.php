@@ -88,8 +88,9 @@ function get_imagify_localize_script_translations( $context ) {
 			return array(
 				'backupOption' => (int) get_imagify_option( 'backup' ),
 				'labels'       => array(
-					'bulkActionsOptimize' => __( 'Optimize', 'imagify' ),
-					'bulkActionsRestore'  => __( 'Restore Original', 'imagify' ),
+					'bulkActionsOptimize'             => __( 'Optimize', 'imagify' ),
+					'bulkActionsOptimizeMissingSizes' => __( 'Optimize Missing Sizes', 'imagify' ),
+					'bulkActionsRestore'              => __( 'Restore Original', 'imagify' ),
 				),
 			);
 
