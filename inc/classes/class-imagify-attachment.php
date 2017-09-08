@@ -573,7 +573,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		 * @param array  $result_sizes An array of created thumbnails.
 		 * @param object $errors       A WP_Error object that stores thumbnail creation failures.
 		 */
-		do_action( 'after_imagify_optimize_missing_thumbnails', $this->id, $result_sizes, $errors );																			error_log( $this->id . ":\n" . print_r( $result_sizes, 1 ) . print_r( $errors, 1 ) );
+		do_action( 'after_imagify_optimize_missing_thumbnails', $this->id, $result_sizes, $errors );
 
 		delete_transient( 'imagify-async-in-progress-' . $this->id );
 
