@@ -14,7 +14,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.1';
 
 	/**
 	 * Tell if AS3CF settings will be used for this attachment.
@@ -332,6 +332,178 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		$this->cleanup( $metadata, $to_delete );
 
 		return $optimized_data;
+	}
+
+	/**
+	 * Optimize missing thumbnail sizes with Imagify.
+	 *
+	 * @since  1.6.10
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  int $optimization_level The optimization level (2=ultra, 1=aggressive, 0=normal).
+	 * @return array|object            An array of thumbnail data, size by size. A WP_Error object on failure.
+	 */
+	public function optimize_missing_thumbnails( $optimization_level = null ) {
+		// Check if the attachment extension is allowed.
+		if ( ! $this->is_mime_type_supported() ) {
+			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
+		}
+
+		/**
+		 * Create missing thumbnails and optimize them.
+		 */
+		$result       = parent::optimize_missing_thumbnails( $optimization_level );
+		$result_sizes = array();
+
+		// Set the "optimization status" transient back.
+		set_transient( $this->optimization_state_transient, true, 10 * MINUTE_IN_SECONDS );
+
+		if ( is_array( $result ) ) {
+			// All good.
+			$result_sizes = $result;
+		} elseif ( is_wp_error( $result ) ) {
+			// Some thumbnails could not be created. Lets see if some were.
+			$result_sizes = $result->get_error_data( 'image_resize_error' );
+			$result_sizes = ! empty( $result_sizes['sizes_succeeded'] ) ? $result_sizes['sizes_succeeded'] : array();
+		}
+
+		if ( ! $result_sizes ) {
+			// No thumbnails created.
+			delete_transient( $this->optimization_state_transient );
+			return $result;
+		}
+
+		/**
+		 * Fetch all images from S3 if they're not on the server.
+		 * S3 Offload needs ALL images (so it can update its metas), we can't just send some of them without entering Hell -_-'.
+		 */
+		$metadata = $this->set_deletion_status();
+
+		if ( ! $this->can_send_to_s3() ) {
+			// The other thumbnails are not on S3, so we don't need to send the new ones.
+			delete_transient( $this->optimization_state_transient );
+			return $result;
+		}
+
+		/**
+		 * The main file.
+		 */
+		$attachment_path  = $this->get_original_path();
+		$filesystem       = imagify_get_filesystem();
+		$to_delete        = array();
+		$to_skip          = array();
+		$filesize_total   = 0;
+		$metadata_changed = false;
+
+		if ( ! $attachment_path ) {
+			// WAT?!
+			if ( ! is_wp_error( $result ) ) {
+				$result = new WP_Error( 'no_attachment_path', __( 'Files could not be sent to Amazon S3.', 'imagify' ), array(
+					'sizes_succeeded' => $result_sizes,
+				) );
+			} else {
+				$result->add( 'no_attachment_path', __( 'Files could not be sent to Amazon S3.', 'imagify' ) );
+			}
+
+			delete_transient( $this->optimization_state_transient );
+			return $result;
+		}
+
+		if ( ! $filesystem->exists( $attachment_path ) && ! $this->get_file_from_s3( $attachment_path ) ) {
+			// The file doesn't exist and couldn't be retrieved from S3.
+			if ( ! is_wp_error( $result ) ) {
+				$result = new WP_Error( 'main_file_not_on_s3', __( 'The main image could not be retrieved from Amazon S3.', 'imagify' ), array(
+					'sizes_succeeded' => $result_sizes,
+				) );
+			} else {
+				$result->add( 'main_file_not_on_s3', __( 'The main image could not be retrieved from Amazon S3.', 'imagify' ) );
+			}
+
+			delete_transient( $this->optimization_state_transient );
+			return $result;
+		}
+
+		// Files that must not be retrieved from S3.
+		foreach ( $result_sizes as $size_key => $size_data ) {
+			$to_skip[] = $this->get_thumbnail_path( $size_data['file'] );
+		}
+
+		// Store the paths of the files that may be deleted once sent to S3.
+		if ( $this->delete_files ) {
+			$to_delete[] = $attachment_path;
+			$to_delete   = array_merge( $to_delete, $to_skip );
+
+			// This is used by AS3CF.
+			$bytes = $filesystem->size( $attachment_path );
+
+			if ( false !== $bytes ) {
+				$metadata_changed     = true;
+				$filesize_total      += $bytes;
+				$metadata['filesize'] = $bytes;
+			} elseif ( ! isset( $metadata['filesize'] ) ) {
+				$metadata_changed     = true;
+				$metadata['filesize'] = 0;
+			}
+		}
+
+		/**
+		 * The thumbnails.
+		 */
+		if ( ! empty( $metadata['sizes'] ) ) {
+			$to_skip = array_flip( $to_skip );
+
+			foreach ( $metadata['sizes'] as $size_key => $size_data ) {
+				$thumbnail_path = $this->get_thumbnail_path( $size_data['file'] );
+
+				if ( isset( $to_skip[ $thumbnail_path ] ) ) {
+					continue;
+				}
+
+				if ( ! $filesystem->exists( $thumbnail_path ) && ! $this->get_file_from_s3( $thumbnail_path ) ) {
+					// The file doesn't exist and couldn't be retrieved from S3.
+					if ( ! is_wp_error( $result ) ) {
+						$result = new WP_Error( 'thumbnail_not_on_s3', __( 'This size could not be retrieved from Amazon S3.', 'imagify' ), array(
+							'sizes_succeeded' => $result_sizes,
+							'size'            => $size_key,
+						) );
+					} else {
+						$result->add( 'thumbnail_not_on_s3', __( 'This size could not be retrieved from Amazon S3.', 'imagify' ), array(
+							'size' => $size_key,
+						) );
+					}
+
+					delete_transient( $this->optimization_state_transient );
+					return $result;
+				}
+
+				if ( $this->delete_files ) {
+					$to_delete[] = $thumbnail_path;
+
+					// This is used by AS3CF.
+					$bytes = $filesystem->size( $thumbnail_path );
+
+					if ( false !== $bytes ) {
+						$filesize_total += $bytes;
+					}
+				}
+			} // End foreach().
+		} // End if().
+
+		if ( $this->delete_files && $filesize_total ) {
+			// Add the total file size for all image sizes. This is a meta used by AS3CF.
+			update_post_meta( $this->id, 'wpos3_filesize_total', $filesize_total );
+		}
+
+		$sent      = $this->maybe_send_attachment_to_s3( $metadata, $attachment_path );
+		// Update metadata only if they changed.
+		$metadata  = $metadata_changed ? $metadata  : false;
+		// Delete files only if they have been uploaded to S3.
+		$to_delete = $sent             ? $to_delete : array();
+
+		$this->cleanup( $metadata, $to_delete );
+
+		return $result;
 	}
 
 	/**

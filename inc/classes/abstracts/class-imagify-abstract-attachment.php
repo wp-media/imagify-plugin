@@ -13,7 +13,7 @@ class Imagify_Abstract_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.3';
+	const VERSION = '1.1';
 
 	/**
 	 * The attachment ID.
@@ -404,6 +404,97 @@ class Imagify_Abstract_Attachment {
 	}
 
 	/**
+	 * Get the registered sizes.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @return array Data for the registered thumbnail sizes.
+	 */
+	static public function get_registered_sizes() {
+		static $registered_sizes;
+
+		if ( ! isset( $registered_sizes ) ) {
+			$registered_sizes = get_imagify_thumbnail_sizes();
+		}
+
+		return $registered_sizes;
+	}
+
+	/**
+	 * Get the unoptimized sizes for a specific attachment.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @return array Data for the unoptimized thumbnail sizes.
+	 *               Each size data has a "file" key containing the name the thumbnail "should" have.
+	 */
+	public function get_unoptimized_sizes() {
+		// The attachment must have been optimized once and have a backup.
+		if ( ! $this->is_optimized() || ! $this->has_backup() ) {
+			return array();
+		}
+
+		$registered_sizes = static::get_registered_sizes();
+		$attachment_sizes = $this->get_data();
+		$attachment_sizes = ! empty( $attachment_sizes['sizes'] ) ? $attachment_sizes['sizes'] : array();
+		$missing_sizes    = array_diff_key( $registered_sizes, $attachment_sizes );
+
+		if ( ! $missing_sizes ) {
+			// We have everything we need.
+			return array();
+		}
+
+		// Get full size dimensions.
+		$orig   = wp_get_attachment_metadata( $this->id );
+		$orig_f = ! empty( $orig['file'] )   ? $orig['file']         : '';
+		$orig_w = ! empty( $orig['width'] )  ? (int) $orig['width']  : 0;
+		$orig_h = ! empty( $orig['height'] ) ? (int) $orig['height'] : 0;
+
+		if ( ! $orig_f || ! $orig_w || ! $orig_h ) {
+			return array();
+		}
+
+		$orig_f = pathinfo( $orig_f );
+		$orig_f = $orig_f['filename'] . '-{%suffix%}.' . $orig_f['extension'];
+
+		// Test if the missing sizes are needed.
+		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes', array() );
+		$is_active_for_network = imagify_is_active_for_network();
+
+		foreach ( $missing_sizes as $size_name => $size_data ) {
+			$duplicate = ( $orig_w === $size_data['width'] ) && ( $orig_h === $size_data['height'] );
+
+			if ( $duplicate ) {
+				// Same dimensions as the full size.
+				unset( $missing_sizes[ $size_name ] );
+				continue;
+			}
+
+			if ( ! $is_active_for_network && isset( $disallowed_sizes[ $size_name ] ) ) {
+				// This size must be optimized.
+				unset( $missing_sizes[ $size_name ] );
+				continue;
+			}
+
+			$resize_result = image_resize_dimensions( $orig_w, $orig_h, $size_data['width'], $size_data['height'], $size_data['crop'] );
+
+			if ( ! $resize_result ) {
+				// This size is not needed.
+				unset( $missing_sizes[ $size_name ] );
+				continue;
+			}
+
+			// Provide what should be the file name.
+			list( , , , , $dst_w, $dst_h ) = $resize_result;
+			$missing_sizes[ $size_name ]['file'] = str_replace( '{%suffix%}', "{$dst_w}x{$dst_h}", $orig_f );
+		}
+
+		return $missing_sizes;
+	}
+
+	/**
 	 * Fills statistics data with values from $data array.
 	 *
 	 * @since 1.0
@@ -432,6 +523,20 @@ class Imagify_Abstract_Attachment {
 	 * @return array $optimized_data     The optimization data.
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
+		return array();
+	}
+
+	/**
+	 * Optimize missing sizes with Imagify.
+	 *
+	 * @since  1.6.10
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  int $optimization_level The optimization level (2=ultra, 1=aggressive, 0=normal).
+	 * @return array|object            An array of thumbnail data, size by size. A WP_Error object on failure.
+	 */
+	public function optimize_missing_thumbnails( $optimization_level = null ) {
 		return array();
 	}
 

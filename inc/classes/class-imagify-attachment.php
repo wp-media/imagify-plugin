@@ -13,7 +13,17 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.3';
+	const VERSION = '1.1';
+
+	/**
+	 * The editor instance used to resize files.
+	 *
+	 * @since 1.6.10
+	 *
+	 * @var object
+	 * @access protected
+	 */
+	protected $editor;
 
 	/**
 	 * Get the attachment backup file path.
@@ -195,6 +205,114 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	}
 
 	/**
+	 * Create a thumbnail if it doesn't exist.
+	 *
+	 * @since  1.6.10
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $thumbnail_data The thumbnail data (width, height, crop, name, file).
+	 * @return bool|array|object     True if the file exists. An array of thumbnail data if the file has just been created (width, height, crop, file). A WP_Error object on error.
+	 */
+	protected function create_thumbnail( $thumbnail_data ) {
+		$thumbnail_size = $thumbnail_data['name'];
+		$metadata       = wp_get_attachment_metadata( $this->id );
+		$metadata_sizes = ! empty( $metadata['sizes'] ) && is_array( $metadata['sizes'] ) ? $metadata['sizes'] : array();
+
+		$original_dirname = trailingslashit( dirname( $this->get_original_path() ) );
+		$thumbnail_path   = $original_dirname . $thumbnail_data['file'];
+
+		if ( ! empty( $metadata_sizes[ $thumbnail_size ] ) && $filesystem->exists( $thumbnail_path ) ) {
+			imagify_chmod_file( $thumbnail_path );
+			return true;
+		}
+
+		// Get the editor.
+		if ( ! isset( $this->editor ) ) {
+			$this->editor = wp_get_image_editor( $this->get_backup_path() );
+		}
+
+		if ( is_wp_error( $this->editor ) ) {
+			return $this->editor;
+		}
+
+		// Create the file.
+		$result = $this->editor->multi_resize( array( $thumbnail_size => $thumbnail_data ) );
+
+		if ( ! $result ) {
+			return new WP_Error( 'image_resize_error' );
+		}
+
+		$filesystem        = imagify_get_filesystem();
+		// The file name can change from what we expected (1px wider, etc).
+		$backup_dirname    = trailingslashit( dirname( $this->get_backup_path() ) );
+		$backup_thumb_path = $backup_dirname . $result[ $thumbnail_size ]['file'];
+		$thumbnail_path    = $original_dirname . $result[ $thumbnail_size ]['file'];
+
+		// Since we used the backup image as source, the new image is still in the backup folder, we need to move it.
+		$filesystem->move( $backup_thumb_path, $thumbnail_path, true );
+
+		if ( $filesystem->exists( $backup_thumb_path ) ) {
+			$filesystem->delete( $backup_thumb_path );
+		}
+
+		if ( ! $filesystem->exists( $thumbnail_path ) ) {
+			return new WP_Error( 'image_resize_error' );
+		}
+
+		imagify_chmod_file( $thumbnail_path );
+
+		return reset( $result );
+	}
+
+	/**
+	 * Create all missing thumbnails if they don't exist and update the attachment metadata.
+	 *
+	 * @since  1.6.10
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $missing_sizes An array of thumbnail data (width, height, crop, name, file) for each thumbnail size.
+	 * @return array                An array of thumbnail data (width, height, crop, file).
+	 */
+	protected function create_missing_thumbnails( $missing_sizes ) {
+		if ( ! $missing_sizes ) {
+			return array();
+		}
+
+		$metadata            = wp_get_attachment_metadata( $this->id );
+		$metadata['sizes']   = ! empty( $metadata['sizes'] ) && is_array( $metadata['sizes'] ) ? $metadata['sizes'] : array();
+		$thumbnail_new_datas = array();
+		$thumbnail_metadatas = array();
+
+		// Create the missing thumbnails.
+		foreach ( $missing_sizes as $size_name => $thumbnail_data ) {
+			$result = $this->create_thumbnail( $thumbnail_data );
+
+			if ( is_array( $result ) ) {
+				// New file.
+				$thumbnail_new_datas[ $size_name ] = $result;
+				unset( $thumbnail_new_datas[ $size_name ]['name'] );
+			} elseif ( true === $result ) {
+				// The file already exists.
+				$thumbnail_metadatas[ $size_name ] = $metadata['sizes'][ $size_name ];
+			}
+		}
+
+		// Save the new data into the attachment metadata.
+		if ( $thumbnail_new_datas ) {
+			$metadata['sizes'] = array_merge( $metadata['sizes'], $thumbnail_new_datas );
+
+			/**
+			 * Here we don't use wp_update_attachment_metadata() to prevent triggering unwanted hooks.
+			 */
+			update_post_meta( $this->id, '_wp_attachment_metadata', $metadata );
+		}
+
+		return array_merge( $thumbnail_metadatas, $thumbnail_new_datas );
+	}
+
+	/**
 	 * Optimize all sizes with Imagify.
 	 *
 	 * @since 1.0
@@ -293,9 +411,14 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		// Optimize all thumbnails.
 		if ( $sizes ) {
+			$disallowed_sizes        = get_imagify_option( 'disallowed-sizes', array() );
+			$is_active_for_network   = imagify_is_active_for_network();
+			$attachment_path_dirname = trailingslashit( dirname( $attachment_path ) );
+			$attachment_url_dirname  = trailingslashit( dirname( $attachment_url ) );
+
 			foreach ( $sizes as $size_key => $size_data ) {
 				// Check if this size has to be optimized.
-				if ( array_key_exists( $size_key, get_imagify_option( 'disallowed-sizes', array() ) ) && ! imagify_is_active_for_network() ) {
+				if ( ! $is_active_for_network && isset( $disallowed_sizes[ $size_key ] ) ) {
 					$data['sizes'][ $size_key ] = array(
 						'success' => false,
 						'error'   => __( 'This size isn\'t authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
@@ -303,8 +426,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 					continue;
 				}
 
-				$thumbnail_path = trailingslashit( dirname( $attachment_path ) ) . $size_data['file'];
-				$thumbnail_url  = trailingslashit( dirname( $attachment_url ) ) . $size_data['file'];
+				$thumbnail_path = $attachment_path_dirname . $size_data['file'];
+				$thumbnail_url  = $attachment_url_dirname . $size_data['file'];
 
 				// Optimize the thumbnail size.
 				$response = do_imagify( $thumbnail_path, array(
@@ -347,12 +470,119 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		 *
 		 * @param int   $id              The attachment ID.
 		 * @param array $optimized_data  The optimization data.
-		*/
+		 */
 		do_action( 'after_imagify_optimize_attachment', $this->id, $optimized_data );
 
 		delete_transient( 'imagify-async-in-progress-' . $this->id );
 
 		return $optimized_data;
+	}
+
+	/**
+	 * Optimize missing thumbnail sizes with Imagify.
+	 *
+	 * @since  1.6.10
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  int $optimization_level The optimization level (2=ultra, 1=aggressive, 0=normal).
+	 * @return array|object            An array of thumbnail data, size by size. A WP_Error object on failure.
+	 */
+	public function optimize_missing_thumbnails( $optimization_level = null ) {
+		// Check if the attachment extension is allowed.
+		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
+		}
+
+		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		$missing_sizes      = $this->get_unoptimized_sizes();
+
+		if ( ! $missing_sizes ) {
+			// We have everything we need.
+			return array();
+		}
+
+		/**
+		 * Fires before optimizing the missing thumbnails.
+		 *
+		 * @since  1.6.10
+		 * @author Grégory Viguier
+		 * @see    $this->get_unoptimized_sizes()
+		 *
+		 * @param int   $id            The attachment ID.
+		 * @param array $missing_sizes An array of the missing sizes.
+		*/
+		do_action( 'before_imagify_optimize_missing_thumbnails', $this->id, $missing_sizes );
+
+		set_transient( 'imagify-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+
+		$errors = new WP_Error();
+
+		// Create the missing thumbnails.
+		$result_sizes = $this->create_missing_thumbnails( $missing_sizes );
+		$failed_sizes = array_diff_key( $missing_sizes, $result_sizes );
+
+		if ( $failed_sizes ) {
+			$failed_count  = count( $failed_sizes );
+			/* translators: %d is a number of thumbnails. */
+			$error_message = _n( '%d thumbnail failed to be created', '%d thumbnails failed to be created', $failed_count, 'imagify' );
+			$error_message = sprintf( $error_message, $failed_count );
+			$errors->add( 'image_resize_error', $error_message, array( 'nbr_failed' => $failed_count, 'sizes_failed' => $failed_sizes, 'sizes_succeeded' => $result_sizes ) );
+		}
+
+		if ( ! $result_sizes ) {
+			delete_transient( 'imagify-async-in-progress-' . $this->id );
+			return $errors;
+		}
+
+		// Optimize.
+		$imagify_data     = $this->get_data();
+		$original_dirname = trailingslashit( dirname( $this->get_original_path() ) );
+		$orig_url_dirname = trailingslashit( dirname( $this->get_original_url() ) );
+
+		foreach ( $result_sizes as $size_name => $thumbnail_data ) {
+			$thumbnail_path = $original_dirname . $thumbnail_data['file'];
+			$thumbnail_url  = $orig_url_dirname . $thumbnail_data['file'];
+
+			// Optimize the thumbnail size.
+			$response = do_imagify( $thumbnail_path, array(
+				'backup'             => false,
+				'optimization_level' => $optimization_level,
+				'context'            => 'wp',
+			) );
+
+			$imagify_data = $this->fill_data( $imagify_data, $response, $thumbnail_url, $size_name );
+
+			/** This filter is documented in inc/classes/class-imagify-attachment.php. */
+			$imagify_data = apply_filters( 'imagify_fill_thumbnail_data', $imagify_data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_name, $optimization_level );
+		}
+
+		// Save Imagify data.
+		$imagify_data['stats']['percent'] = round( ( ( $imagify_data['stats']['original_size'] - $imagify_data['stats']['optimized_size'] ) / $imagify_data['stats']['original_size'] ) * 100, 2 );
+
+		update_post_meta( $this->id, '_imagify_data', $imagify_data );
+
+		/**
+		 * Fires after optimizing the missing thumbnails.
+		 *
+		 * @since  1.6.10
+		 * @author Grégory Viguier
+		 * @see    $this->create_missing_thumbnails()
+		 *
+		 * @param int    $id           The attachment ID.
+		 * @param array  $result_sizes An array of created thumbnails.
+		 * @param object $errors       A WP_Error object that stores thumbnail creation failures.
+		 */
+		do_action( 'after_imagify_optimize_missing_thumbnails', $this->id, $result_sizes, $errors );
+
+		delete_transient( 'imagify-async-in-progress-' . $this->id );
+
+		// Return the result.
+		if ( $errors->get_error_codes() ) {
+			return $errors;
+		}
+
+		return $result_sizes;
 	}
 
 	/**
