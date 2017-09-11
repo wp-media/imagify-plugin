@@ -347,7 +347,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	public function optimize_missing_thumbnails( $optimization_level = null ) {
 		// Check if the attachment extension is allowed.
 		if ( ! $this->is_mime_type_supported() ) {
-			return array();
+			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
 		/**
