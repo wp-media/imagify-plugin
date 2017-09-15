@@ -101,8 +101,9 @@ function _imagify_warning_wrong_api_key_notice() {
 		<div class="imagify-notice-content">
 			<p class="imagify-notice-title"><strong><?php _e( 'Your API key isn\'t valid!', 'imagify' ); ?></strong></p>
 			<p>
-				<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
 				<?php
+				wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false );
+
 				printf(
 					/* translators: 1 and 2 are link tag starts, 3 is a link tag end. */
 					__( 'Go to your Imagify account page to get your API Key and specify it on %1$syour settings%3$s or %2$screate an account for free%3$s if you don\'t have one yet.', 'imagify' ),
