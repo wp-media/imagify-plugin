@@ -39,7 +39,7 @@ function imagify_get_capacity( $force_mono = false ) {
  * @param string|bool $query_arg Optional. Key to check for the nonce in `$_REQUEST`. If false, `$_REQUEST` values will be evaluated for '_ajax_nonce', and '_wpnonce' (in that order). Default false.
  */
 function imagify_check_nonce( $action, $query_arg = false ) {
-	if ( ! check_ajax_referer( $action, false, false ) ) {
+	if ( ! check_ajax_referer( $action, $query_arg, false ) ) {
 		imagify_die();
 	}
 }
