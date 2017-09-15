@@ -74,7 +74,7 @@ function imagify_die( $message = null ) {
 	if ( ! isset( $message ) ) {
 		/* translators: This sentense already exists in WordPress. */
 		$message = __( 'Sorry, you are not allowed to do that.', 'imagify' );
-	} elseif ( is_wp_error( $response ) ) {
+	} elseif ( is_wp_error( $message ) ) {
 		$message = imagify_translate_api_message( $message->get_error_message() );
 	}
 
