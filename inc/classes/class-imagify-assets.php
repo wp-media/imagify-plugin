@@ -125,8 +125,8 @@ class Imagify_Assets {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles_and_scripts' ) );
 		add_action( 'wp_enqueue_media',      array( $this, 'enqueue_media_modal' ) );
 
-		add_action( 'admin_footer-media_page_imagify-bulk-optimization', array( $this, 'print_intercom' ) );
-		add_action( 'admin_footer-settings_page_imagify',                array( $this, 'print_intercom' ) );
+		add_action( 'admin_footer-media_page_imagify-bulk-optimization', array( $this, 'print_support_script' ) );
+		add_action( 'admin_footer-settings_page_imagify',                array( $this, 'print_support_script' ) );
 	}
 
 	/**
@@ -324,7 +324,7 @@ class Imagify_Assets {
 	 * @since  1.6.10
 	 * @author Grégory Viguier
 	 */
-	public function print_intercom() {
+	public function print_support_script() {
 		if ( ! imagify_valid_key() ) {
 			return;
 		}
