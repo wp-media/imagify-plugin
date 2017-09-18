@@ -187,22 +187,14 @@ class Imagify_Notices {
 	 * @see    _do_admin_post_imagify_dismiss_notice()
 	 */
 	public function admin_post_dismiss_notice() {
-		if ( defined( 'DOING_AJAX' ) ) {
-			check_ajax_referer( self::DISMISS_NONCE_ACTION );
-		} else {
-			check_admin_referer( self::DISMISS_NONCE_ACTION );
-		}
+		imagify_check_nonce( self::DISMISS_NONCE_ACTION );
 
 		$notice  = ! empty( $_GET['notice'] ) ? esc_html( $_GET['notice'] ) : false;
 		$notices = $this->get_notice_ids();
 		$notices = array_flip( $notices );
 
 		if ( ! $notice || ! isset( $notices[ $notice ] ) || ! $this->user_can( $notice ) ) {
-			if ( defined( 'DOING_AJAX' ) ) {
-				wp_send_json_error();
-			} else {
-				wp_nonce_ays( '' );
-			}
+			imagify_die();
 		}
 
 		self::dismiss_notice( $notice );
@@ -216,11 +208,7 @@ class Imagify_Notices {
 		*/
 		do_action( 'imagify_dismiss_notice', $notice );
 
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			wp_safe_redirect( wp_get_referer() );
-			die();
-		}
-
+		imagify_maybe_redirect();
 		wp_send_json_success();
 	}
 
@@ -248,10 +236,10 @@ class Imagify_Notices {
 	 * @see    _imagify_deactivate_plugin()
 	 */
 	public function deactivate_plugin() {
-		check_admin_referer( self::DEACTIVATE_PLUGIN_NONCE_ACTION );
+		imagify_check_nonce( self::DEACTIVATE_PLUGIN_NONCE_ACTION );
 
 		if ( empty( $_GET['plugin'] ) || ! $this->user_can( 'plugins-to-deactivate' ) ) {
-			wp_nonce_ays( '' );
+			imagify_die();
 		}
 
 		$plugin  = esc_html( $_GET['plugin'] );
@@ -259,13 +247,13 @@ class Imagify_Notices {
 		$plugins = array_flip( $plugins );
 
 		if ( empty( $plugins[ $plugin ] ) ) {
-			wp_nonce_ays( '' );
+			imagify_die();
 		}
 
 		deactivate_plugins( $plugin );
 
-		wp_safe_redirect( wp_get_referer() );
-		die();
+		imagify_maybe_redirect();
+		wp_send_json_success();
 	}
 
 
