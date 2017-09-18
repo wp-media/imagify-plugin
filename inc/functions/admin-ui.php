@@ -20,6 +20,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 	$output_before            = $is_media_page ? '<div class="misc-pub-section misc-pub-imagify imagify-data-item">' : '<li class="imagify-data-item">';
 	$output_after             = $is_media_page ? '</div>' : '</li>';
 	$reoptimize_link          = get_imagify_attachment_reoptimize_link( $attachment, $context );
+	$reoptimize_link         .= get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $context );
 	$reoptimize_output        = $reoptimize_link ? $reoptimize_link : '';
 	$reoptimize_output_before = '<div class="imagify-datas-actions-links">';
 	$reoptimize_output_after  = '</div><!-- .imagify-datas-actions-links -->';
@@ -224,6 +225,53 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 }
 
 /**
+ * Get the link to optimize missing thumbnail sizes for a specific attachment.
+ *
+ * @since  1.6.10
+ * @author Grégory Viguier
+ *
+ * @param  object $attachment The attachement object.
+ * @param  string $context    A context.
+ * @return string             The output to print.
+ */
+function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $context = 'wp' ) {
+	/**
+	 * Allow to not display the "Optimize missing thumbnails" link.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @param bool   $display    True to display the link. False to not display it.
+	 * @param object $attachment The attachement object.
+	 * @param string $context    The context.
+	 */
+	$display = apply_filters( 'imagify_display_missing_thumbnails_link', true, $attachment, $context );
+
+	// Stop the process if the filter is false or if the API key isn't valid.
+	if ( ! $display || ! imagify_valid_key() ) {
+		return '';
+	}
+
+	$missing_sizes = $attachment->get_unoptimized_sizes();
+
+	if ( ! $missing_sizes ) {
+		return '';
+	}
+
+	$url = get_imagify_admin_url( 'optimize-missing-sizes', array(
+		'attachment_id' => $attachment->id,
+		'context'       => $context,
+	) );
+
+	$output  = '<a href="' . esc_url( $url ) . '" id="imagify-optimize_missing_sizes-' . $attachment->id . '" class="button-imagify-optimize-missing-sizes" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">';
+		/* translators: 1 is the number of thumbnails to optimize, 2 is the opening of a HTML tag that will be hidden on small screens, 3 is the closing tag. */
+		$output .= '<span class="dashicons dashicons-admin-generic"></span>' . sprintf( _n( '%2$sOptimize %3$s%1$d missing thumbnail', '%2$sOptimize %3$s%1$d missing thumbnails', count( $missing_sizes ), 'imagify' ), count( $missing_sizes ), '<span class="imagify-hide-if-small">', '</span>' );
+	$output .= '</a>';
+
+	return $output;
+}
+
+/**
  * Get all data to diplay for a specific attachment.
  *
  * @since 1.2
@@ -287,7 +335,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
  * @return string HTML.
  */
 function get_imagify_new_to_imagify() {
-	if ( ! imagify_valid_key() ) {
+	if ( ! current_user_can( imagify_get_capacity() ) || ! imagify_valid_key() ) {
 		return '';
 	}
 

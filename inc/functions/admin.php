@@ -111,6 +111,9 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 		case 'manual-override-upload':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_override_upload&attachment_id=' . $id . '&optimization_level=' . $level . '&context=' . $context ), 'imagify-manual-override-upload' );
 
+		case 'optimize-missing-sizes':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_optimize_missing_sizes&attachment_id=' . $id . '&context=' . $context ), 'imagify-optimize-missing-sizes' );
+
 		case 'manual-upload':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-manual-upload' );
 
@@ -137,32 +140,17 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
  * @return array An array containing the max width and height.
  */
 function get_imagify_max_intermediate_image_size() {
-	global $_wp_additional_image_sizes;
-
 	$width  = 0;
 	$height = 0;
 	$limit  = 9999;
-	$sizes  = array( 'thumbnail' => 1, 'medium' => 1, 'large' => 1 );
-	$get_intermediate_image_sizes = get_intermediate_image_sizes();
 
-	// Create the full array with sizes and crop info.
-	foreach ( $get_intermediate_image_sizes as $_size ) {
-		if ( isset( $sizes[ $_size ] ) ) {
-			$_size_width  = get_option( $_size . '_size_w' );
-			$_size_height = get_option( $_size . '_size_h' );
-		} elseif ( isset( $_wp_additional_image_sizes[ $_size ] ) ) {
-			$_size_width  = $_wp_additional_image_sizes[ $_size ]['width'];
-			$_size_height = $_wp_additional_image_sizes[ $_size ]['height'];
-		} else {
-			continue;
+	foreach ( get_imagify_thumbnail_sizes() as $_size ) {
+		if ( $_size['width'] > $width && $_size['width'] < $limit ) {
+			$width = $_size['width'];
 		}
 
-		if ( $_size_width < $limit ) {
-			$width = max( $width, $_size_width );
-		}
-
-		if ( $_size_height < $limit ) {
-			$height = max( $height, $_size_height );
+		if ( $_size['height'] > $height && $_size['height'] < $limit ) {
+			$height = $_size['height'];
 		}
 	}
 

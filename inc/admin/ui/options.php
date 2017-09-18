@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @since 1.0
  */
 function _imagify_display_options_page() {
-	global $_wp_additional_image_sizes, $wp_version;
+	global $wp_version;
 
 	if ( isset( $_POST['submit-goto-bulk'] ) ) { // WPCS: CSRF ok.
 		wp_safe_redirect( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) );
