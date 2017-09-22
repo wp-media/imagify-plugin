@@ -84,6 +84,11 @@ class Imagify_AS3CF {
 		add_filter( 'imagify_optimize_attachment_context', array( $this, 'optimize_attachment_context' ), 10, 2 );
 
 		/**
+		 * Redirections.
+		 */
+		add_filter( 'imagify_redirect_to', array( $this, 'redirect_referrer' ) );
+
+		/**
 		 * Bulk optimization.
 		 */
 		add_action( 'imagify_bulk_optimize_before_file_existence_tests', array( $this, 'maybe_copy_files_from_s3' ), 8, 3 );
@@ -131,6 +136,20 @@ class Imagify_AS3CF {
 			return self::CONTEXT;
 		}
 		return $context;
+	}
+
+	/**
+	 * After a non-ajax optimization, remove some unnecessary arguments from the referrer used for the redirection.
+	 * Those arguments don't break anything, they're just not relevant and display obsolete admin notices.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $redirect The URL to redirect to.
+	 * @return string
+	 */
+	public function redirect_referrer( $redirect ) {
+		return remove_query_arg( array( 'as3cfpro-action', 'as3cf_id', 'errors', 'count' ), $redirect );
 	}
 
 	/**
