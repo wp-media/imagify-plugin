@@ -1,1 +1,41 @@
+.imagify-popin-message {
+	padding: 5px 15px;
+	text-align: left;
+}
+.imagify-popin-message.imagify-error p {
+	color: #FFF;
+}
 
+.imagify-small-options {
+	width: 300px;
+	margin: 1em auto .5em;
+	background: #338EA6;
+	border-radius: 4px;
+}
+
+.imagify-small-options input[type="radio"]:not(:checked) + label,
+.imagify-small-options input[type="radio"]:checked + label {
+	padding: 8px 10px;
+	font-size: 13px;
+	color: #FFF;
+	box-shadow: none;
+	border-left: 0;
+}
+
+.imagify-small-options input[type="radio"]:not(:checked) + label {
+	background: #338EA6;
+	color: rgba(255, 255, 255, .4);
+}
+.imagify-small-options input[type="radio"]:checked + label {
+	background: #40B1D0;
+}
+
+.imagify-cols:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+.imagify-col {
+	float: left;
+	width: 50%;
+}

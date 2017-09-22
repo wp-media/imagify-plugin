@@ -1,1 +1,13 @@
+/* Doughnut inside a column */
+td .imagify-chart {
+	top: 4px;
+	float: none;
+	margin-bottom: 0;
+}
 
+td .imagify-chart-container {
+	width: 18px;
+	height: 18px;
+	float: none;
+	margin-right: 10px;
+}
