@@ -148,6 +148,20 @@ body.imagify-modal-is-open {
 	margin-right: 20px;
 }
 
+/* On library page */
+td .imagify-chart {
+	top: 4px;
+	float: none;
+	margin-bottom: 0;
+}
+
+td .imagify-chart-container {
+	width: 18px;
+	height: 18px;
+	float: none;
+	margin-right: 10px;
+}
+
 /**
  *
  * == Settings page
@@ -877,6 +891,12 @@ ul.imagify-datas-details.imagify-datas-details {
 	border-top: 2px solid #f2f2f2;
 	padding-bottom: 5px;
 }
+/* Library */
+.column-imagify_optimized_file .imagify-datas-actions-links a {
+	margin: 0 .7em;
+	padding-left: 15px;
+}
+
 /* Media edition */
 .compat-field-imagify .imagify-datas-actions-links a,
 .misc-pub-imagify .imagify-datas-actions-links a {
@@ -1199,11 +1219,23 @@ ul.imagify-datas-details.imagify-datas-details {
 	visibility: visible;
 }
 
-.imagify-col { /* TODO: style conflict? */
+/* Attachments specifics */
+.wp_attachment_image #imagify-visual-comparison .close-btn,
+.imagify-visual-comparison .close-btn {
+	top: 0;
+}
+
+.wp_attachment_image #imagify-visual-comparison .imagify-modal-content,
+.imagify-visual-comparison .imagify-modal-content {
+	padding-top: 40px;
+}
+
+/* Col, behavior depending on parent */
+.imagify-col {
 	float: left;
 	width: 50%;
 }
-.imagify-col { /* TODO: style conflict? */
+.imagify-col {
 	-webkit-flex-basis: 50%;
 	-ms-flex-preferred-size: 50%;
 	flex-basis: 50%;
