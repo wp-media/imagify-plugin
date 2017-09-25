@@ -966,17 +966,6 @@ ul.imagify-datas-details.imagify-datas-details {
 	font-size: 10px;
 }
 
-/* unused code */
-.imagify-progress-value,
-#wp-admin-bar-imagify-profile .imagify-progress-value {
-	position: absolute;
-	top: 0; right: 0; left: 0; bottom: 0;
-	text-align: center;
-	line-height: 13px;
-	font-weight: bold;
-}
-/* end of unused code */
-
 .imagify-progress,
 #wp-admin-bar-imagify-profile .imagify-progress {
 	height: 1.5em;
