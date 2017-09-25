@@ -31,6 +31,13 @@
 	top: 25% !important;
 }
 
+.imagify-sweet-alert .swal2-buttonswrapper.swal2-loading .swal2-confirm.swal2-confirm {
+	height: 40px !important;
+	border-radius: 100% !important;
+	border-left-width: 0 !important;
+	border-right-width: 0 !important;
+}
+
 /* Make the page in background blured when sweet alert is open */
 #wpwrap {
 	transition: all .4s;
