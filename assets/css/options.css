@@ -166,6 +166,10 @@ input[id^="imagify_sizes_"]:checked + label {
 	width: 5em;
 }
 
+.imagify-menu-bar-img {
+	margin-top: 1em;
+}
+
 /* Layout */
 .imagify-main {
 	float: left;

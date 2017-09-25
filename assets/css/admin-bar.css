@@ -1,3 +1,64 @@
+.imagify-account,
+.imagify-account-link {
+	padding-right: 15px;
+}
+.imagify-meteo-icon {
+	display: inline-block;
+	height: 38px;
+	vertical-align: middle;
+	margin-right: 10px;
+}
+.imagify-user-plan {
+	color: #40b1d0;
+}
+.imagify-meteo-title.imagify-meteo-title {
+	color: #FFF;
+	font-size: 17px;
+}
+.imagify-space-left {
+	display: inline-block;
+	min-height: 38px;
+	min-width: 245px;
+	vertical-align: middle;
+}
+.imagify-space-left > p {
+	color: #FFF;
+}
+[class^="imagify-bar-"],
+#wp-admin-bar-imagify-profile [class^="imagify-bar-"] {
+	position: relative;
+	height: 1.5em;
+	width: 100%;
+	background: #60758D;
+	color: #FFF;
+	font-size: 10px;
+}
+.imagify-progress,
+#wp-admin-bar-imagify-profile .imagify-progress {
+	height: 1.5em;
+}
+.imagify-progress {
+	transition: width .3s;
+}
+.imagify-bar-positive .imagify-progress {
+	background: #8CC152;
+}
+.imagify-bar-positive .imagify-barnb {
+	color: #8CC152;
+}
+.imagify-bar-negative .imagify-progress {
+	background: #73818C;
+}
+.imagify-bar-negative .imagify-barnb {
+	color: #73818C;
+}
+.imagify-bar-neutral .imagify-progress {
+	background: #F5A623;
+}
+.imagify-space-left .imagify-bar-negative .imagify-progress {
+	background: #D0021B;
+}
+
 #wpadminbar #wp-admin-bar-imagify-profile * {
 	line-height: 1.5;
 	white-space: initial;
@@ -83,7 +144,7 @@
 	margin-top: 1em;
 }
 
-#wpadminbar #wp-admin-bar-imagify-profile .btn-ghost {
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-btn-ghost {
 	display: inline-block;
 	height: auto;
 	padding: 7px 10px;
@@ -95,8 +156,8 @@
 	transition: all .275s;
 }
 
-#wpadminbar #wp-admin-bar-imagify-profile .btn-ghost:hover,
-#wpadminbar #wp-admin-bar-imagify-profile .btn-ghost:focus {
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-btn-ghost:hover,
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-btn-ghost:focus {
 	background: #FFF;
 	color: #888;
 }

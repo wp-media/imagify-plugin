@@ -106,6 +106,7 @@
 	-webkit-user-select: none;
 	-moz-user-select: none;
 }
+
 .twentytwenty-container * {
 	box-sizing: content-box;
 }
@@ -152,6 +153,7 @@
 	z-index: 30;
 	overflow: hidden;
 }
+
 .twentytwenty-duo-buttons button {
 	float: left;
 	padding: 2px 6px;
@@ -165,24 +167,30 @@
 	transition: all .3s;
 	cursor: pointer;
 }
+
 .twentytwenty-duo-buttons button:hover,
 .twentytwenty-duo-buttons button:focus {
 	background: #444;
 }
+
 .twentytwenty-duo-buttons button:first-child {
 	border-radius: 3px 0 0 3px;
 }
+
 .twentytwenty-duo-buttons button:last-child {
 	border-radius: 0 3px 3px 0;
 }
+
 .twentytwenty-duo-buttons button.selected {
 	background: #8bc34a;
 	text-shadow: 0 0 1px rgba(0,0,0,.2);
 	cursor: default;
 }
+
 .twentytwenty-duo-left {
 	left: 10px;
 }
+
 .twentytwenty-duo-right {
 	right: 10px;
 }
@@ -197,6 +205,124 @@
 	right: 50%;
 	margin-right: -22px;
 	border-left: 8px solid white;
+}
+
+#imagify-visual-comparison .close-btn,
+.imagify-visual-comparison .close-btn {
+	top: 50px;
+	right: 5px;
+	width: 33px;
+	height: 33px;
+	padding: 1px 0 0 2px;
+	border: 1px solid #F2F2F2;
+	color: #F2F2F2;
+	line-height: 19px;
+	text-align: center;
+	border-radius: 50%;
+}
+
+.imagify-modal .imagify-comparison-title {
+	font-size: 28px;
+	margin-bottom: 1em;
+	color: #F2F2F2;
+	text-align: left;
+}
+.imagify-modal .imagify-comparison-title .twentytwenty-duo-buttons {
+	position: static;
+	margin: 0 10px 0 15px;
+}
+.imagify-comparison-title .twentytwenty-duo-buttons button {
+	float: none;
+	padding: 6px 12px;
+	font-size: 16px;
+	text-transform: none;
+	border: 1px solid #40B1D0;
+	color: #888899;
+	letter-spacing: 0;
+}
+.imagify-comparison-title .twentytwenty-duo-buttons button:focus {
+	outline: none;
+	box-shadow: none;
+}
+.imagify-comparison-title .twentytwenty-duo-buttons .selected {
+	border: 1px solid #40B1D0;
+	color: #FFF;
+	background: #40B1D0;
+}
+
+.imagify-comparison-levels {
+	margin: 15px 0;
+	overflow: hidden;
+}
+.imagify-comparison-levels div {
+	display: none;
+	min-width: 175px;
+	font-size: 11px;
+}
+.imagify-comparison-levels .imagify-chart,
+.imagify-comparison-levels .imagify-chart-container {
+	width: 25px;
+	float: none;
+	margin: 0;
+}
+.imagify-visual-comparison .imagify-chart-container canvas {
+	width: 15px!important;
+	height: 15px!important;
+	margin-right: 5px;
+}
+.imagify-c-level.go-left {
+	float: left;
+}
+.imagify-c-level.go-right {
+	float: right;
+}
+.imagify-c-level.go-right,
+.imagify-c-level.go-left {
+	display: table;
+}
+.imagify-c-level .imagify-c-level-row {
+	display: table-row;
+	margin: 0;
+	color: #FFF;
+}
+.imagify-c-level-row > span {
+	display: table-cell;
+	padding: 2px 0;
+}
+.imagify-c-level-row .value {
+	text-align: right;
+	padding-left: 5px;
+}
+.imagify-c-level-row .value.level {
+	color: #40b1d0;
+}
+.imagify-c-level-row .value.size {
+	color: #8bc34a;
+	font-weight: bold;
+}
+.imagify-c-level-row .value .imagify-chart {
+	top: 1px;
+}
+
+/* TT Loader */
+.imagify-modal .loader {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -32px 0 0 -32px;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity .4s;
+}
+.imagify-modal .loading .loader {
+	visibility: visible;
+	opacity: 1;
+}
+
+.imagify-settings .imagify-visual-comparison-text {
+	margin-top: 1em;
+	color: #40b1d0;
+	font-weight: bold;
 }
 
 /* Specifics for too high modals */

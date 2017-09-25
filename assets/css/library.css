@@ -11,3 +11,8 @@ td .imagify-chart-container {
 	float: none;
 	margin-right: 10px;
 }
+
+.column-imagify_optimized_file .imagify-datas-actions-links a {
+	margin: 0 .7em;
+	padding-left: 15px;
+}
