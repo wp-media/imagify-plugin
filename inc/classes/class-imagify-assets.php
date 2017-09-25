@@ -161,11 +161,7 @@ class Imagify_Assets {
 
 		$this->register_style( 'twentytwenty', 'twentytwenty', array( 'admin' ) );
 
-		$this->register_style( 'attachment-data', 'attachment-data', array( 'admin' ) );
-
 		$this->register_style( 'pricing-modal', 'pricing-modal', array( 'admin' ) );
-
-		$this->register_style( 'library', 'library', array( 'attachment-data' ) );
 
 		$this->register_style( 'bulk', 'bulk', array( 'sweetalert', 'admin' ) );
 
@@ -250,10 +246,6 @@ class Imagify_Assets {
 		 * Loaded in the library and attachment edition.
 		 */
 		if ( imagify_is_screen( 'library' ) || imagify_is_screen( 'attachment' ) ) {
-			if ( imagify_is_screen( 'attachment' ) ) {
-				$this->enqueue_style( 'attachment-data' );
-			}
-
 			$this->enqueue_assets( 'twentytwenty' );
 		}
 
@@ -261,7 +253,7 @@ class Imagify_Assets {
 		 * Loaded in the library.
 		 */
 		if ( imagify_is_screen( 'library' ) ) {
-			$this->enqueue_assets( 'library' );
+			$this->enqueue_style( 'admin' )->enqueue_script( 'library' );
 		}
 
 		/**
@@ -306,7 +298,7 @@ class Imagify_Assets {
 		 */
 		$this->register_styles_and_scripts();
 
-		$this->enqueue_style( 'attachment-data' )->enqueue_script( 'media-modal' );
+		$this->enqueue_style( 'admin' )->enqueue_script( 'media-modal' );
 
 		/**
 		 * Triggered after Imagify CSS and JS have been enqueued for the media modal.
