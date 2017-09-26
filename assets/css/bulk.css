@@ -124,8 +124,11 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 /* Header */
 .imagify-title-right {
 	display: table;
-	float: right;
+	float: right; /* fallback old browsers */
 	margin-top: -10px;
+	-webkit-box-ordinal-group: 3;
+	           -ms-flex-order: 2;
+	                    order: 2;
 }
 .imagify-title-right p {
 	margin: 0;
