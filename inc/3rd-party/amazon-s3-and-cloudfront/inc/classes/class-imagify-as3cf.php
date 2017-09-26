@@ -132,7 +132,7 @@ class Imagify_AS3CF {
 	 * @return string                The new context.
 	 */
 	public function optimize_attachment_context( $context, $attachment_id ) {
-		if ( self::CONTEXT === $context || imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+		if ( self::CONTEXT === $context || ( 'wp' === $context && imagify_is_attachment_mime_type_supported( $attachment_id ) ) ) {
 			return self::CONTEXT;
 		}
 		return $context;
