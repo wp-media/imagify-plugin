@@ -47,6 +47,11 @@ function imagify_round_half_five( $number ) {
  */
 function get_imagify_attachment_class_name( $context, $attachment_id, $identifier ) {
 	$context = $context ? $context : 'wp';
+
+	if ( 'wp' !== $context && 'wp' === strtolower( $context ) ) {
+		$context = 'wp';
+	}
+
 	/**
 	 * Filter the context used for the optimization.
 	 *
