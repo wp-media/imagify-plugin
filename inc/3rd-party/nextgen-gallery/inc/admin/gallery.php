@@ -15,7 +15,6 @@ function _imagify_ngg_manage_images_number_of_columns( $count ) {
 	$count++;
 	add_filter( 'ngg_manage_images_column_' . $count . '_header', '_imagify_ngg_manage_media_columns' );
 	add_filter( 'ngg_manage_images_column_' . $count . '_content', '_imagify_ngg_manage_media_custom_column', 10, 2 );
-	add_filter( 'imagify_display_missing_thumbnails_link', '_imagify_ngg_hide_missing_thumbnails_link', 10, 3 );
 
 	return $count;
 }
@@ -47,6 +46,7 @@ function _imagify_ngg_manage_media_custom_column( $output, $image ) {
 	return get_imagify_media_column_content( $attachment, 'NGG' );
 }
 
+add_filter( 'imagify_display_missing_thumbnails_link', '_imagify_ngg_hide_missing_thumbnails_link', 10, 3 );
 /**
  * Hide the "Optimize missing thumbnails" link.
  *
