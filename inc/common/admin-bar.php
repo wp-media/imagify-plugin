@@ -61,18 +61,3 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 		) );
 	}
 }
-
-add_action( 'admin_bar_init', '_imagify_admin_bar_styles' );
-/**
- * Include Admin Bar Profile informations styles in front.
- *
- * @since  1.2
- */
-function _imagify_admin_bar_styles() {
-	if ( is_admin() || ! get_imagify_option( 'admin_bar_menu', 0 ) ) {
-		return;
-	}
-
-	$css_ext = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '.css' : '.min.css';
-	wp_enqueue_style( 'imagify-css-admin-bar', IMAGIFY_ASSETS_CSS_URL . 'admin-bar' . $css_ext, array(), IMAGIFY_VERSION, 'all' );
-}

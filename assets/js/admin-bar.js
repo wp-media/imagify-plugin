@@ -3,7 +3,7 @@
 
 	var busy = false;
 
-	$( '#wp-admin-bar-imagify' ).hover( function() {
+	$( d ).on( 'mouseenter', '#wp-admin-bar-imagify', function() {
 		var $adminBarProfile, url;
 
 		if ( true === busy ) {

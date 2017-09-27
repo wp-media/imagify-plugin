@@ -119,6 +119,7 @@ class Imagify_Assets {
 	 */
 	public function init() {
 		if ( ! is_admin() ) {
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles_and_scripts_frontend' ) );
 			return;
 		}
 
@@ -130,7 +131,24 @@ class Imagify_Assets {
 	}
 
 	/**
-	 * Register stylesheets and scripts.
+	 * Enqueue stylesheets and scripts for the frontend.
+	 *
+	 * @since  1.6.10
+	 * @author Grégory Viguier
+	 */
+	public function enqueue_styles_and_scripts_frontend() {
+		if ( ! $this->is_admin_bar_item_showing() ) {
+			return;
+		}
+
+		$this->register_style( 'admin-bar' );
+		$this->register_script( 'admin-bar', 'admin-bar', array( 'jquery' ) );
+
+		$this->enqueue_assets( 'admin-bar' )->localize( 'imagifyAdminBar' );
+	}
+
+	/**
+	 * Register stylesheets and scripts for the administration area.
 	 *
 	 * @since  1.6.10
 	 * @author Grégory Viguier
@@ -203,7 +221,7 @@ class Imagify_Assets {
 	}
 
 	/**
-	 * Enqueue stylesheets and scripts.
+	 * Enqueue stylesheets and scripts for the administration area.
 	 *
 	 * @since  1.6.10
 	 * @author Grégory Viguier
