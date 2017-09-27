@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.8.1
-Stable tag: 1.6.9.1
+Tested up to: 4.8.2
+Stable tag: 1.6.10
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -136,8 +136,20 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.10 =
+* New: if new thumbnail sizes appear after activating a new theme or plugin, you can now optimize only these missing sizes instead of restoring and re-optimizing all images.
+* Improvement: CSS and JS files have been split and are loaded only when needed.
+* Improvement: in each NextGen Galleries you now have "Optimize" and "Restore" bulk actions.
+* Improvement: better banner placements with languages with long sentences.
+* Improvement: messages like the "WELL DONE" one can now be translated.
+* Bug Fix: the account infos in the admin bar now works properly on front-end.
+* Bug Fix: some thumbnail sizes with curious name were not listed in the settings page.
+* Bug Fix: improved library size calculation for "What plan do I need?". Some thumbnail sizes were missing, lowering the result.
+* Regression fix: the issue with Imagify's popup on WP Rocket options screen is now also solved when WP Rocket is white-labelled.
+* Lots of various small fixes and code improvements.
+
 = 1.6.9.1 =
-* Regression fix: Don't load Imagify SweetAlert files on WP Rocket options screen to avoid conflitcs.
+* Regression fix: don't load Imagify's popup files on WP Rocket options screen to avoid conflicts.
 
 = 1.6.9 =
 * Improvement: the bulk optimization now stops as soon as the quota is fully consumed, instead of trying to optimize more images and getting error messages one after the other.
