@@ -9,18 +9,21 @@
         }
     },
     "globals": {
-        "ajaxurl":        false,
-        "Promise":        false,
-        "jQuery":         false,
-        "Chart":          false,
-        "swal":           false,
-        "imagify":        true,
-        "imagifyAdmin":   true,
-        "imagifyBulk":    true,
-        "ImagifyGulp":    false,
-        "imagifyOptions": true,
-        "imagifyTTT":     true,
-        "imagifyUpload":  true
+        "ajaxurl":             false,
+        "Promise":             false,
+        "jQuery":              false,
+        "Chart":               false,
+        "swal":                false,
+        "imagify":             true,
+        "imagifyAdminBar":     true,
+        "imagifyBulk":         true,
+        "ImagifyGulp":         false,
+        "imagifyLibrary":      true,
+        "imagifyNotices":      true,
+        "imagifyOptions":      true,
+        "imagifyPricingModal": true,
+        "imagifySwal":         true,
+        "imagifyTTT":          true
     },
     "rules": {
         "consistent-this":            "error",

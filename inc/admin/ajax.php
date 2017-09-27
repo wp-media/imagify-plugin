@@ -559,7 +559,7 @@ function _do_wp_ajax_imagify_get_admin_bar_profile() {
 			$message .= '<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s almost over!', 'imagify' ) . '</strong></p>';
 			/* translators: %s is a line break. */
 			$message .= '<p>' . sprintf( __( 'You have almost used all your credit.%sDon\'t forget to upgrade your subscription to continue optimizing your images.', 'imagify' ), '<br/><br/>' ) . '</p>';
-			$message .= '<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">' . __( 'View My Subscription', 'imagify' ) . '</a></p>';
+			$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">' . __( 'View My Subscription', 'imagify' ) . '</a></p>';
 		$message .= '</div>';
 	}
 
@@ -572,7 +572,7 @@ function _do_wp_ajax_imagify_get_admin_bar_profile() {
 				size_format( $user->quota * 1048576 ),
 				date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) )
 			) . '</p>';
-			$message .= '<p class="center txt-center text-center"><a class="btn btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>';
+			$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>';
 		$message .= '</div>';
 	}
 
@@ -722,72 +722,4 @@ function _imagify_update_estimate_sizes() {
 	update_imagify_option( 'average_size_images_per_month', array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ) );
 
 	die( 1 );
-}
-
-/** --------------------------------------------------------------------------------------------- */
-/** OTHER ======================================================================================= */
-/** --------------------------------------------------------------------------------------------- */
-
-add_action( 'wp_ajax_imagify_dismiss_notice',    '_do_admin_post_imagify_dismiss_notice' );
-add_action( 'admin_post_imagify_dismiss_notice', '_do_admin_post_imagify_dismiss_notice' );
-/**
- * Process a dismissed notice.
- *
- * @since 1.0
- * @author Jonathan Buttigieg
- */
-function _do_admin_post_imagify_dismiss_notice() {
-	if ( defined( 'DOING_AJAX' ) ) {
-		check_ajax_referer( 'imagify-dismiss-notice' );
-	} else {
-		check_admin_referer( 'imagify-dismiss-notice' );
-	}
-
-	if ( empty( $_GET['notice'] ) || ! current_user_can( 'manage_options' ) ) {
-		if ( defined( 'DOING_AJAX' ) ) {
-			wp_send_json_error();
-		} else {
-			wp_nonce_ays( '' );
-		}
-	}
-
-	$notice = $_GET['notice'];
-
-	imagify_dismiss_notice( $notice );
-
-	/**
-	 * Fires when a notice is dismissed.
-	 *
-	 * @since 1.4.2
-	 *
-	 * @param int $notice The notice slug
-	*/
-	do_action( 'imagify_dismiss_notice', $notice );
-
-	if ( ! defined( 'DOING_AJAX' ) ) {
-		wp_safe_redirect( wp_get_referer() );
-		die();
-	}
-
-	wp_send_json_success();
-}
-
-add_action( 'admin_post_imagify_deactivate_plugin', '_imagify_deactivate_plugin' );
-/**
- * Disable a plugin which can be in conflict with Imagify
- *
- * @since 1.2
- * @author Jonathan Buttigieg
- */
-function _imagify_deactivate_plugin() {
-	if ( empty( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'imagifydeactivatepluginnonce' ) ) {
-		wp_nonce_ays( '' );
-	}
-
-	if ( ! empty( $_GET['plugin'] ) ) {
-		deactivate_plugins( $_GET['plugin'] );
-	}
-
-	wp_safe_redirect( wp_get_referer() );
-	die();
 }

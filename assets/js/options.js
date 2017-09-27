@@ -1,17 +1,3 @@
-window.imagify = window.imagify || {
-	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
-	log:    function( content ) {
-		if ( undefined !== console ) {
-			console.log( content ); // eslint-disable-line no-console
-		}
-	},
-	info:   function( content ) {
-		if ( undefined !== console ) {
-			console.info( content ); // eslint-disable-line no-console
-		}
-	}
-};
-
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 	/*
 	 * Process an API key check validity.
@@ -28,7 +14,7 @@ window.imagify = window.imagify || {
 		}
 
 		if ( $( '#check_api_key' ).val() === value ) {
-			$( '#imagify-check-api-container' ).html( '<span class="dashicons dashicons-yes"></span> ' + imagifyAdmin.labels.ValidApiKeyText );
+			$( '#imagify-check-api-container' ).html( '<span class="dashicons dashicons-yes"></span> ' + imagifyOptions.labels.ValidApiKeyText );
 			return false;
 		}
 
@@ -36,12 +22,12 @@ window.imagify = window.imagify || {
 			xhr.abort();
 		} else {
 			$( '#imagify-check-api-container' ).remove();
-			obj.after( '<span id="imagify-check-api-container"><span class="imagify-spinner"></span>' + imagifyAdmin.labels.waitApiKeyCheckText + '</span>' );
+			obj.after( '<span id="imagify-check-api-container"><span class="imagify-spinner"></span>' + imagifyOptions.labels.waitApiKeyCheckText + '</span>' );
 		}
 
 		busy = true;
 
-		xhr = $.get( ajaxurl + imagify.concat + 'action=imagify_check_api_key_validity&api_key=' + obj.val() + '&imagifycheckapikeynonce=' + $( '#imagifycheckapikeynonce' ).val() )
+		xhr = $.get( ajaxurl + w.imagify.concat + 'action=imagify_check_api_key_validity&api_key=' + obj.val() + '&imagifycheckapikeynonce=' + $( '#imagifycheckapikeynonce' ).val() )
 			.done( function( response ) {
 				if ( ! response.success ) {
 					$( '#imagify-check-api-container' ).html( '<span class="dashicons dashicons-no"></span> ' + response.data );
@@ -49,8 +35,8 @@ window.imagify = window.imagify || {
 					// Success, the API key is valid.
 					$( '#imagify-check-api-container' ).remove();
 					swal( {
-						title:       imagifyAdmin.labels.ApiKeyCheckSuccessTitle,
-						html:        imagifyAdmin.labels.ApiKeyCheckSuccessText,
+						title:       imagifyOptions.labels.ApiKeyCheckSuccessTitle,
+						html:        imagifyOptions.labels.ApiKeyCheckSuccessText,
 						type:        'success',
 						customClass: 'imagify-sweet-alert'
 					} ).then( function() {
@@ -121,12 +107,12 @@ window.imagify = window.imagify || {
 
 		// Are you sure? No backup?
 		swal( {
-			title:            imagifyOptions.noBackupTitle,
-			html:             imagifyOptions.noBackupText,
+			title:            imagifyOptions.labels.noBackupTitle,
+			html:             imagifyOptions.labels.noBackupText,
 			type:             'warning',
 			customClass:      'imagify-sweet-alert',
 			showCancelButton: true,
-			cancelButtonText: imagifyAdmin.labels.swalCancel,
+			cancelButtonText: imagifySwal.labels.cancelButtonText,
 			reverseButtons:   true
 		} ).then(
 			function() {

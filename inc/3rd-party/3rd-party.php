@@ -7,6 +7,7 @@ require( IMAGIFY_3RD_PARTY_PATH . 'nextgen-gallery/nextgen-gallery.php' );
 require( IMAGIFY_3RD_PARTY_PATH . 'screets-lc.php' );
 require( IMAGIFY_3RD_PARTY_PATH . 'wp-retina-2x.php' );
 require( IMAGIFY_3RD_PARTY_PATH . 'wp-rocket.php' );
+require( IMAGIFY_3RD_PARTY_PATH . 'yoast-seo.php' );
 
 // Hosting.
 require( IMAGIFY_3RD_PARTY_PATH . 'hosting/wpengine.php' );

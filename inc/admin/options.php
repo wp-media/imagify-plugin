@@ -143,10 +143,10 @@ function _imagify_after_save_options( $old_value, $value ) {
 	}
 
 	if ( is_wp_error( get_imagify_user() ) ) {
-		imagify_renew_notice( 'wrong-api-key' );
+		Imagify_Notices::renew_notice( 'wrong-api-key' );
 		delete_site_transient( 'imagify_check_licence_1' );
 	} else {
-		imagify_dismiss_notice( 'wrong-api-key' );
+		Imagify_Notices::dismiss_notice( 'wrong-api-key' );
 	}
 }
 

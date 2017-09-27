@@ -1,0 +1,50 @@
+/* Some Sweet alert styles */
+.imagify-sweet-alert button {
+	margin-top: 17px !important;
+	height: 45px !important;
+	letter-spacing: 3px;
+	text-transform: uppercase !important;
+	border-radius: 3px !important;
+	background-color: #40b1d0  !important;
+	box-shadow: 0 3px 0 #338ea6  !important;
+}
+.imagify-sweet-alert button.loading {
+	border-radius: 100% !important;
+	height: 40px !important;
+	padding:0!important;
+	box-shadow: none!important;
+}
+.imagify-sweet-alert button.swal2-cancel {
+	background: #777 !important;
+	box-shadow: 0 3px 0 #444 !important;
+}
+.imagify-sweet-alert-signup .sa-confirm-button-container {
+	width: 40%;
+}
+.imagify-sweet-alert-signup button {
+	width: 100%;
+	padding: 0 !important;
+}
+.imagify-sweet-alert .sa-input-error:before,
+.imagify-sweet-alert .sa-input-error:after,
+.imagify-sweet-alert .la-ball-fall {
+	top: 25% !important;
+}
+
+.imagify-sweet-alert .swal2-buttonswrapper.swal2-loading .swal2-confirm.swal2-confirm {
+	height: 40px !important;
+	border-radius: 100% !important;
+	border-left-width: 0 !important;
+	border-right-width: 0 !important;
+}
+
+/* Make the page in background blured when sweet alert is open */
+#wpwrap {
+	transition: all .4s;
+}
+.stop-scrolling #wpwrap {
+	filter: blur(2px);
+}
+.stop-scrolling #wpwrap #wpadminbar {
+	top: -32px;
+}

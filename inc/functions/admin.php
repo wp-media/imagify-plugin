@@ -30,6 +30,68 @@ function imagify_is_active_for_network() {
 }
 
 /**
+ * Tell if the current screen is what we're looking for.
+ *
+ * @since  1.6.10
+ * @author Grégory Viguier
+ *
+ * @param  string $identifier The screen "name".
+ * @return bool
+ */
+function imagify_is_screen( $identifier ) {
+	global $post_id;
+
+	if ( ! $identifier ) {
+		return false;
+	}
+
+	$current_screen = get_current_screen();
+
+	if ( ! $current_screen || ! $current_screen->in_admin() ) {
+		return false;
+	}
+
+	switch ( $identifier ) {
+		case 'imagify-settings':
+			// Imagify Settings or Imagify Network Settings.
+			return 'settings_page_' . IMAGIFY_SLUG === $current_screen->id || 'settings_page_' . IMAGIFY_SLUG . '-network' === $current_screen->id;
+
+		case 'imagify-network-settings':
+			// Imagify Network Settings.
+			return 'settings_page_' . IMAGIFY_SLUG . '-network' === $current_screen->id;
+
+		case 'library':
+			// Media Library.
+			return 'upload' === $current_screen->id;
+
+		case 'upload':
+			// Upload New Media.
+			return 'media' === $current_screen->id;
+
+		case 'post':
+			// Edit Post, Page, Attachment, etc.
+			return 'post' === $current_screen->base;
+
+		case 'attachment':
+		case 'post-attachment':
+			// Edit Attachment.
+			return 'post' === $current_screen->base && 'attachment' === $current_screen->id && $post_id && imagify_is_attachment_mime_type_supported( $post_id );
+
+		case 'bulk':
+		case 'bulk-optimization':
+			// Bulk Optimization.
+			return 'media_page_' . IMAGIFY_SLUG . '-bulk-optimization' === $current_screen->id;
+
+		case 'media-modal':
+			// Media modal.
+			return did_action( 'wp_enqueue_media' ) || doing_filter( 'wp_enqueue_media' );
+
+		default:
+			return $identifier === $current_screen->id;
+	}
+}
+
+/**
  * Get the URL related to specific admin page or action.
  *
  * @since 1.0
@@ -59,7 +121,7 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_restore_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-restore-upload' );
 
 		case 'dismiss-notice':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), 'imagify-dismiss-notice' );
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
 
 		case 'bulk-optimization':
 			return admin_url( 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization' );

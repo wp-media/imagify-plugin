@@ -131,7 +131,7 @@ function _imagify_display_options_page() {
 											printf(
 												/* translators: 1 is a link tag start, 2 is the link tag end. */
 												__( 'Don\'t have an API Key yet? %1$sCreate one, it\'s FREE%2$s.', 'imagify' ),
-												'<a id="imagify-signup" href="' . IMAGIFY_APP_MAIN . '/#/register">',
+												'<a id="imagify-signup" target="_blank" href="' . IMAGIFY_APP_MAIN . '/#/register">',
 												'</a>'
 											);
 											echo '</p>';
