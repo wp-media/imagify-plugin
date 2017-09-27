@@ -253,6 +253,24 @@ function _imagify_admin_bar_styles() {
 	}
 }
 
+
+/**
+ * Make an absolute path relative to WordPress' root folder.
+ * Also works for files from registered symlinked plugins.
+ *
+ * @since  1.6.8
+ * @since  1.6.10 Deprecated. Don't laugh.
+ * @author Grégory Viguier
+ *
+ * @param  string $file_path An absolute path.
+ * @return string            A relative path. Can return the absolute path in case of a failure.
+ */
+function imagify_make_file_path_replative( $file_path ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'imagify_make_file_path_relative( $file_path )' );
+
+	return imagify_make_file_path_relative( $file_path );
+}
+
 if ( is_admin() ) :
 
 	/**

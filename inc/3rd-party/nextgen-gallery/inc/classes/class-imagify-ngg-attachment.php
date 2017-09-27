@@ -105,7 +105,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return string|false
 	 */
 	public function get_backup_url() {
-		return site_url( '/' ) . imagify_make_file_path_replative( $this->get_backup_path() );
+		return site_url( '/' ) . imagify_make_file_path_relative( $this->get_backup_path() );
 	}
 
 	/**

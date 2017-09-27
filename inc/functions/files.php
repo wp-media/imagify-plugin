@@ -94,13 +94,13 @@ function imagify_get_abspath() {
  * Make an absolute path relative to WordPress' root folder.
  * Also works for files from registered symlinked plugins.
  *
- * @since  1.6.8
+ * @since  1.6.10
  * @author Grégory Viguier
  *
  * @param  string $file_path An absolute path.
  * @return string            A relative path. Can return the absolute path in case of a failure.
  */
-function imagify_make_file_path_replative( $file_path ) {
+function imagify_make_file_path_relative( $file_path ) {
 	static $abspath;
 	global $wp_plugin_paths;
 
