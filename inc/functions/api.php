@@ -135,7 +135,7 @@ function check_imagify_discount() {
 /**
  * Get Maximum image size for free plan.
  *
- * @since 1.5.6
+ * @since  1.5.6
  * @author Remy Perona
  *
  * @return string
@@ -185,31 +185,31 @@ function is_imagify_blocked() {
  * @return bool True if the Imagify API is available.
  */
 function is_imagify_servers_up() {
-	static $imagify_api_version;
+	static $is_up;
 
-	if ( isset( $imagify_api_version ) ) {
-		return $imagify_api_version;
+	if ( isset( $is_up ) ) {
+		return $is_up;
 	}
 
 	$transient_name       = 'imagify_check_api_version';
 	$transient_expiration = 3 * MINUTE_IN_SECONDS;
 
 	if ( get_site_transient( $transient_name ) ) {
-		$imagify_api_version = true;
-		return $imagify_api_version;
+		$is_up = true;
+		return $is_up;
 	}
 
 	if ( is_wp_error( get_imagify_api_version() ) ) {
 		set_site_transient( $transient_name, 0, $transient_expiration );
 
-		$imagify_api_version = false;
-		return $imagify_api_version;
+		$is_up = false;
+		return $is_up;
 	}
 
 	set_site_transient( $transient_name, 1, $transient_expiration );
 
-	$imagify_api_version = true;
-	return $imagify_api_version;
+	$is_up = true;
+	return $is_up;
 }
 
 /**
@@ -255,7 +255,7 @@ function imagify_translate_api_message( $message ) {
 		'Unknown error occurred'                                                       => __( 'Unknown error occurred.', 'imagify' ),
 		'Your image is too big to be uploaded on our server'                           => __( 'Your image is too big to be uploaded on our server.', 'imagify' ),
 		// API messages.
-		'Authentification not provided'                                                => __( 'Authentification not provided.', 'imagify' ),
+		'Authentification not provided'                                                => __( 'Authentication not provided.', 'imagify' ),
 		'Cannot create client token'                                                   => __( 'Cannot create client token.', 'imagify' ),
 		'Confirm your account to continue optimizing image'                            => __( 'Confirm your account to continue optimizing images.', 'imagify' ),
 		'Coupon doesn\'t exist'                                                        => __( 'Coupon does not exist.', 'imagify' ),

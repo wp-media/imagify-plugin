@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Round UP to nearest half integer.
  *
- * @since 1.0
+ * @since  1.0
  * @source http://stackoverflow.com/a/13526408
  *
  * @param  int|float|string $number  The number to round up.
@@ -55,7 +55,7 @@ function get_imagify_attachment_class_name( $context, $attachment_id, $identifie
 	/**
 	 * Filter the context used for the optimization.
 	 *
-	 * @since 1.6.6
+	 * @since  1.6.6
 	 * @author Grégory Viguier
 	 *
 	 * @param string $context       The context.

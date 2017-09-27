@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Get WP Direct filesystem object. Also define chmod constants if not done yet.
  *
- * @since 1.6.5
+ * @since  1.6.5
  * @author Grégory Viguier
  *
  * @return object A `$wp_filesystem` object.
