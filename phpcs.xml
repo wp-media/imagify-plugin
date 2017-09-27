@@ -44,15 +44,22 @@
 		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_getinfo"/>
 		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_init"/>
 		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_setopt"/>
+		<exclude name="WordPress.WP.CapitalPDangit.Misspelled"/>
 		<exclude name="WordPress.XSS.EscapeOutput"/>
+	</rule>
+
+	<rule ref="Squiz.PHP.EmbeddedPhp.ContentAfterEnd">
+		<exclude-pattern>inc/admin/ui/options.php</exclude-pattern>
 	</rule>
 
 	<rule ref="Squiz.PHP.EmbeddedPhp.ContentBeforeOpen">
 		<exclude-pattern>inc/admin/ui/options.php</exclude-pattern>
 	</rule>
 
-	<rule ref="Squiz.PHP.EmbeddedPhp.ContentAfterEnd">
-		<exclude-pattern>inc/admin/ui/options.php</exclude-pattern>
+	<rule ref="WordPress.CSRF.NonceVerification">
+		<properties>
+			<property name="customNonceVerificationFunctions" value="imagify_check_nonce" type="array"/>
+		</properties>
 	</rule>
 
 	<rule ref="WordPress.Files.FileName.InvalidClassFileName">

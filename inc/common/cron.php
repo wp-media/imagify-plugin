@@ -16,8 +16,7 @@ function _imagify_rating_scheduled() {
 
 add_action( 'imagify_rating_event', '_do_imagify_rating_cron' );
 /**
- * Saved the user images count to display it later
- * in a notice message to ask him to rate Imagify on WordPress.org.
+ * Save the user images count to display it later in a notice message to ask him to rate Imagify on WordPress.org.
  *
  * @since 1.4.2
  */
@@ -43,7 +42,7 @@ add_filter( 'cron_schedules', 'imagify_purge_cron_schedule' );
 /**
  * Adds weekly interval for cron jobs.
  *
- * @since 1.6
+ * @since  1.6
  * @author Remy Perona
  *
  * @param  Array $schedules An array of intervals used by cron jobs.
@@ -67,7 +66,7 @@ add_action( 'init', '_imagify_update_library_size_calculations_scheduled' );
  * Planning cron task to update weekly the size of the images and the size of images uploaded by month.
  * If the task is not programmed, it is automatically triggered.
  *
- * @since 1.6
+ * @since  1.6
  * @author Remy Perona
  */
 function _imagify_update_library_size_calculations_scheduled() {
@@ -80,7 +79,7 @@ add_action( 'imagify_update_library_size_calculations_event', '_do_imagify_updat
 /**
  * Cron task to update weekly the size of the images and the size of images uploaded by month.
  *
- * @since 1.6
+ * @since  1.6
  * @author Remy Perona
  */
 function _do_imagify_update_library_size_calculations() {

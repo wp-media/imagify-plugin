@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Get user capacity to operate Imagify.
  *
- * @since 1.6.5
+ * @since  1.6.5
  * @author Grégory Viguier
  *
  * @param  bool $force_mono Force capacity for mono-site.

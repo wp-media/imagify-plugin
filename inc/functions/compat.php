@@ -1,8 +1,11 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-if ( ! function_exists( 'curl_file_create' ) ) :
+/** --------------------------------------------------------------------------------------------- */
+/** PHP ========================================================================================= */
+/** --------------------------------------------------------------------------------------------- */
 
+if ( ! function_exists( 'curl_file_create' ) ) :
 	/**
 	 * PHP-agnostic version of curl_file_create(): create a CURLFile object.
 	 *
@@ -20,7 +23,6 @@ if ( ! function_exists( 'curl_file_create' ) ) :
 			. ( $postname ? $postname : basename( $filename ) )
 			. ( $mimetype ? ";type=$mimetype" : '' );
 	}
-
 endif;
 
 if ( ! function_exists( 'array_replace' ) ) :
@@ -56,8 +58,11 @@ if ( ! function_exists( 'array_replace' ) ) :
 	}
 endif;
 
-if ( ! function_exists( 'wp_json_encode' ) ) :
+/** --------------------------------------------------------------------------------------------- */
+/** WORDPRESS =================================================================================== */
+/** --------------------------------------------------------------------------------------------- */
 
+if ( ! function_exists( 'wp_json_encode' ) ) :
 	/**
 	 * Encode a variable into JSON, with some sanity checks.
 	 *
@@ -103,18 +108,16 @@ if ( ! function_exists( 'wp_json_encode' ) ) :
 
 		return call_user_func_array( 'json_encode', $args );
 	}
-
 endif;
 
 if ( ! function_exists( '_wp_json_prepare_data' ) ) :
-
 	/**
 	 * Prepares response data to be serialized to JSON.
 	 *
 	 * This supports the JsonSerializable interface for PHP 5.2-5.3 as well.
 	 *
-	 * @since 1.6.5
-	 * @since WP 4.4.0
+	 * @since  1.6.5
+	 * @since  WP 4.4.0
 	 * @access private
 	 *
 	 * @param  mixed $data Native representation.
@@ -157,16 +160,14 @@ if ( ! function_exists( '_wp_json_prepare_data' ) ) :
 				return null;
 		}
 	}
-
 endif;
 
 if ( ! function_exists( '_wp_json_sanity_check' ) ) :
-
 	/**
 	 * Perform sanity checks on data that shall be encoded to JSON.
 	 *
-	 * @since 1.6.5
-	 * @since WP 4.1.0
+	 * @since  1.6.5
+	 * @since  WP 4.1.0
 	 * @access private
 	 * @throws Exception If the depth limit is reached.
 	 *
@@ -225,16 +226,14 @@ if ( ! function_exists( '_wp_json_sanity_check' ) ) :
 
 		return $output;
 	}
-
 endif;
 
 if ( ! function_exists( '_wp_json_convert_string' ) ) :
-
 	/**
 	 * Convert a string to UTF-8, so that it can be safely encoded to JSON.
 	 *
-	 * @since 1.6.5
-	 * @since WP 4.1.0
+	 * @since  1.6.5
+	 * @since  WP 4.1.0
 	 * @access private
 	 *
 	 * @see _wp_json_sanity_check()
@@ -261,11 +260,9 @@ if ( ! function_exists( '_wp_json_convert_string' ) ) :
 			return wp_check_invalid_utf8( $string, true );
 		}
 	}
-
 endif;
 
 if ( ! function_exists( 'wp_normalize_path' ) ) :
-
 	/**
 	 * Normalize a filesystem path.
 	 *
@@ -290,9 +287,27 @@ if ( ! function_exists( 'wp_normalize_path' ) ) :
 		}
 		return $path;
 	}
-
 endif;
 
+if ( ! function_exists( 'wp_get_additional_image_sizes' ) ) :
+	/**
+	 * Retrieve additional image sizes.
+	 *
+	 * @since 1.6.10
+	 * @since WP 4.7.0
+	 *
+	 * @global array $_wp_additional_image_sizes
+	 *
+	 * @return array Additional images size data.
+	 */
+	function wp_get_additional_image_sizes() {
+		global $_wp_additional_image_sizes;
+		if ( ! $_wp_additional_image_sizes ) {
+			$_wp_additional_image_sizes = array(); // WPCS: override ok.
+		}
+		return $_wp_additional_image_sizes;
+	}
+endif;
 
 if ( ! function_exists( 'wp_parse_url' ) ) :
 	/**

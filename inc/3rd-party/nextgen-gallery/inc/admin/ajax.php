@@ -11,11 +11,8 @@ add_action( 'wp_ajax_imagify_ngg_get_unoptimized_attachment_ids', '_do_wp_ajax_i
 function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 	global $wpdb;
 
-	check_ajax_referer( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
-
-	if ( ! current_user_can( 'upload_files' ) ) {
-		wp_send_json_error();
-	}
+	imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
+	imagify_check_user_capacity( 'upload_files' );
 
 	$user = new Imagify_User();
 

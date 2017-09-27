@@ -274,9 +274,9 @@ if ( is_admin() ) :
 	 * @since 1.6.10 Deprecated.
 	 */
 	function _imagify_admin_print_intercom() {
-		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->print_intercom()' );
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->print_support_script()' );
 
-		Imagify_Assets::get_instance()->print_intercom();
+		Imagify_Assets::get_instance()->print_support_script();
 	}
 
 	/**
@@ -287,12 +287,12 @@ if ( is_admin() ) :
 	 * @author Jonathan Buttigieg
 	 */
 	function _imagify_ngg_admin_print_intercom() {
-		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->print_intercom()' );
+		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->print_support_script()' );
 
 		$current_screen = get_current_screen();
 
 		if ( isset( $current_screen ) && false !== strpos( $current_screen->base, '_page_imagify-ngg-bulk-optimization' ) ) {
-			Imagify_Assets::get_instance()->print_intercom();
+			Imagify_Assets::get_instance()->print_support_script();
 		}
 	}
 

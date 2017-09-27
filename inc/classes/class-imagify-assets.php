@@ -126,8 +126,8 @@ class Imagify_Assets {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles_and_scripts' ) );
 		add_action( 'wp_enqueue_media',      array( $this, 'enqueue_media_modal' ) );
 
-		add_action( 'admin_footer-media_page_imagify-bulk-optimization', array( $this, 'print_intercom' ) );
-		add_action( 'admin_footer-settings_page_imagify',                array( $this, 'print_intercom' ) );
+		add_action( 'admin_footer-media_page_imagify-bulk-optimization', array( $this, 'print_support_script' ) );
+		add_action( 'admin_footer-settings_page_imagify',                array( $this, 'print_support_script' ) );
 	}
 
 	/**
@@ -179,11 +179,7 @@ class Imagify_Assets {
 
 		$this->register_style( 'twentytwenty', 'twentytwenty', array( 'admin' ) );
 
-		$this->register_style( 'attachment-data', 'attachment-data', array( 'admin' ) );
-
 		$this->register_style( 'pricing-modal', 'pricing-modal', array( 'admin' ) );
-
-		$this->register_style( 'library', 'library', array( 'attachment-data' ) );
 
 		$this->register_style( 'bulk', 'bulk', array( 'sweetalert', 'admin' ) );
 
@@ -268,10 +264,6 @@ class Imagify_Assets {
 		 * Loaded in the library and attachment edition.
 		 */
 		if ( imagify_is_screen( 'library' ) || imagify_is_screen( 'attachment' ) ) {
-			if ( imagify_is_screen( 'attachment' ) ) {
-				$this->enqueue_style( 'attachment-data' );
-			}
-
 			$this->enqueue_assets( 'twentytwenty' );
 		}
 
@@ -279,7 +271,7 @@ class Imagify_Assets {
 		 * Loaded in the library.
 		 */
 		if ( imagify_is_screen( 'library' ) ) {
-			$this->enqueue_assets( 'library' );
+			$this->enqueue_style( 'admin' )->enqueue_script( 'library' );
 		}
 
 		/**
@@ -324,7 +316,7 @@ class Imagify_Assets {
 		 */
 		$this->register_styles_and_scripts();
 
-		$this->enqueue_style( 'attachment-data' )->enqueue_script( 'media-modal' );
+		$this->enqueue_style( 'admin' )->enqueue_script( 'media-modal' );
 
 		/**
 		 * Triggered after Imagify CSS and JS have been enqueued for the media modal.
@@ -342,7 +334,7 @@ class Imagify_Assets {
 	 * @since  1.6.10
 	 * @author Grégory Viguier
 	 */
-	public function print_intercom() {
+	public function print_support_script() {
 		if ( ! imagify_valid_key() ) {
 			return;
 		}

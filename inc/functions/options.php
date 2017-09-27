@@ -30,9 +30,8 @@ function get_imagify_option( $option, $default = false ) {
 		$basename = plugin_basename( IMAGIFY_FILE );
 	}
 
-	$plugins = get_site_option( 'active_sitewide_plugins' );
-	$options = isset( $plugins[ $basename ] ) ? get_site_option( IMAGIFY_SETTINGS_SLUG ) : get_option( IMAGIFY_SETTINGS_SLUG );
-	$value   = isset( $options[ $option ] ) && $default !== $options[ $option ] ? $options[ $option ] : $default;
+	$options = imagify_is_active_for_network() ? get_site_option( IMAGIFY_SETTINGS_SLUG ) : get_option( IMAGIFY_SETTINGS_SLUG );
+	$value   = isset( $options[ $option ] ) ? $options[ $option ] : $default;
 
 	if ( 'api_key' === $option && defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
 		$value = IMAGIFY_API_KEY;
@@ -60,7 +59,9 @@ function get_imagify_option( $option, $default = false ) {
  * @return void
  */
 function update_imagify_option( $key, $value ) {
-	$options         = get_option( IMAGIFY_SETTINGS_SLUG );
+	$options = get_option( IMAGIFY_SETTINGS_SLUG );
+	$options = is_array( $options ) ? $options : array();
+
 	$options[ $key ] = $value;
 
 	update_option( IMAGIFY_SETTINGS_SLUG, $options );
@@ -74,29 +75,29 @@ function update_imagify_option( $key, $value ) {
  * @return bool True if the API key is valid.
  */
 function imagify_valid_key() {
-	static $imagify_valid_key;
+	static $is_valid;
 
-	if ( isset( $imagify_valid_key ) ) {
-		return $imagify_valid_key;
+	if ( isset( $is_valid ) ) {
+		return $is_valid;
 	}
 
-	if ( ! get_imagify_option( 'api_key', false ) ) {
-		$imagify_valid_key = false;
-		return false;
+	if ( ! get_imagify_option( 'api_key' ) ) {
+		$is_valid = false;
+		return $is_valid;
 	}
 
 	if ( get_site_transient( 'imagify_check_licence_1' ) ) {
-		$imagify_valid_key = true;
-		return true;
+		$is_valid = true;
+		return $is_valid;
 	}
 
 	if ( is_wp_error( get_imagify_user() ) ) {
-		$imagify_valid_key = false;
-		return false;
+		$is_valid = false;
+		return $is_valid;
 	}
 
-	$imagify_valid_key = true;
-	set_site_transient( 'imagify_check_licence_1', true, YEAR_IN_SECONDS );
+	$is_valid = true;
+	set_site_transient( 'imagify_check_licence_1', $is_valid, YEAR_IN_SECONDS );
 
-	return true;
+	return $is_valid;
 }
