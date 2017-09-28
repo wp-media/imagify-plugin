@@ -487,56 +487,58 @@
 	 */
 	if ( $( '.post-php .wp_attachment_image .thumbnail' ).length > 0 ) {
 
-		var $oriParent   = $( '.post-php .wp_attachment_image' ),
-			$thumbnail   = $oriParent.find( '.thumbnail' ),
-			thumb        = { src: $thumbnail.prop( 'src' ), width: $thumbnail.width(), height: $thumbnail.height() },
-			oriSource    = { src: $( '#imagify-full-original' ).val(), size: $( '#imagify-full-original-size' ).val() },
-			$optimizeBtn = $( '#misc-publishing-actions' ).find( '.misc-pub-imagify .button-primary' ),
-			widthLimit   = 360,
-			filesize, saving;
+		$( '.post-php .wp_attachment_image .thumbnail' ).on( 'load', function() {
+			var $oriParent   = $( '.post-php .wp_attachment_image' ),
+				$thumbnail   = $oriParent.find( '.thumbnail' ),
+				thumb        = { src: $thumbnail.prop( 'src' ), width: $thumbnail.width(), height: $thumbnail.height() },
+				oriSource    = { src: $( '#imagify-full-original' ).val(), size: $( '#imagify-full-original-size' ).val() },
+				$optimizeBtn = $( '#misc-publishing-actions' ).find( '.misc-pub-imagify .button-primary' ),
+				widthLimit   = 360,
+				filesize, saving;
 
-		// If shown image > 360, use twentytwenty.
-		if ( thumb.width > widthLimit && oriSource.src ) {
+			// If shown image > 360, use twentytwenty.
+			if ( thumb.width > widthLimit && oriSource.src ) {
 
-			filesize = $( '.misc-pub-filesize strong' ).text();
-			saving   = $( '.imagify-data-item .imagify-chart-value' ).text();
+				filesize = $( '.misc-pub-filesize strong' ).text();
+				saving   = $( '.imagify-data-item .imagify-chart-value' ).text();
 
-			// Create button to trigger.
-			$( '[id^="imgedit-open-btn-"]' ).before( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-visual-comparison" id="imagify-start-comparison">' + imagifyTTT.labels.compare + '</button>' );
+				// Create button to trigger.
+				$( '[id^="imgedit-open-btn-"]' ).before( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-visual-comparison" id="imagify-start-comparison">' + imagifyTTT.labels.compare + '</button>' );
 
-			// Modal and trigger event creation.
-			imagifyTwentyModal( {
-				width:         thumb.width,
-				height:        thumb.height,
-				originalUrl:   oriSource.src,
-				optimizedUrl:  thumb.src,
-				originalSize:  oriSource.size,
-				optimizedSize: filesize,
-				saving:        saving,
-				modalAppendTo: $oriParent,
-				trigger:       $( '#imagify-start-comparison' ),
-				modalId:       'imagify-visual-comparison'
-			} );
-		}
-		// Else put images next to next.
-		else if ( thumb.width < widthLimit && oriSource.src ) {
-			// TODO
-		}
-		// If image has no backup.
-		else if ( $( '#imagify-full-original' ).length > 0 && oriSource.src === '' ) {
-			// do nothing ?
-		}
-		// In case image is not optimized.
-		else {
-			// If is not in optimizing process, propose the Optimize button trigger.
-			if ( $( '#misc-publishing-actions' ).find( '.misc-pub-imagify .button-primary' ).length === 1 ) {
-				$( '[id^="imgedit-open-btn-"]' ).before( '<span class="spinner imagify-hidden"></span><a class="imagify-button-primary button-primary imagify-optimize-trigger" id="imagify-optimize-trigger" href="' + $optimizeBtn.attr( 'href' ) + '">' + imagifyTTT.labels.optimize + '</a>' );
-
-				$( '#imagify-optimize-trigger' ).on( 'click', function() {
-					$( this ).prev( '.spinner' ).removeClass( 'imagify-hidden' ).addClass( 'is-active' );
+				// Modal and trigger event creation.
+				imagifyTwentyModal( {
+					width:         thumb.width,
+					height:        thumb.height,
+					originalUrl:   oriSource.src,
+					optimizedUrl:  thumb.src,
+					originalSize:  oriSource.size,
+					optimizedSize: filesize,
+					saving:        saving,
+					modalAppendTo: $oriParent,
+					trigger:       $( '#imagify-start-comparison' ),
+					modalId:       'imagify-visual-comparison'
 				} );
 			}
-		}
+			// Else put images next to next.
+			else if ( thumb.width < widthLimit && oriSource.src ) {
+				// TODO
+			}
+			// If image has no backup.
+			else if ( $( '#imagify-full-original' ).length > 0 && '' === oriSource.src ) {
+				// do nothing ?
+			}
+			// In case image is not optimized.
+			else {
+				// If is not in optimizing process, propose the Optimize button trigger.
+				if ( $( '#misc-publishing-actions' ).find( '.misc-pub-imagify .button-primary' ).length === 1 ) {
+					$( '[id^="imgedit-open-btn-"]' ).before( '<span class="spinner imagify-hidden"></span><a class="imagify-button-primary button-primary imagify-optimize-trigger" id="imagify-optimize-trigger" href="' + $optimizeBtn.attr( 'href' ) + '">' + imagifyTTT.labels.optimize + '</a>' );
+
+					$( '#imagify-optimize-trigger' ).on( 'click', function() {
+						$( this ).prev( '.spinner' ).removeClass( 'imagify-hidden' ).addClass( 'is-active' );
+					} );
+				}
+			}
+		} );
 
 	}
 
