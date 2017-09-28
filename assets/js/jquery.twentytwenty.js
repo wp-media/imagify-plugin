@@ -241,7 +241,7 @@
 				// Load after img.
 				$modal.find( '.imagify-img-after' ).on( 'load', function() {
 					imgsLoaded++;
-				} ).attr( 'src', settings.optimizedUrl );
+				} ).attr( 'src', settings.optimizedUrl + ( settings.optimizedUrl.indexOf( '?' ) > 0 ? '&' : '?' ) + 'v=' + Date.now() );
 
 				$tt       = $modal.find( '.twentytwenty-container' );
 				checkLoad = setInterval( function() {
