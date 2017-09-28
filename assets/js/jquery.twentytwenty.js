@@ -262,7 +262,7 @@
 
 						if ( ! $tt.closest( '.imagify-modal-content' ).hasClass( 'loaded' ) ) {
 							$tt.closest( '.imagify-modal-content' ).removeClass( 'loading' ).addClass( 'loaded' );
-							drawMeAChart( $modal.find( '.imagify-level-optimized' ).find( '.imagify-chart' ).find( 'canvas' ) );
+							drawMeAChart( $modal.find( '.imagify-level-optimized .imagify-chart canvas' ) );
 						}
 
 						// Check if image height is to big.
@@ -425,7 +425,7 @@
 				// Fires on initialisation & each time the handle is moving.
 				if ( ! $tt.closest( '.imagify-modal-content' ).hasClass( 'loaded' ) ) {
 					$tt.closest( '.imagify-modal-content' ).removeClass( 'loading' ).addClass( 'loaded' );
-					drawMeAChart( $( '.imagify-level-ultra' ).find( '.imagify-chart' ).find( 'canvas' ) );
+					drawMeAChart( $( '.imagify-level-ultra .imagify-chart canvas' ) );
 				}
 			} );
 
@@ -463,7 +463,7 @@
 				$imgBefore.attr( 'style', '' );
 				$imgBefore.removeClass( 'twentytwenty-before' );
 				$container.find( '.img-' + image ).addClass( 'twentytwenty-before' ).css( 'clip', clipStyles );
-				$( '.twentytwenty-before-label' ).find( '.twentytwenty-label-content' ).text( $container.data( image + '-label' ) );
+				$( '.twentytwenty-before-label .twentytwenty-label-content' ).text( $container.data( image + '-label' ) );
 				$( '.imagify-c-level.go-left' ).attr( 'aria-hidden', 'true' ).removeClass( 'go-left go-right' );
 				$( '.imagify-level-' + image ).attr( 'aria-hidden', 'false' ).addClass( 'go-left' );
 			}
@@ -472,12 +472,12 @@
 			if ( 'right' === side ) {
 				$imgAfter.removeClass( 'twentytwenty-after' );
 				$container.find( '.img-' + image ).addClass( 'twentytwenty-after' );
-				$( '.twentytwenty-after-label' ).find( '.twentytwenty-label-content' ).text( $container.data( image + '-label' ) );
+				$( '.twentytwenty-after-label .twentytwenty-label-content' ).text( $container.data( image + '-label' ) );
 				$( '.imagify-c-level.go-right' ).attr( 'aria-hidden', 'true' ).removeClass( 'go-left go-right' );
 				$( '.imagify-level-' + image ).attr( 'aria-hidden', 'false' ).addClass( 'go-right' );
 			}
 
-			drawMeAChart( $( '.imagify-level-' + image ).find( '.imagify-chart' ).find( 'canvas' ) );
+			drawMeAChart( $( '.imagify-level-' + image + ' .imagify-chart canvas' ) );
 		} );
 	} );
 
@@ -485,21 +485,21 @@
 	/**
 	 * Imagify comparison inside Media post visualization.
 	 */
-	if ( $( '.post-php' ).find( '.wp_attachment_image' ).find( '.thumbnail' ).length > 0 ) {
+	if ( $( '.post-php .wp_attachment_image .thumbnail' ).length > 0 ) {
 
-		var $oriParent   = $( '.post-php' ).find( '.wp_attachment_image' ),
+		var $oriParent   = $( '.post-php .wp_attachment_image' ),
 			$thumbnail   = $oriParent.find( '.thumbnail' ),
 			thumb        = { src: $thumbnail.prop( 'src' ), width: $thumbnail.width(), height: $thumbnail.height() },
 			oriSource    = { src: $( '#imagify-full-original' ).val(), size: $( '#imagify-full-original-size' ).val() },
-			$optimizeBtn = $( '#misc-publishing-actions' ).find( '.misc-pub-imagify' ).find( '.button-primary' ),
+			$optimizeBtn = $( '#misc-publishing-actions' ).find( '.misc-pub-imagify .button-primary' ),
 			widthLimit   = 360,
 			filesize, saving;
 
 		// If shown image > 360, use twentytwenty.
-		if ( thumb.width > widthLimit && $( '#imagify-full-original' ).length > 0 && $( '#imagify-full-original' ).val() !== '' ) {
+		if ( thumb.width > widthLimit && oriSource.src ) {
 
-			filesize = $( '.misc-pub-filesize' ).find( 'strong' ).text();
-			saving   = $( '.imagify-data-item' ).find( '.imagify-chart-value' ).text();
+			filesize = $( '.misc-pub-filesize strong' ).text();
+			saving   = $( '.imagify-data-item .imagify-chart-value' ).text();
 
 			// Create button to trigger.
 			$( '[id^="imgedit-open-btn-"]' ).before( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-visual-comparison" id="imagify-start-comparison">' + imagifyTTT.labels.compare + '</button>' );
@@ -519,20 +519,20 @@
 			} );
 		}
 		// Else put images next to next.
-		else if ( thumb.width < widthLimit && $( '#imagify-full-original' ).length > 0 && $( '#imagify-full-original' ).val() !== '' ) {
+		else if ( thumb.width < widthLimit && oriSource.src ) {
 			// TODO
 		}
 		// If image has no backup.
-		else if ( $( '#imagify-full-original' ).length > 0 && $( '#imagify-full-original' ).val() === '' ) {
+		else if ( $( '#imagify-full-original' ).length > 0 && oriSource.src === '' ) {
 			// do nothing ?
 		}
 		// In case image is not optimized.
 		else {
 			// If is not in optimizing process, propose the Optimize button trigger.
-			if ( $( '#misc-publishing-actions' ).find( '.misc-pub-imagify' ).find( '.button-primary' ).length === 1 ) {
+			if ( $( '#misc-publishing-actions' ).find( '.misc-pub-imagify .button-primary' ).length === 1 ) {
 				$( '[id^="imgedit-open-btn-"]' ).before( '<span class="spinner imagify-hidden"></span><a class="imagify-button-primary button-primary imagify-optimize-trigger" id="imagify-optimize-trigger" href="' + $optimizeBtn.attr( 'href' ) + '">' + imagifyTTT.labels.optimize + '</a>' );
 
-				$( '#imagify-optimize-trigger' ).on('click', function() {
+				$( '#imagify-optimize-trigger' ).on( 'click', function() {
 					$( this ).prev( '.spinner' ).removeClass( 'imagify-hidden' ).addClass( 'is-active' );
 				} );
 			}
@@ -543,7 +543,7 @@
 	/**
 	 * Images comparison in attachments list page (upload.php).
 	 */
-	if ( $( '.upload-php' ).find( '.imagify-compare-images' ).length > 0 ) {
+	if ( $( '.upload-php .imagify-compare-images' ).length > 0 ) {
 
 		$( '.imagify-compare-images' ).each( function() {
 			var $this  = $( this ),
@@ -557,7 +557,7 @@
 				originalUrl:   $this.data( 'backup-src' ),
 				optimizedUrl:  $this.data( 'full-src' ),
 				originalSize:  $datas.find( '.original' ).text(),
-				optimizedSize: $datas.find( '.imagify-data-item' ).find( '.big' ).text(),
+				optimizedSize: $datas.find( '.imagify-data-item .big' ).text(),
 				saving:        $datas.find( '.imagify-chart-value' ).text(),
 				modalAppendTo: $this.closest( '.column-primary' ),
 				trigger:       $this,
@@ -569,7 +569,7 @@
 	/**
 	 * Images Comparison in Grid View modal.
 	 */
-	if ( $('.upload-php').length > 0 ) {
+	if ( $( '.upload-php' ).length > 0 ) {
 
 		var getVar = function ( param ) {
 				var vars = {};
@@ -588,29 +588,31 @@
 			},
 			imagifyContentInModal = function() {
 				var tempTimer = setInterval( function() {
-					var $datas;
+					var $datas, originalSrc;
 
-					if ( ! $( '.media-modal' ).find( '.imagify-datas-details' ).length ) {
+					if ( ! $( '.media-modal .imagify-datas-details' ).length ) {
 						return;
 					}
 
-					if ( $( '#imagify-original-src' ).length > 0 && $( '#imagify-original-src' ) !== '' ) {
+					originalSrc = $( '#imagify-original-src' ).val();
+
+					if ( originalSrc ) {
 						// Trigger creation.
-						$( '.media-frame-content' ).find( '.attachment-actions' ).prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
+						$( '.media-frame-content .attachment-actions' ).prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
 
 						// Get datas.
-						$datas = $( '.media-frame-content' ).find( '.compat-field-imagify' );
+						$datas = $( '.media-frame-content .compat-field-imagify' );
 
 						// Modal and trigger event creation.
 						imagifyTwentyModal( {
 							width:         $( '#imagify-full-width' ).val(),
 							height:        $( '#imagify-full-height' ).val(),
-							originalUrl:   $( '#imagify-original-src' ).val(),
+							originalUrl:   originalSrc,
 							optimizedUrl:  $( '#imagify-full-src' ).val(),
 							originalSize:  $( '#imagify-original-size' ).val(),
-							optimizedSize: $datas.find( '.imagify-data-item' ).find( '.big' ).text(),
+							optimizedSize: $datas.find( '.imagify-data-item .big' ).text(),
 							saving:        $datas.find( '.imagify-chart-value' ).text(),
-							modalAppendTo: $( '.media-frame-content' ).find( '.thumbnail-image' ),
+							modalAppendTo: $( '.media-frame-content .thumbnail-image' ),
 							trigger:       $( '#imagify-media-frame-comparison-btn' ),
 							modalId:       'imagify-comparison-modal',
 							openModal:     true
@@ -622,12 +624,12 @@
 				}, 20 );
 			},
 			waitContent = setInterval( function() {
-				if ( ! $('.upload-php').find('.media-frame.mode-grid').find('.attachments').length ) {
+				if ( ! $( '.upload-php .media-frame.mode-grid .attachments' ).length ) {
 					return;
 				}
 
 				// If attachment is clicked, build the modal inside the modal.
-				$( '.upload-php' ).find( '.media-frame.mode-grid' ).on( 'click', '.attachment', function() {
+				$( '.upload-php .media-frame.mode-grid' ).on( 'click', '.attachment', function() {
 					imagifyContentInModal();
 				} );
 
