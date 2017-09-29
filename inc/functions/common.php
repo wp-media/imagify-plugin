@@ -48,3 +48,17 @@ function imagify_get_capacity( $describer = 'manage' ) {
 	 */
 	return apply_filters( 'imagify_capacity', $capacity, $describer );
 }
+
+/**
+ * Tell if the current user as the required capacity to operate Imagify.
+ *
+ * @since  1.6.11
+ * @author Grégory Viguier
+ *
+ * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+ * @param  int    $post_id   A post ID.
+ * @return bool
+ */
+function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
+	return current_user_can( imagify_get_capacity( $describer ), $post_id );
+}
