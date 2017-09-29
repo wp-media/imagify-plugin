@@ -356,14 +356,15 @@ function imagify_check_nonce( $action, $query_arg = false ) {
  * @since  1.6.10
  * @author Grégory Viguier
  *
- * @param string $capacity a user capacity.
+ * @param string $capacity A user capacity.
+ * @param int    $post_id  A post ID.
  */
-function imagify_check_user_capacity( $capacity = null ) {
+function imagify_check_user_capacity( $capacity = null, $post_id = null ) {
 	if ( ! isset( $capacity ) ) {
 		$capacity = imagify_get_capacity();
 	}
 
-	if ( ! current_user_can( $capacity ) ) {
+	if ( ! current_user_can( $capacity, $post_id ) ) {
 		imagify_die();
 	}
 }
