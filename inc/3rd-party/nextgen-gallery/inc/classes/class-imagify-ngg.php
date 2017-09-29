@@ -52,6 +52,7 @@ class Imagify_NGG {
 		$done = true;
 
 		add_action( 'init', array( $this, 'add_mixin' ) );
+		add_filter( 'do_imagify_args', array($this, 'adjust_optimize_args'));
 	}
 
 	/**
@@ -84,6 +85,22 @@ class Imagify_NGG {
 	function add_mixin() {
 		include_once( 'class-imagify-ngg-storage.php' );
 		C_Gallery_Storage::get_instance()->get_wrapped_instance()->add_mixin( 'Imagify_NGG_Storage' );
+	}
+
+
+	/**
+	 * Don't strip EXIF meta from NGG images, or resize them.
+	 *
+	 * @param $args
+	 * @param $file_path
+	 *
+	 * @return array
+	 */
+	function adjust_optimize_args($args)
+	{
+		if ($args['context'] == 'NGG') $args['keep_exif'] = 1;
+
+		return $args;
 	}
 }
 
