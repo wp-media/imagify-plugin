@@ -798,6 +798,6 @@ class Imagify_Assets {
 
 		$has_api_key = ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key' );
 
-		return $has_api_key && is_admin_bar_showing() && current_user_can( imagify_get_capacity() ) && get_imagify_option( 'admin_bar_menu' );
+		return $has_api_key && is_admin_bar_showing() && imagify_current_user_can() && get_imagify_option( 'admin_bar_menu' );
 	}
 }

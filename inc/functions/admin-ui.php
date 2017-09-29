@@ -335,7 +335,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
  * @return string HTML.
  */
 function get_imagify_new_to_imagify() {
-	if ( ! current_user_can( imagify_get_capacity() ) || ! imagify_valid_key() ) {
+	if ( ! imagify_current_user_can() || ! imagify_valid_key() ) {
 		return '';
 	}
 

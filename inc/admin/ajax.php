@@ -10,12 +10,12 @@ add_action( 'admin_post_imagify_manual_upload', '_do_admin_post_imagify_manual_u
 /**
  * Process all thumbnails of a specific image with Imagify with the manual method.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  */
 function _do_admin_post_imagify_manual_upload() {
 	imagify_check_nonce( 'imagify-manual-upload' );
-	imagify_check_user_capacity( 'upload_files' );
+	imagify_check_user_capacity( 'manual-optimize' );
 
 	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
 		imagify_die( __( 'Invalid request', 'imagify' ) );
@@ -41,12 +41,12 @@ add_action( 'admin_post_imagify_manual_override_upload', '_do_admin_post_imagify
 /**
  * Process all thumbnails of a specific image with Imagify with a different optimization level.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  */
 function _do_admin_post_imagify_manual_override_upload() {
 	imagify_check_nonce( 'imagify-manual-override-upload' );
-	imagify_check_user_capacity( 'upload_files' );
+	imagify_check_user_capacity( 'manual-optimize' );
 
 	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
 		imagify_die( __( 'Invalid request', 'imagify' ) );
@@ -75,12 +75,12 @@ add_action( 'admin_post_imagify_optimize_missing_sizes', '_do_admin_post_imagify
 /**
  * Process one or some thumbnails that are not optimized yet.
  *
- * @since 1.6.10
+ * @since  1.6.10
  * @author Grégory Viguier
  */
 function _do_admin_post_imagify_optimize_missing_sizes() {
 	imagify_check_nonce( 'imagify-optimize-missing-sizes' );
-	imagify_check_user_capacity( 'upload_files' );
+	imagify_check_user_capacity( 'manual-optimize' );
 
 	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
 		imagify_die( __( 'Invalid request', 'imagify' ) );
@@ -106,12 +106,12 @@ add_action( 'admin_post_imagify_restore_upload', '_do_admin_post_imagify_restore
 /**
  * Process a restoration to the original attachment.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  */
 function _do_admin_post_imagify_restore_upload() {
 	imagify_check_nonce( 'imagify-restore-upload' );
-	imagify_check_user_capacity( 'upload_files' );
+	imagify_check_user_capacity( 'manual-optimize' );
 
 	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
 		imagify_die( __( 'Invalid request', 'imagify' ) );
@@ -137,12 +137,12 @@ add_action( 'wp_ajax_imagify_bulk_upload', '_do_wp_ajax_imagify_bulk_upload' );
 /**
  * Process all thumbnails of a specific image with Imagify with the bulk method.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  */
 function _do_wp_ajax_imagify_bulk_upload() {
 	imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
-	imagify_check_user_capacity( 'upload_files' );
+	imagify_check_user_capacity( 'manual-optimize' );
 
 	if ( empty( $_POST['image'] ) || empty( $_POST['context'] ) ) {
 		imagify_die( __( 'Invalid request', 'imagify' ) );
@@ -205,7 +205,7 @@ function _do_admin_post_async_optimize_upload_new_media() {
 	}
 
 	imagify_check_nonce( 'new_media-' . $_POST['attachment_id'] );
-	imagify_check_user_capacity( 'upload_files' );
+	imagify_check_user_capacity( 'auto-optimize' );
 
 	$context       = esc_html( $_POST['context'] );
 	$attachment_id = absint( $_POST['attachment_id'] );
@@ -221,7 +221,7 @@ add_action( 'wp_ajax_imagify_async_optimize_save_image_editor_file', '_do_admin_
 /**
  * Optimize image on picture editing (resize, crop...) with async request.
  *
- * @since 1.4
+ * @since  1.4
  * @author Julio Potier
  */
 function _do_admin_post_async_optimize_save_image_editor_file() {
@@ -280,7 +280,7 @@ function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
 	global $wpdb;
 
 	imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
-	imagify_check_user_capacity( imagify_get_capacity( true ) );
+	imagify_check_user_capacity( 'bulk-optimize' );
 
 	if ( ! imagify_valid_key() ) {
 		wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
@@ -469,7 +469,7 @@ add_action( 'wp_ajax_imagify_signup', '_do_wp_ajax_imagify_signup' );
 /**
  * Create a new Imagify account.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  */
 function _do_wp_ajax_imagify_signup() {
@@ -503,7 +503,7 @@ add_action( 'wp_ajax_imagify_check_api_key_validity', '_do_wp_ajax_imagify_check
 /**
  * Process an API key check validity.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  */
 function _do_wp_ajax_imagify_check_api_key_validity() {
@@ -532,7 +532,7 @@ add_action( 'wp_ajax_imagify_get_admin_bar_profile', '_do_wp_ajax_imagify_get_ad
 /**
  * Get admin bar profile output
  *
- * @since 1.2.3
+ * @since  1.2.3
  * @author Jonathan Buttigieg
  */
 function _do_wp_ajax_imagify_get_admin_bar_profile() {

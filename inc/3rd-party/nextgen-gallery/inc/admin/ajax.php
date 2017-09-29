@@ -5,14 +5,14 @@ add_action( 'wp_ajax_imagify_ngg_get_unoptimized_attachment_ids', '_do_wp_ajax_i
 /**
  * Get all unoptimized attachment ids.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  */
 function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 	global $wpdb;
 
 	imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
-	imagify_check_user_capacity( 'upload_files' );
+	imagify_check_user_capacity( 'bulk-optimize' );
 
 	$user = new Imagify_User();
 
