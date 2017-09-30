@@ -12,6 +12,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @return string
  */
 function imagify_get_capacity( $describer = 'manage' ) {
+	static $edit_attachment_cap;
+
 	// Back compat.
 	if ( ! is_string( $describer ) ) {
 		if ( $describer || ! is_multisite() ) {
@@ -28,7 +30,19 @@ function imagify_get_capacity( $describer = 'manage' ) {
 		case 'bulk-optimize':
 			$capacity = 'manage_options';
 			break;
+		case 'optimize':
+			// This is a generic capacity: don't use it unless you have no other choices!
+			if ( ! isset( $edit_attachment_cap ) ) {
+				$edit_attachment_cap = get_post_type_object( 'attachment' );
+				$edit_attachment_cap = $edit_attachment_cap ? $edit_attachment_cap->cap->edit_posts : 'edit_posts';
+			}
+
+			$capacity = $edit_attachment_cap;
+			break;
 		case 'manual-optimize':
+			// Must be used with an Attachment ID.
+			$capacity = 'edit_post';
+			break;
 		case 'auto-optimize':
 			$capacity = 'upload_files';
 			break;
