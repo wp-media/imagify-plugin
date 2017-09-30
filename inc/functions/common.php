@@ -64,15 +64,29 @@ function imagify_get_capacity( $describer = 'manage' ) {
 }
 
 /**
- * Tell if the current user as the required capacity to operate Imagify.
+ * Tell if the current user has the required ability to operate Imagify.
  *
  * @since  1.6.11
  * @author Grégory Viguier
  *
  * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
- * @param  int    $post_id   A post ID.
+ * @param  int    $post_id   A post ID (a gallery ID for NGG).
  * @return bool
  */
 function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
-	return current_user_can( imagify_get_capacity( $describer ), $post_id );
+	$post_id  = $post_id ? $post_id : null;
+	$capacity = imagify_get_capacity( $describer );
+	$user_can = current_user_can( $capacity, $post_id );
+
+	/**
+	 * Filter the current user ability to operate Imagify.
+	 *
+	 * @since 1.6.11
+	 *
+	 * @param bool   $user_can  Tell if the current user has the required ability to operate Imagify.
+	 * @param string $capacity  The user capacity.
+	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+	 * @param int    $post_id   A post ID (a gallery ID for NGG).
+	 */
+	return apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $post_id );
 }
