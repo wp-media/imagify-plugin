@@ -42,8 +42,12 @@ function _imagify_ngg_manage_media_columns() {
  * @return string
  */
 function _imagify_ngg_manage_media_custom_column( $output, $image ) {
+	add_filter( 'imagify_capacity', 'imagify_get_ngg_capacity', 10, 2 );
 	$attachment = new Imagify_NGG_Attachment( $image );
-	return get_imagify_media_column_content( $attachment, 'NGG' );
+	$output     = get_imagify_media_column_content( $attachment, 'NGG' );
+	remove_filter( 'imagify_capacity', 'imagify_get_ngg_capacity' );
+
+	return $output;
 }
 
 add_filter( 'imagify_display_missing_thumbnails_link', '_imagify_ngg_hide_missing_thumbnails_link', 10, 3 );
