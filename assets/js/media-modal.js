@@ -29,6 +29,8 @@ window.imagify.drawMeAChart = function( canvas ) {
 
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
+	var working = false;
+
 	/**
 	 * Toggle slide in custom column.
 	 */
@@ -65,12 +67,14 @@ window.imagify.drawMeAChart = function( canvas ) {
 		$parent.html( '<div class="button"><span class="imagify-spinner"></span>' + $obj.data( 'waiting-label' ) + '</div>' );
 
 		$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ) )
-			.done( function( response ){
+			.done( function( response ) {
+				working = true;
 				$parent.html( response.data );
 				$parent.find( '.imagify-datas-more-action a' ).addClass( 'is-open' ).find( '.the-text' ).text( $parent.find( '.imagify-datas-more-action a' ).data( 'close' ) );
 				$parent.find( '.imagify-datas-details' ).addClass( 'is-open' );
 
 				w.imagify.drawMeAChart( $parent.find( '.imagify-consumption-chart' ) );
+				working = false;
 			} );
 	} );
 
@@ -84,7 +88,10 @@ window.imagify.drawMeAChart = function( canvas ) {
 		$canvas  = $( selector );
 
 		w.imagify.drawMeAChart( $canvas );
-		$canvas.closest( '.imagify-datas-list' ).siblings( '.imagify-datas-details' ).hide();
+
+		if ( ! working ) {
+			$canvas.closest( '.imagify-datas-list' ).siblings( '.imagify-datas-details' ).hide();
+		}
 	} )
 		.trigger( 'canvasprinted.imagify' );
 
