@@ -335,7 +335,7 @@ class Imagify_AS3CF {
 		}
 
 		if ( ! isset( $auto_optimize ) ) {
-			$auto_optimize = get_imagify_option( 'api_key' ) && get_imagify_option( 'auto_optimize' );
+			$auto_optimize = imagify_valid_key() && get_imagify_option( 'auto_optimize' );
 		}
 
 		if ( $is_new_upload && ! $auto_optimize ) {
