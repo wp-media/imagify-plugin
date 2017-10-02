@@ -74,9 +74,29 @@ function imagify_get_capacity( $describer = 'manage' ) {
  * @return bool
  */
 function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
+	static $can_upload;
+
 	$post_id  = $post_id ? $post_id : null;
 	$capacity = imagify_get_capacity( $describer );
-	$user_can = current_user_can( $capacity, $post_id );
+	$user_can = false;
+
+	if ( 'manage' !== $describer && 'bulk-optimize' !== $describer ) {
+		// Describers that are not 'manage' and 'bulk-optimize' need an additional test for 'upload_files'.
+		if ( ! isset( $can_upload ) ) {
+			$can_upload = current_user_can( 'upload_files' );
+		}
+
+		if ( $can_upload ) {
+			if ( 'upload_files' === $capacity ) {
+				// We already know it's true.
+				$user_can = true;
+			} else {
+				$user_can = current_user_can( $capacity, $post_id );
+			}
+		}
+	} else {
+		$user_can = current_user_can( $capacity );
+	}
 
 	/**
 	 * Filter the current user ability to operate Imagify.
