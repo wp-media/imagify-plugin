@@ -110,3 +110,17 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 	 */
 	return apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $post_id );
 }
+
+/**
+ * Sanitize an optimization context.
+ *
+ * @since  1.6.11
+ * @author Grégory Viguier
+ *
+ * @param  string $context The context.
+ * @return string
+ */
+function imagify_sanitize_context( $context ) {
+	$context = preg_replace( '/[^a-zA-Z0-9_\-]/', '', $context );
+	return $context ? $context : 'wp';
+}
