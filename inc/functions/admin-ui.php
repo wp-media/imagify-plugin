@@ -285,6 +285,10 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	$attachment_id  = $attachment->id;
 	$attachment_ext = $attachment->get_extension();
 
+	if ( ! imagify_current_user_can( 'manual-optimize', $attachment_id ) ) {
+		return __( 'You are not allowed to optimize this file.', 'imagify' );
+	}
+
 	// Check if the attachment extension is allowed.
 	if ( ! $attachment->is_mime_type_supported() ) {
 		/* translators: %s is a file extension. */

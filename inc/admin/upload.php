@@ -5,14 +5,17 @@ add_filter( 'manage_media_columns', '_imagify_manage_media_columns' );
 /**
  * Add "Imagify" column in upload.php.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @param  array $columns An array of columns displayed in the Media list table.
  * @return array
  */
 function _imagify_manage_media_columns( $columns ) {
-	$columns['imagify_optimized_file'] = __( 'Imagify', 'imagify' );
+	if ( imagify_current_user_can( 'optimize' ) ) {
+		$columns['imagify_optimized_file'] = __( 'Imagify', 'imagify' );
+	}
+
 	return $columns;
 }
 
@@ -20,7 +23,7 @@ add_action( 'manage_media_custom_column', '_imagify_manage_media_custom_column',
 /**
  * Add content to the "Imagify" columns in upload.php.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @param string $column_name   Name of the custom column.
@@ -41,7 +44,7 @@ add_action( 'restrict_manage_posts', '_imagify_attachments_filter_dropdown' );
 /**
  * Adds a dropdown that allows filtering on the attachments Imagify status.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  */
 function _imagify_attachments_filter_dropdown() {
@@ -73,7 +76,7 @@ add_filter( 'request', '_imagify_sort_attachments_by_status' );
 /**
  * Modify the query based on the imagify-status variable in $_GET.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @param  array $vars The array of requested query variables.
