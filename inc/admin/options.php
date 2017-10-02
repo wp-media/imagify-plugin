@@ -168,10 +168,10 @@ if ( imagify_is_active_for_network() ) :
 		$capability = apply_filters( "option_page_capability_{$option_group}", 'manage_network_options' );
 
 		if ( ! current_user_can( $capability ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?' ), 403 );
+			imagify_die();
 		}
 
-		check_admin_referer( $option_group . '-options' );
+		imagify_check_nonce( $option_group . '-options' );
 
 		$whitelist_options = apply_filters( 'whitelist_options', array() );
 
@@ -201,9 +201,7 @@ if ( imagify_is_active_for_network() ) :
 		/**
 		 * Redirect back to the settings page that was submitted.
 		 */
-		$goback = add_query_arg( 'settings-updated', 'true',  wp_get_referer() );
-		wp_safe_redirect( $goback );
-		exit;
+		imagify_maybe_redirect( false, array( 'settings-updated' => 'true' ) );
 	}
 
 endif;
