@@ -79,7 +79,7 @@ class Imagify_Notices {
 	 * @var array
 	 */
 	protected static $capabilities = array(
-		'grid-view'                  => 'manual-optimize',
+		'grid-view'                  => 'optimize',
 		'backup-folder-not-writable' => 'bulk-optimize',
 		'rating'                     => 'bulk-optimize',
 		'wp-rocket'                  => 'bulk-optimize',
