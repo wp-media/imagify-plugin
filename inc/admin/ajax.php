@@ -14,17 +14,18 @@ add_action( 'admin_post_imagify_manual_upload', '_do_admin_post_imagify_manual_u
  * @author Jonathan Buttigieg
  */
 function _do_admin_post_imagify_manual_upload() {
-	imagify_check_nonce( 'imagify-manual-upload' );
-	imagify_check_user_capacity( 'manual-optimize' );
-
 	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
 		imagify_die( __( 'Invalid request', 'imagify' ) );
 	}
 
-	$context       = esc_html( $_GET['context'] );
+	$context       = imagify_sanitize_context( $_GET['context'] );
 	$attachment_id = absint( $_GET['attachment_id'] );
-	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_manual_upload' );
-	$attachment    = new $class_name( $attachment_id );
+
+	imagify_check_nonce( 'imagify-manual-upload-' . $attachment_id . '-' . $context );
+	imagify_check_user_capacity( 'manual-optimize', $attachment_id );
+
+	$class_name = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_manual_upload' );
+	$attachment = new $class_name( $attachment_id );
 
 	// Optimize it!!!!!
 	$attachment->optimize();
@@ -45,17 +46,18 @@ add_action( 'admin_post_imagify_manual_override_upload', '_do_admin_post_imagify
  * @author Jonathan Buttigieg
  */
 function _do_admin_post_imagify_manual_override_upload() {
-	imagify_check_nonce( 'imagify-manual-override-upload' );
-	imagify_check_user_capacity( 'manual-optimize' );
-
 	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
 		imagify_die( __( 'Invalid request', 'imagify' ) );
 	}
 
-	$context       = esc_html( $_GET['context'] );
+	$context       = imagify_sanitize_context( $_GET['context'] );
 	$attachment_id = absint( $_GET['attachment_id'] );
-	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_manual_override_upload' );
-	$attachment    = new $class_name( $attachment_id );
+
+	imagify_check_nonce( 'imagify-manual-override-upload-' . $attachment_id . '-' . $context );
+	imagify_check_user_capacity( 'manual-optimize', $attachment_id );
+
+	$class_name = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_manual_override_upload' );
+	$attachment = new $class_name( $attachment_id );
 
 	// Restore the backup file.
 	$attachment->restore();
@@ -79,17 +81,18 @@ add_action( 'admin_post_imagify_optimize_missing_sizes', '_do_admin_post_imagify
  * @author Grégory Viguier
  */
 function _do_admin_post_imagify_optimize_missing_sizes() {
-	imagify_check_nonce( 'imagify-optimize-missing-sizes' );
-	imagify_check_user_capacity( 'manual-optimize' );
-
 	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
 		imagify_die( __( 'Invalid request', 'imagify' ) );
 	}
 
-	$context       = esc_html( $_GET['context'] );
+	$context       = imagify_sanitize_context( $_GET['context'] );
 	$attachment_id = absint( $_GET['attachment_id'] );
-	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_optimize_missing_sizes' );
-	$attachment    = new $class_name( $attachment_id );
+
+	imagify_check_nonce( 'imagify-optimize-missing-sizes-' . $attachment_id . '-' . $context );
+	imagify_check_user_capacity( 'manual-optimize', $attachment_id );
+
+	$class_name = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_optimize_missing_sizes' );
+	$attachment = new $class_name( $attachment_id );
 
 	// Optimize the missing thumbnails.
 	$attachment->optimize_missing_thumbnails();
@@ -110,17 +113,18 @@ add_action( 'admin_post_imagify_restore_upload', '_do_admin_post_imagify_restore
  * @author Jonathan Buttigieg
  */
 function _do_admin_post_imagify_restore_upload() {
-	imagify_check_nonce( 'imagify-restore-upload' );
-	imagify_check_user_capacity( 'manual-optimize' );
-
 	if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
 		imagify_die( __( 'Invalid request', 'imagify' ) );
 	}
 
-	$context       = esc_html( $_GET['context'] );
+	$context       = imagify_sanitize_context( $_GET['context'] );
 	$attachment_id = absint( $_GET['attachment_id'] );
-	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_restore_upload' );
-	$attachment    = new $class_name( $attachment_id );
+
+	imagify_check_nonce( 'imagify-restore-upload-' . $attachment_id . '-' . $context );
+	imagify_check_user_capacity( 'manual-optimize', $attachment_id );
+
+	$class_name = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_restore_upload' );
+	$attachment = new $class_name( $attachment_id );
 
 	// Restore the backup file.
 	$attachment->restore();
@@ -141,15 +145,16 @@ add_action( 'wp_ajax_imagify_bulk_upload', '_do_wp_ajax_imagify_bulk_upload' );
  * @author Jonathan Buttigieg
  */
 function _do_wp_ajax_imagify_bulk_upload() {
-	imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
-	imagify_check_user_capacity( 'manual-optimize' );
-
 	if ( empty( $_POST['image'] ) || empty( $_POST['context'] ) ) {
 		imagify_die( __( 'Invalid request', 'imagify' ) );
 	}
 
-	$context            = esc_html( $_POST['context'] );
-	$attachment_id      = absint( $_POST['image'] );
+	$context       = imagify_sanitize_context( $_POST['context'] );
+	$attachment_id = absint( $_POST['image'] );
+
+	imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
+	imagify_check_user_capacity( 'bulk-optimize', $attachment_id );
+
 	$class_name         = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_bulk_upload' );
 	$attachment         = new $class_name( $attachment_id );
 	$optimization_level = get_transient( 'imagify_bulk_optimization_level' );
@@ -204,13 +209,14 @@ function _do_admin_post_async_optimize_upload_new_media() {
 		return;
 	}
 
-	imagify_check_nonce( 'new_media-' . $_POST['attachment_id'] );
+	$context       = imagify_sanitize_context( $_POST['context'] );
+	$attachment_id = absint( $_POST['attachment_id'] );
+
+	imagify_check_nonce( 'new_media-' . $attachment_id );
 	imagify_check_user_capacity( 'auto-optimize' );
 
-	$context       = esc_html( $_POST['context'] );
-	$attachment_id = absint( $_POST['attachment_id'] );
-	$class_name    = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_async_optimize_upload_new_media' );
-	$attachment    = new $class_name( $attachment_id );
+	$class_name = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_async_optimize_upload_new_media' );
+	$attachment = new $class_name( $attachment_id );
 
 	// Optimize it!!!!!
 	$attachment->optimize( null, $_POST['metadata'] );
@@ -225,9 +231,9 @@ add_action( 'wp_ajax_imagify_async_optimize_save_image_editor_file', '_do_admin_
  * @author Julio Potier
  */
 function _do_admin_post_async_optimize_save_image_editor_file() {
-	$attachment_id = ! empty( $_POST['postid'] ) ? (int) $_POST['postid'] : 0; // WPCS: CSRF ok.
+	$attachment_id = ! empty( $_POST['postid'] ) ? absint( $_POST['postid'] ) : 0;
 
-	if ( ! $attachment_id || empty( $_POST['do'] ) ) { // WPCS: CSRF ok.
+	if ( ! $attachment_id || empty( $_POST['do'] ) ) {
 		return;
 	}
 
