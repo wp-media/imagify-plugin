@@ -140,7 +140,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * New: if new thumbnail sizes appear after activating a new theme or plugin, you can now optimize only these missing sizes instead of restoring and re-optimizing all images.
 * Improvement: CSS and JS files have been split and are loaded only when needed.
 * Improvement: in each NextGen Galleries you now have "Optimize" and "Restore" bulk actions.
-* Improvement: better banner placements with languages with long sentences.
+* Improvement: better banner placements with languages with long sentences (looking at you, Germany).
 * Improvement: messages like the "WELL DONE" one can now be translated.
 * Bug Fix: the account infos in the admin bar now works properly on front-end.
 * Bug Fix: some thumbnail sizes with curious name were not listed in the settings page.
