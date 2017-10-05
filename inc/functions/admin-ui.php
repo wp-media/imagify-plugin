@@ -151,7 +151,7 @@ function get_imagify_attachment_error_text( $attachment, $context = 'wp' ) {
 	if ( isset( $data['sizes']['full']['success'] ) && ! $data['sizes']['full']['success'] ) {
 		$class   = $is_media_page ? '' : ' button-imagify-manual-upload';
 		$waiting = $is_media_page ? '' : ' data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"';
-		$output .= '<strong>' . $data['sizes']['full']['error'] . '</strong><br/>';
+		$output .= '<strong>' . imagify_translate_api_message( $data['sizes']['full']['error'] ) . '</strong><br/>';
 		$output .= '<a id="imagify-upload-' . $attachment_id . '" class="button' . $class . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '"' . $waiting . '>' . __( 'Try again', 'imagify' ) . '</a>';
 	}
 
