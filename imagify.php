@@ -86,7 +86,6 @@ function _imagify_init() {
 	if ( is_admin() ) {
 		require( IMAGIFY_ADMIN_PATH . 'upgrader.php' );
 		require( IMAGIFY_ADMIN_PATH . 'heartbeat.php' );
-		require( IMAGIFY_ADMIN_PATH . 'ajax.php' );
 		require( IMAGIFY_ADMIN_PATH . 'options.php' );
 		require( IMAGIFY_ADMIN_PATH . 'menu.php' );
 		require( IMAGIFY_ADMIN_PATH . 'plugins.php' );
@@ -95,8 +94,10 @@ function _imagify_init() {
 		require( IMAGIFY_ADMIN_PATH . 'meta-boxes.php' );
 		require( IMAGIFY_ADMIN_UI_PATH . 'options.php' );
 		require( IMAGIFY_ADMIN_UI_PATH . 'bulk.php' );
+		require( IMAGIFY_CLASSES_PATH . 'class-imagify-admin-ajax-post.php' );
 
 		Imagify_Notices::get_instance()->init();
+		Imagify_Admin_Ajax_Post::get_instance()->init();
 	}
 
 	Imagify_Assets::get_instance()->init();
