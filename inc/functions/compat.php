@@ -437,3 +437,23 @@ if ( ! function_exists( '_wp_translate_php_url_constant_to_key' ) ) :
 		}
 	}
 endif;
+
+if ( ! function_exists( 'wp_scripts' ) ) :
+	/**
+	 * Initialize $wp_scripts if it has not been set.
+	 *
+	 * @global WP_Scripts $wp_scripts
+	 *
+	 * @since 1.6.11
+	 * @since WP 4.2.0
+	 *
+	 * @return WP_Scripts WP_Scripts instance.
+	 */
+	function wp_scripts() {
+		global $wp_scripts;
+		if ( ! ( $wp_scripts instanceof WP_Scripts ) ) {
+			$wp_scripts = new WP_Scripts(); // WPCS: override ok.
+		}
+		return $wp_scripts;
+	}
+endif;

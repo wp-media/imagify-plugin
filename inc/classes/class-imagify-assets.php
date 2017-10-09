@@ -507,6 +507,8 @@ class Imagify_Assets {
 			$this->current_handle      = $handle;
 			$this->current_handle_type = 'js';
 
+			$this->maybe_register_heartbeat( $handle );
+
 			if ( ! empty( $this->scripts[ $handle ] ) ) {
 				// If we registered it, it's one of our scripts.
 				$handle = self::JS_PREFIX . $handle;
@@ -769,6 +771,41 @@ class Imagify_Assets {
 		}
 
 		return $depts;
+	}
+
+	/**
+	 * Make sure Heartbeat is registered if the given script requires it.
+	 * Lots of people love deregister Heartbeat.
+	 *
+	 * @since  1.6.11
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $handle Name of the script. Should be unique.
+	 */
+	protected function maybe_register_heartbeat( $handle ) {
+		if ( wp_script_is( 'heartbeat', 'registered' ) ) {
+			return;
+		}
+
+		if ( ! empty( $this->scripts[ $handle ] ) ) {
+			// If we registered it, it's one of our scripts.
+			$handle = self::JS_PREFIX . $handle;
+		}
+
+		$dependencies = wp_scripts()->query( $handle );
+
+		if ( ! $dependencies || ! $dependencies->deps ) {
+			return;
+		}
+
+		$dependencies = array_flip( $dependencies->deps );
+
+		if ( ! isset( $dependencies['heartbeat'] ) ) {
+			return;
+		}
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+		wp_register_script( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", array( 'jquery' ), false, true );
 	}
 
 	/**
