@@ -39,6 +39,7 @@ class Imagify_Admin_Ajax_Post {
 		'imagify_async_optimize_save_image_editor_file',
 		'imagify_get_unoptimized_attachment_ids',
 		'imagify_check_backup_dir_is_writable',
+		'nopriv_imagify_rpc',
 		'imagify_signup',
 		'imagify_check_api_key_validity',
 		'imagify_get_admin_bar_profile',
@@ -563,6 +564,52 @@ class Imagify_Admin_Ajax_Post {
 		wp_send_json_success( array(
 			'is_writable' => (int) imagify_backup_dir_is_writable(),
 		) );
+	}
+
+	/**
+	 * Bridge between XML-RPC and actions triggered by imagify_do_async_job().
+	 * When XML-RPC is used, a current user is set, but no cookies are set, so they cannot be sent with the request. Instead we stored the user ID in a transient.
+	 *
+	 * @since  1.6.11
+	 * @author Grégory Viguier
+	 * @see    imagify_do_async_job()
+	 */
+	public function nopriv_imagify_rpc_callback() {
+		if ( empty( $_POST['imagify_rpc_action'] ) || empty( $_POST['imagify_rpc_id'] ) || 32 !== strlen( $_POST['imagify_rpc_id'] ) ) { // WPCS: CSRF ok.
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		// Not necessary but just in case, whitelist the original action.
+		$action  = $_POST['imagify_rpc_action']; // WPCS: CSRF ok.
+		$actions = array_flip( $this->ajax_only_actions );
+		unset( $actions['nopriv_imagify_rpc'] );
+
+		if ( ! isset( $actions[ $action ] ) ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		// Get the user ID.
+		$rpc_id  = sanitize_key( $_POST['imagify_rpc_id'] );
+		$user_id = absint( get_transient( 'imagify_rpc_' . $rpc_id ) );
+		$user    = $user_id ? get_userdata( $user_id ) : false;
+
+		delete_transient( 'imagify_rpc_' . $rpc_id );
+
+		if ( ! $user || ! $user->exists() ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		// The current user must be set before verifying the nonce.
+		wp_set_current_user( $user_id );
+
+		imagify_check_nonce( 'imagify_rpc_' . $rpc_id, 'imagify_rpc_nonce' );
+
+		// Trigger the action we originally wanted.
+		$_POST['action'] = $action;
+		unset( $_POST['imagify_rpc_action'], $_POST['imagify_rpc_id'], $_POST['imagify_rpc_nonce'] );
+
+		/** This hook is documented in wp-admin/admin-ajax.php. */
+		do_action( 'wp_ajax_' . $_POST['action'] );
 	}
 
 
