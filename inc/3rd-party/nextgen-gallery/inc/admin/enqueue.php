@@ -47,5 +47,5 @@ function _imagify_ngg_admin_print_styles() {
 	$assets->enqueue_assets( array( 'pricing-modal', 'bulk' ) )->localize( 'imagifyBulk', $l10n );
 
 	// Intercom.
-	add_action( 'admin_footer-' . $bulk_screen_id, array( $assets, 'print_intercom' ) );
+	add_action( 'admin_footer-' . $bulk_screen_id, array( $assets, 'print_support_script' ) );
 }
