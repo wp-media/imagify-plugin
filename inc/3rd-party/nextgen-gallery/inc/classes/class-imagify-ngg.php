@@ -86,15 +86,3 @@ class Imagify_NGG {
 		C_Gallery_Storage::get_instance()->get_wrapped_instance()->add_mixin( 'Imagify_NGG_Storage' );
 	}
 }
-
-/**
- * Returns the main instance of the Imagify_NGG class.
- *
- * @since 1.6.5
- * @author Grégory Viguier
- *
- * @return object The Imagify_NGG instance.
- */
-function imagify_ngg() {
-	return Imagify_NGG::get_instance();
-}

@@ -11,7 +11,7 @@ class Imagify_Deprecated {
 	/**
 	 * A shorthand to display a message about a deprecated method.
 	 *
-	 * @since 1.6.5
+	 * @since  1.6.5
 	 * @author Grégory Viguier
 	 *
 	 * @param string $method_name The deprecated method.
@@ -31,7 +31,7 @@ class Imagify_Deprecated {
 	 */
 	public static function instance() {
 		$class_name = get_class( $this );
-		_deprecated_function( $class_name . '::' . __FUNCTION__ . '()', '1.6.5', 'imagify()' );
+		_deprecated_function( $class_name . '::' . __FUNCTION__ . '()', '1.6.5', 'Imagify::get_instance()' );
 		return Imagify::get_instance();
 	}
 
@@ -184,7 +184,6 @@ class Imagify_Deprecated {
 	}
 }
 
-
 if ( class_exists( 'WpeCommon' ) ) :
 
 	/**
@@ -253,7 +252,6 @@ function _imagify_admin_bar_styles() {
 	}
 }
 
-
 /**
  * Make an absolute path relative to WordPress' root folder.
  * Also works for files from registered symlinked plugins.
@@ -270,6 +268,78 @@ function imagify_make_file_path_replative( $file_path ) {
 
 	return imagify_make_file_path_relative( $file_path );
 }
+
+if ( is_admin() && ( function_exists( 'as3cf_init' ) || function_exists( 'as3cf_pro_init' ) ) ) :
+
+	/**
+	 * Returns the main instance of the Imagify_AS3CF class.
+	 *
+	 * @since  1.6.6
+	 * @since  1.6.12 Deprecated.
+	 * @author Grégory Viguier
+	 *
+	 * @return object The Imagify_AS3CF instance.
+	 */
+	function imagify_as3cf() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.12', 'Imagify_AS3CF::get_instance()' );
+
+		return Imagify_AS3CF::get_instance();
+	}
+
+endif;
+
+if ( function_exists( 'enable_media_replace' ) ) :
+
+	/**
+	 * Returns the main instance of the Imagify_Enable_Media_Replace class.
+	 *
+	 * @since  1.6.9
+	 * @since  1.6.12 Deprecated.
+	 * @author Grégory Viguier
+	 *
+	 * @return object The Imagify_Enable_Media_Replace instance.
+	 */
+	function imagify_enable_media_replace() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.12', 'Imagify_Enable_Media_Replace::get_instance()' );
+
+		return Imagify_Enable_Media_Replace::get_instance();
+	}
+
+endif;
+
+if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_site_option( 'ngg_options' ) ) :
+
+	/**
+	 * Returns the main instance of the Imagify_NGG class.
+	 *
+	 * @since  1.6.5
+	 * @since  1.6.12 Deprecated.
+	 * @author Grégory Viguier
+	 *
+	 * @return object The Imagify_NGG instance.
+	 */
+	function imagify_ngg() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.12', 'Imagify_NGG::get_instance()' );
+
+		return Imagify_NGG::get_instance();
+	}
+
+	/**
+	 * Returns the main instance of the Imagify_NGG_DB class.
+	 *
+	 * @since  1.6.5
+	 * @since  1.6.12 Deprecated.
+	 * @author Jonathan Buttigieg
+	 *
+	 * @return object The Imagify_NGG_DB instance.
+	 */
+	function imagify_ngg_db() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.12', 'Imagify_NGG_DB::get_instance()' );
+
+		return Imagify_NGG_DB::get_instance();
+	}
+
+endif;
 
 if ( is_admin() ) :
 
