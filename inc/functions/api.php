@@ -2,6 +2,18 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 /**
+ * Returns the main instance of the Imagify class.
+ *
+ * @since  1.6.5
+ * @author Grégory Viguier
+ *
+ * @return object The Imagify instance.
+ */
+function imagify() {
+	return Imagify::get_instance();
+}
+
+/**
  * Create a new user on Imagify.
  *
  * @param  array $data All user data.
