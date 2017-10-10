@@ -99,7 +99,9 @@ function _imagify_init() {
 		Imagify_Notices::get_instance()->init();
 	}
 
-	Imagify_Assets::get_instance()->init();
+	if ( ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+		Imagify_Assets::get_instance()->init();
+	}
 
 	/**
 	* Fires when Imagify is correctly loaded.
