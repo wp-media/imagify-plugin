@@ -14,7 +14,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1.1';
+	const VERSION = '1.1.2';
 
 	/**
 	 * The image object.
@@ -146,7 +146,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return array
 	 */
 	public function get_row() {
-		return imagify_ngg_db()->get( $this->id );
+		return Imagify_NGG_DB::get_instance()->get( $this->id );
 	}
 
 	/**
@@ -280,7 +280,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 					$error_status = 'already_optimized';
 				}
 
-				imagify_ngg_db()->update( $this->id, array(
+				Imagify_NGG_DB::get_instance()->update( $this->id, array(
 					'pid'    => $this->id,
 					'status' => $error_status,
 					'data'   => serialize( $data ),
@@ -394,7 +394,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		$data = $this->fill_data( null, $response, $attachment_url );
 
 		// Save the optimization level.
-		imagify_ngg_db()->update( $this->id, array(
+		Imagify_NGG_DB::get_instance()->update( $this->id, array(
 			'pid'                => $this->id,
 			'optimization_level' => $optimization_level,
 		) );
@@ -414,7 +414,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		$data = $this->optimize_thumbnails( $optimization_level, $data );
 
 		// Save the status to success.
-		imagify_ngg_db()->update( $this->id, array(
+		Imagify_NGG_DB::get_instance()->update( $this->id, array(
 			'pid'    => $this->id,
 			'status' => 'success',
 		) );
@@ -534,7 +534,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				$data = apply_filters( 'imagify_fill_ngg_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
 			}
 
-			imagify_ngg_db()->update( $this->id, array(
+			Imagify_NGG_DB::get_instance()->update( $this->id, array(
 				'pid'  => $this->id,
 				'data' => serialize( $data ),
 			) );
@@ -613,7 +613,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Remove Imagify data.
 		 */
-		imagify_ngg_db()->delete( $image->pid );
+		Imagify_NGG_DB::get_instance()->delete( $image->pid );
 
 		/**
 		 * Fill in the NGG meta data.
