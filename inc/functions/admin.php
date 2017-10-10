@@ -393,7 +393,7 @@ function imagify_die( $message = null ) {
 		}
 	}
 
-	if ( defined( 'DOING_AJAX' ) ) {
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 		wp_send_json_error( $message );
 	}
 
