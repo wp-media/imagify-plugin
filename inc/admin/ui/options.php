@@ -59,7 +59,6 @@ function _imagify_display_options_page() {
 		<?php } // End if(). ?>
 
 		<div class="imagify-col imagify-main">
-			<?php $heading_tag = version_compare( $wp_version, '4.3' ) >= 0 ? 'h1' : 'h2'; ?>
 			<div class="imagify-title">
 				<div class="imagify-logo-block">
 					<img width="225" height="26" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" />
@@ -68,9 +67,10 @@ function _imagify_display_options_page() {
 					</small>
 				</div>
 
-				<?php $imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform'; ?>
 				<p class="imagify-rate-us">
 					<?php
+					$imagify_rate_url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
+
 					printf(
 						/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end + a line break tag, 3 is a link tag start, 4 is the link tag end. */
 						__( '%1$sDo you like this plugin?%2$s Please take a few seconds to %3$srate it on WordPress.org%4$s!', 'imagify' ),
@@ -82,6 +82,12 @@ function _imagify_display_options_page() {
 					?>
 					<br>
 					<a class="stars" href="<?php echo $imagify_rate_url; ?>"><?php echo str_repeat( '<span class="dashicons dashicons-star-filled"></span>', 5 ); ?></a>
+				</p>
+
+				<p class="imagify-documentation-link-box">
+					<span class="imagify-documentation-link-icon dashicons dashicons-media-text" aria-hidden="true"></span>
+					<?php _e( 'Need help or have questions?', 'imagify' ); ?><br/>
+					<a class="imagify-documentation-link" href="https://imagify.io/documentation/"><?php _e( 'Check our documentation.', 'imagify' ); ?></a>
 				</p>
 			</div>
 			<?php $form_action = ( imagify_is_active_for_network() ) ? admin_url( 'admin-post.php' ) : admin_url( 'options.php' ); ?>

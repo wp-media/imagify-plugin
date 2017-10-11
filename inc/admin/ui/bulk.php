@@ -197,7 +197,13 @@ function _imagify_display_bulk_page() {
 							}
 							?>
 						</li>
-						<li><?php esc_html_e( 'You must keep this page open while the bulk optimization is processing. If you leave you can come back to continue where it left off.', 'imagify' ); ?></li>
+						<li>
+							<?php esc_html_e( 'You must keep this page open while the bulk optimization is processing. If you leave you can come back to continue where it left off.', 'imagify' ); ?>
+						</li>
+						<li class="imagify-documentation-link-box">
+							<strong><?php _e( 'Need help or have questions?', 'imagify' ); ?></strong>
+							<a class="imagify-documentation-link" href="https://imagify.io/documentation/"><?php _e( 'Check our documentation.', 'imagify' ); ?></a>
+						</li>
 					</ul>
 				</div><!-- .col-1-2 -->
 			</div><!-- .imagify-columns -->
