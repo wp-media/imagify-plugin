@@ -59,6 +59,8 @@
 	<rule ref="WordPress.CSRF.NonceVerification">
 		<properties>
 			<property name="customNonceVerificationFunctions" value="imagify_check_nonce" type="array"/>
+			<property name="customSanitizingFunctions" value="imagify_sanitize_context,empty,isset" type="array"/>
+			<property name="customUnslashingSanitizingFunctions" value="imagify_sanitize_context,empty,isset" type="array"/>
 		</properties>
 	</rule>
 

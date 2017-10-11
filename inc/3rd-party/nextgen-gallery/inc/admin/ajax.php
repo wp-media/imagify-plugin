@@ -1,18 +1,76 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
+add_action( 'wp_ajax_imagify_manual_upload',             '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'admin_post_imagify_manual_upload',          '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'wp_ajax_imagify_manual_override_upload',    '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'admin_post_imagify_manual_override_upload', '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'wp_ajax_imagify_restore_upload',            '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'admin_post_imagify_restore_upload',         '_do_admin_post_imagify_ngg_user_capacity', 5 );
+/**
+ * On manual optimization, manual re-optimization, and manual restoration, filter the user capacity to operate Imagify within NGG.
+ *
+ * @since  1.6.11
+ * @author Grégory Viguier
+ */
+function _do_admin_post_imagify_ngg_user_capacity() {
+	if ( ! empty( $_GET['context'] ) && 'NGG' === $_GET['context'] ) { // WPCS: CSRF ok.
+		add_filter( 'imagify_capacity', 'imagify_get_ngg_capacity', 10, 2 );
+	}
+}
+
+add_filter( 'imagify_current_user_can', 'imagify_ngg_current_user_can', 10, 4 );
+/**
+ * Filter the current user capability to operate Imagify.
+ *
+ * @since  1.6.11
+ * @author Grégory Viguier
+ *
+ * @param  bool   $user_can  Tell if the current user has the required capacity to operate Imagify.
+ * @param  string $capacity  The user capacity.
+ * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+ * @param  int    $post_id   A post ID (a gallery ID for NGG).
+ * @return bool
+ */
+function imagify_ngg_current_user_can( $user_can, $capacity, $describer, $post_id ) {
+	static $user_can_per_gallery = array();
+
+	if ( ! $user_can || ! $post_id || 'NextGEN Manage gallery' !== $capacity ) {
+		return $user_can;
+	}
+
+	$image = nggdb::find_image( $post_id );
+
+	if ( isset( $user_can_per_gallery[ $image->galleryid ] ) ) {
+		return $user_can_per_gallery[ $image->galleryid ];
+	}
+
+	$gallery_mapper = C_Gallery_Mapper::get_instance();
+	$gallery        = $gallery_mapper->find( $image->galleryid, false );
+
+	if ( get_current_user_id() === $gallery->author || current_user_can( 'NextGEN Manage others gallery' ) ) {
+		// The user created this gallery or can edit others galleries.
+		$user_can_per_gallery[ $image->galleryid ] = true;
+		return $user_can_per_gallery[ $image->galleryid ];
+	}
+
+	// The user can't edit this gallery.
+	$user_can_per_gallery[ $image->galleryid ] = false;
+	return $user_can_per_gallery[ $image->galleryid ];
+}
+
 add_action( 'wp_ajax_imagify_ngg_get_unoptimized_attachment_ids', '_do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids' );
 /**
  * Get all unoptimized attachment ids.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  */
 function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 	global $wpdb;
 
 	imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
-	imagify_check_user_capacity( 'upload_files' );
+	imagify_check_user_capacity( 'bulk-optimize' );
 
 	$user = new Imagify_User();
 

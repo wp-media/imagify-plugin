@@ -378,7 +378,7 @@ class Imagify_AS3CF {
 
 		check_ajax_referer( 'imagify_async_optimize_as3cf' );
 
-		if ( empty( $_POST['post_id'] ) || ! current_user_can( 'upload_files' ) ) {
+		if ( empty( $_POST['post_id'] ) || ! imagify_current_user_can( 'auto-optimize' ) ) {
 			die();
 		}
 
