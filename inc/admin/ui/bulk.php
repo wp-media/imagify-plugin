@@ -272,17 +272,19 @@ function _imagify_display_bulk_page() {
 								</button>
 							</p>
 						</div>
-						<div class="imagify-cell imagify-pl0">
-							<p class="imagify-info-block">
-								<?php
-								printf(
-									/* translators: %s is a file size. */
-									__( 'All images greater than %s will be optimized when using a paid plan.', 'imagify' ),
-									size_format( get_imagify_max_image_size() )
-								);
-								?>
-							</p>
-						</div>
+						<?php if ( ! is_wp_error( get_imagify_max_image_size() ) ) { ?>
+							<div class="imagify-cell imagify-pl0">
+								<p class="imagify-info-block">
+									<?php
+									printf(
+										/* translators: %s is a file size. */
+										__( 'All images greater than %s will be optimized when using a paid plan.', 'imagify' ),
+										size_format( get_imagify_max_image_size() )
+									);
+									?>
+								</p>
+							</div>
+						<?php } ?>
 					</div>
 				</div>
 			</div><!-- .imagify-bulk-submit -->

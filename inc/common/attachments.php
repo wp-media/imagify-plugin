@@ -15,7 +15,7 @@ add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', I
  */
 function _imagify_optimize_attachment( $metadata, $attachment_id ) {
 
-	if ( ! get_imagify_option( 'api_key' ) || ! get_imagify_option( 'auto_optimize' ) ) {
+	if ( ! imagify_valid_key() || ! get_imagify_option( 'auto_optimize' ) ) {
 		return $metadata;
 	}
 
@@ -54,9 +54,15 @@ function _imagify_optimize_save_image_editor_file() {
 		return;
 	}
 
-	check_ajax_referer( 'image_editor-' . $_POST['postid'] );
+	$attachment_id = absint( $_POST['postid'] );
 
-	if ( ! get_post_meta( $_POST['postid'], '_imagify_data', true ) ) {
+	if ( ! $attachment_id || ! imagify_valid_key() ) {
+		return;
+	}
+
+	check_ajax_referer( 'image_editor-' . $attachment_id );
+
+	if ( ! get_post_meta( $attachment_id, '_imagify_data', true ) ) {
 		return;
 	}
 

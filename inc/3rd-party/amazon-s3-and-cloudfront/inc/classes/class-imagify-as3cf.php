@@ -103,7 +103,7 @@ class Imagify_AS3CF {
 		 */
 		// Remove some of our hooks: let S3 work first in these cases.
 		remove_filter( 'wp_generate_attachment_metadata',                       '_imagify_optimize_attachment', IMAGIFY_INT_MAX );
-		remove_action( 'wp_ajax_imagify_async_optimize_as3cf',                  '_do_admin_post_async_optimize_upload_new_media' );
+		remove_action( 'wp_ajax_imagify_async_optimize_upload_new_media',       '_do_admin_post_async_optimize_upload_new_media' );
 		remove_action( 'shutdown',                                              '_imagify_optimize_save_image_editor_file' );
 		remove_action( 'wp_ajax_imagify_async_optimize_save_image_editor_file', '_do_admin_post_async_optimize_save_image_editor_file' );
 
@@ -335,7 +335,7 @@ class Imagify_AS3CF {
 		}
 
 		if ( ! isset( $auto_optimize ) ) {
-			$auto_optimize = get_imagify_option( 'api_key' ) && get_imagify_option( 'auto_optimize' );
+			$auto_optimize = imagify_valid_key() && get_imagify_option( 'auto_optimize' );
 		}
 
 		if ( $is_new_upload && ! $auto_optimize ) {

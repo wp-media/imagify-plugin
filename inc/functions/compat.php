@@ -289,26 +289,6 @@ if ( ! function_exists( 'wp_normalize_path' ) ) :
 	}
 endif;
 
-if ( ! function_exists( 'wp_get_additional_image_sizes' ) ) :
-	/**
-	 * Retrieve additional image sizes.
-	 *
-	 * @since 1.6.10
-	 * @since WP 4.7.0
-	 *
-	 * @global array $_wp_additional_image_sizes
-	 *
-	 * @return array Additional images size data.
-	 */
-	function wp_get_additional_image_sizes() {
-		global $_wp_additional_image_sizes;
-		if ( ! $_wp_additional_image_sizes ) {
-			$_wp_additional_image_sizes = array(); // WPCS: override ok.
-		}
-		return $_wp_additional_image_sizes;
-	}
-endif;
-
 if ( ! function_exists( 'wp_parse_url' ) ) :
 	/**
 	 * A wrapper for PHP's parse_url() function that handles consistency in the return
@@ -371,7 +351,6 @@ if ( ! function_exists( 'wp_parse_url' ) ) :
 	}
 endif;
 
-
 if ( ! function_exists( '_get_component_from_parsed_url_array' ) ) :
 	/**
 	 * Retrieve a specific component from a parsed URL array.
@@ -405,7 +384,6 @@ if ( ! function_exists( '_get_component_from_parsed_url_array' ) ) :
 	}
 endif;
 
-
 if ( ! function_exists( '_wp_translate_php_url_constant_to_key' ) ) :
 	/**
 	 * Translate a PHP_URL_* constant to the named array keys PHP uses.
@@ -435,5 +413,79 @@ if ( ! function_exists( '_wp_translate_php_url_constant_to_key' ) ) :
 		} else {
 			return false;
 		}
+	}
+endif;
+
+if ( ! function_exists( 'wp_get_additional_image_sizes' ) ) :
+	/**
+	 * Retrieve additional image sizes.
+	 *
+	 * @since 1.6.10
+	 * @since WP 4.7.0
+	 *
+	 * @global array $_wp_additional_image_sizes
+	 *
+	 * @return array Additional images size data.
+	 */
+	function wp_get_additional_image_sizes() {
+		global $_wp_additional_image_sizes;
+		if ( ! $_wp_additional_image_sizes ) {
+			$_wp_additional_image_sizes = array(); // WPCS: override ok.
+		}
+		return $_wp_additional_image_sizes;
+	}
+endif;
+
+if ( ! function_exists( 'doing_filter' ) ) :
+	/**
+	 * Retrieve the name of a filter currently being processed.
+	 *
+	 * The function current_filter() only returns the most recent filter or action
+	 * being executed. did_action() returns true once the action is initially
+	 * processed.
+	 *
+	 * This function allows detection for any filter currently being
+	 * executed (despite not being the most recent filter to fire, in the case of
+	 * hooks called from hook callbacks) to be verified.
+	 *
+	 * @since 1.6.11
+	 * @since WP 3.9.0
+	 *
+	 * @see current_filter()
+	 * @see did_action()
+	 * @global array $wp_current_filter Current filter.
+	 *
+	 * @param null|string $filter Optional. Filter to check. Defaults to null, which
+	 *                            checks if any filter is currently being run.
+	 * @return bool Whether the filter is currently in the stack.
+	 */
+	function doing_filter( $filter = null ) {
+		global $wp_current_filter;
+
+		if ( null === $filter ) {
+			return ! empty( $wp_current_filter );
+		}
+
+		return in_array( $filter, $wp_current_filter, true );
+	}
+endif;
+
+if ( ! function_exists( 'wp_scripts' ) ) :
+	/**
+	 * Initialize $wp_scripts if it has not been set.
+	 *
+	 * @global WP_Scripts $wp_scripts
+	 *
+	 * @since 1.6.11
+	 * @since WP 4.2.0
+	 *
+	 * @return WP_Scripts WP_Scripts instance.
+	 */
+	function wp_scripts() {
+		global $wp_scripts;
+		if ( ! ( $wp_scripts instanceof WP_Scripts ) ) {
+			$wp_scripts = new WP_Scripts(); // WPCS: override ok.
+		}
+		return $wp_scripts;
 	}
 endif;

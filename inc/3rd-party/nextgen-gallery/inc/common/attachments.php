@@ -19,14 +19,13 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 	}
 
 	foreach ( $image_ids as $id ) {
-		$body                  = array();
-		$body['metadata']      = 1;
-		$body['context']       = 'NGG';
-		$body['attachment_id'] = $id;
-		$body['action']        = 'imagify_async_optimize_upload_new_media';
-		$body['_ajax_nonce']   = wp_create_nonce( 'new_media-' . $id );
-
-		imagify_do_async_job( $body );
+		imagify_do_async_job( array(
+			'action'        => 'imagify_async_optimize_upload_new_media',
+			'_ajax_nonce'   => wp_create_nonce( 'new_media-' . $id ),
+			'metadata'      => 1,
+			'context'       => 'NGG',
+			'attachment_id' => $id,
+		) );
 	}
 }
 

@@ -522,4 +522,260 @@ if ( is_admin() ) :
 		return Imagify_Notices::notice_is_dismissed( $notice, $user_id );
 	}
 
+	/**
+	 * Process all thumbnails of a specific image with Imagify with the manual method.
+	 *
+	 * @since  1.0
+	 * @since  1.6.11 Deprecated.
+	 * @author Jonathan Buttigieg
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_manual_upload_callback()
+	 * @deprecated
+	 */
+	function _do_admin_post_imagify_manual_upload() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_manual_upload_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_manual_upload_callback();
+	}
+
+	/**
+	 * Process all thumbnails of a specific image with Imagify with a different optimization level.
+	 *
+	 * @since  1.0
+	 * @since  1.6.11 Deprecated.
+	 * @author Jonathan Buttigieg
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_manual_override_upload_callback()
+	 * @deprecated
+	 */
+	function _do_admin_post_imagify_manual_override_upload() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_manual_override_upload_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_manual_override_upload_callback();
+	}
+
+	/**
+	 * Process one or some thumbnails that are not optimized yet.
+	 *
+	 * @since  1.6.10
+	 * @since  1.6.11 Deprecated.
+	 * @author Grégory Viguier
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_optimize_missing_sizes_callback()
+	 * @deprecated
+	 */
+	function _do_admin_post_imagify_optimize_missing_sizes() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_optimize_missing_sizes_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_optimize_missing_sizes_callback();
+	}
+
+	/**
+	 * Process a restoration to the original attachment.
+	 *
+	 * @since  1.0
+	 * @since  1.6.11 Deprecated.
+	 * @author Jonathan Buttigieg
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_restore_upload_callback()
+	 * @deprecated
+	 */
+	function _do_admin_post_imagify_restore_upload() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_restore_upload_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_restore_upload_callback();
+	}
+
+	/**
+	 * Process all thumbnails of a specific image with Imagify with the bulk method.
+	 *
+	 * @since  1.0
+	 * @since  1.6.11 Deprecated.
+	 * @author Jonathan Buttigieg
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_bulk_upload_callback()
+	 * @deprecated
+	 */
+	function _do_wp_ajax_imagify_bulk_upload() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_bulk_upload_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_bulk_upload_callback();
+	}
+
+	/**
+	 * Optimize image on picture uploading with async request.
+	 *
+	 * @since  1.5
+	 * @since  1.6.11 Deprecated.
+	 * @author Julio Potier
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_async_optimize_upload_new_media_callback()
+	 * @deprecated
+	 */
+	function _do_admin_post_async_optimize_upload_new_media() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_async_optimize_upload_new_media_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_async_optimize_upload_new_media_callback();
+	}
+
+	/**
+	 * Optimize image on picture editing (resize, crop...) with async request.
+	 *
+	 * @since  1.4
+	 * @since  1.6.11 Deprecated.
+	 * @author Julio Potier
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_async_optimize_save_image_editor_file_callback()
+	 * @deprecated
+	 */
+	function _do_admin_post_async_optimize_save_image_editor_file() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_async_optimize_save_image_editor_file_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_async_optimize_save_image_editor_file_callback();
+	}
+
+	/**
+	 * Get all unoptimized attachment ids.
+	 *
+	 * @since  1.0
+	 * @since  1.6.11 Deprecated.
+	 * @author Jonathan Buttigieg
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_get_unoptimized_attachment_ids_callback()
+	 * @deprecated
+	 */
+	function _do_wp_ajax_imagify_get_unoptimized_attachment_ids() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_get_unoptimized_attachment_ids_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_get_unoptimized_attachment_ids_callback();
+	}
+
+	/**
+	 * Check if the backup directory is writable.
+	 * This is used to display an error message in the plugin's settings page.
+	 *
+	 * @since  1.6.8
+	 * @since  1.6.11 Deprecated.
+	 * @author Grégory Viguier
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_check_backup_dir_is_writable_callback()
+	 * @deprecated
+	 */
+	function _do_wp_ajax_imagify_check_backup_dir_is_writable() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_check_backup_dir_is_writable_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_check_backup_dir_is_writable_callback();
+	}
+
+	/**
+	 * Create a new Imagify account.
+	 *
+	 * @since  1.0
+	 * @since  1.6.11 Deprecated.
+	 * @author Jonathan Buttigieg
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_signup_callback()
+	 * @deprecated
+	 */
+	function _do_wp_ajax_imagify_signup() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_signup_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_signup_callback();
+	}
+
+	/**
+	 * Process an API key check validity.
+	 *
+	 * @since  1.0
+	 * @since  1.6.11 Deprecated.
+	 * @author Jonathan Buttigieg
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_check_api_key_validity_callback()
+	 * @deprecated
+	 */
+	function _do_wp_ajax_imagify_check_api_key_validity() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_check_api_key_validity_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_check_api_key_validity_callback();
+	}
+
+	/**
+	 * Get admin bar profile output.
+	 *
+	 * @since  1.2.3
+	 * @since  1.6.11 Deprecated.
+	 * @author Jonathan Buttigieg
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_get_admin_bar_profile_callback()
+	 * @deprecated
+	 */
+	function _do_wp_ajax_imagify_get_admin_bar_profile() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_get_admin_bar_profile_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_get_admin_bar_profile_callback();
+	}
+
+	/**
+	 * Get pricings from API for Onetime and Plans at the same time.
+	 *
+	 * @since  1.6
+	 * @since  1.6.11 Deprecated.
+	 * @author Geoffrey Crofte
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_get_prices_callback()
+	 * @deprecated
+	 */
+	function _imagify_get_prices_from_api() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_get_prices_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_get_prices_callback();
+	}
+
+	/**
+	 * Check Coupon code on modal popin.
+	 *
+	 * @since  1.6
+	 * @since  1.6.11 Deprecated.
+	 * @author Geoffrey Crofte
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_check_coupon_callback()
+	 * @deprecated
+	 */
+	function _imagify_check_coupon_code() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_check_coupon_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_check_coupon_callback();
+	}
+
+	/**
+	 * Get current discount promotion to display information on payment modal.
+	 *
+	 * @since  1.6.3
+	 * @since  1.6.11 Deprecated.
+	 * @author Geoffrey Crofte
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_get_discount_callback()
+	 * @deprecated
+	 */
+	function _imagify_get_discount() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_get_discount_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_get_discount_callback();
+	}
+
+	/**
+	 * Get estimated sizes from the WordPress library.
+	 *
+	 * @since  1.6
+	 * @since  1.6.11 Deprecated.
+	 * @author Geoffrey Crofte
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_get_images_counts_callback()
+	 * @deprecated
+	 */
+	function _imagify_get_estimated_sizes() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_get_images_counts_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_get_images_counts_callback();
+	}
+
+	/**
+	 * Estimate sizes and update the options values for them.
+	 *
+	 * @since  1.6
+	 * @since  1.6.11 Deprecated.
+	 * @author Remy Perona
+	 * @see    Imagify_Admin_Ajax_Post::get_instance()->imagify_update_estimate_sizes_callback()
+	 * @deprecated
+	 */
+	function _imagify_update_estimate_sizes() {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.11', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_update_estimate_sizes_callback()' );
+
+		Imagify_Admin_Ajax_Post::get_instance()->imagify_update_estimate_sizes_callback();
+	}
+
 endif;

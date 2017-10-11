@@ -436,7 +436,7 @@ class Imagify_Abstract_Attachment {
 			return array();
 		}
 
-		$registered_sizes = static::get_registered_sizes();
+		$registered_sizes = self::get_registered_sizes();
 		$attachment_sizes = $this->get_data();
 		$attachment_sizes = ! empty( $attachment_sizes['sizes'] ) ? $attachment_sizes['sizes'] : array();
 		$missing_sizes    = array_diff_key( $registered_sizes, $attachment_sizes );

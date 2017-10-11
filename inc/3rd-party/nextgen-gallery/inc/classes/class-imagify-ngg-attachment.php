@@ -123,6 +123,19 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
+	 * Get the attachment SQL data row.
+	 *
+	 * @since 1.5
+	 * @author Jonathan Buttigieg
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function get_row() {
+		return imagify_ngg_db()->get( $this->id );
+	}
+
+	/**
 	 * Get the attachment optimization level.
 	 *
 	 * @since 1.5
@@ -134,19 +147,6 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	public function get_optimization_level() {
 		$row = $this->row ? $this->row : $this->get_row();
 		return isset( $row['optimization_level'] ) ? (int) $row['optimization_level'] : false;
-	}
-
-	/**
-	 * Get the attachment SQL data row.
-	 *
-	 * @since 1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return array
-	 */
-	public function get_row() {
-		return imagify_ngg_db()->get( $this->id );
 	}
 
 	/**
@@ -285,6 +285,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 					'status' => $error_status,
 					'data'   => serialize( $data ),
 				) );
+				$this->row = null;
 
 				return false;
 			}
@@ -398,6 +399,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			'pid'                => $this->id,
 			'optimization_level' => $optimization_level,
 		) );
+		$this->row = null;
 
 		if ( ! $data ) {
 			delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
@@ -418,6 +420,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			'pid'    => $this->id,
 			'status' => 'success',
 		) );
+		$this->row = null;
 
 		/**
 		 * Fires after optimizing an attachment.
@@ -538,6 +541,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				'pid'  => $this->id,
 				'data' => serialize( $data ),
 			) );
+			$this->row = null;
 		} // End if().
 
 		/**
@@ -614,6 +618,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		 * Remove Imagify data.
 		 */
 		imagify_ngg_db()->delete( $image->pid );
+		$this->row = null;
 
 		/**
 		 * Fill in the NGG meta data.

@@ -107,6 +107,9 @@ function _imagify_sort_attachments_by_status( $vars ) {
 			break;
 		case 'errors':
 			$status = 'error';
+			break;
+		default:
+			return $vars;
 	}
 
 	$vars = array_merge( $vars, array(

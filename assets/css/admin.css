@@ -328,17 +328,19 @@ td .imagify-chart-container {
 /* Exception in Medias edition page and post Edition pages (insert media popin) */
 .wp_attachment_image .imagify-button-primary,
 .media-frame-content .imagify-button-primary {
-	float: left;
 	padding: 0 10px 1px;
 	margin: 0 5px 2px 0;
 	font-size: 13px;
 	line-height: 26px;
 	box-shadow: 0 3px 0 rgba(51, 142, 166, 1);
 }
+.wp_attachment_image .imagify-button-primary {
+	float: left;
+}
 
 /**
  * == Header & Subheader & Sections
- * 
+ *
  * (options, Welcome Notice, Bulk)
  */
 .imagify-title.imagify-title {
@@ -465,7 +467,7 @@ p.imagify-section-title.imagify-section-title {
 	}
 }
 
-/** 
+/**
  * == Messages & infos
  */
 .imagify-important {

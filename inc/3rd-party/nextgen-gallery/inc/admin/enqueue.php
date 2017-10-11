@@ -18,7 +18,7 @@ function _imagify_ngg_admin_print_styles() {
 	 * Manage Gallery Images.
 	 */
 	if ( imagify_is_screen( 'nggallery-manage-images' ) ) {
-		$assets->enqueue_assets( 'library' );
+		$assets->enqueue_style( 'admin' )->enqueue_script( 'library' );
 		return;
 	}
 
@@ -47,5 +47,5 @@ function _imagify_ngg_admin_print_styles() {
 	$assets->enqueue_assets( array( 'pricing-modal', 'bulk' ) )->localize( 'imagifyBulk', $l10n );
 
 	// Intercom.
-	add_action( 'admin_footer-' . $bulk_screen_id, array( $assets, 'print_intercom' ) );
+	add_action( 'admin_footer-' . $bulk_screen_id, array( $assets, 'print_support_script' ) );
 }
