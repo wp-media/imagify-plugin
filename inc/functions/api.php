@@ -272,6 +272,7 @@ function imagify_translate_api_message( $message ) {
 		'WELL DONE. This image is already compressed, no further compression required' => __( 'WELL DONE. This image is already optimized, no further optimization is required.', 'imagify' ),
 		'You are not authorized to perform this action'                                => __( 'You are not authorized to perform this action.', 'imagify' ),
 		'You\'ve consumed all your data. You have to upgrade your account to continue' => __( 'You have consumed all your data. You have to upgrade your account to continue.', 'imagify' ),
+		'Invalid token'                                                                => __( 'Invalid API key', 'imagify' ),
 	);
 
 	if ( isset( $messages[ $trim_message ] ) ) {
