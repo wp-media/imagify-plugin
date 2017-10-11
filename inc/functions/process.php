@@ -151,11 +151,19 @@ function do_imagify( $file_path, $args = array() ) {
  * @since 1.4
  */
 function imagify_do_async_job( $body ) {
+	// No need to send all the cookies.
+	$cookies = isset( $_COOKIE ) && is_array( $_COOKIE ) ? $_COOKIE : array();
+	$cookies = array_intersect_key( $_COOKIE, array(
+		SECURE_AUTH_COOKIE => '',
+		AUTH_COOKIE        => '',
+		LOGGED_IN_COOKIE   => '',
+	) );
+
 	$args = array(
 		'timeout'   => 0.01,
 		'blocking'  => false,
 		'body'      => $body,
-		'cookies'   => $_COOKIE,
+		'cookies'   => $cookies,
 		'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
 	);
 
@@ -168,6 +176,28 @@ function imagify_do_async_job( $body ) {
 	 * @param array $args An array of arguments passed to wp_remote_post().
 	 */
 	$args = apply_filters( 'imagify_do_async_job_args', $args );
+
+	/**
+	 * It can be a XML-RPC request. The problem is that XML-RPC doesn't use cookies.
+	 */
+	if ( defined( 'XMLRPC_REQUEST' ) && get_current_user_id() ) {
+		/**
+		 * In old WP versions, the field "option_name" in the wp_options table was limited to 64 characters.
+		 * From 64, remove 19 characters for "_transient_timeout_" = 45.
+		 * Then remove 12 characters for "imagify_rpc_" (transient name) = 33.
+		 * Hopefully, a md5 is 32 characters long.
+		 */
+		$rpc_id = md5( maybe_serialize( $body ) );
+
+		// Send the request to our RPC bridge instead.
+		$args['body']['imagify_rpc_action'] = $args['body']['action'];
+		$args['body']['action']             = 'imagify_rpc';
+		$args['body']['imagify_rpc_id']     = $rpc_id;
+		$args['body']['imagify_rpc_nonce']  = wp_create_nonce( 'imagify_rpc_' . $rpc_id );
+
+		// Since we can't send cookies to keep the user logged in, store the user ID in a transient.
+		set_transient( 'imagify_rpc_' . $rpc_id, get_current_user_id(), 30 );
+	}
 
 	wp_remote_post( admin_url( 'admin-ajax.php' ), $args );
 }

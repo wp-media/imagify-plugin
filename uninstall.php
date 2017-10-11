@@ -16,11 +16,13 @@ delete_site_transient( 'imagify_max_image_size' );
 wp_clear_scheduled_hook( 'imagify_rating_event' );
 wp_clear_scheduled_hook( 'imagify_update_library_size_calculations_event' );
 
-// WP transients.
-$wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "_transient_imagify-async-in-progress-%"' );
-
-// NextGen Gallery transients.
-$wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "_transient_imagify-ngg-async-in-progress-%"' );
+// Delete transients.
+$transients = implode( '" OR option_name LIKE "', array(
+	'_transient_%imagify-async-in-progress-%',
+	'_transient_%imagify-ngg-async-in-progress-%',
+	'_transient_%imagify_rpc_%',
+) );
+$wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "' . $transients . '"' ); // WPCS: unprepared SQL ok.
 
 // Delete all user meta related to Imagify.
 delete_metadata( 'user', '', '_imagify_ignore_notices', '', true );
