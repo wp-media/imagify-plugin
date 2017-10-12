@@ -154,8 +154,7 @@ function _imagify_display_bulk_page() {
 
 						<p><?php _e( 'Optimized size', 'imagify' ); ?></p>
 						<div class="imagify-bar-positive base-transparent right-outside-number">
-
-							<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo $optimized_percent; ?>%"><span class="imagify-barnb"><?php echo size_format( $optimized_nb, 1 ); ?></span></div>
+							<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo ( 100 - $optimized_percent ); ?>%"><span class="imagify-barnb"><?php echo size_format( $optimized_nb, 1 ); ?></span></div>
 						</div>
 
 					</div>

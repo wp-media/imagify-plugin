@@ -148,7 +148,7 @@
 		$( '#imagify-original-bar' ).find( '.imagify-barnb' ).html( data.original_human );
 
 		// The optimized bar.
-		$( '#imagify-optimized-bar' ).css( 'width', data.optimized_percent + '%' ).find( '.imagify-barnb' ).html( data.optimized_human );
+		$( '#imagify-optimized-bar' ).css( 'width', ( 100 - data.optimized_percent ) + '%' ).find( '.imagify-barnb' ).html( data.optimized_human );
 
 		// The Percent data.
 		$( '#imagify-total-optimized-attachments-pct' ).html( data.optimized_percent + '%' );
