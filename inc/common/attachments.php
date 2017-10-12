@@ -19,6 +19,22 @@ function _imagify_optimize_attachment( $metadata, $attachment_id ) {
 		return $metadata;
 	}
 
+	/**
+	 * Allow to prevent automatic optimization for a specific attachment.
+	 *
+	 * @since  1.6.12
+	 * @author Grégory Viguier
+	 *
+	 * @param bool  $optimize      True to optimize, false otherwise.
+	 * @param int   $attachment_id Attachment ID.
+	 * @param array $metadata      An array of attachment meta data.
+	 */
+	$optimize = apply_filters( 'imagify_auto_optimize_attachment', true, $attachment_id, $metadata );
+
+	if ( ! $optimize ) {
+		return $metadata;
+	}
+
 	$context     = 'wp';
 	$action      = 'imagify_async_optimize_upload_new_media';
 	$_ajax_nonce = wp_create_nonce( 'new_media-' . $attachment_id );
