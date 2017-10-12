@@ -7,7 +7,7 @@ add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', I
  *
  * @since 1.0
  * @since 1.5 Async job.
- * @see _do_admin_post_async_optimize_upload_new_media()
+ * @see   Imagify_Admin_Ajax_Post::imagify_async_optimize_upload_new_media_callback()
  *
  * @param  array $metadata      An array of attachment meta data.
  * @param  int   $attachment_id Current attachment ID.
