@@ -4,13 +4,15 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Get all translations we can use with wp_localize_script().
  *
- * @since 1.5
+ * @since  1.5
  * @author Jonathan Buttigieg
  *
  * @param  string $context       The translation context.
  * @return array  $translations  The translations.
  */
 function get_imagify_localize_script_translations( $context ) {
+	global $post_id;
+
 	switch ( $context ) {
 		case 'admin-bar':
 			if ( is_admin() ) {
@@ -72,8 +74,19 @@ function get_imagify_localize_script_translations( $context ) {
 			);
 
 		case 'twentytwenty':
+			if ( imagify_is_screen( 'attachment' ) ) {
+				$image = wp_get_attachment_image_src( $post_id, 'full' );
+				$image = $image && is_array( $image ) ? $image : array( '', 0, 0 );
+			} else {
+				$image = array( '', 0, 0 );
+			}
+
 			return array(
-				'labels' => array(
+				'imageSrc'    => $image[0],
+				'imageWidth'  => $image[1],
+				'imageHeight' => $image[2],
+				'widthLimit'  => 360, // See _imagify_add_actions_to_media_list_row().
+				'labels'      => array(
 					'filesize'   => __( 'File Size:', 'imagify' ),
 					'saving'     => __( 'Original Saving:', 'imagify' ),
 					'close'      => __( 'Close', 'imagify' ),
