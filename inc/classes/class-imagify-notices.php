@@ -74,15 +74,15 @@ class Imagify_Notices {
 
 	/**
 	 * List of user capabilities to use for each notice.
-	 * Default value is not listed.
+	 * Default value 'manage' is not listed.
 	 *
 	 * @var array
 	 */
 	protected static $capabilities = array(
-		'grid-view'                  => 'upload',
-		'backup-folder-not-writable' => 'admin',
-		'rating'                     => 'admin',
-		'wp-rocket'                  => 'admin',
+		'grid-view'                  => 'optimize',
+		'backup-folder-not-writable' => 'bulk-optimize',
+		'rating'                     => 'bulk-optimize',
+		'wp-rocket'                  => 'bulk-optimize',
 	);
 
 	/**
@@ -712,6 +712,7 @@ class Imagify_Notices {
 
 	/**
 	 * Tell if the current user can see the notices.
+	 * Notice IDs that are not listed in self::$capabilities are assumed as 'manage'.
 	 *
 	 * @since  1.6.10
 	 * @author Grégory Viguier
@@ -720,19 +721,9 @@ class Imagify_Notices {
 	 * @return bool
 	 */
 	protected function user_can( $notice_id ) {
-		static $user_can;
+		$capability = isset( self::$capabilities[ $notice_id ] ) ? self::$capabilities[ $notice_id ] : 'manage';
 
-		if ( ! isset( $user_can ) ) {
-			$user_can = array(
-				'network' => current_user_can( imagify_get_capacity() ),
-				'admin'   => current_user_can( imagify_get_capacity( true ) ),
-				'upload'  => current_user_can( 'upload_files' ),
-			);
-		}
-
-		$capability = isset( self::$capabilities[ $notice_id ] ) ? self::$capabilities[ $notice_id ] : 'network';
-
-		return isset( $user_can[ $capability ] ) ? $user_can[ $capability ] : $user_can['network'];
+		return imagify_current_user_can( $capability );
 	}
 
 	/**

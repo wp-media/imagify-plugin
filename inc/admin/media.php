@@ -19,6 +19,10 @@ function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
 		return $form_fields;
 	}
 
+	if ( ! imagify_current_user_can( 'manual-optimize', $post->ID ) ) {
+		return $form_fields;
+	}
+
 	$class_name = get_imagify_attachment_class_name( 'wp', $post->ID, 'attachment_fields_to_edit' );
 	$attachment = new $class_name( $post->ID );
 
@@ -45,6 +49,10 @@ add_filter( 'media_row_actions', '_imagify_add_actions_to_media_list_row', IMAGI
  * @return array
  */
 function _imagify_add_actions_to_media_list_row( $actions, $post ) {
+	if ( ! imagify_current_user_can( 'manual-optimize', $post->ID ) ) {
+		return $actions;
+	}
+
 	// If this attachment is not an image, do nothing.
 	if ( ! imagify_is_attachment_mime_type_supported( $post->ID ) ) {
 		return $actions;
@@ -65,7 +73,7 @@ function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 
 	$image = wp_get_attachment_image_src( $post->ID, 'full' );
 
-	// If full image is too small.
+	// If full image is too small. See get_imagify_localize_script_translations().
 	if ( ! $image || (int) $image[1] < 360 ) {
 		return $actions;
 	}

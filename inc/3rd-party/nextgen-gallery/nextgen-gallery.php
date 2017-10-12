@@ -14,6 +14,7 @@ define( 'IMAGIFY_NGG_FUNCTIONS_PATH', realpath( IMAGIFY_NGG_INC_PATH . 'function
 
 require( IMAGIFY_NGG_FUNCTIONS_PATH . 'admin-stats.php' );
 require( IMAGIFY_NGG_FUNCTIONS_PATH . 'attachments.php' );
+require( IMAGIFY_NGG_FUNCTIONS_PATH . 'common.php' );
 require( IMAGIFY_NGG_COMMON_PATH . 'attachments.php' );
 
 Imagify_NGG::get_instance()->init();

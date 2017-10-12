@@ -20,5 +20,5 @@ add_action( 'admin_menu', '_imagify_bulk_optimization_menu' );
  * @since 1.0
  */
 function _imagify_bulk_optimization_menu() {
-	add_media_page( __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), imagify_get_capacity( true ), IMAGIFY_SLUG . '-bulk-optimization', '_imagify_display_bulk_page' );
+	add_media_page( __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), imagify_get_capacity( 'bulk-optimize' ), IMAGIFY_SLUG . '-bulk-optimization', '_imagify_display_bulk_page' );
 }

@@ -3,7 +3,7 @@
  * Plugin Name: Imagify
  * Plugin URI: https://wordpress.org/plugins/imagify/
  * Description: Dramaticaly reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool.
- * Version: 1.6.11
+ * Version: 1.6.12
  * Author: WP Media
  * Author URI: https://wp-media.me/
  * Licence: GPLv2
@@ -17,7 +17,7 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 // Imagify defines.
-define( 'IMAGIFY_VERSION'       , '1.6.11' );
+define( 'IMAGIFY_VERSION'       , '1.6.12' );
 define( 'IMAGIFY_SLUG'          , 'imagify' );
 define( 'IMAGIFY_SETTINGS_SLUG' , IMAGIFY_SLUG . '_settings' );
 define( 'IMAGIFY_WEB_MAIN'      , 'https://imagify.io' );
@@ -82,7 +82,6 @@ function _imagify_init() {
 	if ( is_admin() ) {
 		require( IMAGIFY_ADMIN_PATH . 'upgrader.php' );
 		require( IMAGIFY_ADMIN_PATH . 'heartbeat.php' );
-		require( IMAGIFY_ADMIN_PATH . 'ajax.php' );
 		require( IMAGIFY_ADMIN_PATH . 'options.php' );
 		require( IMAGIFY_ADMIN_PATH . 'menu.php' );
 		require( IMAGIFY_ADMIN_PATH . 'plugins.php' );
@@ -91,8 +90,10 @@ function _imagify_init() {
 		require( IMAGIFY_ADMIN_PATH . 'meta-boxes.php' );
 		require( IMAGIFY_ADMIN_UI_PATH . 'options.php' );
 		require( IMAGIFY_ADMIN_UI_PATH . 'bulk.php' );
+		require( IMAGIFY_CLASSES_PATH . 'class-imagify-admin-ajax-post.php' );
 
 		Imagify_Notices::get_instance()->init();
+		Imagify_Admin_Ajax_Post::get_instance()->init();
 	}
 
 	if ( ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {

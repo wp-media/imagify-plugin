@@ -507,6 +507,8 @@ class Imagify_Assets {
 			$this->current_handle      = $handle;
 			$this->current_handle_type = 'js';
 
+			$this->maybe_register_heartbeat( $handle );
+
 			if ( ! empty( $this->scripts[ $handle ] ) ) {
 				// If we registered it, it's one of our scripts.
 				$handle = self::JS_PREFIX . $handle;
@@ -772,6 +774,41 @@ class Imagify_Assets {
 	}
 
 	/**
+	 * Make sure Heartbeat is registered if the given script requires it.
+	 * Lots of people love deregister Heartbeat.
+	 *
+	 * @since  1.6.11
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $handle Name of the script. Should be unique.
+	 */
+	protected function maybe_register_heartbeat( $handle ) {
+		if ( wp_script_is( 'heartbeat', 'registered' ) ) {
+			return;
+		}
+
+		if ( ! empty( $this->scripts[ $handle ] ) ) {
+			// If we registered it, it's one of our scripts.
+			$handle = self::JS_PREFIX . $handle;
+		}
+
+		$dependencies = wp_scripts()->query( $handle );
+
+		if ( ! $dependencies || ! $dependencies->deps ) {
+			return;
+		}
+
+		$dependencies = array_flip( $dependencies->deps );
+
+		if ( ! isset( $dependencies['heartbeat'] ) ) {
+			return;
+		}
+
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+		wp_register_script( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", array( 'jquery' ), false, true );
+	}
+
+	/**
 	 * Tell if debug is on.
 	 *
 	 * @since  1.6.10
@@ -798,6 +835,6 @@ class Imagify_Assets {
 
 		$has_api_key = ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key' );
 
-		return $has_api_key && is_admin_bar_showing() && current_user_can( imagify_get_capacity() ) && get_imagify_option( 'admin_bar_menu' );
+		return $has_api_key && is_admin_bar_showing() && imagify_current_user_can() && get_imagify_option( 'admin_bar_menu' );
 	}
 }
