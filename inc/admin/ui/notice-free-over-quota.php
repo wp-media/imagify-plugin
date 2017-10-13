@@ -19,7 +19,7 @@ $this->render_view( 'header', array(
 	printf(
 		/* translators: 1 is a link tag start, 2 is the link tag end. */
 		__( 'To continue to optimize your images, log in to your Imagify account to %1$sbuy a pack or subscribe to a plan%2$s.', 'imagify' ),
-		'<a target="_blank" href="' . IMAGIFY_APP_MAIN . '/#/subscription">',
+		'<a target="_blank" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '">',
 		'</a>'
 	);
 	?>

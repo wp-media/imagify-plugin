@@ -45,7 +45,10 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 		'id'     => 'imagify-rate-it',
 		/* translators: %s is WordPress.org. */
 		'title'  => sprintf( __( 'Rate Imagify on %s', 'imagify' ), 'WordPress.org' ),
-		'href'   => 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform',
+		'href'   => imagify_get_external_url( 'rate' ),
+		'meta'   => array(
+			'target' => '_blank',
+		),
 	) );
 
 	// Quota & Profile informations.
@@ -57,7 +60,7 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 		$wp_admin_bar->add_menu( array(
 			'parent' => 'imagify',
 			'id'     => 'imagify-profile',
-			'title'  => wp_nonce_field( 'imagify-get-admin-bar-profile', 'imagifygetadminbarprofilenonce', false, false ) . '<div id="wp-admin-bar-imagify-profile-loading">' . __( 'Loading...', 'imagify' ) . '</div><div id="wp-admin-bar-imagify-profile-content"></div>',
+			'title'  => wp_nonce_field( 'imagify-get-admin-bar-profile', 'imagifygetadminbarprofilenonce', false, false ) . '<div id="wp-admin-bar-imagify-profile-loading" class="hide-if-no-js">' . __( 'Loading...', 'imagify' ) . '</div><div id="wp-admin-bar-imagify-profile-content" class="hide-if-no-js"></div>',
 		) );
 	}
 }
