@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  *
  * @since 1.0
  *
- * return bool True if Imagify is activated on the network
+ * return bool True if Imagify is activated on the network.
  */
 function imagify_is_active_for_network() {
 	static $is;

@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 					<p class="imagify-col-desc"><?php _e( 'Don\'t have an Imagify account yet? Optimize your images by creating an account in a few seconds!', 'imagify' ); ?></p>
 					<p>
 						<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
-						<a id="imagify-signup" target="_blank" href="<?php echo IMAGIFY_APP_MAIN; ?>/#/register" class="button button-primary"><?php _e( 'Sign up, It\'s FREE!', 'imagify' ); ?></a>
+						<a id="imagify-signup" target="_blank" href="<?php echo esc_url( imagify_get_external_url( 'register' ) ); ?>" class="button button-primary"><?php _e( 'Sign up, It\'s FREE!', 'imagify' ); ?></a>
 					</p>
 				</div>
 			</div>
@@ -31,7 +31,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 						printf(
 							/* translators: 1 is a link tag start, 2 is the link tag end. */
 							__( 'Save your API Key you have received by email or you can get it on your %1$sImagify account page%2$s.', 'imagify' ),
-							'<a target="_blank" href="' . IMAGIFY_APP_MAIN . '/#/api">',
+							'<a target="_blank" href="' . esc_url( imagify_get_external_url( 'get-api-key' ) ) . '">',
 							'</a>'
 						);
 						?>

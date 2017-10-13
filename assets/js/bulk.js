@@ -345,7 +345,7 @@
 							text2share = text2share.replace( '%2$s', data.global_original_size_human );
 							text2share = encodeURIComponent( text2share );
 
-							$( '.imagify-sn-twitter' ).attr( 'href', 'https://twitter.com/intent/tweet?source=webclient&amp;original_referer=' + imagifyBulk.labels.pluginURL + '&amp;text=' + text2share + '&amp;url=' + imagifyBulk.labels.pluginURL + '&amp;related=imagify&amp;hastags=performance,web,wordpress' );
+							$( '.imagify-sn-twitter' ).attr( 'href', imagifyBulk.labels.twitterShareURL + '&amp;text=' + text2share );
 
 							$( '.imagify-ac-chart' ).attr( 'data-percent', data.global_percent );
 							drawMeCompleteChart( $( '.imagify-ac-chart' ).find( 'canvas' ) );
