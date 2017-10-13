@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Imagify NextGen Gallery class.
  *
- * @since 1.5
+ * @since  1.5
  * @author Jonathan Buttigieg
  */
 class Imagify_NGG {
@@ -14,13 +14,13 @@ class Imagify_NGG {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.0.3';
 
 	/**
 	 * The single instance of the class.
 	 *
-	 * @access  protected
-	 * @since   1.5
+	 * @since  1.5
+	 * @access protected
 	 *
 	 * @var object
 	 */
@@ -32,8 +32,7 @@ class Imagify_NGG {
 	 * @since  1.5
 	 * @since  1.6.5 Doesn't launch the hooks anymore.
 	 * @author Jonathan Buttigieg
-	 *
-	 * @return void
+	 * @access protected
 	 */
 	protected function __construct() {}
 
@@ -42,6 +41,7 @@ class Imagify_NGG {
 	 *
 	 * @since  1.6.5
 	 * @author Grégory Viguier
+	 * @access public
 	 */
 	public function init() {
 		static $done = false;
@@ -59,9 +59,9 @@ class Imagify_NGG {
 	 *
 	 * Ensures only one instance of class is loaded or can be loaded.
 	 *
-	 * @access  public
-	 * @since   1.6.5
-	 * @author  Grégory Viguier
+	 * @since  1.6.5
+	 * @author Grégory Viguier
+	 * @access public
 	 *
 	 * @return object Main instance.
 	 */
@@ -76,25 +76,11 @@ class Imagify_NGG {
 	/**
 	 * Add custom NGG mixin to override its functions.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
-	 *
-	 * @return void
+	 * @access public
 	 */
-	function add_mixin() {
-		include_once( 'class-imagify-ngg-storage.php' );
+	public function add_mixin() {
 		C_Gallery_Storage::get_instance()->get_wrapped_instance()->add_mixin( 'Imagify_NGG_Storage' );
 	}
-}
-
-/**
- * Returns the main instance of the Imagify_NGG class.
- *
- * @since 1.6.5
- * @author Grégory Viguier
- *
- * @return object The Imagify_NGG instance.
- */
-function imagify_ngg() {
-	return Imagify_NGG::get_instance();
 }

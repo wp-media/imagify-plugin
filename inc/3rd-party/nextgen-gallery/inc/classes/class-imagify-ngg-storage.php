@@ -14,7 +14,7 @@ class Imagify_NGG_Storage extends Mixin {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * Delete a gallery AND all the pictures associated to this gallery!
@@ -30,7 +30,7 @@ class Imagify_NGG_Storage extends Mixin {
 		$images_id  = nggdb::get_ids_from_gallery( $gallery_id );
 
 		foreach ( $images_id as $pid ) {
-			imagify_ngg_db()->delete( $pid );
+			Imagify_NGG_DB::get_instance()->delete( $pid );
 		}
 
 		return $this->call_parent( 'delete_gallery', $gallery );
@@ -60,7 +60,7 @@ class Imagify_NGG_Storage extends Mixin {
 			$attachment = new Imagify_NGG_Attachment( $image->pid );
 
 			if ( $attachment->is_optimized() ) {
-				imagify_ngg_db()->delete( $image->pid );
+				Imagify_NGG_DB::get_instance()->delete( $image->pid );
 			}
 		}
 
@@ -88,7 +88,7 @@ class Imagify_NGG_Storage extends Mixin {
 
 		// Remove Imagify data.
 		if ( isset( $image->pid ) ) {
-			imagify_ngg_db()->delete( $image->pid );
+			Imagify_NGG_DB::get_instance()->delete( $image->pid );
 		}
 
 		return $this->call_parent( 'recover_image', $image );

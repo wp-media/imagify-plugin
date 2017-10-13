@@ -9,9 +9,9 @@ if ( ! function_exists( 'curl_file_create' ) ) :
 	/**
 	 * PHP-agnostic version of curl_file_create(): create a CURLFile object.
 	 *
-	 * @since 1.0
-	 * @since PHP 5.5
-	 * @see   http://dk2.php.net/manual/en/function.curl-file-create.php
+	 * @since  1.0
+	 * @since  PHP 5.5
+	 * @source http://dk2.php.net/manual/en/function.curl-file-create.php
 	 *
 	 * @param  string $filename Path to the file which will be uploaded.
 	 * @param  string $mimetype Mimetype of the file.
@@ -31,8 +31,7 @@ if ( ! function_exists( 'array_replace' ) ) :
 	 *
 	 * @since  1.6.9
 	 * @since  PHP 5.3
-	 * @see    http://dk2.php.net/manual/en/function.array-replace.php
-	 * @author Grégory Viguier
+	 * @source http://dk2.php.net/manual/en/function.array-replace.php
 	 *
 	 * @param  array $target       The array in which elements are replaced.
 	 * @param  array $replacements The array from which elements will be extracted.
@@ -55,6 +54,107 @@ if ( ! function_exists( 'array_replace' ) ) :
 		}
 
 		return $target;
+	}
+endif;
+
+// SPL can be disabled on PHP 5.2.
+if ( ! function_exists( 'spl_autoload_register' ) ) :
+	$_wp_spl_autoloaders = array();
+
+	/**
+	 * Autoloader compatibility callback.
+	 *
+	 * @since  1.6.12
+	 * @since  WP 4.6.0
+	 * @source WordPress
+	 *
+	 * @param string $classname Class to attempt autoloading.
+	 */
+	function __autoload( $classname ) {
+		global $_wp_spl_autoloaders;
+		foreach ( $_wp_spl_autoloaders as $autoloader ) {
+			if ( ! is_callable( $autoloader ) ) {
+				// Avoid the extra warning if the autoloader isn't callable.
+				continue;
+			}
+
+			call_user_func( $autoloader, $classname );
+
+			// If it has been autoloaded, stop processing.
+			if ( class_exists( $classname, false ) ) {
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Registers a function to be autoloaded.
+	 *
+	 * @since  1.6.12
+	 * @since  WP 4.6.0
+	 * @source WordPress
+	 *
+	 * @throws Exception If the function to register is not callable.
+	 *
+	 * @param callable $autoload_function The function to register.
+	 * @param bool     $throw             Optional. Whether the function should throw an exception
+	 *                                    if the function isn't callable. Default true.
+	 * @param bool     $prepend           Whether the function should be prepended to the stack.
+	 *                                    Default false.
+	 */
+	function spl_autoload_register( $autoload_function, $throw = true, $prepend = false ) {
+		if ( $throw && ! is_callable( $autoload_function ) ) {
+			// String not translated to match PHP core.
+			throw new Exception( 'Function not callable' );
+		}
+
+		global $_wp_spl_autoloaders;
+
+		// Don't allow multiple registration.
+		if ( in_array( $autoload_function, $_wp_spl_autoloaders, true ) ) {
+			return;
+		}
+
+		if ( $prepend ) {
+			array_unshift( $_wp_spl_autoloaders, $autoload_function );
+		} else {
+			$_wp_spl_autoloaders[] = $autoload_function;
+		}
+	}
+
+	/**
+	 * Unregisters an autoloader function.
+	 *
+	 * @since  1.6.12
+	 * @since  WP 4.6.0
+	 * @source WordPress
+	 *
+	 * @param callable $function The function to unregister.
+	 * @return bool True if the function was unregistered, false if it could not be.
+	 */
+	function spl_autoload_unregister( $function ) {
+		global $_wp_spl_autoloaders;
+		foreach ( $_wp_spl_autoloaders as &$autoloader ) {
+			if ( $autoloader === $function ) {
+				unset( $autoloader );
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Retrieves the registered autoloader functions.
+	 *
+	 * @since  1.6.12
+	 * @since  WP 4.6.0
+	 * @source WordPress
+	 *
+	 * @return array List of autoloader functions.
+	 */
+	function spl_autoload_functions() {
+		return $GLOBALS['_wp_spl_autoloaders'];
 	}
 endif;
 

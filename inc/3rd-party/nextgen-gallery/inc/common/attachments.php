@@ -39,7 +39,7 @@ add_action( 'ngg_delete_picture', '_imagify_ngg_delete_picture' );
  * @param int $image_id An image ID.
  */
 function _imagify_ngg_delete_picture( $image_id ) {
-	imagify_ngg_db()->delete( $image_id );
+	Imagify_NGG_DB::get_instance()->delete( $image_id );
 }
 
 add_filter( 'ngg_medialibrary_imported_image', '_imagify_ngg_media_library_imported_image_data', 10, 2 );
@@ -71,7 +71,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 		'sizes' => array( 'full' => $full_size ),
 	);
 
-	imagify_ngg_db()->update( $image->pid, array(
+	Imagify_NGG_DB::get_instance()->update( $image->pid, array(
 		'pid'                => $image->pid,
 		'optimization_level' => $attachment->get_optimization_level(),
 		'status'             => $attachment->get_status(),

@@ -445,15 +445,3 @@ class Imagify_AS3CF {
 		return imagify_is_attachment_mime_type_supported( $post_id );
 	}
 }
-
-/**
- * Returns the main instance of the Imagify_AS3CF class.
- *
- * @since  1.6.6
- * @author Grégory Viguier
- *
- * @return object The Imagify_AS3CF instance.
- */
-function imagify_as3cf() {
-	return Imagify_AS3CF::get_instance();
-}
