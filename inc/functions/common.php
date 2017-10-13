@@ -124,3 +124,81 @@ function imagify_sanitize_context( $context ) {
 	$context = preg_replace( '/[^a-zA-Z0-9_\-]/', '', $context );
 	return $context ? $context : 'wp';
 }
+
+/**
+ * Simple helper to get some external URLs, like to the documentation.
+ *
+ * @since  1.6.12
+ * @author Grégory Viguier
+ *
+ * @param  string $target     What we want.
+ * @param  array  $query_args An array of query arguments.
+ * @return string The URL.
+ */
+function imagify_get_external_url( $target, $query_args = array() ) {
+	$site_url = 'https://imagify.io/';
+	$app_url  = 'https://app.imagify.io/#/';
+
+	switch ( $target ) {
+		case 'plugin':
+			/* translators: Plugin URI of the plugin/theme */
+			$url = __( 'https://wordpress.org/plugins/imagify/', 'imagify' );
+			break;
+
+		case 'rate':
+			$url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
+			break;
+
+		case 'share-twitter':
+			$url = rawurlencode( imagify_get_external_url( 'plugin' ) );
+			$url = 'https://twitter.com/intent/tweet?source=webclient&original_referer=' . $url . '&url=' . $url . '&related=imagify&hastags=performance,web,wordpress';
+			break;
+
+		case 'share-facebook':
+			$url = rawurlencode( imagify_get_external_url( 'plugin' ) );
+			$url = 'https://www.facebook.com/sharer/sharer.php?u=' . $url;
+			break;
+
+		case 'exif':
+			/* translators: URL to a Wikipedia page explaining what EXIF means. */
+			$url = __( 'https://en.wikipedia.org/wiki/Exchangeable_image_file_format', 'imagify' );
+			break;
+
+		case 'contact':
+			$locale = function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale();
+			$paths  = array(
+				'default' => 'contact',
+				'fr_FR'   => 'fr/contact',
+			);
+
+			$url = isset( $paths[ $locale ] ) ? $paths[ $locale ] : $paths['default'];
+			$url = $site_url . $url . '/';
+			break;
+
+		case 'documentation':
+			$url = $site_url . 'documentation/';
+			break;
+
+		case 'register':
+			return $app_url . 'register';
+
+		case 'subscription':
+			return $app_url . 'subscription';
+
+		case 'get-api-key':
+			return $app_url . 'api';
+
+		case 'payment':
+			// Don't remove the trailing slash.
+			return $app_url . 'plugin/';
+
+		default:
+			return '';
+	}
+
+	if ( $query_args ) {
+		$url = add_query_arg( $query_args, $url );
+	}
+
+	return $url;
+}
