@@ -129,7 +129,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 /**
  * Get the error message for a specific attachment.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @param  object $attachment The attachement object.
@@ -293,6 +293,11 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	if ( ! $attachment->is_mime_type_supported() ) {
 		/* translators: %s is a file extension. */
 		return sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
+	}
+
+	// Check if the attachment has the required WP metadata.
+	if ( ! get_attached_file( $attachment->id, true ) || ! wp_get_attachment_metadata( $attachment->id, true ) ) {
+		return __( 'This media lacks the required metadata and can\'t be optimized.', 'imagify' );
 	}
 
 	// Check if the API key is valid.
