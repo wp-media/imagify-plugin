@@ -167,6 +167,27 @@ abstract class Imagify_Abstract_DB {
 	}
 
 	/**
+	 * Retrieve a specific column's value by the the specified column / values.
+	 *
+	 * @access public
+	 * @since  1.6.12
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $column        A column name.
+	 * @param  string $column_where  A column name.
+	 * @param  array  $column_values An array of values.
+	 * @return string
+	 */
+	public function get_column_in( $column, $column_where, $column_values ) {
+		global $wpdb;
+		$column        = esc_sql( $column );
+		$column_where  = esc_sql( $column_where );
+		$column_values = esc_sql( $column_values );
+		$column_values = "'" . implode( "','", $column_values ) . "'";
+		return $wpdb->get_var( "SELECT $column FROM $this->table_name WHERE $column_where IN ( $column_values ) LIMIT 1;" ); // WPCS: unprepared SQL ok.
+	}
+
+	/**
 	 * Insert a new row.
 	 *
 	 * @access  public

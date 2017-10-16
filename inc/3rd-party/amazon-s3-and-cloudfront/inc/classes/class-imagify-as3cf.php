@@ -338,9 +338,19 @@ class Imagify_AS3CF {
 			$auto_optimize = imagify_valid_key() && get_imagify_option( 'auto_optimize' );
 		}
 
-		if ( $is_new_upload && ! $auto_optimize ) {
-			// It's a new upload and auto-optimization is disabled.
-			return $metadata;
+		if ( $is_new_upload ) {
+			// It's a new upload.
+			if ( ! $auto_optimize ) {
+				// Auto-optimization is disabled.
+				return $metadata;
+			}
+
+			/** This filter is documented in inc/common/attachments.php. */
+			$optimize = apply_filters( 'imagify_auto_optimize_attachment', true, $attachment_id, $metadata );
+
+			if ( ! $optimize ) {
+				return $metadata;
+			}
 		}
 
 		if ( ! $is_new_upload && ! get_post_meta( $attachment_id, '_imagify_data', true ) ) {
@@ -434,16 +444,4 @@ class Imagify_AS3CF {
 
 		return imagify_is_attachment_mime_type_supported( $post_id );
 	}
-}
-
-/**
- * Returns the main instance of the Imagify_AS3CF class.
- *
- * @since  1.6.6
- * @author Grégory Viguier
- *
- * @return object The Imagify_AS3CF instance.
- */
-function imagify_as3cf() {
-	return Imagify_AS3CF::get_instance();
 }

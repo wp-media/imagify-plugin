@@ -148,19 +148,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 */
 	public static function instance() {
 		$class_name = get_class( $this );
-		_deprecated_function( $class_name . '::' . __FUNCTION__ . '()', '1.6.5', 'imagify_ngg_db()' );
+		_deprecated_function( $class_name . '::' . __FUNCTION__ . '()', '1.6.5', 'Imagify_NGG_DB::get_instance()' );
 		return self::get_instance();
 	}
-}
-
-/**
- * Returns the main instance of the Imagify_NGG_DB class.
- *
- * @since 1.6.5
- * @author Jonathan Buttigieg
- *
- * @return object The Imagify_NGG_DB instance.
- */
-function imagify_ngg_db() {
-	return Imagify_NGG_DB::get_instance();
 }
