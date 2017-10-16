@@ -427,10 +427,14 @@ class Imagify_Admin_Ajax_Post {
 		$ids = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"SELECT $wpdb->posts.ID
 			FROM $wpdb->posts
-				LEFT JOIN $wpdb->postmeta
-					ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '_imagify_optimization_level' )
-				LEFT JOIN $wpdb->postmeta AS mt1
-					ON ( $wpdb->posts.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+			LEFT JOIN $wpdb->postmeta
+				ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '_imagify_optimization_level' )
+			LEFT JOIN $wpdb->postmeta AS mt1
+				ON ( $wpdb->posts.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+			INNER JOIN $wpdb->postmeta AS mt2
+				ON ( $wpdb->posts.ID = mt2.post_id AND mt2.meta_key = '_wp_attached_file' )
+			INNER JOIN $wpdb->postmeta AS mt3
+				ON ( $wpdb->posts.ID = mt3.post_id AND mt3.meta_key = '_wp_attachment_metadata' )
 			WHERE
 				$wpdb->posts.post_mime_type IN ( $mime_types )
 				AND (
@@ -441,8 +445,7 @@ class Imagify_Admin_Ajax_Post {
 					mt1.meta_value = 'error'
 				)
 				AND $wpdb->posts.post_type = 'attachment'
-				AND $wpdb->posts.post_status <> 'trash'
-				AND $wpdb->posts.post_status <> 'auto-draft'
+				AND $wpdb->posts.post_status = 'inherit'
 			GROUP BY $wpdb->posts.ID
 			ORDER BY
 				CASE mt1.meta_value
