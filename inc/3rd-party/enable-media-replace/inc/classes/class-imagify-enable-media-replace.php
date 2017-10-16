@@ -198,15 +198,3 @@ class Imagify_Enable_Media_Replace {
 		return $this->attachment;
 	}
 }
-
-/**
- * Returns the main instance of the Imagify_Enable_Media_Replace class.
- *
- * @since 1.6.9
- * @author Grégory Viguier
- *
- * @return object The Imagify_Enable_Media_Replace instance.
- */
-function imagify_enable_media_replace() {
-	return Imagify_Enable_Media_Replace::get_instance();
-}
