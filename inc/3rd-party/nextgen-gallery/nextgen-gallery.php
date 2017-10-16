@@ -18,6 +18,7 @@ require( IMAGIFY_NGG_FUNCTIONS_PATH . 'common.php' );
 require( IMAGIFY_NGG_COMMON_PATH . 'attachments.php' );
 
 Imagify_NGG::get_instance()->init();
+Imagify_NGG_DB::get_instance(); // Required to set $wpdb->ngg_imagify_data.
 
 if ( is_admin() ) {
 	require( IMAGIFY_NGG_ADMIN_PATH . 'enqueue.php' );
