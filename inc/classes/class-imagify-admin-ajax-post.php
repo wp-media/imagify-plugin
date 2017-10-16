@@ -528,6 +528,11 @@ class Imagify_Admin_Ajax_Post {
 		$data = array();
 
 		foreach ( $ids as $i => $id ) {
+			if ( empty( $results['filenames'][ $id ] ) ) {
+				// Problem.
+				continue;
+			}
+
 			$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
 
 			/** This filter is documented in inc/functions/process.php. */
