@@ -81,6 +81,19 @@ function imagify_is_attachment_mime_type_supported( $attachment_id ) {
 }
 
 /**
+ * Tell if the attachment has the required WP metadata.
+ *
+ * @since  1.6.12
+ * @author Grégory Viguier
+ *
+ * @param  int $attachment_id The attachment ID.
+ * @return bool
+ */
+function imagify_attachment_has_required_metadata( $attachment_id ) {
+	return get_attached_file( $attachment_id, true ) && wp_get_attachment_metadata( $attachment_id, true );
+}
+
+/**
  * Get the path to the backups directory.
  *
  * @since  1.6.8
