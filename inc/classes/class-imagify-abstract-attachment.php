@@ -112,14 +112,13 @@ class Imagify_Abstract_Attachment {
 
 	/**
 	 * Tell if the current attachment has the required WP metadata.
-
 	 *
 	 * @since  1.6.12
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
 	 */
-	function has_required_metadata() {
+	public function has_required_metadata() {
 		return imagify_attachment_has_required_metadata( $this->id );
 	}
 
