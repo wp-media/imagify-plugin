@@ -295,7 +295,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	}
 
 	// Check if the attachment has the required WP metadata.
-	if ( ! imagify_attachment_has_required_metadata( $attachment->id ) ) {
+	if ( ! $attachment->has_required_metadata() ) {
 		return __( 'This media lacks the required metadata and can\'t be optimized.', 'imagify' );
 	}
 

@@ -217,6 +217,25 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
+	 * Tell if the current attachment has the required WP metadata.
+
+	 *
+	 * @since  1.6.12
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	function has_required_metadata() {
+		static $sizes;
+
+		if ( ! isset( $sizes ) ) {
+			$sizes = C_Gallery_Storage::get_instance()->get_image_sizes();
+		}
+
+		return $sizes && $this->get_original_path();
+	}
+
+	/**
 	 * Update the metadata size of the attachment.
 	 *
 	 * @since 1.5
