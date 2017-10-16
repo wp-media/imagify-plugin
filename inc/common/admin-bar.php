@@ -39,6 +39,17 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 		) );
 	}
 
+	// Documentation.
+	$wp_admin_bar->add_menu(array(
+		'parent' => 'imagify',
+		'id'     => 'imagify-documentation',
+		'title'  => __( 'Documentation', 'imagify' ),
+		'href'   => imagify_get_external_url( 'documentation' ),
+		'meta'   => array(
+			'target' => '_blank',
+		),
+	) );
+
 	// Rate it.
 	$wp_admin_bar->add_menu(array(
 		'parent' => 'imagify',
