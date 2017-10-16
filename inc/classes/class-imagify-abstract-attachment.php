@@ -111,6 +111,18 @@ class Imagify_Abstract_Attachment {
 	}
 
 	/**
+	 * Tell if the current attachment has the required WP metadata.
+	 *
+	 * @since  1.6.12
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function has_required_metadata() {
+		return imagify_attachment_has_required_metadata( $this->id );
+	}
+
+	/**
 	 * Get the attachment error if there is one.
 	 *
 	 * @since 1.1.5

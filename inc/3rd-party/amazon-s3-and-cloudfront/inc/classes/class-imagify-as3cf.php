@@ -173,6 +173,12 @@ class Imagify_AS3CF {
 		$ids = array_flip( $ids );
 
 		foreach ( $ids as $id => $i ) {
+			if ( empty( $results['filenames'][ $id ] ) ) {
+				// Problem.
+				unset( $ids[ $id ] );
+				continue;
+			}
+
 			$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
 
 			/** This filter is documented in inc/functions/process.php. */

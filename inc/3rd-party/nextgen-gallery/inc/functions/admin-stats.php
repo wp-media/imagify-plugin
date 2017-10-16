@@ -135,7 +135,7 @@ function imagify_ngg_count_saving_data( $attachments ) {
 		WHERE status = 'success'
 		LIMIT %d, %d";
 
-	$attachments = $wpdb->get_col( $wpdb->prepare( $query, $offset, $limit ) );
+	$attachments = $wpdb->get_col( $wpdb->prepare( $query, $offset, $limit ) ); // WPCS: unprepared SQL ok.
 	$wpdb->flush();
 
 	while ( $attachments ) {
@@ -172,7 +172,7 @@ function imagify_ngg_count_saving_data( $attachments ) {
 			// Unless we are really unlucky, we still have attachments to fetch.
 			$offset += $limit;
 
-			$attachments = $wpdb->get_col( $wpdb->prepare( $query, $offset, $limit ) );
+			$attachments = $wpdb->get_col( $wpdb->prepare( $query, $offset, $limit ) ); // WPCS: unprepared SQL ok.
 			$wpdb->flush();
 		} else {
 			// Save one request, don't go back to the beginning of the loop.
