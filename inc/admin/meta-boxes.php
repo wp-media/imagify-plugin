@@ -18,6 +18,10 @@ function _imagify_attachment_submitbox_misc_actions() {
 		return;
 	}
 
+	if ( ! imagify_attachment_has_required_metadata( $post->ID ) ) {
+		return;
+	}
+
 	$class_name = get_imagify_attachment_class_name( 'wp', $post->ID, 'attachment_submitbox_misc_actions' );
 	$attachment = new $class_name( $post->ID );
 
