@@ -77,24 +77,23 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	}
 
 	$full_size = $attachment->get_size_data();
-	$data      = array(
-		'stats' => array(
-			'original_size'  => $full_size['original_size'],
-			'optimized_size' => $full_size['optimized_size'],
-			'percent'        => $full_size['percent'],
-		),
-		'sizes' => array( 'full' => $full_size ),
-	);
 
 	Imagify_NGG_DB::get_instance()->update( $image->pid, array(
 		'pid'                => $image->pid,
 		'optimization_level' => $attachment->get_optimization_level(),
 		'status'             => $attachment->get_status(),
-		'data'               => maybe_serialize( $data ),
+		'data'               => maybe_serialize( array(
+			'stats' => array(
+				'original_size'  => $full_size['original_size'],
+				'optimized_size' => $full_size['optimized_size'],
+				'percent'        => $full_size['percent'],
+			),
+			'sizes' => array( 'full' => $full_size ),
+		) ),
 	) );
 
-	$image = new Imagify_NGG_Attachment( $image->pid );
-	$image->optimize_thumbnails();
+	$imagify_image = new Imagify_NGG_Attachment( $image->pid );
+	$imagify_image->optimize_thumbnails();
 
 	return $image;
 }
