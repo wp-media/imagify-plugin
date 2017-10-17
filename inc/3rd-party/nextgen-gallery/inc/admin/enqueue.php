@@ -17,7 +17,7 @@ function _imagify_ngg_admin_print_styles() {
 	/**
 	 * Manage Gallery Images.
 	 */
-	if ( imagify_is_screen( 'nggallery-manage-images' ) ) {
+	if ( imagify_is_screen( 'nggallery-manage-images' ) || ! empty( $_GET['gid'] ) && ! empty( $_GET['pid'] ) && imagify_is_screen( 'nggallery-manage-gallery' ) ) {
 		$assets->enqueue_style( 'admin' )->enqueue_script( 'library' );
 		return;
 	}
