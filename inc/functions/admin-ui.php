@@ -247,8 +247,8 @@ function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $
 	 */
 	$display = apply_filters( 'imagify_display_missing_thumbnails_link', true, $attachment, $context );
 
-	// Stop the process if the filter is false or if the API key isn't valid.
-	if ( ! $display || ! imagify_valid_key() ) {
+	// Stop the process if the filter is false, or if the API key isn't valid, or if there is no backup file.
+	if ( ! $display || ! imagify_valid_key() || ! $attachment->has_backup() ) {
 		return '';
 	}
 

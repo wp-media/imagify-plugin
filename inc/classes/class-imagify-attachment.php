@@ -496,6 +496,11 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			return array();
 		}
 
+		// Stop the process if there is no backup file to use.
+		if ( ! $this->has_backup() ) {
+			return new WP_Error( 'no_backup', __( 'This file has no backup file.', 'imagify' ) );
+		}
+
 		/**
 		 * Fires before optimizing the missing thumbnails.
 		 *
