@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Imagify NextGen Gallery attachment class.
  *
- * @since 1.5
+ * @since  1.5
  * @author Jonathan Buttigieg
  */
 class Imagify_NGG_Attachment extends Imagify_Attachment {
@@ -50,7 +50,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * The constructor.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @param int|object $id An image attachment ID or a NGG object.
@@ -92,7 +92,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the attachment backup URL.
 	 *
-	 * @since 1.6.8
+	 * @since  1.6.8
 	 * @author Grégory Viguier
 	 *
 	 * @return string|false
@@ -104,7 +104,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the attachment SQL data row.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -117,7 +117,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the attachment optimization data.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -131,7 +131,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the attachment optimization level.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -145,7 +145,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the attachment optimization status (success or error).
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -159,7 +159,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the original attachment path.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -172,7 +172,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the original attachment URL.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -252,9 +252,9 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Fills statistics data with values from $data array.
 	 *
-	 * @since 1.5
-	 * @since 1.6.5 Not static anymore.
-	 * @since 1.6.6 Removed the attachment ID parameter.
+	 * @since  1.5
+	 * @since  1.6.5 Not static anymore.
+	 * @since  1.6.6 Removed the attachment ID parameter.
 	 * @author Jonathan Buttigieg
 	 * @access public
 	 *
@@ -326,7 +326,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Optimize all sizes with Imagify.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -353,9 +353,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		}
 
 		// Get file path & URL for original image.
-		$attachment_path          = $this->get_original_path();
-		$attachment_url           = $this->get_original_url();
-		$attachment_original_size = $this->get_original_size( false );
+		$attachment_path = $this->get_original_path();
+		$attachment_url  = $this->get_original_url();
 
 		/**
 		 * Fires before optimizing an attachment.
@@ -400,7 +399,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			'optimization_level' => $optimization_level,
 			'context'            => 'NGG',
 			'resized'            => $resized,
-			'original_size'      => $attachment_original_size,
+			'original_size'      => $this->get_original_size( false ),
 		) );
 
 		$data = $this->fill_data( null, $response, $attachment_url );
@@ -484,7 +483,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Optimize all thumbnails of an image.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
