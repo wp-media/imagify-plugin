@@ -97,8 +97,8 @@ function imagify_get_abspath() {
  * @since  1.6.10
  * @author Grégory Viguier
  *
- * @param  string      $file_path An absolute path.
- * @return string|bool            A relative path. Can return the absolute path or false in case of a failure.
+ * @param  string $file_path An absolute path.
+ * @return string|bool       A relative path. Can return the absolute path or false in case of a failure.
  */
 function imagify_make_file_path_relative( $file_path ) {
 	static $abspath;
