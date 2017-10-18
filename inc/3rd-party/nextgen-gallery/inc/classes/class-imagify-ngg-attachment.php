@@ -14,7 +14,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1.2';
+	const VERSION = '1.1.3';
 
 	/**
 	 * The image object.
@@ -77,23 +77,16 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Get the attachment backup file path.
+	 * Get the attachment backup file path, even if the file doesn't exist.
 	 *
-	 * @since  1.5
-	 * @author Jonathan Buttigieg
+	 * @since  1.6.13
+	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @return string|false The file path. False if it doesn't exist.
+	 * @return string The file path.
 	 */
-	public function get_backup_path() {
-		$file_path   = $this->get_original_path();
-		$backup_path = get_imagify_ngg_attachment_backup_path( $file_path );
-
-		if ( $backup_path && file_exists( $backup_path ) ) {
-			return $backup_path;
-		}
-
-		return false;
+	public function get_raw_backup_path() {
+		return get_imagify_ngg_attachment_backup_path( $this->get_original_path() );
 	}
 
 	/**
@@ -105,7 +98,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return string|false
 	 */
 	public function get_backup_url() {
-		return site_url( '/' ) . imagify_make_file_path_relative( $this->get_backup_path() );
+		return site_url( '/' ) . imagify_make_file_path_relative( $this->get_raw_backup_path() );
 	}
 
 	/**

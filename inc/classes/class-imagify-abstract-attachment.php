@@ -13,7 +13,7 @@ class Imagify_Abstract_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 
 	/**
 	 * The attachment ID.
@@ -50,6 +50,19 @@ class Imagify_Abstract_Attachment {
 	}
 
 	/**
+	 * Get the attachment backup file path, even if the file doesn't exist.
+	 *
+	 * @since  1.6.13
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return string The file path.
+	 */
+	public function get_raw_backup_path() {
+		return '';
+	}
+
+	/**
 	 * Get the attachment backup file path.
 	 *
 	 * @since  1.0
@@ -58,19 +71,25 @@ class Imagify_Abstract_Attachment {
 	 * @return string|false The file path. False if it doesn't exist.
 	 */
 	public function get_backup_path() {
-		return '';
+		$backup_path = $this->get_raw_backup_path();
+
+		if ( $backup_path && file_exists( $backup_path ) ) {
+			return $backup_path;
+		}
+
+		return false;
 	}
 
 	/**
 	 * Get the attachment backup URL.
 	 *
-	 * @since 1.4
+	 * @since  1.4
 	 * @access public
 	 *
 	 * @return string|false
 	 */
 	public function get_backup_url() {
-		return get_imagify_attachment_url( $this->get_backup_path() );
+		return get_imagify_attachment_url( $this->get_raw_backup_path() );
 	}
 
 	/**

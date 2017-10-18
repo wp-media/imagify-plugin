@@ -13,7 +13,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 
 	/**
 	 * The editor instance used to resize files.
@@ -26,22 +26,16 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	protected $editor;
 
 	/**
-	 * Get the attachment backup file path.
+	 * Get the attachment backup file path, even if the file doesn't exist.
 	 *
-	 * @since  1.0
+	 * @since  1.6.13
+	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @return string|false The file path. False if it doesn't exist.
+	 * @return string The file path.
 	 */
-	public function get_backup_path() {
-		$file_path   = $this->get_original_path();
-		$backup_path = get_imagify_attachment_backup_path( $file_path );
-
-		if ( $backup_path && file_exists( $backup_path ) ) {
-			return $backup_path;
-		}
-
-		return false;
+	public function get_raw_backup_path() {
+		return get_imagify_attachment_backup_path( $this->get_original_path() );
 	}
 
 	/**
