@@ -221,6 +221,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		$original_dirname = trailingslashit( dirname( $this->get_original_path() ) );
 		$thumbnail_path   = $original_dirname . $thumbnail_data['file'];
+		$filesystem       = imagify_get_filesystem();
 
 		if ( ! empty( $metadata_sizes[ $thumbnail_size ] ) && $filesystem->exists( $thumbnail_path ) ) {
 			imagify_chmod_file( $thumbnail_path );
@@ -243,7 +244,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			return new WP_Error( 'image_resize_error' );
 		}
 
-		$filesystem        = imagify_get_filesystem();
 		// The file name can change from what we expected (1px wider, etc).
 		$backup_dirname    = trailingslashit( dirname( $this->get_backup_path() ) );
 		$backup_thumb_path = $backup_dirname . $result[ $thumbnail_size ]['file'];
