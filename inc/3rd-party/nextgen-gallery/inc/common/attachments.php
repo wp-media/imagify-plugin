@@ -44,19 +44,6 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 	}
 }
 
-add_action( 'ngg_delete_picture', '_imagify_ngg_delete_picture' );
-/**
- * Delete the Imagify data when an image is deleted.
- *
- * @since  1.5
- * @author Jonathan Buttigieg
- *
- * @param int $image_id An image ID.
- */
-function _imagify_ngg_delete_picture( $image_id ) {
-	Imagify_NGG_DB::get_instance()->delete( $image_id );
-}
-
 add_filter( 'ngg_medialibrary_imported_image', '_imagify_ngg_media_library_imported_image_data', 10, 2 );
 /**
  * Import Imagify data from a WordPress image to a new NGG image
@@ -97,3 +84,10 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 
 	return $image;
 }
+
+/**
+ * Delete the Imagify data when an image is deleted.
+ *
+ * @since 1.5
+ */
+add_action( 'ngg_delete_picture', array( Imagify_NGG_DB::get_instance(), 'delete' ) );
