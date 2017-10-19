@@ -400,6 +400,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			'context'            => 'NGG',
 			'resized'            => $resized,
 			'original_size'      => $this->get_original_size( false ),
+			'backup_path'        => $this->get_raw_backup_path(),
 		) );
 
 		$data = $this->fill_data( null, $response, $attachment_url );
@@ -525,7 +526,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				$response = do_imagify( $thumbnail_path, array(
 					'backup'             => false,
 					'optimization_level' => $optimization_level,
-					'context'            => 'wp',
+					'context'            => 'NGG',
 				) );
 
 				$data = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
