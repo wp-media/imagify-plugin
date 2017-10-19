@@ -4,8 +4,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Imagify DB base class.
  *
- * @source  https://gist.github.com/pippinsplugins/e220a7f0f0f2fbe64608
- * @since   1.5
+ * @since  1.5
+ * @source https://gist.github.com/pippinsplugins/e220a7f0f0f2fbe64608
  */
 abstract class Imagify_Abstract_DB {
 
@@ -14,59 +14,58 @@ abstract class Imagify_Abstract_DB {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.1';
 
 	/**
 	 * The single instance of the class.
 	 *
-	 * @access  protected
-	 * @since   1.5
-	 *
-	 * @var object
+	 * @var    object
+	 * @since  1.5
+	 * @access protected
 	 */
 	protected static $_instance;
 
 	/**
 	 * The name of our database table.
 	 *
-	 * @var     string
-	 * @access  public
-	 * @since   1.5
+	 * @var    string
+	 * @since  1.5
+	 * @access public
 	 */
 	public $table_name;
 
 	/**
 	 * The version of our database table.
 	 *
-	 * @var     string
-	 * @access  public
-	 * @since   1.5
+	 * @var    string
+	 * @since  1.5
+	 * @access public
 	 */
 	public $version;
 
 	/**
 	 * The name of the primary column.
 	 *
-	 * @var     string
-	 * @access  public
-	 * @since   1.5
+	 * @var    string
+	 * @since  1.5
+	 * @access public
 	 */
 	public $primary_key;
 
 	/**
 	 * Get things started.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access protected
 	 */
 	protected function __construct() {}
 
 	/**
 	 * Get the main Instance.
 	 *
-	 * @access  public
-	 * @since   1.6.5
-	 * @author  Grégory Viguier
+	 * @since  1.6.5
+	 * @access public
+	 * @author Grégory Viguier
 	 *
 	 * @return object Main instance.
 	 */
@@ -81,32 +80,28 @@ abstract class Imagify_Abstract_DB {
 	/**
 	 * Whitelist of columns.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access public
 	 *
 	 * @return  array
 	 */
-	public function get_columns() {
-		return array();
-	}
+	abstract public function get_columns();
 
 	/**
 	 * Default column values.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access public
 	 *
 	 * @return  array
 	 */
-	public function get_column_defaults() {
-		return array();
-	}
+	abstract public function get_column_defaults();
 
 	/**
 	 * Retrieve a row by the primary key.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access public
 	 *
 	 * @param  string $row_id A primary key.
 	 * @return object
@@ -119,8 +114,8 @@ abstract class Imagify_Abstract_DB {
 	/**
 	 * Retrieve a row by a specific column / value.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access public
 	 *
 	 * @param  string $column A column name.
 	 * @param  string $row_id A value.
@@ -135,8 +130,8 @@ abstract class Imagify_Abstract_DB {
 	/**
 	 * Retrieve a specific column's value by the primary key.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access public
 	 *
 	 * @param  string $column A column name.
 	 * @param  string $row_id A primary key.
@@ -151,8 +146,8 @@ abstract class Imagify_Abstract_DB {
 	/**
 	 * Retrieve a specific column's value by the the specified column / value.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access public
 	 *
 	 * @param  string $column       A column name.
 	 * @param  string $column_where A column name.
@@ -169,8 +164,8 @@ abstract class Imagify_Abstract_DB {
 	/**
 	 * Retrieve a specific column's value by the the specified column / values.
 	 *
-	 * @access public
 	 * @since  1.6.12
+	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $column        A column name.
@@ -190,8 +185,8 @@ abstract class Imagify_Abstract_DB {
 	/**
 	 * Insert a new row.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access public
 	 *
 	 * @param  string $data New data.
 	 * @return int
@@ -223,8 +218,8 @@ abstract class Imagify_Abstract_DB {
 	/**
 	 * Update a row.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access public
 	 *
 	 * @param  string $row_id A primary key.
 	 * @param  array  $data   New data.
@@ -269,8 +264,8 @@ abstract class Imagify_Abstract_DB {
 	/**
 	 * Delete a row identified by the primary key.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access public
 	 *
 	 * @param  string $row_id A primary key.
 	 * @return bool
@@ -292,6 +287,7 @@ abstract class Imagify_Abstract_DB {
 	 * Check if the given table exists.
 	 *
 	 * @since  1.5
+	 * @access public
 	 *
 	 * @param  string $table The table name.
 	 * @return bool          True if the table name exists.
@@ -302,5 +298,4 @@ abstract class Imagify_Abstract_DB {
 
 		return $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE '%s'", $table ) ) === $table;
 	}
-
 }
