@@ -375,38 +375,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		set_transient( 'imagify-ngg-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
 
-		// Get the resize values for the original size.
-		$resized         = false;
-		$do_resize       = get_imagify_option( 'resize_larger', false );
-		$resize_width    = get_imagify_option( 'resize_larger_w' );
-		$attachment_size = @getimagesize( $attachment_path );
-
-		if ( $do_resize && isset( $attachment_size[0] ) && $resize_width < $attachment_size[0] ) {
-			$resized_attachment_path = $this->resize( $attachment_path, $attachment_size, $resize_width );
-
-			if ( ! is_wp_error( $resized_attachment_path ) ) {
-				// TODO (@Greg): Send an error message if the backup fails.
-				imagify_backup_file( $attachment_path, $this->get_backup_path() );
-
-				$filesystem = imagify_get_filesystem();
-
-				$filesystem->move( $resized_attachment_path, $attachment_path, true );
-				imagify_chmod_file( $attachment_path );
-
-				// If resized temp file still exists, delete it.
-				if ( $filesystem->exists( $resized_attachment_path ) ) {
-					$filesystem->delete( $resized_attachment_path );
-				}
-
-				$resized = true;
-			}
-		}
-
 		// Optimize the original size.
 		$response = do_imagify( $attachment_path, array(
 			'optimization_level' => $optimization_level,
 			'context'            => 'NGG',
-			'resized'            => $resized,
+			'resized'            => false,
 			'original_size'      => $attachment_original_size,
 		) );
 
@@ -422,12 +395,6 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		if ( ! $data ) {
 			delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
 			return;
-		}
-
-		// If we resized the original with success, we have to update the attachment metadata.
-		// If not, WordPress keeps the old attachment size.
-		if ( $do_resize && $resized ) {
-			$this->update_metadata_size();
 		}
 
 		// Optimize thumbnails.
@@ -533,7 +500,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				$response = do_imagify( $thumbnail_path, array(
 					'backup'             => false,
 					'optimization_level' => $optimization_level,
-					'context'            => 'wp',
+					'context'            => 'NGG',
 				) );
 
 				$data = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
