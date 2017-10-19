@@ -17,7 +17,7 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 		return;
 	}
 
-	if ( ! empty( $_POST['nextgen_upload_image_sec'] ) && ! empty( $_POST['action'] ) && 'import_media_library' === $_POST['action'] && ! empty( $_POST['attachment_ids'] ) && is_array( $_POST['attachment_ids'] ) ) {
+	if ( ! empty( $_POST['nextgen_upload_image_sec'] ) && ! empty( $_POST['action'] ) && 'import_media_library' === $_POST['action'] && ! empty( $_POST['attachment_ids'] ) && is_array( $_POST['attachment_ids'] ) ) { // WPCS: CSRF ok.
 		/**
 		 * The images are imported from the library.
 		 * In this case, those images are dealt with in _imagify_ngg_media_library_imported_image_data().
