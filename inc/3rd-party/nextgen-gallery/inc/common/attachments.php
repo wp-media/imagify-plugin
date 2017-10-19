@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 add_action( 'ngg_after_new_images_added', '_imagify_ngg_optimize_attachment', IMAGIFY_INT_MAX, 2 );
 /**
- * Auto-optimize when a new attachment is generated.
+ * Auto-optimize when a new attachment is added to the database (NGG plugin's table), except for images imported from the library.
  *
  * @since  1.5
  * @author Jonathan Buttigieg
@@ -14,6 +14,14 @@ add_action( 'ngg_after_new_images_added', '_imagify_ngg_optimize_attachment', IM
 function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 
 	if ( ! imagify_valid_key() || ! get_imagify_option( 'auto_optimize' ) ) {
+		return;
+	}
+
+	if ( ! empty( $_POST['nextgen_upload_image_sec'] ) && ! empty( $_POST['action'] ) && 'import_media_library' === $_POST['action'] && ! empty( $_POST['attachment_ids'] ) && is_array( $_POST['attachment_ids'] ) ) {
+		/**
+		 * The images are imported from the library.
+		 * In this case, those images are dealt with in _imagify_ngg_media_library_imported_image_data().
+		 */
 		return;
 	}
 
@@ -46,7 +54,7 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 
 add_filter( 'ngg_medialibrary_imported_image', '_imagify_ngg_media_library_imported_image_data', 10, 2 );
 /**
- * Import Imagify data from a WordPress image to a new NGG image
+ * Import Imagify data from a WordPress image to a new NGG image, and optimize the thumbnails.
  *
  * @since  1.5
  * @author Jonathan Buttigieg
@@ -59,10 +67,12 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	$class_name = get_imagify_attachment_class_name( 'wp', $attachment->ID, 'ngg_medialibrary_imported_image' );
 	$attachment = new $class_name( $attachment->ID );
 
-	if ( ! $attachment->is_optimized() ) {
+	if ( ! $attachment->get_status() ) {
+		// The image is not optimized.
 		return $image;
 	}
 
+	// Copy the attachment data.
 	$full_size = $attachment->get_size_data();
 
 	Imagify_NGG_DB::get_instance()->update( $image->pid, array(
@@ -70,16 +80,30 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 		'optimization_level' => $attachment->get_optimization_level(),
 		'status'             => $attachment->get_status(),
 		'data'               => maybe_serialize( array(
+			'sizes' => array(
+				'full' => $full_size,
+			),
 			'stats' => array(
 				'original_size'  => $full_size['original_size'],
 				'optimized_size' => $full_size['optimized_size'],
 				'percent'        => $full_size['percent'],
 			),
-			'sizes' => array( 'full' => $full_size ),
 		) ),
 	) );
 
 	$imagify_image = new Imagify_NGG_Attachment( $image->pid );
+
+	// Copy the backup file (we don't want to backup the optimized file).
+	$attachment_backup_path = $attachment->get_backup_path();
+
+	if ( $attachment_backup_path ) {
+		$ngg_backup_path = $imagify_image->get_raw_backup_path();
+
+		imagify_get_filesystem()->copy( $attachment_backup_path, $ngg_backup_path, true );
+		imagify_chmod_file( $ngg_backup_path );
+	}
+
+	// Optimize thumbnails.
 	$imagify_image->optimize_thumbnails();
 
 	return $image;
