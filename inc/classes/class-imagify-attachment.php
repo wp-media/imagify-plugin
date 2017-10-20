@@ -484,7 +484,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function optimize_missing_thumbnails( $optimization_level = null ) {
 		// Check if the attachment extension is allowed.
-		if ( ! imagify_is_attachment_mime_type_supported( $this->id ) ) {
+		if ( ! $this->is_mime_type_supported() ) {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 

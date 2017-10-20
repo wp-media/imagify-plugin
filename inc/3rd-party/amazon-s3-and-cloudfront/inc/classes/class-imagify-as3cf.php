@@ -359,9 +359,13 @@ class Imagify_AS3CF {
 			}
 		}
 
-		if ( ! $is_new_upload && ! get_post_meta( $attachment_id, '_imagify_data', true ) ) {
-			// It's not a new upload and the attachment is not optimized yet.
-			return $metadata;
+		if ( ! $is_new_upload ) {
+			$attachment = get_imagify_attachment( self::CONTEXT, $attachment_id, 'as3cf_async_job' );
+
+			if ( ! $attachment->get_data() ) {
+				// It's not a new upload and the attachment is not optimized yet.
+				return $metadata;
+			}
 		}
 
 		$data = array();

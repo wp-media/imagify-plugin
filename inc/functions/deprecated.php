@@ -219,13 +219,18 @@ if ( function_exists( 'emr_delete_current_files' ) ) :
 
 		$attachment_id = (int) $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE guid='%s';", $guid ) );
 
-		// Stop if the attachment wasn't optimized yet by Imagify.
-		if ( ! get_post_meta( $attachment_id, '_imagify_data', true ) ) {
+		if ( ! $attachment_id ) {
 			return;
 		}
 
-		$optimization_level = get_post_meta( $attachment_id, '_imagify_optimization_level', true );
-		$attachment         = get_imagify_attachment( 'wp', $attachment_id, 'enable-media-replace-upload-done' );
+		$attachment = get_imagify_attachment( 'wp', $attachment_id, 'enable-media-replace-upload-done' );
+
+		// Stop if the attachment wasn't optimized yet by Imagify.
+		if ( ! $attachment->get_data() ) {
+			return;
+		}
+
+		$optimization_level = $attachment->get_optimization_level();
 
 		// Remove old optimization data.
 		$attachment->delete_imagify_data();

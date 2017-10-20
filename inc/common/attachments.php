@@ -76,7 +76,9 @@ function _imagify_optimize_save_image_editor_file() {
 
 	check_ajax_referer( 'image_editor-' . $attachment_id );
 
-	if ( ! get_post_meta( $attachment_id, '_imagify_data', true ) ) {
+	$attachment = get_imagify_attachment( 'wp', $attachment_id, 'save_image_editor_file' );
+
+	if ( ! $attachment->get_data() ) {
 		return;
 	}
 

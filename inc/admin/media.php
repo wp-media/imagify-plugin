@@ -52,12 +52,12 @@ function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 		return $actions;
 	}
 
+	$attachment = get_imagify_attachment( 'wp', $post->ID, 'media_row_actions' );
+
 	// If this attachment is not an image, do nothing.
-	if ( ! imagify_is_attachment_mime_type_supported( $post->ID ) ) {
+	if ( ! $attachment->is_mime_type_supported() ) {
 		return $actions;
 	}
-
-	$attachment = get_imagify_attachment( 'wp', $post->ID, 'media_row_actions' );
 
 	// If Imagify license not valid, or image is not optimized, do nothing.
 	if ( ! imagify_valid_key() || ! $attachment->is_optimized() ) {

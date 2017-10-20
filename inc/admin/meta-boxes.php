@@ -14,15 +14,15 @@ function _imagify_attachment_submitbox_misc_actions() {
 		return;
 	}
 
-	if ( ! imagify_is_attachment_mime_type_supported( $post->ID ) ) {
-		return;
-	}
-
-	if ( ! imagify_attachment_has_required_metadata( $post->ID ) ) {
-		return;
-	}
-
 	$attachment = get_imagify_attachment( 'wp', $post->ID, 'attachment_submitbox_misc_actions' );
+
+	if ( ! $attachment->is_mime_type_supported() ) {
+		return;
+	}
+
+	if ( ! $attachment->has_required_metadata() ) {
+		return;
+	}
 
 	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
 

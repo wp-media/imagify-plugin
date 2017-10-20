@@ -340,12 +340,13 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'image_editor-' . $attachment_id );
 		imagify_check_user_capacity( 'edit_post', $attachment_id );
 
-		if ( ! get_post_meta( $attachment_id, '_imagify_data', true ) ) {
+		$attachment = get_imagify_attachment( 'wp', $attachment_id, 'wp_ajax_imagify_async_optimize_save_image_editor_file' );
+
+		if ( ! $attachment->get_data() ) {
 			return;
 		}
 
-		$optimization_level = (int) get_post_meta( $attachment_id, '_imagify_optimization_level', true );
-		$attachment         = get_imagify_attachment( 'wp', $attachment_id, 'wp_ajax_imagify_async_optimize_save_image_editor_file' );
+		$optimization_level = $attachment->get_optimization_level();
 		$metadata           = wp_get_attachment_metadata( $attachment_id );
 
 		// Remove old optimization data.
