@@ -56,7 +56,7 @@ abstract class Imagify_Abstract_Attachment {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return string The file path.
+	 * @return string|bool The file path. False on failure.
 	 */
 	abstract public function get_raw_backup_path();
 

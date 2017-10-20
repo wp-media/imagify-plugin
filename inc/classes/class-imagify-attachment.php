@@ -32,7 +32,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @return string The file path.
+	 * @return string|bool The file path. False on failure.
 	 */
 	public function get_raw_backup_path() {
 		return get_imagify_attachment_backup_path( $this->get_original_path() );
