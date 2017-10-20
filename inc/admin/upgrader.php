@@ -82,9 +82,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 
 		if ( $query->posts ) {
 			foreach ( (array) $query->posts as $id ) {
-				$class_name        = get_imagify_attachment_class_name( 'wp', $id, 'imagify_upgrade' );
-				$attachment        = new $class_name( $id );
-				$attachment_error  = $attachment->get_optimized_error();
+				$attachment_error  = get_imagify_attachment( 'wp', $id, 'imagify_upgrade' )->get_optimized_error();
 				$attachment_error  = trim( $attachment_error );
 				$attachment_status = get_post_meta( $id, '_imagify_status', true );
 
@@ -126,9 +124,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 
 		if ( $query->posts ) {
 			foreach ( (array) $query->posts as $id ) {
-				$class_name       = get_imagify_attachment_class_name( 'wp', $id, 'imagify_upgrade' );
-				$attachment       = new $class_name( $id );
-				$attachment_stats = $attachment->get_stats_data();
+				$attachment_stats = get_imagify_attachment( 'wp', $id, 'imagify_upgrade' )->get_stats_data();
 
 				if ( isset( $attachment_stats['aggressive'] ) ) {
 					update_post_meta( $id, '_imagify_optimization_level', (int) $attachment_stats['aggressive'] );

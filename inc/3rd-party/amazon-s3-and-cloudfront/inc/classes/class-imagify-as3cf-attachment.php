@@ -723,8 +723,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 * @return bool|null                True on success. False on failure. Null if backup is not needed.
 	 */
 	protected function maybe_backup( $attachment_path ) {
-		$class_name = get_class( $this );
-		_deprecated_function( $class_name . '::' . __FUNCTION__ . '()', '1.6.8', 'imagify_backup_file()' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.6.8', 'imagify_backup_file()' );
 
 		$result = imagify_backup_file( $attachment_path );
 

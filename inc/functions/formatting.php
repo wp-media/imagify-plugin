@@ -66,3 +66,19 @@ function get_imagify_attachment_class_name( $context, $attachment_id, $identifie
 
 	return 'Imagify_' . ( 'wp' !== $context ? $context . '_' : '' ) . 'Attachment';
 }
+
+/**
+ * Get the Imagify attachment instance depending to a context.
+ *
+ * @since  1.6.13
+ * @author Grégory Viguier
+ *
+ * @param  string $context       The context to determine the class name.
+ * @param  int    $attachment_id The attachment ID.
+ * @param  string $identifier    An identifier.
+ * @return object                The Imagify attachment instance.
+ */
+function get_imagify_attachment( $context, $attachment_id, $identifier ) {
+	$class_name = get_imagify_attachment_class_name( $context, $attachment_id, $identifier );
+	return new $class_name( $attachment_id );
+}

@@ -192,8 +192,7 @@ class Imagify_Enable_Media_Replace {
 			return $this->attachment;
 		}
 
-		$class_name       = get_imagify_attachment_class_name( 'wp', $this->attachment_id, 'enable_media_replace' );
-		$this->attachment = new $class_name( $this->attachment_id );
+		$this->attachment = get_imagify_attachment( 'wp', $this->attachment_id, 'enable_media_replace' );
 
 		return $this->attachment;
 	}

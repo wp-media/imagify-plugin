@@ -34,8 +34,7 @@ function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
 		return;
 	}
 
-	$class_name = get_imagify_attachment_class_name( 'wp', $attachment_id, 'manage_media_custom_column' );
-	$attachment = new $class_name( $attachment_id );
+	$attachment = get_imagify_attachment( 'wp', $attachment_id, 'manage_media_custom_column' );
 
 	echo get_imagify_media_column_content( $attachment );
 }
