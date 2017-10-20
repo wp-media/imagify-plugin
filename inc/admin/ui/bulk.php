@@ -138,7 +138,7 @@ function _imagify_display_bulk_page() {
 								<?php
 								printf(
 									/* translators: you can use %s to include a line break. */
-									__( 'that\'s the number of images you optimized with Imagify', 'imagify' ),
+									__( 'that\'s the number of original images you optimized with Imagify', 'imagify' ),
 									'<br>'
 								);
 								?>
