@@ -339,6 +339,21 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 		return Imagify_NGG_DB::get_instance();
 	}
 
+	/**
+	 * Delete the Imagify data when an image is deleted.
+	 *
+	 * @since  1.5
+	 * @since  1.6.13 Deprecated.
+	 * @author Jonathan Buttigieg
+	 *
+	 * @param int $image_id An image ID.
+	 */
+	function _imagify_ngg_delete_picture( $image_id ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.6.13', 'Imagify_NGG_DB::get_instance()->delete( $image_id )' );
+
+		Imagify_NGG_DB::get_instance()->delete( $image_id );
+	}
+
 endif;
 
 if ( is_admin() ) :

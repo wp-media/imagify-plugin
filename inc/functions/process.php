@@ -16,12 +16,13 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 function do_imagify( $file_path, $args = array() ) {
 	$errors = new WP_Error();
 	$args   = array_merge( array(
-		'backup'             => get_imagify_option( 'backup', false ),
+		'backup'             => get_imagify_option( 'backup' ),
 		'optimization_level' => get_imagify_option( 'optimization_level', 1 ),
-		'keep_exif'          => get_imagify_option( 'exif', false ),
+		'keep_exif'          => get_imagify_option( 'exif' ),
 		'context'            => 'wp',
 		'resized'            => false,
 		'original_size'      => 0,
+		'backup_path'        => null,
 	), $args );
 
 	/**
@@ -72,8 +73,8 @@ function do_imagify( $file_path, $args = array() ) {
 
 	// Check that file exists.
 	if ( 0 === $file_size ) {
-		/* translators: %s is a file size. */
-		$errors->add( 'image_not_found', sprintf( __( 'Skipped (%s), image not found.', 'imagify' ), size_format( $file_size ) ) );
+		/* translators: %s is a file path. */
+		$errors->add( 'image_not_found', sprintf( __( 'Skipped (%s), image not found.', 'imagify' ), '<code>' . imagify_make_file_path_relative( $file_path ) . '</code>' ) );
 		return $errors;
 	}
 
@@ -106,9 +107,9 @@ function do_imagify( $file_path, $args = array() ) {
 	}
 
 	// Create a backup file.
-	if ( 'wp' === $args['context'] && $args['backup'] && ! $args['resized'] ) {
+	if ( $args['backup'] && ! $args['resized'] ) {
 		// TODO (@Greg): Send an error message if the backup fails.
-		imagify_backup_file( $file_path );
+		imagify_backup_file( $file_path, $args['backup_path'] );
 	}
 
 	if ( ! function_exists( 'download_url' ) ) {
@@ -224,6 +225,11 @@ function imagify_backup_file( $file_path, $backup_path = null ) {
 
 	$filesystem = imagify_get_filesystem();
 
+	// Make sure the filesystem has no errors.
+	if ( ! empty( $filesystem->errors->errors ) ) {
+		return new WP_Error( 'filesystem_error', __( 'Filesystem error.', 'imagify' ), $filesystem->errors );
+	}
+
 	// Make sure the source file exists.
 	if ( ! $filesystem->exists( $file_path ) ) {
 		return new WP_Error( 'source_doesnt_exist', __( 'The file to backup does not exist.', 'imagify' ), array(
@@ -238,16 +244,11 @@ function imagify_backup_file( $file_path, $backup_path = null ) {
 		}
 
 		$backup_path = get_imagify_attachment_backup_path( $file_path );
-
-		// Make sure the uploads directory has no errors.
-		if ( ! $backup_path ) {
-			return new WP_Error( 'wp_upload_error', __( 'Error while retrieving the uploads directory path.', 'imagify' ) );
-		}
 	}
 
-	// Make sure the filesystem has no errors.
-	if ( ! empty( $filesystem->errors->errors ) ) {
-		return new WP_Error( 'filesystem_error', __( 'Filesystem error.', 'imagify' ), $filesystem->errors );
+	// Make sure the uploads directory has no errors.
+	if ( ! $backup_path ) {
+		return new WP_Error( 'wp_upload_error', __( 'Error while retrieving the uploads directory path.', 'imagify' ) );
 	}
 
 	// Create sub-directories.

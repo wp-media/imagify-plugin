@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Imagify NextGen Gallery attachment class.
  *
- * @since 1.5
+ * @since  1.5
  * @author Jonathan Buttigieg
  */
 class Imagify_NGG_Attachment extends Imagify_Attachment {
@@ -14,7 +14,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1.2';
+	const VERSION = '1.1.3';
 
 	/**
 	 * The image object.
@@ -50,7 +50,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * The constructor.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @param int|object $id An image attachment ID or a NGG object.
@@ -77,41 +77,34 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Get the attachment backup file path.
+	 * Get the attachment backup file path, even if the file doesn't exist.
 	 *
-	 * @since  1.5
-	 * @author Jonathan Buttigieg
+	 * @since  1.6.13
+	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @return string|false The file path. False if it doesn't exist.
+	 * @return string The file path.
 	 */
-	public function get_backup_path() {
-		$file_path   = $this->get_original_path();
-		$backup_path = get_imagify_ngg_attachment_backup_path( $file_path );
-
-		if ( $backup_path && file_exists( $backup_path ) ) {
-			return $backup_path;
-		}
-
-		return false;
+	public function get_raw_backup_path() {
+		return get_imagify_ngg_attachment_backup_path( $this->get_original_path() );
 	}
 
 	/**
 	 * Get the attachment backup URL.
 	 *
-	 * @since 1.6.8
+	 * @since  1.6.8
 	 * @author Grégory Viguier
 	 *
 	 * @return string|false
 	 */
 	public function get_backup_url() {
-		return site_url( '/' ) . imagify_make_file_path_relative( $this->get_backup_path() );
+		return site_url( '/' ) . imagify_make_file_path_relative( $this->get_raw_backup_path() );
 	}
 
 	/**
 	 * Get the attachment SQL data row.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -124,7 +117,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the attachment optimization data.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -138,7 +131,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the attachment optimization level.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -152,7 +145,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the attachment optimization status (success or error).
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -166,7 +159,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the original attachment path.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -179,7 +172,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Get the original attachment URL.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -259,9 +252,9 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Fills statistics data with values from $data array.
 	 *
-	 * @since 1.5
-	 * @since 1.6.5 Not static anymore.
-	 * @since 1.6.6 Removed the attachment ID parameter.
+	 * @since  1.5
+	 * @since  1.6.5 Not static anymore.
+	 * @since  1.6.6 Removed the attachment ID parameter.
 	 * @author Jonathan Buttigieg
 	 * @access public
 	 *
@@ -333,7 +326,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Optimize all sizes with Imagify.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -360,9 +353,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		}
 
 		// Get file path & URL for original image.
-		$attachment_path          = $this->get_original_path();
-		$attachment_url           = $this->get_original_url();
-		$attachment_original_size = $this->get_original_size( false );
+		$attachment_path = $this->get_original_path();
+		$attachment_url  = $this->get_original_url();
 
 		/**
 		 * Fires before optimizing an attachment.
@@ -407,7 +399,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			'optimization_level' => $optimization_level,
 			'context'            => 'NGG',
 			'resized'            => $resized,
-			'original_size'      => $attachment_original_size,
+			'original_size'      => $this->get_original_size( false ),
+			'backup_path'        => $this->get_raw_backup_path(),
 		) );
 
 		$data = $this->fill_data( null, $response, $attachment_url );
@@ -491,7 +484,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	/**
 	 * Optimize all thumbnails of an image.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
@@ -533,7 +526,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				$response = do_imagify( $thumbnail_path, array(
 					'backup'             => false,
 					'optimization_level' => $optimization_level,
-					'context'            => 'wp',
+					'context'            => 'NGG',
 				) );
 
 				$data = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
