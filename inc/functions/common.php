@@ -142,6 +142,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Assets'              => 1,
 		'Imagify_Attachment'          => 1,
 		'Imagify_Notices'             => 1,
+		'Imagify_Options'             => 1,
 		'Imagify_User'                => 1,
 		'Imagify'                     => 1,
 	);
