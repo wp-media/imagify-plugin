@@ -6,46 +6,12 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  *
  * @since 1.0
  *
- * @param  string $option  The option name.
- * @param  bool   $default The default value of option.
- * @return mixed  The option value.
+ * @param  string $key     The option name.
+ * @param  mixed  $default The default value of the option. Leave empty to use the internal default value (see Imagify_Options::$default_values).
+ * @return mixed           The option value.
  */
-function get_imagify_option( $option, $default = false ) {
-	static $basename;
-	/**
-	 * Pre-filter any Imagify option before read.
-	 *
-	 * @since 1.0
-	 *
-	 * @param mixed $value   Value to return instead of the option value. Default null to skip it.
-	 * @param mixed $default The default value. Default false.
-	 */
-	$value = apply_filters( 'pre_get_imagify_option_' . $option, null, $default );
-
-	if ( isset( $value ) ) {
-		return $value;
-	}
-
-	if ( ! isset( $basename ) ) {
-		$basename = plugin_basename( IMAGIFY_FILE );
-	}
-
-	$options = imagify_is_active_for_network() ? get_site_option( IMAGIFY_SETTINGS_SLUG ) : get_option( IMAGIFY_SETTINGS_SLUG );
-	$value   = isset( $options[ $option ] ) ? $options[ $option ] : $default;
-
-	if ( 'api_key' === $option && defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
-		$value = IMAGIFY_API_KEY;
-	}
-
-	/**
-	 * Filter any Imagify option after read.
-	 *
-	 * @since 1.0
-	 *
-	 * @param mixed $value   Value of the option.
-	 * @param mixed $default The default value. Default false.
-	*/
-	return apply_filters( 'get_imagify_option_' . $option, $value, $default );
+function get_imagify_option( $key, $default = null ) {
+	return Imagify_Options::get_instance()->get( $key, $default );
 }
 
 /**
@@ -54,17 +20,11 @@ function get_imagify_option( $option, $default = false ) {
  * @since  1.6
  * @author Remy Perona
  *
- * @param  string $key    The option name.
- * @param  string $value  The value of the option.
- * @return void
+ * @param string $key   The option name.
+ * @param mixed  $value The value of the option.
  */
 function update_imagify_option( $key, $value ) {
-	$options = get_option( IMAGIFY_SETTINGS_SLUG );
-	$options = is_array( $options ) ? $options : array();
-
-	$options[ $key ] = $value;
-
-	update_option( IMAGIFY_SETTINGS_SLUG, $options );
+	Imagify_Options::get_instance()->set( $key, $value );
 }
 
 /**
@@ -81,7 +41,7 @@ function imagify_valid_key() {
 		return $is_valid;
 	}
 
-	if ( ! get_imagify_option( 'api_key' ) ) {
+	if ( ! Imagify_Options::get_instance()->get( 'api_key' ) ) {
 		$is_valid = false;
 		return $is_valid;
 	}
