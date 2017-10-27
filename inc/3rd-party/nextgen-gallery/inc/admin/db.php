@@ -12,6 +12,6 @@ function _imagify_create_ngg_table() {
 	global $wpdb;
 
 	if ( ! get_option( $wpdb->prefix . 'ngg_imagify_data_db_version' ) ) {
-		imagify_ngg_db()->create_table();
+		Imagify_NGG_DB::get_instance()->create_table();
 	}
 }

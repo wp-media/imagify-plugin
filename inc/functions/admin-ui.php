@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Get the optimization data list for a specific attachment.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @param  object $attachment The attachment object.
@@ -129,7 +129,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 /**
  * Get the error message for a specific attachment.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @param  object $attachment The attachement object.
@@ -161,7 +161,7 @@ function get_imagify_attachment_error_text( $attachment, $context = 'wp' ) {
 /**
  * Get the re-optimize link for a specific attachment.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @param  object $attachment The attachement object.
@@ -247,8 +247,8 @@ function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $
 	 */
 	$display = apply_filters( 'imagify_display_missing_thumbnails_link', true, $attachment, $context );
 
-	// Stop the process if the filter is false or if the API key isn't valid.
-	if ( ! $display || ! imagify_valid_key() ) {
+	// Stop the process if the filter is false, or if the API key isn't valid, or if there is no backup file.
+	if ( ! $display || ! imagify_valid_key() || ! $attachment->has_backup() ) {
 		return '';
 	}
 
@@ -274,7 +274,7 @@ function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $
 /**
  * Get all data to diplay for a specific attachment.
  *
- * @since 1.2
+ * @since  1.2
  * @author Jonathan Buttigieg
  *
  * @param  object $attachment  The attachement object.
@@ -282,17 +282,21 @@ function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $
  * @return string              The output to print.
  */
 function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
-	$attachment_id  = $attachment->id;
-	$attachment_ext = $attachment->get_extension();
-
-	if ( ! imagify_current_user_can( 'manual-optimize', $attachment_id ) ) {
+	if ( ! imagify_current_user_can( 'manual-optimize', $attachment->id ) ) {
 		return __( 'You are not allowed to optimize this file.', 'imagify' );
 	}
 
 	// Check if the attachment extension is allowed.
 	if ( ! $attachment->is_mime_type_supported() ) {
+		$attachment_ext = $attachment->get_extension();
+
 		/* translators: %s is a file extension. */
 		return sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
+	}
+
+	// Check if the attachment has the required WP metadata.
+	if ( ! $attachment->has_required_metadata() ) {
+		return __( 'This media lacks the required metadata and can\'t be optimized.', 'imagify' );
 	}
 
 	// Check if the API key is valid.
@@ -304,7 +308,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	}
 
 	$transient_context = ( 'wp' !== $context ) ? strtolower( $context ) . '-' : '';
-	$transient_name    = 'imagify-' . $transient_context . 'async-in-progress-' . $attachment_id;
+	$transient_name    = 'imagify-' . $transient_context . 'async-in-progress-' . $attachment->id;
 
 	if ( false !== get_transient( $transient_name ) ) {
 		return '<div class="button"><span class="imagify-spinner"></span>' . __( 'Optimizing...', 'imagify' ) . '</div>';
@@ -313,10 +317,10 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	// Check if the image was optimized.
 	if ( ! $attachment->is_optimized() && ! $attachment->has_error() ) {
 		$args = array(
-			'attachment_id' => $attachment_id,
+			'attachment_id' => $attachment->id,
 			'context'       => $context,
 		);
-		$output = '<a id="imagify-upload-' . $attachment_id . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
+		$output = '<a id="imagify-upload-' . $attachment->id . '" href="' . esc_url( get_imagify_admin_url( 'manual-upload', $args ) ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
 
 		if ( $attachment->has_backup() ) {
 			$output .= '<span class="attachment-has-backup hidden"></span>';
@@ -388,8 +392,8 @@ function get_imagify_price_table_format( $value ) {
 /**
  * Get the payment modal HTML.
  *
- * @since 1.6
- * @since 1.6.3 Include discount banners.
+ * @since  1.6
+ * @since  1.6.3 Include discount banners.
  * @author Geoffrey
  *
  * @todo Make first offers dynamic thanks to consumption estimation.
@@ -701,7 +705,7 @@ function imagify_payment_modal() {
 									</p>
 								</div>
 								<div class="imagify-col imagify-txt-end">
-									<p><a class="button imagify-button-ghost imagify-button-medium imagify-mt1 imagify-mb1 imagify-mr1" href="https://imagify.io/<?php echo ( get_locale() === 'fr_FR' ? 'fr/' : '' ); ?>contact" target="_blank"><i class="dashicons dashicons-email" aria-hidden="true"></i>&nbsp;<?php esc_html_e( 'Contact Us', 'imagify' ); ?></a></p>
+									<p><a class="button imagify-button-ghost imagify-button-medium imagify-mt1 imagify-mb1 imagify-mr1" href="<?php echo esc_html( imagify_get_external_url( 'contact' ) ); ?>" target="_blank"><i class="dashicons dashicons-email" aria-hidden="true"></i>&nbsp;<?php esc_html_e( 'Contact Us', 'imagify' ); ?></a></p>
 								</div>
 							</div>
 
@@ -757,9 +761,7 @@ function imagify_payment_modal() {
 
 				<div class="imagify-modal-views imagify-payment-process-view" id="imagify-payment-process-view" aria-hidden="true">
 
-					<?php $imagify_api_key = get_imagify_option( 'api_key', false ); ?>
-
-					<iframe data-imagify-api="<?php echo $imagify_api_key; ?>" id="imagify-payment-iframe" data-src="<?php echo IMAGIFY_PAYMENT_URL; ?>" name="imagify-payment-iframe" src="" frameborder="0"></iframe>
+					<iframe data-imagify-api="<?php echo esc_attr( get_imagify_option( 'api_key' ) ); ?>" id="imagify-payment-iframe" data-src="<?php echo esc_url( imagify_get_external_url( 'payment' ) ); ?>" name="imagify-payment-iframe" src="" frameborder="0"></iframe>
 
 				</div><!-- .imagify-modal-views -->
 
@@ -832,8 +834,8 @@ function imagify_payment_modal() {
 /**
  * Print the discount banner used inside Payment Modal.
  *
- * @author Geoffrey Crofte
  * @since  1.6.3
+ * @author Geoffrey Crofte
  *
  * @return void
  */

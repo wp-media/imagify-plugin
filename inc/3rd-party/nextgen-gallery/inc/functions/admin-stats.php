@@ -38,7 +38,7 @@ function imagify_ngg_count_error_attachments() {
 		return $count;
 	}
 
-	$count = (int) imagify_ngg_db()->get_column_by( 'COUNT(*)', 'status', 'error' );
+	$count = (int) Imagify_NGG_DB::get_instance()->get_column_by( 'COUNT(*)', 'status', 'error' );
 
 	return $count;
 }
@@ -58,7 +58,7 @@ function imagify_ngg_count_optimized_attachments() {
 		return $count;
 	}
 
-	$count = (int) imagify_ngg_db()->get_column_by( 'COUNT(*)', 'status', 'success' );
+	$count = (int) Imagify_NGG_DB::get_instance()->get_column_in( 'COUNT(*)', 'status', array( 'success', 'already_optimized' ) );
 
 	return $count;
 }
@@ -121,7 +121,6 @@ function imagify_ngg_count_saving_data( $attachments ) {
 		return $attachments;
 	}
 
-	$table_name     = $wpdb->ngg_imagify_data;
 	$original_size  = 0;
 	$optimized_size = 0;
 	$count          = 0;
@@ -130,13 +129,13 @@ function imagify_ngg_count_saving_data( $attachments ) {
 	$limit  = apply_filters( 'imagify_count_saving_data_limit', 15000 );
 	$limit  = absint( $limit );
 	$offset = 0;
+	$query  = "
+		SELECT data
+		FROM $wpdb->ngg_imagify_data
+		WHERE status = 'success'
+		LIMIT %d, %d";
 
-	$attachments = $wpdb->get_col( // WPCS: unprepared SQL ok.
-		"SELECT $table_name.data
-		 FROM {$wpdb->ngg_imagify_data}
-		 WHERE status = 'success'
-		 LIMIT $offset, $limit"
-	);
+	$attachments = $wpdb->get_col( $wpdb->prepare( $query, $offset, $limit ) ); // WPCS: unprepared SQL ok.
 	$wpdb->flush();
 
 	while ( $attachments ) {
@@ -173,12 +172,7 @@ function imagify_ngg_count_saving_data( $attachments ) {
 			// Unless we are really unlucky, we still have attachments to fetch.
 			$offset += $limit;
 
-			$attachments = $wpdb->get_col( // WPCS: unprepared SQL ok.
-				"SELECT $table_name.data
-				 FROM {$wpdb->ngg_imagify_data}
-				 WHERE status = 'success'
-				 LIMIT $offset, $limit"
-			);
+			$attachments = $wpdb->get_col( $wpdb->prepare( $query, $offset, $limit ) ); // WPCS: unprepared SQL ok.
 			$wpdb->flush();
 		} else {
 			// Save one request, don't go back to the beginning of the loop.

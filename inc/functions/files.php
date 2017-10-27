@@ -98,7 +98,7 @@ function imagify_get_abspath() {
  * @author Grégory Viguier
  *
  * @param  string $file_path An absolute path.
- * @return string            A relative path. Can return the absolute path in case of a failure.
+ * @return string|bool       A relative path. Can return the absolute path or false in case of a failure.
  */
 function imagify_make_file_path_relative( $file_path ) {
 	static $abspath;
@@ -106,6 +106,10 @@ function imagify_make_file_path_relative( $file_path ) {
 
 	if ( ! isset( $abspath ) ) {
 		$abspath = wp_normalize_path( ABSPATH );
+	}
+
+	if ( ! $file_path ) {
+		return false;
 	}
 
 	$file_path = wp_normalize_path( $file_path );

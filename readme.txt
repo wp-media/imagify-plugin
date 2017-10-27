@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.8.2
-Stable tag: 1.6.11
+Stable tag: 1.6.12
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -136,6 +136,13 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.12 =
+* New: added links to the documentation in the plugin's admin bar item and the plugin's row (plugins page). There is more to come.
+* Improvement: image attachments that don't have some mandatory WordPress metadata are not included in Imagify stats anymore.
+* Fix: the "Optimized size" progress bar in the bulk optimization page now behaves like the "Original size" one does.
+* Dev stuff: auto-optimization can be disabled on an attachment basis with the new filter `imagify_auto_optimize_attachment`. For example it can be used to disable auto-optimization for a specific file extension.
+* Dev stuff: classes are now auto-loaded. Some constants have been removed.
+
 = 1.6.11 =
 * Improvement: Imagify now works with the iOS app, and with XML-RPC in general.
 * Improvement: we harmonized and improved how user roles are handled.

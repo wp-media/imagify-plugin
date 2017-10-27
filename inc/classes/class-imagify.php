@@ -500,15 +500,3 @@ class Imagify extends Imagify_Deprecated {
 		return $response;
 	}
 }
-
-/**
- * Returns the main instance of the Imagify class.
- *
- * @since 1.6.5
- * @author Grégory Viguier
- *
- * @return object The Imagify instance.
- */
-function imagify() {
-	return Imagify::get_instance();
-}

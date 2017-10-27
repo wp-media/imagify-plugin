@@ -5,24 +5,20 @@ if ( ! class_exists( 'C_NextGEN_Bootstrap' ) || ! class_exists( 'Mixin' ) || ! g
 	return;
 }
 
-define( 'IMAGIFY_NGG_FILE'           , __FILE__ );
-define( 'IMAGIFY_NGG_PATH'           , realpath( plugin_dir_path( IMAGIFY_NGG_FILE ) ) . '/' );
-define( 'IMAGIFY_NGG_INC_PATH'       , realpath( IMAGIFY_NGG_PATH . 'inc/' ) . '/' );
-define( 'IMAGIFY_NGG_ADMIN_PATH'     , realpath( IMAGIFY_NGG_INC_PATH . 'admin' ) . '/' );
-define( 'IMAGIFY_NGG_COMMON_PATH'    , realpath( IMAGIFY_NGG_INC_PATH . 'common' ) . '/' );
-define( 'IMAGIFY_NGG_FUNCTIONS_PATH' , realpath( IMAGIFY_NGG_INC_PATH . 'functions' ) . '/' );
-define( 'IMAGIFY_NGG_CLASSES_PATH'   , realpath( IMAGIFY_NGG_INC_PATH . 'classes' ) . '/' );
+define( 'IMAGIFY_NGG_FILE'          , __FILE__ );
+define( 'IMAGIFY_NGG_PATH'          , realpath( plugin_dir_path( IMAGIFY_NGG_FILE ) ) . '/' );
+define( 'IMAGIFY_NGG_INC_PATH'      , realpath( IMAGIFY_NGG_PATH . 'inc/' ) . '/' );
+define( 'IMAGIFY_NGG_ADMIN_PATH'    , realpath( IMAGIFY_NGG_INC_PATH . 'admin' ) . '/' );
+define( 'IMAGIFY_NGG_COMMON_PATH'   , realpath( IMAGIFY_NGG_INC_PATH . 'common' ) . '/' );
+define( 'IMAGIFY_NGG_FUNCTIONS_PATH', realpath( IMAGIFY_NGG_INC_PATH . 'functions' ) . '/' );
 
-require( IMAGIFY_NGG_CLASSES_PATH . 'class-imagify-ngg.php' );
-require( IMAGIFY_NGG_CLASSES_PATH . 'class-imagify-ngg-db.php' );
-require( IMAGIFY_NGG_CLASSES_PATH . 'class-imagify-ngg-attachment.php' );
 require( IMAGIFY_NGG_FUNCTIONS_PATH . 'admin-stats.php' );
 require( IMAGIFY_NGG_FUNCTIONS_PATH . 'attachments.php' );
 require( IMAGIFY_NGG_FUNCTIONS_PATH . 'common.php' );
 require( IMAGIFY_NGG_COMMON_PATH . 'attachments.php' );
 
-imagify_ngg()->init();
-imagify_ngg_db();
+Imagify_NGG::get_instance()->init();
+Imagify_NGG_DB::get_instance(); // Required to set $wpdb->ngg_imagify_data.
 
 if ( is_admin() ) {
 	require( IMAGIFY_NGG_ADMIN_PATH . 'enqueue.php' );

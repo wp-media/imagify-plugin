@@ -124,3 +124,126 @@ function imagify_sanitize_context( $context ) {
 	$context = preg_replace( '/[^a-zA-Z0-9_\-]/', '', $context );
 	return $context ? $context : 'wp';
 }
+
+/**
+ * Classes autoloader.
+ *
+ * @since  1.6.12
+ * @author Grégory Viguier
+ *
+ * @param string $class Name of the class to include.
+ */
+function imagify_autoload( $class ) {
+	// Generic classes.
+	$classes = array(
+		'Imagify_Abstract_Attachment' => 1,
+		'Imagify_Abstract_DB'         => 1,
+		'Imagify_Admin_Ajax_Post'     => 1,
+		'Imagify_Assets'              => 1,
+		'Imagify_Attachment'          => 1,
+		'Imagify_Notices'             => 1,
+		'Imagify_User'                => 1,
+		'Imagify'                     => 1,
+	);
+
+	if ( isset( $classes[ $class ] ) ) {
+		$class = str_replace( '_', '-', strtolower( $class ) );
+		include IMAGIFY_CLASSES_PATH . 'class-' . $class . '.php';
+		return;
+	}
+
+	// Third party classes.
+	$classes = array(
+		'Imagify_AS3CF_Attachment'     => 'amazon-s3-and-cloudfront',
+		'Imagify_AS3CF'                => 'amazon-s3-and-cloudfront',
+		'Imagify_Enable_Media_Replace' => 'enable-media-replace',
+		'Imagify_NGG_Attachment'       => 'nextgen-gallery',
+		'Imagify_NGG_DB'               => 'nextgen-gallery',
+		'Imagify_NGG_Storage'          => 'nextgen-gallery',
+		'Imagify_NGG'                  => 'nextgen-gallery',
+	);
+
+	if ( isset( $classes[ $class ] ) ) {
+		$folder = $classes[ $class ];
+		$class  = str_replace( '_', '-', strtolower( $class ) );
+		include IMAGIFY_3RD_PARTY_PATH . $folder . '/inc/classes/class-' . $class . '.php';
+	}
+}
+
+/**
+ * Simple helper to get some external URLs, like to the documentation.
+ *
+ * @since  1.6.12
+ * @author Grégory Viguier
+ *
+ * @param  string $target     What we want.
+ * @param  array  $query_args An array of query arguments.
+ * @return string The URL.
+ */
+function imagify_get_external_url( $target, $query_args = array() ) {
+	$site_url = 'https://imagify.io/';
+	$app_url  = 'https://app.imagify.io/#/';
+
+	switch ( $target ) {
+		case 'plugin':
+			/* translators: Plugin URI of the plugin/theme */
+			$url = __( 'https://wordpress.org/plugins/imagify/', 'imagify' );
+			break;
+
+		case 'rate':
+			$url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
+			break;
+
+		case 'share-twitter':
+			$url = rawurlencode( imagify_get_external_url( 'plugin' ) );
+			$url = 'https://twitter.com/intent/tweet?source=webclient&original_referer=' . $url . '&url=' . $url . '&related=imagify&hastags=performance,web,wordpress';
+			break;
+
+		case 'share-facebook':
+			$url = rawurlencode( imagify_get_external_url( 'plugin' ) );
+			$url = 'https://www.facebook.com/sharer/sharer.php?u=' . $url;
+			break;
+
+		case 'exif':
+			/* translators: URL to a Wikipedia page explaining what EXIF means. */
+			$url = __( 'https://en.wikipedia.org/wiki/Exchangeable_image_file_format', 'imagify' );
+			break;
+
+		case 'contact':
+			$locale = function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale();
+			$paths  = array(
+				'default' => 'contact',
+				'fr_FR'   => 'fr/contact',
+			);
+
+			$url = isset( $paths[ $locale ] ) ? $paths[ $locale ] : $paths['default'];
+			$url = $site_url . $url . '/';
+			break;
+
+		case 'documentation':
+			$url = $site_url . 'documentation/';
+			break;
+
+		case 'register':
+			return $app_url . 'register';
+
+		case 'subscription':
+			return $app_url . 'subscription';
+
+		case 'get-api-key':
+			return $app_url . 'api';
+
+		case 'payment':
+			// Don't remove the trailing slash.
+			return $app_url . 'plugin/';
+
+		default:
+			return '';
+	}
+
+	if ( $query_args ) {
+		$url = add_query_arg( $query_args, $url );
+	}
+
+	return $url;
+}

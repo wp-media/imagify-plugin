@@ -13,7 +13,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 
 	/**
 	 * The editor instance used to resize files.
@@ -26,22 +26,16 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	protected $editor;
 
 	/**
-	 * Get the attachment backup file path.
+	 * Get the attachment backup file path, even if the file doesn't exist.
 	 *
-	 * @since  1.0
+	 * @since  1.6.13
+	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @return string|false The file path. False if it doesn't exist.
+	 * @return string|bool The file path. False on failure.
 	 */
-	public function get_backup_path() {
-		$file_path   = $this->get_original_path();
-		$backup_path = get_imagify_attachment_backup_path( $file_path );
-
-		if ( $backup_path && file_exists( $backup_path ) ) {
-			return $backup_path;
-		}
-
-		return false;
+	public function get_raw_backup_path() {
+		return get_imagify_attachment_backup_path( $this->get_original_path() );
 	}
 
 	/**
@@ -221,6 +215,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		$original_dirname = trailingslashit( dirname( $this->get_original_path() ) );
 		$thumbnail_path   = $original_dirname . $thumbnail_data['file'];
+		$filesystem       = imagify_get_filesystem();
 
 		if ( ! empty( $metadata_sizes[ $thumbnail_size ] ) && $filesystem->exists( $thumbnail_path ) ) {
 			imagify_chmod_file( $thumbnail_path );
@@ -243,7 +238,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			return new WP_Error( 'image_resize_error' );
 		}
 
-		$filesystem        = imagify_get_filesystem();
 		// The file name can change from what we expected (1px wider, etc).
 		$backup_dirname    = trailingslashit( dirname( $this->get_backup_path() ) );
 		$backup_thumb_path = $backup_dirname . $result[ $thumbnail_size ]['file'];
@@ -500,6 +494,11 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		if ( ! $missing_sizes ) {
 			// We have everything we need.
 			return array();
+		}
+
+		// Stop the process if there is no backup file to use.
+		if ( ! $this->has_backup() ) {
+			return new WP_Error( 'no_backup', __( 'This file has no backup file.', 'imagify' ) );
 		}
 
 		/**

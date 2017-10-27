@@ -7,7 +7,7 @@ add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', I
  *
  * @since 1.0
  * @since 1.5 Async job.
- * @see _do_admin_post_async_optimize_upload_new_media()
+ * @see   Imagify_Admin_Ajax_Post::imagify_async_optimize_upload_new_media_callback()
  *
  * @param  array $metadata      An array of attachment meta data.
  * @param  int   $attachment_id Current attachment ID.
@@ -16,6 +16,22 @@ add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', I
 function _imagify_optimize_attachment( $metadata, $attachment_id ) {
 
 	if ( ! imagify_valid_key() || ! get_imagify_option( 'auto_optimize' ) ) {
+		return $metadata;
+	}
+
+	/**
+	 * Allow to prevent automatic optimization for a specific attachment.
+	 *
+	 * @since  1.6.12
+	 * @author Grégory Viguier
+	 *
+	 * @param bool  $optimize      True to optimize, false otherwise.
+	 * @param int   $attachment_id Attachment ID.
+	 * @param array $metadata      An array of attachment meta data.
+	 */
+	$optimize = apply_filters( 'imagify_auto_optimize_attachment', true, $attachment_id, $metadata );
+
+	if ( ! $optimize ) {
 		return $metadata;
 	}
 

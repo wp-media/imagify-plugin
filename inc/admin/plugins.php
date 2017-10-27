@@ -12,6 +12,7 @@ add_filter( 'network_admin_plugin_action_links_' . plugin_basename( IMAGIFY_FILE
  * @return array
  */
 function _imagify_plugin_action_links( $actions ) {
+	array_unshift( $actions, sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( imagify_get_external_url( 'documentation' ) ), __( 'Documentation', 'imagify' ) ) );
 	array_unshift( $actions, sprintf( '<a href="%s">%s</a>', esc_url( get_imagify_admin_url( 'bulk-optimization' ) ), __( 'Bulk Optimization', 'imagify' ) ) );
 	array_unshift( $actions, sprintf( '<a href="%s">%s</a>', esc_url( get_imagify_admin_url() ), __( 'Settings' ) ) );
 	return $actions;

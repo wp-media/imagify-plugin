@@ -73,7 +73,7 @@ function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 
 	$image = wp_get_attachment_image_src( $post->ID, 'full' );
 
-	// If full image is too small.
+	// If full image is too small. See get_imagify_localize_script_translations().
 	if ( ! $image || (int) $image[1] < 360 ) {
 		return $actions;
 	}

@@ -427,10 +427,14 @@ class Imagify_Admin_Ajax_Post {
 		$ids = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"SELECT $wpdb->posts.ID
 			FROM $wpdb->posts
-				LEFT JOIN $wpdb->postmeta
-					ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '_imagify_optimization_level' )
-				LEFT JOIN $wpdb->postmeta AS mt1
-					ON ( $wpdb->posts.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+			LEFT JOIN $wpdb->postmeta
+				ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '_imagify_optimization_level' )
+			LEFT JOIN $wpdb->postmeta AS mt1
+				ON ( $wpdb->posts.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+			INNER JOIN $wpdb->postmeta AS mt2
+				ON ( $wpdb->posts.ID = mt2.post_id AND mt2.meta_key = '_wp_attached_file' )
+			INNER JOIN $wpdb->postmeta AS mt3
+				ON ( $wpdb->posts.ID = mt3.post_id AND mt3.meta_key = '_wp_attachment_metadata' )
 			WHERE
 				$wpdb->posts.post_mime_type IN ( $mime_types )
 				AND (
@@ -441,8 +445,7 @@ class Imagify_Admin_Ajax_Post {
 					mt1.meta_value = 'error'
 				)
 				AND $wpdb->posts.post_type = 'attachment'
-				AND $wpdb->posts.post_status <> 'trash'
-				AND $wpdb->posts.post_status <> 'auto-draft'
+				AND $wpdb->posts.post_status = 'inherit'
 			GROUP BY $wpdb->posts.ID
 			ORDER BY
 				CASE mt1.meta_value
@@ -528,6 +531,11 @@ class Imagify_Admin_Ajax_Post {
 		$data = array();
 
 		foreach ( $ids as $i => $id ) {
+			if ( empty( $results['filenames'][ $id ] ) ) {
+				// Problem.
+				continue;
+			}
+
 			$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
 
 			/** This filter is documented in inc/functions/process.php. */
@@ -714,7 +722,7 @@ class Imagify_Admin_Ajax_Post {
 				$message .= '<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s almost over!', 'imagify' ) . '</strong></p>';
 				/* translators: %s is a line break. */
 				$message .= '<p>' . sprintf( __( 'You have almost used all your credit.%sDon\'t forget to upgrade your subscription to continue optimizing your images.', 'imagify' ), '<br/><br/>' ) . '</p>';
-				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">' . __( 'View My Subscription', 'imagify' ) . '</a></p>';
+				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">' . __( 'View My Subscription', 'imagify' ) . '</a></p>';
 			$message .= '</div>';
 		}
 
@@ -727,7 +735,7 @@ class Imagify_Admin_Ajax_Post {
 					size_format( $user->quota * 1048576 ),
 					date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) )
 				) . '</p>';
-				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>';
+				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>';
 			$message .= '</div>';
 		}
 
@@ -758,7 +766,7 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		$quota_section .= '<p class="imagify-abq-row">';
-			$quota_section .= '<a class="imagify-account-link" href="' . IMAGIFY_APP_MAIN . '/#/subscription" target="_blank">';
+			$quota_section .= '<a class="imagify-account-link" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">';
 				$quota_section .= '<span class="dashicons dashicons-admin-users"></span>';
 				$quota_section .= '<span class="button-text">' . __( 'View my subscription', 'imagify' ) . '</span>';
 			$quota_section .= '</a>'; // .imagify-account-link
