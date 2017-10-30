@@ -151,7 +151,7 @@ abstract class Imagify_Abstract_Attachment {
 		$error = $this->get_size_data( 'full', 'error' );
 
 		if ( is_string( $error ) ) {
-			return $error;
+			return trim( $error );
 		}
 
 		return false;
