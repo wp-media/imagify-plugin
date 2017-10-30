@@ -17,7 +17,7 @@ class Imagify_AS3CF {
 	const VERSION = '1.0';
 
 	/**
-	 * Context used with get_imagify_attachment_class_name().
+	 * Context used with get_imagify_attachment().
 	 * It matches the class name Imagify_AS3CF_Attachment.
 	 *
 	 * @var string
@@ -409,8 +409,7 @@ class Imagify_AS3CF {
 		}
 
 		$optimization_level = null;
-		$class_name         = get_imagify_attachment_class_name( self::CONTEXT, $attachment_id, 'as3cf_optimize' );
-		$attachment         = new $class_name( $attachment_id );
+		$attachment         = get_imagify_attachment( self::CONTEXT, $attachment_id, 'as3cf_optimize' );
 
 		// Some specifics for the image editor.
 		if ( ! empty( $_POST['data']['do'] ) ) {

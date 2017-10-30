@@ -138,8 +138,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'imagify-manual-upload-' . $attachment_id . '-' . $context );
 		imagify_check_user_capacity( 'manual-optimize', $attachment_id );
 
-		$class_name = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_manual_upload' );
-		$attachment = new $class_name( $attachment_id );
+		$attachment = get_imagify_attachment( $context, $attachment_id, 'imagify_manual_upload' );
 
 		// Optimize it!!!!!
 		$attachment->optimize();
@@ -168,8 +167,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'imagify-manual-override-upload-' . $attachment_id . '-' . $context );
 		imagify_check_user_capacity( 'manual-optimize', $attachment_id );
 
-		$class_name = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_manual_override_upload' );
-		$attachment = new $class_name( $attachment_id );
+		$attachment = get_imagify_attachment( $context, $attachment_id, 'imagify_manual_override_upload' );
 
 		// Restore the backup file.
 		$attachment->restore();
@@ -201,8 +199,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'imagify-optimize-missing-sizes-' . $attachment_id . '-' . $context );
 		imagify_check_user_capacity( 'manual-optimize', $attachment_id );
 
-		$class_name = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_optimize_missing_sizes' );
-		$attachment = new $class_name( $attachment_id );
+		$attachment = get_imagify_attachment( $context, $attachment_id, 'imagify_optimize_missing_sizes' );
 
 		// Optimize the missing thumbnails.
 		$attachment->optimize_missing_thumbnails();
@@ -231,8 +228,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'imagify-restore-upload-' . $attachment_id . '-' . $context );
 		imagify_check_user_capacity( 'manual-optimize', $attachment_id );
 
-		$class_name = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_restore_upload' );
-		$attachment = new $class_name( $attachment_id );
+		$attachment = get_imagify_attachment( $context, $attachment_id, 'imagify_restore_upload' );
 
 		// Restore the backup file.
 		$attachment->restore();
@@ -262,8 +258,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
 		imagify_check_user_capacity( 'bulk-optimize', $attachment_id );
 
-		$class_name         = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_bulk_upload' );
-		$attachment         = new $class_name( $attachment_id );
+		$attachment         = get_imagify_attachment( $context, $attachment_id, 'imagify_bulk_upload' );
 		$optimization_level = get_transient( 'imagify_bulk_optimization_level' );
 
 		// Restore it if the optimization level is updated.
@@ -322,8 +317,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'new_media-' . $attachment_id );
 		imagify_check_user_capacity( 'auto-optimize' );
 
-		$class_name = get_imagify_attachment_class_name( $context, $attachment_id, 'imagify_async_optimize_upload_new_media' );
-		$attachment = new $class_name( $attachment_id );
+		$attachment = get_imagify_attachment( $context, $attachment_id, 'imagify_async_optimize_upload_new_media' );
 
 		// Optimize it!!!!!
 		$attachment->optimize( null, $_POST['metadata'] );
@@ -351,8 +345,7 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		$optimization_level = (int) get_post_meta( $attachment_id, '_imagify_optimization_level', true );
-		$class_name         = get_imagify_attachment_class_name( 'wp', $attachment_id, 'wp_ajax_imagify_async_optimize_save_image_editor_file' );
-		$attachment         = new $class_name( $attachment_id );
+		$attachment         = get_imagify_attachment( 'wp', $attachment_id, 'wp_ajax_imagify_async_optimize_save_image_editor_file' );
 		$metadata           = wp_get_attachment_metadata( $attachment_id );
 
 		// Remove old optimization data.

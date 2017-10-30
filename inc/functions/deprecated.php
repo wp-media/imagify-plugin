@@ -30,8 +30,7 @@ class Imagify_Deprecated {
 	 * @return object Main instance.
 	 */
 	public static function instance() {
-		$class_name = get_class( $this );
-		_deprecated_function( $class_name . '::' . __FUNCTION__ . '()', '1.6.5', 'Imagify::get_instance()' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.6.5', 'Imagify::get_instance()' );
 		return Imagify::get_instance();
 	}
 
@@ -226,8 +225,7 @@ if ( function_exists( 'emr_delete_current_files' ) ) :
 		}
 
 		$optimization_level = get_post_meta( $attachment_id, '_imagify_optimization_level', true );
-		$class_name         = get_imagify_attachment_class_name( 'wp', $attachment_id, 'enable-media-replace-upload-done' );
-		$attachment         = new $class_name( $attachment_id );
+		$attachment         = get_imagify_attachment( 'wp', $attachment_id, 'enable-media-replace-upload-done' );
 
 		// Remove old optimization data.
 		$attachment->delete_imagify_data();
