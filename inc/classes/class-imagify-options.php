@@ -17,41 +17,43 @@ class Imagify_Options {
 	const VERSION = '1.0';
 
 	/**
-	 * The option name.
+	 * Suffix used in the name of the option.
 	 *
-	 * @var   string
-	 * @since 1.6.13
+	 * @var    string
+	 * @since  1.6.13
+	 * @access protected
 	 */
-	protected $option_name;
+	protected $identifier = 'settings';
 
 	/**
-	 * The default option values.
-	 * These are the "zero state" values. The main infos are not the values here, but their type.
+	 * The default values for the Imagify main options.
+	 * These are the "zero state" values.
+	 * Don't use null as value.
 	 *
-	 * @var   array
-	 * @since 1.6.13
+	 * @var    array
+	 * @since  1.6.13
+	 * @access protected
 	 */
 	protected $default_values = array(
-		'version'                       => '',
-		'api_key'                       => '',
-		'optimization_level'            => 0,
-		'auto_optimize'                 => 0,
-		'backup'                        => 0,
-		'resize_larger'                 => 0,
-		'resize_larger_w'               => 0,
-		'exif'                          => 0,
-		'disallowed-sizes'              => array(),
-		'admin_bar_menu'                => 0,
-		'total_size_images_library'     => array(),
-		'average_size_images_per_month' => array(),
+		'version'            => '',
+		'api_key'            => '',
+		'optimization_level' => 0,
+		'auto_optimize'      => 0,
+		'backup'             => 0,
+		'resize_larger'      => 0,
+		'resize_larger_w'    => 0,
+		'exif'               => 0,
+		'disallowed-sizes'   => array(),
+		'admin_bar_menu'     => 0,
 	);
 
 	/**
-	 * The option values used when they are set the first time or reset.
+	 * The Imagify main option values used when they are set the first time or reset.
 	 * Values identical to default values are not listed.
 	 *
-	 * @var   array
-	 * @since 1.6.13
+	 * @var    array
+	 * @since  1.6.13
+	 * @access protected
 	 */
 	protected $reset_values = array(
 		'optimization_level' => 1,
@@ -59,6 +61,24 @@ class Imagify_Options {
 		'backup'             => 1,
 		'admin_bar_menu'     => 1,
 	);
+
+	/**
+	 * Tell if the option should be autoloaded by WP.
+	 *
+	 * @var    string
+	 * @since  1.6.13
+	 * @access protected
+	 */
+	protected $autoload = 'yes';
+
+	/**
+	 * Identifier used in the hook names.
+	 *
+	 * @var    string
+	 * @since  1.6.13
+	 * @access private
+	 */
+	private $hook_identifier;
 
 	/**
 	 * The single instance of the class.
@@ -77,7 +97,11 @@ class Imagify_Options {
 	 * @access protected
 	 */
 	protected function __construct() {
-		$this->option_name = IMAGIFY_SLUG . '_settings';
+		$this->hook_identifier = strtolower( str_replace( 'Imagify_', '', get_class( $this ) ) );
+
+		if ( ! is_string( $this->autoload ) ) {
+			$this->autoload = $this->autoload ? 'yes' : 'no';
+		}
 	}
 
 	/**
@@ -99,7 +123,7 @@ class Imagify_Options {
 
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** ONE OPTION ============================================================================== */
+	/** ONE OPTION OR DATA ====================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
@@ -109,37 +133,41 @@ class Imagify_Options {
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @param  string $key     The option name.
-	 * @param  mixed  $default The default value of the option.
-	 * @return mixed           The option value.
+	 * @param  string $key The option name.
+	 * @return mixed       The option value.
 	 */
-	public function get( $key, $default = null ) {
+	public function get( $key ) {
+		$default_values = $this->get_default_values();
+
+		if ( ! isset( $default_values[ $key ] ) ) {
+			return null;
+		}
+
+		$default = $default_values[ $key ];
+
 		/**
 		 * Pre-filter any Imagify option before read.
 		 *
 		 * @since 1.0
 		 *
 		 * @param mixed $value   Value to return instead of the option value. Default null to skip it.
-		 * @param mixed $default The default value. Default false.
+		 * @param mixed $default The default value.
 		 */
-		$value = apply_filters( 'pre_get_imagify_option_' . $key, null, $default );
+		$value = apply_filters( 'pre_get_imagify_' . $this->get_hook_identifier() . '_' . $key, null, $default );
 
 		if ( isset( $value ) ) {
 			return $value;
 		}
 
 		// Get the value.
-		$options = $this->get_all();
-		$default = $this->get_default_value( $key, $default );
-		$value   = isset( $options[ $key ] ) ? $options[ $key ] : $default;
+		$values = $this->get_all();
+		$value  = $values[ $key ];
 
 		// Cast the value.
 		if ( is_array( $default ) && ! is_array( $value ) ) {
 			$value = array();
-		} elseif ( is_int( $default ) && ! is_int( $value ) ) {
+		} elseif ( is_int( $default ) ) {
 			$value = (int) $value;
-		} elseif ( is_bool( $default ) && ! is_bool( $value ) ) {
-			$value = (bool) $value;
 		}
 
 		// If defined, use the constant for the API key.
@@ -155,46 +183,78 @@ class Imagify_Options {
 		 * @param mixed $value   Value of the option.
 		 * @param mixed $default The default value. Default false.
 		*/
-		return apply_filters( 'get_imagify_option_' . $key, $value, $default );
+		return apply_filters( 'get_imagify_' . $this->get_hook_identifier() . '_' . $key, $value, $default );
 	}
 
 	/**
-	 * Set an Imagify option.
+	 * Get all options.
 	 *
 	 * @since  1.6.13
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @param string $key   The option name.
-	 * @param mixed  $value The value of the option.
+	 * @return array The options.
 	 */
-	public function set( $key, $value ) {
-		$options = $this->get_all();
+	public function get_all() {
+		$values = $this->get_raw();
 
-		$options[ $key ] = $value;
+		if ( ! $values ) {
+			return $this->get_reset_values();
+		}
 
-		$this->set_all( $options );
+		return self::merge_intersect( $values, $this->get_default_values() );
 	}
 
 	/**
-	 * Delete an Imagify option.
+	 * Set one or multiple options.
 	 *
 	 * @since  1.6.13
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @param string $key The option name.
+	 * @param array $values An array of option name / option value pairs.
 	 */
-	public function delete( $key ) {
-		$options = $this->get_all();
+	public function set( $values ) {
+		$args = func_get_args();
 
-		if ( ! isset( $options[ $key ] ) ) {
+		if ( isset( $args[1] ) && is_string( $args[0] ) ) {
+			$values = array( $args[0] => $args[1] );
+		}
+
+		if ( ! is_array( $values ) ) {
+			// PABKAC.
 			return;
 		}
 
-		unset( $options[ $key ] );
+		$values = array_merge( (array) $this->get_raw(), $values );
+		$values = array_intersect_key( $values, $this->get_default_values() );
 
-		$this->set_all( $options );
+		$this->set_raw( $values );
+	}
+
+	/**
+	 * Delete one or multiple options.
+	 *
+	 * @since  1.6.13
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param array|string $keys An array of option names or a single option name.
+	 */
+	public function delete( $keys ) {
+		$values = $this->get_raw();
+
+		if ( ! $values ) {
+			if ( false !== $values ) {
+				$this->delete_raw();
+			}
+			return;
+		}
+
+		$keys   = array_flip( (array) $keys );
+		$values = array_diff_key( $values, $keys );
+
+		$this->set_raw( $values );
 	}
 
 	/**
@@ -211,86 +271,48 @@ class Imagify_Options {
 		return null !== $this->get( $key );
 	}
 
-	/**
-	 * Get a default value.
-	 *
-	 * @since  1.6.13
-	 * @author Grégory Viguier
-	 * @access public
-	 *
-	 * @param  string $key     The option name.
-	 * @param  mixed  $default The default value of the option.
-	 * @return mixed
-	 */
-	public function get_default_value( $key, $default = null ) {
-		if ( isset( $default ) ) {
-			return $default;
-		}
-
-		return isset( $this->default_values[ $key ] ) ? $this->default_values[ $key ] : $default;
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** ALL OPTIONS ============================================================================= */
+	/** GET / UPDATE / DELETE RAW VALUES ======================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get all Imagify options.
+	 * Get the name of the option that stores the settings.
 	 *
 	 * @since  1.6.13
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @return array The options.
+	 * @return string
 	 */
-	public function get_all() {
-		$options = $this->get_raw();
-		$options = is_array( $options ) ? $options : array();
-
-		if ( ! $options ) {
-			return $this->get_reset_values();
-		}
-
-		return array_merge( $this->get_default_values(), $options );
+	public function get_option_name() {
+		return IMAGIFY_SLUG . '_' . $this->identifier;
 	}
 
 	/**
-	 * Set an Imagify option.
+	 * Get the identifier used in the hook names.
 	 *
 	 * @since  1.6.13
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @param array $options The new options.
+	 * @return string
 	 */
-	public function set_all( $options ) {
-		if ( ! is_array( $options ) ) {
-			// PABKAC.
-			return;
-		}
-
-		if ( ! $options ) {
-			$this->delete_all();
-			return;
-		}
-
-		imagify_is_active_for_network() ? update_site_option( $this->get_option_name(), $options ) : update_option( $this->get_option_name(), $options );
+	public function get_hook_identifier() {
+		return $this->hook_identifier;
 	}
 
 	/**
-	 * Delete all Imagify options.
+	 * Tell if the option is autoloaded.
 	 *
 	 * @since  1.6.13
 	 * @author Grégory Viguier
 	 * @access public
+	 *
+	 * @return bool
 	 */
-	public function delete_all() {
-		if ( false === $this->get_raw() ) {
-			return;
-		}
-
-		imagify_is_active_for_network() ? delete_site_option( $this->get_option_name() ) : delete_option( $this->get_option_name() );
+	public function is_autoloaded() {
+		return 'yes' === $this->autoload;
 	}
 
 	/**
@@ -300,14 +322,63 @@ class Imagify_Options {
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @return mixed The options.
+	 * @return array|bool The options. False if not set yet or invalid.
 	 */
 	public function get_raw() {
-		return imagify_is_active_for_network() ? get_site_option( $this->get_option_name() ) : get_option( $this->get_option_name() );
+		$values = imagify_is_active_for_network() ? get_site_option( $this->get_option_name() ) : get_option( $this->get_option_name() );
+
+		if ( false !== $values && ! is_array( $values ) ) {
+			return array();
+		}
+
+		return $values;
 	}
 
 	/**
-	 * Get the default values.
+	 * Update the Imagify options.
+	 *
+	 * @since  1.6.13
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param array $values An array of option name / option value pairs.
+	 */
+	public function set_raw( $values ) {
+		if ( ! $values ) {
+			// The option is empty: delete it.
+			$this->delete_raw();
+
+		} elseif ( imagify_is_active_for_network() ) {
+			// Network option.
+			update_site_option( $this->get_option_name(), $values );
+
+		} elseif ( false === get_option( $this->get_option_name() ) ) {
+			// Compat' with WP < 4.2 + autoload: the option doesn't exist in the database.
+			add_option( $this->get_option_name(), $values, '', $this->autoload );
+		} else {
+			// Update the current value.
+			update_option( $this->get_option_name(), $values, $this->autoload );
+		}
+	}
+
+	/**
+	 * Delete all Imagify options.
+	 *
+	 * @since  1.6.13
+	 * @author Grégory Viguier
+	 * @access public
+	 */
+	public function delete_raw() {
+		imagify_is_active_for_network() ? delete_site_option( $this->get_option_name() ) : delete_option( $this->get_option_name() );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** DEFAULT + RESET VALUES ================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get default option values.
 	 *
 	 * @since  1.6.13
 	 * @author Grégory Viguier
@@ -316,11 +387,32 @@ class Imagify_Options {
 	 * @return array
 	 */
 	public function get_default_values() {
-		return $this->default_values;
+		/**
+		 * Allow to add more default option values.
+		 *
+		 * @since  1.6.13
+		 * @author Grégory Viguier
+		 *
+		 * @param array $new_values     New default option values.
+		 * @param array $default_values Plugin default option values.
+		 */
+		$new_values = apply_filters( 'imagify_default_' . $this->get_hook_identifier() . '_values', array(), $this->default_values );
+		$new_values = is_array( $new_values ) ? $new_values : array();
+
+		if ( $new_values ) {
+			// Don't allow new values to overwrite the plugin values.
+			$new_values = array_diff_key( $new_values, $this->default_values );
+		}
+
+		if ( ! $new_values ) {
+			return $this->default_values;
+		}
+
+		return array_merge( $this->default_values, $new_values );
 	}
 
 	/**
-	 * Get the values used when they are set the first time.
+	 * Get the values used when the option is empty.
 	 *
 	 * @since  1.6.13
 	 * @author Grégory Viguier
@@ -329,19 +421,51 @@ class Imagify_Options {
 	 * @return array
 	 */
 	public function get_reset_values() {
-		return array_merge( $this->default_values, $this->reset_values );
+		$reset_values = array_merge( $this->get_default_values(), $this->reset_values );
+
+		/**
+		 * Allow to add more reset option values.
+		 *
+		 * @since  1.6.13
+		 * @author Grégory Viguier
+		 *
+		 * @param array $new_values   New reset option values.
+		 * @param array $reset_values Plugin reset option values.
+		 */
+		$new_values = apply_filters( 'imagify_reset_' . $this->get_hook_identifier() . '_values', array(), $reset_values );
+		$new_values = is_array( $new_values ) ? $new_values : array();
+
+		if ( $new_values ) {
+			// Don't allow new values to overwrite the plugin values.
+			$new_values = array_diff_key( $new_values, $this->default_values );
+		}
+
+		if ( ! $new_values ) {
+			return $reset_values;
+		}
+
+		return array_merge( $reset_values, $new_values );
 	}
 
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** TOOLS =================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
 	/**
-	 * Get the option name.
+	 * `array_merge()` + `array_intersect_key()`.
 	 *
 	 * @since  1.6.13
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @return string
+	 * @param array $values  The array we're interested in.
+	 * @param array $default The array we use as boundaries.
+	 *
+	 * @return array
 	 */
-	public function get_option_name() {
-		return $this->option_name;
+	public static function merge_intersect( $values, $default ) {
+		$values = array_merge( $default, (array) $values );
+		return array_intersect_key( $values, $default );
 	}
 }
