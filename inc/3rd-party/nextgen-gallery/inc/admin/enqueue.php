@@ -11,7 +11,6 @@ add_action( 'imagify_assets_enqueued', '_imagify_ngg_admin_print_styles' );
  * @author Grégory Viguier
  */
 function _imagify_ngg_admin_print_styles() {
-	global $admin_page_hooks;
 	$assets = Imagify_Assets::get_instance();
 
 	/**
@@ -25,10 +24,7 @@ function _imagify_ngg_admin_print_styles() {
 	/**
 	 * NGG Bulk Optimization.
 	 */
-	// Because WP nonsense, the screen ID depends on the menu title, which is translated. So the screen ID changes depending on the administration locale.
-	$ngg_menu_slug  = defined( 'NGGFOLDER' ) ? plugin_basename( NGGFOLDER ) : 'nextgen-gallery';
-	$ngg_menu_slug  = isset( $admin_page_hooks[ $ngg_menu_slug ] ) ? $admin_page_hooks[ $ngg_menu_slug ] : 'gallery';
-	$bulk_screen_id = $ngg_menu_slug . '_page_' . IMAGIFY_SLUG . '-ngg-bulk-optimization';
+	$bulk_screen_id = imagify_get_ngg_bulk_screen_id();
 
 	if ( ! imagify_is_screen( $bulk_screen_id ) ) {
 		return;
