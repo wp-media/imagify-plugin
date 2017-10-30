@@ -141,8 +141,10 @@ function imagify_autoload( $class ) {
 		'Imagify_Admin_Ajax_Post'     => 1,
 		'Imagify_Assets'              => 1,
 		'Imagify_Attachment'          => 1,
+		'Imagify_Data'                => 1,
 		'Imagify_Notices'             => 1,
 		'Imagify_Options'             => 1,
+		'Imagify_Settings'            => 1,
 		'Imagify_User'                => 1,
 		'Imagify'                     => 1,
 	);
