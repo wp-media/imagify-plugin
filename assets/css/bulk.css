@@ -223,6 +223,23 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	border-radius: 4px;
 	line-height: 1.6;
 }
+/* documentation exception */
+.imagify-documentation-link-box:after,
+.imagify-documentation-link-box:before {
+	display: none;
+}
+.imagify-list-infos .imagify-documentation-link-box {
+	display: flex;
+	align-items: center;
+	padding-left: 12px;
+	border: 1px solid #338EA6;
+	background: #D9E4EC;
+}
+.imagify-documentation-icon {
+	width: 15px;
+	height: 20px;
+	margin-right: 15px;
+}
 .imagify-list-infos .imagify-alt.imagify-alt {
 	background: #8BA7B5;
 	color: #FFF;

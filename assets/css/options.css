@@ -126,6 +126,28 @@
 	}
 }
 
+.imagify-settings .imagify-rate-us {
+	margin-right: 25px;
+	margin-left: auto;
+}
+/* Documentation link */
+.imagify-settings .imagify-documentation-link-box {
+	display: flex;
+	padding: 10px 15px 12px;
+	margin-right: -1em;
+	border: 2px solid #40b1d0;
+	color: #FFF;
+	font-weight: bold;
+	border-radius: 2px;
+}
+.imagify-documentation-link-icon {
+	width: 23px;
+	height: 31px;
+	font-size: 2.6em;
+	margin-right: 15px;
+	line-height: 1.3;
+}
+
 /* Label & fake labels */
 label + .imagify-info,
 label + .imagify-options-line,
@@ -174,6 +196,11 @@ input[id^="imagify_sizes_"]:checked + label {
 .imagify-main {
 	float: left;
 	width: 70%;
+}
+.imagify-have-rocket .imagify-main {
+	float: none;
+	width: 1265px;
+	max-width: 100%;
 }
 .imagify-sidebar {
 	float: right;
