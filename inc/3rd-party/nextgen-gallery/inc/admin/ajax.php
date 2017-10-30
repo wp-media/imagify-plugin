@@ -81,7 +81,7 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 	@set_time_limit( 0 );
 
 	$optimization_level = (int) $_GET['optimization_level'];
-	$optimization_level = ( -1 !== $optimization_level ) ? $optimization_level : get_imagify_option( 'optimization_level', 1 );
+	$optimization_level = ( -1 !== $optimization_level ) ? $optimization_level : get_imagify_option( 'optimization_level' );
 	$optimization_level = (int) $optimization_level;
 
 	/**

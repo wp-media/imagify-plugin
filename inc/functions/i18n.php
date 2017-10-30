@@ -99,7 +99,7 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'library':
 			return array(
-				'backupOption' => (int) get_imagify_option( 'backup' ),
+				'backupOption' => get_imagify_option( 'backup' ),
 				'labels'       => array(
 					'bulkActionsOptimize'             => __( 'Optimize', 'imagify' ),
 					'bulkActionsOptimizeMissingSizes' => __( 'Optimize Missing Sizes', 'imagify' ),

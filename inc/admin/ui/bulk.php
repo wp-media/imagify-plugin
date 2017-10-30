@@ -206,13 +206,13 @@ function _imagify_display_bulk_page() {
 			<div class="imagify-bulk-submit imagify-columns imagify-count">
 				<div class="col-1-2">
 
-					<?php if ( (int) get_imagify_option( 'backup', 0 ) === 1 ) { ?>
+					<?php if ( get_imagify_option( 'backup' ) ) { ?>
 
 						<p class="imagify-count-title"><?php esc_html_e( 'Select Your Compression Level', 'imagify' ); ?>
 							<?php
 							$default_set = esc_html__( 'Ultra', 'imagify' );
 
-							switch ( (int) get_imagify_option( 'optimization_level' ) ) {
+							switch ( get_imagify_option( 'optimization_level' ) ) {
 								case 1:
 									$default_set = esc_html__( 'Aggressive', 'imagify' );
 									break;

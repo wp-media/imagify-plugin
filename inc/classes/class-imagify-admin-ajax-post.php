@@ -402,7 +402,7 @@ class Imagify_Admin_Ajax_Post {
 
 		// Get (ordered) IDs.
 		$optimization_level = (int) $_GET['optimization_level'];
-		$optimization_level = ( -1 !== $optimization_level ) ? $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
+		$optimization_level = ( -1 !== $optimization_level ) ? $optimization_level : get_imagify_option( 'optimization_level' );
 
 		/**
 		 * Filter the unoptimized attachments limit query.
@@ -678,10 +678,7 @@ class Imagify_Admin_Ajax_Post {
 			imagify_die( $response );
 		}
 
-		$options            = get_site_option( IMAGIFY_SETTINGS_SLUG );
-		$options['api_key'] = sanitize_key( $_GET['api_key'] );
-
-		update_site_option( IMAGIFY_SETTINGS_SLUG, $options );
+		update_imagify_option( 'api_key', $_GET['api_key'] );
 
 		wp_send_json_success();
 	}
@@ -848,12 +845,15 @@ class Imagify_Admin_Ajax_Post {
 
 		$raw_total_size_in_library = imagify_calculate_total_size_images_library();
 		$raw_average_per_month     = imagify_calculate_average_size_images_per_month();
-		update_imagify_option( 'total_size_images_library', array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ) );
-		update_imagify_option( 'average_size_images_per_month', array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ) );
+
+		Imagify_Data::get_instance()->set( array(
+			'total_size_images_library'     => array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ),
+			'average_size_images_per_month' => array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ),
+		) );
 
 		wp_send_json_success( array(
-			'total_library_size' => get_imagify_option( 'total_size_images_library', null ),
-			'average_month_size' => get_imagify_option( 'average_size_images_per_month', null ),
+			'total_library_size' => Imagify_Data::get_instance()->get( 'total_size_images_library' ),
+			'average_month_size' => Imagify_Data::get_instance()->get( 'average_size_images_per_month' ),
 		) );
 	}
 
@@ -870,8 +870,10 @@ class Imagify_Admin_Ajax_Post {
 		$raw_total_size_in_library = imagify_calculate_total_size_images_library();
 		$raw_average_per_month     = imagify_calculate_average_size_images_per_month();
 
-		update_imagify_option( 'total_size_images_library', array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ) );
-		update_imagify_option( 'average_size_images_per_month', array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ) );
+		Imagify_Data::get_instance()->set( array(
+			'total_size_images_library'     => array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ),
+			'average_size_images_per_month' => array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ),
+		) );
 
 		die( 1 );
 	}

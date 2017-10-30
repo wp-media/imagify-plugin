@@ -407,8 +407,8 @@ function imagify_payment_modal() {
 
 					<?php
 					$attachments_number = imagify_count_attachments();
-					$total_size         = get_imagify_option( 'total_size_images_library', false );
-					$per_month          = get_imagify_option( 'average_size_images_per_month', false );
+					$total_size         = Imagify_Data::get_instance()->get( 'total_size_images_library' );
+					$per_month          = Imagify_Data::get_instance()->get( 'average_size_images_per_month' );
 					?>
 
 					<div class="imagify-modal-section section-gray imagify-estimation-block<?php echo false === $total_size ? ' imagify-analyzing' : ''; ?>">
@@ -440,7 +440,7 @@ function imagify_payment_modal() {
 									printf(
 										/* translators: %s is a formatted file size. */
 										esc_html__( 'You currently have %s of images in your library.', 'imagify' ),
-										'<strong class="imagify-dark total-library-size">' . ( isset( $total_size['human'] ) ? $total_size['human'] : $total_size ) . '</strong>'
+										'<strong class="imagify-dark total-library-size">' . ( isset( $total_size['human'] ) ? $total_size['human'] : '' ) . '</strong>'
 									);
 									?>
 								</p>
@@ -450,7 +450,7 @@ function imagify_payment_modal() {
 									printf(
 										/* translators: %s is a formatted file size. */
 										esc_html__( 'You upload around %s of images per month.', 'imagify' ),
-										'<strong class="imagify-dark average-month-size">' . ( isset( $per_month['human'] ) ? $per_month['human'] : $per_month ) . '</strong>'
+										'<strong class="imagify-dark average-month-size">' . ( isset( $per_month['human'] ) ? $per_month['human'] : '' ) . '</strong>'
 									);
 									?>
 								</p>

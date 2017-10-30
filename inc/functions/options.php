@@ -5,13 +5,13 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * A wrapper to easily get imagify option.
  *
  * @since 1.0
+ * @since 1.6.13 The $default parameter was removed.
  *
- * @param  string $key     The option name.
- * @param  mixed  $default The default value of the option. Leave empty to use the internal default value (see Imagify_Options::$default_values).
- * @return mixed           The option value.
+ * @param  string $key The option name.
+ * @return mixed       The option value.
  */
-function get_imagify_option( $key, $default = null ) {
-	return Imagify_Options::get_instance()->get( $key, $default );
+function get_imagify_option( $key ) {
+	return Imagify_Options::get_instance()->get( $key );
 }
 
 /**

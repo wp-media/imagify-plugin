@@ -160,7 +160,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			$this->delete_imagify_data();
 		}
 
-		$optimization_level = isset( $optimization_level ) ? (int) $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
+		$optimization_level = isset( $optimization_level ) ? (int) $optimization_level : get_imagify_option( 'optimization_level' );
 
 		// Check if the full size is already optimized with this level.
 		if ( $this->is_optimized() && $this->get_optimization_level() === $optimization_level ) {
@@ -247,7 +247,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		// Optimize all thumbnails.
 		if ( ! empty( $metadata['sizes'] ) ) {
-			$disallowed_sizes      = (array) get_imagify_option( 'disallowed-sizes', array() );
+			$disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
 			$is_active_for_network = imagify_is_active_for_network();
 
 			foreach ( $metadata['sizes'] as $size_key => $size_data ) {

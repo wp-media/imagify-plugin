@@ -322,7 +322,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			return;
 		}
 
-		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		$optimization_level = isset( $optimization_level ) ? (int) $optimization_level : get_imagify_option( 'optimization_level' );
 		$metadata           = $metadata ? $metadata : wp_get_attachment_metadata( $this->id );
 		$sizes              = isset( $metadata['sizes'] ) ? (array) $metadata['sizes'] : array();
 
@@ -405,7 +405,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		// Optimize all thumbnails.
 		if ( $sizes ) {
-			$disallowed_sizes        = get_imagify_option( 'disallowed-sizes', array() );
+			$disallowed_sizes        = get_imagify_option( 'disallowed-sizes' );
 			$is_active_for_network   = imagify_is_active_for_network();
 			$attachment_path_dirname = trailingslashit( dirname( $attachment_path ) );
 			$attachment_url_dirname  = trailingslashit( dirname( $attachment_url ) );
@@ -488,7 +488,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
-		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		$optimization_level = isset( $optimization_level ) ? (int) $optimization_level : get_imagify_option( 'optimization_level' );
 		$missing_sizes      = $this->get_unoptimized_sizes();
 
 		if ( ! $missing_sizes ) {

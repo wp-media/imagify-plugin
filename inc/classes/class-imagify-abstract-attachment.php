@@ -483,7 +483,7 @@ abstract class Imagify_Abstract_Attachment {
 		$orig_f = $orig_f['filename'] . '-{%suffix%}.' . $orig_f['extension'];
 
 		// Test if the missing sizes are needed.
-		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes', array() );
+		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
 		$is_active_for_network = imagify_is_active_for_network();
 
 		foreach ( $missing_sizes as $size_name => $size_data ) {
