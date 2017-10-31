@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 add_filter( 'http_request_args', 'imagify_siteground_change_user_agent', 10, 2 );
 /**
- * Filter the arguments used in an HTTP request to change the User Agent for requests "to self".
+ * Filter the arguments used in a HTTP request to change the User Agent for requests "to self".
  * SiteGround blocks (error 403) HTTP requests with a User-Agent containing the site's domain.
  * The problem is that, for a given site at https://example.com, WordPress uses the UA `WordPress/4.8.2; https://example.com`.
  *
