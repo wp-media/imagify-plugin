@@ -123,7 +123,7 @@ class Imagify_Assets {
 			return;
 		}
 
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles_and_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles_and_scripts' ), IMAGIFY_INT_MAX );
 		add_action( 'wp_enqueue_media',      array( $this, 'enqueue_media_modal' ) );
 
 		add_action( 'admin_footer-media_page_imagify-bulk-optimization', array( $this, 'print_support_script' ) );
