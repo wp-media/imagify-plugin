@@ -418,6 +418,8 @@ class Imagify_Admin_Ajax_Post {
 		$mime_types = esc_sql( $mime_types );
 		$mime_types = "'" . implode( "','", $mime_types ) . "'";
 
+		imagify_unlimit_sql_joins();
+
 		$ids = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"SELECT $wpdb->posts.ID
 			FROM $wpdb->posts
