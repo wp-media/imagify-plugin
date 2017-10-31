@@ -69,6 +69,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 	if ( version_compare( $current_version, '1.2' ) < 0 ) {
 		// Update all already optimized images status from 'error' to 'already_optimized'.
 		$query = new WP_Query( array(
+			'is_imagify'             => true,
 			'post_type'              => 'attachment',
 			'post_status'            => 'inherit',
 			'post_mime_type'         => 'image',
@@ -102,6 +103,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 	if ( version_compare( $current_version, '1.3.2' ) < 0 ) {
 		// Update all already optimized images status from 'error' to 'already_optimized'.
 		$query = new WP_Query( array(
+			'is_imagify'             => true,
 			'post_type'              => 'attachment',
 			'post_status'            => 'inherit',
 			'post_mime_type'         => 'image',
