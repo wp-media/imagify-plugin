@@ -157,6 +157,7 @@ function imagify_autoload( $class ) {
 		'Imagify_AS3CF_Attachment'     => 'amazon-s3-and-cloudfront',
 		'Imagify_AS3CF'                => 'amazon-s3-and-cloudfront',
 		'Imagify_Enable_Media_Replace' => 'enable-media-replace',
+		'Imagify_Formidable_Pro'       => 'formidable-pro',
 		'Imagify_NGG_Attachment'       => 'nextgen-gallery',
 		'Imagify_NGG_DB'               => 'nextgen-gallery',
 		'Imagify_NGG_Storage'          => 'nextgen-gallery',

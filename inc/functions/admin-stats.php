@@ -449,6 +449,7 @@ function imagify_calculate_total_size_images_library() {
  */
 function imagify_calculate_average_size_images_per_month() {
 	$query = array(
+		'is_imagify'     => true,
 		'post_type'      => 'attachment',
 		'post_status'    => 'inherit',
 		'post_mime_type' => get_imagify_mime_type(),
