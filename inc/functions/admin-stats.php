@@ -97,6 +97,8 @@ function imagify_count_error_attachments() {
 	$mime_types = esc_sql( $mime_types );
 	$mime_types = "'" . implode( "','", $mime_types ) . "'";
 
+	imagify_unlimit_sql_joins();
+
 	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( $wpdb->posts.ID )
@@ -149,6 +151,8 @@ function imagify_count_optimized_attachments() {
 	$mime_types = get_imagify_mime_type();
 	$mime_types = esc_sql( $mime_types );
 	$mime_types = "'" . implode( "','", $mime_types ) . "'";
+
+	imagify_unlimit_sql_joins();
 
 	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
