@@ -152,19 +152,11 @@ function do_imagify( $file_path, $args = array() ) {
  * @since 1.4
  */
 function imagify_do_async_job( $body ) {
-	// No need to send all the cookies.
-	$cookies = isset( $_COOKIE ) && is_array( $_COOKIE ) ? $_COOKIE : array();
-	$cookies = array_intersect_key( $_COOKIE, array(
-		SECURE_AUTH_COOKIE => '',
-		AUTH_COOKIE        => '',
-		LOGGED_IN_COOKIE   => '',
-	) );
-
 	$args = array(
 		'timeout'   => 0.01,
 		'blocking'  => false,
 		'body'      => $body,
-		'cookies'   => $cookies,
+		'cookies'   => isset( $_COOKIE ) && is_array( $_COOKIE ) ? $_COOKIE : array(),
 		'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
 	);
 
