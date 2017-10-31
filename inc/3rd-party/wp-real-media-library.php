@@ -29,19 +29,19 @@ if ( defined( 'RML_FILE' ) ) :
 
 		if ( $notices->has_notices() && ( $notices->display_welcome_steps() || $notices->display_wrong_api_key() ) ) {
 			// We display a notice that uses SweetAlert.
-			imgfyrml_dequeue();
+			imagify_wprml_dequeue();
 			return;
 		}
 
 		if ( imagify_is_screen( 'bulk' ) || imagify_is_screen( 'imagify-settings' ) ) {
 			// We display a page that uses SweetAlert.
-			imgfyrml_dequeue();
+			imagify_wprml_dequeue();
 			return;
 		}
 
 		if ( function_exists( 'imagify_get_ngg_bulk_screen_id' ) && imagify_is_screen( imagify_get_ngg_bulk_screen_id() ) ) {
 			// We display the NGG Bulk Optimization page.
-			imgfyrml_dequeue();
+			imagify_wprml_dequeue();
 		}
 	}
 
@@ -51,7 +51,7 @@ if ( defined( 'RML_FILE' ) ) :
 	 * @since  1.6.13
 	 * @author Grégory Viguier
 	 */
-	function imgfyrml_dequeue() {
+	function imagify_wprml_dequeue() {
 		$instance = MatthiasWeb\RealMediaLibrary\general\Backend::getInstance();
 
 		remove_action( 'admin_enqueue_scripts', array( $instance, 'admin_enqueue_scripts' ), 0 );
