@@ -16,4 +16,5 @@ require( IMAGIFY_3RD_PARTY_PATH . 'yoast-seo.php' );
 /**
  * Hosting.
  */
+require( IMAGIFY_3RD_PARTY_PATH . 'hosting/siteground.php' );
 require( IMAGIFY_3RD_PARTY_PATH . 'hosting/wpengine.php' );
