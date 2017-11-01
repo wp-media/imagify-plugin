@@ -31,11 +31,8 @@ function imagify_count_attachments() {
 		return $count;
 	}
 
-	$mime_types = get_imagify_mime_type();
-	$mime_types = esc_sql( $mime_types );
-	$mime_types = "'" . implode( "','", $mime_types ) . "'";
-
-	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types = Imagify_DB::get_mime_types();
+	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( ID )
 		FROM $wpdb->posts
@@ -93,13 +90,10 @@ function imagify_count_error_attachments() {
 		return $count;
 	}
 
-	$mime_types = get_imagify_mime_type();
-	$mime_types = esc_sql( $mime_types );
-	$mime_types = "'" . implode( "','", $mime_types ) . "'";
+	Imagify_DB::unlimit_joins();
 
-	imagify_unlimit_sql_joins();
-
-	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types = Imagify_DB::get_mime_types();
+	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( $wpdb->posts.ID )
 		FROM $wpdb->posts
@@ -148,13 +142,10 @@ function imagify_count_optimized_attachments() {
 		return $count;
 	}
 
-	$mime_types = get_imagify_mime_type();
-	$mime_types = esc_sql( $mime_types );
-	$mime_types = "'" . implode( "','", $mime_types ) . "'";
+	Imagify_DB::unlimit_joins();
 
-	imagify_unlimit_sql_joins();
-
-	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types = Imagify_DB::get_mime_types();
+	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( $wpdb->posts.ID )
 		FROM $wpdb->posts
@@ -407,11 +398,8 @@ function imagify_count_saving_data( $key = '' ) {
 function imagify_calculate_total_size_images_library() {
 	global $wpdb;
 
-	$mime_types = get_imagify_mime_type();
-	$mime_types = esc_sql( $mime_types );
-	$mime_types = "'" . implode( "','", $mime_types ) . "'";
-
-	$image_ids = $wpdb->get_col( // WPCS: unprepared SQL ok.
+	$mime_types = Imagify_DB::get_mime_types();
+	$image_ids  = $wpdb->get_col( // WPCS: unprepared SQL ok.
 		"
 		SELECT ID
 		FROM $wpdb->posts
@@ -543,7 +531,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 		return 0;
 	}
 
-	$results = imagify_get_wpdb_metas( array(
+	$results = Imagify_DB::get_metas( array(
 		// Get attachments filename.
 		'filenames'    => '_wp_attached_file',
 		// Get attachments data.
