@@ -72,7 +72,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 			'is_imagify'             => true,
 			'post_type'              => 'attachment',
 			'post_status'            => 'inherit',
-			'post_mime_type'         => 'image',
+			'post_mime_type'         => get_imagify_mime_type(),
 			'meta_key'               => '_imagify_status',
 			'meta_value'             => 'error',
 			'posts_per_page'         => -1,
@@ -106,7 +106,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 			'is_imagify'             => true,
 			'post_type'              => 'attachment',
 			'post_status'            => 'inherit',
-			'post_mime_type'         => 'image',
+			'post_mime_type'         => get_imagify_mime_type(),
 			'meta_query'             => array(
 				'relation' => 'AND',
 				array(
