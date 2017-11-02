@@ -109,8 +109,6 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 * @author Jonathan Buttigieg
 	 */
 	public function create_table() {
-		global $wpdb;
-
 		$charset_collate = Imagify_DB::get_charset_collate();
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
