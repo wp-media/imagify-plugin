@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.8.2
-Stable tag: 1.6.12
+Tested up to: 4.8.3
+Stable tag: 1.6.13
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -134,6 +134,18 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 2. Settings Page
 
 3. Media Page
+
+== Changelog ==
+= 1.6.13 =
+* New: added links to the documentation in Imagify' settings and bulk optimization pages.
+* Improvement: better compatibility with NextGen Gallery plugin. Imagify no longer resizes NextGen images nor removes exif, to let NextGen Gallery do its job peacefully.
+* Improvement: better compatibility with WP Real Media Library plugin, our modal wasn't working correctly.
+* Improvement: better compatibility with plugins that use cookies, like Duo Two-Factor Authentication and Shield Security.
+* Improvement: better compatibility with SireGround. A security measure was preventing Imagify to work correctly.
+* Improvement: better compatibility with hosts that limit some SQL requests.
+* Improvement: better compatibility with Heartbeat Control plugin, it prevented our bulk optimization to work.
+* Improvement: better compatibility with Formidable Forms Pro plugin, it was filtering our queries.
+* Bug Fix: fixed a few bugs when optimizing in NextGen Gallery.
 
 == Changelog ==
 = 1.6.12 =
