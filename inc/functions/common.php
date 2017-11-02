@@ -141,6 +141,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Admin_Ajax_Post'     => 1,
 		'Imagify_Assets'              => 1,
 		'Imagify_Attachment'          => 1,
+		'Imagify_DB'                  => 1,
 		'Imagify_Notices'             => 1,
 		'Imagify_User'                => 1,
 		'Imagify'                     => 1,
@@ -247,36 +248,4 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 	}
 
 	return $url;
-}
-
-/**
- * Some hosts limit the number of JOINs in SQL queries, but we need them.
- *
- * @since  1.6.13
- * @author Grégory Viguier
- */
-function imagify_unlimit_sql_joins() {
-	global $wpdb;
-	static $done = false;
-
-	if ( $done ) {
-		return;
-	}
-
-	$done  = true;
-	$query = 'SET SQL_BIG_SELECTS=1';
-
-	/**
-	 * Filter the SQL query allowing to remove the limit on JOINs.
-	 *
-	 * @since  1.6.13
-	 * @author Grégory Viguier
-	 *
-	 * @param string|bool $query The query. False to prevent any query.
-	 */
-	$query = apply_filters( 'imagify_unlimit_sql_joins_query', $query );
-
-	if ( $query && is_string( $query ) ) {
-		$wpdb->query( $query ); // WPCS: unprepared SQL ok.
-	}
 }

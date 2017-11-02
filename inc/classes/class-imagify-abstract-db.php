@@ -14,7 +14,7 @@ abstract class Imagify_Abstract_DB {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 
 	/**
 	 * The single instance of the class.
@@ -177,8 +177,7 @@ abstract class Imagify_Abstract_DB {
 		global $wpdb;
 		$column        = esc_sql( $column );
 		$column_where  = esc_sql( $column_where );
-		$column_values = esc_sql( $column_values );
-		$column_values = "'" . implode( "','", $column_values ) . "'";
+		$column_values = Imagify_DB::prepare_values_list( $column_values );
 		return $wpdb->get_var( "SELECT $column FROM $this->table_name WHERE $column_where IN ( $column_values ) LIMIT 1;" ); // WPCS: unprepared SQL ok.
 	}
 

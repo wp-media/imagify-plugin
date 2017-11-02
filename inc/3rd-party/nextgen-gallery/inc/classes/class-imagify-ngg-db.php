@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Imagify NextGen Gallery DB class.
  *
- * @since 1.5
+ * @since  1.5
  * @author Jonathan Buttigieg
  */
 class Imagify_NGG_DB extends Imagify_Abstract_DB {
@@ -14,13 +14,13 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * The single instance of the class.
 	 *
-	 * @access  protected
-	 * @since   1.5
+	 * @since  1.5
+	 * @access protected
 	 *
 	 * @var object
 	 */
@@ -29,9 +29,9 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	/**
 	 * Get things started.
 	 *
-	 * @access  public
-	 * @since   1.5
-	 * @author  Jonathan Buttigieg
+	 * @since  1.5
+	 * @access protected
+	 * @author Jonathan Buttigieg
 	 */
 	protected function __construct() {
 		global $wpdb;
@@ -50,9 +50,9 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	/**
 	 * Get the main Instance.
 	 *
-	 * @access  public
-	 * @since   1.6.5
-	 * @author  Grégory Viguier
+	 * @since  1.6.5
+	 * @access public
+	 * @author Grégory Viguier
 	 *
 	 * @return object Main instance.
 	 */
@@ -67,11 +67,11 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	/**
 	 * Whitelist of columns.
 	 *
-	 * @access  public
-	 * @since   1.5
-	 * @author  Jonathan Buttigieg
+	 * @since  1.5
+	 * @access public
+	 * @author Jonathan Buttigieg
 	 *
-	 * @return  array
+	 * @return array
 	 */
 	public function get_columns() {
 		return array(
@@ -86,11 +86,11 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	/**
 	 * Default column values.
 	 *
-	 * @access  public
-	 * @since   1.5
-	 * @author  Jonathan Buttigieg
+	 * @since  1.5
+	 * @access public
+	 * @author Jonathan Buttigieg
 	 *
-	 * @return  array
+	 * @return array
 	 */
 	public function get_column_defaults() {
 		return array(
@@ -104,20 +104,12 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	/**
 	 * Create the table.
 	 *
-	 * @access  public
-	 * @since   1.5
+	 * @since  1.5
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function create_table() {
-		global $wpdb;
-
-		if ( ! empty( $wpdb->charset ) ) {
-			$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
-		}
-
-		if ( ! empty( $wpdb->collate ) ) {
-			$charset_collate .= " COLLATE $wpdb->collate";
-		}
+		$charset_collate = Imagify_DB::get_charset_collate();
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
@@ -128,7 +120,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 			status varchar(30) NOT NULL,
 			data longtext NOT NULL,
 			PRIMARY KEY (data_id)
-		) $charset_collate;";
+		)$charset_collate;";
 
 		maybe_create_table( $this->table_name, $sql );
 
@@ -140,9 +132,9 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 * Ensures only one instance of class is loaded or can be loaded.
 	 * Well, actually it ensures nothing since it's not a full singleton pattern.
 	 *
-	 * @access  public
-	 * @since   1.5
-	 * @author  Jonathan Buttigieg
+	 * @since  1.5
+	 * @access public
+	 * @author Jonathan Buttigieg
 	 *
 	 * @return object Main instance.
 	 */
