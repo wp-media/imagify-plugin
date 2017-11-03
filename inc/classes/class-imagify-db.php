@@ -17,31 +17,6 @@ class Imagify_DB {
 	const VERSION = '1.0';
 
 	/**
-	 * Get SQL query to set default character and collate.
-	 *
-	 * @since  1.6.13
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return string
-	 */
-	public static function get_charset_collate() {
-		global $wpdb;
-
-		$charset_collate = '';
-
-		if ( ! empty( $wpdb->charset ) ) {
-			$charset_collate .= " DEFAULT CHARACTER SET $wpdb->charset";
-		}
-
-		if ( ! empty( $wpdb->collate ) ) {
-			$charset_collate .= " COLLATE $wpdb->collate";
-		}
-
-		return $charset_collate;
-	}
-
-	/**
 	 * Some hosts limit the number of JOINs in SQL queries, but we need them.
 	 *
 	 * @since  1.6.13

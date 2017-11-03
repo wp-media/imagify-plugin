@@ -109,9 +109,11 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 * @author Jonathan Buttigieg
 	 */
 	public function create_table() {
-		$charset_collate = Imagify_DB::get_charset_collate();
+		global $wpdb;
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+		$charset_collate = $wpdb->get_charset_collate();
 
 		$sql = "CREATE TABLE {$this->table_name} (
 			data_id int(11) NOT NULL AUTO_INCREMENT,
@@ -120,7 +122,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 			status varchar(30) NOT NULL,
 			data longtext NOT NULL,
 			PRIMARY KEY (data_id)
-		)$charset_collate;";
+		) $charset_collate;";
 
 		maybe_create_table( $this->table_name, $sql );
 
