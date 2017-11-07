@@ -136,7 +136,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
-= 1.6.13 =
+= 1.6.13 - 2017/11/07 =
 * New: added links to the documentation in Imagify' settings and bulk optimization pages.
 * Improvement: better compatibility with NextGen Gallery plugin. Imagify no longer resizes NextGen images nor removes exif, to let NextGen Gallery do its job peacefully.
 * Improvement: better compatibility with WP Real Media Library plugin, our modal wasn't working correctly.
