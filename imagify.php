@@ -75,6 +75,7 @@ function _imagify_init() {
 	require( IMAGIFY_COMMON_PATH . 'attachments.php' );
 	require( IMAGIFY_COMMON_PATH . 'admin-bar.php' );
 	require( IMAGIFY_COMMON_PATH . 'cron.php' );
+	require( IMAGIFY_COMMON_PATH . 'partners.php' );
 	require( IMAGIFY_3RD_PARTY_PATH . '3rd-party.php' );
 
 	if ( is_admin() ) {

@@ -133,6 +133,10 @@ class Imagify extends Imagify_Deprecated {
 			'post_data' => $data,
 		) );
 
+		if ( ! is_wp_error( $response ) ) {
+			imagify_delete_partner();
+		}
+
 		return $response;
 	}
 
