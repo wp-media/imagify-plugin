@@ -52,7 +52,7 @@ if ( defined( 'RML_FILE' ) ) :
 	 * @author Grégory Viguier
 	 */
 	function imagify_wprml_dequeue() {
-		$instance = MatthiasWeb\RealMediaLibrary\general\Backend::getInstance();
+		$instance = call_user_func( array( 'MatthiasWeb\RealMediaLibrary\general\Backend', 'getInstance' ) );
 
 		remove_action( 'admin_enqueue_scripts', array( $instance, 'admin_enqueue_scripts' ), 0 );
 		remove_action( 'admin_footer',          array( $instance, 'admin_footer' ) );
