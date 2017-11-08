@@ -147,7 +147,6 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Improvement: better compatibility with Formidable Forms Pro plugin, the bulk optimizer was never satisfied.
 * Bug Fix: fixed a few bugs when optimizing in NextGen Gallery.
 
-== Changelog ==
 = 1.6.12 - 2017/10/18 =
 * New: added links to the documentation in the plugin's admin bar item and the plugin's row (plugins page). There is more to come.
 * Improvement: image attachments that don't have some mandatory WordPress metadata are not included in Imagify stats anymore.
