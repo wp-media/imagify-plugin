@@ -144,7 +144,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Improvement: better compatibility with NextGen Gallery plugin. Imagify no longer resizes NextGen images nor removes exif, to let NextGen Gallery do its job peacefully.
 * Improvement: better compatibility with WP Real Media Library plugin, our modal wasn't working correctly.
 * Improvement: better compatibility with plugins that use cookies, like Duo Two-Factor Authentication and Shield Security, to prevent being disconnected.
-* Improvement: better compatibility with SireGround. A "security" measure was preventing Imagify to work correctly.
+* Improvement: better compatibility with SiteGround. A "security" measure was preventing Imagify to work correctly.
 * Improvement: better compatibility with hosts that limit some SQL queries, it prevented our bulk optimization to work.
 * Improvement: better compatibility with Heartbeat Control plugin, it prevented our bulk optimization to work.
 * Improvement: better compatibility with Formidable Forms Pro plugin, the bulk optimizer was never satisfied.
