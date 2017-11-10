@@ -2,13 +2,13 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 /**
- * Get all mime type which could be optimized by Imagify.
+ * Get all mime types which could be optimized by Imagify.
  *
- * @since 1.3
+ * @since 1.6.14
  *
- * @return array $mime_type  The mime type.
+ * @return array The mime types.
  */
-function get_imagify_mime_type() {
+function imagify_get_mime_types() {
 	return array(
 		'image/jpeg',
 		'image/png',
@@ -71,7 +71,7 @@ function imagify_is_attachment_mime_type_supported( $attachment_id ) {
 		return $is[ $attachment_id ];
 	}
 
-	$mime_types = get_imagify_mime_type();
+	$mime_types = imagify_get_mime_types();
 	$mime_types = array_flip( $mime_types );
 	$mime_type  = (string) get_post_mime_type( $attachment_id );
 

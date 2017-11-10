@@ -92,7 +92,7 @@ class Imagify_DB {
 		static $mime_types;
 
 		if ( ! isset( $mime_types ) ) {
-			$mime_types = self::prepare_values_list( get_imagify_mime_type() );
+			$mime_types = self::prepare_values_list( imagify_get_mime_types() );
 		}
 
 		return $mime_types;

@@ -449,7 +449,7 @@ function imagify_calculate_average_size_images_per_month() {
 		'is_imagify'     => true,
 		'post_type'      => 'attachment',
 		'post_status'    => imagify_get_post_statuses(),
-		'post_mime_type' => get_imagify_mime_type(),
+		'post_mime_type' => imagify_get_mime_types(),
 		'posts_per_page' => 250,
 		'fields'         => 'ids',
 		'meta_query'     => array(
