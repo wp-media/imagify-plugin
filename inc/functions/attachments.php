@@ -81,6 +81,36 @@ function imagify_is_attachment_mime_type_supported( $attachment_id ) {
 }
 
 /**
+ * Get post statuses related to attachments.
+ *
+ * @since  1.6.14
+ * @author Grégory Viguier
+ *
+ * @return array
+ */
+function imagify_get_post_statuses() {
+	static $statuses;
+
+	if ( isset( $statuses ) ) {
+		return $statuses;
+	}
+
+	$statuses = array(
+		'inherit' => 'inherit',
+		'private' => 'private',
+	);
+
+	$custom_statuses = get_post_stati( array( 'public' => true ) );
+	unset( $custom_statuses['publish'] );
+
+	if ( $custom_statuses ) {
+		$statuses = array_merge( $statuses, $custom_statuses );
+	}
+
+	return $statuses;
+}
+
+/**
  * Tell if the attachment has the required WP metadata.
  *
  * @since  1.6.12

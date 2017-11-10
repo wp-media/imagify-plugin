@@ -14,7 +14,7 @@ class Imagify_DB {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * Some hosts limit the number of JOINs in SQL queries, but we need them.
@@ -96,6 +96,25 @@ class Imagify_DB {
 		}
 
 		return $mime_types;
+	}
+
+	/**
+	 * Get post statuses related to attachments, ready to be used in a `IN ()` clause.
+	 *
+	 * @since  1.6.14
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string A comma separated list of post statuses.
+	 */
+	public static function get_post_statuses() {
+		static $statuses;
+
+		if ( ! isset( $statuses ) ) {
+			$statuses = self::prepare_values_list( imagify_get_post_statuses() );
+		}
+
+		return $statuses;
 	}
 
 	/**

@@ -71,7 +71,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 		$query = new WP_Query( array(
 			'is_imagify'             => true,
 			'post_type'              => 'attachment',
-			'post_status'            => 'inherit',
+			'post_status'            => imagify_get_post_statuses(),
 			'post_mime_type'         => get_imagify_mime_type(),
 			'meta_key'               => '_imagify_status',
 			'meta_value'             => 'error',
@@ -105,7 +105,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 		$query = new WP_Query( array(
 			'is_imagify'             => true,
 			'post_type'              => 'attachment',
-			'post_status'            => 'inherit',
+			'post_status'            => imagify_get_post_statuses(),
 			'post_mime_type'         => get_imagify_mime_type(),
 			'meta_query'             => array(
 				'relation' => 'AND',

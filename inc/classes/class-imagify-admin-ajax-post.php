@@ -417,6 +417,7 @@ class Imagify_Admin_Ajax_Post {
 		Imagify_DB::unlimit_joins();
 
 		$mime_types = Imagify_DB::get_mime_types();
+		$statuses   = Imagify_DB::get_post_statuses();
 		$ids        = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"
 			SELECT p.ID
@@ -439,7 +440,7 @@ class Imagify_Admin_Ajax_Post {
 					mt4.post_id IS NULL
 				)
 				AND p.post_type = 'attachment'
-				AND p.post_status = 'inherit'
+				AND p.post_status IN ( $statuses )
 			GROUP BY p.ID
 			ORDER BY
 				CASE mt3.meta_value

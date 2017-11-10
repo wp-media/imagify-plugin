@@ -32,6 +32,7 @@ function imagify_count_attachments() {
 	}
 
 	$mime_types = Imagify_DB::get_mime_types();
+	$statuses   = Imagify_DB::get_post_statuses();
 	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( p.ID )
@@ -42,7 +43,7 @@ function imagify_count_attachments() {
 			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
-			AND p.post_status = 'inherit'"
+			AND p.post_status IN ( $statuses )"
 	);
 
 	/**
@@ -93,6 +94,7 @@ function imagify_count_error_attachments() {
 	Imagify_DB::unlimit_joins();
 
 	$mime_types = Imagify_DB::get_mime_types();
+	$statuses   = Imagify_DB::get_post_statuses();
 	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( p.ID )
@@ -105,7 +107,7 @@ function imagify_count_error_attachments() {
 			ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
-			AND p.post_status = 'inherit'
+			AND p.post_status IN ( $statuses )
 			AND mt3.meta_value = 'error'"
 	);
 
@@ -145,6 +147,7 @@ function imagify_count_optimized_attachments() {
 	Imagify_DB::unlimit_joins();
 
 	$mime_types = Imagify_DB::get_mime_types();
+	$statuses   = Imagify_DB::get_post_statuses();
 	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( p.ID )
@@ -157,7 +160,7 @@ function imagify_count_optimized_attachments() {
 			ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
-			AND p.post_status = 'inherit'
+			AND p.post_status IN ( $statuses )
 			AND mt3.meta_value IN ( 'success', 'already_optimized' )"
 	);
 
@@ -303,6 +306,7 @@ function imagify_count_saving_data( $key = '' ) {
 		Imagify_DB::unlimit_joins();
 
 		$mime_types     = Imagify_DB::get_mime_types();
+		$statuses       = Imagify_DB::get_post_statuses();
 		$attachment_ids = $wpdb->get_col(
 			"
 			SELECT p.ID
@@ -315,7 +319,7 @@ function imagify_count_saving_data( $key = '' ) {
 				ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
 			WHERE p.post_mime_type IN ( $mime_types )
 				AND p.post_type = 'attachment'
-				AND p.post_status = 'inherit'
+				AND p.post_status IN ( $statuses )
 				AND mt3.meta_value = 'success'
 			ORDER BY CAST( p.ID AS UNSIGNED )"
 		);
@@ -404,6 +408,7 @@ function imagify_calculate_total_size_images_library() {
 	global $wpdb;
 
 	$mime_types = Imagify_DB::get_mime_types();
+	$statuses   = Imagify_DB::get_post_statuses();
 	$image_ids  = $wpdb->get_col( // WPCS: unprepared SQL ok.
 		"
 		SELECT p.ID
@@ -414,7 +419,7 @@ function imagify_calculate_total_size_images_library() {
 			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
-			AND p.post_status = 'inherit'
+			AND p.post_status IN ( $statuses )
 		LIMIT 250
 	" );
 
@@ -443,7 +448,7 @@ function imagify_calculate_average_size_images_per_month() {
 	$query = array(
 		'is_imagify'     => true,
 		'post_type'      => 'attachment',
-		'post_status'    => 'inherit',
+		'post_status'    => imagify_get_post_statuses(),
 		'post_mime_type' => get_imagify_mime_type(),
 		'posts_per_page' => 250,
 		'fields'         => 'ids',
