@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Count number of attachments.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @return int The number of attachments.
@@ -34,15 +34,15 @@ function imagify_count_attachments() {
 	$mime_types = Imagify_DB::get_mime_types();
 	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
-		SELECT COUNT( ID )
-		FROM $wpdb->posts
-		INNER JOIN $wpdb->postmeta
-			ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '_wp_attached_file' )
+		SELECT COUNT( p.ID )
+		FROM $wpdb->posts AS p
 		INNER JOIN $wpdb->postmeta AS mt1
-			ON ( $wpdb->posts.ID = mt1.post_id AND mt1.meta_key = '_wp_attachment_metadata' )
-		WHERE $wpdb->posts.post_mime_type IN ( $mime_types )
-			AND $wpdb->posts.post_type = 'attachment'
-			AND $wpdb->posts.post_status = 'inherit'"
+			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
+		INNER JOIN $wpdb->postmeta AS mt2
+			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+		WHERE p.post_mime_type IN ( $mime_types )
+			AND p.post_type = 'attachment'
+			AND p.post_status = 'inherit'"
 	);
 
 	/**
@@ -63,7 +63,7 @@ function imagify_count_attachments() {
 /**
  * Count number of optimized attachments with an error.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @return int The number of attachments.
@@ -95,18 +95,18 @@ function imagify_count_error_attachments() {
 	$mime_types = Imagify_DB::get_mime_types();
 	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
-		SELECT COUNT( $wpdb->posts.ID )
-		FROM $wpdb->posts
-		INNER JOIN $wpdb->postmeta
-			ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '_imagify_status' )
+		SELECT COUNT( p.ID )
+		FROM $wpdb->posts AS p
 		INNER JOIN $wpdb->postmeta AS mt1
-			ON ( $wpdb->posts.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
+			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
 		INNER JOIN $wpdb->postmeta AS mt2
-			ON ( $wpdb->posts.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
-		WHERE $wpdb->posts.post_mime_type IN ( $mime_types )
-			AND $wpdb->posts.post_type = 'attachment'
-			AND $wpdb->posts.post_status = 'inherit'
-			AND $wpdb->postmeta.meta_value = 'error'"
+			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+		INNER JOIN $wpdb->postmeta AS mt3
+			ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
+		WHERE p.post_mime_type IN ( $mime_types )
+			AND p.post_type = 'attachment'
+			AND p.post_status = 'inherit'
+			AND mt3.meta_value = 'error'"
 	);
 
 	return $count;
@@ -115,7 +115,7 @@ function imagify_count_error_attachments() {
 /**
  * Count number of optimized attachments (by Imagify or an other tool before).
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @return int The number of attachments.
@@ -147,22 +147,18 @@ function imagify_count_optimized_attachments() {
 	$mime_types = Imagify_DB::get_mime_types();
 	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
-		SELECT COUNT( $wpdb->posts.ID )
-		FROM $wpdb->posts
-		INNER JOIN $wpdb->postmeta
-			ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '_imagify_status' )
+		SELECT COUNT( p.ID )
+		FROM $wpdb->posts AS p
 		INNER JOIN $wpdb->postmeta AS mt1
-			ON ( $wpdb->posts.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
+			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
 		INNER JOIN $wpdb->postmeta AS mt2
-			ON ( $wpdb->posts.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
-		WHERE $wpdb->posts.post_mime_type IN ( $mime_types )
-			AND $wpdb->posts.post_type = 'attachment'
-			AND $wpdb->posts.post_status = 'inherit'
-			AND (
-				$wpdb->postmeta.meta_value = 'success'
-				OR
-				$wpdb->postmeta.meta_value = 'already_optimized'
-			)"
+			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+		INNER JOIN $wpdb->postmeta AS mt3
+			ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
+		WHERE p.post_mime_type IN ( $mime_types )
+			AND p.post_type = 'attachment'
+			AND p.post_status = 'inherit'
+			AND mt3.meta_value IN ( 'success', 'already_optimized' )"
 	);
 
 	return $count;
@@ -171,7 +167,7 @@ function imagify_count_optimized_attachments() {
 /**
  * Count number of unoptimized attachments.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @return int The number of attachments.
@@ -197,7 +193,7 @@ function imagify_count_unoptimized_attachments() {
 /**
  * Count percent of optimized attachments.
  *
- * @since 1.0
+ * @since  1.0
  * @author Jonathan Buttigieg
  *
  * @return int The percent of optimized attachments.
@@ -304,16 +300,24 @@ function imagify_count_saving_data( $key = '' ) {
 		$limit = apply_filters( 'imagify_count_saving_data_limit', 15000 );
 		$limit = absint( $limit );
 
+		Imagify_DB::unlimit_joins();
+
+		$mime_types     = Imagify_DB::get_mime_types();
 		$attachment_ids = $wpdb->get_col(
-			"SELECT $wpdb->postmeta.post_id
-			 FROM $wpdb->postmeta
-			 INNER JOIN $wpdb->postmeta AS mt1
-			     ON ( $wpdb->postmeta.post_id = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
-			 INNER JOIN $wpdb->postmeta AS mt2
-			     ON ( $wpdb->postmeta.post_id = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
-			 WHERE $wpdb->postmeta.meta_key = '_imagify_status'
-			     AND $wpdb->postmeta.meta_value = 'success'
-			 ORDER BY CAST( $wpdb->postmeta.post_id AS UNSIGNED )"
+			"
+			SELECT p.ID
+			FROM $wpdb->posts AS p
+			INNER JOIN $wpdb->postmeta AS mt1
+				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
+			INNER JOIN $wpdb->postmeta AS mt2
+				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+			INNER JOIN $wpdb->postmeta AS mt3
+				ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
+			WHERE p.post_mime_type IN ( $mime_types )
+				AND p.post_type = 'attachment'
+				AND p.post_status = 'inherit'
+				AND mt3.meta_value = 'success'
+			ORDER BY CAST( p.ID AS UNSIGNED )"
 		);
 		$wpdb->flush();
 
@@ -325,10 +329,11 @@ function imagify_count_saving_data( $key = '' ) {
 			$limit_ids = implode( ',', $limit_ids );
 
 			$attachments = $wpdb->get_col( // WPCS: unprepared SQL ok.
-				"SELECT meta_value
-				 FROM $wpdb->postmeta
-				 WHERE post_id IN ( $limit_ids )
-				    AND meta_key = '_imagify_data'"
+				"
+				SELECT meta_value
+				FROM $wpdb->postmeta
+				WHERE post_id IN ( $limit_ids )
+					AND meta_key = '_imagify_data'"
 			);
 			$wpdb->flush();
 
@@ -401,15 +406,15 @@ function imagify_calculate_total_size_images_library() {
 	$mime_types = Imagify_DB::get_mime_types();
 	$image_ids  = $wpdb->get_col( // WPCS: unprepared SQL ok.
 		"
-		SELECT ID
-		FROM $wpdb->posts
-		INNER JOIN $wpdb->postmeta
-			ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '_wp_attached_file' )
+		SELECT p.ID
+		FROM $wpdb->posts AS p
 		INNER JOIN $wpdb->postmeta AS mt1
-			ON ( $wpdb->posts.ID = mt1.post_id AND mt1.meta_key = '_wp_attachment_metadata' )
-		WHERE $wpdb->posts.post_mime_type IN ( $mime_types )
-			AND $wpdb->posts.post_type = 'attachment'
-			AND $wpdb->posts.post_status = 'inherit'
+			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
+		INNER JOIN $wpdb->postmeta AS mt2
+			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+		WHERE p.post_mime_type IN ( $mime_types )
+			AND p.post_type = 'attachment'
+			AND p.post_status = 'inherit'
 		LIMIT 250
 	" );
 
@@ -417,11 +422,10 @@ function imagify_calculate_total_size_images_library() {
 		return 0;
 	}
 
-	$partial_total_images = count( $image_ids );
-	$total_images         = imagify_count_attachments();
-	$total_size_images    = imagify_calculate_total_image_size( $image_ids, $partial_total_images, $total_images );
+	$count_latest_images = count( $image_ids );
+	$count_total_images  = imagify_count_attachments();
 
-	return $total_size_images;
+	return imagify_calculate_total_image_size( $image_ids, $count_latest_images, $count_total_images );
 }
 
 /**
