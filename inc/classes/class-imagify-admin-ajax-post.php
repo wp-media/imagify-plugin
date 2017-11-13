@@ -414,18 +414,14 @@ class Imagify_Admin_Ajax_Post {
 		$unoptimized_attachment_limit = (int) apply_filters( 'imagify_unoptimized_attachment_limit', 10000 );
 		$unoptimized_attachment_limit = -1 === $unoptimized_attachment_limit ? PHP_INT_MAX : $unoptimized_attachment_limit;
 
-		Imagify_DB::unlimit_joins();
-
-		$mime_types = Imagify_DB::get_mime_types();
-		$statuses   = Imagify_DB::get_post_statuses();
-		$ids        = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
+		$mime_types  = Imagify_DB::get_mime_types();
+		$statuses    = Imagify_DB::get_post_statuses();
+		$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
+		$ids         = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"
 			SELECT p.ID
 			FROM $wpdb->posts AS p
-			INNER JOIN $wpdb->postmeta AS mt1
-				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
-			INNER JOIN $wpdb->postmeta AS mt2
-				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+				$nodata_join
 			LEFT JOIN $wpdb->postmeta AS mt3
 				ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
 			LEFT JOIN $wpdb->postmeta AS mt4

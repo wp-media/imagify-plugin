@@ -31,16 +31,14 @@ function imagify_count_attachments() {
 		return $count;
 	}
 
-	$mime_types = Imagify_DB::get_mime_types();
-	$statuses   = Imagify_DB::get_post_statuses();
-	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types  = Imagify_DB::get_mime_types();
+	$statuses    = Imagify_DB::get_post_statuses();
+	$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
+	$count       = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( p.ID )
 		FROM $wpdb->posts AS p
-		INNER JOIN $wpdb->postmeta AS mt1
-			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
-		INNER JOIN $wpdb->postmeta AS mt2
-			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+			$nodata_join
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )"
@@ -91,18 +89,14 @@ function imagify_count_error_attachments() {
 		return $count;
 	}
 
-	Imagify_DB::unlimit_joins();
-
-	$mime_types = Imagify_DB::get_mime_types();
-	$statuses   = Imagify_DB::get_post_statuses();
-	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types  = Imagify_DB::get_mime_types();
+	$statuses    = Imagify_DB::get_post_statuses();
+	$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
+	$count       = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( p.ID )
 		FROM $wpdb->posts AS p
-		INNER JOIN $wpdb->postmeta AS mt1
-			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
-		INNER JOIN $wpdb->postmeta AS mt2
-			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+			$nodata_join
 		INNER JOIN $wpdb->postmeta AS mt3
 			ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
 		WHERE p.post_mime_type IN ( $mime_types )
@@ -144,18 +138,14 @@ function imagify_count_optimized_attachments() {
 		return $count;
 	}
 
-	Imagify_DB::unlimit_joins();
-
-	$mime_types = Imagify_DB::get_mime_types();
-	$statuses   = Imagify_DB::get_post_statuses();
-	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types  = Imagify_DB::get_mime_types();
+	$statuses    = Imagify_DB::get_post_statuses();
+	$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
+	$count       = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( p.ID )
 		FROM $wpdb->posts AS p
-		INNER JOIN $wpdb->postmeta AS mt1
-			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
-		INNER JOIN $wpdb->postmeta AS mt2
-			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+			$nodata_join
 		INNER JOIN $wpdb->postmeta AS mt3
 			ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
 		WHERE p.post_mime_type IN ( $mime_types )
@@ -303,18 +293,14 @@ function imagify_count_saving_data( $key = '' ) {
 		$limit = apply_filters( 'imagify_count_saving_data_limit', 15000 );
 		$limit = absint( $limit );
 
-		Imagify_DB::unlimit_joins();
-
 		$mime_types     = Imagify_DB::get_mime_types();
 		$statuses       = Imagify_DB::get_post_statuses();
-		$attachment_ids = $wpdb->get_col(
+		$nodata_join    = Imagify_DB::get_required_wp_metadata_join_clause();
+		$attachment_ids = $wpdb->get_col( // WPCS: unprepared SQL ok.
 			"
 			SELECT p.ID
 			FROM $wpdb->posts AS p
-			INNER JOIN $wpdb->postmeta AS mt1
-				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
-			INNER JOIN $wpdb->postmeta AS mt2
-				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+				$nodata_join
 			INNER JOIN $wpdb->postmeta AS mt3
 				ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
 			WHERE p.post_mime_type IN ( $mime_types )
@@ -407,16 +393,14 @@ function imagify_count_saving_data( $key = '' ) {
 function imagify_calculate_total_size_images_library() {
 	global $wpdb;
 
-	$mime_types = Imagify_DB::get_mime_types();
-	$statuses   = Imagify_DB::get_post_statuses();
-	$image_ids  = $wpdb->get_col( // WPCS: unprepared SQL ok.
+	$mime_types  = Imagify_DB::get_mime_types();
+	$statuses    = Imagify_DB::get_post_statuses();
+	$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
+	$image_ids   = $wpdb->get_col( // WPCS: unprepared SQL ok.
 		"
 		SELECT p.ID
 		FROM $wpdb->posts AS p
-		INNER JOIN $wpdb->postmeta AS mt1
-			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
-		INNER JOIN $wpdb->postmeta AS mt2
-			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+			$nodata_join
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
@@ -452,7 +436,13 @@ function imagify_calculate_average_size_images_per_month() {
 		'post_mime_type' => imagify_get_mime_types(),
 		'posts_per_page' => 250,
 		'fields'         => 'ids',
-		'meta_query'     => array(
+	);
+
+	if ( imagify_has_attachments_without_required_metadata() ) {
+		Imagify_DB::unlimit_joins();
+
+		$query['meta_query'] = array(
+			'relation' => 'AND',
 			array(
 				'key'     => '_wp_attached_file',
 				'compare' => 'EXISTS',
@@ -461,8 +451,8 @@ function imagify_calculate_average_size_images_per_month() {
 				'key'     => '_wp_attachment_metadata',
 				'compare' => 'EXISTS',
 			),
-		),
-	);
+		);
+	}
 
 	$partial_images_uploaded_last_month = new WP_Query( array_merge( $query, array(
 		'date_query'     => array(
