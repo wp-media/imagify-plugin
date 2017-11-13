@@ -118,6 +118,59 @@ class Imagify_DB {
 	}
 
 	/**
+	 * Get the SQL JOIN clause to use to get only attachments that have the required WP metadata.
+	 * It returns an empty string if the database has no attacjments without the required metadada.
+	 * It also triggers Imagify_DB::unlimit_joins().
+	 *
+	 * @since  1.6.14
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $id_field An ID field to match the metadata ID against in the JOIN clause.
+	 *                          Default is the posts table `ID` field, using the `p` alias: `p.ID`.
+	 *                          In case of "false" value or PEBKAC, fallback to the same field without alias.
+	 * @return string
+	 */
+	public static function get_required_wp_metadata_join_clause( $id_field = 'p.ID' ) {
+		global $wpdb;
+
+		if ( ! imagify_has_attachments_without_required_metadata() ) {
+			return '';
+		}
+
+		self::unlimit_joins();
+		$clause = '';
+
+		if ( ! $id_field || ! is_string( $id_field ) ) {
+			$id_field = "$wpdb->posts.ID";
+		}
+
+		foreach ( self::get_required_wp_metadata_aliases() as $meta_name => $alias ) {
+			$clause .= "
+			INNER JOIN $wpdb->postmeta AS $alias
+				ON ( $id_field = $alias.post_id AND $alias.meta_key = '$meta_name' )";
+		}
+
+		return $clause;
+	}
+
+	/**
+	 * Get the aliases used for the metas in self::get_required_wp_metadata_join_clause().
+	 *
+	 * @since  1.6.14
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return array An array with the meta name as key and its alias as value.
+	 */
+	public static function get_required_wp_metadata_aliases() {
+		return array(
+			'_wp_attached_file'       => 'imrwpmt1',
+			'_wp_attachment_metadata' => 'imrwpmt2',
+		);
+	}
+
+	/**
 	 * Combine two arrays with some specific keys.
 	 * We use this function to combine the result of 2 SQL queries.
 	 *
