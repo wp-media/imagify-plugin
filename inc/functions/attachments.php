@@ -124,6 +124,42 @@ function imagify_attachment_has_required_metadata( $attachment_id ) {
 }
 
 /**
+ * Tell if the site has attachments (only the ones Imagify would optimize) without the required WP metadata.
+ *
+ * @since  1.6.14
+ * @author Grégory Viguier
+ *
+ * @return bool
+ */
+function imagify_has_attachments_without_required_metadata() {
+	global $wpdb;
+	static $has;
+
+	if ( isset( $has ) ) {
+		return $has;
+	}
+
+	$mime_types = Imagify_DB::get_mime_types();
+	$statuses   = Imagify_DB::get_post_statuses();
+	$has        = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
+		"
+		SELECT p.ID
+		FROM $wpdb->posts AS p
+		LEFT JOIN $wpdb->postmeta AS mt1
+			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
+		LEFT JOIN $wpdb->postmeta AS mt2
+			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+		WHERE p.post_mime_type IN ( $mime_types )
+			AND p.post_type = 'attachment'
+			AND p.post_status IN ( $statuses )
+			AND ( mt1.meta_value IS NULL OR mt2.meta_value IS NULL )
+		LIMIT 1"
+	);
+
+	return $has;
+}
+
+/**
  * Get the path to the backups directory.
  *
  * @since  1.6.8
