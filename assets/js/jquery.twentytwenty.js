@@ -1,65 +1,52 @@
-/* eslint-disable */
-(function($, d, w, undefined) {
+(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
-	$.fn.twentytwenty = function(options, callback) {
-		options = $.extend({
+	$.fn.twentytwenty = function( options, callback ) {
+		options = $.extend( {
 			handlePosition: 0.5,
 			orientation:    'horizontal',
 			labelBefore:    'Before',
 			labelAfter:     'After'
-		}, options);
+		}, options );
 
-		return this.each(function() {
+		return this.each( function() {
 			var sliderPct         = options.handlePosition,
-				$container        = $(this),
+				$container        = $( this ),
 				sliderOrientation = options.orientation,
-				beforeDirection   = (sliderOrientation === 'vertical') ? 'down' : 'left',
-				afterDirection    = (sliderOrientation === 'vertical') ? 'up' : 'right',
-				$beforeImg        = $container.find('img:first'),
-				$afterImg         = $container.find('img:last');
+				beforeDirection   = ( 'vertical' === sliderOrientation ) ? 'down' : 'left',
+				afterDirection    = ( 'vertical' === sliderOrientation ) ? 'up'   : 'right',
+				$beforeImg        = $container.find( 'img:first' ),
+				$afterImg         = $container.find( 'img:last' ),
+				offsetX           = 0,
+				offsetY           = 0,
+				imgWidth          = 0,
+				imgHeight         = 0,
+				$slider, $overlay,
+				calcOffset = function( dimensionPct ) {
+					var width  = parseInt( $beforeImg.attr( 'width' ), 10 ),
+						height = parseInt( $beforeImg.attr( 'height' ), 10 );
 
+					if ( ! width || ! height ) {
+						width  = parseInt( $beforeImg.width(), 10 );
+						height = parseInt( $beforeImg.height(), 10 );
+					}
 
-			$container.wrap('<div class="twentytwenty-wrapper twentytwenty-' + sliderOrientation + '"></div>');
-			$container.append('<div class="twentytwenty-overlay"></div>');
-			$container.append('<div class="twentytwenty-handle"></div>');
-
-			var $slider = $container.find('.twentytwenty-handle');
-
-			$slider.append('<span class="twentytwenty-' + beforeDirection + '-arrow"></span>');
-			$slider.append('<span class="twentytwenty-' + afterDirection + '-arrow"></span>');
-			$container.addClass('twentytwenty-container');
-			$beforeImg.addClass('twentytwenty-before');
-			$afterImg.addClass('twentytwenty-after');
-
-			var $overlay = $container.find('.twentytwenty-overlay');
-
-			$overlay.append('<div class="twentytwenty-labels twentytwenty-before-label"><span class="twentytwenty-label-content">' + options.labelBefore + '</span></div>');
-			$overlay.append('<div class="twentytwenty-labels twentytwenty-after-label"><span class="twentytwenty-label-content">' + options.labelAfter + '</span></div>');
-
-
-			// some usefull function and vars declarations
-
-			var calcOffset = function(dimensionPct) {
-					var w = $beforeImg.width();
-					var h = $beforeImg.height();
 					return {
-						w: w+"px",
-						h: h+"px",
-						cw: (dimensionPct*w)+"px",
-						ch: (dimensionPct*h)+"px"
+						w:  width  + "px",
+						h:  height + "px",
+						cw: ( dimensionPct * width )  + "px",
+						ch: ( dimensionPct * height ) + "px"
 					};
 				},
-
 				adjustContainer = function( offset ) {
-					// make it dynamic, in case "before" image change
-					var $beforeImg = $container.find('.twentytwenty-before');
+					// Make it dynamic, in case the "before" image changes.
+					var $beforeImage = $container.find( '.twentytwenty-before' );
 
-					if ( sliderOrientation === 'vertical' ) {
-						$beforeImg.css( 'clip', 'rect(0,' + offset.w + ',' + offset.ch + ',0)' );
+					if ( 'vertical' === sliderOrientation ) {
+						$beforeImage.css( 'clip', 'rect(0,' + offset.w + ',' + offset.ch + ',0)' );
+					} else {
+						$beforeImage.css( 'clip', 'rect(0,' + offset.cw + ',' + offset.h + ',0)' );
 					}
-					else {
-						$beforeImg.css( 'clip', 'rect(0,' + offset.cw + ',' + offset.h + ',0)' );
-					}
+
 					$container.css( 'height', offset.h );
 
 					if ( typeof callback === 'function' ) {
@@ -67,62 +54,81 @@
 					}
 				},
 				adjustSlider = function( pct ) {
-					var offset = calcOffset(pct);
-					$slider.css( ( sliderOrientation === 'vertical' ) ? 'top' : 'left', ( sliderOrientation === 'vertical' ) ? offset.ch : offset.cw );
+					var offset = calcOffset( pct );
+
+					if ( 'vertical' === sliderOrientation ) {
+						$slider.css( 'top', offset.ch );
+					} else {
+						$slider.css( 'left', offset.cw );
+					}
+
 					adjustContainer( offset );
-				},
-				offsetX = 0,
-				offsetY = 0,
-				imgWidth = 0,
-				imgHeight = 0;
+				};
 
-			$( w ).on('resize.twentytwenty', function() {
+
+			$container.wrap( '<div class="twentytwenty-wrapper twentytwenty-' + sliderOrientation + '"></div>' );
+			$container.append( '<div class="twentytwenty-overlay"></div>' );
+			$container.append( '<div class="twentytwenty-handle"></div>' );
+
+			$slider = $container.find( '.twentytwenty-handle' );
+
+			$slider.append( '<span class="twentytwenty-' + beforeDirection + '-arrow"></span>' );
+			$slider.append( '<span class="twentytwenty-' + afterDirection + '-arrow"></span>' );
+			$container.addClass( 'twentytwenty-container' );
+			$beforeImg.addClass( 'twentytwenty-before' );
+			$afterImg.addClass( 'twentytwenty-after' );
+
+			$overlay = $container.find( '.twentytwenty-overlay' );
+
+			$overlay.append( '<div class="twentytwenty-labels twentytwenty-before-label"><span class="twentytwenty-label-content">' + options.labelBefore + '</span></div>' );
+			$overlay.append( '<div class="twentytwenty-labels twentytwenty-after-label"><span class="twentytwenty-label-content">' + options.labelAfter + '</span></div>' );
+
+			$( w ).on( 'resize.twentytwenty', function() {
 				adjustSlider( sliderPct );
-			});
+			} );
 
-			$slider.on('movestart', function(e) {
-				if ( ( ( e.distX > e.distY && e.distX < -e.distY ) || ( e.distX < e.distY && e.distX > -e.distY ) ) && sliderOrientation !== 'vertical' ) {
+			$slider.on( 'movestart', function( e ) {
+				if ( 'vertical' !== sliderOrientation && ( ( e.distX > e.distY && e.distX < -e.distY ) || ( e.distX < e.distY && e.distX > -e.distY ) ) ) {
+					e.preventDefault();
+				} else if ( 'vertical' === sliderOrientation && ( ( e.distX < e.distY && e.distX < -e.distY ) || ( e.distX > e.distY && e.distX > -e.distY ) ) ) {
 					e.preventDefault();
 				}
-				else if ( ( ( e.distX < e.distY && e.distX < -e.distY ) || ( e.distX > e.distY && e.distX > -e.distY ) ) && sliderOrientation === 'vertical' ) {
-					e.preventDefault();
-				}
-				$container.addClass('active');
-				offsetX 	= $container.offset().left;
-				offsetY 	= $container.offset().top;
-				imgWidth 	= $beforeImg.width();
-				imgHeight 	= $beforeImg.height();
-			});
 
-			$slider.on('moveend', function() {
-				$container.removeClass('active');
-			});
+				$container.addClass( 'active' );
 
-			$slider.on('move', function(e) {
+				offsetX   = $container.offset().left;
+				offsetY   = $container.offset().top;
+				imgWidth  = $beforeImg.width();
+				imgHeight = $beforeImg.height();
+			} );
+
+			$slider.on( 'moveend', function() {
+				$container.removeClass( 'active' );
+			} );
+
+			$slider.on( 'move', function( e ) {
 				if ( $container.hasClass('active') ) {
-
-					sliderPct = ( sliderOrientation === 'vertical' ) ? ( e.pageY-offsetY )/imgHeight : ( e.pageX-offsetX )/imgWidth;
+					sliderPct = 'vertical' === sliderOrientation ? ( e.pageY - offsetY ) / imgHeight : ( e.pageX - offsetX ) / imgWidth;
 
 					if ( sliderPct < 0 ) {
 						sliderPct = 0;
-					}
-					if ( sliderPct > 1 ) {
+					} else if ( sliderPct > 1 ) {
 						sliderPct = 1;
 					}
+
 					adjustSlider( sliderPct );
 				}
-			});
+			} );
 
-			$container.find('img').on('mousedown', function(event) {
-				event.preventDefault();
-			});
+			$container.find( 'img' ).on( 'mousedown', function( e ) {
+				e.preventDefault();
+			} );
 
-			$( w ).trigger('resize.twentytwenty');
-		});
+			$( w ).trigger( 'resize.twentytwenty' );
+		} );
 	};
 
 } )(jQuery, document, window);
-/* eslint-enable */
 
 /**
  * Twentytwenty Imagify Init
