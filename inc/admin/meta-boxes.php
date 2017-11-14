@@ -55,6 +55,6 @@ function _imagify_attachment_submitbox_misc_actions() {
 
 	if ( $attachment->is_optimized() ) {
 		echo '<input id="imagify-full-original" type="hidden" value="' . esc_url( $attachment->get_backup_url() ) . '">';
-		echo '<input id="imagify-full-original-size" type="hidden" value="' . esc_attr( $attachment->get_original_size() ) . '">';
+		echo '<input id="imagify-full-original-size" type="hidden" value="' . esc_attr( $attachment->get_original_size( true, 0 ) ) . '">';
 	}
 }
