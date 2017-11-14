@@ -45,11 +45,16 @@
 	color: #46b1ce;
 }
 
+.imagify-overview-chart-container {
+	float: left;
+	margin-right: 20px;
+}
 .imagify-chart-percent {
 	position: absolute;
 	left: 0; right: 0;
 	top: 50%;
-	margin-top: -14px;
+	margin-top: -.5em;
+	line-height: 1;
 	text-align: center;
 	font-size: 55px;
 	font-weight: bold;

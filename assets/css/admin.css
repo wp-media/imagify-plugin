@@ -132,34 +132,18 @@ body.imagify-modal-is-open {
 
 /* Doughnut */
 .imagify-chart {
-	width: 33.33%;
 	position: relative;
+	top: 1px;
+	display: inline-block;
+	vertical-align: middle;
 }
-
-.imagify-chart {
-	float: left;
-	margin-bottom: 20px;
-}
-
 .imagify-chart-container {
 	position: relative;
-	width: 180px;
-	float: left;
-	margin-right: 20px;
+	display: inline-block;
+	margin-right: 5px;
 }
-
-/* On library page */
-td .imagify-chart {
-	top: 4px;
-	float: none;
-	margin-bottom: 0;
-}
-
-td .imagify-chart-container {
-	width: 18px;
-	height: 18px;
-	float: none;
-	margin-right: 10px;
+.imagify-chart-container canvas {
+	display: block;
 }
 
 /**
@@ -779,13 +763,6 @@ ul.imagify-datas-list .big {
 .imagify-data-item {
 	overflow: hidden;
 }
-.imagify-data-item .imagify-chart {
-	display: inline-block;
-	top: 1px;
-	width: 20px;
-	vertical-align: middle;
-	margin-bottom: 0;
-}
 li.imagify-data-item {
 	clear: both;
 	margin-bottom: 2px;
@@ -816,8 +793,12 @@ ul.imagify-datas-list .imagify-data-item strong {
 	float: none;
 }
 .media-sidebar .imagify-datas-list .imagify-data-item strong {
+	display: inline-block;
 	width: auto;
 	float: none;
+}
+.media-sidebar .imagify-datas-list .imagify-data-item .imagify-chart {
+	float: left;
 }
 .imagify-datas-more-action.imagify-datas-more-action {
 	margin: .4em auto;
