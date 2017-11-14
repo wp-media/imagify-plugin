@@ -194,7 +194,8 @@
 			title:             imagifyBulk.labels.waitTitle,
 			html:              imagifyBulk.labels.waitText,
 			showConfirmButton: false,
-			imageUrl:          imagifyBulk.waitImageUrl
+			imageUrl:          imagifyBulk.waitImageUrl,
+			customClass:       'imagify-sweet-alert'
 		} );
 
 		$.get( ajaxurl + w.imagify.concat + 'action=' + imagifyBulk.ajaxAction + '&optimization_level=' + optimizationLevel + '&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val() )
