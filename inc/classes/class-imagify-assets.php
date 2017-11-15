@@ -14,7 +14,7 @@ class Imagify_Assets {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * Prefix used for stylesheet handles.
@@ -192,7 +192,7 @@ class Imagify_Assets {
 
 		$this->register_script( 'sweetalert', 'sweetalert2', array( 'promise-polyfill' ), '4.6.6' )->localize( 'imagifySwal' );
 
-		$this->register_script( 'chart', 'chart', array(), '1.0.2' );
+		$this->register_script( 'chart', 'chart', array(), '2.7.1' );
 
 		$this->register_script( 'event-move', 'jquery.event.move', array( 'jquery' ), '2.0.1' );
 

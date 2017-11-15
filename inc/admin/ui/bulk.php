@@ -104,7 +104,7 @@ function _imagify_display_bulk_page() {
 				<div class="col-1-3 col-overview">
 					<h3><?php _e( 'Overview', 'imagify' ); ?></h3>
 
-					<div class="imagify-chart-container">
+					<div class="imagify-chart-container imagify-overview-chart-container">
 						<canvas id="imagify-overview-chart" width="180" height="180"></canvas>
 						<div id="imagify-overview-chart-percent" class="imagify-chart-percent"><?php echo imagify_percent_optimized_attachments(); ?><span>%</span></div>
 					</div>

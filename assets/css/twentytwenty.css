@@ -254,21 +254,10 @@
 	margin: 15px 0;
 	overflow: hidden;
 }
-.imagify-comparison-levels div {
+.imagify-comparison-levels .imagify-c-level {
 	display: none;
 	min-width: 175px;
 	font-size: 11px;
-}
-.imagify-comparison-levels .imagify-chart,
-.imagify-comparison-levels .imagify-chart-container {
-	width: 25px;
-	float: none;
-	margin: 0;
-}
-.imagify-visual-comparison .imagify-chart-container canvas {
-	width: 15px!important;
-	height: 15px!important;
-	margin-right: 5px;
 }
 .imagify-c-level.go-left {
 	float: left;
@@ -299,9 +288,6 @@
 .imagify-c-level-row .value.size {
 	color: #8bc34a;
 	font-weight: bold;
-}
-.imagify-c-level-row .value .imagify-chart {
-	top: 1px;
 }
 
 /* TT Loader */

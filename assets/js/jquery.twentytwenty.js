@@ -136,25 +136,32 @@
 	 */
 	var drawMeAChart = function ( canvas ) {
 			canvas.each( function() {
-				var $this        = $( this ),
-					theValue     = parseInt( $this.closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text(), 10 ),
-					overviewData = [
-						{
-							value: theValue,
-							color: '#00B3D3'
-						},
-						{
-							value: 100 - theValue,
-							color: '#D8D8D8'
-						}
-					];
+				var value = parseInt( $( this ).closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text(), 10 );
 
-				new Chart( $this[0].getContext( '2d' ) ).Doughnut( overviewData, { // eslint-disable-line new-cap
-					segmentStrokeColor:    '#2A2E3C',
-					segmentStrokeWidth:    1,
-					animateRotate:         true,
-					percentageInnerCutout: 60,
-					tooltipEvents:         []
+				new Chart( this, { // eslint-disable-line no-new
+					type: 'doughnut',
+					data: {
+						datasets: [{
+							data:            [ value, 100 - value ],
+							backgroundColor: [ '#00B3D3', '#D8D8D8' ],
+							borderColor:     '#2A2E3C',
+							borderWidth:     1
+						}]
+					},
+					options: {
+						legend: {
+							display: false
+						},
+						events:    [],
+						animation: {
+							easing: 'easeOutBounce'
+						},
+						tooltips: {
+							enabled: false
+						},
+						responsive:       false,
+						cutoutPercentage: 60
+					}
 				} );
 			} );
 		},
