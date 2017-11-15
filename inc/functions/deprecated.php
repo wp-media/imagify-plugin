@@ -408,10 +408,11 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 endif;
 
 /**
- * Get all mime type which could be optimized by Imagify.
+ * Get all mime types which could be optimized by Imagify.
  *
  * @since 1.3
  * @since 1.6.14 Deprecated.
+ * @deprecated
  *
  * @return array $mime_type  The mime type.
  */
