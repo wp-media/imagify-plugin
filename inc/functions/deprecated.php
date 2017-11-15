@@ -59,7 +59,7 @@ class Imagify_Deprecated {
 	 * @since 1.6.5 Deprecated
 	 * @deprecated
 	 *
-	 * @param  array $data All user data. Details here: --.
+	 * @param  array $data All user data.
 	 * @return object
 	 */
 	public function createUser( $data ) {
@@ -73,7 +73,7 @@ class Imagify_Deprecated {
 	 * @since 1.6.5 Deprecated
 	 * @deprecated
 	 *
-	 * @param  string $data All user data. Details here: --.
+	 * @param  string $data All user data.
 	 * @return object
 	 */
 	public function updateUser( $data ) {
@@ -127,7 +127,7 @@ class Imagify_Deprecated {
 	 * @since 1.6.5 Deprecated
 	 * @deprecated
 	 *
-	 * @param  string $data All options. Details here: --.
+	 * @param  string $data All options.
 	 * @return object
 	 */
 	public function uploadImage( $data ) {
@@ -141,7 +141,7 @@ class Imagify_Deprecated {
 	 * @since 1.6.5 Deprecated
 	 * @deprecated
 	 *
-	 * @param  string $data All options. Details here: --.
+	 * @param  string $data All options.
 	 * @return object
 	 */
 	public function fetchImage( $data ) {
