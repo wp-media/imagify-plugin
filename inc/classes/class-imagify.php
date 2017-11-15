@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.6';
+	const VERSION = '1.1';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -51,8 +51,6 @@ class Imagify extends Imagify_Deprecated {
 
 	/**
 	 * The constructor.
-	 *
-	 * @return void
 	 */
 	protected function __construct() {
 		// Check if the WordPress plugin is activated and the API key is stored in the options.
@@ -74,9 +72,9 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Get the main Instance.
 	 *
-	 * @access  public
-	 * @since   1.6.5
-	 * @author  Grégory Viguier
+	 * @access public
+	 * @since  1.6.5
+	 * @author Grégory Viguier
 	 *
 	 * @return object Main instance.
 	 */
@@ -91,8 +89,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Get your Imagify account infos.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
 	 * @return object
 	 */
@@ -113,29 +111,42 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Create a user on your Imagify account.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
-	 * @param  array $data All user data. Details here: --.
+	 * @param  array $data All user data.
 	 * @return object
 	 */
 	public function create_user( $data ) {
-		$this->headers       = array();
-		$data['from_plugin'] = true;
+		$this->headers = array();
+		$data          = array_merge( $data, array(
+			'from_plugin' => true,
+			'partner'     => imagify_get_partner(),
+		) );
 
-		return $this->http_call( 'users/', array(
+		if ( ! $data['partner'] ) {
+			unset( $data['partner'] );
+		}
+
+		$response = $this->http_call( 'users/', array(
 			'method'    => 'POST',
 			'post_data' => $data,
 		) );
+
+		if ( ! is_wp_error( $response ) ) {
+			imagify_delete_partner();
+		}
+
+		return $response;
 	}
 
 	/**
 	 * Update an existing user on your Imagify account.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
-	 * @param  string $data All user data. Details here: --.
+	 * @param  string $data All user data.
 	 * @return object
 	 */
 	public function update_user( $data ) {
@@ -151,8 +162,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Check your Imagify API key status.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
 	 * @param  string $data The license key.
 	 * @return object
@@ -160,15 +171,24 @@ class Imagify extends Imagify_Deprecated {
 	public function get_status( $data ) {
 		static $status = array();
 
-		if ( ! isset( $status[ $data ] ) ) {
-			$this->headers = array(
-				'Authorization' => 'Authorization: token ' . $data,
-			);
-
-			$status[ $data ] = $this->http_call( 'status/', array(
-				'timeout' => 10,
-			) );
+		if ( isset( $status[ $data ] ) ) {
+			return $status[ $data ];
 		}
+
+		$this->headers = array(
+			'Authorization' => 'Authorization: token ' . $data,
+		);
+
+		$uri     = 'status/';
+		$partner = imagify_get_partner();
+
+		if ( $partner ) {
+			$uri .= '?partner=' . $partner;
+		}
+
+		$status[ $data ] = $this->http_call( $uri, array(
+			'timeout' => 10,
+		) );
 
 		return $status[ $data ];
 	}
@@ -176,8 +196,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Get the Imagify API version.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
 	 * @return object
 	 */
@@ -200,8 +220,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Get Public Info.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
 	 * @return object
 	 */
@@ -215,8 +235,8 @@ class Imagify extends Imagify_Deprecated {
 	 * Optimize an image from its binary content.
 	 *
 	 * @access public
-	 * @since  1.6.5
-	 * @since  1.6.7 $data['image'] can contain the file path (prefered) or the result of `curl_file_create()`.
+	 * @since 1.6.5
+	 * @since 1.6.7 $data['image'] can contain the file path (prefered) or the result of `curl_file_create()`.
 	 *
 	 * @param  string $data All options.
 	 * @return object
@@ -235,8 +255,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Optimize an image from its URL.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
 	 * @param  string $data All options. Details here: --.
 	 * @return object
@@ -253,8 +273,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Get prices for plans.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
 	 * @return object
 	 */
@@ -267,8 +287,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Get prices for packs (one time).
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
 	 * @return object
 	 */
@@ -281,8 +301,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Get all prices (packs & plans included).
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
 	 * @return object
 	 */
@@ -295,8 +315,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Get all prices (packs & plans included).
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
 	 * @param  string $coupon A coupon code.
 	 * @return object
@@ -310,8 +330,8 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * Get information about current discount.
 	 *
-	 * @access  public
-	 * @since   1.6.5
+	 * @access public
+	 * @since  1.6.5
 	 *
 	 * @return object
 	 */
