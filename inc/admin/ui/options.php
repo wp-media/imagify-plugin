@@ -351,7 +351,7 @@ function _imagify_display_options_page() {
 						</tbody>
 					</table>
 
-					<h3 class="imagify-options-title"><?php _e( 'Display options', 'Imagify' ); ?></h3>
+					<h3 class="imagify-options-title"><?php _e( 'Display options', 'imagify' ); ?></h3>
 
 					<table class="form-table">
 						<tbody>

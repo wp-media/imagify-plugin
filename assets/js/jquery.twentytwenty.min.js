@@ -577,11 +577,11 @@
 	 */
 	if ( $( '.upload-php' ).length > 0 ) {
 
-		var getVar = function ( param ) {
+		var getVar = function( param ) {
 				var vars = {};
 
 				w.location.href.replace(
-					/[?&]+([^=&]+)=?([^&]*)?/gi,//
+					/[?&]+([^=&]+)=?([^&]*)?/gi,
 					function( m, key, value ) {
 						vars[ key ] = undefined !== value ? value : '';
 					}
@@ -594,7 +594,7 @@
 			},
 			imagifyContentInModal = function() {
 				var tempTimer = setInterval( function() {
-					var $datas, originalSrc;
+					var $datas, originalSrc, $actions;
 
 					if ( ! $( '.media-modal .imagify-datas-details' ).length ) {
 						return;
@@ -604,7 +604,10 @@
 
 					if ( originalSrc ) {
 						// Trigger creation.
-						$( '.media-frame-content .attachment-actions' ).prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
+						$actions = $( '.media-frame-content .attachment-actions' );
+
+						$actions.find( '#imagify-media-frame-comparison-btn' ).remove();
+						$actions.prepend( '<button type="button" class="imagify-button-primary button-primary imagify-modal-trigger" data-target="#imagify-comparison-modal" id="imagify-media-frame-comparison-btn">' + imagifyTTT.labels.compare + '</button>' );
 
 						// Get datas.
 						$datas = $( '.media-frame-content .compat-field-imagify' );
@@ -628,26 +631,17 @@
 					clearInterval( tempTimer );
 					tempTimer = null;
 				}, 20 );
-			},
-			waitContent = setInterval( function() {
-				if ( ! $( '.upload-php .media-frame.mode-grid .attachments' ).length ) {
-					return;
-				}
+			};
 
-				// If attachment is clicked, build the modal inside the modal.
-				$( '.upload-php .media-frame.mode-grid' ).on( 'click', '.attachment', function() {
-					imagifyContentInModal();
-				} );
+		// If attachment is clicked, or the "Previous" and "Next" buttons, build the modal inside the modal.
+		$( '.upload-php' ).on( 'click', '.media-frame.mode-grid .attachment, .edit-media-header .left, .edit-media-header .right', function() {
+			imagifyContentInModal();
+		} );
 
-				// If attachment is mentionned in URL, build the modal inside the modal.
-				if ( getVar( 'item' ) ) {
-					imagifyContentInModal();
-				}
-
-				clearInterval( waitContent );
-				waitContent = null;
-			}, 100 );
-		// If URL contain item, that will open the WP Modal View.
+		// If attachment is mentionned in URL, build the modal inside the modal.
+		if ( getVar( 'item' ) ) {
+			imagifyContentInModal();
+		}
 	}
 
 } )(jQuery, document, window);

@@ -227,17 +227,27 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 			break;
 
 		case 'register':
-			return $app_url . 'register';
+			$partner = imagify_get_partner();
+
+			if ( $partner ) {
+				$query_args['partner'] = $partner;
+			}
+
+			$url = $app_url . 'register';
+			break;
 
 		case 'subscription':
-			return $app_url . 'subscription';
+			$url = $app_url . 'subscription';
+			break;
 
 		case 'get-api-key':
-			return $app_url . 'api';
+			$url = $app_url . 'api';
+			break;
 
 		case 'payment':
 			// Don't remove the trailing slash.
-			return $app_url . 'plugin/';
+			$url = $app_url . 'plugin/';
+			break;
 
 		default:
 			return '';
