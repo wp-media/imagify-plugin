@@ -97,12 +97,12 @@ function imagify_count_error_attachments() {
 		SELECT COUNT( p.ID )
 		FROM $wpdb->posts AS p
 			$nodata_join
-		INNER JOIN $wpdb->postmeta AS mt3
-			ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
+		INNER JOIN $wpdb->postmeta AS mt1
+			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
-			AND mt3.meta_value = 'error'"
+			AND mt1.meta_value = 'error'"
 	);
 
 	return $count;
@@ -146,12 +146,12 @@ function imagify_count_optimized_attachments() {
 		SELECT COUNT( p.ID )
 		FROM $wpdb->posts AS p
 			$nodata_join
-		INNER JOIN $wpdb->postmeta AS mt3
-			ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
+		INNER JOIN $wpdb->postmeta AS mt1
+			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
-			AND mt3.meta_value IN ( 'success', 'already_optimized' )"
+			AND mt1.meta_value IN ( 'success', 'already_optimized' )"
 	);
 
 	return $count;
@@ -301,12 +301,12 @@ function imagify_count_saving_data( $key = '' ) {
 			SELECT p.ID
 			FROM $wpdb->posts AS p
 				$nodata_join
-			INNER JOIN $wpdb->postmeta AS mt3
-				ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
+			INNER JOIN $wpdb->postmeta AS mt1
+				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
 			WHERE p.post_mime_type IN ( $mime_types )
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
-				AND mt3.meta_value = 'success'
+				AND mt1.meta_value = 'success'
 			ORDER BY CAST( p.ID AS UNSIGNED )"
 		);
 		$wpdb->flush();

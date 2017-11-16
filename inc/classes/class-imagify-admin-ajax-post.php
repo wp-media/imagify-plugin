@@ -422,24 +422,24 @@ class Imagify_Admin_Ajax_Post {
 			SELECT p.ID
 			FROM $wpdb->posts AS p
 				$nodata_join
-			LEFT JOIN $wpdb->postmeta AS mt3
-				ON ( p.ID = mt3.post_id AND mt3.meta_key = '_imagify_status' )
-			LEFT JOIN $wpdb->postmeta AS mt4
-				ON ( p.ID = mt4.post_id AND mt4.meta_key = '_imagify_optimization_level' )
+			LEFT JOIN $wpdb->postmeta AS mt1
+				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+			LEFT JOIN $wpdb->postmeta AS mt2
+				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_optimization_level' )
 			WHERE
 				p.post_mime_type IN ( $mime_types )
 				AND (
-					mt3.meta_value = 'error'
+					mt1.meta_value = 'error'
 					OR
-					mt4.meta_value != '%d'
+					mt2.meta_value != '%d'
 					OR
-					mt4.post_id IS NULL
+					mt2.post_id IS NULL
 				)
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
 			GROUP BY p.ID
 			ORDER BY
-				CASE mt3.meta_value
+				CASE mt1.meta_value
 					WHEN 'already_optimized' THEN 2
 					ELSE 1
 				END ASC,
