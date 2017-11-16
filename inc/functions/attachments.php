@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Get all mime types which could be optimized by Imagify.
  *
- * @since 1.6.14
+ * @since 1.7
  *
  * @return array The mime types.
  */
@@ -83,7 +83,7 @@ function imagify_is_attachment_mime_type_supported( $attachment_id ) {
 /**
  * Get post statuses related to attachments.
  *
- * @since  1.6.14
+ * @since  1.7
  * @author Grégory Viguier
  *
  * @return array
@@ -126,7 +126,7 @@ function imagify_attachment_has_required_metadata( $attachment_id ) {
 /**
  * Tell if the site has attachments (only the ones Imagify would optimize) without the required WP metadata.
  *
- * @since  1.6.14
+ * @since  1.7
  * @author Grégory Viguier
  *
  * @return bool

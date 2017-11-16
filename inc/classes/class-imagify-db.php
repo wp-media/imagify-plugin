@@ -101,7 +101,7 @@ class Imagify_DB {
 	/**
 	 * Get post statuses related to attachments, ready to be used in a `IN ()` clause.
 	 *
-	 * @since  1.6.14
+	 * @since  1.7
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -122,7 +122,7 @@ class Imagify_DB {
 	 * It returns an empty string if the database has no attacjments without the required metadada.
 	 * It also triggers Imagify_DB::unlimit_joins().
 	 *
-	 * @since  1.6.14
+	 * @since  1.7
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -157,7 +157,7 @@ class Imagify_DB {
 	/**
 	 * Get the aliases used for the metas in self::get_required_wp_metadata_join_clause().
 	 *
-	 * @since  1.6.14
+	 * @since  1.7
 	 * @access public
 	 * @author Grégory Viguier
 	 *

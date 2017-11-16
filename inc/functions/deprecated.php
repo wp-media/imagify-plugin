@@ -411,13 +411,13 @@ endif;
  * Get all mime types which could be optimized by Imagify.
  *
  * @since 1.3
- * @since 1.6.14 Deprecated.
+ * @since 1.7 Deprecated.
  * @deprecated
  *
  * @return array $mime_type  The mime type.
  */
 function get_imagify_mime_type() {
-	_deprecated_function( __FUNCTION__ . '()', '1.6.14', 'imagify_get_mime_types()' );
+	_deprecated_function( __FUNCTION__ . '()', '1.7', 'imagify_get_mime_types()' );
 
 	return imagify_get_mime_types();
 }
