@@ -80,18 +80,9 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 
 	@set_time_limit( 0 );
 
-	$optimization_level = (int) $_GET['optimization_level'];
-	$optimization_level = ( -1 !== $optimization_level ) ? $optimization_level : get_imagify_option( 'optimization_level', 1 );
-	$optimization_level = (int) $optimization_level;
-
-	/**
-	 * Filter the unoptimized attachments limit query.
-	 *
-	 * @since 1.4.4
-	 *
-	 * @param int The limit (-1 for unlimited).
-	 */
-	$unoptimized_attachment_limit = apply_filters( 'imagify_unoptimized_attachment_limit', 10000 );
+	$optimization_level           = (int) $_GET['optimization_level'];
+	$optimization_level           = -1 !== $optimization_level ? $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
+	$unoptimized_attachment_limit = imagify_get_unoptimized_attachment_limit();
 
 	$storage   = C_Gallery_Storage::get_instance();
 	$ngg_table = $wpdb->prefix . 'ngg_pictures';

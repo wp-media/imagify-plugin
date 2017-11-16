@@ -401,18 +401,9 @@ class Imagify_Admin_Ajax_Post {
 		@set_time_limit( 0 );
 
 		// Get (ordered) IDs.
-		$optimization_level = (int) $_GET['optimization_level'];
-		$optimization_level = ( -1 !== $optimization_level ) ? $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
-
-		/**
-		 * Filter the unoptimized attachments limit query.
-		 *
-		 * @since 1.4.4
-		 *
-		 * @param int The limit (-1 for unlimited).
-		 */
-		$unoptimized_attachment_limit = (int) apply_filters( 'imagify_unoptimized_attachment_limit', 10000 );
-		$unoptimized_attachment_limit = -1 === $unoptimized_attachment_limit ? PHP_INT_MAX : $unoptimized_attachment_limit;
+		$optimization_level           = (int) $_GET['optimization_level'];
+		$optimization_level           = -1 !== $optimization_level ? $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
+		$unoptimized_attachment_limit = imagify_get_unoptimized_attachment_limit();
 
 		Imagify_DB::unlimit_joins();
 

@@ -45,12 +45,7 @@ function imagify_count_attachments() {
 			AND $wpdb->posts.post_status = 'inherit'"
 	);
 
-	/**
-	 * Filter the limit from which the library is considered large.
-	 *
-	 * @param int $limit Number of attachments.
-	 */
-	if ( $count > apply_filters( 'imagify_unoptimized_attachment_limit', 10000 ) ) {
+	if ( $count > imagify_get_unoptimized_attachment_limit() ) {
 		set_transient( 'imagify_large_library', 1 );
 	} elseif ( get_transient( 'imagify_large_library' ) ) {
 		// In case the number is decreasing under our limit.

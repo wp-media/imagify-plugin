@@ -186,12 +186,7 @@ function _imagify_display_bulk_page() {
 								printf(
 									/* translators: %s is a formatted number. Don't use %d. */
 									__( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ),
-									/**
-									 * Filter the unoptimized attachments limit.
-									 *
-									 * @param int Default is 10000.
-									 */
-									number_format_i18n( apply_filters( 'imagify_unoptimized_attachment_limit', 10000 ) )
+									number_format_i18n( imagify_get_unoptimized_attachment_limit() )
 								);
 							}
 							?>
