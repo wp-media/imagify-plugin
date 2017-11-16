@@ -94,7 +94,7 @@ function imagify_count_error_attachments() {
 	$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
 	$count       = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
-		SELECT COUNT( p.ID )
+		SELECT COUNT( DISTINCT p.ID )
 		FROM $wpdb->posts AS p
 			$nodata_join
 		INNER JOIN $wpdb->postmeta AS mt1
@@ -143,7 +143,7 @@ function imagify_count_optimized_attachments() {
 	$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
 	$count       = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
-		SELECT COUNT( p.ID )
+		SELECT COUNT( DISTINCT p.ID )
 		FROM $wpdb->posts AS p
 			$nodata_join
 		INNER JOIN $wpdb->postmeta AS mt1
@@ -311,7 +311,7 @@ function imagify_count_saving_data( $key = '' ) {
 		);
 		$wpdb->flush();
 
-		$attachment_ids = array_map( 'absint', $attachment_ids );
+		$attachment_ids = array_map( 'absint', array_unique( $attachment_ids ) );
 		$attachment_ids = array_chunk( $attachment_ids, $limit );
 
 		while ( $attachment_ids ) {
@@ -341,20 +341,29 @@ function imagify_count_saving_data( $key = '' ) {
 					continue;
 				}
 
-				++$count;
 				$original_data = $attachment_data['sizes']['full'];
 
+				if ( empty( $original_data['success'] ) ) {
+					/**
+					 * Case where this attachment has multiple '_imagify_status' metas, and is fetched (in the above query) as a "success" while the '_imagify_data' says otherwise.
+					 * Don't ask how it's possible, I don't know.
+					 */
+					continue;
+				}
+
+				++$count;
+
 				// Increment the original sizes.
-				$original_size  += $original_data['original_size']  ? $original_data['original_size']  : 0;
-				$optimized_size += $original_data['optimized_size'] ? $original_data['optimized_size'] : 0;
+				$original_size  += ! empty( $original_data['original_size'] )  ? $original_data['original_size']  : 0;
+				$optimized_size += ! empty( $original_data['optimized_size'] ) ? $original_data['optimized_size'] : 0;
 
 				unset( $attachment_data['sizes']['full'], $original_data );
 
 				// Increment the thumbnails sizes.
 				foreach ( $attachment_data['sizes'] as $size_data ) {
 					if ( ! empty( $size_data['success'] ) ) {
-						$original_size  += $size_data['original_size']  ? $size_data['original_size']  : 0;
-						$optimized_size += $size_data['optimized_size'] ? $size_data['optimized_size'] : 0;
+						$original_size  += ! empty( $size_data['original_size'] )  ? $size_data['original_size']  : 0;
+						$optimized_size += ! empty( $size_data['optimized_size'] ) ? $size_data['optimized_size'] : 0;
 					}
 				}
 
