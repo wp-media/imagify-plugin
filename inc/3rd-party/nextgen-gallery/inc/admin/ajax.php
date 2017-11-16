@@ -80,9 +80,8 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 
 	@set_time_limit( 0 );
 
-	$optimization_level           = (int) $_GET['optimization_level'];
-	$optimization_level           = -1 !== $optimization_level ? $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
-	$unoptimized_attachment_limit = imagify_get_unoptimized_attachment_limit();
+	$optimization_level = (int) $_GET['optimization_level'];
+	$optimization_level = -1 !== $optimization_level ? $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
 
 	$storage   = C_Gallery_Storage::get_instance();
 	$ngg_table = $wpdb->prefix . 'ngg_pictures';
@@ -97,7 +96,7 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 			OR idata.status = 'error'
 		LIMIT %d",
 		$optimization_level,
-		$unoptimized_attachment_limit
+		imagify_get_unoptimized_attachment_limit()
 	), ARRAY_A );
 
 	// Save the optimization level in a transient to retrieve it later during the process.

@@ -401,9 +401,8 @@ class Imagify_Admin_Ajax_Post {
 		@set_time_limit( 0 );
 
 		// Get (ordered) IDs.
-		$optimization_level           = (int) $_GET['optimization_level'];
-		$optimization_level           = -1 !== $optimization_level ? $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
-		$unoptimized_attachment_limit = imagify_get_unoptimized_attachment_limit();
+		$optimization_level = (int) $_GET['optimization_level'];
+		$optimization_level = -1 !== $optimization_level ? $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
 
 		Imagify_DB::unlimit_joins();
 
@@ -439,11 +438,11 @@ class Imagify_Admin_Ajax_Post {
 				$wpdb->posts.ID DESC
 			LIMIT 0, %d",
 			$optimization_level,
-			$unoptimized_attachment_limit
+			imagify_get_unoptimized_attachment_limit()
 		) );
 
 		$wpdb->flush();
-		unset( $unoptimized_attachment_limit, $mime_types );
+		unset( $mime_types );
 		$ids = array_filter( array_map( 'absint', $ids ) );
 
 		if ( ! $ids ) {
