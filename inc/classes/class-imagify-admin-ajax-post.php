@@ -645,7 +645,7 @@ class Imagify_Admin_Ajax_Post {
 		$data = array(
 			'email'    => $_GET['email'],
 			'password' => wp_generate_password( 12, false ),
-			'lang'     => get_locale(),
+			'lang'     => imagify_get_locale(),
 		);
 
 		$response = add_imagify_user( $data );
