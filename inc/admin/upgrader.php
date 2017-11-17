@@ -121,8 +121,8 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 		$wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "_transient_imagify-async-in-progress-%"' );
 	}
 
-	// 1.6.13
-	if ( ! imagify_is_active_for_network() && $options->is_autoloaded() && version_compare( $current_version, '1.6.13' ) < 0 ) {
+	// 1.7
+	if ( ! imagify_is_active_for_network() && $options->is_autoloaded() && version_compare( $current_version, '1.7' ) < 0 ) {
 		// Make sure the settings are auloaded.
 		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET `autoload` = 'yes' WHERE `autoload` != 'yes' AND option_name = %s", $options->get_option_name() ) );
 	}

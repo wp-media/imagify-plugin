@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Class that handles the plugin options.
  *
- * @since 1.6.13
+ * @since 1.7
  */
 class Imagify_Options {
 
@@ -12,7 +12,7 @@ class Imagify_Options {
 	 * Class version.
 	 *
 	 * @var   string
-	 * @since 1.6.13
+	 * @since 1.7
 	 */
 	const VERSION = '1.0';
 
@@ -20,7 +20,7 @@ class Imagify_Options {
 	 * Suffix used in the name of the option.
 	 *
 	 * @var    string
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected $identifier = 'settings';
@@ -31,7 +31,7 @@ class Imagify_Options {
 	 * Don't use null as value.
 	 *
 	 * @var    array
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected $default_values = array(
@@ -52,7 +52,7 @@ class Imagify_Options {
 	 * Values identical to default values are not listed.
 	 *
 	 * @var    array
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected $reset_values = array(
@@ -66,7 +66,7 @@ class Imagify_Options {
 	 * Tell if the option should be autoloaded by WP.
 	 *
 	 * @var    string
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected $autoload = 'yes';
@@ -75,7 +75,7 @@ class Imagify_Options {
 	 * Identifier used in the hook names.
 	 *
 	 * @var    string
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access private
 	 */
 	private $hook_identifier;
@@ -84,7 +84,7 @@ class Imagify_Options {
 	 * The single instance of the class.
 	 *
 	 * @var    object
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected static $_instance;
@@ -92,7 +92,7 @@ class Imagify_Options {
 	/**
 	 * The constructor.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access protected
 	 */
@@ -107,7 +107,7 @@ class Imagify_Options {
 	/**
 	 * Get the main Instance.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -129,7 +129,7 @@ class Imagify_Options {
 	/**
 	 * Get an Imagify option.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -189,7 +189,7 @@ class Imagify_Options {
 	/**
 	 * Get all options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -208,7 +208,7 @@ class Imagify_Options {
 	/**
 	 * Set one or multiple options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -235,7 +235,7 @@ class Imagify_Options {
 	/**
 	 * Delete one or multiple options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -260,7 +260,7 @@ class Imagify_Options {
 	/**
 	 * Checks if the option with the given name exists or not.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -279,7 +279,7 @@ class Imagify_Options {
 	/**
 	 * Get the name of the option that stores the settings.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -292,7 +292,7 @@ class Imagify_Options {
 	/**
 	 * Get the identifier used in the hook names.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -305,7 +305,7 @@ class Imagify_Options {
 	/**
 	 * Tell if the option is autoloaded.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -318,7 +318,7 @@ class Imagify_Options {
 	/**
 	 * Get the raw value of all Imagify options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -337,7 +337,7 @@ class Imagify_Options {
 	/**
 	 * Update the Imagify options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -364,7 +364,7 @@ class Imagify_Options {
 	/**
 	 * Delete all Imagify options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 */
@@ -380,7 +380,7 @@ class Imagify_Options {
 	/**
 	 * Get default option values.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -390,7 +390,7 @@ class Imagify_Options {
 		/**
 		 * Allow to add more default option values.
 		 *
-		 * @since  1.6.13
+		 * @since  1.7
 		 * @author Grégory Viguier
 		 *
 		 * @param array $new_values     New default option values.
@@ -414,7 +414,7 @@ class Imagify_Options {
 	/**
 	 * Get the values used when the option is empty.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -426,7 +426,7 @@ class Imagify_Options {
 		/**
 		 * Allow to add more reset option values.
 		 *
-		 * @since  1.6.13
+		 * @since  1.7
 		 * @author Grégory Viguier
 		 *
 		 * @param array $new_values   New reset option values.
@@ -455,7 +455,7 @@ class Imagify_Options {
 	/**
 	 * `array_merge()` + `array_intersect_key()`.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *

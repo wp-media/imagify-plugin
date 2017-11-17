@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Class that handles the plugin settings.
  *
- * @since 1.6.13
+ * @since 1.7
  */
 class Imagify_Settings {
 
@@ -12,7 +12,7 @@ class Imagify_Settings {
 	 * Class version.
 	 *
 	 * @var   string
-	 * @since 1.6.13
+	 * @since 1.7
 	 */
 	const VERSION = '1.0';
 
@@ -20,7 +20,7 @@ class Imagify_Settings {
 	 * The settings group.
 	 *
 	 * @var   string
-	 * @since 1.6.13
+	 * @since 1.7
 	 */
 	protected $settings_group;
 
@@ -28,7 +28,7 @@ class Imagify_Settings {
 	 * The option name.
 	 *
 	 * @var   string
-	 * @since 1.6.13
+	 * @since 1.7
 	 */
 	protected $option_name;
 
@@ -36,7 +36,7 @@ class Imagify_Settings {
 	 * The options instance.
 	 *
 	 * @var   object
-	 * @since 1.6.13
+	 * @since 1.7
 	 */
 	protected $options;
 
@@ -44,7 +44,7 @@ class Imagify_Settings {
 	 * The single instance of the class.
 	 *
 	 * @var    object
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected static $_instance;
@@ -52,7 +52,7 @@ class Imagify_Settings {
 	/**
 	 * The constructor.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access protected
 	 */
@@ -65,7 +65,7 @@ class Imagify_Settings {
 	/**
 	 * Get the main Instance.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -82,7 +82,7 @@ class Imagify_Settings {
 	/**
 	 * Launch the hooks.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 */
@@ -114,7 +114,7 @@ class Imagify_Settings {
 	/**
 	 * Get the name of the settings group.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -127,7 +127,7 @@ class Imagify_Settings {
 	/**
 	 * Get the URL to use as form action.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -145,7 +145,7 @@ class Imagify_Settings {
 	/**
 	 * Sanitize and validate Imagify' options before storing them.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -248,7 +248,7 @@ class Imagify_Settings {
 	/**
 	 * Add Imagify' settings to the settings API whitelist.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 */
@@ -259,7 +259,7 @@ class Imagify_Settings {
 	/**
 	 * Set the user capacity needed to save Imagify's main options from the settings page.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 */
@@ -271,7 +271,7 @@ class Imagify_Settings {
 	 * If the user clicked the "Save & Go to Bulk Optimizer" button, set a redirection to the bulk optimizer.
 	 * We use this hook because it can be triggered even if the option value hasn't changed.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -290,7 +290,7 @@ class Imagify_Settings {
 	/**
 	 * Used to launch some actions after saving the network options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -305,7 +305,7 @@ class Imagify_Settings {
 	/**
 	 * Used to launch some actions after saving the options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -328,7 +328,7 @@ class Imagify_Settings {
 	/**
 	 * `options.php` does not handle network options. Let's use `admin-post.php` for multisite installations.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 */

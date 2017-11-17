@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * A wrapper to easily get imagify option.
  *
  * @since 1.0
- * @since 1.6.13 The $default parameter was removed.
+ * @since 1.7 The $default parameter was removed.
  *
  * @param  string $key The option name.
  * @return mixed       The option value.

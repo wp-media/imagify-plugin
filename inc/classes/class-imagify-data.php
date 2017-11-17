@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Class that handles the plugin data.
  *
- * @since 1.6.13
+ * @since 1.7
  */
 class Imagify_Data extends Imagify_Options {
 
@@ -12,7 +12,7 @@ class Imagify_Data extends Imagify_Options {
 	 * Class version.
 	 *
 	 * @var   string
-	 * @since 1.6.13
+	 * @since 1.7
 	 */
 	const VERSION = '1.0';
 
@@ -20,7 +20,7 @@ class Imagify_Data extends Imagify_Options {
 	 * Suffix used in the name of the option.
 	 *
 	 * @var    string
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected $identifier = 'data';
@@ -31,7 +31,7 @@ class Imagify_Data extends Imagify_Options {
 	 * Don't use null as value.
 	 *
 	 * @var    array
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected $default_values = array(
@@ -44,7 +44,7 @@ class Imagify_Data extends Imagify_Options {
 	 * Values identical to default values are not listed.
 	 *
 	 * @var    array
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected $reset_values = array();
@@ -53,7 +53,7 @@ class Imagify_Data extends Imagify_Options {
 	 * Tell if the option should be autoloaded by WP.
 	 *
 	 * @var    string
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected $autoload = 'no';
@@ -62,7 +62,7 @@ class Imagify_Data extends Imagify_Options {
 	 * The single instance of the class.
 	 *
 	 * @var    object
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access protected
 	 */
 	protected static $_instance;
@@ -70,7 +70,7 @@ class Imagify_Data extends Imagify_Options {
 	/**
 	 * Get the main Instance.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -92,7 +92,7 @@ class Imagify_Data extends Imagify_Options {
 	/**
 	 * Get an Imagify option.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -154,7 +154,7 @@ class Imagify_Data extends Imagify_Options {
 	/**
 	 * Get the raw value of all Imagify options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -173,7 +173,7 @@ class Imagify_Data extends Imagify_Options {
 	/**
 	 * Update the Imagify options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
@@ -196,7 +196,7 @@ class Imagify_Data extends Imagify_Options {
 	/**
 	 * Delete all Imagify options.
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 */
