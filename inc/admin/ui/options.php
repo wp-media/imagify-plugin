@@ -487,7 +487,7 @@ function _imagify_display_options_page() {
 					data-original-dim="1220x350"
 					data-original-alt="<?php
 						/* translators: %s is a formatted file size. */
-						printf( esc_attr__( 'Original photography about %s', 'imagify' ), size_format( 343040 ) );
+						printf( esc_attr__( 'Original photography about %s', 'imagify' ), imagify_size_format( 343040 ) );
 					?>"
 
 					data-normal-label="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
@@ -495,7 +495,7 @@ function _imagify_display_options_page() {
 					data-normal-dim="1220x350"
 					data-normal-alt="<?php
 						/* translators: %s is a formatted file size. */
-						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format( 301056 ) );
+						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 301056 ) );
 					?>"
 
 					data-aggressive-label="<?php esc_attr_e( 'Aggressive', 'imagify' ); ?>"
@@ -503,7 +503,7 @@ function _imagify_display_options_page() {
 					data-aggressive-dim="1220x350"
 					data-aggressive-alt="<?php
 						/* translators: %s is a formatted file size. */
-						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format( 108544 ) );
+						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 108544 ) );
 					?>"
 
 					data-ultra-label="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
@@ -511,7 +511,7 @@ function _imagify_display_options_page() {
 					data-ultra-dim="1220x350"
 					data-ultra-alt="<?php
 						/* translators: %s is a formatted file size. */
-						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format( 46080 ) );
+						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 46080 ) );
 					?>"></div>
 
 				<div class="imagify-comparison-levels">
@@ -522,7 +522,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value"><?php echo size_format( 343040 ); ?></span>
+							<span class="value"><?php echo imagify_size_format( 343040 ); ?></span>
 						</p>
 					</div>
 					<div class="imagify-c-level imagify-level-optimized imagify-level-normal" aria-hidden="true">
@@ -532,7 +532,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size"><?php echo size_format( 301056 ); ?></span>
+							<span class="value size"><?php echo imagify_size_format( 301056 ); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -552,7 +552,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size"><?php echo size_format( 108544 ); ?></span>
+							<span class="value size"><?php echo imagify_size_format( 108544 ); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -573,7 +573,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size"><?php echo size_format( 46080 ); ?></span>
+							<span class="value size"><?php echo imagify_size_format( 46080 ); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>

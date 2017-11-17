@@ -29,8 +29,8 @@ function _imagify_ngg_heartbeat_received( $response, $data ) {
 		'errors_attachments'            => imagify_ngg_count_error_attachments(),
 		'optimized_attachments_percent' => imagify_ngg_percent_optimized_attachments(),
 		'optimized_percent'             => $saving_data['percent'],
-		'original_human'                => size_format( $saving_data['original_size'], 1 ),
-		'optimized_human'               => size_format( $saving_data['optimized_size'], 1 ),
+		'original_human'                => imagify_size_format( $saving_data['original_size'], 1 ),
+		'optimized_human'               => imagify_size_format( $saving_data['optimized_size'], 1 ),
 		'unconsumed_quota'              => $user->get_percent_unconsumed_quota(),
 	);
 

@@ -265,7 +265,7 @@ abstract class Imagify_Abstract_Attachment {
 		$original_size = empty( $original_size ) ? $filesystem->size( $this->get_original_path() ) : (int) $original_size;
 
 		if ( true === $human_format ) {
-			$original_size = @size_format( $original_size, 2 );
+			$original_size = imagify_size_format( $original_size, 2 );
 		}
 
 		return $original_size;

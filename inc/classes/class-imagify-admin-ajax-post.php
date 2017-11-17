@@ -723,7 +723,7 @@ class Imagify_Admin_Ajax_Post {
 				$message .= '<p>' . sprintf(
 					/* translators: 1 is a data quota, 2 is a date. */
 					__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
-					size_format( $user->quota * 1048576 ),
+					imagify_size_format( $user->quota * 1048576 ),
 					date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) )
 				) . '</p>';
 				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>';
@@ -852,8 +852,8 @@ class Imagify_Admin_Ajax_Post {
 		) );
 
 		wp_send_json_success( array(
-			'total_library_size' => array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ),
-			'average_month_size' => array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ),
+			'total_library_size' => array( 'raw' => $raw_total_size_in_library, 'human' => imagify_size_format( $raw_total_size_in_library ) ),
+			'average_month_size' => array( 'raw' => $raw_average_per_month, 'human' => imagify_size_format( $raw_average_per_month ) ),
 		) );
 	}
 

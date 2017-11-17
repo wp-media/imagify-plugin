@@ -41,7 +41,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 	$optimization_level = $attachment->get_optimization_level_label();
 
 	if ( ! $is_media_page ) {
-		$output .= $output_before . '<span class="data">' . __( 'New Filesize:', 'imagify' ) . '</span> <strong class="big">' . size_format( $data['sizes']['full']['optimized_size'], 2 ) . '</strong>' . $output_after;
+		$output .= $output_before . '<span class="data">' . __( 'New Filesize:', 'imagify' ) . '</span> <strong class="big">' . imagify_size_format( $data['sizes']['full']['optimized_size'], 2 ) . '</strong>' . $output_after;
 	}
 
 	$chart = '';
@@ -440,7 +440,7 @@ function imagify_payment_modal() {
 									printf(
 										/* translators: %s is a formatted file size. */
 										esc_html__( 'You currently have %s of images in your library.', 'imagify' ),
-										'<strong class="imagify-dark total-library-size">' . ( is_float( $total_size ) ? size_format( $total_size ) : '' ) . '</strong>'
+										'<strong class="imagify-dark total-library-size">' . ( is_float( $total_size ) ? imagify_size_format( $total_size ) : '' ) . '</strong>'
 									);
 									?>
 								</p>
@@ -450,7 +450,7 @@ function imagify_payment_modal() {
 									printf(
 										/* translators: %s is a formatted file size. */
 										esc_html__( 'You upload around %s of images per month.', 'imagify' ),
-										'<strong class="imagify-dark average-month-size">' . ( is_float( $per_month ) ? size_format( $per_month ) : '' ) . '</strong>'
+										'<strong class="imagify-dark average-month-size">' . ( is_float( $per_month ) ? imagify_size_format( $per_month ) : '' ) . '</strong>'
 									);
 									?>
 								</p>

@@ -149,12 +149,12 @@ function _imagify_display_bulk_page() {
 					<div class="imagify-bars">
 						<p><?php _e( 'Original size', 'imagify' ); ?></p>
 						<div class="imagify-bar-negative base-transparent right-outside-number">
-							<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo size_format( $original_nb, 1 ); ?></span></div>
+							<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo imagify_size_format( $original_nb, 1 ); ?></span></div>
 						</div>
 
 						<p><?php _e( 'Optimized size', 'imagify' ); ?></p>
 						<div class="imagify-bar-positive base-transparent right-outside-number">
-							<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo ( 100 - $optimized_percent ); ?>%"><span class="imagify-barnb"><?php echo size_format( $optimized_nb, 1 ); ?></span></div>
+							<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo ( 100 - $optimized_percent ); ?>%"><span class="imagify-barnb"><?php echo imagify_size_format( $optimized_nb, 1 ); ?></span></div>
 						</div>
 
 					</div>
@@ -287,7 +287,7 @@ function _imagify_display_bulk_page() {
 									printf(
 										/* translators: %s is a file size. */
 										__( 'All images greater than %s will be optimized when using a paid plan.', 'imagify' ),
-										size_format( get_imagify_max_image_size() )
+										imagify_size_format( get_imagify_max_image_size() )
 									);
 									?>
 								</p>
