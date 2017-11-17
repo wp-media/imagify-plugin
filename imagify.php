@@ -75,7 +75,8 @@ function _imagify_init() {
 	require( IMAGIFY_COMMON_PATH . 'cron.php' );
 	require( IMAGIFY_3RD_PARTY_PATH . '3rd-party.php' );
 
-	Imagify_Settings::get_instance()->init();
+	Imagify_Options::get_instance()->init();
+	Imagify_Data::get_instance()->init();
 
 	if ( is_admin() ) {
 		require( IMAGIFY_ADMIN_PATH . 'upgrader.php' );
@@ -91,6 +92,7 @@ function _imagify_init() {
 
 		Imagify_Notices::get_instance()->init();
 		Imagify_Admin_Ajax_Post::get_instance()->init();
+		Imagify_Settings::get_instance()->init();
 	}
 
 	if ( ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {

@@ -35,8 +35,8 @@ class Imagify_Data extends Imagify_Options {
 	 * @access protected
 	 */
 	protected $default_values = array(
-		'total_size_images_library'     => array(),
-		'average_size_images_per_month' => array(),
+		'total_size_images_library'     => 0.0,
+		'average_size_images_per_month' => 0.0,
 	);
 
 	/**
@@ -82,68 +82,6 @@ class Imagify_Data extends Imagify_Options {
 		}
 
 		return self::$_instance;
-	}
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** ONE OPTION OR DATA ====================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Get an Imagify option.
-	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
-	 *
-	 * @param  string $key The option name.
-	 * @return mixed       The option value.
-	 */
-	public function get( $key ) {
-		$default_values = $this->get_default_values();
-
-		if ( ! isset( $default_values[ $key ] ) ) {
-			return null;
-		}
-
-		$default = $default_values[ $key ];
-
-		/**
-		 * Pre-filter any Imagify option before read.
-		 *
-		 * @since 1.0
-		 *
-		 * @param mixed $value   Value to return instead of the option value. Default null to skip it.
-		 * @param mixed $default The default value.
-		 */
-		$value = apply_filters( 'pre_get_imagify_' . $this->get_hook_identifier() . '_' . $key, null, $default );
-
-		if ( isset( $value ) ) {
-			return $value;
-		}
-
-		// Get the value.
-		$values = $this->get_all();
-		$value  = $values[ $key ];
-
-		// Cast the value.
-		if ( is_array( $default ) && ! is_array( $value ) ) {
-			$value = array();
-		} elseif ( is_int( $default ) ) {
-			$value = (int) $value;
-		} elseif ( is_bool( $default ) ) {
-			$value = (bool) $value;
-		}
-
-		/**
-		 * Filter any Imagify option after read.
-		 *
-		 * @since 1.0
-		 *
-		 * @param mixed $value   Value of the option.
-		 * @param mixed $default The default value. Default false.
-		*/
-		return apply_filters( 'get_imagify_' . $this->get_hook_identifier() . '_' . $key, $value, $default );
 	}
 
 
@@ -202,5 +140,85 @@ class Imagify_Data extends Imagify_Options {
 	 */
 	public function delete_raw() {
 		delete_option( $this->get_option_name() );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** SANITIZATION, VALIDATION ================================================================ */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Sanitize and validate an option value.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param  string $key     The option key.
+	 * @param  mixed  $value   The value.
+	 * @param  mixed  $default The default value.
+	 * @return mixed
+	 */
+	public function sanitize_and_validate( $key, $value, $default = null ) {
+		static $max_sizes;
+
+		if ( ! isset( $default ) ) {
+			$default_values = $this->get_default_values();
+			$default        = $default_values[ $key ];
+		}
+
+		// Cast the value.
+		$value = self::cast( $value, $default );
+
+		if ( $value === $default ) {
+			return $value;
+		}
+
+		switch ( $key ) {
+			case 'total_size_images_library':
+			case 'average_size_images_per_month':
+				if ( $value <= 0 ) {
+					// Invalid.
+					return 0.0;
+				}
+				return $value;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sanitize and validate Imagify' options before storing them.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param  string $values The option value.
+	 * @return array
+	 */
+	public function sanitize_and_validate_on_update( $values ) {
+		$values         = is_array( $values ) ? $values : array();
+		$default_values = $this->get_default_values();
+
+		/**
+		 * Generic sanitization and validation.
+		 */
+		if ( $values ) {
+			foreach ( $default_values as $key => $default ) {
+				if ( ! isset( $values[ $key ] ) ) {
+					continue;
+				}
+
+				$values[ $key ] = $this->sanitize_and_validate( $key, $values[ $key ], $default );
+
+				// No need to store values equal to the default values.
+				if ( $default === $values[ $key ] ) {
+					unset( $values[ $key ] );
+				}
+			}
+		}
+
+		return array_intersect_key( $values, $default_values );
 	}
 }

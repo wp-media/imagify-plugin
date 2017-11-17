@@ -440,7 +440,7 @@ function imagify_payment_modal() {
 									printf(
 										/* translators: %s is a formatted file size. */
 										esc_html__( 'You currently have %s of images in your library.', 'imagify' ),
-										'<strong class="imagify-dark total-library-size">' . ( isset( $total_size['human'] ) ? $total_size['human'] : '' ) . '</strong>'
+										'<strong class="imagify-dark total-library-size">' . ( is_float( $total_size ) ? size_format( $total_size ) : '' ) . '</strong>'
 									);
 									?>
 								</p>
@@ -450,7 +450,7 @@ function imagify_payment_modal() {
 									printf(
 										/* translators: %s is a formatted file size. */
 										esc_html__( 'You upload around %s of images per month.', 'imagify' ),
-										'<strong class="imagify-dark average-month-size">' . ( isset( $per_month['human'] ) ? $per_month['human'] : '' ) . '</strong>'
+										'<strong class="imagify-dark average-month-size">' . ( is_float( $per_month ) ? size_format( $per_month ) : '' ) . '</strong>'
 									);
 									?>
 								</p>

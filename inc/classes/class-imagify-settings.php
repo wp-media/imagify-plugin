@@ -87,12 +87,7 @@ class Imagify_Settings {
 	 * @access public
 	 */
 	public function init() {
-		add_filter( 'sanitize_option_' . $this->option_name, array( $this, 'sanitize_and_validate' ) );
-
-		if ( ! is_admin() ) {
-			return;
-		}
-
+		add_filter( 'sanitize_option_' . $this->option_name,           array( $this, 'populate_values_on_save' ), 5 );
 		add_action( 'admin_init',                                      array( $this, 'register' ) );
 		add_filter( 'option_page_capability_' . $this->settings_group, array( $this, 'get_capability' ) );
 
@@ -139,11 +134,12 @@ class Imagify_Settings {
 
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** SANITIZATION AND VALIDATATION =========================================================== */
+	/** ON FORM SUBMIT ========================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Sanitize and validate Imagify' options before storing them.
+	 * On form submit, handle values that are not part of the form.
+	 * This must be hooked before Imagify_Options::sanitize_and_validate_on_update().
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
@@ -152,77 +148,19 @@ class Imagify_Settings {
 	 * @param  string $values The option value.
 	 * @return array
 	 */
-	public function sanitize_and_validate( $values ) {
-		$values         = is_array( $values ) ? $values : array();
-		$default_values = $this->options->get_default_values();
+	public function populate_values_on_save( $values ) {
+		$values = is_array( $values ) ? $values : array();
 
-		/**
-		 * Sanitize.
-		 */
-		foreach ( $default_values as $option => $default ) {
-			if ( ! isset( $values[ $option ] ) ) {
-				continue;
-			}
-
-			if ( is_array( $default ) && ! is_array( $values[ $option ] ) ) {
-				// PABKAC.
-				unset( $values[ $option ] );
-				continue;
-			}
-
-			if ( is_int( $default ) ) {
-				$values[ $option ] = (int) $values[ $option ];
-			} elseif ( is_string( $default ) ) {
-				if ( 'api_key' === $option ) {
-					$values[ $option ] = sanitize_key( $values[ $option ] );
-				} else {
-					$values[ $option ] = sanitize_text_field( $values[ $option ] );
-				}
-			}
-
-			// No need to store values equal to the default values.
-			if ( $default === $values[ $option ] ) {
-				unset( $values[ $option ] );
-			}
-		}
-
-		/**
-		 * Validate.
-		 */
 		// Version.
 		if ( empty( $values['version'] ) ) {
 			$values['version'] = IMAGIFY_VERSION;
 		}
 
-		// API key.
-		if ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
-			$values['api_key'] = (string) IMAGIFY_API_KEY;
-		}
-
-		// Optimization level.
-		if ( isset( $values['optimization_level'] ) ) {
-			$values['optimization_level'] = min( 2, max( 0, $values['optimization_level'] ) );
-		}
-
-		// The max width for the "Resize larger images" option can't be 0.
-		if ( empty( $values['resize_larger_w'] ) ) {
-			unset( $values['resize_larger'], $values['resize_larger_w'] );
-		}
-
-		// The max width for the "Resize larger images" option can't be less than the largest thumbnail width.
-		if ( ! empty( $values['resize_larger_w'] ) ) {
-			$max_sizes = get_imagify_max_intermediate_image_size();
-
-			if ( $values['resize_larger_w'] < $max_sizes['width'] ) {
-				$values['resize_larger_w'] = $max_sizes['width'];
-			}
-		}
-
 		// Disabled thumbnail sizes.
-		if ( isset( $values['sizes'] ) ) {
+		if ( isset( $values['sizes'] ) && is_array( $values['sizes'] ) ) {
 			$values['disallowed-sizes'] = array();
 
-			if ( ! empty( $values['sizes'] ) && is_array( $values['sizes'] ) ) {
+			if ( ! empty( $values['sizes'] ) ) {
 				foreach ( $values['sizes'] as $size_key => $size_value ) {
 					if ( false === strpos( $size_key, '-hidden' ) ) {
 						continue;
@@ -237,7 +175,7 @@ class Imagify_Settings {
 			}
 		}
 
-		return array_intersect_key( $values, $default_values );
+		return $values;
 	}
 
 

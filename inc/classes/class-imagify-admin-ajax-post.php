@@ -847,13 +847,13 @@ class Imagify_Admin_Ajax_Post {
 		$raw_average_per_month     = imagify_calculate_average_size_images_per_month();
 
 		Imagify_Data::get_instance()->set( array(
-			'total_size_images_library'     => array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ),
-			'average_size_images_per_month' => array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ),
+			'total_size_images_library'     => $raw_total_size_in_library,
+			'average_size_images_per_month' => $raw_average_per_month,
 		) );
 
 		wp_send_json_success( array(
-			'total_library_size' => Imagify_Data::get_instance()->get( 'total_size_images_library' ),
-			'average_month_size' => Imagify_Data::get_instance()->get( 'average_size_images_per_month' ),
+			'total_library_size' => array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ),
+			'average_month_size' => array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ),
 		) );
 	}
 
@@ -867,12 +867,9 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'update_estimate_sizes' );
 		imagify_check_user_capacity();
 
-		$raw_total_size_in_library = imagify_calculate_total_size_images_library();
-		$raw_average_per_month     = imagify_calculate_average_size_images_per_month();
-
 		Imagify_Data::get_instance()->set( array(
-			'total_size_images_library'     => array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ),
-			'average_size_images_per_month' => array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ),
+			'total_size_images_library'     => imagify_calculate_total_size_images_library(),
+			'average_size_images_per_month' => imagify_calculate_average_size_images_per_month(),
 		) );
 
 		die( 1 );

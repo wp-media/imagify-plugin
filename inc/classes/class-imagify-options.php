@@ -121,9 +121,20 @@ class Imagify_Options {
 		return self::$_instance;
 	}
 
+	/**
+	 * Launch the hooks.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 */
+	public function init() {
+		add_filter( 'sanitize_option_' . $this->get_option_name(), array( $this, 'sanitize_and_validate_on_update' ), 50 );
+	}
+
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** ONE OPTION OR DATA ====================================================================== */
+	/** GET/SET/DELETE OPTION(S) ================================================================ */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
@@ -159,21 +170,11 @@ class Imagify_Options {
 			return $value;
 		}
 
-		// Get the value.
+		// Get all values.
 		$values = $this->get_all();
-		$value  = $values[ $key ];
 
-		// Cast the value.
-		if ( is_array( $default ) && ! is_array( $value ) ) {
-			$value = array();
-		} elseif ( is_int( $default ) ) {
-			$value = (int) $value;
-		}
-
-		// If defined, use the constant for the API key.
-		if ( 'api_key' === $key && defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
-			$value = (string) IMAGIFY_API_KEY;
-		}
+		// Sanitize and validate the value.
+		$value = $this->sanitize_and_validate( $key, $values[ $key ], $default );
 
 		/**
 		 * Filter any Imagify option after read.
@@ -187,7 +188,7 @@ class Imagify_Options {
 	}
 
 	/**
-	 * Get all options.
+	 * Get all options (no cast, no sanitization, no validation).
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
@@ -449,6 +450,131 @@ class Imagify_Options {
 
 
 	/** ----------------------------------------------------------------------------------------- */
+	/** SANITIZATION, VALIDATION ================================================================ */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Sanitize and validate an option value.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param  string $key     The option key.
+	 * @param  mixed  $value   The value.
+	 * @param  mixed  $default The default value.
+	 * @return mixed
+	 */
+	public function sanitize_and_validate( $key, $value, $default = null ) {
+		static $max_sizes;
+
+		if ( ! isset( $default ) ) {
+			$default_values = $this->get_default_values();
+			$default        = $default_values[ $key ];
+		}
+
+		// Cast the value.
+		$value = self::cast( $value, $default );
+
+		if ( $value === $default ) {
+			return $value;
+		}
+
+		switch ( $key ) {
+			case 'version':
+				return sanitize_text_field( $value );
+
+			case 'api_key':
+				if ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
+					$value = (string) IMAGIFY_API_KEY;
+				}
+				return $value ? sanitize_key( $value ) : '';
+
+			case 'optimization_level':
+				if ( $value < 0 || $value > 2 ) {
+					// For an invalid value, return the "reset" value.
+					$reset_values = $this->get_reset_values();
+					return $reset_values[ $key ];
+				}
+				return $value;
+
+			case 'auto_optimize':
+			case 'backup':
+			case 'resize_larger':
+			case 'exif':
+			case 'admin_bar_menu':
+				return 1;
+
+			case 'resize_larger_w':
+				if ( $value <= 0 ) {
+					// Invalid.
+					return 0;
+				}
+				if ( ! isset( $max_sizes ) ) {
+					$max_sizes = get_imagify_max_intermediate_image_size();
+				}
+				if ( $value < $max_sizes['width'] ) {
+					// Invalid.
+					return $max_sizes['width'];
+				}
+				return $value;
+
+			case 'disallowed-sizes':
+				if ( ! $value ) {
+					return $default;
+				}
+
+				$sizes = array();
+
+				foreach ( $value as $size => $meh ) {
+					$size = sanitize_text_field( $size );
+					$sizes[ $size ] = 1;
+				}
+
+				return $sizes;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sanitize and validate Imagify' options before storing them.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param  string $values The option value.
+	 * @return array
+	 */
+	public function sanitize_and_validate_on_update( $values ) {
+		$values         = is_array( $values ) ? $values : array();
+		$default_values = $this->get_default_values();
+
+		/**
+		 * Generic sanitization and validation.
+		 */
+		if ( $values ) {
+			foreach ( $default_values as $key => $default ) {
+				if ( isset( $values[ $key ] ) ) {
+					$values[ $key ] = $this->sanitize_and_validate( $key, $values[ $key ], $default );
+				}
+			}
+		}
+
+		/**
+		 * Specific validation.
+		 */
+		// The max width for the "Resize larger images" option can't be 0.
+		if ( empty( $values['resize_larger_w'] ) ) {
+			unset( $values['resize_larger'], $values['resize_larger_w'] );
+		}
+
+		return array_intersect_key( $values, $default_values );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
 	/** TOOLS =================================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
@@ -459,13 +585,57 @@ class Imagify_Options {
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @param array $values  The array we're interested in.
-	 * @param array $default The array we use as boundaries.
-	 *
+	 * @param  array $values  The array we're interested in.
+	 * @param  array $default The array we use as boundaries.
 	 * @return array
 	 */
 	public static function merge_intersect( $values, $default ) {
 		$values = array_merge( $default, (array) $values );
 		return array_intersect_key( $values, $default );
+	}
+
+	/**
+	 * Cast a value, depending on its default value type.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param  mixed $value   The value to cast.
+	 * @param  mixed $default The default value.
+	 * @return mixed
+	 */
+	public static function cast( $value, $default ) {
+		if ( is_array( $default ) ) {
+			return is_array( $value ) ? $value : array();
+		}
+
+		if ( is_int( $default ) ) {
+			return (int) $value;
+		}
+
+		if ( is_bool( $default ) ) {
+			return (bool) $value;
+		}
+
+		if ( is_float( $default ) ) {
+			return round( (float) $value, 3 );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Cast a float like 3.000 into an integer.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param  float $float The float.
+	 * @return float|int
+	 */
+	public static function maybe_cast_float_as_int( $float ) {
+		return ( $float / (int) $float ) === (float) 1 ? (int) $float : $float;
 	}
 }

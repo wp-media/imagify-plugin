@@ -122,8 +122,29 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 	}
 
 	// 1.7
-	if ( ! imagify_is_active_for_network() && $options->is_autoloaded() && version_compare( $current_version, '1.7' ) < 0 ) {
-		// Make sure the settings are auloaded.
-		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET `autoload` = 'yes' WHERE `autoload` != 'yes' AND option_name = %s", $options->get_option_name() ) );
+	if ( version_compare( $current_version, '1.7' ) < 0 ) {
+		// Migrate data.
+		$old_options = get_option( 'imagify_settings' );
+
+		if ( is_array( $old_options ) && ! empty( $old_options['total_size_images_library']['raw'] ) && ! empty( $old_options['average_size_images_per_month']['raw'] ) ) {
+			Imagify_Data::get_instance()->set( array(
+				'total_size_images_library'     => $old_options['total_size_images_library']['raw'],
+				'average_size_images_per_month' => $old_options['average_size_images_per_month']['raw'],
+			) );
+		} else {
+			// They are not set? Strange, but ok, let's calculate them.
+			_do_imagify_update_library_size_calculations();
+		}
+
+		if ( imagify_is_active_for_network() ) {
+			// Now we can delete the option if we don't use it for the settings.
+			delete_option( 'imagify_settings' );
+		} else {
+			// Make sure the settings are auloaded.
+			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET `autoload` = 'yes' WHERE `autoload` != 'yes' AND option_name = %s", $options->get_option_name() ) );
+		}
+
+		// Cleanup the settings (they're not deleted, they're only sanitized and saved).
+		$options->set( array() );
 	}
 }
