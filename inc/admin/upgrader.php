@@ -8,25 +8,152 @@ add_action( 'admin_init', '_imagify_upgrader' );
  * @since 1.0
  */
 function _imagify_upgrader() {
-	$current_version = get_imagify_option( 'version' );
+	// Version stored on the network is used on first install.
+	$network_options = Imagify_Options::get_instance();
+	$network_version = $network_options->get( 'version' );
+	// Version stored on site level is used on upgrade.
+	$site_data       = Imagify_Data::get_instance();
+	$site_version    = $site_data->get( 'version' );
+	// Back-compat' with previous version of the upgrader.
+	$site_version    = imagify_upgrader_upgrade( $network_version, $site_version );
 
-	// You can hook the upgrader to trigger any action when Imagify is upgraded.
-	// First install.
-	if ( ! $current_version ) {
+	// First install (network).
+	if ( ! $network_version ) {
+		/**
+		 * Triggered on Imagify first install (network).
+		 *
+		 * @since  1.7
+		 * @author Grégory Viguier
+		 */
+		do_action( 'imagify_first_network_install' );
+	}
+	// Already installed but got updated (network).
+	elseif ( IMAGIFY_VERSION !== $network_version ) {
+		/**
+		 * Triggered on Imagify upgrade (network).
+		 *
+		 * @since  1.7
+		 * @author Grégory Viguier
+		 *
+		 * @param string $network_version Previous version stored on the network.
+		 * @param string $site_version    Previous version stored on site level.
+		 */
+		do_action( 'imagify_network_upgrade', $network_version, $site_version );
+	}
+
+	// If any upgrade has been done, we flush and update version.
+	if ( did_action( 'imagify_first_network_install' ) || did_action( 'imagify_network_upgrade' ) ) {
+		$network_options->set( 'version', IMAGIFY_VERSION );
+	}
+
+	// First install (site level).
+	if ( ! $site_version ) {
+		/**
+		 * Triggered on Imagify first install (site level).
+		 *
+		 * @since 1.0
+		 */
 		do_action( 'imagify_first_install' );
 	}
-	// Already installed but got updated.
-	elseif ( IMAGIFY_VERSION !== $current_version ) {
-		do_action( 'imagify_upgrade', IMAGIFY_VERSION, $current_version );
+	// Already installed but got updated (site level).
+	elseif ( IMAGIFY_VERSION !== $site_version ) {
+		/**
+		 * Triggered on Imagify upgrade (site level).
+		 *
+		 * @since 1.0
+		 * @since 1.7 $network_version replaces the "new version" (which can easily be grabbed with the constant).
+		 *
+		 * @param string $network_version Previous version stored on the network.
+		 * @param string $site_version    Previous version stored on site level.
+		 */
+		do_action( 'imagify_upgrade', $network_version, $site_version );
 	}
 
 	// If any upgrade has been done, we flush and update version.
 	if ( did_action( 'imagify_first_install' ) || did_action( 'imagify_upgrade' ) ) {
-		update_imagify_option( 'version', IMAGIFY_VERSION );
+		$site_data->set( 'version', IMAGIFY_VERSION );
 	}
 }
 
-add_action( 'imagify_first_install', '_imagify_first_install' );
+/**
+ * Upgrade the upgrader:
+ * Imagify 1.7 splits "network version" and "site version". Since the "site version" didn't exist before 1.7, we need to provide a version based on the "network version".
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  string|bool $network_version Previous version stored on the network.
+ * @param  string|bool $site_version    Previous version stored on site level.
+ * @return string|bool
+ */
+function imagify_upgrader_upgrade( $network_version, $site_version ) {
+	global $wpdb;
+
+	if ( ! $network_version || $site_version ) {
+		// Really first install, or this site's upgrader is already upgraded.
+		return $site_version;
+	}
+
+	if ( ! is_multisite() ) {
+		// Not a multisite, so both versions must have the same value.
+		Imagify_Data::get_instance()->set( 'version', $network_version );
+		return $network_version;
+	}
+
+	$sites = get_site_option( 'imagify_old_version' );
+
+	if ( IMAGIFY_VERSION !== $network_version && ! $sites ) {
+		// The network is not up-to-date yet: store the site IDs that must be updated.
+		$network_id = function_exists( 'get_current_network_id' ) ? get_current_network_id() : $wpdb->siteid;
+		$sites      = $wpdb->get_col( $wpdb->prepare( "SELECT blog_id FROM $wpdb->blogs WHERE site_id = %d AND archived = 0 AND deleted = 0", $network_id ) );
+		$sites      = array_map( 'absint', $sites );
+		$sites      = array_filter( $sites );
+
+		if ( ! $sites ) {
+			// Uh?
+			return $site_version;
+		}
+
+		// We store the old network version and the site Ids: those sites will need to be upgraded from this version.
+		$sites['version'] = $network_version;
+
+		add_site_option( 'imagify_old_version', $sites );
+	}
+
+	if ( empty( $sites['version'] ) ) {
+		// WTF.
+		delete_site_option( 'imagify_old_version' );
+		return $site_version;
+	}
+
+	$network_version = $sites['version'];
+	unset( $sites['version'] );
+
+	$sites   = array_flip( $sites );
+	$site_id = get_current_blog_id();
+
+	if ( ! isset( $sites[ $site_id ] ) ) {
+		// This site is already upgraded.
+		return $site_version;
+	}
+
+	unset( $sites[ $site_id ] );
+
+	if ( ! $sites ) {
+		// We're done, all the sites have been upgraded.
+		delete_site_option( 'imagify_old_version' );
+	} else {
+		// Some sites still need to be upgraded.
+		$sites = array_flip( $sites );
+		$sites['version'] = $network_version;
+		update_site_option( 'imagify_old_version', $sites );
+	}
+
+	Imagify_Data::get_instance()->set( 'version', $network_version );
+	return $network_version;
+}
+
+add_action( 'imagify_first_network_install', '_imagify_first_install' );
 /**
  * Keeps this function up to date at each version.
  *
@@ -42,17 +169,18 @@ add_action( 'imagify_upgrade', '_imagify_new_upgrade', 10, 2 );
  * What to do when Imagify is updated, depending on versions.
  *
  * @since 1.0
+ * @since 1.7 $network_version replaces the "new version" (which can easily be grabbed with the constant).
  *
- * @param string $imagify_version New Imagify version.
- * @param string $current_version Old Imagify version.
+ * @param string $network_version Previous version stored on the network.
+ * @param string $site_version    Previous version stored on site level.
  */
-function _imagify_new_upgrade( $imagify_version, $current_version ) {
+function _imagify_new_upgrade( $network_version, $site_version ) {
 	global $wpdb;
 
 	$options = Imagify_Options::get_instance();
 
 	// 1.2
-	if ( version_compare( $current_version, '1.2' ) < 0 ) {
+	if ( version_compare( $site_version, '1.2' ) < 0 ) {
 		// Update all already optimized images status from 'error' to 'already_optimized'.
 		$query = new WP_Query( array(
 			'post_type'              => 'attachment',
@@ -81,7 +209,7 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 	}
 
 	// 1.3.2
-	if ( version_compare( $current_version, '1.3.2' ) < 0 ) {
+	if ( version_compare( $site_version, '1.3.2' ) < 0 ) {
 		// Update all already optimized images status from 'error' to 'already_optimized'.
 		$query = new WP_Query( array(
 			'post_type'              => 'attachment',
@@ -116,35 +244,19 @@ function _imagify_new_upgrade( $imagify_version, $current_version ) {
 	}
 
 	// 1.4.5
-	if ( version_compare( $current_version, '1.4.5' ) < 0 ) {
+	if ( version_compare( $site_version, '1.4.5' ) < 0 ) {
 		// Delete all transients used for async optimization.
 		$wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "_transient_imagify-async-in-progress-%"' );
 	}
 
 	// 1.7
-	if ( version_compare( $current_version, '1.7' ) < 0 ) {
+	if ( version_compare( $site_version, '1.7' ) < 0 ) {
 		// Migrate data.
-		$old_options = get_option( 'imagify_settings' );
+		_do_imagify_update_library_size_calculations();
 
-		if ( is_array( $old_options ) && ! empty( $old_options['total_size_images_library']['raw'] ) && ! empty( $old_options['average_size_images_per_month']['raw'] ) ) {
-			Imagify_Data::get_instance()->set( array(
-				'total_size_images_library'     => $old_options['total_size_images_library']['raw'],
-				'average_size_images_per_month' => $old_options['average_size_images_per_month']['raw'],
-			) );
-		} else {
-			// They are not set? Strange, but ok, let's calculate them.
-			_do_imagify_update_library_size_calculations();
-		}
-
-		if ( imagify_is_active_for_network() ) {
-			// Now we can delete the option if we don't use it for the settings.
-			delete_option( 'imagify_settings' );
-		} else {
-			// Make sure the settings are auloaded.
+		if ( ! imagify_is_active_for_network() ) {
+			// Make sure the settings are autoloaded.
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET `autoload` = 'yes' WHERE `autoload` != 'yes' AND option_name = %s", $options->get_option_name() ) );
 		}
-
-		// Cleanup the settings (they're not deleted, they're only sanitized and saved).
-		$options->set( array() );
 	}
 }

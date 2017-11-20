@@ -35,6 +35,7 @@ class Imagify_Data extends Imagify_Options {
 	 * @access protected
 	 */
 	protected $default_values = array(
+		'version'                       => '',
 		'total_size_images_library'     => 0.0,
 		'average_size_images_per_month' => 0.0,
 	);
@@ -56,7 +57,7 @@ class Imagify_Data extends Imagify_Options {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $autoload = 'no';
+	protected $autoload = 'yes';
 
 	/**
 	 * The single instance of the class.
@@ -175,6 +176,9 @@ class Imagify_Data extends Imagify_Options {
 		}
 
 		switch ( $key ) {
+			case 'version':
+				return sanitize_text_field( $value );
+
 			case 'total_size_images_library':
 			case 'average_size_images_per_month':
 				if ( $value <= 0 ) {
@@ -217,6 +221,14 @@ class Imagify_Data extends Imagify_Options {
 					unset( $values[ $key ] );
 				}
 			}
+		}
+
+		/**
+		 * Specific validation.
+		 */
+		// Version.
+		if ( empty( $values['version'] ) ) {
+			$values['version'] = IMAGIFY_VERSION;
 		}
 
 		return array_intersect_key( $values, $default_values );

@@ -5,6 +5,8 @@ global $wpdb;
 
 // Delete Imagify options.
 delete_site_option( 'imagify_settings' );
+delete_site_option( 'imagify_old_version' );
+delete_option( 'imagify_data' );
 
 // Delete all transients.
 delete_site_transient( 'imagify_check_licence_1' );
