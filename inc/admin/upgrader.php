@@ -8,14 +8,13 @@ add_action( 'admin_init', '_imagify_upgrader' );
  * @since 1.0
  */
 function _imagify_upgrader() {
-	// Version stored on the network is used on first install.
-	$network_options = Imagify_Options::get_instance();
-	$network_version = $network_options->get( 'version' );
-	// Version stored on site level is used on upgrade.
-	$site_data       = Imagify_Data::get_instance();
-	$site_version    = $site_data->get( 'version' );
 	// Back-compat' with previous version of the upgrader.
-	$site_version    = imagify_upgrader_upgrade( $network_version, $site_version );
+	imagify_upgrader_upgrade();
+
+	// Version stored on the network.
+	$network_version = Imagify_Options::get_instance()->get( 'version' );
+	// Version stored at the site level.
+	$site_version    = Imagify_Data::get_instance()->get( 'version' );
 
 	// First install (network).
 	if ( ! $network_version ) {
@@ -43,7 +42,7 @@ function _imagify_upgrader() {
 
 	// If any upgrade has been done, we flush and update version.
 	if ( did_action( 'imagify_first_network_install' ) || did_action( 'imagify_network_upgrade' ) ) {
-		$network_options->set( 'version', IMAGIFY_VERSION );
+		Imagify_Options::get_instance()->set( 'version', IMAGIFY_VERSION );
 	}
 
 	// First install (site level).
@@ -71,7 +70,7 @@ function _imagify_upgrader() {
 
 	// If any upgrade has been done, we flush and update version.
 	if ( did_action( 'imagify_first_install' ) || did_action( 'imagify_upgrade' ) ) {
-		$site_data->set( 'version', IMAGIFY_VERSION );
+		Imagify_Data::get_instance()->set( 'version', IMAGIFY_VERSION );
 	}
 }
 
@@ -81,23 +80,30 @@ function _imagify_upgrader() {
  *
  * @since  1.7
  * @author Grégory Viguier
- *
- * @param  string|bool $network_version Previous version stored on the network.
- * @param  string|bool $site_version    Previous version stored on site level.
- * @return string|bool
  */
-function imagify_upgrader_upgrade( $network_version, $site_version ) {
+function imagify_upgrader_upgrade() {
 	global $wpdb;
 
-	if ( ! $network_version || $site_version ) {
-		// Really first install, or this site's upgrader is already upgraded.
-		return $site_version;
+	// Version stored on the network.
+	$network_version = Imagify_Options::get_instance()->get( 'version' );
+
+	if ( ! $network_version ) {
+		// Really first install.
+		return;
+	}
+
+	// Version stored at the site level.
+	$site_version = Imagify_Data::get_instance()->get( 'version' );
+
+	if ( $site_version ) {
+		// This site's upgrader is already upgraded.
+		return;
 	}
 
 	if ( ! is_multisite() ) {
 		// Not a multisite, so both versions must have the same value.
 		Imagify_Data::get_instance()->set( 'version', $network_version );
-		return $network_version;
+		return;
 	}
 
 	$sites = get_site_option( 'imagify_old_version' );
@@ -111,7 +117,7 @@ function imagify_upgrader_upgrade( $network_version, $site_version ) {
 
 		if ( ! $sites ) {
 			// Uh?
-			return $site_version;
+			return;
 		}
 
 		// We store the old network version and the site Ids: those sites will need to be upgraded from this version.
@@ -123,7 +129,7 @@ function imagify_upgrader_upgrade( $network_version, $site_version ) {
 	if ( empty( $sites['version'] ) ) {
 		// WTF.
 		delete_site_option( 'imagify_old_version' );
-		return $site_version;
+		return;
 	}
 
 	$network_version = $sites['version'];
@@ -134,7 +140,7 @@ function imagify_upgrader_upgrade( $network_version, $site_version ) {
 
 	if ( ! isset( $sites[ $site_id ] ) ) {
 		// This site is already upgraded.
-		return $site_version;
+		return;
 	}
 
 	unset( $sites[ $site_id ] );
@@ -150,7 +156,6 @@ function imagify_upgrader_upgrade( $network_version, $site_version ) {
 	}
 
 	Imagify_Data::get_instance()->set( 'version', $network_version );
-	return $network_version;
 }
 
 add_action( 'imagify_first_network_install', '_imagify_first_install' );
