@@ -142,7 +142,7 @@ class Imagify_User {
 	}
 
 	/**
-	 * Count percent of consumed quota.
+	 * Percentage of consumed quota, including extra quota.
 	 *
 	 * @since 1.0
 	 *
@@ -150,23 +150,21 @@ class Imagify_User {
 	 * @return int
 	 */
 	public function get_percent_consumed_quota() {
-		$percent        = 0;
 		$quota          = $this->quota;
 		$consumed_quota = $this->consumed_current_month_quota;
 
-		if ( ( $this->quota + $this->extra_quota ) - ( $this->consumed_current_month_quota + $this->extra_quota_consumed ) <= 0 ) {
-			return 100;
-		}
-
 		if ( imagify_round_half_five( $this->extra_quota_consumed ) < $this->extra_quota ) {
-			$quota          = $this->extra_quota + $quota;
-			$consumed_quota = $consumed_quota + $this->extra_quota_consumed;
+			$quota          += $this->extra_quota;
+			$consumed_quota += $this->extra_quota_consumed;
 		}
 
-		$percent = 100 - ( ( $quota - $consumed_quota ) / $quota ) * 100;
-		$percent = min( round( $percent, 1 ), 100 );
+		if ( ! $quota || ! $consumed_quota ) {
+			return 0;
+		}
 
-		return $percent;
+		$percent = 100 * $consumed_quota / $quota;
+
+		return min( round( $percent, 1 ), 100 );
 	}
 
 	/**

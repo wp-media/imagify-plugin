@@ -5,24 +5,31 @@
  */
 window.imagify.drawMeAChart = function( canvas ) {
 	canvas.each( function() {
-		var $this        = jQuery( this ),
-			theValue     = parseInt( $this.closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() ),
-			overviewData = [
-				{
-					value: theValue,
-					color: '#00B3D3'
-				},
-				{
-					value: 100 - theValue,
-					color: '#D8D8D8'
-				}
-			];
+		var value = parseInt( jQuery( this ).closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() );
 
-		new Chart( $this[0].getContext( '2d' ) ).Doughnut( overviewData, { // eslint-disable-line new-cap
-			segmentStrokeColor: '#FFF',
-			segmentStrokeWidth: 1,
-			animateRotate:      true,
-			tooltipEvents:      []
+		new Chart( this, { // eslint-disable-line no-new
+			type: 'doughnut',
+			data: {
+				datasets: [{
+					data:            [ value, 100 - value ],
+					backgroundColor: [ '#00B3D3', '#D8D8D8' ],
+					borderColor:     '#fff',
+					borderWidth:     1
+				}]
+			},
+			options: {
+				legend: {
+					display: false
+				},
+				events:    [],
+				animation: {
+					easing: 'easeOutBounce'
+				},
+				tooltips: {
+					enabled: false
+				},
+				responsive: false
+			}
 		} );
 	} );
 };

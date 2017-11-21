@@ -44,12 +44,7 @@ function imagify_count_attachments() {
 			AND p.post_status IN ( $statuses )"
 	);
 
-	/**
-	 * Filter the limit from which the library is considered large.
-	 *
-	 * @param int $limit Number of attachments.
-	 */
-	if ( $count > apply_filters( 'imagify_unoptimized_attachment_limit', 10000 ) ) {
+	if ( $count > imagify_get_unoptimized_attachment_limit() ) {
 		set_transient( 'imagify_large_library', 1 );
 	} elseif ( get_transient( 'imagify_large_library' ) ) {
 		// In case the number is decreasing under our limit.
@@ -209,7 +204,11 @@ function imagify_percent_optimized_attachments() {
 	$total_attachments           = imagify_count_attachments();
 	$total_optimized_attachments = imagify_count_optimized_attachments();
 
-	return $total_attachments && $total_optimized_attachments ? round( 100 - ( ( $total_attachments - $total_optimized_attachments ) / $total_attachments ) * 100 ) : 0;
+	if ( ! $total_attachments || ! $total_optimized_attachments ) {
+		return 0;
+	}
+
+	return min( round( 100 * $total_optimized_attachments / $total_attachments ), 100 );
 }
 
 /**

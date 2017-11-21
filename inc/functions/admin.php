@@ -201,27 +201,21 @@ function get_imagify_bulk_buffer_size() {
 function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
 	$wprocket_url = 'https://wp-rocket.me/';
 
-	// Locale.
-	$locale       = function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale();
-	$suffixes     = array(
-		'fr_FR' => 'fr',
-		'es_ES' => 'es',
-		'it_IT' => 'it',
-		'de_DE' => 'de',
-	);
+	// Current lang.
+	$lang = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
 
-	if ( isset( $suffixes[ $locale ] ) ) {
-		$wprocket_url .= $suffixes[ $locale ] . '/';
+	if ( 'en' !== $lang ) {
+		$wprocket_url .= $lang . '/';
 	}
 
 	// URI.
 	$paths = array(
 		'pricing' => array(
-			'default' => 'pricing',
-			'fr_FR'   => 'offres',
-			'es_ES'   => 'precios',
-			'it_IT'   => 'offerte',
-			'de_DE'   => 'preise',
+			'de' => 'preise',
+			'en' => 'pricing',
+			'es' => 'precios',
+			'fr' => 'offres',
+			'it' => 'offerte',
 		),
 	);
 
@@ -229,11 +223,7 @@ function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
 		$path = trim( $path, '/' );
 
 		if ( isset( $paths[ $path ] ) ) {
-			if ( isset( $paths[ $path ][ $locale ] ) ) {
-				$wprocket_url .= $paths[ $path ][ $locale ] . '/';
-			} else {
-				$wprocket_url .= $paths[ $path ]['default'] . '/';
-			}
+			$wprocket_url .= $paths[ $path ][ $lang ] . '/';
 		} else {
 			$wprocket_url .= $path . '/';
 		}

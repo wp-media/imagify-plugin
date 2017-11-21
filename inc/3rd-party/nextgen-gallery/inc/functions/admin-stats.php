@@ -87,7 +87,11 @@ function imagify_ngg_percent_optimized_attachments() {
 	$total_attachments           = imagify_ngg_count_attachments();
 	$total_optimized_attachments = imagify_ngg_count_optimized_attachments();
 
-	return $total_attachments && $total_optimized_attachments ? round( 100 - ( ( $total_attachments - $total_optimized_attachments ) / $total_attachments ) * 100 ) : 0;
+	if ( ! $total_attachments || ! $total_optimized_attachments ) {
+		return 0;
+	}
+
+	return min( round( 100 * $total_optimized_attachments / $total_attachments ), 100 );
 }
 
 /**
