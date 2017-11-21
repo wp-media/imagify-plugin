@@ -594,7 +594,7 @@ abstract class Imagify_Abstract_Attachment {
 		$image_type = pathinfo( $attachment_path, PATHINFO_EXTENSION );
 
 		// Try to correct for auto-rotation if the info is available.
-		if ( function_exists( 'exif_read_data' ) && ( 'jpg' === $image_type || 'jpeg' === $image_type) ) {
+		if ( function_exists( 'exif_read_data' ) && ( 'jpg' === $image_type || 'jpe' === $image_type || 'jpeg' === $image_type ) ) {
 			$exif        = @exif_read_data( $attachment_path );
 			$orientation = is_array( $exif ) && array_key_exists( 'Orientation', $exif ) ? $exif['Orientation'] : 0;
 
