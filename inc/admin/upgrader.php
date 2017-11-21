@@ -190,8 +190,8 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 		$query = new WP_Query( array(
 			'is_imagify'             => true,
 			'post_type'              => 'attachment',
-			'post_status'            => 'inherit',
-			'post_mime_type'         => get_imagify_mime_type(),
+			'post_status'            => imagify_get_post_statuses(),
+			'post_mime_type'         => imagify_get_mime_types(),
 			'meta_key'               => '_imagify_status',
 			'meta_value'             => 'error',
 			'posts_per_page'         => -1,
@@ -220,8 +220,8 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 		$query = new WP_Query( array(
 			'is_imagify'             => true,
 			'post_type'              => 'attachment',
-			'post_status'            => 'inherit',
-			'post_mime_type'         => get_imagify_mime_type(),
+			'post_status'            => imagify_get_post_statuses(),
+			'post_mime_type'         => imagify_get_mime_types(),
 			'meta_query'             => array(
 				'relation' => 'AND',
 				array(

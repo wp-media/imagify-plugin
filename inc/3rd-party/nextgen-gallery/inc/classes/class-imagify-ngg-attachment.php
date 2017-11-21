@@ -202,7 +202,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			return $this->is_mime_type_supported;
 		}
 
-		$mime_types = get_imagify_mime_type();
+		$mime_types = imagify_get_mime_types();
 		$mime_types = array_flip( $mime_types );
 
 		$this->is_mime_type_supported = isset( $mime_types[ $mime_type ] );

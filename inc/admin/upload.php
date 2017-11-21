@@ -123,7 +123,7 @@ function _imagify_sort_attachments_by_status( $vars ) {
 		),
 	) );
 
-	$vars['post_mime_type'] = get_imagify_mime_type();
+	$vars['post_mime_type'] = imagify_get_mime_types();
 
 	return $vars;
 }

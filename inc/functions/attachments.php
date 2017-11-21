@@ -2,17 +2,17 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 /**
- * Get all mime type which could be optimized by Imagify.
+ * Get all mime types which could be optimized by Imagify.
  *
- * @since 1.3
+ * @since 1.7
  *
- * @return array $mime_type  The mime type.
+ * @return array The mime types.
  */
-function get_imagify_mime_type() {
+function imagify_get_mime_types() {
 	return array(
-		'image/jpeg',
-		'image/png',
-		'image/gif',
+		'jpg|jpeg|jpe' => 'image/jpeg',
+		'png'          => 'image/png',
+		'gif'          => 'image/gif',
 	);
 }
 
@@ -42,11 +42,7 @@ function imagify_get_mime_type_from_file( $file_path ) {
 		}
 	}
 
-	$image_type = wp_check_filetype( $file_path, array(
-		'jpg|jpeg|jpe' => 'image/jpeg',
-		'png'          => 'image/png',
-		'gif'          => 'image/gif',
-	) );
+	$image_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
 
 	return $image_type['type'];
 }
@@ -71,13 +67,43 @@ function imagify_is_attachment_mime_type_supported( $attachment_id ) {
 		return $is[ $attachment_id ];
 	}
 
-	$mime_types = get_imagify_mime_type();
+	$mime_types = imagify_get_mime_types();
 	$mime_types = array_flip( $mime_types );
 	$mime_type  = (string) get_post_mime_type( $attachment_id );
 
 	$is[ $attachment_id ] = isset( $mime_types[ $mime_type ] );
 
 	return $is[ $attachment_id ];
+}
+
+/**
+ * Get post statuses related to attachments.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return array
+ */
+function imagify_get_post_statuses() {
+	static $statuses;
+
+	if ( isset( $statuses ) ) {
+		return $statuses;
+	}
+
+	$statuses = array(
+		'inherit' => 'inherit',
+		'private' => 'private',
+	);
+
+	$custom_statuses = get_post_stati( array( 'public' => true ) );
+	unset( $custom_statuses['publish'] );
+
+	if ( $custom_statuses ) {
+		$statuses = array_merge( $statuses, $custom_statuses );
+	}
+
+	return $statuses;
 }
 
 /**
@@ -91,6 +117,42 @@ function imagify_is_attachment_mime_type_supported( $attachment_id ) {
  */
 function imagify_attachment_has_required_metadata( $attachment_id ) {
 	return get_attached_file( $attachment_id, true ) && wp_get_attachment_metadata( $attachment_id, true );
+}
+
+/**
+ * Tell if the site has attachments (only the ones Imagify would optimize) without the required WP metadata.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return bool
+ */
+function imagify_has_attachments_without_required_metadata() {
+	global $wpdb;
+	static $has;
+
+	if ( isset( $has ) ) {
+		return $has;
+	}
+
+	$mime_types = Imagify_DB::get_mime_types();
+	$statuses   = Imagify_DB::get_post_statuses();
+	$has        = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
+		"
+		SELECT p.ID
+		FROM $wpdb->posts AS p
+		LEFT JOIN $wpdb->postmeta AS mt1
+			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
+		LEFT JOIN $wpdb->postmeta AS mt2
+			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+		WHERE p.post_mime_type IN ( $mime_types )
+			AND p.post_type = 'attachment'
+			AND p.post_status IN ( $statuses )
+			AND ( mt1.meta_value IS NULL OR mt2.meta_value IS NULL )
+		LIMIT 1"
+	);
+
+	return $has;
 }
 
 /**
