@@ -182,16 +182,11 @@ function _imagify_display_bulk_page() {
 							<?php
 							esc_html_e( 'Please be aware that optimizing a large number of images can take a while depending on your server and network speed.', 'imagify' );
 
-							if ( get_transient( IMAGIFY_SLUG . '_large_library' ) ) {
+							if ( get_transient( 'imagify_large_library' ) ) {
 								printf(
 									/* translators: %s is a formatted number. Don't use %d. */
 									__( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ),
-									/**
-									 * Filter the unoptimized attachments limit.
-									 *
-									 * @param int Default is 10000.
-									 */
-									number_format_i18n( apply_filters( 'imagify_unoptimized_attachment_limit', 10000 ) )
+									number_format_i18n( imagify_get_unoptimized_attachment_limit() )
 								);
 							}
 							?>

@@ -337,3 +337,24 @@ function get_imagify_upload_baseurl() {
 
 	return $upload_baseurl;
 }
+
+/**
+ * Get the maximal number of unoptimized attachments to fetch.
+ *
+ * @since  1.6.14
+ * @author Grégory Viguier
+ *
+ * @return int
+ */
+function imagify_get_unoptimized_attachment_limit() {
+	/**
+	 * Filter the unoptimized attachments limit query.
+	 *
+	 * @since 1.4.4
+	 *
+	 * @param int $limit The limit (-1 for unlimited).
+	 */
+	$limit = (int) apply_filters( 'imagify_unoptimized_attachment_limit', 10000 );
+
+	return -1 === $limit ? PHP_INT_MAX : abs( $limit );
+}
