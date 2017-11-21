@@ -14,7 +14,7 @@ class Imagify_AS3CF {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * Context used with get_imagify_attachment().
@@ -217,7 +217,7 @@ class Imagify_AS3CF {
 		}
 
 		unset( $sql_ids );
-		$s3_data = imagify_query_results_combine( $ids, $s3_data, true );
+		$s3_data = Imagify_DB::combine_query_results( $ids, $s3_data, true );
 
 		// Retrieve the missing files from S3.
 		$ids = array_flip( $ids );
@@ -272,7 +272,7 @@ class Imagify_AS3CF {
 		}
 
 		if ( ! isset( $data ) ) {
-			$data = imagify_get_wpdb_metas( array(
+			$data = Imagify_DB::get_metas( array(
 				// Get the filesizes.
 				's3_filesize' => 'wpos3_filesize_total',
 			), $image_ids );

@@ -45,7 +45,7 @@ function imagify_round_half_five( $number ) {
  * @return string|false         False on failure. Number string on success.
  */
 function imagify_size_format( $bytes, $decimals = 0 ) {
-	$bytes = size_format( $bytes, $decimals );
+	$bytes = @size_format( $bytes, $decimals );
 	return str_replace( ' ', ' ', $bytes );
 }
 

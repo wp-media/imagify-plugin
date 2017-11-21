@@ -14,7 +14,7 @@ class Imagify_Admin_Ajax_Post {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * Actions to be triggered on admin ajax and admin post.
@@ -402,23 +402,12 @@ class Imagify_Admin_Ajax_Post {
 
 		// Get (ordered) IDs.
 		$optimization_level = (int) $_GET['optimization_level'];
-		$optimization_level = ( -1 !== $optimization_level ) ? $optimization_level : get_imagify_option( 'optimization_level' );
+		$optimization_level = -1 !== $optimization_level ? $optimization_level : get_imagify_option( 'optimization_level' );
 
-		/**
-		 * Filter the unoptimized attachments limit query.
-		 *
-		 * @since 1.4.4
-		 *
-		 * @param int The limit (-1 for unlimited).
-		 */
-		$unoptimized_attachment_limit = (int) apply_filters( 'imagify_unoptimized_attachment_limit', 10000 );
-		$unoptimized_attachment_limit = -1 === $unoptimized_attachment_limit ? PHP_INT_MAX : $unoptimized_attachment_limit;
+		Imagify_DB::unlimit_joins();
 
-		$mime_types = get_imagify_mime_type();
-		$mime_types = esc_sql( $mime_types );
-		$mime_types = "'" . implode( "','", $mime_types ) . "'";
-
-		$ids = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
+		$mime_types = Imagify_DB::get_mime_types();
+		$ids        = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"SELECT $wpdb->posts.ID
 			FROM $wpdb->posts
 			LEFT JOIN $wpdb->postmeta
@@ -449,18 +438,18 @@ class Imagify_Admin_Ajax_Post {
 				$wpdb->posts.ID DESC
 			LIMIT 0, %d",
 			$optimization_level,
-			$unoptimized_attachment_limit
+			imagify_get_unoptimized_attachment_limit()
 		) );
 
 		$wpdb->flush();
-		unset( $unoptimized_attachment_limit, $mime_types );
+		unset( $mime_types );
 		$ids = array_filter( array_map( 'absint', $ids ) );
 
 		if ( ! $ids ) {
 			wp_send_json_error( array( 'message' => 'no-images' ) );
 		}
 
-		$results = imagify_get_wpdb_metas( array(
+		$results = Imagify_DB::get_metas( array(
 			// Get attachments filename.
 			'filenames'           => '_wp_attached_file',
 			// Get attachments data.
@@ -646,7 +635,7 @@ class Imagify_Admin_Ajax_Post {
 		$data = array(
 			'email'    => $_GET['email'],
 			'password' => wp_generate_password( 12, false ),
-			'lang'     => get_locale(),
+			'lang'     => imagify_get_locale(),
 		);
 
 		$response = add_imagify_user( $data );

@@ -31,11 +31,8 @@ function imagify_count_attachments() {
 		return $count;
 	}
 
-	$mime_types = get_imagify_mime_type();
-	$mime_types = esc_sql( $mime_types );
-	$mime_types = "'" . implode( "','", $mime_types ) . "'";
-
-	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types = Imagify_DB::get_mime_types();
+	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( ID )
 		FROM $wpdb->posts
@@ -48,12 +45,7 @@ function imagify_count_attachments() {
 			AND $wpdb->posts.post_status = 'inherit'"
 	);
 
-	/**
-	 * Filter the limit from which the library is considered large.
-	 *
-	 * @param int $limit Number of attachments.
-	 */
-	if ( $count > apply_filters( 'imagify_unoptimized_attachment_limit', 10000 ) ) {
+	if ( $count > imagify_get_unoptimized_attachment_limit() ) {
 		set_transient( 'imagify_large_library', 1 );
 	} elseif ( get_transient( 'imagify_large_library' ) ) {
 		// In case the number is decreasing under our limit.
@@ -93,11 +85,10 @@ function imagify_count_error_attachments() {
 		return $count;
 	}
 
-	$mime_types = get_imagify_mime_type();
-	$mime_types = esc_sql( $mime_types );
-	$mime_types = "'" . implode( "','", $mime_types ) . "'";
+	Imagify_DB::unlimit_joins();
 
-	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types = Imagify_DB::get_mime_types();
+	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( $wpdb->posts.ID )
 		FROM $wpdb->posts
@@ -146,11 +137,10 @@ function imagify_count_optimized_attachments() {
 		return $count;
 	}
 
-	$mime_types = get_imagify_mime_type();
-	$mime_types = esc_sql( $mime_types );
-	$mime_types = "'" . implode( "','", $mime_types ) . "'";
+	Imagify_DB::unlimit_joins();
 
-	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types = Imagify_DB::get_mime_types();
+	$count      = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( $wpdb->posts.ID )
 		FROM $wpdb->posts
@@ -225,7 +215,11 @@ function imagify_percent_optimized_attachments() {
 	$total_attachments           = imagify_count_attachments();
 	$total_optimized_attachments = imagify_count_optimized_attachments();
 
-	return $total_attachments && $total_optimized_attachments ? round( 100 - ( ( $total_attachments - $total_optimized_attachments ) / $total_attachments ) * 100 ) : 0;
+	if ( ! $total_attachments || ! $total_optimized_attachments ) {
+		return 0;
+	}
+
+	return min( round( 100 * $total_optimized_attachments / $total_attachments ), 100 );
 }
 
 /**
@@ -403,11 +397,8 @@ function imagify_count_saving_data( $key = '' ) {
 function imagify_calculate_total_size_images_library() {
 	global $wpdb;
 
-	$mime_types = get_imagify_mime_type();
-	$mime_types = esc_sql( $mime_types );
-	$mime_types = "'" . implode( "','", $mime_types ) . "'";
-
-	$image_ids = $wpdb->get_col( // WPCS: unprepared SQL ok.
+	$mime_types = Imagify_DB::get_mime_types();
+	$image_ids  = $wpdb->get_col( // WPCS: unprepared SQL ok.
 		"
 		SELECT ID
 		FROM $wpdb->posts
@@ -445,6 +436,7 @@ function imagify_calculate_total_size_images_library() {
  */
 function imagify_calculate_average_size_images_per_month() {
 	$query = array(
+		'is_imagify'     => true,
 		'post_type'      => 'attachment',
 		'post_status'    => 'inherit',
 		'post_mime_type' => get_imagify_mime_type(),
@@ -538,7 +530,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 		return 0;
 	}
 
-	$results = imagify_get_wpdb_metas( array(
+	$results = Imagify_DB::get_metas( array(
 		// Get attachments filename.
 		'filenames'    => '_wp_attached_file',
 		// Get attachments data.

@@ -142,6 +142,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Assets'              => 1,
 		'Imagify_Attachment'          => 1,
 		'Imagify_Data'                => 1,
+		'Imagify_DB'                  => 1,
 		'Imagify_Notices'             => 1,
 		'Imagify_Options'             => 1,
 		'Imagify_Settings'            => 1,
@@ -160,6 +161,7 @@ function imagify_autoload( $class ) {
 		'Imagify_AS3CF_Attachment'     => 'amazon-s3-and-cloudfront',
 		'Imagify_AS3CF'                => 'amazon-s3-and-cloudfront',
 		'Imagify_Enable_Media_Replace' => 'enable-media-replace',
+		'Imagify_Formidable_Pro'       => 'formidable-pro',
 		'Imagify_NGG_Attachment'       => 'nextgen-gallery',
 		'Imagify_NGG_DB'               => 'nextgen-gallery',
 		'Imagify_NGG_Storage'          => 'nextgen-gallery',
@@ -213,14 +215,13 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 			break;
 
 		case 'contact':
-			$locale = function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale();
-			$paths  = array(
-				'default' => 'contact',
-				'fr_FR'   => 'fr/contact',
+			$lang  = imagify_get_current_lang_in( 'fr' );
+			$paths = array(
+				'en' => 'contact',
+				'fr' => 'fr/contact',
 			);
 
-			$url = isset( $paths[ $locale ] ) ? $paths[ $locale ] : $paths['default'];
-			$url = $site_url . $url . '/';
+			$url = $site_url . $paths[ $lang ] . '/';
 			break;
 
 		case 'documentation':
@@ -228,17 +229,27 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 			break;
 
 		case 'register':
-			return $app_url . 'register';
+			$partner = imagify_get_partner();
+
+			if ( $partner ) {
+				$query_args['partner'] = $partner;
+			}
+
+			$url = $app_url . 'register';
+			break;
 
 		case 'subscription':
-			return $app_url . 'subscription';
+			$url = $app_url . 'subscription';
+			break;
 
 		case 'get-api-key':
-			return $app_url . 'api';
+			$url = $app_url . 'api';
+			break;
 
 		case 'payment':
 			// Don't remove the trailing slash.
-			return $app_url . 'plugin/';
+			$url = $app_url . 'plugin/';
+			break;
 
 		default:
 			return '';
@@ -249,4 +260,51 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 	}
 
 	return $url;
+}
+
+/**
+ * Get the current lang ('fr', 'en', 'de'...), limited to a given list.
+ *
+ * @since  1.6.14
+ * @author Grégory Viguier
+ *
+ * @param  array $langs An array of langs, like array( 'de', 'es', 'fr', 'it' ).
+ * @return string The current lang. Default is 'en'.
+ */
+function imagify_get_current_lang_in( $langs ) {
+	static $locale;
+
+	if ( ! isset( $locale ) ) {
+		$locale = imagify_get_locale();
+		$locale = explode( '_', strtolower( $locale . '_' ) ); // Trailing underscore is to make sure $locale[1] is set.
+	}
+
+	foreach ( (array) $langs as $lang ) {
+		if ( $lang === $locale[0] || $lang === $locale[1] ) {
+			return $lang;
+		}
+	}
+
+	return 'en';
+}
+
+/**
+ * Get the current locale.
+ *
+ * @since  1.6.14
+ * @author Grégory Viguier
+ *
+ * @return string The current locale.
+ */
+function imagify_get_locale() {
+	$locale = function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale();
+	/**
+	 * Filter the locale used by Imagify.
+	 *
+	 * @since  1.6.14
+	 * @author Grégory Viguier
+	 *
+	 * @param string $locale The current locale.
+	 */
+	return apply_filters( 'imagify_locale', $locale );
 }

@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.8.2
-Stable tag: 1.6.12
+Tested up to: 4.8.3
+Stable tag: 1.6.14
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -136,21 +136,42 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
-= 1.6.12 =
+= 1.6.14 =
+* New: added compatibility with partners' plugins.
+* Improvement: updated the script used for the charts, it will lower the risk of conflicts with other plugins (that are also up-to-date).
+* Improvement: the comparison tool button is now also inserted when clicking the next/previous buttons in the media modal.
+* Bug Fix: the comparison tool button should not be inserted several times anymore.
+* Bug Fix: the images wouldn't appear in the comparison tool sometimes.
+
+= 1.6.13.1 - 2017/11/08 =
+* Bug Fix: fixed a php error with php 5.2.
+
+= 1.6.13 - 2017/11/07 =
+* New: added links to the documentation in Imagify' settings and bulk optimization pages.
+* Improvement: better compatibility with NextGen Gallery plugin. Imagify no longer resizes NextGen images nor removes exif, to let NextGen Gallery do its job peacefully.
+* Improvement: better compatibility with WP Real Media Library plugin, our modal wasn't working correctly.
+* Improvement: better compatibility with plugins that use cookies, like Duo Two-Factor Authentication and Shield Security, to prevent being disconnected.
+* Improvement: better compatibility with SiteGround. A "security" measure was preventing Imagify to work correctly.
+* Improvement: better compatibility with hosts that limit some SQL queries, it prevented our bulk optimization to work.
+* Improvement: better compatibility with Heartbeat Control plugin, it prevented our bulk optimization to work.
+* Improvement: better compatibility with Formidable Forms Pro plugin, the bulk optimizer was never satisfied.
+* Bug Fix: fixed a few bugs when optimizing in NextGen Gallery.
+
+= 1.6.12 - 2017/10/18 =
 * New: added links to the documentation in the plugin's admin bar item and the plugin's row (plugins page). There is more to come.
 * Improvement: image attachments that don't have some mandatory WordPress metadata are not included in Imagify stats anymore.
 * Fix: the "Optimized size" progress bar in the bulk optimization page now behaves like the "Original size" one does.
 * Dev stuff: auto-optimization can be disabled on an attachment basis with the new filter `imagify_auto_optimize_attachment`. For example it can be used to disable auto-optimization for a specific file extension.
 * Dev stuff: classes are now auto-loaded. Some constants have been removed.
 
-= 1.6.11 =
+= 1.6.11 - 2017/10/12 =
 * Improvement: Imagify now works with the iOS app, and with XML-RPC in general.
 * Improvement: we harmonized and improved how user roles are handled.
 * Improvement: prevent optimized image to be cached by the browser in the comparison tool.
 * Fix: sometimes the comparison tool's button wouldn't show on the attachment edition page.
 * Fix: the bulk optimization button works again.
 
-= 1.6.10 =
+= 1.6.10 - 2017/10/05 =
 * New: if new thumbnail sizes appear after activating a new theme or plugin, you can now optimize only these missing sizes instead of restoring and re-optimizing all images.
 * Improvement: CSS and JS files have been split and are loaded only when needed.
 * Improvement: in each NextGen Galleries you now have "Optimize" and "Restore" bulk actions.
@@ -162,10 +183,10 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Regression fix: the issue with Imagify's popup on WP Rocket options screen is now also solved when WP Rocket is white-labelled.
 * Lots of various small fixes and code improvements.
 
-= 1.6.9.1 =
+= 1.6.9.1 - 2017/08/12 =
 * Regression fix: don't load Imagify's popup files on WP Rocket options screen to avoid conflicts.
 
-= 1.6.9 =
+= 1.6.9 - 2017/08/11 =
 * Improvement: the bulk optimization now stops as soon as the quota is fully consumed, instead of trying to optimize more images and getting error messages one after the other.
 * Improvement: updated (almost) all JavaScript libraries we use. SweetAlert won't conflict with new versions anymore. Few code improvements.
 * Improvement: in the medias list, improved the Imagify column behavior on small screens.
@@ -175,7 +196,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Regression fix: fixed optimization and restoration not working in NextGen Gallery.
 * Regression fix: fixed the bulk optimization not working with PHP 5.2.
 
-= 1.6.8 =
+= 1.6.8 - 2017/07/26 =
 * Improvement: don't display the restore bulk action in the medias list if there is nothing to restore.
 * Improvement: you can know select and unselect all image sizes at once in the settings page.
 * Improvement: detect when the backup directory is not writable. A warning is displayed dynamically under the backup setting, a notice is also displayed on some pages.
@@ -183,10 +204,10 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Bug Fix: the "Save & Go to Bulk Optimizer" button now redirects you even if no settings have been changed.
 * Lots of various small fixes and code improvements.
 
-= 1.6.7.1 =
+= 1.6.7.1 - 2017/07/13 =
 * Bug Fix: Fixed the "Unknown error" during a bulk optimization.
 
-= 1.6.7 =
+= 1.6.7 - 2017/07/12 =
 * Improvement: Compatibility with the plugin WP Offload S3 Pro, and fixed a few things for both Lite and Pro versions.
 * Improvement: Improved performance on the bulk optimization page for huge image libraries.
 * Improvement: When performing a bulk optimization, moved the attachments with the "WELL DONE" message at the end of the queue, it helps to speed up things.
@@ -195,50 +216,50 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Regression fix: Fixed the buffer size on the bulk optimization page.
 * Dev stuff: Added a hook allowing to filter arguments when doing a request to our API. It can be used to increase the timeout value for example.
 
-= 1.6.6 =
+= 1.6.6 - 2017/06/27 =
 * New: Compatibility with the plugin WP Offload S3 Lite. Your images now will be sent to Amazon S3 after being optimized. Also works when you store your images only on S3, not locally.
 * Improvement: Added a filter to the asynchronous job arguments.
 * Bug fix: Compatibility with Internet Explorer 9 to 11.
 * Regression fix: The comparison tool stopped working in the medias list since the previous version.
 
-= 1.6.5 =
+= 1.6.5 - 2017/06/22 =
 * Improvement: Code quality of the whole plugin has been improved to fit more WordPress coding standards.
 * Improvement: Lots of internationalization improvements. Now the plugin's internationalization fully rely on the repository system.
 * Bug Fix: Fixed an error with php 7.1: `Uncaught Error: [] operator not supported for strings in /wp-content/plugins/imagify/inc/functions/admin.php:134`.
 
-= 1.6.4 =
+= 1.6.4 - 2017/04/06 =
 * Improvement: Provide a link to optimize in higher level when an image is already optimized.
 * Improvement: Add a dedicated message for 413 HTTP error when the image is too big to be uploaded on our servers.
 
-= 1.6.3 =
+= 1.6.3 - 2016/12/16 =
 * Improvement: The discount is now automatically applied in when you buy from the plugin and a promotion is active
 
-= 1.6.2 =
+= 1.6.2 - 2016/11/22 =
 * Bug Fix: Correctly display the modal when clicking on the plan suggestion button on bulk optimization page
 
-= 1.6.1 =
+= 1.6.1 - 2016/11/22 =
 * Bug Fix: Better offer suggestion when your medias library is bigger than 3GB
 
-= 1.6 =
+= 1.6 - 2016/11/21 =
 * New: Knowing how many MB/GB you need to optimize your existing and future images is complicated. We love to make things easier, so Imagify will do it and advise you the best plan.
 * New: You can now buy all the plans without leaving your WordPress administration
 * Improvement: Some styles fixed in the interface
 
-= 1.5.10 =
+= 1.5.10 - 2016/10/05 =
 * Improvement: Set to 1 the Bulk buffer size when there are more than 10 thumbnails to avoid "Unknown error" on the Bulk Optimization
 
-= 1.5.9 =
+= 1.5.9 - 2016/09/27 =
 * Bug Fix: Don't delete the thumbnail when the maximum file size is set to one of the thumbnail size
 * Bug Fix: Don't strip the image meta data if possible (only with Imagick)
 * Bug Fix: Fix persistent "WELL DONE" message because of "original_size" meta value was 0
 
-= 1.5.8 =
+= 1.5.8 - 2016/08/24 =
 * Regression fix: Check if the backup option is active before doing a backup when an image is resized
 
-= 1.5.7 =
+= 1.5.7 - 2016/08/23 =
 * Improvement: Resize images bigger than the maximum width defined in the settings using WP Image Editor instead of Imagify API
 
-= 1.5.6 =
+= 1.5.6 - 2016/07/29 =
 * Improvement: Dynamically update from the API the maximum image size allowed in bulk optimization
 * Improvement: Updated SweetAlert to SweetAlert2
 
