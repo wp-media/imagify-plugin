@@ -10,9 +10,9 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  */
 function imagify_get_mime_types() {
 	return array(
-		'image/jpeg',
-		'image/png',
-		'image/gif',
+		'jpg|jpeg|jpe' => 'image/jpeg',
+		'png'          => 'image/png',
+		'gif'          => 'image/gif',
 	);
 }
 
@@ -42,11 +42,7 @@ function imagify_get_mime_type_from_file( $file_path ) {
 		}
 	}
 
-	$image_type = wp_check_filetype( $file_path, array(
-		'jpg|jpeg|jpe' => 'image/jpeg',
-		'png'          => 'image/png',
-		'gif'          => 'image/gif',
-	) );
+	$image_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
 
 	return $image_type['type'];
 }
