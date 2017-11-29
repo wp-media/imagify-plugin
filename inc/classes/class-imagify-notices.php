@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @since  1.6.10
  * @author Grégory Viguier
  */
-class Imagify_Notices {
+class Imagify_Notices extends Imagify_Notices_Deprecated {
 
 	/**
 	 * Class version.
@@ -668,22 +668,6 @@ class Imagify_Notices {
 		return false;
 	}
 
-	/**
-	 * Include the view file.
-	 *
-	 * @since  1.6.10
-	 * @since  1.7 Deprecated
-	 * @author Grégory Viguier
-	 * @deprecated
-	 *
-	 * @param string $view The view ID.
-	 * @param mixed  $data Some data to pass to the view.
-	 */
-	public function render_view( $view, $data = array() ) {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.7', 'imagify_print_template( \'notice-\' . $view, $data )' );
-
-		imagify_print_template( 'notice-' . $view, $data );
-	}
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** INTERNAL TOOLS ========================================================================== */

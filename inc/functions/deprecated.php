@@ -2,9 +2,10 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 /**
- * Deprecated imagify.io API for WordPress.
+ * Class for deprecated methods from Imagify.
  *
- * @since 1.6.5
+ * @since  1.6.5
+ * @author Grégory Viguier
  * @deprecated
  */
 class Imagify_Deprecated {
@@ -231,6 +232,123 @@ class Imagify_Deprecated {
 	}
 }
 
+/**
+ * Class for deprecated methods from Imagify_Abstract_DB.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ * @deprecated
+ */
+class Imagify_Abstract_DB_Deprecated {
+
+	/**
+	 * Main Instance.
+	 * Ensures only one instance of class is loaded or can be loaded.
+	 * Well, actually it ensures nothing since it's not a full singleton pattern.
+	 *
+	 * @since  1.5 In Imagify_NGG_DB.
+	 * @since  1.7 Deprecated.
+	 * @access public
+	 * @author Jonathan Buttigieg
+	 * @deprecated
+	 *
+	 * @return object Main instance.
+	 */
+	public static function instance() {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.6.5', get_class( $this ) . '::get_instance()' );
+
+		return self::get_instance();
+	}
+}
+
+/**
+ * Class for deprecated methods from Imagify_Abstract_Attachment.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ * @deprecated
+ */
+class Imagify_Abstract_Attachment_Deprecated {
+
+	/**
+	 * Maybe backup a file.
+	 *
+	 * @since  1.6.6 In Imagify_AS3CF_Attachment.
+	 * @since  1.6.8 Deprecated.
+	 * @author Grégory Viguier
+	 * @deprecated
+	 *
+	 * @param  string $attachment_path  The file path.
+	 * @return bool|null                True on success. False on failure. Null if backup is not needed.
+	 */
+	protected function maybe_backup( $attachment_path ) {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.6.8', 'imagify_backup_file()' );
+
+		$result = imagify_backup_file( $attachment_path );
+
+		if ( false === $result ) {
+			return null;
+		}
+
+		return ! is_wp_error( $result );
+	}
+}
+
+/**
+ * Class for deprecated methods from Imagify_AS3CF.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ * @deprecated
+ */
+class Imagify_AS3CF_Deprecated {
+
+	/**
+	 * Tell if the attachment has a supported mime type.
+	 *
+	 * @since  1.6.6 In Imagify_AS3CF.
+	 * @since  1.6.8 Deprecated.
+	 * @see    imagify_is_attachment_mime_type_supported()
+	 * @author Grégory Viguier
+	 * @deprecated
+	 *
+	 * @param  int $post_id The attachment ID.
+	 * @return bool
+	 */
+	public function is_mime_type_supported( $post_id ) {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.6.8', 'imagify_is_attachment_mime_type_supported( $post_id )' );
+
+		return imagify_is_attachment_mime_type_supported( $post_id );
+	}
+}
+
+/**
+ * Class for deprecated methods from Imagify_Notices.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ * @deprecated
+ */
+class Imagify_Notices_Deprecated {
+
+	/**
+	 * Include the view file.
+	 *
+	 * @since  1.6.10 In Imagify_Notices
+	 * @since  1.7 Deprecated
+	 * @author Grégory Viguier
+	 * @deprecated
+	 *
+	 * @param string $view The view ID.
+	 * @param mixed  $data Some data to pass to the view.
+	 */
+	public function render_view( $view, $data = array() ) {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.7', 'imagify_print_template( \'notice-\' . $view, $data )' );
+
+		imagify_print_template( 'notice-' . $view, $data );
+	}
+}
+
 if ( class_exists( 'WpeCommon' ) ) :
 
 	/**
@@ -414,57 +532,57 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 		Imagify_NGG_DB::get_instance()->delete( $image_id );
 	}
 
-	/**
-	 * Combine two arrays with some specific keys.
-	 * We use this function to combine the result of 2 SQL queries.
-	 *
-	 * @since 1.4.5
-	 * @since 1.6.7  Added the $keep_keys_order parameter.
-	 * @since 1.6.13 Deprecated.
-	 * @deprecated
-	 *
-	 * @param  array $keys            An array of keys.
-	 * @param  array $values          An array of arrays like array( 'id' => id, 'value' => value ).
-	 * @param  int   $keep_keys_order Set to true to return an array ordered like $keys instead of $values.
-	 * @return array                  The combined arrays.
-	 */
-	function imagify_query_results_combine( $keys, $values, $keep_keys_order = false ) {
-		_deprecated_function( __FUNCTION__ . '()', '1.6.13', 'Imagify_DB::combine_query_results( $keys, $values, $keep_keys_order )' );
-
-		return Imagify_DB::combine_query_results( $keys, $values, $keep_keys_order );
-	}
-
-	/**
-	 * A helper to retrieve all values from one or several post metas, given a list of post IDs.
-	 * The $wpdb cache is flushed to save memory.
-	 *
-	 * @since  1.6.7
-	 * @since  1.6.13 Deprecated.
-	 * @author Grégory Viguier
-	 * @deprecated
-	 *
-	 * @param  array $metas An array of meta names like:
-	 *                      array(
-	 *                          'key1' => 'meta_name_1',
-	 *                          'key2' => 'meta_name_2',
-	 *                          'key3' => 'meta_name_3',
-	 *                      )
-	 *                      If a key contains 'data', the results will be unserialized.
-	 * @param  array $ids   An array of post IDs.
-	 * @return array        An array of arrays of results like:
-	 *                      array(
-	 *                          'key1' => array( post_id_1 => 'result_1', post_id_2 => 'result_2', post_id_3 => 'result_3' ),
-	 *                          'key2' => array( post_id_1 => 'result_4', post_id_3 => 'result_5' ),
-	 *                          'key3' => array( post_id_1 => 'result_6', post_id_2 => 'result_7' ),
-	 *                      )
-	 */
-	function imagify_get_wpdb_metas( $metas, $ids ) {
-		_deprecated_function( __FUNCTION__ . '()', '1.6.13', 'Imagify_DB::get_metas( $metas, $ids )' );
-
-		return Imagify_DB::get_metas( $metas, $ids );
-	}
-
 endif;
+
+/**
+ * Combine two arrays with some specific keys.
+ * We use this function to combine the result of 2 SQL queries.
+ *
+ * @since 1.4.5
+ * @since 1.6.7  Added the $keep_keys_order parameter.
+ * @since 1.6.13 Deprecated.
+ * @deprecated
+ *
+ * @param  array $keys            An array of keys.
+ * @param  array $values          An array of arrays like array( 'id' => id, 'value' => value ).
+ * @param  int   $keep_keys_order Set to true to return an array ordered like $keys instead of $values.
+ * @return array                  The combined arrays.
+ */
+function imagify_query_results_combine( $keys, $values, $keep_keys_order = false ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.6.13', 'Imagify_DB::combine_query_results( $keys, $values, $keep_keys_order )' );
+
+	return Imagify_DB::combine_query_results( $keys, $values, $keep_keys_order );
+}
+
+/**
+ * A helper to retrieve all values from one or several post metas, given a list of post IDs.
+ * The $wpdb cache is flushed to save memory.
+ *
+ * @since  1.6.7
+ * @since  1.6.13 Deprecated.
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @param  array $metas An array of meta names like:
+ *                      array(
+ *                          'key1' => 'meta_name_1',
+ *                          'key2' => 'meta_name_2',
+ *                          'key3' => 'meta_name_3',
+ *                      )
+ *                      If a key contains 'data', the results will be unserialized.
+ * @param  array $ids   An array of post IDs.
+ * @return array        An array of arrays of results like:
+ *                      array(
+ *                          'key1' => array( post_id_1 => 'result_1', post_id_2 => 'result_2', post_id_3 => 'result_3' ),
+ *                          'key2' => array( post_id_1 => 'result_4', post_id_3 => 'result_5' ),
+ *                          'key3' => array( post_id_1 => 'result_6', post_id_2 => 'result_7' ),
+ *                      )
+ */
+function imagify_get_wpdb_metas( $metas, $ids ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.6.13', 'Imagify_DB::get_metas( $metas, $ids )' );
+
+	return Imagify_DB::get_metas( $metas, $ids );
+}
 
 /**
  * Get all mime types which could be optimized by Imagify.
@@ -1013,6 +1131,7 @@ if ( is_admin() ) :
 	 * @since  1.0
 	 * @since  1.7 Deprecated.
 	 * @author Jonathan
+	 * @deprecated
 	 */
 	function _imagify_correct_capability_for_options_page() {
 		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Settings::get_instance()->get_capability()' );
@@ -1026,6 +1145,7 @@ if ( is_admin() ) :
 	 * @since  1.0
 	 * @since  1.7 Deprecated.
 	 * @author Jonathan
+	 * @deprecated
 	 */
 	function _imagify_register_setting() {
 		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Settings::get_instance()->register()' );
@@ -1039,6 +1159,7 @@ if ( is_admin() ) :
 	 * @since  1.0
 	 * @since  1.7 Deprecated.
 	 * @author Jonathan
+	 * @deprecated
 	 *
 	 * @param  mixed $value     The new option value.
 	 * @param  mixed $old_value The old option value.
@@ -1057,6 +1178,7 @@ if ( is_admin() ) :
 	 * @since  1.6.8
 	 * @since  1.7 Deprecated.
 	 * @author Grégory Viguier
+	 * @deprecated
 	 *
 	 * @param  mixed $value     The new, unserialized option value.
 	 * @param  mixed $old_value The old option value.
@@ -1074,6 +1196,7 @@ if ( is_admin() ) :
 	 * @since  1.6.5
 	 * @since  1.7 Deprecated.
 	 * @author Grégory Viguier
+	 * @deprecated
 	 *
 	 * @param string $option     Name of the network option.
 	 * @param mixed  $value      Current value of the network option.
@@ -1093,6 +1216,7 @@ if ( is_admin() ) :
 	 * @since  1.6.8  Not used to redirect user to Bulk Optimizer anymore: see _imagify_maybe_set_redirection_before_save_options().
 	 * @since  1.7 Deprecated.
 	 * @author Jonathan
+	 * @deprecated
 	 *
 	 * @param mixed $old_value The old option value.
 	 * @param mixed $value     The new option value.
@@ -1108,6 +1232,7 @@ if ( is_admin() ) :
 	 *
 	 * @since 1.0
 	 * @since 1.7 Deprecated.
+	 * @deprecated
 	 */
 	function _imagify_update_site_option_on_network() {
 		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Settings::get_instance()->update_site_option_on_network()' );
