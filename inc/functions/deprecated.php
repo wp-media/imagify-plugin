@@ -1115,4 +1115,68 @@ if ( is_admin() ) :
 		Imagify_Settings::get_instance()->update_site_option_on_network();
 	}
 
+	/**
+	 * Display the plan chooser section.
+	 *
+	 * @since  1.6
+	 * @since  1.7 Deprecated.
+	 * @author Geoffrey
+	 * @deprecated
+	 *
+	 * @return string HTML.
+	 */
+	function get_imagify_new_to_imagify() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'imagify_get_template( \'part-new-to-imagify\' )' );
+
+		return imagify_get_template( 'part-new-to-imagify' );
+	}
+
+	/**
+	 * Get the payment modal HTML.
+	 *
+	 * @since  1.6
+	 * @since  1.6.3 Include discount banners.
+	 * @since  1.7 Deprecated.
+	 * @author Geoffrey
+	 * @deprecated
+	 */
+	function imagify_payment_modal() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'imagify_print_template( \'modal-payment\' )' );
+
+		imagify_print_template( 'modal-payment' );
+	}
+
+	/**
+	 * Print the discount banner used inside Payment Modal.
+	 *
+	 * @since  1.6.3
+	 * @since  1.7 Deprecated.
+	 * @author Geoffrey Crofte
+	 * @deprecated
+	 */
+	function imagify_print_discount_banner() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'imagify_print_template( \'part-discount-banner\' )' );
+
+		imagify_print_template( 'part-discount-banner' );
+	}
+
+	/**
+	 * Return the formatted price present in pricing tables.
+	 *
+	 * @since  1.6
+	 * @since  1.7 Deprecated.
+	 * @author Geoffrey
+	 * @deprecated
+	 *
+	 * @param  float $value The price value.
+	 * @return string       The markuped price.
+	 */
+	function get_imagify_price_table_format( $value ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.7' );
+
+		$v = explode( '.', (string) $value );
+
+		return '<span class="imagify-price-big">' . $v[0] . '</span> <span class="imagify-price-mini">.' . ( strlen( $v[1] ) === 1 ? $v[1] . '0' : $v[1] ) . '</span>';
+	}
+
 endif;
