@@ -102,7 +102,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	}
 
 	/**
-	 * Get width and height of the image.
+	 * Get width and height of the original image.
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
