@@ -196,6 +196,7 @@ function imagify_autoload( $class ) {
 		'Imagify_File_Attachment'          => 1,
 		'Imagify_Files_DB'                 => 1,
 		'Imagify_Files_Iterator'           => 1,
+		'Imagify_Files_List_Table'         => 1,
 		'Imagify_Files_Recursive_Iterator' => 1,
 		'Imagify_Files_Scan'               => 1,
 		'Imagify_Folders_DB'               => 1,
