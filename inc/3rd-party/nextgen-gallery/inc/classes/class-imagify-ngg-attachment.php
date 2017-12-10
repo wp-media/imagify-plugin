@@ -14,36 +14,33 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1.3';
+	const VERSION = '1.2';
+
+	/**
+	 * Name of the DB class.
+	 *
+	 * @var string
+	 */
+	const DB_CLASS_NAME = 'Imagify_NGG_DB';
 
 	/**
 	 * The image object.
 	 *
-	 * @since 1.5
-	 *
 	 * @var    object A nggImage object.
+	 * @since  1.5
+	 * @since  1.7 Not public anymore.
 	 * @access public
 	 */
-	public $image;
-
-	/**
-	 * The attachment SQL data row.
-	 *
-	 * @since 1.5
-	 *
-	 * @var    array
-	 * @access public
-	 */
-	public $row;
+	protected $image;
 
 	/**
 	 * Tell if the file mime type can be optimized by Imagify.
 	 *
-	 * @since 1.6.9
-	 *
-	 * @var bool
+	 * @var    bool
+	 * @since  1.6.9
+	 * @since  1.7 Not public anymore.
 	 * @access protected
-	 * see $this->is_mime_type_supported()
+	 * @see    $this->is_mime_type_supported()
 	 */
 	protected $is_mime_type_supported;
 
@@ -54,7 +51,6 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @author Jonathan Buttigieg
 	 *
 	 * @param int|object $id An image attachment ID or a NGG object.
-	 * @return void
 	 */
 	public function __construct( $id ) {
 		if ( is_object( $id ) ) {
@@ -65,8 +61,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			$this->id    = $this->image->pid;
 		}
 
-		$this->id  = absint( $this->id );
-		$this->row = $this->get_row();
+		$this->id = (int) $this->id;
+		$this->get_row();
 
 		// Load nggAdmin class.
 		$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
@@ -102,19 +98,6 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Get the attachment SQL data row.
-	 *
-	 * @since  1.5
-	 * @author Jonathan Buttigieg
-	 *
-	 * @access public
-	 * @return array
-	 */
-	public function get_row() {
-		return Imagify_NGG_DB::get_instance()->get( $this->id );
-	}
-
-	/**
 	 * Get the attachment optimization data.
 	 *
 	 * @since  1.5
@@ -124,8 +107,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return array|bool
 	 */
 	public function get_data() {
-		$row = $this->row ? $this->row : $this->get_row();
-		return isset( $row['data'] ) ? maybe_unserialize( $row['data'] ) : false;
+		$row = $this->get_row();
+		return isset( $row['data'] ) ? $row['data'] : false;
 	}
 
 	/**
@@ -138,7 +121,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return int|bool
 	 */
 	public function get_optimization_level() {
-		$row = $this->row ? $this->row : $this->get_row();
+		$row = $this->get_row();
 		return isset( $row['optimization_level'] ) ? (int) $row['optimization_level'] : false;
 	}
 
@@ -152,7 +135,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return string|bool
 	 */
 	public function get_status() {
-		$row = $this->row ? $this->row : $this->get_row();
+		$row = $this->get_row();
 		return isset( $row['status'] ) ? $row['status'] : false;
 	}
 
@@ -291,12 +274,10 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 					$error_status = 'already_optimized';
 				}
 
-				Imagify_NGG_DB::get_instance()->update( $this->id, array(
-					'pid'    => $this->id,
+				$this->update_row( array(
 					'status' => $error_status,
 					'data'   => serialize( $data ),
 				) );
-				$this->row = null;
 
 				return false;
 			}
@@ -379,11 +360,9 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		$data = $this->fill_data( null, $response, $attachment_url );
 
 		// Save the optimization level.
-		Imagify_NGG_DB::get_instance()->update( $this->id, array(
-			'pid'                => $this->id,
+		$this->update_row( array(
 			'optimization_level' => $optimization_level,
 		) );
-		$this->row = null;
 
 		if ( ! $data ) {
 			delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
@@ -394,11 +373,9 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		$data = $this->optimize_thumbnails( $optimization_level, $data );
 
 		// Save the status to success.
-		Imagify_NGG_DB::get_instance()->update( $this->id, array(
-			'pid'    => $this->id,
+		$this->update_row( array(
 			'status' => 'success',
 		) );
-		$this->row = null;
 
 		/**
 		 * Fires after optimizing an attachment.
@@ -516,11 +493,9 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				$data = apply_filters( 'imagify_fill_ngg_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
 			}
 
-			Imagify_NGG_DB::get_instance()->update( $this->id, array(
-				'pid'  => $this->id,
-				'data' => serialize( $data ),
+			$this->update_row( array(
+				'data' => $data,
 			) );
-			$this->row = null;
 		} // End if().
 
 		/**
@@ -596,8 +571,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Remove Imagify data.
 		 */
-		Imagify_NGG_DB::get_instance()->delete( $image->pid );
-		$this->row = null;
+		$this->delete_row();
 
 		/**
 		 * Fill in the NGG meta data.
