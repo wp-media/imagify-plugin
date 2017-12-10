@@ -175,6 +175,65 @@ class Imagify_Settings {
 
 		unset( $values['disallowed-sizes-reversed'], $values['disallowed-sizes-checked'] );
 
+		// Custom folders.
+		if ( isset( $values['custom_folders'] ) && is_array( $values['custom_folders'] ) ) {
+			$selected_raw       = $values['custom_folders'];
+			$selected_paths     = Imagify_DB::prepare_values_list( $selected_raw );
+			$selected_raw       = array_flip( $selected_raw );
+			$optimization_level = isset( $values['optimization_level'] ) ? $values['optimization_level'] : null;
+			$optimization_level = Imagify_Options::get_instance()->sanitize_and_validate( 'optimization_level', $optimization_level );
+			unset( $values['custom_folders'] );
+
+			// Selected folders that already are in the DB.
+			$results = $wpdb->get_results( "SELECT * FROM $wpdb->imagify_folders WHERE path IN ( $selected_paths );", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+			if ( $results ) {
+				// Add the missing optimization levels.
+				foreach ( $results as $i => $result ) {
+					if ( ! isset( $result['optimization_level'] ) && Imagify_Files_Scan::placeholder_path_exists( $result['path'] ) ) {
+						// Add the optimization level only if not already set and if the file exists.
+						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->imagify_folders SET optimization_level = %d WHERE folder_id = %d", $optimization_level, $result['folder_id'] ) );
+					}
+
+					// Remove the path from the selected list, so the remaining will be created.
+					unset( $selected_raw[ $result['path'] ] );
+				}
+			}
+
+			// Not selected folders that are in the DB, and that have an optimization level.
+			$results = $wpdb->get_col( "SELECT folder_id FROM $wpdb->imagify_folders WHERE path NOT IN ( $selected_paths ) AND optimization_level IS NOT NULL;" ); // WPCS: unprepared SQL ok.
+
+			if ( $results ) {
+				// Remove the optimization levels.
+				$results = Imagify_DB::prepare_values_list( $results );
+				$wpdb->query( "UPDATE $wpdb->imagify_folders SET optimization_level = NULL WHERE folder_id IN ( $results )" ); // WPCS: unprepared SQL ok.
+			}
+
+			if ( $selected_raw ) {
+				// If we still have paths here, they need to be added to the DB.
+				$filesystem = imagify_get_filesystem();
+
+				foreach ( $selected_raw as $path => $meh ) {
+					$path = sanitize_text_field( $path );
+					$path = Imagify_Files_Scan::remove_placeholder( $path );
+					$path = realpath( $path );
+
+					if ( ! $path || ! $filesystem->is_dir( $path ) ) {
+						continue;
+					}
+
+					if ( Imagify_Files_Scan::is_path_forbidden( $path ) ) {
+						continue;
+					}
+
+					Imagify_Folders_DB::get_instance()->insert( array(
+						'path'               => Imagify_Files_Scan::add_placeholder( trailingslashit( $path ) ),
+						'optimization_level' => $optimization_level,
+					) );
+				}
+			}
+		}
+
 		return $values;
 	}
 
