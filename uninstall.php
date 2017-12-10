@@ -14,9 +14,11 @@ delete_option( $wpdb->prefix . 'ngg_imagify_data_db_version' );
 
 // Delete all transients.
 delete_site_transient( 'imagify_check_licence_1' );
+delete_site_transient( 'imagify_user' );
 delete_transient( 'imagify_bulk_optimization_level' );
 delete_transient( 'imagify_large_library' );
 delete_transient( 'imagify_max_image_size' );
+delete_transient( 'imagify_user' );
 
 // Delete transients.
 $transients = implode( '" OR option_name LIKE "', array(
