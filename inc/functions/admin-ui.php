@@ -164,13 +164,13 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 		$output .= '</a>';
 
 		if ( ! $is_library_page ) {
-			$image = wp_get_attachment_image_src( $attachment_id, 'full' );
+			$dimensions = $attachment->get_dimensions();
 
 			$output .= '<input id="imagify-original-src" type="hidden" value="' . esc_url( $attachment->get_backup_url() ) . '">';
 			$output .= '<input id="imagify-original-size" type="hidden" value="' . $attachment->get_original_size() . '">';
-			$output .= '<input id="imagify-full-src" type="hidden" value="' . $image[0] . '">';
-			$output .= '<input id="imagify-full-width" type="hidden" value="' . $image[1] . '">';
-			$output .= '<input id="imagify-full-height" type="hidden" value="' . $image[2] . '">';
+			$output .= '<input id="imagify-full-src" type="hidden" value="' . esc_url( $attachment->get_original_url() ) . '">';
+			$output .= '<input id="imagify-full-width" type="hidden" value="' . $dimensions['width'] . '">';
+			$output .= '<input id="imagify-full-height" type="hidden" value="' . $dimensions['height'] . '">';
 		}
 	}
 

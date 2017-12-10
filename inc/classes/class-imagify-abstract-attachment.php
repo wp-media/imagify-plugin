@@ -181,6 +181,22 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	}
 
 	/**
+	 * Get width and height of the original image.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function get_dimensions() {
+		return array(
+			'width'  => 0,
+			'height' => 0,
+		);
+	}
+
+	/**
 	 * Get the attachment optimization level label.
 	 *
 	 * @since  1.2
