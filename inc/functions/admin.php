@@ -132,6 +132,9 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 		case 'dismiss-notice':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
 
+		case 'get-files-tree':
+			return wp_nonce_url( admin_url( 'admin-ajax.php?action=imagify_get_files_tree' ), 'get-files-tree' );
+
 		case 'bulk-optimization':
 			return admin_url( 'upload.php?page=' . Imagify_Views::get_instance()->get_bulk_page_slug() );
 
@@ -369,4 +372,63 @@ function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
 
 	wp_safe_redirect( esc_url_raw( $redirect ) );
 	die();
+}
+
+/**
+ * Get cached Imagify user data.
+ * This is usefull to prevent triggering an HTTP request to our server on every page load, but it can be used only where the data doesn't need to be in real time.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return object|bool An object on success. False otherwise.
+ */
+function imagify_get_cached_user() {
+	if ( ! imagify_valid_key() ) {
+		return false;
+	}
+
+	if ( imagify_is_active_for_network() ) {
+		$user = get_site_transient( 'imagify_user' );
+	} else {
+		$user = get_transient( 'imagify_user' );
+	}
+
+	return is_object( $user ) ? $user : false;
+}
+
+/**
+ * Cache Imagify user data for 5 minutes.
+ * Runs every methods to store the results. Also stores formatted data like the quota and the next update date.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return object|bool An object on success. False otherwise.
+ */
+function imagify_cache_user() {
+	if ( ! imagify_valid_key() ) {
+		return false;
+	}
+
+	$user    = new Imagify_User();
+	$data    = (object) get_object_vars( $user );
+	$methods = get_class_methods( $user );
+
+	foreach ( $methods as $method ) {
+		if ( '__construct' !== $method ) {
+			$data->$method = $user->$method();
+		}
+	}
+
+	$data->quota_formatted            = imagify_size_format( $user->quota * 1048576 );
+	$data->next_date_update_formatted = date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) );
+
+	if ( imagify_is_active_for_network() ) {
+		set_site_transient( 'imagify_user', $data, 5 * MINUTE_IN_SECONDS );
+	} else {
+		set_transient( 'imagify_user', $data, 5 * MINUTE_IN_SECONDS );
+	}
+
+	return $data;
 }

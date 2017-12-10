@@ -81,7 +81,7 @@
 	/**
 	 * Imagify Backup alert.
 	 */
-	$( '.imagify-settings-section' ).find( '#backup' ).on( 'change', function() {
+	$( '.imagify-settings-section' ).find( '#imagify_backup' ).on( 'change', function() {
 		var $_this         = $( this ),
 			$backupMessage = $_this.siblings( '#backup-dir-is-writable' ),
 			params         = {
@@ -127,6 +127,194 @@
 	} );
 
 } )(jQuery, document, window);
+
+
+// Display Imagify User data =======================================================================
+(function(w, d, $, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
+
+	if ( ! w.imagifyUser ) {
+		return;
+	}
+
+	$.getJSON( ajaxurl, w.imagifyUser )
+		.done( function( r ) {
+			if ( $.isPlainObject( r ) && r.success ) {
+				r.data.id      = null;
+				r.data.plan_id = null;
+				r.data.is      = [];
+
+				$.each( r.data, function( k, v ) {
+					var htmlClass = '.imagify-user-' + k.replace( /_/g, '-' );
+
+					if ( k.indexOf( 'is_' ) === 0 ) {
+						if ( v ) {
+							r.data.is.push( htmlClass );
+						}
+					} else {
+						$( htmlClass ).text( v );
+					}
+				} );
+
+				if ( r.data.get_percent_unconsumed_quota > 0 && r.data.get_percent_unconsumed_quota <= 20 ) {
+					r.data.is.push( '.imagify-user-is-almost-over-quota' );
+				}
+
+				$( r.data.is.join( ',' ) ).removeClass( 'hidden' );
+			}
+		} );
+
+} )(window, document, jQuery);
+
+
+// Files tree for "custom folders" =================================================================
+(function(w, d, $, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
+
+	if ( ! imagifyOptions.getFilesTree ) {
+		return;
+	}
+
+	// Clicking the main button: fetch site's root folders and files, then display them in a modal.
+	$( '#imagify-add-custom-folder' ).on( 'click.imagify', function() {
+		var $button  = $( this ),
+			selected = [];
+
+		if ( $button.attr( 'disabled' ) ) {
+			return;
+		}
+
+		$button.attr( 'disabled', 'disabled' );
+
+		$( '#imagify-custom-folders' ).find( ':checked' ).each( function() {
+			selected.push( this.value );
+		} );
+
+		$.post( {
+			url:      imagifyOptions.getFilesTree,
+			dataType: 'json',
+			data:     {
+				folder:   '/',
+				selected: selected
+			}
+		} ).done( function( response ) {
+			if ( ! response.success ) {
+				swal( {
+					title:       imagifyOptions.labels.error,
+					html:        response.data || '',
+					type:        'error',
+					customClass: 'imagify-sweet-alert'
+				} );
+				return;
+			}
+
+			swal( {
+				title:            imagifyOptions.labels.filesTreeTitle,
+				html:             '<ul id="imagify-folders-tree">' + response.data + '</ul>',
+				type:             'question',
+				customClass:      'imagify-sweet-alert',
+				showCancelButton: true,
+				cancelButtonText: imagifySwal.labels.cancelButtonText,
+				reverseButtons:   true
+			} ).then( function() {
+				var values = $( '#imagify-folders-tree input' ).serializeArray(), // Don't do `$( '#imagify-folders-tree' ).find( 'input' )`, it won't work.
+					$fieldset;
+
+				if ( ! values.length ) {
+					return;
+				}
+
+				$fieldset = $( '#imagify-custom-folders' ).children( '.imagify-check-group' );
+
+				if ( ! $fieldset.length ) {
+					$fieldset = $( '<fieldset class="imagify-check-group"><legend class="screen-reader-text">' + imagifyOptions.labels.customFilesLegend + '</legend></fieldset>' ).prependTo( '#imagify-custom-folders' );
+				}
+
+				$.each( values, function( i, v ) {
+					var field = '',
+						$field;
+					// Value #///# In input id #///# Label.
+					v.value    = v.value.split( '#///#' );
+					v.value[1] = 'imagify_custom_folders_' + v.value[1];
+					$field     = $( '#' + v.value[1] )
+
+					if ( $field.length ) {
+						$field.prop( 'checked', true );
+						return;
+					}
+
+					field += '<input type="checkbox" value="' + v.value[0] + '" id="' + v.value[1] + '" name="imagify_settings[custom_folders][]" class="mini imagify-row-check" checked="checked"/> ';
+					field += '<label for="' + v.value[1] + '" onclick="">' + v.value[2] + '</label><br class="imagify-br">';
+					$fieldset.append( field );
+				} );
+			} );
+		} )
+		.fail( function() {
+			swal( {
+				title:       imagifyOptions.labels.error,
+				type:        'error',
+				customClass: 'imagify-sweet-alert'
+			} );
+		} )
+		.always( function(){
+			$button.removeAttr( 'disabled' );
+		} );
+	} );
+
+	// Clicking a folder icon in the modal: fetch the folder's sub-folders and files, then display them.
+	$( d ).on( 'click.imagify', '#imagify-folders-tree [data-folder]', function() {
+		var $button     = $( this ),
+			$mainButton = $( '#imagify-add-custom-folder' ),
+			$tree       = $button.next( 'ul' ),
+			selected    = [],
+			$parent;
+
+		if ( $tree.length ) {
+			$tree.toggleClass( 'hidden' );
+			return;
+		}
+
+		if ( $button.attr( 'disabled' ) ) {
+			return;
+		}
+
+		$button.attr( 'disabled', 'disabled' );
+
+		$( '#imagify-custom-folders' ).find( ':checked' ).each( function() {
+			selected.push( this.value );
+		} );
+
+		$.post( {
+			url:      imagifyOptions.getFilesTree,
+			dataType: 'json',
+			data:     {
+				folder:   $button.data( 'folder' ),
+				selected: selected
+			}
+		} ).done( function( response ) {
+			if ( ! response.success ) {
+				swal( {
+					title:       imagifyOptions.labels.error,
+					html:        response.data || '',
+					type:        'error',
+					customClass: 'imagify-sweet-alert'
+				} );
+				return;
+			}
+
+			$button.parent().append( '<ul>' + response.data + '</ul>' );
+		} )
+		.fail( function(){
+			swal( {
+				title:       imagifyOptions.labels.error,
+				type:        'error',
+				customClass: 'imagify-sweet-alert'
+			} );
+		} )
+		.always( function(){
+			$button.removeAttr( 'disabled' );
+		} );
+	} );
+
+} )(window, document, jQuery);
 
 
 // "Select all" checkboxes =========================================================================
@@ -181,7 +369,7 @@
 				return controlChecked ? true : false;
 			} );
 
-		$wrap.find( '.imagify-row-check' )
+		$wrap.find( '.imagify-row-check' ).filter( ':visible:enabled' )
 			.prop( 'checked', function() {
 				if ( toggle ) {
 					return false;

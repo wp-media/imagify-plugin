@@ -342,7 +342,9 @@ body.imagify-modal-is-open {
 .imagify-settings .imagify-logo-block {
 	flex-shrink: 0;
 	flex-grow: 0;
+	padding: 0;
 	margin-right: 35px;
+	color: inherit;
 }
 .imagify-settings .imagify-title + .imagify-notice {
 	margin: 0;
@@ -595,6 +597,14 @@ p.imagify-section-title.imagify-section-title {
 .imagify-checkbox.imagify-checkbox:checked:focus + label:before {
 	border-style: dotted;
 	border-color: #40b1d0;
+}
+
+/* Checkbox groups */
+.imagify-check-group {
+	max-height: 20em;
+	padding-left: 2px;
+	margin-bottom: 1em;
+	overflow-y: auto;
 }
 
 /* Custom radio in CSS */
