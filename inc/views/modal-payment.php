@@ -60,7 +60,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 					</div>
 				</div><!-- .imagify-modal-section -->
 
-				<?php imagify_print_template( 'part-discount-banner' ); ?>
+				<?php $this->print_template( 'part-discount-banner' ); ?>
 
 				<div class="imagify-modal-section imagify-pre-checkout-offers">
 					<p class="imagify-modal-title">
@@ -239,7 +239,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 							<p><?php esc_html_e( 'Monthly plans come with credits which is renewed every months. The billing happens automatically each month or year depending the billing period you choose.', 'imagify' ); ?></p>
 						</div>
 
-						<?php imagify_print_template( 'part-settings-discount-banner' ); ?>
+						<?php $this->print_template( 'part-settings-discount-banner' ); ?>
 
 						<div class="imagify-inline-options imagify-small-options imagify-radio-line">
 							<input id="imagify-pricing-montly" type="radio" value="monthly" name="plan-pricing" checked="checked">
@@ -363,7 +363,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 			<div class="imagify-modal-views imagify-payment-process-view" id="imagify-payment-process-view" aria-hidden="true">
 
-				<iframe data-imagify-api="<?php echo esc_attr( get_imagify_option( 'api_key' ) ); ?>" id="imagify-payment-iframe" data-src="<?php echo esc_url( imagify_get_external_url( 'payment' ) ); ?>" name="imagify-payment-iframe" src="" frameborder="0"></iframe>
+				<iframe data-imagify-api="<?php echo esc_attr( get_imagify_option( 'api_key' ) ); ?>" id="imagify-payment-iframe" data-src="<?php echo esc_url( imagify_get_external_url( 'payment' ) ); ?>" name="imagify-payment-iframe"></iframe>
 
 			</div><!-- .imagify-modal-views -->
 

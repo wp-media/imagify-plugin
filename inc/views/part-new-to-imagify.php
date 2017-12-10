@@ -30,7 +30,7 @@ if ( ! $show_new ) {
 	</div>
 	<div class="imagify-oh">
 		<p class="imagify-section-title"><?php _e( 'You\'re new to Imagify?', 'imagify' ); ?></p>
-		<p><?php _e( 'Let us help you by analyzing your existing images and determine the best plan for you', 'imagify' ); ?></p>
+		<p><?php _e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
 	</div>
 </div>
 

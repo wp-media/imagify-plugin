@@ -4,11 +4,11 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 ?>
 <div class="wrap imagify-settings imagify-bulk">
 
-	<?php imagify_print_template( 'part-bulk-header' ); ?>
+	<?php $this->print_template( 'part-bulk-header' ); ?>
 
-	<?php imagify_print_template( 'part-new-to-imagify' ); ?>
+	<?php $this->print_template( 'part-new-to-imagify' ); ?>
 
-	<?php imagify_print_template( 'part-bulk-subtitle' ); ?>
+	<?php $this->print_template( 'part-bulk-subtitle' ); ?>
 
 	<div class="imagify-settings-section">
 
@@ -207,7 +207,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		</div><!-- .imagify-bulk-submit -->
 	</div>
 
-	<?php imagify_print_template( 'part-bulk-success' ); ?>
+	<?php $this->print_template( 'part-bulk-success' ); ?>
 
 	<div class="imagify-bulk-table">
 		<table summary="<?php _e( 'Compression process results', 'imagify' ); ?>">
@@ -261,7 +261,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		</table>
 	</div>
 
-	<?php imagify_print_template( 'modal-payment' ); ?>
+	<?php $this->print_template( 'modal-payment' ); ?>
 
 </div>
 <?php
