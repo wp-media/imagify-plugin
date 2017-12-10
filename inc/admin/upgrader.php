@@ -267,6 +267,6 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 		}
 
 		// Rename the option that stores the NGG table version. Since the table is also updated in 1.7, let's simply delete the option.
-		delete_option( $wpdb->prefix . 'ngg_imagify_data' );
+		delete_option( $wpdb->prefix . 'ngg_imagify_data_db_version' );
 	}
 }

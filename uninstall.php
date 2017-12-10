@@ -9,6 +9,8 @@ delete_site_option( 'imagify_old_version' );
 delete_site_option( 'imagify_files_db_version' );
 delete_site_option( 'imagify_folders_db_version' );
 delete_option( 'imagify_data' );
+delete_option( 'ngg_imagify_data_db_version' );
+delete_option( $wpdb->prefix . 'ngg_imagify_data_db_version' );
 
 // Delete all transients.
 delete_site_transient( 'imagify_check_licence_1' );
