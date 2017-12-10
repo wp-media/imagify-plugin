@@ -149,6 +149,8 @@ class Imagify_Settings {
 	 * @return array
 	 */
 	public function populate_values_on_save( $values ) {
+		global $wpdb;
+
 		$values = is_array( $values ) ? $values : array();
 
 		// Version.
@@ -157,23 +159,21 @@ class Imagify_Settings {
 		}
 
 		// Disabled thumbnail sizes.
-		if ( isset( $values['sizes'] ) && is_array( $values['sizes'] ) ) {
+		if ( isset( $values['disallowed-sizes-reversed'] ) && is_array( $values['disallowed-sizes-reversed'] ) ) {
+			$checked = ! empty( $values['disallowed-sizes-checked'] ) && is_array( $values['disallowed-sizes-checked'] ) ? array_flip( $values['disallowed-sizes-checked'] ) : array();
 			$values['disallowed-sizes'] = array();
 
-			if ( ! empty( $values['sizes'] ) ) {
-				foreach ( $values['sizes'] as $size_key => $size_value ) {
-					if ( false === strpos( $size_key, '-hidden' ) ) {
-						continue;
-					}
-
-					$size_key = str_replace( '-hidden', '', $size_key );
-
-					if ( ! isset( $values['sizes'][ $size_key ] ) ) {
+			if ( ! empty( $values['disallowed-sizes-reversed'] ) ) {
+				foreach ( $values['disallowed-sizes-reversed'] as $size_key ) {
+					if ( ! isset( $checked[ $size_key ] ) ) {
+						// The checkbox is not checked: the size is disabled.
 						$values['disallowed-sizes'][ $size_key ] = 1;
 					}
 				}
 			}
 		}
+
+		unset( $values['disallowed-sizes-reversed'], $values['disallowed-sizes-checked'] );
 
 		return $values;
 	}
@@ -312,5 +312,309 @@ class Imagify_Settings {
 		 * Redirect back to the settings page that was submitted.
 		 */
 		imagify_maybe_redirect( false, array( 'settings-updated' => 'true' ) );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** FIELDS ================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Display a single checkbox.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param array $args Arguments:
+	 *                    {option_name}   string   The option name. E.g. 'disallowed-sizes'. Mandatory.
+	 *                    {label}         string   The label to use.
+	 *                    {info}          string   Text to display in an "Info box" after the field. A 'aria-describedby' attribute will automatically be created.
+	 *                    {attributes}    array    A list of HTML attributes, as 'attribute' => 'value'.
+	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
+	 */
+	public function field_checkbox( $args ) {
+		$args = array_merge( array(
+			'option_name'   => '',
+			'label'         => '',
+			'info'          => '',
+			'attributes'    => array(),
+			// To not use the plugin settings: use an integer.
+			'current_value' => null,
+		), $args );
+
+		if ( ! $args['option_name'] || ! $args['label'] ) {
+			return;
+		}
+
+		if ( is_numeric( $args['current_value'] ) || is_bool( $args['current_value'] ) ) {
+			// We don't use the plugin settings.
+			$current_value = (int) (bool) $args['current_values'];
+		} else {
+			// This is a normal plugin setting.
+			$current_value = $this->options->get( $args['option_name'] );
+		}
+
+		$option_name_class = sanitize_html_class( $args['option_name'] );
+		$attributes        = array(
+			'name' => $this->option_name . '[' . $args['option_name'] . ']',
+			'id'   => 'imagify_' . $option_name_class,
+		);
+
+		if ( $args['info'] && empty( $attributes['aria-describedby'] ) ) {
+			$attributes['aria-describedby'] = 'describe-' . $option_name_class;
+		}
+
+		$attributes         = array_merge( $attributes, $args['attributes'] );
+		$args['attributes'] = self::build_attributes( $attributes );
+		?>
+		<input type="checkbox" value="1" <?php checked( $current_value, 1 ); ?><?php echo $args['attributes']; ?> />
+		<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
+		<label for="<?php echo $attributes['id']; ?>" onclick=""><?php echo $args['label']; ?></label>
+		<?php
+		if ( ! $args['info'] ) {
+			return;
+		}
+		?>
+		<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-info">
+			<span class="dashicons dashicons-info"></span>
+			<?php echo $args['info']; ?>
+		</span>
+		<?php
+	}
+
+	/**
+	 * Display a checkbox group.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param array $args Arguments:
+	 *                    {option_name}     string The option name. E.g. 'disallowed-sizes'. Mandatory.
+	 *                    {legend}          string Label to use for the <legend> tag.
+	 *                    {values}          array  List of values to display, in the form of 'value' => 'Label'. Mandatory.
+	 *                    {disabled_values} array  Values to be disabled. Values are the array keys.
+	 *                    {reverse_check}   bool   If true, the values that will be stored in the option are the ones that are unchecked. It requires special treatment when saving (detect what values are unchecked).
+	 *                    {attributes}      array  A list of HTML attributes, as 'attribute' => 'value'.
+	 *                    {current_values}  array  USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
+	 */
+	public function field_checkbox_list( $args ) {
+		static $all_check_count = 0;
+
+		$args = array_merge( array(
+			'option_name'     => '',
+			'legend'          => '',
+			'values'          => array(),
+			'disabled_values' => array(),
+			'reverse_check'   => false,
+			'attributes'      => array(),
+			// To not use the plugin settings: use an array.
+			'current_values'  => false,
+		), $args );
+
+		if ( ! $args['option_name'] || ! $args['values'] ) {
+			return;
+		}
+
+		if ( is_array( $args['current_values'] ) ) {
+			// We don't use the plugin settings.
+			$current_values = $args['current_values'];
+		} else {
+			// This is a normal plugin setting.
+			$current_values = $this->options->get( $args['option_name'] );
+		}
+
+		$option_name_class = sanitize_html_class( $args['option_name'] );
+		$attributes        = array_merge( array(
+			'name'  => $this->option_name . '[' . $args['option_name'] . ( $args['reverse_check'] ? '-checked' : '' ) . '][]',
+			'id'    => 'imagify_' . $option_name_class . '_%s',
+			'class' => 'mini imagify-row-check',
+		), $args['attributes'] );
+
+		$id_attribute = $attributes['id'];
+		unset( $attributes['id'] );
+		$args['attributes'] = self::build_attributes( $attributes );
+
+		$current_values    = array_diff_key( $current_values, $args['disabled_values'] );
+		$display_check_all = count( $args['values'] ) > 3;
+		?>
+		<fieldset class="imagify-check-group">
+			<?php
+			if ( $args['legend'] ) {
+				?>
+				<legend class="screen-reader-text"><?php echo $args['legend']; ?></legend>
+				<?php
+			}
+
+			if ( $display_check_all ) {
+				if ( $args['reverse_check'] ) {
+					$all_checked = ! array_intersect_key( $args['values'], $current_values );
+				} else {
+					$all_checked = ! array_diff_key( $args['values'], $current_values );
+				}
+				$all_check_id = sanitize_html_class( 'imagify-toggle-check-' . $args['option_name'] );
+				++$all_check_count;
+				?>
+				<em class="hide-if-no-js">
+					<input id="<?php echo $all_check_id . '-' . $all_check_count; ?>" type="checkbox" class="mini imagify-toggle-check" <?php checked( $all_checked ); ?>>
+					<label for="<?php echo $all_check_id . '-' . $all_check_count; ?>" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
+				</em>
+				<br class="imagify-br">
+				<?php
+			}
+
+			foreach ( $args['values'] as $value => $label ) {
+				$input_id = sprintf( $id_attribute, sanitize_html_class( $value ) );
+				$disabled = isset( $args['disabled_values'][ $value ] );
+
+				if ( $args['reverse_check'] ) {
+					$checked = ! $disabled && ! isset( $current_values[ $value ] );
+				} else {
+					$checked = ! $disabled && isset( $current_values[ $value ] );
+				}
+
+				if ( $args['reverse_check'] ) {
+					echo '<input type="hidden" name="' . $this->option_name . '[' . $args['option_name'] . '-reversed][]" value="' . esc_attr( $value ) . '" />';
+				}
+				?>
+				<input type="checkbox" value="<?php echo esc_attr( $value ); ?>" id="<?php echo $input_id; ?>"<?php echo $args['attributes']; ?> <?php checked( $checked ); ?> <?php disabled( $disabled ); ?>/>
+				<label for="<?php echo $input_id; ?>" onclick=""><?php echo $label; ?></label>
+				<br class="imagify-br">
+				<?php
+			}
+
+			if ( $display_check_all ) {
+				++$all_check_count;
+				?>
+				<em class="hide-if-no-js">
+					<input id="<?php echo $all_check_id . '-' . $all_check_count; ?>" type="checkbox" class="mini imagify-toggle-check" <?php checked( $all_checked ); ?>>
+					<label for="<?php echo $all_check_id . '-' . $all_check_count; ?>" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
+				</em>
+				<br class="imagify-br">
+				<?php
+			}
+			?>
+		</fieldset>
+		<?php
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** FIELD VALUES ============================================================================ */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the thumbnail sizes.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array A list of thumbnail sizes in the form of 'medium' => 'medium - 300 × 300'.
+	 */
+	public static function get_thumbnail_sizes() {
+		static $sizes;
+
+		if ( isset( $sizes ) ) {
+			return $sizes;
+		}
+
+		$sizes = get_imagify_thumbnail_sizes();
+
+		foreach ( $sizes as $size_key => $size_data ) {
+			$sizes[ $size_key ] = sprintf( '%s - %d &times; %d',  esc_html( stripslashes( $size_data['name'] ) ), $size_data['width'], $size_data['height'] );
+		}
+
+		return $sizes;
+	}
+
+	/**
+	 * Get installed theme names.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array A list of installed themes in the form of '{{THEMES}}/twentyseventeen/' => 'Twenty Seventeen'.
+	 */
+	public static function get_themes() {
+		static $themes;
+
+		if ( isset( $themes ) ) {
+			return $themes;
+		}
+
+		$all_themes = wp_get_themes();
+		$themes     = array();
+
+		if ( $all_themes ) {
+			foreach ( $all_themes as $stylesheet => $theme ) {
+				if ( ! $theme->exists() ) {
+					continue;
+				}
+
+				// The theme directory is not enough, we must also use the theme root.
+				$path = Imagify_Files_Scan::add_placeholder( trailingslashit( $theme->get_stylesheet_directory() ) );
+
+				$themes[ $path ] = $theme->display( 'Name', false );
+			}
+		}
+
+		return $themes;
+	}
+
+	/**
+	 * Get installed plugin names.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array A list of installed plugins in the form of '{{PLUGINS}}/imagify/' => 'Imagify'.
+	 */
+	public static function get_plugins() {
+		static $plugins;
+
+		if ( isset( $plugins ) ) {
+			return $plugins;
+		}
+
+		$all_plugins = get_plugins();
+		$plugins     = array();
+
+		if ( $all_plugins ) {
+			foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+				$plugin_data = _get_plugin_data_markup_translate( $plugin_file, $plugin_data, false );
+				// The folder name is enough.
+				$plugins[ '{{PLUGINS}}/' . dirname( $plugin_file ) . '/' ] = $plugin_data['Name'];
+			}
+		}
+
+		return $plugins;
+	}
+
+	/**
+	 * Create HTML attributes from an array.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param  array $attributes A list of attribute pairs.
+	 * @return string            HTML attributes.
+	 */
+	public static function build_attributes( $attributes ) {
+		if ( ! $attributes || ! is_array( $attributes ) ) {
+			return '';
+		}
+
+		$out = '';
+
+		foreach ( $attributes as $attribute => $value ) {
+			$out .= ' ' . $attribute . '="' . esc_attr( $value ) . '"';
+		}
+
+		return $out;
 	}
 }
