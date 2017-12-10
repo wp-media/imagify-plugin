@@ -136,18 +136,21 @@ function imagify_sanitize_context( $context ) {
 function imagify_autoload( $class ) {
 	// Generic classes.
 	$classes = array(
-		'Imagify_Abstract_Attachment' => 1,
-		'Imagify_Abstract_DB'         => 1,
-		'Imagify_Admin_Ajax_Post'     => 1,
-		'Imagify_Assets'              => 1,
-		'Imagify_Attachment'          => 1,
-		'Imagify_Data'                => 1,
-		'Imagify_DB'                  => 1,
-		'Imagify_Notices'             => 1,
-		'Imagify_Options'             => 1,
-		'Imagify_Settings'            => 1,
-		'Imagify_User'                => 1,
-		'Imagify'                     => 1,
+		'Imagify_Abstract_Attachment'      => 1,
+		'Imagify_Abstract_DB'              => 1,
+		'Imagify_Admin_Ajax_Post'          => 1,
+		'Imagify_Assets'                   => 1,
+		'Imagify_Attachment'               => 1,
+		'Imagify_Data'                     => 1,
+		'Imagify_DB'                       => 1,
+		'Imagify_Files_Iterator'           => 1,
+		'Imagify_Files_Recursive_Iterator' => 1,
+		'Imagify_Files_Scan'               => 1,
+		'Imagify_Notices'                  => 1,
+		'Imagify_Options'                  => 1,
+		'Imagify_Settings'                 => 1,
+		'Imagify_User'                     => 1,
+		'Imagify'                          => 1,
 	);
 
 	if ( isset( $classes[ $class ] ) ) {
