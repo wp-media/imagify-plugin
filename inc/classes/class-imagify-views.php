@@ -246,7 +246,11 @@ class Imagify_Views {
 	 * @access public
 	 */
 	public function load_files_list() {
-		// Nothing yet.
+		// Instantiate the list.
+		$this->list_table = new Imagify_Files_List_Table( 'imagify-files' );
+
+		// Query the Items.
+		$this->list_table->prepare_items();
 	}
 
 
