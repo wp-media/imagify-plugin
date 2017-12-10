@@ -54,11 +54,13 @@ function imagify_is_screen( $identifier ) {
 	switch ( $identifier ) {
 		case 'imagify-settings':
 			// Imagify Settings or Imagify Network Settings.
-			return 'settings_page_' . IMAGIFY_SLUG === $current_screen->id || 'settings_page_' . IMAGIFY_SLUG . '-network' === $current_screen->id;
+			$slug = Imagify_Views::get_instance()->get_settings_page_slug();
+			return 'settings_page_' . $slug === $current_screen->id || $slug . '_page_' . $slug . '-network' === $current_screen->id || 'toplevel_page_' . $slug . '-network' === $current_screen->id;
 
 		case 'imagify-network-settings':
 			// Imagify Network Settings.
-			return 'settings_page_' . IMAGIFY_SLUG . '-network' === $current_screen->id;
+			$slug = Imagify_Views::get_instance()->get_settings_page_slug();
+			return $slug . '_page_' . $slug . '-network' === $current_screen->id || 'toplevel_page_' . $slug . '-network' === $current_screen->id;
 
 		case 'library':
 			// Media Library.
@@ -80,7 +82,14 @@ function imagify_is_screen( $identifier ) {
 		case 'bulk':
 		case 'bulk-optimization':
 			// Bulk Optimization.
-			return 'media_page_' . IMAGIFY_SLUG . '-bulk-optimization' === $current_screen->id;
+			$slug = Imagify_Views::get_instance()->get_bulk_page_slug();
+			return 'media_page_' . $slug === $current_screen->id;
+
+		case 'files':
+		case 'files-list':
+			// "Custom folders" files list.
+			$slug = Imagify_Views::get_instance()->get_files_page_slug();
+			return 'toplevel_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
 
 		case 'media-modal':
 			// Media modal.
@@ -100,7 +109,7 @@ function imagify_is_screen( $identifier ) {
  * @param  array|string $arg    An array of arguments. It can contain an attachment ID and/or a context.
  * @return string               The URL of the specific admin page or action.
  */
-function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
+function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 	if ( is_array( $arg ) ) {
 		$id      = isset( $arg['attachment_id'] )      ? $arg['attachment_id']      : 0;
 		$context = isset( $arg['context'] )            ? $arg['context']            : 'wp';
@@ -124,11 +133,15 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
 
 		case 'bulk-optimization':
-			return admin_url( 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization' );
+			return admin_url( 'upload.php?page=' . Imagify_Views::get_instance()->get_bulk_page_slug() );
+
+		case 'files-list':
+			$page = '?page=' . Imagify_Views::get_instance()->get_files_page_slug();
+			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'upload.php' . $page );
 
 		default:
-			$page = imagify_is_active_for_network() ? network_admin_url( 'settings.php' ) : admin_url( 'options-general.php' );
-			return $page . '?page=' . IMAGIFY_SLUG;
+			$page = '?page=' . Imagify_Views::get_instance()->get_settings_page_slug();
+			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'options-general.php' . $page );
 	}
 }
 
