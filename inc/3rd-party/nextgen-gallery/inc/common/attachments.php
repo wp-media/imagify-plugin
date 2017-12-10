@@ -78,7 +78,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 		'pid'                => $image->pid,
 		'optimization_level' => $attachment->get_optimization_level(),
 		'status'             => $attachment->get_status(),
-		'data'               => maybe_serialize( array(
+		'data'               => array(
 			'sizes' => array(
 				'full' => $full_size,
 			),
@@ -87,7 +87,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 				'optimized_size' => $full_size['optimized_size'],
 				'percent'        => $full_size['percent'],
 			),
-		) ),
+		),
 	) );
 
 	$imagify_image = new Imagify_NGG_Attachment( $image->pid );

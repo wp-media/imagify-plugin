@@ -14,7 +14,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.1';
 
 	/**
 	 * The single instance of the class.
@@ -27,25 +27,42 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	protected static $_instance;
 
 	/**
-	 * Get things started.
+	 * The suffix used in the name of the database table (so, without the wpdb prefix).
 	 *
-	 * @since  1.5
+	 * @var    string
+	 * @since  1.7
 	 * @access protected
-	 * @author Jonathan Buttigieg
 	 */
-	protected function __construct() {
-		global $wpdb;
+	protected $table = 'ngg_imagify_data';
 
-		$this->table_name  = $wpdb->prefix . 'ngg_imagify_data';
-		$this->primary_key = 'pid'; // Instead of data_id.
-		$this->version     = '1.0';
+	/**
+	 * The version of our database table.
+	 *
+	 * @var    int
+	 * @since  1.5
+	 * @since  1.7 Not public anymore, now an integer.
+	 * @access protected
+	 */
+	protected $table_version = 110;
 
-		// Database declaration.
-		$wpdb->ngg_imagify_data = $this->table_name;
+	/**
+	 * Tell if the table is the same for each site of a Multisite.
+	 *
+	 * @var    bool
+	 * @since  1.7
+	 * @access protected
+	 */
+	protected $table_is_global = false;
 
-		// Add table to the index of WordPress tables.
-		$wpdb->tables[] = 'ngg_imagify_data';
-	}
+	/**
+	 * The name of the primary column.
+	 *
+	 * @var    string
+	 * @since  1.5
+	 * @since  1.7 Not public anymore.
+	 * @access protected
+	 */
+	protected $primary_key = 'pid';
 
 	/**
 	 * Get the main Instance.
@@ -94,6 +111,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 */
 	public function get_column_defaults() {
 		return array(
+			'data_id'            => 0,
 			'pid'                => 0,
 			'optimization_level' => '',
 			'status'             => '',
@@ -102,30 +120,37 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	}
 
 	/**
-	 * Create the table.
+	 * Get the list pf columns that are serialised.
 	 *
-	 * @since  1.5
+	 * @since  1.7
 	 * @access public
-	 * @author Jonathan Buttigieg
+	 * @author Grégory Viguier
+	 *
+	 * @return array
 	 */
-	public function create_table() {
-		global $wpdb;
+	public function get_serialised_columns() {
+		return array(
+			'data' => 1,
+		);
+	}
 
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-		$charset_collate = $wpdb->get_charset_collate();
-
-		$sql = "CREATE TABLE {$this->table_name} (
+	/**
+	 * Get the query to create the table fields.
+	 *
+	 * @since  1.7
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	protected function get_table_schema() {
+		return '
 			data_id int(11) NOT NULL AUTO_INCREMENT,
 			pid int(11) NOT NULL,
 			optimization_level varchar(1) NOT NULL,
 			status varchar(30) NOT NULL,
 			data longtext NOT NULL,
-			PRIMARY KEY (data_id)
-		) $charset_collate;";
-
-		maybe_create_table( $this->table_name, $sql );
-
-		update_option( $this->table_name . '_db_version', $this->version );
+			PRIMARY KEY (data_id),
+			KEY pid (pid)';
 	}
 }
