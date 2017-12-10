@@ -92,7 +92,7 @@ class Imagify_DB {
 	 * Example Escape Chain:
 	 *     $sql  = esc_sql( $wpdb->esc_like( $input ) );
 	 *
-	 * @since  1.6.13
+	 * @since  1.7
 	 * @access public
 	 * @author Grégory Viguier
 	 *
