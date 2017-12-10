@@ -203,6 +203,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Options'                  => 1,
 		'Imagify_Settings'                 => 1,
 		'Imagify_User'                     => 1,
+		'Imagify_Views'                    => 1,
 		'Imagify'                          => 1,
 	);
 
