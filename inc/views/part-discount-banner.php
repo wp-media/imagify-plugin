@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		<?php
 		printf(
 			/* translators: %s is a formatted percentage. */
-			__( '%s OFF on all the subscriptions', 'secupress' ),
+			__( '%s OFF on all the subscriptions', 'imagify' ),
 			'<span class="imagify-promotion-number"></span>'
 		);
 		?>
@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		<?php
 		printf(
 			/* translators: %s is a formatted date. */
-			__( 'Special Offer<br><strong>Until %s</strong>', 'secupress' ),
+			__( 'Special Offer<br><strong>Until %s</strong>', 'imagify' ),
 			'<span class="imagify-promotion-date"></span>'
 		);
 		?>
