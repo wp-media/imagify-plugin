@@ -242,6 +242,23 @@ class Imagify_Deprecated {
 class Imagify_Abstract_DB_Deprecated {
 
 	/**
+	 * Check if the given table exists.
+	 *
+	 * @since  1.5 In Imagify_Abstract_DB.
+	 * @since  1.7 Deprecated.
+	 * @access public
+	 * @deprecated
+	 *
+	 * @param  string $table The table name.
+	 * @return bool          True if the table name exists.
+	 */
+	public function table_exists( $table ) {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.7.0', 'Imagify_DB::table_exists( $table )' );
+
+		return Imagify_DB::table_exists( $table );
+	}
+
+	/**
 	 * Main Instance.
 	 * Ensures only one instance of class is loaded or can be loaded.
 	 * Well, actually it ensures nothing since it's not a full singleton pattern.
@@ -530,6 +547,20 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 		_deprecated_function( __FUNCTION__ . '()', '1.6.13', 'Imagify_NGG_DB::get_instance()->delete( $image_id )' );
 
 		Imagify_NGG_DB::get_instance()->delete( $image_id );
+	}
+
+	/**
+	 * Create the Imagify table needed for NGG compatibility.
+	 *
+	 * @since  1.5
+	 * @since  1.7 Deprecated.
+	 * @author Jonathan Buttigieg
+	 * @deprecated
+	 */
+	function _imagify_create_ngg_table() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_NGG_DB::get_instance()->maybe_upgrade_table()' );
+
+		Imagify_NGG_DB::get_instance()->maybe_upgrade_table();
 	}
 
 endif;
