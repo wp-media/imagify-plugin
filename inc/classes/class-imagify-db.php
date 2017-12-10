@@ -80,6 +80,37 @@ class Imagify_DB {
 	}
 
 	/**
+	 * First half of escaping for LIKE special characters % and _ before preparing for MySQL.
+	 * Use this only before wpdb::prepare() or esc_sql().  Reversing the order is very bad for security.
+	 *
+	 * Example Prepared Statement:
+	 *     $wild = '%';
+	 *     $find = 'only 43% of planets';
+	 *     $like = $wild . $wpdb->esc_like( $find ) . $wild;
+	 *     $sql  = $wpdb->prepare( "SELECT * FROM $wpdb->posts WHERE post_content LIKE %s", $like );
+	 *
+	 * Example Escape Chain:
+	 *     $sql  = esc_sql( $wpdb->esc_like( $input ) );
+	 *
+	 * @since  1.6.13
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $text The raw text to be escaped. The input typed by the user should have no extra or deleted slashes.
+	 * @return string       Text in the form of a LIKE phrase. The output is not SQL safe. Call $wpdb::prepare() or real_escape next.
+	 */
+	public static function esc_like( $text ) {
+		global $wpdb;
+
+		if ( method_exists( $wpdb, 'esc_like' ) ) {
+			// Introduced in WP 4.0.0.
+			return $wpdb->esc_like( $text );
+		}
+
+		return addcslashes( $text, '_%\\' );
+	}
+
+	/**
 	 * Get Imagify mime types, ready to be used in a `IN ()` clause.
 	 *
 	 * @since  1.6.13
@@ -256,5 +287,48 @@ class Imagify_DB {
 		}
 
 		return $metas;
+	}
+
+	/**
+	 * Create/Upgrade the table in the database.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $table_name   The (prefixed) table name.
+	 * @param  string $schema_query Query representing the table schema.
+	 * @return bool                 True on success. False otherwise.
+	 */
+	public static function create_table( $table_name, $schema_query ) {
+		global $wpdb;
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$schema_query    = trim( $schema_query );
+		$charset_collate = $wpdb->get_charset_collate();
+
+		dbDelta( "CREATE TABLE $table_name ($schema_query) $charset_collate;" );
+
+		return empty( $wpdb->last_error ) && self::table_exists( $table_name );
+	}
+
+	/**
+	 * Tell if the given table exists.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $table_name Full name of the table (with DB prefix).
+	 * @return bool
+	 */
+	public static function table_exists( $table_name ) {
+		global $wpdb;
+
+		$escaped_table = self::esc_like( $table_name );
+		$result        = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $escaped_table ) );
+
+		return $result === $table_name;
 	}
 }
