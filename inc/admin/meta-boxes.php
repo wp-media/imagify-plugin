@@ -30,7 +30,7 @@ function _imagify_attachment_submitbox_misc_actions() {
 		echo '<div class="misc-pub-section misc-pub-imagify">';
 			echo __( 'Invalid API key', 'imagify' );
 			echo '<br/>';
-			echo '<a href="' . esc_url( get_imagify_admin_url( 'options-general' ) ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
+			echo '<a href="' . esc_url( get_imagify_admin_url() ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
 		echo '</div>';
 
 	} elseif ( $attachment->is_optimized() || $attachment->has_error() ) {

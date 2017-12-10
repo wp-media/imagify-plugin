@@ -357,7 +357,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
 		$output  = __( 'Invalid API key', 'imagify' );
 		$output .= '<br/>';
-		$output .= '<a href="' . esc_url( get_imagify_admin_url( 'options-general' ) ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
+		$output .= '<a href="' . esc_url( get_imagify_admin_url() ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
 		return $output;
 	}
 
