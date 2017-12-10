@@ -143,6 +143,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Attachment'               => 1,
 		'Imagify_Data'                     => 1,
 		'Imagify_DB'                       => 1,
+		'Imagify_File_Attachment'          => 1,
 		'Imagify_Files_DB'                 => 1,
 		'Imagify_Files_Iterator'           => 1,
 		'Imagify_Files_Recursive_Iterator' => 1,
