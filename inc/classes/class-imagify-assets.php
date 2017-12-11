@@ -14,7 +14,7 @@ class Imagify_Assets {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * Prefix used for stylesheet handles.
@@ -185,6 +185,8 @@ class Imagify_Assets {
 
 		$this->register_style( 'options', 'options', array( 'sweetalert', 'admin' ) );
 
+		$this->register_style( 'files-list', 'files-list', array( 'admin' ) );
+
 		/**
 		 * 3rd Party Scripts.
 		 */
@@ -218,6 +220,8 @@ class Imagify_Assets {
 		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
 
 		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'admin' ) )->defer_localization( 'imagifyOptions' );
+
+		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'admin' ) );
 	}
 
 	/**
@@ -282,10 +286,17 @@ class Imagify_Assets {
 		}
 
 		/*
-		 * Loaded in settings page.
+		 * Loaded in the settings page.
 		 */
 		if ( imagify_is_screen( 'imagify-settings' ) ) {
 			$this->enqueue_assets( array( 'sweetalert', 'notices', 'twentytwenty', 'pricing-modal', 'options' ) );
+		}
+
+		/*
+		 * Loaded in the files list page.
+		 */
+		if ( imagify_is_screen( 'files-list' ) ) {
+			$this->enqueue_assets( array( 'files-list' ) );
 		}
 
 		/**
