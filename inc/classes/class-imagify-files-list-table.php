@@ -151,26 +151,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Allow to save the screen options when submitted by the user.
-	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
-	 *
-	 * @param  bool|int $status Screen option value. Default false to skip.
-	 * @param  string   $option The option name.
-	 * @param  int      $value  The number of rows to use.
-	 * @return int|bool
-	 */
-	public static function save_screen_options( $status, $option, $value ) {
-		if ( self::PER_PAGE_OPTION === $option ) {
-			return (int) $value;
-		}
-
-		return $status;
-	}
-
-	/**
 	 * Message to be displayed when there are no items.
 	 *
 	 * @since  1.7
@@ -386,5 +366,25 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 */
 	protected function get_default_primary_column_name() {
 		return 'title';
+	}
+
+	/**
+	 * Allow to save the screen options when submitted by the user.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param  bool|int $status Screen option value. Default false to skip.
+	 * @param  string   $option The option name.
+	 * @param  int      $value  The number of rows to use.
+	 * @return int|bool
+	 */
+	public static function save_screen_options( $status, $option, $value ) {
+		if ( self::PER_PAGE_OPTION === $option ) {
+			return (int) $value;
+		}
+
+		return $status;
 	}
 }
