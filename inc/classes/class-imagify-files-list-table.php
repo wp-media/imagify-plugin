@@ -15,14 +15,25 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 *
 	 * @var   string
 	 * @since 1.7
+	 * @author Grégory Viguier
 	 */
 	const VERSION = '1.0';
+
+	/**
+	 * Class version.
+	 *
+	 * @var   string
+	 * @since 1.7
+	 * @author Grégory Viguier
+	 */
+	const PER_PAGE_OPTION = 'imagify_files_per_page';
 
 	/**
 	 * List of the folders containing the listed files.
 	 *
 	 * @var    array
 	 * @since  1.7
+	 * @author Grégory Viguier
 	 * @access protected
 	 */
 	protected $folders = array();
@@ -57,16 +68,16 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	public function prepare_items() {
 		global $wpdb;
 
+		add_screen_option( 'per_page', array(
+			'label'   => __( 'Number of files per page', 'imagify' ),
+			'default' => 20,
+			'option'  => self::PER_PAGE_OPTION,
+		) );
+
 		$files_db = Imagify_Files_DB::get_instance();
 		$table    = $files_db->get_table_name();
 		$prim_key = esc_sql( $files_db->get_primary_key() );
-		$per_page = $this->get_items_per_page( 'imagify_files_per_page' );
-
-		add_screen_option( 'per_page', array(
-			'label'   => __( 'Files Per Page', 'imagify' ),
-			'default' => 20,
-			'option'  => 'imagify_files_per_page',
-		) );
+		$per_page = $this->get_items_per_page( self::PER_PAGE_OPTION );
 
 		$this->set_pagination_args( array(
 			'total_items' => (int) $wpdb->get_var( "SELECT COUNT($prim_key) FROM $table" ), // WPCS: unprepared SQL ok.
@@ -137,6 +148,26 @@ class Imagify_Files_List_Table extends WP_List_Table {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Allow to save the screen options when submitted by the user.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param  bool|int $status Screen option value. Default false to skip.
+	 * @param  string   $option The option name.
+	 * @param  int      $value  The number of rows to use.
+	 * @return int|bool
+	 */
+	public static function save_screen_options( $status, $option, $value ) {
+		if ( self::PER_PAGE_OPTION === $option ) {
+			return (int) $value;
+		}
+
+		return $status;
 	}
 
 	/**
