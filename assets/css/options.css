@@ -226,10 +226,12 @@ label + .imagify-options-line,
 .imagify-visual-label {
 	display: inline-block;
 	max-width: 70%;
-	margin-left: 15px;
-	margin-top: 2px!important;
+	margin-left: 38px;
 	-webkit-transition: opacity .3s;
 	transition: opacity .3s;
+}
+label + .imagify-info {
+	margin-top: 10px;
 }
 .imagify-visual-label {
 	vertical-align: -5px;
