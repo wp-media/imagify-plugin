@@ -639,8 +639,7 @@ p.imagify-section-title.imagify-section-title {
 	letter-spacing: 0.1em;
 	color: #FFF;
 	background: #2E3243;
-	border-left: 1px solid rgba(255, 255, 255, 0.2);
-	box-shadow: 0 -3px 0 rgba(0, 0, 0, 0.1) inset, inset -1px 0 0 rgba(255, 255, 255, 0.2);
+	box-shadow: 0 -3px 0 rgba(0, 0, 0, 0.1) inset;
 	z-index: 2;
 	-webkit-transition: all .275s;
 	transition: all .275s;

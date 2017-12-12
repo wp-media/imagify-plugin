@@ -18,15 +18,81 @@
 }
 
 .imagify-options-title {
-	padding-bottom: .5em;
-	border-bottom: 3px solid #F2F2F2;
-	font-size: 13px;
-	font-weight: 500;
-	text-transform: uppercase;
-	letter-spacing: 0.025em;
-	color: #40b1d0;
+	margin: .75em 0 0 0;
+	font-size: 24px;
+	letter-spacing: 0.02em;
+	font-weight: bold;
+	color: #343A49;
 }
 
+.imagify-options-subtitle {
+	padding-bottom: .3em;
+	margin-bottom: 20px;
+	border-bottom: 1px solid #D2D3D6;
+	font-size: 14px;
+	letter-spacing: 0.02em;
+	font-weight: bold;
+	text-transform: uppercase;
+	color: #626E7B;
+}
+
+.imagify-options-subtitle a {
+	font-size: 12px;
+	color: #338EA6;
+	text-transform: none;
+	letter-spacing: 0;
+}
+
+.imagify-options-subtitle .imagify-info {
+	float: right;
+	margin-right: 15px;
+}
+
+.imagify-setting-line {
+	border-top: 1px solid #D2D3D6;
+	padding: 25px 0 13px;
+}
+
+/* 3 inlined buttons + Visual comparison */
+.imagify-setting-optim-level {
+	display: flex;
+	align-items: center;
+}
+
+.imagify-setting-optim-level {
+	padding-bottom: 10px;
+}
+.imagify-setting-optim-level > p {
+	margin: 0;
+}
+.imagify-setting-optim-level .imagify-inline-options {
+	flex-basis: 60%;
+	flex-grow: 1;
+	width: auto;
+	display: flex;
+	background: #2E3243;
+	border-radius: 3px;
+}
+.imagify-setting-optim-level .imagify-inline-options label {
+	display: block !important;
+	width: 100%;
+	font-size: 14px !important;
+	border-radius: 3px!important;
+}
+.imagify-setting-optim-level .imagify-visual-comparison-text {
+	flex-basis: 40%;
+	flex-shrink: 1;
+	padding-left: 20px;
+	color: #626E7B;
+}
+.imagify-setting-optim-level.imagify-setting-optim-level .imagify-visual-comparison-btn {
+	padding-top: 5px;
+	margin-top: 2px;
+	border-radius: 2px;
+	text-shadow: none!important;
+}
+
+/* TODO: maybe remove table lines, we don't use theme anymore… */
 @media (max-width: 782px) {
 	.imagify-settings .form-table th {
 		padding-top: 2em;
