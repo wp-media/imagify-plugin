@@ -3,6 +3,9 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 $user = new Imagify_User();
 ?>
+
+<h1 class="screen-reader-text"><?php _e( 'Bulk Optimization', 'imagify' ); ?> – Imagify <?php echo IMAGIFY_VERSION; ?></h1>
+
 <div class="imagify-title">
 
 	<?php if ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || false === IMAGIFY_HIDDEN_ACCOUNT ) { ?>

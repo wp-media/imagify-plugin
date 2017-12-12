@@ -2,13 +2,15 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 ?>
+<h1 class="screen-reader-text"><?php _e( 'Settings' ); ?> — Imagify <?php echo IMAGIFY_VERSION; ?></h1>
+
 <div class="imagify-title">
-	<h1 class="imagify-logo-block">
+	<p class="imagify-logo-block">
 		<img width="225" height="26" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" />
 		<small>
 			<sup><?php echo IMAGIFY_VERSION; ?></sup>
 		</small>
-	</h1>
+	</p>
 
 	<p class="imagify-rate-us">
 		<?php
