@@ -80,6 +80,6 @@ $user = new Imagify_User();
 
 	<?php } // End if(). ?>
 
-	<img width="225" height="26" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" />
+	<img width="191" height="22" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" />
 </div>
 <?php

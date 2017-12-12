@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 <div class="imagify-title">
 	<p class="imagify-logo-block">
-		<img width="225" height="26" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" />
+		<img width="191" height="22" alt="Imagify" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" class="imagify-logo" />
 		<small>
 			<sup><?php echo IMAGIFY_VERSION; ?></sup>
 		</small>
@@ -26,5 +26,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		<br>
 		<a class="stars" href="<?php echo esc_url( imagify_get_external_url( 'rate' ) ); ?>" target="_blank"><?php echo str_repeat( '<span class="dashicons dashicons-star-filled"></span>', 5 ); ?></a>
 	</p>
+
+	<?php $this->print_template( 'part-settings-documentation' ); ?>
 </div>
 <?php

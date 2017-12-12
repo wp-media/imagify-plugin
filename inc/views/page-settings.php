@@ -121,7 +121,6 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 			<div class="imagify-col">
 				<?php
 				$this->print_template( 'part-settings-account' );
-				$this->print_template( 'part-settings-documentation' );
 				?>
 			</div>
 

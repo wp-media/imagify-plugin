@@ -329,9 +329,9 @@ body.imagify-modal-is-open {
  */
 .imagify-title.imagify-title {
 	position: relative;
-	padding: 30px 50px;
+	padding: 12px 36px;
 	font-size: 23px;
-	background: #2E3243;
+	background: #1F2332;
 	color: #FFF;
 }
 .imagify-settings .imagify-title { /* (options and bulk) */
@@ -345,6 +345,9 @@ body.imagify-modal-is-open {
 	padding: 0;
 	margin-right: 35px;
 	color: inherit;
+}
+.imagify-logo-block sup {
+	color: #1F2332;
 }
 .imagify-settings .imagify-title + .imagify-notice {
 	margin: 0;
