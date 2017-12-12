@@ -181,10 +181,13 @@ body.imagify-modal-is-open {
 .imagify-button-primary.imagify-button-primary,
 .imagify-button-secondary.imagify-button-secondary {
 	height: auto;
-	padding: 8px 20px;
+	padding: 11px 22px;
 	border: 0 none;
 	font-size: 14px;
 	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.01em;
+	word-spacing: 0.01em;
 	box-shadow: 0 3px 0 rgba(0, 0, 0, .15);
 	border-radius: 3px;
 	cursor: pointer;
@@ -668,6 +671,53 @@ p.imagify-section-title.imagify-section-title {
 
 .imagify-inline-options .imagify-info {
 	margin-top: 15px;
+}
+
+/**
+ * Account information columns (Settings & Bulk)
+ */
+.imagify-col.imagify-account-info-col,
+.imagify-account-info-col {
+	width: 465px;
+	max-width: 100%;
+}
+.imagify-col.imagify-shared-with-account-col,
+.imagify-shared-with-account-col {
+	width: calc(100% - 465px);
+}
+
+.imagify-account-info-col .imagify-options-title {
+	padding: 24px 26px;
+	color: #FFF;
+	background: #1F2332;
+}
+.imagify-account-info-col .imagify-col-content {
+	padding: 26px 26px 35px;
+	border: 1px solid #D2D3D6;
+	border-top: 0;
+	background: #F4F7F9;
+}
+.imagify-account-info-col .imagify-col-content h3 {
+	font-size: 19px;
+	color: #1F2332;
+}
+.imagify-account-info-col .imagify-col-content p {
+	margin: 1.5em 0;
+}
+.imagify-account-info-col .imagify-col-content p:first-child {
+	margin-top: 0;
+}
+
+.imagify-user-plan-label {
+	float: right;
+	margin-top: -4px;
+	padding: 2px 10px;
+	border: 2px solid #40B1D0;
+	font-size: 14px;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+	color: #40B1D0;
+	border-radius: 3px;
 }
 
 /**

@@ -20,7 +20,7 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 			<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
 			<?php wp_nonce_field( 'imagify-check-api-key', 'imagifycheckapikeynonce', false ); ?>
 
-			<div class="imagify-col<?php echo $hidden_class; ?>">
+			<div class="imagify-col imagify-shared-with-account-col<?php echo $hidden_class; ?>">
 				<div class="imagify-settings-section">
 
 					<h2 class="imagify-options-title"><?php _e( 'Settings' ); ?></h2>
@@ -109,7 +109,7 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 				</div>
 			</div>
 
-			<div class="imagify-col">
+			<div class="imagify-col imagify-account-info-col">
 				<?php
 				$this->print_template( 'part-settings-account' );
 				?>
