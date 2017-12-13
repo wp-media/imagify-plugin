@@ -783,13 +783,13 @@ p.imagify-section-title.imagify-section-title {
  */
 .imagify-col.imagify-col.imagify-account-info-col,
 .imagify-account-info-col {
-	width: 465px;
-	max-width: 100%;
+	width: 40%;
+	max-width: 465px;
 	padding: 0;
 }
 .imagify-col.imagify-col.imagify-shared-with-account-col,
 .imagify-shared-with-account-col {
-	width: calc(100% - 465px);
+	width: 60%;
 	padding: 0;
 }
 

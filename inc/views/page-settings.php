@@ -6,9 +6,7 @@ $options      = Imagify_Options::get_instance();
 $option_name  = $options->get_option_name();
 $hidden_class = imagify_valid_key() ? '' : ' hidden';
 ?>
-<div class="wrap imagify-settings <?php echo defined( 'WP_ROCKET_VERSION' ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket'; ?>">
-
-	<?php $this->print_template( 'part-rocket-ad' ); ?>
+<div class="wrap imagify-settings <?php echo defined( 'WP_ROCKET_VERSION' ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket'; ?> imagify-clearfix">
 
 	<div class="imagify-col imagify-main">
 
@@ -131,32 +129,35 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 			
 			<div class="imagify-settings-main-content imagify-pb0">
 				<div class="imagify-settings-section clear<?php echo $hidden_class; ?>">
-					<h2 class="imagify-options-title"><?php _e( 'Display options', 'imagify' ); ?></h2>
+					<div class="imagify-col">
+						<h2 class="imagify-options-title"><?php _e( 'Display options', 'imagify' ); ?></h2>
 
-					<table class="form-table">
-						<tbody>
-							<tr>
-								<th scope="row"><span><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></span></th>
-								<td>
-									<?php
-									$settings->field_checkbox( array(
-										'option_name' => 'admin_bar_menu',
-										'label'       => __( 'Show Admin Bar menu', 'imagify' ) . '</span><span class="imagify-visual-label">' . __( 'I want this awesome quick access menu on my admin bar.', 'imagify' ),
-									) );
-									?>
-									<p>
-										<img class="imagify-menu-bar-img" src="<?php echo IMAGIFY_ASSETS_IMG_URL . 'imagify-menu-bar.jpg'; ?>" width="300" height="225" alt="">
-									</p>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+						<p class="imagify-options-subtitle"><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></p>
+						
+						<div class="imagify-col">
+							<p>
+							<?php
+							$settings->field_checkbox( array(
+								'option_name' => 'admin_bar_menu',
+								'label'       => __( 'I want this awesome quick access menu on my admin bar.', 'imagify' ),
+							) );
+							?>
+							</p>
+						</div>
+						<div class="imagify-col">
+							<p>
+								<img class="imagify-menu-bar-img" src="<?php echo IMAGIFY_ASSETS_IMG_URL . 'imagify-menu-bar.jpg'; ?>" width="300" height="225" alt="">
+							</p>
+						</div>
+					</div>
 				</div>
 
 				<?php $this->print_template( 'part-settings-footer' ); ?>
 			</div>
 		</form>
 	</div>
+
+	<?php $this->print_template( 'part-rocket-ad' ); ?>
 
 	<?php
 	$this->print_template( 'modal-settings-infos' );
