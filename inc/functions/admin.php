@@ -132,6 +132,9 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 		case 'dismiss-notice':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
 
+		case 'refresh-file-modified':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_refresh_file_modified&attachment_id=' . $id ), 'refresh-file-modified' );
+
 		case 'get-files-tree':
 			return wp_nonce_url( admin_url( 'admin-ajax.php?action=imagify_get_files_tree' ), 'get-files-tree' );
 
