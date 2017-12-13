@@ -137,7 +137,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 		$backup_path = $this->get_raw_backup_path();
 
-		if ( $backup_path && file_exists( $backup_path ) ) {
+		if ( $backup_path && imagify_get_filesystem()->exists( $backup_path ) ) {
 			return $backup_path;
 		}
 
@@ -324,21 +324,14 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * Get the attachment optimization level label.
 	 *
 	 * @since  1.2
+	 * @since  1.7 Added $format parameter.
 	 * @access public
 	 *
+	 * @param  string $format Format to display the label. Use %ICON% for the icon and %s for the label.
 	 * @return string
 	 */
-	public function get_optimization_level_label() {
-		switch ( $this->get_optimization_level() ) {
-			case 2:
-				return __( 'Ultra', 'imagify' );
-			case 1:
-				return __( 'Aggressive', 'imagify' );
-			case 0:
-				return __( 'Normal', 'imagify' );
-		}
-
-		return '';
+	public function get_optimization_level_label( $format = '%s' ) {
+		return imagify_get_optimization_level_label( $this->get_optimization_level(), $format );
 	}
 
 	/**
@@ -357,13 +350,95 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		}
 
 		$size = $this->get_size_data( 'full', 'original_size' );
-		$size = $size ? $size : imagify_get_filesystem()->size( $this->get_original_path() );
+
+		if ( ! $size ) {
+			// Check for the backup file first.
+			$filepath = $this->get_backup_path();
+
+			if ( ! $filepath ) {
+				$filepath = $this->get_original_path();
+				$filepath = $filepath && imagify_get_filesystem()->exists( $filepath ) ? $filepath : false;
+			}
+
+			$size = $filepath ? imagify_get_filesystem()->size( $filepath ) : 0;
+		}
 
 		if ( $human_format ) {
 			return imagify_size_format( (int) $size, $decimals );
 		}
 
 		return (int) $size;
+	}
+
+	/**
+	 * Get the optimized attachment size.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  bool $human_format True to display the image human format size (1Mb).
+	 * @param  int  $decimals     Precision of number of decimal places.
+	 * @return string|int
+	 */
+	public function get_optimized_size( $human_format = true, $decimals = 2 ) {
+		if ( ! $this->is_valid() ) {
+			return $human_format ? imagify_size_format( 0, $decimals ) : 0;
+		}
+
+		$size = $this->get_size_data( 'full', 'optimized_size' );
+
+		if ( ! $size ) {
+			$filepath = $this->get_original_path();
+			$filepath = $filepath && imagify_get_filesystem()->exists( $filepath ) ? $filepath : false;
+			$size     = $filepath ? imagify_get_filesystem()->size( $filepath ) : 0;
+		}
+
+		if ( $human_format ) {
+			return imagify_size_format( (int) $size, $decimals );
+		}
+
+		return (int) $size;
+	}
+
+	/**
+	 * Get the optimized attachment size.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return float A 2-decimals float.
+	 */
+	public function get_saving_percent() {
+		if ( ! $this->is_valid() ) {
+			return round( (float) 0, 2 );
+		}
+
+		$percent = $this->get_size_data( 'full', 'percent' );
+		$percent = $percent ? $percent : (float) 0;
+
+		return round( $percent, 2 );
+	}
+
+	/**
+	 * Get the overall optimized size (all thumbnails).
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return float A 2-decimals float.
+	 */
+	public function get_overall_saving_percent() {
+		if ( ! $this->is_valid() ) {
+			return round( (float) 0, 2 );
+		}
+
+		$percent = $this->get_data();
+		$percent = ! empty( $data['stats']['percent'] ) ? $data['stats']['percent'] : (float) 0;
+
+		return round( $percent, 2 );
 	}
 
 	/**
@@ -451,8 +526,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		$filepath = $this->get_original_path();
 		$size     = 0;
 
-		if ( $filepath && file_exists( $filepath ) ) {
-			$size = filesize( $filepath );
+		if ( $filepath && imagify_get_filesystem()->exists( $filepath ) ) {
+			$size = imagify_get_filesystem()->size( $filepath );
 		}
 
 		return $size > IMAGIFY_MAX_BYTES;

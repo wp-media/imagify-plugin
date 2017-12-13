@@ -157,7 +157,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Get the attachment optimization status (success or error).
+	 * Get the file optimization status (success, already_optimized, or error).
 	 *
 	 * @since  1.7
 	 * @access public
@@ -271,7 +271,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Get the original attachment size.
+	 * Get the original file size.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -286,14 +286,109 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return $human_format ? imagify_size_format( 0, $decimals ) : 0;
 		}
 
-		$row  = $this->get_row();
-		$size = ! empty( $row['original_size'] ) ? $row['original_size'] : imagify_get_filesystem()->size( $this->get_original_path() );
+		$row = $this->get_row();
+
+		if ( ! empty( $row['original_size'] ) ) {
+			$size = $row['original_size'];
+		} else {
+			// Check for the backup file first.
+			$filepath = $this->get_backup_path();
+
+			if ( ! $filepath ) {
+				$filepath = $this->get_original_path();
+				$filepath = $filepath && imagify_get_filesystem()->exists( $filepath ) ? $filepath : false;
+			}
+
+			$size = $filepath ? imagify_get_filesystem()->size( $filepath ) : 0;
+		}
 
 		if ( $human_format ) {
 			return imagify_size_format( (int) $size, $decimals );
 		}
 
 		return (int) $size;
+	}
+
+	/**
+	 * Get the optimized file size.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  bool $human_format True to display the image human format size (1Mb).
+	 * @param  int  $decimals     Precision of number of decimal places.
+	 * @return string|int
+	 */
+	public function get_optimized_size( $human_format = true, $decimals = 2 ) {
+		if ( ! $this->is_valid() ) {
+			return $human_format ? imagify_size_format( 0, $decimals ) : 0;
+		}
+
+		$row  = $this->get_row();
+
+		if ( ! empty( $row['optimized_size'] ) ) {
+			$size = $row['optimized_size'];
+		} else {
+			$filepath = $this->get_original_path();
+			$filepath = $filepath && imagify_get_filesystem()->exists( $filepath ) ? $filepath : false;
+			$size     = $filepath ? imagify_get_filesystem()->size( $filepath ) : 0;
+		}
+
+		if ( $human_format ) {
+			return imagify_size_format( (int) $size, $decimals );
+		}
+
+		return (int) $size;
+	}
+
+	/**
+	 * Get the optimized attachment size.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return float A 2-decimals float.
+	 */
+	public function get_saving_percent() {
+		if ( ! $this->is_valid() ) {
+			return round( (float) 0, 2 );
+		}
+
+		$row = $this->get_row();
+
+		if ( ! empty( $row['percent'] ) ) {
+			return $row['percent'] / 100;
+		}
+
+		$original_size = $this->get_original_size( false );
+
+		if ( ! $original_size ) {
+			return round( (float) 0, 2 );
+		}
+
+		$optimized_size = $this->get_optimized_size( false );
+
+		if ( ! $optimized_size ) {
+			return round( (float) 0, 2 );
+		}
+
+		return round( ( $original_size - $optimized_size ) / $original_size * 100, 2 );
+	}
+
+	/**
+	 * Get the overall optimized size (all thumbnails).
+	 * And since we don't have thumbnails...
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return float A 2-decimals float.
+	 */
+	public function get_overall_saving_percent() {
+		return $this->get_saving_percent();
 	}
 
 	/**
@@ -319,6 +414,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		$data = self::merge_intersect( $this->get_row(), array(
 			'original_size'      => 0,
 			'optimized_size'     => false,
+			'percent'            => 0,
 			'status'             => false,
 			'error'              => false,
 		) );
@@ -328,11 +424,13 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		if ( $data['status'] ) {
 			unset( $data['status'], $data['error'] );
 
-			if ( $data['original_size'] && $data['optimized_size'] ) {
-				$data['percent'] = $data['optimized_size'] / $data['original_size'] * 100;
+			if ( empty( $data['percent'] ) && $data['original_size'] && $data['optimized_size'] ) {
+				$data['percent'] = round( ( $data['original_size'] - $data['optimized_size'] ) / $data['original_size'] * 100, 2 );
+			} elseif ( ! empty( $data['percent'] ) ) {
+				$data['percent'] = $data['percent'] / 100;
 			}
 		} else {
-			unset( $data['status'], $data['original_size'], $data['optimized_size'] );
+			unset( $data['status'], $data['original_size'], $data['optimized_size'], $data['percent'] );
 		}
 
 		if ( isset( $key ) ) {
