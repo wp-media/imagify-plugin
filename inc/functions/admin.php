@@ -370,6 +370,14 @@ function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
 	 */
 	$redirect = apply_filters( 'imagify_redirect_to', $redirect );
 
+	if ( $message ) {
+		if ( is_multisite() && strpos( $redirect, network_admin_url( '/' ) ) === 0 ) {
+			Imagify_Notices::get_instance()->add_network_temporary_notice( $message );
+		} else {
+			Imagify_Notices::get_instance()->add_site_temporary_notice( $message );
+		}
+	}
+
 	wp_safe_redirect( esc_url_raw( $redirect ) );
 	die();
 }
