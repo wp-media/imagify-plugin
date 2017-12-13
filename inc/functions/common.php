@@ -388,8 +388,10 @@ function imagify_get_optimization_level_label( $level, $format = '%s' ) {
 		switch ( $level ) {
 			case 2:
 				$icon = '.ı|';
+				break;
 			case 1:
 				$icon = '.ı|';
+				break;
 			case 0:
 				$icon = '.ı|';
 		}
