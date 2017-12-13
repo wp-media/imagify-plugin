@@ -459,7 +459,6 @@ class Imagify_Settings {
 	 *                    {current_values}  array  USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_checkbox_list( $args ) {
-		static $all_check_count = 0;
 
 		$args = array_merge( array(
 			'option_name'     => '',
@@ -496,29 +495,15 @@ class Imagify_Settings {
 		$args['attributes'] = self::build_attributes( $attributes );
 
 		$current_values    = array_diff_key( $current_values, $args['disabled_values'] );
-		$display_check_all = count( $args['values'] ) > 3;
+		$nb_of_values      = count( $args['values'] );
+		$display_check_all = $nb_of_values > 3;
+		$nb_of_checked     = 0;
 		?>
-		<fieldset class="imagify-check-group<?php echo count( $args['values'] ) >= 5 ? ' imagify-is-scrollable' : ''; ?>">
+		<fieldset class="imagify-check-group<?php echo $nb_of_values > 5 ? ' imagify-is-scrollable' : ''; ?>">
 			<?php
 			if ( $args['legend'] ) {
 				?>
 				<legend class="screen-reader-text"><?php echo $args['legend']; ?></legend>
-				<?php
-			}
-
-			if ( $display_check_all ) {
-				if ( $args['reverse_check'] ) {
-					$all_checked = ! array_intersect_key( $args['values'], $current_values );
-				} else {
-					$all_checked = ! array_diff_key( $args['values'], $current_values );
-				}
-				$all_check_id = sanitize_html_class( 'imagify-toggle-check-' . $args['option_name'] );
-				++$all_check_count;
-				?>
-				<p class="hide-if-no-js">
-					<input id="<?php echo $all_check_id . '-' . $all_check_count; ?>" type="checkbox" class="imagify-toggle-check" <?php checked( $all_checked ); ?>>
-					<label for="<?php echo $all_check_id . '-' . $all_check_count; ?>" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
-				</p>
 				<?php
 			}
 
@@ -532,6 +517,8 @@ class Imagify_Settings {
 					$checked = ! $disabled && isset( $current_values[ $value ] );
 				}
 
+				$nb_of_checked = $checked ? $nb_of_checked + 1 : $nb_of_checked;
+
 				if ( $args['reverse_check'] ) {
 					echo '<input type="hidden" name="' . $this->option_name . '[' . $args['option_name'] . '-reversed][]" value="' . esc_attr( $value ) . '" />';
 				}
@@ -542,19 +529,25 @@ class Imagify_Settings {
 				</p>
 				<?php
 			}
-
-			if ( $display_check_all ) {
-				++$all_check_count;
-				?>
-				<p class="hide-if-no-js">
-					<input id="<?php echo $all_check_id . '-' . $all_check_count; ?>" type="checkbox" class="imagify-toggle-check" <?php checked( $all_checked ); ?>>
-					<label for="<?php echo $all_check_id . '-' . $all_check_count; ?>" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
-				</p>
-				<?php
-			}
 			?>
 		</fieldset>
 		<?php
+		if ( $display_check_all ) {
+			if ( $args['reverse_check'] ) {
+				$all_checked = ! array_intersect_key( $args['values'], $current_values );
+			} else {
+				$all_checked = ! array_diff_key( $args['values'], $current_values );
+			}
+			?>
+			<p class="hide-if-no-js imagify-select-all-buttons">
+				<button type="button" class="imagify-link-like imagify-select-all<?php echo $all_checked ? ' imagify-is-inactive" aria-disabled="true' : ''; ?>" data-action="select"><?php _e( 'Select All', 'imagify' ); ?></button>
+
+				<span class="imagify-pipe"></span>
+
+				<button type="button" class="imagify-link-like imagify-select-all<?php echo $nb_of_checked === 0 ? ' imagify-is-inactive" aria-disabled="true' : ''; ?>" data-action="unselect"><?php _e( 'Unselect All', 'imagify' ); ?></button>
+			</p>
+			<?php
+		}
 	}
 
 

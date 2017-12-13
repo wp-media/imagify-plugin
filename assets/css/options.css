@@ -474,6 +474,21 @@ a.btn-rocket:focus {
 	box-shadow: 0 3px 0 darkorange;
 }
 
+/* Select / Unselect all buttons */
+.imagify-select-all-buttons {
+	margin-top: 8px;
+}
+.imagify-link-like.imagify-select-all {
+	font-weight: bold;
+	font-size: 12px;
+	color: #3694AE;
+}
+.imagify-select-all.imagify-is-inactive {
+	color: inherit;
+	text-decoration: none;
+	cursor: default;
+}
+
 /* Files tree */
 #imagify-add-custom-folder + .imagify-loader {
 	display: none;

@@ -225,7 +225,7 @@
 				$fieldset = $( '#imagify-custom-folders' ).children( '.imagify-check-group' );
 
 				if ( ! $fieldset.length ) {
-					$fieldset = $( '<fieldset class="imagify-check-group"><legend class="screen-reader-text">' + imagifyOptions.labels.customFilesLegend + '</legend></fieldset>' ).prependTo( '#imagify-custom-folders' );
+					$fieldset = $( '<fieldset class="imagify-check-group"><legend class="screen-reader-text">' + imagifyOptions.labels.customFilesLegend + '</legend></fieldset>' ).appendTo( '#imagify-custom-folders' );
 				}
 
 				$.each( values, function( i, v ) {
@@ -241,8 +241,8 @@
 						return;
 					}
 
-					field += '<input type="checkbox" value="' + v.value[0] + '" id="' + v.value[1] + '" name="imagify_settings[custom_folders][]" class="mini imagify-row-check" checked="checked"/> ';
-					field += '<label for="' + v.value[1] + '" onclick="">' + v.value[2] + '</label><br class="imagify-br">';
+					field += '<p><input type="checkbox" value="' + v.value[0] + '" id="' + v.value[1] + '" name="imagify_settings[custom_folders][]" class="imagify-row-check" checked="checked" /> ';
+					field += '<label for="' + v.value[1] + '" onclick="">' + v.value[2] + '</label></p>';
 					$fieldset.append( field );
 				} );
 			} );
@@ -340,21 +340,21 @@
 	};
 
 	// Check all checkboxes.
-	$( '.imagify-check-group .imagify-row-check' ).on( 'click', function() {
-		var $group     = $( this ).closest( '.imagify-check-group' ),
-			allChecked = 0 === $group.find( '.imagify-row-check' ).filter( ':visible:enabled' ).not( ':checked' ).length;
+	$( '.imagify-select-all' ).on( 'click.imagify', function() {
+		var $_this   = $(this),
+			action   = $_this.data( 'action' ),
+			$btns    = $_this.closest( '.imagify-select-all-buttons' ),
+			$group   = $btns.prev( '.imagify-check-group' ),
+			inactive = 'imagify-is-inactive';
 
-		// Toggle "check all" checkboxes.
-		$group.find( '.imagify-toggle-check' ).prop( 'checked', allChecked );
-	} ).first().trigger( 'change.imagify' );
+		if ( $_this.hasClass( inactive ) ) {
+			return false;
+		}
 
-	$( '.imagify-check-group .imagify-toggle-check' ).on( 'click.wp-toggle-checkboxes', function( e ) {
-		var $this          = $( this ),
-			$wrap          = $this.closest( '.imagify-check-group' ),
-			controlChecked = $this.prop( 'checked' ),
-			toggle         = e.shiftKey || $this.data( 'wp-toggle' );
-
-		$wrap.find( '.imagify-toggle-check' )
+		$btns.find( '.imagify-select-all' ).removeClass( inactive ).attr( 'aria-disabled', 'false' );
+		$_this.addClass( inactive ).attr( 'aria-disabled', 'true' );
+		
+		$group.find( '.imagify-row-check' )
 			.prop( 'checked', function() {
 				var $this = $( this );
 
@@ -362,21 +362,34 @@
 					return false;
 				}
 
-				if ( toggle ) {
-					return ! $this.prop( 'checked' );
+				if ( action === 'select' ) {
+					return true;
 				}
 
-				return controlChecked ? true : false;
+				return false;
 			} );
 
-		$wrap.find( '.imagify-row-check' ).filter( ':visible:enabled' )
-			.prop( 'checked', function() {
-				if ( toggle ) {
-					return false;
-				}
+	} );
 
-				return controlChecked ? true : false;
-			} );
+	// Change buttons status on checkboxes interation.
+	$( '.imagify-check-group .imagify-row-check' ).on( 'change.imagify', function() {
+		var $group      = $( this ).closest( '.imagify-check-group' ),
+			$checks     = $group.find( '.imagify-row-check' ),
+			could_be    = $checks.filter( ':visible:enabled' ).length,
+			are_checked = $checks.filter( ':visible:enabled:checked' ).length,
+			$btns       = $group.next( '.imagify-select-all-buttons' ),
+			inactive    = 'imagify-is-inactive';
+
+		// Toggle status of "check all" buttons.
+		if ( are_checked === 0 ) {
+			$btns.find( '[data-action="unselect"]' ).addClass( inactive ).attr( 'aria-disabled', 'true' );
+		}
+		if ( are_checked === could_be ) {
+			$btns.find( '[data-action="select"]' ).addClass( inactive ).attr( 'aria-disabled', 'true' );
+		}
+		if ( are_checked !== could_be && are_checked > 0 ) {
+			$btns.find( '.imagify-select-all' ).removeClass( inactive ).attr( 'aria-disabled', 'false' );
+		}
 	} );
 
 } )(window, document, jQuery);

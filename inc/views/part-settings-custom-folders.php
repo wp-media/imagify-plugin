@@ -55,13 +55,13 @@ $settings = Imagify_Settings::get_instance();
 		?>
 	</div>
 
-	<div id="imagify-custom-folders" class="hide-if-no-js">
+	<div id="imagify-custom-folders" class="hide-if-no-js imagify-mt3">
 		<h3 class="imagify-options-subtitle"><?php _e( 'Custom folders', 'imagify' ); ?></h3>
 		<p><?php _e( 'You can choose to optimize custom folders on your site.', 'imagify' ); ?></p>
 
-		<button id="imagify-add-custom-folder" class="button imagify-button-secondary" type="button">
-			<span class="dashicons dashicons-category"></span>
-			<span class="button-text"><?php _e( 'Add custom folders to be optimized', 'imagify' ); ?></span>
+		<button id="imagify-add-custom-folder" class="button imagify-button-clean" type="button">
+			<span class="dashicons dashicons-plus"></span>
+			<span class="button-text"><?php _e( 'Add folder', 'imagify' ); ?></span>
 		</button>
 		<img class="imagify-loader" alt="<?php esc_attr_e( 'Loading...', 'imagify' ); ?>" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'loader-balls.svg' ); ?>" width="38" height="24"/>
 		<?php

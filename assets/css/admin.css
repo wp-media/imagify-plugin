@@ -25,6 +25,9 @@
 .imagify-mt1.imagify-mt1 {
 	margin-top: 1em;
 }
+.imagify-mt3.imagify-mt3 {
+	margin-top: 3em;
+}
 .imagify-mb1.imagify-mb1 {
 	margin-bottom: 1em;
 }
@@ -73,6 +76,14 @@
 	height: 1px;
 	margin: 20px 0;
 	background: #D2D3D6;
+}
+.imagify-pipe {
+	display: inline-block;
+	margin: 0 .75em;
+	vertical-align: middle;
+	height: 15px;
+	width: 1px;
+	background: #979797;
 }
 
 /* Default counter */
@@ -298,6 +309,50 @@ body.imagify-modal-is-open {
 .imagify-button-light.imagify-button-light:focus {
 	color: #FFF;
 	background: rgba(0, 0, 0, .2);
+}
+
+/* Buttons clean */
+.button.imagify-button-clean {
+	padding: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.imagify-button-clean .dashicons-plus:before {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 18px;
+	padding-top: 3px;
+	font-size: 17px;
+	background: #40B1D0;
+	color: #FFF;
+	transition: all .275s;
+}
+.button.imagify-button-clean:hover,
+.button.imagify-button-clean:focus,
+.button.imagify-button-clean:active,
+.button.imagify-button-clean[disabled] {
+	background: transparent;
+	color: #343A49;
+	box-shadow: none;
+}
+.button.imagify-button-clean:hover .dashicons-plus:before,
+.button.imagify-button-clean:focus .dashicons-plus:before {
+	background: #343A49;
+}
+
+/* Buttons link-like */
+button.imagify-link-like {
+	border: 0;
+	padding: 0;
+	color: inherit;
+	text-decoration: underline;
+	font-size: 13px;
+	box-shadow: none;
+	background: transparent;
+	cursor: pointer;
 }
 
 /* Modifier */
@@ -647,13 +702,13 @@ p.imagify-section-title.imagify-section-title {
 /* Checkbox groups */
 .imagify-check-group {
 	padding-left: 2px;
-	margin-bottom: 1em;
+	margin-bottom: 0;
 }
 .imagify-check-group.imagify-is-scrollable {
 	max-height: 15em;
 	overflow-y: auto;
 	padding: 8px;
-	margin: 1.5em 0 1.5em -8px;
+	margin: 1.5em 0 0 -8px;
 	background: #F4F7F9;
 	border: 1px solid #D2D3D6;
 	border-radius: 3px;
