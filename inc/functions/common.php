@@ -366,3 +366,45 @@ function imagify_get_locale() {
 	 */
 	return apply_filters( 'imagify_locale', $locale );
 }
+
+/**
+ * Get the label corresponding to the given optimization label.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  int|bool $level  Optimization level (between 0 and 2). False if no level.
+ * @param  string   $format Format to display the label. Use %ICON% for the icon and %s for the label.
+ * @return string           The label.
+ */
+function imagify_get_optimization_level_label( $level, $format = '%s' ) {
+	if ( ! is_numeric( $level ) ) {
+		return '';
+	}
+
+	if ( strpos( $format, '%ICON%' ) !== false ) {
+		$icon = '';
+
+		switch ( $level ) {
+			case 2:
+				$icon = '.ı|';
+			case 1:
+				$icon = '.ı|';
+			case 0:
+				$icon = '.ı|';
+		}
+
+		$format = str_replace( '%ICON%', $icon, $format );
+	}
+
+	switch ( $level ) {
+		case 2:
+			return sprintf( $format, __( 'Ultra', 'imagify' ) );
+		case 1:
+			return sprintf( $format, __( 'Aggressive', 'imagify' ) );
+		case 0:
+			return sprintf( $format, __( 'Normal', 'imagify' ) );
+	}
+
+	return '';
+}
