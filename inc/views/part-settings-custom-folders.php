@@ -8,10 +8,10 @@ if ( ! imagify_can_optimize_custom_folders() ) {
 $settings = Imagify_Settings::get_instance();
 ?>
 <div class="imagify-col">
-	<h3><?php _e( 'Themes and Plugins', 'imagify' ); ?></h3>
+	<h3 class="imagify-options-subtitle"><?php _e( 'Themes and Plugins', 'imagify' ); ?></h3>
 
 	<div>
-		<h4><?php _e( 'Themes to optimize', 'imagify' ); ?></h4>
+		<h4 class="imagify-h4-like"><?php _e( 'Themes to optimize', 'imagify' ); ?></h4>
 		<p><?php _e( 'You can choose to optimize the themes on your site.', 'imagify' ); ?></p>
 		<?php
 		$themes  = Imagify_Settings::get_themes();
@@ -39,7 +39,7 @@ $settings = Imagify_Settings::get_instance();
 	</div>
 
 	<div>
-		<h4><?php _e( 'Plugins to optimize', 'imagify' ); ?></h4>
+		<h4 class="imagify-h4-like"><?php _e( 'Plugins to optimize', 'imagify' ); ?></h4>
 		<p><?php _e( 'You can choose to optimize the plugins on your site.', 'imagify' ); ?></p>
 		<?php
 		/**
@@ -56,7 +56,7 @@ $settings = Imagify_Settings::get_instance();
 	</div>
 
 	<div id="imagify-custom-folders" class="hide-if-no-js">
-		<h3><?php _e( 'Custom folders', 'imagify' ); ?></h3>
+		<h3 class="imagify-options-subtitle"><?php _e( 'Custom folders', 'imagify' ); ?></h3>
 		<p><?php _e( 'You can choose to optimize custom folders on your site.', 'imagify' ); ?></p>
 
 		<button id="imagify-add-custom-folder" class="button imagify-button-secondary" type="button">

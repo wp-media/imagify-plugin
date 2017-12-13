@@ -488,7 +488,7 @@ class Imagify_Settings {
 		$attributes        = array_merge( array(
 			'name'  => $this->option_name . '[' . $args['option_name'] . ( $args['reverse_check'] ? '-checked' : '' ) . '][]',
 			'id'    => 'imagify_' . $option_name_class . '_%s',
-			'class' => 'mini imagify-row-check',
+			'class' => 'imagify-row-check',
 		), $args['attributes'] );
 
 		$id_attribute = $attributes['id'];
@@ -498,7 +498,7 @@ class Imagify_Settings {
 		$current_values    = array_diff_key( $current_values, $args['disabled_values'] );
 		$display_check_all = count( $args['values'] ) > 3;
 		?>
-		<fieldset class="imagify-check-group">
+		<fieldset class="imagify-check-group<?php echo count( $args['values'] ) >= 5 ? ' imagify-is-scrollable' : ''; ?>">
 			<?php
 			if ( $args['legend'] ) {
 				?>
@@ -515,11 +515,10 @@ class Imagify_Settings {
 				$all_check_id = sanitize_html_class( 'imagify-toggle-check-' . $args['option_name'] );
 				++$all_check_count;
 				?>
-				<em class="hide-if-no-js">
-					<input id="<?php echo $all_check_id . '-' . $all_check_count; ?>" type="checkbox" class="mini imagify-toggle-check" <?php checked( $all_checked ); ?>>
+				<p class="hide-if-no-js">
+					<input id="<?php echo $all_check_id . '-' . $all_check_count; ?>" type="checkbox" class="imagify-toggle-check" <?php checked( $all_checked ); ?>>
 					<label for="<?php echo $all_check_id . '-' . $all_check_count; ?>" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
-				</em>
-				<br class="imagify-br">
+				</p>
 				<?php
 			}
 
@@ -537,20 +536,20 @@ class Imagify_Settings {
 					echo '<input type="hidden" name="' . $this->option_name . '[' . $args['option_name'] . '-reversed][]" value="' . esc_attr( $value ) . '" />';
 				}
 				?>
-				<input type="checkbox" value="<?php echo esc_attr( $value ); ?>" id="<?php echo $input_id; ?>"<?php echo $args['attributes']; ?> <?php checked( $checked ); ?> <?php disabled( $disabled ); ?>/>
-				<label for="<?php echo $input_id; ?>" onclick=""><?php echo $label; ?></label>
-				<br class="imagify-br">
+				<p>
+					<input type="checkbox" value="<?php echo esc_attr( $value ); ?>" id="<?php echo $input_id; ?>"<?php echo $args['attributes']; ?> <?php checked( $checked ); ?> <?php disabled( $disabled ); ?>/>
+					<label for="<?php echo $input_id; ?>" onclick=""><?php echo $label; ?></label>
+				</p>
 				<?php
 			}
 
 			if ( $display_check_all ) {
 				++$all_check_count;
 				?>
-				<em class="hide-if-no-js">
-					<input id="<?php echo $all_check_id . '-' . $all_check_count; ?>" type="checkbox" class="mini imagify-toggle-check" <?php checked( $all_checked ); ?>>
+				<p class="hide-if-no-js">
+					<input id="<?php echo $all_check_id . '-' . $all_check_count; ?>" type="checkbox" class="imagify-toggle-check" <?php checked( $all_checked ); ?>>
 					<label for="<?php echo $all_check_id . '-' . $all_check_count; ?>" onclick=""><?php _e( '(Un)Select All', 'imagify' ); ?></label>
-				</em>
-				<br class="imagify-br">
+				</p>
 				<?php
 			}
 			?>

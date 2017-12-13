@@ -6,91 +6,79 @@ $options     = Imagify_Options::get_instance();
 $option_name = $options->get_option_name();
 ?>
 <div class="<?php echo imagify_can_optimize_custom_folders() ? 'imagify-col' : ''; ?>">
-	<h3><?php _e( 'Medias Library', 'imagify' ); ?></h3>
+	<h3 class="imagify-options-subtitle"><?php _e( 'Medias Library', 'imagify' ); ?></h3>
 
-	<table class="form-table">
-		<tbody>
+	<p class="imagify-setting-line">
+		<?php
+		$settings->field_checkbox( array(
+			'option_name' => 'resize_larger',
+			'label'       => __( 'Resize larger images', 'imagify' ),
+			'attributes'  => array(
+				'aria-describedby' => 'describe-resize_larger',
+			),
+		) );
+		?>
 
-			<tr>
-				<th scope="row"></th>
-				<td>
-					<?php
-					$settings->field_checkbox( array(
-						'option_name' => 'resize_larger',
-						'label'       => __( 'Resize larger images', 'imagify' ),
-						'attributes'  => array(
-							'aria-describedby' => 'describe-resize_larger',
-						),
-					) );
-					?>
+		<span class="imagify-options-line">
+			<label for="imagify_resize_larger_w">
+			<?php
+			$max_sizes       = get_imagify_max_intermediate_image_size();
+			$resize_larger_w = $options->get( 'resize_larger_w' );
+			printf(
+				/* translators: 1 is a text input for a number of pixels (don't use %d). */
+				__( 'to maximum %s pixels width', 'imagify' ),
+				'<input type="number" id="imagify_resize_larger_w" min="' . $max_sizes['width'] . '" name="' . $option_name . '[resize_larger_w]" value="' . ( $resize_larger_w ? $resize_larger_w : '' ) . '" size="5">'
+			);
+			?>
+			</label>
+		</span>
 
-					<p class="imagify-options-line">
-						<label for="imagify_resize_larger_w">
-						<?php
-						$max_sizes       = get_imagify_max_intermediate_image_size();
-						$resize_larger_w = $options->get( 'resize_larger_w' );
-						printf(
-							/* translators: 1 is a text input for a number of pixels (don't use %d). */
-							__( 'to maximum %s pixels width', 'imagify' ),
-							'<input type="number" id="imagify_resize_larger_w" min="' . $max_sizes['width'] . '" name="' . $option_name . '[resize_larger_w]" value="' . ( $resize_larger_w ? $resize_larger_w : '' ) . '" size="5">'
-						);
-						?>
-						</label>
-					</p>
+		<span id="describe-resize_larger" class="imagify-info">
+			<span class="dashicons dashicons-info"></span>
+			<?php
+			printf(
+				/* translators: 1 is a number of pixels. */
+				__( 'This option is recommended to reduce larger images. You can save up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %dpx.', 'imagify' ),
+				$max_sizes['width']
+			);
+			?>
+		</span>
+	</p>
 
-					<span id="describe-resize_larger" class="imagify-info">
-						<span class="dashicons dashicons-info"></span>
-						<?php
-						printf(
-							/* translators: 1 is a number of pixels. */
-							__( 'This option is recommended to reduce larger images. You can save up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %dpx.', 'imagify' ),
-							$max_sizes['width']
-						);
-						?>
-					</span>
-				</td>
-			</tr>
+	<?php if ( ! imagify_is_active_for_network() ) { ?>
 
-			<?php if ( ! imagify_is_active_for_network() ) { ?>
+	<div class="imagify-divider"></div>
 
-				<tr>
-					<th scope="row"><?php _e( 'Files optimization', 'imagify' ); ?></th>
-					<td>
-						<p>
-							<?php _e( 'You can choose to compress different image sizes created by WordPress here.', 'imagify' ); ?>
-							<br/>
-							<?php
-							printf(
-								/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end. */
-								__( 'The %1$soriginal size%2$s is %1$sautomatically optimized%2$s by Imagify.', 'imagify' ),
-								'<strong>', '</strong>'
-							);
-							?>
-							<br>
-							<span class="imagify-important">
-								<?php _e( 'Remember each additional image size will affect your Imagify monthly usage!', 'imagify' ); ?>
-							</span>
-						</p>
+	<h4 class="imagify-h4-like"><?php _e( 'Files optimization', 'imagify' ); ?></h4>
 
-						<br>
+	<p>
+		<?php _e( 'You can choose to compress different image sizes created by WordPress here.', 'imagify' ); ?>
+	</p>
 
-						<?php
-						/**
-						 * Disallowed thumbnail sizes.
-						 */
-						$settings->field_checkbox_list( array(
-							'option_name'   => 'disallowed-sizes',
-							'legend'        => __( 'Choose the sizes to optimize', 'imagify' ),
-							'values'        => Imagify_Settings::get_thumbnail_sizes(),
-							'reverse_check' => true,
-						) );
-						?>
-					</td>
-				</tr>
+	<p>
+		<?php
+		printf(
+			/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end. */
+			__( 'The %1$soriginal size%2$s is %1$sautomatically optimized%2$s by Imagify.', 'imagify' ),
+			'<strong>', '</strong>'
+		);
+		?>
+		<br>
+		<span class="imagify-success">
+			<?php _e( 'Remember each additional image size will affect your Imagify monthly usage!', 'imagify' ); ?>
+		</span>
+	</p>
 
-			<?php } ?>
-
-		</tbody>
-	</table>
+	<?php
+		/**
+		 * Disallowed thumbnail sizes.
+		 */
+		$settings->field_checkbox_list( array(
+			'option_name'   => 'disallowed-sizes',
+			'legend'        => __( 'Choose the sizes to optimize', 'imagify' ),
+			'values'        => Imagify_Settings::get_thumbnail_sizes(),
+			'reverse_check' => true,
+		) );
+	} ?>
 </div>
 <?php

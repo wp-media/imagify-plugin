@@ -68,6 +68,12 @@
 	color: #626E7B;
 }
 
+.imagify-h4-like {
+	font-size: 14px;
+	font-weight: bold;
+	color: #2E3243;
+}
+
 .imagify-options-subtitle a {
 	font-size: 12px;
 	color: #338EA6;
@@ -83,6 +89,10 @@
 .imagify-setting-line {
 	border-top: 1px solid #D2D3D6;
 	padding: 25px 0 13px;
+}
+.imagify-options-subtitle + .imagify-setting-line {
+	border-top: 0;
+	padding-top: 8px;
 }
 
 /* 3 inlined buttons + Visual comparison */
@@ -256,15 +266,22 @@
 
 /* Label & fake labels */
 label + .imagify-info,
-label + .imagify-options-line,
 .imagify-visual-label {
 	display: inline-block;
 	width: 550px;
-	max-width: 100%;
+	max-width: calc(100% - 38px);
 	margin-left: 38px;
 	padding-right: 25px;
+}
+label + .imagify-options-line {
+	display: block;
+	margin: 8px 0 20px 40px;
+	font-size: 14px;
 	-webkit-transition: opacity .3s;
 	transition: opacity .3s;
+}
+.imagify-options-line + .imagify-info {
+	margin-left: 38px;
 }
 label + .imagify-info {
 	margin-top: 10px;
@@ -290,12 +307,16 @@ label[for="imagify_sizes_full"] + .imagify-info {
 	margin-left: 45px;
 }
 
-.imagify-check-group [name^="imagify_"]:checked + label {
-	font-weight: bold;
-}
-
-#describe-resize-larger.imagify-options-line input {
+#imagify_resize_larger_w {
 	width: 5em;
+	height: auto;
+	padding: 6px;
+	margin: 0 6px;
+	border: 1px solid #8BA6B4;
+	box-shadow: none;
+	border-radius: 2px;
+	color: #338EA6;
+	font-weight: bold;
 }
 
 .imagify-menu-bar-img {
