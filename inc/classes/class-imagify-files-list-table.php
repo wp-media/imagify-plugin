@@ -91,6 +91,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$orderby  = 'path';
 		$order    = 'ASC';
 		$folders  = array();
+		$file_ids = array();
 		$where    = '';
 
 		$sent_orderby = filter_input( INPUT_GET, 'orderby', FILTER_SANITIZE_STRING );
@@ -157,6 +158,9 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			// Store the folders used by the items to get their data later in 1 query.
 			$folders[ $item->folder_id ] = $item->folder_id;
 
+			// Store the item IDs to store transients later in 1 query.
+			$file_ids[ $item->file_id ] = $item->file_id;
+
 			// Use Imagify objects + add related folder ID and path (set later).
 			$this->items[ $i ] = get_imagify_attachment( 'File', $item, 'files_list_row' );
 			$this->items[ $i ]->folder_id   = $item->folder_id;
@@ -164,6 +168,12 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		}
 
 		$folders = array_filter( $folders );
+
+		// Cache transient values.
+		imagify_load_network_options( $file_ids, array(
+			'_site_transient_imagify-file-async-in-progress-',
+			'_site_transient_timeout_imagify-file-async-in-progress-',
+		) );
 
 		if ( ! $folders ) {
 			return;
@@ -547,6 +557,13 @@ class Imagify_Files_List_Table extends WP_List_Table {
 				esc_html_e( 'Invalid API key', 'imagify' );
 				echo '<br/><a href="' . esc_url( get_imagify_admin_url() ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
 			}
+			return;
+		}
+
+		$transient_name = 'imagify-file-async-in-progress-' . $item->get_id();
+
+		if ( false !== get_site_transient( $transient_name ) ) {
+			echo '<div class="button"><span class="imagify-spinner"></span>' . __( 'Optimizing...', 'imagify' ) . '</div>';
 			return;
 		}
 

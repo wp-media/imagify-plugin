@@ -592,7 +592,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		*/
 		do_action( 'before_imagify_optimize_file', $this->id );
 
-		set_transient( 'imagify-file-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+		set_site_transient( 'imagify-file-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
 
 		// Optimize the original size.
 		$response = do_imagify( $attachment_path, array(
@@ -613,7 +613,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		$classname::get_instance()->update( $this->id, $data );
 
 		if ( 'success' !== $data['status'] ) {
-			delete_transient( 'imagify-file-async-in-progress-' . $this->id );
+			delete_site_transient( 'imagify-file-async-in-progress-' . $this->id );
 			return;
 		}
 
@@ -630,7 +630,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		 */
 		do_action( 'after_imagify_optimize_file', $this->id, $optimized_data );
 
-		delete_transient( 'imagify-file-async-in-progress-' . $this->id );
+		delete_site_transient( 'imagify-file-async-in-progress-' . $this->id );
 
 		return $optimized_data;
 	}
