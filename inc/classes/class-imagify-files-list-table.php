@@ -84,7 +84,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			'per_page'    => $per_page,
 		) );
 
-		// Get items.
+		// Prepare the query to get items.
 		$page     = $this->get_pagenum();
 		$offset   = ( $page - 1 ) * $per_page;
 		$orderbys = $this->get_sortable_columns();
@@ -140,44 +140,58 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			$where = "WHERE folder_id IN ( $where )";
 		}
 
+		// Get items.
 		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $files_table $where ORDER BY %s %s LIMIT %d, %d", $orderby, $order, $offset, $per_page ) ); // WPCS: unprepared SQL ok.
 
-		if ( $this->items ) {
-			foreach ( $this->items as $i => $item ) {
-				foreach ( $item as $key => $value ) {
-					$item->$key = $files_db->cast( $value, $key );
-				}
+		if ( ! $this->items ) {
+			return;
+		}
 
-				$folders[ $item->folder_id ] = $item->folder_id;
-
-				$this->items[ $i ] = get_imagify_attachment( 'File', $item, 'files_list_row' );
-				$this->items[ $i ]->folder_id   = $item->folder_id;
-				$this->items[ $i ]->folder_path = false;
+		// Prepare items.
+		foreach ( $this->items as $i => $item ) {
+			// Cast values.
+			foreach ( $item as $key => $value ) {
+				$item->$key = $files_db->cast( $value, $key );
 			}
 
-			$folders = array_filter( $folders );
+			// Store the folders used by the items to get their data later in 1 query.
+			$folders[ $item->folder_id ] = $item->folder_id;
 
-			if ( $folders ) {
-				$folders_db    = Imagify_Folders_DB::get_instance();
-				$folders_table = $folders_db->get_table_name();
-				$folders       = Imagify_DB::prepare_values_list( $folders );
-				$folders       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE folder_id IN ( $folders )" ); // WPCS: unprepared SQL ok.
+			// Use Imagify objects + add related folder ID and path (set later).
+			$this->items[ $i ] = get_imagify_attachment( 'File', $item, 'files_list_row' );
+			$this->items[ $i ]->folder_id   = $item->folder_id;
+			$this->items[ $i ]->folder_path = false;
+		}
 
-				if ( $folders ) {
-					foreach ( $folders as $folder ) {
-						foreach ( $folder as $key => $value ) {
-							$folder->$key = $folders_db->cast( $value, $key );
-						}
+		$folders = array_filter( $folders );
 
-						$this->folders[ $folder->folder_id ] = $folder;
-					}
+		if ( ! $folders ) {
+			return;
+		}
 
-					foreach ( $this->items as $i => $item ) {
-						if ( $item->folder_id && isset( $this->folders[ $item->folder_id ] ) ) {
-							$item->folder_path = $this->folders[ $item->folder_id ]->path;
-						}
-					}
-				}
+		// Get folders data.
+		$folders_db    = Imagify_Folders_DB::get_instance();
+		$folders_table = $folders_db->get_table_name();
+		$folders       = Imagify_DB::prepare_values_list( $folders );
+		$folders       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE folder_id IN ( $folders )" ); // WPCS: unprepared SQL ok.
+
+		if ( ! $folders ) {
+			return;
+		}
+
+		// Cast folders data and store data into a property.
+		foreach ( $folders as $folder ) {
+			foreach ( $folder as $key => $value ) {
+				$folder->$key = $folders_db->cast( $value, $key );
+			}
+
+			$this->folders[ $folder->folder_id ] = $folder;
+		}
+
+		// Set folders path to each item.
+		foreach ( $this->items as $i => $item ) {
+			if ( $item->folder_id && isset( $this->folders[ $item->folder_id ] ) ) {
+				$item->folder_path = $this->folders[ $item->folder_id ]->path;
 			}
 		}
 	}
@@ -297,7 +311,9 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	public function get_bulk_actions() {
-		return array();
+		return array(
+			'imagify-bulk-refresh-status' => __( 'Refresh status', 'imagify' ),
+		);
 	}
 
 	/**
@@ -443,6 +459,9 @@ class Imagify_Files_List_Table extends WP_List_Table {
 						<span class="imagify-chart">
 							<span class="imagify-chart-container">
 								<canvas class="imagify-consumption-chart imagify-consumption-chart-<?php echo $item->get_id(); ?>" width="15" height="15"></canvas>
+								<?php if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) { ?>
+									<script type="text/javascript">jQuery( window ).trigger( "canvasprinted.imagify", [ ".imagify-consumption-chart-<?php echo $item->get_id(); ?>" ] ); </script>
+								<?php } ?>
 							</span>
 						</span>
 						<span class="imagify-chart-value"><?php echo $item->get_saving_percent(); ?></span>%
@@ -547,15 +566,15 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		$url = get_imagify_admin_url( 'manual-upload', array(
+		$url = get_imagify_admin_url( 'optimize-file', array(
 			'attachment_id' => $item->get_id(),
-			'context'       => 'File',
 		) );
 		$level = imagify_get_optimization_level_label( Imagify_Options::get_instance()->get( 'optimization_level' ) );
 		/* translators: %s is an optimization level. */
 		$title = sprintf( __( 'Optimize this file to %s.' ), $level );
+		$class = 'button-primary button-imagify-optimize' . ( $item->has_backup() ? ' file-has-backup' : '' );
 		?>
-		<a id="imagify-upload-<?php echo $item->get_id(); ?>" href="<?php echo esc_url( $url ); ?>" title="<?php echo esc_attr( $title ); ?>" class="button-primary button-imagify-manual-upload" data-waiting-label="<?php esc_attr_e( 'Optimizing...', 'imagify' ); ?>">
+		<a id="imagify-optimize-<?php echo $item->get_id(); ?>" href="<?php echo esc_url( $url ); ?>" title="<?php echo esc_attr( $title ); ?>" class="<?php echo $class; ?>" data-waiting-label="<?php esc_attr_e( 'Optimizing...', 'imagify' ); ?>">
 			<?php esc_html_e( 'Optimize', 'imagify' ); ?>
 		</a>
 		<?php
@@ -581,14 +600,13 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		$url = get_imagify_admin_url( 'manual-override-upload', array(
+		$url = get_imagify_admin_url( 'reoptimize-file', array(
 			'attachment_id'      => $item->get_id(),
-			'context'            => 'File',
 			'optimization_level' => $item->get_optimization_level(),
 		) );
 		?>
 		<br/>
-		<a href="<?php echo esc_url( $url ); ?>" class="button-imagify-manual-override-upload" data-waiting-label="<?php esc_attr_e( 'Optimizing...', 'imagify' ); ?>">
+		<a href="<?php echo esc_url( $url ); ?>" class="button-imagify-reoptimize" data-waiting-label="<?php esc_attr_e( 'Optimizing...', 'imagify' ); ?>">
 			<span class="dashicons dashicons-admin-generic"></span>
 			<span class="imagify-hide-if-small">
 				<?php esc_html_e( 'Re-Optimize', 'imagify' ); ?>
@@ -624,7 +642,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$item_level = $item->get_optimization_level();
 		$args       = array(
 			'attachment_id' => $item->get_id(),
-			'context'       => 'File',
 		);
 		$labels = array(
 			0 => __( 'Normal', 'imagify' ),
@@ -639,7 +656,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 			$args['optimization_level'] = $level;
 			?>
-			<a href="<?php echo esc_url( get_imagify_admin_url( 'manual-override-upload', $args ) ); ?>" class="button-imagify-manual-override-upload" data-waiting-label="<?php esc_attr_e( 'Optimizing...', 'imagify' ); ?>">
+			<a href="<?php echo esc_url( get_imagify_admin_url( 'reoptimize-file', $args ) ); ?>" class="button-imagify-reoptimize" data-waiting-label="<?php esc_attr_e( 'Optimizing...', 'imagify' ); ?>">
 				<span class="dashicons dashicons-admin-generic"></span>
 				<span class="imagify-hide-if-small">
 					<?php
@@ -666,12 +683,11 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		$url = get_imagify_admin_url( 'restore-upload', array(
+		$url = get_imagify_admin_url( 'restore-file', array(
 			'attachment_id' => $item->get_id(),
-			'context'       => 'File',
 		) );
 		?>
-		<a id="imagify-restore-<?php echo $item->get_id(); ?>" href="<?php echo esc_url( $url ); ?>" class="button-imagify-restore attachment-has-backup" data-waiting-label="<?php esc_attr_e( 'Restoring...', 'imagify' ); ?>">
+		<a id="imagify-restore-<?php echo $item->get_id(); ?>" href="<?php echo esc_url( $url ); ?>" class="button-imagify-restore file-has-backup" data-waiting-label="<?php esc_attr_e( 'Restoring...', 'imagify' ); ?>">
 			<span class="dashicons dashicons-image-rotate"></span>
 			<?php esc_html_e( 'Restore Original', 'imagify' ); ?>
 		</a>
@@ -693,7 +709,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		) );
 		?>
 		<br/>
-		<a href="<?php echo esc_url( $url ); ?>" class="button-imagify-refresh-file-modified" data-waiting-label="<?php esc_attr_e( 'Refreshing status...', 'imagify' ); ?>">
+		<a id="imagify-refresh-status-<?php echo $item->get_id(); ?>" href="<?php echo esc_url( $url ); ?>" class="button-imagify-refresh-status" data-waiting-label="<?php esc_attr_e( 'Refreshing status...', 'imagify' ); ?>">
 			<span class="dashicons dashicons-image-rotate"></span>
 			<?php esc_html_e( 'Refresh status', 'imagify' ); ?>
 		</a>

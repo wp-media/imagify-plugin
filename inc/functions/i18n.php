@@ -191,6 +191,15 @@ function get_imagify_localize_script_translations( $context ) {
 
 			return $translations;
 
+		case 'files-list':
+			return array(
+				'backupOption' => get_imagify_option( 'backup' ),
+				'labels'       => array(
+					'bulkActionsOptimize' => __( 'Optimize', 'imagify' ),
+					'bulkActionsRestore'  => __( 'Restore Original', 'imagify' ),
+				),
+			);
+
 		default:
 			return array();
 	} // End switch().

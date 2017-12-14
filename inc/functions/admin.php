@@ -132,8 +132,15 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 		case 'dismiss-notice':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
 
+		case 'optimize-file':
+		case 'restore-file':
 		case 'refresh-file-modified':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_refresh_file_modified&attachment_id=' . $id ), 'refresh-file-modified' );
+			$action = str_replace( '-', '_', $action );
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_' . $action . '&id=' . $id ), $action );
+
+		case 'reoptimize-file':
+			$action = str_replace( '-', '_', $action );
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_' . $action . '&id=' . $id . '&level=' . $level ), $action );
 
 		case 'get-files-tree':
 			return wp_nonce_url( admin_url( 'admin-ajax.php?action=imagify_get_files_tree' ), 'get-files-tree' );
