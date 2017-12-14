@@ -827,6 +827,11 @@ p.imagify-section-title.imagify-section-title {
 	border-radius: 3px;
 }
 
+/* Content given after remote answer, avoid "flash" effect on content */
+.imagify-user-plan-label:empty {
+	display: none;
+}
+
 /**
  * == Columns
  */

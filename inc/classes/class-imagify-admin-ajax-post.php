@@ -939,7 +939,7 @@ class Imagify_Admin_Ajax_Post {
 
 			$output .= '<li>';
 			/* translators: %s is a folder path. */
-				$output .= '<button type="button" data-folder="' . esc_attr( $rel_path ) . '" title="' . sprintf( esc_attr__( 'Open/Close the folder "%s".', 'imagify' ), $rel_path ) . '">';
+				$output .= '<button class="imagify-folder" type="button" data-folder="' . esc_attr( $rel_path ) . '" title="' . sprintf( esc_attr__( 'Open/Close the folder "%s".', 'imagify' ), $rel_path ) . '">';
 					$output .= '<span class="dashicons dashicons-category"></span>';
 				$output .= '</button>';
 				$output .= '<input type="checkbox" name="imagify-custom-files[]" value="' . $value . '" id="imagify-custom-folder-' . $check_id . '" class="screen-reader-text"' . disabled( true, isset( $selected[ $placeholder ] ), false ) . '/>';

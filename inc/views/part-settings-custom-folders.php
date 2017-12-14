@@ -59,7 +59,7 @@ $settings = Imagify_Settings::get_instance();
 		<h3 class="imagify-options-subtitle"><?php _e( 'Custom folders', 'imagify' ); ?></h3>
 		<p><?php _e( 'You can choose to optimize custom folders on your site.', 'imagify' ); ?></p>
 
-		<button id="imagify-add-custom-folder" class="button imagify-button-clean" type="button">
+		<button id="imagify-add-custom-folder" class="button imagify-button-clean imagify-add-custom-folder" type="button">
 			<span class="dashicons dashicons-plus"></span>
 			<span class="button-text"><?php _e( 'Add folder', 'imagify' ); ?></span>
 		</button>

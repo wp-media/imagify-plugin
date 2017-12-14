@@ -208,7 +208,7 @@
 
 			swal( {
 				title:            imagifyOptions.labels.filesTreeTitle,
-				html:             '<ul id="imagify-folders-tree">' + response.data + '</ul>',
+				html:             '<ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul>',
 				type:             'question',
 				customClass:      'imagify-sweet-alert',
 				showCancelButton: true,

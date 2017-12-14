@@ -431,17 +431,38 @@ label[for="imagify_admin_bar_menu"] {
 }
 
 /* Files tree */
-#imagify-add-custom-folder + .imagify-loader {
+.imagify-add-custom-folder + .imagify-loader {
 	display: none;
 	vertical-align: middle;
 }
-#imagify-add-custom-folder[disabled] + .imagify-loader {
+.imagify-add-custom-folder[disabled] + .imagify-loader {
 	display: inline-block;
 }
-#imagify-folders-tree [name="imagify-custom-files[]"]:checked + label {
+.imagify-folders-tree [name="imagify-custom-files[]"]:checked + label {
 	background: yellow;
 }
-#imagify-folders-tree [name="imagify-custom-files[]"][disabled] + label {
+.imagify-folders-tree [name="imagify-custom-files[]"][disabled] + label {
 	background: #bbb;
 	font-style: italic;
+}
+.imagify-folders-tree {
+	text-align: left;
+}
+.imagify-folders-tree ul {
+	position: relative;
+	margin-left: .5em;
+	padding-top: .6em;
+	padding-left: 1em;
+	border-left: 1px dotted #ccc;
+}
+
+.imagify-folders-tree .imagify-folder {
+	/* Try to remove !important from sweet-alert-custom.css on buttons */
+	height: auto !important;
+	margin-top: 0 !important;
+	padding: 0;
+	border: 0;
+	background: transparent!important;
+	box-shadow: none!important;
+	margin-right: 10px;
 }
