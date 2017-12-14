@@ -387,11 +387,15 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @param object $item The current File object.
 	 */
 	public function column_title( $item ) {
-		$base = ! empty( $item->folder_path ) ? Imagify_Files_Scan::remove_placeholder( $item->folder_path ) : '';
+		$url   = $item->get_original_url();
+		$base  = ! empty( $item->folder_path ) ? Imagify_Files_Scan::remove_placeholder( $item->folder_path ) : '';
+		$title = imagify_make_file_path_relative( $item->get_original_path(), $base );
 		?>
 		<strong class="has-media-icon">
-			<span class="media-icon image-icon"><img src="<?php echo esc_url( $item->get_original_url() ); ?>" alt="" width="60" /></span>
-			<?php echo esc_html( imagify_make_file_path_relative( $item->get_original_path(), $base ) ); ?>
+			<a href="<?php echo esc_url( $url ); ?>" target="_blank">
+				<span class="media-icon image-icon"><img src="<?php echo esc_url( $url ); ?>" alt="" width="60" /></span>
+				<?php echo esc_html( $title ); ?>
+			</a>
 		</strong>
 		<?php
 	}
@@ -727,6 +731,19 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 */
 	protected function get_default_primary_column_name() {
 		return 'title';
+	}
+
+	/**
+	 * Get a list of CSS classes for the WP_List_Table table tag.
+	 *
+	 * @since  1.7
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @return array List of CSS classes for the table tag.
+	 */
+	protected function get_table_classes() {
+		return array( 'widefat', 'fixed', 'striped', 'media', $this->_args['plural'] );
 	}
 
 	/**
