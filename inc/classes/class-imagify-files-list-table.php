@@ -425,12 +425,20 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$dimensions  = $item->get_dimensions();
 		$orientation = $dimensions['width'] > $dimensions['height'] ? ' landscape' : ' portrait';
 		$orientation = $dimensions['width'] && $dimensions['height'] ? $orientation : '';
+
+		if ( ! wp_doing_ajax() && $item->get_optimized_size( false ) > 100000 ) {
+			// LazyLoad.
+			$image_tag  = '<img src="' . esc_url( IMAGIFY_ASSETS_IMG_URL . 'lazyload.png' ) . '" data-lazy-src="' . esc_url( $url ) . '" alt="" />';
+			$image_tag .= '<noscript><img src="' . esc_url( $url ) . '" alt="" /></noscript>';
+		} else {
+			$image_tag = '<img src="' . esc_url( $url ) . '" alt="" />';
+		}
 		?>
 		<strong class="has-media-icon">
 			<a href="<?php echo esc_url( $url ); ?>" target="_blank">
 				<span class="media-icon image-icon<?php echo $orientation; ?>">
 					<span class="centered">
-						<img src="<?php echo esc_url( $url ); ?>" alt="" />
+						<?php echo $image_tag; ?>
 					</span>
 				</span>
 				<?php echo esc_html( $title ); ?>
