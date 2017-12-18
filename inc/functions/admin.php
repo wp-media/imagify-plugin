@@ -113,7 +113,7 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 	if ( is_array( $arg ) ) {
 		$id      = isset( $arg['attachment_id'] )      ? $arg['attachment_id']      : 0;
 		$context = isset( $arg['context'] )            ? $arg['context']            : 'wp';
-		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : 0;
+		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : '';
 	}
 
 	switch ( $action ) {
@@ -135,12 +135,12 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 		case 'optimize-file':
 		case 'restore-file':
 		case 'refresh-file-modified':
-			$action = str_replace( '-', '_', $action );
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_' . $action . '&id=' . $id ), $action );
+			$action = 'imagify_' . str_replace( '-', '_', $action );
+			return wp_nonce_url( admin_url( 'admin-post.php?action=' . $action . '&id=' . $id ), $action );
 
 		case 'reoptimize-file':
-			$action = str_replace( '-', '_', $action );
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_' . $action . '&id=' . $id . '&level=' . $level ), $action );
+			$action = 'imagify_' . str_replace( '-', '_', $action );
+			return wp_nonce_url( admin_url( 'admin-post.php?action=' . $action . '&id=' . $id . '&level=' . $level ), $action );
 
 		case 'get-files-tree':
 			return wp_nonce_url( admin_url( 'admin-ajax.php?action=imagify_get_files_tree' ), 'get-files-tree' );
