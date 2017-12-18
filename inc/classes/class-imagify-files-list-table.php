@@ -504,7 +504,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 						<span class="imagify-chart">
 							<span class="imagify-chart-container">
 								<canvas class="imagify-consumption-chart imagify-consumption-chart-<?php echo $item->get_id(); ?>" width="15" height="15"></canvas>
-								<?php if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) { ?>
+								<?php if ( wp_doing_ajax() ) { ?>
 									<script type="text/javascript">jQuery( window ).trigger( "canvasprinted.imagify", [ ".imagify-consumption-chart-<?php echo $item->get_id(); ?>" ] ); </script>
 								<?php } ?>
 							</span>

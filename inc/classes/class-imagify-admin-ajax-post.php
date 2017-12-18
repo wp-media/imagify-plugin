@@ -105,7 +105,7 @@ class Imagify_Admin_Ajax_Post {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		if ( wp_doing_ajax() ) {
 			// Actions triggered only on admin ajax.
 			$actions = array_merge( $this->ajax_post_actions, $this->ajax_only_actions );
 
