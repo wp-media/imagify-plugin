@@ -487,6 +487,7 @@ class Imagify_Admin_Ajax_Post {
 			'status'             => $list_table->get_column( 'status', $file ),
 			'optimization_level' => $list_table->get_column( 'optimization_level', $file ),
 			'actions'            => $list_table->get_column( 'actions', $file ),
+			'title'              => $list_table->get_column( 'title', $file ),
 		) );
 	}
 
@@ -539,6 +540,7 @@ class Imagify_Admin_Ajax_Post {
 			'status'             => $list_table->get_column( 'status', $file ),
 			'optimization_level' => $list_table->get_column( 'optimization_level', $file ),
 			'actions'            => $list_table->get_column( 'actions', $file ),
+			'title'              => $list_table->get_column( 'title', $file ), // This one must remain after the "optimization" column, otherwize the data for the comparison tool won't be up-to-date.
 		) );
 	}
 
