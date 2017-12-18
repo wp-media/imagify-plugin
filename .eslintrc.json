@@ -23,7 +23,8 @@
         "imagifyOptions":      true,
         "imagifyPricingModal": true,
         "imagifySwal":         true,
-        "imagifyTTT":          true
+        "imagifyTTT":          true,
+        "imagifyFiles":        true
     },
     "rules": {
         "consistent-this":            "error",

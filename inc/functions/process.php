@@ -113,7 +113,7 @@ function do_imagify( $file_path, $args = array() ) {
 	}
 
 	if ( ! function_exists( 'download_url' ) ) {
-		require( ABSPATH . 'wp-admin/includes/file.php' );
+		require_once ABSPATH . 'wp-admin/includes/file.php';
 	}
 
 	$temp_file = download_url( $response->image );

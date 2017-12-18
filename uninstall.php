@@ -24,7 +24,7 @@ delete_transient( 'imagify_user' );
 $transients = implode( '" OR option_name LIKE "', array(
 	'_transient_%imagify-async-in-progress-%',
 	'_transient_%imagify-ngg-async-in-progress-%',
-	'_transient_%imagify-file-async-in-progress-%',
+	'_site_transient_%imagify-file-async-in-progress-%',
 	'_transient_%imagify_rpc_%',
 ) );
 $wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "' . $transients . '"' ); // WPCS: unprepared SQL ok.

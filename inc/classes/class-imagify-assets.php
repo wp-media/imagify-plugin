@@ -221,7 +221,7 @@ class Imagify_Assets {
 
 		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'admin' ) )->defer_localization( 'imagifyOptions' );
 
-		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'admin' ) );
+		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'chart', 'admin' ) )->defer_localization( 'imagifyFiles' );
 	}
 
 	/**

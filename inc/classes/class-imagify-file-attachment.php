@@ -19,13 +19,13 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	const VERSION = '1.0';
 
 	/**
-	 * Name of the DB class.
+	 * The attachment SQL DB class.
 	 *
 	 * @var    string
 	 * @since  1.7
-	 * @author Grégory Viguier
+	 * @access protected
 	 */
-	const DB_CLASS_NAME = 'Imagify_Files_DB';
+	protected $db_class_name = 'Imagify_Files_DB';
 
 	/**
 	 * The constructor.
@@ -135,7 +135,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return array();
 		}
 
-		$classname = self::DB_CLASS_NAME;
+		$classname = $this->db_class_name;
 		$data      = array_merge( $classname::get_instance()->get_column_defaults(), $this->get_row() );
 
 		unset( $data['file_id'] );
@@ -157,7 +157,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Get the attachment optimization status (success or error).
+	 * Get the file optimization status (success, already_optimized, or error).
 	 *
 	 * @since  1.7
 	 * @access public
@@ -227,19 +227,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return;
 		}
 
-		// All DB columns that have `null` as default value, are Imagify data.
-		$classname       = self::DB_CLASS_NAME;
-		$instance        = $classname::get_instance();
-		$column_defaults = $instance->get_column_defaults();
-		$imagify_columns = array();
-
-		foreach ( $column_defaults as $column_name => $value ) {
-			if ( ! isset( $value ) ) {
-				$imagify_columns[ $column_name ] = null;
-			}
-		}
-
-		$instance->update( $this->id, $imagify_columns );
+		$this->update_row( $this->get_reset_imagify_data() );
 	}
 
 	/**
@@ -271,7 +259,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Get the original attachment size.
+	 * Get the original file size.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -286,14 +274,109 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return $human_format ? imagify_size_format( 0, $decimals ) : 0;
 		}
 
-		$row  = $this->get_row();
-		$size = ! empty( $row['original_size'] ) ? $row['original_size'] : imagify_get_filesystem()->size( $this->get_original_path() );
+		$row = $this->get_row();
+
+		if ( ! empty( $row['original_size'] ) ) {
+			$size = $row['original_size'];
+		} else {
+			// Check for the backup file first.
+			$file_path = $this->get_backup_path();
+
+			if ( ! $file_path ) {
+				$file_path = $this->get_original_path();
+				$file_path = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
+			}
+
+			$size = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+		}
 
 		if ( $human_format ) {
 			return imagify_size_format( (int) $size, $decimals );
 		}
 
 		return (int) $size;
+	}
+
+	/**
+	 * Get the optimized file size.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  bool $human_format True to display the image human format size (1Mb).
+	 * @param  int  $decimals     Precision of number of decimal places.
+	 * @return string|int
+	 */
+	public function get_optimized_size( $human_format = true, $decimals = 2 ) {
+		if ( ! $this->is_valid() ) {
+			return $human_format ? imagify_size_format( 0, $decimals ) : 0;
+		}
+
+		$row  = $this->get_row();
+
+		if ( ! empty( $row['optimized_size'] ) ) {
+			$size = $row['optimized_size'];
+		} else {
+			$file_path = $this->get_original_path();
+			$file_path = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
+			$size      = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+		}
+
+		if ( $human_format ) {
+			return imagify_size_format( (int) $size, $decimals );
+		}
+
+		return (int) $size;
+	}
+
+	/**
+	 * Get the optimized attachment size.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return float A 2-decimals float.
+	 */
+	public function get_saving_percent() {
+		if ( ! $this->is_valid() ) {
+			return round( (float) 0, 2 );
+		}
+
+		$row = $this->get_row();
+
+		if ( ! empty( $row['percent'] ) ) {
+			return $row['percent'] / 100;
+		}
+
+		$original_size = $this->get_original_size( false );
+
+		if ( ! $original_size ) {
+			return round( (float) 0, 2 );
+		}
+
+		$optimized_size = $this->get_optimized_size( false );
+
+		if ( ! $optimized_size ) {
+			return round( (float) 0, 2 );
+		}
+
+		return round( ( $original_size - $optimized_size ) / $original_size * 100, 2 );
+	}
+
+	/**
+	 * Get the overall optimized size (all thumbnails).
+	 * And since we don't have thumbnails...
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return float A 2-decimals float.
+	 */
+	public function get_overall_saving_percent() {
+		return $this->get_saving_percent();
 	}
 
 	/**
@@ -319,6 +402,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		$data = self::merge_intersect( $this->get_row(), array(
 			'original_size'      => 0,
 			'optimized_size'     => false,
+			'percent'            => 0,
 			'status'             => false,
 			'error'              => false,
 		) );
@@ -328,11 +412,13 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		if ( $data['status'] ) {
 			unset( $data['status'], $data['error'] );
 
-			if ( $data['original_size'] && $data['optimized_size'] ) {
-				$data['percent'] = $data['optimized_size'] / $data['original_size'] * 100;
+			if ( empty( $data['percent'] ) && $data['original_size'] && $data['optimized_size'] ) {
+				$data['percent'] = round( ( $data['original_size'] - $data['optimized_size'] ) / $data['original_size'] * 100, 2 );
+			} elseif ( ! empty( $data['percent'] ) ) {
+				$data['percent'] = $data['percent'] / 100;
 			}
 		} else {
-			unset( $data['status'], $data['original_size'], $data['optimized_size'] );
+			unset( $data['status'], $data['original_size'], $data['optimized_size'], $data['percent'] );
 		}
 
 		if ( isset( $key ) ) {
@@ -394,6 +480,44 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	}
 
 	/**
+	 * Get default values used to reset Imagify data.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function get_reset_imagify_data() {
+		static $column_defaults;
+
+		if ( ! isset( $column_defaults ) ) {
+			$classname       = $this->db_class_name;
+			$column_defaults = $classname::get_instance()->get_column_defaults();
+
+			// All DB columns that have `null` as default value, are Imagify data.
+			foreach ( $column_defaults as $column_name => $value ) {
+				if ( 'hash' === $column_name || 'modified' === $column_name ) {
+					continue;
+				}
+
+				if ( isset( $value ) ) {
+					unset( $column_defaults[ $column_name ] );
+				}
+			}
+		}
+
+		$imagify_columns = $column_defaults;
+
+		// Also set the new file hash.
+		$file_path = $this->get_original_path();
+
+		if ( $file_path && imagify_get_filesystem()->exists( $file_path ) ) {
+			$imagify_columns['hash'] = md5_file( $file_path );
+		}
+
+		return $imagify_columns;
+	}
+
+	/**
 	 * Fills statistics data with values from $data array.
 	 *
 	 * @since  1.7
@@ -408,19 +532,10 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 */
 	public function fill_data( $data, $response, $url = null, $size = null ) {
 		$data = is_array( $data ) ? $data : array();
-
-		$data = self::merge_intersect( $data, array(
-			'width'          => 0,
-			'height'         => 0,
-			'original_size'  => 0,
-			'original_hash'  => '',
-			'optimized_size' => null,
-			'optimized_hash' => null,
-			'status'         => null,
-			'error'          => null,
-		) );
+		$data = self::merge_intersect( $data, $this->get_reset_imagify_data() );
 
 		if ( is_wp_error( $response ) ) {
+			// Error or already optimized.
 			$data['error'] = $response->get_error_message();
 
 			if ( false !== strpos( $data['error'], 'This image is already compressed' ) ) {
@@ -432,18 +547,29 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return $data;
 		}
 
-		$response = (object) array_merge( array(
-			'original_size' => 0,
-			'new_size'      => 0,
-		), (array) $response );
+		// Success.
+		$old_data        = $this->get_data();
+		$original_size   = $old_data['original_size'];
+		$data['percent'] = 0;
+		$data['status']  = 'success';
 
-		$data = array_merge( $data, array(
-			'original_size'  => (int) $response->original_size,
-			'optimized_size' => (int) $response->new_size,
-			'optimized_hash' => md5_file( $this->get_original_path() ),
-			'status'         => 'success',
-			'error'          => null,
-		) );
+		if ( ! empty( $response->original_size ) && ! $original_size ) {
+			$data['original_size'] = (int) $response->original_size;
+			$original_size         = $data['original_size'];
+		}
+
+		if ( ! empty( $response->new_size ) ) {
+			$data['optimized_size'] = (int) $response->new_size;
+		} else {
+			$file_path = $this->get_original_path();
+			$file_path = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
+
+			$data['optimized_size'] = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+		}
+
+		if ( $original_size && $data['optimized_size'] ) {
+			$data['percent'] = round( ( $original_size - $data['optimized_size'] ) / $original_size * 10000 );
+		}
 
 		return $data;
 	}
@@ -457,32 +583,20 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 *
 	 * @param  int   $optimization_level The optimization level (2=ultra, 1=aggressive, 0=normal).
 	 * @param  array $metadata           The attachment meta data. Not used here.
-	 * @return array $optimized_data     The optimization data.
+	 * @return bool|object               True on success (status success or already_optimized). A WP_Error object on failure.
 	 */
 	public function optimize( $optimization_level = null, $metadata = null ) {
 		// Check if the file extension is allowed.
 		if ( ! $this->is_mime_type_supported() ) {
-			return;
+			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
-		$optimization_level = isset( $optimization_level ) ? (int) $optimization_level : get_imagify_option( 'optimization_level' );
+		$optimization_level = is_numeric( $optimization_level ) ? (int) $optimization_level : get_imagify_option( 'optimization_level' );
 
-		// To avoid issue with "original_size" at 0.
-		if ( 0 === $this->get_stats_data( 'original_size' ) ) {
-			$this->delete_imagify_data();
-		}
-
-		// Check if the full size is already optimized.
+		// Check if the image is already optimized.
 		if ( $this->is_optimized() && ( $this->get_optimization_level() === $optimization_level ) ) {
-			return;
+			return new WP_Error( 'same_optimization_level', __( 'This file is already optimized with this level.', 'imagify' ) );
 		}
-
-		// Get file path, md5, width, and height for original image.
-		$original_path   = $this->get_original_path();
-		$original_md5    = md5_file( $original_path );
-		$attachment_size = @getimagesize( $attachment_path );
-		$original_width  = isset( $attachment_size[0] ) ? (int) $attachment_size[0] : 0;
-		$original_height = isset( $attachment_size[1] ) ? (int) $attachment_size[1] : 0;
 
 		/**
 		 * Fires before optimizing a file.
@@ -494,32 +608,34 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		*/
 		do_action( 'before_imagify_optimize_file', $this->id );
 
-		set_transient( 'imagify-file-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+		set_site_transient( 'imagify-file-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
 
-		// Optimize the original size.
-		$response = do_imagify( $attachment_path, array(
+		// Optimize the image.
+		$response = do_imagify( $this->get_original_path(), array(
 			'optimization_level' => $optimization_level,
-			'context'            => 'file',
+			'context'            => 'File',
 			'original_size'      => $this->get_original_size( false ),
 			'backup_path'        => $this->get_raw_backup_path(),
 		) );
 
+		// Fill the data.
 		$data = $this->fill_data( array(
-			'width'              => $original_width,
-			'height'             => $original_height,
-			'original_hash'      => $original_md5,
 			'optimization_level' => $optimization_level,
 		), $response );
 
-		$classname = self::DB_CLASS_NAME;
-		$classname::get_instance()->update( $this->id, $data );
+		// Save the data.
+		$this->update_row( $data );
 
-		if ( 'success' !== $data['status'] ) {
-			delete_transient( 'imagify-file-async-in-progress-' . $this->id );
-			return;
+		if ( is_wp_error( $response ) ) {
+			delete_site_transient( 'imagify-file-async-in-progress-' . $this->id );
+
+			if ( 'error' === $data['status'] ) {
+				return $response;
+			}
+
+			// Already optimized.
+			return true;
 		}
-
-		$optimized_data = $this->get_data();
 
 		/**
 		 * Fires after optimizing an attachment.
@@ -530,11 +646,11 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		 * @param int   $id              The attachment ID.
 		 * @param array $optimized_data  The optimization data.
 		 */
-		do_action( 'after_imagify_optimize_file', $this->id, $optimized_data );
+		do_action( 'after_imagify_optimize_file', $this->id, $this->get_data() );
 
-		delete_transient( 'imagify-file-async-in-progress-' . $this->id );
+		delete_site_transient( 'imagify-file-async-in-progress-' . $this->id );
 
-		return $optimized_data;
+		return true;
 	}
 
 	/**
@@ -544,22 +660,26 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return void
+	 * @return bool|object True on success (status success or already_optimized). A WP_Error object on failure.
 	 */
 	public function restore() {
-		// Check if the attachment extension is allowed.
+		// Check if the file extension is allowed.
 		if ( ! $this->is_mime_type_supported() ) {
-			return;
-		}
-
-		// Stop the process if there is no backup file to restore.
-		if ( ! $this->has_backup() ) {
-			return;
+			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
 		$backup_path = $this->get_backup_path();
-		$file_path   = $this->get_original_path();
-		$filesystem  = imagify_get_filesystem();
+
+		// Stop the process if there is no backup file to restore.
+		if ( ! $backup_path ) {
+			return new WP_Error( 'source_doesnt_exist', __( 'The backup file does not exist.', 'imagify' ) );
+		}
+
+		$file_path  = $this->get_original_path();
+
+		if ( ! $file_path ) {
+			return new WP_Error( 'empty_path', __( 'The file path is empty.', 'imagify' ) );
+		}
 
 		/**
 		 * Fires before restoring a file.
@@ -572,7 +692,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		do_action( 'before_imagify_restore_file', $this->id );
 
 		// Create the original image from the backup.
-		$filesystem->copy( $backup_path, $file_path, true );
+		imagify_get_filesystem()->copy( $backup_path, $file_path, true );
 		imagify_chmod_file( $file_path );
 
 		// Remove old optimization data.

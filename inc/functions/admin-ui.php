@@ -37,11 +37,10 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 	}
 
 	$attachment_id      = $attachment->id;
-	$data               = $attachment->get_data();
 	$optimization_level = $attachment->get_optimization_level_label();
 
 	if ( ! $is_media_page ) {
-		$output .= $output_before . '<span class="data">' . __( 'New Filesize:', 'imagify' ) . '</span> <strong class="big">' . imagify_size_format( $data['sizes']['full']['optimized_size'], 2 ) . '</strong>' . $output_after;
+		$output .= $output_before . '<span class="data">' . __( 'New Filesize:', 'imagify' ) . '</span> <strong class="big">' . $attachment->get_optimized_size() . '</strong>' . $output_after;
 	}
 
 	$chart = '';
@@ -62,7 +61,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 
 	$output .= $output_before;
 	$output .= '<span class="data">' . __( 'Original Saving:', 'imagify' ) . '</span> ';
-	$output .= '<strong>' . $chart . '<span class="imagify-chart-value">' . $data['sizes']['full']['percent'] . '</span>%</strong>';
+	$output .= '<strong>' . $chart . '<span class="imagify-chart-value">' . $attachment->get_saving_percent() . '</span>%</strong>';
 	$output .= $output_after;
 
 	// More details section.
@@ -87,7 +86,7 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 
 	if ( $total_optimized_thumbnails ) {
 		$output .= $output_before . '<span class="data">' . __( 'Thumbnails Optimized:', 'imagify' ) . '</span> <strong>' . $total_optimized_thumbnails . '</strong>' . $output_after;
-		$output .= $output_before . '<span class="data">' . __( 'Overall Saving:', 'imagify' ) . '</span> <strong>' . $data['stats']['percent'] . '%</strong>' . $output_after;
+		$output .= $output_before . '<span class="data">' . __( 'Overall Saving:', 'imagify' ) . '</span> <strong>' . $attachment->get_overall_saving_percent() . '%</strong>' . $output_after;
 	}
 
 	// End of list.

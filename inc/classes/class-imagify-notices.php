@@ -17,6 +17,13 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	const VERSION = '1.0';
 
 	/**
+	 * Name of the transient storing temporary notices.
+	 *
+	 * @var string
+	 */
+	const TEMPORARY_NOTICES_TRANSIENT_NAME = 'imagify_temporary_notices';
+
+	/**
 	 * Name of the user meta that stores the dismissed notice IDs.
 	 *
 	 * @var string
@@ -171,6 +178,9 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 				Imagify_Views::get_instance()->print_template( $view, $data );
 			}
 		}
+
+		// Temporary notices.
+		$this->render_temporary_notices();
 	}
 
 	/**
@@ -572,6 +582,145 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 
 
 	/** ----------------------------------------------------------------------------------------- */
+	/** TEMPORARY NOTICES ======================================================================= */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Maybe display some notices.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function render_temporary_notices() {
+		if ( is_network_admin() ) {
+			$notices = $this->get_network_temporary_notices();
+		} else {
+			$notices = $this->get_site_temporary_notices();
+		}
+
+		if ( ! $notices ) {
+			return;
+		}
+
+		$views = Imagify_Views::get_instance();
+
+		foreach ( $notices as $i => $notice_data ) {
+			$notices[ $i ]['type'] = ! empty( $notice_data['type'] ) ? $notice_data['type'] : 'error';
+		}
+
+		$views->print_template( 'notice-temporary', $notices );
+	}
+
+	/**
+	 * Get temporary notices for the network.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return array
+	 */
+	public function get_network_temporary_notices() {
+		$notices = get_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+
+		if ( false === $notices ) {
+			return array();
+		}
+
+		delete_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+
+		return $notices && is_array( $notices ) ? $notices : array();
+	}
+
+	/**
+	 * Create a temporary notice for the network.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param array|object|string $notice_data Some data, with the message to display.
+	 */
+	public function add_network_temporary_notice( $notice_data ) {
+		$notices = get_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+		$notices = is_array( $notices ) ? $notices : array();
+
+		if ( is_wp_error( $notice_data ) ) {
+			$notice_data = $notice_data->get_error_messages();
+			$notice_data = implode( '<br/>', $notice_data );
+		}
+
+		if ( is_string( $notice_data ) ) {
+			$notice_data = array(
+				'message' => $notice_data,
+			);
+		} elseif ( is_object( $notice_data ) ) {
+			$notice_data = (array) $notice_data;
+		}
+
+		if ( ! is_array( $notice_data ) || empty( $notice_data['message'] ) ) {
+			return;
+		}
+
+		$notices[] = $notice_data;
+
+		set_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME, $notices, 30 );
+	}
+
+	/**
+	 * Get temporary notices for the current site.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return array
+	 */
+	public function get_site_temporary_notices() {
+		$notices = get_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+
+		if ( false === $notices ) {
+			return array();
+		}
+
+		delete_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+
+		return $notices && is_array( $notices ) ? $notices : array();
+	}
+
+	/**
+	 * Create a temporary notice for the current site.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param array|string $notice_data Some data, with the message to display.
+	 */
+	public function add_site_temporary_notice( $notice_data ) {
+		$notices = get_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+		$notices = is_array( $notices ) ? $notices : array();
+
+		if ( is_string( $notice_data ) ) {
+			$notice_data = array(
+				'message' => $notice_data,
+			);
+		} elseif ( is_object( $notice_data ) ) {
+			$notice_data = (array) $notice_data;
+		}
+
+		if ( ! is_array( $notice_data ) || empty( $notice_data['message'] ) ) {
+			return;
+		}
+
+		$notices[] = $notice_data;
+
+		set_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME, $notices, 30 );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
 	/** PUBLIC TOOLS ============================================================================ */
 	/** ----------------------------------------------------------------------------------------- */
 
@@ -582,8 +731,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	 * @author Grégory Viguier
 	 * @see    imagify_renew_notice()
 	 *
-	 * @param  string $notice  A notice ID.
-	 * @param  int    $user_id A user ID.
+	 * @param string $notice  A notice ID.
+	 * @param int    $user_id A user ID.
 	 */
 	public static function renew_notice( $notice, $user_id = 0 ) {
 		$user_id = $user_id ? (int) $user_id : get_current_user_id();
