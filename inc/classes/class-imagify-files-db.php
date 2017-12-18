@@ -42,7 +42,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $table_version = 10;
+	protected $table_version = 25;
 
 	/**
 	 * Tell if the table is the same for each site of a Multisite.
@@ -93,17 +93,16 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			'file_id'            => '%d',
 			'folder_id'          => '%d',
 			'path'               => '%s',
+			'hash'               => '%s',
+			'modified'           => '%d',
 			'width'              => '%d',
 			'height'             => '%d',
 			'original_size'      => '%d',
-			'original_hash'      => '%s',
 			'optimized_size'     => '%d',
-			'optimized_hash'     => '%s',
 			'percent'            => '%d',
 			'optimization_level' => '%d',
 			'status'             => '%s',
 			'error'              => '%s',
-			'modified'           => '%d',
 		);
 	}
 
@@ -121,17 +120,16 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			'file_id'            => 0,
 			'folder_id'          => 0,
 			'path'               => '',
+			'hash'               => '',
+			'modified'           => 0,
 			'width'              => 0,
 			'height'             => 0,
 			'original_size'      => 0,
-			'original_hash'      => '',
 			'optimized_size'     => null,
-			'optimized_hash'     => null,
 			'percent'            => null,
 			'optimization_level' => null,
 			'status'             => null,
 			'error'              => null,
-			'modified'           => null,
 		);
 	}
 
@@ -149,17 +147,16 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			file_id bigint(20) unsigned NOT NULL auto_increment,
 			folder_id bigint(20) unsigned NOT NULL default 0,
 			path varchar(191) NOT NULL default '',
+			hash varchar(32) NOT NULL default '',
+			modified int(1) NOT NULL default 0,
 			width int(5) NOT NULL default 0,
 			height int(5) NOT NULL default 0,
 			original_size int(10) NOT NULL default 0,
-			original_hash varchar(32) NOT NULL default '',
 			optimized_size int(10) default NULL,
-			optimized_hash varchar(32) default NULL,
 			percent int(2) unsigned default NULL,
 			optimization_level int(1) default NULL,
 			status varchar(20) default NULL,
 			error varchar(100) default NULL,
-			modified int(1) default NULL,
 			PRIMARY KEY (file_id),
 			UNIQUE KEY path (path),
 			KEY folder_id (folder_id),
