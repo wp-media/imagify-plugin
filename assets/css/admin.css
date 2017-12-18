@@ -473,6 +473,9 @@ button.imagify-link-like {
 .imagify-settings-section {
 	padding: 10px 20px;
 }
+.imagify-account-info-col .imagify-settings-section {
+	padding-right: 0;
+}
 .imagify-settings-main-content,
 .imagify-welcome .imagify-settings-section {
 	border: 1px solid #D9D9D9;
