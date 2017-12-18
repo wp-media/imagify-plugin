@@ -640,11 +640,16 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param array|string $notice_data Some data, with the message to display.
+	 * @param array|object|string $notice_data Some data, with the message to display.
 	 */
 	public function add_network_temporary_notice( $notice_data ) {
 		$notices = get_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
 		$notices = is_array( $notices ) ? $notices : array();
+
+		if ( is_wp_error( $notice_data ) ) {
+			$notice_data = $notice_data->get_error_messages();
+			$notice_data = implode( '<br/>', $notice_data );
+		}
 
 		if ( is_string( $notice_data ) ) {
 			$notice_data = array(
