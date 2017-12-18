@@ -19,13 +19,13 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	const VERSION = '1.0';
 
 	/**
-	 * Name of the DB class.
+	 * The attachment SQL DB class.
 	 *
 	 * @var    string
 	 * @since  1.7
-	 * @author Grégory Viguier
+	 * @access protected
 	 */
-	const DB_CLASS_NAME = 'Imagify_Files_DB';
+	protected $db_class_name = 'Imagify_Files_DB';
 
 	/**
 	 * The constructor.
@@ -135,7 +135,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return array();
 		}
 
-		$classname = self::DB_CLASS_NAME;
+		$classname = $this->db_class_name;
 		$data      = array_merge( $classname::get_instance()->get_column_defaults(), $this->get_row() );
 
 		unset( $data['file_id'] );
@@ -228,7 +228,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		}
 
 		// All DB columns that have `null` as default value, are Imagify data.
-		$classname       = self::DB_CLASS_NAME;
+		$classname       = $this->db_class_name;
 		$instance        = $classname::get_instance();
 		$column_defaults = $instance->get_column_defaults();
 		$imagify_columns = array();
@@ -609,7 +609,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			'optimization_level' => $optimization_level,
 		), $response );
 
-		$classname = self::DB_CLASS_NAME;
+		$classname = $this->db_class_name;
 		$classname::get_instance()->update( $this->id, $data );
 
 		if ( 'success' !== $data['status'] ) {

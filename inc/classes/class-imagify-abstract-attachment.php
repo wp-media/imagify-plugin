@@ -18,9 +18,11 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	/**
 	 * The attachment SQL DB class.
 	 *
-	 * @var string
+	 * @var    string
+	 * @since  1.7
+	 * @access protected
 	 */
-	const DB_CLASS_NAME = '';
+	protected $db_class_name = '';
 
 	/**
 	 * The attachment SQL data row.
@@ -810,11 +812,11 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return $this->row;
 		}
 
-		if ( ! self::DB_CLASS_NAME || ! $this->is_valid() ) {
+		if ( ! $this->db_class_name || ! $this->is_valid() ) {
 			return array();
 		}
 
-		$classname = self::DB_CLASS_NAME;
+		$classname = $this->db_class_name;
 		$this->row = $classname::get_instance()->get( $this->id );
 
 		if ( ! $this->row ) {
@@ -835,11 +837,11 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @param  array $data The data to update.
 	 */
 	public function update_row( $data ) {
-		if ( ! self::DB_CLASS_NAME || ! $this->is_valid() ) {
+		if ( ! $this->db_class_name || ! $this->is_valid() ) {
 			return;
 		}
 
-		$classname = self::DB_CLASS_NAME;
+		$classname = $this->db_class_name;
 		$classname::get_instance()->update( $this->id, $data );
 
 		$this->reset_row_cache();
@@ -853,11 +855,11 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @access public
 	 */
 	public function delete_row() {
-		if ( ! self::DB_CLASS_NAME || ! $this->is_valid() ) {
+		if ( ! $this->db_class_name || ! $this->is_valid() ) {
 			return;
 		}
 
-		$classname = self::DB_CLASS_NAME;
+		$classname = $this->db_class_name;
 		$classname::get_instance()->delete( $this->id );
 
 		$this->reset_row_cache();
