@@ -87,8 +87,15 @@ window.imagify.drawMeAChart = function( canvas ) {
 			} ).get();
 
 			ids.forEach( function( id, index ) {
+				var $button = $( '#' + action + '-' + id );
+
+				if ( ! $button.length ) {
+					$button.closest( 'tr' ).find( '#cb-select-' + id ).prop( 'checked', false );
+					return;
+				}
+
 				setTimeout( function() {
-					$( '#' + action + '-' + id ).trigger( 'click.imagify' );
+					$button.trigger( 'click.imagify' );
 				}, index * 500 );
 			} );
 		} );
@@ -115,8 +122,12 @@ window.imagify.drawMeAChart = function( canvas ) {
 
 		$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ) )
 			.done( function( r ) {
-				if ( ! r.success && r.data.row ) {
-					$row.html( '<td class="colspanchange" colspan="' + $row.children().length + '">' + r.data.row + '</td>' );
+				if ( ! r.success ) {
+					if ( r.data.row ) {
+						$row.html( '<td class="colspanchange" colspan="' + $row.children().length + '">' + r.data.row + '</td>' );
+					} else {
+						$parent.html( r.data );
+					}
 					return;
 				}
 
@@ -125,7 +136,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 				} );
 			} )
 			.always( function() {
-				$row.removeClass( 'working' );
+				$row.removeClass( 'working' ).find( '.check-column [type="checkbox"]' ).prop( 'checked', false );
 			} );
 	} );
 

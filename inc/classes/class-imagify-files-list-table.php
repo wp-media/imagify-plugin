@@ -372,6 +372,27 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Get a column contents.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $column The column "name": "cb", "title", "optimization_level", etc.
+	 * @param  object $item   The current File object.
+	 * @return string         HTML contents,
+	 */
+	public function get_column( $column, $item ) {
+		if ( ! method_exists( $this, 'column_' . $column ) ) {
+			return '';
+		}
+
+		ob_start();
+		call_user_func( array( $this, 'column_' . $column ), $item );
+		return ob_get_clean();
+	}
+
+	/**
 	 * Handles the checkbox column output.
 	 *
 	 * @since  1.7
@@ -397,13 +418,21 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @param object $item The current File object.
 	 */
 	public function column_title( $item ) {
-		$url   = $item->get_original_url();
-		$base  = ! empty( $item->folder_path ) ? Imagify_Files_Scan::remove_placeholder( $item->folder_path ) : '';
-		$title = imagify_make_file_path_relative( $item->get_original_path(), $base );
+		$item        = $this->maybe_set_item_folder( $item );
+		$url         = $item->get_original_url();
+		$base        = ! empty( $item->folder_path ) ? Imagify_Files_Scan::remove_placeholder( $item->folder_path ) : '';
+		$title       = imagify_make_file_path_relative( $item->get_original_path(), $base );
+		$dimensions  = $item->get_dimensions();
+		$orientation = $dimensions['width'] > $dimensions['height'] ? ' landscape' : ' portrait';
+		$orientation = $dimensions['width'] && $dimensions['height'] ? $orientation : '';
 		?>
 		<strong class="has-media-icon">
 			<a href="<?php echo esc_url( $url ); ?>" target="_blank">
-				<span class="media-icon image-icon"><img src="<?php echo esc_url( $url ); ?>" alt="" width="60" /></span>
+				<span class="media-icon image-icon<?php echo $orientation; ?>">
+					<span class="centered">
+						<img src="<?php echo esc_url( $url ); ?>" alt="" />
+					</span>
+				</span>
 				<?php echo esc_html( $title ); ?>
 			</a>
 		</strong>
@@ -421,6 +450,8 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 */
 	public function column_folder( $item ) {
 		static $themes_and_plugins;
+
+		$item = $this->maybe_set_item_folder( $item );
 
 		if ( empty( $item->folder_path ) ) {
 			return;
@@ -496,32 +527,30 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @param object $item The current File object.
 	 */
 	public function column_status( $item ) {
-		$status = $item->get_status();
+		$status     = $item->get_status();
+		$error_text = $item->get_optimized_error();
+		$row        = $item->get_row();
+		$messages   = array();
 
 		if ( ! $status ) {
-			echo esc_html_x( 'Not optimized', 'image', 'imagify' );
-			return;
-		}
-
-		$text = $item->get_optimized_error();
-
-		if ( $text ) {
+			// File is not optimized.
+			$messages[] = esc_html_x( 'Not optimized', 'image', 'imagify' );
+		} elseif ( $error_text ) {
 			// Error or already optimized.
-			echo esc_html( $text );
-			return;
+			$messages[] = esc_html( $error_text );
 		}
 
-		// At this point, the file is optimized.
-		$row = $item->get_row();
-
-		if ( ! $row['modified'] ) {
-			esc_html_e( 'No changes found', 'imagify' );
-		} else {
-			esc_html_e( 'The file has changed', 'imagify' );
+		if ( ! $row['modified'] && ! $messages ) {
+			// No need to display this if we already have another message to display.
+			$messages[] = esc_html__( 'No changes found', 'imagify' );
+		} elseif ( $row['modified'] ) {
+			// The file has changed or is missing.
+			$messages[] = esc_html__( 'The file has changed', 'imagify' );
 		}
+
+		echo implode( '<br/>', $messages );
 
 		$this->refresh_status_button( $item );
-		$this->reoptimize_button( $item );
 	}
 
 	/**
@@ -534,7 +563,9 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @param object $item The current File object.
 	 */
 	public function column_optimization_level( $item ) {
-		echo $item->get_optimization_level_label( '%ICON% %s' );
+		if ( ! $item->has_error() ) {
+			echo $item->get_optimization_level_label( '%ICON% %s' );
+		}
 	}
 
 	/**
@@ -568,6 +599,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		}
 
 		$this->optimize_button( $item );
+		$this->retry_button( $item );
 		$this->reoptimize_buttons( $item );
 		$this->restore_button( $item );
 	}
@@ -602,8 +634,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prints a button to re-optimize the file to the same level.
-	 * It is display only if "already_optimized" or "error", and if it has a backup.
+	 * Prints a button to retry to optimize the file.
 	 *
 	 * @since  1.7
 	 * @access protected
@@ -611,28 +642,23 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 *
 	 * @param object $item The current File object.
 	 */
-	protected function reoptimize_button( $item ) {
-		if ( ! $item->get_status() ) {
-			// Not optimized yet.
+	protected function retry_button( $item ) {
+		if ( ! $item->is_already_optimized() && ! $item->has_error() ) {
+			// Not optimized or successfully optimized.
 			return;
 		}
 
-		if ( $item->is_optimized() || ! $item->has_backup() ) {
-			return;
-		}
-
-		$url = get_imagify_admin_url( 'reoptimize-file', array(
-			'attachment_id'      => $item->get_id(),
-			'optimization_level' => $item->get_optimization_level(),
+		$url = get_imagify_admin_url( 'optimize-file', array(
+			'attachment_id' => $item->get_id(),
 		) );
+		$level = imagify_get_optimization_level_label( Imagify_Options::get_instance()->get( 'optimization_level' ) );
+		/* translators: %s is an optimization level. */
+		$title = sprintf( __( 'Optimize this file to %s.' ), $level );
+		$class = 'button button-imagify-optimize' . ( $item->has_backup() ? ' file-has-backup' : '' );
 		?>
-		<br/>
-		<a href="<?php echo esc_url( $url ); ?>" class="button-imagify-reoptimize" data-waiting-label="<?php esc_attr_e( 'Optimizing...', 'imagify' ); ?>">
-			<span class="dashicons dashicons-admin-generic"></span>
-			<span class="imagify-hide-if-small">
-				<?php esc_html_e( 'Re-Optimize', 'imagify' ); ?>
-			</span>
-		</a>
+		<a id="imagify-optimize-<?php echo $item->get_id(); ?>" href="<?php echo esc_url( $url ); ?>" title="<?php echo esc_attr( $title ); ?>" class="<?php echo $class; ?>" data-waiting-label="<?php esc_attr_e( 'Optimizing...', 'imagify' ); ?>">
+			<?php esc_html_e( 'Try again', 'imagify' ); ?>
+		</a><br/>
 		<?php
 	}
 
@@ -660,7 +686,11 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		$item_level = $item->get_optimization_level();
+		/**
+		 * If the image is optimized, don't display the Retry button for the level the image is optimized in.
+		 * If not, don't display the Retry button for the level set in the plugin settings.
+		 */
+		$skip_level = $is_optimized ? $item->get_optimization_level() : Imagify_Options::get_instance()->get( 'optimization_level' );
 		$args       = array(
 			'attachment_id' => $item->get_id(),
 		);
@@ -671,7 +701,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		);
 
 		foreach ( $labels as $level => $label ) {
-			if ( $item_level === $level && $is_optimized ) {
+			if ( $skip_level === $level ) {
 				continue;
 			}
 
@@ -735,6 +765,43 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			<?php esc_html_e( 'Refresh status', 'imagify' ); ?>
 		</a>
 		<?php
+	}
+
+	/**
+	 * Add the folder_id and folder_path properties to the $item if not set yet.
+	 * It may happen if the $item doesn't come from the prepare() method.
+	 *
+	 * @since  1.7
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  object $item The current File object.
+	 * @return object       The current File object.
+	 */
+	protected function maybe_set_item_folder( $item ) {
+		if ( isset( $item->folder_path ) ) {
+			return $item;
+		}
+
+		$item->folder_id   = 0;
+		$item->folder_path = false;
+
+		$row = $item->get_row();
+
+		if ( ! $row['folder_id'] ) {
+			return $item;
+		}
+
+		$folder = Imagify_Folders_DB::get_instance()->get( $row['folder_id'] );
+
+		if ( ! $folder ) {
+			return $item;
+		}
+
+		$item->folder_id   = $folder['folder_id'];
+		$item->folder_path = $folder['path'];
+
+		return $item;
 	}
 
 	/**
