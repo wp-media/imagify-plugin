@@ -1,12 +1,51 @@
-/* Some Sweet alert styles */
-.imagify-sweet-alert button {
-	margin-top: 17px !important;
-	height: 45px !important;
-	letter-spacing: 3px;
-	text-transform: uppercase !important;
-	border-radius: 3px !important;
-	background-color: #40b1d0  !important;
-	box-shadow: 0 3px 0 #338ea6  !important;
+/* Sub Layer */
+body[class*="_imagify"] .swal2-container.swal2-shown {
+	background: rgb(31, 35 ,50);
+	background: rgba(31, 35 ,50, .9);
+	z-index: 100000;
+}
+
+/* White Container */
+.imagify-sweet-alert .swal2-modal {
+	border-radius: 2px;
+}
+
+/* Title and Subtitle */
+
+.imagify-sweet-alert .swal2-title {
+	margin: 0;
+	padding: 28px 32px;
+	font-size: 24px;
+	text-align: left;
+	color: #FFF;
+	background: #1F2332;
+}
+.imagify-sweet-alert .imagify-swal-subtitle {
+	padding: 0 32px 28px;
+	margin-top: -16px;
+	font-weight: 500;
+	font-size: 14px;
+	text-align: left;
+	color: #7A8996;
+	background: #1F2332;
+}
+
+/* Buttons */
+.imagify-sweet-alert .swal2-buttonswrapper {
+	margin-top: 0;
+	padding: 22px;
+	background: #F4F7F9;
+}
+.imagify-sweet-alert button.swal2-styled {
+	height: auto;
+	padding: 12px 32px;
+	margin: 10px;
+	font-size: 14px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	border-radius: 3px;
+	background-color: #40b1d0 !important;
+	box-shadow: 0 3px 0 #338ea6;
 }
 .imagify-sweet-alert button.loading {
 	border-radius: 100% !important;
@@ -15,8 +54,9 @@
 	box-shadow: none!important;
 }
 .imagify-sweet-alert button.swal2-cancel {
-	background: #777 !important;
-	box-shadow: 0 3px 0 #444 !important;
+	color: #7A8996;
+	background: #E9EFF2 !important;
+	box-shadow: 0 3px 0 rgba(31, 35, 50, .2);
 }
 .imagify-sweet-alert-signup .sa-confirm-button-container {
 	width: 40%;
@@ -38,13 +78,7 @@
 	border-right-width: 0 !important;
 }
 
-/* Make the page in background blured when sweet alert is open */
-#wpwrap {
-	transition: all .4s;
-}
-.stop-scrolling #wpwrap {
-	filter: blur(2px);
-}
-.stop-scrolling #wpwrap #wpadminbar {
-	top: -32px;
+/* Imagify swal contents */
+.imagify-swal-content {
+	padding: 28px 32px;
 }

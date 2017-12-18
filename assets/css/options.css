@@ -430,7 +430,7 @@ label[for="imagify_admin_bar_menu"] {
 	cursor: default;
 }
 
-/* Files tree */
+/* Files tree Part */
 .imagify-add-custom-folder + .imagify-loader {
 	display: none;
 	vertical-align: middle;
@@ -438,31 +438,138 @@ label[for="imagify_admin_bar_menu"] {
 .imagify-add-custom-folder[disabled] + .imagify-loader {
 	display: inline-block;
 }
-.imagify-folders-tree [name="imagify-custom-files[]"]:checked + label {
-	background: yellow;
-}
-.imagify-folders-tree [name="imagify-custom-files[]"][disabled] + label {
-	background: #bbb;
-	font-style: italic;
-}
+
+/* Tree */
 .imagify-folders-tree {
+	margin: 0;
 	text-align: left;
 }
-.imagify-folders-tree ul {
-	position: relative;
-	margin-left: .5em;
-	padding-top: .6em;
-	padding-left: 1em;
-	border-left: 1px dotted #ccc;
+.imagify-icon-folder {
+	display: inline-block;
+	margin: 0 5px;
+	width: 27px;
+	height: 19px;
+	background: url("../images/icon-folder-closed.svg") 0 0 no-repeat;
+	background-size: 21px 19px;
 }
-
+.imagify-is-open .imagify-icon-folder {
+	background-image: url("../images/icon-folder-open.svg");
+	background-size: 27px 19px;
+}
 .imagify-folders-tree .imagify-folder {
-	/* Try to remove !important from sweet-alert-custom.css on buttons */
-	height: auto !important;
-	margin-top: 0 !important;
+	position: relative;
+	z-index: 2;
+	float: left;
+	margin-top: 0;
 	padding: 0;
 	border: 0;
 	background: transparent!important;
-	box-shadow: none!important;
-	margin-right: 10px;
+	box-shadow: none;
+	cursor: pointer;
+}
+.imagify-swal-content .imagify-folders-tree label {
+	position: relative;
+	display: inline-block;
+	padding-right: 10px;
+	font-size: 15px;
+	vertical-align: top;
+	transition: all .475s;
+}
+.imagify-swal-content .imagify-folders-tree label:before {
+	position: absolute;
+	left: -28px;
+	top: 2px;
+	content: "✓";
+	color: #8BC34A;
+	font-size: 14px;
+	font-style: normal;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	opacity: 0;
+	transform: scale(0);
+	transition: all .475s;
+}
+.imagify-swal-content .imagify-folders-tree label:after {
+	content: "";
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 4px;
+	background: #8BC34A;
+	font-size: 15px;
+	opacity: 0;
+	transform: translateX(-10px);
+	transition: all .475s;
+}
+
+.imagify-swal-content .imagify-folders-tree .imagify-is-open ~ label:before {
+	font-size: 13px;
+	left: -24px;
+	top: 4px;
+}
+
+.imagify-folders-tree [name="imagify-custom-files[]"]:checked + label:after {
+	opacity: 1;
+	transform: translateX(0);
+}
+.imagify-folders-tree [name="imagify-custom-files[]"]:checked + label:before {
+	opacity: 1;
+	transform: scale(1);
+}
+.imagify-folders-tree [name="imagify-custom-files[]"]:checked + label {
+	font-weight: bold;
+	color: #5C8031;
+}
+.imagify-folders-tree [name="imagify-custom-files[]"][disabled] + label {
+	font-weight: bold;
+	opacity: 0.5;
+}
+.imagify-folders-tree [name="imagify-custom-files[]"][disabled] + label:before {
+	color: #626E7B;
+	opacity: 1;
+	transform: scale(1);
+}
+.imagify-folders-tree [name="imagify-custom-files[]"][disabled] + label:after {
+	background-color: #626E7B;
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Sub Trees */
+.imagify-folders-sub-tree {
+	position: relative;
+	margin-left: .75em;
+	padding-top: .6em;
+	padding-left: 1em;
+	border-left: 1px dotted rgba(98, 110, 123, .3);
+}
+.imagify-folders-sub-tree li {
+	position: relative;
+}
+.imagify-folders-sub-tree li:before {
+	content: "";
+	position: absolute;
+	top: 10px;
+	left: -1em;
+	height: 1px;
+	width: 0.9em;
+	border-top: 1px dotted rgba(98, 110, 123, .3);
+}
+.imagify-folders-sub-tree li:last-child:after {
+	content: "";
+	position: absolute;
+	left: -1.1em;
+	bottom: 0;
+	height: 11px;
+	width: 3px;
+	background: #FFF;
+}
+
+.imagify-empty-folder {
+	margin-top: -.5em;
+}
+.imagify-empty-folder em {
+	font-size: 12px;
+	font-weight: 500;
+	color: #A2AFBC;
 }

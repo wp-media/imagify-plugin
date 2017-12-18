@@ -1182,13 +1182,14 @@ class Imagify_Admin_Ajax_Post {
 			$label       = str_replace( $folder, '', $abs_path );
 			// Value #///# In input id #///# Label.
 			$value       = esc_attr( $placeholder ) . '#///#' . sanitize_html_class( $placeholder ) . '#///#' . esc_attr( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $placeholder ) ) );
+			$disabled    = disabled( true, isset( $selected[ $placeholder ] ), false );
 
 			$output .= '<li>';
 			/* translators: %s is a folder path. */
-				$output .= '<button class="imagify-folder" type="button" data-folder="' . esc_attr( $rel_path ) . '" title="' . sprintf( esc_attr__( 'Open/Close the folder "%s".', 'imagify' ), $rel_path ) . '">';
-					$output .= '<span class="dashicons dashicons-category"></span>';
+				$output .= '<button class="imagify-folder" type="button" data-folder="' . esc_attr( $rel_path ) . '" title="' . sprintf( esc_attr__( 'Open/Close the folder "%s".', 'imagify' ), $rel_path ) . '"' . $disabled . '>';
+					$output .= '<span class="imagify-icon-folder"></span>';
 				$output .= '</button>';
-				$output .= '<input type="checkbox" name="imagify-custom-files[]" value="' . $value . '" id="imagify-custom-folder-' . $check_id . '" class="screen-reader-text"' . disabled( true, isset( $selected[ $placeholder ] ), false ) . '/>';
+				$output .= '<input type="checkbox" name="imagify-custom-files[]" value="' . $value . '" id="imagify-custom-folder-' . $check_id . '" class="screen-reader-text"' . $disabled . '/>';
 				/* translators: %s is a folder path. */
 				$output .= '<label for="imagify-custom-folder-' . $check_id . '" title="' . sprintf( esc_attr__( 'Select the folder "%s".', 'imagify' ), $rel_path ) . '">';
 					$output .= $label;
@@ -1198,11 +1199,11 @@ class Imagify_Admin_Ajax_Post {
 
 		if ( $images ) {
 			/* translators: %s is a formatted number, dont use %d. */
-			$output .= '<li><em><span class="dashicons dashicons-images-alt"></span> ' . sprintf( _n( '%s image', '%s images', $images, 'imagify' ), number_format_i18n( $images ) ) . '</em></li>';
+			$output .= '<li class="imagify-number-of-images-in-folder"><em><span class="dashicons dashicons-images-alt"></span> ' . sprintf( _n( '%s image', '%s images', $images, 'imagify' ), number_format_i18n( $images ) ) . '</em></li>';
 		}
 
 		if ( ! $output ) {
-			$output .= '<li><em>' . __( 'Empty folder', 'imagify' ) . '</em></li>';
+			$output .= '<li class="imagify-empty-folder"><em>' . __( 'Empty folder', 'imagify' ) . '</em></li>';
 		}
 
 		wp_send_json_success( $output );

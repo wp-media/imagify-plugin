@@ -208,10 +208,12 @@
 
 			swal( {
 				title:            imagifyOptions.labels.filesTreeTitle,
-				html:             '<ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul>',
-				type:             'question',
-				customClass:      'imagify-sweet-alert',
+				html:             '<div class="imagify-swal-subtitle">' + imagifyOptions.labels.filesTreeSubTitle + '</div><div class="imagify-swal-content"><ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul></div>',
+				type:             '',
+				customClass:      'imagify-sweet-alert imagify-folders-selection',
 				showCancelButton: true,
+				padding: 0,
+				confirmButtonText: imagifyOptions.labels.confirmFilesTreeBtn,
 				cancelButtonText: imagifySwal.labels.cancelButtonText,
 				reverseButtons:   true
 			} ).then( function() {
@@ -261,12 +263,12 @@
 
 	// Clicking a folder icon in the modal: fetch the folder's sub-folders and files, then display them.
 	$( d ).on( 'click.imagify', '#imagify-folders-tree [data-folder]', function() {
+
 		var $button  = $( this ),
-			$tree    = $button.next( 'ul' ),
 			selected = [];
 
-		if ( $tree.length ) {
-			$tree.toggleClass( 'hidden' );
+		if ( $( this ).hasClass( 'imagify-is-open' ) ) {
+			$button.removeClass(' imagify-is-open' ).nextAll( '.imagify-folders-sub-tree' ).toggleClass( 'hidden' );
 			return;
 		}
 
@@ -299,7 +301,7 @@
 					return;
 				}
 
-				$button.parent().append( '<ul>' + response.data + '</ul>' );
+				$button.addClass( 'imagify-is-open' ).parent().append( '<ul class="imagify-folders-sub-tree">' + response.data + '</ul>' );
 			} )
 			.fail( function(){
 				swal( {
