@@ -364,10 +364,10 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 */
 	public function get_sortable_columns() {
 		return array(
-			'folder'             => 'orderby',
-			'optimization'       => array( 'orderby', true ),
-			'status'             => 'orderby',
-			'optimization_level' => array( 'orderby', true ),
+			'folder'             => 'folder',
+			'optimization'       => array( 'optimization', true ),
+			'status'             => 'status',
+			'optimization_level' => array( 'optimization_level', true ),
 		);
 	}
 
