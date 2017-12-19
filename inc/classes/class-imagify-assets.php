@@ -296,7 +296,7 @@ class Imagify_Assets {
 		 * Loaded in the files list page.
 		 */
 		if ( imagify_is_screen( 'files-list' ) ) {
-			$this->enqueue_assets( array( 'files-list' ) );
+			$this->enqueue_assets( array( 'files-list', 'twentytwenty' ) );
 		}
 
 		/**

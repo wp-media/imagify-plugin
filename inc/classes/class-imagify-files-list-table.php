@@ -425,17 +425,28 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$dimensions  = $item->get_dimensions();
 		$orientation = $dimensions['width'] > $dimensions['height'] ? ' landscape' : ' portrait';
 		$orientation = $dimensions['width'] && $dimensions['height'] ? $orientation : '';
+
+		if ( ! wp_doing_ajax() && $item->get_optimized_size( false ) > 100000 ) {
+			// LazyLoad.
+			$image_tag  = '<img src="' . esc_url( IMAGIFY_ASSETS_IMG_URL . 'lazyload.png' ) . '" data-lazy-src="' . esc_url( $url ) . '" alt="" />';
+			$image_tag .= '<noscript><img src="' . esc_url( $url ) . '" alt="" /></noscript>';
+		} else {
+			$image_tag = '<img src="' . esc_url( $url ) . '" class="hide-if-no-js" alt="" />';
+		}
 		?>
 		<strong class="has-media-icon">
 			<a href="<?php echo esc_url( $url ); ?>" target="_blank">
 				<span class="media-icon image-icon<?php echo $orientation; ?>">
 					<span class="centered">
-						<img src="<?php echo esc_url( $url ); ?>" alt="" />
+						<?php echo $image_tag; ?>
 					</span>
 				</span>
 				<?php echo esc_html( $title ); ?>
 			</a>
 		</strong>
+		<p class="filename">
+			<?php $this->comparison_tool_button( $item ); ?>
+		</p>
 		<?php
 	}
 
@@ -491,12 +502,12 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		<ul class="imagify-datas-list">
 			<li class="imagify-data-item">
 				<span class="data"><?php esc_html_e( 'Original Filesize:', 'imagify' ); ?></span>
-				<strong class="data-value"><?php echo esc_html( $item->get_original_size() ); ?></strong>
+				<strong class="data-value original"><?php echo esc_html( $item->get_original_size() ); ?></strong>
 			</li>
 			<?php if ( $item->is_optimized() ) { ?>
 				<li class="imagify-data-item">
 					<span class="data"><?php esc_html_e( 'New Filesize:', 'imagify' ); ?></span>
-					<strong class="data-value big"><?php echo esc_html( $item->get_optimized_size() ); ?></strong>
+					<strong class="data-value big optimized"><?php echo esc_html( $item->get_optimized_size() ); ?></strong>
 				</li>
 				<li class="imagify-data-item">
 					<span class="data"><?php esc_html_e( 'Original Saving:', 'imagify' ); ?></span>
@@ -504,7 +515,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 						<span class="imagify-chart">
 							<span class="imagify-chart-container">
 								<canvas class="imagify-consumption-chart imagify-consumption-chart-<?php echo $item->get_id(); ?>" width="15" height="15"></canvas>
-								<?php if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) { ?>
+								<?php if ( wp_doing_ajax() ) { ?>
 									<script type="text/javascript">jQuery( window ).trigger( "canvasprinted.imagify", [ ".imagify-consumption-chart-<?php echo $item->get_id(); ?>" ] ); </script>
 								<?php } ?>
 							</span>
@@ -765,6 +776,52 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			<?php esc_html_e( 'Refresh status', 'imagify' ); ?>
 		</a>
 		<?php
+	}
+
+	/**
+	 * Prints a button for the comparison tool (before / after optimization).
+	 *
+	 * @since  1.7
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param object $item The current File object.
+	 */
+	protected function comparison_tool_button( $item ) {
+		if ( ! $item->is_optimized() || ! $item->has_backup() ) {
+			return;
+		}
+
+		$file_path = $item->get_original_path();
+
+		if ( ! $file_path || ! imagify_get_filesystem()->exists( $file_path ) ) {
+			return;
+		}
+
+		$dimensions = $item->get_dimensions();
+
+		if ( $dimensions['width'] < 360 ) {
+			return;
+		}
+
+		$backup_url = $item->get_backup_url();
+
+		printf(
+			'<a href="%1$s" data-id="%2$d" data-backup-src="%3$s" data-full-src="%4$s" data-full-width="%5$d" data-full-height="%6$d" data-target="#imagify-comparison-%2$d" class="imagify-compare-images imagify-modal-trigger" target="_blank">%7$s</a>',
+			esc_url( $backup_url ),
+			$item->get_id(),
+			esc_url( $backup_url ),
+			esc_url( $item->get_original_url() ),
+			$dimensions['width'],
+			$dimensions['height'],
+			esc_html__( 'Compare Original VS Optimized', 'imagify' )
+		);
+
+		if ( wp_doing_ajax() ) {
+			?>
+			<script type="text/javascript">jQuery( window ).trigger( 'comparisonprinted.imagify', [ <?php echo $item->get_id(); ?> ] ); </script>
+			<?php
+		}
 	}
 
 	/**

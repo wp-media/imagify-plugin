@@ -321,7 +321,7 @@ function imagify_die( $message = null ) {
 		}
 	}
 
-	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+	if ( wp_doing_ajax() ) {
 		wp_send_json_error( $message );
 	}
 
@@ -358,7 +358,7 @@ function imagify_die( $message = null ) {
  * @param array|string $args_or_url An array of query args to add to the redirection URL. If a string, the complete URL.
  */
 function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
-	if ( defined( 'DOING_AJAX' ) ) {
+	if ( wp_doing_ajax() ) {
 		return;
 	}
 
