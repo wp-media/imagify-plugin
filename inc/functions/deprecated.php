@@ -695,7 +695,7 @@ if ( is_admin() ) :
 		$data     = method_exists( $notices, $callback ) ? call_user_func( array( $notices, $callback ) ) : false;
 
 		if ( $data ) {
-			$this->render_view( str_replace( '_', '-', $notice_id ), $data );
+			Imagify_Views::get_instance()->print_template( 'notice-' . $notice_id, $data );
 		}
 	}
 
