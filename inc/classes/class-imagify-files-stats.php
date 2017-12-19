@@ -18,42 +18,6 @@ class Imagify_Files_Stats {
 	 */
 	const VERSION = '1.0';
 
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.7
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected static $_instance;
-
-	/**
-	 * The constructor.
-	 *
-	 * @since  1.7
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected function __construct() {}
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** COUNT FILES ============================================================================= */
