@@ -1,121 +1,170 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
-
+$user = new Imagify_User();
 ?>
 <div class="wrap imagify-settings imagify-bulk">
 
 	<?php $this->print_template( 'part-bulk-header' ); ?>
 
-	<?php $this->print_template( 'part-new-to-imagify' ); ?>
-
-	<?php $this->print_template( 'part-bulk-subtitle' ); ?>
-
 	<div class="imagify-settings-section">
 
 		<div class="imagify-columns">
 
-			<div class="col-1-3 col-overview">
-				<h3><?php _e( 'Overview', 'imagify' ); ?></h3>
+			<div class="imagify-col col-overview">
+				<h2 class="imagify-h2-like">
+					<span class="dashicons dashicons-chart-line"></span>
+					<?php _e( 'Overview', 'imagify' ); ?>
+				</h2>
+				
+				<div class="imagify-columns">
+					<div class="imagify-col col-statistics">
+						<h3 class="screen-reader-text"><?php _e( 'Statistics', 'imagify' ); ?></h3>
 
-				<div class="imagify-chart-container imagify-overview-chart-container">
-					<canvas id="imagify-overview-chart" width="180" height="180"></canvas>
-					<div id="imagify-overview-chart-percent" class="imagify-chart-percent"><?php echo imagify_percent_optimized_attachments(); ?><span>%</span></div>
-				</div>
-				<div id="imagify-overview-chart-legend"></div>
-
-				<p class="imagify-global-optim-phrase imagify-clear">
-					<?php
-					printf(
-						/* translators: %s is a percentage. */
-						esc_html__( 'You optimized %s of your website\'s images', 'imagify' ),
-						'<span class="imagify-total-percent">' . imagify_percent_optimized_attachments() . '%</span>'
-					);
-					?>
-				</p>
-			</div>
-
-			<div class="col-1-3 col-statistics">
-				<h3><?php _e( 'Statistics', 'imagify' ); ?></h3>
-
-				<?php
-				$total_saving_data = imagify_count_saving_data();
-				$optimized_percent = $total_saving_data['percent'];
-				$optimized_nb      = $total_saving_data['optimized_size'];
-				$original_nb       = $total_saving_data['original_size'];
-				?>
-
-				<div class="imagify-number-you-optimized">
-					<p>
-						<span id="imagify-total-optimized-attachments" class="number"><?php echo number_format_i18n( $total_saving_data['count'] ); ?></span>
-						<span class="text">
-							<?php
-							printf(
-								/* translators: you can use %s to include a line break. */
-								__( 'that\'s the number of original images you optimized with Imagify', 'imagify' ),
-								'<br>'
-							);
-							?>
-						</span>
-					</p>
-				</div>
-
-				<div class="imagify-bars">
-					<p><?php _e( 'Original size', 'imagify' ); ?></p>
-					<div class="imagify-bar-negative base-transparent right-outside-number">
-						<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo imagify_size_format( $original_nb, 1 ); ?></span></div>
-					</div>
-
-					<p><?php _e( 'Optimized size', 'imagify' ); ?></p>
-					<div class="imagify-bar-positive base-transparent right-outside-number">
-						<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo ( 100 - $optimized_percent ); ?>%"><span class="imagify-barnb"><?php echo imagify_size_format( $optimized_nb, 1 ); ?></span></div>
-					</div>
-
-				</div>
-
-				<div class="imagify-number-you-optimized">
-					<p>
-						<span id="imagify-total-optimized-attachments-pct" class="number"><?php echo number_format_i18n( $optimized_percent ); ?>%</span>
-						<span class="text">
-							<?php
-							printf(
-								/* translators: %s is a line break. */
-								__( 'that\'s the size you saved %sby using Imagify', 'imagify' ),
-								'<br>'
-							);
-							?>
-						</span>
-					</p>
-				</div>
-			</div>
-
-			<div class="col-1-3 col-informations">
-				<h3><?php _e( 'Information', 'imagify' ); ?></h3>
-				<ul class="imagify-list-infos">
-					<li>
 						<?php
-						esc_html_e( 'Please be aware that optimizing a large number of images can take a while depending on your server and network speed.', 'imagify' );
-
-						if ( get_transient( 'imagify_large_library' ) ) {
-							printf(
-								/* translators: %s is a formatted number. Don't use %d. */
-								__( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ),
-								number_format_i18n( imagify_get_unoptimized_attachment_limit() )
-							);
-						}
+						$total_saving_data = imagify_count_saving_data();
+						$optimized_percent = $total_saving_data['percent'];
+						$optimized_nb      = $total_saving_data['optimized_size'];
+						$original_nb       = $total_saving_data['original_size'];
 						?>
-					</li>
-					<li>
-						<?php esc_html_e( 'You must keep this page open while the bulk optimization is processing. If you leave you can come back to continue where it left off.', 'imagify' ); ?>
-					</li>
-					<li class="imagify-documentation-link-box">
-						<span class="imagify-documentation-icon"><svg viewBox="0 0 15 20" xmlns="http://www.w3.org/2000/svg"><g fill="#40b1d0" fill-rule="nonzero"><g><path d="m14.583 20h-14.167c-.23 0-.417-.187-.417-.417v-14.167c0-.111.044-.217.122-.295l5-5c.078-.078.184-.122.295-.122h9.167c.23 0 .417.187.417.417v19.17c0 .23-.187.417-.417.417m-13.75-.833h13.333v-18.333h-8.578l-4.756 4.756v13.578"/><path d="m5.417 5.833h-5c-.23 0-.417-.187-.417-.417 0-.23.187-.417.417-.417h4.583v-4.583c0-.23.187-.417.417-.417.23 0 .417.187.417.417v5c0 .23-.187.417-.417.417"/></g><path d="m12.583 7h-9.167c-.23 0-.417-.224-.417-.5 0-.276.187-.5.417-.5h9.167c.23 0 .417.224.417.5 0 .276-.187.5-.417.5"/><path d="m12.583 5h-4.167c-.23 0-.417-.224-.417-.5 0-.276.187-.5.417-.5h4.167c.23 0 .417.224.417.5 0 .276-.187.5-.417.5"/><path d="m12.583 10h-9.167c-.23 0-.417-.224-.417-.5 0-.276.187-.5.417-.5h9.167c.23 0 .417.224.417.5 0 .276-.187.5-.417.5"/><path d="m12.583 13h-9.167c-.23 0-.417-.224-.417-.5 0-.276.187-.5.417-.5h9.167c.23 0 .417.224.417.5 0 .276-.187.5-.417.5"/><path d="m12.583 15h-9.167c-.23 0-.417-.224-.417-.5 0-.276.187-.5.417-.5h9.167c.23 0 .417.224.417.5 0 .276-.187.5-.417.5"/><path d="m12.583 18h-9.167c-.23 0-.417-.224-.417-.5 0-.276.187-.5.417-.5h9.167c.23 0 .417.224.417.5 0 .276-.187.5-.417.5"/></g></svg></span>
-						<span>
-							<?php _e( 'Need help or have questions?', 'imagify' ); ?>
-							<a class="imagify-documentation-link" href="<?php echo esc_url( imagify_get_external_url( 'documentation' ) ); ?>" target="_blank"><?php _e( 'Check our documentation.', 'imagify' ); ?></a>
-						<span>
-					</li>
-				</ul>
-			</div><!-- .col-1-2 -->
+
+						<div class="imagify-number-you-optimized">
+							<p>
+								<span id="imagify-total-optimized-attachments" class="number"><?php echo number_format_i18n( $total_saving_data['count'] ); ?></span>
+								<span class="text">
+									<?php
+									printf(
+										/* translators: you can use %s to include a line break. */
+										__( 'that\'s the number of original images%s you optimized with Imagify', 'imagify' ),
+										'<br>'
+									);
+									?>
+								</span>
+							</p>
+						</div>
+
+						<div class="imagify-bars">
+							<p><?php _e( 'Original size', 'imagify' ); ?></p>
+							<div class="imagify-bar-negative base-transparent right-outside-number">
+								<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo imagify_size_format( $original_nb, 1 ); ?></span></div>
+							</div>
+
+							<p><?php _e( 'Optimized size', 'imagify' ); ?></p>
+							<div class="imagify-bar-primary base-transparent right-outside-number">
+								<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo ( 100 - $optimized_percent ); ?>%"><span class="imagify-barnb"><?php echo imagify_size_format( $optimized_nb, 1 ); ?></span></div>
+							</div>
+
+						</div>
+
+						<div class="imagify-number-you-optimized">
+							<p>
+								<span id="imagify-total-optimized-attachments-pct" class="number"><?php echo number_format_i18n( $optimized_percent ); ?>%</span>
+								<span class="text">
+									<?php
+									printf(
+										/* translators: %s is a line break. */
+										__( 'that\'s the size you saved %sby using Imagify', 'imagify' ),
+										'<br>'
+									);
+									?>
+								</span>
+							</p>
+						</div>
+					</div><!-- .imagify-col.col-statistics -->
+
+					<div class="imagify-col col-chart">
+						<div class="imagify-chart-container imagify-overview-chart-container">
+							<canvas id="imagify-overview-chart" width="180" height="180"></canvas>
+							<div id="imagify-overview-chart-percent" class="imagify-chart-percent"><?php echo imagify_percent_optimized_attachments(); ?><span>%</span></div>
+						</div>
+						<div id="imagify-overview-chart-legend"></div>
+
+						<p class="imagify-global-optim-phrase imagify-clear">
+							<?php
+							printf(
+								/* translators: %s is a percentage. */
+								esc_html__( 'You optimized %s of your website\'s images', 'imagify' ),
+								'<span class="imagify-total-percent">' . imagify_percent_optimized_attachments() . '%</span>'
+							);
+							?>
+						</p>
+					</div><!-- .imagify-col -->
+				</div>
+			</div><!-- .imagify-col.col-overview -->
+
+			<div class="imagify-col imagify-account-info-col">
+
+				<?php if ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || false === IMAGIFY_HIDDEN_ACCOUNT ) { ?>
+					<div class="imagify-options-title">
+						<div class="imagify-account">
+							<p class="imagify-meteo-title"><?php _e( 'Account status', 'imagify' ); ?></p>
+							<p class="imagify-meteo-subs"><?php _e( 'Your subscription:', 'imagify' ); ?>&nbsp;<strong class="imagify-user-plan"><?php echo $user->plan_label; ?></strong></p>
+						</div>
+						<div class="imagify-account-link">
+							<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" class="button button-ghost" target="_blank">
+								<span class="dashicons dashicons-admin-users"></span>
+								<span class="button-text"><?php _e( 'View My Subscription', 'imagify' ); ?></span>
+							</a>
+						</div>
+					</div>
+
+					<?php if ( 1 === $user->plan_id ) { ?>
+					<div class="imagify-col-content">
+						<div class="imagify-sep-v"></div>
+						<div class="imagify-credit-left">
+							<?php
+							$unconsumed_quota  = $user->get_percent_unconsumed_quota();
+							$meteo_icon        = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="37" height="38" alt="" />';
+							$bar_class         = 'positive';
+							$is_display_bubble = false;
+
+							if ( $unconsumed_quota >= 21 && $unconsumed_quota <= 50 ) {
+								$bar_class  = 'neutral';
+								$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="37" height="38" alt="" />';
+							} elseif ( $unconsumed_quota <= 20 ) {
+								$bar_class         = 'negative';
+								$is_display_bubble = true;
+								$meteo_icon        = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="38" height="36" alt="" />';
+							}
+							?>
+							<span class="imagify-meteo-icon"><?php echo $meteo_icon; ?></span>
+							<div class="imagify-space-left">
+
+								<p>
+									<?php
+									printf(
+										/* translators: %s is a data quota. */
+										__( 'You have %s space credit left' , 'imagify' ),
+										'<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>'
+									);
+									?>
+								</p>
+
+								<div class="imagify-bar-<?php echo $bar_class; ?>">
+									<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
+								</div>
+							</div>
+							<div class="imagify-space-tooltips imagify-tooltips <?php echo ( ! $is_display_bubble ) ? 'hidden' : ''; ?>">
+								<div class="tooltip-content tooltip-table">
+									<div class="cell-icon">
+										<span aria-hidden="true" class="icon icon-round">i</span>
+									</div>
+									<div class="cell-text">
+										<?php _e( 'Upgrade your account to continue optimizing your images', 'imagify' ); ?>
+									</div>
+									<div class="cell-sep"></div>
+									<div class="cell-cta">
+										<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'More info', 'imagify' ); ?></a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div><!-- .imagify-col-content -->
+
+					<?php } // End if(). ?>
+				<?php } // End if(). ?>
+			
+			</div><!-- .imagify-account-info-col -->
+
 		</div><!-- .imagify-columns -->
 	</div><!-- .imagify-settings-section -->
 

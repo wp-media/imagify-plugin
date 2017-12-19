@@ -110,15 +110,16 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	padding: 11px 20px;
 }
 
+/* Bulk overview columns */
 .imagify-columns .col-overview.col-overview {
+	width: calc(100% - 465px);
 	padding-left: 20px;
 }
-.imagify-columns .col-informations.col-informations {
-	width: 36.6%;
-	padding-right: 30px;
-}
 .imagify-columns .col-statistics.col-statistics {
-	width: 30%;
+	width: 60%;
+}
+.imagify-columns .col-chart.col-chart {
+	width: 40%;
 }
 
 .imagify-bulk-submit .imagify-inline-options input[type="radio"]:not(:checked) + label,
@@ -127,47 +128,10 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 }
 
 /* Header */
-.imagify-title-right {
-	display: table;
-	float: right; /* fallback old browsers */
-	margin-top: -10px;
-	-webkit-box-ordinal-group: 3;
-	           -ms-flex-order: 2;
-	                    order: 2;
-}
-.imagify-title-right p {
-	margin: 0;
-}
-.imagify-title-right a {
-	font-weight: bold;
-	text-decoration: none;
-}
-.imagify-title-right > div {
-	display: table-cell;
-	vertical-align: middle;
-}
-.imagify-title-right .dashicons-arrow-down-alt2 {
-	vertical-align: -4px;
-	margin-left: 2px;
-}
 @media (max-width: 1200px) {
 	.imagify-bulk .imagify-title {
-		display: -webkit-box;
-		display: -webkit-flex;
-		display: -ms-flexbox;
 		display: flex;
-		-webkit-box-orient: vertical;
-		-webkit-box-direction: normal;
-		-webkit-flex-direction: column;
-		-ms-flex-direction: column;
 		flex-direction: column;
-	}
-	.imagify-title-right {
-		-webkit-box-ordinal-group: 3;
-		-webkit-order: 2;
-		-ms-flex-order: 2;
-		order: 2;
-		margin-top: 20px;
 	}
 }
 
@@ -182,17 +146,12 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	padding-left: 15px;
 }
 
+.imagify-bulk .imagify-documentation-link-box {
+	margin-left: auto;
+	margin-right: 35px;
+}
+
 @media (max-width: 630px) {
-	.imagify-title-right {
-		display: block;
-		width: auto;
-	}
-	.imagify-title-right > div {
-		display: block;
-		width: auto;
-		margin-top: 10px;
-		max-width: 100%;
-	}
 	.imagify-credit-left {
 		padding-left: 0;
 	}
@@ -212,7 +171,25 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	margin-right: -4.5em;
 	text-align: right;
 	font-weight: bold;
-	line-height: 1.5;
+	line-height: .8;
+}
+
+.imagify-h2-like {
+	margin: 0 0 .5em 0;
+	padding-bottom: .5em;
+	border-bottom: 1px solid #E9EFF2;
+	font-size: 24px;
+	color: #000;
+	font-weight: bold;
+}
+.imagify-h2-like .dashicons,
+.imagify-h2-like .dashicons:before {
+	font-size: 38px;
+	height: 38px;
+	width: 38px;
+	margin-right: 12px;
+	vertical-align: -5px;
+	color: #40B1D0;
 }
 
 .imagify-list-infos {
@@ -306,7 +283,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 .imagify-bulk .imagify-settings-section {
 	border: 1px solid #D9D9D9;
 	border-top: 0;
-	background: #F2F5F7;
+	background: #FFF;
 	color: #4A4A4A;
 }
 .imagify-bulk .imagify-settings-section p,
@@ -433,39 +410,41 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 }
 
 /* Number display */
+.imagify-number-you-optimized {
+	margin-bottom: 1.35em;
+	overflow: hidden;
+}
 .imagify-number-you-optimized .number {
 	display: table-cell;
 	padding-right: 15px;
-	font-size: 36px;
+	font-size: 48px;
 	font-weight: bold;
-	line-height: 1.1;
+	line-height: 1;
 	vertical-align: middle;
 	white-space: nowrap;
+	color: #000;
+}
+.imagify-number-you-optimized [id="imagify-total-optimized-attachments-pct"] {
+	color: #40B1D0;
 }
 .imagify-number-you-optimized .text {
 	display: table-cell;
 	vertical-align: middle;
 	overflow: hidden;
 	font-size: 12px;
-}
-.imagify-number-you-optimized .text br {
-	display: none;
+	color: #626E7B;
 }
 .imagify-number-you-optimized > p {
 	display: table;
 }
-.imagify-number-you-optimized {
-	padding-bottom: 0.85em;
-	margin-bottom: 1.35em;
-	overflow: hidden;
-	border-bottom: 1px solid rgba(0,0,0, 0.05);
-}
 
 /* Number and bars */
+.imagify-bars {
+	padding-right: 15px;
+}
 .imagify-bars p {
-	font-weight: bold;
 	font-size: 12px;
-	margin-bottom: 0;
+	margin-bottom: 5px;
 }
 .imagify-bars + .imagify-number-you-optimized {
 	border-bottom: 0;

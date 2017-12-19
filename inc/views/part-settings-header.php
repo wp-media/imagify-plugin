@@ -27,6 +27,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		<a class="stars" href="<?php echo esc_url( imagify_get_external_url( 'rate' ) ); ?>" target="_blank"><?php echo str_repeat( '<span class="dashicons dashicons-star-filled"></span>', 5 ); ?></a>
 	</p>
 
-	<?php $this->print_template( 'part-settings-documentation' ); ?>
+	<?php $this->print_template( 'part-documentation-link' ); ?>
 </div>
 <?php

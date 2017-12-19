@@ -429,6 +429,21 @@ button.imagify-link-like {
 	padding-top: 15px;
 	padding-bottom: 15px;
 }
+.imagify-page-title {
+	display: flex;
+	align-items: center;
+}
+.imagify-title svg {
+	margin-right: 20px;
+}
+.imagify-title path {
+	fill: #40B1D0;
+}
+.imagify-title .title-text {
+	font-size: 28px;
+	font-weight: bold;
+	color: #FFF;
+}
 .imagify-logo {
 	vertical-align: top;
 }
@@ -462,6 +477,30 @@ button.imagify-link-like {
 }
 .imagify-section p:last-child {
 	margin-bottom: 0;
+}
+
+/* Documentation link */
+.imagify-settings .imagify-documentation-link-box {
+	display: flex;
+	padding: 12px 13px 14px;
+	margin-right: -1em;
+	margin-left: 40px;
+	border: 1px solid #40b1d0;
+	color: #E5EBEF;
+	border-radius: 3px;
+}
+.imagify-documentation-link-icon {
+	width: 23px;
+	height: 31px;
+	font-size: 2.6em;
+	margin-right: 15px;
+	line-height: 1.3;
+}
+.imagify-documentation-link-box span {
+	font-size: 12px;
+}
+.imagify-documentation-link-box a {
+	font-weight: bold;
 }
 
 @media (max-width: 1120px) {
@@ -1133,6 +1172,9 @@ ul.imagify-datas-details.imagify-datas-details {
 }
 
 .imagify-progress {
+	height: 8px;
+}
+.imagify-space-left .imagify-progress {
 	height: 1.5em;
 }
 .imagify-progress {
@@ -1144,11 +1186,17 @@ ul.imagify-datas-details.imagify-datas-details {
 .imagify-bar-positive .imagify-barnb {
 	color: #8CC152;
 }
+.imagify-bar-primary .imagify-progress {
+	background: #40B1D0;
+}
+.imagify-bar-primary .imagify-barnb {
+	color: #40B1D0;
+}
 .imagify-bar-negative .imagify-progress {
-	background: #73818C;
+	background: #D2D3D6;
 }
 .imagify-bar-negative .imagify-barnb {
-	color: #73818C;
+	color: #7A8996;
 }
 .imagify-bar-neutral .imagify-progress {
 	background: #F5A623;
