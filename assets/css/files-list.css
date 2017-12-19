@@ -1,3 +1,26 @@
+/* Filter block */
+.imagify-files-list .wp-filter {
+	padding: 15px 20px;
+}
+.imagify-files-list .filter-items select {
+	height: auto;
+	padding: 6px;
+	margin-right: 12px;
+}
+.imagify-files-list .filter-items .button {
+	height: auto;
+	padding: 2px 12px 3px;
+}
+
+.imagify-files-list .no-items td {
+	padding: 35px;
+	text-align: center;
+	font-size: 18px;
+}
+.imagify-files-list .no-items td a {
+	text-decoration: underline;
+}
+
 .media-icon {
 	position: relative;
 	width: 60px;
