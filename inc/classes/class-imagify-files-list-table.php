@@ -545,18 +545,18 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		if ( ! $status ) {
 			// File is not optimized.
-			$messages[] = esc_html_x( 'Not optimized', 'image', 'imagify' );
+			$messages[] = '<strong class="imagify-status-not-optimized">' . esc_html_x( 'Not optimized', 'image', 'imagify' ) . '</strong>';
 		} elseif ( $error_text ) {
 			// Error or already optimized.
-			$messages[] = esc_html( $error_text );
+			$messages[] = '<span class="imagify-status-' . $status . '">' . esc_html( $error_text ) . '</span>';
 		}
 
 		if ( ! $row['modified'] && ! $messages ) {
 			// No need to display this if we already have another message to display.
-			$messages[] = esc_html__( 'No changes found', 'imagify' );
+			$messages[] = '<em class="imagify-status-no-changes">' . esc_html__( 'No changes found', 'imagify' ) . '</em>';
 		} elseif ( $row['modified'] ) {
 			// The file has changed or is missing.
-			$messages[] = esc_html__( 'The file has changed', 'imagify' );
+			$messages[] = '<strong class="imagify-status-changed">' . esc_html__( 'The file has changed', 'imagify' ) . '</strong>';
 		}
 
 		echo implode( '<br/>', $messages );

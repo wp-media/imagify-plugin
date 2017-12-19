@@ -127,28 +127,32 @@ table.media .column-title .media-icon.portrait img {
 }
 
 /* Actions col */
-.imagify-files-list .actions .button,
-.imagify-files-list .actions .button-primary {
+.imagify-files-list .column-actions .button,
+.imagify-files-list .column-actions .button-primary {
 	padding: 5px 20px;
 	font-size: 14px;
 	height: auto;
 }
-.imagify-files-list .actions .button-primary {
+.imagify-files-list .column-actions .button-primary {
 	background: #3694AE;
 	color: #FFF;
 	border: 0;
 	box-shadow: none;
 	text-shadow: none;
 }
-.imagify-files-list .actions a,
+.imagify-files-list .column-actions a,
 .status a.button-imagify-refresh-status {
 	display: inline-block;
 	margin: .3em 0;
 	font-size: 12px;
 	font-weight: bold;
 }
-.imagify-files-list .actions a .dashicons,
-.imagify-files-list .actions a .dashicons:before,
+.imagify-files-list .imagify-status-already_optimized {
+	font-weight: bold;
+	color: #8BC34A;
+}
+.imagify-files-list .column-actions a .dashicons,
+.imagify-files-list .column-actions a .dashicons:before,
 .status a.button-imagify-refresh-status .dashicons,
 .status a.button-imagify-refresh-status .dashicons:before {
 	margin-right: 2px;
