@@ -199,6 +199,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Files_List_Table'         => 1,
 		'Imagify_Files_Recursive_Iterator' => 1,
 		'Imagify_Files_Scan'               => 1,
+		'Imagify_Files_Stats'              => 1,
 		'Imagify_Folders_DB'               => 1,
 		'Imagify_Notices'                  => 1,
 		'Imagify_Options'                  => 1,

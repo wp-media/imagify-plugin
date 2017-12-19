@@ -213,7 +213,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 	$total_saving_data = imagify_count_saving_data();
 
 	$groups = array(
-		array(
+		'library' => array(
 			'icon'     => 'images-alt2',
 			'title'    => __( 'Optimize the images of your Media Library', 'imagify' ),
 			'subtitle' => __( 'Choose here the bulk optimization settings for the medias stored in the WordPress\' Library.', 'imagify' ),
@@ -225,15 +225,15 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 					'optimized_images' => imagify_count_optimized_attachments(),
 					'errors'           => imagify_count_error_attachments(),
 					'errors_url'       => add_query_arg( array(
-							'mode'           => 'list',
-							'imagify-status' => 'errors',
-						), admin_url( 'upload.php' ) ),
+						'mode'           => 'list',
+						'imagify-status' => 'errors',
+					), admin_url( 'upload.php' ) ),
 					'optimized_size'   => $total_saving_data['optimized_size'],
 					'original_size'    => $total_saving_data['original_size'],
 				),
 			),
 		),
-		array(
+		'custom-files' => array(
 			'icon'     => 'admin-plugins',
 			'title'    => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
 			'subtitle' => __( 'Choose here the bulk optimization settings for the medias stored in your themes and plugins.', 'imagify' ),
@@ -241,41 +241,30 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
 			'rows'     => array(
 				'themes'         => array(
-					'title'            => __( 'Themes', 'imagify' ),
-					'optimized_images' => 54634,
-					'errors'           => 1,
-					'errors_url'       => add_query_arg( array(
-							'folder-type-filter' => 'themes',
-							'status'             => 'error',
-						), get_imagify_admin_url( 'files-list' ) ),
-					'optimized_size'   => 12453000,
-					'original_size'    => 12453000,
+					'title' => __( 'Themes', 'imagify' ),
 				),
 				'plugins'        => array(
-					'title'            => __( 'Plugins', 'imagify' ),
-					'optimized_images' => 54634,
-					'errors'           => 4,
-					'errors_url'       => add_query_arg( array(
-							'folder-type-filter' => 'plugins',
-							'status'             => 'error',
-						), get_imagify_admin_url( 'files-list' ) ),
-					'optimized_size'   => 12453000,
-					'original_size'    => 12453000,
+					'title' => __( 'Plugins', 'imagify' ),
 				),
 				'custom-folders' => array(
-					'title'            => __( 'Custom Folders', 'imagify' ),
-					'optimized_images' => 54634,
-					'errors'           => 0,
-					'errors_url'       => add_query_arg( array(
-							'folder-type-filter' => 'custom-folders',
-							'status'             => 'error',
-						), get_imagify_admin_url( 'files-list' ) ),
-					'optimized_size'   => 12453000,
-					'original_size'    => 12453000,
+					'title' => __( 'Custom Folders', 'imagify' ),
 				),
 			),
 		),
 	);
+
+	foreach ( $groups['custom-files']['rows'] as $folder_type => $row ) {
+		$groups['custom-files']['rows'][ $folder_type ] = array_merge( $row, array(
+			'optimized_images' => Imagify_Files_Stats::count_optimized_files( $folder_type ),
+			'errors'           => Imagify_Files_Stats::count_error_files( $folder_type ),
+			'errors_url'       => add_query_arg( array(
+				'folder-type-filter' => $folder_type,
+				'status'             => 'error',
+			), get_imagify_admin_url( 'files-list' ) ),
+			'optimized_size'   => Imagify_Files_Stats::get_optimized_size( $folder_type ),
+			'original_size'    => Imagify_Files_Stats::get_original_size( $folder_type ),
+		) );
+	}
 
 	foreach ( $groups as $group ) {
 		$this->print_template( 'part-bulk-optimization-group', $group );
