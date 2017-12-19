@@ -132,6 +132,19 @@ class Imagify_Settings {
 		return imagify_is_active_for_network() ? admin_url( 'admin-post.php' ) : admin_url( 'options.php' );
 	}
 
+	/**
+	 * Tell if we're submitting the settings form.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public function is_form_submit() {
+		return filter_input( INPUT_POST, 'option_page', FILTER_SANITIZE_STRING ) === $this->settings_group && filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING ) === 'update';
+	}
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** ON FORM SUBMIT ========================================================================== */
@@ -158,10 +171,15 @@ class Imagify_Settings {
 			$values['version'] = IMAGIFY_VERSION;
 		}
 
+		if ( ! $this->is_form_submit() ) {
+			return $values;
+		}
+
 		// Disabled thumbnail sizes.
+		$values['disallowed-sizes'] = array();
+
 		if ( isset( $values['disallowed-sizes-reversed'] ) && is_array( $values['disallowed-sizes-reversed'] ) ) {
 			$checked = ! empty( $values['disallowed-sizes-checked'] ) && is_array( $values['disallowed-sizes-checked'] ) ? array_flip( $values['disallowed-sizes-checked'] ) : array();
-			$values['disallowed-sizes'] = array();
 
 			if ( ! empty( $values['disallowed-sizes-reversed'] ) ) {
 				foreach ( $values['disallowed-sizes-reversed'] as $size_key ) {
@@ -201,7 +219,7 @@ class Imagify_Settings {
 			}
 
 			// Not selected folders that are in the DB, and that have an optimization level.
-			$results = $wpdb->get_col( "SELECT folder_id FROM $wpdb->imagify_folders WHERE path NOT IN ( $selected_paths ) AND optimization_level IS NOT NULL;" ); // WPCS: unprepared SQL ok.
+			$results = $wpdb->get_col( "SELECT folder_id FROM $wpdb->imagify_folders WHERE path NOT IN ( $selected_paths ) AND optimization_level IS NOT NULL" ); // WPCS: unprepared SQL ok.
 
 			if ( $results ) {
 				// Remove the optimization levels.
@@ -232,6 +250,9 @@ class Imagify_Settings {
 					) );
 				}
 			}
+		} else {
+			unset( $values['custom_folders'] );
+			$wpdb->query( "UPDATE $wpdb->imagify_folders SET optimization_level = NULL WHERE optimization_level IS NOT NULL" );
 		}
 
 		return $values;

@@ -174,8 +174,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 
 			if ( $data ) {
 				// The notice must be displayed: render the view.
-				$view = 'notice-' . str_replace( '_', '-', $notice_id );
-				Imagify_Views::get_instance()->print_template( $view, $data );
+				Imagify_Views::get_instance()->print_template( 'notice-' . $notice_id, $data );
 			}
 		}
 

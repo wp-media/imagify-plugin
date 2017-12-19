@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-$this->render_view( 'header', array(
+$this->print_template( 'notice-header', array(
 	'title' => __( 'The external HTTP requests are blocked!', 'imagify' ),
 ) );
 ?>
@@ -16,6 +16,6 @@ $this->render_view( 'header', array(
 	<textarea readonly="readonly" class="large-text readonly" rows="1">define( 'WP_ACCESSIBLE_HOSTS', '*.imagify.io' );</textarea>
 </p>
 <?php
-$this->render_view( 'footer', array(
+$this->print_template( 'notice-footer', array(
 	'dismissible' => 'http-block-external',
 ) );

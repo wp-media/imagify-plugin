@@ -207,61 +207,82 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		</div><!-- .imagify-bulk-submit -->
 	</div>
 
-	<?php $this->print_template( 'part-bulk-success' ); ?>
+	<?php
+	$this->print_template( 'part-bulk-success' );
 
-	<div class="imagify-bulk-table">
-		<table summary="<?php _e( 'Compression process results', 'imagify' ); ?>">
-			<thead>
-				<tr>
-					<th class="imagify-cell-filename"><?php _e( 'Filename', 'imagify' ); ?></th>
-					<th class="imagify-cell-status"><?php _e( 'Status', 'imagify' ); ?></th>
-					<th class="imagify-cell-original"><?php _e( 'Original', 'imagify' ); ?></th>
-					<th class="imagify-cell-optimized"><?php _e( 'Optimized', 'imagify' ); ?></th>
-					<th class="imagify-cell-percentage"><?php _e( 'Percentage', 'imagify' ); ?></th>
-					<th class="imagify-cell-thumbnails"><?php _e( 'Thumbnails optimized', 'imagify' ); ?></th>
-					<th class="imagify-cell-savings"><?php _e( 'Overall saving', 'imagify' ); ?></th>
-				</tr>
-			</thead>
-			<tfoot>
-				<tr>
-					<td class="imagify-cell-nb-files">
-						<?php
-						/* translators: %s is a number. Don't use %d. */
-						printf( _n( '%s file', '%s files', 0, 'imagify' ), '<span class="imagify-nb-files">0</span>' );
-						?>
-					</td>
-					<td class="imagify-cell-errors">
-						<?php
-						/* translators: %s is a number. Don't use %d. */
-						printf( _n( '%s error', '%s errors', 0, 'imagify' ), '<span class="imagify-nb-errors">0</span>' );
-						?>
-					</td>
-					<td class="imagify-cell-totaloriginal" colspan="4"><?php _e( 'Total:', 'imagify' ); ?><strong> <span class="imagify-total-original">0&nbsp;kB</span></strong></td>
-					<td class="imagify-cell-totalgain"><?php _e( 'Gain:', 'imagify' ); ?><strong> <span class="imagify-total-gain">0&nbsp;kB</span></strong></td>
-				</tr>
-			</tfoot>
-			<tbody>
-				<!-- The progress bar -->
-				<tr aria-hidden="true" class="imagify-row-progress hidden">
-					<td colspan="7">
-						<div class="media-item">
-							<div class="progress">
-								<div id="imagify-progress-bar" class="bar"><div class="percent">0%</div></div>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<!-- No image uploaded yet -->
-				<tr class="imagify-no-uploaded-yet">
-					<td colspan="7">
-						<p><a id="imagify-simulate-bulk-action" href="#"><?php _e( 'Start the bulk optimization', 'imagify' ); ?></a></p>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+	$total_saving_data = imagify_count_saving_data();
 
-	<?php $this->print_template( 'modal-payment' ); ?>
+	$groups = array(
+		array(
+			'icon'     => 'images-alt2',
+			'title'    => __( 'Optimize the images of your Media Library', 'imagify' ),
+			'subtitle' => __( 'Choose here the bulk optimization settings for the medias stored in the WordPress\' Library.', 'imagify' ),
+			/* translators: 1 is the opening of a link, 2 is the closing of this link. */
+			'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in your %1$sMedia Library%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
+			'rows'     => array(
+				'library' => array(
+					'title'            => __( 'Media Library', 'imagify' ),
+					'optimized_images' => imagify_count_optimized_attachments(),
+					'errors'           => imagify_count_error_attachments(),
+					'errors_url'       => add_query_arg( array(
+							'mode'           => 'list',
+							'imagify-status' => 'errors',
+						), admin_url( 'upload.php' ) ),
+					'optimized_size'   => $total_saving_data['optimized_size'],
+					'original_size'    => $total_saving_data['original_size'],
+				),
+			),
+		),
+		array(
+			'icon'     => 'admin-plugins',
+			'title'    => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
+			'subtitle' => __( 'Choose here the bulk optimization settings for the medias stored in your themes and plugins.', 'imagify' ),
+			/* translators: 1 is the opening of a link, 2 is the closing of this link. */
+			'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
+			'rows'     => array(
+				'themes'         => array(
+					'title'            => __( 'Themes', 'imagify' ),
+					'optimized_images' => 54634,
+					'errors'           => 1,
+					'errors_url'       => add_query_arg( array(
+							'folder-type-filter' => 'themes',
+							'status'             => 'error',
+						), get_imagify_admin_url( 'files-list' ) ),
+					'optimized_size'   => 12453000,
+					'original_size'    => 12453000,
+				),
+				'plugins'        => array(
+					'title'            => __( 'Plugins', 'imagify' ),
+					'optimized_images' => 54634,
+					'errors'           => 4,
+					'errors_url'       => add_query_arg( array(
+							'folder-type-filter' => 'plugins',
+							'status'             => 'error',
+						), get_imagify_admin_url( 'files-list' ) ),
+					'optimized_size'   => 12453000,
+					'original_size'    => 12453000,
+				),
+				'custom-folders' => array(
+					'title'            => __( 'Custom Folders', 'imagify' ),
+					'optimized_images' => 54634,
+					'errors'           => 0,
+					'errors_url'       => add_query_arg( array(
+							'folder-type-filter' => 'custom-folders',
+							'status'             => 'error',
+						), get_imagify_admin_url( 'files-list' ) ),
+					'optimized_size'   => 12453000,
+					'original_size'    => 12453000,
+				),
+			),
+		),
+	);
+
+	foreach ( $groups as $group ) {
+		$this->print_template( 'part-bulk-optimization-group', $group );
+	}
+
+	$this->print_template( 'modal-payment' );
+	?>
 
 </div>
 <?php
