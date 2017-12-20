@@ -260,31 +260,27 @@ $user = new Imagify_User();
 		$this->print_template( 'part-bulk-optimization-group', $group );
 	} ?>
 
-		<div class="imagify-bulk-submit">
-			<div class="imagify-table">
-				<div class="imagify-cell imagify-pl0">
-					<p>
-						<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
-						<button id="imagify-bulk-action" type="button" class="button button-primary">
-							<span class="dashicons dashicons-admin-generic"></span>
-							<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify' ); ?></span>
-						</button>
-					</p>
-				</div>
-				<?php if ( ! is_wp_error( get_imagify_max_image_size() ) ) { ?>
-					<div class="imagify-cell imagify-pl0">
-						<p class="imagify-info-block">
-							<?php
-							printf(
-								/* translators: %s is a file size. */
-								__( 'All images greater than %s will be optimized when using a paid plan.', 'imagify' ),
-								imagify_size_format( get_imagify_max_image_size() )
-							);
-							?>
-						</p>
-					</div>
-				<?php } ?>
+		<div class="imagify-bulk-submit imagify-flex imagify-vcenter">
+			<div class="imagify-pr2">
+				<p>
+					<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
+					<button id="imagify-bulk-action" type="button" class="button button-primary">
+						<span class="dashicons dashicons-admin-generic"></span>
+						<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify' ); ?></span>
+					</button>
+				</p>
 			</div>
+			<?php if ( ! is_wp_error( get_imagify_max_image_size() ) ) { ?>
+				<p>
+					<?php
+					printf(
+						/* translators: %s is a file size. */
+						__( 'All images greater than %s will be optimized when using a paid plan.', 'imagify' ),
+						imagify_size_format( get_imagify_max_image_size() )
+					);
+					?>
+				</p>
+			<?php } ?>
 		</div><!-- .imagify-bulk-submit -->
 	</div><!-- .imagify-settings-section -->
 

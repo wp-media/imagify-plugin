@@ -122,11 +122,6 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	width: 40%;
 }
 
-.imagify-bulk-submit .imagify-inline-options input[type="radio"]:not(:checked) + label,
-.imagify-bulk-submit .imagify-inline-options input[type="radio"]:checked + label {
-	margin-bottom: 1.75em;
-}
-
 /* Header */
 @media (max-width: 1200px) {
 	.imagify-bulk .imagify-title {
@@ -907,8 +902,12 @@ td.imagify-cell-filename {
 	color: #8CC152;
 }
 
+/* Submit Bulk */
+.imagify-bulk-submit {
+	padding: 15px 0 8px 0;
+}
+
 /* Icon rotation */
-/* icon rotate */
 .dashicons.rotate {
 	-webkit-animation: icon-rotate 2.6s infinite linear;
 	animation: icon-rotate 2.6s infinite linear;
