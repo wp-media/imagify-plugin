@@ -5,23 +5,26 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 ?>
 
 <div class="imagify-bulk-table">
-	<table summary="<?php _e( 'Compression process results', 'imagify' ); ?>">
+	<div class="imagify-table-header imagify-flex imagify-vcenter">
+		<div class="imagify-th-titles imagify-flex imagify-vcenter">
+			<span class="dashicons dashicons-<?php echo $data['icon']; ?>"></span>
+			<div class="imagify-th-titles">
+				<p class="imagify-th-title" id="<?php echo $data['id']; ?>-title"><?php echo $data['title']; ?></p>
+				<?php if ( isset( $data['subtitle'] ) && ! empty( $data['subtitle'] ) ) { ?>
+				<p class="imagify-th-subtitle" id="<?php echo $data['id']; ?>-subtitle"><?php echo $data['subtitle']; ?></p>
+				<?php } ?>
+			</div>
+		</div>
+		<div class="imagify-th-action">
+			<button class="hide-if-no-js button imagify-button-clean" type="button">
+				<?php esc_html_e( 'View Details', 'imagify' ); ?>
+				<span class="dashicons dashicons-menu"></span>
+			</button>
+		</div>
+	</div>
+
+	<table aria-labelledby="<?php echo $data['id']; ?>-title" aria-describedby="<?php echo $data['id']; ?>-subtitle">
 		<thead>
-			<tr>
-				<th class="">
-					<span class="dashicons dashicons-<?php echo $data['icon']; ?>"></span>
-				</th>
-				<th class="" colspan="5">
-					<div class=""><?php echo $data['title']; ?></div>
-					<div class=""><?php echo $data['subtitle']; ?></div>
-				</th>
-				<th class="">
-					<button class="hide-if-no-js" type="button">
-						<?php esc_html_e( 'View Details', 'imagify' ); ?>
-						<span class="dashicons dashicons-menu"></span>
-					</button>
-				</th>
-			</tr>
 			<tr class="screen-reader-text">
 				<th class="imagify-cell-checkbox"><?php esc_html_e( 'Group selection', 'imagify' ); ?></th>
 				<th class="imagify-cell-title"><?php esc_html_e( 'Group name', 'imagify' ); ?></th>

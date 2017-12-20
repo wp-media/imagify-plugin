@@ -350,7 +350,8 @@ body.imagify-modal-is-open {
 }
 
 /* Buttons clean */
-.button.imagify-button-clean {
+.button.imagify-button-clean,
+.imagify-button-clean {
 	padding: 0;
 	background: transparent;
 	box-shadow: none;

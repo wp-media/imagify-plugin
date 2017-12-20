@@ -191,6 +191,7 @@ $user = new Imagify_User();
 
 	$groups = array(
 		array(
+			'id'      => 'media-library',
 			'icon'     => 'images-alt2',
 			'title'    => __( 'Optimize the images of your Media Library', 'imagify' ),
 			'subtitle' => __( 'Choose here the bulk optimization settings for the medias stored in the WordPress\' Library.', 'imagify' ),
@@ -211,6 +212,7 @@ $user = new Imagify_User();
 			),
 		),
 		array(
+			'id'      => 'custom-folders',
 			'icon'     => 'admin-plugins',
 			'title'    => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
 			'subtitle' => __( 'Choose here the bulk optimization settings for the medias stored in your themes and plugins.', 'imagify' ),
