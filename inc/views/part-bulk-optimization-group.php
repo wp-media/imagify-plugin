@@ -56,8 +56,10 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 			<?php foreach ( $data['rows'] as $group => $row ) { ?>
 				<tr>
 					<td class="imagify-cell-checkbox">
-						<input id="cb-select-<?php echo $group; ?>" type="checkbox" name="group[]" checked="checked" value="<?php echo $group; ?>" class="mini" />
-						<label for="cb-select-<?php echo $group; ?>"></label>
+						<p>
+							<input id="cb-select-<?php echo $group; ?>" type="checkbox" name="group[]" checked="checked" value="<?php echo $group; ?>" />
+							<label for="cb-select-<?php echo $group; ?>"></label>
+						</p>
 					</td>
 					<td class="imagify-cell-title">
 						<label for="cb-select-<?php echo $group; ?>"><?php echo $row['title']; ?></label>
@@ -88,9 +90,12 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 					</td>
 					<td class="imagify-cell-level">
 						<div class="imagify-level-selector">
-							<span class="hide-if-js"><?php _e( 'Current level:', 'imagify'); ?> <?php echo imagify_get_optimization_level_label( $default_level, '%ICON% %s' ); ?></span>
+							<span class="hide-if-js">
+								<?php _e( 'Current level:', 'imagify'); ?>
+								<span class="imagify-current-level-info"><?php echo imagify_get_optimization_level_label( $default_level, '%ICON% %s' ); ?></span>
+							</span>
 							
-							<button aria-controls="imagify-<?php echo $group; ?>-level-selector-list" type="button" class="button imagify-button-clean hide-if-no-js imagify-level-selector-button"><?php echo imagify_get_optimization_level_label( $default_level, '%ICON% %s' ); ?></button>
+							<button aria-controls="imagify-<?php echo $group; ?>-level-selector-list" type="button" class="button imagify-button-clean hide-if-no-js imagify-level-selector-button"><span class="imagify-current-level-info"><?php echo imagify_get_optimization_level_label( $default_level, '%ICON% %s' ); ?></span></button>
 
 							<ul id="imagify-<?php echo $group; ?>-level-selector-list" role="listbox" aria-orientation="vertical" class="imagify-level-selector-list">
 								<?php foreach ( array( 0, 1, 2 ) as $level ) { ?>

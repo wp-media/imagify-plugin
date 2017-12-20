@@ -430,7 +430,13 @@
 	 * @version: 1.7
 	 */
 	
-	var $lvl_selectors = $( '.imagify-level-selector-list' );
+	var $lvl_selectors = $( '.imagify-level-selector-list' ),
+		imagify_close_level_list = function( $curr_list ) {
+
+			$curr_list.closest( '.imagify-level-selector' ).find( '.imagify-current-level-info' ).html( $curr_list.find( '.imagify-current-level label' ).html() );
+			$curr_list.attr( 'aria-hidden', 'true' );
+
+		};
 
 	$lvl_selectors.attr( 'aria-hidden', 'true' );
 
@@ -447,19 +453,25 @@
 			$curr.find( 'input' ).focus().select();
 		} );
 
-		$list.find( 'input' ).on( 'focus', function() {
+		$list.find( 'input' ).on( 'focus change', function() {
 			var $radio = $(this);
 
 			$radio.closest( '.imagify-level-selector-list' ).find( '.imagify-current-level' ).removeClass( 'imagify-current-level' ).attr( 'aria-current', 'false' );
 			$radio.closest( '.imagify-level-choice' ).addClass( 'imagify-current-level' ).attr( 'aria-current', 'true' );
 
 		} );
+
+		$list.find( 'label' ).on( 'click', function() {
+			setTimeout( function() {
+				imagify_close_level_list( $list );
+			}, 200 );
+		} );
 	} );
 
 	// Escape level selection on Esc or Return key pressed.
 	$( document ).on( 'keypress.imagify', function(e) {
 		if  ( ( 27 === e.keyCode || 13 === e.keyCode ) && $( '.imagify-level-selector-list[aria-hidden="false"]' ).length > 0  ) {
-			$( '.imagify-level-selector-list[aria-hidden="false"]' ).attr( 'aria-hidden', 'true' );
+			imagify_close_level_list( $( '.imagify-level-selector-list[aria-hidden="false"]' ) );
 		}
 	} );
 

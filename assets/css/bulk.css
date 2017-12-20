@@ -515,7 +515,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	border: 1px solid #D3D3D3;
 }
 .imagify-bulk-table td {
-	padding: 16px;
+	padding: 20px;
 }
 .imagify-bulk-table thead tr,
 .imagify-bulk-table thead th {
@@ -526,13 +526,13 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	background: #F2F5F7;
 }
 .imagify-bulk-table thead th {
-	padding: 14px 15px;
+	padding: 20px;
 	text-align: left;
 	font-weight: bold;
 	font-size: 14px;
 }
 .imagify-bulk-table tfoot td {
-	padding: 14px 15px;
+	padding: 20px;
 	color: #626E7B;
 }
 
@@ -576,6 +576,14 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	box-shadow: 0 6px 12px rgba(0, 0, 0, .1);
 	border-radius: 3px;
 	font-weight: bold;
+	text-transform: uppercase;
+	letter-spacing: .02em;
+}
+.imagify-level-selector-list li:first-child label {
+	border-radius: 3px 3px 0 0;
+}
+.imagify-level-selector-list li:last-child label {
+	border-radius: 0 0 3px 3px;
 }
 .imagify-level-selector-list li {
 	margin: 0;
@@ -596,12 +604,30 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 .imagify-level-selector-list label:hover,
 .imagify-level-selector-list input:focus + label,
 .imagify-level-selector-list .imagify-current-level input:focus + label {
-	background: #1F2332;
+	background: #40B1D0;
 	color: #F4F7F9;
+}
+.imagify-level-selector-list input:checked + label:hover polygon,
+.imagify-level-selector-list .imagify-current-level label:hover polygon,
+.imagify-level-selector-list label:hover polygon,
+.imagify-level-selector-list input:focus + label polygon,
+.imagify-level-selector-list .imagify-current-level input:focus + label polygon {
+	fill: #FFF;
+}
+.imagify-level-selector-list input:checked + label:hover polygon[fill="#CCD1D6"],
+.imagify-level-selector-list .imagify-current-level label:hover polygon[fill="#CCD1D6"],
+.imagify-level-selector-list label:hover polygon[fill="#CCD1D6"],
+.imagify-level-selector-list input:focus + label polygon[fill="#CCD1D6"],
+.imagify-level-selector-list .imagify-current-level input:focus + label polygon[fill="#CCD1D6"] {
+	fill: #3694AE;
 }
 .imagify-level-selector-list li label {
 	display: block;
 	padding: 10px;
+	transition: all .275s;
+}
+.imagify-level-selector-list polygon {
+	transition: all .275s;
 }
 .imagify-level-selector-list {
 	position: absolute;
@@ -620,6 +646,20 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	opacity: 1;
 	visibility: visible;
 	transform: translateY(-50%) scale(1);
+}
+.button .imagify-current-level-info {
+	position: relative;
+	padding-right: 20px;
+}
+.button .imagify-current-level-info:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	margin-top: -3px;
+	border-top: 6px solid #7A8996;
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
 }
 
 
@@ -735,6 +775,12 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 }
 
 /* TD's width */
+.imagify-cell-checkbox {
+	width: 35px;
+}
+.imagify-cell-checkbox p {
+	margin: 0;
+}
 .imagify-cell-title label,
 .imagify-cell-label {
 	font-size: 14px;
@@ -749,6 +795,9 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	font-size: 12px;
 	font-weight: 500;
 	color: #7A8996;
+}
+td.imagify-cell-title {
+	padding-left: 0;
 }
 .imagify-cell-title label,
 .imagify-cell-original .imagify-cell-label {
@@ -804,6 +853,18 @@ td.imagify-cell-filename {
 }
 .imagify-cell-totaloriginal {
 	text-align: right;
+}
+.imagify-cell-level {
+	width: 145px;
+}
+.imagify-level-selector-button.imagify-level-selector-button {
+	border: 1px solid #FFF;
+	padding: 2px 10px;
+}
+.imagify-level-selector-button.imagify-level-selector-button:hover,
+.imagify-level-selector-button.imagify-level-selector-button:focus {
+	border-color: #EEE;
+	box-shadow: 0 4px 8px rgba(0,0,0,.1);
 }
 
 .imagiuploaded,
