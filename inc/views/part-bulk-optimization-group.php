@@ -90,12 +90,12 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 						<div class="imagify-level-selector">
 							<span class="hide-if-js"><?php _e( 'Current level:', 'imagify'); ?> <?php echo imagify_get_optimization_level_label( $default_level, '%ICON% %s' ); ?></span>
 							
-							<button aria-controls="imagify-level-selector-list" type="button" class="button imagify-button-clean hide-if-no-js"><?php echo imagify_get_optimization_level_label( $default_level, '%ICON% %s' ); ?></button>
+							<button aria-controls="imagify-<?php echo $group; ?>-level-selector-list" type="button" class="button imagify-button-clean hide-if-no-js imagify-level-selector-button"><?php echo imagify_get_optimization_level_label( $default_level, '%ICON% %s' ); ?></button>
 
-							<ul id="imagify-level-selector-list" role="listbox" aria-orientation="vertical" class="imagify-level-selector-list">
+							<ul id="imagify-<?php echo $group; ?>-level-selector-list" role="listbox" aria-orientation="vertical" class="imagify-level-selector-list">
 								<?php foreach ( array( 0, 1, 2 ) as $level ) { ?>
-								<li<?php echo $level === $default_level ? ' class="imagify-current-level" aria-current' : ''; ?> role="option"> 
-									<input type="radio" name="level[<?php echo $group; ?>]" value="<?php echo $level; ?>" id="<?php echo $group; ?>-level-<?php echo $level; ?>" <?php echo checked( $level, $default_level ); ?>>
+								<li class="imagify-level-choice<?php echo $level === $default_level ? ' imagify-current-level" aria-current="true' : ''; ?>" role="option"> 
+									<input type="radio" name="level[<?php echo $group; ?>]" value="<?php echo $level; ?>" id="<?php echo $group; ?>-level-<?php echo $level; ?>" <?php echo checked( $level, $default_level ); ?> class="screen-reader-text">
 									<label for="<?php echo $group; ?>-level-<?php echo $level; ?>"><?php echo imagify_get_optimization_level_label( $level, '%ICON% %s' ); ?></label>
 								</li>
 								<?php } ?>

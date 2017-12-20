@@ -422,6 +422,47 @@
 				} );
 			} );
 	} );
+	
+	/**
+	 * Optimization Level Custom Select
+	 *
+	 * @author: Geoffrey Crofte
+	 * @version: 1.7
+	 */
+	
+	var $lvl_selectors = $( '.imagify-level-selector-list' );
+
+	$lvl_selectors.attr( 'aria-hidden', 'true' );
+
+	$( '.imagify-level-selector-button' ).each( function(){
+		var $btn  = $(this),
+			$list = $( '#' + $btn.attr( 'aria-controls' ) );
+
+		$btn.on( 'click.imagify', function() {
+			var $curr = $list.find( '.imagify-current-level' );
+
+			$lvl_selectors.attr( 'aria-hidden', 'true' );
+			$list.attr( 'aria-hidden', 'false' );
+
+			$curr.find( 'input' ).focus().select();
+		} );
+
+		$list.find( 'input' ).on( 'focus', function() {
+			var $radio = $(this);
+
+			$radio.closest( '.imagify-level-selector-list' ).find( '.imagify-current-level' ).removeClass( 'imagify-current-level' ).attr( 'aria-current', 'false' );
+			$radio.closest( '.imagify-level-choice' ).addClass( 'imagify-current-level' ).attr( 'aria-current', 'true' );
+
+		} );
+	} );
+
+	// Escape level selection on Esc or Return key pressed.
+	$( document ).on( 'keypress.imagify', function(e) {
+		if  ( ( 27 === e.keyCode || 13 === e.keyCode ) && $( '.imagify-level-selector-list[aria-hidden="false"]' ).length > 0  ) {
+			$( '.imagify-level-selector-list[aria-hidden="false"]' ).attr( 'aria-hidden', 'true' );
+		}
+	} );
+
 
 } )(jQuery, document, window);
 
