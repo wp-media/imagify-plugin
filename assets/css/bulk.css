@@ -515,7 +515,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	border: 1px solid #D3D3D3;
 }
 .imagify-bulk-table td {
-	padding: 8px 15px;
+	padding: 16px;
 }
 .imagify-bulk-table thead tr,
 .imagify-bulk-table thead th {
@@ -523,27 +523,25 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 }
 .imagify-bulk-table tfoot tr,
 .imagify-bulk-table tfoot th {
-	background: #73818C;
+	background: #F2F5F7;
 }
 .imagify-bulk-table thead th {
 	padding: 14px 15px;
 	text-align: left;
-	color: #F2F5F7;
 	font-weight: bold;
 	font-size: 14px;
 }
 .imagify-bulk-table tfoot td {
 	padding: 14px 15px;
-	color: #F9FAFA;
+	color: #626E7B;
 }
 
+.imagify-bulk-table tbody tr + tr {
+	border-top: 3px solid #F2F5F7;
+}
 .imagify-bulk-table tbody tr,
 .imagify-bulk-table tbody td {
 	background: #FFF;
-}
-.imagify-bulk-table tbody tr:nth-child(odd),
-.imagify-bulk-table tbody tr:nth-child(odd) td {
-	background: #F2F5F7;
 }
 
 .imagify-bulk-table .imagify-row-progress {
@@ -737,6 +735,44 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 }
 
 /* TD's width */
+.imagify-cell-title label,
+.imagify-cell-label {
+	font-size: 14px;
+	text-transform: uppercase;
+	letter-spacing: .02em;
+	font-weight: bold;
+}
+.imagify-cell-label {
+	margin-right: 10px;
+}
+.imagify-cell-value {
+	font-size: 12px;
+	font-weight: 500;
+	color: #7A8996;
+}
+.imagify-cell-title label,
+.imagify-cell-original .imagify-cell-label {
+	color: #1F2332;
+}
+.imagify-cell-optimized .imagify-cell-label {
+	color: #338EA6;
+}
+.imagify-cell-images-optimized {
+	font-size: 14px;
+	font-weight: bold;
+	color: #338EA6;
+}
+.imagify-cell-errors {
+	color: #C51162;
+	font-weight: bold;
+	font-size: 14px;
+}
+.imagify-cell-errors a {
+	margin-left: 5px;
+	color: #7A8996;
+	font-weight: normal;
+	font-size: 12px;
+}
 .imagify-cell-filename {
 	max-width: 200px;
 }
@@ -761,9 +797,6 @@ td.imagify-cell-filename {
 .imagify-cell-percentage,
 .imagify-cell-savings {
 	color: #46B1CE;
-	font-weight: bold;
-}
-.imagify-cell-optimized {
 	font-weight: bold;
 }
 .imagify-bulk-table td.imagify-cell-totaloriginal {

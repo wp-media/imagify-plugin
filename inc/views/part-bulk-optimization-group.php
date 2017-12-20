@@ -79,12 +79,12 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 						?>
 					</td>
 					<td class="imagify-cell-optimized">
-						<?php esc_html_e( 'Optimized Filesize', 'imagify' ); ?>
-						<?php echo imagify_size_format( $row['optimized_size'], 3 ); ?>
+						<span class="imagify-cell-label"><?php esc_html_e( 'Optimized Size', 'imagify' ); ?></span>
+						<span class="imagify-cell-value"><?php echo imagify_size_format( $row['optimized_size'], 3 ); ?></span>
 					</td>
 					<td class="imagify-cell-original">
-						<?php esc_html_e( 'Original Filesize', 'imagify' ); ?>
-						<?php echo imagify_size_format( $row['original_size'], 3 ); ?>
+						<span class="imagify-cell-label"><?php esc_html_e( 'Original Size', 'imagify' ); ?></span>
+						<span class="imagify-cell-value"><?php echo imagify_size_format( $row['original_size'], 3 ); ?></span>
 					</td>
 					<td class="imagify-cell-level">
 						<div class="imagify-level-selector">
