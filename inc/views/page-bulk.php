@@ -95,39 +95,39 @@ $user = new Imagify_User();
 
 				<?php if ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || false === IMAGIFY_HIDDEN_ACCOUNT ) { ?>
 					<div class="imagify-options-title">
-						<div class="imagify-account">
-							<p class="imagify-meteo-title"><?php _e( 'Account status', 'imagify' ); ?></p>
-							<p class="imagify-meteo-subs"><?php _e( 'Your subscription:', 'imagify' ); ?>&nbsp;<strong class="imagify-user-plan"><?php echo $user->plan_label; ?></strong></p>
-						</div>
-						<div class="imagify-account-link">
-							<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" class="button button-ghost" target="_blank">
-								<span class="dashicons dashicons-admin-users"></span>
-								<span class="button-text"><?php _e( 'View My Subscription', 'imagify' ); ?></span>
-							</a>
-						</div>
+						<p class="imagify-meteo-title">
+							<span class="dashicons dashicons-admin-users"></span>
+							<?php _e( 'Account status', 'imagify' ); ?>
+						</p>
+
+						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View My Subscription', 'imagify' ); ?></a>
+
+						<p class="imagify-meteo-subs">
+							<span class="screen-reader-text"><?php _e( 'Your subscription:', 'imagify' ); ?></span>
+							<strong class="imagify-user-plan imagify-user-plan-label"><?php echo $user->plan_label; ?></strong>
+						</p>
 					</div>
 
 					<?php if ( 1 === $user->plan_id ) { ?>
 					<div class="imagify-col-content">
-						<div class="imagify-sep-v"></div>
-						<div class="imagify-credit-left">
-							<?php
-							$unconsumed_quota  = $user->get_percent_unconsumed_quota();
-							$meteo_icon        = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="37" height="38" alt="" />';
-							$bar_class         = 'positive';
-							$is_display_bubble = false;
+						<?php
+						$unconsumed_quota  = $user->get_percent_unconsumed_quota();
+						$meteo_icon        = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="63" height="64" alt="" />';
+						$bar_class         = 'positive';
+						$is_display_bubble = false;
 
-							if ( $unconsumed_quota >= 21 && $unconsumed_quota <= 50 ) {
-								$bar_class  = 'neutral';
-								$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="37" height="38" alt="" />';
-							} elseif ( $unconsumed_quota <= 20 ) {
-								$bar_class         = 'negative';
-								$is_display_bubble = true;
-								$meteo_icon        = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="38" height="36" alt="" />';
-							}
-							?>
-							<span class="imagify-meteo-icon"><?php echo $meteo_icon; ?></span>
-							<div class="imagify-space-left">
+						if ( $unconsumed_quota >= 21 && $unconsumed_quota <= 50 ) {
+							$bar_class  = 'neutral';
+							$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="63" height="64" alt="" />';
+						} elseif ( $unconsumed_quota <= 20 ) {
+							$bar_class         = 'negative';
+							$is_display_bubble = true;
+							$meteo_icon        = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="64" height="63" alt="" />';
+						}
+						?>
+						<div class="imagify-flex imagify-vcenter">
+							<span class="imagify-meteo-icon imagify-noshrink"><?php echo $meteo_icon; ?></span>
+							<div class="imagify-space-left imagify-full-width">
 
 								<p>
 									<?php
@@ -143,21 +143,38 @@ $user = new Imagify_User();
 									<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
 								</div>
 							</div>
-							<div class="imagify-space-tooltips imagify-tooltips <?php echo ( ! $is_display_bubble ) ? 'hidden' : ''; ?>">
-								<div class="tooltip-content tooltip-table">
-									<div class="cell-icon">
-										<span aria-hidden="true" class="icon icon-round">i</span>
-									</div>
-									<div class="cell-text">
-										<?php _e( 'Upgrade your account to continue optimizing your images', 'imagify' ); ?>
-									</div>
-									<div class="cell-sep"></div>
-									<div class="cell-cta">
-										<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'More info', 'imagify' ); ?></a>
-									</div>
+						</div>
+						<div class="imagify-space-tooltips imagify-tooltips <?php echo ( ! $is_display_bubble ) ? 'hidden' : ''; ?>">
+							<div class="tooltip-content tooltip-table">
+								<div class="cell-icon">
+									<span aria-hidden="true" class="icon icon-round">i</span>
+								</div>
+								<div class="cell-text">
+									<?php _e( 'Upgrade your account to continue optimizing your images', 'imagify' ); ?>
+								</div>
+								<div class="cell-sep"></div>
+								<div class="cell-cta">
+									<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'More info', 'imagify' ); ?></a>
 								</div>
 							</div>
 						</div>
+
+						<div class="imagify-divider"></div>
+						
+						<?php 
+						$show_new = apply_filters( 'imagify_show_new_to_imagify', true );
+						if ( $show_new ) { ?>
+
+						<p class="imagify-section-title imagify-h3-like"><?php _e( 'You\'re new to Imagify?', 'imagify' ); ?></p>
+						<p><?php _e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
+
+						<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-secondary imagify-button-big">
+							<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
+							<span class="button-text"><?php _e( 'What plan do I need?', 'imagify' ); ?></span>
+						</button>
+
+						<?php } ?>
+
 					</div><!-- .imagify-col-content -->
 
 					<?php } // End if(). ?>
@@ -166,95 +183,6 @@ $user = new Imagify_User();
 			</div><!-- .imagify-account-info-col -->
 
 		</div><!-- .imagify-columns -->
-	</div><!-- .imagify-settings-section -->
-
-	<div class="imagify-section imagify-section-gray">
-		<div class="imagify-bulk-submit imagify-columns imagify-count">
-			<div class="col-1-2">
-
-				<?php if ( get_imagify_option( 'backup' ) ) { ?>
-
-					<p class="imagify-count-title"><?php esc_html_e( 'Select Your Compression Level', 'imagify' ); ?>
-						<?php
-						$default_level      = __( 'Aggressive', 'imagify' );
-						$optimization_level = get_imagify_option( 'optimization_level' );
-
-						switch ( $optimization_level ) {
-							case 2:
-								$default_level = __( 'Ultra', 'imagify' );
-								break;
-							case 0:
-								$default_level = __( 'Normal', 'imagify' );
-						}
-
-						/* translators: %s is an optimization level. */
-						echo '<em class="imagify-default-settings">(' . sprintf( esc_html__( 'Your default setting: %s', 'imagify' ), '&nbsp;<strong class="imagify-primary">' . $default_level . '</strong>' ) . ')</em>';
-						?>
-					</p>
-					<p class="imagify-inline-options">
-						<input type="radio" id="imagify-optimization_level_normal" name="optimization_level" value="0" <?php checked( $optimization_level, 0 ); ?>>
-						<label for="imagify-optimization_level_normal">
-							<?php esc_html_e( 'Normal', 'imagify' ); ?>
-						</label>
-
-						<input type="radio" id="imagify-optimization_level_aggro" name="optimization_level" value="1" <?php checked( $optimization_level, 1 ); ?>>
-						<label for="imagify-optimization_level_aggro">
-							<?php esc_html_e( 'Aggressive', 'imagify' ); ?>
-						</label>
-
-						<input type="radio" id="imagify-optimization_level_ultra" name="optimization_level" value="2" <?php checked( $optimization_level, 2 ); ?>>
-						<label for="imagify-optimization_level_ultra">
-							<?php esc_html_e( 'Ultra', 'imagify' ); ?>
-						</label>
-					</p>
-
-				<?php } else { ?>
-
-					<p>
-						<strong>
-							<?php
-							printf(
-								/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-								__( 'Don\'t forget to check %1$syour settings%2$s before bulk optimization.', 'imagify' ),
-								'<a href="' . esc_url( get_imagify_admin_url() ) . '">',
-								'</a>'
-							);
-							?>
-						</strong>
-					</p>
-
-				<?php } // End if(). ?>
-
-			</div>
-			<div class="col-1-2">
-				<p class="imagify-count-title"><?php esc_html_e( 'Let\'s go!', 'imagify' ); ?></p>
-				<div class="imagify-table">
-					<div class="imagify-cell imagify-pl0">
-						<p>
-							<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
-							<button id="imagify-bulk-action" type="button" class="button button-primary">
-								<span class="dashicons dashicons-admin-generic"></span>
-								<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify' ); ?></span>
-							</button>
-						</p>
-					</div>
-					<?php if ( ! is_wp_error( get_imagify_max_image_size() ) ) { ?>
-						<div class="imagify-cell imagify-pl0">
-							<p class="imagify-info-block">
-								<?php
-								printf(
-									/* translators: %s is a file size. */
-									__( 'All images greater than %s will be optimized when using a paid plan.', 'imagify' ),
-									imagify_size_format( get_imagify_max_image_size() )
-								);
-								?>
-							</p>
-						</div>
-					<?php } ?>
-				</div>
-			</div>
-		</div><!-- .imagify-bulk-submit -->
-	</div>
 
 	<?php
 	$this->print_template( 'part-bulk-success' );
@@ -328,10 +256,37 @@ $user = new Imagify_User();
 
 	foreach ( $groups as $group ) {
 		$this->print_template( 'part-bulk-optimization-group', $group );
-	}
+	} ?>
 
-	$this->print_template( 'modal-payment' );
-	?>
+		<div class="imagify-bulk-submit">
+			<div class="imagify-table">
+				<div class="imagify-cell imagify-pl0">
+					<p>
+						<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
+						<button id="imagify-bulk-action" type="button" class="button button-primary">
+							<span class="dashicons dashicons-admin-generic"></span>
+							<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify' ); ?></span>
+						</button>
+					</p>
+				</div>
+				<?php if ( ! is_wp_error( get_imagify_max_image_size() ) ) { ?>
+					<div class="imagify-cell imagify-pl0">
+						<p class="imagify-info-block">
+							<?php
+							printf(
+								/* translators: %s is a file size. */
+								__( 'All images greater than %s will be optimized when using a paid plan.', 'imagify' ),
+								imagify_size_format( get_imagify_max_image_size() )
+							);
+							?>
+						</p>
+					</div>
+				<?php } ?>
+			</div>
+		</div><!-- .imagify-bulk-submit -->
+	</div><!-- .imagify-settings-section -->
+
+	<?php $this->print_template( 'modal-payment' ); ?>
 
 </div>
 <?php
