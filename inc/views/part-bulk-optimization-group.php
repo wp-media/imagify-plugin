@@ -87,11 +87,20 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 						<?php echo imagify_size_format( $row['original_size'], 3 ); ?>
 					</td>
 					<td class="imagify-cell-level">
-						<select name="level[<?php echo $group; ?>]">
-							<?php foreach ( array( 0, 1, 2 ) as $level ) { ?>
-								<option value="<?php echo $level; ?>"<?php selected( $level, $default_level ); ?>><?php echo esc_html( imagify_get_optimization_level_label( $level, '%ICON% %s' ) ); ?></option>
-							<?php } ?>
-						</select>
+						<div class="imagify-level-selector">
+							<span class="hide-if-js"><?php _e( 'Current level:', 'imagify'); ?> <?php echo imagify_get_optimization_level_label( $default_level, '%ICON% %s' ); ?></span>
+							
+							<button aria-controls="imagify-level-selector-list" type="button" class="button imagify-button-clean hide-if-no-js"><?php echo imagify_get_optimization_level_label( $default_level, '%ICON% %s' ); ?></button>
+
+							<ul id="imagify-level-selector-list" role="listbox" aria-orientation="vertical" class="imagify-level-selector-list">
+								<?php foreach ( array( 0, 1, 2 ) as $level ) { ?>
+								<li<?php echo $level === $default_level ? ' class="imagify-current-level" aria-current' : ''; ?> role="option"> 
+									<input type="radio" name="level[<?php echo $group; ?>]" value="<?php echo $level; ?>" id="<?php echo $group; ?>-level-<?php echo $level; ?>" <?php echo checked( $level, $default_level ); ?>>
+									<label for="<?php echo $group; ?>-level-<?php echo $level; ?>"><?php echo imagify_get_optimization_level_label( $level, '%ICON% %s' ); ?></label>
+								</li>
+								<?php } ?>
+							</ul>
+						</div>
 					</td>
 				</tr>
 			<?php } ?>
