@@ -211,13 +211,13 @@ $user = new Imagify_User();
 				),
 			),
 		),
-		array(
+		/*array(
 			'id'      => 'custom-folders',
 			'icon'     => 'admin-plugins',
 			'title'    => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
 			'subtitle' => __( 'Choose here the bulk optimization settings for the medias stored in your themes and plugins.', 'imagify' ),
 			/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-			'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
+			/*'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
 			'rows'     => array(
 				'themes'         => array(
 					'title'            => __( 'Themes', 'imagify' ),
@@ -253,35 +253,43 @@ $user = new Imagify_User();
 					'original_size'    => 12453000,
 				),
 			),
-		),
+		),*/
 	);
+
+
 
 	foreach ( $groups as $group ) {
 		$this->print_template( 'part-bulk-optimization-group', $group );
-	} ?>
+	}
+
+	//TODO: find a way to know when user didn't select Custom Folders
+	if ( count( $groups ) === 1 ) {
+		$this->print_template( 'part-bulk-optimization-newbie' );
+	}
+	?>
 
 		<div class="imagify-bulk-submit imagify-flex imagify-vcenter">
-			<div class="imagify-pr2">
-				<p>
-					<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
-					<button id="imagify-bulk-action" type="button" class="button button-primary">
-						<span class="dashicons dashicons-admin-generic"></span>
-						<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify' ); ?></span>
-					</button>
-				</p>
-			</div>
-			<?php if ( ! is_wp_error( get_imagify_max_image_size() ) ) { ?>
-				<p>
-					<?php
-					printf(
-						/* translators: %s is a file size. */
-						__( 'All images greater than %s will be optimized when using a paid plan.', 'imagify' ),
-						imagify_size_format( get_imagify_max_image_size() )
-					);
-					?>
-				</p>
-			<?php } ?>
-		</div><!-- .imagify-bulk-submit -->
+				<div class="imagify-pr2">
+					<p>
+						<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
+						<button id="imagify-bulk-action" type="button" class="button button-primary">
+							<span class="dashicons dashicons-admin-generic"></span>
+							<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify' ); ?></span>
+						</button>
+					</p>
+				</div>
+				<?php if ( ! is_wp_error( get_imagify_max_image_size() ) ) { ?>
+					<p>
+						<?php
+						printf(
+							/* translators: %s is a file size. */
+							__( 'All images greater than %s will be optimized when using a paid plan.', 'imagify' ),
+							imagify_size_format( get_imagify_max_image_size() )
+						);
+						?>
+					</p>
+				<?php } ?>
+			</div><!-- .imagify-bulk-submit -->
 	</div><!-- .imagify-settings-section -->
 
 	<?php $this->print_template( 'modal-payment' ); ?>

@@ -7,7 +7,7 @@ if ( ! imagify_can_optimize_custom_folders() ) {
 
 $settings = Imagify_Settings::get_instance();
 ?>
-<div class="imagify-col">
+<div class="imagify-col" id="custom-folders">
 	<h3 class="imagify-options-subtitle"><?php _e( 'Themes and Plugins', 'imagify' ); ?></h3>
 
 	<div>

@@ -1391,3 +1391,16 @@ ul.imagify-datas-details.imagify-datas-details {
 	padding-right: 0;
 	padding-left: 20px;
 }
+
+.imagify-col:target {
+	animation: hello 1s 3 linear backwards;
+}
+
+@keyframes hello {
+	0%, 100% {
+		background: #FFF;
+	}
+	50% {
+		background: #F4F7F9;
+	}
+}
