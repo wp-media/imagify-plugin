@@ -253,7 +253,7 @@
 			.done( function( response ) {
 				var swal_title = '',
 					swal_text  = '',
-					Optimizer, table,
+					Optimizer, $table,
 					files  = 0,
 					errors = 0,
 					stopOptimization = 0,
@@ -294,7 +294,7 @@
 				$( '.imagify-row-progress' ).slideDown();
 				$( '.imagify-no-uploaded-yet, .imagify-row-complete' ).hide( 200 );
 
-				table     = $( '.imagify-bulk-table table tbody' );
+				$table    = $( '.imagify-bulk-table-details tbody' );
 				Optimizer = new ImagifyGulp( {
 					'buffer_size': imagifyBulk.bufferSize,
 					'lib':         ajaxurl + w.imagify.concat + 'action=imagify_bulk_upload&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val(),
@@ -304,7 +304,7 @@
 
 				// Before the attachment optimization.
 				Optimizer.before( function( data ) {
-					table.find( '.imagify-row-progress' ).after( '<tr id="attachment-' + data.id + '"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="' + data.thumbnail + '" alt=""/></span><span class="imagifilename">' + data.filename + '</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>' + imagifyBulk.labels.optimizing + '<span></span></span></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-savings"></td></tr>' );
+					$table.append( '<tr id="attachment-' + data.id + '"><td class="imagify-cell-filename"><span class="imagiuploaded"><img src="' + data.thumbnail + '" alt=""/></span><span class="imagifilename">' + data.filename + '</span></td><td class="imagify-cell-status"><span class="imagistatus status-compressing"><span class="dashicons dashicons-admin-generic rotate"></span>' + imagifyBulk.labels.optimizing + '<span></span></span></td><td class="imagify-cell-thumbnails"></td><td class="imagify-cell-original"></td><td class="imagify-cell-optimized"></td><td class="imagify-cell-percentage"></td><td class="imagify-cell-savings"></td></tr>' );
 				} )
 				// After the attachment optimization.
 					.each( function( data ) {
@@ -366,9 +366,7 @@
 							$( '.imagify-cell-errors' ).html( imagifyBulk.labels.nbrErrors.replace( '%s', errors ) );
 						}
 
-						$attachment.after( '<tr><td colspan="7"><span class="status-' + errorClass + '">' + data.error + '</span></td></tr>' );
-
-						$attachment.find( '.imagify-cell-status' ).html( '<span class="imagistatus status-' + errorClass + '"><span class="dashicons dashicons-' + errorDashicon + '"></span>' + errorMessage + '</span>' );
+						$attachment.find( '.imagify-cell-status' ).html( '<span class="imagistatus status-' + errorClass + '"><span class="dashicons dashicons-' + errorDashicon + '"></span>' + errorMessage + '</span><br><span class="status-' + errorClass + '">' + data.error + '</span>' );
 					} )
 					// After all attachments optimization.
 					.done( function( data ) {
