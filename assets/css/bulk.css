@@ -533,6 +533,9 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	font-size: 12px;
 	color: #7A8996;
 }
+.imagify-th-action .imagify-is-active {
+	color: #FFF;
+}
 .imagify-th-action .button:hover,
 .imagify-th-action .button:focus {
 	color: #FFF;
@@ -818,6 +821,25 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 }
 .imagify-cell-checkbox p {
 	margin: 0;
+}
+.imagify-cell-checkbox-loader {
+	display: block;
+	width: 27px;
+	height: 28px;
+	line-height: 0;
+	animation: loading 4s infinite linear;
+}
+@keyframes loading {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(360deg);
+	} 
+}
+.imagify-cell-checkbox-loader.hidden {
+	display: none;
+	animation: none;
 }
 .imagify-cell-title label,
 .imagify-cell-label {
