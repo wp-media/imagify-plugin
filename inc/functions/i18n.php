@@ -118,7 +118,16 @@ function get_imagify_localize_script_translations( $context ) {
 				'totalErrorsAttachments'      => imagify_count_error_attachments(),
 				'heartbeatId'                 => 'update_bulk_data',
 				'waitImageUrl'                => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
-				'ajaxAction'                  => 'imagify_get_unoptimized_attachment_ids',
+				'spinnerWaitingUrl'           => IMAGIFY_ASSETS_IMG_URL . 'spinner-waiting.svg',
+				'spinnerWorkingUrl'           => IMAGIFY_ASSETS_IMG_URL . 'spinner-working.svg',
+				'ajaxActions'                 => array(
+					'libraryFetch'         => 'imagify_get_unoptimized_attachment_ids',
+					'customFolderFetch'    => 'imagify_get_unoptimized_file_ids',
+					'libraryOptimize'      => 'imagify_bulk_upload',
+					'customFolderOptimize' => 'imagify_optimize_files',
+					'getFolderData'        => 'imagify_get_folder_type_data',
+				),
+				'ajaxNonce'                   => wp_create_nonce( 'imagify-bulk-upload' ),
 				'ajaxContext'                 => 'wp',
 				'bufferSize'                  => get_imagify_bulk_buffer_size(),
 				'labels'                      => array(
@@ -137,7 +146,9 @@ function get_imagify_localize_script_translations( $context ) {
 					'noAttachmentToOptimizeText'     => __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
 					'optimizing'                     => __( 'Optimizing', 'imagify' ),
 					'error'                          => __( 'Error', 'imagify' ),
+					'ajaxErrorText'                  => __( 'The operation failed.', 'imagify' ),
 					'complete'                       => _x( 'Complete', 'adjective', 'imagify' ),
+					'alreadyOptimized'               => _x( 'Already Optimized', 'file', 'imagify' ),
 					/* translators: %s is a number. Don't use %d. */
 					'nbrFiles'                       => __( '%s file(s)', 'imagify' ),
 					'notice'                         => _x( 'Notice', 'noun', 'imagify' ),
@@ -148,6 +159,11 @@ function get_imagify_localize_script_translations( $context ) {
 					'twitterShareURL'                => imagify_get_external_url( 'share-twitter' ),
 					'getUnoptimizedImagesErrorTitle' => __( 'Oops, There is something wrong!', 'imagify' ),
 					'getUnoptimizedImagesErrorText'  => __( 'An unknown error occurred when we tried to get all your unoptimized images. Try again and if the issue still persists, please contact us!', 'imagify' ),
+					'waitingOtimizationsText'        => __( 'Waiting other optimizations to finish.', 'imagify' ),
+					/* translators: %s is a formatted number, dont use %d. */
+					'imagesOptimizedText'            => __( '%s Image(s) Optimized', 'imagify' ),
+					/* translators: %s is a formatted number, dont use %d. */
+					'imagesErrorText'                => __( '%s Error(s)', 'imagify' ),
 				),
 			);
 

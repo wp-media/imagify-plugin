@@ -24,10 +24,6 @@ var ImagifyGulp = function () {
 		this._each = new Function();
 		this._done = new Function();
 		this._error = new Function();
-		this.total_original_size = 0;
-		this.total_optimized_size = 0;
-		this.total_gain = 0;
-		this.total_percent = 0;
 		this.global_original_size = 0;
 		this.global_optimized_size = 0;
 		this.global_gain = 0;
@@ -171,15 +167,17 @@ var ImagifyGulp = function () {
 		key: 'send',
 		value: function send(data) {
 
-			var self = this,
-			    transport = new XMLHttpRequest(),
-			    err = false,
-			    json = {},
-			    response = {
-				filename: data.filename,
-				image: data.image_id,
-				error: ''
-			};
+			var self      = this,
+				transport = new XMLHttpRequest(),
+				err       = false,
+				json      = {},
+				response  = {
+					id:        data.id,
+					image:     data.image_id,
+					filename:  data.filename,
+					thumbnail: data.thumbnail,
+					error:     ''
+				};
 
 			transport.onreadystatechange = function () {
 				if (4 === this.readyState) {
@@ -205,32 +203,20 @@ var ImagifyGulp = function () {
 						response.success = json.success;
 
 						if (true === json.success) {
-
-							self.total_original_size += json_data.original_size;
-							self.total_optimized_size += json_data.new_size;
-							self.total_gain += json_data.original_size - json_data.new_size;
-							self.total_percent = (self.total_optimized_size / self.total_original_size * 100).toFixed(2);
-							self.global_original_size += json_data.original_overall_size;
+							self.global_original_size  += json_data.original_overall_size;
 							self.global_optimized_size += json_data.new_overall_size;
-							self.global_gain += json_data.overall_saving;
-							self.global_percent = (100 - self.global_optimized_size / self.global_optimized_size * 100).toFixed(2);
+							self.global_gain           += json_data.overall_saving;
+							self.global_percent         = ( 100 - self.global_optimized_size / self.global_optimized_size * 100 ).toFixed( 2 );
 
-							response.original_size = json_data.original_size;
-							response.original_size_human = self.humanSize(json_data.original_size);
-
-							response.new_size = json_data.new_size;
-							response.new_size_human = self.humanSize(json_data.new_size);
-
-							response.percent = json_data.percent;
-							response.thumbnails = json_data.thumbnails;
-
-							response.overall_saving = json_data.overall_saving;
-							response.overall_saving_human = self.humanSize(json_data.overall_saving);
-
-							response.original_overall_size = json_data.original_overall_size;
-							response.original_overall_size_human = self.humanSize(json_data.original_overall_size);
+							response.original_size_human         = json_data.original_size_human;
+							response.new_size_human              = json_data.new_size_human;
+							response.overall_saving_human        = json_data.overall_saving_human;
+							response.original_overall_size_human = json_data.original_overall_size_human;
+							response.percent_human               = json_data.percent_human;
+							response.thumbnails                  = json_data.thumbnails;
 						} else {
-							response.error = json_data.error;
+							response.error_code = json_data.error_code;
+							response.error      = json_data.error;
 						}
 					}
 
@@ -240,19 +226,12 @@ var ImagifyGulp = function () {
 						self.process(self.images_ids.shift());
 					}
 
-					if (self.processed_images === self.total_images) {
-
-						var tmp_global_percent = 0;
-
-						if (0 !== self.global_original_size) {
-							tmp_global_percent = (100 - 100 * (self.global_optimized_size / self.global_original_size)).toFixed(2);
-						}
-
-						self._done({
-							global_original_size_human: self.humanSize(self.global_original_size),
-							global_gain_human: self.humanSize(self.global_gain),
-							global_percent: tmp_global_percent
-						});
+					if ( self.processed_images === self.total_images ) {
+						self._done( {
+							global_original_size:  self.global_original_size,
+							global_optimized_size: self.global_optimized_size,
+							global_gain:           self.global_gain
+						} );
 					}
 				}
 			};
