@@ -69,7 +69,7 @@ add_action( 'wp_ajax_imagify_ngg_get_unoptimized_attachment_ids', '_do_wp_ajax_i
 function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 	global $wpdb;
 
-	imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
+	imagify_check_nonce( 'imagify-bulk-upload' );
 	imagify_check_user_capacity( 'bulk-optimize' );
 
 	$user = new Imagify_User();

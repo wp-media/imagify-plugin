@@ -54,6 +54,7 @@ class Imagify_Admin_Ajax_Post {
 		'imagify_update_estimate_sizes',
 		'imagify_get_user_data',
 		'imagify_get_files_tree',
+		'imagify_get_folder_type_data',
 	);
 
 	/**
@@ -261,7 +262,7 @@ class Imagify_Admin_Ajax_Post {
 		$context       = imagify_sanitize_context( $_POST['context'] );
 		$attachment_id = absint( $_POST['image'] );
 
-		imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
+		imagify_check_nonce( 'imagify-bulk-upload' );
 		imagify_check_user_capacity( 'bulk-optimize', $attachment_id );
 
 		$attachment         = get_imagify_attachment( $context, $attachment_id, 'imagify_bulk_upload' );
@@ -272,30 +273,43 @@ class Imagify_Admin_Ajax_Post {
 			$attachment->restore();
 		}
 
-		// Optimize it!!!!!
+		// Optimize it.
 		$attachment->optimize( $optimization_level );
 
 		// Return the optimization statistics.
 		$fullsize_data = $attachment->get_size_data();
-		$stats_data    = $attachment->get_stats_data();
-		$user          = new Imagify_User();
 		$data          = array();
 
 		if ( ! $attachment->is_optimized() ) {
-			$data['success'] = false;
-			$data['error']   = $fullsize_data['error'];
+			$data['success']    = false;
+			$data['error_code'] = '';
+			$data['error']      = $fullsize_data['error'];
+
+			if ( ! $attachment->has_error() ) {
+				$data['error_code'] = 'already_optimized';
+			} else {
+				$message = imagify_translate_api_message( 'You\'ve consumed all your data. You have to upgrade your account to continue.' );
+
+				if ( $data['error'] === $message ) {
+					$data['error_code'] = 'consumed_all_data';
+				}
+			}
 
 			imagify_die( $data );
 		}
 
-		$data['success']               = true;
-		$data['original_size']         = $fullsize_data['original_size'];
-		$data['new_size']              = $fullsize_data['optimized_size'];
-		$data['percent']               = $fullsize_data['percent'];
-		$data['overall_saving']        = $stats_data['original_size'] - $stats_data['optimized_size'];
-		$data['original_overall_size'] = $stats_data['original_size'];
-		$data['new_overall_size']      = $stats_data['optimized_size'];
-		$data['thumbnails']            = $attachment->get_optimized_sizes_count();
+		$stats_data = $attachment->get_stats_data();
+
+		$data['success']                     = true;
+		$data['original_size_human']         = imagify_size_format( $fullsize_data['original_size'], 2 );
+		$data['new_size_human']              = imagify_size_format( $fullsize_data['optimized_size'], 2 );
+		$data['overall_saving']              = $stats_data['original_size'] - $stats_data['optimized_size'];
+		$data['overall_saving_human']        = imagify_size_format( $data['overall_saving'], 2 );
+		$data['original_overall_size']       = $stats_data['original_size'];
+		$data['original_overall_size_human'] = imagify_size_format( $data['original_overall_size'], 2 );
+		$data['new_overall_size']            = $stats_data['optimized_size'];
+		$data['percent_human']               = $fullsize_data['percent'] . '%';
+		$data['thumbnails']                  = $attachment->get_optimized_sizes_count();
 
 		wp_send_json_success( $data );
 	}
@@ -635,7 +649,7 @@ class Imagify_Admin_Ajax_Post {
 	public function imagify_get_unoptimized_attachment_ids_callback() {
 		global $wpdb;
 
-		imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
+		imagify_check_nonce( 'imagify-bulk-upload' );
 		imagify_check_user_capacity( 'bulk-optimize' );
 
 		if ( ! imagify_valid_key() ) {
@@ -790,6 +804,56 @@ class Imagify_Admin_Ajax_Post {
 
 		if ( ! $data ) {
 			wp_send_json_error( array( 'message' => 'no-images' ) );
+		}
+
+		wp_send_json_success( $data );
+	}
+
+	/**
+	 * Get stats data for a specific folder type.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @see    imagify_get_folder_type_data()
+	 * @author Grégory Viguier
+	 */
+	public function imagify_get_folder_type_data_callback() {
+		imagify_check_nonce( 'imagify-bulk-upload' );
+
+		$folder_type  = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
+		$folder_types = array(
+			'library'        => 'bulk-optimize',
+			'themes'         => 'optimize-file',
+			'plugins'        => 'optimize-file',
+			'custom-folders' => 'optimize-file',
+		);
+
+		if ( ! isset( $folder_types[ $folder_type ] ) ) {
+			/**
+			 * Provide a user capacity or a capacity describer, allowing to get stats data for a custom folder type.
+			 *
+			 * @since  1.7
+			 * @author Grégory Viguier
+			 *
+			 * @param string $capacity    A user capacity or a capacity describer.
+			 * @param string $folder_type A folder type.
+			 */
+			$folder_types[ $folder_type ] = apply_filters( 'imagify_get_folder_type_data_capacity', '', $folder_type );
+		}
+
+		if ( ! $folder_types[ $folder_type ] ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		imagify_check_user_capacity( $folder_types[ $folder_type ] );
+
+		/**
+		 * Get the formated data.
+		 */
+		$data = imagify_get_folder_type_data( $folder_type );
+
+		if ( ! $data ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
 		wp_send_json_success( $data );
