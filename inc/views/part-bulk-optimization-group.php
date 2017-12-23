@@ -1,22 +1,39 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
-
-$default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 ?>
 
 <div class="imagify-bulk-table">
-	<table summary="<?php _e( 'Compression process results', 'imagify' ); ?>">
+	<table data-group-id="<?php echo $data['group_id']; ?>">
 		<thead>
-			<tr>
+			<tr class="imagify-bulk-table-title imagify-resting">
 				<th class="">
 					<span class="dashicons dashicons-<?php echo $data['icon']; ?>"></span>
 				</th>
 				<th class="" colspan="5">
-					<div class=""><?php echo $data['title']; ?></div>
-					<div class=""><?php echo $data['subtitle']; ?></div>
+					<?php echo esc_html( $data['title'] ); ?>
 				</th>
 				<th class="">
-					<button class="hide-if-no-js" type="button">
+				</th>
+			</tr>
+			<tr class="imagify-bulk-table-title imagify-fetching hidden" aria-hidden="true">
+				<th class="">
+					<span class="dashicons dashicons-<?php echo $data['icon']; ?>"></span>
+				</th>
+				<th class="" colspan="5">
+					<?php esc_html_e( 'Fetching your images...', 'imagify' ); ?>
+				</th>
+				<th class="">
+				</th>
+			</tr>
+			<tr class="imagify-bulk-table-title imagify-optimizing hidden" aria-hidden="true">
+				<th class="">
+					<span class="dashicons dashicons-<?php echo $data['icon']; ?>"></span>
+				</th>
+				<th class="" colspan="5">
+					<?php echo esc_html( $data['optimizing'] ); ?>
+				</th>
+				<th class="">
+					<button class="imagify-view-optimization-details" type="button">
 						<?php esc_html_e( 'View Details', 'imagify' ); ?>
 						<span class="dashicons dashicons-menu"></span>
 					</button>
@@ -32,6 +49,38 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 				<th class="imagify-cell-level"><?php esc_html_e( 'Level Selection', 'imagify' ); ?></th>
 			</tr>
 		</thead>
+		<tbody>
+			<!-- The results. -->
+			<tr class="imagify-row-optimization-details hidden" aria-hidden="true">
+				<td colspan="7">
+					<table summary="<?php _e( 'Optimization process results', 'imagify' ); ?>">
+						<thead>
+							<tr class="">
+								<?php $this->print_template( 'part-bulk-optimization-results-header-' . $data['group_id'] ); ?>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</td>
+			</tr>
+			<!-- The progress bar. -->
+			<tr class="imagify-row-progress">
+				<td colspan="7">
+					<div class="progress">
+						<div class="imagify-progress-bar bar"><div class="percent">0%</div></div>
+					</div>
+				</td>
+			</tr>
+			<?php
+			foreach ( $data['rows'] as $folder_type => $row ) {
+				$row['folder_type'] = $folder_type;
+
+				$row = array_merge( $row, imagify_get_folder_type_data( $folder_type ) );
+
+				$this->print_template( 'part-bulk-optimization-group-row-folder-type', $row );
+			}
+			?>
+		</tbody>
 		<tfoot>
 			<tr>
 				<td colspan="7">
@@ -39,67 +88,6 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 				</td>
 			</tr>
 		</tfoot>
-		<tbody>
-			<!-- The progress bar -->
-			<tr aria-hidden="true" class="imagify-row-progress hidden">
-				<td colspan="7">
-					<div class="media-item">
-						<div class="progress">
-							<div id="imagify-progress-bar" class="bar"><div class="percent">0%</div></div>
-						</div>
-					</div>
-				</td>
-			</tr>
-			<?php foreach ( $data['rows'] as $group => $row ) { ?>
-				<tr>
-					<td class="imagify-cell-checkbox">
-						<input id="cb-select-<?php echo $group; ?>" type="checkbox" name="group[]" checked="checked" value="<?php echo $group; ?>" class="mini" />
-						<label for="cb-select-<?php echo $group; ?>"></label>
-					</td>
-					<td class="imagify-cell-title">
-						<label for="cb-select-<?php echo $group; ?>"><?php echo $row['title']; ?></label>
-					</td>
-					<td class="imagify-cell-images-optimized">
-						<?php
-						/* translators: %s is a formatted number, dont use %d. */
-						printf( esc_html( _n( '%s Image Optimized', '%s Images Optimized', $row['optimized_images'], 'imagify' ) ), number_format_i18n( $row['optimized_images'] ) );
-						?>
-					</td>
-					<td class="imagify-cell-errors">
-						<?php
-						/* translators: %s is a formatted number, dont use %d. */
-						printf( esc_html( _n( '%s Error', '%s Errors', $row['errors'], 'imagify' ) ), number_format_i18n( $row['errors'] ) );
-
-						if ( $row['errors'] ) {
-							echo ' <a href="' . esc_url( $row['errors_url'] ) . '">' . esc_html__( 'View Errors', 'imagify' ) . '</a>';
-						}
-						?>
-					</td>
-					<td class="imagify-cell-optimized">
-						<?php
-						if ( $row['optimized_size'] ) {
-							esc_html_e( 'Optimized Filesize', 'imagify' );
-							echo ' ' . imagify_size_format( $row['optimized_size'], 3 );
-						}
-						?>
-					</td>
-					<td class="imagify-cell-original">
-						<?php
-						if ( $row['original_size'] ) {
-							esc_html_e( 'Original Filesize', 'imagify' );
-							echo ' ' . imagify_size_format( $row['original_size'], 3 );
-						}
-						?>
-					</td>
-					<td class="imagify-cell-level">
-						<select name="level[<?php echo $group; ?>]">
-							<?php foreach ( array( 0, 1, 2 ) as $level ) { ?>
-								<option value="<?php echo $level; ?>"<?php selected( $level, $default_level ); ?>><?php echo esc_html( imagify_get_optimization_level_label( $level, '%ICON% %s' ) ); ?></option>
-							<?php } ?>
-						</select>
-					</td>
-				</tr>
-			<?php } ?>
-		</tbody>
 	</table>
+	<script id="tmpl-imagify-file-row-<?php echo $data['group_id']; ?>" type="text/html"><?php $this->print_template( 'part-bulk-optimization-underscore-file-row-' . $data['group_id'] ); ?></script>
 </div>

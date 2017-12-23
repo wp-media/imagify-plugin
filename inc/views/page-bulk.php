@@ -112,7 +112,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 						<span>
 							<?php _e( 'Need help or have questions?', 'imagify' ); ?>
 							<a class="imagify-documentation-link" href="<?php echo esc_url( imagify_get_external_url( 'documentation' ) ); ?>" target="_blank"><?php _e( 'Check our documentation.', 'imagify' ); ?></a>
-						<span>
+						</span>
 					</li>
 				</ul>
 			</div><!-- .col-1-2 -->
@@ -182,7 +182,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 				<div class="imagify-table">
 					<div class="imagify-cell imagify-pl0">
 						<p>
-							<?php wp_nonce_field( 'imagify-bulk-upload', 'imagifybulkuploadnonce' ); ?>
 							<button id="imagify-bulk-action" type="button" class="button button-primary">
 								<span class="dashicons dashicons-admin-generic"></span>
 								<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify' ); ?></span>
@@ -210,36 +209,32 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 	<?php
 	$this->print_template( 'part-bulk-success' );
 
-	$total_saving_data = imagify_count_saving_data();
-
 	$groups = array(
 		'library' => array(
-			'icon'     => 'images-alt2',
-			'title'    => __( 'Optimize the images of your Media Library', 'imagify' ),
-			'subtitle' => __( 'Choose here the bulk optimization settings for the medias stored in the WordPress\' Library.', 'imagify' ),
+			/**
+			 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
+			 * It is also used in the underscore template id: 'tmpl-imagify-results-row-{$group_id}'.
+			 */
+			'group_id'   => 'library',
+			'icon'       => 'images-alt2',
+			'title'      => __( 'Optimize the images of your Media Library', 'imagify' ),
+			'optimizing' => __( 'Optimizing the images of your Media Library...', 'imagify' ),
 			/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-			'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in your %1$sMedia Library%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
-			'rows'     => array(
+			'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in your %1$sMedia Library%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
+			'rows'       => array(
 				'library' => array(
-					'title'            => __( 'Media Library', 'imagify' ),
-					'optimized_images' => imagify_count_optimized_attachments(),
-					'errors'           => imagify_count_error_attachments(),
-					'errors_url'       => add_query_arg( array(
-						'mode'           => 'list',
-						'imagify-status' => 'errors',
-					), admin_url( 'upload.php' ) ),
-					'optimized_size'   => $total_saving_data['optimized_size'],
-					'original_size'    => $total_saving_data['original_size'],
+					'title' => __( 'Media Library', 'imagify' ),
 				),
 			),
 		),
 		'custom-files' => array(
-			'icon'     => 'admin-plugins',
-			'title'    => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
-			'subtitle' => __( 'Choose here the bulk optimization settings for the medias stored in your themes and plugins.', 'imagify' ),
+			'group_id'   => 'custom-files',
+			'icon'       => 'admin-plugins',
+			'title'      => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
+			'optimizing' => __( 'Optimizing the images of your Themes and Plugins...', 'imagify' ),
 			/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-			'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
-			'rows'     => array(
+			'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
+			'rows'       => array(
 				'themes'         => array(
 					'title' => __( 'Themes', 'imagify' ),
 				),
@@ -252,19 +247,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			),
 		),
 	);
-
-	foreach ( $groups['custom-files']['rows'] as $folder_type => $row ) {
-		$groups['custom-files']['rows'][ $folder_type ] = array_merge( $row, array(
-			'optimized_images' => Imagify_Files_Stats::count_optimized_files( $folder_type ),
-			'errors'           => Imagify_Files_Stats::count_error_files( $folder_type ),
-			'errors_url'       => add_query_arg( array(
-				'folder-type-filter' => $folder_type,
-				'status'             => 'error',
-			), get_imagify_admin_url( 'files-list' ) ),
-			'optimized_size'   => Imagify_Files_Stats::get_optimized_size( $folder_type ),
-			'original_size'    => Imagify_Files_Stats::get_original_size( $folder_type ),
-		) );
-	}
 
 	foreach ( $groups as $group ) {
 		$this->print_template( 'part-bulk-optimization-group', $group );
