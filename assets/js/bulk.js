@@ -268,13 +268,18 @@
 				.done( function( response ) {
 					var swal_title = '',
 						swal_text  = '',
+						swal_classes = '',
 						Optimizer, $table,
 						files  = 0,
 						errors = 0,
 						stopOptimization = 0,
 						original_overall_size = 0,
 						overall_saving = 0,
-						incr = 0;
+						incr = 0,
+						swal_show_confirm = true;
+
+					response.success = false;
+					response.data.message = 'over-quota';
 
 					if ( ! response.success ) {
 						$obj.removeAttr( 'disabled' );
@@ -286,8 +291,10 @@
 						if ( 'invalid-api-key' === response.data.message ) {
 							swal_title = imagifyBulk.labels.invalidAPIKeyTitle;
 						} else if ( 'over-quota' === response.data.message ) {
-							swal_title = imagifyBulk.labels.overQuotaTitle;
-							swal_text  = imagifyBulk.labels.overQuotaText;
+							swal_title   = imagifyBulk.labels.overQuotaTitle;
+							swal_classes = ' imagify-swal-has-subtitle imagify-swal-error-header';
+							swal_text    = '<div class="imagify-swal-subtitle">' + imagifyBulk.labels.overQuotaSubTitle + '</div><div class="imagify-swal-content imagify-txt-start">' + imagifyBulk.labels.overQuotaText + '</div><div class="imagify-swal-buttonswrapper"><a href="' + imagifyBulk.imagifySubscriptionURL + '" target="_blank" class="imagify-button imagify-button-primary button"><svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><g fill="#000" fill-rule="nonzero" transform="translate(1 1)" stroke="#fff"><polygon points="8.75 0 8.75 0.7 12.8065 0.7 5.0015 8.5015 5.4985 8.9985 13.3 1.1935 13.3 5.25 14 5.25 14 0"/><polygon points="11.9 13.3 0.7 13.3 0.7 2.1 6.3 2.1 6.3 1.4 0 1.4 0 14 12.6 14 12.6 7.7 11.9 7.7"/></g></svg>' + imagifyBulk.labels.overQuotaConfirm + '</a></div>';
+							swal_show_confirm = false;
 						} else if ( 'no-images' === response.data.message ) {
 							swal_title = imagifyBulk.labels.noAttachmentToOptimizeTitle;
 							swal_text  = imagifyBulk.labels.noAttachmentToOptimizeText;
@@ -299,7 +306,10 @@
 							html:        swal_text,
 							type:        'info',
 							padding:     0,
-							customClass: 'imagify-sweet-alert'
+							showCloseButton: true,
+							width:       620,
+							showConfirmButton: swal_show_confirm,
+							customClass: 'imagify-sweet-alert' + swal_classes
 						} );
 
 						return;

@@ -143,6 +143,34 @@
 	content: counter(num) ". ";
 }
 
+/* List counter */
+.imagify-count-list {
+	counter-reset: listcount;
+}
+.imagify-count-list li {
+	display: flex;
+	align-items: center;
+}
+.imagify-count-list li + li {
+	margin-top: .5em;
+}
+.imagify-count-list li:before {
+	display: flex;
+	flex-basis: 24px;
+	flex-shrink: 0;
+	flex-grow: 0;
+	align-items: center;
+	justify-content: center;
+	margin-right: 16px;
+	border: 2px solid #40b1d0;
+	width: 24px;
+	height: 24px;
+	counter-increment: listcount 1;
+	content: counter(listcount);
+	color: #40b1d0;
+	border-radius: 50%;
+}
+
 /* Table layout */
 .imagify-table {
 	display: table;

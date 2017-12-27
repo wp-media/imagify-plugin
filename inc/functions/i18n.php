@@ -114,6 +114,11 @@ function get_imagify_localize_script_translations( $context ) {
 			);
 
 		case 'bulk':
+			$query_args = array(
+				'utm_source' => 'plugin',
+				'utm_medium' => 'imagify-wp',
+				'utm_content' => 'over-quota',
+			);
 			$translations = array(
 				'totalUnoptimizedAttachments' => imagify_count_unoptimized_attachments(),
 				'totalOptimizedAttachments'   => imagify_count_optimized_attachments(),
@@ -123,6 +128,7 @@ function get_imagify_localize_script_translations( $context ) {
 				'ajaxAction'                  => 'imagify_get_unoptimized_attachment_ids',
 				'ajaxContext'                 => 'wp',
 				'bufferSize'                  => get_imagify_bulk_buffer_size(),
+				'imagifySubscriptionURL'      => esc_url( imagify_get_external_url( 'subscription', $query_args ) ),
 				'labels'                      => array(
 					'overviewChartLabels'            => array(
 						'unoptimized' => __( 'Unoptimized', 'imagify' ),
@@ -133,8 +139,10 @@ function get_imagify_localize_script_translations( $context ) {
 					'waitTitle'                      => __( 'Please wait...', 'imagify' ),
 					'waitText'                       => __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
 					'invalidAPIKeyTitle'             => __( 'Your API key isn\'t valid!', 'imagify' ),
-					'overQuotaTitle'                 => __( 'Oops, It\'s Over!', 'imagify' ),
+					'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
+					'overQuotaSubTitle'              => __( 'Upgrade your account to continue optimizing your images.', 'imagify' ),
 					'overQuotaText'                  => '',
+					'overQuotaConfirm'               => __( 'See our plans on the Imagify’s website', 'imagify' ),
 					'noAttachmentToOptimizeTitle'    => __( 'Hold on!', 'imagify' ),
 					'noAttachmentToOptimizeText'     => __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
 					'optimizing'                     => __( 'Optimizing', 'imagify' ),
@@ -169,30 +177,13 @@ function get_imagify_localize_script_translations( $context ) {
 				return $translations;
 			}
 
-			$user = get_imagify_user();
+			$translations['labels']['overQuotaText'] = '<strong>' . __( 'To continue optimizing your images, you can:', 'imagify' ) . '</strong>';
 
-			if ( is_wp_error( $user ) ) {
-				$translations['labels']['overQuotaText'] = sprintf(
-					/* translators: 1 is a link tag start, 2 is the link tag end. */
-					__( 'To continue to optimize your images, log in to your Imagify account to %1$sbuy a pack or subscribe to a plan%2$s.', 'imagify' ),
-					'<a target="_blank" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '">',
-					'</a>'
-				);
-			} else {
-				$translations['labels']['overQuotaText']  = sprintf(
-					/* translators: 1 is a data quota, 2 is a date. */
-					__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
-					imagify_size_format( $user->quota * 1048576 ),
-					date_i18n( __( 'F j, Y' ), strtotime( $user->next_date_update ) )
-				);
-				$translations['labels']['overQuotaText'] .= '<br/><br/>';
-				$translations['labels']['overQuotaText'] .= sprintf(
-					/* translators: 1 is a link tag start, 2 is the link tag end. */
-					__( 'To continue to optimize your images, log in to your Imagify account to %1$sbuy a pack or subscribe to a plan%2$s.', 'imagify' ),
-					'<a target="_blank" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '">',
-					'</a>'
-				);
-			}
+			/* translators: 1 is the beginning of strong tag 2 is the closing tag. */
+			$translations['labels']['overQuotaText'] .= '<ul class="imagify-count-list">
+				<li>' . sprintf( __( '%1$sUpgrade your subscription%2$s to optimize more images per month', 'imagify' ), '<strong>', '</strong>&nbsp;' ) . '</li>
+				<li>' . sprintf( __( '%1$sBuy a “One-Time Plan”%2$s to optimize the remaining images only', 'imagify' ), '<strong>', '</strong>&nbsp;' ) . '</li>
+			</ul>';
 
 			return $translations;
 
