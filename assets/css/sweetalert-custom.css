@@ -27,7 +27,7 @@ body[class*="_imagify"] .swal2-container.swal2-shown {
 	color: #FFF;
 	background: #1F2332;
 }
-.imagify-folders-selection .swal2-title {
+.imagify-swal-has-subtitle .swal2-title {
 	text-align: left;
 }
 .imagify-sweet-alert .imagify-swal-subtitle {
@@ -93,9 +93,28 @@ body[class*="_imagify"] .swal2-container.swal2-shown {
 	padding: 28px 32px;
 	background: #FFF;
 }
-.imagify-folders-selection .swal2-content {
+.imagify-swal-has-subtitle .swal2-content {
 	padding: 0;
 }
 .imagify-swal-content {
 	padding: 28px 32px;
+}
+
+/* Quota */
+.imagify-swal-quota .imagify-space-left {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 4px 32px;
+	text-align: left;
+	font-weight: bold;
+	color: #FFF;
+	background: #343A49;
+}
+.imagify-swal-quota .imagify-space-left p {
+	font-size: 14px;
+}
+.imagify-swal-quota .imagify-space-left [class^="imagify-bar-"] {
+	width: auto;
+	flex-basis: 269px;
 }

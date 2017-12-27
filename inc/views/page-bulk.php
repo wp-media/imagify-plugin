@@ -194,9 +194,8 @@ $user = new Imagify_User();
 			'id'      => 'media-library',
 			'icon'     => 'images-alt2',
 			'title'    => __( 'Optimize the images of your Media Library', 'imagify' ),
-			'subtitle' => __( 'Choose here the bulk optimization settings for the medias stored in the WordPress\' Library.', 'imagify' ),
 			/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-			'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in your %1$sMedia Library%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
+			'footer'   => sprintf( __( 'You can also re-optimize your images from your  %1$smedia library %2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
 			'rows'     => array(
 				'library' => array(
 					'title'            => __( 'Media Library', 'imagify' ),
@@ -293,6 +292,10 @@ $user = new Imagify_User();
 	</div><!-- .imagify-settings-section -->
 
 	<?php $this->print_template( 'modal-payment' ); ?>
+	
+	<script type="text/template" id="imagify-bulk-infos">
+		<?php $this->print_template( 'part-bulk-infos' ); ?>
+	</script>
 
 </div>
 <?php

@@ -150,6 +150,9 @@ function get_imagify_localize_script_translations( $context ) {
 					'twitterShareURL'                => imagify_get_external_url( 'share-twitter' ),
 					'getUnoptimizedImagesErrorTitle' => __( 'Oops, There is something wrong!', 'imagify' ),
 					'getUnoptimizedImagesErrorText'  => __( 'An unknown error occurred when we tried to get all your unoptimized images. Try again and if the issue still persists, please contact us!', 'imagify' ),
+					'bulkInfoTitle'                  => __( 'Information', 'imagify' ),
+					'bulkInfoSubtitle'               => __( 'Some information to know before launching the optimization.', 'imagify' ),
+					'confirmBulk'                    => __( 'Start the optimization', 'imagify' ),
 				),
 			);
 

@@ -213,7 +213,7 @@
 				title:            imagifyOptions.labels.filesTreeTitle,
 				html:             '<div class="imagify-swal-subtitle">' + imagifyOptions.labels.filesTreeSubTitle + '</div><div class="imagify-swal-content"><ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul></div>',
 				type:             '',
-				customClass:      'imagify-sweet-alert imagify-folders-selection',
+				customClass:      'imagify-sweet-alert imagify-swal-has-subtitle  imagify-folders-selection',
 				showCancelButton: true,
 				padding: 0,
 				confirmButtonText: imagifyOptions.labels.confirmFilesTreeBtn,

@@ -182,12 +182,6 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	vertical-align: -5px;
 	color: #40B1D0;
 }
-
-.imagify-list-infos {
-	max-width: 100%;
-	width: 415px;
-}
-.imagify-list-infos li,
 .imagify-info-block {
 	position: relative;
 	padding: 10px;
@@ -196,62 +190,40 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	border-radius: 4px;
 	line-height: 1.6;
 }
-
-/* documentation exception */
-.imagify-documentation-link-box:after,
-.imagify-documentation-link-box:before {
-	display: none;
+.imagify-list-infos {
+	margin: 0;
+	padding: 0;
 }
-.imagify-list-infos .imagify-documentation-link-box {
+.imagify-list-infos li {
 	display: flex;
 	align-items: center;
-	padding-left: 12px;
-	border: 1px solid #338EA6;
-	background: #D9E4EC;
+	padding: 15px 5px;
+	text-align: left;
+	font-size: 14px;
+	line-height: 1.5;
+	color: #626E7B;
 }
-.imagify-documentation-icon {
-	width: 15px;
-	height: 20px;
-	margin-right: 15px;
+.imagify-list-infos li:first-child {
+	padding-top: 5px;
 }
-.imagify-list-infos .imagify-alt.imagify-alt {
-	background: #8BA7B5;
-	color: #FFF;
-	font-weight: bold;
+.imagify-list-infos li:last-child {
+	padding-bottom: 5px;
 }
 .imagify-list-infos li + li {
-	margin-top: 1em;
+	border-top: 1px solid #E9EFF2;
 }
-.imagify-list-infos li:before,
-.imagify-info-block:before {
-	content: "";
-	position: absolute;
-	left: 13px; top: 14px;
-	height: 16px; width: 16px;
-	border: 1px solid #46b1ce;
-	border-radius: 10px;
+
+.imagify-info-icon {
+	flex-grow: 0;
+	flex-basis: 50px;
 }
-.imagify-list-infos li:after,
-.imagify-info-block:after {
-	content: "i";
-	position: absolute;
-	left: 20px; top: 13px;
-	font-style: italic;
-	color: #46b1ce;
+.imagify-info-icon + span {
+	padding-left: 20px;
 }
-.imagify-cell .imagify-info-block {
-	padding-top: 0;
-}
-.imagify-cell .imagify-info-block:after {
-	top: 6px;
-}
-.imagify-cell .imagify-info-block:before {
-	top: 7px;
-}
-.imagify-list-infos .imagify-alt:before,
-.imagify-list-infos .imagify-alt:after {
-	color: #fff;
-	border-color: #fff;
+
+.imagify-list-infos a:before {
+	content: '';
+	display: block;
 }
 
 /* Some main sections/content */
