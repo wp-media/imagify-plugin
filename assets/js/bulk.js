@@ -245,6 +245,7 @@
 			title:             imagifyBulk.labels.waitTitle,
 			html:              imagifyBulk.labels.waitText,
 			showConfirmButton: false,
+			padding:           0,
 			imageUrl:          imagifyBulk.waitImageUrl,
 			customClass:       'imagify-sweet-alert'
 		} );
@@ -283,6 +284,7 @@
 						title:       swal_title,
 						html:        swal_text,
 						type:        'info',
+						padding:     0,
 						customClass: 'imagify-sweet-alert'
 					} );
 
@@ -358,6 +360,7 @@
 								title:       imagifyBulk.labels.overQuotaTitle,
 								html:        imagifyBulk.labels.overQuotaText,
 								type:        'error',
+								padding:     0,
 								customClass: 'imagify-sweet-alert',
 							} ).then( function() {
 								location.reload();
@@ -425,6 +428,7 @@
 					title:       imagifyBulk.labels.getUnoptimizedImagesErrorTitle,
 					html:        imagifyBulk.labels.getUnoptimizedImagesErrorText,
 					type:        'error',
+					padding:     0,
 					customClass: 'imagify-sweet-alert'
 				} ).then( function() {
 					location.reload();

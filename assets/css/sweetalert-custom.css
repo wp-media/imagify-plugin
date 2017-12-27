@@ -10,15 +10,25 @@ body[class*="_imagify"] .swal2-container.swal2-shown {
 	border-radius: 2px;
 }
 
-/* Title and Subtitle */
+/* To get icon background dark */
+.imagify-sweet-alert {
+	background: #1F2332!important;
+}
+.imagify-sweet-alert .swal2-icon {
+	margin-bottom: 5px;
+}
 
+/* Title and Subtitle */
 .imagify-sweet-alert .swal2-title {
 	margin: 0;
 	padding: 28px 32px;
 	font-size: 24px;
-	text-align: left;
+	text-align: center;
 	color: #FFF;
 	background: #1F2332;
+}
+.imagify-folders-selection .swal2-title {
+	text-align: left;
 }
 .imagify-sweet-alert .imagify-swal-subtitle {
 	padding: 0 32px 28px;
@@ -79,6 +89,13 @@ body[class*="_imagify"] .swal2-container.swal2-shown {
 }
 
 /* Imagify swal contents */
+.imagify-sweet-alert .swal2-content {
+	padding: 28px 32px;
+	background: #FFF;
+}
+.imagify-folders-selection .swal2-content {
+	padding: 0;
+}
 .imagify-swal-content {
 	padding: 28px 32px;
 }

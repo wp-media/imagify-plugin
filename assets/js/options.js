@@ -38,6 +38,7 @@
 						title:       imagifyOptions.labels.ApiKeyCheckSuccessTitle,
 						html:        imagifyOptions.labels.ApiKeyCheckSuccessText,
 						type:        'success',
+						padding:     0,
 						customClass: 'imagify-sweet-alert'
 					} ).then( function() {
 						location.reload();
@@ -111,6 +112,7 @@
 			html:             imagifyOptions.labels.noBackupText,
 			type:             'warning',
 			customClass:      'imagify-sweet-alert',
+			padding:          0,
 			showCancelButton: true,
 			cancelButtonText: imagifySwal.labels.cancelButtonText,
 			reverseButtons:   true
@@ -201,6 +203,7 @@
 					title:       imagifyOptions.labels.error,
 					html:        response.data || '',
 					type:        'error',
+					padding:     0,
 					customClass: 'imagify-sweet-alert'
 				} );
 				return;
@@ -253,7 +256,8 @@
 				swal( {
 					title:       imagifyOptions.labels.error,
 					type:        'error',
-					customClass: 'imagify-sweet-alert'
+					customClass: 'imagify-sweet-alert',
+					padding: 0
 				} );
 			} )
 			.always( function(){
@@ -296,6 +300,7 @@
 						title:       imagifyOptions.labels.error,
 						html:        response.data || '',
 						type:        'error',
+						padding:     0,
 						customClass: 'imagify-sweet-alert'
 					} );
 					return;
@@ -307,6 +312,7 @@
 				swal( {
 					title:       imagifyOptions.labels.error,
 					type:        'error',
+					padding:     0,
 					customClass: 'imagify-sweet-alert'
 				} );
 			} )
