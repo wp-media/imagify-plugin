@@ -502,7 +502,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		$user = new Imagify_User();
 
 		// Don't display the notice if the user doesn't almost use all his quota or the API key isn't valid.
-		if ( $user->get_percent_unconsumed_quota() > 99.2 || ! imagify_valid_key() ) {
+		if ( $user->get_percent_unconsumed_quota() > 20 || ! imagify_valid_key() ) {
 			return $display;
 		}
 
