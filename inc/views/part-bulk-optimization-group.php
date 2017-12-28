@@ -36,22 +36,17 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 						<th class="imagify-cell-overall"><?php esc_html_e( 'Overall savings', 'imagify' ); ?></th>
 					</tr>
 				</thead>
-				<tfoot>
-					<!-- The progress bar -->
-					<tr aria-hidden="true" class="imagify-row-progress hidden" id="imagify-row-progress-<?php echo $data['id']; ?>">
-						<td colspan="7">
-							<div class="media-item">
-								<div class="progress">
-									<div id="imagify-progress-bar" class="bar"><div class="percent">0%</div></div>
-								</div>
-							</div>
-						</td>
-					</tr>
-				</tfoot>
 				<tbody>
-
 				</tbody>
 			</table>
+
+			<div aria-hidden="true" class="imagify-row-progress hidden" id="imagify-row-progress-<?php echo $data['id']; ?>">
+				<div class="media-item">
+					<div class="progress">
+						<div id="imagify-progress-bar" class="bar"><div class="percent">0%</div></div>
+					</div>
+				</div>
+			</div>
 
 			<table aria-labelledby="<?php echo $data['id']; ?>-title" aria-describedby="<?php echo $data['id']; ?>-subtitle">
 				<thead>

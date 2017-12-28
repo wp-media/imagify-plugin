@@ -314,7 +314,7 @@
 
 					swal.close();
 
-					$( '.imagify-row-progress' ).slideDown();
+					$( '.imagify-row-progress' ).slideDown().attr( 'aria-hidden', 'false' );
 					$( '.imagify-no-uploaded-yet, .imagify-row-complete' ).hide( 200 );
 					
 					// Show loaders, hide checkboxes.
@@ -409,7 +409,7 @@
 							$( w ).off( 'beforeunload', confirmMessage );
 
 							// Hide the progress bar.
-							$( '.imagify-row-progress' ).slideUp();
+							$( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' );
 
 							// Hide the loaders, show the checkbox.
 							$( '.imagify-cell-checkbox-box' ).removeClass( 'hidden' ).attr( 'aria-hidden', 'false' );

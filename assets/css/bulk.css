@@ -560,8 +560,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	display: none;
 }
 
-.imagify-bulk-table .imagify-row-progress,
-.imagify-bulk-table .imagify-row-progress td {
+.imagify-bulk-table .imagify-row-progress {
 	height: 8px;
 	padding: 0;
 }
