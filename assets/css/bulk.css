@@ -130,14 +130,40 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	width: 40%;
 }
 
-/* Header */
-@media (max-width: 1200px) {
-	.imagify-bulk .imagify-title {
-		display: flex;
-		flex-direction: column;
+@media (max-width: 1520px) and (min-width: 1381px), (max-width: 1086px) {
+	.imagify-columns .col-statistics.col-statistics,
+	.imagify-columns .col-chart.col-chart {
+		width: 50%;
 	}
 }
 
+@media (max-width: 1380px) and (min-width: 1246px), (max-width: 380px) {
+	.imagify-overview-chart-container {
+		float: none;
+		margin-right: 0;
+	}
+	.imagify-doughnut-legend {
+		margin-top: 18px;
+	}
+	.imagify-global-optim-phrase {
+		padding-top: 0;
+		width: auto;
+	}
+}
+
+@media (max-width: 808px) {
+	.imagify-columns .col-statistics.col-statistics,
+	.imagify-columns .col-chart.col-chart {
+		width: auto;
+		float: none;
+		padding: 0;
+	}
+	.imagify-columns .col-chart.col-chart {
+		margin-top: 3em;
+	}
+}
+
+/* Header */
 .imagify-sep-v {
 	width: 1px;
 	background: rgba(255, 255, 255, .2);
@@ -977,5 +1003,79 @@ td.imagify-cell-filename {
 	}
 	to {
 		transform: rotate(360deg);
+	}
+}
+
+
+@media (max-width: 1245px) {
+	.imagify-col.imagify-col.imagify-account-info-col {
+		width: auto;
+		max-width: none;
+		float: none;
+	}
+	.imagify-columns .col-overview.col-overview {
+		float: none;
+		width: auto;
+		padding-left: 0;
+		padding-right: 0;
+	}
+}
+
+@media (max-width: 1200px) {
+	.imagify-settings .imagify-title .imagify-logo {
+		display: none;
+	}
+}
+
+@media (max-width: 940px) {
+	.imagify-bulk-table-container tbody,
+	.imagify-bulk-table-container tr {
+		text-align: left;
+	}
+	.imagify-bulk-table-container tbody,
+	.imagify-bulk-table-container tbody tr,
+	.imagify-bulk-table-container tbody td {
+		display: block;
+	}
+	.imagify-bulk-table-container tbody td {
+		padding: 20px;
+	}
+	.imagify-cell-checkbox,
+	.imagify-cell-title {
+		float: left;
+	}
+	.imagify-cell-checkbox {
+		width: 26px;
+	}
+	.imagify-bulk-table-container .imagify-cell-title {
+		padding-left: 10px;
+		width: calc(100% - 96px);
+	}
+	.imagify-cell-title:after,
+	.imagify-cell-images-optimized:before {
+		content: '';
+		display: table;
+		clear: both;
+		width: 100%;
+	}
+	.imagify-cell-images-optimized {
+		clear: both;
+	}
+
+	.imagify-bulk-table-container .imagify-cell-title ~ td {
+		display: inline-block;
+	}
+
+	.imagify-bulk-table-container td.imagify-cell-level {
+		display: block
+	}
+}
+
+@media (max-width: 918px) {
+	.imagify-settings .imagify-title {
+		display: block;
+	}
+	.imagify-settings .imagify-documentation-link-box {
+		display: inline-flex;
 	}
 }
