@@ -278,9 +278,6 @@
 						incr = 0,
 						swal_show_confirm = true;
 
-					response.success = false;
-					response.data.message = 'over-quota';
-
 					if ( ! response.success ) {
 						$obj.removeAttr( 'disabled' );
 						$obj.find( '.dashicons' ).removeClass( 'rotate' );
