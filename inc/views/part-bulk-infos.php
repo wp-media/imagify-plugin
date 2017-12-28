@@ -1,6 +1,9 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
+//TODO: get things dynamic.
+//Don't show imagify-swal-quota if quota > 20
+
 $unconsumed_quota = 8;
 $bar_class = 'negative'; //neutral, positive
 ?>
