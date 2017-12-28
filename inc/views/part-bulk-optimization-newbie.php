@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			<span class="dashicons dashicons-admin-plugins"></span>
 			<div class="imagify-th-titles">
 				<p class="imagify-th-title"><?php _e( 'Optimize the images of your Themes and Plugins', 'imagify' ); ?></p>
-				<p class="imagify-th-subtitle"><?php _e( 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus corporis beatae earum, hic at voluptatem a error.', 'imagify' ); ?></p>
 			</div>
 		</div>
 		<div class="imagify-th-action">
