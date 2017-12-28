@@ -12,7 +12,7 @@
 					imagifyBulk.totalOptimizedAttachments,
 					imagifyBulk.totalErrorsAttachments
 				],
-				backgroundColor: [ '#D9E4EB', '#46B1CE', '#2E3242' ],
+				backgroundColor: [ '#D9E4EB', '#46B1CE', '#C51162' ],
 				borderWidth:     0
 			}]
 		},

@@ -62,6 +62,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		'http-block-external',
 		// This warning is displayed when the grid view is active on the library. Dismissible.
 		'grid-view',
+		// This warning is displayed to warn the user that its quota is almost consumed for the current month. Dismissible.
+		'almost-over-quota',
 		// This warning is displayed to warn the user that its quota is consumed for the current month. Dismissible.
 		'free-over-quota',
 		// This warning is displayed if the backup folder is not writable. NOT dismissible.
@@ -461,6 +463,46 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 
 		// Don't display the notice if the user doesn't use all his quota or the API key isn't valid.
 		if ( ! $user->is_over_quota() || ! imagify_valid_key() ) {
+			return $display;
+		}
+
+		$display = $user;
+		return $display;
+	}
+
+	/**
+	 * Tell if the 'almost-over-quota' notice should be displayed.
+	 *
+	 * @since  1.7.0
+	 * @author Geoffrey Crofte
+	 *
+	 * @return bool|object An Imagify user object. False otherwise.
+	 */
+	public function display_almost_over_quota() {
+		static $display;
+
+		if ( isset( $display ) ) {
+			return $display;
+		}
+
+		$display = false;
+
+		if ( ! $this->user_can( 'almost-over-quota' ) ) {
+			return $display;
+		}
+
+		if ( ! imagify_is_screen( 'imagify-settings' ) && ! imagify_is_screen( 'bulk' ) ) {
+			return $display;
+		}
+
+		if ( self::notice_is_dismissed( 'almost-over-quota' ) ) {
+			return $display;
+		}
+
+		$user = new Imagify_User();
+
+		// Don't display the notice if the user doesn't almost use all his quota or the API key isn't valid.
+		if ( $user->get_percent_unconsumed_quota() > 99.2 || ! imagify_valid_key() ) {
 			return $display;
 		}
 
