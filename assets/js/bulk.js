@@ -118,7 +118,7 @@
 	 *
 	 * @param {element} canvas A canvas element.
 	 */
-	function drawMeCompleteChart( canvas ) {
+	function imagifyDrawCompleteChart( canvas ) {
 		var donut = this.donut;
 
 		canvas.each( function() {
@@ -287,6 +287,7 @@
 		title = title || imagifyBulk.labels.error;
 		text  = text || '';
 		type  = type || 'error';
+		stopOptimization = true;
 
 		swal( {
 			title:       title,
@@ -434,7 +435,7 @@
 		$complete.find( '.imagify-sn-twitter' ).attr( 'href', imagifyBulk.labels.twitterShareURL + '&amp;text=' + text2share );
 
 		// Chart.
-		drawMeCompleteChart( $complete.find( '.imagify-ac-chart canvas' ) );
+		imagifyDrawCompleteChart( $complete.find( '.imagify-ac-chart canvas' ) );
 
 		$complete.addClass( 'done' ).imagifyShow();
 
@@ -573,8 +574,8 @@
 
 		$.get( url )
 			.done( function( response ) {
-				var swal_title = imagifyBulk.labels.error,
-					swal_text  = '';
+				var swalTitle = imagifyBulk.labels.error,
+					swalText  = '';
 
 				if ( stopOptimization ) {
 					return;
@@ -588,11 +589,13 @@
 
 				// Display an error message.
 				if ( 'invalid-api-key' === response.data.message ) {
-					swal_title = imagifyBulk.labels.invalidAPIKeyTitle;
-				} else if ( 'over-quota' === response.data.message ) {
-					swal_title = imagifyBulk.labels.overQuotaTitle;
-					swal_text  = imagifyBulk.labels.overQuotaText;
-				} else if ( 'no-images' === response.data.message ) {
+					swalTitle = imagifyBulk.labels.invalidAPIKeyTitle;
+				}
+				else if ( 'over-quota' === response.data.message ) {
+					swalTitle = imagifyBulk.labels.overQuotaTitle;
+					swalText  = imagifyBulk.labels.overQuotaText;
+				}
+				else if ( 'no-images' === response.data.message ) {
 					if ( optimizationQueue.length ) {
 						/**
 						 * Don't throw an error if not the last in queue.
@@ -610,11 +613,11 @@
 						return;
 					}
 
-					swal_title = imagifyBulk.labels.noAttachmentToOptimizeTitle;
-					swal_text  = imagifyBulk.labels.noAttachmentToOptimizeText;
+					swalTitle = imagifyBulk.labels.noAttachmentToOptimizeTitle;
+					swalText  = imagifyBulk.labels.noAttachmentToOptimizeText;
 				}
 
-				imagifyDisplayError( swal_title, swal_text, 'info' );
+				imagifyDisplayError( swalTitle, swalText, 'info' );
 			} )
 			.fail( function() {
 				// Display an error message.
@@ -726,7 +729,6 @@
 			if ( 'consumed_all_data' === data.error_code ) {
 				// No more data, stop optimization.
 				if ( ! stopOptimization ) {
-					stopOptimization = true;
 					Optimizer.stopProcess();
 
 					// Display an alert to warn that all data is consumed.
