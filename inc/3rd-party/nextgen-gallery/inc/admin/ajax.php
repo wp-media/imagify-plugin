@@ -24,11 +24,12 @@ add_filter( 'imagify_current_user_can', 'imagify_ngg_current_user_can', 10, 4 );
  * Filter the current user capability to operate Imagify.
  *
  * @since  1.6.11
+ * @see    imagify_get_capacity()
  * @author Grégory Viguier
  *
  * @param  bool   $user_can  Tell if the current user has the required capacity to operate Imagify.
  * @param  string $capacity  The user capacity.
- * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+ * @param  string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
  * @param  int    $post_id   A post ID (a gallery ID for NGG).
  * @return bool
  */

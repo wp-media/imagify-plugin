@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @since  1.6.11 Uses a string as describer for the first argument.
  * @author Grégory Viguier
  *
- * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+ * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'optimize-file'.
  * @return string
  */
 function imagify_get_capacity( $describer = 'manage' ) {
@@ -59,7 +59,7 @@ function imagify_get_capacity( $describer = 'manage' ) {
 	 * @since 1.6.11 Replaced $force_mono by $describer.
 	 *
 	 * @param string $capacity  The user capacity.
-	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'optimize-file'.
 	 */
 	return apply_filters( 'imagify_capacity', $capacity, $describer );
 }
@@ -68,9 +68,10 @@ function imagify_get_capacity( $describer = 'manage' ) {
  * Tell if the current user has the required ability to operate Imagify.
  *
  * @since  1.6.11
+ * @see    imagify_get_capacity()
  * @author Grégory Viguier
  *
- * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+ * @param  string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
  * @param  int    $post_id   A post ID (a gallery ID for NGG).
  * @return bool
  */
@@ -106,7 +107,7 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 	 *
 	 * @param bool   $user_can  Tell if the current user has the required ability to operate Imagify.
 	 * @param string $capacity  The user capacity.
-	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+	 * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
 	 * @param int    $post_id   A post ID (a gallery ID for NGG).
 	 */
 	return apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $post_id );

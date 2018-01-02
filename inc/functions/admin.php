@@ -285,10 +285,10 @@ function imagify_check_nonce( $action, $query_arg = false ) {
  *
  * @since  1.6.10
  * @since  1.6.11 Uses a capacity describer instead of a capacity itself.
- * @author Grégory Viguier
  * @see    imagify_get_capacity()
+ * @author Grégory Viguier
  *
- * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'. Can also be a "real" user capacity.
+ * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
  * @param int    $post_id   A post ID.
  */
 function imagify_check_user_capacity( $describer = 'manage', $post_id = null ) {
