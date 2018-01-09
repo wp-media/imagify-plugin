@@ -203,7 +203,7 @@ class Imagify_Options {
 			return $this->get_reset_values();
 		}
 
-		return self::merge_intersect( $values, $this->get_default_values() );
+		return imagify_merge_intersect( $values, $this->get_default_values() );
 	}
 
 	/**
@@ -572,22 +572,6 @@ class Imagify_Options {
 	/** ----------------------------------------------------------------------------------------- */
 	/** TOOLS =================================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * `array_merge()` + `array_intersect_key()`.
-	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
-	 *
-	 * @param  array $values  The array we're interested in.
-	 * @param  array $default The array we use as boundaries.
-	 * @return array
-	 */
-	public static function merge_intersect( $values, $default ) {
-		$values = array_merge( $default, (array) $values );
-		return array_intersect_key( $values, $default );
-	}
 
 	/**
 	 * Cast a value, depending on its default value type.

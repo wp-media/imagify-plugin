@@ -399,7 +399,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return isset( $key ) ? '' : array();
 		}
 
-		$data = self::merge_intersect( $this->get_row(), array(
+		$data = imagify_merge_intersect( $this->get_row(), array(
 			'original_size'      => 0,
 			'optimized_size'     => false,
 			'percent'            => 0,
@@ -450,7 +450,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			'percent'        => 0,
 		);
 
-		return self::merge_intersect( $stats, $default );
+		return imagify_merge_intersect( $stats, $default );
 	}
 
 	/**
@@ -532,7 +532,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 */
 	public function fill_data( $data, $response, $url = null, $size = null ) {
 		$data = is_array( $data ) ? $data : array();
-		$data = self::merge_intersect( $data, $this->get_reset_imagify_data() );
+		$data = imagify_merge_intersect( $data, $this->get_reset_imagify_data() );
 
 		if ( is_wp_error( $response ) ) {
 			// Error or already optimized.

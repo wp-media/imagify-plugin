@@ -412,3 +412,18 @@ function imagify_get_optimization_level_label( $level, $format = '%s' ) {
 
 	return '';
 }
+
+/**
+ * `array_merge()` + `array_intersect_key()`.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  array $values  The array we're interested in.
+ * @param  array $default The array we use as boundaries.
+ * @return array
+ */
+function imagify_merge_intersect( $values, $default ) {
+	$values = array_merge( $default, (array) $values );
+	return array_intersect_key( $values, $default );
+}
