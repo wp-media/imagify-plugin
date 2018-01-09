@@ -19,42 +19,6 @@ class Imagify_Files_Scan {
 	const VERSION = '1.0';
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.7
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected static $_instance;
-
-	/**
-	 * The constructor.
-	 *
-	 * @since  1.7
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected function __construct() {}
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
 	 * Get files (optimizable by Imagify) recursively from a specific folder.
 	 *
 	 * @since  1.7
@@ -64,7 +28,7 @@ class Imagify_Files_Scan {
 	 * @param  string $folder An absolute path to a folder.
 	 * @return array|object   An array of absolute paths. A WP_Error object on error.
 	 */
-	public function get_files_from_folder( $folder ) {
+	public static function get_files_from_folder( $folder ) {
 		// Formate and validate the folder path.
 		if ( ! is_string( $folder ) || '' === $folder || '/' === $folder || '\\' === $folder ) {
 			return new WP_Error( 'invalid_folder', __( 'Invalid folder.', 'imagify' ) );
@@ -86,7 +50,6 @@ class Imagify_Files_Scan {
 
 		// Finally we made all our validations.
 		/**
-		 * 512 stands for FilesystemIterator::FOLLOW_SYMLINKS, which was introduced in php 5.3.1.
 		 * 4096 stands for FilesystemIterator::SKIP_DOTS, which was introduced in php 5.3.0.
 		 * 8192 stands for FilesystemIterator::UNIX_PATHS, which was introduced in php 5.3.0.
 		 */
@@ -110,19 +73,13 @@ class Imagify_Files_Scan {
 	 * @return bool
 	 */
 	public static function is_path_forbidden( $file_path, $check_parents = true ) {
-		static $abspath, $folders, $root_folders;
+		static $folders, $root_folders;
 
 		if ( self::is_filename_forbidden( basename( $file_path ) ) ) {
 			return true;
 		}
 
-		if ( ! isset( $abspath ) ) {
-			$abspath = self::normalize_path_for_comparison( ABSPATH );
-		}
-
-		$file_path = self::normalize_path_for_comparison( $file_path );
-
-		if ( strpos( $file_path, $abspath ) !== 0 ) {
+		if ( imagify_file_is_symlinked( $file_path ) ) {
 			// Files outside the site's folder are forbidden.
 			return true;
 		}
@@ -132,6 +89,8 @@ class Imagify_Files_Scan {
 			$folders = array_map( 'strtolower', $folders );
 			$folders = array_flip( $folders );
 		}
+
+		$file_path = self::normalize_path_for_comparison( $file_path );
 
 		if ( isset( $folders[ $file_path ] ) ) {
 			return true;
@@ -176,12 +135,12 @@ class Imagify_Files_Scan {
 		}
 
 		$folders = array(
-			imagify_get_files_backup_dir_path(),           // "Custom folders" backup.
-			imagify_get_abspath() . 'wp-admin',            // `wp-admin`
-			imagify_get_abspath() . WPINC,                 // `wp-includes`
-			get_imagify_upload_basedir( true ),            // Medias library.
-			WP_CONTENT_DIR . '/gallery',                   // NGG galleries.
-			self::get_file_symlinked_path( IMAGIFY_PATH ), // Imagify plugin.
+			imagify_get_files_backup_dir_path(), // "Custom folders" backup.
+			imagify_get_abspath() . 'wp-admin',  // `wp-admin`
+			imagify_get_abspath() . WPINC,       // `wp-includes`
+			get_imagify_upload_basedir( true ),  // Medias library.
+			WP_CONTENT_DIR . '/gallery',         // NGG galleries.
+			IMAGIFY_PATH,                        // Imagify plugin.
 		);
 		$folders = array_map( 'trailingslashit', $folders );
 		$folders = array_map( 'wp_normalize_path', $folders );
@@ -462,25 +421,6 @@ class Imagify_Files_Scan {
 		$theme_roots = array_map( 'trim', $theme_roots, array_fill( 0 , count( $theme_roots ) , '/' ) );
 
 		return $theme_roots;
-	}
-
-	/**
-	 * If a file is symlinked (and registered in the WP system), get its "fake" path within the site.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $file_path The file path.
-	 * @return string            The symlinked path. The same (normalized and untrailed slash) path if not symlinked.
-	 */
-	public static function get_file_symlinked_path( $file_path ) {
-		global $wp_plugin_paths;
-
-		$file_path = wp_normalize_path( untrailingslashit( $file_path ) );
-		$sym_paths = array_flip( $wp_plugin_paths );
-
-		return isset( $sym_paths[ $file_path ] ) ? $sym_paths[ $file_path ] : $file_path;
 	}
 
 	/**
