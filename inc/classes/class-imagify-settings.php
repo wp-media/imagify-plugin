@@ -195,22 +195,20 @@ class Imagify_Settings {
 
 		// Custom folders.
 		if ( isset( $values['custom_folders'] ) && is_array( $values['custom_folders'] ) ) {
-			$selected_raw       = $values['custom_folders'];
-			$selected_paths     = Imagify_DB::prepare_values_list( $selected_raw );
-			$selected_raw       = array_flip( $selected_raw );
-			$optimization_level = isset( $values['optimization_level'] ) ? $values['optimization_level'] : null;
-			$optimization_level = Imagify_Options::get_instance()->sanitize_and_validate( 'optimization_level', $optimization_level );
+			$selected_raw   = $values['custom_folders'];
+			$selected_paths = Imagify_DB::prepare_values_list( $selected_raw );
+			$selected_raw   = array_flip( $selected_raw );
 			unset( $values['custom_folders'] );
 
 			// Selected folders that already are in the DB.
 			$results = $wpdb->get_results( "SELECT * FROM $wpdb->imagify_folders WHERE path IN ( $selected_paths );", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 			if ( $results ) {
-				// Add the missing optimization levels.
+				// Set active.
 				foreach ( $results as $i => $result ) {
-					if ( ! isset( $result['optimization_level'] ) && Imagify_Files_Scan::placeholder_path_exists( $result['path'] ) ) {
+					if ( empty( $result['active'] ) && Imagify_Files_Scan::placeholder_path_exists( $result['path'] ) ) {
 						// Add the optimization level only if not already set and if the file exists.
-						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->imagify_folders SET optimization_level = %d WHERE folder_id = %d", $optimization_level, $result['folder_id'] ) );
+						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->imagify_folders SET active = 1 WHERE folder_id = %d", $result['folder_id'] ) );
 					}
 
 					// Remove the path from the selected list, so the remaining will be created.
@@ -218,13 +216,13 @@ class Imagify_Settings {
 				}
 			}
 
-			// Not selected folders that are in the DB, and that have an optimization level.
-			$results = $wpdb->get_col( "SELECT folder_id FROM $wpdb->imagify_folders WHERE path NOT IN ( $selected_paths ) AND optimization_level IS NOT NULL" ); // WPCS: unprepared SQL ok.
+			// Not selected folders that are in the DB, and that are active.
+			$results = $wpdb->get_col( "SELECT folder_id FROM $wpdb->imagify_folders WHERE path NOT IN ( $selected_paths ) AND active = 1" ); // WPCS: unprepared SQL ok.
 
 			if ( $results ) {
-				// Remove the optimization levels.
+				// Remove the active status.
 				$results = Imagify_DB::prepare_values_list( $results );
-				$wpdb->query( "UPDATE $wpdb->imagify_folders SET optimization_level = NULL WHERE folder_id IN ( $results )" ); // WPCS: unprepared SQL ok.
+				$wpdb->query( "UPDATE $wpdb->imagify_folders SET active = 0 WHERE folder_id IN ( $results )" ); // WPCS: unprepared SQL ok.
 			}
 
 			if ( $selected_raw ) {
@@ -245,14 +243,14 @@ class Imagify_Settings {
 					}
 
 					Imagify_Folders_DB::get_instance()->insert( array(
-						'path'               => Imagify_Files_Scan::add_placeholder( trailingslashit( $path ) ),
-						'optimization_level' => $optimization_level,
+						'path'   => Imagify_Files_Scan::add_placeholder( trailingslashit( $path ) ),
+						'active' => 1,
 					) );
 				}
 			}
 		} else {
 			unset( $values['custom_folders'] );
-			$wpdb->query( "UPDATE $wpdb->imagify_folders SET optimization_level = NULL WHERE optimization_level IS NOT NULL" );
+			$wpdb->query( "UPDATE $wpdb->imagify_folders SET active = 0 WHERE active = 1" );
 		}
 
 		return $values;
@@ -634,8 +632,13 @@ class Imagify_Settings {
 					continue;
 				}
 
-				// The theme directory is not enough, we must also use the theme root.
-				$path = Imagify_Files_Scan::add_placeholder( trailingslashit( $theme->get_stylesheet_directory() ) );
+				$path = trailingslashit( $theme->get_stylesheet_directory() );
+
+				if ( imagify_file_is_symlinked( $path ) ) {
+					continue;
+				}
+
+				$path = Imagify_Files_Scan::add_placeholder( $path );
 
 				$themes[ $path ] = $theme->display( 'Name', false );
 			}
@@ -654,19 +657,31 @@ class Imagify_Settings {
 	 * @return array A list of installed plugins in the form of '{{PLUGINS}}/imagify/' => 'Imagify'.
 	 */
 	public static function get_plugins() {
-		static $plugins;
+		static $plugins, $plugins_path;
 
 		if ( isset( $plugins ) ) {
 			return $plugins;
+		}
+
+		if ( ! isset( $plugins_path ) ) {
+			$plugins_path = Imagify_Files_Scan::remove_placeholder( '{{PLUGINS}}/' );
 		}
 
 		$all_plugins = get_plugins();
 		$plugins     = array();
 
 		if ( $all_plugins ) {
+			$filesystem = imagify_get_filesystem();
+
 			foreach ( $all_plugins as $plugin_file => $plugin_data ) {
-				$plugin_data = _get_plugin_data_markup_translate( $plugin_file, $plugin_data, false );
+				$plugin_path = $plugins_path . $plugin_file;
+
+				if ( ! $filesystem->exists( $plugin_path ) || imagify_file_is_symlinked( $plugin_path ) ) {
+					continue;
+				}
+
 				// The folder name is enough.
+				$plugin_data = _get_plugin_data_markup_translate( $plugin_file, $plugin_data, false );
 				$plugins[ '{{PLUGINS}}/' . dirname( $plugin_file ) . '/' ] = $plugin_data['Name'];
 			}
 		}
