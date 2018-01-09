@@ -370,7 +370,7 @@ function imagify_get_folder_type_data( $folder_type ) {
 				'original'         => Imagify_Files_Stats::get_original_size( $folder_type ),
 				'errors_url'       => add_query_arg( array(
 					'folder-type-filter' => $folder_type,
-					'status'             => 'error',
+					'status-filter'      => 'errors',
 				), get_imagify_admin_url( 'files-list' ) ),
 			);
 			break;

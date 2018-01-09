@@ -94,10 +94,11 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$file_ids = array();
 		$where    = '';
 
-		$sent_orderby = filter_input( INPUT_GET, 'orderby', FILTER_SANITIZE_STRING );
-		$sent_order   = filter_input( INPUT_GET, 'order', FILTER_SANITIZE_STRING );
-		$type_filter  = self::get_folder_type_filter();
-		$filter       = self::get_folder_filter();
+		$sent_orderby  = filter_input( INPUT_GET, 'orderby', FILTER_SANITIZE_STRING );
+		$sent_order    = filter_input( INPUT_GET, 'order', FILTER_SANITIZE_STRING );
+		$type_filter   = self::get_folder_type_filter();
+		$folder_filter = self::get_folder_filter();
+		$status_filter = self::get_status_filter();
 
 		if ( ! empty( $sent_orderby ) && isset( $orderbys[ $sent_orderby ] ) ) {
 			$orderby = $sent_orderby;
@@ -112,9 +113,9 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			$order = 'ASC' === strtoupper( $sent_order ) ? 'ASC' : 'DESC';
 		}
 
-		if ( $filter ) {
+		if ( $folder_filter ) {
 			// Display only files from a specific plugin, theme, or custom folder.
-			$where = "WHERE folder_id = $filter";
+			$where = "WHERE folder_id = $folder_filter";
 
 		} elseif ( $type_filter ) {
 			// Display only files from plugins, themes, or custom folders.
@@ -137,6 +138,23 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 			$where = $where ? Imagify_DB::prepare_values_list( $where ) : 0;
 			$where = "WHERE folder_id IN ( $where )";
+		}
+
+		if ( $status_filter ) {
+			// Display files optimized, not optimized, or with error.
+			$where .= $where ? ' AND ' : 'WHERE ';
+
+			switch ( $status_filter ) {
+				case 'optimized':
+					$where .= "( status = 'success' OR status = 'already_optimized' )";
+					break;
+				case 'unoptimized':
+					$where .= 'status IS NUUL';
+					break;
+				case 'errors':
+					$where .= "status = 'error'";
+					break;
+			}
 		}
 
 		// Get items.
@@ -255,10 +273,17 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			'plugins'        => __( 'Plugins', 'imagify' ),
 			'custom-folders' => __( 'Custom folders', 'imagify' ),
 		);
+		$status_filters = array(
+			''            => __( 'All images', 'imagify' ),
+			'optimized'   => __( 'Optimized','imagify' ),
+			'unoptimized' => __( 'Unoptimized','imagify' ),
+			'errors'      => __( 'Errors','imagify' ),
+		);
 
 		// Get submitted values.
-		$type_filter = self::get_folder_type_filter();
-		$filter      = self::get_folder_filter();
+		$type_filter   = self::get_folder_type_filter();
+		$folder_filter = self::get_folder_filter();
+		$status_filter = self::get_status_filter();
 
 		$this->screen->render_screen_reader_content( 'heading_views' );
 		?>
@@ -281,7 +306,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 				<label for="folder-filter" class="screen-reader-text"><?php _e( 'Filter by folder', 'imagify' ); ?></label>
 				<select class="folder-filters" name="folder-filter" id="folder-filter">
 					<?php
-					printf( '<option value="%s"%s>%s</option>', '', selected( $filter, 0, false ), esc_html__( 'All Folders', 'imagify' ) );
+					printf( '<option value="%s"%s>%s</option>', '', selected( $folder_filter, 0, false ), esc_html__( 'All Folders', 'imagify' ) );
 
 					foreach ( $groups as $type => $folders ) {
 						echo '<optgroup label="' . esc_attr( $type_filters[ $type ] ) . '">';
@@ -289,10 +314,19 @@ class Imagify_Files_List_Table extends WP_List_Table {
 						natsort( $folders );
 
 						foreach ( $folders as $folder_id => $label ) {
-							printf( '<option value="%d"%s>%s</option>', $folder_id, selected( $filter, $folder_id, false ), esc_html( $label ) );
+							printf( '<option value="%d"%s>%s</option>', $folder_id, selected( $folder_filter, $folder_id, false ), esc_html( $label ) );
 						}
 
 						echo '</optgroup>';
+					}
+					?>
+				</select>
+
+				<label for="status-filter" class="screen-reader-text"><?php _e( 'Filter by status', 'imagify' ); ?></label>
+				<select class="folder-filters" name="status-filter" id="status-filter">
+					<?php
+					foreach ( $status_filters as $status => $label ) {
+						printf( '<option value="%s"%s>%s</option>', $status, selected( $status_filter, $status, false ), esc_html( $label ) );
 					}
 					?>
 				</select>
@@ -949,6 +983,33 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		if ( ! isset( $filter ) ) {
 			$filter = (int) filter_input( INPUT_GET, 'folder-filter', FILTER_SANITIZE_NUMBER_INT );
 		}
+
+		return $filter;
+	}
+
+	/**
+	 * Get the requested status filter.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public static function get_status_filter() {
+		static $filter;
+
+		if ( isset( $filter ) ) {
+			return $filter;
+		}
+
+		$values = array(
+			'optimized'   => 1,
+			'unoptimized' => 1,
+			'errors'       => 1,
+		);
+		$filter = trim( filter_input( INPUT_GET, 'status-filter', FILTER_SANITIZE_STRING ) );
+		$filter = isset( $values[ $filter ] ) ? $filter : '';
 
 		return $filter;
 	}
