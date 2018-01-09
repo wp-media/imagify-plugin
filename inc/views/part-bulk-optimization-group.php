@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 ?>
 
 <div class="imagify-bulk-table">
-	<table data-group-id="<?php echo $data['group_id']; ?>">
+	<table data-group-id="<?php echo $data['group_id']; ?>" data-context="<?php echo $data['context']; ?>">
 		<thead>
 			<tr class="imagify-bulk-table-title imagify-resting">
 				<th class="">

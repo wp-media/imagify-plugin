@@ -216,6 +216,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			 * It is also used in the underscore template id: 'tmpl-imagify-results-row-{$group_id}'.
 			 */
 			'group_id'   => 'library',
+			'context'    => 'wp',
 			'icon'       => 'images-alt2',
 			'title'      => __( 'Optimize the images of your Media Library', 'imagify' ),
 			'optimizing' => __( 'Optimizing the images of your Media Library...', 'imagify' ),
@@ -229,6 +230,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		),
 		'custom-files' => array(
 			'group_id'   => 'custom-files',
+			'context'    => 'File',
 			'icon'       => 'admin-plugins',
 			'title'      => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
 			'optimizing' => __( 'Optimizing the images of your Themes and Plugins...', 'imagify' ),

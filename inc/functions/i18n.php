@@ -124,12 +124,14 @@ function get_imagify_localize_script_translations( $context ) {
 					'libraryFetch'         => 'imagify_get_unoptimized_attachment_ids',
 					'customFolderFetch'    => 'imagify_get_unoptimized_file_ids',
 					'libraryOptimize'      => 'imagify_bulk_upload',
-					'customFolderOptimize' => 'imagify_optimize_files',
+					'customFolderOptimize' => 'imagify_bulk_optimize_file',
 					'getFolderData'        => 'imagify_get_folder_type_data',
 				),
 				'ajaxNonce'                   => wp_create_nonce( 'imagify-bulk-upload' ),
-				'ajaxContext'                 => 'wp',
-				'bufferSize'                  => get_imagify_bulk_buffer_size(),
+				'bufferSizes'                 => array(
+					'wp'   => get_imagify_bulk_buffer_size(),
+					'File' => get_imagify_bulk_buffer_size( 1 ),
+				),
 				'labels'                      => array(
 					'overviewChartLabels'            => array(
 						'unoptimized' => __( 'Unoptimized', 'imagify' ),
@@ -167,14 +169,28 @@ function get_imagify_localize_script_translations( $context ) {
 				),
 			);
 
+			if ( isset( $translations['bufferSizes']['wp'] ) ) {
+				/**
+				 * Filter the number of parallel queries during the Bulk Optimization (library).
+				 *
+				 * @since 1.5.4
+				 * @since 1.7 Deprecated
+				 * @deprecated
+				 *
+				 * @param int $buffer_size Number of parallel queries.
+				 */
+				$translations['bufferSizes']['wp'] = apply_filters_deprecated( 'imagify_bulk_buffer_size', array( $translations['bufferSizes']['wp'] ), '1.7', 'imagify_bulk_buffer_sizes' );
+			}
+
 			/**
 			 * Filter the number of parallel queries during the Bulk Optimization.
 			 *
-			 * @since 1.5.4
+			 * @since  1.7
+			 * @author Grégory Viguier
 			 *
-			 * @param int $buffer_size Number of parallel queries.
+			 * @param array $buffer_sizes An array of number of parallel queries, keyed by context.
 			 */
-			$translations['bufferSize'] = apply_filters( 'imagify_bulk_buffer_size', $translations['bufferSize'] );
+			$translations['bufferSizes'] = apply_filters( 'imagify_bulk_buffer_sizes', $translations['bufferSizes'] );
 
 			if ( ! imagify_valid_key() ) {
 				return $translations;
