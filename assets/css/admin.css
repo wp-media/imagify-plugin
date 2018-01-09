@@ -387,13 +387,16 @@ body.imagify-modal-is-open {
 	background: transparent;
 	box-shadow: none;
 }
-
+.imagify-button-clean .dashicons-plus {
+	width: 32px;
+}
 .imagify-button-clean .dashicons-plus:before {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 20px;
-	height: 18px;
+	width: 25px;
+	height: 22px;
+	margin-left: 2px;
 	padding-top: 3px;
 	font-size: 17px;
 	background: #40B1D0;

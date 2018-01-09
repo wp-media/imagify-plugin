@@ -85,7 +85,7 @@ if ( imagify_valid_key() ) {
 			?>
 			<p><strong><?php _e( 'Oops, It\'s almost over!', 'imagify' ); ?></strong></p>
 			<p><?php _e( 'You have almost used all your credit. Don\'t forget to upgrade your subscription to continue optimizing your images.', 'imagify' ); ?></p>
-			<p><a class="btn imagify-btn-ghost" href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View My Subscription', 'imagify' ); ?></a></p>
+			<p><a class="button imagify-button-ghost" href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View My Subscription', 'imagify' ); ?></a></p>
 			<?php
 			if ( ! $user ) {
 				echo '</div>';

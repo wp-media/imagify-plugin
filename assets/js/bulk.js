@@ -12,7 +12,7 @@
 					imagifyBulk.totalOptimizedAttachments,
 					imagifyBulk.totalErrorsAttachments
 				],
-				backgroundColor: [ '#D9E4EB', '#46B1CE', '#C51162' ],
+				backgroundColor: [ '#10121A', '#46B1CE', '#C51162' ],
 				borderWidth:     0
 			}]
 		},
@@ -142,7 +142,7 @@
 					}
 				},
 				responsive:       false,
-				cutoutPercentage: 85
+				cutoutPercentage: 94
 			}
 		} );
 

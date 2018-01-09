@@ -15,8 +15,7 @@
 	margin-bottom: 15px;
 	border-radius: 5px;
 	padding: 3px 8px 2px 31px;
-	font-size: 14px;
-	font-weight: 600;
+	font-size: 13px;
 	cursor: default;
 	-webkit-transition: background-color 200ms ease-in-out;
 	-moz-transition: background-color 200ms ease-in-out;
@@ -37,7 +36,6 @@
 	width: 180px;
 	padding-top: 20px;
 	font-size: 14px;
-	font-weight: bold;
 	text-align: center;
 }
 
