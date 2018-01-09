@@ -42,7 +42,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $table_version = 10;
+	protected $table_version = 15;
 
 	/**
 	 * Tell if the table is the same for each site of a Multisite.
@@ -90,9 +90,9 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 */
 	public function get_columns() {
 		return array(
-			'folder_id'          => '%d',
-			'path'               => '%s',
-			'optimization_level' => '%d',
+			'folder_id' => '%d',
+			'path'      => '%s',
+			'active'    => '%d',
 		);
 	}
 
@@ -107,9 +107,9 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 */
 	public function get_column_defaults() {
 		return array(
-			'folder_id'          => 0,
-			'path'               => '',
-			'optimization_level' => null,
+			'folder_id' => 0,
+			'path'      => '',
+			'active'    => 0,
 		);
 	}
 
@@ -126,10 +126,10 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 		return "
 			folder_id bigint(20) unsigned NOT NULL auto_increment,
 			path varchar(100) NOT NULL default '',
-			optimization_level int(1) default NULL,
+			active int(1) NOT NULL default 0,
 			PRIMARY KEY (folder_id),
 			UNIQUE KEY path (path),
-			KEY optimization_level (optimization_level)";
+			KEY active (active)";
 	}
 
 	/**
@@ -147,17 +147,9 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 
 		$column = esc_sql( $column_select );
 
-		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE optimization_level IS NOT NULL;" ); // WPCS: unprepared SQL ok.
+		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE active = 1;" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 
 	/**
@@ -179,17 +171,9 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 		$column_where  = esc_sql( $column_where );
 		$column_values = Imagify_DB::prepare_values_list( $column_values );
 
-		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where IN ( $column_values ) AND optimization_level IS NOT NULL;" ); // WPCS: unprepared SQL ok.
+		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where IN ( $column_values ) AND active = 1;" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 
 	/**
@@ -211,17 +195,9 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 		$column_where  = esc_sql( $column_where );
 		$column_values = Imagify_DB::prepare_values_list( $column_values );
 
-		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where NOT IN ( $column_values ) AND optimization_level IS NOT NULL;" ); // WPCS: unprepared SQL ok.
+		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where NOT IN ( $column_values ) AND active = 1;" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 
 	/**
@@ -239,16 +215,8 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 
 		$column = esc_sql( $column_select );
 
-		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE optimization_level IS NULL;" ); // WPCS: unprepared SQL ok.
+		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE active != 1;" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 }
