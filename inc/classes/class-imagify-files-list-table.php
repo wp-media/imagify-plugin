@@ -231,8 +231,8 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		}
 
 		// Group folders by type.
-		$themes  = imagify_get_theme_folders();
-		$plugins = imagify_get_plugin_folders();
+		$themes  = Imagify_Settings::get_themes();
+		$plugins = Imagify_Settings::get_plugins();
 		$groups  = array(
 			'themes'         => array(),
 			'plugins'        => array(),
