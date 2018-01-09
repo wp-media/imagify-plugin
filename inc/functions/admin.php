@@ -190,12 +190,16 @@ function get_imagify_max_intermediate_image_size() {
  * Get the default Bulk Optimization buffer size.
  *
  * @since  1.5.10
+ * @since  1.7 Added $sizes parameter.
  * @author Jonathan Buttigieg
  *
- * @return int The buffer size.
+ * @param  int $sizes Number of image sizes per item (attachment).
+ * @return int        The buffer size.
  */
-function get_imagify_bulk_buffer_size() {
-	$sizes = count( get_imagify_thumbnail_sizes() );
+function get_imagify_bulk_buffer_size( $sizes = false ) {
+	if ( ! $sizes ) {
+		$sizes = count( get_imagify_thumbnail_sizes() );
+	}
 
 	switch ( true ) {
 		case ( $sizes >= 10 ):
