@@ -71,3 +71,82 @@ function imagify_get_file_backup_path( $file_path ) {
 
 	return str_replace( $abspath, $backup_dir, $file_path );
 }
+
+/**
+ * Get installed theme paths.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return array A list of installed theme paths in the form of '{{THEMES}}/twentyseventeen/' => '/abspath/to/wp-content/themes/twentyseventeen/'.
+ */
+function imagify_get_theme_folders() {
+	static $themes;
+
+	if ( isset( $themes ) ) {
+		return $themes;
+	}
+
+	$all_themes = wp_get_themes();
+	$themes     = array();
+
+	if ( $all_themes ) {
+		foreach ( $all_themes as $stylesheet => $theme ) {
+			if ( ! $theme->exists() ) {
+				continue;
+			}
+
+			$path = trailingslashit( $theme->get_stylesheet_directory() );
+
+			if ( Imagify_Files_Scan::is_path_forbidden( $path ) ) {
+				continue;
+			}
+
+			$placeholder = Imagify_Files_Scan::add_placeholder( $path );
+
+			$themes[ $placeholder ] = $path;
+		}
+	}
+
+	return $themes;
+}
+
+/**
+ * Get installed plugin paths.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return array A list of installed plugin paths in the form of '{{PLUGINS}}/imagify/' => '/abspath/to/wp-content/plugins/imagify/'.
+ */
+function imagify_get_plugin_folders() {
+	static $plugins, $plugins_path;
+
+	if ( isset( $plugins ) ) {
+		return $plugins;
+	}
+
+	if ( ! isset( $plugins_path ) ) {
+		$plugins_path = Imagify_Files_Scan::remove_placeholder( '{{PLUGINS}}/' );
+	}
+
+	$all_plugins = get_plugins();
+	$plugins     = array();
+
+	if ( $all_plugins ) {
+		$filesystem = imagify_get_filesystem();
+
+		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+			$path = $plugins_path . $plugin_file;
+
+			if ( ! $filesystem->exists( $path ) || Imagify_Files_Scan::is_path_forbidden( $path ) ) {
+				continue;
+			}
+
+			$plugin_file = dirname( $plugin_file ) . '/';
+			$plugins[ '{{PLUGINS}}/' . $plugin_file ] = $plugins_path . $plugin_file;
+		}
+	}
+
+	return $plugins;
+}
