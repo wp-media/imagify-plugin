@@ -133,7 +133,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	}
 
 	/**
-	 * Retrieve folders "in sync" (where an optimization level is set).
+	 * Retrieve active folders (checked in the settings).
 	 *
 	 * @since  1.7
 	 * @access public
@@ -142,7 +142,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @param  string $column_select A column name.
 	 * @return array
 	 */
-	public function get_optimized_folders_column( $column_select ) {
+	public function get_active_folders_column( $column_select ) {
 		global $wpdb;
 
 		$column = esc_sql( $column_select );
@@ -153,7 +153,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	}
 
 	/**
-	 * Retrieve folders "in sync" (where an optimization level is set) by the specified column / values.
+	 * Retrieve active folders (checked in the settings) by the specified column / values.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -164,7 +164,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @param  array  $column_values An array of values.
 	 * @return array
 	 */
-	public function get_optimized_folders_column_in( $column_select, $column_where, $column_values ) {
+	public function get_active_folders_column_in( $column_select, $column_where, $column_values ) {
 		global $wpdb;
 
 		$column        = esc_sql( $column_select );
@@ -177,7 +177,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	}
 
 	/**
-	 * Retrieve folders "in sync" (where an optimization level is set) by the specified column / values.
+	 * Retrieve active folders (checked in the settings) by the specified column / values.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -188,7 +188,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @param  array  $column_values An array of values.
 	 * @return array
 	 */
-	public function get_optimized_folders_column_not_in( $column_select, $column_where, $column_values ) {
+	public function get_active_folders_column_not_in( $column_select, $column_where, $column_values ) {
 		global $wpdb;
 
 		$column        = esc_sql( $column_select );
@@ -201,7 +201,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	}
 
 	/**
-	 * Retrieve folders "not in sync" (where an optimization level is not set).
+	 * Retrieve not active folders (not checked in the settings).
 	 *
 	 * @since  1.7
 	 * @access public
@@ -210,7 +210,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @param  string $column_select A column name.
 	 * @return array
 	 */
-	public function get_unoptimized_folders_column( $column_select ) {
+	public function get_inactive_folders_column( $column_select ) {
 		global $wpdb;
 
 		$column = esc_sql( $column_select );
