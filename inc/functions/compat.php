@@ -611,3 +611,99 @@ if ( ! function_exists( 'wp_doing_ajax' ) ) :
 		return apply_filters( 'wp_doing_ajax', defined( 'DOING_AJAX' ) && DOING_AJAX );
 	}
 endif;
+
+if ( ! function_exists( '_deprecated_hook' ) ) :
+	/**
+	 * Marks a deprecated action or filter hook as deprecated and throws a notice.
+	 *
+	 * Use the {@see 'deprecated_hook_run'} action to get the backtrace describing where
+	 * the deprecated hook was called.
+	 *
+	 * Default behavior is to trigger a user error if `WP_DEBUG` is true.
+	 *
+	 * This function is called by the do_action_deprecated() and apply_filters_deprecated()
+	 * functions, and so generally does not need to be called directly.
+	 *
+	 * @since  1.7
+	 * @since  WP 4.6.0
+	 * @access private
+	 *
+	 * @param string $hook        The hook that was used.
+	 * @param string $version     The version of WordPress that deprecated the hook.
+	 * @param string $replacement Optional. The hook that should have been used.
+	 * @param string $message     Optional. A message regarding the change.
+	 */
+	function _deprecated_hook( $hook, $version, $replacement = null, $message = null ) {
+		/**
+		 * Fires when a deprecated hook is called.
+		 *
+		 * @since 1.7
+		 * @since WP 4.6.0
+		 *
+		 * @param string $hook        The hook that was called.
+		 * @param string $replacement The hook that should be used as a replacement.
+		 * @param string $version     The version of WordPress that deprecated the argument used.
+		 * @param string $message     A message regarding the change.
+		 */
+		do_action( 'deprecated_hook_run', $hook, $replacement, $version, $message );
+
+		/**
+		 * Filters whether to trigger deprecated hook errors.
+		 *
+		 * @since 1.7
+		 * @since WP 4.6.0
+		 *
+		 * @param bool $trigger Whether to trigger deprecated hook errors. Requires
+		 *                      `WP_DEBUG` to be defined true.
+		 */
+		if ( WP_DEBUG && apply_filters( 'deprecated_hook_trigger_error', true ) ) {
+			$message = empty( $message ) ? '' : ' ' . $message;
+			if ( ! is_null( $replacement ) ) {
+				/* translators: 1: WordPress hook name, 2: version number, 3: alternative hook name */
+				trigger_error( sprintf( __( '%1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.' ), $hook, $version, $replacement ) . $message );
+			} else {
+				/* translators: 1: WordPress hook name, 2: version number */
+				trigger_error( sprintf( __( '%1$s is <strong>deprecated</strong> since version %2$s with no alternative available.' ), $hook, $version ) . $message );
+			}
+		}
+	}
+endif;
+
+if ( ! function_exists( 'apply_filters_deprecated' ) ) :
+	/**
+	 * Fires functions attached to a deprecated filter hook.
+	 *
+	 * When a filter hook is deprecated, the apply_filters() call is replaced with
+	 * apply_filters_deprecated(), which triggers a deprecation notice and then fires
+	 * the original filter hook.
+	 *
+	 * Note: the value and extra arguments passed to the original apply_filters() call
+	 * must be passed here to `$args` as an array. For example:
+	 *
+	 *     // Old filter.
+	 *     return apply_filters( 'wpdocs_filter', $value, $extra_arg );
+	 *
+	 *     // Deprecated.
+	 *     return apply_filters_deprecated( 'wpdocs_filter', array( $value, $extra_arg ), '4.9', 'wpdocs_new_filter' );
+	 *
+	 * @since 1.7
+	 * @since WP 4.6.0
+	 *
+	 * @see _deprecated_hook()
+	 *
+	 * @param string $tag         The name of the filter hook.
+	 * @param array  $args        Array of additional function arguments to be passed to apply_filters().
+	 * @param string $version     The version of WordPress that deprecated the hook.
+	 * @param string $replacement Optional. The hook that should have been used. Default false.
+	 * @param string $message     Optional. A message regarding the change. Default null.
+	 */
+	function apply_filters_deprecated( $tag, $args, $version, $replacement = false, $message = null ) {
+		if ( ! has_filter( $tag ) ) {
+			return $args[0];
+		}
+
+		_deprecated_hook( $tag, $version, $replacement, $message );
+
+		return apply_filters_ref_array( $tag, $args );
+	}
+endif;
