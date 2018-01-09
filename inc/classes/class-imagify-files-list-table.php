@@ -120,19 +120,17 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			// Display only files from plugins, themes, or custom folders.
 			if ( 'themes' === $type_filter ) {
 				// Where the folders are themes.
-				$where = Imagify_Settings::get_themes();
-				$where = array_keys( $where );
+				$where = array_keys( imagify_get_theme_folders() );
 				$where = Imagify_Folders_DB::get_instance()->get_column_in( 'folder_id', 'path', $where );
 
 			} elseif ( 'plugins' === $type_filter ) {
 				// Where the folders are plugins.
-				$where = Imagify_Settings::get_plugins();
-				$where = array_keys( $where );
+				$where = array_keys( imagify_get_plugin_folders() );
 				$where = Imagify_Folders_DB::get_instance()->get_column_in( 'folder_id', 'path', $where );
 
 			} else {
 				// Where the folders are not themes nor plugins.
-				$where = array_merge( Imagify_Settings::get_themes(), Imagify_Settings::get_plugins() );
+				$where = array_merge( imagify_get_theme_folders(), imagify_get_plugin_folders() );
 				$where = array_keys( $where );
 				$where = Imagify_Folders_DB::get_instance()->get_column_not_in( 'folder_id', 'path', $where );
 			}
@@ -151,9 +149,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		// Prepare items.
 		foreach ( $this->items as $i => $item ) {
 			// Cast values.
-			foreach ( $item as $key => $value ) {
-				$item->$key = $files_db->cast( $value, $key );
-			}
+			$item = $files_db->cast_row( $item );
 
 			// Store the folders used by the items to get their data later in 1 query.
 			$folders[ $item->folder_id ] = $item->folder_id;
@@ -191,9 +187,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		// Cast folders data and store data into a property.
 		foreach ( $folders as $folder ) {
-			foreach ( $folder as $key => $value ) {
-				$folder->$key = $folders_db->cast( $value, $key );
-			}
+			$folder = $folders_db->cast_row( $folder );
 
 			$this->folders[ $folder->folder_id ] = $folder;
 		}
@@ -237,8 +231,8 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		}
 
 		// Group folders by type.
-		$themes  = Imagify_Settings::get_themes();
-		$plugins = Imagify_Settings::get_plugins();
+		$themes  = imagify_get_theme_folders();
+		$plugins = imagify_get_plugin_folders();
 		$groups  = array(
 			'themes'         => array(),
 			'plugins'        => array(),
