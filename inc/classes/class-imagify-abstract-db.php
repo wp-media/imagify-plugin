@@ -245,15 +245,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 
 		$result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE $column_where = $placeholder LIMIT 1;", $column_value ), ARRAY_A ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $key => $value ) {
-			$result[ $key ] = $this->cast( $value, $key );
-		}
-
-		return $result;
+		return (array) $this->cast_row( $result );
 	}
 
 	/**
@@ -275,15 +267,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 
 		$result = $wpdb->get_row( "SELECT * FROM $this->table_name WHERE $column_where IN ( $column_values ) LIMIT 1;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $key => $value ) {
-			$result[ $key ] = $this->cast( $value, $key );
-		}
-
-		return $result;
+		return (array) $this->cast_row( $result );
 	}
 
 	/**
@@ -377,15 +361,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 
 		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where IN ( $column_values );" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 
 	/**
@@ -409,15 +385,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 
 		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where NOT IN ( $column_values );" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 
 	/**
@@ -784,7 +752,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	}
 
 	/**
-	 * Cast a value before returning it.
+	 * Cast a value.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -814,6 +782,57 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Cast a column.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array  $values The values to cast.
+	 * @param  string $column The corresponding column name.
+	 * @return array
+	 */
+	public function cast_col( $values, $column ) {
+		if ( ! $values ) {
+			return $values;
+		}
+
+		foreach ( $values as $i => $value ) {
+			$values[ $i ] = $this->cast( $value, $column );
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Cast a row.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array|object $row_fields A row from the DB.
+	 * @return array|object
+	 */
+	public function cast_row( $row_fields ) {
+		if ( ! $row_fields ) {
+			return $row_fields;
+		}
+
+		if ( is_array( $row_fields ) ) {
+			foreach ( $row_fields as $field => $value ) {
+				$row_fields[ $field ] = $this->cast( $value, $field );
+			}
+		} elseif ( is_object( $row_fields ) ) {
+			foreach ( $row_fields as $field => $value ) {
+				$row_fields->$field = $this->cast( $value, $field );
+			}
+		}
+
+		return $row_fields;
 	}
 
 	/**
