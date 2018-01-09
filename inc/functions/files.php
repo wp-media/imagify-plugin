@@ -138,3 +138,47 @@ function imagify_make_file_path_relative( $file_path, $base = '' ) {
 
 	return substr_replace( $file_path, '', 0, $pos + strlen( $base ) );
 }
+
+/**
+ * Tell if a file is symlinked.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  string $file_path An absolute path.
+ * @return bool
+ */
+function imagify_file_is_symlinked( $file_path ) {
+	static $abspath;
+	static $plugin_paths = array();
+	global $wp_plugin_paths;
+
+	if ( ! isset( $abspath ) ) {
+		$abspath = strtolower( wp_normalize_path( trailingslashit( imagify_get_abspath() ) ) );
+	}
+
+	$lower_file_path = strtolower( wp_normalize_path( trailingslashit( realpath( $file_path ) ) ) );
+
+	if ( strpos( $lower_file_path, $abspath ) !== 0 ) {
+		return true;
+	}
+
+	if ( $wp_plugin_paths && is_array( $wp_plugin_paths ) ) {
+		if ( ! $plugin_paths ) {
+			foreach ( $wp_plugin_paths as $dir => $realdir ) {
+				$dir = strtolower( wp_normalize_path( trailingslashit( $dir ) ) );
+				$plugin_paths[ $dir ] = strtolower( wp_normalize_path( trailingslashit( $realdir ) ) );
+			}
+		}
+
+		$lower_file_path = strtolower( wp_normalize_path( trailingslashit( $file_path ) ) );
+
+		foreach ( $plugin_paths as $dir => $realdir ) {
+			if ( strpos( $lower_file_path, $dir ) === 0 ) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
