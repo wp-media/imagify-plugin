@@ -10,8 +10,12 @@ function _imagify_display_options_page() {
 	global $wp_version;
 
 	if ( isset( $_POST['submit-goto-bulk'] ) ) { // WPCS: CSRF ok.
-		wp_safe_redirect( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) );
+		wp_safe_redirect( esc_url_raw( get_imagify_admin_url( 'bulk-optimization' ) ) );
 	}
+
+	$settings    = Imagify_Settings::get_instance();
+	$options     = Imagify_Options::get_instance();
+	$option_name = $options->get_option_name();
 	?>
 	<div class="wrap imagify-settings <?php echo defined( 'WP_ROCKET_VERSION' ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket'; ?>">
 
@@ -88,15 +92,14 @@ function _imagify_display_options_page() {
 					<a class="imagify-documentation-link" href="<?php echo esc_url( imagify_get_external_url( 'documentation' ) ); ?>" target="_blank"><?php _e( 'Check our documentation.', 'imagify' ); ?></a></span>
 				</p>
 			</div>
-			<?php $form_action = ( imagify_is_active_for_network() ) ? admin_url( 'admin-post.php' ) : admin_url( 'options.php' ); ?>
-			<form action="<?php echo $form_action; ?>" id="imagify-settings" method="post">
 
-				<?php settings_fields( IMAGIFY_SLUG ); ?>
+			<form action="<?php echo esc_url( $settings->get_form_action() ); ?>" id="imagify-settings" method="post">
+
+				<?php settings_fields( $settings->get_settings_group() ); ?>
 				<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
 				<?php wp_nonce_field( 'imagify-check-api-key', 'imagifycheckapikeynonce', false ); ?>
 
-				<input id="check_api_key" type="hidden" value="<?php echo esc_attr( get_imagify_option( 'api_key' ) ); ?>" name="check_api_key">
-				<input id="version" type="hidden" value="<?php echo esc_attr( get_imagify_option( 'version' ) ); ?>" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[version]">
+				<input id="check_api_key" type="hidden" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="check_api_key">
 
 				<h3 class="screen-reader-text"><?php _e( 'Settings' ); ?></h3>
 
@@ -110,7 +113,7 @@ function _imagify_display_options_page() {
 								<tr>
 									<th scope="row"><label for="api_key"><?php _e( 'API Key', 'imagify' ); ?></label></th>
 									<td>
-										<input type="text" size="35" value="<?php echo esc_attr( get_imagify_option( 'api_key' ) ); ?>" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[api_key]" id="api_key">
+										<input type="text" size="35" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="<?php echo $option_name; ?>[api_key]" id="api_key">
 										<?php
 										if ( imagify_valid_key() ) {
 											?>
@@ -120,7 +123,7 @@ function _imagify_display_options_page() {
 											</span>
 
 											<?php
-										} elseif ( ! imagify_valid_key() && get_imagify_option( 'api_key', false ) ) {
+										} elseif ( ! imagify_valid_key() && $options->get( 'api_key' ) ) {
 											?>
 
 											<span id="imagify-check-api-container">
@@ -130,7 +133,7 @@ function _imagify_display_options_page() {
 											<?php
 										}
 
-										if ( ! get_imagify_option( 'api_key', false ) ) {
+										if ( ! $options->get( 'api_key' ) ) {
 											echo '<p class="description desc api_key">';
 											printf(
 												/* translators: 1 is a link tag start, 2 is the link tag end. */
@@ -149,7 +152,7 @@ function _imagify_display_options_page() {
 
 				<?php } // End if(). ?>
 
-				<div class="imagify-settings-section <?php echo ( ! imagify_valid_key() ) ? 'hidden' : ''; ?>">
+				<div class="imagify-settings-section <?php echo ! imagify_valid_key() ? 'hidden' : ''; ?>">
 
 					<table class="form-table">
 						<tbody>
@@ -157,17 +160,17 @@ function _imagify_display_options_page() {
 								<th scope="row"><?php _e( 'Optimization Level', 'imagify' ); ?></th>
 								<td>
 									<p class="imagify-inline-options">
-										<input type="radio" id="imagify-optimization_level_normal" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[optimization_level]" value="0" <?php checked( get_imagify_option( 'optimization_level' ), 0 ); ?>>
+										<input type="radio" id="imagify-optimization_level_normal" name="<?php echo $option_name; ?>[optimization_level]" value="0" <?php checked( $options->get( 'optimization_level' ), 0 ); ?>>
 										<label for="imagify-optimization_level_normal">
 											<?php _e( 'Normal', 'imagify' ); ?>
 										</label>
 
-										<input type="radio" id="imagify-optimization_level_aggro" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[optimization_level]" value="1" <?php checked( get_imagify_option( 'optimization_level' ), 1 ); ?>>
+										<input type="radio" id="imagify-optimization_level_aggro" name="<?php echo $option_name; ?>[optimization_level]" value="1" <?php checked( $options->get( 'optimization_level' ), 1 ); ?>>
 										<label for="imagify-optimization_level_aggro">
 											<?php _e( 'Aggressive', 'imagify' ); ?>
 										</label>
 
-										<input type="radio" id="imagify-optimization_level_ultra" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[optimization_level]" value="2" <?php checked( get_imagify_option( 'optimization_level' ), 2 ); ?>>
+										<input type="radio" id="imagify-optimization_level_ultra" name="<?php echo $option_name; ?>[optimization_level]" value="2" <?php checked( $options->get( 'optimization_level' ), 2 ); ?>>
 										<label for="imagify-optimization_level_ultra">
 											<?php _e( 'Ultra', 'imagify' ); ?>
 										</label>
@@ -193,7 +196,7 @@ function _imagify_display_options_page() {
 							<tr>
 								<th scope="row"><span><?php _e( 'Auto-Optimize images on upload', 'imagify' ); ?></span></th>
 								<td>
-									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[auto_optimize]" id="auto_optimize" <?php checked( get_imagify_option( 'auto_optimize', 0 ), 1 ); ?> aria-describedby="describe-auto-optimize" />
+									<input type="checkbox" value="1" name="<?php echo $option_name; ?>[auto_optimize]" id="auto_optimize" <?php checked( $options->get( 'auto_optimize' ), 1 ); ?> aria-describedby="describe-auto-optimize" />
 									<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
 									<label for="auto_optimize" onclick=""><span class="screen-reader-text"><?php _e( 'Auto-Optimize images on upload', 'imagify' ); ?></span></label>
 
@@ -207,14 +210,14 @@ function _imagify_display_options_page() {
 								<th scope="row"><span><?php _e( 'Backup original images', 'imagify' ); ?></span></th>
 								<td>
 									<?php
-									$backup_enabled     = (int) get_imagify_option( 'backup', 0 );
+									$backup_enabled     = $options->get( 'backup' );
 									$backup_error_class = ' hidden';
 
 									if ( $backup_enabled && ! imagify_backup_dir_is_writable() ) {
 										$backup_error_class = '';
 									}
 									?>
-									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[backup]" id="backup" <?php checked( $backup_enabled, 1 ); ?> aria-describedby="describe-backup" />
+									<input type="checkbox" value="1" name="<?php echo $option_name; ?>[backup]" id="backup" <?php checked( $backup_enabled, 1 ); ?> aria-describedby="describe-backup" />
 									<label for="backup" onclick=""><span class="screen-reader-text"><?php _e( 'Backup original images', 'imagify' ); ?></span></label>
 
 									<span id="describe-backup" class="imagify-info">
@@ -234,16 +237,17 @@ function _imagify_display_options_page() {
 							<tr>
 								<th scope="row"><span><?php _e( 'Resize larger images', 'imagify' ); ?></span></th>
 								<td>
-									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[resize_larger]" id="resize_larger" <?php checked( get_imagify_option( 'resize_larger', 0 ), 1 ); ?> aria-describedby="describe-resize-larger" />
+									<input type="checkbox" value="1" name="<?php echo $option_name; ?>[resize_larger]" id="resize_larger" <?php checked( $options->get( 'resize_larger' ), 1 ); ?> aria-describedby="describe-resize-larger" />
 									<label for="resize_larger" onclick=""><span class="screen-reader-text"><?php _e( 'Resize larger images', 'imagify' ); ?></span></label>
 
 									<p id="describe-resize-larger" class="imagify-options-line">
 										<?php
-										$max_sizes = get_imagify_max_intermediate_image_size();
+										$max_sizes       = get_imagify_max_intermediate_image_size();
+										$resize_larger_w = $options->get( 'resize_larger_w' );
 										printf(
 											/* translators: 1 is a text input for a number of pixels (don't use %d). */
 											__( 'to maximum %s pixels width', 'imagify' ),
-											'<input type="number" min="' . $max_sizes['width'] . '" name="' . IMAGIFY_SETTINGS_SLUG . '[resize_larger_w]" value="' . get_imagify_option( 'resize_larger_w', false ) . '" size="5">'
+											'<input type="number" min="' . $max_sizes['width'] . '" name="' . $option_name . '[resize_larger_w]" value="' . ( $resize_larger_w ? $resize_larger_w : '' ) . '" size="5">'
 										);
 										?>
 									</p>
@@ -265,7 +269,7 @@ function _imagify_display_options_page() {
 							<tr>
 								<th scope="row"><span><?php _e( 'EXIF Data', 'imagify' ); ?></span></th>
 								<td>
-									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[exif]" id="exif" <?php checked( get_imagify_option( 'exif', 0 ), 1 ); ?> aria-describedby="describe-exif" />
+									<input type="checkbox" value="1" name="<?php echo $option_name; ?>[exif]" id="exif" <?php checked( $options->get( 'exif' ), 1 ); ?> aria-describedby="describe-exif" />
 									<label for="exif" onclick=""><span class="screen-reader-text"><?php _e( 'EXIF Data', 'imagify' ); ?></span></label>
 
 									<span id="describe-exif" class="imagify-info">
@@ -307,7 +311,7 @@ function _imagify_display_options_page() {
 											<?php
 											$sizes      = get_imagify_thumbnail_sizes();
 											$select_all = count( $sizes ) > 3;
-											$disallowed = (array) get_imagify_option( 'disallowed-sizes', array() );
+											$disallowed = $options->get( 'disallowed-sizes' );
 
 											if ( $select_all ) {
 												$has_disallowed = array_intersect_key( $disallowed, $sizes );
@@ -326,8 +330,8 @@ function _imagify_display_options_page() {
 												$label   = sprintf( '%s - %d &times; %d', $label, $size_data['width'], $size_data['height'] );
 												$checked = ! isset( $disallowed[ $size_key ] );
 												?>
-												<input type="hidden" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
-												<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini imagify-row-check" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php checked( $checked ); ?>/>
+												<input type="hidden" name="<?php echo $option_name; ?>[sizes][<?php echo $size_key; ?>-hidden]" value="1" />
+												<input type="checkbox" id="imagify_sizes_<?php echo $size_key; ?>" class="mini imagify-row-check" name="<?php echo $option_name; ?>[sizes][<?php echo $size_key; ?>]" value="1" <?php checked( $checked ); ?>/>
 												<label for="imagify_sizes_<?php echo $size_key; ?>" onclick=""><?php echo $label; ?></label>
 												<br class="imagify-br">
 												<?php
@@ -358,7 +362,7 @@ function _imagify_display_options_page() {
 							<tr>
 								<th scope="row"><span><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></span></th>
 								<td>
-									<input type="checkbox" value="1" name="<?php echo IMAGIFY_SETTINGS_SLUG; ?>[admin_bar_menu]" id="admin_bar_menu" <?php checked( get_imagify_option( 'admin_bar_menu', 0 ), 1 ); ?> aria-describedby="describe-admin-bar-menu" />
+									<input type="checkbox" value="1" name="<?php echo $option_name; ?>[admin_bar_menu]" id="admin_bar_menu" <?php checked( $options->get( 'admin_bar_menu' ), 1 ); ?> aria-describedby="describe-admin-bar-menu" />
 									<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
 									<label for="admin_bar_menu" onclick="">
 										<span class="screen-reader-text"><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></span>
@@ -395,7 +399,7 @@ function _imagify_display_options_page() {
 							printf(
 								/* translators: 1 is a link tag start, 2 is the link tag end. */
 								__( 'Once your settings saved, optimize all your images by using the %1$sImagify Bulk Optimization%2$s feature.', 'imagify' ),
-								'<a href="' . esc_url( get_admin_url() ) . 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization">',
+								'<a href="' . esc_url( get_imagify_admin_url( 'bulk-optimization' ) ) . '">',
 								'</a>'
 							);
 							?>
@@ -483,7 +487,7 @@ function _imagify_display_options_page() {
 					data-original-dim="1220x350"
 					data-original-alt="<?php
 						/* translators: %s is a formatted file size. */
-						printf( esc_attr__( 'Original photography about %s', 'imagify' ), size_format( 343040 ) );
+						printf( esc_attr__( 'Original photography about %s', 'imagify' ), imagify_size_format( 343040 ) );
 					?>"
 
 					data-normal-label="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
@@ -491,7 +495,7 @@ function _imagify_display_options_page() {
 					data-normal-dim="1220x350"
 					data-normal-alt="<?php
 						/* translators: %s is a formatted file size. */
-						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format( 301056 ) );
+						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 301056 ) );
 					?>"
 
 					data-aggressive-label="<?php esc_attr_e( 'Aggressive', 'imagify' ); ?>"
@@ -499,7 +503,7 @@ function _imagify_display_options_page() {
 					data-aggressive-dim="1220x350"
 					data-aggressive-alt="<?php
 						/* translators: %s is a formatted file size. */
-						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format( 108544 ) );
+						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 108544 ) );
 					?>"
 
 					data-ultra-label="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
@@ -507,7 +511,7 @@ function _imagify_display_options_page() {
 					data-ultra-dim="1220x350"
 					data-ultra-alt="<?php
 						/* translators: %s is a formatted file size. */
-						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), size_format( 46080 ) );
+						printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 46080 ) );
 					?>"></div>
 
 				<div class="imagify-comparison-levels">
@@ -518,7 +522,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value"><?php echo size_format( 343040 ); ?></span>
+							<span class="value"><?php echo imagify_size_format( 343040 ); ?></span>
 						</p>
 					</div>
 					<div class="imagify-c-level imagify-level-optimized imagify-level-normal" aria-hidden="true">
@@ -528,7 +532,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size"><?php echo size_format( 301056 ); ?></span>
+							<span class="value size"><?php echo imagify_size_format( 301056 ); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -548,7 +552,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size"><?php echo size_format( 108544 ); ?></span>
+							<span class="value size"><?php echo imagify_size_format( 108544 ); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>
@@ -569,7 +573,7 @@ function _imagify_display_options_page() {
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'File Size:', 'imagify' ); ?></span>
-							<span class="value size"><?php echo size_format( 46080 ); ?></span>
+							<span class="value size"><?php echo imagify_size_format( 46080 ); ?></span>
 						</p>
 						<p class="imagify-c-level-row">
 							<span class="label"><?php _e( 'Original Saving:', 'imagify' ); ?></span>

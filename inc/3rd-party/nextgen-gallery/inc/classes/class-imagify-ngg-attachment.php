@@ -340,7 +340,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			return;
 		}
 
-		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		$optimization_level = isset( $optimization_level ) ? (int) $optimization_level : get_imagify_option( 'optimization_level' );
 
 		// To avoid issue with "original_size" at 0 in "_imagify_data".
 		if ( 0 === (int) $this->get_stats_data( 'original_size' ) ) {
@@ -469,7 +469,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			return $data;
 		}
 
-		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		$optimization_level = isset( $optimization_level ) ? (int) $optimization_level : get_imagify_option( 'optimization_level' );
 
 		/**
 		 * Fires before optimizing all thumbnails.

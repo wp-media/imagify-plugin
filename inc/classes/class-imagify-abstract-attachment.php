@@ -266,7 +266,7 @@ abstract class Imagify_Abstract_Attachment {
 		$original_size = empty( $original_size ) ? $filesystem->size( $this->get_original_path() ) : (int) $original_size;
 
 		if ( true === $human_format ) {
-			$original_size = @size_format( $original_size, $decimals );
+			$original_size = imagify_size_format( $original_size, 2 );
 		}
 
 		return $original_size;
@@ -484,7 +484,7 @@ abstract class Imagify_Abstract_Attachment {
 		$orig_f = $orig_f['filename'] . '-{%suffix%}.' . $orig_f['extension'];
 
 		// Test if the missing sizes are needed.
-		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes', array() );
+		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
 		$is_active_for_network = imagify_is_active_for_network();
 
 		foreach ( $missing_sizes as $size_name => $size_data ) {

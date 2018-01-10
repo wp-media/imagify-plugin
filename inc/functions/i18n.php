@@ -99,7 +99,7 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'library':
 			return array(
-				'backupOption' => (int) get_imagify_option( 'backup' ),
+				'backupOption' => get_imagify_option( 'backup' ),
 				'labels'       => array(
 					'bulkActionsOptimize'             => __( 'Optimize', 'imagify' ),
 					'bulkActionsOptimizeMissingSizes' => __( 'Optimize Missing Sizes', 'imagify' ),
@@ -173,7 +173,7 @@ function get_imagify_localize_script_translations( $context ) {
 				$translations['labels']['overQuotaText']  = sprintf(
 					/* translators: 1 is a data quota, 2 is a date. */
 					__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
-					size_format( $user->quota * 1048576 ),
+					imagify_size_format( $user->quota * 1048576 ),
 					date_i18n( __( 'F j, Y' ), strtotime( $user->next_date_update ) )
 				);
 				$translations['labels']['overQuotaText'] .= '<br/><br/>';

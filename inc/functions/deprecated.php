@@ -1007,4 +1007,112 @@ if ( is_admin() ) :
 		Imagify_Admin_Ajax_Post::get_instance()->imagify_update_estimate_sizes_callback();
 	}
 
+	/**
+	 * Fix the capability for our capacity filter hook
+	 *
+	 * @since  1.0
+	 * @since  1.7 Deprecated.
+	 * @author Jonathan
+	 */
+	function _imagify_correct_capability_for_options_page() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Settings::get_instance()->get_capability()' );
+
+		return Imagify_Settings::get_instance()->get_capability();
+	}
+
+	/**
+	 * Tell to WordPress to be confident with our setting, we are clean!
+	 *
+	 * @since  1.0
+	 * @since  1.7 Deprecated.
+	 * @author Jonathan
+	 */
+	function _imagify_register_setting() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Settings::get_instance()->register()' );
+
+		Imagify_Settings::get_instance()->register();
+	}
+
+	/**
+	 * Filter specific options before its value is (maybe) serialized and updated.
+	 *
+	 * @since  1.0
+	 * @since  1.7 Deprecated.
+	 * @author Jonathan
+	 *
+	 * @param  mixed $value     The new option value.
+	 * @param  mixed $old_value The old option value.
+	 * @return array The new option value.
+	 */
+	function _imagify_pre_update_option( $value, $old_value ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Settings::get_instance()->sanitize_and_validate( $value )' );
+
+		return Imagify_Settings::get_instance()->sanitize_and_validate( $value );
+	}
+
+	/**
+	 * If the user clicked the "Save & Go to Bulk Optimizer" button, set a redirection to the bulk optimizer.
+	 * We use this hook because it can be triggered even if the option value hasn't changed.
+	 *
+	 * @since  1.6.8
+	 * @since  1.7 Deprecated.
+	 * @author Grégory Viguier
+	 *
+	 * @param  mixed $value     The new, unserialized option value.
+	 * @param  mixed $old_value The old option value.
+	 * @return mixed            The option value.
+	 */
+	function _imagify_maybe_set_redirection_before_save_options( $value, $old_value ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Settings::get_instance()->maybe_set_redirection( $value, $old_value )' );
+
+		return Imagify_Settings::get_instance()->maybe_set_redirection( $value, $old_value );
+	}
+
+	/**
+	 * Used to launch some actions after saving the network options.
+	 *
+	 * @since  1.6.5
+	 * @since  1.7 Deprecated.
+	 * @author Grégory Viguier
+	 *
+	 * @param string $option     Name of the network option.
+	 * @param mixed  $value      Current value of the network option.
+	 * @param mixed  $old_value  Old value of the network option.
+	 */
+	function _imagify_after_save_network_options( $option, $value, $old_value ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Settings::get_instance()->after_save_network_options( $option, $value, $old_value )' );
+
+		Imagify_Settings::get_instance()->after_save_network_options( $option, $value, $old_value );
+	}
+
+	/**
+	 * Used to launch some actions after saving the options.
+	 *
+	 * @since  1.0
+	 * @since  1.5    Used to redirect user to Bulk Optimizer (if requested).
+	 * @since  1.6.8  Not used to redirect user to Bulk Optimizer anymore: see _imagify_maybe_set_redirection_before_save_options().
+	 * @since  1.7 Deprecated.
+	 * @author Jonathan
+	 *
+	 * @param mixed $old_value The old option value.
+	 * @param mixed $value     The new option value.
+	 */
+	function _imagify_after_save_options( $old_value, $value ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Settings::get_instance()->after_save_options( $old_value, $value )' );
+
+		Imagify_Settings::get_instance()->after_save_options( $old_value, $value );
+	}
+
+	/**
+	 * `options.php` do not handle site options. Let's use `admin-post.php` for multisite installations.
+	 *
+	 * @since 1.0
+	 * @since 1.7 Deprecated.
+	 */
+	function _imagify_update_site_option_on_network() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Settings::get_instance()->update_site_option_on_network()' );
+
+		Imagify_Settings::get_instance()->update_site_option_on_network();
+	}
+
 endif;

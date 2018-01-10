@@ -557,7 +557,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 	$partial_total_intermediate_images = 0;
 
 	$is_active_for_network = imagify_is_active_for_network();
-	$disallowed_sizes      = array_filter( (array) get_imagify_option( 'disallowed-sizes', array() ) );
+	$disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
 
 	foreach ( $image_ids as $i => $image_id ) {
 		$attachment_status = isset( $results['statuses'][ $image_id ] ) ? $results['statuses'][ $image_id ] : false;

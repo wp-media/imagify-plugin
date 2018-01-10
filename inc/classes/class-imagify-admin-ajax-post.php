@@ -402,7 +402,7 @@ class Imagify_Admin_Ajax_Post {
 
 		// Get (ordered) IDs.
 		$optimization_level = (int) $_GET['optimization_level'];
-		$optimization_level = -1 !== $optimization_level ? $optimization_level : (int) get_imagify_option( 'optimization_level', 1 );
+		$optimization_level = -1 !== $optimization_level ? $optimization_level : get_imagify_option( 'optimization_level' );
 
 		$mime_types  = Imagify_DB::get_mime_types();
 		$statuses    = Imagify_DB::get_post_statuses();
@@ -665,10 +665,7 @@ class Imagify_Admin_Ajax_Post {
 			imagify_die( $response );
 		}
 
-		$options            = get_site_option( IMAGIFY_SETTINGS_SLUG );
-		$options['api_key'] = sanitize_key( $_GET['api_key'] );
-
-		update_site_option( IMAGIFY_SETTINGS_SLUG, $options );
+		update_imagify_option( 'api_key', $_GET['api_key'] );
 
 		wp_send_json_success();
 	}
@@ -713,7 +710,7 @@ class Imagify_Admin_Ajax_Post {
 				$message .= '<p>' . sprintf(
 					/* translators: 1 is a data quota, 2 is a date. */
 					__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
-					size_format( $user->quota * 1048576 ),
+					imagify_size_format( $user->quota * 1048576 ),
 					date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) )
 				) . '</p>';
 				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>';
@@ -835,12 +832,15 @@ class Imagify_Admin_Ajax_Post {
 
 		$raw_total_size_in_library = imagify_calculate_total_size_images_library();
 		$raw_average_per_month     = imagify_calculate_average_size_images_per_month();
-		update_imagify_option( 'total_size_images_library', array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ) );
-		update_imagify_option( 'average_size_images_per_month', array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ) );
+
+		Imagify_Data::get_instance()->set( array(
+			'total_size_images_library'     => $raw_total_size_in_library,
+			'average_size_images_per_month' => $raw_average_per_month,
+		) );
 
 		wp_send_json_success( array(
-			'total_library_size' => get_imagify_option( 'total_size_images_library', null ),
-			'average_month_size' => get_imagify_option( 'average_size_images_per_month', null ),
+			'total_library_size' => array( 'raw' => $raw_total_size_in_library, 'human' => imagify_size_format( $raw_total_size_in_library ) ),
+			'average_month_size' => array( 'raw' => $raw_average_per_month, 'human' => imagify_size_format( $raw_average_per_month ) ),
 		) );
 	}
 
@@ -854,11 +854,10 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'update_estimate_sizes' );
 		imagify_check_user_capacity();
 
-		$raw_total_size_in_library = imagify_calculate_total_size_images_library();
-		$raw_average_per_month     = imagify_calculate_average_size_images_per_month();
-
-		update_imagify_option( 'total_size_images_library', array( 'raw' => $raw_total_size_in_library, 'human' => size_format( $raw_total_size_in_library ) ) );
-		update_imagify_option( 'average_size_images_per_month', array( 'raw' => $raw_average_per_month, 'human' => size_format( $raw_average_per_month ) ) );
+		Imagify_Data::get_instance()->set( array(
+			'total_size_images_library'     => imagify_calculate_total_size_images_library(),
+			'average_size_images_per_month' => imagify_calculate_average_size_images_per_month(),
+		) );
 
 		die( 1 );
 	}

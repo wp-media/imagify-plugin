@@ -19,7 +19,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 // Imagify defines.
 define( 'IMAGIFY_VERSION'       , '1.7' );
 define( 'IMAGIFY_SLUG'          , 'imagify' );
-define( 'IMAGIFY_SETTINGS_SLUG' , IMAGIFY_SLUG . '_settings' );
 define( 'IMAGIFY_FILE'          , __FILE__ );
 define( 'IMAGIFY_PATH'          , realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
 define( 'IMAGIFY_INC_PATH'      , realpath( IMAGIFY_PATH . 'inc/' ) . '/' );
@@ -78,10 +77,12 @@ function _imagify_init() {
 	require( IMAGIFY_COMMON_PATH . 'partners.php' );
 	require( IMAGIFY_3RD_PARTY_PATH . '3rd-party.php' );
 
+	Imagify_Options::get_instance()->init();
+	Imagify_Data::get_instance()->init();
+
 	if ( is_admin() ) {
 		require( IMAGIFY_ADMIN_PATH . 'upgrader.php' );
 		require( IMAGIFY_ADMIN_PATH . 'heartbeat.php' );
-		require( IMAGIFY_ADMIN_PATH . 'options.php' );
 		require( IMAGIFY_ADMIN_PATH . 'menu.php' );
 		require( IMAGIFY_ADMIN_PATH . 'plugins.php' );
 		require( IMAGIFY_ADMIN_PATH . 'upload.php' );
@@ -93,6 +94,7 @@ function _imagify_init() {
 
 		Imagify_Notices::get_instance()->init();
 		Imagify_Admin_Ajax_Post::get_instance()->init();
+		Imagify_Settings::get_instance()->init();
 	}
 
 	if ( ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
