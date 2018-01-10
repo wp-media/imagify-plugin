@@ -104,8 +104,8 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 			'context'       => $context,
 		);
 		$class   = $is_media_page ? '' : ' class="button-imagify-restore attachment-has-backup"';
-		$waiting = $is_media_page ? '' : ' data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '"';
-		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . get_imagify_admin_url( 'restore-upload', $args ) . '"' . $class . $waiting . '>';
+		$waiting = $is_media_page ? '' : ' data-waiting-label="' . esc_attr__( 'Restoring...', 'imagify' ) . '"';
+		$output .= '<a id="imagify-restore-' . $attachment_id . '" href="' . esc_url( get_imagify_admin_url( 'restore-upload', $args ) ) . '"' . $class . $waiting . '>';
 			$output .= '<span class="dashicons dashicons-image-rotate"></span>' . __( 'Restore Original', 'imagify' );
 		$output .= '</a>';
 

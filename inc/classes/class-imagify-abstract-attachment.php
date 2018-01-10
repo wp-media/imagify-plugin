@@ -257,15 +257,16 @@ abstract class Imagify_Abstract_Attachment {
 	 * @access public
 	 *
 	 * @param  bool $human_format True to display the image human format size (1Mb).
+	 * @param  int  $decimals     Precision of number of decimal places.
 	 * @return string
 	 */
-	public function get_original_size( $human_format = true ) {
+	public function get_original_size( $human_format = true, $decimals = 2 ) {
 		$filesystem    = imagify_get_filesystem();
 		$original_size = $this->get_size_data( 'full', 'original_size' );
 		$original_size = empty( $original_size ) ? $filesystem->size( $this->get_original_path() ) : (int) $original_size;
 
 		if ( true === $human_format ) {
-			$original_size = @size_format( $original_size, 2 );
+			$original_size = @size_format( $original_size, $decimals );
 		}
 
 		return $original_size;
@@ -593,7 +594,7 @@ abstract class Imagify_Abstract_Attachment {
 		$image_type = pathinfo( $attachment_path, PATHINFO_EXTENSION );
 
 		// Try to correct for auto-rotation if the info is available.
-		if ( function_exists( 'exif_read_data' ) && ( 'jpg' === $image_type || 'jpeg' === $image_type) ) {
+		if ( function_exists( 'exif_read_data' ) && ( 'jpg' === $image_type || 'jpe' === $image_type || 'jpeg' === $image_type ) ) {
 			$exif        = @exif_read_data( $attachment_path );
 			$orientation = is_array( $exif ) && array_key_exists( 'Orientation', $exif ) ? $exif['Orientation'] : 0;
 

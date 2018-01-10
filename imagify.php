@@ -3,7 +3,7 @@
  * Plugin Name: Imagify
  * Plugin URI: https://wordpress.org/plugins/imagify/
  * Description: Dramaticaly reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool.
- * Version: 1.6.13.1
+ * Version: 1.6.14
  * Author: WP Media
  * Author URI: https://wp-media.me/
  * Licence: GPLv2
@@ -17,7 +17,7 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 // Imagify defines.
-define( 'IMAGIFY_VERSION'       , '1.6.13.1' );
+define( 'IMAGIFY_VERSION'       , '1.6.14' );
 define( 'IMAGIFY_SLUG'          , 'imagify' );
 define( 'IMAGIFY_SETTINGS_SLUG' , IMAGIFY_SLUG . '_settings' );
 define( 'IMAGIFY_FILE'          , __FILE__ );
@@ -71,9 +71,11 @@ function _imagify_init() {
 	require( IMAGIFY_FUNCTIONS_PATH . 'admin-ui.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'admin-stats.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'i18n.php' );
+	require( IMAGIFY_FUNCTIONS_PATH . 'partners.php' );
 	require( IMAGIFY_COMMON_PATH . 'attachments.php' );
 	require( IMAGIFY_COMMON_PATH . 'admin-bar.php' );
 	require( IMAGIFY_COMMON_PATH . 'cron.php' );
+	require( IMAGIFY_COMMON_PATH . 'partners.php' );
 	require( IMAGIFY_3RD_PARTY_PATH . '3rd-party.php' );
 
 	if ( is_admin() ) {

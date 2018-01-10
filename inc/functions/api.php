@@ -272,6 +272,7 @@ function imagify_translate_api_message( $message ) {
 		'Confirm your account to continue optimizing image'                            => __( 'Confirm your account to continue optimizing images.', 'imagify' ),
 		'Coupon doesn\'t exist'                                                        => __( 'Coupon does not exist.', 'imagify' ),
 		'Email field shouldn\'t be empty'                                              => __( 'Email field should not be empty.', 'imagify' ),
+		'Email or Password field shouldn\'t be empty'                                  => __( 'This account already exists.', 'imagify' ),
 		'Error uploading to data Storage'                                              => __( 'Error uploading to Data Storage.', 'imagify' ),
 		'Not able to connect to Data Storage API to get the token'                     => __( 'Unable to connect to Data Storage API to get the token.', 'imagify' ),
 		'Not able to connect to Data Storage API'                                      => __( 'Unable to connect to Data Storage API.', 'imagify' ),

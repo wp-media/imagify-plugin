@@ -1,25 +1,21 @@
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 	var overviewCanvas = d.getElementById( 'imagify-overview-chart' ),
-		overviewData   = [
-			{
-				value:     imagifyBulk.totalUnoptimizedAttachments,
-				color:     '#D9E4EB',
-				highlight: '#D9E4EB',
-				label:     imagifyBulk.labels.overviewChartLabels.unoptimized
-			},
-			{
-				value:     imagifyBulk.totalOptimizedAttachments,
-				color:     '#46B1CE',
-				highlight: '#46B1CE',
-				label:     imagifyBulk.labels.overviewChartLabels.optimized
-			},
-			{
-				value:     imagifyBulk.totalErrorsAttachments,
-				color:     '#2E3242',
-				highlight: '#2E3242',
-				label:     imagifyBulk.labels.overviewChartLabels.error
-			}
-		],
+		overviewData   = {
+			labels: [
+				imagifyBulk.labels.overviewChartLabels.unoptimized,
+				imagifyBulk.labels.overviewChartLabels.optimized,
+				imagifyBulk.labels.overviewChartLabels.error
+			],
+			datasets: [{
+				data:     [
+					imagifyBulk.totalUnoptimizedAttachments,
+					imagifyBulk.totalOptimizedAttachments,
+					imagifyBulk.totalErrorsAttachments
+				],
+				backgroundColor: [ '#D9E4EB', '#46B1CE', '#2E3242' ],
+				borderWidth:     0
+			}]
+		},
 		overviewDoughnut, overviewLegend;
 
 	/**
@@ -29,27 +25,51 @@
 	 * @param {element} canvas
 	 */
 	function drawMeAChart( canvas ) {
-		canvas.each( function() {
-			var $this    = $( this ),
-				theValue = parseInt( $this.closest( '.imagify-chart' ).next( '.imagipercent' ).text(), 10 ),
-				data     = [
-					{
-						value: theValue,
-						color: '#00B3D3'
-					},
-					{
-						value: 100 - theValue,
-						color: '#D8D8D8'
-					}
-				];
+		var donuts;
 
-			new Chart( $this[0].getContext( '2d' ) ).Doughnut( data, { // eslint-disable-line new-cap
-				segmentStrokeColor: '#FFF',
-				segmentStrokeWidth: 1,
-				animateRotate:      true,
-				tooltipEvents:      []
+		if ( ! this.donuts ) {
+			this.donuts = {};
+		}
+
+		donuts = this.donuts;
+
+		canvas.each( function() {
+			var value = parseInt( $( this ).closest( '.imagify-chart' ).next( '.imagipercent' ).text(), 10 );
+
+			if ( undefined !== donuts[ this.id ] ) {
+				donuts[ this.id ].data.datasets[0].data[0] = value;
+				donuts[ this.id ].data.datasets[0].data[1] = 100 - value;
+				donuts[ this.id ].update();
+				return;
+			}
+
+			donuts[ this.id ] = new Chart( this, {
+				type: 'doughnut',
+				data: {
+					datasets: [{
+						data:            [ value, 100 - value ],
+						backgroundColor: [ '#00B3D3', '#D8D8D8' ],
+						borderColor:     '#fff',
+						borderWidth:     1
+					}]
+				},
+				options: {
+					legend: {
+						display: false
+					},
+					events:    [],
+					animation: {
+						easing: 'easeOutBounce'
+					},
+					tooltips: {
+						enabled: false
+					},
+					responsive: false
+				}
 			} );
 		} );
+
+		this.donuts = donuts;
 	}
 
 	/*
@@ -59,53 +79,84 @@
 	 * @param {element} canvas
 	 */
 	function drawMeCompleteChart( canvas ) {
-		canvas.each( function() {
-			var $this    = $( this ),
-				theValue = parseInt( $this.closest( '.imagify-ac-chart' ).attr( 'data-percent' ), 10 ),
-				data     = [
-					{
-						value: theValue,
-						color: '#40B1D0'
-					},
-					{
-						value: 100 - theValue,
-						color: '#FFFFFF'
-					}
-				];
+		var donut = this.donut;
 
-			new Chart( $this[0].getContext( '2d' ) ).Doughnut( data, { // eslint-disable-line new-cap
-				segmentStrokeColor:    'transparent',
-				segmentStrokeWidth:    0,
-				animateRotate:         true,
-				animation:             true,
-				percentageInnerCutout: 70,
-				tooltipEvents:         []
+		canvas.each( function() {
+			var value = parseInt( $( this ).closest( '.imagify-ac-chart' ).attr( 'data-percent' ), 10 );
+
+			if ( undefined !== donut ) {
+				donut.data.datasets[0].data[0] = value;
+				donut.data.datasets[0].data[1] = 100 - value;
+				donut.update();
+				return;
+			}
+
+			donut = new Chart( this, {
+				type: 'doughnut',
+				data: {
+					datasets: [{
+						data:            [ value, 100 - value ],
+						backgroundColor: [ '#40B1D0', '#FFFFFF' ],
+						borderWidth:     0
+					}]
+				},
+				options: {
+					legend: {
+						display: false
+					},
+					events:    [],
+					animation: {
+						easing: 'easeOutBounce'
+					},
+					tooltips: {
+						enabled: false
+					},
+					responsive:       false,
+					cutoutPercentage: 70
+				}
 			} );
 		} );
+
+		this.donut = donut;
 	}
 
 	if ( overviewCanvas ) {
-		overviewDoughnut = new Chart( overviewCanvas.getContext( '2d' ) ).Doughnut( overviewData, { // eslint-disable-line new-cap
-			segmentStrokeColor:    'transparent',
-			segmentStrokeWidth:    0,
-			animateRotate:         true,
-			animation:             true,
-			percentageInnerCutout: 85,
-			legendTemplate:        '<ul class="imagify-<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>',
-			tooltipTemplate:       '<%= value %>'
+		overviewDoughnut = new Chart( overviewCanvas, {
+			type:    'doughnut',
+			data:    overviewData,
+			options: {
+				legend: {
+					display: false/*,
+					template: '<ul class="imagify-<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>',*/
+				},
+				events:    [],
+				animation: {
+					easing: 'easeOutBounce'
+				},
+				tooltips: {
+					displayColors: false,
+					callbacks:     {
+						label: function( tooltipItem, data ) {
+							return data.datasets[ tooltipItem.datasetIndex ].data[ tooltipItem.index ];
+						}
+					}
+				},
+				responsive:       false,
+				cutoutPercentage: 85
+			}
 		} );
 
 		/**
 		 * Then you just need to generate the legend.
 		 * var overviewLegend = overviewDoughnut.generateLegend();
-		 * bugged `segments undefined` ?
+		 * bugged `segments undefined`?
 		 */
 
 		// And append it to your page somewhere.
 		overviewLegend = '<ul class="imagify-doughnut-legend">';
 
-		$( overviewData ).each( function( i ) {
-			overviewLegend += '<li><span style="background-color:' + overviewData[ i ].color + '"></span>' + overviewData[ i ].label + '</li>';
+		$.each( overviewData.labels, function( i, label ) {
+			overviewLegend += '<li><span style="background-color:' + overviewData.datasets[0].backgroundColor[ i ] + '"></span>' + label + '</li>';
 		} );
 
 		overviewLegend += '</ul>';
@@ -127,9 +178,9 @@
 		}
 
 		data      = data.imagify_bulk_data;
-		donutData = overviewDoughnut.segments;
+		donutData = overviewDoughnut.data.datasets[0].data;
 
-		if ( data.unoptimized_attachments === donutData[0].value && data.optimized_attachments === donutData[1].value && data.errors_attachments === donutData[2].value ) {
+		if ( data.unoptimized_attachments === donutData[0] && data.optimized_attachments === donutData[1] && data.errors_attachments === donutData[2] ) {
 			return;
 		}
 
@@ -153,9 +204,9 @@
 		// The Percent data.
 		$( '#imagify-total-optimized-attachments-pct' ).html( data.optimized_percent + '%' );
 
-		overviewDoughnut.segments[0].value = data.unoptimized_attachments;
-		overviewDoughnut.segments[1].value = data.optimized_attachments;
-		overviewDoughnut.segments[2].value = data.errors_attachments;
+		overviewDoughnut.data.datasets[0].data[0] = data.unoptimized_attachments;
+		overviewDoughnut.data.datasets[0].data[1] = data.optimized_attachments;
+		overviewDoughnut.data.datasets[0].data[2] = data.errors_attachments;
 		overviewDoughnut.update();
 	} );
 
@@ -194,7 +245,8 @@
 			title:             imagifyBulk.labels.waitTitle,
 			html:              imagifyBulk.labels.waitText,
 			showConfirmButton: false,
-			imageUrl:          imagifyBulk.waitImageUrl
+			imageUrl:          imagifyBulk.waitImageUrl,
+			customClass:       'imagify-sweet-alert'
 		} );
 
 		$.get( ajaxurl + w.imagify.concat + 'action=' + imagifyBulk.ajaxAction + '&optimization_level=' + optimizationLevel + '&imagifybulkuploadnonce=' + $( '#imagifybulkuploadnonce' ).val() )
@@ -270,7 +322,7 @@
 							$attachment.find( '.imagify-cell-status' ).html( '<span class="imagistatus status-complete"><span class="dashicons dashicons-yes"></span>' + imagifyBulk.labels.complete + '</span>' );
 							$attachment.find( '.imagify-cell-original' ).html( data.original_size_human );
 							$attachment.find( '.imagify-cell-optimized' ).html( data.new_size_human );
-							$attachment.find( '.imagify-cell-percentage' ).html( '<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart-' + data.image + '-' + incr + '" style="width: 18px; height: 18px;"></canvas></span></span><span class="imagipercent">' + data.percent + '</span>%' );
+							$attachment.find( '.imagify-cell-percentage' ).html( '<span class="imagify-chart"><span class="imagify-chart-container"><canvas height="18" width="18" id="imagify-consumption-chart-' + data.image + '-' + incr + '"></canvas></span></span><span class="imagipercent">' + data.percent + '</span>%' );
 							drawMeAChart( $attachment.find( '.imagify-cell-percentage canvas' ) );
 							$attachment.find( '.imagify-cell-thumbnails' ).html( data.thumbnails );
 							$attachment.find( '.imagify-cell-savings' ).html( Optimizer.humanSize( data.overall_saving, 1 ) );

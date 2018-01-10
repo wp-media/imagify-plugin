@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * Deprecated imagify.io API for WordPress.
  *
  * @since 1.6.5
+ * @deprecated
  */
 class Imagify_Deprecated {
 
@@ -12,7 +13,9 @@ class Imagify_Deprecated {
 	 * A shorthand to display a message about a deprecated method.
 	 *
 	 * @since  1.6.5
+	 * @since  1.6.5 Deprecated
 	 * @author Grégory Viguier
+	 * @deprecated
 	 *
 	 * @param string $method_name The deprecated method.
 	 */
@@ -27,6 +30,9 @@ class Imagify_Deprecated {
 	 * Ensures only one instance of class is loaded or can be loaded.
 	 * Well, actually it ensures nothing since it's not a full singleton pattern.
 	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
+	 *
 	 * @return object Main instance.
 	 */
 	public static function instance() {
@@ -36,6 +42,9 @@ class Imagify_Deprecated {
 
 	/**
 	 * Get your Imagify account infos.
+	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
 	 *
 	 * @return object
 	 */
@@ -47,7 +56,10 @@ class Imagify_Deprecated {
 	/**
 	 * Create a user on your Imagify account.
 	 *
-	 * @param  array $data All user data. Details here: --.
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
+	 *
+	 * @param  array $data All user data.
 	 * @return object
 	 */
 	public function createUser( $data ) {
@@ -58,7 +70,10 @@ class Imagify_Deprecated {
 	/**
 	 * Update an existing user on your Imagify account.
 	 *
-	 * @param  string $data All user data. Details here: --.
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
+	 *
+	 * @param  string $data All user data.
 	 * @return object
 	 */
 	public function updateUser( $data ) {
@@ -68,6 +83,9 @@ class Imagify_Deprecated {
 
 	/**
 	 * Check your Imagify API key status.
+	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
 	 *
 	 * @param  string $data The license key.
 	 * @return object
@@ -80,6 +98,9 @@ class Imagify_Deprecated {
 	/**
 	 * Get the Imagify API version.
 	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
+	 *
 	 * @return object
 	 */
 	public function getApiVersion() {
@@ -89,6 +110,9 @@ class Imagify_Deprecated {
 
 	/**
 	 * Get Public Info.
+	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
 	 *
 	 * @return object
 	 */
@@ -100,7 +124,10 @@ class Imagify_Deprecated {
 	/**
 	 * Optimize an image from its binary content.
 	 *
-	 * @param  string $data All options. Details here: --.
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
+	 *
+	 * @param  string $data All options.
 	 * @return object
 	 */
 	public function uploadImage( $data ) {
@@ -111,7 +138,10 @@ class Imagify_Deprecated {
 	/**
 	 * Optimize an image from its URL.
 	 *
-	 * @param  string $data All options. Details here: --.
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
+	 *
+	 * @param  string $data All options.
 	 * @return object
 	 */
 	public function fetchImage( $data ) {
@@ -121,6 +151,9 @@ class Imagify_Deprecated {
 
 	/**
 	 * Get prices for plans.
+	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
 	 *
 	 * @return object
 	 */
@@ -132,6 +165,9 @@ class Imagify_Deprecated {
 	/**
 	 * Get prices for packs (one time).
 	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
+	 *
 	 * @return object
 	 */
 	public function getPacksPrices() {
@@ -142,6 +178,9 @@ class Imagify_Deprecated {
 	/**
 	 * Get all prices (packs & plans included).
 	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
+	 *
 	 * @return object
 	 */
 	public function getAllPrices() {
@@ -151,6 +190,9 @@ class Imagify_Deprecated {
 
 	/**
 	 * Get all prices (packs & plans included).
+	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
 	 *
 	 * @param  string $coupon A coupon code.
 	 * @return object
@@ -163,6 +205,9 @@ class Imagify_Deprecated {
 	/**
 	 * Get information about current discount.
 	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
+	 *
 	 * @return object
 	 */
 	public function checkDiscount() {
@@ -172,6 +217,9 @@ class Imagify_Deprecated {
 
 	/**
 	 * Make an HTTP call using curl.
+	 *
+	 * @since 1.6.5 Deprecated
+	 * @deprecated
 	 *
 	 * @param  string $url  The URL to call.
 	 * @param  array  $args The request args.
@@ -191,6 +239,7 @@ if ( class_exists( 'WpeCommon' ) ) :
 	 * @since  1.4.7
 	 * @since  1.6.7 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 *
 	 * @return int
 	 */
@@ -209,6 +258,7 @@ if ( function_exists( 'emr_delete_current_files' ) ) :
 	 * @since  1.0
 	 * @since  1.6.9 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 *
 	 * @param string $guid A post guid.
 	 */
@@ -246,6 +296,7 @@ endif;
  *
  * @since 1.2
  * @since 1.6.10 Deprecated.
+ * @deprecated
  */
 function _imagify_admin_bar_styles() {
 	_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->enqueue_styles_and_scripts_frontend()' );
@@ -262,6 +313,7 @@ function _imagify_admin_bar_styles() {
  * @since  1.6.8
  * @since  1.6.10 Deprecated. Don't laugh.
  * @author Grégory Viguier
+ * @deprecated
  *
  * @param  string $file_path An absolute path.
  * @return string            A relative path. Can return the absolute path in case of a failure.
@@ -280,6 +332,7 @@ if ( is_admin() && ( function_exists( 'as3cf_init' ) || function_exists( 'as3cf_
 	 * @since  1.6.6
 	 * @since  1.6.12 Deprecated.
 	 * @author Grégory Viguier
+	 * @deprecated
 	 *
 	 * @return object The Imagify_AS3CF instance.
 	 */
@@ -299,6 +352,7 @@ if ( function_exists( 'enable_media_replace' ) ) :
 	 * @since  1.6.9
 	 * @since  1.6.12 Deprecated.
 	 * @author Grégory Viguier
+	 * @deprecated
 	 *
 	 * @return object The Imagify_Enable_Media_Replace instance.
 	 */
@@ -318,6 +372,7 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 	 * @since  1.6.5
 	 * @since  1.6.12 Deprecated.
 	 * @author Grégory Viguier
+	 * @deprecated
 	 *
 	 * @return object The Imagify_NGG instance.
 	 */
@@ -333,6 +388,7 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 	 * @since  1.6.5
 	 * @since  1.6.12 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 *
 	 * @return object The Imagify_NGG_DB instance.
 	 */
@@ -348,6 +404,7 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 	 * @since  1.5
 	 * @since  1.6.13 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 *
 	 * @param int $image_id An image ID.
 	 */
@@ -364,6 +421,7 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 	 * @since 1.4.5
 	 * @since 1.6.7  Added the $keep_keys_order parameter.
 	 * @since 1.6.13 Deprecated.
+	 * @deprecated
 	 *
 	 * @param  array $keys            An array of keys.
 	 * @param  array $values          An array of arrays like array( 'id' => id, 'value' => value ).
@@ -383,6 +441,7 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 	 * @since  1.6.7
 	 * @since  1.6.13 Deprecated.
 	 * @author Grégory Viguier
+	 * @deprecated
 	 *
 	 * @param  array $metas An array of meta names like:
 	 *                      array(
@@ -414,6 +473,7 @@ if ( is_admin() ) :
 	 *
 	 * @since 1.0
 	 * @since 1.6.10 Deprecated.
+	 * @deprecated
 	 */
 	function _imagify_admin_print_styles() {
 		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->enqueue_styles_and_scripts()' );
@@ -426,6 +486,7 @@ if ( is_admin() ) :
 	 *
 	 * @since 1.0
 	 * @since 1.6.10 Deprecated.
+	 * @deprecated
 	 */
 	function _imagify_admin_print_intercom() {
 		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->print_support_script()' );
@@ -439,6 +500,7 @@ if ( is_admin() ) :
 	 * @since  1.5
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _imagify_ngg_admin_print_intercom() {
 		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Assets::get_instance()->print_support_script()' );
@@ -456,6 +518,7 @@ if ( is_admin() ) :
 	 * @since  1.6.10
 	 * @author Grégory Viguier
 	 * @see    Imagify_Notices::notices()
+	 * @deprecated
 	 *
 	 * @param string $function  The function to deprecate.
 	 * @param string $notice_id The notice to deprecate.
@@ -478,6 +541,7 @@ if ( is_admin() ) :
 	 * @since  1.0
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _imagify_warning_empty_api_key_notice() {
 		_imagify_deprecate_old_notice( __FUNCTION__, 'welcome-steps' );
@@ -489,6 +553,7 @@ if ( is_admin() ) :
 	 * @since  1.0
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _imagify_warning_wrong_api_key_notice() {
 		_imagify_deprecate_old_notice( __FUNCTION__, 'wrong-api-key' );
@@ -500,6 +565,7 @@ if ( is_admin() ) :
 	 * @since  1.0
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _imagify_warning_plugins_to_deactivate_notice() {
 		_imagify_deprecate_old_notice( __FUNCTION__, 'plugins-to-deactivate' );
@@ -511,6 +577,7 @@ if ( is_admin() ) :
 	 * @since  1.0
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _imagify_http_block_external_notice() {
 		_imagify_deprecate_old_notice( __FUNCTION__, 'http-block-external' );
@@ -522,6 +589,7 @@ if ( is_admin() ) :
 	 * @since  1.0.2
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _imagify_warning_grid_view_notice() {
 		_imagify_deprecate_old_notice( __FUNCTION__, 'grid-view' );
@@ -533,6 +601,7 @@ if ( is_admin() ) :
 	 * @since  1.1.1
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _imagify_warning_over_quota_notice() {
 		_imagify_deprecate_old_notice( __FUNCTION__, 'over-quota' );
@@ -544,6 +613,7 @@ if ( is_admin() ) :
 	 * @since  1.6.8
 	 * @since  1.6.10 Deprecated.
 	 * @author Grégory Viguier
+	 * @deprecated
 	 */
 	function _imagify_warning_backup_folder_not_writable_notice() {
 		_imagify_deprecate_old_notice( __FUNCTION__, 'backup-folder-not-writable' );
@@ -554,6 +624,7 @@ if ( is_admin() ) :
 	 *
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _imagify_rocket_notice() {
 		_imagify_deprecate_old_notice( __FUNCTION__, 'rocket' );
@@ -565,6 +636,7 @@ if ( is_admin() ) :
 	 * @since  1.4.2
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _imagify_rating_notice() {
 		_imagify_deprecate_old_notice( __FUNCTION__, 'rating' );
@@ -574,6 +646,7 @@ if ( is_admin() ) :
 	 * Stop the rating cron when the notice is dismissed.
 	 *
 	 * @since 1.6.10 Deprecated.
+	 * @deprecated
 	 *
 	 * @param string $notice The notice name.
 	 */
@@ -589,6 +662,7 @@ if ( is_admin() ) :
 	 * @since  1.0
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _do_admin_post_imagify_dismiss_notice() {
 		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Notices::get_instance()->admin_post_dismiss_notice()' );
@@ -602,6 +676,7 @@ if ( is_admin() ) :
 	 * @since  1.2
 	 * @since  1.6.10 Deprecated.
 	 * @author Jonathan Buttigieg
+	 * @deprecated
 	 */
 	function _imagify_deactivate_plugin() {
 		_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'Imagify_Notices::get_instance()->deactivate_plugin()' );
@@ -614,6 +689,7 @@ if ( is_admin() ) :
 	 *
 	 * @since 1.0
 	 * @since 1.6.10 Deprecated.
+	 * @deprecated
 	 *
 	 * @param  string $notice  A notice ID.
 	 * @param  int    $user_id A user ID.
@@ -630,6 +706,7 @@ if ( is_admin() ) :
 	 *
 	 * @since 1.0
 	 * @since 1.6.10 Deprecated.
+	 * @deprecated
 	 *
 	 * @param  string $notice  A notice ID.
 	 * @param  int    $user_id A user ID.
@@ -647,6 +724,7 @@ if ( is_admin() ) :
 	 * @since  1.6.5
 	 * @since  1.6.10 Deprecated.
 	 * @author Grégory Viguier
+	 * @deprecated
 	 *
 	 * @param  string $notice  A notice ID.
 	 * @param  int    $user_id A user ID.
