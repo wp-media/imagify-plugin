@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.8.3
-Stable tag: 1.6.14
+Tested up to: 4.9.1
+Stable tag: 1.7
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -136,7 +136,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
-= 1.6.14 =
+= 1.6.14 - 2018/01/10 =
 * New: added compatibility with partners' plugins.
 * Improvement: updated the script used for the charts, it will lower the risk of conflicts with other plugins (that are also up-to-date).
 * Improvement: the comparison tool button is now also inserted when clicking the next/previous buttons in the media modal.
