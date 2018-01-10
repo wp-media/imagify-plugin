@@ -42,7 +42,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $table_version = 15;
+	protected $table_version = 20;
 
 	/**
 	 * Tell if the table is the same for each site of a Multisite.
@@ -125,8 +125,8 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	protected function get_table_schema() {
 		return "
 			folder_id bigint(20) unsigned NOT NULL auto_increment,
-			path varchar(100) NOT NULL default '',
-			active int(1) NOT NULL default 0,
+			path varchar(191) NOT NULL default '',
+			active tinyint(1) unsigned NOT NULL default 0,
 			PRIMARY KEY (folder_id),
 			UNIQUE KEY path (path),
 			KEY active (active)";
