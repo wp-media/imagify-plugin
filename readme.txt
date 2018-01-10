@@ -136,7 +136,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
-= 1.6.14 =
+= 1.6.14 - 2018/01/10 =
 * New: added compatibility with partners' plugins.
 * Improvement: updated the script used for the charts, it will lower the risk of conflicts with other plugins (that are also up-to-date).
 * Improvement: the comparison tool button is now also inserted when clicking the next/previous buttons in the media modal.
