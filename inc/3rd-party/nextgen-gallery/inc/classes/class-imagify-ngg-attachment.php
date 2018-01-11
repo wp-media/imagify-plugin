@@ -14,7 +14,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.2';
+	const VERSION = '1.3';
 
 	/**
 	 * The attachment SQL DB class.
@@ -75,6 +75,40 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
+	 * Get the original attachment path.
+	 *
+	 * @since  1.5
+	 * @author Jonathan Buttigieg
+	 *
+	 * @access public
+	 * @return string
+	 */
+	public function get_original_path() {
+		if ( ! $this->is_valid() ) {
+			return '';
+		}
+
+		return $this->image->imagePath;
+	}
+
+	/**
+	 * Get the original attachment URL.
+	 *
+	 * @since  1.5
+	 * @author Jonathan Buttigieg
+	 *
+	 * @access public
+	 * @return string
+	 */
+	public function get_original_url() {
+		if ( ! $this->is_valid() ) {
+			return '';
+		}
+
+		return $this->image->imageURL;
+	}
+
+	/**
 	 * Get the attachment backup file path, even if the file doesn't exist.
 	 *
 	 * @since  1.6.13
@@ -84,6 +118,10 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return string|bool The file path. False on failure.
 	 */
 	public function get_raw_backup_path() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
 		return get_imagify_ngg_attachment_backup_path( $this->get_original_path() );
 	}
 
@@ -96,6 +134,10 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return string|false
 	 */
 	public function get_backup_url() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
 		return site_url( '/' ) . imagify_make_file_path_relative( $this->get_raw_backup_path() );
 	}
 
@@ -142,29 +184,34 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Get the original attachment path.
+	 * Get width and height of the original image.
 	 *
-	 * @since  1.5
-	 * @author Jonathan Buttigieg
-	 *
+	 * @since  1.7
 	 * @access public
-	 * @return string
+	 * @author Grégory Viguier
+	 *
+	 * @return array
 	 */
-	public function get_original_path() {
-		return $this->image->imagePath;
+	public function get_dimensions() {
+		return array(
+			'width'  => ! empty( $this->image->meta_data['width'] )  ? (int) $this->image->meta_data['width']  : 0,
+			'height' => ! empty( $this->image->meta_data['height'] ) ? (int) $this->image->meta_data['height'] : 0,
+		);
 	}
 
 	/**
-	 * Get the original attachment URL.
+	 * Delete the data related to optimization.
 	 *
-	 * @since  1.5
-	 * @author Jonathan Buttigieg
-	 *
+	 * @since  1.7
 	 * @access public
-	 * @return string
+	 * @author Grégory Viguier
 	 */
-	public function get_original_url() {
-		return $this->image->imageURL;
+	public function delete_imagify_data() {
+		if ( ! $this->is_valid() ) {
+			return;
+		}
+
+		$this->delete_row();
 	}
 
 	/**
@@ -229,6 +276,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			$metadata['height']         = $size[1];
 			$metadata['full']['width']  = $size[0];
 			$metadata['full']['height'] = $size[1];
+			$this->image->meta_data     = $metadata;
 
 			nggdb::update_image_meta( $this->id , $metadata );
 		}
@@ -262,6 +310,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		}
 
 		if ( is_wp_error( $response ) ) {
+			// Error or already optimized.
 			$error        = $response->get_error_message();
 			$error_status = 'error';
 
@@ -283,25 +332,51 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 				return false;
 			}
+
+			return $data;
+		}
+
+		// Success.
+		$old_data      = $this->get_data();
+		$original_size = ! empty( $old_data['sizes'][ $size ]['original_size'] ) ? (int) $old_data['sizes'][ $size ]['original_size'] : 0;
+
+		$response = (object) array_merge( array(
+			'original_size' => 0,
+			'new_size'      => 0,
+			'percent'       => 0,
+		), (array) $response );
+
+		if ( ! empty( $response->original_size ) && ! $original_size ) {
+			$original_size = (int) $response->original_size;
+		}
+
+		if ( ! empty( $response->new_size ) ) {
+			$optimized_size = (int) $response->new_size;
 		} else {
-			$response = (object) array_merge( array(
-				'original_size' => 0,
-				'new_size'      => 0,
-				'percent'       => 0,
-			), (array) $response );
+			$file_path      = $this->get_original_path();
+			$file_path      = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
+			$optimized_size = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+		}
 
-			$data['sizes'][ $size ] = array(
-				'success'        => true,
-				'file_url'       => $url,
-				'original_size'  => $response->original_size,
-				'optimized_size' => $response->new_size,
-				'percent'        => $response->percent,
-			);
+		if ( $original_size && $optimized_size ) {
+			$percent = round( ( $original_size - $optimized_size ) / $original_size * 100, 2 );
+		} elseif ( ! empty( $response->percent ) ) {
+			$percent = round( $response->percent, 2 );
+		} else {
+			$percent = 0;
+		}
 
-			$data['stats']['original_size']  += $response->original_size;
-			$data['stats']['optimized_size'] += $response->new_size;
-			$data['stats']['percent']         = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
-		} // End if().
+		$data['sizes'][ $size ] = array(
+			'success'        => true,
+			'file_url'       => $url,
+			'original_size'  => $original_size,
+			'optimized_size' => $optimized_size,
+			'percent'        => percent,
+		);
+
+		$data['stats']['original_size']  += $original_size;
+		$data['stats']['optimized_size'] += $optimized_size;
+		$data['stats']['percent']         = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
 
 		return $data;
 	}
@@ -418,6 +493,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				$image->meta_data['md5'] = $md5;
 				$image->meta_data['full']['md5'] = $md5;
 			}
+
+			$this->image = $image;
 
 			$storage->_image_mapper->save( $image );
 		}
