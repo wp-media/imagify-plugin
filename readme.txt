@@ -136,6 +136,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 3. Media Page
 
 == Changelog ==
+= 1.6.14.1 - 2018/01/11 =
+* Bug Fix: no more conflicts between our script used for the charts and theme builders, or plugins that use an outdated version of this script.
+
 = 1.6.14 - 2018/01/10 =
 * New: added compatibility with partners' plugins.
 * Improvement: updated the script used for the charts, it will lower the risk of conflicts with other plugins (that are also up-to-date).
