@@ -90,22 +90,24 @@ function imagify_get_theme_folders() {
 	$all_themes = wp_get_themes();
 	$themes     = array();
 
-	if ( $all_themes ) {
-		foreach ( $all_themes as $stylesheet => $theme ) {
-			if ( ! $theme->exists() ) {
-				continue;
-			}
+	if ( ! $all_themes ) {
+		return $themes;
+	}
 
-			$path = trailingslashit( $theme->get_stylesheet_directory() );
-
-			if ( Imagify_Files_Scan::is_path_forbidden( $path ) ) {
-				continue;
-			}
-
-			$placeholder = Imagify_Files_Scan::add_placeholder( $path );
-
-			$themes[ $placeholder ] = $path;
+	foreach ( $all_themes as $stylesheet => $theme ) {
+		if ( ! $theme->exists() ) {
+			continue;
 		}
+
+		$path = trailingslashit( $theme->get_stylesheet_directory() );
+
+		if ( Imagify_Files_Scan::is_path_forbidden( $path ) ) {
+			continue;
+		}
+
+		$placeholder = Imagify_Files_Scan::add_placeholder( $path );
+
+		$themes[ $placeholder ] = $path;
 	}
 
 	return $themes;
@@ -133,19 +135,21 @@ function imagify_get_plugin_folders() {
 	$all_plugins = get_plugins();
 	$plugins     = array();
 
-	if ( $all_plugins ) {
-		$filesystem = imagify_get_filesystem();
+	if ( ! $all_plugins ) {
+		return $plugins;
+	}
 
-		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
-			$path = $plugins_path . $plugin_file;
+	$filesystem = imagify_get_filesystem();
 
-			if ( ! $filesystem->exists( $path ) || Imagify_Files_Scan::is_path_forbidden( $path ) ) {
-				continue;
-			}
+	foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+		$path = $plugins_path . $plugin_file;
 
-			$plugin_file = dirname( $plugin_file ) . '/';
-			$plugins[ '{{PLUGINS}}/' . $plugin_file ] = $plugins_path . $plugin_file;
+		if ( ! $filesystem->exists( $path ) || Imagify_Files_Scan::is_path_forbidden( $path ) ) {
+			continue;
 		}
+
+		$plugin_file = dirname( $plugin_file ) . '/';
+		$plugins[ '{{PLUGINS}}/' . $plugin_file ] = $plugins_path . $plugin_file;
 	}
 
 	return $plugins;
