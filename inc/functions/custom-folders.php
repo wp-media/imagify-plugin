@@ -583,6 +583,10 @@ function imagify_insert_custom_file( $args = array() ) {
 		$args['hash'] = md5_file( $args['file_path'] );
 	}
 
+	if ( empty( $args['mime_type'] ) ) {
+		$args['mime_type'] = imagify_get_mime_type_from_file( $args['file_path'] );
+	}
+
 	if ( empty( $args['original_size'] ) ) {
 		$args['original_size'] = (int) $filesystem->size( $args['file_path'] );
 	}
