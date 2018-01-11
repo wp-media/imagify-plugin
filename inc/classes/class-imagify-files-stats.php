@@ -496,34 +496,20 @@ class Imagify_Files_Stats {
 	 * @return string A list of folder IDs, ready to be used in a "IN" SQL clause.
 	 */
 	public static function get_theme_folders() {
-		global $wpdb;
 		static $folders;
 
 		if ( isset( $folders ) ) {
 			return $folders;
 		}
 
-		$all_themes = wp_get_themes();
-
-		if ( ! $all_themes ) {
-			$folders = '0';
-			return $folders;
-		}
-
-		$themes = array();
-
-		foreach ( $all_themes as $theme ) {
-			if ( $theme->exists() ) {
-				// The theme directory is not enough, we must also use the theme root.
-				$themes[] = Imagify_Files_Scan::add_placeholder( trailingslashit( $theme->get_stylesheet_directory() ) );
-			}
-		}
+		$themes = imagify_get_theme_folders();
 
 		if ( ! $themes ) {
 			$folders = '0';
 			return $folders;
 		}
 
+		$themes  = array_keys( $themes );
 		$folders = Imagify_Folders_DB::get_instance()->get_column_in( 'folder_id', 'path', $themes );
 		$folders = $folders ? implode( ',', $folders ) : '0';
 
@@ -540,32 +526,20 @@ class Imagify_Files_Stats {
 	 * @return string A list of folder IDs, ready to be used in a "IN" SQL clause.
 	 */
 	public static function get_plugin_folders() {
-		global $wpdb;
 		static $folders;
 
 		if ( isset( $folders ) ) {
 			return $folders;
 		}
 
-		$all_plugins = get_plugins();
-
-		if ( ! $all_plugins ) {
-			$folders = '0';
-			return $folders;
-		}
-
-		$plugins = array();
-
-		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
-			// The folder name is enough.
-			$plugins[] = '{{PLUGINS}}/' . dirname( $plugin_file ) . '/';
-		}
+		$plugins = imagify_get_plugin_folders();
 
 		if ( ! $plugins ) {
 			$folders = '0';
 			return $folders;
 		}
 
+		$plugins = array_keys( $plugins );
 		$folders = Imagify_Folders_DB::get_instance()->get_column_in( 'folder_id', 'path', $plugins );
 		$folders = $folders ? implode( ',', $folders ) : '0';
 
