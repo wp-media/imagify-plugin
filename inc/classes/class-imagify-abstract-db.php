@@ -91,6 +91,15 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	protected $table_created = false;
 
 	/**
+	 * Stores the list of columns that must be (un)serialized.
+	 *
+	 * @var    array
+	 * @since  1.7
+	 * @access protected
+	 */
+	protected $to_serialize;
+
+	/**
 	 * Get things started.
 	 *
 	 * @since  1.5
@@ -180,19 +189,6 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	 * @return  array
 	 */
 	abstract public function get_column_defaults();
-
-	/**
-	 * Get the list pf columns that are serialised.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return array
-	 */
-	public function get_serialised_columns() {
-		return array();
-	}
 
 	/**
 	 * Get the query to create the table fields.
@@ -747,8 +743,8 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	 * @return bool
 	 */
 	public function is_column_serialized( $key ) {
-		$columns = $this->get_serialised_columns();
-		return isset( $columns[ $key ] );
+		$columns = $this->get_column_defaults();
+		return isset( $columns[ $key ] ) && is_array( $columns[ $key ] );
 	}
 
 	/**
@@ -836,7 +832,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	}
 
 	/**
-	 * Serialize columns that need it.
+	 * Serialize columns that need to be.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -846,12 +842,17 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	 * @return array
 	 */
 	public function serialize_columns( $data ) {
-		if ( ! $this->get_serialised_columns() ) {
+		if ( ! isset( $this->to_serialize ) ) {
+			$this->to_serialize = array_filter( $this->get_column_defaults(), 'is_array' );
+		}
+
+		if ( ! $this->to_serialize ) {
 			return $data;
 		}
 
-		$to_serialize = array_intersect_key( $data, $this->get_serialised_columns() );
-		$to_serialize = array_map( 'maybe_serialize', $to_serialize );
-		return array_merge( $data, $to_serialize );
+		$serialized_data = array_intersect_key( $data, $this->to_serialize );
+		$serialized_data = array_map( 'maybe_serialize', $serialized_data );
+
+		return array_merge( $data, $serialized_data );
 	}
 }
