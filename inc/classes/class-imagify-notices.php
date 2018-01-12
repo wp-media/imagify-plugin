@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @since  1.6.10
  * @author Grégory Viguier
  */
-class Imagify_Notices {
+class Imagify_Notices extends Imagify_Notices_Deprecated {
 
 	/**
 	 * Class version.
@@ -36,13 +36,6 @@ class Imagify_Notices {
 	 * @var string
 	 */
 	const DEACTIVATE_PLUGIN_NONCE_ACTION = 'imagify-deactivate-plugin';
-
-	/**
-	 * The path to the folder containing the views.
-	 *
-	 * @var string
-	 */
-	protected static $views_folder = IMAGIFY_ADMIN_UI_PATH;
 
 	/**
 	 * List of notice IDs.
@@ -174,7 +167,8 @@ class Imagify_Notices {
 
 			if ( $data ) {
 				// The notice must be displayed: render the view.
-				$this->render_view( str_replace( '_', '-', $notice_id ), $data );
+				$view = 'notice-' . str_replace( '_', '-', $notice_id );
+				imagify_print_template( $view, $data );
 			}
 		}
 	}
@@ -672,19 +666,6 @@ class Imagify_Notices {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Include the view file.
-	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 *
-	 * @param string $view The view ID.
-	 * @param mixed  $data Some data to pass to the view.
-	 */
-	public function render_view( $view, $data = array() ) {
-		require self::$views_folder . 'notice-' . $view . '.php';
 	}
 
 
