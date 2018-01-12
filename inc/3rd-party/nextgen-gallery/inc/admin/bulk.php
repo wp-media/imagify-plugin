@@ -9,7 +9,7 @@ add_action( 'admin_init', '_imagify_ngg_update_bulk_stats' );
  * @author Jonathan Buttigieg
  */
 function _imagify_ngg_update_bulk_stats() {
-	if ( empty( $_GET['page'] ) || 'imagify-ngg-bulk-optimization' !== $_GET['page'] ) { // WPCS: CSRF ok.
+	if ( empty( $_GET['page'] ) || imagify_get_ngg_bulk_screen_slug() !== $_GET['page'] ) { // WPCS: CSRF ok.
 		return;
 	}
 
