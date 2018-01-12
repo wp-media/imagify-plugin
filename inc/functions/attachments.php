@@ -29,8 +29,8 @@ function imagify_get_mime_types() {
 function imagify_get_mime_type_from_file( $file_path ) {
 	$file_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
 
-	if ( false === $file_type[ 'type' ] && function_exists( 'mime_content_type' ) ) {
-		$file_type[ 'type' ] = mime_content_type( $file_path );
+	if ( false === $file_type['type'] && function_exists( 'mime_content_type' ) ) {
+		$file_type['type'] = mime_content_type( $file_path );
 	}
 
 	return $file_type['type'];
