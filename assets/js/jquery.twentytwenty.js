@@ -144,7 +144,7 @@
 			canvas.each( function() {
 				var value = parseInt( $( this ).closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text(), 10 );
 
-				new Chart( this, { // eslint-disable-line no-new
+				new w.imagify.Chart( this, { // eslint-disable-line no-new
 					type: 'doughnut',
 					data: {
 						datasets: [{
