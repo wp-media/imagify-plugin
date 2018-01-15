@@ -43,7 +43,7 @@
 				return;
 			}
 
-			donuts[ this.id ] = new Chart( this, {
+			donuts[ this.id ] = new w.imagify.Chart( this, {
 				type: 'doughnut',
 				data: {
 					datasets: [{
@@ -91,7 +91,7 @@
 				return;
 			}
 
-			donut = new Chart( this, {
+			donut = new w.imagify.Chart( this, {
 				type: 'doughnut',
 				data: {
 					datasets: [{
@@ -121,7 +121,7 @@
 	}
 
 	if ( overviewCanvas ) {
-		overviewDoughnut = new Chart( overviewCanvas, {
+		overviewDoughnut = new w.imagify.Chart( overviewCanvas, {
 			type:    'doughnut',
 			data:    overviewData,
 			options: {
