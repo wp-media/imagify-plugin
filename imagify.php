@@ -23,6 +23,7 @@ define( 'IMAGIFY_FILE'          , __FILE__ );
 define( 'IMAGIFY_PATH'          , realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
 define( 'IMAGIFY_INC_PATH'      , realpath( IMAGIFY_PATH . 'inc/' ) . '/' );
 define( 'IMAGIFY_ADMIN_PATH'    , realpath( IMAGIFY_INC_PATH . 'admin' ) . '/' );
+define( 'IMAGIFY_ADMIN_UI_PATH' , realpath( IMAGIFY_ADMIN_PATH . 'ui' ) . '/' );
 define( 'IMAGIFY_COMMON_PATH'   , realpath( IMAGIFY_INC_PATH . 'common' ) . '/' );
 define( 'IMAGIFY_FUNCTIONS_PATH', realpath( IMAGIFY_INC_PATH . 'functions' ) . '/' );
 define( 'IMAGIFY_CLASSES_PATH'  , realpath( IMAGIFY_INC_PATH . 'classes' ) . '/' );
@@ -87,6 +88,8 @@ function _imagify_init() {
 		require( IMAGIFY_ADMIN_PATH . 'upload.php' );
 		require( IMAGIFY_ADMIN_PATH . 'media.php' );
 		require( IMAGIFY_ADMIN_PATH . 'meta-boxes.php' );
+		require( IMAGIFY_ADMIN_UI_PATH . 'options.php' );
+		require( IMAGIFY_ADMIN_UI_PATH . 'bulk.php' );
 		require( IMAGIFY_CLASSES_PATH . 'class-imagify-admin-ajax-post.php' );
 
 		Imagify_Notices::get_instance()->init();
