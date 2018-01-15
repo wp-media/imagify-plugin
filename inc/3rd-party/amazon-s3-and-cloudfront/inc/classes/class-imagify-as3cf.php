@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @since  1.6.6
  * @author Grégory Viguier
  */
-class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
+class Imagify_AS3CF {
 
 	/**
 	 * Class version.
@@ -430,5 +430,27 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 
 		// Optimize it.
 		$attachment->optimize( $optimization_level, $_POST['metadata'] );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** TOOLS =================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Tell if the attachment has a supported mime type.
+	 *
+	 * @since  1.6.6
+	 * @since  1.6.8 Deprecated.
+	 * @see    imagify_is_attachment_mime_type_supported()
+	 * @author Grégory Viguier
+	 *
+	 * @param  int $post_id The attachment ID.
+	 * @return bool
+	 */
+	public function is_mime_type_supported( $post_id ) {
+		_deprecated_function( 'Imagify_AS3CF::is_mime_type_supported()', '1.6.8', 'imagify_is_attachment_mime_type_supported()' );
+
+		return imagify_is_attachment_mime_type_supported( $post_id );
 	}
 }

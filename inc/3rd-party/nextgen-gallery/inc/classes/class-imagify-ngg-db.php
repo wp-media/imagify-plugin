@@ -128,4 +128,20 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 
 		update_option( $this->table_name . '_db_version', $this->version );
 	}
+
+	/**
+	 * Main Instance.
+	 * Ensures only one instance of class is loaded or can be loaded.
+	 * Well, actually it ensures nothing since it's not a full singleton pattern.
+	 *
+	 * @since  1.5
+	 * @access public
+	 * @author Jonathan Buttigieg
+	 *
+	 * @return object Main instance.
+	 */
+	public static function instance() {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.6.5', 'Imagify_NGG_DB::get_instance()' );
+		return self::get_instance();
+	}
 }
