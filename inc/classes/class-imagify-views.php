@@ -227,7 +227,79 @@ class Imagify_Views {
 	 * @access public
 	 */
 	public function display_bulk_page() {
-		$this->print_template( 'page-bulk' );
+		/**
+		 * Filter the data to use on the bulk optimization page.
+		 *
+		 * @since  1.7
+		 * @author Grégory Viguier
+		 *
+		 * @param array $data The data to use.
+		 */
+		$data = apply_filters( 'imagify_bulk_page_data', array() );
+
+		if ( ! $data || ! is_array( $data ) ) {
+			$total_saving_data = imagify_count_saving_data();
+
+			$data = array(
+				// Global chart.
+				'optimized_attachments_percent' => imagify_percent_optimized_attachments(),
+				// Stats block.
+				'already_optimized_attachments' => $total_saving_data['count'],
+				'original_human'                => $total_saving_data['original_size'],
+				'optimized_human'               => $total_saving_data['optimized_size'],
+				'optimized_percent'             => $total_saving_data['percent'],
+				// Limits.
+				'unoptimized_attachment_limit'  => imagify_get_unoptimized_attachment_limit(),
+				'max_image_size'                => get_imagify_max_image_size(),
+				// What to optimize.
+				'groups'                        => array(
+					'library' => array(
+						/**
+						 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
+						 * It is also used in the underscore template id: 'tmpl-imagify-results-row-{$group_id}' and in get_imagify_localize_script_translations().
+						 */
+						'group_id'   => 'library',
+						'context'    => 'wp',
+						'icon'       => 'images-alt2',
+						'title'      => __( 'Optimize the images of your Media Library', 'imagify' ),
+						'optimizing' => __( 'Optimizing the images of your Media Library...', 'imagify' ),
+						/* translators: 1 is the opening of a link, 2 is the closing of this link. */
+						'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in your %1$sMedia Library%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
+						'rows'       => array(
+							/**
+							 * The 'library' key corresponds to the "folder type".
+							 * It is used in imagify_get_folder_type_data() for example.
+							 */
+							'library' => array(
+								'title' => __( 'Media Library', 'imagify' ),
+							),
+						),
+					),
+					'custom-files' => array(
+						'group_id'   => 'custom-files',
+						'context'    => 'File',
+						'icon'       => 'admin-plugins',
+						'title'      => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
+						'optimizing' => __( 'Optimizing the images of your Themes and Plugins...', 'imagify' ),
+						/* translators: 1 is the opening of a link, 2 is the closing of this link. */
+						'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
+						'rows'       => array(
+							'themes'         => array(
+								'title' => __( 'Themes', 'imagify' ),
+							),
+							'plugins'        => array(
+								'title' => __( 'Plugins', 'imagify' ),
+							),
+							'custom-folders' => array(
+								'title' => __( 'Custom Folders', 'imagify' ),
+							),
+						),
+					),
+				),
+			);
+		}
+
+		$this->print_template( 'page-bulk', $data );
 	}
 
 	/**
