@@ -152,6 +152,26 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 			$page = '?page=' . Imagify_Views::get_instance()->get_files_page_slug();
 			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'upload.php' . $page );
 
+		case 'folder-errors':
+			switch ( $arg ) {
+				case 'library':
+					return add_query_arg( array(
+						'mode'           => 'list',
+						'imagify-status' => 'errors',
+					), admin_url( 'upload.php' ) );
+
+				case 'themes':
+				case 'plugins':
+				case 'custom-folders':
+					return add_query_arg( array(
+						'folder-type-filter' => $arg,
+						'status-filter'      => 'errors',
+					), get_imagify_admin_url( 'files-list' ) );
+
+				default:
+					return '';
+			}
+
 		default:
 			$page = '?page=' . Imagify_Views::get_instance()->get_settings_page_slug();
 			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'options-general.php' . $page );
