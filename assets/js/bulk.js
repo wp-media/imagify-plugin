@@ -297,6 +297,24 @@
 		},
 
 		/*
+		 * Get the URL used for ajax requests.
+		 *
+		 * @param  {string} action An ajax action, or part of it.
+		 * @param  {object} item   The current item.
+		 * @return {string}
+		 */
+		getAjaxUrl: function ( action, item ) {
+			var camelGroupID = item.groupId.replace( /[\s_-](\S)/g, function( c, l ) {
+				return l.toUpperCase();
+			} );
+
+			action = action.replace( '%GROUP_ID%', camelGroupID );
+			action = imagifyBulk.ajaxActions[ action ];
+
+			return ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&optimization_level=' + item.level + '&action=' + action + '&folder_type=' + item.type;
+		},
+
+		/*
 		 * Get the message displayed to the user when (s)he leaves the page.
 		 *
 		 * @return {string}
@@ -355,6 +373,7 @@
 			$row       = $( $row() );
 			$toReplace = $row.find( '.imagify-cell-status ~ td' );
 			colspan    = $toReplace.length;
+			text       = text || '';
 
 			$toReplace.remove();
 			$row.find( '.imagify-cell-status' ).after( '<td colspan="' + colspan + '">' + text + '</td>' );
@@ -598,7 +617,7 @@
 		 * Process the first item in the queue.
 		 */
 		processQueue: function () {
-			var $row, $table, item, url;
+			var $row, $table, item;
 
 			if ( w.imagify.bulk.processIsStopped ) {
 				return;
@@ -626,15 +645,7 @@
 			w.imagify.bulk.displayFolderRow( 'working', $row );
 
 			// Fetch image IDs.
-			url = ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&optimization_level=' + item.level;
-
-			if ( 'library' === item.type ) {
-				url += '&action=' + imagifyBulk.ajaxActions.libraryFetch;
-			} else {
-				url += '&action=' + imagifyBulk.ajaxActions.customFolderFetch + '&folder_type=' + item.type;
-			}
-
-			$.get( url )
+			$.get( w.imagify.bulk.getAjaxUrl( '%GROUP_ID%Fetch', item ) )
 				.done( function( response ) {
 					if ( w.imagify.bulk.processIsStopped ) {
 						return;
@@ -688,9 +699,11 @@
 		 */
 		optimizeFiles: function ( e, item, files ) {
 			var $row             = $( '#cb-select-' + item.type ).closest( '.imagify-row-folder-type' ),
-				$currentRows     = $row.add( $row.next( '.imagify-row-working' ) ),
-				$optimizedCount  = $currentRows.find( '.imagify-cell-images-optimized span' ),
-				$errorsCount     = $currentRows.find( '.imagify-cell-errors span' ),
+				$workingRow      = $row.next( '.imagify-row-working' ),
+				$optimizedCount  = $workingRow.find( '.imagify-cell-images-optimized span' ),
+				optimizedCount   = parseInt( $optimizedCount.text(), 10 ),
+				$errorsCount     = $workingRow.find( '.imagify-cell-errors span' ),
+				errorsCount      = parseInt( $errorsCount.text(), 10 ),
 				$table           = $row.closest( 'table' ),
 				defaultsTemplate = {
 					groupId:              item.groupId,
@@ -707,7 +720,7 @@
 					percent_human:        '',
 					overall_saving_human: ''
 				},
-				url, Optimizer, $resultsContainer;
+				Optimizer, $resultsContainer;
 
 			if ( w.imagify.bulk.processIsStopped ) {
 				return;
@@ -723,17 +736,9 @@
 			w.imagify.bulk.displayGroupHeader( 'optimizing', $table );
 
 			// Optimize the files.
-			url = ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&optimization_level=' + item.level;
-
-			if ( 'library' === item.type ) {
-				url += '&action=' + imagifyBulk.ajaxActions.libraryOptimize;
-			} else {
-				url += '&action=' + imagifyBulk.ajaxActions.customFolderOptimize + '&folder_type=' + item.type;
-			}
-
 			Optimizer = new ImagifyGulp( {
 				'buffer_size': imagifyBulk.bufferSizes[ item.context ] || 1,
-				'lib':         url,
+				'lib':         w.imagify.bulk.getAjaxUrl( '%GROUP_ID%Optimize', item ),
 				'images':      files,
 				'context':     item.context
 			} );
@@ -772,7 +777,8 @@
 					w.imagify.bulk.drawFileChart( $( '#' + item.groupId + '-' + data.image ).find( '.imagify-cell-percentage canvas' ) ); // Don't use $fileRow, its DOM is not refreshed with the new values.
 
 					// Update the optimized images counter.
-					$optimizedCount.text( parseInt( $optimizedCount.text(), 10 ) + 1 );
+					optimizedCount += 1;
+					$optimizedCount.text( optimizedCount );
 					return;
 				}
 
@@ -784,6 +790,10 @@
 						label:       imagifyBulk.labels.alreadyOptimized,
 						chartSuffix: data.image
 					}, data ) ), data.error ) );
+
+					// Update the optimized images counter.
+					optimizedCount += 1;
+					$optimizedCount.text( optimizedCount );
 					return;
 				}
 
@@ -804,16 +814,16 @@
 
 				// Update the "working" folder row.
 				if ( ! $errorsCount.length ) {
-					$errorsCount = $currentRows.find( '.imagify-cell-errors' ).html( imagifyBulk.labels.imagesErrorText.replace( '%s', '<span>1</span>' ) ).find( 'span' );
+					errorsCount  = 1;
+					$errorsCount = $workingRow.find( '.imagify-cell-errors' ).html( imagifyBulk.labels.imagesErrorText.replace( '%s', '<span>1</span>' ) ).find( 'span' );
 				} else {
-					$errorsCount.text( parseInt( $errorsCount.text(), 10 ) + 1 );
+					errorsCount += 1;
+					$errorsCount.text( errorsCount );
 				}
 			} );
 
 			// After all image optimizations.
 			Optimizer.done( function( data ) {
-				var statsUrl;
-
 				// Uncheck the checkbox.
 				$( '#cb-select-' + item.type ).prop( 'checked', false );
 
@@ -835,9 +845,7 @@
 				// Update and display the "normal" folder row.
 				$row.addClass( 'updating' );
 
-				statsUrl = ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&action=' + imagifyBulk.ajaxActions.getFolderData + '&folder_type=' + item.type;
-
-				$.get( statsUrl )
+				$.get( w.imagify.bulk.getAjaxUrl( 'getFolderData', item ) )
 					.done( function( response ) {
 						if ( response.success ) {
 							$.each( response.data, function( dataName, dataHtml ) {
