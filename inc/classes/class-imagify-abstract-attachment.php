@@ -16,6 +16,15 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	const VERSION = '1.3';
 
 	/**
+	 * The attachment ID.
+	 *
+	 * @var    int
+	 * @since  1.0
+	 * @access public
+	 */
+	public $id = 0;
+
+	/**
 	 * The attachment SQL DB class.
 	 *
 	 * @var    string
@@ -31,16 +40,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $row;
-
-	/**
-	 * The attachment ID.
-	 *
-	 * @var    int
-	 * @since  1.0
-	 * @access public
-	 */
-	public $id = 0;
+	protected $row = null;
 
 	/**
 	 * The constructor.
@@ -48,8 +48,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @since  1.0
 	 * @access public
 	 *
-	 * @param  int $id The attachment ID.
-	 * @return void
+	 * @param int|object $id The attachment ID or the attachment itself.
+	 *                       If an integer, make sure the attachment exists.
 	 */
 	public function __construct( $id = 0 ) {
 		global $post;
@@ -220,7 +220,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 */
 	public function get_optimized_sizes_count() {
 		$data  = $this->get_data();
-		$sizes = (array) $data['sizes'];
+		$sizes = ! empty( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
 		$count = 0;
 
 		unset( $sizes['full'] );
@@ -230,7 +230,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		}
 
 		foreach ( $sizes as $size ) {
-			if ( $size['success'] ) {
+			if ( ! empty( $size['success'] ) ) {
 				$count++;
 			}
 		}
@@ -813,15 +813,14 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		}
 
 		if ( ! $this->db_class_name || ! $this->is_valid() ) {
-			return array();
+			return $this->invalidate_row();
 		}
 
 		$classname = $this->db_class_name;
 		$this->row = $classname::get_instance()->get( $this->id );
 
 		if ( ! $this->row ) {
-			$this->id = 0;
-			$this->reset_row_cache();
+			return $this->invalidate_row();
 		}
 
 		return $this->row;
@@ -862,7 +861,21 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		$classname = $this->db_class_name;
 		$classname::get_instance()->delete( $this->id );
 
-		$this->reset_row_cache();
+		$this->invalidate_row();
+	}
+
+	/**
+	 * Invalidate the row.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array The row
+	 */
+	public function invalidate_row() {
+		$this->row = array();
+		return $this->row;
 	}
 
 	/**
@@ -871,8 +884,11 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
+	 *
+	 * @return null The row.
 	 */
 	public function reset_row_cache() {
 		$this->row = null;
+		return $this->row;
 	}
 }

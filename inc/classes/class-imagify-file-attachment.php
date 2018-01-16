@@ -41,11 +41,12 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			$this->id = (int) $id;
 			$this->get_row();
 		} elseif ( is_array( $id ) || is_object( $id ) ) {
+			$classname = $this->db_class_name;
+			$prim_key  = $classname::get_instance()->get_primary_key();
 			$this->row = (array) $id;
-			$this->id  = $this->row['file_id'];
+			$this->id  = $this->row[ $prim_key ];
 		} else {
-			$this->id = 0;
-			$this->reset_row_cache();
+			$this->invalidate_row();
 		}
 	}
 
@@ -707,5 +708,26 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		 * @param int $id The file ID.
 		*/
 		do_action( 'after_imagify_restore_file', $this->id );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** DB ROW ================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Invalidate the row.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array The row
+	 */
+	public function invalidate_row() {
+		// Since the ID doesn't exist in any other table (not a Post ID, not a NGG gallery ID), it must be reset.
+		$this->id  = 0;
+		$this->row = array();
+		return $this->row;
 	}
 }
