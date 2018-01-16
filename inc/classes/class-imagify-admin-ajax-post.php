@@ -285,7 +285,7 @@ class Imagify_Admin_Ajax_Post {
 		if ( ! $attachment->is_optimized() ) {
 			$data['success']    = false;
 			$data['error_code'] = '';
-			$data['error']      = $fullsize_data['error'];
+			$data['error']      = isset( $fullsize_data['error'] ) ? (string) $fullsize_data['error'] : '';
 
 			if ( ! $attachment->has_error() ) {
 				$data['error_code'] = 'already-optimized';
@@ -366,7 +366,7 @@ class Imagify_Admin_Ajax_Post {
 			$data = array(
 				'success'    => false,
 				'error_code' => '',
-				'error'      => $file->get_optimized_error(),
+				'error'      => (string) $file->get_optimized_error(),
 			);
 
 			if ( ! $file->has_error() ) {
@@ -786,7 +786,8 @@ class Imagify_Admin_Ajax_Post {
 		 */
 		do_action( 'imagify_bulk_optimize_before_file_existence_tests', $ids, $results, $optimization_level );
 
-		$data = array();
+		$data       = array();
+		$filesystem = imagify_get_filesystem();
 
 		foreach ( $ids as $i => $id ) {
 			if ( empty( $results['filenames'][ $id ] ) ) {
@@ -799,7 +800,7 @@ class Imagify_Admin_Ajax_Post {
 			/** This filter is documented in inc/functions/process.php. */
 			$file_path = apply_filters( 'imagify_file_path', $file_path );
 
-			if ( ! $file_path || ! file_exists( $file_path ) ) {
+			if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
 				continue;
 			}
 
@@ -808,7 +809,7 @@ class Imagify_Admin_Ajax_Post {
 			$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
 
 			// Don't try to re-optimize if there is no backup file.
-			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) ) {
+			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! $filesystem->exists( $attachment_backup_path ) ) {
 				continue;
 			}
 
