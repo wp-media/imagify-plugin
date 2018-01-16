@@ -57,13 +57,12 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	public function __construct( $id ) {
 		if ( is_object( $id ) ) {
 			$this->image = $id;
-			$this->id    = $id->pid;
+			$this->id    = (int) $id->pid;
 		} else {
 			$this->image = nggdb::find_image( absint( $id ) );
-			$this->id    = $this->image->pid;
+			$this->id    = ! empty( $this->image->pid ) ? (int) $this->image->pid : 0;
 		}
 
-		$this->id = (int) $this->id;
 		$this->get_row();
 
 		// Load nggAdmin class.
@@ -148,11 +147,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @author Jonathan Buttigieg
 	 *
 	 * @access public
-	 * @return array|bool
+	 * @return array
 	 */
 	public function get_data() {
 		$row = $this->get_row();
-		return isset( $row['data'] ) ? $row['data'] : false;
+		return isset( $row['data'] ) ? $row['data'] : array();
 	}
 
 	/**
@@ -207,7 +206,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @author Grégory Viguier
 	 */
 	public function delete_imagify_data() {
-		if ( ! $this->is_valid() ) {
+		if ( ! $this->get_row() ) {
 			return;
 		}
 
@@ -278,7 +277,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			$metadata['full']['height'] = $size[1];
 			$this->image->meta_data     = $metadata;
 
-			nggdb::update_image_meta( $this->id , $metadata );
+			nggdb::update_image_meta( $this->id, $metadata );
 		}
 	}
 
@@ -326,8 +325,10 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				}
 
 				$this->update_row( array(
+					// The pid column is needed in case the row doesn't exist yet.
+					'pid'    => $this->id,
 					'status' => $error_status,
-					'data'   => serialize( $data ),
+					'data'   => $data,
 				) );
 
 				return false;
@@ -371,7 +372,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			'file_url'       => $url,
 			'original_size'  => $original_size,
 			'optimized_size' => $optimized_size,
-			'percent'        => percent,
+			'percent'        => $percent,
 		);
 
 		$data['stats']['original_size']  += $original_size;
@@ -438,10 +439,13 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		// Save the optimization level.
 		$this->update_row( array(
+			// The pid column is needed in case the row doesn't exist yet.
+			'pid'                => $this->id,
 			'optimization_level' => $optimization_level,
 		) );
 
 		if ( ! $data ) {
+			// Already optimized.
 			delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
 			return;
 		}
@@ -493,8 +497,6 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				$image->meta_data['md5'] = $md5;
 				$image->meta_data['full']['md5'] = $md5;
 			}
-
-			$this->image = $image;
 
 			$storage->_image_mapper->save( $image );
 		}

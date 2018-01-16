@@ -70,19 +70,15 @@ add_action( 'wp_ajax_imagify_ngg_get_unoptimized_attachment_ids', '_do_wp_ajax_i
 function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 	global $wpdb;
 
+	$ajax_post = Imagify_Admin_Ajax_Post::get_instance();
+
 	imagify_check_nonce( 'imagify-bulk-upload' );
 	imagify_check_user_capacity( 'bulk-optimize' );
-
-	$user = new Imagify_User();
-
-	if ( $user->is_over_quota() ) {
-		wp_send_json_error( array( 'message' => 'over-quota' ) );
-	}
+	$ajax_post->check_can_optimize();
 
 	@set_time_limit( 0 );
 
-	$optimization_level = (int) $_GET['optimization_level'];
-	$optimization_level = -1 !== $optimization_level ? $optimization_level : get_imagify_option( 'optimization_level' );
+	$optimization_level = $ajax_post->get_optimization_level();
 
 	$storage   = C_Gallery_Storage::get_instance();
 	$ngg_table = $wpdb->prefix . 'ngg_pictures';
@@ -100,8 +96,11 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 		imagify_get_unoptimized_attachment_limit()
 	), ARRAY_A );
 
-	// Save the optimization level in a transient to retrieve it later during the process.
-	set_transient( 'imagify_bulk_optimization_level', $optimization_level );
+	if ( ! $images ) {
+		wp_send_json_success( array() );
+	}
+
+	$filesystem = imagify_get_filesystem();
 
 	foreach ( $images as $image ) {
 		$id        = absint( $image['id'] );
@@ -110,7 +109,7 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 		/** This filter is documented in inc/functions/process.php. */
 		$file_path = apply_filters( 'imagify_file_path', $file_path );
 
-		if ( ! $file_path || ! file_exists( $file_path ) ) {
+		if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
 			continue;
 		}
 
@@ -132,7 +131,7 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 		}
 
 		// Don't try to re-optimize if there is no backup file.
-		if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) ) {
+		if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! $filesystem->exists( $attachment_backup_path ) ) {
 			continue;
 		}
 
@@ -149,9 +148,9 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 		$data[ '_' . $id ] = $storage->get_image_url( $id );
 	} // End foreach().
 
-	if ( $data ) {
-		wp_send_json_success( $data );
+	if ( ! $data ) {
+		wp_send_json_success( array() );
 	}
 
-	wp_send_json_error( array( 'message' => 'no-images' ) );
+	wp_send_json_success( $data );
 }
