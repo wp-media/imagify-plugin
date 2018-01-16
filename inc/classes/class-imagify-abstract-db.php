@@ -437,7 +437,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 			return false;
 		}
 
-		if ( false === (bool) $this->get( $row_id ) ) {
+		if ( ! $this->get( $row_id ) ) {
 			$this->insert( $data );
 			return true;
 		}
