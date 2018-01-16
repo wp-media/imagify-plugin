@@ -121,11 +121,11 @@ function get_imagify_localize_script_translations( $context ) {
 				'spinnerWaitingUrl'           => IMAGIFY_ASSETS_IMG_URL . 'spinner-waiting.svg',
 				'spinnerWorkingUrl'           => IMAGIFY_ASSETS_IMG_URL . 'spinner-working.svg',
 				'ajaxActions'                 => array(
-					'libraryFetch'         => 'imagify_get_unoptimized_attachment_ids',
-					'customFolderFetch'    => 'imagify_get_unoptimized_file_ids',
-					'libraryOptimize'      => 'imagify_bulk_upload',
-					'customFolderOptimize' => 'imagify_bulk_optimize_file',
-					'getFolderData'        => 'imagify_get_folder_type_data',
+					'libraryFetch'        => 'imagify_get_unoptimized_attachment_ids',
+					'customFilesFetch'    => 'imagify_get_unoptimized_file_ids',
+					'libraryOptimize'     => 'imagify_bulk_upload',
+					'customFilesOptimize' => 'imagify_bulk_optimize_file',
+					'getFolderData'       => 'imagify_get_folder_type_data',
 				),
 				'ajaxNonce'                   => wp_create_nonce( 'imagify-bulk-upload' ),
 				'bufferSizes'                 => array(
