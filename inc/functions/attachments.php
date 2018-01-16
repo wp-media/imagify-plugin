@@ -27,6 +27,10 @@ function imagify_get_mime_types() {
  * @return string|bool       A mime type. False on failure: the last test is limited to mime types supported by Imagify.
  */
 function imagify_get_mime_type_from_file( $file_path ) {
+	if ( ! $file_path ) {
+		return false;
+	}
+
 	$file_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
 
 	if ( false === $file_type['type'] && function_exists( 'mime_content_type' ) ) {
