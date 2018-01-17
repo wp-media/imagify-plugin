@@ -81,9 +81,14 @@ function imagify_is_screen( $identifier ) {
 
 		case 'bulk':
 		case 'bulk-optimization':
-			// Bulk Optimization.
+			// Bulk Optimization (any).
 			$slug = Imagify_Views::get_instance()->get_bulk_page_slug();
-			return 'media_page_' . $slug === $current_screen->id;
+			return 'toplevel_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
+
+		case 'files-bulk-optimization':
+			// Bulk Optimization (custom folders).
+			$slug = Imagify_Views::get_instance()->get_bulk_page_slug();
+			return 'toplevel_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
 
 		case 'files':
 		case 'files-list':
@@ -148,6 +153,10 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 		case 'bulk-optimization':
 			return admin_url( 'upload.php?page=' . Imagify_Views::get_instance()->get_bulk_page_slug() );
 
+		case 'files-bulk-optimization':
+			$page = '?page=' . Imagify_Views::get_instance()->get_bulk_page_slug();
+			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'upload.php' . $page );
+
 		case 'files-list':
 			$page = '?page=' . Imagify_Views::get_instance()->get_files_page_slug();
 			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'upload.php' . $page );
@@ -167,10 +176,8 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 						'folder-type-filter' => $arg,
 						'status-filter'      => 'errors',
 					), get_imagify_admin_url( 'files-list' ) );
-
-				default:
-					return '';
 			}
+			return '';
 
 		default:
 			$page = '?page=' . Imagify_Views::get_instance()->get_settings_page_slug();

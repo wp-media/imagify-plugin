@@ -83,7 +83,7 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 	$user_can = false;
 
 	if ( 'manage' !== $describer && 'bulk-optimize' !== $describer && 'optimize-file' !== $describer ) {
-		// Describers that are not 'manage' and 'bulk-optimize' need an additional test for 'upload_files'.
+		// Describers that are not 'manage', 'bulk-optimize', and 'optimize-file' need an additional test for 'upload_files'.
 		if ( ! isset( $can_upload ) ) {
 			$can_upload = current_user_can( 'upload_files' );
 		}
@@ -114,7 +114,7 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 }
 
 /**
- * Sanitize an optimization context.
+ * Tell if the current user can optimize custom folders.
  *
  * @since  1.7
  * @author Grégory Viguier
@@ -137,23 +137,6 @@ function imagify_can_optimize_custom_folders() {
 	// Check for user capacity.
 	if ( ! imagify_current_user_can( 'optimize-file' ) ) {
 		$can = false;
-		return $can;
-	}
-
-	// Multisite, network activated: ok only in the network admin.
-	if ( imagify_is_active_for_network() ) {
-		$can = is_network_admin();
-		return $can;
-	}
-
-	// Multisite, not network activated: ok only in some defined sites.
-	if ( is_multisite() ) {
-		$allowed_sites   = defined( 'IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES' ) && IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES ? IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES : '';
-		$allowed_sites   = explode( ',', IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES );
-		$allowed_sites   = array_flip( array_filter( array_map( 'trim', $allowed_sites ) ) );
-		$current_site_id = get_current_blog_id();
-
-		$can = $current_site_id && isset( $allowed_sites[ $current_site_id ] );
 		return $can;
 	}
 

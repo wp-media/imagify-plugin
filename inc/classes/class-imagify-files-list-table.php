@@ -227,7 +227,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 */
 	public function no_items() {
 		/* translators: 1 is a link tag start, 2 is the link tag end. */
-		printf( __( 'No files yet. Launch a %1$sbulk optimization%2$s to see them appear here.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'bulk-optimization' ) ) . '">', '</a>' );
+		printf( __( 'No files yet. Launch a %1$sbulk optimization%2$s to see them appear here.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-bulk-optimization' ) ) . '">', '</a>' );
 	}
 
 	/**

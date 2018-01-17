@@ -107,7 +107,10 @@ class Imagify_Views {
 	public function init() {
 		// Menu items.
 		add_action( 'admin_menu', array( $this, 'add_site_menus' ) );
-		add_action( ( imagify_is_active_for_network() ? 'network_' : '' ) . 'admin_menu', array( $this, 'add_network_menus' ) );
+
+		if ( imagify_is_active_for_network() ) {
+			add_action( 'network_admin_menu', array( $this, 'add_network_menus' ) );
+		}
 
 		// Action links in plugins list.
 		$basename = plugin_basename( IMAGIFY_FILE );
@@ -124,18 +127,39 @@ class Imagify_Views {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Add the bulk optimization sub-menu under "Library".
+	 * Add sub-menus for all sites.
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 */
 	public function add_site_menus() {
+		// Sub-menu item: bulk optimization.
 		add_media_page( __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), imagify_get_capacity( 'bulk-optimize' ), $this->get_bulk_page_slug(), array( $this, 'display_bulk_page' ) );
+
+		if ( imagify_is_active_for_network() ) {
+			return;
+		}
+
+		/**
+		 * Plugin is not network activated.
+		 */
+		if ( imagify_can_optimize_custom_folders() ) {
+			// Sub-menu item: custom folders list.
+			$screen_id = add_media_page( __( 'Themes and Plugins Images', 'imagify' ), __( 'Optimized Files', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+
+			if ( $screen_id ) {
+				// Load the data for this page.
+				add_action( 'load-' . $screen_id, array( $this, 'load_files_list' ) );
+			}
+		}
+
+		// Sub-menu item: settings.
+		add_options_page( 'Imagify', 'Imagify', imagify_get_capacity(), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
 	}
 
 	/**
-	 * Add menu items for the the settings and for the "custom folders" files.
+	 * Add menu and sub-menus in the network admin when Imagify is network-activated.
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
@@ -144,41 +168,30 @@ class Imagify_Views {
 	public function add_network_menus() {
 		global $submenu;
 
-		$capa_settings = imagify_get_capacity();
-		$capa_files    = imagify_get_capacity( 'optimize-file' );
-
-		if ( imagify_is_active_for_network() ) {
-			// Plugin is network activated.
-			if ( imagify_can_optimize_custom_folders() ) {
-				// Main item: custom folders. Sub-menu item: settings.
-				$screen_id = add_menu_page( __( 'Themes and Plugins Images', 'imagify' ), 'Imagify', $capa_files, $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
-				add_submenu_page( $this->get_files_page_slug(), 'Imagify', __( 'Settings', 'imagify' ), $capa_settings, $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
-
-				// Change the sub-menu label.
-				if ( ! empty( $submenu[ $this->get_files_page_slug() ] ) ) {
-					$submenu[ $this->get_files_page_slug() ][0][0] = __( 'Optimized Files', 'imagify' ); // WPCS: override ok.
-				}
-
-				// On the "Themes and Plugins Images" page, load the data.
-				add_action( 'load-' . $screen_id, array( $this, 'load_files_list' ) );
-				return;
-			}
-
+		if ( ! imagify_can_optimize_custom_folders() ) {
 			// Main item: settings (edge case).
-			add_menu_page( 'Imagify', 'Imagify', $capa_settings, $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
+			add_menu_page( 'Imagify', 'Imagify', imagify_get_capacity(), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
 			return;
 		}
 
-		if ( imagify_can_optimize_custom_folders() ) {
-			// Sub-menu item: custom folders.
-			$screen_id = add_media_page( __( 'Themes and Plugins Images', 'imagify' ), __( 'Optimized Files', 'imagify' ), $capa_files, $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+		// Main item: bulk optimization (custom folders).
+		add_menu_page( __( 'Bulk Optimization', 'imagify' ), 'Imagify', imagify_get_capacity( 'optimize-file' ), $this->get_bulk_page_slug(), array( $this, 'display_bulk_page' ) );
 
+		// Sub-menu item: custom folders list.
+		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Themes and Plugins Images', 'imagify' ), __( 'Themes and Plugins Images', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+
+		// Sub-menu item: settings.
+		add_submenu_page( $this->get_bulk_page_slug(), 'Imagify', __( 'Settings', 'imagify' ), imagify_get_capacity(), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
+
+		// Change the sub-menu label.
+		if ( ! empty( $submenu[ $this->get_bulk_page_slug() ] ) ) {
+			$submenu[ $this->get_bulk_page_slug() ][0][0] = __( 'Bulk Optimization', 'imagify' ); // WPCS: override ok.
+		}
+
+		if ( $screen_id ) {
 			// On the "Themes and Plugins Images" page, load the data.
 			add_action( 'load-' . $screen_id, array( $this, 'load_files_list' ) );
 		}
-
-		// Sub-menu item: settings.
-		add_options_page( 'Imagify', 'Imagify', $capa_settings, $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
 	}
 
 
@@ -252,51 +265,62 @@ class Imagify_Views {
 				'unoptimized_attachment_limit'  => imagify_get_unoptimized_attachment_limit(),
 				'max_image_size'                => get_imagify_max_image_size(),
 				// What to optimize.
-				'groups'                        => array(
-					'library' => array(
-						/**
-						 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
-						 * It is also used in the underscore template id: 'tmpl-imagify-results-row-{$group_id}' and in get_imagify_localize_script_translations().
-						 */
-						'group_id'   => 'library',
-						'context'    => 'wp',
-						'icon'       => 'images-alt2',
-						'title'      => __( 'Optimize the images of your Media Library', 'imagify' ),
-						'optimizing' => __( 'Optimizing the images of your Media Library...', 'imagify' ),
-						/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-						'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in your %1$sMedia Library%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
-						'rows'       => array(
-							/**
-							 * The 'library' key corresponds to the "folder type".
-							 * It is used in imagify_get_folder_type_data() for example.
-							 */
-							'library' => array(
-								'title' => __( 'Media Library', 'imagify' ),
-							),
-						),
-					),
-					'custom-files' => array(
-						'group_id'   => 'custom-files',
-						'context'    => 'File',
-						'icon'       => 'admin-plugins',
-						'title'      => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
-						'optimizing' => __( 'Optimizing the images of your Themes and Plugins...', 'imagify' ),
-						/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-						'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
-						'rows'       => array(
-							'themes'         => array(
-								'title' => __( 'Themes', 'imagify' ),
-							),
-							'plugins'        => array(
-								'title' => __( 'Plugins', 'imagify' ),
-							),
-							'custom-folders' => array(
-								'title' => __( 'Custom Folders', 'imagify' ),
-							),
-						),
-					),
-				),
+				'groups'                        => array(),
 			);
+
+			if ( ! is_network_admin() ) {
+				/**
+				 * Library: in each site.
+				 */
+				$data['groups']['library'] = array(
+					/**
+					 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
+					 * It is also used in the underscore template id: 'tmpl-imagify-results-row-{$group_id}' and in get_imagify_localize_script_translations().
+					 */
+					'group_id'   => 'library',
+					'context'    => 'wp',
+					'icon'       => 'images-alt2',
+					'title'      => __( 'Optimize the images of your Media Library', 'imagify' ),
+					'optimizing' => __( 'Optimizing the images of your Media Library...', 'imagify' ),
+					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
+					'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in your %1$sMedia Library%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
+					'rows'       => array(
+						/**
+						 * The 'library' key corresponds to the "folder type".
+						 * It is used in imagify_get_folder_type_data() for example.
+						 */
+						'library' => array(
+							'title' => __( 'Media Library', 'imagify' ),
+						),
+					),
+				);
+			}
+
+			if ( imagify_can_optimize_custom_folders() && ( imagify_is_active_for_network() && is_network_admin() || ! imagify_is_active_for_network() ) ) {
+				/**
+				 * Custom folders: in network admin only if network activated, in each site otherwise.
+				 */
+				$data['groups']['custom-files'] = array(
+					'group_id'   => 'custom-files',
+					'context'    => 'File',
+					'icon'       => 'admin-plugins',
+					'title'      => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
+					'optimizing' => __( 'Optimizing the images of your Themes and Plugins...', 'imagify' ),
+					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
+					'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
+					'rows'       => array(
+						'themes'         => array(
+							'title' => __( 'Themes', 'imagify' ),
+						),
+						'plugins'        => array(
+							'title' => __( 'Plugins', 'imagify' ),
+						),
+						'custom-folders' => array(
+							'title' => __( 'Custom Folders', 'imagify' ),
+						),
+					),
+				);
+			}
 		}
 
 		$this->print_template( 'page-bulk', $data );
