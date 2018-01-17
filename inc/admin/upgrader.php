@@ -265,5 +265,8 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 			// Make sure the settings are autoloaded.
 			$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET `autoload` = 'yes' WHERE `autoload` != 'yes' AND option_name = %s", $options->get_option_name() ) );
 		}
+
+		// Rename the option that stores the NGG table version. Since the table is also updated in 1.7, let's simply delete the option.
+		delete_option( $wpdb->prefix . 'ngg_imagify_data' );
 	}
 }

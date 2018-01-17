@@ -2,6 +2,60 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 /**
+ * Get a template contents.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param string $template The template name.
+ * @param mixed  $data     Some data to pass to the template.
+ */
+function imagify_get_template( $template, $data = array() ) {
+	$path = IMAGIFY_INC_PATH . 'views/' . $template . '.php';
+
+	if ( ! imagify_get_filesystem()->exists( $path ) ) {
+		return false;
+	}
+
+	ob_start();
+	include $path;
+	$contents = ob_get_clean();
+
+	return trim( (string) $contents );
+}
+
+/**
+ * Print a template.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param string $template The template name.
+ * @param mixed  $data     Some data to pass to the template.
+ */
+function imagify_print_template( $template, $data = array() ) {
+	echo imagify_get_template( $template, $data );
+}
+
+/**
+ * The main settings page construtor using the required functions from WP
+ *
+ * @since 1.0
+ */
+function _imagify_display_options_page() {
+	imagify_print_template( 'page-settings' );
+}
+
+/**
+ * The main settings page construtor using the required functions from WP.
+ *
+ * @since 1.0
+ */
+function _imagify_display_bulk_page() {
+	imagify_print_template( 'page-bulk' );
+}
+
+/**
  * Get the optimization data list for a specific attachment.
  *
  * @since  1.0

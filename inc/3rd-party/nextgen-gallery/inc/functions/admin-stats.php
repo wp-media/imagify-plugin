@@ -38,7 +38,7 @@ function imagify_ngg_count_error_attachments() {
 		return $count;
 	}
 
-	$count = (int) Imagify_NGG_DB::get_instance()->get_column_by( 'COUNT(*)', 'status', 'error' );
+	$count = (int) Imagify_NGG_DB::get_instance()->get_var_by( 'COUNT(*)', 'status', 'error' );
 
 	return $count;
 }
@@ -58,7 +58,7 @@ function imagify_ngg_count_optimized_attachments() {
 		return $count;
 	}
 
-	$count = (int) Imagify_NGG_DB::get_instance()->get_column_in( 'COUNT(*)', 'status', array( 'success', 'already_optimized' ) );
+	$count = (int) Imagify_NGG_DB::get_instance()->get_var_in( 'COUNT(*)', 'status', array( 'success', 'already_optimized' ) );
 
 	return $count;
 }
