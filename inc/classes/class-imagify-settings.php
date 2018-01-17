@@ -675,8 +675,9 @@ class Imagify_Settings {
 
 			foreach ( $all_plugins as $plugin_file => $plugin_data ) {
 				$plugin_path = $plugins_path . $plugin_file;
+				$plugin_base = trailingslashit( dirname( $plugin_path ) );
 
-				if ( ! $filesystem->exists( $plugin_path ) || imagify_file_is_symlinked( $plugin_path ) ) {
+				if ( $plugins_path === $plugin_base || ! $filesystem->exists( $plugin_path ) || imagify_file_is_symlinked( $plugin_path ) ) {
 					continue;
 				}
 
