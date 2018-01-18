@@ -64,17 +64,14 @@
 				canvas: false,
 				donut:  false,
 				data:   {
+					// Order: unoptimized, optimized, error.
 					labels: [
 						imagifyBulk.labels.overviewChartLabels.unoptimized,
 						imagifyBulk.labels.overviewChartLabels.optimized,
 						imagifyBulk.labels.overviewChartLabels.error
 					],
 					datasets: [{
-						data: [
-							imagifyBulk.totalUnoptimizedAttachments,
-							imagifyBulk.totalOptimizedAttachments,
-							imagifyBulk.totalErrorsAttachments
-						],
+						data: [],
 						backgroundColor: [ '#D9E4EB', '#46B1CE', '#2E3242' ],
 						borderWidth:     0
 					}]
@@ -98,6 +95,8 @@
 		globalGain:          0,
 		globalOriginalSize:  0,
 		globalOptimizedSize: 0,
+		// Heartbeat.
+		folderTypes:         [],
 
 		// Methods =================================================================================
 
@@ -152,6 +151,11 @@
 			}
 
 			// Create new donut.
+			this.charts.overview.data.datasets[0].data = [
+				parseInt( this.charts.overview.canvas.getAttribute( 'data-unoptimized' ), 10 ),
+				parseInt( this.charts.overview.canvas.getAttribute( 'data-optimized' ), 10 ),
+				parseInt( this.charts.overview.canvas.getAttribute( 'data-errors' ), 10 )
+			];
 			initData = $.extend( {}, this.charts.overview.data );
 
 			if ( data.length ) {
@@ -954,6 +958,14 @@
 		 */
 		addHeartbeat: function ( e, data ) {
 			data.imagify_heartbeat = imagifyBulk.heartbeatId;
+
+			if ( ! w.imagify.bulk.folderTypes.length ) {
+				$( '.imagify-bulk-table > table' ).each( function() {
+					w.imagify.bulk.folderTypes.push( $( this ).data( 'group-id' ) );
+				} );
+			}
+
+			data.imagify_types = w.imagify.bulk.folderTypes;
 		},
 
 		/**

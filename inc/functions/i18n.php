@@ -113,9 +113,6 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'bulk':
 			$translations = array(
-				'totalUnoptimizedAttachments' => imagify_count_unoptimized_attachments(),
-				'totalOptimizedAttachments'   => imagify_count_optimized_attachments(),
-				'totalErrorsAttachments'      => imagify_count_error_attachments(),
 				'heartbeatId'                 => 'update_bulk_data',
 				'waitImageUrl'                => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
 				'spinnerWaitingUrl'           => IMAGIFY_ASSETS_IMG_URL . 'spinner-waiting.svg',

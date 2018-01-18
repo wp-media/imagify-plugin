@@ -24,7 +24,7 @@ function _imagify_ngg_heartbeat_received( $response, $data ) {
 
 	$response['imagify_bulk_data'] = array(
 		// User account.
-		'unconsumed_quota'              => $user->get_percent_unconsumed_quota(),
+		'unconsumed_quota'              => is_wp_error( $user ) ? 0 : $user->get_percent_unconsumed_quota(),
 		// Global chart.
 		'optimized_attachments_percent' => imagify_ngg_percent_optimized_attachments(),
 		'unoptimized_attachments'       => imagify_ngg_count_unoptimized_attachments(),

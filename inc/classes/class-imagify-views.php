@@ -240,38 +240,42 @@ class Imagify_Views {
 	 * @access public
 	 */
 	public function display_bulk_page() {
-		/**
-		 * Filter the data to use on the bulk optimization page.
-		 *
-		 * @since  1.7
-		 * @author Grégory Viguier
-		 *
-		 * @param array $data The data to use.
-		 */
-		$data = apply_filters( 'imagify_bulk_page_data', array() );
+		$data = array(
+			// Global chart.
+			'total_attachments'             => 0,
+			'unoptimized_attachments'       => 0,
+			'optimized_attachments'         => 0,
+			'errors_attachments'            => 0,
+			// Stats block.
+			'already_optimized_attachments' => 0,
+			'original_size'                 => 0,
+			'optimized_size'                => 0,
+			'optimized_percent'             => 0,
+			// Limits.
+			'unoptimized_attachment_limit'  => 0,
+			// What to optimize.
+			'groups'                        => array(),
+		);
 
-		if ( ! $data || ! is_array( $data ) ) {
-			$total_saving_data = imagify_count_saving_data();
-
-			$data = array(
-				// Global chart.
-				'optimized_attachments_percent' => imagify_percent_optimized_attachments(),
-				// Stats block.
-				'already_optimized_attachments' => $total_saving_data['count'],
-				'original_human'                => $total_saving_data['original_size'],
-				'optimized_human'               => $total_saving_data['optimized_size'],
-				'optimized_percent'             => $total_saving_data['percent'],
-				// Limits.
-				'unoptimized_attachment_limit'  => imagify_get_unoptimized_attachment_limit(),
-				'max_image_size'                => get_imagify_max_image_size(),
-				// What to optimize.
-				'groups'                        => array(),
-			);
-
+		if ( imagify_is_screen( 'bulk' ) ) {
 			if ( ! is_network_admin() ) {
 				/**
 				 * Library: in each site.
 				 */
+				$total_saving_data = imagify_count_saving_data();
+
+				// Global chart.
+				$data['total_attachments']             += imagify_count_attachments();
+				$data['unoptimized_attachments']       += imagify_count_unoptimized_attachments();
+				$data['optimized_attachments']         += imagify_count_optimized_attachments();
+				$data['errors_attachments']            += imagify_count_error_attachments();
+				// Stats block.
+				$data['already_optimized_attachments'] += $total_saving_data['count'];
+				$data['original_size']                 += $total_saving_data['original_size'];
+				$data['optimized_size']                += $total_saving_data['optimized_size'];
+				// Limits.
+				$data['unoptimized_attachment_limit']  += imagify_get_unoptimized_attachment_limit();
+				// Group.
 				$data['groups']['library'] = array(
 					/**
 					 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
@@ -300,6 +304,16 @@ class Imagify_Views {
 				/**
 				 * Custom folders: in network admin only if network activated, in each site otherwise.
 				 */
+				// Global chart.
+				$data['total_attachments']             += Imagify_Files_Stats::count_all_files();
+				$data['unoptimized_attachments']       += Imagify_Files_Stats::count_no_status_files();
+				$data['optimized_attachments']         += Imagify_Files_Stats::count_optimized_files();
+				$data['errors_attachments']            += Imagify_Files_Stats::count_error_files();
+				// Stats block.
+				$data['already_optimized_attachments'] += Imagify_Files_Stats::count_success_files();
+				$data['original_size']                 += Imagify_Files_Stats::get_original_size();
+				$data['optimized_size']                += Imagify_Files_Stats::get_optimized_size();
+				// Group.
 				$data['groups']['custom-files'] = array(
 					'group_id'   => 'custom-files',
 					'context'    => 'File',
@@ -321,6 +335,31 @@ class Imagify_Views {
 					),
 				);
 			}
+		}
+
+		/**
+		 * Filter the data to use on the bulk optimization page.
+		 *
+		 * @since  1.7
+		 * @author Grégory Viguier
+		 *
+		 * @param array $data The data to use.
+		 */
+		$data = apply_filters( 'imagify_bulk_page_data', $data );
+
+		/**
+		 * Percentages.
+		 */
+		if ( $data['total_attachments'] && $data['optimized_attachments'] ) {
+			$data['optimized_attachments_percent'] = round( 100 * $data['optimized_attachments'] / $data['total_attachments'] );
+		} else {
+			$data['optimized_attachments_percent'] = 0;
+		}
+
+		if ( $data['original_size'] && $data['optimized_size'] ) {
+			$data['optimized_percent'] = ceil( 100 - ( 100 * $data['optimized_size'] / $data['original_size'] ) );
+		} else {
+			$data['optimized_percent'] = 0;
 		}
 
 		$this->print_template( 'page-bulk', $data );

@@ -18,8 +18,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 				<h3><?php esc_html_e( 'Overview', 'imagify' ); ?></h3>
 
 				<div class="imagify-chart-container imagify-overview-chart-container">
-					<canvas id="imagify-overview-chart" width="180" height="180"></canvas>
-					<div id="imagify-overview-chart-percent" class="imagify-chart-percent"><?php echo esc_html( $data['optimized_attachments_percent'] ); ?><span>%</span></div>
+					<canvas id="imagify-overview-chart" width="180" height="180" data-unoptimized="<?php echo esc_attr( $data['unoptimized_attachments'] ); ?>" data-optimized="<?php echo esc_attr( $data['optimized_attachments'] ); ?>" data-errors="<?php echo esc_attr( $data['errors_attachments'] ); ?>"></canvas>
+					<div id="imagify-overview-chart-percent" class="imagify-chart-percent"><?php echo esc_html( min( $data['optimized_attachments_percent'], 100 ) ); ?><span>%</span></div>
 				</div>
 				<div id="imagify-overview-chart-legend"></div>
 
@@ -28,7 +28,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 					printf(
 						/* translators: %s is a percentage. */
 						esc_html__( 'You optimized %s of your website\'s images', 'imagify' ),
-						'<span class="imagify-total-percent">' . esc_html( $data['optimized_attachments_percent'] ) . '%</span>'
+						'<span class="imagify-total-percent">' . esc_html( min( $data['optimized_attachments_percent'], 100 ) ) . '%</span>'
 					);
 					?>
 				</p>
@@ -55,12 +55,12 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 				<div class="imagify-bars">
 					<p><?php esc_html_e( 'Original size', 'imagify' ); ?></p>
 					<div class="imagify-bar-negative base-transparent right-outside-number">
-						<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo esc_html( imagify_size_format( $data['original_human'], 1 ) ); ?></span></div>
+						<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo esc_html( imagify_size_format( $data['original_size'], 1 ) ); ?></span></div>
 					</div>
 
 					<p><?php esc_html_e( 'Optimized size', 'imagify' ); ?></p>
 					<div class="imagify-bar-positive base-transparent right-outside-number">
-						<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo ( 100 - $data['optimized_percent'] ); ?>%"><span class="imagify-barnb"><?php echo esc_html( imagify_size_format( $data['optimized_human'], 1 ) ); ?></span></div>
+						<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo max( 100 - $data['optimized_percent'], 0 ); ?>%"><span class="imagify-barnb"><?php echo esc_html( imagify_size_format( $data['optimized_size'], 1 ) ); ?></span></div>
 					</div>
 
 				</div>
@@ -88,7 +88,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 						<?php
 						esc_html_e( 'Please be aware that optimizing a large number of images can take a while depending on your server and network speed.', 'imagify' );
 
-						if ( get_transient( 'imagify_large_library' ) ) {
+						if ( ! empty( $data['groups']['library'] ) && get_transient( 'imagify_large_library' ) ) {
 							printf(
 								/* translators: %s is a formatted number. Don't use %d. */
 								esc_html__( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ),
@@ -188,7 +188,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 								printf(
 									/* translators: %s is a file size. */
 									esc_html__( 'All images greater than %s will be optimized when using a paid plan.', 'imagify' ),
-									esc_html( imagify_size_format( $data['max_image_size'] ) )
+									esc_html( imagify_size_format( get_imagify_max_image_size() ) )
 								);
 								?>
 							</p>

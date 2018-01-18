@@ -90,6 +90,39 @@ class Imagify_Files_Stats {
 	}
 
 	/**
+	 * Count number of images successfully optimized by Imagify in custom folders.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $folder_type The type of folder we want stats from: all, themes, plugins, custom-folders.
+	 * @return int                 The number of images.
+	 */
+	public static function count_success_files( $folder_type = 'all' ) {
+		global $wpdb;
+
+		$folder_type = self::validate_folder_type( $folder_type );
+
+		/**
+		 * Filter the number of images successfully optimized by Imagify in custom folders.
+		 *
+		 * @since  1.7
+		 * @author Grégory Viguier
+		 *
+		 * @param int|bool $pre_count   Default is false. Provide an integer.
+		 * @param string   $folder_type The type of folder we want stats from: all, themes, plugins, custom-folders.
+		 */
+		$pre_count = apply_filters( 'imagify_count_success_files', false, $folder_type );
+
+		if ( false !== $pre_count ) {
+			return (int) $pre_count;
+		}
+
+		return self::count_files( $folder_type, 'success' );
+	}
+
+	/**
 	 * Count number of optimized images in custom folders.
 	 *
 	 * @since  1.7
@@ -153,6 +186,39 @@ class Imagify_Files_Stats {
 		}
 
 		return self::count_files( $folder_type, 'unoptimized' );
+	}
+
+	/**
+	 * Count number of images without status in custom folders.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $folder_type The type of folder we want stats from: all, themes, plugins, custom-folders.
+	 * @return int                 The number of images.
+	 */
+	public static function count_no_status_files( $folder_type = 'all' ) {
+		global $wpdb;
+
+		$folder_type = self::validate_folder_type( $folder_type );
+
+		/**
+		 * Filter the number of images without status in custom folders.
+		 *
+		 * @since  1.7
+		 * @author Grégory Viguier
+		 *
+		 * @param int|bool $pre_count   Default is false. Provide an integer.
+		 * @param string   $folder_type The type of folder we want stats from: all, themes, plugins, custom-folders.
+		 */
+		$pre_count = apply_filters( 'imagify_count_no_status_files', false, $folder_type );
+
+		if ( false !== $pre_count ) {
+			return (int) $pre_count;
+		}
+
+		return self::count_files( $folder_type, 'none' );
 	}
 
 	/**
