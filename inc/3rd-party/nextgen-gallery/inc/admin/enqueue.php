@@ -33,11 +33,8 @@ function _imagify_ngg_admin_print_styles() {
 	$assets->remove_deferred_localization( 'bulk', 'imagifyBulk' );
 
 	$l10n = $assets->get_localization_data( 'bulk', array(
-		'totalUnoptimizedAttachments' => imagify_ngg_count_unoptimized_attachments(),
-		'totalOptimizedAttachments'   => imagify_ngg_count_optimized_attachments(),
-		'totalErrorsAttachments'      => imagify_ngg_count_error_attachments(),
-		'heartbeatId'                 => 'update_ngg_bulk_data',
-		'bufferSizes'                 => array(
+		'heartbeatId' => 'update_ngg_bulk_data',
+		'bufferSizes' => array(
 			'NGG' => get_imagify_bulk_buffer_size( 3 ),
 		),
 	) );
