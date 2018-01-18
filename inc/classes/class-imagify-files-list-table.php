@@ -152,13 +152,14 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			}
 		}
 
-		// Get items.
-		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $files_table $where ORDER BY %s %s LIMIT %d, %d", $orderby, $order, $offset, $per_page ) ); // WPCS: unprepared SQL ok.
-
+		// Pagination.
 		$this->set_pagination_args( array(
 			'total_items' => (int) $wpdb->get_var( "SELECT COUNT($files_key) FROM $files_table $where" ), // WPCS: unprepared SQL ok.
 			'per_page'    => $per_page,
 		) );
+
+		// Get items.
+		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $files_table $where ORDER BY $orderby $order LIMIT %d, %d", $offset, $per_page ) ); // WPCS: unprepared SQL ok.
 
 		if ( ! $this->items ) {
 			return;
