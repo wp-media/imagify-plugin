@@ -398,15 +398,10 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 
 			if ( ! $filesystem->exists( $row_fields['file_path'] ) ) {
 				// If the file doesn't exist:remove all traces of it and bail out.
-				$file_backup_path = imagify_get_file_backup_path( $row_fields['file_path'] );
-
-				if ( $file_backup_path && $filesystem->exists( $file_backup_path ) ) {
-					// Delete the backup file.
-					$filesystem->delete( $file_backup_path );
-				}
-
-				// Remove the row from the DB.
-				$files_db->delete( $row_fields[ $files_key ] );
+				imagify_delete_custom_file( array(
+					'file_id'   => $row_fields[ $files_key ],
+					'file_path' => $row_fields['file_path'],
+				) );
 				continue;
 			}
 
@@ -485,15 +480,10 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 
 				if ( ! $filesystem->exists( $row_fields['file_path'] ) ) {
 					// If the file doesn't exist:remove all traces of it and bail out.
-					$file_backup_path = imagify_get_file_backup_path( $row_fields['file_path'] );
-
-					if ( $file_backup_path && $filesystem->exists( $file_backup_path ) ) {
-						// Delete the backup file.
-						$filesystem->delete( $file_backup_path );
-					}
-
-					// Remove the row from the DB.
-					$files_db->delete( $row_fields[ $files_key ] );
+					imagify_delete_custom_file( array(
+						'file_id'   => $row_fields[ $files_key ],
+						'file_path' => $row_fields['file_path'],
+					) );
 					continue;
 				}
 
@@ -617,6 +607,63 @@ function imagify_insert_custom_file( $args = array() ) {
 	unset( $args[ $primary_key ] );
 
 	return $files_db->insert( $args );
+}
+
+/**
+ * Delete a custom file.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param array $args An array of arguments.
+ *                    At least: 'file_id'. At best (less queries): 'file_id', 'file_path' (or 'path' for the placeholder), and 'backup_path'.
+ */
+function imagify_delete_custom_file( $args = array() ) {
+	$args = array_merge( array(
+		'file_id'     => 0,
+		'file_path'   => '',
+		'path'        => '',
+		'backup_path' => '',
+		'file'        => false,
+	), $args );
+
+	$filesystem = imagify_get_filesystem();
+	$file       = $args['file'] && is_a( $args['file'], 'Imagify_File_Attachment' ) ? $args['file'] : false;
+
+	// The file.
+	if ( ! $args['file_path'] && $args['path'] ) {
+		$args['file_path'] = Imagify_Files_Scan::remove_placeholder( $args['path'] );
+	}
+
+	if ( ! $args['file_path'] && $args['file_id'] ) {
+		$file = $file ? $file : get_imagify_attachment( 'File', $args['file_id'], 'delete_custom_file' );
+		$args['file_path'] = $file->get_original_path();
+	}
+
+	if ( $args['file_path'] && $filesystem->exists( $args['file_path'] ) ) {
+		$filesystem->delete( $args['file_path'] );
+	}
+
+	// The backup file.
+	if ( ! $args['backup_path'] && $args['file_path'] ) {
+		$args['backup_path'] = imagify_get_file_backup_path( $args['file_path'] );
+	}
+
+	if ( ! $args['backup_path'] && $args['file_id'] ) {
+		$file = $file ? $file : get_imagify_attachment( 'File', $args['file_id'], 'delete_custom_file' );
+		$args['backup_path'] = $file->get_raw_backup_path();
+	}
+
+	if ( $args['backup_path'] && $filesystem->exists( $args['backup_path'] ) ) {
+		$filesystem->delete( $args['backup_path'] );
+	}
+
+	// In the database.
+	if ( $file ) {
+		$file->delete_row();
+	} else {
+		Imagify_Files_DB::get_instance()->delete( $args['file_id'] );
+	}
 }
 
 /**
