@@ -594,7 +594,11 @@ function imagify_insert_custom_file( $args = array() ) {
 		return 0;
 	}
 
-	if ( empty( $args['width'] ) || empty( $args['height'] ) ) {
+	if ( empty( $args['mime_type'] ) ) {
+		$args['mime_type'] = imagify_get_mime_type_from_file( $args['file_path'] );
+	}
+
+	if ( ( empty( $args['width'] ) || empty( $args['height'] ) ) && strpos( $args['mime_type'], 'image/' ) === 0 ) {
 		$file_size      = @getimagesize( $args['file_path'] );
 		$args['width']  = $file_size && isset( $file_size[0] ) ? $file_size[0] : 0;
 		$args['height'] = $file_size && isset( $file_size[1] ) ? $file_size[1] : 0;
@@ -602,10 +606,6 @@ function imagify_insert_custom_file( $args = array() ) {
 
 	if ( empty( $args['hash'] ) ) {
 		$args['hash'] = md5_file( $args['file_path'] );
-	}
-
-	if ( empty( $args['mime_type'] ) ) {
-		$args['mime_type'] = imagify_get_mime_type_from_file( $args['file_path'] );
 	}
 
 	if ( empty( $args['original_size'] ) ) {
