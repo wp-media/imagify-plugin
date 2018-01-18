@@ -272,7 +272,7 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
  * Files are scanned from the folders, then:
  *     - If a file doesn't exist in the DB, it is added.
  *     - If a file is in the DB, but with a wrong folder_id, it is fixed.
- *     - If a file doesn't exist, it is not returned.
+ *     - If a file doesn't exist, it is removed from the database and its backup is deleted.
  *
  * @since  1.7
  * @see    imagify_get_folders_from_type()
@@ -280,7 +280,8 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
  *
  * @param  array $folders An array of arrays containing at least the key 'folder_path'. See imagify_get_folders_from_type() for the format.
  * @param  array $args    A list of arguments to tell more precisely what to fetch:
- *                            - int $optimization_level If set with an integer, only files that needs to be optimized to this level will be returned (the status is also checked).
+ *                            - int  $optimization_level        If set with an integer, only files that needs to be optimized to this level will be returned (the status is also checked).
+ *                            - bool $insert_files_as_modified True to set 'modified' to 1 when a file is inserted in the database.
  * @return array          A list of files in the following format:
  *                            Array(
  *                                [_2] => Array(
@@ -322,6 +323,7 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 	$files_table  = $files_db->get_table_name();
 	$files_key    = esc_sql( $files_db->get_primary_key() );
 	$optimization = isset( $args['optimization_level'] ) && is_numeric( $args['optimization_level'] );
+	$modified     = ! empty( $args['insert_files_as_modified'] ) ? 1 : 0;
 
 	/**
 	 * Scan folders for files. $files_from_scan will be in the following format:
@@ -395,7 +397,16 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 			}
 
 			if ( ! $filesystem->exists( $row_fields['file_path'] ) ) {
-				// If the file doesn't exist, bail out.
+				// If the file doesn't exist:remove all traces of it and bail out.
+				$file_backup_path = imagify_get_file_backup_path( $row_fields['file_path'] );
+
+				if ( $file_backup_path && $filesystem->exists( $file_backup_path ) ) {
+					// Delete the backup file.
+					$filesystem->delete( $file_backup_path );
+				}
+
+				// Remove the row from the DB.
+				$files_db->delete( $row_fields[ $files_key ] );
 				continue;
 			}
 
@@ -473,7 +484,16 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 				}
 
 				if ( ! $filesystem->exists( $row_fields['file_path'] ) ) {
-					// If the file doesn't exist, bail out.
+					// If the file doesn't exist:remove all traces of it and bail out.
+					$file_backup_path = imagify_get_file_backup_path( $row_fields['file_path'] );
+
+					if ( $file_backup_path && $filesystem->exists( $file_backup_path ) ) {
+						// Delete the backup file.
+						$filesystem->delete( $file_backup_path );
+					}
+
+					// Remove the row from the DB.
+					$files_db->delete( $row_fields[ $files_key ] );
 					continue;
 				}
 
@@ -505,6 +525,7 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 					'folder_id' => $folder_id,
 					'path'      => $placeholder,
 					'file_path' => $file_path,
+					'modified'  => $modified,
 				) );
 
 				if ( $file_id ) {
