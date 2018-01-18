@@ -618,3 +618,116 @@ function imagify_insert_custom_file( $args = array() ) {
 
 	return $files_db->insert( $args );
 }
+
+/**
+ * Check if a file has been modified, and update the database accordingly.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  object $file    An Imagify_File_Attachment object.
+ * @return int|bool|object The file ID if modified. False if not modified. A WP_Error object if the file doesn't exist.
+ */
+function imagify_refresh_file_modified( $file ) {
+	$file_path   = $file->get_original_path();
+	$backup_path = $file->get_backup_path();
+	$filesystem  = imagify_get_filesystem();
+	$modified    = false;
+
+	if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
+		/**
+		 * The file doesn't exist anymore.
+		 */
+		if ( $backup_path ) {
+			// Delete the backup file.
+			$filesystem->delete( $backup_path );
+		}
+
+		// Remove the entry from the database.
+		$file->delete_row();
+
+		return new WP_Error( 'no-file', __( 'The file was missing or its path couldn\'t be retrieved from the database. The entry has been deleted from the database.', 'imagify' ) );
+	}
+
+	/**
+	 * The file still exists.
+	 */
+	$old_data = $file->get_row();
+	$new_data = array();
+
+	// Folder ID.
+	if ( $old_data['folder_id'] ) {
+		$folder = Imagify_Folders_DB::get_instance()->get( $old_data['folder_id'] );
+
+		if ( ! $folder ) {
+			$new_data['folder_id'] = 0;
+		}
+	}
+
+	// Hash + modified.
+	$current_hash = md5_file( $file_path );
+
+	if ( ! $old_data['hash'] ) {
+		$new_data['modified'] = 0;
+	} else {
+		$new_data['modified'] = (int) ! hash_equals( $old_data['hash'], $current_hash );
+	}
+
+	$new_data['hash'] = $current_hash;
+
+	// The file is modified.
+	if ( $new_data['modified'] ) {
+		// Delete all optimization data and update file data.
+		$modified  = true;
+		$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : imagify_get_mime_type_from_file( $file_path );
+
+		if ( strpos( $mime_type, 'image/' ) === 0 ) {
+			$size = @getimagesize( $file_path );
+		} else {
+			$size = false;
+		}
+
+		$new_data = array_merge( $new_data, array(
+			'width'              => $size && isset( $size[0] ) ? $size[0] : 0,
+			'height'             => $size && isset( $size[1] ) ? $size[1] : 0,
+			'original_size'      => $filesystem->size( $file_path ),
+			'optimized_size'     => null,
+			'percent'            => null,
+			'optimization_level' => null,
+			'status'             => null,
+			'error'              => null,
+		) );
+
+		if ( $backup_path ) {
+			// Delete the backup of the previous file.
+			$filesystem->delete( $backup_path );
+		}
+	} else {
+		// Update file data to make sure nothing is missing.
+		$path      = $backup_path ? $backup_path : $file_path;
+		$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : imagify_get_mime_type_from_file( $path );
+
+		if ( strpos( $mime_type, 'image/' ) === 0 ) {
+			$size = @getimagesize( $path );
+		} else {
+			$size = false;
+		}
+
+		$new_data = array_merge( $new_data, array(
+			'width'         => $size && isset( $size[0] ) ? $size[0] : 0,
+			'height'        => $size && isset( $size[1] ) ? $size[1] : 0,
+			'original_size' => $filesystem->size( $path ),
+		) );
+	}
+
+	// Save the new data.
+	$old_data = array_intersect_key( $old_data, $new_data );
+	ksort( $old_data );
+	ksort( $new_data );
+
+	if ( $old_data !== $new_data ) {
+		$file->update_row( $new_data );
+	}
+
+	return $modified ? $file->get_id() : false;
+}
