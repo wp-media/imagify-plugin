@@ -88,6 +88,7 @@ function _imagify_init() {
 		require( IMAGIFY_ADMIN_PATH . 'upload.php' );
 		require( IMAGIFY_ADMIN_PATH . 'media.php' );
 		require( IMAGIFY_ADMIN_PATH . 'meta-boxes.php' );
+		require( IMAGIFY_ADMIN_PATH . 'custom-folders.php' );
 
 		Imagify_Notices::get_instance()->init();
 		Imagify_Admin_Ajax_Post::get_instance()->init();
