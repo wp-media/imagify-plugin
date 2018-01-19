@@ -653,6 +653,79 @@ function get_imagify_mime_type() {
 	return imagify_get_mime_types();
 }
 
+/**
+ * Planning cron.
+ * If the task is not programmed, it is automatically triggered.
+ *
+ * @since 1.4.2
+ * @since 1.7 Deprecated.
+ * @deprecated
+ */
+function _imagify_rating_scheduled() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Cron_Rating::get_instance()->schedule_event()' );
+
+	Imagify_Cron_Rating::get_instance()->schedule_event();
+}
+
+/**
+ * Save the user images count to display it later in a notice message to ask him to rate Imagify on WordPress.org.
+ *
+ * @since 1.4.2
+ * @since 1.7 Deprecated.
+ * @deprecated
+ */
+function _do_imagify_rating_cron() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Cron_Rating::get_instance()->do_event()' );
+
+	Imagify_Cron_Rating::get_instance()->do_event();
+}
+
+/**
+ * Adds weekly interval for cron jobs.
+ *
+ * @since  1.6
+ * @since  1.7 Deprecated.
+ * @author Remy Perona
+ * @deprecated
+ *
+ * @param  Array $schedules An array of intervals used by cron jobs.
+ * @return Array Updated array of intervals.
+ */
+function imagify_purge_cron_schedule( $schedules ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Cron_Library_Size::get_instance()->maybe_add_recurrence( $schedules )' );
+
+	return Imagify_Cron_Library_Size::get_instance()->do_event( $schedules );
+}
+
+/**
+ * Planning cron task to update weekly the size of the images and the size of images uploaded by month.
+ * If the task is not programmed, it is automatically triggered.
+ *
+ * @since  1.6
+ * @since  1.7 Deprecated.
+ * @author Remy Perona
+ * @deprecated
+ */
+function _imagify_update_library_size_calculations_scheduled() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Cron_Library_Size::get_instance()->schedule_event()' );
+
+	Imagify_Cron_Library_Size::get_instance()->schedule_event();
+}
+
+/**
+ * Cron task to update weekly the size of the images and the size of images uploaded by month.
+ *
+ * @since  1.6
+ * @since  1.7 Deprecated.
+ * @author Remy Perona
+ * @deprecated
+ */
+function _do_imagify_update_library_size_calculations() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Cron_Library_Size::get_instance()->do_event()' );
+
+	Imagify_Cron_Library_Size::get_instance()->do_event();
+}
+
 if ( is_admin() ) :
 
 	/**

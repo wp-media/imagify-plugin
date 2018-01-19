@@ -73,7 +73,6 @@ function _imagify_init() {
 	require( IMAGIFY_FUNCTIONS_PATH . 'partners.php' );
 	require( IMAGIFY_COMMON_PATH . 'attachments.php' );
 	require( IMAGIFY_COMMON_PATH . 'admin-bar.php' );
-	require( IMAGIFY_COMMON_PATH . 'cron.php' );
 	require( IMAGIFY_COMMON_PATH . 'partners.php' );
 	require( IMAGIFY_3RD_PARTY_PATH . '3rd-party.php' );
 
@@ -81,6 +80,8 @@ function _imagify_init() {
 	Imagify_Data::get_instance()->init();
 	Imagify_Folders_DB::get_instance()->init();
 	Imagify_Files_DB::get_instance()->init();
+	Imagify_Cron_Library_Size::get_instance()->init();
+	Imagify_Cron_Rating::get_instance()->init();
 
 	if ( is_admin() ) {
 		require( IMAGIFY_ADMIN_PATH . 'upgrader.php' );
