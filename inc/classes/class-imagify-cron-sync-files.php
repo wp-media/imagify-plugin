@@ -107,28 +107,13 @@ class Imagify_Cron_Sync_Files extends Imagify_Abstract_Cron {
 			return;
 		}
 
-		$folders_table = $folders_db->get_table_name();
-		$folders_key   = $folders_db->get_primary_key();
-		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE active = 1;", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$folders = imagify_get_folders_from_type( 'all', array(
+			'active' => true,
+		) );
 
-		if ( ! $results ) {
+		if ( ! $folders ) {
 			return;
 		}
-
-		$folders = array();
-
-		foreach ( $results as $row_fields ) {
-			// Cast the row.
-			$row_fields = $folders_db->cast_row( $row_fields );
-
-			// Add the absolute path.
-			$row_fields['folder_path'] = Imagify_Files_Scan::remove_placeholder( $row_fields['path'] );
-
-			// Add the row to the list.
-			$folders[ $row_fields[ $folders_key ] ] = $row_fields;
-		}
-
-		unset( $results );
 
 		/**
 		 * Get the files from DB, and from the folders.

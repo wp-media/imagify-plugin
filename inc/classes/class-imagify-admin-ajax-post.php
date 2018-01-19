@@ -767,7 +767,9 @@ class Imagify_Admin_Ajax_Post {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders = imagify_get_folders_from_type( $folder_type );
+		$folders = imagify_get_folders_from_type( $folder_type, array(
+			'active' => true,
+		) );
 
 		if ( ! $folders ) {
 			wp_send_json_success( array() );

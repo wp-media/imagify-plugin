@@ -161,47 +161,57 @@ function imagify_get_plugin_folders() {
  * @since  1.7
  * @author Grégory Viguier
  *
- * @param  string    $folder_type The folder type. Possible values are 'themes', 'plugins', and 'custom-folders'. Custom folder types can also be used.
- * @param  bool|null $to_optimize True to fetch only folders that must be optimized (checked in the settings). False to fetch only folders that must noe be optimized. Null for all.
- * @return array                  An array of arrays containing the following keys:
- *                                    - int    $folder_id   The folder ID.
- *                                    - string $path        The folder path, with placeholder.
- *                                    - int    $active      1 if the folder should be optimized. 0 otherwize.
- *                                    - string $folder_path The real absolute folder path.
- *                                Example:
- *                                    Array(
- *                                        [7] => Array(
- *                                            [folder_id] => 7
- *                                            [path] => {{ABSPATH}}/custom-path/
- *                                            [active] => 1
- *                                            [folder_path] => /absolute/path/to/custom-path/
- *                                        )
- *                                        [13] => Array(
- *                                            [folder_id] => 13
- *                                            [path] => {{CONTENT}}/another-custom-path/
- *                                            [active] => 1
- *                                            [folder_path] => /absolute/path/to/wp-content/another-custom-path/
- *                                        )
- *                                    )
+ * @param  string $folder_type The folder type. Possible values are 'all', 'themes', 'plugins', and 'custom-folders'. Custom folder types can also be used.
+ * @param  array  $args        A list of arguments to tell more precisely what to fetch:
+ *                                 - bool $active True to fetch only "active" folders (checked in the settings). False to fetch only folders that are not "active".
+ * @return array               An array of arrays containing the following keys:
+ *                                 - int    $folder_id   The folder ID.
+ *                                 - string $path        The folder path, with placeholder.
+ *                                 - int    $active      1 if the folder should be optimized. 0 otherwize.
+ *                                 - string $folder_path The real absolute folder path.
+ *                             Example:
+ *                                 Array(
+ *                                     [7] => Array(
+ *                                         [folder_id] => 7
+ *                                         [path] => {{ABSPATH}}/custom-path/
+ *                                         [active] => 1
+ *                                         [folder_path] => /absolute/path/to/custom-path/
+ *                                     )
+ *                                     [13] => Array(
+ *                                         [folder_id] => 13
+ *                                         [path] => {{CONTENT}}/another-custom-path/
+ *                                         [active] => 1
+ *                                         [folder_path] => /absolute/path/to/wp-content/another-custom-path/
+ *                                     )
+ *                                 )
  */
-function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
+function imagify_get_folders_from_type( $folder_type, $args = array() ) {
 	global $wpdb;
 
 	$folder_type   = strtolower( $folder_type );
 	$folders_db    = Imagify_Folders_DB::get_instance();
 	$folders_table = $folders_db->get_table_name();
 	$primary_key   = $folders_db->get_primary_key();
-	$active        = '';
+	$where_active  = '';
 
-	if ( $to_optimize ) {
-		$to_optimize = true;
-		$active      = 'AND active = 1';
-	} elseif ( false === $to_optimize ) {
-		$active      = 'AND active = 0';
+	if ( isset( $args['active'] ) ) {
+		if ( $args['active'] ) {
+			$args['active'] = true;
+			$where_active   = 'AND active = 1';
+		} else {
+			$args['active'] = false;
+			$where_active   = 'AND active = 0';
+		}
 	}
 
 	// Get the folders from the DB.
-	if ( 'themes' === $folder_type || 'plugins' === $folder_type ) {
+	if ( 'all' === $folder_type ) {
+		/**
+		 * Everything.
+		 */
+		$results = $wpdb->get_results( "SELECT * FROM $folders_table $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+	} elseif ( 'themes' === $folder_type || 'plugins' === $folder_type ) {
 		/**
 		 * Themes or plugins.
 		 */
@@ -212,7 +222,7 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
 		}
 
 		$folder_values = Imagify_DB::prepare_values_list( $folders );
-		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $folder_values ) $active;", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $folder_values ) $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 	} elseif ( 'custom-folders' === $folder_type ) {
 		/**
@@ -220,7 +230,7 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
 		 */
 		$folders       = array_keys( array_merge( imagify_get_theme_folders(), imagify_get_plugin_folders() ) );
 		$folder_values = Imagify_DB::prepare_values_list( $folders );
-		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path NOT IN ( $folder_values ) $active;", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path NOT IN ( $folder_values ) $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 		if ( $results && is_array( $results ) ) {
 			$filesystem = imagify_get_filesystem();
@@ -240,10 +250,11 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
 		 * @since  1.7
 		 * @author Grégory Viguier
 		 *
-		 * @param array $results     An array of arrays containing the same keys as in the "imagify_folders" table in the DB.
-		 * @param bool  $to_optimize True to fetch only folders that must be optimized.
+		 * @param array $results An array of arrays containing the same keys as in the "imagify_folders" table in the DB.
+		 * @param array $args    A list of arguments passed to the function:
+		 *                           - bool $active True to fetch only "active" folders (checked in the settings). False to fetch only folders that are not "active".
 		 */
-		$results = apply_filters( 'imagify_get_folders_from_type_' . $folder_type, array(), $to_optimize );
+		$results = apply_filters( 'imagify_get_folders_from_type_' . $folder_type, array(), $args );
 	}
 
 	if ( ! $results || ! is_array( $results ) ) {
