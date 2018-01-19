@@ -4,7 +4,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Basis class that handles events.
  *
- * @since 1.7
+ * @since  1.7
+ * @author Grégory Viguier
  */
 abstract class Imagify_Abstract_Cron {
 

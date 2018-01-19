@@ -4,7 +4,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Class that handles the plugin rating cron.
  *
- * @since 1.7
+ * @since  1.7
+ * @author Grégory Viguier
  */
 class Imagify_Cron_Rating extends Imagify_Abstract_Cron {
 

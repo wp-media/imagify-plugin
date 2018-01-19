@@ -4,7 +4,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 /**
  * Class that handles the cron that calculate and cache the library size.
  *
- * @since 1.7
+ * @since  1.7
+ * @author Grégory Viguier
  */
 class Imagify_Cron_Library_Size extends Imagify_Abstract_Cron {
 
