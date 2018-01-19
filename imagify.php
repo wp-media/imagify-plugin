@@ -82,6 +82,7 @@ function _imagify_init() {
 	Imagify_Files_DB::get_instance()->init();
 	Imagify_Cron_Library_Size::get_instance()->init();
 	Imagify_Cron_Rating::get_instance()->init();
+	Imagify_Cron_Sync_Files::get_instance()->init();
 
 	if ( is_admin() ) {
 		require( IMAGIFY_ADMIN_PATH . 'upgrader.php' );

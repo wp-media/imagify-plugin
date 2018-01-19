@@ -190,7 +190,7 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
 	$folder_type   = strtolower( $folder_type );
 	$folders_db    = Imagify_Folders_DB::get_instance();
 	$folders_table = $folders_db->get_table_name();
-	$primary_key   = esc_sql( $folders_db->get_primary_key() );
+	$primary_key   = $folders_db->get_primary_key();
 	$active        = '';
 
 	if ( $to_optimize ) {
@@ -253,7 +253,7 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
 	// Cast results, add absolute paths.
 	$folders = array();
 
-	foreach ( $results as $i => $row_fields ) {
+	foreach ( $results as $row_fields ) {
 		// Cast the row.
 		$row_fields = $folders_db->cast_row( $row_fields );
 

@@ -53,15 +53,11 @@ function imagify_sync_theme_plugin_files_on_update( $response, $hook_extra, $res
 
 	$files_db    = Imagify_Files_DB::get_instance();
 	$files_table = $files_db->get_table_name();
-	$files_key   = esc_sql( $files_db->get_primary_key() );
-	$file_ids    = array();
-
-	foreach ( $files as $file_data ) {
-		$file_ids[] = $file_data[ $files_key ];
-	}
-
-	$file_ids = Imagify_DB::prepare_values_list( $file_ids );
-	$results  = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids ) ORDER BY $files_key;", ARRAY_A ); // WPCS: unprepared SQL ok.
+	$files_key   = $files_db->get_primary_key();
+	$file_ids    = wp_list_pluck( $files, $files_key );
+	$file_ids    = Imagify_DB::prepare_values_list( $file_ids );
+	$files_key   = esc_sql( $files_key );
+	$results     = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids ) ORDER BY $files_key;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 	if ( ! $results ) {
 		// WAT?!
