@@ -144,7 +144,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 					$where .= "( status = 'success' OR status = 'already_optimized' )";
 					break;
 				case 'unoptimized':
-					$where .= 'status IS NUUL';
+					$where .= 'status IS NULL';
 					break;
 				case 'errors':
 					$where .= "status = 'error'";
