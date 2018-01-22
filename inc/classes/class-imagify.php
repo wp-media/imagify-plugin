@@ -503,8 +503,15 @@ class Imagify extends Imagify_Deprecated {
 	private function handle_response( $response, $http_code, $error = '' ) {
 		$response = json_decode( $response );
 
-		if ( 200 !== $http_code && isset( $response->code, $response->detail ) ) {
-			return new WP_Error( $http_code, $response->detail );
+		if ( 200 !== $http_code && ! empty( $response->code ) ) {
+			if ( ! empty( $response->detail ) ) {
+				return new WP_Error( $http_code, $response->detail );
+			}
+			if ( ! empty( $response->image ) ) {
+				$error = (array) $response->image;
+				$error = reset( $error );
+				return new WP_Error( $http_code, $error );
+			}
 		}
 
 		if ( 413 === $http_code ) {

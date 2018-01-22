@@ -550,56 +550,6 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 	}
 
 	/**
-	 * Combine two arrays with some specific keys.
-	 * We use this function to combine the result of 2 SQL queries.
-	 *
-	 * @since 1.4.5
-	 * @since 1.6.7  Added the $keep_keys_order parameter.
-	 * @since 1.6.13 Deprecated.
-	 * @deprecated
-	 *
-	 * @param  array $keys            An array of keys.
-	 * @param  array $values          An array of arrays like array( 'id' => id, 'value' => value ).
-	 * @param  int   $keep_keys_order Set to true to return an array ordered like $keys instead of $values.
-	 * @return array                  The combined arrays.
-	 */
-	function imagify_query_results_combine( $keys, $values, $keep_keys_order = false ) {
-		_deprecated_function( __FUNCTION__ . '()', '1.6.13', 'Imagify_DB::combine_query_results( $keys, $values, $keep_keys_order )' );
-
-		return Imagify_DB::combine_query_results( $keys, $values, $keep_keys_order );
-	}
-
-	/**
-	 * A helper to retrieve all values from one or several post metas, given a list of post IDs.
-	 * The $wpdb cache is flushed to save memory.
-	 *
-	 * @since  1.6.7
-	 * @since  1.6.13 Deprecated.
-	 * @author Grégory Viguier
-	 * @deprecated
-	 *
-	 * @param  array $metas An array of meta names like:
-	 *                      array(
-	 *                          'key1' => 'meta_name_1',
-	 *                          'key2' => 'meta_name_2',
-	 *                          'key3' => 'meta_name_3',
-	 *                      )
-	 *                      If a key contains 'data', the results will be unserialized.
-	 * @param  array $ids   An array of post IDs.
-	 * @return array        An array of arrays of results like:
-	 *                      array(
-	 *                          'key1' => array( post_id_1 => 'result_1', post_id_2 => 'result_2', post_id_3 => 'result_3' ),
-	 *                          'key2' => array( post_id_1 => 'result_4', post_id_3 => 'result_5' ),
-	 *                          'key3' => array( post_id_1 => 'result_6', post_id_2 => 'result_7' ),
-	 *                      )
-	 */
-	function imagify_get_wpdb_metas( $metas, $ids ) {
-		_deprecated_function( __FUNCTION__ . '()', '1.6.13', 'Imagify_DB::get_metas( $metas, $ids )' );
-
-		return Imagify_DB::get_metas( $metas, $ids );
-	}
-
-	/**
 	 * Create the Imagify table needed for NGG compatibility.
 	 *
 	 * @since  1.5
@@ -614,6 +564,56 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 	}
 
 endif;
+
+/**
+ * Combine two arrays with some specific keys.
+ * We use this function to combine the result of 2 SQL queries.
+ *
+ * @since 1.4.5
+ * @since 1.6.7  Added the $keep_keys_order parameter.
+ * @since 1.6.13 Deprecated.
+ * @deprecated
+ *
+ * @param  array $keys            An array of keys.
+ * @param  array $values          An array of arrays like array( 'id' => id, 'value' => value ).
+ * @param  int   $keep_keys_order Set to true to return an array ordered like $keys instead of $values.
+ * @return array                  The combined arrays.
+ */
+function imagify_query_results_combine( $keys, $values, $keep_keys_order = false ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.6.13', 'Imagify_DB::combine_query_results( $keys, $values, $keep_keys_order )' );
+
+	return Imagify_DB::combine_query_results( $keys, $values, $keep_keys_order );
+}
+
+/**
+ * A helper to retrieve all values from one or several post metas, given a list of post IDs.
+ * The $wpdb cache is flushed to save memory.
+ *
+ * @since  1.6.7
+ * @since  1.6.13 Deprecated.
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @param  array $metas An array of meta names like:
+ *                      array(
+ *                          'key1' => 'meta_name_1',
+ *                          'key2' => 'meta_name_2',
+ *                          'key3' => 'meta_name_3',
+ *                      )
+ *                      If a key contains 'data', the results will be unserialized.
+ * @param  array $ids   An array of post IDs.
+ * @return array        An array of arrays of results like:
+ *                      array(
+ *                          'key1' => array( post_id_1 => 'result_1', post_id_2 => 'result_2', post_id_3 => 'result_3' ),
+ *                          'key2' => array( post_id_1 => 'result_4', post_id_3 => 'result_5' ),
+ *                          'key3' => array( post_id_1 => 'result_6', post_id_2 => 'result_7' ),
+ *                      )
+ */
+function imagify_get_wpdb_metas( $metas, $ids ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.6.13', 'Imagify_DB::get_metas( $metas, $ids )' );
+
+	return Imagify_DB::get_metas( $metas, $ids );
+}
 
 /**
  * Get all mime types which could be optimized by Imagify.

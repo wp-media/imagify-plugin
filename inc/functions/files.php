@@ -95,25 +95,28 @@ function imagify_get_abspath() {
  * Also works for files from registered symlinked plugins.
  *
  * @since  1.6.10
+ * @since  1.7 The parameter $base is added.
  * @author Grégory Viguier
  *
  * @param  string $file_path An absolute path.
+ * @param  string $base      A base path to use instead of ABSPATH.
  * @return string|bool       A relative path. Can return the absolute path or false in case of a failure.
  */
-function imagify_make_file_path_relative( $file_path ) {
+function imagify_make_file_path_relative( $file_path, $base = '' ) {
 	static $abspath;
 	global $wp_plugin_paths;
-
-	if ( ! isset( $abspath ) ) {
-		$abspath = wp_normalize_path( ABSPATH );
-	}
 
 	if ( ! $file_path ) {
 		return false;
 	}
 
+	if ( ! isset( $abspath ) ) {
+		$abspath = wp_normalize_path( ABSPATH );
+	}
+
 	$file_path = wp_normalize_path( $file_path );
-	$pos       = strpos( $file_path, $abspath );
+	$base      = $base ? trailingslashit( wp_normalize_path( $base ) ) : $abspath;
+	$pos       = strpos( $file_path, $base );
 
 	if ( false === $pos && $wp_plugin_paths && is_array( $wp_plugin_paths ) ) {
 		// The file is probably part of a symlinked plugin.
@@ -125,7 +128,7 @@ function imagify_make_file_path_relative( $file_path ) {
 			}
 		}
 
-		$pos = strpos( $file_path, $abspath );
+		$pos = strpos( $file_path, $base );
 	}
 
 	if ( false === $pos ) {
@@ -133,5 +136,5 @@ function imagify_make_file_path_relative( $file_path ) {
 		return $file_path;
 	}
 
-	return substr_replace( $file_path, '', 0, $pos + strlen( $abspath ) );
+	return substr_replace( $file_path, '', 0, $pos + strlen( $base ) );
 }

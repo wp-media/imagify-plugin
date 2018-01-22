@@ -524,14 +524,9 @@ class Imagify_Options {
 					return $default;
 				}
 
-				$sizes = array();
-
-				foreach ( $value as $size => $meh ) {
-					$size = sanitize_text_field( $size );
-					$sizes[ $size ] = 1;
-				}
-
-				return $sizes;
+				$value = array_keys( $value );
+				$value = array_map( 'sanitize_text_field', $value );
+				return array_fill_keys( $value, 1 );
 		}
 
 		return false;

@@ -102,6 +102,24 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	}
 
 	/**
+	 * Get width and height of the original image.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function get_dimensions() {
+		$values = wp_get_attachment_image_src( $this->id, 'full' );
+
+		return array(
+			'width'  => $values[1],
+			'height' => $values[2],
+		);
+	}
+
+	/**
 	 * Update the metadata size of the attachment.
 	 *
 	 * @since 1.2
