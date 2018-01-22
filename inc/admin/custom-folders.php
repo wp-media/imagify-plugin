@@ -5,7 +5,8 @@ add_filter( 'upgrader_post_install', 'imagify_sync_theme_plugin_files_on_update'
 /**
  * Filters the installation response after the installation has finished.
  *
- * @since 2.8.0
+ * @since  1.7
+ * @author Grégory Viguier
  *
  * @param bool  $response   Installation response.
  * @param array $hook_extra Extra arguments passed to hooked filters.
