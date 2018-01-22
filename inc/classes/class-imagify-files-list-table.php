@@ -263,6 +263,8 @@ class Imagify_Files_List_Table extends WP_List_Table {
 				$groups['themes'][ $folder->folder_id ] = $themes[ $folder->path ];
 			} elseif ( isset( $plugins[ $folder->path ] ) ) {
 				$groups['plugins'][ $folder->folder_id ] = $plugins[ $folder->path ];
+			} elseif ( '{{ABSPATH}}/' === $folder->path ) {
+				$groups['custom-folders'][ $folder->folder_id ] = __( 'Site\'s root', 'imagify' );
 			} else {
 				$groups['custom-folders'][ $folder->folder_id ] = '/' . trim( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $folder->path ) ), '/' );
 			}
@@ -511,6 +513,9 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		if ( isset( $themes_and_plugins[ $item->folder_path ] ) ) {
 			// It's a theme or a plugin.
 			printf( $format, esc_html( $themes_and_plugins[ $item->folder_path ] ) );
+		} elseif ( '{{ABSPATH}}/' === $item->folder_path ) {
+			// It's the site's root.
+			printf( $format, __( 'Site\'s root', 'imagify' ) );
 		} else {
 			// It's a custom folder.
 			printf( $format, '<code>/' . trim( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $item->folder_path ) ), '/' ) . '</code>' );

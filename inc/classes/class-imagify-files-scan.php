@@ -29,6 +29,8 @@ class Imagify_Files_Scan {
 	 * @return array|object   An array of absolute paths. A WP_Error object on error.
 	 */
 	public static function get_files_from_folder( $folder ) {
+		static $abspath;
+
 		// Formate and validate the folder path.
 		if ( ! is_string( $folder ) || '' === $folder || '/' === $folder || '\\' === $folder ) {
 			return new WP_Error( 'invalid_folder', __( 'Invalid folder.', 'imagify' ) );
@@ -48,7 +50,24 @@ class Imagify_Files_Scan {
 			return new WP_Error( 'folder_forbidden', __( 'This folder is not allowed.', 'imagify' ) );
 		}
 
+		if ( ! isset( $abspath ) ) {
+			$abspath = realpath( ABSPATH );
+		}
+
 		// Finally we made all our validations.
+		if ( $folder === $abspath ) {
+			// For the site's root, we don't look in sub-folders.
+			$dir    = new DirectoryIterator( $folder );
+			$dir    = new Imagify_Files_Iterator( $dir, false );
+			$images = array();
+
+			foreach ( new IteratorIterator( $dir ) as $file ) {
+				$images[] = $file->getPathname();
+			}
+
+			return $images;
+		}
+
 		/**
 		 * 4096 stands for FilesystemIterator::SKIP_DOTS, which was introduced in php 5.3.0.
 		 * 8192 stands for FilesystemIterator::UNIX_PATHS, which was introduced in php 5.3.0.

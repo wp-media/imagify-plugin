@@ -76,6 +76,10 @@ $settings = Imagify_Settings::get_instance();
 			$custom_folders = array_map( array( 'Imagify_Files_Scan', 'remove_placeholder' ), $custom_folders );
 			$custom_folders = array_map( 'imagify_make_file_path_relative', $custom_folders );
 
+			if ( isset( $custom_folders['{{ABSPATH}}/'] ) ) {
+				$custom_folders['{{ABSPATH}}/'] = __( 'Site\'s root', 'imagify' );
+			}
+
 			$settings->field_checkbox_list( array(
 				'option_name'    => 'custom_folders',
 				'legend'         => __( 'Choose the folders to optimize', 'imagify' ),
