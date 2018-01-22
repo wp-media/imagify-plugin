@@ -209,7 +209,7 @@ function imagify_get_folders_from_type( $folder_type, $args = array() ) {
 		/**
 		 * Everything.
 		 */
-		$results = $wpdb->get_results( "SELECT * FROM $folders_table $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$results = $wpdb->get_results( "SELECT * FROM $folders_table WHERE 1=1 $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 	} elseif ( 'themes' === $folder_type || 'plugins' === $folder_type ) {
 		/**
