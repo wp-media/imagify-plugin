@@ -291,8 +291,9 @@ function imagify_get_folders_from_type( $folder_type, $args = array() ) {
  *
  * @param  array $folders An array of arrays containing at least the key 'folder_path'. See imagify_get_folders_from_type() for the format.
  * @param  array $args    A list of arguments to tell more precisely what to fetch:
- *                            - int  $optimization_level        If set with an integer, only files that needs to be optimized to this level will be returned (the status is also checked).
+ *                            - int  $optimization_level       If set with an integer, only files that needs to be optimized to this level will be returned (the status is also checked).
  *                            - bool $insert_files_as_modified True to set 'modified' to 1 when a file is inserted in the database.
+ *                            - bool $return_only_old_files    True to return only files that have not been newly inserted.
  * @return array          A list of files in the following format:
  *                            Array(
  *                                [_2] => Array(
@@ -335,6 +336,7 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 	$files_key    = esc_sql( $files_db->get_primary_key() );
 	$optimization = isset( $args['optimization_level'] ) && is_numeric( $args['optimization_level'] );
 	$modified     = ! empty( $args['insert_files_as_modified'] ) ? 1 : 0;
+	$no_new_files = ! empty( $args['return_only_old_files'] );
 
 	/**
 	 * Scan folders for files. $files_from_scan will be in the following format:
@@ -529,7 +531,7 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 					'modified'  => $modified,
 				) );
 
-				if ( $file_id ) {
+				if ( $file_id && ! $no_new_files ) {
 					$files_from_db[ $folder_id ][ '_' . $file_id ] = array(
 						'file_id'            => $file_id,
 						'folder_id'          => $folder_id,
@@ -788,4 +790,47 @@ function imagify_refresh_file_modified( $file ) {
 	}
 
 	return $modified ? $file->get_id() : false;
+}
+
+/**
+ * Check if files inside the given folders have been modified, and update the database accordingly.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param array $folders A list of folders. See imagify_get_folders_from_type() for the format.
+ */
+function imagify_synchronize_files_from_folders( $folders ) {
+	/**
+	 * Get the files from DB, and from the folder.
+	 */
+	$files = imagify_get_files_from_folders( $folders, array(
+		'insert_files_as_modified' => true,
+		'return_only_old_files'    => true,
+	) );
+
+	if ( ! $files ) {
+		// This theme or plugin doesn't have (new) images.
+		return;
+	}
+
+	$files_db    = Imagify_Files_DB::get_instance();
+	$files_table = $files_db->get_table_name();
+	$files_key   = $files_db->get_primary_key();
+	$file_ids    = wp_list_pluck( $files, $files_key );
+	$file_ids    = Imagify_DB::prepare_values_list( $file_ids );
+	$files_key   = esc_sql( $files_key );
+	$results     = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids ) ORDER BY $files_key;", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+	if ( ! $results ) {
+		// WAT?!
+		return;
+	}
+
+	// Finally, refresh the files data.
+	foreach ( $results as $file ) {
+		$file = $files_db->cast_row( $file );
+		$file = get_imagify_attachment( 'File', $file, 'synchronize_files_from_folders' );
+		imagify_refresh_file_modified( $file );
+	}
 }

@@ -19,6 +19,23 @@ function imagify_sync_theme_plugin_files_on_update( $response, $hook_extra, $res
 		return $response;
 	}
 
+	$folders_db = Imagify_Folders_DB::get_instance();
+	$files_db   = Imagify_Files_DB::get_instance();
+
+	if ( ! $folders_db->can_operate() || ! $files_db->can_operate() ) {
+		return;
+	}
+
+	if ( ! imagify_valid_key() ) {
+		return;
+	}
+
+	$user = new Imagify_User();
+
+	if ( $user->is_over_quota() ) {
+		return;
+	}
+
 	$folder_path = trailingslashit( $result['destination'] );
 
 	if ( Imagify_Files_Scan::is_path_forbidden( $folder_path, false ) ) {
@@ -35,41 +52,15 @@ function imagify_sync_theme_plugin_files_on_update( $response, $hook_extra, $res
 	}
 
 	$folder_id = reset( $folder_id );
-	$folder    = array(
-		'folder_id'   => $folder_id,
-		'path'        => $placeholder,
-		'active'      => 1,
-		'folder_path' => $folder_path,
-	);
 
-	/**
-	 * Get the files from DB, and from the folder.
-	 */
-	$files = imagify_get_files_from_folders( array( $folder_id => $folder ), array( 'insert_files_as_modified' => true ) );
-
-	if ( ! $files ) {
-		// This theme or plugin doesn't have images.
-		return $response;
-	}
-
-	$files_db    = Imagify_Files_DB::get_instance();
-	$files_table = $files_db->get_table_name();
-	$files_key   = $files_db->get_primary_key();
-	$file_ids    = wp_list_pluck( $files, $files_key );
-	$file_ids    = Imagify_DB::prepare_values_list( $file_ids );
-	$files_key   = esc_sql( $files_key );
-	$results     = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids ) ORDER BY $files_key;", ARRAY_A ); // WPCS: unprepared SQL ok.
-
-	if ( ! $results ) {
-		// WAT?!
-		return $response;
-	}
-
-	// Finally, refresh the files data.
-	foreach ( $results as $file ) {
-		$file = get_imagify_attachment( 'File', $file, 'sync_theme_plugin_files_on_update' );
-		imagify_refresh_file_modified( $file );
-	}
+	imagify_synchronize_files_from_folders( array(
+		$folder_id => array(
+			'folder_id'   => $folder_id,
+			'path'        => $placeholder,
+			'active'      => 1,
+			'folder_path' => $folder_path,
+		),
+	) );
 
 	return $response;
 }
