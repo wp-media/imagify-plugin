@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-$this->render_view( 'header', array(
+$this->print_template( 'notice-header', array(
 	'title' => __( 'Your API key isn\'t valid!', 'imagify' ),
 ) );
 ?>
@@ -18,6 +18,6 @@ $this->render_view( 'header', array(
 	?>
 </p>
 <?php
-$this->render_view( 'footer', array(
+$this->print_template( 'notice-footer', array(
 	'dismissible' => 'wrong-api-key',
 ) );

@@ -1,4 +1,6 @@
-window.imagify = {
+window.imagify = window.imagify || {};
+
+jQuery.extend( window.imagify, {
 	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
 	log:    function( content ) {
 		if ( undefined !== console ) {
@@ -20,7 +22,7 @@ window.imagify = {
 
 		jQuery( 'body' ).addClass( 'imagify-modal-is-open' );
 	}
-};
+} );
 
 
 // Imagify light modal =============================================================================
