@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-$this->render_view( 'header' );
+$this->print_template( 'notice-header' );
 ?>
 <p>
 	<?php
@@ -29,6 +29,6 @@ $this->render_view( 'header' );
 	<a class="stars" target="_blank" href="<?php echo esc_url( imagify_get_external_url( 'rate' ) ); ?>">☆☆☆☆☆</a>
 </p>
 <?php
-$this->render_view( 'footer', array(
+$this->print_template( 'notice-footer', array(
 	'dismissible' => 'rating',
 ) );
