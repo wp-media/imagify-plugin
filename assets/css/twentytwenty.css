@@ -305,12 +305,6 @@
 	opacity: 1;
 }
 
-.imagify-settings .imagify-visual-comparison-text {
-	margin-top: 1em;
-	color: #40b1d0;
-	font-weight: bold;
-}
-
 /* Specifics for too high modals */
 .modal-is-too-high .imagify-comparison-levels {
 	position: absolute;

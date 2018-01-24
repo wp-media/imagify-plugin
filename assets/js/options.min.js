@@ -38,6 +38,7 @@
 						title:       imagifyOptions.labels.ApiKeyCheckSuccessTitle,
 						html:        imagifyOptions.labels.ApiKeyCheckSuccessText,
 						type:        'success',
+						padding:     0,
 						customClass: 'imagify-sweet-alert'
 					} ).then( function() {
 						location.reload();
@@ -111,6 +112,7 @@
 			html:             imagifyOptions.labels.noBackupText,
 			type:             'warning',
 			customClass:      'imagify-sweet-alert',
+			padding:          0,
 			showCancelButton: true,
 			cancelButtonText: imagifySwal.labels.cancelButtonText,
 			reverseButtons:   true
@@ -201,19 +203,22 @@
 					title:       imagifyOptions.labels.error,
 					html:        response.data || '',
 					type:        'error',
+					padding:     0,
 					customClass: 'imagify-sweet-alert'
 				} );
 				return;
 			}
 
 			swal( {
-				title:            imagifyOptions.labels.filesTreeTitle,
-				html:             '<ul id="imagify-folders-tree">' + response.data + '</ul>',
-				type:             'question',
-				customClass:      'imagify-sweet-alert',
-				showCancelButton: true,
-				cancelButtonText: imagifySwal.labels.cancelButtonText,
-				reverseButtons:   true
+				title:             imagifyOptions.labels.filesTreeTitle,
+				html:              '<div class="imagify-swal-subtitle">' + imagifyOptions.labels.filesTreeSubTitle + '</div><div class="imagify-swal-content"><ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul></div>',
+				type:              '',
+				customClass:       'imagify-sweet-alert imagify-swal-has-subtitle  imagify-folders-selection',
+				showCancelButton:  true,
+				padding:           0,
+				confirmButtonText: imagifyOptions.labels.confirmFilesTreeBtn,
+				cancelButtonText:  imagifySwal.labels.cancelButtonText,
+				reverseButtons:    true
 			} ).then( function() {
 				var values = $( '#imagify-folders-tree input' ).serializeArray(), // Don't do `$( '#imagify-folders-tree' ).find( 'input' )`, it won't work.
 					$fieldset;
@@ -225,7 +230,7 @@
 				$fieldset = $( '#imagify-custom-folders' ).children( '.imagify-check-group' );
 
 				if ( ! $fieldset.length ) {
-					$fieldset = $( '<fieldset class="imagify-check-group"><legend class="screen-reader-text">' + imagifyOptions.labels.customFilesLegend + '</legend></fieldset>' ).prependTo( '#imagify-custom-folders' );
+					$fieldset = $( '<fieldset class="imagify-check-group"><legend class="screen-reader-text">' + imagifyOptions.labels.customFilesLegend + '</legend></fieldset>' ).appendTo( '#imagify-custom-folders' );
 				}
 
 				$.each( values, function( i, v ) {
@@ -241,8 +246,8 @@
 						return;
 					}
 
-					field += '<input type="checkbox" value="' + v.value[0] + '" id="' + v.value[1] + '" name="imagify_settings[custom_folders][]" class="mini imagify-row-check" checked="checked"/> ';
-					field += '<label for="' + v.value[1] + '" onclick="">' + v.value[2] + '</label><br class="imagify-br">';
+					field += '<p><input type="checkbox" value="' + v.value[0] + '" id="' + v.value[1] + '" name="imagify_settings[custom_folders][]" class="imagify-row-check" checked="checked" /> ';
+					field += '<label for="' + v.value[1] + '" onclick="">' + v.value[2] + '</label></p>';
 					$fieldset.append( field );
 				} );
 			} );
@@ -251,7 +256,8 @@
 				swal( {
 					title:       imagifyOptions.labels.error,
 					type:        'error',
-					customClass: 'imagify-sweet-alert'
+					customClass: 'imagify-sweet-alert',
+					padding:     0
 				} );
 			} )
 			.always( function(){
@@ -261,12 +267,12 @@
 
 	// Clicking a folder icon in the modal: fetch the folder's sub-folders and files, then display them.
 	$( d ).on( 'click.imagify', '#imagify-folders-tree [data-folder]', function() {
+
 		var $button  = $( this ),
-			$tree    = $button.next( 'ul' ),
 			selected = [];
 
-		if ( $tree.length ) {
-			$tree.toggleClass( 'hidden' );
+		if ( $( this ).hasClass( 'imagify-is-open' ) ) {
+			$button.removeClass(' imagify-is-open' ).nextAll( '.imagify-folders-sub-tree' ).toggleClass( 'hidden' );
 			return;
 		}
 
@@ -294,17 +300,19 @@
 						title:       imagifyOptions.labels.error,
 						html:        response.data || '',
 						type:        'error',
+						padding:     0,
 						customClass: 'imagify-sweet-alert'
 					} );
 					return;
 				}
 
-				$button.parent().append( '<ul>' + response.data + '</ul>' );
+				$button.addClass( 'imagify-is-open' ).parent().append( '<ul class="imagify-folders-sub-tree">' + response.data + '</ul>' );
 			} )
 			.fail( function(){
 				swal( {
 					title:       imagifyOptions.labels.error,
 					type:        'error',
+					padding:     0,
 					customClass: 'imagify-sweet-alert'
 				} );
 			} )
@@ -339,21 +347,21 @@
 	};
 
 	// Check all checkboxes.
-	$( '.imagify-check-group .imagify-row-check' ).on( 'click', function() {
-		var $group     = $( this ).closest( '.imagify-check-group' ),
-			allChecked = 0 === $group.find( '.imagify-row-check' ).filter( ':visible:enabled' ).not( ':checked' ).length;
+	$( '.imagify-select-all' ).on( 'click.imagify', function() {
+		var $_this   = $(this),
+			action   = $_this.data( 'action' ),
+			$btns    = $_this.closest( '.imagify-select-all-buttons' ),
+			$group   = $btns.prev( '.imagify-check-group' ),
+			inactive = 'imagify-is-inactive';
 
-		// Toggle "check all" checkboxes.
-		$group.find( '.imagify-toggle-check' ).prop( 'checked', allChecked );
-	} ).first().trigger( 'change.imagify' );
+		if ( $_this.hasClass( inactive ) ) {
+			return false;
+		}
 
-	$( '.imagify-check-group .imagify-toggle-check' ).on( 'click.wp-toggle-checkboxes', function( e ) {
-		var $this          = $( this ),
-			$wrap          = $this.closest( '.imagify-check-group' ),
-			controlChecked = $this.prop( 'checked' ),
-			toggle         = e.shiftKey || $this.data( 'wp-toggle' );
+		$btns.find( '.imagify-select-all' ).removeClass( inactive ).attr( 'aria-disabled', 'false' );
+		$_this.addClass( inactive ).attr( 'aria-disabled', 'true' );
 
-		$wrap.find( '.imagify-toggle-check' )
+		$group.find( '.imagify-row-check' )
 			.prop( 'checked', function() {
 				var $this = $( this );
 
@@ -361,21 +369,34 @@
 					return false;
 				}
 
-				if ( toggle ) {
-					return ! $this.prop( 'checked' );
+				if ( action === 'select' ) {
+					return true;
 				}
 
-				return controlChecked ? true : false;
+				return false;
 			} );
 
-		$wrap.find( '.imagify-row-check' ).filter( ':visible:enabled' )
-			.prop( 'checked', function() {
-				if ( toggle ) {
-					return false;
-				}
+	} );
 
-				return controlChecked ? true : false;
-			} );
+	// Change buttons status on checkboxes interation.
+	$( '.imagify-check-group .imagify-row-check' ).on( 'change.imagify', function() {
+		var $group      = $( this ).closest( '.imagify-check-group' ),
+			$checks     = $group.find( '.imagify-row-check' ),
+			could_be    = $checks.filter( ':visible:enabled' ).length,
+			are_checked = $checks.filter( ':visible:enabled:checked' ).length,
+			$btns       = $group.next( '.imagify-select-all-buttons' ),
+			inactive    = 'imagify-is-inactive';
+
+		// Toggle status of "check all" buttons.
+		if ( are_checked === 0 ) {
+			$btns.find( '[data-action="unselect"]' ).addClass( inactive ).attr( 'aria-disabled', 'true' );
+		}
+		if ( are_checked === could_be ) {
+			$btns.find( '[data-action="select"]' ).addClass( inactive ).attr( 'aria-disabled', 'true' );
+		}
+		if ( are_checked !== could_be && are_checked > 0 ) {
+			$btns.find( '.imagify-select-all' ).removeClass( inactive ).attr( 'aria-disabled', 'false' );
+		}
 	} );
 
 } )(window, document, jQuery);

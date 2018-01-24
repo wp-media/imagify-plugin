@@ -61,7 +61,9 @@ function get_imagify_localize_script_translations( $context ) {
 					'ApiKeyCheckSuccessText'  => __( 'Your API key is valid. You can now configure the Imagify settings to optimize your images.', 'imagify' ),
 					'noBackupTitle'           => __( 'Don\'t Need a Parachute?', 'imagify' ),
 					'noBackupText'            => __( 'If you keep this option deactivated, you won\'t be able to re-optimize your images to another compression level and restore your original images in case of need.', 'imagify' ),
-					'filesTreeTitle'          => __( 'Select folders to optimize.', 'imagify' ),
+					'filesTreeTitle'          => __( 'Select Custom Folders', 'imagify' ),
+					'filesTreeSubTitle'       => __( 'Select one or several custom folders to optimize.', 'imagify' ),
+					'confirmFilesTreeBtn'     => __( 'Select Folders', 'imagify' ),
 					'customFilesLegend'       => __( 'Choose the folders to optimize', 'imagify' ),
 					'error'                   => __( 'Error', 'imagify' ),
 				),
@@ -113,23 +115,21 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'bulk':
 			$translations = array(
-				'heartbeatId'                 => 'update_bulk_data',
-				'waitImageUrl'                => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
-				'spinnerWaitingUrl'           => IMAGIFY_ASSETS_IMG_URL . 'spinner-waiting.svg',
-				'spinnerWorkingUrl'           => IMAGIFY_ASSETS_IMG_URL . 'spinner-working.svg',
-				'ajaxActions'                 => array(
+				'heartbeatId'  => 'update_bulk_data',
+				'waitImageUrl' => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
+				'ajaxActions'  => array(
 					'libraryFetch'        => 'imagify_get_unoptimized_attachment_ids',
 					'customFilesFetch'    => 'imagify_get_unoptimized_file_ids',
 					'libraryOptimize'     => 'imagify_bulk_upload',
 					'customFilesOptimize' => 'imagify_bulk_optimize_file',
 					'getFolderData'       => 'imagify_get_folder_type_data',
 				),
-				'ajaxNonce'                   => wp_create_nonce( 'imagify-bulk-upload' ),
-				'bufferSizes'                 => array(
+				'ajaxNonce'   => wp_create_nonce( 'imagify-bulk-upload' ),
+				'bufferSizes' => array(
 					'wp'   => get_imagify_bulk_buffer_size(),
 					'File' => get_imagify_bulk_buffer_size( 1 ),
 				),
-				'labels'                      => array(
+				'labels' => array(
 					'overviewChartLabels'            => array(
 						'unoptimized' => __( 'Unoptimized', 'imagify' ),
 						'optimized'   => __( 'Optimized', 'imagify' ),
@@ -139,8 +139,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'waitTitle'                      => __( 'Please wait...', 'imagify' ),
 					'waitText'                       => __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
 					'invalidAPIKeyTitle'             => __( 'Your API key isn\'t valid!', 'imagify' ),
-					'overQuotaTitle'                 => __( 'Oops, It\'s Over!', 'imagify' ),
-					'overQuotaText'                  => '',
+					'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
 					'noAttachmentToOptimizeTitle'    => __( 'Hold on!', 'imagify' ),
 					'noAttachmentToOptimizeText'     => __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
 					'optimizing'                     => __( 'Optimizing', 'imagify' ),
@@ -163,6 +162,8 @@ function get_imagify_localize_script_translations( $context ) {
 					'imagesOptimizedText'            => __( '%s Image(s) Optimized', 'imagify' ),
 					/* translators: %s is a formatted number, dont use %d. */
 					'imagesErrorText'                => __( '%s Error(s)', 'imagify' ),
+					'bulkInfoTitle'                  => __( 'Information', 'imagify' ),
+					'confirmBulk'                    => __( 'Start the optimization', 'imagify' ),
 				),
 			);
 
@@ -188,35 +189,6 @@ function get_imagify_localize_script_translations( $context ) {
 			 * @param array $buffer_sizes An array of number of parallel queries, keyed by context.
 			 */
 			$translations['bufferSizes'] = apply_filters( 'imagify_bulk_buffer_sizes', $translations['bufferSizes'] );
-
-			if ( ! imagify_valid_key() ) {
-				return $translations;
-			}
-
-			$user = get_imagify_user();
-
-			if ( is_wp_error( $user ) ) {
-				$translations['labels']['overQuotaText'] = sprintf(
-					/* translators: 1 is a link tag start, 2 is the link tag end. */
-					__( 'To continue to optimize your images, log in to your Imagify account to %1$sbuy a pack or subscribe to a plan%2$s.', 'imagify' ),
-					'<a target="_blank" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '">',
-					'</a>'
-				);
-			} else {
-				$translations['labels']['overQuotaText']  = sprintf(
-					/* translators: 1 is a data quota, 2 is a date. */
-					__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
-					imagify_size_format( $user->quota * 1048576 ),
-					date_i18n( __( 'F j, Y' ), strtotime( $user->next_date_update ) )
-				);
-				$translations['labels']['overQuotaText'] .= '<br/><br/>';
-				$translations['labels']['overQuotaText'] .= sprintf(
-					/* translators: 1 is a link tag start, 2 is the link tag end. */
-					__( 'To continue to optimize your images, log in to your Imagify account to %1$sbuy a pack or subscribe to a plan%2$s.', 'imagify' ),
-					'<a target="_blank" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '">',
-					'</a>'
-				);
-			}
 
 			return $translations;
 

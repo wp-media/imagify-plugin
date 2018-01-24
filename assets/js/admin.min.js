@@ -37,6 +37,7 @@ window.imagify = {
 
 			return function() {
 				compiled = compiled || _.template( jQuery( '#tmpl-' + id ).html(), options );
+				data     = data || {};
 				return compiled( data );
 			};
 		} );

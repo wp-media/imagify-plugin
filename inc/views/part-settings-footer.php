@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 ?>
 
-<div class="submit">
+<div class="submit imagify-clearfix">
 	<?php
 	// Classical submit.
 	submit_button();
@@ -17,19 +17,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		array() // Other attributes.
 	);
 	?>
-
-	<div class="imagify-bulk-info">
-		<p>
-			<?php
-			printf(
-				/* translators: 1 is a link tag start, 2 is the link tag end. */
-				__( 'Once your settings saved, optimize all your images by using the %1$sImagify Bulk Optimization%2$s feature.', 'imagify' ),
-				'<a href="' . esc_url( get_imagify_admin_url( 'bulk-optimization' ) ) . '">',
-				'</a>'
-			);
-			?>
-		</p>
-	</div>
 </div>
 
 <?php
