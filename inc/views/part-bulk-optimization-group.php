@@ -37,7 +37,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		</div>
 
 		<div class="imagify-th-action">
-			<button class="button imagify-button-clean imagify-show-table-details" type="button">
+			<button class="button imagify-button-clean imagify-show-table-details" type="button" data-label-show="<?php esc_attr_e( 'View Details', 'imagify' ); ?>" data-label-hide="<?php esc_attr_e( 'Hide Details', 'imagify' ); ?>">
 				<?php esc_html_e( 'View Details', 'imagify' ); ?>
 				<span class="dashicons dashicons-menu"></span>
 			</button>

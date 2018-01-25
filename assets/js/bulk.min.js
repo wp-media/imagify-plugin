@@ -625,10 +625,10 @@
 			}
 
 			if ( openDetails ) {
-				$button.find( '.dashicons' ).addClass( 'dashicons-no-alt' ).removeClass( 'dashicons-menu' );
+				$button.html( $button.data( 'label-hide' ) + '<span class="dashicons dashicons-no-alt"></span>' );
 				$details.imagifyShow();
 			} else {
-				$button.find( '.dashicons' ).addClass( 'dashicons-menu' ).removeClass( 'dashicons-no-alt' );
+				$button.html( $button.data( 'label-show' ) + '<span class="dashicons dashicons-menu"></span>' );
 				$details.imagifyHide();
 			}
 		},
