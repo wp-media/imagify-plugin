@@ -170,7 +170,9 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 								<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
 								<span class="button-text"><?php _e( 'What plan do I need?', 'imagify' ); ?></span>
 							</button>
-						<?php } ?>
+							<?php
+						}
+						?>
 
 					</div><!-- .imagify-col-content -->
 
@@ -218,11 +220,28 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			</div><!-- .imagify-bulk-submit -->
 	</div><!-- .imagify-settings-section -->
 
-	<?php $this->print_template( 'modal-payment' ); ?>
+	<?php
+	$this->print_template( 'modal-payment' );
 
-	<script type="text/html" id="tmpl-imagify-bulk-infos">
-		<?php $this->print_template( 'part-bulk-optimization-infos' ); ?>
-	</script>
+	if ( empty( $user ) ) {
+		$user = new Imagify_User();
+	}
+
+	$unconsumed_quota = $user->get_percent_unconsumed_quota();
+
+	if ( $unconsumed_quota <= 20 ) {
+		?>
+		<script type="text/html" id="tmpl-imagify-bulk-infos">
+			<?php
+			$this->print_template( 'part-bulk-optimization-infos', array(
+				'quota'   => $unconsumed_quota,
+				'library' => ! empty( $data['groups']['library'] ),
+			) );
+			?>
+		</script>
+		<?php
+	}
+	?>
 
 	<script type="text/html" id="tmpl-imagify-spinner">
 		<?php $this->print_template( 'part-bulk-optimization-spinner' ); ?>

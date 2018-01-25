@@ -121,7 +121,7 @@
 
 			// Other buttons/UI.
 			$( '.imagify-show-table-details' ).on( 'click.imagify open.imagify close.imagify', this.toggleOptimizationDetails );
-			$( '#imagify-bulk-action' ).on( 'click.imagify', this.launchAllProcesses );
+			$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
 			$( '.imagify-share-networks a' ).on( 'click.imagify', this.share );
 
 			// Optimization events.
@@ -634,90 +634,106 @@
 		},
 
 		/*
-		 * Build the queue and launch all processes.
+		 * Maybe display a modal, then launch all processes.
 		 */
-		launchAllProcesses: function () {
-			var $w          = $( w ),
-				$button     = $( this ),
-				$checkboxes = $( '.imagify-bulk-table [name="group[]"]:checked' ),
-				skip        = true;
+		maybeLaunchAllProcesses: function () {
+			var $quotaModal;
 
-			if ( ! $checkboxes.length || $button.attr( 'disabled' ) ) {
+			if ( ! $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
 				return;
 			}
 
-			// Swal Information before loading the optimize process.
-			swal( {
-				title:             imagifyBulk.labels.bulkInfoTitle,
-				html:              $( '#tmpl-imagify-bulk-infos' ).html(),
-				type:              '',
-				customClass:       'imagify-sweet-alert imagify-swal-has-subtitle imagify-before-bulk-infos',
-				showCancelButton:  true,
-				padding:           0,
-				width:             554,
-				confirmButtonText: imagifyBulk.labels.confirmBulk,
-				cancelButtonText:  imagifySwal.labels.cancelButtonText,
-				reverseButtons:    true
-			} ).then( function() {
-				// Disable the button.
-				$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
+			if ( $( this ).attr( 'disabled' ) ) {
+				return;
+			}
 
-				// Add a message to be displayed when the user wants to quit the page.
-				$w.on( 'beforeunload', w.imagify.bulk.getConfirmMessage );
+			$quotaModal = $( '#tmpl-imagify-bulk-infos' );
 
-				// Hide the "Complete" message.
-				$( '.imagify-row-complete' ).imagifyHide( 200, function() {
-					$( this ).removeClass( 'done' );
-				} );
+			if ( $quotaModal.length ) {
+				// Swal Information before loading the optimize process.
+				swal( {
+					title:             imagifyBulk.labels.bulkInfoTitle,
+					html:              $quotaModal.html(),
+					type:              '',
+					customClass:       'imagify-sweet-alert imagify-swal-has-subtitle imagify-before-bulk-infos',
+					showCancelButton:  true,
+					padding:           0,
+					width:             554,
+					confirmButtonText: imagifyBulk.labels.confirmBulk,
+					cancelButtonText:  imagifySwal.labels.cancelButtonText,
+					reverseButtons:    true
+				} ).then( w.imagify.bulk.launchAllProcesses ).catch( swal.noop );
+			} else {
+				w.imagify.bulk.launchAllProcesses();
+			}
+		},
 
-				// Close the optimization details.
-				$( '.imagify-show-table-details' ).trigger( 'close.imagify' );
+		/*
+		 * Build the queue and launch all processes.
+		 */
+		launchAllProcesses: function () {
+			var $w      = $( w ),
+				$button = $( '#imagify-bulk-action' ),
+				skip    = true;
 
-				// Make sure to reset properties.
-				w.imagify.bulk.queue               = [];
-				w.imagify.bulk.status              = {};
-				w.imagify.bulk.processIsStopped    = false;
-				w.imagify.bulk.globalGain          = 0;
-				w.imagify.bulk.globalOriginalSize  = 0;
-				w.imagify.bulk.globalOptimizedSize = 0;
+			// Disable the button.
+			$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
 
-				$checkboxes.each( function() {
-					var $checkbox  = $( this ),
-						$row       = $checkbox.closest( '.imagify-row-folder-type' ),
-						$container = $row.closest( '.imagify-bulk-table' ),
-						groupId    = $container.data( 'group-id' ),
-						context    = $container.data( 'context' ),
-						type       = $checkbox.val(),
-						level      = $row.find( '.imagify-cell-level [name="level[' + type + ']"]:checked' ).val();
+			// Add a message to be displayed when the user wants to quit the page.
+			$w.on( 'beforeunload', this.getConfirmMessage );
 
-					// Build the queue.
-					w.imagify.bulk.queue.push( {
-						groupId: groupId,
-						context: context,
-						type:    type,
-						level:   undefined === level ? -1 : parseInt( level, 10 )
-					} );
-
-					// Set the status.
-					w.imagify.bulk.status[ groupId + '|' + type ] = {
-						isError: false,
-						id:      'waiting'
-					};
-
-					// Display a "waiting" message + spinner into the folder rows.
-					if ( skip ) {
-						// No need to do that for the first one, we'll display a "working" row instead.
-						skip = false;
-						return true;
-					}
-
-					// Display the "waiting" folder row and hide the "normal" one.
-					w.imagify.bulk.displayFolderRow( 'waiting', $row );
-				} );
-
-				// Process the queue.
-				$w.trigger( 'processQueue.imagify' );
+			// Hide the "Complete" message.
+			$( '.imagify-row-complete' ).imagifyHide( 200, function() {
+				$( this ).removeClass( 'done' );
 			} );
+
+			// Close the optimization details.
+			$( '.imagify-show-table-details' ).trigger( 'close.imagify' );
+
+			// Make sure to reset properties.
+			this.queue               = [];
+			this.status              = {};
+			this.processIsStopped    = false;
+			this.globalGain          = 0;
+			this.globalOriginalSize  = 0;
+			this.globalOptimizedSize = 0;
+
+			$( '.imagify-bulk-table [name="group[]"]:checked' ).each( function() {
+				var $checkbox  = $( this ),
+					$row       = $checkbox.closest( '.imagify-row-folder-type' ),
+					$container = $row.closest( '.imagify-bulk-table' ),
+					groupId    = $container.data( 'group-id' ),
+					context    = $container.data( 'context' ),
+					type       = $checkbox.val(),
+					level      = $row.find( '.imagify-cell-level [name="level[' + type + ']"]:checked' ).val();
+
+				// Build the queue.
+				w.imagify.bulk.queue.push( {
+					groupId: groupId,
+					context: context,
+					type:    type,
+					level:   undefined === level ? -1 : parseInt( level, 10 )
+				} );
+
+				// Set the status.
+				w.imagify.bulk.status[ groupId + '|' + type ] = {
+					isError: false,
+					id:      'waiting'
+				};
+
+				// Display a "waiting" message + spinner into the folder rows.
+				if ( skip ) {
+					// No need to do that for the first one, we'll display a "working" row instead.
+					skip = false;
+					return true;
+				}
+
+				// Display the "waiting" folder row and hide the "normal" one.
+				w.imagify.bulk.displayFolderRow( 'waiting', $row );
+			} );
+
+			// Process the queue.
+			$w.trigger( 'processQueue.imagify' );
 		},
 
 		/*
@@ -1052,8 +1068,8 @@
 				}
 				else if ( noImages ) {
 					w.imagify.bulk.displayError( {
-						text: imagifyBulk.labels.noAttachmentToOptimizeTitle,
-						html: imagifyBulk.labels.noAttachmentToOptimizeText,
+						title: imagifyBulk.labels.noAttachmentToOptimizeTitle,
+						html:  imagifyBulk.labels.noAttachmentToOptimizeText,
 						type: 'info'
 					} );
 				}

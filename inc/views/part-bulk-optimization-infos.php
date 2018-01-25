@@ -1,10 +1,5 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
-
-// TODO: get things dynamic.
-// Don't show imagify-swal-quota if quota > 20.
-$unconsumed_quota = 8;
-$bar_class        = 'negative'; // 'neutral', 'positive'.
 ?>
 <div class="imagify-swal-subtitle"><?php esc_html_e( 'Some information to know before launching the optimization.', 'imagify' ); ?></div>
 <div class="imagify-swal-quota">
@@ -14,13 +9,13 @@ $bar_class        = 'negative'; // 'neutral', 'positive'.
 			printf(
 				/* translators: %s is a data quota. */
 				esc_html__( 'You have %s space credit left' , 'imagify' ),
-				'<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>'
+				'<span class="imagify-unconsumed-percent">' . $data['quota'] . '%</span>'
 			);
 			?>
 		</p>
 
-		<div class="imagify-bar-<?php echo $bar_class; ?>">
-			<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
+		<div class="imagify-bar-negative">
+			<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $data['quota'] . '%'; ?>;"></div>
 		</div>
 	</div>
 </div>
@@ -31,7 +26,7 @@ $bar_class        = 'negative'; // 'neutral', 'positive'.
 			<span><?php
 			esc_html_e( 'Please be aware that optimizing a large number of images can take a while depending on your server and network speed.', 'imagify' );
 
-			if ( get_transient( 'imagify_large_library' ) ) {
+			if ( ! empty( $data['library'] ) && get_transient( 'imagify_large_library' ) ) {
 				printf(
 					/* translators: %s is a formatted number. Don't use %d. */
 					__( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ),
