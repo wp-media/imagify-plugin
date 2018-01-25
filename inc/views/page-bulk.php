@@ -85,7 +85,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			<div class="imagify-col imagify-account-info-col">
 
 				<?php
-				if ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || false === IMAGIFY_HIDDEN_ACCOUNT ) {
+				if ( ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || false === IMAGIFY_HIDDEN_ACCOUNT ) && imagify_valid_key() ) {
 					$user = new Imagify_User();
 					?>
 					<div class="imagify-options-title">
@@ -103,79 +103,77 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 					</div>
 
 					<?php if ( 1 === $user->plan_id ) { ?>
-					<div class="imagify-col-content">
-						<?php
-						$unconsumed_quota  = $user->get_percent_unconsumed_quota();
-						$meteo_icon        = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="63" height="64" alt="" />';
-						$bar_class         = 'positive';
-						$is_display_bubble = false;
-
-						if ( $unconsumed_quota >= 21 && $unconsumed_quota <= 50 ) {
-							$bar_class  = 'neutral';
-							$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="63" height="64" alt="" />';
-						} elseif ( $unconsumed_quota <= 20 ) {
-							$bar_class         = 'negative';
-							$is_display_bubble = true;
-							$meteo_icon        = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="64" height="63" alt="" />';
-						}
-						?>
-						<div class="imagify-flex imagify-vcenter">
-							<span class="imagify-meteo-icon imagify-noshrink"><?php echo $meteo_icon; ?></span>
-							<div class="imagify-space-left imagify-full-width">
-
-								<p>
-									<?php
-									printf(
-										/* translators: %s is a data quota. */
-										__( 'You have %s space credit left' , 'imagify' ),
-										'<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>'
-									);
-									?>
-								</p>
-
-								<div class="imagify-bar-<?php echo $bar_class; ?>">
-									<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
-								</div>
-							</div>
-						</div>
-						<div class="imagify-space-tooltips imagify-tooltips <?php echo ( ! $is_display_bubble ) ? 'hidden' : ''; ?>">
-							<div class="tooltip-content tooltip-table">
-								<div class="cell-icon">
-									<span aria-hidden="true" class="icon icon-round">i</span>
-								</div>
-								<div class="cell-text">
-									<?php _e( 'Upgrade your account to continue optimizing your images', 'imagify' ); ?>
-								</div>
-								<div class="cell-sep"></div>
-								<div class="cell-cta">
-									<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'More info', 'imagify' ); ?></a>
-								</div>
-							</div>
-						</div>
-
-						<div class="imagify-divider"></div>
-
-						<?php
-						/**
-						 * Filter whether the plan chooser section is displayed.
-						 *
-						 * @param $show_new bool Default to true: display the section.
-						 */
-						if ( apply_filters( 'imagify_show_new_to_imagify', true ) ) {
-							?>
-							<p class="imagify-section-title imagify-h3-like"><?php esc_html_e( 'You\'re new to Imagify?', 'imagify' ); ?></p>
-							<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
-
-							<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-secondary imagify-button-big">
-								<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
-								<span class="button-text"><?php _e( 'What plan do I need?', 'imagify' ); ?></span>
-							</button>
+						<div class="imagify-col-content">
 							<?php
-						}
-						?>
+							$unconsumed_quota  = $user->get_percent_unconsumed_quota();
+							$meteo_icon        = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="63" height="64" alt="" />';
+							$bar_class         = 'positive';
+							$is_display_bubble = false;
 
-					</div><!-- .imagify-col-content -->
+							if ( $unconsumed_quota >= 21 && $unconsumed_quota <= 50 ) {
+								$bar_class  = 'neutral';
+								$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="63" height="64" alt="" />';
+							} elseif ( $unconsumed_quota <= 20 ) {
+								$bar_class         = 'negative';
+								$is_display_bubble = true;
+								$meteo_icon        = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="64" height="63" alt="" />';
+							}
+							?>
+							<div class="imagify-flex imagify-vcenter">
+								<span class="imagify-meteo-icon imagify-noshrink"><?php echo $meteo_icon; ?></span>
+								<div class="imagify-space-left imagify-full-width">
 
+									<p>
+										<?php
+										printf(
+											/* translators: %s is a data quota. */
+											__( 'You have %s space credit left' , 'imagify' ),
+											'<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>'
+										);
+										?>
+									</p>
+
+									<div class="imagify-bar-<?php echo $bar_class; ?>">
+										<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $unconsumed_quota . '%'; ?>;"></div>
+									</div>
+								</div>
+							</div>
+							<div class="imagify-space-tooltips imagify-tooltips <?php echo ( ! $is_display_bubble ) ? 'hidden' : ''; ?>">
+								<div class="tooltip-content tooltip-table">
+									<div class="cell-icon">
+										<span aria-hidden="true" class="icon icon-round">i</span>
+									</div>
+									<div class="cell-text">
+										<?php _e( 'Upgrade your account to continue optimizing your images', 'imagify' ); ?>
+									</div>
+									<div class="cell-sep"></div>
+									<div class="cell-cta">
+										<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'More info', 'imagify' ); ?></a>
+									</div>
+								</div>
+							</div>
+
+							<div class="imagify-divider"></div>
+
+							<?php
+							/**
+							 * Filter whether the plan chooser section is displayed.
+							 *
+							 * @param $show_new bool Default to true: display the section.
+							 */
+							if ( apply_filters( 'imagify_show_new_to_imagify', true ) ) {
+								?>
+								<p class="imagify-section-title imagify-h3-like"><?php esc_html_e( 'You\'re new to Imagify?', 'imagify' ); ?></p>
+								<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
+
+								<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-secondary imagify-button-big">
+									<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
+									<span class="button-text"><?php _e( 'What plan do I need?', 'imagify' ); ?></span>
+								</button>
+								<?php
+							}
+							?>
+						</div><!-- .imagify-col-content -->
 					<?php } // End if(). ?>
 				<?php } // End if(). ?>
 
@@ -223,23 +221,25 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 	<?php
 	$this->print_template( 'modal-payment' );
 
-	if ( empty( $user ) ) {
-		$user = new Imagify_User();
-	}
+	if ( imagify_valid_key() ) {
+		if ( empty( $user ) ) {
+			$user = new Imagify_User();
+		}
 
-	$unconsumed_quota = $user->get_percent_unconsumed_quota();
+		$unconsumed_quota = $user->get_percent_unconsumed_quota();
 
-	if ( $unconsumed_quota <= 20 ) {
-		?>
-		<script type="text/html" id="tmpl-imagify-bulk-infos">
-			<?php
-			$this->print_template( 'part-bulk-optimization-infos', array(
-				'quota'   => $unconsumed_quota,
-				'library' => ! empty( $data['groups']['library'] ),
-			) );
+		if ( $unconsumed_quota <= 20 ) {
 			?>
-		</script>
-		<?php
+			<script type="text/html" id="tmpl-imagify-bulk-infos">
+				<?php
+				$this->print_template( 'part-bulk-optimization-infos', array(
+					'quota'   => $unconsumed_quota,
+					'library' => ! empty( $data['groups']['library'] ),
+				) );
+				?>
+			</script>
+			<?php
+		}
 	}
 	?>
 

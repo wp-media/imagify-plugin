@@ -152,7 +152,7 @@
 						if ( v ) {
 							r.data.is.push( htmlClass );
 						}
-					} else {
+					} else if ( 'is' !== k ) {
 						$( htmlClass ).text( v );
 					}
 				} );
@@ -160,6 +160,8 @@
 				if ( r.data.get_percent_unconsumed_quota > 0 && r.data.get_percent_unconsumed_quota <= 20 ) {
 					r.data.is.push( '.imagify-user-is-almost-over-quota' );
 				}
+
+				r.data.is.push( 'best-plan' );
 
 				$( r.data.is.join( ',' ) ).removeClass( 'hidden' );
 			}

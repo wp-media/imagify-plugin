@@ -7,6 +7,7 @@ if ( imagify_valid_key() ) {
 	$hidden_class     = '';
 
 	if ( ! $user ) {
+		// Lazyload user
 		Imagify_Assets::get_instance()->localize_script( 'options', 'imagifyUser', array(
 			'action'   => 'imagify_get_user_data',
 			'_wpnonce' => wp_create_nonce( 'imagify_get_user_data' ),
@@ -119,7 +120,7 @@ if ( imagify_valid_key() ) {
 			 * Best plan.
 			 */
 			?>
-			<div class="<?php echo $hidden_class; ?>">
+			<div class="best-plan<?php echo $hidden_class; ?>">
 				<p><?php _e( 'We can also analyze your needs to prevent you to buy a plan that doesn\'t suit you.', 'imagify' ); ?><br>
 				<?php _e( 'Our analyze will allow you to choose a better plan for your needs.', 'imagify' ); ?></p>
 

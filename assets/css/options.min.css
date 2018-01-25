@@ -164,6 +164,9 @@
 	margin-top: 2em;
 	padding: 18px 0 7px 30px;
 }
+.imagify-settings .hidden + div.submit.submit {
+	margin-top: -1px;
+}
 .imagify-settings p.submit {
 	float: left;
 	margin-top: 0;
