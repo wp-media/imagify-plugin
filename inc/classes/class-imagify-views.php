@@ -313,28 +313,34 @@ class Imagify_Views {
 				$data['already_optimized_attachments'] += Imagify_Files_Stats::count_success_files();
 				$data['original_size']                 += Imagify_Files_Stats::get_original_size();
 				$data['optimized_size']                += Imagify_Files_Stats::get_optimized_size();
-				// Group.
-				$data['groups']['custom-files'] = array(
-					'group_id'   => 'custom-files',
-					'context'    => 'File',
-					'icon'       => 'admin-plugins',
-					'title'      => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
-					'subtitle'   => __( 'Choose here the bulk optimization settings for the medias stored in your themes and plugins.', 'imagify' ),
-					'optimizing' => __( 'Optimizing the images of your Themes and Plugins...', 'imagify' ),
-					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-					'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
-					'rows'       => array(
-						'themes'         => array(
-							'title' => __( 'Themes', 'imagify' ),
+
+				if ( Imagify_Folders_DB::get_instance()->has_items() ) {
+					// Group.
+					$data['groups']['custom-files'] = array(
+						'group_id'   => 'custom-files',
+						'context'    => 'File',
+						'icon'       => 'admin-plugins',
+						'title'      => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
+						'subtitle'   => __( 'Choose here the bulk optimization settings for the medias stored in your themes and plugins.', 'imagify' ),
+						'optimizing' => __( 'Optimizing the images of your Themes and Plugins...', 'imagify' ),
+						/* translators: 1 is the opening of a link, 2 is the closing of this link. */
+						'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
+						'rows'       => array(
+							'themes'         => array(
+								'title' => __( 'Themes', 'imagify' ),
+							),
+							'plugins'        => array(
+								'title' => __( 'Plugins', 'imagify' ),
+							),
+							'custom-folders' => array(
+								'title' => __( 'Custom Folders', 'imagify' ),
+							),
 						),
-						'plugins'        => array(
-							'title' => __( 'Plugins', 'imagify' ),
-						),
-						'custom-folders' => array(
-							'title' => __( 'Custom Folders', 'imagify' ),
-						),
-					),
-				);
+					);
+				} else {
+					// New Feature!
+					$data['no-custom-folders'] = true;
+				}
 			}
 		}
 

@@ -190,8 +190,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			$this->print_template( 'part-bulk-optimization-group', $group );
 		}
 
-		// TODO: find a way to know when user didn't select Custom Folders.
-		if ( count( $data['groups'] ) === 1 ) {
+		// New Feature!
+		if ( ! empty( $data['no-custom-folders'] ) ) {
 			$this->print_template( 'part-bulk-optimization-newbie' );
 		}
 		?>
