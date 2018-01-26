@@ -66,7 +66,12 @@
 				};
 
 
+			if ( $container.parent( '.twentytwenty-wrapper' ).length ) {
+				$container.unwrap();
+			}
 			$container.wrap( '<div class="twentytwenty-wrapper twentytwenty-' + sliderOrientation + '"></div>' );
+
+			$container.children( '.twentytwenty-overlay, .twentytwenty-handle' ).remove();
 			$container.append( '<div class="twentytwenty-overlay"></div>' );
 			$container.append( '<div class="twentytwenty-handle"></div>' );
 
