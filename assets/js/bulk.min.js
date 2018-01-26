@@ -108,16 +108,16 @@
 			this.drawOverviewChart();
 
 			// Optimization level selector.
-			$( '.imagify-level-selector-button' ).each( function() {
-				var $button = $( this ),
-					$list   = $( '#' + $button.attr( 'aria-controls' ) );
+			$( '.imagify-level-selector-button' )
+				.on( 'click.imagify', this.openLevelSelectorFromButton );
 
-				$button.on( 'click.imagify', w.imagify.bulk.focusLevel );
-				$list.find( 'input' ).on( 'focus.imagify change.imagify', w.imagify.bulk.showLevel );
-				$list.find( 'label' ).on( 'click.imagify', $list, w.imagify.bulk.closeLevelSelectorWithDelay );
-			} );
+			$( '.imagify-level-selector-list input' )
+				.on( 'change.imagify init.imagify', this.syncLevelSelectorFromRadio )
+				.filter( ':checked' )
+				.trigger( 'init.imagify' );
 
-			$( d ).on( 'keypress.imagify', this.closeLevelSelectorOnKeyStroke );
+			$( d )
+				.on( 'keypress.imagify click.imagify', this.closeLevelSelectors );
 
 			// Other buttons/UI.
 			$( '.imagify-show-table-details' ).on( 'click.imagify open.imagify close.imagify', this.toggleOptimizationDetails );
@@ -342,22 +342,22 @@
 		/*
 		 * Close the given optimization level selector.
 		 *
-		 * @param {object} $list A jQuery object.
-		 * @param {int}    timer Timer in ms to close the selector.
+		 * @param {object} $lists A jQuery object.
+		 * @param {int}    timer  Timer in ms to close the selector.
 		 */
-		closeLevelSelector: function ( $list, timer ) {
-			if ( ! $list || ! $list.length ) {
+		closeLevelSelector: function ( $lists, timer ) {
+			if ( ! $lists || ! $lists.length ) {
 				return;
 			}
 
 			if ( undefined !== timer && timer > 0 ) {
 				w.setTimeout( function() {
-					w.imagify.bulk.closeLevelSelector( $list );
+					w.imagify.bulk.closeLevelSelector( $lists );
 				}, timer );
 				return;
 			}
 
-			$list.attr( 'aria-hidden', 'true' ).closest( '.imagify-level-selector' ).find( '.imagify-current-level-info' ).html( $list.find( '.imagify-current-level label' ).html() );
+			$lists.attr( 'aria-hidden', 'true' );
 		},
 
 		/*
@@ -567,43 +567,42 @@
 		// Event callbacks =========================================================================
 
 		/*
-		 * Optimization level selector: focus the current radio input on button click.
-		 */
-		focusLevel: function () {
-			var $list = $( '#' + $( this ).attr( 'aria-controls' ) );
-
-			$( '.imagify-level-selector-list' ).not( $list ).attr( 'aria-hidden', 'true' );
-			$list.attr( 'aria-hidden', 'false' ).find( '.imagify-current-level input' ).focus().select();
-		},
-
-		/*
-		 * Optimization level selector: on radio focus or change, display the selected level.
-		 */
-		showLevel: function () {
-			var $radio = $( this );
-
-			$radio.closest( '.imagify-level-selector-list' ).find( '.imagify-current-level' ).removeClass( 'imagify-current-level' ).attr( 'aria-current', 'false' );
-			$radio.closest( '.imagify-level-choice' ).addClass( 'imagify-current-level' ).attr( 'aria-current', 'true' );
-		},
-
-		/*
-		 * Optimization level selector: close the selector on label click.
-		 *
-		 * @param {object} e jQuery's Event object. e.data contains the list jQuery object.
-		 */
-		closeLevelSelectorWithDelay: function ( e ) {
-			w.imagify.bulk.closeLevelSelector( e.data, 200 );
-		},
-
-		/*
-		 * Optimization level selector: close the selectors on Esc or Enter kaystroke.
+		 * Optimization level selector: on button click, open the dropdown and focus the current radio input.
+		 * The dropdown must be open or the focus event won't be triggered.
 		 *
 		 * @param {object} e jQuery's Event object.
 		 */
-		closeLevelSelectorOnKeyStroke: function ( e ) {
-			if ( 27 === e.keyCode || 13 === e.keyCode ) {
-				w.imagify.bulk.closeLevelSelector( $( '.imagify-level-selector-list[aria-hidden="false"]' ) );
+		openLevelSelectorFromButton: function ( e ) {
+			var $list = $( '#' + $( this ).attr( 'aria-controls' ) );
+			// Stop click event from bubbling: this will allow to close the selector list if anything else id clicked.
+			e.stopPropagation();
+			// Close other lists.
+			$( '.imagify-level-selector-list' ).not( $list ).attr( 'aria-hidden', 'true' );
+			// Open the corresponding list and focus the radio.
+			$list.attr( 'aria-hidden', 'false' ).find( ':checked' ).trigger( 'focus.imagify' );
+		},
+
+		/*
+		 * Optimization level selector: on radio change, make the row "current" and update the button text.
+		 */
+		syncLevelSelectorFromRadio: function () {
+			var $row = $( this ).closest( '.imagify-level-choice' );
+			// Update rows attributes.
+			$row.addClass( 'imagify-current-level' ).attr( 'aria-current', 'true' ).siblings( '.imagify-level-choice' ).removeClass( 'imagify-current-level' ).attr( 'aria-current', 'false' );
+			// Change the button text.
+			$row.closest( '.imagify-level-selector' ).find( '.imagify-current-level-info' ).html( $row.find( 'label' ).html() );
+		},
+
+		/*
+		 * Optimization level selector: on Escape or Enter kaystroke, close the dropdown.
+		 *
+		 * @param {object} e jQuery's Event object.
+		 */
+		closeLevelSelectors: function ( e ) {
+			if ( 'keypress' === e.type && 27 !== e.keyCode && 13 !== e.keyCode ) {
+				return;
 			}
+			w.imagify.bulk.closeLevelSelector( $( '.imagify-level-selector-list[aria-hidden="false"]' ) );
 		},
 
 		/*

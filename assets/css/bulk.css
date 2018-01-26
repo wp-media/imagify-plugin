@@ -629,8 +629,8 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 .imagify-level-selector-list svg {
 	margin-right: 5px;
 }
-.imagify-level-selector-list .imagify-current-level label,
-.imagify-level-selector-list input:checked + label {
+.imagify-level-selector-list input:checked + label,
+.imagify-level-selector-list .imagify-current-level label {
 	background: #343A49;
 	color: #FFF;
 }

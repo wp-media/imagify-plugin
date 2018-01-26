@@ -36,7 +36,7 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 
 			<button aria-controls="imagify-<?php echo $data['folder_type']; ?>-level-selector-list" type="button" class="button imagify-button-clean hide-if-no-js imagify-level-selector-button"><span class="imagify-current-level-info"><?php echo imagify_get_optimization_level_label( $default_level, '%ICON% %s' ); ?></span></button>
 
-			<ul id="imagify-<?php echo $data['folder_type']; ?>-level-selector-list" role="listbox" aria-orientation="vertical" aria-hidden="true" class="imagify-level-selector-list">
+			<ul id="imagify-<?php echo $data['folder_type']; ?>-level-selector-list" role="listbox" aria-orientation="vertical" aria-hidden="true" class="imagify-level-selector-list hide-if-no-js">
 				<?php foreach ( array( 0, 1, 2 ) as $level ) { ?>
 				<li class="imagify-level-choice<?php echo $level === $default_level ? ' imagify-current-level" aria-current="true' : ''; ?>" role="option">
 					<input type="radio" name="level[<?php echo $data['folder_type']; ?>]" value="<?php echo $level; ?>" id="<?php echo $data['folder_type']; ?>-level-<?php echo $level; ?>" <?php checked( $level, $default_level ); ?> class="screen-reader-text">
