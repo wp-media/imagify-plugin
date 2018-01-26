@@ -42,7 +42,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $table_version = 40;
+	protected $table_version = 45;
 
 	/**
 	 * Tell if the table is the same for each site of a Multisite.
@@ -92,6 +92,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 		return array(
 			'file_id'            => '%d',
 			'folder_id'          => '%d',
+			'file_date'          => '%s',
 			'path'               => '%s',
 			'hash'               => '%s',
 			'mime_type'          => '%s',
@@ -120,6 +121,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 		return array(
 			'file_id'            => 0,
 			'folder_id'          => 0,
+			'file_date'          => '0000-00-00 00:00:00',
 			'path'               => '',
 			'hash'               => '',
 			'mime_type'          => '',
@@ -146,10 +148,11 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 *
 	 * @return string
 	 */
-	protected function get_table_schema() {
+	protected function get_table_schema() {error_log( print_r( 'khgfk', 1 ) );
 		return "
 			file_id bigint(20) unsigned NOT NULL auto_increment,
 			folder_id bigint(20) unsigned NOT NULL default 0,
+			file_date datetime NOT NULL default '0000-00-00 00:00:00',
 			path varchar(191) NOT NULL default '',
 			hash varchar(32) NOT NULL default '',
 			mime_type varchar(100) NOT NULL default '',

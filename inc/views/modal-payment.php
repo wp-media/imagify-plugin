@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			<div class="imagify-modal-views imagify-pre-checkout-view" id="imagify-pre-checkout-view" aria-hidden="false">
 
 				<?php
-				$attachments_number = imagify_count_attachments();
+				$attachments_number = imagify_count_attachments() + Imagify_Files_Stats::count_all_files();
 				$total_size         = Imagify_Data::get_instance()->get( 'total_size_images_library' );
 				$per_month          = Imagify_Data::get_instance()->get( 'average_size_images_per_month' );
 				?>
@@ -28,7 +28,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 									<?php
 									printf(
 										/* translators: %s is a formatted number (don't use %d). */
-										_n( 'You have %s image', 'You have %s images', $attachments_number, 'imagify' ),
+										_n( 'You have %s original image', 'You have %s original images', $attachments_number, 'imagify' ),
 										'</span><span class="imagify-big-number">' . number_format_i18n( $attachments_number ) . '</span><span class="imagify-border-styled">'
 									);
 									?>
@@ -41,7 +41,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 								<?php
 								printf(
 									/* translators: %s is a formatted file size. */
-									esc_html__( 'You currently have %s of images in your library.', 'imagify' ),
+									esc_html__( 'You currently have %s of images in your library, themes, and plugins.', 'imagify' ),
 									'<strong class="imagify-dark total-library-size">' . ( is_float( $total_size ) ? imagify_size_format( $total_size ) : '' ) . '</strong>'
 								);
 								?>

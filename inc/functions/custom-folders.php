@@ -597,6 +597,10 @@ function imagify_insert_custom_file( $args = array() ) {
 		return 0;
 	}
 
+	if ( empty( $args['file_date'] ) || '0000-00-00 00:00:00' === $args['file_date'] ) {
+		$args['file_date'] = current_time( 'mysql' );
+	}
+
 	if ( empty( $args['mime_type'] ) ) {
 		$args['mime_type'] = imagify_get_mime_type_from_file( $args['file_path'] );
 	}
@@ -748,6 +752,7 @@ function imagify_refresh_file_modified( $file ) {
 		}
 
 		$new_data = array_merge( $new_data, array(
+			'file_date'          => current_time( 'mysql' ),
 			'width'              => $size && isset( $size[0] ) ? $size[0] : 0,
 			'height'             => $size && isset( $size[1] ) ? $size[1] : 0,
 			'original_size'      => $filesystem->size( $file_path ),
@@ -766,6 +771,7 @@ function imagify_refresh_file_modified( $file ) {
 		// Update file data to make sure nothing is missing.
 		$path      = $backup_path ? $backup_path : $file_path;
 		$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : imagify_get_mime_type_from_file( $path );
+		$file_date = ! empty( $old_data['file_date'] ) && '0000-00-00 00:00:00' !== $old_data['file_date'] ? $old_data['file_date'] : current_time( 'mysql' );
 
 		if ( strpos( $mime_type, 'image/' ) === 0 ) {
 			$size = @getimagesize( $path );
@@ -774,6 +780,7 @@ function imagify_refresh_file_modified( $file ) {
 		}
 
 		$new_data = array_merge( $new_data, array(
+			'file_date'     => $file_date,
 			'width'         => $size && isset( $size[0] ) ? $size[0] : 0,
 			'height'        => $size && isset( $size[1] ) ? $size[1] : 0,
 			'original_size' => $filesystem->size( $path ),
