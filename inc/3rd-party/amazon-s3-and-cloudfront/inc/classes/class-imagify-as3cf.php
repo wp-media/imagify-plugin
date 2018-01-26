@@ -165,7 +165,7 @@ class Imagify_AS3CF {
 	public function maybe_copy_files_from_s3( $ids, $results, $optimization_level ) {
 		global $wpdb, $as3cf;
 
-		if ( ! $as3cf->is_plugin_setup() ) {
+		if ( ! $as3cf || ! $as3cf->is_plugin_setup() ) {
 			return;
 		}
 
@@ -394,8 +394,6 @@ class Imagify_AS3CF {
 	 * @author Grégory Viguier
 	 */
 	public function optimize() {
-		global $as3cf;
-
 		check_ajax_referer( 'imagify_async_optimize_as3cf' );
 
 		if ( empty( $_POST['post_id'] ) || ! imagify_current_user_can( 'auto-optimize' ) ) {
