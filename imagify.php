@@ -65,6 +65,7 @@ function _imagify_init() {
 	require( IMAGIFY_FUNCTIONS_PATH . 'admin.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'api.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'attachments.php' );
+	require( IMAGIFY_FUNCTIONS_PATH . 'custom-folders.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'process.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'admin-ui.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'admin-stats.php' );
@@ -78,6 +79,8 @@ function _imagify_init() {
 
 	Imagify_Options::get_instance()->init();
 	Imagify_Data::get_instance()->init();
+	Imagify_Folders_DB::get_instance()->init();
+	Imagify_Files_DB::get_instance()->init();
 
 	if ( is_admin() ) {
 		require( IMAGIFY_ADMIN_PATH . 'upgrader.php' );
@@ -87,7 +90,6 @@ function _imagify_init() {
 		require( IMAGIFY_ADMIN_PATH . 'upload.php' );
 		require( IMAGIFY_ADMIN_PATH . 'media.php' );
 		require( IMAGIFY_ADMIN_PATH . 'meta-boxes.php' );
-		require( IMAGIFY_CLASSES_PATH . 'class-imagify-admin-ajax-post.php' );
 
 		Imagify_Notices::get_instance()->init();
 		Imagify_Admin_Ajax_Post::get_instance()->init();
