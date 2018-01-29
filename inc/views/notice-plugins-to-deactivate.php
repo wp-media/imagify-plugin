@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-$this->render_view( 'header' );
+$this->print_template( 'notice-header' );
 ?>
 <p><?php echo _n( 'The following plugin is not compatible with this plugin and may cause unexpected results:', 'The following plugins are not compatible with this plugin and may cause unexpected results:', count( $data ), 'imagify' ); ?></p>
 
@@ -15,4 +15,4 @@ foreach ( $data as $plugin ) {
 ?>
 </ul>
 <?php
-$this->render_view( 'footer' );
+$this->print_template( 'notice-footer' );
