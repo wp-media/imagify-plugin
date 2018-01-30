@@ -360,9 +360,9 @@ class Imagify_Notices_Deprecated {
 	 * @param mixed  $data Some data to pass to the view.
 	 */
 	public function render_view( $view, $data = array() ) {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.7', 'imagify_print_template( \'notice-\' . $view, $data )' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.7', 'Imagify_Views::get_instance()->print_template( \'notice-\' . $view, $data )' );
 
-		imagify_print_template( 'notice-' . $view, $data );
+		Imagify_Views::get_instance()->print_template( 'notice-' . $view, $data );
 	}
 }
 
@@ -1297,9 +1297,9 @@ if ( is_admin() ) :
 	 * @deprecated
 	 */
 	function imagify_payment_modal() {
-		_deprecated_function( __FUNCTION__ . '()', '1.7', 'imagify_print_template( \'modal-payment\' )' );
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Views::get_instance()->print_template( \'modal-payment\' )' );
 
-		imagify_print_template( 'modal-payment' );
+		Imagify_Views::get_instance()->print_template( 'modal-payment' );
 	}
 
 	/**
@@ -1311,9 +1311,9 @@ if ( is_admin() ) :
 	 * @deprecated
 	 */
 	function imagify_print_discount_banner() {
-		_deprecated_function( __FUNCTION__ . '()', '1.7', 'imagify_print_template( \'part-discount-banner\' )' );
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Views::get_instance()->print_template( \'part-discount-banner\' )' );
 
-		imagify_print_template( 'part-discount-banner' );
+		Imagify_Views::get_instance()->print_template( 'part-discount-banner' );
 	}
 
 	/**
@@ -1333,6 +1333,72 @@ if ( is_admin() ) :
 		$v = explode( '.', (string) $value );
 
 		return '<span class="imagify-price-big">' . $v[0] . '</span> <span class="imagify-price-mini">.' . ( strlen( $v[1] ) === 1 ? $v[1] . '0' : $v[1] ) . '</span>';
+	}
+
+	/**
+	 * Add submenu in menu "Settings".
+	 *
+	 * @since 1.0
+	 * @since 1.7 Deprecated.
+	 * @deprecated
+	 */
+	function _imagify_settings_menu() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Views::get_instance()->add_network_menus()' );
+
+		Imagify_Views::get_instance()->add_network_menus();
+	}
+
+	/**
+	 * Add submenu in menu "Media".
+	 *
+	 * @since 1.0
+	 * @since 1.7 Deprecated.
+	 * @deprecated
+	 */
+	function _imagify_bulk_optimization_menu() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Views::get_instance()->add_site_menus()' );
+
+		Imagify_Views::get_instance()->add_site_menus();
+	}
+
+	/**
+	 * The main settings page.
+	 *
+	 * @since 1.0
+	 * @since 1.7 Deprecated.
+	 * @deprecated
+	 */
+	function _imagify_display_options_page() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Views::get_instance()->display_settings_page()' );
+
+		Imagify_Views::get_instance()->display_settings_page();
+	}
+
+	/**
+	 * The bulk optimization page.
+	 *
+	 * @since 1.0
+	 * @since 1.7 Deprecated.
+	 * @deprecated
+	 */
+	function _imagify_display_bulk_page() {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Views::get_instance()->display_bulk_page()' );
+
+		Imagify_Views::get_instance()->display_bulk_page();
+	}
+
+	/**
+	 * Add link to the plugin configuration pages.
+	 *
+	 * @since 1.0
+	 *
+	 * @param  array $actions An array of action links.
+	 * @return array
+	 */
+	function _imagify_plugin_action_links( $actions ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Views::get_instance()->plugin_action_links( $actions )' );
+
+		return Imagify_Views::get_instance()->plugin_action_links( $actions );
 	}
 
 endif;

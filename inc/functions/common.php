@@ -25,6 +25,7 @@ function imagify_get_capacity( $describer = 'manage' ) {
 
 	switch ( $describer ) {
 		case 'manage':
+		case 'optimize-file':
 			$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
 			break;
 		case 'bulk-optimize':
@@ -80,7 +81,7 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 	$capacity = imagify_get_capacity( $describer );
 	$user_can = false;
 
-	if ( 'manage' !== $describer && 'bulk-optimize' !== $describer ) {
+	if ( 'manage' !== $describer && 'bulk-optimize' !== $describer && 'optimize-file' !== $describer ) {
 		// Describers that are not 'manage' and 'bulk-optimize' need an additional test for 'upload_files'.
 		if ( ! isset( $can_upload ) ) {
 			$can_upload = current_user_can( 'upload_files' );
@@ -109,6 +110,55 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 	 * @param int    $post_id   A post ID (a gallery ID for NGG).
 	 */
 	return apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $post_id );
+}
+
+/**
+ * Sanitize an optimization context.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return bool
+ */
+function imagify_can_optimize_custom_folders() {
+	static $can;
+
+	if ( isset( $can ) ) {
+		return $can;
+	}
+
+	// Check if the DB tables are ready.
+	if ( ! Imagify_Folders_DB::get_instance()->can_operate() || ! Imagify_Files_DB::get_instance()->can_operate() ) {
+		$can = false;
+		return $can;
+	}
+
+	// Check for user capacity.
+	if ( ! imagify_current_user_can( 'optimize-file' ) ) {
+		$can = false;
+		return $can;
+	}
+
+	// Multisite, network activated: ok only in the network admin.
+	if ( imagify_is_active_for_network() ) {
+		$can = is_network_admin();
+		return $can;
+	}
+
+	// Multisite, not network activated: ok only in some defined sites.
+	if ( is_multisite() ) {
+		$allowed_sites   = defined( 'IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES' ) && IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES ? IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES : '';
+		$allowed_sites   = explode( ',', IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES );
+		$allowed_sites   = array_flip( array_filter( array_map( 'trim', $allowed_sites ) ) );
+		$current_site_id = get_current_blog_id();
+
+		$can = $current_site_id && isset( $allowed_sites[ $current_site_id ] );
+		return $can;
+	}
+
+	// Not multisite: ok.
+	$can = true;
+	return $can;
 }
 
 /**
@@ -153,6 +203,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Options'                  => 1,
 		'Imagify_Settings'                 => 1,
 		'Imagify_User'                     => 1,
+		'Imagify_Views'                    => 1,
 		'Imagify'                          => 1,
 	);
 
