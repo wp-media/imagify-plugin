@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-$this->render_view( 'header' );
+$this->print_template( 'notice-header' );
 
 $filesystem  = imagify_get_filesystem();
 $backup_path = imagify_make_file_path_relative( get_imagify_backup_dir_path( true ) );
@@ -16,4 +16,4 @@ if ( $filesystem->exists( get_imagify_backup_dir_path() ) ) {
 
 echo '<p>' . sprintf( $message, "<code>$backup_path</code>" ) . '</p>';
 
-$this->render_view( 'footer' );
+$this->print_template( 'notice-footer' );
