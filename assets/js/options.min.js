@@ -271,18 +271,26 @@
 	$( d ).on( 'click.imagify', '#imagify-folders-tree [data-folder]', function() {
 
 		var $button  = $( this ),
+			$tree    = $button.nextAll( '.imagify-folders-sub-tree' ),
 			selected = [];
-
-		if ( $( this ).hasClass( 'imagify-is-open' ) ) {
-			$button.removeClass(' imagify-is-open' ).nextAll( '.imagify-folders-sub-tree' ).toggleClass( 'hidden' );
-			return;
-		}
 
 		if ( $button.attr( 'disabled' ) ) {
 			return;
 		}
 
 		$button.attr( 'disabled', 'disabled' );
+
+		if ( $tree.length ) {
+			if ( $button.hasClass( 'imagify-is-open' ) ) {
+				$tree.addClass( 'hidden' );
+				$button.removeClass(' imagify-is-open' );
+			} else {
+				$tree.removeClass( 'hidden' );
+				$button.addClass(' imagify-is-open' );
+			}
+			$button.removeAttr( 'disabled' );
+			return;
+		}
 
 		$( '#imagify-custom-folders' ).find( ':checked' ).each( function() {
 			selected.push( this.value );
