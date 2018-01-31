@@ -48,6 +48,8 @@ class Imagify_Admin_Ajax_Post {
 		'imagify_get_discount',
 		'imagify_get_images_counts',
 		'imagify_update_estimate_sizes',
+		'imagify_get_user_data',
+		'imagify_get_files_tree',
 	);
 
 	/**
@@ -860,5 +862,103 @@ class Imagify_Admin_Ajax_Post {
 		) );
 
 		die( 1 );
+	}
+
+	/**
+	 * Get the Imagify User data.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 */
+	public function imagify_get_user_data_callback() {
+		imagify_check_nonce( 'imagify_get_user_data' );
+		imagify_check_user_capacity();
+
+		$user = imagify_cache_user();
+
+		if ( ! $user || ! $user->id ) {
+			imagify_die( __( 'Couldn\'t get user data.', 'imagify' ) );
+		}
+
+		// Remove useless sensitive data.
+		unset( $user->email );
+
+		wp_send_json_success( $user );
+	}
+
+	/**
+	 * Get files and folders that are direct children of a given folder.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 */
+	public function imagify_get_files_tree_callback() {
+		imagify_check_nonce( 'get-files-tree' );
+		imagify_check_user_capacity( 'optimize-file' );
+
+		if ( ! isset( $_POST['folder'] ) || '' === $_POST['folder'] ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		$folder = trailingslashit( sanitize_text_field( $_POST['folder'] ) );
+		$folder = realpath( ABSPATH . ltrim( $folder, '/' ) );
+
+		if ( ! $folder || ! imagify_get_filesystem()->exists( $folder ) ) {
+			imagify_die( __( 'This folder doesn\'t exist.', 'imagify' ) );
+		}
+
+		if ( ! imagify_get_filesystem()->is_dir( $folder ) ) {
+			imagify_die( __( 'This file is not a folder.', 'imagify' ) );
+		}
+
+		if ( Imagify_Files_Scan::is_path_forbidden( $folder ) ) {
+			imagify_die( __( 'This folder is not allowed.', 'imagify' ) );
+		}
+
+		// Finally we made all our validations.
+		$selected = ! empty( $_POST['selected'] ) && is_array( $_POST['selected'] ) ? array_flip( $_POST['selected'] ) : array();
+		$folder   = wp_normalize_path( trailingslashit( $folder ) );
+		$dir      = new DirectoryIterator( $folder );
+		$dir      = new Imagify_Files_Iterator( $dir );
+		$output   = '';
+		$images   = 0;
+
+		foreach ( new IteratorIterator( $dir ) as $file ) {
+			if ( ! $file->isDir() ) {
+				++$images;
+				continue;
+			}
+
+			$abs_path    = $file->getPathname();
+			$rel_path    = esc_attr( imagify_make_file_path_relative( trailingslashit( $abs_path ) ) );
+			$placeholder = Imagify_Files_Scan::add_placeholder( trailingslashit( $abs_path ) );
+			$check_id    = sanitize_html_class( $placeholder );
+			$label       = str_replace( $folder, '', $abs_path );
+			// Value #///# In input id #///# Label.
+			$value       = esc_attr( $placeholder ) . '#///#' . sanitize_html_class( $placeholder ) . '#///#' . esc_attr( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $placeholder ) ) );
+
+			$output .= '<li>';
+			/* translators: %s is a folder path. */
+				$output .= '<button type="button" data-folder="' . esc_attr( $rel_path ) . '" title="' . sprintf( esc_attr__( 'Open/Close the folder "%s".', 'imagify' ), $rel_path ) . '">';
+					$output .= '<span class="dashicons dashicons-category"></span>';
+				$output .= '</button>';
+				$output .= '<input type="checkbox" name="imagify-custom-files[]" value="' . $value . '" id="imagify-custom-folder-' . $check_id . '" class="screen-reader-text"' . disabled( true, isset( $selected[ $placeholder ] ), false ) . '/>';
+				/* translators: %s is a folder path. */
+				$output .= '<label for="imagify-custom-folder-' . $check_id . '" title="' . sprintf( esc_attr__( 'Select the folder "%s".', 'imagify' ), $rel_path ) . '">';
+					$output .= $label;
+				$output .= '</label>';
+			$output .= '</li>';
+		}
+
+		if ( $images ) {
+			/* translators: %s is a formatted number, dont use %d. */
+			$output .= '<li><em><span class="dashicons dashicons-images-alt"></span> ' . sprintf( _n( '%s image', '%s images', $images, 'imagify' ), number_format_i18n( $images ) ) . '</em></li>';
+		}
+
+		if ( ! $output ) {
+			$output .= '<li><em>' . __( 'Empty folder', 'imagify' ) . '</em></li>';
+		}
+
+		wp_send_json_success( $output );
 	}
 }

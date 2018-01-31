@@ -53,13 +53,17 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'options':
 			return array(
-				'labels' => array(
+				'getFilesTree' => imagify_can_optimize_custom_folders() ? get_imagify_admin_url( 'get-files-tree' ) : false,
+				'labels'       => array(
 					'ValidApiKeyText'         => __( 'Your API key is valid.', 'imagify' ),
 					'waitApiKeyCheckText'     => __( 'Check in progress...', 'imagify' ),
 					'ApiKeyCheckSuccessTitle' => __( 'Congratulations!', 'imagify' ),
 					'ApiKeyCheckSuccessText'  => __( 'Your API key is valid. You can now configure the Imagify settings to optimize your images.', 'imagify' ),
 					'noBackupTitle'           => __( 'Don\'t Need a Parachute?', 'imagify' ),
 					'noBackupText'            => __( 'If you keep this option deactivated, you won\'t be able to re-optimize your images to another compression level and restore your original images in case of need.', 'imagify' ),
+					'filesTreeTitle'          => __( 'Select folders to optimize.', 'imagify' ),
+					'customFilesLegend'       => __( 'Choose the folders to optimize', 'imagify' ),
+					'error'                   => __( 'Error', 'imagify' ),
 				),
 			);
 

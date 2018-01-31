@@ -180,7 +180,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 	margin-left: 45px;
 }
 
-input[id^="imagify_sizes_"]:checked + label {
+.imagify-check-group [name^="imagify_"]:checked + label {
 	font-weight: bold;
 }
 
@@ -341,4 +341,20 @@ a.btn-rocket:hover,
 a.btn-rocket:focus {
 	background: darkorange;
 	box-shadow: 0 3px 0 darkorange;
+}
+
+/* Files tree */
+#imagify-add-custom-folder + .imagify-loader {
+	display: none;
+	vertical-align: middle;
+}
+#imagify-add-custom-folder[disabled] + .imagify-loader {
+	display: inline-block;
+}
+#imagify-folders-tree [name="imagify-custom-files[]"]:checked + label {
+	background: yellow;
+}
+#imagify-folders-tree [name="imagify-custom-files[]"][disabled] + label {
+	background: #bbb;
+	font-style: italic;
 }
