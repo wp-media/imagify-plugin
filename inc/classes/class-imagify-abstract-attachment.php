@@ -43,6 +43,17 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	protected $row = null;
 
 	/**
+	 * Tell if the file extension can be optimized by Imagify.
+	 * This is used to cache the result of $this->is_extension_supported().
+	 *
+	 * @var    bool
+	 * @since  1.7
+	 * @access protected
+	 * @see    $this->is_extension_supported()
+	 */
+	protected $is_extension_supported;
+
+	/**
 	 * The constructor.
 	 *
 	 * @since  1.0
@@ -286,6 +297,32 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 		$fullsize_path = $this->get_original_path();
 		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
+	}
+
+	/**
+	 * Tell if the current file extension is supported.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function is_extension_supported() {
+		if ( isset( $this->is_extension_supported ) ) {
+			return $this->is_extension_supported;
+		}
+
+		if ( ! $this->is_valid() ) {
+			$this->is_extension_supported = false;
+			return $this->is_extension_supported;
+		}
+
+		$file_type = wp_check_filetype( $this->get_original_path(), imagify_get_mime_types() );
+
+		$this->is_extension_supported = (bool) $file_type['ext'];
+
+		return $this->is_extension_supported;
 	}
 
 	/**

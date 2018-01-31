@@ -286,11 +286,15 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	}
 
 	// Check if the attachment extension is allowed.
-	if ( ! $attachment->is_mime_type_supported() ) {
-		$attachment_ext = $attachment->get_extension();
+	if ( ! $attachment->is_extension_supported() ) {
+		$extension = $attachment->get_extension();
+
+		if ( '' === $extension ) {
+			return __( 'With no extension, this file cannot be optimized', 'imagify' );
+		}
 
 		/* translators: %s is a file extension. */
-		return sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
+		return sprintf( __( '%s cannot be optimized', 'imagify' ), strtoupper( $extension ) );
 	}
 
 	// Check if the attachment has the required WP metadata.

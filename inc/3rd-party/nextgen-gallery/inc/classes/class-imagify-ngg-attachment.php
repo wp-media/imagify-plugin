@@ -395,7 +395,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return;
 		}
 
@@ -605,7 +605,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 */
 	public function restore() {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return new WP_Error( 'mime_not_type_supported', __( 'Mime type not supported.', 'imagify' ) );
 		}
 

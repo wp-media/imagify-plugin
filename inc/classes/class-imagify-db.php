@@ -130,6 +130,26 @@ class Imagify_DB {
 	}
 
 	/**
+	 * Get Imagify file extensions, ready to be used in a `REGEXP` clause.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string A pipe separated list of file extensions.
+	 */
+	public static function get_extensions() {
+		static $extensions;
+
+		if ( ! isset( $extensions ) ) {
+			$extensions = array_keys( imagify_get_mime_types() );
+			$extensions = implode( '|', $extensions );
+		}
+
+		return $extensions;
+	}
+
+	/**
 	 * Get post statuses related to attachments, ready to be used in a `IN ()` clause.
 	 *
 	 * @since  1.7
@@ -150,7 +170,7 @@ class Imagify_DB {
 
 	/**
 	 * Get the SQL JOIN clause to use to get only attachments that have the required WP metadata.
-	 * It returns an empty string if the database has no attacjments without the required metadada.
+	 * It returns an empty string if the database has no attachments without the required metadada.
 	 * It also triggers Imagify_DB::unlimit_joins().
 	 *
 	 * @since  1.7
@@ -186,7 +206,29 @@ class Imagify_DB {
 	}
 
 	/**
-	 * Get the aliases used for the metas in self::get_required_wp_metadata_join_clause().
+	 * Get the SQL part to be used in a WHERE clause, to get only attachments that have a valid '_wp_attached_file' metadata.
+	 * It returns an empty string if the database has no attachments without the required metadada.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public static function get_required_wp_metadata_where_clause() {
+		if ( ! imagify_has_attachments_without_required_metadata() ) {
+			return '';
+		}
+
+		$alias      = self::get_required_wp_metadata_aliases();
+		$alias      = $alias['_wp_attached_file'];
+		$extensions = self::get_extensions();
+
+		return "AND $alias.meta_value NOT LIKE '%://%' AND $alias.meta_value NOT LIKE '_:\\\\\%' AND LOWER( $alias.meta_value ) REGEXP '.+\.($extensions)'";
+	}
+
+	/**
+	 * Get the aliases used for the metas in self::get_required_wp_metadata_join_clause() and self::get_required_wp_metadata_where_clause().
 	 *
 	 * @since  1.7
 	 * @access public

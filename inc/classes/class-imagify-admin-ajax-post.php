@@ -664,10 +664,11 @@ class Imagify_Admin_Ajax_Post {
 		// Get (ordered) IDs.
 		$optimization_level = $this->get_optimization_level();
 
-		$mime_types  = Imagify_DB::get_mime_types();
-		$statuses    = Imagify_DB::get_post_statuses();
-		$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
-		$ids         = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
+		$mime_types   = Imagify_DB::get_mime_types();
+		$statuses     = Imagify_DB::get_post_statuses();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"
 			SELECT p.ID
 			FROM $wpdb->posts AS p
@@ -687,6 +688,7 @@ class Imagify_Admin_Ajax_Post {
 				)
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
+				$nodata_where
 			GROUP BY p.ID
 			ORDER BY
 				CASE mt1.meta_value
