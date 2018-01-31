@@ -78,8 +78,8 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 * @return string|bool       Path to the file if it exists or has been successfully retrieved from S3. False on failure.
 	 */
 	public function get_thumbnail_path( $size_file = false ) {
-		if ( ! $this->is_extension_supported() ) {
-			return false;
+		if ( ! $this->is_valid() ) {
+			return '';
 		}
 
 		$file_path = get_attached_file( $this->id, true );
