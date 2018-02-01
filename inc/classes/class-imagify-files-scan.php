@@ -37,7 +37,7 @@ class Imagify_Files_Scan {
 		$folder = realpath( $folder );
 
 		if ( ! $folder ) {
-			return new WP_Error( 'folder_not_exists', __( 'This folder doesn\'t exist.', 'imagify' ) );
+			return new WP_Error( 'folder_not_exists', __( 'This folder does not exist.', 'imagify' ) );
 		}
 
 		if ( ! imagify_get_filesystem()->is_dir( $folder ) ) {
