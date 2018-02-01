@@ -17,11 +17,13 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	const VERSION = '1.2';
 
 	/**
-	 * Name of the DB class.
+	 * The attachment SQL DB class.
 	 *
-	 * @var string
+	 * @var    string
+	 * @since  1.7
+	 * @access protected
 	 */
-	const DB_CLASS_NAME = 'Imagify_NGG_DB';
+	protected $db_class_name = 'Imagify_NGG_DB';
 
 	/**
 	 * The image object.

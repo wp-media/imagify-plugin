@@ -266,6 +266,7 @@ function imagify_translate_api_message( $message ) {
 		// Local messages from Imagify::curl_http_call() and Imagify::handle_response().
 		'Unknown error occurred'                                                                   => __( 'Unknown error occurred.', 'imagify' ),
 		'Your image is too big to be uploaded on our server'                                       => __( 'Your image is too big to be uploaded on our server.', 'imagify' ),
+		'cURL isn\'t installed on the server'                                                      => __( 'cURL isn\'t installed on the server.', 'imagify' ),
 		// API messages.
 		'Authentification not provided'                                                            => __( 'Authentication not provided.', 'imagify' ),
 		'Cannot create client token'                                                               => __( 'Cannot create client token.', 'imagify' ),

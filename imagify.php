@@ -95,7 +95,7 @@ function _imagify_init() {
 		Imagify_Views::get_instance()->init();
 	}
 
-	if ( ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+	if ( ! wp_doing_ajax() ) {
 		Imagify_Assets::get_instance()->init();
 	}
 

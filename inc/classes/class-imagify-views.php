@@ -113,6 +113,9 @@ class Imagify_Views {
 		$basename = plugin_basename( IMAGIFY_FILE );
 		add_filter( 'plugin_action_links_' . $basename,               array( $this, 'plugin_action_links' ) );
 		add_filter( 'network_admin_plugin_action_links_' . $basename, array( $this, 'plugin_action_links' ) );
+
+		// Save the "per page" option value from the files list screen.
+		add_filter( 'set-screen-option', array( 'Imagify_Files_List_Table', 'save_screen_options' ), 10, 3 );
 	}
 
 
@@ -246,7 +249,13 @@ class Imagify_Views {
 	 * @access public
 	 */
 	public function load_files_list() {
-		// Nothing yet.
+		// Instantiate the list.
+		$this->list_table = new Imagify_Files_List_Table( array(
+			'screen' => 'imagify-files',
+		) );
+
+		// Query the Items.
+		$this->list_table->prepare_items();
 	}
 
 

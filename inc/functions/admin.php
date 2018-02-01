@@ -113,7 +113,7 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 	if ( is_array( $arg ) ) {
 		$id      = isset( $arg['attachment_id'] )      ? $arg['attachment_id']      : 0;
 		$context = isset( $arg['context'] )            ? $arg['context']            : 'wp';
-		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : 0;
+		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : '';
 	}
 
 	switch ( $action ) {
@@ -131,6 +131,16 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 
 		case 'dismiss-notice':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
+
+		case 'optimize-file':
+		case 'restore-file':
+		case 'refresh-file-modified':
+			$action = 'imagify_' . str_replace( '-', '_', $action );
+			return wp_nonce_url( admin_url( 'admin-post.php?action=' . $action . '&id=' . $id ), $action );
+
+		case 'reoptimize-file':
+			$action = 'imagify_' . str_replace( '-', '_', $action );
+			return wp_nonce_url( admin_url( 'admin-post.php?action=' . $action . '&id=' . $id . '&level=' . $level ), $action );
 
 		case 'get-files-tree':
 			return wp_nonce_url( admin_url( 'admin-ajax.php?action=imagify_get_files_tree' ), 'get-files-tree' );
@@ -311,7 +321,7 @@ function imagify_die( $message = null ) {
 		}
 	}
 
-	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+	if ( wp_doing_ajax() ) {
 		wp_send_json_error( $message );
 	}
 
@@ -348,7 +358,7 @@ function imagify_die( $message = null ) {
  * @param array|string $args_or_url An array of query args to add to the redirection URL. If a string, the complete URL.
  */
 function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
-	if ( defined( 'DOING_AJAX' ) ) {
+	if ( wp_doing_ajax() ) {
 		return;
 	}
 
@@ -369,6 +379,14 @@ function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
 	 * @param string $redirect The URL to redirect to.
 	 */
 	$redirect = apply_filters( 'imagify_redirect_to', $redirect );
+
+	if ( $message ) {
+		if ( is_multisite() && strpos( $redirect, network_admin_url( '/' ) ) === 0 ) {
+			Imagify_Notices::get_instance()->add_network_temporary_notice( $message );
+		} else {
+			Imagify_Notices::get_instance()->add_site_temporary_notice( $message );
+		}
+	}
 
 	wp_safe_redirect( esc_url_raw( $redirect ) );
 	die();

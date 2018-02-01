@@ -234,7 +234,7 @@
 					// Value #///# In input id #///# Label.
 					v.value    = v.value.split( '#///#' );
 					v.value[1] = 'imagify_custom_folders_' + v.value[1];
-					$field     = $( '#' + v.value[1] )
+					$field     = $( '#' + v.value[1] );
 
 					if ( $field.length ) {
 						$field.prop( 'checked', true );
@@ -247,25 +247,23 @@
 				} );
 			} );
 		} )
-		.fail( function() {
-			swal( {
-				title:       imagifyOptions.labels.error,
-				type:        'error',
-				customClass: 'imagify-sweet-alert'
+			.fail( function() {
+				swal( {
+					title:       imagifyOptions.labels.error,
+					type:        'error',
+					customClass: 'imagify-sweet-alert'
+				} );
+			} )
+			.always( function(){
+				$button.removeAttr( 'disabled' );
 			} );
-		} )
-		.always( function(){
-			$button.removeAttr( 'disabled' );
-		} );
 	} );
 
 	// Clicking a folder icon in the modal: fetch the folder's sub-folders and files, then display them.
 	$( d ).on( 'click.imagify', '#imagify-folders-tree [data-folder]', function() {
-		var $button     = $( this ),
-			$mainButton = $( '#imagify-add-custom-folder' ),
-			$tree       = $button.next( 'ul' ),
-			selected    = [],
-			$parent;
+		var $button  = $( this ),
+			$tree    = $button.next( 'ul' ),
+			selected = [];
 
 		if ( $tree.length ) {
 			$tree.toggleClass( 'hidden' );
@@ -289,29 +287,30 @@
 				folder:   $button.data( 'folder' ),
 				selected: selected
 			}
-		} ).done( function( response ) {
-			if ( ! response.success ) {
+		} )
+			.done( function( response ) {
+				if ( ! response.success ) {
+					swal( {
+						title:       imagifyOptions.labels.error,
+						html:        response.data || '',
+						type:        'error',
+						customClass: 'imagify-sweet-alert'
+					} );
+					return;
+				}
+
+				$button.parent().append( '<ul>' + response.data + '</ul>' );
+			} )
+			.fail( function(){
 				swal( {
 					title:       imagifyOptions.labels.error,
-					html:        response.data || '',
 					type:        'error',
 					customClass: 'imagify-sweet-alert'
 				} );
-				return;
-			}
-
-			$button.parent().append( '<ul>' + response.data + '</ul>' );
-		} )
-		.fail( function(){
-			swal( {
-				title:       imagifyOptions.labels.error,
-				type:        'error',
-				customClass: 'imagify-sweet-alert'
+			} )
+			.always( function(){
+				$button.removeAttr( 'disabled' );
 			} );
-		} )
-		.always( function(){
-			$button.removeAttr( 'disabled' );
-		} );
 	} );
 
 } )(window, document, jQuery);

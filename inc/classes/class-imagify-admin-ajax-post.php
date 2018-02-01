@@ -26,6 +26,10 @@ class Imagify_Admin_Ajax_Post {
 		'imagify_manual_override_upload',
 		'imagify_optimize_missing_sizes',
 		'imagify_restore_upload',
+		'imagify_optimize_file',
+		'imagify_reoptimize_file',
+		'imagify_restore_file',
+		'imagify_refresh_file_modified',
 	);
 
 	/**
@@ -101,7 +105,7 @@ class Imagify_Admin_Ajax_Post {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		if ( wp_doing_ajax() ) {
 			// Actions triggered only on admin ajax.
 			$actions = array_merge( $this->ajax_post_actions, $this->ajax_only_actions );
 
@@ -294,6 +298,250 @@ class Imagify_Admin_Ajax_Post {
 		$data['thumbnails']            = $attachment->get_optimized_sizes_count();
 
 		wp_send_json_success( $data );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** CUSTOM FOLDERS ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Optimize a file.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_optimize_file_callback() {
+		imagify_check_nonce( 'imagify_optimize_file' );
+		imagify_check_user_capacity( 'optimize-file' );
+
+		$file = $this->get_file_to_optimize( 'imagify_optimize_file' );
+
+		// Optimize it.
+		$result = $file->optimize();
+
+		$this->file_optimization_output( $result, $file );
+	}
+
+	/**
+	 * Re-optimize a file.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_reoptimize_file_callback() {
+		imagify_check_nonce( 'imagify_reoptimize_file' );
+		imagify_check_user_capacity( 'optimize-file' );
+
+		$file = $this->get_file_to_optimize( 'imagify_reoptimize_file' );
+
+		// Restore it.
+		$result = $file->restore();
+
+		if ( ! is_wp_error( $result ) ) {
+			// Optimize it.
+			$level  = isset( $_GET['level'] ) && is_numeric( $_GET['level'] ) ? $_GET['level'] : null;
+			$result = $file->optimize( $level );
+		}
+
+		$this->file_optimization_output( $result, $file );
+	}
+
+	/**
+	 * Restore a file.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_restore_file_callback() {
+		imagify_check_nonce( 'imagify_restore_file' );
+		imagify_check_user_capacity( 'optimize-file' );
+
+		$file = $this->get_file_to_optimize( 'imagify_restore_file' );
+
+		// Restore it.
+		$result = $file->restore();
+
+		$this->file_optimization_output( $result, $file );
+	}
+
+	/**
+	 * Get all unoptimized attachment ids.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_refresh_file_modified_callback() {
+		imagify_check_nonce( 'imagify_refresh_file_modified' );
+		imagify_check_user_capacity( 'optimize-file' );
+
+		$file        = $this->get_file_to_optimize( 'imagify_refresh_file_modified' );
+		$file_path   = $file->get_original_path();
+		$backup_path = $file->get_backup_path();
+		$filesystem  = imagify_get_filesystem();
+
+		if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
+			/**
+			 * The file doesn't exist anymore.
+			 */
+			if ( ! $backup_path ) {
+				// No backup, let's delete this entry.
+				$file->delete_row();
+
+				$message = __( 'The file was missing or its path couldn\'t be retrieved from the database. The entry has been deleted from the database.', 'imagify' );
+
+				imagify_maybe_redirect( $message );
+
+				wp_send_json_error( array(
+					'row' => $message,
+				) );
+			} else {
+				// We have a backup, let's restore it.
+				$result = $file->restore();
+
+				$this->file_optimization_output( $result, $file );
+			}
+		}
+
+		/**
+		 * The file still exists.
+		 */
+		$old_data = $file->get_row();
+		$new_data = array();
+
+		// Folder ID.
+		if ( $old_data['folder_id'] ) {
+			$folder = Imagify_Folders_DB::get_instance()->get( $old_data['folder_id'] );
+
+			if ( ! $folder ) {
+				$new_data['folder_id'] = 0;
+			}
+		}
+
+		// Hash + modified.
+		$current_hash = md5_file( $file_path );
+
+		if ( ! $old_data['hash'] ) {
+			$new_data['modified'] = 0;
+		} else {
+			$new_data['modified'] = (int) ! hash_equals( $old_data['hash'], $current_hash );
+		}
+
+		$new_data['hash'] = $current_hash;
+
+		// The file is modified.
+		if ( $new_data['modified'] ) {
+			// Delete all optimization data and update file data.
+			$size = @getimagesize( $file_path );
+
+			$new_data = array_merge( $new_data, array(
+				'width'              => $size && isset( $size[0] ) ? $size[0] : 0,
+				'height'             => $size && isset( $size[1] ) ? $size[1] : 0,
+				'original_size'      => $filesystem->size( $file_path ),
+				'optimized_size'     => null,
+				'percent'            => null,
+				'optimization_level' => null,
+				'status'             => null,
+				'error'              => null,
+			) );
+
+			if ( $backup_path ) {
+				// Delete the backup of the previous file.
+				$filesystem->delete( $backup_path );
+			}
+		} else {
+			// Update file data.
+			$path = $backup_path ? $backup_path : $file_path;
+			$size = @getimagesize( $path );
+
+			$new_data = array_merge( $new_data, array(
+				'width'         => $size && isset( $size[0] ) ? $size[0] : 0,
+				'height'        => $size && isset( $size[1] ) ? $size[1] : 0,
+				'original_size' => $filesystem->size( $path ),
+			) );
+		}
+
+		// Save the new data.
+		$old_data = array_intersect_key( $old_data, $new_data );
+		ksort( $old_data );
+		ksort( $new_data );
+
+		if ( $old_data !== $new_data ) {
+			$file->update_row( $new_data );
+		}
+
+		imagify_maybe_redirect();
+
+		// Return some HTML to the ajax call.
+		$list_table = new Imagify_Files_List_Table( array(
+			'screen' => 'imagify-files',
+		) );
+
+		wp_send_json_success( array(
+			'folder'             => $list_table->get_column( 'folder', $file ),
+			'optimization'       => $list_table->get_column( 'optimization', $file ),
+			'status'             => $list_table->get_column( 'status', $file ),
+			'optimization_level' => $list_table->get_column( 'optimization_level', $file ),
+			'actions'            => $list_table->get_column( 'actions', $file ),
+			'title'              => $list_table->get_column( 'title', $file ),
+		) );
+	}
+
+	/**
+	 * Depending on the file ID sent, get the corresponding file object.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $identifier The identifier to use in get_imagify_attachment().
+	 * @return object             A Imagify_File_Attachment object.
+	 */
+	protected function get_file_to_optimize( $identifier ) {
+		if ( empty( $_GET['id'] ) ) { // WPCS: CSRF ok.
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		$file_id = (int) $_GET['id'];
+
+		$file = get_imagify_attachment( 'File', $file_id, $identifier );
+
+		if ( ! $file->is_valid() ) {
+			imagify_die( __( 'Invalid file ID', 'imagify' ) );
+		}
+
+		return $file;
+	}
+
+	/**
+	 * After a file optimization, restore, or whatever, redirect the user or output HTML for ajax.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param bool|object $result True if the operation succeeded. A WP_Error object on failure.
+	 * @param object      $file   A Imagify_File_Attachment object.
+	 */
+	protected function file_optimization_output( $result, $file ) {
+		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
+
+		// Return some HTML to the ajax call.
+		$list_table = new Imagify_Files_List_Table( array(
+			'screen' => 'imagify-files',
+		) );
+
+		wp_send_json_success( array(
+			'optimization'       => $list_table->get_column( 'optimization', $file ),
+			'status'             => $list_table->get_column( 'status', $file ),
+			'optimization_level' => $list_table->get_column( 'optimization_level', $file ),
+			'actions'            => $list_table->get_column( 'actions', $file ),
+			'title'              => $list_table->get_column( 'title', $file ), // This one must remain after the "optimization" column, otherwize the data for the comparison tool won't be up-to-date.
+		) );
 	}
 
 
