@@ -130,26 +130,6 @@ class Imagify_DB {
 	}
 
 	/**
-	 * Get Imagify file extensions, ready to be used in a `REGEXP` clause.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return string A pipe separated list of file extensions.
-	 */
-	public static function get_extensions() {
-		static $extensions;
-
-		if ( ! isset( $extensions ) ) {
-			$extensions = array_keys( imagify_get_mime_types() );
-			$extensions = implode( '|', $extensions );
-		}
-
-		return $extensions;
-	}
-
-	/**
 	 * Get post statuses related to attachments, ready to be used in a `IN ()` clause.
 	 *
 	 * @since  1.7
@@ -222,9 +202,49 @@ class Imagify_DB {
 
 		$alias      = self::get_required_wp_metadata_aliases();
 		$alias      = $alias['_wp_attached_file'];
-		$extensions = self::get_extensions();
+		$extensions = self::get_extensions_query();
 
-		return "AND $alias.meta_value NOT LIKE '%://%' AND $alias.meta_value NOT LIKE '_:\\\\\%' AND LOWER( $alias.meta_value ) REGEXP '.+\.($extensions)'";
+		return "AND $alias.meta_value NOT LIKE '%://%' AND $alias.meta_value NOT LIKE '_:\\\\\%' AND $extensions";
+	}
+
+	/**
+	 * Get the SQL part to be used in a WHERE clause, to get only attachments that have a valid file extensions.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $alias    The alias to use for the meta value.
+	 * @param  bool   $matching Set to false to get a query to fetch metas NOT matching the file extensions.
+	 * @return string           A query.
+	 */
+	public static function get_extensions_query( $alias = false, $matching = true ) {
+		static $extensions, $query, $not_matching_query;
+
+		if ( ! isset( $extensions ) ) {
+			$extensions = array_keys( imagify_get_mime_types() );
+			$extensions = implode( '|', $extensions );
+			$extensions = explode( '|', $extensions );
+		}
+
+		if ( ! $alias ) {
+			$alias = self::get_required_wp_metadata_aliases();
+			$alias = $alias['_wp_attached_file'];
+		}
+
+		if ( $matching ) {
+			if ( ! isset( $query ) ) {
+				$query = "( LOWER( $alias.meta_value ) LIKE '%." . implode( "' OR LOWER( $alias.meta_value ) LIKE '%.", $extensions ) . "' )";
+			}
+
+			return $query;
+		}
+
+		if ( ! isset( $not_matching_query ) ) {
+			$not_matching_query = "( LOWER( $alias.meta_value ) NOT LIKE '%." . implode( "' AND LOWER( $alias.meta_value ) NOT LIKE '%.", $extensions ) . "' )";
+		}
+
+		return $not_matching_query;
 	}
 
 	/**

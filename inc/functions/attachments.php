@@ -136,8 +136,8 @@ function imagify_has_attachments_without_required_metadata() {
 	}
 
 	$mime_types = Imagify_DB::get_mime_types();
-	$extensions = Imagify_DB::get_extensions();
 	$statuses   = Imagify_DB::get_post_statuses();
+	$extensions = Imagify_DB::get_extensions_query( 'mt1', false );
 	$has        = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT p.ID
@@ -149,7 +149,7 @@ function imagify_has_attachments_without_required_metadata() {
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
-			AND ( mt1.meta_value IS NULL OR mt1.meta_value LIKE '%://%' OR mt1.meta_value LIKE '_:\\\\\%' OR LOWER( mt1.meta_value ) NOT REGEXP '.+\.($extensions)' OR mt2.meta_value IS NULL )
+			AND ( mt1.meta_value IS NULL OR mt1.meta_value LIKE '%://%' OR mt1.meta_value LIKE '_:\\\\\%' OR $extensions OR mt2.meta_value IS NULL )
 		LIMIT 1"
 	);
 
