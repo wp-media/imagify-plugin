@@ -979,6 +979,13 @@ td.imagify-cell-filename {
 	padding: 15px 0 8px 0;
 }
 
+.imagify-settings .button-primary.button-primary[disabled] {
+	color: #4A4A4A!important;
+	background: #D9E4EB!important;
+	text-shadow: none!important;
+	cursor: not-allowed;
+}
+
 /* Icon rotation */
 .dashicons.rotate {
 	-webkit-animation: icon-rotate 2.6s infinite linear;
