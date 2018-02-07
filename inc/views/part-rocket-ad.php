@@ -18,6 +18,10 @@ $discount_code    = 'IMAGIFY20';
 		<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket@2x.png 2x" alt="WP Rocket" width="232" height="63">
 
 		<p>
+			<?php $promo = __( 'Get %s OFF%s Now', 'rocket-lazyload' ); ?>
+			<span class="imagify-rocket-cta-promo">
+				<?php printf( $promo, '<strong>20%', '</strong>' ); ?>
+			</span>
 			<a class="btn btn-rocket" href="<?php echo esc_url( imagify_get_wp_rocket_url() ); ?>" target="_blank"><?php _e( 'Get WP Rocket now', 'imagify' ); ?></a>
 		</p>
 

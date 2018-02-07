@@ -334,8 +334,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 	text-align: center;
 	color: #FFF;
 }
-
-p.imagify-sidebar-title {
+.imagify-sidebar-title {
 	margin: 1.2em 0 1.5em;
 	text-align: left;
 	color: #F56640;
@@ -344,12 +343,25 @@ p.imagify-sidebar-title {
 	word-spacing: 0.015em;
 	font-weight: bold;
 }
-
+.imagify-rocket-cta-promo {
+	display: block;
+	padding: 15px;
+	margin-top: 1em;
+	border: 2px dashed #F56640;
+	border-bottom: 0;
+	border-radius: 3px 3px 0 0;
+	font-size: 22px;
+	font-weight: bold;
+	color: #F56640;
+}
+.imagify-rocket-cta-promo strong {
+	color: #FFF;
+}
 a.btn-rocket {
 	display: block;
 	font-size: 15px;
 	padding: 10px 12px;
-	margin: 1.5em 0;
+	margin: 0 0 1.5em;
 	background: #F56640;
 	border-radius: 3px;
 	color: #FFF;
