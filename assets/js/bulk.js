@@ -72,7 +72,7 @@
 					],
 					datasets: [ {
 						data:            [],
-						backgroundColor: [ '#D9E4EB', '#46B1CE', '#2E3242' ],
+						backgroundColor: [ '#10121A', '#46B1CE', '#C51162' ],
 						borderWidth:     0
 					} ]
 				}
