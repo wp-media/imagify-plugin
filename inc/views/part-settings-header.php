@@ -11,7 +11,9 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			<sup><?php echo IMAGIFY_VERSION; ?></sup>
 		</small>
 	</p>
-
+	
+	<?php $options = Imagify_Options::get_instance();
+	if ( $options->get( 'api_key' ) ) { ?>
 	<p class="imagify-rate-us">
 		<?php
 		printf(
@@ -26,6 +28,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		<br>
 		<a class="stars" aria-hidden="true" href="<?php echo esc_url( imagify_get_external_url( 'rate' ) ); ?>" target="_blank"><?php echo str_repeat( '<span class="dashicons dashicons-star-filled"></span>', 5 ); ?></a>
 	</p>
+	<?php } ?>
 
 	<?php $this->print_template( 'part-documentation-link' ); ?>
 </div>
