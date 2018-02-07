@@ -334,7 +334,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 	text-align: center;
 	color: #FFF;
 }
-.imagify-sidebar-title {
+p.imagify-sidebar-title {
 	margin: 1.2em 0 1.5em;
 	text-align: left;
 	color: #F56640;
