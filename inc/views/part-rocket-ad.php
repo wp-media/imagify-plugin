@@ -29,7 +29,7 @@ $discount_code    = 'IMAGIFY20';
 			<li><?php
 				printf(
 					/* translators: 1 is the start of the colored text wrapper, 2 is the end. */
-					__( 'All you need to %1$simprove your Google PageSpeed%2$ score.', 'imagify' ),
+					__( 'All you need to %1$simprove your Google PageSpeed%2$s score.', 'imagify' ),
 					'<strong>',
 					'</strong>'
 				);
