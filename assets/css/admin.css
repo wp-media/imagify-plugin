@@ -389,6 +389,7 @@ body.imagify-modal-is-open {
 }
 .imagify-button-clean .dashicons-plus {
 	width: 32px;
+	height: 25px;
 }
 .imagify-button-clean .dashicons-plus:before {
 	display: flex;
@@ -407,7 +408,7 @@ body.imagify-modal-is-open {
 .button.imagify-button-clean:focus,
 .button.imagify-button-clean:active,
 .button.imagify-button-clean[disabled] {
-	background: transparent;
+	background: transparent!important;
 	color: #343A49;
 	box-shadow: none;
 }
