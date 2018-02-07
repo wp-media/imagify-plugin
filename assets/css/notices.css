@@ -191,7 +191,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	border: 0 none;
 	box-shadow: none;
 	color: #FFF;
-	background: #412355;
+	background: #1F2332;
 }
 .media_page_imagify-bulk-optimization .imagify-rkt-notice {
 	margin-left: 2px;
@@ -210,7 +210,8 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	padding: 0;
 	margin-top: -11px;
 	background: transparent;
-	color: #FD7300;
+	color: rgba(255,255,255,.5);
+	text-decoration: none;
 	border-radius: 50%;
 	transition: all .275s;
 }
@@ -240,6 +241,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 }
 .imagify-rkt-notice .imagify-rkt-msg {
 	width: 100%!important; /* !important because of a dirtugly WP Engine code */
+	color: #FFF;
 	padding: 0 15px;
 	font-size: 14px;
 	line-height: 1.6;
@@ -252,8 +254,8 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	padding: 5px 10px;
 	font-size: 23px;
 	font-weight: bold;
-	border: 1px dashed #F7A933;
-	color: #F7A933;
+	border: 1px dashed #F56640;
+	color: #F56640;
 }
 .imagify-rkt-notice .imagify-rkt-cta {
 	width: 250px!important; /* !important because of a dirtugly WP Engine code */
@@ -271,11 +273,11 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	height: auto;
 	font-weight: 600;
 	font-size: 14px;
-	box-shadow: 0 4px 0 #B27A27;
 	border: 0 none;
 	padding: 9px 18px 9px;
-	background: #F7A933;
-	text-shadow: 1px 1px 1px rgba(0,0,0,.2);
+	background: #F56640;
+	box-shadow: none;
+	text-shadow: none!important;
 }
 @media (max-width: 880px) {
 	.imagify-rkt-notice {
