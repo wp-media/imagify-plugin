@@ -15,7 +15,7 @@ $discount_code    = 'IMAGIFY20';
 			<?php _e( 'We recommend for you', 'corporate' ); ?>
 		</p>
 
-		<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket@2x.png 2x" alt="WP Rocket" width="232" height="63">
+		<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.svg 1x, <?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.svg 2x" alt="WP Rocket" width="232" height="63">
 
 		<p>
 			<?php $promo = __( 'Get %s OFF%s Now', 'rocket-lazyload' ); ?>
