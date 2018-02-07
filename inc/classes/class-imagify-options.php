@@ -388,6 +388,13 @@ class Imagify_Options {
 	 * @return array
 	 */
 	public function get_default_values() {
+		$default_values = $this->default_values;
+
+		if ( ! empty( $default_values['cached'] ) ) {
+			unset( $default_values['cached'] );
+			return $default_values;
+		}
+
 		/**
 		 * Allow to add more default option values.
 		 *
@@ -397,19 +404,22 @@ class Imagify_Options {
 		 * @param array $new_values     New default option values.
 		 * @param array $default_values Plugin default option values.
 		 */
-		$new_values = apply_filters( 'imagify_default_' . $this->get_hook_identifier() . '_values', array(), $this->default_values );
+		$new_values = apply_filters( 'imagify_default_' . $this->get_hook_identifier() . '_values', array(), $default_values );
 		$new_values = is_array( $new_values ) ? $new_values : array();
 
 		if ( $new_values ) {
 			// Don't allow new values to overwrite the plugin values.
-			$new_values = array_diff_key( $new_values, $this->default_values );
+			$new_values = array_diff_key( $new_values, $default_values );
 		}
 
-		if ( ! $new_values ) {
-			return $this->default_values;
+		if ( $new_values ) {
+			$default_values       = array_merge( $default_values, $new_values );
+			$this->default_values = $default_values;
 		}
 
-		return array_merge( $this->default_values, $new_values );
+		$this->default_values['cached'] = 1;
+
+		return $default_values;
 	}
 
 	/**
@@ -422,7 +432,15 @@ class Imagify_Options {
 	 * @return array
 	 */
 	public function get_reset_values() {
-		$reset_values = array_merge( $this->get_default_values(), $this->reset_values );
+		$reset_values = $this->reset_values;
+
+		if ( ! empty( $reset_values['cached'] ) ) {
+			unset( $reset_values['cached'] );
+			return $reset_values;
+		}
+
+		$default_values = $this->get_default_values();
+		$reset_values   = array_merge( $default_values, $reset_values );
 
 		/**
 		 * Allow to add more reset option values.
@@ -438,14 +456,17 @@ class Imagify_Options {
 
 		if ( $new_values ) {
 			// Don't allow new values to overwrite the plugin values.
-			$new_values = array_diff_key( $new_values, $this->default_values );
+			$new_values = array_diff_key( $new_values, $default_values );
 		}
 
-		if ( ! $new_values ) {
-			return $reset_values;
+		if ( $new_values ) {
+			$reset_values       = array_merge( $reset_values, $new_values );
+			$this->reset_values = $reset_values;
 		}
 
-		return array_merge( $reset_values, $new_values );
+		$this->reset_values['cached'] = 1;
+
+		return $reset_values;
 	}
 
 
