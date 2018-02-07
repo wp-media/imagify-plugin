@@ -858,8 +858,11 @@ td.imagify-cell-title {
 .imagify-cell-original .imagify-cell-label {
 	color: #1F2332;
 }
-.imagify-cell-optimized {
-	font-weight: bold;
+.imagify-cell-optimized,
+.imagify-cell-original {
+	font-weight: 500;
+	color: #7A8996;
+	font-size: 12px;
 }
 .imagify-cell-optimized .imagify-cell-label {
 	color: #338EA6;
