@@ -330,9 +330,20 @@ label[for="imagify_sizes_full"] + .imagify-info {
 	}
 }
 .imagify-sidebar-section {
+	position: relative;
 	padding: 10px 20px;
 	text-align: center;
 	color: #FFF;
+}
+.imagify-sidebar-close {
+	position: absolute;
+	top: 8px;
+	right: 12px;
+	text-decoration: none;
+}
+.imagify-sidebar-close i {
+	font-size: 2em;
+	color: rgba(255,255,255,.5);
 }
 p.imagify-sidebar-title {
 	margin: 1.2em 0 1.5em;

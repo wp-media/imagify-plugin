@@ -59,6 +59,10 @@ $discount_code    = 'IMAGIFY20';
 				);
 			?></li>
 		</ul>
+
+	<?php $dismiss_url = get_imagify_admin_url( 'dismiss-notice', 'wp-rocket-sidebar-add' ); ?>
+
+	<a class="imagify-sidebar-close" href="<?php echo esc_url( $dismiss_url ); ?>"><span class="screen-reader-text"><?php _e( 'Remove the ad', 'imagify' ) ?></span><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></a>
 	</div>
 </div>
 
