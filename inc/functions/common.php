@@ -173,6 +173,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Abstract_Attachment'      => 1,
 		'Imagify_Abstract_Cron'            => 1,
 		'Imagify_Abstract_DB'              => 1,
+		'Imagify_Abstract_Options'         => 1,
 		'Imagify_Admin_Ajax_Post'          => 1,
 		'Imagify_Assets'                   => 1,
 		'Imagify_Attachment'               => 1,
