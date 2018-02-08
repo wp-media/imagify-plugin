@@ -213,7 +213,7 @@
 
 			swal( {
 				title:             imagifyOptions.labels.filesTreeTitle,
-				html:              '<div class="imagify-swal-subtitle">' + imagifyOptions.labels.filesTreeSubTitle + '</div><div class="imagify-swal-content"><ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul></div>',
+				html:              '<div class="imagify-swal-subtitle">' + imagifyOptions.labels.filesTreeSubTitle + '</div><div class="imagify-swal-content"><p class="imagify-folders-information"><i class="dashicons dashicons-info" aria-hidden="true"></i>' + imagifyOptions.labels.cleaningInfo + '</p><ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul></div>',
 				type:              '',
 				customClass:       'imagify-sweet-alert imagify-swal-has-subtitle  imagify-folders-selection',
 				showCancelButton:  true,

@@ -63,6 +63,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'noBackupText'            => __( 'If you keep this option deactivated, you won\'t be able to re-optimize your images to another compression level and restore your original images in case of need.', 'imagify' ),
 					'filesTreeTitle'          => __( 'Select Custom Folders', 'imagify' ),
 					'filesTreeSubTitle'       => __( 'Select one or several custom folders to optimize.', 'imagify' ),
+					'cleaningInfo'            => __( 'We removed some folders that are not containing any images from the tree.', 'imagify' ),
 					'confirmFilesTreeBtn'     => __( 'Select Folders', 'imagify' ),
 					'customFilesLegend'       => __( 'Choose the folders to optimize', 'imagify' ),
 					'error'                   => __( 'Error', 'imagify' ),

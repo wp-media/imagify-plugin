@@ -436,104 +436,187 @@ label[for="imagify_admin_bar_menu"] {
 	display: inline-block;
 }
 
+.imagify-folders-information {
+	position: relative;
+	margin: -5px 0 20px 0;
+	padding: 10px 10px 10px 40px;
+	text-align: left;
+	background: #F2F2F2;
+}
+.imagify-folders-information i {
+	position: absolute;
+	left: 10px;
+	top: 50%;
+	margin-top: -10px;
+}
+
 /* Tree */
 .imagify-folders-tree {
 	margin: 0;
 	text-align: left;
 }
-.imagify-icon-folder {
-	display: inline-block;
-	margin: 0 5px;
-	width: 27px;
-	height: 19px;
-	background: url("../images/icon-folder-closed.svg") 0 0 no-repeat;
-	background-size: 21px 19px;
-}
-.imagify-is-open .imagify-icon-folder {
-	background-image: url("../images/icon-folder-open.svg");
-	background-size: 27px 19px;
+.imagify-folders-tree li {
+	clear: left;
 }
 .imagify-folders-tree .imagify-folder {
+	box-sizing: border-box;
 	position: relative;
+	width: 48px;
 	z-index: 2;
 	float: left;
-	margin-top: 0;
-	padding: 0;
+	margin-top: -3px;
+	padding: 0 8px 0 0;
 	border: 0;
 	background: transparent!important;
 	box-shadow: none;
 	cursor: pointer;
+	transition: all .275s;
 }
+.imagify-folders-tree span.imagify-folder {
+	padding-left: 1.5px;
+}
+.imagify-folders-tree .imagify-folder:before {
+	content: "+";
+	display: inline-block;
+	width: 13px;
+	height: 21px;
+	font-size: 1.5em;
+	vertical-align: .15em;
+}
+.imagify-folders-tree span.imagify-folder:before {
+	content: '';
+}
+.imagify-folders-tree .imagify-folder-icon path {
+	transition: all .275s;
+}
+.imagify-folders-tree .imagify-is-open .imagify-folder-icon path {
+	stroke: #7A8996;
+}
+.imagify-folders-tree .imagify-is-open.imagify-folder:before {
+	content: "-";
+	color: #7A8996;
+}
+.imagify-folders-tree .imagify-is-open ~ label {
+	color: #7A8996;
+}
+
+.imagify-folders-tree button.imagify-folder:hover,
+.imagify-folders-tree button.imagify-folder:focus,
+.imagify-folders-tree button.imagify-folder:hover path,
+.imagify-folders-tree button.imagify-folder:focus path {
+	color: #3694AE;
+	stroke: #3694AE;
+}
+
 .imagify-folders-tree .imagify-folder:disabled,
 .imagify-folders-tree .imagify-folder.disabled {
 	color: rgb(127, 127, 127);
 }
 .imagify-swal-content .imagify-folders-tree label {
 	position: relative;
-	display: inline-block;
-	padding-right: 10px;
+	display: block;
+	width: 100%;
+	padding: 3px 0;
 	font-size: 15px;
+	font-weight: 500;
 	vertical-align: top;
 	transition: all .475s;
 }
-.imagify-swal-content .imagify-folders-tree label:before {
+.imagify-swal-content .imagify-folders-tree label:hover,
+.imagify-folders-tree input:focus + label {
+	background: #F4F7F9;
+}
+
+.imagify-folders-tree .imagify-folder-already-selected label,
+.imagify-folders-tree .imagify-folder-already-selected label:hover,
+.imagify-folders-tree .imagify-folder-already-selected input:focus + label {
+	background: #40B1D0;
+	color: #FFF;
+	border-radius: 3px;
+	cursor: default;
+}
+.imagify-folders-tree .imagify-folder-already-selected button,
+.imagify-folders-tree .imagify-folder-already-selected button path {
+	color: #FFF;
+	stroke: #FFF;
+	cursor: default;
+}
+.imagify-folders-tree .imagify-folder-already-selected button:hover path,
+.imagify-folders-tree .imagify-folder-already-selected button:focus path {
+	stroke: #FFF;
+}
+.imagify-folders-tree .imagify-folder-already-selected button:before {
+	content: '';
+}
+
+/* Add Folder fake checkbox */
+.imagify-add-ed-folder {
 	position: absolute;
-	left: -28px;
-	top: 2px;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+	word-spacing: 0.02em;
+	color: #3694AE;
+	background: #F4F7F9;
+	opacity: 0;
+	transform: translateX(15px);
+	transition: all .275s;
+}
+label:hover .imagify-add-ed-folder,
+input:focus + label .imagify-add-ed-folder,
+input:checked + label .imagify-add-ed-folder,
+.imagify-folder-already-selected .imagify-add-ed-folder {
+	opacity: 1;
+	transform: translateX(0);
+}
+input:checked + label .imagify-add-ed-folder {
+	background: #FFF;
+}
+input:checked:focus + label .imagify-add-ed-folder,
+input:checked + label:hover .imagify-add-ed-folder {
+	background: #F4F7F9;
+}
+.imagify-folder-already-selected .imagify-add-ed-folder {
+	background: #40B1D0;
+	color: #FFF;
+}
+.imagify-fake-checkbox {
+	position: relative;
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	margin: 3.5px 15px 0 5px;
+	border: 1.5px solid #3694AE;
+	border-radius: 3px;
+	vertical-align: -4px;
+}
+.imagify-fake-checkbox:after {
+	position: absolute;
+	left: 1px;
+	top: 0;
 	content: "✓";
-	color: #8BC34A;
+	color: #3694AE;
 	font-size: 14px;
+	line-height: .9;
 	font-style: normal;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	opacity: 0;
 	transform: scale(0);
 	transition: all .475s;
 }
-.imagify-swal-content .imagify-folders-tree label:after {
-	content: "";
-	position: absolute;
-	right: 0;
-	top: 0;
-	bottom: 0;
-	width: 4px;
-	background: #8BC34A;
-	font-size: 15px;
-	opacity: 0;
-	transform: translateX(-10px);
-	transition: all .475s;
-}
-
-.imagify-swal-content .imagify-folders-tree .imagify-is-open ~ label:before {
-	font-size: 13px;
-	left: -24px;
-	top: 4px;
-}
-
-.imagify-folders-tree [name="imagify-custom-files[]"]:checked + label:after {
-	opacity: 1;
-	transform: translateX(0);
-}
-.imagify-folders-tree [name="imagify-custom-files[]"]:checked + label:before {
+input:checked + label .imagify-fake-checkbox:after,
+.imagify-folder-already-selected .imagify-fake-checkbox:after {
 	opacity: 1;
 	transform: scale(1);
 }
-.imagify-folders-tree [name="imagify-custom-files[]"]:checked + label {
-	font-weight: bold;
-	color: #5C8031;
+.imagify-folder-already-selected .imagify-fake-checkbox {
+	border-color: #40B1D0;
 }
-.imagify-folders-tree [name="imagify-custom-files[]"][disabled] + label {
-	font-weight: bold;
-	opacity: 0.5;
-}
-.imagify-folders-tree [name="imagify-custom-files[]"][disabled] + label:before {
-	color: #626E7B;
-	opacity: 1;
-	transform: scale(1);
-}
-.imagify-folders-tree [name="imagify-custom-files[]"][disabled] + label:after {
-	background-color: #626E7B;
-	opacity: 1;
-	transform: translateY(0);
+.imagify-folder-already-selected .imagify-fake-checkbox:after {
+	color: #FFF;
 }
 
 /* Sub Trees */
@@ -546,11 +629,12 @@ label[for="imagify_admin_bar_menu"] {
 }
 .imagify-folders-sub-tree li {
 	position: relative;
+	margin-bottom: 4px;
 }
 .imagify-folders-sub-tree li:before {
 	content: "";
 	position: absolute;
-	top: 10px;
+	top: 12px;
 	left: -1em;
 	height: 1px;
 	width: 0.9em;
