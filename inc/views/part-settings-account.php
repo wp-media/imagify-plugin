@@ -133,9 +133,6 @@ if ( imagify_valid_key() ) {
 			 */
 			?>
 			<div class="best-plan<?php echo $hidden_class; ?>">
-				<p><?php esc_html_e( 'We can also analyze your needs to prevent you to buy a plan that doesn\'t suit you.', 'imagify' ); ?><br>
-				<?php esc_html_e( 'Our analyze will allow you to choose a better plan for your needs.', 'imagify' ); ?></p>
-
 				<h3><?php esc_html_e( 'You’re new to Imagify', 'imagify' ); ?></h3>
 
 				<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
