@@ -186,7 +186,7 @@
 			return;
 		}
 
-		$button.attr( 'disabled', 'disabled' );
+		$button.attr( 'disabled', 'disabled' ).next( 'img' ).attr( 'aria-hidden', 'false' );
 
 		$( '#imagify-custom-folders' ).find( ':checked' ).each( function() {
 			selected.push( this.value );
@@ -263,7 +263,7 @@
 				} );
 			} )
 			.always( function(){
-				$button.removeAttr( 'disabled' );
+				$button.removeAttr( 'disabled' ).next( 'img' ).attr( 'aria-hidden', 'true' );
 			} );
 	} );
 

@@ -63,7 +63,7 @@ $settings = Imagify_Settings::get_instance();
 			<span class="dashicons dashicons-plus"></span>
 			<span class="button-text"><?php _e( 'Add folder', 'imagify' ); ?></span>
 		</button>
-		<img class="imagify-loader" alt="<?php esc_attr_e( 'Loading...', 'imagify' ); ?>" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'loader-balls.svg' ); ?>" width="38" height="24"/>
+		<img class="imagify-loader" aria-hidden="true" alt="<?php esc_attr_e( 'Loading...', 'imagify' ); ?>" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'loader-balls.svg' ); ?>" width="38" height="24"/>
 		<?php
 		/**
 		 * Other custom folders.
