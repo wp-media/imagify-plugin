@@ -248,8 +248,11 @@
 						return;
 					}
 
-					field += '<p><input type="checkbox" value="' + v.value[0] + '" id="' + v.value[1] + '" name="imagify_settings[custom_folders][]" class="imagify-row-check" checked="checked" /> ';
-					field += '<label for="' + v.value[1] + '" onclick="">' + v.value[2] + '</label></p>';
+					field += '<p id="' + v.value[1] + '" class="imagify-custom-folder-line" data-value="' + v.value[0] + '">';
+					field += v.value[2];
+					field += '<button type="button" class="imagify-custom-folders-remove"><span class="imagify-custom-folders-remove-text">' + imagifyOptions.labels.removeFolder + '</span><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></button>';
+					field += '</p>';
+
 					$fieldset.append( field );
 				} );
 			} );

@@ -6,64 +6,56 @@ if ( ! imagify_can_optimize_custom_folders() ) {
 }
 
 $settings = Imagify_Settings::get_instance();
+$themes   = Imagify_Settings::get_themes();
+$plugins  = Imagify_Settings::get_plugins();
+
+$themes_and_plugins = array_keys( array_merge( $themes, $plugins ) );
+
+$disabled_values = Imagify_Files_Scan::get_forbidden_folders();
+$disabled_values = array_map( array( 'Imagify_Files_Scan', 'add_placeholder' ), $disabled_values );
+$disabled_values = array_flip( $disabled_values );
+$theme_name = 'The Theme'; // TODO: dynamic
+$child_theme_name = 'The Kid'; // TODO: dynamic
+$themes_count = 2; // TODO: dynamic. 1 if main theme, 2 if is a child
 ?>
 <div class="imagify-col" id="custom-folders">
-	<h3 class="imagify-options-subtitle"><?php _e( 'Themes and Plugins', 'imagify' ); ?></h3>
+	<h3 class="imagify-options-subtitle"><?php _e( 'Custom Folders', 'imagify' ); ?></h3>
 
-	<div>
-		<h4 class="imagify-h4-like"><?php _e( 'Themes to optimize', 'imagify' ); ?></h4>
-		<p><?php _e( 'You can choose to optimize the themes on your site.', 'imagify' ); ?></p>
-		<?php
-		$themes  = Imagify_Settings::get_themes();
-		$plugins = Imagify_Settings::get_plugins();
+	<div id="imagify-custom-folders" class="hide-if-no-js imagify-mt2">
+		
+		<div class="imagify-folder-themes-suggestion">
+			<div class="imagify-fts-header imagify-flex imagify-vcenter">
+				<span><i class="dashicons dashicons-info"></i></span>
+				<p>
+					<?php // TODO: dynamic. Sometimes you only have a main theme ;p ?>
+					<?php printf ( __( 'You’re using %s', 'imagify' ), '<strong>' . $child_theme_name . '</strong>' ); ?>
+					<br>
+					<?php printf( __( 'child theme of %s', 'imagify' ), '<strong>' . $theme_name . '</strong>' ); ?>
+				</p>
+			</div>
 
-		$themes_and_plugins = array_keys( array_merge( $themes, $plugins ) );
-		$custom_folders     = Imagify_Folders_DB::get_instance()->get_active_folders_column_in( 'path', 'path', $themes_and_plugins );
-		$custom_folders     = array_flip( $custom_folders );
+			<div class="imagify-fts-content">
+				
+				<p><?php echo _n( 'Would you like to optimize your theme?', 'Would you like to optimize your themes?', $themes_count, 'imagify' ); ?></p>
 
-		$disabled_values = Imagify_Files_Scan::get_forbidden_folders();
-		$disabled_values = array_map( array( 'Imagify_Files_Scan', 'add_placeholder' ), $disabled_values );
-		$disabled_values = array_flip( $disabled_values );
+				<button id="imagify-add-themes-to-custom-folder" class="button imagify-button-clean imagify-add-themes" type="button">
+					<span class="dashicons dashicons-plus"></span>
+					<span class="button-text"><?php echo _n( 'Add the theme to optimization', 'Add the themes to optimization', $themes_count , 'imagify' ); ?></span>
+				</button>
+			</div>
+		</div>
 
-		/**
-		 * Themes.
-		 */
-		$settings->field_checkbox_list( array(
-			'option_name'     => 'custom_folders',
-			'legend'          => __( 'Choose the themes to optimize', 'imagify' ),
-			'current_values'  => $custom_folders,
-			'values'          => $themes,
-			'disabled_values' => $disabled_values,
-		) );
-		?>
-	</div>
+		<p class="imagify-kindof-title imagify-flex imagify-vcenter">
+			<span><?php _e( 'Optimize Images in custom folders here.', 'imagify' ); ?></span>
+			<span>
+				<button id="imagify-add-custom-folder" class="button imagify-button-mini imagify-button-primary imagify-add-custom-folder" type="button">
+					<span class="dashicons dashicons-plus"></span>
+					<span class="button-text"><?php _e( 'Add folders', 'imagify' ); ?></span>
+				</button>
+				<img class="imagify-loader" aria-hidden="true" alt="<?php esc_attr_e( 'Loading...', 'imagify' ); ?>" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'loader-balls.svg' ); ?>" width="38" height="24"/>
+			</span>
+		</p>
 
-	<div>
-		<h4 class="imagify-h4-like"><?php _e( 'Plugins to optimize', 'imagify' ); ?></h4>
-		<p><?php _e( 'You can choose to optimize the plugins on your site.', 'imagify' ); ?></p>
-		<?php
-		/**
-		 * Plugins.
-		 */
-		$settings->field_checkbox_list( array(
-			'option_name'     => 'custom_folders',
-			'legend'          => __( 'Choose the plugins to optimize', 'imagify' ),
-			'current_values'  => $custom_folders,
-			'values'          => $plugins,
-			'disabled_values' => $disabled_values,
-		) );
-		?>
-	</div>
-
-	<div id="imagify-custom-folders" class="hide-if-no-js imagify-mt3">
-		<h3 class="imagify-options-subtitle"><?php _e( 'Custom folders', 'imagify' ); ?></h3>
-		<p><?php _e( 'You can choose to optimize custom folders on your site.', 'imagify' ); ?></p>
-
-		<button id="imagify-add-custom-folder" class="button imagify-button-clean imagify-add-custom-folder" type="button">
-			<span class="dashicons dashicons-plus"></span>
-			<span class="button-text"><?php _e( 'Add folder', 'imagify' ); ?></span>
-		</button>
-		<img class="imagify-loader" aria-hidden="true" alt="<?php esc_attr_e( 'Loading...', 'imagify' ); ?>" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'loader-balls.svg' ); ?>" width="38" height="24"/>
 		<?php
 		/**
 		 * Other custom folders.
@@ -80,6 +72,16 @@ $settings = Imagify_Settings::get_instance();
 				$custom_folders['{{ABSPATH}}/'] = __( 'Site\'s root', 'imagify' );
 			}
 
+
+			// TODO: remove that sample of markup.
+			for ( $i = 0; $i <= 2; $i++ ) {
+			echo '<p id="imagify_custom_folders_{CONTENTfoldername}" class="imagify-custom-folder-line" data-value="{{CONTENT}}/folder/name/">';
+			echo '/wp-content/folder/name/';
+			echo '<button type="button" class="imagify-custom-folders-remove"><span class="imagify-custom-folders-remove-text">' . __( 'Remove', 'imagify' ) . '</span><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></button>';
+			echo '</p>';
+			}
+
+			// TODO: Create a new "field_removable_item_list" method, for example.
 			$settings->field_checkbox_list( array(
 				'option_name'    => 'custom_folders',
 				'legend'         => __( 'Choose the folders to optimize', 'imagify' ),

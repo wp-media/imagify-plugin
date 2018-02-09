@@ -433,6 +433,102 @@ label[for="imagify_admin_bar_menu"] {
 	cursor: default;
 }
 
+/* Add Themes box */
+.imagify-fts-header {
+	padding: 10px 16px;
+	background: #343A49;
+	color: #FFF;
+}
+.imagify-fts-header i {
+	font-size: 1.8em;
+	margin-right: 12px;
+}
+.imagify-fts-header p {
+	margin: 0;
+	color: #FFF;
+}
+.imagify-fts-header strong {
+	color: #40B1D0;
+	font-weight: bold;
+}
+
+.imagify-fts-content {
+	padding: 16px;
+	background: #F4F7F9;
+	border: 1px solid #CDD0D4;
+	border-top: 0;
+}
+
+.imagify-fts-content p {
+	margin-top: 0;
+}
+
+.imagify-kindof-title {
+	margin-top: 2em;
+	padding: 0 0 10px 0;
+	border-bottom: 1px solid #D2D3D6;
+	font-weight: bold;
+}
+.imagify-kindof-title .imagify-button-primary {
+	padding: 4px 13px 4px 10px;
+}
+
+p.imagify-custom-folder-line {
+	position: relative;
+	margin: 0;
+	padding: 12px 15px;
+	color: #4A5362;
+	font-weight: 500;
+	transition: all .75s;
+}
+.imagify-custom-folder-line.imagify-will-remove {
+	background: #C51162;
+	color: #FFF;
+	transform: translateX(-120px);
+	opacity: 0;
+}
+.imagify-custom-folder-line:first-child {
+	margin-top: -.5em;
+}
+.imagify-custom-folder-line + .imagify-custom-folder-line {
+	border-top: 1px solid #E9EFF2;
+}
+
+.imagify-custom-folders-remove {
+	position: absolute;
+	right: 0;
+	top: 6px;
+	border: 0;
+	padding: 5px 10px 4px;
+	box-shadow: none;
+	color: #7A8996;
+	border-radius: 16px;
+	font-size: 13px;
+	line-height: 18px;
+	background: #FFF;
+	transition: all .275s;
+}
+.imagify-custom-folders-remove-text {
+	max-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	display: inline-block;
+	transform: scale(0);
+	opacity: 0;
+	transition: all .275s;
+}
+.imagify-custom-folders-remove:hover,
+.imagify-custom-folders-remove:focus {
+	background: #D9EFF6;
+	color: #225E6E;
+}
+.imagify-custom-folders-remove:hover .imagify-custom-folders-remove-text,
+.imagify-custom-folders-remove:focus .imagify-custom-folders-remove-text {
+	max-width: 6em;
+	transform: scale(1);
+	opacity: 1;
+}
+
 /* Files tree Part */
 .imagify-add-custom-folder + .imagify-loader {
 	display: none;
