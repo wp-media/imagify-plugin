@@ -20,31 +20,24 @@ function imagify_get_mime_types() {
  * Get a file mime type.
  *
  * @since  1.6.9
+ * @since  1.7 Doesn't use exif_imagetype() nor getimagesize() anymore.
  * @author Grégory Viguier
  *
  * @param  string $file_path A file path (prefered) or a filename.
  * @return string|bool       A mime type. False on failure: the last test is limited to mime types supported by Imagify.
  */
 function imagify_get_mime_type_from_file( $file_path ) {
-	if ( function_exists( 'exif_imagetype' ) ) {
-		$image_type = @exif_imagetype( $file_path );
-
-		if ( false !== $image_type ) {
-			return image_type_to_mime_type( $image_type );
-		}
+	if ( ! $file_path ) {
+		return false;
 	}
 
-	if ( function_exists( 'getimagesize' ) ) {
-		$image_type = @getimagesize( $file_path );
+	$file_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
 
-		if ( isset( $image_type[2] ) ) {
-			return image_type_to_mime_type( $image_type[2] );
-		}
+	if ( false === $file_type['type'] && function_exists( 'mime_content_type' ) ) {
+		$file_type['type'] = mime_content_type( $file_path );
 	}
 
-	$image_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
-
-	return $image_type['type'];
+	return $file_type['type'];
 }
 
 /**

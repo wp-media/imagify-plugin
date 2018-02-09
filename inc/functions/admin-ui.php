@@ -314,7 +314,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	}
 
 	// Check if the image was optimized.
-	if ( ! $attachment->is_optimized() && ! $attachment->has_error() ) {
+	if ( ! $attachment->get_status() ) {
 		$args = array(
 			'attachment_id' => $attachment->id,
 			'context'       => $context,
@@ -329,4 +329,90 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	}
 
 	return get_imagify_attachment_optimization_text( $attachment, $context );
+}
+
+/**
+ * Get stats data for a specific folder type.
+ *
+ * @since  1.7
+ * @see    Imagify_Admin_Ajax_Post::imagify_get_folder_type_data_callback()
+ * @author Grégory Viguier
+ *
+ * @param  string $folder_type A folder type.
+ * @return array
+ */
+function imagify_get_folder_type_data( $folder_type ) {
+	/**
+	 * Get the data.
+	 */
+	switch ( $folder_type ) {
+		case 'library':
+			$total_saving_data = imagify_count_saving_data();
+			$data              = array(
+				'images-optimized' => imagify_count_optimized_attachments(),
+				'errors'           => imagify_count_error_attachments(),
+				'optimized'        => $total_saving_data['optimized_size'],
+				'original'         => $total_saving_data['original_size'],
+				'errors_url'       => get_imagify_admin_url( 'folder-errors', $folder_type ),
+			);
+			break;
+
+		case 'themes':
+		case 'plugins':
+		case 'custom-folders':
+			$data = array(
+				'images-optimized' => Imagify_Files_Stats::count_optimized_files( $folder_type ),
+				'errors'           => Imagify_Files_Stats::count_error_files( $folder_type ),
+				'optimized'        => Imagify_Files_Stats::get_optimized_size( $folder_type ),
+				'original'         => Imagify_Files_Stats::get_original_size( $folder_type ),
+				'errors_url'       => get_imagify_admin_url( 'folder-errors', $folder_type ),
+			);
+			break;
+
+		default:
+			/**
+			 * Provide custom folder type data.
+			 *
+			 * @since  1.7
+			 * @author Grégory Viguier
+			 *
+			 * @param array  $data        An array with keys corresponding to cell classes, and values formatted with HTML.
+			 * @param string $folder_type A folder type.
+			 */
+			$data = apply_filters( 'imagify_get_folder_type_data', array(), $folder_type );
+
+			if ( ! $data || ! is_array( $data ) ) {
+				return array();
+			}
+	}
+
+	/**
+	 * Format the data.
+	 */
+	/* translators: %s is a formatted number, dont use %d. */
+	$data['images-optimized'] = sprintf( _n( '%s Image Optimized', '%s Images Optimized', $data['images-optimized'], 'imagify' ), '<span>' . number_format_i18n( $data['images-optimized'] ) . '</span>' );
+
+	if ( $data['errors'] ) {
+		/* translators: %s is a formatted number, dont use %d. */
+		$data['errors']  = sprintf( _n( '%s Error', '%s Errors', $data['errors'], 'imagify' ), '<span>' . number_format_i18n( $data['errors'] ) . '</span>' );
+		$data['errors'] .= ' <a href="' . esc_url( $data['errors_url'] ) . '">' . __( 'View Errors', 'imagify' ) . '</a>';
+	} else {
+		$data['errors'] = '';
+	}
+
+	if ( $data['optimized'] ) {
+		$data['optimized'] = __( 'Optimized Filesize', 'imagify' ) . ' ' . imagify_size_format( $data['optimized'], 2 );
+	} else {
+		$data['optimized'] = '';
+	}
+
+	if ( $data['original'] ) {
+		$data['original'] = __( 'Original Filesize', 'imagify' ) . ' ' . imagify_size_format( $data['original'], 2 );
+	} else {
+		$data['original'] = '';
+	}
+
+	unset( $data['errors_url'] );
+
+	return $data;
 }

@@ -411,6 +411,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
 
 		if ( ! $data ) {
+			// Already optimized.
 			delete_transient( 'imagify-async-in-progress-' . $this->id );
 			return;
 		}

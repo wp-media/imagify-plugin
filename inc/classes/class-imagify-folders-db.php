@@ -42,7 +42,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $table_version = 10;
+	protected $table_version = 20;
 
 	/**
 	 * Tell if the table is the same for each site of a Multisite.
@@ -90,9 +90,9 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 */
 	public function get_columns() {
 		return array(
-			'folder_id'          => '%d',
-			'path'               => '%s',
-			'optimization_level' => '%d',
+			'folder_id' => '%d',
+			'path'      => '%s',
+			'active'    => '%d',
 		);
 	}
 
@@ -107,9 +107,9 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 */
 	public function get_column_defaults() {
 		return array(
-			'folder_id'          => 0,
-			'path'               => '',
-			'optimization_level' => null,
+			'folder_id' => 0,
+			'path'      => '',
+			'active'    => 0,
 		);
 	}
 
@@ -125,15 +125,15 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	protected function get_table_schema() {
 		return "
 			folder_id bigint(20) unsigned NOT NULL auto_increment,
-			path varchar(100) NOT NULL default '',
-			optimization_level int(1) default NULL,
+			path varchar(191) NOT NULL default '',
+			active tinyint(1) unsigned NOT NULL default 0,
 			PRIMARY KEY (folder_id),
 			UNIQUE KEY path (path),
-			KEY optimization_level (optimization_level)";
+			KEY active (active)";
 	}
 
 	/**
-	 * Retrieve folders "in sync" (where an optimization level is set).
+	 * Retrieve active folders (checked in the settings).
 	 *
 	 * @since  1.7
 	 * @access public
@@ -142,26 +142,18 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @param  string $column_select A column name.
 	 * @return array
 	 */
-	public function get_optimized_folders_column( $column_select ) {
+	public function get_active_folders_column( $column_select ) {
 		global $wpdb;
 
 		$column = esc_sql( $column_select );
 
-		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE optimization_level IS NOT NULL;" ); // WPCS: unprepared SQL ok.
+		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE active = 1;" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 
 	/**
-	 * Retrieve folders "in sync" (where an optimization level is set) by the specified column / values.
+	 * Retrieve active folders (checked in the settings) by the specified column / values.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -172,28 +164,20 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @param  array  $column_values An array of values.
 	 * @return array
 	 */
-	public function get_optimized_folders_column_in( $column_select, $column_where, $column_values ) {
+	public function get_active_folders_column_in( $column_select, $column_where, $column_values ) {
 		global $wpdb;
 
 		$column        = esc_sql( $column_select );
 		$column_where  = esc_sql( $column_where );
 		$column_values = Imagify_DB::prepare_values_list( $column_values );
 
-		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where IN ( $column_values ) AND optimization_level IS NOT NULL;" ); // WPCS: unprepared SQL ok.
+		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where IN ( $column_values ) AND active = 1;" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 
 	/**
-	 * Retrieve folders "in sync" (where an optimization level is set) by the specified column / values.
+	 * Retrieve active folders (checked in the settings) by the specified column / values.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -204,28 +188,20 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @param  array  $column_values An array of values.
 	 * @return array
 	 */
-	public function get_optimized_folders_column_not_in( $column_select, $column_where, $column_values ) {
+	public function get_active_folders_column_not_in( $column_select, $column_where, $column_values ) {
 		global $wpdb;
 
 		$column        = esc_sql( $column_select );
 		$column_where  = esc_sql( $column_where );
 		$column_values = Imagify_DB::prepare_values_list( $column_values );
 
-		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where NOT IN ( $column_values ) AND optimization_level IS NOT NULL;" ); // WPCS: unprepared SQL ok.
+		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where NOT IN ( $column_values ) AND active = 1;" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 
 	/**
-	 * Retrieve folders "not in sync" (where an optimization level is not set).
+	 * Retrieve not active folders (not checked in the settings).
 	 *
 	 * @since  1.7
 	 * @access public
@@ -234,21 +210,13 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @param  string $column_select A column name.
 	 * @return array
 	 */
-	public function get_unoptimized_folders_column( $column_select ) {
+	public function get_inactive_folders_column( $column_select ) {
 		global $wpdb;
 
 		$column = esc_sql( $column_select );
 
-		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE optimization_level IS NULL;" ); // WPCS: unprepared SQL ok.
+		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE active != 1;" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 }

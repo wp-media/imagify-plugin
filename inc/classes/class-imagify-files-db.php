@@ -42,7 +42,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $table_version = 25;
+	protected $table_version = 40;
 
 	/**
 	 * Tell if the table is the same for each site of a Multisite.
@@ -94,6 +94,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			'folder_id'          => '%d',
 			'path'               => '%s',
 			'hash'               => '%s',
+			'mime_type'          => '%s',
 			'modified'           => '%d',
 			'width'              => '%d',
 			'height'             => '%d',
@@ -121,6 +122,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			'folder_id'          => 0,
 			'path'               => '',
 			'hash'               => '',
+			'mime_type'          => '',
 			'modified'           => 0,
 			'width'              => 0,
 			'height'             => 0,
@@ -136,6 +138,8 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	/**
 	 * Get the query to create the table fields.
 	 *
+	 * For with and height: `smallint(2) unsigned` means 65,535px max.
+	 *
 	 * @since  1.7
 	 * @access protected
 	 * @author Grégory Viguier
@@ -148,15 +152,16 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			folder_id bigint(20) unsigned NOT NULL default 0,
 			path varchar(191) NOT NULL default '',
 			hash varchar(32) NOT NULL default '',
-			modified int(1) NOT NULL default 0,
-			width int(5) NOT NULL default 0,
-			height int(5) NOT NULL default 0,
-			original_size int(10) NOT NULL default 0,
-			optimized_size int(10) default NULL,
-			percent int(2) unsigned default NULL,
-			optimization_level int(1) default NULL,
+			mime_type varchar(100) NOT NULL default '',
+			modified tinyint(1) unsigned NOT NULL default 0,
+			width smallint(2) unsigned NOT NULL default 0,
+			height smallint(2) unsigned NOT NULL default 0,
+			original_size int(4) unsigned NOT NULL default 0,
+			optimized_size int(4) unsigned default NULL,
+			percent tinyint(1) unsigned default NULL,
+			optimization_level tinyint(1) unsigned default NULL,
 			status varchar(20) default NULL,
-			error varchar(100) default NULL,
+			error varchar(255) default NULL,
 			PRIMARY KEY (file_id),
 			UNIQUE KEY path (path),
 			KEY folder_id (folder_id),

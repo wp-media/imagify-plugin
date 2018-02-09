@@ -39,9 +39,11 @@ class Imagify_Admin_Ajax_Post {
 	 */
 	protected $ajax_only_actions = array(
 		'imagify_bulk_upload',
+		'imagify_bulk_optimize_file',
 		'imagify_async_optimize_upload_new_media',
 		'imagify_async_optimize_save_image_editor_file',
 		'imagify_get_unoptimized_attachment_ids',
+		'imagify_get_unoptimized_file_ids',
 		'imagify_check_backup_dir_is_writable',
 		'nopriv_imagify_rpc',
 		'imagify_signup',
@@ -54,6 +56,7 @@ class Imagify_Admin_Ajax_Post {
 		'imagify_update_estimate_sizes',
 		'imagify_get_user_data',
 		'imagify_get_files_tree',
+		'imagify_get_folder_type_data',
 	);
 
 	/**
@@ -146,7 +149,7 @@ class Imagify_Admin_Ajax_Post {
 
 		$attachment = get_imagify_attachment( $context, $attachment_id, 'imagify_manual_upload' );
 
-		// Optimize it!!!!!
+		// Optimize it.
 		$attachment->optimize();
 
 		imagify_maybe_redirect();
@@ -178,8 +181,8 @@ class Imagify_Admin_Ajax_Post {
 		// Restore the backup file.
 		$attachment->restore();
 
-		// Optimize it!!!!!
-		$attachment->optimize( (int) $_GET['optimization_level'] );
+		// Optimize it.
+		$attachment->optimize( $this->get_optimization_level() );
 
 		imagify_maybe_redirect();
 
@@ -261,41 +264,54 @@ class Imagify_Admin_Ajax_Post {
 		$context       = imagify_sanitize_context( $_POST['context'] );
 		$attachment_id = absint( $_POST['image'] );
 
-		imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
+		imagify_check_nonce( 'imagify-bulk-upload' );
 		imagify_check_user_capacity( 'bulk-optimize', $attachment_id );
 
 		$attachment         = get_imagify_attachment( $context, $attachment_id, 'imagify_bulk_upload' );
-		$optimization_level = get_transient( 'imagify_bulk_optimization_level' );
+		$optimization_level = $this->get_optimization_level();
 
 		// Restore it if the optimization level is updated.
 		if ( $optimization_level !== $attachment->get_optimization_level() ) {
 			$attachment->restore();
 		}
 
-		// Optimize it!!!!!
+		// Optimize it.
 		$attachment->optimize( $optimization_level );
 
 		// Return the optimization statistics.
 		$fullsize_data = $attachment->get_size_data();
-		$stats_data    = $attachment->get_stats_data();
-		$user          = new Imagify_User();
 		$data          = array();
 
 		if ( ! $attachment->is_optimized() ) {
-			$data['success'] = false;
-			$data['error']   = $fullsize_data['error'];
+			$data['success']    = false;
+			$data['error_code'] = '';
+			$data['error']      = isset( $fullsize_data['error'] ) ? (string) $fullsize_data['error'] : '';
+
+			if ( ! $attachment->has_error() ) {
+				$data['error_code'] = 'already-optimized';
+			} else {
+				$message = imagify_translate_api_message( 'You\'ve consumed all your data. You have to upgrade your account to continue.' );
+
+				if ( $data['error'] === $message ) {
+					$data['error_code'] = 'over-quota';
+				}
+			}
 
 			imagify_die( $data );
 		}
 
-		$data['success']               = true;
-		$data['original_size']         = $fullsize_data['original_size'];
-		$data['new_size']              = $fullsize_data['optimized_size'];
-		$data['percent']               = $fullsize_data['percent'];
-		$data['overall_saving']        = $stats_data['original_size'] - $stats_data['optimized_size'];
-		$data['original_overall_size'] = $stats_data['original_size'];
-		$data['new_overall_size']      = $stats_data['optimized_size'];
-		$data['thumbnails']            = $attachment->get_optimized_sizes_count();
+		$stats_data = $attachment->get_stats_data();
+
+		$data['success']                     = true;
+		$data['original_size_human']         = imagify_size_format( $fullsize_data['original_size'], 2 );
+		$data['new_size_human']              = imagify_size_format( $fullsize_data['optimized_size'], 2 );
+		$data['overall_saving']              = $stats_data['original_size'] - $stats_data['optimized_size'];
+		$data['overall_saving_human']        = imagify_size_format( $data['overall_saving'], 2 );
+		$data['original_overall_size']       = $stats_data['original_size'];
+		$data['original_overall_size_human'] = imagify_size_format( $data['original_overall_size'], 2 );
+		$data['new_overall_size']            = $stats_data['optimized_size'];
+		$data['percent_human']               = $fullsize_data['percent'] . '%';
+		$data['thumbnails']                  = $attachment->get_optimized_sizes_count();
 
 		wp_send_json_success( $data );
 	}
@@ -304,6 +320,83 @@ class Imagify_Admin_Ajax_Post {
 	/** ----------------------------------------------------------------------------------------- */
 	/** CUSTOM FOLDERS ========================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Optimize a file.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_bulk_optimize_file_callback() {
+		imagify_check_nonce( 'imagify-bulk-upload' );
+
+		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
+
+		$this->check_user_capacity_for_folder_type( $folder_type, array(
+			'themes',
+			'plugins',
+			'custom-folders',
+		) );
+
+		$file_id = (int) filter_input( INPUT_POST, 'image', FILTER_SANITIZE_NUMBER_INT );
+		$context = imagify_sanitize_context( filter_input( INPUT_POST, 'context', FILTER_SANITIZE_STRING ) );
+		$context = ! $context || 'wp' === strtolower( $context ) ? 'File' : $context;
+
+		if ( ! $file_id ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		$file = get_imagify_attachment( $context, $file_id, 'imagify_bulk_optimize_file' );
+
+		if ( ! $file->is_valid() ) {
+			imagify_die( __( 'Invalid file ID', 'imagify' ) );
+		}
+
+		// Restore before re-optimizing.
+		if ( false !== $file->get_optimization_level() ) {
+			$file->restore();
+		}
+
+		// Optimize it.
+		$result = $file->optimize( $this->get_optimization_level() );
+
+		// Return the optimization statistics.
+		if ( ! $file->is_optimized() ) {
+			$data = array(
+				'success'    => false,
+				'error_code' => '',
+				'error'      => (string) $file->get_optimized_error(),
+			);
+
+			if ( ! $file->has_error() ) {
+				$data['error_code'] = 'already-optimized';
+			} else {
+				$message = imagify_translate_api_message( 'You\'ve consumed all your data. You have to upgrade your account to continue.' );
+
+				if ( $data['error'] === $message ) {
+					$data['error_code'] = 'over-quota';
+				}
+			}
+
+			imagify_die( $data );
+		}
+
+		$data = $file->get_size_data();
+
+		wp_send_json_success( array(
+			'success'                     => true,
+			'original_size_human'         => imagify_size_format( $data['original_size'], 2 ),
+			'new_size_human'              => imagify_size_format( $data['optimized_size'], 2 ),
+			'overall_saving'              => $data['original_size'] - $data['optimized_size'],
+			'overall_saving_human'        => imagify_size_format( $data['original_size'] - $data['optimized_size'], 2 ),
+			'original_overall_size'       => $data['original_size'],
+			'original_overall_size_human' => imagify_size_format( $data['original_size'], 2 ),
+			'new_overall_size'            => $data['optimized_size'],
+			'percent_human'               => $data['percent'] . '%',
+			'thumbnails'                  => $file->get_optimized_sizes_count(),
+		) );
+	}
 
 	/**
 	 * Optimize a file.
@@ -491,59 +584,6 @@ class Imagify_Admin_Ajax_Post {
 		) );
 	}
 
-	/**
-	 * Depending on the file ID sent, get the corresponding file object.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $identifier The identifier to use in get_imagify_attachment().
-	 * @return object             A Imagify_File_Attachment object.
-	 */
-	protected function get_file_to_optimize( $identifier ) {
-		if ( empty( $_GET['id'] ) ) { // WPCS: CSRF ok.
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		$file_id = (int) $_GET['id'];
-
-		$file = get_imagify_attachment( 'File', $file_id, $identifier );
-
-		if ( ! $file->is_valid() ) {
-			imagify_die( __( 'Invalid file ID', 'imagify' ) );
-		}
-
-		return $file;
-	}
-
-	/**
-	 * After a file optimization, restore, or whatever, redirect the user or output HTML for ajax.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param bool|object $result True if the operation succeeded. A WP_Error object on failure.
-	 * @param object      $file   A Imagify_File_Attachment object.
-	 */
-	protected function file_optimization_output( $result, $file ) {
-		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
-
-		// Return some HTML to the ajax call.
-		$list_table = new Imagify_Files_List_Table( array(
-			'screen' => 'imagify-files',
-		) );
-
-		wp_send_json_success( array(
-			'optimization'       => $list_table->get_column( 'optimization', $file ),
-			'status'             => $list_table->get_column( 'status', $file ),
-			'optimization_level' => $list_table->get_column( 'optimization_level', $file ),
-			'actions'            => $list_table->get_column( 'actions', $file ),
-			'title'              => $list_table->get_column( 'title', $file ), // This one must remain after the "optimization" column, otherwize the data for the comparison tool won't be up-to-date.
-		) );
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** AUTOMATIC OPTIMIZATION ================================================================== */
@@ -635,24 +675,14 @@ class Imagify_Admin_Ajax_Post {
 	public function imagify_get_unoptimized_attachment_ids_callback() {
 		global $wpdb;
 
-		imagify_check_nonce( 'imagify-bulk-upload', 'imagifybulkuploadnonce' );
+		imagify_check_nonce( 'imagify-bulk-upload' );
 		imagify_check_user_capacity( 'bulk-optimize' );
-
-		if ( ! imagify_valid_key() ) {
-			wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
-		}
-
-		$user = new Imagify_User();
-
-		if ( $user->is_over_quota() ) {
-			wp_send_json_error( array( 'message' => 'over-quota' ) );
-		}
+		$this->check_can_optimize();
 
 		@set_time_limit( 0 );
 
 		// Get (ordered) IDs.
-		$optimization_level = (int) $_GET['optimization_level'];
-		$optimization_level = -1 !== $optimization_level ? $optimization_level : get_imagify_option( 'optimization_level' );
+		$optimization_level = $this->get_optimization_level();
 
 		$mime_types  = Imagify_DB::get_mime_types();
 		$statuses    = Imagify_DB::get_post_statuses();
@@ -694,7 +724,7 @@ class Imagify_Admin_Ajax_Post {
 		$ids = array_filter( array_map( 'absint', $ids ) );
 
 		if ( ! $ids ) {
-			wp_send_json_error( array( 'message' => 'no-images' ) );
+			wp_send_json_success( array() );
 		}
 
 		$results = Imagify_DB::get_metas( array(
@@ -707,9 +737,6 @@ class Imagify_Admin_Ajax_Post {
 			// Get attachments status.
 			'statuses'            => '_imagify_status',
 		), $ids );
-
-		// Save the optimization level in a transient to retrieve it later during the process.
-		set_transient( 'imagify_bulk_optimization_level', $optimization_level );
 
 		// First run.
 		foreach ( $ids as $i => $id ) {
@@ -742,7 +769,7 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		if ( ! $ids ) {
-			wp_send_json_error( array( 'message' => 'no-images' ) );
+			wp_send_json_success( array() );
 		}
 
 		$ids = array_values( $ids );
@@ -759,7 +786,8 @@ class Imagify_Admin_Ajax_Post {
 		 */
 		do_action( 'imagify_bulk_optimize_before_file_existence_tests', $ids, $results, $optimization_level );
 
-		$data = array();
+		$data       = array();
+		$filesystem = imagify_get_filesystem();
 
 		foreach ( $ids as $i => $id ) {
 			if ( empty( $results['filenames'][ $id ] ) ) {
@@ -772,7 +800,7 @@ class Imagify_Admin_Ajax_Post {
 			/** This filter is documented in inc/functions/process.php. */
 			$file_path = apply_filters( 'imagify_file_path', $file_path );
 
-			if ( ! $file_path || ! file_exists( $file_path ) ) {
+			if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
 				continue;
 			}
 
@@ -781,7 +809,7 @@ class Imagify_Admin_Ajax_Post {
 			$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
 
 			// Don't try to re-optimize if there is no backup file.
-			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) ) {
+			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! $filesystem->exists( $attachment_backup_path ) ) {
 				continue;
 			}
 
@@ -789,7 +817,101 @@ class Imagify_Admin_Ajax_Post {
 		} // End foreach().
 
 		if ( ! $data ) {
-			wp_send_json_error( array( 'message' => 'no-images' ) );
+			wp_send_json_success( array() );
+		}
+
+		wp_send_json_success( $data );
+	}
+
+	/**
+	 * Get all unoptimized file ids.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 */
+	public function imagify_get_unoptimized_file_ids_callback() {
+		imagify_check_nonce( 'imagify-bulk-upload' );
+
+		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
+
+		$this->check_user_capacity_for_folder_type( $folder_type, array(
+			'themes',
+			'plugins',
+			'custom-folders',
+		) );
+
+		$this->check_can_optimize();
+
+		@set_time_limit( 0 );
+
+		$optimization_level = $this->get_optimization_level();
+
+		/**
+		 * Get the folders from DB.
+		 */
+		$folders = imagify_get_folders_from_type( $folder_type );
+
+		if ( ! $folders ) {
+			wp_send_json_success( array() );
+		}
+
+		/**
+		 * Triggered before getting file IDs.
+		 *
+		 * @since  1.7
+		 * @author Grégory Viguier
+		 *
+		 * @param array $folders            An array of folders data.
+		 * @param int   $optimization_level The optimization level that will be used for the optimization.
+		 */
+		do_action( 'imagify_bulk_optimize_files_before_get_files', $folders, $optimization_level );
+
+		/**
+		 * Get the files from DB, and from the folders.
+		 */
+		$files = imagify_get_files_from_folders( $folders, array(
+			'optimization_level' => $optimization_level,
+		) );
+
+		if ( ! $files ) {
+			wp_send_json_success( array() );
+		}
+
+		// We need to output file URLs.
+		foreach ( $files as $k => $file ) {
+			$files[ $k ] = Imagify_Files_Scan::remove_placeholder( $file['path'], 'url' );
+		}
+
+		wp_send_json_success( $files );
+	}
+
+	/**
+	 * Get stats data for a specific folder type.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @see    imagify_get_folder_type_data()
+	 * @author Grégory Viguier
+	 */
+	public function imagify_get_folder_type_data_callback() {
+		imagify_check_nonce( 'imagify-bulk-upload' );
+
+		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
+
+		$this->check_user_capacity_for_folder_type( $folder_type, array(
+			'library',
+			'themes',
+			'plugins',
+			'custom-folders',
+		) );
+
+		/**
+		 * Get the formated data.
+		 */
+		$data = imagify_get_folder_type_data( $folder_type );
+
+		if ( ! $data ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
 		wp_send_json_success( $data );
@@ -1208,5 +1330,140 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		wp_send_json_success( $output );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** VARIOUS HELPERS ========================================================================= */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the submitted optimization level.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return int
+	 */
+	public function get_optimization_level() {
+		$optimization_level = filter_input( INPUT_GET, 'optimization_level', FILTER_SANITIZE_NUMBER_INT );
+
+		if ( isset( $optimization_level ) && $optimization_level >= 0 && $optimization_level <= 2 ) {
+			return (int) $optimization_level;
+		}
+
+		return get_imagify_option( 'optimization_level' );
+	}
+
+	/**
+	 * Check user capacity depending on a folder type. Die on failure.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param string $folder_type  A folder type.
+	 * @param array  $folder_types A list of "basic" allowed folder types.
+	 */
+	public function check_user_capacity_for_folder_type( $folder_type, $folder_types ) {
+		$folder_types = array_flip( $folder_types );
+		$folder_types = array_intersect_key( array(
+			'library'        => 'bulk-optimize',
+			'themes'         => 'optimize-file',
+			'plugins'        => 'optimize-file',
+			'custom-folders' => 'optimize-file',
+		), $folder_types );
+
+		if ( ! isset( $folder_types[ $folder_type ] ) ) {
+			/**
+			 * Provide a user capacity or a capacity describer, allowing to work with a custom folder type.
+			 *
+			 * @since  1.7
+			 * @author Grégory Viguier
+			 *
+			 * @param string $capacity    A user capacity or a capacity describer.
+			 * @param string $folder_type A folder type.
+			 */
+			$folder_types[ $folder_type ] = apply_filters( 'imagify_folder_type_capacity', '', $folder_type );
+		}
+
+		if ( empty( $folder_types[ $folder_type ] ) ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		imagify_check_user_capacity( $folder_types[ $folder_type ] );
+	}
+
+	/**
+	 * Check if the user has a valid account and has quota. Die on failure.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function check_can_optimize() {
+		if ( ! imagify_valid_key() ) {
+			wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
+		}
+
+		$user = new Imagify_User();
+
+		if ( $user->is_over_quota() ) {
+			wp_send_json_error( array( 'message' => 'over-quota' ) );
+		}
+	}
+
+	/**
+	 * Depending on the file ID sent, get the corresponding file object.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $identifier The identifier to use in get_imagify_attachment().
+	 * @return object             A Imagify_File_Attachment object.
+	 */
+	protected function get_file_to_optimize( $identifier ) {
+		$file_id = (int) filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT );
+
+		if ( ! $file_id ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		$file = get_imagify_attachment( 'File', $file_id, $identifier );
+
+		if ( ! $file->is_valid() ) {
+			imagify_die( __( 'Invalid file ID', 'imagify' ) );
+		}
+
+		return $file;
+	}
+
+	/**
+	 * After a file optimization, restore, or whatever, redirect the user or output HTML for ajax.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param bool|object $result True if the operation succeeded. A WP_Error object on failure.
+	 * @param object      $file   A Imagify_File_Attachment object.
+	 */
+	protected function file_optimization_output( $result, $file ) {
+		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
+
+		// Return some HTML to the ajax call.
+		$list_table = new Imagify_Files_List_Table( array(
+			'screen' => 'imagify-files',
+		) );
+
+		wp_send_json_success( array(
+			'optimization'       => $list_table->get_column( 'optimization', $file ),
+			'status'             => $list_table->get_column( 'status', $file ),
+			'optimization_level' => $list_table->get_column( 'optimization_level', $file ),
+			'actions'            => $list_table->get_column( 'actions', $file ),
+			'title'              => $list_table->get_column( 'title', $file ), // This one must remain after the "optimization" column, otherwize the data for the comparison tool won't be up-to-date.
+		) );
 	}
 }

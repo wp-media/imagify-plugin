@@ -91,6 +91,15 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	protected $table_created = false;
 
 	/**
+	 * Stores the list of columns that must be (un)serialized.
+	 *
+	 * @var    array
+	 * @since  1.7
+	 * @access protected
+	 */
+	protected $to_serialize;
+
+	/**
 	 * Get things started.
 	 *
 	 * @since  1.5
@@ -182,19 +191,6 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	abstract public function get_column_defaults();
 
 	/**
-	 * Get the list pf columns that are serialised.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return array
-	 */
-	public function get_serialised_columns() {
-		return array();
-	}
-
-	/**
 	 * Get the query to create the table fields.
 	 *
 	 * @since  1.7
@@ -245,15 +241,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 
 		$result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE $column_where = $placeholder LIMIT 1;", $column_value ), ARRAY_A ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $key => $value ) {
-			$result[ $key ] = $this->cast( $value, $key );
-		}
-
-		return $result;
+		return (array) $this->cast_row( $result );
 	}
 
 	/**
@@ -275,15 +263,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 
 		$result = $wpdb->get_row( "SELECT * FROM $this->table_name WHERE $column_where IN ( $column_values ) LIMIT 1;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $key => $value ) {
-			$result[ $key ] = $this->cast( $value, $key );
-		}
-
-		return $result;
+		return (array) $this->cast_row( $result );
 	}
 
 	/**
@@ -377,15 +357,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 
 		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where IN ( $column_values );" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 
 	/**
@@ -409,15 +381,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 
 		$result = $wpdb->get_col( "SELECT $column FROM $this->table_name WHERE $column_where NOT IN ( $column_values );" ); // WPCS: unprepared SQL ok.
 
-		if ( ! $result ) {
-			return array();
-		}
-
-		foreach ( $result as $i => $value ) {
-			$result[ $i ] = $this->cast( $value, $column_select );
-		}
-
-		return $result;
+		return $this->cast_col( $result, $column_select );
 	}
 
 	/**
@@ -473,7 +437,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 			return false;
 		}
 
-		if ( false === (bool) $this->get( $row_id ) ) {
+		if ( ! $this->get( $row_id ) ) {
 			$this->insert( $data );
 			return true;
 		}
@@ -779,12 +743,12 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	 * @return bool
 	 */
 	public function is_column_serialized( $key ) {
-		$columns = $this->get_serialised_columns();
-		return isset( $columns[ $key ] );
+		$columns = $this->get_column_defaults();
+		return isset( $columns[ $key ] ) && is_array( $columns[ $key ] );
 	}
 
 	/**
-	 * Cast a value before returning it.
+	 * Cast a value.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -817,7 +781,58 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	}
 
 	/**
-	 * Serialize columns that need it.
+	 * Cast a column.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array  $values The values to cast.
+	 * @param  string $column The corresponding column name.
+	 * @return array
+	 */
+	public function cast_col( $values, $column ) {
+		if ( ! $values ) {
+			return $values;
+		}
+
+		foreach ( $values as $i => $value ) {
+			$values[ $i ] = $this->cast( $value, $column );
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Cast a row.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array|object $row_fields A row from the DB.
+	 * @return array|object
+	 */
+	public function cast_row( $row_fields ) {
+		if ( ! $row_fields ) {
+			return $row_fields;
+		}
+
+		if ( is_array( $row_fields ) ) {
+			foreach ( $row_fields as $field => $value ) {
+				$row_fields[ $field ] = $this->cast( $value, $field );
+			}
+		} elseif ( is_object( $row_fields ) ) {
+			foreach ( $row_fields as $field => $value ) {
+				$row_fields->$field = $this->cast( $value, $field );
+			}
+		}
+
+		return $row_fields;
+	}
+
+	/**
+	 * Serialize columns that need to be.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -827,12 +842,17 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	 * @return array
 	 */
 	public function serialize_columns( $data ) {
-		if ( ! $this->get_serialised_columns() ) {
+		if ( ! isset( $this->to_serialize ) ) {
+			$this->to_serialize = array_filter( $this->get_column_defaults(), 'is_array' );
+		}
+
+		if ( ! $this->to_serialize ) {
 			return $data;
 		}
 
-		$to_serialize = array_intersect_key( $data, $this->get_serialised_columns() );
-		$to_serialize = array_map( 'maybe_serialize', $to_serialize );
-		return array_merge( $data, $to_serialize );
+		$serialized_data = array_intersect_key( $data, $this->to_serialize );
+		$serialized_data = array_map( 'maybe_serialize', $serialized_data );
+
+		return array_merge( $data, $serialized_data );
 	}
 }

@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			<div class="imagify-ac-chart" data-percent="0">
 				<span class="imagify-chart">
 					<span class="imagify-chart-container">
-						<canvas width="46" height="46"></canvas>
+						<canvas id="imagify-ac-chart" width="46" height="46"></canvas>
 					</span>
 				</span>
 			</div>

@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @since  1.6.11 Uses a string as describer for the first argument.
  * @author Grégory Viguier
  *
- * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+ * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'optimize-file'.
  * @return string
  */
 function imagify_get_capacity( $describer = 'manage' ) {
@@ -59,7 +59,7 @@ function imagify_get_capacity( $describer = 'manage' ) {
 	 * @since 1.6.11 Replaced $force_mono by $describer.
 	 *
 	 * @param string $capacity  The user capacity.
-	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'optimize-file'.
 	 */
 	return apply_filters( 'imagify_capacity', $capacity, $describer );
 }
@@ -68,9 +68,10 @@ function imagify_get_capacity( $describer = 'manage' ) {
  * Tell if the current user has the required ability to operate Imagify.
  *
  * @since  1.6.11
+ * @see    imagify_get_capacity()
  * @author Grégory Viguier
  *
- * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+ * @param  string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
  * @param  int    $post_id   A post ID (a gallery ID for NGG).
  * @return bool
  */
@@ -82,7 +83,7 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 	$user_can = false;
 
 	if ( 'manage' !== $describer && 'bulk-optimize' !== $describer && 'optimize-file' !== $describer ) {
-		// Describers that are not 'manage' and 'bulk-optimize' need an additional test for 'upload_files'.
+		// Describers that are not 'manage', 'bulk-optimize', and 'optimize-file' need an additional test for 'upload_files'.
 		if ( ! isset( $can_upload ) ) {
 			$can_upload = current_user_can( 'upload_files' );
 		}
@@ -106,14 +107,14 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 	 *
 	 * @param bool   $user_can  Tell if the current user has the required ability to operate Imagify.
 	 * @param string $capacity  The user capacity.
-	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+	 * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
 	 * @param int    $post_id   A post ID (a gallery ID for NGG).
 	 */
 	return apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $post_id );
 }
 
 /**
- * Sanitize an optimization context.
+ * Tell if the current user can optimize custom folders.
  *
  * @since  1.7
  * @author Grégory Viguier
@@ -136,23 +137,6 @@ function imagify_can_optimize_custom_folders() {
 	// Check for user capacity.
 	if ( ! imagify_current_user_can( 'optimize-file' ) ) {
 		$can = false;
-		return $can;
-	}
-
-	// Multisite, network activated: ok only in the network admin.
-	if ( imagify_is_active_for_network() ) {
-		$can = is_network_admin();
-		return $can;
-	}
-
-	// Multisite, not network activated: ok only in some defined sites.
-	if ( is_multisite() ) {
-		$allowed_sites   = defined( 'IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES' ) && IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES ? IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES : '';
-		$allowed_sites   = explode( ',', IMAGIFY_CUSTOM_FOLDERS_ALLOWED_SITES );
-		$allowed_sites   = array_flip( array_filter( array_map( 'trim', $allowed_sites ) ) );
-		$current_site_id = get_current_blog_id();
-
-		$can = $current_site_id && isset( $allowed_sites[ $current_site_id ] );
 		return $can;
 	}
 
@@ -199,6 +183,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Files_List_Table'         => 1,
 		'Imagify_Files_Recursive_Iterator' => 1,
 		'Imagify_Files_Scan'               => 1,
+		'Imagify_Files_Stats'              => 1,
 		'Imagify_Folders_DB'               => 1,
 		'Imagify_Notices'                  => 1,
 		'Imagify_Options'                  => 1,
@@ -409,4 +394,19 @@ function imagify_get_optimization_level_label( $level, $format = '%s' ) {
 	}
 
 	return '';
+}
+
+/**
+ * `array_merge()` + `array_intersect_key()`.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  array $values  The array we're interested in.
+ * @param  array $default The array we use as boundaries.
+ * @return array
+ */
+function imagify_merge_intersect( $values, $default ) {
+	$values = array_merge( $default, (array) $values );
+	return array_intersect_key( $values, $default );
 }

@@ -18,7 +18,7 @@ $settings = Imagify_Settings::get_instance();
 		$plugins = Imagify_Settings::get_plugins();
 
 		$themes_and_plugins = array_keys( array_merge( $themes, $plugins ) );
-		$custom_folders     = Imagify_Folders_DB::get_instance()->get_optimized_folders_column_in( 'path', 'path', $themes_and_plugins );
+		$custom_folders     = Imagify_Folders_DB::get_instance()->get_active_folders_column_in( 'path', 'path', $themes_and_plugins );
 		$custom_folders     = array_flip( $custom_folders );
 
 		$disabled_values = Imagify_Files_Scan::get_forbidden_folders();
@@ -69,7 +69,7 @@ $settings = Imagify_Settings::get_instance();
 		 * Other custom folders.
 		 */
 		$disabled_values = array_merge( $themes_and_plugins, array_flip( $disabled_values ) );
-		$custom_folders  = Imagify_Folders_DB::get_instance()->get_optimized_folders_column_not_in( 'path', 'path', $disabled_values );
+		$custom_folders  = Imagify_Folders_DB::get_instance()->get_active_folders_column_not_in( 'path', 'path', $disabled_values );
 
 		if ( $custom_folders ) {
 			$custom_folders = array_combine( $custom_folders, $custom_folders );

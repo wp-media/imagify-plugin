@@ -12,6 +12,7 @@
         "ajaxurl":             false,
         "Promise":             false,
         "jQuery":              false,
+        "_":                   false,
         "Chart":               false,
         "swal":                false,
         "imagify":             true,

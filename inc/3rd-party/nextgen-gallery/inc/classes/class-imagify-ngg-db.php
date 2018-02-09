@@ -43,7 +43,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 * @since  1.7 Not public anymore, now an integer.
 	 * @access protected
 	 */
-	protected $table_version = 110;
+	protected $table_version = 10;
 
 	/**
 	 * Tell if the table is the same for each site of a Multisite.
@@ -115,22 +115,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 			'pid'                => 0,
 			'optimization_level' => '',
 			'status'             => '',
-			'data'               => '',
-		);
-	}
-
-	/**
-	 * Get the list pf columns that are serialised.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return array
-	 */
-	public function get_serialised_columns() {
-		return array(
-			'data' => 1,
+			'data'               => array(),
 		);
 	}
 
@@ -144,13 +129,13 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 * @return string
 	 */
 	protected function get_table_schema() {
-		return '
-			data_id int(11) NOT NULL AUTO_INCREMENT,
-			pid int(11) NOT NULL,
-			optimization_level varchar(1) NOT NULL,
-			status varchar(30) NOT NULL,
-			data longtext NOT NULL,
+		return "
+			data_id int(11) unsigned NOT NULL AUTO_INCREMENT,
+			pid int(11) unsigned NOT NULL default 0,
+			optimization_level varchar(1) NOT NULL default '',
+			status varchar(30) NOT NULL default '',
+			data longtext NOT NULL default '',
 			PRIMARY KEY (data_id),
-			KEY pid (pid)';
+			KEY pid (pid)";
 	}
 }

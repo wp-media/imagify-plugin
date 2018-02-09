@@ -217,7 +217,7 @@ class Imagify_Assets {
 
 		$this->register_script( 'async', 'imagify-gulp', array(), '2017-07-28' );
 
-		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
+		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
 
 		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'admin' ) )->defer_localization( 'imagifyOptions' );
 

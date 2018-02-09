@@ -81,9 +81,14 @@ function imagify_is_screen( $identifier ) {
 
 		case 'bulk':
 		case 'bulk-optimization':
-			// Bulk Optimization.
+			// Bulk Optimization (any).
 			$slug = Imagify_Views::get_instance()->get_bulk_page_slug();
-			return 'media_page_' . $slug === $current_screen->id;
+			return 'toplevel_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
+
+		case 'files-bulk-optimization':
+			// Bulk Optimization (custom folders).
+			$slug = Imagify_Views::get_instance()->get_bulk_page_slug();
+			return 'toplevel_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
 
 		case 'files':
 		case 'files-list':
@@ -148,9 +153,31 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 		case 'bulk-optimization':
 			return admin_url( 'upload.php?page=' . Imagify_Views::get_instance()->get_bulk_page_slug() );
 
+		case 'files-bulk-optimization':
+			$page = '?page=' . Imagify_Views::get_instance()->get_bulk_page_slug();
+			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'upload.php' . $page );
+
 		case 'files-list':
 			$page = '?page=' . Imagify_Views::get_instance()->get_files_page_slug();
 			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'upload.php' . $page );
+
+		case 'folder-errors':
+			switch ( $arg ) {
+				case 'library':
+					return add_query_arg( array(
+						'mode'           => 'list',
+						'imagify-status' => 'errors',
+					), admin_url( 'upload.php' ) );
+
+				case 'themes':
+				case 'plugins':
+				case 'custom-folders':
+					return add_query_arg( array(
+						'folder-type-filter' => $arg,
+						'status-filter'      => 'errors',
+					), get_imagify_admin_url( 'files-list' ) );
+			}
+			return '';
 
 		default:
 			$page = '?page=' . Imagify_Views::get_instance()->get_settings_page_slug();
@@ -190,12 +217,16 @@ function get_imagify_max_intermediate_image_size() {
  * Get the default Bulk Optimization buffer size.
  *
  * @since  1.5.10
+ * @since  1.7 Added $sizes parameter.
  * @author Jonathan Buttigieg
  *
- * @return int The buffer size.
+ * @param  int $sizes Number of image sizes per item (attachment).
+ * @return int        The buffer size.
  */
-function get_imagify_bulk_buffer_size() {
-	$sizes = count( get_imagify_thumbnail_sizes() );
+function get_imagify_bulk_buffer_size( $sizes = false ) {
+	if ( ! $sizes ) {
+		$sizes = count( get_imagify_thumbnail_sizes() );
+	}
 
 	switch ( true ) {
 		case ( $sizes >= 10 ):
@@ -285,10 +316,10 @@ function imagify_check_nonce( $action, $query_arg = false ) {
  *
  * @since  1.6.10
  * @since  1.6.11 Uses a capacity describer instead of a capacity itself.
- * @author Grégory Viguier
  * @see    imagify_get_capacity()
+ * @author Grégory Viguier
  *
- * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'. Can also be a "real" user capacity.
+ * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
  * @param int    $post_id   A post ID.
  */
 function imagify_check_user_capacity( $describer = 'manage', $post_id = null ) {
