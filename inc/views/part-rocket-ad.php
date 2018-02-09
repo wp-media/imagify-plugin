@@ -16,48 +16,21 @@ $discount_code    = 'IMAGIFY20';
 		</p>
 
 		<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.svg 1x, <?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.svg 2x" alt="WP Rocket" width="232" height="63">
+		
+		<p class="imagify-sidebar-description"><?php printf( __( 'WP&nbsp;Rocket is a %sspeed optimization plugin for WordPress%s helping you implement  a variety of speed-boosting features to you WordPress site.', 'imagify' ), '<strong>', '</strong>' ); ?></p>
 
 		<p>
-			<?php $promo = __( 'Get %s OFF%s Now', 'rocket-lazyload' ); ?>
 			<span class="imagify-rocket-cta-promo">
-				<?php printf( $promo, '<strong>20%', '</strong>' ); ?>
+				<?php printf( __( 'Coupon: %s', 'imagify' ), '<strong>' . $discount_code . '</strong>' ); ?>
 			</span>
-			<a class="btn btn-rocket" href="<?php echo esc_url( imagify_get_wp_rocket_url() ); ?>" target="_blank"><?php _e( 'Get WP Rocket now', 'imagify' ); ?></a>
+			<a class="btn btn-rocket" href="<?php echo esc_url( imagify_get_wp_rocket_url() ); ?>" target="_blank"><?php printf( __( 'Get %s OFF Now!', 'imagify' ), $discount_percent ); ?></a>
 		</p>
 
 		<ul>
-			<li><?php
-				printf(
-					/* translators: 1 is the start of the colored text wrapper, 2 is the end. */
-					__( 'All you need to %1$simprove your Google PageSpeed%2$s score.', 'imagify' ),
-					'<strong>',
-					'</strong>'
-				);
-			?></li>
-			<li><?php
-				printf(
-					/* translators: 1 is the start of the colored text wrapper, 2 is the end. */
-					__( '%1$sBoost your SEO%2$s by preloading your cache page for Google’s bots.', 'imagify' ),
-					'<strong>',
-					'</strong>'
-				);
-			?></li>
-			<li><?php
-				printf(
-					/* translators: 1 is the start of the colored text wrapper, 2 is the end. */
-					__( 'Watch your conversion rise with the %1$100% WooCommerce compatibility%2$.', 'imagify' ),
-					'<strong>',
-					'</strong>'
-				);
-			?></li>
-			<li><?php
-				printf(
-					/* translators: 1 is the start of the colored text wrapper, 2 is the end. */
-					__( 'Minimal configuration, %1$Immediate results%2$.', 'imagify' ),
-					'<strong>',
-					'</strong>'
-				);
-			?></li>
+			<li><?php _e( 'Improve your Google PageSpeed Score.', 'imagify' ); ?></li>
+			<li><?php _e( 'Boost your SEO.', 'imagify' ); ?></li>
+			<li><?php _e( 'WooCommerce compatibility.', 'imagify' ); ?></li>
+			<li><?php _e( 'Immediate results.', 'imagify' ); ?></li>
 		</ul>
 
 	<?php $dismiss_url = get_imagify_admin_url( 'dismiss-notice', 'wp-rocket-sidebar-add' ); ?>

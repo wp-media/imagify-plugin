@@ -270,7 +270,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 /* Layout */
 .imagify-col.imagify-main {
 	float: left;
-	width: calc(100% - 340px);
+	width: calc(100% - 320px);
 	padding-left: 0;
 	padding-right: 0;
 }
@@ -281,7 +281,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 }
 .imagify-sidebar {
 	float: left;
-	width: 320px;
+	width: 300px;
 	max-width: 100%;
 }
 
@@ -334,7 +334,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 	position: relative;
 	padding: 10px 20px;
 	text-align: center;
-	color: #FFF;
+	color: #F2F2F2;
 }
 .imagify-sidebar-close {
 	position: absolute;
@@ -355,19 +355,27 @@ p.imagify-sidebar-title {
 	word-spacing: 0.015em;
 	font-weight: bold;
 }
+p.imagify-sidebar-description {
+	margin: 1.5em 0;
+	text-align: left;
+	font-weight: 500;
+	color: #F2F2F2;
+}
+.imagify-sidebar-description strong {
+	color: #39CE9A;
+}
 .imagify-rocket-cta-promo {
 	display: block;
-	padding: 15px;
-	margin-top: 1em;
+	padding: 8px 10px;
+	margin: 1.3em 0 .5em 0;
 	border: 2px dashed #F56640;
-	border-bottom: 0;
-	border-radius: 3px 3px 0 0;
-	font-size: 22px;
+	border-radius: 3px;
+	font-size: 18px;
 	font-weight: bold;
 	color: #F56640;
 }
 .imagify-rocket-cta-promo strong {
-	color: #FFF;
+	color: #F2F2F2;
 }
 a.btn-rocket {
 	display: block;
@@ -376,14 +384,14 @@ a.btn-rocket {
 	margin: 0 0 1.5em;
 	background: #F56640;
 	border-radius: 3px;
-	color: #FFF;
+	color: #F2F2F2;
 	text-transform: uppercase;
 	font-weight: bold;
 	text-decoration: none;
 }
 a.btn-rocket:hover,
 a.btn-rocket:focus {
-	background: darkorange;
+	background: #AC2B15;
 }
 
 .imagify-sidebar-section ul {
@@ -402,9 +410,6 @@ a.btn-rocket:focus {
 	left: 0; top: 0;
 	color: #39CE9A;
 	font-size: 18px;
-}
-.imagify-sidebar-section li strong {
-	color: #39CE9A;
 }
 
 /* Menu in admin bar label exception */
