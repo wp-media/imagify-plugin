@@ -85,6 +85,13 @@ class Imagify_Cron_Sync_Files extends Imagify_Abstract_Cron {
 	public function do_event() {
 		global $wpdb;
 
+		$folders_db = Imagify_Folders_DB::get_instance();
+		$files_db   = Imagify_Files_DB::get_instance();
+
+		if ( ! $folders_db->can_operate() || ! $files_db->can_operate() ) {
+			return;
+		}
+
 		if ( ! imagify_valid_key() ) {
 			return;
 		}
@@ -100,13 +107,6 @@ class Imagify_Cron_Sync_Files extends Imagify_Abstract_Cron {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders_db = Imagify_Folders_DB::get_instance();
-		$files_db   = Imagify_Files_DB::get_instance();
-
-		if ( ! $folders_db->can_operate() || ! $files_db->can_operate() ) {
-			return;
-		}
-
 		$folders = imagify_get_folders_from_type( 'all', array(
 			'active' => true,
 		) );
@@ -115,33 +115,6 @@ class Imagify_Cron_Sync_Files extends Imagify_Abstract_Cron {
 			return;
 		}
 
-		/**
-		 * Get the files from DB, and from the folders.
-		 */
-		$files = imagify_get_files_from_folders( $folders, array(
-			'insert_files_as_modified' => true,
-		) );
-
-		if ( ! $files ) {
-			return;
-		}
-
-		$files_table = $files_db->get_table_name();
-		$files_key   = $files_db->get_primary_key();
-		$file_ids    = wp_list_pluck( $files, $files_key );
-		$file_ids    = Imagify_DB::prepare_values_list( $file_ids );
-		$files_key   = esc_sql( $files_key );
-		$results     = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids ) ORDER BY $files_key;", ARRAY_A ); // WPCS: unprepared SQL ok.
-
-		if ( ! $results ) {
-			// WAT?!
-			return;
-		}
-
-		// Finally, refresh the files data.
-		foreach ( $results as $file ) {
-			$file = get_imagify_attachment( 'File', $file, 'sync_all_files_cron' );
-			imagify_refresh_file_modified( $file );
-		}
+		imagify_synchronize_files_from_folders( $folders );
 	}
 }
