@@ -227,7 +227,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	public function clear_scheduled_rating( $notice ) {
 		if ( 'rating' === $notice ) {
 			set_site_transient( 'do_imagify_rating_cron', 'no' );
-			wp_clear_scheduled_hook( 'imagify_rating_event' );
+			Imagify_Cron_Rating::get_instance()->unschedule_event();
 		}
 	}
 

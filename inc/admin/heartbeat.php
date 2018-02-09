@@ -18,7 +18,6 @@ function _imagify_heartbeat_received( $response, $data ) {
 		return $response;
 	}
 
-
 	$user     = new Imagify_User();
 	$types    = ! empty( $data['imagify_types'] ) && is_array( $data['imagify_types'] ) ? array_flip( $data['imagify_types'] ) : array();
 	$new_data = array(

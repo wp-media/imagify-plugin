@@ -171,10 +171,14 @@ function imagify_autoload( $class ) {
 	// Generic classes.
 	$classes = array(
 		'Imagify_Abstract_Attachment'      => 1,
+		'Imagify_Abstract_Cron'            => 1,
 		'Imagify_Abstract_DB'              => 1,
 		'Imagify_Admin_Ajax_Post'          => 1,
 		'Imagify_Assets'                   => 1,
 		'Imagify_Attachment'               => 1,
+		'Imagify_Cron_Library_Size'        => 1,
+		'Imagify_Cron_Rating'              => 1,
+		'Imagify_Cron_Sync_Files'          => 1,
 		'Imagify_Data'                     => 1,
 		'Imagify_DB'                       => 1,
 		'Imagify_File_Attachment'          => 1,

@@ -79,11 +79,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$files_key   = esc_sql( $files_db->get_primary_key() );
 		$per_page    = $this->get_items_per_page( self::PER_PAGE_OPTION );
 
-		$this->set_pagination_args( array(
-			'total_items' => (int) $wpdb->get_var( "SELECT COUNT($files_key) FROM $files_table" ), // WPCS: unprepared SQL ok.
-			'per_page'    => $per_page,
-		) );
-
 		// Prepare the query to get items.
 		$page     = $this->get_pagenum();
 		$offset   = ( $page - 1 ) * $per_page;
@@ -149,7 +144,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 					$where .= "( status = 'success' OR status = 'already_optimized' )";
 					break;
 				case 'unoptimized':
-					$where .= 'status IS NUUL';
+					$where .= 'status IS NULL';
 					break;
 				case 'errors':
 					$where .= "status = 'error'";
@@ -157,8 +152,14 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			}
 		}
 
+		// Pagination.
+		$this->set_pagination_args( array(
+			'total_items' => (int) $wpdb->get_var( "SELECT COUNT($files_key) FROM $files_table $where" ), // WPCS: unprepared SQL ok.
+			'per_page'    => $per_page,
+		) );
+
 		// Get items.
-		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $files_table $where ORDER BY %s %s LIMIT %d, %d", $orderby, $order, $offset, $per_page ) ); // WPCS: unprepared SQL ok.
+		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $files_table $where ORDER BY $orderby $order LIMIT %d, %d", $offset, $per_page ) ); // WPCS: unprepared SQL ok.
 
 		if ( ! $this->items ) {
 			return;

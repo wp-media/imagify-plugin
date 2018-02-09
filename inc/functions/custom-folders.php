@@ -161,47 +161,57 @@ function imagify_get_plugin_folders() {
  * @since  1.7
  * @author Grégory Viguier
  *
- * @param  string    $folder_type The folder type. Possible values are 'themes', 'plugins', and 'custom-folders'. Custom folder types can also be used.
- * @param  bool|null $to_optimize True to fetch only folders that must be optimized (checked in the settings). False to fetch only folders that must noe be optimized. Null for all.
- * @return array                  An array of arrays containing the following keys:
- *                                    - int    $folder_id   The folder ID.
- *                                    - string $path        The folder path, with placeholder.
- *                                    - int    $active      1 if the folder should be optimized. 0 otherwize.
- *                                    - string $folder_path The real absolute folder path.
- *                                Example:
- *                                    Array(
- *                                        [7] => Array(
- *                                            [folder_id] => 7
- *                                            [path] => {{ABSPATH}}/custom-path/
- *                                            [active] => 1
- *                                            [folder_path] => /absolute/path/to/custom-path/
- *                                        )
- *                                        [13] => Array(
- *                                            [folder_id] => 13
- *                                            [path] => {{CONTENT}}/another-custom-path/
- *                                            [active] => 1
- *                                            [folder_path] => /absolute/path/to/wp-content/another-custom-path/
- *                                        )
- *                                    )
+ * @param  string $folder_type The folder type. Possible values are 'all', 'themes', 'plugins', and 'custom-folders'. Custom folder types can also be used.
+ * @param  array  $args        A list of arguments to tell more precisely what to fetch:
+ *                                 - bool $active True to fetch only "active" folders (checked in the settings). False to fetch only folders that are not "active".
+ * @return array               An array of arrays containing the following keys:
+ *                                 - int    $folder_id   The folder ID.
+ *                                 - string $path        The folder path, with placeholder.
+ *                                 - int    $active      1 if the folder should be optimized. 0 otherwize.
+ *                                 - string $folder_path The real absolute folder path.
+ *                             Example:
+ *                                 Array(
+ *                                     [7] => Array(
+ *                                         [folder_id] => 7
+ *                                         [path] => {{ABSPATH}}/custom-path/
+ *                                         [active] => 1
+ *                                         [folder_path] => /absolute/path/to/custom-path/
+ *                                     )
+ *                                     [13] => Array(
+ *                                         [folder_id] => 13
+ *                                         [path] => {{CONTENT}}/another-custom-path/
+ *                                         [active] => 1
+ *                                         [folder_path] => /absolute/path/to/wp-content/another-custom-path/
+ *                                     )
+ *                                 )
  */
-function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
+function imagify_get_folders_from_type( $folder_type, $args = array() ) {
 	global $wpdb;
 
 	$folder_type   = strtolower( $folder_type );
 	$folders_db    = Imagify_Folders_DB::get_instance();
 	$folders_table = $folders_db->get_table_name();
-	$primary_key   = esc_sql( $folders_db->get_primary_key() );
-	$active        = '';
+	$primary_key   = $folders_db->get_primary_key();
+	$where_active  = '';
 
-	if ( $to_optimize ) {
-		$to_optimize = true;
-		$active      = 'AND active = 1';
-	} elseif ( false === $to_optimize ) {
-		$active      = 'AND active = 0';
+	if ( isset( $args['active'] ) ) {
+		if ( $args['active'] ) {
+			$args['active'] = true;
+			$where_active   = 'AND active = 1';
+		} else {
+			$args['active'] = false;
+			$where_active   = 'AND active = 0';
+		}
 	}
 
 	// Get the folders from the DB.
-	if ( 'themes' === $folder_type || 'plugins' === $folder_type ) {
+	if ( 'all' === $folder_type ) {
+		/**
+		 * Everything.
+		 */
+		$results = $wpdb->get_results( "SELECT * FROM $folders_table WHERE 1=1 $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+	} elseif ( 'themes' === $folder_type || 'plugins' === $folder_type ) {
 		/**
 		 * Themes or plugins.
 		 */
@@ -212,7 +222,7 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
 		}
 
 		$folder_values = Imagify_DB::prepare_values_list( $folders );
-		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $folder_values ) $active;", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $folder_values ) $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 	} elseif ( 'custom-folders' === $folder_type ) {
 		/**
@@ -220,7 +230,7 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
 		 */
 		$folders       = array_keys( array_merge( imagify_get_theme_folders(), imagify_get_plugin_folders() ) );
 		$folder_values = Imagify_DB::prepare_values_list( $folders );
-		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path NOT IN ( $folder_values ) $active;", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path NOT IN ( $folder_values ) $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 		if ( $results && is_array( $results ) ) {
 			$filesystem = imagify_get_filesystem();
@@ -240,10 +250,11 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
 		 * @since  1.7
 		 * @author Grégory Viguier
 		 *
-		 * @param array $results     An array of arrays containing the same keys as in the "imagify_folders" table in the DB.
-		 * @param bool  $to_optimize True to fetch only folders that must be optimized.
+		 * @param array $results An array of arrays containing the same keys as in the "imagify_folders" table in the DB.
+		 * @param array $args    A list of arguments passed to the function:
+		 *                           - bool $active True to fetch only "active" folders (checked in the settings). False to fetch only folders that are not "active".
 		 */
-		$results = apply_filters( 'imagify_get_folders_from_type_' . $folder_type, array(), $to_optimize );
+		$results = apply_filters( 'imagify_get_folders_from_type_' . $folder_type, array(), $args );
 	}
 
 	if ( ! $results || ! is_array( $results ) ) {
@@ -253,7 +264,7 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
 	// Cast results, add absolute paths.
 	$folders = array();
 
-	foreach ( $results as $i => $row_fields ) {
+	foreach ( $results as $row_fields ) {
 		// Cast the row.
 		$row_fields = $folders_db->cast_row( $row_fields );
 
@@ -272,7 +283,7 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
  * Files are scanned from the folders, then:
  *     - If a file doesn't exist in the DB, it is added.
  *     - If a file is in the DB, but with a wrong folder_id, it is fixed.
- *     - If a file doesn't exist, it is not returned.
+ *     - If a file doesn't exist, it is removed from the database and its backup is deleted.
  *
  * @since  1.7
  * @see    imagify_get_folders_from_type()
@@ -280,7 +291,8 @@ function imagify_get_folders_from_type( $folder_type, $to_optimize = true ) {
  *
  * @param  array $folders An array of arrays containing at least the key 'folder_path'. See imagify_get_folders_from_type() for the format.
  * @param  array $args    A list of arguments to tell more precisely what to fetch:
- *                            - int $optimization_level If set with an integer, only files that needs to be optimized to this level will be returned (the status is also checked).
+ *                            - int  $optimization_level        If set with an integer, only files that needs to be optimized to this level will be returned (the status is also checked).
+ *                            - bool $insert_files_as_modified True to set 'modified' to 1 when a file is inserted in the database.
  * @return array          A list of files in the following format:
  *                            Array(
  *                                [_2] => Array(
@@ -322,6 +334,7 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 	$files_table  = $files_db->get_table_name();
 	$files_key    = esc_sql( $files_db->get_primary_key() );
 	$optimization = isset( $args['optimization_level'] ) && is_numeric( $args['optimization_level'] );
+	$modified     = ! empty( $args['insert_files_as_modified'] ) ? 1 : 0;
 
 	/**
 	 * Scan folders for files. $files_from_scan will be in the following format:
@@ -395,7 +408,11 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 			}
 
 			if ( ! $filesystem->exists( $row_fields['file_path'] ) ) {
-				// If the file doesn't exist, bail out.
+				// If the file doesn't exist:remove all traces of it and bail out.
+				imagify_delete_custom_file( array(
+					'file_id'   => $row_fields[ $files_key ],
+					'file_path' => $row_fields['file_path'],
+				) );
 				continue;
 			}
 
@@ -473,7 +490,11 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 				}
 
 				if ( ! $filesystem->exists( $row_fields['file_path'] ) ) {
-					// If the file doesn't exist, bail out.
+					// If the file doesn't exist:remove all traces of it and bail out.
+					imagify_delete_custom_file( array(
+						'file_id'   => $row_fields[ $files_key ],
+						'file_path' => $row_fields['file_path'],
+					) );
 					continue;
 				}
 
@@ -505,6 +526,7 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 					'folder_id' => $folder_id,
 					'path'      => $placeholder,
 					'file_path' => $file_path,
+					'modified'  => $modified,
 				) );
 
 				if ( $file_id ) {
@@ -573,7 +595,11 @@ function imagify_insert_custom_file( $args = array() ) {
 		return 0;
 	}
 
-	if ( empty( $args['width'] ) || empty( $args['height'] ) ) {
+	if ( empty( $args['mime_type'] ) ) {
+		$args['mime_type'] = imagify_get_mime_type_from_file( $args['file_path'] );
+	}
+
+	if ( ( empty( $args['width'] ) || empty( $args['height'] ) ) && strpos( $args['mime_type'], 'image/' ) === 0 ) {
 		$file_size      = @getimagesize( $args['file_path'] );
 		$args['width']  = $file_size && isset( $file_size[0] ) ? $file_size[0] : 0;
 		$args['height'] = $file_size && isset( $file_size[1] ) ? $file_size[1] : 0;
@@ -581,10 +607,6 @@ function imagify_insert_custom_file( $args = array() ) {
 
 	if ( empty( $args['hash'] ) ) {
 		$args['hash'] = md5_file( $args['file_path'] );
-	}
-
-	if ( empty( $args['mime_type'] ) ) {
-		$args['mime_type'] = imagify_get_mime_type_from_file( $args['file_path'] );
 	}
 
 	if ( empty( $args['original_size'] ) ) {
@@ -596,4 +618,174 @@ function imagify_insert_custom_file( $args = array() ) {
 	unset( $args[ $primary_key ] );
 
 	return $files_db->insert( $args );
+}
+
+/**
+ * Delete a custom file.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param array $args An array of arguments.
+ *                    At least: 'file_id'. At best (less queries): 'file_id', 'file_path' (or 'path' for the placeholder), and 'backup_path'.
+ */
+function imagify_delete_custom_file( $args = array() ) {
+	$args = array_merge( array(
+		'file_id'     => 0,
+		'file_path'   => '',
+		'path'        => '',
+		'backup_path' => '',
+		'file'        => false,
+	), $args );
+
+	$filesystem = imagify_get_filesystem();
+	$file       = $args['file'] && is_a( $args['file'], 'Imagify_File_Attachment' ) ? $args['file'] : false;
+
+	// The file.
+	if ( ! $args['file_path'] && $args['path'] ) {
+		$args['file_path'] = Imagify_Files_Scan::remove_placeholder( $args['path'] );
+	}
+
+	if ( ! $args['file_path'] && $args['file_id'] ) {
+		$file = $file ? $file : get_imagify_attachment( 'File', $args['file_id'], 'delete_custom_file' );
+		$args['file_path'] = $file->get_original_path();
+	}
+
+	if ( $args['file_path'] && $filesystem->exists( $args['file_path'] ) ) {
+		$filesystem->delete( $args['file_path'] );
+	}
+
+	// The backup file.
+	if ( ! $args['backup_path'] && $args['file_path'] ) {
+		$args['backup_path'] = imagify_get_file_backup_path( $args['file_path'] );
+	}
+
+	if ( ! $args['backup_path'] && $args['file_id'] ) {
+		$file = $file ? $file : get_imagify_attachment( 'File', $args['file_id'], 'delete_custom_file' );
+		$args['backup_path'] = $file->get_raw_backup_path();
+	}
+
+	if ( $args['backup_path'] && $filesystem->exists( $args['backup_path'] ) ) {
+		$filesystem->delete( $args['backup_path'] );
+	}
+
+	// In the database.
+	if ( $file ) {
+		$file->delete_row();
+	} else {
+		Imagify_Files_DB::get_instance()->delete( $args['file_id'] );
+	}
+}
+
+/**
+ * Check if a file has been modified, and update the database accordingly.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  object $file    An Imagify_File_Attachment object.
+ * @return int|bool|object The file ID if modified. False if not modified. A WP_Error object if the file doesn't exist.
+ */
+function imagify_refresh_file_modified( $file ) {
+	$file_path   = $file->get_original_path();
+	$backup_path = $file->get_backup_path();
+	$filesystem  = imagify_get_filesystem();
+	$modified    = false;
+
+	if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
+		/**
+		 * The file doesn't exist anymore.
+		 */
+		if ( $backup_path ) {
+			// Delete the backup file.
+			$filesystem->delete( $backup_path );
+		}
+
+		// Remove the entry from the database.
+		$file->delete_row();
+
+		return new WP_Error( 'no-file', __( 'The file was missing or its path could not be retrieved from the database. The entry has been deleted from the database.', 'imagify' ) );
+	}
+
+	/**
+	 * The file still exists.
+	 */
+	$old_data = $file->get_row();
+	$new_data = array();
+
+	// Folder ID.
+	if ( $old_data['folder_id'] ) {
+		$folder = Imagify_Folders_DB::get_instance()->get( $old_data['folder_id'] );
+
+		if ( ! $folder ) {
+			$new_data['folder_id'] = 0;
+		}
+	}
+
+	// Hash + modified.
+	$current_hash = md5_file( $file_path );
+
+	if ( ! $old_data['hash'] ) {
+		$new_data['modified'] = 0;
+	} else {
+		$new_data['modified'] = (int) ! hash_equals( $old_data['hash'], $current_hash );
+	}
+
+	$new_data['hash'] = $current_hash;
+
+	// The file is modified.
+	if ( $new_data['modified'] ) {
+		// Delete all optimization data and update file data.
+		$modified  = true;
+		$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : imagify_get_mime_type_from_file( $file_path );
+
+		if ( strpos( $mime_type, 'image/' ) === 0 ) {
+			$size = @getimagesize( $file_path );
+		} else {
+			$size = false;
+		}
+
+		$new_data = array_merge( $new_data, array(
+			'width'              => $size && isset( $size[0] ) ? $size[0] : 0,
+			'height'             => $size && isset( $size[1] ) ? $size[1] : 0,
+			'original_size'      => $filesystem->size( $file_path ),
+			'optimized_size'     => null,
+			'percent'            => null,
+			'optimization_level' => null,
+			'status'             => null,
+			'error'              => null,
+		) );
+
+		if ( $backup_path ) {
+			// Delete the backup of the previous file.
+			$filesystem->delete( $backup_path );
+		}
+	} else {
+		// Update file data to make sure nothing is missing.
+		$path      = $backup_path ? $backup_path : $file_path;
+		$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : imagify_get_mime_type_from_file( $path );
+
+		if ( strpos( $mime_type, 'image/' ) === 0 ) {
+			$size = @getimagesize( $path );
+		} else {
+			$size = false;
+		}
+
+		$new_data = array_merge( $new_data, array(
+			'width'         => $size && isset( $size[0] ) ? $size[0] : 0,
+			'height'        => $size && isset( $size[1] ) ? $size[1] : 0,
+			'original_size' => $filesystem->size( $path ),
+		) );
+	}
+
+	// Save the new data.
+	$old_data = array_intersect_key( $old_data, $new_data );
+	ksort( $old_data );
+	ksort( $new_data );
+
+	if ( $old_data !== $new_data ) {
+		$file->update_row( $new_data );
+	}
+
+	return $modified ? $file->get_id() : false;
 }

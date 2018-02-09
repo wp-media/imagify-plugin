@@ -462,7 +462,7 @@ class Imagify_Admin_Ajax_Post {
 	}
 
 	/**
-	 * Get all unoptimized attachment ids.
+	 * Check if a file has been modified, and update the database accordingly.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -472,99 +472,17 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'imagify_refresh_file_modified' );
 		imagify_check_user_capacity( 'optimize-file' );
 
-		$file        = $this->get_file_to_optimize( 'imagify_refresh_file_modified' );
-		$file_path   = $file->get_original_path();
-		$backup_path = $file->get_backup_path();
-		$filesystem  = imagify_get_filesystem();
+		$file   = $this->get_file_to_optimize( 'imagify_refresh_file_modified' );
+		$result = imagify_refresh_file_modified( $file );
 
-		if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
-			/**
-			 * The file doesn't exist anymore.
-			 */
-			if ( ! $backup_path ) {
-				// No backup, let's delete this entry.
-				$file->delete_row();
+		if ( is_wp_error( $result ) ) {
+			$message = $result->get_error_message();
 
-				$message = __( 'The file was missing or its path couldn\'t be retrieved from the database. The entry has been deleted from the database.', 'imagify' );
+			imagify_maybe_redirect( $message );
 
-				imagify_maybe_redirect( $message );
-
-				wp_send_json_error( array(
-					'row' => $message,
-				) );
-			} else {
-				// We have a backup, let's restore it.
-				$result = $file->restore();
-
-				$this->file_optimization_output( $result, $file );
-			}
-		}
-
-		/**
-		 * The file still exists.
-		 */
-		$old_data = $file->get_row();
-		$new_data = array();
-
-		// Folder ID.
-		if ( $old_data['folder_id'] ) {
-			$folder = Imagify_Folders_DB::get_instance()->get( $old_data['folder_id'] );
-
-			if ( ! $folder ) {
-				$new_data['folder_id'] = 0;
-			}
-		}
-
-		// Hash + modified.
-		$current_hash = md5_file( $file_path );
-
-		if ( ! $old_data['hash'] ) {
-			$new_data['modified'] = 0;
-		} else {
-			$new_data['modified'] = (int) ! hash_equals( $old_data['hash'], $current_hash );
-		}
-
-		$new_data['hash'] = $current_hash;
-
-		// The file is modified.
-		if ( $new_data['modified'] ) {
-			// Delete all optimization data and update file data.
-			$size = @getimagesize( $file_path );
-
-			$new_data = array_merge( $new_data, array(
-				'width'              => $size && isset( $size[0] ) ? $size[0] : 0,
-				'height'             => $size && isset( $size[1] ) ? $size[1] : 0,
-				'original_size'      => $filesystem->size( $file_path ),
-				'optimized_size'     => null,
-				'percent'            => null,
-				'optimization_level' => null,
-				'status'             => null,
-				'error'              => null,
+			wp_send_json_error( array(
+				'row' => $message,
 			) );
-
-			if ( $backup_path ) {
-				// Delete the backup of the previous file.
-				$filesystem->delete( $backup_path );
-			}
-		} else {
-			// Update file data.
-			$path = $backup_path ? $backup_path : $file_path;
-			$size = @getimagesize( $path );
-
-			$new_data = array_merge( $new_data, array(
-				'width'         => $size && isset( $size[0] ) ? $size[0] : 0,
-				'height'        => $size && isset( $size[1] ) ? $size[1] : 0,
-				'original_size' => $filesystem->size( $path ),
-			) );
-		}
-
-		// Save the new data.
-		$old_data = array_intersect_key( $old_data, $new_data );
-		ksort( $old_data );
-		ksort( $new_data );
-
-		if ( $old_data !== $new_data ) {
-			$file->update_row( $new_data );
 		}
 
 		imagify_maybe_redirect();
@@ -849,7 +767,9 @@ class Imagify_Admin_Ajax_Post {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders = imagify_get_folders_from_type( $folder_type );
+		$folders = imagify_get_folders_from_type( $folder_type, array(
+			'active' => true,
+		) );
 
 		if ( ! $folders ) {
 			wp_send_json_success( array() );
