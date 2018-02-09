@@ -115,6 +115,14 @@ class Imagify_Files_Scan {
 			return true;
 		}
 
+		if ( self::get_forbidden_folder_patterns() ) {
+			foreach ( self::get_forbidden_folder_patterns() as $pattern ) {
+				if ( preg_match( '@^' . $pattern . '@', $file_path ) ) {
+					return true;
+				}
+			}
+		}
+
 		if ( ! $check_parents ) {
 			// Don't check if the file is located in a forbidden folder.
 			if ( ! isset( $root_folders ) ) {
@@ -138,7 +146,6 @@ class Imagify_Files_Scan {
 
 	/**
 	 * Get the list of folders where Imagify won't look for files to optimize.
-	 * It can contain non-folder paths.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -154,13 +161,34 @@ class Imagify_Files_Scan {
 		}
 
 		$folders = array(
-			imagify_get_files_backup_dir_path(), // "Custom folders" backup.
-			imagify_get_abspath() . 'wp-admin',  // `wp-admin`
-			imagify_get_abspath() . WPINC,       // `wp-includes`
-			get_imagify_upload_basedir( true ),  // Medias library.
-			WP_CONTENT_DIR . '/gallery',         // NGG galleries.
-			IMAGIFY_PATH,                        // Imagify plugin.
+			// Server.
+			imagify_get_abspath() . 'cgi-bin',    // `cgi-bin`
+			// WordPress.
+			imagify_get_abspath() . 'wp-admin',   // `wp-admin`
+			imagify_get_abspath() . WPINC,        // `wp-includes`
+			get_imagify_upload_basedir( true ),   // Medias library.
+			WP_CONTENT_DIR . '/languages',        // Translations.
+			WP_CONTENT_DIR . '/mu-plugins',       // MU plugins.
+			WP_CONTENT_DIR . '/upgrade',          // Upgrade.
+			// Plugins.
+			WP_CONTENT_DIR . '/backups',          // A folder commonly used by backup plugins.
+			WP_CONTENT_DIR . '/cache',            // A folder commonly used by cache plugins.
+			WP_CONTENT_DIR . '/bps-backup',       // BulletProof Security.
+			WP_CONTENT_DIR . '/ngg',              // NextGen Gallery.
+			WP_CONTENT_DIR . '/ngg_styles',       // NextGen Gallery.
+			WP_CONTENT_DIR . '/w3tc-config',      // W3 Total Cache.
+			WP_CONTENT_DIR . '/wp-rocket-config', // WP Rocket.
+			imagify_get_files_backup_dir_path(),  // Imagify "Custom folders" backup.
+			IMAGIFY_PATH,                         // Imagify plugin.
+			self::get_wc_logs_path(),             // WooCommerce Logs.
+			self::get_ewww_tools_path(),          // EWWW.
 		);
+
+		// NextGen Gallery.
+		if ( ! is_multisite() ) {
+			$folders[] = self::get_ngg_galleries_path();
+		}
+
 		$folders = array_map( 'trailingslashit', $folders );
 		$folders = array_map( 'wp_normalize_path', $folders );
 
@@ -174,14 +202,74 @@ class Imagify_Files_Scan {
 		 * @param array $folders       List of folders already forbidden.
 		 */
 		$added_folders = apply_filters( 'imagify_add_forbidden_folders', array(), $folders );
+		$added_folders = array_filter( (array) $added_folders );
+		$added_folders = array_filter( $added_folders, 'is_string' );
 
-		if ( ! $added_folders || ! is_array( $added_folders ) ) {
+		if ( ! $added_folders ) {
 			return $folders;
 		}
 
-		$added_folders = array_filter( $added_folders, 'is_string' );
 		$added_folders = array_map( 'trailingslashit', $added_folders );
 		$added_folders = array_map( 'wp_normalize_path', $added_folders );
+
+		$folders = array_merge( $folders, $added_folders );
+		$folders = array_flip( array_flip( $folders ) );
+
+		return $folders;
+	}
+
+	/**
+	 * Get the list of folder patterns where Imagify won't look for files to optimize.
+	 * `^` will be prepended to each pattern (aka, the pattern must match an absolute path). Pattern delimiter is `@`. Paths tested against these patterns are lower-cased.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return array A list of regex patterns.
+	 */
+	public static function get_forbidden_folder_patterns() {
+		static $folders;
+
+		if ( isset( $folders ) ) {
+			return $folders;
+		}
+
+		$folders = array();
+
+		// NextGen Gallery.
+		if ( is_multisite() ) {
+			$folders[] = self::get_ngg_galleries_path();
+		}
+
+		if ( $folders ) {
+			$folders = array_map( 'trailingslashit', $folders );
+			$folders = array_map( 'wp_normalize_path', $folders );
+			$folders = array_map( 'preg_quote', $folders, array_fill( 1, count( $folders ), '@' ) );
+
+			// Must be done after `wp_normalize_path()` and `preg_quote()`.
+			foreach ( $folders as $i => $folder ) {
+				$folders[ $i ] = str_replace( '%BLOG_ID%', '\d+', $folder );
+			}
+		}
+
+		/**
+		 * Add folder patterns to the list of forbidden ones.
+		 * Don't forget to use `trailingslashit()`, `wp_normalize_path()` and `preg_quote()`!
+		 *
+		 * @since  1.7
+		 * @author Grégory Viguier
+		 *
+		 * @param array $added_folders List of patterns.
+		 * @param array $folders       List of patterns already forbidden.
+		 */
+		$added_folders = apply_filters( 'imagify_add_forbidden_folder_patterns', array(), $folders );
+		$added_folders = array_filter( (array) $added_folders );
+		$added_folders = array_filter( $added_folders, 'is_string' );
+
+		if ( ! $added_folders ) {
+			return $folders;
+		}
 
 		$folders = array_merge( $folders, $added_folders );
 		$folders = array_flip( array_flip( $folders ) );
@@ -455,5 +543,74 @@ class Imagify_Files_Scan {
 	 */
 	public static function normalize_path_for_comparison( $file_path ) {
 		return strtolower( wp_normalize_path( trailingslashit( $file_path ) ) );
+	}
+
+	/**
+	 * Get the path to NextGen galleries. On multisite, the path contains `%BLOG_ID%`, and must be used as a regex pattern.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string An absolute path.
+	 */
+	public static function get_ngg_galleries_path() {
+		$ngg_options = get_site_option( 'ngg_options' );
+
+		if ( empty( $ngg_options['gallerypath'] ) ) {
+			if ( is_multisite() ) {
+				return get_imagify_upload_basedir( true ) . 'sites/%BLOG_ID%/nggallery';
+			}
+
+			return WP_CONTENT_DIR . '/gallery/';
+		}
+
+		$ngg_root = defined( 'NGG_GALLERY_ROOT_TYPE' ) ? NGG_GALLERY_ROOT_TYPE : 'site';
+
+		if ( 'content' === $ngg_root ) {
+			$ngg_root = WP_CONTENT_DIR . '/';
+		} else {
+			$ngg_root = imagify_get_abspath();
+		}
+
+		if ( is_multisite() ) {
+			return $ngg_root . str_replace( '%BLOG_NAME%', get_bloginfo( 'name' ), $ngg_options['gallerypath'] );
+		}
+
+		return $ngg_root . $ngg_options['gallerypath'];
+	}
+
+	/**
+	 * Get the path to WooCommerce logs.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string An absolute path.
+	 */
+	public static function get_wc_logs_path() {
+		if ( defined( 'WC_LOG_DIR' ) ) {
+			return WC_LOG_DIR;
+		}
+
+		return get_imagify_upload_basedir( true ) . 'wc-logs/';
+	}
+
+	/**
+	 * Get the path to EWWW optimization tools.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string An absolute path.
+	 */
+	public static function get_ewww_tools_path() {
+		if ( defined( 'EWWW_IMAGE_OPTIMIZER_TOOL_PATH' ) ) {
+			return EWWW_IMAGE_OPTIMIZER_TOOL_PATH;
+		}
+
+		return WP_CONTENT_DIR . '/ewww/';
 	}
 }
