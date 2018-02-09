@@ -174,7 +174,7 @@
 				initData.datasets[0].data = data;
 			}
 
-			this.charts.overview.donut = new Chart( this.charts.overview.canvas, {
+			this.charts.overview.donut = new w.imagify.Chart( this.charts.overview.canvas, {
 				type:    'doughnut',
 				data:    initData,
 				options: {
@@ -231,7 +231,7 @@
 				}
 
 				// Create new donut.
-				donuts[ this.id ] = new Chart( this, {
+				donuts[ this.id ] = new w.imagify.Chart( this, {
 					type: 'doughnut',
 					data: {
 						datasets: [{
@@ -286,7 +286,7 @@
 			}
 
 			// Create new donut.
-			this.charts.share.donut = new Chart( this.charts.share.canvas, {
+			this.charts.share.donut = new w.imagify.Chart( this.charts.share.canvas, {
 				type: 'doughnut',
 				data: {
 					datasets: [{
@@ -513,7 +513,7 @@
 
 			spinnerTemplate = w.imagify.template( 'imagify-spinner' );
 			$newRow.children( '.imagify-cell-checkbox' ).html( spinnerTemplate() ).find( 'svg' ).attr( 'fill', spinnerColor );
-			$newRow.children( '.imagify-cell-title' ).text( $newRow.children( '.imagify-cell-title' ).text() );
+			$newRow.children( '.imagify-cell-title' ).html( '<span class="imagify-cell-label">' + $newRow.children( '.imagify-cell-title' ).text() + '</span>' );
 			$newRow.children( '.imagify-cell-images-optimized' ).html( text );
 			$newRow.children( '.imagify-cell-errors, .imagify-cell-optimized, .imagify-cell-original, .imagify-cell-level' ).text( '' );
 
