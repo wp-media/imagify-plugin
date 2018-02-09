@@ -87,12 +87,11 @@ class Imagify_Files_Scan {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param  string $file_path     A file or folder absolute path.
-	 * @param  bool   $check_parents If true, will check that the given file/folder is not inside a forbidden folder.
+	 * @param  string $file_path A file or folder absolute path.
 	 * @return bool
 	 */
-	public static function is_path_forbidden( $file_path, $check_parents = true ) {
-		static $folders, $root_folders;
+	public static function is_path_forbidden( $file_path ) {
+		static $folders;
 
 		if ( self::is_filename_forbidden( basename( $file_path ) ) ) {
 			return true;
@@ -121,18 +120,6 @@ class Imagify_Files_Scan {
 					return true;
 				}
 			}
-		}
-
-		if ( ! $check_parents ) {
-			// Don't check if the file is located in a forbidden folder.
-			if ( ! isset( $root_folders ) ) {
-				$root_folders = self::get_forbidden_folder_roots();
-				$root_folders = array_map( 'strtolower', $root_folders );
-				$root_folders = array_flip( $root_folders );
-			}
-
-			// Since the user can select plugins and themes directly, disallow to select plugins and themes folders directly.
-			return isset( $root_folders[ $file_path ] );
 		}
 
 		foreach ( $folders as $folder ) {
@@ -273,42 +260,6 @@ class Imagify_Files_Scan {
 
 		$folders = array_merge( $folders, $added_folders );
 		$folders = array_flip( array_flip( $folders ) );
-
-		return $folders;
-	}
-
-	/**
-	 * Get the list of folder "roots" where Imagify won't look for files to optimize.
-	 * Folder "roots" are folders where Imagify can look for files in sub-folders, but not directly into these folders.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return array A list of absolute paths.
-	 */
-	public static function get_forbidden_folder_roots() {
-		static $folders;
-
-		if ( isset( $folders ) ) {
-			return $folders;
-		}
-
-		$filesystem = imagify_get_filesystem();
-		$folders    = array(
-			WP_PLUGIN_DIR,
-		);
-
-		foreach ( (array) get_theme_roots() as $theme_root ) {
-			if ( $filesystem->exists( $theme_root ) ) {
-				$folders[] = $theme_root;
-			} else {
-				$folders[] = WP_CONTENT_DIR . $theme_root;
-			}
-		}
-
-		$folders = array_map( 'trailingslashit', $folders );
-		$folders = array_map( 'wp_normalize_path', $folders );
 
 		return $folders;
 	}
