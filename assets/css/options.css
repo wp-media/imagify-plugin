@@ -270,8 +270,9 @@ label[for="imagify_sizes_full"] + .imagify-info {
 /* Layout */
 .imagify-col.imagify-main {
 	float: left;
-	width: 70%;
+	width: calc(100% - 340px);
 	padding-left: 0;
+	padding-right: 0;
 }
 .imagify-have-rocket .imagify-main {
 	float: none;
@@ -280,8 +281,8 @@ label[for="imagify_sizes_full"] + .imagify-info {
 }
 .imagify-sidebar {
 	float: left;
-	width: 28%;
-	max-width: 320px;
+	width: 320px;
+	max-width: 100%;
 }
 
 /* Sidebar with Ads */
