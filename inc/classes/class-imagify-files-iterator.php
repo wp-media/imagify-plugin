@@ -20,6 +20,29 @@ class Imagify_Files_Iterator extends FilterIterator {
 	const VERSION = '1.0';
 
 	/**
+	 * Tell if the iterator will return both folders and images, or only images.
+	 *
+	 * @var   bool
+	 * @since 1.7
+	 */
+	protected $include_folders;
+
+	/**
+	 * Check whether the current element of the iterator is acceptable.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param object $iterator        The iterator that is being filtered.
+	 * @param bool   $include_folders True to return both folders and images. False to return only images.
+	 */
+	public function __construct( $iterator, $include_folders = true ) {
+		parent::__construct( $iterator );
+		$this->include_folders = (bool) $include_folders;
+	}
+
+	/**
 	 * Check whether the current element of the iterator is acceptable.
 	 *
 	 * @since  1.7
@@ -39,7 +62,7 @@ class Imagify_Files_Iterator extends FilterIterator {
 		}
 
 		// OK for folders.
-		if ( $this->isDir() ) {
+		if ( $this->include_folders && $this->isDir() ) {
 			return true;
 		}
 

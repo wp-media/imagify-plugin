@@ -1183,6 +1183,8 @@ class Imagify_Admin_Ajax_Post {
 	 * @author Grégory Viguier
 	 */
 	public function imagify_get_files_tree_callback() {
+		static $abspath;
+
 		imagify_check_nonce( 'get-files-tree' );
 		imagify_check_user_capacity( 'optimize-file' );
 
@@ -1205,12 +1207,30 @@ class Imagify_Admin_Ajax_Post {
 			imagify_die( __( 'This folder is not allowed.', 'imagify' ) );
 		}
 
+		if ( ! isset( $abspath ) ) {
+			$abspath = wp_normalize_path( ABSPATH );
+		}
+
 		// Finally we made all our validations.
 		$selected = ! empty( $_POST['selected'] ) && is_array( $_POST['selected'] ) ? array_flip( $_POST['selected'] ) : array();
 		$folder   = wp_normalize_path( trailingslashit( $folder ) );
+		$views    = Imagify_Views::get_instance();
+		$output   = '';
+
+		if ( $folder === $abspath ) {
+			$output .= $views->get_template( 'part-settings-files-tree-row', array(
+				'relative_path'     => '/',
+				// Value #///# In input id #///# Label.
+				'checkbox_value'    => '{{ABSPATH}}/#///#ABSPATH#///#' . esc_attr__( 'Site\'s root', 'imagify' ),
+				'checkbox_id'       => 'ABSPATH',
+				'checkbox_selected' => isset( $selected['{{ABSPATH}}/'] ),
+				'label'             => __( 'Site\'s root', 'imagify' ),
+				'no_button'         => true,
+			) );
+		}
+
 		$dir      = new DirectoryIterator( $folder );
 		$dir      = new Imagify_Files_Iterator( $dir );
-		$output   = '';
 		$images   = 0;
 
 		foreach ( new IteratorIterator( $dir ) as $file ) {
@@ -1219,25 +1239,18 @@ class Imagify_Admin_Ajax_Post {
 				continue;
 			}
 
-			$abs_path    = $file->getPathname();
-			$rel_path    = esc_attr( imagify_make_file_path_relative( trailingslashit( $abs_path ) ) );
-			$placeholder = Imagify_Files_Scan::add_placeholder( trailingslashit( $abs_path ) );
-			$check_id    = sanitize_html_class( $placeholder );
-			$label       = str_replace( $folder, '', $abs_path );
-			// Value #///# In input id #///# Label.
-			$value       = esc_attr( $placeholder ) . '#///#' . sanitize_html_class( $placeholder ) . '#///#' . esc_attr( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $placeholder ) ) );
+			$folder_path   = $file->getPathname();
+			$relative_path = esc_attr( imagify_make_file_path_relative( trailingslashit( $folder_path ) ) );
+			$placeholder   = Imagify_Files_Scan::add_placeholder( trailingslashit( $folder_path ) );
 
-			$output .= '<li>';
-			/* translators: %s is a folder path. */
-				$output .= '<button type="button" data-folder="' . esc_attr( $rel_path ) . '" title="' . sprintf( esc_attr__( 'Open/Close the folder "%s".', 'imagify' ), $rel_path ) . '">';
-					$output .= '<span class="dashicons dashicons-category"></span>';
-				$output .= '</button>';
-				$output .= '<input type="checkbox" name="imagify-custom-files[]" value="' . $value . '" id="imagify-custom-folder-' . $check_id . '" class="screen-reader-text"' . disabled( true, isset( $selected[ $placeholder ] ), false ) . '/>';
-				/* translators: %s is a folder path. */
-				$output .= '<label for="imagify-custom-folder-' . $check_id . '" title="' . sprintf( esc_attr__( 'Select the folder "%s".', 'imagify' ), $rel_path ) . '">';
-					$output .= $label;
-				$output .= '</label>';
-			$output .= '</li>';
+			$output .= $views->get_template( 'part-settings-files-tree-row', array(
+				'relative_path'     => $relative_path,
+				// Value #///# In input id #///# Label.
+				'checkbox_value'    => esc_attr( $placeholder ) . '#///#' . sanitize_html_class( $placeholder ) . '#///#' . $relative_path,
+				'checkbox_id'       => sanitize_html_class( $placeholder ),
+				'checkbox_selected' => isset( $selected[ $placeholder ] ),
+				'label'             => str_replace( $folder, '', $folder_path ),
+			) );
 		}
 
 		if ( $images ) {
