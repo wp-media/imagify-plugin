@@ -162,7 +162,7 @@
 				initData.datasets[0].data = data;
 			}
 
-			this.charts.overview.donut = new Chart( this.charts.overview.canvas, {
+			this.charts.overview.donut = new w.imagify.Chart( this.charts.overview.canvas, {
 				type:    'doughnut',
 				data:    initData,
 				options: {
@@ -219,7 +219,7 @@
 				}
 
 				// Create new donut.
-				donuts[ this.id ] = new Chart( this, {
+				donuts[ this.id ] = new w.imagify.Chart( this, {
 					type: 'doughnut',
 					data: {
 						datasets: [{
@@ -274,7 +274,7 @@
 			}
 
 			// Create new donut.
-			this.charts.share.donut = new Chart( this.charts.share.canvas, {
+			this.charts.share.donut = new w.imagify.Chart( this.charts.share.canvas, {
 				type: 'doughnut',
 				data: {
 					datasets: [{
