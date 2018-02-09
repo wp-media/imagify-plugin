@@ -38,7 +38,7 @@ function imagify_sync_theme_plugin_files_on_update( $response, $hook_extra, $res
 
 	$folder_path = trailingslashit( $result['destination'] );
 
-	if ( Imagify_Files_Scan::is_path_forbidden( $folder_path, false ) ) {
+	if ( Imagify_Files_Scan::is_path_forbidden( $folder_path ) ) {
 		// This theme or plugin must not be optimized.
 		return $response;
 	}
