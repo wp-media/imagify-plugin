@@ -801,6 +801,7 @@ function imagify_refresh_file_modified( $file ) {
  * @param array $folders A list of folders. See imagify_get_folders_from_type() for the format.
  */
 function imagify_synchronize_files_from_folders( $folders ) {
+	global $wpdb;
 	/**
 	 * Get the files from DB, and from the folder.
 	 */

@@ -207,6 +207,23 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
+	 * Tell if the table is empty or not.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool True if the table contains at least one row.
+	 */
+	public function has_items() {
+		global $wpdb;
+
+		$column = esc_sql( $this->primary_key );
+
+		return (bool) $wpdb->get_var( "SELECT $column FROM $this->table_name LIMIT 1;" ); // WPCS: unprepared SQL ok.
+	}
+
+	/**
 	 * Retrieve a row by the primary key.
 	 *
 	 * @since  1.5

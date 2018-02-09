@@ -41,7 +41,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	padding: 0;
 	margin: 10px 20px 10px 2px;
 	border: 0 none;
-	background: #2E3243;
+	background: #4A5362;
 	box-shadow: none;
 	color: #FFF;
 }
@@ -68,11 +68,15 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	padding: 18px 23px;
 	background: #40B1D0;
 }
+.imagify-flex-notice-content .imagify-notice-logo {
+	display: flex;
+	align-items: center;
+}
 .updated .imagify-notice-logo {
 	background: #8BC34A;
 }
 .error .imagify-notice-logo {
-	background: #D0021B;
+	background: #C51162;
 }
 
 .imagify-notice-title {
@@ -84,6 +88,29 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 }
 .imagify-notice-content.imagify-notice-content p {
 	margin: 0.65em 0;
+}
+.imagify-flex-notice-content .imagify-notice-content {
+	display: flex;
+	flex-wrap: wrap;
+	padding: 0;
+}
+.imagify-flex-notice-content .imagify-notice-content > * {
+	padding: 10px 20px;
+}
+.imagify-flex-notice-content .imagify-meteo-icon img {
+	height: 100%;
+	margin-top: 6px;
+}
+.imagify-notice-quota [class^="imagify-bar-"] {
+	background: #1F2332;
+}
+.imagify-notice-quota .imagify-space-left p {
+	margin: 0;
+}
+.imagify-flex-notice-content .imagify-notice-content .imagify-notice-quota {
+	padding-right: 24px;
+	padding-left: 8px;
+	background: #343A49;
 }
 .imagify-notice a {
 	color: #40B1D0;

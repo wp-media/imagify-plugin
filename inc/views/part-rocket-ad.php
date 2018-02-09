@@ -11,36 +11,49 @@ $discount_code    = 'IMAGIFY20';
 
 <div class="imagify-col imagify-sidebar">
 	<div class="imagify-sidebar-section">
-		<span class="imagify-sidebar-title">
-			<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>phone.svg" width="19" height="16" alt=""> <?php _e( 'Is your website too slow?', 'imagify' ); ?>
-		</span>
-		<ul class="wp-media-products">
-			<li>
-				<div class="links wprocket-link">
-					<p><strong>
-						<?php _e( 'Discover the best caching plugin to speed up your website.', 'imagify' ); ?>
-					</strong></p>
+		<p class="imagify-sidebar-title">
+			<?php _e( 'We recommend for you', 'corporate' ); ?>
+		</p>
 
-					<p class="imagify-big-text">
-						<?php
-						printf(
-							/* translators: 1 is the start of a styled wrapper, 2 is a "bold" tag start, 3 is a percentage, 4 is the "bold" tag end, 5 is the styled wrapper end, 6 is a discount code. */
-							__( '%1$sGet %2$s%3$s off%4$s%5$s with this coupon code: %6$s', 'imagify' ),
-							'<span class="imagify-mark-styled"><span>',
-							'<strong>',
-							$discount_percent,
-							'</strong>',
-							'</span></span>',
-							'<span class="imagify-discount-code">' . $discount_code . '</span>'
-						);
-						?>
-					</p>
+		<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket@2x.png 2x" alt="WP Rocket" width="232" height="63">
 
-					<p>
-						<a class="btn btn-rocket" href="<?php echo esc_url( imagify_get_wp_rocket_url() ); ?>" target="_blank"><?php _e( 'Get WP Rocket now', 'imagify' ); ?></a>
-					</p>
-				</div>
-			</li>
+		<p>
+			<a class="btn btn-rocket" href="<?php echo esc_url( imagify_get_wp_rocket_url() ); ?>" target="_blank"><?php _e( 'Get WP Rocket now', 'imagify' ); ?></a>
+		</p>
+
+		<ul>
+			<li><?php
+				printf(
+					/* translators: 1 is the start of the colored text wrapper, 2 is the end. */
+					__( 'All you need to %1$simprove your Google PageSpeed%2$ score.', 'imagify' ),
+					'<strong>',
+					'</strong>'
+				);
+			?></li>
+			<li><?php
+				printf(
+					/* translators: 1 is the start of the colored text wrapper, 2 is the end. */
+					__( '%1$sBoost your SEO%2$s by preloading your cache page for Google’s bots.', 'imagify' ),
+					'<strong>',
+					'</strong>'
+				);
+			?></li>
+			<li><?php
+				printf(
+					/* translators: 1 is the start of the colored text wrapper, 2 is the end. */
+					__( 'Watch your conversion rise with the %1$100% WooCommerce compatibility%2$.', 'imagify' ),
+					'<strong>',
+					'</strong>'
+				);
+			?></li>
+			<li><?php
+				printf(
+					/* translators: 1 is the start of the colored text wrapper, 2 is the end. */
+					__( 'Minimal configuration, %1$Immediate results%2$.', 'imagify' ),
+					'<strong>',
+					'</strong>'
+				);
+			?></li>
 		</ul>
 	</div>
 </div>

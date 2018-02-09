@@ -70,11 +70,11 @@
 						imagifyBulk.labels.overviewChartLabels.optimized,
 						imagifyBulk.labels.overviewChartLabels.error
 					],
-					datasets: [{
-						data: [],
+					datasets: [ {
+						data:            [],
 						backgroundColor: [ '#D9E4EB', '#46B1CE', '#2E3242' ],
 						borderWidth:     0
-					}]
+					} ]
 				}
 			},
 			files: {
@@ -107,9 +107,21 @@
 			// Overview chart.
 			this.drawOverviewChart();
 
-			// Buttons.
-			$( '.imagify-view-optimization-details' ).on( 'click.imagify open.imagify close.imagify', this.toggleOptimizationDetails );
-			$( '#imagify-bulk-action' ).on( 'click.imagify', this.launchAllProcesses );
+			// Optimization level selector.
+			$( '.imagify-level-selector-button' )
+				.on( 'click.imagify', this.openLevelSelectorFromButton );
+
+			$( '.imagify-level-selector-list input' )
+				.on( 'change.imagify init.imagify', this.syncLevelSelectorFromRadio )
+				.filter( ':checked' )
+				.trigger( 'init.imagify' );
+
+			$( d )
+				.on( 'keypress.imagify click.imagify', this.closeLevelSelectors );
+
+			// Other buttons/UI.
+			$( '.imagify-show-table-details' ).on( 'click.imagify open.imagify close.imagify', this.toggleOptimizationDetails );
+			$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
 			$( '.imagify-share-networks a' ).on( 'click.imagify', this.share );
 
 			// Optimization events.
@@ -328,6 +340,27 @@
 		},
 
 		/*
+		 * Close the given optimization level selector.
+		 *
+		 * @param {object} $lists A jQuery object.
+		 * @param {int}    timer  Timer in ms to close the selector.
+		 */
+		closeLevelSelector: function ( $lists, timer ) {
+			if ( ! $lists || ! $lists.length ) {
+				return;
+			}
+
+			if ( undefined !== timer && timer > 0 ) {
+				w.setTimeout( function() {
+					w.imagify.bulk.closeLevelSelector( $lists );
+				}, timer );
+				return;
+			}
+
+			$lists.attr( 'aria-hidden', 'true' );
+		},
+
+		/*
 		 * Stop everything and update the current item status as an error.
 		 *
 		 * @param {string} errorId An error ID.
@@ -349,19 +382,34 @@
 		 *
 		 * @param {string} title The modal title.
 		 * @param {string} text  The modal text.
-		 * @param {string} title The modal type ("error", "info").
+		 * @param {object} args  Other less common args.
 		 */
-		displayError: function ( title, text, type ) {
-			title = title || imagifyBulk.labels.error;
-			text  = text || '';
-			type  = type || 'error';
+		displayError: function ( title, text, args ) {
+			var def = {
+				title:             '',
+				html:              '',
+				type:              'error',
+				customClass:       '',
+				width:             620,
+				padding:           0,
+				showCloseButton:   true,
+				showConfirmButton: true
+			};
 
-			swal( {
-				title:       title,
-				html:        text,
-				type:        type,
-				customClass: 'imagify-sweet-alert'
-			} );
+			if ( $.isPlainObject( title ) ) {
+				args = $.extend( {}, def, title );
+			} else {
+				args = args || {};
+				args = $.extend( {}, def, {
+					title: title || '',
+					html:  text  || ''
+				}, args );
+			}
+
+			args.title        = args.title || imagifyBulk.labels.error;
+			args.customClass += ' imagify-sweet-alert';
+
+			swal( args );
 		},
 
 		/*
@@ -392,7 +440,7 @@
 		 * @param {element} $container jQuery element of the group container.
 		 */
 		displayGroupHeader: function ( state, $container ) {
-			$container = $container.find( '.imagify-bulk-table-title' );
+			$container = $container.find( '.imagify-table-header' );
 			$container.not( '.imagify-' + state ).imagifyHide();
 			$container.filter( '.imagify-' + state ).imagifyShow();
 		},
@@ -425,7 +473,7 @@
 		 * @param {element} $row  jQuery element of the "normal" row.
 		 */
 		displayFolderRow: function ( state, $row ) {
-			var $newRow, spinner, text;
+			var $newRow, spinnerTemplate, spinnerColor, text;
 
 			if ( 'resting' === state ) {
 				$row.next( '.imagify-row-waiting, .imagify-row-working' ).remove();
@@ -437,18 +485,18 @@
 			$newRow = $row.next( '.imagify-row-waiting, .imagify-row-working' );
 
 			if ( 'waiting' === state ) {
-				spinner = imagifyBulk.spinnerWaitingUrl;
-				text    = imagifyBulk.labels.waitingOtimizationsText;
+				spinnerColor = '#d2d3d6';
+				text         = imagifyBulk.labels.waitingOtimizationsText;
 			} else {
-				spinner = imagifyBulk.spinnerWorkingUrl;
-				text    = imagifyBulk.labels.imagesOptimizedText.replace( '%s', '<span>0</span>' );
+				spinnerColor = '#40b1d0';
+				text         = imagifyBulk.labels.imagesOptimizedText.replace( '%s', '<span>0</span>' );
 			}
 
 			if ( $newRow.length ) {
 				if ( ! $newRow.hasClass( 'imagify-row-' + state ) ) {
 					// Should happen when switching from 'waiting' to 'working'.
 					$newRow.attr( 'class', 'imagify-row-' + state );
-					$newRow.find( '.imagify-cell-checkbox img' ).attr( 'src', spinner );
+					$newRow.find( '.imagify-cell-checkbox svg' ).attr( 'fill', spinnerColor );
 					$newRow.children( '.imagify-cell-images-optimized' ).html( text );
 				}
 
@@ -463,8 +511,9 @@
 				'aria-hidden': 'false'
 			} );
 
-			$newRow.children( '.imagify-cell-checkbox' ).html( '<img alt="" src="' + spinner + '"/>' );
-			$newRow.children( '.imagify-cell-title' ).text( $newRow.children( '.imagify-cell-title' ).text() );
+			spinnerTemplate = w.imagify.template( 'imagify-spinner' );
+			$newRow.children( '.imagify-cell-checkbox' ).html( spinnerTemplate() ).find( 'svg' ).attr( 'fill', spinnerColor );
+			$newRow.children( '.imagify-cell-title' ).html( '<span class="imagify-cell-label">' + $newRow.children( '.imagify-cell-title' ).text() + '</span>' );
 			$newRow.children( '.imagify-cell-images-optimized' ).html( text );
 			$newRow.children( '.imagify-cell-errors, .imagify-cell-optimized, .imagify-cell-original, .imagify-cell-level' ).text( '' );
 
@@ -518,13 +567,52 @@
 		// Event callbacks =========================================================================
 
 		/*
+		 * Optimization level selector: on button click, open the dropdown and focus the current radio input.
+		 * The dropdown must be open or the focus event won't be triggered.
+		 *
+		 * @param {object} e jQuery's Event object.
+		 */
+		openLevelSelectorFromButton: function ( e ) {
+			var $list = $( '#' + $( this ).attr( 'aria-controls' ) );
+			// Stop click event from bubbling: this will allow to close the selector list if anything else id clicked.
+			e.stopPropagation();
+			// Close other lists.
+			$( '.imagify-level-selector-list' ).not( $list ).attr( 'aria-hidden', 'true' );
+			// Open the corresponding list and focus the radio.
+			$list.attr( 'aria-hidden', 'false' ).find( ':checked' ).trigger( 'focus.imagify' );
+		},
+
+		/*
+		 * Optimization level selector: on radio change, make the row "current" and update the button text.
+		 */
+		syncLevelSelectorFromRadio: function () {
+			var $row = $( this ).closest( '.imagify-level-choice' );
+			// Update rows attributes.
+			$row.addClass( 'imagify-current-level' ).attr( 'aria-current', 'true' ).siblings( '.imagify-level-choice' ).removeClass( 'imagify-current-level' ).attr( 'aria-current', 'false' );
+			// Change the button text.
+			$row.closest( '.imagify-level-selector' ).find( '.imagify-current-level-info' ).html( $row.find( 'label' ).html() );
+		},
+
+		/*
+		 * Optimization level selector: on Escape or Enter kaystroke, close the dropdown.
+		 *
+		 * @param {object} e jQuery's Event object.
+		 */
+		closeLevelSelectors: function ( e ) {
+			if ( 'keypress' === e.type && 27 !== e.keyCode && 13 !== e.keyCode ) {
+				return;
+			}
+			w.imagify.bulk.closeLevelSelector( $( '.imagify-level-selector-list[aria-hidden="false"]' ) );
+		},
+
+		/*
 		 * Display/Hide optimization details.
 		 *
 		 * @param {object} e jQuery's Event object.
 		 */
 		toggleOptimizationDetails: function ( e ) {
 			var $button  = $( this ),
-				$details = $button.closest( 'table' ).find( '.imagify-row-optimization-details' ),
+				$details = $button.closest( '.imagify-bulk-table' ).find( '.imagify-bulk-table-details' ),
 				openDetails;
 
 			if ( 'open' === e.type ) {
@@ -536,11 +624,46 @@
 			}
 
 			if ( openDetails ) {
-				$button.addClass( 'close' );
+				$button.html( $button.data( 'label-hide' ) + '<span class="dashicons dashicons-no-alt"></span>' );
 				$details.imagifyShow();
 			} else {
-				$button.removeClass( 'close' );
+				$button.html( $button.data( 'label-show' ) + '<span class="dashicons dashicons-menu"></span>' );
 				$details.imagifyHide();
+			}
+		},
+
+		/*
+		 * Maybe display a modal, then launch all processes.
+		 */
+		maybeLaunchAllProcesses: function () {
+			var $quotaModal;
+
+			if ( ! $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
+				return;
+			}
+
+			if ( $( this ).attr( 'disabled' ) ) {
+				return;
+			}
+
+			$quotaModal = $( '#tmpl-imagify-bulk-infos' );
+
+			if ( $quotaModal.length ) {
+				// Swal Information before loading the optimize process.
+				swal( {
+					title:             imagifyBulk.labels.bulkInfoTitle,
+					html:              $quotaModal.html(),
+					type:              '',
+					customClass:       'imagify-sweet-alert imagify-swal-has-subtitle imagify-before-bulk-infos',
+					showCancelButton:  true,
+					padding:           0,
+					width:             554,
+					confirmButtonText: imagifyBulk.labels.confirmBulk,
+					cancelButtonText:  imagifySwal.labels.cancelButtonText,
+					reverseButtons:    true
+				} ).then( w.imagify.bulk.launchAllProcesses ).catch( swal.noop );
+			} else {
+				w.imagify.bulk.launchAllProcesses();
 			}
 		},
 
@@ -548,20 +671,15 @@
 		 * Build the queue and launch all processes.
 		 */
 		launchAllProcesses: function () {
-			var $w          = $( w ),
-				$button     = $( this ),
-				$checkboxes = $( '.imagify-bulk-table [name="group[]"]:checked' ),
-				skip        = true;
-
-			if ( ! $checkboxes.length || $button.attr( 'disabled' ) ) {
-				return;
-			}
+			var $w      = $( w ),
+				$button = $( '#imagify-bulk-action' ),
+				skip    = true;
 
 			// Disable the button.
 			$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
 
 			// Add a message to be displayed when the user wants to quit the page.
-			$w.on( 'beforeunload', w.imagify.bulk.getConfirmMessage );
+			$w.on( 'beforeunload', this.getConfirmMessage );
 
 			// Hide the "Complete" message.
 			$( '.imagify-row-complete' ).imagifyHide( 200, function() {
@@ -569,24 +687,24 @@
 			} );
 
 			// Close the optimization details.
-			$( '.imagify-view-optimization-details' ).trigger( 'close.imagify' );
+			$( '.imagify-show-table-details' ).trigger( 'close.imagify' );
 
 			// Make sure to reset properties.
-			w.imagify.bulk.queue               = [];
-			w.imagify.bulk.status              = {};
-			w.imagify.bulk.processIsStopped    = false;
-			w.imagify.bulk.globalGain          = 0;
-			w.imagify.bulk.globalOriginalSize  = 0;
-			w.imagify.bulk.globalOptimizedSize = 0;
+			this.queue               = [];
+			this.status              = {};
+			this.processIsStopped    = false;
+			this.globalGain          = 0;
+			this.globalOriginalSize  = 0;
+			this.globalOptimizedSize = 0;
 
-			$checkboxes.each( function() {
+			$( '.imagify-bulk-table [name="group[]"]:checked' ).each( function() {
 				var $checkbox  = $( this ),
 					$row       = $checkbox.closest( '.imagify-row-folder-type' ),
-					$container = $row.closest( 'table' ),
+					$container = $row.closest( '.imagify-bulk-table' ),
 					groupId    = $container.data( 'group-id' ),
 					context    = $container.data( 'context' ),
 					type       = $checkbox.val(),
-					level      = $row.find( '.imagify-cell-level [name="level[' + type + ']"]' ).val();
+					level      = $row.find( '.imagify-cell-level [name="level[' + type + ']"]:checked' ).val();
 
 				// Build the queue.
 				w.imagify.bulk.queue.push( {
@@ -632,12 +750,22 @@
 				return;
 			}
 
+			// Display an alert to wait.
+			swal( {
+				title:             imagifyBulk.labels.waitTitle,
+				html:              imagifyBulk.labels.waitText,
+				showConfirmButton: false,
+				padding:           0,
+				imageUrl:          imagifyBulk.waitImageUrl,
+				customClass:       'imagify-sweet-alert'
+			} );
+
 			/**
 			 * Fetch files for the first folder type in the queue.
 			 */
 			item   = w.imagify.bulk.queue.shift();
 			$row   = $( '#cb-select-' + item.type ).closest( '.imagify-row-folder-type' );
-			$table = $row.closest( 'table' );
+			$table = $row.closest( '.imagify-bulk-table' );
 
 			// Update status.
 			w.imagify.bulk.status[ item.groupId + '|' + item.type ].id = 'fetching';
@@ -654,6 +782,8 @@
 					if ( w.imagify.bulk.processIsStopped ) {
 						return;
 					}
+
+					swal.close();
 
 					// Success.
 					if ( response.success && ( $.isArray( response.data ) || $.isPlainObject( response.data ) ) ) { // Array if empty, object otherwize.
@@ -708,7 +838,9 @@
 				optimizedCount   = parseInt( $optimizedCount.text(), 10 ),
 				$errorsCount     = $workingRow.find( '.imagify-cell-errors span' ),
 				errorsCount      = parseInt( $errorsCount.text(), 10 ),
-				$table           = $row.closest( 'table' ),
+				$table           = $row.closest( '.imagify-bulk-table' ),
+				$progressBar     = $table.find( '#imagify-row-progress-' + item.groupId ),
+				$progress        = $progressBar.find( '.bar' ),
 				defaultsTemplate = {
 					groupId:              item.groupId,
 					id:                   0,
@@ -734,10 +866,13 @@
 			w.imagify.bulk.status[ item.groupId + '|' + item.type ].id = 'optimizing';
 
 			// Empty the result details.
-			$table.find( '.imagify-row-optimization-details tbody' ).text( '' );
+			$resultsContainer = $table.find( '.imagify-bulk-table-details tbody' ).text( '' );
 
 			// Display the "Optimizing" message in the table header.
 			w.imagify.bulk.displayGroupHeader( 'optimizing', $table );
+
+			// Display the progress bar.
+			$progressBar.slideDown().attr( 'aria-hidden', 'false' );
 
 			// Optimize the files.
 			Optimizer = new ImagifyGulp( {
@@ -746,8 +881,6 @@
 				'images':      files,
 				'context':     item.context
 			} );
-
-			$resultsContainer = $table.find( '.imagify-row-optimization-details tbody' );
 
 			// Before the attachment optimization, add a file row displaying the optimization process.
 			Optimizer.before( function( data ) {
@@ -767,7 +900,7 @@
 					$fileRow = $( '#' + item.groupId + '-' + data.image );
 
 				// Update the progress bar.
-				$table.find( '.imagify-progress-bar' ).css( 'width', data.progress + '%' ).find( '.percent' ).html( data.progress + '%' );
+				$progress.css( 'width', data.progress + '%' ).find( '.percent' ).html( data.progress + '%' );
 
 				if ( data.success ) {
 					// Image successfully optimized.
@@ -881,8 +1014,7 @@
 		 */
 		queueEmpty: function () {
 			var $tables   = $( '.imagify-bulk-table' ),
-				swalTitle = imagifyBulk.labels.error,
-				swalText  = '',
+				errorArgs = {},
 				hasError  = false,
 				noImages  = true;
 
@@ -910,24 +1042,35 @@
 
 				if ( hasError ) {
 					if ( 'invalid-api-key' === hasError ) {
-						swalTitle = imagifyBulk.labels.invalidAPIKeyTitle;
+						errorArgs = {
+							title: imagifyBulk.labels.invalidAPIKeyTitle,
+							type:  'info'
+						};
 					}
 					else if ( 'over-quota' === hasError ) {
-						swalTitle = imagifyBulk.labels.overQuotaTitle;
-						swalText  = imagifyBulk.labels.overQuotaText;
+						errorArgs = {
+							title:             imagifyBulk.labels.overQuotaTitle,
+							text:              $( '#tmpl-imagify-overquota-alert' ).html(),
+							type:              'info',
+							customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
+							showConfirmButton: false
+						};
 					}
-					else if ( 'get-unoptimized-images' === hasError ) {
-						swalTitle = imagifyBulk.labels.getUnoptimizedImagesErrorTitle;
-						swalText  = imagifyBulk.labels.getUnoptimizedImagesErrorText;
+					else if ( 'get-unoptimized-images' === hasError || 'consumed-all-data' === hasError ) {
+						errorArgs = {
+							title: imagifyBulk.labels.getUnoptimizedImagesErrorTitle,
+							text:  imagifyBulk.labels.getUnoptimizedImagesErrorText,
+							type:  'info'
+						};
 					}
-					else if ( 'consumed-all-data' === hasError ) {
-						swalTitle = imagifyBulk.labels.getUnoptimizedImagesErrorTitle;
-						swalText  = imagifyBulk.labels.getUnoptimizedImagesErrorText;
-					}
-					w.imagify.bulk.displayError( swalTitle, swalText );
+					w.imagify.bulk.displayError( errorArgs );
 				}
 				else if ( noImages ) {
-					w.imagify.bulk.displayError( imagifyBulk.labels.noAttachmentToOptimizeTitle, imagifyBulk.labels.noAttachmentToOptimizeText, 'info' );
+					w.imagify.bulk.displayError( {
+						title: imagifyBulk.labels.noAttachmentToOptimizeTitle,
+						html:  imagifyBulk.labels.noAttachmentToOptimizeText,
+						type: 'info'
+					} );
 				}
 			}
 
@@ -944,7 +1087,7 @@
 			w.imagify.bulk.displayFolderRow( 'resting', $tables.find( '.imagify-row-folder-type' ).not( '.updating' ) );
 
 			// Reset the progress bars.
-			$tables.find( '.imagify-progress-bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
+			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
 
 			// Enable the main button.
 			$( '#imagify-bulk-action' ).prop( 'disabled', false ).find( '.dashicons' ).removeClass( 'rotate' );
@@ -960,7 +1103,7 @@
 			data.imagify_heartbeat = imagifyBulk.heartbeatId;
 
 			if ( ! w.imagify.bulk.folderTypes.length ) {
-				$( '.imagify-bulk-table > table' ).each( function() {
+				$( '.imagify-bulk-table' ).each( function() {
 					w.imagify.bulk.folderTypes.push( $( this ).data( 'group-id' ) );
 				} );
 			}

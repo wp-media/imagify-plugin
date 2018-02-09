@@ -1255,11 +1255,11 @@ class Imagify_Admin_Ajax_Post {
 
 		if ( $images ) {
 			/* translators: %s is a formatted number, dont use %d. */
-			$output .= '<li><em><span class="dashicons dashicons-images-alt"></span> ' . sprintf( _n( '%s image', '%s images', $images, 'imagify' ), number_format_i18n( $images ) ) . '</em></li>';
+			$output .= '<li class="imagify-number-of-images-in-folder"><em><span class="dashicons dashicons-images-alt"></span> ' . sprintf( _n( '%s image', '%s images', $images, 'imagify' ), number_format_i18n( $images ) ) . '</em></li>';
 		}
 
 		if ( ! $output ) {
-			$output .= '<li><em>' . __( 'Empty folder', 'imagify' ) . '</em></li>';
+			$output .= '<li class="imagify-empty-folder"><em>' . __( 'Empty folder', 'imagify' ) . '</em></li>';
 		}
 
 		wp_send_json_success( $output );
