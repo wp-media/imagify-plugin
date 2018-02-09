@@ -706,7 +706,7 @@ function imagify_refresh_file_modified( $file ) {
 		// Remove the entry from the database.
 		$file->delete_row();
 
-		return new WP_Error( 'no-file', __( 'The file was missing or its path couldn\'t be retrieved from the database. The entry has been deleted from the database.', 'imagify' ) );
+		return new WP_Error( 'no-file', __( 'The file was missing or its path could not be retrieved from the database. The entry has been deleted from the database.', 'imagify' ) );
 	}
 
 	/**
