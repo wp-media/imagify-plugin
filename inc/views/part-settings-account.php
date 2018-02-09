@@ -1,6 +1,16 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
+if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
+	if ( ! defined( 'IMAGIFY_API_KEY' ) || ! IMAGIFY_API_KEY ) {
+		$options = Imagify_Options::get_instance();
+		?>
+		<input type="hidden" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="<?php echo $options->get_option_name(); ?>[api_key]">
+		<?php
+	}
+	return;
+}
+
 if ( imagify_valid_key() ) {
 	$user             = imagify_get_cached_user();
 	$unconsumed_quota = $user ? $user->get_percent_unconsumed_quota : false;

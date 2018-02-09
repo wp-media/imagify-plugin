@@ -85,7 +85,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			<div class="imagify-col imagify-account-info-col">
 
 				<?php
-				if ( ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || false === IMAGIFY_HIDDEN_ACCOUNT ) && imagify_valid_key() ) {
+				if ( ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || ! IMAGIFY_HIDDEN_ACCOUNT ) && imagify_valid_key() ) {
 					$user = new Imagify_User();
 					?>
 					<div class="imagify-options-title">
