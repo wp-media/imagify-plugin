@@ -1,4 +1,6 @@
-window.imagify = {
+window.imagify = window.imagify || {};
+
+jQuery.extend( window.imagify, {
 	concat: ajaxurl.indexOf( '?' ) > 0 ? '&' : '?',
 	log:    function( content ) {
 		if ( undefined !== console ) {
@@ -53,7 +55,7 @@ window.imagify = {
 
 		return ( bytes / Math.pow( 1024, i ) ).toFixed( 2 ) + '\xA0' + sizes[ i ];
 	}
-};
+} );
 
 
 // Imagify light modal =============================================================================
