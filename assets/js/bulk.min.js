@@ -431,7 +431,7 @@
 			args.title        = args.title || imagifyBulk.labels.error;
 			args.customClass += ' imagify-sweet-alert';
 
-			swal( args );
+			swal( args ).catch( swal.noop );
 		},
 
 		/*
@@ -793,7 +793,7 @@
 					padding:           0,
 					imageUrl:          imagifyBulk.waitImageUrl,
 					customClass:       'imagify-sweet-alert'
-				} );
+				} ).catch( swal.noop );
 				w.imagify.bulk.displayedWaitMessage = true;
 			}
 
