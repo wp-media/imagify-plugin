@@ -120,6 +120,7 @@
 				.on( 'keypress.imagify click.imagify', this.closeLevelSelectors );
 
 			// Other buttons/UI.
+			$( '.imagify-bulk-table [name="group[]"]' ).on( 'change.imagify init.imagify', this.toggleOptimizationButton ).trigger( 'init.imagify' );
 			$( '.imagify-show-table-details' ).on( 'click.imagify open.imagify close.imagify', this.toggleOptimizationDetails );
 			$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
 			$( '.imagify-share-networks a' ).on( 'click.imagify', this.share );
@@ -603,6 +604,17 @@
 				return;
 			}
 			w.imagify.bulk.closeLevelSelector( $( '.imagify-level-selector-list[aria-hidden="false"]' ) );
+		},
+
+		/*
+		 * Enable or disable the Optimization button depending on the checked checkboxes.
+		 */
+		toggleOptimizationButton: function () {
+			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
+				$( '#imagify-bulk-action' ).removeAttr( 'disabled' );
+			} else {
+				$( '#imagify-bulk-action' ).attr( 'disabled', 'disabled' );
+			}
 		},
 
 		/*
