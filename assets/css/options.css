@@ -472,6 +472,13 @@ label[for="imagify_admin_bar_menu"] {
 .imagify-kindof-title .imagify-button-primary {
 	padding: 4px 13px 4px 10px;
 }
+.imagify-kindof-title .imagify-button-primary .dashicons {
+	vertical-align: -7.5px;
+}
+.imagify-kindof-title .imagify-button-primary:hover,
+.imagify-kindof-title .imagify-button-primary:focus {
+	color: #FFF;
+}
 
 p.imagify-custom-folder-line {
 	position: relative;

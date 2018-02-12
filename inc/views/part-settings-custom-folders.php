@@ -17,6 +17,7 @@ $disabled_values = array_flip( $disabled_values );
 $theme_name = 'The Theme'; // TODO: dynamic
 $child_theme_name = 'The Kid'; // TODO: dynamic
 $themes_count = 2; // TODO: dynamic. 1 if main theme, 2 if is a child
+$themes_already_added = false; // TODO:
 ?>
 <div class="imagify-col" id="custom-folders">
 	<h3 class="imagify-options-subtitle"><?php _e( 'Custom Folders', 'imagify' ); ?></h3>
@@ -35,13 +36,19 @@ $themes_count = 2; // TODO: dynamic. 1 if main theme, 2 if is a child
 			</div>
 
 			<div class="imagify-fts-content">
-				
+
+				<?php if ( $themes_already_added ) { ?>
+
+				<p class="imagify-mb0"><?php echo _n( 'Your theme is already in the optimization process. All Good!', 'Your themes are already in the optimization process. All Good!', $themes_count, 'imagify' ); ?></p>
+
+				<?php } else { ?>
 				<p><?php echo _n( 'Would you like to optimize your theme?', 'Would you like to optimize your themes?', $themes_count, 'imagify' ); ?></p>
 
 				<button id="imagify-add-themes-to-custom-folder" class="button imagify-button-clean imagify-add-themes" type="button">
 					<span class="dashicons dashicons-plus"></span>
 					<span class="button-text"><?php echo _n( 'Add the theme to optimization', 'Add the themes to optimization', $themes_count , 'imagify' ); ?></span>
 				</button>
+				<?php } ?>
 			</div>
 		</div>
 

@@ -68,6 +68,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'confirmFilesTreeBtn'     => __( 'Select Folders', 'imagify' ),
 					'customFilesLegend'       => __( 'Choose the folders to optimize', 'imagify' ),
 					'error'                   => __( 'Error', 'imagify' ),
+					'themesAdded'             => __( 'Added! All Good!', 'imagify' ),
 				),
 			);
 

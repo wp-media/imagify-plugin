@@ -334,6 +334,25 @@
 			} );
 	} );
 
+	// Clicking a Remove folder button make it disappear and save it in DB.
+	$( '#imagify-custom-folders' ).on( 'click.imagify', '.imagify-custom-folders-remove', function() {
+		var $_this = $(this);
+
+		// Make the item disappear.
+		$_this.closest( '.imagify-custom-folder-line' ).addClass( 'imagify-will-remove' );
+
+		//TODO: AJAX stuff to remove it from DB.
+	} );
+
+	// Clicking the "add themes to folders" button.
+	$( '#imagify-add-themes-to-custom-folder' ).on( 'click.imagify', function() {
+
+		// TODO: Add lines into custom folders.
+
+		// Remove clicked button
+		$(this).replaceWith( '<p>' + imagifyOptions.labels.themesAdded + '</p>' );
+	} );
+
 } )(window, document, jQuery);
 
 
