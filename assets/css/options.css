@@ -26,19 +26,24 @@
 	vertical-align: -2px;
 }
 
-.imagify-api-line {
+.imagify-account-info-col .imagify-api-line {
 	padding: 22px 26px;
 	background: #343A49
 }
 
-.imagify-api-line label {
-	display: inline-block;
+.imagify-api-line label,
+p.imagify-api-key-invite-title {
+	display: block;
 	margin-bottom: 6px;
 	font-size: 14px;
 	text-transform: uppercase;
 	letter-spacing: 0.02em;
-	color: #E5EBEF;
 	font-weight: bold;
+	color: #343A49;
+}
+.imagify-account-info-col .imagify-api-line label {
+	color: #E5EBEF;
+	display: inline-block;
 }
 .imagify-api-line.imagify-api-line input[type="text"] {
 	width: 100%;
@@ -51,6 +56,26 @@
 	color: #40B1D0;
 	background: transparent;
 	box-shadow: none;
+}
+
+.imagify-no-api-key .imagify-api-line {
+	margin: 3em 0 0 0;
+	padding: 2em 0 0;
+	border-top: 1px solid #D5D6D9;
+}
+.imagify-no-api-key .imagify-api-line input[type="text"] {
+	margin-top: 5px;
+	width: 400px;
+	max-width: 100%;
+}
+.imagify-settings .imagify-no-api-key div.submit.submit {
+	border: 0;
+	padding: 0 16px;
+	margin-top: 0;
+	background: #FFF;
+}
+.imagify-settings .imagify-no-api-key div.submit.submit p {
+	padding-bottom: 0;
 }
 
 .imagify-options-title {

@@ -90,7 +90,8 @@ if ( imagify_valid_key() ) {
 			<strong class="imagify-user-plan-label"><?php echo $user ? esc_html( $user->plan_label ) : ''; ?></strong>
 		</h2>
 	<?php } else { ?>
-		<h2 class="imagify-options-title"><?php esc_html_e( 'Your account', 'imagify' ); ?></h2>
+		<h2 class="imagify-options-title"><?php esc_html_e( 'Your Account', 'imagify' ); ?></h2>
+		<p class="imagify-options-subtitle"><?php esc_html_e( 'Options page isn’t available until you enter your API Key', 'imagify' ); ?></p>
 	<?php } ?>
 
 	<?php
@@ -99,9 +100,16 @@ if ( imagify_valid_key() ) {
 		 * API key field.
 		 */
 		$options = Imagify_Options::get_instance();
-		?>
+
+		if ( ! $options->get( 'api_key' ) ) { ?>
+			<p class="imagify-api-key-invite"><?php esc_html_e( 'Don\'t have an API Key yet?', 'imagify' );?></p>
+			<?php //<p class="imagify-api-key-invite-title"><?php esc_html_e( 'Create one, it\'s FREE.', 'imagify' ); </p> ?>
+			
+			<p><a id="imagify-signup" class="button imagify-button-secondary" href="<?php echo esc_url( imagify_get_external_url( 'register' ) ); ?>" target="_blank"><?php esc_html_e( 'Create a Free API Key', 'imagify' ); ?></a></p>
+		<?php }	?>
+
 		<div class="imagify-api-line">
-			<label for="api_key"><?php esc_html_e( 'API Key', 'imagify' ); ?></label>
+			<label for="api_key"><?php echo $options->get('api_key') ? esc_html__( 'API Key', 'imagify' ) : esc_html__( 'Enter Your API Key Below', 'imagify' ); ?></label>
 			<input type="text" size="35" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="<?php echo $options->get_option_name(); ?>[api_key]" id="api_key">
 			<?php
 			if ( imagify_valid_key() ) {
@@ -120,17 +128,6 @@ if ( imagify_valid_key() ) {
 				</span>
 
 				<?php
-			}
-
-			if ( ! $options->get( 'api_key' ) ) {
-				echo '<p class="description desc api_key">';
-				printf(
-					/* translators: 1 is a link tag start, 2 is the link tag end. */
-					esc_html__( 'Don\'t have an API Key yet? %1$sCreate one, it\'s FREE%2$s.', 'imagify' ),
-					'<a id="imagify-signup" href="' . esc_url( imagify_get_external_url( 'register' ) ) . '" target="_blank">',
-					'</a>'
-				);
-				echo '</p>';
 			}
 			?>
 			<input id="check_api_key" type="hidden" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="check_api_key">
