@@ -115,6 +115,7 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'bulk':
 			$translations = array(
+				'keyIsValid'   => imagify_valid_key(),
 				'heartbeatId'  => 'update_bulk_data',
 				'waitImageUrl' => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
 				'ajaxActions'  => array(

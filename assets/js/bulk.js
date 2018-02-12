@@ -128,6 +128,11 @@
 			// Overview chart.
 			this.drawOverviewChart();
 
+			if ( ! imagifyBulk.keyIsValid ) {
+				$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
+				return;
+			}
+
 			// Optimization level selector.
 			$( '.imagify-level-selector-button' )
 				.on( 'click.imagify', this.openLevelSelectorFromButton );
@@ -670,6 +675,14 @@
 		 */
 		maybeLaunchAllProcesses: function () {
 			var $quotaModal;
+
+			if ( ! imagifyBulk.keyIsValid ) {
+				w.imagify.bulk.displayError( {
+					title: imagifyBulk.labels.invalidAPIKeyTitle,
+					type:  'info'
+				} );
+				return;
+			}
 
 			if ( ! $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
 				return;
