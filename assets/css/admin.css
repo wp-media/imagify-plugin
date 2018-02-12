@@ -936,8 +936,8 @@ p.imagify-section-title.imagify-section-title {
 	border-radius: 3px;
 	color: #FFF;
 }
-.imagify-block-secondary p,
-.imagify-account-info-col .imagify-block-secondary h3 {
+.imagify-block-secondary.imagify-block-secondary p,
+.imagify-account-info-col .imagify-block-secondary.imagify-block-secondary h3 {
 	color: inherit;
 }
 .imagify-account-info-col .imagify-col-content h3:first-child {
