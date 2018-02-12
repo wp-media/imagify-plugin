@@ -73,95 +73,12 @@ function imagify_get_file_backup_path( $file_path ) {
 }
 
 /**
- * Get installed theme paths.
- *
- * @since  1.7
- * @author Grégory Viguier
- *
- * @return array A list of installed theme paths in the form of '{{THEMES}}/twentyseventeen/' => '/abspath/to/wp-content/themes/twentyseventeen/'.
- */
-function imagify_get_theme_folders() {
-	static $themes;
-
-	if ( isset( $themes ) ) {
-		return $themes;
-	}
-
-	$all_themes = wp_get_themes();
-	$themes     = array();
-
-	if ( ! $all_themes ) {
-		return $themes;
-	}
-
-	foreach ( $all_themes as $stylesheet => $theme ) {
-		if ( ! $theme->exists() ) {
-			continue;
-		}
-
-		$path = trailingslashit( $theme->get_stylesheet_directory() );
-
-		if ( Imagify_Files_Scan::is_path_forbidden( $path ) ) {
-			continue;
-		}
-
-		$placeholder = Imagify_Files_Scan::add_placeholder( $path );
-
-		$themes[ $placeholder ] = $path;
-	}
-
-	return $themes;
-}
-
-/**
- * Get installed plugin paths.
- *
- * @since  1.7
- * @author Grégory Viguier
- *
- * @return array A list of installed plugin paths in the form of '{{PLUGINS}}/imagify/' => '/abspath/to/wp-content/plugins/imagify/'.
- */
-function imagify_get_plugin_folders() {
-	static $plugins, $plugins_path;
-
-	if ( isset( $plugins ) ) {
-		return $plugins;
-	}
-
-	if ( ! isset( $plugins_path ) ) {
-		$plugins_path = Imagify_Files_Scan::remove_placeholder( '{{PLUGINS}}/' );
-	}
-
-	$all_plugins = get_plugins();
-	$plugins     = array();
-
-	if ( ! $all_plugins ) {
-		return $plugins;
-	}
-
-	$filesystem = imagify_get_filesystem();
-
-	foreach ( $all_plugins as $plugin_file => $plugin_data ) {
-		$path = $plugins_path . $plugin_file;
-
-		if ( ! $filesystem->exists( $path ) || Imagify_Files_Scan::is_path_forbidden( $path ) ) {
-			continue;
-		}
-
-		$plugin_file = dirname( $plugin_file ) . '/';
-		$plugins[ '{{PLUGINS}}/' . $plugin_file ] = $plugins_path . $plugin_file;
-	}
-
-	return $plugins;
-}
-
-/**
  * Get folders to be optimized from the DB, by folder type.
  *
  * @since  1.7
  * @author Grégory Viguier
  *
- * @param  string $folder_type The folder type. Possible values are 'all', 'themes', 'plugins', and 'custom-folders'. Custom folder types can also be used.
+ * @param  string $folder_type The folder type. Possible value is 'custom-folders'. Custom folder types can also be used.
  * @param  array  $args        A list of arguments to tell more precisely what to fetch:
  *                                 - bool $active True to fetch only "active" folders (checked in the settings). False to fetch only folders that are not "active".
  * @return array               An array of arrays containing the following keys:
@@ -185,10 +102,10 @@ function imagify_get_plugin_folders() {
  *                                     )
  *                                 )
  */
-function imagify_get_folders_from_type( $folder_type, $args = array() ) {
+function imagify_get_folders_from_type( $folder_type = 'custom-folders', $args = array() ) {
 	global $wpdb;
 
-	$folder_type   = strtolower( $folder_type );
+	$folder_type   = ! empty( $folder_type ) ? strtolower( $folder_type ) : 'custom-folders';
 	$folders_db    = Imagify_Folders_DB::get_instance();
 	$folders_table = $folders_db->get_table_name();
 	$primary_key   = $folders_db->get_primary_key();
@@ -197,52 +114,20 @@ function imagify_get_folders_from_type( $folder_type, $args = array() ) {
 	if ( isset( $args['active'] ) ) {
 		if ( $args['active'] ) {
 			$args['active'] = true;
-			$where_active   = 'AND active = 1';
+			$where_active   = 'WHERE active = 1';
 		} else {
 			$args['active'] = false;
-			$where_active   = 'AND active = 0';
+			$where_active   = 'WHERE active = 0';
 		}
 	}
 
 	// Get the folders from the DB.
-	if ( 'all' === $folder_type ) {
+	if ( 'custom-folders' === $folder_type ) {
 		/**
 		 * Everything.
 		 */
-		$results = $wpdb->get_results( "SELECT * FROM $folders_table WHERE 1=1 $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$results = $wpdb->get_results( "SELECT * FROM $folders_table $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
-	} elseif ( 'themes' === $folder_type || 'plugins' === $folder_type ) {
-		/**
-		 * Themes or plugins.
-		 */
-		if ( 'themes' === $folder_type ) {
-			$folders = array_keys( imagify_get_theme_folders() );
-		} else {
-			$folders = array_keys( imagify_get_plugin_folders() );
-		}
-
-		$folder_values = Imagify_DB::prepare_values_list( $folders );
-		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $folder_values ) $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
-
-	} elseif ( 'custom-folders' === $folder_type ) {
-		/**
-		 * Custom folders.
-		 */
-		$folders       = array_keys( array_merge( imagify_get_theme_folders(), imagify_get_plugin_folders() ) );
-		$folder_values = Imagify_DB::prepare_values_list( $folders );
-		$results       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path NOT IN ( $folder_values ) $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
-
-		if ( $results && is_array( $results ) ) {
-			$filesystem = imagify_get_filesystem();
-
-			foreach ( $results as $i => $result ) {
-				$path = Imagify_Files_Scan::remove_placeholder( $result['path'] );
-
-				if ( ! $filesystem->exists( $path ) || Imagify_Files_Scan::is_path_forbidden( $path ) ) {
-					unset( $results[ $i ] );
-				}
-			}
-		}
 	} else {
 		/**
 		 * Provide folders for a custom folder type.
@@ -818,7 +703,7 @@ function imagify_synchronize_files_from_folders( $folders ) {
 	) );
 
 	if ( ! $files ) {
-		// This theme or plugin doesn't have (new) images.
+		// This folder doesn't have (new) images.
 		return;
 	}
 

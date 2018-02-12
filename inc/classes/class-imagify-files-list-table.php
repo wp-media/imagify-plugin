@@ -91,7 +91,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		$sent_orderby  = filter_input( INPUT_GET, 'orderby', FILTER_SANITIZE_STRING );
 		$sent_order    = filter_input( INPUT_GET, 'order', FILTER_SANITIZE_STRING );
-		$type_filter   = self::get_folder_type_filter();
 		$folder_filter = self::get_folder_filter();
 		$status_filter = self::get_status_filter();
 
@@ -109,30 +108,8 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		}
 
 		if ( $folder_filter ) {
-			// Display only files from a specific plugin, theme, or custom folder.
+			// Display only files from a specific custom folder.
 			$where = "WHERE folder_id = $folder_filter";
-
-		} elseif ( $type_filter ) {
-			// Display only files from plugins, themes, or custom folders.
-			if ( 'themes' === $type_filter ) {
-				// Where the folders are themes.
-				$where = array_keys( imagify_get_theme_folders() );
-				$where = Imagify_Folders_DB::get_instance()->get_column_in( 'folder_id', 'path', $where );
-
-			} elseif ( 'plugins' === $type_filter ) {
-				// Where the folders are plugins.
-				$where = array_keys( imagify_get_plugin_folders() );
-				$where = Imagify_Folders_DB::get_instance()->get_column_in( 'folder_id', 'path', $where );
-
-			} else {
-				// Where the folders are not themes nor plugins.
-				$where = array_merge( imagify_get_theme_folders(), imagify_get_plugin_folders() );
-				$where = array_keys( $where );
-				$where = Imagify_Folders_DB::get_instance()->get_column_not_in( 'folder_id', 'path', $where );
-			}
-
-			$where = $where ? Imagify_DB::prepare_values_list( $where ) : 0;
-			$where = "WHERE folder_id IN ( $where )";
 		}
 
 		if ( $status_filter ) {
@@ -252,7 +229,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		);
 
 		if ( self::get_folder_filter() ) {
-			// A specific plugin, theme, or custom folder (selected or not).
+			// A specific custom folder (selected or not).
 			$args['folder']           = self::get_folder_filter();
 			$args['_wp_http_referer'] = rawurlencode( add_query_arg( 'folder-filter', self::get_folder_filter(), $args['_wp_http_referer'] ) );
 
@@ -266,23 +243,8 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		if ( self::get_folder_type_filter() ) {
-			// Selected plugins, themes, or custom folders.
-			$args['folder-type']      = self::get_folder_type_filter();
-			$args['_wp_http_referer'] = rawurlencode( add_query_arg( 'folder-type-filter', self::get_folder_type_filter(), $args['_wp_http_referer'] ) );
-
-			printf(
-				/* translators: 1 and 2 are link tag starts, 3 is a link tag end. */
-				esc_html__( 'No files yet. Do you want to %1$sscan these folders%3$s for new files or launch a %2$sbulk optimization%3$s directly?', 'imagify' ),
-				'<a href="' . esc_url( add_query_arg( $args, admin_url( 'admin-post.php' ) ) ) . '">',
-				'<a href="' . esc_url( get_imagify_admin_url( 'files-bulk-optimization' ) ) . '">',
-				'</a>'
-			);
-			return;
-		}
-
 		if ( Imagify_Folders_DB::get_instance()->has_active_folders() ) {
-			// All selected plugins, themes, and custom folders.
+			// All selected custom folders.
 			$args['_wp_http_referer'] = rawurlencode( $args['_wp_http_referer'] );
 			printf(
 				/* translators: 1 and 2 are link tag starts, 3 is a link tag end. */
@@ -297,7 +259,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		// Nothing selected in the settings.
 		printf(
 			/* translators: 1 is a link tag start, 2 is the link tag end. */
-			esc_html__( 'To see things appear here, you must select plugins or themes in the settings page first :)', 'imagify' ),
+			esc_html__( 'To see things appear here, you must select folders in the settings page first :)', 'imagify' ),
 			'<a href="' . esc_url( get_imagify_admin_url() ) . '">',
 			'</a>'
 		);
@@ -321,33 +283,25 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		// Group folders by type.
-		$themes  = Imagify_Settings::get_themes();
-		$plugins = Imagify_Settings::get_plugins();
-		$groups  = array(
-			'themes'         => array(),
-			'plugins'        => array(),
-			'custom-folders' => array(),
-		);
+		// Filter files by folder.
+		$folder_filters = array();
+		$root_id        = 0;
 
 		foreach ( $folders as $folder ) {
-			if ( isset( $themes[ $folder->path ] ) ) {
-				$groups['themes'][ $folder->folder_id ] = $themes[ $folder->path ];
-			} elseif ( isset( $plugins[ $folder->path ] ) ) {
-				$groups['plugins'][ $folder->folder_id ] = $plugins[ $folder->path ];
-			} elseif ( '{{ABSPATH}}/' === $folder->path ) {
-				$groups['custom-folders'][ $folder->folder_id ] = __( 'Site\'s root', 'imagify' );
+			if ( '{{ABSPATH}}/' === $folder->path ) {
+				$root_id = $folder->folder_id;
+				$folder_filters[ $folder->folder_id ] = '/';
 			} else {
-				$groups['custom-folders'][ $folder->folder_id ] = '/' . trim( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $folder->path ) ), '/' );
+				$folder_filters[ $folder->folder_id ] = '/' . trim( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $folder->path ) ), '/' );
 			}
 		}
 
-		$groups       = array_filter( $groups );
-		$type_filters = array(
-			'themes'         => __( 'Themes', 'imagify' ),
-			'plugins'        => __( 'Plugins', 'imagify' ),
-			'custom-folders' => __( 'Custom folders', 'imagify' ),
-		);
+		asort( $folder_filters );
+
+		if ( $root_id ) {
+			$folder_filters[ $root_id ] = __( 'Site\'s root', 'imagify' );
+		}
+
 		$status_filters = array(
 			''            => __( 'All images', 'imagify' ),
 			'optimized'   => __( 'Optimized','imagify' ),
@@ -356,7 +310,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		);
 
 		// Get submitted values.
-		$type_filter   = self::get_folder_type_filter();
 		$folder_filter = self::get_folder_filter();
 		$status_filter = self::get_status_filter();
 
@@ -365,34 +318,13 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		<div class="wp-filter">
 			<div class="filter-items">
 
-				<?php if ( count( $groups ) > 1 ) { ?>
-					<label for="folder-type-filter" class="screen-reader-text"><?php _e( 'Filter by folder type', 'imagify' ); ?></label>
-					<select class="folder-filters" name="folder-type-filter" id="folder-type-filter">
-						<?php
-						printf( '<option value="%s"%s>%s</option>', '', selected( $type_filter, '', false ), esc_html__( 'All Folder types', 'imagify' ) );
-
-						foreach ( $groups as $type => $folders ) {
-							printf( '<option value="%s"%s>%s</option>', $type, selected( $type_filter, $type, false ), esc_html( $type_filters[ $type ] ) );
-						}
-						?>
-					</select>
-				<?php } ?>
-
 				<label for="folder-filter" class="screen-reader-text"><?php _e( 'Filter by folder', 'imagify' ); ?></label>
 				<select class="folder-filters" name="folder-filter" id="folder-filter">
 					<?php
 					printf( '<option value="%s"%s>%s</option>', '', selected( $folder_filter, 0, false ), esc_html__( 'All Folders', 'imagify' ) );
 
-					foreach ( $groups as $type => $folders ) {
-						echo '<optgroup label="' . esc_attr( $type_filters[ $type ] ) . '">';
-
-						natsort( $folders );
-
-						foreach ( $folders as $folder_id => $label ) {
-							printf( '<option value="%d"%s>%s</option>', $folder_id, selected( $folder_filter, $folder_id, false ), esc_html( $label ) );
-						}
-
-						echo '</optgroup>';
+					foreach ( $folder_filters as $folder_id => $label ) {
+						printf( '<option value="%d"%s>%s</option>', $folder_id, selected( $folder_filter, $folder_id, false ), esc_html( $label ) );
 					}
 					?>
 				</select>
@@ -563,16 +495,10 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @param object $item The current File object.
 	 */
 	public function column_folder( $item ) {
-		static $themes_and_plugins;
-
 		$item = $this->maybe_set_item_folder( $item );
 
 		if ( empty( $item->folder_path ) ) {
 			return;
-		}
-
-		if ( ! isset( $themes_and_plugins ) ) {
-			$themes_and_plugins = array_merge( Imagify_Settings::get_themes(), Imagify_Settings::get_plugins() );
 		}
 
 		$format = '%s';
@@ -582,14 +508,10 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			$format = '<a href="' . esc_url( add_query_arg( 'folder-filter', $item->folder_id, get_imagify_admin_url( 'files-list' ) ) ) . '">%s</a>';
 		}
 
-		if ( isset( $themes_and_plugins[ $item->folder_path ] ) ) {
-			// It's a theme or a plugin.
-			printf( $format, esc_html( $themes_and_plugins[ $item->folder_path ] ) );
-		} elseif ( '{{ABSPATH}}/' === $item->folder_path ) {
+		if ( '{{ABSPATH}}/' === $item->folder_path ) {
 			// It's the site's root.
 			printf( $format, __( 'Site\'s root', 'imagify' ) );
 		} else {
-			// It's a custom folder.
 			printf( $format, '<code>/' . trim( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $item->folder_path ) ), '/' ) . '</code>' );
 		}
 	}
@@ -1011,39 +933,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		}
 
 		return $status;
-	}
-
-	/**
-	 * Get the requested folder type filter.
-	 * If a folder filter is requested, this folder type filter is ommited.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return string
-	 */
-	public static function get_folder_type_filter() {
-		static $filter;
-
-		if ( isset( $filter ) ) {
-			return $filter;
-		}
-
-		if ( self::get_folder_filter() ) {
-			$filter = '';
-			return $filter;
-		}
-
-		$values = array(
-			'themes'         => 1,
-			'plugins'        => 1,
-			'custom-folders' => 1,
-		);
-		$filter = trim( filter_input( INPUT_GET, 'folder-type-filter', FILTER_SANITIZE_STRING ) );
-		$filter = isset( $values[ $filter ] ) ? $filter : '';
-
-		return $filter;
 	}
 
 	/**

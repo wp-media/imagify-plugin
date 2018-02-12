@@ -458,30 +458,6 @@ class Imagify_Files_Scan {
 	}
 
 	/**
-	 * Get all theme roots.
-	 * In most sites, only one will be returned.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return array A list of theme roots. All heading and trailing slashes are trimed.
-	 */
-	public static function get_theme_roots() {
-		static $theme_roots;
-
-		if ( isset( $theme_roots ) ) {
-			return $theme_roots;
-		}
-
-		$theme_roots = (array) get_theme_roots();
-		$theme_roots = array_flip( array_flip( $theme_roots ) );
-		$theme_roots = array_map( 'trim', $theme_roots, array_fill( 0 , count( $theme_roots ) , '/' ) );
-
-		return $theme_roots;
-	}
-
-	/**
 	 * Normalize a file path, aiming for path comparison.
 	 * The path is normalized, case-lowered, and a trailing slash is added.
 	 *

@@ -361,14 +361,12 @@ function imagify_get_folder_type_data( $folder_type ) {
 			);
 			break;
 
-		case 'themes':
-		case 'plugins':
 		case 'custom-folders':
 			$data = array(
-				'images-optimized' => Imagify_Files_Stats::count_optimized_files( $folder_type ),
-				'errors'           => Imagify_Files_Stats::count_error_files( $folder_type ),
-				'optimized'        => Imagify_Files_Stats::get_optimized_size( $folder_type ),
-				'original'         => Imagify_Files_Stats::get_original_size( $folder_type ),
+				'images-optimized' => Imagify_Files_Stats::count_optimized_files(),
+				'errors'           => Imagify_Files_Stats::count_error_files(),
+				'optimized'        => Imagify_Files_Stats::get_optimized_size(),
+				'original'         => Imagify_Files_Stats::get_original_size(),
 				'errors_url'       => get_imagify_admin_url( 'folder-errors', $folder_type ),
 			);
 			break;

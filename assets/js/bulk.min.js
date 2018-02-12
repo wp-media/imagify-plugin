@@ -4,7 +4,7 @@
 	/**
 	 * Hide element(s).
 	 *
-	 * @param  {int)      duration A duration in ms.
+	 * @param  {int}      duration A duration in ms.
 	 * @param  {function} callback A callback to execute once the element is hidden.
 	 * @return {element}  The jQuery element(s).
 	 */
@@ -31,7 +31,7 @@
 	/**
 	 * Show element(s).
 	 *
-	 * @param  {int)      duration A duration in ms.
+	 * @param  {int}      duration A duration in ms.
 	 * @param  {function} callback A callback to execute before starting to display the element.
 	 * @return {element} The jQuery element(s).
 	 */
@@ -1069,7 +1069,7 @@
 					w.imagify.bulk.displayError( {
 						title: imagifyBulk.labels.noAttachmentToOptimizeTitle,
 						html:  imagifyBulk.labels.noAttachmentToOptimizeText,
-						type: 'info'
+						type:  'info'
 					} );
 				}
 			}

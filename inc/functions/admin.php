@@ -169,12 +169,9 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 						'imagify-status' => 'errors',
 					), admin_url( 'upload.php' ) );
 
-				case 'themes':
-				case 'plugins':
 				case 'custom-folders':
 					return add_query_arg( array(
-						'folder-type-filter' => $arg,
-						'status-filter'      => 'errors',
+						'status-filter' => 'errors',
 					), get_imagify_admin_url( 'files-list' ) );
 			}
 			return '';

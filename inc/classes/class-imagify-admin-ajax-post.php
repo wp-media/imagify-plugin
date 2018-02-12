@@ -332,14 +332,7 @@ class Imagify_Admin_Ajax_Post {
 	 */
 	public function imagify_bulk_optimize_file_callback() {
 		imagify_check_nonce( 'imagify-bulk-upload' );
-
-		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
-
-		$this->check_user_capacity_for_folder_type( $folder_type, array(
-			'themes',
-			'plugins',
-			'custom-folders',
-		) );
+		imagify_check_user_capacity( 'optimize-file' );
 
 		$file_id = (int) filter_input( INPUT_POST, 'image', FILTER_SANITIZE_NUMBER_INT );
 		$context = imagify_sanitize_context( filter_input( INPUT_POST, 'context', FILTER_SANITIZE_STRING ) );
@@ -518,7 +511,7 @@ class Imagify_Admin_Ajax_Post {
 		$folder = (int) filter_input( INPUT_GET, 'folder', FILTER_SANITIZE_NUMBER_INT );
 
 		if ( $folder > 0 ) {
-			// A specific plugin, theme, or custom folder (selected or not).
+			// A specific custom folder (selected or not).
 			$folders_db  = Imagify_Folders_DB::get_instance();
 			$folders_key = $folders_db->get_primary_key();
 			$folder      = $folders_db->get( $folder );
@@ -537,25 +530,7 @@ class Imagify_Admin_Ajax_Post {
 			imagify_maybe_redirect();
 		}
 
-		$folder_types = array(
-			'themes'         => 1,
-			'plugins'        => 1,
-			'custom-folders' => 1,
-		);
-		$folder_type = trim( filter_input( INPUT_GET, 'folder-type', FILTER_SANITIZE_STRING ) );
-		$folder_type = isset( $folder_types[ $folder_type ] ) ? $folder_type : '';
-
-		if ( $folder_type ) {
-			// Selected plugins, themes, or custom folders.
-			$folders = imagify_get_folders_from_type( $folder_type, array(
-				'active' => true,
-			) );
-			imagify_get_files_from_folders( $folders );
-
-			imagify_maybe_redirect();
-		}
-
-		// All selected plugins, themes, and custom folders.
+		// All selected custom folders.
 		$folders = imagify_get_folders_from_type( 'all', array(
 			'active' => true,
 		) );
@@ -813,14 +788,7 @@ class Imagify_Admin_Ajax_Post {
 	 */
 	public function imagify_get_unoptimized_file_ids_callback() {
 		imagify_check_nonce( 'imagify-bulk-upload' );
-
-		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
-
-		$this->check_user_capacity_for_folder_type( $folder_type, array(
-			'themes',
-			'plugins',
-			'custom-folders',
-		) );
+		imagify_check_user_capacity( 'optimize-file' );
 
 		$this->check_can_optimize();
 
@@ -831,7 +799,7 @@ class Imagify_Admin_Ajax_Post {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders = imagify_get_folders_from_type( $folder_type, array(
+		$folders = imagify_get_folders_from_type( 'custom-folders', array(
 			'active' => true,
 		) );
 
@@ -882,10 +850,16 @@ class Imagify_Admin_Ajax_Post {
 
 		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
 
+		if ( 'library' === $folder_type ) {
+			imagify_check_user_capacity( 'bulk-optimize' );
+		} elseif ( 'custom-folders' === $folder_type ) {
+			imagify_check_user_capacity( 'optimize-file' );
+		} else {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
 		$this->check_user_capacity_for_folder_type( $folder_type, array(
 			'library',
-			'themes',
-			'plugins',
 			'custom-folders',
 		) );
 
@@ -1354,45 +1328,6 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		return get_imagify_option( 'optimization_level' );
-	}
-
-	/**
-	 * Check user capacity depending on a folder type. Die on failure.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param string $folder_type  A folder type.
-	 * @param array  $folder_types A list of "basic" allowed folder types.
-	 */
-	public function check_user_capacity_for_folder_type( $folder_type, $folder_types ) {
-		$folder_types = array_flip( $folder_types );
-		$folder_types = array_intersect_key( array(
-			'library'        => 'bulk-optimize',
-			'themes'         => 'optimize-file',
-			'plugins'        => 'optimize-file',
-			'custom-folders' => 'optimize-file',
-		), $folder_types );
-
-		if ( ! isset( $folder_types[ $folder_type ] ) ) {
-			/**
-			 * Provide a user capacity or a capacity describer, allowing to work with a custom folder type.
-			 *
-			 * @since  1.7
-			 * @author Grégory Viguier
-			 *
-			 * @param string $capacity    A user capacity or a capacity describer.
-			 * @param string $folder_type A folder type.
-			 */
-			$folder_types[ $folder_type ] = apply_filters( 'imagify_folder_type_capacity', '', $folder_type );
-		}
-
-		if ( empty( $folder_types[ $folder_type ] ) ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		imagify_check_user_capacity( $folder_types[ $folder_type ] );
 	}
 
 	/**
