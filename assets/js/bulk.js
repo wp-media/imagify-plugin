@@ -1,5 +1,24 @@
 (function( $, undefined ) { // eslint-disable-line no-shadow, no-shadow-restricted-names
 
+	var jqPropHookChecked = $.propHooks.checked;
+
+	// Force `.prop()` to trigger a `change` event.
+	$.propHooks.checked = {
+		set: function( elem, value, name ) {
+			var ret;
+
+			if ( undefined === jqPropHookChecked ) {
+				ret = ( elem[ name ] = value );
+			} else {
+				ret = jqPropHookChecked( elem, value, name );
+			}
+
+			$( elem ).trigger( 'change.imagify' );
+
+			return ret;
+		}
+	};
+
 	// Custom jQuery functions =====================================================================
 	/**
 	 * Hide element(s).
@@ -690,7 +709,7 @@
 				skip    = true;
 
 			// Disable the button.
-			$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
+			$button.attr( 'disabled', 'disabled' ).find( '.dashicons' ).addClass( 'rotate' );
 
 			// Add a message to be displayed when the user wants to quit the page.
 			$w.on( 'beforeunload', this.getConfirmMessage );
@@ -1107,8 +1126,12 @@
 			// Reset the progress bars.
 			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
 
-			// Enable the main button.
-			$( '#imagify-bulk-action' ).prop( 'disabled', false ).find( '.dashicons' ).removeClass( 'rotate' );
+			// Enable (or not) the main button.
+			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
+				$( '#imagify-bulk-action' ).removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
+			} else {
+				$( '#imagify-bulk-action' ).find( '.dashicons' ).removeClass( 'rotate' );
+			}
 		},
 
 		/**
