@@ -166,12 +166,6 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	width: 1px;
 	background: rgba(255, 255, 255, .2);
 }
-
-.imagify-bulk .imagify-documentation-link-box {
-	margin-left: auto;
-	margin-right: 35px;
-}
-
 .base-transparent {
 	background: transparent;
 }

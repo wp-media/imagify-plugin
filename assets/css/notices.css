@@ -68,6 +68,9 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	padding: 18px 23px;
 	background: #40B1D0;
 }
+.imagify-notice-logo .imagify-logo {
+	opacity: 1;
+}
 .imagify-flex-notice-content .imagify-notice-logo {
 	display: flex;
 	align-items: center;

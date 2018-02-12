@@ -23,7 +23,7 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 				<div class="imagify-col imagify-shared-with-account-col<?php echo $hidden_class; ?>">
 					<div class="imagify-settings-section">
 
-						<h2 class="imagify-options-title"><?php _e( 'Settings' ); ?></h2>
+						<h2 class="imagify-options-title"><?php _e( 'General Settings' ); ?></h2>
 
 						<p class="imagify-options-subtitle" id="imagify-optimization-level-label">
 							<?php _e( 'Optimization Level', 'imagify' ); ?>

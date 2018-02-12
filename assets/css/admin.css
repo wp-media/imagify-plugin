@@ -489,7 +489,7 @@ button.imagify-link-like {
  */
 .imagify-title.imagify-title {
 	position: relative;
-	padding: 20px 36px;
+	padding: 10px 30px;
 	font-size: 23px;
 	background: #1F2332;
 	color: #FFF;
@@ -500,6 +500,8 @@ button.imagify-link-like {
 	align-items: center;
 }
 .imagify-settings .imagify-logo-block {
+	display: flex;
+	align-items: center;
 	flex-shrink: 0;
 	flex-grow: 0;
 	padding: 0;
@@ -515,23 +517,26 @@ button.imagify-link-like {
 	padding-top: 15px;
 	padding-bottom: 15px;
 }
-.imagify-page-title {
-	display: flex;
-	align-items: center;
-}
-.imagify-page-title svg {
-	margin-right: 20px;
-}
-.imagify-page-title path {
-	fill: #40B1D0;
-}
 .imagify-title .title-text {
 	font-size: 28px;
 	font-weight: bold;
 	color: #FFF;
 }
+.imagify-lb-icon {
+	padding-right: 18px;
+}
+.imagify-lb-text img {
+	margin-bottom: .15em;
+}
+.imagify-lb-text {
+	font-size: 23px;
+	font-weight: bold;
+	color: #FFF;
+}
 .imagify-logo {
+	display: block;
 	vertical-align: top;
+	opacity: .4;
 }
 .imagify-sub-header,
 .imagify-sub-title.imagify-sub-title, /* heavier is better */
@@ -569,7 +574,6 @@ button.imagify-link-like {
 .imagify-settings .imagify-documentation-link-box {
 	display: flex;
 	padding: 12px 13px 14px;
-	margin-right: -1em;
 	border: 1px solid #40b1d0;
 	color: #E5EBEF;
 	border-radius: 3px;
