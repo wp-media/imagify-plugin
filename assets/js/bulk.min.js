@@ -86,17 +86,19 @@
 			}
 		},
 		// Folder types in queue.
-		queue:               [],
+		queue:                [],
 		// Status of each folder type.
-		status:              {},
+		status:               {},
+		// Tell if the message displayed when retrieving the image IDs has been shown once.
+		displayedWaitMessage: false,
 		// Set to true to stop the whole thing.
-		processIsStopped:    false,
+		processIsStopped:     false,
 		// Global stats.
-		globalGain:          0,
-		globalOriginalSize:  0,
-		globalOptimizedSize: 0,
+		globalGain:           0,
+		globalOriginalSize:   0,
+		globalOptimizedSize:  0,
 		// Heartbeat.
-		folderTypes:         [],
+		folderTypes:          [],
 
 		// Methods =================================================================================
 
@@ -702,12 +704,13 @@
 			$( '.imagify-show-table-details' ).trigger( 'close.imagify' );
 
 			// Make sure to reset properties.
-			this.queue               = [];
-			this.status              = {};
-			this.processIsStopped    = false;
-			this.globalGain          = 0;
-			this.globalOriginalSize  = 0;
-			this.globalOptimizedSize = 0;
+			this.queue                = [];
+			this.status               = {};
+			this.displayedWaitMessage = false;
+			this.processIsStopped     = false;
+			this.globalGain           = 0;
+			this.globalOriginalSize   = 0;
+			this.globalOptimizedSize  = 0;
 
 			$( '.imagify-bulk-table [name="group[]"]:checked' ).each( function() {
 				var $checkbox  = $( this ),
@@ -762,15 +765,18 @@
 				return;
 			}
 
-			// Display an alert to wait.
-			swal( {
-				title:             imagifyBulk.labels.waitTitle,
-				html:              imagifyBulk.labels.waitText,
-				showConfirmButton: false,
-				padding:           0,
-				imageUrl:          imagifyBulk.waitImageUrl,
-				customClass:       'imagify-sweet-alert'
-			} );
+			if ( ! w.imagify.bulk.displayedWaitMessage ) {
+				// Display an alert to wait.
+				swal( {
+					title:             imagifyBulk.labels.waitTitle,
+					html:              imagifyBulk.labels.waitText,
+					showConfirmButton: false,
+					padding:           0,
+					imageUrl:          imagifyBulk.waitImageUrl,
+					customClass:       'imagify-sweet-alert'
+				} );
+				w.imagify.bulk.displayedWaitMessage = true;
+			}
 
 			/**
 			 * Fetch files for the first folder type in the queue.
