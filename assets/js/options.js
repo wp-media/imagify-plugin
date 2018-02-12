@@ -252,7 +252,7 @@
 					field += '<label for="' + v.value[1] + '" onclick="">' + v.value[2] + '</label></p>';
 					$fieldset.append( field );
 				} );
-			} );
+			} ).catch( swal.noop );
 		} )
 			.fail( function() {
 				swal( {
@@ -274,7 +274,7 @@
 			$tree    = $button.nextAll( '.imagify-folders-sub-tree' ),
 			selected = [];
 
-		if ( $button.attr( 'disabled' ) ) {
+		if ( $button.attr( 'disabled' ) || $button.siblings( ':checkbox' ).is( ':checked' ) ) {
 			return;
 		}
 
