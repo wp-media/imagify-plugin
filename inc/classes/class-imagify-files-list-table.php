@@ -227,8 +227,80 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @author Grégory Viguier
 	 */
 	public function no_items() {
-		/* translators: 1 is a link tag start, 2 is the link tag end. */
-		printf( __( 'No files yet. Launch a %1$sbulk optimization%2$s to see them appear here.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-bulk-optimization' ) ) . '">', '</a>' );
+		if ( self::get_status_filter() ) {
+			// Filter by status.
+			switch ( self::get_status_filter() ) {
+				case 'optimized':
+					/* translators: 1 is a link tag start, 2 is the link tag end. */
+					printf( esc_html__( 'No optimized files. Have you tried the %1$sbulk optimization%2$s yet?', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-bulk-optimization' ) ) . '">', '</a>' );
+					return;
+
+				case 'unoptimized':
+					esc_html_e( 'No unoptimized files, hurray!', 'imagify' );
+					return;
+
+				case 'errors':
+					esc_html_e( 'No errors, hurray!', 'imagify' );
+					return;
+			}
+		}
+
+		$args = array(
+			'action'           => 'imagify_scan_custom_folders',
+			'_wpnonce'         => wp_create_nonce( 'imagify_scan_custom_folders' ),
+			'_wp_http_referer' => get_imagify_admin_url( 'files-list' ),
+		);
+
+		if ( self::get_folder_filter() ) {
+			// A specific plugin, theme, or custom folder (selected or not).
+			$args['folder']           = self::get_folder_filter();
+			$args['_wp_http_referer'] = rawurlencode( add_query_arg( 'folder-filter', self::get_folder_filter(), $args['_wp_http_referer'] ) );
+
+			printf(
+				/* translators: 1 and 2 are link tag starts, 3 is a link tag end. */
+				esc_html__( 'No files yet. Do you want to %1$sscan this folder%3$s for new files or launch a %2$sbulk optimization%3$s directly?', 'imagify' ),
+				'<a href="' . esc_url( add_query_arg( $args, admin_url( 'admin-post.php' ) ) ) . '">',
+				'<a href="' . esc_url( get_imagify_admin_url( 'files-bulk-optimization' ) ) . '">',
+				'</a>'
+			);
+			return;
+		}
+
+		if ( self::get_folder_type_filter() ) {
+			// Selected plugins, themes, or custom folders.
+			$args['folder-type']      = self::get_folder_type_filter();
+			$args['_wp_http_referer'] = rawurlencode( add_query_arg( 'folder-type-filter', self::get_folder_type_filter(), $args['_wp_http_referer'] ) );
+
+			printf(
+				/* translators: 1 and 2 are link tag starts, 3 is a link tag end. */
+				esc_html__( 'No files yet. Do you want to %1$sscan these folders%3$s for new files or launch a %2$sbulk optimization%3$s directly?', 'imagify' ),
+				'<a href="' . esc_url( add_query_arg( $args, admin_url( 'admin-post.php' ) ) ) . '">',
+				'<a href="' . esc_url( get_imagify_admin_url( 'files-bulk-optimization' ) ) . '">',
+				'</a>'
+			);
+			return;
+		}
+
+		if ( Imagify_Folders_DB::get_instance()->has_active_folders() ) {
+			// All selected plugins, themes, and custom folders.
+			$args['_wp_http_referer'] = rawurlencode( $args['_wp_http_referer'] );
+			printf(
+				/* translators: 1 and 2 are link tag starts, 3 is a link tag end. */
+				esc_html__( 'No files yet. Do you want to %1$sscan your selected folders%3$s for new files or launch a %2$sbulk optimization%3$s directly?', 'imagify' ),
+				'<a href="' . esc_url( add_query_arg( $args, admin_url( 'admin-post.php' ) ) ) . '">',
+				'<a href="' . esc_url( get_imagify_admin_url( 'files-bulk-optimization' ) ) . '">',
+				'</a>'
+			);
+			return;
+		}
+
+		// Nothing selected in the settings.
+		printf(
+			/* translators: 1 is a link tag start, 2 is the link tag end. */
+			esc_html__( 'To see things appear here, you must select plugins or themes in the settings page first :)', 'imagify' ),
+			'<a href="' . esc_url( get_imagify_admin_url() ) . '">',
+			'</a>'
+		);
 	}
 
 	/**
@@ -988,6 +1060,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		if ( ! isset( $filter ) ) {
 			$filter = (int) filter_input( INPUT_GET, 'folder-filter', FILTER_SANITIZE_NUMBER_INT );
+			$filter = max( 0, $filter );
 		}
 
 		return $filter;

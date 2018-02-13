@@ -64,7 +64,9 @@ class Imagify_Admin_Ajax_Post {
 	 *
 	 * @var array
 	 */
-	protected $post_only_actions = array();
+	protected $post_only_actions = array(
+		'imagify_scan_custom_folders',
+	);
 
 	/**
 	 * The single instance of the class.
@@ -500,6 +502,66 @@ class Imagify_Admin_Ajax_Post {
 			'actions'            => $list_table->get_column( 'actions', $file ),
 			'title'              => $list_table->get_column( 'title', $file ),
 		) );
+	}
+
+	/**
+	 * Look for new files in custom folders.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_scan_custom_folders_callback() {
+		imagify_check_nonce( 'imagify_scan_custom_folders' );
+		imagify_check_user_capacity( 'optimize-file' );
+
+		$folder = (int) filter_input( INPUT_GET, 'folder', FILTER_SANITIZE_NUMBER_INT );
+
+		if ( $folder > 0 ) {
+			// A specific plugin, theme, or custom folder (selected or not).
+			$folders_db  = Imagify_Folders_DB::get_instance();
+			$folders_key = $folders_db->get_primary_key();
+			$folder      = $folders_db->get( $folder );
+
+			if ( ! $folder ) {
+				// This should not happen.
+				imagify_maybe_redirect( __( 'This folder is not in the database.', 'imagify' ) );
+			}
+
+			$folder['folder_path'] = Imagify_Files_Scan::remove_placeholder( $folder['path'] );
+
+			imagify_get_files_from_folders( array(
+				$folder[ $folders_key ] => $folder,
+			) );
+
+			imagify_maybe_redirect();
+		}
+
+		$folder_types = array(
+			'themes'         => 1,
+			'plugins'        => 1,
+			'custom-folders' => 1,
+		);
+		$folder_type = trim( filter_input( INPUT_GET, 'folder-type', FILTER_SANITIZE_STRING ) );
+		$folder_type = isset( $folder_types[ $folder_type ] ) ? $folder_type : '';
+
+		if ( $folder_type ) {
+			// Selected plugins, themes, or custom folders.
+			$folders = imagify_get_folders_from_type( $folder_type, array(
+				'active' => true,
+			) );
+			imagify_get_files_from_folders( $folders );
+
+			imagify_maybe_redirect();
+		}
+
+		// All selected plugins, themes, and custom folders.
+		$folders = imagify_get_folders_from_type( 'all', array(
+			'active' => true,
+		) );
+		imagify_get_files_from_folders( $folders );
+
+		imagify_maybe_redirect();
 	}
 
 
