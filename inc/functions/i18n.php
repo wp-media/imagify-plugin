@@ -130,7 +130,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'wp'   => get_imagify_bulk_buffer_size(),
 					'File' => get_imagify_bulk_buffer_size( 1 ),
 				),
-				'labels' => array(
+				'labels'      => array(
 					'overviewChartLabels'            => array(
 						'unoptimized' => __( 'Unoptimized', 'imagify' ),
 						'optimized'   => __( 'Optimized', 'imagify' ),
@@ -167,6 +167,14 @@ function get_imagify_localize_script_translations( $context ) {
 					'confirmBulk'                    => __( 'Start the optimization', 'imagify' ),
 				),
 			);
+
+			if ( $translations['keyIsValid'] ) {
+				$user = new Imagify_User();
+
+				if ( $user->is_over_quota() ) {
+					$translations['isOverQuota'] = 1;
+				}
+			}
 
 			if ( isset( $translations['bufferSizes']['wp'] ) ) {
 				/**

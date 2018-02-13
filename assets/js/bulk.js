@@ -674,7 +674,7 @@
 		 * Maybe display a modal, then launch all processes.
 		 */
 		maybeLaunchAllProcesses: function () {
-			var $quotaModal;
+			var $infosModal;
 
 			if ( ! imagifyBulk.keyIsValid ) {
 				w.imagify.bulk.displayError( {
@@ -692,13 +692,25 @@
 				return;
 			}
 
-			$quotaModal = $( '#tmpl-imagify-bulk-infos' );
+			if ( imagifyBulk.isOverQuota ) {
+				// Swal information when over quota.
+				w.imagify.bulk.displayError( {
+					title:             imagifyBulk.labels.overQuotaTitle,
+					html:              $( '#tmpl-imagify-overquota-alert' ).html(),
+					type:              'info',
+					customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
+					showConfirmButton: false
+				} );
+				return;
+			}
 
-			if ( $quotaModal.length ) {
+			$infosModal = $( '#tmpl-imagify-bulk-infos' );
+
+			if ( $infosModal.length ) {
 				// Swal Information before loading the optimize process.
 				swal( {
 					title:             imagifyBulk.labels.bulkInfoTitle,
-					html:              $quotaModal.html(),
+					html:              $infosModal.html(),
 					type:              '',
 					customClass:       'imagify-sweet-alert imagify-swal-has-subtitle imagify-before-bulk-infos',
 					showCancelButton:  true,
@@ -984,13 +996,6 @@
 					return;
 				}
 
-				if ( 'over-quota' === data.error_code ) {
-					// No more data, stop everything.
-					Optimizer.stopProcess();
-					w.imagify.bulk.stopProcess( data.error_code, item );
-					return;
-				}
-
 				// Display the error in the file row.
 				$fileRow.replaceWith( w.imagify.bulk.displayErrorInRow( template( $.extend( {}, defaultsTemplate, {
 					status:      'error',
@@ -1006,6 +1011,12 @@
 				} else {
 					errorsCount += 1;
 					$errorsCount.text( errorsCount );
+				}
+
+				if ( 'over-quota' === data.error_code ) {
+					// No more data, stop everything.
+					Optimizer.stopProcess();
+					w.imagify.bulk.stopProcess( data.error_code, item );
 				}
 			} );
 
@@ -1100,7 +1111,7 @@
 					else if ( 'over-quota' === hasError ) {
 						errorArgs = {
 							title:             imagifyBulk.labels.overQuotaTitle,
-							text:              $( '#tmpl-imagify-overquota-alert' ).html(),
+							html:              $( '#tmpl-imagify-overquota-alert' ).html(),
 							type:              'info',
 							customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
 							showConfirmButton: false
@@ -1109,7 +1120,7 @@
 					else if ( 'get-unoptimized-images' === hasError || 'consumed-all-data' === hasError ) {
 						errorArgs = {
 							title: imagifyBulk.labels.getUnoptimizedImagesErrorTitle,
-							text:  imagifyBulk.labels.getUnoptimizedImagesErrorText,
+							html:  imagifyBulk.labels.getUnoptimizedImagesErrorText,
 							type:  'info'
 						};
 					}

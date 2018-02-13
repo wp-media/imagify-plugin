@@ -227,8 +227,16 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		}
 
 		$unconsumed_quota = $user->get_percent_unconsumed_quota();
+		$display_infos    = get_transient( 'imagify_bulk_optimization_infos' );
 
-		if ( $unconsumed_quota <= 20 ) {
+		?>
+		<script type="text/html" id="tmpl-imagify-overquota-alert">
+			<?php $this->print_template( 'part-bulk-optimization-overquota-alert' ); ?>
+		</script>
+		<?php
+
+		if ( ! $display_infos ) {
+			set_transient( 'imagify_bulk_optimization_infos', 1, WEEK_IN_SECONDS );
 			?>
 			<script type="text/html" id="tmpl-imagify-bulk-infos">
 				<?php
@@ -246,10 +254,5 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 	<script type="text/html" id="tmpl-imagify-spinner">
 		<?php $this->print_template( 'part-bulk-optimization-spinner' ); ?>
 	</script>
-
-	<script type="text/html" id="tmpl-imagify-overquota-alert">
-		<?php $this->print_template( 'part-bulk-optimization-overquota-alert' ); ?>
-	</script>
-
 </div>
 <?php

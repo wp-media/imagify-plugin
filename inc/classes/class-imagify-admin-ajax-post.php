@@ -292,12 +292,14 @@ class Imagify_Admin_Ajax_Post {
 			if ( ! $attachment->has_error() ) {
 				$data['error_code'] = 'already-optimized';
 			} else {
-				$message = imagify_translate_api_message( 'You\'ve consumed all your data. You have to upgrade your account to continue.' );
+				$message = 'You\'ve consumed all your data. You have to upgrade your account to continue';
 
 				if ( $data['error'] === $message ) {
 					$data['error_code'] = 'over-quota';
 				}
 			}
+
+			$data['error'] = imagify_translate_api_message( $data['error'] );
 
 			imagify_die( $data );
 		}
@@ -367,12 +369,14 @@ class Imagify_Admin_Ajax_Post {
 			if ( ! $file->has_error() ) {
 				$data['error_code'] = 'already-optimized';
 			} else {
-				$message = imagify_translate_api_message( 'You\'ve consumed all your data. You have to upgrade your account to continue.' );
+				$message = 'You\'ve consumed all your data. You have to upgrade your account to continue';
 
 				if ( $data['error'] === $message ) {
 					$data['error_code'] = 'over-quota';
 				}
 			}
+
+			$data['error'] = imagify_translate_api_message( $data['error'] );
 
 			imagify_die( $data );
 		}
