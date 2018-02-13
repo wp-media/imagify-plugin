@@ -499,6 +499,66 @@ class Imagify_Files_Stats {
 		}
 	}
 
+	/**
+	 * Sum up all original sizes.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return int The sizes sum in bytes.
+	 */
+	public static function get_overall_original_size() {
+		global $wpdb;
+		static $size;
+
+		if ( isset( $size ) ) {
+			return $size;
+		}
+
+		$files_db = Imagify_Files_DB::get_instance();
+
+		if ( ! $files_db->can_operate() ) {
+			$size = 0;
+			return $size;
+		}
+
+		$table_name = $files_db->get_table_name();
+		$size       = round( $wpdb->get_var( "SELECT SUM( original_size ) FROM $table_name" ) ); // WPCS: unprepared SQL ok.
+
+		return $size;
+	}
+
+	/**
+	 * Calculate the average size of the images uploaded per month.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return int The current average size of images uploaded per month in bytes.
+	 */
+	public static function calculate_average_size_per_month() {
+		global $wpdb;
+		static $average;
+
+		if ( isset( $average ) ) {
+			return $average;
+		}
+
+		$files_db = Imagify_Files_DB::get_instance();
+
+		if ( ! $files_db->can_operate() ) {
+			$average = 0;
+			return $average;
+		}
+
+		$table_name = $files_db->get_table_name();
+		$average    = round( $wpdb->get_var( "SELECT AVG( size ) AS average_size_per_month FROM ( SELECT SUM( original_size ) AS size FROM $table_name GROUP BY YEAR( file_date ), MONTH( file_date ) ) AS size_per_month" ) ); // WPCS: unprepared SQL ok.
+
+		return $average;
+	}
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** TOOLS =================================================================================== */
