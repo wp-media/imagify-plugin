@@ -254,6 +254,8 @@ class Imagify_Views {
 			// Limits.
 			'unoptimized_attachment_limit'  => 0,
 			// What to optimize.
+			'icon'                          => 'images-alt2',
+			'title'                         => __( 'Optimize your images', 'imagify' ),
 			'groups'                        => array(),
 		);
 
@@ -279,24 +281,13 @@ class Imagify_Views {
 				$data['groups']['library'] = array(
 					/**
 					 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
-					 * It is also used in the underscore template id: 'tmpl-imagify-results-row-{$group_id}' and in get_imagify_localize_script_translations().
+					 * It is also used in get_imagify_localize_script_translations() and imagify_get_folder_type_data().
 					 */
-					'group_id'   => 'library',
-					'context'    => 'wp',
-					'icon'       => 'images-alt2',
-					'title'      => __( 'Optimize the images of your Media Library', 'imagify' ),
-					'optimizing' => __( 'Optimizing the images of your Media Library...', 'imagify' ),
+					'group_id' => 'library',
+					'context'  => 'wp',
+					'title'    => __( 'Media Library', 'imagify' ),
 					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-					'footer'     => sprintf( __( 'You can also re-optimize your images from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
-					'rows'       => array(
-						/**
-						 * The 'library' key corresponds to the "folder type".
-						 * It is used in imagify_get_folder_type_data() for example.
-						 */
-						'library' => array(
-							'title' => __( 'Media Library', 'imagify' ),
-						),
-					),
+					'footer'   => sprintf( __( 'You can also re-optimize your images from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
 				);
 			}
 
@@ -316,20 +307,12 @@ class Imagify_Views {
 
 				if ( Imagify_Folders_DB::get_instance()->has_items() ) {
 					// Group.
-					$data['groups']['custom-files'] = array(
-						'group_id'   => 'custom-files',
-						'context'    => 'File',
-						'icon'       => 'admin-plugins',
-						'title'      => __( 'Optimize the images from your site\'s folders', 'imagify' ),
-						'subtitle'   => __( 'Choose here the bulk optimization settings for the medias stored in your folders.', 'imagify' ),
-						'optimizing' => __( 'Optimizing the images of your folders...', 'imagify' ),
+					$data['groups']['custom-folders'] = array(
+						'group_id' => 'custom-folders',
+						'context'  => 'File',
+						'title'    => __( 'Custom folders', 'imagify' ),
 						/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-						'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
-						'rows'       => array(
-							'custom-folders' => array(
-								'title' => __( 'Other Medias', 'imagify' ),
-							),
-						),
+						'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
 					);
 				} else {
 					// New Feature!

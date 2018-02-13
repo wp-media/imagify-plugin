@@ -862,11 +862,6 @@ class Imagify_Admin_Ajax_Post {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$this->check_user_capacity_for_folder_type( $folder_type, array(
-			'library',
-			'custom-folders',
-		) );
-
 		/**
 		 * Get the formated data.
 		 */

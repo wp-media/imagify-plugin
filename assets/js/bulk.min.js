@@ -354,7 +354,7 @@
 			action = action.replace( '%GROUP_ID%', camelGroupID );
 			action = imagifyBulk.ajaxActions[ action ];
 
-			return ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&optimization_level=' + item.level + '&action=' + action + '&folder_type=' + item.type;
+			return ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&optimization_level=' + item.level + '&action=' + action + '&folder_type=' + item.groupId;
 		},
 
 		/*
@@ -396,7 +396,7 @@
 		stopProcess: function ( errorId, item ) {
 			this.processIsStopped = true;
 
-			w.imagify.bulk.status[ item.groupId + '|' + item.type ] = {
+			w.imagify.bulk.status[ item.groupId ] = {
 				isError: true,
 				id:      errorId
 			};
@@ -458,39 +458,6 @@
 			$row.find( '.imagify-cell-status' ).after( '<td colspan="' + colspan + '">' + text + '</td>' );
 
 			return $row;
-		},
-
-		/*
-		 * Display one of the 3 group headers.
-		 *
-		 * @param {string}  state      One of the 3 states: 'resting' (it's the "normal" title), 'fetching', and 'optimizing'.
-		 * @param {element} $container jQuery element of the group container.
-		 */
-		displayGroupHeader: function ( state, $container ) {
-			$container = $container.find( '.imagify-table-header' );
-			$container.not( '.imagify-' + state ).imagifyHide();
-			$container.filter( '.imagify-' + state ).imagifyShow();
-		},
-
-		/*
-		 * If the current folder is the last of the group, display the "normal" group header.
-		 *
-		 * @param {string}  groupId    The folder's group ID.
-		 * @param {element} $container jQuery element of the group container.
-		 */
-		maybeResetGroupHeader: function ( groupId, $table ) {
-			var resetHeader = true;
-
-			$.each( this.queue, function( i, otherItem ) {
-				if ( otherItem.groupId === groupId ) {
-					resetHeader = false;
-					return false;
-				}
-			} );
-
-			if ( resetHeader ) {
-				this.displayGroupHeader( 'resting', $table );
-			}
 		},
 
 		/*
@@ -757,24 +724,21 @@
 			this.globalOptimizedSize  = 0;
 
 			$( '.imagify-bulk-table [name="group[]"]:checked' ).each( function() {
-				var $checkbox  = $( this ),
-					$row       = $checkbox.closest( '.imagify-row-folder-type' ),
-					$container = $row.closest( '.imagify-bulk-table' ),
-					groupId    = $container.data( 'group-id' ),
-					context    = $container.data( 'context' ),
-					type       = $checkbox.val(),
-					level      = $row.find( '.imagify-cell-level [name="level[' + type + ']"]:checked' ).val();
+				var $checkbox = $( this ),
+					$row      = $checkbox.closest( '.imagify-row-folder-type' ),
+					groupId   = $row.data( 'group-id' ),
+					context   = $row.data( 'context' ),
+					level     = $row.find( '.imagify-cell-level [name="level[' + groupId + ']"]:checked' ).val();
 
 				// Build the queue.
 				w.imagify.bulk.queue.push( {
 					groupId: groupId,
 					context: context,
-					type:    type,
 					level:   undefined === level ? -1 : parseInt( level, 10 )
 				} );
 
 				// Set the status.
-				w.imagify.bulk.status[ groupId + '|' + type ] = {
+				w.imagify.bulk.status[ groupId ] = {
 					isError: false,
 					id:      'waiting'
 				};
@@ -798,7 +762,7 @@
 		 * Process the first item in the queue.
 		 */
 		processQueue: function () {
-			var $row, $table, item;
+			var $row, item;
 
 			if ( w.imagify.bulk.processIsStopped ) {
 				return;
@@ -825,15 +789,11 @@
 			/**
 			 * Fetch files for the first folder type in the queue.
 			 */
-			item   = w.imagify.bulk.queue.shift();
-			$row   = $( '#cb-select-' + item.type ).closest( '.imagify-row-folder-type' );
-			$table = $row.closest( '.imagify-bulk-table' );
+			item = w.imagify.bulk.queue.shift();
+			$row = $( '#cb-select-' + item.groupId ).closest( '.imagify-row-folder-type' );
 
 			// Update status.
-			w.imagify.bulk.status[ item.groupId + '|' + item.type ].id = 'fetching';
-
-			// Display the "Fetching" message in the table header.
-			w.imagify.bulk.displayGroupHeader( 'fetching', $table );
+			w.imagify.bulk.status[ item.groupId ].id = 'fetching';
 
 			// Display the "working" folder row and hide the "normal" one.
 			w.imagify.bulk.displayFolderRow( 'working', $row );
@@ -856,10 +816,10 @@
 						}
 
 						// No images.
-						w.imagify.bulk.status[ item.groupId + '|' + item.type ].id = 'no-images';
+						w.imagify.bulk.status[ item.groupId ].id = 'no-images';
 
 						if ( ! w.imagify.bulk.processIsStopped ) {
-							$( '#cb-select-' + item.type ).prop( 'checked', false );
+							$( '#cb-select-' + item.groupId ).prop( 'checked', false );
 
 							if ( ! w.imagify.bulk.queue.length ) {
 								$( w ).trigger( 'queueEmpty.imagify' );
@@ -868,9 +828,6 @@
 
 							// Reset the folder row.
 							w.imagify.bulk.displayFolderRow( 'resting', $row );
-
-							// Maybe display the "normal" header.
-							w.imagify.bulk.maybeResetGroupHeader( item.groupId, $table );
 
 							$( w ).trigger( 'processQueue.imagify' );
 						}
@@ -894,14 +851,14 @@
 		 * @param {object} files A list of file IDs (key) and URLs (values).
 		 */
 		optimizeFiles: function ( e, item, files ) {
-			var $row             = $( '#cb-select-' + item.type ).closest( '.imagify-row-folder-type' ),
+			var $row             = $( '#cb-select-' + item.groupId ).closest( '.imagify-row-folder-type' ),
 				$workingRow      = $row.next( '.imagify-row-working' ),
 				$optimizedCount  = $workingRow.find( '.imagify-cell-images-optimized span' ),
 				optimizedCount   = parseInt( $optimizedCount.text(), 10 ),
 				$errorsCount     = $workingRow.find( '.imagify-cell-errors span' ),
 				errorsCount      = parseInt( $errorsCount.text(), 10 ),
 				$table           = $row.closest( '.imagify-bulk-table' ),
-				$progressBar     = $table.find( '#imagify-row-progress-' + item.groupId ),
+				$progressBar     = $table.find( '.imagify-row-progress' ),
 				$progress        = $progressBar.find( '.bar' ),
 				defaultsTemplate = {
 					groupId:              item.groupId,
@@ -925,15 +882,16 @@
 			}
 
 			// Update folder status.
-			w.imagify.bulk.status[ item.groupId + '|' + item.type ].id = 'optimizing';
+			w.imagify.bulk.status[ item.groupId ].id = 'optimizing';
 
-			// Empty the result details.
+			// Fill in the result table header.
+			$table.find( '.imagify-bulk-table-details thead' ).html( $( '#tmpl-imagify-file-header-' + item.groupId ).html() );
+
+			// Empty the result table body.
 			$resultsContainer = $table.find( '.imagify-bulk-table-details tbody' ).text( '' );
 
-			// Display the "Optimizing" message in the table header.
-			w.imagify.bulk.displayGroupHeader( 'optimizing', $table );
-
-			// Display the progress bar.
+			// Reset and display the progress bar.
+			$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
 			$progressBar.slideDown().attr( 'aria-hidden', 'false' );
 
 			// Optimize the files.
@@ -1023,7 +981,7 @@
 			// After all image optimizations.
 			Optimizer.done( function( data ) {
 				// Uncheck the checkbox.
-				$( '#cb-select-' + item.type ).prop( 'checked', false );
+				$( '#cb-select-' + item.groupId ).prop( 'checked', false );
 
 				if ( data.global_original_size ) {
 					w.imagify.bulk.globalGain          += parseInt( data.global_gain, 10 );
@@ -1036,11 +994,11 @@
 				}
 
 				// Update folder type status.
-				if ( ! w.imagify.bulk.status[ item.groupId + '|' + item.type ].isError ) {
-					w.imagify.bulk.status[ item.groupId + '|' + item.type ].id = 'done';
+				if ( ! w.imagify.bulk.status[ item.groupId ].isError ) {
+					w.imagify.bulk.status[ item.groupId ].id = 'done';
 				}
 
-				// Update and display the "normal" folder row.
+				// Update the folder row.
 				$row.addClass( 'updating' );
 
 				$.get( w.imagify.bulk.getAjaxUrl( 'getFolderData', item ) )
@@ -1058,9 +1016,6 @@
 						if ( ! w.imagify.bulk.queue.length ) {
 							$( w ).trigger( 'queueEmpty.imagify' );
 						} else {
-							// Maybe display the "normal" header.
-							w.imagify.bulk.maybeResetGroupHeader( item.groupId, $table );
-
 							$( w ).trigger( 'processQueue.imagify' );
 						}
 					} );
@@ -1087,7 +1042,7 @@
 
 			// Maybe display error.
 			if ( ! $.isEmptyObject( w.imagify.bulk.status ) ) {
-				$.each( w.imagify.bulk.status, function( groupIdPipeType, typeStatus ) {
+				$.each( w.imagify.bulk.status, function( groupId, typeStatus ) {
 					if ( typeStatus.isError ) {
 						// One error is enough to display a message.
 						hasError = typeStatus.id;
@@ -1141,9 +1096,6 @@
 			// Unlink the message displayed when the user wants to quit the page.
 			$( w ).off( 'beforeunload', w.imagify.bulk.getConfirmMessage );
 
-			// Display the "normal" headers.
-			w.imagify.bulk.displayGroupHeader( 'resting', $tables );
-
 			// Display the "normal" folder rows (the values of the last one should being updated via ajax, don't display it for now).
 			w.imagify.bulk.displayFolderRow( 'resting', $tables.find( '.imagify-row-folder-type' ).not( '.updating' ) );
 
@@ -1168,7 +1120,7 @@
 			data.imagify_heartbeat = imagifyBulk.heartbeatId;
 
 			if ( ! w.imagify.bulk.folderTypes.length ) {
-				$( '.imagify-bulk-table' ).each( function() {
+				$( '.imagify-row-folder-type' ).each( function() {
 					w.imagify.bulk.folderTypes.push( $( this ).data( 'group-id' ) );
 				} );
 			}

@@ -184,9 +184,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		<?php
 		$this->print_template( 'part-bulk-optimization-success' );
 
-		foreach ( $data['groups'] as $group ) {
-			$this->print_template( 'part-bulk-optimization-group', $group );
-		}
+		$this->print_template( 'part-bulk-optimization-table', $data );
 
 		// New Feature!
 		if ( ! empty( $data['no-custom-folders'] ) ) {
