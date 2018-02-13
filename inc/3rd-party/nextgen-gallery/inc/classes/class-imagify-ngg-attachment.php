@@ -270,14 +270,12 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		$size = @getimagesize( $this->get_original_path() );
 
 		if ( isset( $size[0], $size[1] ) ) {
-			$metadata                   = $this->image->meta_data;
-			$metadata['width']          = $size[0];
-			$metadata['height']         = $size[1];
-			$metadata['full']['width']  = $size[0];
-			$metadata['full']['height'] = $size[1];
-			$this->image->meta_data     = $metadata;
+			$this->image->meta_data['width']          = $size[0];
+			$this->image->meta_data['height']         = $size[1];
+			$this->image->meta_data['full']['width']  = $size[0];
+			$this->image->meta_data['full']['height'] = $size[1];
 
-			nggdb::update_image_meta( $this->id, $metadata );
+			nggdb::update_image_meta( $this->id, $this->image->meta_data );
 		}
 	}
 
