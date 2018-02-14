@@ -142,6 +142,8 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @return bool
 	 */
 	public function has_active_folders() {
+		global $wpdb;
+
 		$column = esc_sql( $this->get_primary_key() );
 
 		return (bool) $wpdb->get_var( "SELECT $column FROM $this->table_name WHERE active = 1 LIMIT 1;" ); // WPCS: unprepared SQL ok.

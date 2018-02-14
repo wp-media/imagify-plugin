@@ -16,7 +16,7 @@ function _imagify_attachment_submitbox_misc_actions() {
 
 	$attachment = get_imagify_attachment( 'wp', $post->ID, 'attachment_submitbox_misc_actions' );
 
-	if ( ! $attachment->is_mime_type_supported() ) {
+	if ( ! $attachment->is_extension_supported() ) {
 		return;
 	}
 

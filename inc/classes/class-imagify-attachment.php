@@ -129,7 +129,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function update_metadata_size() {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return false;
 		}
 
@@ -336,7 +336,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return;
 		}
 
@@ -503,7 +503,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function optimize_missing_thumbnails( $optimization_level = null ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
@@ -613,7 +613,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function restore() {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return;
 		}
 
