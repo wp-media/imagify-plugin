@@ -5,8 +5,18 @@ if ( defined( 'WP_ROCKET_VERSION' ) ) {
 	return '';
 }
 
+$notice  = 'wp-rocket';
+$user_id = get_current_user_id();
+$notices = get_user_meta( $user_id, '_imagify_ignore_ads', true );
+$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+
+if ( isset( $notices[ $notice ] ) ) {
+	return;
+}
+
 $discount_percent = '20%';
 $discount_code    = 'IMAGIFY20';
+$dismiss_url      = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_ad&ad=' . $notice ), 'imagify-dismiss-ad' );
 ?>
 
 <div class="imagify-col imagify-sidebar">
@@ -45,8 +55,6 @@ $discount_code    = 'IMAGIFY20';
 			<li><?php _e( 'WooCommerce compatibility.', 'imagify' ); ?></li>
 			<li><?php _e( 'Immediate results.', 'imagify' ); ?></li>
 		</ul>
-
-	<?php $dismiss_url = get_imagify_admin_url( 'dismiss-notice', 'wp-rocket-sidebar-add' ); ?>
 
 	<a class="imagify-sidebar-close" href="<?php echo esc_url( $dismiss_url ); ?>"><span class="screen-reader-text"><?php _e( 'Remove the ad', 'imagify' ); ?></span><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></a>
 	</div>

@@ -66,6 +66,7 @@ class Imagify_Admin_Ajax_Post {
 	 */
 	protected $post_only_actions = array(
 		'imagify_scan_custom_folders',
+		'imagify_dismiss_ad',
 	);
 
 	/**
@@ -1303,6 +1304,45 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		wp_send_json_success( $output );
+	}
+
+	/**
+	 * Store the "closed" status of the ads.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_dismiss_ad_callback() {
+
+		imagify_check_nonce( 'imagify-dismiss-ad' );
+		imagify_check_user_capacity();
+
+		$notice = filter_input( INPUT_GET, 'ad', FILTER_SANITIZE_STRING );
+
+		if ( ! $notice ) {
+			imagify_maybe_redirect();
+			wp_send_json_error();
+		}
+
+		$user_id = get_current_user_id();
+		$notices = get_user_meta( $user_id, '_imagify_ignore_ads', true );
+		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+
+		if ( isset( $notices[ $notice ] ) ) {
+			imagify_maybe_redirect();
+			wp_send_json_success();
+		}
+
+		$notices   = array_flip( $notices );
+		$notices[] = $notice;
+		$notices   = array_filter( $notices );
+		$notices   = array_values( $notices );
+
+		update_user_meta( $user_id, '_imagify_ignore_ads', $notices );
+
+		imagify_maybe_redirect();
+		wp_send_json_success();
 	}
 
 
