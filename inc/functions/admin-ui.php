@@ -403,13 +403,13 @@ function imagify_get_folder_type_data( $folder_type ) {
 	}
 
 	if ( $data['optimized'] ) {
-		$data['optimized'] = __( 'Optimized Filesize', 'imagify' ) . ' ' . imagify_size_format( $data['optimized'], 2 );
+		$data['optimized'] = '<span class="imagify-cell-label">' . __( 'Optimized Filesize', 'imagify' ) . '</span> ' . imagify_size_format( $data['optimized'], 2 );
 	} else {
 		$data['optimized'] = '';
 	}
 
 	if ( $data['original'] ) {
-		$data['original'] = __( 'Original Filesize', 'imagify' ) . ' ' . imagify_size_format( $data['original'], 2 );
+		$data['original'] = '<span class="imagify-cell-label">' . __( 'Original Filesize', 'imagify' ) . '</span> ' . imagify_size_format( $data['original'], 2 );
 	} else {
 		$data['original'] = '';
 	}

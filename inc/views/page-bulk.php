@@ -91,10 +91,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 					<div class="imagify-options-title">
 						<p class="imagify-meteo-title">
 							<span class="dashicons dashicons-admin-users"></span>
-							<?php esc_html_e( 'Account status', 'imagify' ); ?>
+							<?php esc_html_e( 'Your Account', 'imagify' ); ?>
 						</p>
 
-						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View My Subscription', 'imagify' ); ?></a>
+						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View your profile', 'imagify' ); ?></a>
 
 						<p class="imagify-meteo-subs">
 							<span class="screen-reader-text"><?php _e( 'Your subscription:', 'imagify' ); ?></span>
@@ -152,9 +152,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 									</div>
 								</div>
 							</div>
-
-							<div class="imagify-divider"></div>
-
 							<?php
 							/**
 							 * Filter whether the plan chooser section is displayed.
@@ -163,13 +160,15 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 							 */
 							if ( apply_filters( 'imagify_show_new_to_imagify', true ) ) {
 								?>
+							<div class="imagify-block-secondary">
 								<p class="imagify-section-title imagify-h3-like"><?php esc_html_e( 'You\'re new to Imagify?', 'imagify' ); ?></p>
 								<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
 
-								<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-secondary imagify-button-big">
+								<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-button-big imagify-full-width">
 									<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
 									<span class="button-text"><?php _e( 'What plan do I need?', 'imagify' ); ?></span>
 								</button>
+							</div>
 								<?php
 							}
 							?>
