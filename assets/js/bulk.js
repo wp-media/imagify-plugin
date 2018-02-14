@@ -72,7 +72,7 @@
 					],
 					datasets: [ {
 						data:            [],
-						backgroundColor: [ '#D9E4EB', '#46B1CE', '#2E3242' ],
+						backgroundColor: [ '#10121A', '#46B1CE', '#C51162' ],
 						borderWidth:     0
 					} ]
 				}
@@ -107,6 +107,9 @@
 			// Overview chart.
 			this.drawOverviewChart();
 
+			// Disable main button if nothing's checked
+			this.maybeDisabledMainButton();
+
 			// Optimization level selector.
 			$( '.imagify-level-selector-button' )
 				.on( 'click.imagify', this.openLevelSelectorFromButton );
@@ -123,6 +126,7 @@
 			$( '.imagify-show-table-details' ).on( 'click.imagify open.imagify close.imagify', this.toggleOptimizationDetails );
 			$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
 			$( '.imagify-share-networks a' ).on( 'click.imagify', this.share );
+			$( '.imagify-cell-checkbox input' ).on( 'change.imagify', this.maybeDisabledMainButton );
 
 			// Optimization events.
 			$( w )
@@ -629,6 +633,19 @@
 			} else {
 				$button.html( $button.data( 'label-show' ) + '<span class="dashicons dashicons-menu"></span>' );
 				$details.imagifyHide();
+			}
+		},
+
+		/*
+		 * Maybe make the main bulk button disabled if no checkboxes checked.
+		 */
+		maybeDisabledMainButton: function() {
+			var $checkboxes = $( '.imagify-cell-checkbox input' );
+
+			if ( $checkboxes.filter(':checked').length === 0 ) {
+				$( '#imagify-bulk-action' ).prop( 'disabled', true);
+			} else {
+				$( '#imagify-bulk-action' ).prop( 'disabled', false);
 			}
 		},
 

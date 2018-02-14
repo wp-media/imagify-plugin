@@ -186,7 +186,7 @@
 			return;
 		}
 
-		$button.attr( 'disabled', 'disabled' );
+		$button.attr( 'disabled', 'disabled' ).next( 'img' ).attr( 'aria-hidden', 'false' );
 
 		$( '#imagify-custom-folders' ).find( ':checked' ).each( function() {
 			selected.push( this.value );
@@ -213,7 +213,7 @@
 
 			swal( {
 				title:             imagifyOptions.labels.filesTreeTitle,
-				html:              '<div class="imagify-swal-subtitle">' + imagifyOptions.labels.filesTreeSubTitle + '</div><div class="imagify-swal-content"><ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul></div>',
+				html:              '<div class="imagify-swal-subtitle">' + imagifyOptions.labels.filesTreeSubTitle + '</div><div class="imagify-swal-content"><p class="imagify-folders-information"><i class="dashicons dashicons-info" aria-hidden="true"></i>' + imagifyOptions.labels.cleaningInfo + '</p><ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul></div>',
 				type:              '',
 				customClass:       'imagify-sweet-alert imagify-swal-has-subtitle  imagify-folders-selection',
 				showCancelButton:  true,
@@ -248,8 +248,11 @@
 						return;
 					}
 
-					field += '<p><input type="checkbox" value="' + v.value[0] + '" id="' + v.value[1] + '" name="imagify_settings[custom_folders][]" class="imagify-row-check" checked="checked" /> ';
-					field += '<label for="' + v.value[1] + '" onclick="">' + v.value[2] + '</label></p>';
+					field += '<p id="' + v.value[1] + '" class="imagify-custom-folder-line" data-value="' + v.value[0] + '">';
+					field += v.value[2];
+					field += '<button type="button" class="imagify-custom-folders-remove"><span class="imagify-custom-folders-remove-text">' + imagifyOptions.labels.removeFolder + '</span><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></button>';
+					field += '</p>';
+
 					$fieldset.append( field );
 				} );
 			} );
@@ -263,7 +266,7 @@
 				} );
 			} )
 			.always( function(){
-				$button.removeAttr( 'disabled' );
+				$button.removeAttr( 'disabled' ).next( 'img' ).attr( 'aria-hidden', 'true' );
 			} );
 	} );
 
@@ -329,6 +332,25 @@
 			.always( function(){
 				$button.removeAttr( 'disabled' );
 			} );
+	} );
+
+	// Clicking a Remove folder button make it disappear and save it in DB.
+	$( '#imagify-custom-folders' ).on( 'click.imagify', '.imagify-custom-folders-remove', function() {
+		var $_this = $(this);
+
+		// Make the item disappear.
+		$_this.closest( '.imagify-custom-folder-line' ).addClass( 'imagify-will-remove' );
+
+		//TODO: AJAX stuff to remove it from DB.
+	} );
+
+	// Clicking the "add themes to folders" button.
+	$( '#imagify-add-themes-to-custom-folder' ).on( 'click.imagify', function() {
+
+		// TODO: Add lines into custom folders.
+
+		// Remove clicked button
+		$(this).replaceWith( '<p>' + imagifyOptions.labels.themesAdded + '</p>' );
 	} );
 
 } )(window, document, jQuery);
