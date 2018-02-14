@@ -20,12 +20,12 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 				<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
 				<?php wp_nonce_field( 'imagify-check-api-key', 'imagifycheckapikeynonce', false ); ?>
 
-				<?php if ( ! imagify_valid_key() ) { ?>
-				<?php $this->print_template( 'part-settings-account' ); ?>
-				<?php $this->print_template( 'part-settings-footer' ); ?>
-			</div><!-- .imagify-settings-main-content -->
-
-				<?php } else { ?>
+				<?php
+				if ( ! imagify_valid_key() ) {
+					$this->print_template( 'part-settings-account' );
+					$this->print_template( 'part-settings-footer' );
+				}
+				?>
 
 				<div class="imagify-col imagify-shared-with-account-col<?php echo $hidden_class; ?>">
 					<div class="imagify-settings-section">
@@ -116,11 +116,11 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 					</div>
 				</div>
 
-				<div class="imagify-col imagify-account-info-col">
-					<?php
-					$this->print_template( 'part-settings-account' );
-					?>
-				</div>
+				<?php if ( imagify_valid_key() ) { ?>
+					<div class="imagify-col imagify-account-info-col">
+						<?php $this->print_template( 'part-settings-account' ); ?>
+					</div>
+				<?php } ?>
 			</div>
 
 			<div class="imagify-settings-main-content<?php echo $hidden_class; ?>">
@@ -134,8 +134,8 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 				</div>
 			</div>
 
-			<div class="imagify-settings-main-content imagify-pb0">
-				<div class="imagify-settings-section clear<?php echo $hidden_class; ?>">
+			<div class="imagify-settings-main-content imagify-pb0<?php echo $hidden_class; ?>">
+				<div class="imagify-settings-section clear">
 					<div class="imagify-col">
 						<h2 class="imagify-options-title"><?php _e( 'Display options', 'imagify' ); ?></h2>
 
@@ -159,9 +159,12 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 					</div>
 				</div>
 
-				<?php $this->print_template( 'part-settings-footer' ); ?>
+				<?php
+				if ( imagify_valid_key() ) {
+					$this->print_template( 'part-settings-footer' );
+				}
+				?>
 			</div>
-			<?php } ?>
 		</form>
 	</div>
 
