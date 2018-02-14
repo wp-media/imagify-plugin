@@ -29,7 +29,8 @@ if ( imagify_valid_key() ) {
 ?>
 <div class="imagify-settings-section">
 
-	<?php if ( imagify_valid_key() ) {
+	<?php
+	if ( imagify_valid_key() ) {
 		?>
 		<div class="imagify-col-content imagify-block-secondary imagify-mt2">
 			<?php
@@ -111,15 +112,17 @@ if ( imagify_valid_key() ) {
 		 */
 		$options = Imagify_Options::get_instance();
 
-		if ( ! $options->get( 'api_key' ) ) { ?>
-			<p class="imagify-api-key-invite"><?php esc_html_e( 'Don\'t have an API Key yet?', 'imagify' );?></p>
-			<?php //<p class="imagify-api-key-invite-title"><?php esc_html_e( 'Create one, it\'s FREE.', 'imagify' ); </p> ?>
-			
+		if ( ! $options->get( 'api_key' ) ) {
+			?>
+			<p class="imagify-api-key-invite"><?php esc_html_e( 'Don\'t have an API Key yet?', 'imagify' ); ?></p>
+
 			<p><a id="imagify-signup" class="button imagify-button-secondary" href="<?php echo esc_url( imagify_get_external_url( 'register' ) ); ?>" target="_blank"><?php esc_html_e( 'Create a Free API Key', 'imagify' ); ?></a></p>
-		<?php }	?>
+			<?php
+		}
+		?>
 
 		<div class="imagify-api-line">
-			<label for="api_key"><?php echo $options->get('api_key') ? esc_html__( 'API Key', 'imagify' ) : esc_html__( 'Enter Your API Key Below', 'imagify' ); ?></label>
+			<label for="api_key"><?php echo $options->get( 'api_key' ) ? esc_html__( 'API Key', 'imagify' ) : esc_html__( 'Enter Your API Key Below', 'imagify' ); ?></label>
 			<input type="text" size="35" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="<?php echo $options->get_option_name(); ?>[api_key]" id="api_key">
 			<?php
 			if ( imagify_valid_key() ) {
@@ -142,6 +145,8 @@ if ( imagify_valid_key() ) {
 			?>
 			<input id="check_api_key" type="hidden" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="check_api_key">
 		</div><!-- .imagify-api-line -->
-	<?php } ?>
+		<?php
+	}
+	?>
 </div>
 <?php

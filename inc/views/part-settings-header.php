@@ -14,24 +14,27 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			<?php _e( 'Settings', 'imagify' ); ?>
 		</span>
 	</p>
-	
-	<?php $options = Imagify_Options::get_instance();
-	if ( $options->get( 'api_key' ) ) { ?>
-	<p class="imagify-rate-us">
-		<?php
-		printf(
-			/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end + a line break tag, 3 is a link tag start, 4 is the link tag end. */
-			__( '%1$sDo you like this plugin?%2$s Please take a few seconds to %3$srate it on WordPress.org%4$s!', 'imagify' ),
-			'<strong>',
-			'</strong><br />',
-			'<a href="' . esc_url( imagify_get_external_url( 'rate' ) ) . '" target="_blank">',
-			'</a>'
-		);
+
+	<?php
+	if ( Imagify_Options::get_instance()->get( 'api_key' ) ) {
 		?>
-		<br>
-		<a class="stars" aria-hidden="true" href="<?php echo esc_url( imagify_get_external_url( 'rate' ) ); ?>" target="_blank"><?php echo str_repeat( '<span class="dashicons dashicons-star-filled"></span>', 5 ); ?></a>
-	</p>
-	<?php } ?>
+		<p class="imagify-rate-us">
+			<?php
+			printf(
+				/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end + a line break tag, 3 is a link tag start, 4 is the link tag end. */
+				__( '%1$sDo you like this plugin?%2$s Please take a few seconds to %3$srate it on WordPress.org%4$s!', 'imagify' ),
+				'<strong>',
+				'</strong><br />',
+				'<a href="' . esc_url( imagify_get_external_url( 'rate' ) ) . '" target="_blank">',
+				'</a>'
+			);
+			?>
+			<br>
+			<a class="stars" aria-hidden="true" href="<?php echo esc_url( imagify_get_external_url( 'rate' ) ); ?>" target="_blank"><?php echo str_repeat( '<span class="dashicons dashicons-star-filled"></span>', 5 ); ?></a>
+		</p>
+		<?php
+	}
+	?>
 
 	<?php $this->print_template( 'part-documentation-link' ); ?>
 </div>

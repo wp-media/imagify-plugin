@@ -7,10 +7,10 @@ if ( ! imagify_can_optimize_custom_folders() ) {
 
 $settings = Imagify_Settings::get_instance();
 
-$theme_name           = 'The Theme'; // TODO: dynamic
-$child_theme_name     = 'The Kid'; // TODO: dynamic
-$themes_count         = 2; // TODO: dynamic. 1 if main theme, 2 if is a child
-$themes_already_added = false; // TODO:
+$theme_name           = 'The Theme'; // TODO: dynamic.
+$child_theme_name     = 'The Kid'; // TODO: dynamic.
+$themes_count         = 2; // TODO: dynamic. 1 if main theme, 2 if is a child.
+$themes_already_added = false; // TODO: dynamic.
 ?>
 
 <div class="imagify-col" id="custom-folders">
@@ -22,10 +22,14 @@ $themes_already_added = false; // TODO:
 			<div class="imagify-fts-header imagify-flex imagify-vcenter">
 				<span><i class="dashicons dashicons-info"></i></span>
 				<p>
-					<?php // TODO: dynamic. Sometimes you only have a main theme ;p ?>
-					<?php printf ( __( 'You’re using %s', 'imagify' ), '<strong>' . $child_theme_name . '</strong>' ); ?>
-					<br>
-					<?php printf( __( 'child theme of %s', 'imagify' ), '<strong>' . $theme_name . '</strong>' ); ?>
+					<?php
+					// TODO: dynamic. Sometimes you only have a main theme ;p.
+					/* translators: %s is a theme name. */
+					printf( __( 'You’re using %s', 'imagify' ), '<strong>' . $child_theme_name . '</strong>' );
+					echo '<br>';
+					/* translators: %s is a theme name. */
+					printf( __( 'child theme of %s', 'imagify' ), '<strong>' . $theme_name . '</strong>' );
+					?>
 				</p>
 			</div>
 
