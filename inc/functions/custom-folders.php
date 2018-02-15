@@ -166,7 +166,7 @@ function imagify_get_folders_from_type( $folder_type = 'custom-folders', $args =
 /**
  * Get files belonging to the given folders.
  * Files are scanned from the folders, then:
- *     - If a file doesn't exist in the DB, it is added.
+ *     - If a file doesn't exist in the DB, it is added (maybe, depending on arguments provided).
  *     - If a file is in the DB, but with a wrong folder_id, it is fixed.
  *     - If a file doesn't exist, it is removed from the database and its backup is deleted.
  *
@@ -174,37 +174,37 @@ function imagify_get_folders_from_type( $folder_type = 'custom-folders', $args =
  * @see    imagify_get_folders_from_type()
  * @author Grégory Viguier
  *
- * @param  array $folders An array of arrays containing at least the key 'folder_path'. See imagify_get_folders_from_type() for the format.
+ * @param  array $folders An array of arrays containing at least the keys 'folder_path' and 'active'. See imagify_get_folders_from_type() for the format.
  * @param  array $args    A list of arguments to tell more precisely what to fetch:
- *                            - int  $optimization_level       If set with an integer, only files that needs to be optimized to this level will be returned (the status is also checked).
- *                            - bool $insert_files_as_modified True to set 'modified' to 1 when a file is inserted in the database.
- *                            - bool $return_only_old_files    True to return only files that have not been newly inserted.
+ *                            - int  $optimization_level        If set with an integer, only files that needs to be optimized to this level will be returned (the status is also checked).
+ *                            - bool $return_only_old_files     True to return only files that have not been newly inserted.
+ *                            - bool $add_inactive_folder_files When true: if a file is not in the database and its folder is not "active", it is added to the DB. Default false: new files are not added to the database if the folder is not active.
  * @return array          A list of files in the following format:
  *                            Array(
  *                                [_2] => Array(
- *                                    [file_id] => 2
- *                                    [folder_id] => 7
- *                                    [path] => {{ABSPATH}}/custom-path/image-1.jpg
+ *                                    [file_id]            => 2
+ *                                    [folder_id]          => 7
+ *                                    [path]               => {{ABSPATH}}/custom-path/image-1.jpg
  *                                    [optimization_level] => null
- *                                    [status] => null
- *                                    [file_path] => /absolute/path/to/custom-path/image-1.jpg
- *                                )
+ *                                    [status]             => null
+ *                                    [file_path]          => /absolute/path/to/custom-path/image-1.jpg
+ *                                ),
  *                                [_3] => Array(
- *                                    [file_id] => 3
- *                                    [folder_id] => 7
- *                                    [path] => {{ABSPATH}}/custom-path/image-2.jpg
+ *                                    [file_id]            => 3
+ *                                    [folder_id]          => 7
+ *                                    [path]               => {{ABSPATH}}/custom-path/image-2.jpg
  *                                    [optimization_level] => 2
- *                                    [status] => success
- *                                    [file_path] => /absolute/path/to/custom-path/image-2.jpg
- *                                )
+ *                                    [status]             => success
+ *                                    [file_path]          => /absolute/path/to/custom-path/image-2.jpg
+ *                                ),
  *                                [_6] => Array(
- *                                    [file_id] => 6
- *                                    [folder_id] => 13
- *                                    [path] => {{CONTENT}}/another-custom-path/image-1.jpg
+ *                                    [file_id]            => 6
+ *                                    [folder_id]          => 13
+ *                                    [path]               => {{CONTENT}}/another-custom-path/image-1.jpg
  *                                    [optimization_level] => 0
- *                                    [status] => error
- *                                    [file_path] => /absolute/path/to/wp-content/another-custom-path/image-1.jpg
- *                                )
+ *                                    [status]             => error
+ *                                    [file_path]          => /absolute/path/to/wp-content/another-custom-path/image-1.jpg
+ *                                ),
  *                            )
  *                            The fields 'optimization_level' and 'status' are set only if the argument 'optimization_level' was set.
  */
@@ -215,13 +215,14 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 		return array();
 	}
 
-	$filesystem   = imagify_get_filesystem();
-	$files_db     = Imagify_Files_DB::get_instance();
-	$files_table  = $files_db->get_table_name();
-	$files_key    = esc_sql( $files_db->get_primary_key() );
-	$optimization = isset( $args['optimization_level'] ) && is_numeric( $args['optimization_level'] );
-	$modified     = ! empty( $args['insert_files_as_modified'] ) ? 1 : 0;
-	$no_new_files = ! empty( $args['return_only_old_files'] );
+	$filesystem                = imagify_get_filesystem();
+	$files_db                  = Imagify_Files_DB::get_instance();
+	$files_table               = $files_db->get_table_name();
+	$files_key                 = $files_db->get_primary_key();
+	$files_key_esc             = esc_sql( $files_key );
+	$optimization              = isset( $args['optimization_level'] ) && is_numeric( $args['optimization_level'] );
+	$no_new_files              = ! empty( $args['return_only_old_files'] );
+	$add_inactive_folder_files = ! empty( $args['add_inactive_folder_files'] );
 
 	/**
 	 * Scan folders for files. $files_from_scan will be in the following format:
@@ -256,9 +257,9 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 	$folder_ids        = array_keys( $folders );
 	$files_from_db     = array_fill_keys( $folder_ids, array() );
 	$folder_ids        = Imagify_DB::prepare_values_list( $folder_ids );
-	$select_fields     = "$files_key, folder_id, path" . ( $optimization ? ', optimization_level, status' : '' );
+	$select_fields     = "$files_key_esc, folder_id, path" . ( $optimization ? ', optimization_level, status' : '' );
 
-	$results = $wpdb->get_results( "SELECT $select_fields FROM $files_table WHERE folder_id IN ( $folder_ids ) ORDER BY folder_id, $files_key;", ARRAY_A ); // WPCS: unprepared SQL ok.
+	$results = $wpdb->get_results( "SELECT $select_fields FROM $files_table WHERE folder_id IN ( $folder_ids ) ORDER BY folder_id, $files_key_esc;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 	if ( $results ) {
 		$wpdb->flush();
@@ -329,9 +330,9 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 		}
 
 		$placeholders  = Imagify_DB::prepare_values_list( array_keys( $folders_by_placeholder ) );
-		$select_fields = "$files_key, folder_id, path" . ( $optimization ? ', optimization_level, status' : '' );
+		$select_fields = "$files_key_esc, folder_id, path" . ( $optimization ? ', optimization_level, status' : '' );
 
-		$results = $wpdb->get_results( "SELECT $select_fields FROM $files_table WHERE path IN ( $placeholders ) ORDER BY folder_id, $files_key;", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$results = $wpdb->get_results( "SELECT $select_fields FROM $files_table WHERE path IN ( $placeholders ) ORDER BY folder_id, $files_key_esc;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 		if ( $results ) {
 			// Damn...
@@ -408,12 +409,17 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 	// Insert the remaining files into the DB.
 	if ( $files_from_scan ) {
 		foreach ( $files_from_scan as $folder_id => $placeholders ) {
+			// Don't add the file to the DB if its folder is not "active".
+			if ( ! $add_inactive_folder_files && empty( $folders[ $folder_id ]['active'] ) ) {
+				unset( $files_from_scan[ $folder_id ] );
+				continue;
+			}
+
 			foreach ( $placeholders as $file_path => $placeholder ) {
 				$file_id = imagify_insert_custom_file( array(
 					'folder_id' => $folder_id,
 					'path'      => $placeholder,
 					'file_path' => $file_path,
-					'modified'  => $modified,
 				) );
 
 				if ( $file_id && ! $no_new_files ) {
@@ -574,10 +580,14 @@ function imagify_delete_custom_file( $args = array() ) {
  * @since  1.7
  * @author Grégory Viguier
  *
- * @param  object $file    An Imagify_File_Attachment object.
- * @return int|bool|object The file ID if modified. False if not modified. A WP_Error object if the file doesn't exist.
+ * @param  object $file             An Imagify_File_Attachment object.
+ * @param  bool   $is_folder_active Tell if the folder is active.
+ * @return int|bool|object          The file ID if modified. False if not modified. A WP_Error object if the entry has been removed from the database.
+ *                                  The entry is removed from the database if:
+ *                                  - The file doesn't exist anymore.
+ *                                  - Or if its folder is not active and: the file has been modified, or the file is not optimized by Imagify, or the file is orphan (its folder is not in the database anymore).
  */
-function imagify_refresh_file_modified( $file ) {
+function imagify_refresh_file_modified( $file, $is_folder_active = null ) {
 	$file_path   = $file->get_original_path();
 	$backup_path = $file->get_backup_path();
 	$filesystem  = imagify_get_filesystem();
@@ -606,11 +616,22 @@ function imagify_refresh_file_modified( $file ) {
 
 	// Folder ID.
 	if ( $old_data['folder_id'] ) {
-		$folder = Imagify_Folders_DB::get_instance()->get( $old_data['folder_id'] );
+		$folder = wp_cache_get( 'custom_folder_' . $old_data['folder_id'], 'imagify' );
+
+		if ( false === $folder ) {
+			// The folder is not in the cache.
+			$folder = Imagify_Folders_DB::get_instance()->get( $old_data['folder_id'] );
+			$folder = $folder ? $folder : 0;
+			wp_cache_set( 'custom_folder_' . $old_data['folder_id'], $folder, 'imagify' );
+		}
 
 		if ( ! $folder ) {
+			// The folder is not in the database anymore.
+			$old_data['folder_id'] = 0;
 			$new_data['folder_id'] = 0;
 		}
+	} else {
+		$folder = 0;
 	}
 
 	// Hash + modified.
@@ -620,6 +641,26 @@ function imagify_refresh_file_modified( $file ) {
 		$new_data['modified'] = 0;
 	} else {
 		$new_data['modified'] = (int) ! hash_equals( $old_data['hash'], $current_hash );
+	}
+
+	// The file is modified or is not optimized.
+	if ( $new_data['modified'] || ! $file->is_optimized() ) {
+		if ( ! isset( $is_folder_active ) ) {
+			$is_folder_active = $folder && $folder['active'];
+		}
+
+		// Its folder is not active: remove the entry from the database and delete the backup.
+		if ( ! $is_folder_active ) {
+			if ( $backup_path ) {
+				// Delete the backup file.
+				$filesystem->delete( $backup_path );
+			}
+
+			// Remove the entry from the database.
+			$file->delete_row();
+
+			return new WP_Error( 'folder-not-active', __( 'The file has been modified or was not optimized: its folder not being selected in the settings, the entry has been deleted from the database.', 'imagify' ) );
+		}
 	}
 
 	$new_data['hash'] = $current_hash;
@@ -698,8 +739,7 @@ function imagify_synchronize_files_from_folders( $folders ) {
 	 * Get the files from DB, and from the folder.
 	 */
 	$files = imagify_get_files_from_folders( $folders, array(
-		'insert_files_as_modified' => true,
-		'return_only_old_files'    => true,
+		'return_only_old_files' => true,
 	) );
 
 	if ( ! $files ) {
@@ -707,23 +747,34 @@ function imagify_synchronize_files_from_folders( $folders ) {
 		return;
 	}
 
-	$files_db    = Imagify_Files_DB::get_instance();
-	$files_table = $files_db->get_table_name();
-	$files_key   = $files_db->get_primary_key();
-	$file_ids    = wp_list_pluck( $files, $files_key );
-	$file_ids    = Imagify_DB::prepare_values_list( $file_ids );
-	$files_key   = esc_sql( $files_key );
-	$results     = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids ) ORDER BY $files_key;", ARRAY_A ); // WPCS: unprepared SQL ok.
+	$files_db      = Imagify_Files_DB::get_instance();
+	$files_table   = $files_db->get_table_name();
+	$files_key     = $files_db->get_primary_key();
+	$files_key_esc = esc_sql( $files_key );
+	$file_ids      = wp_list_pluck( $files, $files_key );
+	$file_ids      = Imagify_DB::prepare_values_list( $file_ids );
+	$results       = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids ) ORDER BY $files_key_esc;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 	if ( ! $results ) {
 		// WAT?!
 		return;
 	}
 
+	// Caching the folders will prevent unecessary SQL queries in imagify_refresh_file_modified().
+	foreach ( $folders as $folder_id => $folder ) {
+		wp_cache_set( 'custom_folder_' . $folder_id, $folder, 'imagify' );
+	}
+
 	// Finally, refresh the files data.
 	foreach ( $results as $file ) {
-		$file = $files_db->cast_row( $file );
-		$file = get_imagify_attachment( 'File', $file, 'synchronize_files_from_folders' );
-		imagify_refresh_file_modified( $file );
+		$file      = $files_db->cast_row( $file );
+		$folder_id = $file['folder_id'];
+		$file      = get_imagify_attachment( 'File', $file, 'synchronize_files_from_folders' );
+
+		imagify_refresh_file_modified( $file, $folders[ $folder_id ]['active'] );
+	}
+
+	foreach ( $folders as $folder_id => $folder ) {
+		wp_cache_delete( 'custom_folder_' . $folder_id, 'imagify' );
 	}
 }

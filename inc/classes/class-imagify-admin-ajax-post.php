@@ -528,8 +528,12 @@ class Imagify_Admin_Ajax_Post {
 
 			$folder['folder_path'] = Imagify_Files_Scan::remove_placeholder( $folder['path'] );
 
-			imagify_get_files_from_folders( array(
+			$folders = array(
 				$folder[ $folders_key ] => $folder,
+			);
+
+			imagify_get_files_from_folders( $folders, array(
+				'add_inactive_folder_files' => true,
 			) );
 
 			imagify_maybe_redirect();

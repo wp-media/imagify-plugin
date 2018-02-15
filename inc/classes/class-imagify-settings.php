@@ -170,7 +170,9 @@ class Imagify_Settings {
 
 		$values = is_array( $values ) ? $values : array();
 
-		// Disabled thumbnail sizes.
+		/**
+		 * Disabled thumbnail sizes.
+		 */
 		$values['disallowed-sizes'] = array();
 
 		if ( isset( $values['disallowed-sizes-reversed'] ) && is_array( $values['disallowed-sizes-reversed'] ) ) {
@@ -188,10 +190,13 @@ class Imagify_Settings {
 
 		unset( $values['disallowed-sizes-reversed'], $values['disallowed-sizes-checked'] );
 
-		// Custom folders.
-		$folders_db    = Imagify_Folders_DB::get_instance();
-		$folders_table = $folders_db->get_table_name();
-		$primary_key   = $folders_db->get_primary_key();
+		/**
+		 * Custom folders.
+		 */
+		$folders_db      = Imagify_Folders_DB::get_instance();
+		$folders_table   = $folders_db->get_table_name();
+		$folders_key     = $folders_db->get_primary_key();
+		$folders_key_esc = esc_sql( $folders_key );
 
 		if ( ! $folders_db->can_operate() ) {
 			unset( $values['custom_folders'] );
@@ -249,7 +254,7 @@ class Imagify_Settings {
 			foreach ( $results as $i => $result ) {
 				if ( empty( $result['active'] ) && Imagify_Files_Scan::placeholder_path_exists( $result['path'] ) ) {
 					// Add the active state only if not already set and if the file exists.
-					$folders_db->update( $result[ $primary_key ], array(
+					$folders_db->update( $result[ $folders_key ], array(
 						'active' => 1,
 					) );
 				}
@@ -260,12 +265,26 @@ class Imagify_Settings {
 		}
 
 		// Not selected folders that are in the DB, and that are active.
-		$results = $wpdb->get_col( "SELECT $primary_key FROM $folders_table WHERE path NOT IN ( $selected_paths ) AND active = 1" ); // WPCS: unprepared SQL ok.
+		$results = $wpdb->get_col( "SELECT $folders_key_esc FROM $folders_table WHERE path NOT IN ( $selected_paths ) AND active = 1" ); // WPCS: unprepared SQL ok.
 
 		if ( $results ) {
-			// Remove the active status from the folders that are not selected.
+			$results = $folders_db->cast_col( $results, $folders_key );
 			$results = Imagify_DB::prepare_values_list( $results );
-			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE $primary_key IN ( $results )" ); // WPCS: unprepared SQL ok.
+
+			// Remove the active status from the folders that are not selected.
+			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE $folders_key_esc IN ( $results )" ); // WPCS: unprepared SQL ok.
+		}
+
+		// All inactive folders.
+		$results = $wpdb->get_col( "SELECT $folders_key_esc FROM $folders_table WHERE active != 1" ); // WPCS: unprepared SQL ok.
+
+		if ( $results ) {
+			$results = $folders_db->cast_col( $results, $folders_key );
+			$results = Imagify_DB::prepare_values_list( $results );
+
+			// Remove files that are in inactive folders and are not optimized.
+			$files_table = Imagify_Files_DB::get_instance()->get_table_name();
+			$wpdb->query( "DELETE FROM $files_table WHERE folder_id IN ( $results ) AND ( status != 'success' OR status IS NULL )" ); // WPCS: unprepared SQL ok.
 		}
 
 		if ( $selected_raw ) {

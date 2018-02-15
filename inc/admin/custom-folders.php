@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 add_filter( 'upgrader_post_install', 'imagify_sync_theme_plugin_files_on_update', IMAGIFY_INT_MAX, 3 );
 /**
- * Filters the installation response after the installation has finished.
+ * Sync files after a theme or plugin has been updated.
  *
  * @since  1.7
  * @author Grégory Viguier
@@ -43,21 +43,21 @@ function imagify_sync_theme_plugin_files_on_update( $response, $hook_extra, $res
 		return $response;
 	}
 
+	// Get the related folder.
 	$placeholder = Imagify_Files_Scan::add_placeholder( $folder_path );
-	$folder_id   = Imagify_Folders_DB::get_instance()->get_active_folders_column_in( 'folder_id', 'path', $placeholder );
+	$folder      = Imagify_Folders_DB::get_instance()->get_in( 'path', $placeholder );
 
-	if ( ! $folder_id ) {
-		// This theme or plugin is not "active".
+	if ( ! $folder ) {
+		// This theme or plugin is not in the database.
 		return $response;
 	}
 
-	$folder_id = reset( $folder_id );
-
+	// Sync the folder files.
 	imagify_synchronize_files_from_folders( array(
 		$folder_id => array(
-			'folder_id'   => $folder_id,
+			'folder_id'   => $folder['folder_id'],
 			'path'        => $placeholder,
-			'active'      => 1,
+			'active'      => $folder['active'],
 			'folder_path' => $folder_path,
 		),
 	) );
