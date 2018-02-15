@@ -164,16 +164,11 @@ class Imagify_Settings {
 	public function populate_values_on_save( $values ) {
 		global $wpdb;
 
-		$values = is_array( $values ) ? $values : array();
-
-		// Version.
-		if ( empty( $values['version'] ) ) {
-			$values['version'] = IMAGIFY_VERSION;
-		}
-
 		if ( ! $this->is_form_submit() ) {
 			return $values;
 		}
+
+		$values = is_array( $values ) ? $values : array();
 
 		// Disabled thumbnail sizes.
 		$values['disallowed-sizes'] = array();
