@@ -7,7 +7,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 	canvas.each( function() {
 		var value = parseInt( jQuery( this ).closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() );
 
-		new Chart( this, { // eslint-disable-line no-new
+		new imagify.Chart( this, { // eslint-disable-line no-new
 			type: 'doughnut',
 			data: {
 				datasets: [{
