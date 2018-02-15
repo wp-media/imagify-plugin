@@ -189,63 +189,107 @@ class Imagify_Settings {
 		unset( $values['disallowed-sizes-reversed'], $values['disallowed-sizes-checked'] );
 
 		// Custom folders.
-		if ( isset( $values['custom_folders'] ) && is_array( $values['custom_folders'] ) ) {
-			$selected_raw   = $values['custom_folders'];
-			$selected_paths = Imagify_DB::prepare_values_list( $selected_raw );
-			$selected_raw   = array_flip( $selected_raw );
+		$folders_db    = Imagify_Folders_DB::get_instance();
+		$folders_table = $folders_db->get_table_name();
+		$primary_key   = $folders_db->get_primary_key();
+
+		if ( ! $folders_db->can_operate() ) {
 			unset( $values['custom_folders'] );
+			return $values;
+		}
 
-			// Selected folders that already are in the DB.
-			$results = $wpdb->get_results( "SELECT * FROM $wpdb->imagify_folders WHERE path IN ( $selected_paths );", ARRAY_A ); // WPCS: unprepared SQL ok.
+		if ( ! isset( $values['custom_folders'] ) ) {
+			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" );
+			return $values;
+		}
 
-			if ( $results ) {
-				// Set active.
-				foreach ( $results as $i => $result ) {
-					if ( empty( $result['active'] ) && Imagify_Files_Scan::placeholder_path_exists( $result['path'] ) ) {
-						// Add the optimization level only if not already set and if the file exists.
-						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->imagify_folders SET active = 1 WHERE folder_id = %d", $result['folder_id'] ) );
-					}
+		$selected_raw = array_filter( $values['custom_folders'] );
+		unset( $values['custom_folders'] );
 
-					// Remove the path from the selected list, so the remaining will be created.
-					unset( $selected_raw[ $result['path'] ] );
-				}
+		if ( ! is_array( $selected_raw ) ) {
+			return $values;
+		}
+
+		if ( ! $selected_raw ) {
+			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" );
+			return $values;
+		}
+
+		// Remove duplicates.
+		$selected_raw = array_flip( array_flip( $selected_raw ) );
+
+		// Remove sub-paths: if 'a/b/' and 'a/b/c/' are in the array, we keep only the "parent" 'a/b/'.
+		sort( $selected_raw );
+		$prev_key = null;
+
+		foreach ( $selected_raw as $i => $placeholder_path ) {
+			if ( ! isset( $prev_key ) ) {
+				$prev_key = $i;
+				continue;
 			}
 
-			// Not selected folders that are in the DB, and that are active.
-			$results = $wpdb->get_col( "SELECT folder_id FROM $wpdb->imagify_folders WHERE path NOT IN ( $selected_paths ) AND active = 1" ); // WPCS: unprepared SQL ok.
+			$prev_path        = strtolower( $selected_raw[ $prev_key ] );
+			$placeholder_path = strtolower( $placeholder_path );
 
-			if ( $results ) {
-				// Remove the active status.
-				$results = Imagify_DB::prepare_values_list( $results );
-				$wpdb->query( "UPDATE $wpdb->imagify_folders SET active = 0 WHERE folder_id IN ( $results )" ); // WPCS: unprepared SQL ok.
+			if ( strpos( $placeholder_path, $prev_path ) === 0 ) {
+				unset( $selected_raw[ $i ] );
+			} else {
+				$prev_key = $i;
 			}
+		}
 
-			if ( $selected_raw ) {
-				// If we still have paths here, they need to be added to the DB.
-				$filesystem = imagify_get_filesystem();
+		$selected_paths = Imagify_DB::prepare_values_list( $selected_raw );
+		$selected_raw   = array_flip( $selected_raw );
 
-				foreach ( $selected_raw as $path => $meh ) {
-					$path = sanitize_text_field( $path );
-					$path = Imagify_Files_Scan::remove_placeholder( $path );
-					$path = realpath( $path );
+		// Get folders that already are in the DB.
+		$results = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $selected_paths );", ARRAY_A ); // WPCS: unprepared SQL ok.
 
-					if ( ! $path || ! $filesystem->is_dir( $path ) ) {
-						continue;
-					}
-
-					if ( Imagify_Files_Scan::is_path_forbidden( $path ) ) {
-						continue;
-					}
-
-					Imagify_Folders_DB::get_instance()->insert( array(
-						'path'   => Imagify_Files_Scan::add_placeholder( trailingslashit( $path ) ),
+		if ( $results ) {
+			// Set active.
+			foreach ( $results as $i => $result ) {
+				if ( empty( $result['active'] ) && Imagify_Files_Scan::placeholder_path_exists( $result['path'] ) ) {
+					// Add the active state only if not already set and if the file exists.
+					$folders_db->update( $result[ $primary_key ], array(
 						'active' => 1,
 					) );
 				}
+
+				// Remove the path from the selected list, so the remaining will be created.
+				unset( $selected_raw[ $result['path'] ] );
 			}
-		} else {
-			unset( $values['custom_folders'] );
-			$wpdb->query( "UPDATE $wpdb->imagify_folders SET active = 0 WHERE active = 1" );
+		}
+
+		// Not selected folders that are in the DB, and that are active.
+		$results = $wpdb->get_col( "SELECT $primary_key FROM $folders_table WHERE path NOT IN ( $selected_paths ) AND active = 1" ); // WPCS: unprepared SQL ok.
+
+		if ( $results ) {
+			// Remove the active status from the folders that are not selected.
+			$results = Imagify_DB::prepare_values_list( $results );
+			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE $primary_key IN ( $results )" ); // WPCS: unprepared SQL ok.
+		}
+
+		if ( $selected_raw ) {
+			// If we still have paths here, they need to be added to the DB.
+			$filesystem = imagify_get_filesystem();
+
+			foreach ( $selected_raw as $path => $meh ) {
+				$path = sanitize_text_field( $path );
+				$path = Imagify_Files_Scan::remove_placeholder( $path );
+				$path = realpath( $path );
+
+				if ( ! $path || ! $filesystem->is_dir( $path ) ) {
+					continue;
+				}
+
+				if ( Imagify_Files_Scan::is_path_forbidden( $path ) ) {
+					continue;
+				}
+
+				$folders_db->insert( array(
+					'path'   => Imagify_Files_Scan::add_placeholder( trailingslashit( $path ) ),
+					'active' => 1,
+				) );
+			}
 		}
 
 		return $values;
