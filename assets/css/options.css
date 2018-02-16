@@ -491,6 +491,7 @@ label[for="imagify_admin_bar_menu"] {
 	margin-top: 2em;
 	padding: 0 0 10px 0;
 	border-bottom: 1px solid #D2D3D6;
+	justify-content: space-between;
 	font-weight: bold;
 }
 .imagify-kindof-title .imagify-button-primary {
