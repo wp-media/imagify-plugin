@@ -471,7 +471,8 @@ label[for="imagify_admin_bar_menu"] {
 	margin: 0;
 	color: #FFF;
 }
-.imagify-fts-header strong {
+.imagify-fts-header strong,
+#imagify-add-themes-to-custom-folder strong {
 	color: #40B1D0;
 	font-weight: bold;
 }

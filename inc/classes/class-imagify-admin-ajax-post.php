@@ -1265,8 +1265,8 @@ class Imagify_Admin_Ajax_Post {
 		if ( $folder === $abspath ) {
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
 				'relative_path'     => '/',
-				// Value #///# In input id #///# Label.
-				'checkbox_value'    => '{{ABSPATH}}/#///#ABSPATH#///#' . esc_attr__( 'Site\'s root', 'imagify' ),
+				// Value #///# Label.
+				'checkbox_value'    => '{{ABSPATH}}/#///#' . esc_attr__( 'Site\'s root', 'imagify' ),
 				'checkbox_id'       => 'ABSPATH',
 				'checkbox_selected' => isset( $selected['{{ABSPATH}}/'] ),
 				'label'             => __( 'Site\'s root', 'imagify' ),
@@ -1290,8 +1290,8 @@ class Imagify_Admin_Ajax_Post {
 
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
 				'relative_path'     => $relative_path,
-				// Value #///# In input id #///# Label.
-				'checkbox_value'    => esc_attr( $placeholder ) . '#///#' . sanitize_html_class( $placeholder ) . '#///#' . $relative_path,
+				// Value #///# Label.
+				'checkbox_value'    => esc_attr( $placeholder ) . '#///#' . esc_attr( $relative_path ),
 				'checkbox_id'       => sanitize_html_class( $placeholder ),
 				'checkbox_selected' => isset( $selected[ $placeholder ] ),
 				'label'             => str_replace( $folder, '', $folder_path ),

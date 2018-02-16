@@ -687,7 +687,8 @@ p.imagify-section-title.imagify-section-title {
 .imagify-important {
 	color: #F5A623;
 }
-.imagify-success {
+.imagify-success,
+.imagify-settings .imagify-success {
 	color: #8BC34A;
 }
 .imagify-info,

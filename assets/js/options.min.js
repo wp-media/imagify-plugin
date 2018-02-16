@@ -177,10 +177,86 @@
 		return;
 	}
 
+	function imagifyInsertFolderRow( value ) {
+		var added    = false,
+			prevPath = null,
+			valueTest, template, $wrap, $rows, $field;
+
+		if ( ! value ) {
+			return;
+		}
+
+		$wrap  = $( '#imagify-custom-folders-selected' );
+		$rows  = $wrap.find( '.imagify-custom-folder-line' );
+		$field = $rows.find( '[value="' + value + '"]' );
+
+		if ( $field.length ) {
+			// Shouldn't happen.
+			return;
+		}
+
+		// Path #///# Label.
+		value     = value.split( '#///#' );
+		valueTest = value[1].replace( /\/+$/,'' ).toLowerCase();
+		template  = w.imagify.template( 'imagify-custom-folder' );
+
+		$rows.each( function() {
+			var $this         = $( this ),
+				thisValueTest = $this.data( 'path' ).replace( /\/+$/,'' ).toLowerCase();
+
+			if ( '' !== thisValueTest && valueTest.indexOf( thisValueTest ) === 0 ) {
+				// We try to add a sub-folder of an already selected folder. It shouldn't happen though, since it can't be selected.
+				added = true;
+				return false;
+			} else if ( valueTest < thisValueTest ) {
+				$this.before( template( {
+					value: value[0],
+					label: value[1]
+				} ) );
+				$rows = $wrap.find( '.imagify-custom-folder-line' );
+				added = true;
+				return false;
+			}
+		} );
+
+		if ( ! added ) {
+			$wrap.append( template( {
+				value: value[0],
+				label: value[1]
+			} ) );
+			$rows = $wrap.find( '.imagify-custom-folder-line' );
+		}
+
+		// Remove sub-paths: if 'a/b/' and 'a/b/c/' are in the array, we keep only the "parent" 'a/b/'.
+		if ( '' !== valueTest ) {
+			$rows.each( function() {
+				var $this, thisPath;
+
+				if ( null === prevPath ) {
+					prevPath = $( this ).data( 'path' ).toLowerCase();
+					return true;
+				}
+
+				$this    = $( this );
+				thisPath = $this.data( 'path' ).toLowerCase();
+
+				if ( thisPath.indexOf( prevPath ) === 0 ) {
+					$this.find( '.imagify-custom-folders-remove' ).trigger( 'click.imagify' );
+				} else {
+					prevPath = $( this ).data( 'path' ).toLowerCase();
+				}
+			} );
+		}
+
+		// Display a message.
+		$wrap.next( '.hidden' ).removeClass( 'hidden' );
+	}
+
 	// Clicking the main button: fetch site's root folders and files, then display them in a modal.
 	$( '#imagify-add-custom-folder' ).on( 'click.imagify', function() {
 		var $button  = $( this ),
-			selected = [];
+			selected = [],
+			$folders;
 
 		if ( $button.attr( 'disabled' ) ) {
 			return;
@@ -188,7 +264,9 @@
 
 		$button.attr( 'disabled', 'disabled' ).next( 'img' ).attr( 'aria-hidden', 'false' );
 
-		$( '#imagify-custom-folders' ).find( ':checked' ).each( function() {
+		$folders = $( '#imagify-custom-folders-selected' );
+
+		$folders.find( 'input' ).each( function() {
 			selected.push( this.value );
 		} );
 
@@ -222,38 +300,14 @@
 				cancelButtonText:  imagifySwal.labels.cancelButtonText,
 				reverseButtons:    true
 			} ).then( function() {
-				var values = $( '#imagify-folders-tree input' ).serializeArray(), // Don't do `$( '#imagify-folders-tree' ).find( 'input' )`, it won't work.
-					$fieldset;
+				var values = $( '#imagify-folders-tree input' ).serializeArray(); // Don't do `$( '#imagify-folders-tree' ).find( 'input' )`, it won't work.
 
 				if ( ! values.length ) {
 					return;
 				}
 
-				$fieldset = $( '#imagify-custom-folders' ).children( '.imagify-check-group' );
-
-				if ( ! $fieldset.length ) {
-					$fieldset = $( '<fieldset class="imagify-check-group"><legend class="screen-reader-text">' + imagifyOptions.labels.customFilesLegend + '</legend></fieldset>' ).appendTo( '#imagify-custom-folders' );
-				}
-
 				$.each( values, function( i, v ) {
-					var field = '',
-						$field;
-					// Value #///# In input id #///# Label.
-					v.value    = v.value.split( '#///#' );
-					v.value[1] = 'imagify_custom_folders_' + v.value[1];
-					$field     = $( '#' + v.value[1] );
-
-					if ( $field.length ) {
-						$field.prop( 'checked', true );
-						return;
-					}
-
-					field += '<p id="' + v.value[1] + '" class="imagify-custom-folder-line" data-value="' + v.value[0] + '">';
-					field += v.value[2];
-					field += '<button type="button" class="imagify-custom-folders-remove"><span class="imagify-custom-folders-remove-text">' + imagifyOptions.labels.removeFolder + '</span><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></button>';
-					field += '</p>';
-
-					$fieldset.append( field );
+					imagifyInsertFolderRow( v.value );
 				} );
 			} ).catch( swal.noop );
 		} )
@@ -272,7 +326,6 @@
 
 	// Clicking a folder icon in the modal: fetch the folder's sub-folders and files, then display them.
 	$( d ).on( 'click.imagify', '#imagify-folders-tree [data-folder]', function() {
-
 		var $button  = $( this ),
 			$tree    = $button.nextAll( '.imagify-folders-sub-tree' ),
 			selected = [];
@@ -295,7 +348,7 @@
 			return;
 		}
 
-		$( '#imagify-custom-folders' ).find( ':checked' ).each( function() {
+		$( '#imagify-custom-folders-selected' ).find( 'input' ).each( function() {
 			selected.push( this.value );
 		} );
 
@@ -334,23 +387,26 @@
 			} );
 	} );
 
-	// Clicking a Remove folder button make it disappear and save it in DB.
+	// Clicking a Remove folder button make it disappear.
 	$( '#imagify-custom-folders' ).on( 'click.imagify', '.imagify-custom-folders-remove', function() {
-		var $_this = $(this);
+		var $row = $( this ).closest( '.imagify-custom-folder-line' ).addClass( 'imagify-will-remove' );
 
-		// Make the item disappear.
-		$_this.closest( '.imagify-custom-folder-line' ).addClass( 'imagify-will-remove' );
-
-		//TODO: AJAX stuff to remove it from DB.
+		w.setTimeout( function() {
+			$row.remove();
+			// Display a message.
+			$( '#imagify-custom-folders-selected' ).next( '.hidden' ).removeClass( 'hidden' );
+		}, 750 );
 	} );
 
 	// Clicking the "add themes to folders" button.
 	$( '#imagify-add-themes-to-custom-folder' ).on( 'click.imagify', function() {
+		var $this = $( this );
 
-		// TODO: Add lines into custom folders.
+		imagifyInsertFolderRow( $this.data( 'theme' ) );
+		imagifyInsertFolderRow( $this.data( 'theme-parent' ) );
 
-		// Remove clicked button
-		$(this).replaceWith( '<p>' + imagifyOptions.labels.themesAdded + '</p>' );
+		// Remove clicked button.
+		$this.replaceWith( '<p>' + imagifyOptions.labels.themesAdded + '</p>' );
 	} );
 
 } )(window, document, jQuery);
