@@ -1,6 +1,9 @@
 .wrap.imagify-settings {
 	margin-right: 0;
 }
+.imagify-settings.imagify-have-rocket {
+	margin-right: 20px;
+}
 
 /* The field that checks the API Key */
 #imagify-check-api-container {

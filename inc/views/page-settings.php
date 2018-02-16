@@ -5,8 +5,15 @@ $settings     = Imagify_Settings::get_instance();
 $options      = Imagify_Options::get_instance();
 $option_name  = $options->get_option_name();
 $hidden_class = imagify_valid_key() ? '' : ' hidden';
+
+/* Ads notice */
+$notice  = 'wp-rocket';
+$user_id = get_current_user_id();
+$notices = get_user_meta( $user_id, '_imagify_ignore_ads', true );
+$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+$wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket';
 ?>
-<div class="wrap imagify-settings <?php echo defined( 'WP_ROCKET_VERSION' ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket'; ?> imagify-clearfix">
+<div class="wrap imagify-settings <?php echo $wrapper_class; ?> imagify-clearfix">
 
 	<div class="imagify-col imagify-main">
 
