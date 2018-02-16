@@ -1155,6 +1155,7 @@
 			/**
 			 * User account.
 			 */
+			data.unconsumed_quota = data.unconsumed_quota.toFixed( 1 ); // A mystery where a float rounded on php side is not rounded here anymore. JavaScript is fun, it always surprises you in a manner you didn't expect.
 			$( '.imagify-unconsumed-percent' ).html( data.unconsumed_quota + '%' );
 			$( '.imagify-unconsumed-bar' ).css( 'width', data.unconsumed_quota + '%' );
 
