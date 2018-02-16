@@ -305,7 +305,10 @@ class Imagify_Views {
 				$data['original_size']                 += Imagify_Files_Stats::get_original_size();
 				$data['optimized_size']                += Imagify_Files_Stats::get_optimized_size();
 
-				if ( Imagify_Folders_DB::get_instance()->has_items() ) {
+				if ( ! Imagify_Folders_DB::get_instance()->has_items() ) {
+					// New Feature!
+					$data['no-custom-folders'] = true;
+				} elseif ( Imagify_Folders_DB::get_instance()->has_active_folders() ) {
 					// Group.
 					$data['groups']['custom-folders'] = array(
 						'group_id' => 'custom-folders',
@@ -314,9 +317,6 @@ class Imagify_Views {
 						/* translators: 1 is the opening of a link, 2 is the closing of this link. */
 						'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
 					);
-				} else {
-					// New Feature!
-					$data['no-custom-folders'] = true;
 				}
 			}
 		}
