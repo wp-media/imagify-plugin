@@ -146,7 +146,7 @@ class Imagify_Views {
 		 */
 		if ( imagify_can_optimize_custom_folders() ) {
 			// Sub-menu item: custom folders list.
-			$screen_id = add_media_page( __( 'Other Medias optimized by Imagify', 'imagify' ), __( 'Other Medias', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+			$screen_id = add_media_page( __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
 
 			if ( $screen_id ) {
 				// Load the data for this page.
@@ -178,7 +178,7 @@ class Imagify_Views {
 		add_menu_page( __( 'Bulk Optimization', 'imagify' ), 'Imagify', imagify_get_capacity( 'optimize-file' ), $this->get_bulk_page_slug(), array( $this, 'display_bulk_page' ) );
 
 		// Sub-menu item: custom folders list.
-		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Other Medias optimized by Imagify', 'imagify' ), __( 'Other Medias', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
 
 		// Sub-menu item: settings.
 		add_submenu_page( $this->get_bulk_page_slug(), 'Imagify', __( 'Settings', 'imagify' ), imagify_get_capacity(), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
@@ -189,7 +189,7 @@ class Imagify_Views {
 		}
 
 		if ( $screen_id ) {
-			// On the "Other Medias optimized by Imagify" page, load the data.
+			// On the "Other Media optimized by Imagify" page, load the data.
 			add_action( 'load-' . $screen_id, array( $this, 'load_files_list' ) );
 		}
 	}
