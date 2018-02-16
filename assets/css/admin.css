@@ -494,6 +494,13 @@ button.imagify-link-like {
 	background: #1F2332;
 	color: #FFF;
 }
+.imagify-welcome .imagify-logo {
+	opacity: 1;
+}
+.imagify-welcome .imagify-title {
+	display: flex;
+	padding: 20px 30px;
+}
 .imagify-settings .imagify-title { /* (options and bulk) */
 	display: flex;
 	justify-content: space-between;

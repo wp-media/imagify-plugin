@@ -3,7 +3,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 ?>
 <div class="imagify-welcome">
 	<div class="imagify-title">
-		<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="225" height="26" alt="Imagify" /> <small><sup><?php echo IMAGIFY_VERSION; ?></sup></small>
+		<img class="imagify-logo" src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>imagify-logo.png" width="225" height="26" alt="Imagify" />
 		<span class="baseline">
 			<?php _e( 'Welcome to Imagify, the best way to easily optimize your images!', 'imagify' ); ?>
 		</span>
