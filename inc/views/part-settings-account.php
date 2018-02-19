@@ -35,53 +35,21 @@ if ( imagify_valid_key() ) {
 		<div class="imagify-col-content imagify-block-secondary imagify-mt2">
 			<?php
 			/**
-			 * Remaining quota.
-			 */
-			if ( ! $user || ( $unconsumed_quota <= 20 && $unconsumed_quota > 0 ) ) {
-				if ( ! $user ) {
-					echo '<div class="imagify-user-is-almost-over-quota hidden">';
-				}
-				?>
-				<p><strong><?php esc_html_e( 'Oops, It\'s almost over!', 'imagify' ); ?></strong></p>
-				<p><?php esc_html_e( 'You have almost used all your credit. Don\'t forget to upgrade your subscription to continue optimizing your images.', 'imagify' ); ?></p>
-				<p><a class="button imagify-button-ghost" href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php esc_html_e( 'View My Subscription', 'imagify' ); ?></a></p>
-				<?php
-				if ( ! $user ) {
-					echo '</div>';
-				}
-			}
-
-			if ( ! $user || 0 === $unconsumed_quota ) {
-				if ( ! $user ) {
-					echo '<div class="imagify-user-is-over-quota hidden">';
-				}
-				?>
-				<p><strong><?php esc_html_e( 'Oops, It\'s Over!', 'imagify' ); ?></strong></p>
-				<p>
-					<?php
-					printf(
-						/* translators: 1 is a "bold" tag openning, 2 is a data quota, 3 is a date, 4 is the "bold" tag closing. */
-						esc_html__( 'You have consumed all your credit for this month. You will have %1$s%2$s back on %3$s%4$s.', 'imagify' ),
-						'<strong>',
-						'<span class="imagify-user-quota-formatted">' . ( $user ? esc_html( $user->quota_formatted ) : '' ) . '</span>',
-						'<span class="imagify-user-next-date-update-formatted">' . ( $user ? esc_html( $user->next_date_update_formatted ) : '' ) . '</span>',
-						'</strong>'
-					);
-					?>
-				</p>
-				<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php esc_html_e( 'Upgrade My Subscription', 'imagify' ); ?></a></p>
-				<?php
-				if ( ! $user ) {
-					echo '</div>';
-				}
-			}
-
-			/**
 			 * Best plan.
 			 */
 			?>
 			<div class="best-plan<?php echo $hidden_class; ?>">
-				<h3><?php esc_html_e( 'You’re new to Imagify', 'imagify' ); ?></h3>
+				<h3 class="imagify-user-best-plan-title">
+					<?php
+					if ( $user && ! $unconsumed_quota ) {
+						esc_html_e( 'Oops, It\'s Over!', 'imagify' );
+					} elseif ( $user && $unconsumed_quota <= 20 ) {
+						esc_html_e( 'Oops, It\'s almost over!', 'imagify' );
+					} else {
+						esc_html_e( 'You’re new to Imagify', 'imagify' );
+					}
+					?>
+				</h3>
 
 				<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
 
