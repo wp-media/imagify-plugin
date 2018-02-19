@@ -881,11 +881,10 @@ class Imagify_Admin_Ajax_Post {
 	}
 
 	/**
-	 * Get stats data for a specific folder type.
+	 * Set the "bulk info" popup state as "seen".
 	 *
 	 * @since  1.7
 	 * @access public
-	 * @see    imagify_get_folder_type_data()
 	 * @author Grégory Viguier
 	 */
 	public function imagify_bulk_info_seen_callback() {
