@@ -57,6 +57,7 @@ class Imagify_Admin_Ajax_Post {
 		'imagify_get_user_data',
 		'imagify_get_files_tree',
 		'imagify_get_folder_type_data',
+		'imagify_bulk_info_seen',
 	);
 
 	/**
@@ -877,6 +878,32 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		wp_send_json_success( $data );
+	}
+
+	/**
+	 * Get stats data for a specific folder type.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @see    imagify_get_folder_type_data()
+	 * @author Grégory Viguier
+	 */
+	public function imagify_bulk_info_seen_callback() {
+		imagify_check_nonce( 'imagify-bulk-upload' );
+
+		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
+
+		if ( 'library' === $folder_type ) {
+			imagify_check_user_capacity( 'bulk-optimize' );
+		} elseif ( 'custom-folders' === $folder_type ) {
+			imagify_check_user_capacity( 'optimize-file' );
+		} else {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		set_transient( 'imagify_bulk_optimization_infos', 1, WEEK_IN_SECONDS );
+
+		wp_send_json_success();
 	}
 
 	/**

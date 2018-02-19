@@ -686,7 +686,16 @@
 					confirmButtonText: imagifyBulk.labels.confirmBulk,
 					cancelButtonText:  imagifySwal.labels.cancelButtonText,
 					reverseButtons:    true
-				} ).then( w.imagify.bulk.launchAllProcesses ).catch( swal.noop );
+				} ).then( function() {
+					var $row    = $( '.imagify-bulk-table [name="group[]"]:checked' ).first().closest( '.imagify-row-folder-type' ),
+						groupId = $row.data( 'group-id' ),
+						context = $row.data( 'context' );
+
+					$.get( ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&action=' + imagifyBulk.ajaxActions.bulkInfoSeen + '&folder_type=' + groupId + '&context=' + context );
+					$infosModal.remove();
+
+					w.imagify.bulk.launchAllProcesses();
+				} ).catch( swal.noop );
 			} else {
 				w.imagify.bulk.launchAllProcesses();
 			}

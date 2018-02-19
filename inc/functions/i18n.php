@@ -127,6 +127,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'libraryOptimize'       => 'imagify_bulk_upload',
 					'customFoldersOptimize' => 'imagify_bulk_optimize_file',
 					'getFolderData'         => 'imagify_get_folder_type_data',
+					'bulkInfoSeen'          => 'imagify_bulk_info_seen',
 				),
 				'ajaxNonce'   => wp_create_nonce( 'imagify-bulk-upload' ),
 				'bufferSizes' => array(

@@ -233,7 +233,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		<?php
 
 		if ( ! $display_infos ) {
-			set_transient( 'imagify_bulk_optimization_infos', 1, WEEK_IN_SECONDS );
 			?>
 			<script type="text/html" id="tmpl-imagify-bulk-infos">
 				<?php
