@@ -164,6 +164,7 @@ class Imagify_Files_Scan {
 			WP_CONTENT_DIR . '/ngg',              // NextGen Gallery.
 			WP_CONTENT_DIR . '/ngg_styles',       // NextGen Gallery.
 			WP_CONTENT_DIR . '/w3tc-config',      // W3 Total Cache.
+			WP_CONTENT_DIR . '/wfcache',          // WP Fastest Cache.
 			WP_CONTENT_DIR . '/wp-rocket-config', // WP Rocket.
 			imagify_get_files_backup_dir_path(),  // Imagify "Custom folders" backup.
 			IMAGIFY_PATH,                         // Imagify plugin.
