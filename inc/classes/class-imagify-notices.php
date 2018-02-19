@@ -64,8 +64,6 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		'grid-view',
 		// This warning is displayed to warn the user that the quota is almost consumed for the current month. Dismissible.
 		'almost-over-quota',
-		// This warning is displayed to warn the user that the quota is consumed for the current month. Dismissible.
-		'free-over-quota',
 		// This warning is displayed if the backup folder is not writable. NOT dismissible.
 		'backup-folder-not-writable',
 		// This notice is displayed to rate the plugin after 100 optimizations & 7 days after the first installation. Dismissible.
@@ -427,46 +425,6 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		}
 
 		$display = true;
-		return $display;
-	}
-
-	/**
-	 * Tell if the 'over-quota' notice should be displayed.
-	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 *
-	 * @return bool|object An Imagify user object. False otherwise.
-	 */
-	public function display_free_over_quota() {
-		static $display;
-
-		if ( isset( $display ) ) {
-			return $display;
-		}
-
-		$display = false;
-
-		if ( ! $this->user_can( 'free-over-quota' ) ) {
-			return $display;
-		}
-
-		if ( ! imagify_is_screen( 'imagify-settings' ) && ! imagify_is_screen( 'bulk' ) ) {
-			return $display;
-		}
-
-		if ( self::notice_is_dismissed( 'free-over-quota' ) ) {
-			return $display;
-		}
-
-		$user = new Imagify_User();
-
-		// Don't display the notice if the user doesn't use all his quota or the API key isn't valid.
-		if ( ! $user->is_over_quota() || ! imagify_valid_key() ) {
-			return $display;
-		}
-
-		$display = $user;
 		return $display;
 	}
 
