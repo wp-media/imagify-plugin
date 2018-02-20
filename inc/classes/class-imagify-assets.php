@@ -352,7 +352,7 @@ class Imagify_Assets {
 
 		$user = get_imagify_user();
 
-		if ( empty( $user->is_intercom ) || false === $user->display_support ) {
+		if ( empty( $user->is_intercom ) || empty( $user->display_support ) ) {
 			return;
 		}
 		?>
