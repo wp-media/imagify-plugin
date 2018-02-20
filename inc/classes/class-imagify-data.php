@@ -37,6 +37,7 @@ class Imagify_Data extends Imagify_Abstract_Options {
 	protected $default_values = array(
 		'total_size_images_library'     => 0.0,
 		'average_size_images_per_month' => 0.0,
+		'previous_quota_percent'        => 0.0,
 	);
 
 	/**
@@ -91,6 +92,10 @@ class Imagify_Data extends Imagify_Abstract_Options {
 					return 0.0;
 				}
 				return $value;
+
+			case 'previous_quota_percent':
+				$value = round( $value, 1 );
+				return min( max( 0, $value ), 100 );
 		}
 
 		return false;

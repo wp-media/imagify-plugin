@@ -215,12 +215,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 	$this->print_template( 'modal-payment' );
 
 	if ( imagify_valid_key() ) {
-		if ( empty( $user ) ) {
-			$user = new Imagify_User();
-		}
-
-		$unconsumed_quota = $user->get_percent_unconsumed_quota();
-		$display_infos    = get_transient( 'imagify_bulk_optimization_infos' );
+		$display_infos = get_transient( 'imagify_bulk_optimization_infos' );
 
 		?>
 		<script type="text/html" id="tmpl-imagify-overquota-alert">
@@ -229,6 +224,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		<?php
 
 		if ( ! $display_infos ) {
+			if ( ! isset( $unconsumed_quota ) ) {
+				$user             = $user ? $user : new Imagify_User();
+				$unconsumed_quota = $user->get_percent_unconsumed_quota();
+			}
 			?>
 			<script type="text/html" id="tmpl-imagify-bulk-infos">
 				<?php

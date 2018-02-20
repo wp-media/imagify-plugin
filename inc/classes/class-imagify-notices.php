@@ -143,11 +143,14 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'all_admin_notices',                    array( $this, 'render_notices' ) );
-		add_action( 'wp_ajax_imagify_dismiss_notice',       array( $this, 'admin_post_dismiss_notice' ) );
-		add_action( 'admin_post_imagify_dismiss_notice',    array( $this, 'admin_post_dismiss_notice' ) );
-		add_action( 'imagify_dismiss_notice',               array( $this, 'clear_scheduled_rating' ) );
-		add_action( 'admin_post_imagify_deactivate_plugin', array( $this, 'deactivate_plugin' ) );
+		// For generic purpose.
+		add_action( 'all_admin_notices',                     array( $this, 'render_notices' ) );
+		add_action( 'wp_ajax_imagify_dismiss_notice',        array( $this, 'admin_post_dismiss_notice' ) );
+		add_action( 'admin_post_imagify_dismiss_notice',     array( $this, 'admin_post_dismiss_notice' ) );
+		// For specific notices.
+		add_action( 'imagify_dismiss_notice',                array( $this, 'clear_scheduled_rating' ) );
+		add_action( 'admin_post_imagify_deactivate_plugin',  array( $this, 'deactivate_plugin' ) );
+		add_action( 'imagify_not_almost_over_quota_anymore', array( $this, 'renew_almost_over_quota_notice' ) );
 	}
 
 
@@ -257,6 +260,40 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 
 		imagify_maybe_redirect();
 		wp_send_json_success();
+	}
+
+	/**
+	 * Renew the "almost-over-quota" notice when the consumed quota percent decreases back below 80%.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 */
+	public function renew_almost_over_quota_notice() {
+		global $wpdb;
+
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE '%almost-over-quota%'", self::DISMISS_META_NAME ) );
+
+		if ( ! $results ) {
+			return;
+		}
+
+		// Prevent multiple queries to the DB by caching user metas.
+		$not_cached = array();
+
+		foreach ( $results as $result ) {
+			if ( ! wp_cache_get( $result->umeta_id, 'user_meta' ) ) {
+				$not_cached[] = $result->umeta_id;
+			}
+		}
+
+		if ( $not_cached ) {
+			update_meta_cache( 'user', $not_cached );
+		}
+
+		// Renew the notice for all users.
+		foreach ( $results as $result ) {
+			self::renew_notice( 'almost-over-quota', $result->user_id );
+		}
 	}
 
 
@@ -459,8 +496,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 
 		$user = new Imagify_User();
 
-		// Don't display the notice if the user doesn't almost use all his quota or the API key isn't valid.
-		if ( $user->get_percent_unconsumed_quota() > 20 || ! imagify_valid_key() ) {
+		// Don't display the notice if the user doesn't almost use all his quota.
+		if ( $user->get_percent_unconsumed_quota() > 20 ) {
 			return $display;
 		}
 
@@ -728,7 +765,6 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	 *
 	 * @since  1.6.10
 	 * @author Grégory Viguier
-	 * @see    imagify_renew_notice()
 	 *
 	 * @param string $notice  A notice ID.
 	 * @param int    $user_id A user ID.
