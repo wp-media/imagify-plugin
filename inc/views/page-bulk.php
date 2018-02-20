@@ -102,7 +102,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 						</p>
 					</div>
 
-					<?php if ( 1 === $user->plan_id ) { ?>
+					<?php if ( $user && 1 === $user->plan_id ) { ?>
 						<div class="imagify-col-content">
 							<?php
 							$unconsumed_quota  = $user->get_percent_unconsumed_quota();
@@ -138,20 +138,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 									</div>
 								</div>
 							</div>
-							<div class="imagify-space-tooltips imagify-tooltips <?php echo ( ! $is_display_bubble ) ? 'hidden' : ''; ?>">
-								<div class="tooltip-content tooltip-table">
-									<div class="cell-icon">
-										<span aria-hidden="true" class="icon icon-round">i</span>
-									</div>
-									<div class="cell-text">
-										<?php _e( 'Upgrade your account to continue optimizing your images', 'imagify' ); ?>
-									</div>
-									<div class="cell-sep"></div>
-									<div class="cell-cta">
-										<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'More info', 'imagify' ); ?></a>
-									</div>
-								</div>
-							</div>
 							<?php
 							/**
 							 * Filter whether the plan chooser section is displayed.
@@ -160,15 +146,25 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 							 */
 							if ( apply_filters( 'imagify_show_new_to_imagify', true ) ) {
 								?>
-							<div class="imagify-block-secondary">
-								<p class="imagify-section-title imagify-h3-like"><?php esc_html_e( 'You\'re new to Imagify?', 'imagify' ); ?></p>
-								<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
+								<div class="imagify-block-secondary">
+									<p class="imagify-section-title imagify-h3-like">
+										<?php
+										if ( ! $unconsumed_quota ) {
+											esc_html_e( 'Oops, It\'s Over!', 'imagify' );
+										} elseif ( $unconsumed_quota <= 20 ) {
+											esc_html_e( 'Oops, It\'s almost over!', 'imagify' );
+										} else {
+											esc_html_e( 'You\'re new to Imagify?', 'imagify' );
+										}
+										?>
+									</p>
+									<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
 
-								<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-button-big imagify-full-width">
-									<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
-									<span class="button-text"><?php _e( 'What plan do I need?', 'imagify' ); ?></span>
-								</button>
-							</div>
+									<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-button-big imagify-full-width">
+										<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
+										<span class="button-text"><?php _e( 'What plan do I need?', 'imagify' ); ?></span>
+									</button>
+								</div>
 								<?php
 							}
 							?>

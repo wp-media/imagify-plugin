@@ -46,7 +46,7 @@ if ( imagify_valid_key() ) {
 					} elseif ( $user && $unconsumed_quota <= 20 ) {
 						esc_html_e( 'Oops, It\'s almost over!', 'imagify' );
 					} else {
-						esc_html_e( 'You’re new to Imagify', 'imagify' );
+						esc_html_e( 'You\'re new to Imagify?', 'imagify' );
 					}
 					?>
 				</h3>
