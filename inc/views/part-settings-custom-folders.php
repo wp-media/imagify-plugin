@@ -97,7 +97,7 @@ if ( ! is_network_admin() ) {
 						?>
 						<p class="imagify-mb0"><?php echo _n( 'Your theme is already in the optimization process. All Good!', 'Your themes are already in the optimization process. All Good!', $themes_count, 'imagify' ); ?></p>
 						<?php
-					} elseif ( $themes_count !== count( $themes_not_added ) ) {
+					} elseif ( count( $themes_not_added ) !== $themes_count ) {
 						$theme = reset( $themes_not_added );
 						$theme = $themes[ $theme ];
 						?>
@@ -123,7 +123,7 @@ if ( ! is_network_admin() ) {
 							<span class="button-text"><?php echo _n( 'Add the theme to optimization', 'Add the themes to optimization', $themes_count , 'imagify' ); ?></span>
 						</button>
 						<?php
-						}
+					}
 					?>
 				</div>
 			</div>
@@ -156,10 +156,12 @@ if ( ! is_network_admin() ) {
 		<p class="imagify-success hidden"><?php _e( 'You changed your custom folder settings, don\'t forget to save your changes!', 'imagify' ); ?></p>
 
 		<script type="text/html" id="tmpl-imagify-custom-folder">
-			<?php $this->print_template( 'part-settings-row-custom-folder', array(
+			<?php
+			$this->print_template( 'part-settings-row-custom-folder', array(
 				'value' => '{{ data.value }}',
 				'label' => '{{ data.label }}',
-			) ); ?>
+			) );
+			?>
 		</script>
 	</div>
 </div>

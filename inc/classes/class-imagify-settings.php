@@ -204,7 +204,7 @@ class Imagify_Settings {
 		}
 
 		if ( ! isset( $values['custom_folders'] ) ) {
-			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" );
+			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" ); // WPCS: unprepared SQL ok.
 			return $values;
 		}
 
@@ -216,7 +216,7 @@ class Imagify_Settings {
 		}
 
 		if ( ! $selected_raw ) {
-			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" );
+			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" ); // WPCS: unprepared SQL ok.
 			return $values;
 		}
 

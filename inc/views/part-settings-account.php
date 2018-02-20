@@ -65,15 +65,20 @@ if ( imagify_valid_key() ) {
 
 	<?php
 	if ( ! defined( 'IMAGIFY_API_KEY' ) || ! IMAGIFY_API_KEY ) {
-		if ( imagify_valid_key() ) { ?>
+		if ( imagify_valid_key() ) {
+			?>
 			<h2 class="imagify-options-title">
 				<?php esc_html_e( 'Account Type', 'imagify' ); ?>
 				<strong class="imagify-user-plan-label"><?php echo $user ? esc_html( $user->plan_label ) : ''; ?></strong>
 			</h2>
-		<?php } else { ?>
+			<?php
+		} else {
+			?>
 			<h2 class="imagify-options-title"><?php esc_html_e( 'Your Account', 'imagify' ); ?></h2>
 			<p class="imagify-options-subtitle"><?php esc_html_e( 'Options page isn’t available until you enter your API Key', 'imagify' ); ?></p>
-		<?php } ?>
+			<?php
+		}
+		?>
 
 		<?php
 		/**
