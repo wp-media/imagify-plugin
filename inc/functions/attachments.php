@@ -135,21 +135,19 @@ function imagify_has_attachments_without_required_metadata() {
 		return $has;
 	}
 
-	$mime_types = Imagify_DB::get_mime_types();
-	$statuses   = Imagify_DB::get_post_statuses();
-	$extensions = Imagify_DB::get_extensions_query( 'mt1', false );
-	$has        = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types   = Imagify_DB::get_mime_types();
+	$statuses     = Imagify_DB::get_post_statuses();
+	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause( 'p.ID', false, false );
+	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( array(), false, false );
+	$has          = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT p.ID
 		FROM $wpdb->posts AS p
-		LEFT JOIN $wpdb->postmeta AS mt1
-			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
-		LEFT JOIN $wpdb->postmeta AS mt2
-			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+			$nodata_join
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
-			AND ( mt1.meta_value IS NULL OR mt1.meta_value LIKE '%://%' OR mt1.meta_value LIKE '_:\\\\\%' OR $extensions OR mt2.meta_value IS NULL )
+			$nodata_where
 		LIMIT 1"
 	);
 
