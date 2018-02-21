@@ -96,6 +96,16 @@ function imagify_get_post_statuses() {
 		$statuses = array_merge( $statuses, $custom_statuses );
 	}
 
+	/**
+	 * Filter the post statuses Imagify is allowed to optimize.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 *
+	 * @param array $statuses An array of post statuses. Kays and values are set.
+	 */
+	$statuses = apply_filters( 'imagify_post_statuses', $statuses );
+
 	return $statuses;
 }
 
