@@ -259,7 +259,19 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 	$folder_ids        = Imagify_DB::prepare_values_list( $folder_ids );
 	$select_fields     = "$files_key_esc, folder_id, path" . ( $optimization ? ', optimization_level, status' : '' );
 
-	$results = $wpdb->get_results( "SELECT $select_fields FROM $files_table WHERE folder_id IN ( $folder_ids ) ORDER BY folder_id, $files_key_esc;", ARRAY_A ); // WPCS: unprepared SQL ok.
+	if ( $optimization ) {
+		$orderby = "
+			CASE status
+				WHEN 'already_optimized' THEN 3
+				WHEN 'error' THEN 2
+				ELSE 1
+			END ASC,
+			$files_key_esc DESC";
+	} else {
+		$orderby = "folder_id, $files_key_esc";
+	}
+
+	$results = $wpdb->get_results( "SELECT $select_fields FROM $files_table WHERE folder_id IN ( $folder_ids ) ORDER BY $orderby;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 	if ( $results ) {
 		$wpdb->flush();
