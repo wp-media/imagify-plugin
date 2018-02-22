@@ -153,7 +153,7 @@ class Imagify_Files_Scan {
 			// WordPress.
 			imagify_get_abspath() . 'wp-admin',   // `wp-admin`
 			imagify_get_abspath() . WPINC,        // `wp-includes`
-			get_imagify_upload_basedir( true ),   // Medias library.
+			get_imagify_upload_basedir( true ),   // Media library.
 			WP_CONTENT_DIR . '/languages',        // Translations.
 			WP_CONTENT_DIR . '/mu-plugins',       // MU plugins.
 			WP_CONTENT_DIR . '/upgrade',          // Upgrade.

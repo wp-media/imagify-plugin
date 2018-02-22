@@ -6,7 +6,7 @@ $options     = Imagify_Options::get_instance();
 $option_name = $options->get_option_name();
 ?>
 <div class="<?php echo imagify_can_optimize_custom_folders() ? 'imagify-col' : ''; ?>">
-	<h3 class="imagify-options-subtitle"><?php _e( 'Medias Library', 'imagify' ); ?></h3>
+	<h3 class="imagify-options-subtitle"><?php _e( 'Media Library', 'imagify' ); ?></h3>
 
 	<p class="imagify-setting-line">
 		<?php

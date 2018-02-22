@@ -469,7 +469,7 @@ button.imagify-link-like {
 	vertical-align: middle;
 }
 
-/* Exception in Medias edition page and post Edition pages (insert media popin) */
+/* Exception in Media edition page and post Edition pages (insert media popin) */
 .wp_attachment_image .imagify-button-primary,
 .media-frame-content .imagify-button-primary {
 	padding: 0 10px 1px;
