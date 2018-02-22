@@ -249,7 +249,8 @@ class Imagify_DB {
 	 * @return string           A query.
 	 */
 	public static function get_extensions_where_clause( $alias = false, $matching = true, $test = true ) {
-		static $extensions, $query = array();
+		static $extensions;
+		static $query = array();
 
 		if ( $test && ! imagify_has_attachments_without_required_metadata() ) {
 			return '';
