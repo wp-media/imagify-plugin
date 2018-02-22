@@ -454,18 +454,16 @@ abstract class Imagify_Abstract_Options {
 		$reset_values   = array_merge( $default_values, $reset_values );
 
 		/**
-		 * Allow to add more reset option values.
+		 * Allow to filter the "reset" option values.
 		 *
 		 * @since  1.7
 		 * @author Grégory Viguier
 		 *
-		 * @param array $new_values   New reset option values.
 		 * @param array $reset_values Plugin reset option values.
 		 */
-		$new_values = apply_filters( 'imagify_reset_' . $this->get_hook_identifier() . '_values', array(), $reset_values );
-		$new_values = is_array( $new_values ) ? $new_values : array();
+		$new_values = apply_filters( 'imagify_reset_' . $this->get_hook_identifier() . '_values', $reset_values );
 
-		if ( $new_values ) {
+		if ( $new_values && is_array( $new_values ) ) {
 			$reset_values = array_merge( $reset_values, $new_values );
 		}
 
