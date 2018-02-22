@@ -94,7 +94,7 @@ function imagify_is_screen( $identifier ) {
 		case 'files-list':
 			// "Custom folders" files list.
 			$slug = Imagify_Views::get_instance()->get_files_page_slug();
-			return 'toplevel_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
+			return 'imagify_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
 
 		case 'media-modal':
 			// Media modal.
