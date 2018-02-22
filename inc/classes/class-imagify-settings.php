@@ -193,6 +193,11 @@ class Imagify_Settings {
 		/**
 		 * Custom folders.
 		 */
+		if ( ! imagify_current_user_can( 'optimize-file' ) ) {
+			unset( $values['custom_folders'] );
+			return $values;
+		}
+
 		$folders_db      = Imagify_Folders_DB::get_instance();
 		$folders_table   = $folders_db->get_table_name();
 		$folders_key     = $folders_db->get_primary_key();
