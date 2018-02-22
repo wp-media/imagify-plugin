@@ -25,8 +25,10 @@ function imagify_get_capacity( $describer = 'manage' ) {
 
 	switch ( $describer ) {
 		case 'manage':
-		case 'optimize-file':
 			$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
+			break;
+		case 'optimize-file':
+			$capacity = is_multisite() ? 'manage_network_options' : 'manage_options';
 			break;
 		case 'bulk-optimize':
 			$capacity = 'manage_options';
