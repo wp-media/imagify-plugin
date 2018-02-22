@@ -466,11 +466,6 @@ abstract class Imagify_Abstract_Options {
 		$new_values = is_array( $new_values ) ? $new_values : array();
 
 		if ( $new_values ) {
-			// Don't allow new values to overwrite the plugin values.
-			$new_values = array_diff_key( $new_values, $default_values );
-		}
-
-		if ( $new_values ) {
 			$reset_values = array_merge( $reset_values, $new_values );
 		}
 
