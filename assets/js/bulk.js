@@ -183,6 +183,10 @@
 			if ( this.charts.overview.donut ) {
 				// Update existing donut.
 				if ( data.length ) {
+					if ( data.reduce( function( a, b ) { return a + b; }, 0 ) === 0 ) {
+						data[0] = 1;
+					}
+
 					this.charts.overview.donut.data.datasets[0].data = data;
 					this.charts.overview.donut.update();
 				}
@@ -199,6 +203,10 @@
 
 			if ( data.length ) {
 				initData.datasets[0].data = data;
+			}
+
+			if ( initData.datasets[0].data.reduce( function( a, b ) { return a + b; }, 0 ) === 0 ) {
+				initData.datasets[0].data[0] = 1;
 			}
 
 			this.charts.overview.donut = new w.imagify.Chart( this.charts.overview.canvas, {
