@@ -61,7 +61,7 @@ function imagify_get_mime_type_from_file( $file_path ) {
 		return false;
 	}
 
-	$file_type  = wp_check_filetype( $file_path, imagify_get_mime_types() );
+	$file_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
 
 	return $file_type['type'];
 }
