@@ -233,6 +233,10 @@ class Imagify_Settings {
 		$prev_key = null;
 
 		foreach ( $selected_raw as $i => $placeholder_path ) {
+			if ( '{{ABSPATH}}/' === $placeholder_path ) {
+				continue;
+			}
+
 			if ( ! isset( $prev_key ) ) {
 				$prev_key = $i;
 				continue;
