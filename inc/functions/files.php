@@ -47,6 +47,30 @@ function imagify_chmod_file( $file_path ) {
 }
 
 /**
+ * Get a file mime type.
+ *
+ * @since  1.6.9
+ * @since  1.7 Doesn't use exif_imagetype() nor getimagesize() anymore.
+ * @author Grégory Viguier
+ *
+ * @param  string $file_path A file path (prefered) or a filename.
+ * @return string|bool       A mime type. False on failure: the last test is limited to mime types supported by Imagify.
+ */
+function imagify_get_mime_type_from_file( $file_path ) {
+	if ( ! $file_path ) {
+		return false;
+	}
+
+	$file_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
+
+	if ( false === $file_type['type'] && function_exists( 'mime_content_type' ) ) {
+		$file_type['type'] = mime_content_type( $file_path );
+	}
+
+	return $file_type['type'];
+}
+
+/**
  * Get a file modification date, formated as "mysql". Fallback to current date.
  *
  * @since  1.7
