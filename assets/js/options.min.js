@@ -226,20 +226,13 @@
 		// Remove sub-paths: if 'a/b/' and 'a/b/c/' are in the array, we keep only the "parent" 'a/b/'.
 		if ( '' !== valueTest ) {
 			$rows.each( function() {
-				var $this, thisPath;
+				var $this    = $( this ),
+					thisPath = $this.data( 'path' ).toLowerCase();
 
-				if ( null === prevPath ) {
-					prevPath = $( this ).data( 'path' ).toLowerCase();
-					return true;
-				}
-
-				$this    = $( this );
-				thisPath = $this.data( 'path' ).toLowerCase();
-
-				if ( thisPath.indexOf( prevPath ) === 0 ) {
+				if ( null !== prevPath && thisPath.indexOf( prevPath ) === 0 ) {
 					$this.find( '.imagify-custom-folders-remove' ).trigger( 'click.imagify' );
 				} else {
-					prevPath = $( this ).data( 'path' ).toLowerCase();
+					prevPath = thisPath;
 				}
 			} );
 		}
