@@ -308,7 +308,7 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 			}
 
 			if ( ! $filesystem->exists( $row_fields['file_path'] ) ) {
-				// If the file doesn't exist:remove all traces of it and bail out.
+				// If the file doesn't exist: remove all traces of it and bail out.
 				imagify_delete_custom_file( array(
 					'file_id'   => $row_fields[ $files_key ],
 					'file_path' => $row_fields['file_path'],
@@ -390,7 +390,7 @@ function imagify_get_files_from_folders( $folders, $args = array() ) {
 				}
 
 				if ( ! $filesystem->exists( $row_fields['file_path'] ) ) {
-					// If the file doesn't exist:remove all traces of it and bail out.
+					// If the file doesn't exist: remove all traces of it and bail out.
 					imagify_delete_custom_file( array(
 						'file_id'   => $row_fields[ $files_key ],
 						'file_path' => $row_fields['file_path'],
@@ -587,6 +587,57 @@ function imagify_delete_custom_file( $args = array() ) {
 }
 
 /**
+ * Remove the given folders from the DB if they are inactive and have no files.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  array $folder_ids An array of folder IDs.
+ * @return int               Number of removed folders.
+ */
+function imagify_delete_custom_folders_if_inactive_and_empty( $folder_ids = null ) {
+	global $wpdb;
+
+	$folders_db      = Imagify_Folders_DB::get_instance();
+	$folders_table   = $folders_db->get_table_name();
+	$folders_key     = $folders_db->get_primary_key();
+	$folders_key_esc = esc_sql( $folders_key );
+	$files_table     = Imagify_Files_DB::get_instance()->get_table_name();
+
+	$folder_ids = array_filter( (array) $folder_ids );
+
+	if ( $folder_ids ) {
+		$folder_ids = $folders_db->cast_col( $folder_ids, $folders_key );
+		$folder_ids = Imagify_DB::prepare_values_list( $folder_ids );
+		$in_clause  = "folders.$folders_key_esc IN ( $folder_ids )";
+	} else {
+		$in_clause = '1=1';
+	}
+
+	// Within the range of given folder IDs, filter the ones that are inactive and have no files.
+	$results = $wpdb->get_col( // WPCS: unprepared SQL ok.
+		"
+		SELECT folders.$folders_key_esc FROM $folders_table AS folders
+			LEFT JOIN $files_table AS files ON folders.$folders_key_esc = files.folder_id
+		WHERE $in_clause
+			AND folders.active != 1
+			AND files.folder_id IS NULL"
+	);
+
+	if ( ! $results ) {
+		return 0;
+	}
+
+	$results = $folders_db->cast_col( $results, $folders_key );
+	$results = Imagify_DB::prepare_values_list( $results );
+
+	// Remove inactive folders with no files.
+	$wpdb->query( "DELETE FROM $folders_table WHERE $folders_key_esc IN ( $results )" ); // WPCS: unprepared SQL ok.
+
+	return (int) $wpdb->rows_affected;
+}
+
+/**
  * Check if a file has been modified, and update the database accordingly.
  *
  * @since  1.7
@@ -600,6 +651,8 @@ function imagify_delete_custom_file( $args = array() ) {
  *                                  - Or if its folder is not active and: the file has been modified, or the file is not optimized by Imagify, or the file is orphan (its folder is not in the database anymore).
  */
 function imagify_refresh_file_modified( $file, $is_folder_active = null ) {
+	global $wpdb;
+
 	$file_path   = $file->get_original_path();
 	$backup_path = $file->get_backup_path();
 	$filesystem  = imagify_get_filesystem();
@@ -614,8 +667,15 @@ function imagify_refresh_file_modified( $file, $is_folder_active = null ) {
 			$filesystem->delete( $backup_path );
 		}
 
+		// Get the folder ID before removing the row.
+		$folder_id = $file->get_row();
+		$folder_id = $folder_id['folder_id'];
+
 		// Remove the entry from the database.
 		$file->delete_row();
+
+		// Remove the corresponding folder if inactive and have no files left.
+		imagify_delete_custom_folders_if_inactive_and_empty( $folder_id );
 
 		return new WP_Error( 'no-file', __( 'The file was missing or its path could not be retrieved from the database. The entry has been deleted from the database.', 'imagify' ) );
 	}
@@ -670,6 +730,9 @@ function imagify_refresh_file_modified( $file, $is_folder_active = null ) {
 
 			// Remove the entry from the database.
 			$file->delete_row();
+
+			// Remove the corresponding folder if inactive and have no files left.
+			imagify_delete_custom_folders_if_inactive_and_empty( $folder_id );
 
 			return new WP_Error( 'folder-not-active', __( 'The file has been modified or was not optimized: its folder not being selected in the settings, the entry has been deleted from the database.', 'imagify' ) );
 		}

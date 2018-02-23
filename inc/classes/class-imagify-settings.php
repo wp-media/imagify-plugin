@@ -296,6 +296,9 @@ class Imagify_Settings {
 			$wpdb->query( "DELETE FROM $files_table WHERE folder_id IN ( $results ) AND ( status != 'success' OR status IS NULL )" ); // WPCS: unprepared SQL ok.
 		}
 
+		// Remove inactive folders with no files.
+		imagify_delete_custom_folders_if_inactive_and_empty();
+
 		if ( $selected_raw ) {
 			// If we still have paths here, they need to be added to the DB.
 			$filesystem = imagify_get_filesystem();
