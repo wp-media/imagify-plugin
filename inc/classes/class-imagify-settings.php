@@ -151,14 +151,14 @@ class Imagify_Settings {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * On form submit, handle values that are not part of the form.
+	 * On form submit, handle some specific values.
 	 * This must be hooked before Imagify_Options::sanitize_and_validate_on_update().
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @param  string $values The option value.
+	 * @param  array $values The option values.
 	 * @return array
 	 */
 	public function populate_values_on_save( $values ) {
@@ -173,6 +173,27 @@ class Imagify_Settings {
 		/**
 		 * Disabled thumbnail sizes.
 		 */
+		$values = $this->populate_disallowed_sizes( $values );
+
+		/**
+		 * Custom folders.
+		 */
+		$values = $this->populate_custom_folders( $values );
+
+		return $values;
+	}
+
+	/**
+	 * On form submit, handle disallowed thumbnail sizes.
+	 *
+	 * @since  1.7
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $values The option values.
+	 * @return array
+	 */
+	protected function populate_disallowed_sizes( $values ) {
 		$values['disallowed-sizes'] = array();
 
 		if ( isset( $values['disallowed-sizes-reversed'] ) && is_array( $values['disallowed-sizes-reversed'] ) ) {
@@ -190,9 +211,20 @@ class Imagify_Settings {
 
 		unset( $values['disallowed-sizes-reversed'], $values['disallowed-sizes-checked'] );
 
-		/**
-		 * Custom folders.
-		 */
+		return $values;
+	}
+
+	/**
+	 * On form submit, handle the custom folders.
+	 *
+	 * @since  1.7
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $values The option values.
+	 * @return array
+	 */
+	protected function populate_custom_folders( $values ) {
 		if ( ! imagify_current_user_can( 'optimize-file' ) ) {
 			unset( $values['custom_folders'] );
 			return $values;
