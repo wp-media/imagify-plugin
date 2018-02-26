@@ -142,7 +142,6 @@ function imagify_can_optimize_custom_folders() {
 		return $can;
 	}
 
-	// Not multisite: ok.
 	$can = true;
 	return $can;
 }

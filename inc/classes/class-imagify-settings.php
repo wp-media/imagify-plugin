@@ -225,7 +225,8 @@ class Imagify_Settings {
 	 * @return array
 	 */
 	protected function populate_custom_folders( $values ) {
-		if ( ! imagify_current_user_can( 'optimize-file' ) ) {
+		if ( ! imagify_can_optimize_custom_folders() ) {
+			// The databases are not ready or the user has not the permission.
 			unset( $values['custom_folders'] );
 			return $values;
 		}
@@ -235,36 +236,35 @@ class Imagify_Settings {
 		$folders_key     = $folders_db->get_primary_key();
 		$folders_key_esc = esc_sql( $folders_key );
 
-		if ( ! $folders_db->can_operate() ) {
-			unset( $values['custom_folders'] );
-			return $values;
-		}
-
 		if ( ! isset( $values['custom_folders'] ) ) {
+			// No selected folders: set them all inactive.
 			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" ); // WPCS: unprepared SQL ok.
 			return $values;
 		}
 
-		$selected_raw = array_filter( $values['custom_folders'] );
-		unset( $values['custom_folders'] );
-
-		if ( ! is_array( $selected_raw ) ) {
+		if ( ! is_array( $values['custom_folders'] ) ) {
+			// Invalid value.
+			unset( $values['custom_folders'] );
 			return $values;
 		}
 
-		if ( ! $selected_raw ) {
+		$selected = array_filter( $values['custom_folders'] );
+		unset( $values['custom_folders'] );
+
+		if ( ! $selected ) {
+			// No selected folders: set them all inactive.
 			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" ); // WPCS: unprepared SQL ok.
 			return $values;
 		}
 
 		// Remove duplicates.
-		$selected_raw = array_flip( array_flip( $selected_raw ) );
+		$selected = array_flip( array_flip( $selected ) );
 
 		// Remove sub-paths: if 'a/b/' and 'a/b/c/' are in the array, we keep only the "parent" 'a/b/'.
-		sort( $selected_raw );
+		sort( $selected );
 		$prev_key = null;
 
-		foreach ( $selected_raw as $i => $placeholder_path ) {
+		foreach ( $selected as $i => $placeholder_path ) {
 			if ( '{{ABSPATH}}/' === $placeholder_path ) {
 				continue;
 			}
@@ -274,18 +274,18 @@ class Imagify_Settings {
 				continue;
 			}
 
-			$prev_path        = strtolower( $selected_raw[ $prev_key ] );
+			$prev_path        = strtolower( $selected[ $prev_key ] );
 			$placeholder_path = strtolower( $placeholder_path );
 
 			if ( strpos( $placeholder_path, $prev_path ) === 0 ) {
-				unset( $selected_raw[ $i ] );
+				unset( $selected[ $i ] );
 			} else {
 				$prev_key = $i;
 			}
 		}
 
-		$selected_paths = Imagify_DB::prepare_values_list( $selected_raw );
-		$selected_raw   = array_flip( $selected_raw );
+		$selected_paths = Imagify_DB::prepare_values_list( $selected );
+		$selected       = array_flip( $selected );
 
 		// Get folders that already are in the DB.
 		$results = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $selected_paths );", ARRAY_A ); // WPCS: unprepared SQL ok.
@@ -301,7 +301,7 @@ class Imagify_Settings {
 				}
 
 				// Remove the path from the selected list, so the remaining will be created.
-				unset( $selected_raw[ $result['path'] ] );
+				unset( $selected[ $result['path'] ] );
 			}
 		}
 
@@ -331,11 +331,11 @@ class Imagify_Settings {
 		// Remove inactive folders with no files.
 		imagify_delete_custom_folders_if_inactive_and_empty();
 
-		if ( $selected_raw ) {
+		if ( $selected ) {
 			// If we still have paths here, they need to be added to the DB.
 			$filesystem = imagify_get_filesystem();
 
-			foreach ( $selected_raw as $path => $meh ) {
+			foreach ( $selected as $path => $meh ) {
 				$path = sanitize_text_field( $path );
 				$path = Imagify_Files_Scan::remove_placeholder( $path );
 				$path = realpath( $path );
