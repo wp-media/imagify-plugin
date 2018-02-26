@@ -694,7 +694,6 @@ function imagify_refresh_file_modified( $file, $is_folder_active = null ) {
 			// The folder is not in the cache.
 			$folder = Imagify_Folders_DB::get_instance()->get( $old_data['folder_id'] );
 			$folder = $folder ? $folder : 0;
-			wp_cache_set( 'custom_folder_' . $old_data['folder_id'], $folder, 'imagify' );
 		}
 
 		if ( ! $folder ) {
