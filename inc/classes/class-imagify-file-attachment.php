@@ -102,7 +102,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		return imagify_get_file_backup_path( $this->get_original_path() );
+		return Imagify_Custom_Folders::get_file_backup_path( $this->get_original_path() );
 	}
 
 	/**
