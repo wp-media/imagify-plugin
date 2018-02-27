@@ -17,6 +17,68 @@ class Imagify_Custom_Folders {
 	const VERSION = '1.0';
 
 	/**
+	 * Insert a file into the DB.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $args An array of arguments to pass to Imagify_Files_DB::insert(). Required values are 'folder_id' and ( 'path' or 'file_path').
+	 * @return int         The file ID on success. 0 on failure.
+	 */
+	public static function insert_file( $args = array() ) {
+		if ( empty( $args['folder_id'] ) ) {
+			return 0;
+		}
+
+		if ( empty( $args['path'] ) ) {
+			if ( empty( $args['file_path'] ) ) {
+				return 0;
+			}
+
+			$args['path'] = Imagify_Files_Scan::add_placeholder( $args['file_path'] );
+		}
+
+		if ( empty( $args['file_path'] ) ) {
+			$args['file_path'] = Imagify_Files_Scan::remove_placeholder( $args['path'] );
+		}
+
+		$filesystem = imagify_get_filesystem();
+
+		if ( ! $filesystem->is_readable( $args['file_path'] ) ) {
+			return 0;
+		}
+
+		if ( empty( $args['file_date'] ) || '0000-00-00 00:00:00' === $args['file_date'] ) {
+			$args['file_date'] = imagify_get_file_date( $args['file_path'] );
+		}
+
+		if ( empty( $args['mime_type'] ) ) {
+			$args['mime_type'] = imagify_get_mime_type_from_file( $args['file_path'] );
+		}
+
+		if ( ( empty( $args['width'] ) || empty( $args['height'] ) ) && strpos( $args['mime_type'], 'image/' ) === 0 ) {
+			$file_size      = @getimagesize( $args['file_path'] );
+			$args['width']  = $file_size && isset( $file_size[0] ) ? $file_size[0] : 0;
+			$args['height'] = $file_size && isset( $file_size[1] ) ? $file_size[1] : 0;
+		}
+
+		if ( empty( $args['hash'] ) ) {
+			$args['hash'] = md5_file( $args['file_path'] );
+		}
+
+		if ( empty( $args['original_size'] ) ) {
+			$args['original_size'] = (int) $filesystem->size( $args['file_path'] );
+		}
+
+		$files_db    = Imagify_Files_DB::get_instance();
+		$primary_key = $files_db->get_primary_key();
+		unset( $args[ $primary_key ] );
+
+		return $files_db->insert( $args );
+	}
+
+	/**
 	 * Get folders from the DB.
 	 *
 	 * @since  1.7
@@ -355,7 +417,7 @@ class Imagify_Custom_Folders {
 				}
 
 				foreach ( $placeholders as $file_path => $placeholder ) {
-					$file_id = imagify_insert_custom_file( array(
+					$file_id = self::insert_file( array(
 						'folder_id' => $folder_id,
 						'path'      => $placeholder,
 						'file_path' => $file_path,
