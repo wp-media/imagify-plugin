@@ -181,6 +181,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Cron_Library_Size'        => 1,
 		'Imagify_Cron_Rating'              => 1,
 		'Imagify_Cron_Sync_Files'          => 1,
+		'Imagify_Custom_Folders'           => 1,
 		'Imagify_Data'                     => 1,
 		'Imagify_DB'                       => 1,
 		'Imagify_File_Attachment'          => 1,
