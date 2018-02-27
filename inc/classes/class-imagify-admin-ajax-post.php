@@ -474,7 +474,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_user_capacity( 'optimize-file' );
 
 		$file   = $this->get_file_to_optimize( 'imagify_refresh_file_modified' );
-		$result = imagify_refresh_file_modified( $file );
+		$result = Imagify_Custom_Folders::refresh_file( $file );
 
 		if ( is_wp_error( $result ) ) {
 			$message = $result->get_error_message();
