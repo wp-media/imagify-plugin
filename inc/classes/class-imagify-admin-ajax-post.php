@@ -541,7 +541,7 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		// All selected custom folders.
-		$folders = imagify_get_folders_from_type( 'all', array(
+		$folders = Imagify_Custom_Folders::get_folders( array(
 			'active' => true,
 		) );
 		imagify_get_files_from_folders( $folders );
@@ -809,7 +809,7 @@ class Imagify_Admin_Ajax_Post {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders = imagify_get_folders_from_type( 'custom-folders', array(
+		$folders = Imagify_Custom_Folders::get_folders( array(
 			'active' => true,
 		) );
 

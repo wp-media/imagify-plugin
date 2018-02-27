@@ -17,6 +17,82 @@ class Imagify_Custom_Folders {
 	const VERSION = '1.0';
 
 	/**
+	 * Get folders from the DB.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $args A list of arguments to tell more precisely what to fetch:
+	 *                         - bool $active True to fetch only "active" folders (checked in the settings). False to fetch only folders that are not "active".
+	 * @return array       An array of arrays containing the following keys:
+	 *                         - int    $folder_id   The folder ID.
+	 *                         - string $path        The folder path, with placeholder.
+	 *                         - int    $active      1 if the folder should be optimized. 0 otherwize.
+	 *                         - string $folder_path The real absolute folder path.
+	 *                     Example:
+	 *                         Array(
+	 *                             [7] => Array(
+	 *                                 [folder_id] => 7
+	 *                                 [path] => {{ABSPATH}}/custom-path/
+	 *                                 [active] => 1
+	 *                                 [folder_path] => /absolute/path/to/custom-path/
+	 *                             )
+	 *                             [13] => Array(
+	 *                                 [folder_id] => 13
+	 *                                 [path] => {{CONTENT}}/another-custom-path/
+	 *                                 [active] => 1
+	 *                                 [folder_path] => /absolute/path/to/wp-content/another-custom-path/
+	 *                             )
+	 *                         )
+	 */
+	public static function get_folders( $args = array() ) {
+		global $wpdb;
+
+		$folders_db    = Imagify_Folders_DB::get_instance();
+		$folders_table = $folders_db->get_table_name();
+		$primary_key   = $folders_db->get_primary_key();
+		$where_active  = '';
+
+		if ( isset( $args['active'] ) ) {
+			if ( $args['active'] ) {
+				$args['active'] = true;
+				$where_active   = 'WHERE active = 1';
+			} else {
+				$args['active'] = false;
+				$where_active   = 'WHERE active = 0';
+			}
+		}
+
+		// Get the folders from the DB.
+		$results = $wpdb->get_results( "SELECT * FROM $folders_table $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+		if ( ! $results || ! is_array( $results ) ) {
+			return array();
+		}
+
+		// Cast results, add absolute paths.
+		$folders = array();
+
+		foreach ( $results as $row_fields ) {
+			// Cast the row.
+			$row_fields = $folders_db->cast_row( $row_fields );
+
+			// Add the absolute path.
+			$row_fields['folder_path'] = Imagify_Files_Scan::remove_placeholder( $row_fields['path'] );
+
+			// Add the row to the list.
+			$folders[ $row_fields[ $primary_key ] ] = $row_fields;
+		}
+
+		return $folders;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** WHEN SAVING SELECTED FOLDERS ============================================================ */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
 	 * Dectivate all active folders.
 	 *
 	 * @since  1.7

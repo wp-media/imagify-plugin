@@ -73,97 +73,6 @@ function imagify_get_file_backup_path( $file_path ) {
 }
 
 /**
- * Get folders to be optimized from the DB, by folder type.
- *
- * @since  1.7
- * @author Grégory Viguier
- *
- * @param  string $folder_type The folder type. Possible value is 'custom-folders'. Custom folder types can also be used.
- * @param  array  $args        A list of arguments to tell more precisely what to fetch:
- *                                 - bool $active True to fetch only "active" folders (checked in the settings). False to fetch only folders that are not "active".
- * @return array               An array of arrays containing the following keys:
- *                                 - int    $folder_id   The folder ID.
- *                                 - string $path        The folder path, with placeholder.
- *                                 - int    $active      1 if the folder should be optimized. 0 otherwize.
- *                                 - string $folder_path The real absolute folder path.
- *                             Example:
- *                                 Array(
- *                                     [7] => Array(
- *                                         [folder_id] => 7
- *                                         [path] => {{ABSPATH}}/custom-path/
- *                                         [active] => 1
- *                                         [folder_path] => /absolute/path/to/custom-path/
- *                                     )
- *                                     [13] => Array(
- *                                         [folder_id] => 13
- *                                         [path] => {{CONTENT}}/another-custom-path/
- *                                         [active] => 1
- *                                         [folder_path] => /absolute/path/to/wp-content/another-custom-path/
- *                                     )
- *                                 )
- */
-function imagify_get_folders_from_type( $folder_type = 'custom-folders', $args = array() ) {
-	global $wpdb;
-
-	$folder_type   = ! empty( $folder_type ) ? strtolower( $folder_type ) : 'custom-folders';
-	$folders_db    = Imagify_Folders_DB::get_instance();
-	$folders_table = $folders_db->get_table_name();
-	$primary_key   = $folders_db->get_primary_key();
-	$where_active  = '';
-
-	if ( isset( $args['active'] ) ) {
-		if ( $args['active'] ) {
-			$args['active'] = true;
-			$where_active   = 'WHERE active = 1';
-		} else {
-			$args['active'] = false;
-			$where_active   = 'WHERE active = 0';
-		}
-	}
-
-	// Get the folders from the DB.
-	if ( 'custom-folders' === $folder_type ) {
-		/**
-		 * Everything.
-		 */
-		$results = $wpdb->get_results( "SELECT * FROM $folders_table $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
-
-	} else {
-		/**
-		 * Provide folders for a custom folder type.
-		 *
-		 * @since  1.7
-		 * @author Grégory Viguier
-		 *
-		 * @param array $results An array of arrays containing the same keys as in the "imagify_folders" table in the DB.
-		 * @param array $args    A list of arguments passed to the function:
-		 *                           - bool $active True to fetch only "active" folders (checked in the settings). False to fetch only folders that are not "active".
-		 */
-		$results = apply_filters( 'imagify_get_folders_from_type_' . $folder_type, array(), $args );
-	}
-
-	if ( ! $results || ! is_array( $results ) ) {
-		return array();
-	}
-
-	// Cast results, add absolute paths.
-	$folders = array();
-
-	foreach ( $results as $row_fields ) {
-		// Cast the row.
-		$row_fields = $folders_db->cast_row( $row_fields );
-
-		// Add the absolute path.
-		$row_fields['folder_path'] = Imagify_Files_Scan::remove_placeholder( $row_fields['path'] );
-
-		// Add the row to the list.
-		$folders[ $row_fields[ $primary_key ] ] = $row_fields;
-	}
-
-	return $folders;
-}
-
-/**
  * Get files belonging to the given folders.
  * Files are scanned from the folders, then:
  *     - If a file doesn't exist in the DB, it is added (maybe, depending on arguments provided).
@@ -171,10 +80,10 @@ function imagify_get_folders_from_type( $folder_type = 'custom-folders', $args =
  *     - If a file doesn't exist, it is removed from the database and its backup is deleted.
  *
  * @since  1.7
- * @see    imagify_get_folders_from_type()
+ * @see    Imagify_Custom_Folders::get_folders()
  * @author Grégory Viguier
  *
- * @param  array $folders An array of arrays containing at least the keys 'folder_path' and 'active'. See imagify_get_folders_from_type() for the format.
+ * @param  array $folders An array of arrays containing at least the keys 'folder_path' and 'active'. See Imagify_Custom_Folders::get_folders() for the format.
  * @param  array $args    A list of arguments to tell more precisely what to fetch:
  *                            - int  $optimization_level        If set with an integer, only files that needs to be optimized to this level will be returned (the status is also checked).
  *                            - bool $return_only_old_files     True to return only files that have not been newly inserted.
@@ -754,7 +663,7 @@ function imagify_refresh_file_modified( $file, $is_folder_active = null ) {
  * @since  1.7
  * @author Grégory Viguier
  *
- * @param array $folders A list of folders. See imagify_get_folders_from_type() for the format.
+ * @param array $folders A list of folders. See Imagify_Custom_Folders::get_folders() for the format.
  */
 function imagify_synchronize_files_from_folders( $folders ) {
 	global $wpdb;
