@@ -970,16 +970,16 @@ class Imagify_Custom_Folders {
 
 		$folders_db  = Imagify_Folders_DB::get_instance();
 		$folders_key = $folders_db->get_primary_key();
-		$folder_ids  = $folders_db->get_inactive_folders_column( $folders_key );
-
-		if ( ! $folder_ids ) {
-			return;
-		}
-
 		$files_table = Imagify_Files_DB::get_instance()->get_table_name();
-		$folder_ids  = Imagify_DB::prepare_values_list( $folder_ids );
+		$folder_ids  = $folders_db->get_active_folders_column( $folders_key );
 
-		$wpdb->query( "DELETE FROM $files_table WHERE folder_id IN ( $folder_ids ) AND ( status != 'success' OR status IS NULL )" ); // WPCS: unprepared SQL ok.
+		if ( $folder_ids ) {
+			$folder_ids = Imagify_DB::prepare_values_list( $folder_ids );
+
+			$wpdb->query( "DELETE FROM $files_table WHERE folder_id NOT IN ( $folder_ids ) AND ( status != 'success' OR status IS NULL )" ); // WPCS: unprepared SQL ok.
+		} else {
+			$wpdb->query( "DELETE FROM $files_table WHERE status != 'success' OR status IS NULL" ); // WPCS: unprepared SQL ok.
+		}
 	}
 
 	/**
