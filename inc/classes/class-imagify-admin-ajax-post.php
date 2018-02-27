@@ -533,7 +533,7 @@ class Imagify_Admin_Ajax_Post {
 				$folder[ $folders_key ] => $folder,
 			);
 
-			imagify_get_files_from_folders( $folders, array(
+			Imagify_Custom_Folders::get_files_from_folders( $folders, array(
 				'add_inactive_folder_files' => true,
 			) );
 
@@ -544,7 +544,7 @@ class Imagify_Admin_Ajax_Post {
 		$folders = Imagify_Custom_Folders::get_folders( array(
 			'active' => true,
 		) );
-		imagify_get_files_from_folders( $folders );
+		Imagify_Custom_Folders::get_files_from_folders( $folders );
 
 		imagify_maybe_redirect();
 	}
@@ -831,7 +831,7 @@ class Imagify_Admin_Ajax_Post {
 		/**
 		 * Get the files from DB, and from the folders.
 		 */
-		$files = imagify_get_files_from_folders( $folders, array(
+		$files = Imagify_Custom_Folders::get_files_from_folders( $folders, array(
 			'optimization_level' => $optimization_level,
 		) );
 
