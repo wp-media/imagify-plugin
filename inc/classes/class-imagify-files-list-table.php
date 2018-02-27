@@ -74,10 +74,11 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			'option'  => self::PER_PAGE_OPTION,
 		) );
 
-		$files_db    = Imagify_Files_DB::get_instance();
-		$files_table = $files_db->get_table_name();
-		$files_key   = esc_sql( $files_db->get_primary_key() );
-		$per_page    = $this->get_items_per_page( self::PER_PAGE_OPTION );
+		$files_db      = Imagify_Files_DB::get_instance();
+		$files_table   = $files_db->get_table_name();
+		$files_key     = $files_db->get_primary_key();
+		$files_key_esc = esc_sql( $files_key );
+		$per_page      = $this->get_items_per_page( self::PER_PAGE_OPTION );
 
 		// Prepare the query to get items.
 		$page     = $this->get_pagenum();
@@ -131,7 +132,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		// Pagination.
 		$this->set_pagination_args( array(
-			'total_items' => (int) $wpdb->get_var( "SELECT COUNT($files_key) FROM $files_table $where" ), // WPCS: unprepared SQL ok.
+			'total_items' => (int) $wpdb->get_var( "SELECT COUNT($files_key_esc) FROM $files_table $where" ), // WPCS: unprepared SQL ok.
 			'per_page'    => $per_page,
 		) );
 
@@ -151,12 +152,13 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			$folders[ $item->folder_id ] = $item->folder_id;
 
 			// Store the item IDs to store transients later in 1 query.
-			$file_ids[ $item->file_id ] = $item->file_id;
+			$file_ids[ $item->$files_key ] = $item->$files_key;
 
 			// Use Imagify objects + add related folder ID and path (set later).
 			$this->items[ $i ] = get_imagify_attachment( 'File', $item, 'files_list_row' );
-			$this->items[ $i ]->folder_id   = $item->folder_id;
-			$this->items[ $i ]->folder_path = false;
+			$this->items[ $i ]->folder_id        = $item->folder_id;
+			$this->items[ $i ]->folder_path      = false;
+			$this->items[ $i ]->is_folder_active = true;
 		}
 
 		$folders = array_filter( $folders );
@@ -172,10 +174,11 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		}
 
 		// Get folders data.
-		$folders_db    = Imagify_Folders_DB::get_instance();
-		$folders_table = $folders_db->get_table_name();
-		$folders       = Imagify_DB::prepare_values_list( $folders );
-		$folders       = $wpdb->get_results( "SELECT * FROM $folders_table WHERE folder_id IN ( $folders )" ); // WPCS: unprepared SQL ok.
+		$folders_db      = Imagify_Folders_DB::get_instance();
+		$folders_table   = $folders_db->get_table_name();
+		$folders_key_esc = esc_sql( $folders_db->get_primary_key() );
+		$folders         = Imagify_DB::prepare_values_list( $folders );
+		$folders         = $wpdb->get_results( "SELECT * FROM $folders_table WHERE $folders_key_esc IN ( $folders )" ); // WPCS: unprepared SQL ok.
 
 		if ( ! $folders ) {
 			return;
@@ -191,7 +194,8 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		// Set folders path to each item.
 		foreach ( $this->items as $i => $item ) {
 			if ( $item->folder_id && isset( $this->folders[ $item->folder_id ] ) ) {
-				$item->folder_path = $this->folders[ $item->folder_id ]->path;
+				$item->folder_path      = $this->folders[ $item->folder_id ]->path;
+				$item->is_folder_active = (bool) $this->folders[ $item->folder_id ]->active;
 			}
 		}
 	}
@@ -513,6 +517,11 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			printf( $format, __( 'Site\'s root', 'imagify' ) );
 		} else {
 			printf( $format, '<code>/' . trim( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $item->folder_path ) ), '/' ) . '</code>' );
+		}
+
+		if ( ! $item->is_folder_active ) {
+			echo '<br/>';
+			_e( 'This folder is not selected for bulk optimization.', 'imagify' );
 		}
 	}
 
@@ -883,8 +892,9 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return $item;
 		}
 
-		$item->folder_id   = $folder['folder_id'];
-		$item->folder_path = $folder['path'];
+		$item->folder_id        = $folder['folder_id'];
+		$item->folder_path      = $folder['path'];
+		$item->is_folder_active = (bool) $folder['active'];
 
 		return $item;
 	}
