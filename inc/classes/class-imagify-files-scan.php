@@ -455,7 +455,7 @@ class Imagify_Files_Scan {
 	 * @return bool
 	 */
 	public static function placeholder_path_exists( $file_path ) {
-		return imagify_get_filesystem()->exists( self::remove_placeholder( $file_path ) );
+		return imagify_get_filesystem()->is_readable( self::remove_placeholder( $file_path ) );
 	}
 
 	/**
