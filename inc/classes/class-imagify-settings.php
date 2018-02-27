@@ -232,6 +232,11 @@ class Imagify_Settings {
 		if ( ! isset( $values['custom_folders'] ) ) {
 			// No selected folders: set them all inactive.
 			Imagify_Custom_Folders::deactivate_all_folders();
+			// Remove files that are in inactive folders and are not optimized.
+			Imagify_Custom_Folders::remove_unoptimized_files_from_inactive_folders();
+			// Remove empty inactive folders.
+			Imagify_Custom_Folders::remove_empty_inactive_folders();
+
 			return $values;
 		}
 
@@ -247,6 +252,11 @@ class Imagify_Settings {
 		if ( ! $selected ) {
 			// No selected folders: set them all inactive.
 			Imagify_Custom_Folders::deactivate_all_folders();
+			// Remove files that are in inactive folders and are not optimized.
+			Imagify_Custom_Folders::remove_unoptimized_files_from_inactive_folders();
+			// Remove empty inactive folders.
+			Imagify_Custom_Folders::remove_empty_inactive_folders();
+
 			return $values;
 		}
 
