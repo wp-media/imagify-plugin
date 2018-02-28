@@ -315,7 +315,9 @@ class Imagify_Custom_Folders {
 				$file->delete_row();
 
 				// Remove the corresponding folder if inactive and have no files left.
-				self::remove_empty_inactive_folders( $folder_id );
+				if ( $old_data['folder_id'] ) {
+					self::remove_empty_inactive_folders( $old_data['folder_id'] );
+				}
 
 				return new WP_Error( 'folder-not-active', __( 'The file has been modified or was not optimized: its folder not being selected in the settings, the entry has been deleted from the database.', 'imagify' ) );
 			}
