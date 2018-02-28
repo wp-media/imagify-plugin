@@ -287,9 +287,14 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
+		$files_db      = Imagify_Files_DB::get_instance();
+		$files_table   = $files_db->get_table_name();
+		$files_key_esc = esc_sql( $files_db->get_primary_key() );
+
 		// Filter files by folder.
 		$folder_filters = array();
 		$root_id        = 0;
+		$counts         = $wpdb->get_results( "SELECT folder_id, COUNT( $files_key_esc ) AS count FROM $files_table GROUP BY folder_id", OBJECT_K ); // WPCS: unprepared SQL ok.
 
 		foreach ( $folders as $folder ) {
 			if ( '{{ABSPATH}}/' === $folder->path ) {
@@ -300,23 +305,52 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			}
 		}
 
-		asort( $folder_filters );
+		natcasesort( $folder_filters );
 
 		if ( $root_id ) {
 			$folder_filters[ $root_id ] = __( 'Site\'s root', 'imagify' );
 		}
 
+		foreach ( $folder_filters as $folder_id => $label ) {
+			$folder_filters[ $folder_id ] .= ' (' . ( isset( $counts[ $folder_id ] ) ? (int) $counts[ $folder_id ]->count : 0 ) . ')';
+		}
+
+		// Filter files by status.
+		$counts         = $wpdb->get_results( "SELECT status, COUNT( $files_key_esc ) AS count FROM $files_table GROUP BY status", OBJECT_K ); // WPCS: unprepared SQL ok.
+		$status_filters = array(
+			'optimized'   => 0,
+			'unoptimized' => 0,
+			'errors'      => 0,
+		);
+
+		if ( isset( $counts['success'] ) ) {
+			$status_filters['optimized'] += $counts['success']->count;
+		}
+
+		if ( isset( $counts['already_optimized'] ) ) {
+			$status_filters['optimized'] += $counts['already_optimized']->count;
+		}
+
+		if ( isset( $counts[''] ) ) {
+			$status_filters['unoptimized'] += $counts['']->count;
+		}
+
+		if ( isset( $counts['error'] ) ) {
+			$status_filters['errors'] += $counts['error']->count;
+		}
+
 		$status_filters = array(
 			''            => __( 'All images', 'imagify' ),
-			'optimized'   => __( 'Optimized','imagify' ),
-			'unoptimized' => __( 'Unoptimized','imagify' ),
-			'errors'      => __( 'Errors','imagify' ),
+			'optimized'   => __( 'Optimized','imagify' ) . ' (' . $status_filters['optimized'] . ')',
+			'unoptimized' => __( 'Unoptimized','imagify' ) . ' (' . $status_filters['unoptimized'] . ')',
+			'errors'      => __( 'Errors','imagify' ) . ' (' . $status_filters['errors'] . ')',
 		);
 
 		// Get submitted values.
 		$folder_filter = self::get_folder_filter();
 		$status_filter = self::get_status_filter();
 
+		// Display the filters.
 		$this->screen->render_screen_reader_content( 'heading_views' );
 		?>
 		<div class="wp-filter">
