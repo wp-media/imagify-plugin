@@ -835,11 +835,7 @@ class Imagify_Custom_Folders {
 	 * @author Grégory Viguier
 	 */
 	public static function deactivate_all_folders() {
-		global $wpdb;
-
-		$folders_table = Imagify_Folders_DB::get_instance()->get_table_name();
-
-		$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" ); // WPCS: unprepared SQL ok.
+		self::deactivate_not_selected_folders();
 	}
 
 	/**
@@ -849,19 +845,25 @@ class Imagify_Custom_Folders {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param array|object|string $selected_paths A list of "placeholdered" paths.
+	 * @param array|object|string $selected_paths A list of "placeholdered" paths corresponding to the selected folders.
 	 */
-	public static function deactivate_not_selected_folders( $selected_paths ) {
+	public static function deactivate_not_selected_folders( $selected_paths = array() ) {
 		global $wpdb;
 
 		$folders_table = Imagify_Folders_DB::get_instance()->get_table_name();
 
-		if ( is_array( $selected_paths ) || is_object( $selected_paths ) ) {
-			$selected_paths = Imagify_DB::prepare_values_list( $selected_paths );
+		if ( $selected_paths ) {
+			if ( is_array( $selected_paths ) || is_object( $selected_paths ) ) {
+				$selected_paths = Imagify_DB::prepare_values_list( $selected_paths );
+			}
+
+			$selected_paths_clause = "AND path NOT IN ( $selected_paths )";
+		} else {
+			$selected_paths_clause = '';
 		}
 
 		// Remove the active status from the folders that are not selected.
-		$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1 AND path NOT IN ( $selected_paths )" ); // WPCS: unprepared SQL ok.
+		$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active != 0 $selected_paths_clause" ); // WPCS: unprepared SQL ok.
 	}
 
 	/**
@@ -871,11 +873,15 @@ class Imagify_Custom_Folders {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param  array|object $selected_paths A list of "placeholdered" paths.
+	 * @param  array|object $selected_paths A list of "placeholdered" paths corresponding to the selected folders.
 	 * @return array                        An array of paths of folders that are not in the DB.
 	 */
 	public static function activate_selected_folders( $selected_paths ) {
 		global $wpdb;
+
+		if ( ! $selected_paths ) {
+			return $selected_paths;
+		}
 
 		$folders_db    = Imagify_Folders_DB::get_instance();
 		$folders_table = $folders_db->get_table_name();
