@@ -108,7 +108,7 @@ class Imagify_Cron_Rating extends Imagify_Abstract_Cron {
 
 		$user = get_imagify_user();
 
-		if ( isset( $user ) && (int) $user->image_count > 100 ) {
+		if ( ! is_wp_error( $user ) && (int) $user->image_count > 100 ) {
 			set_site_transient( 'imagify_user_images_count', $user->image_count );
 		}
 	}

@@ -8,12 +8,12 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 		<div class="imagify-th-titles imagify-flex imagify-vcenter">
 			<span class="dashicons dashicons-admin-plugins"></span>
 			<div class="imagify-th-titles">
-				<p class="imagify-th-title"><?php _e( 'Optimize the images of your Themes and Plugins', 'imagify' ); ?></p>
+				<p class="imagify-th-title"><?php _e( 'Optimize the images from your site\'s folders', 'imagify' ); ?></p>
 			</div>
 		</div>
 		<div class="imagify-th-action">
 			<a class="hide-if-no-js button imagify-button-secondary" href="<?php echo esc_url( get_imagify_admin_url() ); ?>#custom-folders">
-				<?php esc_html_e( 'Choose your themes and plugins to optimize', 'imagify' ); ?>
+				<?php esc_html_e( 'Choose your folders to optimize', 'imagify' ); ?>
 			</a>
 		</div>
 	</div>

@@ -53,16 +53,7 @@ class Imagify extends Imagify_Deprecated {
 	 * The constructor.
 	 */
 	protected function __construct() {
-		// Check if the WordPress plugin is activated and the API key is stored in the options.
-		if ( defined( 'IMAGIFY_VERSION' ) && function_exists( 'get_imagify_option' ) ) {
-			$api_key       = get_imagify_option( 'api_key' );
-			$this->api_key = $api_key ? $api_key : $this->api_key;
-		}
-
-		// Check if the API key is defined with the PHP constant (it's ovveride the WordPress plugin option.
-		if ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
-			$this->api_key = IMAGIFY_API_KEY;
-		}
+		$this->api_key = get_imagify_option( 'api_key' );
 
 		$this->all_headers['Accept']        = 'Accept: application/json';
 		$this->all_headers['Content-Type']  = 'Content-Type: application/json';

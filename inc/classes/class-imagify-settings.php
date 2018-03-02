@@ -164,18 +164,15 @@ class Imagify_Settings {
 	public function populate_values_on_save( $values ) {
 		global $wpdb;
 
-		$values = is_array( $values ) ? $values : array();
-
-		// Version.
-		if ( empty( $values['version'] ) ) {
-			$values['version'] = IMAGIFY_VERSION;
-		}
-
 		if ( ! $this->is_form_submit() ) {
 			return $values;
 		}
 
-		// Disabled thumbnail sizes.
+		$values = is_array( $values ) ? $values : array();
+
+		/**
+		 * Disabled thumbnail sizes.
+		 */
 		$values['disallowed-sizes'] = array();
 
 		if ( isset( $values['disallowed-sizes-reversed'] ) && is_array( $values['disallowed-sizes-reversed'] ) ) {
@@ -193,64 +190,137 @@ class Imagify_Settings {
 
 		unset( $values['disallowed-sizes-reversed'], $values['disallowed-sizes-checked'] );
 
-		// Custom folders.
-		if ( isset( $values['custom_folders'] ) && is_array( $values['custom_folders'] ) ) {
-			$selected_raw   = $values['custom_folders'];
-			$selected_paths = Imagify_DB::prepare_values_list( $selected_raw );
-			$selected_raw   = array_flip( $selected_raw );
+		/**
+		 * Custom folders.
+		 */
+		if ( ! imagify_current_user_can( 'optimize-file' ) ) {
 			unset( $values['custom_folders'] );
+			return $values;
+		}
 
-			// Selected folders that already are in the DB.
-			$results = $wpdb->get_results( "SELECT * FROM $wpdb->imagify_folders WHERE path IN ( $selected_paths );", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$folders_db      = Imagify_Folders_DB::get_instance();
+		$folders_table   = $folders_db->get_table_name();
+		$folders_key     = $folders_db->get_primary_key();
+		$folders_key_esc = esc_sql( $folders_key );
 
-			if ( $results ) {
-				// Set active.
-				foreach ( $results as $i => $result ) {
-					if ( empty( $result['active'] ) && Imagify_Files_Scan::placeholder_path_exists( $result['path'] ) ) {
-						// Add the optimization level only if not already set and if the file exists.
-						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->imagify_folders SET active = 1 WHERE folder_id = %d", $result['folder_id'] ) );
-					}
+		if ( ! $folders_db->can_operate() ) {
+			unset( $values['custom_folders'] );
+			return $values;
+		}
 
-					// Remove the path from the selected list, so the remaining will be created.
-					unset( $selected_raw[ $result['path'] ] );
-				}
+		if ( ! isset( $values['custom_folders'] ) ) {
+			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" ); // WPCS: unprepared SQL ok.
+			return $values;
+		}
+
+		$selected_raw = array_filter( $values['custom_folders'] );
+		unset( $values['custom_folders'] );
+
+		if ( ! is_array( $selected_raw ) ) {
+			return $values;
+		}
+
+		if ( ! $selected_raw ) {
+			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" ); // WPCS: unprepared SQL ok.
+			return $values;
+		}
+
+		// Remove duplicates.
+		$selected_raw = array_flip( array_flip( $selected_raw ) );
+
+		// Remove sub-paths: if 'a/b/' and 'a/b/c/' are in the array, we keep only the "parent" 'a/b/'.
+		sort( $selected_raw );
+		$prev_key = null;
+
+		foreach ( $selected_raw as $i => $placeholder_path ) {
+			if ( '{{ABSPATH}}/' === $placeholder_path ) {
+				continue;
 			}
 
-			// Not selected folders that are in the DB, and that are active.
-			$results = $wpdb->get_col( "SELECT folder_id FROM $wpdb->imagify_folders WHERE path NOT IN ( $selected_paths ) AND active = 1" ); // WPCS: unprepared SQL ok.
-
-			if ( $results ) {
-				// Remove the active status.
-				$results = Imagify_DB::prepare_values_list( $results );
-				$wpdb->query( "UPDATE $wpdb->imagify_folders SET active = 0 WHERE folder_id IN ( $results )" ); // WPCS: unprepared SQL ok.
+			if ( ! isset( $prev_key ) ) {
+				$prev_key = $i;
+				continue;
 			}
 
-			if ( $selected_raw ) {
-				// If we still have paths here, they need to be added to the DB.
-				$filesystem = imagify_get_filesystem();
+			$prev_path        = strtolower( $selected_raw[ $prev_key ] );
+			$placeholder_path = strtolower( $placeholder_path );
 
-				foreach ( $selected_raw as $path => $meh ) {
-					$path = sanitize_text_field( $path );
-					$path = Imagify_Files_Scan::remove_placeholder( $path );
-					$path = realpath( $path );
+			if ( strpos( $placeholder_path, $prev_path ) === 0 ) {
+				unset( $selected_raw[ $i ] );
+			} else {
+				$prev_key = $i;
+			}
+		}
 
-					if ( ! $path || ! $filesystem->is_dir( $path ) ) {
-						continue;
-					}
+		$selected_paths = Imagify_DB::prepare_values_list( $selected_raw );
+		$selected_raw   = array_flip( $selected_raw );
 
-					if ( Imagify_Files_Scan::is_path_forbidden( $path ) ) {
-						continue;
-					}
+		// Get folders that already are in the DB.
+		$results = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $selected_paths );", ARRAY_A ); // WPCS: unprepared SQL ok.
 
-					Imagify_Folders_DB::get_instance()->insert( array(
-						'path'   => Imagify_Files_Scan::add_placeholder( trailingslashit( $path ) ),
+		if ( $results ) {
+			// Set active.
+			foreach ( $results as $i => $result ) {
+				if ( empty( $result['active'] ) && Imagify_Files_Scan::placeholder_path_exists( $result['path'] ) ) {
+					// Add the active state only if not already set and if the file exists.
+					$folders_db->update( $result[ $folders_key ], array(
 						'active' => 1,
 					) );
 				}
+
+				// Remove the path from the selected list, so the remaining will be created.
+				unset( $selected_raw[ $result['path'] ] );
 			}
-		} else {
-			unset( $values['custom_folders'] );
-			$wpdb->query( "UPDATE $wpdb->imagify_folders SET active = 0 WHERE active = 1" );
+		}
+
+		// Not selected folders that are in the DB, and that are active.
+		$results = $wpdb->get_col( "SELECT $folders_key_esc FROM $folders_table WHERE path NOT IN ( $selected_paths ) AND active = 1" ); // WPCS: unprepared SQL ok.
+
+		if ( $results ) {
+			$results = $folders_db->cast_col( $results, $folders_key );
+			$results = Imagify_DB::prepare_values_list( $results );
+
+			// Remove the active status from the folders that are not selected.
+			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE $folders_key_esc IN ( $results )" ); // WPCS: unprepared SQL ok.
+		}
+
+		// All inactive folders.
+		$results = $wpdb->get_col( "SELECT $folders_key_esc FROM $folders_table WHERE active != 1" ); // WPCS: unprepared SQL ok.
+
+		if ( $results ) {
+			$results = $folders_db->cast_col( $results, $folders_key );
+			$results = Imagify_DB::prepare_values_list( $results );
+
+			// Remove files that are in inactive folders and are not optimized.
+			$files_table = Imagify_Files_DB::get_instance()->get_table_name();
+			$wpdb->query( "DELETE FROM $files_table WHERE folder_id IN ( $results ) AND ( status != 'success' OR status IS NULL )" ); // WPCS: unprepared SQL ok.
+		}
+
+		// Remove inactive folders with no files.
+		imagify_delete_custom_folders_if_inactive_and_empty();
+
+		if ( $selected_raw ) {
+			// If we still have paths here, they need to be added to the DB.
+			$filesystem = imagify_get_filesystem();
+
+			foreach ( $selected_raw as $path => $meh ) {
+				$path = sanitize_text_field( $path );
+				$path = Imagify_Files_Scan::remove_placeholder( $path );
+				$path = realpath( $path );
+
+				if ( ! $path || ! $filesystem->is_dir( $path ) ) {
+					continue;
+				}
+
+				if ( Imagify_Files_Scan::is_path_forbidden( $path ) ) {
+					continue;
+				}
+
+				$folders_db->insert( array(
+					'path'   => Imagify_Files_Scan::add_placeholder( trailingslashit( $path ) ),
+					'active' => 1,
+				) );
+			}
 		}
 
 		return $values;
@@ -597,89 +667,6 @@ class Imagify_Settings {
 		}
 
 		return $sizes;
-	}
-
-	/**
-	 * Get installed theme names.
-	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
-	 *
-	 * @return array A list of installed themes in the form of '{{THEMES}}/twentyseventeen/' => 'Twenty Seventeen'.
-	 */
-	public static function get_themes() {
-		static $themes;
-
-		if ( isset( $themes ) ) {
-			return $themes;
-		}
-
-		$all_themes = wp_get_themes();
-		$themes     = array();
-
-		if ( $all_themes ) {
-			foreach ( $all_themes as $stylesheet => $theme ) {
-				if ( ! $theme->exists() ) {
-					continue;
-				}
-
-				$path = trailingslashit( $theme->get_stylesheet_directory() );
-
-				if ( imagify_file_is_symlinked( $path ) ) {
-					continue;
-				}
-
-				$path = Imagify_Files_Scan::add_placeholder( $path );
-
-				$themes[ $path ] = $theme->display( 'Name', false );
-			}
-		}
-
-		return $themes;
-	}
-
-	/**
-	 * Get installed plugin names.
-	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
-	 *
-	 * @return array A list of installed plugins in the form of '{{PLUGINS}}/imagify/' => 'Imagify'.
-	 */
-	public static function get_plugins() {
-		static $plugins, $plugins_path;
-
-		if ( isset( $plugins ) ) {
-			return $plugins;
-		}
-
-		if ( ! isset( $plugins_path ) ) {
-			$plugins_path = Imagify_Files_Scan::remove_placeholder( '{{PLUGINS}}/' );
-		}
-
-		$all_plugins = get_plugins();
-		$plugins     = array();
-
-		if ( $all_plugins ) {
-			$filesystem = imagify_get_filesystem();
-
-			foreach ( $all_plugins as $plugin_file => $plugin_data ) {
-				$plugin_path = $plugins_path . $plugin_file;
-				$plugin_base = trailingslashit( dirname( $plugin_path ) );
-
-				if ( $plugins_path === $plugin_base || ! $filesystem->exists( $plugin_path ) || imagify_file_is_symlinked( $plugin_path ) ) {
-					continue;
-				}
-
-				// The folder name is enough.
-				$plugin_data = _get_plugin_data_markup_translate( $plugin_file, $plugin_data, false );
-				$plugins[ '{{PLUGINS}}/' . dirname( $plugin_file ) . '/' ] = $plugin_data['Name'];
-			}
-		}
-
-		return $plugins;
 	}
 
 	/**

@@ -1,10 +1,29 @@
 (function( $, undefined ) { // eslint-disable-line no-shadow, no-shadow-restricted-names
 
+	var jqPropHookChecked = $.propHooks.checked;
+
+	// Force `.prop()` to trigger a `change` event.
+	$.propHooks.checked = {
+		set: function( elem, value, name ) {
+			var ret;
+
+			if ( undefined === jqPropHookChecked ) {
+				ret = ( elem[ name ] = value );
+			} else {
+				ret = jqPropHookChecked( elem, value, name );
+			}
+
+			$( elem ).trigger( 'change.imagify' );
+
+			return ret;
+		}
+	};
+
 	// Custom jQuery functions =====================================================================
 	/**
 	 * Hide element(s).
 	 *
-	 * @param  {int)      duration A duration in ms.
+	 * @param  {int}      duration A duration in ms.
 	 * @param  {function} callback A callback to execute once the element is hidden.
 	 * @return {element}  The jQuery element(s).
 	 */
@@ -31,7 +50,7 @@
 	/**
 	 * Show element(s).
 	 *
-	 * @param  {int)      duration A duration in ms.
+	 * @param  {int}      duration A duration in ms.
 	 * @param  {function} callback A callback to execute before starting to display the element.
 	 * @return {element} The jQuery element(s).
 	 */
@@ -86,17 +105,19 @@
 			}
 		},
 		// Folder types in queue.
-		queue:               [],
+		queue:                [],
 		// Status of each folder type.
-		status:              {},
+		status:               {},
+		// Tell if the message displayed when retrieving the image IDs has been shown once.
+		displayedWaitMessage: false,
 		// Set to true to stop the whole thing.
-		processIsStopped:    false,
+		processIsStopped:     false,
 		// Global stats.
-		globalGain:          0,
-		globalOriginalSize:  0,
-		globalOptimizedSize: 0,
+		globalGain:           0,
+		globalOriginalSize:   0,
+		globalOptimizedSize:  0,
 		// Heartbeat.
-		folderTypes:         [],
+		folderTypes:          [],
 
 		// Methods =================================================================================
 
@@ -107,8 +128,10 @@
 			// Overview chart.
 			this.drawOverviewChart();
 
-			// Disable main button if nothing's checked
-			this.maybeDisabledMainButton();
+			if ( ! imagifyBulk.keyIsValid ) {
+				$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
+				return;
+			}
 
 			// Optimization level selector.
 			$( '.imagify-level-selector-button' )
@@ -123,10 +146,10 @@
 				.on( 'keypress.imagify click.imagify', this.closeLevelSelectors );
 
 			// Other buttons/UI.
+			$( '.imagify-bulk-table [name="group[]"]' ).on( 'change.imagify init.imagify', this.toggleOptimizationButton ).trigger( 'init.imagify' );
 			$( '.imagify-show-table-details' ).on( 'click.imagify open.imagify close.imagify', this.toggleOptimizationDetails );
 			$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
 			$( '.imagify-share-networks a' ).on( 'click.imagify', this.share );
-			$( '.imagify-cell-checkbox input' ).on( 'change.imagify', this.maybeDisabledMainButton );
 
 			// Optimization events.
 			$( w )
@@ -160,6 +183,10 @@
 			if ( this.charts.overview.donut ) {
 				// Update existing donut.
 				if ( data.length ) {
+					if ( data.reduce( function( a, b ) { return a + b; }, 0 ) === 0 ) {
+						data[0] = 1;
+					}
+
 					this.charts.overview.donut.data.datasets[0].data = data;
 					this.charts.overview.donut.update();
 				}
@@ -176,6 +203,10 @@
 
 			if ( data.length ) {
 				initData.datasets[0].data = data;
+			}
+
+			if ( initData.datasets[0].data.reduce( function( a, b ) { return a + b; }, 0 ) === 0 ) {
+				initData.datasets[0].data[0] = 1;
 			}
 
 			this.charts.overview.donut = new w.imagify.Chart( this.charts.overview.canvas, {
@@ -331,7 +362,7 @@
 			action = action.replace( '%GROUP_ID%', camelGroupID );
 			action = imagifyBulk.ajaxActions[ action ];
 
-			return ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&optimization_level=' + item.level + '&action=' + action + '&folder_type=' + item.type;
+			return ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&optimization_level=' + item.level + '&action=' + action + '&folder_type=' + item.groupId;
 		},
 
 		/*
@@ -373,7 +404,7 @@
 		stopProcess: function ( errorId, item ) {
 			this.processIsStopped = true;
 
-			w.imagify.bulk.status[ item.groupId + '|' + item.type ] = {
+			w.imagify.bulk.status[ item.groupId ] = {
 				isError: true,
 				id:      errorId
 			};
@@ -413,7 +444,7 @@
 			args.title        = args.title || imagifyBulk.labels.error;
 			args.customClass += ' imagify-sweet-alert';
 
-			swal( args );
+			swal( args ).catch( swal.noop );
 		},
 
 		/*
@@ -435,39 +466,6 @@
 			$row.find( '.imagify-cell-status' ).after( '<td colspan="' + colspan + '">' + text + '</td>' );
 
 			return $row;
-		},
-
-		/*
-		 * Display one of the 3 group headers.
-		 *
-		 * @param {string}  state      One of the 3 states: 'resting' (it's the "normal" title), 'fetching', and 'optimizing'.
-		 * @param {element} $container jQuery element of the group container.
-		 */
-		displayGroupHeader: function ( state, $container ) {
-			$container = $container.find( '.imagify-table-header' );
-			$container.not( '.imagify-' + state ).imagifyHide();
-			$container.filter( '.imagify-' + state ).imagifyShow();
-		},
-
-		/*
-		 * If the current folder is the last of the group, display the "normal" group header.
-		 *
-		 * @param {string}  groupId    The folder's group ID.
-		 * @param {element} $container jQuery element of the group container.
-		 */
-		maybeResetGroupHeader: function ( groupId, $table ) {
-			var resetHeader = true;
-
-			$.each( this.queue, function( i, otherItem ) {
-				if ( otherItem.groupId === groupId ) {
-					resetHeader = false;
-					return false;
-				}
-			} );
-
-			if ( resetHeader ) {
-				this.displayGroupHeader( 'resting', $table );
-			}
 		},
 
 		/*
@@ -610,6 +608,17 @@
 		},
 
 		/*
+		 * Enable or disable the Optimization button depending on the checked checkboxes.
+		 */
+		toggleOptimizationButton: function () {
+			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
+				$( '#imagify-bulk-action' ).removeAttr( 'disabled' );
+			} else {
+				$( '#imagify-bulk-action' ).attr( 'disabled', 'disabled' );
+			}
+		},
+
+		/*
 		 * Display/Hide optimization details.
 		 *
 		 * @param {object} e jQuery's Event object.
@@ -637,23 +646,18 @@
 		},
 
 		/*
-		 * Maybe make the main bulk button disabled if no checkboxes checked.
-		 */
-		maybeDisabledMainButton: function() {
-			var $checkboxes = $( '.imagify-cell-checkbox input' );
-
-			if ( $checkboxes.filter(':checked').length === 0 ) {
-				$( '#imagify-bulk-action' ).prop( 'disabled', true);
-			} else {
-				$( '#imagify-bulk-action' ).prop( 'disabled', false);
-			}
-		},
-
-		/*
 		 * Maybe display a modal, then launch all processes.
 		 */
 		maybeLaunchAllProcesses: function () {
-			var $quotaModal;
+			var $infosModal;
+
+			if ( ! imagifyBulk.keyIsValid ) {
+				w.imagify.bulk.displayError( {
+					title: imagifyBulk.labels.invalidAPIKeyTitle,
+					type:  'info'
+				} );
+				return;
+			}
 
 			if ( ! $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
 				return;
@@ -663,13 +667,25 @@
 				return;
 			}
 
-			$quotaModal = $( '#tmpl-imagify-bulk-infos' );
+			if ( imagifyBulk.isOverQuota ) {
+				// Swal information when over quota.
+				w.imagify.bulk.displayError( {
+					title:             imagifyBulk.labels.overQuotaTitle,
+					html:              $( '#tmpl-imagify-overquota-alert' ).html(),
+					type:              'info',
+					customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
+					showConfirmButton: false
+				} );
+				return;
+			}
 
-			if ( $quotaModal.length ) {
+			$infosModal = $( '#tmpl-imagify-bulk-infos' );
+
+			if ( $infosModal.length ) {
 				// Swal Information before loading the optimize process.
 				swal( {
 					title:             imagifyBulk.labels.bulkInfoTitle,
-					html:              $quotaModal.html(),
+					html:              $infosModal.html(),
 					type:              '',
 					customClass:       'imagify-sweet-alert imagify-swal-has-subtitle imagify-before-bulk-infos',
 					showCancelButton:  true,
@@ -678,7 +694,16 @@
 					confirmButtonText: imagifyBulk.labels.confirmBulk,
 					cancelButtonText:  imagifySwal.labels.cancelButtonText,
 					reverseButtons:    true
-				} ).then( w.imagify.bulk.launchAllProcesses ).catch( swal.noop );
+				} ).then( function() {
+					var $row    = $( '.imagify-bulk-table [name="group[]"]:checked' ).first().closest( '.imagify-row-folder-type' ),
+						groupId = $row.data( 'group-id' ),
+						context = $row.data( 'context' );
+
+					$.get( ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&action=' + imagifyBulk.ajaxActions.bulkInfoSeen + '&folder_type=' + groupId + '&context=' + context );
+					$infosModal.remove();
+
+					w.imagify.bulk.launchAllProcesses();
+				} ).catch( swal.noop );
 			} else {
 				w.imagify.bulk.launchAllProcesses();
 			}
@@ -693,7 +718,7 @@
 				skip    = true;
 
 			// Disable the button.
-			$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
+			$button.attr( 'disabled', 'disabled' ).find( '.dashicons' ).addClass( 'rotate' );
 
 			// Add a message to be displayed when the user wants to quit the page.
 			$w.on( 'beforeunload', this.getConfirmMessage );
@@ -707,32 +732,30 @@
 			$( '.imagify-show-table-details' ).trigger( 'close.imagify' );
 
 			// Make sure to reset properties.
-			this.queue               = [];
-			this.status              = {};
-			this.processIsStopped    = false;
-			this.globalGain          = 0;
-			this.globalOriginalSize  = 0;
-			this.globalOptimizedSize = 0;
+			this.queue                = [];
+			this.status               = {};
+			this.displayedWaitMessage = false;
+			this.processIsStopped     = false;
+			this.globalGain           = 0;
+			this.globalOriginalSize   = 0;
+			this.globalOptimizedSize  = 0;
 
 			$( '.imagify-bulk-table [name="group[]"]:checked' ).each( function() {
-				var $checkbox  = $( this ),
-					$row       = $checkbox.closest( '.imagify-row-folder-type' ),
-					$container = $row.closest( '.imagify-bulk-table' ),
-					groupId    = $container.data( 'group-id' ),
-					context    = $container.data( 'context' ),
-					type       = $checkbox.val(),
-					level      = $row.find( '.imagify-cell-level [name="level[' + type + ']"]:checked' ).val();
+				var $checkbox = $( this ),
+					$row      = $checkbox.closest( '.imagify-row-folder-type' ),
+					groupId   = $row.data( 'group-id' ),
+					context   = $row.data( 'context' ),
+					level     = $row.find( '.imagify-cell-level [name="level[' + groupId + ']"]:checked' ).val();
 
 				// Build the queue.
 				w.imagify.bulk.queue.push( {
 					groupId: groupId,
 					context: context,
-					type:    type,
 					level:   undefined === level ? -1 : parseInt( level, 10 )
 				} );
 
 				// Set the status.
-				w.imagify.bulk.status[ groupId + '|' + type ] = {
+				w.imagify.bulk.status[ groupId ] = {
 					isError: false,
 					id:      'waiting'
 				};
@@ -756,7 +779,7 @@
 		 * Process the first item in the queue.
 		 */
 		processQueue: function () {
-			var $row, $table, item;
+			var $row, item;
 
 			if ( w.imagify.bulk.processIsStopped ) {
 				return;
@@ -767,28 +790,27 @@
 				return;
 			}
 
-			// Display an alert to wait.
-			swal( {
-				title:             imagifyBulk.labels.waitTitle,
-				html:              imagifyBulk.labels.waitText,
-				showConfirmButton: false,
-				padding:           0,
-				imageUrl:          imagifyBulk.waitImageUrl,
-				customClass:       'imagify-sweet-alert'
-			} );
+			if ( ! w.imagify.bulk.displayedWaitMessage ) {
+				// Display an alert to wait.
+				swal( {
+					title:             imagifyBulk.labels.waitTitle,
+					html:              imagifyBulk.labels.waitText,
+					showConfirmButton: false,
+					padding:           0,
+					imageUrl:          imagifyBulk.waitImageUrl,
+					customClass:       'imagify-sweet-alert'
+				} ).catch( swal.noop );
+				w.imagify.bulk.displayedWaitMessage = true;
+			}
 
 			/**
 			 * Fetch files for the first folder type in the queue.
 			 */
-			item   = w.imagify.bulk.queue.shift();
-			$row   = $( '#cb-select-' + item.type ).closest( '.imagify-row-folder-type' );
-			$table = $row.closest( '.imagify-bulk-table' );
+			item = w.imagify.bulk.queue.shift();
+			$row = $( '#cb-select-' + item.groupId ).closest( '.imagify-row-folder-type' );
 
 			// Update status.
-			w.imagify.bulk.status[ item.groupId + '|' + item.type ].id = 'fetching';
-
-			// Display the "Fetching" message in the table header.
-			w.imagify.bulk.displayGroupHeader( 'fetching', $table );
+			w.imagify.bulk.status[ item.groupId ].id = 'fetching';
 
 			// Display the "working" folder row and hide the "normal" one.
 			w.imagify.bulk.displayFolderRow( 'working', $row );
@@ -811,10 +833,10 @@
 						}
 
 						// No images.
-						w.imagify.bulk.status[ item.groupId + '|' + item.type ].id = 'no-images';
+						w.imagify.bulk.status[ item.groupId ].id = 'no-images';
 
 						if ( ! w.imagify.bulk.processIsStopped ) {
-							$( '#cb-select-' + item.type ).prop( 'checked', false );
+							$( '#cb-select-' + item.groupId ).prop( 'checked', false );
 
 							if ( ! w.imagify.bulk.queue.length ) {
 								$( w ).trigger( 'queueEmpty.imagify' );
@@ -823,9 +845,6 @@
 
 							// Reset the folder row.
 							w.imagify.bulk.displayFolderRow( 'resting', $row );
-
-							// Maybe display the "normal" header.
-							w.imagify.bulk.maybeResetGroupHeader( item.groupId, $table );
 
 							$( w ).trigger( 'processQueue.imagify' );
 						}
@@ -849,14 +868,14 @@
 		 * @param {object} files A list of file IDs (key) and URLs (values).
 		 */
 		optimizeFiles: function ( e, item, files ) {
-			var $row             = $( '#cb-select-' + item.type ).closest( '.imagify-row-folder-type' ),
+			var $row             = $( '#cb-select-' + item.groupId ).closest( '.imagify-row-folder-type' ),
 				$workingRow      = $row.next( '.imagify-row-working' ),
 				$optimizedCount  = $workingRow.find( '.imagify-cell-images-optimized span' ),
 				optimizedCount   = parseInt( $optimizedCount.text(), 10 ),
 				$errorsCount     = $workingRow.find( '.imagify-cell-errors span' ),
 				errorsCount      = parseInt( $errorsCount.text(), 10 ),
 				$table           = $row.closest( '.imagify-bulk-table' ),
-				$progressBar     = $table.find( '#imagify-row-progress-' + item.groupId ),
+				$progressBar     = $table.find( '.imagify-row-progress' ),
 				$progress        = $progressBar.find( '.bar' ),
 				defaultsTemplate = {
 					groupId:              item.groupId,
@@ -880,15 +899,16 @@
 			}
 
 			// Update folder status.
-			w.imagify.bulk.status[ item.groupId + '|' + item.type ].id = 'optimizing';
+			w.imagify.bulk.status[ item.groupId ].id = 'optimizing';
 
-			// Empty the result details.
+			// Fill in the result table header.
+			$table.find( '.imagify-bulk-table-details thead' ).html( $( '#tmpl-imagify-file-header-' + item.groupId ).html() );
+
+			// Empty the result table body.
 			$resultsContainer = $table.find( '.imagify-bulk-table-details tbody' ).text( '' );
 
-			// Display the "Optimizing" message in the table header.
-			w.imagify.bulk.displayGroupHeader( 'optimizing', $table );
-
-			// Display the progress bar.
+			// Reset and display the progress bar.
+			$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
 			$progressBar.slideDown().attr( 'aria-hidden', 'false' );
 
 			// Optimize the files.
@@ -951,13 +971,6 @@
 					return;
 				}
 
-				if ( 'over-quota' === data.error_code ) {
-					// No more data, stop everything.
-					Optimizer.stopProcess();
-					w.imagify.bulk.stopProcess( data.error_code, item );
-					return;
-				}
-
 				// Display the error in the file row.
 				$fileRow.replaceWith( w.imagify.bulk.displayErrorInRow( template( $.extend( {}, defaultsTemplate, {
 					status:      'error',
@@ -974,12 +987,18 @@
 					errorsCount += 1;
 					$errorsCount.text( errorsCount );
 				}
+
+				if ( 'over-quota' === data.error_code ) {
+					// No more data, stop everything.
+					Optimizer.stopProcess();
+					w.imagify.bulk.stopProcess( data.error_code, item );
+				}
 			} );
 
 			// After all image optimizations.
 			Optimizer.done( function( data ) {
 				// Uncheck the checkbox.
-				$( '#cb-select-' + item.type ).prop( 'checked', false );
+				$( '#cb-select-' + item.groupId ).prop( 'checked', false );
 
 				if ( data.global_original_size ) {
 					w.imagify.bulk.globalGain          += parseInt( data.global_gain, 10 );
@@ -992,11 +1011,11 @@
 				}
 
 				// Update folder type status.
-				if ( ! w.imagify.bulk.status[ item.groupId + '|' + item.type ].isError ) {
-					w.imagify.bulk.status[ item.groupId + '|' + item.type ].id = 'done';
+				if ( ! w.imagify.bulk.status[ item.groupId ].isError ) {
+					w.imagify.bulk.status[ item.groupId ].id = 'done';
 				}
 
-				// Update and display the "normal" folder row.
+				// Update the folder row.
 				$row.addClass( 'updating' );
 
 				$.get( w.imagify.bulk.getAjaxUrl( 'getFolderData', item ) )
@@ -1014,9 +1033,6 @@
 						if ( ! w.imagify.bulk.queue.length ) {
 							$( w ).trigger( 'queueEmpty.imagify' );
 						} else {
-							// Maybe display the "normal" header.
-							w.imagify.bulk.maybeResetGroupHeader( item.groupId, $table );
-
 							$( w ).trigger( 'processQueue.imagify' );
 						}
 					} );
@@ -1043,7 +1059,7 @@
 
 			// Maybe display error.
 			if ( ! $.isEmptyObject( w.imagify.bulk.status ) ) {
-				$.each( w.imagify.bulk.status, function( groupIdPipeType, typeStatus ) {
+				$.each( w.imagify.bulk.status, function( groupId, typeStatus ) {
 					if ( typeStatus.isError ) {
 						// One error is enough to display a message.
 						hasError = typeStatus.id;
@@ -1067,7 +1083,7 @@
 					else if ( 'over-quota' === hasError ) {
 						errorArgs = {
 							title:             imagifyBulk.labels.overQuotaTitle,
-							text:              $( '#tmpl-imagify-overquota-alert' ).html(),
+							html:              $( '#tmpl-imagify-overquota-alert' ).html(),
 							type:              'info',
 							customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
 							showConfirmButton: false
@@ -1076,7 +1092,7 @@
 					else if ( 'get-unoptimized-images' === hasError || 'consumed-all-data' === hasError ) {
 						errorArgs = {
 							title: imagifyBulk.labels.getUnoptimizedImagesErrorTitle,
-							text:  imagifyBulk.labels.getUnoptimizedImagesErrorText,
+							html:  imagifyBulk.labels.getUnoptimizedImagesErrorText,
 							type:  'info'
 						};
 					}
@@ -1086,7 +1102,7 @@
 					w.imagify.bulk.displayError( {
 						title: imagifyBulk.labels.noAttachmentToOptimizeTitle,
 						html:  imagifyBulk.labels.noAttachmentToOptimizeText,
-						type: 'info'
+						type:  'info'
 					} );
 				}
 			}
@@ -1097,17 +1113,18 @@
 			// Unlink the message displayed when the user wants to quit the page.
 			$( w ).off( 'beforeunload', w.imagify.bulk.getConfirmMessage );
 
-			// Display the "normal" headers.
-			w.imagify.bulk.displayGroupHeader( 'resting', $tables );
-
 			// Display the "normal" folder rows (the values of the last one should being updated via ajax, don't display it for now).
 			w.imagify.bulk.displayFolderRow( 'resting', $tables.find( '.imagify-row-folder-type' ).not( '.updating' ) );
 
 			// Reset the progress bars.
 			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
 
-			// Enable the main button.
-			$( '#imagify-bulk-action' ).prop( 'disabled', false ).find( '.dashicons' ).removeClass( 'rotate' );
+			// Enable (or not) the main button.
+			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
+				$( '#imagify-bulk-action' ).removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
+			} else {
+				$( '#imagify-bulk-action' ).find( '.dashicons' ).removeClass( 'rotate' );
+			}
 		},
 
 		/**
@@ -1120,7 +1137,7 @@
 			data.imagify_heartbeat = imagifyBulk.heartbeatId;
 
 			if ( ! w.imagify.bulk.folderTypes.length ) {
-				$( '.imagify-bulk-table' ).each( function() {
+				$( '.imagify-row-folder-type' ).each( function() {
 					w.imagify.bulk.folderTypes.push( $( this ).data( 'group-id' ) );
 				} );
 			}
@@ -1155,6 +1172,7 @@
 			/**
 			 * User account.
 			 */
+			data.unconsumed_quota = data.unconsumed_quota.toFixed( 1 ); // A mystery where a float rounded on php side is not rounded here anymore. JavaScript is fun, it always surprises you in a manner you didn't expect.
 			$( '.imagify-unconsumed-percent' ).html( data.unconsumed_quota + '%' );
 			$( '.imagify-unconsumed-bar' ).css( 'width', data.unconsumed_quota + '%' );
 

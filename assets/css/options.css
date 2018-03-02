@@ -1,6 +1,9 @@
 .wrap.imagify-settings {
 	margin-right: 0;
 }
+.imagify-settings.imagify-have-rocket {
+	margin-right: 20px;
+}
 
 /* The field that checks the API Key */
 #imagify-check-api-container {
@@ -471,7 +474,8 @@ label[for="imagify_admin_bar_menu"] {
 	margin: 0;
 	color: #FFF;
 }
-.imagify-fts-header strong {
+.imagify-fts-header strong,
+#imagify-add-themes-to-custom-folder strong {
 	color: #40B1D0;
 	font-weight: bold;
 }
@@ -491,6 +495,7 @@ label[for="imagify_admin_bar_menu"] {
 	margin-top: 2em;
 	padding: 0 0 10px 0;
 	border-bottom: 1px solid #D2D3D6;
+	justify-content: space-between;
 	font-weight: bold;
 }
 .imagify-kindof-title .imagify-button-primary {
@@ -538,6 +543,7 @@ p.imagify-custom-folder-line {
 	line-height: 18px;
 	background: #FFF;
 	transition: all .275s;
+	cursor: pointer;
 }
 .imagify-custom-folders-remove-text {
 	max-width: 0;

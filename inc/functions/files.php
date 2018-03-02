@@ -39,11 +39,60 @@ function imagify_get_filesystem() {
  * @since 1.2
  * @since 1.6.5 Use WP Filesystem.
  *
- * @param string $file The path to file.
+ * @param  string $file_path The path to file.
  * @return bool
  */
-function imagify_chmod_file( $file ) {
-	return imagify_get_filesystem()->chmod( $file, FS_CHMOD_FILE );
+function imagify_chmod_file( $file_path ) {
+	return imagify_get_filesystem()->chmod( $file_path, FS_CHMOD_FILE );
+}
+
+/**
+ * Get a file mime type.
+ *
+ * @since  1.6.9
+ * @since  1.7 Doesn't use exif_imagetype() nor getimagesize() anymore.
+ * @author Grégory Viguier
+ *
+ * @param  string $file_path A file path (prefered) or a filename.
+ * @return string|bool       A mime type. False on failure: the last test is limited to mime types supported by Imagify.
+ */
+function imagify_get_mime_type_from_file( $file_path ) {
+	if ( ! $file_path ) {
+		return false;
+	}
+
+	$file_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
+
+	return $file_type['type'];
+}
+
+/**
+ * Get a file modification date, formated as "mysql". Fallback to current date.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  string $file_path The file path.
+ * @return string            The date.
+ */
+function imagify_get_file_date( $file_path ) {
+	static $offset;
+
+	if ( ! $file_path ) {
+		return current_time( 'mysql' );
+	}
+
+	$date = imagify_get_filesystem()->mtime( $file_path );
+
+	if ( ! $date ) {
+		return current_time( 'mysql' );
+	}
+
+	if ( ! isset( $offset ) ) {
+		$offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
+	}
+
+	return gmdate( 'Y-m-d H:i:s', $date + $offset );
 }
 
 

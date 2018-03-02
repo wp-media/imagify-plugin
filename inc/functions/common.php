@@ -25,8 +25,10 @@ function imagify_get_capacity( $describer = 'manage' ) {
 
 	switch ( $describer ) {
 		case 'manage':
-		case 'optimize-file':
 			$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
+			break;
+		case 'optimize-file':
+			$capacity = is_multisite() ? 'manage_network_options' : 'manage_options';
 			break;
 		case 'bulk-optimize':
 			$capacity = 'manage_options';
@@ -173,6 +175,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Abstract_Attachment'      => 1,
 		'Imagify_Abstract_Cron'            => 1,
 		'Imagify_Abstract_DB'              => 1,
+		'Imagify_Abstract_Options'         => 1,
 		'Imagify_Admin_Ajax_Post'          => 1,
 		'Imagify_Assets'                   => 1,
 		'Imagify_Attachment'               => 1,

@@ -57,6 +57,7 @@ class Imagify_Admin_Ajax_Post {
 		'imagify_get_user_data',
 		'imagify_get_files_tree',
 		'imagify_get_folder_type_data',
+		'imagify_bulk_info_seen',
 	);
 
 	/**
@@ -66,6 +67,7 @@ class Imagify_Admin_Ajax_Post {
 	 */
 	protected $post_only_actions = array(
 		'imagify_scan_custom_folders',
+		'imagify_dismiss_ad',
 	);
 
 	/**
@@ -292,12 +294,14 @@ class Imagify_Admin_Ajax_Post {
 			if ( ! $attachment->has_error() ) {
 				$data['error_code'] = 'already-optimized';
 			} else {
-				$message = imagify_translate_api_message( 'You\'ve consumed all your data. You have to upgrade your account to continue.' );
+				$message = 'You\'ve consumed all your data. You have to upgrade your account to continue';
 
 				if ( $data['error'] === $message ) {
 					$data['error_code'] = 'over-quota';
 				}
 			}
+
+			$data['error'] = imagify_translate_api_message( $data['error'] );
 
 			imagify_die( $data );
 		}
@@ -332,14 +336,7 @@ class Imagify_Admin_Ajax_Post {
 	 */
 	public function imagify_bulk_optimize_file_callback() {
 		imagify_check_nonce( 'imagify-bulk-upload' );
-
-		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
-
-		$this->check_user_capacity_for_folder_type( $folder_type, array(
-			'themes',
-			'plugins',
-			'custom-folders',
-		) );
+		imagify_check_user_capacity( 'optimize-file' );
 
 		$file_id = (int) filter_input( INPUT_POST, 'image', FILTER_SANITIZE_NUMBER_INT );
 		$context = imagify_sanitize_context( filter_input( INPUT_POST, 'context', FILTER_SANITIZE_STRING ) );
@@ -374,12 +371,14 @@ class Imagify_Admin_Ajax_Post {
 			if ( ! $file->has_error() ) {
 				$data['error_code'] = 'already-optimized';
 			} else {
-				$message = imagify_translate_api_message( 'You\'ve consumed all your data. You have to upgrade your account to continue.' );
+				$message = 'You\'ve consumed all your data. You have to upgrade your account to continue';
 
 				if ( $data['error'] === $message ) {
 					$data['error_code'] = 'over-quota';
 				}
 			}
+
+			$data['error'] = imagify_translate_api_message( $data['error'] );
 
 			imagify_die( $data );
 		}
@@ -518,7 +517,7 @@ class Imagify_Admin_Ajax_Post {
 		$folder = (int) filter_input( INPUT_GET, 'folder', FILTER_SANITIZE_NUMBER_INT );
 
 		if ( $folder > 0 ) {
-			// A specific plugin, theme, or custom folder (selected or not).
+			// A specific custom folder (selected or not).
 			$folders_db  = Imagify_Folders_DB::get_instance();
 			$folders_key = $folders_db->get_primary_key();
 			$folder      = $folders_db->get( $folder );
@@ -530,32 +529,18 @@ class Imagify_Admin_Ajax_Post {
 
 			$folder['folder_path'] = Imagify_Files_Scan::remove_placeholder( $folder['path'] );
 
-			imagify_get_files_from_folders( array(
+			$folders = array(
 				$folder[ $folders_key ] => $folder,
+			);
+
+			imagify_get_files_from_folders( $folders, array(
+				'add_inactive_folder_files' => true,
 			) );
 
 			imagify_maybe_redirect();
 		}
 
-		$folder_types = array(
-			'themes'         => 1,
-			'plugins'        => 1,
-			'custom-folders' => 1,
-		);
-		$folder_type = trim( filter_input( INPUT_GET, 'folder-type', FILTER_SANITIZE_STRING ) );
-		$folder_type = isset( $folder_types[ $folder_type ] ) ? $folder_type : '';
-
-		if ( $folder_type ) {
-			// Selected plugins, themes, or custom folders.
-			$folders = imagify_get_folders_from_type( $folder_type, array(
-				'active' => true,
-			) );
-			imagify_get_files_from_folders( $folders );
-
-			imagify_maybe_redirect();
-		}
-
-		// All selected plugins, themes, and custom folders.
+		// All selected custom folders.
 		$folders = imagify_get_folders_from_type( 'all', array(
 			'active' => true,
 		) );
@@ -813,14 +798,7 @@ class Imagify_Admin_Ajax_Post {
 	 */
 	public function imagify_get_unoptimized_file_ids_callback() {
 		imagify_check_nonce( 'imagify-bulk-upload' );
-
-		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
-
-		$this->check_user_capacity_for_folder_type( $folder_type, array(
-			'themes',
-			'plugins',
-			'custom-folders',
-		) );
+		imagify_check_user_capacity( 'optimize-file' );
 
 		$this->check_can_optimize();
 
@@ -831,7 +809,7 @@ class Imagify_Admin_Ajax_Post {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders = imagify_get_folders_from_type( $folder_type, array(
+		$folders = imagify_get_folders_from_type( 'custom-folders', array(
 			'active' => true,
 		) );
 
@@ -882,12 +860,13 @@ class Imagify_Admin_Ajax_Post {
 
 		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
 
-		$this->check_user_capacity_for_folder_type( $folder_type, array(
-			'library',
-			'themes',
-			'plugins',
-			'custom-folders',
-		) );
+		if ( 'library' === $folder_type ) {
+			imagify_check_user_capacity( 'bulk-optimize' );
+		} elseif ( 'custom-folders' === $folder_type ) {
+			imagify_check_user_capacity( 'optimize-file' );
+		} else {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
 
 		/**
 		 * Get the formated data.
@@ -899,6 +878,31 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		wp_send_json_success( $data );
+	}
+
+	/**
+	 * Set the "bulk info" popup state as "seen".
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_bulk_info_seen_callback() {
+		imagify_check_nonce( 'imagify-bulk-upload' );
+
+		$folder_type = filter_input( INPUT_GET, 'folder_type', FILTER_SANITIZE_STRING );
+
+		if ( 'library' === $folder_type ) {
+			imagify_check_user_capacity( 'bulk-optimize' );
+		} elseif ( 'custom-folders' === $folder_type ) {
+			imagify_check_user_capacity( 'optimize-file' );
+		} else {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		set_transient( 'imagify_bulk_optimization_infos', 1, WEEK_IN_SECONDS );
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -1240,6 +1244,14 @@ class Imagify_Admin_Ajax_Post {
 		// Remove useless sensitive data.
 		unset( $user->email );
 
+		if ( ! $user->get_percent_unconsumed_quota ) {
+			$user->best_plan_title = __( 'Oops, It\'s Over!', 'imagify' );
+		} elseif ( $user->get_percent_unconsumed_quota <= 20 ) {
+			$user->best_plan_title = __( 'Oops, It\'s almost over!', 'imagify' );
+		} else {
+			$user->best_plan_title = __( 'You\'re new to Imagify?', 'imagify' );
+		}
+
 		wp_send_json_success( $user );
 	}
 
@@ -1287,8 +1299,8 @@ class Imagify_Admin_Ajax_Post {
 		if ( $folder === $abspath ) {
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
 				'relative_path'     => '/',
-				// Value #///# In input id #///# Label.
-				'checkbox_value'    => '{{ABSPATH}}/#///#ABSPATH#///#' . esc_attr__( 'Site\'s root', 'imagify' ),
+				// Value #///# Label.
+				'checkbox_value'    => '{{ABSPATH}}/#///#' . esc_attr__( 'Site\'s root', 'imagify' ),
 				'checkbox_id'       => 'ABSPATH',
 				'checkbox_selected' => isset( $selected['{{ABSPATH}}/'] ),
 				'label'             => __( 'Site\'s root', 'imagify' ),
@@ -1312,8 +1324,8 @@ class Imagify_Admin_Ajax_Post {
 
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
 				'relative_path'     => $relative_path,
-				// Value #///# In input id #///# Label.
-				'checkbox_value'    => esc_attr( $placeholder ) . '#///#' . sanitize_html_class( $placeholder ) . '#///#' . $relative_path,
+				// Value #///# Label.
+				'checkbox_value'    => esc_attr( $placeholder ) . '#///#' . esc_attr( $relative_path ),
 				'checkbox_id'       => sanitize_html_class( $placeholder ),
 				'checkbox_selected' => isset( $selected[ $placeholder ] ),
 				'label'             => str_replace( $folder, '', $folder_path ),
@@ -1330,6 +1342,45 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		wp_send_json_success( $output );
+	}
+
+	/**
+	 * Store the "closed" status of the ads.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_dismiss_ad_callback() {
+
+		imagify_check_nonce( 'imagify-dismiss-ad' );
+		imagify_check_user_capacity();
+
+		$notice = filter_input( INPUT_GET, 'ad', FILTER_SANITIZE_STRING );
+
+		if ( ! $notice ) {
+			imagify_maybe_redirect();
+			wp_send_json_error();
+		}
+
+		$user_id = get_current_user_id();
+		$notices = get_user_meta( $user_id, '_imagify_ignore_ads', true );
+		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+
+		if ( isset( $notices[ $notice ] ) ) {
+			imagify_maybe_redirect();
+			wp_send_json_success();
+		}
+
+		$notices   = array_flip( $notices );
+		$notices[] = $notice;
+		$notices   = array_filter( $notices );
+		$notices   = array_values( $notices );
+
+		update_user_meta( $user_id, '_imagify_ignore_ads', $notices );
+
+		imagify_maybe_redirect();
+		wp_send_json_success();
 	}
 
 
@@ -1354,45 +1405,6 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		return get_imagify_option( 'optimization_level' );
-	}
-
-	/**
-	 * Check user capacity depending on a folder type. Die on failure.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param string $folder_type  A folder type.
-	 * @param array  $folder_types A list of "basic" allowed folder types.
-	 */
-	public function check_user_capacity_for_folder_type( $folder_type, $folder_types ) {
-		$folder_types = array_flip( $folder_types );
-		$folder_types = array_intersect_key( array(
-			'library'        => 'bulk-optimize',
-			'themes'         => 'optimize-file',
-			'plugins'        => 'optimize-file',
-			'custom-folders' => 'optimize-file',
-		), $folder_types );
-
-		if ( ! isset( $folder_types[ $folder_type ] ) ) {
-			/**
-			 * Provide a user capacity or a capacity describer, allowing to work with a custom folder type.
-			 *
-			 * @since  1.7
-			 * @author Grégory Viguier
-			 *
-			 * @param string $capacity    A user capacity or a capacity describer.
-			 * @param string $folder_type A folder type.
-			 */
-			$folder_types[ $folder_type ] = apply_filters( 'imagify_folder_type_capacity', '', $folder_type );
-		}
-
-		if ( empty( $folder_types[ $folder_type ] ) ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		imagify_check_user_capacity( $folder_types[ $folder_type ] );
 	}
 
 	/**

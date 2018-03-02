@@ -37,7 +37,7 @@ class Imagify_Deprecated {
 	 * @return object Main instance.
 	 */
 	public static function instance() {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.6.5', 'Imagify::get_instance()' );
+		_deprecated_function( 'Imagify::instance()', '1.6.5', 'Imagify::get_instance()' );
 		return Imagify::get_instance();
 	}
 
@@ -272,7 +272,7 @@ class Imagify_Abstract_DB_Deprecated {
 	 * @return object Main instance.
 	 */
 	public static function instance() {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.6.5', get_class( $this ) . '::get_instance()' );
+		_deprecated_function( 'Imagify_Abstract_DB::instance()', '1.6.5', 'Imagify_Abstract_DB::get_instance()' );
 
 		return self::get_instance();
 	}

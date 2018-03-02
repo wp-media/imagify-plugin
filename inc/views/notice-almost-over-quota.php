@@ -37,5 +37,5 @@ $bar_class         = 'negative';
 </p>
 <?php
 $this->print_template( 'notice-footer', array(
-	'dismissible' => 'free-over-quota',
+	'dismissible' => 'almost-over-quota',
 ) );

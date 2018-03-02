@@ -469,7 +469,7 @@ button.imagify-link-like {
 	vertical-align: middle;
 }
 
-/* Exception in Medias edition page and post Edition pages (insert media popin) */
+/* Exception in Media edition page and post Edition pages (insert media popin) */
 .wp_attachment_image .imagify-button-primary,
 .media-frame-content .imagify-button-primary {
 	padding: 0 10px 1px;
@@ -493,6 +493,13 @@ button.imagify-link-like {
 	font-size: 23px;
 	background: #1F2332;
 	color: #FFF;
+}
+.imagify-welcome .imagify-logo {
+	opacity: 1;
+}
+.imagify-welcome .imagify-title {
+	display: flex;
+	padding: 20px 30px;
 }
 .imagify-settings .imagify-title { /* (options and bulk) */
 	display: flex;
@@ -680,7 +687,8 @@ p.imagify-section-title.imagify-section-title {
 .imagify-important {
 	color: #F5A623;
 }
-.imagify-success {
+.imagify-success,
+.imagify-settings .imagify-success {
 	color: #8BC34A;
 }
 .imagify-info,

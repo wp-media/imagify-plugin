@@ -57,7 +57,7 @@ class Imagify_Files_Iterator extends FilterIterator {
 		// Forbidden file/folder paths and names.
 		$file_path = $this->current()->getPathname();
 
-		if ( Imagify_Files_Scan::is_path_forbidden( $file_path, false ) ) {
+		if ( Imagify_Files_Scan::is_path_forbidden( $file_path ) ) {
 			return false;
 		}
 
