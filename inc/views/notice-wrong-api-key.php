@@ -2,7 +2,8 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 $this->print_template( 'notice-header', array(
-	'title' => __( 'Your API key isn\'t valid!', 'imagify' ),
+	'title'   => __( 'Your API key isn\'t valid!', 'imagify' ),
+	'classes' => array( 'error' ),
 ) );
 ?>
 <p>

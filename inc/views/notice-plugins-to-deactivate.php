@@ -1,7 +1,9 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-$this->print_template( 'notice-header' );
+$this->print_template( 'notice-header', array(
+	'classes' => array( 'error' ),
+) );
 ?>
 <p><?php echo _n( 'The following plugin is not compatible with this plugin and may cause unexpected results:', 'The following plugins are not compatible with this plugin and may cause unexpected results:', count( $data ), 'imagify' ); ?></p>
 
