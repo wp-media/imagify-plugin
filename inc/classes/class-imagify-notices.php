@@ -496,7 +496,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 
 		$user = new Imagify_User();
 
-		// Don't display the notice if the user doesn't almost use all his quota.
+		// Don't display the notice if the user's unconsumed quota is superior to 20%.
 		if ( $user->get_percent_unconsumed_quota() > 20 ) {
 			return $display;
 		}
