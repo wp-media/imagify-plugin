@@ -270,14 +270,12 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		$size = @getimagesize( $this->get_original_path() );
 
 		if ( isset( $size[0], $size[1] ) ) {
-			$metadata                   = $this->image->meta_data;
-			$metadata['width']          = $size[0];
-			$metadata['height']         = $size[1];
-			$metadata['full']['width']  = $size[0];
-			$metadata['full']['height'] = $size[1];
-			$this->image->meta_data     = $metadata;
+			$this->image->meta_data['width']          = $size[0];
+			$this->image->meta_data['height']         = $size[1];
+			$this->image->meta_data['full']['width']  = $size[0];
+			$this->image->meta_data['full']['height'] = $size[1];
 
-			nggdb::update_image_meta( $this->id, $metadata );
+			nggdb::update_image_meta( $this->id, $this->image->meta_data );
 		}
 	}
 
@@ -395,7 +393,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return;
 		}
 
@@ -605,7 +603,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 */
 	public function restore() {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return new WP_Error( 'mime_not_type_supported', __( 'Mime type not supported.', 'imagify' ) );
 		}
 

@@ -165,7 +165,7 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 	public function maybe_copy_files_from_s3( $ids, $results, $optimization_level ) {
 		global $wpdb, $as3cf;
 
-		if ( ! $as3cf->is_plugin_setup() ) {
+		if ( ! $as3cf || ! $as3cf->is_plugin_setup() ) {
 			return;
 		}
 

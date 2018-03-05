@@ -219,7 +219,7 @@ class Imagify_Assets {
 
 		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
 
-		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'admin' ) )->defer_localization( 'imagifyOptions' );
+		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'underscore', 'admin' ) )->defer_localization( 'imagifyOptions' );
 
 		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'chart', 'admin' ) )->defer_localization( 'imagifyFiles' );
 	}
@@ -352,7 +352,7 @@ class Imagify_Assets {
 
 		$user = get_imagify_user();
 
-		if ( empty( $user->is_intercom ) || false === $user->display_support ) {
+		if ( empty( $user->is_intercom ) || empty( $user->display_support ) ) {
 			return;
 		}
 		?>
@@ -844,8 +844,6 @@ class Imagify_Assets {
 			return false;
 		}
 
-		$has_api_key = ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key' );
-
-		return $has_api_key && is_admin_bar_showing() && imagify_current_user_can() && get_imagify_option( 'admin_bar_menu' );
+		return get_imagify_option( 'api_key' ) && is_admin_bar_showing() && imagify_current_user_can() && get_imagify_option( 'admin_bar_menu' );
 	}
 }

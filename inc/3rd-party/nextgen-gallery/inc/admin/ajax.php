@@ -8,6 +8,7 @@ add_action( 'admin_post_imagify_manual_override_upload', '_do_admin_post_imagify
 add_action( 'wp_ajax_imagify_restore_upload',            '_do_admin_post_imagify_ngg_user_capacity', 5 );
 add_action( 'admin_post_imagify_restore_upload',         '_do_admin_post_imagify_ngg_user_capacity', 5 );
 add_action( 'wp_ajax_imagify_get_folder_type_data',      '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'wp_ajax_bulk_info_seen_callback',           '_do_admin_post_imagify_ngg_user_capacity', 5 );
 /**
  * On manual optimization, manual re-optimization, and manual restoration, filter the user capacity to operate Imagify within NGG.
  *

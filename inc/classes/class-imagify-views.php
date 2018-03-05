@@ -146,7 +146,7 @@ class Imagify_Views {
 		 */
 		if ( imagify_can_optimize_custom_folders() ) {
 			// Sub-menu item: custom folders list.
-			$screen_id = add_media_page( __( 'Themes and Plugins Images', 'imagify' ), __( 'Optimized Files', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+			$screen_id = add_media_page( __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
 
 			if ( $screen_id ) {
 				// Load the data for this page.
@@ -178,7 +178,7 @@ class Imagify_Views {
 		add_menu_page( __( 'Bulk Optimization', 'imagify' ), 'Imagify', imagify_get_capacity( 'optimize-file' ), $this->get_bulk_page_slug(), array( $this, 'display_bulk_page' ) );
 
 		// Sub-menu item: custom folders list.
-		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Themes and Plugins Images', 'imagify' ), __( 'Themes and Plugins Images', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
 
 		// Sub-menu item: settings.
 		add_submenu_page( $this->get_bulk_page_slug(), 'Imagify', __( 'Settings', 'imagify' ), imagify_get_capacity(), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
@@ -189,7 +189,7 @@ class Imagify_Views {
 		}
 
 		if ( $screen_id ) {
-			// On the "Themes and Plugins Images" page, load the data.
+			// On the "Other Media optimized by Imagify" page, load the data.
 			add_action( 'load-' . $screen_id, array( $this, 'load_files_list' ) );
 		}
 	}
@@ -254,6 +254,8 @@ class Imagify_Views {
 			// Limits.
 			'unoptimized_attachment_limit'  => 0,
 			// What to optimize.
+			'icon'                          => 'images-alt2',
+			'title'                         => __( 'Optimize your images', 'imagify' ),
 			'groups'                        => array(),
 		);
 
@@ -279,24 +281,13 @@ class Imagify_Views {
 				$data['groups']['library'] = array(
 					/**
 					 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
-					 * It is also used in the underscore template id: 'tmpl-imagify-results-row-{$group_id}' and in get_imagify_localize_script_translations().
+					 * It is also used in get_imagify_localize_script_translations() and imagify_get_folder_type_data().
 					 */
-					'group_id'   => 'library',
-					'context'    => 'wp',
-					'icon'       => 'images-alt2',
-					'title'      => __( 'Optimize the images of your Media Library', 'imagify' ),
-					'optimizing' => __( 'Optimizing the images of your Media Library...', 'imagify' ),
+					'group_id' => 'library',
+					'context'  => 'wp',
+					'title'    => __( 'Media Library', 'imagify' ),
 					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-					'footer'     => sprintf( __( 'You can also re-optimize your images from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
-					'rows'       => array(
-						/**
-						 * The 'library' key corresponds to the "folder type".
-						 * It is used in imagify_get_folder_type_data() for example.
-						 */
-						'library' => array(
-							'title' => __( 'Media Library', 'imagify' ),
-						),
-					),
+					'footer'   => sprintf( __( 'You can also re-optimize your images from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
 				);
 			}
 
@@ -314,32 +305,18 @@ class Imagify_Views {
 				$data['original_size']                 += Imagify_Files_Stats::get_original_size();
 				$data['optimized_size']                += Imagify_Files_Stats::get_optimized_size();
 
-				if ( Imagify_Folders_DB::get_instance()->has_items() ) {
-					// Group.
-					$data['groups']['custom-files'] = array(
-						'group_id'   => 'custom-files',
-						'context'    => 'File',
-						'icon'       => 'admin-plugins',
-						'title'      => __( 'Optimize the images of your Themes and Plugins', 'imagify' ),
-						'subtitle'   => __( 'Choose here the bulk optimization settings for the medias stored in your themes and plugins.', 'imagify' ),
-						'optimizing' => __( 'Optimizing the images of your Themes and Plugins...', 'imagify' ),
-						/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-						'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
-						'rows'       => array(
-							'themes'         => array(
-								'title' => __( 'Themes', 'imagify' ),
-							),
-							'plugins'        => array(
-								'title' => __( 'Plugins', 'imagify' ),
-							),
-							'custom-folders' => array(
-								'title' => __( 'Custom Folders', 'imagify' ),
-							),
-						),
-					);
-				} else {
+				if ( ! Imagify_Folders_DB::get_instance()->has_items() ) {
 					// New Feature!
 					$data['no-custom-folders'] = true;
+				} elseif ( Imagify_Folders_DB::get_instance()->has_active_folders() ) {
+					// Group.
+					$data['groups']['custom-folders'] = array(
+						'group_id' => 'custom-folders',
+						'context'  => 'File',
+						'title'    => __( 'Custom folders', 'imagify' ),
+						/* translators: 1 is the opening of a link, 2 is the closing of this link. */
+						'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
+					);
 				}
 			}
 		}

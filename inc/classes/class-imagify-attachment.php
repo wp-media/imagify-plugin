@@ -129,7 +129,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function update_metadata_size() {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return false;
 		}
 
@@ -336,7 +336,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return;
 		}
 
@@ -410,16 +410,15 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		// Save the optimization level.
 		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
 
-		if ( ! $data ) {
-			// Already optimized.
-			delete_transient( 'imagify-async-in-progress-' . $this->id );
-			return;
-		}
-
 		// If we resized the original with success, we have to update the attachment metadata.
 		// If not, WordPress keeps the old attachment size.
-		if ( $do_resize && $resized ) {
+		if ( $resized ) {
 			$this->update_metadata_size();
+		}
+
+		if ( ! $data ) {
+			delete_transient( 'imagify-async-in-progress-' . $this->id );
+			return;
 		}
 
 		// Optimize all thumbnails.
@@ -503,7 +502,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function optimize_missing_thumbnails( $optimization_level = null ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
@@ -613,7 +612,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function restore() {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return;
 		}
 

@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 /**
- * Class that scans the "active" custom folders to keep files in sync in the database.
+ * Class that scans the custom folders to keep files in sync in the database.
  *
  * @since  1.7
  * @author Grégory Viguier
@@ -107,14 +107,12 @@ class Imagify_Cron_Sync_Files extends Imagify_Abstract_Cron {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders = imagify_get_folders_from_type( 'all', array(
-			'active' => true,
-		) );
+		$folders = Imagify_Custom_Folders::get_folders();
 
 		if ( ! $folders ) {
 			return;
 		}
 
-		imagify_synchronize_files_from_folders( $folders );
+		Imagify_Custom_Folders::synchronize_files_from_folders( $folders );
 	}
 }

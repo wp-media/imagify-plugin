@@ -94,7 +94,7 @@ function imagify_is_screen( $identifier ) {
 		case 'files-list':
 			// "Custom folders" files list.
 			$slug = Imagify_Views::get_instance()->get_files_page_slug();
-			return 'toplevel_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
+			return 'imagify_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
 
 		case 'media-modal':
 			// Media modal.
@@ -169,12 +169,9 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 						'imagify-status' => 'errors',
 					), admin_url( 'upload.php' ) );
 
-				case 'themes':
-				case 'plugins':
 				case 'custom-folders':
 					return add_query_arg( array(
-						'folder-type-filter' => $arg,
-						'status-filter'      => 'errors',
+						'status-filter' => 'errors',
 					), get_imagify_admin_url( 'files-list' ) );
 			}
 			return '';

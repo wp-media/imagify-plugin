@@ -5,8 +5,15 @@ $settings     = Imagify_Settings::get_instance();
 $options      = Imagify_Options::get_instance();
 $option_name  = $options->get_option_name();
 $hidden_class = imagify_valid_key() ? '' : ' hidden';
+
+/* Ads notice */
+$notice  = 'wp-rocket';
+$user_id = get_current_user_id();
+$notices = get_user_meta( $user_id, '_imagify_ignore_ads', true );
+$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+$wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket';
 ?>
-<div class="wrap imagify-settings <?php echo defined( 'WP_ROCKET_VERSION' ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket'; ?> imagify-clearfix">
+<div class="wrap imagify-settings <?php echo $wrapper_class; ?> imagify-clearfix">
 
 	<div class="imagify-col imagify-main">
 
@@ -14,16 +21,23 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 
 		<form action="<?php echo esc_url( $settings->get_form_action() ); ?>" id="imagify-settings" method="post">
 
-			<div class="imagify-settings-main-content">
+			<div class="imagify-settings-main-content<?php echo imagify_valid_key() ? '' : ' imagify-no-api-key'; ?>">
 
 				<?php settings_fields( $settings->get_settings_group() ); ?>
 				<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
 				<?php wp_nonce_field( 'imagify-check-api-key', 'imagifycheckapikeynonce', false ); ?>
 
+				<?php
+				if ( ! imagify_valid_key() ) {
+					$this->print_template( 'part-settings-account' );
+					$this->print_template( 'part-settings-footer' );
+				}
+				?>
+
 				<div class="imagify-col imagify-shared-with-account-col<?php echo $hidden_class; ?>">
 					<div class="imagify-settings-section">
 
-						<h2 class="imagify-options-title"><?php _e( 'Settings' ); ?></h2>
+						<h2 class="imagify-options-title"><?php _e( 'General Settings', 'imagify' ); ?></h2>
 
 						<p class="imagify-options-subtitle" id="imagify-optimization-level-label">
 							<?php _e( 'Optimization Level', 'imagify' ); ?>
@@ -109,11 +123,11 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 					</div>
 				</div>
 
-				<div class="imagify-col imagify-account-info-col">
-					<?php
-					$this->print_template( 'part-settings-account' );
-					?>
-				</div>
+				<?php if ( imagify_valid_key() ) { ?>
+					<div class="imagify-col imagify-account-info-col">
+						<?php $this->print_template( 'part-settings-account' ); ?>
+					</div>
+				<?php } ?>
 			</div>
 
 			<div class="imagify-settings-main-content<?php echo $hidden_class; ?>">
@@ -127,8 +141,8 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 				</div>
 			</div>
 
-			<div class="imagify-settings-main-content imagify-pb0">
-				<div class="imagify-settings-section clear<?php echo $hidden_class; ?>">
+			<div class="imagify-settings-main-content imagify-pb0<?php echo $hidden_class; ?>">
+				<div class="imagify-settings-section clear">
 					<div class="imagify-col">
 						<h2 class="imagify-options-title"><?php _e( 'Display options', 'imagify' ); ?></h2>
 
@@ -152,7 +166,11 @@ $hidden_class = imagify_valid_key() ? '' : ' hidden';
 					</div>
 				</div>
 
-				<?php $this->print_template( 'part-settings-footer' ); ?>
+				<?php
+				if ( imagify_valid_key() ) {
+					$this->print_template( 'part-settings-footer' );
+				}
+				?>
 			</div>
 		</form>
 	</div>

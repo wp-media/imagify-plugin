@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 $this->print_template( 'notice-header', array(
-	'classes' => array( 'imagify-flex-notice-content' ),
+	'classes' => array( 'imagify-flex-notice-content', 'error' ),
 ) );
 
 $user              = new Imagify_User();
@@ -37,5 +37,5 @@ $bar_class         = 'negative';
 </p>
 <?php
 $this->print_template( 'notice-footer', array(
-	'dismissible' => 'free-over-quota',
+	'dismissible' => 'almost-over-quota',
 ) );

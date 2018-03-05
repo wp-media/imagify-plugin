@@ -18,7 +18,13 @@ function imagify_siteground_change_user_agent( $r, $url ) {
 	static $user_agent;
 	$site_url = site_url( '/' );
 
-	if ( false === strpos( $url, $site_url ) || false === strpos( $r['user-agent'], $_SERVER['HTTP_HOST'] ) ) {
+	if ( false === strpos( $url, $site_url ) ) {
+		return $r;
+	}
+
+	$site_url = wp_parse_url( $site_url );
+
+	if ( false === strpos( $r['user-agent'], $site_url['host'] ) ) {
 		return $r;
 	}
 

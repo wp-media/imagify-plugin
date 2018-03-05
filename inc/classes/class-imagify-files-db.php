@@ -148,7 +148,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 *
 	 * @return string
 	 */
-	protected function get_table_schema() {error_log( print_r( 'khgfk', 1 ) );
+	protected function get_table_schema() {
 		return "
 			file_id bigint(20) unsigned NOT NULL auto_increment,
 			folder_id bigint(20) unsigned NOT NULL default 0,

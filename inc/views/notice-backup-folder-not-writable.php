@@ -1,7 +1,9 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-$this->print_template( 'notice-header' );
+$this->print_template( 'notice-header', array(
+	'classes' => array( 'error' ),
+) );
 
 $filesystem  = imagify_get_filesystem();
 $backup_path = imagify_make_file_path_relative( get_imagify_backup_dir_path( true ) );

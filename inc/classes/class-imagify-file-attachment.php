@@ -102,7 +102,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		return imagify_get_file_backup_path( $this->get_original_path() );
+		return Imagify_Custom_Folders::get_file_backup_path( $this->get_original_path() );
 	}
 
 	/**
@@ -229,6 +229,20 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		}
 
 		$this->update_row( $this->get_reset_imagify_data() );
+	}
+
+	/**
+	 * Tell if the current file extension is supported.
+	 * If it's in the DB, it's supported.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function is_extension_supported() {
+		return $this->is_valid();
 	}
 
 	/**
@@ -588,7 +602,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 */
 	public function optimize( $optimization_level = null, $metadata = null ) {
 		// Check if the file extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
@@ -665,7 +679,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 */
 	public function restore() {
 		// Check if the file extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 

@@ -41,7 +41,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 								<?php
 								printf(
 									/* translators: %s is a formatted file size. */
-									esc_html__( 'You currently have %s of images in your library, themes, and plugins.', 'imagify' ),
+									esc_html__( 'You currently have %s of images in your library and folders.', 'imagify' ),
 									'<strong class="imagify-dark total-library-size">' . ( is_float( $total_size ) ? imagify_size_format( $total_size ) : '' ) . '</strong>'
 								);
 								?>

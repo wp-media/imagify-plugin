@@ -61,11 +61,14 @@ function get_imagify_localize_script_translations( $context ) {
 					'ApiKeyCheckSuccessText'  => __( 'Your API key is valid. You can now configure the Imagify settings to optimize your images.', 'imagify' ),
 					'noBackupTitle'           => __( 'Don\'t Need a Parachute?', 'imagify' ),
 					'noBackupText'            => __( 'If you keep this option deactivated, you won\'t be able to re-optimize your images to another compression level and restore your original images in case of need.', 'imagify' ),
+					'removeFolder'            => __( 'Remove', 'imagify' ),
 					'filesTreeTitle'          => __( 'Select Custom Folders', 'imagify' ),
 					'filesTreeSubTitle'       => __( 'Select one or several custom folders to optimize.', 'imagify' ),
+					'cleaningInfo'            => __( 'We removed some folders that are not containing any images from the tree.', 'imagify' ),
 					'confirmFilesTreeBtn'     => __( 'Select Folders', 'imagify' ),
 					'customFilesLegend'       => __( 'Choose the folders to optimize', 'imagify' ),
 					'error'                   => __( 'Error', 'imagify' ),
+					'themesAdded'             => __( 'Added! All Good!', 'imagify' ),
 				),
 			);
 
@@ -115,22 +118,24 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'bulk':
 			$translations = array(
+				'keyIsValid'   => imagify_valid_key(),
 				'curlMissing'  => ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ),
 				'heartbeatId'  => 'update_bulk_data',
 				'waitImageUrl' => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
 				'ajaxActions'  => array(
-					'libraryFetch'        => 'imagify_get_unoptimized_attachment_ids',
-					'customFilesFetch'    => 'imagify_get_unoptimized_file_ids',
-					'libraryOptimize'     => 'imagify_bulk_upload',
-					'customFilesOptimize' => 'imagify_bulk_optimize_file',
-					'getFolderData'       => 'imagify_get_folder_type_data',
+					'libraryFetch'          => 'imagify_get_unoptimized_attachment_ids',
+					'customFoldersFetch'    => 'imagify_get_unoptimized_file_ids',
+					'libraryOptimize'       => 'imagify_bulk_upload',
+					'customFoldersOptimize' => 'imagify_bulk_optimize_file',
+					'getFolderData'         => 'imagify_get_folder_type_data',
+					'bulkInfoSeen'          => 'imagify_bulk_info_seen',
 				),
 				'ajaxNonce'   => wp_create_nonce( 'imagify-bulk-upload' ),
 				'bufferSizes' => array(
 					'wp'   => get_imagify_bulk_buffer_size(),
 					'File' => get_imagify_bulk_buffer_size( 1 ),
 				),
-				'labels' => array(
+				'labels'      => array(
 					'overviewChartLabels'            => array(
 						'unoptimized' => __( 'Unoptimized', 'imagify' ),
 						'optimized'   => __( 'Optimized', 'imagify' ),
@@ -168,6 +173,14 @@ function get_imagify_localize_script_translations( $context ) {
 					'curlMissing'                    => __( 'cURL is not installed on the server.', 'imagify' ),
 				),
 			);
+
+			if ( $translations['keyIsValid'] ) {
+				$user = new Imagify_User();
+
+				if ( $user->is_over_quota() ) {
+					$translations['isOverQuota'] = 1;
+				}
+			}
 
 			if ( isset( $translations['bufferSizes']['wp'] ) ) {
 				/**

@@ -98,12 +98,25 @@ body[class*="_imagify"] .swal2-container.swal2-shown {
 	background: #E9EFF2 !important;
 	box-shadow: 0 3px 0 rgba(31, 35, 50, .2);
 }
+.imagify-sweet-alert-signup.imagify-sweet-alert {
+	background: #FFF!important;
+} 
+.imagify-sweet-alert-signup .swal2-buttonswrapper {
+	padding: 12px 22px;
+}
+.swal2-success-circular-line-left,
+.swal2-success-fix,
+.swal2-success-circular-line-right {
+	background: #1F2332 !important
+}
 .imagify-sweet-alert-signup .sa-confirm-button-container {
 	width: 40%;
 }
-.imagify-sweet-alert-signup button {
-	width: 100%;
-	padding: 0 !important;
+.imagify-sweet-alert-signup .swal2-input {
+	margin-top: 0;
+	margin-left: 40px;
+	margin-right: 40px;
+	width: calc( 100% - 80px);
 }
 .imagify-sweet-alert .sa-input-error:before,
 .imagify-sweet-alert .sa-input-error:after,

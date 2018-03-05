@@ -66,7 +66,12 @@
 				};
 
 
+			if ( $container.parent( '.twentytwenty-wrapper' ).length ) {
+				$container.unwrap();
+			}
 			$container.wrap( '<div class="twentytwenty-wrapper twentytwenty-' + sliderOrientation + '"></div>' );
+
+			$container.children( '.twentytwenty-overlay, .twentytwenty-handle' ).remove();
 			$container.append( '<div class="twentytwenty-overlay"></div>' );
 			$container.append( '<div class="twentytwenty-handle"></div>' );
 
@@ -144,7 +149,7 @@
 			canvas.each( function() {
 				var value = parseInt( $( this ).closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text(), 10 );
 
-				new Chart( this, { // eslint-disable-line no-new
+				new w.imagify.Chart( this, { // eslint-disable-line no-new
 					type: 'doughnut',
 					data: {
 						datasets: [{

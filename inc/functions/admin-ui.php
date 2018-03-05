@@ -286,11 +286,15 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	}
 
 	// Check if the attachment extension is allowed.
-	if ( ! $attachment->is_mime_type_supported() ) {
-		$attachment_ext = $attachment->get_extension();
+	if ( ! $attachment->is_extension_supported() ) {
+		$extension = $attachment->get_extension();
+
+		if ( '' === $extension ) {
+			return __( 'With no extension, this file cannot be optimized', 'imagify' );
+		}
 
 		/* translators: %s is a file extension. */
-		return sprintf( __( '%s can\'t be optimized', 'imagify' ), strtoupper( $attachment_ext ) );
+		return sprintf( __( '%s cannot be optimized', 'imagify' ), strtoupper( $extension ) );
 	}
 
 	// Check if the attachment has the required WP metadata.
@@ -357,14 +361,12 @@ function imagify_get_folder_type_data( $folder_type ) {
 			);
 			break;
 
-		case 'themes':
-		case 'plugins':
 		case 'custom-folders':
 			$data = array(
-				'images-optimized' => Imagify_Files_Stats::count_optimized_files( $folder_type ),
-				'errors'           => Imagify_Files_Stats::count_error_files( $folder_type ),
-				'optimized'        => Imagify_Files_Stats::get_optimized_size( $folder_type ),
-				'original'         => Imagify_Files_Stats::get_original_size( $folder_type ),
+				'images-optimized' => Imagify_Files_Stats::count_optimized_files(),
+				'errors'           => Imagify_Files_Stats::count_error_files(),
+				'optimized'        => Imagify_Files_Stats::get_optimized_size(),
+				'original'         => Imagify_Files_Stats::get_original_size(),
 				'errors_url'       => get_imagify_admin_url( 'folder-errors', $folder_type ),
 			);
 			break;
@@ -401,13 +403,13 @@ function imagify_get_folder_type_data( $folder_type ) {
 	}
 
 	if ( $data['optimized'] ) {
-		$data['optimized'] = __( 'Optimized Filesize', 'imagify' ) . ' ' . imagify_size_format( $data['optimized'], 2 );
+		$data['optimized'] = '<span class="imagify-cell-label">' . __( 'Optimized Filesize', 'imagify' ) . '</span> ' . imagify_size_format( $data['optimized'], 2 );
 	} else {
 		$data['optimized'] = '';
 	}
 
 	if ( $data['original'] ) {
-		$data['original'] = __( 'Original Filesize', 'imagify' ) . ' ' . imagify_size_format( $data['original'], 2 );
+		$data['original'] = '<span class="imagify-cell-label">' . __( 'Original Filesize', 'imagify' ) . '</span> ' . imagify_size_format( $data['original'], 2 );
 	} else {
 		$data['original'] = '';
 	}

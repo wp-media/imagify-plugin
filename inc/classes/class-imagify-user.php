@@ -147,9 +147,11 @@ class Imagify_User {
 	 * @since 1.0
 	 *
 	 * @access public
-	 * @return int
+	 * @return float|int
 	 */
 	public function get_percent_consumed_quota() {
+		static $done = false;
+
 		$quota          = $this->quota;
 		$consumed_quota = $this->consumed_current_month_quota;
 
@@ -159,12 +161,50 @@ class Imagify_User {
 		}
 
 		if ( ! $quota || ! $consumed_quota ) {
-			return 0;
+			$percent = 0;
+		} else {
+			$percent = 100 * $consumed_quota / $quota;
+			$percent = round( $percent, 1 );
+			$percent = min( max( 0, $percent ), 100 );
 		}
 
-		$percent = 100 * $consumed_quota / $quota;
+		if ( ! $done ) {
+			$previous_percent = Imagify_Data::get_instance()->get( 'previous_quota_percent' );
 
-		return min( round( $percent, 1 ), 100 );
+			// Percent is not 100% anymore.
+			if ( 100 === $previous_percent && $percent < 100 ) {
+				/**
+				 * Triggered when the consumed quota percent decreases below 100%.
+				 *
+				 * @since  1.7
+				 * @author Grégory Viguier
+				 *
+				 * @param float|int $percent The current percentage of consumed quota.
+				 */
+				do_action( 'imagify_not_over_quota_anymore', $percent );
+			}
+			// Percent is not >= 80% anymore.
+			if ( $previous_percent >= 80 && $percent < 80 ) {
+				/**
+				 * Triggered when the consumed quota percent decreases below 80%.
+				 *
+				 * @since  1.7
+				 * @author Grégory Viguier
+				 *
+				 * @param float|int $percent          The current percentage of consumed quota.
+				 * @param float|int $previous_percent The previous percentage of consumed quota.
+				 */
+				do_action( 'imagify_not_almost_over_quota_anymore', $percent, $previous_percent );
+			}
+
+			if ( $previous_percent !== $percent ) {
+				Imagify_Data::get_instance()->set( 'previous_quota_percent', $percent );
+			}
+
+			$done = true;
+		}
+
+		return $percent;
 	}
 
 	/**
@@ -173,7 +213,7 @@ class Imagify_User {
 	 * @since 1.0
 	 *
 	 * @access public
-	 * @return int
+	 * @return float|int
 	 */
 	public function get_percent_unconsumed_quota() {
 		$percent = 100 - $this->get_percent_consumed_quota();

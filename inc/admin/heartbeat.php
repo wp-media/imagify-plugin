@@ -51,7 +51,7 @@ function _imagify_heartbeat_received( $response, $data ) {
 		$new_data['optimized_human']               += $saving_data['optimized_size'];
 	}
 
-	if ( isset( $types['custom-files'] ) ) {
+	if ( isset( $types['custom-folders'] ) ) {
 		/**
 		 * Custom folders.
 		 */

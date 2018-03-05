@@ -133,6 +133,23 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	}
 
 	/**
+	 * Tell if folders are selected in the plugin settings.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function has_active_folders() {
+		global $wpdb;
+
+		$column = esc_sql( $this->get_primary_key() );
+
+		return (bool) $wpdb->get_var( "SELECT $column FROM $this->table_name WHERE active = 1 LIMIT 1;" ); // WPCS: unprepared SQL ok.
+	}
+
+	/**
 	 * Retrieve active folders (checked in the settings).
 	 *
 	 * @since  1.7

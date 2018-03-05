@@ -128,7 +128,7 @@ abstract class Imagify_Abstract_Cron {
 	abstract public function do_event();
 
 	/**
-	 * Deschedule the event at plugin or submodule deactivation.
+	 * Unschedule the event at plugin or submodule deactivation.
 	 *
 	 * @since  1.7
 	 * @access public

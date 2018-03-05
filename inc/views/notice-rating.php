@@ -1,7 +1,9 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-$this->print_template( 'notice-header' );
+$this->print_template( 'notice-header', array(
+	'classes' => array( 'updated' ),
+) );
 ?>
 <p>
 	<?php

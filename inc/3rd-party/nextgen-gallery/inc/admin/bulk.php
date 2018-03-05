@@ -41,24 +41,13 @@ function imagify_ngg_bulk_page_data( $data ) {
 	$data['groups']['NGG'] = array(
 		/**
 		 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
-		 * It is also used in the underscore template id: 'tmpl-imagify-results-row-{$group_id}' and in get_imagify_localize_script_translations().
+		 * It is also used in get_imagify_localize_script_translations() and imagify_get_folder_type_data().
 		 */
-		'group_id'   => 'library',
-		'context'    => 'NGG',
-		'icon'       => 'images-alt2',
-		'title'      => __( 'Optimize the images of your galleries', 'imagify' ),
-		'optimizing' => __( 'Optimizing the images of your galleries...', 'imagify' ),
+		'group_id' => 'library',
+		'context'  => 'NGG',
+		'title'    => __( 'NextGen Galleries', 'imagify' ),
 		/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-		'footer'     => sprintf( __( 'You can re-optimize your images more finely directly in each %1$sgallery%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'admin.php?page=nggallery-manage-gallery' ) ) . '">', '</a>' ),
-		'rows'       => array(
-			/**
-			 * The 'NGG' key corresponds to the "folder type".
-			 * It is used in imagify_get_folder_type_data() for example.
-			 */
-			'NGG' => array(
-				'title' => __( 'NextGen galleries', 'imagify' ),
-			),
-		),
+		'footer'   => sprintf( __( 'You can also re-optimize your images more finely directly in each %1$sgallery%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'admin.php?page=nggallery-manage-gallery' ) ) . '">', '</a>' ),
 	);
 
 	return $data;
