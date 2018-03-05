@@ -155,6 +155,10 @@
 			$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
 			$( '.imagify-share-networks a' ).on( 'click.imagify', this.share );
 
+			if ( imagifyBulk.curlMissing ) {
+				return;
+			}
+
 			// Optimization events.
 			$( w )
 				.on( 'processQueue.imagify', this.processQueue )
@@ -668,6 +672,11 @@
 					title: imagifyBulk.labels.invalidAPIKeyTitle,
 					type:  'info'
 				} );
+				return;
+			}
+
+			if ( imagifyBulk.curlMissing ) {
+				w.imagify.bulk.displayError( '', imagifyBulk.labels.curlMissing );
 				return;
 			}
 

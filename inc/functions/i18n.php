@@ -119,6 +119,7 @@ function get_imagify_localize_script_translations( $context ) {
 		case 'bulk':
 			$translations = array(
 				'keyIsValid'   => imagify_valid_key(),
+				'curlMissing'  => ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ),
 				'heartbeatId'  => 'update_bulk_data',
 				'waitImageUrl' => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
 				'ajaxActions'  => array(
@@ -169,6 +170,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'imagesErrorText'                => __( '%s Error(s)', 'imagify' ),
 					'bulkInfoTitle'                  => __( 'Information', 'imagify' ),
 					'confirmBulk'                    => __( 'Start the optimization', 'imagify' ),
+					'curlMissing'                    => __( 'cURL is not installed on the server.', 'imagify' ),
 				),
 			);
 
