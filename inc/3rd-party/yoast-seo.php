@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-if ( defined( 'WPSEO_VERSION' ) && is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) :
+if ( defined( 'WPSEO_VERSION' ) && is_admin() && ! wp_doing_ajax() ) :
 
 	add_action( 'wp_print_scripts', '_imagify_dequeue_yoastseo_script' );
 	/**

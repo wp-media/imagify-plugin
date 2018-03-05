@@ -16,21 +16,22 @@
 		<exclude name="Squiz.Commenting.BlockComment.NoEmptyLineBefore"/>
 		<exclude name="Squiz.Commenting.FileComment.Missing"/>
 		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
+		<exclude name="Squiz.PHP.EmbeddedPhp.ContentBeforeOpen"/>
+		<exclude name="Squiz.PHP.EmbeddedPhp.ContentAfterEnd"/>
 		<exclude name="Squiz.PHP.CommentedOutCode.Found"/>
 		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.AssociativeKeyFound"/>
 		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize"/>
 		<exclude name="WordPress.VIP.DirectDatabaseQuery.DirectQuery"/>
 		<exclude name="WordPress.VIP.DirectDatabaseQuery.NoCaching"/>
 		<exclude name="WordPress.VIP.DirectDatabaseQuery.SchemaChange"/>
-		<exclude name="WordPress.VIP.PostsPerPage.posts_per_page"/><!-- Temporarily excluded -->
 		<exclude name="WordPress.VIP.PostsPerPage.posts_per_page_posts_per_page"/><!-- Temporarily excluded -->
 		<exclude name="WordPress.VIP.RestrictedFunctions.get_intermediate_image_sizes_get_intermediate_image_sizes"/>
 		<exclude name="WordPress.VIP.RestrictedFunctions.user_meta_get_user_meta"/>
 		<exclude name="WordPress.VIP.RestrictedFunctions.user_meta_update_user_meta"/>
 		<exclude name="WordPress.VIP.RestrictedFunctions.wp_redirect"/>
 		<exclude name="WordPress.VIP.RestrictedFunctions.wp_remote_get_wp_remote_get"/>
-		<exclude name="WordPress.VIP.RestrictedVariables.cache_constraints___COOKIE"/><!-- Temporarily excluded -->
-		<exclude name="WordPress.VIP.SlowDBQuery.slow_db_query"/><!-- Temporarily excluded -->
+		<exclude name="WordPress.VIP.RestrictedVariables.cache_constraints___COOKIE"/>
+		<exclude name="WordPress.VIP.RestrictedVariables.user_meta__wpdb__usermeta"/>
 		<exclude name="WordPress.VIP.SlowDBQuery.slow_db_query_meta_key"/><!-- Temporarily excluded -->
 		<exclude name="WordPress.VIP.SlowDBQuery.slow_db_query_meta_query"/><!-- Temporarily excluded -->
 		<exclude name="WordPress.VIP.SlowDBQuery.slow_db_query_meta_value"/><!-- Temporarily excluded -->
@@ -46,14 +47,6 @@
 		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_setopt"/>
 		<exclude name="WordPress.WP.CapitalPDangit.Misspelled"/>
 		<exclude name="WordPress.XSS.EscapeOutput"/>
-	</rule>
-
-	<rule ref="Squiz.PHP.EmbeddedPhp.ContentAfterEnd">
-		<exclude-pattern>inc/admin/ui/options.php</exclude-pattern>
-	</rule>
-
-	<rule ref="Squiz.PHP.EmbeddedPhp.ContentBeforeOpen">
-		<exclude-pattern>inc/admin/ui/options.php</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.CSRF.NonceVerification">

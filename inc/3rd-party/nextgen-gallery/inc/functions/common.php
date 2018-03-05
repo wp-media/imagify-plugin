@@ -6,10 +6,11 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * It is meant to be used to filter 'imagify_capacity'.
  *
  * @since  1.6.11
+ * @see    imagify_get_capacity()
  * @author Grégory Viguier
  *
  * @param string $capacity  The user capacity.
- * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+ * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
  * @return string
  */
 function imagify_get_ngg_capacity( $capacity = 'edit_post', $describer = 'manual-optimize' ) {
@@ -35,5 +36,17 @@ function imagify_get_ngg_bulk_screen_id() {
 	$ngg_menu_slug  = defined( 'NGGFOLDER' ) ? plugin_basename( NGGFOLDER ) : 'nextgen-gallery';
 	$ngg_menu_slug  = isset( $admin_page_hooks[ $ngg_menu_slug ] ) ? $admin_page_hooks[ $ngg_menu_slug ] : 'gallery';
 
-	return $ngg_menu_slug . '_page_' . IMAGIFY_SLUG . '-ngg-bulk-optimization';
+	return $ngg_menu_slug . '_page_' . imagify_get_ngg_bulk_screen_slug();
+}
+
+/**
+ * Get NGG Bulk Optimization screen slug.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return string
+ */
+function imagify_get_ngg_bulk_screen_slug() {
+	return IMAGIFY_SLUG . '-ngg-bulk-optimization';
 }

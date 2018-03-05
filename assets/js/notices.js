@@ -40,6 +40,7 @@
 			html:                imagifyNotices.labels.signupText,
 			confirmButtonText:   imagifyNotices.labels.signupConfirmButtonText,
 			input:               'email',
+			padding:             0,
 			showLoaderOnConfirm: true,
 			customClass:         'imagify-sweet-alert imagify-sweet-alert-signup',
 			inputValidator:      function( inputValue ) {
@@ -70,6 +71,7 @@
 				title:       imagifyNotices.labels.signupSuccessTitle,
 				html:        imagifyNotices.labels.signupSuccessText,
 				type:        'success',
+				padding:     0,
 				customClass: 'imagify-sweet-alert'
 			} );
 		} );
@@ -87,6 +89,7 @@
 			html:                imagifyNotices.labels.saveApiKeyText,
 			confirmButtonText:   imagifyNotices.labels.saveApiKeyConfirmButtonText,
 			input:               'text',
+			padding:             0,
 			showLoaderOnConfirm: true,
 			customClass:         'imagify-sweet-alert imagify-sweet-alert-signup',
 			inputValidator:      function( inputValue ) {
@@ -115,6 +118,7 @@
 				title:       imagifyNotices.labels.ApiKeyCheckSuccessTitle,
 				html:        imagifyNotices.labels.ApiKeyCheckSuccessText,
 				type:        'success',
+				padding:     0,
 				customClass: 'imagify-sweet-alert'
 			} );
 		} );

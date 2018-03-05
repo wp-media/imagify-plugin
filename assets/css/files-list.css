@@ -1,0 +1,162 @@
+/* Filter block */
+.imagify-files-list .wp-filter {
+	padding: 15px 20px;
+}
+.imagify-files-list .filter-items select {
+	height: auto;
+	padding: 6px;
+	margin-right: 12px;
+}
+.imagify-files-list .filter-items .button {
+	height: auto;
+	padding: 2px 12px 3px;
+}
+
+/* Empty table */
+.imagify-files-list .no-items td {
+	padding: 35px;
+	text-align: center;
+	font-size: 18px;
+}
+.imagify-files-list .no-items td a {
+	text-decoration: underline;
+}
+
+/* Th sortable */
+.imagify-files-list .sortable a {
+	color: #000;
+}
+
+/* Global links */
+.imagify-files-list a {
+	color: #3694AE;
+}
+
+/* Global TDs */
+.imagify-files-list tbody td,
+.imagify-files-list tbody th,
+.imagify-files-list.imagify-files-list tbody .check-column {
+	vertical-align: middle;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	color: #626E7B;
+}
+
+/* Col Title */
+.imagify-files-list .column-title strong {
+	font-weight: normal;
+	font-size: 14px;
+}
+.imagify-files-list .column-title strong a {
+	display: inline-flex;
+	align-items: center;
+	word-break: break-all;
+	word-wrap: break-word;
+	font-weight: normal;
+}
+.imagify-files-list .filename {
+	font-size: 12px;
+	font-weight: bold;
+}
+.imagify-files-list .media-icon {
+	position: relative;
+	width: 60px;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+.media-icon .centered {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	transform: translate( 50%, 50% );
+}
+.media-icon .centered img {
+	position: absolute;
+	left: 0;
+	top: 0;
+	transform: translate( -50%, -50% );
+}
+table.media .column-title .media-icon.landscape img {
+	max-width: none;
+	width: auto;
+	height: 60px;
+}
+table.media .column-title .media-icon.portrait img {
+	width: 60px;
+}
+
+/* Optimization datas Col */
+.imagify-files-list ul.imagify-datas-list {
+	font-size: 11px;
+}
+.imagify-files-list ul.imagify-datas-list .big {
+	font-size: 13px;
+}
+.imagify-files-list ul.imagify-datas-list span.imagify-chart-value {
+	font-size: 12px;
+}
+.imagify-files-list ul.imagify-datas-list .imagify-chart-container {
+	margin-right: 2px;
+}
+.imagify-files-list ul.imagify-datas-list canvas {
+	width: 18px!important;
+	height: 18px!important;
+}
+
+/* Optimization Level Col */
+.imagify-files-list .optimization_level {
+	text-align: center;
+	font-weight: bold;
+	font-size: 14px;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+}
+.imagify-files-list .column-optimization_level,
+.imagify-files-list .column-optimization_level a {
+	text-align: center;
+}
+.imagify-files-list .column-optimization_level a span {
+	float: none;
+	display: inline-block;
+	vertical-align: middle;
+}
+.imagify-files-list .column-optimization_level .sorting-indicator {
+	vertical-align: -10px;
+}
+
+/* Actions col */
+.imagify-files-list .column-actions .button,
+.imagify-files-list .column-actions .button-primary {
+	padding: 5px 20px;
+	font-size: 14px;
+	height: auto;
+}
+.imagify-files-list .column-actions .button-primary {
+	background: #3694AE;
+	color: #FFF;
+	border: 0;
+	box-shadow: none;
+	text-shadow: none;
+}
+.imagify-files-list .column-actions a,
+.status a.button-imagify-refresh-status {
+	display: inline-block;
+	margin: .3em 0;
+	font-size: 12px;
+	font-weight: bold;
+}
+.imagify-files-list .imagify-status-already_optimized {
+	font-weight: bold;
+	color: #8BC34A;
+}
+.imagify-files-list .column-actions a .dashicons,
+.imagify-files-list .column-actions a .dashicons:before,
+.status a.button-imagify-refresh-status .dashicons,
+.status a.button-imagify-refresh-status .dashicons:before {
+	margin-right: 2px;
+	font-size: 17px;
+	height: 17px;
+	width: 17px;
+}

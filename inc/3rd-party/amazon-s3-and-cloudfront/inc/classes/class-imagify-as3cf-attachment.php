@@ -78,8 +78,8 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 * @return string|bool       Path to the file if it exists or has been successfully retrieved from S3. False on failure.
 	 */
 	public function get_thumbnail_path( $size_file = false ) {
-		if ( ! $this->is_mime_type_supported() ) {
-			return false;
+		if ( ! $this->is_valid() ) {
+			return '';
 		}
 
 		$file_path = get_attached_file( $this->id, true );
@@ -114,7 +114,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 * @return string|bool       The file URL. False on failure.
 	 */
 	public function get_thumbnail_url( $size_file = false ) {
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return false;
 		}
 
@@ -151,7 +151,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		 */
 
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return false;
 		}
 
@@ -346,7 +346,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 */
 	public function optimize_missing_thumbnails( $optimization_level = null ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
@@ -516,7 +516,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 */
 	public function restore() {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return false;
 		}
 
@@ -713,28 +713,6 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Maybe backup a file.
-	 *
-	 * @since  1.6.6
-	 * @since  1.6.8 Deprecated.
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $attachment_path  The file path.
-	 * @return bool|null                True on success. False on failure. Null if backup is not needed.
-	 */
-	protected function maybe_backup( $attachment_path ) {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.6.8', 'imagify_backup_file()' );
-
-		$result = imagify_backup_file( $attachment_path );
-
-		if ( false === $result ) {
-			return null;
-		}
-
-		return ! is_wp_error( $result );
-	}
-
-	/**
 	 * Tell if the files must be deleted after being optimized or restored.
 	 * It sets the 2 properties $this->use_s3_settings and $this->delete_files.
 	 *
@@ -820,7 +798,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	protected function get_file_from_s3( $file_path ) {
 		global $as3cf;
 
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return false;
 		}
 

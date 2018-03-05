@@ -15,16 +15,9 @@
 	color: #FFF;
 	font-size: 17px;
 }
-.imagify-space-left {
-	display: inline-block;
-	min-height: 38px;
-	min-width: 245px;
-	vertical-align: middle;
-}
 .imagify-space-left > p {
 	color: #FFF;
 }
-[class^="imagify-bar-"],
 #wp-admin-bar-imagify-profile [class^="imagify-bar-"] {
 	position: relative;
 	height: 1.5em;
@@ -33,7 +26,6 @@
 	color: #FFF;
 	font-size: 10px;
 }
-.imagify-progress,
 #wp-admin-bar-imagify-profile .imagify-progress {
 	height: 1.5em;
 }

@@ -21,6 +21,40 @@ jQuery.extend( window.imagify, {
 		} ).focus().removeAttr( 'tabindex' ).addClass( 'modal-is-open' );
 
 		jQuery( 'body' ).addClass( 'imagify-modal-is-open' );
+	},
+	template: function( id ) {
+		if ( undefined === _ ) {
+			// No need to load underscore everywhere if we don't use it.
+			return '';
+		}
+
+		return _.memoize( function( data ) {
+			var compiled,
+				options = {
+					evaluate:    /<#([\s\S]+?)#>/g,
+					interpolate: /\{\{\{([\s\S]+?)\}\}\}/g,
+					escape:      /\{\{([^}]+?)\}\}(?!\})/g,
+					variable:    'data'
+				};
+
+			return function() {
+				compiled = compiled || _.template( jQuery( '#tmpl-' + id ).html(), options );
+				data     = data || {};
+				return compiled( data );
+			};
+		} );
+	},
+	humanSize: function( bytes ) {
+		var sizes = ['B', 'kB', 'MB'],
+			i;
+
+		if ( 0 === bytes ) {
+			return '0\xA0kB';
+		}
+
+		i = parseInt( Math.floor( Math.log( bytes ) / Math.log( 1024 ) ), 10 );
+
+		return ( bytes / Math.pow( 1024, i ) ).toFixed( 2 ) + '\xA0' + sizes[ i ];
 	}
 } );
 

@@ -17,37 +17,6 @@ function imagify_get_mime_types() {
 }
 
 /**
- * Get a file mime type.
- *
- * @since  1.6.9
- * @author Grégory Viguier
- *
- * @param  string $file_path A file path (prefered) or a filename.
- * @return string|bool       A mime type. False on failure: the last test is limited to mime types supported by Imagify.
- */
-function imagify_get_mime_type_from_file( $file_path ) {
-	if ( function_exists( 'exif_imagetype' ) ) {
-		$image_type = @exif_imagetype( $file_path );
-
-		if ( false !== $image_type ) {
-			return image_type_to_mime_type( $image_type );
-		}
-	}
-
-	if ( function_exists( 'getimagesize' ) ) {
-		$image_type = @getimagesize( $file_path );
-
-		if ( isset( $image_type[2] ) ) {
-			return image_type_to_mime_type( $image_type[2] );
-		}
-	}
-
-	$image_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
-
-	return $image_type['type'];
-}
-
-/**
  * Tell if an attachment has a supported mime type.
  * Was previously Imagify_AS3CF::is_mime_type_supported() since 1.6.6.
  * Ironically, this function is used in Imagify::is_mime_type_supported() since 1.6.9.
@@ -103,6 +72,16 @@ function imagify_get_post_statuses() {
 		$statuses = array_merge( $statuses, $custom_statuses );
 	}
 
+	/**
+	 * Filter the post statuses Imagify is allowed to optimize.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 *
+	 * @param array $statuses An array of post statuses. Kays and values are set.
+	 */
+	$statuses = apply_filters( 'imagify_post_statuses', $statuses );
+
 	return $statuses;
 }
 
@@ -110,13 +89,20 @@ function imagify_get_post_statuses() {
  * Tell if the attachment has the required WP metadata.
  *
  * @since  1.6.12
+ * @since  1.7 Also checks that the '_wp_attached_file' meta is valid (not a URL or anything funny).
  * @author Grégory Viguier
  *
  * @param  int $attachment_id The attachment ID.
  * @return bool
  */
 function imagify_attachment_has_required_metadata( $attachment_id ) {
-	return get_attached_file( $attachment_id, true ) && wp_get_attachment_metadata( $attachment_id, true );
+	$file = get_post_meta( $attachment_id, '_wp_attached_file', true );
+
+	if ( ! $file || preg_match( '@://@', $file ) || preg_match( '@^.:\\\@', $file ) ) {
+		return false;
+	}
+
+	return (bool) wp_get_attachment_metadata( $attachment_id, true );
 }
 
 /**
@@ -135,20 +121,19 @@ function imagify_has_attachments_without_required_metadata() {
 		return $has;
 	}
 
-	$mime_types = Imagify_DB::get_mime_types();
-	$statuses   = Imagify_DB::get_post_statuses();
-	$has        = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types   = Imagify_DB::get_mime_types();
+	$statuses     = Imagify_DB::get_post_statuses();
+	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause( 'p.ID', false, false );
+	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( array(), false, false );
+	$has          = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT p.ID
 		FROM $wpdb->posts AS p
-		LEFT JOIN $wpdb->postmeta AS mt1
-			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_wp_attached_file' )
-		LEFT JOIN $wpdb->postmeta AS mt2
-			ON ( p.ID = mt2.post_id AND mt2.meta_key = '_wp_attachment_metadata' )
+			$nodata_join
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
-			AND ( mt1.meta_value IS NULL OR mt2.meta_value IS NULL )
+			$nodata_where
 		LIMIT 1"
 	);
 

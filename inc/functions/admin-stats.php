@@ -31,17 +31,19 @@ function imagify_count_attachments() {
 		return $count;
 	}
 
-	$mime_types  = Imagify_DB::get_mime_types();
-	$statuses    = Imagify_DB::get_post_statuses();
-	$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
-	$count       = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types   = Imagify_DB::get_mime_types();
+	$statuses     = Imagify_DB::get_post_statuses();
+	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( p.ID )
 		FROM $wpdb->posts AS p
 			$nodata_join
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
-			AND p.post_status IN ( $statuses )"
+			AND p.post_status IN ( $statuses )
+			$nodata_where"
 	);
 
 	if ( $count > imagify_get_unoptimized_attachment_limit() ) {
@@ -84,10 +86,11 @@ function imagify_count_error_attachments() {
 		return $count;
 	}
 
-	$mime_types  = Imagify_DB::get_mime_types();
-	$statuses    = Imagify_DB::get_post_statuses();
-	$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
-	$count       = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types   = Imagify_DB::get_mime_types();
+	$statuses     = Imagify_DB::get_post_statuses();
+	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( DISTINCT p.ID )
 		FROM $wpdb->posts AS p
@@ -97,7 +100,8 @@ function imagify_count_error_attachments() {
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
-			AND mt1.meta_value = 'error'"
+			AND mt1.meta_value = 'error'
+			$nodata_where"
 	);
 
 	return $count;
@@ -133,10 +137,11 @@ function imagify_count_optimized_attachments() {
 		return $count;
 	}
 
-	$mime_types  = Imagify_DB::get_mime_types();
-	$statuses    = Imagify_DB::get_post_statuses();
-	$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
-	$count       = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types   = Imagify_DB::get_mime_types();
+	$statuses     = Imagify_DB::get_post_statuses();
+	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( DISTINCT p.ID )
 		FROM $wpdb->posts AS p
@@ -146,7 +151,8 @@ function imagify_count_optimized_attachments() {
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
-			AND mt1.meta_value IN ( 'success', 'already_optimized' )"
+			AND mt1.meta_value IN ( 'success', 'already_optimized' )
+			$nodata_where"
 	);
 
 	return $count;
@@ -295,6 +301,7 @@ function imagify_count_saving_data( $key = '' ) {
 		$mime_types     = Imagify_DB::get_mime_types();
 		$statuses       = Imagify_DB::get_post_statuses();
 		$nodata_join    = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where   = Imagify_DB::get_required_wp_metadata_where_clause();
 		$attachment_ids = $wpdb->get_col( // WPCS: unprepared SQL ok.
 			"
 			SELECT p.ID
@@ -306,6 +313,7 @@ function imagify_count_saving_data( $key = '' ) {
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
 				AND mt1.meta_value = 'success'
+				$nodata_where
 			ORDER BY CAST( p.ID AS UNSIGNED )"
 		);
 		$wpdb->flush();
@@ -401,10 +409,11 @@ function imagify_count_saving_data( $key = '' ) {
 function imagify_calculate_total_size_images_library() {
 	global $wpdb;
 
-	$mime_types  = Imagify_DB::get_mime_types();
-	$statuses    = Imagify_DB::get_post_statuses();
-	$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
-	$image_ids   = $wpdb->get_col( // WPCS: unprepared SQL ok.
+	$mime_types   = Imagify_DB::get_mime_types();
+	$statuses     = Imagify_DB::get_post_statuses();
+	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+	$image_ids    = $wpdb->get_col( // WPCS: unprepared SQL ok.
 		"
 		SELECT p.ID
 		FROM $wpdb->posts AS p
@@ -412,6 +421,7 @@ function imagify_calculate_total_size_images_library() {
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
+			$nodata_where
 		LIMIT 250
 	" );
 
@@ -432,90 +442,84 @@ function imagify_calculate_total_size_images_library() {
  * for the 3 latest months, add up their filesizes, and doing some maths to get the total average size.
  *
  * @since  1.6
+ * @since  1.7 Use wpdb instead of WP_Query.
  * @author Remy Perona
  *
  * @return int The current estimated average size of images uploaded per month.
  */
 function imagify_calculate_average_size_images_per_month() {
-	$query = array(
-		'is_imagify'     => true,
-		'post_type'      => 'attachment',
-		'post_status'    => imagify_get_post_statuses(),
-		'post_mime_type' => imagify_get_mime_types(),
-		'posts_per_page' => 250,
-		'fields'         => 'ids',
-	);
+	global $wpdb;
 
-	if ( imagify_has_attachments_without_required_metadata() ) {
-		Imagify_DB::unlimit_joins();
+	$mime_types   = Imagify_DB::get_mime_types();
+	$statuses     = Imagify_DB::get_post_statuses();
+	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause( "$wpdb->posts.ID" );
+	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+	$limit        = ' LIMIT 0, 250';
+	$query        = "
+		SELECT $wpdb->posts.ID
+		FROM $wpdb->posts
+			$nodata_join
+		WHERE $wpdb->posts.post_mime_type IN ( $mime_types )
+			AND $wpdb->posts.post_type = 'attachment'
+			AND $wpdb->posts.post_status IN ( $statuses )
+			$nodata_where
+			%date_query%";
 
-		$query['meta_query'] = array(
-			'relation' => 'AND',
-			array(
-				'key'     => '_wp_attached_file',
-				'compare' => 'EXISTS',
-			),
-			array(
-				'key'     => '_wp_attachment_metadata',
-				'compare' => 'EXISTS',
-			),
-		);
-	}
-
-	$partial_images_uploaded_last_month = new WP_Query( array_merge( $query, array(
-		'date_query'     => array(
-			array(
-				'before' => 'now',
-				'after'  => '1 month ago',
-			),
+	// Queries per month.
+	$date_query = new WP_Date_Query( array(
+		array(
+			'before' => 'now',
+			'after'  => '1 month ago',
 		),
-	) ) );
+	) );
 
-	$partial_images_uploaded_two_months_ago = new WP_Query( array_merge( $query, array(
-		'date_query' => array(
-			array(
-				'before' => '1 month ago',
-				'after'  => '2 months ago',
-			),
+	$partial_images_uploaded_last_month = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
+
+	$date_query = new WP_Date_Query( array(
+		array(
+			'before' => '1 month ago',
+			'after'  => '2 months ago',
 		),
-	) ) );
+	) );
 
-	$partial_images_uploaded_three_months_ago = new WP_Query( array_merge( $query, array(
-		'date_query' => array(
-			array(
-				'before' => '2 months ago',
-				'after'  => '3 months ago',
-			),
+	$partial_images_uploaded_two_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
+
+	$date_query = new WP_Date_Query( array(
+		array(
+			'before' => '2 month ago',
+			'after'  => '3 months ago',
 		),
-	) ) );
+	) );
 
-	$partial_images_uploaded_id = array_merge( $partial_images_uploaded_last_month->posts, $partial_images_uploaded_two_months_ago->posts, $partial_images_uploaded_three_months_ago->posts );
+	$partial_images_uploaded_three_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
+
+	// Total for the 3 months.
+	$partial_images_uploaded_id = array_merge( $partial_images_uploaded_last_month, $partial_images_uploaded_two_months_ago, $partial_images_uploaded_three_months_ago );
 
 	if ( ! $partial_images_uploaded_id ) {
 		return 0;
 	}
 
-	$images_uploaded_id = new WP_Query( array_merge( $query, array(
-		'posts_per_page' => -1,
-		'date_query'     => array(
-			array(
-				'before' => 'now',
-				'after'  => '3 months ago',
-			),
+	// Total for the 3 months, without the "250" limit.
+	$date_query = new WP_Date_Query( array(
+		array(
+			'before' => 'now',
+			'after'  => '3 month ago',
 		),
-	) ) );
+	) );
 
-	if ( ! $images_uploaded_id->posts ) {
+	$images_uploaded_id = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query ) ); // WPCS: unprepared SQL ok.
+
+	if ( ! $images_uploaded_id ) {
 		return 0;
 	}
 
 	// Number of image attachments uploaded for the 3 latest months, limited to 250 per month.
 	$partial_total_images_uploaded = count( $partial_images_uploaded_id );
 	// Total number of image attachments uploaded for the 3 latest months.
-	$total_images_uploaded         = (int) $images_uploaded_id->post_count;
-	$average_size_images_per_month = imagify_calculate_total_image_size( $partial_images_uploaded_id, $partial_total_images_uploaded, $total_images_uploaded ) / 3;
+	$total_images_uploaded         = count( $images_uploaded_id );
 
-	return $average_size_images_per_month;
+	return imagify_calculate_total_image_size( $partial_images_uploaded_id, $partial_total_images_uploaded, $total_images_uploaded ) / 3;
 }
 
 /**
