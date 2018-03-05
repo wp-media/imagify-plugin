@@ -107,12 +107,12 @@ class Imagify_Cron_Sync_Files extends Imagify_Abstract_Cron {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders = imagify_get_folders_from_type( 'all' );
+		$folders = Imagify_Custom_Folders::get_folders();
 
 		if ( ! $folders ) {
 			return;
 		}
 
-		imagify_synchronize_files_from_folders( $folders );
+		Imagify_Custom_Folders::synchronize_files_from_folders( $folders );
 	}
 }

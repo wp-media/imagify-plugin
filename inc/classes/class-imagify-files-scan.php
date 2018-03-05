@@ -149,27 +149,27 @@ class Imagify_Files_Scan {
 
 		$folders = array(
 			// Server.
-			imagify_get_abspath() . 'cgi-bin',    // `cgi-bin`
+			imagify_get_abspath() . 'cgi-bin',             // `cgi-bin`
 			// WordPress.
-			imagify_get_abspath() . 'wp-admin',   // `wp-admin`
-			imagify_get_abspath() . WPINC,        // `wp-includes`
-			get_imagify_upload_basedir( true ),   // Media library.
-			WP_CONTENT_DIR . '/languages',        // Translations.
-			WP_CONTENT_DIR . '/mu-plugins',       // MU plugins.
-			WP_CONTENT_DIR . '/upgrade',          // Upgrade.
+			imagify_get_abspath() . 'wp-admin',            // `wp-admin`
+			imagify_get_abspath() . WPINC,                 // `wp-includes`
+			get_imagify_upload_basedir( true ),            // Media library.
+			WP_CONTENT_DIR . '/languages',                 // Translations.
+			WP_CONTENT_DIR . '/mu-plugins',                // MU plugins.
+			WP_CONTENT_DIR . '/upgrade',                   // Upgrade.
 			// Plugins.
-			WP_CONTENT_DIR . '/backups',          // A folder commonly used by backup plugins.
-			WP_CONTENT_DIR . '/cache',            // A folder commonly used by cache plugins.
-			WP_CONTENT_DIR . '/bps-backup',       // BulletProof Security.
-			WP_CONTENT_DIR . '/ngg',              // NextGen Gallery.
-			WP_CONTENT_DIR . '/ngg_styles',       // NextGen Gallery.
-			WP_CONTENT_DIR . '/w3tc-config',      // W3 Total Cache.
-			WP_CONTENT_DIR . '/wfcache',          // WP Fastest Cache.
-			WP_CONTENT_DIR . '/wp-rocket-config', // WP Rocket.
-			imagify_get_files_backup_dir_path(),  // Imagify "Custom folders" backup.
-			IMAGIFY_PATH,                         // Imagify plugin.
-			self::get_wc_logs_path(),             // WooCommerce Logs.
-			self::get_ewww_tools_path(),          // EWWW.
+			WP_CONTENT_DIR . '/backups',                   // A folder commonly used by backup plugins.
+			WP_CONTENT_DIR . '/cache',                     // A folder commonly used by cache plugins.
+			WP_CONTENT_DIR . '/bps-backup',                // BulletProof Security.
+			WP_CONTENT_DIR . '/ngg',                       // NextGen Gallery.
+			WP_CONTENT_DIR . '/ngg_styles',                // NextGen Gallery.
+			WP_CONTENT_DIR . '/w3tc-config',               // W3 Total Cache.
+			WP_CONTENT_DIR . '/wfcache',                   // WP Fastest Cache.
+			WP_CONTENT_DIR . '/wp-rocket-config',          // WP Rocket.
+			Imagify_Custom_Folders::get_backup_dir_path(), // Imagify "Custom folders" backup.
+			IMAGIFY_PATH,                                  // Imagify plugin.
+			self::get_wc_logs_path(),                      // WooCommerce Logs.
+			self::get_ewww_tools_path(),                   // EWWW.
 		);
 
 		// NextGen Gallery.
@@ -455,7 +455,7 @@ class Imagify_Files_Scan {
 	 * @return bool
 	 */
 	public static function placeholder_path_exists( $file_path ) {
-		return imagify_get_filesystem()->exists( self::remove_placeholder( $file_path ) );
+		return imagify_get_filesystem()->is_readable( self::remove_placeholder( $file_path ) );
 	}
 
 	/**

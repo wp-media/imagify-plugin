@@ -151,19 +151,17 @@ class Imagify_Settings {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * On form submit, handle values that are not part of the form.
+	 * On form submit, handle some specific values.
 	 * This must be hooked before Imagify_Options::sanitize_and_validate_on_update().
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @param  string $values The option value.
+	 * @param  array $values The option values.
 	 * @return array
 	 */
 	public function populate_values_on_save( $values ) {
-		global $wpdb;
-
 		if ( ! $this->is_form_submit() ) {
 			return $values;
 		}
@@ -173,6 +171,27 @@ class Imagify_Settings {
 		/**
 		 * Disabled thumbnail sizes.
 		 */
+		$values = $this->populate_disallowed_sizes( $values );
+
+		/**
+		 * Custom folders.
+		 */
+		$values = $this->populate_custom_folders( $values );
+
+		return $values;
+	}
+
+	/**
+	 * On form submit, handle disallowed thumbnail sizes.
+	 *
+	 * @since  1.7
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $values The option values.
+	 * @return array
+	 */
+	protected function populate_disallowed_sizes( $values ) {
 		$values['disallowed-sizes'] = array();
 
 		if ( isset( $values['disallowed-sizes-reversed'] ) && is_array( $values['disallowed-sizes-reversed'] ) ) {
@@ -190,138 +209,81 @@ class Imagify_Settings {
 
 		unset( $values['disallowed-sizes-reversed'], $values['disallowed-sizes-checked'] );
 
-		/**
-		 * Custom folders.
-		 */
-		if ( ! imagify_current_user_can( 'optimize-file' ) ) {
-			unset( $values['custom_folders'] );
-			return $values;
-		}
+		return $values;
+	}
 
-		$folders_db      = Imagify_Folders_DB::get_instance();
-		$folders_table   = $folders_db->get_table_name();
-		$folders_key     = $folders_db->get_primary_key();
-		$folders_key_esc = esc_sql( $folders_key );
-
-		if ( ! $folders_db->can_operate() ) {
+	/**
+	 * On form submit, handle the custom folders.
+	 *
+	 * @since  1.7
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $values The option values.
+	 * @return array
+	 */
+	protected function populate_custom_folders( $values ) {
+		if ( ! imagify_can_optimize_custom_folders() ) {
+			// The databases are not ready or the user has not the permission.
 			unset( $values['custom_folders'] );
 			return $values;
 		}
 
 		if ( ! isset( $values['custom_folders'] ) ) {
-			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" ); // WPCS: unprepared SQL ok.
+			// No selected folders: set them all inactive.
+			Imagify_Custom_Folders::deactivate_all_folders();
+			// Remove files that are in inactive folders and are not optimized.
+			Imagify_Custom_Folders::remove_unoptimized_files_from_inactive_folders();
+			// Remove empty inactive folders.
+			Imagify_Custom_Folders::remove_empty_inactive_folders();
+
 			return $values;
 		}
 
-		$selected_raw = array_filter( $values['custom_folders'] );
+		if ( ! is_array( $values['custom_folders'] ) ) {
+			// Invalid value.
+			unset( $values['custom_folders'] );
+			return $values;
+		}
+
+		$selected = array_filter( $values['custom_folders'] );
 		unset( $values['custom_folders'] );
 
-		if ( ! is_array( $selected_raw ) ) {
-			return $values;
-		}
-
-		if ( ! $selected_raw ) {
-			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE active = 1" ); // WPCS: unprepared SQL ok.
-			return $values;
-		}
-
-		// Remove duplicates.
-		$selected_raw = array_flip( array_flip( $selected_raw ) );
-
-		// Remove sub-paths: if 'a/b/' and 'a/b/c/' are in the array, we keep only the "parent" 'a/b/'.
-		sort( $selected_raw );
-		$prev_key = null;
-
-		foreach ( $selected_raw as $i => $placeholder_path ) {
-			if ( '{{ABSPATH}}/' === $placeholder_path ) {
-				continue;
-			}
-
-			if ( ! isset( $prev_key ) ) {
-				$prev_key = $i;
-				continue;
-			}
-
-			$prev_path        = strtolower( $selected_raw[ $prev_key ] );
-			$placeholder_path = strtolower( $placeholder_path );
-
-			if ( strpos( $placeholder_path, $prev_path ) === 0 ) {
-				unset( $selected_raw[ $i ] );
-			} else {
-				$prev_key = $i;
-			}
-		}
-
-		$selected_paths = Imagify_DB::prepare_values_list( $selected_raw );
-		$selected_raw   = array_flip( $selected_raw );
-
-		// Get folders that already are in the DB.
-		$results = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $selected_paths );", ARRAY_A ); // WPCS: unprepared SQL ok.
-
-		if ( $results ) {
-			// Set active.
-			foreach ( $results as $i => $result ) {
-				if ( empty( $result['active'] ) && Imagify_Files_Scan::placeholder_path_exists( $result['path'] ) ) {
-					// Add the active state only if not already set and if the file exists.
-					$folders_db->update( $result[ $folders_key ], array(
-						'active' => 1,
-					) );
-				}
-
-				// Remove the path from the selected list, so the remaining will be created.
-				unset( $selected_raw[ $result['path'] ] );
-			}
-		}
-
-		// Not selected folders that are in the DB, and that are active.
-		$results = $wpdb->get_col( "SELECT $folders_key_esc FROM $folders_table WHERE path NOT IN ( $selected_paths ) AND active = 1" ); // WPCS: unprepared SQL ok.
-
-		if ( $results ) {
-			$results = $folders_db->cast_col( $results, $folders_key );
-			$results = Imagify_DB::prepare_values_list( $results );
-
-			// Remove the active status from the folders that are not selected.
-			$wpdb->query( "UPDATE $folders_table SET active = 0 WHERE $folders_key_esc IN ( $results )" ); // WPCS: unprepared SQL ok.
-		}
-
-		// All inactive folders.
-		$results = $wpdb->get_col( "SELECT $folders_key_esc FROM $folders_table WHERE active != 1" ); // WPCS: unprepared SQL ok.
-
-		if ( $results ) {
-			$results = $folders_db->cast_col( $results, $folders_key );
-			$results = Imagify_DB::prepare_values_list( $results );
-
+		if ( ! $selected ) {
+			// No selected folders: set them all inactive.
+			Imagify_Custom_Folders::deactivate_all_folders();
 			// Remove files that are in inactive folders and are not optimized.
-			$files_table = Imagify_Files_DB::get_instance()->get_table_name();
-			$wpdb->query( "DELETE FROM $files_table WHERE folder_id IN ( $results ) AND ( status != 'success' OR status IS NULL )" ); // WPCS: unprepared SQL ok.
+			Imagify_Custom_Folders::remove_unoptimized_files_from_inactive_folders();
+			// Remove empty inactive folders.
+			Imagify_Custom_Folders::remove_empty_inactive_folders();
+
+			return $values;
 		}
 
-		// Remove inactive folders with no files.
-		imagify_delete_custom_folders_if_inactive_and_empty();
+		// Normalize the paths, remove duplicates, and remove sub-paths.
+		$selected = array_map( 'sanitize_text_field', $selected );
+		$selected = array_map( 'wp_normalize_path', $selected );
+		$selected = array_map( 'trailingslashit', $selected );
+		$selected = array_flip( array_flip( $selected ) );
+		$selected = Imagify_Custom_Folders::remove_sub_paths( $selected );
 
-		if ( $selected_raw ) {
-			// If we still have paths here, they need to be added to the DB.
-			$filesystem = imagify_get_filesystem();
+		// Remove the active status from the folders that are not selected.
+		Imagify_Custom_Folders::deactivate_not_selected_folders( $selected );
 
-			foreach ( $selected_raw as $path => $meh ) {
-				$path = sanitize_text_field( $path );
-				$path = Imagify_Files_Scan::remove_placeholder( $path );
-				$path = realpath( $path );
+		// Add the active status to the folders that are selected (and already in the DB).
+		$selected = Imagify_Custom_Folders::activate_selected_folders( $selected );
 
-				if ( ! $path || ! $filesystem->is_dir( $path ) ) {
-					continue;
-				}
+		// If we still have paths here, they need to be added to the DB with an active status.
+		Imagify_Custom_Folders::insert_folders( $selected );
 
-				if ( Imagify_Files_Scan::is_path_forbidden( $path ) ) {
-					continue;
-				}
+		// Remove files that are in inactive folders and are not optimized.
+		Imagify_Custom_Folders::remove_unoptimized_files_from_inactive_folders();
 
-				$folders_db->insert( array(
-					'path'   => Imagify_Files_Scan::add_placeholder( trailingslashit( $path ) ),
-					'active' => 1,
-				) );
-			}
-		}
+		// Reassign files to active folders.
+		Imagify_Custom_Folders::reassign_inactive_files();
+
+		// Remove empty inactive folders.
+		Imagify_Custom_Folders::remove_empty_inactive_folders();
 
 		return $values;
 	}
@@ -669,12 +631,17 @@ class Imagify_Settings {
 		return $sizes;
 	}
 
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** TOOLS =================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
 	/**
 	 * Create HTML attributes from an array.
 	 *
 	 * @since  1.7
-	 * @author Grégory Viguier
 	 * @access public
+	 * @author Grégory Viguier
 	 *
 	 * @param  array $attributes A list of attribute pairs.
 	 * @return string            HTML attributes.

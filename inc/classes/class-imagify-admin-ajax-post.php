@@ -474,7 +474,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_user_capacity( 'optimize-file' );
 
 		$file   = $this->get_file_to_optimize( 'imagify_refresh_file_modified' );
-		$result = imagify_refresh_file_modified( $file );
+		$result = Imagify_Custom_Folders::refresh_file( $file );
 
 		if ( is_wp_error( $result ) ) {
 			$message = $result->get_error_message();
@@ -533,7 +533,7 @@ class Imagify_Admin_Ajax_Post {
 				$folder[ $folders_key ] => $folder,
 			);
 
-			imagify_get_files_from_folders( $folders, array(
+			Imagify_Custom_Folders::get_files_from_folders( $folders, array(
 				'add_inactive_folder_files' => true,
 			) );
 
@@ -541,10 +541,10 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		// All selected custom folders.
-		$folders = imagify_get_folders_from_type( 'all', array(
+		$folders = Imagify_Custom_Folders::get_folders( array(
 			'active' => true,
 		) );
-		imagify_get_files_from_folders( $folders );
+		Imagify_Custom_Folders::get_files_from_folders( $folders );
 
 		imagify_maybe_redirect();
 	}
@@ -809,7 +809,7 @@ class Imagify_Admin_Ajax_Post {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders = imagify_get_folders_from_type( 'custom-folders', array(
+		$folders = Imagify_Custom_Folders::get_folders( array(
 			'active' => true,
 		) );
 
@@ -831,7 +831,7 @@ class Imagify_Admin_Ajax_Post {
 		/**
 		 * Get the files from DB, and from the folders.
 		 */
-		$files = imagify_get_files_from_folders( $folders, array(
+		$files = Imagify_Custom_Folders::get_files_from_folders( $folders, array(
 			'optimization_level' => $optimization_level,
 		) );
 

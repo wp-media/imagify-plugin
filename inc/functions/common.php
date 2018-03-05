@@ -142,7 +142,6 @@ function imagify_can_optimize_custom_folders() {
 		return $can;
 	}
 
-	// Not multisite: ok.
 	$can = true;
 	return $can;
 }
@@ -182,6 +181,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Cron_Library_Size'        => 1,
 		'Imagify_Cron_Rating'              => 1,
 		'Imagify_Cron_Sync_Files'          => 1,
+		'Imagify_Custom_Folders'           => 1,
 		'Imagify_Data'                     => 1,
 		'Imagify_DB'                       => 1,
 		'Imagify_File_Attachment'          => 1,

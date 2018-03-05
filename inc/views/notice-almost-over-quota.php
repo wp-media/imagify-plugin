@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 $this->print_template( 'notice-header', array(
-	'classes' => array( 'imagify-flex-notice-content' ),
+	'classes' => array( 'imagify-flex-notice-content', 'error' ),
 ) );
 
 $user              = new Imagify_User();

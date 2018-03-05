@@ -53,7 +53,7 @@ function imagify_sync_theme_plugin_files_on_update( $response, $hook_extra, $res
 	}
 
 	// Sync the folder files.
-	imagify_synchronize_files_from_folders( array(
+	Imagify_Custom_Folders::synchronize_files_from_folders( array(
 		$folder['folder_id'] => array(
 			'folder_id'   => $folder['folder_id'],
 			'path'        => $placeholder,

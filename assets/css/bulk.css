@@ -82,7 +82,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress {
 
 .media_page_imagify-bulk-optimization .media-item .percent,
 body[class*="_imagify-ngg-bulk-optimization"] .media-item .percent {
-	position absolute;
+	position: absolute;
 	top: 6px;
 	right: 0;
 	text-shadow: none;
@@ -734,7 +734,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 		-webkit-transform: scale(1.05);
 		opacity: 1;
 	}
-  	100% {
+    100% {
 		-webkit-transform: scale(1);
 		opacity: 1;
   }
@@ -960,7 +960,7 @@ td.imagify-cell-filename {
 	background-size: cover;
 }
 .imagiuploaded img {
-	max-widht: 100%;
+	max-width: 100%;
 	height: auto;
 }
 

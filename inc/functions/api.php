@@ -303,7 +303,7 @@ function imagify_translate_api_message( $message ) {
 	// API message.
 	if ( preg_match( '@^Custom one time plan starts from (\d+) MB$@', $trim_message, $matches ) ) {
 		/* translators: %s is a formatted number, dont use %d. */
-		return sprintf( __( 'Custom one time plan starts from %s&nbsp;MB.', 'imagify' ), number_format_i18n( (int) $matches[1] ) );
+		return sprintf( __( 'Custom one time plan starts from %s MB.', 'imagify' ), number_format_i18n( (int) $matches[1] ) );
 	}
 
 	// API message.

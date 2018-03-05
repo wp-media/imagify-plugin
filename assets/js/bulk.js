@@ -110,6 +110,8 @@
 		status:               {},
 		// Tell if the message displayed when retrieving the image IDs has been shown once.
 		displayedWaitMessage: false,
+		// Tell how many rows are available.
+		hasMultipleRows:      true,
 		// Set to true to stop the whole thing.
 		processIsStopped:     false,
 		// Global stats.
@@ -132,6 +134,8 @@
 				$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
 				return;
 			}
+
+			this.hasMultipleRows = $( '.imagify-bulk-table [name="group[]"]' ).length > 1;
 
 			// Optimization level selector.
 			$( '.imagify-level-selector-button' )
@@ -609,8 +613,16 @@
 
 		/*
 		 * Enable or disable the Optimization button depending on the checked checkboxes.
+		 * Also, if there is only 1 checkbox in the page, don't allow it to be unchecked.
 		 */
 		toggleOptimizationButton: function () {
+			// Prevent uncheck if there is only one checkbox.
+			if ( ! w.imagify.bulk.hasMultipleRows && ! this.checked ) {
+				$( this ).prop( 'checked', true );
+				return;
+			}
+
+			// Enable or disable the Optimization button.
 			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
 				$( '#imagify-bulk-action' ).removeAttr( 'disabled' );
 			} else {
@@ -836,7 +848,9 @@
 						w.imagify.bulk.status[ item.groupId ].id = 'no-images';
 
 						if ( ! w.imagify.bulk.processIsStopped ) {
-							$( '#cb-select-' + item.groupId ).prop( 'checked', false );
+							if ( w.imagify.bulk.hasMultipleRows ) {
+								$( '#cb-select-' + item.groupId ).prop( 'checked', false );
+							}
 
 							if ( ! w.imagify.bulk.queue.length ) {
 								$( w ).trigger( 'queueEmpty.imagify' );
@@ -998,7 +1012,9 @@
 			// After all image optimizations.
 			Optimizer.done( function( data ) {
 				// Uncheck the checkbox.
-				$( '#cb-select-' + item.groupId ).prop( 'checked', false );
+				if ( w.imagify.bulk.hasMultipleRows ) {
+					$( '#cb-select-' + item.groupId ).prop( 'checked', false );
+				}
 
 				if ( data.global_original_size ) {
 					w.imagify.bulk.globalGain          += parseInt( data.global_gain, 10 );

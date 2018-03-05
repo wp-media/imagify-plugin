@@ -1,6 +1,9 @@
 .wrap.imagify-settings {
 	margin-right: 0;
 }
+.imagify-settings.imagify-have-rocket {
+	margin-right: 20px;
+}
 
 /* The field that checks the API Key */
 #imagify-check-api-container {
@@ -540,6 +543,7 @@ p.imagify-custom-folder-line {
 	line-height: 18px;
 	background: #FFF;
 	transition: all .275s;
+	cursor: pointer;
 }
 .imagify-custom-folders-remove-text {
 	max-width: 0;
