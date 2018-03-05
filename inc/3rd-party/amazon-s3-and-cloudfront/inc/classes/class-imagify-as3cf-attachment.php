@@ -731,7 +731,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			 * This means we'll follow AS3CF settings to know if the local files must be sent to S3 and/or deleted.
 			 */
 			$this->use_s3_settings = true;
-			$this->delete_files    = $as3cf->get_setting( 'remove-local-file' ) && $this->can_send_to_s3();
+			$this->delete_files    = $as3cf && $as3cf->get_setting( 'remove-local-file' ) && $this->can_send_to_s3();
 
 			return $metadata;
 		}
@@ -767,7 +767,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		static $is;
 
 		if ( ! isset( $is ) ) {
-			$is = $as3cf->is_plugin_setup();
+			$is = $as3cf && $as3cf->is_plugin_setup();
 		}
 
 		return $is;
@@ -783,7 +783,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 */
 	public function get_s3_info() {
 		global $as3cf;
-		return $as3cf->get_attachment_s3_info( $this->id );
+		return $as3cf ? $as3cf->get_attachment_s3_info( $this->id ) : false;
 	}
 
 	/**
@@ -878,7 +878,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		}
 
 		if ( ! isset( $copy_to_s3 ) ) {
-			$copy_to_s3 = (bool) $as3cf->get_setting( 'copy-to-s3' );
+			$copy_to_s3 = $as3cf && $as3cf->get_setting( 'copy-to-s3' );
 		}
 
 		$is_s3_setup      = $this->is_s3_setup();
