@@ -439,7 +439,7 @@ class Imagify_Views {
 	 */
 	public function get_template( $template, $data = array() ) {
 		$path = str_replace( '_', '-', $template );
-		$path = IMAGIFY_INC_PATH . 'views/' . $template . '.php';
+		$path = IMAGIFY_PATH . 'views/' . $template . '.php';
 
 		if ( ! imagify_get_filesystem()->exists( $path ) ) {
 			return false;
