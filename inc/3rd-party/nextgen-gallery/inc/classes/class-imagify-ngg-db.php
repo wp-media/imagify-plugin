@@ -19,10 +19,9 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	/**
 	 * The single instance of the class.
 	 *
+	 * @var    object
 	 * @since  1.5
 	 * @access protected
-	 *
-	 * @var object
 	 */
 	protected static $_instance;
 
@@ -43,7 +42,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 * @since  1.7 Not public anymore, now an integer.
 	 * @access protected
 	 */
-	protected $table_version = 10;
+	protected $table_version = 100;
 
 	/**
 	 * Tell if the table is the same for each site of a Multisite.
