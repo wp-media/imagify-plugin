@@ -150,18 +150,18 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	/**
 	 * Fills statistics data with values from $data array.
 	 *
-	 * @since 1.0
-	 * @since 1.6.5 Not static anymore.
-	 * @since 1.6.6 Removed the attachment ID parameter.
+	 * @since  1.0
+	 * @since  1.6.5 Not static anymore.
+	 * @since  1.6.6 Removed the attachment ID parameter.
+	 * @since  1.7   Removed the image URL parameter.
 	 * @access public
 	 *
 	 * @param  array  $data      The statistics data.
 	 * @param  object $response  The API response.
-	 * @param  int    $url       The attachment URL.
 	 * @param  string $size      The attachment size key.
 	 * @return bool|array        False if the original size has an error or an array contains the data for other result.
 	 */
-	public function fill_data( $data, $response, $url, $size = 'full' ) {
+	public function fill_data( $data, $response, $size = 'full' ) {
 		$data          = is_array( $data ) ? $data : array();
 		$data['sizes'] = ! empty( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
 
@@ -203,7 +203,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 			$data['sizes'][ $size ] = array(
 				'success'        => true,
-				'file_url'       => $url,
 				'original_size'  => $response->original_size,
 				'optimized_size' => $response->new_size,
 				'percent'        => $response->percent,
@@ -405,7 +404,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			'original_size'      => $attachment_original_size,
 		) );
 
-		$data = $this->fill_data( null, $response, $attachment_url );
+		$data = $this->fill_data( null, $response );
 
 		// Save the optimization level.
 		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
@@ -448,7 +447,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 					'context'            => 'wp',
 				) );
 
-				$data = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
+				$data = $this->fill_data( $data, $response, $size_key );
 
 				/**
 				* Filter the optimization data of a specific thumbnail.
@@ -568,7 +567,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 				'context'            => 'wp',
 			) );
 
-			$imagify_data = $this->fill_data( $imagify_data, $response, $thumbnail_url, $size_name );
+			$imagify_data = $this->fill_data( $imagify_data, $response, $size_name );
 
 			/** This filter is documented in inc/classes/class-imagify-attachment.php. */
 			$imagify_data = apply_filters( 'imagify_fill_thumbnail_data', $imagify_data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_name, $optimization_level );
