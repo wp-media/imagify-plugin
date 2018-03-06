@@ -194,7 +194,7 @@ class Imagify_Assets {
 
 		$this->register_script( 'sweetalert', 'sweetalert2', array( 'promise-polyfill' ), '4.6.6' )->localize( 'imagifySwal' );
 
-		$this->register_script( 'chart', 'chart', array(), '2.7.1' );
+		$this->register_script( 'chart', 'chart', array(), '2.7.1.0' );
 
 		$this->register_script( 'event-move', 'jquery.event.move', array( 'jquery' ), '2.0.1' );
 
