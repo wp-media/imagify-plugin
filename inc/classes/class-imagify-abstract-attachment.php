@@ -721,15 +721,15 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @since  1.0
 	 * @since  1.6.5 Not static anymore.
 	 * @since  1.6.6 Removed the attachment ID parameter.
+	 * @since  1.7   Removed the image URL parameter.
 	 * @access public
 	 *
 	 * @param  array  $data     The statistics data.
 	 * @param  object $response The API response.
-	 * @param  int    $url      The attachment URL.
 	 * @param  string $size     The attachment size key.
 	 * @return bool|array False if the original size has an error or an array contains the data for other result.
 	 */
-	abstract public function fill_data( $data, $response, $url, $size = 'full' );
+	abstract public function fill_data( $data, $response, $size = 'full' );
 
 	/**
 	 * Optimize all sizes with Imagify.

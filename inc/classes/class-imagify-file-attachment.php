@@ -541,11 +541,10 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 *
 	 * @param  array  $data     The statistics data.
 	 * @param  object $response The API response.
-	 * @param  int    $url      The attachment URL. Not used here.
 	 * @param  string $size     The attachment size key. Not used here.
-	 * @return bool|array False if the original size has an error or an array contains the data for other result.
+	 * @return bool|array       False if the original size has an error or an array contains the data for other result.
 	 */
-	public function fill_data( $data, $response, $url = null, $size = null ) {
+	public function fill_data( $data, $response, $size = null ) {
 		$data = is_array( $data ) ? $data : array();
 		$data = imagify_merge_intersect( $data, $this->get_reset_imagify_data() );
 

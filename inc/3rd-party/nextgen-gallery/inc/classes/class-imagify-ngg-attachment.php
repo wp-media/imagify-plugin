@@ -285,16 +285,16 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @since  1.5
 	 * @since  1.6.5 Not static anymore.
 	 * @since  1.6.6 Removed the attachment ID parameter.
+	 * @since  1.7   Removed the image URL parameter.
 	 * @author Jonathan Buttigieg
 	 * @access public
 	 *
 	 * @param  array  $data      The statistics data.
 	 * @param  object $response  The API response.
-	 * @param  int    $url       The attachment URL.
 	 * @param  string $size      The attachment size key.
 	 * @return bool|array        False if the original size has an error or an array contains the data for other result.
 	 */
-	public function fill_data( $data, $response, $url, $size = 'full' ) {
+	public function fill_data( $data, $response, $size = 'full' ) {
 		$data          = is_array( $data ) ? $data : array();
 		$data['sizes'] = ! empty( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
 
@@ -367,7 +367,6 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		$data['sizes'][ $size ] = array(
 			'success'        => true,
-			'file_url'       => $url,
 			'original_size'  => $original_size,
 			'optimized_size' => $optimized_size,
 			'percent'        => $percent,
@@ -409,9 +408,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			return;
 		}
 
-		// Get file path & URL for original image.
+		// Get file path for original image.
 		$attachment_path = $this->get_original_path();
-		$attachment_url  = $this->get_original_url();
 
 		/**
 		 * Fires before optimizing an attachment.
@@ -433,7 +431,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			'backup_path'        => $this->get_raw_backup_path(),
 		) );
 
-		$data = $this->fill_data( null, $response, $attachment_url );
+		$data = $this->fill_data( null, $response );
 
 		// Save the optimization level.
 		$this->update_row( array(
@@ -553,7 +551,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 					'backup'             => false,
 				) );
 
-				$data = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
+				$data = $this->fill_data( $data, $response, $size_key );
 
 				/**
 				* Filter the optimization data of a specific thumbnail.

@@ -219,7 +219,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			'original_size'      => $this->get_original_size( false ),
 		) );
 
-		$data = $this->fill_data( null, $response, $this->get_original_url() );
+		$data = $this->fill_data( null, $response );
 
 		if ( $this->delete_files ) {
 			$to_delete[] = $attachment_path;
@@ -301,7 +301,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 					'context'            => 'wp',
 				) );
 
-				$data = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
+				$data = $this->fill_data( $data, $response, $size_key );
 
 				/** This filter is documented in /inc/classes/class-imagify-attachment.php. */
 				$data = apply_filters( 'imagify_fill_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
