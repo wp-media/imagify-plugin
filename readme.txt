@@ -140,7 +140,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * New: you can now optimize the images from your themes and plugins, or from any other folder in your site!
 * Improvement: compatibility with old and new versions of WP Offload S3 plugins.
 * Improvement: don't start the bulk optimization process if cURL is not available.
-* Bug Fix: image dimentions not being stored sometimes after it is resized.
+* Bug Fix: image dimensions not being stored sometimes after it is resized.
 * Bug Fix: the comparison tool could display multiple handles.
 * Bug Fix: issue with php 7.2.
 * Dev stuff: lots of internal changes, many things have been rewritten.
