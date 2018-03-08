@@ -160,7 +160,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			height smallint(2) unsigned NOT NULL default 0,
 			original_size int(4) unsigned NOT NULL default 0,
 			optimized_size int(4) unsigned default NULL,
-			percent tinyint(1) unsigned default NULL,
+			percent smallint(2) unsigned default NULL,
 			optimization_level tinyint(1) unsigned default NULL,
 			status varchar(20) default NULL,
 			error varchar(255) default NULL,
