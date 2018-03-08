@@ -45,7 +45,7 @@ $folder_icon    = '<svg width="20px" height="17px" viewBox="0 0 20 17" version="
 			if ( $data['checkbox_selected'] ) {
 				_e( 'Folder Added', 'imagify' );
 			} else {
-				_e( 'Add Folder', 'imagify' );
+				_ex( 'Add Folder', 'checkbox label', 'imagify' );
 			}
 			?>
 			<span class="imagify-fake-checkbox"></span>
