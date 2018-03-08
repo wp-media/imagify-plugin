@@ -130,7 +130,7 @@ if ( ! is_network_admin() ) {
 		<?php } ?>
 
 		<p class="imagify-kindof-title imagify-flex imagify-vcenter">
-			<span><?php _e( 'Optimize Images in custom folders here.', 'imagify' ); ?></span>
+			<span><?php _e( 'Select folders for optimization.', 'imagify' ); ?></span>
 			<span>
 				<button id="imagify-add-custom-folder" class="button imagify-button-mini imagify-button-primary imagify-add-custom-folder" type="button">
 					<span class="dashicons dashicons-plus"></span>

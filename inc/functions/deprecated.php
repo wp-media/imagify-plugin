@@ -164,7 +164,7 @@ class Imagify_Deprecated {
 	}
 
 	/**
-	 * Get prices for packs (one time).
+	 * Get prices for packs (One Time).
 	 *
 	 * @since 1.6.5 Deprecated
 	 * @deprecated

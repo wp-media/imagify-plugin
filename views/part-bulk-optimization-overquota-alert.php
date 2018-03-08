@@ -21,7 +21,7 @@ $overquota_url = imagify_get_external_url( 'subscription', array(
 			<li>
 				<?php
 				/* translators: 1 is the beginning of strong tag 2 is the closing tag. */
-				printf( esc_html__( '%1$sBuy a “One-Time Plan”%2$s to optimize the remaining images only', 'imagify' ), '<strong>', '</strong>&nbsp;' );
+				printf( esc_html__( '%1$sBuy a One Time plan%2$s to optimize the remaining images only', 'imagify' ), '<strong>', '</strong>&nbsp;' );
 				?>
 			</li>
 		</ul>

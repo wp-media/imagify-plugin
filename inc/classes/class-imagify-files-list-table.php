@@ -54,7 +54,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		) );
 
 		$this->modes = array(
-			'list' => __( 'List View' ),
+			'list' => __( 'List View', 'imagify' ),
 		);
 	}
 
@@ -376,7 +376,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 					?>
 				</select>
 
-				<?php submit_button( __( 'Filter', 'imagify' ), '', 'filter_action', false, array( 'id' => 'folders-query-submit' ) ); ?>
+				<?php submit_button( _x( 'Filter', 'verb', 'imagify' ), '', 'filter_action', false, array( 'id' => 'folders-query-submit' ) ); ?>
 
 				<?php $this->extra_tablenav( 'bar' ); ?>
 			</div>
@@ -476,7 +476,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 */
 	public function column_cb( $item ) {
 		?>
-		<label class="screen-reader-text" for="cb-select-<?php echo $item->get_id(); ?>"><?php _e( 'Select file', 'imagify' ); ?></label>
+		<label class="screen-reader-text" for="cb-select-<?php echo $item->get_id(); ?>"><?php _ex( 'Select file', 'checkbox label', 'imagify' ); ?></label>
 		<input id="cb-select-<?php echo $item->get_id(); ?>" type="checkbox" name="bulk_select[]" value="<?php echo $item->get_id(); ?>" />
 		<?php
 	}

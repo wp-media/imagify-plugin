@@ -276,7 +276,7 @@ class Imagify extends Imagify_Deprecated {
 	}
 
 	/**
-	 * Get prices for packs (one time).
+	 * Get prices for packs (One Time).
 	 *
 	 * @access public
 	 * @since  1.6.5

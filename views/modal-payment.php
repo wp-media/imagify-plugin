@@ -144,7 +144,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 					<div class="imagify-offer-line imagify-offer-onetime" data-offer='{"recommended":{"id":999,"name":"Customized","data":3000001337,"dataf":"3 GB","imgs":54634,"price":28.98}}'>
 						<div class="imagify-offer-header">
 							<p class="imagify-offer-title">
-								<?php esc_html_e( 'Optimize the images you already have, buy a one-time plan', 'imagify' ); ?>
+								<?php esc_html_e( 'Optimize the images you already have, buy a One Time plan', 'imagify' ); ?>
 							</p>
 						</div><!-- .imagify-offer-header -->
 
@@ -314,7 +314,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 					</div><!-- .imagify-tab-content -->
 					<div class="imagify-tab-content" id="imagify-pricing-tab-onetime" role="tabpanel">
 						<div class="imagify-modal-section section-gray">
-							<p><?php esc_html_e( 'One time plans are useful if you have a lots of existing images which need to be optimized. You can use it for bulk optimizing all your past images. You will pay only once.', 'imagify' ); ?></p>
+							<p><?php esc_html_e( 'One Time plans are useful if you have a lots of existing images which need to be optimized. You can use it for bulk optimizing all your past images. You will pay only once.', 'imagify' ); ?></p>
 						</div>
 
 						<div class="imagify-pricing-table imagify-month-selected">

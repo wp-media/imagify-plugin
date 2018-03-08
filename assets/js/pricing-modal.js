@@ -942,7 +942,7 @@
 			checkout_datas.monthly = JSON.parse( $monthly_offer.attr( 'data-offer' ) );
 		}
 
-		// If user choose a one time plan.
+		// If user choose a One Time plan.
 		if ( $onetime_offer.hasClass( 'imagify-offer-selected' ) ) {
 			checkout_datas.onetime = JSON.parse( $onetime_offer.attr( 'data-offer' ) );
 		}
