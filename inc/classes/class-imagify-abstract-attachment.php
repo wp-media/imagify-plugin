@@ -475,7 +475,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		}
 
 		$percent = $this->get_data();
-		$percent = ! empty( $data['stats']['percent'] ) ? $data['stats']['percent'] : (float) 0;
+		$percent = ! empty( $percent['stats']['percent'] ) ? $percent['stats']['percent'] : (float) 0;
 
 		return round( $percent, 2 );
 	}
