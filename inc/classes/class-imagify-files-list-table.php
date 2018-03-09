@@ -416,7 +416,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			'folder'             => __( 'Folder', 'imagify' ),
 			'optimization'       => __( 'Optimization', 'imagify' ),
 			'status'             => __( 'Status', 'imagify' ),
-			'optimization_level' => __( 'Optimization level', 'imagify' ),
+			'optimization_level' => __( 'Optimization Level', 'imagify' ),
 			'actions'            => __( 'Actions', 'imagify' ),
 		);
 	}

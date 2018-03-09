@@ -144,16 +144,16 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 			<div class="imagify-settings-main-content imagify-pb0<?php echo $hidden_class; ?>">
 				<div class="imagify-settings-section clear">
 					<div class="imagify-col">
-						<h2 class="imagify-options-title"><?php _e( 'Display options', 'imagify' ); ?></h2>
+						<h2 class="imagify-options-title"><?php _e( 'Display Options', 'imagify' ); ?></h2>
 
-						<p class="imagify-options-subtitle"><?php _e( 'Show Admin Bar menu', 'imagify' ); ?></p>
+						<p class="imagify-options-subtitle"><?php _e( 'Show Toolbar Menu', 'imagify' ); ?></p>
 
 						<div class="imagify-col">
 							<p>
 							<?php
 							$settings->field_checkbox( array(
 								'option_name' => 'admin_bar_menu',
-								'label'       => __( 'I want this awesome quick access menu on my admin bar.', 'imagify' ),
+								'label'       => __( 'I want this awesome quick access menu on my Toolbar.', 'imagify' ),
 							) );
 							?>
 							</p>

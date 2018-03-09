@@ -64,7 +64,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'removeFolder'            => _x( 'Remove', 'custom folder', 'imagify' ),
 					'filesTreeTitle'          => __( 'Select Folders', 'imagify' ),
 					'filesTreeSubTitle'       => __( 'Select one or several folders to optimize.', 'imagify' ),
-					'cleaningInfo'            => __( 'We removed some folders that are not containing any images from the tree.', 'imagify' ),
+					'cleaningInfo'            => __( 'Some folders that do not contain any images are hidden.', 'imagify' ),
 					'confirmFilesTreeBtn'     => __( 'Select Folders', 'imagify' ),
 					'customFilesLegend'       => __( 'Choose the folders to optimize', 'imagify' ),
 					'error'                   => __( 'Error', 'imagify' ),
