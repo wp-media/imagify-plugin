@@ -107,7 +107,7 @@ Absolutely. Most of the time, Imagify will still be able to optimize your images
 
 Normal compression is a "lossless" optimization. This means there is no loss of image quality. Aggressive and Ultra compression are more powerful, so the picture quality will be somewhat reduced. The weight of the image will be much less.
 
-= Is the EXIF data of images removes? =
+= Is the EXIF data of images removed? =
 
 By default EXIF data is removed. It is however possible to keep it by enabling the option.
 
@@ -135,8 +135,10 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 3. Media Page
 
+4. Other Media Page
+
 == Changelog ==
-= 1.7 =
+= 1.7 - 2018/03/13 =
 * New: you can now optimize the images from your themes and plugins, or from any other folder in your site!
 * Improvement: compatibility with old and new versions of WP Offload S3 plugins.
 * Improvement: don't start the bulk optimization process if cURL is not available.
