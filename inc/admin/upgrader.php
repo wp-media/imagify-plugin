@@ -259,7 +259,7 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	// 1.7
 	if ( version_compare( $site_version, '1.7' ) < 0 ) {
 		// Migrate data.
-		_do_imagify_update_library_size_calculations();
+		Imagify_Cron_Library_Size::get_instance()->do_event();
 
 		if ( ! imagify_is_active_for_network() ) {
 			// Make sure the settings are autoloaded.
