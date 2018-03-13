@@ -53,16 +53,7 @@ class Imagify extends Imagify_Deprecated {
 	 * The constructor.
 	 */
 	protected function __construct() {
-		// Check if the WordPress plugin is activated and the API key is stored in the options.
-		if ( defined( 'IMAGIFY_VERSION' ) && function_exists( 'get_imagify_option' ) ) {
-			$api_key       = get_imagify_option( 'api_key', false );
-			$this->api_key = $api_key ? $api_key : $this->api_key;
-		}
-
-		// Check if the API key is defined with the PHP constant (it's ovveride the WordPress plugin option.
-		if ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
-			$this->api_key = IMAGIFY_API_KEY;
-		}
+		$this->api_key = get_imagify_option( 'api_key' );
 
 		$this->all_headers['Accept']        = 'Accept: application/json';
 		$this->all_headers['Content-Type']  = 'Content-Type: application/json';
@@ -285,7 +276,7 @@ class Imagify extends Imagify_Deprecated {
 	}
 
 	/**
-	 * Get prices for packs (one time).
+	 * Get prices for packs (One Time).
 	 *
 	 * @access public
 	 * @since  1.6.5
@@ -503,8 +494,15 @@ class Imagify extends Imagify_Deprecated {
 	private function handle_response( $response, $http_code, $error = '' ) {
 		$response = json_decode( $response );
 
-		if ( 200 !== $http_code && isset( $response->code, $response->detail ) ) {
-			return new WP_Error( $http_code, $response->detail );
+		if ( 200 !== $http_code && ! empty( $response->code ) ) {
+			if ( ! empty( $response->detail ) ) {
+				return new WP_Error( $http_code, $response->detail );
+			}
+			if ( ! empty( $response->image ) ) {
+				$error = (array) $response->image;
+				$error = reset( $error );
+				return new WP_Error( $http_code, $error );
+			}
 		}
 
 		if ( 413 === $http_code ) {

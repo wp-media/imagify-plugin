@@ -54,11 +54,13 @@ function imagify_is_screen( $identifier ) {
 	switch ( $identifier ) {
 		case 'imagify-settings':
 			// Imagify Settings or Imagify Network Settings.
-			return 'settings_page_' . IMAGIFY_SLUG === $current_screen->id || 'settings_page_' . IMAGIFY_SLUG . '-network' === $current_screen->id;
+			$slug = Imagify_Views::get_instance()->get_settings_page_slug();
+			return 'settings_page_' . $slug === $current_screen->id || $slug . '_page_' . $slug . '-network' === $current_screen->id || 'toplevel_page_' . $slug . '-network' === $current_screen->id;
 
 		case 'imagify-network-settings':
 			// Imagify Network Settings.
-			return 'settings_page_' . IMAGIFY_SLUG . '-network' === $current_screen->id;
+			$slug = Imagify_Views::get_instance()->get_settings_page_slug();
+			return $slug . '_page_' . $slug . '-network' === $current_screen->id || 'toplevel_page_' . $slug . '-network' === $current_screen->id;
 
 		case 'library':
 			// Media Library.
@@ -79,8 +81,20 @@ function imagify_is_screen( $identifier ) {
 
 		case 'bulk':
 		case 'bulk-optimization':
-			// Bulk Optimization.
-			return 'media_page_' . IMAGIFY_SLUG . '-bulk-optimization' === $current_screen->id;
+			// Bulk Optimization (any).
+			$slug = Imagify_Views::get_instance()->get_bulk_page_slug();
+			return 'toplevel_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
+
+		case 'files-bulk-optimization':
+			// Bulk Optimization (custom folders).
+			$slug = Imagify_Views::get_instance()->get_bulk_page_slug();
+			return 'toplevel_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
+
+		case 'files':
+		case 'files-list':
+			// "Custom folders" files list.
+			$slug = Imagify_Views::get_instance()->get_files_page_slug();
+			return 'imagify_page_' . $slug . '-network' === $current_screen->id || 'media_page_' . $slug === $current_screen->id;
 
 		case 'media-modal':
 			// Media modal.
@@ -100,11 +114,11 @@ function imagify_is_screen( $identifier ) {
  * @param  array|string $arg    An array of arguments. It can contain an attachment ID and/or a context.
  * @return string               The URL of the specific admin page or action.
  */
-function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
+function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 	if ( is_array( $arg ) ) {
 		$id      = isset( $arg['attachment_id'] )      ? $arg['attachment_id']      : 0;
 		$context = isset( $arg['context'] )            ? $arg['context']            : 'wp';
-		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : 0;
+		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : '';
 	}
 
 	switch ( $action ) {
@@ -123,12 +137,48 @@ function get_imagify_admin_url( $action = 'options-general', $arg = array() ) {
 		case 'dismiss-notice':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
 
+		case 'optimize-file':
+		case 'restore-file':
+		case 'refresh-file-modified':
+			$action = 'imagify_' . str_replace( '-', '_', $action );
+			return wp_nonce_url( admin_url( 'admin-post.php?action=' . $action . '&id=' . $id ), $action );
+
+		case 'reoptimize-file':
+			$action = 'imagify_' . str_replace( '-', '_', $action );
+			return wp_nonce_url( admin_url( 'admin-post.php?action=' . $action . '&id=' . $id . '&level=' . $level ), $action );
+
+		case 'get-files-tree':
+			return wp_nonce_url( admin_url( 'admin-ajax.php?action=imagify_get_files_tree' ), 'get-files-tree' );
+
 		case 'bulk-optimization':
-			return admin_url( 'upload.php?page=' . IMAGIFY_SLUG . '-bulk-optimization' );
+			return admin_url( 'upload.php?page=' . Imagify_Views::get_instance()->get_bulk_page_slug() );
+
+		case 'files-bulk-optimization':
+			$page = '?page=' . Imagify_Views::get_instance()->get_bulk_page_slug();
+			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'upload.php' . $page );
+
+		case 'files-list':
+			$page = '?page=' . Imagify_Views::get_instance()->get_files_page_slug();
+			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'upload.php' . $page );
+
+		case 'folder-errors':
+			switch ( $arg ) {
+				case 'library':
+					return add_query_arg( array(
+						'mode'           => 'list',
+						'imagify-status' => 'errors',
+					), admin_url( 'upload.php' ) );
+
+				case 'custom-folders':
+					return add_query_arg( array(
+						'status-filter' => 'errors',
+					), get_imagify_admin_url( 'files-list' ) );
+			}
+			return '';
 
 		default:
-			$page = imagify_is_active_for_network() ? network_admin_url( 'settings.php' ) : admin_url( 'options-general.php' );
-			return $page . '?page=' . IMAGIFY_SLUG;
+			$page = '?page=' . Imagify_Views::get_instance()->get_settings_page_slug();
+			return imagify_is_active_for_network() ? network_admin_url( 'admin.php' . $page ) : admin_url( 'options-general.php' . $page );
 	}
 }
 
@@ -164,12 +214,16 @@ function get_imagify_max_intermediate_image_size() {
  * Get the default Bulk Optimization buffer size.
  *
  * @since  1.5.10
+ * @since  1.7 Added $sizes parameter.
  * @author Jonathan Buttigieg
  *
- * @return int The buffer size.
+ * @param  int $sizes Number of image sizes per item (attachment).
+ * @return int        The buffer size.
  */
-function get_imagify_bulk_buffer_size() {
-	$sizes = count( get_imagify_thumbnail_sizes() );
+function get_imagify_bulk_buffer_size( $sizes = false ) {
+	if ( ! $sizes ) {
+		$sizes = count( get_imagify_thumbnail_sizes() );
+	}
 
 	switch ( true ) {
 		case ( $sizes >= 10 ):
@@ -259,10 +313,10 @@ function imagify_check_nonce( $action, $query_arg = false ) {
  *
  * @since  1.6.10
  * @since  1.6.11 Uses a capacity describer instead of a capacity itself.
- * @author Grégory Viguier
  * @see    imagify_get_capacity()
+ * @author Grégory Viguier
  *
- * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'. Can also be a "real" user capacity.
+ * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
  * @param int    $post_id   A post ID.
  */
 function imagify_check_user_capacity( $describer = 'manage', $post_id = null ) {
@@ -295,7 +349,7 @@ function imagify_die( $message = null ) {
 		}
 	}
 
-	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+	if ( wp_doing_ajax() ) {
 		wp_send_json_error( $message );
 	}
 
@@ -332,7 +386,7 @@ function imagify_die( $message = null ) {
  * @param array|string $args_or_url An array of query args to add to the redirection URL. If a string, the complete URL.
  */
 function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
-	if ( defined( 'DOING_AJAX' ) ) {
+	if ( wp_doing_ajax() ) {
 		return;
 	}
 
@@ -354,6 +408,73 @@ function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
 	 */
 	$redirect = apply_filters( 'imagify_redirect_to', $redirect );
 
+	if ( $message ) {
+		if ( is_multisite() && strpos( $redirect, network_admin_url( '/' ) ) === 0 ) {
+			Imagify_Notices::get_instance()->add_network_temporary_notice( $message );
+		} else {
+			Imagify_Notices::get_instance()->add_site_temporary_notice( $message );
+		}
+	}
+
 	wp_safe_redirect( esc_url_raw( $redirect ) );
 	die();
+}
+
+/**
+ * Get cached Imagify user data.
+ * This is usefull to prevent triggering an HTTP request to our server on every page load, but it can be used only where the data doesn't need to be in real time.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return object|bool An object on success. False otherwise.
+ */
+function imagify_get_cached_user() {
+	if ( ! imagify_valid_key() ) {
+		return false;
+	}
+
+	if ( imagify_is_active_for_network() ) {
+		$user = get_site_transient( 'imagify_user' );
+	} else {
+		$user = get_transient( 'imagify_user' );
+	}
+
+	return is_object( $user ) ? $user : false;
+}
+
+/**
+ * Cache Imagify user data for 5 minutes.
+ * Runs every methods to store the results. Also stores formatted data like the quota and the next update date.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return object|bool An object on success. False otherwise.
+ */
+function imagify_cache_user() {
+	if ( ! imagify_valid_key() ) {
+		return false;
+	}
+
+	$user    = new Imagify_User();
+	$data    = (object) get_object_vars( $user );
+	$methods = get_class_methods( $user );
+
+	foreach ( $methods as $method ) {
+		if ( '__construct' !== $method ) {
+			$data->$method = $user->$method();
+		}
+	}
+
+	$data->quota_formatted            = imagify_size_format( $user->quota * 1048576 );
+	$data->next_date_update_formatted = date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) );
+
+	if ( imagify_is_active_for_network() ) {
+		set_site_transient( 'imagify_user', $data, 5 * MINUTE_IN_SECONDS );
+	} else {
+		set_transient( 'imagify_user', $data, 5 * MINUTE_IN_SECONDS );
+	}
+
+	return $data;
 }

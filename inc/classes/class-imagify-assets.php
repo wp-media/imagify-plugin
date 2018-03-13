@@ -14,7 +14,7 @@ class Imagify_Assets {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * Prefix used for stylesheet handles.
@@ -185,6 +185,8 @@ class Imagify_Assets {
 
 		$this->register_style( 'options', 'options', array( 'sweetalert', 'admin' ) );
 
+		$this->register_style( 'files-list', 'files-list', array( 'admin' ) );
+
 		/**
 		 * 3rd Party Scripts.
 		 */
@@ -215,9 +217,11 @@ class Imagify_Assets {
 
 		$this->register_script( 'async', 'imagify-gulp', array(), '2017-07-28' );
 
-		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
+		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
 
-		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'admin' ) )->defer_localization( 'imagifyOptions' );
+		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'underscore', 'admin' ) )->defer_localization( 'imagifyOptions' );
+
+		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'chart', 'admin' ) )->defer_localization( 'imagifyFiles' );
 	}
 
 	/**
@@ -282,10 +286,17 @@ class Imagify_Assets {
 		}
 
 		/*
-		 * Loaded in settings page.
+		 * Loaded in the settings page.
 		 */
 		if ( imagify_is_screen( 'imagify-settings' ) ) {
 			$this->enqueue_assets( array( 'sweetalert', 'notices', 'twentytwenty', 'pricing-modal', 'options' ) );
+		}
+
+		/*
+		 * Loaded in the files list page.
+		 */
+		if ( imagify_is_screen( 'files-list' ) ) {
+			$this->enqueue_assets( array( 'files-list', 'twentytwenty' ) );
 		}
 
 		/**
@@ -341,7 +352,7 @@ class Imagify_Assets {
 
 		$user = get_imagify_user();
 
-		if ( empty( $user->is_intercom ) || false === $user->display_support ) {
+		if ( empty( $user->is_intercom ) || empty( $user->display_support ) ) {
 			return;
 		}
 		?>
@@ -833,8 +844,6 @@ class Imagify_Assets {
 			return false;
 		}
 
-		$has_api_key = ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key' );
-
-		return $has_api_key && is_admin_bar_showing() && imagify_current_user_can() && get_imagify_option( 'admin_bar_menu' );
+		return get_imagify_option( 'api_key' ) && is_admin_bar_showing() && imagify_current_user_can() && get_imagify_option( 'admin_bar_menu' );
 	}
 }

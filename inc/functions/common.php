@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @since  1.6.11 Uses a string as describer for the first argument.
  * @author Grégory Viguier
  *
- * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+ * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'optimize-file'.
  * @return string
  */
 function imagify_get_capacity( $describer = 'manage' ) {
@@ -26,6 +26,9 @@ function imagify_get_capacity( $describer = 'manage' ) {
 	switch ( $describer ) {
 		case 'manage':
 			$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
+			break;
+		case 'optimize-file':
+			$capacity = is_multisite() ? 'manage_network_options' : 'manage_options';
 			break;
 		case 'bulk-optimize':
 			$capacity = 'manage_options';
@@ -58,7 +61,7 @@ function imagify_get_capacity( $describer = 'manage' ) {
 	 * @since 1.6.11 Replaced $force_mono by $describer.
 	 *
 	 * @param string $capacity  The user capacity.
-	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'optimize-file'.
 	 */
 	return apply_filters( 'imagify_capacity', $capacity, $describer );
 }
@@ -67,9 +70,10 @@ function imagify_get_capacity( $describer = 'manage' ) {
  * Tell if the current user has the required ability to operate Imagify.
  *
  * @since  1.6.11
+ * @see    imagify_get_capacity()
  * @author Grégory Viguier
  *
- * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+ * @param  string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
  * @param  int    $post_id   A post ID (a gallery ID for NGG).
  * @return bool
  */
@@ -80,8 +84,8 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 	$capacity = imagify_get_capacity( $describer );
 	$user_can = false;
 
-	if ( 'manage' !== $describer && 'bulk-optimize' !== $describer ) {
-		// Describers that are not 'manage' and 'bulk-optimize' need an additional test for 'upload_files'.
+	if ( 'manage' !== $describer && 'bulk-optimize' !== $describer && 'optimize-file' !== $describer ) {
+		// Describers that are not 'manage', 'bulk-optimize', and 'optimize-file' need an additional test for 'upload_files'.
 		if ( ! isset( $can_upload ) ) {
 			$can_upload = current_user_can( 'upload_files' );
 		}
@@ -105,10 +109,41 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 	 *
 	 * @param bool   $user_can  Tell if the current user has the required ability to operate Imagify.
 	 * @param string $capacity  The user capacity.
-	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', and 'auto-optimize'.
+	 * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
 	 * @param int    $post_id   A post ID (a gallery ID for NGG).
 	 */
 	return apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $post_id );
+}
+
+/**
+ * Tell if the current user can optimize custom folders.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @return bool
+ */
+function imagify_can_optimize_custom_folders() {
+	static $can;
+
+	if ( isset( $can ) ) {
+		return $can;
+	}
+
+	// Check if the DB tables are ready.
+	if ( ! Imagify_Folders_DB::get_instance()->can_operate() || ! Imagify_Files_DB::get_instance()->can_operate() ) {
+		$can = false;
+		return $can;
+	}
+
+	// Check for user capacity.
+	if ( ! imagify_current_user_can( 'optimize-file' ) ) {
+		$can = false;
+		return $can;
+	}
+
+	$can = true;
+	return $can;
 }
 
 /**
@@ -136,15 +171,33 @@ function imagify_sanitize_context( $context ) {
 function imagify_autoload( $class ) {
 	// Generic classes.
 	$classes = array(
-		'Imagify_Abstract_Attachment' => 1,
-		'Imagify_Abstract_DB'         => 1,
-		'Imagify_Admin_Ajax_Post'     => 1,
-		'Imagify_Assets'              => 1,
-		'Imagify_Attachment'          => 1,
-		'Imagify_DB'                  => 1,
-		'Imagify_Notices'             => 1,
-		'Imagify_User'                => 1,
-		'Imagify'                     => 1,
+		'Imagify_Abstract_Attachment'      => 1,
+		'Imagify_Abstract_Cron'            => 1,
+		'Imagify_Abstract_DB'              => 1,
+		'Imagify_Abstract_Options'         => 1,
+		'Imagify_Admin_Ajax_Post'          => 1,
+		'Imagify_Assets'                   => 1,
+		'Imagify_Attachment'               => 1,
+		'Imagify_Cron_Library_Size'        => 1,
+		'Imagify_Cron_Rating'              => 1,
+		'Imagify_Cron_Sync_Files'          => 1,
+		'Imagify_Custom_Folders'           => 1,
+		'Imagify_Data'                     => 1,
+		'Imagify_DB'                       => 1,
+		'Imagify_File_Attachment'          => 1,
+		'Imagify_Files_DB'                 => 1,
+		'Imagify_Files_Iterator'           => 1,
+		'Imagify_Files_List_Table'         => 1,
+		'Imagify_Files_Recursive_Iterator' => 1,
+		'Imagify_Files_Scan'               => 1,
+		'Imagify_Files_Stats'              => 1,
+		'Imagify_Folders_DB'               => 1,
+		'Imagify_Notices'                  => 1,
+		'Imagify_Options'                  => 1,
+		'Imagify_Settings'                 => 1,
+		'Imagify_User'                     => 1,
+		'Imagify_Views'                    => 1,
+		'Imagify'                          => 1,
 	);
 
 	if ( isset( $classes[ $class ] ) ) {
@@ -304,4 +357,65 @@ function imagify_get_locale() {
 	 * @param string $locale The current locale.
 	 */
 	return apply_filters( 'imagify_locale', $locale );
+}
+
+/**
+ * Get the label corresponding to the given optimization label.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  int|bool $level  Optimization level (between 0 and 2). False if no level.
+ * @param  string   $format Format to display the label. Use %ICON% for the icon and %s for the label.
+ * @return string           The label.
+ */
+function imagify_get_optimization_level_label( $level, $format = '%s' ) {
+	if ( ! is_numeric( $level ) ) {
+		return '';
+	}
+
+	if ( strpos( $format, '%ICON%' ) !== false ) {
+		$icon = '<svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"><g fill="#40B1D0" fill-rule="evenodd">';
+
+		switch ( $level ) {
+			case 2:
+				$icon .= '<polygon points="11.6054688 11.6054688 8.7890625 11.6054688 8.7890625 0.39453125 11.6054688 0.39453125"/><polygon points="7.39453125 11.6054688 4.60546875 11.6054688 4.60546875 3.89453125 7.39453125 3.89453125"/><polygon points="3.2109375 11.6054688 0.39453125 11.6054688 0.39453125 6 3.2109375 6"/>';
+				break;
+			case 1:
+				$icon .= '<polygon fill="#CCD1D6" points="11.6054688 11.6054688 8.7890625 11.6054688 8.7890625 0.39453125 11.6054688 0.39453125"/><polygon points="7.39453125 11.6054688 4.60546875 11.6054688 4.60546875 3.89453125 7.39453125 3.89453125"/><polygon points="3.2109375 11.6054688 0.39453125 11.6054688 0.39453125 6 3.2109375 6"/>';
+				break;
+			case 0:
+				$icon .= '<polygon fill="#CCD1D6" points="11.6054688 11.6054688 8.7890625 11.6054688 8.7890625 0.39453125 11.6054688 0.39453125"/><polygon fill="#CCD1D6" points="7.39453125 11.6054688 4.60546875 11.6054688 4.60546875 3.89453125 7.39453125 3.89453125"/><polygon points="3.2109375 11.6054688 0.39453125 11.6054688 0.39453125 6 3.2109375 6"/>';
+		}
+
+		$icon .= '</g></svg>';
+
+		$format = str_replace( '%ICON%', $icon, $format );
+	}
+
+	switch ( $level ) {
+		case 2:
+			return sprintf( $format, __( 'Ultra', 'imagify' ) );
+		case 1:
+			return sprintf( $format, __( 'Aggressive', 'imagify' ) );
+		case 0:
+			return sprintf( $format, __( 'Normal', 'imagify' ) );
+	}
+
+	return '';
+}
+
+/**
+ * `array_merge()` + `array_intersect_key()`.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  array $values  The array we're interested in.
+ * @param  array $default The array we use as boundaries.
+ * @return array
+ */
+function imagify_merge_intersect( $values, $default ) {
+	$values = array_merge( $default, (array) $values );
+	return array_intersect_key( $values, $default );
 }

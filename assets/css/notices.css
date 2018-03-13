@@ -41,7 +41,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	padding: 0;
 	margin: 10px 20px 10px 2px;
 	border: 0 none;
-	background: #2E3243;
+	background: #4A5362;
 	box-shadow: none;
 	color: #FFF;
 }
@@ -68,11 +68,18 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	padding: 18px 23px;
 	background: #40B1D0;
 }
+.imagify-notice-logo .imagify-logo {
+	opacity: 1;
+}
+.imagify-flex-notice-content .imagify-notice-logo {
+	display: flex;
+	align-items: center;
+}
 .updated .imagify-notice-logo {
 	background: #8BC34A;
 }
 .error .imagify-notice-logo {
-	background: #D0021B;
+	background: #C51162;
 }
 
 .imagify-notice-title {
@@ -84,6 +91,29 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 }
 .imagify-notice-content.imagify-notice-content p {
 	margin: 0.65em 0;
+}
+.imagify-flex-notice-content .imagify-notice-content {
+	display: flex;
+	flex-wrap: wrap;
+	padding: 0;
+}
+.imagify-flex-notice-content .imagify-notice-content > * {
+	padding: 10px 20px;
+}
+.imagify-flex-notice-content .imagify-meteo-icon img {
+	height: 100%;
+	margin-top: 6px;
+}
+.imagify-notice-quota [class^="imagify-bar-"] {
+	background: #1F2332;
+}
+.imagify-notice-quota .imagify-space-left p {
+	margin: 0;
+}
+.imagify-flex-notice-content .imagify-notice-content .imagify-notice-quota {
+	padding-right: 24px;
+	padding-left: 8px;
+	background: #343A49;
 }
 .imagify-notice a {
 	color: #40B1D0;
@@ -164,7 +194,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	border: 0 none;
 	box-shadow: none;
 	color: #FFF;
-	background: #412355;
+	background: #1F2332;
 }
 .media_page_imagify-bulk-optimization .imagify-rkt-notice {
 	margin-left: 2px;
@@ -183,7 +213,8 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	padding: 0;
 	margin-top: -11px;
 	background: transparent;
-	color: #FD7300;
+	color: rgba(255,255,255,.5);
+	text-decoration: none;
 	border-radius: 50%;
 	transition: all .275s;
 }
@@ -213,6 +244,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 }
 .imagify-rkt-notice .imagify-rkt-msg {
 	width: 100%!important; /* !important because of a dirtugly WP Engine code */
+	color: #FFF;
 	padding: 0 15px;
 	font-size: 14px;
 	line-height: 1.6;
@@ -225,8 +257,8 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	padding: 5px 10px;
 	font-size: 23px;
 	font-weight: bold;
-	border: 1px dashed #F7A933;
-	color: #F7A933;
+	border: 1px dashed #F56640;
+	color: #F56640;
 }
 .imagify-rkt-notice .imagify-rkt-cta {
 	width: 250px!important; /* !important because of a dirtugly WP Engine code */
@@ -244,11 +276,11 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	height: auto;
 	font-weight: 600;
 	font-size: 14px;
-	box-shadow: 0 4px 0 #B27A27;
 	border: 0 none;
 	padding: 9px 18px 9px;
-	background: #F7A933;
-	text-shadow: 1px 1px 1px rgba(0,0,0,.2);
+	background: #F56640;
+	box-shadow: none;
+	text-shadow: none!important;
 }
 @media (max-width: 880px) {
 	.imagify-rkt-notice {

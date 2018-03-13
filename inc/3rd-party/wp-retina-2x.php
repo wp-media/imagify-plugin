@@ -81,7 +81,7 @@ if ( function_exists( 'wr2x_get_retina' ) ) :
 		) );
 		$attachment = get_imagify_attachment( 'wp', $id, 'imagify_fill_thumbnail_data' );
 
-		return $attachment->fill_data( $data, $response, $url, $size_key . '@2x' );
+		return $attachment->fill_data( $data, $response, $size_key . '@2x' );
 	}
 
 endif;

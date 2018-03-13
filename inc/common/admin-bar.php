@@ -63,15 +63,13 @@ function _imagify_admin_bar( $wp_admin_bar ) {
 	) );
 
 	// Quota & Profile informations.
-	if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
+	if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT || ! get_imagify_option( 'api_key' ) ) {
 		return;
 	}
 
-	if ( ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) || get_imagify_option( 'api_key', false ) ) {
-		$wp_admin_bar->add_menu( array(
-			'parent' => 'imagify',
-			'id'     => 'imagify-profile',
-			'title'  => wp_nonce_field( 'imagify-get-admin-bar-profile', 'imagifygetadminbarprofilenonce', false, false ) . '<div id="wp-admin-bar-imagify-profile-loading" class="hide-if-no-js">' . __( 'Loading...', 'imagify' ) . '</div><div id="wp-admin-bar-imagify-profile-content" class="hide-if-no-js"></div>',
-		) );
-	}
+	$wp_admin_bar->add_menu( array(
+		'parent' => 'imagify',
+		'id'     => 'imagify-profile',
+		'title'  => wp_nonce_field( 'imagify-get-admin-bar-profile', 'imagifygetadminbarprofilenonce', false, false ) . '<div id="wp-admin-bar-imagify-profile-loading" class="hide-if-no-js">' . __( 'Loading...', 'imagify' ) . '</div><div id="wp-admin-bar-imagify-profile-content" class="hide-if-no-js"></div>',
+	) );
 }

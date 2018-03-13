@@ -34,11 +34,15 @@ function _imagify_ngg_admin_print_styles() {
 
 	$l10n = $assets->get_localization_data( 'bulk', array(
 		'heartbeatId' => 'update_ngg_bulk_data',
-		'ajaxAction'  => 'imagify_ngg_get_unoptimized_attachment_ids',
-		'ajaxContext' => 'NGG',
-		/** This filter is documented in inc/classes/class-imagify-assets.php */
-		'bufferSize'  => apply_filters( 'imagify_bulk_buffer_size', 4 ),
+		'bufferSizes' => array(
+			'NGG' => get_imagify_bulk_buffer_size( 3 ),
+		),
 	) );
+
+	$l10n['ajaxActions']['libraryFetch'] = 'imagify_ngg_get_unoptimized_attachment_ids';
+
+	/** This filter is documented in inc/classes/class-imagify-assets.php */
+	$l10n['bufferSizes'] = apply_filters( 'imagify_bulk_buffer_sizes', $l10n['bufferSizes'] );
 
 	$assets->enqueue_assets( array( 'pricing-modal', 'bulk' ) )->localize( 'imagifyBulk', $l10n );
 

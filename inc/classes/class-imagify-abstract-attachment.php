@@ -6,14 +6,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  *
  * @since 1.0
  */
-abstract class Imagify_Abstract_Attachment {
+abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_Deprecated {
 
 	/**
 	 * Class version.
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.2';
+	const VERSION = '1.3';
 
 	/**
 	 * The attachment ID.
@@ -25,13 +25,42 @@ abstract class Imagify_Abstract_Attachment {
 	public $id = 0;
 
 	/**
+	 * The attachment SQL DB class.
+	 *
+	 * @var    string
+	 * @since  1.7
+	 * @access protected
+	 */
+	protected $db_class_name = '';
+
+	/**
+	 * The attachment SQL data row.
+	 *
+	 * @var    array
+	 * @since  1.7
+	 * @access protected
+	 */
+	protected $row = null;
+
+	/**
+	 * Tell if the file extension can be optimized by Imagify.
+	 * This is used to cache the result of $this->is_extension_supported().
+	 *
+	 * @var    bool
+	 * @since  1.7
+	 * @access protected
+	 * @see    $this->is_extension_supported()
+	 */
+	protected $is_extension_supported;
+
+	/**
 	 * The constructor.
 	 *
 	 * @since  1.0
 	 * @access public
 	 *
-	 * @param  int $id The attachment ID.
-	 * @return void
+	 * @param int|object $id The attachment ID or the attachment itself.
+	 *                       If an integer, make sure the attachment exists.
 	 */
 	public function __construct( $id = 0 ) {
 		global $post;
@@ -46,8 +75,54 @@ abstract class Imagify_Abstract_Attachment {
 			$this->id = $post->ID;
 		}
 
-		$this->id = absint( $this->id );
+		$this->id = (int) $this->id;
 	}
+
+	/**
+	 * Tell if the current attachment is valid.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public function is_valid() {
+		return $this->id > 0;
+	}
+
+	/**
+	 * Get the attachment ID.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return int
+	 */
+	public function get_id() {
+		return $this->id;
+	}
+
+	/**
+	 * Get the original attachment path.
+	 *
+	 * @since  1.0
+	 * @access public
+	 *
+	 * @return string
+	 */
+	abstract public function get_original_path();
+
+	/**
+	 * Get the original attachment URL.
+	 *
+	 * @since  1.0
+	 * @access public
+	 *
+	 * @return string
+	 */
+	abstract public function get_original_url();
 
 	/**
 	 * Get the attachment backup file path, even if the file doesn't exist.
@@ -69,9 +144,13 @@ abstract class Imagify_Abstract_Attachment {
 	 * @return string|false The file path. False if it doesn't exist.
 	 */
 	public function get_backup_path() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
 		$backup_path = $this->get_raw_backup_path();
 
-		if ( $backup_path && file_exists( $backup_path ) ) {
+		if ( $backup_path && imagify_get_filesystem()->exists( $backup_path ) ) {
 			return $backup_path;
 		}
 
@@ -87,6 +166,10 @@ abstract class Imagify_Abstract_Attachment {
 	 * @return string|false
 	 */
 	public function get_backup_url() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
 		return get_imagify_attachment_url( $this->get_raw_backup_path() );
 	}
 
@@ -101,43 +184,24 @@ abstract class Imagify_Abstract_Attachment {
 	abstract public function get_data();
 
 	/**
-	 * Get the attachment extension.
+	 * Get the attachment optimization level.
+	 *
+	 * @since  1.0
+	 * @access public
+	 *
+	 * @return int
+	 */
+	abstract public function get_optimization_level();
+
+	/**
+	 * Get the attachment optimization status (success or error).
 	 *
 	 * @since  1.0
 	 * @access public
 	 *
 	 * @return string
 	 */
-	public function get_extension() {
-		$fullsize_path = $this->get_original_path();
-		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
-	}
-
-	/**
-	 * Tell if the current file mime type is supported.
-	 *
-	 * @since  1.6.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return bool
-	 */
-	public function is_mime_type_supported() {
-		return imagify_is_attachment_mime_type_supported( $this->id );
-	}
-
-	/**
-	 * Tell if the current attachment has the required WP metadata.
-	 *
-	 * @since  1.6.12
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return bool
-	 */
-	public function has_required_metadata() {
-		return imagify_attachment_has_required_metadata( $this->id );
-	}
+	abstract public function get_status();
 
 	/**
 	 * Get the attachment error if there is one.
@@ -154,56 +218,7 @@ abstract class Imagify_Abstract_Attachment {
 			return trim( $error );
 		}
 
-		return false;
-	}
-
-	/**
-	 * Get the attachment optimization level.
-	 *
-	 * @since  1.0
-	 * @access public
-	 *
-	 * @return int
-	 */
-	abstract public function get_optimization_level();
-
-	/**
-	 * Delete the 3 metas used by Imagify.
-	 *
-	 * @since  1.6.6
-	 * @access public
-	 * @author Grégory Viguier
-	 */
-	public function delete_imagify_data() {
-		delete_post_meta( $this->id, '_imagify_data' );
-		delete_post_meta( $this->id, '_imagify_status' );
-		delete_post_meta( $this->id, '_imagify_optimization_level' );
-	}
-
-	/**
-	 * Get the attachment optimization level label.
-	 *
-	 * @since  1.2
-	 * @access public
-	 *
-	 * @return string
-	 */
-	public function get_optimization_level_label() {
-		$label = '';
-		$level = $this->get_optimization_level();
-
-		switch ( $level ) {
-			case 2:
-				$label = __( 'Ultra', 'imagify' );
-				break;
-			case 1:
-				$label = __( 'Aggressive', 'imagify' );
-				break;
-			case 0:
-				$label = __( 'Normal', 'imagify' );
-		}
-
-		return $label;
+		return '';
 	}
 
 	/**
@@ -216,13 +231,17 @@ abstract class Imagify_Abstract_Attachment {
 	 */
 	public function get_optimized_sizes_count() {
 		$data  = $this->get_data();
-		$sizes = (array) $data['sizes'];
+		$sizes = ! empty( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
 		$count = 0;
 
 		unset( $sizes['full'] );
 
+		if ( ! $sizes ) {
+			return 0;
+		}
+
 		foreach ( $sizes as $size ) {
-			if ( $size['success'] ) {
+			if ( ! empty( $size['success'] ) ) {
 				$count++;
 			}
 		}
@@ -231,24 +250,128 @@ abstract class Imagify_Abstract_Attachment {
 	}
 
 	/**
-	 * Get the attachment optimization status (success or error).
+	 * Delete the 3 metas used by Imagify.
 	 *
-	 * @since  1.0
+	 * @since  1.6.6
 	 * @access public
-	 *
-	 * @return string
+	 * @author Grégory Viguier
 	 */
-	abstract public function get_status();
+	public function delete_imagify_data() {
+		if ( ! $this->is_valid() ) {
+			return;
+		}
+
+		delete_post_meta( $this->id, '_imagify_data' );
+		delete_post_meta( $this->id, '_imagify_status' );
+		delete_post_meta( $this->id, '_imagify_optimization_level' );
+	}
 
 	/**
-	 * Get the original attachment path.
+	 * Get width and height of the original image.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function get_dimensions() {
+		return array(
+			'width'  => 0,
+			'height' => 0,
+		);
+	}
+
+	/**
+	 * Get the attachment extension.
 	 *
 	 * @since  1.0
 	 * @access public
 	 *
 	 * @return string
 	 */
-	abstract public function get_original_path();
+	public function get_extension() {
+		if ( ! $this->is_valid() ) {
+			return '';
+		}
+
+		$fullsize_path = $this->get_original_path();
+		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
+	}
+
+	/**
+	 * Tell if the current file extension is supported.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function is_extension_supported() {
+		if ( isset( $this->is_extension_supported ) ) {
+			return $this->is_extension_supported;
+		}
+
+		if ( ! $this->is_valid() ) {
+			$this->is_extension_supported = false;
+			return $this->is_extension_supported;
+		}
+
+		$file_type = wp_check_filetype( $this->get_original_path(), imagify_get_mime_types() );
+
+		$this->is_extension_supported = (bool) $file_type['ext'];
+
+		return $this->is_extension_supported;
+	}
+
+	/**
+	 * Tell if the current file mime type is supported.
+	 *
+	 * @since  1.6.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function is_mime_type_supported() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		return imagify_is_attachment_mime_type_supported( $this->id );
+	}
+
+	/**
+	 * Tell if the current attachment has the required WP metadata.
+	 *
+	 * @since  1.6.12
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function has_required_metadata() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		return imagify_attachment_has_required_metadata( $this->id );
+	}
+
+	/**
+	 * Get the attachment optimization level label.
+	 *
+	 * @since  1.2
+	 * @since  1.7 Added $format parameter.
+	 * @access public
+	 *
+	 * @param  string $format Format to display the label. Use %ICON% for the icon and %s for the label.
+	 * @return string
+	 */
+	public function get_optimization_level_label( $format = '%s' ) {
+		return imagify_get_optimization_level_label( $this->get_optimization_level(), $format );
+	}
 
 	/**
 	 * Get the original attachment size.
@@ -258,29 +381,104 @@ abstract class Imagify_Abstract_Attachment {
 	 *
 	 * @param  bool $human_format True to display the image human format size (1Mb).
 	 * @param  int  $decimals     Precision of number of decimal places.
-	 * @return string
+	 * @return string|int
 	 */
 	public function get_original_size( $human_format = true, $decimals = 2 ) {
-		$filesystem    = imagify_get_filesystem();
-		$original_size = $this->get_size_data( 'full', 'original_size' );
-		$original_size = empty( $original_size ) ? $filesystem->size( $this->get_original_path() ) : (int) $original_size;
-
-		if ( true === $human_format ) {
-			$original_size = @size_format( $original_size, $decimals );
+		if ( ! $this->is_valid() ) {
+			return $human_format ? imagify_size_format( 0, $decimals ) : 0;
 		}
 
-		return $original_size;
+		$size = $this->get_size_data( 'full', 'original_size' );
+
+		if ( ! $size ) {
+			// Check for the backup file first.
+			$filepath = $this->get_backup_path();
+
+			if ( ! $filepath ) {
+				$filepath = $this->get_original_path();
+				$filepath = $filepath && imagify_get_filesystem()->exists( $filepath ) ? $filepath : false;
+			}
+
+			$size = $filepath ? imagify_get_filesystem()->size( $filepath ) : 0;
+		}
+
+		if ( $human_format ) {
+			return imagify_size_format( (int) $size, $decimals );
+		}
+
+		return (int) $size;
 	}
 
 	/**
-	 * Get the original attachment URL.
+	 * Get the optimized attachment size.
 	 *
-	 * @since  1.0
+	 * @since  1.7
 	 * @access public
+	 * @author Grégory Viguier
 	 *
-	 * @return string
+	 * @param  bool $human_format True to display the image human format size (1Mb).
+	 * @param  int  $decimals     Precision of number of decimal places.
+	 * @return string|int
 	 */
-	abstract public function get_original_url();
+	public function get_optimized_size( $human_format = true, $decimals = 2 ) {
+		if ( ! $this->is_valid() ) {
+			return $human_format ? imagify_size_format( 0, $decimals ) : 0;
+		}
+
+		$size = $this->get_size_data( 'full', 'optimized_size' );
+
+		if ( ! $size ) {
+			$filepath = $this->get_original_path();
+			$filepath = $filepath && imagify_get_filesystem()->exists( $filepath ) ? $filepath : false;
+			$size     = $filepath ? imagify_get_filesystem()->size( $filepath ) : 0;
+		}
+
+		if ( $human_format ) {
+			return imagify_size_format( (int) $size, $decimals );
+		}
+
+		return (int) $size;
+	}
+
+	/**
+	 * Get the optimized attachment size.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return float A 2-decimals float.
+	 */
+	public function get_saving_percent() {
+		if ( ! $this->is_valid() ) {
+			return round( (float) 0, 2 );
+		}
+
+		$percent = $this->get_size_data( 'full', 'percent' );
+		$percent = $percent ? $percent : (float) 0;
+
+		return round( $percent, 2 );
+	}
+
+	/**
+	 * Get the overall optimized size (all thumbnails).
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return float A 2-decimals float.
+	 */
+	public function get_overall_saving_percent() {
+		if ( ! $this->is_valid() ) {
+			return round( (float) 0, 2 );
+		}
+
+		$percent = $this->get_data();
+		$percent = ! empty( $percent['stats']['percent'] ) ? $percent['stats']['percent'] : (float) 0;
+
+		return round( $percent, 2 );
+	}
 
 	/**
 	 * Get the statistics of a specific size.
@@ -367,8 +565,8 @@ abstract class Imagify_Abstract_Attachment {
 		$filepath = $this->get_original_path();
 		$size     = 0;
 
-		if ( file_exists( $filepath ) ) {
-			$size = filesize( $filepath );
+		if ( $filepath && imagify_get_filesystem()->exists( $filepath ) ) {
+			$size = imagify_get_filesystem()->size( $filepath );
 		}
 
 		return $size > IMAGIFY_MAX_BYTES;
@@ -395,8 +593,7 @@ abstract class Imagify_Abstract_Attachment {
 	 * @return bool True if the attachment has an error.
 	 */
 	public function has_error() {
-		$has_error = $this->get_size_data( 'full', 'error' );
-		return is_string( $has_error );
+		return 'error' === $this->get_status();
 	}
 
 	/**
@@ -420,7 +617,7 @@ abstract class Imagify_Abstract_Attachment {
 	public function delete_backup() {
 		$backup_path = $this->get_backup_path();
 
-		if ( ! empty( $backup_path ) ) {
+		if ( $backup_path ) {
 			imagify_get_filesystem()->delete( $backup_path );
 		}
 	}
@@ -456,7 +653,7 @@ abstract class Imagify_Abstract_Attachment {
 	 */
 	public function get_unoptimized_sizes() {
 		// The attachment must have been optimized once and have a backup.
-		if ( ! $this->is_optimized() || ! $this->has_backup() ) {
+		if ( ! $this->is_valid() || ! $this->is_optimized() || ! $this->has_backup() ) {
 			return array();
 		}
 
@@ -484,7 +681,7 @@ abstract class Imagify_Abstract_Attachment {
 		$orig_f = $orig_f['filename'] . '-{%suffix%}.' . $orig_f['extension'];
 
 		// Test if the missing sizes are needed.
-		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes', array() );
+		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
 		$is_active_for_network = imagify_is_active_for_network();
 
 		foreach ( $missing_sizes as $size_name => $size_data ) {
@@ -524,15 +721,15 @@ abstract class Imagify_Abstract_Attachment {
 	 * @since  1.0
 	 * @since  1.6.5 Not static anymore.
 	 * @since  1.6.6 Removed the attachment ID parameter.
+	 * @since  1.7   Removed the image URL parameter.
 	 * @access public
 	 *
 	 * @param  array  $data     The statistics data.
 	 * @param  object $response The API response.
-	 * @param  int    $url      The attachment URL.
 	 * @param  string $size     The attachment size key.
 	 * @return bool|array False if the original size has an error or an array contains the data for other result.
 	 */
-	abstract public function fill_data( $data, $response, $url, $size = 'full' );
+	abstract public function fill_data( $data, $response, $size = 'full' );
 
 	/**
 	 * Optimize all sizes with Imagify.
@@ -581,6 +778,10 @@ abstract class Imagify_Abstract_Attachment {
 	 * @return string Path the the resized image or the original image if the resize failed.
 	 */
 	public function resize( $attachment_path, $attachment_sizes, $max_width ) {
+		if ( ! $this->is_valid() ) {
+			return '';
+		}
+
 		// Prevent removal of the exif/meta data when resizing (only works with Imagick).
 		add_filter( 'image_strip_meta', '__return_false' );
 
@@ -627,5 +828,104 @@ abstract class Imagify_Abstract_Attachment {
 		remove_filter( 'image_strip_meta', '__return_false' );
 
 		return $resized_image_path;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** DB ROW ================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the data row.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function get_row() {
+		if ( isset( $this->row ) ) {
+			return $this->row;
+		}
+
+		if ( ! $this->db_class_name || ! $this->is_valid() ) {
+			return $this->invalidate_row();
+		}
+
+		$classname = $this->db_class_name;
+		$this->row = $classname::get_instance()->get( $this->id );
+
+		if ( ! $this->row ) {
+			return $this->invalidate_row();
+		}
+
+		return $this->row;
+	}
+
+	/**
+	 * Update the data row.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param  array $data The data to update.
+	 */
+	public function update_row( $data ) {
+		if ( ! $this->db_class_name || ! $this->is_valid() ) {
+			return;
+		}
+
+		$classname = $this->db_class_name;
+		$classname::get_instance()->update( $this->id, $data );
+
+		$this->reset_row_cache();
+	}
+
+	/**
+	 * Delete the data row.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 */
+	public function delete_row() {
+		if ( ! $this->db_class_name || ! $this->is_valid() ) {
+			return;
+		}
+
+		$classname = $this->db_class_name;
+		$classname::get_instance()->delete( $this->id );
+
+		$this->invalidate_row();
+	}
+
+	/**
+	 * Invalidate the row.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array The row
+	 */
+	public function invalidate_row() {
+		$this->row = array();
+		return $this->row;
+	}
+
+	/**
+	 * Reset the row cache.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return null The row.
+	 */
+	public function reset_row_cache() {
+		$this->row = null;
+		return $this->row;
 	}
 }

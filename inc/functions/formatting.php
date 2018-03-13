@@ -34,6 +34,22 @@ function imagify_round_half_five( $number ) {
 }
 
 /**
+ * Convert number of bytes largest unit bytes will fit into.
+ * This is a clone of size_format(), but with a non-breaking space.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  int|string $bytes    Number of bytes. Note max integer size for integers.
+ * @param  int        $decimals Optional. Precision of number of decimal places. Default 0.
+ * @return string|false         False on failure. Number string on success.
+ */
+function imagify_size_format( $bytes, $decimals = 0 ) {
+	$bytes = @size_format( $bytes, $decimals );
+	return str_replace( ' ', ' ', $bytes );
+}
+
+/**
  * Get the Imagify attachment class name depending to a context.
  *
  * @since  1.5

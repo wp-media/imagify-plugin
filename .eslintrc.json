@@ -12,6 +12,7 @@
         "ajaxurl":             false,
         "Promise":             false,
         "jQuery":              false,
+        "_":                   false,
         "Chart":               false,
         "swal":                false,
         "imagify":             true,
@@ -23,7 +24,8 @@
         "imagifyOptions":      true,
         "imagifyPricingModal": true,
         "imagifySwal":         true,
-        "imagifyTTT":          true
+        "imagifyTTT":          true,
+        "imagifyFiles":        true
     },
     "rules": {
         "consistent-this":            "error",

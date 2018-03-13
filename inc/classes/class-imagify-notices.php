@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @since  1.6.10
  * @author Grégory Viguier
  */
-class Imagify_Notices {
+class Imagify_Notices extends Imagify_Notices_Deprecated {
 
 	/**
 	 * Class version.
@@ -15,6 +15,13 @@ class Imagify_Notices {
 	 * @var string
 	 */
 	const VERSION = '1.0';
+
+	/**
+	 * Name of the transient storing temporary notices.
+	 *
+	 * @var string
+	 */
+	const TEMPORARY_NOTICES_TRANSIENT_NAME = 'imagify_temporary_notices';
 
 	/**
 	 * Name of the user meta that stores the dismissed notice IDs.
@@ -38,13 +45,6 @@ class Imagify_Notices {
 	const DEACTIVATE_PLUGIN_NONCE_ACTION = 'imagify-deactivate-plugin';
 
 	/**
-	 * The path to the folder containing the views.
-	 *
-	 * @var string
-	 */
-	protected static $views_folder = IMAGIFY_ADMIN_UI_PATH;
-
-	/**
 	 * List of notice IDs.
 	 * They correspond to method names and IDs stored in the "dismissed" transient.
 	 * Only use "-" character, not "_".
@@ -62,8 +62,8 @@ class Imagify_Notices {
 		'http-block-external',
 		// This warning is displayed when the grid view is active on the library. Dismissible.
 		'grid-view',
-		// This warning is displayed to warn the user that its quota is consumed for the current month. Dismissible.
-		'free-over-quota',
+		// This warning is displayed to warn the user that the quota is almost consumed for the current month. Dismissible.
+		'almost-over-quota',
 		// This warning is displayed if the backup folder is not writable. NOT dismissible.
 		'backup-folder-not-writable',
 		// This notice is displayed to rate the plugin after 100 optimizations & 7 days after the first installation. Dismissible.
@@ -143,11 +143,14 @@ class Imagify_Notices {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'all_admin_notices',                    array( $this, 'render_notices' ) );
-		add_action( 'wp_ajax_imagify_dismiss_notice',       array( $this, 'admin_post_dismiss_notice' ) );
-		add_action( 'admin_post_imagify_dismiss_notice',    array( $this, 'admin_post_dismiss_notice' ) );
-		add_action( 'imagify_dismiss_notice',               array( $this, 'clear_scheduled_rating' ) );
-		add_action( 'admin_post_imagify_deactivate_plugin', array( $this, 'deactivate_plugin' ) );
+		// For generic purpose.
+		add_action( 'all_admin_notices',                     array( $this, 'render_notices' ) );
+		add_action( 'wp_ajax_imagify_dismiss_notice',        array( $this, 'admin_post_dismiss_notice' ) );
+		add_action( 'admin_post_imagify_dismiss_notice',     array( $this, 'admin_post_dismiss_notice' ) );
+		// For specific notices.
+		add_action( 'imagify_dismiss_notice',                array( $this, 'clear_scheduled_rating' ) );
+		add_action( 'admin_post_imagify_deactivate_plugin',  array( $this, 'deactivate_plugin' ) );
+		add_action( 'imagify_not_almost_over_quota_anymore', array( $this, 'renew_almost_over_quota_notice' ) );
 	}
 
 
@@ -174,9 +177,12 @@ class Imagify_Notices {
 
 			if ( $data ) {
 				// The notice must be displayed: render the view.
-				$this->render_view( str_replace( '_', '-', $notice_id ), $data );
+				Imagify_Views::get_instance()->print_template( 'notice-' . $notice_id, $data );
 			}
 		}
+
+		// Temporary notices.
+		$this->render_temporary_notices();
 	}
 
 	/**
@@ -224,7 +230,7 @@ class Imagify_Notices {
 	public function clear_scheduled_rating( $notice ) {
 		if ( 'rating' === $notice ) {
 			set_site_transient( 'do_imagify_rating_cron', 'no' );
-			wp_clear_scheduled_hook( 'imagify_rating_event' );
+			Imagify_Cron_Rating::get_instance()->unschedule_event();
 		}
 	}
 
@@ -254,6 +260,40 @@ class Imagify_Notices {
 
 		imagify_maybe_redirect();
 		wp_send_json_success();
+	}
+
+	/**
+	 * Renew the "almost-over-quota" notice when the consumed quota percent decreases back below 80%.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 */
+	public function renew_almost_over_quota_notice() {
+		global $wpdb;
+
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE '%almost-over-quota%'", self::DISMISS_META_NAME ) );
+
+		if ( ! $results ) {
+			return;
+		}
+
+		// Prevent multiple queries to the DB by caching user metas.
+		$not_cached = array();
+
+		foreach ( $results as $result ) {
+			if ( ! wp_cache_get( $result->umeta_id, 'user_meta' ) ) {
+				$not_cached[] = $result->umeta_id;
+			}
+		}
+
+		if ( $not_cached ) {
+			update_meta_cache( 'user', $not_cached );
+		}
+
+		// Renew the notice for all users.
+		foreach ( $results as $result ) {
+			self::renew_notice( 'almost-over-quota', $result->user_id );
+		}
 	}
 
 
@@ -426,14 +466,14 @@ class Imagify_Notices {
 	}
 
 	/**
-	 * Tell if the 'over-quota' notice should be displayed.
+	 * Tell if the 'almost-over-quota' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since  1.7.0
+	 * @author Geoffrey Crofte
 	 *
 	 * @return bool|object An Imagify user object. False otherwise.
 	 */
-	public function display_free_over_quota() {
+	public function display_almost_over_quota() {
 		static $display;
 
 		if ( isset( $display ) ) {
@@ -442,7 +482,7 @@ class Imagify_Notices {
 
 		$display = false;
 
-		if ( ! $this->user_can( 'free-over-quota' ) ) {
+		if ( ! $this->user_can( 'almost-over-quota' ) ) {
 			return $display;
 		}
 
@@ -450,14 +490,14 @@ class Imagify_Notices {
 			return $display;
 		}
 
-		if ( self::notice_is_dismissed( 'free-over-quota' ) ) {
+		if ( self::notice_is_dismissed( 'almost-over-quota' ) ) {
 			return $display;
 		}
 
 		$user = new Imagify_User();
 
-		// Don't display the notice if the user doesn't use all his quota or the API key isn't valid.
-		if ( ! $user->is_over_quota() || ! imagify_valid_key() ) {
+		// Don't display the notice if the user's unconsumed quota is superior to 20%.
+		if ( $user->get_percent_unconsumed_quota() > 20 ) {
 			return $display;
 		}
 
@@ -578,6 +618,145 @@ class Imagify_Notices {
 
 
 	/** ----------------------------------------------------------------------------------------- */
+	/** TEMPORARY NOTICES ======================================================================= */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Maybe display some notices.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function render_temporary_notices() {
+		if ( is_network_admin() ) {
+			$notices = $this->get_network_temporary_notices();
+		} else {
+			$notices = $this->get_site_temporary_notices();
+		}
+
+		if ( ! $notices ) {
+			return;
+		}
+
+		$views = Imagify_Views::get_instance();
+
+		foreach ( $notices as $i => $notice_data ) {
+			$notices[ $i ]['type'] = ! empty( $notice_data['type'] ) ? $notice_data['type'] : 'error';
+		}
+
+		$views->print_template( 'notice-temporary', $notices );
+	}
+
+	/**
+	 * Get temporary notices for the network.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return array
+	 */
+	public function get_network_temporary_notices() {
+		$notices = get_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+
+		if ( false === $notices ) {
+			return array();
+		}
+
+		delete_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+
+		return $notices && is_array( $notices ) ? $notices : array();
+	}
+
+	/**
+	 * Create a temporary notice for the network.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param array|object|string $notice_data Some data, with the message to display.
+	 */
+	public function add_network_temporary_notice( $notice_data ) {
+		$notices = get_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+		$notices = is_array( $notices ) ? $notices : array();
+
+		if ( is_wp_error( $notice_data ) ) {
+			$notice_data = $notice_data->get_error_messages();
+			$notice_data = implode( '<br/>', $notice_data );
+		}
+
+		if ( is_string( $notice_data ) ) {
+			$notice_data = array(
+				'message' => $notice_data,
+			);
+		} elseif ( is_object( $notice_data ) ) {
+			$notice_data = (array) $notice_data;
+		}
+
+		if ( ! is_array( $notice_data ) || empty( $notice_data['message'] ) ) {
+			return;
+		}
+
+		$notices[] = $notice_data;
+
+		set_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME, $notices, 30 );
+	}
+
+	/**
+	 * Get temporary notices for the current site.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return array
+	 */
+	public function get_site_temporary_notices() {
+		$notices = get_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+
+		if ( false === $notices ) {
+			return array();
+		}
+
+		delete_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+
+		return $notices && is_array( $notices ) ? $notices : array();
+	}
+
+	/**
+	 * Create a temporary notice for the current site.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param array|string $notice_data Some data, with the message to display.
+	 */
+	public function add_site_temporary_notice( $notice_data ) {
+		$notices = get_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
+		$notices = is_array( $notices ) ? $notices : array();
+
+		if ( is_string( $notice_data ) ) {
+			$notice_data = array(
+				'message' => $notice_data,
+			);
+		} elseif ( is_object( $notice_data ) ) {
+			$notice_data = (array) $notice_data;
+		}
+
+		if ( ! is_array( $notice_data ) || empty( $notice_data['message'] ) ) {
+			return;
+		}
+
+		$notices[] = $notice_data;
+
+		set_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME, $notices, 30 );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
 	/** PUBLIC TOOLS ============================================================================ */
 	/** ----------------------------------------------------------------------------------------- */
 
@@ -586,10 +765,9 @@ class Imagify_Notices {
 	 *
 	 * @since  1.6.10
 	 * @author Grégory Viguier
-	 * @see    imagify_renew_notice()
 	 *
-	 * @param  string $notice  A notice ID.
-	 * @param  int    $user_id A user ID.
+	 * @param string $notice  A notice ID.
+	 * @param int    $user_id A user ID.
 	 */
 	public static function renew_notice( $notice, $user_id = 0 ) {
 		$user_id = $user_id ? (int) $user_id : get_current_user_id();
@@ -672,19 +850,6 @@ class Imagify_Notices {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Include the view file.
-	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 *
-	 * @param string $view The view ID.
-	 * @param mixed  $data Some data to pass to the view.
-	 */
-	public function render_view( $view, $data = array() ) {
-		require self::$views_folder . 'notice-' . $view . '.php';
 	}
 
 

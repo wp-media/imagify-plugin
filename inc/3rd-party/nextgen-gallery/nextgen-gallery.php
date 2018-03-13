@@ -18,12 +18,11 @@ require( IMAGIFY_NGG_FUNCTIONS_PATH . 'common.php' );
 require( IMAGIFY_NGG_COMMON_PATH . 'attachments.php' );
 
 Imagify_NGG::get_instance()->init();
-Imagify_NGG_DB::get_instance(); // Required to set $wpdb->ngg_imagify_data.
+Imagify_NGG_DB::get_instance()->init();
 
 if ( is_admin() ) {
 	require( IMAGIFY_NGG_ADMIN_PATH . 'enqueue.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'ajax.php' );
-	require( IMAGIFY_NGG_ADMIN_PATH . 'db.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'menu.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'gallery.php' );
 	require( IMAGIFY_NGG_ADMIN_PATH . 'bulk.php' );

@@ -102,6 +102,24 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	}
 
 	/**
+	 * Get width and height of the original image.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function get_dimensions() {
+		$values = wp_get_attachment_image_src( $this->id, 'full' );
+
+		return array(
+			'width'  => $values[1],
+			'height' => $values[2],
+		);
+	}
+
+	/**
 	 * Update the metadata size of the attachment.
 	 *
 	 * @since 1.2
@@ -111,7 +129,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function update_metadata_size() {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return false;
 		}
 
@@ -132,18 +150,18 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	/**
 	 * Fills statistics data with values from $data array.
 	 *
-	 * @since 1.0
-	 * @since 1.6.5 Not static anymore.
-	 * @since 1.6.6 Removed the attachment ID parameter.
+	 * @since  1.0
+	 * @since  1.6.5 Not static anymore.
+	 * @since  1.6.6 Removed the attachment ID parameter.
+	 * @since  1.7   Removed the image URL parameter.
 	 * @access public
 	 *
 	 * @param  array  $data      The statistics data.
 	 * @param  object $response  The API response.
-	 * @param  int    $url       The attachment URL.
 	 * @param  string $size      The attachment size key.
 	 * @return bool|array        False if the original size has an error or an array contains the data for other result.
 	 */
-	public function fill_data( $data, $response, $url, $size = 'full' ) {
+	public function fill_data( $data, $response, $size = 'full' ) {
 		$data          = is_array( $data ) ? $data : array();
 		$data['sizes'] = ! empty( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
 
@@ -185,7 +203,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 			$data['sizes'][ $size ] = array(
 				'success'        => true,
-				'file_url'       => $url,
 				'original_size'  => $response->original_size,
 				'optimized_size' => $response->new_size,
 				'percent'        => $response->percent,
@@ -318,11 +335,11 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function optimize( $optimization_level = null, $metadata = array() ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return;
 		}
 
-		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		$optimization_level = isset( $optimization_level ) ? (int) $optimization_level : get_imagify_option( 'optimization_level' );
 		$metadata           = $metadata ? $metadata : wp_get_attachment_metadata( $this->id );
 		$sizes              = isset( $metadata['sizes'] ) ? (array) $metadata['sizes'] : array();
 
@@ -387,25 +404,25 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			'original_size'      => $attachment_original_size,
 		) );
 
-		$data = $this->fill_data( null, $response, $attachment_url );
+		$data = $this->fill_data( null, $response );
 
 		// Save the optimization level.
 		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
+
+		// If we resized the original with success, we have to update the attachment metadata.
+		// If not, WordPress keeps the old attachment size.
+		if ( $resized ) {
+			$this->update_metadata_size();
+		}
 
 		if ( ! $data ) {
 			delete_transient( 'imagify-async-in-progress-' . $this->id );
 			return;
 		}
 
-		// If we resized the original with success, we have to update the attachment metadata.
-		// If not, WordPress keeps the old attachment size.
-		if ( $do_resize && $resized ) {
-			$this->update_metadata_size();
-		}
-
 		// Optimize all thumbnails.
 		if ( $sizes ) {
-			$disallowed_sizes        = get_imagify_option( 'disallowed-sizes', array() );
+			$disallowed_sizes        = get_imagify_option( 'disallowed-sizes' );
 			$is_active_for_network   = imagify_is_active_for_network();
 			$attachment_path_dirname = trailingslashit( dirname( $attachment_path ) );
 			$attachment_url_dirname  = trailingslashit( dirname( $attachment_url ) );
@@ -430,7 +447,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 					'context'            => 'wp',
 				) );
 
-				$data = $this->fill_data( $data, $response, $thumbnail_url, $size_key );
+				$data = $this->fill_data( $data, $response, $size_key );
 
 				/**
 				* Filter the optimization data of a specific thumbnail.
@@ -484,11 +501,11 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function optimize_missing_thumbnails( $optimization_level = null ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
-		$optimization_level = is_null( $optimization_level ) ? (int) get_imagify_option( 'optimization_level', 1 ) : (int) $optimization_level;
+		$optimization_level = isset( $optimization_level ) ? (int) $optimization_level : get_imagify_option( 'optimization_level' );
 		$missing_sizes      = $this->get_unoptimized_sizes();
 
 		if ( ! $missing_sizes ) {
@@ -550,7 +567,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 				'context'            => 'wp',
 			) );
 
-			$imagify_data = $this->fill_data( $imagify_data, $response, $thumbnail_url, $size_name );
+			$imagify_data = $this->fill_data( $imagify_data, $response, $size_name );
 
 			/** This filter is documented in inc/classes/class-imagify-attachment.php. */
 			$imagify_data = apply_filters( 'imagify_fill_thumbnail_data', $imagify_data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_name, $optimization_level );
@@ -594,7 +611,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function restore() {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_mime_type_supported() ) {
+		if ( ! $this->is_extension_supported() ) {
 			return;
 		}
 

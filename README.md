@@ -13,6 +13,8 @@ WooCommerce and NextGen Gallery compatible.
 
 ![Media Page](https://ps.w.org/imagify/assets/screenshot-3.png "Media Page")
 
+![Other Media Page](https://ps.w.org/imagify/assets/screenshot-4.png "Other Media Page")
+
 ## What is Image Compression?
 
 Learn more about image compression, check that: [https://imagify.io/images-compression](https://imagify.io/images-compression).
@@ -90,7 +92,7 @@ Absolutely. Most of the time, Imagify will still be able to optimize your images
 
 Normal compression is a "lossless" optimization. This means there is no loss of image quality. Aggressive and Ultra compression are more powerful, so the picture quality will be somewhat reduced. The weight of the image will be much less.
 
-### Is the EXIF data of images removes?
+### Is the EXIF data of images removed?
 
 By default EXIF data is removed. It is however possible to keep it by enabling the option.
 

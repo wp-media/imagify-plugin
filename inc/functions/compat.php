@@ -57,105 +57,43 @@ if ( ! function_exists( 'array_replace' ) ) :
 	}
 endif;
 
+if ( ! function_exists( 'hash_equals' ) ) :
+	/**
+	 * Timing attack safe string comparison
+	 *
+	 * Compares two strings using the same time whether they're equal or not.
+	 *
+	 * This function was added in PHP 5.6.
+	 *
+	 * Note: It can leak the length of a string when arguments of differing length are supplied.
+	 *
+	 * @since 1.7
+	 * @since PHP 5.6.0
+	 * @since WP 3.9.2
+	 *
+	 * @param  string $a Expected string.
+	 * @param  string $b Actual, user supplied, string.
+	 * @return bool      Whether strings are equal.
+	 */
+	function hash_equals( $a, $b ) {
+		$a_length = strlen( $a );
+		if ( strlen( $b ) !== $a_length ) {
+			return false;
+		}
+		$result = 0;
+
+		// Do not attempt to "optimize" this.
+		for ( $i = 0; $i < $a_length; $i++ ) {
+			$result |= ord( $a[ $i ] ) ^ ord( $b[ $i ] );
+		}
+
+		return 0 === $result;
+	}
+endif;
+
 // SPL can be disabled on PHP 5.2.
 if ( ! function_exists( 'spl_autoload_register' ) ) :
-	$_wp_spl_autoloaders = array();
-
-	/**
-	 * Autoloader compatibility callback.
-	 *
-	 * @since  1.6.12
-	 * @since  WP 4.6.0
-	 * @source WordPress
-	 *
-	 * @param string $classname Class to attempt autoloading.
-	 */
-	function __autoload( $classname ) {
-		global $_wp_spl_autoloaders;
-		foreach ( $_wp_spl_autoloaders as $autoloader ) {
-			if ( ! is_callable( $autoloader ) ) {
-				// Avoid the extra warning if the autoloader isn't callable.
-				continue;
-			}
-
-			call_user_func( $autoloader, $classname );
-
-			// If it has been autoloaded, stop processing.
-			if ( class_exists( $classname, false ) ) {
-				return;
-			}
-		}
-	}
-
-	/**
-	 * Registers a function to be autoloaded.
-	 *
-	 * @since  1.6.12
-	 * @since  WP 4.6.0
-	 * @source WordPress
-	 *
-	 * @throws Exception If the function to register is not callable.
-	 *
-	 * @param callable $autoload_function The function to register.
-	 * @param bool     $throw             Optional. Whether the function should throw an exception
-	 *                                    if the function isn't callable. Default true.
-	 * @param bool     $prepend           Whether the function should be prepended to the stack.
-	 *                                    Default false.
-	 */
-	function spl_autoload_register( $autoload_function, $throw = true, $prepend = false ) {
-		if ( $throw && ! is_callable( $autoload_function ) ) {
-			// String not translated to match PHP core.
-			throw new Exception( 'Function not callable' );
-		}
-
-		global $_wp_spl_autoloaders;
-
-		// Don't allow multiple registration.
-		if ( in_array( $autoload_function, $_wp_spl_autoloaders, true ) ) {
-			return;
-		}
-
-		if ( $prepend ) {
-			array_unshift( $_wp_spl_autoloaders, $autoload_function );
-		} else {
-			$_wp_spl_autoloaders[] = $autoload_function;
-		}
-	}
-
-	/**
-	 * Unregisters an autoloader function.
-	 *
-	 * @since  1.6.12
-	 * @since  WP 4.6.0
-	 * @source WordPress
-	 *
-	 * @param callable $function The function to unregister.
-	 * @return bool True if the function was unregistered, false if it could not be.
-	 */
-	function spl_autoload_unregister( $function ) {
-		global $_wp_spl_autoloaders;
-		foreach ( $_wp_spl_autoloaders as &$autoloader ) {
-			if ( $autoloader === $function ) {
-				unset( $autoloader );
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Retrieves the registered autoloader functions.
-	 *
-	 * @since  1.6.12
-	 * @since  WP 4.6.0
-	 * @source WordPress
-	 *
-	 * @return array List of autoloader functions.
-	 */
-	function spl_autoload_functions() {
-		return $GLOBALS['_wp_spl_autoloaders'];
-	}
+	require_once IMAGIFY_FUNCTIONS_PATH . 'compat-spl-autoload.php';
 endif;
 
 /** --------------------------------------------------------------------------------------------- */
@@ -587,5 +525,123 @@ if ( ! function_exists( 'wp_scripts' ) ) :
 			$wp_scripts = new WP_Scripts(); // WPCS: override ok.
 		}
 		return $wp_scripts;
+	}
+endif;
+
+if ( ! function_exists( 'wp_doing_ajax' ) ) :
+	/**
+	 * Determines whether the current request is a WordPress Ajax request.
+	 *
+	 * @since 1.7
+	 * @since WP 4.7.0
+	 *
+	 * @return bool True if it's a WordPress Ajax request, false otherwise.
+	 */
+	function wp_doing_ajax() {
+		/**
+		 * Filters whether the current request is a WordPress Ajax request.
+		 *
+		 * @since 1.7
+		 * @since WP 4.7.0
+		 *
+		 * @param bool $wp_doing_ajax Whether the current request is a WordPress Ajax request.
+		 */
+		return apply_filters( 'wp_doing_ajax', defined( 'DOING_AJAX' ) && DOING_AJAX );
+	}
+endif;
+
+if ( ! function_exists( '_deprecated_hook' ) ) :
+	/**
+	 * Marks a deprecated action or filter hook as deprecated and throws a notice.
+	 *
+	 * Use the {@see 'deprecated_hook_run'} action to get the backtrace describing where
+	 * the deprecated hook was called.
+	 *
+	 * Default behavior is to trigger a user error if `WP_DEBUG` is true.
+	 *
+	 * This function is called by the do_action_deprecated() and apply_filters_deprecated()
+	 * functions, and so generally does not need to be called directly.
+	 *
+	 * @since  1.7
+	 * @since  WP 4.6.0
+	 * @access private
+	 *
+	 * @param string $hook        The hook that was used.
+	 * @param string $version     The version of WordPress that deprecated the hook.
+	 * @param string $replacement Optional. The hook that should have been used.
+	 * @param string $message     Optional. A message regarding the change.
+	 */
+	function _deprecated_hook( $hook, $version, $replacement = null, $message = null ) {
+		/**
+		 * Fires when a deprecated hook is called.
+		 *
+		 * @since 1.7
+		 * @since WP 4.6.0
+		 *
+		 * @param string $hook        The hook that was called.
+		 * @param string $replacement The hook that should be used as a replacement.
+		 * @param string $version     The version of WordPress that deprecated the argument used.
+		 * @param string $message     A message regarding the change.
+		 */
+		do_action( 'deprecated_hook_run', $hook, $replacement, $version, $message );
+
+		/**
+		 * Filters whether to trigger deprecated hook errors.
+		 *
+		 * @since 1.7
+		 * @since WP 4.6.0
+		 *
+		 * @param bool $trigger Whether to trigger deprecated hook errors. Requires
+		 *                      `WP_DEBUG` to be defined true.
+		 */
+		if ( WP_DEBUG && apply_filters( 'deprecated_hook_trigger_error', true ) ) {
+			$message = empty( $message ) ? '' : ' ' . $message;
+			if ( ! is_null( $replacement ) ) {
+				/* translators: 1: WordPress hook name, 2: version number, 3: alternative hook name */
+				trigger_error( sprintf( __( '%1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.', 'imagify' ), $hook, $version, $replacement ) . $message );
+			} else {
+				/* translators: 1: WordPress hook name, 2: version number */
+				trigger_error( sprintf( __( '%1$s is <strong>deprecated</strong> since version %2$s with no alternative available.', 'imagify' ), $hook, $version ) . $message );
+			}
+		}
+	}
+endif;
+
+if ( ! function_exists( 'apply_filters_deprecated' ) ) :
+	/**
+	 * Fires functions attached to a deprecated filter hook.
+	 *
+	 * When a filter hook is deprecated, the apply_filters() call is replaced with
+	 * apply_filters_deprecated(), which triggers a deprecation notice and then fires
+	 * the original filter hook.
+	 *
+	 * Note: the value and extra arguments passed to the original apply_filters() call
+	 * must be passed here to `$args` as an array. For example:
+	 *
+	 *     // Old filter.
+	 *     return apply_filters( 'wpdocs_filter', $value, $extra_arg );
+	 *
+	 *     // Deprecated.
+	 *     return apply_filters_deprecated( 'wpdocs_filter', array( $value, $extra_arg ), '4.9', 'wpdocs_new_filter' );
+	 *
+	 * @since 1.7
+	 * @since WP 4.6.0
+	 *
+	 * @see _deprecated_hook()
+	 *
+	 * @param string $tag         The name of the filter hook.
+	 * @param array  $args        Array of additional function arguments to be passed to apply_filters().
+	 * @param string $version     The version of WordPress that deprecated the hook.
+	 * @param string $replacement Optional. The hook that should have been used. Default false.
+	 * @param string $message     Optional. A message regarding the change. Default null.
+	 */
+	function apply_filters_deprecated( $tag, $args, $version, $replacement = false, $message = null ) {
+		if ( ! has_filter( $tag ) ) {
+			return $args[0];
+		}
+
+		_deprecated_hook( $tag, $version, $replacement, $message );
+
+		return apply_filters_ref_array( $tag, $args );
 	}
 endif;

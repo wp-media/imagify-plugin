@@ -17,7 +17,7 @@ function do_imagify( $file_path, $args = array() ) {
 	$errors = new WP_Error();
 	$args   = array_merge( array(
 		'backup'             => get_imagify_option( 'backup' ),
-		'optimization_level' => get_imagify_option( 'optimization_level', 1 ),
+		'optimization_level' => get_imagify_option( 'optimization_level' ),
 		'keep_exif'          => get_imagify_option( 'exif' ),
 		'context'            => 'wp',
 		'resized'            => false,
@@ -113,7 +113,7 @@ function do_imagify( $file_path, $args = array() ) {
 	}
 
 	if ( ! function_exists( 'download_url' ) ) {
-		require( ABSPATH . 'wp-admin/includes/file.php' );
+		require_once ABSPATH . 'wp-admin/includes/file.php';
 	}
 
 	$temp_file = download_url( $response->image );

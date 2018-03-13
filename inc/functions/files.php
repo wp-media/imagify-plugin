@@ -39,11 +39,60 @@ function imagify_get_filesystem() {
  * @since 1.2
  * @since 1.6.5 Use WP Filesystem.
  *
- * @param string $file The path to file.
+ * @param  string $file_path The path to file.
  * @return bool
  */
-function imagify_chmod_file( $file ) {
-	return imagify_get_filesystem()->chmod( $file, FS_CHMOD_FILE );
+function imagify_chmod_file( $file_path ) {
+	return imagify_get_filesystem()->chmod( $file_path, FS_CHMOD_FILE );
+}
+
+/**
+ * Get a file mime type.
+ *
+ * @since  1.6.9
+ * @since  1.7 Doesn't use exif_imagetype() nor getimagesize() anymore.
+ * @author Grégory Viguier
+ *
+ * @param  string $file_path A file path (prefered) or a filename.
+ * @return string|bool       A mime type. False on failure: the last test is limited to mime types supported by Imagify.
+ */
+function imagify_get_mime_type_from_file( $file_path ) {
+	if ( ! $file_path ) {
+		return false;
+	}
+
+	$file_type = wp_check_filetype( $file_path, imagify_get_mime_types() );
+
+	return $file_type['type'];
+}
+
+/**
+ * Get a file modification date, formated as "mysql". Fallback to current date.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  string $file_path The file path.
+ * @return string            The date.
+ */
+function imagify_get_file_date( $file_path ) {
+	static $offset;
+
+	if ( ! $file_path ) {
+		return current_time( 'mysql' );
+	}
+
+	$date = imagify_get_filesystem()->mtime( $file_path );
+
+	if ( ! $date ) {
+		return current_time( 'mysql' );
+	}
+
+	if ( ! isset( $offset ) ) {
+		$offset = get_option( 'gmt_offset' ) * HOUR_IN_SECONDS;
+	}
+
+	return gmdate( 'Y-m-d H:i:s', $date + $offset );
 }
 
 
@@ -95,25 +144,28 @@ function imagify_get_abspath() {
  * Also works for files from registered symlinked plugins.
  *
  * @since  1.6.10
+ * @since  1.7 The parameter $base is added.
  * @author Grégory Viguier
  *
  * @param  string $file_path An absolute path.
+ * @param  string $base      A base path to use instead of ABSPATH.
  * @return string|bool       A relative path. Can return the absolute path or false in case of a failure.
  */
-function imagify_make_file_path_relative( $file_path ) {
+function imagify_make_file_path_relative( $file_path, $base = '' ) {
 	static $abspath;
 	global $wp_plugin_paths;
-
-	if ( ! isset( $abspath ) ) {
-		$abspath = wp_normalize_path( ABSPATH );
-	}
 
 	if ( ! $file_path ) {
 		return false;
 	}
 
+	if ( ! isset( $abspath ) ) {
+		$abspath = wp_normalize_path( ABSPATH );
+	}
+
 	$file_path = wp_normalize_path( $file_path );
-	$pos       = strpos( $file_path, $abspath );
+	$base      = $base ? trailingslashit( wp_normalize_path( $base ) ) : $abspath;
+	$pos       = strpos( $file_path, $base );
 
 	if ( false === $pos && $wp_plugin_paths && is_array( $wp_plugin_paths ) ) {
 		// The file is probably part of a symlinked plugin.
@@ -125,7 +177,7 @@ function imagify_make_file_path_relative( $file_path ) {
 			}
 		}
 
-		$pos = strpos( $file_path, $abspath );
+		$pos = strpos( $file_path, $base );
 	}
 
 	if ( false === $pos ) {
@@ -133,5 +185,49 @@ function imagify_make_file_path_relative( $file_path ) {
 		return $file_path;
 	}
 
-	return substr_replace( $file_path, '', 0, $pos + strlen( $abspath ) );
+	return substr_replace( $file_path, '', 0, $pos + strlen( $base ) );
+}
+
+/**
+ * Tell if a file is symlinked.
+ *
+ * @since  1.7
+ * @author Grégory Viguier
+ *
+ * @param  string $file_path An absolute path.
+ * @return bool
+ */
+function imagify_file_is_symlinked( $file_path ) {
+	static $abspath;
+	static $plugin_paths = array();
+	global $wp_plugin_paths;
+
+	if ( ! isset( $abspath ) ) {
+		$abspath = strtolower( wp_normalize_path( trailingslashit( imagify_get_abspath() ) ) );
+	}
+
+	$lower_file_path = strtolower( wp_normalize_path( trailingslashit( realpath( $file_path ) ) ) );
+
+	if ( strpos( $lower_file_path, $abspath ) !== 0 ) {
+		return true;
+	}
+
+	if ( $wp_plugin_paths && is_array( $wp_plugin_paths ) ) {
+		if ( ! $plugin_paths ) {
+			foreach ( $wp_plugin_paths as $dir => $realdir ) {
+				$dir = strtolower( wp_normalize_path( trailingslashit( $dir ) ) );
+				$plugin_paths[ $dir ] = strtolower( wp_normalize_path( trailingslashit( $realdir ) ) );
+			}
+		}
+
+		$lower_file_path = strtolower( wp_normalize_path( trailingslashit( $file_path ) ) );
+
+		foreach ( $plugin_paths as $dir => $realdir ) {
+			if ( strpos( $lower_file_path, $dir ) === 0 ) {
+				return true;
+			}
+		}
+	}
+
+	return false;
 }

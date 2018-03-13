@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
-Tested up to: 4.9.1
-Stable tag: 1.6.14.1
+Tested up to: 4.9.4
+Stable tag: 1.7
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -107,7 +107,7 @@ Absolutely. Most of the time, Imagify will still be able to optimize your images
 
 Normal compression is a "lossless" optimization. This means there is no loss of image quality. Aggressive and Ultra compression are more powerful, so the picture quality will be somewhat reduced. The weight of the image will be much less.
 
-= Is the EXIF data of images removes? =
+= Is the EXIF data of images removed? =
 
 By default EXIF data is removed. It is however possible to keep it by enabling the option.
 
@@ -135,7 +135,22 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 3. Media Page
 
+4. Other Media Page
+
 == Changelog ==
+= 1.7 - 2018/03/13 =
+* New: you can now optimize the images from your themes and plugins, or from any other folder in your site!
+* Improvement: compatibility with old and new versions of WP Offload S3 plugins.
+* Improvement: don't start the bulk optimization process if cURL is not available.
+* Bug Fix: image dimensions not being stored sometimes after it is resized.
+* Bug Fix: the comparison tool could display multiple handles.
+* Bug Fix: issue with php 7.2.
+* Dev stuff: lots of internal changes, many things have been rewritten.
+* Dev stuff: the default options can now be filtered.
+
+= 1.6.14.2 - 2018/01/15 =
+* Improvement: force browsers not to use the old version of our script for the charts.
+
 = 1.6.14.1 - 2018/01/11 =
 * Bug Fix: no more conflicts between our script used for the charts and theme builders, or plugins that use an outdated version of this script.
 

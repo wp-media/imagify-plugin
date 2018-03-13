@@ -14,38 +14,54 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.1';
 
 	/**
 	 * The single instance of the class.
 	 *
+	 * @var    object
 	 * @since  1.5
 	 * @access protected
-	 *
-	 * @var object
 	 */
 	protected static $_instance;
 
 	/**
-	 * Get things started.
+	 * The suffix used in the name of the database table (so, without the wpdb prefix).
 	 *
-	 * @since  1.5
+	 * @var    string
+	 * @since  1.7
 	 * @access protected
-	 * @author Jonathan Buttigieg
 	 */
-	protected function __construct() {
-		global $wpdb;
+	protected $table = 'ngg_imagify_data';
 
-		$this->table_name  = $wpdb->prefix . 'ngg_imagify_data';
-		$this->primary_key = 'pid'; // Instead of data_id.
-		$this->version     = '1.0';
+	/**
+	 * The version of our database table.
+	 *
+	 * @var    int
+	 * @since  1.5
+	 * @since  1.7 Not public anymore, now an integer.
+	 * @access protected
+	 */
+	protected $table_version = 100;
 
-		// Database declaration.
-		$wpdb->ngg_imagify_data = $this->table_name;
+	/**
+	 * Tell if the table is the same for each site of a Multisite.
+	 *
+	 * @var    bool
+	 * @since  1.7
+	 * @access protected
+	 */
+	protected $table_is_global = false;
 
-		// Add table to the index of WordPress tables.
-		$wpdb->tables[] = 'ngg_imagify_data';
-	}
+	/**
+	 * The name of the primary column.
+	 *
+	 * @var    string
+	 * @since  1.5
+	 * @since  1.7 Not public anymore.
+	 * @access protected
+	 */
+	protected $primary_key = 'pid';
 
 	/**
 	 * Get the main Instance.
@@ -94,54 +110,31 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 	 */
 	public function get_column_defaults() {
 		return array(
+			'data_id'            => 0,
 			'pid'                => 0,
 			'optimization_level' => '',
 			'status'             => '',
-			'data'               => '',
+			'data'               => array(),
 		);
 	}
 
 	/**
-	 * Create the table.
+	 * Get the query to create the table fields.
 	 *
-	 * @since  1.5
-	 * @access public
-	 * @author Jonathan Buttigieg
+	 * @since  1.7
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @return string
 	 */
-	public function create_table() {
-		global $wpdb;
-
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-		$charset_collate = $wpdb->get_charset_collate();
-
-		$sql = "CREATE TABLE {$this->table_name} (
-			data_id int(11) NOT NULL AUTO_INCREMENT,
-			pid int(11) NOT NULL,
-			optimization_level varchar(1) NOT NULL,
-			status varchar(30) NOT NULL,
-			data longtext NOT NULL,
-			PRIMARY KEY (data_id)
-		) $charset_collate;";
-
-		maybe_create_table( $this->table_name, $sql );
-
-		update_option( $this->table_name . '_db_version', $this->version );
-	}
-
-	/**
-	 * Main Instance.
-	 * Ensures only one instance of class is loaded or can be loaded.
-	 * Well, actually it ensures nothing since it's not a full singleton pattern.
-	 *
-	 * @since  1.5
-	 * @access public
-	 * @author Jonathan Buttigieg
-	 *
-	 * @return object Main instance.
-	 */
-	public static function instance() {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.6.5', 'Imagify_NGG_DB::get_instance()' );
-		return self::get_instance();
+	protected function get_table_schema() {
+		return "
+			data_id int(11) unsigned NOT NULL AUTO_INCREMENT,
+			pid int(11) unsigned NOT NULL default 0,
+			optimization_level varchar(1) NOT NULL default '',
+			status varchar(30) NOT NULL default '',
+			data longtext NOT NULL default '',
+			PRIMARY KEY (data_id),
+			KEY pid (pid)";
 	}
 }

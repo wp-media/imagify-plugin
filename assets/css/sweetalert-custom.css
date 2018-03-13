@@ -1,12 +1,91 @@
-/* Some Sweet alert styles */
-.imagify-sweet-alert button {
-	margin-top: 17px !important;
-	height: 45px !important;
-	letter-spacing: 3px;
-	text-transform: uppercase !important;
-	border-radius: 3px !important;
-	background-color: #40b1d0  !important;
-	box-shadow: 0 3px 0 #338ea6  !important;
+/* Sub Layer */
+body[class*="_imagify"] .swal2-container.swal2-shown {
+	background: rgb(31, 35 ,50);
+	background: rgba(31, 35 ,50, .9);
+	z-index: 100000;
+}
+
+/* White Container */
+.imagify-sweet-alert .swal2-modal {
+	border-radius: 2px;
+}
+
+/* To get icon background dark */
+.imagify-sweet-alert {
+	background: #1F2332!important;
+}
+.imagify-sweet-alert .swal2-icon {
+	margin-bottom: 5px;
+}
+
+/* header error color */
+.imagify-swal-error-header {
+	background: #C51162!important;
+}
+.imagify-swal-error-header .swal2-icon {
+	border-color: #FFF;
+	color: #FFF;
+}
+
+/* Title and Subtitle */
+.imagify-sweet-alert .swal2-title {
+	margin: 0;
+	padding: 28px 32px;
+	font-size: 24px;
+	text-align: center;
+	color: #FFF;
+	background: #1F2332;
+}
+.imagify-swal-has-subtitle .swal2-title {
+	text-align: left;
+}
+.imagify-swal-error-header .swal2-title {
+	background: #C51162;
+	text-align: center;
+}
+.imagify-sweet-alert .imagify-swal-subtitle {
+	padding: 0 32px 28px;
+	margin-top: -16px;
+	font-weight: 500;
+	font-size: 14px;
+	text-align: left;
+	color: #7A8996;
+	background: #1F2332;
+}
+.imagify-swal-error-header .imagify-swal-subtitle {
+	color: #FFF;
+	background: #C51162;
+	text-align: center;
+}
+
+/* Buttons */
+.imagify-sweet-alert .swal2-buttonswrapper,
+.imagify-swal-buttonswrapper {
+	margin-top: 0;
+	padding: 22px;
+	background: #F4F7F9;
+}
+.imagify-sweet-alert button.swal2-styled,
+.imagify-swal-buttonswrapper a.button.imagify-button-primary {
+	height: auto;
+	padding: 12px 32px;
+	margin: 10px;
+	font-size: 14px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	border-radius: 3px;
+	background-color: #40b1d0 !important;
+	text-shadow: none!important;
+	box-shadow: 0 3px 0 #338ea6;
+}
+.imagify-swal-buttonswrapper a.button.imagify-button-primary:focus,
+.imagify-swal-buttonswrapper a.button.imagify-button-primary:hover {
+	text-shadow: none;
+	color: #FFF;
+}
+.imagify-swal-buttonswrapper a.button svg {
+	margin-right: 12px;
+	vertical-align: -2px;
 }
 .imagify-sweet-alert button.loading {
 	border-radius: 100% !important;
@@ -15,15 +94,29 @@
 	box-shadow: none!important;
 }
 .imagify-sweet-alert button.swal2-cancel {
-	background: #777 !important;
-	box-shadow: 0 3px 0 #444 !important;
+	color: #7A8996;
+	background: #E9EFF2 !important;
+	box-shadow: 0 3px 0 rgba(31, 35, 50, .2);
+}
+.imagify-sweet-alert-signup.imagify-sweet-alert {
+	background: #FFF!important;
+} 
+.imagify-sweet-alert-signup .swal2-buttonswrapper {
+	padding: 12px 22px;
+}
+.swal2-success-circular-line-left,
+.swal2-success-fix,
+.swal2-success-circular-line-right {
+	background: #1F2332 !important
 }
 .imagify-sweet-alert-signup .sa-confirm-button-container {
 	width: 40%;
 }
-.imagify-sweet-alert-signup button {
-	width: 100%;
-	padding: 0 !important;
+.imagify-sweet-alert-signup .swal2-input {
+	margin-top: 0;
+	margin-left: 40px;
+	margin-right: 40px;
+	width: calc( 100% - 80px);
 }
 .imagify-sweet-alert .sa-input-error:before,
 .imagify-sweet-alert .sa-input-error:after,
@@ -38,13 +131,39 @@
 	border-right-width: 0 !important;
 }
 
-/* Make the page in background blured when sweet alert is open */
-#wpwrap {
-	transition: all .4s;
+/* Imagify swal contents */
+.imagify-sweet-alert .swal2-content {
+	padding: 28px 32px;
+	background: #FFF;
 }
-.stop-scrolling #wpwrap {
-	filter: blur(2px);
+.imagify-swal-has-subtitle .swal2-content {
+	padding: 0;
 }
-.stop-scrolling #wpwrap #wpadminbar {
-	top: -32px;
+.imagify-swal-content {
+	font-size: 14px;
+	padding: 28px 32px;
+}
+
+/* Quota */
+.imagify-swal-quota .imagify-space-left {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 4px 32px;
+	text-align: left;
+	font-weight: bold;
+	color: #FFF;
+	background: #343A49;
+}
+.imagify-swal-quota .imagify-space-left p {
+	font-size: 14px;
+}
+.imagify-swal-quota .imagify-space-left [class^="imagify-bar-"] {
+	width: auto;
+	flex-basis: 269px;
+}
+
+/* Close button */
+.imagify-sweet-alert .swal2-close {
+	color: rgba(255,255,255,.5);
 }

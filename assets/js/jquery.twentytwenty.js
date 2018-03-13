@@ -66,7 +66,12 @@
 				};
 
 
+			if ( $container.parent( '.twentytwenty-wrapper' ).length ) {
+				$container.unwrap();
+			}
 			$container.wrap( '<div class="twentytwenty-wrapper twentytwenty-' + sliderOrientation + '"></div>' );
+
+			$container.children( '.twentytwenty-overlay, .twentytwenty-handle' ).remove();
 			$container.append( '<div class="twentytwenty-overlay"></div>' );
 			$container.append( '<div class="twentytwenty-handle"></div>' );
 
@@ -241,13 +246,13 @@
 					w.imagify.openModal( $( this ) );
 				}
 
-				$modal.find( '.imagify-modal-content').css( {
+				$modal.find( '.imagify-modal-content' ).css( {
 					'width':     ( $( w ).outerWidth() * 0.85 ) + 'px',
 					'max-width': settings.width
 				} );
 
 				// Load before img.
-				$modal.find( '.imagify-img-before').on( 'load', function() {
+				$modal.find( '.imagify-img-before' ).on( 'load', function() {
 					imgsLoaded++;
 				} ).attr( 'src', settings.originalUrl );
 
@@ -648,6 +653,56 @@
 		if ( getVar( 'item' ) ) {
 			imagifyContentInModal();
 		}
+	}
+
+	/**
+	 * Images comparison in custom folders list page.
+	 */
+	if ( $( '#imagify-files-list-form' ).length > 0 ) {
+
+		var buildComparisonModal = function( $buttons ) {
+			$buttons.each( function() {
+				var $this  = $( this ),
+					id     = $this.data( 'id' ),
+					$datas = $this.closest( 'tr' ).find( '.column-optimization .imagify-data-item' );
+
+				$( '#imagify-comparison-' + id ).remove();
+
+				// Modal and trigger event creation.
+				imagifyTwentyModal( {
+					width:         parseInt( $this.data( 'full-width' ), 10 ),
+					height:        parseInt( $this.data( 'full-height' ), 10 ),
+					originalUrl:   $this.data( 'backup-src' ),
+					optimizedUrl:  $this.data( 'full-src' ),
+					originalSize:  $datas.find( '.original' ).text(),
+					optimizedSize: $datas.find( '.optimized' ).text(),
+					saving:        $datas.find( '.imagify-chart-value' ).text(),
+					modalAppendTo: $this.closest( '.column-primary' ),
+					trigger:       $this,
+					modalId:       'imagify-comparison-' + id
+				} );
+			} );
+		};
+
+		/**
+		 * Update the comparison tool window when a file row is updated via ajax, and the ones already printed.
+		 */
+		$( w ).on( 'comparisonprinted.imagify', function( e, id ) {
+			var $buttons;
+
+			id = id || 0;
+
+			if ( id ) {
+				$buttons = $( '#imagify-files-list-form' ).find( '.imagify-compare-images[data-id="' + id + '"]' );
+			} else {
+				$buttons = $( '#imagify-files-list-form' ).find( '.imagify-compare-images' );
+			}
+
+			if ( $buttons.length ) {
+				buildComparisonModal( $buttons );
+			}
+		} )
+			.trigger( 'comparisonprinted.imagify' );
 	}
 
 } )(jQuery, document, window);
