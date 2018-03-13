@@ -11,7 +11,7 @@
  * Text Domain: imagify
  * Domain Path: languages
  *
- * Copyright 2017 WP Media
+ * Copyright 2018 WP Media
  */
 
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
