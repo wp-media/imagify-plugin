@@ -133,7 +133,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			return false;
 		}
 
-		$size = imagify_get_filesystem()->get_image_size( $this->get_original_path() );
+		$size = $this->filesystem->get_image_size( $this->get_original_path() );
 
 		if ( ! $size ) {
 			return false;
@@ -230,12 +230,11 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		$metadata       = wp_get_attachment_metadata( $this->id );
 		$metadata_sizes = ! empty( $metadata['sizes'] ) && is_array( $metadata['sizes'] ) ? $metadata['sizes'] : array();
 
-		$filesystem       = imagify_get_filesystem();
-		$original_dirname = $filesystem->dir_path( $this->get_original_path() );
+		$original_dirname = $this->filesystem->dir_path( $this->get_original_path() );
 		$thumbnail_path   = $original_dirname . $thumbnail_data['file'];
 
-		if ( ! empty( $metadata_sizes[ $thumbnail_size ] ) && $filesystem->exists( $thumbnail_path ) ) {
-			$filesystem->chmod_file( $thumbnail_path );
+		if ( ! empty( $metadata_sizes[ $thumbnail_size ] ) && $this->filesystem->exists( $thumbnail_path ) ) {
+			$this->filesystem->chmod_file( $thumbnail_path );
 			return true;
 		}
 
@@ -256,22 +255,22 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		}
 
 		// The file name can change from what we expected (1px wider, etc).
-		$backup_dirname    = $filesystem->dir_path( $this->get_backup_path() );
+		$backup_dirname    = $this->filesystem->dir_path( $this->get_backup_path() );
 		$backup_thumb_path = $backup_dirname . $result[ $thumbnail_size ]['file'];
 		$thumbnail_path    = $original_dirname . $result[ $thumbnail_size ]['file'];
 
 		// Since we used the backup image as source, the new image is still in the backup folder, we need to move it.
-		$filesystem->move( $backup_thumb_path, $thumbnail_path, true );
+		$this->filesystem->move( $backup_thumb_path, $thumbnail_path, true );
 
-		if ( $filesystem->exists( $backup_thumb_path ) ) {
-			$filesystem->delete( $backup_thumb_path );
+		if ( $this->filesystem->exists( $backup_thumb_path ) ) {
+			$this->filesystem->delete( $backup_thumb_path );
 		}
 
-		if ( ! $filesystem->exists( $thumbnail_path ) ) {
+		if ( ! $this->filesystem->exists( $thumbnail_path ) ) {
 			return new WP_Error( 'image_resize_error' );
 		}
 
-		$filesystem->chmod_file( $thumbnail_path );
+		$this->filesystem->chmod_file( $thumbnail_path );
 
 		return reset( $result );
 	}
@@ -370,13 +369,12 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		set_transient( 'imagify-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
 
 		// Get the resize values for the original size.
-		$resized    = false;
-		$do_resize  = get_imagify_option( 'resize_larger' );
-		$filesystem = imagify_get_filesystem();
+		$resized   = false;
+		$do_resize = get_imagify_option( 'resize_larger' );
 
 		if ( $do_resize ) {
 			$resize_width    = get_imagify_option( 'resize_larger_w' );
-			$attachment_size = $filesystem->get_image_size( $attachment_path );
+			$attachment_size = $this->filesystem->get_image_size( $attachment_path );
 
 			if ( $attachment_size && $resize_width < $attachment_size['width'] ) {
 				$resized_attachment_path = $this->resize( $attachment_path, $attachment_size, $resize_width );
@@ -385,12 +383,12 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 					// TODO (@Greg): Send an error message if the backup fails.
 					imagify_backup_file( $attachment_path );
 
-					$filesystem->move( $resized_attachment_path, $attachment_path, true );
-					$filesystem->chmod_file( $attachment_path );
+					$this->filesystem->move( $resized_attachment_path, $attachment_path, true );
+					$this->filesystem->chmod_file( $attachment_path );
 
 					// If resized temp file still exists, delete it.
-					if ( $filesystem->exists( $resized_attachment_path ) ) {
-						$filesystem->delete( $resized_attachment_path );
+					if ( $this->filesystem->exists( $resized_attachment_path ) ) {
+						$this->filesystem->delete( $resized_attachment_path );
 					}
 
 					$resized = true;
@@ -426,8 +424,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		if ( $sizes ) {
 			$disallowed_sizes        = get_imagify_option( 'disallowed-sizes' );
 			$is_active_for_network   = imagify_is_active_for_network();
-			$attachment_path_dirname = $filesystem->dir_path( $attachment_path );
-			$attachment_url_dirname  = $filesystem->dir_path( $attachment_url );
+			$attachment_path_dirname = $this->filesystem->dir_path( $attachment_path );
+			$attachment_url_dirname  = $this->filesystem->dir_path( $attachment_url );
 
 			foreach ( $sizes as $size_key => $size_data ) {
 				// Check if this size has to be optimized.
@@ -555,9 +553,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		// Optimize.
 		$imagify_data     = $this->get_data();
-		$filesystem       = imagify_get_filesystem();
-		$original_dirname = $filesystem->dir_path( $this->get_original_path() );
-		$orig_url_dirname = $filesystem->dir_path( $this->get_original_url() );
+		$original_dirname = $this->filesystem->dir_path( $this->get_original_path() );
+		$orig_url_dirname = $this->filesystem->dir_path( $this->get_original_url() );
 
 		foreach ( $result_sizes as $size_name => $thumbnail_data ) {
 			$thumbnail_path = $original_dirname . $thumbnail_data['file'];
@@ -625,7 +622,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		$backup_path     = $this->get_backup_path();
 		$attachment_path = $this->get_original_path();
-		$filesystem      = imagify_get_filesystem();
 
 		/**
 		 * Fires before restoring an attachment.
@@ -637,8 +633,8 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		do_action( 'before_imagify_restore_attachment', $this->id );
 
 		// Create the original image from the backup.
-		$filesystem->copy( $backup_path, $attachment_path, true );
-		$filesystem->chmod_file( $attachment_path );
+		$this->filesystem->copy( $backup_path, $attachment_path, true );
+		$this->filesystem->chmod_file( $attachment_path );
 
 		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
 			require_once( ABSPATH . 'wp-admin/includes/image.php' );

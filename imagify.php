@@ -11,7 +11,7 @@
  * Text Domain: imagify
  * Domain Path: languages
  *
- * Copyright 2017 WP Media
+ * Copyright 2018 WP Media
  */
 
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
@@ -61,7 +61,6 @@ function _imagify_init() {
 
 	require( IMAGIFY_FUNCTIONS_PATH . 'options.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'formatting.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'files.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'admin.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'api.php' );
 	require( IMAGIFY_FUNCTIONS_PATH . 'attachments.php' );

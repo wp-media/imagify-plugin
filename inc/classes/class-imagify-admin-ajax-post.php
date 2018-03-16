@@ -71,6 +71,16 @@ class Imagify_Admin_Ajax_Post {
 	);
 
 	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
+
+	/**
 	 * The single instance of the class.
 	 *
 	 * @var object
@@ -82,7 +92,9 @@ class Imagify_Admin_Ajax_Post {
 	 *
 	 * @return void
 	 */
-	protected function __construct() {}
+	protected function __construct() {
+		$this->filesystem = Imagify_Filesystem::get_instance();
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -753,8 +765,7 @@ class Imagify_Admin_Ajax_Post {
 		 */
 		do_action( 'imagify_bulk_optimize_before_file_existence_tests', $ids, $results, $optimization_level );
 
-		$data       = array();
-		$filesystem = imagify_get_filesystem();
+		$data = array();
 
 		foreach ( $ids as $i => $id ) {
 			if ( empty( $results['filenames'][ $id ] ) ) {
@@ -767,7 +778,7 @@ class Imagify_Admin_Ajax_Post {
 			/** This filter is documented in inc/functions/process.php. */
 			$file_path = apply_filters( 'imagify_file_path', $file_path );
 
-			if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
+			if ( ! $file_path || ! $this->filesystem->exists( $file_path ) ) {
 				continue;
 			}
 
@@ -776,7 +787,7 @@ class Imagify_Admin_Ajax_Post {
 			$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
 
 			// Don't try to re-optimize if there is no backup file.
-			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! $filesystem->exists( $attachment_backup_path ) ) {
+			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! $this->filesystem->exists( $attachment_backup_path ) ) {
 				continue;
 			}
 
@@ -1269,15 +1280,14 @@ class Imagify_Admin_Ajax_Post {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$filesystem = imagify_get_filesystem();
-		$folder     = trailingslashit( sanitize_text_field( $_POST['folder'] ) );
-		$folder     = realpath( $filesystem->get_abspath() . ltrim( $folder, '/' ) );
+		$folder = trailingslashit( sanitize_text_field( $_POST['folder'] ) );
+		$folder = realpath( $this->filesystem->get_abspath() . ltrim( $folder, '/' ) );
 
 		if ( ! $folder ) {
 			imagify_die( __( 'This folder doesn\'t exist.', 'imagify' ) );
 		}
 
-		if ( ! $filesystem->is_dir( $folder ) ) {
+		if ( ! $this->filesystem->is_dir( $folder ) ) {
 			imagify_die( __( 'This file is not a folder.', 'imagify' ) );
 		}
 
@@ -1287,11 +1297,11 @@ class Imagify_Admin_Ajax_Post {
 
 		// Finally we made all our validations.
 		$selected = ! empty( $_POST['selected'] ) && is_array( $_POST['selected'] ) ? array_flip( $_POST['selected'] ) : array();
-		$folder   = $filesystem->normalize_dir_path( $folder );
+		$folder   = $this->filesystem->normalize_dir_path( $folder );
 		$views    = Imagify_Views::get_instance();
 		$output   = '';
 
-		if ( $filesystem->is_abspath( $folder ) ) {
+		if ( $this->filesystem->is_abspath( $folder ) ) {
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
 				'relative_path'     => '/',
 				// Value #///# Label.
@@ -1314,7 +1324,7 @@ class Imagify_Admin_Ajax_Post {
 			}
 
 			$folder_path   = trailingslashit( $file->getPathname() );
-			$relative_path = $filesystem->make_path_relative( $folder_path );
+			$relative_path = $this->filesystem->make_path_relative( $folder_path );
 			$placeholder   = Imagify_Files_Scan::add_placeholder( $folder_path );
 
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
