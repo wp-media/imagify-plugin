@@ -77,6 +77,20 @@ class Imagify_Files_Scan {
 	}
 
 	/**
+	 * Tell if a path is autorized.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $file_path A file or folder absolute path.
+	 * @return bool
+	 */
+	public static function is_path_autorized( $file_path ) {
+		return ! self::is_path_forbidden( $file_path );
+	}
+
+	/**
 	 * Tell if a path is forbidden.
 	 *
 	 * @since  1.7

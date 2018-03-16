@@ -6,16 +6,17 @@ if ( ! imagify_can_optimize_custom_folders() ) {
 }
 
 // Get folders, remove excluded ones, sort them, add labels.
-$disabled_values = Imagify_Files_Scan::get_forbidden_folders();
-$disabled_values = array_map( array( 'Imagify_Files_Scan', 'add_placeholder' ), $disabled_values );
-$custom_folders  = Imagify_Folders_DB::get_instance()->get_active_folders_column_not_in( 'path', 'path', $disabled_values );
-$custom_folders  = array_filter( $custom_folders, array( 'Imagify_Files_Scan', 'is_path_forbidden' ) );
-$filesystem      = imagify_get_filesystem();
-$themes          = array();
+$custom_folders = Imagify_Folders_DB::get_instance()->get_active_folders_column( 'path' );
+$filesystem     = imagify_get_filesystem();
+$themes         = array();
 
 if ( $custom_folders ) {
 	$custom_folders = array_combine( $custom_folders, $custom_folders );
 	$custom_folders = array_map( array( 'Imagify_Files_Scan', 'remove_placeholder' ), $custom_folders );
+	$custom_folders = array_filter( $custom_folders, array( 'Imagify_Files_Scan', 'is_path_autorized' ) );
+}
+
+if ( $custom_folders ) {
 	$custom_folders = array_map( array( $filesystem, 'make_path_relative' ), $custom_folders );
 	$custom_folders = array_map( 'untrailingslashit', $custom_folders );
 	natcasesort( $custom_folders );
