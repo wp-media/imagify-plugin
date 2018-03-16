@@ -14,7 +14,7 @@ class Imagify_Admin_Ajax_Post {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * Actions to be triggered on admin ajax and admin post.
@@ -1262,8 +1262,6 @@ class Imagify_Admin_Ajax_Post {
 	 * @author Grégory Viguier
 	 */
 	public function imagify_get_files_tree_callback() {
-		static $abspath;
-
 		imagify_check_nonce( 'get-files-tree' );
 		imagify_check_user_capacity( 'optimize-file' );
 
@@ -1271,14 +1269,15 @@ class Imagify_Admin_Ajax_Post {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$folder = trailingslashit( sanitize_text_field( $_POST['folder'] ) );
-		$folder = realpath( ABSPATH . ltrim( $folder, '/' ) );
+		$filesystem = imagify_get_filesystem();
+		$folder     = trailingslashit( sanitize_text_field( $_POST['folder'] ) );
+		$folder     = realpath( $filesystem->get_abspath() . ltrim( $folder, '/' ) );
 
-		if ( ! $folder || ! imagify_get_filesystem()->exists( $folder ) ) {
+		if ( ! $folder ) {
 			imagify_die( __( 'This folder doesn\'t exist.', 'imagify' ) );
 		}
 
-		if ( ! imagify_get_filesystem()->is_dir( $folder ) ) {
+		if ( ! $filesystem->is_dir( $folder ) ) {
 			imagify_die( __( 'This file is not a folder.', 'imagify' ) );
 		}
 
@@ -1286,17 +1285,13 @@ class Imagify_Admin_Ajax_Post {
 			imagify_die( __( 'This folder is not allowed.', 'imagify' ) );
 		}
 
-		if ( ! isset( $abspath ) ) {
-			$abspath = wp_normalize_path( ABSPATH );
-		}
-
 		// Finally we made all our validations.
 		$selected = ! empty( $_POST['selected'] ) && is_array( $_POST['selected'] ) ? array_flip( $_POST['selected'] ) : array();
-		$folder   = wp_normalize_path( trailingslashit( $folder ) );
+		$folder   = $filesystem->normalize_dir_path( $folder );
 		$views    = Imagify_Views::get_instance();
 		$output   = '';
 
-		if ( $folder === $abspath ) {
+		if ( $filesystem->is_abspath( $folder ) ) {
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
 				'relative_path'     => '/',
 				// Value #///# Label.
@@ -1318,17 +1313,17 @@ class Imagify_Admin_Ajax_Post {
 				continue;
 			}
 
-			$folder_path   = $file->getPathname();
-			$relative_path = esc_attr( imagify_make_file_path_relative( trailingslashit( $folder_path ) ) );
-			$placeholder   = Imagify_Files_Scan::add_placeholder( trailingslashit( $folder_path ) );
+			$folder_path   = trailingslashit( $file->getPathname() );
+			$relative_path = $filesystem->make_path_relative( $folder_path );
+			$placeholder   = Imagify_Files_Scan::add_placeholder( $folder_path );
 
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
-				'relative_path'     => $relative_path,
+				'relative_path'     => esc_attr( $relative_path ),
 				// Value #///# Label.
 				'checkbox_value'    => esc_attr( $placeholder ) . '#///#' . esc_attr( $relative_path ),
 				'checkbox_id'       => sanitize_html_class( $placeholder ),
 				'checkbox_selected' => isset( $selected[ $placeholder ] ),
-				'label'             => str_replace( $folder, '', $folder_path ),
+				'label'             => str_replace( $folder, '', untrailingslashit( $folder_path ) ),
 			) );
 		}
 

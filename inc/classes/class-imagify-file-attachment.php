@@ -16,7 +16,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * The attachment SQL DB class.
@@ -119,7 +119,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		return site_url( '/' ) . imagify_make_file_path_relative( $this->get_raw_backup_path() );
+		return site_url( '/' ) . imagify_get_filesystem()->make_path_relative( $this->get_raw_backup_path() );
 	}
 
 	/**
@@ -707,7 +707,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 
 		// Create the original image from the backup.
 		imagify_get_filesystem()->copy( $backup_path, $file_path, true );
-		imagify_chmod_file( $file_path );
+		imagify_get_filesystem()->chmod_file( $file_path );
 
 		// Remove old optimization data.
 		$this->delete_imagify_data();

@@ -14,7 +14,7 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * Context used with get_imagify_attachment().
@@ -170,7 +170,8 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 		}
 
 		// Remove from the list files that exist.
-		$ids = array_flip( $ids );
+		$ids        = array_flip( $ids );
+		$filesystem = imagify_get_filesystem();
 
 		foreach ( $ids as $id => $i ) {
 			if ( empty( $results['filenames'][ $id ] ) ) {
@@ -184,7 +185,7 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 			/** This filter is documented in inc/functions/process.php. */
 			$file_path = apply_filters( 'imagify_file_path', $file_path, $id, 'as3cf_maybe_copy_files_from_s3' );
 
-			if ( ! $file_path || file_exists( $file_path ) ) {
+			if ( ! $file_path || $filesystem->exists( $file_path ) ) {
 				// The file exists, no need to retrieve it from S3.
 				unset( $ids[ $id ] );
 			} else {
@@ -231,14 +232,14 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 			$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
 
 			// Don't try to re-optimize if there is no backup file.
-			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) ) {
+			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! $filesystem->exists( $attachment_backup_path ) ) {
 				unset( $s3_data[ $id ], $ids[ $id ] );
 				continue;
 			}
 
-			$directory        = dirname( $s3_object['key'] );
-			$directory        = '.' === $directory || '' === $directory ? '' : $directory . '/';
-			$s3_object['key'] = $directory . wp_basename( $file_path );
+			$directory        = $filesystem->dir_path( $s3_object['key'] );
+			$directory        = $filesystem->is_root( $directory ) ? '' : $directory;
+			$s3_object['key'] = $directory . $filesystem->file_name( $file_path );
 
 			// Retrieve file from S3.
 			$as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $file_path );
@@ -266,7 +267,7 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 			return $size_and_count;
 		}
 
-		if ( file_exists( $files['full'] ) ) {
+		if ( imagify_get_filesystem()->exists( $files['full'] ) ) {
 			// If the full size is on the server, that probably means all files are on the server too.
 			return $size_and_count;
 		}

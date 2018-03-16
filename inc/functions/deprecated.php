@@ -454,9 +454,9 @@ function _imagify_admin_bar_styles() {
  * @return string            A relative path. Can return the absolute path in case of a failure.
  */
 function imagify_make_file_path_replative( $file_path ) {
-	_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'imagify_make_file_path_relative( $file_path )' );
+	_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'imagify_get_filesystem()->make_path_relative( $file_path )' );
 
-	return imagify_make_file_path_relative( $file_path );
+	return imagify_get_filesystem()->make_path_relative( $file_path );
 }
 
 if ( is_admin() && ( function_exists( 'as3cf_init' ) || function_exists( 'as3cf_pro_init' ) ) ) :

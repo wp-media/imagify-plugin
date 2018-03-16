@@ -6,7 +6,7 @@ $this->print_template( 'notice-header', array(
 ) );
 
 $filesystem  = imagify_get_filesystem();
-$backup_path = imagify_make_file_path_relative( get_imagify_backup_dir_path( true ) );
+$backup_path = $filesystem->make_path_relative( get_imagify_backup_dir_path( true ) );
 
 if ( $filesystem->exists( get_imagify_backup_dir_path() ) ) {
 	/* translators: %s is a file path. */

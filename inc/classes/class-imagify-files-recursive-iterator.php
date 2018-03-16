@@ -17,7 +17,7 @@ class Imagify_Files_Recursive_Iterator extends RecursiveFilterIterator {
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * Check whether the current element of the iterator is acceptable.
@@ -62,7 +62,7 @@ class Imagify_Files_Recursive_Iterator extends RecursiveFilterIterator {
 		if ( $has_extension_method ) {
 			$file_extension = strtolower( $this->current()->getExtension() );
 		} else {
-			$file_extension = strtolower( pathinfo( $file_path, PATHINFO_EXTENSION ) );
+			$file_extension = strtolower( imagify_get_filesystem()->path_info( $file_path, 'extension' ) );
 		}
 
 		return preg_match( '@^' . $extensions . '$@', $file_extension );

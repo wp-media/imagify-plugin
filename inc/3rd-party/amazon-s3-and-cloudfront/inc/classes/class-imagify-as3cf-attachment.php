@@ -14,7 +14,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 
 	/**
 	 * Tell if AS3CF settings will be used for this attachment.
@@ -86,7 +86,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		if ( $size_file ) {
 			// It's not the full size.
-			$file_path = dirname( $file_path ) . '/' . $size_file;
+			$file_path = imagify_get_filesystem()->dir_path( $file_path ) . $size_file;
 		}
 
 		return $file_path;
@@ -122,7 +122,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		if ( $size_file ) {
 			// It's not the full size.
-			$file_url = trailingslashit( dirname( $file_url ) ) . $size_file;
+			$file_url = imagify_get_filesystem()->dir_path( $file_url ) . $size_file;
 		}
 
 		return $file_url;
@@ -202,11 +202,11 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		$resized = $this->maybe_resize( $attachment_path );
 
 		if ( $resized ) {
-			$size = @getimagesize( $attachment_path );
+			$size = $filesystem->get_image_size( $attachment_path );
 
-			if ( isset( $size[0], $size[1] ) ) {
-				$metadata['width']  = $size[0];
-				$metadata['height'] = $size[1];
+			if ( $size ) {
+				$metadata['width']  = $size['width'];
+				$metadata['height'] = $size['height'];
 				$metadata_changed   = true;
 			}
 		}
@@ -538,7 +538,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		// Create the original image from the backup.
 		$filesystem->copy( $backup_path, $attachment_path, true );
-		imagify_chmod_file( $attachment_path );
+		$filesystem->chmod_file( $attachment_path );
 
 		if ( ! $filesystem->exists( $attachment_path ) ) {
 			return false;
@@ -681,9 +681,10 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	protected function maybe_resize( $attachment_path ) {
 		$do_resize       = get_imagify_option( 'resize_larger' );
 		$resize_width    = get_imagify_option( 'resize_larger_w' );
-		$attachment_size = @getimagesize( $attachment_path );
+		$filesystem      = imagify_get_filesystem();
+		$attachment_size = $filesystem->get_image_size( $attachment_path );
 
-		if ( ! $do_resize || ! isset( $attachment_size[0] ) || $resize_width >= $attachment_size[0] ) {
+		if ( ! $do_resize || ! $attachment_size || $resize_width >= $attachment_size['width'] ) {
 			return false;
 		}
 
@@ -699,10 +700,8 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		$filesystem = imagify_get_filesystem();
-
 		$filesystem->move( $resized_attachment_path, $attachment_path, true );
-		imagify_chmod_file( $attachment_path );
+		$filesystem->chmod_file( $attachment_path );
 
 		// If resized temp file still exists, delete it.
 		if ( $filesystem->exists( $resized_attachment_path ) ) {
@@ -814,9 +813,9 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		}
 
 		$filesystem       = imagify_get_filesystem();
-		$directory        = dirname( $s3_object['key'] );
-		$directory        = '.' === $directory || '' === $directory ? '' : $directory . '/';
-		$s3_object['key'] = $directory . wp_basename( $file_path );
+		$directory        = $filesystem->dir_path( $s3_object['key'] );
+		$directory        = $filesystem->is_root( $directory ) ? '' : $directory;
+		$s3_object['key'] = $directory . $filesystem->file_name( $file_path );
 
 		// Retrieve file from S3.
 		$as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $file_path );

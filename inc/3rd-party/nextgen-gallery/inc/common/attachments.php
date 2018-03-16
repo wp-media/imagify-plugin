@@ -99,7 +99,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 		$ngg_backup_path = $imagify_image->get_raw_backup_path();
 
 		imagify_get_filesystem()->copy( $attachment_backup_path, $ngg_backup_path, true );
-		imagify_chmod_file( $ngg_backup_path );
+		imagify_get_filesystem()->chmod_file( $ngg_backup_path );
 	}
 
 	// Optimize thumbnails.

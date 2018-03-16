@@ -14,7 +14,7 @@ class Imagify_Custom_Folders {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -37,7 +37,8 @@ class Imagify_Custom_Folders {
 			return $backup_dir;
 		}
 
-		$backup_dir = imagify_get_abspath() . 'imagify-backup/';
+		$filesystem = imagify_get_filesystem();
+		$backup_dir = $filesystem->get_abspath() . 'imagify-backup/';
 
 		/**
 		 * Filter the backup directory path (custom folders).
@@ -48,7 +49,7 @@ class Imagify_Custom_Folders {
 		 * @param string $backup_dir The backup directory path.
 		*/
 		$backup_dir = apply_filters( 'imagify_files_backup_directory', $backup_dir );
-		$backup_dir = trailingslashit( wp_normalize_path( $backup_dir ) );
+		$backup_dir = $filesystem->normalize_dir_path( $backup_dir );
 
 		return $backup_dir;
 	}
@@ -63,14 +64,7 @@ class Imagify_Custom_Folders {
 	 * @return bool
 	 */
 	public static function backup_dir_is_writable() {
-		if ( ! get_imagify_backup_dir_path() ) {
-			return false;
-		}
-
-		$filesystem     = imagify_get_filesystem();
-		$has_backup_dir = wp_mkdir_p( self::get_backup_dir_path() );
-
-		return $has_backup_dir && $filesystem->is_writable( self::get_backup_dir_path() );
+		return imagify_get_filesystem()->make_dir( self::get_backup_dir_path() );
 	}
 
 	/**
@@ -85,7 +79,7 @@ class Imagify_Custom_Folders {
 	 */
 	public static function get_file_backup_path( $file_path ) {
 		$file_path  = wp_normalize_path( (string) $file_path );
-		$abspath    = imagify_get_abspath();
+		$abspath    = imagify_get_filesystem()->get_abspath();
 		$backup_dir = self::get_backup_dir_path();
 
 		if ( ! $file_path ) {
@@ -134,17 +128,17 @@ class Imagify_Custom_Folders {
 		}
 
 		if ( empty( $args['file_date'] ) || '0000-00-00 00:00:00' === $args['file_date'] ) {
-			$args['file_date'] = imagify_get_file_date( $args['file_path'] );
+			$args['file_date'] = $filesystem->get_date( $args['file_path'] );
 		}
 
 		if ( empty( $args['mime_type'] ) ) {
-			$args['mime_type'] = imagify_get_mime_type_from_file( $args['file_path'] );
+			$args['mime_type'] = $filesystem->get_mime_type( $args['file_path'] );
 		}
 
 		if ( ( empty( $args['width'] ) || empty( $args['height'] ) ) && strpos( $args['mime_type'], 'image/' ) === 0 ) {
-			$file_size      = @getimagesize( $args['file_path'] );
-			$args['width']  = $file_size && isset( $file_size[0] ) ? $file_size[0] : 0;
-			$args['height'] = $file_size && isset( $file_size[1] ) ? $file_size[1] : 0;
+			$file_size      = $filesystem->get_image_size( $args['file_path'] );
+			$args['width']  = $file_size ? $file_size['width']  : 0;
+			$args['height'] = $file_size ? $file_size['height'] : 0;
 		}
 
 		if ( empty( $args['hash'] ) ) {
@@ -329,18 +323,18 @@ class Imagify_Custom_Folders {
 		if ( $new_data['modified'] ) {
 			// Delete all optimization data and update file data.
 			$modified  = true;
-			$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : imagify_get_mime_type_from_file( $file_path );
+			$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : $filesystem->get_mime_type( $file_path );
 
 			if ( strpos( $mime_type, 'image/' ) === 0 ) {
-				$size = @getimagesize( $file_path );
+				$size = $filesystem->get_image_size( $file_path );
 			} else {
 				$size = false;
 			}
 
 			$new_data = array_merge( $new_data, array(
-				'file_date'          => imagify_get_file_date( $file_path ),
-				'width'              => $size && isset( $size[0] ) ? $size[0] : 0,
-				'height'             => $size && isset( $size[1] ) ? $size[1] : 0,
+				'file_date'          => $filesystem->get_date( $file_path ),
+				'width'              => $size ? $size['width']  : 0,
+				'height'             => $size ? $size['height'] : 0,
 				'original_size'      => $filesystem->size( $file_path ),
 				'optimized_size'     => null,
 				'percent'            => null,
@@ -356,19 +350,19 @@ class Imagify_Custom_Folders {
 		} else {
 			// Update file data to make sure nothing is missing.
 			$path      = $backup_path ? $backup_path : $file_path;
-			$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : imagify_get_mime_type_from_file( $path );
-			$file_date = ! empty( $old_data['file_date'] ) && '0000-00-00 00:00:00' !== $old_data['file_date'] ? $old_data['file_date'] : imagify_get_file_date( $path );
+			$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : $filesystem->get_mime_type( $path );
+			$file_date = ! empty( $old_data['file_date'] ) && '0000-00-00 00:00:00' !== $old_data['file_date'] ? $old_data['file_date'] : $filesystem->get_date( $path );
 
 			if ( strpos( $mime_type, 'image/' ) === 0 ) {
-				$size = @getimagesize( $path );
+				$size = $filesystem->get_image_size( $path );
 			} else {
 				$size = false;
 			}
 
 			$new_data = array_merge( $new_data, array(
 				'file_date'     => $file_date,
-				'width'         => $size && isset( $size[0] ) ? $size[0] : 0,
-				'height'        => $size && isset( $size[1] ) ? $size[1] : 0,
+				'width'         => $size ? $size['width']  : 0,
+				'height'        => $size ? $size['height'] : 0,
 				'original_size' => $filesystem->size( $path ),
 			) );
 		}
@@ -1042,6 +1036,7 @@ class Imagify_Custom_Folders {
 			return;
 		}
 
+		$filesystem         = imagify_get_filesystem();
 		$file_ids_by_folder = array();
 		$active_folders     = self::sort_folders( $active_folders, true );
 
@@ -1050,7 +1045,7 @@ class Imagify_Custom_Folders {
 			$inactive_file['full_path'] = Imagify_Files_Scan::remove_placeholder( $inactive_file['path'] );
 
 			if ( $has_abspath ) {
-				$inactive_file['dirname'] = trailingslashit( dirname( $inactive_file['full_path'] ) );
+				$inactive_file['dirname'] = $filesystem->dir_path( $inactive_file['full_path'] );
 			}
 
 			foreach ( $active_folders as $active_folder ) {

@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -418,7 +418,7 @@ class Imagify extends Imagify_Deprecated {
 		try {
 			$ch = curl_init();
 
-			if ( isset( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && file_exists( $args['post_data']['image'] ) ) {
+			if ( isset( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && imagify_get_filesystem()->exists( $args['post_data']['image'] ) ) {
 				$args['post_data']['image'] = curl_file_create( $args['post_data']['image'] );
 			}
 
