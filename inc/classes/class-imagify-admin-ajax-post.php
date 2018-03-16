@@ -12,14 +12,19 @@ class Imagify_Admin_Ajax_Post {
 	/**
 	 * Class version.
 	 *
-	 * @var string
+	 * @var    string
+	 * @since  1.6.11
+	 * @author Grégory Viguier
 	 */
 	const VERSION = '1.0.2';
 
 	/**
 	 * Actions to be triggered on admin ajax and admin post.
 	 *
-	 * @var array
+	 * @var    array
+	 * @since  1.6.11
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected $ajax_post_actions = array(
 		'imagify_manual_upload',
@@ -35,7 +40,10 @@ class Imagify_Admin_Ajax_Post {
 	/**
 	 * Actions to be triggered only on admin ajax.
 	 *
-	 * @var array
+	 * @var    array
+	 * @since  1.6.11
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected $ajax_only_actions = array(
 		'imagify_bulk_upload',
@@ -63,7 +71,10 @@ class Imagify_Admin_Ajax_Post {
 	/**
 	 * Actions to be triggered only on admin post.
 	 *
-	 * @var array
+	 * @var    array
+	 * @since  1.6.11
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected $post_only_actions = array(
 		'imagify_scan_custom_folders',
@@ -90,7 +101,9 @@ class Imagify_Admin_Ajax_Post {
 	/**
 	 * The constructor.
 	 *
-	 * @return void
+	 * @since  1.6.11
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected function __construct() {
 		$this->filesystem = Imagify_Filesystem::get_instance();
@@ -105,6 +118,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get the main Instance.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return object Main instance.
@@ -121,6 +135,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Launch the hooks.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function init() {
@@ -150,6 +165,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize all thumbnails of a specific image with the manual method.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_manual_upload_callback() {
@@ -179,6 +195,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize all thumbnails of a specific image with a different optimization level.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_manual_override_upload_callback() {
@@ -211,6 +228,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize one or some thumbnails that are not optimized yet.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function imagify_optimize_missing_sizes_callback() {
@@ -240,6 +258,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Process a restoration to the original attachment.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_restore_upload_callback() {
@@ -270,6 +289,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize all thumbnails of a specific image with the bulk method.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_bulk_upload_callback() {
@@ -570,6 +590,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize image on picture uploading with async request.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Julio Potier
 	 * @see    _imagify_optimize_attachment()
 	 */
@@ -595,6 +616,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize image on picture editing (resize, crop...) with async request.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Julio Potier
 	 */
 	public function imagify_async_optimize_save_image_editor_file_callback() {
@@ -647,6 +669,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get all unoptimized attachment ids.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_get_unoptimized_attachment_ids_callback() {
@@ -805,6 +828,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get all unoptimized file ids.
 	 *
 	 * @since  1.7
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function imagify_get_unoptimized_file_ids_callback() {
@@ -921,6 +945,7 @@ class Imagify_Admin_Ajax_Post {
 	 * This is used to display an error message in the plugin's settings page.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function imagify_check_backup_dir_is_writable_callback() {
@@ -937,6 +962,7 @@ class Imagify_Admin_Ajax_Post {
 	 * When XML-RPC is used, a current user is set, but no cookies are set, so they cannot be sent with the request. Instead we stored the user ID in a transient.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Grégory Viguier
 	 * @see    imagify_do_async_job()
 	 */
@@ -987,6 +1013,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Create a new Imagify account.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_signup_callback() {
@@ -1020,6 +1047,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Check the API key validity.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_check_api_key_validity_callback() {
@@ -1045,6 +1073,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get admin bar profile output.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_get_admin_bar_profile_callback() {
@@ -1130,6 +1159,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get pricings from API for Onetime and Plans at the same time.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Geoffrey Crofte
 	 */
 	public function imagify_get_prices_callback() {
@@ -1156,6 +1186,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Check Coupon code on modal popin.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Geoffrey Crofte
 	 */
 	public function imagify_check_coupon_callback() {
@@ -1195,6 +1226,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get estimated sizes from the WordPress library.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Geoffrey Crofte
 	 */
 	public function imagify_get_images_counts_callback() {
@@ -1219,6 +1251,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Estimate sizes and update the options values for them.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Remy Perona
 	 */
 	public function imagify_update_estimate_sizes_callback() {
@@ -1240,6 +1273,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get the Imagify User data.
 	 *
 	 * @since  1.7
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function imagify_get_user_data_callback() {
@@ -1270,6 +1304,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get files and folders that are direct children of a given folder.
 	 *
 	 * @since  1.7
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function imagify_get_files_tree_callback() {
