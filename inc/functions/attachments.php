@@ -172,7 +172,7 @@ function get_imagify_backup_dir_path( $bypass_error = false ) {
 	 * @param string $backup_dir The backup directory path.
 	*/
 	$backup_dir = apply_filters( 'imagify_backup_directory', $backup_dir );
-	$backup_dir = trailingslashit( wp_normalize_path( $backup_dir ) );
+	$backup_dir = imagify_get_filesystem()->normalize_dir_path( $backup_dir );
 
 	return $backup_dir;
 }
@@ -186,14 +186,7 @@ function get_imagify_backup_dir_path( $bypass_error = false ) {
  * @return bool
  */
 function imagify_backup_dir_is_writable() {
-	if ( ! get_imagify_backup_dir_path() ) {
-		return false;
-	}
-
-	$filesystem     = imagify_get_filesystem();
-	$has_backup_dir = wp_mkdir_p( get_imagify_backup_dir_path() );
-
-	return $has_backup_dir && $filesystem->is_writable( get_imagify_backup_dir_path() );
+	return imagify_get_filesystem()->make_dir( get_imagify_backup_dir_path() );
 }
 
 /**
@@ -267,7 +260,7 @@ function get_imagify_attachment_url( $file_path ) {
 
 	if ( false !== strpos( '/' . $file_path, '/wp-content/uploads/' ) ) {
 		// Get the directory name relative to the basedir (back compat for pre-2.7 uploads).
-		return trailingslashit( $upload_baseurl . _wp_get_attachment_relative_path( $file_path ) ) . basename( $file_path );
+		return trailingslashit( $upload_baseurl . _wp_get_attachment_relative_path( $file_path ) ) . imagify_get_filesystem()->file_name( $file_path );
 	}
 
 	// It's a newly-uploaded file, therefore $file is relative to the basedir.
@@ -339,23 +332,7 @@ function get_imagify_thumbnail_sizes() {
  * @return string|bool        The path. False on failure.
  */
 function get_imagify_upload_basedir( $bypass_error = false ) {
-	static $upload_basedir;
-	static $upload_basedir_or_error;
-
-	if ( isset( $upload_basedir ) ) {
-		return $bypass_error ? $upload_basedir : $upload_basedir_or_error;
-	}
-
-	$uploads        = wp_upload_dir();
-	$upload_basedir = trailingslashit( wp_normalize_path( $uploads['basedir'] ) );
-
-	if ( false !== $uploads['error'] ) {
-		$upload_basedir_or_error = false;
-	} else {
-		$upload_basedir_or_error = $upload_basedir;
-	}
-
-	return $bypass_error ? $upload_basedir : $upload_basedir_or_error;
+	return imagify_get_filesystem()->get_upload_basedir( $bypass_error );
 }
 
 /**
@@ -364,25 +341,10 @@ function get_imagify_upload_basedir( $bypass_error = false ) {
  * @since  1.6.7
  * @author Grégory Viguier
  *
- * @return string|bool The path. False on failure.
+ * @return string|bool The URL. False on failure.
  */
 function get_imagify_upload_baseurl() {
-	static $upload_baseurl;
-
-	if ( isset( $upload_baseurl ) ) {
-		return $upload_baseurl;
-	}
-
-	$uploads = wp_upload_dir();
-
-	if ( false !== $uploads['error'] ) {
-		$upload_baseurl = false;
-		return $upload_baseurl;
-	}
-
-	$upload_baseurl = trailingslashit( $uploads['baseurl'] );
-
-	return $upload_baseurl;
+	return imagify_get_filesystem()->get_upload_baseurl();
 }
 
 /**

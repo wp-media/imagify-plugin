@@ -560,6 +560,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 	// Total number of thumbnails.
 	$partial_total_intermediate_images = 0;
 
+	$filesystem            = imagify_get_filesystem();
 	$is_active_for_network = imagify_is_active_for_network();
 	$disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
 
@@ -603,7 +604,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 			}
 
 			if ( $sizes ) {
-				$full_dirname = dirname( $files['full'] );
+				$full_dirname = $filesystem->dir_path( $files['full'] );
 
 				foreach ( $sizes as $size_key => $size_data ) {
 					$files[ $size_key ] = $full_dirname . '/' . $size_data['file'];
@@ -630,8 +631,8 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 			$partial_total_intermediate_images += $size_and_count['thumbnails'];
 		} else {
 			foreach ( $files as $file ) {
-				if ( file_exists( $file ) ) {
-					$partial_size_images += filesize( $file );
+				if ( $filesystem->exists( $file ) ) {
+					$partial_size_images += $filesystem->size( $file );
 				}
 			}
 

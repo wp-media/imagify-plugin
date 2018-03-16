@@ -62,9 +62,9 @@ function do_imagify( $file_path, $args = array() ) {
 	}
 
 	// Check that the file is writable.
-	if ( ! wp_is_writable( dirname( $file_path ) ) ) {
+	if ( ! $filesystem->is_writable( $filesystem->dir_path( $file_path ) ) ) {
 		/* translators: %s is a file path. */
-		$errors->add( 'not_writable', sprintf( __( '%s is not writable', 'imagify' ), dirname( $file_path ) ) );
+		$errors->add( 'not_writable', sprintf( __( '%s is not writable', 'imagify' ), $filesystem->make_path_relative( $filesystem->dir_path( $file_path ) ) ) );
 		return $errors;
 	}
 
@@ -74,7 +74,7 @@ function do_imagify( $file_path, $args = array() ) {
 	// Check that file exists.
 	if ( 0 === $file_size ) {
 		/* translators: %s is a file path. */
-		$errors->add( 'image_not_found', sprintf( __( 'Skipped (%s), image not found.', 'imagify' ), '<code>' . imagify_make_file_path_relative( $file_path ) . '</code>' ) );
+		$errors->add( 'image_not_found', sprintf( __( 'Skipped (%s), image not found.', 'imagify' ), '<code>' . $filesystem->make_path_relative( $file_path ) . '</code>' ) );
 		return $errors;
 	}
 
@@ -124,7 +124,7 @@ function do_imagify( $file_path, $args = array() ) {
 	}
 
 	$filesystem->move( $temp_file, $file_path, true );
-	imagify_chmod_file( $file_path );
+	$filesystem->chmod_file( $file_path );
 
 	// If temp file still exists, delete it.
 	if ( $filesystem->exists( $temp_file ) ) {
@@ -225,7 +225,7 @@ function imagify_backup_file( $file_path, $backup_path = null ) {
 	// Make sure the source file exists.
 	if ( ! $filesystem->exists( $file_path ) ) {
 		return new WP_Error( 'source_doesnt_exist', __( 'The file to backup does not exist.', 'imagify' ), array(
-			'file_path' => imagify_make_file_path_relative( $file_path ),
+			'file_path' => $filesystem->make_path_relative( $file_path ),
 		) );
 	}
 
@@ -244,7 +244,7 @@ function imagify_backup_file( $file_path, $backup_path = null ) {
 	}
 
 	// Create sub-directories.
-	wp_mkdir_p( dirname( $backup_path ) );
+	$filesystem->make_dir( $filesystem->dir_path( $backup_path ) );
 
 	/**
 	 * Allow to overwrite the backup file if it already exists.
@@ -264,8 +264,8 @@ function imagify_backup_file( $file_path, $backup_path = null ) {
 	// Make sure the backup copy exists.
 	if ( ! $filesystem->exists( $backup_path ) ) {
 		return new WP_Error( 'backup_doesnt_exist', __( 'The file could not be saved.', 'imagify' ), array(
-			'file_path'   => imagify_make_file_path_relative( $file_path ),
-			'backup_path' => imagify_make_file_path_relative( $backup_path ),
+			'file_path'   => $filesystem->make_path_relative( $file_path ),
+			'backup_path' => $filesystem->make_path_relative( $backup_path ),
 		) );
 	}
 

@@ -13,7 +13,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.3';
+	const VERSION = '1.3.1';
 
 	/**
 	 * The attachment ID.
@@ -54,6 +54,16 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	protected $is_extension_supported;
 
 	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
+
+	/**
 	 * The constructor.
 	 *
 	 * @since  1.0
@@ -75,7 +85,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			$this->id = $post->ID;
 		}
 
-		$this->id = (int) $this->id;
+		$this->id         = (int) $this->id;
+		$this->filesystem = Imagify_Filesystem::get_instance();
 	}
 
 	/**
@@ -150,7 +161,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 		$backup_path = $this->get_raw_backup_path();
 
-		if ( $backup_path && imagify_get_filesystem()->exists( $backup_path ) ) {
+		if ( $backup_path && $this->filesystem->exists( $backup_path ) ) {
 			return $backup_path;
 		}
 
@@ -288,15 +299,14 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @since  1.0
 	 * @access public
 	 *
-	 * @return string
+	 * @return string|null
 	 */
 	public function get_extension() {
 		if ( ! $this->is_valid() ) {
 			return '';
 		}
 
-		$fullsize_path = $this->get_original_path();
-		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
+		return $this->filesystem->path_info( $this->get_original_path(), 'extension' );
 	}
 
 	/**
@@ -396,10 +406,10 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 			if ( ! $filepath ) {
 				$filepath = $this->get_original_path();
-				$filepath = $filepath && imagify_get_filesystem()->exists( $filepath ) ? $filepath : false;
+				$filepath = $filepath && $this->filesystem->exists( $filepath ) ? $filepath : false;
 			}
 
-			$size = $filepath ? imagify_get_filesystem()->size( $filepath ) : 0;
+			$size = $filepath ? $this->filesystem->size( $filepath ) : 0;
 		}
 
 		if ( $human_format ) {
@@ -429,8 +439,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 		if ( ! $size ) {
 			$filepath = $this->get_original_path();
-			$filepath = $filepath && imagify_get_filesystem()->exists( $filepath ) ? $filepath : false;
-			$size     = $filepath ? imagify_get_filesystem()->size( $filepath ) : 0;
+			$filepath = $filepath && $this->filesystem->exists( $filepath ) ? $filepath : false;
+			$size     = $filepath ? $this->filesystem->size( $filepath ) : 0;
 		}
 
 		if ( $human_format ) {
@@ -565,8 +575,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		$filepath = $this->get_original_path();
 		$size     = 0;
 
-		if ( $filepath && imagify_get_filesystem()->exists( $filepath ) ) {
-			$size = imagify_get_filesystem()->size( $filepath );
+		if ( $filepath && $this->filesystem->exists( $filepath ) ) {
+			$size = $this->filesystem->size( $filepath );
 		}
 
 		return $size > IMAGIFY_MAX_BYTES;
@@ -618,7 +628,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		$backup_path = $this->get_backup_path();
 
 		if ( $backup_path ) {
-			imagify_get_filesystem()->delete( $backup_path );
+			$this->filesystem->delete( $backup_path );
 		}
 	}
 
@@ -677,8 +687,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return array();
 		}
 
-		$orig_f = pathinfo( $orig_f );
-		$orig_f = $orig_f['filename'] . '-{%suffix%}.' . $orig_f['extension'];
+		$orig_f = $this->filesystem->path_info( $orig_f );
+		$orig_f = $orig_f['file_base'] . '-{%suffix%}.' . $orig_f['extension'];
 
 		// Test if the missing sizes are needed.
 		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
@@ -769,6 +779,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * Resize an image if bigger than the maximum width defined in the settings.
 	 *
 	 * @since  1.5.7
+	 * @since  1.7.1 Keys for width and height in $attachment_sizes are now 'width' and 'height' instead of 0 and 1.
 	 * @access public
 	 * @author Remy Perona
 	 *
@@ -785,19 +796,19 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		// Prevent removal of the exif/meta data when resizing (only works with Imagick).
 		add_filter( 'image_strip_meta', '__return_false' );
 
-		$new_sizes = wp_constrain_dimensions( $attachment_sizes[0], $attachment_sizes[1], $max_width );
+		$new_sizes = wp_constrain_dimensions( $attachment_sizes['width'], $attachment_sizes['height'], $max_width );
 		$editor    = wp_get_image_editor( $attachment_path );
 
 		if ( is_wp_error( $editor ) ) {
 			return $editor;
 		}
 
-		$image_type = pathinfo( $attachment_path, PATHINFO_EXTENSION );
+		$image_type = strtolower( (string) $this->filesystem->path_info( $attachment_path, 'extension' ) );
 
 		// Try to correct for auto-rotation if the info is available.
-		if ( function_exists( 'exif_read_data' ) && ( 'jpg' === $image_type || 'jpe' === $image_type || 'jpeg' === $image_type ) ) {
-			$exif        = @exif_read_data( $attachment_path );
-			$orientation = is_array( $exif ) && array_key_exists( 'Orientation', $exif ) ? $exif['Orientation'] : 0;
+		if ( $this->filesystem->can_get_exif() && ( 'jpg' === $image_type || 'jpe' === $image_type || 'jpeg' === $image_type ) ) {
+			$exif        = $this->filesystem->get_image_exif( $attachment_path );
+			$orientation = isset( $exif['Orientation'] ) ? (int) $exif['Orientation'] : 1;
 
 			switch ( $orientation ) {
 				case 3:

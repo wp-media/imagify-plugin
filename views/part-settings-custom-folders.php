@@ -15,7 +15,7 @@ $themes          = array();
 if ( $custom_folders ) {
 	$custom_folders = array_combine( $custom_folders, $custom_folders );
 	$custom_folders = array_map( array( 'Imagify_Files_Scan', 'remove_placeholder' ), $custom_folders );
-	$custom_folders = array_map( 'imagify_make_file_path_relative', $custom_folders );
+	$custom_folders = array_map( array( $this->filesystem, 'make_path_relative' ), $custom_folders );
 	$custom_folders = array_map( 'untrailingslashit', $custom_folders );
 	natcasesort( $custom_folders );
 	$custom_folders = array_map( 'trailingslashit', $custom_folders );
@@ -41,7 +41,7 @@ if ( ! is_network_admin() ) {
 			$theme = array(
 				'name'  => $theme->display( 'Name' ),
 				'path'  => Imagify_Files_Scan::add_placeholder( $theme_path ),
-				'label' => imagify_make_file_path_relative( $theme_path ),
+				'label' => $this->filesystem->make_path_relative( $theme_path ),
 			);
 
 			$themes[ $theme['path'] ] = $theme;

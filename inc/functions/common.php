@@ -116,6 +116,18 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
 }
 
 /**
+ * Get WP Direct filesystem object. Also define chmod constants if not done yet.
+ *
+ * @since  1.6.5
+ * @author Grégory Viguier
+ *
+ * @return object A Imagify_Filesystem object.
+ */
+function imagify_get_filesystem() {
+	return Imagify_Filesystem::get_instance();
+}
+
+/**
  * Tell if the current user can optimize custom folders.
  *
  * @since  1.7
@@ -191,6 +203,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Files_Recursive_Iterator' => 1,
 		'Imagify_Files_Scan'               => 1,
 		'Imagify_Files_Stats'              => 1,
+		'Imagify_Filesystem'               => 1,
 		'Imagify_Folders_DB'               => 1,
 		'Imagify_Notices'                  => 1,
 		'Imagify_Options'                  => 1,

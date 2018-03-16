@@ -5,10 +5,9 @@ $this->print_template( 'notice-header', array(
 	'classes' => array( 'error' ),
 ) );
 
-$filesystem  = imagify_get_filesystem();
-$backup_path = imagify_make_file_path_relative( get_imagify_backup_dir_path( true ) );
+$backup_path = $this->filesystem->make_path_relative( get_imagify_backup_dir_path( true ) );
 
-if ( $filesystem->exists( get_imagify_backup_dir_path() ) ) {
+if ( $this->filesystem->exists( get_imagify_backup_dir_path() ) ) {
 	/* translators: %s is a file path. */
 	$message = __( 'The backup folder %s is not writable by the server, original images cannot be saved!', 'imagify' );
 } else {

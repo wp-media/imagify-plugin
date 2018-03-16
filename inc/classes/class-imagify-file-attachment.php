@@ -16,7 +16,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * The attachment SQL DB class.
@@ -48,6 +48,8 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		} else {
 			$this->invalidate_row();
 		}
+
+		$this->filesystem = Imagify_Filesystem::get_instance();
 	}
 
 	/**
@@ -119,7 +121,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		return site_url( '/' ) . imagify_make_file_path_relative( $this->get_raw_backup_path() );
+		return site_url( '/' ) . $this->filesystem->make_path_relative( $this->get_raw_backup_path() );
 	}
 
 	/**
@@ -299,10 +301,10 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 
 			if ( ! $file_path ) {
 				$file_path = $this->get_original_path();
-				$file_path = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
+				$file_path = $file_path && $this->filesystem->exists( $file_path ) ? $file_path : false;
 			}
 
-			$size = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+			$size = $file_path ? $this->filesystem->size( $file_path ) : 0;
 		}
 
 		if ( $human_format ) {
@@ -334,8 +336,8 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			$size = $row['optimized_size'];
 		} else {
 			$file_path = $this->get_original_path();
-			$file_path = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
-			$size      = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+			$file_path = $file_path && $this->filesystem->exists( $file_path ) ? $file_path : false;
+			$size      = $file_path ? $this->filesystem->size( $file_path ) : 0;
 		}
 
 		if ( $human_format ) {
@@ -525,7 +527,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		// Also set the new file hash.
 		$file_path = $this->get_original_path();
 
-		if ( $file_path && imagify_get_filesystem()->exists( $file_path ) ) {
+		if ( $file_path && $this->filesystem->exists( $file_path ) ) {
 			$imagify_columns['hash'] = md5_file( $file_path );
 		}
 
@@ -576,9 +578,9 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			$data['optimized_size'] = (int) $response->new_size;
 		} else {
 			$file_path = $this->get_original_path();
-			$file_path = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
+			$file_path = $file_path && $this->filesystem->exists( $file_path ) ? $file_path : false;
 
-			$data['optimized_size'] = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+			$data['optimized_size'] = $file_path ? $this->filesystem->size( $file_path ) : 0;
 		}
 
 		if ( $original_size && $data['optimized_size'] ) {
@@ -706,8 +708,8 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		do_action( 'before_imagify_restore_file', $this->id );
 
 		// Create the original image from the backup.
-		imagify_get_filesystem()->copy( $backup_path, $file_path, true );
-		imagify_chmod_file( $file_path );
+		$this->filesystem->copy( $backup_path, $file_path, true );
+		$this->filesystem->chmod_file( $file_path );
 
 		// Remove old optimization data.
 		$this->delete_imagify_data();
