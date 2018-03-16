@@ -7,7 +7,6 @@ if ( ! imagify_can_optimize_custom_folders() ) {
 
 // Get folders, remove excluded ones, sort them, add labels.
 $custom_folders = Imagify_Folders_DB::get_instance()->get_active_folders_column( 'path' );
-$filesystem     = imagify_get_filesystem();
 $themes         = array();
 
 if ( $custom_folders ) {
@@ -17,7 +16,7 @@ if ( $custom_folders ) {
 }
 
 if ( $custom_folders ) {
-	$custom_folders = array_map( array( $filesystem, 'make_path_relative' ), $custom_folders );
+	$custom_folders = array_map( array( $this->filesystem, 'make_path_relative' ), $custom_folders );
 	$custom_folders = array_map( 'untrailingslashit', $custom_folders );
 	natcasesort( $custom_folders );
 	$custom_folders = array_map( 'trailingslashit', $custom_folders );
@@ -43,7 +42,7 @@ if ( ! is_network_admin() ) {
 			$theme = array(
 				'name'  => $theme->display( 'Name' ),
 				'path'  => Imagify_Files_Scan::add_placeholder( $theme_path ),
-				'label' => $filesystem->make_path_relative( $theme_path ),
+				'label' => $this->filesystem->make_path_relative( $theme_path ),
 			);
 
 			$themes[ $theme['path'] ] = $theme;
