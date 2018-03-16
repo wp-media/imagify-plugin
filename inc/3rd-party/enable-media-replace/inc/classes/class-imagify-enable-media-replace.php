@@ -38,6 +38,16 @@ class Imagify_Enable_Media_Replace {
 	protected $old_backup_path;
 
 	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
+
+	/**
 	 * The single instance of the class.
 	 *
 	 * @var object
@@ -68,7 +78,9 @@ class Imagify_Enable_Media_Replace {
 	 * @since  1.6.9
 	 * @author Grégory Viguier
 	 */
-	protected function __construct() {}
+	protected function __construct() {
+		$this->filesystem = Imagify_Filesystem::get_instance();
+	}
 
 	/**
 	 * Launch the hooks before the files and data are replaced.
@@ -156,9 +168,7 @@ class Imagify_Enable_Media_Replace {
 		/**
 		 * Delete the old backup file.
 		 */
-		$filesystem = imagify_get_filesystem();
-
-		if ( ! $this->old_backup_path || ! $filesystem->exists( $this->old_backup_path ) ) {
+		if ( ! $this->old_backup_path || ! $this->filesystem->exists( $this->old_backup_path ) ) {
 			// The user didn't choose to rename the files, or there is no old backup.
 			$this->old_backup_path = null;
 			return $return_url;
@@ -173,7 +183,7 @@ class Imagify_Enable_Media_Replace {
 		}
 
 		// Finally, delete the old backup file.
-		$filesystem->delete( $this->old_backup_path );
+		$this->filesystem->delete( $this->old_backup_path );
 
 		$this->old_backup_path = null;
 		return $return_url;

@@ -54,6 +54,16 @@ class Imagify_Views {
 	protected $list_table;
 
 	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
+
+	/**
 	 * The single instance of the class.
 	 *
 	 * @var    object
@@ -78,6 +88,7 @@ class Imagify_Views {
 		$this->slug_settings = IMAGIFY_SLUG;
 		$this->slug_bulk     = IMAGIFY_SLUG . '-bulk-optimization';
 		$this->slug_files    = IMAGIFY_SLUG . '-files';
+		$this->filesystem    = Imagify_Filesystem::get_instance();
 	}
 
 	/**
@@ -441,7 +452,7 @@ class Imagify_Views {
 		$path = str_replace( '_', '-', $template );
 		$path = IMAGIFY_PATH . 'views/' . $template . '.php';
 
-		if ( ! imagify_get_filesystem()->exists( $path ) ) {
+		if ( ! $this->filesystem->exists( $path ) ) {
 			return false;
 		}
 

@@ -28,6 +28,16 @@ class Imagify_Files_Iterator extends FilterIterator {
 	protected $include_folders;
 
 	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
+
+	/**
 	 * Check whether the current element of the iterator is acceptable.
 	 *
 	 * @since  1.7
@@ -40,6 +50,7 @@ class Imagify_Files_Iterator extends FilterIterator {
 	public function __construct( $iterator, $include_folders = true ) {
 		parent::__construct( $iterator );
 		$this->include_folders = (bool) $include_folders;
+		$this->filesystem      = Imagify_Filesystem::get_instance();
 	}
 
 	/**
@@ -85,7 +96,7 @@ class Imagify_Files_Iterator extends FilterIterator {
 		if ( $has_extension_method ) {
 			$file_extension = strtolower( $this->current()->getExtension() );
 		} else {
-			$file_extension = strtolower( imagify_get_filesystem()->path_info( $file_path, 'extension' ) );
+			$file_extension = strtolower( $this->filesystem->path_info( $file_path, 'extension' ) );
 		}
 
 		return preg_match( '@^' . $extensions . '$@', $file_extension );

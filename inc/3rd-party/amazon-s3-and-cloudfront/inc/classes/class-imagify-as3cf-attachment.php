@@ -33,7 +33,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	/**
 	 * The name of the transient that tells if optimization is processing.
 	 *
-	 * @var string.
+	 * @var string
 	 */
 	protected $optimization_state_transient;
 
@@ -86,7 +86,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		if ( $size_file ) {
 			// It's not the full size.
-			$file_path = imagify_get_filesystem()->dir_path( $file_path ) . $size_file;
+			$file_path = $this->filesystem->dir_path( $file_path ) . $size_file;
 		}
 
 		return $file_path;
@@ -122,7 +122,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		if ( $size_file ) {
 			// It's not the full size.
-			$file_url = imagify_get_filesystem()->dir_path( $file_url ) . $size_file;
+			$file_url = $this->filesystem->dir_path( $file_url ) . $size_file;
 		}
 
 		return $file_url;
@@ -175,9 +175,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		$filesystem = imagify_get_filesystem();
-
-		if ( ! $filesystem->exists( $attachment_path ) && ! $this->get_file_from_s3( $attachment_path ) ) {
+		if ( ! $this->filesystem->exists( $attachment_path ) && ! $this->get_file_from_s3( $attachment_path ) ) {
 			// The file doesn't exist and couldn't be retrieved from S3.
 			return false;
 		}
@@ -202,7 +200,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		$resized = $this->maybe_resize( $attachment_path );
 
 		if ( $resized ) {
-			$size = $filesystem->get_image_size( $attachment_path );
+			$size = $this->filesystem->get_image_size( $attachment_path );
 
 			if ( $size ) {
 				$metadata['width']  = $size['width'];
@@ -224,7 +222,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		if ( $this->delete_files ) {
 			$to_delete[] = $attachment_path;
 			// This is used by AS3CF.
-			$bytes       = $filesystem->size( $attachment_path );
+			$bytes       = $this->filesystem->size( $attachment_path );
 
 			if ( false !== $bytes ) {
 				$metadata_changed     = true;
@@ -257,7 +255,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 					$to_delete[] = $thumbnail_path;
 
 					// Even if this size must not be optimized ($disallowed_sizes), we must fetch the file from S3 to get its size.
-					if ( ! $filesystem->exists( $thumbnail_path ) && ! $this->get_file_from_s3( $thumbnail_path ) ) {
+					if ( ! $this->filesystem->exists( $thumbnail_path ) && ! $this->get_file_from_s3( $thumbnail_path ) ) {
 						// Doesn't exist and couldn't be retrieved from S3.
 						$data['sizes'][ $size_key ] = array(
 							'success' => false,
@@ -267,7 +265,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 					}
 
 					// This is used by AS3CF.
-					$bytes = $filesystem->size( $thumbnail_path );
+					$bytes = $this->filesystem->size( $thumbnail_path );
 
 					if ( false !== $bytes ) {
 						$filesize_total += $bytes;
@@ -283,7 +281,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 					continue;
 				}
 
-				if ( ! $this->delete_files && ! $filesystem->exists( $thumbnail_path ) && ! $this->get_file_from_s3( $thumbnail_path ) ) {
+				if ( ! $this->delete_files && ! $this->filesystem->exists( $thumbnail_path ) && ! $this->get_file_from_s3( $thumbnail_path ) ) {
 					// Doesn't exist and couldn't be retrieved from S3.
 					$data['sizes'][ $size_key ] = array(
 						'success' => false,
@@ -390,7 +388,6 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		 * The main file.
 		 */
 		$attachment_path  = $this->get_original_path();
-		$filesystem       = imagify_get_filesystem();
 		$to_delete        = array();
 		$to_skip          = array();
 		$filesize_total   = 0;
@@ -410,7 +407,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			return $result;
 		}
 
-		if ( ! $filesystem->exists( $attachment_path ) && ! $this->get_file_from_s3( $attachment_path ) ) {
+		if ( ! $this->filesystem->exists( $attachment_path ) && ! $this->get_file_from_s3( $attachment_path ) ) {
 			// The file doesn't exist and couldn't be retrieved from S3.
 			if ( ! is_wp_error( $result ) ) {
 				$result = new WP_Error( 'main_file_not_on_s3', __( 'The main image could not be retrieved from Amazon S3.', 'imagify' ), array(
@@ -435,7 +432,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			$to_delete   = array_merge( $to_delete, $to_skip );
 
 			// This is used by AS3CF.
-			$bytes = $filesystem->size( $attachment_path );
+			$bytes = $this->filesystem->size( $attachment_path );
 
 			if ( false !== $bytes ) {
 				$metadata_changed     = true;
@@ -460,7 +457,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 					continue;
 				}
 
-				if ( ! $filesystem->exists( $thumbnail_path ) && ! $this->get_file_from_s3( $thumbnail_path ) ) {
+				if ( ! $this->filesystem->exists( $thumbnail_path ) && ! $this->get_file_from_s3( $thumbnail_path ) ) {
 					// The file doesn't exist and couldn't be retrieved from S3.
 					if ( ! is_wp_error( $result ) ) {
 						$result = new WP_Error( 'thumbnail_not_on_s3', __( 'This size could not be retrieved from Amazon S3.', 'imagify' ), array(
@@ -481,7 +478,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 					$to_delete[] = $thumbnail_path;
 
 					// This is used by AS3CF.
-					$bytes = $filesystem->size( $thumbnail_path );
+					$bytes = $this->filesystem->size( $thumbnail_path );
 
 					if ( false !== $bytes ) {
 						$filesize_total += $bytes;
@@ -530,17 +527,16 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		$backup_path     = $this->get_backup_path();
 		$attachment_path = $this->get_original_path();
-		$filesystem      = imagify_get_filesystem();
 
 		if ( ! $attachment_path ) {
 			return false;
 		}
 
 		// Create the original image from the backup.
-		$filesystem->copy( $backup_path, $attachment_path, true );
-		$filesystem->chmod_file( $attachment_path );
+		$this->filesystem->copy( $backup_path, $attachment_path, true );
+		$this->filesystem->chmod_file( $attachment_path );
 
-		if ( ! $filesystem->exists( $attachment_path ) ) {
+		if ( ! $this->filesystem->exists( $attachment_path ) ) {
 			return false;
 		}
 
@@ -571,7 +567,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		if ( $this->delete_files ) {
 			// This is used by AS3CF.
-			$bytes = $filesystem->size( $attachment_path );
+			$bytes = $this->filesystem->size( $attachment_path );
 
 			if ( false !== $bytes ) {
 				$filesize_total      += $bytes;
@@ -591,7 +587,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 				if ( $this->delete_files ) {
 					// This is used by AS3CF.
-					$bytes = $filesystem->size( $thumbnail_path );
+					$bytes = $this->filesystem->size( $thumbnail_path );
 
 					if ( false !== $bytes ) {
 						$filesize_total += $bytes;
@@ -681,8 +677,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	protected function maybe_resize( $attachment_path ) {
 		$do_resize       = get_imagify_option( 'resize_larger' );
 		$resize_width    = get_imagify_option( 'resize_larger_w' );
-		$filesystem      = imagify_get_filesystem();
-		$attachment_size = $filesystem->get_image_size( $attachment_path );
+		$attachment_size = $this->filesystem->get_image_size( $attachment_path );
 
 		if ( ! $do_resize || ! $attachment_size || $resize_width >= $attachment_size['width'] ) {
 			return false;
@@ -700,15 +695,15 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		$filesystem->move( $resized_attachment_path, $attachment_path, true );
-		$filesystem->chmod_file( $attachment_path );
+		$this->filesystem->move( $resized_attachment_path, $attachment_path, true );
+		$this->filesystem->chmod_file( $attachment_path );
 
 		// If resized temp file still exists, delete it.
-		if ( $filesystem->exists( $resized_attachment_path ) ) {
-			$filesystem->delete( $resized_attachment_path );
+		if ( $this->filesystem->exists( $resized_attachment_path ) ) {
+			$this->filesystem->delete( $resized_attachment_path );
 		}
 
-		return $filesystem->exists( $attachment_path );
+		return $this->filesystem->exists( $attachment_path );
 	}
 
 	/**
@@ -812,15 +807,14 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		$filesystem       = imagify_get_filesystem();
-		$directory        = $filesystem->dir_path( $s3_object['key'] );
-		$directory        = $filesystem->is_root( $directory ) ? '' : $directory;
-		$s3_object['key'] = $directory . $filesystem->file_name( $file_path );
+		$directory        = $this->filesystem->dir_path( $s3_object['key'] );
+		$directory        = $this->filesystem->is_root( $directory ) ? '' : $directory;
+		$s3_object['key'] = $directory . $this->filesystem->file_name( $file_path );
 
 		// Retrieve file from S3.
 		$as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $file_path );
 
-		return $filesystem->exists( $file_path ) ? $file_path : false;
+		return $this->filesystem->exists( $file_path ) ? $file_path : false;
 	}
 
 	/**
@@ -922,13 +916,11 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		$filesystem = imagify_get_filesystem();
-
-		if ( ! $filesystem->exists( $file_path ) ) {
+		if ( ! $this->filesystem->exists( $file_path ) ) {
 			return true;
 		}
 
-		return $filesystem->delete( $file_path, false, 'f' );
+		return $this->filesystem->delete( $file_path, false, 'f' );
 	}
 
 	/**

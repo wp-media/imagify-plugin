@@ -100,7 +100,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 							?>
 							<br/><strong id="backup-dir-is-writable" class="imagify-error<?php echo $backup_error_class; ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_check_backup_dir_is_writable' ) ); ?>">
 								<?php
-								$backup_path = imagify_get_filesystem()->make_path_relative( get_imagify_backup_dir_path( true ) );
+								$backup_path = $this->filesystem->make_path_relative( get_imagify_backup_dir_path( true ) );
 								/* translators: %s is a file path. */
 								printf( __( 'The backup folder %s cannot be created or is not writable by the server, original images cannot be saved!', 'imagify' ), "<code>$backup_path</code>" );
 								?>

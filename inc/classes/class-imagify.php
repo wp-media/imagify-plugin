@@ -41,6 +41,16 @@ class Imagify extends Imagify_Deprecated {
 	private $all_headers = array();
 
 	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
+
+	/**
 	 * The single instance of the class.
 	 *
 	 * @access  protected
@@ -53,7 +63,8 @@ class Imagify extends Imagify_Deprecated {
 	 * The constructor.
 	 */
 	protected function __construct() {
-		$this->api_key = get_imagify_option( 'api_key' );
+		$this->api_key    = get_imagify_option( 'api_key' );
+		$this->filesystem = Imagify_Filesystem::get_instance();
 
 		$this->all_headers['Accept']        = 'Accept: application/json';
 		$this->all_headers['Content-Type']  = 'Content-Type: application/json';
@@ -418,7 +429,7 @@ class Imagify extends Imagify_Deprecated {
 		try {
 			$ch = curl_init();
 
-			if ( isset( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && imagify_get_filesystem()->exists( $args['post_data']['image'] ) ) {
+			if ( isset( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && $this->filesystem->exists( $args['post_data']['image'] ) ) {
 				$args['post_data']['image'] = curl_file_create( $args['post_data']['image'] );
 			}
 

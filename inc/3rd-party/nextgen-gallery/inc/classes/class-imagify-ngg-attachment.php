@@ -65,10 +65,12 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		$this->get_row();
 
+		$this->filesystem = Imagify_Filesystem::get_instance();
+
 		// Load nggAdmin class.
 		$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
 
-		if ( ! class_exists( 'nggAdmin' ) && imagify_get_filesystem()->exists( $ngg_admin_functions_path ) ) {
+		if ( ! class_exists( 'nggAdmin' ) && $this->filesystem->exists( $ngg_admin_functions_path ) ) {
 			require_once( $ngg_admin_functions_path );
 		}
 	}
@@ -137,7 +139,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		return site_url( '/' ) . imagify_get_filesystem()->make_path_relative( $this->get_raw_backup_path() );
+		return site_url( '/' ) . $this->filesystem->make_path_relative( $this->get_raw_backup_path() );
 	}
 
 	/**
@@ -226,7 +228,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			return $this->is_mime_type_supported;
 		}
 
-		$mime_type = imagify_get_filesystem()->get_mime_type( $this->get_original_path() );
+		$mime_type = $this->filesystem->get_mime_type( $this->get_original_path() );
 
 		if ( ! $mime_type ) {
 			$this->is_mime_type_supported = false;
@@ -267,7 +269,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return void
 	 */
 	public function update_metadata_size() {
-		$size = imagify_get_filesystem()->get_image_size( $this->get_original_path() );
+		$size = $this->filesystem->get_image_size( $this->get_original_path() );
 
 		if ( $size ) {
 			$this->image->meta_data['width']          = $size['width'];
@@ -353,8 +355,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			$optimized_size = (int) $response->new_size;
 		} else {
 			$file_path      = $this->get_original_path();
-			$file_path      = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
-			$optimized_size = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+			$file_path      = $file_path && $this->filesystem->exists( $file_path ) ? $file_path : false;
+			$optimized_size = $file_path ? $this->filesystem->size( $file_path ) : 0;
 		}
 
 		if ( $original_size && $optimized_size ) {
@@ -471,7 +473,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		$image   = $storage->_image_mapper->find( $this->id );
 
 		if ( $image ) {
-			$dimensions = imagify_get_filesystem()->get_image_size( $attachment_path );
+			$dimensions = $this->filesystem->get_image_size( $attachment_path );
 			$md5        = md5_file( $attachment_path );
 
 			if ( ( $dimensions || $md5 ) && ( empty( $image->meta_data['full'] ) || ! is_array( $image->meta_data['full'] ) ) ) {
@@ -620,7 +622,6 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Make some more tests before restoring the backup.
 		 */
-		$filesystem     = imagify_get_filesystem();
 		$full_abspath   = $storage->get_image_abspath( $image );
 		$backup_abspath = $storage->get_image_abspath( $image, 'backup' );
 
@@ -628,7 +629,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			return new WP_Error( 'same_path', __( 'Image path and backup path are identical.', 'imagify' ) );
 		}
 
-		if ( ! $filesystem->is_writable( $full_abspath ) || ! $filesystem->is_writable( $filesystem->dir_path( $full_abspath ) ) ) {
+		if ( ! $this->filesystem->is_writable( $full_abspath ) || ! $this->filesystem->is_writable( $this->filesystem->dir_path( $full_abspath ) ) ) {
 			return new WP_Error( 'destination_not_writable', __( 'The image to replace is not writable.', 'imagify' ) );
 		}
 
@@ -641,7 +642,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		*/
 		do_action( 'before_imagify_ngg_restore_attachment', $this->id );
 
-		if ( ! $filesystem->copy( $backup_abspath, $full_abspath, true, FS_CHMOD_FILE ) ) {
+		if ( ! $this->filesystem->copy( $backup_abspath, $full_abspath, true, FS_CHMOD_FILE ) ) {
 			return new WP_Error( 'copy_failed', __( 'Restoration failed.', 'imagify' ) );
 		}
 
@@ -654,10 +655,10 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		 * Fill in the NGG meta data.
 		 */
 		// 1- Meta data for the backup file.
-		$dimensions  = $filesystem->get_image_size( $backup_abspath );
+		$dimensions  = $this->filesystem->get_image_size( $backup_abspath );
 		$backup_data = array(
 			'backup' => array(
-				'filename'  => $filesystem->file_name( $full_abspath ), // Yes, $full_abspath.
+				'filename'  => $this->filesystem->file_name( $full_abspath ), // Yes, $full_abspath.
 				'width'     => 0,
 				'height'    => 0,
 				'generated' => microtime(),
@@ -681,7 +682,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			),
 		);
 
-		$dimensions = $filesystem->get_image_size( $full_abspath );
+		$dimensions = $this->filesystem->get_image_size( $full_abspath );
 
 		if ( $dimensions ) {
 			$full_data['width']  = $dimensions['width'];
@@ -761,7 +762,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				'generated' => microtime(),
 			);
 
-			$dimensions = $filesystem->get_image_size( $thumbnail->fileName );
+			$dimensions = $this->filesystem->get_image_size( $thumbnail->fileName );
 
 			if ( $dimensions ) {
 				$size_meta['width']  = $dimensions['width'];
