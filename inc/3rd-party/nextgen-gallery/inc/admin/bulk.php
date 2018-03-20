@@ -1,18 +1,37 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
-add_filter( 'imagify_bulk_page_data', 'imagify_ngg_bulk_page_data' );
+add_filter( 'imagify_bulk_page_types', 'imagify_ngg_bulk_page_types' );
 /**
- * Filter the data to use on the bulk optimization page.
+ * Filter the types to display in the bulk optimization page.
  *
- * @since  1.7
+ * @since  1.7.1
  * @author Grégory Viguier
  *
- * @param  array $data The data to use.
+ * @param  array $types The folder types displayed on the page. If a folder type is "library", the context should be suffixed after a pipe character. They are passed as array keys.
  * @return array
  */
-function imagify_ngg_bulk_page_data( $data ) {
-	if ( empty( $_GET['page'] ) || imagify_get_ngg_bulk_screen_slug() !== $_GET['page'] ) { // WPCS: CSRF ok.
+function imagify_ngg_bulk_page_types( $types ) {
+	if ( ! empty( $_GET['page'] ) && imagify_get_ngg_bulk_screen_slug() === $_GET['page'] ) { // WPCS: CSRF ok.
+		$types['library|NGG'] = 1;
+	}
+
+	return $types;
+}
+
+add_filter( 'imagify_bulk_stats', 'imagify_ngg_bulk_stats', 10, 2 );
+/**
+ * Filter the generic stats used in the bulk optimization page.
+ *
+ * @since  1.7.1
+ * @author Grégory Viguier
+ *
+ * @param  array $data  The data.
+ * @param  array $types The folder types. They are passed as array keys.
+ * @return array
+ */
+function imagify_ngg_bulk_stats( $data, $types ) {
+	if ( ! isset( $types['library|NGG'] ) ) {
 		return $data;
 	}
 
@@ -33,8 +52,29 @@ function imagify_ngg_bulk_page_data( $data ) {
 	$data['errors_attachments']            += imagify_ngg_count_error_attachments();
 	// Stats block.
 	$data['already_optimized_attachments'] += $total_saving_data['count'];
-	$data['original_size']                 += $total_saving_data['original_size'];
-	$data['optimized_size']                += $total_saving_data['optimized_size'];
+	$data['original_human']                += $total_saving_data['original_size'];
+	$data['optimized_human']               += $total_saving_data['optimized_size'];
+
+	return $data;
+}
+
+add_filter( 'imagify_bulk_page_data', 'imagify_ngg_bulk_page_data', 10, 2 );
+/**
+ * Filter the data to use on the bulk optimization page.
+ *
+ * @since  1.7
+ * @since  1.7.1 Added the $types parameter.
+ * @author Grégory Viguier
+ *
+ * @param  array $data  The data to use.
+ * @param  array $types The folder types displayed on the page. They are passed as array keys.
+ * @return array
+ */
+function imagify_ngg_bulk_page_data( $data, $types ) {
+	if ( ! isset( $types['library|NGG'] ) ) {
+		return $data;
+	}
+
 	// Limits.
 	$data['unoptimized_attachment_limit']  += imagify_get_unoptimized_attachment_limit();
 	// Group.
