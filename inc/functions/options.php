@@ -28,41 +28,6 @@ function update_imagify_option( $key, $value ) {
 }
 
 /**
- * Determine if the Imagify API key is valid.
- *
- * @since 1.0
- *
- * @return bool True if the API key is valid.
- */
-function imagify_valid_key() {
-	static $is_valid;
-
-	if ( isset( $is_valid ) ) {
-		return $is_valid;
-	}
-
-	if ( ! Imagify_Options::get_instance()->get( 'api_key' ) ) {
-		$is_valid = false;
-		return $is_valid;
-	}
-
-	if ( get_site_transient( 'imagify_check_licence_1' ) ) {
-		$is_valid = true;
-		return $is_valid;
-	}
-
-	if ( is_wp_error( get_imagify_user() ) ) {
-		$is_valid = false;
-		return $is_valid;
-	}
-
-	$is_valid = true;
-	set_site_transient( 'imagify_check_licence_1', $is_valid, YEAR_IN_SECONDS );
-
-	return $is_valid;
-}
-
-/**
  * Autoload network options and put them in cache.
  *
  * @since  1.7

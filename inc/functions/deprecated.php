@@ -831,6 +831,51 @@ function imagify_file_is_symlinked( $file_path ) {
 	return imagify_get_filesystem()->is_symlinked( $file_path );
 }
 
+/**
+ * Determine if the Imagify API key is valid.
+ *
+ * @since 1.0
+ * @since 1.7.1 Deprecated.
+ * @deprecated
+ *
+ * @return bool True if the API key is valid.
+ */
+function imagify_valid_key() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'Imagify_Requirements::is_api_key_valid()' );
+
+	return Imagify_Requirements::is_api_key_valid();
+}
+
+/**
+ * Check if external requests are blocked for Imagify.
+ *
+ * @since 1.0
+ * @since 1.7.1 Deprecated.
+ * @deprecated
+ *
+ * @return bool True if Imagify API can't be called.
+ */
+function is_imagify_blocked() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'Imagify_Requirements::is_imagify_blocked()' );
+
+	return Imagify_Requirements::is_imagify_blocked();
+}
+
+/**
+ * Determine if the Imagify API is available by checking the API version.
+ *
+ * @since 1.0
+ * @since 1.7.1 Deprecated.
+ * @deprecated
+ *
+ * @return bool True if the Imagify API is available.
+ */
+function is_imagify_servers_up() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'Imagify_Requirements::is_api_up()' );
+
+	return Imagify_Requirements::is_api_up();
+}
+
 if ( is_admin() ) :
 
 	/**
