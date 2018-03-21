@@ -60,7 +60,7 @@ function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 	}
 
 	// If Imagify license not valid, or image is not optimized, do nothing.
-	if ( ! imagify_valid_key() || ! $attachment->is_optimized() ) {
+	if ( ! Imagify_Requirements::is_api_key_valid() || ! $attachment->is_optimized() ) {
 		return $actions;
 	}
 

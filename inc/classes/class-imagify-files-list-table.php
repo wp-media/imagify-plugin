@@ -674,7 +674,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	public function column_actions( $item ) {
 		static $done = false;
 
-		if ( ! imagify_valid_key() ) {
+		if ( ! Imagify_Requirements::is_api_key_valid() ) {
 			// Stop the process if the API key isn't valid.
 			if ( ! $done ) {
 				// No need to display this on every row.

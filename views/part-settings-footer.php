@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 	// Classical submit.
 	submit_button();
 
-	if ( imagify_valid_key() ) {
+	if ( Imagify_Requirements::is_api_key_valid() ) {
 		// Submit and go to bulk page.
 		submit_button(
 			esc_html__( 'Save & Go to Bulk Optimizer', 'imagify' ),

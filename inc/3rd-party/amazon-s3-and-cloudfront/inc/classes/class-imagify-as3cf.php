@@ -353,7 +353,7 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 		}
 
 		if ( ! isset( $auto_optimize ) ) {
-			$auto_optimize = imagify_valid_key() && get_imagify_option( 'auto_optimize' );
+			$auto_optimize = Imagify_Requirements::is_api_key_valid() && get_imagify_option( 'auto_optimize' );
 		}
 
 		if ( $is_new_upload ) {

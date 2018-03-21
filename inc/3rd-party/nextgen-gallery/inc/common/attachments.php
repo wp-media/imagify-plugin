@@ -13,7 +13,7 @@ add_action( 'ngg_after_new_images_added', '_imagify_ngg_optimize_attachment', IM
  */
 function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 
-	if ( ! imagify_valid_key() || ! get_imagify_option( 'auto_optimize' ) ) {
+	if ( ! Imagify_Requirements::is_api_key_valid() || ! get_imagify_option( 'auto_optimize' ) ) {
 		return;
 	}
 

@@ -9,7 +9,7 @@ $overquota_url = imagify_get_external_url( 'subscription', array(
 ?>
 <div class="imagify-swal-subtitle"><?php esc_html_e( 'Upgrade your account to continue optimizing your images.', 'imagify' ); ?></div>
 <div class="imagify-swal-content imagify-txt-start">
-	<?php if ( imagify_valid_key() ) { ?>
+	<?php if ( Imagify_Requirements::is_api_key_valid() ) { ?>
 		<strong><?php esc_html_e( 'To continue optimizing your images, you can:', 'imagify' ); ?></strong>
 		<ul class="imagify-count-list">
 			<li>

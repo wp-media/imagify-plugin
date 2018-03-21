@@ -85,7 +85,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			<div class="imagify-col imagify-account-info-col">
 
 				<?php
-				if ( ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || ! IMAGIFY_HIDDEN_ACCOUNT ) && imagify_valid_key() ) {
+				if ( ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || ! IMAGIFY_HIDDEN_ACCOUNT ) && Imagify_Requirements::is_api_key_valid() ) {
 					$user = new Imagify_User();
 					?>
 					<div class="imagify-options-title">
@@ -214,7 +214,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 	<?php
 	$this->print_template( 'modal-payment' );
 
-	if ( imagify_valid_key() ) {
+	if ( Imagify_Requirements::is_api_key_valid() ) {
 		$display_infos = get_transient( 'imagify_bulk_optimization_infos' );
 
 		?>

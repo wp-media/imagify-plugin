@@ -92,13 +92,11 @@ class Imagify_Cron_Sync_Files extends Imagify_Abstract_Cron {
 			return;
 		}
 
-		if ( ! imagify_valid_key() ) {
+		if ( ! Imagify_Requirements::is_api_key_valid() ) {
 			return;
 		}
 
-		$user = new Imagify_User();
-
-		if ( $user->is_over_quota() ) {
+		if ( Imagify_Requirements::is_over_quota() ) {
 			return;
 		}
 

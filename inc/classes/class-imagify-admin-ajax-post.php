@@ -953,7 +953,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_user_capacity();
 
 		wp_send_json_success( array(
-			'is_writable' => (int) imagify_backup_dir_is_writable(),
+			'is_writable' => (int) Imagify_Requirements::attachments_backup_dir_is_writable(),
 		) );
 	}
 
@@ -1455,13 +1455,11 @@ class Imagify_Admin_Ajax_Post {
 	 * @author Grégory Viguier
 	 */
 	public function check_can_optimize() {
-		if ( ! imagify_valid_key() ) {
+		if ( ! Imagify_Requirements::is_api_key_valid() ) {
 			wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
 		}
 
-		$user = new Imagify_User();
-
-		if ( $user->is_over_quota() ) {
+		if ( Imagify_Requirements::is_over_quota() ) {
 			wp_send_json_error( array( 'message' => 'over-quota' ) );
 		}
 	}

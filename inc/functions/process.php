@@ -223,7 +223,7 @@ function imagify_backup_file( $file_path, $backup_path = null ) {
 
 	if ( ! isset( $backup_path ) ) {
 		// Make sure the backup directory is writable.
-		if ( ! imagify_backup_dir_is_writable() ) {
+		if ( ! Imagify_Requirements::attachments_backup_dir_is_writable() ) {
 			return new WP_Error( 'backup_dir_not_writable', __( 'The backup directory is not writable.', 'imagify' ) );
 		}
 
