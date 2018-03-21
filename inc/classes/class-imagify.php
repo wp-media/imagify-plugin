@@ -433,6 +433,20 @@ class Imagify extends Imagify_Deprecated {
 				$args['post_data']['image'] = curl_file_create( $args['post_data']['image'] );
 			}
 
+			// Handle proxies.
+			$proxy = new WP_HTTP_Proxy();
+
+			if ( $proxy->is_enabled() && $proxy->send_through_proxy( $url ) ) {
+				curl_setopt( $ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP );
+				curl_setopt( $ch, CURLOPT_PROXY, $proxy->host() );
+				curl_setopt( $ch, CURLOPT_PROXYPORT, $proxy->port() );
+
+				if ( $proxy->use_authentication() ) {
+					curl_setopt( $ch, CURLOPT_PROXYAUTH, CURLAUTH_ANY );
+					curl_setopt( $ch, CURLOPT_PROXYUSERPWD, $proxy->authentication() );
+				}
+			}
+
 			if ( 'POST' === $args['method'] ) {
 				curl_setopt( $ch, CURLOPT_POST, true );
 				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] );
