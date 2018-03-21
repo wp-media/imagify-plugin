@@ -14,7 +14,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.2';
+	const VERSION = '1.2.1';
 
 	/**
 	 * Suffix used in the name of the options that store the table versions.
