@@ -16,7 +16,7 @@ class Imagify_Admin_Ajax_Post {
 	 * @since  1.6.11
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.0.3';
 
 	/**
 	 * Actions to be triggered on admin ajax and admin post.
@@ -66,6 +66,7 @@ class Imagify_Admin_Ajax_Post {
 		'imagify_get_files_tree',
 		'imagify_get_folder_type_data',
 		'imagify_bulk_info_seen',
+		'imagify_bulk_get_stats',
 	);
 
 	/**
@@ -938,6 +939,36 @@ class Imagify_Admin_Ajax_Post {
 		set_transient( 'imagify_bulk_optimization_infos', 1, WEEK_IN_SECONDS );
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Get generic stats to display in the bulk page.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_bulk_get_stats_callback() {
+		imagify_check_nonce( 'imagify-bulk-upload' );
+
+		$folder_types = filter_input( INPUT_GET, 'types', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY );
+		$folder_types = is_array( $folder_types ) ? array_flip( array_filter( $folder_types ) ) : array();
+
+		if ( ! $folder_types ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		foreach ( $folder_types as $folder_type ) {
+			if ( 'library' === $folder_type ) {
+				imagify_check_user_capacity( 'bulk-optimize' );
+			} elseif ( 'custom-folders' === $folder_type ) {
+				imagify_check_user_capacity( 'optimize-file' );
+			} else {
+				imagify_check_user_capacity( 'bulk-optimize', $folder_type );
+			}
+		}
+
+		wp_send_json_success( imagify_get_bulk_stats( $folder_types ) );
 	}
 
 	/**

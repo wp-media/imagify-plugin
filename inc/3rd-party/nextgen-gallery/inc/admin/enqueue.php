@@ -33,7 +33,6 @@ function _imagify_ngg_admin_print_styles() {
 	$assets->remove_deferred_localization( 'bulk', 'imagifyBulk' );
 
 	$l10n = $assets->get_localization_data( 'bulk', array(
-		'heartbeatId' => 'update_ngg_bulk_data',
 		'bufferSizes' => array(
 			'NGG' => get_imagify_bulk_buffer_size( 3 ),
 		),

@@ -182,6 +182,11 @@ function get_imagify_localize_script_translations( $context ) {
 				),
 			);
 
+			if ( get_transient( 'imagify_large_library' ) ) {
+				// On huge media libraries, don't use heartbeat, and fetch stats only when the process ends.
+				$translations['ajaxActions']['getStats'] = 'imagify_bulk_get_stats';
+			}
+
 			if ( isset( $translations['bufferSizes']['wp'] ) ) {
 				/**
 				 * Filter the number of parallel queries during the Bulk Optimization (library).

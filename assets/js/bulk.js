@@ -156,10 +156,16 @@
 				.on( 'optimizeFiles.imagify', this.optimizeFiles )
 				.on( 'queueEmpty.imagify', this.queueEmpty );
 
-			// Heartbeat.
-			$( d )
-				.on( 'heartbeat-send', this.addHeartbeat )
-				.on( 'heartbeat-tick', this.processHeartbeat );
+			if ( imagifyBulk.ajaxActions.getStats && $( '.imagify-bulk-table [data-group-id="library"][data-context="wp"]' ).length ) {
+				// If large library.
+				imagifyBulk.heartbeatId = false;
+			}
+
+			if ( imagifyBulk.heartbeatId ) {
+				$( d )
+					.on( 'heartbeat-send', this.addHeartbeat )
+					.on( 'heartbeat-tick', this.processHeartbeat );
+			}
 
 			// Heartbeat for requirements.
 			$( d )
@@ -367,6 +373,28 @@
 			action = imagifyBulk.ajaxActions[ action ];
 
 			return ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&optimization_level=' + item.level + '&action=' + action + '&folder_type=' + item.groupId;
+		},
+
+		/**
+		 * Get folder types used in the page.
+		 *
+		 * @return {array}
+		 */
+		getFolderTypes: function () {
+			if ( ! w.imagify.bulk.folderTypes.length ) {
+				$( '.imagify-row-folder-type' ).each( function() {
+					var $this   = $( this ),
+						groupID = $this.data( 'group-id' );
+
+					if ( 'library' === groupID ) {
+						groupID += '|' + $this.data( 'context' );
+					}
+
+					w.imagify.bulk.folderTypes.push( groupID );
+				} );
+			}
+
+			return w.imagify.bulk.folderTypes;
 		},
 
 		/*
@@ -639,6 +667,61 @@
 			this.globalGain          = 0;
 			this.globalOriginalSize  = 0;
 			this.globalOptimizedSize = 0;
+		},
+
+		/**
+		 * Print optimization stats.
+		 *
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		updateStats: function ( data ) {
+			var donutData;
+
+			if ( ! data || ! $.isPlainObject( data ) ) {
+				return;
+			}
+
+			if ( w.imagify.bulk.charts.overview.donut.data ) {
+				donutData = w.imagify.bulk.charts.overview.donut.data.datasets[0].data;
+
+				if ( data.unoptimized_attachments === donutData[0] && data.optimized_attachments === donutData[1] && data.errors_attachments === donutData[2] ) {
+					return;
+				}
+			}
+
+			/**
+			 * User account.
+			 */
+			data.unconsumed_quota = data.unconsumed_quota.toFixed( 1 ); // A mystery where a float rounded on php side is not rounded here anymore. JavaScript is fun, it always surprises you in a manner you didn't expect.
+			$( '.imagify-unconsumed-percent' ).html( data.unconsumed_quota + '%' );
+			$( '.imagify-unconsumed-bar' ).css( 'width', data.unconsumed_quota + '%' );
+
+			/**
+			 * Global chart.
+			 */
+			$( '#imagify-overview-chart-percent' ).html( data.optimized_attachments_percent + '<span>%</span>' );
+			$( '.imagify-total-percent' ).html( data.optimized_attachments_percent + '%' );
+
+			w.imagify.bulk.drawOverviewChart( [
+				data.unoptimized_attachments,
+				data.optimized_attachments,
+				data.errors_attachments
+			] );
+
+			/**
+			 * Stats block.
+			 */
+			// The total optimized images.
+			$( '#imagify-total-optimized-attachments' ).html( data.already_optimized_attachments );
+
+			// The original bar.
+			$( '#imagify-original-bar' ).find( '.imagify-barnb' ).html( data.original_human );
+
+			// The optimized bar.
+			$( '#imagify-optimized-bar' ).css( 'width', ( 100 - data.optimized_percent ) + '%' ).find( '.imagify-barnb' ).html( data.optimized_human );
+
+			// The Percent data.
+			$( '#imagify-total-optimized-attachments-pct' ).html( data.optimized_percent + '%' );
 		},
 
 		// Event callbacks =========================================================================
@@ -1128,6 +1211,20 @@
 			// Reset the queue.
 			w.imagify.bulk.queue = [];
 
+			// Fetch and display generic stats if heartbeat is disabled.
+			if ( ! imagifyBulk.heartbeatId ) {
+				$.get( ajaxurl, {
+					_wpnonce: imagifyBulk.ajaxNonce,
+					action:   imagifyBulk.ajaxActions.getStats,
+					types:    w.imagify.bulk.getFolderTypes()
+				} )
+					.done( function( response ) {
+						if ( response.success ) {
+							w.imagify.bulk.updateStats( response.data );
+						}
+					} );
+			}
+
 			// Maybe display error.
 			if ( ! $.isEmptyObject( w.imagify.bulk.status ) ) {
 				$.each( w.imagify.bulk.status, function( groupId, typeStatus ) {
@@ -1208,13 +1305,7 @@
 			data.imagify_ids = data.imagify_ids || {};
 			data.imagify_ids[ imagifyBulk.heartbeatId ] = 1;
 
-			if ( ! w.imagify.bulk.folderTypes.length ) {
-				$( '.imagify-row-folder-type' ).each( function() {
-					w.imagify.bulk.folderTypes.push( $( this ).data( 'group-id' ) );
-				} );
-			}
-
-			data.imagify_types = w.imagify.bulk.folderTypes;
+			data.imagify_types = w.imagify.bulk.getFolderTypes();
 		},
 
 		/**
@@ -1225,55 +1316,9 @@
 		 * @param {object} data Object containing all Heartbeat IDs.
 		 */
 		processHeartbeat: function ( e, data ) {
-			var donutData;
-
-			if ( ! data.imagify_bulk_data ) {
-				return;
+			if ( data.imagify_bulk_data ) {
+				w.imagify.bulk.updateStats( data.imagify_bulk_data );
 			}
-
-			data = data.imagify_bulk_data;
-
-			if ( w.imagify.bulk.charts.overview.donut.data ) {
-				donutData = w.imagify.bulk.charts.overview.donut.data.datasets[0].data;
-
-				if ( data.unoptimized_attachments === donutData[0] && data.optimized_attachments === donutData[1] && data.errors_attachments === donutData[2] ) {
-					return;
-				}
-			}
-
-			/**
-			 * User account.
-			 */
-			data.unconsumed_quota = data.unconsumed_quota.toFixed( 1 ); // A mystery where a float rounded on php side is not rounded here anymore. JavaScript is fun, it always surprises you in a manner you didn't expect.
-			$( '.imagify-unconsumed-percent' ).html( data.unconsumed_quota + '%' );
-			$( '.imagify-unconsumed-bar' ).css( 'width', data.unconsumed_quota + '%' );
-
-			/**
-			 * Global chart.
-			 */
-			$( '#imagify-overview-chart-percent' ).html( data.optimized_attachments_percent + '<span>%</span>' );
-			$( '.imagify-total-percent' ).html( data.optimized_attachments_percent + '%' );
-
-			w.imagify.bulk.drawOverviewChart( [
-				data.unoptimized_attachments,
-				data.optimized_attachments,
-				data.errors_attachments
-			] );
-
-			/**
-			 * Stats block.
-			 */
-			// The total optimized images.
-			$( '#imagify-total-optimized-attachments' ).html( data.already_optimized_attachments );
-
-			// The original bar.
-			$( '#imagify-original-bar' ).find( '.imagify-barnb' ).html( data.original_human );
-
-			// The optimized bar.
-			$( '#imagify-optimized-bar' ).css( 'width', ( 100 - data.optimized_percent ) + '%' ).find( '.imagify-barnb' ).html( data.optimized_human );
-
-			// The Percent data.
-			$( '#imagify-total-optimized-attachments-pct' ).html( data.optimized_percent + '%' );
 		},
 
 		/**
