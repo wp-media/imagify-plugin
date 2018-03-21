@@ -118,11 +118,16 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'bulk':
 			$translations = array(
-				'keyIsValid'   => imagify_valid_key(),
-				'curlMissing'  => ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ),
-				'heartbeatId'  => 'update_bulk_data',
-				'waitImageUrl' => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
-				'ajaxActions'  => array(
+				'curlMissing'     => ! Imagify_Requirements::supports_curl(),
+				'editorMissing'   => ! Imagify_Requirements::supports_image_editor(),
+				'extHttpBlocked'  => Imagify_Requirements::is_imagify_blocked(),
+				'apiDown'         => Imagify_Requirements::is_imagify_blocked() || ! Imagify_Requirements::is_api_up(),
+				'keyIsValid'      => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid(),
+				'isOverQuota'     => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid() && Imagify_Requirements::is_over_quota(),
+				'heartbeatId'     => 'update_bulk_data',
+				'reqsHeartbeatId' => 'update_bulk_requirements',
+				'waitImageUrl'    => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
+				'ajaxActions'     => array(
 					'libraryFetch'          => 'imagify_get_unoptimized_attachment_ids',
 					'customFoldersFetch'    => 'imagify_get_unoptimized_file_ids',
 					'libraryOptimize'       => 'imagify_bulk_upload',
@@ -130,22 +135,26 @@ function get_imagify_localize_script_translations( $context ) {
 					'getFolderData'         => 'imagify_get_folder_type_data',
 					'bulkInfoSeen'          => 'imagify_bulk_info_seen',
 				),
-				'ajaxNonce'   => wp_create_nonce( 'imagify-bulk-upload' ),
-				'bufferSizes' => array(
+				'ajaxNonce'       => wp_create_nonce( 'imagify-bulk-upload' ),
+				'bufferSizes'     => array(
 					'wp'   => get_imagify_bulk_buffer_size(),
 					'File' => get_imagify_bulk_buffer_size( 1 ),
 				),
-				'labels'      => array(
+				'labels'          => array(
 					'overviewChartLabels'            => array(
 						'unoptimized' => __( 'Unoptimized', 'imagify' ),
 						'optimized'   => __( 'Optimized', 'imagify' ),
 						'error'       => __( 'Error', 'imagify' ),
 					),
+					'curlMissing'                    => __( 'cURL is not available on the server.', 'imagify' ),
+					'editorMissing'                  => __( 'No php extension is available to edit images on the server.', 'imagify' ),
+					'extHttpBlocked'                 => __( 'External HTTP requests are blocked.', 'imagify' ),
+					'apiDown'                        => __( 'Sorry, our servers are temporarily unavailable. Please, try again in a couple of minutes.', 'imagify' ),
+					'invalidAPIKeyTitle'             => __( 'Your API key isn\'t valid!', 'imagify' ),
+					'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
 					'processing'                     => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
 					'waitTitle'                      => __( 'Please wait...', 'imagify' ),
 					'waitText'                       => __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
-					'invalidAPIKeyTitle'             => __( 'Your API key isn\'t valid!', 'imagify' ),
-					'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
 					'noAttachmentToOptimizeTitle'    => __( 'Hold on!', 'imagify' ),
 					'noAttachmentToOptimizeText'     => __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
 					'optimizing'                     => __( 'Optimizing', 'imagify' ),
@@ -170,17 +179,8 @@ function get_imagify_localize_script_translations( $context ) {
 					'imagesErrorText'                => __( '%s Error(s)', 'imagify' ),
 					'bulkInfoTitle'                  => __( 'Information', 'imagify' ),
 					'confirmBulk'                    => __( 'Start the optimization', 'imagify' ),
-					'curlMissing'                    => __( 'cURL is not installed on the server.', 'imagify' ),
 				),
 			);
-
-			if ( $translations['keyIsValid'] ) {
-				$user = new Imagify_User();
-
-				if ( $user->is_over_quota() ) {
-					$translations['isOverQuota'] = 1;
-				}
-			}
 
 			if ( get_transient( 'imagify_large_library' ) ) {
 				// On huge media libraries, don't use heartbeat, and fetch stats only when the process ends.

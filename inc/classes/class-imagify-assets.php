@@ -346,7 +346,7 @@ class Imagify_Assets {
 	 * @author Grégory Viguier
 	 */
 	public function print_support_script() {
-		if ( ! imagify_valid_key() ) {
+		if ( ! Imagify_Requirements::is_api_key_valid() ) {
 			return;
 		}
 

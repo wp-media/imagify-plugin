@@ -359,7 +359,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 			return $display;
 		}
 
-		if ( self::notice_is_dismissed( 'wrong-api-key' ) || ! get_imagify_option( 'api_key' ) || imagify_valid_key() ) {
+		if ( self::notice_is_dismissed( 'wrong-api-key' ) || ! get_imagify_option( 'api_key' ) || Imagify_Requirements::is_api_key_valid() ) {
 			return $display;
 		}
 
@@ -416,7 +416,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 			return $display;
 		}
 
-		if ( self::notice_is_dismissed( 'http-block-external' ) || ! is_imagify_blocked() ) {
+		if ( self::notice_is_dismissed( 'http-block-external' ) || ! Imagify_Requirements::is_imagify_blocked() ) {
 			return $display;
 		}
 
@@ -457,7 +457,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		}
 
 		// Don't display the notice if the API key isn't valid.
-		if ( ! imagify_valid_key() ) {
+		if ( ! Imagify_Requirements::is_api_key_valid() ) {
 			return $display;
 		}
 
@@ -536,7 +536,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 			return $display;
 		}
 
-		if ( imagify_backup_dir_is_writable() ) {
+		if ( Imagify_Requirements::attachments_backup_dir_is_writable() ) {
 			return $display;
 		}
 

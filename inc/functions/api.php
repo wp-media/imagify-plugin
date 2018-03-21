@@ -168,63 +168,6 @@ function get_imagify_max_image_size() {
 }
 
 /**
- * Check if external requests are blocked for Imagify.
- *
- * @since 1.0
- *
- * return bool True if Imagify API can't be called.
- */
-function is_imagify_blocked() {
-	if ( ! defined( 'WP_HTTP_BLOCK_EXTERNAL' ) || ! WP_HTTP_BLOCK_EXTERNAL ) {
-		return false;
-	}
-
-	if ( ! defined( 'WP_ACCESSIBLE_HOSTS' ) ) {
-		return true;
-	}
-
-	$accessible_hosts = explode( ',', WP_ACCESSIBLE_HOSTS );
-	$accessible_hosts = array_map( 'trim', $accessible_hosts );
-
-	return ! in_array( '*.imagify.io', $accessible_hosts, true );
-}
-
-/**
- * Determine if the Imagify API is available by checking the API version.
- *
- * @since 1.0
- *
- * @return bool True if the Imagify API is available.
- */
-function is_imagify_servers_up() {
-	static $is_up;
-
-	if ( isset( $is_up ) ) {
-		return $is_up;
-	}
-
-	$transient_name       = 'imagify_check_api_version';
-	$transient_expiration = 3 * MINUTE_IN_SECONDS;
-
-	if ( get_site_transient( $transient_name ) ) {
-		$is_up = true;
-		return $is_up;
-	}
-
-	if ( is_wp_error( get_imagify_api_version() ) ) {
-		set_site_transient( $transient_name, 0, $transient_expiration );
-
-		$is_up = false;
-		return $is_up;
-	}
-
-	set_site_transient( $transient_name, 1, $transient_expiration );
-
-	$is_up = true;
-	return $is_up;
-}
-
-/**
  * Translate a message from our servers.
  *
  * @since  1.6.10
@@ -266,7 +209,7 @@ function imagify_translate_api_message( $message ) {
 		// Local messages from Imagify::curl_http_call() and Imagify::handle_response().
 		'Unknown error occurred'                                                                   => __( 'Unknown error occurred.', 'imagify' ),
 		'Your image is too big to be uploaded on our server'                                       => __( 'Your image is too big to be uploaded on our server.', 'imagify' ),
-		'cURL isn\'t installed on the server'                                                      => __( 'cURL is not installed on the server.', 'imagify' ),
+		'cURL isn\'t installed on the server'                                                      => __( 'cURL is not available on the server.', 'imagify' ),
 		// API messages.
 		'Authentification not provided'                                                            => __( 'Authentication not provided.', 'imagify' ),
 		'Cannot create client token'                                                               => __( 'Cannot create client token.', 'imagify' ),

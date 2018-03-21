@@ -419,8 +419,8 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	private function curl_http_call( $url, $args = array() ) {
-		// Check if php-curl is enabled.
-		if ( ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ) ) {
+		// Check if curl is available.
+		if ( ! Imagify_Requirements::supports_curl() ) {
 			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
 		}
 

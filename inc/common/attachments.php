@@ -15,7 +15,7 @@ add_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', I
  */
 function _imagify_optimize_attachment( $metadata, $attachment_id ) {
 
-	if ( ! imagify_valid_key() || ! get_imagify_option( 'auto_optimize' ) ) {
+	if ( ! Imagify_Requirements::is_api_key_valid() || ! get_imagify_option( 'auto_optimize' ) ) {
 		return $metadata;
 	}
 
@@ -70,7 +70,7 @@ function _imagify_optimize_save_image_editor_file() {
 
 	$attachment_id = absint( $_POST['postid'] );
 
-	if ( ! $attachment_id || ! imagify_valid_key() ) {
+	if ( ! $attachment_id || ! Imagify_Requirements::is_api_key_valid() ) {
 		return;
 	}
 

@@ -11,7 +11,7 @@ if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
 	return;
 }
 
-if ( imagify_valid_key() ) {
+if ( Imagify_Requirements::is_api_key_valid() ) {
 	$user             = imagify_get_cached_user();
 	$unconsumed_quota = $user ? $user->get_percent_unconsumed_quota : false;
 	$hidden_class     = '';
@@ -30,7 +30,7 @@ if ( imagify_valid_key() ) {
 <div class="imagify-settings-section">
 
 	<?php
-	if ( imagify_valid_key() ) {
+	if ( Imagify_Requirements::is_api_key_valid() ) {
 		?>
 		<div class="imagify-col-content imagify-block-secondary imagify-mt2">
 			<?php
@@ -65,7 +65,7 @@ if ( imagify_valid_key() ) {
 
 	<?php
 	if ( ! defined( 'IMAGIFY_API_KEY' ) || ! IMAGIFY_API_KEY ) {
-		if ( imagify_valid_key() ) {
+		if ( Imagify_Requirements::is_api_key_valid() ) {
 			?>
 			<h2 class="imagify-options-title">
 				<?php esc_html_e( 'Account Type', 'imagify' ); ?>
@@ -99,7 +99,7 @@ if ( imagify_valid_key() ) {
 			<label for="api_key"><?php echo $options->get( 'api_key' ) ? esc_html__( 'API Key', 'imagify' ) : esc_html__( 'Enter Your API Key Below', 'imagify' ); ?></label>
 			<input type="text" size="35" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="<?php echo $options->get_option_name(); ?>[api_key]" id="api_key">
 			<?php
-			if ( imagify_valid_key() ) {
+			if ( Imagify_Requirements::is_api_key_valid() ) {
 				?>
 
 				<span id="imagify-check-api-container" class="imagify-valid">
@@ -107,7 +107,7 @@ if ( imagify_valid_key() ) {
 				</span>
 
 				<?php
-			} elseif ( ! imagify_valid_key() && $options->get( 'api_key' ) ) {
+			} elseif ( ! Imagify_Requirements::is_api_key_valid() && $options->get( 'api_key' ) ) {
 				?>
 
 				<span id="imagify-check-api-container">

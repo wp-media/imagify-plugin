@@ -24,7 +24,7 @@ function _imagify_attachment_submitbox_misc_actions() {
 		return;
 	}
 
-	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
+	if ( ! Imagify_Requirements::is_api_key_valid() && ! $attachment->is_optimized() ) {
 
 		echo '<div class="misc-pub-section misc-pub-imagify"><h4>' . __( 'Imagify', 'imagify' ) . '</h4></div>';
 		echo '<div class="misc-pub-section misc-pub-imagify">';
