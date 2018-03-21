@@ -237,7 +237,7 @@ class Imagify_User {
 	}
 
 	/**
-	 * Check if the user has consumed its quota.
+	 * Check if the user has consumed all his/her quota.
 	 *
 	 * @since 1.1.1
 	 *
@@ -245,6 +245,10 @@ class Imagify_User {
 	 * @return bool
 	 */
 	public function is_over_quota() {
+		if ( empty( $this->id ) ) {
+			return true;
+		}
+
 		if ( $this->is_free() && 100 === $this->get_percent_consumed_quota() ) {
 			return true;
 		}
