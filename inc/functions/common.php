@@ -207,6 +207,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Folders_DB'               => 1,
 		'Imagify_Notices'                  => 1,
 		'Imagify_Options'                  => 1,
+		'Imagify_Requirements'             => 1,
 		'Imagify_Settings'                 => 1,
 		'Imagify_User'                     => 1,
 		'Imagify_Views'                    => 1,
