@@ -64,6 +64,16 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	protected $filesystem;
 
 	/**
+	 * The editor instances used to resize files.
+	 *
+	 * @var    array An array of image editor objects (WP_Image_Editor_Imagick, WP_Image_Editor_GD).
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $editors = array();
+
+	/**
 	 * The constructor.
 	 *
 	 * @since  1.0
@@ -607,6 +617,58 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	}
 
 	/**
+	 * Get an image editor instance (WP_Image_Editor_Imagick, WP_Image_Editor_GD).
+	 *
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $path A file path.
+	 * @return object       An image editor instance (WP_Image_Editor_Imagick, WP_Image_Editor_GD). A WP_Error object on error.
+	 */
+	protected function get_editor( $path ) {
+		if ( isset( $this->editors[ $path ] ) ) {
+			return $this->editors[ $path ];
+		}
+
+		$this->editors[ $path ] = wp_get_image_editor( $path, array(
+			'methods' => self::get_editor_methods(),
+		) );
+
+		return $this->editors[ $path ];
+	}
+
+	/**
+	 * Get the image editor methods we will use.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return array
+	 */
+	public static function get_editor_methods() {
+		static $methods;
+
+		if ( isset( $methods ) ) {
+			return $methods;
+		}
+
+		$methods = array(
+			'resize',
+			'multi_resize',
+			'generate_filename',
+			'save',
+		);
+
+		if ( Imagify_Filesystem::get_instance()->can_get_exif() ) {
+			$methods[] = 'rotate';
+		}
+
+		return $methods;
+	}
+
+	/**
 	 * Update the metadata size of the attachment
 	 *
 	 * @since  1.2
@@ -797,7 +859,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		add_filter( 'image_strip_meta', '__return_false' );
 
 		$new_sizes = wp_constrain_dimensions( $attachment_sizes['width'], $attachment_sizes['height'], $max_width );
-		$editor    = wp_get_image_editor( $attachment_path );
+
+		$editor = $this->get_editor( $attachment_path );
 
 		if ( is_wp_error( $editor ) ) {
 			return $editor;

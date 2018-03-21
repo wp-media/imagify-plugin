@@ -16,16 +16,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	const VERSION = '1.1.2';
 
 	/**
-	 * The editor instance used to resize files.
-	 *
-	 * @since 1.6.10
-	 *
-	 * @var object
-	 * @access protected
-	 */
-	protected $editor;
-
-	/**
 	 * Get the attachment backup file path, even if the file doesn't exist.
 	 *
 	 * @since  1.6.13
@@ -239,16 +229,14 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		}
 
 		// Get the editor.
-		if ( ! isset( $this->editor ) ) {
-			$this->editor = wp_get_image_editor( $this->get_backup_path() );
-		}
+		$editor = $this->get_editor( $this->get_backup_path() );
 
-		if ( is_wp_error( $this->editor ) ) {
-			return $this->editor;
+		if ( is_wp_error( $editor ) ) {
+			return $editor;
 		}
 
 		// Create the file.
-		$result = $this->editor->multi_resize( array( $thumbnail_size => $thumbnail_data ) );
+		$result = $editor->multi_resize( array( $thumbnail_size => $thumbnail_data ) );
 
 		if ( ! $result ) {
 			return new WP_Error( 'image_resize_error' );
