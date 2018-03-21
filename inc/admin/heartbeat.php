@@ -14,7 +14,7 @@ add_filter( 'heartbeat_received', '_imagify_heartbeat_received', 10, 2 );
  * @return array
  */
 function _imagify_heartbeat_received( $response, $data ) {
-	if ( empty( $data['imagify_heartbeat'] ) || 'update_bulk_data' !== $data['imagify_heartbeat'] ) {
+	if ( empty( $data['imagify_ids']['update_bulk_data'] ) ) {
 		return $response;
 	}
 
@@ -89,6 +89,34 @@ function _imagify_heartbeat_received( $response, $data ) {
 	$new_data['optimized_human']               = imagify_size_format( $new_data['optimized_human'], 1 );
 
 	$response['imagify_bulk_data'] = $new_data;
+
+	return $response;
+}
+
+add_filter( 'heartbeat_received', 'imagify_heartbeat_requirements_received', 10, 2 );
+/**
+ * Prepare the data that goes back with the Heartbeat API.
+ *
+ * @since  1.7.1
+ * @author Grégory Viguier
+ *
+ * @param  array $response The Heartbeat response.
+ * @param  array $data     The $_POST data sent.
+ * @return array
+ */
+function imagify_heartbeat_requirements_received( $response, $data ) {
+	if ( empty( $data['imagify_ids']['update_bulk_requirements'] ) ) {
+		return $response;
+	}
+
+	$response['imagify_bulk_requirements'] = array(
+		'curl_missing'          => ! Imagify_Requirements::supports_curl(),
+		'editor_missing'        => ! Imagify_Requirements::supports_image_editor(),
+		'external_http_blocked' => Imagify_Requirements::is_imagify_blocked(),
+		'api_down'              => Imagify_Requirements::is_imagify_blocked() || ! Imagify_Requirements::is_api_up(),
+		'key_is_valid'          => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid(),
+		'is_over_quota'         => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid() && Imagify_Requirements::is_over_quota(),
+	);
 
 	return $response;
 }

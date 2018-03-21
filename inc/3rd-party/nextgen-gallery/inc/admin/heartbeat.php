@@ -14,7 +14,7 @@ add_filter( 'heartbeat_received', '_imagify_ngg_heartbeat_received', 10, 2 );
  * @return array
  */
 function _imagify_ngg_heartbeat_received( $response, $data ) {
-	if ( ! isset( $data['imagify_heartbeat'] ) || 'update_ngg_bulk_data' !== $data['imagify_heartbeat'] ) {
+	if ( empty( $data['imagify_ids']['update_bulk_data'] ) ) {
 		return $response;
 	}
 

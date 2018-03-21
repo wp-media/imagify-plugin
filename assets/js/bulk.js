@@ -130,11 +130,6 @@
 			// Overview chart.
 			this.drawOverviewChart();
 
-			if ( ! imagifyBulk.keyIsValid ) {
-				$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
-				return;
-			}
-
 			this.hasMultipleRows = $( '.imagify-bulk-table [name="group[]"]' ).length > 1;
 
 			// Optimization level selector.
@@ -155,10 +150,6 @@
 			$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
 			$( '.imagify-share-networks a' ).on( 'click.imagify', this.share );
 
-			if ( imagifyBulk.curlMissing ) {
-				return;
-			}
-
 			// Optimization events.
 			$( w )
 				.on( 'processQueue.imagify', this.processQueue )
@@ -169,6 +160,11 @@
 			$( d )
 				.on( 'heartbeat-send', this.addHeartbeat )
 				.on( 'heartbeat-tick', this.processHeartbeat );
+
+			// Heartbeat for requirements.
+			$( d )
+				.on( 'heartbeat-send', this.addRequirementsHeartbeat )
+				.on( 'heartbeat-tick', this.processRequirementsHeartbeat );
 		},
 
 		/**
@@ -421,6 +417,77 @@
 		},
 
 		/*
+		 * Tell if we have a blocking error. Can also display an error message in a swal.
+		 *
+		 * @param  {bool} displayErrorMessage False to not display any error message.
+		 * @return {bool}
+		 */
+		hasBlockingError: function ( displayErrorMessage ) {
+			displayErrorMessage = undefined !== displayErrorMessage && displayErrorMessage;
+
+			if ( imagifyBulk.curlMissing ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						html: imagifyBulk.labels.curlMissing
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyBulk.editorMissing ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						html: imagifyBulk.labels.editorMissing
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyBulk.extHttpBlocked ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						html: imagifyBulk.labels.extHttpBlocked
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyBulk.apiDown ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						html: imagifyBulk.labels.apiDown
+					} );
+				}
+				return true;
+			}
+
+			if ( ! imagifyBulk.keyIsValid ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						title: imagifyBulk.labels.invalidAPIKeyTitle,
+						type:  'info'
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyBulk.isOverQuota ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						title:             imagifyBulk.labels.overQuotaTitle,
+						html:              $( '#tmpl-imagify-overquota-alert' ).html(),
+						type:              'info',
+						customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
+						showConfirmButton: false
+					} );
+				}
+				return true;
+			}
+
+			return false;
+		},
+
+		/*
 		 * Display an error message in a modal.
 		 *
 		 * @param {string} title The modal title.
@@ -667,16 +734,7 @@
 		maybeLaunchAllProcesses: function () {
 			var $infosModal;
 
-			if ( ! imagifyBulk.keyIsValid ) {
-				w.imagify.bulk.displayError( {
-					title: imagifyBulk.labels.invalidAPIKeyTitle,
-					type:  'info'
-				} );
-				return;
-			}
-
-			if ( imagifyBulk.curlMissing ) {
-				w.imagify.bulk.displayError( '', imagifyBulk.labels.curlMissing );
+			if ( $( this ).attr( 'disabled' ) ) {
 				return;
 			}
 
@@ -684,19 +742,7 @@
 				return;
 			}
 
-			if ( $( this ).attr( 'disabled' ) ) {
-				return;
-			}
-
-			if ( imagifyBulk.isOverQuota ) {
-				// Swal information when over quota.
-				w.imagify.bulk.displayError( {
-					title:             imagifyBulk.labels.overQuotaTitle,
-					html:              $( '#tmpl-imagify-overquota-alert' ).html(),
-					type:              'info',
-					customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
-					showConfirmButton: false
-				} );
+			if ( w.imagify.bulk.hasBlockingError( true ) ) {
 				return;
 			}
 
@@ -1159,7 +1205,8 @@
 		 * @param {object} data Object containing all Heartbeat IDs.
 		 */
 		addHeartbeat: function ( e, data ) {
-			data.imagify_heartbeat = imagifyBulk.heartbeatId;
+			data.imagify_ids = data.imagify_ids || {};
+			data.imagify_ids[ imagifyBulk.heartbeatId ] = 1;
 
 			if ( ! w.imagify.bulk.folderTypes.length ) {
 				$( '.imagify-row-folder-type' ).each( function() {
@@ -1227,6 +1274,39 @@
 
 			// The Percent data.
 			$( '#imagify-total-optimized-attachments-pct' ).html( data.optimized_percent + '%' );
+		},
+
+		/**
+		 * Add our Heartbeat ID for requirements on "heartbeat-send" event.
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		addRequirementsHeartbeat: function ( e, data ) {
+			data.imagify_ids = data.imagify_ids || {};
+			data.imagify_ids[ imagifyBulk.reqsHeartbeatId ] = 1;
+		},
+
+		/**
+		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * It allows to update requirements status periodically.
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		processRequirementsHeartbeat: function ( e, data ) {
+			if ( ! data.imagify_bulk_requirements ) {
+				return;
+			}
+
+			data = data.imagify_bulk_requirements;
+
+			imagifyBulk.curlMissing    = data.curl_missing;
+			imagifyBulk.editorMissing  = data.editor_missing;
+			imagifyBulk.extHttpBlocked = data.external_http_blocked;
+			imagifyBulk.apiDown        = data.api_down;
+			imagifyBulk.keyIsValid     = data.key_is_valid;
+			imagifyBulk.isOverQuota    = data.is_over_quota;
 		},
 
 		/**
