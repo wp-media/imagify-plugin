@@ -927,8 +927,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return $this->invalidate_row();
 		}
 
-		$classname = $this->db_class_name;
-		$this->row = $classname::get_instance()->get( $this->id );
+		$this->row = $this->get_row_db_instance()->get( $this->id );
 
 		if ( ! $this->row ) {
 			return $this->invalidate_row();
@@ -951,8 +950,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return;
 		}
 
-		$classname = $this->db_class_name;
-		$classname::get_instance()->update( $this->id, $data );
+		$this->get_row_db_instance()->update( $this->id, $data );
 
 		$this->reset_row_cache();
 	}
@@ -969,10 +967,22 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return;
 		}
 
-		$classname = $this->db_class_name;
-		$classname::get_instance()->delete( $this->id );
+		$this->get_row_db_instance()->delete( $this->id );
 
 		$this->invalidate_row();
+	}
+
+	/**
+	 * Shorthand to get the DB table instance.
+	 *
+	 * @since  1.7.1
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return object The DB table instance.
+	 */
+	public function get_row_db_instance() {
+		return call_user_func( array( $this->db_class_name, 'get_instance' ) );
 	}
 
 	/**

@@ -41,8 +41,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			$this->id = (int) $id;
 			$this->get_row();
 		} elseif ( is_array( $id ) || is_object( $id ) ) {
-			$classname = $this->db_class_name;
-			$prim_key  = $classname::get_instance()->get_primary_key();
+			$prim_key  = $this->get_row_db_instance()->get_primary_key();
 			$this->row = (array) $id;
 			$this->id  = $this->row[ $prim_key ];
 		} else {
@@ -138,8 +137,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return array();
 		}
 
-		$classname = $this->db_class_name;
-		$data      = array_merge( $classname::get_instance()->get_column_defaults(), $this->get_row() );
+		$data = array_merge( $this->get_row_db_instance()->get_column_defaults(), $this->get_row() );
 
 		unset( $data['file_id'] );
 		return $data;
@@ -507,8 +505,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		static $column_defaults;
 
 		if ( ! isset( $column_defaults ) ) {
-			$classname       = $this->db_class_name;
-			$column_defaults = $classname::get_instance()->get_column_defaults();
+			$column_defaults = $this->get_row_db_instance()->get_column_defaults();
 
 			// All DB columns that have `null` as default value, are Imagify data.
 			foreach ( $column_defaults as $column_name => $value ) {
