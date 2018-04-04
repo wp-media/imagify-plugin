@@ -25,6 +25,16 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	public $id = 0;
 
 	/**
+	 * Context.
+	 *
+	 * @var    string
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $context;
+
+	/**
 	 * The attachment SQL DB class.
 	 *
 	 * @var    string
@@ -97,6 +107,27 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 		$this->id         = (int) $this->id;
 		$this->filesystem = Imagify_Filesystem::get_instance();
+	}
+
+	/**
+	 * Get the attachment context.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public function get_context() {
+		if ( $this->context ) {
+			return $this->context;
+		}
+
+		$this->context = str_replace( array( 'Imagify_', 'Attachment' ), '', get_class( $this ) );
+		$this->context = trim( $this->context, '_' );
+		$this->context = $this->context ? $this->context : 'wp';
+
+		return $this->context;
 	}
 
 	/**

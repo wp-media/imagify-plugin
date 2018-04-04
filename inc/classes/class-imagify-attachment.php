@@ -387,7 +387,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		// Optimize the original size.
 		$response = do_imagify( $attachment_path, array(
 			'optimization_level' => $optimization_level,
-			'context'            => 'wp',
+			'context'            => $this->get_context(),
 			'resized'            => $resized,
 			'original_size'      => $attachment_original_size,
 		) );
@@ -432,7 +432,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 				$response = do_imagify( $thumbnail_path, array(
 					'backup'             => false,
 					'optimization_level' => $optimization_level,
-					'context'            => 'wp',
+					'context'            => $this->get_context(),
 				) );
 
 				$data = $this->fill_data( $data, $response, $size_key );
@@ -552,7 +552,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			$response = do_imagify( $thumbnail_path, array(
 				'backup'             => false,
 				'optimization_level' => $optimization_level,
-				'context'            => 'wp',
+				'context'            => $this->get_context(),
 			) );
 
 			$imagify_data = $this->fill_data( $imagify_data, $response, $size_name );
