@@ -28,6 +28,16 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	protected $db_class_name = 'Imagify_Files_DB';
 
 	/**
+	 * Tell if the optimization status is network-wide.
+	 *
+	 * @var    bool
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $optimization_state_network_wide = true;
+
+	/**
 	 * The constructor.
 	 *
 	 * @since  1.7
@@ -48,7 +58,8 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			$this->invalidate_row();
 		}
 
-		$this->filesystem = Imagify_Filesystem::get_instance();
+		$this->filesystem                   = Imagify_Filesystem::get_instance();
+		$this->optimization_state_transient = 'imagify-file-async-in-progress-' . $this->id;
 	}
 
 	/**
@@ -621,7 +632,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		*/
 		do_action( 'before_imagify_optimize_file', $this->id );
 
-		set_site_transient( 'imagify-file-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+		$this->set_running_status();
 
 		// Optimize the image.
 		$response = do_imagify( $this->get_original_path(), array(
@@ -640,7 +651,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		$this->update_row( $data );
 
 		if ( is_wp_error( $response ) ) {
-			delete_site_transient( 'imagify-file-async-in-progress-' . $this->id );
+			$this->delete_running_status();
 
 			if ( 'error' === $data['status'] ) {
 				return $response;
@@ -661,7 +672,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		 */
 		do_action( 'after_imagify_optimize_file', $this->id, $this->get_data() );
 
-		delete_site_transient( 'imagify-file-async-in-progress-' . $this->id );
+		$this->delete_running_status();
 
 		return true;
 	}

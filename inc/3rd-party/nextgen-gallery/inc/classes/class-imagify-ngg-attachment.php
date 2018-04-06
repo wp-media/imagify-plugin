@@ -65,7 +65,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		$this->get_row();
 
-		$this->filesystem = Imagify_Filesystem::get_instance();
+		$this->filesystem                   = Imagify_Filesystem::get_instance();
+		$this->optimization_state_transient = 'imagify-ngg-async-in-progress-' . $this->id;
 
 		// Load nggAdmin class.
 		$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
@@ -422,7 +423,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		*/
 		do_action( 'before_imagify_ngg_optimize_attachment', $this->id );
 
-		set_transient( 'imagify-ngg-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+		$this->set_running_status();
 
 		// Optimize the original size.
 		$response = do_imagify( $attachment_path, array(
@@ -444,7 +445,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		if ( ! $data ) {
 			// Already optimized.
-			delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
+			$this->delete_running_status();
 			return;
 		}
 
@@ -499,7 +500,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			$storage->_image_mapper->save( $image );
 		}
 
-		delete_transient( 'imagify-ngg-async-in-progress-' . $this->id );
+		$this->delete_running_status();
 
 		return $data;
 	}
