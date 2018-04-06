@@ -13,7 +13,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1.2';
+	const VERSION = '1.1.3';
 
 	/**
 	 * Get the attachment backup file path, even if the file doesn't exist.
@@ -387,7 +387,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		// Optimize the original size.
 		$response = do_imagify( $attachment_path, array(
 			'optimization_level' => $optimization_level,
-			'context'            => 'wp',
+			'context'            => $this->get_context(),
 			'resized'            => $resized,
 			'original_size'      => $attachment_original_size,
 		) );
@@ -432,7 +432,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 				$response = do_imagify( $thumbnail_path, array(
 					'backup'             => false,
 					'optimization_level' => $optimization_level,
-					'context'            => 'wp',
+					'context'            => $this->get_context(),
 				) );
 
 				$data = $this->fill_data( $data, $response, $size_key );
@@ -552,7 +552,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			$response = do_imagify( $thumbnail_path, array(
 				'backup'             => false,
 				'optimization_level' => $optimization_level,
-				'context'            => 'wp',
+				'context'            => $this->get_context(),
 			) );
 
 			$imagify_data = $this->fill_data( $imagify_data, $response, $size_name );
@@ -587,6 +587,121 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		}
 
 		return $result_sizes;
+	}
+
+	/**
+	 * Re-optimize the given thumbnail sizes to the same level.
+	 * Before doing this, the given sizes must be restored.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $sizes The sizes to optimize.
+	 * @return array|void             A WP_Error object on failure.
+	 */
+	public function reoptimize_thumbnails( $sizes ) {
+		// Check if the attachment extension is allowed.
+		if ( ! $this->is_extension_supported() ) {
+			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
+		}
+
+		if ( ! $sizes || ! is_array( $sizes ) ) {
+			return;
+		}
+
+		/**
+		 * Fires before re-optimizing some thumbnails of an attachment.
+		 *
+		 * @since  1.7.1
+		 * @author Grégory Viguier
+		 *
+		 * @param int   $id    The attachment ID.
+		 * @param array $sizes The sizes to optimize.
+		*/
+		do_action( 'before_imagify_reoptimize_attachment_thumbnails', $this->id, $sizes );
+
+		set_transient( 'imagify-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+
+		$data = $this->get_data();
+
+		$data['sizes'] = ! empty( $data['sizes'] ) && is_array( $data['sizes'] ) ? $data['sizes'] : array();
+
+		foreach ( $sizes as $size_key => $size_data ) {
+			// In case it's a disallowed size, fill in the new data. If it's not, it will be overwritten by $this->fill_data() later.
+			$data['sizes'][ $size_key ] = array(
+				'success' => false,
+				'error'   => __( 'This size isn\'t authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
+			);
+		}
+
+		// Update global attachment stats.
+		$data['stats'] = array(
+			'original_size'  => 0,
+			'optimized_size' => 0,
+			'percent'        => 0,
+		);
+
+		foreach ( $data['sizes'] as $size_data ) {
+			if ( ! empty( $size_data['original_size'] ) ) {
+				$data['stats']['original_size'] += $size_data['original_size'];
+			}
+			if ( ! empty( $size_data['optimized_size'] ) ) {
+				$data['stats']['optimized_size'] += $size_data['optimized_size'];
+			}
+		}
+
+		// Remove disallowed sizes.
+		if ( ! imagify_is_active_for_network() ) {
+			$sizes = array_diff_key( $sizes, get_imagify_option( 'disallowed-sizes' ) );
+		}
+
+		if ( ! $sizes ) {
+			$data['stats']['percent'] = $data['stats']['original_size'] ? round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 ) : 0;
+			update_post_meta( $this->id, '_imagify_data', $data );
+			delete_transient( 'imagify-async-in-progress-' . $this->id );
+			return;
+		}
+
+		$optimization_level      = $this->get_optimization_level();
+		$thumbnail_path          = $this->get_original_path();
+		$thumbnail_url           = $this->get_original_url();
+		$attachment_path_dirname = $this->filesystem->dir_path( $thumbnail_path );
+		$attachment_url_dirname  = $this->filesystem->dir_path( $thumbnail_url );
+
+		foreach ( $sizes as $size_key => $size_data ) {
+			$thumbnail_path = $attachment_path_dirname . $size_data['file'];
+			$thumbnail_url  = $attachment_url_dirname . $size_data['file'];
+
+			// Optimize the thumbnail size.
+			$response = do_imagify( $thumbnail_path, array(
+				'backup'             => false,
+				'optimization_level' => $optimization_level,
+				'context'            => $this->get_context(),
+			) );
+
+			$data = $this->fill_data( $data, $response, $size_key );
+
+			/** This filter is documented in /inc/classes/class-imagify-attachment.php. */
+			$data = apply_filters( 'imagify_fill_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
+		} // End foreach().
+
+		$data['stats']['percent'] = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
+
+		update_post_meta( $this->id, '_imagify_data', $data );
+
+		/**
+		 * Fires after re-optimizing some thumbnails of an attachment.
+		 *
+		 * @since  1.7.1
+		 * @author Grégory Viguier
+		 *
+		 * @param int   $id    The attachment ID.
+		 * @param array $sizes The sizes to optimize.
+		*/
+		do_action( 'after_imagify_reoptimize_attachment_thumbnails', $this->id, $sizes );
+
+		delete_transient( 'imagify-async-in-progress-' . $this->id );
 	}
 
 	/**

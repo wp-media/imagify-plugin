@@ -13,7 +13,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.3.1';
+	const VERSION = '1.3.2';
 
 	/**
 	 * The attachment ID.
@@ -23,6 +23,16 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @access public
 	 */
 	public $id = 0;
+
+	/**
+	 * Context.
+	 *
+	 * @var    string
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $context;
 
 	/**
 	 * The attachment SQL DB class.
@@ -97,6 +107,27 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 		$this->id         = (int) $this->id;
 		$this->filesystem = Imagify_Filesystem::get_instance();
+	}
+
+	/**
+	 * Get the attachment context.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public function get_context() {
+		if ( $this->context ) {
+			return $this->context;
+		}
+
+		$this->context = str_replace( array( 'Imagify_', 'Attachment' ), '', get_class( $this ) );
+		$this->context = trim( $this->context, '_' );
+		$this->context = $this->context ? $this->context : 'wp';
+
+		return $this->context;
 	}
 
 	/**
@@ -828,6 +859,19 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	abstract public function optimize_missing_thumbnails( $optimization_level = null );
 
 	/**
+	 * Re-optimize the given thumbnail sizes to the same level.
+	 * Before doing this, the given sizes must be restored.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $sizes The sizes to optimize.
+	 * @return array|void             A WP_Error object on failure.
+	 */
+	abstract public function reoptimize_thumbnails( $sizes );
+
+	/**
 	 * Process an attachment restoration from the backup file.
 	 *
 	 * @since  1.0
@@ -927,8 +971,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return $this->invalidate_row();
 		}
 
-		$classname = $this->db_class_name;
-		$this->row = $classname::get_instance()->get( $this->id );
+		$this->row = $this->get_row_db_instance()->get( $this->id );
 
 		if ( ! $this->row ) {
 			return $this->invalidate_row();
@@ -951,8 +994,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return;
 		}
 
-		$classname = $this->db_class_name;
-		$classname::get_instance()->update( $this->id, $data );
+		$this->get_row_db_instance()->update( $this->id, $data );
 
 		$this->reset_row_cache();
 	}
@@ -969,10 +1011,22 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return;
 		}
 
-		$classname = $this->db_class_name;
-		$classname::get_instance()->delete( $this->id );
+		$this->get_row_db_instance()->delete( $this->id );
 
 		$this->invalidate_row();
+	}
+
+	/**
+	 * Shorthand to get the DB table instance.
+	 *
+	 * @since  1.7.1
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return object The DB table instance.
+	 */
+	public function get_row_db_instance() {
+		return call_user_func( array( $this->db_class_name, 'get_instance' ) );
 	}
 
 	/**

@@ -14,7 +14,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.3.1';
+	const VERSION = '1.3.2';
 
 	/**
 	 * The attachment SQL DB class.
@@ -589,6 +589,19 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		return $data;
 	}
+
+	/**
+	 * Re-optimize the given thumbnail sizes to the same level.
+	 * This is not used in this context.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $sizes The sizes to optimize.
+	 * @return array|void             A WP_Error object on failure.
+	 */
+	public function reoptimize_thumbnails( $sizes ) {}
 
 	/**
 	 * Process an attachment restoration from the backup file.
