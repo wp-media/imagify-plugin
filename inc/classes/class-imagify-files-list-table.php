@@ -631,7 +631,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			$messages[] = '<strong class="imagify-status-not-optimized">' . esc_html_x( 'Not optimized', 'image', 'imagify' ) . '</strong>';
 		} elseif ( $error_text ) {
 			// Error or already optimized.
-			$messages[] = '<span class="imagify-status-' . $status . '">' . esc_html( $error_text ) . '</span>';
+			$messages[] = '<span class="imagify-status-' . $status . '">' . esc_html( imagify_translate_api_message( $error_text ) ) . '</span>';
 		}
 
 		if ( ! $row['modified'] && ! $messages ) {
