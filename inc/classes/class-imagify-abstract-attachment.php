@@ -13,7 +13,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.3.1';
+	const VERSION = '1.3.2';
 
 	/**
 	 * The attachment ID.
@@ -857,6 +857,19 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @return array|object            An array of thumbnail data, size by size. A WP_Error object on failure.
 	 */
 	abstract public function optimize_missing_thumbnails( $optimization_level = null );
+
+	/**
+	 * Re-optimize the given thumbnail sizes to the same level.
+	 * Before doing this, the given sizes must be restored.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $sizes The sizes to optimize.
+	 * @return array|void             A WP_Error object on failure.
+	 */
+	abstract public function reoptimize_thumbnails( $sizes );
 
 	/**
 	 * Process an attachment restoration from the backup file.

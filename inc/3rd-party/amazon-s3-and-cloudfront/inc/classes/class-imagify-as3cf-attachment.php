@@ -14,7 +14,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1.1';
+	const VERSION = '1.1.2';
 
 	/**
 	 * Tell if AS3CF settings will be used for this attachment.
@@ -502,6 +502,19 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		return $result;
 	}
+
+	/**
+	 * Re-optimize the given thumbnail sizes to the same level.
+	 * Not supported yet in this context.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $sizes The sizes to optimize.
+	 * @return array|void             A WP_Error object on failure.
+	 */
+	public function reoptimize_thumbnails( $sizes ) {}
 
 	/**
 	 * Process an attachment restoration from the backup file.
