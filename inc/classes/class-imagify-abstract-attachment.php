@@ -127,7 +127,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 		$this->id                           = (int) $this->id;
 		$this->filesystem                   = Imagify_Filesystem::get_instance();
-		$this->optimization_state_transient = ( 'wp' !== $this->get_context() ) ? strtolower( $this->get_context() ) . '-' : '';
+		$this->optimization_state_transient = 'wp' !== $this->get_context() ? strtolower( $this->get_context() ) . '-' : '';
 		$this->optimization_state_transient = 'imagify-' . $this->optimization_state_transient . 'async-in-progress-' . $this->id;
 	}
 
