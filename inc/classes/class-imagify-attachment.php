@@ -354,7 +354,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		*/
 		do_action( 'before_imagify_optimize_attachment', $this->id );
 
-		set_transient( 'imagify-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+		$this->set_running_status();
 
 		// Get the resize values for the original size.
 		$resized   = false;
@@ -404,7 +404,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		}
 
 		if ( ! $data ) {
-			delete_transient( 'imagify-async-in-progress-' . $this->id );
+			$this->delete_running_status();
 			return;
 		}
 
@@ -472,7 +472,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		 */
 		do_action( 'after_imagify_optimize_attachment', $this->id, $optimized_data );
 
-		delete_transient( 'imagify-async-in-progress-' . $this->id );
+		$this->delete_running_status();
 
 		return $optimized_data;
 	}
@@ -518,7 +518,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		*/
 		do_action( 'before_imagify_optimize_missing_thumbnails', $this->id, $missing_sizes );
 
-		set_transient( 'imagify-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+		$this->set_running_status();
 
 		$errors = new WP_Error();
 
@@ -535,7 +535,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		}
 
 		if ( ! $result_sizes ) {
-			delete_transient( 'imagify-async-in-progress-' . $this->id );
+			$this->delete_running_status();
 			return $errors;
 		}
 
@@ -579,7 +579,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		 */
 		do_action( 'after_imagify_optimize_missing_thumbnails', $this->id, $result_sizes, $errors );
 
-		delete_transient( 'imagify-async-in-progress-' . $this->id );
+		$this->delete_running_status();
 
 		// Return the result.
 		if ( $errors->get_error_codes() ) {
@@ -621,7 +621,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		*/
 		do_action( 'before_imagify_reoptimize_attachment_thumbnails', $this->id, $sizes );
 
-		set_transient( 'imagify-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+		$this->set_running_status();
 
 		$data = $this->get_data();
 
@@ -659,7 +659,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		if ( ! $sizes ) {
 			$data['stats']['percent'] = $data['stats']['original_size'] ? round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 ) : 0;
 			update_post_meta( $this->id, '_imagify_data', $data );
-			delete_transient( 'imagify-async-in-progress-' . $this->id );
+			$this->delete_running_status();
 			return;
 		}
 
@@ -701,7 +701,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		*/
 		do_action( 'after_imagify_reoptimize_attachment_thumbnails', $this->id, $sizes );
 
-		delete_transient( 'imagify-async-in-progress-' . $this->id );
+		$this->delete_running_status();
 	}
 
 	/**

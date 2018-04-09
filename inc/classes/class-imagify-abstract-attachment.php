@@ -84,6 +84,26 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	protected $editors = array();
 
 	/**
+	 * The name of the transient that tells if optimization is processing.
+	 *
+	 * @var    string
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $optimization_state_transient;
+
+	/**
+	 * Tell if the optimization status is network-wide.
+	 *
+	 * @var    bool
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $optimization_state_network_wide = false;
+
+	/**
 	 * The constructor.
 	 *
 	 * @since  1.0
@@ -105,8 +125,10 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			$this->id = $post->ID;
 		}
 
-		$this->id         = (int) $this->id;
-		$this->filesystem = Imagify_Filesystem::get_instance();
+		$this->id                           = (int) $this->id;
+		$this->filesystem                   = Imagify_Filesystem::get_instance();
+		$this->optimization_state_transient = 'wp' !== $this->get_context() ? strtolower( $this->get_context() ) . '-' : '';
+		$this->optimization_state_transient = 'imagify-' . $this->optimization_state_transient . 'async-in-progress-' . $this->id;
 	}
 
 	/**
@@ -946,6 +968,52 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		remove_filter( 'image_strip_meta', '__return_false' );
 
 		return $resized_image_path;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** WORKING STATUS ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Tell if the file is currently being optimized (or restored, etc).
+	 *
+	 * @since  1.7.1
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public function is_running() {
+		$callback = $this->optimization_state_network_wide ? 'get_site_transient' : 'get_transient';
+
+		return false !== call_user_func( $callback, $this->optimization_state_transient );
+	}
+
+	/**
+	 * Set the running status to "running" for 10 minutes.
+	 *
+	 * @since  1.7.1
+	 * @author Grégory Viguier
+	 * @access public
+	 */
+	public function set_running_status() {
+		$callback = $this->optimization_state_network_wide ? 'set_site_transient' : 'set_transient';
+
+		call_user_func( $callback, $this->optimization_state_transient, true, 10 * MINUTE_IN_SECONDS );
+	}
+
+	/**
+	 * Unset the running status.
+	 *
+	 * @since  1.7.1
+	 * @author Grégory Viguier
+	 * @access public
+	 */
+	public function delete_running_status() {
+		$callback = $this->optimization_state_network_wide ? 'delete_site_transient' : 'delete_transient';
+
+		call_user_func( $callback, $this->optimization_state_transient );
 	}
 
 

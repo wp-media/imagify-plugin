@@ -310,10 +310,7 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 		return $output;
 	}
 
-	$transient_context = ( 'wp' !== $context ) ? strtolower( $context ) . '-' : '';
-	$transient_name    = 'imagify-' . $transient_context . 'async-in-progress-' . $attachment->id;
-
-	if ( false !== get_transient( $transient_name ) ) {
+	if ( $attachment->is_running() ) {
 		return '<div class="button"><span class="imagify-spinner"></span>' . __( 'Optimizing...', 'imagify' ) . '</div>';
 	}
 

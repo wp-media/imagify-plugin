@@ -685,9 +685,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		$transient_name = 'imagify-file-async-in-progress-' . $item->get_id();
-
-		if ( false !== get_site_transient( $transient_name ) ) {
+		if ( $item->is_running() ) {
 			echo '<div class="button"><span class="imagify-spinner"></span>' . __( 'Optimizing...', 'imagify' ) . '</div>';
 			return;
 		}

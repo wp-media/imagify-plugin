@@ -30,27 +30,6 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 */
 	protected $delete_files;
 
-	/**
-	 * The name of the transient that tells if optimization is processing.
-	 *
-	 * @var string
-	 */
-	protected $optimization_state_transient;
-
-	/**
-	 * The constructor.
-	 *
-	 * @since  1.6.6
-	 * @author Grégory Viguier
-	 *
-	 * @param int $id The attachment ID.
-	 */
-	public function __construct( $id = 0 ) {
-		parent::__construct( $id );
-
-		$this->optimization_state_transient = 'imagify-async-in-progress-' . $this->id;
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** ATTACHMENT PATHS AND URLS =============================================================== */
@@ -183,9 +162,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		/**
 		 * Start the process.
 		 */
-
-		// Set a "optimization status" transient.
-		set_transient( $this->optimization_state_transient, true, 10 * MINUTE_IN_SECONDS );
+		$this->set_running_status();
 
 		/** This hook is documented in /inc/classes/class-imagify-attachment.php. */
 		do_action( 'before_imagify_optimize_attachment', $this->id );
@@ -354,8 +331,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		$result       = parent::optimize_missing_thumbnails( $optimization_level );
 		$result_sizes = array();
 
-		// Set the "optimization status" transient back.
-		set_transient( $this->optimization_state_transient, true, 10 * MINUTE_IN_SECONDS );
+		$this->set_running_status();
 
 		if ( is_array( $result ) ) {
 			// All good.
@@ -368,7 +344,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		if ( ! $result_sizes ) {
 			// No thumbnails created.
-			delete_transient( $this->optimization_state_transient );
+			$this->delete_running_status();
 			return $result;
 		}
 
@@ -380,7 +356,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		if ( ! $this->can_send_to_s3() ) {
 			// The other thumbnails are not on S3, so we don't need to send the new ones.
-			delete_transient( $this->optimization_state_transient );
+			$this->delete_running_status();
 			return $result;
 		}
 
@@ -403,7 +379,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 				$result->add( 'no_attachment_path', __( 'Files could not be sent to Amazon S3.', 'imagify' ) );
 			}
 
-			delete_transient( $this->optimization_state_transient );
+			$this->delete_running_status();
 			return $result;
 		}
 
@@ -417,7 +393,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 				$result->add( 'main_file_not_on_s3', __( 'The main image could not be retrieved from Amazon S3.', 'imagify' ) );
 			}
 
-			delete_transient( $this->optimization_state_transient );
+			$this->delete_running_status();
 			return $result;
 		}
 
@@ -470,7 +446,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 						) );
 					}
 
-					delete_transient( $this->optimization_state_transient );
+					$this->delete_running_status();
 					return $result;
 				}
 
@@ -675,7 +651,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		/**
 		 * Delete the "optimization status" transient.
 		 */
-		delete_transient( $this->optimization_state_transient );
+		$this->delete_running_status();
 	}
 
 	/**
