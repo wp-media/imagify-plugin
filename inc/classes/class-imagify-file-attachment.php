@@ -16,7 +16,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * The attachment SQL DB class.
@@ -26,6 +26,16 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 * @access protected
 	 */
 	protected $db_class_name = 'Imagify_Files_DB';
+
+	/**
+	 * Tell if the optimization status is network-wide.
+	 *
+	 * @var    bool
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $optimization_state_network_wide = true;
 
 	/**
 	 * The constructor.
@@ -41,13 +51,15 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			$this->id = (int) $id;
 			$this->get_row();
 		} elseif ( is_array( $id ) || is_object( $id ) ) {
-			$classname = $this->db_class_name;
-			$prim_key  = $classname::get_instance()->get_primary_key();
+			$prim_key  = $this->get_row_db_instance()->get_primary_key();
 			$this->row = (array) $id;
 			$this->id  = $this->row[ $prim_key ];
 		} else {
 			$this->invalidate_row();
 		}
+
+		$this->filesystem                   = Imagify_Filesystem::get_instance();
+		$this->optimization_state_transient = 'imagify-file-async-in-progress-' . $this->id;
 	}
 
 	/**
@@ -119,7 +131,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		return site_url( '/' ) . imagify_make_file_path_relative( $this->get_raw_backup_path() );
+		return site_url( '/' ) . $this->filesystem->make_path_relative( $this->get_raw_backup_path() );
 	}
 
 	/**
@@ -136,8 +148,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			return array();
 		}
 
-		$classname = $this->db_class_name;
-		$data      = array_merge( $classname::get_instance()->get_column_defaults(), $this->get_row() );
+		$data = array_merge( $this->get_row_db_instance()->get_column_defaults(), $this->get_row() );
 
 		unset( $data['file_id'] );
 		return $data;
@@ -299,10 +310,10 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 
 			if ( ! $file_path ) {
 				$file_path = $this->get_original_path();
-				$file_path = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
+				$file_path = $file_path && $this->filesystem->exists( $file_path ) ? $file_path : false;
 			}
 
-			$size = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+			$size = $file_path ? $this->filesystem->size( $file_path ) : 0;
 		}
 
 		if ( $human_format ) {
@@ -334,8 +345,8 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			$size = $row['optimized_size'];
 		} else {
 			$file_path = $this->get_original_path();
-			$file_path = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
-			$size      = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+			$file_path = $file_path && $this->filesystem->exists( $file_path ) ? $file_path : false;
+			$size      = $file_path ? $this->filesystem->size( $file_path ) : 0;
 		}
 
 		if ( $human_format ) {
@@ -505,8 +516,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		static $column_defaults;
 
 		if ( ! isset( $column_defaults ) ) {
-			$classname       = $this->db_class_name;
-			$column_defaults = $classname::get_instance()->get_column_defaults();
+			$column_defaults = $this->get_row_db_instance()->get_column_defaults();
 
 			// All DB columns that have `null` as default value, are Imagify data.
 			foreach ( $column_defaults as $column_name => $value ) {
@@ -525,7 +535,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		// Also set the new file hash.
 		$file_path = $this->get_original_path();
 
-		if ( $file_path && imagify_get_filesystem()->exists( $file_path ) ) {
+		if ( $file_path && $this->filesystem->exists( $file_path ) ) {
 			$imagify_columns['hash'] = md5_file( $file_path );
 		}
 
@@ -576,9 +586,9 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 			$data['optimized_size'] = (int) $response->new_size;
 		} else {
 			$file_path = $this->get_original_path();
-			$file_path = $file_path && imagify_get_filesystem()->exists( $file_path ) ? $file_path : false;
+			$file_path = $file_path && $this->filesystem->exists( $file_path ) ? $file_path : false;
 
-			$data['optimized_size'] = $file_path ? imagify_get_filesystem()->size( $file_path ) : 0;
+			$data['optimized_size'] = $file_path ? $this->filesystem->size( $file_path ) : 0;
 		}
 
 		if ( $original_size && $data['optimized_size'] ) {
@@ -622,7 +632,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		*/
 		do_action( 'before_imagify_optimize_file', $this->id );
 
-		set_site_transient( 'imagify-file-async-in-progress-' . $this->id, true, 10 * MINUTE_IN_SECONDS );
+		$this->set_running_status();
 
 		// Optimize the image.
 		$response = do_imagify( $this->get_original_path(), array(
@@ -641,7 +651,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		$this->update_row( $data );
 
 		if ( is_wp_error( $response ) ) {
-			delete_site_transient( 'imagify-file-async-in-progress-' . $this->id );
+			$this->delete_running_status();
 
 			if ( 'error' === $data['status'] ) {
 				return $response;
@@ -662,7 +672,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		 */
 		do_action( 'after_imagify_optimize_file', $this->id, $this->get_data() );
 
-		delete_site_transient( 'imagify-file-async-in-progress-' . $this->id );
+		$this->delete_running_status();
 
 		return true;
 	}
@@ -706,8 +716,8 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		do_action( 'before_imagify_restore_file', $this->id );
 
 		// Create the original image from the backup.
-		imagify_get_filesystem()->copy( $backup_path, $file_path, true );
-		imagify_chmod_file( $file_path );
+		$this->filesystem->copy( $backup_path, $file_path, true );
+		$this->filesystem->chmod_file( $file_path );
 
 		// Remove old optimization data.
 		$this->delete_imagify_data();

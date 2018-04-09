@@ -12,14 +12,19 @@ class Imagify_Admin_Ajax_Post {
 	/**
 	 * Class version.
 	 *
-	 * @var string
+	 * @var    string
+	 * @since  1.6.11
+	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.3';
 
 	/**
 	 * Actions to be triggered on admin ajax and admin post.
 	 *
-	 * @var array
+	 * @var    array
+	 * @since  1.6.11
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected $ajax_post_actions = array(
 		'imagify_manual_upload',
@@ -35,7 +40,10 @@ class Imagify_Admin_Ajax_Post {
 	/**
 	 * Actions to be triggered only on admin ajax.
 	 *
-	 * @var array
+	 * @var    array
+	 * @since  1.6.11
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected $ajax_only_actions = array(
 		'imagify_bulk_upload',
@@ -58,17 +66,31 @@ class Imagify_Admin_Ajax_Post {
 		'imagify_get_files_tree',
 		'imagify_get_folder_type_data',
 		'imagify_bulk_info_seen',
+		'imagify_bulk_get_stats',
 	);
 
 	/**
 	 * Actions to be triggered only on admin post.
 	 *
-	 * @var array
+	 * @var    array
+	 * @since  1.6.11
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected $post_only_actions = array(
 		'imagify_scan_custom_folders',
 		'imagify_dismiss_ad',
 	);
+
+	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
 
 	/**
 	 * The single instance of the class.
@@ -80,9 +102,13 @@ class Imagify_Admin_Ajax_Post {
 	/**
 	 * The constructor.
 	 *
-	 * @return void
+	 * @since  1.6.11
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
-	protected function __construct() {}
+	protected function __construct() {
+		$this->filesystem = Imagify_Filesystem::get_instance();
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -93,6 +119,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get the main Instance.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return object Main instance.
@@ -109,6 +136,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Launch the hooks.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function init() {
@@ -138,6 +166,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize all thumbnails of a specific image with the manual method.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_manual_upload_callback() {
@@ -167,6 +196,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize all thumbnails of a specific image with a different optimization level.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_manual_override_upload_callback() {
@@ -199,6 +229,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize one or some thumbnails that are not optimized yet.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function imagify_optimize_missing_sizes_callback() {
@@ -228,6 +259,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Process a restoration to the original attachment.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_restore_upload_callback() {
@@ -258,6 +290,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize all thumbnails of a specific image with the bulk method.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_bulk_upload_callback() {
@@ -558,6 +591,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize image on picture uploading with async request.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Julio Potier
 	 * @see    _imagify_optimize_attachment()
 	 */
@@ -583,6 +617,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Optimize image on picture editing (resize, crop...) with async request.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Julio Potier
 	 */
 	public function imagify_async_optimize_save_image_editor_file_callback() {
@@ -635,6 +670,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get all unoptimized attachment ids.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_get_unoptimized_attachment_ids_callback() {
@@ -753,8 +789,7 @@ class Imagify_Admin_Ajax_Post {
 		 */
 		do_action( 'imagify_bulk_optimize_before_file_existence_tests', $ids, $results, $optimization_level );
 
-		$data       = array();
-		$filesystem = imagify_get_filesystem();
+		$data = array();
 
 		foreach ( $ids as $i => $id ) {
 			if ( empty( $results['filenames'][ $id ] ) ) {
@@ -767,7 +802,7 @@ class Imagify_Admin_Ajax_Post {
 			/** This filter is documented in inc/functions/process.php. */
 			$file_path = apply_filters( 'imagify_file_path', $file_path );
 
-			if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
+			if ( ! $file_path || ! $this->filesystem->exists( $file_path ) ) {
 				continue;
 			}
 
@@ -776,7 +811,7 @@ class Imagify_Admin_Ajax_Post {
 			$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
 
 			// Don't try to re-optimize if there is no backup file.
-			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! $filesystem->exists( $attachment_backup_path ) ) {
+			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! $this->filesystem->exists( $attachment_backup_path ) ) {
 				continue;
 			}
 
@@ -794,6 +829,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get all unoptimized file ids.
 	 *
 	 * @since  1.7
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function imagify_get_unoptimized_file_ids_callback() {
@@ -906,10 +942,41 @@ class Imagify_Admin_Ajax_Post {
 	}
 
 	/**
+	 * Get generic stats to display in the bulk page.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_bulk_get_stats_callback() {
+		imagify_check_nonce( 'imagify-bulk-upload' );
+
+		$folder_types = filter_input( INPUT_GET, 'types', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY );
+		$folder_types = is_array( $folder_types ) ? array_flip( array_filter( $folder_types ) ) : array();
+
+		if ( ! $folder_types ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		foreach ( $folder_types as $folder_type ) {
+			if ( 'library' === $folder_type ) {
+				imagify_check_user_capacity( 'bulk-optimize' );
+			} elseif ( 'custom-folders' === $folder_type ) {
+				imagify_check_user_capacity( 'optimize-file' );
+			} else {
+				imagify_check_user_capacity( 'bulk-optimize', $folder_type );
+			}
+		}
+
+		wp_send_json_success( imagify_get_bulk_stats( $folder_types ) );
+	}
+
+	/**
 	 * Check if the backup directory is writable.
 	 * This is used to display an error message in the plugin's settings page.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function imagify_check_backup_dir_is_writable_callback() {
@@ -917,7 +984,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_user_capacity();
 
 		wp_send_json_success( array(
-			'is_writable' => (int) imagify_backup_dir_is_writable(),
+			'is_writable' => (int) Imagify_Requirements::attachments_backup_dir_is_writable(),
 		) );
 	}
 
@@ -926,6 +993,7 @@ class Imagify_Admin_Ajax_Post {
 	 * When XML-RPC is used, a current user is set, but no cookies are set, so they cannot be sent with the request. Instead we stored the user ID in a transient.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Grégory Viguier
 	 * @see    imagify_do_async_job()
 	 */
@@ -976,6 +1044,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Create a new Imagify account.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_signup_callback() {
@@ -1009,6 +1078,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Check the API key validity.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_check_api_key_validity_callback() {
@@ -1034,6 +1104,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get admin bar profile output.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_get_admin_bar_profile_callback() {
@@ -1119,6 +1190,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get pricings from API for Onetime and Plans at the same time.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Geoffrey Crofte
 	 */
 	public function imagify_get_prices_callback() {
@@ -1145,6 +1217,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Check Coupon code on modal popin.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Geoffrey Crofte
 	 */
 	public function imagify_check_coupon_callback() {
@@ -1184,6 +1257,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get estimated sizes from the WordPress library.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Geoffrey Crofte
 	 */
 	public function imagify_get_images_counts_callback() {
@@ -1208,6 +1282,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Estimate sizes and update the options values for them.
 	 *
 	 * @since  1.6.11
+	 * @access public
 	 * @author Remy Perona
 	 */
 	public function imagify_update_estimate_sizes_callback() {
@@ -1229,6 +1304,7 @@ class Imagify_Admin_Ajax_Post {
 	 * Get the Imagify User data.
 	 *
 	 * @since  1.7
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function imagify_get_user_data_callback() {
@@ -1259,11 +1335,10 @@ class Imagify_Admin_Ajax_Post {
 	 * Get files and folders that are direct children of a given folder.
 	 *
 	 * @since  1.7
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function imagify_get_files_tree_callback() {
-		static $abspath;
-
 		imagify_check_nonce( 'get-files-tree' );
 		imagify_check_user_capacity( 'optimize-file' );
 
@@ -1272,13 +1347,13 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		$folder = trailingslashit( sanitize_text_field( $_POST['folder'] ) );
-		$folder = realpath( ABSPATH . ltrim( $folder, '/' ) );
+		$folder = realpath( $this->filesystem->get_abspath() . ltrim( $folder, '/' ) );
 
-		if ( ! $folder || ! imagify_get_filesystem()->exists( $folder ) ) {
+		if ( ! $folder ) {
 			imagify_die( __( 'This folder doesn\'t exist.', 'imagify' ) );
 		}
 
-		if ( ! imagify_get_filesystem()->is_dir( $folder ) ) {
+		if ( ! $this->filesystem->is_dir( $folder ) ) {
 			imagify_die( __( 'This file is not a folder.', 'imagify' ) );
 		}
 
@@ -1286,17 +1361,13 @@ class Imagify_Admin_Ajax_Post {
 			imagify_die( __( 'This folder is not allowed.', 'imagify' ) );
 		}
 
-		if ( ! isset( $abspath ) ) {
-			$abspath = wp_normalize_path( ABSPATH );
-		}
-
 		// Finally we made all our validations.
 		$selected = ! empty( $_POST['selected'] ) && is_array( $_POST['selected'] ) ? array_flip( $_POST['selected'] ) : array();
-		$folder   = wp_normalize_path( trailingslashit( $folder ) );
+		$folder   = $this->filesystem->normalize_dir_path( $folder );
 		$views    = Imagify_Views::get_instance();
 		$output   = '';
 
-		if ( $folder === $abspath ) {
+		if ( $this->filesystem->is_abspath( $folder ) ) {
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
 				'relative_path'     => '/',
 				// Value #///# Label.
@@ -1318,17 +1389,17 @@ class Imagify_Admin_Ajax_Post {
 				continue;
 			}
 
-			$folder_path   = $file->getPathname();
-			$relative_path = esc_attr( imagify_make_file_path_relative( trailingslashit( $folder_path ) ) );
-			$placeholder   = Imagify_Files_Scan::add_placeholder( trailingslashit( $folder_path ) );
+			$folder_path   = trailingslashit( $file->getPathname() );
+			$relative_path = $this->filesystem->make_path_relative( $folder_path );
+			$placeholder   = Imagify_Files_Scan::add_placeholder( $folder_path );
 
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
-				'relative_path'     => $relative_path,
+				'relative_path'     => esc_attr( $relative_path ),
 				// Value #///# Label.
 				'checkbox_value'    => esc_attr( $placeholder ) . '#///#' . esc_attr( $relative_path ),
 				'checkbox_id'       => sanitize_html_class( $placeholder ),
 				'checkbox_selected' => isset( $selected[ $placeholder ] ),
-				'label'             => str_replace( $folder, '', $folder_path ),
+				'label'             => str_replace( $folder, '', untrailingslashit( $folder_path ) ),
 			) );
 		}
 
@@ -1415,13 +1486,11 @@ class Imagify_Admin_Ajax_Post {
 	 * @author Grégory Viguier
 	 */
 	public function check_can_optimize() {
-		if ( ! imagify_valid_key() ) {
+		if ( ! Imagify_Requirements::is_api_key_valid() ) {
 			wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
 		}
 
-		$user = new Imagify_User();
-
-		if ( $user->is_over_quota() ) {
+		if ( Imagify_Requirements::is_over_quota() ) {
 			wp_send_json_error( array( 'message' => 'over-quota' ) );
 		}
 	}

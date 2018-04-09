@@ -171,7 +171,7 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
 	global $pagenow, $typenow;
 
 	// Stop the process if the API key isn't valid.
-	if ( ! imagify_valid_key() ) {
+	if ( ! Imagify_Requirements::is_api_key_valid() ) {
 		return '';
 	}
 
@@ -247,7 +247,7 @@ function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $
 	$display = apply_filters( 'imagify_display_missing_thumbnails_link', true, $attachment, $context );
 
 	// Stop the process if the filter is false, or if the API key isn't valid, or if there is no backup file.
-	if ( ! $display || ! imagify_valid_key() || ! $attachment->has_backup() ) {
+	if ( ! $display || ! Imagify_Requirements::is_api_key_valid() || ! $attachment->has_backup() ) {
 		return '';
 	}
 
@@ -303,17 +303,14 @@ function get_imagify_media_column_content( $attachment, $context = 'wp' ) {
 	}
 
 	// Check if the API key is valid.
-	if ( ! imagify_valid_key() && ! $attachment->is_optimized() ) {
+	if ( ! Imagify_Requirements::is_api_key_valid() && ! $attachment->is_optimized() ) {
 		$output  = __( 'Invalid API key', 'imagify' );
 		$output .= '<br/>';
 		$output .= '<a href="' . esc_url( get_imagify_admin_url() ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
 		return $output;
 	}
 
-	$transient_context = ( 'wp' !== $context ) ? strtolower( $context ) . '-' : '';
-	$transient_name    = 'imagify-' . $transient_context . 'async-in-progress-' . $attachment->id;
-
-	if ( false !== get_transient( $transient_name ) ) {
+	if ( $attachment->is_running() ) {
 		return '<div class="button"><span class="imagify-spinner"></span>' . __( 'Optimizing...', 'imagify' ) . '</div>';
 	}
 

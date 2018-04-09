@@ -101,11 +101,6 @@ class Imagify_Cron_Rating extends Imagify_Abstract_Cron {
 			return;
 		}
 
-		// Check if the Imagify servers & the API are accessible.
-		if ( ! is_imagify_servers_up() ) {
-			return;
-		}
-
 		$user = get_imagify_user();
 
 		if ( ! is_wp_error( $user ) && (int) $user->image_count > 100 ) {

@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -41,6 +41,16 @@ class Imagify extends Imagify_Deprecated {
 	private $all_headers = array();
 
 	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
+
+	/**
 	 * The single instance of the class.
 	 *
 	 * @access  protected
@@ -53,7 +63,8 @@ class Imagify extends Imagify_Deprecated {
 	 * The constructor.
 	 */
 	protected function __construct() {
-		$this->api_key = get_imagify_option( 'api_key' );
+		$this->api_key    = get_imagify_option( 'api_key' );
+		$this->filesystem = Imagify_Filesystem::get_instance();
 
 		$this->all_headers['Accept']        = 'Accept: application/json';
 		$this->all_headers['Content-Type']  = 'Content-Type: application/json';
@@ -408,8 +419,8 @@ class Imagify extends Imagify_Deprecated {
 	 * @return object
 	 */
 	private function curl_http_call( $url, $args = array() ) {
-		// Check if php-curl is enabled.
-		if ( ! function_exists( 'curl_init' ) || ! function_exists( 'curl_exec' ) ) {
+		// Check if curl is available.
+		if ( ! Imagify_Requirements::supports_curl() ) {
 			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
 		}
 
@@ -418,8 +429,22 @@ class Imagify extends Imagify_Deprecated {
 		try {
 			$ch = curl_init();
 
-			if ( isset( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && file_exists( $args['post_data']['image'] ) ) {
+			if ( isset( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && $this->filesystem->exists( $args['post_data']['image'] ) ) {
 				$args['post_data']['image'] = curl_file_create( $args['post_data']['image'] );
+			}
+
+			// Handle proxies.
+			$proxy = new WP_HTTP_Proxy();
+
+			if ( $proxy->is_enabled() && $proxy->send_through_proxy( $url ) ) {
+				curl_setopt( $ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP );
+				curl_setopt( $ch, CURLOPT_PROXY, $proxy->host() );
+				curl_setopt( $ch, CURLOPT_PROXYPORT, $proxy->port() );
+
+				if ( $proxy->use_authentication() ) {
+					curl_setopt( $ch, CURLOPT_PROXYAUTH, CURLAUTH_ANY );
+					curl_setopt( $ch, CURLOPT_PROXYUSERPWD, $proxy->authentication() );
+				}
 			}
 
 			if ( 'POST' === $args['method'] ) {

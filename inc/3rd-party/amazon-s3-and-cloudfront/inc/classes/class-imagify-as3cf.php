@@ -14,7 +14,7 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * Context used with get_imagify_attachment().
@@ -30,6 +30,16 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 	 * @var array
 	 */
 	protected $uploads = array();
+
+	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
 
 	/**
 	 * The single instance of the class.
@@ -62,7 +72,9 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 	 * @since  1.6.6
 	 * @author Grégory Viguier
 	 */
-	protected function __construct() {}
+	protected function __construct() {
+		$this->filesystem = Imagify_Filesystem::get_instance();
+	}
 
 	/**
 	 * Launch the hooks.
@@ -184,7 +196,7 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 			/** This filter is documented in inc/functions/process.php. */
 			$file_path = apply_filters( 'imagify_file_path', $file_path, $id, 'as3cf_maybe_copy_files_from_s3' );
 
-			if ( ! $file_path || file_exists( $file_path ) ) {
+			if ( ! $file_path || $this->filesystem->exists( $file_path ) ) {
 				// The file exists, no need to retrieve it from S3.
 				unset( $ids[ $id ] );
 			} else {
@@ -231,14 +243,14 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 			$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
 
 			// Don't try to re-optimize if there is no backup file.
-			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! file_exists( $attachment_backup_path ) ) {
+			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! $this->filesystem->exists( $attachment_backup_path ) ) {
 				unset( $s3_data[ $id ], $ids[ $id ] );
 				continue;
 			}
 
-			$directory        = dirname( $s3_object['key'] );
-			$directory        = '.' === $directory || '' === $directory ? '' : $directory . '/';
-			$s3_object['key'] = $directory . wp_basename( $file_path );
+			$directory        = $this->filesystem->dir_path( $s3_object['key'] );
+			$directory        = $this->filesystem->is_root( $directory ) ? '' : $directory;
+			$s3_object['key'] = $directory . $this->filesystem->file_name( $file_path );
 
 			// Retrieve file from S3.
 			$as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $file_path );
@@ -259,14 +271,14 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 	 * @param  array $image_ids      An array of all attachment IDs.
 	 * @return bool|array            False by default. Provide an array with the keys 'filesize' (containing the total filesize) and 'thumbnails' (containing the number of thumbnails).
 	 */
-	function add_stats_for_s3_files( $size_and_count, $image_id, $files, $image_ids ) {
+	public function add_stats_for_s3_files( $size_and_count, $image_id, $files, $image_ids ) {
 		static $data;
 
 		if ( is_array( $size_and_count ) ) {
 			return $size_and_count;
 		}
 
-		if ( file_exists( $files['full'] ) ) {
+		if ( $this->filesystem->exists( $files['full'] ) ) {
 			// If the full size is on the server, that probably means all files are on the server too.
 			return $size_and_count;
 		}
@@ -341,7 +353,7 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 		}
 
 		if ( ! isset( $auto_optimize ) ) {
-			$auto_optimize = imagify_valid_key() && get_imagify_option( 'auto_optimize' );
+			$auto_optimize = Imagify_Requirements::is_api_key_valid() && get_imagify_option( 'auto_optimize' );
 		}
 
 		if ( $is_new_upload ) {

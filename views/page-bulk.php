@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 						<div class="imagify-number-you-optimized">
 							<p>
-								<span id="imagify-total-optimized-attachments" class="number"><?php echo esc_html( number_format_i18n( $data['already_optimized_attachments'] ) ); ?></span>
+								<span id="imagify-total-optimized-attachments" class="number"><?php echo esc_html( $data['already_optimized_attachments'] ); ?></span>
 								<span class="text">
 									<?php
 									printf(
@@ -36,12 +36,12 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 						<div class="imagify-bars">
 							<p><?php esc_html_e( 'Original size', 'imagify' ); ?></p>
 							<div class="imagify-bar-negative base-transparent right-outside-number">
-								<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo esc_html( imagify_size_format( $data['original_size'], 1 ) ); ?></span></div>
+								<div id="imagify-original-bar" class="imagify-progress" style="width: 100%"><span class="imagify-barnb"><?php echo esc_html( $data['original_human'] ); ?></span></div>
 							</div>
 
 							<p><?php esc_html_e( 'Optimized size', 'imagify' ); ?></p>
 							<div class="imagify-bar-primary base-transparent right-outside-number">
-								<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo max( 100 - $data['optimized_percent'], 0 ); ?>%"><span class="imagify-barnb"><?php echo esc_html( imagify_size_format( $data['optimized_size'], 1 ) ); ?></span></div>
+								<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo max( 100 - $data['optimized_percent'], 0 ); ?>%"><span class="imagify-barnb"><?php echo esc_html( $data['optimized_human'] ); ?></span></div>
 							</div>
 
 						</div>
@@ -85,7 +85,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			<div class="imagify-col imagify-account-info-col">
 
 				<?php
-				if ( ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || ! IMAGIFY_HIDDEN_ACCOUNT ) && imagify_valid_key() ) {
+				if ( ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || ! IMAGIFY_HIDDEN_ACCOUNT ) && Imagify_Requirements::is_api_key_valid() ) {
 					$user = new Imagify_User();
 					?>
 					<div class="imagify-options-title">
@@ -214,7 +214,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 	<?php
 	$this->print_template( 'modal-payment' );
 
-	if ( imagify_valid_key() ) {
+	if ( Imagify_Requirements::is_api_key_valid() ) {
 		$display_infos = get_transient( 'imagify_bulk_optimization_infos' );
 
 		?>

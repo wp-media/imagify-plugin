@@ -16,7 +16,7 @@ class Imagify_Files_Scan {
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * Get files (optimizable by Imagify) recursively from a specific folder.
@@ -29,10 +29,10 @@ class Imagify_Files_Scan {
 	 * @return array|object   An array of absolute paths. A WP_Error object on error.
 	 */
 	public static function get_files_from_folder( $folder ) {
-		static $abspath;
+		$filesystem = imagify_get_filesystem();
 
 		// Formate and validate the folder path.
-		if ( ! is_string( $folder ) || '' === $folder || '/' === $folder || '\\' === $folder ) {
+		if ( ! is_string( $folder ) ) {
 			return new WP_Error( 'invalid_folder', __( 'Invalid folder.', 'imagify' ) );
 		}
 
@@ -42,7 +42,7 @@ class Imagify_Files_Scan {
 			return new WP_Error( 'folder_not_exists', __( 'This folder does not exist.', 'imagify' ) );
 		}
 
-		if ( ! imagify_get_filesystem()->is_dir( $folder ) ) {
+		if ( ! $filesystem->is_dir( $folder ) ) {
 			return new WP_Error( 'not_a_folder', __( 'This file is not a folder.', 'imagify' ) );
 		}
 
@@ -50,12 +50,8 @@ class Imagify_Files_Scan {
 			return new WP_Error( 'folder_forbidden', __( 'This folder is not allowed.', 'imagify' ) );
 		}
 
-		if ( ! isset( $abspath ) ) {
-			$abspath = realpath( ABSPATH );
-		}
-
 		// Finally we made all our validations.
-		if ( $folder === $abspath ) {
+		if ( $filesystem->is_abspath( $folder ) ) {
 			// For the site's root, we don't look in sub-folders.
 			$dir    = new DirectoryIterator( $folder );
 			$dir    = new Imagify_Files_Iterator( $dir, false );
@@ -81,6 +77,20 @@ class Imagify_Files_Scan {
 	}
 
 	/**
+	 * Tell if a path is autorized.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $file_path A file or folder absolute path.
+	 * @return bool
+	 */
+	public static function is_path_autorized( $file_path ) {
+		return ! self::is_path_forbidden( $file_path );
+	}
+
+	/**
 	 * Tell if a path is forbidden.
 	 *
 	 * @since  1.7
@@ -93,11 +103,13 @@ class Imagify_Files_Scan {
 	public static function is_path_forbidden( $file_path ) {
 		static $folders;
 
-		if ( self::is_filename_forbidden( basename( $file_path ) ) ) {
+		$filesystem = imagify_get_filesystem();
+
+		if ( self::is_filename_forbidden( $filesystem->file_name( $file_path ) ) ) {
 			return true;
 		}
 
-		if ( imagify_file_is_symlinked( $file_path ) ) {
+		if ( $filesystem->is_symlinked( $file_path ) ) {
 			// Files outside the site's folder are forbidden.
 			return true;
 		}
@@ -147,12 +159,13 @@ class Imagify_Files_Scan {
 			return $folders;
 		}
 
-		$folders = array(
+		$filesystem = imagify_get_filesystem();
+		$folders    = array(
 			// Server.
-			imagify_get_abspath() . 'cgi-bin',             // `cgi-bin`
+			$filesystem->get_abspath() . 'cgi-bin',        // `cgi-bin`
 			// WordPress.
-			imagify_get_abspath() . 'wp-admin',            // `wp-admin`
-			imagify_get_abspath() . WPINC,                 // `wp-includes`
+			$filesystem->get_abspath() . 'wp-admin',       // `wp-admin`
+			$filesystem->get_abspath() . WPINC,            // `wp-includes`
 			get_imagify_upload_basedir( true ),            // Media library.
 			WP_CONTENT_DIR . '/languages',                 // Translations.
 			WP_CONTENT_DIR . '/mu-plugins',                // MU plugins.
@@ -498,7 +511,7 @@ class Imagify_Files_Scan {
 		if ( 'content' === $ngg_root ) {
 			$ngg_root = WP_CONTENT_DIR . '/';
 		} else {
-			$ngg_root = imagify_get_abspath();
+			$ngg_root = imagify_get_filesystem()->get_abspath();
 		}
 
 		if ( is_multisite() ) {

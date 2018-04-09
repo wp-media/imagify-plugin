@@ -130,11 +130,6 @@
 			// Overview chart.
 			this.drawOverviewChart();
 
-			if ( ! imagifyBulk.keyIsValid ) {
-				$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
-				return;
-			}
-
 			this.hasMultipleRows = $( '.imagify-bulk-table [name="group[]"]' ).length > 1;
 
 			// Optimization level selector.
@@ -155,20 +150,27 @@
 			$( '#imagify-bulk-action' ).on( 'click.imagify', this.maybeLaunchAllProcesses );
 			$( '.imagify-share-networks a' ).on( 'click.imagify', this.share );
 
-			if ( imagifyBulk.curlMissing ) {
-				return;
-			}
-
 			// Optimization events.
 			$( w )
 				.on( 'processQueue.imagify', this.processQueue )
 				.on( 'optimizeFiles.imagify', this.optimizeFiles )
 				.on( 'queueEmpty.imagify', this.queueEmpty );
 
-			// Heartbeat.
+			if ( imagifyBulk.ajaxActions.getStats && $( '.imagify-bulk-table [data-group-id="library"][data-context="wp"]' ).length ) {
+				// If large library.
+				imagifyBulk.heartbeatId = false;
+			}
+
+			if ( imagifyBulk.heartbeatId ) {
+				$( d )
+					.on( 'heartbeat-send', this.addHeartbeat )
+					.on( 'heartbeat-tick', this.processHeartbeat );
+			}
+
+			// Heartbeat for requirements.
 			$( d )
-				.on( 'heartbeat-send', this.addHeartbeat )
-				.on( 'heartbeat-tick', this.processHeartbeat );
+				.on( 'heartbeat-send', this.addRequirementsHeartbeat )
+				.on( 'heartbeat-tick', this.processRequirementsHeartbeat );
 		},
 
 		/**
@@ -373,6 +375,28 @@
 			return ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&optimization_level=' + item.level + '&action=' + action + '&folder_type=' + item.groupId;
 		},
 
+		/**
+		 * Get folder types used in the page.
+		 *
+		 * @return {array}
+		 */
+		getFolderTypes: function () {
+			if ( ! w.imagify.bulk.folderTypes.length ) {
+				$( '.imagify-row-folder-type' ).each( function() {
+					var $this   = $( this ),
+						groupID = $this.data( 'group-id' );
+
+					if ( 'library' === groupID ) {
+						groupID += '|' + $this.data( 'context' );
+					}
+
+					w.imagify.bulk.folderTypes.push( groupID );
+				} );
+			}
+
+			return w.imagify.bulk.folderTypes;
+		},
+
 		/*
 		 * Get the message displayed to the user when (s)he leaves the page.
 		 *
@@ -418,6 +442,77 @@
 			};
 
 			$( w ).trigger( 'queueEmpty.imagify' );
+		},
+
+		/*
+		 * Tell if we have a blocking error. Can also display an error message in a swal.
+		 *
+		 * @param  {bool} displayErrorMessage False to not display any error message.
+		 * @return {bool}
+		 */
+		hasBlockingError: function ( displayErrorMessage ) {
+			displayErrorMessage = undefined !== displayErrorMessage && displayErrorMessage;
+
+			if ( imagifyBulk.curlMissing ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						html: imagifyBulk.labels.curlMissing
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyBulk.editorMissing ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						html: imagifyBulk.labels.editorMissing
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyBulk.extHttpBlocked ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						html: imagifyBulk.labels.extHttpBlocked
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyBulk.apiDown ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						html: imagifyBulk.labels.apiDown
+					} );
+				}
+				return true;
+			}
+
+			if ( ! imagifyBulk.keyIsValid ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						title: imagifyBulk.labels.invalidAPIKeyTitle,
+						type:  'info'
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyBulk.isOverQuota ) {
+				if ( displayErrorMessage ) {
+					w.imagify.bulk.displayError( {
+						title:             imagifyBulk.labels.overQuotaTitle,
+						html:              $( '#tmpl-imagify-overquota-alert' ).html(),
+						type:              'info',
+						customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
+						showConfirmButton: false
+					} );
+				}
+				return true;
+			}
+
+			return false;
 		},
 
 		/*
@@ -574,6 +669,61 @@
 			this.globalOptimizedSize = 0;
 		},
 
+		/**
+		 * Print optimization stats.
+		 *
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		updateStats: function ( data ) {
+			var donutData;
+
+			if ( ! data || ! $.isPlainObject( data ) ) {
+				return;
+			}
+
+			if ( w.imagify.bulk.charts.overview.donut.data ) {
+				donutData = w.imagify.bulk.charts.overview.donut.data.datasets[0].data;
+
+				if ( data.unoptimized_attachments === donutData[0] && data.optimized_attachments === donutData[1] && data.errors_attachments === donutData[2] ) {
+					return;
+				}
+			}
+
+			/**
+			 * User account.
+			 */
+			data.unconsumed_quota = data.unconsumed_quota.toFixed( 1 ); // A mystery where a float rounded on php side is not rounded here anymore. JavaScript is fun, it always surprises you in a manner you didn't expect.
+			$( '.imagify-unconsumed-percent' ).html( data.unconsumed_quota + '%' );
+			$( '.imagify-unconsumed-bar' ).css( 'width', data.unconsumed_quota + '%' );
+
+			/**
+			 * Global chart.
+			 */
+			$( '#imagify-overview-chart-percent' ).html( data.optimized_attachments_percent + '<span>%</span>' );
+			$( '.imagify-total-percent' ).html( data.optimized_attachments_percent + '%' );
+
+			w.imagify.bulk.drawOverviewChart( [
+				data.unoptimized_attachments,
+				data.optimized_attachments,
+				data.errors_attachments
+			] );
+
+			/**
+			 * Stats block.
+			 */
+			// The total optimized images.
+			$( '#imagify-total-optimized-attachments' ).html( data.already_optimized_attachments );
+
+			// The original bar.
+			$( '#imagify-original-bar' ).find( '.imagify-barnb' ).html( data.original_human );
+
+			// The optimized bar.
+			$( '#imagify-optimized-bar' ).css( 'width', ( 100 - data.optimized_percent ) + '%' ).find( '.imagify-barnb' ).html( data.optimized_human );
+
+			// The Percent data.
+			$( '#imagify-total-optimized-attachments-pct' ).html( data.optimized_percent + '%' );
+		},
+
 		// Event callbacks =========================================================================
 
 		/*
@@ -667,16 +817,7 @@
 		maybeLaunchAllProcesses: function () {
 			var $infosModal;
 
-			if ( ! imagifyBulk.keyIsValid ) {
-				w.imagify.bulk.displayError( {
-					title: imagifyBulk.labels.invalidAPIKeyTitle,
-					type:  'info'
-				} );
-				return;
-			}
-
-			if ( imagifyBulk.curlMissing ) {
-				w.imagify.bulk.displayError( '', imagifyBulk.labels.curlMissing );
+			if ( $( this ).attr( 'disabled' ) ) {
 				return;
 			}
 
@@ -684,19 +825,7 @@
 				return;
 			}
 
-			if ( $( this ).attr( 'disabled' ) ) {
-				return;
-			}
-
-			if ( imagifyBulk.isOverQuota ) {
-				// Swal information when over quota.
-				w.imagify.bulk.displayError( {
-					title:             imagifyBulk.labels.overQuotaTitle,
-					html:              $( '#tmpl-imagify-overquota-alert' ).html(),
-					type:              'info',
-					customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
-					showConfirmButton: false
-				} );
+			if ( w.imagify.bulk.hasBlockingError( true ) ) {
 				return;
 			}
 
@@ -1082,6 +1211,20 @@
 			// Reset the queue.
 			w.imagify.bulk.queue = [];
 
+			// Fetch and display generic stats if heartbeat is disabled.
+			if ( ! imagifyBulk.heartbeatId ) {
+				$.get( ajaxurl, {
+					_wpnonce: imagifyBulk.ajaxNonce,
+					action:   imagifyBulk.ajaxActions.getStats,
+					types:    w.imagify.bulk.getFolderTypes()
+				} )
+					.done( function( response ) {
+						if ( response.success ) {
+							w.imagify.bulk.updateStats( response.data );
+						}
+					} );
+			}
+
 			// Maybe display error.
 			if ( ! $.isEmptyObject( w.imagify.bulk.status ) ) {
 				$.each( w.imagify.bulk.status, function( groupId, typeStatus ) {
@@ -1159,15 +1302,10 @@
 		 * @param {object} data Object containing all Heartbeat IDs.
 		 */
 		addHeartbeat: function ( e, data ) {
-			data.imagify_heartbeat = imagifyBulk.heartbeatId;
+			data.imagify_ids = data.imagify_ids || {};
+			data.imagify_ids[ imagifyBulk.heartbeatId ] = 1;
 
-			if ( ! w.imagify.bulk.folderTypes.length ) {
-				$( '.imagify-row-folder-type' ).each( function() {
-					w.imagify.bulk.folderTypes.push( $( this ).data( 'group-id' ) );
-				} );
-			}
-
-			data.imagify_types = w.imagify.bulk.folderTypes;
+			data.imagify_types = w.imagify.bulk.getFolderTypes();
 		},
 
 		/**
@@ -1178,55 +1316,42 @@
 		 * @param {object} data Object containing all Heartbeat IDs.
 		 */
 		processHeartbeat: function ( e, data ) {
-			var donutData;
+			if ( data.imagify_bulk_data ) {
+				w.imagify.bulk.updateStats( data.imagify_bulk_data );
+			}
+		},
 
-			if ( ! data.imagify_bulk_data ) {
+		/**
+		 * Add our Heartbeat ID for requirements on "heartbeat-send" event.
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		addRequirementsHeartbeat: function ( e, data ) {
+			data.imagify_ids = data.imagify_ids || {};
+			data.imagify_ids[ imagifyBulk.reqsHeartbeatId ] = 1;
+		},
+
+		/**
+		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * It allows to update requirements status periodically.
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		processRequirementsHeartbeat: function ( e, data ) {
+			if ( ! data.imagify_bulk_requirements ) {
 				return;
 			}
 
-			data = data.imagify_bulk_data;
+			data = data.imagify_bulk_requirements;
 
-			if ( w.imagify.bulk.charts.overview.donut.data ) {
-				donutData = w.imagify.bulk.charts.overview.donut.data.datasets[0].data;
-
-				if ( data.unoptimized_attachments === donutData[0] && data.optimized_attachments === donutData[1] && data.errors_attachments === donutData[2] ) {
-					return;
-				}
-			}
-
-			/**
-			 * User account.
-			 */
-			data.unconsumed_quota = data.unconsumed_quota.toFixed( 1 ); // A mystery where a float rounded on php side is not rounded here anymore. JavaScript is fun, it always surprises you in a manner you didn't expect.
-			$( '.imagify-unconsumed-percent' ).html( data.unconsumed_quota + '%' );
-			$( '.imagify-unconsumed-bar' ).css( 'width', data.unconsumed_quota + '%' );
-
-			/**
-			 * Global chart.
-			 */
-			$( '#imagify-overview-chart-percent' ).html( data.optimized_attachments_percent + '<span>%</span>' );
-			$( '.imagify-total-percent' ).html( data.optimized_attachments_percent + '%' );
-
-			w.imagify.bulk.drawOverviewChart( [
-				data.unoptimized_attachments,
-				data.optimized_attachments,
-				data.errors_attachments
-			] );
-
-			/**
-			 * Stats block.
-			 */
-			// The total optimized images.
-			$( '#imagify-total-optimized-attachments' ).html( data.already_optimized_attachments );
-
-			// The original bar.
-			$( '#imagify-original-bar' ).find( '.imagify-barnb' ).html( data.original_human );
-
-			// The optimized bar.
-			$( '#imagify-optimized-bar' ).css( 'width', ( 100 - data.optimized_percent ) + '%' ).find( '.imagify-barnb' ).html( data.optimized_human );
-
-			// The Percent data.
-			$( '#imagify-total-optimized-attachments-pct' ).html( data.optimized_percent + '%' );
+			imagifyBulk.curlMissing    = data.curl_missing;
+			imagifyBulk.editorMissing  = data.editor_missing;
+			imagifyBulk.extHttpBlocked = data.external_http_blocked;
+			imagifyBulk.apiDown        = data.api_down;
+			imagifyBulk.keyIsValid     = data.key_is_valid;
+			imagifyBulk.isOverQuota    = data.is_over_quota;
 		},
 
 		/**

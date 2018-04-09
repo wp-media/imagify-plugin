@@ -14,8 +14,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @return obj|array         Error message | Optimized image data.
  */
 function do_imagify( $file_path, $args = array() ) {
-	$errors = new WP_Error();
-	$args   = array_merge( array(
+	$args = array_merge( array(
 		'backup'             => get_imagify_option( 'backup' ),
 		'optimization_level' => get_imagify_option( 'optimization_level' ),
 		'keep_exif'          => get_imagify_option( 'exif' ),
@@ -34,48 +33,43 @@ function do_imagify( $file_path, $args = array() ) {
 	 */
 	$file_path = apply_filters( 'imagify_file_path', $file_path );
 
-	// Check if the Imagify servers & the API are accessible.
-	if ( ! is_imagify_servers_up() ) {
-		$errors->add( 'api_server_down', __( 'Sorry, our servers are temporarily unaccessible. Please, try again in a couple of minutes.', 'imagify' ) );
-		return $errors;
+	// Check that file path isn't empty.
+	if ( ! $file_path ) {
+		return new WP_Error( 'empty_path', __( 'File path is empty.', 'imagify' ) );
+	}
+
+	// Check if curl is available.
+	if ( ! Imagify_Requirements::supports_curl() ) {
+		return new WP_Error( 'curl', __( 'cURL is not available on the server.', 'imagify' ) );
+	}
+
+	// Check if imageMagick or GD is available.
+	if ( ! Imagify_Requirements::supports_image_editor() ) {
+		return new WP_Error( 'image_editor', __( 'No php extensions are available to edit images on the server.', 'imagify' ) );
 	}
 
 	// Check if external HTTP requests are blocked.
-	if ( is_imagify_blocked() ) {
-		$errors->add( 'http_block_external', __( 'External HTTP requests are blocked', 'imagify' ) );
-		return $errors;
+	if ( Imagify_Requirements::is_imagify_blocked() ) {
+		return new WP_Error( 'http_block_external', __( 'External HTTP requests are blocked.', 'imagify' ) );
 	}
 
-	// Check that file path isn't empty.
-	if ( empty( $file_path ) ) {
-		$errors->add( 'empty_path', __( 'File path is empty', 'imagify' ) );
-		return $errors;
+	// Check if the Imagify servers & the API are accessible.
+	if ( ! Imagify_Requirements::is_api_up() ) {
+		return new WP_Error( 'api_server_down', __( 'Sorry, our servers are temporarily unavailable. Please, try again in a couple of minutes.', 'imagify' ) );
 	}
 
 	$filesystem = imagify_get_filesystem();
 
 	// Check that the file exists.
-	if ( ! $filesystem->exists( $file_path ) || ! $filesystem->is_file( $file_path ) ) {
+	if ( ! $filesystem->is_writable( $file_path ) || ! $filesystem->is_file( $file_path ) ) {
 		/* translators: %s is a file path. */
-		$errors->add( 'file_not_found', sprintf( __( 'Could not find %s', 'imagify' ), $file_path ) );
-		return $errors;
+		return new WP_Error( 'file_not_found', sprintf( __( 'Could not find %s.', 'imagify' ), $filesystem->make_path_relative( $file_path ) ) );
 	}
 
-	// Check that the file is writable.
-	if ( ! wp_is_writable( dirname( $file_path ) ) ) {
+	// Check that the file directory is writable.
+	if ( ! $filesystem->is_writable( $filesystem->dir_path( $file_path ) ) ) {
 		/* translators: %s is a file path. */
-		$errors->add( 'not_writable', sprintf( __( '%s is not writable', 'imagify' ), dirname( $file_path ) ) );
-		return $errors;
-	}
-
-	// Get file size.
-	$file_size = $filesystem->size( $file_path );
-
-	// Check that file exists.
-	if ( 0 === $file_size ) {
-		/* translators: %s is a file path. */
-		$errors->add( 'image_not_found', sprintf( __( 'Skipped (%s), image not found.', 'imagify' ), '<code>' . imagify_make_file_path_relative( $file_path ) . '</code>' ) );
-		return $errors;
+		return new WP_Error( 'not_writable', sprintf( __( '%s is not writable.', 'imagify' ), $filesystem->make_path_relative( $filesystem->dir_path( $file_path ) ) ) );
 	}
 
 	/**
@@ -102,8 +96,7 @@ function do_imagify( $file_path, $args = array() ) {
 
 	// Check status code.
 	if ( is_wp_error( $response ) ) {
-		$errors->add( 'api_error', $response->get_error_message() );
-		return $errors;
+		return new WP_Error( 'api_error', $response->get_error_message() );
 	}
 
 	// Create a backup file.
@@ -119,12 +112,11 @@ function do_imagify( $file_path, $args = array() ) {
 	$temp_file = download_url( $response->image );
 
 	if ( is_wp_error( $temp_file ) ) {
-		$errors->add( 'temp_file_not_found', $temp_file->get_error_message() );
-		return $errors;
+		return new WP_Error( 'temp_file_not_found', $temp_file->get_error_message() );
 	}
 
 	$filesystem->move( $temp_file, $file_path, true );
-	imagify_chmod_file( $file_path );
+	$filesystem->chmod_file( $file_path );
 
 	// If temp file still exists, delete it.
 	if ( $filesystem->exists( $temp_file ) ) {
@@ -225,13 +217,13 @@ function imagify_backup_file( $file_path, $backup_path = null ) {
 	// Make sure the source file exists.
 	if ( ! $filesystem->exists( $file_path ) ) {
 		return new WP_Error( 'source_doesnt_exist', __( 'The file to backup does not exist.', 'imagify' ), array(
-			'file_path' => imagify_make_file_path_relative( $file_path ),
+			'file_path' => $filesystem->make_path_relative( $file_path ),
 		) );
 	}
 
 	if ( ! isset( $backup_path ) ) {
 		// Make sure the backup directory is writable.
-		if ( ! imagify_backup_dir_is_writable() ) {
+		if ( ! Imagify_Requirements::attachments_backup_dir_is_writable() ) {
 			return new WP_Error( 'backup_dir_not_writable', __( 'The backup directory is not writable.', 'imagify' ) );
 		}
 
@@ -244,7 +236,7 @@ function imagify_backup_file( $file_path, $backup_path = null ) {
 	}
 
 	// Create sub-directories.
-	wp_mkdir_p( dirname( $backup_path ) );
+	$filesystem->make_dir( $filesystem->dir_path( $backup_path ) );
 
 	/**
 	 * Allow to overwrite the backup file if it already exists.
@@ -264,8 +256,8 @@ function imagify_backup_file( $file_path, $backup_path = null ) {
 	// Make sure the backup copy exists.
 	if ( ! $filesystem->exists( $backup_path ) ) {
 		return new WP_Error( 'backup_doesnt_exist', __( 'The file could not be saved.', 'imagify' ), array(
-			'file_path'   => imagify_make_file_path_relative( $file_path ),
-			'backup_path' => imagify_make_file_path_relative( $backup_path ),
+			'file_path'   => $filesystem->make_path_relative( $file_path ),
+			'backup_path' => $filesystem->make_path_relative( $backup_path ),
 		) );
 	}
 

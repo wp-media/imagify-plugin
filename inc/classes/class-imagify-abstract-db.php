@@ -14,7 +14,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.2';
+	const VERSION = '1.2.1';
 
 	/**
 	 * Suffix used in the name of the options that store the table versions.
@@ -561,9 +561,9 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 		$wpdb->{$this->table} = $this->table_name;
 
 		if ( $this->table_is_global ) {
-			$wpdb->global_tables[] = $this->table_name;
+			$wpdb->global_tables[] = $this->table;
 		} else {
-			$wpdb->tables[] = $this->table_name;
+			$wpdb->tables[] = $this->table;
 		}
 	}
 
@@ -581,9 +581,9 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 		unset( $wpdb->{$this->table} );
 
 		if ( $this->table_is_global ) {
-			$wpdb->global_tables = array_diff( $wpdb->global_tables, array( $this->table_name ) );
+			$wpdb->global_tables = array_diff( $wpdb->global_tables, array( $this->table ) );
 		} else {
-			$wpdb->tables = array_diff( $wpdb->tables, array( $this->table_name ) );
+			$wpdb->tables = array_diff( $wpdb->tables, array( $this->table ) );
 		}
 	}
 

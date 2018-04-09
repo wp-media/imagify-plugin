@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 $settings     = Imagify_Settings::get_instance();
 $options      = Imagify_Options::get_instance();
 $option_name  = $options->get_option_name();
-$hidden_class = imagify_valid_key() ? '' : ' hidden';
+$hidden_class = Imagify_Requirements::is_api_key_valid() ? '' : ' hidden';
 
 /* Ads notice */
 $notice  = 'wp-rocket';
@@ -21,14 +21,14 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 
 		<form action="<?php echo esc_url( $settings->get_form_action() ); ?>" id="imagify-settings" method="post">
 
-			<div class="imagify-settings-main-content<?php echo imagify_valid_key() ? '' : ' imagify-no-api-key'; ?>">
+			<div class="imagify-settings-main-content<?php echo Imagify_Requirements::is_api_key_valid() ? '' : ' imagify-no-api-key'; ?>">
 
 				<?php settings_fields( $settings->get_settings_group() ); ?>
 				<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
 				<?php wp_nonce_field( 'imagify-check-api-key', 'imagifycheckapikeynonce', false ); ?>
 
 				<?php
-				if ( ! imagify_valid_key() ) {
+				if ( ! Imagify_Requirements::is_api_key_valid() ) {
 					$this->print_template( 'part-settings-account' );
 					$this->print_template( 'part-settings-footer' );
 				}
@@ -96,11 +96,11 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 								'info'        => __( 'Keep your original images in a separate folder before optimization process.', 'imagify' ),
 							) );
 
-							$backup_error_class = $options->get( 'backup' ) && ! imagify_backup_dir_is_writable() ? '' : ' hidden';
+							$backup_error_class = $options->get( 'backup' ) && ! Imagify_Requirements::attachments_backup_dir_is_writable() ? '' : ' hidden';
 							?>
 							<br/><strong id="backup-dir-is-writable" class="imagify-error<?php echo $backup_error_class; ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_check_backup_dir_is_writable' ) ); ?>">
 								<?php
-								$backup_path = imagify_make_file_path_relative( get_imagify_backup_dir_path( true ) );
+								$backup_path = $this->filesystem->make_path_relative( get_imagify_backup_dir_path( true ) );
 								/* translators: %s is a file path. */
 								printf( __( 'The backup folder %s cannot be created or is not writable by the server, original images cannot be saved!', 'imagify' ), "<code>$backup_path</code>" );
 								?>
@@ -123,7 +123,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 					</div>
 				</div>
 
-				<?php if ( imagify_valid_key() ) { ?>
+				<?php if ( Imagify_Requirements::is_api_key_valid() ) { ?>
 					<div class="imagify-col imagify-account-info-col">
 						<?php $this->print_template( 'part-settings-account' ); ?>
 					</div>
@@ -167,7 +167,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 				</div>
 
 				<?php
-				if ( imagify_valid_key() ) {
+				if ( Imagify_Requirements::is_api_key_valid() ) {
 					$this->print_template( 'part-settings-footer' );
 				}
 				?>

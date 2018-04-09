@@ -430,7 +430,7 @@ function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
  * @return object|bool An object on success. False otherwise.
  */
 function imagify_get_cached_user() {
-	if ( ! imagify_valid_key() ) {
+	if ( ! Imagify_Requirements::is_api_key_valid() ) {
 		return false;
 	}
 
@@ -453,7 +453,7 @@ function imagify_get_cached_user() {
  * @return object|bool An object on success. False otherwise.
  */
 function imagify_cache_user() {
-	if ( ! imagify_valid_key() ) {
+	if ( ! Imagify_Requirements::is_api_key_valid() ) {
 		return false;
 	}
 

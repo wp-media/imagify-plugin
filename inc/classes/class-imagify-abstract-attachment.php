@@ -13,7 +13,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.3';
+	const VERSION = '1.3.2';
 
 	/**
 	 * The attachment ID.
@@ -23,6 +23,16 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @access public
 	 */
 	public $id = 0;
+
+	/**
+	 * Context.
+	 *
+	 * @var    string
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $context;
 
 	/**
 	 * The attachment SQL DB class.
@@ -54,6 +64,46 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	protected $is_extension_supported;
 
 	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
+
+	/**
+	 * The editor instances used to resize files.
+	 *
+	 * @var    array An array of image editor objects (WP_Image_Editor_Imagick, WP_Image_Editor_GD).
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $editors = array();
+
+	/**
+	 * The name of the transient that tells if optimization is processing.
+	 *
+	 * @var    string
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $optimization_state_transient;
+
+	/**
+	 * Tell if the optimization status is network-wide.
+	 *
+	 * @var    bool
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $optimization_state_network_wide = false;
+
+	/**
 	 * The constructor.
 	 *
 	 * @since  1.0
@@ -75,7 +125,31 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			$this->id = $post->ID;
 		}
 
-		$this->id = (int) $this->id;
+		$this->id                           = (int) $this->id;
+		$this->filesystem                   = Imagify_Filesystem::get_instance();
+		$this->optimization_state_transient = 'wp' !== $this->get_context() ? strtolower( $this->get_context() ) . '-' : '';
+		$this->optimization_state_transient = 'imagify-' . $this->optimization_state_transient . 'async-in-progress-' . $this->id;
+	}
+
+	/**
+	 * Get the attachment context.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public function get_context() {
+		if ( $this->context ) {
+			return $this->context;
+		}
+
+		$this->context = str_replace( array( 'Imagify_', 'Attachment' ), '', get_class( $this ) );
+		$this->context = trim( $this->context, '_' );
+		$this->context = $this->context ? $this->context : 'wp';
+
+		return $this->context;
 	}
 
 	/**
@@ -150,7 +224,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 		$backup_path = $this->get_raw_backup_path();
 
-		if ( $backup_path && imagify_get_filesystem()->exists( $backup_path ) ) {
+		if ( $backup_path && $this->filesystem->exists( $backup_path ) ) {
 			return $backup_path;
 		}
 
@@ -288,15 +362,14 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @since  1.0
 	 * @access public
 	 *
-	 * @return string
+	 * @return string|null
 	 */
 	public function get_extension() {
 		if ( ! $this->is_valid() ) {
 			return '';
 		}
 
-		$fullsize_path = $this->get_original_path();
-		return pathinfo( $fullsize_path, PATHINFO_EXTENSION );
+		return $this->filesystem->path_info( $this->get_original_path(), 'extension' );
 	}
 
 	/**
@@ -396,10 +469,10 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 			if ( ! $filepath ) {
 				$filepath = $this->get_original_path();
-				$filepath = $filepath && imagify_get_filesystem()->exists( $filepath ) ? $filepath : false;
+				$filepath = $filepath && $this->filesystem->exists( $filepath ) ? $filepath : false;
 			}
 
-			$size = $filepath ? imagify_get_filesystem()->size( $filepath ) : 0;
+			$size = $filepath ? $this->filesystem->size( $filepath ) : 0;
 		}
 
 		if ( $human_format ) {
@@ -429,8 +502,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 		if ( ! $size ) {
 			$filepath = $this->get_original_path();
-			$filepath = $filepath && imagify_get_filesystem()->exists( $filepath ) ? $filepath : false;
-			$size     = $filepath ? imagify_get_filesystem()->size( $filepath ) : 0;
+			$filepath = $filepath && $this->filesystem->exists( $filepath ) ? $filepath : false;
+			$size     = $filepath ? $this->filesystem->size( $filepath ) : 0;
 		}
 
 		if ( $human_format ) {
@@ -565,8 +638,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		$filepath = $this->get_original_path();
 		$size     = 0;
 
-		if ( $filepath && imagify_get_filesystem()->exists( $filepath ) ) {
-			$size = imagify_get_filesystem()->size( $filepath );
+		if ( $filepath && $this->filesystem->exists( $filepath ) ) {
+			$size = $this->filesystem->size( $filepath );
 		}
 
 		return $size > IMAGIFY_MAX_BYTES;
@@ -597,6 +670,58 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	}
 
 	/**
+	 * Get an image editor instance (WP_Image_Editor_Imagick, WP_Image_Editor_GD).
+	 *
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $path A file path.
+	 * @return object       An image editor instance (WP_Image_Editor_Imagick, WP_Image_Editor_GD). A WP_Error object on error.
+	 */
+	protected function get_editor( $path ) {
+		if ( isset( $this->editors[ $path ] ) ) {
+			return $this->editors[ $path ];
+		}
+
+		$this->editors[ $path ] = wp_get_image_editor( $path, array(
+			'methods' => self::get_editor_methods(),
+		) );
+
+		return $this->editors[ $path ];
+	}
+
+	/**
+	 * Get the image editor methods we will use.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return array
+	 */
+	public static function get_editor_methods() {
+		static $methods;
+
+		if ( isset( $methods ) ) {
+			return $methods;
+		}
+
+		$methods = array(
+			'resize',
+			'multi_resize',
+			'generate_filename',
+			'save',
+		);
+
+		if ( Imagify_Filesystem::get_instance()->can_get_exif() ) {
+			$methods[] = 'rotate';
+		}
+
+		return $methods;
+	}
+
+	/**
 	 * Update the metadata size of the attachment
 	 *
 	 * @since  1.2
@@ -618,7 +743,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		$backup_path = $this->get_backup_path();
 
 		if ( $backup_path ) {
-			imagify_get_filesystem()->delete( $backup_path );
+			$this->filesystem->delete( $backup_path );
 		}
 	}
 
@@ -677,8 +802,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return array();
 		}
 
-		$orig_f = pathinfo( $orig_f );
-		$orig_f = $orig_f['filename'] . '-{%suffix%}.' . $orig_f['extension'];
+		$orig_f = $this->filesystem->path_info( $orig_f );
+		$orig_f = $orig_f['file_base'] . '-{%suffix%}.' . $orig_f['extension'];
 
 		// Test if the missing sizes are needed.
 		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
@@ -756,6 +881,19 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	abstract public function optimize_missing_thumbnails( $optimization_level = null );
 
 	/**
+	 * Re-optimize the given thumbnail sizes to the same level.
+	 * Before doing this, the given sizes must be restored.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $sizes The sizes to optimize.
+	 * @return array|void             A WP_Error object on failure.
+	 */
+	abstract public function reoptimize_thumbnails( $sizes );
+
+	/**
 	 * Process an attachment restoration from the backup file.
 	 *
 	 * @since  1.0
@@ -769,6 +907,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * Resize an image if bigger than the maximum width defined in the settings.
 	 *
 	 * @since  1.5.7
+	 * @since  1.7.1 Keys for width and height in $attachment_sizes are now 'width' and 'height' instead of 0 and 1.
 	 * @access public
 	 * @author Remy Perona
 	 *
@@ -785,19 +924,20 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		// Prevent removal of the exif/meta data when resizing (only works with Imagick).
 		add_filter( 'image_strip_meta', '__return_false' );
 
-		$new_sizes = wp_constrain_dimensions( $attachment_sizes[0], $attachment_sizes[1], $max_width );
-		$editor    = wp_get_image_editor( $attachment_path );
+		$new_sizes = wp_constrain_dimensions( $attachment_sizes['width'], $attachment_sizes['height'], $max_width );
+
+		$editor = $this->get_editor( $attachment_path );
 
 		if ( is_wp_error( $editor ) ) {
 			return $editor;
 		}
 
-		$image_type = pathinfo( $attachment_path, PATHINFO_EXTENSION );
+		$image_type = strtolower( (string) $this->filesystem->path_info( $attachment_path, 'extension' ) );
 
 		// Try to correct for auto-rotation if the info is available.
-		if ( function_exists( 'exif_read_data' ) && ( 'jpg' === $image_type || 'jpe' === $image_type || 'jpeg' === $image_type ) ) {
-			$exif        = @exif_read_data( $attachment_path );
-			$orientation = is_array( $exif ) && array_key_exists( 'Orientation', $exif ) ? $exif['Orientation'] : 0;
+		if ( $this->filesystem->can_get_exif() && ( 'jpg' === $image_type || 'jpe' === $image_type || 'jpeg' === $image_type ) ) {
+			$exif        = $this->filesystem->get_image_exif( $attachment_path );
+			$orientation = isset( $exif['Orientation'] ) ? (int) $exif['Orientation'] : 1;
 
 			switch ( $orientation ) {
 				case 3:
@@ -832,6 +972,52 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 
 
 	/** ----------------------------------------------------------------------------------------- */
+	/** WORKING STATUS ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Tell if the file is currently being optimized (or restored, etc).
+	 *
+	 * @since  1.7.1
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public function is_running() {
+		$callback = $this->optimization_state_network_wide ? 'get_site_transient' : 'get_transient';
+
+		return false !== call_user_func( $callback, $this->optimization_state_transient );
+	}
+
+	/**
+	 * Set the running status to "running" for 10 minutes.
+	 *
+	 * @since  1.7.1
+	 * @author Grégory Viguier
+	 * @access public
+	 */
+	public function set_running_status() {
+		$callback = $this->optimization_state_network_wide ? 'set_site_transient' : 'set_transient';
+
+		call_user_func( $callback, $this->optimization_state_transient, true, 10 * MINUTE_IN_SECONDS );
+	}
+
+	/**
+	 * Unset the running status.
+	 *
+	 * @since  1.7.1
+	 * @author Grégory Viguier
+	 * @access public
+	 */
+	public function delete_running_status() {
+		$callback = $this->optimization_state_network_wide ? 'delete_site_transient' : 'delete_transient';
+
+		call_user_func( $callback, $this->optimization_state_transient );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
 	/** DB ROW ================================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
@@ -853,8 +1039,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return $this->invalidate_row();
 		}
 
-		$classname = $this->db_class_name;
-		$this->row = $classname::get_instance()->get( $this->id );
+		$this->row = $this->get_row_db_instance()->get( $this->id );
 
 		if ( ! $this->row ) {
 			return $this->invalidate_row();
@@ -877,8 +1062,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return;
 		}
 
-		$classname = $this->db_class_name;
-		$classname::get_instance()->update( $this->id, $data );
+		$this->get_row_db_instance()->update( $this->id, $data );
 
 		$this->reset_row_cache();
 	}
@@ -895,10 +1079,22 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return;
 		}
 
-		$classname = $this->db_class_name;
-		$classname::get_instance()->delete( $this->id );
+		$this->get_row_db_instance()->delete( $this->id );
 
 		$this->invalidate_row();
+	}
+
+	/**
+	 * Shorthand to get the DB table instance.
+	 *
+	 * @since  1.7.1
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return object The DB table instance.
+	 */
+	public function get_row_db_instance() {
+		return call_user_func( array( $this->db_class_name, 'get_instance' ) );
 	}
 
 	/**

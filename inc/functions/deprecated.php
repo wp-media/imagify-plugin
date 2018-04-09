@@ -454,9 +454,9 @@ function _imagify_admin_bar_styles() {
  * @return string            A relative path. Can return the absolute path in case of a failure.
  */
 function imagify_make_file_path_replative( $file_path ) {
-	_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'imagify_make_file_path_relative( $file_path )' );
+	_deprecated_function( __FUNCTION__ . '()', '1.6.10', 'imagify_get_filesystem()->make_path_relative( $file_path )' );
 
-	return imagify_make_file_path_relative( $file_path );
+	return imagify_get_filesystem()->make_path_relative( $file_path );
 }
 
 if ( is_admin() && ( function_exists( 'as3cf_init' ) || function_exists( 'as3cf_pro_init' ) ) ) :
@@ -584,6 +584,46 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 		add_filter( 'imagify_count_unoptimized_attachments' , 'imagify_ngg_count_unoptimized_attachments' );
 		add_filter( 'imagify_percent_optimized_attachments' , 'imagify_ngg_percent_optimized_attachments' );
 		add_filter( 'imagify_count_saving_data'             , 'imagify_ngg_count_saving_data', 8 );
+	}
+
+	/**
+	 * Prepare the data that goes back with the Heartbeat API.
+	 *
+	 * @since 1.5
+	 * @since 1.7.1 Deprecated.
+	 * @deprecated
+	 *
+	 * @param  array $response  The Heartbeat response.
+	 * @param  array $data      The $_POST data sent.
+	 * @return array
+	 */
+	function _imagify_ngg_heartbeat_received( $response, $data ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.7.1' );
+
+		if ( ! isset( $data['imagify_heartbeat'] ) || 'update_ngg_bulk_data' !== $data['imagify_heartbeat'] ) {
+			return $response;
+		}
+
+		add_filter( 'imagify_count_saving_data', 'imagify_ngg_count_saving_data', 8 );
+		$saving_data = imagify_count_saving_data();
+		$user        = new Imagify_User();
+
+		$response['imagify_bulk_data'] = array(
+			// User account.
+			'unconsumed_quota'              => is_wp_error( $user ) ? 0 : $user->get_percent_unconsumed_quota(),
+			// Global chart.
+			'optimized_attachments_percent' => imagify_ngg_percent_optimized_attachments(),
+			'unoptimized_attachments'       => imagify_ngg_count_unoptimized_attachments(),
+			'optimized_attachments'         => imagify_ngg_count_optimized_attachments(),
+			'errors_attachments'            => imagify_ngg_count_error_attachments(),
+			// Stats block.
+			'already_optimized_attachments' => number_format_i18n( $saving_data['count'] ),
+			'original_human'                => imagify_size_format( $saving_data['original_size'], 1 ),
+			'optimized_human'               => imagify_size_format( $saving_data['optimized_size'], 1 ),
+			'optimized_percent'             => $saving_data['percent'],
+		);
+
+		return $response;
 	}
 
 endif;
@@ -724,6 +764,156 @@ function _do_imagify_update_library_size_calculations() {
 	_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_Cron_Library_Size::get_instance()->do_event()' );
 
 	Imagify_Cron_Library_Size::get_instance()->do_event();
+}
+
+/**
+ * Set a file permissions using FS_CHMOD_FILE.
+ *
+ * @since 1.2
+ * @since 1.6.5 Use WP Filesystem.
+ * @since 1.7.1 Deprecated.
+ * @deprecated
+ *
+ * @param  string $file_path Path to the file.
+ * @return bool              True on success, false on failure.
+ */
+function imagify_chmod_file( $file_path ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'imagify_get_filesystem()->chmod_file( $file_path )' );
+
+	return imagify_get_filesystem()->chmod_file( $file_path );
+}
+
+/**
+ * Get a file mime type.
+ *
+ * @since  1.6.9
+ * @since  1.7 Doesn't use exif_imagetype() nor getimagesize() anymore.
+ * @since  1.7.1 Deprecated.
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @param  string $file_path A file path (prefered) or a filename.
+ * @return string|bool       A mime type. False on failure: the test is limited to mime types supported by Imagify.
+ */
+function imagify_get_mime_type_from_file( $file_path ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'imagify_get_filesystem()->get_mime_type( $file_path )' );
+
+	return imagify_get_filesystem()->get_mime_type( $file_path );
+}
+
+/**
+ * Get a file modification date, formated as "mysql". Fallback to current date.
+ *
+ * @since  1.7
+ * @since  1.7.1 Deprecated.
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @param  string $file_path The file path.
+ * @return string            The date.
+ */
+function imagify_get_file_date( $file_path ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'imagify_get_filesystem()->get_date( $file_path )' );
+
+	return imagify_get_filesystem()->get_date( $file_path );
+}
+
+/**
+ * Get a clean value of ABSPATH that can be used in string replacements.
+ *
+ * @since  1.6.8
+ * @since  1.7.1 Deprecated.
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @return string The path to WordPress' root folder.
+ */
+function imagify_get_abspath() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'imagify_get_filesystem()->get_abspath()' );
+
+	return imagify_get_filesystem()->get_abspath();
+}
+
+/**
+ * Make an absolute path relative to WordPress' root folder.
+ * Also works for files from registered symlinked plugins.
+ *
+ * @since  1.6.10
+ * @since  1.7 The parameter $base is added.
+ * @since  1.7.1 Deprecated.
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @param  string $file_path An absolute path.
+ * @param  string $base      A base path to use instead of ABSPATH.
+ * @return string|bool       A relative path. Can return the absolute path or false in case of a failure.
+ */
+function imagify_make_file_path_relative( $file_path, $base = '' ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'imagify_get_filesystem()->make_path_relative( $file_path, $base )' );
+
+	return imagify_get_filesystem()->make_path_relative( $file_path, $base );
+}
+
+/**
+ * Tell if a file is symlinked.
+ *
+ * @since  1.7
+ * @since  1.7.1 Deprecated.
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @param  string $file_path An absolute path.
+ * @return bool
+ */
+function imagify_file_is_symlinked( $file_path ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'imagify_get_filesystem()->is_symlinked( $file_path )' );
+
+	return imagify_get_filesystem()->is_symlinked( $file_path );
+}
+
+/**
+ * Determine if the Imagify API key is valid.
+ *
+ * @since 1.0
+ * @since 1.7.1 Deprecated.
+ * @deprecated
+ *
+ * @return bool True if the API key is valid.
+ */
+function imagify_valid_key() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'Imagify_Requirements::is_api_key_valid()' );
+
+	return Imagify_Requirements::is_api_key_valid();
+}
+
+/**
+ * Check if external requests are blocked for Imagify.
+ *
+ * @since 1.0
+ * @since 1.7.1 Deprecated.
+ * @deprecated
+ *
+ * @return bool True if Imagify API can't be called.
+ */
+function is_imagify_blocked() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'Imagify_Requirements::is_imagify_blocked()' );
+
+	return Imagify_Requirements::is_imagify_blocked();
+}
+
+/**
+ * Determine if the Imagify API is available by checking the API version.
+ *
+ * @since 1.0
+ * @since 1.7.1 Deprecated.
+ * @deprecated
+ *
+ * @return bool True if the Imagify API is available.
+ */
+function is_imagify_servers_up() {
+	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'Imagify_Requirements::is_api_up()' );
+
+	return Imagify_Requirements::is_api_up();
 }
 
 if ( is_admin() ) :

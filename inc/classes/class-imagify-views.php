@@ -15,7 +15,7 @@ class Imagify_Views {
 	 * @var   string
 	 * @since 1.7
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * Slug used for the settings page URL.
@@ -54,6 +54,16 @@ class Imagify_Views {
 	protected $list_table;
 
 	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
+
+	/**
 	 * The single instance of the class.
 	 *
 	 * @var    object
@@ -78,6 +88,7 @@ class Imagify_Views {
 		$this->slug_settings = IMAGIFY_SLUG;
 		$this->slug_bulk     = IMAGIFY_SLUG . '-bulk-optimization';
 		$this->slug_files    = IMAGIFY_SLUG . '-files';
+		$this->filesystem    = Imagify_Filesystem::get_instance();
 	}
 
 	/**
@@ -240,23 +251,14 @@ class Imagify_Views {
 	 * @access public
 	 */
 	public function display_bulk_page() {
-		$data = array(
-			// Global chart.
-			'total_attachments'             => 0,
-			'unoptimized_attachments'       => 0,
-			'optimized_attachments'         => 0,
-			'errors_attachments'            => 0,
-			// Stats block.
-			'already_optimized_attachments' => 0,
-			'original_size'                 => 0,
-			'optimized_size'                => 0,
-			'optimized_percent'             => 0,
+		$types = array();
+		$data  = array(
 			// Limits.
-			'unoptimized_attachment_limit'  => 0,
+			'unoptimized_attachment_limit' => 0,
 			// What to optimize.
-			'icon'                          => 'images-alt2',
-			'title'                         => __( 'Optimize your images', 'imagify' ),
-			'groups'                        => array(),
+			'icon'                         => 'images-alt2',
+			'title'                        => __( 'Optimize your images', 'imagify' ),
+			'groups'                       => array(),
 		);
 
 		if ( imagify_is_screen( 'bulk' ) ) {
@@ -264,87 +266,77 @@ class Imagify_Views {
 				/**
 				 * Library: in each site.
 				 */
-				$total_saving_data = imagify_count_saving_data();
-
-				// Global chart.
-				$data['total_attachments']             += imagify_count_attachments();
-				$data['unoptimized_attachments']       += imagify_count_unoptimized_attachments();
-				$data['optimized_attachments']         += imagify_count_optimized_attachments();
-				$data['errors_attachments']            += imagify_count_error_attachments();
-				// Stats block.
-				$data['already_optimized_attachments'] += $total_saving_data['count'];
-				$data['original_size']                 += $total_saving_data['original_size'];
-				$data['optimized_size']                += $total_saving_data['optimized_size'];
-				// Limits.
-				$data['unoptimized_attachment_limit']  += imagify_get_unoptimized_attachment_limit();
-				// Group.
-				$data['groups']['library'] = array(
-					/**
-					 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
-					 * It is also used in get_imagify_localize_script_translations() and imagify_get_folder_type_data().
-					 */
-					'group_id' => 'library',
-					'context'  => 'wp',
-					'title'    => __( 'Media Library', 'imagify' ),
-					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-					'footer'   => sprintf( __( 'You can also re-optimize your images from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
-				);
+				$types['library|wp'] = 1;
 			}
 
 			if ( imagify_can_optimize_custom_folders() && ( imagify_is_active_for_network() && is_network_admin() || ! imagify_is_active_for_network() ) ) {
 				/**
 				 * Custom folders: in network admin only if network activated, in each site otherwise.
 				 */
-				// Global chart.
-				$data['total_attachments']             += Imagify_Files_Stats::count_all_files();
-				$data['unoptimized_attachments']       += Imagify_Files_Stats::count_no_status_files();
-				$data['optimized_attachments']         += Imagify_Files_Stats::count_optimized_files();
-				$data['errors_attachments']            += Imagify_Files_Stats::count_error_files();
-				// Stats block.
-				$data['already_optimized_attachments'] += Imagify_Files_Stats::count_success_files();
-				$data['original_size']                 += Imagify_Files_Stats::get_original_size();
-				$data['optimized_size']                += Imagify_Files_Stats::get_optimized_size();
-
-				if ( ! Imagify_Folders_DB::get_instance()->has_items() ) {
-					// New Feature!
-					$data['no-custom-folders'] = true;
-				} elseif ( Imagify_Folders_DB::get_instance()->has_active_folders() ) {
-					// Group.
-					$data['groups']['custom-folders'] = array(
-						'group_id' => 'custom-folders',
-						'context'  => 'File',
-						'title'    => __( 'Custom folders', 'imagify' ),
-						/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-						'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
-					);
-				}
+				$types['custom-folders'] = 1;
 			}
 		}
+
+		/**
+		 * Filter the types to display in the bulk optimization page.
+		 *
+		 * @since  1.7.1
+		 * @author Grégory Viguier
+		 *
+		 * @param array $types The folder types displayed on the page. If a folder type is "library", the context should be suffixed after a pipe character. They are passed as array keys.
+		 */
+		$types = apply_filters( 'imagify_bulk_page_types', $types );
+		$types = array_filter( (array) $types );
+
+		if ( isset( $types['library|wp'] ) ) {
+			// Limits.
+			$data['unoptimized_attachment_limit'] += imagify_get_unoptimized_attachment_limit();
+			// Group.
+			$data['groups']['library'] = array(
+				/**
+				 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
+				 * It is also used in get_imagify_localize_script_translations() and imagify_get_folder_type_data().
+				 */
+				'group_id' => 'library',
+				'context'  => 'wp',
+				'title'    => __( 'Media Library', 'imagify' ),
+				/* translators: 1 is the opening of a link, 2 is the closing of this link. */
+				'footer'   => sprintf( __( 'You can also re-optimize your images from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
+			);
+		}
+
+		if ( isset( $types['custom-folders'] ) ) {
+			if ( ! Imagify_Folders_DB::get_instance()->has_items() ) {
+				// New Feature!
+				$data['no-custom-folders'] = true;
+			} elseif ( Imagify_Folders_DB::get_instance()->has_active_folders() ) {
+				// Group.
+				$data['groups']['custom-folders'] = array(
+					'group_id' => 'custom-folders',
+					'context'  => 'File',
+					'title'    => __( 'Custom folders', 'imagify' ),
+					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
+					'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
+				);
+			}
+		}
+
+		// Add generic stats.
+		$data = array_merge( $data, imagify_get_bulk_stats( $types, array(
+			'fullset' => true,
+		) ) );
 
 		/**
 		 * Filter the data to use on the bulk optimization page.
 		 *
 		 * @since  1.7
+		 * @since  1.7.1 Added the $types parameter.
 		 * @author Grégory Viguier
 		 *
-		 * @param array $data The data to use.
+		 * @param array $data  The data to use.
+		 * @param array $types The folder types displayed on the page. They are passed as array keys.
 		 */
-		$data = apply_filters( 'imagify_bulk_page_data', $data );
-
-		/**
-		 * Percentages.
-		 */
-		if ( $data['total_attachments'] && $data['optimized_attachments'] ) {
-			$data['optimized_attachments_percent'] = round( 100 * $data['optimized_attachments'] / $data['total_attachments'] );
-		} else {
-			$data['optimized_attachments_percent'] = 0;
-		}
-
-		if ( $data['original_size'] && $data['optimized_size'] ) {
-			$data['optimized_percent'] = ceil( 100 - ( 100 * $data['optimized_size'] / $data['original_size'] ) );
-		} else {
-			$data['optimized_percent'] = 0;
-		}
+		$data = apply_filters( 'imagify_bulk_page_data', $data, $types );
 
 		$this->print_template( 'page-bulk', $data );
 	}
@@ -441,7 +433,7 @@ class Imagify_Views {
 		$path = str_replace( '_', '-', $template );
 		$path = IMAGIFY_PATH . 'views/' . $template . '.php';
 
-		if ( ! imagify_get_filesystem()->exists( $path ) ) {
+		if ( ! $this->filesystem->exists( $path ) ) {
 			return false;
 		}
 

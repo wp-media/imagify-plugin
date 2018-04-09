@@ -17,7 +17,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @since 1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * Class version.
@@ -39,6 +39,16 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	protected $folders = array();
 
 	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $filesystem;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since  1.7
@@ -56,6 +66,8 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$this->modes = array(
 			'list' => __( 'List View', 'imagify' ),
 		);
+
+		$this->filesystem = Imagify_Filesystem::get_instance();
 	}
 
 	/**
@@ -301,7 +313,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 				$root_id = $folder->folder_id;
 				$folder_filters[ $folder->folder_id ] = '/';
 			} else {
-				$folder_filters[ $folder->folder_id ] = '/' . trim( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $folder->path ) ), '/' );
+				$folder_filters[ $folder->folder_id ] = '/' . trim( $this->filesystem->make_path_relative( Imagify_Files_Scan::remove_placeholder( $folder->path ) ), '/' );
 			}
 		}
 
@@ -494,7 +506,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$item        = $this->maybe_set_item_folder( $item );
 		$url         = $item->get_original_url();
 		$base        = ! empty( $item->folder_path ) ? Imagify_Files_Scan::remove_placeholder( $item->folder_path ) : '';
-		$title       = imagify_make_file_path_relative( $item->get_original_path(), $base );
+		$title       = $this->filesystem->make_path_relative( $item->get_original_path(), $base );
 		$dimensions  = $item->get_dimensions();
 		$orientation = $dimensions['width'] > $dimensions['height'] ? ' landscape' : ' portrait';
 		$orientation = $dimensions['width'] && $dimensions['height'] ? $orientation : '';
@@ -550,7 +562,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			// It's the site's root.
 			printf( $format, __( 'Site\'s root', 'imagify' ) );
 		} else {
-			printf( $format, '<code>/' . trim( imagify_make_file_path_relative( Imagify_Files_Scan::remove_placeholder( $item->folder_path ) ), '/' ) . '</code>' );
+			printf( $format, '<code>/' . trim( $this->filesystem->make_path_relative( Imagify_Files_Scan::remove_placeholder( $item->folder_path ) ), '/' ) . '</code>' );
 		}
 
 		if ( ! $item->is_folder_active ) {
@@ -619,7 +631,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			$messages[] = '<strong class="imagify-status-not-optimized">' . esc_html_x( 'Not optimized', 'image', 'imagify' ) . '</strong>';
 		} elseif ( $error_text ) {
 			// Error or already optimized.
-			$messages[] = '<span class="imagify-status-' . $status . '">' . esc_html( $error_text ) . '</span>';
+			$messages[] = '<span class="imagify-status-' . $status . '">' . esc_html( imagify_translate_api_message( $error_text ) ) . '</span>';
 		}
 
 		if ( ! $row['modified'] && ! $messages ) {
@@ -662,7 +674,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	public function column_actions( $item ) {
 		static $done = false;
 
-		if ( ! imagify_valid_key() ) {
+		if ( ! Imagify_Requirements::is_api_key_valid() ) {
 			// Stop the process if the API key isn't valid.
 			if ( ! $done ) {
 				// No need to display this on every row.
@@ -673,9 +685,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		$transient_name = 'imagify-file-async-in-progress-' . $item->get_id();
-
-		if ( false !== get_site_transient( $transient_name ) ) {
+		if ( $item->is_running() ) {
 			echo '<div class="button"><span class="imagify-spinner"></span>' . __( 'Optimizing...', 'imagify' ) . '</div>';
 			return;
 		}
@@ -865,7 +875,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		$file_path = $item->get_original_path();
 
-		if ( ! $file_path || ! imagify_get_filesystem()->exists( $file_path ) ) {
+		if ( ! $file_path || ! $this->filesystem->exists( $file_path ) ) {
 			return;
 		}
 
