@@ -147,7 +147,7 @@ function get_imagify_localize_script_translations( $context ) {
 						'error'       => __( 'Error', 'imagify' ),
 					),
 					'curlMissing'                    => __( 'cURL is not available on the server.', 'imagify' ),
-					'editorMissing'                  => __( 'No php extension is available to edit images on the server.', 'imagify' ),
+					'editorMissing'                  => __( 'No php extensions are available to edit images on the server.', 'imagify' ),
 					'extHttpBlocked'                 => __( 'External HTTP requests are blocked.', 'imagify' ),
 					'apiDown'                        => __( 'Sorry, our servers are temporarily unavailable. Please, try again in a couple of minutes.', 'imagify' ),
 					'invalidAPIKeyTitle'             => __( 'Your API key isn\'t valid!', 'imagify' ),
