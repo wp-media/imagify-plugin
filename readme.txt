@@ -138,6 +138,14 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.7.1 =
+* New: compatibility with Regenerate Thumbnails (v3) plugin.
+* Improvement: better performance of the bulk optimization on sites with huge media library. This is done by not updating the statistics display periodically, but only when the job is done.
+* Improvement: SiteGround cache testing is not blocked anymore.
+* Improvement: proxies are now handled.
+* Improvement: test for ImageMagick or GD availability.
+* Dev stuff: improved the way we use the filesystem. This should solve few edge cases.
+
 = 1.7 - 2018/03/13 =
 * New: you can now optimize the images from your themes and plugins, or from any other folder in your site!
 * Improvement: compatibility with old and new versions of WP Offload S3 plugins.
