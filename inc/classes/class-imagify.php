@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1.1';
+	const VERSION = '1.1.2';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -63,6 +63,11 @@ class Imagify extends Imagify_Deprecated {
 	 * The constructor.
 	 */
 	protected function __construct() {
+		if ( ! class_exists( 'Imagify_Filesystem' ) ) {
+			// Dirty patch used when updating from 1.7.
+			include_once IMAGIFY_CLASSES_PATH . 'class-imagify-filesystem.php';
+		}
+
 		$this->api_key    = get_imagify_option( 'api_key' );
 		$this->filesystem = Imagify_Filesystem::get_instance();
 
@@ -98,13 +103,21 @@ class Imagify extends Imagify_Deprecated {
 	 */
 	public function get_user() {
 		static $user;
+		global $wp_current_filter;
 
-		if ( ! isset( $user ) ) {
+		if ( isset( $user ) ) {
+			return $user;
+		}
+
+		if ( ! in_array( 'upgrader_post_install', (array) $wp_current_filter, true ) ) {
 			$this->headers = $this->all_headers;
 
 			$user = $this->http_call( 'users/me/', array(
 				'timeout' => 10,
 			) );
+		} else {
+			// Dirty patch used when updating from 1.7.
+			$user = new WP_Error();
 		}
 
 		return $user;
