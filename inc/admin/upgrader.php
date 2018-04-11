@@ -270,3 +270,52 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 		delete_option( $wpdb->prefix . 'ngg_imagify_data_db_version' );
 	}
 }
+
+add_filter( 'upgrader_post_install', 'imagify_maybe_reset_opcache', 20, 3 );
+/**
+ * Maybe reset opcache after Imagify update.
+ *
+ * @since  1.7.1.2
+ * @author Grégory Viguier
+ *
+ * @param  bool  $response   Installation response.
+ * @param  array $hook_extra Extra arguments passed to hooked filters.
+ * @param  array $result     Installation result data.
+ * @return bool
+ */
+function imagify_maybe_reset_opcache( $response, $hook_extra, $result ) {
+	static $imagify_path;
+	static $can_reset;
+
+	if ( empty( $hook_extra['plugin'] ) || empty( $result['destination'] ) ) {
+		return $response;
+	}
+
+	if ( ! isset( $imagify_path ) ) {
+		$imagify_path = trailingslashit( wp_normalize_path( IMAGIFY_PATH ) );
+	}
+
+	$destination = trailingslashit( wp_normalize_path( $result['destination'] ) );
+
+	if ( $destination !== $imagify_path ) {
+		return $response;
+	}
+
+	if ( ! isset( $can_reset ) ) {
+		$can_reset = true;
+
+		if ( ! function_exists( 'opcache_reset' ) ) {
+			$can_reset = false;
+		}
+
+		if ( ! empty( ini_get( 'opcache.restrict_api' ) ) && strpos( __FILE__, ini_get( 'opcache.restrict_api' ) ) !== 0 ) {
+			$can_reset = false;
+		}
+	}
+
+	if ( $can_reset ) {
+		opcache_reset();
+	}
+
+	return $response;
+}
