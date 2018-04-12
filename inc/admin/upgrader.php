@@ -317,7 +317,9 @@ function imagify_maybe_reset_opcache( $wp_upgrader, $hook_extra ) {
 			$can_reset = false;
 		}
 
-		if ( ! empty( ini_get( 'opcache.restrict_api' ) ) && strpos( __FILE__, ini_get( 'opcache.restrict_api' ) ) !== 0 ) {
+		$restrict_api = ini_get( 'opcache.restrict_api' );
+
+		if ( $restrict_api && strpos( __FILE__, $restrict_api ) !== 0 ) {
 			$can_reset = false;
 		}
 	}

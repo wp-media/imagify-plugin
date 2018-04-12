@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 3.7.0
 Tested up to: 4.9.5
-Stable tag: 1.7.1.2
+Stable tag: 1.7.1.3
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -138,6 +138,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.7.1.3 - 2018/04/12 =
+* Bug Fix: a fatal error with outdated versions of php.
+
 = 1.7.1.2 - 2018/04/12 =
 * Improvement: reset OPcache after Imagify being updated.
 * Bug Fix: a fatal error upon Imagify update.
