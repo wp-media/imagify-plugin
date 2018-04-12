@@ -194,37 +194,55 @@ class Imagify_DB {
 	 * It returns an empty string if the database has no attachments without the required metadada.
 	 *
 	 * @since  1.7
+	 * @since  1.7.1.2 Use a single $arg parameter instead of 3. New $prepared parameter.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param  string $aliases  The aliases to use for the meta values.
-	 * @param  bool   $matching Set to false to get a query to fetch invalid metas.
-	 * @param  bool   $test     Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
-	 * @return string           A query.
+	 * @param  array $args {
+	 *                   Optional. An array of arguments.
+	 *
+	 *                   string $aliases  The aliases to use for the meta values.
+	 *                   bool   $matching Set to false to get a query to fetch invalid metas.
+	 *                   bool   $test     Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 *                   bool   $prepared Set to true if the query will be prepared with using $wpdb->prepare().
+	 * }.
+	 * @return string A query.
 	 */
-	public static function get_required_wp_metadata_where_clause( $aliases = array(), $matching = true, $test = true ) {
+	public static function get_required_wp_metadata_where_clause( $args = array() ) {
 		static $query = array();
+
+		$args = imagify_merge_intersect( $args, array(
+			'aliases'  => array(),
+			'matching' => true,
+			'test'     => true,
+			'prepared' => false,
+		) );
+
+		list( $aliases, $matching, $test, $prepared ) = array_values( $args );
 
 		if ( $test && ! imagify_has_attachments_without_required_metadata() ) {
 			return '';
 		}
 
-		if ( is_string( $aliases ) ) {
+		if ( $aliases && is_string( $aliases ) ) {
 			$aliases = array(
 				'_wp_attached_file' => $aliases,
 			);
+		} elseif ( ! is_array( $aliases ) ) {
+			$aliases = array();
 		}
 
 		$aliases = imagify_merge_intersect( $aliases, self::get_required_wp_metadata_aliases() );
 		$key     = implode( '|', $aliases ) . '|' . (int) $matching;
 
 		if ( isset( $query[ $key ] ) ) {
-			return $query[ $key ];
+			return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
 		}
 
+		unset( $args['prepared'] );
 		$alias_1    = $aliases['_wp_attached_file'];
 		$alias_2    = $aliases['_wp_attachment_metadata'];
-		$extensions = self::get_extensions_where_clause( $alias_1, $matching, $test );
+		$extensions = self::get_extensions_where_clause( $args );
 
 		if ( $matching ) {
 			$query[ $key ] = "AND $alias_1.meta_value NOT LIKE '%://%' AND $alias_1.meta_value NOT LIKE '_:\\\\\%' $extensions";
@@ -232,7 +250,7 @@ class Imagify_DB {
 			$query[ $key ] = "AND ( $alias_2.meta_value IS NULL OR $alias_1.meta_value IS NULL OR $alias_1.meta_value LIKE '%://%' OR $alias_1.meta_value LIKE '_:\\\\\%' $extensions )";
 		}
 
-		return $query[ $key ];
+		return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
 	}
 
 	/**
@@ -240,17 +258,32 @@ class Imagify_DB {
 	 * It returns an empty string if the database has no attachments without the required metadada.
 	 *
 	 * @since  1.7
+	 * @since  1.7.1.2 Use a single $arg parameter instead of 3. New $prepared parameter.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param  string $alias    The alias to use for the meta value.
-	 * @param  bool   $matching Set to false to get a query to fetch metas NOT matching the file extensions.
-	 * @param  bool   $test     Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
-	 * @return string           A query.
+	 * @param  array $args {
+	 *                   Optional. An array of arguments.
+	 *
+	 *                   string $alias    The alias to use for the meta value.
+	 *                   bool   $matching Set to false to get a query to fetch metas NOT matching the file extensions.
+	 *                   bool   $test     Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 *                   bool   $prepared Set to true if the query will be prepared with using $wpdb->prepare().
+	 * }.
+	 * @return string A query.
 	 */
-	public static function get_extensions_where_clause( $alias = false, $matching = true, $test = true ) {
+	public static function get_extensions_where_clause( $args = false ) {
 		static $extensions;
 		static $query = array();
+
+		$args = imagify_merge_intersect( $args, array(
+			'alias'    => array(),
+			'matching' => true,
+			'test'     => true,
+			'prepared' => false,
+		) );
+
+		list( $alias, $matching, $test, $prepared ) = array_values( $args );
 
 		if ( $test && ! imagify_has_attachments_without_required_metadata() ) {
 			return '';
@@ -270,7 +303,7 @@ class Imagify_DB {
 		$key = $alias . '|' . (int) $matching;
 
 		if ( isset( $query[ $key ] ) ) {
-			return $query[ $key ];
+			return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
 		}
 
 		if ( $matching ) {
@@ -279,7 +312,7 @@ class Imagify_DB {
 			$query[ $key ] = "OR ( LOWER( $alias.meta_value ) NOT LIKE '%." . implode( "' AND LOWER( $alias.meta_value ) NOT LIKE '%.", $extensions ) . "' )";
 		}
 
-		return $query[ $key ];
+		return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
 	}
 
 	/**

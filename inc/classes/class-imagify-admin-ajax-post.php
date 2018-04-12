@@ -688,7 +688,9 @@ class Imagify_Admin_Ajax_Post {
 		$mime_types   = Imagify_DB::get_mime_types();
 		$statuses     = Imagify_DB::get_post_statuses();
 		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( array(
+			'prepared' => true,
+		) );
 		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"
 			SELECT p.ID
