@@ -271,34 +271,43 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	}
 }
 
-add_filter( 'upgrader_post_install', 'imagify_maybe_reset_opcache', 20, 3 );
+add_action( 'upgrader_process_complete', 'imagify_maybe_reset_opcache', 20, 2 );
 /**
  * Maybe reset opcache after Imagify update.
  *
  * @since  1.7.1.2
  * @author Grégory Viguier
  *
- * @param  bool  $response   Installation response.
- * @param  array $hook_extra Extra arguments passed to hooked filters.
- * @param  array $result     Installation result data.
- * @return bool
+ * @param object $wp_upgrader Plugin_Upgrader instance.
+ * @param array  $hook_extra  {
+ *     Array of bulk item update data.
+ *
+ *     @type string $action  Type of action. Default 'update'.
+ *     @type string $type    Type of update process. Accepts 'plugin', 'theme', 'translation', or 'core'.
+ *     @type bool   $bulk    Whether the update process is a bulk update. Default true.
+ *     @type array  $plugins Array of the basename paths of the plugins' main files.
+ * }
  */
-function imagify_maybe_reset_opcache( $response, $hook_extra, $result ) {
+function imagify_maybe_reset_opcache( $wp_upgrader, $hook_extra ) {
 	static $imagify_path;
 	static $can_reset;
 
-	if ( empty( $hook_extra['plugin'] ) || empty( $result['destination'] ) ) {
-		return $response;
+	if ( ! isset( $hook_extra['action'], $hook_extra['type'], $hook_extra['plugins'] ) ) {
+		return;
 	}
+
+	if ( 'update' !== $hook_extra['action'] || 'plugin' !== $hook_extra['type'] || ! is_array( $hook_extra['plugins'] ) ) {
+		return;
+	}
+
+	$plugins = array_flip( $hook_extra['plugins'] );
 
 	if ( ! isset( $imagify_path ) ) {
-		$imagify_path = trailingslashit( wp_normalize_path( IMAGIFY_PATH ) );
+		$imagify_path = plugin_basename( IMAGIFY_FILE );
 	}
 
-	$destination = trailingslashit( wp_normalize_path( $result['destination'] ) );
-
-	if ( $destination !== $imagify_path ) {
-		return $response;
+	if ( ! isset( $plugins[ $imagify_path ] ) ) {
+		return;
 	}
 
 	if ( ! isset( $can_reset ) ) {
@@ -316,6 +325,4 @@ function imagify_maybe_reset_opcache( $response, $hook_extra, $result ) {
 	if ( $can_reset ) {
 		opcache_reset();
 	}
-
-	return $response;
 }
