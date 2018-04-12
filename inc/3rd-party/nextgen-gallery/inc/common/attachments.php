@@ -66,7 +66,7 @@ add_filter( 'ngg_medialibrary_imported_image', '_imagify_ngg_media_library_impor
 function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	$attachment = get_imagify_attachment( 'wp', $attachment->ID, 'ngg_medialibrary_imported_image' );
 
-	if ( ! $attachment->get_status() ) {
+	if ( ! $attachment->is_optimized() ) {
 		// The image is not optimized.
 		return $image;
 	}
