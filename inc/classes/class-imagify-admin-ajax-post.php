@@ -1401,7 +1401,7 @@ class Imagify_Admin_Ajax_Post {
 				'checkbox_value'    => esc_attr( $placeholder ) . '#///#' . esc_attr( $relative_path ),
 				'checkbox_id'       => sanitize_html_class( $placeholder ),
 				'checkbox_selected' => isset( $selected[ $placeholder ] ),
-				'label'             => str_replace( $folder, '', untrailingslashit( $folder_path ) ),
+				'label'             => $this->filesystem->file_name( $folder_path ),
 			) );
 		}
 

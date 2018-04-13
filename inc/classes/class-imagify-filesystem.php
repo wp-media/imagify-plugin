@@ -638,7 +638,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 
 		$abspath = trailingslashit( $abspath );
 
-		if ( '/' !== substr( $abspath, 0, 1 ) && ':' !== substr( $path, 1, 1 ) ) {
+		if ( '/' !== substr( $abspath, 0, 1 ) && ':' !== substr( $abspath, 1, 1 ) ) {
 			$abspath = '/' . $abspath;
 		}
 
