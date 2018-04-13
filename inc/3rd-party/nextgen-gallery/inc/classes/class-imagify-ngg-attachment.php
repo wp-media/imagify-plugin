@@ -417,10 +417,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires before optimizing an attachment.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
-		 * @param int $id The attachment ID
-		*/
+		 * @param int $id The image ID
+		 */
 		do_action( 'before_imagify_ngg_optimize_attachment', $this->id );
 
 		$this->set_running_status();
@@ -460,11 +461,12 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires after optimizing an attachment.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
-		 * @param int    $id    The attachment ID.
+		 * @param int    $id    The image ID.
 		 * @param array  $data  The optimization data.
-		*/
+		 */
 		do_action( 'after_imagify_ngg_optimize_attachment', $this->id, $data );
 
 		/**
@@ -531,10 +533,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires before optimizing all thumbnails.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
 		 * @param int $id The image ID.
-		*/
+		 */
 		do_action( 'before_imagify_ngg_optimize_thumbnails', $this->id );
 
 		if ( $sizes ) {
@@ -557,19 +560,20 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				$data = $this->fill_data( $data, $response, $size_key );
 
 				/**
-				* Filter the optimization data of a specific thumbnail.
-				*
-				* @since 1.5
-				*
-				* @param  array  $data            The statistics data.
-				* @param  object $response        The API response.
-				* @param  int    $id              The attachment ID.
-				* @param  string $thumbnail_path  The attachment path.
-				* @param  string $thumbnail_url   The attachment URL.
-				* @param  string $size_key        The attachment size key.
-				* @param  bool   $is_aggressive   The optimization level.
-				* @return array  $data            The new optimization data.
-				*/
+				 * Filter the optimization data of a specific thumbnail.
+				 *
+				 * @since  1.5
+				 * @author Jonathan Buttigieg
+				 *
+				 * @param  array  $data            The statistics data.
+				 * @param  object $response        The API response.
+				 * @param  int    $id              The image ID.
+				 * @param  string $thumbnail_path  The image path.
+				 * @param  string $thumbnail_url   The image URL.
+				 * @param  string $size_key        The image size key.
+				 * @param  bool   $is_aggressive   The optimization level.
+				 * @return array  $data            The new optimization data.
+				 */
 				$data = apply_filters( 'imagify_fill_ngg_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
 			}
 
@@ -581,11 +585,12 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires after optimizing all thumbnails.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
 		 * @param int   $id    The image ID.
 		 * @param array $data  The optimization data.
-		*/
+		 */
 		do_action( 'after_imagify_ngg_optimize_thumbnails', $this->id, $data );
 
 		return $data;
@@ -650,10 +655,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires before restoring an attachment.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
 		 * @param int $id The attachment ID.
-		*/
+		 */
 		do_action( 'before_imagify_ngg_restore_attachment', $this->id );
 
 		if ( ! $this->filesystem->copy( $backup_abspath, $full_abspath, true, FS_CHMOD_FILE ) ) {
@@ -814,10 +820,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires after restoring an attachment.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
 		 * @param int $id The attachment ID.
-		*/
+		 */
 		do_action( 'after_imagify_ngg_restore_attachment', $this->id );
 
 		return true;
