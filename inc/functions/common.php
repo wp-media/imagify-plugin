@@ -212,6 +212,8 @@ function imagify_autoload( $class ) {
 		'Imagify_User'                     => 1,
 		'Imagify_Views'                    => 1,
 		'Imagify'                          => 1,
+		'WP_Async_Request'                 => 1,
+		'WP_Background_Process'            => 1,
 	);
 
 	if ( isset( $classes[ $class ] ) ) {
