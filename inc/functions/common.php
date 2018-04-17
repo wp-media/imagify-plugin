@@ -224,15 +224,16 @@ function imagify_autoload( $class ) {
 
 	// Third party classes.
 	$classes = array(
-		'Imagify_AS3CF_Attachment'      => 'amazon-s3-and-cloudfront',
-		'Imagify_AS3CF'                 => 'amazon-s3-and-cloudfront',
-		'Imagify_Enable_Media_Replace'  => 'enable-media-replace',
-		'Imagify_Formidable_Pro'        => 'formidable-pro',
-		'Imagify_NGG_Attachment'        => 'nextgen-gallery',
-		'Imagify_NGG_DB'                => 'nextgen-gallery',
-		'Imagify_NGG_Storage'           => 'nextgen-gallery',
-		'Imagify_NGG'                   => 'nextgen-gallery',
-		'Imagify_Regenerate_Thumbnails' => 'regenerate-thumbnails',
+		'Imagify_AS3CF_Attachment'                          => 'amazon-s3-and-cloudfront',
+		'Imagify_AS3CF'                                     => 'amazon-s3-and-cloudfront',
+		'Imagify_Enable_Media_Replace'                      => 'enable-media-replace',
+		'Imagify_Formidable_Pro'                            => 'formidable-pro',
+		'Imagify_NGG_Attachment'                            => 'nextgen-gallery',
+		'Imagify_NGG_DB'                                    => 'nextgen-gallery',
+		'Imagify_NGG_Dynamic_Thumbnails_Background_Process' => 'nextgen-gallery',
+		'Imagify_NGG_Storage'                               => 'nextgen-gallery',
+		'Imagify_NGG'                                       => 'nextgen-gallery',
+		'Imagify_Regenerate_Thumbnails'                     => 'regenerate-thumbnails',
 	);
 
 	if ( isset( $classes[ $class ] ) ) {
