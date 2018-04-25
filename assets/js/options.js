@@ -383,7 +383,7 @@
 		w.setTimeout( function() {
 			$row.remove();
 			// Display a message.
-			$( '#imagify-custom-folders-selected' ).next( '.hidden' ).removeClass( 'hidden' );
+			$( '#imagify-custom-folders-selected' ).siblings( '.imagify-success.hidden' ).removeClass( 'hidden' );
 		}, 750 );
 	} );
 
