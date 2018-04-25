@@ -12,6 +12,7 @@ $themes         = array();
 if ( $custom_folders ) {
 	$custom_folders = array_combine( $custom_folders, $custom_folders );
 	$custom_folders = array_map( array( 'Imagify_Files_Scan', 'remove_placeholder' ), $custom_folders );
+	$custom_folders = array_map( 'trailingslashit', $custom_folders );
 	$custom_folders = array_filter( $custom_folders, array( 'Imagify_Files_Scan', 'is_path_autorized' ) );
 }
 
