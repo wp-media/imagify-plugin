@@ -176,7 +176,7 @@ class Imagify_Custom_Folders {
 		), $args );
 
 		$filesystem = imagify_get_filesystem();
-		$file       = $args['file'] && is_a( $args['file'], 'Imagify_File_Attachment' ) ? $args['file'] : false;
+		$file       = $args['file'] && $args['file'] instanceof Imagify_File_Attachment ? $args['file'] : false;
 
 		// The file.
 		if ( ! $args['file_path'] && $args['path'] ) {

@@ -116,12 +116,12 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		global $post;
 
 		if ( $id ) {
-			if ( is_a( $id, 'WP_Post' ) ) {
+			if ( $id instanceof WP_Post ) {
 				$this->id = $id->ID;
 			} elseif ( is_numeric( $id ) ) {
 				$this->id = $id;
 			}
-		} elseif ( $post && is_a( $post, 'WP_Post' ) ) {
+		} elseif ( $post && $id instanceof WP_Post ) {
 			$this->id = $post->ID;
 		}
 

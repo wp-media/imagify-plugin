@@ -66,7 +66,7 @@ add_filter( 'ngg_medialibrary_imported_image', '_imagify_ngg_media_library_impor
 function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	$attachment = get_imagify_attachment( 'wp', $attachment->ID, 'ngg_medialibrary_imported_image' );
 
-	if ( ! $attachment->get_status() ) {
+	if ( ! $attachment->is_optimized() ) {
 		// The image is not optimized.
 		return $image;
 	}
@@ -106,6 +106,63 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	$imagify_image->optimize_thumbnails();
 
 	return $image;
+}
+
+add_action( 'ngg_generated_image', 'imagify_ngg_maybe_add_dynamic_thumbnail_to_background_process', IMAGIFY_INT_MAX, 2 );
+/**
+ * Add a dynamically generated thumbnail to the background process queue.
+ *
+ * @since  1.8
+ * @author Grégory Viguier
+ *
+ * @param object $image A NGG image object.
+ * @param string $size  The thumbnail size name.
+ */
+function imagify_ngg_maybe_add_dynamic_thumbnail_to_background_process( $image, $size ) {
+	static $done = false;
+
+	$attachment = get_imagify_attachment( 'NGG', $image, 'ngg_maybe_add_dynamic_thumbnail_to_background_process' );
+
+	if ( ! $attachment->is_optimized() ) {
+		// The main image is not optimized.
+		return;
+	}
+
+	$data = $attachment->get_data();
+
+	if ( isset( $data['sizes'][ $size ]['success'] ) ) {
+		// This thumbnail has already been processed.
+		return;
+	}
+
+	$process = Imagify_NGG_Dynamic_Thumbnails_Background_Process::get_instance();
+	$data    = array(
+		'id'   => $attachment->get_id(),
+		'size' => $size,
+	);
+
+	if ( $process->is_in_queue( $data ) ) {
+		// Duplicate.
+		return;
+	}
+
+	// Do the optimization asynchroniously.
+	$process->push_to_queue( $data );
+
+	if ( ! $done ) {
+		$done = true;
+		add_action( 'shutdown', 'imagify_ngg_dispatch_dynamic_thumbnail_background_process' );
+	}
+}
+
+/**
+ * Dispatch the optimization process.
+ *
+ * @since  1.8
+ * @author Grégory Viguier
+ */
+function imagify_ngg_dispatch_dynamic_thumbnail_background_process() {
+	Imagify_NGG_Dynamic_Thumbnails_Background_Process::get_instance()->save()->dispatch();
 }
 
 /**

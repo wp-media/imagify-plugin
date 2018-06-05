@@ -14,7 +14,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.3.2';
+	const VERSION = '1.4';
 
 	/**
 	 * The attachment SQL DB class.
@@ -31,9 +31,18 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @var    object A nggImage object.
 	 * @since  1.5
 	 * @since  1.7 Not public anymore.
-	 * @access public
+	 * @access protected
 	 */
 	protected $image;
+
+	/**
+	 * The storage object used by NGG.
+	 *
+	 * @var    object A C_Gallery_Storage object (by default).
+	 * @since  1.8.
+	 * @access protected
+	 */
+	protected $storage;
 
 	/**
 	 * Tell if the file mime type can be optimized by Imagify.
@@ -56,14 +65,25 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 */
 	public function __construct( $id ) {
 		if ( is_object( $id ) ) {
-			$this->image = $id;
-			$this->id    = (int) $id->pid;
+			if ( $id instanceof nggImage ) {
+				$this->image = $id;
+				$this->id    = (int) $id->pid;
+			} else {
+				$this->image = nggdb::find_image( (int) $id->pid );
+				$this->id    = ! empty( $this->image->pid ) ? (int) $this->image->pid : 0;
+			}
 		} else {
 			$this->image = nggdb::find_image( absint( $id ) );
 			$this->id    = ! empty( $this->image->pid ) ? (int) $this->image->pid : 0;
 		}
 
 		$this->get_row();
+
+		if ( ! empty( $this->image->_ngiw ) ) {
+			$this->storage = $this->image->_ngiw->get_storage()->object;
+		} else {
+			$this->storage = C_Gallery_Storage::get_instance()->object;
+		}
 
 		$this->filesystem                   = Imagify_Filesystem::get_instance();
 		$this->optimization_state_transient = 'imagify-ngg-async-in-progress-' . $this->id;
@@ -72,7 +92,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
 
 		if ( ! class_exists( 'nggAdmin' ) && $this->filesystem->exists( $ngg_admin_functions_path ) ) {
-			require_once( $ngg_admin_functions_path );
+			require_once $ngg_admin_functions_path;
 		}
 	}
 
@@ -255,7 +275,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		static $sizes;
 
 		if ( ! isset( $sizes ) ) {
-			$sizes = C_Gallery_Storage::get_instance()->get_image_sizes();
+			$sizes = $this->get_image_sizes();
 		}
 
 		return $sizes && $this->get_original_path();
@@ -417,10 +437,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires before optimizing an attachment.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
-		 * @param int $id The attachment ID
-		*/
+		 * @param int $id The image ID
+		 */
 		do_action( 'before_imagify_ngg_optimize_attachment', $this->id );
 
 		$this->set_running_status();
@@ -444,7 +465,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		) );
 
 		if ( ! $data ) {
-			// Already optimized.
+			// Error or already optimized.
 			$this->delete_running_status();
 			return;
 		}
@@ -460,45 +481,52 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires after optimizing an attachment.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
-		 * @param int    $id    The attachment ID.
+		 * @param int    $id    The image ID.
 		 * @param array  $data  The optimization data.
-		*/
+		 */
 		do_action( 'after_imagify_ngg_optimize_attachment', $this->id, $data );
 
 		/**
 		 * Update NGG meta data.
 		 */
-		$storage = C_Gallery_Storage::get_instance()->object;
-		$image   = $storage->_image_mapper->find( $this->id );
+		$image_data = $this->storage->_image_mapper->find( $this->id );
 
-		if ( $image ) {
-			$dimensions = $this->filesystem->get_image_size( $attachment_path );
-			$md5        = md5_file( $attachment_path );
-
-			if ( ( $dimensions || $md5 ) && ( empty( $image->meta_data['full'] ) || ! is_array( $image->meta_data['full'] ) ) ) {
-				$image->meta_data['full'] = array(
-					'width'  => 0,
-					'height' => 0,
-					'md5'    => '',
-				);
-			}
-
-			if ( $dimensions ) {
-				$image->meta_data['width']  = $dimensions['width'];
-				$image->meta_data['height'] = $dimensions['height'];
-				$image->meta_data['full']['width']  = $dimensions['width'];
-				$image->meta_data['full']['height'] = $dimensions['height'];
-			}
-
-			if ( $md5 ) {
-				$image->meta_data['md5'] = $md5;
-				$image->meta_data['full']['md5'] = $md5;
-			}
-
-			$storage->_image_mapper->save( $image );
+		if ( ! $image_data ) {
+			$this->delete_running_status();
+			return $data;
 		}
+
+		$dimensions = $this->filesystem->get_image_size( $attachment_path );
+		$md5        = md5_file( $attachment_path );
+
+		if ( ( $dimensions || $md5 ) && ( empty( $image_data->meta_data['full'] ) || ! is_array( $image_data->meta_data['full'] ) ) ) {
+			$image_data->meta_data['full'] = array(
+				'width'  => 0,
+				'height' => 0,
+				'md5'    => '',
+			);
+		}
+
+		if ( $dimensions ) {
+			$image_data->meta_data['width']  = $dimensions['width'];
+			$image_data->meta_data['height'] = $dimensions['height'];
+			$image_data->meta_data['full']['width']  = $dimensions['width'];
+			$image_data->meta_data['full']['height'] = $dimensions['height'];
+		}
+
+		if ( $md5 ) {
+			$image_data->meta_data['md5'] = $md5;
+			$image_data->meta_data['full']['md5'] = $md5;
+		}
+
+		$this->storage->_image_mapper->save( $image_data );
+
+		// Keep our property up to date.
+		$this->image->_ngiw->_cache['meta_data'] = $image_data->meta_data;
+		$this->image->_ngiw->_orig_image         = $image_data;
 
 		$this->delete_running_status();
 
@@ -517,9 +545,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @return array $data                The optimization data.
 	 */
 	public function optimize_thumbnails( $optimization_level = null, $data = array() ) {
-		$storage = C_Gallery_Storage::get_instance();
-		$sizes   = $storage->get_image_sizes();
-		$data    = $data ? $data : $this->get_data();
+		$sizes = $this->get_image_sizes();
+		$data  = $data ? $data : $this->get_data();
 
 		// Stop if the original image has an error.
 		if ( $this->has_error() ) {
@@ -531,20 +558,23 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires before optimizing all thumbnails.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
 		 * @param int $id The image ID.
-		*/
+		 */
 		do_action( 'before_imagify_ngg_optimize_thumbnails', $this->id );
 
 		if ( $sizes ) {
+			$image_data = $this->storage->_image_mapper->find( $this->id );
+
 			foreach ( $sizes as $size_key ) {
 				if ( 'full' === $size_key || isset( $data['sizes'][ $size_key ]['success'] ) ) {
 					continue;
 				}
 
-				$thumbnail_path = $storage->get_image_abspath( $this->image, $size_key );
-				$thumbnail_url  = $storage->get_image_url( $this->image, $size_key );
+				$thumbnail_path = $this->storage->get_image_abspath( $image_data, $size_key );
+				$thumbnail_url  = $this->storage->get_image_url( $image_data, $size_key );
 
 				// Optimize the thumbnail size.
 				$response = do_imagify( $thumbnail_path, array(
@@ -557,19 +587,20 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				$data = $this->fill_data( $data, $response, $size_key );
 
 				/**
-				* Filter the optimization data of a specific thumbnail.
-				*
-				* @since 1.5
-				*
-				* @param  array  $data            The statistics data.
-				* @param  object $response        The API response.
-				* @param  int    $id              The attachment ID.
-				* @param  string $thumbnail_path  The attachment path.
-				* @param  string $thumbnail_url   The attachment URL.
-				* @param  string $size_key        The attachment size key.
-				* @param  bool   $is_aggressive   The optimization level.
-				* @return array  $data            The new optimization data.
-				*/
+				 * Filter the optimization data of a specific thumbnail.
+				 *
+				 * @since  1.5
+				 * @author Jonathan Buttigieg
+				 *
+				 * @param  array  $data            The statistics data.
+				 * @param  object $response        The API response.
+				 * @param  int    $id              The image ID.
+				 * @param  string $thumbnail_path  The image path.
+				 * @param  string $thumbnail_url   The image URL.
+				 * @param  string $size_key        The image size key.
+				 * @param  bool   $is_aggressive   The optimization level.
+				 * @return array  $data            The new optimization data.
+				 */
 				$data = apply_filters( 'imagify_fill_ngg_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
 			}
 
@@ -581,14 +612,98 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires after optimizing all thumbnails.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
 		 * @param int   $id    The image ID.
 		 * @param array $data  The optimization data.
-		*/
+		 */
 		do_action( 'after_imagify_ngg_optimize_thumbnails', $this->id, $data );
 
 		return $data;
+	}
+
+	/**
+	 * Optimize one size.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param string $size The thumbnail size.
+	 */
+	public function optimize_new_thumbnail( $size ) {
+		// Check if the attachment extension is allowed.
+		if ( ! $this->is_extension_supported() ) {
+			return;
+		}
+
+		if ( ! $this->is_optimized() ) {
+			// The main image is not optimized.
+			return;
+		}
+
+		$data = $this->get_data();
+
+		if ( isset( $data['sizes'][ $size ]['success'] ) ) {
+			// This thumbnail has already been processed.
+			return;
+		}
+
+		$sizes = $this->get_image_sizes();
+		$sizes = array_flip( $sizes );
+
+		if ( ! isset( $sizes[ $size ] ) ) {
+			// This size doesn't exist.
+			return;
+		}
+
+		/**
+		 * Fires before optimizing a thumbnail.
+		 *
+		 * @since  1.8
+		 * @author Grégory Viguier
+		 *
+		 * @param int $id The image ID.
+		 */
+		do_action( 'before_imagify_ngg_optimize_new_thumbnail', $this->id );
+
+		$this->set_running_status();
+
+		$image_data         = $this->storage->_image_mapper->find( $this->id );
+		$thumbnail_path     = $this->storage->get_image_abspath( $image_data, $size );
+		$thumbnail_url      = $this->storage->get_image_url( $image_data, $size );
+		$optimization_level = $this->get_optimization_level();
+
+		// Optimize the thumbnail size.
+		$response = do_imagify( $thumbnail_path, array(
+			'optimization_level' => $optimization_level,
+			'context'            => 'NGG',
+			'keep_exif'          => true,
+			'backup'             => false,
+		) );
+
+		$data = $this->fill_data( $data, $response, $size );
+
+		/** This filter is documented in inc/3rd-party/nextgen-gallery/inc/classes/class-imagify-ngg-attachment.php. */
+		$data = apply_filters( 'imagify_fill_ngg_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size, $optimization_level );
+
+		$this->update_row( array(
+			'data' => $data,
+		) );
+
+		/**
+		 * Fires after optimizing a thumbnail.
+		 *
+		 * @since  1.8
+		 * @author Grégory Viguier
+		 *
+		 * @param int   $id    The image ID.
+		 * @param array $data  The optimization data.
+		 */
+		do_action( 'after_imagify_ngg_optimize_new_thumbnail', $this->id, $data );
+
+		$this->delete_running_status();
 	}
 
 	/**
@@ -626,18 +741,17 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			return new WP_Error( 'no_backup', __( 'Backup image not found.', 'imagify' ) );
 		}
 
-		$storage = C_Gallery_Storage::get_instance()->object;
-		$image   = $storage->_image_mapper->find( $this->id );
+		$image_data = $this->storage->_image_mapper->find( $this->id );
 
-		if ( ! $image ) {
+		if ( ! $image_data ) {
 			return new WP_Error( 'no_image', __( 'Image not found in NextGen Gallery data.', 'imagify' ) );
 		}
 
 		/**
 		 * Make some more tests before restoring the backup.
 		 */
-		$full_abspath   = $storage->get_image_abspath( $image );
-		$backup_abspath = $storage->get_image_abspath( $image, 'backup' );
+		$full_abspath   = $this->storage->get_image_abspath( $image_data );
+		$backup_abspath = $this->storage->get_image_abspath( $image_data, 'backup' );
 
 		if ( $backup_abspath === $full_abspath ) {
 			return new WP_Error( 'same_path', __( 'Image path and backup path are identical.', 'imagify' ) );
@@ -650,10 +764,11 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires before restoring an attachment.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
 		 * @param int $id The attachment ID.
-		*/
+		 */
 		do_action( 'before_imagify_ngg_restore_attachment', $this->id );
 
 		if ( ! $this->filesystem->copy( $backup_abspath, $full_abspath, true, FS_CHMOD_FILE ) ) {
@@ -717,7 +832,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		// 4- Common meta data.
 		require_once( NGGALLERY_ABSPATH . '/lib/meta.php' );
-		$meta_obj    = new nggMeta( $image );
+		$meta_obj    = new nggMeta( $image_data );
 		$common_data = $meta_obj->get_common_meta();
 
 		if ( $common_data ) {
@@ -738,9 +853,9 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 				'keywords'          => '',
 			);
 
-			if ( ! empty( $image->meta_data ) && is_array( $image->meta_data ) ) {
-				$image->meta_data = array_merge( $common_data, $image->meta_data );
-				$common_data      = array_intersect_key( $image->meta_data, $common_data );
+			if ( ! empty( $image_data->meta_data ) && is_array( $image_data->meta_data ) ) {
+				$image_data->meta_data = array_merge( $common_data, $image_data->meta_data );
+				$common_data           = array_intersect_key( $image_data->meta_data, $common_data );
 			}
 		}
 
@@ -751,15 +866,15 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		 */
 		$failed = array();
 
-		foreach ( $storage->get_image_sizes( $image ) as $named_size ) {
+		foreach ( $this->get_image_sizes() as $named_size ) {
 			if ( 'full' === $named_size ) {
 				continue;
 			}
 
-			$params    = $storage->get_image_size_params( $image, $named_size );
-			$thumbnail = $storage->generate_image_clone(
+			$params    = $this->storage->get_image_size_params( $image_data, $named_size );
+			$thumbnail = $this->storage->generate_image_clone(
 				$backup_abspath,
-				$storage->get_image_abspath( $image, $named_size ),
+				$this->storage->get_image_abspath( $image_data, $named_size ),
 				$params
 			);
 
@@ -790,14 +905,18 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			$thumbnails_data[ $named_size ] = $size_meta;
 		} // End foreach().
 
-		do_action( 'ngg_recovered_image', $image );
+		do_action( 'ngg_recovered_image', $image_data );
 
 		/**
 		 * Save the meta data.
 		 */
-		$image->meta_data = array_merge( $backup_data, $full_data, $thumbnails_data, $common_data );
+		$image_data->meta_data = array_merge( $backup_data, $full_data, $thumbnails_data, $common_data );
 
-		$post_id = $storage->_image_mapper->save( $image );
+		// Keep our property up to date.
+		$this->image->_ngiw->_cache['meta_data'] = $image_data->meta_data;
+		$this->image->_ngiw->_orig_image         = $image_data;
+
+		$post_id = $this->storage->_image_mapper->save( $image_data );
 
 		if ( ! $post_id ) {
 			return new WP_Error( 'meta_data_not_saved', __( 'Related data could not be saved.', 'imagify' ) );
@@ -814,12 +933,62 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		/**
 		 * Fires after restoring an attachment.
 		 *
-		 * @since 1.5
+		 * @since  1.5
+		 * @author Jonathan Buttigieg
 		 *
 		 * @param int $id The attachment ID.
-		*/
+		 */
 		do_action( 'after_imagify_ngg_restore_attachment', $this->id );
 
 		return true;
+	}
+
+	/**
+	 * Get the image sizes.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return array
+	 */
+	public function get_image_sizes() {
+		$sizes = array(
+			'full',
+		);
+
+		// Remove common values (that have no value for us here, lol).
+		$image_data = array_diff_key( $this->image->meta_data, array(
+			'backup'            => 1,
+			'width'             => 1,
+			'height'            => 1,
+			'md5'               => 1,
+			'full'              => 1,
+			'aperture'          => 1,
+			'credit'            => 1,
+			'camera'            => 1,
+			'caption'           => 1,
+			'created_timestamp' => 1,
+			'copyright'         => 1,
+			'focal_length'      => 1,
+			'iso'               => 1,
+			'shutter_speed'     => 1,
+			'flash'             => 1,
+			'title'             => 1,
+			'keywords'          => 1,
+			'saved'             => 1,
+		) );
+
+		if ( ! $image_data ) {
+			return $sizes;
+		}
+
+		foreach ( $image_data as $size_name => $size_data ) {
+			if ( isset( $size_data['width'], $size_data['height'], $size_data['filename'], $size_data['generated'] ) ) {
+				$sizes[] = $size_name;
+			}
+		}
+
+		return $sizes;
 	}
 }
