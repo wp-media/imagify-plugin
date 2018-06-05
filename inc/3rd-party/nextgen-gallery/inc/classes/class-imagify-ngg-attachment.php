@@ -65,7 +65,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 */
 	public function __construct( $id ) {
 		if ( is_object( $id ) ) {
-			if ( is_a( $id, 'nggImage' ) ) {
+			if ( $id instanceof nggImage ) {
 				$this->image = $id;
 				$this->id    = (int) $id->pid;
 			} else {
