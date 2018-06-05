@@ -285,7 +285,7 @@ class Imagify_Regenerate_Thumbnails {
 	}
 
 	/**
-	 * Backup the optimized full-sized file and replace it by the original backup file.
+	 * Put the optimized full-sized file back.
 	 *
 	 * @since  1.7.1
 	 * @access protected

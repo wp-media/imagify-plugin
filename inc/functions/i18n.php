@@ -150,7 +150,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'editorMissing'                  => __( 'No php extensions are available to edit images on the server.', 'imagify' ),
 					'extHttpBlocked'                 => __( 'External HTTP requests are blocked.', 'imagify' ),
 					'apiDown'                        => __( 'Sorry, our servers are temporarily unavailable. Please, try again in a couple of minutes.', 'imagify' ),
-					'invalidAPIKeyTitle'             => __( 'Your API key isn\'t valid!', 'imagify' ),
+					'invalidAPIKeyTitle'             => __( 'Your API key is not valid!', 'imagify' ),
 					'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
 					'processing'                     => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
 					'waitTitle'                      => __( 'Please wait...', 'imagify' ),
