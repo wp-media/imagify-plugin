@@ -248,17 +248,11 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		$thumbnail_path    = $original_dirname . $result[ $thumbnail_size ]['file'];
 
 		// Since we used the backup image as source, the new image is still in the backup folder, we need to move it.
-		$this->filesystem->move( $backup_thumb_path, $thumbnail_path, true );
+		$moved = $this->filesystem->move( $backup_thumb_path, $thumbnail_path, true );
 
-		if ( $this->filesystem->exists( $backup_thumb_path ) ) {
-			$this->filesystem->delete( $backup_thumb_path );
-		}
-
-		if ( ! $this->filesystem->exists( $thumbnail_path ) ) {
+		if ( ! $moved ) {
 			return new WP_Error( 'image_resize_error' );
 		}
-
-		$this->filesystem->chmod_file( $thumbnail_path );
 
 		return reset( $result );
 	}
@@ -351,7 +345,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		 * @since 1.0
 		 *
 		 * @param int $id The attachment ID.
-		*/
+		 */
 		do_action( 'before_imagify_optimize_attachment', $this->id );
 
 		$this->set_running_status();
@@ -372,12 +366,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 					imagify_backup_file( $attachment_path );
 
 					$this->filesystem->move( $resized_attachment_path, $attachment_path, true );
-					$this->filesystem->chmod_file( $attachment_path );
-
-					// If resized temp file still exists, delete it.
-					if ( $this->filesystem->exists( $resized_attachment_path ) ) {
-						$this->filesystem->delete( $resized_attachment_path );
-					}
 
 					$resized = true;
 				}
@@ -393,6 +381,23 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		) );
 
 		$data = $this->fill_data( null, $response );
+
+		/**
+		 * Filter the optimization data of the full size.
+		 *
+		 * @since  1.8
+		 * @author Grégory Viguier
+		 *
+		 * @param array  $data               The statistics data.
+		 * @param object $response           The API response.
+		 * @param int    $id                 The attachment ID.
+		 * @param string $attachment_path    The attachment path.
+		 * @param string $attachment_url     The attachment URL.
+		 * @param string $size_key           The attachment size key. The value is obviously 'full' but it's kept for concistancy with other filters.
+		 * @param int    $optimization_level The optimization level.
+		 * @param array  $metadata           WP metadata.
+		 */
+		$data = apply_filters( 'imagify_fill_full_size_data', $data, $response, $this->id, $attachment_path, $attachment_url, 'full', $optimization_level, $metadata );
 
 		// Save the optimization level.
 		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
@@ -416,17 +421,33 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			$attachment_url_dirname  = $this->filesystem->dir_path( $attachment_url );
 
 			foreach ( $sizes as $size_key => $size_data ) {
+				$thumbnail_path = $attachment_path_dirname . $size_data['file'];
+				$thumbnail_url  = $attachment_url_dirname . $size_data['file'];
+
 				// Check if this size has to be optimized.
 				if ( ! $is_active_for_network && isset( $disallowed_sizes[ $size_key ] ) ) {
 					$data['sizes'][ $size_key ] = array(
 						'success' => false,
 						'error'   => __( 'This size isn\'t authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
 					);
+
+					/**
+					 * Filter the optimization data of an unauthorized thumbnail.
+					 *
+					 * @since  1.8
+					 * @author Grégory Viguier
+					 *
+					 * @param array  $data               The statistics data.
+					 * @param int    $id                 The attachment ID.
+					 * @param string $thumbnail_path     The thumbnail path.
+					 * @param string $thumbnail_url      The thumbnail URL.
+					 * @param string $size_key           The thumbnail size key.
+					 * @param int    $optimization_level The optimization level.
+					 * @param array  $metadata           WP metadata.
+					 */
+					$data = apply_filters( 'imagify_fill_unauthorized_thumbnail_data', $data, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level, $metadata );
 					continue;
 				}
-
-				$thumbnail_path = $attachment_path_dirname . $size_data['file'];
-				$thumbnail_url  = $attachment_url_dirname . $size_data['file'];
 
 				// Optimize the thumbnail size.
 				$response = do_imagify( $thumbnail_path, array(
@@ -438,20 +459,21 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 				$data = $this->fill_data( $data, $response, $size_key );
 
 				/**
-				* Filter the optimization data of a specific thumbnail.
-				*
-				* @since 1.0
-				*
-				* @param  array  $data            The statistics data.
-				* @param  object $response        The API response.
-				* @param  int    $id              The attachment ID.
-				* @param  string $thumbnail_path  The attachment path.
-				* @param  string $thumbnail_url   The attachment URL.
-				* @param  string $size_key        The attachment size key.
-				* @param  bool   $is_aggressive   The optimization level.
-				* @return array  $data            The new optimization data.
-				*/
-				$data = apply_filters( 'imagify_fill_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
+				 * Filter the optimization data of a specific thumbnail.
+				 *
+				 * @since 1.0
+				 * @since 1.8 Added $metadata.
+				 *
+				 * @param array  $data               The statistics data.
+				 * @param object $response           The API response.
+				 * @param int    $id                 The attachment ID.
+				 * @param string $thumbnail_path     The thumbnail path.
+				 * @param string $thumbnail_url      The thumbnail URL.
+				 * @param string $size_key           The thumbnail size key.
+				 * @param int    $optimization_level The optimization level.
+				 * @param array  $metadata           WP metadata.
+				 */
+				$data = apply_filters( 'imagify_fill_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level, $metadata );
 			} // End foreach().
 		} // End if().
 
@@ -556,9 +578,10 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			) );
 
 			$imagify_data = $this->fill_data( $imagify_data, $response, $size_name );
+			$metadata     = wp_get_attachment_metadata( $this->id );
 
 			/** This filter is documented in inc/classes/class-imagify-attachment.php. */
-			$imagify_data = apply_filters( 'imagify_fill_thumbnail_data', $imagify_data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_name, $optimization_level );
+			$imagify_data = apply_filters( 'imagify_fill_thumbnail_data', $imagify_data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_name, $optimization_level, $metadata );
 		}
 
 		// Save Imagify data.
