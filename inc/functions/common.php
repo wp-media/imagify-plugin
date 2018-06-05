@@ -231,6 +231,8 @@ function imagify_autoload( $class ) {
 		'Imagify_NGG_Storage'           => 'nextgen-gallery',
 		'Imagify_NGG'                   => 'nextgen-gallery',
 		'Imagify_Regenerate_Thumbnails' => 'regenerate-thumbnails',
+		'Imagify_WP_Retina_2x'          => 'wp-retina-2x',
+		'Imagify_WP_Retina_2x_Core'     => 'wp-retina-2x',
 	);
 
 	if ( isset( $classes[ $class ] ) ) {
