@@ -12,6 +12,7 @@ $themes         = array();
 if ( $custom_folders ) {
 	$custom_folders = array_combine( $custom_folders, $custom_folders );
 	$custom_folders = array_map( array( 'Imagify_Files_Scan', 'remove_placeholder' ), $custom_folders );
+	$custom_folders = array_map( 'trailingslashit', $custom_folders );
 	$custom_folders = array_filter( $custom_folders, array( 'Imagify_Files_Scan', 'is_path_autorized' ) );
 }
 
@@ -153,6 +154,19 @@ if ( ! is_network_admin() ) {
 			}
 			?>
 		</fieldset>
+
+		<p>
+			<?php
+			printf(
+				/* translators: 1 and 2 are <strong> opening and closing tags. */
+				__( '%1$sSelecting a folder will also optimize images in sub-folders.%2$s The only exception is "Site’s root": when selected, only images that are directly at the site’s root will be optimized (sub-folders can be selected separately).', 'imagify' ),
+				'<strong>',
+				'</strong>'
+			);
+			?>
+			<br/>
+			<?php _e( 'Folders that are hidden in the folder selector window are excluded and will not be optimized even if a parent folder is selected.', 'imagify' ); ?>
+		</p>
 
 		<p class="imagify-success hidden"><?php _e( 'You changed your custom folder settings, don\'t forget to save your changes!', 'imagify' ); ?></p>
 
