@@ -19,6 +19,7 @@ require( IMAGIFY_NGG_COMMON_PATH . 'attachments.php' );
 
 Imagify_NGG::get_instance()->init();
 Imagify_NGG_DB::get_instance()->init();
+Imagify_NGG_Dynamic_Thumbnails_Background_Process::get_instance();
 
 if ( is_admin() ) {
 	require( IMAGIFY_NGG_ADMIN_PATH . 'enqueue.php' );

@@ -17,7 +17,7 @@ class Imagify_Files_Recursive_Iterator extends RecursiveFilterIterator {
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * Filesystem object.
@@ -57,6 +57,10 @@ class Imagify_Files_Recursive_Iterator extends RecursiveFilterIterator {
 
 		// Forbidden file/folder paths and names.
 		$file_path = $this->current()->getPathname();
+
+		if ( $this->current()->isDir() ) {
+			$file_path = trailingslashit( $file_path );
+		}
 
 		if ( Imagify_Files_Scan::is_path_forbidden( $file_path ) ) {
 			return false;

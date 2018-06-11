@@ -17,7 +17,16 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.1';
+
+	/**
+	 * Delimiter used for regex patterns.
+	 *
+	 * @var    string
+	 * @since  1.8
+	 * @author Grégory Viguier
+	 */
+	const PATTERN_DELIMITER = '@';
 
 	/**
 	 * The single instance of the class.
@@ -791,5 +800,115 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		$upload_baseurl = trailingslashit( $uploads['baseurl'] );
 
 		return $upload_baseurl;
+	}
+
+	/**
+	 * Get the path to the uploads base directory of the main site.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public function get_main_upload_basedir() {
+		static $basedir;
+
+		if ( isset( $basedir ) ) {
+			return $basedir;
+		}
+
+		$basedir = get_imagify_upload_basedir( true );
+
+		if ( is_multisite() ) {
+			$pattern = '/' . $this->get_multisite_uploads_subdir_pattern() . '$';
+			$basedir = preg_replace( self::PATTERN_DELIMITER . $pattern . self::PATTERN_DELIMITER, '/', $basedir );
+		}
+
+		return $basedir;
+	}
+
+	/**
+	 * Get the URL of the uploads base directory of the main site.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public function get_main_upload_baseurl() {
+		static $baseurl;
+
+		if ( isset( $baseurl ) ) {
+			return $baseurl;
+		}
+
+		$baseurl = get_imagify_upload_baseurl( true );
+
+		if ( is_multisite() ) {
+			$pattern = '/' . $this->get_multisite_uploads_subdir_pattern() . '$';
+			$baseurl = preg_replace( self::PATTERN_DELIMITER . $pattern . self::PATTERN_DELIMITER, '/', $baseurl );
+		}
+
+		return $baseurl;
+	}
+
+	/**
+	 * Get the regex pattern used to match the uploads subdir on multisite in a file path.
+	 * Pattern delimiter is `Imagify_Filesystem::PATTERN_DELIMITER`.
+	 * Paths tested against these patterns are lower-cased.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @see    _wp_upload_dir()
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public function get_multisite_uploads_subdir_pattern() {
+		static $pattern;
+
+		if ( isset( $pattern ) ) {
+			return $pattern;
+		}
+
+		$pattern = '';
+
+		if ( ! is_multisite() ) {
+			return $pattern;
+		}
+
+		if ( ! get_site_option( 'ms_files_rewriting' ) ) {
+			if ( defined( 'MULTISITE' ) ) {
+				$pattern = 'sites/\d+/';
+			} else {
+				$pattern = '\d+/';
+			}
+		} elseif ( defined( 'UPLOADS' ) ) {
+			$site_id = (string) get_current_blog_id();
+			$path    = $this->get_upload_basedir( true ); // Something like `/absolute/path/to/wp-content/blogs.dir/3/files/`, also for site 1.
+			$path    = strrev( $path );
+
+			if ( preg_match( self::PATTERN_DELIMITER . '^.*' . strrev( $site_id ) . '[^/]*/' . self::PATTERN_DELIMITER . 'U', $path, $matches ) ) {
+				$pattern = end( $matches );
+				$pattern = ltrim( strtolower( strrev( $pattern ) ), '/' );
+				$pattern = str_replace( $site_id, '\d+', $pattern );
+			}
+		}
+
+		/**
+		 * Filter the regex pattern used to match the uploads subdir on multisite in a file path.
+		 * Pattern delimiter is `Imagify_Filesystem::PATTERN_DELIMITER`.
+		 * Important: lowercase, no heading slash, mandatory trailing slash.
+		 *
+		 * @since  1.8
+		 * @author Grégory Viguier
+		 *
+		 * @param string $pattern The regex pattern.
+		 */
+		$pattern = apply_filters( 'imagify_multisite_uploads_subdir_pattern', $pattern );
+
+		return $pattern;
 	}
 }

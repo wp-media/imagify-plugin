@@ -16,7 +16,7 @@ class Imagify_Admin_Ajax_Post {
 	 * @since  1.6.11
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.3';
+	const VERSION = '1.0.4';
 
 	/**
 	 * Actions to be triggered on admin ajax and admin post.
@@ -1359,13 +1359,14 @@ class Imagify_Admin_Ajax_Post {
 			imagify_die( __( 'This file is not a folder.', 'imagify' ) );
 		}
 
+		$folder = $this->filesystem->normalize_dir_path( $folder );
+
 		if ( Imagify_Files_Scan::is_path_forbidden( $folder ) ) {
 			imagify_die( __( 'This folder is not allowed.', 'imagify' ) );
 		}
 
 		// Finally we made all our validations.
 		$selected = ! empty( $_POST['selected'] ) && is_array( $_POST['selected'] ) ? array_flip( $_POST['selected'] ) : array();
-		$folder   = $this->filesystem->normalize_dir_path( $folder );
 		$views    = Imagify_Views::get_instance();
 		$output   = '';
 
@@ -1381,9 +1382,9 @@ class Imagify_Admin_Ajax_Post {
 			) );
 		}
 
-		$dir      = new DirectoryIterator( $folder );
-		$dir      = new Imagify_Files_Iterator( $dir );
-		$images   = 0;
+		$dir    = new DirectoryIterator( $folder );
+		$dir    = new Imagify_Files_Iterator( $dir );
+		$images = 0;
 
 		foreach ( new IteratorIterator( $dir ) as $file ) {
 			if ( ! $file->isDir() ) {
