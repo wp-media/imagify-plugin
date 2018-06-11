@@ -124,7 +124,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 * @param  string $file_path Path to the file.
 	 * @param  string $option    If present, specifies a specific element to be returned; one of 'dir_path', 'file_name', 'extension' or 'file_base'.
 	 *                           If option is not specified, returns all available elements.
-	 * @return array|string      If the option parameter is not passed, an associative array containing the following elements is returned: 'dir_path' (with trailing slash), 'file_name' (with extension), 'extension' (if any), and 'file_base' (without extension).
+	 * @return array|string|null If the option parameter is not passed, an associative array containing the following elements is returned: 'dir_path' (with trailing slash), 'file_name' (with extension), 'extension' (if any), and 'file_base' (without extension).
 	 */
 	public function path_info( $file_path, $option = null ) {
 		if ( ! $file_path ) {
@@ -372,6 +372,37 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		return false;
 	}
 
+	/**
+	 * Tell if a file is a pdf.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $file_path Path to the file.
+	 * @return bool
+	 */
+	public function is_pdf( $file_path ) {
+		if ( function_exists( 'finfo_fopen' ) ) {
+			$finfo = finfo_open( FILEINFO_MIME );
+
+			if ( $finfo ) {
+				$mimetype = finfo_file( $finfo, $file_path );
+
+				if ( false !== $mimetype ) {
+					return 'application/pdf' === $mimetype;
+				}
+			}
+		}
+
+		if ( function_exists( 'mime_content_type' ) ) {
+			$mimetype = mime_content_type( $file_path );
+			return 'application/pdf' === $mimetype;
+		}
+
+		return false;
+	}
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** CLASS OVERWRITES ======================================================================== */
@@ -442,8 +473,6 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 * @return bool
 	 */
 	public function is_image( $file_path ) {
-		static $methods;
-
 		if ( function_exists( 'finfo_fopen' ) ) {
 			$finfo = finfo_open( FILEINFO_MIME );
 
