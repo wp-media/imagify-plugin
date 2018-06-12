@@ -468,6 +468,60 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 
 
 	/** ----------------------------------------------------------------------------------------- */
+	/** CLASS OVERWRITES ======================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Move a file and apply chmod.
+	 * If the file failed to be moved once, a 2nd attempt is made after applying chmod.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $source      Path to the file to move.
+	 * @param  string $destination Path to the destination.
+	 * @param  bool   $overwrite   Allow to overwrite existing file at destination.
+	 * @return bool                True on success, false on failure.
+	 */
+	public function move( $source, $destination, $overwrite = false ) {
+		if ( parent::move( $source, $destination, $overwrite ) ) {
+			return $this->chmod_file( $destination );
+		}
+
+		if ( ! $this->chmod_file( $destination ) ) {
+			return false;
+		}
+
+		if ( parent::move( $source, $destination, $overwrite ) ) {
+			return $this->chmod_file( $destination );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if a file or directory is writable.
+	 * This function is used to work around certain ACL issues in PHP primarily affecting Windows Servers.
+	 * Replacement for is_writable().
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $file_path Path to the file.
+	 * @return bool
+	 */
+	public function is_writable( $file_path ) {
+		if ( ! $file_path ) {
+			return false;
+		}
+
+		return wp_is_writable( $file_path );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
 	/** WORK WITH IMAGES ======================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
