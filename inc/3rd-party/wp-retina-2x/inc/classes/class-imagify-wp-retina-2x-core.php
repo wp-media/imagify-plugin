@@ -1062,6 +1062,86 @@ class Imagify_WP_Retina_2x_Core {
 	}
 
 	/**
+	 * Tell if a file extension is supported by WP Retina 2x.
+	 * Ii uses $wr2x_core->is_supported_image() if available.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @see    $wr2x_core->is_supported_image()
+	 * @author Grégory Viguier
+	 *
+	 * @param  string|int $file_path Path to the file or attachment ID.
+	 * @return bool
+	 */
+	public function is_supported_format( $file_path ) {
+		global $wr2x_core;
+		static $method;
+		static $results = array();
+
+		if ( ! $file_path ) {
+			return false;
+		}
+
+		if ( isset( $results[ $file_path ] ) ) {
+			// $file_path can be a path or an attachment ID.
+			return $results[ $file_path ];
+		}
+
+		if ( is_int( $file_path ) ) {
+			$attachment_id = $file_path;
+			$file_path     = get_attached_file( $attachment_id );
+
+			if ( ! $file_path ) {
+				$results[ $attachment_id ] = false;
+				return false;
+			}
+
+			if ( isset( $results[ $file_path ] ) ) {
+				// $file_path is now a path for sure.
+				$results[ $attachment_id ] = $results[ $file_path ];
+				return $results[ $file_path ];
+			}
+		}
+
+		if ( ! isset( $method ) ) {
+			if ( $wr2x_core && is_object( $wr2x_core ) && method_exists( $wr2x_core, 'is_supported_image' ) ) {
+				$method = array( $wr2x_core, 'is_supported_image' );
+			} else {
+				$method = array( $this, 'is_supported_extension' );
+			}
+		}
+
+		$results[ $file_path ]     = call_user_func( $method, $file_path );
+		$results[ $attachment_id ] = $results[ $file_path ];
+
+		return $results[ $file_path ];
+	}
+
+	/**
+	 * Tell if a file extension is supported by WP Retina 2x.
+	 * Internal version of $wr2x_core->is_supported_image().
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @see    $this->is_supported_format()
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $file_path Path to a file.
+	 * @return bool
+	 */
+	protected function is_supported_extension( $file_path ) {
+		$extension  = strtolower( $this->filesystem->path_info( $file_path, 'extension' ) );
+		$extensions = array(
+			'jpg'  => 1,
+			'jpeg' => 1,
+			'png'  => 1,
+			'gif'  => 1,
+		);
+
+		return isset( $extensions[ $extension ] );
+	}
+
+	/**
 	 * Get the path to the retina version of an image.
 	 *
 	 * @since  1.8

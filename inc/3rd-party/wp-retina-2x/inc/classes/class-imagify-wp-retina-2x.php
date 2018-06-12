@@ -310,6 +310,10 @@ class Imagify_WP_Retina_2x {
 	 * @param int $attachment_id An attachment ID.
 	 */
 	public function delete_full_retina_backup_file_hook( $attachment_id ) {
+		if ( ! $this->get_core()->is_supported_format( $attachment_id ) ) {
+			return;
+		}
+
 		$attachment  = get_imagify_attachment( 'wp', $attachment_id, 'delete_attachment' );
 		$retina_path = $this->get_core()->get_retina_path( $attachment->get_original_path() );
 
@@ -327,7 +331,7 @@ class Imagify_WP_Retina_2x {
 	 *
 	 * @param  array  $data               The statistics data.
 	 * @param  object $response           The API response.
-	 * @param  int    $id                 The attachment ID.
+	 * @param  int    $attachment_id      The attachment ID.
 	 * @param  string $path               The attachment path.
 	 * @param  string $url                The attachment URL.
 	 * @param  string $size_key           The attachment size key. The value is obviously 'full' but it's kept for oncistancy with other filters.
@@ -335,12 +339,16 @@ class Imagify_WP_Retina_2x {
 	 * @param  array  $metadata           WP metadata.
 	 * @return array  $data               The new optimization data.
 	 */
-	public function optimize_full_retina_version_hook( $data, $response, $id, $path, $url, $size_key, $optimization_level, $metadata ) {
-		$attachment = get_imagify_attachment( 'wp', $id, 'optimize_full_retina_version_hook' );
+	public function optimize_full_retina_version_hook( $data, $response, $attachment_id, $path, $url, $size_key, $optimization_level, $metadata ) {
+		if ( ! $this->get_core()->is_supported_format( $attachment_id ) ) {
+			return $data;
+		}
+
+		$attachment = get_imagify_attachment( 'wp', $attachment_id, 'optimize_full_retina_version_hook' );
 
 		return $this->get_core()->optimize_retina_image( array(
 			'data'               => $data,
-			'attachment'         => get_imagify_attachment( 'wp', $id, 'optimize_full_retina_version_hook' ),
+			'attachment'         => get_imagify_attachment( 'wp', $attachment_id, 'optimize_full_retina_version_hook' ),
 			'retina_path'        => wr2x_get_retina( $path ),
 			'size_key'           => $size_key,
 			'optimization_level' => $optimization_level,
@@ -357,7 +365,7 @@ class Imagify_WP_Retina_2x {
 	 *
 	 * @param  array  $data               The statistics data.
 	 * @param  object $response           The API response.
-	 * @param  int    $id                 The attachment ID.
+	 * @param  int    $attachment_id      The attachment ID.
 	 * @param  string $path               The thumbnail path.
 	 * @param  string $url                The thumbnail URL.
 	 * @param  string $size_key           The thumbnail size key.
@@ -365,10 +373,14 @@ class Imagify_WP_Retina_2x {
 	 * @param  array  $metadata           WP metadata.
 	 * @return array  $data               The new optimization data.
 	 */
-	public function optimize_retina_version_hook( $data, $response, $id, $path, $url, $size_key, $optimization_level, $metadata ) {
+	public function optimize_retina_version_hook( $data, $response, $attachment_id, $path, $url, $size_key, $optimization_level, $metadata ) {
+		if ( ! $this->get_core()->is_supported_format( $attachment_id ) ) {
+			return $data;
+		}
+
 		return $this->get_core()->optimize_retina_image( array(
 			'data'               => $data,
-			'attachment'         => get_imagify_attachment( 'wp', $id, 'optimize_retina_version_hook' ),
+			'attachment'         => get_imagify_attachment( 'wp', $attachment_id, 'optimize_retina_version_hook' ),
 			'retina_path'        => wr2x_get_retina( $path ),
 			'size_key'           => $size_key,
 			'optimization_level' => $optimization_level,
@@ -384,7 +396,7 @@ class Imagify_WP_Retina_2x {
 	 * @author Grégory Viguier
 	 *
 	 * @param  array  $data               The statistics data.
-	 * @param  int    $id                 The attachment ID.
+	 * @param  int    $attachment_id      The attachment ID.
 	 * @param  string $path               The thumbnail path.
 	 * @param  string $url                The thumbnail URL.
 	 * @param  string $size_key           The thumbnail size key.
@@ -392,10 +404,14 @@ class Imagify_WP_Retina_2x {
 	 * @param  array  $metadata           WP metadata.
 	 * @return array  $data               The new optimization data.
 	 */
-	public function maybe_optimize_unauthorized_retina_version_hook( $data, $id, $path, $url, $size_key, $optimization_level, $metadata ) {
+	public function maybe_optimize_unauthorized_retina_version_hook( $data, $attachment_id, $path, $url, $size_key, $optimization_level, $metadata ) {
+		if ( ! $this->get_core()->is_supported_format( $attachment_id ) ) {
+			return $data;
+		}
+
 		return $this->get_core()->optimize_retina_image( array(
 			'data'               => $data,
-			'attachment'         => get_imagify_attachment( 'wp', $id, 'maybe_optimize_unauthorized_retina_version_hook' ),
+			'attachment'         => get_imagify_attachment( 'wp', $attachment_id, 'maybe_optimize_unauthorized_retina_version_hook' ),
 			'retina_path'        => wr2x_get_retina( $path ),
 			'size_key'           => $size_key,
 			'optimization_level' => $optimization_level,
@@ -413,6 +429,10 @@ class Imagify_WP_Retina_2x {
 	 * @param int $attachment_id An attachment ID.
 	 */
 	public function restore_retina_images_hook( $attachment_id ) {
+		if ( ! $this->get_core()->is_supported_format( $attachment_id ) ) {
+			return;
+		}
+
 		$attachment = get_imagify_attachment( 'wp', $attachment_id, 'restore_retina_images_hook' );
 
 		if ( ! $this->get_core()->has_retina_images( $attachment ) ) {
@@ -489,10 +509,17 @@ class Imagify_WP_Retina_2x {
 	public function get_requested_attachment( $context, $key = 'attachmentId' ) {
 		$attachment_id = filter_input( INPUT_POST, $key, FILTER_VALIDATE_INT );
 
-		if ( $attachment_id <= 0 || ! wp_attachment_is_image( $attachment_id ) ) {
+		if ( $attachment_id <= 0 ) {
 			$this->send_json( array(
 				'success' => false,
 				'message' => __( 'The attachment ID is missing.', 'imagify' ),
+			) );
+		}
+
+		if ( ! $this->get_core()->is_supported_format( $attachment_id ) ) {
+			$this->send_json( array(
+				'success' => false,
+				'message' => __( 'This format is not supported.', 'imagify' ),
 			) );
 		}
 
