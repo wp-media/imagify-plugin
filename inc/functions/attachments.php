@@ -5,21 +5,32 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * Get all mime types which could be optimized by Imagify.
  *
  * @since 1.7
+ * @since 1.8 Added $type parameter.
  *
- * @return array The mime types.
+ * @param  string $type One of 'image', 'not-image'. Any other value will return all mime types.
+ * @return array        The mime types.
  */
-function imagify_get_mime_types() {
-	return array(
-		'jpg|jpeg|jpe' => 'image/jpeg',
-		'png'          => 'image/png',
-		'gif'          => 'image/gif',
-	);
+function imagify_get_mime_types( $type = null ) {
+	$mimes = array();
+
+	if ( 'not-image' !== $type ) {
+		$mimes = array(
+			'jpg|jpeg|jpe' => 'image/jpeg',
+			'png'          => 'image/png',
+			'gif'          => 'image/gif',
+		);
+	}
+
+	if ( 'image' !== $type ) {
+		$mimes['pdf'] = 'application/pdf';
+	}
+
+	return $mimes;
 }
 
 /**
  * Tell if an attachment has a supported mime type.
  * Was previously Imagify_AS3CF::is_mime_type_supported() since 1.6.6.
- * Ironically, this function is used in Imagify::is_mime_type_supported() since 1.6.9.
  *
  * @since  1.6.8
  * @author Grégory Viguier

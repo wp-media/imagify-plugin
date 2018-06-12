@@ -426,11 +426,11 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 		}
 
 		$data = imagify_merge_intersect( $this->get_row(), array(
-			'original_size'      => 0,
-			'optimized_size'     => false,
-			'percent'            => 0,
-			'status'             => false,
-			'error'              => false,
+			'original_size'  => 0,
+			'optimized_size' => false,
+			'percent'        => 0,
+			'status'         => false,
+			'error'          => false,
 		) );
 
 		$data['success'] = 'success' === $data['status'];

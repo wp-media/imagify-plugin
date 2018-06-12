@@ -43,8 +43,10 @@ function do_imagify( $file_path, $args = array() ) {
 		return new WP_Error( 'curl', __( 'cURL is not available on the server.', 'imagify' ) );
 	}
 
+	$filesystem = imagify_get_filesystem();
+
 	// Check if imageMagick or GD is available.
-	if ( ! Imagify_Requirements::supports_image_editor() ) {
+	if ( $filesystem->is_image( $file_path ) && ! Imagify_Requirements::supports_image_editor() ) {
 		return new WP_Error( 'image_editor', __( 'No php extensions are available to edit images on the server.', 'imagify' ) );
 	}
 
@@ -57,8 +59,6 @@ function do_imagify( $file_path, $args = array() ) {
 	if ( ! Imagify_Requirements::is_api_up() ) {
 		return new WP_Error( 'api_server_down', __( 'Sorry, our servers are temporarily unavailable. Please, try again in a couple of minutes.', 'imagify' ) );
 	}
-
-	$filesystem = imagify_get_filesystem();
 
 	// Check that the file exists.
 	if ( ! $filesystem->is_writable( $file_path ) || ! $filesystem->is_file( $file_path ) ) {

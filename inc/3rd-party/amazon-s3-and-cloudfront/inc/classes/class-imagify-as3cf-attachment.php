@@ -148,6 +148,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 		// Get file path of the full size.
 		$attachment_path = $this->get_original_path();
+		$attachment_url  = $this->get_original_url();
 
 		if ( ! $attachment_path ) {
 			// We're in deep sh**.
@@ -174,7 +175,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		$filesize_total = 0;
 
 		// Maybe resize (and backup) the image.
-		$resized = $this->maybe_resize( $attachment_path );
+		$resized = $this->is_image() && $this->maybe_resize( $attachment_path );
 
 		if ( $resized ) {
 			$size = $this->filesystem->get_image_size( $attachment_path );
@@ -210,6 +211,9 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			}
 		}
 
+		/** This filter is documented in /inc/classes/class-imagify-attachment.php. */
+		$data = apply_filters( 'imagify_fill_full_size_data', $data, $response, $this->id, $attachment_path, $attachment_url, 'full', $optimization_level, $metadata );
+
 		// Save the optimization level.
 		update_post_meta( $this->id, '_imagify_optimization_level', $optimization_level );
 
@@ -227,11 +231,12 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
 			foreach ( $metadata['sizes'] as $size_key => $size_data ) {
 				$thumbnail_path = $this->get_thumbnail_path( $size_data['file'] );
+				$thumbnail_url  = $this->get_thumbnail_url( $size_data['file'] );
 
 				if ( $this->delete_files ) {
 					$to_delete[] = $thumbnail_path;
 
-					// Even if this size must not be optimized ($disallowed_sizes), we must fetch the file from S3 to get its size.
+					// Even if this size must not be optimized ($disallowed_sizes), we must fetch the file from S3 to get its size, and not to trigger a `WP_Error` in `upload_attachment_to_s3()`.
 					if ( ! $this->filesystem->exists( $thumbnail_path ) && ! $this->get_file_from_s3( $thumbnail_path ) ) {
 						// Doesn't exist and couldn't be retrieved from S3.
 						$data['sizes'][ $size_key ] = array(
@@ -250,11 +255,14 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 				}
 
 				// Check if this size has to be optimized.
-				if ( isset( $disallowed_sizes[ $size_key ] ) && ! $is_active_for_network ) {
+				if ( ! $is_active_for_network && isset( $disallowed_sizes[ $size_key ] ) && $this->is_image() ) {
 					$data['sizes'][ $size_key ] = array(
 						'success' => false,
 						'error'   => __( 'This size isn\'t authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
 					);
+
+					/** This filter is documented in /inc/classes/class-imagify-attachment.php. */
+					$data = apply_filters( 'imagify_fill_unauthorized_thumbnail_data', $data, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level, $metadata );
 					continue;
 				}
 
@@ -267,7 +275,9 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 					continue;
 				}
 
-				$thumbnail_url = $this->get_thumbnail_url( $size_data['file'] );
+				if ( ! $this->is_image() ) {
+					continue;
+				}
 
 				// Optimize the thumbnail size.
 				$response = do_imagify( $thumbnail_path, array(
@@ -279,7 +289,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 				$data = $this->fill_data( $data, $response, $size_key );
 
 				/** This filter is documented in /inc/classes/class-imagify-attachment.php. */
-				$data = apply_filters( 'imagify_fill_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level );
+				$data = apply_filters( 'imagify_fill_thumbnail_data', $data, $response, $this->id, $thumbnail_path, $thumbnail_url, $size_key, $optimization_level, $metadata );
 			} // End foreach().
 		} // End if().
 
@@ -321,7 +331,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 */
 	public function optimize_missing_thumbnails( $optimization_level = null ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_extension_supported() ) {
+		if ( ! $this->is_extension_supported() || ! $this->is_image() ) {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
@@ -529,26 +539,39 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
-			require_once( ABSPATH . 'wp-admin/includes/image.php' );
-		}
+		$this->set_deletion_status();
 
 		// Remove old optimization data.
 		$this->delete_imagify_data();
 
-		/** This hook is documented in /inc/classes/class-imagify-attachment.php. */
-		do_action( 'after_imagify_restore_attachment', $this->id );
+		if ( ! $this->is_image() ) {
+			// We need to delete the thumbnails for pdf, or new ones will be generated with new unique file names.
+			$metadata = wp_get_attachment_metadata( $this->id );
 
-		$this->set_deletion_status();
+			if ( ! empty( $metadata['sizes'] ) && is_array( $metadata['sizes'] ) ) {
+				foreach ( $metadata['sizes'] as $size_key => $size_data ) {
+					$thumbnail_path = $this->get_thumbnail_path( $size_data['file'] );
 
-		// If the files must be deleted, we need to store the file sizes.
-		$filesize_total = 0;
+					if ( $this->filesystem->exists( $thumbnail_path ) ) {
+						$this->filesystem->delete( $thumbnail_path );
+					}
+				}
+			}
+		}
+
+		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
+			require_once( ABSPATH . 'wp-admin/includes/image.php' );
+		}
+
 		// Generate new thumbnails and new metadata.
-		$metadata       = wp_generate_attachment_metadata( $this->id, $attachment_path );
+		$metadata = wp_generate_attachment_metadata( $this->id, $attachment_path );
+
 		// Send to S3.
 		$sent           = $this->maybe_send_attachment_to_s3( $metadata, $attachment_path );
 		// Files restored (and maybe to delete).
 		$files          = array();
+		// If the files must be deleted, we need to store the file sizes.
+		$filesize_total = 0;
 
 		if ( $sent ) {
 			$files[] = $attachment_path;
@@ -589,6 +612,9 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			// Add the total file size for all image sizes. This is a meta used by AS3CF.
 			update_post_meta( $this->id, 'wpos3_filesize_total', $filesize_total );
 		}
+
+		/** This hook is documented in /inc/classes/class-imagify-attachment.php. */
+		do_action( 'after_imagify_restore_attachment', $this->id );
 
 		$to_delete = $this->delete_files ? $files : array();
 
@@ -664,6 +690,10 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 * @return bool                     True on success. False on failure.
 	 */
 	protected function maybe_resize( $attachment_path ) {
+		if ( ! $this->is_image() ) {
+			return false;
+		}
+
 		$do_resize       = get_imagify_option( 'resize_larger' );
 		$resize_width    = get_imagify_option( 'resize_larger_w' );
 		$attachment_size = $this->filesystem->get_image_size( $attachment_path );

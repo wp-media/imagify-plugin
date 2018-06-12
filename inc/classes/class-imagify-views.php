@@ -257,7 +257,7 @@ class Imagify_Views {
 			'unoptimized_attachment_limit' => 0,
 			// What to optimize.
 			'icon'                         => 'images-alt2',
-			'title'                        => __( 'Optimize your images', 'imagify' ),
+			'title'                        => __( 'Optimize your media files', 'imagify' ),
 			'groups'                       => array(),
 		);
 
@@ -301,7 +301,7 @@ class Imagify_Views {
 				'context'  => 'wp',
 				'title'    => __( 'Media Library', 'imagify' ),
 				/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-				'footer'   => sprintf( __( 'You can also re-optimize your images from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
+				'footer'   => sprintf( __( 'You can also re-optimize your media files from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
 			);
 		}
 
@@ -316,7 +316,7 @@ class Imagify_Views {
 					'context'  => 'File',
 					'title'    => __( 'Custom folders', 'imagify' ),
 					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-					'footer'   => sprintf( __( 'You can re-optimize your images more finely directly in the %1$simages management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
+					'footer'   => sprintf( __( 'You can re-optimize your media files more finely directly in the %1$smedia management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
 				);
 			}
 		}

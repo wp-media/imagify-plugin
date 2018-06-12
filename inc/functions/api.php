@@ -208,12 +208,12 @@ function imagify_translate_api_message( $message ) {
 	$messages = array(
 		// Local messages from Imagify::curl_http_call() and Imagify::handle_response().
 		'Unknown error occurred'                                                                   => __( 'Unknown error occurred.', 'imagify' ),
-		'Your image is too big to be uploaded on our server'                                       => __( 'Your image is too big to be uploaded on our server.', 'imagify' ),
+		'Your image is too big to be uploaded on our server'                                       => __( 'Your file is too big to be uploaded on our server.', 'imagify' ),
 		'cURL isn\'t installed on the server'                                                      => __( 'cURL is not available on the server.', 'imagify' ),
 		// API messages.
 		'Authentification not provided'                                                            => __( 'Authentication not provided.', 'imagify' ),
 		'Cannot create client token'                                                               => __( 'Cannot create client token.', 'imagify' ),
-		'Confirm your account to continue optimizing image'                                        => __( 'Confirm your account to continue optimizing images.', 'imagify' ),
+		'Confirm your account to continue optimizing image'                                        => __( 'Confirm your account to continue optimizing files.', 'imagify' ),
 		'Coupon doesn\'t exist'                                                                    => __( 'Coupon does not exist.', 'imagify' ),
 		'Email field shouldn\'t be empty'                                                          => __( 'Email field should not be empty.', 'imagify' ),
 		'Email or Password field shouldn\'t be empty'                                              => __( 'This account already exists.', 'imagify' ),
@@ -226,7 +226,7 @@ function imagify_translate_api_message( $message ) {
 		'Too many request, be patient'                                                             => __( 'Too many requests, please be patient.', 'imagify' ),
 		'Unable to regenerate access token'                                                        => __( 'Unable to regenerate access token.', 'imagify' ),
 		'User not valid'                                                                           => __( 'User not valid.', 'imagify' ),
-		'WELL DONE. This image is already compressed, no further compression required'             => __( 'WELL DONE. This image is already optimized, no further optimization is required.', 'imagify' ),
+		'WELL DONE. This image is already compressed, no further compression required'             => __( 'WELL DONE. This media file is already optimized, no further optimization is required.', 'imagify' ),
 		'You are not authorized to perform this action'                                            => __( 'You are not authorized to perform this action.', 'imagify' ),
 		'You\'ve consumed all your data. You have to upgrade your account to continue'             => __( 'You have consumed all your data. You have to upgrade your account to continue.', 'imagify' ),
 		'Invalid token'                                                                            => __( 'Invalid API key', 'imagify' ),

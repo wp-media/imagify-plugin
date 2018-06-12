@@ -101,6 +101,10 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return array
 	 */
 	public function get_dimensions() {
+		if ( ! $this->is_image() ) {
+			return parent::get_dimensions();
+		}
+
 		$values = wp_get_attachment_image_src( $this->id, 'full' );
 
 		return array(
@@ -119,7 +123,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function update_metadata_size() {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_extension_supported() ) {
+		if ( ! $this->is_extension_supported() || ! $this->is_image() ) {
 			return false;
 		}
 
@@ -268,7 +272,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 * @return array                An array of thumbnail data (width, height, crop, file).
 	 */
 	protected function create_missing_thumbnails( $missing_sizes ) {
-		if ( ! $missing_sizes ) {
+		if ( ! $missing_sizes || ! $this->is_image() ) {
 			return array();
 		}
 
@@ -322,7 +326,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		$optimization_level = isset( $optimization_level ) ? (int) $optimization_level : get_imagify_option( 'optimization_level' );
 		$metadata           = $metadata ? $metadata : wp_get_attachment_metadata( $this->id );
-		$sizes              = isset( $metadata['sizes'] ) ? (array) $metadata['sizes'] : array();
+		$sizes              = ! empty( $metadata['sizes'] ) && is_array( $metadata['sizes'] ) && $this->is_image() ? $metadata['sizes'] : array();
 
 		// To avoid issue with "original_size" at 0 in "_imagify_data".
 		if ( 0 === (int) $this->get_stats_data( 'original_size' ) ) {
@@ -330,7 +334,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		}
 
 		// Check if the full size is already optimized.
-		if ( $this->is_optimized() && ( $this->get_optimization_level() === $optimization_level ) ) {
+		if ( $this->is_optimized() && $this->get_optimization_level() === $optimization_level ) {
 			return;
 		}
 
@@ -352,7 +356,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		// Get the resize values for the original size.
 		$resized   = false;
-		$do_resize = get_imagify_option( 'resize_larger' );
+		$do_resize = $this->is_image() && get_imagify_option( 'resize_larger' );
 
 		if ( $do_resize ) {
 			$resize_width    = get_imagify_option( 'resize_larger_w' );
@@ -511,7 +515,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function optimize_missing_thumbnails( $optimization_level = null ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_extension_supported() ) {
+		if ( ! $this->is_extension_supported() || ! $this->is_image() ) {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
@@ -625,7 +629,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 */
 	public function reoptimize_thumbnails( $sizes ) {
 		// Check if the attachment extension is allowed.
-		if ( ! $this->is_extension_supported() ) {
+		if ( ! $this->is_extension_supported() || ! $this->is_image() ) {
 			return new WP_Error( 'mime_type_not_supported', __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
@@ -762,18 +766,20 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		$this->filesystem->copy( $backup_path, $attachment_path, true );
 		$this->filesystem->chmod_file( $attachment_path );
 
-		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
-			require_once( ABSPATH . 'wp-admin/includes/image.php' );
-		}
+		if ( $this->is_image() ) {
+			if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
+				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+			}
 
-		remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', IMAGIFY_INT_MAX );
-		wp_generate_attachment_metadata( $this->id, $attachment_path );
+			remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', IMAGIFY_INT_MAX );
+			wp_generate_attachment_metadata( $this->id, $attachment_path );
+
+			// Restore the original size in the metadata.
+			$this->update_metadata_size();
+		}
 
 		// Remove old optimization data.
 		$this->delete_imagify_data();
-
-		// Restore the original size in the metadata.
-		$this->update_metadata_size();
 
 		/**
 		 * Fires after restoring an attachment.

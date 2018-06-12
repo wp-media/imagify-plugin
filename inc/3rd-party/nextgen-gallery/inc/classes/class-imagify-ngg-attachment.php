@@ -206,6 +206,21 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
+	 * Delete the data related to optimization.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function delete_imagify_data() {
+		if ( ! $this->get_row() ) {
+			return;
+		}
+
+		$this->delete_row();
+	}
+
+	/**
 	 * Get width and height of the original image.
 	 *
 	 * @since  1.7
@@ -222,45 +237,28 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	}
 
 	/**
-	 * Delete the data related to optimization.
+	 * Get the file mime type + file extension (if the file is supported).
 	 *
-	 * @since  1.7
+	 * @since  1.8
 	 * @access public
-	 * @author Grégory Viguier
-	 */
-	public function delete_imagify_data() {
-		if ( ! $this->get_row() ) {
-			return;
-		}
-
-		$this->delete_row();
-	}
-
-	/**
-	 * Tell if the current file mime type is supported.
-	 *
-	 * @since  1.6.9
+	 * @see    wp_check_filetype()
 	 * @author Grégory Viguier
 	 *
-	 * @return bool
+	 * @return object
 	 */
-	public function is_mime_type_supported() {
-		if ( isset( $this->is_mime_type_supported ) ) {
-			return $this->is_mime_type_supported;
+	public function get_file_type() {
+		if ( isset( $this->file_type ) ) {
+			return $this->file_type;
 		}
 
-		$mime_type = $this->filesystem->get_mime_type( $this->get_original_path() );
-
-		if ( ! $mime_type ) {
-			$this->is_mime_type_supported = false;
-			return $this->is_mime_type_supported;
+		if ( ! $this->is_valid() ) {
+			$this->file_type = (object) array( 'ext' => '', 'type' => '' );
+			return $this->file_type;
 		}
 
-		$mime_types = imagify_get_mime_types();
-		$mime_types = array_flip( $mime_types );
+		$this->file_type = (object) wp_check_filetype( $this->get_original_path(), imagify_get_mime_types( 'image' ) );
 
-		$this->is_mime_type_supported = isset( $mime_types[ $mime_type ] );
-		return $this->is_mime_type_supported;
+		return $this->file_type;
 	}
 
 	/**
@@ -292,14 +290,16 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	public function update_metadata_size() {
 		$size = $this->filesystem->get_image_size( $this->get_original_path() );
 
-		if ( $size ) {
-			$this->image->meta_data['width']          = $size['width'];
-			$this->image->meta_data['height']         = $size['height'];
-			$this->image->meta_data['full']['width']  = $size['width'];
-			$this->image->meta_data['full']['height'] = $size['height'];
-
-			nggdb::update_image_meta( $this->id, $this->image->meta_data );
+		if ( ! $size ) {
+			return;
 		}
+
+		$this->image->meta_data['width']          = $size['width'];
+		$this->image->meta_data['height']         = $size['height'];
+		$this->image->meta_data['full']['width']  = $size['width'];
+		$this->image->meta_data['full']['height'] = $size['height'];
+
+		nggdb::update_image_meta( $this->id, $this->image->meta_data );
 	}
 
 	/**
@@ -433,6 +433,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		// Get file path for original image.
 		$attachment_path = $this->get_original_path();
+		$attachment_url  = $this->get_original_url();
 
 		/**
 		 * Fires before optimizing an attachment.
@@ -457,6 +458,22 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 
 		$data = $this->fill_data( null, $response );
 
+		/**
+		 * Filter the optimization data of the full size.
+		 *
+		 * @since  1.8
+		 * @author Grégory Viguier
+		 *
+		 * @param array  $data               The statistics data.
+		 * @param object $response           The API response.
+		 * @param int    $id                 The attachment ID.
+		 * @param string $attachment_path    The attachment path.
+		 * @param string $attachment_url     The attachment URL.
+		 * @param string $size_key           The attachment size key. The value is obviously 'full' but it's kept for concistancy with other filters.
+		 * @param int    $optimization_level The optimization level.
+		 */
+		$data = apply_filters( 'imagify_fill_ngg_full_size_data', $data, $response, $this->id, $attachment_path, $attachment_url, 'full', $optimization_level );
+
 		// Save the optimization level.
 		$this->update_row( array(
 			// The pid column is needed in case the row doesn't exist yet.
@@ -477,17 +494,6 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		$this->update_row( array(
 			'status' => 'success',
 		) );
-
-		/**
-		 * Fires after optimizing an attachment.
-		 *
-		 * @since  1.5
-		 * @author Jonathan Buttigieg
-		 *
-		 * @param int    $id    The image ID.
-		 * @param array  $data  The optimization data.
-		 */
-		do_action( 'after_imagify_ngg_optimize_attachment', $this->id, $data );
 
 		/**
 		 * Update NGG meta data.
@@ -522,11 +528,15 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 			$image_data->meta_data['full']['md5'] = $md5;
 		}
 
-		$this->storage->_image_mapper->save( $image_data );
-
-		// Keep our property up to date.
-		$this->image->_ngiw->_cache['meta_data'] = $image_data->meta_data;
-		$this->image->_ngiw->_orig_image         = $image_data;
+		/**
+		 * Fires after optimizing an attachment.
+		 *
+		 * @since 1.5
+		 *
+		 * @param int    $id    The attachment ID.
+		 * @param array  $data  The optimization data.
+		*/
+		do_action( 'after_imagify_ngg_optimize_attachment', $this->id, $data );
 
 		$this->delete_running_status();
 

@@ -82,11 +82,13 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 
 	$output .= $output_before . '<span class="data">' . __( 'Level:', 'imagify' ) . '</span> <strong>' . $optimization_level . '</strong>' . $output_after;
 
-	$total_optimized_thumbnails = $attachment->get_optimized_sizes_count();
+	if ( $attachment->is_image() ) {
+		$total_optimized_thumbnails = $attachment->get_optimized_sizes_count();
 
-	if ( $total_optimized_thumbnails ) {
-		$output .= $output_before . '<span class="data">' . __( 'Thumbnails Optimized:', 'imagify' ) . '</span> <strong>' . $total_optimized_thumbnails . '</strong>' . $output_after;
-		$output .= $output_before . '<span class="data">' . __( 'Overall Saving:', 'imagify' ) . '</span> <strong>' . $attachment->get_overall_saving_percent() . '%</strong>' . $output_after;
+		if ( $total_optimized_thumbnails ) {
+			$output .= $output_before . '<span class="data">' . __( 'Thumbnails Optimized:', 'imagify' ) . '</span> <strong>' . $total_optimized_thumbnails . '</strong>' . $output_after;
+			$output .= $output_before . '<span class="data">' . __( 'Overall Saving:', 'imagify' ) . '</span> <strong>' . $attachment->get_overall_saving_percent() . '%</strong>' . $output_after;
+		}
 	}
 
 	// End of list.
@@ -109,13 +111,16 @@ function get_imagify_attachment_optimization_text( $attachment, $context = 'wp' 
 		$output .= '</a>';
 
 		if ( ! $is_library_page ) {
-			$dimensions = $attachment->get_dimensions();
-
 			$output .= '<input id="imagify-original-src" type="hidden" value="' . esc_url( $attachment->get_backup_url() ) . '">';
 			$output .= '<input id="imagify-original-size" type="hidden" value="' . $attachment->get_original_size() . '">';
 			$output .= '<input id="imagify-full-src" type="hidden" value="' . esc_url( $attachment->get_original_url() ) . '">';
-			$output .= '<input id="imagify-full-width" type="hidden" value="' . $dimensions['width'] . '">';
-			$output .= '<input id="imagify-full-height" type="hidden" value="' . $dimensions['height'] . '">';
+
+			if ( $attachment->is_image() ) {
+				$dimensions = $attachment->get_dimensions();
+
+				$output .= '<input id="imagify-full-width" type="hidden" value="' . $dimensions['width'] . '">';
+				$output .= '<input id="imagify-full-height" type="hidden" value="' . $dimensions['height'] . '">';
+			}
 		}
 	}
 
@@ -234,6 +239,9 @@ function get_imagify_attachment_reoptimize_link( $attachment, $context = 'wp' ) 
  * @return string             The output to print.
  */
 function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $context = 'wp' ) {
+	if ( ! $attachment->is_image() || ! Imagify_Requirements::is_api_key_valid() || ! $attachment->has_backup() ) {
+		return '';
+	}
 	/**
 	 * Allow to not display the "Optimize missing thumbnails" link.
 	 *
@@ -247,7 +255,7 @@ function get_imagify_attachment_optimize_missing_thumbnails_link( $attachment, $
 	$display = apply_filters( 'imagify_display_missing_thumbnails_link', true, $attachment, $context );
 
 	// Stop the process if the filter is false, or if the API key isn't valid, or if there is no backup file.
-	if ( ! $display || ! Imagify_Requirements::is_api_key_valid() || ! $attachment->has_backup() ) {
+	if ( ! $display ) {
 		return '';
 	}
 
@@ -389,7 +397,7 @@ function imagify_get_folder_type_data( $folder_type ) {
 	 * Format the data.
 	 */
 	/* translators: %s is a formatted number, dont use %d. */
-	$data['images-optimized'] = sprintf( _n( '%s Image Optimized', '%s Images Optimized', $data['images-optimized'], 'imagify' ), '<span>' . number_format_i18n( $data['images-optimized'] ) . '</span>' );
+	$data['images-optimized'] = sprintf( _n( '%s Media File Optimized', '%s Media Files Optimized', $data['images-optimized'], 'imagify' ), '<span>' . number_format_i18n( $data['images-optimized'] ) . '</span>' );
 
 	if ( $data['errors'] ) {
 		/* translators: %s is a formatted number, dont use %d. */
