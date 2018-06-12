@@ -485,12 +485,13 @@ class Imagify_WP_Retina_2x_Core {
 		foreach ( $sizes as $size_key => $image_data ) {
 			$retina_path = wr2x_get_retina( $original_dirpath . $image_data['file'] );
 
-			if ( $retina_path ) {
-				// The file exists.
-				$sizes[ $size_key ]['retina-path'] = $retina_path;
-			} else {
+			if ( ! $retina_path ) {
 				unset( $sizes[ $size_key ] );
+				continue;
 			}
+
+			// The file exists.
+			$sizes[ $size_key ]['retina-path'] = $retina_path;
 		}
 
 		if ( ! $sizes ) {
@@ -1041,27 +1042,6 @@ class Imagify_WP_Retina_2x_Core {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the suffix added to the file name, with a trailing dot.
-	 * Don't use it for the size name.
-	 *
-	 * @since  1.8
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return string
-	 */
-	public function get_suffix() {
-		global $wr2x_core;
-		static $suffix;
-
-		if ( ! isset( $suffix ) ) {
-			$suffix = $wr2x_core && is_object( $wr2x_core ) && method_exists( $wr2x_core, 'retina_extension' ) ? $wr2x_core->retina_extension() : '@2x.';
-		}
-
-		return $suffix;
-	}
-
-	/**
 	 * Get the path to the retina version of an image.
 	 *
 	 * @since  1.8
@@ -1535,5 +1515,90 @@ class Imagify_WP_Retina_2x_Core {
 
 		wp_update_attachment_metadata( $attachment->get_id(), $metadata );
 		return true;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** WR2X COMPAT' TOOLS ====================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the suffix added to the file name, with a trailing dot.
+	 * Don't use it for the size name.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public function get_suffix() {
+		global $wr2x_core;
+		static $suffix;
+
+		if ( ! isset( $suffix ) ) {
+			$suffix = $wr2x_core && is_object( $wr2x_core ) && method_exists( $wr2x_core, 'retina_extension' ) ? $wr2x_core->retina_extension() : '@2x.';
+		}
+
+		return $suffix;
+	}
+
+	/**
+	 * Get info about retina version.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  object $attachment An Imagify attachment.
+	 * @param  string $type       The type of info. Possible values are 'basic' and 'full' (for the full size).
+	 * @return array              An array containing some HTML, indexed by the attachment ID.
+	 */
+	public function get_retina_info( $attachment, $type = 'basic' ) {
+		global $wr2x_core;
+		static $can_get_info;
+
+		if ( ! isset( $can_get_info ) ) {
+			$can_get_info = $wr2x_core && is_object( $wr2x_core ) && method_exists( $wr2x_core, 'retina_info' ) && method_exists( $wr2x_core, 'html_get_basic_retina_info_full' ) && method_exists( $wr2x_core, 'html_get_basic_retina_info' );
+		}
+
+		if ( ! $can_get_info ) {
+			return '';
+		}
+
+		$attachment_id = $attachment->get_id();
+		$info          = $wr2x_core->retina_info( $attachment_id );
+
+		if ( 'full' === $type ) {
+			return array(
+				$attachment_id => $wr2x_core->html_get_basic_retina_info_full( $attachment_id, $info ),
+			);
+		}
+
+		return array(
+			$attachment_id => $wr2x_core->html_get_basic_retina_info( $attachment_id, $info ),
+		);
+	}
+
+	/**
+	 * Log.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param string $text Text to log.
+	 */
+	public function log( $text ) {
+		global $wr2x_core;
+		static $can_log;
+
+		if ( ! isset( $can_log ) ) {
+			$can_log = $wr2x_core && is_object( $wr2x_core ) && method_exists( $wr2x_core, 'log' );
+		}
+
+		if ( $can_log ) {
+			$wr2x_core->log( $text );
+		}
 	}
 }

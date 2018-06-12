@@ -141,7 +141,7 @@ class Imagify_WP_Retina_2x {
 		$this->maybe_send_json_error( $result );
 
 		$this->send_json( array(
-			'results'      => $this->get_retina_info( $attachment ),
+			'results'      => $this->get_core()->get_retina_info( $attachment ),
 			'message'      => __( 'Retina files generated.', 'imagify' ),
 			'imagify_info' => $this->get_imagify_info( $attachment ),
 		) );
@@ -167,8 +167,8 @@ class Imagify_WP_Retina_2x {
 		$this->maybe_send_json_error( $result );
 
 		$this->send_json( array(
-			'results'      => $this->get_retina_info( $attachment ),
-			'results_full' => $this->get_retina_info( $attachment, 'full' ),
+			'results'      => $this->get_core()->get_retina_info( $attachment ),
+			'results_full' => $this->get_core()->get_retina_info( $attachment, 'full' ),
 			'message'      => __( 'Retina files deleted.', 'imagify' ),
 		) );
 	}
@@ -192,7 +192,7 @@ class Imagify_WP_Retina_2x {
 		$this->maybe_send_json_error( $result );
 
 		$this->send_json( array(
-			'results' => $this->get_retina_info( $attachment, 'full' ),
+			'results' => $this->get_core()->get_retina_info( $attachment, 'full' ),
 			'message' => __( 'Full retina file deleted.', 'imagify' ),
 		) );
 	}
@@ -217,7 +217,7 @@ class Imagify_WP_Retina_2x {
 		$this->maybe_send_json_error( $result );
 
 		$this->send_json( array(
-			'results' => $this->get_retina_info( $attachment ),
+			'results' => $this->get_core()->get_retina_info( $attachment ),
 			'message' => __( 'Images replaced successfully.', 'imagify' ),
 		) );
 	}
@@ -242,7 +242,7 @@ class Imagify_WP_Retina_2x {
 		$this->maybe_send_json_error( $result );
 
 		$this->send_json( array(
-			'results' => $this->get_retina_info( $attachment ),
+			'results' => $this->get_core()->get_retina_info( $attachment ),
 			'message' => __( 'Image replaced successfully.', 'imagify' ),
 		) );
 	}
@@ -518,13 +518,11 @@ class Imagify_WP_Retina_2x {
 	 * @return string Path to the temporary file.
 	 */
 	public function get_uploaded_file_path() {
-		global $wr2x_core;
-
 		$tmp_file_path = ! empty( $_FILES['file']['tmp_name'] ) && is_uploaded_file( $_FILES['file']['tmp_name'] ) ? $_FILES['file']['tmp_name'] : '';
 		$filesystem    = Imagify_Filesystem::get_instance();
 
 		if ( ! $tmp_file_path || ! $filesystem->is_image( $tmp_file_path ) ) {
-			$wr2x_core->log( 'The file is not an image or the upload went wrong.' );
+			$this->get_core()->log( 'The file is not an image or the upload went wrong.' );
 			$filesystem->delete( $tmp_file_path );
 
 			$this->send_json_string( array(
@@ -537,7 +535,7 @@ class Imagify_WP_Retina_2x {
 		$file_data = wp_check_filetype_and_ext( $tmp_file_path, $file_name );
 
 		if ( empty( $file_data['ext'] ) ) {
-			$wr2x_core->log( 'You cannot use this file (wrong extension? wrong type?).' );
+			$this->get_core()->log( 'You cannot use this file (wrong extension? wrong type?).' );
 			$filesystem->delete( $tmp_file_path );
 
 			$this->send_json_string( array(
@@ -546,7 +544,7 @@ class Imagify_WP_Retina_2x {
 			) );
 		}
 
-		$wr2x_core->log( 'The temporary file was written successfully.' );
+		$this->get_core()->log( 'The temporary file was written successfully.' );
 
 		return $tmp_file_path;
 	}
@@ -587,34 +585,6 @@ class Imagify_WP_Retina_2x {
 		}
 
 		return is_array( $metadata['sizes'] );
-	}
-
-	/**
-	 * Get info about retina version.
-	 *
-	 * @since  1.8
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param  object $attachment An Imagify attachment.
-	 * @param  string $type       The type of info. Possible values are 'basic' and 'full' (for the full size).
-	 * @return array              An array containing some HTML, indexed by the attachment ID.
-	 */
-	public function get_retina_info( $attachment, $type = 'basic' ) {
-		global $wr2x_core;
-
-		$attachment_id = $attachment->get_id();
-		$info          = $wr2x_core->retina_info( $attachment_id );
-
-		if ( 'full' === $type ) {
-			return array(
-				$attachment_id => $wr2x_core->html_get_basic_retina_info_full( $attachment_id, $info ),
-			);
-		}
-
-		return array(
-			$attachment_id => $wr2x_core->html_get_basic_retina_info( $attachment_id, $info ),
-		);
 	}
 
 	/**
