@@ -14,7 +14,7 @@ class Imagify_Custom_Folders {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -176,7 +176,7 @@ class Imagify_Custom_Folders {
 		), $args );
 
 		$filesystem = imagify_get_filesystem();
-		$file       = $args['file'] && is_a( $args['file'], 'Imagify_File_Attachment' ) ? $args['file'] : false;
+		$file       = $args['file'] && $args['file'] instanceof Imagify_File_Attachment ? $args['file'] : false;
 
 		// The file.
 		if ( ! $args['file_path'] && $args['path'] ) {
@@ -947,7 +947,7 @@ class Imagify_Custom_Folders {
 				continue;
 			}
 
-			if ( Imagify_Files_Scan::is_path_forbidden( $full_path ) ) {
+			if ( Imagify_Files_Scan::is_path_forbidden( trailingslashit( $full_path ) ) ) {
 				continue;
 			}
 

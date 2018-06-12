@@ -16,7 +16,7 @@ class Imagify_Files_Scan {
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.1';
 
 	/**
 	 * Get files (optimizable by Imagify) recursively from a specific folder.
@@ -46,7 +46,7 @@ class Imagify_Files_Scan {
 			return new WP_Error( 'not_a_folder', __( 'This file is not a folder.', 'imagify' ) );
 		}
 
-		if ( self::is_path_forbidden( $folder ) ) {
+		if ( self::is_path_forbidden( trailingslashit( $folder ) ) ) {
 			return new WP_Error( 'folder_forbidden', __( 'This folder is not allowed.', 'imagify' ) );
 		}
 
@@ -76,10 +76,17 @@ class Imagify_Files_Scan {
 		return $images;
 	}
 
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** FORBIDDEN FOLDERS AND FILES ============================================================= */
+	/** ----------------------------------------------------------------------------------------- */
+
 	/**
 	 * Tell if a path is autorized.
+	 * When testing a folder, the path MUST have a trailing slash.
 	 *
 	 * @since  1.7.1
+	 * @since  1.8 The path must have a trailing slash if for a folder.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -92,8 +99,10 @@ class Imagify_Files_Scan {
 
 	/**
 	 * Tell if a path is forbidden.
+	 * When testing a folder, the path MUST have a trailing slash.
 	 *
 	 * @since  1.7
+	 * @since  1.8 The path must have a trailing slash if  for a folder.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -126,11 +135,11 @@ class Imagify_Files_Scan {
 			return true;
 		}
 
-		if ( self::get_forbidden_folder_patterns() ) {
-			foreach ( self::get_forbidden_folder_patterns() as $pattern ) {
-				if ( preg_match( '@^' . $pattern . '@', $file_path ) ) {
-					return true;
-				}
+		$delim = Imagify_Filesystem::PATTERN_DELIMITER;
+
+		foreach ( self::get_forbidden_folder_patterns() as $pattern ) {
+			if ( preg_match( $delim . '^' . $pattern . $delim, $file_path ) ) {
+				return true;
 			}
 		}
 
@@ -160,38 +169,39 @@ class Imagify_Files_Scan {
 		}
 
 		$filesystem = imagify_get_filesystem();
+		$abspath    = $filesystem->get_abspath();
 		$folders    = array(
 			// Server.
-			$filesystem->get_abspath() . 'cgi-bin',        // `cgi-bin`
+			$abspath . 'cgi-bin',                          // `cgi-bin`
 			// WordPress.
-			$filesystem->get_abspath() . 'wp-admin',       // `wp-admin`
-			$filesystem->get_abspath() . WPINC,            // `wp-includes`
-			get_imagify_upload_basedir( true ),            // Media library.
-			WP_CONTENT_DIR . '/languages',                 // Translations.
+			$abspath . 'wp-admin',                         // `wp-admin`
+			$abspath . WPINC,                              // `wp-includes`
 			WP_CONTENT_DIR . '/mu-plugins',                // MU plugins.
 			WP_CONTENT_DIR . '/upgrade',                   // Upgrade.
 			// Plugins.
-			WP_CONTENT_DIR . '/backups',                   // A folder commonly used by backup plugins.
-			WP_CONTENT_DIR . '/cache',                     // A folder commonly used by cache plugins.
 			WP_CONTENT_DIR . '/bps-backup',                // BulletProof Security.
+			self::get_ewww_tools_path(),                   // EWWW: /wp-content/ewww.
 			WP_CONTENT_DIR . '/ngg',                       // NextGen Gallery.
 			WP_CONTENT_DIR . '/ngg_styles',                // NextGen Gallery.
 			WP_CONTENT_DIR . '/w3tc-config',               // W3 Total Cache.
 			WP_CONTENT_DIR . '/wfcache',                   // WP Fastest Cache.
 			WP_CONTENT_DIR . '/wp-rocket-config',          // WP Rocket.
-			Imagify_Custom_Folders::get_backup_dir_path(), // Imagify "Custom folders" backup.
-			IMAGIFY_PATH,                                  // Imagify plugin.
-			self::get_wc_logs_path(),                      // WooCommerce Logs.
-			self::get_ewww_tools_path(),                   // EWWW.
+			Imagify_Custom_Folders::get_backup_dir_path(), // Imagify "Custom folders" backup: /imagify-backup.
+			IMAGIFY_PATH,                                  // Imagify plugin: /wp-content/plugins/imagify.
+			self::get_shortpixel_path(),                   // ShortPixel: /wp-content/uploads/ShortpixelBackups.
 		);
 
-		// NextGen Gallery.
 		if ( ! is_multisite() ) {
-			$folders[] = self::get_ngg_galleries_path();
+			$uploads_dir = $filesystem->get_upload_basedir( true );
+
+			$folders[] = self::get_ngg_galleries_path();       // NextGen Gallery: /wp-content/gallery.
+			$folders[] = $uploads_dir . 'formidable';          // Formidable Forms: /wp-content/uploads/formidable.
+			$folders[] = get_imagify_backup_dir_path( true );  // Imagify Media Library backup: /wp-content/uploads/backup.
+			$folders[] = self::get_wc_logs_path();             // WooCommerce Logs: /wp-content/uploads/wc-logs.
+			$folders[] = $uploads_dir . 'woocommerce_uploads'; // WooCommerce uploads: /wp-content/uploads/woocommerce_uploads.
 		}
 
-		$folders = array_map( 'trailingslashit', $folders );
-		$folders = array_map( 'wp_normalize_path', $folders );
+		$folders = array_map( array( $filesystem, 'normalize_dir_path' ), $folders );
 
 		/**
 		 * Add folders to the list of forbidden ones.
@@ -210,8 +220,7 @@ class Imagify_Files_Scan {
 			return $folders;
 		}
 
-		$added_folders = array_map( 'trailingslashit', $added_folders );
-		$added_folders = array_map( 'wp_normalize_path', $added_folders );
+		$added_folders = array_map( array( $filesystem, 'normalize_dir_path' ), $added_folders );
 
 		$folders = array_merge( $folders, $added_folders );
 		$folders = array_flip( array_flip( $folders ) );
@@ -220,8 +229,10 @@ class Imagify_Files_Scan {
 	}
 
 	/**
-	 * Get the list of folder patterns where Imagify won't look for files to optimize.
-	 * `^` will be prepended to each pattern (aka, the pattern must match an absolute path). Pattern delimiter is `@`. Paths tested against these patterns are lower-cased.
+	 * Get the list of folder patterns where Imagify won't look for files to optimize. This is meant for paths that are dynamic.
+	 * `^` will be prepended to each pattern (aka, the pattern must match an absolute path).
+	 * Pattern delimiter is `Imagify_Filesystem::PATTERN_DELIMITER`.
+	 * Paths tested against these patterns are lower-cased.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -238,25 +249,21 @@ class Imagify_Files_Scan {
 
 		$folders = array();
 
-		// NextGen Gallery.
+		// Media Library: /wp\-content/uploads/(sites/\d+/)?\d{4}/\d{2}/.
+		$folders[] = self::get_media_library_pattern();
+
 		if ( is_multisite() ) {
-			$folders[] = self::get_ngg_galleries_path();
-		}
-
-		if ( $folders ) {
-			$folders = array_map( 'trailingslashit', $folders );
-			$folders = array_map( 'wp_normalize_path', $folders );
-			$folders = array_map( 'preg_quote', $folders, array_fill( 1, count( $folders ), '@' ) );
-
-			// Must be done after `wp_normalize_path()` and `preg_quote()`.
-			foreach ( $folders as $i => $folder ) {
-				$folders[ $i ] = str_replace( '%BLOG_ID%', '\d+', $folder );
-			}
+			/**
+			 * On multisite we can't exclude Imagify's library backup folders, or any other folder located in the uploads folders (created by other plugins): there are too many ways it can fail.
+			 * Only exception we're aware of so far is NextGen Gallery, because it provides a clear pattern to use.
+			 */
+			// NextGen Gallery: /wp\-content/uploads/sites/\d+/nggallery/.
+			$folders[] = self::get_ngg_galleries_multisite_pattern();
 		}
 
 		/**
 		 * Add folder patterns to the list of forbidden ones.
-		 * Don't forget to use `trailingslashit()`, `wp_normalize_path()` and `preg_quote()`!
+		 * Don't forget to use `Imagify_Files_Scan::normalize_path_for_regex( $path )`!
 		 *
 		 * @since  1.7
 		 * @author Grégory Viguier
@@ -321,6 +328,12 @@ class Imagify_Files_Scan {
 			'.DS_Store',
 			'.git',
 			'.svn',
+			'backup',
+			'backups',
+			'cache',
+			'lang',
+			'langs',
+			'languages',
 			'node_modules',
 			'Thumbs.db',
 		);
@@ -349,6 +362,11 @@ class Imagify_Files_Scan {
 
 		return $file_names;
 	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** PLACEHOLDERS ============================================================================ */
+	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * Add a placeholder to a path.
@@ -418,14 +436,16 @@ class Imagify_Files_Scan {
 			return $replacements;
 		}
 
+		$filesystem   = imagify_get_filesystem();
 		$replacements = array(
-			'{{PLUGINS}}/'    => WP_PLUGIN_DIR . '/',
-			'{{MU_PLUGINS}}/' => WPMU_PLUGIN_DIR . '/',
-			'{{THEMES}}/'     => WP_CONTENT_DIR . '/themes/',
-			'{{CONTENT}}/'    => WP_CONTENT_DIR . '/',
+			'{{PLUGINS}}/'    => WP_PLUGIN_DIR,
+			'{{MU_PLUGINS}}/' => WPMU_PLUGIN_DIR,
+			'{{THEMES}}/'     => WP_CONTENT_DIR . '/themes',
+			'{{UPLOADS}}/'    => $filesystem->get_main_upload_basedir(),
+			'{{CONTENT}}/'    => WP_CONTENT_DIR,
 			'{{ABSPATH}}/'    => ABSPATH,
 		);
-		$replacements = array_map( 'wp_normalize_path', $replacements );
+		$replacements = array_map( array( $filesystem, 'normalize_dir_path' ), $replacements );
 
 		return $replacements;
 	}
@@ -450,6 +470,7 @@ class Imagify_Files_Scan {
 			'{{PLUGINS}}/'    => plugins_url( '/' ),
 			'{{MU_PLUGINS}}/' => plugins_url( '/', WPMU_PLUGIN_DIR . '/.' ),
 			'{{THEMES}}/'     => content_url( 'themes/' ),
+			'{{UPLOADS}}/'    => imagify_get_filesystem()->get_main_upload_baseurl(),
 			'{{CONTENT}}/'    => content_url( '/' ),
 			'{{ABSPATH}}/'    => site_url( '/' ),
 		);
@@ -471,23 +492,13 @@ class Imagify_Files_Scan {
 		return imagify_get_filesystem()->is_readable( self::remove_placeholder( $file_path ) );
 	}
 
-	/**
-	 * Normalize a file path, aiming for path comparison.
-	 * The path is normalized, case-lowered, and a trailing slash is added.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $file_path The file path.
-	 * @return string            The normalized file path.
-	 */
-	public static function normalize_path_for_comparison( $file_path ) {
-		return strtolower( wp_normalize_path( trailingslashit( $file_path ) ) );
-	}
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** PATHS =================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the path to NextGen galleries. On multisite, the path contains `%BLOG_ID%`, and must be used as a regex pattern.
+	 * Get the path to NextGen galleries on monosites.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -496,33 +507,44 @@ class Imagify_Files_Scan {
 	 * @return string An absolute path.
 	 */
 	public static function get_ngg_galleries_path() {
-		$ngg_options = get_site_option( 'ngg_options' );
-
-		if ( empty( $ngg_options['gallerypath'] ) ) {
-			if ( is_multisite() ) {
-				return get_imagify_upload_basedir( true ) . 'sites/%BLOG_ID%/nggallery';
-			}
-
-			return WP_CONTENT_DIR . '/gallery/';
-		}
+		$filesystem     = imagify_get_filesystem();
+		$galleries_path = get_site_option( 'ngg_options' );
+		$galleries_path = ! empty( $galleries_path['gallerypath'] ) ? $galleries_path['gallerypath'] : '';
+		$galleries_path = $filesystem->normalize_dir_path( $galleries_path );
+		$galleries_path = trim( $galleries_path, '/' ); // Something like `wp-content/gallery`.
 
 		$ngg_root = defined( 'NGG_GALLERY_ROOT_TYPE' ) ? NGG_GALLERY_ROOT_TYPE : 'site';
 
+		if ( $galleries_path && 'content' === $ngg_root ) {
+			$ngg_root = $filesystem->normalize_dir_path( WP_CONTENT_DIR );
+			$ngg_root = trim( $ngg_root, '/' ); // Something like `abs-path/to/wp-content`.
+
+			$exploded_root      = explode( '/', $ngg_root );
+			$exploded_galleries = explode( '/', $galleries_path );
+			$first_gallery_dirname = reset( $exploded_galleries );
+			$last_root_dirname     = end( $exploded_root );
+
+			if ( $last_root_dirname === $first_gallery_dirname ) {
+				array_shift( $exploded_galleries );
+				$galleries_path = implode( '/', $exploded_galleries );
+			}
+		}
+
 		if ( 'content' === $ngg_root ) {
-			$ngg_root = WP_CONTENT_DIR . '/';
+			$ngg_root = $filesystem->normalize_dir_path( WP_CONTENT_DIR );
 		} else {
-			$ngg_root = imagify_get_filesystem()->get_abspath();
+			$ngg_root = $filesystem->get_abspath();
 		}
 
-		if ( is_multisite() ) {
-			return $ngg_root . str_replace( '%BLOG_NAME%', get_bloginfo( 'name' ), $ngg_options['gallerypath'] );
+		if ( strpos( $galleries_path, $ngg_root ) !== 0 ) {
+			$galleries_path = $ngg_root . $galleries_path;
 		}
 
-		return $ngg_root . $ngg_options['gallerypath'];
+		return $galleries_path . '/';
 	}
 
 	/**
-	 * Get the path to WooCommerce logs.
+	 * Get the path to WooCommerce logs on monosites.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -535,11 +557,12 @@ class Imagify_Files_Scan {
 			return WC_LOG_DIR;
 		}
 
-		return get_imagify_upload_basedir( true ) . 'wc-logs/';
+		return imagify_get_filesystem()->get_upload_basedir( true ) . 'wc-logs/';
 	}
 
 	/**
 	 * Get the path to EWWW optimization tools.
+	 * It is the same for all sites on multisite.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -553,5 +576,123 @@ class Imagify_Files_Scan {
 		}
 
 		return WP_CONTENT_DIR . '/ewww/';
+	}
+
+	/**
+	 * Get the path to ShortPixel backup folder.
+	 * It is the same for all sites on multisite (and yes, you'll get a surprise if your upload base dir -aka uploads/sites/12/- is not 2 folders deeper than theuploads folder).
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string An absolute path.
+	 */
+	public static function get_shortpixel_path() {
+		if ( defined( 'SHORTPIXEL_BACKUP_FOLDER' ) ) {
+			return trailingslashit( SHORTPIXEL_BACKUP_FOLDER );
+		}
+
+		$filesystem = imagify_get_filesystem();
+		$path       = $filesystem->get_upload_basedir( true );
+		$path       = is_main_site() ? $path : $filesystem->dir_path( $filesystem->dir_path( $path ) );
+
+		return $path . 'ShortpixelBackups/';
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** REGEX PATTERNS ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the regex pattern used to match the paths to the media library.
+	 * Pattern delimiter is `Imagify_Filesystem::PATTERN_DELIMITER`.
+	 * Paths tested against these patterns are lower-cased.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string Something like `/wp\-content/uploads/(sites/\d+/)?\d{4}/\d{2}/`.
+	 */
+	public static function get_media_library_pattern() {
+		$filesystem  = imagify_get_filesystem();
+		$uploads_dir = self::normalize_path_for_regex( $filesystem->get_main_upload_basedir() );
+
+		if ( ! is_multisite() ) {
+			if ( get_option( 'uploads_use_yearmonth_folders' ) ) {
+				// In year/month folders.
+				return $uploads_dir . '\d{4}/\d{2}/';
+			}
+
+			// Not in year/month folders.
+			return $uploads_dir . '[^/]+$';
+		}
+
+		$pattern = $filesystem->get_multisite_uploads_subdir_pattern();
+
+		if ( get_option( 'uploads_use_yearmonth_folders' ) ) {
+			// In year/month folders.
+			return $uploads_dir . '(' . $pattern . ')?\d{4}/\d{2}/';
+		}
+
+		// Not in year/month folders.
+		return $uploads_dir . '(' . $pattern . ')?[^/]+$';
+	}
+
+	/**
+	 * Get the regex pattern used to match the paths to NextGen galleries on multisite.
+	 * Pattern delimiter is `Imagify_Filesystem::PATTERN_DELIMITER`.
+	 * Paths tested against these patterns are lower-cased.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string Something like `/wp-content/uploads/sites/\d+/nggallery/`.
+	 */
+	public static function get_ngg_galleries_multisite_pattern() {
+		$galleries_path = self::get_ngg_galleries_path(); // Something like `wp-content/uploads/sites/%BLOG_ID%/nggallery/`.
+		$galleries_path = self::normalize_path_for_regex( $galleries_path );
+		$galleries_path = str_replace( array( '%blog_name%', '%blog_id%' ), array( '.+', '\d+' ), $galleries_path );
+
+		return $galleries_path;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** NORMALIZATION TOOLS ===================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Normalize a file path, aiming for path comparison.
+	 * The path is normalized and case-lowered.
+	 *
+	 * @since  1.7
+	 * @since  1.8 No trailing slash anymore, because it can be used for files.
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $file_path The file path.
+	 * @return string            The normalized file path.
+	 */
+	public static function normalize_path_for_comparison( $file_path ) {
+		return strtolower( wp_normalize_path( $file_path ) );
+	}
+
+	/**
+	 * Normalize a file path, aiming for use in a regex pattern.
+	 * The path is normalized, case-lowered, and escaped.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $file_path The file path.
+	 * @return string            The normalized file path.
+	 */
+	public static function normalize_path_for_regex( $file_path ) {
+		return preg_quote( imagify_get_filesystem()->normalize_path_for_comparison( $file_path ), Imagify_Filesystem::PATTERN_DELIMITER );
 	}
 }
