@@ -352,10 +352,10 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		}
 
 		$status_filters = array(
-			''            => __( 'All images', 'imagify' ),
-			'optimized'   => __( 'Optimized','imagify' ) . ' (' . $status_filters['optimized'] . ')',
-			'unoptimized' => __( 'Unoptimized','imagify' ) . ' (' . $status_filters['unoptimized'] . ')',
-			'errors'      => __( 'Errors','imagify' ) . ' (' . $status_filters['errors'] . ')',
+			''            => __( 'All Media Files', 'imagify' ),
+			'optimized'   => _x( 'Optimized', 'Media Files','imagify' ) . ' (' . $status_filters['optimized'] . ')',
+			'unoptimized' => _x( 'Unoptimized', 'Media Files','imagify' ) . ' (' . $status_filters['unoptimized'] . ')',
+			'errors'      => _x( 'Errors', 'Media Files','imagify' ) . ' (' . $status_filters['errors'] . ')',
 		);
 
 		// Get submitted values.
@@ -503,25 +503,33 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @param object $item The current File object.
 	 */
 	public function column_title( $item ) {
-		$item        = $this->maybe_set_item_folder( $item );
-		$url         = $item->get_original_url();
-		$base        = ! empty( $item->folder_path ) ? Imagify_Files_Scan::remove_placeholder( $item->folder_path ) : '';
-		$title       = $this->filesystem->make_path_relative( $item->get_original_path(), $base );
-		$dimensions  = $item->get_dimensions();
-		$orientation = $dimensions['width'] > $dimensions['height'] ? ' landscape' : ' portrait';
-		$orientation = $dimensions['width'] && $dimensions['height'] ? $orientation : '';
+		$item  = $this->maybe_set_item_folder( $item );
+		$url   = $item->get_original_url();
+		$base  = ! empty( $item->folder_path ) ? Imagify_Files_Scan::remove_placeholder( $item->folder_path ) : '';
+		$title = $this->filesystem->make_path_relative( $item->get_original_path(), $base );
 
-		if ( ! wp_doing_ajax() && $item->get_optimized_size( false ) > 100000 ) {
-			// LazyLoad.
-			$image_tag  = '<img src="' . esc_url( IMAGIFY_ASSETS_IMG_URL . 'lazyload.png' ) . '" data-lazy-src="' . esc_url( $url ) . '" alt="" />';
-			$image_tag .= '<noscript><img src="' . esc_url( $url ) . '" alt="" /></noscript>';
+		list( $mime ) = explode( '/', $item->get_mime_type() );
+
+		if ( $item->is_image() ) {
+			$dimensions  = $item->get_dimensions();
+			$orientation = $dimensions['width'] > $dimensions['height'] ? ' landscape' : ' portrait';
+			$orientation = $dimensions['width'] && $dimensions['height'] ? $orientation : '';
+
+			if ( ! wp_doing_ajax() && $item->get_optimized_size( false ) > 100000 ) {
+				// LazyLoad.
+				$image_tag  = '<img src="' . esc_url( IMAGIFY_ASSETS_IMG_URL . 'lazyload.png' ) . '" data-lazy-src="' . esc_url( $url ) . '" alt="" />';
+				$image_tag .= '<noscript><img src="' . esc_url( $url ) . '" alt="" /></noscript>';
+			} else {
+				$image_tag = '<img src="' . esc_url( $url ) . '" class="hide-if-no-js" alt="" />';
+			}
 		} else {
-			$image_tag = '<img src="' . esc_url( $url ) . '" class="hide-if-no-js" alt="" />';
+			$orientation = '';
+			$image_tag   = '<img src="' . esc_url( wp_mime_type_icon( $mime ) ) . '" class="hide-if-no-js" alt="" />';
 		}
 		?>
 		<strong class="has-media-icon">
 			<a href="<?php echo esc_url( $url ); ?>" target="_blank">
-				<span class="media-icon image-icon<?php echo $orientation; ?>">
+				<span class="media-icon <?php echo sanitize_html_class( $mime . '-icon' ); ?><?php echo $orientation; ?>">
 					<span class="centered">
 						<?php echo $image_tag; ?>
 					</span>
@@ -628,7 +636,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		if ( ! $status ) {
 			// File is not optimized.
-			$messages[] = '<strong class="imagify-status-not-optimized">' . esc_html_x( 'Not optimized', 'image', 'imagify' ) . '</strong>';
+			$messages[] = '<strong class="imagify-status-not-optimized">' . esc_html_x( 'Not optimized', 'Media File', 'imagify' ) . '</strong>';
 		} elseif ( $error_text ) {
 			// Error or already optimized.
 			$messages[] = '<span class="imagify-status-' . $status . '">' . esc_html( imagify_translate_api_message( $error_text ) ) . '</span>';
@@ -869,7 +877,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @param object $item The current File object.
 	 */
 	protected function comparison_tool_button( $item ) {
-		if ( ! $item->is_optimized() || ! $item->has_backup() ) {
+		if ( ! $item->is_optimized() || ! $item->has_backup() || ! $item->is_image() ) {
 			return;
 		}
 
