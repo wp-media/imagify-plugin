@@ -406,8 +406,6 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 	 * @author Grégory Viguier
 	 */
 	public function optimize() {
-		global $as3cf;
-
 		check_ajax_referer( 'imagify_async_optimize_as3cf' );
 
 		if ( empty( $_POST['post_id'] ) || ! imagify_current_user_can( 'auto-optimize' ) ) {
