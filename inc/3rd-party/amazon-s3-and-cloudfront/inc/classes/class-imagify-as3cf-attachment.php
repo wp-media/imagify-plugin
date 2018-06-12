@@ -684,15 +684,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		$this->filesystem->move( $resized_attachment_path, $attachment_path, true );
-		$this->filesystem->chmod_file( $attachment_path );
-
-		// If resized temp file still exists, delete it.
-		if ( $this->filesystem->exists( $resized_attachment_path ) ) {
-			$this->filesystem->delete( $resized_attachment_path );
-		}
-
-		return $this->filesystem->exists( $attachment_path );
+		return $this->filesystem->move( $resized_attachment_path, $attachment_path, true );
 	}
 
 	/**

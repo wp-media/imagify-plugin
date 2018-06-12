@@ -185,22 +185,6 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	}
 
 	/**
-	 * Determine if a file or directory is writable.
-	 * This function is used to work around certain ACL issues in PHP primarily affecting Windows Servers.
-	 * Replacement for is_writable().
-	 *
-	 * @param  string $file_path Path to the file.
-	 * @return bool
-	 */
-	public function is_writable( $file_path ) {
-		if ( ! $file_path ) {
-			return false;
-		}
-
-		return wp_is_writable( $file_path );
-	}
-
-	/**
 	 * Recursive directory creation based on full path. Will attempt to set permissions on folders.
 	 * Replacement for recursive mkdir().
 	 *
@@ -399,8 +383,100 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 
 
 	/** ----------------------------------------------------------------------------------------- */
+	/** CLASS OVERWRITES ======================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Move a file and apply chmod.
+	 * If the file failed to be moved once, a 2nd attempt is made after applying chmod.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $source      Path to the file to move.
+	 * @param  string $destination Path to the destination.
+	 * @param  bool   $overwrite   Allow to overwrite existing file at destination.
+	 * @return bool                True on success, false on failure.
+	 */
+	public function move( $source, $destination, $overwrite = false ) {
+		if ( parent::move( $source, $destination, $overwrite ) ) {
+			return $this->chmod_file( $destination );
+		}
+
+		if ( ! $this->chmod_file( $destination ) ) {
+			return false;
+		}
+
+		if ( parent::move( $source, $destination, $overwrite ) ) {
+			return $this->chmod_file( $destination );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if a file or directory is writable.
+	 * This function is used to work around certain ACL issues in PHP primarily affecting Windows Servers.
+	 * Replacement for is_writable().
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $file_path Path to the file.
+	 * @return bool
+	 */
+	public function is_writable( $file_path ) {
+		if ( ! $file_path ) {
+			return false;
+		}
+
+		return wp_is_writable( $file_path );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
 	/** WORK WITH IMAGES ======================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Tell if a file is an image.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $file_path Path to the file.
+	 * @return bool
+	 */
+	public function is_image( $file_path ) {
+		static $methods;
+
+		if ( function_exists( 'finfo_fopen' ) ) {
+			$finfo = finfo_open( FILEINFO_MIME );
+
+			if ( $finfo ) {
+				$mimetype = finfo_file( $finfo, $file_path );
+
+				if ( false !== $mimetype ) {
+					return strpos( $mimetype, 'image/' ) === 0;
+				}
+			}
+		}
+
+		if ( function_exists( 'exif_imagetype' ) ) {
+			$mimetype = exif_imagetype( $file_path );
+			return (bool) $mimetype;
+		}
+
+		if ( function_exists( 'mime_content_type' ) ) {
+			$mimetype = mime_content_type( $file_path );
+			return strpos( $mimetype, 'image/' ) === 0;
+		}
+
+		return false;
+	}
 
 	/**
 	 * Get an image data.
@@ -411,7 +487,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $file_path Path to the file.
-	 * @return array|bool        The image data. An empty array on failure.
+	 * @return array             The image data. An empty array on failure.
 	 */
 	public function get_image_size( $file_path ) {
 		if ( ! $file_path ) {
