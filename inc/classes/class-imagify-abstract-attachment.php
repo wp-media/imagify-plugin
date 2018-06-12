@@ -50,18 +50,47 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $row = null;
+	protected $row;
 
 	/**
-	 * Tell if the file extension can be optimized by Imagify.
-	 * This is used to cache the result of $this->is_extension_supported().
+	 * Tell if the file is an image.
 	 *
 	 * @var    bool
-	 * @since  1.7
+	 * @since  1.8
 	 * @access protected
-	 * @see    $this->is_extension_supported()
+	 * @see    $this->is_image()
 	 */
-	protected $is_extension_supported;
+	protected $is_image;
+
+	/**
+	 * Tell if the file is a pdf.
+	 *
+	 * @var    bool
+	 * @since  1.8
+	 * @access protected
+	 * @see    $this->is_pdf()
+	 */
+	protected $is_pdf;
+
+	/**
+	 * Stores the file extension (even if the extension is not supported by Imagify).
+	 *
+	 * @var    string|null
+	 * @since  1.8
+	 * @access protected
+	 * @see    $this->get_extension()
+	 */
+	protected $extension = false;
+
+	/**
+	 * Stores the file mime type + file extension (if the file is supported).
+	 *
+	 * @var    array
+	 * @since  1.8
+	 * @access protected
+	 * @see    $this->get_file_type()
+	 */
+	protected $file_type;
 
 	/**
 	 * Filesystem object.
@@ -357,6 +386,89 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	}
 
 	/**
+	 * Tell if the current item refers to an image, based on file extension.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool Returns false in case it's an image but not in a supported format (bmp for example).
+	 */
+	public function is_image() {
+		if ( isset( $this->is_image ) ) {
+			return $this->is_image;
+		}
+
+		$this->is_image = strpos( (string) $this->get_mime_type(), 'image/' ) === 0;
+
+		return $this->is_image;
+	}
+
+	/**
+	 * Tell if the current item refers to a pdf, based on file extension.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function is_pdf() {
+		if ( isset( $this->is_pdf ) ) {
+			return $this->is_pdf;
+		}
+
+		$this->is_pdf = 'application/pdf' === $this->get_mime_type();
+
+		return $this->is_pdf;
+	}
+
+	/**
+	 * Get the file mime type.
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function get_mime_type() {
+		return $this->get_file_type()->type;
+	}
+
+	/**
+	 * Get the file mime type + file extension (if the file is supported).
+	 *
+	 * @since  1.8
+	 * @access public
+	 * @see    wp_check_filetype()
+	 * @author Grégory Viguier
+	 *
+	 * @return object
+	 */
+	public function get_file_type() {
+		if ( isset( $this->file_type ) ) {
+			return $this->file_type;
+		}
+
+		if ( ! $this->is_valid() ) {
+			$this->file_type = (object) array( 'ext' => '', 'type' => '' );
+			return $this->file_type;
+		}
+
+		$path = $this->get_original_path();
+
+		if ( ! $path ) {
+			$this->file_type = (object) array( 'ext' => '', 'type' => '' );
+			return $this->file_type;
+		}
+
+		$this->file_type = (object) wp_check_filetype( $path, imagify_get_mime_types() );
+
+		return $this->file_type;
+	}
+
+	/**
 	 * Get the attachment extension.
 	 *
 	 * @since  1.0
@@ -365,11 +477,18 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @return string|null
 	 */
 	public function get_extension() {
-		if ( ! $this->is_valid() ) {
-			return '';
+		if ( false !== $this->extension ) {
+			return $this->extension;
 		}
 
-		return $this->filesystem->path_info( $this->get_original_path(), 'extension' );
+		if ( ! $this->is_valid() ) {
+			$this->extension = null;
+			return $this->extension;
+		}
+
+		$this->extension = $this->filesystem->path_info( $this->get_original_path(), 'extension' );
+
+		return $this->extension;
 	}
 
 	/**
@@ -382,37 +501,21 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @return bool
 	 */
 	public function is_extension_supported() {
-		if ( isset( $this->is_extension_supported ) ) {
-			return $this->is_extension_supported;
-		}
-
-		if ( ! $this->is_valid() ) {
-			$this->is_extension_supported = false;
-			return $this->is_extension_supported;
-		}
-
-		$file_type = wp_check_filetype( $this->get_original_path(), imagify_get_mime_types() );
-
-		$this->is_extension_supported = (bool) $file_type['ext'];
-
-		return $this->is_extension_supported;
+		return (bool) $this->get_file_type()->ext;
 	}
 
 	/**
 	 * Tell if the current file mime type is supported.
 	 *
 	 * @since  1.6.9
+	 * @since  1.8 Does the same has this->is_extension_supported().
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
 	 */
 	public function is_mime_type_supported() {
-		if ( ! $this->is_valid() ) {
-			return false;
-		}
-
-		return imagify_is_attachment_mime_type_supported( $this->id );
+		return (bool) $this->get_mime_type();
 	}
 
 	/**
@@ -778,7 +881,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 */
 	public function get_unoptimized_sizes() {
 		// The attachment must have been optimized once and have a backup.
-		if ( ! $this->is_valid() || ! $this->is_optimized() || ! $this->has_backup() ) {
+		if ( ! $this->is_valid() || ! $this->is_optimized() || ! $this->has_backup() || ! $this->is_image() ) {
 			return array();
 		}
 
@@ -917,7 +1020,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @return string Path the the resized image or the original image if the resize failed.
 	 */
 	public function resize( $attachment_path, $attachment_sizes, $max_width ) {
-		if ( ! $this->is_valid() ) {
+		if ( ! $this->is_valid() || ! $this->is_image() ) {
 			return '';
 		}
 
