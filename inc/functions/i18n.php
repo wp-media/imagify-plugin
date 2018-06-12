@@ -83,11 +83,15 @@ function get_imagify_localize_script_translations( $context ) {
 			);
 
 		case 'twentytwenty':
-			if ( imagify_is_screen( 'attachment' ) ) {
-				$image = wp_get_attachment_image_src( $post_id, 'full' );
-				$image = $image && is_array( $image ) ? $image : array( '', 0, 0 );
-			} else {
-				$image = array( '', 0, 0 );
+			$image = array( '', 0, 0 );
+
+			if ( imagify_is_screen( 'attachment' ) && wp_attachment_is_image( $post_id ) ) {
+				$attachment = get_imagify_attachment( 'wp', $post_id, 'imagify_localize_script_translations' );
+
+				if ( $attachment->is_image() ) {
+					$image = wp_get_attachment_image_src( $post_id, 'full' );
+					$image = $image && is_array( $image ) ? $image : array( '', 0, 0 );
+				}
 			}
 
 			return array(
@@ -99,8 +103,8 @@ function get_imagify_localize_script_translations( $context ) {
 					'filesize'   => __( 'File Size:', 'imagify' ),
 					'saving'     => __( 'Original Saving:', 'imagify' ),
 					'close'      => __( 'Close', 'imagify' ),
-					'originalL'  => __( 'Original Image', 'imagify' ),
-					'optimizedL' => __( 'Optimized Image', 'imagify' ),
+					'originalL'  => __( 'Original File', 'imagify' ),
+					'optimizedL' => __( 'Optimized File', 'imagify' ),
 					'compare'    => __( 'Compare Original VS Optimized', 'imagify' ),
 					'optimize'   => __( 'Optimize', 'imagify' ),
 				),
@@ -154,9 +158,9 @@ function get_imagify_localize_script_translations( $context ) {
 					'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
 					'processing'                     => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
 					'waitTitle'                      => __( 'Please wait...', 'imagify' ),
-					'waitText'                       => __( 'We are trying to get your unoptimized images, it may take time depending on the number of images.', 'imagify' ),
+					'waitText'                       => __( 'We are trying to get your unoptimized media files, it may take time depending on the number of files.', 'imagify' ),
 					'noAttachmentToOptimizeTitle'    => __( 'Hold on!', 'imagify' ),
-					'noAttachmentToOptimizeText'     => __( 'All your images have been optimized by Imagify. Congratulations!', 'imagify' ),
+					'noAttachmentToOptimizeText'     => __( 'All your media files have been optimized by Imagify. Congratulations!', 'imagify' ),
 					'optimizing'                     => __( 'Optimizing', 'imagify' ),
 					'error'                          => __( 'Error', 'imagify' ),
 					'ajaxErrorText'                  => __( 'The operation failed.', 'imagify' ),
@@ -171,10 +175,10 @@ function get_imagify_localize_script_translations( $context ) {
 					'textToShare'                    => __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
 					'twitterShareURL'                => imagify_get_external_url( 'share-twitter' ),
 					'getUnoptimizedImagesErrorTitle' => __( 'Oops, There is something wrong!', 'imagify' ),
-					'getUnoptimizedImagesErrorText'  => __( 'An unknown error occurred when we tried to get all your unoptimized images. Try again and if the issue still persists, please contact us!', 'imagify' ),
+					'getUnoptimizedImagesErrorText'  => __( 'An unknown error occurred when we tried to get all your unoptimized media files. Try again and if the issue still persists, please contact us!', 'imagify' ),
 					'waitingOtimizationsText'        => __( 'Waiting other optimizations to finish.', 'imagify' ),
 					/* translators: %s is a formatted number, dont use %d. */
-					'imagesOptimizedText'            => __( '%s Image(s) Optimized', 'imagify' ),
+					'imagesOptimizedText'            => __( '%s Media File(s) Optimized', 'imagify' ),
 					/* translators: %s is a formatted number, dont use %d. */
 					'imagesErrorText'                => __( '%s Error(s)', 'imagify' ),
 					'bulkInfoTitle'                  => __( 'Information', 'imagify' ),

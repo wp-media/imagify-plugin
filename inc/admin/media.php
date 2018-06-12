@@ -55,7 +55,7 @@ function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 	$attachment = get_imagify_attachment( 'wp', $post->ID, 'media_row_actions' );
 
 	// If this attachment is not an image, do nothing.
-	if ( ! $attachment->is_extension_supported() ) {
+	if ( ! $attachment->is_extension_supported() || ! $attachment->is_image() ) {
 		return $actions;
 	}
 

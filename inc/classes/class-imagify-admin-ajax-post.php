@@ -244,6 +244,12 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_user_capacity( 'manual-optimize', $attachment_id );
 
 		$attachment = get_imagify_attachment( $context, $attachment_id, 'imagify_optimize_missing_sizes' );
+		$context    = $attachment->get_context();
+
+		if ( ! $attachment->is_image() ) {
+			$output = get_imagify_attachment_optimization_text( $attachment, $context );
+			wp_send_json_error( $output );
+		}
 
 		// Optimize the missing thumbnails.
 		$attachment->optimize_missing_thumbnails();
@@ -1407,7 +1413,7 @@ class Imagify_Admin_Ajax_Post {
 
 		if ( $images ) {
 			/* translators: %s is a formatted number, dont use %d. */
-			$output .= '<li class="imagify-number-of-images-in-folder"><em><span class="dashicons dashicons-images-alt"></span> ' . sprintf( _n( '%s image', '%s images', $images, 'imagify' ), number_format_i18n( $images ) ) . '</em></li>';
+			$output .= '<li class="imagify-number-of-images-in-folder"><em><span class="dashicons dashicons-images-alt"></span> ' . sprintf( _n( '%s Media File', '%s Media Files', $images, 'imagify' ), number_format_i18n( $images ) ) . '</em></li>';
 		}
 
 		if ( ! $output ) {

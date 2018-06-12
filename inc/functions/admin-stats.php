@@ -280,10 +280,12 @@ function imagify_count_saving_data( $key = '' ) {
 				unset( $attachment_data['sizes']['full'] );
 
 				// Increment the thumbnails sizes.
-				foreach ( $attachment_data['sizes'] as $size_data ) {
-					if ( ! empty( $size_data['success'] ) ) {
-						$original_size  += $size_data['original_size']  ? $size_data['original_size']  : 0;
-						$optimized_size += $size_data['optimized_size'] ? $size_data['optimized_size'] : 0;
+				if ( $attachment_data['sizes'] ) {
+					foreach ( $attachment_data['sizes'] as $size_data ) {
+						if ( ! empty( $size_data['success'] ) ) {
+							$original_size  += $size_data['original_size']  ? $size_data['original_size']  : 0;
+							$optimized_size += $size_data['optimized_size'] ? $size_data['optimized_size'] : 0;
+						}
 					}
 				}
 			}
@@ -367,10 +369,12 @@ function imagify_count_saving_data( $key = '' ) {
 				unset( $attachment_data['sizes']['full'], $original_data );
 
 				// Increment the thumbnails sizes.
-				foreach ( $attachment_data['sizes'] as $size_data ) {
-					if ( ! empty( $size_data['success'] ) ) {
-						$original_size  += ! empty( $size_data['original_size'] )  ? $size_data['original_size']  : 0;
-						$optimized_size += ! empty( $size_data['optimized_size'] ) ? $size_data['optimized_size'] : 0;
+				if ( $attachment_data['sizes'] ) {
+					foreach ( $attachment_data['sizes'] as $size_data ) {
+						if ( ! empty( $size_data['success'] ) ) {
+							$original_size  += ! empty( $size_data['original_size'] )  ? $size_data['original_size']  : 0;
+							$optimized_size += ! empty( $size_data['optimized_size'] ) ? $size_data['optimized_size'] : 0;
+						}
 					}
 				}
 
