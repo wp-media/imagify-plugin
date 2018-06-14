@@ -192,9 +192,13 @@ class Imagify_Files_Scan {
 		);
 
 		if ( ! is_multisite() ) {
-			$uploads_dir = $filesystem->get_upload_basedir( true );
+			$uploads_dir   = $filesystem->get_upload_basedir( true );
+			$ngg_galleries = self::get_ngg_galleries_path();
 
-			$folders[] = self::get_ngg_galleries_path();       // NextGen Gallery: /wp-content/gallery.
+			if ( $ngg_galleries ) {
+				$folders[] = $ngg_galleries;                   // NextGen Gallery: /wp-content/gallery.
+			}
+
 			$folders[] = $uploads_dir . 'formidable';          // Formidable Forms: /wp-content/uploads/formidable.
 			$folders[] = get_imagify_backup_dir_path( true );  // Imagify Media Library backup: /wp-content/uploads/backup.
 			$folders[] = self::get_wc_logs_path();             // WooCommerce Logs: /wp-content/uploads/wc-logs.
@@ -257,8 +261,12 @@ class Imagify_Files_Scan {
 			 * On multisite we can't exclude Imagify's library backup folders, or any other folder located in the uploads folders (created by other plugins): there are too many ways it can fail.
 			 * Only exception we're aware of so far is NextGen Gallery, because it provides a clear pattern to use.
 			 */
-			// NextGen Gallery: /wp\-content/uploads/sites/\d+/nggallery/.
-			$folders[] = self::get_ngg_galleries_multisite_pattern();
+			$ngg_galleries = self::get_ngg_galleries_multisite_pattern();
+
+			if ( $ngg_galleries ) {
+				// NextGen Gallery: /wp\-content/uploads/sites/\d+/nggallery/.
+				$folders[] = $ngg_galleries;
+			}
 		}
 
 		/**
@@ -504,13 +512,17 @@ class Imagify_Files_Scan {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return string An absolute path.
+	 * @return string|bool An absolute path. False if it can't be retrieved.
 	 */
 	public static function get_ngg_galleries_path() {
-		$filesystem     = imagify_get_filesystem();
 		$galleries_path = get_site_option( 'ngg_options' );
-		$galleries_path = ! empty( $galleries_path['gallerypath'] ) ? $galleries_path['gallerypath'] : '';
-		$galleries_path = $filesystem->normalize_dir_path( $galleries_path );
+
+		if ( empty( $galleries_path['gallerypath'] ) ) {
+			return false;
+		}
+
+		$filesystem     = imagify_get_filesystem();
+		$galleries_path = $filesystem->normalize_dir_path( $galleries_path['gallerypath'] );
 		$galleries_path = trim( $galleries_path, '/' ); // Something like `wp-content/gallery`.
 
 		$ngg_root = defined( 'NGG_GALLERY_ROOT_TYPE' ) ? NGG_GALLERY_ROOT_TYPE : 'site';
@@ -650,10 +662,15 @@ class Imagify_Files_Scan {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return string Something like `/wp-content/uploads/sites/\d+/nggallery/`.
+	 * @return string|bool Something like `/wp-content/uploads/sites/\d+/nggallery/`. False if it can't be retrieved.
 	 */
 	public static function get_ngg_galleries_multisite_pattern() {
 		$galleries_path = self::get_ngg_galleries_path(); // Something like `wp-content/uploads/sites/%BLOG_ID%/nggallery/`.
+
+		if ( ! $galleries_path ) {
+			return false;
+		}
+
 		$galleries_path = self::normalize_path_for_regex( $galleries_path );
 		$galleries_path = str_replace( array( '%blog_name%', '%blog_id%' ), array( '.+', '\d+' ), $galleries_path );
 
