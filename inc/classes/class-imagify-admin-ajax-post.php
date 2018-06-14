@@ -377,7 +377,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'imagify-bulk-upload' );
 		imagify_check_user_capacity( 'optimize-file' );
 
-		$file_id = (int) filter_input( INPUT_POST, 'image', FILTER_SANITIZE_NUMBER_INT );
+		$file_id = filter_input( INPUT_POST, 'image', FILTER_VALIDATE_INT );
 		$context = imagify_sanitize_context( filter_input( INPUT_POST, 'context', FILTER_SANITIZE_STRING ) );
 		$context = ! $context || 'wp' === strtolower( $context ) ? 'File' : $context;
 
@@ -553,7 +553,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'imagify_scan_custom_folders' );
 		imagify_check_user_capacity( 'optimize-file' );
 
-		$folder = (int) filter_input( INPUT_GET, 'folder', FILTER_SANITIZE_NUMBER_INT );
+		$folder = filter_input( INPUT_GET, 'folder', FILTER_VALIDATE_INT );
 
 		if ( $folder > 0 ) {
 			// A specific custom folder (selected or not).
@@ -1515,7 +1515,7 @@ class Imagify_Admin_Ajax_Post {
 	 * @return object             A Imagify_File_Attachment object.
 	 */
 	protected function get_file_to_optimize( $identifier ) {
-		$file_id = (int) filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT );
+		$file_id = filter_input( INPUT_GET, 'id', FILTER_VALIDATE_INT );
 
 		if ( ! $file_id ) {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
