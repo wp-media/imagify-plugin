@@ -27,12 +27,13 @@ delete_transient( 'imagify_user' );
 
 // Delete transients.
 $transients = implode( '" OR option_name LIKE "', array(
-	'_transient_%imagify-async-in-progress-%',
-	'_transient_%imagify-ngg-async-in-progress-%',
-	'_site_transient_%imagify-file-async-in-progress-%',
-	'_transient_%imagify_rpc_%',
+	'\_transient\_%imagify-async-in-progress-%',
+	'\_transient\_%imagify-ngg-async-in-progress-%',
+	'\_site\_transient\_%imagify-file-async-in-progress-%',
+	'\_transient\_%imagify\_rpc\_%',
+	'\_site\_transient\_imagify\_%\_process\_lock%',
 ) );
-$wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "' . $transients . '"' ); // WPCS: unprepared SQL ok.
+$wpdb->query( "DELETE from $wpdb->options WHERE option_name LIKE \"$transients\"" ); // WPCS: unprepared SQL ok.
 
 // Clear scheduled hooks.
 wp_clear_scheduled_hook( 'imagify_rating_event' );
