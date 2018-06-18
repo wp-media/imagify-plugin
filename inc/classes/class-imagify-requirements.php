@@ -268,7 +268,15 @@ class Imagify_Requirements {
 	 * @return bool
 	 */
 	public static function is_api_key_valid( $reset_cache = false ) {
-		if ( ! $reset_cache && isset( self::$supports['api_key_valid'] ) ) {
+		if ( $reset_cache ) {
+			unset( self::$supports['api_key_valid'] );
+
+			if ( get_site_transient( 'imagify_check_licence_1' ) ) {
+				delete_site_transient( 'imagify_check_licence_1' );
+			}
+		}
+
+		if ( isset( self::$supports['api_key_valid'] ) ) {
 			return self::$supports['api_key_valid'];
 		}
 
@@ -277,7 +285,7 @@ class Imagify_Requirements {
 			return self::$supports['api_key_valid'];
 		}
 
-		if ( ! $reset_cache && get_site_transient( 'imagify_check_licence_1' ) ) {
+		if ( get_site_transient( 'imagify_check_licence_1' ) ) {
 			self::$supports['api_key_valid'] = true;
 			return self::$supports['api_key_valid'];
 		}
@@ -332,11 +340,13 @@ class Imagify_Requirements {
 	public static function reset_cache( $cache_key ) {
 		unset( self::$supports[ $cache_key ] );
 
-		if ( 'api_up' === $cache_key ) {
-			delete_site_transient( 'imagify_check_api_version' );
-		}
-		elseif ( 'api_key_valid' === $cache_key ) {
-			delete_site_transient( 'imagify_check_licence_1' );
+		$transients = array(
+			'api_up'        => 'imagify_check_api_version',
+			'api_key_valid' => 'imagify_check_licence_1',
+		);
+
+		if ( isset( $transients[ $cache_key ] ) && get_site_transient( $transients[ $cache_key ] ) ) {
+			delete_site_transient( $transients[ $cache_key ] );
 		}
 	}
 }
