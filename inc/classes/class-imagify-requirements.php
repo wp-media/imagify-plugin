@@ -269,11 +269,7 @@ class Imagify_Requirements {
 	 */
 	public static function is_api_key_valid( $reset_cache = false ) {
 		if ( $reset_cache ) {
-			unset( self::$supports['api_key_valid'] );
-
-			if ( get_site_transient( 'imagify_check_licence_1' ) ) {
-				delete_site_transient( 'imagify_check_licence_1' );
-			}
+			self::reset_cache( 'api_key_valid' );
 		}
 
 		if ( isset( self::$supports['api_key_valid'] ) ) {
