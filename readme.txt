@@ -138,6 +138,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.8.0.1 - 2018/06/19 =
+* Bug Fix: issue on some sites displaying a "no php extension available".
+
 = 1.8 - 2018/06/19 =
 * New: you can now optimize pdf files.
 * Improvement: custom folders, you can now optimize files located in the *uploads* folder.

@@ -76,7 +76,7 @@ class Imagify_Requirements {
 
 		$args = array(
 			'path'       => IMAGIFY_PATH . 'assets/images/imagify-logo.png',
-			'mime_types' => imagify_get_mime_types(),
+			'mime_types' => imagify_get_mime_types( 'image' ),
 			'methods'    => Imagify_Attachment::get_editor_methods(),
 		);
 
