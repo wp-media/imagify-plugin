@@ -259,47 +259,44 @@
 			selected.push( this.value );
 		} );
 
-		$.post( {
-			url:      imagifyOptions.getFilesTree,
-			dataType: 'json',
-			data:     {
-				folder:   '/',
-				selected: selected
-			}
-		} ).done( function( response ) {
-			if ( ! response.success ) {
-				swal( {
-					title:       imagifyOptions.labels.error,
-					html:        response.data || '',
-					type:        'error',
-					padding:     0,
-					customClass: 'imagify-sweet-alert'
-				} );
-				return;
-			}
-
-			swal( {
-				title:             imagifyOptions.labels.filesTreeTitle,
-				html:              '<div class="imagify-swal-subtitle">' + imagifyOptions.labels.filesTreeSubTitle + '</div><div class="imagify-swal-content"><p class="imagify-folders-information"><i class="dashicons dashicons-info" aria-hidden="true"></i>' + imagifyOptions.labels.cleaningInfo + '</p><ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul></div>',
-				type:              '',
-				customClass:       'imagify-sweet-alert imagify-swal-has-subtitle  imagify-folders-selection',
-				showCancelButton:  true,
-				padding:           0,
-				confirmButtonText: imagifyOptions.labels.confirmFilesTreeBtn,
-				cancelButtonText:  imagifySwal.labels.cancelButtonText,
-				reverseButtons:    true
-			} ).then( function() {
-				var values = $( '#imagify-folders-tree input' ).serializeArray(); // Don't do `$( '#imagify-folders-tree' ).find( 'input' )`, it won't work.
-
-				if ( ! values.length ) {
+		$.post( imagifyOptions.getFilesTree, {
+			folder:   '/',
+			selected: selected
+		}, null, 'json' )
+			.done( function( response ) {
+				if ( ! response.success ) {
+					swal( {
+						title:       imagifyOptions.labels.error,
+						html:        response.data || '',
+						type:        'error',
+						padding:     0,
+						customClass: 'imagify-sweet-alert'
+					} );
 					return;
 				}
 
-				$.each( values, function( i, v ) {
-					imagifyInsertFolderRow( v.value );
-				} );
-			} ).catch( swal.noop );
-		} )
+				swal( {
+					title:             imagifyOptions.labels.filesTreeTitle,
+					html:              '<div class="imagify-swal-subtitle">' + imagifyOptions.labels.filesTreeSubTitle + '</div><div class="imagify-swal-content"><p class="imagify-folders-information"><i class="dashicons dashicons-info" aria-hidden="true"></i>' + imagifyOptions.labels.cleaningInfo + '</p><ul id="imagify-folders-tree" class="imagify-folders-tree">' + response.data + '</ul></div>',
+					type:              '',
+					customClass:       'imagify-sweet-alert imagify-swal-has-subtitle  imagify-folders-selection',
+					showCancelButton:  true,
+					padding:           0,
+					confirmButtonText: imagifyOptions.labels.confirmFilesTreeBtn,
+					cancelButtonText:  imagifySwal.labels.cancelButtonText,
+					reverseButtons:    true
+				} ).then( function() {
+					var values = $( '#imagify-folders-tree input' ).serializeArray(); // Don't do `$( '#imagify-folders-tree' ).find( 'input' )`, it won't work.
+
+					if ( ! values.length ) {
+						return;
+					}
+
+					$.each( values, function( i, v ) {
+						imagifyInsertFolderRow( v.value );
+					} );
+				} ).catch( swal.noop );
+			} )
 			.fail( function() {
 				swal( {
 					title:       imagifyOptions.labels.error,
@@ -341,14 +338,10 @@
 			selected.push( this.value );
 		} );
 
-		$.post( {
-			url:      imagifyOptions.getFilesTree,
-			dataType: 'json',
-			data:     {
-				folder:   $button.data( 'folder' ),
-				selected: selected
-			}
-		} )
+		$.post( imagifyOptions.getFilesTree, {
+			folder:   $button.data( 'folder' ),
+			selected: selected
+		}, null, 'json' )
 			.done( function( response ) {
 				if ( ! response.success ) {
 					swal( {
