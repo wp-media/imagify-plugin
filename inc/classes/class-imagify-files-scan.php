@@ -16,7 +16,7 @@ class Imagify_Files_Scan {
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 
 	/**
 	 * Get files (optimizable by Imagify) recursively from a specific folder.
@@ -51,7 +51,7 @@ class Imagify_Files_Scan {
 		}
 
 		// Finally we made all our validations.
-		if ( $filesystem->is_abspath( $folder ) ) {
+		if ( $filesystem->is_site_root( $folder ) ) {
 			// For the site's root, we don't look in sub-folders.
 			$dir    = new DirectoryIterator( $folder );
 			$dir    = new Imagify_Files_Iterator( $dir, false );
@@ -169,10 +169,11 @@ class Imagify_Files_Scan {
 		}
 
 		$filesystem = imagify_get_filesystem();
+		$site_root  = $filesystem->get_site_root();
 		$abspath    = $filesystem->get_abspath();
 		$folders    = array(
 			// Server.
-			$abspath . 'cgi-bin',                          // `cgi-bin`
+			$site_root . 'cgi-bin',                        // `cgi-bin`
 			// WordPress.
 			$abspath . 'wp-admin',                         // `wp-admin`
 			$abspath . WPINC,                              // `wp-includes`
@@ -451,7 +452,7 @@ class Imagify_Files_Scan {
 			'{{THEMES}}/'     => WP_CONTENT_DIR . '/themes',
 			'{{UPLOADS}}/'    => $filesystem->get_main_upload_basedir(),
 			'{{CONTENT}}/'    => WP_CONTENT_DIR,
-			'{{ABSPATH}}/'    => ABSPATH,
+			'{{ROOT}}/'       => $filesystem->get_site_root(),
 		);
 		$replacements = array_map( array( $filesystem, 'normalize_dir_path' ), $replacements );
 
@@ -474,13 +475,14 @@ class Imagify_Files_Scan {
 			return $replacements;
 		}
 
+		$filesystem   = imagify_get_filesystem();
 		$replacements = array(
 			'{{PLUGINS}}/'    => plugins_url( '/' ),
 			'{{MU_PLUGINS}}/' => plugins_url( '/', WPMU_PLUGIN_DIR . '/.' ),
 			'{{THEMES}}/'     => content_url( 'themes/' ),
-			'{{UPLOADS}}/'    => imagify_get_filesystem()->get_main_upload_baseurl(),
+			'{{UPLOADS}}/'    => $filesystem->get_main_upload_baseurl(),
 			'{{CONTENT}}/'    => content_url( '/' ),
-			'{{ABSPATH}}/'    => site_url( '/' ),
+			'{{ROOT}}/'       => $filesystem->get_site_root_url(),
 		);
 
 		return $replacements;

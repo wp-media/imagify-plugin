@@ -16,7 +16,7 @@ class Imagify_Admin_Ajax_Post {
 	 * @since  1.6.11
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.4';
+	const VERSION = '1.0.5';
 
 	/**
 	 * Actions to be triggered on admin ajax and admin post.
@@ -1355,7 +1355,7 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		$folder = trailingslashit( sanitize_text_field( $_POST['folder'] ) );
-		$folder = realpath( $this->filesystem->get_abspath() . ltrim( $folder, '/' ) );
+		$folder = realpath( $this->filesystem->get_site_root() . ltrim( $folder, '/' ) );
 
 		if ( ! $folder ) {
 			imagify_die( __( 'This folder doesn\'t exist.', 'imagify' ) );
@@ -1376,13 +1376,13 @@ class Imagify_Admin_Ajax_Post {
 		$views    = Imagify_Views::get_instance();
 		$output   = '';
 
-		if ( $this->filesystem->is_abspath( $folder ) ) {
+		if ( $this->filesystem->is_site_root( $folder ) ) {
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
 				'relative_path'     => '/',
 				// Value #///# Label.
-				'checkbox_value'    => '{{ABSPATH}}/#///#' . esc_attr__( 'Site\'s root', 'imagify' ),
+				'checkbox_value'    => '{{ROOT}}/#///#' . esc_attr__( 'Site\'s root', 'imagify' ),
 				'checkbox_id'       => 'ABSPATH',
-				'checkbox_selected' => isset( $selected['{{ABSPATH}}/'] ),
+				'checkbox_selected' => isset( $selected['{{ROOT}}/'] ),
 				'label'             => __( 'Site\'s root', 'imagify' ),
 				'no_button'         => true,
 			) );

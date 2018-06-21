@@ -17,7 +17,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @since 1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.0.2';
 
 	/**
 	 * Class version.
@@ -309,7 +309,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$counts         = $wpdb->get_results( "SELECT folder_id, COUNT( $files_key_esc ) AS count FROM $files_table GROUP BY folder_id", OBJECT_K ); // WPCS: unprepared SQL ok.
 
 		foreach ( $folders as $folder ) {
-			if ( '{{ABSPATH}}/' === $folder->path ) {
+			if ( '{{ROOT}}/' === $folder->path ) {
 				$root_id = $folder->folder_id;
 				$folder_filters[ $folder->folder_id ] = '/';
 			} else {
@@ -363,7 +363,10 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$status_filter = self::get_status_filter();
 
 		// Display the filters.
-		$this->screen->render_screen_reader_content( 'heading_views' );
+		if ( method_exists( $this->screen, 'render_screen_reader_content' ) ) {
+			// Introduced in WP 4.4.
+			$this->screen->render_screen_reader_content( 'heading_views' );
+		}
 		?>
 		<div class="wp-filter">
 			<div class="filter-items">
@@ -566,7 +569,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			$format = '<a href="' . esc_url( add_query_arg( 'folder-filter', $item->folder_id, get_imagify_admin_url( 'files-list' ) ) ) . '">%s</a>';
 		}
 
-		if ( '{{ABSPATH}}/' === $item->folder_path ) {
+		if ( '{{ROOT}}/' === $item->folder_path ) {
 			// It's the site's root.
 			printf( $format, __( 'Site\'s root', 'imagify' ) );
 		} else {
