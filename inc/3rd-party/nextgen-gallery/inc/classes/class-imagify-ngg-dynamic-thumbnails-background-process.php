@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
  * @since  1.8
  * @author Grégory Viguier
  */
-class Imagify_NGG_Dynamic_Thumbnails_Background_Process extends WP_Background_Process {
+class Imagify_NGG_Dynamic_Thumbnails_Background_Process extends Imagify_Abstract_Background_Process {
 
 	/**
 	 * Class version.
@@ -16,17 +16,7 @@ class Imagify_NGG_Dynamic_Thumbnails_Background_Process extends WP_Background_Pr
 	 * @since  1.8
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
-
-	/**
-	 * Prefix used to build the global process identifier.
-	 *
-	 * @var    string
-	 * @since  1.8
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected $prefix = 'imagify';
+	const VERSION = '1.1';
 
 	/**
 	 * Action.
