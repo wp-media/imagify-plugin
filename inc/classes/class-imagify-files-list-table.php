@@ -1010,7 +1010,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		static $filter;
 
 		if ( ! isset( $filter ) ) {
-			$filter = (int) filter_input( INPUT_GET, 'folder-filter', FILTER_SANITIZE_NUMBER_INT );
+			$filter = filter_input( INPUT_GET, 'folder-filter', FILTER_VALIDATE_INT );
 			$filter = max( 0, $filter );
 		}
 
