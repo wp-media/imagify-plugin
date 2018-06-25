@@ -525,6 +525,10 @@ span.imagify-price-by {
 	border-color: #FFF;
 	background: #40B1D0;
 }
+.imagify-offer-selected .imagify-checkbox.imagify-checkbox:not(:checked) + label:after,
+.imagify-offer-selected .imagify-checkbox.imagify-checkbox:checked + label:after {
+	color: #FFF;
+}
 .imagify-offer-selected .imagify-offer-by {
 	color: #2E3243;
 }

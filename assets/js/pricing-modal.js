@@ -152,7 +152,7 @@
 				quo   = datas.quota,           // 1000 (MB) - 5000 images (monthly/onetime)
 				cos   = datas.cost,            // 3.49 (onetime)
 				name  = ( quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB' ),
-				pcs   = type === 'monthly' ? { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 } : cos,
+				pcs   = 'monthly' === type ? { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 } : cos,
 				pcsd  = pcs, // Used if discount is active.
 				percent, $datas_c, datas_content;
 
@@ -163,7 +163,7 @@
 			}
 
 			if ( typeof classes !== 'undefined' ) {
-				$offer.addClass( 'imagify-' + type + '-' + lab + classes);
+				$offer.addClass( 'imagify-' + type + '-' + lab + classes );
 			}
 
 			// Name.
@@ -363,10 +363,10 @@
 						// Switch offers title is < 25mb.
 						if ( mo_user_cons < 25 &&  ot_user_cons < 25 ) {
 							$( '.imagify-pre-checkout-offers .imagify-modal-title' ).addClass( 'imagify-enough-free' );
-							$( '.imagify-offer-selected' ).removeClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).removeAttr( 'checked' );
+							$( '.imagify-offer-selected' ).removeClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).prop( 'checked', false );
 						} else {
 							$( '.imagify-enough-free' ).removeClass( 'imagify-enough-free' );
-							$( '.imagify-offer-selected' ).addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).attr( 'checked', 'checked' );
+							$( '.imagify-offer-line' ).addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).prop( 'checked', true );
 						}
 
 						// Don't create prices table if something went wrong during request.
