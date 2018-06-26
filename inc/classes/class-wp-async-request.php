@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+
 /**
  * WP Async Request
  *
