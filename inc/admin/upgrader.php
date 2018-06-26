@@ -310,21 +310,37 @@ function imagify_maybe_reset_opcache( $wp_upgrader, $hook_extra ) {
 		return;
 	}
 
-	if ( ! isset( $can_reset ) ) {
-		$can_reset = true;
+	imagify_reset_opcache();
+}
 
+/**
+ * Reset PHP opcache.
+ *
+ * @since  1.8.1
+ * @author Grégory Viguier
+ */
+function imagify_reset_opcache() {
+	static $can_reset;
+
+	if ( ! isset( $can_reset ) ) {
 		if ( ! function_exists( 'opcache_reset' ) ) {
 			$can_reset = false;
+			return;
 		}
 
 		$restrict_api = ini_get( 'opcache.restrict_api' );
 
 		if ( $restrict_api && strpos( __FILE__, $restrict_api ) !== 0 ) {
 			$can_reset = false;
+			return;
 		}
+
+		$can_reset = true;
 	}
 
-	if ( $can_reset ) {
-		opcache_reset();
+	if ( ! $can_reset ) {
+		return;
 	}
+
+	opcache_reset();
 }
