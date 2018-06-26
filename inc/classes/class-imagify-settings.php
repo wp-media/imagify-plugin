@@ -361,15 +361,18 @@ class Imagify_Settings {
 	 * @param mixed $value     The new option value.
 	 */
 	public function after_save_options( $old_value, $value ) {
-		if ( ! $value || isset( $old_value['api_key'], $value['api_key'] ) && $old_value['api_key'] === $value['api_key'] ) {
+		$old_key = isset( $old_value['api_key'] ) ? $old_value['api_key'] : '';
+		$new_key = isset( $value['api_key'] )     ? $value['api_key']     : '';
+
+		if ( $old_key === $new_key ) {
 			return;
 		}
 
-		if ( is_wp_error( get_imagify_user() ) ) {
-			Imagify_Notices::renew_notice( 'wrong-api-key' );
-			delete_site_transient( 'imagify_check_licence_1' );
-		} else {
+		// Handle API key validation cache and notices.
+		if ( Imagify_Requirements::is_api_key_valid( true ) ) {
 			Imagify_Notices::dismiss_notice( 'wrong-api-key' );
+		} else {
+			Imagify_Notices::renew_notice( 'wrong-api-key' );
 		}
 	}
 
@@ -385,6 +388,7 @@ class Imagify_Settings {
 			return;
 		}
 
+		/** This filter is documented in /wp-admin/options.php. */
 		$capability = apply_filters( 'option_page_capability_' . $this->settings_group, 'manage_network_options' );
 
 		if ( ! current_user_can( $capability ) ) {

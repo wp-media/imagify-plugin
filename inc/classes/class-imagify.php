@@ -532,6 +532,11 @@ class Imagify extends Imagify_Deprecated {
 	private function handle_response( $response, $http_code, $error = '' ) {
 		$response = json_decode( $response );
 
+		if ( 401 === $http_code ) {
+			// Reset the API validity cache if the API key is not valid.
+			Imagify_Requirements::reset_cache( 'api_key_valid' );
+		}
+
 		if ( 200 !== $http_code && ! empty( $response->code ) ) {
 			if ( ! empty( $response->detail ) ) {
 				return new WP_Error( $http_code, $response->detail );
