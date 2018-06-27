@@ -1,19 +1,19 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
-
 ?>
 <div id="imagify-pricing-modal" class="imagify-modal imagify-payment-modal hide-if-no-js" aria-hidden="false" role="dialog">
 	<div class="imagify-modal-content">
 		<div class="imagify-modal-main">
+
+			<?php
+			/**
+			 * FIRST MODAL VIEW.
+			 */
+			?>
+
 			<div class="imagify-modal-views imagify-pre-checkout-view" id="imagify-pre-checkout-view" aria-hidden="false">
 
-				<?php
-				$attachments_number = imagify_count_attachments() + Imagify_Files_Stats::count_all_files();
-				$total_size         = Imagify_Data::get_instance()->get( 'total_size_images_library' );
-				$per_month          = Imagify_Data::get_instance()->get( 'average_size_images_per_month' );
-				?>
-
-				<div class="imagify-modal-section section-gray imagify-estimation-block<?php echo false === $total_size ? ' imagify-analyzing' : ''; ?>">
+				<div class="imagify-modal-section section-gray imagify-estimation-block imagify-analyzing">
 					<p class="imagify-modal-title">
 						<span class="imagify-numbers-calc"><?php esc_html_e( 'We analysed your images', 'imagify' ); ?></span>
 						<span class="imagify-numbers-notcalc"><?php esc_html_e( 'We are analysing your images', 'imagify' ); ?></span>
@@ -26,6 +26,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 							<p>
 								<span class="imagify-border-styled">
 									<?php
+									$attachments_number = imagify_count_attachments() + Imagify_Files_Stats::count_all_files();
+
 									printf(
 										/* translators: %s is a formatted number (don't use %d). */
 										_n( 'You have %s original image', 'You have %s original images', $attachments_number, 'imagify' ),
@@ -42,7 +44,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 								printf(
 									/* translators: %s is a formatted file size. */
 									esc_html__( 'You currently have %s of images in your library and folders.', 'imagify' ),
-									'<strong class="imagify-dark total-library-size">' . ( is_float( $total_size ) ? imagify_size_format( $total_size ) : '' ) . '</strong>'
+									'<strong class="imagify-dark total-library-size">0</strong>'
 								);
 								?>
 							</p>
@@ -52,7 +54,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 								printf(
 									/* translators: %s is a formatted file size. */
 									esc_html__( 'You upload around %s of images per month.', 'imagify' ),
-									'<strong class="imagify-dark average-month-size">' . ( is_float( $per_month ) ? imagify_size_format( $per_month ) : '' ) . '</strong>'
+									'<strong class="imagify-dark average-month-size">0</strong>'
 								);
 								?>
 							</p>
