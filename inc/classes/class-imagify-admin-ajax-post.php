@@ -1149,7 +1149,7 @@ class Imagify_Admin_Ajax_Post {
 				$message .= '<p>' . sprintf(
 					/* translators: 1 is a data quota, 2 is a date. */
 					__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
-					imagify_size_format( $user->quota * 1048576 ),
+					imagify_size_format( $user->quota * pow( 1024, 2 ) ),
 					date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) )
 				) . '</p>';
 				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>';
