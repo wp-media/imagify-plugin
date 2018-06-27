@@ -958,7 +958,7 @@ div.imagify-col-price {
 	-ms-flex-positive: 1;
 	flex-grow: 1;
 }
-p.imagify-modal-sidebar-title {
+p.imagify-modal-sidebar-title.imagify-modal-sidebar-title {
 	margin-top: 5px;
 	padding-right: 40px;
 	font-size: 18px;
@@ -1004,7 +1004,7 @@ p.imagify-modal-sidebar-title {
 	font-size: 10px;
 	color: #7A8996;
 }
-.imagify-modal-testimony-content p {
+.imagify-modal-testimony-content.imagify-modal-testimony-content p {
 	font-size: 13px;
 	font-style: italic;
 	line-height: 1.7;
