@@ -290,7 +290,6 @@ add_action( 'upgrader_process_complete', 'imagify_maybe_reset_opcache', 20, 2 );
  */
 function imagify_maybe_reset_opcache( $wp_upgrader, $hook_extra ) {
 	static $imagify_path;
-	static $can_reset;
 
 	if ( ! isset( $hook_extra['action'], $hook_extra['type'], $hook_extra['plugins'] ) ) {
 		return;
