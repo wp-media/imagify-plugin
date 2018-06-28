@@ -1024,17 +1024,13 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			return '';
 		}
 
-		// Prevent removal of the exif/meta data when resizing (only works with Imagick).
-		add_filter( 'image_strip_meta', '__return_false' );
-
-		$new_sizes = wp_constrain_dimensions( $attachment_sizes['width'], $attachment_sizes['height'], $max_width );
-
 		$editor = $this->get_editor( $attachment_path );
 
 		if ( is_wp_error( $editor ) ) {
 			return $editor;
 		}
 
+		$new_sizes  = wp_constrain_dimensions( $attachment_sizes['width'], $attachment_sizes['height'], $max_width );
 		$image_type = strtolower( (string) $this->filesystem->path_info( $attachment_path, 'extension' ) );
 
 		// Try to correct for auto-rotation if the info is available.
@@ -1054,7 +1050,13 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 			}
 		}
 
+		// Prevent removal of the exif data when resizing (only works with Imagick).
+		add_filter( 'image_strip_meta', '__return_false', 789 );
+
 		$resized = $editor->resize( $new_sizes[0], $new_sizes[1], false );
+
+		// Remove the filter when we're done to prevent any conflict.
+		remove_filter( 'image_strip_meta', '__return_false', 789 );
 
 		if ( is_wp_error( $resized ) ) {
 			return $resized;
@@ -1066,9 +1068,6 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		if ( is_wp_error( $resized_image_saved ) ) {
 			return $resized_image_saved;
 		}
-
-		// Remove the filter when we're done to prevent any conflict.
-		remove_filter( 'image_strip_meta', '__return_false' );
 
 		return $resized_image_path;
 	}

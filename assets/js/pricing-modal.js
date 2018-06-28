@@ -152,7 +152,7 @@
 				quo   = datas.quota,           // 1000 (MB) - 5000 images (monthly/onetime)
 				cos   = datas.cost,            // 3.49 (onetime)
 				name  = ( quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB' ),
-				pcs   = type === 'monthly' ? { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 } : cos,
+				pcs   = 'monthly' === type ? { monthly: mon, yearly: Math.round( ann / 12 * 100 ) / 100 } : cos,
 				pcsd  = pcs, // Used if discount is active.
 				percent, $datas_c, datas_content;
 
@@ -163,7 +163,7 @@
 			}
 
 			if ( typeof classes !== 'undefined' ) {
-				$offer.addClass( 'imagify-' + type + '-' + lab + classes);
+				$offer.addClass( 'imagify-' + type + '-' + lab + classes );
 			}
 
 			// Name.
@@ -323,18 +323,15 @@
 
 					// Get the discount informations.
 					$.post( ajaxurl, prices_rq_discount, function( discount_response ) {
-						var images_datas, prices_datas, promo_datas, monthlies, onetimes,
-							mo_user_cons, ot_user_cons,
+						var images_datas, prices_datas, promo_datas,
+							offers, consumption, suggested,
+							freeQuota = 25,
+							ot_html   = '',
+							mo_html   = '',
 							$mo_tpl, $ot_tpl,
 							ot_clone, mo_clone,
-							ot_html      = '',
-							mo_html      = '',
-							ot_suggested = false,
-							mo_suggested = false,
 							$estim_block, $offers_block,
-							$banners, date_end, promo, discount,
-							prev_offers, nb_to_remove, $total_offers,
-							i, j;
+							$banners, date_end, promo, discount;
 
 						if ( ! discount_response.success ) {
 							// TODO: replace modal content by any information.
@@ -345,32 +342,46 @@
 						images_datas = imgs_response.data;
 						prices_datas = prices_response.data;
 						promo_datas  = discount_response.data;
-						monthlies    = prices_datas.monthlies;
-						onetimes     = prices_datas.onetimes;
-						mo_user_cons = Math.round( images_datas.average_month_size.raw / 1000000 ); // 1000000 in MB,
-						ot_user_cons = Math.round( images_datas.total_library_size.raw / 1000000 ); // in MB,
+						offers       = {
+							mo: prices_datas.monthlies,
+							ot: prices_datas.onetimes
+						};
+						consumption  = {
+							month: images_datas.average_month_size.raw / Math.pow( 1024, 2 ), // Bytes to MB.
+							total: images_datas.total_library_size.raw / Math.pow( 1024, 2 )  // Bytes to MB.
+						};
 						$mo_tpl      = $( '#imagify-offer-monthly-template' );
 						$ot_tpl      = $( '#imagify-offer-onetime-template' );
 						ot_clone     = $ot_tpl.html();
 						mo_clone     = $mo_tpl.html();
 						$estim_block = $( '.imagify-estimation-block' );
 
+						// Remove the monthly free plan from the offers.
+						$.each( offers.mo, function( index, value ) {
+							if ( 'free' === value.label ) {
+								freeQuota = value.quota;
+								offers.mo.splice( index, 1 );
+								return false;
+							}
+						} );
+
 						// Refresh Analyzing block.
 						$estim_block.removeClass( 'imagify-analyzing' );
 						$estim_block.find( '.average-month-size' ).text( images_datas.average_month_size.human );
 						$estim_block.find( '.total-library-size' ).text( images_datas.total_library_size.human );
 
-						// Switch offers title is < 25mb.
-						if ( mo_user_cons < 25 &&  ot_user_cons < 25 ) {
+						// Switch offers title if < 25mb.
+						if ( consumption.total + consumption.month < freeQuota ) {
 							$( '.imagify-pre-checkout-offers .imagify-modal-title' ).addClass( 'imagify-enough-free' );
-							$( '.imagify-offer-selected' ).removeClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).removeAttr( 'checked' );
 						} else {
 							$( '.imagify-enough-free' ).removeClass( 'imagify-enough-free' );
-							$( '.imagify-offer-selected' ).addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).attr( 'checked', 'checked' );
 						}
 
+						// Reset offer selection.
+						$( '.imagify-offer-selected' ).removeClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).prop( 'checked', false );
+
 						// Don't create prices table if something went wrong during request.
-						if ( null === monthlies || null === onetimes ) {
+						if ( null === offers.mo || null === offers.ot ) {
 							$offers_block = $( '.imagify-pre-checkout-offers' );
 
 							// Hide main content.
@@ -409,91 +420,70 @@
 						}
 
 						/**
+						 * Find which plan(s) should be pre-selected.
+						 */
+						suggested = imagifyModal.getSuggestedOffers( offers, consumption, freeQuota );
+
+						/**
 						 * Below lines will build Plan and Onetime offers lists.
-						 * It will also pre-select a Plan and Onetime in both of views: pre-checkout and pricing tables.
+						 * It will also pre-select a Plan and/or Onetime in both of views: pre-checkout and pricing tables.
 						 */
 
 						// Now, do the MONTHLIES Markup.
-						$.each( monthlies, function( index, value ) {
+						$.each( offers.mo, function( index, value ) {
 							var $tpl, $offer,
 								classes = '';
 
-							// If it's free, don't show it.
-							if ( 'free' === value.label ) {
-								return true; // Continue-like (but $.each is not a loop... so).
-							}
-
-							$tpl = $( mo_clone ).clone();
-
 							// If offer is too big (far) than estimated needs, don't show the offer.
-							if ( false !== mo_suggested && ( index - mo_suggested ) > 2 ) {
+							if ( ( index - suggested.mo.index ) > 2 ) {
 								return true;
 							}
 
-							// Parent classes.
-							if ( ( mo_user_cons < value.quota && false === mo_suggested ) ) {
-								classes      = ' imagify-offer-selected';
-								mo_suggested = index;
+							if ( index === suggested.mo.index ) {
+								// It's the one to display.
+								$offer = $( '.imagify-pre-checkout-offers .imagify-offer-monthly' );
 
-								// Add this offer as pre-selected item in pre-checkout view.
-								$offer = $( '.imagify-pre-checkout-offers' ).find( '.imagify-offer-monthly' );
+								if ( suggested.mo.selected ) {
+									classes = ' imagify-offer-selected';
+
+									// Add this offer as pre-selected item in pre-checkout view.
+									$offer.addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).prop( 'checked', true );
+								}
 
 								// Populate the Pre-checkout view depending on user_cons.
 								imagifyModal.populateOffer( $offer, value, 'monthly' );
 							}
 
 							// Populate each offer.
+							$tpl = $( mo_clone ).clone();
 							$tpl = imagifyModal.populateOffer( $tpl, value, 'monthly', classes );
 
 							// Complete Monthlies HTML.
 							mo_html += $tpl[0].outerHTML;
 						} );
 
-						// Deal with the case of too much small offers (before recommanded one).
-						prev_offers = $( mo_html ).filter( '.imagify-offer-selected' ).prevAll();
-
-						// If we have more than 1 previous offer.
-						if ( prev_offers.length > 1 ) {
-							nb_to_remove  = prev_offers.length - 1;
-							$total_offers = $( mo_html );
-
-							// Remove too far previous offer.
-							for ( i = 0; i < nb_to_remove; i++ ) {
-								delete $total_offers[ i ];
-							}
-
-							// Rebuild mo_html with removed items.
-							mo_html = '';
-							for ( j = 0; j < $total_offers.length; j++) {
-								mo_html += $( '<div/>' ).append( $total_offers[ j ] ).html();
-							}
-						}
-
 						// Do the ONETIMES Markup.
-						$.each( onetimes, function( index, value ) {
-							var $tpl    = $( ot_clone ).clone(),
-								$offer  = $( '.imagify-pre-checkout-offers' ).find( '.imagify-offer-onetime' ),
-								classes = '',
-								tvalue;
+						$.each( offers.ot, function( index, value ) {
+							var $tpl, $offer,
+								classes = '';
 
 							// Parent classes.
-							if ( ( ot_user_cons < value.quota && ot_suggested === false ) ) {
-								classes      = ' imagify-offer-selected';
-								ot_suggested = true;
+							if ( index === suggested.ot.index ) {
+								$offer = $( '.imagify-pre-checkout-offers .imagify-offer-onetime' );
+
+								if ( suggested.ot.selected ) {
+									classes = ' imagify-offer-selected';
+
+									// Add this offer as pre-selected item in pre-checkout view.
+									$offer.addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).prop( 'checked', true );
+								}
 
 								// Populate the Pre-checkout view depending on user_cons.
 								imagifyModal.populateOffer( $offer, value, 'onetime' );
 							}
 
-							// If too big, populate with the biggest offer available.
-							// TODO: create custom offers at this point.
-							if ( ( onetimes.length - 1 ) === index && false === ot_suggested ) {
-								// populate the Pre-checkout view depending on user_cons
-								tvalue = onetimes[ onetimes.length - 1 ];
-								imagifyModal.populateOffer( $offer, tvalue, 'onetime' );
-							}
-
 							// Populate each offer.
+							$tpl = $( ot_clone ).clone();
 							$tpl = imagifyModal.populateOffer( $tpl, value, 'onetime', classes );
 
 							// complete Onetimes HTML
@@ -523,6 +513,175 @@
 				// Populate Pay button.
 				imagifyModal.populatePayBtn();
 			} ); // End $.post.
+		},
+
+		/**
+		 * Tell which offer(s) should be pre-selected.
+		 *
+		 * @param object offers {
+		 *     An object build like this:
+		 *
+		 *     @type array mo Monthly offers. The most important data being 'quota' (MBytes).
+		 *     @type array ot One-Time offers. The most important data being 'quota' (MBytes).
+		 * }
+		 * @param object consumption {
+		 *     An object build like this:
+		 *
+		 *     @type array month Average image size uploaded each month on the site (MBytes).
+		 *     @type array total Total image size in the library (MBytes).
+		 * }
+		 * @param int    freeQuota Quota of the free monthly offer (MBytes). Currently 25.
+		 * @return object {
+		 *     An object build like this:
+		 *
+		 *     @type object mo An object containing the index of the suggested monthly offer, and if it should be selected.
+		 *     @type object ot An object containing the index of the suggested one-time offer, and if it should be selected.
+		 * }
+		 */
+		getSuggestedOffers: function( offers, consumption, freeQuota ) {
+			var tmpMB     = consumption.total + consumption.month,
+				suggested = {
+					mo: false,
+					ot: false
+				};
+
+			if ( consumption.month <= freeQuota ) {
+				/**
+				 * The free plan is enough (but we still may need a One-Time plan).
+				 */
+				suggested.mo = {
+					index:    0,
+					selected: 0
+				};
+
+				tmpMB -= freeQuota;
+			} else {
+				/**
+				 * Paid monthly plan.
+				 */
+				$.each( offers.mo, function( index, value ) {
+					if ( value.quota < consumption.month ) {
+						// This plan is not big enough for the user needs.
+						return true;
+					}
+
+					// Suggested monthly plan.
+					suggested.mo = {
+						index:    index,
+						selected: 1
+					};
+					return false;
+				} );
+
+				if ( false === suggested.mo ) {
+					/**
+					 * If nothing is selected, that means no plan is big enough for the user's monthly consumption.
+					 * In that case we fallback to the biggest available.
+					 */
+					suggested.mo = {
+						index:    offers.mo.length - 1,
+						selected: 1
+					};
+				}
+
+				// Remaining MB.
+				tmpMB -= offers.mo[ suggested.mo.index ].quota;
+			}
+
+			if ( tmpMB <= 0 ) {
+				/**
+				 * The monthly plan is big enough to optimize all the images that already are in the library.
+				 * We'll display a One-Time plan that is able to optimize the whole library, in case the user doesn't want a monthly plan, but it won't be pre-selected.
+				 */
+				$.each( offers.ot, function( index, value ) {
+					if ( value.quota < consumption.total ) {
+						// This plan is not big enough for the user needs.
+						return true;
+					}
+
+					// Suggested monthly plan.
+					suggested.ot = {
+						index:    index,
+						selected: 0
+					};
+					return false;
+				} );
+
+				if ( false === suggested.ot ) {
+					suggested.ot = {
+						index:    offers.ot.length - 1,
+						selected: 0
+					};
+				}
+
+				return suggested;
+			}
+
+			/**
+			 * The monthly plan is not big enough to optimize all the images that already are in the library.
+			 * We need to select a One-Time plan.
+			 */
+			$.each( offers.ot, function( index, value ) {
+				if ( value.quota < tmpMB ) {
+					// This plan is not big enough for the user needs.
+					return true;
+				}
+
+				// Suggested one-time plan.
+				suggested.ot = {
+					index:    index,
+					selected: 1
+				};
+				return false;
+			} );
+
+			if ( false !== suggested.ot ) {
+				// OK, we have all we need.
+				return suggested;
+			}
+
+			/**
+			 * If nothing is selected, that means no OT plan is big enough for the user.
+			 * In that case we fallback to the biggest available, and we need to increase the monthly plan.
+			 */
+			suggested.ot = {
+				index:    offers.ot.length - 1,
+				selected: 1
+			};
+
+			// Reset monthly plan.
+			suggested.mo = false;
+
+			// Reset the remaining MB and substract the OT plan quota.
+			tmpMB = consumption.total + consumption.month - offers.ot[ suggested.ot.index ].quota;
+
+			// Search for a new monthly plan.
+			$.each( offers.mo, function( index, value ) {
+				if ( value.quota < tmpMB ) {
+					// This plan is not big enough for the user needs.
+					return true;
+				}
+
+				// Suggested monthly plan.
+				suggested.mo = {
+					index:    index,
+					selected: 1
+				};
+				return false;
+			} );
+
+			if ( false === suggested.mo ) {
+				/**
+				 * If nothing is selected, that means no monthly plan is big enough for the user's monthly consumption.
+				 * In that case we fallback to the biggest available.
+				 */
+				suggested.mo = {
+					index:    offers.mo.length - 1,
+					selected: 1
+				};
+			}
+
+			return suggested;
 		},
 
 		/**

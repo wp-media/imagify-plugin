@@ -38,13 +38,20 @@ function imagify_round_half_five( $number ) {
  * This is a clone of size_format(), but with a non-breaking space.
  *
  * @since  1.7
+ * @since  1.8.1 Automatic $decimals.
  * @author Grégory Viguier
  *
  * @param  int|string $bytes    Number of bytes. Note max integer size for integers.
- * @param  int        $decimals Optional. Precision of number of decimal places. Default 0.
+ * @param  int        $decimals Optional. Precision of number of decimal places.
+ *                              If negative or not an integer, $decimals value is "automatic": 0 if $bytes <= 1GB, or 1 if > 1GB.
  * @return string|false         False on failure. Number string on success.
  */
-function imagify_size_format( $bytes, $decimals = 0 ) {
+function imagify_size_format( $bytes, $decimals = -1 ) {
+
+	if ( $decimals < 0 || ! is_int( $decimals ) ) {
+		$decimals = $bytes > pow( 1024, 3 ) ? 1 : 0;
+	}
+
 	$bytes = @size_format( $bytes, $decimals );
 	return str_replace( ' ', ' ', $bytes );
 }
