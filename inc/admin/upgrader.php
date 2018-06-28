@@ -269,6 +269,22 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 		// Rename the option that stores the NGG table version. Since the table is also updated in 1.7, let's simply delete the option.
 		delete_option( $wpdb->prefix . 'ngg_imagify_data_db_version' );
 	}
+
+	// 1.8.1
+	if ( version_compare( $site_version, '1.8.1' ) < 0 ) {
+		// Custom folders: replace `{{ABSPATH}}/` by `{{ROOT}}/`.
+		$filesystem  = imagify_get_filesystem();
+		$replacement = '{{ROOT}}/';
+
+		if ( $filesystem->has_wp_its_own_directory() ) {
+			$replacement .= str_replace( $filesystem->get_site_root(), '', $filesystem->get_abspath() );
+		}
+
+		$replacement = Imagify_DB::esc_like( $replacement );
+
+		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->base_prefix}imagify_files SET path = REPLACE( path, '{{ABSPATH}}/', %s ) WHERE path LIKE %s", $replacement, '{{ABSPATH}}/%' ) );
+		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->base_prefix}imagify_folders SET path = REPLACE( path, '{{ABSPATH}}/', %s ) WHERE path LIKE %s", $replacement, '{{ABSPATH}}/%' ) );
+	}
 }
 
 add_action( 'upgrader_process_complete', 'imagify_maybe_reset_opcache', 20, 2 );
