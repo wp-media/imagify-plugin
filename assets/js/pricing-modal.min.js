@@ -347,8 +347,8 @@
 							ot: prices_datas.onetimes
 						};
 						consumption  = {
-							month: images_datas.average_month_size.raw / Math.pow( 1024, 2 ), // In MB.
-							total: images_datas.total_library_size.raw / Math.pow( 1024, 2 )  // In MB.
+							month: images_datas.average_month_size.raw / Math.pow( 1024, 2 ), // Bytes to MB.
+							total: images_datas.total_library_size.raw / Math.pow( 1024, 2 )  // Bytes to MB.
 						};
 						$mo_tpl      = $( '#imagify-offer-monthly-template' );
 						$ot_tpl      = $( '#imagify-offer-onetime-template' );
@@ -356,7 +356,7 @@
 						mo_clone     = $mo_tpl.html();
 						$estim_block = $( '.imagify-estimation-block' );
 
-						// Remove the monthly free plan from the offers and get its quota.
+						// Remove the monthly free plan from the offers.
 						$.each( offers.mo, function( index, value ) {
 							if ( 'free' === value.label ) {
 								freeQuota = value.quota;
@@ -371,7 +371,7 @@
 						$estim_block.find( '.total-library-size' ).text( images_datas.total_library_size.human );
 
 						// Switch offers title if < 25mb.
-						if ( consumption.total < freeQuota ) {
+						if ( consumption.total + consumption.month < freeQuota ) {
 							$( '.imagify-pre-checkout-offers .imagify-modal-title' ).addClass( 'imagify-enough-free' );
 						} else {
 							$( '.imagify-enough-free' ).removeClass( 'imagify-enough-free' );
@@ -539,7 +539,7 @@
 		 * }
 		 */
 		getSuggestedOffers: function( offers, consumption, freeQuota ) {
-			var tmpMB     = consumption.total,
+			var tmpMB     = consumption.total + consumption.month,
 				suggested = {
 					mo: false,
 					ot: false
@@ -653,7 +653,7 @@
 			suggested.mo = false;
 
 			// Reset the remaining MB and substract the OT plan quota.
-			tmpMB = consumption.total - offers.ot[ suggested.ot.index ].quota;
+			tmpMB = consumption.total + consumption.month - offers.ot[ suggested.ot.index ].quota;
 
 			// Search for a new monthly plan.
 			$.each( offers.mo, function( index, value ) {
