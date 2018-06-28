@@ -723,6 +723,8 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 
 	/**
 	 * Get the path to the site's root.
+	 * This is an improved version of get_home_path() that *should* work in almost every cases.
+	 * Because creating a constant like ABSPATH was too simple.
 	 *
 	 * @since  1.8.1
 	 * @access public
@@ -738,13 +740,27 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return $root_path;
 		}
 
-		$home    = set_url_scheme( get_option( 'home' ), 'http' );
-		$siteurl = set_url_scheme( get_option( 'siteurl' ), 'http' );
+		/**
+		 * Filter the path to the site's root.
+		 *
+		 * @since  1.8.1
+		 * @author Grégory Viguier
+		 *
+		 * @param string $root_path Path to the site's root. Default is null.
+		 */
+		$root_path = apply_filters( 'imagify_site_root', null );
+
+		if ( is_string( $root_path ) ) {
+			return $root_path;
+		}
+
+		$home    = set_url_scheme( untrailingslashit( get_option( 'home' ) ), 'http' );
+		$siteurl = set_url_scheme( untrailingslashit( get_option( 'siteurl' ) ), 'http' );
 
 		if ( ! empty( $home ) && 0 !== strcasecmp( $home, $siteurl ) ) {
 			$wp_path_rel_to_home = str_ireplace( $home, '', $siteurl ); /* $siteurl - $home */
-			$pos                 = strripos( str_replace( '\\', '/', $_SERVER['SCRIPT_FILENAME'] ), trailingslashit( $wp_path_rel_to_home ) );
-			$root_path           = substr( $_SERVER['SCRIPT_FILENAME'], 0, $pos );
+			$pos                 = strripos( str_replace( '\\', '/', ABSPATH ), trailingslashit( $wp_path_rel_to_home ) );
+			$root_path           = substr( ABSPATH, 0, $pos );
 			$root_path           = trailingslashit( str_replace( '\\', '/', $root_path ) );
 			return $root_path;
 		}
@@ -755,8 +771,8 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		}
 
 		// For a multisite in its own directory, get_home_path() returns the expected path only for the main site.
-		$script_filename   = str_replace( '\\', '/', $_SERVER['SCRIPT_FILENAME'] );
-		$path_current_site = '/' . trim( str_replace( '\\', '/', PATH_CURRENT_SITE ), '/' ) . '/';
+		$script_filename   = str_replace( '\\', '/', wp_unslash( $_SERVER['SCRIPT_FILENAME'] ) );
+		$path_current_site = trailingslashit( '/' . trim( str_replace( '\\', '/', PATH_CURRENT_SITE ), '/' ) );
 		$pos               = strripos( $script_filename, $path_current_site );
 
 		if ( false === $pos ) {
