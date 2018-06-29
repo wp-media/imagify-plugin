@@ -237,6 +237,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Regenerate_Thumbnails'                     => 'regenerate-thumbnails',
 		'Imagify_WP_Retina_2x'                              => 'wp-retina-2x',
 		'Imagify_WP_Retina_2x_Core'                         => 'wp-retina-2x',
+		'Imagify_WP_Time_Capsule'                           => 'wp-time-capsule',
 	);
 
 	if ( isset( $classes[ $class ] ) ) {
