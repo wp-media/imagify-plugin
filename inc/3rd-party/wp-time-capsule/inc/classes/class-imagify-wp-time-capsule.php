@@ -95,12 +95,31 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * Launch the hooks.
 	 *
-	 * @since  1.8
+	 * @since  1.8.1
 	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function init() {
 		if ( ! is_admin() ) {
+			return;
+		}
+
+		if ( defined( 'IMAGIFY_DISPLAY_PARTNERS' ) && false === IMAGIFY_DISPLAY_PARTNERS ) {
+			return;
+		}
+
+		/**
+		 * Allow to hide partners UI via filter.
+		 *
+		 * @since  1.8.1
+		 * @author Grégory Viguier
+		 *
+		 * @param bool   $display Set to false to hide.
+		 * @param string $parner  Partner's name.
+		 */
+		$display = apply_filters( 'imagify_display_partners', true, 'WP Time Capsule' );
+
+		if ( ! $display ) {
 			return;
 		}
 
