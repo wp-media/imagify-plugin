@@ -52,27 +52,27 @@ function _imagify_init() {
 		return;
 	}
 
-	require( IMAGIFY_FUNCTIONS_PATH . 'compat.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'deprecated.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'common.php' );
+	require IMAGIFY_FUNCTIONS_PATH . 'compat.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'deprecated.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'common.php';
 
 	// Register classes.
 	spl_autoload_register( 'imagify_autoload' );
 
-	require( IMAGIFY_FUNCTIONS_PATH . 'options.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'formatting.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'admin.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'api.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'attachments.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'process.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'admin-ui.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'admin-stats.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'i18n.php' );
-	require( IMAGIFY_FUNCTIONS_PATH . 'partners.php' );
-	require( IMAGIFY_COMMON_PATH . 'attachments.php' );
-	require( IMAGIFY_COMMON_PATH . 'admin-bar.php' );
-	require( IMAGIFY_COMMON_PATH . 'partners.php' );
-	require( IMAGIFY_3RD_PARTY_PATH . '3rd-party.php' );
+	require IMAGIFY_FUNCTIONS_PATH . 'options.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'formatting.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'admin.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'api.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'attachments.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'process.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'admin-ui.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'admin-stats.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'i18n.php';
+	require IMAGIFY_FUNCTIONS_PATH . 'partners.php';
+	require IMAGIFY_COMMON_PATH . 'attachments.php';
+	require IMAGIFY_COMMON_PATH . 'admin-bar.php';
+	require IMAGIFY_COMMON_PATH . 'partners.php';
+	require IMAGIFY_3RD_PARTY_PATH . '3rd-party.php';
 
 	Imagify_Options::get_instance()->init();
 	Imagify_Data::get_instance()->init();
@@ -83,12 +83,12 @@ function _imagify_init() {
 	Imagify_Cron_Sync_Files::get_instance()->init();
 
 	if ( is_admin() ) {
-		require( IMAGIFY_ADMIN_PATH . 'upgrader.php' );
-		require( IMAGIFY_ADMIN_PATH . 'heartbeat.php' );
-		require( IMAGIFY_ADMIN_PATH . 'upload.php' );
-		require( IMAGIFY_ADMIN_PATH . 'media.php' );
-		require( IMAGIFY_ADMIN_PATH . 'meta-boxes.php' );
-		require( IMAGIFY_ADMIN_PATH . 'custom-folders.php' );
+		require IMAGIFY_ADMIN_PATH . 'upgrader.php';
+		require IMAGIFY_ADMIN_PATH . 'heartbeat.php';
+		require IMAGIFY_ADMIN_PATH . 'upload.php';
+		require IMAGIFY_ADMIN_PATH . 'media.php';
+		require IMAGIFY_ADMIN_PATH . 'meta-boxes.php';
+		require IMAGIFY_ADMIN_PATH . 'custom-folders.php';
 
 		Imagify_Notices::get_instance()->init();
 		Imagify_Admin_Ajax_Post::get_instance()->init();
