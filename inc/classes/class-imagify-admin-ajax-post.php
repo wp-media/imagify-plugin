@@ -16,7 +16,7 @@ class Imagify_Admin_Ajax_Post {
 	 * @since  1.6.11
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.5';
+	const VERSION = '1.0.6';
 
 	/**
 	 * Actions to be triggered on admin ajax and admin post.
@@ -1120,21 +1120,11 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_user_capacity();
 
 		$user             = new Imagify_User();
-		$unconsumed_quota = $user->get_percent_unconsumed_quota();
-		$meteo_icon       = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="37" height="38" alt="" />';
-		$bar_class        = 'positive';
+		$views            = Imagify_Views::get_instance();
+		$unconsumed_quota = $views->get_quota_percent();
 		$message          = '';
 
-		if ( $unconsumed_quota >= 21 && $unconsumed_quota <= 50 ) {
-			$bar_class  = 'neutral';
-			$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="37" height="38" alt="" />';
-		}
-		elseif ( $unconsumed_quota <= 20 ) {
-			$bar_class  = 'negative';
-			$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="38" height="36" alt="" />';
-		}
-
-		if ( $unconsumed_quota <= 20 && $unconsumed_quota > 0 ) {
+		if ( $unconsumed_quota <= 20 ) {
 			$message  = '<div class="imagify-error">';
 				$message .= '<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s almost over!', 'imagify' ) . '</strong></p>';
 				/* translators: %s is a line break. */
@@ -1161,7 +1151,7 @@ class Imagify_Admin_Ajax_Post {
 			$quota_section .= '<div class="imagify-abq-row">';
 
 		if ( 1 === $user->plan_id ) {
-			$quota_section .= '<div class="imagify-meteo-icon">' . $meteo_icon . '</div>';
+			$quota_section .= '<div class="imagify-meteo-icon">' . $views->get_quota_icon() . '</div>';
 		}
 
 		$quota_section .= '<div class="imagify-account">';
@@ -1175,9 +1165,9 @@ class Imagify_Admin_Ajax_Post {
 				$quota_section .= '<div class="imagify-space-left">';
 					/* translators: %s is a data quota. */
 					$quota_section .= '<p>' . sprintf( __( 'You have %s space credit left', 'imagify' ), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ) . '</p>';
-					$quota_section .= '<div class="imagify-bar-' . $bar_class . '">';
+					$quota_section .= '<div class="' . $views->get_quota_class() . '">';
 						$quota_section .= '<div style="width: ' . $unconsumed_quota . '%;" class="imagify-unconsumed-bar imagify-progress"></div>';
-					$quota_section .= '</div>'; // .imagify-bar-{$bar_class}
+					$quota_section .= '</div>'; // .imagify-bar-{negative|neutral|positive}
 				$quota_section .= '</div>'; // .imagify-space-left
 			$quota_section .= '</div>'; // .imagify-abq-row
 		}
