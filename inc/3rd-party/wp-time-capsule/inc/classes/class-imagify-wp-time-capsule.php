@@ -25,7 +25,16 @@ class Imagify_WP_Time_Capsule {
 	 * @since  1.8.1
 	 * @author Grégory Viguier
 	 */
-	const PARTNER_ID = 'xxxxxxxxxxx';
+	const PARTNER_ID = 'imagify';
+
+	/**
+	 * Affiliate base URL.
+	 *
+	 * @var    string
+	 * @since  1.8.1
+	 * @author Grégory Viguier
+	 */
+	const BASE_URL = 'https://wptimecapsule.com/updates/?partner=';
 
 	/**
 	 * The single instance of the class.
@@ -298,6 +307,6 @@ class Imagify_WP_Time_Capsule {
 	 * @return string
 	 */
 	public function get_url() {
-		return 'https://wptimecapsule.com/updates/?partner=' . self::PARTNER_ID;
+		return self::BASE_URL . self::PARTNER_ID;
 	}
 }
