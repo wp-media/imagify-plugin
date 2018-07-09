@@ -9,13 +9,13 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 			printf(
 				/* translators: %s is a data quota. */
 				esc_html__( 'You have %s space credit left' , 'imagify' ),
-				'<span class="imagify-unconsumed-percent">' . $data['quota'] . '%</span>'
+				'<span class="imagify-unconsumed-percent">' . esc_html( $data['quota'] ) . '%</span>'
 			);
 			?>
 		</p>
 
-		<div class="imagify-bar-negative">
-			<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $data['quota'] . '%'; ?>;"></div>
+		<div class="<?php echo sanitize_html_class( $data['quota_class'] ); ?>">
+			<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo esc_attr( $data['quota'] ) . '%'; ?>;"></div>
 		</div>
 	</div>
 </div>
