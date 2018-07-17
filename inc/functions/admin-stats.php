@@ -742,8 +742,11 @@ function imagify_get_bulk_stats( $types, $args = array() ) {
 	 */
 	if ( $args['fullset'] ) {
 		// User account.
-		$user = new Imagify_User();
-		$data['unconsumed_quota'] = is_wp_error( $user ) ? 0 : $user->get_percent_unconsumed_quota();
+		$views = Imagify_Views::get_instance();
+
+		$data['unconsumed_quota'] = $views->get_quota_percent();
+		$data['quota_class']      = $views->get_quota_class();
+		$data['quota_icon']       = $views->get_quota_icon();
 	}
 
 	/**
