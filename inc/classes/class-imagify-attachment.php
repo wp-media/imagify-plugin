@@ -768,7 +768,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
 		if ( $this->is_image() ) {
 			if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
-				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+				require_once ABSPATH . 'wp-admin/includes/image.php';
 			}
 
 			remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', IMAGIFY_INT_MAX );
