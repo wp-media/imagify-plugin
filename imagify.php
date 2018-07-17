@@ -18,6 +18,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 // Imagify defines.
 define( 'IMAGIFY_VERSION'       , '1.8' );
+define( 'IMAGIFY_WP_MIN'        , '4.0' );
 define( 'IMAGIFY_SLUG'          , 'imagify' );
 define( 'IMAGIFY_FILE'          , __FILE__ );
 define( 'IMAGIFY_PATH'          , realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
@@ -44,8 +45,16 @@ add_action( 'plugins_loaded', '_imagify_init' );
  * @since 1.0
  */
 function _imagify_init() {
+	global $wp_version;
+
 	// Load translations.
 	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
+
+	// Check WordPress version.
+	if ( version_compare( $wp_version, IMAGIFY_WP_MIN ) < 0 ) {
+		add_action( 'all_admin_notices', 'imagify_wp_version_notice' );
+		return;
+	}
 
 	// Nothing to do if autosave.
 	if ( defined( 'DOING_AUTOSAVE' ) ) {
@@ -106,4 +115,36 @@ function _imagify_init() {
 	* @since 1.0
 	*/
 	do_action( 'imagify_loaded' );
+}
+
+
+/**
+ * Display an admin notice informing that the current WP version is lower than the required one.
+ *
+ * @since  1.8.1
+ * @author Grégory Viguier
+ */
+function imagify_wp_version_notice() {
+	global $wp_version;
+
+	if ( is_multisite() ) {
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$is_active = is_plugin_active_for_network( plugin_basename( IMAGIFY_FILE ) );
+		$capacity  = $is_active ? 'manage_network_options' : 'manage_options';
+	} else {
+		$capacity = 'manage_options';
+	}
+
+	if ( ! current_user_can( $capacity ) ) {
+		return;
+	}
+
+	echo '<div class="error notice"><p>';
+	echo '<strong>' . __( 'Notice:', 'imagify' ) . '</strong> ';
+	/* translators: 1 is this plugin name, 2 is the required WP version, 3 is the current WP version. */
+	printf( __( '%1$s requires WordPress %2$s minimum, your website is actually running version %3$s.', 'imagify' ), '<strong>Imagify</strong>', '<code>' . IMAGIFY_WP_MIN . '</code>', '<code>' . $wp_version . '</code>' );
+	echo '</p></div>';
 }

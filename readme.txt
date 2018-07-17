@@ -1,7 +1,7 @@
 === Imagify Image Optimizer ===
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
-Requires at least: 3.7.0
+Requires at least: 4.0.0
 Tested up to: 4.9.6
 Stable tag: 1.8
 
