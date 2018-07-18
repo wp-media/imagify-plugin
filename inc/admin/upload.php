@@ -56,14 +56,14 @@ function _imagify_attachments_filter_dropdown() {
 	$errors      = imagify_count_error_attachments();
 	$status      = isset( $_GET['imagify-status'] ) ? $_GET['imagify-status'] : 0; // WPCS: CSRF ok.
 	$options     = array(
-		'optimized'   => _x( 'Optimized', 'Media Files','imagify' ),
-		'unoptimized' => _x( 'Unoptimized', 'Media Files','imagify' ),
-		'errors'      => _x( 'Errors', 'Media Files','imagify' ),
+		'optimized'   => _x( 'Optimized', 'Media Files', 'imagify' ),
+		'unoptimized' => _x( 'Unoptimized', 'Media Files', 'imagify' ),
+		'errors'      => _x( 'Errors', 'Media Files', 'imagify' ),
 	);
 
-	echo '<label class="screen-reader-text" for="filter-by-optimization-status">' . __( 'Filter by status','imagify' ) . '</label>';
+	echo '<label class="screen-reader-text" for="filter-by-optimization-status">' . __( 'Filter by status', 'imagify' ) . '</label>';
 	echo '<select id="filter-by-optimization-status" name="imagify-status">';
-		echo '<option value="0" selected="selected">' . __( 'All Media Files','imagify' ) . '</option>';
+		echo '<option value="0" selected="selected">' . __( 'All Media Files', 'imagify' ) . '</option>';
 
 	foreach ( $options as $value => $label ) {
 		echo '<option value="' . $value . '" ' . selected( $status, $value, false ) . '>' . $label . ' (' . ${$value} . ')</option>';

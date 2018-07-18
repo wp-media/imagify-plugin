@@ -252,7 +252,10 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		}
 
 		if ( ! $this->is_valid() ) {
-			$this->file_type = (object) array( 'ext' => '', 'type' => '' );
+			$this->file_type = (object) array(
+				'ext'  => '',
+				'type' => '',
+			);
 			return $this->file_type;
 		}
 
