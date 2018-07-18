@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 4.0.0
 Tested up to: 4.9.6
-Stable tag: 1.8
+Stable tag: 1.8.0.1
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -138,6 +138,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.8.0.1 - 2018/06/19 =
+* Bug Fix: issue on some sites displaying a "no php extension available".
+
 = 1.8 - 2018/06/19 =
 * New: you can now optimize pdf files.
 * Improvement: custom folders, you can now optimize files located in the *uploads* folder.
