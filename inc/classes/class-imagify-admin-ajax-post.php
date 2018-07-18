@@ -287,7 +287,10 @@ class Imagify_Admin_Ajax_Post {
 		imagify_maybe_redirect();
 
 		// Return the optimization button.
-		$output = get_imagify_admin_url( 'manual-upload', array( 'attachment_id' => $attachment->id, 'context' => $context ) );
+		$output = get_imagify_admin_url( 'manual-upload', array(
+			'attachment_id' => $attachment->id,
+			'context'       => $context,
+		) );
 		$output = '<a id="imagify-upload-' . $attachment->id . '" href="' . esc_url( $output ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
 		wp_send_json_success( $output );
 	}
@@ -711,7 +714,7 @@ class Imagify_Admin_Ajax_Post {
 				AND (
 					mt1.meta_value = 'error'
 					OR
-					mt2.meta_value != '%d'
+					mt2.meta_value != %d
 					OR
 					mt2.post_id IS NULL
 				)
@@ -1271,8 +1274,14 @@ class Imagify_Admin_Ajax_Post {
 		) );
 
 		wp_send_json_success( array(
-			'total_library_size' => array( 'raw' => $raw_total_size_in_library, 'human' => imagify_size_format( $raw_total_size_in_library ) ),
-			'average_month_size' => array( 'raw' => $raw_average_per_month, 'human' => imagify_size_format( $raw_average_per_month ) ),
+			'total_library_size' => array(
+				'raw'   => $raw_total_size_in_library,
+				'human' => imagify_size_format( $raw_total_size_in_library ),
+			),
+			'average_month_size' => array(
+				'raw'   => $raw_average_per_month,
+				'human' => imagify_size_format( $raw_average_per_month ),
+			),
 		) );
 	}
 

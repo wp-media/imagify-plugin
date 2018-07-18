@@ -452,14 +452,20 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		}
 
 		if ( ! $this->is_valid() ) {
-			$this->file_type = (object) array( 'ext' => '', 'type' => '' );
+			$this->file_type = (object) array(
+				'ext'  => '',
+				'type' => '',
+			);
 			return $this->file_type;
 		}
 
 		$path = $this->get_original_path();
 
 		if ( ! $path ) {
-			$this->file_type = (object) array( 'ext' => '', 'type' => '' );
+			$this->file_type = (object) array(
+				'ext'  => '',
+				'type' => '',
+			);
 			return $this->file_type;
 		}
 
@@ -859,7 +865,7 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 *
 	 * @return array Data for the registered thumbnail sizes.
 	 */
-	static public function get_registered_sizes() {
+	public static function get_registered_sizes() {
 		static $registered_sizes;
 
 		if ( ! isset( $registered_sizes ) ) {

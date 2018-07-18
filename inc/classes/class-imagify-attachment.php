@@ -557,7 +557,12 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			/* translators: %d is a number of thumbnails. */
 			$error_message = _n( '%d thumbnail failed to be created', '%d thumbnails failed to be created', $failed_count, 'imagify' );
 			$error_message = sprintf( $error_message, $failed_count );
-			$errors->add( 'image_resize_error', $error_message, array( 'nbr_failed' => $failed_count, 'sizes_failed' => $failed_sizes, 'sizes_succeeded' => $result_sizes ) );
+
+			$errors->add( 'image_resize_error', $error_message, array(
+				'nbr_failed'      => $failed_count,
+				'sizes_failed'    => $failed_sizes,
+				'sizes_succeeded' => $result_sizes,
+			) );
 		}
 
 		if ( ! $result_sizes ) {

@@ -267,7 +267,7 @@ abstract class Imagify_Abstract_Cron {
 	 *
 	 * @return int Timestamp.
 	 */
-	static public function get_next_timestamp( $event_time = '00:00' ) {
+	public static function get_next_timestamp( $event_time = '00:00' ) {
 		$current_time_int = (int) date( 'Gis' );
 		$event_time_int   = (int) str_replace( ':', '', $event_time . '00' );
 		$event_time       = explode( ':', $event_time );
