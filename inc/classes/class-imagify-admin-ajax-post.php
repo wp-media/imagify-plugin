@@ -16,7 +16,7 @@ class Imagify_Admin_Ajax_Post {
 	 * @since  1.6.11
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.4';
+	const VERSION = '1.0.6';
 
 	/**
 	 * Actions to be triggered on admin ajax and admin post.
@@ -287,7 +287,10 @@ class Imagify_Admin_Ajax_Post {
 		imagify_maybe_redirect();
 
 		// Return the optimization button.
-		$output = get_imagify_admin_url( 'manual-upload', array( 'attachment_id' => $attachment->id, 'context' => $context ) );
+		$output = get_imagify_admin_url( 'manual-upload', array(
+			'attachment_id' => $attachment->id,
+			'context'       => $context,
+		) );
 		$output = '<a id="imagify-upload-' . $attachment->id . '" href="' . esc_url( $output ) . '" class="button-primary button-imagify-manual-upload" data-waiting-label="' . esc_attr__( 'Optimizing...', 'imagify' ) . '">' . __( 'Optimize', 'imagify' ) . '</a>';
 		wp_send_json_success( $output );
 	}
@@ -377,7 +380,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'imagify-bulk-upload' );
 		imagify_check_user_capacity( 'optimize-file' );
 
-		$file_id = (int) filter_input( INPUT_POST, 'image', FILTER_SANITIZE_NUMBER_INT );
+		$file_id = filter_input( INPUT_POST, 'image', FILTER_VALIDATE_INT );
 		$context = imagify_sanitize_context( filter_input( INPUT_POST, 'context', FILTER_SANITIZE_STRING ) );
 		$context = ! $context || 'wp' === strtolower( $context ) ? 'File' : $context;
 
@@ -553,7 +556,7 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_nonce( 'imagify_scan_custom_folders' );
 		imagify_check_user_capacity( 'optimize-file' );
 
-		$folder = (int) filter_input( INPUT_GET, 'folder', FILTER_SANITIZE_NUMBER_INT );
+		$folder = filter_input( INPUT_GET, 'folder', FILTER_VALIDATE_INT );
 
 		if ( $folder > 0 ) {
 			// A specific custom folder (selected or not).
@@ -711,7 +714,7 @@ class Imagify_Admin_Ajax_Post {
 				AND (
 					mt1.meta_value = 'error'
 					OR
-					mt2.meta_value != '%d'
+					mt2.meta_value != %d
 					OR
 					mt2.post_id IS NULL
 				)
@@ -1120,21 +1123,11 @@ class Imagify_Admin_Ajax_Post {
 		imagify_check_user_capacity();
 
 		$user             = new Imagify_User();
-		$unconsumed_quota = $user->get_percent_unconsumed_quota();
-		$meteo_icon       = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="37" height="38" alt="" />';
-		$bar_class        = 'positive';
+		$views            = Imagify_Views::get_instance();
+		$unconsumed_quota = $views->get_quota_percent();
 		$message          = '';
 
-		if ( $unconsumed_quota >= 21 && $unconsumed_quota <= 50 ) {
-			$bar_class  = 'neutral';
-			$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="37" height="38" alt="" />';
-		}
-		elseif ( $unconsumed_quota <= 20 ) {
-			$bar_class  = 'negative';
-			$meteo_icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="38" height="36" alt="" />';
-		}
-
-		if ( $unconsumed_quota <= 20 && $unconsumed_quota > 0 ) {
+		if ( $unconsumed_quota <= 20 ) {
 			$message  = '<div class="imagify-error">';
 				$message .= '<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s almost over!', 'imagify' ) . '</strong></p>';
 				/* translators: %s is a line break. */
@@ -1149,7 +1142,7 @@ class Imagify_Admin_Ajax_Post {
 				$message .= '<p>' . sprintf(
 					/* translators: 1 is a data quota, 2 is a date. */
 					__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
-					imagify_size_format( $user->quota * 1048576 ),
+					imagify_size_format( $user->quota * pow( 1024, 2 ) ),
 					date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) )
 				) . '</p>';
 				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>';
@@ -1161,7 +1154,7 @@ class Imagify_Admin_Ajax_Post {
 			$quota_section .= '<div class="imagify-abq-row">';
 
 		if ( 1 === $user->plan_id ) {
-			$quota_section .= '<div class="imagify-meteo-icon">' . $meteo_icon . '</div>';
+			$quota_section .= '<div class="imagify-meteo-icon">' . $views->get_quota_icon() . '</div>';
 		}
 
 		$quota_section .= '<div class="imagify-account">';
@@ -1175,9 +1168,9 @@ class Imagify_Admin_Ajax_Post {
 				$quota_section .= '<div class="imagify-space-left">';
 					/* translators: %s is a data quota. */
 					$quota_section .= '<p>' . sprintf( __( 'You have %s space credit left', 'imagify' ), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ) . '</p>';
-					$quota_section .= '<div class="imagify-bar-' . $bar_class . '">';
+					$quota_section .= '<div class="' . $views->get_quota_class() . '">';
 						$quota_section .= '<div style="width: ' . $unconsumed_quota . '%;" class="imagify-unconsumed-bar imagify-progress"></div>';
-					$quota_section .= '</div>'; // .imagify-bar-{$bar_class}
+					$quota_section .= '</div>'; // .imagify-bar-{negative|neutral|positive}
 				$quota_section .= '</div>'; // .imagify-space-left
 			$quota_section .= '</div>'; // .imagify-abq-row
 		}
@@ -1281,8 +1274,14 @@ class Imagify_Admin_Ajax_Post {
 		) );
 
 		wp_send_json_success( array(
-			'total_library_size' => array( 'raw' => $raw_total_size_in_library, 'human' => imagify_size_format( $raw_total_size_in_library ) ),
-			'average_month_size' => array( 'raw' => $raw_average_per_month, 'human' => imagify_size_format( $raw_average_per_month ) ),
+			'total_library_size' => array(
+				'raw'   => $raw_total_size_in_library,
+				'human' => imagify_size_format( $raw_total_size_in_library ),
+			),
+			'average_month_size' => array(
+				'raw'   => $raw_average_per_month,
+				'human' => imagify_size_format( $raw_average_per_month ),
+			),
 		) );
 	}
 
@@ -1355,7 +1354,7 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		$folder = trailingslashit( sanitize_text_field( $_POST['folder'] ) );
-		$folder = realpath( $this->filesystem->get_abspath() . ltrim( $folder, '/' ) );
+		$folder = realpath( $this->filesystem->get_site_root() . ltrim( $folder, '/' ) );
 
 		if ( ! $folder ) {
 			imagify_die( __( 'This folder doesn\'t exist.', 'imagify' ) );
@@ -1376,13 +1375,13 @@ class Imagify_Admin_Ajax_Post {
 		$views    = Imagify_Views::get_instance();
 		$output   = '';
 
-		if ( $this->filesystem->is_abspath( $folder ) ) {
+		if ( $this->filesystem->is_site_root( $folder ) ) {
 			$output .= $views->get_template( 'part-settings-files-tree-row', array(
 				'relative_path'     => '/',
 				// Value #///# Label.
-				'checkbox_value'    => '{{ABSPATH}}/#///#' . esc_attr__( 'Site\'s root', 'imagify' ),
+				'checkbox_value'    => '{{ROOT}}/#///#' . esc_attr__( 'Site\'s root', 'imagify' ),
 				'checkbox_id'       => 'ABSPATH',
-				'checkbox_selected' => isset( $selected['{{ABSPATH}}/'] ),
+				'checkbox_selected' => isset( $selected['{{ROOT}}/'] ),
 				'label'             => __( 'Site\'s root', 'imagify' ),
 				'no_button'         => true,
 			) );
@@ -1515,7 +1514,7 @@ class Imagify_Admin_Ajax_Post {
 	 * @return object             A Imagify_File_Attachment object.
 	 */
 	protected function get_file_to_optimize( $identifier ) {
-		$file_id = (int) filter_input( INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT );
+		$file_id = filter_input( INPUT_GET, 'id', FILTER_VALIDATE_INT );
 
 		if ( ! $file_id ) {
 			imagify_die( __( 'Invalid request', 'imagify' ) );

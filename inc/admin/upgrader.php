@@ -253,7 +253,7 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	// 1.4.5
 	if ( version_compare( $site_version, '1.4.5' ) < 0 ) {
 		// Delete all transients used for async optimization.
-		$wpdb->query( 'DELETE from ' . $wpdb->options . ' WHERE option_name LIKE "_transient_imagify-async-in-progress-%"' );
+		$wpdb->query( $wpdb->prepare( "DELETE from $wpdb->options WHERE option_name LIKE %s", Imagify_DB::esc_like( '_transient_imagify-async-in-progress-' ) . '%' ) );
 	}
 
 	// 1.7
@@ -268,6 +268,22 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 
 		// Rename the option that stores the NGG table version. Since the table is also updated in 1.7, let's simply delete the option.
 		delete_option( $wpdb->prefix . 'ngg_imagify_data_db_version' );
+	}
+
+	// 1.8.1
+	if ( version_compare( $site_version, '1.8.1' ) < 0 ) {
+		// Custom folders: replace `{{ABSPATH}}/` by `{{ROOT}}/`.
+		$filesystem  = imagify_get_filesystem();
+		$replacement = '{{ROOT}}/';
+
+		if ( $filesystem->has_wp_its_own_directory() ) {
+			$replacement .= str_replace( $filesystem->get_site_root(), '', $filesystem->get_abspath() );
+		}
+
+		$replacement = Imagify_DB::esc_like( $replacement );
+
+		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->base_prefix}imagify_files SET path = REPLACE( path, '{{ABSPATH}}/', %s ) WHERE path LIKE %s", $replacement, '{{ABSPATH}}/%' ) );
+		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->base_prefix}imagify_folders SET path = REPLACE( path, '{{ABSPATH}}/', %s ) WHERE path LIKE %s", $replacement, '{{ABSPATH}}/%' ) );
 	}
 }
 
@@ -290,7 +306,6 @@ add_action( 'upgrader_process_complete', 'imagify_maybe_reset_opcache', 20, 2 );
  */
 function imagify_maybe_reset_opcache( $wp_upgrader, $hook_extra ) {
 	static $imagify_path;
-	static $can_reset;
 
 	if ( ! isset( $hook_extra['action'], $hook_extra['type'], $hook_extra['plugins'] ) ) {
 		return;
@@ -310,21 +325,37 @@ function imagify_maybe_reset_opcache( $wp_upgrader, $hook_extra ) {
 		return;
 	}
 
-	if ( ! isset( $can_reset ) ) {
-		$can_reset = true;
+	imagify_reset_opcache();
+}
 
+/**
+ * Reset PHP opcache.
+ *
+ * @since  1.8.1
+ * @author Grégory Viguier
+ */
+function imagify_reset_opcache() {
+	static $can_reset;
+
+	if ( ! isset( $can_reset ) ) {
 		if ( ! function_exists( 'opcache_reset' ) ) {
 			$can_reset = false;
+			return;
 		}
 
 		$restrict_api = ini_get( 'opcache.restrict_api' );
 
 		if ( $restrict_api && strpos( __FILE__, $restrict_api ) !== 0 ) {
 			$can_reset = false;
+			return;
 		}
+
+		$can_reset = true;
 	}
 
-	if ( $can_reset ) {
-		opcache_reset();
+	if ( ! $can_reset ) {
+		return;
 	}
+
+	opcache_reset();
 }

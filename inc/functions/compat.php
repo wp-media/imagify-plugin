@@ -57,40 +57,6 @@ if ( ! function_exists( 'array_replace' ) ) :
 	}
 endif;
 
-if ( ! function_exists( 'hash_equals' ) ) :
-	/**
-	 * Timing attack safe string comparison
-	 *
-	 * Compares two strings using the same time whether they're equal or not.
-	 *
-	 * This function was added in PHP 5.6.
-	 *
-	 * Note: It can leak the length of a string when arguments of differing length are supplied.
-	 *
-	 * @since 1.7
-	 * @since PHP 5.6.0
-	 * @since WP 3.9.2
-	 *
-	 * @param  string $a Expected string.
-	 * @param  string $b Actual, user supplied, string.
-	 * @return bool      Whether strings are equal.
-	 */
-	function hash_equals( $a, $b ) {
-		$a_length = strlen( $a );
-		if ( strlen( $b ) !== $a_length ) {
-			return false;
-		}
-		$result = 0;
-
-		// Do not attempt to "optimize" this.
-		for ( $i = 0; $i < $a_length; $i++ ) {
-			$result |= ord( $a[ $i ] ) ^ ord( $b[ $i ] );
-		}
-
-		return 0 === $result;
-	}
-endif;
-
 // SPL can be disabled on PHP 5.2.
 if ( ! function_exists( 'spl_autoload_register' ) ) :
 	require_once IMAGIFY_FUNCTIONS_PATH . 'compat-spl-autoload.php';
@@ -300,47 +266,6 @@ if ( ! function_exists( '_wp_json_convert_string' ) ) :
 	}
 endif;
 
-if ( ! function_exists( 'wp_normalize_path' ) ) :
-	/**
-	 * Normalize a filesystem path.
-	 *
-	 * On windows systems, replaces backslashes with forward slashes
-	 * and forces upper-case drive letters.
-	 * Allows for two leading slashes for Windows network shares, but
-	 * ensures that all other duplicate slashes are reduced to a single.
-	 *
-	 * @since 1.6.7
-	 * @since WP 3.9.0
-	 * @since WP 4.4.0 Ensures upper-case drive letters on Windows systems.
-	 * @since WP 4.5.0 Allows for Windows network shares.
-	 * @since WP 5.0   Allows for PHP file wrappers.
-	 *
-	 * @param  string $path Path to normalize.
-	 * @return string Normalized path.
-	 */
-	function wp_normalize_path( $path ) {
-		$wrapper = '';
-
-		if ( wp_is_stream( $path ) ) {
-			list( $wrapper, $path ) = explode( '://', $path, 2 );
-			$wrapper .= '://';
-		}
-
-		// Standardise all paths to use /.
-		$path = str_replace( '\\', '/', $path );
-
-		// Replace multiple slashes down to a singular, allowing for network shares having two slashes.
-		$path = preg_replace( '|(?<=.)/+|', '/', $path );
-
-		// Windows paths should uppercase the drive letter.
-		if ( ':' === substr( $path, 1, 1 ) ) {
-			$path = ucfirst( $path );
-		}
-
-		return $wrapper . $path;
-	}
-endif;
-
 if ( ! function_exists( 'wp_parse_url' ) ) :
 	/**
 	 * A wrapper for PHP's parse_url() function that handles consistency in the return
@@ -485,40 +410,6 @@ if ( ! function_exists( 'wp_get_additional_image_sizes' ) ) :
 			$_wp_additional_image_sizes = array(); // WPCS: override ok.
 		}
 		return $_wp_additional_image_sizes;
-	}
-endif;
-
-if ( ! function_exists( 'doing_filter' ) ) :
-	/**
-	 * Retrieve the name of a filter currently being processed.
-	 *
-	 * The function current_filter() only returns the most recent filter or action
-	 * being executed. did_action() returns true once the action is initially
-	 * processed.
-	 *
-	 * This function allows detection for any filter currently being
-	 * executed (despite not being the most recent filter to fire, in the case of
-	 * hooks called from hook callbacks) to be verified.
-	 *
-	 * @since 1.6.11
-	 * @since WP 3.9.0
-	 *
-	 * @see current_filter()
-	 * @see did_action()
-	 * @global array $wp_current_filter Current filter.
-	 *
-	 * @param null|string $filter Optional. Filter to check. Defaults to null, which
-	 *                            checks if any filter is currently being run.
-	 * @return bool Whether the filter is currently in the stack.
-	 */
-	function doing_filter( $filter = null ) {
-		global $wp_current_filter;
-
-		if ( null === $filter ) {
-			return ! empty( $wp_current_filter );
-		}
-
-		return in_array( $filter, $wp_current_filter, true );
 	}
 endif;
 

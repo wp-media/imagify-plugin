@@ -14,7 +14,7 @@ class Imagify_Custom_Folders {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.0.3';
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -38,7 +38,7 @@ class Imagify_Custom_Folders {
 		}
 
 		$filesystem = imagify_get_filesystem();
-		$backup_dir = $filesystem->get_abspath() . 'imagify-backup/';
+		$backup_dir = $filesystem->get_site_root() . 'imagify-backup/';
 
 		/**
 		 * Filter the backup directory path (custom folders).
@@ -79,14 +79,14 @@ class Imagify_Custom_Folders {
 	 */
 	public static function get_file_backup_path( $file_path ) {
 		$file_path  = wp_normalize_path( (string) $file_path );
-		$abspath    = imagify_get_filesystem()->get_abspath();
+		$site_root  = imagify_get_filesystem()->get_site_root();
 		$backup_dir = self::get_backup_dir_path();
 
 		if ( ! $file_path ) {
 			return false;
 		}
 
-		return str_replace( $abspath, $backup_dir, $file_path );
+		return str_replace( $site_root, $backup_dir, $file_path );
 	}
 
 
@@ -402,7 +402,7 @@ class Imagify_Custom_Folders {
 	 *                         Array(
 	 *                             [7] => Array(
 	 *                                 [folder_id] => 7
-	 *                                 [path] => {{ABSPATH}}/custom-path/
+	 *                                 [path] => {{ROOT}}/custom-path/
 	 *                                 [active] => 1
 	 *                                 [folder_path] => /absolute/path/to/custom-path/
 	 *                             )
@@ -478,7 +478,7 @@ class Imagify_Custom_Folders {
 	 *                                [_2] => Array(
 	 *                                    [file_id]            => 2
 	 *                                    [folder_id]          => 7
-	 *                                    [path]               => {{ABSPATH}}/custom-path/image-1.jpg
+	 *                                    [path]               => {{ROOT}}/custom-path/image-1.jpg
 	 *                                    [optimization_level] => null
 	 *                                    [status]             => null
 	 *                                    [file_path]          => /absolute/path/to/custom-path/image-1.jpg
@@ -486,7 +486,7 @@ class Imagify_Custom_Folders {
 	 *                                [_3] => Array(
 	 *                                    [file_id]            => 3
 	 *                                    [folder_id]          => 7
-	 *                                    [path]               => {{ABSPATH}}/custom-path/image-2.jpg
+	 *                                    [path]               => {{ROOT}}/custom-path/image-2.jpg
 	 *                                    [optimization_level] => 2
 	 *                                    [status]             => success
 	 *                                    [file_path]          => /absolute/path/to/custom-path/image-2.jpg
@@ -1017,14 +1017,15 @@ class Imagify_Custom_Folders {
 		}
 
 		$active_folder_ids = array();
-		$has_abspath       = false;
+		$has_site_root     = false;
 
 		foreach ( $active_folders as $i => $active_folder ) {
 			$active_folders[ $i ] = $folders_db->cast_row( $active_folder );
 			$active_folder_ids[]  = $active_folders[ $i ][ $folders_key ];
 
-			if ( '{{ABSPATH}}/' === $active_folders[ $i ]['path'] ) {
-				$has_abspath = true;
+			if ( '{{ROOT}}/' === $active_folders[ $i ]['path'] ) {
+				$has_site_root = true;
+				break;
 			}
 		}
 
@@ -1044,7 +1045,7 @@ class Imagify_Custom_Folders {
 			$inactive_file              = $files_db->cast_row( $inactive_file );
 			$inactive_file['full_path'] = Imagify_Files_Scan::remove_placeholder( $inactive_file['path'] );
 
-			if ( $has_abspath ) {
+			if ( $has_site_root ) {
 				$inactive_file['dirname'] = $filesystem->dir_path( $inactive_file['full_path'] );
 			}
 
@@ -1060,7 +1061,7 @@ class Imagify_Custom_Folders {
 					$file_ids_by_folder[ $folder_id ] = array();
 				}
 
-				if ( '{{ABSPATH}}/' === $active_folder['path'] ) {
+				if ( '{{ROOT}}/' === $active_folder['path'] ) {
 					// For the site's root: only direct childs.
 					if ( $inactive_file['dirname'] === $active_folder['full_path'] ) {
 						// This file is in the site's root folder.
@@ -1199,7 +1200,7 @@ class Imagify_Custom_Folders {
 		sort( $placeholders );
 
 		foreach ( $placeholders as $i => $placeholder_path ) {
-			if ( '{{ABSPATH}}/' === $placeholder_path ) {
+			if ( '{{ROOT}}/' === $placeholder_path ) {
 				continue;
 			}
 

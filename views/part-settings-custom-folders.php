@@ -22,8 +22,8 @@ if ( $custom_folders ) {
 	natcasesort( $custom_folders );
 	$custom_folders = array_map( 'trailingslashit', $custom_folders );
 
-	if ( isset( $custom_folders['{{ABSPATH}}/'] ) ) {
-		$custom_folders['{{ABSPATH}}/'] = __( 'Site\'s root', 'imagify' );
+	if ( isset( $custom_folders['{{ROOT}}/'] ) ) {
+		$custom_folders['{{ROOT}}/'] = __( 'Site\'s root', 'imagify' );
 	}
 }
 

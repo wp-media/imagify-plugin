@@ -13,6 +13,10 @@
 
 	<rule ref="WordPress">
 		<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/ -->
+		<exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>
+		<exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning"/>
+		<exclude name="Generic.Functions.FunctionCallArgumentSpacing.SpaceBeforeComma"/>
+		<exclude name="Generic.Functions.FunctionCallArgumentSpacing.TooMuchSpaceAfterComma"/>
 		<exclude name="Generic.PHP.NoSilencedErrors.Discouraged"/>
 		<exclude name="Squiz.ControlStructures.ControlSignature.SpaceAfterCloseBrace"/>
 		<exclude name="Squiz.Commenting.BlockComment.NoEmptyLineBefore"/>
@@ -22,6 +26,8 @@
 		<exclude name="Squiz.PHP.EmbeddedPhp.ContentAfterEnd"/>
 		<exclude name="Squiz.PHP.CommentedOutCode.Found"/>
 		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.AssociativeKeyFound"/>
+		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned"/>
+		<exclude name="WordPress.Arrays.MultipleStatementAlignment.LongIndexSpaceBeforeDoubleArrow"/>
 		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize"/>
 		<exclude name="WordPress.VIP.DirectDatabaseQuery.DirectQuery"/>
 		<exclude name="WordPress.VIP.DirectDatabaseQuery.NoCaching"/>
@@ -49,6 +55,10 @@
 		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_setopt"/>
 		<exclude name="WordPress.WP.CapitalPDangit.Misspelled"/>
 		<exclude name="WordPress.XSS.EscapeOutput"/>
+	</rule>
+
+	<rule ref="Generic.Files.OneClassPerFile.MultipleFound">
+		<exclude-pattern>inc/functions/deprecated.php</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.CSRF.NonceVerification">

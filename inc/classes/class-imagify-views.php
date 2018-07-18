@@ -15,7 +15,7 @@ class Imagify_Views {
 	 * @var   string
 	 * @since 1.7
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.1';
 
 	/**
 	 * Slug used for the settings page URL.
@@ -411,6 +411,92 @@ class Imagify_Views {
 	 */
 	public function get_files_page_slug() {
 		return $this->slug_files;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** QUOTA =================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the remaining quota in percent.
+	 *
+	 * @since  1.8.1
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return int
+	 */
+	public function get_quota_percent() {
+		static $quota;
+
+		if ( isset( $quota ) ) {
+			return $quota;
+		}
+
+		$user  = new Imagify_User();
+		$quota = $user->get_percent_unconsumed_quota();
+
+		return $quota;
+	}
+
+	/**
+	 * Get the HTML class used for the quota (to change the color when out of quota for example).
+	 *
+	 * @since  1.8.1
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return string
+	 */
+	public function get_quota_class() {
+		static $class;
+
+		if ( isset( $class ) ) {
+			return $class;
+		}
+
+		$quota = $this->get_quota_percent();
+		$class = 'imagify-bar-';
+
+		if ( $quota <= 20 ) {
+			$class .= 'negative';
+		} elseif ( $quota <= 50 ) {
+			$class .= 'neutral';
+		} else {
+			$class .= 'positive';
+		}
+
+		return $class;
+	}
+
+	/**
+	 * Get the HTML tag used for the quota (the weather-like icon).
+	 *
+	 * @since  1.8.1
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return string
+	 */
+	public function get_quota_icon() {
+		static $icon;
+
+		if ( isset( $icon ) ) {
+			return $icon;
+		}
+
+		$quota = $this->get_quota_percent();
+
+		if ( $quota <= 20 ) {
+			$icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'stormy.svg" width="64" height="63" alt="" />';
+		} elseif ( $quota <= 50 ) {
+			$icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'cloudy-sun.svg" width="63" height="64" alt="" />';
+		} else {
+			$icon = '<img src="' . IMAGIFY_ASSETS_IMG_URL . 'sun.svg" width="63" height="64" alt="" />';
+		}
+
+		return $icon;
 	}
 
 

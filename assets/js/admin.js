@@ -38,7 +38,7 @@ jQuery.extend( window.imagify, {
 				};
 
 			return function() {
-				compiled = compiled || _.template( jQuery( '#tmpl-' + id ).html(), options );
+				compiled = compiled || _.template( jQuery( '#tmpl-' + id ).html(), null, options );
 				data     = data || {};
 				return compiled( data );
 			};

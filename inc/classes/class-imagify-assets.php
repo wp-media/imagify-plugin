@@ -619,7 +619,6 @@ class Imagify_Assets {
 		$handles = (array) $handles;
 
 		foreach ( $handles as $handle ) {
-			$this->enqueue_style( $handle );
 			$this->enqueue_script( $handle );
 		}
 

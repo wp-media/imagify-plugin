@@ -33,7 +33,7 @@ function _imagify_attachment_submitbox_misc_actions() {
 			echo '<a href="' . esc_url( get_imagify_admin_url() ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
 		echo '</div>';
 
-	} elseif ( $attachment->is_optimized() || $attachment->has_error() ) {
+	} elseif ( $attachment->is_optimized() || $attachment->is_already_optimized() || $attachment->has_error() ) {
 
 		echo '<div class="misc-pub-section misc-pub-imagify"><h4>' . __( 'Imagify', 'imagify' ) . '</h4></div>';
 		echo get_imagify_attachment_optimization_text( $attachment );

@@ -17,7 +17,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.2';
 
 	/**
 	 * Delimiter used for regex patterns.
@@ -209,15 +209,15 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return $this->is_dir( $path ) && $this->is_writable( $path );
 		}
 
-		$abspath = $this->get_abspath();
+		$site_root = $this->get_site_root();
 
-		if ( strpos( $path, $abspath ) !== 0 ) {
+		if ( strpos( $path, $site_root ) !== 0 ) {
 			return false;
 		}
 
-		$bits = str_replace( $abspath, '', $path );
+		$bits = str_replace( $site_root, '', $path );
 		$bits = explode( '/', $bits );
-		$path = untrailingslashit( $abspath );
+		$path = untrailingslashit( $site_root );
 
 		foreach ( $bits as $bit ) {
 			$path .= '/' . $bit;
@@ -337,7 +337,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 * @return bool
 	 */
 	public function is_symlinked( $file_path ) {
-		static $abspath;
+		static $site_root;
 		static $plugin_paths = array();
 		global $wp_plugin_paths;
 
@@ -351,13 +351,13 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return false;
 		}
 
-		if ( ! isset( $abspath ) ) {
-			$abspath = $this->normalize_path_for_comparison( $this->get_abspath() );
+		if ( ! isset( $site_root ) ) {
+			$site_root = $this->normalize_path_for_comparison( $this->get_site_root() );
 		}
 
 		$lower_file_path = $this->normalize_path_for_comparison( $real_path );
 
-		if ( strpos( $lower_file_path, $abspath ) !== 0 ) {
+		if ( strpos( $lower_file_path, $site_root ) !== 0 ) {
 			return true;
 		}
 
@@ -604,19 +604,14 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 * @return string|bool       A relative path. Can return the absolute path or false in case of a failure.
 	 */
 	public function make_path_relative( $file_path, $base = '' ) {
-		static $abspath;
 		global $wp_plugin_paths;
 
 		if ( ! $file_path ) {
 			return false;
 		}
 
-		if ( ! isset( $abspath ) ) {
-			$abspath = wp_normalize_path( ABSPATH );
-		}
-
 		$file_path = wp_normalize_path( $file_path );
-		$base      = $base ? $this->normalize_dir_path( $base ) : $abspath;
+		$base      = $base ? $this->normalize_dir_path( $base ) : $this->get_site_root();
 		$pos       = strpos( $file_path, $base );
 
 		if ( false === $pos && $wp_plugin_paths && is_array( $wp_plugin_paths ) ) {
@@ -676,6 +671,20 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
+	 * Tell if WordPress is installed in its own directory: aka WP's path !== site's path.
+	 *
+	 * @since  1.8.1
+	 * @access public
+	 * @see    https://codex.wordpress.org/Giving_WordPress_Its_Own_Directory
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public function has_wp_its_own_directory() {
+		return $this->get_abspath() !== $this->get_site_root();
+	}
+
+	/**
 	 * The path to the server's root is not always '/', it can also be '//' or 'C://'.
 	 * I am get_root.
 	 *
@@ -692,7 +701,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return $groot;
 		}
 
-		$groot = preg_replace( '@^((?:.:)?/+).*@', '$1', $this->get_abspath() );
+		$groot = preg_replace( '@^((?:.:)?/+).*@', '$1', $this->get_site_root() );
 
 		return $groot;
 	}
@@ -713,7 +722,125 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	}
 
 	/**
-	 * Get a clean value of ABSPATH that can be used in string replacements.
+	 * Get the path to the site's root.
+	 * This is an improved version of get_home_path() that *should* work in almost every cases.
+	 * Because creating a constant like ABSPATH was too simple.
+	 *
+	 * @since  1.8.1
+	 * @access public
+	 * @see    get_home_path()
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public function get_site_root() {
+		static $root_path;
+
+		if ( isset( $root_path ) ) {
+			return $root_path;
+		}
+
+		/**
+		 * Filter the path to the site's root.
+		 *
+		 * @since  1.8.1
+		 * @author Grégory Viguier
+		 *
+		 * @param string $root_path Path to the site's root. Default is null.
+		 */
+		$root_path = apply_filters( 'imagify_site_root', null );
+
+		if ( is_string( $root_path ) ) {
+			return $root_path;
+		}
+
+		$home    = set_url_scheme( untrailingslashit( get_option( 'home' ) ), 'http' );
+		$siteurl = set_url_scheme( untrailingslashit( get_option( 'siteurl' ) ), 'http' );
+
+		if ( ! empty( $home ) && 0 !== strcasecmp( $home, $siteurl ) ) {
+			$wp_path_rel_to_home = str_ireplace( $home, '', $siteurl ); /* $siteurl - $home */
+			$pos                 = strripos( str_replace( '\\', '/', ABSPATH ), trailingslashit( $wp_path_rel_to_home ) );
+			$root_path           = substr( ABSPATH, 0, $pos );
+			$root_path           = trailingslashit( str_replace( '\\', '/', $root_path ) );
+			return $root_path;
+		}
+
+		if ( ! defined( 'PATH_CURRENT_SITE' ) || ! is_multisite() || is_main_site() ) {
+			$root_path = str_replace( '\\', '/', ABSPATH );
+			return $root_path;
+		}
+
+		// For a multisite in its own directory, get_home_path() returns the expected path only for the main site.
+		$script_filename   = str_replace( '\\', '/', wp_unslash( $_SERVER['SCRIPT_FILENAME'] ) );
+		$path_current_site = trailingslashit( '/' . trim( str_replace( '\\', '/', PATH_CURRENT_SITE ), '/' ) );
+		$pos               = strripos( $script_filename, $path_current_site );
+
+		if ( false === $pos ) {
+			$root_path = str_replace( '\\', '/', ABSPATH );
+			return $root_path;
+		}
+
+		$root_path = substr( $script_filename, 0, $pos ) . $path_current_site;
+		return $root_path;
+	}
+
+	/**
+	 * Get the URL of the site's root. It corresponds to the main site's home page URL.
+	 *
+	 * @since  1.8.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public function get_site_root_url() {
+		static $root_url;
+
+		if ( isset( $root_url ) ) {
+			return $root_url;
+		}
+
+		if ( ! is_multisite() || is_main_site() ) {
+			$root_url = home_url( '/' );
+			return $root_url;
+		}
+
+		$current_network = false;
+
+		if ( function_exists( 'get_network' ) ) {
+			$current_network = get_network();
+		} elseif ( function_exists( 'get_current_site' ) ) {
+			$current_network = get_current_site();
+		}
+
+		if ( ! $current_network ) {
+			$root_url = home_url( '/' );
+			return $root_url;
+		}
+
+		$root_url = is_ssl() ? 'https' : 'http';
+		$root_url = set_url_scheme( 'http://' . $current_network->domain . $current_network->path, $root_url );
+		$root_url = trailingslashit( $root_url );
+
+		return $root_url;
+	}
+
+	/**
+	 * Tell if a path is the site's root.
+	 *
+	 * @since  1.8.1
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $path The path.
+	 * @return bool
+	 */
+	public function is_site_root( $path ) {
+		return $this->normalize_dir_path( $path ) === $this->get_site_root();
+	}
+
+	/**
+	 * Get a clean value of ABSPATH.
 	 *
 	 * @since  1.7.1
 	 * @access public
@@ -740,7 +867,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 
 		} elseif ( false === $pos && class_exists( 'ReflectionClass' ) ) {
 			// Imagify is symlinked (dude, you look for trouble).
-			$reflector = new ReflectionClass( 'Requests' );
+			$reflector = new ReflectionClass( 'WP' );
 			$test_file = $reflector->getFileName();
 			$pos       = strpos( $test_file, $abspath );
 
@@ -760,7 +887,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	}
 
 	/**
-	 * Tell if a path is the site's root (ABSPATH).
+	 * Tell if a path is WP's root (ABSPATH).
 	 *
 	 * @since  1.7.1
 	 * @access public

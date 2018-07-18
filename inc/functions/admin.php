@@ -21,7 +21,7 @@ function imagify_is_active_for_network() {
 	}
 
 	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-		require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 	}
 
 	$is = is_plugin_active_for_network( plugin_basename( IMAGIFY_FILE ) );
@@ -467,7 +467,7 @@ function imagify_cache_user() {
 		}
 	}
 
-	$data->quota_formatted            = imagify_size_format( $user->quota * 1048576 );
+	$data->quota_formatted            = imagify_size_format( $user->quota * pow( 1024, 2 ) );
 	$data->next_date_update_formatted = date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) );
 
 	if ( imagify_is_active_for_network() ) {

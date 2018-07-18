@@ -402,7 +402,7 @@ if ( function_exists( 'emr_delete_current_files' ) ) :
 
 		_deprecated_function( __FUNCTION__ . '()', '1.6.9', 'imagify_enable_media_replace()->optimize()' );
 
-		$attachment_id = (int) $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE guid='%s';", $guid ) );
+		$attachment_id = (int) $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE guid = %s;", $guid ) );
 
 		if ( ! $attachment_id ) {
 			return;

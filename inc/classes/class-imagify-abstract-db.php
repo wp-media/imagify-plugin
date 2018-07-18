@@ -256,7 +256,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 		$placeholder   = $this->get_placeholder( $column_where );
 		$column_where  = esc_sql( $column_where );
 
-		$result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE $column_where = $placeholder LIMIT 1;", $column_value ), ARRAY_A ); // WPCS: unprepared SQL ok.
+		$result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE $column_where = $placeholder LIMIT 1;", $column_value ), ARRAY_A ); // WPCS: unprepared SQL ok, PreparedSQLPlaceholders replacement count ok.
 
 		return (array) $this->cast_row( $result );
 	}
@@ -323,7 +323,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 		$column       = esc_sql( $column_select );
 		$column_where = esc_sql( $column_where );
 
-		$result = $wpdb->get_var( $wpdb->prepare( "SELECT $column FROM $this->table_name WHERE $column_where = $placeholder LIMIT 1;", $column_value ) ); // WPCS: unprepared SQL ok.
+		$result = $wpdb->get_var( $wpdb->prepare( "SELECT $column FROM $this->table_name WHERE $column_where = $placeholder LIMIT 1;", $column_value ) ); // WPCS: unprepared SQL ok, PreparedSQLPlaceholders replacement count ok.
 
 		return $this->cast( $result, $column_select );
 	}
@@ -499,7 +499,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 
 		$placeholder = $this->get_placeholder( $this->primary_key );
 
-		return (bool) $wpdb->query( $wpdb->prepare( "DELETE FROM $this->table_name WHERE $this->primary_key = $placeholder", $row_id ) ); // WPCS: unprepared SQL ok.
+		return (bool) $wpdb->query( $wpdb->prepare( "DELETE FROM $this->table_name WHERE $this->primary_key = $placeholder", $row_id ) ); // WPCS: unprepared SQL ok, PreparedSQLPlaceholders replacement count ok.
 	}
 
 

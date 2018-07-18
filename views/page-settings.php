@@ -132,7 +132,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 
 			<div class="imagify-settings-main-content<?php echo $hidden_class; ?>">
 
-				<div class="imagify-settings-section clear">
+				<div class="imagify-settings-section imagify-clear">
 					<h2 class="imagify-options-title"><?php _e( 'Optimization', 'imagify' ); ?></h2>
 					<?php
 					$this->print_template( 'part-settings-library' );
@@ -142,7 +142,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 			</div>
 
 			<div class="imagify-settings-main-content imagify-pb0<?php echo $hidden_class; ?>">
-				<div class="imagify-settings-section clear">
+				<div class="imagify-settings-section imagify-clear">
 					<div class="imagify-col">
 						<h2 class="imagify-options-title"><?php _e( 'Display Options', 'imagify' ); ?></h2>
 

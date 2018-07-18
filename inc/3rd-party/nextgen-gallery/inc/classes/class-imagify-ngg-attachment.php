@@ -252,7 +252,10 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		}
 
 		if ( ! $this->is_valid() ) {
-			$this->file_type = (object) array( 'ext' => '', 'type' => '' );
+			$this->file_type = (object) array(
+				'ext'  => '',
+				'type' => '',
+			);
 			return $this->file_type;
 		}
 
@@ -841,7 +844,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 		$thumbnails_data = array();
 
 		// 4- Common meta data.
-		require_once( NGGALLERY_ABSPATH . '/lib/meta.php' );
+		require_once NGGALLERY_ABSPATH . '/lib/meta.php';
 		$meta_obj    = new nggMeta( $image_data );
 		$common_data = $meta_obj->get_common_meta();
 
