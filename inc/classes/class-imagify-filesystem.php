@@ -773,7 +773,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		/**
 		 * For a multisite in its own directory, get_home_path() returns the expected path only for the main site.
 		 *
-		 * Friend, each time an attempt is made to improve this method, and especialy this part, please increment the following counter.
+		 * Friend, each time an attempt is made to improve this method, and especially this part, please increment the following counter.
 		 * Improvement attempts: 2.
 		 */
 		$document_root     = trailingslashit( str_replace( '\\', '/', wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) );
