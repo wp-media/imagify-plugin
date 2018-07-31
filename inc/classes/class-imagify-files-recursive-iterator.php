@@ -55,8 +55,14 @@ class Imagify_Files_Recursive_Iterator extends RecursiveFilterIterator {
 	public function accept() {
 		static $extensions, $has_extension_method;
 
-		// Forbidden file/folder paths and names.
 		$file_path = $this->current()->getPathname();
+
+		// Prevent triggering an open_basedir restriction error.
+		$file_name = $this->filesystem->file_name( $file_path );
+
+		if ( '.' === $file_name || '..' === $file_name ) {
+			return false;
+		}
 
 		if ( $this->current()->isDir() ) {
 			$file_path = trailingslashit( $file_path );
