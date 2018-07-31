@@ -65,9 +65,17 @@ class Imagify_Files_Iterator extends FilterIterator {
 	public function accept() {
 		static $extensions, $has_extension_method;
 
-		// Forbidden file/folder paths and names.
-		$is_dir    = $this->isDir();
 		$file_path = $this->current()->getPathname();
+
+		// Prevent triggering an open_basedir restriction error.
+		$file_name = $this->filesystem->file_name( $file_path );
+
+		if ( '.' === $file_name || '..' === $file_name ) {
+			return false;
+		}
+
+		// Forbidden file/folder paths and names.
+		$is_dir = $this->isDir();
 
 		if ( $is_dir ) {
 			$file_path = trailingslashit( $file_path );

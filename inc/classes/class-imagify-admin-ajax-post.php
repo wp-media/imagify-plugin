@@ -1417,7 +1417,7 @@ class Imagify_Admin_Ajax_Post {
 		}
 
 		if ( ! $output ) {
-			$output .= '<li class="imagify-empty-folder"><em>' . __( 'Empty folder', 'imagify' ) . '</em></li>';
+			$output .= '<li class="imagify-empty-folder"><em>' . __( 'No optimizable files', 'imagify' ) . '</em></li>';
 		}
 
 		wp_send_json_success( $output );

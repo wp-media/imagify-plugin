@@ -770,17 +770,16 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return $root_path;
 		}
 
-		// For a multisite in its own directory, get_home_path() returns the expected path only for the main site.
-		$script_filename   = str_replace( '\\', '/', wp_unslash( $_SERVER['SCRIPT_FILENAME'] ) );
-		$path_current_site = trailingslashit( '/' . trim( str_replace( '\\', '/', PATH_CURRENT_SITE ), '/' ) );
-		$pos               = strripos( $script_filename, $path_current_site );
+		/**
+		 * For a multisite in its own directory, get_home_path() returns the expected path only for the main site.
+		 *
+		 * Friend, each time an attempt is made to improve this method, and especially this part, please increment the following counter.
+		 * Improvement attempts: 2.
+		 */
+		$document_root     = trailingslashit( str_replace( '\\', '/', wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) );
+		$path_current_site = trim( str_replace( '\\', '/', PATH_CURRENT_SITE ), '/' );
+		$root_path         = trailingslashit( $document_root . $path_current_site );
 
-		if ( false === $pos ) {
-			$root_path = str_replace( '\\', '/', ABSPATH );
-			return $root_path;
-		}
-
-		$root_path = substr( $script_filename, 0, $pos ) . $path_current_site;
 		return $root_path;
 	}
 
