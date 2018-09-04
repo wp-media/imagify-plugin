@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 ?>
 <h1 class="screen-reader-text"><?php esc_html_e( 'Settings', 'imagify' ); ?> — Imagify <?php echo IMAGIFY_VERSION; ?></h1>

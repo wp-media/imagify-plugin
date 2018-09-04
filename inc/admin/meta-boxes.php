@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 add_action( 'attachment_submitbox_misc_actions', '_imagify_attachment_submitbox_misc_actions', IMAGIFY_INT_MAX );
 /**

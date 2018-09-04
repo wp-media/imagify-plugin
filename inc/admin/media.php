@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 add_filter( 'attachment_fields_to_edit', '_imagify_attachment_fields_to_edit', IMAGIFY_INT_MAX, 2 );
 /**

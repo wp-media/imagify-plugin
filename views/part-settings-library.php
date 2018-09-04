@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $settings    = Imagify_Settings::get_instance();
 $options     = Imagify_Options::get_instance();

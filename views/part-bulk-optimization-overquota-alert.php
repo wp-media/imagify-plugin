@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $overquota_url = imagify_get_external_url( 'subscription', array(
 	'utm_source'  => 'plugin',

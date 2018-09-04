@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class allowing to filter RecursiveDirectoryIterator, to return only files that Imagify can optimize.

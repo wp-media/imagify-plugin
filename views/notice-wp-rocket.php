@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $dismiss_url  = get_imagify_admin_url( 'dismiss-notice', 'wp-rocket' );
 $coupon_code  = 'IMAGIFY20';

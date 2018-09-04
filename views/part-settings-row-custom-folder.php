@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 ?>
 <p class="imagify-custom-folder-line" data-path="<?php echo '{{ROOT}}/' === $data['value'] ? '/' : esc_attr( $data['label'] ); ?>">
 	<input type="hidden" name="imagify_settings[custom_folders][]" value="<?php echo esc_attr( $data['value'] ); ?>" />

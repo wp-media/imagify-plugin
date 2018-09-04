@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 if ( function_exists( 'fn_lc_fix_ssl_upload_url' ) && defined( 'SLC_VERSION' ) && version_compare( SLC_VERSION, '2.2.8' ) < 0 ) :
 

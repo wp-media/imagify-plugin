@@ -14,7 +14,7 @@
  * Copyright 2018 WP Media
  */
 
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 // Imagify defines.
 define( 'IMAGIFY_VERSION'       , '1.8.1.1' );

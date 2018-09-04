@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 add_action( 'update_option_' . Imagify_Options::get_instance()->get_option_name(), 'imagify_maybe_delete_partner_on_option_update', 10, 2 );
 /**

@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $disabled_attr  = disabled( true, $data['checkbox_selected'], false );
 $disabled_class = $data['checkbox_selected'] ? ' disabled' : '';

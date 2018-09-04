@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 add_action( 'admin_bar_menu', '_imagify_admin_bar', IMAGIFY_INT_MAX );
 /**

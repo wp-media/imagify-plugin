@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 ?>
 <div class="imagify-swal-subtitle"><?php esc_html_e( 'Some information to know before launching the optimization.', 'imagify' ); ?></div>
 <div class="imagify-swal-quota">
