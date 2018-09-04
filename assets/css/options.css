@@ -288,6 +288,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 }
 
 .imagify-menu-bar-img {
+	box-sizing: border-box;
 	max-width: 100%;
 	height: auto;
 	margin-top: 0;
