@@ -220,20 +220,28 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		$path = untrailingslashit( $site_root );
 
 		foreach ( $bits as $bit ) {
-			$path .= '/' . $bit;
+			$parent_path = $path;
+			$path       .= '/' . $bit;
 
-			if ( ! $this->exists( $path ) ) {
-				$this->mkdir( $path );
-			} elseif ( ! $this->is_dir( $path ) ) {
-				return false;
-			}
-
-			if ( ! $this->is_writable( $path ) ) {
-				$this->chmod_dir( $path );
-
-				if ( ! $this->is_writable( $path ) ) {
+			if ( $this->exists( $path ) ) {
+				if ( ! $this->is_dir( $path ) ) {
 					return false;
 				}
+				continue;
+			}
+
+			if ( ! $this->is_writable( $parent_path ) ) {
+				$this->chmod_dir( $parent_path );
+
+				if ( ! $this->is_writable( $parent_path ) ) {
+					return false;
+				}
+			}
+
+			$this->mkdir( $path );
+
+			if ( ! $this->exists( $path ) ) {
+				return false;
 			}
 		}
 
