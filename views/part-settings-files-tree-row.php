@@ -17,6 +17,9 @@ $folder_icon    = '<svg width="20px" height="17px" viewBox="0 0 20 17" version="
 			printf( esc_attr__( 'Open/Close the folder "%s".', 'imagify' ), $data['relative_path'] );
 		}
 		?>">
+			<?php if ( ! $data['checkbox_selected'] ) { ?>
+				<span class="imagify-loader"><img alt="<?php esc_attr_e( 'Loading...', 'imagify' ); ?>" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'spinner.gif' ); ?>" width="20" height="20"/></span>
+			<?php } ?>
 			<span class="imagify-folder-icon"><?php echo $folder_icon; ?></span>
 		</button>
 	<?php else : ?>
