@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 ?>
 <div class="clear"></div>
 <div class="imagify-notice below-h2<?php echo ( ! empty( $data['classes'] ) ? ' ' . implode( ' ', $data['classes'] ) : '' ); ?>">

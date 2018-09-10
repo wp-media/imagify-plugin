@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Imagify WP Offload S3 attachment class.
@@ -560,7 +560,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		}
 
 		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
-			require_once( ABSPATH . 'wp-admin/includes/image.php' );
+			require_once ABSPATH . 'wp-admin/includes/image.php';
 		}
 
 		// Generate new thumbnails and new metadata.

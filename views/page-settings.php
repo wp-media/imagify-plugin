@@ -1,10 +1,11 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $settings     = Imagify_Settings::get_instance();
 $options      = Imagify_Options::get_instance();
 $option_name  = $options->get_option_name();
 $hidden_class = Imagify_Requirements::is_api_key_valid() ? '' : ' hidden';
+$lang         = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
 
 /* Ads notice */
 $notice  = 'wp-rocket';
@@ -160,7 +161,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 						</div>
 						<div class="imagify-col">
 							<p>
-								<img class="imagify-menu-bar-img" src="<?php echo IMAGIFY_ASSETS_IMG_URL . 'imagify-menu-bar.jpg'; ?>" width="300" height="225" alt="">
+								<img class="imagify-menu-bar-img" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'imagify-menu-bar-' . $lang . '.jpg' ); ?>" width="273" height="239" alt="">
 							</p>
 						</div>
 

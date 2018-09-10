@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 if ( defined( 'WPSEO_VERSION' ) && is_admin() && ! wp_doing_ajax() ) :
 

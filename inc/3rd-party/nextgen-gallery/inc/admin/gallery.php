@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 add_filter( 'ngg_manage_images_number_of_columns', '_imagify_ngg_manage_images_number_of_columns' );
 /**

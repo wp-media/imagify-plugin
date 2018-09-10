@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $disabled_attr  = disabled( true, $data['checkbox_selected'], false );
 $disabled_class = $data['checkbox_selected'] ? ' disabled' : '';
@@ -8,16 +8,18 @@ $folder_icon    = '<svg width="20px" height="17px" viewBox="0 0 20 17" version="
 
 <li<?php echo $data['checkbox_selected'] ? ' class="imagify-folder-already-selected"' : ''; ?>>
 	<?php if ( empty( $data['no_button'] ) ) : ?>
-		<button type="button" class="imagify-folder" data-folder="<?php echo $data['relative_path']; ?>"<?php echo $disabled_attr; ?> title="
-			<?php
-			if ( $data['checkbox_selected'] ) {
-				/* translators: %s is a folder path. */
-				printf( esc_attr__( 'The folder "%s" is already selected.', 'imagify' ), $data['relative_path'] );
-			} else {
-				/* translators: %s is a folder path. */
-				printf( esc_attr__( 'Open/Close the folder "%s".', 'imagify' ), $data['relative_path'] );
-			}
-			?>">
+		<button type="button" class="imagify-folder" data-folder="<?php echo $data['relative_path']; ?>"<?php echo $disabled_attr; ?> title="<?php
+		if ( $data['checkbox_selected'] ) {
+			/* translators: %s is a folder path. */
+			printf( esc_attr__( 'The folder "%s" is already selected.', 'imagify' ), $data['relative_path'] );
+		} else {
+			/* translators: %s is a folder path. */
+			printf( esc_attr__( 'Open/Close the folder "%s".', 'imagify' ), $data['relative_path'] );
+		}
+		?>">
+			<?php if ( ! $data['checkbox_selected'] ) { ?>
+				<span class="imagify-loader"><img alt="<?php esc_attr_e( 'Loading...', 'imagify' ); ?>" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'spinner.gif' ); ?>" width="20" height="20"/></span>
+			<?php } ?>
 			<span class="imagify-folder-icon"><?php echo $folder_icon; ?></span>
 		</button>
 	<?php else : ?>
@@ -28,16 +30,15 @@ $folder_icon    = '<svg width="20px" height="17px" viewBox="0 0 20 17" version="
 
 	<input type="checkbox" name="imagify-custom-files[]" value="<?php echo $data['checkbox_value']; ?>" id="imagify-custom-folder-<?php echo $data['checkbox_id']; ?>" class="screen-reader-text"<?php echo $disabled_attr; ?>/>
 
-	<label for="imagify-custom-folder-<?php echo $data['checkbox_id']; ?>" title="
-		<?php
-		if ( $data['checkbox_selected'] ) {
-			/* translators: %s is a folder path. */
-			printf( esc_attr__( 'The folder "%s" is already selected.', 'imagify' ), $data['relative_path'] );
-		} else {
-			/* translators: %s is a folder path. */
-			printf( esc_attr__( 'Select the folder "%s".', 'imagify' ), $data['relative_path'] );
-		}
-		?>">
+	<label for="imagify-custom-folder-<?php echo $data['checkbox_id']; ?>" title="<?php
+	if ( $data['checkbox_selected'] ) {
+		/* translators: %s is a folder path. */
+		printf( esc_attr__( 'The folder "%s" is already selected.', 'imagify' ), $data['relative_path'] );
+	} else {
+		/* translators: %s is a folder path. */
+		printf( esc_attr__( 'Select the folder "%s".', 'imagify' ), $data['relative_path'] );
+	}
+	?>">
 		<?php echo esc_html( $data['label'] ); ?>
 
 		<span class="imagify-add-ed-folder">

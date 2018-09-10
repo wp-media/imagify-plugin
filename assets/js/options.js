@@ -320,7 +320,7 @@
 			return;
 		}
 
-		$button.attr( 'disabled', 'disabled' );
+		$button.attr( 'disabled', 'disabled' ).addClass( 'imagify-loading' );
 
 		if ( $tree.length ) {
 			if ( $button.hasClass( 'imagify-is-open' ) ) {
@@ -328,9 +328,9 @@
 				$button.removeClass(' imagify-is-open' );
 			} else {
 				$tree.removeClass( 'hidden' );
-				$button.addClass(' imagify-is-open' );
+				$button.addClass( 'imagify-is-open' );
 			}
-			$button.removeAttr( 'disabled' );
+			$button.removeAttr( 'disabled' ).removeClass( 'imagify-loading' );
 			return;
 		}
 
@@ -365,7 +365,7 @@
 				} );
 			} )
 			.always( function(){
-				$button.removeAttr( 'disabled' );
+				$button.removeAttr( 'disabled' ).removeClass( 'imagify-loading' );
 			} );
 	} );
 

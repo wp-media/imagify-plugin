@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class used to check that Imagify has everything it needs.
@@ -76,7 +76,7 @@ class Imagify_Requirements {
 
 		$args = array(
 			'path'       => IMAGIFY_PATH . 'assets/images/imagify-logo.png',
-			'mime_types' => imagify_get_mime_types(),
+			'mime_types' => imagify_get_mime_types( 'image' ),
 			'methods'    => Imagify_Attachment::get_editor_methods(),
 		);
 

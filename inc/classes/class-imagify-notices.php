@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class that handles the admin notices.
@@ -271,7 +271,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	public function renew_almost_over_quota_notice() {
 		global $wpdb;
 
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE '%almost-over-quota%'", self::DISMISS_META_NAME ) );
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE %s", self::DISMISS_META_NAME, '%almost-over-quota%' ) );
 
 		if ( ! $results ) {
 			return;

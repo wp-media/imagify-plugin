@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 ?>
 <th class="imagify-cell-filename"><?php esc_html_e( 'Filename', 'imagify' ); ?></th>
 <th class="imagify-cell-status"><?php esc_html_e( 'Status', 'imagify' ); ?></th>

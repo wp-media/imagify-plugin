@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class that display the "custom folders" files.
@@ -353,9 +353,9 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		$status_filters = array(
 			''            => __( 'All Media Files', 'imagify' ),
-			'optimized'   => _x( 'Optimized', 'Media Files','imagify' ) . ' (' . $status_filters['optimized'] . ')',
-			'unoptimized' => _x( 'Unoptimized', 'Media Files','imagify' ) . ' (' . $status_filters['unoptimized'] . ')',
-			'errors'      => _x( 'Errors', 'Media Files','imagify' ) . ' (' . $status_filters['errors'] . ')',
+			'optimized'   => _x( 'Optimized', 'Media Files', 'imagify' ) . ' (' . $status_filters['optimized'] . ')',
+			'unoptimized' => _x( 'Unoptimized', 'Media Files', 'imagify' ) . ' (' . $status_filters['unoptimized'] . ')',
+			'errors'      => _x( 'Errors', 'Media Files', 'imagify' ) . ' (' . $status_filters['errors'] . ')',
 		);
 
 		// Get submitted values.
@@ -1039,7 +1039,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$values = array(
 			'optimized'   => 1,
 			'unoptimized' => 1,
-			'errors'       => 1,
+			'errors'      => 1,
 		);
 		$filter = trim( filter_input( INPUT_GET, 'status-filter', FILTER_SANITIZE_STRING ) );
 		$filter = isset( $values[ $filter ] ) ? $filter : '';

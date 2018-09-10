@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 ?>
 <tr id="{{ data.groupId }}-{{ data.id }}">
 	<td class="imagify-cell-filename">

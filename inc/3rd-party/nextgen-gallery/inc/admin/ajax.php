@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 add_action( 'wp_ajax_imagify_manual_upload',             '_do_admin_post_imagify_ngg_user_capacity', 5 );
 add_action( 'admin_post_imagify_manual_upload',          '_do_admin_post_imagify_ngg_user_capacity', 5 );
