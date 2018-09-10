@@ -440,7 +440,8 @@ a.btn-rocket:focus {
 }
 
 /* Menu in admin bar label exception */
-label[for="imagify_admin_bar_menu"] {
+label[for="imagify_admin_bar_menu"],
+label[for="imagify_partner_links"] {
 	font-weight: normal !important;
 	color: #626E7B !important;
 }
