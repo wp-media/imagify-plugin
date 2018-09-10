@@ -2,9 +2,9 @@
 defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
 
 /**
- * Class that handles our partnership with WP Time Machine.
+ * Class that handles our partnership with WP Time Capsule.
  *
- * @since  1.8.1
+ * @since  1.8.2
  * @author Grégory Viguier
  */
 class Imagify_WP_Time_Capsule {
@@ -13,7 +13,7 @@ class Imagify_WP_Time_Capsule {
 	 * Class version.
 	 *
 	 * @var    string
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @author Grégory Viguier
 	 */
 	const VERSION = '1.0';
@@ -22,7 +22,7 @@ class Imagify_WP_Time_Capsule {
 	 * Partner ID.
 	 *
 	 * @var    string
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @author Grégory Viguier
 	 */
 	const PARTNER_ID = 'imagify';
@@ -31,7 +31,7 @@ class Imagify_WP_Time_Capsule {
 	 * Affiliate base URL.
 	 *
 	 * @var    string
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @author Grégory Viguier
 	 */
 	const BASE_URL = 'https://wptimecapsule.com/updates/?partner=';
@@ -40,7 +40,7 @@ class Imagify_WP_Time_Capsule {
 	 * The single instance of the class.
 	 *
 	 * @var    object Imagify_WP_Time_Machine
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
@@ -50,7 +50,7 @@ class Imagify_WP_Time_Capsule {
 	 * Temporary state property that tells if the gutton in the iframe should be added.
 	 *
 	 * @var    bool
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
@@ -64,7 +64,7 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * Get the main Instance.
 	 *
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -81,7 +81,7 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * The constructor.
 	 *
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
@@ -95,7 +95,7 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * Launch the hooks.
 	 *
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access public
 	 * @author Grégory Viguier
 	 */
@@ -108,18 +108,7 @@ class Imagify_WP_Time_Capsule {
 			return;
 		}
 
-		/**
-		 * Allow to hide partners UI via filter.
-		 *
-		 * @since  1.8.1
-		 * @author Grégory Viguier
-		 *
-		 * @param bool   $display Set to false to hide.
-		 * @param string $parner  Partner's name.
-		 */
-		$display = apply_filters( 'imagify_display_partners', true, 'WP Time Capsule' );
-
-		if ( ! $display ) {
+		if ( ! get_imagify_option( 'partner_links' ) ) {
 			return;
 		}
 
@@ -137,7 +126,7 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * Add a link in Imagify's update message (plugins list).
 	 *
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -183,7 +172,7 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * Print some CSS in the Core Update page for the link into the Imagify row.
 	 *
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access public
 	 * @author Grégory Viguier
 	 */
@@ -202,7 +191,7 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * Print some JS in the Core Update page to add a link into the Imagify row.
 	 *
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access public
 	 * @author Grégory Viguier
 	 */
@@ -230,7 +219,7 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * Maybe launch the hooks that will add a button in the plugin information modal.
 	 *
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -274,11 +263,11 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * Launch a ob_start() at the beginning of the plugin information modal.
 	 *
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access public
 	 * @author Grégory Viguier
 	 */
-	function print_link_in_iframe_init() {
+	public function print_link_in_iframe_init() {
 		if ( ! $this->add_iframe_button ) {
 			return;
 		}
@@ -291,11 +280,11 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * Add a button in the plugin information modal.
 	 *
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access public
 	 * @author Grégory Viguier
 	 */
-	function print_link_in_iframe() {
+	public function print_link_in_iframe() {
 		global $tab;
 
 		if ( ! $this->add_iframe_button ) {
@@ -319,7 +308,7 @@ class Imagify_WP_Time_Capsule {
 	/**
 	 * Get the partnership URL.
 	 *
-	 * @since  1.8.1
+	 * @since  1.8.2
 	 * @access public
 	 * @author Grégory Viguier
 	 *
