@@ -108,6 +108,8 @@ class Imagify_WP_Time_Capsule {
 			return;
 		}
 
+		add_filter( 'imagify_deactivatable_partners', array( $this, 'add_self' ) );
+
 		if ( ! get_imagify_option( 'partner_links' ) ) {
 			return;
 		}
@@ -122,6 +124,21 @@ class Imagify_WP_Time_Capsule {
 	/** ----------------------------------------------------------------------------------------- */
 	/** HOOKS =================================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Add this partner to the list of partners affected by the display option.
+	 *
+	 * @since  1.8.2
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $partners An array of partner names.
+	 * @return array
+	 */
+	public function add_self( $partners ) {
+		$partners[] = 'WP Time Capsule';
+		return $partners;
+	}
 
 	/**
 	 * Add a link in Imagify's update message (plugins list).
