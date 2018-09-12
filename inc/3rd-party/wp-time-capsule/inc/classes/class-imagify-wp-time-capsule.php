@@ -47,7 +47,7 @@ class Imagify_WP_Time_Capsule {
 	protected static $_instance;
 
 	/**
-	 * Temporary state property that tells if the gutton in the iframe should be added.
+	 * Temporary state property that tells if the button in the iframe should be added.
 	 *
 	 * @var    bool
 	 * @since  1.8.2
