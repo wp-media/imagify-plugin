@@ -1081,7 +1081,6 @@ p.imagify-section-title.imagify-section-title {
 ul.imagify-datas-list.imagify-datas-list {
 	margin: 0 auto;
 	color: #555;
-	font-size: 10px;
 }
 ul.imagify-datas-list .big {
 	font-size: 12px;
@@ -1211,7 +1210,6 @@ ul.imagify-datas-details.imagify-datas-details {
 /* Media edition */
 .compat-field-imagify .imagify-datas-actions-links a,
 .misc-pub-imagify .imagify-datas-actions-links a {
-	font-size: 10px;
 	float: left;
 	width: 50%;
 }
