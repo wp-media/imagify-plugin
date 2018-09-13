@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 4.0.0
-Tested up to: 4.9.7
-Stable tag: 1.8.1.1
+Tested up to: 4.9.8
+Stable tag: 1.8.2
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -138,6 +138,13 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.8.2 - 2018/09/12 =
+* New: display partnership links (can be removed).
+* Improvement: display a small spinner when opening a folder in the custom folders selector.
+* Improvement: visual for the admin toolbar option has been updated and localized for some languages.
+* Bug Fix: two errors that prevented to create the backup folder (and other things).
+* Bug Fix: improved uninstall cleanup.
+
 = 1.8.1.1 - 2018/07/31 =
 * Bug Fix: an open_basedir error that prevented some users to use the custom folders browser.
 * Bug Fix: an error that prevented to create the backup folder (and other things) on multisite.

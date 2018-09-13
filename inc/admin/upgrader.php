@@ -285,6 +285,11 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->base_prefix}imagify_files SET path = REPLACE( path, '{{ABSPATH}}/', %s ) WHERE path LIKE %s", $replacement, '{{ABSPATH}}/%' ) );
 		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->base_prefix}imagify_folders SET path = REPLACE( path, '{{ABSPATH}}/', %s ) WHERE path LIKE %s", $replacement, '{{ABSPATH}}/%' ) );
 	}
+
+	// 1.8.2
+	if ( version_compare( $site_version, '1.8.2' ) < 0 ) {
+		Imagify_Options::get_instance()->set( 'partner_links', 1 );
+	}
 }
 
 add_action( 'upgrader_process_complete', 'imagify_maybe_reset_opcache', 20, 2 );

@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class that handles the plugin options.
@@ -44,6 +44,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'exif'               => 0,
 		'disallowed-sizes'   => array(),
 		'admin_bar_menu'     => 0,
+		'partner_links'      => 0,
 	);
 
 	/**
@@ -59,6 +60,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'auto_optimize'      => 1,
 		'backup'             => 1,
 		'admin_bar_menu'     => 1,
+		'partner_links'      => 1,
 	);
 
 	/**
@@ -145,6 +147,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'resize_larger':
 			case 'exif':
 			case 'admin_bar_menu':
+			case 'partner_links':
 				return 1;
 
 			case 'resize_larger_w':

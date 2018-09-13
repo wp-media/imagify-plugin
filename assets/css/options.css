@@ -288,6 +288,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 }
 
 .imagify-menu-bar-img {
+	box-sizing: border-box;
 	max-width: 100%;
 	height: auto;
 	margin-top: 0;
@@ -440,7 +441,8 @@ a.btn-rocket:focus {
 }
 
 /* Menu in admin bar label exception */
-label[for="imagify_admin_bar_menu"] {
+label[for="imagify_admin_bar_menu"],
+label[for="imagify_partner_links"] {
 	font-weight: normal !important;
 	color: #626E7B !important;
 }
@@ -637,6 +639,23 @@ p.imagify-custom-folder-line {
 }
 .imagify-folders-tree .imagify-is-open ~ label {
 	color: #7A8996;
+}
+.imagify-folders-tree .imagify-folder.imagify-loading:before,
+.imagify-folders-tree .imagify-folder .imagify-loader {
+	display: none;
+}
+.imagify-folders-tree .imagify-folder.imagify-loading .imagify-loader {
+	display: inline-block;
+	width: 13px;
+	height: 21px;
+	font-size: 1.5em;
+	vertical-align: .15em;
+}
+.imagify-folders-tree .imagify-folder.imagify-loading .imagify-loader img {
+	display: inline-block;
+	width: 100%;
+	height: auto;
+	vertical-align: middle;
 }
 
 .imagify-folders-tree button.imagify-folder:hover,

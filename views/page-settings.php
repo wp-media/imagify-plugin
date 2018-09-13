@@ -1,10 +1,11 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $settings     = Imagify_Settings::get_instance();
 $options      = Imagify_Options::get_instance();
 $option_name  = $options->get_option_name();
 $hidden_class = Imagify_Requirements::is_api_key_valid() ? '' : ' hidden';
+$lang         = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
 
 /* Ads notice */
 $notice  = 'wp-rocket';
@@ -160,9 +161,45 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 						</div>
 						<div class="imagify-col">
 							<p>
-								<img class="imagify-menu-bar-img" src="<?php echo IMAGIFY_ASSETS_IMG_URL . 'imagify-menu-bar.jpg'; ?>" width="300" height="225" alt="">
+								<img class="imagify-menu-bar-img" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'imagify-menu-bar-' . $lang . '.jpg' ); ?>" width="273" height="239" alt="">
 							</p>
 						</div>
+
+						<?php
+						/**
+						 * List of partners affected by this option.
+						 * For internal use only.
+						 *
+						 * @since  1.8.2
+						 * @author Grégory Viguier
+						 *
+						 * @param  array $partners An array of partner names.
+						 * @return array
+						 */
+						$partners = apply_filters( 'imagify_deactivatable_partners', array() );
+
+						if ( $partners ) {
+							?>
+							<p class="imagify-options-subtitle" id="imagify-partners-label">
+								<?php esc_html_e( 'Partners', 'imagify' ); ?>
+
+								<span class="imagify-info">
+									<span class="dashicons dashicons-info"></span>
+									<a href="#imagify-partners-info" class="imagify-modal-trigger"><?php _e( 'More info?', 'imagify' ); ?></a>
+								</span>
+							</p>
+
+							<p>
+								<?php
+								$settings->field_checkbox( array(
+									'option_name' => 'partner_links',
+									'label'       => __( 'Display Partner Links', 'imagify' ),
+								) );
+								?>
+							</p>
+							<?php
+						}
+						?>
 					</div>
 				</div>
 
@@ -178,6 +215,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 	<?php
 	$this->print_template( 'part-rocket-ad' );
 	$this->print_template( 'modal-settings-infos' );
+	$this->print_template( 'modal-settings-partners-infos' );
 	$this->print_template( 'modal-settings-visual-comparison' );
 	$this->print_template( 'modal-payment' );
 	?>

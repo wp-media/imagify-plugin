@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 add_filter( 'imagify_bulk_page_types', 'imagify_ngg_bulk_page_types' );
 /**

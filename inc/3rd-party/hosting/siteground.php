@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 add_filter( 'http_request_args', 'imagify_siteground_change_user_agent', 10, 2 );
 /**

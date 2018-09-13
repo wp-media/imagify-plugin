@@ -1,4 +1,4 @@
-<?php defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' ); ?>
+<?php defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' ); ?>
 
 <h1 class="screen-reader-text"><?php _e( 'Bulk Optimization', 'imagify' ); ?> – Imagify <?php echo IMAGIFY_VERSION; ?></h1>
 

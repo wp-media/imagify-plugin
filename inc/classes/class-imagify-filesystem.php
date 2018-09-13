@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
@@ -220,20 +220,28 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		$path = untrailingslashit( $site_root );
 
 		foreach ( $bits as $bit ) {
-			$path .= '/' . $bit;
+			$parent_path = $path;
+			$path       .= '/' . $bit;
 
-			if ( ! $this->exists( $path ) ) {
-				$this->mkdir( $path );
-			} elseif ( ! $this->is_dir( $path ) ) {
-				return false;
-			}
-
-			if ( ! $this->is_writable( $path ) ) {
-				$this->chmod_dir( $path );
-
-				if ( ! $this->is_writable( $path ) ) {
+			if ( $this->exists( $path ) ) {
+				if ( ! $this->is_dir( $path ) ) {
 					return false;
 				}
+				continue;
+			}
+
+			if ( ! $this->is_writable( $parent_path ) ) {
+				$this->chmod_dir( $parent_path );
+
+				if ( ! $this->is_writable( $parent_path ) ) {
+					return false;
+				}
+			}
+
+			$this->mkdir( $path );
+
+			if ( ! $this->exists( $path ) ) {
+				return false;
 			}
 		}
 
@@ -761,12 +769,12 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			$wp_path_rel_to_home = str_ireplace( $home, '', $siteurl ); /* $siteurl - $home */
 			$pos                 = strripos( str_replace( '\\', '/', ABSPATH ), trailingslashit( $wp_path_rel_to_home ) );
 			$root_path           = substr( ABSPATH, 0, $pos );
-			$root_path           = trailingslashit( str_replace( '\\', '/', $root_path ) );
+			$root_path           = trailingslashit( wp_normalize_path( $root_path ) );
 			return $root_path;
 		}
 
 		if ( ! defined( 'PATH_CURRENT_SITE' ) || ! is_multisite() || is_main_site() ) {
-			$root_path = str_replace( '\\', '/', ABSPATH );
+			$root_path = $this->get_abspath();
 			return $root_path;
 		}
 
@@ -774,11 +782,12 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		 * For a multisite in its own directory, get_home_path() returns the expected path only for the main site.
 		 *
 		 * Friend, each time an attempt is made to improve this method, and especially this part, please increment the following counter.
-		 * Improvement attempts: 2.
+		 * Improvement attempts: 3.
 		 */
-		$document_root     = trailingslashit( str_replace( '\\', '/', wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ) );
+		$document_root     = realpath( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ); // `realpath()` is needed for those cases where $_SERVER['DOCUMENT_ROOT'] is totally different from ABSPATH.
+		$document_root     = trailingslashit( str_replace( '\\', '/', $document_root ) );
 		$path_current_site = trim( str_replace( '\\', '/', PATH_CURRENT_SITE ), '/' );
-		$root_path         = trailingslashit( $document_root . $path_current_site );
+		$root_path         = trailingslashit( wp_normalize_path( $document_root . $path_current_site ) );
 
 		return $root_path;
 	}

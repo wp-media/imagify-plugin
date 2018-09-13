@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 add_action( 'imagify_assets_enqueued', '_imagify_ngg_admin_print_styles' );
 /**

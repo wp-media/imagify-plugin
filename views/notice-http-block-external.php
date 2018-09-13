@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin\' uh?' );
+defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $this->print_template( 'notice-header', array(
 	'title'   => __( 'The external HTTP requests are blocked!', 'imagify' ),
