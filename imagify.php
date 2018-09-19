@@ -83,6 +83,7 @@ function _imagify_init() {
 	require IMAGIFY_COMMON_PATH . 'partners.php';
 	require IMAGIFY_3RD_PARTY_PATH . '3rd-party.php';
 
+	Imagify_Auto_Optimization::get_instance()->init();
 	Imagify_Options::get_instance()->init();
 	Imagify_Data::get_instance()->init();
 	Imagify_Folders_DB::get_instance()->init();
