@@ -788,7 +788,16 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 */
 	public function get_s3_info() {
 		global $as3cf;
-		return $as3cf ? $as3cf->get_attachment_s3_info( $this->id ) : false;
+
+		if ( ! $as3cf ) {
+			return false;
+		}
+
+		if ( method_exists( $as3cf, 'get_attachment_s3_info' ) ) {
+			return $as3cf->get_attachment_s3_info( $this->id );
+		}
+
+		return $as3cf->get_attachment_provider_info( $this->id );
 	}
 
 	/**
@@ -823,7 +832,11 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 		$s3_object['key'] = $directory . $this->filesystem->file_name( $file_path );
 
 		// Retrieve file from S3.
-		$as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $file_path );
+		if ( method_exists( $as3cf->plugin_compat, 'copy_s3_file_to_server' ) ) {
+			$as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $file_path );
+		} else {
+			$as3cf->plugin_compat->copy_provider_file_to_server( $s3_object, $file_path );
+		}
 
 		return $this->filesystem->exists( $file_path ) ? $file_path : false;
 	}
@@ -859,7 +872,11 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 			return false;
 		}
 
-		$s3_data = $as3cf->upload_attachment_to_s3( $this->id, $metadata, $attachment_path, false, $remove_local_files );
+		if ( method_exists( $as3cf, 'upload_attachment_to_s3' ) ) {
+			$s3_data = $as3cf->upload_attachment_to_s3( $this->id, $metadata, $attachment_path, false, $remove_local_files );
+		} else {
+			$s3_data = $as3cf->upload_attachment( $this->id, $metadata, $attachment_path, false, $remove_local_files );
+		}
 
 		return ! is_wp_error( $s3_data );
 	}
