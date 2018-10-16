@@ -48,7 +48,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	protected $ajax_only_actions = array(
 		'imagify_bulk_upload',
 		'imagify_bulk_optimize_file',
-		'imagify_async_optimize',
+		'imagify_auto_optimize',
 		'imagify_get_unoptimized_attachment_ids',
 		'imagify_get_unoptimized_file_ids',
 		'imagify_check_backup_dir_is_writable',
@@ -596,21 +596,21 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Optimize image on picture uploading with async request.
+	 * Optimize image with async request.
 	 *
-	 * @since  1.6.11
+	 * @since  1.8.3
 	 * @access public
-	 * @author Julio Potier
-	 * @see    _imagify_optimize_attachment()
+	 * @author Grégory Viguier
+	 * @see    Imagify_Auto_Optimization->do_auto_optimization()
 	 */
-	public function imagify_async_optimize() {
-		if ( empty( $_POST['_ajax_nonce'] ) || empty( $_POST['attachment_id'] ) || empty( $_POST['metadata'] ) || empty( $_POST['context'] ) ) { // WPCS: CSRF ok.
-			return;
+	public function imagify_auto_optimize_callback() {
+		if ( empty( $_POST['_ajax_nonce'] ) || empty( $_POST['attachment_id'] ) || empty( $_POST['context'] ) ) { // WPCS: CSRF ok.
+			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
 		$attachment_id = absint( $_POST['attachment_id'] );
 
-		imagify_check_nonce( 'new_media-' . $attachment_id );
+		imagify_check_nonce( 'imagify_auto_optimize-' . $attachment_id );
 
 		if ( ! get_transient( 'imagify-auto-optimize-' . $attachment_id ) ) {
 			imagify_die();
@@ -619,28 +619,72 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		delete_transient( 'imagify-auto-optimize-' . $attachment_id );
 
 		if ( ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
-			die();
+			imagify_die( __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
-		$optimization_level = null;
-		$context            = imagify_sanitize_context( $_POST['context'] );
-		$attachment         = get_imagify_attachment( $context, $attachment_id, 'as3cf_optimize' );
+		$this->check_can_optimize();
 
-		// Some specifics for the image editor.
-		if ( ! empty( $_POST['data']['do'] ) ) {
+		@set_time_limit( 0 );
+
+		/**
+		 * Let's start.
+		 */
+		$context       = imagify_sanitize_context( $_POST['context'] );
+		$attachment    = get_imagify_attachment( $context, $attachment_id, 'auto_optimize' );
+		$is_new_upload = ! empty( $_POST['is_new_upload'] );
+
+		/**
+		 * Triggered before an attachment is auto-optimized.
+		 *
+		 * @since  1.8.3
+		 * @author Grégory Viguier
+		 *
+		 * @param int    $attachment_id The attachment ID.
+		 * @param bool   $is_new_upload True if it's a new upload. False otherwize.
+		 * @param string $context       The attachment context, like "wp" or "AS3CF".
+		 */
+		do_action( 'imagify_before_auto_optimization', $attachment_id, $is_new_upload, $context );
+
+		if ( $is_new_upload ) {
+			/**
+			 * It's a new upload.
+			 */
+			// $metadata is provided to tell `$attachment->optimize()` it's a new upload.
+			$metadata = wp_get_attachment_metadata( $attachment_id, true );
+
+			// Optimize.
+			$attachment->optimize( null, $metadata );
+		} else {
+			/**
+			 * The attachment has already been optimized (or at least it has been tried).
+			 */
+			// Get the optimization level before remove our data.
 			$optimization_level = $attachment->get_optimization_level();
 
 			// Remove old optimization data.
 			$attachment->delete_imagify_data();
 
-			if ( 'restore' === $_POST['data']['do'] ) {
+			// Some specifics for the image editor.
+			if ( ! empty( $_POST['data']['do'] ) && 'restore' === $_POST['data']['do'] ) {
 				// Restore the backup file.
 				$attachment->restore();
 			}
+
+			// Optimize.
+			$attachment->optimize( $optimization_level );
 		}
 
-		// Optimize.
-		$attachment->optimize( $optimization_level, $_POST['metadata'] );
+		/**
+		 * Triggered after an attachment is auto-optimized.
+		 *
+		 * @since  1.8.3
+		 * @author Grégory Viguier
+		 *
+		 * @param int    $attachment_id The attachment ID.
+		 * @param bool   $is_new_upload True if it's a new upload. False otherwize.
+		 * @param string $context       The attachment context, like "wp" or "AS3CF".
+		 */
+		do_action( 'imagify_after_auto_optimization', $attachment_id, $is_new_upload, $context );
 		die( 1 );
 	}
 
@@ -1469,11 +1513,19 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 */
 	public function check_can_optimize() {
 		if ( ! Imagify_Requirements::is_api_key_valid() ) {
-			wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
+			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
+			}
+
+			imagify_die( __( 'Your API key is not valid!', 'imagify' ) );
 		}
 
 		if ( Imagify_Requirements::is_over_quota() ) {
-			wp_send_json_error( array( 'message' => 'over-quota' ) );
+			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				wp_send_json_error( array( 'message' => 'over-quota' ) );
+			}
+
+			imagify_die( __( 'You have used all your credits!', 'imagify' ) );
 		}
 	}
 

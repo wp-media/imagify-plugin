@@ -529,7 +529,7 @@ class Imagify_Admin_Ajax_Post_Deprecated {
 	 * @deprecated
 	 */
 	public function imagify_async_optimize_upload_new_media_callback() {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_async_optimize()' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
 
 		if ( empty( $_POST['_ajax_nonce'] ) || empty( $_POST['attachment_id'] ) || empty( $_POST['metadata'] ) || empty( $_POST['context'] ) ) { // WPCS: CSRF ok.
 			return;
@@ -558,7 +558,7 @@ class Imagify_Admin_Ajax_Post_Deprecated {
 	 * @deprecated
 	 */
 	public function imagify_async_optimize_save_image_editor_file_callback() {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_async_optimize()' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
 
 		$attachment_id = ! empty( $_POST['postid'] ) ? absint( $_POST['postid'] ) : 0;
 

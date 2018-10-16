@@ -14,7 +14,7 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.1';
 
 	/**
 	 * Context used with get_imagify_attachment().

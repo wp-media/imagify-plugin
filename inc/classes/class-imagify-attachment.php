@@ -764,7 +764,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		 * @since 1.0
 		 *
 		 * @param int $id The attachment ID
-		*/
+		 */
 		do_action( 'before_imagify_restore_attachment', $this->id );
 
 		// Create the original image from the backup.
@@ -776,7 +776,6 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 				require_once ABSPATH . 'wp-admin/includes/image.php';
 			}
 
-			remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', IMAGIFY_INT_MAX );
 			wp_generate_attachment_metadata( $this->id, $attachment_path );
 
 			// Restore the original size in the metadata.
@@ -792,7 +791,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		 * @since 1.0
 		 *
 		 * @param int $id The attachment ID
-		*/
+		 */
 		do_action( 'after_imagify_restore_attachment', $this->id );
 	}
 }

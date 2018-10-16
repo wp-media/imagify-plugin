@@ -98,8 +98,8 @@ class Imagify_Enable_Media_Replace {
 			return $unfiltered;
 		}
 
-		// Remove the automatic optimization.
-		remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', IMAGIFY_INT_MAX );
+		// Disable the automatic optimization.
+		Imagify_Auto_Optimization::get_instance()->remove_hooks();
 
 		// Store the old backup file path.
 		add_filter( 'emr_unique_filename', array( $this, 'store_old_backup_path' ), 10, 3 );
