@@ -253,7 +253,11 @@ class Imagify_AS3CF extends Imagify_AS3CF_Deprecated {
 			$s3_object['key'] = $directory . $this->filesystem->file_name( $file_path );
 
 			// Retrieve file from S3.
-			$as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $file_path );
+			if ( method_exists( $as3cf->plugin_compat, 'copy_s3_file_to_server' ) ) {
+				$as3cf->plugin_compat->copy_s3_file_to_server( $s3_object, $file_path );
+			} else {
+				$as3cf->plugin_compat->copy_provider_file_to_server( $s3_object, $file_path );
+			}
 
 			unset( $s3_data[ $id ], $ids[ $id ] );
 		}
