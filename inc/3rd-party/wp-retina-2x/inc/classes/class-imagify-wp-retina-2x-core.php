@@ -16,7 +16,7 @@ class Imagify_WP_Retina_2x_Core {
 	 * @since  1.8
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.1';
 
 	/**
 	 * Filesystem object.
@@ -262,13 +262,13 @@ class Imagify_WP_Retina_2x_Core {
 		$attachment->delete_backup();
 
 		// Prevent auto-optimization.
-		add_filter( 'imagify_auto_optimize_attachment', '__return_false', 442 );
+		Imagify_Auto_Optimization::prevent_optimization( $attachment_id );
 
 		// Generate the non-retina images and the related WP metadata.
 		wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $original_path ) );
 
 		// Allow auto-optimization back.
-		remove_filter( 'imagify_auto_optimize_attachment', '__return_false', 442 );
+		Imagify_Auto_Optimization::allow_optimization( $attachment_id );
 
 		// Generate retina images (since the Imagify data has been deleted, the images won't be optimized here).
 		$result = $this->generate_retina_images( $attachment );
@@ -1593,7 +1593,13 @@ class Imagify_WP_Retina_2x_Core {
 		$metadata['width']  = $dimensions['width'];
 		$metadata['height'] = $dimensions['height'];
 
+		// Prevent auto-optimization.
+		Imagify_Auto_Optimization::prevent_optimization( $attachment_id );
+
 		wp_update_attachment_metadata( $attachment->get_id(), $metadata );
+
+		// Allow auto-optimization back.
+		Imagify_Auto_Optimization::allow_optimization( $attachment_id );
 		return true;
 	}
 
