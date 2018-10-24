@@ -104,7 +104,7 @@ class Imagify_WP_Time_Capsule {
 			return;
 		}
 
-		if ( defined( 'IMAGIFY_DISPLAY_PARTNERS' ) && false === IMAGIFY_DISPLAY_PARTNERS ) {
+		if ( defined( 'IMAGIFY_DISPLAY_PARTNERS' ) && ! IMAGIFY_DISPLAY_PARTNERS ) {
 			return;
 		}
 

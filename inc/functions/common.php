@@ -181,6 +181,12 @@ function imagify_sanitize_context( $context ) {
  * @param string $class Name of the class to include.
  */
 function imagify_autoload( $class ) {
+	static $strtolower;
+
+	if ( ! isset( $strtolower ) ) {
+		$strtolower = function_exists( 'mb_strtolower' ) ? 'mb_strtolower' : 'strtolower';
+	}
+
 	// Generic classes.
 	$classes = array(
 		'Imagify_Abstract_Attachment'         => 1,
@@ -218,7 +224,7 @@ function imagify_autoload( $class ) {
 	);
 
 	if ( isset( $classes[ $class ] ) ) {
-		$class = str_replace( '_', '-', strtolower( $class ) );
+		$class = str_replace( '_', '-', call_user_func( $strtolower, $class ) );
 		include IMAGIFY_CLASSES_PATH . 'class-' . $class . '.php';
 		return;
 	}
@@ -242,7 +248,7 @@ function imagify_autoload( $class ) {
 
 	if ( isset( $classes[ $class ] ) ) {
 		$folder = $classes[ $class ];
-		$class  = str_replace( '_', '-', strtolower( $class ) );
+		$class  = str_replace( '_', '-', call_user_func( $strtolower, $class ) );
 		include IMAGIFY_3RD_PARTY_PATH . $folder . '/inc/classes/class-' . $class . '.php';
 	}
 }
