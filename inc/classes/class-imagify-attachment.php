@@ -13,7 +13,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1.3';
+	const VERSION = '1.1.4';
 
 	/**
 	 * Get the attachment backup file path, even if the file doesn't exist.
@@ -133,11 +133,46 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			return false;
 		}
 
+		/**
+		 * Triggered before updating an image width and height into its metadata.
+		 *
+		 * @since  1.8.3
+		 * @see    Imagify_Filesystem->get_image_size()
+		 * @author Grégory Viguier
+		 *
+		 * @param int   $attachment_id The attachment ID.
+		 * @param array $size          {
+		 *     An array with, among other data:
+		 *
+		 *     @type int $width  The image width.
+		 *     @type int $height The image height.
+		 * }
+		 */
+		do_action( 'before_imagify_update_metadata_size', $this->id, $size );
+
 		$metadata           = wp_get_attachment_metadata( $this->id );
 		$metadata['width']  = $size['width'];
 		$metadata['height'] = $size['height'];
 
 		wp_update_attachment_metadata( $this->id, $metadata );
+
+		/**
+		 * Triggered after updating an image width and height into its metadata.
+		 *
+		 * @since  1.8.3
+		 * @see    Imagify_Filesystem->get_image_size()
+		 * @author Grégory Viguier
+		 *
+		 * @param int   $attachment_id The attachment ID.
+		 * @param array $size          {
+		 *     An array with, among other data:
+		 *
+		 *     @type int $width  The image width.
+		 *     @type int $height The image height.
+		 * }
+		 */
+		do_action( 'after_imagify_update_metadata_size', $this->id, $size );
+
 		return true;
 	}
 

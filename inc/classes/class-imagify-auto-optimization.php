@@ -98,15 +98,16 @@ class Imagify_Auto_Optimization {
 	public function init() {
 		$prio = IMAGIFY_INT_MAX - 30;
 
-		add_filter( 'wp_generate_attachment_metadata', array( $this, 'store_upload_ids' ), $prio, 2 );
-		add_filter( 'wp_update_attachment_metadata',   array( $this, 'store_ids_to_optimize' ), $prio, 2 );
-		add_action( 'updated_post_meta',               array( $this, 'do_auto_optimization' ), $prio, 4 );
-		add_action( 'added_post_meta',                 array( $this, 'do_auto_optimization' ), $prio, 4 );
-		add_action( 'deleted_post_meta',               array( $this, 'unset_optimization' ), $prio, 3 );
+		// Automatic optimization tunel.
+		add_filter( 'add_attachment',                array( $this, 'store_upload_ids' ), $prio );
+		add_filter( 'wp_update_attachment_metadata', array( $this, 'store_ids_to_optimize' ), $prio, 2 );
+		add_action( 'updated_post_meta',             array( $this, 'do_auto_optimization' ), $prio, 4 );
+		add_action( 'added_post_meta',               array( $this, 'do_auto_optimization' ), $prio, 4 );
+		add_action( 'deleted_post_meta',             array( $this, 'unset_optimization' ), $prio, 3 );
 
-		// Prevent to re-optimize an attachment after a restore.
-		add_action( 'before_imagify_restore_attachment', array( $this, 'allow_restore_before' ), 5 );
-		add_action( 'after_imagify_restore_attachment',  array( $this, 'allow_restore_after' ), 5 );
+		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
+		add_action( 'before_imagify_update_metadata_size', array( __CLASS__, 'prevent_optimization' ), 5 );
+		add_action( 'after_imagify_update_metadata_size',  array( __CLASS__, 'allow_optimization' ), 5 );
 	}
 
 	/**
@@ -119,13 +120,13 @@ class Imagify_Auto_Optimization {
 	public function remove_hooks() {
 		$prio = IMAGIFY_INT_MAX - 30;
 
-		remove_filter( 'wp_generate_attachment_metadata',   array( $this, 'store_upload_ids' ), $prio, 2 );
-		remove_filter( 'wp_update_attachment_metadata',     array( $this, 'store_ids_to_optimize' ), $prio, 2 );
-		remove_action( 'updated_post_meta',                 array( $this, 'do_auto_optimization' ), $prio, 4 );
-		remove_action( 'added_post_meta',                   array( $this, 'do_auto_optimization' ), $prio, 4 );
-		remove_action( 'deleted_post_meta',                 array( $this, 'unset_optimization' ), $prio, 3 );
-		remove_action( 'before_imagify_restore_attachment', array( $this, 'allow_restore_before' ), 5 );
-		remove_action( 'after_imagify_restore_attachment',  array( $this, 'allow_restore_after' ), 5 );
+		remove_filter( 'add_attachment',                      array( $this, 'store_upload_ids' ), $prio );
+		remove_filter( 'wp_update_attachment_metadata',       array( $this, 'store_ids_to_optimize' ), $prio );
+		remove_action( 'updated_post_meta',                   array( $this, 'do_auto_optimization' ), $prio );
+		remove_action( 'added_post_meta',                     array( $this, 'do_auto_optimization' ), $prio );
+		remove_action( 'deleted_post_meta',                   array( $this, 'unset_optimization' ), $prio );
+		remove_action( 'before_imagify_update_metadata_size', array( __CLASS__, 'prevent_optimization' ), 5 );
+		remove_action( 'after_imagify_update_metadata_size',  array( __CLASS__, 'allow_optimization' ), 5 );
 	}
 
 
@@ -134,26 +135,20 @@ class Imagify_Auto_Optimization {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Filter the generated attachment meta data.
-	 * This is used when a new attachment has just been uploaded (or not, when wp_generate_attachment_metadata() is used).
-	 * We use it to tell the difference later in wp_update_attachment_metadata().
+	 * Store the ID of attachments that just have been uploaded.
+	 * We use those IDs to tell the difference later in `wp_update_attachment_metadata()`.
 	 *
 	 * @since  1.8.3
 	 * @access public
 	 * @see    $this->store_ids_to_optimize()
 	 * @author Grégory Viguier
 	 *
-	 * @param  array $metadata      An array of attachment meta data.
-	 * @param  int   $attachment_id Current attachment ID.
-	 * @return array
+	 * @param int $attachment_id Current attachment ID.
 	 */
-	public function store_upload_ids( $metadata, $attachment_id ) {
-
-		if ( imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+	public function store_upload_ids( $attachment_id ) {
+		if ( ! self::is_optimization_prevented( $attachment_id ) && imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 			$this->uploads[ $attachment_id ] = 1;
 		}
-
-		return $metadata;
 	}
 
 	/**
@@ -174,15 +169,14 @@ class Imagify_Auto_Optimization {
 	public function store_ids_to_optimize( $metadata, $attachment_id ) {
 		static $auto_optimize;
 
+		if ( self::is_optimization_prevented( $attachment_id ) ) {
+			return $metadata;
+		}
+
 		$is_new_upload = ! empty( $this->uploads[ $attachment_id ] );
 		unset( $this->uploads[ $attachment_id ] );
 
 		if ( ! $metadata || ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
-			return $metadata;
-		}
-
-		if ( self::is_optimization_prevented( $attachment_id ) ) {
-			self::allow_optimization( $attachment_id );
 			return $metadata;
 		}
 
@@ -193,7 +187,17 @@ class Imagify_Auto_Optimization {
 			}
 
 			if ( ! $auto_optimize ) {
-				// Auto-optimization is disabled.
+				/**
+				 * Fires when a new attachment is uploaded but auto-optimization is disabled.
+				 *
+				 * @since  1.8.3
+				 * @author Grégory Viguier
+				 *
+				 * @param int   $attachment_id Attachment ID.
+				 * @param array $metadata      An array of attachment meta data.
+				 */
+				do_action( 'imagify_new_attachment_auto_optimization_disabled', $attachment_id, $metadata );
+
 				return $metadata;
 			}
 
@@ -223,7 +227,17 @@ class Imagify_Auto_Optimization {
 			$attachment = get_imagify_attachment( 'wp', $attachment_id, 'auto_optimization' );
 
 			if ( ! $attachment->get_data() ) {
-				// The attachment is not optimized yet.
+				/**
+				 * Fires when an attachment is updated but not optimized yet.
+				 *
+				 * @since  1.8.3
+				 * @author Grégory Viguier
+				 *
+				 * @param int   $attachment_id Attachment ID.
+				 * @param array $metadata      An array of attachment meta data.
+				 */
+				do_action( 'imagify_not_optimized_attachment_updated', $attachment_id, $metadata );
+
 				return $metadata;
 			}
 
@@ -271,6 +285,10 @@ class Imagify_Auto_Optimization {
 			return;
 		}
 
+		if ( self::is_optimization_prevented( $attachment_id ) ) {
+			return;
+		}
+
 		$is_new_upload = $this->attachments[ $attachment_id ];
 		unset( $this->attachments[ $attachment_id ] );
 
@@ -289,6 +307,17 @@ class Imagify_Auto_Optimization {
 
 		// Instead of using user permissions, use a transient.
 		set_transient( 'imagify-auto-optimize-' . $attachment_id, 1, 60 );
+
+		/**
+		 * Fires before an attachment auto-optimization is triggered.
+		 *
+		 * @since  1.8.3
+		 * @author Grégory Viguier
+		 *
+		 * @param int  $attachment_id The attachment ID.
+		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
+		 */
+		do_action( 'imagify_before_auto_optimization_launch', $attachment_id, $is_new_upload );
 
 		imagify_do_async_job( array(
 			'action'        => 'imagify_auto_optimize',
@@ -319,32 +348,6 @@ class Imagify_Auto_Optimization {
 		unset( $this->attachments[ $attachment_id ] );
 	}
 
-	/**
-	 * Prevent auto-optimization during a restore.
-	 *
-	 * @since  1.8.3
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param int $attachment_id Current attachment ID.
-	 */
-	public function allow_restore_before( $attachment_id ) {
-		self::prevent_optimization( $attachment_id );
-	}
-
-	/**
-	 * Re-enable auto-optimization during a restore.
-	 *
-	 * @since  1.8.3
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param int $attachment_id Current attachment ID.
-	 */
-	public function allow_restore_after( $attachment_id ) {
-		self::allow_optimization( $attachment_id );
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** TOOLS =================================================================================== */
@@ -355,6 +358,7 @@ class Imagify_Auto_Optimization {
 	 * How to use it:
 	 *     Imagify_Auto_Optimization::prevent_optimization( $attachment_id );
 	 *     wp_update_attachment_metadata( $attachment_id );
+	 *     Imagify_Auto_Optimization::allow_optimization( $attachment_id );
 	 *
 	 * @since  1.8.3
 	 * @access public
@@ -368,6 +372,10 @@ class Imagify_Auto_Optimization {
 
 	/**
 	 * Allow an auto-optimization locally.
+	 * How to use it:
+	 *     Imagify_Auto_Optimization::prevent_optimization( $attachment_id );
+	 *     wp_update_attachment_metadata( $attachment_id );
+	 *     Imagify_Auto_Optimization::allow_optimization( $attachment_id );
 	 *
 	 * @since  1.8.3
 	 * @access public

@@ -639,11 +639,10 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		 * @since  1.8.3
 		 * @author Grégory Viguier
 		 *
-		 * @param int    $attachment_id The attachment ID.
-		 * @param bool   $is_new_upload True if it's a new upload. False otherwize.
-		 * @param string $context       The attachment context, like "wp" or "AS3CF".
+		 * @param int  $attachment_id The attachment ID.
+		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
 		 */
-		do_action( 'imagify_before_auto_optimization', $attachment_id, $is_new_upload, $context );
+		do_action( 'imagify_before_auto_optimization', $attachment_id, $is_new_upload );
 
 		if ( $is_new_upload ) {
 			/**
@@ -680,11 +679,10 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		 * @since  1.8.3
 		 * @author Grégory Viguier
 		 *
-		 * @param int    $attachment_id The attachment ID.
-		 * @param bool   $is_new_upload True if it's a new upload. False otherwize.
-		 * @param string $context       The attachment context, like "wp" or "AS3CF".
+		 * @param int  $attachment_id The attachment ID.
+		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
 		 */
-		do_action( 'imagify_after_auto_optimization', $attachment_id, $is_new_upload, $context );
+		do_action( 'imagify_after_auto_optimization', $attachment_id, $is_new_upload );
 		die( 1 );
 	}
 
