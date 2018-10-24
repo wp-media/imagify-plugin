@@ -110,13 +110,13 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 
 						<p class="imagify-setting-line">
 							<?php
-							$info  = __( 'Keep all EXIF data from your images. EXIF are informations stored in your pictures like shutter speed, exposure compensation, ISO, etc...', 'imagify' );
-							$info .= '<a href="' . esc_url( imagify_get_external_url( 'exif' ) ) . '" target="_blank">' . __( 'Learn more', 'imagify' ) . '</a><br/><br/>';
-							$info .= __( 'If you are a photographer, you may be interested in this option if you are displaying on your pages some info like the model of your camera.', 'imagify' );
+							$info  = __( 'EXIF data is information stored in your pictures like shutter speed, exposure compensation, ISO, etc...', 'imagify' );
+							$info .= ' <a href="' . esc_url( imagify_get_external_url( 'exif' ) ) . '" target="_blank">' . __( 'Learn more', 'imagify' ) . '</a><br/><br/>';
+							$info .= __( 'If you are a photographer, you may be interested in this option if you are displaying info like the model of your camera on your pages. Also, keeping EXIF data can fix some colorimetric problems.', 'imagify' );
 
 							$settings->field_checkbox( array(
 								'option_name' => 'exif',
-								'label'       => __( 'EXIF Data', 'imagify' ),
+								'label'       => __( 'Keep all EXIF data from your images', 'imagify' ),
 								'info'        => $info,
 							) );
 							?>
