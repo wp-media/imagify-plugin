@@ -138,6 +138,12 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.8.3 - 2018/11/24 =
+* Improvement: compatibility with new version of WP Offload Media plugin.
+* Improvement: some wording about AXIF Data and the 2MB limit.
+* Bug Fix: the lock icon now displays correctly.
+* Bug Fix: a text encoding issue with some server configurations.
+
 = 1.8.2 - 2018/09/12 =
 * New: display partnership links (can be removed).
 * Improvement: display a small spinner when opening a folder in the custom folders selector.
