@@ -359,6 +359,7 @@ class Imagify_AS3CF_Deprecated {
 	 * @return array
 	 */
 	public function store_upload_ids( $metadata, $attachment_id ) {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Auto_Optimization::get_instance()->store_upload_ids( $attachment_id )' );
 
 		if ( imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 			$this->uploads[ $attachment_id ] = 1;
@@ -382,6 +383,8 @@ class Imagify_AS3CF_Deprecated {
 	 */
 	public function do_async_job( $metadata, $attachment_id ) {
 		static $auto_optimize;
+
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Auto_Optimization::get_instance()->do_auto_optimization( $meta_id, $attachment_id, $meta_key, $metadata )' );
 
 		$is_new_upload = ! empty( $this->uploads[ $attachment_id ] );
 		unset( $this->uploads[ $attachment_id ] );
@@ -446,6 +449,8 @@ class Imagify_AS3CF_Deprecated {
 	 * @deprecated
 	 */
 	public function optimize() {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
+
 		check_ajax_referer( 'imagify_async_optimize_as3cf' );
 
 		if ( empty( $_POST['post_id'] ) || ! imagify_current_user_can( 'auto-optimize' ) ) {
@@ -515,6 +520,7 @@ class Imagify_Notices_Deprecated {
  *
  * @since  1.8.3
  * @author Grégory Viguier
+ * @deprecated
  */
 class Imagify_Admin_Ajax_Post_Deprecated {
 
@@ -598,6 +604,87 @@ class Imagify_Admin_Ajax_Post_Deprecated {
 		// Optimize it!!!!!
 		$attachment->optimize( $optimization_level, $metadata );
 		die( 1 );
+	}
+}
+
+/**
+ * Compat class for Enable Media Replace plugin.
+ *
+ * @since  1.8.3
+ * @author Grégory Viguier
+ * @deprecated
+ */
+class Imagify_Enable_Media_Replace_Deprecated {
+
+	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @since  1.8.3 Deprecated
+	 * @author Grégory Viguier
+	 * @access protected
+	 */
+	protected $filesystem;
+
+	/**
+	 * Optimize the attachment files if the old ones were also optimized.
+	 * Delete the old backup file.
+	 *
+	 * @since  1.6.9
+	 * @since  1.8.3 Deprecated
+	 * @author Grégory Viguier
+	 * @see    $this->store_old_backup_path()
+	 * @access protected
+	 *
+	 * @param  string $return_url The URL the user will be redirected to.
+	 * @return string             The same URL.
+	 */
+	public function optimize( $return_url ) {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3' );
+
+		$attachment = $this->get_attachment();
+
+		if ( $attachment->get_data() ) {
+			/**
+			 * The old images have been optimized in the past.
+			 */
+			// Use the same otimization level for the new ones.
+			$optimization_level = $attachment->get_optimization_level();
+
+			// Remove old optimization data.
+			$attachment->delete_imagify_data();
+
+			// Optimize and overwrite the previous backup file if exists and needed.
+			add_filter( 'imagify_backup_overwrite_backup', '__return_true', 42 );
+			$attachment->optimize( $optimization_level );
+			remove_filter( 'imagify_backup_overwrite_backup', '__return_true', 42 );
+		}
+
+		$filesystem = Imagify_Filesystem::get_instance();
+
+		/**
+		 * Delete the old backup file.
+		 */
+		if ( ! $this->old_backup_path || ! $filesystem->exists( $this->old_backup_path ) ) {
+			// The user didn't choose to rename the files, or there is no old backup.
+			$this->old_backup_path = null;
+			return $return_url;
+		}
+
+		$new_backup_path = $attachment->get_raw_backup_path();
+
+		if ( $new_backup_path === $this->old_backup_path ) {
+			// We don't want to delete the new backup.
+			$this->old_backup_path = null;
+			return $return_url;
+		}
+
+		// Finally, delete the old backup file.
+		$filesystem->delete( $this->old_backup_path );
+
+		$this->old_backup_path = null;
+		return $return_url;
 	}
 }
 
