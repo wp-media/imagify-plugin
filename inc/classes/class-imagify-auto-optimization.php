@@ -99,7 +99,7 @@ class Imagify_Auto_Optimization {
 		$prio = IMAGIFY_INT_MAX - 30;
 
 		// Automatic optimization tunel.
-		add_filter( 'add_attachment',                array( $this, 'store_upload_ids' ), $prio );
+		add_action( 'add_attachment',                array( $this, 'store_upload_ids' ), $prio );
 		add_filter( 'wp_update_attachment_metadata', array( $this, 'store_ids_to_optimize' ), $prio, 2 );
 		add_action( 'updated_post_meta',             array( $this, 'do_auto_optimization' ), $prio, 4 );
 		add_action( 'added_post_meta',               array( $this, 'do_auto_optimization' ), $prio, 4 );
@@ -120,7 +120,7 @@ class Imagify_Auto_Optimization {
 	public function remove_hooks() {
 		$prio = IMAGIFY_INT_MAX - 30;
 
-		remove_filter( 'add_attachment',                      array( $this, 'store_upload_ids' ), $prio );
+		remove_action( 'add_attachment',                      array( $this, 'store_upload_ids' ), $prio );
 		remove_filter( 'wp_update_attachment_metadata',       array( $this, 'store_ids_to_optimize' ), $prio );
 		remove_action( 'updated_post_meta',                   array( $this, 'do_auto_optimization' ), $prio );
 		remove_action( 'added_post_meta',                     array( $this, 'do_auto_optimization' ), $prio );

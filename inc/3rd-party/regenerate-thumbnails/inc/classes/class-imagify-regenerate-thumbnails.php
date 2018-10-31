@@ -162,9 +162,6 @@ class Imagify_Regenerate_Thumbnails {
 
 		imagify_do_async_job( compact( 'action', '_ajax_nonce', 'sizes', 'attachment_id', 'context' ) );
 
-		// Allow auto-optimization back.
-		Imagify_Auto_Optimization::allow_optimization( $attachment_id );
-
 		return $metadata;
 	}
 
