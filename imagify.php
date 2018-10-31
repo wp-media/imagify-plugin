@@ -3,7 +3,7 @@
  * Plugin Name: Imagify
  * Plugin URI: https://wordpress.org/plugins/imagify/
  * Description: Dramaticaly reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool.
- * Version: 1.8.2
+ * Version: 1.8.3
  * Author: WP Media
  * Author URI: https://wp-media.me/
  * Licence: GPLv2
@@ -17,26 +17,26 @@
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 // Imagify defines.
-define( 'IMAGIFY_VERSION'       , '1.8.2' );
-define( 'IMAGIFY_WP_MIN'        , '4.0' );
-define( 'IMAGIFY_SLUG'          , 'imagify' );
-define( 'IMAGIFY_FILE'          , __FILE__ );
-define( 'IMAGIFY_PATH'          , realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
-define( 'IMAGIFY_INC_PATH'      , realpath( IMAGIFY_PATH . 'inc/' ) . '/' );
-define( 'IMAGIFY_ADMIN_PATH'    , realpath( IMAGIFY_INC_PATH . 'admin' ) . '/' );
-define( 'IMAGIFY_COMMON_PATH'   , realpath( IMAGIFY_INC_PATH . 'common' ) . '/' );
+define( 'IMAGIFY_VERSION',        '1.8.3' );
+define( 'IMAGIFY_WP_MIN',         '4.0' );
+define( 'IMAGIFY_SLUG',           'imagify' );
+define( 'IMAGIFY_FILE',           __FILE__ );
+define( 'IMAGIFY_PATH',           realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
+define( 'IMAGIFY_INC_PATH',       realpath( IMAGIFY_PATH . 'inc/' ) . '/' );
+define( 'IMAGIFY_ADMIN_PATH',     realpath( IMAGIFY_INC_PATH . 'admin' ) . '/' );
+define( 'IMAGIFY_COMMON_PATH',    realpath( IMAGIFY_INC_PATH . 'common' ) . '/' );
 define( 'IMAGIFY_FUNCTIONS_PATH', realpath( IMAGIFY_INC_PATH . 'functions' ) . '/' );
-define( 'IMAGIFY_CLASSES_PATH'  , realpath( IMAGIFY_INC_PATH . 'classes' ) . '/' );
+define( 'IMAGIFY_CLASSES_PATH',   realpath( IMAGIFY_INC_PATH . 'classes' ) . '/' );
 define( 'IMAGIFY_3RD_PARTY_PATH', realpath( IMAGIFY_INC_PATH . '3rd-party' ) . '/' );
-define( 'IMAGIFY_URL'           , plugin_dir_url( IMAGIFY_FILE ) );
-define( 'IMAGIFY_INC_URL'       , IMAGIFY_URL . 'inc/' );
-define( 'IMAGIFY_ADMIN_URL'     , IMAGIFY_INC_URL . 'admin/' );
-define( 'IMAGIFY_ASSETS_URL'    , IMAGIFY_URL . 'assets/' );
-define( 'IMAGIFY_ASSETS_JS_URL' , IMAGIFY_ASSETS_URL . 'js/' );
+define( 'IMAGIFY_URL',            plugin_dir_url( IMAGIFY_FILE ) );
+define( 'IMAGIFY_INC_URL',        IMAGIFY_URL . 'inc/' );
+define( 'IMAGIFY_ADMIN_URL',      IMAGIFY_INC_URL . 'admin/' );
+define( 'IMAGIFY_ASSETS_URL',     IMAGIFY_URL . 'assets/' );
+define( 'IMAGIFY_ASSETS_JS_URL',  IMAGIFY_ASSETS_URL . 'js/' );
 define( 'IMAGIFY_ASSETS_CSS_URL', IMAGIFY_ASSETS_URL . 'css/' );
 define( 'IMAGIFY_ASSETS_IMG_URL', IMAGIFY_ASSETS_URL . 'images/' );
-define( 'IMAGIFY_MAX_BYTES'     , 5242880 );
-define( 'IMAGIFY_INT_MAX'       , PHP_INT_MAX - 30 );
+define( 'IMAGIFY_MAX_BYTES',      5242880 );
+define( 'IMAGIFY_INT_MAX',        PHP_INT_MAX - 30 );
 
 add_action( 'plugins_loaded', '_imagify_init' );
 /**
