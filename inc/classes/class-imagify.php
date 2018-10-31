@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1.2';
+	const VERSION = '1.2';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -25,6 +25,13 @@ class Imagify extends Imagify_Deprecated {
 	 * @var string
 	 */
 	private $api_key = '';
+
+	/**
+	 * Random key used to store the API key in the request args.
+	 *
+	 * @var string
+	 */
+	private $secure_key = '';
 
 	/**
 	 * HTTP headers. Each http call must fill it (even if it's with an empty array).
@@ -69,6 +76,7 @@ class Imagify extends Imagify_Deprecated {
 		}
 
 		$this->api_key    = get_imagify_option( 'api_key' );
+		$this->secure_key = $this->generate_secure_key();
 		$this->filesystem = Imagify_Filesystem::get_instance();
 
 		$this->all_headers['Accept']        = 'Accept: application/json';
@@ -408,6 +416,15 @@ class Imagify extends Imagify_Deprecated {
 			}
 		}
 
+		if ( ! empty( $args['headers']['Authorization'] ) ) {
+			// Make sure our API has not overwritten by some other plugin.
+			$args[ $this->secure_key ] = preg_replace( '/^token /', '', $args['headers']['Authorization'] );
+
+			if ( ! has_filter( 'http_request_args', array( $this, 'force_api_key_header' ) ) ) {
+				add_filter( 'http_request_args', array( $this, 'force_api_key_header' ), IMAGIFY_INT_MAX + 25, 2 );
+			}
+		}
+
 		$response = wp_remote_request( self::API_ENDPOINT . $url, $args );
 
 		if ( is_wp_error( $response ) ) {
@@ -559,5 +576,55 @@ class Imagify extends Imagify_Deprecated {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Generate a random key.
+	 * Similar to wp_generate_password() but without filter.
+	 *
+	 * @access private
+	 * @since  1.8.4
+	 * @see    wp_generate_password()
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	private function generate_secure_key() {
+		$length   = wp_rand( 12, 20 );
+		$chars    = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_ []{}<>~`+=,.;:/?|';
+		$password = '';
+
+		for ( $i = 0; $i < $length; $i++ ) {
+			$password .= substr( $chars, wp_rand( 0, strlen( $chars ) - 1 ), 1 );
+		}
+
+		return $password;
+	}
+
+	/**
+	 * Filter the arguments used in an HTTP request, to make sure our API key has not been overwritten by some other plugin.
+	 *
+	 * @access public
+	 * @since  1.8.4
+	 * @author Grégory Viguier
+	 *
+	 * @param  array  $args An array of HTTP request arguments.
+	 * @param  string $url  The request URL.
+	 * @return array
+	 */
+	public function force_api_key_header( $args, $url ) {
+		if ( strpos( $url, self::API_ENDPOINT ) === false ) {
+			return $args;
+		}
+
+		if ( ! empty( $args['headers']['Authorization'] ) || ! empty( $args[ $this->secure_key ] ) ) {
+			if ( ! empty( $args[ $this->secure_key ] ) ) {
+				$args['headers']['Authorization'] = 'token ' . $args[ $this->secure_key ];
+			} else {
+				$args['headers']['Authorization'] = 'token ' . $this->api_key;
+			}
+		}
+
+		return $args;
 	}
 }
