@@ -349,7 +349,7 @@ class Imagify_AS3CF_Deprecated {
 	 * We use it to tell the difference later in wp_update_attachment_metadata().
 	 *
 	 * @since  1.6.6
-	 * @since  1.8.3 Deprecated
+	 * @since  1.8.4 Deprecated
 	 * @author Grégory Viguier
 	 * @see    $this->do_async_job()
 	 * @deprecated
@@ -359,7 +359,7 @@ class Imagify_AS3CF_Deprecated {
 	 * @return array
 	 */
 	public function store_upload_ids( $metadata, $attachment_id ) {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Auto_Optimization::get_instance()->store_upload_ids( $attachment_id )' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4', 'Imagify_Auto_Optimization::get_instance()->store_upload_ids( $attachment_id )' );
 
 		if ( imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 			$this->uploads[ $attachment_id ] = 1;
@@ -372,7 +372,7 @@ class Imagify_AS3CF_Deprecated {
 	 * After an image (maybe) being sent to S3, launch an async optimization.
 	 *
 	 * @since  1.6.6
-	 * @since  1.8.3 Deprecated
+	 * @since  1.8.4 Deprecated
 	 * @author Grégory Viguier
 	 * @see    $this->store_upload_ids()
 	 * @deprecated
@@ -384,7 +384,7 @@ class Imagify_AS3CF_Deprecated {
 	public function do_async_job( $metadata, $attachment_id ) {
 		static $auto_optimize;
 
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Auto_Optimization::get_instance()->do_auto_optimization( $meta_id, $attachment_id, $meta_key, $metadata )' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4', 'Imagify_Auto_Optimization::get_instance()->do_auto_optimization( $meta_id, $attachment_id, $meta_key, $metadata )' );
 
 		$is_new_upload = ! empty( $this->uploads[ $attachment_id ] );
 		unset( $this->uploads[ $attachment_id ] );
@@ -444,12 +444,12 @@ class Imagify_AS3CF_Deprecated {
 	 * Once an image has been sent to S3, optimize it and send it again.
 	 *
 	 * @since  1.6.6
-	 * @since  1.8.3 Deprecated
+	 * @since  1.8.4 Deprecated
 	 * @author Grégory Viguier
 	 * @deprecated
 	 */
 	public function optimize() {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
 
 		check_ajax_referer( 'imagify_async_optimize_as3cf' );
 
@@ -518,7 +518,7 @@ class Imagify_Notices_Deprecated {
 /**
  * Class for deprecated methods from Imagify_Admin_Ajax_Post.
  *
- * @since  1.8.3
+ * @since  1.8.4
  * @author Grégory Viguier
  * @deprecated
  */
@@ -528,14 +528,14 @@ class Imagify_Admin_Ajax_Post_Deprecated {
 	 * Optimize image on picture uploading with async request.
 	 *
 	 * @since  1.6.11
-	 * @since  1.8.3 Deprecated
+	 * @since  1.8.4 Deprecated
 	 * @access public
 	 * @author Julio Potier
 	 * @see    _imagify_optimize_attachment()
 	 * @deprecated
 	 */
 	public function imagify_async_optimize_upload_new_media_callback() {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
 
 		if ( empty( $_POST['_ajax_nonce'] ) || empty( $_POST['attachment_id'] ) || empty( $_POST['metadata'] ) || empty( $_POST['context'] ) ) { // WPCS: CSRF ok.
 			return;
@@ -558,13 +558,13 @@ class Imagify_Admin_Ajax_Post_Deprecated {
 	 * Optimize image on picture editing (resize, crop...) with async request.
 	 *
 	 * @since  1.6.11
-	 * @since  1.8.3 Deprecated
+	 * @since  1.8.4 Deprecated
 	 * @access public
 	 * @author Julio Potier
 	 * @deprecated
 	 */
 	public function imagify_async_optimize_save_image_editor_file_callback() {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
 
 		$attachment_id = ! empty( $_POST['postid'] ) ? absint( $_POST['postid'] ) : 0;
 
@@ -610,7 +610,7 @@ class Imagify_Admin_Ajax_Post_Deprecated {
 /**
  * Compat class for Enable Media Replace plugin.
  *
- * @since  1.8.3
+ * @since  1.8.4
  * @author Grégory Viguier
  * @deprecated
  */
@@ -621,7 +621,7 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	 *
 	 * @var    object Imagify_Filesystem
 	 * @since  1.7.1
-	 * @since  1.8.3 Deprecated
+	 * @since  1.8.4 Deprecated
 	 * @author Grégory Viguier
 	 * @access protected
 	 */
@@ -632,7 +632,7 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	 * Delete the old backup file.
 	 *
 	 * @since  1.6.9
-	 * @since  1.8.3 Deprecated
+	 * @since  1.8.4 Deprecated
 	 * @author Grégory Viguier
 	 * @see    $this->store_old_backup_path()
 	 * @access protected
@@ -641,7 +641,7 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	 * @return string             The same URL.
 	 */
 	public function optimize( $return_url ) {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.3' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4' );
 
 		$attachment = $this->get_attachment();
 
@@ -1321,7 +1321,7 @@ function is_imagify_servers_up() {
  *
  * @since 1.0
  * @since 1.5 Async job.
- * @since 1.8.3 Deprecated
+ * @since 1.8.4 Deprecated
  * @see   Imagify_Admin_Ajax_Post_Deprecated::imagify_async_optimize_upload_new_media_callback()
  * @deprecated
  *
@@ -1330,7 +1330,7 @@ function is_imagify_servers_up() {
  * @return array
  */
 function _imagify_optimize_attachment( $metadata, $attachment_id ) {
-	_deprecated_function( __FUNCTION__ . '()', '1.8.3', 'Imagify_Auto_Optimization::get_instance()->store_upload_ids()' );
+	_deprecated_function( __FUNCTION__ . '()', '1.8.4', 'Imagify_Auto_Optimization::get_instance()->store_upload_ids()' );
 
 	if ( ! Imagify_Requirements::is_api_key_valid() || ! get_imagify_option( 'auto_optimize' ) ) {
 		return $metadata;
@@ -1366,11 +1366,11 @@ function _imagify_optimize_attachment( $metadata, $attachment_id ) {
  *
  * @since 1.3.6
  * @since 1.4 Async job.
- * @since 1.8.3 Deprecated
+ * @since 1.8.4 Deprecated
  * @deprecated
  */
 function _imagify_optimize_save_image_editor_file() {
-	_deprecated_function( __FUNCTION__ . '()', '1.8.3' );
+	_deprecated_function( __FUNCTION__ . '()', '1.8.4' );
 
 	if ( ! isset( $_POST['action'], $_POST['do'], $_POST['postid'] ) || 'image-editor' !== $_POST['action'] || 'open' === $_POST['do'] ) { // WPCS: CSRF ok.
 		return;

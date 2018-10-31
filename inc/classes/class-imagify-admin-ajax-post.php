@@ -598,7 +598,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	/**
 	 * Optimize image with async request.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @author Grégory Viguier
 	 * @see    Imagify_Auto_Optimization->do_auto_optimization()
@@ -636,7 +636,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		/**
 		 * Triggered before an attachment is auto-optimized.
 		 *
-		 * @since  1.8.3
+		 * @since  1.8.4
 		 * @author Grégory Viguier
 		 *
 		 * @param int  $attachment_id The attachment ID.
@@ -676,7 +676,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		/**
 		 * Triggered after an attachment is auto-optimized.
 		 *
-		 * @since  1.8.3
+		 * @since  1.8.4
 		 * @author Grégory Viguier
 		 *
 		 * @param int  $attachment_id The attachment ID.

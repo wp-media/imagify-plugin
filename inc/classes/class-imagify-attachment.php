@@ -136,7 +136,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		/**
 		 * Triggered before updating an image width and height into its metadata.
 		 *
-		 * @since  1.8.3
+		 * @since  1.8.4
 		 * @see    Imagify_Filesystem->get_image_size()
 		 * @author Grégory Viguier
 		 *
@@ -159,7 +159,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 		/**
 		 * Triggered after updating an image width and height into its metadata.
 		 *
-		 * @since  1.8.3
+		 * @since  1.8.4
 		 * @see    Imagify_Filesystem->get_image_size()
 		 * @author Grégory Viguier
 		 *

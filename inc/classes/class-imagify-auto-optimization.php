@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * This occurs when a new image is uploaded, and when an optimized image is worked with (resized, etc).
  * The process will work only if wp_update_attachment_metadata() is used.
  *
- * @since  1.8.3
+ * @since  1.8.4
  * @author Grégory Viguier
  */
 class Imagify_Auto_Optimization {
@@ -15,7 +15,7 @@ class Imagify_Auto_Optimization {
 	 * Class version.
 	 *
 	 * @var    string
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @author Grégory Viguier
 	 */
 	const VERSION = '1.0';
@@ -24,7 +24,7 @@ class Imagify_Auto_Optimization {
 	 * An array containing the IDs (as keys) of attachments just being uploaded.
 	 *
 	 * @var    array
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
@@ -35,7 +35,7 @@ class Imagify_Auto_Optimization {
 	 * The values tell if the attachment is a new upload.
 	 *
 	 * @var    array
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
@@ -45,7 +45,7 @@ class Imagify_Auto_Optimization {
 	 * The single instance of the class.
 	 *
 	 * @var    object
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
@@ -55,7 +55,7 @@ class Imagify_Auto_Optimization {
 	 * Used to prevent an auto-optimization locally.
 	 *
 	 * @var    array
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access private
 	 * @author Grégory Viguier
 	 */
@@ -65,7 +65,7 @@ class Imagify_Auto_Optimization {
 	 * Get the main Instance.
 	 * Ensures only one instance of class is loaded or can be loaded.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -82,7 +82,7 @@ class Imagify_Auto_Optimization {
 	/**
 	 * The class constructor.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
@@ -91,7 +91,7 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Init.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @author Grégory Viguier
 	 */
@@ -113,7 +113,7 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Remove the hooks.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @author Grégory Viguier
 	 */
@@ -138,7 +138,7 @@ class Imagify_Auto_Optimization {
 	 * Store the ID of attachments that just have been uploaded.
 	 * We use those IDs to tell the difference later in `wp_update_attachment_metadata()`.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @see    $this->store_ids_to_optimize()
 	 * @author Grégory Viguier
@@ -157,7 +157,7 @@ class Imagify_Auto_Optimization {
 	 * - It's a new upload and auto-optimization is enabled.
 	 * - It's not a new upload (it is regenerated) and the attachment is already optimized.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @see    $this->store_upload_ids()
 	 * @author Grégory Viguier
@@ -190,7 +190,7 @@ class Imagify_Auto_Optimization {
 				/**
 				 * Fires when a new attachment is uploaded but auto-optimization is disabled.
 				 *
-				 * @since  1.8.3
+				 * @since  1.8.4
 				 * @author Grégory Viguier
 				 *
 				 * @param int   $attachment_id Attachment ID.
@@ -230,7 +230,7 @@ class Imagify_Auto_Optimization {
 				/**
 				 * Fires when an attachment is updated but not optimized yet.
 				 *
-				 * @since  1.8.3
+				 * @since  1.8.4
 				 * @author Grégory Viguier
 				 *
 				 * @param int   $attachment_id Attachment ID.
@@ -244,7 +244,7 @@ class Imagify_Auto_Optimization {
 			/**
 			 * Allow to prevent automatic reoptimization for a specific attachment.
 			 *
-			 * @since  1.8.3
+			 * @since  1.8.4
 			 * @author Grégory Viguier
 			 *
 			 * @param bool  $optimize      True to optimize, false otherwise.
@@ -271,7 +271,7 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Launch auto optimization immediately after the post meta '_wp_attachment_metadata' is added or updated.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -311,7 +311,7 @@ class Imagify_Auto_Optimization {
 		/**
 		 * Fires before an attachment auto-optimization is triggered.
 		 *
-		 * @since  1.8.3
+		 * @since  1.8.4
 		 * @author Grégory Viguier
 		 *
 		 * @param int  $attachment_id The attachment ID.
@@ -332,7 +332,7 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Remove the attachment ID from the $attachments property if the post meta '_wp_attachment_metadata' is deleted.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -360,7 +360,7 @@ class Imagify_Auto_Optimization {
 	 *     wp_update_attachment_metadata( $attachment_id );
 	 *     Imagify_Auto_Optimization::allow_optimization( $attachment_id );
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -377,7 +377,7 @@ class Imagify_Auto_Optimization {
 	 *     wp_update_attachment_metadata( $attachment_id );
 	 *     Imagify_Auto_Optimization::allow_optimization( $attachment_id );
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -390,7 +390,7 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Tell if an auto-optimization is prevented locally.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access public
 	 * @author Grégory Viguier
 	 *

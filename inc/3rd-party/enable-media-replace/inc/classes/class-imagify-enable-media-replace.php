@@ -43,7 +43,7 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	 * No data means not processed by Imagify, or restored.
 	 *
 	 * @var    bool
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
@@ -160,7 +160,7 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	 * Delete previous backup file. This is done after the images have been already replaced by Enable Media Replace.
 	 * It will prevent having a backup file not corresponding to the current images.
 	 *
-	 * @since  1.8.3
+	 * @since  1.8.4
 	 * @author Grégory Viguier
 	 *
 	 * @param int $attachment_id The attachment ID.
