@@ -306,6 +306,10 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 			$url = $site_url . 'documentation/';
 			break;
 
+		case 'documentation-imagick-gd':
+			$url = $site_url . 'documentation/solve-imagemagick-or-gd-is-required/';
+			break;
+
 		case 'register':
 			$partner = imagify_get_partner();
 

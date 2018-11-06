@@ -47,7 +47,11 @@ function do_imagify( $file_path, $args = array() ) {
 
 	// Check if imageMagick or GD is available.
 	if ( $filesystem->is_image( $file_path ) && ! Imagify_Requirements::supports_image_editor() ) {
-		return new WP_Error( 'image_editor', __( 'No php extensions are available to edit images on the server.', 'imagify' ) );
+		return new WP_Error( 'image_editor', sprintf(
+			/* translators: %s is a "More info?" link. */
+			__( 'No php extensions are available to edit images on the server. ImageMagick or GD is required. %s', 'imagify' ),
+			'<a href="' . esc_url( imagify_get_external_url( 'documentation-imagick-gd' ) ) . '" target="_blank">' . __( 'More info?', 'imagify' ) . '</a>'
+		) );
 	}
 
 	// Check if external HTTP requests are blocked.
