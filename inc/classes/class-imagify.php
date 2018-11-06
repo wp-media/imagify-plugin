@@ -457,7 +457,11 @@ class Imagify extends Imagify_Deprecated {
 		$url = self::API_ENDPOINT . $url;
 
 		try {
-			$ch = curl_init();
+			$ch = @curl_init();
+
+			if ( ! is_resource( $ch ) ) {
+				throw new Exception( 'Could not initialize a new cURL handle' );
+			}
 
 			if ( isset( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && $this->filesystem->exists( $args['post_data']['image'] ) ) {
 				$args['post_data']['image'] = curl_file_create( $args['post_data']['image'] );
@@ -512,7 +516,7 @@ class Imagify extends Imagify_Deprecated {
 			 */
 			do_action( 'imagify_curl_http_response', $url, $args, $e );
 
-			return new WP_Error( 'curl', 'Unknown error occurred' );
+			return new WP_Error( 'curl', 'An error occurred (' . $e->getMessage() . ')' );
 		} // End try().
 
 		$args['headers'] = $this->headers;
@@ -572,7 +576,7 @@ class Imagify extends Imagify_Deprecated {
 		if ( 200 !== $http_code ) {
 			$error = trim( (string) $error );
 			$error = '' !== $error ? ' - ' . htmlentities( $error ) : '';
-			return new WP_Error( $http_code, "Unknown error occurred ({$http_code}{$error})" );
+			return new WP_Error( $http_code, "An error occurred ({$http_code}{$error})" );
 		}
 
 		return $response;
