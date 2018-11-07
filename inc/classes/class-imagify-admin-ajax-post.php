@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.6.11
  * @author Grégory Viguier
  */
-class Imagify_Admin_Ajax_Post {
+class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 	/**
 	 * Class version.
@@ -48,8 +48,7 @@ class Imagify_Admin_Ajax_Post {
 	protected $ajax_only_actions = array(
 		'imagify_bulk_upload',
 		'imagify_bulk_optimize_file',
-		'imagify_async_optimize_upload_new_media',
-		'imagify_async_optimize_save_image_editor_file',
+		'imagify_auto_optimize',
 		'imagify_get_unoptimized_attachment_ids',
 		'imagify_get_unoptimized_file_ids',
 		'imagify_check_backup_dir_is_writable',
@@ -597,76 +596,93 @@ class Imagify_Admin_Ajax_Post {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Optimize image on picture uploading with async request.
+	 * Optimize image with async request.
 	 *
-	 * @since  1.6.11
+	 * @since  1.8.4
 	 * @access public
-	 * @author Julio Potier
-	 * @see    _imagify_optimize_attachment()
+	 * @author Grégory Viguier
+	 * @see    Imagify_Auto_Optimization->do_auto_optimization()
 	 */
-	public function imagify_async_optimize_upload_new_media_callback() {
-		if ( empty( $_POST['_ajax_nonce'] ) || empty( $_POST['attachment_id'] ) || empty( $_POST['metadata'] ) || empty( $_POST['context'] ) ) { // WPCS: CSRF ok.
-			return;
+	public function imagify_auto_optimize_callback() {
+		if ( empty( $_POST['_ajax_nonce'] ) || empty( $_POST['attachment_id'] ) || empty( $_POST['context'] ) ) { // WPCS: CSRF ok.
+			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$context       = imagify_sanitize_context( $_POST['context'] );
 		$attachment_id = absint( $_POST['attachment_id'] );
 
-		imagify_check_nonce( 'new_media-' . $attachment_id );
-		imagify_check_user_capacity( 'auto-optimize' );
+		imagify_check_nonce( 'imagify_auto_optimize-' . $attachment_id );
 
-		$attachment = get_imagify_attachment( $context, $attachment_id, 'imagify_async_optimize_upload_new_media' );
-
-		// Optimize it!!!!!
-		$attachment->optimize( null, $_POST['metadata'] );
-		die( 1 );
-	}
-
-	/**
-	 * Optimize image on picture editing (resize, crop...) with async request.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Julio Potier
-	 */
-	public function imagify_async_optimize_save_image_editor_file_callback() {
-		$attachment_id = ! empty( $_POST['postid'] ) ? absint( $_POST['postid'] ) : 0;
-
-		if ( ! $attachment_id || empty( $_POST['do'] ) ) {
-			return;
+		if ( ! get_transient( 'imagify-auto-optimize-' . $attachment_id ) ) {
+			imagify_die();
 		}
 
-		imagify_check_nonce( 'image_editor-' . $attachment_id );
-		imagify_check_user_capacity( 'edit_post', $attachment_id );
+		delete_transient( 'imagify-auto-optimize-' . $attachment_id );
 
-		$attachment = get_imagify_attachment( 'wp', $attachment_id, 'wp_ajax_imagify_async_optimize_save_image_editor_file' );
-
-		if ( ! $attachment->get_data() ) {
-			return;
+		if ( ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+			imagify_die( __( 'This type of file is not supported.', 'imagify' ) );
 		}
 
-		$optimization_level = $attachment->get_optimization_level();
-		$metadata           = wp_get_attachment_metadata( $attachment_id );
+		$this->check_can_optimize();
 
-		// Remove old optimization data.
-		$attachment->delete_imagify_data();
+		@set_time_limit( 0 );
 
-		if ( 'restore' === $_POST['do'] ) {
-			// Restore the backup file.
-			$attachment->restore();
+		/**
+		 * Let's start.
+		 */
+		$context       = imagify_sanitize_context( $_POST['context'] );
+		$attachment    = get_imagify_attachment( $context, $attachment_id, 'auto_optimize' );
+		$is_new_upload = ! empty( $_POST['is_new_upload'] );
 
-			// Get old metadata to regenerate all thumbnails.
-			$metadata     = array( 'sizes' => array() );
-			$backup_sizes = (array) get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
+		/**
+		 * Triggered before an attachment is auto-optimized.
+		 *
+		 * @since  1.8.4
+		 * @author Grégory Viguier
+		 *
+		 * @param int  $attachment_id The attachment ID.
+		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
+		 */
+		do_action( 'imagify_before_auto_optimization', $attachment_id, $is_new_upload );
 
-			foreach ( $backup_sizes as $size_key => $size_data ) {
-				$size_key = str_replace( '-origin', '' , $size_key );
-				$metadata['sizes'][ $size_key ] = $size_data;
+		if ( $is_new_upload ) {
+			/**
+			 * It's a new upload.
+			 */
+			// $metadata is provided to tell `$attachment->optimize()` it's a new upload.
+			$metadata = wp_get_attachment_metadata( $attachment_id, true );
+
+			// Optimize.
+			$attachment->optimize( null, $metadata );
+		} else {
+			/**
+			 * The attachment has already been optimized (or at least it has been tried).
+			 */
+			// Get the optimization level before remove our data.
+			$optimization_level = $attachment->get_optimization_level();
+
+			// Remove old optimization data.
+			$attachment->delete_imagify_data();
+
+			// Some specifics for the image editor.
+			if ( ! empty( $_POST['data']['do'] ) && 'restore' === $_POST['data']['do'] ) {
+				// Restore the backup file.
+				$attachment->restore();
 			}
+
+			// Optimize.
+			$attachment->optimize( $optimization_level );
 		}
 
-		// Optimize it!!!!!
-		$attachment->optimize( $optimization_level, $metadata );
+		/**
+		 * Triggered after an attachment is auto-optimized.
+		 *
+		 * @since  1.8.4
+		 * @author Grégory Viguier
+		 *
+		 * @param int  $attachment_id The attachment ID.
+		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
+		 */
+		do_action( 'imagify_after_auto_optimization', $attachment_id, $is_new_upload );
 		die( 1 );
 	}
 
@@ -1495,11 +1511,19 @@ class Imagify_Admin_Ajax_Post {
 	 */
 	public function check_can_optimize() {
 		if ( ! Imagify_Requirements::is_api_key_valid() ) {
-			wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
+			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				wp_send_json_error( array( 'message' => 'invalid-api-key' ) );
+			}
+
+			imagify_die( __( 'Your API key is not valid!', 'imagify' ) );
 		}
 
 		if ( Imagify_Requirements::is_over_quota() ) {
-			wp_send_json_error( array( 'message' => 'over-quota' ) );
+			if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+				wp_send_json_error( array( 'message' => 'over-quota' ) );
+			}
+
+			imagify_die( __( 'You have used all your credits!', 'imagify' ) );
 		}
 	}
 

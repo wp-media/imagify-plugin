@@ -29,6 +29,7 @@ delete_transient( 'imagify_user' );
 $transients = implode( '" OR option_name LIKE "', array(
 	'\_transient\_%imagify-async-in-progress-%',
 	'\_transient\_%imagify-ngg-async-in-progress-%',
+	'\_transient\_%imagify-auto-optimize-%',
 	'\_site\_transient\_%imagify-file-async-in-progress-%',
 	'\_transient\_%imagify\_rpc\_%',
 	'\_site\_transient\_imagify\_%\_process\_lock%',

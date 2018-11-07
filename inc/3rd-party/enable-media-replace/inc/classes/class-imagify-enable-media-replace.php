@@ -7,50 +7,65 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.6.9
  * @author Grégory Viguier
  */
-class Imagify_Enable_Media_Replace {
+class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecated {
 
 	/**
 	 * Class version.
 	 *
-	 * @var string
+	 * @var    string
+	 * @since  1.6.9
+	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '2.0';
 
 	/**
 	 * The attachment ID.
 	 *
-	 * @var int
+	 * @var    int
+	 * @since  1.6.9
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected $attachment_id;
 
 	/**
 	 * The attachment.
 	 *
-	 * @var object A Imagify_Attachment object (or any class extending it).
+	 * @var    object A Imagify_Attachment object (or any class extending it).
+	 * @since  1.6.9
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected $attachment;
 
 	/**
+	 * Tell if the attachment has data.
+	 * No data means not processed by Imagify, or restored.
+	 *
+	 * @var    bool
+	 * @since  1.8.4
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $attachment_has_data;
+
+	/**
 	 * The path to the old backup file.
 	 *
-	 * @var string
+	 * @var    string
+	 * @since  1.6.9
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected $old_backup_path;
 
 	/**
-	 * Filesystem object.
-	 *
-	 * @var    object Imagify_Filesystem
-	 * @since  1.7.1
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected $filesystem;
-
-	/**
 	 * The single instance of the class.
 	 *
-	 * @var object
+	 * @var    object
+	 * @since  1.6.9
+	 * @access protected
+	 * @author Grégory Viguier
 	 */
 	protected static $_instance;
 
@@ -78,9 +93,7 @@ class Imagify_Enable_Media_Replace {
 	 * @since  1.6.9
 	 * @author Grégory Viguier
 	 */
-	protected function __construct() {
-		$this->filesystem = Imagify_Filesystem::get_instance();
-	}
+	protected function __construct() {}
 
 	/**
 	 * Launch the hooks before the files and data are replaced.
@@ -98,16 +111,19 @@ class Imagify_Enable_Media_Replace {
 			return $unfiltered;
 		}
 
-		// Remove the automatic optimization.
-		remove_filter( 'wp_generate_attachment_metadata', '_imagify_optimize_attachment', IMAGIFY_INT_MAX );
-
 		// Store the old backup file path.
 		add_filter( 'emr_unique_filename', array( $this, 'store_old_backup_path' ), 10, 3 );
-		// Optimize and delete the old backup file.
-		add_action( 'emr_returnurl',       array( $this, 'optimize' ) );
+		// Delete the old backup file.
+		add_action( 'imagify_before_auto_optimization_launch',  array( $this, 'delete_backup' ) );
+		add_action( 'imagify_not_optimized_attachment_updated', array( $this, 'delete_backup' ) );
 
 		return $unfiltered;
 	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** HOOKS =================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * When the user chooses to change the file name, store the old backup file path. This path will be used later to delete the file.
@@ -129,65 +145,45 @@ class Imagify_Enable_Media_Replace {
 		$backup_path = $this->get_attachment()->get_backup_path();
 
 		if ( $backup_path ) {
-			$this->old_backup_path = $backup_path;
+			$this->old_backup_path     = $backup_path;
+			$this->attachment_has_data = $this->get_attachment()->get_data();
+		} else {
+			$this->attachment_id       = null;
+			$this->old_backup_path     = null;
+			$this->attachment_has_data = null;
 		}
 
 		return $new_filename;
 	}
 
 	/**
-	 * Optimize the attachment files if the old ones were also optimized.
-	 * Delete the old backup file.
+	 * Delete previous backup file. This is done after the images have been already replaced by Enable Media Replace.
+	 * It will prevent having a backup file not corresponding to the current images.
 	 *
-	 * @since  1.6.9
+	 * @since  1.8.4
 	 * @author Grégory Viguier
-	 * @see    $this->store_old_backup_path()
 	 *
-	 * @param  string $return_url The URL the user will be redirected to.
-	 * @return string             The same URL.
+	 * @param int $attachment_id The attachment ID.
 	 */
-	public function optimize( $return_url ) {
-		$attachment = $this->get_attachment();
-
-		if ( $attachment->get_data() ) {
-			/**
-			 * The old images have been optimized in the past.
-			 */
-			// Use the same otimization level for the new ones.
-			$optimization_level = $attachment->get_optimization_level();
-
-			// Remove old optimization data.
-			$attachment->delete_imagify_data();
-
-			// Optimize and overwrite the previous backup file if exists and needed.
-			add_filter( 'imagify_backup_overwrite_backup', '__return_true', 42 );
-			$attachment->optimize( $optimization_level );
-			remove_filter( 'imagify_backup_overwrite_backup', '__return_true', 42 );
+	public function delete_backup( $attachment_id ) {
+		if ( $attachment_id !== $this->attachment_id ) {
+			return;
 		}
 
-		/**
-		 * Delete the old backup file.
-		 */
-		if ( ! $this->old_backup_path || ! $this->filesystem->exists( $this->old_backup_path ) ) {
-			// The user didn't choose to rename the files, or there is no old backup.
-			$this->old_backup_path = null;
-			return $return_url;
+		$filesystem = Imagify_Filesystem::get_instance();
+
+		if ( ! $this->old_backup_path || ! $filesystem->exists( $this->old_backup_path ) ) {
+			return;
 		}
 
-		$new_backup_path = $attachment->get_raw_backup_path();
-
-		if ( $new_backup_path === $this->old_backup_path ) {
-			// We don't want to delete the new backup.
-			$this->old_backup_path = null;
-			return $return_url;
-		}
-
-		// Finally, delete the old backup file.
-		$this->filesystem->delete( $this->old_backup_path );
-
+		$filesystem->delete( $this->old_backup_path );
 		$this->old_backup_path = null;
-		return $return_url;
 	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** TOOLS =================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * Get the attachment.

@@ -337,6 +337,155 @@ class Imagify_AS3CF_Deprecated {
 
 		return imagify_is_attachment_mime_type_supported( $post_id );
 	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** AUTOMATIC OPTIMIZATION: OPTIMIZE AFTER S3 HAS DONE ITS WORK ============================= */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Filter the generated attachment meta data.
+	 * This is used when a new attachment has just been uploaded (or not, when wp_generate_attachment_metadata() is used).
+	 * We use it to tell the difference later in wp_update_attachment_metadata().
+	 *
+	 * @since  1.6.6
+	 * @since  1.8.4 Deprecated
+	 * @author Grégory Viguier
+	 * @see    $this->do_async_job()
+	 * @deprecated
+	 *
+	 * @param  array $metadata      An array of attachment meta data.
+	 * @param  int   $attachment_id Current attachment ID.
+	 * @return array
+	 */
+	public function store_upload_ids( $metadata, $attachment_id ) {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4', 'Imagify_Auto_Optimization::get_instance()->store_upload_ids( $attachment_id )' );
+
+		if ( imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+			$this->uploads[ $attachment_id ] = 1;
+		}
+
+		return $metadata;
+	}
+
+	/**
+	 * After an image (maybe) being sent to S3, launch an async optimization.
+	 *
+	 * @since  1.6.6
+	 * @since  1.8.4 Deprecated
+	 * @author Grégory Viguier
+	 * @see    $this->store_upload_ids()
+	 * @deprecated
+	 *
+	 * @param  array $metadata      An array of attachment meta data.
+	 * @param  int   $attachment_id Current attachment ID.
+	 * @return array
+	 */
+	public function do_async_job( $metadata, $attachment_id ) {
+		static $auto_optimize;
+
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4', 'Imagify_Auto_Optimization::get_instance()->do_auto_optimization( $meta_id, $attachment_id, $meta_key, $metadata )' );
+
+		$is_new_upload = ! empty( $this->uploads[ $attachment_id ] );
+		unset( $this->uploads[ $attachment_id ] );
+
+		if ( ! $metadata || ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+			return $metadata;
+		}
+
+		if ( ! isset( $auto_optimize ) ) {
+			$auto_optimize = Imagify_Requirements::is_api_key_valid() && get_imagify_option( 'auto_optimize' );
+		}
+
+		if ( $is_new_upload ) {
+			// It's a new upload.
+			if ( ! $auto_optimize ) {
+				// Auto-optimization is disabled.
+				return $metadata;
+			}
+
+			/** This filter is documented in inc/common/attachments.php. */
+			$optimize = apply_filters( 'imagify_auto_optimize_attachment', true, $attachment_id, $metadata );
+
+			if ( ! $optimize ) {
+				return $metadata;
+			}
+		}
+
+		if ( ! $is_new_upload ) {
+			$attachment = get_imagify_attachment( self::CONTEXT, $attachment_id, 'as3cf_async_job' );
+
+			if ( ! $attachment->get_data() ) {
+				// It's not a new upload and the attachment is not optimized yet.
+				return $metadata;
+			}
+		}
+
+		$data = array();
+
+		// Some specifics for the image editor.
+		if ( isset( $_POST['action'], $_POST['do'], $_POST['postid'] ) && 'image-editor' === $_POST['action'] && (int) $_POST['postid'] === $attachment_id ) { // WPCS: CSRF ok.
+			check_ajax_referer( 'image_editor-' . $_POST['postid'] );
+			$data = $_POST;
+		}
+
+		imagify_do_async_job( array(
+			'action'      => 'imagify_async_optimize_as3cf',
+			'_ajax_nonce' => wp_create_nonce( 'imagify_async_optimize_as3cf' ),
+			'post_id'     => $attachment_id,
+			'metadata'    => $metadata,
+			'data'        => $data,
+		) );
+
+		return $metadata;
+	}
+
+	/**
+	 * Once an image has been sent to S3, optimize it and send it again.
+	 *
+	 * @since  1.6.6
+	 * @since  1.8.4 Deprecated
+	 * @author Grégory Viguier
+	 * @deprecated
+	 */
+	public function optimize() {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
+
+		check_ajax_referer( 'imagify_async_optimize_as3cf' );
+
+		if ( empty( $_POST['post_id'] ) || ! imagify_current_user_can( 'auto-optimize' ) ) {
+			die();
+		}
+
+		$attachment_id = absint( $_POST['post_id'] );
+
+		if ( ! $attachment_id || empty( $_POST['metadata'] ) || ! is_array( $_POST['metadata'] ) || empty( $_POST['metadata']['sizes'] ) ) {
+			die();
+		}
+
+		if ( ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+			die();
+		}
+
+		$optimization_level = null;
+		$attachment         = get_imagify_attachment( self::CONTEXT, $attachment_id, 'as3cf_optimize' );
+
+		// Some specifics for the image editor.
+		if ( ! empty( $_POST['data']['do'] ) ) {
+			$optimization_level = $attachment->get_optimization_level();
+
+			// Remove old optimization data.
+			$attachment->delete_imagify_data();
+
+			if ( 'restore' === $_POST['data']['do'] ) {
+				// Restore the backup file.
+				$attachment->restore();
+			}
+		}
+
+		// Optimize it.
+		$attachment->optimize( $optimization_level, $_POST['metadata'] );
+	}
 }
 
 /**
@@ -363,6 +512,179 @@ class Imagify_Notices_Deprecated {
 		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.7', 'Imagify_Views::get_instance()->print_template( \'notice-\' . $view, $data )' );
 
 		Imagify_Views::get_instance()->print_template( 'notice-' . $view, $data );
+	}
+}
+
+/**
+ * Class for deprecated methods from Imagify_Admin_Ajax_Post.
+ *
+ * @since  1.8.4
+ * @author Grégory Viguier
+ * @deprecated
+ */
+class Imagify_Admin_Ajax_Post_Deprecated {
+
+	/**
+	 * Optimize image on picture uploading with async request.
+	 *
+	 * @since  1.6.11
+	 * @since  1.8.4 Deprecated
+	 * @access public
+	 * @author Julio Potier
+	 * @see    _imagify_optimize_attachment()
+	 * @deprecated
+	 */
+	public function imagify_async_optimize_upload_new_media_callback() {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
+
+		if ( empty( $_POST['_ajax_nonce'] ) || empty( $_POST['attachment_id'] ) || empty( $_POST['metadata'] ) || empty( $_POST['context'] ) ) { // WPCS: CSRF ok.
+			return;
+		}
+
+		$context       = imagify_sanitize_context( $_POST['context'] );
+		$attachment_id = absint( $_POST['attachment_id'] );
+
+		imagify_check_nonce( 'new_media-' . $attachment_id );
+		imagify_check_user_capacity( 'auto-optimize' );
+
+		$attachment = get_imagify_attachment( $context, $attachment_id, 'imagify_async_optimize_upload_new_media' );
+
+		// Optimize it!!!!!
+		$attachment->optimize( null, $_POST['metadata'] );
+		die( 1 );
+	}
+
+	/**
+	 * Optimize image on picture editing (resize, crop...) with async request.
+	 *
+	 * @since  1.6.11
+	 * @since  1.8.4 Deprecated
+	 * @access public
+	 * @author Julio Potier
+	 * @deprecated
+	 */
+	public function imagify_async_optimize_save_image_editor_file_callback() {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4', 'Imagify_Admin_Ajax_Post::get_instance()->imagify_auto_optimize_callback()' );
+
+		$attachment_id = ! empty( $_POST['postid'] ) ? absint( $_POST['postid'] ) : 0;
+
+		if ( ! $attachment_id || empty( $_POST['do'] ) ) {
+			return;
+		}
+
+		imagify_check_nonce( 'image_editor-' . $attachment_id );
+		imagify_check_user_capacity( 'edit_post', $attachment_id );
+
+		$attachment = get_imagify_attachment( 'wp', $attachment_id, 'wp_ajax_imagify_async_optimize_save_image_editor_file' );
+
+		if ( ! $attachment->get_data() ) {
+			return;
+		}
+
+		$optimization_level = $attachment->get_optimization_level();
+		$metadata           = wp_get_attachment_metadata( $attachment_id );
+
+		// Remove old optimization data.
+		$attachment->delete_imagify_data();
+
+		if ( 'restore' === $_POST['do'] ) {
+			// Restore the backup file.
+			$attachment->restore();
+
+			// Get old metadata to regenerate all thumbnails.
+			$metadata     = array( 'sizes' => array() );
+			$backup_sizes = (array) get_post_meta( $attachment_id, '_wp_attachment_backup_sizes', true );
+
+			foreach ( $backup_sizes as $size_key => $size_data ) {
+				$size_key = str_replace( '-origin', '' , $size_key );
+				$metadata['sizes'][ $size_key ] = $size_data;
+			}
+		}
+
+		// Optimize it!!!!!
+		$attachment->optimize( $optimization_level, $metadata );
+		die( 1 );
+	}
+}
+
+/**
+ * Compat class for Enable Media Replace plugin.
+ *
+ * @since  1.8.4
+ * @author Grégory Viguier
+ * @deprecated
+ */
+class Imagify_Enable_Media_Replace_Deprecated {
+
+	/**
+	 * Filesystem object.
+	 *
+	 * @var    object Imagify_Filesystem
+	 * @since  1.7.1
+	 * @since  1.8.4 Deprecated
+	 * @author Grégory Viguier
+	 * @access protected
+	 */
+	protected $filesystem;
+
+	/**
+	 * Optimize the attachment files if the old ones were also optimized.
+	 * Delete the old backup file.
+	 *
+	 * @since  1.6.9
+	 * @since  1.8.4 Deprecated
+	 * @author Grégory Viguier
+	 * @see    $this->store_old_backup_path()
+	 * @access protected
+	 *
+	 * @param  string $return_url The URL the user will be redirected to.
+	 * @return string             The same URL.
+	 */
+	public function optimize( $return_url ) {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.8.4' );
+
+		$attachment = $this->get_attachment();
+
+		if ( $attachment->get_data() ) {
+			/**
+			 * The old images have been optimized in the past.
+			 */
+			// Use the same otimization level for the new ones.
+			$optimization_level = $attachment->get_optimization_level();
+
+			// Remove old optimization data.
+			$attachment->delete_imagify_data();
+
+			// Optimize and overwrite the previous backup file if exists and needed.
+			add_filter( 'imagify_backup_overwrite_backup', '__return_true', 42 );
+			$attachment->optimize( $optimization_level );
+			remove_filter( 'imagify_backup_overwrite_backup', '__return_true', 42 );
+		}
+
+		$filesystem = Imagify_Filesystem::get_instance();
+
+		/**
+		 * Delete the old backup file.
+		 */
+		if ( ! $this->old_backup_path || ! $filesystem->exists( $this->old_backup_path ) ) {
+			// The user didn't choose to rename the files, or there is no old backup.
+			$this->old_backup_path = null;
+			return $return_url;
+		}
+
+		$new_backup_path = $attachment->get_raw_backup_path();
+
+		if ( $new_backup_path === $this->old_backup_path ) {
+			// We don't want to delete the new backup.
+			$this->old_backup_path = null;
+			return $return_url;
+		}
+
+		// Finally, delete the old backup file.
+		$filesystem->delete( $this->old_backup_path );
+
+		$this->old_backup_path = null;
+		return $return_url;
 	}
 }
 
@@ -992,6 +1314,86 @@ function is_imagify_servers_up() {
 	_deprecated_function( __FUNCTION__ . '()', '1.7.1', 'Imagify_Requirements::is_api_up()' );
 
 	return Imagify_Requirements::is_api_up();
+}
+
+/**
+ * Auto-optimize when a new attachment is generated.
+ *
+ * @since 1.0
+ * @since 1.5 Async job.
+ * @since 1.8.4 Deprecated
+ * @see   Imagify_Admin_Ajax_Post_Deprecated::imagify_async_optimize_upload_new_media_callback()
+ * @deprecated
+ *
+ * @param  array $metadata      An array of attachment meta data.
+ * @param  int   $attachment_id Current attachment ID.
+ * @return array
+ */
+function _imagify_optimize_attachment( $metadata, $attachment_id ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.8.4', 'Imagify_Auto_Optimization::get_instance()->store_upload_ids()' );
+
+	if ( ! Imagify_Requirements::is_api_key_valid() || ! get_imagify_option( 'auto_optimize' ) ) {
+		return $metadata;
+	}
+
+	/**
+	 * Allow to prevent automatic optimization for a specific attachment.
+	 *
+	 * @since  1.6.12
+	 * @author Grégory Viguier
+	 *
+	 * @param bool  $optimize      True to optimize, false otherwise.
+	 * @param int   $attachment_id Attachment ID.
+	 * @param array $metadata      An array of attachment meta data.
+	 */
+	$optimize = apply_filters( 'imagify_auto_optimize_attachment', true, $attachment_id, $metadata );
+
+	if ( ! $optimize ) {
+		return $metadata;
+	}
+
+	$context     = 'wp';
+	$action      = 'imagify_async_optimize_upload_new_media';
+	$_ajax_nonce = wp_create_nonce( 'new_media-' . $attachment_id );
+
+	imagify_do_async_job( compact( 'action', '_ajax_nonce', 'metadata', 'attachment_id', 'context' ) );
+
+	return $metadata;
+}
+
+/**
+ * Optimize an attachment after being resized.
+ *
+ * @since 1.3.6
+ * @since 1.4 Async job.
+ * @since 1.8.4 Deprecated
+ * @deprecated
+ */
+function _imagify_optimize_save_image_editor_file() {
+	_deprecated_function( __FUNCTION__ . '()', '1.8.4' );
+
+	if ( ! isset( $_POST['action'], $_POST['do'], $_POST['postid'] ) || 'image-editor' !== $_POST['action'] || 'open' === $_POST['do'] ) { // WPCS: CSRF ok.
+		return;
+	}
+
+	$attachment_id = absint( $_POST['postid'] );
+
+	if ( ! $attachment_id || ! Imagify_Requirements::is_api_key_valid() ) {
+		return;
+	}
+
+	check_ajax_referer( 'image_editor-' . $attachment_id );
+
+	$attachment = get_imagify_attachment( 'wp', $attachment_id, 'save_image_editor_file' );
+
+	if ( ! $attachment->get_data() ) {
+		return;
+	}
+
+	$body           = $_POST;
+	$body['action'] = 'imagify_async_optimize_save_image_editor_file';
+
+	imagify_do_async_job( $body );
 }
 
 if ( is_admin() ) :
