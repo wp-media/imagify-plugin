@@ -101,6 +101,10 @@
 .imagify-modal-title {
 	font-size: 1.8em;
 }
+.imagify-modal-title .imagify-inner-sub-title {
+	display: block;
+	font-size: .56em;
+}
 .imagify-analyzing .imagify-numbers-calc,
 .imagify-numbers-notcalc,
 .imagify-modal-section.imagify-analyzing .imagify-modal-cols,
