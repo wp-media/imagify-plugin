@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 4.0.0
 Tested up to: 4.9.8
-Stable tag: 1.8.3
+Stable tag: 1.8.4
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -138,7 +138,17 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
-= 1.8.3 - 2018/11/24 =
+= 1.8.4 - 2018/11/12 =
+* Improvement: automatic optimization is delayed further, it now happens after the image original data is stored in the database. This new process should be more reliable.
+* Improvement: compatibility with wordpress.com.
+* Improvement: some wording and typos in the plan suggestion tool.
+* Improvement: improved wording and added a link to a new documentation entry for the case when no php extension are available for image manipulation.
+* Improvement: prevent plugins from accidentally overwriting the header containing the API key when contacting our servers.
+* Bug Fix: the handle in the original/optimized image comparator was a bit shy, but after some personal work it should stick to the cursor hopefully.
+* Bug Fix: a php notice in the WP Retina 2x compatibility code.
+* Bug Fix: handle a specific error case when contacting our servers fails.
+
+= 1.8.3 - 2018/10/24 =
 * Improvement: compatibility with new version of WP Offload Media plugin.
 * Improvement: some wording about AXIF Data and the 2MB limit.
 * Bug Fix: the lock icon now displays correctly.
