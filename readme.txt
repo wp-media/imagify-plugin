@@ -150,7 +150,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 = 1.8.3 - 2018/10/24 =
 * Improvement: compatibility with new version of WP Offload Media plugin.
-* Improvement: some wording about AXIF Data and the 2MB limit.
+* Improvement: some wording about EXIF Data and the 2MB limit.
 * Bug Fix: the lock icon now displays correctly.
 * Bug Fix: a text encoding issue with some server configurations.
 
