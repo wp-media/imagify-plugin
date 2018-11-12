@@ -1091,8 +1091,12 @@ class Imagify_WP_Retina_2x_Core {
 			}
 		}
 
-		$results[ $file_path ]     = call_user_func( $method, $file_path );
-		$results[ $attachment_id ] = $results[ $file_path ];
+		// $file_path is now a path for sure.
+		$results[ $file_path ] = call_user_func( $method, $file_path );
+
+		if ( ! empty( $attachment_id ) ) {
+			$results[ $attachment_id ] = $results[ $file_path ];
+		}
 
 		return $results[ $file_path ];
 	}
