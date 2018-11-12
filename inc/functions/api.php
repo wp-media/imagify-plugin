@@ -207,6 +207,7 @@ function imagify_translate_api_message( $message ) {
 
 	$messages = array(
 		// Local messages from Imagify::curl_http_call() and Imagify::handle_response().
+		'Could not initialize a new cURL handle'                                                   => __( 'Could not initialize a new cURL handle.', 'imagify' ),
 		'Unknown error occurred'                                                                   => __( 'Unknown error occurred.', 'imagify' ),
 		'Your image is too big to be uploaded on our server'                                       => __( 'Your file is too big to be uploaded on our server.', 'imagify' ),
 		'cURL isn\'t installed on the server'                                                      => __( 'cURL is not available on the server.', 'imagify' ),
@@ -238,9 +239,9 @@ function imagify_translate_api_message( $message ) {
 	}
 
 	// Local message.
-	if ( preg_match( '@^Unknown error occurred \((\d+)(.*?)\)$@', $trim_message, $matches ) ) {
-		/* translators: 1 is a http status code, 2 is an error message. */
-		return sprintf( __( 'Unknown error occurred (%1$d%2$s).', 'imagify' ), $matches[1], esc_html( strip_tags( $matches[2] ) ) );
+	if ( preg_match( '@^(?:Unknown|An) error occurred \((.+)\)$@', $trim_message, $matches ) ) {
+		/* translators: %s is an error message. */
+		return sprintf( __( 'An error occurred (%s).', 'imagify' ), esc_html( strip_tags( $matches[1] ) ) );
 	}
 
 	// API message.

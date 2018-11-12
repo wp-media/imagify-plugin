@@ -16,7 +16,7 @@ class Imagify_Regenerate_Thumbnails {
 	 * @since  1.7.1
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.1';
 
 	/**
 	 * Action used for the ajax callback.
@@ -122,6 +122,8 @@ class Imagify_Regenerate_Thumbnails {
 		if ( $attachment ) {
 			// The attachment can be regenerated: backup the optimized full-sized file.
 			$this->backup_optimized_file( $attachment_id );
+			// Prevent automatic optimization.
+			Imagify_Auto_Optimization::prevent_optimization( $attachment_id );
 		}
 
 		return $dispatch_result;
@@ -148,13 +150,15 @@ class Imagify_Regenerate_Thumbnails {
 		if ( ! $sizes ) {
 			// Put the optimized full-sized file back.
 			$this->put_optimized_file_back( $this->get_attachment( $attachment_id ) );
+			// Allow auto-optimization back.
+			Imagify_Auto_Optimization::allow_optimization( $attachment_id );
 
 			return $metadata;
 		}
 
-		$action      = Imagify_Regenerate_Thumbnails::ACTION;
+		$action      = self::ACTION;
 		$context     = $this->get_attachment( $attachment_id )->get_context();
-		$_ajax_nonce = wp_create_nonce( Imagify_Regenerate_Thumbnails::get_nonce_name( $attachment_id, $context ) );
+		$_ajax_nonce = wp_create_nonce( self::get_nonce_name( $attachment_id, $context ) );
 
 		imagify_do_async_job( compact( 'action', '_ajax_nonce', 'sizes', 'attachment_id', 'context' ) );
 

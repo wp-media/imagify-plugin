@@ -22,12 +22,12 @@
 				imgHeight         = 0,
 				$slider, $overlay,
 				calcOffset = function( dimensionPct ) {
-					var width  = parseInt( $beforeImg.attr( 'width' ), 10 ),
-						height = parseInt( $beforeImg.attr( 'height' ), 10 );
+					var width  = parseInt( $beforeImg.width(), 10 ),
+						height = parseInt( $beforeImg.height(), 10 );
 
 					if ( ! width || ! height ) {
-						width  = parseInt( $beforeImg.width(), 10 );
-						height = parseInt( $beforeImg.height(), 10 );
+						width  = parseInt( $beforeImg.attr( 'width' ), 10 );
+						height = parseInt( $beforeImg.attr( 'height' ), 10 );
 					}
 
 					return {

@@ -759,6 +759,8 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		$root_path = apply_filters( 'imagify_site_root', null );
 
 		if ( is_string( $root_path ) ) {
+			$root_path = trailingslashit( wp_normalize_path( $root_path ) );
+
 			return $root_path;
 		}
 

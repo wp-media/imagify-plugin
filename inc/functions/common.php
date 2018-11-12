@@ -197,6 +197,7 @@ function imagify_autoload( $class ) {
 		'Imagify_Admin_Ajax_Post'             => 1,
 		'Imagify_Assets'                      => 1,
 		'Imagify_Attachment'                  => 1,
+		'Imagify_Auto_Optimization'           => 1,
 		'Imagify_Cron_Library_Size'           => 1,
 		'Imagify_Cron_Rating'                 => 1,
 		'Imagify_Cron_Sync_Files'             => 1,
@@ -304,6 +305,10 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 
 		case 'documentation':
 			$url = $site_url . 'documentation/';
+			break;
+
+		case 'documentation-imagick-gd':
+			$url = $site_url . 'documentation/solve-imagemagick-gd-required/';
 			break;
 
 		case 'register':
