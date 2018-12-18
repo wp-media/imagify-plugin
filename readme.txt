@@ -138,6 +138,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.8.4.1 - 2018/12/18 =
+* Improvement: prevent "unknown error" messages that some users are getting since yesterday.
+
 = 1.8.4 - 2018/11/12 =
 * Improvement: automatic optimization is delayed further, it now happens after the image original data is stored in the database. This new process should be more reliable.
 * Improvement: compatibility with wordpress.com.
