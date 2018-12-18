@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.2';
+	const VERSION = '1.2.1';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -454,10 +454,9 @@ class Imagify extends Imagify_Deprecated {
 			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
 		}
 
-		$url = self::API_ENDPOINT . $url;
-
 		try {
-			$ch = @curl_init();
+			$url = self::API_ENDPOINT . $url;
+			$ch  = @curl_init();
 
 			if ( ! is_resource( $ch ) ) {
 				throw new Exception( 'Could not initialize a new cURL handle' );
@@ -489,13 +488,36 @@ class Imagify extends Imagify_Deprecated {
 				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] );
 			}
 
+			if ( defined( 'CURLOPT_PROTOCOLS' ) ) {
+				curl_setopt( $ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS );
+			}
+
+			$user_agent = apply_filters( 'http_headers_useragent', 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ) );
+
 			curl_setopt( $ch, CURLOPT_URL, $url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+			curl_setopt( $ch, CURLOPT_HEADER, false );
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
 			curl_setopt( $ch, CURLOPT_TIMEOUT, $args['timeout'] );
-			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 0 );
-			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
+			curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $args['timeout'] );
+			curl_setopt( $ch, CURLOPT_USERAGENT, $user_agent );
+			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, false );
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+
+			/**
+			 * Tell which http version to use with cURL during image optimization.
+			 *
+			 * @since  1.8.4.1
+			 * @author Grégory Viguier
+			 *
+			 * @param $use_version_1_0 bool True to use version 1.0. False for 1.1. Default is true.
+			 */
+			if ( apply_filters( 'imagify_curl_http_version_1_0', true ) ) {
+				curl_setopt( $ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0 );
+			} else {
+				curl_setopt( $ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1 );
+			}
 
 			$response  = curl_exec( $ch );
 			$error     = curl_error( $ch );
