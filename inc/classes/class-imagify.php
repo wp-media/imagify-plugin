@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 /**
  * Imagify.io API for WordPress.
  */
-class Imagify extends Imagify_Deprecated {
+class Imagify {
 
 	/**
 	 * Class version.

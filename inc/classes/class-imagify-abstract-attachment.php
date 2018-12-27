@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  *
  * @since 1.0
  */
-abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_Deprecated {
+abstract class Imagify_Abstract_Attachment {
 
 	/**
 	 * Class version.
