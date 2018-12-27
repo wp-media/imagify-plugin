@@ -4,6 +4,7 @@
  * Plugin URI: https://wordpress.org/plugins/imagify/
  * Description: Dramaticaly reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool.
  * Version: 1.8.4.1
+ * Requires PHP: 5.4
  * Author: WP Media
  * Author URI: https://wp-media.me/
  * Licence: GPLv2
@@ -12,6 +13,8 @@
  * Domain Path: languages
  *
  * Copyright 2018 WP Media
+ *
+ * @package WP-Media\Imagify\WordPress-Plugin
  */
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
@@ -19,15 +22,16 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 // Imagify defines.
 define( 'IMAGIFY_VERSION',        '1.8.4.1' );
 define( 'IMAGIFY_WP_MIN',         '4.0' );
+define( 'IMAGIFY_PHP_MIN',        '5.4' );
 define( 'IMAGIFY_SLUG',           'imagify' );
 define( 'IMAGIFY_FILE',           __FILE__ );
 define( 'IMAGIFY_PATH',           realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
-define( 'IMAGIFY_INC_PATH',       realpath( IMAGIFY_PATH . 'inc/' ) . '/' );
-define( 'IMAGIFY_ADMIN_PATH',     realpath( IMAGIFY_INC_PATH . 'admin' ) . '/' );
-define( 'IMAGIFY_COMMON_PATH',    realpath( IMAGIFY_INC_PATH . 'common' ) . '/' );
-define( 'IMAGIFY_FUNCTIONS_PATH', realpath( IMAGIFY_INC_PATH . 'functions' ) . '/' );
-define( 'IMAGIFY_CLASSES_PATH',   realpath( IMAGIFY_INC_PATH . 'classes' ) . '/' );
-define( 'IMAGIFY_3RD_PARTY_PATH', realpath( IMAGIFY_INC_PATH . '3rd-party' ) . '/' );
+define( 'IMAGIFY_INC_PATH',       IMAGIFY_PATH . 'inc/' );
+define( 'IMAGIFY_ADMIN_PATH',     IMAGIFY_INC_PATH . 'admin/' );
+define( 'IMAGIFY_COMMON_PATH',    IMAGIFY_INC_PATH . 'common/' );
+define( 'IMAGIFY_FUNCTIONS_PATH', IMAGIFY_INC_PATH . 'functions/' );
+define( 'IMAGIFY_CLASSES_PATH',   IMAGIFY_INC_PATH . 'classes/' );
+define( 'IMAGIFY_3RD_PARTY_PATH', IMAGIFY_INC_PATH . '3rd-party/' );
 define( 'IMAGIFY_URL',            plugin_dir_url( IMAGIFY_FILE ) );
 define( 'IMAGIFY_INC_URL',        IMAGIFY_URL . 'inc/' );
 define( 'IMAGIFY_ADMIN_URL',      IMAGIFY_INC_URL . 'admin/' );
@@ -47,27 +51,37 @@ add_action( 'plugins_loaded', '_imagify_init' );
 function _imagify_init() {
 	global $wp_version;
 
-	// Load translations.
-	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
-
-	// Check WordPress version.
-	if ( version_compare( $wp_version, IMAGIFY_WP_MIN ) < 0 ) {
-		add_action( 'all_admin_notices', 'imagify_wp_version_notice' );
-		return;
-	}
-
 	// Nothing to do if autosave.
 	if ( defined( 'DOING_AUTOSAVE' ) ) {
 		return;
 	}
 
+	// Load translations.
+	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
+
+	// Check for WordPress and PHP version.
+	require IMAGIFY_CLASSES_PATH . 'class-imagify-requirements-check.php';
+
+	$requirement_checks = new Imagify_Requirements_Check(
+		array(
+			'plugin_name'    => 'Imagify',
+			'plugin_file'    => IMAGIFY_FILE,
+			'plugin_version' => IMAGIFY_VERSION,
+			'wp_version'     => IMAGIFY_WP_MIN,
+			'php_version'    => IMAGIFY_PHP_MIN,
+		)
+	);
+
+	if ( ! $requirement_checks->check() ) {
+		return;
+	}
+
+	// Register classes.
+	require IMAGIFY_PATH . 'vendor/autoload.php';
+
 	require IMAGIFY_FUNCTIONS_PATH . 'compat.php';
 	require IMAGIFY_FUNCTIONS_PATH . 'deprecated.php';
 	require IMAGIFY_FUNCTIONS_PATH . 'common.php';
-
-	// Register classes.
-	spl_autoload_register( 'imagify_autoload' );
-
 	require IMAGIFY_FUNCTIONS_PATH . 'options.php';
 	require IMAGIFY_FUNCTIONS_PATH . 'formatting.php';
 	require IMAGIFY_FUNCTIONS_PATH . 'admin.php';
@@ -116,36 +130,4 @@ function _imagify_init() {
 	* @since 1.0
 	*/
 	do_action( 'imagify_loaded' );
-}
-
-
-/**
- * Display an admin notice informing that the current WP version is lower than the required one.
- *
- * @since  1.8.1
- * @author Grégory Viguier
- */
-function imagify_wp_version_notice() {
-	global $wp_version;
-
-	if ( is_multisite() ) {
-		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		$is_active = is_plugin_active_for_network( plugin_basename( IMAGIFY_FILE ) );
-		$capacity  = $is_active ? 'manage_network_options' : 'manage_options';
-	} else {
-		$capacity = 'manage_options';
-	}
-
-	if ( ! current_user_can( $capacity ) ) {
-		return;
-	}
-
-	echo '<div class="error notice"><p>';
-	echo '<strong>' . __( 'Notice:', 'imagify' ) . '</strong> ';
-	/* translators: 1 is this plugin name, 2 is the required WP version, 3 is the current WP version. */
-	printf( __( '%1$s requires WordPress %2$s minimum, your website is actually running version %3$s.', 'imagify' ), '<strong>Imagify</strong>', '<code>' . IMAGIFY_WP_MIN . '</code>', '<code>' . $wp_version . '</code>' );
-	echo '</p></div>';
 }

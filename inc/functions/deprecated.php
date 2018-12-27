@@ -1396,6 +1396,126 @@ function _imagify_optimize_save_image_editor_file() {
 	imagify_do_async_job( $body );
 }
 
+
+/**
+ * Display an admin notice informing that the current WP version is lower than the required one.
+ *
+ * @since  1.8.1
+ * @since  1.9 Deprecated
+ * @author Grégory Viguier
+ * @deprecated
+ */
+function imagify_wp_version_notice() {
+	global $wp_version;
+
+	_deprecated_function( __FUNCTION__ . '()', '1.9', 'Imagify_Requirements_Check->print_notice()' );
+
+	if ( is_multisite() ) {
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$is_active = is_plugin_active_for_network( plugin_basename( IMAGIFY_FILE ) );
+		$capacity  = $is_active ? 'manage_network_options' : 'manage_options';
+	} else {
+		$capacity = 'manage_options';
+	}
+
+	if ( ! current_user_can( $capacity ) ) {
+		return;
+	}
+
+	echo '<div class="error notice"><p>';
+	echo '<strong>' . __( 'Notice:', 'imagify' ) . '</strong> ';
+	/* translators: 1 is this plugin name, 2 is the required WP version, 3 is the current WP version. */
+	printf( __( '%1$s requires WordPress %2$s minimum, your website is actually running version %3$s.', 'imagify' ), '<strong>Imagify</strong>', '<code>' . IMAGIFY_WP_MIN . '</code>', '<code>' . $wp_version . '</code>' );
+	echo '</p></div>';
+}
+
+/**
+ * Classes autoloader.
+ *
+ * @since  1.6.12
+ * @since  1.9 Deprecated
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @param string $class Name of the class to include.
+ */
+function imagify_autoload( $class ) {
+	static $strtolower;
+
+	_deprecated_function( __FUNCTION__ . '()', '1.9' );
+
+	if ( ! isset( $strtolower ) ) {
+		$strtolower = function_exists( 'mb_strtolower' ) ? 'mb_strtolower' : 'strtolower';
+	}
+
+	// Generic classes.
+	$classes = array(
+		'Imagify_Abstract_Attachment'         => 1,
+		'Imagify_Abstract_Background_Process' => 1,
+		'Imagify_Abstract_Cron'               => 1,
+		'Imagify_Abstract_DB'                 => 1,
+		'Imagify_Abstract_Options'            => 1,
+		'Imagify_Admin_Ajax_Post'             => 1,
+		'Imagify_Assets'                      => 1,
+		'Imagify_Attachment'                  => 1,
+		'Imagify_Auto_Optimization'           => 1,
+		'Imagify_Cron_Library_Size'           => 1,
+		'Imagify_Cron_Rating'                 => 1,
+		'Imagify_Cron_Sync_Files'             => 1,
+		'Imagify_Custom_Folders'              => 1,
+		'Imagify_Data'                        => 1,
+		'Imagify_DB'                          => 1,
+		'Imagify_File_Attachment'             => 1,
+		'Imagify_Files_DB'                    => 1,
+		'Imagify_Files_Iterator'              => 1,
+		'Imagify_Files_List_Table'            => 1,
+		'Imagify_Files_Recursive_Iterator'    => 1,
+		'Imagify_Files_Scan'                  => 1,
+		'Imagify_Files_Stats'                 => 1,
+		'Imagify_Filesystem'                  => 1,
+		'Imagify_Folders_DB'                  => 1,
+		'Imagify_Notices'                     => 1,
+		'Imagify_Options'                     => 1,
+		'Imagify_Requirements'                => 1,
+		'Imagify_Settings'                    => 1,
+		'Imagify_User'                        => 1,
+		'Imagify_Views'                       => 1,
+		'Imagify'                             => 1,
+	);
+
+	if ( isset( $classes[ $class ] ) ) {
+		$class = str_replace( '_', '-', call_user_func( $strtolower, $class ) );
+		include IMAGIFY_CLASSES_PATH . 'class-' . $class . '.php';
+		return;
+	}
+
+	// Third party classes.
+	$classes = array(
+		'Imagify_AS3CF_Attachment'                          => 'amazon-s3-and-cloudfront',
+		'Imagify_AS3CF'                                     => 'amazon-s3-and-cloudfront',
+		'Imagify_Enable_Media_Replace'                      => 'enable-media-replace',
+		'Imagify_Formidable_Pro'                            => 'formidable-pro',
+		'Imagify_NGG_Attachment'                            => 'nextgen-gallery',
+		'Imagify_NGG_DB'                                    => 'nextgen-gallery',
+		'Imagify_NGG_Dynamic_Thumbnails_Background_Process' => 'nextgen-gallery',
+		'Imagify_NGG_Storage'                               => 'nextgen-gallery',
+		'Imagify_NGG'                                       => 'nextgen-gallery',
+		'Imagify_Regenerate_Thumbnails'                     => 'regenerate-thumbnails',
+		'Imagify_WP_Retina_2x'                              => 'wp-retina-2x',
+		'Imagify_WP_Retina_2x_Core'                         => 'wp-retina-2x',
+		'Imagify_WP_Time_Capsule'                           => 'wp-time-capsule',
+	);
+
+	if ( isset( $classes[ $class ] ) ) {
+		$folder = $classes[ $class ];
+		$class  = str_replace( '_', '-', call_user_func( $strtolower, $class ) );
+		include IMAGIFY_3RD_PARTY_PATH . $folder . '/inc/classes/class-' . $class . '.php';
+	}
+}
+
 if ( is_admin() ) :
 
 	/**
