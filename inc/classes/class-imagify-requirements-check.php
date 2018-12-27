@@ -41,14 +41,24 @@ class Imagify_Requirements_Check {
 	private $plugin_version;
 
 	/**
-	 * Plugin previous version.
+	 * Last plugin version handling the current version of WP.
 	 *
 	 * @var    string
 	 * @since  1.9
 	 * @access private
 	 * @author Grégory Viguier
 	 */
-	private $plugin_last_version;
+	private $wp_last_version;
+
+	/**
+	 * Last plugin version handling the current version of PHP.
+	 *
+	 * @var    string
+	 * @since  1.9
+	 * @access private
+	 * @author Grégory Viguier
+	 */
+	private $php_last_version;
 
 	/**
 	 * Required WordPress version.
@@ -83,20 +93,25 @@ class Imagify_Requirements_Check {
 	 *     @type string $plugin_name         Plugin name.
 	 *     @type string $plugin_file         Plugin filepath.
 	 *     @type string $plugin_version      Plugin version.
-	 *     @type string $plugin_last_version Plugin previous version.
+	 *     @type string $wp_last_version     Last plugin version handling the current version of WP.
+	 *     @type string $php_last_version    Last plugin version handling the current version of PHP.
 	 *     @type string $wp_version          Required WordPress version.
 	 *     @type string $php_version         Required PHP version.
 	 * }
 	 */
 	public function __construct( $args ) {
-		foreach ( array( 'plugin_name', 'plugin_file', 'plugin_version', 'plugin_last_version', 'wp_version', 'php_version' ) as $setting ) {
+		foreach ( array( 'plugin_name', 'plugin_file', 'plugin_version', 'wp_last_version', 'php_last_version', 'wp_version', 'php_version' ) as $setting ) {
 			if ( isset( $args[ $setting ] ) ) {
 				$this->$setting = $args[ $setting ];
 			}
 		}
 
-		if ( empty( $this->plugin_last_version ) ) {
-			$this->plugin_last_version = '1.8.4.1';
+		if ( empty( $this->wp_last_version ) ) {
+			$this->wp_last_version = '1.6.14.2';
+		}
+
+		if ( empty( $this->php_last_version ) ) {
+			$this->php_last_version = '1.8.4.1';
 		}
 	}
 
@@ -146,6 +161,29 @@ class Imagify_Requirements_Check {
 		global $wp_version;
 
 		return version_compare( $wp_version, $this->wp_version ) >= 0;
+	}
+
+	/**
+	 * Get the last version of the plugin that can run with the current WP and PHP versions.
+	 *
+	 * @since  1.9
+	 * @access private
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	private function get_last_version() {
+		$last_version = '';
+
+		if ( ! $this->php_passes() ) {
+			$last_version = $this->php_last_version;
+		}
+
+		if ( ! $this->wp_passes() ) {
+			$last_version = ! $last_version || version_compare( $last_version, $this->wp_last_version ) > 0 ? $this->wp_last_version : $last_version;
+		}
+
+		return $last_version;
 	}
 
 	/**
@@ -232,7 +270,7 @@ class Imagify_Requirements_Check {
 
 		$message .= '<p>' . esc_html__( 'If you are not able to upgrade, you can rollback to the previous version by using the button below.', 'imagify' ) . "</p>\n";
 		/* translators: %s = Previous plugin version. */
-		$message .= '<p class="submit"><a href="' . esc_url( $rollback_url ) . '" class="button">' . sprintf( __( 'Re-install version %s', 'imagify' ), $this->plugin_last_version ) . '</a></p>';
+		$message .= '<p class="submit"><a href="' . esc_url( $rollback_url ) . '" class="button">' . sprintf( __( 'Re-install version %s', 'imagify' ), $this->get_last_version() ) . '</a></p>';
 
 		echo '<div class="notice notice-error">' . $message . '</div>';
 	}
@@ -254,9 +292,10 @@ class Imagify_Requirements_Check {
 		$plugin_transient = get_site_transient( 'update_plugins' );
 		$plugin_basename  = plugin_basename( $this->plugin_file );
 		$plugin_folder    = dirname( $plugin_basename );
-		$package_filename = $plugin_folder . '.' . $this->plugin_last_version . '.zip';
+		$last_version     = $this->get_last_version();
+		$package_filename = $plugin_folder . '.' . $last_version . '.zip';
 
-		$plugin_transient->checked[ $plugin_basename ] = $this->plugin_last_version;
+		$plugin_transient->checked[ $plugin_basename ] = $last_version;
 
 		if ( ! empty( $plugin_transient->response[ $plugin_basename ] ) ) {
 			$tmp_obj = $plugin_transient->response[ $plugin_basename ];
@@ -267,7 +306,7 @@ class Imagify_Requirements_Check {
 				'id'          => 'w.org/plugins/' . $plugin_folder,
 				'slug'        => $plugin_folder,
 				'plugin'      => $plugin_basename,
-				'new_version' => $this->plugin_last_version,
+				'new_version' => $last_version,
 				'url'         => 'https://wordpress.org/plugins/' . $plugin_folder . '/',
 				'package'     => 'https://downloads.wordpress.org/plugin/' . $package_filename,
 				'icons'       => array(),
@@ -276,7 +315,7 @@ class Imagify_Requirements_Check {
 			);
 		}
 
-		$tmp_obj->new_version = $this->plugin_last_version;
+		$tmp_obj->new_version = $last_version;
 		$tmp_obj->package     = preg_replace( '@/[^/]+$@', '/' . $package_filename, $tmp_obj->package );
 
 		$plugin_transient->response[ $plugin_basename ] = $tmp_obj;
