@@ -14,7 +14,7 @@
 	<file>.</file>
 
 	<exclude-pattern>vendor/*</exclude-pattern>
-	<exclude-pattern>inc/functions/deprecated.php</exclude-pattern>
+	<exclude-pattern>inc/deprecated/*</exclude-pattern>
 
 	<rule ref="WordPress">
 		<exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/><!-- Excluded as long as it doesn't ignore comments. -->

@@ -79,8 +79,9 @@ function _imagify_init() {
 	// Register classes.
 	require IMAGIFY_PATH . 'vendor/autoload.php';
 
+	require IMAGIFY_INC_PATH . 'deprecated/deprecated.php';
+	require IMAGIFY_INC_PATH . 'deprecated/3rd-party.php';
 	require IMAGIFY_FUNCTIONS_PATH . 'compat.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'deprecated.php';
 	require IMAGIFY_FUNCTIONS_PATH . 'common.php';
 	require IMAGIFY_FUNCTIONS_PATH . 'options.php';
 	require IMAGIFY_FUNCTIONS_PATH . 'formatting.php';

@@ -42,6 +42,7 @@
   "autoload": {
 	  "classmap": [
 		"inc/classes",
+		"inc/deprecated/classes",
 		"inc/3rd-party"
 	  ]
   }
