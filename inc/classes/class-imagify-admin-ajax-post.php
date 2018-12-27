@@ -16,7 +16,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @since  1.6.11
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.6';
+	const VERSION = '1.0.7';
 
 	/**
 	 * Actions to be triggered on admin ajax and admin post.
@@ -173,7 +173,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$context       = imagify_sanitize_context( $_GET['context'] );
+		$context       = imagify_sanitize_context( $_GET['context'] ); // WPCS: CSRF ok.
 		$attachment_id = absint( $_GET['attachment_id'] );
 
 		imagify_check_nonce( 'imagify-manual-upload-' . $attachment_id . '-' . $context );
@@ -203,7 +203,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$context       = imagify_sanitize_context( $_GET['context'] );
+		$context       = imagify_sanitize_context( $_GET['context'] ); // WPCS: CSRF ok.
 		$attachment_id = absint( $_GET['attachment_id'] );
 
 		imagify_check_nonce( 'imagify-manual-override-upload-' . $attachment_id . '-' . $context );
@@ -236,7 +236,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$context       = imagify_sanitize_context( $_GET['context'] );
+		$context       = imagify_sanitize_context( $_GET['context'] ); // WPCS: CSRF ok.
 		$attachment_id = absint( $_GET['attachment_id'] );
 
 		imagify_check_nonce( 'imagify-optimize-missing-sizes-' . $attachment_id . '-' . $context );
@@ -272,7 +272,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$context       = imagify_sanitize_context( $_GET['context'] );
+		$context       = imagify_sanitize_context( $_GET['context'] ); // WPCS: CSRF ok.
 		$attachment_id = absint( $_GET['attachment_id'] );
 
 		imagify_check_nonce( 'imagify-restore-upload-' . $attachment_id . '-' . $context );
@@ -306,7 +306,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$context       = imagify_sanitize_context( $_POST['context'] );
+		$context       = imagify_sanitize_context( $_POST['context'] ); // WPCS: CSRF ok.
 		$attachment_id = absint( $_POST['image'] );
 
 		imagify_check_nonce( 'imagify-bulk-upload' );
@@ -477,7 +477,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 		if ( ! is_wp_error( $result ) ) {
 			// Optimize it.
-			$level  = isset( $_GET['level'] ) && is_numeric( $_GET['level'] ) ? $_GET['level'] : null;
+			$level  = isset( $_GET['level'] ) && is_numeric( $_GET['level'] ) ? wp_unslash( $_GET['level'] ) : null;
 			$result = $file->optimize( $level );
 		}
 
@@ -1025,12 +1025,17 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @see    imagify_do_async_job()
 	 */
 	public function nopriv_imagify_rpc_callback() {
-		if ( empty( $_POST['imagify_rpc_action'] ) || empty( $_POST['imagify_rpc_id'] ) || 32 !== strlen( $_POST['imagify_rpc_id'] ) ) { // WPCS: CSRF ok.
+		if ( empty( $_POST['imagify_rpc_action'] ) || empty( $_POST['imagify_rpc_id'] ) ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		$action = wp_unslash( $_POST['imagify_rpc_action'] ); // WPCS: CSRF ok.
+
+		if ( 32 !== strlen( $action ) ) {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
 		// Not necessary but just in case, whitelist the original action.
-		$action  = $_POST['imagify_rpc_action']; // WPCS: CSRF ok.
 		$actions = array_flip( $this->ajax_only_actions );
 		unset( $actions['nopriv_imagify_rpc'] );
 
@@ -1059,7 +1064,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		unset( $_POST['imagify_rpc_action'], $_POST['imagify_rpc_id'], $_POST['imagify_rpc_nonce'] );
 
 		/** This hook is documented in wp-admin/admin-ajax.php. */
-		do_action( 'wp_ajax_' . $_POST['action'] );
+		do_action( 'wp_ajax_' . $action );
 	}
 
 
@@ -1082,12 +1087,14 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Empty email address.', 'imagify' ) );
 		}
 
-		if ( ! is_email( $_GET['email'] ) ) {
+		$email = wp_unslash( $_GET['email'] );
+
+		if ( ! is_email( $email ) ) {
 			imagify_die( __( 'Not a valid email address.', 'imagify' ) );
 		}
 
 		$data = array(
-			'email'    => $_GET['email'],
+			'email'    => $email,
 			'password' => wp_generate_password( 12, false ),
 			'lang'     => imagify_get_locale(),
 		);
@@ -1116,13 +1123,14 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Empty API key.', 'imagify' ) );
 		}
 
-		$response = get_imagify_status( $_GET['api_key'] );
+		$api_key  = wp_unslash( $_GET['api_key'] );
+		$response = get_imagify_status( $api_key );
 
 		if ( is_wp_error( $response ) ) {
 			imagify_die( $response );
 		}
 
-		update_imagify_option( 'api_key', $_GET['api_key'] );
+		update_imagify_option( 'api_key', $api_key );
 
 		wp_send_json_success();
 	}
@@ -1248,7 +1256,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			) );
 		}
 
-		$coupon = check_imagify_coupon_code( $_POST['coupon'] );
+		$coupon = wp_unslash( $_POST['coupon'] );
+		$coupon = check_imagify_coupon_code( $coupon );
 
 		if ( is_wp_error( $coupon ) ) {
 			imagify_die( $coupon );
@@ -1369,7 +1378,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		$folder = trailingslashit( sanitize_text_field( $_POST['folder'] ) );
+		$folder = wp_unslash( $_POST['folder'] );
+		$folder = trailingslashit( sanitize_text_field( $folder ) );
 		$folder = realpath( $this->filesystem->get_site_root() . ltrim( $folder, '/' ) );
 
 		if ( ! $folder ) {
@@ -1387,7 +1397,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		}
 
 		// Finally we made all our validations.
-		$selected = ! empty( $_POST['selected'] ) && is_array( $_POST['selected'] ) ? array_flip( $_POST['selected'] ) : array();
+		$selected = ! empty( $_POST['selected'] ) && is_array( $_POST['selected'] ) ? array_flip( wp_unslash( $_POST['selected'] ) ) : array();
 		$views    = Imagify_Views::get_instance();
 		$output   = '';
 

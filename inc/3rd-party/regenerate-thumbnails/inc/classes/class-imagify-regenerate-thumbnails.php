@@ -16,7 +16,7 @@ class Imagify_Regenerate_Thumbnails {
 	 * @since  1.7.1
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 
 	/**
 	 * Action used for the ajax callback.
@@ -182,7 +182,7 @@ class Imagify_Regenerate_Thumbnails {
 		}
 
 		$attachment_id = absint( $_POST['attachment_id'] );
-		$context       = imagify_sanitize_context( $_POST['context'] );
+		$context       = imagify_sanitize_context( $_POST['context'] ); // WPCS: CSRF ok.
 
 		imagify_check_nonce( self::get_nonce_name( $attachment_id, $context ) );
 		imagify_check_user_capacity( 'manual-optimize', $attachment_id );
@@ -194,7 +194,7 @@ class Imagify_Regenerate_Thumbnails {
 		}
 
 		// Optimize.
-		$attachment->reoptimize_thumbnails( $_POST['sizes'] );
+		$attachment->reoptimize_thumbnails( wp_unslash( $_POST['sizes'] ) );
 
 		// Put the optimized original file back.
 		$this->put_optimized_file_back( $attachment );

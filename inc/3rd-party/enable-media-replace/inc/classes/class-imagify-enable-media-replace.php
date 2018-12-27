@@ -16,7 +16,7 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	 * @since  1.6.9
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '2.0';
+	const VERSION = '2.0.1';
 
 	/**
 	 * The attachment ID.
@@ -107,7 +107,13 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	public function init( $unfiltered = true ) {
 		$this->attachment_id = ! empty( $_POST['ID'] ) ? absint( $_POST['ID'] ) : 0; // WPCS: CSRF ok.
 
-		if ( ! $this->attachment_id || empty( $_FILES['userfile']['tmp_name'] ) || ! is_uploaded_file( $_FILES['userfile']['tmp_name'] ) ) {
+		if ( ! $this->attachment_id || empty( $_FILES['userfile']['tmp_name'] ) ) {
+			return $unfiltered;
+		}
+
+		$tmp_name = wp_unslash( $_FILES['userfile']['tmp_name'] );
+
+		if ( ! is_uploaded_file( $tmp_name ) ) {
 			return $unfiltered;
 		}
 

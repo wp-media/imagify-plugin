@@ -11,7 +11,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.2.1';
+	const VERSION = '1.2.2';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -442,6 +442,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @access private
 	 * @since  1.6.7
+	 * @throws Exception When curl_init() fails.
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $url  The URL to call.

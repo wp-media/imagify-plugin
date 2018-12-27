@@ -16,8 +16,9 @@ function _imagify_upgrader() {
 	// Version stored at the site level.
 	$site_version    = Imagify_Data::get_instance()->get( 'version' );
 
-	// First install (network).
 	if ( ! $network_version ) {
+		// First install (network).
+
 		/**
 		 * Triggered on Imagify first install (network).
 		 *
@@ -25,9 +26,9 @@ function _imagify_upgrader() {
 		 * @author Grégory Viguier
 		 */
 		do_action( 'imagify_first_network_install' );
-	}
-	// Already installed but got updated (network).
-	elseif ( IMAGIFY_VERSION !== $network_version ) {
+	} elseif ( IMAGIFY_VERSION !== $network_version ) {
+		// Already installed but got updated (network).
+
 		/**
 		 * Triggered on Imagify upgrade (network).
 		 *
@@ -45,17 +46,18 @@ function _imagify_upgrader() {
 		Imagify_Options::get_instance()->set( 'version', IMAGIFY_VERSION );
 	}
 
-	// First install (site level).
 	if ( ! $site_version ) {
+		// First install (site level).
+
 		/**
 		 * Triggered on Imagify first install (site level).
 		 *
 		 * @since 1.0
 		 */
 		do_action( 'imagify_first_install' );
-	}
-	// Already installed but got updated (site level).
-	elseif ( IMAGIFY_VERSION !== $site_version ) {
+	} elseif ( IMAGIFY_VERSION !== $site_version ) {
+		// Already installed but got updated (site level).
+
 		/**
 		 * Triggered on Imagify upgrade (site level).
 		 *

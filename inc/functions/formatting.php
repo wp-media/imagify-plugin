@@ -18,7 +18,7 @@ function imagify_round_half_five( $number ) {
 		return $number[0];
 	}
 
-	$decimal = floatval( '0.' . substr( $number[1], 0 , 2 ) ); // Cut only 2 numbers.
+	$decimal = floatval( '0.' . substr( $number[1], 0, 2 ) ); // Cut only 2 numbers.
 
 	if ( $decimal > 0 ) {
 		if ( $decimal <= 0.5 ) {

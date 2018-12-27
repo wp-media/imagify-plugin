@@ -122,7 +122,7 @@ if ( ! is_network_admin() ) {
 
 						<button id="imagify-add-themes-to-custom-folder" class="button imagify-button-clean imagify-add-themes" type="button" data-theme="<?php echo implode( '" data-theme-parent="', $themes ); ?>">
 							<span class="dashicons dashicons-plus"></span>
-							<span class="button-text"><?php echo _n( 'Add the theme to optimization', 'Add the themes to optimization', $themes_count , 'imagify' ); ?></span>
+							<span class="button-text"><?php echo _n( 'Add the theme to optimization', 'Add the themes to optimization', $themes_count, 'imagify' ); ?></span>
 						</button>
 						<?php
 					}

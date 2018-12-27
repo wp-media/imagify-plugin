@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			<?php
 			printf(
 				/* translators: %s is a data quota. */
-				esc_html__( 'You have %s space credit left' , 'imagify' ),
+				esc_html__( 'You have %s space credit left', 'imagify' ),
 				'<span class="imagify-unconsumed-percent">' . esc_html( $data['quota'] ) . '%</span>'
 			);
 			?>
@@ -29,7 +29,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			if ( ! empty( $data['library'] ) && get_transient( 'imagify_large_library' ) ) {
 				printf(
 					/* translators: %s is a formatted number. Don't use %d. */
-					__( 'If you have more than %s images, you will need to launch the bulk optimization several times.' , 'imagify' ),
+					__( 'If you have more than %s images, you will need to launch the bulk optimization several times.', 'imagify' ),
 					number_format_i18n( imagify_get_unoptimized_attachment_limit() )
 				);
 			}

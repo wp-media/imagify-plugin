@@ -14,7 +14,7 @@ class Imagify_Assets {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.0.3';
 
 	/**
 	 * Prefix used for stylesheet handles.
@@ -815,7 +815,7 @@ class Imagify_Assets {
 		}
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_register_script( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", array( 'jquery' ), false, true );
+		wp_register_script( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", array( 'jquery' ), false, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NoExplicitVersion
 	}
 
 	/**

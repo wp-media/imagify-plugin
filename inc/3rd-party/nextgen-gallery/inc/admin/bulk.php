@@ -35,13 +35,13 @@ function imagify_ngg_bulk_stats( $data, $types ) {
 		return $data;
 	}
 
-	add_filter( 'imagify_get_folder_type_data'          , 'imagify_ngg_get_folder_type_data', 10, 2 );
-	add_filter( 'imagify_count_attachments'             , 'imagify_ngg_count_attachments' );
-	add_filter( 'imagify_count_optimized_attachments'   , 'imagify_ngg_count_optimized_attachments' );
-	add_filter( 'imagify_count_error_attachments'       , 'imagify_ngg_count_error_attachments' );
-	add_filter( 'imagify_count_unoptimized_attachments' , 'imagify_ngg_count_unoptimized_attachments' );
-	add_filter( 'imagify_percent_optimized_attachments' , 'imagify_ngg_percent_optimized_attachments' );
-	add_filter( 'imagify_count_saving_data'             , 'imagify_ngg_count_saving_data', 8 );
+	add_filter( 'imagify_get_folder_type_data',          'imagify_ngg_get_folder_type_data', 10, 2 );
+	add_filter( 'imagify_count_attachments',             'imagify_ngg_count_attachments' );
+	add_filter( 'imagify_count_optimized_attachments',   'imagify_ngg_count_optimized_attachments' );
+	add_filter( 'imagify_count_error_attachments',       'imagify_ngg_count_error_attachments' );
+	add_filter( 'imagify_count_unoptimized_attachments', 'imagify_ngg_count_unoptimized_attachments' );
+	add_filter( 'imagify_percent_optimized_attachments', 'imagify_ngg_percent_optimized_attachments' );
+	add_filter( 'imagify_count_saving_data',             'imagify_ngg_count_saving_data', 8 );
 
 	$total_saving_data = imagify_count_saving_data();
 
