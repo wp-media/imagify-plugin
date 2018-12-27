@@ -14,8 +14,6 @@
 	<file>.</file>
 
 	<exclude-pattern>vendor/*</exclude-pattern>
-	<exclude-pattern>inc/classes/class-wp-async-request.php</exclude-pattern>
-	<exclude-pattern>inc/classes/class-wp-background-process.php</exclude-pattern>
 	<exclude-pattern>inc/functions/deprecated.php</exclude-pattern>
 
 	<rule ref="WordPress">
