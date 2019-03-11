@@ -5,17 +5,24 @@
 	<arg name="extensions" value="php"/>
 	<arg value="s"/>
 
-    <!-- Run against the PHPCompatibility ruleset. -->
-    <rule ref="PHPCompatibility"/>
-    <!-- Check for cross-version support for PHP 5.4 and higher. -->
-    <config name="testVersion" value="5.4-"/>
-    <config name="minimum_supported_wp_version" value="4.0"/>
-
 	<file>.</file>
 
 	<exclude-pattern>vendor/*</exclude-pattern>
 	<exclude-pattern>inc/deprecated/*</exclude-pattern>
 
+	<!-- Check for cross-version support for PHP 5.4 and higher + WP 4.0 and higher. -->
+	<config name="testVersion" value="5.4-"/>
+	<config name="minimum_supported_wp_version" value="4.0"/>
+
+	<!-- Run against the PHPCompatibility ruleset. -->
+	<rule ref="PHPCompatibility">
+		<exclude name="PHPCompatibility.PHP.NewFunctions.curl_file_createFound"/><!-- Defined in Imagify 1.0. -->
+		<exclude name="PHPCompatibility.FunctionUse.NewFunctions.curl_file_createFound"/><!-- Same for VSCode. -->
+		<exclude name="PHPCompatibility.PHP.NewFunctions.hash_equalsFound"/><!-- Defined in WP 3.9.2. -->
+		<exclude name="PHPCompatibility.FunctionUse.NewFunctions.hash_equalsFound"/><!-- Same for VSCode. -->
+	</rule>
+
+	<!-- Run against the WordPress ruleset. -->
 	<rule ref="WordPress">
 		<exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/><!-- Excluded as long as it doesn't ignore comments. -->
 		<exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning"/><!-- Too many false positives. -->
@@ -24,8 +31,6 @@
 		<exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket"/><!-- Maybe someday. -->
 		<exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/><!-- Maybe someday. -->
 		<exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine"/><!-- Maybe someday. -->
-		<exclude name="PHPCompatibility.PHP.NewFunctions.curl_file_createFound"/><!-- Defined in Imagify 1.0. -->
-		<exclude name="PHPCompatibility.PHP.NewFunctions.hash_equalsFound"/><!-- Defined in WP 3.9.2. -->
 		<exclude name="Squiz.Commenting.FileComment.Missing"/><!-- Nope nope nope. -->
 		<exclude name="Squiz.PHP.EmbeddedPhp.ContentBeforeOpen"/><!-- Total bullshit. -->
 		<exclude name="Squiz.PHP.EmbeddedPhp.ContentAfterEnd"/><!-- Same. -->
