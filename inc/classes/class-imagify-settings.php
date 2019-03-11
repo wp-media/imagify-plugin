@@ -14,7 +14,7 @@ class Imagify_Settings {
 	 * @var   string
 	 * @since 1.7
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * The settings group.
@@ -411,7 +411,7 @@ class Imagify_Settings {
 				$value  = null;
 
 				if ( isset( $_POST[ $option ] ) ) {
-					$value = $_POST[ $option ];
+					$value = wp_unslash( $_POST[ $option ] );
 					if ( ! is_array( $value ) ) {
 						$value = trim( $value );
 					}

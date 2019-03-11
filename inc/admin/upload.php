@@ -54,7 +54,7 @@ function _imagify_attachments_filter_dropdown() {
 	$optimized   = imagify_count_optimized_attachments();
 	$unoptimized = imagify_count_unoptimized_attachments();
 	$errors      = imagify_count_error_attachments();
-	$status      = isset( $_GET['imagify-status'] ) ? $_GET['imagify-status'] : 0; // WPCS: CSRF ok.
+	$status      = isset( $_GET['imagify-status'] ) ? wp_unslash( $_GET['imagify-status'] ) : 0; // WPCS: CSRF ok.
 	$options     = array(
 		'optimized'   => _x( 'Optimized', 'Media Files', 'imagify' ),
 		'unoptimized' => _x( 'Unoptimized', 'Media Files', 'imagify' ),
@@ -86,7 +86,7 @@ function _imagify_sort_attachments_by_status( $vars ) {
 		return $vars;
 	}
 
-	$status       = $_GET['imagify-status']; // WPCS: CSRF ok.
+	$status       = wp_unslash( $_GET['imagify-status'] ); // WPCS: CSRF ok.
 	$meta_key     = '_imagify_status';
 	$meta_compare = '=';
 	$relation     = array();

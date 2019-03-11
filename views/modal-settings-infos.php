@@ -29,7 +29,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 					<?php _e( 'This will provide a drastic savings on the initial weight, with a small reduction in image quality. Most of the time it\'s not even noticeable.', 'imagify' ); ?>
 				</p>
 				<p>
-					<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.' , 'imagify' ); ?>
+					<?php _e( 'If you want the maximum weight reduction, we recommend using this mode.', 'imagify' ); ?>
 				</p>
 			</div>
 
@@ -42,7 +42,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 					<?php _e( 'This will provide a huge savings on the initial weight. Sometimes the image quality could be degraded a little.', 'imagify' ); ?>
 				</p>
 				<p>
-					<?php _e( 'If you want the maximum weight reduction, and you agree to lose some quality on the images we recommend using this mode.' , 'imagify' ); ?>
+					<?php _e( 'If you want the maximum weight reduction, and you agree to lose some quality on the images we recommend using this mode.', 'imagify' ); ?>
 				</p>
 			</div>
 		</div>

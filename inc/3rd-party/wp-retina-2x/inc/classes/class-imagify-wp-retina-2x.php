@@ -16,7 +16,7 @@ class Imagify_WP_Retina_2x {
 	 * @since  1.8
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * Core instance.
@@ -545,7 +545,8 @@ class Imagify_WP_Retina_2x {
 	 * @return string Path to the temporary file.
 	 */
 	public function get_uploaded_file_path() {
-		$tmp_file_path = ! empty( $_FILES['file']['tmp_name'] ) && is_uploaded_file( $_FILES['file']['tmp_name'] ) ? $_FILES['file']['tmp_name'] : '';
+		$tmp_file_path = ! empty( $_FILES['file']['tmp_name'] )               ? wp_unslash( $_FILES['file']['tmp_name'] ) : '';
+		$tmp_file_path = $tmp_file_path && is_uploaded_file( $tmp_file_path ) ? $tmp_file_path                            : '';
 		$filesystem    = Imagify_Filesystem::get_instance();
 
 		if ( ! $tmp_file_path || ! $filesystem->is_image( $tmp_file_path ) ) {

@@ -112,7 +112,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 										<?php
 										printf(
 											/* translators: %s is a data quota. */
-											__( 'You have %s space credit left' , 'imagify' ),
+											__( 'You have %s space credit left', 'imagify' ),
 											'<span class="imagify-unconsumed-percent">' . $this->get_quota_percent() . '%</span>'
 										);
 										?>

@@ -79,10 +79,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 							</p>
 							<div class="imagify-inline-options imagify-radio-line">
 								<input id="imagify-subscription-monthly" type="radio" value="monthly" name="plan-subscription" checked="checked">
-								<label for="imagify-subscription-monthly"><?php esc_html_e( 'Monthly' , 'imagify' ); ?></label>
+								<label for="imagify-subscription-monthly"><?php esc_html_e( 'Monthly', 'imagify' ); ?></label>
 
 								<input id="imagify-subscription-yearly" type="radio" value="yearly" name="plan-subscription">
-								<label for="imagify-subscription-yearly"><?php esc_html_e( 'Yearly' , 'imagify' ); ?><span class="imagify-2-free"><?php esc_html_e( '2 months free', 'imagify' ); ?></span></label>
+								<label for="imagify-subscription-yearly"><?php esc_html_e( 'Yearly', 'imagify' ); ?><span class="imagify-2-free"><?php esc_html_e( '2 months free', 'imagify' ); ?></span></label>
 							</div><!-- .imagify-radio-line -->
 						</div><!-- .imagify-offer-header -->
 
@@ -245,10 +245,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 						<div class="imagify-inline-options imagify-small-options imagify-radio-line">
 							<input id="imagify-pricing-montly" type="radio" value="monthly" name="plan-pricing" checked="checked">
-							<label for="imagify-pricing-montly"><?php esc_html_e( 'Monthly' , 'imagify' ); ?></label>
+							<label for="imagify-pricing-montly"><?php esc_html_e( 'Monthly', 'imagify' ); ?></label>
 
 							<input id="imagify-pricing-yearly" type="radio" value="yearly" name="plan-pricing">
-							<label for="imagify-pricing-yearly"><?php esc_html_e( 'Yearly' , 'imagify' ); ?><span class="imagify-2-free imagify-b-right"><?php esc_html_e( '2 months free', 'imagify' ); ?></span></label>
+							<label for="imagify-pricing-yearly"><?php esc_html_e( 'Yearly', 'imagify' ); ?><span class="imagify-2-free imagify-b-right"><?php esc_html_e( '2 months free', 'imagify' ); ?></span></label>
 						</div><!-- .imagify-radio-line -->
 
 

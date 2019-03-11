@@ -241,7 +241,7 @@ function imagify_translate_api_message( $message ) {
 	// Local message.
 	if ( preg_match( '@^(?:Unknown|An) error occurred \((.+)\)$@', $trim_message, $matches ) ) {
 		/* translators: %s is an error message. */
-		return sprintf( __( 'An error occurred (%s).', 'imagify' ), esc_html( strip_tags( $matches[1] ) ) );
+		return sprintf( __( 'An error occurred (%s).', 'imagify' ), esc_html( wp_strip_all_tags( $matches[1] ) ) );
 	}
 
 	// API message.
