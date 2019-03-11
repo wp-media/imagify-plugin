@@ -77,7 +77,9 @@ function _imagify_init() {
 	}
 
 	// Register classes.
-	require IMAGIFY_PATH . 'vendor/autoload.php';
+	if ( file_exists( IMAGIFY_PATH . 'vendor/autoload.php' ) ) {
+		require IMAGIFY_PATH . 'vendor/autoload.php';
+	}
 
 	require IMAGIFY_INC_PATH . 'deprecated/deprecated.php';
 	require IMAGIFY_INC_PATH . 'deprecated/3rd-party.php';
