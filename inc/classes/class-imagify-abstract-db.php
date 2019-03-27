@@ -7,14 +7,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.5
  * @source https://gist.github.com/pippinsplugins/e220a7f0f0f2fbe64608
  */
-abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
+abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implements \Imagify\DB\DBInterface {
 
 	/**
 	 * Class version.
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.2.1';
+	const VERSION = '1.3';
 
 	/**
 	 * Suffix used in the name of the options that store the table versions.
@@ -171,7 +171,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Whitelist of columns.
+	 * Get the column placeholders.
 	 *
 	 * @since  1.5
 	 * @access public
