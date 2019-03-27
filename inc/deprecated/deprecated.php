@@ -356,6 +356,21 @@ function imagify_wp_version_notice() {
 }
 
 /**
+ * Delete the backup file when an attachement is deleted.
+ *
+ * @since 1.0
+ * @since 1.9 Deprecated
+ * @deprecated
+ *
+ * @param int $post_id Attachment ID.
+ */
+function _imagify_delete_backup_file( $post_id ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.9', 'imagify_cleanup_after_media_deletion( $post_id )' );
+
+	get_imagify_attachment( 'wp', $post_id, 'delete_attachment' )->delete_backup();
+}
+
+/**
  * Classes autoloader.
  *
  * @since  1.6.12
@@ -411,7 +426,7 @@ function imagify_autoload( $class ) {
 
 	if ( isset( $classes[ $class ] ) ) {
 		$class = str_replace( '_', '-', call_user_func( $strtolower, $class ) );
-		include IMAGIFY_CLASSES_PATH . 'class-' . $class . '.php';
+		include IMAGIFY_PATH . 'inc/classes/class-' . $class . '.php';
 		return;
 	}
 
@@ -435,8 +450,268 @@ function imagify_autoload( $class ) {
 	if ( isset( $classes[ $class ] ) ) {
 		$folder = $classes[ $class ];
 		$class  = str_replace( '_', '-', call_user_func( $strtolower, $class ) );
-		include IMAGIFY_3RD_PARTY_PATH . $folder . '/inc/classes/class-' . $class . '.php';
+		include IMAGIFY_PATH . 'inc/3rd-party/' . $folder . '/inc/classes/class-' . $class . '.php';
 	}
+}
+
+/**
+ * Tell if the attachment has the required WP metadata.
+ *
+ * @since  1.6.12
+ * @since  1.7 Also checks that the '_wp_attached_file' meta is valid (not a URL or anything funny).
+ * @since  1.9 Deprecated
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @param  int $attachment_id The attachment ID.
+ * @return bool
+ */
+function imagify_attachment_has_required_metadata( $attachment_id ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.9', '( new Imagify\\Media\\WP( $attachment_id ) )->has_required_media_data() )' );
+
+	$file = get_post_meta( $attachment_id, '_wp_attached_file', true );
+
+	if ( ! $file || preg_match( '@://@', $file ) || preg_match( '@^.:\\\@', $file ) ) {
+		return false;
+	}
+
+	return (bool) wp_get_attachment_metadata( $attachment_id, true );
+}
+
+/**
+ * Get the default Bulk Optimization buffer size.
+ *
+ * @since  1.5.10
+ * @since  1.7 Added $sizes parameter.
+ * @since  1.9 Deprecated
+ * @author Jonathan Buttigieg
+ * @deprecated
+ *
+ * @param  int $sizes Number of image sizes per item (attachment).
+ * @return int        The buffer size.
+ */
+function get_imagify_bulk_buffer_size( $sizes = false ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.9' );
+
+	if ( ! $sizes ) {
+		$sizes = count( get_imagify_thumbnail_sizes() );
+	}
+
+	switch ( true ) {
+		case ( $sizes >= 10 ):
+			return 1;
+
+		case ( $sizes >= 8 ):
+			return 2;
+
+		case ( $sizes >= 6 ):
+			return 3;
+
+		default:
+			return 4;
+	}
+}
+
+/**
+ * Get the Imagify attachment class name depending to a context.
+ *
+ * @since  1.5
+ * @since  1.6.6 $attachment_id and $identifier have been added.
+ * @since  1.9 Deprecated
+ * @author Jonathan Buttigieg
+ * @deprecated
+ *
+ * @param  string $context       The context to determine the class name.
+ * @param  int    $attachment_id The attachment ID.
+ * @param  string $identifier    An identifier.
+ * @return string                The Imagify attachment class name.
+ */
+function get_imagify_attachment_class_name( $context, $attachment_id, $identifier ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.9', 'imagify_get_optimization_process_class_name( $context )' );
+
+	$context = $context ? $context : 'wp';
+
+	if ( 'wp' !== $context && 'wp' === strtolower( $context ) ) {
+		$context = 'wp';
+	}
+
+	/**
+	 * Filter the context used for the optimization.
+	 *
+	 * @since  1.6.6
+	 * @author Grégory Viguier
+	 *
+	 * @param string $context       The context.
+	 * @param int    $attachment_id The attachment ID.
+	 * @param string $identifier    An identifier.
+	 */
+	$context = apply_filters( 'imagify_optimize_attachment_context', $context, $attachment_id, $identifier );
+
+	return 'Imagify_' . ( 'wp' !== $context ? $context . '_' : '' ) . 'Attachment';
+}
+
+/**
+ * Get the Imagify attachment instance depending to a context.
+ *
+ * @since  1.6.13
+ * @since  1.9 Deprecated
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @param  string $context       The context to determine the class name.
+ * @param  int    $attachment_id The attachment ID.
+ * @param  string $identifier    An identifier.
+ * @return object                The Imagify attachment instance.
+ */
+function get_imagify_attachment( $context, $attachment_id, $identifier ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.9', 'imagify_get_optimization_process( $media_id, $context )' );
+
+	$class_name = get_imagify_attachment_class_name( $context, $attachment_id, $identifier );
+	return new $class_name( $attachment_id );
+}
+
+/**
+ * Optimize a file with Imagify.
+ *
+ * @since 1.0
+ *
+ * @param  string $file_path Absolute path to the file.
+ * @param  array  $args      {
+ *     Optional. An array of arguments.
+ *
+ *     @type bool $backup              Force a backup of the original file.
+ *     @type int  $optimization_level  The optimization level (2=ultra, 1=aggressive, 0=normal).
+ *     @type bool $keep_exif           To keep exif data or not.
+ * }
+ * @return array|WP_Error    Optimized image data. A WP_Error object on error.
+ */
+function do_imagify( $file_path, $args = array() ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.9', '(new Imagify\\Optimization\\File( $file_path ))->optimize( $args )' );
+
+	$args = array_merge( array(
+		'backup'             => get_imagify_option( 'backup' ),
+		'optimization_level' => get_imagify_option( 'optimization_level' ),
+		'keep_exif'          => get_imagify_option( 'exif' ),
+		'context'            => 'wp',
+		'resized'            => false,
+		'original_size'      => 0,
+		'backup_path'        => null,
+	), $args );
+
+	/**
+	 * Filter the attachment path.
+	 *
+	 * @since 1.2
+	 *
+	 * @param string $file_path The attachment path.
+	 */
+	$file_path = apply_filters( 'imagify_file_path', $file_path );
+
+	// Check that file path isn't empty.
+	if ( ! $file_path ) {
+		return new WP_Error( 'empty_path', __( 'File path is empty.', 'imagify' ) );
+	}
+
+	// Check if curl is available.
+	if ( ! Imagify_Requirements::supports_curl() ) {
+		return new WP_Error( 'curl', __( 'cURL is not available on the server.', 'imagify' ) );
+	}
+
+	$filesystem = imagify_get_filesystem();
+
+	// Check if imageMagick or GD is available.
+	if ( $filesystem->is_image( $file_path ) && ! Imagify_Requirements::supports_image_editor() ) {
+		return new WP_Error( 'image_editor', sprintf(
+			/* translators: %s is a "More info?" link. */
+			__( 'No php extensions are available to edit images on the server. ImageMagick or GD is required. %s', 'imagify' ),
+			'<a href="' . esc_url( imagify_get_external_url( 'documentation-imagick-gd' ) ) . '" target="_blank">' . __( 'More info?', 'imagify' ) . '</a>'
+		) );
+	}
+
+	// Check if external HTTP requests are blocked.
+	if ( Imagify_Requirements::is_imagify_blocked() ) {
+		return new WP_Error( 'http_block_external', __( 'External HTTP requests are blocked.', 'imagify' ) );
+	}
+
+	// Check if the Imagify servers & the API are accessible.
+	if ( ! Imagify_Requirements::is_api_up() ) {
+		return new WP_Error( 'api_server_down', __( 'Sorry, our servers are temporarily unavailable. Please, try again in a couple of minutes.', 'imagify' ) );
+	}
+
+	// Check that the file exists.
+	if ( ! $filesystem->is_writable( $file_path ) || ! $filesystem->is_file( $file_path ) ) {
+		/* translators: %s is a file path. */
+		return new WP_Error( 'file_not_found', sprintf( __( 'Could not find %s.', 'imagify' ), $filesystem->make_path_relative( $file_path ) ) );
+	}
+
+	// Check that the file directory is writable.
+	if ( ! $filesystem->is_writable( $filesystem->dir_path( $file_path ) ) ) {
+		/* translators: %s is a file path. */
+		return new WP_Error( 'not_writable', sprintf( __( '%s is not writable.', 'imagify' ), $filesystem->make_path_relative( $filesystem->dir_path( $file_path ) ) ) );
+	}
+
+	/**
+	 * Fires before to optimize the Image with Imagify.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $file_path Absolute path to the image file.
+	 * @param bool   $backup    Force a backup of the original file.
+	*/
+	do_action( 'before_do_imagify', $file_path, $args['backup'] );
+
+	// Create a backup file before sending to optimization (to make sure we can backup the file).
+	$do_backup = $args['backup'] && ! $args['resized'];
+
+	if ( $do_backup ) {
+		$backup_result = imagify_backup_file( $file_path, $args['backup_path'] );
+
+		if ( is_wp_error( $backup_result ) ) {
+			// Stop the process if we can't backup the file.
+			return $backup_result;
+		}
+	}
+
+	// Send image for optimization and fetch the response.
+	$response = upload_imagify_image( array(
+		'image' => $file_path,
+		'data'  => wp_json_encode( array(
+			'aggressive'    => ( 1 === (int) $args['optimization_level'] ),
+			'ultra'         => ( 2 === (int) $args['optimization_level'] ),
+			'keep_exif'     => $args['keep_exif'],
+			'context'       => $args['context'],
+			'original_size' => $args['original_size'],
+		) ),
+	) );
+
+	// Check status code.
+	if ( is_wp_error( $response ) ) {
+		return new WP_Error( 'api_error', $response->get_error_message() );
+	}
+
+	if ( ! function_exists( 'download_url' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+	}
+
+	$temp_file = download_url( $response->image );
+
+	if ( is_wp_error( $temp_file ) ) {
+		return new WP_Error( 'temp_file_not_found', $temp_file->get_error_message() );
+	}
+
+	$filesystem->move( $temp_file, $file_path, true );
+
+	/**
+	 * Fires after to optimize the Image with Imagify.
+	 *
+	 * @since 1.0
+	 *
+	 * @param string $file_path Absolute path to the image file.
+	 * @param bool   $backup    Force a backup of the original file.
+	*/
+	do_action( 'after_do_imagify', $file_path, $args['backup'] );
+
+	return $response;
 }
 
 if ( is_admin() ) :

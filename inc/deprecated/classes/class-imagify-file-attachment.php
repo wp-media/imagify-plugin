@@ -5,7 +5,9 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * Imagify Attachment class for custom folders.
  *
  * @since  1.7
+ * @since  1.9 Deprecated
  * @author Grégory Viguier
+ * @deprecated
  */
 class Imagify_File_Attachment extends Imagify_Attachment {
 
@@ -16,7 +18,7 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 * @since  1.7
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0.1';
+	const VERSION = '1.1';
 
 	/**
 	 * The attachment SQL DB class.
@@ -47,6 +49,8 @@ class Imagify_File_Attachment extends Imagify_Attachment {
 	 * @param int|array|object $id Thefile ID.
 	 */
 	public function __construct( $id = 0 ) {
+		imagify_deprecated_class( get_class( $this ), '1.9', '\\Imagify\\Optimization\\Process\\CustomFolders( $id )' );
+
 		if ( is_numeric( $id ) ) {
 			$this->id = (int) $id;
 			$this->get_row();

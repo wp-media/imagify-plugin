@@ -2,34 +2,6 @@
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Check if Imagify is activated on the network.
- *
- * @since 1.0
- *
- * return bool True if Imagify is activated on the network.
- */
-function imagify_is_active_for_network() {
-	static $is;
-
-	if ( isset( $is ) ) {
-		return $is;
-	}
-
-	if ( ! is_multisite() ) {
-		$is = false;
-		return $is;
-	}
-
-	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-	}
-
-	$is = is_plugin_active_for_network( plugin_basename( IMAGIFY_FILE ) );
-
-	return $is;
-}
-
-/**
  * Tell if the current screen is what we're looking for.
  *
  * @since  1.6.10
@@ -208,36 +180,6 @@ function get_imagify_max_intermediate_image_size() {
 		'width'  => $width,
 		'height' => $height,
 	);
-}
-
-/**
- * Get the default Bulk Optimization buffer size.
- *
- * @since  1.5.10
- * @since  1.7 Added $sizes parameter.
- * @author Jonathan Buttigieg
- *
- * @param  int $sizes Number of image sizes per item (attachment).
- * @return int        The buffer size.
- */
-function get_imagify_bulk_buffer_size( $sizes = false ) {
-	if ( ! $sizes ) {
-		$sizes = count( get_imagify_thumbnail_sizes() );
-	}
-
-	switch ( true ) {
-		case ( $sizes >= 10 ):
-			return 1;
-
-		case ( $sizes >= 8 ):
-			return 2;
-
-		case ( $sizes >= 6 ):
-			return 3;
-
-		default:
-			return 4;
-	}
 }
 
 /**
