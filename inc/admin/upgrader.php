@@ -204,9 +204,10 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 
 		if ( $query->posts ) {
 			foreach ( (array) $query->posts as $id ) {
-				$attachment_error = get_imagify_attachment( 'wp', $id, 'imagify_upgrade' )->get_optimized_error();
+				$data  = get_post_meta( $id, '_imagify_data', true );
+				$error = ! empty( $data['sizes']['full']['error'] ) ? $data['sizes']['full']['error'] : '';
 
-				if ( false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
+				if ( false !== strpos( $error, 'This image is already compressed' ) ) {
 					update_post_meta( $id, '_imagify_status', 'already_optimized' );
 				}
 			}
@@ -243,10 +244,11 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 
 		if ( $query->posts ) {
 			foreach ( (array) $query->posts as $id ) {
-				$attachment_stats = get_imagify_attachment( 'wp', $id, 'imagify_upgrade' )->get_stats_data();
+				$data  = get_post_meta( $id, '_imagify_data', true );
+				$stats = isset( $data['stats'] ) ? $data['stats'] : [];
 
-				if ( isset( $attachment_stats['aggressive'] ) ) {
-					update_post_meta( $id, '_imagify_optimization_level', (int) $attachment_stats['aggressive'] );
+				if ( isset( $stats['aggressive'] ) ) {
+					update_post_meta( $id, '_imagify_optimization_level', (int) $stats['aggressive'] );
 				}
 			}
 		}

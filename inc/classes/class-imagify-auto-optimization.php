@@ -18,7 +18,7 @@ class Imagify_Auto_Optimization {
 	 * @since  1.8.4
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.1';
 
 	/**
 	 * An array containing the IDs (as keys) of attachments just being uploaded.
@@ -28,7 +28,7 @@ class Imagify_Auto_Optimization {
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
-	protected $uploads = array();
+	protected $uploads = [];
 
 	/**
 	 * An array containing the IDs (as keys) of attachments that must be optimized automatically.
@@ -39,7 +39,7 @@ class Imagify_Auto_Optimization {
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
-	protected $attachments = array();
+	protected $attachments = [];
 
 	/**
 	 * The single instance of the class.
@@ -59,7 +59,7 @@ class Imagify_Auto_Optimization {
 	 * @access private
 	 * @author Grégory Viguier
 	 */
-	private static $prevented = array();
+	private static $prevented = [];
 
 	/**
 	 * Get the main Instance.
@@ -99,15 +99,15 @@ class Imagify_Auto_Optimization {
 		$prio = IMAGIFY_INT_MAX - 30;
 
 		// Automatic optimization tunel.
-		add_action( 'add_attachment',                array( $this, 'store_upload_ids' ), $prio );
-		add_filter( 'wp_update_attachment_metadata', array( $this, 'store_ids_to_optimize' ), $prio, 2 );
-		add_action( 'updated_post_meta',             array( $this, 'do_auto_optimization' ), $prio, 4 );
-		add_action( 'added_post_meta',               array( $this, 'do_auto_optimization' ), $prio, 4 );
-		add_action( 'deleted_post_meta',             array( $this, 'unset_optimization' ), $prio, 3 );
+		add_action( 'add_attachment',                [ $this, 'store_upload_ids' ], $prio );
+		add_filter( 'wp_update_attachment_metadata', [ $this, 'store_ids_to_optimize' ], $prio, 2 );
+		add_action( 'updated_post_meta',             [ $this, 'do_auto_optimization' ], $prio, 4 );
+		add_action( 'added_post_meta',               [ $this, 'do_auto_optimization' ], $prio, 4 );
+		add_action( 'deleted_post_meta',             [ $this, 'unset_optimization' ], $prio, 3 );
 
 		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
-		add_action( 'before_imagify_update_metadata_size', array( __CLASS__, 'prevent_optimization' ), 5 );
-		add_action( 'after_imagify_update_metadata_size',  array( __CLASS__, 'allow_optimization' ), 5 );
+		add_action( 'imagify_before_update_wp_media_data_dimensions', [ __CLASS__, 'prevent_optimization' ], 5 );
+		add_action( 'imagify_after_update_wp_media_data_dimensions',  [ __CLASS__, 'allow_optimization' ], 5 );
 	}
 
 	/**
@@ -120,13 +120,13 @@ class Imagify_Auto_Optimization {
 	public function remove_hooks() {
 		$prio = IMAGIFY_INT_MAX - 30;
 
-		remove_action( 'add_attachment',                      array( $this, 'store_upload_ids' ), $prio );
-		remove_filter( 'wp_update_attachment_metadata',       array( $this, 'store_ids_to_optimize' ), $prio );
-		remove_action( 'updated_post_meta',                   array( $this, 'do_auto_optimization' ), $prio );
-		remove_action( 'added_post_meta',                     array( $this, 'do_auto_optimization' ), $prio );
-		remove_action( 'deleted_post_meta',                   array( $this, 'unset_optimization' ), $prio );
-		remove_action( 'before_imagify_update_metadata_size', array( __CLASS__, 'prevent_optimization' ), 5 );
-		remove_action( 'after_imagify_update_metadata_size',  array( __CLASS__, 'allow_optimization' ), 5 );
+		remove_action( 'add_attachment',                                 [ $this, 'store_upload_ids' ], $prio );
+		remove_filter( 'wp_update_attachment_metadata',                  [ $this, 'store_ids_to_optimize' ], $prio );
+		remove_action( 'updated_post_meta',                              [ $this, 'do_auto_optimization' ], $prio );
+		remove_action( 'added_post_meta',                                [ $this, 'do_auto_optimization' ], $prio );
+		remove_action( 'deleted_post_meta',                              [ $this, 'unset_optimization' ], $prio );
+		remove_action( 'imagify_before_update_wp_media_data_dimensions', [ __CLASS__, 'prevent_optimization' ], 5 );
+		remove_action( 'imagify_after_update_wp_media_data_dimensions',  [ __CLASS__, 'allow_optimization' ], 5 );
 	}
 
 
@@ -224,9 +224,14 @@ class Imagify_Auto_Optimization {
 
 		if ( ! $is_new_upload ) {
 			// An existing attachment being regenerated (or something).
-			$attachment = get_imagify_attachment( 'wp', $attachment_id, 'auto_optimization' );
+			$process = imagify_get_optimization_process( $attachment_id, 'wp' );
 
-			if ( ! $attachment->get_data() ) {
+			if ( ! $process->is_valid() ) {
+				// Uh?
+				return $metadata;
+			}
+
+			if ( ! $process->get_data()->get_optimization_status() ) {
 				/**
 				 * Fires when an attachment is updated but not optimized yet.
 				 *
@@ -292,21 +297,7 @@ class Imagify_Auto_Optimization {
 		$is_new_upload = $this->attachments[ $attachment_id ];
 		unset( $this->attachments[ $attachment_id ] );
 
-		// Some specifics for the image editor.
-		if ( isset( $_POST['action'], $_POST['do'], $_POST['postid'] ) && 'image-editor' === $_POST['action'] && (int) $_POST['postid'] === $attachment_id ) { // WPCS: CSRF ok.
-			check_ajax_referer( 'image_editor-' . $attachment_id );
-
-			if ( ! current_user_can( 'edit_post', $attachment_id ) ) {
-				imagify_die();
-			}
-
-			$data = $_POST;
-		} else {
-			$data = array();
-		}
-
-		// Instead of using user permissions, use a transient.
-		set_transient( 'imagify-auto-optimize-' . $attachment_id, 1, 60 );
+		$process = imagify_get_optimization_process( $attachment_id, 'wp' );
 
 		/**
 		 * Fires before an attachment auto-optimization is triggered.
@@ -317,16 +308,68 @@ class Imagify_Auto_Optimization {
 		 * @param int  $attachment_id The attachment ID.
 		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
 		 */
-		do_action( 'imagify_before_auto_optimization_launch', $attachment_id, $is_new_upload );
+		do_action_deprecated( 'imagify_before_auto_optimization_launch', [ $attachment_id, $is_new_upload ], '1.9', 'imagify_before_auto_optimization' );
 
-		imagify_do_async_job( array(
-			'action'        => 'imagify_auto_optimize',
-			'_ajax_nonce'   => wp_create_nonce( 'imagify_auto_optimize-' . $attachment_id ),
-			'attachment_id' => $attachment_id,
-			'is_new_upload' => $is_new_upload,
-			'context'       => 'wp',
-			'data'          => $data,
-		) );
+		/**
+		 * Triggered before a media is auto-optimized.
+		 *
+		 * @since  1.8.4
+		 * @author Grégory Viguier
+		 *
+		 * @param int  $attachment_id The media ID.
+		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
+		 */
+		do_action( 'imagify_before_auto_optimization', $attachment_id, $is_new_upload );
+
+		if ( $is_new_upload ) {
+			/**
+			 * It's a new upload.
+			 */
+			// Optimize.
+			$process->optimize( null, [ 'is_new_upload' => 1 ] );
+		} else {
+			/**
+			 * The media has already been optimized (or at least it has been tried).
+			 */
+			$process_data = $process->get_data();
+
+			// Get the optimization level before deleting the optimization data.
+			$optimization_level = $process_data->get_optimization_level();
+
+			// Some specifics for the image editor.
+			if ( isset( $_POST['action'], $_POST['do'], $_POST['postid'] ) && 'image-editor' === $_POST['action'] && (int) $_POST['postid'] === $attachment_id ) { // WPCS: CSRF ok.
+				check_ajax_referer( 'image_editor-' . $attachment_id );
+
+				if ( ! current_user_can( 'edit_post', $attachment_id ) ) {
+					imagify_die();
+				}
+
+				// Restore the backup file.
+				$result = $process->restore();
+
+				if ( is_wp_error( $result ) ) {
+					// Restoration failed, there is no good way to handle this case.
+					$process_data->delete_optimization_data();
+				}
+			} else {
+				// Remove old optimization data.
+				$process_data->delete_optimization_data();
+			}
+
+			// Optimize.
+			$process->optimize( $optimization_level );
+		}
+
+		/**
+		 * Triggered after a media auto-optimization is launched.
+		 *
+		 * @since  1.8.4
+		 * @author Grégory Viguier
+		 *
+		 * @param int  $attachment_id The media ID.
+		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
+		 */
+		do_action( 'imagify_after_auto_optimization', $attachment_id, $is_new_upload );
 	}
 
 	/**
