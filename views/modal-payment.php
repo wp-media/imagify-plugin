@@ -254,7 +254,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 						<div class="imagify-pricing-table imagify-month-selected">
 
-						<script type="text/template" id="imagify-offer-monthly-template"><div class="imagify-offer-line imagify-offer-monthlies imagify-flex-table">
+						<script type="text/html" id="imagify-offer-monthly-template"><div class="imagify-offer-line imagify-offer-monthlies imagify-flex-table">
 								<div class="imagify-col-details">
 									<p class="imagify-label">
 										<span class="imagify-the-offer">
@@ -320,7 +320,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 						</div>
 
 						<div class="imagify-pricing-table imagify-month-selected">
-						<script type="text/template" id="imagify-offer-onetime-template"><div class="imagify-offer-line imagify-flex-table imagify-offer-onetimes">
+						<script type="text/html" id="imagify-offer-onetime-template"><div class="imagify-offer-line imagify-flex-table imagify-offer-onetimes">
 								<div class="imagify-col-details">
 									<p class="imagify-label">
 										<span class="imagify-the-offer">
