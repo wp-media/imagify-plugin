@@ -14,7 +14,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 * @var   string
 	 * @since 1.7
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.1';
 
 	/**
 	 * Suffix used in the name of the option.
@@ -35,16 +35,19 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 * @access protected
 	 */
 	protected $default_values = array(
-		'api_key'            => '',
-		'optimization_level' => 0,
-		'auto_optimize'      => 0,
-		'backup'             => 0,
-		'resize_larger'      => 0,
-		'resize_larger_w'    => 0,
-		'exif'               => 0,
-		'disallowed-sizes'   => array(),
-		'admin_bar_menu'     => 0,
-		'partner_links'      => 0,
+		'api_key'             => '',
+		'optimization_level'  => 0,
+		'auto_optimize'       => 0,
+		'backup'              => 0,
+		'resize_larger'       => 0,
+		'resize_larger_w'     => 0,
+		'convert_to_webp'     => 0,
+		'display_webp'        => 0,
+		'display_webp_method' => 'picture',
+		'exif'                => 0,
+		'disallowed-sizes'    => array(),
+		'admin_bar_menu'      => 0,
+		'partner_links'       => 0,
 	);
 
 	/**
@@ -59,6 +62,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'optimization_level' => 1,
 		'auto_optimize'      => 1,
 		'backup'             => 1,
+		'convert_to_webp'    => 1,
 		'admin_bar_menu'     => 1,
 		'partner_links'      => 1,
 	);
@@ -145,6 +149,8 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'auto_optimize':
 			case 'backup':
 			case 'resize_larger':
+			case 'convert_to_webp':
+			case 'display_webp':
 			case 'exif':
 			case 'admin_bar_menu':
 			case 'partner_links':
@@ -172,6 +178,18 @@ class Imagify_Options extends Imagify_Abstract_Options {
 				$value = array_keys( $value );
 				$value = array_map( 'sanitize_text_field', $value );
 				return array_fill_keys( $value, 1 );
+
+			case 'display_webp_method':
+				$values = [
+					'picture' => 1,
+					'rewrite' => 1,
+				];
+				if ( isset( $values[ $value ] ) ) {
+					return $value;
+				}
+				// For an invalid value, return the "reset" value.
+				$reset_values = $this->get_reset_values();
+				return $reset_values[ $key ];
 		}
 
 		return false;
@@ -191,6 +209,11 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		// The max width for the "Resize larger images" option can't be 0.
 		if ( empty( $values['resize_larger_w'] ) ) {
 			unset( $values['resize_larger'], $values['resize_larger_w'] );
+		}
+
+		// Don't display wepb if conversion is disabled.
+		if ( empty( $values['convert_to_webp'] ) ) {
+			unset( $values['convert_to_webp'], $values['display_webp'] );
 		}
 
 		return $values;
