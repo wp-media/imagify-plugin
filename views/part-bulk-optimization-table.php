@@ -51,7 +51,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 				<tbody>
 					<?php
 					foreach ( $data['groups'] as $group ) {
-						$group = array_merge( $group, imagify_get_folder_type_data( $group['group_id'] ) );
+						$group = array_merge( $group, imagify_get_folder_type_data( $group['context'] ) );
 
 						$this->print_template( 'part-bulk-optimization-table-row-folder-type', $group );
 					}
