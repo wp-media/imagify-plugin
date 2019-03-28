@@ -4,16 +4,16 @@
 	/**
 	 * Add a "Imagify'em all" in the select list.
 	 */
-	bulkOpt = '<option value="imagify-bulk-upload">' + imagifyLibrary.labels.bulkActionsOptimize + '</option>';
+	bulkOpt = '<option value="imagify-bulk|optimize">' + imagifyLibrary.labels.bulkActionsOptimize + '</option>';
 
 	if ( $( '.button-imagify-optimize-missing-sizes' ).length ) {
 		// If we have items that have missing sizes.
-		bulkOpt += '<option value="imagify-bulk-optimize_missing_sizes">' + imagifyLibrary.labels.bulkActionsOptimizeMissingSizes + '</option>';
+		bulkOpt += '<option value="imagify-bulk|optimize_missing_sizes">' + imagifyLibrary.labels.bulkActionsOptimizeMissingSizes + '</option>';
 	}
 
 	if ( imagifyLibrary.backupOption || $( '.attachment-has-backup' ).length ) {
 		// If the backup option is enabled, or if we have items that can be restored.
-		bulkOpt += '<option value="imagify-bulk-restore">' + imagifyLibrary.labels.bulkActionsRestore + '</option>';
+		bulkOpt += '<option value="imagify-bulk|restore">' + imagifyLibrary.labels.bulkActionsRestore + '</option>';
 	}
 
 	$( '.bulkactions select[name="action"] option:last-child' ).before( bulkOpt );
@@ -27,23 +27,23 @@
 		.add( '#doaction2' )
 		.add( '#bulkaction + [name="showThickbox"]' )
 		.on( 'click', function( e ) {
-			var value = $( this ).prev( 'select' ).val().split( '-' ),
+			var value = $( this ).prev( 'select' ).val().split( '|' ),
 				action, ids;
 
-			if ( 'imagify' !== value[0] ) {
+			if ( 'imagify-bulk' !== value[0] ) {
 				return;
 			}
 
 			e.preventDefault();
 
-			action = value[2];
+			action = value[1];
 			ids    = $( 'input[name^="media"]:checked, input[name^="doaction"]:checked' ).map( function() {
 				return this.value;
 			} ).get();
 
 			ids.forEach( function( id, index ) {
 				setTimeout( function() {
-					$( '#imagify-' + action + '-' + id ).trigger( 'click' );
+					$( '.imagify-data-actions-container[data-id="' + id + '"][data-context="wp"] .button-imagify-' + action ).first().trigger( 'click' );
 				}, index * 300 );
 			} );
 		} );
