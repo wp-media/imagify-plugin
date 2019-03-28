@@ -209,7 +209,7 @@ class Imagify_Assets {
 
 		$this->register_script( 'twentytwenty', 'jquery.twentytwenty', array( 'jquery', 'event-move', 'chart', 'admin' ) )->defer_localization( 'imagifyTTT' );
 
-		$this->register_script( 'media-modal', 'media-modal', array( 'jquery', 'chart', 'admin' ) );
+		$this->register_script( 'media-modal', 'media-modal', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'admin' ) )->localize( 'imagifyModal' );
 
 		$this->register_script( 'pricing-modal', 'pricing-modal', array( 'jquery', 'admin' ) )->defer_localization( 'imagifyPricingModal' );
 
@@ -221,7 +221,7 @@ class Imagify_Assets {
 
 		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'underscore', 'admin' ) )->defer_localization( 'imagifyOptions' );
 
-		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'chart', 'admin' ) )->defer_localization( 'imagifyFiles' );
+		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'admin' ) )->defer_localization( 'imagifyFiles' );
 	}
 
 	/**
@@ -398,7 +398,7 @@ class Imagify_Assets {
 
 		wp_register_style(
 			$handle,
-			IMAGIFY_ASSETS_CSS_URL . $file_name . $extension,
+			IMAGIFY_URL . 'assets/css/' . $file_name . $extension,
 			$dependencies,
 			$version
 		);
@@ -488,7 +488,7 @@ class Imagify_Assets {
 
 		wp_register_script(
 			$handle,
-			IMAGIFY_ASSETS_JS_URL . $file_name . $extension,
+			IMAGIFY_URL . 'assets/js/' . $file_name . $extension,
 			$dependencies,
 			$version,
 			true
