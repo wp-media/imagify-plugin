@@ -1,4 +1,6 @@
 <?php
+namespace Imagify\ThirdParty\FormidablePro;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -8,14 +10,15 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.6.13
  * @author Grégory Viguier
  */
-class Imagify_Formidable_Pro {
+class Main {
+	use \Imagify\Traits\FakeSingletonTrait;
 
 	/**
 	 * Class version.
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.1';
 
 	/**
 	 * Set to true when the current query comes from Imagify.
@@ -23,39 +26,6 @@ class Imagify_Formidable_Pro {
 	 * @var int
 	 */
 	protected $is_imagify;
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var object
-	 */
-	protected static $_instance;
-
-	/**
-	 * Get the main instance.
-	 *
-	 * Ensures only one instance of class is loaded or can be loaded.
-	 *
-	 * @since  1.6.13
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
-	 * The class constructor.
-	 *
-	 * @since  1.6.13
-	 * @author Grégory Viguier
-	 */
-	protected function __construct() {}
 
 	/**
 	 * Launch the hooks.
