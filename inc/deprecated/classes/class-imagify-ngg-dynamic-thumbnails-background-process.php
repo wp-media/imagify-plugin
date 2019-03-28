@@ -5,7 +5,9 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * Class that handles background processing of thumbnails dynamically generated.
  *
  * @since  1.8
+ * @since  1.9 Deprecated
  * @author Grégory Viguier
+ * @deprecated
  */
 class Imagify_NGG_Dynamic_Thumbnails_Background_Process extends Imagify_Abstract_Background_Process {
 
@@ -54,6 +56,19 @@ class Imagify_NGG_Dynamic_Thumbnails_Background_Process extends Imagify_Abstract
 		}
 
 		return self::$_instance;
+	}
+
+	/**
+	 * Initiate new background process.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function __construct() {
+		imagify_deprecated_class( get_class( $this ), '1.9', '\\Imagify\\ThirdParty\\NGG\\DynamicThumbnails()' );
+
+		parent::__construct();
 	}
 
 
