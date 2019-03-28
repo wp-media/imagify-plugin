@@ -1,247 +1,400 @@
-/*
- * imagify-gulpjs - version 0.0.1 - 2017-07-28
- * WP Media <contact@wp-media.me>
+/**
+ * Library that handles the bulk optimization processes.
+ *
+ * @requires jQuery
  */
-'use strict';
+window.imagify = window.imagify || {};
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+/* eslint-disable no-underscore-dangle, consistent-this */
+(function($, d, w) {
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	/**
+	 * Construct the optimizer.
+	 *
+	 * @param {object} settings {
+	 *     Optimizer settings:
+	 *
+	 *     @type {string} groupID         Group ID, like 'library' or 'custom-folders'.
+	 *     @type {string} context         Context within this group, like 'wp' or 'custom-folders' (yes, again).
+	 *     @type {int}    level           Optimization level: 0 to 2.
+	 *     @type {int}    bufferSize      Number of parallel optimizations: usually 4.
+	 *     @type {string} ajaxUrl         URL to request to optimize.
+	 *     @type {object} files           Files to optimize: media ID as key (prefixed with an underscore), file URL as value.
+	 *     @type {string} defaultThumb    A default thumbnail URL.
+	 *     @type {string} doneEvent       Name of the event to listen to know when optimizations end.
+	 *     @type {array}  imageExtensions A list of supported image extensions (only images).
+	 * }
+	 */
+	w.imagify.Optimizer = function ( settings ) {
+		// Settings.
+		this.groupID      = settings.groupID;
+		this.context      = settings.context;
+		this.level        = settings.level;
+		this.bufferSize   = settings.bufferSize || 1;
+		this.ajaxUrl      = settings.ajaxUrl;
+		this.files        = settings.files;
+		this.defaultThumb = settings.defaultThumb;
+		this.doneEvent    = settings.doneEvent;
 
-var ImagifyGulp = function () {
-	function ImagifyGulp(settings) {
-		_classCallCheck(this, ImagifyGulp);
+		if ( settings.imageExtensions ) {
+			this.imageExtensions = settings.imageExtensions;
+		} else {
+			this.imageExtensions = [ 'jpg', 'jpeg', 'jpe', 'png', 'gif' ];
+		}
 
-		this.buffer_size = settings.buffer_size || 1;
-		this.lib_url = settings.lib;
-		this.default_thumb = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACMAAAAjCAIAAACRuyQOAAACy0lEQVRIx+1XS1PTUBTuT/MB1NGF3bhyhys3Pv+Ai8pCF6Bb3bsWq8xAh8441I2TSlKwPIKQJsI40IbSV0pJ6qe3OeZ1b9PaYViQyaJzc+757j3nO985TVx5v3o+b+IS6XyQUgtrj/NqWtJmZf3lavnpl53bC2vjRLqRUV4pxqbZcnrBx3F6G2ZzTjFg879IMwWtanV7g56K1Z2RtBGRpj7IWb0a8HhqOz9O2rjHfrOD34GvWcPEruGQkhmlcFgnF7bjABVJmvA4uj4vY2VJr545/yClw/okBywaadF/m63j1gT/sNO5DbXW8t4sLtJzSQtnAme/ys/BrU9FpdIgY2R3MBLidtQ+ZRt2T9qZvQrtf/N9X5BwbEQKmSVIFGZjEGlWNojB93KbCBolDNl49nVPAIYwUs5QGAOQwCtmuuyGG5ExGhZbtM7s+5+3BGC5nyazhB8RElSAePRwRaX1u9nScadfVYjtncV1HtKDlW0KQMqvID4kCAydHST2fgKhu24B7dTaSY4oYBf2MjN44yK9+FZmRnrdCnuhr3jyB7Vr89G8L9f7oU77VSPhp4POjNarzUgv77Z/ERh+R9oUXbqDXFyktFtJ5ag74cU9cBsCwy3DNoht5Fcf0pO8ysuTt27IFzKH/Hm/Qopi5ekP99zzgkU8goF7VN21ThfM9BKHylHEPbzoQ8wUlSGoG1QVnR3Vhppj66hCtgg/Ayr3tdLXCFQ7al4ABr2gAEBHoCbQFDu+RkCvqPVBx5LCZvq2dEDsgELuDqV7rM/SfvmocfNjkYcEdV8Kdcu4Wh6QLzzoPQKtQ9DQvQL9ZYhOiCYteXougo/9UEIv9YHxKK+iZ9qenouE8QIunCMMMzxHYIIomU2ksBOaI5ZHmCO8OavEnI0K2hjmvTnevPe3bjBlTvKvMsoMi4kVAgO/qBXMGvidGu8Me/lf4yIg/QYbLcmjDg4bKwAAAABJRU5ErkJggg==";
-		this.images = settings.images;
-		this.images_ids = Object.keys(settings.images);
-		this.total_images = this.images_ids.length;
-		this.processed_images = 0;
-		this.inprocess_images = 0;
-		this._before = new Function();
-		this._each = new Function();
-		this._done = new Function();
-		this._error = new Function();
-		this.global_original_size = 0;
-		this.global_optimized_size = 0;
-		this.global_gain = 0;
-		this.global_percent = 0;
-		this.context = settings.context || 'wp';
-	}
+		/**
+		 * An array of media IDs (prefixed with an underscore).
+		 */
+		this.prefixedMediaIDs = Object.keys( this.files );
+		/**
+		 * An array of medias currently being optimized: {
+		 *     @type {int}    mediaID   The media ID.
+		 *     @type {string} filename  The file name.
+		 *     @type {string} thumbnail The file thumbnail URL.
+		 * }
+		 */
+		this.currentItems = [];
 
-	_createClass(ImagifyGulp, [{
-		key: 'before',
-		value: function before(fnc) {
-			this._before = fnc;
+		// Internal counters.
+		this.totalMedia     = this.prefixedMediaIDs.length;
+		this.processedMedia = 0;
+
+		// Global stats.
+		this.globalOriginalSize  = 0;
+		this.globalOptimizedSize = 0;
+		this.globalGain          = 0;
+		this.globalPercent       = 0;
+
+		// Callbacks.
+		this._before = function () {};
+		this._each   = function () {};
+		this._done   = function () {};
+
+		// Listen to the "optimization done" event.
+		if ( this.totalMedia && this.doneEvent ) {
+			$( w ).on( this.doneEvent, { _this: this }, this.processedCallback );
+		}
+	};
+
+	/**
+	 * Callback to trigger before each media optimization.
+	 *
+	 * @param  {callable} fnc A callback.
+	 * @return this
+	 */
+	w.imagify.Optimizer.prototype.before = function( fnc ) {
+		this._before = fnc;
+		return this;
+	};
+
+	/**
+	 * Callback to trigger after each media optimization.
+	 *
+	 * @param  {callable} fnc A callback.
+	 * @return this
+	 */
+	w.imagify.Optimizer.prototype.each = function( fnc ) {
+		this._each = fnc;
+		return this;
+	};
+
+	/**
+	 * Callback to trigger all media optimizations have been done.
+	 *
+	 * @param  {callable} fnc A callback.
+	 * @return this
+	 */
+	w.imagify.Optimizer.prototype.done = function( fnc ) {
+		this._done = fnc;
+		return this;
+	};
+
+	/**
+	 * Launch optimizations.
+	 *
+	 * @return this
+	 */
+	w.imagify.Optimizer.prototype.run = function() {
+		var chunkLength = this.prefixedMediaIDs.length > this.bufferSize ? this.bufferSize : this.prefixedMediaIDs.length,
+			i;
+
+		for ( i = 0; i < chunkLength; i++ ) {
+			this.processNext();
+		}
+
+		return this;
+	};
+
+	/**
+	 * Launch next optimization.
+	 *
+	 * @return this
+	 */
+	w.imagify.Optimizer.prototype.processNext = function() {
+		if ( this.prefixedMediaIDs.length ) {
+			this.process( this.prefixedMediaIDs.shift() );
+		}
+
+		return this;
+	};
+
+	/**
+	 * Launch an optimization.
+	 *
+	 * @param  {string} prefixedId A media ID, prefixed with an underscore.
+	 * @return this
+	 */
+	w.imagify.Optimizer.prototype.process = function( prefixedId ) {
+		var _this     = this,
+			fileURL   = this.files[ prefixedId ],
+			data      = {
+				mediaID:    parseInt( prefixedId.toString().substr( 1 ), 10 ),
+				filename:  this.files[ prefixedId ].split( '/' ).pop(),
+				thumbnail: this.defaultThumb
+			},
+			extension = data.filename.split( '.' ).pop().toLowerCase(),
+			regexp    = new RegExp( '^' + this.imageExtensions.join( '|' ).toLowerCase() + '$' ),
+			image;
+
+		if ( ! extension.match( regexp ) ) {
+			// Not an image.
+			this.currentItems.push( data );
+			this._before( data );
+			this.send( data );
 			return this;
 		}
-	}, {
-		key: 'each',
-		value: function each(fnc) {
-			this._each = fnc;
-			return this;
-		}
-	}, {
-		key: 'done',
-		value: function done(fnc) {
-			this._done = fnc;
-			return this;
-		}
-	}, {
-		key: 'error',
-		value: function error(fnc) {
-			this._error = fnc;
-			return this;
-		}
-	}, {
-		key: 'humanSize',
-		value: function humanSize(bytes) {
-			if (0 === bytes) return '0\xA0kB';
 
-			var sizes = ['B', 'kB', 'MB'],
-			    i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10);
+		// Create a thumbnail and send the ajax request.
+		image = new Image();
 
-			return (bytes / Math.pow(1024, i)).toFixed(2) + '\xA0' + sizes[i];
-		}
-	}, {
-		key: 'run',
-		value: function run() {
-			var cpt = this.images_ids.length > this.buffer_size ? this.buffer_size : this.images_ids.length;
+		image.onerror = function () {
+			_this.currentItems.push( data );
+			_this._before( data );
+			_this.send( data );
+		};
 
-			for (var i = 0; i < cpt; i++) {
-				var id = this.images_ids.shift();
-				this.process(id);
+		image.onload = function () {
+			var maxWidth    = 33,
+				maxHeight   = 33,
+				imageWidth  = image.width,
+				imageHeight = image.height,
+				newHeight   = 0,
+				newWidth    = 0,
+				topOffset   = 0,
+				leftOffset  = 0,
+				canvas      = null,
+				ctx         = null;
+
+			if ( imageWidth < imageHeight ) {
+				// Portrait.
+				newWidth  = maxWidth;
+				newHeight = newWidth * imageHeight / imageWidth;
+				topOffset = ( maxHeight - newHeight ) / 2;
+			} else {
+				// Landscape.
+				newHeight  = maxHeight;
+				newWidth   = newHeight * imageWidth / imageHeight;
+				leftOffset = ( maxWidth - newWidth ) / 2;
 			}
 
-			return this;
-		}
-	}, {
-		key: 'stopProcess',
-		value: function stopProcess() {
-			this.total_images = this.total_images - this.images_ids.length;
-			this.images_ids = [];
-			return this;
-		}
-	}, {
-		key: 'process',
-		value: function process(id) {
-			this.inprocess_images++;
+			canvas = d.createElement( 'canvas' );
 
-			var data = {
-				id: id,
-				image_id: parseInt(id.toString().substr(1), 10),
-				image_src: this.images[id],
-				filename: this.images[id].split('/').pop(),
-				thumbnail: this.default_thumb,
-				error: ''
+			canvas.width  = maxWidth;
+			canvas.height = maxHeight;
+
+			ctx = canvas.getContext( '2d' );
+			ctx.drawImage( this, leftOffset, topOffset, newWidth, newHeight );
+
+			try {
+				data.thumbnail = canvas.toDataURL( 'image/jpeg' );
+			} catch ( e ) {
+				data.thumbnail = _this.defaultThumb;
+			}
+
+			canvas = null;
+			ctx    = null;
+			image  = null;
+
+			_this.currentItems.push( data );
+			_this._before( data );
+			_this.send( data );
+		};
+
+		image.src = fileURL;
+
+		return this;
+	};
+
+	/**
+	 * Do the ajax request.
+	 *
+	 * @param  {object} data {
+	 *     The data:
+	 *
+	 *     @type {int}    mediaID   The media ID.
+	 *     @type {string} filename  The file name.
+	 *     @type {string} thumbnail The file thumbnail URL.
+	 * }
+	 * @return this
+	 */
+	w.imagify.Optimizer.prototype.send = function( data ) {
+		var _this           = this,
+			defaultResponse = {
+				success:   false,
+				mediaID:   data.mediaID,
+				groupID:   this.groupID,
+				context:   this.context,
+				filename:  data.filename,
+				thumbnail: data.thumbnail,
+				status:    'error',
+				error:     ''
 			};
 
-			this.createThumb(data);
-		}
-	}, {
-		key: 'createThumb',
-		value: function createThumb(data) {
-			var self = this,
-			    image = new Image();
+		$.post( {
+			url:      this.ajaxUrl,
+			data:     {
+				media_id:           data.mediaID,
+				context:            this.context,
+				optimization_level: this.level
+			},
+			dataType: 'json'
+		} )
+			.done( function( response ) {
+				if ( response.success ) {
+					return;
+				}
 
-			image.onerror = function () {
-				var data_before = data;
-				data_before.id = data.image_id;
+				defaultResponse.error = response.data.error;
 
-				self._before(data_before);
-				self.send(data);
-			};
-
-			image.onload = function () {
-				var maxWidth = 33,
-				    maxHeight = 33,
-				    imageWidth = image.width,
-				    imageHeight = image.height,
-				    ratio = 1,
-				    newHeight = 0,
-				    newWidth = 0,
-				    canvas = null,
-				    ctx = null;
-
-				if (imageWidth < imageHeight) {
-					ratio = maxWidth / imageWidth;
-					newWidth = maxWidth;
-					newHeight = imageHeight * ratio;
+				_this.processed( defaultResponse );
+			} )
+			.fail( function( jqXHR ) {
+				if ( 200 === jqXHR.status ) {
+					defaultResponse.error = jqXHR.responseText.replace( /<h1>.*<\/h1>\n*/, '' );
 				} else {
-					ratio = maxHeight / imageHeight;
-					newHeight = maxHeight;
-					newWidth = imageWidth * ratio;
+					defaultResponse.error = jqXHR.statusText;
 				}
 
-				canvas = document.createElement('canvas');
+				_this.processed( defaultResponse );
+			} );
 
-				canvas.width = newWidth;
-				canvas.height = newHeight;
-				image.width = newWidth;
-				image.height = newHeight;
+		return this;
+	};
 
-				ctx = canvas.getContext('2d');
-				ctx.drawImage(this, 0, 0, newWidth, newHeight);
+	/**
+	 * Callback triggered when an optimization is complete.
+	 *
+	 * @param {object} e    jQuery's Event object.
+	 * @param {object} item {
+	 *     The response:
+	 *
+	 *     @type {int}    mediaID The media ID.
+	 *     @type {string} context The context.
+	 * }
+	 */
+	w.imagify.Optimizer.prototype.processedCallback = function( e, item ) {
+		var _this = e.data._this;
 
-				try {
-					data.thumbnail = canvas.toDataURL('image/jpeg');
-				} catch (e) {
-					data.thumbnail = self.default_thumb;
-				}
-
-				var before_data = data;
-				before_data.id = data.image_id;
-
-				self._before(before_data);
-
-				self.send(data);
-
-				canvas = null;
-			};
-
-			image.src = data.image_src;
+		if ( item.context !== _this.context ) {
+			return;
 		}
-	}, {
-		key: 'send',
-		value: function send(data) {
 
-			var self      = this,
-				transport = new XMLHttpRequest(),
-				err       = false,
-				json      = {},
-				response  = {
-					id:        data.id,
-					image:     data.image_id,
-					filename:  data.filename,
-					thumbnail: data.thumbnail,
-					error:     ''
-				};
-
-			transport.onreadystatechange = function () {
-				if (4 === this.readyState) {
-
-					self.processed_images++;
-
-					try {
-						json = JSON.parse(this.responseText);
-						err = false;
-					} catch (e) {
-
-						response.success = false;
-						response.error = 'Unknown error occured';
-
-						err = true;
-					}
-
-					response.progress = Math.floor(self.processed_images / self.total_images * 100);
-
-					if (!err) {
-						var json_data = json.data;
-
-						response.success = json.success;
-
-						if (true === json.success) {
-							self.global_original_size  += json_data.original_overall_size;
-							self.global_optimized_size += json_data.new_overall_size;
-							self.global_gain           += json_data.overall_saving;
-							self.global_percent         = ( 100 - self.global_optimized_size / self.global_optimized_size * 100 ).toFixed( 2 );
-
-							response.original_size_human         = json_data.original_size_human;
-							response.new_size_human              = json_data.new_size_human;
-							response.overall_saving_human        = json_data.overall_saving_human;
-							response.original_overall_size_human = json_data.original_overall_size_human;
-							response.percent_human               = json_data.percent_human;
-							response.thumbnails                  = json_data.thumbnails;
-						} else {
-							response.error_code = json_data.error_code;
-							response.error      = json_data.error;
-						}
-					}
-
-					self._each(response);
-
-					if (self.inprocess_images < self.total_images) {
-						self.process(self.images_ids.shift());
-					}
-
-					if ( self.processed_images === self.total_images ) {
-						self._done( {
-							global_original_size:  self.global_original_size,
-							global_optimized_size: self.global_optimized_size,
-							global_gain:           self.global_gain
-						} );
-					}
-				}
-			};
-
-			transport.open('POST', this.lib_url, true);
-			transport.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			transport.send('image=' + data.image_id + '&context=' + this.context);
+		if ( ! item.mediaID || typeof _this.files[ '_' + item.mediaID ] === 'undefined' ) {
+			return;
 		}
-	}]);
 
-	return ImagifyGulp;
-}();
-//# sourceMappingURL=imagify-gulp.js.map
+		item.groupID = _this.groupID;
+
+		if ( ! _this.currentItems.length ) {
+			// Trouble.
+			_this.processed( item );
+			return;
+		}
+
+		$.each( _this.currentItems, function( i, mediaData ) {
+			if ( item.mediaID === mediaData.mediaID ) {
+				item.filename  = mediaData.filename;
+				item.thumbnail = mediaData.thumbnail;
+				return false;
+			}
+		} );
+
+		_this.processed( item );
+	};
+
+	/**
+	 * After a media has been processed.
+	 *
+	 * @param  {object} response {
+	 *     The response:
+	 *
+	 *     @type {bool}   success   Whether the optimization succeeded or not ("already optimized" is a success).
+	 *     @type {int}    mediaID   The media ID.
+	 *     @type {string} groupID   The group ID.
+	 *     @type {string} context   The context.
+	 *     @type {string} filename  The file name.
+	 *     @type {string} thumbnail The file thumbnail URL.
+	 *     @type {string} status    The status, like 'optimized', 'already-optimized', 'over-quota', 'error'.
+	 *     @type {string} error     The error message.
+	 * }
+	 * @return this
+	 */
+	w.imagify.Optimizer.prototype.processed = function( response ) {
+		var currentItems = this.currentItems;
+
+		if ( currentItems.length ) {
+			// Remove this media from the "current" list.
+			$.each( currentItems, function( i, mediaData ) {
+				if ( response.mediaID === mediaData.mediaID ) {
+					currentItems.splice( i, 1 );
+					return false;
+				}
+			} );
+
+			this.currentItems = currentItems;
+		}
+
+		// Update stats.
+		if ( response.success && 'already-optimized' !== response.status ) {
+			this.globalOriginalSize  += response.originalOverallSize;
+			this.globalOptimizedSize += response.newOverallSize;
+			this.globalGain          += response.overallSaving;
+			this.globalPercent        = ( 100 - this.globalOptimizedSize / this.globalOptimizedSize * 100 ).toFixed( 2 );
+		}
+
+		++this.processedMedia;
+		response.progress = Math.floor( this.processedMedia / this.totalMedia * 100 );
+
+		this._each( response );
+
+		if ( this.prefixedMediaIDs.length ) {
+			this.processNext();
+		} else if ( this.totalMedia === this.processedMedia ) {
+			this._done( {
+				globalOriginalSize:  this.globalOriginalSize,
+				globalOptimizedSize: this.globalOptimizedSize,
+				globalGain:          this.globalGain
+			} );
+		}
+
+		return this;
+	};
+
+	/**
+	 * Stop the process.
+	 *
+	 * @return this
+	 */
+	w.imagify.Optimizer.prototype.stopProcess = function() {
+		this.files            = {};
+		this.prefixedMediaIDs = [];
+		this.currentItems     = [];
+
+		if ( this.doneEvent ) {
+			$( w ).off( this.doneEvent, this.processedCallback );
+		}
+
+		return this;
+	};
+
+} )(jQuery, document, window);
