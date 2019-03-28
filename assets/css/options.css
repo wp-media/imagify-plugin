@@ -114,6 +114,7 @@ p.imagify-api-key-invite-title {
 .imagify-setting-line {
 	border-top: 1px solid #D2D3D6;
 	padding: 25px 0 13px;
+	margin: 1em 0;
 }
 .imagify-options-subtitle + .imagify-setting-line {
 	border-top: 0;
