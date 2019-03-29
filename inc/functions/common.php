@@ -2,34 +2,6 @@
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Check if Imagify is activated on the network.
- *
- * @since 1.0
- *
- * return bool True if Imagify is activated on the network.
- */
-function imagify_is_active_for_network() {
-	static $is;
-
-	if ( isset( $is ) ) {
-		return $is;
-	}
-
-	if ( ! is_multisite() ) {
-		$is = false;
-		return $is;
-	}
-
-	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-	}
-
-	$is = is_plugin_active_for_network( plugin_basename( IMAGIFY_FILE ) );
-
-	return $is;
-}
-
-/**
  * Get the Imagify context instance.
  *
  * @since  1.9
