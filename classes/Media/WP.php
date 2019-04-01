@@ -238,7 +238,7 @@ class WP extends AbstractMedia {
 			'full' => [
 				'size'      => 'full',
 				'path'      => $original_path,
-				'width'     => $dimentions['width'],
+				'width'     => $dimensions['width'],
 				'height'    => $dimentions['height'],
 				'mime-type' => $this->get_mime_type(),
 				'disabled'  => false,
