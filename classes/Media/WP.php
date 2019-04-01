@@ -233,7 +233,7 @@ class WP extends AbstractMedia {
 			return [];
 		}
 
-		$dimentions = $this->get_dimensions();
+		$dimensions = $this->get_dimensions();
 		$all_sizes  = [
 			'full' => [
 				'size'      => 'full',
