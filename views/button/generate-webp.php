@@ -14,7 +14,7 @@ if ( ! isset( $data['atts']['class'] ) ) {
 
 if ( ! isset( $data['atts']['data-processing-label'] ) ) {
 	// Used for JS.
-	$data['atts']['data-processing-label'] = __( 'Creating...', 'imagify' );
+	$data['atts']['data-processing-label'] = __( 'Generating...', 'imagify' );
 }
 
 $html_atts = $this->build_attributes( $data['atts'] );

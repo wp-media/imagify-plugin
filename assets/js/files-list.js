@@ -61,7 +61,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 			$( '#doaction, #doaction2' ).on( 'click.imagify', this.processBulkAction );
 
 			// Optimize, restore, etc.
-			$document.on( 'click.imagify', '.button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-restore, .button-imagify-refresh-status', this.processOptimization );
+			$document.on( 'click.imagify', '.button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-generate-webp, .button-imagify-restore, .button-imagify-refresh-status', this.processOptimization );
 
 			$document.on( 'heartbeat-send', this.addToHeartbeat );
 			$document.on( 'heartbeat-tick', this.processHeartbeat );
