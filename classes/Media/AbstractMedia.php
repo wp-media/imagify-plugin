@@ -401,7 +401,7 @@ abstract class AbstractMedia implements MediaInterface {
 		$dimensions = $this->filesystem->get_image_size( $this->get_raw_original_path() );
 
 		if ( ! $dimensions ) {
-			// Could not get the new dimentions.
+	                // Could not get the new dimensions.
 			return false;
 		}
 
