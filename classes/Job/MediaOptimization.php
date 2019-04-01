@@ -64,7 +64,8 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	 *         Can be used to pass any data. Keep it short, don’t forget it will be stored in the database.
 	 *         It should contain the following though:
 	 *
-	 *         @type string $hook_suffix Suffix used to trigger hooks before and after optimization. Should be always provided.
+	 *         @type string $hook_suffix   Suffix used to trigger hooks before and after optimization. Should be always provided.
+	 *         @type bool   $delete_backup True to delete the backup file after the optimization process. This is used when a temporary backup of the original file has been created, but backup option is disabled. Default is false.
 	 *     }
 	 * }
 	 * @return array|bool The modified item to put back in the queue. False to remove the item from the queue.
@@ -235,6 +236,10 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	 * @return array       The item.
 	 */
 	private function task_after( $item ) {
+		if ( ! empty( $item['data']['delete_backup'] ) ) {
+			$this->optimization_process->delete_backup();
+		}
+
 		/**
 		 * Fires after optimizing a media.
 		 * Any number of files can be optimized, not necessarily all of the media files.
