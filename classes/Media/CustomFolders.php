@@ -252,7 +252,7 @@ class CustomFolders extends AbstractMedia {
 			return [];
 		}
 
-		$dimentions = $this->get_dimensions();
+		$dimensions = $this->get_dimensions();
 		$sizes      = [
 			'full' => [
 				'size'      => 'full',
