@@ -166,17 +166,17 @@ window.imagify = window.imagify || {};
 
 			this.hasMultipleRows = $( '.imagify-bulk-table [name="group[]"]' ).length > 1;
 
-			// Optimization level selector.
-			$( '.imagify-level-selector-button' )
-				.on( 'click.imagify', this.openLevelSelectorFromButton );
+			// Selectors (like the level selectors).
+			$( '.imagify-selector-button' )
+				.on( 'click.imagify', this.openSelectorFromButton );
 
-			$( '.imagify-level-selector-list input' )
-				.on( 'change.imagify init.imagify', this.syncLevelSelectorFromRadio )
+			$( '.imagify-selector-list input' )
+				.on( 'change.imagify init.imagify', this.syncSelectorFromRadio )
 				.filter( ':checked' )
 				.trigger( 'init.imagify' );
 
 			$document
-				.on( 'keypress.imagify click.imagify', this.closeLevelSelectors );
+				.on( 'keypress.imagify click.imagify', this.closeSelectors );
 
 			// Other buttons/UI.
 			$( '.imagify-bulk-table [name="group[]"]' )
@@ -595,42 +595,42 @@ window.imagify = window.imagify || {};
 		// Event callbacks =========================================================================
 
 		/*
-		 * Optimization level selector: on button click, open the dropdown and focus the current radio input.
+		 * Selector (like optimization level selector): on button click, open the dropdown and focus the current radio input.
 		 * The dropdown must be open or the focus event won't be triggered.
 		 *
 		 * @param {object} e jQuery's Event object.
 		 */
-		openLevelSelectorFromButton: function ( e ) {
+		openSelectorFromButton: function ( e ) {
 			var $list = $( '#' + $( this ).attr( 'aria-controls' ) );
 			// Stop click event from bubbling: this will allow to close the selector list if anything else id clicked.
 			e.stopPropagation();
 			// Close other lists.
-			$( '.imagify-level-selector-list' ).not( $list ).attr( 'aria-hidden', 'true' );
+			$( '.imagify-selector-list' ).not( $list ).attr( 'aria-hidden', 'true' );
 			// Open the corresponding list and focus the radio.
 			$list.attr( 'aria-hidden', 'false' ).find( ':checked' ).trigger( 'focus.imagify' );
 		},
 
 		/*
-		 * Optimization level selector: on radio change, make the row "current" and update the button text.
+		 * Selector: on radio change, make the row "current" and update the button text.
 		 */
-		syncLevelSelectorFromRadio: function () {
-			var $row = $( this ).closest( '.imagify-level-choice' );
+		syncSelectorFromRadio: function () {
+			var $row = $( this ).closest( '.imagify-selector-choice' );
 			// Update rows attributes.
-			$row.addClass( 'imagify-current-level' ).attr( 'aria-current', 'true' ).siblings( '.imagify-level-choice' ).removeClass( 'imagify-current-level' ).attr( 'aria-current', 'false' );
+			$row.addClass( 'imagify-selector-current-value' ).attr( 'aria-current', 'true' ).siblings( '.imagify-selector-choice' ).removeClass( 'imagify-selector-current-value' ).attr( 'aria-current', 'false' );
 			// Change the button text.
-			$row.closest( '.imagify-level-selector' ).find( '.imagify-current-level-info' ).html( $row.find( 'label' ).html() );
+			$row.closest( '.imagify-selector-list' ).siblings( '.imagify-selector-button' ).find( '.imagify-selector-current-value-info' ).html( $row.find( 'label' ).html() );
 		},
 
 		/*
-		 * Optimization level selector: on Escape or Enter kaystroke, close the dropdown.
+		 * Selector: on Escape or Enter kaystroke, close the dropdown.
 		 *
 		 * @param {object} e jQuery's Event object.
 		 */
-		closeLevelSelectors: function ( e ) {
+		closeSelectors: function ( e ) {
 			if ( 'keypress' === e.type && 27 !== e.keyCode && 13 !== e.keyCode ) {
 				return;
 			}
-			w.imagify.bulk.closeLevelSelector( $( '.imagify-level-selector-list[aria-hidden="false"]' ) );
+			w.imagify.bulk.closeLevelSelector( $( '.imagify-selector-list[aria-hidden="false"]' ) );
 		},
 
 		/*
