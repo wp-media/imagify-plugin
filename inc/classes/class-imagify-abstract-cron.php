@@ -83,20 +83,14 @@ abstract class Imagify_Abstract_Cron {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		static $deactivation_hook;
-
-		if ( ! isset( $deactivation_hook ) ) {
-			$deactivation_hook = 'deactivate_' . plugin_basename( IMAGIFY_FILE );
-		}
-
 		add_action( 'init',                       array( $this, 'schedule_event' ) );
 		add_action( $this->get_event_name(),      array( $this, 'do_event' ) );
 		add_filter( 'cron_schedules',             array( $this, 'maybe_add_recurrence' ) );
 
-		if ( did_action( $deactivation_hook ) ) {
+		if ( did_action( static::get_deactivation_hook_name() ) ) {
 			$this->unschedule_event();
 		} else {
-			add_action( $deactivation_hook,       array( $this, 'unschedule_event' ) );
+			add_action( static::get_deactivation_hook_name(), array( $this, 'unschedule_event' ) );
 		}
 	}
 
@@ -282,5 +276,24 @@ abstract class Imagify_Abstract_Cron {
 
 		// We haven't passed the event time yet, schedule the event today.
 		return mktime( $event_hour, $event_minute, 0 ) - $offset;
+	}
+
+	/**
+	 * Get the deactivation hook name.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string
+	 */
+	public static function get_deactivation_hook_name() {
+		static $deactivation_hook;
+
+		if ( ! isset( $deactivation_hook ) ) {
+			$deactivation_hook = 'deactivate_' . plugin_basename( IMAGIFY_FILE );
+		}
+
+		return $deactivation_hook;
 	}
 }

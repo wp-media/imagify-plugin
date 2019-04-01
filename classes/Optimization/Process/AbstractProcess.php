@@ -1005,6 +1005,54 @@ abstract class AbstractProcess implements ProcessInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
+	 * Generate webp images if they are missing.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
+	 */
+	public function generate_webp_versions() {
+		if ( ! $this->is_valid() ) {
+			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+		}
+
+		$media = $this->get_media();
+
+		if ( ! $media->is_image() ) {
+			return new \WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to webp format.', 'imagify' ) );
+		}
+
+		if ( ! $media->has_backup() ) {
+			return new \WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
+		}
+
+		if ( ! $this->get_data()->is_optimized() ) {
+			return new \WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
+		}
+
+		$size = 'full' . static::WEBP_SUFFIX;
+
+		if ( $this->size_has_optimization_data( $size ) ) {
+			return new \WP_Error( 'has_webp', __( 'This media already has webp versions.', 'imagify' ) );
+		}
+
+		if ( $this->is_locked() ) {
+			return new \WP_Error( 'media_locked', __( 'This media is already being processed.', 'imagify' ) );
+		}
+
+		$this->lock();
+
+		// Since the main image and the thumbnails are already optimized, we can't use them to generate the webp versions, we must restore everything before (yay!).
+		$files = $media->get_media_files();
+
+		foreach ( $files as $size_name => $file ) {
+			//
+		}
+	}
+
+	/**
 	 * Delete the webp images.
 	 * This doesn't delete the related optimization data.
 	 *

@@ -91,4 +91,106 @@ class Imagify_Admin_Ajax_Post_Deprecated {
 		$attachment->optimize( $optimization_level, $metadata );
 		die( 1 );
 	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** AUTOMATIC OPTIMIZATION ================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Auto-optimize files.
+	 *
+	 * @since  1.8.4
+	 * @since  1.9 Deprecated
+	 * @access public
+	 * @author Grégory Viguier
+	 * @see    Imagify_Auto_Optimization->do_auto_optimization()
+	 * @deprecated
+	 */
+	public function imagify_auto_optimize_callback() {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.9' );
+
+		if ( empty( $_POST['_ajax_nonce'] ) || empty( $_POST['attachment_id'] ) || empty( $_POST['context'] ) ) { // WPCS: CSRF ok.
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		$media_id = $this->get_media_id( 'POST' );
+
+		imagify_check_nonce( 'imagify_auto_optimize-' . $media_id );
+
+		if ( ! get_transient( 'imagify-auto-optimize-' . $media_id ) ) {
+			imagify_die();
+		}
+
+		delete_transient( 'imagify-auto-optimize-' . $media_id );
+
+		$context = $this->get_context( 'POST' );
+		$process = imagify_get_optimization_process( $media_id, $context );
+
+		if ( ! $process->is_valid() ) {
+			imagify_die( __( 'This media is not valid.', 'imagify' ) );
+		}
+
+		if ( ! $process->get_media()->is_supported() ) {
+			imagify_die( __( 'This type of file is not supported.', 'imagify' ) );
+		}
+
+		$this->check_can_optimize();
+
+		/**
+		 * Let's start.
+		 */
+		$is_new_upload = ! empty( $_POST['is_new_upload'] );
+
+		/**
+		 * Triggered before a media is auto-optimized.
+		 *
+		 * @since  1.8.4
+		 * @author Grégory Viguier
+		 *
+		 * @param int  $media_id      The media ID.
+		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
+		 */
+		do_action( 'imagify_before_auto_optimization', $media_id, $is_new_upload );
+
+		if ( $is_new_upload ) {
+			/**
+			 * It's a new upload.
+			 */
+			// Optimize.
+			$process->optimize();
+		} else {
+			/**
+			 * The media has already been optimized (or at least it has been tried).
+			 */
+			$data = $process->get_data();
+
+			// Get the optimization level before deleting the optimization data.
+			$optimization_level = $data->get_optimization_level();
+
+			// Remove old optimization data.
+			$data->delete_imagify_data();
+
+			// Some specifics for the image editor.
+			if ( ! empty( $_POST['data']['do'] ) && 'restore' === $_POST['data']['do'] ) {
+				// Restore the backup file.
+				$process->restore();
+			}
+
+			// Optimize.
+			$process->optimize( $optimization_level );
+		}
+
+		/**
+		 * Triggered after a media is auto-optimized.
+		 *
+		 * @since  1.8.4
+		 * @author Grégory Viguier
+		 *
+		 * @param int  $media_id      The media ID.
+		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
+		 */
+		do_action( 'imagify_after_auto_optimization', $media_id, $is_new_upload );
+		die( 1 );
+	}
 }

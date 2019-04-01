@@ -14,7 +14,7 @@ class Imagify_Custom_Folders {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.3';
+	const VERSION = '1.1';
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -166,17 +166,26 @@ class Imagify_Custom_Folders {
 	 * @param array $args An array of arguments.
 	 *                    At least: 'file_id'. At best (less queries): 'file_id', 'file_path' (or 'path' for the placeholder), and 'backup_path'.
 	 */
-	public static function delete_file( $args = array() ) {
-		$args = array_merge( array(
+	public static function delete_file( $args = [] ) {
+		$args = array_merge( [
 			'file_id'     => 0,
 			'file_path'   => '',
 			'path'        => '',
 			'backup_path' => '',
-			'file'        => false,
-		), $args );
+			'process'     => false,
+		], $args );
 
 		$filesystem = imagify_get_filesystem();
-		$file       = $args['file'] && $args['file'] instanceof Imagify_File_Attachment ? $args['file'] : false;
+
+		if ( $args['process'] && $args['process'] instanceof \Imagify\Optimization\Process\ProcessInterface ) {
+			$process = $args['process'];
+
+			if ( ! $process->is_valid() ) {
+				$process = false;
+			}
+		} else {
+			$process = false;
+		}
 
 		// The file.
 		if ( ! $args['file_path'] && $args['path'] ) {
@@ -184,8 +193,16 @@ class Imagify_Custom_Folders {
 		}
 
 		if ( ! $args['file_path'] && $args['file_id'] ) {
-			$file = $file ? $file : get_imagify_attachment( 'File', $args['file_id'], 'delete_custom_file' );
-			$args['file_path'] = $file->get_original_path();
+			if ( ! $process ) {
+				$process = imagify_get_optimization_process( $args['file_id'], 'custom-folders' );
+
+				if ( ! $process->is_valid() ) {
+					// You fucked up!
+					return;
+				}
+			}
+
+			$args['file_path'] = $process->get_media()->get_original_path();
 		}
 
 		if ( $args['file_path'] && $filesystem->exists( $args['file_path'] ) ) {
@@ -198,8 +215,16 @@ class Imagify_Custom_Folders {
 		}
 
 		if ( ! $args['backup_path'] && $args['file_id'] ) {
-			$file = $file ? $file : get_imagify_attachment( 'File', $args['file_id'], 'delete_custom_file' );
-			$args['backup_path'] = $file->get_raw_backup_path();
+			if ( ! $process ) {
+				$process = imagify_get_optimization_process( $args['file_id'], 'custom-folders' );
+
+				if ( ! $process->is_valid() ) {
+					// You fucked up!
+					return;
+				}
+			}
+
+			$args['backup_path'] = $process->get_media()->get_raw_backup_path();
 		}
 
 		if ( $args['backup_path'] && $filesystem->exists( $args['backup_path'] ) ) {
@@ -207,8 +232,8 @@ class Imagify_Custom_Folders {
 		}
 
 		// In the database.
-		if ( $file ) {
-			$file->delete_row();
+		if ( $process ) {
+			$process->get_media()->delete_row();
 		} else {
 			Imagify_Files_DB::get_instance()->delete( $args['file_id'] );
 		}
@@ -221,36 +246,38 @@ class Imagify_Custom_Folders {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param  object $file             An Imagify_File_Attachment object.
-	 * @param  bool   $is_folder_active Tell if the folder is active.
-	 * @return int|bool|object          The file ID if modified. False if not modified. A WP_Error object if the entry has been removed from the database.
-	 *                                  The entry is removed from the database if:
-	 *                                  - The file doesn't exist anymore.
-	 *                                  - Or if its folder is not active and: the file has been modified, or the file is not optimized by Imagify, or the file is orphan (its folder is not in the database anymore).
+	 * @param  ProcessInterface $process          A \Imagify\Optimization\Process\ProcessInterface object.
+	 * @param  bool             $is_folder_active Tell if the folder is active.
+	 * @return int|bool|object  The file ID if modified. False if not modified. A WP_Error object if the entry has been removed from the database.
+	 *                          The entry is removed from the database if:
+	 *                          - The file doesn't exist anymore.
+	 *                          - Or if its folder is not active and: the file has been modified, or the file is not optimized by Imagify, or the file is orphan (its folder is not in the database anymore).
 	 */
-	public static function refresh_file( $file, $is_folder_active = null ) {
+	public static function refresh_file( $process, $is_folder_active = null ) {
 		global $wpdb;
 
-		$file_path   = $file->get_original_path();
-		$backup_path = $file->get_backup_path();
-		$filesystem  = imagify_get_filesystem();
-		$modified    = false;
+		if ( ! $process->is_valid() ) {
+			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+		}
+
+		$media      = $process->get_media();
+		$file_path  = $media->get_original_path();
+		$filesystem = imagify_get_filesystem();
+		$modified   = false;
 
 		if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
 			/**
 			 * The file doesn't exist anymore.
 			 */
-			if ( $backup_path ) {
-				// Delete the backup file.
-				$filesystem->delete( $backup_path );
-			}
+			// Delete the backup file.
+			$process->delete_backup();
 
 			// Get the folder ID before removing the row.
-			$folder_id = $file->get_row();
+			$folder_id = $media->get_row();
 			$folder_id = $folder_id['folder_id'];
 
 			// Remove the entry from the database.
-			$file->delete_row();
+			$media->delete_row();
 
 			// Remove the corresponding folder if inactive and have no files left.
 			self::remove_empty_inactive_folders( $folder_id );
@@ -261,8 +288,8 @@ class Imagify_Custom_Folders {
 		/**
 		 * The file still exists.
 		 */
-		$old_data = $file->get_row();
-		$new_data = array();
+		$old_data = $media->get_row();
+		$new_data = [];
 
 		// Folder ID.
 		if ( $old_data['folder_id'] ) {
@@ -293,20 +320,18 @@ class Imagify_Custom_Folders {
 		}
 
 		// The file is modified or is not optimized.
-		if ( $new_data['modified'] || ! $file->is_optimized() ) {
+		if ( $new_data['modified'] || ! $process->get_data()->is_optimized() ) {
 			if ( ! isset( $is_folder_active ) ) {
 				$is_folder_active = $folder && $folder['active'];
 			}
 
 			// Its folder is not active: remove the entry from the database and delete the backup.
 			if ( ! $is_folder_active ) {
-				if ( $backup_path ) {
-					// Delete the backup file.
-					$filesystem->delete( $backup_path );
-				}
+				// Delete the backup file.
+				$process->delete_backup();
 
 				// Remove the entry from the database.
-				$file->delete_row();
+				$media->delete_row();
 
 				// Remove the corresponding folder if inactive and have no files left.
 				if ( $old_data['folder_id'] ) {
@@ -343,15 +368,14 @@ class Imagify_Custom_Folders {
 				'error'              => null,
 			) );
 
-			if ( $backup_path ) {
-				// Delete the backup of the previous file.
-				$filesystem->delete( $backup_path );
-			}
+			// Delete the backup of the previous file.
+			$process->delete_backup();
 		} else {
 			// Update file data to make sure nothing is missing.
-			$path      = $backup_path ? $backup_path : $file_path;
-			$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : $filesystem->get_mime_type( $path );
-			$file_date = ! empty( $old_data['file_date'] ) && '0000-00-00 00:00:00' !== $old_data['file_date'] ? $old_data['file_date'] : $filesystem->get_date( $path );
+			$backup_path = $media->get_backup_path();
+			$path        = $backup_path ? $backup_path : $file_path;
+			$mime_type   = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : $filesystem->get_mime_type( $path );
+			$file_date   = ! empty( $old_data['file_date'] ) && '0000-00-00 00:00:00' !== $old_data['file_date'] ? $old_data['file_date'] : $filesystem->get_date( $path );
 
 			if ( strpos( $mime_type, 'image/' ) === 0 ) {
 				$size = $filesystem->get_image_size( $path );
@@ -373,10 +397,10 @@ class Imagify_Custom_Folders {
 		ksort( $new_data );
 
 		if ( $old_data !== $new_data ) {
-			$file->update_row( $new_data );
+			$media->update_row( $new_data );
 		}
 
-		return $modified ? $file->get_id() : false;
+		return $modified ? $media->get_id() : false;
 	}
 
 
@@ -393,7 +417,7 @@ class Imagify_Custom_Folders {
 	 *
 	 * @param  array $args A list of arguments to tell more precisely what to fetch:
 	 *                         - bool $active True to fetch only "active" folders (checked in the settings). False to fetch only folders that are not "active".
-	 * @return array       An array of arrays containing the following keys:
+	 * @return array       An array of arrays containing the following values:
 	 *                         - int    $folder_id   The folder ID.
 	 *                         - string $path        The folder path, with placeholder.
 	 *                         - int    $active      1 if the folder should be optimized. 0 otherwize.
@@ -808,9 +832,9 @@ class Imagify_Custom_Folders {
 		foreach ( $results as $file ) {
 			$file      = $files_db->cast_row( $file );
 			$folder_id = $file['folder_id'];
-			$file      = get_imagify_attachment( 'File', $file, 'synchronize_files_from_folders' );
+			$process   = imagify_get_optimization_process( $file, 'custom-folders' );
 
-			self::refresh_file( $file, $folders[ $folder_id ]['active'] );
+			self::refresh_file( $process, $folders[ $folder_id ]['active'] );
 		}
 
 		foreach ( $folders as $folder_id => $folder ) {

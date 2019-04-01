@@ -3,3 +3,5 @@ composer.lock
 gruntlocalconf.json
 node_modules
 vendor
+
+*.php

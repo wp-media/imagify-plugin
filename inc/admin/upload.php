@@ -34,9 +34,9 @@ function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
 		return;
 	}
 
-	$attachment = get_imagify_attachment( 'wp', $attachment_id, 'manage_media_custom_column' );
+	$process = imagify_get_optimization_process( $attachment_id, 'wp' );
 
-	echo get_imagify_media_column_content( $attachment );
+	echo get_imagify_media_column_content( $process );
 }
 
 add_action( 'restrict_manage_posts', '_imagify_attachments_filter_dropdown' );
