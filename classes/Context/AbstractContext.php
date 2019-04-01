@@ -64,6 +64,36 @@ abstract class AbstractContext implements ContextInterface {
 	protected $thumbnail_sizes;
 
 	/**
+	 * Tell if the optimization process is allowed resize in this context.
+	 *
+	 * @var    bool
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $can_resize;
+
+	/**
+	 * Tell if the optimization process is allowed to backup in this context.
+	 *
+	 * @var    bool
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $can_backup;
+
+	/**
+	 * Tell if the optimization process is allowed to keep exif in this context.
+	 *
+	 * @var    bool
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $can_keep_exif;
+
+	/**
 	 * Get the context "short name".
 	 *
 	 * @since  1.9
@@ -125,5 +155,44 @@ abstract class AbstractContext implements ContextInterface {
 	 */
 	public function get_thumbnail_sizes() {
 		return $this->thumbnail_sizes;
+	}
+
+	/**
+	 * Tell if the optimization process is allowed resize in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function can_resize() {
+		return $this->can_resize;
+	}
+
+	/**
+	 * Tell if the optimization process is allowed to backup in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function can_backup() {
+		return $this->can_backup;
+	}
+
+	/**
+	 * Tell if the optimization process is allowed to keep exif in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function can_keep_exif() {
+		return $this->can_keep_exif;
 	}
 }

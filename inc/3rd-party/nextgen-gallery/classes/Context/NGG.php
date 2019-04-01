@@ -53,4 +53,34 @@ class NGG extends \Imagify\Context\AbstractContext {
 	 * @author Grégory Viguier
 	 */
 	protected $thumbnail_sizes = [];
+
+	/**
+	 * Tell if the optimization process is allowed resize in this context.
+	 *
+	 * @var    bool
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $can_resize = false;
+
+	/**
+	 * Tell if the optimization process is allowed to backup in this context.
+	 *
+	 * @var    bool
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $can_backup = true;
+
+	/**
+	 * Tell if the optimization process is allowed to keep exif in this context.
+	 *
+	 * @var    bool
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $can_keep_exif = true;
 }
