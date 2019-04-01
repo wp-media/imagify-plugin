@@ -29,6 +29,10 @@ class WP extends AbstractProcess {
 	 * @return bool
 	 */
 	public function current_user_can( $describer ) {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
 		$describer = $this->normalize_capacity_describer( $describer );
 
 		if ( ! $describer ) {
@@ -36,53 +40,6 @@ class WP extends AbstractProcess {
 		}
 
 		return imagify_get_capacity( $describer, $this->get_media()->get_id() );
-	}
-
-	/**
-	 * Tell if a size can be resized.
-	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $size The size name.
-	 * @param  File   $file A File instance.
-	 * @return bool
-	 */
-	protected function can_resize( $size, $file ) {
-		if ( 'full' !== $size && 'full' . static::WEBP_SUFFIX !== $size ) {
-			return false;
-		}
-
-		return $file->is_image() && $this->get_option( 'resize_larger' ) && $this->get_option( 'resize_larger_w' ) > 0;
-	}
-
-	/**
-	 * Tell if a size can be backuped.
-	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $size The size name.
-	 * @return bool
-	 */
-	protected function can_backup( $size ) {
-		return 'full' === $size && $this->get_option( 'backup' );
-	}
-
-	/**
-	 * Tell if a size should keep exif.
-	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $size The size name.
-	 * @return bool
-	 */
-	protected function can_keep_exif( $size ) {
-		return 'full' === $size && $this->get_option( 'exif' );
 	}
 
 
@@ -292,12 +249,16 @@ class WP extends AbstractProcess {
 			// The path to the destination file.
 			$thumbnail_data['path'] = $destination_dir . $thumbnail_data['file'];
 
-			$result = $file->create_thumbnail( $thumbnail_data );
+			if ( ! $this->filesystem->exists( $thumbnail_data['path'] ) ) {
+				$result = $file->create_thumbnail( $thumbnail_data );
 
-			if ( is_array( $result ) ) {
-				// New file.
-				$metadata['sizes'][ $size_name ] = $result;
-				$has_new_data                    = true;
+				if ( is_array( $result ) ) {
+					// New file.
+					$metadata['sizes'][ $size_name ] = $result;
+					$has_new_data                    = true;
+				}
+			} else {
+				$result = true;
 			}
 
 			if ( ! empty( $metadata['sizes'][ $size_name ] ) && ! is_wp_error( $result ) ) {

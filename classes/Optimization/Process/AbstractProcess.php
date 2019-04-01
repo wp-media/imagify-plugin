@@ -339,6 +339,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( $media->is_image() ) {
 			if ( $this->get_option( 'convert_to_webp' ) ) {
+				// Add webp convertion.
 				$files = $media->get_media_files();
 
 				foreach ( $sizes as $size_name ) {
@@ -353,13 +354,30 @@ abstract class AbstractProcess implements ProcessInterface {
 				}
 			}
 
-			/**
-			 * If we need to create a webp version of the full size, we must create it from an unoptimized image (if possible).
-			 * Since the full size is supposed to be optimized before the webp version creation, we must either:
-			 * - Create a temporary copy of the backup image if it exists.
-			 * - Or, create a temporary copy of the full size before its optimization.
-			 */
-			$this->maybe_create_temporary_full_copy( $sizes );
+			if ( ! $media->get_context_instance()->can_backup() && ! $media->get_backup_path() && ! $this->get_data()->get_size_data( 'full', 'success' ) ) {
+				/**
+				 * Backup is NOT activated, and a backup file does NOT exist yet, and the full size is NOT optimized yet.
+				 * Webp conversion needs a backup file, even a temporary one: we’ll create one.
+				 */
+				$webp = false;
+
+				foreach ( $sizes as $size_name ) {
+					if ( $this->is_size_webp( $size_name ) ) {
+						$webp = true;
+						continue;
+					}
+				}
+
+				if ( $webp ) {
+					// We have at least one webp conversion to do: create a temporary backup.
+					$backuped = $this->get_file()->backup( $media->get_raw_backup_path() );
+
+					if ( $backuped ) {
+						// See \Imagify\Job\MediaOptimization->delete_backup().
+						$args['delete_backup'] = true;
+					}
+				}
+			}
 		}
 
 		$optimization_level = $this->sanitize_optimization_level( $optimization_level );
@@ -417,11 +435,11 @@ abstract class AbstractProcess implements ProcessInterface {
 		$sizes        = $media->get_media_files();
 		$thumb_size   = $size;
 		$webp         = $this->is_size_webp( $size );
-		$use_tmp_file = false;
+		$path_is_temp = false;
 
 		if ( $webp ) {
 			// We'll make sure the file is an image later.
-			$thumb_size = $webp;
+			$thumb_size = $webp; // Contains the name of the non-webp size.
 			$webp       = true;
 		}
 
@@ -460,18 +478,29 @@ abstract class AbstractProcess implements ProcessInterface {
 			}
 		}
 
-		if ( $webp && 'full' === $thumb_size ) {
-			// Webp version of the full size: maybe a temporary copy of the full size has been created.
-			$tmp_path = $this->get_temporary_full_copy_path();
+		$path = $sizes[ $thumb_size ]['path'];
 
-			if ( $this->filesystem->exists( $tmp_path ) ) {
-				$use_tmp_file = true;
-				$path         = $tmp_path;
-			} else {
-				$path = $sizes[ $thumb_size ]['path'];
+		if ( $webp && $this->get_data()->get_size_data( $thumb_size, 'success' ) ) {
+			// We want a webp version but the source file is already optimized by Imagify.
+			$result = $this->create_temporary_copy( $thumb_size, $sizes );
+
+			if ( ! $result ) {
+				// Could not create a copy of the non-webp version.
+				return new \WP_Error(
+					'non_webp_copy_failed',
+					sprintf(
+						/* translators: %s is a size name. */
+						__( 'Could not create an unoptimized copy of the size %s.', 'imagify' ),
+						'<code>' . esc_html( $thumb_size ) . '</code>'
+					)
+				);
 			}
-		} else {
-			$path = $sizes[ $thumb_size ]['path'];
+
+			/**
+			 * $path now targets a temporary file.
+			 */
+			$path         = $this->get_temporary_copy_path( $thumb_size, $sizes );
+			$path_is_temp = true;
 		}
 
 		$file = new File( $path );
@@ -498,10 +527,18 @@ abstract class AbstractProcess implements ProcessInterface {
 				);
 			}
 
+			if ( $path_is_temp ) {
+				$this->filesystem->delete( $path );
+			}
+
 			return $this->update_size_optimization_data( $response, $size, $optimization_level );
 		}
 
 		if ( $webp && ! $file->is_image() ) {
+			if ( $path_is_temp ) {
+				$this->filesystem->delete( $path );
+			}
+
 			return new \WP_Error(
 				'no_webp',
 				__( 'This file is not an image and cannot be converted to webp format.', 'imagify' )
@@ -530,6 +567,10 @@ abstract class AbstractProcess implements ProcessInterface {
 		if ( ! is_wp_error( $response ) ) {
 			if ( $is_disabled ) {
 				// This size must not be optimized.
+				if ( $path_is_temp ) {
+					$this->filesystem->delete( $path );
+				}
+
 				$response = new \WP_Error(
 					'unauthorized_size',
 					sprintf(
@@ -539,6 +580,10 @@ abstract class AbstractProcess implements ProcessInterface {
 					)
 				);
 			} elseif ( ! $this->filesystem->exists( $file->get_path() ) ) {
+				if ( $path_is_temp ) {
+					$this->filesystem->delete( $path );
+				}
+
 				$response = new \WP_Error(
 					'file_not_exists',
 					sprintf(
@@ -548,6 +593,10 @@ abstract class AbstractProcess implements ProcessInterface {
 					)
 				);
 			} elseif ( ! $this->filesystem->is_writable( $file->get_path() ) ) {
+				if ( $path_is_temp ) {
+					$this->filesystem->delete( $path );
+				}
+
 				$response = new \WP_Error(
 					'file_not_writable',
 					sprintf(
@@ -592,13 +641,17 @@ abstract class AbstractProcess implements ProcessInterface {
 		 */
 		do_action( 'imagify_after_optimize_size', $this, $file, $thumb_size, $optimization_level, $webp, $is_disabled );
 
-		if ( $use_tmp_file ) {
-			// Delete the temporary copy of the full size.
-			$destination_path = str_replace( static::TMP_SUFFIX . '.', '.', $file->get_path() );
-
-			$this->filesystem->move( $file->get_path(), $destination_path, true );
-			$this->filesystem->delete( $tmp_path );
+		if ( ! $path_is_temp ) {
+			return $data;
 		}
+
+		// Rename the optimized file.
+		$destination_path = str_replace( static::TMP_SUFFIX . '.', '.', $file->get_path() );
+
+		$this->filesystem->move( $file->get_path(), $destination_path, true );
+
+		// Delete the temporary copy.
+		$this->filesystem->delete( $path );
 
 		return $data;
 	}
@@ -758,20 +811,127 @@ abstract class AbstractProcess implements ProcessInterface {
 
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** TEMPORARY COPY OF THE FULL SIZE ========================================================= */
+	/** TEMPORARY COPY OF A SIZE FILE =========================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the path to a temporary copy of the full size file.
+	 * If we need to create a webp version, we must create it from an unoptimized image.
+	 * The full size is always optimized before the webp version creation, and in some cases it’s the same for the thumbnails.
+	 * Then we use the backup file to create temporary files.
+	 */
+
+	/**
+	 * Create a temporary copy of a size file.
 	 *
 	 * @since  1.9
-	 * @access public
+	 * @access protected
 	 * @author Grégory Viguier
 	 *
-	 * @return string|bool $file_path An image path. False on failure.
+	 * @param  string $size  The image size name.
+	 * @param  array  $sizes A list of thumbnail sizes being optimized.
+	 * @return bool          True if the file exists/is created. False on failure.
 	 */
-	public function get_temporary_full_copy_path() {
-		$path = $this->get_media()->get_raw_original_path();
+	protected function create_temporary_copy( $size, $sizes = null ) {
+		if ( ! isset( $sizes ) ) {
+			$sizes = $this->get_media()->get_media_files();
+		}
+
+		if ( empty( $sizes[ $size ] ) ) {
+			// What?
+			return false;
+		}
+
+		$tmp_path = $this->get_temporary_copy_path( $size, $sizes );
+
+		if ( $tmp_path && $this->filesystem->exists( $tmp_path ) ) {
+			// The temporary file already exists.
+			return true;
+		}
+
+		$tmp_file = new File( $tmp_path );
+
+		if ( ! $tmp_file->is_image() ) {
+			// The file is not an image.
+			return false;
+		}
+
+		$media = $this->get_media();
+
+		if ( ! $tmp_file->is_supported( $media->get_allowed_mime_types() ) ) {
+			// The file is not supported.
+			return false;
+		}
+
+		/**
+		 * Use the backup file as source.
+		 */
+		$backup_path = $media->get_backup_path();
+
+		if ( ! $backup_path ) {
+			// No backup, no hope for you.
+			return false;
+		}
+
+		if ( 'full' === $size ) {
+			/**
+			 * We create a copy of the backup to be able to create a webp version from it.
+			 * That means the optimization process will resize the file if needed, so there is nothing more to do here.
+			 */
+			return $this->filesystem->copy( $backup_path, $tmp_path, true );
+		}
+
+		// We need to create a thumbnail from it.
+		$context_sizes = $media->get_context_instance()->get_thumbnail_sizes();
+
+		if ( empty( $context_sizes[ $size ] ) ) {
+			// What?
+			return false;
+		}
+
+		$backup_file = new File( $backup_path );
+		$resized     = $backup_file->create_thumbnail( [
+			'path'            => $tmp_path,
+			'width'           => $context_sizes[ $size ]['width'],
+			'height'          => $context_sizes[ $size ]['height'],
+			'crop'            => $context_sizes[ $size ]['crop'],
+			'adjust_filename' => false,
+		] );
+
+		if ( is_wp_error( $resized ) ) {
+			return false;
+		}
+
+		// Make sure the new file has the expected name.
+		$new_tmp_path = $this->filesystem->dir_path( $tmp_path ) . $resized['file'];
+
+		if ( $new_tmp_path === $tmp_path ) {
+			return true;
+		}
+
+		return $this->filesystem->move( $new_tmp_path, $tmp_path, true );
+	}
+
+	/**
+	 * Get the path to a temporary copy of a size file.
+	 *
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $size  The image size name.
+	 * @param  array  $sizes A list of thumbnail sizes being optimized.
+	 * @return string|bool   An image path. False on failure.
+	 */
+	protected function get_temporary_copy_path( $size, $sizes = null ) {
+		if ( 'full' === $size ) {
+			$path = $this->get_media()->get_raw_original_path();
+		} else {
+			if ( ! isset( $sizes ) ) {
+				$sizes = $this->get_media()->get_media_files();
+			}
+
+			$path = ! empty( $sizes[ $size ]['path'] ) ? $sizes[ $size ]['path'] : false;
+		}
 
 		if ( ! $path ) {
 			return false;
@@ -784,68 +944,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		return $info['dir_path'] . $info['file_base'] . static::TMP_SUFFIX . '.' . $info['extension'];
-	}
-
-	/**
-	 * Create a temporary copy of:
-	 * - The full size if it's not optimized.
-	 * - The backup image if it exists.
-	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 *
-	 * @param array $sizes A list of thumbnail sizes being optimized.
-	 */
-	protected function maybe_create_temporary_full_copy( $sizes ) {
-		$full_webp_size = 'full' . static::WEBP_SUFFIX;
-
-		if ( ! in_array( $full_webp_size, $sizes, true ) ) {
-			return;
-		}
-
-		$tmp_path = $this->get_temporary_full_copy_path();
-		$tmp_file = new File( $tmp_path );
-
-		if ( ! $tmp_file->is_image() ) {
-			return;
-		}
-
-		$media = $this->get_media();
-
-		if ( ! $tmp_file->is_supported( $media->get_allowed_mime_types() ) ) {
-			return;
-		}
-
-		/**
-		 * Try first with the backup file.
-		 */
-		$backup_path = $media->get_backup_path();
-
-		if ( $backup_path ) {
-			$copied = $this->filesystem->copy( $backup_path, $tmp_path, true );
-
-			if ( $copied ) {
-				$this->filesystem->chmod_file( $tmp_path );
-				return;
-			}
-		}
-
-		/**
-		 * Try then the full size if it's not optimized yet.
-		 */
-		$is_optimized = $this->get_data()->get_size_data( 'full', 'success' );
-		$full_path    = $media->get_original_path();
-
-		if ( $full_path && ! $is_optimized ) {
-			// The full size exists and is not optimized yet.
-			$copied = $this->filesystem->copy( $full_path, $tmp_path, true );
-
-			if ( $copied ) {
-				$this->filesystem->chmod_file( $tmp_path );
-				return;
-			}
-		}
 	}
 
 
@@ -963,7 +1061,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Tell if a size can be resized.
+	 * Tell if a size should be resized.
 	 *
 	 * @since  1.9
 	 * @access protected
@@ -973,10 +1071,25 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @param  File   $file A File instance.
 	 * @return bool
 	 */
-	abstract protected function can_resize( $size, $file );
+	protected function can_resize( $size, $file ) {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( 'full' !== $size && 'full' . static::WEBP_SUFFIX !== $size ) {
+			// We resize only the main file and its webp version.
+			return false;
+		}
+
+		if ( ! $file->is_image() ) {
+			return false;
+		}
+
+		return $this->get_media()->get_context_instance()->can_resize();
+	}
 
 	/**
-	 * Tell if a size can be backuped.
+	 * Tell if a size should be backuped.
 	 *
 	 * @since  1.9
 	 * @access protected
@@ -985,7 +1098,18 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @param  string $size The size name.
 	 * @return bool
 	 */
-	abstract protected function can_backup( $size );
+	protected function can_backup( $size ) {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( 'full' !== $size ) {
+			// We backup only the main file.
+			return false;
+		}
+
+		return $this->get_media()->get_context_instance()->can_backup();
+	}
 
 	/**
 	 * Tell if a size should keep exif.
@@ -997,12 +1121,77 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @param  string $size The size name.
 	 * @return bool
 	 */
-	abstract protected function can_keep_exif( $size );
+	protected function can_keep_exif( $size ) {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( 'full' !== $size && 'full' . static::WEBP_SUFFIX !== $size ) {
+			// We keep exif only on the main file and its webp version.
+			return false;
+		}
+
+		return $this->get_media()->get_context_instance()->can_keep_exif();
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** WEBP ==================================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Generate webp images if they are missing.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
+	 */
+	public function generate_webp_versions() {
+		if ( ! $this->is_valid() ) {
+			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+		}
+
+		$media = $this->get_media();
+
+		if ( ! $media->is_image() ) {
+			return new \WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to webp format.', 'imagify' ) );
+		}
+
+		if ( ! $media->has_backup() ) {
+			return new \WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
+		}
+
+		if ( ! $this->get_data()->is_optimized() ) {
+			return new \WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
+		}
+
+		if ( $this->size_has_optimization_data( 'full' . static::WEBP_SUFFIX ) ) {
+			return new \WP_Error( 'has_webp', __( 'This media already has webp versions.', 'imagify' ) );
+		}
+
+		$files = $media->get_media_files();
+		$sizes = [];
+		$args  = [
+			'hook_suffix' => 'generate_webp_versions',
+		];
+
+		foreach ( $files as $size_name => $file ) {
+			if ( 'image/webp' !== $files[ $size_name ]['mime-type'] ) {
+				array_unshift( $sizes, $size_name . static::WEBP_SUFFIX );
+			}
+		}
+
+		if ( ! $sizes ) {
+			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to webp format.', 'imagify' ) );
+		}
+
+		$optimization_level = $this->get_option( 'optimization_level' );
+
+		// Optimize.
+		return $this->optimize_sizes( $sizes, $optimization_level, $args );
+	}
 
 	/**
 	 * Delete the webp images.

@@ -199,29 +199,6 @@ interface ProcessInterface {
 
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** TEMPORARY COPY OF THE FULL SIZE ========================================================= */
-	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * If we need to create a webp version of the full size, we must create it from an unoptimized image (if possible).
-	 * Since the full size is supposed to be optimized before the webp version creation, we must either:
-	 * - Create a temporary copy of the backup image if it exists.
-	 * - Or, create a temporary copy of the full size before its optimization.
-	 */
-
-	/**
-	 * Get the path to a temporary copy of the full size file.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return string|bool $file_path An image path. False on failure.
-	 */
-	public function get_temporary_full_copy_path();
-
-
-	/** ----------------------------------------------------------------------------------------- */
 	/** RESIZE FILE ============================================================================= */
 	/** ----------------------------------------------------------------------------------------- */
 
