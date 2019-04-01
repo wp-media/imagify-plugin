@@ -25,6 +25,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 	$output_after             = $is_media_page ? '<br/>' : '</li>';
 	$reoptimize_link          = get_imagify_attachment_reoptimize_link( $process );
 	$reoptimize_link         .= get_imagify_attachment_optimize_missing_thumbnails_link( $process );
+	$reoptimize_link         .= get_imagify_attachment_generate_webp_versions_link( $process );
 	$reoptimize_output        = $reoptimize_link ? $reoptimize_link : '';
 	$reoptimize_output_before = '<div class="imagify-datas-actions-links">';
 	$reoptimize_output_after  = '</div><!-- .imagify-datas-actions-links -->';
@@ -311,6 +312,69 @@ function get_imagify_attachment_optimize_missing_thumbnails_link( $process ) {
 	return Imagify_Views::get_instance()->get_template( 'button/optimize-missing-sizes', [
 		'url'   => $url,
 		'count' => count( $missing_sizes ),
+	] );
+}
+
+/**
+ * Get the link to generate webp versions if they are missing.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param  ProcessInterface $process The optimization process object.
+ * @return string                    The output to print.
+ */
+function get_imagify_attachment_generate_webp_versions_link( $process ) {
+	if ( ! $process->is_valid() ) {
+		return '';
+	}
+
+	if ( ! get_imagify_option( 'convert_to_webp' ) ) {
+		return '';
+	}
+
+	$media = $process->get_media();
+
+	if ( ! $media->is_image() || ! Imagify_Requirements::is_api_key_valid() || ! $media->has_backup() ) {
+		return '';
+	}
+
+	if ( ! $process->get_data()->is_optimized() ) {
+		return '';
+	}
+
+	$size = 'full' . constant( get_class( $process ) . '::WEBP_SUFFIX' );
+
+	if ( $process->size_has_optimization_data( $size ) ) {
+		return '';
+	}
+
+	$context = $media->get_context();
+
+	/**
+	 * Allow to not display the "Generate webp versions" link.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 *
+	 * @param bool             $display True to display the link. False to not display it.
+	 * @param ProcessInterface $process The optimization process object.
+	 * @param string           $context The context.
+	 */
+	$display = apply_filters( 'imagify_display_generate_webp_versions_link', true, $process, $context );
+
+	// Stop the process if the filter is false.
+	if ( ! $display ) {
+		return '';
+	}
+
+	$url = get_imagify_admin_url( 'generate-webp-versions', [
+		'attachment_id' => $media->get_id(),
+		'context'       => $context,
+	] );
+
+	return Imagify_Views::get_instance()->get_template( 'button/generate-webp', [
+		'url' => $url,
 	] );
 }
 

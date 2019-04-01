@@ -30,6 +30,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		'imagify_manual_optimize',
 		'imagify_manual_reoptimize',
 		'imagify_optimize_missing_sizes',
+		'imagify_generate_webp_versions',
 		'imagify_restore',
 		'imagify_optimize_file',
 		'imagify_reoptimize_file',
@@ -251,6 +252,39 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	}
 
 	/**
+	 * Generate webp images if they are missing.
+	 *
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param int    $media_id The media ID.
+	 * @param string $context  The context.
+	 */
+	protected function generate_webp_versions( $media_id, $context ) {
+		$process = imagify_get_optimization_process( $media_id, $context );
+
+		if ( ! $process->get_media()->is_image() ) {
+			$output = get_imagify_attachment_optimization_text( $process );
+			imagify_die( $output );
+		}
+
+		// Generate.
+		$result = $process->generate_webp_versions();
+
+		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
+
+		if ( is_wp_error( $result ) ) {
+			// Return an error message.
+			$output = $result->get_error_message();
+
+			wp_send_json_error( [ 'html' => $output ] );
+		}
+
+		wp_send_json_success();
+	}
+
+	/**
 	 * Optimize all files from a media, using the bulk method.
 	 *
 	 * @since  1.9
@@ -352,6 +386,27 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		imagify_check_user_capacity( 'manual-optimize', $media_id );
 
 		$this->optimize_missing_sizes( $media_id, $context );
+	}
+
+	/**
+	 * Generate webp images if they are missing.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_generate_webp_versions_callback() {
+		if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		$context  = $this->get_context();
+		$media_id = $this->get_media_id();
+
+		imagify_check_nonce( 'imagify-generate-webp-versions-' . $media_id . '-' . $context );
+		imagify_check_user_capacity( 'manual-optimize', $media_id );
+
+		$this->generate_webp_versions( $media_id, $context );
 	}
 
 	/**
