@@ -258,7 +258,7 @@ class CustomFolders extends AbstractMedia {
 				'size'      => 'full',
 				'path'      => $original_path,
 				'width'     => $dimensions['width'],
-				'height'    => $dimentions['height'],
+				'height'    => $dimensions['height'],
 				'mime-type' => $this->get_mime_type(),
 				'disabled'  => false,
 			],
