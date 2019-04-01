@@ -97,6 +97,26 @@ function imagify_get_post_statuses() {
 }
 
 /**
+ * Tell if the attachment has the required WP metadata.
+ *
+ * @since  1.6.12
+ * @since  1.7 Also checks that the '_wp_attached_file' meta is valid (not a URL or anything funny).
+ * @author Grégory Viguier
+ *
+ * @param  int $attachment_id The attachment ID.
+ * @return bool
+ */
+function imagify_attachment_has_required_metadata( $attachment_id ) {
+	$file = get_post_meta( $attachment_id, '_wp_attached_file', true );
+
+	if ( ! $file || preg_match( '@://@', $file ) || preg_match( '@^.:\\\@', $file ) ) {
+		return false;
+	}
+
+	return (bool) wp_get_attachment_metadata( $attachment_id, true );
+}
+
+/**
  * Tell if the site has attachments (only the ones Imagify would optimize) without the required WP metadata.
  *
  * @since  1.7
@@ -269,15 +289,7 @@ function get_imagify_attachment_url( $file_path ) {
  *                Removed the filter, added crop value to each size.
  * @author Grégory Viguier
  *
- * @return array {
- *     Data for the currently registered thumbnail sizes.
- *     Size names are used as array keys.
- *
- *     @type int    $width  The image width.
- *     @type int    $height The image height.
- *     @type bool   $crop   True to crop, false to resize.
- *     @type string $name   The size name.
- * }
+ * @return array Data for all currently registered thumbnail sizes (width, height, crop, name).
  */
 function get_imagify_thumbnail_sizes() {
 	// All image size names.

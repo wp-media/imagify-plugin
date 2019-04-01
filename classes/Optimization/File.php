@@ -46,7 +46,7 @@ class File {
 	/**
 	 * Filesystem object.
 	 *
-	 * @var    Imagify_Filesystem
+	 * @var    \Imagify_Filesystem
 	 * @since  1.9
 	 * @access protected
 	 * @author Grégory Viguier
@@ -56,7 +56,7 @@ class File {
 	/**
 	 * The editor instance used to resize the file.
 	 *
-	 * @var    WP_Image_Editor_Imagick|WP_Image_Editor_GD|WP_Error.
+	 * @var    \WP_Image_Editor_Imagick|\WP_Image_Editor_GD|WP_Error.
 	 * @since  1.9
 	 * @access protected
 	 * @author Grégory Viguier
@@ -83,14 +83,7 @@ class File {
 	 * @param  string $file_path Absolute path to the file.
 	 */
 	public function __construct( $file_path ) {
-		/**
-		 * Filter the attachment path.
-		 *
-		 * @since 1.2
-		 *
-		 * @param string $file_path The attachment path.
-		 */
-		$this->path       = apply_filters( 'imagify_file_path', $file_path );
+		$this->path       = $file_path;
 		$this->filesystem = \Imagify_Filesystem::get_instance();
 	}
 

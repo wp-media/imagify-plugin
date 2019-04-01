@@ -246,8 +246,6 @@ class Imagify_Requirements_Check {
 			return;
 		}
 
-		imagify_load_translations();
-
 		$message      = array();
 		$required     = array();
 		$rollback_url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_rollback' ), 'imagify_rollback' );
@@ -290,8 +288,6 @@ class Imagify_Requirements_Check {
 		if ( ! $this->current_user_can() ) {
 			wp_die();
 		}
-
-		imagify_load_translations();
 
 		$plugin_transient = get_site_transient( 'update_plugins' );
 		$plugin_basename  = plugin_basename( $this->plugin_file );

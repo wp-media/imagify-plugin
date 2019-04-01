@@ -55,3 +55,53 @@ function imagify_size_format( $bytes, $decimals = -1 ) {
 	$bytes = @size_format( $bytes, $decimals );
 	return str_replace( ' ', ' ', $bytes );
 }
+
+/**
+ * Get the Imagify attachment class name depending to a context.
+ *
+ * @since  1.5
+ * @since  1.6.6 $attachment_id and $identifier have been added.
+ * @author Jonathan Buttigieg
+ *
+ * @param  string $context       The context to determine the class name.
+ * @param  int    $attachment_id The attachment ID.
+ * @param  string $identifier    An identifier.
+ * @return string                The Imagify attachment class name.
+ */
+function get_imagify_attachment_class_name( $context, $attachment_id, $identifier ) {
+	$context = $context ? $context : 'wp';
+
+	if ( 'wp' !== $context && 'wp' === strtolower( $context ) ) {
+		$context = 'wp';
+	}
+
+	/**
+	 * Filter the context used for the optimization.
+	 *
+	 * @since  1.6.6
+	 * @author Grégory Viguier
+	 *
+	 * @param string $context       The context.
+	 * @param int    $attachment_id The attachment ID.
+	 * @param string $identifier    An identifier.
+	 */
+	$context = apply_filters( 'imagify_optimize_attachment_context', $context, $attachment_id, $identifier );
+
+	return 'Imagify_' . ( 'wp' !== $context ? $context . '_' : '' ) . 'Attachment';
+}
+
+/**
+ * Get the Imagify attachment instance depending to a context.
+ *
+ * @since  1.6.13
+ * @author Grégory Viguier
+ *
+ * @param  string $context       The context to determine the class name.
+ * @param  int    $attachment_id The attachment ID.
+ * @param  string $identifier    An identifier.
+ * @return object                The Imagify attachment instance.
+ */
+function get_imagify_attachment( $context, $attachment_id, $identifier ) {
+	$class_name = get_imagify_attachment_class_name( $context, $attachment_id, $identifier );
+	return new $class_name( $attachment_id );
+}

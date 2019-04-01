@@ -23,12 +23,12 @@ function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
 		return $form_fields;
 	}
 
-	$process = imagify_get_optimization_process( $post->ID, 'wp' );
+	$attachment = get_imagify_attachment( 'wp', $post->ID, 'attachment_fields_to_edit' );
 
 	$form_fields['imagify'] = array(
 		'label'         => 'Imagify',
 		'input'         => 'html',
-		'html'          => get_imagify_media_column_content( $process ),
+		'html'          => get_imagify_media_column_content( $attachment ),
 		'show_in_edit'  => true,
 		'show_in_modal' => true,
 	);
@@ -52,47 +52,41 @@ function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 		return $actions;
 	}
 
-	$process = imagify_get_optimization_process( $post->ID, 'wp' );
+	$attachment = get_imagify_attachment( 'wp', $post->ID, 'media_row_actions' );
 
-	if ( ! $process->is_valid() ) {
+	// If this attachment is not an image, do nothing.
+	if ( ! $attachment->is_extension_supported() || ! $attachment->is_image() ) {
 		return $actions;
 	}
-
-	$media = $process->get_media();
-
-	// If this media is not an image, do nothing.
-	if ( ! $media->is_supported() || ! $media->is_image() ) {
-		return $actions;
-	}
-
-	$data = $process->get_data();
 
 	// If Imagify license not valid, or image is not optimized, do nothing.
-	if ( ! Imagify_Requirements::is_api_key_valid() || ! $data->is_optimized() ) {
+	if ( ! Imagify_Requirements::is_api_key_valid() || ! $attachment->is_optimized() ) {
 		return $actions;
 	}
 
-	// If no backup, do nothing.
-	if ( ! $media->has_backup() ) {
+	// If was not activated for that image, do nothing.
+	if ( ! $attachment->get_backup_url() ) {
 		return $actions;
 	}
 
-	$dimensions = $media->get_dimensions();
+	$image = wp_get_attachment_image_src( $post->ID, 'full' );
 
 	// If full image is too small. See get_imagify_localize_script_translations().
-	if ( $dimensions['width'] < 360 ) {
+	if ( ! $image || (int) $image[1] < 360 ) {
 		return $actions;
 	}
 
 	// Else, add action link for comparison (JS triggered).
-	$actions['imagify-compare'] = Imagify_Views::get_instance()->get_template( 'button/compare-images', [
-		'url'          => get_edit_post_link( $media->get_id() ) . '#imagify-compare',
-		'backup_url'   => $media->get_backup_url(),
-		'original_url' => $media->get_original_url(),
-		'media_id'     => $media->get_id(),
-		'width'        => $dimensions['width'],
-		'height'       => $dimensions['height'],
-	] );
+	$actions['imagify-compare'] = sprintf(
+		'<a href="%1$s#imagify-compare" data-id="%2$d" data-backup-src="%3$s" data-full-src="%4$s" data-full-width="%5$d" data-full-height="%6$d" data-target="#imagify-comparison-%2$d" class="imagify-compare-images imagify-modal-trigger">%7$s</a>',
+		esc_url( get_edit_post_link( $post->ID ) ),
+		$post->ID,
+		esc_url( $attachment->get_backup_url() ),
+		esc_url( $image[0] ),
+		$image[1],
+		$image[2],
+		esc_html__( 'Compare Original VS Optimized', 'imagify' )
+	);
 
 	return $actions;
 }

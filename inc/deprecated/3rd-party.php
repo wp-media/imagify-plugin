@@ -12,9 +12,9 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 	 * @deprecated
 	 */
 	function _imagify_create_ngg_table() {
-		_deprecated_function( __FUNCTION__ . '()', '1.7', '\\Imagify\\ThirdParty\\NGG\\DB::get_instance()->maybe_upgrade_table()' );
+		_deprecated_function( __FUNCTION__ . '()', '1.7', 'Imagify_NGG_DB::get_instance()->maybe_upgrade_table()' );
 
-		\Imagify\ThirdParty\NGG\DB::get_instance()->maybe_upgrade_table();
+		Imagify_NGG_DB::get_instance()->maybe_upgrade_table();
 	}
 
 	/**
@@ -78,20 +78,6 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 		);
 
 		return $response;
-	}
-
-	/**
-	 * Dispatch the optimization process.
-	 *
-	 * @since  1.8
-	 * @since  1.9 Deprecated.
-	 * @author Grégory Viguier
-	 * @deprecated
-	 */
-	function imagify_ngg_dispatch_dynamic_thumbnail_background_process() {
-		_deprecated_function( __FUNCTION__ . '()', '1.9' );
-
-		Imagify_NGG_Dynamic_Thumbnails_Background_Process::get_instance()->save()->dispatch();
 	}
 
 endif;

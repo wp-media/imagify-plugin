@@ -215,8 +215,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return false;
 		}
 
-		$bits = preg_replace( '@^' . preg_quote( $site_root, '@' ) . '@i', '', $path );
-		$bits = trim( $bits, '/' ); // In case the path starts with `//` but the site's root is `/`.
+		$bits = str_replace( $site_root, '', $path );
 		$bits = explode( '/', $bits );
 		$path = untrailingslashit( $site_root );
 
@@ -472,7 +471,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return false;
 		}
 
-		return (bool) wp_is_writable( $file_path );
+		return wp_is_writable( $file_path );
 	}
 
 

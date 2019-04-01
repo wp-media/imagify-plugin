@@ -1,6 +1,4 @@
 <?php
-use \Imagify\ThirdParty\NGG\DB;
-
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -40,7 +38,7 @@ function imagify_ngg_count_error_attachments() {
 		return $count;
 	}
 
-	$ngg_db = DB::get_instance();
+	$ngg_db = Imagify_NGG_DB::get_instance();
 	$key    = $ngg_db->get_primary_key();
 	$count  = (int) $ngg_db->get_var_by( "COUNT($key)", 'status', 'error' );
 
@@ -62,7 +60,7 @@ function imagify_ngg_count_optimized_attachments() {
 		return $count;
 	}
 
-	$ngg_db = DB::get_instance();
+	$ngg_db = Imagify_NGG_DB::get_instance();
 	$key    = $ngg_db->get_primary_key();
 	$count  = (int) $ngg_db->get_var_in( "COUNT($key)", 'status', array( 'success', 'already_optimized' ) );
 

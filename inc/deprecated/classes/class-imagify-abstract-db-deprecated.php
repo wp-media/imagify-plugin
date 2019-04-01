@@ -32,7 +32,7 @@ class Imagify_Abstract_DB_Deprecated {
 	 * Ensures only one instance of class is loaded or can be loaded.
 	 * Well, actually it ensures nothing since it's not a full singleton pattern.
 	 *
-	 * @since  1.5 In \Imagify\ThirdParty\NGG\DB.
+	 * @since  1.5 In Imagify_NGG_DB.
 	 * @since  1.7 Deprecated.
 	 * @access public
 	 * @author Jonathan Buttigieg

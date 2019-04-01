@@ -1,14 +1,14 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
-add_action( 'wp_ajax_imagify_manual_optimize',      '_do_admin_post_imagify_ngg_user_capacity', 5 );
-add_action( 'admin_post_imagify_manual_optimize',   '_do_admin_post_imagify_ngg_user_capacity', 5 );
-add_action( 'wp_ajax_imagify_manual_reoptimize',    '_do_admin_post_imagify_ngg_user_capacity', 5 );
-add_action( 'admin_post_imagify_manual_reoptimize', '_do_admin_post_imagify_ngg_user_capacity', 5 );
-add_action( 'wp_ajax_imagify_restore',              '_do_admin_post_imagify_ngg_user_capacity', 5 );
-add_action( 'admin_post_imagify_restore',           '_do_admin_post_imagify_ngg_user_capacity', 5 );
-add_action( 'wp_ajax_imagify_get_folder_type_data', '_do_admin_post_imagify_ngg_user_capacity', 5 );
-add_action( 'wp_ajax_bulk_info_seen_callback',      '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'wp_ajax_imagify_manual_upload',             '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'admin_post_imagify_manual_upload',          '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'wp_ajax_imagify_manual_override_upload',    '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'admin_post_imagify_manual_override_upload', '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'wp_ajax_imagify_restore_upload',            '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'admin_post_imagify_restore_upload',         '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'wp_ajax_imagify_get_folder_type_data',      '_do_admin_post_imagify_ngg_user_capacity', 5 );
+add_action( 'wp_ajax_bulk_info_seen_callback',           '_do_admin_post_imagify_ngg_user_capacity', 5 );
 /**
  * On manual optimization, manual re-optimization, and manual restoration, filter the user capacity to operate Imagify within NGG.
  *
@@ -16,7 +16,7 @@ add_action( 'wp_ajax_bulk_info_seen_callback',      '_do_admin_post_imagify_ngg_
  * @author Grégory Viguier
  */
 function _do_admin_post_imagify_ngg_user_capacity() {
-	if ( ! empty( $_GET['context'] ) && 'ngg' === $_GET['context'] ) { // WPCS: CSRF ok.
+	if ( ! empty( $_GET['context'] ) && 'NGG' === $_GET['context'] ) { // WPCS: CSRF ok.
 		add_filter( 'imagify_capacity', 'imagify_get_ngg_capacity', 10, 2 );
 	}
 }
@@ -42,13 +42,13 @@ function imagify_ngg_current_user_can( $user_can, $capacity, $describer, $post_i
 		return $user_can;
 	}
 
-	$image = \nggdb::find_image( $post_id );
+	$image = nggdb::find_image( $post_id );
 
 	if ( isset( $user_can_per_gallery[ $image->galleryid ] ) ) {
 		return $user_can_per_gallery[ $image->galleryid ];
 	}
 
-	$gallery_mapper = \C_Gallery_Mapper::get_instance();
+	$gallery_mapper = C_Gallery_Mapper::get_instance();
 	$gallery        = $gallery_mapper->find( $image->galleryid, false );
 
 	if ( get_current_user_id() === $gallery->author || current_user_can( 'NextGEN Manage others gallery' ) ) {
@@ -72,9 +72,9 @@ add_action( 'wp_ajax_imagify_ngg_get_unoptimized_attachment_ids', '_do_wp_ajax_i
 function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 	global $wpdb;
 
-	$ajax_post = \Imagify_Admin_Ajax_Post::get_instance();
+	$ajax_post = Imagify_Admin_Ajax_Post::get_instance();
 
-	imagify_check_nonce( 'imagify-bulk-optimize' );
+	imagify_check_nonce( 'imagify-bulk-upload' );
 	imagify_check_user_capacity( 'bulk-optimize' );
 	$ajax_post->check_can_optimize();
 
@@ -82,7 +82,7 @@ function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
 
 	$optimization_level = $ajax_post->get_optimization_level();
 
-	$storage   = \C_Gallery_Storage::get_instance();
+	$storage   = C_Gallery_Storage::get_instance();
 	$ngg_table = $wpdb->prefix . 'ngg_pictures';
 	$data      = array();
 	$images    = $wpdb->get_results( $wpdb->prepare( // WPCS: unprepared SQL ok.

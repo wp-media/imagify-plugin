@@ -722,7 +722,7 @@ function imagify_get_bulk_stats( $types, $args = array() ) {
 		$data['optimized_human']               += $saving_data['optimized_size'];
 	}
 
-	if ( isset( $types['custom-folders|custom-folders'] ) ) {
+	if ( isset( $types['custom-folders'] ) ) {
 		/**
 		 * Custom folders.
 		 */

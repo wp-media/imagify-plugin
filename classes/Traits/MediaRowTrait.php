@@ -103,7 +103,7 @@ trait MediaRowTrait {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return DBInterface The DB table instance.
+	 * @return \Imagify\DB\DBInterface The DB table instance.
 	 */
 	public function get_row_db_instance() {
 		return call_user_func( [ $this->db_class_name, 'get_instance' ] );

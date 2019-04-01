@@ -14,7 +14,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.0';
 
 	/**
 	 * The single instance of the class.
@@ -41,7 +41,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $table_version = 102;
+	protected $table_version = 100;
 
 	/**
 	 * Tell if the table is the same for each site of a Multisite.
@@ -79,7 +79,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	}
 
 	/**
-	 * Get the column placeholders.
+	 * Whitelist of columns.
 	 *
 	 * @since  1.7
 	 * @access public
@@ -104,7 +104,6 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			'optimization_level' => '%d',
 			'status'             => '%s',
 			'error'              => '%s',
-			'data'               => '%s',
 		);
 	}
 
@@ -134,7 +133,6 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			'optimization_level' => null,
 			'status'             => null,
 			'error'              => null,
-			'data'               => [],
 		);
 	}
 
@@ -166,8 +164,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			optimization_level tinyint(1) unsigned default NULL,
 			status varchar(20) default NULL,
 			error varchar(255) default NULL,
-			data longtext default NULL,
-			PRIMARY KEY  (file_id),
+			PRIMARY KEY (file_id),
 			UNIQUE KEY path (path),
 			KEY folder_id (folder_id),
 			KEY optimization_level (optimization_level),
