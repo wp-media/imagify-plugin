@@ -384,7 +384,7 @@ abstract class AbstractMedia implements MediaInterface {
 	}
 
 	/**
-       * If the media is an image, update the dimensions in the database with the current file dimensions.
+	 * If the media is an image, update the dimensions in the database with the current file dimensions.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -401,7 +401,7 @@ abstract class AbstractMedia implements MediaInterface {
 		$dimensions = $this->filesystem->get_image_size( $this->get_raw_original_path() );
 
 		if ( ! $dimensions ) {
-	                // Could not get the new dimensions.
+			// Could not get the new dimensions.
 			return false;
 		}
 
