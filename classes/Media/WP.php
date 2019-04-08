@@ -233,13 +233,13 @@ class WP extends AbstractMedia {
 			return [];
 		}
 
-		$dimentions = $this->get_dimensions();
+		$dimensions = $this->get_dimensions();
 		$all_sizes  = [
 			'full' => [
 				'size'      => 'full',
 				'path'      => $original_path,
-				'width'     => $dimentions['width'],
-				'height'    => $dimentions['height'],
+				'width'     => $dimensions['width'],
+				'height'    => $dimensions['height'],
 				'mime-type' => $this->get_mime_type(),
 				'disabled'  => false,
 			],
