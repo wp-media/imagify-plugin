@@ -5,6 +5,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * Imagify Attachment base class.
  *
  * @since 1.0
+ * @since 1.9 Deprecated
+ * @deprecated
  */
 abstract class Imagify_Abstract_Attachment {
 

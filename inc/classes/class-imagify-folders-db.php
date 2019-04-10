@@ -14,7 +14,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * The single instance of the class.
@@ -126,7 +126,7 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 			folder_id bigint(20) unsigned NOT NULL auto_increment,
 			path varchar(191) NOT NULL default '',
 			active tinyint(1) unsigned NOT NULL default 0,
-			PRIMARY KEY (folder_id),
+			PRIMARY KEY  (folder_id),
 			UNIQUE KEY path (path),
 			KEY active (active)";
 	}

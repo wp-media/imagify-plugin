@@ -5,6 +5,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * Imagify Attachment class.
  *
  * @since 1.0
+ * @since 1.9 Deprecated
+ * @deprecated
  */
 class Imagify_Attachment extends Imagify_Abstract_Attachment {
 
@@ -13,7 +15,23 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1.4';
+	const VERSION = '1.2';
+
+	/**
+	 * The constructor.
+	 *
+	 * @since  1.2
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param int|object $id The attachment ID or the attachment itself.
+	 *                       If an integer, make sure the attachment exists.
+	 */
+	public function __construct( $id = 0 ) {
+		imagify_deprecated_class( get_class( $this ), '1.9', '\\Imagify\\Optimization\\Process\\WP( $id )' );
+
+		parent::__construct();
+	}
 
 	/**
 	 * Get the attachment backup file path, even if the file doesn't exist.
@@ -467,7 +485,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 				if ( ! $is_active_for_network && isset( $disallowed_sizes[ $size_key ] ) ) {
 					$data['sizes'][ $size_key ] = array(
 						'success' => false,
-						'error'   => __( 'This size isn\'t authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
+						'error'   => __( 'This size is not authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
 					);
 
 					/**
@@ -698,7 +716,7 @@ class Imagify_Attachment extends Imagify_Abstract_Attachment {
 			// In case it's a disallowed size, fill in the new data. If it's not, it will be overwritten by $this->fill_data() later.
 			$data['sizes'][ $size_key ] = array(
 				'success' => false,
-				'error'   => __( 'This size isn\'t authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
+				'error'   => __( 'This size is not authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
 			);
 		}
 
