@@ -298,7 +298,7 @@ interface MediaInterface {
 	public function get_dimensions();
 
 	/**
-	 * If the media is an image, update the dimensions in the database with the current file dimensions.
+	 * If the media is an image, update the dimensions in the database with the current file dimentions.
 	 *
 	 * @since  1.9
 	 * @access public
