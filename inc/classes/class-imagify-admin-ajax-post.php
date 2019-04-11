@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
+	use \Imagify\Traits\FakeSingletonTrait;
 
 	/**
 	 * Class version.
@@ -26,17 +27,19 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
-	protected $ajax_post_actions = array(
+	protected $ajax_post_actions = [
+		// WP optimization.
 		'imagify_manual_optimize',
 		'imagify_manual_reoptimize',
 		'imagify_optimize_missing_sizes',
 		'imagify_generate_webp_versions',
 		'imagify_restore',
+		// Custom folders optimization.
 		'imagify_optimize_file',
 		'imagify_reoptimize_file',
 		'imagify_restore_file',
 		'imagify_refresh_file_modified',
-	);
+	];
 
 	/**
 	 * Actions to be triggered only on admin ajax.
@@ -46,13 +49,17 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
-	protected $ajax_only_actions = array(
+	protected $ajax_only_actions = [
+		// Bulk.
+		'imagify_get_media_ids',
 		'imagify_bulk_optimize',
-		'imagify_bulk_optimize_file',
-		'imagify_get_unoptimized_attachment_ids',
-		'imagify_get_unoptimized_file_ids',
+		'imagify_get_folder_type_data',
+		'imagify_bulk_info_seen',
+		'imagify_bulk_get_stats',
+		// Settings page.
 		'imagify_check_backup_dir_is_writable',
-		'nopriv_imagify_rpc',
+		'imagify_get_files_tree',
+		// Account.
 		'imagify_signup',
 		'imagify_check_api_key_validity',
 		'imagify_get_admin_bar_profile',
@@ -62,11 +69,9 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		'imagify_get_images_counts',
 		'imagify_update_estimate_sizes',
 		'imagify_get_user_data',
-		'imagify_get_files_tree',
-		'imagify_get_folder_type_data',
-		'imagify_bulk_info_seen',
-		'imagify_bulk_get_stats',
-	);
+		// Various.
+		'nopriv_imagify_rpc',
+	];
 
 	/**
 	 * Actions to be triggered only on admin post.
@@ -76,10 +81,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
-	protected $post_only_actions = array(
+	protected $post_only_actions = [
+		// Custom folders optimization.
 		'imagify_scan_custom_folders',
+		// Various.
 		'imagify_dismiss_ad',
-	);
+	];
 
 	/**
 	 * Filesystem object.
@@ -91,44 +98,21 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 */
 	protected $filesystem;
 
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var object
-	 */
-	protected static $_instance;
-
-	/**
-	 * The constructor.
-	 *
-	 * @since  1.6.11
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected function __construct() {
-		$this->filesystem = Imagify_Filesystem::get_instance();
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** INIT ==================================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the main Instance.
+	 * The constructor.
 	 *
 	 * @since  1.6.11
+	 * @since  1.9 Visibility set to public.
 	 * @access public
 	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
 	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
+	public function __construct() {
+		$this->filesystem = Imagify_Filesystem::get_instance();
 	}
 
 	/**
@@ -190,7 +174,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	}
 
 	/**
-	 * Re-optimize a media.
+	 * Re-optimize a media to a different optimization level.
 	 *
 	 * @since  1.9
 	 * @access protected
@@ -216,6 +200,44 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Optimize all files from a media, whatever this media’s previous optimization status (will be restored if needed).
+	 * This is used by the bulk optimization page.
+	 *
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  int    $media_id The media ID.
+	 * @param  string $context  The context.
+	 * @param  int    $level    The optimization level.
+	 * @return bool|WP_Error    True if the optimization have been successfully launched, a \WP_Error object on failure.
+	 */
+	protected function force_optimize( $media_id, $context, $level ) {
+		$process = imagify_get_optimization_process( $media_id, $context );
+		$data    = $process->get_data();
+
+		// Restore before re-optimizing.
+		if ( $data->is_optimized() ) {
+			$result = $process->restore();
+
+			if ( is_wp_error( $result ) ) {
+				// Return an error message.
+				return $result;
+			}
+		}
+
+		// Optimize it.
+		$result = $process->optimize( $level );
+
+		if ( is_wp_error( $result ) ) {
+			// Return an error message.
+			return $result;
+		}
+
+		return true;
 	}
 
 	/**
@@ -284,45 +306,174 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		wp_send_json_success();
 	}
 
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** BULK OPTIMIZATION CALLBACKS ============================================================= */
+	/** ----------------------------------------------------------------------------------------- */
+
 	/**
-	 * Optimize all files from a media, using the bulk method.
+	 * Get media ids for the requested imagify bulk action.
 	 *
 	 * @since  1.9
-	 * @access protected
+	 * @access public
 	 * @author Grégory Viguier
-	 *
-	 * @param  int    $media_id The media ID.
-	 * @param  string $context  The context.
-	 * @param  int    $level    The optimization level.
-	 * @return bool|WP_Error    True if the optimization have been successfully launched, a \WP_Error object on failure.
 	 */
-	protected function bulk_optimize( $media_id, $context, $level ) {
-		$process = imagify_get_optimization_process( $media_id, $context );
+	public function imagify_get_media_ids_callback() {
+		imagify_check_nonce( 'imagify-bulk-optimize' );
 
-		// Restore before re-optimizing.
-		if ( false !== $process->get_data()->get_optimization_level() ) {
-			$result = $process->restore();
+		$context = $this->get_context();
 
-			if ( is_wp_error( $result ) ) {
-				// Return an error message.
-				return new \WP_Error( 'meh', $result->get_error_message() );
+		if ( ! $context ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+			imagify_die();
+		}
+
+		$bulk = $this->get_bulk_instance( $context );
+
+		switch ( $this->get_imagify_action() ) {
+			case 'optimize':
+				$this->check_can_optimize();
+				$data = $bulk->get_unoptimized_media_ids( $this->get_optimization_level() );
+				break;
+
+			case 'generate_webp':
+				$this->check_can_optimize();
+				$data = $bulk->get_optimized_media_ids_without_webp();
+				break;
+
+			default:
+				$data = [];
+		}
+
+		wp_send_json_success( $data );
+	}
+
+	/**
+	 * Process a media with the requested imagify bulk action.
+	 *
+	 * @since  1.6.11
+	 * @access public
+	 * @author Jonathan Buttigieg
+	 */
+	public function imagify_bulk_optimize_callback() {
+		imagify_check_nonce( 'imagify-bulk-optimize' );
+
+		$media_id = $this->get_media_id( 'POST', 'media_id' );
+		$context  = $this->get_context( 'POST' );
+
+		if ( ! $media_id || ! $context ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize', $media_id ) ) {
+			imagify_die();
+		}
+
+		switch ( $this->get_imagify_action() ) {
+			case 'optimize':
+				$level  = $this->get_optimization_level( 'POST' );
+				$result = $this->force_optimize( $media_id, $context, $level );
+				break;
+
+			case 'generate_webp':
+				$result = $this->generate_webp_versions( $media_id, $context );
+				break;
+
+			default:
+				$result = new \WP_Error( 'unknown_action', __( 'Unknown action', 'imagify' ) );
+		}
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( [ 'error' => $result->get_error_message() ] );
+		}
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Get stats data for a specific folder type.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_get_folder_type_data_callback() {
+		imagify_check_nonce( 'imagify-bulk-optimize' );
+
+		$context = $this->get_context();
+
+		if ( ! $context ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+			imagify_die();
+		}
+
+		$bulk = $this->get_bulk_instance( $context );
+
+		wp_send_json_success( $bulk->get_context_data() );
+	}
+
+	/**
+	 * Set the "bulk info" popup state as "seen".
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_bulk_info_seen_callback() {
+		imagify_check_nonce( 'imagify-bulk-optimize' );
+
+		$context = $this->get_context();
+
+		if ( ! $context ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+			imagify_die();
+		}
+
+		set_transient( 'imagify_bulk_optimization_infos', 1, WEEK_IN_SECONDS );
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Get generic stats to display in the bulk page.
+	 *
+	 * @since  1.7.1
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_bulk_get_stats_callback() {
+		imagify_check_nonce( 'imagify-bulk-optimize' );
+
+		$folder_types = filter_input( INPUT_GET, 'types', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY );
+		$folder_types = is_array( $folder_types ) ? array_filter( $folder_types ) : [];
+
+		if ( ! $folder_types ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		foreach ( $folder_types as $folder_type_data ) {
+			$context = ! empty( $folder_type_data['context'] ) ? $folder_type_data['context'] : 'noop';
+
+			if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+				imagify_die();
 			}
 		}
 
-		// Optimize it.
-		$result = $process->optimize( $level );
-
-		if ( is_wp_error( $result ) ) {
-			// Return an error message.
-				return new \WP_Error( 'meh', $result->get_error_message() );
-		}
-
-		return true;
+		wp_send_json_success( imagify_get_bulk_stats( array_flip( $folder_types ) ) );
 	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** MANUAL OPTIMIZATION ===================================================================== */
+	/** WP OPTIMIZATION CALLBACKS =============================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
@@ -333,15 +484,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_manual_optimize_callback() {
-		if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
 		$context  = $this->get_context();
 		$media_id = $this->get_media_id();
 
+		if ( ! $media_id || ! $context ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
 		imagify_check_nonce( 'imagify-optimize-' . $media_id . '-' . $context );
-		imagify_check_user_capacity( 'manual-optimize', $media_id );
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'manual-optimize', $media_id ) ) {
+			imagify_die();
+		}
 
 		$this->optimize_media( $media_id, $context );
 	}
@@ -354,15 +508,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_manual_reoptimize_callback() {
-		if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
 		$context  = $this->get_context();
 		$media_id = $this->get_media_id();
 
+		if ( ! $media_id || ! $context ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
 		imagify_check_nonce( 'imagify-manual-reoptimize-' . $media_id . '-' . $context );
-		imagify_check_user_capacity( 'manual-optimize', $media_id );
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'manual-optimize', $media_id ) ) {
+			imagify_die();
+		}
 
 		$this->reoptimize_media( $media_id, $context, $this->get_optimization_level() );
 	}
@@ -375,15 +532,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @author Grégory Viguier
 	 */
 	public function imagify_optimize_missing_sizes_callback() {
-		if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
 		$context  = $this->get_context();
 		$media_id = $this->get_media_id();
 
+		if ( ! $media_id || ! $context ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
 		imagify_check_nonce( 'imagify-optimize-missing-sizes-' . $media_id . '-' . $context );
-		imagify_check_user_capacity( 'manual-optimize', $media_id );
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'manual-optimize', $media_id ) ) {
+			imagify_die();
+		}
 
 		$this->optimize_missing_sizes( $media_id, $context );
 	}
@@ -396,15 +556,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @author Grégory Viguier
 	 */
 	public function imagify_generate_webp_versions_callback() {
-		if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
 		$context  = $this->get_context();
 		$media_id = $this->get_media_id();
 
+		if ( ! $media_id || ! $context ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
 		imagify_check_nonce( 'imagify-generate-webp-versions-' . $media_id . '-' . $context );
-		imagify_check_user_capacity( 'manual-optimize', $media_id );
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'manual-optimize', $media_id ) ) {
+			imagify_die();
+		}
 
 		$this->generate_webp_versions( $media_id, $context );
 	}
@@ -417,15 +580,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @author Jonathan Buttigieg
 	 */
 	public function imagify_restore_callback() {
-		if ( empty( $_GET['attachment_id'] ) || empty( $_GET['context'] ) ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
 		$context  = $this->get_context();
 		$media_id = $this->get_media_id();
 
+		if ( ! $media_id || ! $context ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
 		imagify_check_nonce( 'imagify-restore-' . $media_id . '-' . $context );
-		imagify_check_user_capacity( 'manual-optimize', $media_id );
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'manual-restore', $media_id ) ) {
+			imagify_die();
+		}
 
 		$process = imagify_get_optimization_process( $media_id, $context );
 
@@ -452,38 +618,9 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		wp_send_json_success( [ 'html' => $output ] );
 	}
 
-	/**
-	 * Optimize all thumbnails of a specific image with the bulk method.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Jonathan Buttigieg
-	 */
-	public function imagify_bulk_optimize_callback() {
-		imagify_check_nonce( 'imagify-bulk-optimize' );
-
-		$media_id = $this->get_media_id( 'POST', 'media_id' );
-
-		if ( ! $media_id ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		imagify_check_user_capacity( 'bulk-optimize', $media_id );
-
-		$context = $this->get_context( 'POST' );
-		$level   = $this->get_optimization_level( 'POST' );
-		$result  = $this->bulk_optimize( $media_id, $context, $level );
-
-		if ( is_wp_error( $result ) ) {
-			wp_send_json_error( [ 'error' => $result->get_error_message() ] );
-		}
-
-		wp_send_json_success();
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** CUSTOM FOLDERS ========================================================================== */
+	/** CUSTOM FOLDERS OPTIMIZATION CALLBACKS =================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
@@ -495,9 +632,16 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 */
 	public function imagify_optimize_file_callback() {
 		imagify_check_nonce( 'imagify_optimize_file' );
-		imagify_check_user_capacity( 'optimize-file' );
 
 		$media_id = $this->get_media_id( 'GET', 'id' );
+
+		if ( ! $media_id ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		if ( ! imagify_get_context( 'custom-folders' )->current_user_can( 'manual-optimize', $media_id ) ) {
+			imagify_die();
+		}
 
 		$this->optimize_media( $media_id, 'custom-folders' );
 	}
@@ -511,11 +655,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 */
 	public function imagify_reoptimize_file_callback() {
 		imagify_check_nonce( 'imagify_reoptimize_file' );
-		imagify_check_user_capacity( 'optimize-file' );
 
 		$media_id = $this->get_media_id( 'GET', 'id' );
-		$level    = $this->get_optimization_level( 'GET', 'level' );
-		$process  = imagify_get_optimization_process( $media_id, 'custom-folders' );
+
+		if ( ! $media_id ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		if ( ! imagify_get_context( 'custom-folders' )->current_user_can( 'manual-optimize', $media_id ) ) {
+			imagify_die();
+		}
+
+		$level = $this->get_optimization_level( 'GET', 'level' );
 
 		$this->reoptimize_media( $media_id, 'custom-folders', $level );
 	}
@@ -529,9 +680,17 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 */
 	public function imagify_restore_file_callback() {
 		imagify_check_nonce( 'imagify_restore_file' );
-		imagify_check_user_capacity( 'optimize-file' );
 
 		$media_id = $this->get_media_id( 'GET', 'id' );
+
+		if ( ! $media_id ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		if ( ! imagify_get_context( 'custom-folders' )->current_user_can( 'manual-restore', $media_id ) ) {
+			imagify_die();
+		}
+
 		$process  = imagify_get_optimization_process( $media_id, 'custom-folders' );
 
 		// Restore it.
@@ -548,28 +707,6 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	}
 
 	/**
-	 * Optimize a file.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 */
-	public function imagify_bulk_optimize_file_callback() {
-		imagify_check_nonce( 'imagify-bulk-optimize' );
-		imagify_check_user_capacity( 'optimize-file' );
-
-		$media_id = $this->get_media_id( 'POST', 'media_id' );
-		$level    = $this->get_optimization_level( 'POST' );
-		$result   = $this->bulk_optimize( $media_id, 'custom-folders', $level );
-
-		if ( is_wp_error( $result ) ) {
-			wp_send_json_error( [ 'error' => $result->get_error_message() ] );
-		}
-
-		wp_send_json_success();
-	}
-
-	/**
 	 * Check if a file has been modified, and update the database accordingly.
 	 *
 	 * @since  1.7
@@ -578,9 +715,17 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 */
 	public function imagify_refresh_file_modified_callback() {
 		imagify_check_nonce( 'imagify_refresh_file_modified' );
-		imagify_check_user_capacity( 'optimize-file' );
 
 		$media_id = $this->get_media_id( 'GET', 'id' );
+
+		if ( ! $media_id ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		if ( ! imagify_get_context( 'custom-folders' )->current_user_can( 'manual-optimize', $media_id ) ) {
+			imagify_die();
+		}
+
 		$process  = imagify_get_optimization_process( $media_id, 'custom-folders' );
 		$result   = Imagify_Custom_Folders::refresh_file( $process );
 
@@ -610,9 +755,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 */
 	public function imagify_scan_custom_folders_callback() {
 		imagify_check_nonce( 'imagify_scan_custom_folders' );
-		imagify_check_user_capacity( 'optimize-file' );
 
-		$folder = filter_input( INPUT_GET, 'folder', FILTER_VALIDATE_INT );
+		if ( ! imagify_get_context( 'custom-folders' )->current_user_can( 'optimize' ) ) {
+			imagify_die();
+		}
+
+		$folder = (int) filter_input( INPUT_GET, 'folder', FILTER_VALIDATE_INT );
 
 		if ( $folder > 0 ) {
 			// A specific custom folder (selected or not).
@@ -649,317 +797,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** VARIOUS FOR OPTIMIZATION ================================================================ */
+	/** SETTINGS PAGE CALLBACKS ================================================================= */
 	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Get all unoptimized attachment ids.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Jonathan Buttigieg
-	 */
-	public function imagify_get_unoptimized_attachment_ids_callback() {
-		global $wpdb;
-
-		imagify_check_nonce( 'imagify-bulk-optimize' );
-		imagify_check_user_capacity( 'bulk-optimize' );
-		$this->check_can_optimize();
-
-		@set_time_limit( 0 );
-
-		// Get (ordered) IDs.
-		$optimization_level = $this->get_optimization_level();
-
-		$mime_types   = Imagify_DB::get_mime_types();
-		$statuses     = Imagify_DB::get_post_statuses();
-		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( array(
-			'prepared' => true,
-		) );
-		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
-			SELECT p.ID
-			FROM $wpdb->posts AS p
-				$nodata_join
-			LEFT JOIN $wpdb->postmeta AS mt1
-				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
-			LEFT JOIN $wpdb->postmeta AS mt2
-				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_optimization_level' )
-			WHERE
-				p.post_mime_type IN ( $mime_types )
-				AND (
-					mt1.meta_value = 'error'
-					OR
-					mt2.meta_value != %d
-					OR
-					mt2.post_id IS NULL
-				)
-				AND p.post_type = 'attachment'
-				AND p.post_status IN ( $statuses )
-				$nodata_where
-			GROUP BY p.ID
-			ORDER BY
-				CASE mt1.meta_value
-					WHEN 'already_optimized' THEN 2
-					ELSE 1
-				END ASC,
-				p.ID DESC
-			LIMIT 0, %d",
-			$optimization_level,
-			imagify_get_unoptimized_attachment_limit()
-		) );
-
-		$wpdb->flush();
-		unset( $mime_types );
-		$ids = array_filter( array_map( 'absint', $ids ) );
-
-		if ( ! $ids ) {
-			wp_send_json_success( array() );
-		}
-
-		$results = Imagify_DB::get_metas( array(
-			// Get attachments filename.
-			'filenames'           => '_wp_attached_file',
-			// Get attachments data.
-			'data'                => '_imagify_data',
-			// Get attachments optimization level.
-			'optimization_levels' => '_imagify_optimization_level',
-			// Get attachments status.
-			'statuses'            => '_imagify_status',
-		), $ids );
-
-		// First run.
-		foreach ( $ids as $i => $id ) {
-			$attachment_status             = isset( $results['statuses'][ $id ] )            ? $results['statuses'][ $id ]            : false;
-			$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
-			$attachment_error              = '';
-
-			if ( isset( $results['data'][ $id ]['sizes']['full']['error'] ) ) {
-				$attachment_error = $results['data'][ $id ]['sizes']['full']['error'];
-			}
-
-			// Don't try to re-optimize if the optimization level is still the same.
-			if ( $optimization_level === $attachment_optimization_level && is_string( $attachment_error ) ) {
-				unset( $ids[ $i ] );
-				continue;
-			}
-
-			// Don't try to re-optimize images already compressed.
-			if ( 'already_optimized' === $attachment_status && $attachment_optimization_level >= $optimization_level ) {
-				unset( $ids[ $i ] );
-				continue;
-			}
-
-			$attachment_error = trim( $attachment_error );
-
-			// Don't try to re-optimize images with an empty error message.
-			if ( 'error' === $attachment_status && empty( $attachment_error ) ) {
-				unset( $ids[ $i ] );
-			}
-		}
-
-		if ( ! $ids ) {
-			wp_send_json_success( array() );
-		}
-
-		$ids = array_values( $ids );
-
-		/**
-		 * Triggered before testing for file existence.
-		 *
-		 * @since  1.6.7
-		 * @author Grégory Viguier
-		 *
-		 * @param array $ids                An array of attachment IDs.
-		 * @param array $results            An array of the data fetched from the database.
-		 * @param int   $optimization_level The optimization level that will be used for the optimization.
-		 */
-		do_action( 'imagify_bulk_optimize_before_file_existence_tests', $ids, $results, $optimization_level );
-
-		$data = array();
-
-		foreach ( $ids as $i => $id ) {
-			if ( empty( $results['filenames'][ $id ] ) ) {
-				// Problem.
-				continue;
-			}
-
-			$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
-
-			/** This filter is documented in inc/functions/process.php. */
-			$file_path = apply_filters( 'imagify_file_path', $file_path );
-
-			if ( ! $file_path || ! $this->filesystem->exists( $file_path ) ) {
-				continue;
-			}
-
-			$attachment_backup_path        = get_imagify_attachment_backup_path( $file_path );
-			$attachment_status             = isset( $results['statuses'][ $id ] )            ? $results['statuses'][ $id ]            : false;
-			$attachment_optimization_level = isset( $results['optimization_levels'][ $id ] ) ? $results['optimization_levels'][ $id ] : false;
-
-			// Don't try to re-optimize if there is no backup file.
-			if ( 'success' === $attachment_status && $optimization_level !== $attachment_optimization_level && ! $this->filesystem->exists( $attachment_backup_path ) ) {
-				continue;
-			}
-
-			$data[ '_' . $id ] = get_imagify_attachment_url( $results['filenames'][ $id ] );
-		} // End foreach().
-
-		if ( ! $data ) {
-			wp_send_json_success( array() );
-		}
-
-		wp_send_json_success( $data );
-	}
-
-	/**
-	 * Get all unoptimized file ids.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 */
-	public function imagify_get_unoptimized_file_ids_callback() {
-		imagify_check_nonce( 'imagify-bulk-optimize' );
-		imagify_check_user_capacity( 'optimize-file' );
-
-		$this->check_can_optimize();
-
-		@set_time_limit( 0 );
-
-		$optimization_level = $this->get_optimization_level();
-
-		/**
-		 * Get the folders from DB.
-		 */
-		$folders = Imagify_Custom_Folders::get_folders( array(
-			'active' => true,
-		) );
-
-		if ( ! $folders ) {
-			wp_send_json_success( array() );
-		}
-
-		/**
-		 * Triggered before getting file IDs.
-		 *
-		 * @since  1.7
-		 * @author Grégory Viguier
-		 *
-		 * @param array $folders            An array of folders data.
-		 * @param int   $optimization_level The optimization level that will be used for the optimization.
-		 */
-		do_action( 'imagify_bulk_optimize_files_before_get_files', $folders, $optimization_level );
-
-		/**
-		 * Get the files from DB, and from the folders.
-		 */
-		$files = Imagify_Custom_Folders::get_files_from_folders( $folders, array(
-			'optimization_level' => $optimization_level,
-		) );
-
-		if ( ! $files ) {
-			wp_send_json_success( array() );
-		}
-
-		// We need to output file URLs.
-		foreach ( $files as $k => $file ) {
-			$files[ $k ] = Imagify_Files_Scan::remove_placeholder( $file['path'], 'url' );
-		}
-
-		wp_send_json_success( $files );
-	}
-
-	/**
-	 * Get stats data for a specific folder type.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @see    imagify_get_folder_type_data()
-	 * @author Grégory Viguier
-	 */
-	public function imagify_get_folder_type_data_callback() {
-		imagify_check_nonce( 'imagify-bulk-optimize' );
-
-		$folder_type = $this->get_folder_type();
-
-		if ( 'library' === $folder_type ) {
-			imagify_check_user_capacity( 'bulk-optimize' );
-		} elseif ( 'custom-folders' === $folder_type ) {
-			imagify_check_user_capacity( 'optimize-file' );
-		} else {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		$context = $this->get_context();
-
-		/**
-		 * Get the formated data.
-		 */
-		$data = imagify_get_folder_type_data( $context );
-
-		if ( ! $data ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		wp_send_json_success( $data );
-	}
-
-	/**
-	 * Set the "bulk info" popup state as "seen".
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 */
-	public function imagify_bulk_info_seen_callback() {
-		imagify_check_nonce( 'imagify-bulk-optimize' );
-
-		$folder_type = $this->get_folder_type();
-
-		if ( 'library' === $folder_type ) {
-			imagify_check_user_capacity( 'bulk-optimize' );
-		} elseif ( 'custom-folders' === $folder_type ) {
-			imagify_check_user_capacity( 'optimize-file' );
-		} else {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		set_transient( 'imagify_bulk_optimization_infos', 1, WEEK_IN_SECONDS );
-
-		wp_send_json_success();
-	}
-
-	/**
-	 * Get generic stats to display in the bulk page.
-	 *
-	 * @since  1.7.1
-	 * @access public
-	 * @author Grégory Viguier
-	 */
-	public function imagify_bulk_get_stats_callback() {
-		imagify_check_nonce( 'imagify-bulk-optimize' );
-
-		$folder_types = filter_input( INPUT_GET, 'types', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY );
-		$folder_types = is_array( $folder_types ) ? array_flip( array_filter( $folder_types ) ) : array();
-
-		if ( ! $folder_types ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		foreach ( $folder_types as $folder_type ) {
-			if ( 'library' === $folder_type ) {
-				imagify_check_user_capacity( 'bulk-optimize' );
-			} elseif ( 'custom-folders' === $folder_type ) {
-				imagify_check_user_capacity( 'optimize-file' );
-			} else {
-				imagify_check_user_capacity( 'bulk-optimize', $folder_type );
-			}
-		}
-
-		wp_send_json_success( imagify_get_bulk_stats( $folder_types ) );
-	}
 
 	/**
 	 * Check if the backup directory is writable.
@@ -971,359 +810,14 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 */
 	public function imagify_check_backup_dir_is_writable_callback() {
 		imagify_check_nonce( 'imagify_check_backup_dir_is_writable' );
-		imagify_check_user_capacity();
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
 
 		wp_send_json_success( array(
 			'is_writable' => (int) Imagify_Requirements::attachments_backup_dir_is_writable(),
 		) );
-	}
-
-	/**
-	 * Bridge between XML-RPC and actions triggered by imagify_do_async_job().
-	 * When XML-RPC is used, a current user is set, but no cookies are set, so they cannot be sent with the request. Instead we stored the user ID in a transient.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Grégory Viguier
-	 * @see    imagify_do_async_job()
-	 */
-	public function nopriv_imagify_rpc_callback() {
-		if ( empty( $_POST['imagify_rpc_action'] ) || empty( $_POST['imagify_rpc_id'] ) ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		$action = wp_unslash( $_POST['imagify_rpc_action'] ); // WPCS: CSRF ok.
-
-		if ( 32 !== strlen( $action ) ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		// Not necessary but just in case, whitelist the original action.
-		$actions = array_flip( $this->ajax_only_actions );
-		unset( $actions['nopriv_imagify_rpc'] );
-
-		if ( ! isset( $actions[ $action ] ) ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		// Get the user ID.
-		$rpc_id  = sanitize_key( $_POST['imagify_rpc_id'] );
-		$user_id = absint( get_transient( 'imagify_rpc_' . $rpc_id ) );
-		$user    = $user_id ? get_userdata( $user_id ) : false;
-
-		delete_transient( 'imagify_rpc_' . $rpc_id );
-
-		if ( ! $user || ! $user->exists() ) {
-			imagify_die( __( 'Invalid request', 'imagify' ) );
-		}
-
-		// The current user must be set before verifying the nonce.
-		wp_set_current_user( $user_id );
-
-		imagify_check_nonce( 'imagify_rpc_' . $rpc_id, 'imagify_rpc_nonce' );
-
-		// Trigger the action we originally wanted.
-		$_POST['action'] = $action;
-		unset( $_POST['imagify_rpc_action'], $_POST['imagify_rpc_id'], $_POST['imagify_rpc_nonce'] );
-
-		/** This hook is documented in wp-admin/admin-ajax.php. */
-		do_action( 'wp_ajax_' . $action );
-	}
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** IMAGIFY ACCOUNT ========================================================================= */
-	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Create a new Imagify account.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Jonathan Buttigieg
-	 */
-	public function imagify_signup_callback() {
-		imagify_check_nonce( 'imagify-signup', 'imagifysignupnonce' );
-		imagify_check_user_capacity();
-
-		if ( empty( $_GET['email'] ) ) {
-			imagify_die( __( 'Empty email address.', 'imagify' ) );
-		}
-
-		$email = wp_unslash( $_GET['email'] );
-
-		if ( ! is_email( $email ) ) {
-			imagify_die( __( 'Not a valid email address.', 'imagify' ) );
-		}
-
-		$data = array(
-			'email'    => $email,
-			'password' => wp_generate_password( 12, false ),
-			'lang'     => imagify_get_locale(),
-		);
-
-		$response = add_imagify_user( $data );
-
-		if ( is_wp_error( $response ) ) {
-			imagify_die( $response );
-		}
-
-		wp_send_json_success();
-	}
-
-	/**
-	 * Check the API key validity.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Jonathan Buttigieg
-	 */
-	public function imagify_check_api_key_validity_callback() {
-		imagify_check_nonce( 'imagify-check-api-key', 'imagifycheckapikeynonce' );
-		imagify_check_user_capacity();
-
-		if ( empty( $_GET['api_key'] ) ) {
-			imagify_die( __( 'Empty API key.', 'imagify' ) );
-		}
-
-		$api_key  = wp_unslash( $_GET['api_key'] );
-		$response = get_imagify_status( $api_key );
-
-		if ( is_wp_error( $response ) ) {
-			imagify_die( $response );
-		}
-
-		update_imagify_option( 'api_key', $api_key );
-
-		wp_send_json_success();
-	}
-
-	/**
-	 * Get admin bar profile output.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Jonathan Buttigieg
-	 */
-	public function imagify_get_admin_bar_profile_callback() {
-		imagify_check_nonce( 'imagify-get-admin-bar-profile', 'imagifygetadminbarprofilenonce' );
-		imagify_check_user_capacity();
-
-		$user             = new Imagify_User();
-		$views            = Imagify_Views::get_instance();
-		$unconsumed_quota = $views->get_quota_percent();
-		$message          = '';
-
-		if ( $unconsumed_quota <= 20 ) {
-			$message  = '<div class="imagify-error">';
-				$message .= '<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s almost over!', 'imagify' ) . '</strong></p>';
-				/* translators: %s is a line break. */
-				$message .= '<p>' . sprintf( __( 'You have almost used all your credit.%sDon\'t forget to upgrade your subscription to continue optimizing your images.', 'imagify' ), '<br/><br/>' ) . '</p>';
-				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">' . __( 'View My Subscription', 'imagify' ) . '</a></p>';
-			$message .= '</div>';
-		}
-
-		if ( 0 === $unconsumed_quota ) {
-			$message  = '<div class="imagify-error">';
-				$message .= '<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s Over!', 'imagify' ) . '</strong></p>';
-				$message .= '<p>' . sprintf(
-					/* translators: 1 is a data quota, 2 is a date. */
-					__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
-					imagify_size_format( $user->quota * pow( 1024, 2 ) ),
-					date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) )
-				) . '</p>';
-				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>';
-			$message .= '</div>';
-		}
-
-		// Custom HTML.
-		$quota_section  = '<div class="imagify-admin-bar-quota">';
-			$quota_section .= '<div class="imagify-abq-row">';
-
-		if ( 1 === $user->plan_id ) {
-			$quota_section .= '<div class="imagify-meteo-icon">' . $views->get_quota_icon() . '</div>';
-		}
-
-		$quota_section .= '<div class="imagify-account">';
-			$quota_section .= '<p class="imagify-meteo-title">' . __( 'Account status', 'imagify' ) . '</p>';
-			$quota_section .= '<p class="imagify-meteo-subs">' . __( 'Your subscription:', 'imagify' ) . '&nbsp;<strong class="imagify-user-plan">' . $user->plan_label . '</strong></p>';
-		$quota_section .= '</div>'; // .imagify-account
-		$quota_section .= '</div>'; // .imagify-abq-row
-
-		if ( 1 === $user->plan_id ) {
-			$quota_section .= '<div class="imagify-abq-row">';
-				$quota_section .= '<div class="imagify-space-left">';
-					/* translators: %s is a data quota. */
-					$quota_section .= '<p>' . sprintf( __( 'You have %s space credit left', 'imagify' ), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ) . '</p>';
-					$quota_section .= '<div class="' . $views->get_quota_class() . '">';
-						$quota_section .= '<div style="width: ' . $unconsumed_quota . '%;" class="imagify-unconsumed-bar imagify-progress"></div>';
-					$quota_section .= '</div>'; // .imagify-bar-{negative|neutral|positive}
-				$quota_section .= '</div>'; // .imagify-space-left
-			$quota_section .= '</div>'; // .imagify-abq-row
-		}
-
-		$quota_section .= '<p class="imagify-abq-row">';
-			$quota_section .= '<a class="imagify-account-link" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">';
-				$quota_section .= '<span class="dashicons dashicons-admin-users"></span>';
-				$quota_section .= '<span class="button-text">' . __( 'View my subscription', 'imagify' ) . '</span>';
-			$quota_section .= '</a>'; // .imagify-account-link
-		$quota_section .= '</p>'; // .imagify-abq-row
-		$quota_section .= '</div>'; // .imagify-admin-bar-quota
-		$quota_section .= $message;
-
-		wp_send_json_success( $quota_section );
-	}
-
-	/**
-	 * Get pricings from API for Onetime and Plans at the same time.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Geoffrey Crofte
-	 */
-	public function imagify_get_prices_callback() {
-		imagify_check_nonce( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
-		imagify_check_user_capacity();
-
-		$prices_all = get_imagify_all_prices();
-
-		if ( is_wp_error( $prices_all ) ) {
-			imagify_die( $prices_all );
-		}
-
-		if ( ! is_object( $prices_all ) ) {
-			imagify_die( __( 'Wrongly formatted response from our server.', 'imagify' ) );
-		}
-
-		wp_send_json_success( array(
-			'onetimes'  => $prices_all->Packs,
-			'monthlies' => $prices_all->Plans,
-		) );
-	}
-
-	/**
-	 * Check Coupon code on modal popin.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Geoffrey Crofte
-	 */
-	public function imagify_check_coupon_callback() {
-		imagify_check_nonce( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
-		imagify_check_user_capacity();
-
-		if ( empty( $_POST['coupon'] ) ) {
-			wp_send_json_success( array(
-				'success' => false,
-				'detail'  => __( 'Coupon is empty.', 'imagify' ),
-			) );
-		}
-
-		$coupon = wp_unslash( $_POST['coupon'] );
-		$coupon = check_imagify_coupon_code( $coupon );
-
-		if ( is_wp_error( $coupon ) ) {
-			imagify_die( $coupon );
-		}
-
-		wp_send_json_success( imagify_translate_api_message( $coupon ) );
-	}
-
-	/**
-	 * Get current discount promotion to display information on payment modal.
-	 *
-	 * @since  1.6.11
-	 * @author Geoffrey Crofte
-	 */
-	public function imagify_get_discount_callback() {
-		imagify_check_nonce( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
-		imagify_check_user_capacity();
-
-		wp_send_json_success( imagify_translate_api_message( check_imagify_discount() ) );
-	}
-
-	/**
-	 * Get estimated sizes from the WordPress library.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Geoffrey Crofte
-	 */
-	public function imagify_get_images_counts_callback() {
-		imagify_check_nonce( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
-		imagify_check_user_capacity();
-
-		$raw_total_size_in_library = imagify_calculate_total_size_images_library() + Imagify_Files_Stats::get_overall_original_size();
-		$raw_average_per_month     = imagify_calculate_average_size_images_per_month() + Imagify_Files_Stats::calculate_average_size_per_month();
-
-		Imagify_Data::get_instance()->set( array(
-			'total_size_images_library'     => $raw_total_size_in_library,
-			'average_size_images_per_month' => $raw_average_per_month,
-		) );
-
-		wp_send_json_success( array(
-			'total_library_size' => array(
-				'raw'   => $raw_total_size_in_library,
-				'human' => imagify_size_format( $raw_total_size_in_library ),
-			),
-			'average_month_size' => array(
-				'raw'   => $raw_average_per_month,
-				'human' => imagify_size_format( $raw_average_per_month ),
-			),
-		) );
-	}
-
-	/**
-	 * Estimate sizes and update the options values for them.
-	 *
-	 * @since  1.6.11
-	 * @access public
-	 * @author Remy Perona
-	 */
-	public function imagify_update_estimate_sizes_callback() {
-		imagify_check_nonce( 'update_estimate_sizes' );
-		imagify_check_user_capacity();
-
-		$raw_total_size_in_library = imagify_calculate_total_size_images_library() + Imagify_Files_Stats::get_overall_original_size();
-		$raw_average_per_month     = imagify_calculate_average_size_images_per_month() + Imagify_Files_Stats::calculate_average_size_per_month();
-
-		Imagify_Data::get_instance()->set( array(
-			'total_size_images_library'     => $raw_total_size_in_library,
-			'average_size_images_per_month' => $raw_average_per_month,
-		) );
-
-		die( 1 );
-	}
-
-	/**
-	 * Get the Imagify User data.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 */
-	public function imagify_get_user_data_callback() {
-		imagify_check_nonce( 'imagify_get_user_data' );
-		imagify_check_user_capacity();
-
-		$user = imagify_cache_user();
-
-		if ( ! $user || ! $user->id ) {
-			imagify_die( __( 'Couldn\'t get user data.', 'imagify' ) );
-		}
-
-		// Remove useless sensitive data.
-		unset( $user->email );
-
-		if ( ! $user->get_percent_unconsumed_quota ) {
-			$user->best_plan_title = __( 'Oops, It\'s Over!', 'imagify' );
-		} elseif ( $user->get_percent_unconsumed_quota <= 20 ) {
-			$user->best_plan_title = __( 'Oops, It\'s almost over!', 'imagify' );
-		} else {
-			$user->best_plan_title = __( 'You\'re new to Imagify?', 'imagify' );
-		}
-
-		wp_send_json_success( $user );
 	}
 
 	/**
@@ -1335,7 +829,10 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 */
 	public function imagify_get_files_tree_callback() {
 		imagify_check_nonce( 'get-files-tree' );
-		imagify_check_user_capacity( 'optimize-file' );
+
+		if ( ! imagify_get_context( 'custom-folders' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
 
 		if ( ! isset( $_POST['folder'] ) || '' === $_POST['folder'] ) {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
@@ -1412,6 +909,386 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		wp_send_json_success( $output );
 	}
 
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** IMAGIFY ACCOUNT CALLBACKS =============================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Create a new Imagify account.
+	 *
+	 * @since  1.6.11
+	 * @access public
+	 * @author Jonathan Buttigieg
+	 */
+	public function imagify_signup_callback() {
+		imagify_check_nonce( 'imagify-signup', 'imagifysignupnonce' );
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
+
+		if ( empty( $_GET['email'] ) ) {
+			imagify_die( __( 'Empty email address.', 'imagify' ) );
+		}
+
+		$email = wp_unslash( $_GET['email'] );
+
+		if ( ! is_email( $email ) ) {
+			imagify_die( __( 'Not a valid email address.', 'imagify' ) );
+		}
+
+		$data = array(
+			'email'    => $email,
+			'password' => wp_generate_password( 12, false ),
+			'lang'     => imagify_get_locale(),
+		);
+
+		$response = add_imagify_user( $data );
+
+		if ( is_wp_error( $response ) ) {
+			imagify_die( $response );
+		}
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Check the API key validity.
+	 *
+	 * @since  1.6.11
+	 * @access public
+	 * @author Jonathan Buttigieg
+	 */
+	public function imagify_check_api_key_validity_callback() {
+		imagify_check_nonce( 'imagify-check-api-key', 'imagifycheckapikeynonce' );
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
+
+		if ( empty( $_GET['api_key'] ) ) {
+			imagify_die( __( 'Empty API key.', 'imagify' ) );
+		}
+
+		$api_key  = wp_unslash( $_GET['api_key'] );
+		$response = get_imagify_status( $api_key );
+
+		if ( is_wp_error( $response ) ) {
+			imagify_die( $response );
+		}
+
+		update_imagify_option( 'api_key', $api_key );
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Get admin bar profile output.
+	 *
+	 * @since  1.6.11
+	 * @access public
+	 * @author Jonathan Buttigieg
+	 */
+	public function imagify_get_admin_bar_profile_callback() {
+		imagify_check_nonce( 'imagify-get-admin-bar-profile', 'imagifygetadminbarprofilenonce' );
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
+
+		$user             = new Imagify_User();
+		$views            = Imagify_Views::get_instance();
+		$unconsumed_quota = $views->get_quota_percent();
+		$message          = '';
+
+		if ( $unconsumed_quota <= 20 ) {
+			$message  = '<div class="imagify-error">';
+				$message .= '<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s almost over!', 'imagify' ) . '</strong></p>';
+				/* translators: %s is a line break. */
+				$message .= '<p>' . sprintf( __( 'You have almost used all your credit.%sDon\'t forget to upgrade your subscription to continue optimizing your images.', 'imagify' ), '<br/><br/>' ) . '</p>';
+				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">' . __( 'View My Subscription', 'imagify' ) . '</a></p>';
+			$message .= '</div>';
+		}
+
+		if ( 0 === $unconsumed_quota ) {
+			$message  = '<div class="imagify-error">';
+				$message .= '<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong>' . __( 'Oops, It\'s Over!', 'imagify' ) . '</strong></p>';
+				$message .= '<p>' . sprintf(
+					/* translators: 1 is a data quota, 2 is a date. */
+					__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
+					imagify_size_format( $user->quota * pow( 1024, 2 ) ),
+					date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) )
+				) . '</p>';
+				$message .= '<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">' . __( 'Upgrade My Subscription', 'imagify' ) . '</a></p>';
+			$message .= '</div>';
+		}
+
+		// Custom HTML.
+		$quota_section  = '<div class="imagify-admin-bar-quota">';
+			$quota_section .= '<div class="imagify-abq-row">';
+
+		if ( 1 === $user->plan_id ) {
+			$quota_section .= '<div class="imagify-meteo-icon">' . $views->get_quota_icon() . '</div>';
+		}
+
+		$quota_section .= '<div class="imagify-account">';
+			$quota_section .= '<p class="imagify-meteo-title">' . __( 'Account status', 'imagify' ) . '</p>';
+			$quota_section .= '<p class="imagify-meteo-subs">' . __( 'Your subscription:', 'imagify' ) . '&nbsp;<strong class="imagify-user-plan">' . $user->plan_label . '</strong></p>';
+		$quota_section .= '</div>'; // .imagify-account
+		$quota_section .= '</div>'; // .imagify-abq-row
+
+		if ( 1 === $user->plan_id ) {
+			$quota_section .= '<div class="imagify-abq-row">';
+				$quota_section .= '<div class="imagify-space-left">';
+					/* translators: %s is a data quota. */
+					$quota_section .= '<p>' . sprintf( __( 'You have %s space credit left', 'imagify' ), '<span class="imagify-unconsumed-percent">' . $unconsumed_quota . '%</span>' ) . '</p>';
+					$quota_section .= '<div class="' . $views->get_quota_class() . '">';
+						$quota_section .= '<div style="width: ' . $unconsumed_quota . '%;" class="imagify-unconsumed-bar imagify-progress"></div>';
+					$quota_section .= '</div>'; // .imagify-bar-{negative|neutral|positive}
+				$quota_section .= '</div>'; // .imagify-space-left
+			$quota_section .= '</div>'; // .imagify-abq-row
+		}
+
+		$quota_section .= '<p class="imagify-abq-row">';
+			$quota_section .= '<a class="imagify-account-link" href="' . esc_url( imagify_get_external_url( 'subscription' ) ) . '" target="_blank">';
+				$quota_section .= '<span class="dashicons dashicons-admin-users"></span>';
+				$quota_section .= '<span class="button-text">' . __( 'View my subscription', 'imagify' ) . '</span>';
+			$quota_section .= '</a>'; // .imagify-account-link
+		$quota_section .= '</p>'; // .imagify-abq-row
+		$quota_section .= '</div>'; // .imagify-admin-bar-quota
+		$quota_section .= $message;
+
+		wp_send_json_success( $quota_section );
+	}
+
+	/**
+	 * Get pricings from API for Onetime and Plans at the same time.
+	 *
+	 * @since  1.6.11
+	 * @access public
+	 * @author Geoffrey Crofte
+	 */
+	public function imagify_get_prices_callback() {
+		imagify_check_nonce( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
+
+		$prices_all = get_imagify_all_prices();
+
+		if ( is_wp_error( $prices_all ) ) {
+			imagify_die( $prices_all );
+		}
+
+		if ( ! is_object( $prices_all ) ) {
+			imagify_die( __( 'Wrongly formatted response from our server.', 'imagify' ) );
+		}
+
+		wp_send_json_success( array(
+			'onetimes'  => $prices_all->Packs,
+			'monthlies' => $prices_all->Plans,
+		) );
+	}
+
+	/**
+	 * Check Coupon code on modal popin.
+	 *
+	 * @since  1.6.11
+	 * @access public
+	 * @author Geoffrey Crofte
+	 */
+	public function imagify_check_coupon_callback() {
+		imagify_check_nonce( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
+
+		if ( empty( $_POST['coupon'] ) ) {
+			wp_send_json_success( array(
+				'success' => false,
+				'detail'  => __( 'Coupon is empty.', 'imagify' ),
+			) );
+		}
+
+		$coupon = wp_unslash( $_POST['coupon'] );
+		$coupon = check_imagify_coupon_code( $coupon );
+
+		if ( is_wp_error( $coupon ) ) {
+			imagify_die( $coupon );
+		}
+
+		wp_send_json_success( imagify_translate_api_message( $coupon ) );
+	}
+
+	/**
+	 * Get current discount promotion to display information on payment modal.
+	 *
+	 * @since  1.6.11
+	 * @author Geoffrey Crofte
+	 */
+	public function imagify_get_discount_callback() {
+		imagify_check_nonce( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
+
+		wp_send_json_success( imagify_translate_api_message( check_imagify_discount() ) );
+	}
+
+	/**
+	 * Get estimated sizes from the WordPress library.
+	 *
+	 * @since  1.6.11
+	 * @access public
+	 * @author Geoffrey Crofte
+	 */
+	public function imagify_get_images_counts_callback() {
+		imagify_check_nonce( 'imagify_get_pricing_' . get_current_user_id(), 'imagifynonce' );
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
+
+		$raw_total_size_in_library = imagify_calculate_total_size_images_library() + Imagify_Files_Stats::get_overall_original_size();
+		$raw_average_per_month     = imagify_calculate_average_size_images_per_month() + Imagify_Files_Stats::calculate_average_size_per_month();
+
+		Imagify_Data::get_instance()->set( array(
+			'total_size_images_library'     => $raw_total_size_in_library,
+			'average_size_images_per_month' => $raw_average_per_month,
+		) );
+
+		wp_send_json_success( array(
+			'total_library_size' => array(
+				'raw'   => $raw_total_size_in_library,
+				'human' => imagify_size_format( $raw_total_size_in_library ),
+			),
+			'average_month_size' => array(
+				'raw'   => $raw_average_per_month,
+				'human' => imagify_size_format( $raw_average_per_month ),
+			),
+		) );
+	}
+
+	/**
+	 * Estimate sizes and update the options values for them.
+	 *
+	 * @since  1.6.11
+	 * @access public
+	 * @author Remy Perona
+	 */
+	public function imagify_update_estimate_sizes_callback() {
+		imagify_check_nonce( 'update_estimate_sizes' );
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
+
+		$raw_total_size_in_library = imagify_calculate_total_size_images_library() + Imagify_Files_Stats::get_overall_original_size();
+		$raw_average_per_month     = imagify_calculate_average_size_images_per_month() + Imagify_Files_Stats::calculate_average_size_per_month();
+
+		Imagify_Data::get_instance()->set( array(
+			'total_size_images_library'     => $raw_total_size_in_library,
+			'average_size_images_per_month' => $raw_average_per_month,
+		) );
+
+		die( 1 );
+	}
+
+	/**
+	 * Get the Imagify User data.
+	 *
+	 * @since  1.7
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_get_user_data_callback() {
+		imagify_check_nonce( 'imagify_get_user_data' );
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
+
+		$user = imagify_cache_user();
+
+		if ( ! $user || ! $user->id ) {
+			imagify_die( __( 'Couldn\'t get user data.', 'imagify' ) );
+		}
+
+		// Remove useless sensitive data.
+		unset( $user->email );
+
+		if ( ! $user->get_percent_unconsumed_quota ) {
+			$user->best_plan_title = __( 'Oops, It\'s Over!', 'imagify' );
+		} elseif ( $user->get_percent_unconsumed_quota <= 20 ) {
+			$user->best_plan_title = __( 'Oops, It\'s almost over!', 'imagify' );
+		} else {
+			$user->best_plan_title = __( 'You\'re new to Imagify?', 'imagify' );
+		}
+
+		wp_send_json_success( $user );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** VARIOUS CALLBACKS ======================================================================= */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Bridge between XML-RPC and actions triggered by imagify_do_async_job().
+	 * When XML-RPC is used, a current user is set, but no cookies are set, so they cannot be sent with the request. Instead we stored the user ID in a transient.
+	 *
+	 * @since  1.6.11
+	 * @access public
+	 * @author Grégory Viguier
+	 * @see    imagify_do_async_job()
+	 */
+	public function nopriv_imagify_rpc_callback() {
+		if ( empty( $_POST['imagify_rpc_action'] ) || empty( $_POST['imagify_rpc_id'] ) ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		$action = wp_unslash( $_POST['imagify_rpc_action'] ); // WPCS: CSRF ok.
+
+		if ( 32 !== strlen( $action ) ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		// Not necessary but just in case, whitelist the original action.
+		$actions = array_flip( $this->ajax_only_actions );
+		unset( $actions['nopriv_imagify_rpc'] );
+
+		if ( ! isset( $actions[ $action ] ) ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		// Get the user ID.
+		$rpc_id  = sanitize_key( $_POST['imagify_rpc_id'] );
+		$user_id = absint( get_transient( 'imagify_rpc_' . $rpc_id ) );
+		$user    = $user_id ? get_userdata( $user_id ) : false;
+
+		delete_transient( 'imagify_rpc_' . $rpc_id );
+
+		if ( ! $user || ! $user->exists() ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		// The current user must be set before verifying the nonce.
+		wp_set_current_user( $user_id );
+
+		imagify_check_nonce( 'imagify_rpc_' . $rpc_id, 'imagify_rpc_nonce' );
+
+		// Trigger the action we originally wanted.
+		$_POST['action'] = $action;
+		unset( $_POST['imagify_rpc_action'], $_POST['imagify_rpc_id'], $_POST['imagify_rpc_nonce'] );
+
+		/** This hook is documented in wp-admin/admin-ajax.php. */
+		do_action( 'wp_ajax_' . $action );
+	}
+
 	/**
 	 * Store the "closed" status of the ads.
 	 *
@@ -1420,9 +1297,11 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @author Grégory Viguier
 	 */
 	public function imagify_dismiss_ad_callback() {
-
 		imagify_check_nonce( 'imagify-dismiss-ad' );
-		imagify_check_user_capacity();
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
 
 		$notice = filter_input( INPUT_GET, 'ad', FILTER_SANITIZE_STRING );
 
@@ -1534,6 +1413,77 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$method = 'POST' === $method ? INPUT_POST : INPUT_GET;
 
 		return filter_input( $method, $parameter, FILTER_SANITIZE_STRING );
+	}
+
+	/**
+	 * Get the submitted imagify action.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $method    The method used: 'GET' (default), or 'POST'.
+	 * @param  string $parameter The name of the parameter to look for.
+	 * @return string
+	 */
+	public function get_imagify_action( $method = 'GET', $parameter = 'imagify_action' ) {
+		$method = 'POST' === $method ? INPUT_POST : INPUT_GET;
+		$action = filter_input( $method, $parameter, FILTER_SANITIZE_STRING );
+
+		return $action ? $action : 'optimize';
+	}
+
+	/**
+	 * Get the Bulk class name depending on a context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $context The context name. Default values are 'wp' and 'custom-folders'.
+	 * @return string          The Bulk class name.
+	 */
+	public function get_bulk_class_name( $context ) {
+		switch ( $context ) {
+			case 'wp':
+				$class_name = '\\Imagify\\Bulk\\WP';
+				break;
+
+			case 'custom-folders':
+				$class_name = '\\Imagify\\Bulk\\CustomFolders';
+				break;
+
+			default:
+				$class_name = '\\Imagify\\Bulk\\Noop';
+		}
+
+		/**
+		* Filter the name of the class to use for bulk process.
+		*
+		* @since  1.9
+		* @author Grégory Viguier
+		*
+		* @param int    $class_name The class name.
+		* @param string $context    The context name.
+		*/
+		$class_name = apply_filters( 'imagify_bulk_class_name', $class_name, $context );
+
+		return '\\' . ltrim( $class_name, '\\' );
+	}
+
+	/**
+	 * Get the Bulk instance depending on a context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $context The context name. Default values are 'wp' and 'custom-folders'.
+	 * @return BulkInterface   The optimization process instance.
+	 */
+	public function get_bulk_instance( $context ) {
+		$class_name = $this->get_bulk_class_name( $context );
+		return new $class_name();
 	}
 
 	/**

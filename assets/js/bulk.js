@@ -127,6 +127,8 @@ window.imagify = window.imagify || {};
 		displayedWaitMessage: false,
 		// Tell how many rows are available.
 		hasMultipleRows:      true,
+		// The action to perform (like 'optimize').
+		imagifyAction:        '',
 		// Set to true to stop the whole thing.
 		processIsStopped:     false,
 		// List of medias being processed.
@@ -229,14 +231,17 @@ window.imagify = window.imagify || {};
 		 * @return {string}
 		 */
 		getAjaxUrl: function ( action, item ) {
-			var camelGroupID = item.groupID.replace( /[\s_-](\S)/g, function( c, l ) {
-				return l.toUpperCase();
-			} );
+			var url = ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&action=' + imagifyBulk.ajaxActions[ action ];
 
-			action = action.replace( '%GROUP_ID%', camelGroupID );
-			action = imagifyBulk.ajaxActions[ action ];
+			if ( item && item.context ) {
+				url += '&context=' + item.context;
+			}
 
-			return ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&action=' + action;
+			if ( 'getMediaIds' === action || 'bulkProcess' === action ) {
+				url += '&imagify_action=' + w.imagify.bulk.imagifyAction;
+			}
+
+			return url;
 		},
 
 		/**
@@ -469,7 +474,7 @@ window.imagify = window.imagify || {};
 					// Should happen when switching from 'waiting' to 'working'.
 					$newRow.attr( 'class', 'imagify-row-' + state );
 					$newRow.find( '.imagify-cell-checkbox svg' ).attr( 'fill', spinnerColor );
-					$newRow.children( '.imagify-cell-images-optimized' ).html( text );
+					$newRow.children( '.imagify-cell-count-optimized' ).html( text );
 				}
 
 				$row.imagifyHide();
@@ -486,8 +491,8 @@ window.imagify = window.imagify || {};
 			spinnerTemplate = w.imagify.template( 'imagify-spinner' );
 			$newRow.children( '.imagify-cell-checkbox' ).html( spinnerTemplate() ).find( 'svg' ).attr( 'fill', spinnerColor );
 			$newRow.children( '.imagify-cell-title' ).html( '<span class="imagify-cell-label">' + $newRow.children( '.imagify-cell-title' ).text() + '</span>' );
-			$newRow.children( '.imagify-cell-images-optimized' ).html( text );
-			$newRow.children( '.imagify-cell-errors, .imagify-cell-optimized, .imagify-cell-original, .imagify-cell-level' ).text( '' );
+			$newRow.children( '.imagify-cell-count-optimized' ).html( text );
+			$newRow.children( '.imagify-cell-count-errors, .imagify-cell-optimized-size, .imagify-cell-original-size, .imagify-cell-level' ).text( '' );
 
 			$row.imagifyHide().after( $newRow );
 		},
@@ -717,11 +722,12 @@ window.imagify = window.imagify || {};
 				cancelButtonText:  imagifySwal.labels.cancelButtonText,
 				reverseButtons:    true
 			} ).then( function() {
-				var $row    = $( '.imagify-bulk-table [name="group[]"]:checked' ).first().closest( '.imagify-row-folder-type' ),
-					groupID = $row.data( 'group-id' ),
-					context = $row.data( 'context' );
+				var $row = $( '.imagify-bulk-table [name="group[]"]:checked' ).first().closest( '.imagify-row-folder-type' );
 
-				$.get( ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&action=' + imagifyBulk.ajaxActions.bulkInfoSeen + '&folder_type=' + groupID + '&context=' + context );
+				$.get( w.imagify.bulk.getAjaxUrl( 'bulkInfoSeen', {
+					context: $row.data( 'context' )
+				} ) );
+
 				$infosModal.remove();
 
 				w.imagify.bulk.launchAllProcesses();
@@ -734,7 +740,8 @@ window.imagify = window.imagify || {};
 		launchAllProcesses: function () {
 			var $w      = $( w ),
 				$button = $( '#imagify-bulk-action' ),
-				skip    = true;
+				skip    = true,
+				action  = $( '.imagify-bulk-submit [name="imagify_action"]:checked' ).first();
 
 			// Disable the button.
 			$button.attr( 'disabled', 'disabled' ).find( '.dashicons' ).addClass( 'rotate' );
@@ -755,6 +762,7 @@ window.imagify = window.imagify || {};
 			this.status               = {};
 			this.displayedWaitMessage = false;
 			this.processIsStopped     = false;
+			this.imagifyAction        = action.length ? action.val() : 'optimize';
 			this.globalGain           = 0;
 			this.globalOriginalSize   = 0;
 			this.globalOptimizedSize  = 0;
@@ -835,7 +843,7 @@ window.imagify = window.imagify || {};
 			w.imagify.bulk.displayFolderRow( 'working', $row );
 
 			// Fetch image IDs.
-			$.get( w.imagify.bulk.getAjaxUrl( '%GROUP_ID%Fetch', item ) )
+			$.get( w.imagify.bulk.getAjaxUrl( 'getMediaIds', item ) )
 				.done( function( response ) {
 					var errorMessage;
 
@@ -923,15 +931,18 @@ window.imagify = window.imagify || {};
 				return;
 			}
 
-			$row             = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
-			$workingRow      = $row.next( '.imagify-row-working' );
-			$optimizedCount  = $workingRow.find( '.imagify-cell-images-optimized span' );
-			optimizedCount   = parseInt( $optimizedCount.text(), 10 );
-			$errorsCount     = $workingRow.find( '.imagify-cell-errors span' );
-			errorsCount      = parseInt( $errorsCount.text(), 10 );
-			$table           = $row.closest( '.imagify-bulk-table' );
-			$progressBar     = $table.find( '.imagify-row-progress' );
-			$progress        = $progressBar.find( '.bar' );
+			$row         = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
+			$workingRow  = $row.next( '.imagify-row-working' );
+			$errorsCount = $workingRow.find( '.imagify-cell-count-errors span' );
+			errorsCount  = parseInt( $errorsCount.text(), 10 );
+			$table       = $row.closest( '.imagify-bulk-table' );
+			$progressBar = $table.find( '.imagify-row-progress' );
+			$progress    = $progressBar.find( '.bar' );
+
+			if ( 'optimize' === w.imagify.bulk.imagifyAction ) {
+				$optimizedCount = $workingRow.find( '.imagify-cell-count-optimized span' );
+				optimizedCount  = parseInt( $optimizedCount.text(), 10 );
+			}
 
 			// Update folder status.
 			w.imagify.bulk.status[ item.groupID ].id = 'optimizing';
@@ -952,7 +963,7 @@ window.imagify = window.imagify || {};
 				context:      item.context,
 				level:        item.level,
 				bufferSize:   imagifyBulk.bufferSizes[ item.context ],
-				ajaxUrl:      w.imagify.bulk.getAjaxUrl( '%GROUP_ID%Optimize', item ),
+				ajaxUrl:      w.imagify.bulk.getAjaxUrl( 'bulkProcess', item ),
 				files:        files,
 				defaultThumb: w.imagify.bulk.defaultThumb,
 				doneEvent:    'mediaProcessed.imagify'
@@ -1023,8 +1034,10 @@ window.imagify = window.imagify || {};
 					}
 
 					// Update the optimized images counter.
-					optimizedCount += 1;
-					$optimizedCount.text( optimizedCount );
+					if ( 'optimize' === w.imagify.bulk.imagifyAction ) {
+						optimizedCount += 1;
+						$optimizedCount.text( optimizedCount );
+					}
 					return;
 				}
 
@@ -1038,7 +1051,7 @@ window.imagify = window.imagify || {};
 				// Update the "working" folder row.
 				if ( ! $errorsCount.length ) {
 					errorsCount  = 1;
-					$errorsCount = $workingRow.find( '.imagify-cell-errors' ).html( imagifyBulk.labels.imagesErrorText.replace( '%s', '<span>1</span>' ) ).find( 'span' );
+					$errorsCount = $workingRow.find( '.imagify-cell-count-errors' ).html( imagifyBulk.labels.imagesErrorText.replace( '%s', '<span>1</span>' ) ).find( 'span' );
 				} else {
 					errorsCount += 1;
 					$errorsCount.text( errorsCount );
@@ -1076,7 +1089,7 @@ window.imagify = window.imagify || {};
 				// Update the folder row.
 				$row.addClass( 'updating' );
 
-				$.get( w.imagify.bulk.getAjaxUrl( 'getFolderData', item ) + '&folder_type=' + item.groupID + '&context=' + item.context )
+				$.get( w.imagify.bulk.getAjaxUrl( 'getFolderData', item ) )
 					.done( function( response ) {
 						if ( w.imagify.bulk.processIsStopped ) {
 							return;
@@ -1116,7 +1129,8 @@ window.imagify = window.imagify || {};
 			var $tables   = $( '.imagify-bulk-table' ),
 				errorArgs = {},
 				hasError  = false,
-				noImages  = true;
+				noImages  = true,
+				errorMsg  = '';
 
 			// Display the share box.
 			w.imagify.bulk.displayShareBox();
@@ -1126,10 +1140,8 @@ window.imagify = window.imagify || {};
 
 			// Fetch and display generic stats if stats via heartbeat are disabled.
 			if ( ! imagifyBulk.heartbeatIDs.stats ) {
-				$.get( ajaxurl, {
-					_wpnonce: imagifyBulk.ajaxNonce,
-					action:   imagifyBulk.ajaxActions.getStats,
-					types:    w.imagify.bulk.getFolderTypes()
+				$.get( w.imagify.bulk.getAjaxUrl( 'getStats' ), {
+					types: w.imagify.bulk.getFolderTypes()
 				} )
 					.done( function( response ) {
 						if ( response.success ) {
@@ -1180,9 +1192,14 @@ window.imagify = window.imagify || {};
 					w.imagify.bulk.displayError( errorArgs );
 				}
 				else if ( noImages ) {
+					if ( imagifyBulk.labels.nothingToDoText.hasOwnProperty( w.imagify.bulk.imagifyAction ) ) {
+						errorMsg = imagifyBulk.labels.nothingToDoText[ w.imagify.bulk.imagifyAction ];
+					} else {
+						errorMsg = imagifyBulk.labels.nothingToDoText.optimize;
+					}
 					w.imagify.bulk.displayError( {
-						title: imagifyBulk.labels.noAttachmentToOptimizeTitle,
-						html:  imagifyBulk.labels.noAttachmentToOptimizeText,
+						title: imagifyBulk.labels.nothingToDoTitle,
+						html:  errorMsg,
 						type:  'info'
 					} );
 				}
@@ -1201,10 +1218,11 @@ window.imagify = window.imagify || {};
 			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
 
 			// Enable (or not) the main button.
-			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
-				$( '#imagify-bulk-action' ).removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
-			} else {
+			if ( w.imagify.bulk.hasMultipleRows && $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
+				// We still have another group to process.
 				$( '#imagify-bulk-action' ).find( '.dashicons' ).removeClass( 'rotate' );
+			} else {
+				$( '#imagify-bulk-action' ).removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
 			}
 		},
 
