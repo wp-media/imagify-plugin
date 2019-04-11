@@ -114,19 +114,25 @@ class Imagify_DB {
 	 * Get Imagify mime types, ready to be used in a `IN ()` clause.
 	 *
 	 * @since  1.6.13
+	 * @since  1.9 Added $type parameter.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return string A comma separated list of mime types.
+	 * @param  string $type One of 'image', 'not-image'. Any other value will return all mime types.
+	 * @return string       A comma separated list of mime types.
 	 */
-	public static function get_mime_types() {
-		static $mime_types;
+	public static function get_mime_types( $type = null ) {
+		static $mime_types = [];
 
-		if ( ! isset( $mime_types ) ) {
-			$mime_types = self::prepare_values_list( imagify_get_mime_types() );
+		if ( empty( $type ) ) {
+			$type = 'all';
 		}
 
-		return $mime_types;
+		if ( ! isset( $mime_types[ $type ] ) ) {
+			$mime_types[ $type ] = self::prepare_values_list( imagify_get_mime_types( $type ) );
+		}
+
+		return $mime_types[ $type ];
 	}
 
 	/**
