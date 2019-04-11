@@ -28,12 +28,16 @@ function imagify_get_context_class_name( $context ) {
 	$context = imagify_sanitize_context( $context );
 
 	switch ( $context ) {
+		case 'wp':
+			$class_name = '\\Imagify\\Context\\WP';
+			break;
+
 		case 'custom-folders':
 			$class_name = '\\Imagify\\Context\\CustomFolders';
 			break;
 
 		default:
-			$class_name = '\\Imagify\\Context\\WP';
+			$class_name = '\\Imagify\\Context\\Noop';
 	}
 
 	/**
@@ -78,12 +82,16 @@ function imagify_get_optimization_process_class_name( $context ) {
 	$context = imagify_sanitize_context( $context );
 
 	switch ( $context ) {
+		case 'wp':
+			$class_name = '\\Imagify\\Optimization\\Process\\WP';
+			break;
+
 		case 'custom-folders':
 			$class_name = '\\Imagify\\Optimization\\Process\\CustomFolders';
 			break;
 
 		default:
-			$class_name = '\\Imagify\\Optimization\\Process\\WP';
+			$class_name = '\\Imagify\\Optimization\\Process\\Noop';
 	}
 
 	/**
