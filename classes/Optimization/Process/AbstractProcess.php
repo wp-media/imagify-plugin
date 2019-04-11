@@ -1074,14 +1074,14 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$media      = $this->get_media();
-		$dimentions = $media->get_dimensions();
+		$dimensions = $media->get_dimensions();
 
-		if ( ! $dimentions['width'] ) {
+		if ( ! $dimensions['width'] ) {
 			// The dimensions don't seem to be in the database anymore: try to get them directly from the file.
-			$dimentions = $file->get_dimensions();
+			$dimensions = $file->get_dimensions();
 		}
 
-		if ( ! $dimentions['width'] ) {
+		if ( ! $dimensions['width'] ) {
 			// Could not get the image dimensions.
 			return new \WP_Error(
 				'no_dimensions',
@@ -1095,7 +1095,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		$resize_width = $this->get_option( 'resize_larger_w' );
 
-		if ( $resize_width >= $dimentions['width'] ) {
+		if ( $resize_width >= $dimensions['width'] ) {
 			// No need to resize.
 			return [
 				'resized'   => false,
@@ -1104,7 +1104,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			];
 		}
 
-		$resized_path = $file->resize( $dimentions, $resize_width );
+		$resized_path = $file->resize( $dimensions, $resize_width );
 
 		if ( is_wp_error( $resized_path ) ) {
 			// The resizement failed.
