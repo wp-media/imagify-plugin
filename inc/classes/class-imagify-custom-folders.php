@@ -260,9 +260,13 @@ class Imagify_Custom_Folders {
 			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
+		$filesystem = imagify_get_filesystem();
 		$media      = $process->get_media();
 		$file_path  = $media->get_original_path();
-		$filesystem = imagify_get_filesystem();
+		$mime_type  = $filesystem->get_mime_type( $file_path );
+		$is_image   = $mime_type && strpos( $mime_type, 'image/' ) === 0;
+		$webp_path  = $is_image ? imagify_path_to_webp( $file_path ) : false;
+		$has_webp   = $webp_path && $filesystem->is_writable( $webp_path );
 		$modified   = false;
 
 		if ( ! $file_path || ! $filesystem->exists( $file_path ) ) {
@@ -281,6 +285,11 @@ class Imagify_Custom_Folders {
 
 			// Remove the corresponding folder if inactive and have no files left.
 			self::remove_empty_inactive_folders( $folder_id );
+
+			// Delete the webp version.
+			if ( $has_webp ) {
+				$filesystem->delete( $webp_path );
+			}
 
 			return new WP_Error( 'no-file', __( 'The file was missing or its path could not be retrieved from the database. The entry has been deleted from the database.', 'imagify' ) );
 		}
@@ -338,6 +347,11 @@ class Imagify_Custom_Folders {
 					self::remove_empty_inactive_folders( $old_data['folder_id'] );
 				}
 
+				// Delete the webp version.
+				if ( $has_webp ) {
+					$filesystem->delete( $webp_path );
+				}
+
 				return new WP_Error( 'folder-not-active', __( 'The file has been modified or was not optimized: its folder not being selected in the settings, the entry has been deleted from the database.', 'imagify' ) );
 			}
 		}
@@ -350,13 +364,18 @@ class Imagify_Custom_Folders {
 			$modified  = true;
 			$mime_type = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : $filesystem->get_mime_type( $file_path );
 
-			if ( strpos( $mime_type, 'image/' ) === 0 ) {
+			if ( $is_image ) {
 				$size = $filesystem->get_image_size( $file_path );
+
+				// Delete the webp version.
+				if ( $has_webp ) {
+					$filesystem->delete( $webp_path );
+				}
 			} else {
 				$size = false;
 			}
 
-			$new_data = array_merge( $new_data, array(
+			$new_data = array_merge( $new_data, [
 				'file_date'          => $filesystem->get_date( $file_path ),
 				'width'              => $size ? $size['width']  : 0,
 				'height'             => $size ? $size['height'] : 0,
@@ -366,7 +385,8 @@ class Imagify_Custom_Folders {
 				'optimization_level' => null,
 				'status'             => null,
 				'error'              => null,
-			) );
+				'data'               => [],
+			] );
 
 			// Delete the backup of the previous file.
 			$process->delete_backup();
@@ -377,18 +397,32 @@ class Imagify_Custom_Folders {
 			$mime_type   = ! empty( $old_data['mime_type'] ) ? $old_data['mime_type'] : $filesystem->get_mime_type( $path );
 			$file_date   = ! empty( $old_data['file_date'] ) && '0000-00-00 00:00:00' !== $old_data['file_date'] ? $old_data['file_date'] : $filesystem->get_date( $path );
 
-			if ( strpos( $mime_type, 'image/' ) === 0 ) {
+			if ( $is_image ) {
 				$size = $filesystem->get_image_size( $path );
 			} else {
 				$size = false;
 			}
 
-			$new_data = array_merge( $new_data, array(
+			$new_data = array_merge( $new_data, [
 				'file_date'     => $file_date,
 				'width'         => $size ? $size['width']  : 0,
 				'height'        => $size ? $size['height'] : 0,
 				'original_size' => $filesystem->size( $path ),
-			) );
+			] );
+
+			// Webp.
+			$webp_size = 'full' . $process::WEBP_SUFFIX;
+
+			if ( $has_webp && empty( $old_data['data'][ $webp_size ]['success'] ) ) {
+				$webp_file_size = $filesystem->size( $webp_path );
+
+				$old_data['data'][ $webp_size ] = [
+					'success'        => true,
+					'original_size'  => $new_data['original_size'],
+					'optimized_size' => $webp_file_size,
+					'percent'        => round( ( ( $new_data['original_size'] - $webp_file_size ) / $new_data['original_size'] ) * 100, 2 ),
+				];
+			}
 		}
 
 		// Save the new data.
