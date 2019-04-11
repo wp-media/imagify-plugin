@@ -150,7 +150,16 @@ function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 						'status-filter' => 'errors',
 					), get_imagify_admin_url( 'files-list' ) );
 			}
-			return '';
+			/**
+			 * Provide a URL to a page displaying optimization errors for the given context.
+			 *
+			 * @since  1.9
+			 * @author Grégory Viguier
+			 *
+			 * @param string $url The URL.
+			 * @param string $arg The context.
+			 */
+			return apply_filters( 'imagify_optimization_errors_url', '', $arg );
 
 		case 'dismiss-notice':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
