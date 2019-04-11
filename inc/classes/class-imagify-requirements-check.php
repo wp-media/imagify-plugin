@@ -197,18 +197,13 @@ class Imagify_Requirements_Check {
 	 */
 	private function current_user_can() {
 		$describer = 'manage';
-
-		if ( function_exists( 'imagify_current_user_can' ) ) {
-			return imagify_current_user_can( $describer );
-		}
-
-		$capacity = $this->is_active_for_network() ? 'manage_network_options' : 'manage_options';
-		// This filter is documented in inc/functions/common.php.
-		$capacity = apply_filters( 'imagify_capacity', $capacity, $describer );
+		$capacity  = $this->is_active_for_network() ? 'manage_network_options' : 'manage_options';
+		// This filter is documented in classes/Context/AbstractContext.php.
+		$capacity  = (string) apply_filters( 'imagify_capacity', $capacity, $describer, 'wp' );
 
 		$user_can = current_user_can( $capacity );
-		// This filter is documented in inc/functions/common.php.
-		$user_can = apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, null );
+		// This filter is documented in classes/Context/AbstractContext.php.
+		$user_can = (bool) apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, null, 'wp' );
 
 		return $user_can;
 	}

@@ -19,7 +19,7 @@ function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
 		return $form_fields;
 	}
 
-	if ( ! imagify_current_user_can( 'manual-optimize', $post->ID ) ) {
+	if ( ! imagify_get_context( 'wp' )->current_user_can( 'manual-optimize', $post->ID ) ) {
 		return $form_fields;
 	}
 
@@ -48,7 +48,7 @@ add_filter( 'media_row_actions', '_imagify_add_actions_to_media_list_row', IMAGI
  * @return array
  */
 function _imagify_add_actions_to_media_list_row( $actions, $post ) {
-	if ( ! imagify_current_user_can( 'manual-optimize', $post->ID ) ) {
+	if ( ! imagify_get_context( 'wp' )->current_user_can( 'manual-optimize', $post->ID ) ) {
 		return $actions;
 	}
 

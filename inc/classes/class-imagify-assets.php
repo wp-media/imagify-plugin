@@ -843,6 +843,6 @@ class Imagify_Assets {
 			return false;
 		}
 
-		return get_imagify_option( 'api_key' ) && is_admin_bar_showing() && imagify_current_user_can() && get_imagify_option( 'admin_bar_menu' );
+		return get_imagify_option( 'api_key' ) && is_admin_bar_showing() && imagify_get_context( 'wp' )->current_user_can( 'manage' ) && get_imagify_option( 'admin_bar_menu' );
 	}
 }

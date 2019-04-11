@@ -69,13 +69,13 @@ interface ProcessInterface {
 	public function is_valid();
 
 	/**
-	 * Tell if the current can optimize/restore/etc.
+	 * Tell if the current user is allowed to operate Imagify in this context.
 	 *
 	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param  string $describer Capacity describer. Possible values are 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'restore'.
+	 * @param  string $describer Capacity describer. See \Imagify\Context\ContextInterface->get_capacity() for possible values. Can also be a "real" user capacity.
 	 * @return bool
 	 */
 	public function current_user_can( $describer );

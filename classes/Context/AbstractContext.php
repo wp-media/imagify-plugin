@@ -195,4 +195,117 @@ abstract class AbstractContext implements ContextInterface {
 	public function can_keep_exif() {
 		return $this->can_keep_exif;
 	}
+
+	/**
+	 * Tell if the current user is allowed to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $describer Capacity describer. See $this->get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @param  int    $media_id  A media ID.
+	 * @return bool
+	 */
+	public function current_user_can( $describer, $media_id = null ) {
+		return $this->user_can( null, $describer, $media_id );
+	}
+
+	/**
+	 * Tell if a user is allowed to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  int|\WP_User $user_id   A user ID or \WP_User object. Fallback to the current user ID.
+	 * @param  string       $describer Capacity describer. See $this->get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @param  int          $media_id  A media ID.
+	 * @return bool
+	 */
+	public function user_can( $user_id, $describer, $media_id = null ) {
+		$current_user_id = get_current_user_id();
+
+		if ( ! $user_id ) {
+			$user    = $current_user_id;
+			$user_id = $current_user_id;
+		} elseif ( $user_id instanceof \WP_User ) {
+			$user    = $user_id;
+			$user_id = (int) $user->ID;
+		} elseif ( is_numeric( $user_id ) ) {
+			$user    = (int) $user_id;
+			$user_id = $user;
+		} else {
+			$user_id = 0;
+		}
+
+		if ( ! $user_id ) {
+			return false;
+		}
+
+		$media_id = $media_id ? (int) $media_id : null;
+		$capacity = $this->get_capacity( $describer );
+
+		if ( $user_id === $current_user_id ) {
+			$user_can = current_user_can( $capacity, $media_id );
+
+			/**
+			 * Tell if the current user is allowed to operate Imagify in this context.
+			 *
+			 * @since 1.6.11
+			 * @since 1.9 Added the context name as parameter.
+			 *
+			 * @param bool   $user_can  Tell if the current user is allowed to operate Imagify in this context.
+			 * @param string $capacity  The user capacity.
+			 * @param string $describer Capacity describer. See $this->get_capacity() for possible values. Can also be a "real" user capacity.
+			 * @param int    $media_id  A media ID.
+			 * @param string $context   The context name.
+			 */
+			$user_can = (bool) apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $media_id, $this->get_name() );
+		} else {
+			$user_can = user_can( $user, $capacity, $media_id );
+		}
+
+		/**
+		 * Tell if the given user is allowed to operate Imagify in this context.
+		 *
+		 * @since  1.9
+		 * @author Grégory Viguier
+		 *
+		 * @param bool   $user_can  Tell if the given user is allowed to operate Imagify in this context.
+		 * @param int    $user_id   The user ID.
+		 * @param string $capacity  The user capacity.
+		 * @param string $describer Capacity describer. See $this->get_capacity() for possible values. Can also be a "real" user capacity.
+		 * @param int    $media_id  A media ID.
+		 * @param string $context   The context name.
+		 */
+		return (bool) apply_filters( 'imagify_user_can', $user_can, $user_id, $capacity, $describer, $media_id, $this->get_name() );
+	}
+
+	/**
+	 * Filter a user capacity used to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $capacity  The user capacity.
+	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
+	 * @return string
+	 */
+	protected function filter_capacity( $capacity, $describer ) {
+		/**
+		 * Filter a user capacity used to operate Imagify in this context.
+		 *
+		 * @since 1.0
+		 * @since 1.6.5  Added $force_mono parameter.
+		 * @since 1.6.11 Replaced $force_mono by $describer.
+		 * @since 1.9    Added the context name as parameter.
+		 *
+		 * @param string $capacity  The user capacity.
+		 * @param string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
+		 * @param string $context   The context name.
+		 */
+		return (string) apply_filters( 'imagify_capacity', $capacity, $describer, $this->get_name() );
+	}
 }

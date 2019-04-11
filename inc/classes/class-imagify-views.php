@@ -157,8 +157,10 @@ class Imagify_Views {
 	 * @access public
 	 */
 	public function add_site_menus() {
+		$wp_context = imagify_get_context( 'wp' );
+
 		// Sub-menu item: bulk optimization.
-		add_media_page( __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), imagify_get_capacity( 'bulk-optimize' ), $this->get_bulk_page_slug(), array( $this, 'display_bulk_page' ) );
+		add_media_page( __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), $wp_context->get_capacity( 'bulk-optimize' ), $this->get_bulk_page_slug(), array( $this, 'display_bulk_page' ) );
 
 		if ( imagify_is_active_for_network() ) {
 			return;
@@ -169,7 +171,8 @@ class Imagify_Views {
 		 */
 		if ( imagify_can_optimize_custom_folders() ) {
 			// Sub-menu item: custom folders list.
-			$screen_id = add_media_page( __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+			$cf_context = imagify_get_context( 'custom-folders' );
+			$screen_id  = add_media_page( __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), $cf_context->current_user_can( 'optimize' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
 
 			if ( $screen_id ) {
 				// Load the data for this page.
@@ -178,7 +181,7 @@ class Imagify_Views {
 		}
 
 		// Sub-menu item: settings.
-		add_options_page( 'Imagify', 'Imagify', imagify_get_capacity(), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
+		add_options_page( 'Imagify', 'Imagify', $wp_context->get_capacity( 'manage' ), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
 	}
 
 	/**
@@ -191,20 +194,24 @@ class Imagify_Views {
 	public function add_network_menus() {
 		global $submenu;
 
+		$wp_context = imagify_get_context( 'wp' );
+
 		if ( ! imagify_can_optimize_custom_folders() ) {
 			// Main item: settings (edge case).
-			add_menu_page( 'Imagify', 'Imagify', imagify_get_capacity(), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
+			add_menu_page( 'Imagify', 'Imagify', $wp_context->get_capacity( 'manage' ), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
 			return;
 		}
 
+		$cf_context = imagify_get_context( 'custom-folders' );
+
 		// Main item: bulk optimization (custom folders).
-		add_menu_page( __( 'Bulk Optimization', 'imagify' ), 'Imagify', imagify_get_capacity( 'optimize-file' ), $this->get_bulk_page_slug(), array( $this, 'display_bulk_page' ) );
+		add_menu_page( __( 'Bulk Optimization', 'imagify' ), 'Imagify', $cf_context->current_user_can( 'bulk-optimize' ), $this->get_bulk_page_slug(), array( $this, 'display_bulk_page' ) );
 
 		// Sub-menu item: custom folders list.
-		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), imagify_get_capacity( 'optimize-file' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), $cf_context->current_user_can( 'bulk-optimize' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
 
 		// Sub-menu item: settings.
-		add_submenu_page( $this->get_bulk_page_slug(), 'Imagify', __( 'Settings', 'imagify' ), imagify_get_capacity(), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
+		add_submenu_page( $this->get_bulk_page_slug(), 'Imagify', __( 'Settings', 'imagify' ), $wp_context->get_capacity( 'manage' ), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
 
 		// Change the sub-menu label.
 		if ( ! empty( $submenu[ $this->get_bulk_page_slug() ] ) ) {
@@ -307,7 +314,7 @@ class Imagify_Views {
 			$data['groups']['library'] = array(
 				/**
 				 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
-				 * It is also used in get_imagify_localize_script_translations() and imagify_get_folder_type_data().
+				 * It is also used in get_imagify_localize_script_translations().
 				 */
 				'group_id' => 'library',
 				'context'  => imagify_get_context( 'wp' )->get_name(),

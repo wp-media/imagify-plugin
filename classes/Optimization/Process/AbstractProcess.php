@@ -211,6 +211,26 @@ abstract class AbstractProcess implements ProcessInterface {
 		return $this->get_media() && $this->get_media()->is_valid();
 	}
 
+	/**
+	 * Tell if the current user is allowed to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $describer Capacity describer. See \Imagify\Context\ContextInterface->get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @return bool
+	 */
+	public function current_user_can( $describer ) {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		$media = $this->get_media();
+
+		return $media->get_context_instance()->current_user_can( $describer, $media->get_id() );
+	}
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** OPTIMIZATION ============================================================================ */
@@ -1554,40 +1574,5 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		return \Imagify_Options::get_instance()->sanitize_and_validate( 'optimization_level', $optimization_level );
-	}
-
-	/**
-	 * Normalize a user capacity describer.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @see    $this->current_user_can( $describer )
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $describer Capacity describer. Possible values are 'bulk-optimize', 'manual-optimize', 'auto-optimize', 'bulk-restore', and 'manual-restore'.
-	 * @return string|bool       The normalized describer. False if not in the list.
-	 */
-	protected function normalize_capacity_describer( $describer ) {
-		if ( ! $this->is_valid() ) {
-			return false;
-		}
-
-		switch ( $describer ) {
-			case 'bulk-optimize':
-			case 'bulk-restore':
-				return 'bulk-optimize';
-
-			case 'optimize':
-			case 'restore':
-			case 'manual-optimize':
-			case 'manual-restore':
-				return 'manual-optimize';
-
-			case 'auto-optimize':
-				return 'auto-optimize';
-
-			default:
-				return false;
-		}
 	}
 }

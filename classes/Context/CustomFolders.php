@@ -87,4 +87,36 @@ class CustomFolders extends AbstractContext {
 
 		return $this->can_keep_exif;
 	}
+
+	/**
+	 * Get user capacity to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
+	 * @return string
+	 */
+	public function get_capacity( $describer ) {
+		switch ( $describer ) {
+			case 'manage':
+				$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
+				break;
+
+			case 'bulk-optimize':
+			case 'optimize':
+			case 'restore':
+			case 'manual-optimize':
+			case 'manual-restore':
+			case 'auto-optimize':
+				$capacity = is_multisite() ? 'manage_network_options' : 'manage_options';
+				break;
+
+			default:
+				$capacity = $describer;
+		}
+
+		return $this->filter_capacity( $capacity, $describer );
+	}
 }

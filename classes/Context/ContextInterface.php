@@ -110,4 +110,43 @@ interface ContextInterface {
 	 * @return bool
 	 */
 	public function can_keep_exif();
+
+	/**
+	 * Tell if the current user is allowed to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $describer Capacity describer. See $this->get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @param  int    $media_id  A media ID.
+	 * @return bool
+	 */
+	public function current_user_can( $describer, $media_id = null );
+
+	/**
+	 * Tell if a user is allowed to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  int    $user_id   A user ID.
+	 * @param  string $describer Capacity describer. See $this->get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @param  int    $media_id  A media ID.
+	 * @return bool
+	 */
+	public function user_can( $user_id, $describer, $media_id = null );
+
+	/**
+	 * Get user capacity to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
+	 * @return string
+	 */
+	public function get_capacity( $describer );
 }

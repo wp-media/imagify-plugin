@@ -10,7 +10,11 @@ add_action( 'admin_bar_menu', '_imagify_admin_bar', IMAGIFY_INT_MAX );
  * @param object $wp_admin_bar WP_Admin_Bar instance, passed by reference.
  */
 function _imagify_admin_bar( $wp_admin_bar ) {
-	if ( ! imagify_current_user_can() || ! get_imagify_option( 'admin_bar_menu' ) ) {
+	if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+		return;
+	}
+
+	if ( ! get_imagify_option( 'admin_bar_menu' ) ) {
 		return;
 	}
 
