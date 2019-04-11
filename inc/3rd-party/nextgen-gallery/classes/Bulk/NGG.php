@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.9
  * @author Grégory Viguier
  */
-class NGG extends AbstractBulk {
+class NGG extends \Imagify\Bulk\AbstractBulk {
 
 	/**
 	 * Context "short name".
