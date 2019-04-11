@@ -70,16 +70,9 @@ class CustomFolders extends AbstractData {
 
 		$data['status'] = $row['status'];
 		$data['level']  = $row['optimization_level'];
+		$data['level']  = is_numeric( $data['level'] ) ? (int) $data['level'] : false;
 
-		if ( 'success' !== $row['status'] ) {
-			/**
-			 * Error.
-			 */
-			$data['sizes']['full'] = [
-				'success' => false,
-				'error'   => $row['error'],
-			];
-		} else {
+		if ( 'success' === $row['status'] ) {
 			/**
 			 * Success.
 			 */
@@ -89,12 +82,24 @@ class CustomFolders extends AbstractData {
 				'optimized_size' => $row['optimized_size'],
 				'percent'        => $row['percent'],
 			];
+		} elseif ( ! empty( $row['status'] ) ) {
+			/**
+			 * Error.
+			 */
+			$data['sizes']['full'] = [
+				'success' => false,
+				'error'   => $row['error'],
+			];
 		}
 
 		if ( ! empty( $row['data']['sizes'] ) && is_array( $row['data']['sizes'] ) ) {
 			unset( $row['data']['sizes']['full'] );
 			$data['sizes'] = array_merge( $data['sizes'], $row['data']['sizes'] );
 			$data['sizes'] = array_filter( $data['sizes'], 'is_array' );
+		}
+
+		if ( empty( $data['sizes'] ) ) {
+			return $data;
 		}
 
 		foreach ( $data['sizes'] as $size_data ) {
@@ -173,12 +178,13 @@ class CustomFolders extends AbstractData {
 			 * Webp version or any other size.
 			 */
 			$old_data['data'] = ! empty( $old_data['data'] ) && is_array( $old_data['data'] ) ? $old_data['data'] : [];
+			$old_data['data']['sizes'] = ! empty( $old_data['data']['sizes'] ) && is_array( $old_data['data']['sizes'] ) ? $old_data['data']['sizes'] : [];
 
 			if ( ! $data['success'] ) {
 				/**
 				 * Error.
 				 */
-				$old_data['data'][ $size ] = [
+				$old_data['data']['sizes'][ $size ] = [
 					'success' => false,
 					'error'   => $data['error'],
 				];
@@ -186,13 +192,17 @@ class CustomFolders extends AbstractData {
 				/**
 				 * Success.
 				 */
-				$old_data['data'][ $size ] = [
+				$old_data['data']['sizes'][ $size ] = [
 					'success'        => true,
 					'original_size'  => $data['original_size'],
 					'optimized_size' => $data['optimized_size'],
 					'percent'        => round( ( ( $data['original_size'] - $data['optimized_size'] ) / $data['original_size'] ) * 100, 2 ),
 				];
 			}
+		}
+
+		if ( isset( $old_data['data']['sizes'] ) && ( ! $old_data['data']['sizes'] || ! is_array( $old_data['data']['sizes'] ) ) ) {
+			unset( $old_data['data']['sizes'] );
 		}
 
 		$this->update_row( $old_data );

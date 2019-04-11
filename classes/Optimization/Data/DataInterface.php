@@ -94,10 +94,10 @@ interface DataInterface {
 	 * @return array {
 	 *     The data.
 	 *
-	 *     @type string $status The optimization status of the whole media: 'success', 'already_optimized', or 'error'.
-	 *                          It is the same as the main file’s status.
-	 *     @type int    $level  The optimization level (0=normal, 1=aggressive, 2=ultra).
-	 *     @type array  $sizes  {
+	 *     @type string   $status The optimization status of the whole media: 'success', 'already_optimized', or 'error'.
+	 *                            It is the same as the main file’s status.
+	 *     @type int|bool $level  The optimization level (0=normal, 1=aggressive, 2=ultra). False if not set.
+	 *     @type array    $sizes  {
 	 *         A list of size data, keyed by size name, and containing:
 	 *
 	 *         @type bool   $success        Whether the optimization has been successful.
@@ -108,7 +108,7 @@ interface DataInterface {
 	 *         If an error or 'already_optimized':
 	 *         @type string $error          An error message.
 	 *     }
-	 *     @type array  $stats  {
+	 *     @type array    $stats  {
 	 *         @type int $original_size  Overall size before optimization.
 	 *         @type int $optimized_size Overall size after optimization.
 	 *         @type int $percent        Overall saving in percent.
