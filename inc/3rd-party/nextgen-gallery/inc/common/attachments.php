@@ -287,7 +287,8 @@ add_filter( 'imagify_crop_thumbnail', 'imagify_ngg_should_crop_thumbnail', 10, 4
  * @return bool
  */
 function imagify_ngg_should_crop_thumbnail( $crop, $size, $size_data, $media ) {
-	static $data_per_media = [];
+	static $data_per_media    = [];
+	static $storage_per_media = [];
 
 	if ( 'ngg' !== $media->get_context() ) {
 		return $crop;
@@ -299,15 +300,15 @@ function imagify_ngg_should_crop_thumbnail( $crop, $size, $size_data, $media ) {
 		$image = \nggdb::find_image( $media_id );
 
 		if ( ! empty( $image->_ngiw ) ) {
-			$storage = $image->_ngiw->get_storage()->object;
+			$storage_per_media[ $media_id ] = $image->_ngiw->get_storage()->object;
 		} else {
-			$storage = \C_Gallery_Storage::get_instance()->object;
+			$storage_per_media[ $media_id ] = \C_Gallery_Storage::get_instance()->object;
 		}
 
-		$data_per_media[ $media_id ] = $storage->_image_mapper->find( $media_id ); // stdClass Object.
+		$data_per_media[ $media_id ] = $storage_per_media[ $media_id ]->_image_mapper->find( $media_id ); // stdClass Object.
 	}
 
-	$params = $storage->get_image_size_params( $data_per_media[ $media_id ], $size );
+	$params = $storage_per_media[ $media_id ]->get_image_size_params( $data_per_media[ $media_id ], $size );
 
 	return ! empty( $params['crop'] );
 }
