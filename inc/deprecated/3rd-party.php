@@ -81,6 +81,72 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 	}
 
 	/**
+	 * Filter the current user capability to operate Imagify.
+	 *
+	 * @since  1.6.11
+	 * @since  1.9 Deprecated.
+	 * @see    imagify_get_capacity()
+	 * @author Grégory Viguier
+	 * @deprecated
+	 *
+	 * @param  bool   $user_can  Tell if the current user has the required capacity to operate Imagify.
+	 * @param  string $capacity  The user capacity.
+	 * @param  string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @param  int    $post_id   A post ID (a gallery ID for NGG).
+	 * @return bool
+	 */
+	function imagify_ngg_current_user_can( $user_can, $capacity, $describer, $post_id ) {
+		static $user_can_per_gallery = array();
+
+		_deprecated_function( __FUNCTION__ . '()', '1.9' );
+
+		if ( ! $user_can || ! $post_id || 'NextGEN Manage gallery' !== $capacity ) {
+			return $user_can;
+		}
+
+		$image = nggdb::find_image( $post_id );
+
+		if ( isset( $user_can_per_gallery[ $image->galleryid ] ) ) {
+			return $user_can_per_gallery[ $image->galleryid ];
+		}
+
+		$gallery_mapper = C_Gallery_Mapper::get_instance();
+		$gallery        = $gallery_mapper->find( $image->galleryid, false );
+
+		if ( get_current_user_id() === $gallery->author || current_user_can( 'NextGEN Manage others gallery' ) ) {
+			// The user created this gallery or can edit others galleries.
+			$user_can_per_gallery[ $image->galleryid ] = true;
+			return $user_can_per_gallery[ $image->galleryid ];
+		}
+
+		// The user can't edit this gallery.
+		$user_can_per_gallery[ $image->galleryid ] = false;
+		return $user_can_per_gallery[ $image->galleryid ];
+	}
+
+	/**
+	 * Get user capacity to operate Imagify within NGG galleries.
+	 * It is meant to be used to filter 'imagify_capacity'.
+	 *
+	 * @since  1.6.11
+	 * @since  1.9 Deprecated.
+	 * @see    imagify_get_capacity()
+	 * @author Grégory Viguier
+	 * @deprecated
+	 *
+	 * @param string $capacity  The user capacity.
+	 * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @return string
+	 */
+	function imagify_get_ngg_capacity( $capacity = 'edit_post', $describer = 'manual-optimize' ) {
+		if ( 'manual-optimize' === $describer ) {
+			return 'NextGEN Manage gallery';
+		}
+
+		return $capacity;
+	}
+
+	/**
 	 * Dispatch the optimization process.
 	 *
 	 * @since  1.8
@@ -92,6 +158,67 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 		_deprecated_function( __FUNCTION__ . '()', '1.9' );
 
 		Imagify_NGG_Dynamic_Thumbnails_Background_Process::get_instance()->save()->dispatch();
+	}
+
+	/**
+	 * On manual optimization, manual re-optimization, and manual restoration, filter the user capacity to operate Imagify within NGG.
+	 *
+	 * @since  1.6.11
+	 * @since  1.9 Deprecated.
+	 * @author Grégory Viguier
+	 * @deprecated
+	 */
+	function _do_admin_post_imagify_ngg_user_capacity() {
+		_deprecated_function( __FUNCTION__ . '()', '1.9' );
+
+		if ( ! empty( $_GET['context'] ) && 'NGG' === $_GET['context'] ) { // WPCS: CSRF ok.
+			add_filter( 'imagify_capacity', 'imagify_get_ngg_capacity', 10, 2 );
+		}
+	}
+
+	/**
+	 * Get all unoptimized attachment ids.
+	 *
+	 * @since  1.0
+	 * @since  1.9 Deprecated
+	 * @author Jonathan Buttigieg
+	 * @deprecated
+	 */
+	function _do_wp_ajax_imagify_ngg_get_unoptimized_attachment_ids() {
+		_deprecated_function( __FUNCTION__ . '()', '1.9', '\\Imagify\\ThirdParty\\NGG\\AdminAjaxPost::get_instance()->get_media_ids()' );
+
+		\Imagify\ThirdParty\NGG\AdminAjaxPost::get_instance()->get_media_ids();
+	}
+
+	/**
+	 * Provide custom folder type data.
+	 *
+	 * @since  1.7
+	 * @since  1.9 Deprecated
+	 * @author Grégory Viguier
+	 * @deprecated
+	 *
+	 * @param  array  $data    An array with keys corresponding to cell classes, and values formatted with HTML.
+	 * @param  string $context A context.
+	 * @return array
+	 */
+	function imagify_ngg_get_folder_type_data( $data, $context ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.9' );
+
+		if ( 'ngg' !== $context ) {
+			return $data;
+		}
+
+		// Already filtered in imagify_ngg_bulk_page_data().
+		$total_saving_data = imagify_count_saving_data();
+
+		return [
+			'images-optimized' => imagify_ngg_count_optimized_attachments(),
+			'errors'           => imagify_ngg_count_error_attachments(),
+			'optimized'        => $total_saving_data['optimized_size'],
+			'original'         => $total_saving_data['original_size'],
+			'errors_url'       => admin_url( 'admin.php?page=nggallery-manage-gallery' ),
+		];
 	}
 
 endif;

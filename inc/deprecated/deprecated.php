@@ -962,4 +962,242 @@ if ( is_admin() ) :
 		return Imagify_Views::get_instance()->plugin_action_links( $actions );
 	}
 
+	/**
+	 * Get stats data for a specific folder type.
+	 *
+	 * @since  1.7
+	 * @since  1.9 Deprecated
+	 * @author Grégory Viguier
+	 * @deprecated
+	 *
+	 * @param  string $context A context.
+	 * @return array
+	 */
+	function imagify_get_folder_type_data( $context ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.9', 'Imagify_Admin_Ajax_Post::get_instance()->get_bulk_instance( $context )->get_context_data()' );
+
+		/**
+		 * Get the data.
+		 */
+		switch ( $context ) {
+			case 'wp':
+				$total_saving_data = imagify_count_saving_data();
+				$data              = array(
+					'images-optimized' => imagify_count_optimized_attachments(),
+					'errors'           => imagify_count_error_attachments(),
+					'optimized'        => $total_saving_data['optimized_size'],
+					'original'         => $total_saving_data['original_size'],
+					'errors_url'       => get_imagify_admin_url( 'folder-errors', $context ),
+				);
+				break;
+
+			case 'custom-folders':
+				$data = array(
+					'images-optimized' => Imagify_Files_Stats::count_optimized_files(),
+					'errors'           => Imagify_Files_Stats::count_error_files(),
+					'optimized'        => Imagify_Files_Stats::get_optimized_size(),
+					'original'         => Imagify_Files_Stats::get_original_size(),
+					'errors_url'       => get_imagify_admin_url( 'folder-errors', $context ),
+				);
+				break;
+
+			default:
+				/**
+				 * Provide custom folder type data.
+				 *
+				 * @since  1.7
+				 * @author Grégory Viguier
+				 *
+				 * @param array  $data    An array with keys corresponding to cell classes, and values formatted with HTML.
+				 * @param string $context A context.
+				 */
+				$data = apply_filters( 'imagify_get_folder_type_data', [], $context );
+
+				if ( ! $data || ! is_array( $data ) ) {
+					return [];
+				}
+		}
+
+		/**
+		 * Format the data.
+		 */
+		/* translators: %s is a formatted number, dont use %d. */
+		$data['images-optimized'] = sprintf( _n( '%s Media File Optimized', '%s Media Files Optimized', $data['images-optimized'], 'imagify' ), '<span>' . number_format_i18n( $data['images-optimized'] ) . '</span>' );
+
+		if ( $data['errors'] ) {
+			/* translators: %s is a formatted number, dont use %d. */
+			$data['errors']  = sprintf( _n( '%s Error', '%s Errors', $data['errors'], 'imagify' ), '<span>' . number_format_i18n( $data['errors'] ) . '</span>' );
+			$data['errors'] .= ' <a href="' . esc_url( $data['errors_url'] ) . '">' . __( 'View Errors', 'imagify' ) . '</a>';
+		} else {
+			$data['errors'] = '';
+		}
+
+		if ( $data['optimized'] ) {
+			$data['optimized'] = '<span class="imagify-cell-label">' . __( 'Optimized Filesize', 'imagify' ) . '</span> ' . imagify_size_format( $data['optimized'], 2 );
+		} else {
+			$data['optimized'] = '';
+		}
+
+		if ( $data['original'] ) {
+			$data['original'] = '<span class="imagify-cell-label">' . __( 'Original Filesize', 'imagify' ) . '</span> ' . imagify_size_format( $data['original'], 2 );
+		} else {
+			$data['original'] = '';
+		}
+
+		unset( $data['errors_url'] );
+
+		return $data;
+	}
+
+	/**
+	 * Tell if the current user has the required ability to operate Imagify.
+	 *
+	 * @since  1.6.11
+	 * @since  1.9
+	 * @see    imagify_get_capacity()
+	 * @author Grégory Viguier
+	 * @deprecated
+	 *
+	 * @param  string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @param  int    $post_id   A post ID.
+	 * @return bool
+	 */
+	function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
+		static $can_upload;
+
+		_deprecated_function( __FUNCTION__ . '()', '1.9', 'imagify_get_context( $context )->current_user_can( $describer, $media_id )' );
+
+		$post_id  = $post_id ? $post_id : null;
+		$capacity = imagify_get_capacity( $describer );
+		$user_can = false;
+
+		if ( 'manage' !== $describer && 'bulk-optimize' !== $describer && 'optimize-file' !== $describer ) {
+			// Describers that are not 'manage', 'bulk-optimize', and 'optimize-file' need an additional test for 'upload_files'.
+			if ( ! isset( $can_upload ) ) {
+				$can_upload = current_user_can( 'upload_files' );
+			}
+
+			if ( $can_upload ) {
+				if ( 'upload_files' === $capacity ) {
+					// We already know it's true.
+					$user_can = true;
+				} else {
+					$user_can = current_user_can( $capacity, $post_id );
+				}
+			}
+		} else {
+			$user_can = current_user_can( $capacity );
+		}
+
+		/**
+		 * Filter the current user ability to operate Imagify.
+		 *
+		 * @since 1.6.11
+		 *
+		 * @param bool   $user_can  Tell if the current user has the required ability to operate Imagify.
+		 * @param string $capacity  The user capacity.
+		 * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
+		 * @param int    $post_id   A post ID (a gallery ID for NGG).
+		 */
+		return apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $post_id );
+	}
+
+	/**
+	 * Get user capacity to operate Imagify.
+	 *
+	 * @since  1.6.5
+	 * @since  1.6.11 Uses a string as describer for the first argument.
+	 * @since  1.9    Deprecated.
+	 * @author Grégory Viguier
+	 * @deprecated
+	 *
+	 * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'optimize-file'.
+	 * @return string
+	 */
+	function imagify_get_capacity( $describer = 'manage' ) {
+		static $edit_attachment_cap;
+
+		_deprecated_function( __FUNCTION__ . '()', '1.9', 'imagify_get_context( $context )->get_capacity( $describer )' );
+
+		// Back compat.
+		if ( ! is_string( $describer ) ) {
+			if ( $describer || ! is_multisite() ) {
+				$describer = 'bulk-optimize';
+			} else {
+				$describer = 'manage';
+			}
+		}
+
+		switch ( $describer ) {
+			case 'manage':
+				$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
+				break;
+
+			case 'optimize-file':
+				$capacity = is_multisite() ? 'manage_network_options' : 'manage_options';
+				break;
+
+			case 'bulk-optimize':
+				$capacity = 'manage_options';
+				break;
+
+			case 'optimize':
+			case 'restore':
+				// This is a generic capacity: don't use it unless you have no other choices!
+				if ( ! isset( $edit_attachment_cap ) ) {
+					$edit_attachment_cap = get_post_type_object( 'attachment' );
+					$edit_attachment_cap = $edit_attachment_cap ? $edit_attachment_cap->cap->edit_posts : 'edit_posts';
+				}
+
+				$capacity = $edit_attachment_cap;
+				break;
+
+			case 'manual-optimize':
+			case 'manual-restore':
+				// Must be used with an Attachment ID.
+				$capacity = 'edit_post';
+				break;
+
+			case 'auto-optimize':
+				$capacity = 'upload_files';
+				break;
+
+			default:
+				$capacity = $describer;
+		}
+
+		/**
+		 * Filter the user capacity used to operate Imagify.
+		 *
+		 * @since 1.0
+		 * @since 1.6.5  Added $force_mono parameter.
+		 * @since 1.6.11 Replaced $force_mono by $describer.
+		 *
+		 * @param string $capacity  The user capacity.
+		 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'optimize-file'.
+		 */
+		return apply_filters( 'imagify_capacity', $capacity, $describer );
+	}
+
+	/**
+	 * Check for user capacity.
+	 *
+	 * @since  1.6.10
+	 * @since  1.6.11 Uses a capacity describer instead of a capacity itself.
+	 * @since  1.9    Deprecated.
+	 * @see    imagify_get_capacity()
+	 * @author Grégory Viguier
+	 * @deprecated
+	 *
+	 * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @param int    $post_id   A post ID.
+	 */
+	function imagify_check_user_capacity( $describer = 'manage', $post_id = null ) {
+		_deprecated_function( __FUNCTION__ . '()', '1.9' );
+
+		if ( ! imagify_current_user_can( $describer, $post_id ) ) {
+			imagify_die();
+		}
+	}
+
 endif;
