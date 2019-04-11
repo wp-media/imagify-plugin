@@ -1218,11 +1218,10 @@ window.imagify = window.imagify || {};
 			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
 
 			// Enable (or not) the main button.
-			if ( w.imagify.bulk.hasMultipleRows && $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
-				// We still have another group to process.
-				$( '#imagify-bulk-action' ).find( '.dashicons' ).removeClass( 'rotate' );
-			} else {
+			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
 				$( '#imagify-bulk-action' ).removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
+			} else {
+				$( '#imagify-bulk-action' ).find( '.dashicons' ).removeClass( 'rotate' );
 			}
 		},
 
