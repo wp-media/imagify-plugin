@@ -20,10 +20,19 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 		return;
 	}
 
-	if ( ! empty( $_POST['nextgen_upload_image_sec'] ) && ! empty( $_POST['action'] ) && 'import_media_library' === $_POST['action'] && ! empty( $_POST['attachment_ids'] ) && is_array( $_POST['attachment_ids'] ) ) { // WPCS: CSRF ok.
+	$is_maybe_library_import = ! empty( $_POST['action'] ) && 'import_media_library' === $_POST['action'] && ! empty( $_POST['attachment_ids'] ) && is_array( $_POST['attachment_ids'] ); // WPCS: CSRF ok.
+
+	if ( $is_maybe_library_import && ! empty( $_POST['nextgen_upload_image_sec'] ) ) { // WPCS: CSRF ok.
 		/**
 		 * The images are imported from the library.
 		 * In this case, those images are dealt with in _imagify_ngg_media_library_imported_image_data().
+		 */
+		return;
+	}
+
+	if ( $is_maybe_library_import && ( ! empty( $_POST['gallery_id'] ) || ! empty( $_POST['gallery_name'] ) ) ) { // WPCS: CSRF ok.
+		/**
+		 * Same thing but for NGG 2.0 probably.
 		 */
 		return;
 	}
@@ -128,10 +137,16 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 		}
 	}
 
-	// Webp for the full size.
-	$add_full_webp = $wp_media->is_image() && ! $wp_process->get_file()->is_webp() && get_imagify_option( 'convert_to_webp' );
+	/**
+	 * Webp for the full size.
+	 * Look for an existing copy locally:
+	 * - if it exists, copy it (and its optimization data),
+	 * - if not, add it to the optimization queue.
+	 */
+	$add_full_webp = $wp_media->is_image() && get_imagify_option( 'convert_to_webp' );
 
 	if ( $add_full_webp ) {
+		// It's a supported image and webp conversion is enabled.
 		$wp_full_path_webp = false;
 		$webp_size_name    = 'full' . constant( get_class( $wp_process ) . '::WEBP_SUFFIX' );
 		$wp_webp_data      = $wp_data->get_size_data( $webp_size_name );
@@ -200,7 +215,12 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	unset( $sizes['full'] );
 
 	if ( $add_full_webp ) {
+		// We could not use a local webp copy: ask for a new one.
 		$sizes[ $webp_size_name ] = [];
+	}
+
+	if ( ! $sizes ) {
+		return $image;
 	}
 
 	$args = [
@@ -215,6 +235,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 add_action( 'ngg_generated_image', 'imagify_ngg_maybe_add_dynamic_thumbnail_to_background_process', IMAGIFY_INT_MAX, 2 );
 /**
  * Add a dynamically generated thumbnail to the background process queue.
+ * Note that this won’t work when images are imported (from WP Library or uploaded), since they are already being processed, and locked.
  *
  * @since  1.8
  * @since  1.9 Doesn't use the class Imagify_NGG_Dynamic_Thumbnails_Background_Process anymore.

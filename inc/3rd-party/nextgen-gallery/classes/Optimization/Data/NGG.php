@@ -68,6 +68,7 @@ class NGG extends \Imagify\Optimization\Data\AbstractData {
 
 		$data['status'] = $row['status'];
 		$data['level']  = $row['optimization_level'];
+		$data['level']  = is_numeric( $data['level'] ) ? (int) $data['level'] : false;
 
 		if ( ! empty( $row['data']['sizes'] ) && is_array( $row['data']['sizes'] ) ) {
 			$data['sizes'] = $row['data']['sizes'];
@@ -75,20 +76,23 @@ class NGG extends \Imagify\Optimization\Data\AbstractData {
 		}
 
 		if ( empty( $data['sizes']['full'] ) ) {
-			// WAT?!
-			if ( 'success' !== $row['status'] ) {
-				$data['sizes']['full'] = [
-					'success' => false,
-					'error'   => '',
-				];
-			} else {
+			if ( 'success' === $row['status'] ) {
 				$data['sizes']['full'] = [
 					'success'        => true,
 					'original_size'  => 0,
 					'optimized_size' => 0,
 					'percent'        => 0,
 				];
+			} elseif ( ! empty( $row['status'] ) ) {
+				$data['sizes']['full'] = [
+					'success' => false,
+					'error'   => '',
+				];
 			}
+		}
+
+		if ( empty( $data['sizes'] ) ) {
+			return $data;
 		}
 
 		foreach ( $data['sizes'] as $size_data ) {
