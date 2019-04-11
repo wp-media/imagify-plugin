@@ -272,3 +272,42 @@ function imagify_ngg_cleanup_after_media_deletion( $image_id, $image ) {
 	$process->delete_webp_files();
 	$process->get_data()->delete_optimization_data();
 }
+
+add_filter( 'imagify_crop_thumbnail', 'imagify_ngg_should_crop_thumbnail', 10, 4 );
+/**
+ * In case of a dynamic thumbnail, tell if the image must be croped or resized.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param  bool           $crop      True to crop the thumbnail, false to resize. Null by default.
+ * @param  string         $size      Name of the thumbnail size.
+ * @param  array          $size_data Data of the thumbnail being processed. Contains at least 'width', 'height', and 'path'.
+ * @param  MediaInterface $media     The MediaInterface instance corresponding to the image being processed.
+ * @return bool
+ */
+function imagify_ngg_should_crop_thumbnail( $crop, $size, $size_data, $media ) {
+	static $data_per_media = [];
+
+	if ( 'ngg' !== $media->get_context() ) {
+		return $crop;
+	}
+
+	$media_id = $media->get_id();
+
+	if ( ! isset( $data_per_media[ $media_id ] ) ) {
+		$image = \nggdb::find_image( $media_id );
+
+		if ( ! empty( $image->_ngiw ) ) {
+			$storage = $image->_ngiw->get_storage()->object;
+		} else {
+			$storage = \C_Gallery_Storage::get_instance()->object;
+		}
+
+		$data_per_media[ $media_id ] = $storage->_image_mapper->find( $media_id ); // stdClass Object.
+	}
+
+	$params = $storage->get_image_size_params( $data_per_media[ $media_id ], $size );
+
+	return ! empty( $params['crop'] );
+}
