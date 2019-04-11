@@ -329,6 +329,9 @@ class Imagify_Assets {
 
 		$this->enqueue_style( 'admin' )->enqueue_script( 'media-modal' );
 
+		// When the optimization buttons are displayed in the media modal, they are fetched through ajax, so they can’t print the "processing" button template in the footer.
+		Imagify_Views::get_instance()->print_js_template_in_footer( 'button/processing' );
+
 		/**
 		 * Triggered after Imagify CSS and JS have been enqueued for the media modal.
 		 *
