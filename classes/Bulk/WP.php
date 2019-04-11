@@ -152,9 +152,6 @@ class WP extends AbstractBulk {
 
 			$file_path = get_imagify_attached_file( $metas['filenames'][ $id ] );
 
-			/** This filter is documented in inc/functions/process.php. */
-			$file_path = apply_filters( 'imagify_file_path', $file_path );
-
 			if ( ! $file_path || ! $this->filesystem->exists( $file_path ) ) {
 				continue;
 			}
@@ -247,9 +244,6 @@ class WP extends AbstractBulk {
 			}
 
 			$file_path = get_imagify_attached_file( $metas['filenames'][ $id ] );
-
-			/** This filter is documented in inc/functions/process.php. */
-			$file_path = apply_filters( 'imagify_file_path', $file_path );
 
 			if ( ! $file_path || ! $this->filesystem->exists( $file_path ) ) {
 				continue;

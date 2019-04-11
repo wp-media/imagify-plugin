@@ -63,9 +63,6 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 			$id        = absint( $image['id'] );
 			$file_path = $storage->get_image_abspath( $id );
 
-			/** This filter is documented in inc/functions/process.php. */
-			$file_path = apply_filters( 'imagify_file_path', $file_path );
-
 			if ( ! $file_path || ! $this->filesystem->exists( $file_path ) ) {
 				continue;
 			}
