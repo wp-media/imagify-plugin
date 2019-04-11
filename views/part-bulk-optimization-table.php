@@ -41,10 +41,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 					<tr class="screen-reader-text">
 						<th class="imagify-cell-checkbox"><?php esc_html_e( 'Group selection', 'imagify' ); ?></th>
 						<th class="imagify-cell-title"><?php esc_html_e( 'Group name', 'imagify' ); ?></th>
-						<th class="imagify-cell-images-optimized"><?php esc_html_e( 'Number of images optimized', 'imagify' ); ?></th>
-						<th class="imagify-cell-errors"><?php esc_html_e( 'Errors', 'imagify' ); ?></th>
-						<th class="imagify-cell-optimized"><?php esc_html_e( 'Optimized Size', 'imagify' ); ?></th>
-						<th class="imagify-cell-original"><?php esc_html_e( 'Original Size', 'imagify' ); ?></th>
+						<th class="imagify-cell-count-optimized"><?php esc_html_e( 'Number of images optimized', 'imagify' ); ?></th>
+						<th class="imagify-cell-count-errors"><?php esc_html_e( 'Errors', 'imagify' ); ?></th>
+						<th class="imagify-cell-optimized-size-size"><?php esc_html_e( 'Optimized Size', 'imagify' ); ?></th>
+						<th class="imagify-cell-original-size-size"><?php esc_html_e( 'Original Size', 'imagify' ); ?></th>
 						<th class="imagify-cell-level"><?php esc_html_e( 'Level Selection', 'imagify' ); ?></th>
 					</tr>
 				</thead>

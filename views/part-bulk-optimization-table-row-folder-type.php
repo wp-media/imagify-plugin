@@ -15,17 +15,17 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 	<td class="imagify-cell-title">
 		<label for="cb-select-<?php echo $data['group_id']; ?>"><?php echo $data['title']; ?></label>
 	</td>
-	<td class="imagify-cell-images-optimized">
-		<?php echo $data['images-optimized']; ?>
+	<td class="imagify-cell-count-optimized">
+		<?php echo $data['count-optimized']; ?>
 	</td>
-	<td class="imagify-cell-errors">
-		<?php echo $data['errors']; ?>
+	<td class="imagify-cell-count-errors">
+		<?php echo $data['count-errors']; ?>
 	</td>
-	<td class="imagify-cell-optimized">
-		<?php echo $data['optimized']; ?>
+	<td class="imagify-cell-optimized-size-size">
+		<?php echo $data['optimized-size']; ?>
 	</td>
-	<td class="imagify-cell-original">
-		<?php echo $data['original']; ?>
+	<td class="imagify-cell-original-size-size">
+		<?php echo $data['original-size']; ?>
 	</td>
 	<td class="imagify-cell-level">
 		<?php
