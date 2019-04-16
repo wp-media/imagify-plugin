@@ -45,6 +45,15 @@ class Imagify_Views {
 	protected $slug_files;
 
 	/**
+	 * A list of JS templates to print at the end of the page.
+	 *
+	 * @var    array
+	 * @since  1.9
+	 * @access protected
+	 */
+	protected $templates_in_footer = [];
+
+	/**
 	 * Stores the "custom folders" files list instance.
 	 *
 	 * @var    object Imagify_Files_List_Table
@@ -117,19 +126,22 @@ class Imagify_Views {
 	 */
 	public function init() {
 		// Menu items.
-		add_action( 'admin_menu', array( $this, 'add_site_menus' ) );
+		add_action( 'admin_menu', [ $this, 'add_site_menus' ] );
 
 		if ( imagify_is_active_for_network() ) {
-			add_action( 'network_admin_menu', array( $this, 'add_network_menus' ) );
+			add_action( 'network_admin_menu', [ $this, 'add_network_menus' ] );
 		}
 
 		// Action links in plugins list.
 		$basename = plugin_basename( IMAGIFY_FILE );
-		add_filter( 'plugin_action_links_' . $basename,               array( $this, 'plugin_action_links' ) );
-		add_filter( 'network_admin_plugin_action_links_' . $basename, array( $this, 'plugin_action_links' ) );
+		add_filter( 'plugin_action_links_' . $basename,               [ $this, 'plugin_action_links' ] );
+		add_filter( 'network_admin_plugin_action_links_' . $basename, [ $this, 'plugin_action_links' ] );
 
 		// Save the "per page" option value from the files list screen.
-		add_filter( 'set-screen-option', array( 'Imagify_Files_List_Table', 'save_screen_options' ), 10, 3 );
+		add_filter( 'set-screen-option', [ 'Imagify_Files_List_Table', 'save_screen_options' ], 10, 3 );
+
+		// JS templates in footer.
+		add_action( 'admin_print_footer_scripts', [ $this, 'print_js_templates' ] );
 	}
 
 
@@ -298,7 +310,7 @@ class Imagify_Views {
 				 * It is also used in get_imagify_localize_script_translations() and imagify_get_folder_type_data().
 				 */
 				'group_id' => 'library',
-				'context'  => 'wp',
+				'context'  => imagify_get_context( 'wp' )->get_name(),
 				'title'    => __( 'Media Library', 'imagify' ),
 				/* translators: 1 is the opening of a link, 2 is the closing of this link. */
 				'footer'   => sprintf( __( 'You can also re-optimize your media files from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
@@ -313,7 +325,7 @@ class Imagify_Views {
 				// Group.
 				$data['groups']['custom-folders'] = array(
 					'group_id' => 'custom-folders',
-					'context'  => 'File',
+					'context'  => imagify_get_context( 'custom-folders' )->get_name(),
 					'title'    => __( 'Custom folders', 'imagify' ),
 					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
 					'footer'   => sprintf( __( 'You can re-optimize your media files more finely directly in the %1$smedia management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
@@ -542,5 +554,88 @@ class Imagify_Views {
 	 */
 	public function print_template( $template, $data = array() ) {
 		echo $this->get_template( $template, $data );
+	}
+
+	/**
+	 * Add a template to the list of JS templates to print at the end of the page.
+	 *
+	 * @since  1.7
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @param string $template The template name.
+	 */
+	public function print_js_template_in_footer( $template ) {
+		if ( isset( $this->templates_in_footer[ $template ] ) ) {
+			return;
+		}
+
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}
+
+		switch ( $template ) {
+			case 'button/processing':
+				$data = [ 'label' => '{{ data.label }}' ];
+				break;
+			default:
+				$data = [];
+		}
+
+		$this->templates_in_footer[ $template ] = $data;
+	}
+
+	/**
+	 * Print the JS templates that have been added to the "queue".
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 * @access public
+	 */
+	public function print_js_templates() {
+		if ( ! $this->templates_in_footer ) {
+			return;
+		}
+
+		foreach ( $this->templates_in_footer as $template => $data ) {
+			$template_id = str_replace( [ '/', '_' ], '-', $template );
+
+			echo '<script type="text/html" id="tmpl-imagify-' . $template_id . '">';
+				$this->print_template( $template, $data );
+			echo '</script>';
+		}
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** TOOLS =================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Create HTML attributes from an array.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $attributes A list of attribute pairs.
+	 * @return string            HTML attributes.
+	 */
+	public function build_attributes( $attributes ) {
+		if ( ! $attributes || ! is_array( $attributes ) ) {
+			return '';
+		}
+
+		$out = '';
+
+		foreach ( $attributes as $attribute => $value ) {
+			if ( '' === $value ) {
+				continue;
+			}
+
+			$out .= ' ' . $attribute . '="' . esc_attr( $value ) . '"';
+		}
+
+		return $out;
 	}
 }
