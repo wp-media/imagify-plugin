@@ -86,7 +86,7 @@ function imagify_is_screen( $identifier ) {
  * @param  array|string $arg    An array of arguments. It can contain an attachment ID and/or a context.
  * @return string               The URL of the specific admin page or action.
  */
-function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
+function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 	if ( is_array( $arg ) ) {
 		$id      = isset( $arg['attachment_id'] )      ? $arg['attachment_id']      : 0;
 		$context = isset( $arg['context'] )            ? $arg['context']            : 'wp';
@@ -94,20 +94,21 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 	}
 
 	switch ( $action ) {
-		case 'manual-override-upload':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_override_upload&attachment_id=' . $id . '&optimization_level=' . $level . '&context=' . $context ), 'imagify-manual-override-upload-' . $id . '-' . $context );
+		case 'manual-reoptimize':
+		case 'manual-override-upload': // Deprecated.
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_reoptimize&attachment_id=' . $id . '&optimization_level=' . $level . '&context=' . $context ), 'imagify-manual-reoptimize-' . $id . '-' . $context );
 
 		case 'optimize-missing-sizes':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_optimize_missing_sizes&attachment_id=' . $id . '&context=' . $context ), 'imagify-optimize-missing-sizes-' . $id . '-' . $context );
 
-		case 'manual-upload':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-manual-upload-' . $id . '-' . $context );
+		case 'optimize':
+		case 'manual-upload': // Deprecated.
+		case 'manual-optimize':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_optimize&attachment_id=' . $id . '&context=' . $context ), 'imagify-optimize-' . $id . '-' . $context );
 
-		case 'restore-upload':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_restore_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-restore-upload-' . $id . '-' . $context );
-
-		case 'dismiss-notice':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
+		case 'restore':
+		case 'restore-upload': // Deprecated.
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_restore&attachment_id=' . $id . '&context=' . $context ), 'imagify-restore-' . $id . '-' . $context );
 
 		case 'optimize-file':
 		case 'restore-file':
@@ -135,7 +136,7 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 
 		case 'folder-errors':
 			switch ( $arg ) {
-				case 'library':
+				case 'wp':
 					return add_query_arg( array(
 						'mode'           => 'list',
 						'imagify-status' => 'errors',
@@ -147,6 +148,9 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 					), get_imagify_admin_url( 'files-list' ) );
 			}
 			return '';
+
+		case 'dismiss-notice':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
 
 		default:
 			$page = '?page=' . Imagify_Views::get_instance()->get_settings_page_slug();
