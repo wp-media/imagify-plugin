@@ -135,7 +135,9 @@ class Noop implements ProcessInterface {
 	 * @param  int $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @return bool|WP_Error           True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function optimize( $optimization_level = null ) {}
+	public function optimize( $optimization_level = null ) {
+		return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+	}
 
 	/**
 	 * Re-optimize a media files with a different level.
