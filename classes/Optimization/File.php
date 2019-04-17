@@ -747,7 +747,7 @@ class File {
 		}
 
 		if ( $this->is_webp() ) {
-			return $this->path;
+			return false;
 		}
 
 		return imagify_path_to_webp( $this->path );

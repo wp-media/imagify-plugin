@@ -142,6 +142,7 @@ interface ContextInterface {
 	 * Get user capacity to operate Imagify in this context.
 	 *
 	 * @since  1.9
+	 * @since  1.9 The describer 'auto-optimize' is not used anymore.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
