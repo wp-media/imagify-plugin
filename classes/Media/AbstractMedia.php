@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Media;
 
-use Imagify\CDN\CDNInterface;
+use Imagify\CDN\PushCDNInterface;
 use Imagify\Context\ContextInterface;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
@@ -37,7 +37,7 @@ abstract class AbstractMedia implements MediaInterface {
 	/**
 	 * CDN to use.
 	 *
-	 * @var    CDNInterface
+	 * @var    PushCDNInterface
 	 * @since  1.9
 	 * @access protected
 	 * @author Grégory Viguier
@@ -183,7 +183,7 @@ abstract class AbstractMedia implements MediaInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return bool|CDNInterface A CDNInterface instance. False if no CDN is used.
+	 * @return bool|PushCDNInterface A PushCDNInterface instance. False if no CDN is used.
 	 */
 	public function get_cdn() {
 		if ( isset( $this->cdn ) ) {
@@ -204,13 +204,13 @@ abstract class AbstractMedia implements MediaInterface {
 		 * @since  1.9
 		 * @author Grégory Viguier
 		 *
-		 * @param bool|CDNInterface $cdn      A CDNInterface instance. False if no CDN is used.
-		 * @param int               $media_id The media ID.
-		 * @param ContextInterface  $context  The context object.
+		 * @param bool|PushCDNInterface $cdn      A PushCDNInterface instance. False if no CDN is used.
+		 * @param int                   $media_id The media ID.
+		 * @param ContextInterface      $context  The context object.
 		 */
 		$this->cdn = apply_filters( 'imagify_cdn', false, $media_id, $context );
 
-		if ( ! $this->cdn || ! $this->cdn instanceof CDNInterface ) {
+		if ( ! $this->cdn || ! $this->cdn instanceof PushCDNInterface ) {
 			$this->cdn = false;
 			return $this->cdn;
 		}

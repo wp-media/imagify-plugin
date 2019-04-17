@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.9
  * @author Grégory Viguier
  */
-interface CDNInterface {
+interface PushCDNInterface {
 
 	/**
 	 * Tell if the CDN is ready (not necessarily reachable).

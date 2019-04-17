@@ -85,7 +85,7 @@ class Noop implements MediaInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return bool|CDNInterface A CDNInterface instance. False if no CDN is used.
+	 * @return bool|PushCDNInterface A PushCDNInterface instance. False if no CDN is used.
 	 */
 	public function get_cdn() {
 		return false;
