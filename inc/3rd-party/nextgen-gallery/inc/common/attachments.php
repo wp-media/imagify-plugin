@@ -12,7 +12,7 @@ add_action( 'ngg_after_new_images_added', '_imagify_ngg_optimize_attachment', IM
  * @author Jonathan Buttigieg
  *
  * @param int   $gallery_id A Gallery ID.
- * @param array $image_ids  Id's which are sucessfully added.
+ * @param array $image_ids  An array of Ids or objects. Ids which are sucessfully added.
  */
 function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 
@@ -37,7 +37,19 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 		return;
 	}
 
-	foreach ( $image_ids as $image_id ) {
+	foreach ( $image_ids as $image ) {
+		if ( is_numeric( $image ) ) {
+			$image_id = (int) $image;
+		} elseif ( is_object( $image ) && ! empty( $image->pid ) ) {
+			$image_id = (int) $image->pid;
+		} else {
+			$image_id = 0;
+		}
+
+		if ( ! $image_id ) {
+			continue;
+		}
+
 		/**
 		 * Allow to prevent automatic optimization for a specific NGG gallery image.
 		 *
@@ -54,7 +66,7 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 			continue;
 		}
 
-		$process = imagify_get_optimization_process( $image_id, 'ngg' );
+		$process = imagify_get_optimization_process( $image, 'ngg' );
 
 		if ( ! $process->is_valid() ) {
 			continue;
