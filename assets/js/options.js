@@ -57,7 +57,6 @@
 			return;
 		}
 		$( 'input[aria-describedby="' + $( this ).attr( 'id' ) + '"]' ).trigger( 'click' );
-		return false;
 	} );
 
 	$( '.imagify-settings th span' ).on( 'click', function() {
