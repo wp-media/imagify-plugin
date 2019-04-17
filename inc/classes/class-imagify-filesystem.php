@@ -215,8 +215,8 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return false;
 		}
 
-		$bits = str_replace( $site_root, '', $path );
-		$bits = explode( '/', $bits );
+		$bits = preg_replace( '@^' . preg_quote( $site_root, '@' ) . '@i', '', $path );
+		$bits = explode( '/', trim( $bits, '/' ) );
 		$path = untrailingslashit( $site_root );
 
 		foreach ( $bits as $bit ) {
