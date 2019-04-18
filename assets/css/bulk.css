@@ -986,6 +986,18 @@ td.imagify-cell-filename {
 }
 
 /* Submit Bulk */
+.imagify-bulk-action-selector {
+	padding: 15px 0 0;
+}
+.imagify-bulk-action-selector .imagify-selector {
+	display: inline-block;
+	margin: 1em 0 0;
+}
+.imagify-bulk-action-selector .imagify-selector-list {
+	right: auto;
+	white-space: nowrap;
+}
+
 .imagify-bulk-submit {
 	padding: 15px 0 8px 0;
 }
@@ -995,14 +1007,6 @@ td.imagify-cell-filename {
 	background: #D9E4EB!important;
 	text-shadow: none!important;
 	cursor: not-allowed;
-}
-
-.imagify-bulk-submit > * {
-	display: inline-block;
-	margin-right: 2em;
-}
-.imagify-bulk-submit > :last-child {
-	margin-right: 0;
 }
 
 /* Icon rotation */

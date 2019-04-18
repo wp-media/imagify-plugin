@@ -741,7 +741,7 @@ window.imagify = window.imagify || {};
 			var $w      = $( w ),
 				$button = $( '#imagify-bulk-action' ),
 				skip    = true,
-				action  = $( '.imagify-bulk-submit [name="imagify_action"]:checked' ).first();
+				action  = $( '.imagify-bulk-action-selector [name="imagify_action"]:checked' ).first();
 
 			// Disable the button.
 			$button.attr( 'disabled', 'disabled' ).find( '.dashicons' ).addClass( 'rotate' );
