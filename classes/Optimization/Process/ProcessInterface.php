@@ -258,6 +258,17 @@ interface ProcessInterface {
 	 */
 	public function is_size_webp( $size_name );
 
+	/**
+	 * Tell if the media has webp versions.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function has_webp();
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** PROCESS STATUS ========================================================================== */

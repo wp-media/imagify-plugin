@@ -90,6 +90,9 @@ function get_imagify_attachment_optimization_text( $process ) {
 	$output .= $output_before . '<span class="data">' . __( 'Level:', 'imagify' ) . '</span> <strong>' . $optimization_level . '</strong>' . $output_after;
 
 	if ( $media->is_image() ) {
+		$has_webp = $process->has_webp() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
+		$output  .= $output_before . '<span class="data">' . __( 'Webp generated:', 'imagify' ) . '</span> <strong class="big">' . esc_html( $has_webp ) . '</strong>' . $output_after;
+
 		$total_optimized_thumbnails = $data->get_optimized_sizes_count();
 
 		if ( $total_optimized_thumbnails ) {
@@ -339,9 +342,7 @@ function get_imagify_attachment_generate_webp_versions_link( $process ) {
 		return '';
 	}
 
-	$size = 'full' . constant( get_class( $process ) . '::WEBP_SUFFIX' );
-
-	if ( $process->get_data()->get_size_data( $size, 'success' ) ) {
+	if ( $process->has_webp() ) {
 		return '';
 	}
 
