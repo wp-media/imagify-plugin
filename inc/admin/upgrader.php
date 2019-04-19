@@ -281,7 +281,7 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 		$replacement = '{{ROOT}}/';
 
 		if ( $filesystem->has_wp_its_own_directory() ) {
-			$replacement .= str_replace( $filesystem->get_site_root(), '', $filesystem->get_abspath() );
+			$replacement .= preg_replace( '@^' . preg_quote( $filesystem->get_site_root(), '@' ) . '@', '', $filesystem->get_abspath() );
 		}
 
 		$replacement = Imagify_DB::esc_like( $replacement );
