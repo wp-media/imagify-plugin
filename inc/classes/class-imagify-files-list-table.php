@@ -638,7 +638,18 @@ class Imagify_Files_List_Table extends WP_List_Table {
 						<span class="imagify-chart-value"><?php echo $data->get_saving_percent(); ?></span>%
 					</strong>
 				</li>
-			<?php } ?>
+				<?php
+				if ( $item->process->get_media()->is_image() ) {
+					$has_webp = $item->process->has_webp() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
+					?>
+					<li class="imagify-data-item">
+						<span class="data"><?php esc_html_e( 'Webp generated:', 'imagify' ); ?></span>
+						<strong class="data-value"><?php echo esc_html( $has_webp ); ?></strong>
+					</li>
+					<?php
+				}
+			}
+			?>
 		</ul>
 		<?php
 	}
