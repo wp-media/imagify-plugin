@@ -45,8 +45,10 @@ function imagify_load_as3cf_compat() {
 	return false;
 }
 
-if ( is_admin() && imagify_load_as3cf_compat() ) :
+if ( imagify_load_as3cf_compat() ) :
 
-	add_action( 'imagify_loaded', array( Imagify_AS3CF::get_instance(), 'init' ), 1 );
+	class_alias( '\\Imagify\\ThirdParty\\AS3CF\\Main', '\\Imagify_AS3CF' );
+
+	add_action( 'imagify_loaded', [ \Imagify\ThirdParty\AS3CF\Main::get_instance(), 'init' ], 1 );
 
 endif;

@@ -5,7 +5,9 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * Imagify WP Offload S3 attachment class.
  *
  * @since  1.6.6
+ * @since  1.9 Deprecated
  * @author Grégory Viguier
+ * @deprecated
  */
 class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 
@@ -29,6 +31,20 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 	 * @var bool
 	 */
 	protected $delete_files;
+
+	/**
+	 * The constructor.
+	 *
+	 * @since  1.5
+	 * @author Jonathan Buttigieg
+	 *
+	 * @param int|object $id An image attachment ID or a NGG object.
+	 */
+	public function __construct( $id ) {
+		imagify_deprecated_class( get_class( $this ), '1.9' );
+
+		parent::__construct( $id );
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -258,7 +274,7 @@ class Imagify_AS3CF_Attachment extends Imagify_Attachment {
 				if ( ! $is_active_for_network && isset( $disallowed_sizes[ $size_key ] ) && $this->is_image() ) {
 					$data['sizes'][ $size_key ] = array(
 						'success' => false,
-						'error'   => __( 'This size isn\'t authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
+						'error'   => __( 'This size is not authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
 					);
 
 					/** This filter is documented in /inc/classes/class-imagify-attachment.php. */
