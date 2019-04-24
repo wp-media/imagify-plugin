@@ -11,6 +11,43 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 class Imagify_Enable_Media_Replace_Deprecated {
 
 	/**
+	 * The attachment ID.
+	 *
+	 * @var    int
+	 * @since  1.6.9
+	 * @since  1.9 Deprecated
+	 * @access protected
+	 * @author Grégory Viguier
+	 * @deprecated
+	 */
+	protected $attachment_id;
+
+	/**
+	 * The attachment.
+	 *
+	 * @var    Imagify_Attachment
+	 * @since  1.6.9
+	 * @since  1.9 Deprecated
+	 * @access protected
+	 * @author Grégory Viguier
+	 * @deprecated
+	 */
+	protected $attachment;
+
+	/**
+	 * Tell if the attachment has data.
+	 * No data means not processed by Imagify, or restored.
+	 *
+	 * @var    bool
+	 * @since  1.8.4
+	 * @since  1.9 Deprecated
+	 * @access protected
+	 * @author Grégory Viguier
+	 * @deprecated
+	 */
+	protected $attachment_has_data;
+
+	/**
 	 * Filesystem object.
 	 *
 	 * @var    object Imagify_Filesystem
@@ -18,6 +55,7 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	 * @since  1.8.4 Deprecated
 	 * @author Grégory Viguier
 	 * @access protected
+	 * @deprecated
 	 */
 	protected $filesystem;
 
@@ -30,6 +68,7 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	 * @author Grégory Viguier
 	 * @see    $this->store_old_backup_path()
 	 * @access protected
+	 * @deprecated
 	 *
 	 * @param  string $return_url The URL the user will be redirected to.
 	 * @return string             The same URL.
@@ -79,5 +118,28 @@ class Imagify_Enable_Media_Replace_Deprecated {
 
 		$this->old_backup_path = null;
 		return $return_url;
+	}
+
+	/**
+	 * Get the attachment.
+	 *
+	 * @since  1.6.9
+	 * @since  1.9 Deprecated
+	 * @author Grégory Viguier
+	 * @access protected
+	 * @deprecated
+	 *
+	 * @return object A Imagify_Attachment object (or any class extending it).
+	 */
+	protected function get_attachment() {
+		if ( $this->attachment ) {
+			return $this->attachment;
+		}
+
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.9', '\\Imagify\\ThirdParty\\EnableMediaReplace\\Main::get_instance()->get_process()' );
+
+		$this->attachment = get_imagify_attachment( 'wp', $this->attachment_id, 'enable_media_replace' );
+
+		return $this->attachment;
 	}
 }

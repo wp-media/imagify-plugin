@@ -1,4 +1,6 @@
 <?php
+namespace Imagify\ThirdParty\EnableMediaReplace;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -7,7 +9,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.6.9
  * @author Grégory Viguier
  */
-class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecated {
+class Main extends \Imagify_Enable_Media_Replace_Deprecated {
+	use \Imagify\Traits\FakeSingletonTrait;
 
 	/**
 	 * Class version.
@@ -16,38 +19,27 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	 * @since  1.6.9
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '2.0.1';
+	const VERSION = '2.1';
 
 	/**
-	 * The attachment ID.
+	 * The media ID.
 	 *
 	 * @var    int
-	 * @since  1.6.9
+	 * @since  1.9
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
-	protected $attachment_id;
+	protected $media_id;
 
 	/**
-	 * The attachment.
+	 * The process instance for the current attachment.
 	 *
-	 * @var    object A Imagify_Attachment object (or any class extending it).
-	 * @since  1.6.9
+	 * @var    ProcessInterface
+	 * @since  1.9
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
-	protected $attachment;
-
-	/**
-	 * Tell if the attachment has data.
-	 * No data means not processed by Imagify, or restored.
-	 *
-	 * @var    bool
-	 * @since  1.8.4
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected $attachment_has_data;
+	protected $process;
 
 	/**
 	 * The path to the old backup file.
@@ -60,42 +52,6 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	protected $old_backup_path;
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.6.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected static $_instance;
-
-	/**
-	 * Get the main instance.
-	 *
-	 * Ensures only one instance of class is loaded or can be loaded.
-	 *
-	 * @since  1.6.9
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
-	 * The class constructor.
-	 *
-	 * @since  1.6.9
-	 * @author Grégory Viguier
-	 */
-	protected function __construct() {}
-
-	/**
 	 * Launch the hooks before the files and data are replaced.
 	 *
 	 * @since  1.6.9
@@ -105,23 +61,26 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	 * @return bool             The same value.
 	 */
 	public function init( $unfiltered = true ) {
-		$this->attachment_id = ! empty( $_POST['ID'] ) ? absint( $_POST['ID'] ) : 0; // WPCS: CSRF ok.
+		$this->media_id = (int) filter_input( INPUT_POST, 'ID' );
+		$this->media_id = max( 0, $this->media_id );
 
-		if ( ! $this->attachment_id || empty( $_FILES['userfile']['tmp_name'] ) ) {
+		if ( ! $this->media_id || empty( $_FILES['userfile']['tmp_name'] ) ) {
+			$this->media_id = 0;
 			return $unfiltered;
 		}
 
 		$tmp_name = wp_unslash( $_FILES['userfile']['tmp_name'] );
 
 		if ( ! is_uploaded_file( $tmp_name ) ) {
+			$this->media_id = 0;
 			return $unfiltered;
 		}
 
 		// Store the old backup file path.
-		add_filter( 'emr_unique_filename', array( $this, 'store_old_backup_path' ), 10, 3 );
+		add_filter( 'emr_unique_filename', [ $this, 'store_old_backup_path' ], 10, 3 );
 		// Delete the old backup file.
-		add_action( 'imagify_before_auto_optimization_launch',  array( $this, 'delete_backup' ) );
-		add_action( 'imagify_not_optimized_attachment_updated', array( $this, 'delete_backup' ) );
+		add_action( 'imagify_before_auto_optimization',         [ $this, 'delete_backup' ] );
+		add_action( 'imagify_not_optimized_attachment_updated', [ $this, 'delete_backup' ] );
 
 		return $unfiltered;
 	}
@@ -135,8 +94,8 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	 * When the user chooses to change the file name, store the old backup file path. This path will be used later to delete the file.
 	 *
 	 * @since  1.6.9
+	 * @access public
 	 * @author Grégory Viguier
-	 * @see    $this->optimize()
 	 *
 	 * @param  string $new_filename The new file name.
 	 * @param  string $current_path The current file path.
@@ -144,19 +103,24 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	 * @return string               The same file name.
 	 */
 	public function store_old_backup_path( $new_filename, $current_path, $post_id ) {
-		if ( $post_id !== $this->attachment_id ) {
+		if ( ! $this->media_id || $post_id !== $this->media_id ) {
 			return $new_filename;
 		}
 
-		$backup_path = $this->get_attachment()->get_backup_path();
+		$this->get_process();
+
+		if ( ! $this->process ) {
+			$this->media_id = 0;
+			return $new_filename;
+		}
+
+		$backup_path = $this->process->get_media()->get_backup_path();
 
 		if ( $backup_path ) {
-			$this->old_backup_path     = $backup_path;
-			$this->attachment_has_data = $this->get_attachment()->get_data();
+			$this->old_backup_path = $backup_path;
 		} else {
-			$this->attachment_id       = null;
-			$this->old_backup_path     = null;
-			$this->attachment_has_data = null;
+			$this->media_id        = 0;
+			$this->old_backup_path = false;
 		}
 
 		return $new_filename;
@@ -167,23 +131,24 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	 * It will prevent having a backup file not corresponding to the current images.
 	 *
 	 * @since  1.8.4
+	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param int $attachment_id The attachment ID.
+	 * @param int $media_id The attachment ID.
 	 */
-	public function delete_backup( $attachment_id ) {
-		if ( $attachment_id !== $this->attachment_id ) {
+	public function delete_backup( $media_id ) {
+		if ( ! $this->old_backup_path || ! $this->media_id || $media_id !== $this->media_id ) {
 			return;
 		}
 
-		$filesystem = Imagify_Filesystem::get_instance();
+		$filesystem = \Imagify_Filesystem::get_instance();
 
-		if ( ! $this->old_backup_path || ! $filesystem->exists( $this->old_backup_path ) ) {
+		if ( ! $filesystem->exists( $this->old_backup_path ) ) {
 			return;
 		}
 
 		$filesystem->delete( $this->old_backup_path );
-		$this->old_backup_path = null;
+		$this->old_backup_path = false;
 	}
 
 
@@ -192,20 +157,25 @@ class Imagify_Enable_Media_Replace extends Imagify_Enable_Media_Replace_Deprecat
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the attachment.
+	 * Get the optimization process corresponding to the current media.
 	 *
-	 * @since  1.6.9
+	 * @since  1.9
 	 * @author Grégory Viguier
+	 * @access protected
 	 *
-	 * @return object A Imagify_Attachment object (or any class extending it).
+	 * @return ProcessInterface|bool False if invalid.
 	 */
-	protected function get_attachment() {
-		if ( $this->attachment ) {
-			return $this->attachment;
+	protected function get_process() {
+		if ( isset( $this->process ) ) {
+			return $this->process;
 		}
 
-		$this->attachment = get_imagify_attachment( 'wp', $this->attachment_id, 'enable_media_replace' );
+		$this->process = imagify_get_optimization_process( $this->media_id, 'wp' );
 
-		return $this->attachment;
+		if ( ! $this->process->is_valid() ) {
+			$this->process = false;
+		}
+
+		return $this->process;
 	}
 }
