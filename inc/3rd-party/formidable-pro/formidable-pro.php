@@ -1,8 +1,12 @@
 <?php
+use Imagify\ThirdParty\FormidablePro;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 if ( class_exists( 'FrmProEddController' ) ) :
 
-	Imagify_Formidable_Pro::get_instance()->init();
+	class_alias( '\\Imagify\\ThirdParty\\FormidablePro\\Main', '\\Imagify_Formidable_Pro' );
+
+	FormidablePro\Main::get_instance()->init();
 
 endif;
