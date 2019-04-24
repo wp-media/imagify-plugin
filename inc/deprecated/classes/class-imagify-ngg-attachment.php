@@ -5,7 +5,9 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * Imagify NextGen Gallery attachment class.
  *
  * @since  1.5
+ * @since  1.9 Deprecated
  * @author Jonathan Buttigieg
+ * @deprecated
  */
 class Imagify_NGG_Attachment extends Imagify_Attachment {
 
@@ -23,7 +25,7 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $db_class_name = 'Imagify_NGG_DB';
+	protected $db_class_name = '\Imagify\ThirdParty\NGG\DB';
 
 	/**
 	 * The image object.
@@ -64,6 +66,8 @@ class Imagify_NGG_Attachment extends Imagify_Attachment {
 	 * @param int|object $id An image attachment ID or a NGG object.
 	 */
 	public function __construct( $id ) {
+		imagify_deprecated_class( get_class( $this ), '1.9', '\\Imagify\\ThirdParty\\NGG\\Optimization\\Process\\NGG( $id )' );
+
 		if ( is_object( $id ) ) {
 			if ( $id instanceof nggImage ) {
 				$this->image = $id;

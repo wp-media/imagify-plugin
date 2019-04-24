@@ -1,25 +1,27 @@
 <?php
+namespace Imagify\ThirdParty\NGG;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Imagify NextGen Gallery storage class.
  *
- * @since 1.5
+ * @since  1.5
  * @author Jonathan Buttigieg
  */
-class Imagify_NGG_Storage extends Mixin {
+class NGGStorage extends \Mixin {
 
 	/**
 	 * Class version.
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.1';
 
 	/**
 	 * Delete a gallery AND all the pictures associated to this gallery!
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @param  int|object $gallery A gallery ID or object.
@@ -27,10 +29,14 @@ class Imagify_NGG_Storage extends Mixin {
 	 */
 	public function delete_gallery( $gallery ) {
 		$gallery_id = is_numeric( $gallery ) ? $gallery : $gallery->{$gallery->id_field};
-		$images_id  = nggdb::get_ids_from_gallery( $gallery_id );
+		$images_id  = \nggdb::get_ids_from_gallery( $gallery_id );
 
 		foreach ( $images_id as $pid ) {
-			Imagify_NGG_DB::get_instance()->delete( $pid );
+			$process = imagify_get_optimization_process( $pid, 'ngg' );
+
+			if ( $process->is_valid() && $process->get_data()->is_optimized() ) {
+				$process->get_data()->delete_optimization_data();
+			}
 		}
 
 		return $this->call_parent( 'delete_gallery', $gallery );
@@ -39,7 +45,7 @@ class Imagify_NGG_Storage extends Mixin {
 	/**
 	 * Generates a specific size for an image.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @param  int|object $image         An image ID or NGG object.
@@ -57,10 +63,10 @@ class Imagify_NGG_Storage extends Mixin {
 		// If a user adds a watermark, rotates or resizes an image, we restore it.
 		// TO DO - waiting for a hook to be able to re-optimize the original size after restoring.
 		if ( isset( $image->pid ) && ( true === $params['watermark'] || ( isset( $params['rotation'] ) || isset( $params['flip'] ) ) || ( ! empty( $params['width'] ) || ! empty( $params['height'] ) ) ) ) {
-			$attachment = new Imagify_NGG_Attachment( $image->pid );
+			$process = imagify_get_optimization_process( $image->pid, 'ngg' );
 
-			if ( $attachment->is_optimized() ) {
-				Imagify_NGG_DB::get_instance()->delete( $image->pid );
+			if ( $process->is_valid() && $process->get_data()->is_optimized() ) {
+				$process->get_data()->delete_optimization_data();
 			}
 		}
 
@@ -70,7 +76,7 @@ class Imagify_NGG_Storage extends Mixin {
 	/**
 	 * Recover image from backup.
 	 *
-	 * @since 1.5
+	 * @since  1.5
 	 * @author Jonathan Buttigieg
 	 *
 	 * @param  int|object $image An image ID or NGG object.
@@ -88,7 +94,11 @@ class Imagify_NGG_Storage extends Mixin {
 
 		// Remove Imagify data.
 		if ( isset( $image->pid ) ) {
-			Imagify_NGG_DB::get_instance()->delete( $image->pid );
+			$process = imagify_get_optimization_process( $image->pid, 'ngg' );
+
+			if ( $process->is_valid() && $process->get_data()->is_optimized() ) {
+				$process->get_data()->delete_optimization_data();
+			}
 		}
 
 		return $this->call_parent( 'recover_image', $image );

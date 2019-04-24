@@ -1,4 +1,6 @@
 <?php
+namespace Imagify\ThirdParty\NGG;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -7,14 +9,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.5
  * @author Jonathan Buttigieg
  */
-class Imagify_NGG_DB extends Imagify_Abstract_DB {
+class DB extends \Imagify_Abstract_DB {
 
 	/**
 	 * Class version.
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.1';
+	const VERSION = '1.1.1';
 
 	/**
 	 * The single instance of the class.
@@ -134,7 +136,7 @@ class Imagify_NGG_DB extends Imagify_Abstract_DB {
 			optimization_level varchar(1) NOT NULL default '',
 			status varchar(30) NOT NULL default '',
 			data longtext NOT NULL default '',
-			PRIMARY KEY (data_id),
+			PRIMARY KEY  (data_id),
 			KEY pid (pid)";
 	}
 }
