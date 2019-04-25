@@ -263,7 +263,8 @@ class File {
 	}
 
 	/**
-	 * Create a thumbnail if it doesn't exist.
+	 * Create a thumbnail.
+	 * Warning: If the destination file already exists, it will be overwritten.
 	 *
 	 * @since  1.9
 	 * @access protected
@@ -272,10 +273,11 @@ class File {
 	 * @param  array $destination {
 	 *     The thumbnail data.
 	 *
-	 *     @type string $path   Path to the destination file.
-	 *     @type int    $width  The image width.
-	 *     @type int    $height The image height.
-	 *     @type bool   $crop   True to crop, false to resize.
+	 *     @type string $path            Path to the destination file.
+	 *     @type int    $width           The image width.
+	 *     @type int    $height          The image height.
+	 *     @type bool   $crop            True to crop, false to resize.
+	 *     @type bool   $adjust_filename True to adjust the file name like what `$editor->multi_resize()` returns, like WP default behavior (default). False to prevent it, and use the file name from $path instead.
 	 * }
 	 * @return bool|array|WP_Error {
 	 *     A WP_Error object on error. True if the file exists.
@@ -305,12 +307,6 @@ class File {
 			);
 		}
 
-		if ( $this->filesystem->exists( $destination['path'] ) ) {
-			// The destination file already exists.
-			$this->filesystem->chmod_file( $destination['path'] );
-			return true;
-		}
-
 		$editor = $this->get_editor();
 
 		if ( is_wp_error( $editor ) ) {
@@ -326,10 +322,17 @@ class File {
 
 		$result = reset( $result );
 
-		// The file name can change from what we expected (1px wider, etc), let's use the resulting data to move the file to the right place.
-		$filename               = $result['file'];
-		$source_thumb_path      = $this->filesystem->dir_path( $this->path ) . $filename;
-		$destination_thumb_path = $this->filesystem->dir_path( $destination['path'] ) . $filename;
+		$filename          = $result['file'];
+		$source_thumb_path = $this->filesystem->dir_path( $this->path ) . $filename;
+
+		if ( ! isset( $destination['adjust_filename'] ) || $destination['adjust_filename'] ) {
+			// The file name can change from what we expected (1px wider, etc), let's use the resulting data to move the file to the right place.
+			$destination_thumb_path = $this->filesystem->dir_path( $destination['path'] ) . $filename;
+		} else {
+			// Respect what is set in $path.
+			$destination_thumb_path = $destination['path'];
+			$result['file']         = $this->filesystem->file_name( $destination['path'] );
+		}
 
 		if ( $source_thumb_path === $destination_thumb_path ) {
 			return $result;

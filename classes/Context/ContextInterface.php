@@ -77,4 +77,37 @@ interface ContextInterface {
 	 * }
 	 */
 	public function get_thumbnail_sizes();
+
+	/**
+	 * Tell if the optimization process is allowed resize in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function can_resize();
+
+	/**
+	 * Tell if the optimization process is allowed to backup in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function can_backup();
+
+	/**
+	 * Tell if the optimization process is allowed to keep exif in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function can_keep_exif();
 }

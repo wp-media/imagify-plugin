@@ -58,49 +58,6 @@ class CustomFolders extends AbstractProcess {
 		return true;
 	}
 
-	/**
-	 * Tell if a size can be resized.
-	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $size The size name.
-	 * @param  File   $file A File instance.
-	 * @return bool
-	 */
-	protected function can_resize( $size, $file ) {
-		return false;
-	}
-
-	/**
-	 * Tell if a size can be backuped.
-	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $size The size name.
-	 * @return bool
-	 */
-	protected function can_backup( $size ) {
-		return 'full' === $size && $this->get_option( 'backup' );
-	}
-
-	/**
-	 * Tell if a size should keep exif.
-	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $size The size name.
-	 * @return bool
-	 */
-	protected function can_keep_exif( $size ) {
-		return 'full' === $size && $this->get_option( 'exif' );
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** MISSING THUMBNAILS ====================================================================== */

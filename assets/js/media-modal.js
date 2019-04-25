@@ -60,7 +60,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 			}
 
 			// Optimize, restore, etc.
-			$document.on( 'click', '.button-imagify-restore, .button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-optimize-missing-sizes', this.processOptimization );
+			$document.on( 'click', '.button-imagify-restore, .button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-optimize-missing-sizes, .button-imagify-generate-webp', this.processOptimization );
 
 			$document.on( 'heartbeat-send', this.addToHeartbeat );
 			$document.on( 'heartbeat-tick', this.processHeartbeat );
