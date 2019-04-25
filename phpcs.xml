@@ -54,7 +54,13 @@
 		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_init"/><!-- Same. -->
 		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_setopt"/><!-- Same. -->
 		<exclude name="WordPress.WP.CapitalPDangit.Misspelled"/><!-- False positives. -->
+		<exclude name="WordPress.WP.GlobalVariablesOverride.Prohibited"/><!-- Why the fuck are YOU allowed to name your variables $path and $type, and not me? -->
 		<!-- Will be handled later. -->
+		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+		<exclude name="WordPress.DB.PreparedSQL.DeprecatedWhitelistCommentFound"/>
+		<exclude name="WordPress.DB.PreparedSQLPlaceholders.DeprecatedWhitelistCommentFound"/>
+		<exclude name="WordPress.Security.NonceVerification.DeprecatedWhitelistCommentFound"/>
+		<exclude name="WordPress.WP.GlobalVariablesOverride.DeprecatedWhitelistCommentFound"/>
 		<exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotSanitized"/>
 		<exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotValidated"/>
 		<exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped"/>
@@ -65,9 +71,19 @@
 		<exclude-pattern>uninstall.php</exclude-pattern>
 	</rule>
 
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>classes/*/</exclude-pattern>
+		<exclude-pattern>inc/3rd-party/*/classes/</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>classes/*/</exclude-pattern>
+		<exclude-pattern>inc/3rd-party/*/classes/</exclude-pattern>
+	</rule>
+
 	<rule ref="WordPress.NamingConventions.ValidVariableName">
 		<properties>
-			<property name="customPropertiesWhitelist" value="Packs,Plans,fileName" type="array"/>
+			<property name="customPropertiesWhitelist" value="Packs,Plans,fileName,parentNode,preserveWhiteSpace,formatOutput,firstChild" type="array"/>
 		</properties>
 	</rule>
 

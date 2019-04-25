@@ -1,49 +1,62 @@
 {
-  "name": "wp-media/imagify-plugin",
-  "description": "Image optimization plugin for WordPress by WP Media.",
-  "keywords": [
-    "wordpress",
-    "images",
-    "optimization",
-    "performance"
-  ],
-  "homepage": "https://imagify.io",
-  "license": "GPL-2.0",
-  "authors": [
-    {
-      "name": "WP Media",
-      "homepage": "https://wp-media.me/"
-    },
-    {
-      "name": "Grégory Viguier",
-      "role": "Developer"
-    }
-  ],
-  "type": "wordpress-plugin",
-  "config": {
-    "sort-packages": true
-  },
-  "support": {
-    "issues": "https://github.com/wp-media/imagify-plugin/issues",
-    "source": "https://github.com/wp-media/imagify-plugin"
-  },
-  "require": {
-    "php": ">=5.4.0",
-	"a5hleyrich/wp-background-processing": "~1.0",
-    "a5hleyrich/wp-queue": "1.3.*",
-    "composer/installers": "~1.0"
-  },
-  "require-dev": {
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
-    "phpcompatibility/phpcompatibility-wp": "*",
-    "squizlabs/php_codesniffer": "^3.2",
-    "wp-coding-standards/wpcs": "~1.2"
-  },
-  "autoload": {
-	  "classmap": [
-		"inc/classes",
-		"inc/deprecated/classes",
-		"inc/3rd-party"
-	  ]
-  }
+	"name": "wp-media/imagify-plugin",
+	"description": "Image optimization plugin for WordPress by WP Media.",
+	"keywords": [
+		"wordpress",
+		"images",
+		"optimization",
+		"performance"
+	],
+	"homepage": "https://imagify.io",
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "WP Media",
+			"homepage": "https://wp-media.me/"
+		},
+		{
+			"name": "Grégory Viguier",
+			"role": "Developer"
+		}
+	],
+	"type": "wordpress-plugin",
+	"config": {
+		"sort-packages": true
+	},
+	"support": {
+		"issues": "https://github.com/wp-media/imagify-plugin/issues",
+		"source": "https://github.com/wp-media/imagify-plugin"
+	},
+	"require": {
+		"php": ">=5.4.0",
+		"a5hleyrich/wp-background-processing": "~1.0",
+		"composer/installers": "~1.0"
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
+		"phpcompatibility/phpcompatibility-wp": "*",
+		"squizlabs/php_codesniffer": "^3.2",
+		"wp-coding-standards/wpcs": "~1.2"
+	},
+	"autoload": {
+		"psr-4": {
+			"Imagify\\": "classes/",
+			"Imagify\\ThirdParty\\AS3CF\\": "inc/3rd-party/amazon-s3-and-cloudfront/classes/",
+			"Imagify\\ThirdParty\\EnableMediaReplace\\": "inc/3rd-party/enable-media-replace/classes/",
+			"Imagify\\ThirdParty\\FormidablePro\\": "inc/3rd-party/formidable-pro/classes/",
+			"Imagify\\ThirdParty\\NGG\\": "inc/3rd-party/nextgen-gallery/classes/",
+			"Imagify\\ThirdParty\\RegenerateThumbnails\\": "inc/3rd-party/regenerate-thumbnails/classes/",
+			"Imagify\\ThirdParty\\WPR2X\\": "inc/3rd-party/wp-retina-2x/classes/"
+		},
+		"classmap": [
+			"inc/classes",
+			"inc/deprecated/classes",
+			"inc/3rd-party"
+		],
+		"exclude-from-classmap": [
+			"inc/3rd-party/*/classes/",
+			"inc/classes/class-imagify-plugin.php",
+			"inc/classes/class-imagify-requirements-check.php"
+		]
+	}
 }

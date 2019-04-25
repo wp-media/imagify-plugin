@@ -12,7 +12,7 @@
  * Text Domain: imagify
  * Domain Path: languages
  *
- * Copyright 2018 WP Media
+ * Copyright 2019 WP Media
  *
  * @package WP-Media\Imagify\WordPress-Plugin
  */
@@ -26,41 +26,84 @@ define( 'IMAGIFY_PHP_MIN',        '5.4' );
 define( 'IMAGIFY_SLUG',           'imagify' );
 define( 'IMAGIFY_FILE',           __FILE__ );
 define( 'IMAGIFY_PATH',           realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
-define( 'IMAGIFY_INC_PATH',       IMAGIFY_PATH . 'inc/' );
-define( 'IMAGIFY_ADMIN_PATH',     IMAGIFY_INC_PATH . 'admin/' );
-define( 'IMAGIFY_COMMON_PATH',    IMAGIFY_INC_PATH . 'common/' );
-define( 'IMAGIFY_FUNCTIONS_PATH', IMAGIFY_INC_PATH . 'functions/' );
-define( 'IMAGIFY_CLASSES_PATH',   IMAGIFY_INC_PATH . 'classes/' );
-define( 'IMAGIFY_3RD_PARTY_PATH', IMAGIFY_INC_PATH . '3rd-party/' );
 define( 'IMAGIFY_URL',            plugin_dir_url( IMAGIFY_FILE ) );
-define( 'IMAGIFY_INC_URL',        IMAGIFY_URL . 'inc/' );
-define( 'IMAGIFY_ADMIN_URL',      IMAGIFY_INC_URL . 'admin/' );
-define( 'IMAGIFY_ASSETS_URL',     IMAGIFY_URL . 'assets/' );
-define( 'IMAGIFY_ASSETS_JS_URL',  IMAGIFY_ASSETS_URL . 'js/' );
-define( 'IMAGIFY_ASSETS_CSS_URL', IMAGIFY_ASSETS_URL . 'css/' );
-define( 'IMAGIFY_ASSETS_IMG_URL', IMAGIFY_ASSETS_URL . 'images/' );
+define( 'IMAGIFY_ASSETS_IMG_URL', IMAGIFY_URL . 'assets/images/' );
 define( 'IMAGIFY_MAX_BYTES',      5242880 );
 define( 'IMAGIFY_INT_MAX',        PHP_INT_MAX - 30 );
 
 add_action( 'plugins_loaded', '_imagify_init' );
 /**
- * Tell WP what to do when plugin is loaded.
+ * Plugin init.
  *
  * @since 1.0
  */
 function _imagify_init() {
-	global $wp_version;
-
-	// Nothing to do if autosave.
+	// Nothing to do during autosave.
 	if ( defined( 'DOING_AUTOSAVE' ) ) {
 		return;
 	}
 
-	// Load translations.
-	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
-
 	// Check for WordPress and PHP version.
-	require IMAGIFY_CLASSES_PATH . 'class-imagify-requirements-check.php';
+	if ( ! imagify_pass_requirements() ) {
+		return;
+	}
+
+	// Init the plugin.
+	require_once IMAGIFY_PATH . 'inc/classes/class-imagify-plugin.php';
+
+	$plugin = new Imagify_Plugin(
+		array(
+			'plugin_path' => IMAGIFY_PATH,
+		)
+	);
+
+	$plugin->init();
+}
+
+/**
+ * Check if Imagify is activated on the network.
+ *
+ * @since 1.0
+ *
+ * return bool True if Imagify is activated on the network.
+ */
+function imagify_is_active_for_network() {
+	static $is;
+
+	if ( isset( $is ) ) {
+		return $is;
+	}
+
+	if ( ! is_multisite() ) {
+		$is = false;
+		return $is;
+	}
+
+	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	$is = is_plugin_active_for_network( plugin_basename( IMAGIFY_FILE ) );
+
+	return $is;
+}
+
+/**
+ * Check for WordPress and PHP version.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @return bool True if WP and PHP versions are OK.
+ */
+function imagify_pass_requirements() {
+	static $check;
+
+	if ( isset( $check ) ) {
+		return $check;
+	}
+
+	require_once IMAGIFY_PATH . 'inc/classes/class-imagify-requirements-check.php';
 
 	$requirement_checks = new Imagify_Requirements_Check(
 		array(
@@ -72,65 +115,67 @@ function _imagify_init() {
 		)
 	);
 
-	if ( ! $requirement_checks->check() ) {
+	$check = $requirement_checks->check();
+
+	return $check;
+}
+
+/**
+ * Load plugin translations.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ */
+function imagify_load_translations() {
+	static $done = false;
+
+	if ( $done ) {
 		return;
 	}
 
-	// Register classes.
-	if ( file_exists( IMAGIFY_PATH . 'vendor/autoload.php' ) ) {
-		require IMAGIFY_PATH . 'vendor/autoload.php';
+	$done = true;
+
+	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
+}
+
+register_activation_hook( IMAGIFY_FILE, 'imagify_set_activation' );
+/**
+ * Set a transient on plugin activation, it will be used later to trigger activation hooks after the plugin is loaded.
+ * The transient contains the ID of the user that activated the plugin.
+ *
+ * @since  1.9
+ * @see    Imagify_Plugin->maybe_activate()
+ * @author Grégory Viguier
+ */
+function imagify_set_activation() {
+	if ( ! imagify_pass_requirements() ) {
+		return;
 	}
 
-	require IMAGIFY_INC_PATH . 'deprecated/deprecated.php';
-	require IMAGIFY_INC_PATH . 'deprecated/3rd-party.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'compat.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'common.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'options.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'formatting.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'admin.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'api.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'attachments.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'process.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'admin-ui.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'admin-stats.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'i18n.php';
-	require IMAGIFY_FUNCTIONS_PATH . 'partners.php';
-	require IMAGIFY_COMMON_PATH . 'attachments.php';
-	require IMAGIFY_COMMON_PATH . 'admin-bar.php';
-	require IMAGIFY_COMMON_PATH . 'partners.php';
-	require IMAGIFY_3RD_PARTY_PATH . '3rd-party.php';
-
-	Imagify_Auto_Optimization::get_instance()->init();
-	Imagify_Options::get_instance()->init();
-	Imagify_Data::get_instance()->init();
-	Imagify_Folders_DB::get_instance()->init();
-	Imagify_Files_DB::get_instance()->init();
-	Imagify_Cron_Library_Size::get_instance()->init();
-	Imagify_Cron_Rating::get_instance()->init();
-	Imagify_Cron_Sync_Files::get_instance()->init();
-
-	if ( is_admin() ) {
-		require IMAGIFY_ADMIN_PATH . 'upgrader.php';
-		require IMAGIFY_ADMIN_PATH . 'heartbeat.php';
-		require IMAGIFY_ADMIN_PATH . 'upload.php';
-		require IMAGIFY_ADMIN_PATH . 'media.php';
-		require IMAGIFY_ADMIN_PATH . 'meta-boxes.php';
-		require IMAGIFY_ADMIN_PATH . 'custom-folders.php';
-
-		Imagify_Notices::get_instance()->init();
-		Imagify_Admin_Ajax_Post::get_instance()->init();
-		Imagify_Settings::get_instance()->init();
-		Imagify_Views::get_instance()->init();
+	if ( imagify_is_active_for_network() ) {
+		set_site_transient( 'imagify_activation', get_current_user_id(), 30 );
+	} else {
+		set_transient( 'imagify_activation', get_current_user_id(), 30 );
 	}
+}
 
-	if ( ! wp_doing_ajax() ) {
-		Imagify_Assets::get_instance()->init();
+register_deactivation_hook( IMAGIFY_FILE, 'imagify_deactivation' );
+/**
+ * Trigger a hook on plugin deactivation.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ */
+function imagify_deactivation() {
+	if ( ! imagify_pass_requirements() ) {
+		return;
 	}
 
 	/**
-	* Fires when Imagify is correctly loaded.
-	*
-	* @since 1.0
-	*/
-	do_action( 'imagify_loaded' );
+	 * Imagify deactivation.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 */
+	do_action( 'imagify_deactivation' );
 }
