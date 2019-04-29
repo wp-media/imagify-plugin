@@ -178,20 +178,25 @@ class WP extends AbstractBulk {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return array A list of media. Array keys are media IDs prefixed with an underscore character, array values are the main file’s URL.
+	 * @return array A list of media IDs.
 	 */
 	public function get_optimized_media_ids_without_webp() {
 		global $wpdb;
 
 		@set_time_limit( 0 );
 
-		$mime_types  = \Imagify_DB::get_mime_types( 'image' );
-		$statuses    = \Imagify_DB::get_post_statuses();
-		$webp_suffix = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::WEBP_SUFFIX' );
-		$ids         = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
+		$mime_types   = \Imagify_DB::get_mime_types( 'image' );
+		$statuses     = \Imagify_DB::get_post_statuses();
+		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause( [
+			'prepared' => true,
+		] );
+		$webp_suffix  = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::WEBP_SUFFIX' );
+		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"
 			SELECT p.ID
 			FROM $wpdb->posts AS p
+				$nodata_join
 			LEFT JOIN $wpdb->postmeta AS mt1
 				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
 			LEFT JOIN $wpdb->postmeta AS mt2
@@ -202,6 +207,7 @@ class WP extends AbstractBulk {
 				AND mt2.meta_value NOT LIKE %s
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
+				$nodata_where
 			ORDER BY p.ID DESC
 			LIMIT 0, %d",
 			'%' . $wpdb->esc_like( '"full' . $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
@@ -256,10 +262,50 @@ class WP extends AbstractBulk {
 				continue;
 			}
 
-			$data[ '_' . $id ] = esc_url( get_imagify_attachment_url( $metas['filenames'][ $id ] ) );
+			$data[] = $id;
 		} // End foreach().
 
 		return $data;
+	}
+
+	/**
+	 * Tell if there are optimized media without webp versions.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return int The number of media.
+	 */
+	public function has_optimized_media_without_webp() {
+		global $wpdb;
+
+		$mime_types   = \Imagify_DB::get_mime_types( 'image' );
+		$statuses     = \Imagify_DB::get_post_statuses();
+		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause( [
+			'prepared' => true,
+		] );
+		$webp_suffix  = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::WEBP_SUFFIX' );
+
+		return (int) $wpdb->get_var( $wpdb->prepare( // WPCS: unprepared SQL ok.
+			"
+			SELECT COUNT(p.ID)
+			FROM $wpdb->posts AS p
+				$nodata_join
+			LEFT JOIN $wpdb->postmeta AS mt1
+				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+			LEFT JOIN $wpdb->postmeta AS mt2
+				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_data' )
+			WHERE
+				p.post_mime_type IN ( $mime_types )
+				AND mt1.meta_value = 'success'
+				AND mt2.meta_value NOT LIKE %s
+				AND p.post_type = 'attachment'
+				AND p.post_status IN ( $statuses )
+				$nodata_where",
+			'%' . $wpdb->esc_like( '"full' . $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+		) );
 	}
 
 	/**

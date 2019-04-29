@@ -30,9 +30,20 @@ interface BulkInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return array A list of media. Array keys are media IDs prefixed with an underscore character, array values are the main file’s URL.
+	 * @return array A list of media IDs.
 	 */
 	public function get_optimized_media_ids_without_webp();
+
+	/**
+	 * Tell if there are optimized media without webp versions.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return int The number of media.
+	 */
+	public function has_optimized_media_without_webp();
 
 	/**
 	 * Get the context data.

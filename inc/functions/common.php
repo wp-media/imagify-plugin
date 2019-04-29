@@ -2,6 +2,41 @@
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
+ * Get the list of the names of the Imagify context currently in use.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @return array An array of strings.
+ */
+function imagify_get_context_names() {
+	static $contexts;
+
+	if ( isset( $contexts ) ) {
+		return $contexts;
+	}
+
+	/**
+	 * Register new contexts.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 *
+	 * @param array $contexts An array of context names.
+	 */
+	$contexts = (array) apply_filters( 'imagify_register_context', [] );
+
+	$contexts = array_filter( $contexts, function( $context ) {
+		return $context && is_string( $context );
+	} );
+	$contexts = array_merge( [ 'wp', 'custom-folders' ], $contexts );
+
+	sort( $contexts );
+
+	return $contexts;
+}
+
+/**
  * Get the Imagify context instance.
  *
  * @since  1.9
