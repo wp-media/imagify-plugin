@@ -81,6 +81,46 @@ $settings = Imagify_Settings::get_instance();
 			do_action( 'imagify_settings_webp_info' );
 			?>
 		</div>
+
+		<?php
+		$count = \Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->get_cached_stat();
+
+		if ( $count ) {
+			?>
+			<div class="imagify-options-line hide-if-no-js">
+				<p>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %s is a formatted number (don’t use %d). */
+							_n( 'It seems that you have %s media without webp versions. You can generate them here if a backup copy is available.', 'It seems that you have %s media without webp versions. You can generate them here if backup copies are available.', $count, 'imagify' ),
+							number_format_i18n( $count )
+						)
+					);
+					?>
+				</p>
+
+				<button id="imagify-generate-webp-versions" class="button imagify-button-primary imagify-button-mini" type="button">
+					<span class="dashicons dashicons-admin-generic"></span>
+					<span class="button-text"><?php esc_html_e( 'Generate missing webp versions', 'imagify' ); ?></span>
+				</button>
+
+				<div aria-hidden="true" class="imagify-progress hidden">
+					<div class="progress">
+						<div class="bar"><div class="percent">0%</div></div>
+					</div>
+				</div>
+			</div>
+			<?php
+			if ( Imagify_Requirements::is_api_key_valid() ) {
+				?>
+				<script type="text/html" id="tmpl-imagify-overquota-alert">
+					<?php $this->print_template( 'part-bulk-optimization-overquota-alert' ); ?>
+				</script>
+				<?php
+			}
+		}
+		?>
 	</div>
 </div>
 <?php
