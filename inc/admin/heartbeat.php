@@ -148,6 +148,53 @@ function imagify_heartbeat_bulk_optimization_status_received( $response, $data )
 	return $response;
 }
 
+add_filter( 'heartbeat_received', 'imagify_heartbeat_options_bulk_optimization_status_received', 10, 2 );
+/**
+ * Look for media where status has changed, compared to what Heartbeat sends.
+ * This is used in the settings page.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param  array $response The Heartbeat response.
+ * @param  array $data     The $_POST data sent.
+ * @return array
+ */
+function imagify_heartbeat_options_bulk_optimization_status_received( $response, $data ) {
+	$heartbeat_id = 'update_options_bulk_queue';
+
+	if ( empty( $data[ $heartbeat_id ] ) || ! is_array( $data[ $heartbeat_id ] ) ) {
+		return $response;
+	}
+
+	$statuses = [];
+
+	foreach ( $data[ $heartbeat_id ] as $item ) {
+		if ( empty( $statuses[ $item['context'] ] ) ) {
+			$statuses[ $item['context'] ] = [];
+		}
+
+		$statuses[ $item['context'] ][ '_' . $item['mediaID'] ] = 1;
+	}
+
+	$results = imagify_get_modified_optimization_statusses( $statuses );
+
+	if ( ! $results ) {
+		return $response;
+	}
+
+	$response[ $heartbeat_id ] = [];
+
+	foreach ( $results as $result ) {
+		$response[ $heartbeat_id ][] = [
+			'mediaID' => $result['media_id'],
+			'context' => $result['context'],
+		];
+	}
+
+	return $response;
+}
+
 add_filter( 'heartbeat_received', 'imagify_heartbeat_optimization_status_received', 10, 2 );
 /**
  * Look for media where status has changed, compared to what Heartbeat sends.
