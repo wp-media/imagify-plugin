@@ -986,18 +986,6 @@ td.imagify-cell-filename {
 }
 
 /* Submit Bulk */
-.imagify-bulk-action-selector {
-	padding: 15px 0 0;
-}
-.imagify-bulk-action-selector .imagify-selector {
-	display: inline-block;
-	margin: 1em 0 0;
-}
-.imagify-bulk-action-selector .imagify-selector-list {
-	right: auto;
-	white-space: nowrap;
-}
-
 .imagify-bulk-submit {
 	padding: 15px 0 8px 0;
 }
