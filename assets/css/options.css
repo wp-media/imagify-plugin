@@ -597,6 +597,31 @@ p.imagify-custom-folder-line {
 	color: #40B1D0;
 }
 
+/* Icon rotation */
+.dashicons.rotate {
+	-webkit-animation: icon-rotate 2.6s infinite linear;
+	animation: icon-rotate 2.6s infinite linear;
+}
+
+@-webkit-keyframes icon-rotate {
+	from {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+	to {
+		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+}
+@keyframes icon-rotate {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
 /* Files tree Part */
 .imagify-add-custom-folder + .imagify-loader {
 	display: none;
