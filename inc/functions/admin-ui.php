@@ -12,14 +12,12 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @return string                    The output to print.
  */
 function get_imagify_attachment_optimization_text( $process ) {
-	global $pagenow, $typenow;
-
 	if ( ! $process->is_valid() ) {
 		return '';
 	}
 
-	$is_media_page            = 'post.php' === $pagenow && 'attachment' === $typenow;
-	$is_library_page          = 'upload.php' === $pagenow;
+	$is_media_page            = Imagify_Views::get_instance()->is_media_page();
+	$is_library_page          = Imagify_Views::get_instance()->is_wp_library_page();
 	$output                   = $is_media_page ? '' : '<ul class="imagify-datas-list">';
 	$output_before            = $is_media_page ? '' : '<li class="imagify-data-item">';
 	$output_after             = $is_media_page ? '<br/>' : '</li>';
@@ -152,8 +150,6 @@ function get_imagify_attachment_optimization_text( $process ) {
  * @return string                    The output to print.
  */
 function get_imagify_attachment_error_text( $process ) {
-	global $pagenow, $typenow;
-
 	if ( ! $process->is_valid() ) {
 		return '';
 	}
@@ -171,7 +167,7 @@ function get_imagify_attachment_error_text( $process ) {
 		'context'       => $media->get_context(),
 	] );
 
-	if ( 'post.php' !== $pagenow || 'attachment' !== $typenow ) {
+	if ( ! Imagify_Views::get_instance()->is_media_page() ) {
 		$class .= ' button-imagify-optimize';
 	}
 
@@ -195,8 +191,6 @@ function get_imagify_attachment_error_text( $process ) {
  * @return string                    The output to print.
  */
 function get_imagify_attachment_reoptimize_link( $process ) {
-	global $pagenow, $typenow;
-
 	if ( ! $process->is_valid() ) {
 		return '';
 	}
@@ -231,7 +225,7 @@ function get_imagify_attachment_reoptimize_link( $process ) {
 		'context'       => $media->get_context(),
 	];
 
-	if ( 'post.php' === $pagenow && 'attachment' === $typenow ) {
+	if ( Imagify_Views::get_instance()->is_media_page() ) {
 		$data['atts'] = [
 			'class' => '',
 		];

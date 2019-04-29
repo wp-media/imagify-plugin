@@ -1,8 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
-global $pagenow;
-
 add_filter( 'heartbeat_received', '_imagify_heartbeat_received', 10, 2 );
 /**
  * Prepare the data that goes back with the Heartbeat API.
@@ -339,7 +337,7 @@ function imagify_get_modified_optimization_statusses( $data ) {
 }
 
 
-if ( 'upload.php' === $pagenow && ! empty( $_GET['page'] ) && Imagify_Views::get_instance()->get_bulk_page_slug() === $_GET['page'] ) { // WPCS: CSRF ok.
+if ( Imagify_Views::get_instance()->is_bulk_page() || Imagify_Views::get_instance()->is_settings_page() ) {
 	add_filter( 'heartbeat_settings', '_imagify_heartbeat_settings', IMAGIFY_INT_MAX );
 }
 /**
