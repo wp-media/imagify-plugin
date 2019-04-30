@@ -58,6 +58,7 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	 *     @type string $task               The task to perform. Optional: set it only if you know what you’re doing.
 	 *     @type int    $id                 The media ID.
 	 *     @type array  $sizes              An array of media sizes (strings). Use "full" for the size of the main file.
+	 *     @type array  $sizes_done         Used internally to store the media sizes that have been processed.
 	 *     @type int    $optimization_level The optimization level. Null for the level set in the settings.
 	 *     @type string $process_class      The name of the process class. The class must implement ProcessInterface.
 	 *     @type array  $data               {
@@ -198,6 +199,8 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 			$current_size = array_shift( $item['sizes'] );
 		}
 
+		$item['sizes_done'][] = $current_size;
+
 		// Optimize the file.
 		$data = $this->optimization_process->optimize_size( $current_size, $item['optimization_level'] );
 
@@ -293,6 +296,7 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 			'task'               => '',
 			'id'                 => 0,
 			'sizes'              => [],
+			'sizes_done'         => [],
 			'optimization_level' => null,
 			'process_class'      => '',
 			'data'               => [],
@@ -347,6 +351,10 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 		if ( ! $item['sizes'] && 'after' !== $item['task'] ) {
 			// Allow to have no sizes, but only after the optimize task is complete.
 			return false;
+		}
+
+		if ( ! isset( $item['sizes_done'] ) || ! is_array( $item['sizes_done'] ) ) {
+			$item['sizes_done'] = [];
 		}
 
 		return $item;
