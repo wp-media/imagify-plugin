@@ -164,7 +164,7 @@ class Imagify_Custom_Folders {
 	 * @author Grégory Viguier
 	 *
 	 * @param array $args An array of arguments.
-	 *                    At least: 'file_id'. At best (less queries): 'file_id', 'file_path' (or 'path' for the placeholder), and 'backup_path'.
+	 *                    At least: 'file_id'. At best: 'file_id', 'file_path' (or 'path' for the placeholder), and 'backup_path'.
 	 */
 	public static function delete_file( $args = [] ) {
 		$args = array_merge( [
@@ -177,66 +177,49 @@ class Imagify_Custom_Folders {
 
 		$filesystem = imagify_get_filesystem();
 
+		// Fill the blanks.
 		if ( $args['process'] && $args['process'] instanceof \Imagify\Optimization\Process\ProcessInterface ) {
 			$process = $args['process'];
-
-			if ( ! $process->is_valid() ) {
-				$process = false;
-			}
 		} else {
-			$process = false;
+			$process = imagify_get_optimization_process( $args['file_id'], 'custom-folders' );
 		}
 
-		// The file.
+		if ( ! $process->is_valid() ) {
+			// You fucked up!
+			return;
+		}
+
 		if ( ! $args['file_path'] && $args['path'] ) {
 			$args['file_path'] = Imagify_Files_Scan::remove_placeholder( $args['path'] );
 		}
 
 		if ( ! $args['file_path'] && $args['file_id'] ) {
-			if ( ! $process ) {
-				$process = imagify_get_optimization_process( $args['file_id'], 'custom-folders' );
-
-				if ( ! $process->is_valid() ) {
-					// You fucked up!
-					return;
-				}
-			}
-
 			$args['file_path'] = $process->get_media()->get_original_path();
 		}
 
-		if ( $args['file_path'] && $filesystem->exists( $args['file_path'] ) ) {
-			$filesystem->delete( $args['file_path'] );
-		}
-
-		// The backup file.
 		if ( ! $args['backup_path'] && $args['file_path'] ) {
 			$args['backup_path'] = self::get_file_backup_path( $args['file_path'] );
 		}
 
 		if ( ! $args['backup_path'] && $args['file_id'] ) {
-			if ( ! $process ) {
-				$process = imagify_get_optimization_process( $args['file_id'], 'custom-folders' );
-
-				if ( ! $process->is_valid() ) {
-					// You fucked up!
-					return;
-				}
-			}
-
 			$args['backup_path'] = $process->get_media()->get_raw_backup_path();
 		}
 
+		// Trigger a common hook.
+		imagify_trigger_delete_media_hook( $process );
+
+		// The file.
+		if ( $args['file_path'] && $filesystem->exists( $args['file_path'] ) ) {
+			$filesystem->delete( $args['file_path'] );
+		}
+
+		// The backup file.
 		if ( $args['backup_path'] && $filesystem->exists( $args['backup_path'] ) ) {
 			$filesystem->delete( $args['backup_path'] );
 		}
 
 		// In the database.
-		if ( $process ) {
-			$process->get_media()->delete_row();
-		} else {
-			Imagify_Files_DB::get_instance()->delete( $args['file_id'] );
-		}
+		$process->get_media()->delete_row();
 	}
 
 	/**

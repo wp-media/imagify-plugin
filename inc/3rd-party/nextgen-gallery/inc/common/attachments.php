@@ -277,6 +277,9 @@ function imagify_ngg_cleanup_after_media_deletion( $image_id, $image ) {
 		return;
 	}
 
+	// Trigger a common hook.
+	imagify_trigger_delete_media_hook( $process );
+
 	/**
 	 * The backup file has already been deleted by NGG.
 	 * Delete the webp versions and the optimization data.
