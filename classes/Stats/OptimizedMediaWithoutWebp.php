@@ -32,6 +32,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	public function init() {
 		add_action( 'imagify_after_optimize',      [ $this, 'maybe_clear_cache_after_optimization' ], 10, 2 );
 		add_action( 'imagify_after_restore_media', [ $this, 'maybe_clear_cache_after_restoration' ], 10, 4 );
+		add_action( 'imagify_delete_media',        [ $this, 'maybe_clear_cache_on_deletion' ] );
 	}
 
 
@@ -163,7 +164,33 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 		$sizes     = isset( $data['sizes'] ) ? (array) $data['sizes'] : [];
 		$size_name = 'full' . $process::WEBP_SUFFIX;
 
-		if ( empty( $sizes[ $size_name ]['success'] ) ) {
+		if ( ! empty( $sizes['full']['success'] ) && empty( $sizes[ $size_name ]['success'] ) ) {
+			/**
+			 * This media had no webp versions.
+			 */
+			$this->clear_cache();
+		}
+	}
+
+	/**
+	 * Clear cache on media deletion.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param ProcessInterface $process An optimization process.
+	 */
+	public function maybe_clear_cache_on_deletion( $process ) {
+		if ( false === get_transient( static::NAME ) ) {
+			return;
+		}
+
+		$data      = $process->get_data()->get_optimization_data();
+		$sizes     = isset( $data['sizes'] ) ? (array) $data['sizes'] : [];
+		$size_name = 'full' . $process::WEBP_SUFFIX;
+
+		if ( ! empty( $sizes['full']['success'] ) && empty( $sizes[ $size_name ]['success'] ) ) {
 			/**
 			 * This media had no webp versions.
 			 */

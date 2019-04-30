@@ -51,6 +51,7 @@ class Imagify_Plugin {
 		Imagify_Cron_Rating::get_instance()->init();
 		Imagify_Cron_Sync_Files::get_instance()->init();
 		\Imagify\Job\MediaOptimization::get_instance()->init();
+		\Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->init();
 
 		if ( is_admin() ) {
 			Imagify_Notices::get_instance()->init();
@@ -103,6 +104,7 @@ class Imagify_Plugin {
 		require_once $inc_path . 'functions/formatting.php';
 		require_once $inc_path . 'functions/admin.php';
 		require_once $inc_path . 'functions/api.php';
+		require_once $inc_path . 'functions/media.php';
 		require_once $inc_path . 'functions/attachments.php';
 		require_once $inc_path . 'functions/process.php';
 		require_once $inc_path . 'functions/admin-ui.php';
