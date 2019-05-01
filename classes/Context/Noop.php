@@ -4,23 +4,13 @@ namespace Imagify\Context;
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Interface to use for contexts.
+ * Fallback class for contexts.
  *
  * @since  1.9
  * @author Grégory Viguier
  */
-interface ContextInterface {
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance();
+class Noop implements ContextInterface {
+	use \Imagify\Traits\FakeSingletonTrait;
 
 	/**
 	 * Get the context "short name".
@@ -31,7 +21,9 @@ interface ContextInterface {
 	 *
 	 * @return string
 	 */
-	public function get_name();
+	public function get_name() {
+		return 'noop';
+	}
 
 	/**
 	 * Tell if the context is network-wide.
@@ -42,7 +34,9 @@ interface ContextInterface {
 	 *
 	 * @return bool
 	 */
-	public function is_network_wide();
+	public function is_network_wide() {
+		return false;
+	}
 
 	/**
 	 * Get the type of files this context allows.
@@ -57,7 +51,9 @@ interface ContextInterface {
 	 *                - 'image' to allow only images.
 	 *                - 'not-image' to allow only pdf files.
 	 */
-	public function get_allowed_mime_types();
+	public function get_allowed_mime_types() {
+		return 'all';
+	}
 
 	/**
 	 * Get the thumbnail sizes for this context, except the full size.
@@ -76,7 +72,9 @@ interface ContextInterface {
 	 *     @type string $name   The size name.
 	 * }
 	 */
-	public function get_thumbnail_sizes();
+	public function get_thumbnail_sizes() {
+		return [];
+	}
 
 	/**
 	 * Tell if the optimization process is allowed resize in this context.
@@ -87,7 +85,9 @@ interface ContextInterface {
 	 *
 	 * @return bool
 	 */
-	public function can_resize();
+	public function can_resize() {
+		return false;
+	}
 
 	/**
 	 * Tell if the optimization process is allowed to backup in this context.
@@ -98,7 +98,9 @@ interface ContextInterface {
 	 *
 	 * @return bool
 	 */
-	public function can_backup();
+	public function can_backup() {
+		return false;
+	}
 
 	/**
 	 * Tell if the optimization process is allowed to keep exif in this context.
@@ -109,7 +111,9 @@ interface ContextInterface {
 	 *
 	 * @return bool
 	 */
-	public function can_keep_exif();
+	public function can_keep_exif() {
+		return true;
+	}
 
 	/**
 	 * Tell if the current user is allowed to operate Imagify in this context.
@@ -122,7 +126,9 @@ interface ContextInterface {
 	 * @param  int    $media_id  A media ID.
 	 * @return bool
 	 */
-	public function current_user_can( $describer, $media_id = null );
+	public function current_user_can( $describer, $media_id = null ) {
+		return false;
+	}
 
 	/**
 	 * Tell if a user is allowed to operate Imagify in this context.
@@ -136,7 +142,9 @@ interface ContextInterface {
 	 * @param  int    $media_id  A media ID.
 	 * @return bool
 	 */
-	public function user_can( $user_id, $describer, $media_id = null );
+	public function user_can( $user_id, $describer, $media_id = null ) {
+		return false;
+	}
 
 	/**
 	 * Get user capacity to operate Imagify in this context.
@@ -148,5 +156,7 @@ interface ContextInterface {
 	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
 	 * @return string
 	 */
-	public function get_capacity( $describer );
+	public function get_capacity( $describer ) {
+		return 'noop';
+	}
 }

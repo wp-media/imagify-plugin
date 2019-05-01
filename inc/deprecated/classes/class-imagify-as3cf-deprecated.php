@@ -93,7 +93,7 @@ class Imagify_AS3CF_Deprecated {
 
 			$file_path = get_imagify_attached_file( $results['filenames'][ $id ] );
 
-			/** This filter is documented in inc/functions/process.php. */
+			/** This filter is documented in inc/deprecated/deprecated.php. */
 			$file_path = apply_filters( 'imagify_file_path', $file_path, $id, 'as3cf_maybe_copy_files_from_s3' );
 
 			if ( ! $file_path || $this->filesystem->exists( $file_path ) ) {

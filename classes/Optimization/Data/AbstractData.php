@@ -359,7 +359,7 @@ abstract class AbstractData implements DataInterface {
 		$stats = '';
 
 		if ( empty( $data['stats'] ) ) {
-			return [];
+			return $key ? '' : [];
 		}
 
 		if ( ! isset( $data['stats'][ $key ] ) ) {

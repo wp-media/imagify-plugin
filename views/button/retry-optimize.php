@@ -21,7 +21,7 @@ $html_atts = $this->build_attributes( $data['atts'] );
 
 if ( ! empty( $data['error'] ) ) {
 	?>
-	<strong><?php echo imagify_translate_api_message( $data['error'] ); ?></strong>
+	<strong><?php echo esc_html( imagify_translate_api_message( $data['error'] ) ); ?></strong>
 	<br/>
 	<?php
 }

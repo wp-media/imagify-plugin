@@ -290,12 +290,12 @@ class NGG extends \Imagify\Media\AbstractMedia {
 				continue;
 			}
 
-			$size_meta = array(
+			$size_meta = [
 				'width'     => 0,
 				'height'    => 0,
 				'filename'  => \M_I18n::mb_basename( $thumbnail->fileName ),
 				'generated' => microtime(),
-			);
+			];
 
 			$dimensions = $this->filesystem->get_image_size( $thumbnail->fileName );
 
@@ -325,7 +325,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			return new \WP_Error(
 				'thumbnail_restore_failed',
 				sprintf( _n( '%n thumbnail could not be restored.', '%n thumbnails could not be restored.', count( $failed ), 'imagify' ), count( $failed ) ),
-				array( 'failed_thumbnails' => $failed )
+				[ 'failed_thumbnails' => $failed ]
 			);
 		}
 
@@ -389,13 +389,13 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			return [];
 		}
 
-		$dimentions = $this->get_dimensions();
+		$dimensions = $this->get_dimensions();
 		$all_sizes  = [
 			'full' => [
 				'size'      => 'full',
 				'path'      => $original_path,
-				'width'     => $dimentions['width'],
-				'height'    => $dimentions['height'],
+				'width'     => $dimensions['width'],
+				'height'    => $dimensions['height'],
 				'mime-type' => $this->get_mime_type(),
 				'disabled'  => false,
 			],
@@ -503,12 +503,8 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		];
 
 		foreach ( $data as $k => $v ) {
-			if ( $this->image->meta_data[ $k ] !== $v ) {
+			if ( ! isset( $this->image->meta_data[ $k ] ) || $this->image->meta_data[ $k ] !== $v ) {
 				$this->image->meta_data[ $k ] = $v;
-				$changed = true;
-			}
-			if ( $this->image->meta_data['full'][ $k ] !== $v ) {
-				$this->image->meta_data['full'][ $k ] = $v;
 				$changed = true;
 			}
 		}

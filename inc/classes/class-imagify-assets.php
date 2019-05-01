@@ -329,6 +329,9 @@ class Imagify_Assets {
 
 		$this->enqueue_style( 'admin' )->enqueue_script( 'media-modal' );
 
+		// When the optimization buttons are displayed in the media modal, they are fetched through ajax, so they can’t print the "processing" button template in the footer.
+		Imagify_Views::get_instance()->print_js_template_in_footer( 'button/processing' );
+
 		/**
 		 * Triggered after Imagify CSS and JS have been enqueued for the media modal.
 		 *
@@ -843,6 +846,6 @@ class Imagify_Assets {
 			return false;
 		}
 
-		return get_imagify_option( 'api_key' ) && is_admin_bar_showing() && imagify_current_user_can() && get_imagify_option( 'admin_bar_menu' );
+		return get_imagify_option( 'api_key' ) && is_admin_bar_showing() && imagify_get_context( 'wp' )->current_user_can( 'manage' ) && get_imagify_option( 'admin_bar_menu' );
 	}
 }

@@ -1229,6 +1229,10 @@ ul.imagify-datas-details.imagify-datas-details {
 	width: auto;
 	float: none;
 }
+.media-sidebar .compat-field-imagify .imagify-datas-actions-links br,
+.submitbox .misc-pub-imagify .imagify-datas-actions-links br {
+	display: none;
+}
 .imagify-datas-actions-links a:only-child {
 	float: none;
 	width: auto;

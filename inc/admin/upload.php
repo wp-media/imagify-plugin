@@ -12,7 +12,7 @@ add_filter( 'manage_media_columns', '_imagify_manage_media_columns' );
  * @return array
  */
 function _imagify_manage_media_columns( $columns ) {
-	if ( imagify_current_user_can( 'optimize' ) ) {
+	if ( imagify_get_context( 'wp' )->current_user_can( 'optimize' ) ) {
 		$columns['imagify_optimized_file'] = __( 'Imagify', 'imagify' );
 	}
 

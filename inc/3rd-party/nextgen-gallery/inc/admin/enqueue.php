@@ -38,8 +38,6 @@ function _imagify_ngg_admin_print_styles() {
 		],
 	] );
 
-	$l10n['ajaxActions']['libraryFetch'] = 'imagify_ngg_get_unoptimized_attachment_ids';
-
 	/** This filter is documented in inc/classes/class-imagify-assets.php */
 	$l10n['bufferSizes'] = apply_filters( 'imagify_bulk_buffer_sizes', $l10n['bufferSizes'] );
 

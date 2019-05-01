@@ -888,7 +888,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	protected function user_can( $notice_id ) {
 		$capability = isset( self::$capabilities[ $notice_id ] ) ? self::$capabilities[ $notice_id ] : 'manage';
 
-		return imagify_current_user_can( $capability );
+		return imagify_get_context( 'wp' )->current_user_can( $capability );
 	}
 
 	/**

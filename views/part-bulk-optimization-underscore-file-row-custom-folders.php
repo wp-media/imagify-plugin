@@ -12,8 +12,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			{{ data.label }}
 		</span>
 	</td>
-	<td class="imagify-cell-original">{{ data.originalSizeHuman }}</td>
-	<td class="imagify-cell-optimized">{{ data.newSizeHuman }}</td>
+	<td class="imagify-cell-original-size">{{ data.originalSizeHuman }}</td>
+	<td class="imagify-cell-optimized-size">{{ data.newSizeHuman }}</td>
 	<td class="imagify-cell-percentage">
 		<span class="imagify-chart">
 			<span class="imagify-chart-container">

@@ -20,50 +20,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  */
 class NGG extends \Imagify\Optimization\Process\AbstractProcess {
 
-	/**
-	 * Tell if the current can optimize/restore/etc.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $describer Capacity describer. Possible values are 'bulk-optimize', 'manual-optimize', 'auto-optimize', 'bulk-restore', and 'manual-restore'.
-	 * @return bool
-	 */
-	public function current_user_can( $describer ) {
-		static $user_can_per_gallery = [];
-
-		$describer = $this->normalize_capacity_describer( $describer );
-
-		if ( ! $describer ) {
-			return false;
-		}
-
-		if ( 'manual-optimize' !== $describer ) {
-			return imagify_get_capacity( $describer );
-		}
-
-		$image = $this->get_media()->get_ngg_image();
-
-		if ( isset( $user_can_per_gallery[ $image->galleryid ] ) ) {
-			return $user_can_per_gallery[ $image->galleryid ];
-		}
-
-		$gallery_mapper = \C_Gallery_Mapper::get_instance();
-		$gallery        = $gallery_mapper->find( $image->galleryid, false );
-
-		if ( get_current_user_id() === $gallery->author || current_user_can( 'NextGEN Manage others gallery' ) ) {
-			// The user created this gallery or can edit others galleries.
-			$user_can_per_gallery[ $image->galleryid ] = true;
-			return $user_can_per_gallery[ $image->galleryid ];
-		}
-
-		// The user can't edit this gallery.
-		$user_can_per_gallery[ $image->galleryid ] = false;
-		return $user_can_per_gallery[ $image->galleryid ];
-	}
-
-
 	/** ----------------------------------------------------------------------------------------- */
 	/** MISSING THUMBNAILS ====================================================================== */
 	/** ----------------------------------------------------------------------------------------- */

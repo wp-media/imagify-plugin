@@ -164,7 +164,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 			return $data;
 		}
 
-		$webp_size_suffix = constant( imagify_get_context_class_name( 'wp' ) . '::WEBP_SUFFIX' );
+		$webp_size_suffix = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::WEBP_SUFFIX' );
 		$webp_size_name   = 'full' . $webp_size_suffix;
 
 		if ( ! empty( $imagify_data['sizes'][ $webp_size_name ]['success'] ) ) {

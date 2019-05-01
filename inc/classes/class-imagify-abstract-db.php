@@ -868,7 +868,15 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 		}
 
 		$serialized_data = array_intersect_key( $data, $this->to_serialize );
-		$serialized_data = array_map( 'maybe_serialize', $serialized_data );
+
+		if ( ! $serialized_data ) {
+			return $data;
+		}
+
+		$serialized_data = array_map( function( $array ) {
+			// Try not to store empty serialized arrays.
+			return [] === $array ? null : maybe_serialize( $array );
+		}, $serialized_data );
 
 		return array_merge( $data, $serialized_data );
 	}

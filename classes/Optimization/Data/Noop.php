@@ -4,12 +4,12 @@ namespace Imagify\Optimization\Data;
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Interface to use to handle the optimization data of "media groups" (aka attachments).
+ * Fallback class optimization data of "media groups" (aka attachments).
  *
  * @since  1.9
  * @author Grégory Viguier
  */
-interface DataInterface {
+class Noop implements DataInterface {
 
 	/**
 	 * Tell if the given entry can be accepted in the constructor.
@@ -22,7 +22,9 @@ interface DataInterface {
 	 * @param  mixed $id Whatever.
 	 * @return bool
 	 */
-	public static function constructor_accepts( $id );
+	public static function constructor_accepts( $id ) {
+		return false;
+	}
 
 	/**
 	 * Get the media instance.
@@ -33,7 +35,9 @@ interface DataInterface {
 	 *
 	 * @return MediaInterface|false
 	 */
-	public function get_media();
+	public function get_media() {
+		return false;
+	}
 
 	/**
 	 * Tell if the current media is valid.
@@ -44,7 +48,9 @@ interface DataInterface {
 	 *
 	 * @return bool
 	 */
-	public function is_valid();
+	public function is_valid() {
+		return false;
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -60,7 +66,9 @@ interface DataInterface {
 	 *
 	 * @return bool True if the media is optimized.
 	 */
-	public function is_optimized();
+	public function is_optimized() {
+		return false;
+	}
 
 	/**
 	 * Check if the main file is optimized (NOT by Imagify).
@@ -71,7 +79,9 @@ interface DataInterface {
 	 *
 	 * @return bool True if the media is optimized.
 	 */
-	public function is_already_optimized();
+	public function is_already_optimized() {
+		return false;
+	}
 
 	/**
 	 * Check if the main file is optimized (by Imagify).
@@ -82,7 +92,9 @@ interface DataInterface {
 	 *
 	 * @return bool True if the media is optimized.
 	 */
-	public function is_error();
+	public function is_error() {
+		return false;
+	}
 
 	/**
 	 * Get the whole media optimization data.
@@ -91,31 +103,20 @@ interface DataInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return array {
-	 *     The data.
-	 *
-	 *     @type string   $status The optimization status of the whole media: 'success', 'already_optimized', or 'error'.
-	 *                            It is the same as the main file’s status.
-	 *     @type int|bool $level  The optimization level (0=normal, 1=aggressive, 2=ultra). False if not set.
-	 *     @type array    $sizes  {
-	 *         A list of size data, keyed by size name, and containing:
-	 *
-	 *         @type bool   $success        Whether the optimization has been successful.
-	 *         If a success:
-	 *         @type int    $original_size  The file size before optimization.
-	 *         @type int    $optimized_size The file size after optimization.
-	 *         @type int    $percent        Saving in percent.
-	 *         If an error or 'already_optimized':
-	 *         @type string $error          An error message.
-	 *     }
-	 *     @type array    $stats  {
-	 *         @type int $original_size  Overall size before optimization.
-	 *         @type int $optimized_size Overall size after optimization.
-	 *         @type int $percent        Overall saving in percent.
-	 *     }
-	 * }
+	 * @return array The data. See parent method for details.
 	 */
-	public function get_optimization_data();
+	public function get_optimization_data() {
+		return [
+			'status' => '',
+			'level'  => false,
+			'sizes'  => [],
+			'stats'  => [
+				'original_size'  => 0,
+				'optimized_size' => 0,
+				'percent'        => 0,
+			],
+		];
+	}
 
 	/**
 	 * Update the optimization data, level, and status for a size.
@@ -125,18 +126,9 @@ interface DataInterface {
 	 * @author Grégory Viguier
 	 *
 	 * @param string $size The size name.
-	 * @param array  $data {
-	 *     The optimization data.
-	 *
-	 *     @type int    $level          The optimization level.
-	 *     @type string $status         The status: 'success', 'already_optimized', 'error'.
-	 *     @type bool   $success        True if successfully optimized. False on error or if already optimized.
-	 *     @type string $error          An error message.
-	 *     @type int    $original_size  The weight of the file, before optimization.
-	 *     @type int    $optimized_size The weight of the file, after optimization.
-	 * }
+	 * @param array  $data The optimization data. See parent method for details.
 	 */
-	public function update_size_optimization_data( $size, array $data );
+	public function update_size_optimization_data( $size, array $data ) {}
 
 	/**
 	 * Delete the media optimization data, level, and status.
@@ -145,7 +137,7 @@ interface DataInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 */
-	public function delete_optimization_data();
+	public function delete_optimization_data() {}
 
 	/**
 	 * Get the media's optimization level.
@@ -156,7 +148,9 @@ interface DataInterface {
 	 *
 	 * @return int|bool The optimization level. False if not optimized.
 	 */
-	public function get_optimization_level();
+	public function get_optimization_level() {
+		return false;
+	}
 
 	/**
 	 * Get the media's optimization status (success or error).
@@ -167,7 +161,9 @@ interface DataInterface {
 	 *
 	 * @return string The optimization status. An empty string if there is none.
 	 */
-	public function get_optimization_status();
+	public function get_optimization_status() {
+		return '';
+	}
 
 	/**
 	 * Count number of optimized sizes.
@@ -178,7 +174,9 @@ interface DataInterface {
 	 *
 	 * @return int Number of optimized sizes.
 	 */
-	public function get_optimized_sizes_count();
+	public function get_optimized_sizes_count() {
+		return 0;
+	}
 
 	/**
 	 * Get the original media's size (weight).
@@ -191,7 +189,9 @@ interface DataInterface {
 	 * @param  int  $decimals     Precision of number of decimal places.
 	 * @return string|int
 	 */
-	public function get_original_size( $human_format = true, $decimals = 2 );
+	public function get_original_size( $human_format = true, $decimals = 2 ) {
+		return $human_format ? imagify_size_format( 0, $decimals ) : 0;
+	}
 
 	/**
 	 * Get the optimized media's size (weight).
@@ -204,7 +204,9 @@ interface DataInterface {
 	 * @param  int  $decimals     Precision of number of decimal places.
 	 * @return string|int
 	 */
-	public function get_optimized_size( $human_format = true, $decimals = 2 );
+	public function get_optimized_size( $human_format = true, $decimals = 2 ) {
+		return $human_format ? imagify_size_format( 0, $decimals ) : 0;
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -222,7 +224,9 @@ interface DataInterface {
 	 * @param  string $key  The specific data slug.
 	 * @return array|string
 	 */
-	public function get_size_data( $size = 'full', $key = '' );
+	public function get_size_data( $size = 'full', $key = '' ) {
+		return $key ? '' : [];
+	}
 
 	/**
 	 * Get the overall statistics data or a specific one.
@@ -234,7 +238,9 @@ interface DataInterface {
 	 * @param  string $key The specific data slug.
 	 * @return array|string
 	 */
-	public function get_stats_data( $key = '' );
+	public function get_stats_data( $key = '' ) {
+		return $key ? '' : [];
+	}
 
 	/**
 	 * Get the optimized/original saving of the original image in percent.
@@ -245,7 +251,9 @@ interface DataInterface {
 	 *
 	 * @return float A 2-decimals float.
 	 */
-	public function get_saving_percent();
+	public function get_saving_percent() {
+		return round( (float) 0, 2 );
+	}
 
 	/**
 	 * Get the overall optimized/original saving (original image + all thumbnails) in percent.
@@ -256,5 +264,7 @@ interface DataInterface {
 	 *
 	 * @return float A 2-decimals float.
 	 */
-	public function get_overall_saving_percent();
+	public function get_overall_saving_percent() {
+		return round( (float) 0, 2 );
+	}
 }

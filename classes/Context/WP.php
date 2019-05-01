@@ -105,4 +105,54 @@ class WP extends AbstractContext {
 
 		return $this->can_keep_exif;
 	}
+
+	/**
+	 * Get user capacity to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
+	 * @return string
+	 */
+	public function get_capacity( $describer ) {
+		static $edit_attachment_cap;
+
+		switch ( $describer ) {
+			case 'manage':
+				$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
+				break;
+
+			case 'bulk-optimize':
+				$capacity = 'manage_options';
+				break;
+
+			case 'optimize':
+			case 'restore':
+				// This is a generic capacity: don't use it unless you have no other choices!
+				if ( ! isset( $edit_attachment_cap ) ) {
+					$edit_attachment_cap = get_post_type_object( 'attachment' );
+					$edit_attachment_cap = $edit_attachment_cap ? $edit_attachment_cap->cap->edit_posts : 'edit_posts';
+				}
+
+				$capacity = $edit_attachment_cap;
+				break;
+
+			case 'manual-optimize':
+			case 'manual-restore':
+				// Must be used with an Attachment ID.
+				$capacity = 'edit_post';
+				break;
+
+			case 'auto-optimize':
+				$capacity = 'upload_files';
+				break;
+
+			default:
+				$capacity = $describer;
+		}
+
+		return $this->filter_capacity( $capacity, $describer );
+	}
 }

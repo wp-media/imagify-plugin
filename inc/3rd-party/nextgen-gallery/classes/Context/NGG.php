@@ -83,4 +83,42 @@ class NGG extends \Imagify\Context\AbstractContext {
 	 * @author Grégory Viguier
 	 */
 	protected $can_keep_exif = true;
+
+	/**
+	 * Get user capacity to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
+	 * @return string
+	 */
+	public function get_capacity( $describer = 'manage' ) {
+		switch ( $describer ) {
+			case 'manage':
+				$capacity = 'NextGEN Change options';
+				break;
+
+			case 'bulk-optimize':
+				$capacity = 'NextGEN Manage others gallery';
+				break;
+
+			case 'optimize':
+			case 'restore':
+			case 'manual-optimize':
+			case 'manual-restore':
+				$capacity = 'NextGEN Manage gallery';
+				break;
+
+			case 'auto-optimize':
+				$capacity = 'NextGEN Upload images';
+				break;
+
+			default:
+				$capacity = $describer;
+		}
+
+		return $this->filter_capacity( $capacity, $describer );
+	}
 }

@@ -4,12 +4,40 @@ namespace Imagify\Optimization\Process;
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Interface to use to optimize medias.
+ * Fallback class to optimize medias.
  *
  * @since  1.9
  * @author Grégory Viguier
  */
-interface ProcessInterface {
+class Noop implements ProcessInterface {
+
+	/**
+	 * The suffix used in the thumbnail size name.
+	 *
+	 * @var    string
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 */
+	const WEBP_SUFFIX = '@imagify-webp';
+
+	/**
+	 * The suffix used in file name to create a temporary copy of the full size.
+	 *
+	 * @var    string
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 */
+	const TMP_SUFFIX = '@imagify-tmp';
+
+	/**
+	 * Used for the name of the transient telling if a media is locked.
+	 * %1$s is the context, %2$s is the media ID.
+	 *
+	 * @var    string
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 */
+	const LOCK_NAME = 'imagify_%1$s_%2$s_process_locked';
 
 	/**
 	 * Tell if the given entry can be accepted in the constructor.
@@ -22,7 +50,9 @@ interface ProcessInterface {
 	 * @param  mixed $id Whatever.
 	 * @return bool
 	 */
-	public static function constructor_accepts( $id );
+	public static function constructor_accepts( $id ) {
+		return false;
+	}
 
 	/**
 	 * Get the data instance.
@@ -33,7 +63,9 @@ interface ProcessInterface {
 	 *
 	 * @return DataInterface|false
 	 */
-	public function get_data();
+	public function get_data() {
+		return false;
+	}
 
 	/**
 	 * Get the media instance.
@@ -44,7 +76,9 @@ interface ProcessInterface {
 	 *
 	 * @return MediaInterface|false
 	 */
-	public function get_media();
+	public function get_media() {
+		return false;
+	}
 
 	/**
 	 * Get the File instance.
@@ -55,7 +89,9 @@ interface ProcessInterface {
 	 *
 	 * @return File|false
 	 */
-	public function get_file();
+	public function get_file() {
+		return false;
+	}
 
 	/**
 	 * Tell if the current media is valid.
@@ -66,7 +102,9 @@ interface ProcessInterface {
 	 *
 	 * @return bool
 	 */
-	public function is_valid();
+	public function is_valid() {
+		return false;
+	}
 
 	/**
 	 * Tell if the current user is allowed to operate Imagify in this context.
@@ -78,7 +116,9 @@ interface ProcessInterface {
 	 * @param  string $describer Capacity describer. See \Imagify\Context\ContextInterface->get_capacity() for possible values. Can also be a "real" user capacity.
 	 * @return bool
 	 */
-	public function current_user_can( $describer );
+	public function current_user_can( $describer ) {
+		return false;
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -95,7 +135,9 @@ interface ProcessInterface {
 	 * @param  int $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @return bool|WP_Error           True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function optimize( $optimization_level = null );
+	public function optimize( $optimization_level = null ) {
+		return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+	}
 
 	/**
 	 * Re-optimize a media files with a different level.
@@ -107,7 +149,9 @@ interface ProcessInterface {
 	 * @param  int $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @return bool|WP_Error           True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function reoptimize( $optimization_level = null );
+	public function reoptimize( $optimization_level = null ) {
+		return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+	}
 
 	/**
 	 * Optimize several file sizes by pushing tasks into the queue.
@@ -120,7 +164,9 @@ interface ProcessInterface {
 	 * @param  int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @return bool|WP_Error             True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function optimize_sizes( $sizes, $optimization_level = null );
+	public function optimize_sizes( $sizes, $optimization_level = null ) {
+		return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+	}
 
 	/**
 	 * Optimize one file with Imagify directly.
@@ -133,7 +179,9 @@ interface ProcessInterface {
 	 * @param  int    $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @return array|WP_Error             The optimization data. A \WP_Error instance on failure.
 	 */
-	public function optimize_size( $size, $optimization_level = null );
+	public function optimize_size( $size, $optimization_level = null ) {
+		return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+	}
 
 	/**
 	 * Restore the media files from the backup file.
@@ -144,7 +192,9 @@ interface ProcessInterface {
 	 *
 	 * @return bool|WP_Error True on success. A \WP_Error instance on failure.
 	 */
-	public function restore();
+	public function restore() {
+		return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -172,7 +222,9 @@ interface ProcessInterface {
 	 *     @type string $file   The name the thumbnail "should" have.
 	 * }
 	 */
-	public function get_missing_sizes();
+	public function get_missing_sizes() {
+		return [];
+	}
 
 	/**
 	 * Optimize missing thumbnail sizes.
@@ -183,7 +235,9 @@ interface ProcessInterface {
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function optimize_missing_thumbnails();
+	public function optimize_missing_thumbnails() {
+		return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -197,7 +251,7 @@ interface ProcessInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 */
-	public function delete_backup();
+	public function delete_backup() {}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -219,7 +273,13 @@ interface ProcessInterface {
 	 *     @type int  $file_size The file size in bytes.
 	 * }
 	 */
-	public function maybe_resize( $size, $file );
+	public function maybe_resize( $size, $file ) {
+		return [
+			'resized'   => false,
+			'backuped'  => false,
+			'file_size' => 0,
+		];
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -235,7 +295,9 @@ interface ProcessInterface {
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function generate_webp_versions();
+	public function generate_webp_versions() {
+		return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+	}
 
 	/**
 	 * Delete the webp images.
@@ -244,7 +306,7 @@ interface ProcessInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 */
-	public function delete_webp_files();
+	public function delete_webp_files() {}
 
 	/**
 	 * Tell if a thumbnail size is an "Imagify webp" size.
@@ -256,7 +318,9 @@ interface ProcessInterface {
 	 * @param  string $size_name The size name.
 	 * @return string|bool       The unsuffixed name of the size if webp. False if not webp.
 	 */
-	public function is_size_webp( $size_name );
+	public function is_size_webp( $size_name ) {
+		return false;
+	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -272,7 +336,9 @@ interface ProcessInterface {
 	 *
 	 * @return bool
 	 */
-	public function is_locked();
+	public function is_locked() {
+		return false;
+	}
 
 	/**
 	 * Set the running status to "running" for a period of time.
@@ -281,7 +347,7 @@ interface ProcessInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 */
-	public function lock();
+	public function lock() {}
 
 	/**
 	 * Delete the running status.
@@ -290,7 +356,7 @@ interface ProcessInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 */
-	public function unlock();
+	public function unlock() {}
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -307,7 +373,9 @@ interface ProcessInterface {
 	 * @param  string $size The size name.
 	 * @return bool
 	 */
-	public function size_has_optimization_data( $size );
+	public function size_has_optimization_data( $size ) {
+		return false;
+	}
 
 	/**
 	 * Update the optimization data for a size.
@@ -331,5 +399,15 @@ interface ProcessInterface {
 	 *     @type int    $optimized_size The weight of the file, once optimized.
 	 * }
 	 */
-	public function update_size_optimization_data( $response, $size, $level );
+	public function update_size_optimization_data( $response, $size, $level ) {
+		return [
+			'size'           => 'noop',
+			'level'          => false,
+			'status'         => '',
+			'success'        => false,
+			'error'          => '',
+			'original_size'  => 0,
+			'optimized_size' => 0,
+		];
+	}
 }

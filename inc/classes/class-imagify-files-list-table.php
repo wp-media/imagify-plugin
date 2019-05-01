@@ -729,6 +729,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$this->optimize_button( $item );
 		$this->retry_button( $item );
 		$this->reoptimize_buttons( $item );
+		$this->generate_webp_versions_button( $item );
 		$this->restore_button( $item );
 	}
 
@@ -810,35 +811,50 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		$is_optimized   = $data->is_optimized();
-		$media          = $item->process->get_media();
-		$has_backup     = $media->has_backup();
-		$can_reoptimize = $has_backup || ! $is_optimized;
+		$is_already_optimized = $data->is_already_optimized();
+		$media                = $item->process->get_media();
+		$can_reoptimize       = $is_already_optimized || $media->has_backup();
 
 		// Don't display anything if there is no backup or the image has been optimized.
 		if ( ! $can_reoptimize ) {
 			return;
 		}
 
-		/**
-		 * If the image is optimized, don't display the Retry button for the level the image is optimized in.
-		 * If not, don't display the Retry button for the level set in the plugin settings.
-		 */
-		$skip_level = $is_optimized ? $data->get_optimization_level() : Imagify_Options::get_instance()->get( 'optimization_level' );
-		$data       = [];
-		$url_args   = [ 'attachment_id' => $media->get_id() ];
+		$media_level = $data->get_optimization_level();
+		$data        = [];
+		$url_args    = [ 'attachment_id' => $media->get_id() ];
 
-		foreach ( [ 0, 1, 2 ] as $level ) {
-			if ( $skip_level === $level ) {
-				continue;
+		foreach ( [ 2, 1, 0 ] as $level ) {
+			/**
+			 * Display a link if:
+			 * - the level is lower than the one used to optimize the media,
+			 * - or, the level is higher and the media is not already optimized.
+			 */
+			if ( $media_level < $level || ( $media_level > $level && ! $is_already_optimized ) ) {
+				$url_args['optimization_level'] = $level;
+				$data['optimization_level']     = $level;
+				$data['url']                    = get_imagify_admin_url( 'reoptimize-file', $url_args );
+
+				echo $this->views->get_template( 'button/re-optimize', $data );
+				echo '<br/>';
 			}
+		}
+	}
 
-			$url_args['optimization_level'] = $level;
-			$data['optimization_level']     = $level;
-			$data['url']                    = get_imagify_admin_url( 'reoptimize-file', $url_args );
+	/**
+	 * Prints buttons to re-optimize the file to other levels.
+	 *
+	 * @since  1.7
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param object $item The current item. It must contain at least a $process property.
+	 */
+	protected function generate_webp_versions_button( $item ) {
+		$button = get_imagify_attachment_generate_webp_versions_link( $item->process );
 
-			echo $this->views->get_template( 'button/re-optimize', $data );
-			echo '<br/>';
+		if ( $button ) {
+			echo $button . '<br/>';
 		}
 	}
 

@@ -322,7 +322,7 @@ class Imagify_Settings {
 	 * @access public
 	 */
 	public function get_capability() {
-		return imagify_get_capacity();
+		return imagify_get_context( 'wp' )->get_capacity( 'manage' );
 	}
 
 	/**

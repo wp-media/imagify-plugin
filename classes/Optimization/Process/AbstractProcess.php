@@ -211,6 +211,26 @@ abstract class AbstractProcess implements ProcessInterface {
 		return $this->get_media() && $this->get_media()->is_valid();
 	}
 
+	/**
+	 * Tell if the current user is allowed to operate Imagify in this context.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $describer Capacity describer. See \Imagify\Context\ContextInterface->get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @return bool
+	 */
+	public function current_user_can( $describer ) {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		$media = $this->get_media();
+
+		return $media->get_context_instance()->current_user_can( $describer, $media->get_id() );
+	}
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** OPTIMIZATION ============================================================================ */
@@ -364,7 +384,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				foreach ( $sizes as $size_name ) {
 					if ( $this->is_size_webp( $size_name ) ) {
 						$webp = true;
-						continue;
+						break;
 					}
 				}
 
@@ -406,7 +426,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 */
 		MediaOptimization::get_instance()->push_to_queue( [
 			'id'                 => $media->get_id(),
-			'sizes'              => $sizes,
+			'sizes'              => array_unique( $sizes ),
 			'optimization_level' => $optimization_level,
 			'process_class'      => get_class( $this ),
 			'data'               => $args,
@@ -455,11 +475,11 @@ abstract class AbstractProcess implements ProcessInterface {
 			);
 		}
 
-		if ( $this->size_has_optimization_data( $size ) ) {
-			// This size already has optimization data, and must not be optimized again.
+		if ( $this->get_data()->get_size_data( $size, 'success' ) ) {
+			// This size is already optimized with Imagify, and must not be optimized again.
 			if ( $webp ) {
 				return new \WP_Error(
-					'size_already_has_optimization_data',
+					'size_is_successfully_optimized',
 					sprintf(
 						/* translators: %s is a size name. */
 						__( 'The webp format for the size %s already exists.', 'imagify' ),
@@ -468,16 +488,19 @@ abstract class AbstractProcess implements ProcessInterface {
 				);
 			} else {
 				return new \WP_Error(
-					'size_already_has_optimization_data',
+					'size_is_successfully_optimized',
 					sprintf(
 						/* translators: %s is a size name. */
-						__( 'The size %s already has optimization data.', 'imagify' ),
+						__( 'The size %s is already optimized by Imagify.', 'imagify' ),
 						'<code>' . esc_html( $thumb_size ) . '</code>'
 					)
 				);
 			}
 		}
 
+		/**
+		 * Starting from here, errors will be stored in the optimization data of the size.
+		 */
 		$path = $sizes[ $thumb_size ]['path'];
 
 		if ( $webp && $this->get_data()->get_size_data( $thumb_size, 'success' ) ) {
@@ -486,7 +509,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 			if ( ! $result ) {
 				// Could not create a copy of the non-webp version.
-				return new \WP_Error(
+				$response = new \WP_Error(
 					'non_webp_copy_failed',
 					sprintf(
 						/* translators: %s is a size name. */
@@ -494,6 +517,10 @@ abstract class AbstractProcess implements ProcessInterface {
 						'<code>' . esc_html( $thumb_size ) . '</code>'
 					)
 				);
+
+				$this->update_size_optimization_data( $response, $size, $optimization_level );
+
+				return $response;
 			}
 
 			/**
@@ -531,7 +558,9 @@ abstract class AbstractProcess implements ProcessInterface {
 				$this->filesystem->delete( $path );
 			}
 
-			return $this->update_size_optimization_data( $response, $size, $optimization_level );
+			$this->update_size_optimization_data( $response, $size, $optimization_level );
+
+			return $response;
 		}
 
 		if ( $webp && ! $file->is_image() ) {
@@ -539,10 +568,14 @@ abstract class AbstractProcess implements ProcessInterface {
 				$this->filesystem->delete( $path );
 			}
 
-			return new \WP_Error(
+			$response = new \WP_Error(
 				'no_webp',
 				__( 'This file is not an image and cannot be converted to webp format.', 'imagify' )
 			);
+
+			$this->update_size_optimization_data( $response, $size, $optimization_level );
+
+			return $response;
 		}
 
 		$is_disabled = ! empty( $sizes[ $thumb_size ]['disabled'] );
@@ -832,8 +865,10 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @return bool          True if the file exists/is created. False on failure.
 	 */
 	protected function create_temporary_copy( $size, $sizes = null ) {
+		$media = $this->get_media();
+
 		if ( ! isset( $sizes ) ) {
-			$sizes = $this->get_media()->get_media_files();
+			$sizes = $media->get_media_files();
 		}
 
 		if ( empty( $sizes[ $size ] ) ) {
@@ -855,8 +890,6 @@ abstract class AbstractProcess implements ProcessInterface {
 			return false;
 		}
 
-		$media = $this->get_media();
-
 		if ( ! $tmp_file->is_supported( $media->get_allowed_mime_types() ) ) {
 			// The file is not supported.
 			return false;
@@ -872,28 +905,92 @@ abstract class AbstractProcess implements ProcessInterface {
 			return false;
 		}
 
+		/**
+		 * In all cases we must make a copy of the backup file, and not use the backup directly:
+		 * sometimes the backup image does not have a valid file extension (yes I’m looking at you NextGEN Gallery).
+		 */
+		$copied = $this->filesystem->copy( $backup_path, $tmp_path, true );
+
+		if ( ! $copied ) {
+			return false;
+		}
+
 		if ( 'full' === $size ) {
 			/**
 			 * We create a copy of the backup to be able to create a webp version from it.
 			 * That means the optimization process will resize the file if needed, so there is nothing more to do here.
 			 */
-			return $this->filesystem->copy( $backup_path, $tmp_path, true );
+			return true;
 		}
 
 		// We need to create a thumbnail from it.
+		$size_data     = $sizes[ $size ];
 		$context_sizes = $media->get_context_instance()->get_thumbnail_sizes();
 
-		if ( empty( $context_sizes[ $size ] ) ) {
-			// What?
+		if ( ! empty( $context_sizes[ $size ] ) ) {
+			// Not a dynamic size, yay!
+			$size_data = array_merge( $size_data, $context_sizes );
+		}
+
+		if ( empty( $size_data['path'] ) && 'full' === $size ) {
+			// Should not happen.
+			$size_data['path'] = $media->get_raw_original_path();
+		}
+
+		if ( empty( $size_data['path'] ) ) {
+			// Should not happen.
 			return false;
 		}
 
-		$backup_file = new File( $backup_path );
-		$resized     = $backup_file->create_thumbnail( [
+		if ( ! isset( $size_data['crop'] ) ) {
+			/**
+			 * In case of a dynamic thumbnail we don’t know if the image must be croped or resized.
+			 *
+			 * @since  1.9
+			 * @author Grégory Viguier
+			 *
+			 * @param bool           $crop      True to crop the thumbnail, false to resize. Null by default.
+			 * @param string         $size      Name of the thumbnail size.
+			 * @param array          $size_data Data of the thumbnail being processed. Contains at least 'width', 'height', and 'path'.
+			 * @param MediaInterface $media     The MediaInterface instance corresponding to the image being processed.
+			 */
+			$crop = apply_filters( 'imagify_crop_thumbnail', null, $size, $size_data, $media );
+
+			if ( null !== $crop ) {
+				$size_data['crop'] = (bool) $crop;
+			}
+		}
+
+		if ( ! isset( $size_data['crop'] ) ) {
+			// We don't have the 'crop' data in that case: let’s try to guess it.
+			if ( ! $size_data['height'] || ! $size_data['width'] ) {
+				// One of the size dimensions is 0, that means crop is probably disabled.
+				$size_data['crop'] = false;
+			} else {
+				if ( ! $this->filesystem->exists( $size_data['path'] ) ) {
+					// Screwed.
+					return false;
+				}
+
+				$thumb_dimensions = $this->filesystem->get_image_size( $size_data['path'] );
+
+				if ( ! $thumb_dimensions || ! $thumb_dimensions['width'] || ! $thumb_dimensions['height'] ) {
+					// ( ; Д ; )
+					return false;
+				}
+
+				// Compare dimensions.
+				$new_height = $thumb_dimensions['width'] * $size_data['height'] / $size_data['width'];
+				// If the difference is > to 1px, let's assume that crop is enabled.
+				$size_data['crop'] = abs( $thumb_dimensions['height'] - $new_height ) > 1;
+			}
+		}
+
+		$resized = $tmp_file->create_thumbnail( [
 			'path'            => $tmp_path,
-			'width'           => $context_sizes[ $size ]['width'],
-			'height'          => $context_sizes[ $size ]['height'],
-			'crop'            => $context_sizes[ $size ]['crop'],
+			'width'           => $size_data['width'],
+			'height'          => $size_data['height'],
+			'crop'            => $size_data['crop'],
 			'adjust_filename' => false,
 		] );
 
@@ -977,14 +1074,14 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$media      = $this->get_media();
-		$dimentions = $media->get_dimensions();
+		$dimensions = $media->get_dimensions();
 
-		if ( ! $dimentions['width'] ) {
+		if ( ! $dimensions['width'] ) {
 			// The dimensions don't seem to be in the database anymore: try to get them directly from the file.
-			$dimentions = $file->get_dimensions();
+			$dimensions = $file->get_dimensions();
 		}
 
-		if ( ! $dimentions['width'] ) {
+		if ( ! $dimensions['width'] ) {
 			// Could not get the image dimensions.
 			return new \WP_Error(
 				'no_dimensions',
@@ -998,7 +1095,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		$resize_width = $this->get_option( 'resize_larger_w' );
 
-		if ( $resize_width >= $dimentions['width'] ) {
+		if ( $resize_width >= $dimensions['width'] ) {
 			// No need to resize.
 			return [
 				'resized'   => false,
@@ -1007,7 +1104,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			];
 		}
 
-		$resized_path = $file->resize( $dimentions, $resize_width );
+		$resized_path = $file->resize( $dimensions, $resize_width );
 
 		if ( is_wp_error( $resized_path ) ) {
 			// The resizement failed.
@@ -1163,11 +1260,13 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new \WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
 		}
 
-		if ( ! $this->get_data()->is_optimized() ) {
+		$data = $this->get_data();
+
+		if ( ! $data->is_optimized() ) {
 			return new \WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
 		}
 
-		if ( $this->size_has_optimization_data( 'full' . static::WEBP_SUFFIX ) ) {
+		if ( $data->get_size_data( 'full' . static::WEBP_SUFFIX, 'success' ) ) {
 			return new \WP_Error( 'has_webp', __( 'This media already has webp versions.', 'imagify' ) );
 		}
 
@@ -1474,6 +1573,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 			// Status.
 			$data['status'] = 'success';
+			$data['error']  = null;
 
 			// Size data.
 			$data['success']        = true;
@@ -1554,40 +1654,5 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		return \Imagify_Options::get_instance()->sanitize_and_validate( 'optimization_level', $optimization_level );
-	}
-
-	/**
-	 * Normalize a user capacity describer.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @see    $this->current_user_can( $describer )
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $describer Capacity describer. Possible values are 'bulk-optimize', 'manual-optimize', 'auto-optimize', 'bulk-restore', and 'manual-restore'.
-	 * @return string|bool       The normalized describer. False if not in the list.
-	 */
-	protected function normalize_capacity_describer( $describer ) {
-		if ( ! $this->is_valid() ) {
-			return false;
-		}
-
-		switch ( $describer ) {
-			case 'bulk-optimize':
-			case 'bulk-restore':
-				return 'bulk-optimize';
-
-			case 'optimize':
-			case 'restore':
-			case 'manual-optimize':
-			case 'manual-restore':
-				return 'manual-optimize';
-
-			case 'auto-optimize':
-				return 'auto-optimize';
-
-			default:
-				return false;
-		}
 	}
 }

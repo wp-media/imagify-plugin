@@ -198,28 +198,35 @@ function get_imagify_attachment_reoptimize_link( $process ) {
 		return '';
 	}
 
+	$data = $process->get_data();
+
+	if ( ! $data->get_optimization_status() ) {
+		// Not optimized yet.
+		return '';
+	}
+
 	// Stop the process if the API key isn't valid.
 	if ( ! Imagify_Requirements::is_api_key_valid() ) {
 		return '';
 	}
 
-	$media                = $process->get_media();
-	$data                 = $process->get_data();
 	$is_already_optimized = $data->is_already_optimized();
+	$media                = $process->get_media();
+	$can_reoptimize       = $is_already_optimized || $media->has_backup();
 
 	// Don't display anything if there is no backup or the image has been optimized.
-	if ( ! $media->has_backup() && ! $is_already_optimized ) {
+	if ( ! $can_reoptimize ) {
 		return '';
 	}
 
-	$views    = Imagify_Views::get_instance();
-	$level    = $data->get_optimization_level();
-	$data     = [];
-	$url_args = [
+	$output      = '';
+	$views       = Imagify_Views::get_instance();
+	$media_level = $data->get_optimization_level();
+	$data        = [];
+	$url_args    = [
 		'attachment_id' => $media->get_id(),
 		'context'       => $media->get_context(),
 	];
-	$output   = '';
 
 	if ( 'post.php' === $pagenow && 'attachment' === $typenow ) {
 		$data['atts'] = [
@@ -227,31 +234,20 @@ function get_imagify_attachment_reoptimize_link( $process ) {
 		];
 	}
 
-	// Re-optimize to Ultra.
-	if ( 1 === $level || 0 === $level ) {
-		$url_args['optimization_level'] = 2;
-		$data['optimization_level']     = 2;
-		$data['url']                    = get_imagify_admin_url( 'manual-reoptimize', $url_args );
+	foreach ( [ 2, 1, 0 ] as $level ) {
+		/**
+		 * Display a link if:
+		 * - the level is lower than the one used to optimize the media,
+		 * - or, the level is higher and the media is not already optimized.
+		 */
+		if ( $media_level < $level || ( $media_level > $level && ! $is_already_optimized ) ) {
+			$url_args['optimization_level'] = $level;
+			$data['optimization_level']     = $level;
+			$data['url']                    = get_imagify_admin_url( 'manual-reoptimize', $url_args );
 
-		$output .= $views->get_template( 'button/re-optimize', $data );
-	}
-
-	// Re-optimize to Aggressive.
-	if ( ( 2 === $level && ! $is_already_optimized ) || 0 === $level ) {
-		$url_args['optimization_level'] = 1;
-		$data['optimization_level']     = 1;
-		$data['url']                    = get_imagify_admin_url( 'manual-reoptimize', $url_args );
-
-		$output .= $views->get_template( 'button/re-optimize', $data );
-	}
-
-	// Re-optimize to Normal.
-	if ( ( 2 === $level || 1 === $level ) && ! $is_already_optimized ) {
-		$url_args['optimization_level'] = 0;
-		$data['optimization_level']     = 0;
-		$data['url']                    = get_imagify_admin_url( 'manual-reoptimize', $url_args );
-
-		$output .= $views->get_template( 'button/re-optimize', $data );
+			$output .= $views->get_template( 'button/re-optimize', $data );
+			$output .= '<br/>';
+		}
 	}
 
 	return $output;
@@ -345,7 +341,7 @@ function get_imagify_attachment_generate_webp_versions_link( $process ) {
 
 	$size = 'full' . constant( get_class( $process ) . '::WEBP_SUFFIX' );
 
-	if ( $process->size_has_optimization_data( $size ) ) {
+	if ( $process->get_data()->get_size_data( $size, 'success' ) ) {
 		return '';
 	}
 
@@ -373,9 +369,11 @@ function get_imagify_attachment_generate_webp_versions_link( $process ) {
 		'context'       => $context,
 	] );
 
-	return Imagify_Views::get_instance()->get_template( 'button/generate-webp', [
+	$output = Imagify_Views::get_instance()->get_template( 'button/generate-webp', [
 		'url' => $url,
 	] );
+
+	return $output . '<br/>';
 }
 
 /**
@@ -473,88 +471,4 @@ function get_imagify_media_column_content( $process, $with_container = true ) {
 		'context'  => $context,
 		'content'  => $output,
 	] );
-}
-
-/**
- * Get stats data for a specific folder type.
- *
- * @since  1.7
- * @see    Imagify_Admin_Ajax_Post::imagify_get_folder_type_data_callback()
- * @author Grégory Viguier
- *
- * @param  string $context A context.
- * @return array
- */
-function imagify_get_folder_type_data( $context ) {
-	/**
-	 * Get the data.
-	 */
-	switch ( $context ) {
-		case 'wp':
-			$total_saving_data = imagify_count_saving_data();
-			$data              = array(
-				'images-optimized' => imagify_count_optimized_attachments(),
-				'errors'           => imagify_count_error_attachments(),
-				'optimized'        => $total_saving_data['optimized_size'],
-				'original'         => $total_saving_data['original_size'],
-				'errors_url'       => get_imagify_admin_url( 'folder-errors', $context ),
-			);
-			break;
-
-		case 'custom-folders':
-			$data = array(
-				'images-optimized' => Imagify_Files_Stats::count_optimized_files(),
-				'errors'           => Imagify_Files_Stats::count_error_files(),
-				'optimized'        => Imagify_Files_Stats::get_optimized_size(),
-				'original'         => Imagify_Files_Stats::get_original_size(),
-				'errors_url'       => get_imagify_admin_url( 'folder-errors', $context ),
-			);
-			break;
-
-		default:
-			/**
-			 * Provide custom folder type data.
-			 *
-			 * @since  1.7
-			 * @author Grégory Viguier
-			 *
-			 * @param array  $data    An array with keys corresponding to cell classes, and values formatted with HTML.
-			 * @param string $context A context.
-			 */
-			$data = apply_filters( 'imagify_get_folder_type_data', [], $context );
-
-			if ( ! $data || ! is_array( $data ) ) {
-				return [];
-			}
-	}
-
-	/**
-	 * Format the data.
-	 */
-	/* translators: %s is a formatted number, dont use %d. */
-	$data['images-optimized'] = sprintf( _n( '%s Media File Optimized', '%s Media Files Optimized', $data['images-optimized'], 'imagify' ), '<span>' . number_format_i18n( $data['images-optimized'] ) . '</span>' );
-
-	if ( $data['errors'] ) {
-		/* translators: %s is a formatted number, dont use %d. */
-		$data['errors']  = sprintf( _n( '%s Error', '%s Errors', $data['errors'], 'imagify' ), '<span>' . number_format_i18n( $data['errors'] ) . '</span>' );
-		$data['errors'] .= ' <a href="' . esc_url( $data['errors_url'] ) . '">' . __( 'View Errors', 'imagify' ) . '</a>';
-	} else {
-		$data['errors'] = '';
-	}
-
-	if ( $data['optimized'] ) {
-		$data['optimized'] = '<span class="imagify-cell-label">' . __( 'Optimized Filesize', 'imagify' ) . '</span> ' . imagify_size_format( $data['optimized'], 2 );
-	} else {
-		$data['optimized'] = '';
-	}
-
-	if ( $data['original'] ) {
-		$data['original'] = '<span class="imagify-cell-label">' . __( 'Original Filesize', 'imagify' ) . '</span> ' . imagify_size_format( $data['original'], 2 );
-	} else {
-		$data['original'] = '';
-	}
-
-	unset( $data['errors_url'] );
-
-	return $data;
 }

@@ -21,30 +21,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 class CustomFolders extends AbstractProcess {
 
 	/**
-	 * Tell if the current can optimize/restore/etc.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $describer Capacity describer. Possible values are 'bulk-optimize', 'manual-optimize', 'auto-optimize', 'bulk-restore', and 'manual-restore'.
-	 * @return bool
-	 */
-	public function current_user_can( $describer ) {
-		$describer = $this->normalize_capacity_describer( $describer );
-
-		if ( ! $describer ) {
-			return false;
-		}
-
-		if ( 'manual-optimize' === $describer ) {
-			$describer = 'optimize-file';
-		}
-
-		return imagify_get_capacity( $describer, $this->get_media()->get_id() );
-	}
-
-	/**
 	 * Restore the thumbnails.
 	 * This context has no thumbnails.
 	 *

@@ -173,27 +173,38 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		?>
 
 		<div class="imagify-bulk-submit imagify-flex imagify-vcenter">
-				<div class="imagify-pr2">
-					<p>
-						<?php wp_nonce_field( 'imagify-bulk-optimize', 'imagifybulkuploadnonce' ); ?>
-						<button id="imagify-bulk-action" type="button" class="button button-primary">
-							<span class="dashicons dashicons-admin-generic"></span>
-							<span class="button-text"><?php _e( 'Imagif\'em all', 'imagify' ); ?></span>
-						</button>
-					</p>
-				</div>
-				<?php if ( ! is_wp_error( get_imagify_max_image_size() ) ) { ?>
-					<p>
-						<?php
-						printf(
-							/* translators: %s is a file size. */
-							esc_html__( 'All images greater than %s (after resizing, if any) will be optimized when using a paid plan.', 'imagify' ),
-							esc_html( imagify_size_format( get_imagify_max_image_size() ) )
-						);
-						?>
-					</p>
-				<?php } ?>
-			</div><!-- .imagify-bulk-submit -->
+			<?php
+			if ( get_imagify_option( 'convert_to_webp' ) ) {
+				$this->print_template( 'input/selector', [
+					'current_label' => __( 'Current action:', 'imagify' ),
+					'name'          => 'imagify_action',
+					'value'         => 'optimize',
+					'values'        => [
+						'optimize'      => __( 'Optimize', 'imagify' ),
+						'generate_webp' => __( 'Generate missing webp versions', 'imagify' ),
+					],
+				] );
+			}
+			?>
+			<p>
+				<?php wp_nonce_field( 'imagify-bulk-optimize', 'imagifybulkuploadnonce' ); ?>
+				<button id="imagify-bulk-action" type="button" class="button button-primary">
+					<span class="dashicons dashicons-admin-generic"></span>
+					<span class="button-text"><?php _e( 'Imagif’em all', 'imagify' ); ?></span>
+				</button>
+			</p>
+			<?php if ( ! is_wp_error( get_imagify_max_image_size() ) ) { ?>
+				<p>
+					<?php
+					printf(
+						/* translators: %s is a file size. */
+						esc_html__( 'All images greater than %s (after resizing, if any) will be optimized when using a paid plan.', 'imagify' ),
+						esc_html( imagify_size_format( get_imagify_max_image_size() ) )
+					);
+					?>
+				</p>
+			<?php } ?>
+		</div><!-- .imagify-bulk-submit -->
 	</div><!-- .imagify-settings-section -->
 
 	<?php
