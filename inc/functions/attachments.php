@@ -200,7 +200,7 @@ function get_imagify_attachment_backup_path( $file_path ) {
 		return false;
 	}
 
-	return str_replace( $upload_basedir, $backup_dir, $file_path );
+	return preg_replace( '@^' . preg_quote( $upload_basedir, '@' ) . '@', $backup_dir, $file_path );
 }
 
 /**
@@ -249,7 +249,7 @@ function get_imagify_attachment_url( $file_path ) {
 	// Check that the upload base exists in the (absolute) file location.
 	if ( 0 === strpos( $file_path, $upload_basedir ) ) {
 		// Replace file location with url location.
-		return str_replace( $upload_basedir, $upload_baseurl, $file_path );
+		return preg_replace( '@^' . preg_quote( $upload_basedir, '@' ) . '@', $upload_baseurl, $file_path );
 	}
 
 	if ( false !== strpos( '/' . $file_path, '/wp-content/uploads/' ) ) {

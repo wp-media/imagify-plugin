@@ -86,7 +86,7 @@ class Imagify_Custom_Folders {
 			return false;
 		}
 
-		return str_replace( $site_root, $backup_dir, $file_path );
+		return preg_replace( '@^' . preg_quote( $site_root, '@' ) . '@', $backup_dir, $file_path );
 	}
 
 
