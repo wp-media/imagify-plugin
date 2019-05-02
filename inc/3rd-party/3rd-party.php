@@ -10,6 +10,7 @@ require IMAGIFY_PATH . 'inc/3rd-party/enable-media-replace/enable-media-replace.
 require IMAGIFY_PATH . 'inc/3rd-party/formidable-pro/formidable-pro.php';
 require IMAGIFY_PATH . 'inc/3rd-party/nextgen-gallery/nextgen-gallery.php';
 require IMAGIFY_PATH . 'inc/3rd-party/regenerate-thumbnails/regenerate-thumbnails.php';
+require IMAGIFY_PATH . 'inc/3rd-party/wp-retina-2x/wp-retina-2x.php';
 require IMAGIFY_PATH . 'inc/3rd-party/wp-time-capsule/wp-time-capsule.php';
 require IMAGIFY_PATH . 'inc/3rd-party/screets-lc.php';
 require IMAGIFY_PATH . 'inc/3rd-party/wp-real-media-library.php';
