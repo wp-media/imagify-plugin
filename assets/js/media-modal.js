@@ -66,7 +66,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 			$document.on( 'heartbeat-tick', this.processHeartbeat );
 
 			// Some items may be processed in background on page load.
-			$processing = $( '.imagify-data-actions-container .imagify-button-processing' );
+			$processing = $( '.imagify-data-actions-container .button-imagify-processing' );
 
 			if ( $processing.length ) {
 				// Fasten Heartbeat for a minute.
