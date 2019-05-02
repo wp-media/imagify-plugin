@@ -218,6 +218,15 @@ class Imagify_Custom_Folders {
 			$filesystem->delete( $args['backup_path'] );
 		}
 
+		// Webp.
+		$mime_type = $filesystem->get_mime_type( $args['file_path'] );
+		$is_image  = $mime_type && strpos( $mime_type, 'image/' ) === 0;
+		$webp_path = $is_image ? imagify_path_to_webp( $args['file_path'] ) : false;
+
+		if ( $webp_path && $filesystem->is_writable( $webp_path ) ) {
+			$filesystem->delete( $webp_path );
+		}
+
 		// In the database.
 		$process->get_media()->delete_row();
 	}
