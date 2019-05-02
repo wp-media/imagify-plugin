@@ -37,6 +37,20 @@ function imagify_get_context_names() {
 }
 
 /**
+ * Sanitize an optimization context.
+ *
+ * @since  1.6.11
+ * @author Grégory Viguier
+ *
+ * @param  string $context The context.
+ * @return string
+ */
+function imagify_sanitize_context( $context ) {
+	$context = preg_replace( '/[^a-z0-9_-]/i', '', $context );
+	return $context ? strtolower( $context ) : 'wp';
+}
+
+/**
  * Get the Imagify context instance.
  *
  * @since  1.9
@@ -47,7 +61,7 @@ function imagify_get_context_names() {
  */
 function imagify_get_context( $context ) {
 	$class_name = imagify_get_context_class_name( $context );
-	return new $class_name();
+	return $class_name::get_instance();
 }
 
 /**
@@ -197,20 +211,6 @@ function imagify_can_optimize_custom_folders() {
 	$can = imagify_get_context( 'custom-folders' )->current_user_can( 'optimize' );
 
 	return $can;
-}
-
-/**
- * Sanitize an optimization context.
- *
- * @since  1.6.11
- * @author Grégory Viguier
- *
- * @param  string $context The context.
- * @return string
- */
-function imagify_sanitize_context( $context ) {
-	$context = preg_replace( '/[^a-z0-9_-]/i', '', $context );
-	return $context ? strtolower( $context ) : 'wp';
 }
 
 /**
