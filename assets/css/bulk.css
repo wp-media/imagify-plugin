@@ -1009,14 +1009,6 @@ td.imagify-cell-filename {
 	cursor: not-allowed;
 }
 
-.imagify-bulk-submit > * {
-	display: inline-block;
-	margin-right: 2em;
-}
-.imagify-bulk-submit > :last-child {
-	margin-right: 0;
-}
-
 /* Icon rotation */
 .dashicons.rotate {
 	-webkit-animation: icon-rotate 2.6s infinite linear;
