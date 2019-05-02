@@ -1266,7 +1266,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new \WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
 		}
 
-		if ( $data->get_size_data( 'full' . static::WEBP_SUFFIX, 'success' ) ) {
+		if ( $this->has_webp() ) {
 			return new \WP_Error( 'has_webp', __( 'This media already has webp versions.', 'imagify' ) );
 		}
 
@@ -1375,6 +1375,27 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Tell if the media has webp versions.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function has_webp() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( ! $this->get_media()->is_image() ) {
+			return false;
+		}
+
+		return (bool) $this->get_data()->get_size_data( 'full' . static::WEBP_SUFFIX, 'success' );
 	}
 
 
