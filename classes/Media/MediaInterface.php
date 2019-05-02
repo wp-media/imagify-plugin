@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Media;
 
-use Imagify\CDN\CDNInterface;
+use Imagify\CDN\PushCDNInterface;
 use Imagify\Context\ContextInterface;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
@@ -78,7 +78,7 @@ interface MediaInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return bool|CDNInterface A CDNInterface instance. False if no CDN is used.
+	 * @return bool|PushCDNInterface A PushCDNInterface instance. False if no CDN is used.
 	 */
 	public function get_cdn();
 

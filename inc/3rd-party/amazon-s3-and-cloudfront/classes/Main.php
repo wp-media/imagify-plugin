@@ -249,7 +249,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param bool|CDNInterface $cdn      A CDNInterface instance. False if no CDN is used.
+	 * @param bool|PushCDNInterface $cdn      A PushCDNInterface instance. False if no CDN is used.
 	 * @param int               $media_id The media ID.
 	 * @param ContextInterface  $context  The context object.
 	 */
@@ -257,7 +257,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		if ( 'wp' !== $context->get_name() ) {
 			return $cdn;
 		}
-		if ( $cdn instanceof CDNInterface ) {
+		if ( $cdn instanceof PushCDNInterface ) {
 			return $cdn;
 		}
 

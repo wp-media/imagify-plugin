@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\ThirdParty\AS3CF\CDN\WP;
 
-use Imagify\CDN\CDNInterface;
+use Imagify\CDN\PushCDNInterface;
 use Imagify\Context\ContextInterface;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.9
  * @author Grégory Viguier
  */
-class AS3 implements CDNInterface {
+class AS3 implements PushCDNInterface {
 
 	/**
 	 * The media ID.
@@ -433,10 +433,10 @@ class AS3 implements CDNInterface {
 		 * @since  1.9
 		 * @author Grégory Viguier
 		 *
-		 * @param bool         $can           True if the media can be sent. False otherwize.
-		 * @param CDNInterface $cdn           The CDN instance.
-		 * @param bool         $cdn_setting   CDN setting that tells if a new media can be sent to the CDN.
-		 * @param bool         $is_new_upload Tell if the current media is a new upload. If not, it means it's a media being regenerated, restored, etc.
+		 * @param bool             $can           True if the media can be sent. False otherwize.
+		 * @param PushCDNInterface $cdn           The CDN instance.
+		 * @param bool             $cdn_setting   CDN setting that tells if a new media can be sent to the CDN.
+		 * @param bool             $is_new_upload Tell if the current media is a new upload. If not, it means it's a media being regenerated, restored, etc.
 		 */
 		$can[ $this->id ] = (bool) apply_filters( 'imagify_can_send_to_cdn', $can[ $this->id ], $this, $cdn_setting, $is_new_upload );
 
