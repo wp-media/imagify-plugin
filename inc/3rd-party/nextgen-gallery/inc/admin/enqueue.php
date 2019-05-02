@@ -38,7 +38,7 @@ function _imagify_ngg_admin_print_styles() {
 		],
 	] );
 
-	/** This filter is documented in inc/classes/class-imagify-assets.php */
+	/** This filter is documented in inc/functions/i18n.php */
 	$l10n['bufferSizes'] = apply_filters( 'imagify_bulk_buffer_sizes', $l10n['bufferSizes'] );
 
 	$assets->enqueue_assets( [ 'pricing-modal', 'bulk' ] )->localize( 'imagifyBulk', $l10n );
