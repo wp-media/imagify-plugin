@@ -574,6 +574,8 @@ function get_imagify_attachment( $context, $attachment_id, $identifier ) {
  * Optimize a file with Imagify.
  *
  * @since 1.0
+ * @since 1.9 Deprecated
+ * @deprecated
  *
  * @param  string $file_path Absolute path to the file.
  * @param  array  $args      {
@@ -712,6 +714,87 @@ function do_imagify( $file_path, $args = array() ) {
 	do_action( 'after_do_imagify', $file_path, $args['backup'] );
 
 	return $response;
+}
+
+/**
+ * Backup a file.
+ *
+ * @since  1.6.8
+ * @since  1.9 Deprecated
+ * @author Grégory Viguier
+ * @deprecated
+ *
+ * @param  string $file_path   The file path.
+ * @param  string $backup_path The backup path. This is useful for NGG for example, who doesn't store the backups in our backup folder.
+ * @return bool|object         True on success. False if the backup option is not enabled. A WP_Error object on failure.
+ */
+function imagify_backup_file( $file_path, $backup_path = null ) {
+	_deprecated_function( __FUNCTION__ . '()', '1.9', '(new Imagify\\Optimization\\File( $file_path ))->backup( $backup_path )' );
+
+	if ( ! get_imagify_option( 'backup' ) ) {
+		return false;
+	}
+
+	// Make sure the source path is not empty.
+	if ( ! $file_path ) {
+		return new WP_Error( 'empty_path', __( 'The file path is empty.', 'imagify' ) );
+	}
+
+	$filesystem = imagify_get_filesystem();
+
+	// Make sure the filesystem has no errors.
+	if ( ! empty( $filesystem->errors->errors ) ) {
+		return new WP_Error( 'filesystem_error', __( 'Filesystem error.', 'imagify' ), $filesystem->errors );
+	}
+
+	// Make sure the source file exists.
+	if ( ! $filesystem->exists( $file_path ) ) {
+		return new WP_Error( 'source_doesnt_exist', __( 'The file to backup does not exist.', 'imagify' ), array(
+			'file_path' => $filesystem->make_path_relative( $file_path ),
+		) );
+	}
+
+	if ( ! isset( $backup_path ) ) {
+		// Make sure the backup directory is writable.
+		if ( ! Imagify_Requirements::attachments_backup_dir_is_writable() ) {
+			return new WP_Error( 'backup_dir_not_writable', __( 'The backup directory is not writable.', 'imagify' ) );
+		}
+
+		$backup_path = get_imagify_attachment_backup_path( $file_path );
+	}
+
+	// Make sure the uploads directory has no errors.
+	if ( ! $backup_path ) {
+		return new WP_Error( 'wp_upload_error', __( 'Error while retrieving the uploads directory path.', 'imagify' ) );
+	}
+
+	// Create sub-directories.
+	$filesystem->make_dir( $filesystem->dir_path( $backup_path ) );
+
+	/**
+	 * Allow to overwrite the backup file if it already exists.
+	 *
+	 * @since  1.6.9
+	 * @author Grégory Viguier
+	 *
+	 * @param bool   $overwrite   Whether to overwrite the backup file.
+	 * @param string $file_path   The file path.
+	 * @param string $backup_path The backup path.
+	 */
+	$overwrite = apply_filters( 'imagify_backup_overwrite_backup', false, $file_path, $backup_path );
+
+	// Copy the file.
+	$filesystem->copy( $file_path, $backup_path, $overwrite, FS_CHMOD_FILE );
+
+	// Make sure the backup copy exists.
+	if ( ! $filesystem->exists( $backup_path ) ) {
+		return new WP_Error( 'backup_doesnt_exist', __( 'The file could not be saved.', 'imagify' ), array(
+			'file_path'   => $filesystem->make_path_relative( $file_path ),
+			'backup_path' => $filesystem->make_path_relative( $backup_path ),
+		) );
+	}
+
+	return true;
 }
 
 if ( is_admin() ) :
