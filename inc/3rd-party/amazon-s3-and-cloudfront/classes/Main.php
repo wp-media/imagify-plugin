@@ -169,7 +169,6 @@ class Main extends \Imagify_AS3CF_Deprecated {
 
 		if ( ! empty( $imagify_data['sizes'][ $webp_size_name ]['success'] ) ) {
 			// We have a webp image.
-			// $data['src']['webp_path']   = imagify_path_to_webp( get_attached_file( $post_id, true ) );.
 			$data['src']['webp_exists'] = true;
 		}
 
@@ -250,8 +249,8 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	 * @author Grégory Viguier
 	 *
 	 * @param bool|PushCDNInterface $cdn      A PushCDNInterface instance. False if no CDN is used.
-	 * @param int               $media_id The media ID.
-	 * @param ContextInterface  $context  The context object.
+	 * @param int                   $media_id The media ID.
+	 * @param ContextInterface      $context  The context object.
 	 */
 	public function register_cdn( $cdn, $media_id, $context ) {
 		if ( 'wp' !== $context->get_name() ) {
