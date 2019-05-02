@@ -82,8 +82,8 @@ function get_imagify_localize_script_translations( $context ) {
 					'keyIsValid'       => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid(),
 					'isOverQuota'      => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid() && Imagify_Requirements::is_over_quota(),
 					'heartbeatIDs'     => [
-						'queue'        => 'update_options_bulk_queue',
-						'requirements' => 'update_bulk_requirements',
+						'queue'        => 'imagify_options_bulk_queue',
+						'requirements' => 'imagify_bulk_requirements',
 					],
 					'ajaxActions'      => [
 						'getMediaIds' => 'imagify_get_media_ids',
@@ -200,9 +200,9 @@ function get_imagify_localize_script_translations( $context ) {
 				'keyIsValid'      => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid(),
 				'isOverQuota'     => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid() && Imagify_Requirements::is_over_quota(),
 				'heartbeatIDs'     => [
-					'stats'        => 'update_bulk_data',
-					'queue'        => 'update_bulk_queue',
-					'requirements' => 'update_bulk_requirements',
+					'stats'        => 'imagify_bulk_data',
+					'queue'        => 'imagify_bulk_queue',
+					'requirements' => 'imagify_bulk_requirements',
 				],
 				'waitImageUrl'    => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
 				'ajaxActions'     => [
@@ -298,7 +298,7 @@ function get_imagify_localize_script_translations( $context ) {
 		case 'files-list':
 			return [
 				'backupOption' => get_imagify_option( 'backup' ),
-				'context'      => imagify_get_context( 'custom-folders' )->get_name(),
+				'context'      => 'custom-folders',
 				'heartbeatId'  => 'imagify_custom_folders_optimization_status',
 				'labels'       => [
 					'bulkActionsOptimize' => __( 'Optimize', 'imagify' ),

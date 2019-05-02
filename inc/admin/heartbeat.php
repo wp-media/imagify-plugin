@@ -12,13 +12,15 @@ add_filter( 'heartbeat_received', '_imagify_heartbeat_received', 10, 2 );
  * @return array
  */
 function _imagify_heartbeat_received( $response, $data ) {
-	if ( empty( $data['update_bulk_data'] ) ) {
+	$heartbeat_id = 'imagify_bulk_data';
+
+	if ( empty( $data[ $heartbeat_id ] ) ) {
 		return $response;
 	}
 
-	$folder_types = array_flip( array_filter( $data['update_bulk_data'] ) );
+	$folder_types = array_flip( array_filter( $data[ $heartbeat_id ] ) );
 
-	$response['imagify_bulk_data'] = imagify_get_bulk_stats( $folder_types, array(
+	$response[ $heartbeat_id ] = imagify_get_bulk_stats( $folder_types, array(
 		'fullset' => true,
 	) );
 
@@ -37,11 +39,13 @@ add_filter( 'heartbeat_received', 'imagify_heartbeat_requirements_received', 10,
  * @return array
  */
 function imagify_heartbeat_requirements_received( $response, $data ) {
-	if ( empty( $data['update_bulk_requirements'] ) ) {
+	$heartbeat_id = 'imagify_bulk_requirements';
+
+	if ( empty( $data[ $heartbeat_id ] ) ) {
 		return $response;
 	}
 
-	$response['imagify_bulk_requirements'] = array(
+	$response[ $heartbeat_id ] = array(
 		'curl_missing'          => ! Imagify_Requirements::supports_curl(),
 		'editor_missing'        => ! Imagify_Requirements::supports_image_editor(),
 		'external_http_blocked' => Imagify_Requirements::is_imagify_blocked(),
@@ -66,7 +70,7 @@ add_filter( 'heartbeat_received', 'imagify_heartbeat_bulk_optimization_status_re
  * @return array
  */
 function imagify_heartbeat_bulk_optimization_status_received( $response, $data ) {
-	$heartbeat_id = 'update_bulk_queue';
+	$heartbeat_id = 'imagify_bulk_queue';
 
 	if ( empty( $data[ $heartbeat_id ] ) || ! is_array( $data[ $heartbeat_id ] ) ) {
 		return $response;
@@ -159,7 +163,7 @@ add_filter( 'heartbeat_received', 'imagify_heartbeat_options_bulk_optimization_s
  * @return array
  */
 function imagify_heartbeat_options_bulk_optimization_status_received( $response, $data ) {
-	$heartbeat_id = 'update_options_bulk_queue';
+	$heartbeat_id = 'imagify_options_bulk_queue';
 
 	if ( empty( $data[ $heartbeat_id ] ) || ! is_array( $data[ $heartbeat_id ] ) ) {
 		return $response;
