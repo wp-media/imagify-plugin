@@ -3,7 +3,7 @@
 	<description>Image optimization plugin for WordPress by WP Media.</description>
 
 	<arg name="extensions" value="php"/>
-	<arg value="s"/>
+	<!-- <arg value="s"/> -->
 
 	<file>.</file>
 
@@ -16,12 +16,11 @@
 	<config name="testVersion" value="5.4-"/>
 	<config name="minimum_supported_wp_version" value="4.0"/>
 
-	<!-- Run against the PHPCompatibility ruleset. -->
-	<rule ref="PHPCompatibility">
+	<!-- Run against the PHPCompatibility ruleset dedicated to WP. -->
+	<rule ref="PHPCompatibilityWP">
+		<include-pattern>*\.php$</include-pattern>
 		<exclude name="PHPCompatibility.PHP.NewFunctions.curl_file_createFound"/><!-- Defined in Imagify 1.0. -->
 		<exclude name="PHPCompatibility.FunctionUse.NewFunctions.curl_file_createFound"/><!-- Same for VSCode. -->
-		<exclude name="PHPCompatibility.PHP.NewFunctions.hash_equalsFound"/><!-- Defined in WP 3.9.2. -->
-		<exclude name="PHPCompatibility.FunctionUse.NewFunctions.hash_equalsFound"/><!-- Same for VSCode. -->
 	</rule>
 
 	<!-- Run against the WordPress ruleset. -->
