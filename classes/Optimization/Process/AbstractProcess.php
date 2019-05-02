@@ -503,6 +503,8 @@ abstract class AbstractProcess implements ProcessInterface {
 		 */
 		$path = $sizes[ $thumb_size ]['path'];
 
+		$optimization_level = $this->sanitize_optimization_level( $optimization_level );
+
 		if ( $webp && $this->get_data()->get_size_data( $thumb_size, 'success' ) ) {
 			// We want a webp version but the source file is already optimized by Imagify.
 			$result = $this->create_temporary_copy( $thumb_size, $sizes );
@@ -531,8 +533,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$file = new File( $path );
-
-		$optimization_level = $this->sanitize_optimization_level( $optimization_level );
 
 		if ( ! $file->is_supported( $media->get_allowed_mime_types() ) ) {
 			// This file type is not supported.
@@ -929,12 +929,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( ! empty( $context_sizes[ $size ] ) ) {
 			// Not a dynamic size, yay!
-			$size_data = array_merge( $size_data, $context_sizes );
-		}
-
-		if ( empty( $size_data['path'] ) && 'full' === $size ) {
-			// Should not happen.
-			$size_data['path'] = $media->get_raw_original_path();
+			$size_data = array_merge( $size_data, $context_sizes[ $size ] );
 		}
 
 		if ( empty( $size_data['path'] ) ) {
@@ -1286,7 +1281,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to webp format.', 'imagify' ) );
 		}
 
-		$optimization_level = $this->get_option( 'optimization_level' );
+		$optimization_level = $data->get_optimization_level();
 
 		// Optimize.
 		return $this->optimize_sizes( $sizes, $optimization_level, $args );
