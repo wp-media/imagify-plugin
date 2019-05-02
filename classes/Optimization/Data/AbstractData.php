@@ -279,35 +279,68 @@ abstract class AbstractData implements DataInterface {
 	}
 
 	/**
-	 * Get the optimized attachment size.
+	 * Get the file size of the full size file.
+	 * If the webp size is available, it is used.
 	 *
-	 * @since  1.7
+	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  bool $human_format True to display the image human format size (1Mb).
 	 * @param  int  $decimals     Precision of number of decimal places.
+	 * @param  bool $use_webp     Use the webp size if available.
 	 * @return string|int
 	 */
-	public function get_optimized_size( $human_format = true, $decimals = 2 ) {
+	public function get_optimized_size( $human_format = true, $decimals = 2, $use_webp = true ) {
 		if ( ! $this->is_valid() ) {
 			return $human_format ? imagify_size_format( 0, $decimals ) : 0;
 		}
 
-		$size = $this->get_optimization_data();
-		$size = ! empty( $size['sizes']['full']['optimized_size'] ) ? $size['sizes']['full']['optimized_size'] : 0;
+		$data  = $this->get_optimization_data();
+		$media = $this->get_media();
+
+		if ( $use_webp ) {
+			$process_class_name = imagify_get_optimization_process_class_name( $media->get_context() );
+			$webp_size_name     = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
+		}
+
+		if ( $use_webp && ! empty( $data['sizes'][ $webp_size_name ]['optimized_size'] ) ) {
+			$size = (int) $data['sizes'][ $webp_size_name ]['optimized_size'];
+		} elseif ( ! empty( $data['sizes']['full']['optimized_size'] ) ) {
+			$size = (int) $data['sizes']['full']['optimized_size'];
+		} else {
+			$size = 0;
+		}
+
+		if ( $size ) {
+			return $human_format ? imagify_size_format( $size, $decimals ) : $size;
+		}
 
 		// If nothing in the database, try to get the info from the file.
-		if ( ! $size ) {
-			$filepath = $this->get_media()->get_original_path();
-			$size     = $filepath ? $this->filesystem->size( $filepath ) : 0;
+		$filepath = false;
+
+		if ( $use_webp && ! empty( $data['sizes'][ $webp_size_name ]['success'] ) ) {
+			// Try with the webp file first.
+			$filepath = $media->get_raw_original_path();
+			$filepath = $filepath ? imagify_path_to_webp( $filepath ) : false;
+
+			if ( ! $filepath || ! $this->filesystem->exists( $filepath ) ) {
+				$filepath = false;
+			}
 		}
 
-		if ( $human_format ) {
-			return imagify_size_format( (int) $size, $decimals );
+		if ( ! $filepath ) {
+			// No webp? The full size then.
+			$filepath = $media->get_original_path();
 		}
 
-		return (int) $size;
+		if ( ! $filepath ) {
+			return $human_format ? imagify_size_format( 0, $decimals ) : 0;
+		}
+
+		$size = (int) $this->filesystem->size( $filepath );
+
+		return $human_format ? imagify_size_format( $size, $decimals ) : $size;
 	}
 
 
@@ -383,7 +416,15 @@ abstract class AbstractData implements DataInterface {
 			return round( (float) 0, 2 );
 		}
 
-		$percent = $this->get_size_data( 'full', 'percent' );
+		$process_class_name = imagify_get_optimization_process_class_name( $this->get_media()->get_context() );
+		$webp_size_name     = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
+
+		$percent = $this->get_size_data( $webp_size_name, 'percent' );
+
+		if ( ! $percent ) {
+			$percent = $this->get_size_data( 'full', 'percent' );
+		}
+
 		$percent = $percent ? $percent : 0;
 
 		return round( (float) $percent, 2 );
