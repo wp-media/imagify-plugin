@@ -187,7 +187,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @param  int    $media_id The media ID.
 	 * @param  string $context  The context.
 	 * @param  int    $level    The optimization level.
-	 * @return bool|WP_Error    True if the optimization have been successfully launched, a \WP_Error object on failure.
+	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	protected function force_optimize( $media_id, $context, $level ) {
 		$process = imagify_get_optimization_process( $media_id, $context );
