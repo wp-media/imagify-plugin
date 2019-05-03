@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 4.0.0
-Tested up to: 4.9.8
-Stable tag: 1.8.4
+Tested up to: 5.1.1
+Stable tag: 1.9.0
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -45,7 +45,7 @@ With the backup option, you can change your mind whenever you want by restoring 
 
 = Is Imagify Free? =
 
-You can optimize for free 25MB of images (about 250 images) every month and you will receive a 25MB bonus upon registration.
+You can optimize for free 25MB of images (about 250 images) every month.
 
 Need more? Have a look at our plans: [https://imagify.io/pricing](https://imagify.io/pricing)
 
@@ -138,6 +138,17 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.0 - 2019/05/06 =
+* New: webp support. For each image or thumbnail, Imagify can create a webp version of it. But since creating these images without using them does not make really sense, Imagify can also display your webp images on your site. All of this can be enabled in the settings. For the images that are already optimized, you get the possibility to create the webp versions separately (one by one or in the settings page), but only if you kept a backup copy of the original images.
+* Improvement: the optimization process has been entirely rebuilt. This new process allows you to optimize as many thumnail sizes that you want. It also implies that many classes, functions, and hooks have been deprecated.
+* Improvement: compatibility with Flywheel.
+* Improvement: some error messages are now more accurate.
+* Fix: made sure to stop the optimization process if the backup process fails. Since the optimization process has been rebuilt, some other bugs have been fixed along the way.
+* Fix: an issue preventing directory creation.
+* Fix: a fatal error when uploading an image in NextGen Gallery, due to a recent change in NGG.
+* Imagify now requires WordPress 4.0+ and php 5.4+.
+* Support for the plugin WP Retina 2x has been dropped (maybe temporarily).
+
 = 1.8.4.1 - 2018/12/18 =
 * Improvement: prevent "unknown error" messages that some users are getting since yesterday.
 
