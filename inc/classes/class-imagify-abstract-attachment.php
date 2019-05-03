@@ -252,8 +252,9 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 		}
 
 		$backup_path = $this->get_raw_backup_path();
+		$has_backup = apply_filters('imagify_has_backup', $this->filesystem->exists( $backup_path ), $backup_path);
 
-		if ( $backup_path && $this->filesystem->exists( $backup_path ) ) {
+		if ( $backup_path && $has_backup) {
 			return $backup_path;
 		}
 
