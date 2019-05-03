@@ -46,8 +46,7 @@ function imagify_get_context_names() {
  * @return string
  */
 function imagify_sanitize_context( $context ) {
-	$context = preg_replace( '/[^a-z0-9_-]/i', '', $context );
-	return $context ? strtolower( $context ) : 'wp';
+	return sanitize_key( $context );
 }
 
 /**
