@@ -763,7 +763,8 @@ abstract class Imagify_Abstract_Attachment extends Imagify_Abstract_Attachment_D
 	 * @return bool True if the attachment has a backup.
 	 */
 	public function has_backup() {
-		return (bool) $this->get_backup_path();
+		$has_backup = $this->get_backup_path();
+		return apply_filters('imagify_has_backup', (bool) $has_backup, $has_backup);
 	}
 
 	/**
