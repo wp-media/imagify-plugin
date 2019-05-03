@@ -4,7 +4,7 @@ module.exports = function( grunt ) {
 	grunt.initConfig( {
 		// JS linter.
 		'eslint': {
-			'all': [ 'gruntfile.js', 'assets/js/*.js', '!**/*.min.js', '!assets/js/chart.js', '!assets/js/es6-promise.auto.js', '!assets/js/formdata-polyfill.js', '!assets/js/imagify-gulp.js', '!assets/js/jquery.event.move.js', '!assets/js/sweetalert2.js', '!assets/js/weakmap-polyfill.js' ]
+			'all': [ 'gruntfile.js', 'assets/js/*.js', '!**/*.min.js', '!assets/js/chart.js', '!assets/js/es6-promise.auto.js', '!assets/js/imagify-gulp.js', '!assets/js/jquery.event.move.js', '!assets/js/sweetalert2.js' ]
 		},
 		// JS minify.
 		'uglify': {
@@ -12,7 +12,7 @@ module.exports = function( grunt ) {
 				'files': [ {
 					'expand': true,
 					'cwd':    'assets/js',
-					'src':    [ '*.js', '!*.min.js', '!chart.js', '!es6-promise.auto.js', '!imagify-gulp.js', '!jquery.event.move.js', '!formdata-polyfill.js', '!jquery.twentytwenty.js', '!sweetalert2.js', '!weakmap-polyfill.js' ],
+					'src':    [ '*.js', '!*.min.js', '!chart.js', '!es6-promise.auto.js', '!imagify-gulp.js', '!jquery.event.move.js', '!jquery.twentytwenty.js', '!sweetalert2.js' ],
 					'dest':   'assets/js',
 					'ext':    '.min.js'
 				} ]
