@@ -147,7 +147,7 @@ window.imagify = window.imagify || {};
 		 *     @type {string} context     The context.
 		 *     @type {int}    level       The optimization.
 		 *     @type {string} optimizeURL The URL to ping to optimize a file.
-		 *     @type {array}  mediaIDs     A list of file IDs.
+		 *     @type {array}  mediaIDs    A list of file IDs.
 		 *     @type {object} files       File IDs as keys (prefixed by an underscore), File URLs as values.
 		 * }
 		 */
@@ -740,8 +740,7 @@ window.imagify = window.imagify || {};
 		launchAllProcesses: function () {
 			var $w      = $( w ),
 				$button = $( '#imagify-bulk-action' ),
-				skip    = true,
-				action  = $( '.imagify-bulk-action-selector [name="imagify_action"]:checked' ).first();
+				skip    = true;
 
 			// Disable the button.
 			$button.attr( 'disabled', 'disabled' ).find( '.dashicons' ).addClass( 'rotate' );
@@ -762,7 +761,7 @@ window.imagify = window.imagify || {};
 			this.status               = {};
 			this.displayedWaitMessage = false;
 			this.processIsStopped     = false;
-			this.imagifyAction        = action.length ? action.val() : 'optimize';
+			this.imagifyAction        = 'optimize';
 			this.globalGain           = 0;
 			this.globalOriginalSize   = 0;
 			this.globalOptimizedSize  = 0;

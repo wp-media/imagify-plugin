@@ -45,6 +45,7 @@ class Main {
 		}
 		$done = true;
 
+		add_filter( 'imagify_register_context',   [ $this, 'register_context' ] );
 		add_filter( 'imagify_context_class_name', [ $this, 'add_context_class_name' ], 10, 2 );
 		add_filter( 'imagify_process_class_name', [ $this, 'add_process_class_name' ], 10, 2 );
 		add_filter( 'imagify_bulk_class_name',    [ $this, 'add_bulk_class_name' ], 10, 2 );
@@ -52,14 +53,18 @@ class Main {
 	}
 
 	/**
-	 * Add custom NGG mixin to override its functions.
+	 * Register the context used for NGG.
 	 *
-	 * @since  1.5
+	 * @since  1.9
 	 * @access public
-	 * @author Jonathan Buttigieg
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $contexts An array of context names.
+	 * @return array
 	 */
-	public function add_mixin() {
-		\C_Gallery_Storage::get_instance()->get_wrapped_instance()->add_mixin( '\\Imagify\\ThirdParty\\NGG\\NGGStorage' );
+	public function register_context( $contexts ) {
+		$contexts[] = 'ngg';
+		return $contexts;
 	}
 
 	/**
@@ -117,5 +122,16 @@ class Main {
 		}
 
 		return $class_name;
+	}
+
+	/**
+	 * Add custom NGG mixin to override its functions.
+	 *
+	 * @since  1.5
+	 * @access public
+	 * @author Jonathan Buttigieg
+	 */
+	public function add_mixin() {
+		\C_Gallery_Storage::get_instance()->get_wrapped_instance()->add_mixin( '\\Imagify\\ThirdParty\\NGG\\NGGStorage' );
 	}
 }

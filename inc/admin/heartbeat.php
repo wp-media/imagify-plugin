@@ -1,8 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
-global $pagenow;
-
 add_filter( 'heartbeat_received', '_imagify_heartbeat_received', 10, 2 );
 /**
  * Prepare the data that goes back with the Heartbeat API.
@@ -143,6 +141,53 @@ function imagify_heartbeat_bulk_optimization_status_received( $response, $data )
 				'error'   => imagify_translate_api_message( $message ),
 			];
 		}
+	}
+
+	return $response;
+}
+
+add_filter( 'heartbeat_received', 'imagify_heartbeat_options_bulk_optimization_status_received', 10, 2 );
+/**
+ * Look for media where status has changed, compared to what Heartbeat sends.
+ * This is used in the settings page.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param  array $response The Heartbeat response.
+ * @param  array $data     The $_POST data sent.
+ * @return array
+ */
+function imagify_heartbeat_options_bulk_optimization_status_received( $response, $data ) {
+	$heartbeat_id = 'update_options_bulk_queue';
+
+	if ( empty( $data[ $heartbeat_id ] ) || ! is_array( $data[ $heartbeat_id ] ) ) {
+		return $response;
+	}
+
+	$statuses = [];
+
+	foreach ( $data[ $heartbeat_id ] as $item ) {
+		if ( empty( $statuses[ $item['context'] ] ) ) {
+			$statuses[ $item['context'] ] = [];
+		}
+
+		$statuses[ $item['context'] ][ '_' . $item['mediaID'] ] = 1;
+	}
+
+	$results = imagify_get_modified_optimization_statusses( $statuses );
+
+	if ( ! $results ) {
+		return $response;
+	}
+
+	$response[ $heartbeat_id ] = [];
+
+	foreach ( $results as $result ) {
+		$response[ $heartbeat_id ][] = [
+			'mediaID' => $result['media_id'],
+			'context' => $result['context'],
+		];
 	}
 
 	return $response;
@@ -292,7 +337,7 @@ function imagify_get_modified_optimization_statusses( $data ) {
 }
 
 
-if ( 'upload.php' === $pagenow && ! empty( $_GET['page'] ) && Imagify_Views::get_instance()->get_bulk_page_slug() === $_GET['page'] ) { // WPCS: CSRF ok.
+if ( Imagify_Views::get_instance()->is_bulk_page() || Imagify_Views::get_instance()->is_settings_page() ) {
 	add_filter( 'heartbeat_settings', '_imagify_heartbeat_settings', IMAGIFY_INT_MAX );
 }
 /**

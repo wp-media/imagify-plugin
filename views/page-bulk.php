@@ -172,26 +172,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		}
 		?>
 
-		<?php
-		if ( get_imagify_option( 'convert_to_webp' ) ) {
-			?>
-			<div class="imagify-bulk-action-selector">
-				<?php
-				$this->print_template( 'input/selector', [
-					'current_label' => __( 'Current action:', 'imagify' ),
-					'name'          => 'imagify_action',
-					'value'         => 'optimize',
-					'values'        => [
-						'optimize'      => __( 'Optimize', 'imagify' ),
-						'generate_webp' => __( 'Generate missing webp versions', 'imagify' ),
-					],
-				] );
-				?>
-			</div>
-			<?php
-		}
-		?>
-
 		<div class="imagify-bulk-submit imagify-flex imagify-vcenter">
 			<div class="imagify-pr2">
 				<p>

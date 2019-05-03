@@ -82,16 +82,16 @@ class CustomFolders extends AbstractBulk {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return array A list of media. Array keys are media IDs prefixed with an underscore character, array values are the main file’s URL.
+	 * @return array A list of media IDs.
 	 */
 	public function get_optimized_media_ids_without_webp() {
 		global $wpdb;
 
 		@set_time_limit( 0 );
 
-		$mime_types    = \Imagify_DB::get_mime_types( 'image' );
 		$files_table   = \Imagify_Files_DB::get_instance()->get_table_name();
 		$folders_table = \Imagify_Folders_DB::get_instance()->get_table_name();
+		$mime_types    = \Imagify_DB::get_mime_types( 'image' );
 		$webp_suffix   = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::WEBP_SUFFIX' );
 		$files         = $wpdb->get_results( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"
@@ -131,10 +131,42 @@ class CustomFolders extends AbstractBulk {
 				continue;
 			}
 
-			$data[ '_' . $file_id ] = esc_url( \Imagify_Files_Scan::remove_placeholder( $file->path, 'url' ) );
+			$data[] = $file_id;
 		} // End foreach().
 
 		return $data;
+	}
+
+	/**
+	 * Tell if there are optimized media without webp versions.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return int The number of media.
+	 */
+	public function has_optimized_media_without_webp() {
+		global $wpdb;
+
+		$files_table   = \Imagify_Files_DB::get_instance()->get_table_name();
+		$folders_table = \Imagify_Folders_DB::get_instance()->get_table_name();
+		$mime_types    = \Imagify_DB::get_mime_types( 'image' );
+		$webp_suffix   = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::WEBP_SUFFIX' );
+
+		return (int) $wpdb->get_var( $wpdb->prepare( // WPCS: unprepared SQL ok.
+			"
+			SELECT COUNT(fi.file_id)
+			FROM $files_table as fi
+			INNER JOIN $folders_table AS fo
+				ON ( fi.folder_id = fo.folder_id )
+			WHERE
+				fi.mime_type IN ( $mime_types )
+				AND fi.status = 'success'
+				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )
+			ORDER BY fi.file_id DESC",
+			'%' . $wpdb->esc_like( '"full' . $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+		) );
 	}
 
 	/**

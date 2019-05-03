@@ -152,25 +152,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @access protected
 	 * @author Grégory Viguier
 	 *
-	 * @param int    $media_id The media ID.
-	 * @param string $context  The context.
+	 * @param  int    $media_id The media ID.
+	 * @param  string $context  The context.
+	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	protected function optimize_media( $media_id, $context ) {
-		$process = imagify_get_optimization_process( $media_id, $context );
-
-		// Optimize.
-		$result = $process->optimize();
-
-		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
-
-		if ( is_wp_error( $result ) ) {
-			// Return an error message.
-			$output = $result->get_error_message();
-
-			wp_send_json_error( [ 'html' => $output ] );
-		}
-
-		wp_send_json_success();
+		return imagify_get_optimization_process( $media_id, $context )->optimize();
 	}
 
 	/**
@@ -180,26 +167,13 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @access protected
 	 * @author Grégory Viguier
 	 *
-	 * @param int    $media_id The media ID.
-	 * @param string $context  The context.
-	 * @param int    $level    The optimization level.
+	 * @param  int    $media_id The media ID.
+	 * @param  string $context  The context.
+	 * @param  int    $level    The optimization level.
+	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	protected function reoptimize_media( $media_id, $context, $level ) {
-		$process = imagify_get_optimization_process( $media_id, $context );
-
-		// Optimize.
-		$result = $process->reoptimize( $level );
-
-		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
-
-		if ( is_wp_error( $result ) ) {
-			// Return an error message.
-			$output = $result->get_error_message();
-
-			wp_send_json_error( [ 'html' => $output ] );
-		}
-
-		wp_send_json_success();
+		return imagify_get_optimization_process( $media_id, $context )->reoptimize( $level );
 	}
 
 	/**
@@ -213,7 +187,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @param  int    $media_id The media ID.
 	 * @param  string $context  The context.
 	 * @param  int    $level    The optimization level.
-	 * @return bool|WP_Error    True if the optimization have been successfully launched, a \WP_Error object on failure.
+	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	protected function force_optimize( $media_id, $context, $level ) {
 		$process = imagify_get_optimization_process( $media_id, $context );
@@ -229,15 +203,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			}
 		}
 
-		// Optimize it.
-		$result = $process->optimize( $level );
-
-		if ( is_wp_error( $result ) ) {
-			// Return an error message.
-			return $result;
-		}
-
-		return true;
+		return $process->optimize( $level );
 	}
 
 	/**
@@ -247,30 +213,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @access protected
 	 * @author Grégory Viguier
 	 *
-	 * @param int    $media_id The media ID.
-	 * @param string $context  The context.
+	 * @param  int    $media_id The media ID.
+	 * @param  string $context  The context.
+	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	protected function optimize_missing_sizes( $media_id, $context ) {
-		$process = imagify_get_optimization_process( $media_id, $context );
-
-		if ( ! $process->get_media()->is_image() ) {
-			$output = get_imagify_attachment_optimization_text( $process );
-			imagify_die( $output );
-		}
-
-		// Optimize.
-		$result = $process->optimize_missing_thumbnails();
-
-		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
-
-		if ( is_wp_error( $result ) ) {
-			// Return an error message.
-			$output = $result->get_error_message();
-
-			wp_send_json_error( [ 'html' => $output ] );
-		}
-
-		wp_send_json_success();
+		return imagify_get_optimization_process( $media_id, $context )->optimize_missing_thumbnails();
 	}
 
 	/**
@@ -280,30 +228,27 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @access protected
 	 * @author Grégory Viguier
 	 *
-	 * @param int    $media_id The media ID.
-	 * @param string $context  The context.
+	 * @param  int    $media_id The media ID.
+	 * @param  string $context  The context.
+	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	protected function generate_webp_versions( $media_id, $context ) {
-		$process = imagify_get_optimization_process( $media_id, $context );
+		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
+	}
 
-		if ( ! $process->get_media()->is_image() ) {
-			$output = get_imagify_attachment_optimization_text( $process );
-			imagify_die( $output );
-		}
-
-		// Generate.
-		$result = $process->generate_webp_versions();
-
-		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
-
-		if ( is_wp_error( $result ) ) {
-			// Return an error message.
-			$output = $result->get_error_message();
-
-			wp_send_json_error( [ 'html' => $output ] );
-		}
-
-		wp_send_json_success();
+	/**
+	 * Restore a media.
+	 *
+	 * @since  1.9
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  int    $media_id The media ID.
+	 * @param  string $context  The context.
+	 * @return bool|WP_Error    True on success. A \WP_Error instance on failure.
+	 */
+	protected function restore_media( $media_id, $context ) {
+		return imagify_get_optimization_process( $media_id, $context )->restore();
 	}
 
 
@@ -497,7 +442,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$this->optimize_media( $media_id, $context );
+		$result = $this->optimize_media( $media_id, $context );
+
+		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
+
+		if ( is_wp_error( $result ) ) {
+			// Return an error message.
+			$output = $result->get_error_message();
+
+			wp_send_json_error( [ 'html' => $output ] );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -521,7 +477,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$this->reoptimize_media( $media_id, $context, $this->get_optimization_level() );
+		$result = $this->reoptimize_media( $media_id, $context, $this->get_optimization_level() );
+
+		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
+
+		if ( is_wp_error( $result ) ) {
+			// Return an error message.
+			$output = $result->get_error_message();
+
+			wp_send_json_error( [ 'html' => $output ] );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -545,7 +512,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$this->optimize_missing_sizes( $media_id, $context );
+		$result = $this->optimize_missing_sizes( $media_id, $context );
+
+		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
+
+		if ( is_wp_error( $result ) ) {
+			// Return an error message.
+			$output = $result->get_error_message();
+
+			wp_send_json_error( [ 'html' => $output ] );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -569,7 +547,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$this->generate_webp_versions( $media_id, $context );
+		$result = $this->generate_webp_versions( $media_id, $context );
+
+		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
+
+		if ( is_wp_error( $result ) ) {
+			// Return an error message.
+			$output = $result->get_error_message();
+
+			wp_send_json_error( [ 'html' => $output ] );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -593,10 +582,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$process = imagify_get_optimization_process( $media_id, $context );
-
-		// Restore from backup.
-		$result = $process->restore();
+		$result = $this->restore_media( $media_id, $context );
 
 		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
 
@@ -643,7 +629,16 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$this->optimize_media( $media_id, 'custom-folders' );
+		$result = $this->optimize_media( $media_id, 'custom-folders' );
+
+		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
+
+		if ( is_wp_error( $result ) ) {
+			// Return an error message.
+			wp_send_json_error( $result->get_error_message() );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -668,7 +663,16 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 		$level = $this->get_optimization_level( 'GET', 'level' );
 
-		$this->reoptimize_media( $media_id, 'custom-folders', $level );
+		$result = $this->reoptimize_media( $media_id, 'custom-folders', $level );
+
+		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
+
+		if ( is_wp_error( $result ) ) {
+			// Return an error message.
+			wp_send_json_error( $result->get_error_message() );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -691,16 +695,13 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$process  = imagify_get_optimization_process( $media_id, 'custom-folders' );
-
-		// Restore it.
-		$result = $process->restore();
+		$result = $this->restore_media( $media_id, 'custom-folders' );
 
 		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
 
 		if ( is_wp_error( $result ) ) {
 			// Return an error message.
-			imagify_die( $result->get_error_message() );
+			wp_send_json_error( $result->get_error_message() );
 		}
 
 		$this->file_optimization_output( $process );

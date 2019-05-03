@@ -1,20 +1,41 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
-add_action( 'delete_attachment', 'imagify_cleanup_after_media_deletion' );
+add_action( 'delete_attachment', 'imagify_trigger_delete_attachment_hook' );
 /**
- * Delete the backup file and the webp files when an attachement is deleted.
+ * Trigger a common Imagify hook when an attachment is deleted.
  *
  * @since  1.9
  * @author Grégory Viguier
  *
  * @param int $post_id Attachment ID.
  */
-function imagify_cleanup_after_media_deletion( $post_id ) {
+function imagify_trigger_delete_attachment_hook( $post_id ) {
 	$process = imagify_get_optimization_process( $post_id, 'wp' );
 
+	if ( ! $process->is_valid() ) {
+		return;
+	}
+
+	imagify_trigger_delete_media_hook( $process );
+}
+
+add_action( 'imagify_delete_media', 'imagify_cleanup_after_media_deletion' );
+/**
+ * Delete the backup file and the webp files when an attachement is deleted.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param ProcessInterface $process An optimization process.
+ */
+function imagify_cleanup_after_media_deletion( $process ) {
+	if ( 'wp' !== $process->get_media()->get_context() ) {
+		return;
+	}
+
 	/**
-	 * The optimization data has already been deleted by WP (post metas).
+	 * The optimization data will be automatically deleted by WP (post metas).
 	 * Delete the webp versions and the backup file.
 	 */
 	$process->delete_webp_files();

@@ -215,11 +215,11 @@ class Imagify_Assets {
 
 		$this->register_script( 'library', 'library', array( 'jquery', 'media-modal' ) )->defer_localization( 'imagifyLibrary' );
 
-		$this->register_script( 'async', 'imagify-gulp', array(), '2017-07-28' );
+		$this->register_script( 'async', 'imagify-gulp' );
 
 		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
 
-		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'underscore', 'admin' ) )->defer_localization( 'imagifyOptions' );
+		$this->register_script( 'options', 'options', array( 'jquery', 'heartbeat', 'sweetalert', 'underscore', 'admin' ) )->defer_localization( 'imagifyOptions' );
 
 		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'admin' ) )->defer_localization( 'imagifyFiles' );
 	}

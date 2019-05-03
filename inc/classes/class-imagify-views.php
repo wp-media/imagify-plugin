@@ -434,6 +434,102 @@ class Imagify_Views {
 
 
 	/** ----------------------------------------------------------------------------------------- */
+	/** PAGE TESTS ============================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Tell if we’re displaying the settings page.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public function is_settings_page() {
+		global $pagenow;
+
+		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+
+		if ( $this->get_settings_page_slug() !== $page ) {
+			return false;
+		}
+
+		if ( imagify_is_active_for_network() ) {
+			return 'admin.php' === $pagenow;
+		}
+
+		return 'options-general.php' === $pagenow;
+	}
+
+	/**
+	 * Tell if we’re displaying the bulk optimization page.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public function is_bulk_page() {
+		global $pagenow;
+
+		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+
+		return 'upload.php' === $pagenow && $this->get_bulk_page_slug() === $page;
+	}
+
+	/**
+	 * Tell if we’re displaying the custom files list page.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public function is_files_page() {
+		global $pagenow;
+
+		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+
+		return 'upload.php' === $pagenow && $this->get_files_page_slug() === $page;
+	}
+
+	/**
+	 * Tell if we’re displaying the WP media library page.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public function is_wp_library_page() {
+		global $pagenow;
+
+		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+
+		return 'upload.php' === $pagenow && ! $page;
+	}
+
+	/**
+	 * Tell if we’re displaying a media page.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public function is_media_page() {
+		global $pagenow, $typenow;
+
+		return 'post.php' === $pagenow && 'attachment' === $typenow;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
 	/** QUOTA =================================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 

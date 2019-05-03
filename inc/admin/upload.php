@@ -47,7 +47,7 @@ add_action( 'restrict_manage_posts', '_imagify_attachments_filter_dropdown' );
  * @author Jonathan Buttigieg
  */
 function _imagify_attachments_filter_dropdown() {
-	if ( 'upload.php' !== $GLOBALS['pagenow'] ) {
+	if ( ! Imagify_Views::get_instance()->is_wp_library_page() ) {
 		return;
 	}
 
@@ -82,7 +82,7 @@ add_filter( 'request', '_imagify_sort_attachments_by_status' );
  * @return array
  */
 function _imagify_sort_attachments_by_status( $vars ) {
-	if ( 'upload.php' !== $GLOBALS['pagenow'] || empty( $_GET['imagify-status'] ) ) { // WPCS: CSRF ok.
+	if ( empty( $_GET['imagify-status'] ) || ! Imagify_Views::get_instance()->is_wp_library_page() ) { // WPCS: CSRF ok.
 		return $vars;
 	}
 

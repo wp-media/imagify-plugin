@@ -112,7 +112,7 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return array A list of media. Array keys are media IDs prefixed with an underscore character, array values are the main file’s URL.
+	 * @return array A list of media IDs.
 	 */
 	public function get_optimized_media_ids_without_webp() {
 		global $wpdb;
@@ -155,10 +155,40 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 				continue;
 			}
 
-			$data[ '_' . $file_id ] = esc_url( $storage->get_image_url( $file_id ) );
+			$data[] = $file_id;
 		} // End foreach().
 
 		return $data;
+	}
+
+	/**
+	 * Tell if there are optimized media without webp versions.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return int The number of media.
+	 */
+	public function has_optimized_media_without_webp() {
+		global $wpdb;
+
+		$ngg_table   = $wpdb->prefix . 'ngg_pictures';
+		$data_table  = DB::get_instance()->get_table_name();
+		$webp_suffix = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::WEBP_SUFFIX' );
+
+		return (int) $wpdb->get_var( $wpdb->prepare( // WPCS: unprepared SQL ok.
+			"
+			SELECT COUNT(ngg.pid)
+			FROM $ngg_table as ngg
+			INNER JOIN $data_table AS data
+				ON ( ngg.pid = data.pid )
+			WHERE
+				data.status = 'success'
+				AND data.data NOT LIKE %s
+			ORDER BY ngg.pid DESC",
+			'%' . $wpdb->esc_like( '"full' . $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+		) );
 	}
 
 	/**
