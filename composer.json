@@ -39,6 +39,7 @@
 		"wp-coding-standards/wpcs": "~1.2"
 	},
 	"autoload": {
+		"classmap-authoritative": true,
 		"psr-4": {
 			"Imagify\\": "classes/",
 			"Imagify\\ThirdParty\\AS3CF\\": "inc/3rd-party/amazon-s3-and-cloudfront/classes/",

@@ -188,7 +188,7 @@ class Display {
 
 		$output = '<picture' . $this->build_attributes( $attributes ) . ">\n";
 		/**
-		 * Allow to add more <ource> tags to the <picture> tag.
+		 * Allow to add more <source> tags to the <picture> tag.
 		 *
 		 * @since  1.9
 		 * @author Grégory Viguier
@@ -249,7 +249,7 @@ class Display {
 		 * @author Grégory Viguier
 		 *
 		 * @param array $attributes A list of attributes to be added to the <source> tag.
-		 * @param array $data       Data built from the originale <img> tag. See $this->process_image().
+		 * @param array $data       Data built from the original <img> tag. See $this->process_image().
 		 */
 		$attributes = apply_filters( 'imagify_picture_source_attributes', $attributes, $image );
 

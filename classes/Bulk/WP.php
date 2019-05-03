@@ -227,8 +227,6 @@ class WP extends AbstractBulk {
 			'filenames' => '_wp_attached_file',
 		], $ids );
 
-		$context = imagify_get_context( 'wp' )->get_name();
-
 		/**
 		 * Triggered before testing for file existence.
 		 *
@@ -239,7 +237,7 @@ class WP extends AbstractBulk {
 		 * @param array  $metas An array of the data fetched from the database.
 		 * @param string $context The context.
 		 */
-		do_action( 'imagify_bulk_generate_webp_before_file_existence_tests', $ids, $metas, $context );
+		do_action( 'imagify_bulk_generate_webp_before_file_existence_tests', $ids, $metas, 'wp' );
 
 		$data = [];
 

@@ -537,7 +537,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			$orientation = $dimensions['width'] > $dimensions['height'] ? ' landscape' : ' portrait';
 			$orientation = $dimensions['width'] && $dimensions['height'] ? $orientation : '';
 
-			if ( ! wp_doing_ajax() && $item->process->get_data()->get_optimized_size( false ) > 100000 ) {
+			if ( ! wp_doing_ajax() && $item->process->get_data()->get_optimized_size( false, 0, false ) > 100000 ) {
 				// LazyLoad.
 				$image_tag  = '<img src="' . esc_url( IMAGIFY_ASSETS_IMG_URL . 'lazyload.png' ) . '" data-lazy-src="' . esc_url( $url ) . '" alt="" />';
 				$image_tag .= '<noscript><img src="' . esc_url( $url ) . '" alt="" /></noscript>';

@@ -292,7 +292,7 @@ class Imagify_Views {
 				/**
 				 * Custom folders: in network admin only if network activated, in each site otherwise.
 				 */
-				$types['custom-folders'] = 1;
+				$types['custom-folders|custom-folders'] = 1;
 			}
 		}
 
@@ -317,14 +317,14 @@ class Imagify_Views {
 				 * It is also used in get_imagify_localize_script_translations().
 				 */
 				'group_id' => 'library',
-				'context'  => imagify_get_context( 'wp' )->get_name(),
+				'context'  => 'wp',
 				'title'    => __( 'Media Library', 'imagify' ),
 				/* translators: 1 is the opening of a link, 2 is the closing of this link. */
 				'footer'   => sprintf( __( 'You can also re-optimize your media files from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
 			);
 		}
 
-		if ( isset( $types['custom-folders'] ) ) {
+		if ( isset( $types['custom-folders|custom-folders'] ) ) {
 			if ( ! Imagify_Folders_DB::get_instance()->has_items() ) {
 				// New Feature!
 				$data['no-custom-folders'] = true;
@@ -332,7 +332,7 @@ class Imagify_Views {
 				// Group.
 				$data['groups']['custom-folders'] = array(
 					'group_id' => 'custom-folders',
-					'context'  => imagify_get_context( 'custom-folders' )->get_name(),
+					'context'  => 'custom-folders',
 					'title'    => __( 'Custom folders', 'imagify' ),
 					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
 					'footer'   => sprintf( __( 'You can re-optimize your media files more finely directly in the %1$smedia management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),

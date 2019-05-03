@@ -160,7 +160,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	if ( $add_full_webp ) {
 		// It's a supported image and webp conversion is enabled.
 		$wp_full_path_webp = false;
-		$webp_size_name    = 'full' . constant( get_class( $wp_process ) . '::WEBP_SUFFIX' );
+		$webp_size_name    = 'full' . $wp_process::WEBP_SUFFIX;
 		$wp_webp_data      = $wp_data->get_size_data( $webp_size_name );
 
 		// Get the path to the webp image if it exists.

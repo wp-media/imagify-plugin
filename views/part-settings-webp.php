@@ -49,7 +49,7 @@ $settings = Imagify_Settings::get_instance();
 			<?php
 			printf(
 				/* translators: 1 and 2 are HTML tag names, 3 is a <strong> tag opening, 4 is the <strong> tag closing. */
-				esc_html__( 'The first option replaces the %1$s tags by %2$s tags. %3$sThis is the prefered solution but some themes may break%4$s, so make sure to verify that all seems fine.', 'imagify' ),
+				esc_html__( 'The first option replaces the %1$s tags with %2$s tags. %3$sThis is the preferred solution but some themes may break%4$s, so make sure to verify that everything seems fine.', 'imagify' ),
 				'<code>&lt;img&gt;</code>',
 				'<code>&lt;picture&gt;</code>',
 				'<strong>',
