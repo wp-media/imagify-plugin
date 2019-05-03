@@ -477,7 +477,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$rsult = $this->reoptimize_media( $media_id, $context, $this->get_optimization_level() );
+		$result = $this->reoptimize_media( $media_id, $context, $this->get_optimization_level() );
 
 		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
 
