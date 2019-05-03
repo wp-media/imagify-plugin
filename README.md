@@ -3,7 +3,8 @@
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
 Imagify is the most advanced image compression tool, you can now use this power directly in WordPress.
-After enabling it all your images including thumbnails and retina images from WP Retina x2 will be automatically optimized on the fly when you will add in into WordPress.
+After enabling it all your images including thumbnails will be automatically optimized on the fly when uploaded into WordPress.
+Imagify also supports webp format: a webp version of each image can be created, according the chosen optimization level.
 
 WooCommerce and NextGen Gallery compatible.
 
@@ -44,7 +45,7 @@ With the backup option, you can change your mind whenever you want by restoring 
 
 ## Is Imagify Free?
 
-You can optimize for free 25MB of images (about 250 images) every month and you will receive a 25MB bonus upon registration.
+You can optimize for free 25MB of images (about 250 images) every month.
 
 Need more? Have a look at our plans: [https://imagify.io/pricing](https://imagify.io/pricing).
 
