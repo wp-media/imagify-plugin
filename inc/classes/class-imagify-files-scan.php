@@ -393,7 +393,7 @@ class Imagify_Files_Scan {
 
 		foreach ( $locations as $placeholder => $location_path ) {
 			if ( strpos( $file_path, $location_path ) === 0 ) {
-				return str_replace( $location_path, $placeholder, $file_path );
+				return preg_replace( '@^' . preg_quote( $location_path, '@' ) . '@', $placeholder, $file_path );
 			}
 		}
 
@@ -421,7 +421,7 @@ class Imagify_Files_Scan {
 
 		foreach ( $locations as $placeholder => $location_path ) {
 			if ( strpos( $file_path, $placeholder ) === 0 ) {
-				return str_replace( $placeholder, $location_path, $file_path );
+				return preg_replace( '@^' . preg_quote( $placeholder, '@' ) . '@', $location_path, $file_path );
 			}
 		}
 

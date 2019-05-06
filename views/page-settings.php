@@ -136,6 +136,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 				<div class="imagify-settings-section imagify-clear">
 					<h2 class="imagify-options-title"><?php _e( 'Optimization', 'imagify' ); ?></h2>
 					<?php
+					$this->print_template( 'part-settings-webp' );
 					$this->print_template( 'part-settings-library' );
 					$this->print_template( 'part-settings-custom-folders' );
 					?>

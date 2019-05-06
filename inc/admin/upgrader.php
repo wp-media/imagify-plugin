@@ -16,8 +16,9 @@ function _imagify_upgrader() {
 	// Version stored at the site level.
 	$site_version    = Imagify_Data::get_instance()->get( 'version' );
 
-	// First install (network).
 	if ( ! $network_version ) {
+		// First install (network).
+
 		/**
 		 * Triggered on Imagify first install (network).
 		 *
@@ -25,9 +26,9 @@ function _imagify_upgrader() {
 		 * @author Grégory Viguier
 		 */
 		do_action( 'imagify_first_network_install' );
-	}
-	// Already installed but got updated (network).
-	elseif ( IMAGIFY_VERSION !== $network_version ) {
+	} elseif ( IMAGIFY_VERSION !== $network_version ) {
+		// Already installed but got updated (network).
+
 		/**
 		 * Triggered on Imagify upgrade (network).
 		 *
@@ -45,17 +46,18 @@ function _imagify_upgrader() {
 		Imagify_Options::get_instance()->set( 'version', IMAGIFY_VERSION );
 	}
 
-	// First install (site level).
 	if ( ! $site_version ) {
+		// First install (site level).
+
 		/**
 		 * Triggered on Imagify first install (site level).
 		 *
 		 * @since 1.0
 		 */
 		do_action( 'imagify_first_install' );
-	}
-	// Already installed but got updated (site level).
-	elseif ( IMAGIFY_VERSION !== $site_version ) {
+	} elseif ( IMAGIFY_VERSION !== $site_version ) {
+		// Already installed but got updated (site level).
+
 		/**
 		 * Triggered on Imagify upgrade (site level).
 		 *
@@ -202,9 +204,10 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 
 		if ( $query->posts ) {
 			foreach ( (array) $query->posts as $id ) {
-				$attachment_error = get_imagify_attachment( 'wp', $id, 'imagify_upgrade' )->get_optimized_error();
+				$data  = get_post_meta( $id, '_imagify_data', true );
+				$error = ! empty( $data['sizes']['full']['error'] ) ? $data['sizes']['full']['error'] : '';
 
-				if ( false !== strpos( $attachment_error, 'This image is already compressed' ) ) {
+				if ( false !== strpos( $error, 'This image is already compressed' ) ) {
 					update_post_meta( $id, '_imagify_status', 'already_optimized' );
 				}
 			}
@@ -241,10 +244,11 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 
 		if ( $query->posts ) {
 			foreach ( (array) $query->posts as $id ) {
-				$attachment_stats = get_imagify_attachment( 'wp', $id, 'imagify_upgrade' )->get_stats_data();
+				$data  = get_post_meta( $id, '_imagify_data', true );
+				$stats = isset( $data['stats'] ) ? $data['stats'] : [];
 
-				if ( isset( $attachment_stats['aggressive'] ) ) {
-					update_post_meta( $id, '_imagify_optimization_level', (int) $attachment_stats['aggressive'] );
+				if ( isset( $stats['aggressive'] ) ) {
+					update_post_meta( $id, '_imagify_optimization_level', (int) $stats['aggressive'] );
 				}
 			}
 		}
@@ -277,7 +281,7 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 		$replacement = '{{ROOT}}/';
 
 		if ( $filesystem->has_wp_its_own_directory() ) {
-			$replacement .= str_replace( $filesystem->get_site_root(), '', $filesystem->get_abspath() );
+			$replacement .= preg_replace( '@^' . preg_quote( $filesystem->get_site_root(), '@' ) . '@', '', $filesystem->get_abspath() );
 		}
 
 		$replacement = Imagify_DB::esc_like( $replacement );

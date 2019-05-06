@@ -5,17 +5,17 @@
  */
 window.imagify.drawMeAChart = function( canvas ) {
 	canvas.each( function() {
-		var value = parseInt( jQuery( this ).closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() );
+		var value = parseInt( jQuery( this ).closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text(), 10 );
 
 		new window.imagify.Chart( this, { // eslint-disable-line no-new
 			type: 'doughnut',
 			data: {
-				datasets: [{
+				datasets: [ {
 					data:            [ value, 100 - value ],
 					backgroundColor: [ '#00B3D3', '#D8D8D8' ],
 					borderColor:     '#fff',
 					borderWidth:     1
-				}]
+				} ]
 			},
 			options: {
 				legend: {
@@ -36,70 +36,306 @@ window.imagify.drawMeAChart = function( canvas ) {
 
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
-	var working = false;
+	w.imagify.modal = {
 
-	/**
-	 * Toggle slide in custom column.
-	 */
-	$( '.imagify-datas-details' ).hide();
+		working: [],
 
-	$( d ).on( 'click', '.imagify-datas-more-action a', function( e ) {
-		var $this = $( this );
+		/*
+		 * Init.
+		 */
+		init: function () {
+			var $document = $( d ),
+				$processing;
 
-		e.preventDefault();
+			// Update the chart in the media modal when a media is selected, and the ones already printed.
+			$( w ).on( 'canvasprinted.imagify', this.updateChart ).trigger( 'canvasprinted.imagify' );
 
-		if ( $this.hasClass( 'is-open' ) ) {
-			$( $this.attr( 'href' ) ).slideUp( 300 ).removeClass( 'is-open' );
-			$this.removeClass( 'is-open' ).find( '.the-text' ).text( $this.data( 'open' ) );
-		} else {
-			$( $this.attr( 'href' ) ).slideDown( 300 ).addClass( 'is-open' );
-			$this.addClass( 'is-open' ).find( '.the-text' ).text( $this.data( 'close' ) );
-		}
-	} );
+			// Toggle slide in custom column.
+			$( '.imagify-datas-details' ).hide();
 
-	/**
-	 * Process to one of these actions: restore, optimize, re-optimize, or optimize missing sizes.
-	 */
-	$( d ).on( 'click', '.button-imagify-restore, .button-imagify-manual-upload, .button-imagify-manual-override-upload, .button-imagify-optimize-missing-sizes', function( e ) {
-		var $obj    = $( this ),
-			$parent = $obj.parents( '.column-imagify_optimized_file, .compat-field-imagify .field' ),
-			href    = $obj.attr( 'href' );
+			$document.on( 'click', '.imagify-datas-more-action a', this.toggleSlide );
 
-		e.preventDefault();
+			if ( ! this.hasHeartbeat() ) {
+				return;
+			}
 
-		if ( ! $parent.length ) {
-			$parent = $obj.closest( '.column' );
-		}
+			// Optimize, restore, etc.
+			$document.on( 'click', '.button-imagify-restore, .button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-optimize-missing-sizes, .button-imagify-generate-webp', this.processOptimization );
 
-		$parent.html( '<div class="button"><span class="imagify-spinner"></span>' + $obj.data( 'waiting-label' ) + '</div>' );
+			$document.on( 'heartbeat-send', this.addToHeartbeat );
+			$document.on( 'heartbeat-tick', this.processHeartbeat );
 
-		$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ) )
-			.done( function( response ) {
-				working = true;
-				$parent.html( response.data );
-				$parent.find( '.imagify-datas-more-action a' ).addClass( 'is-open' ).find( '.the-text' ).text( $parent.find( '.imagify-datas-more-action a' ).data( 'close' ) );
-				$parent.find( '.imagify-datas-details' ).addClass( 'is-open' );
+			// Some items may be processed in background on page load.
+			$processing = $( '.imagify-data-actions-container .button-imagify-processing' );
 
-				w.imagify.drawMeAChart( $parent.find( '.imagify-consumption-chart' ) );
-				working = false;
-			} );
-	} );
+			if ( $processing.length ) {
+				// Fasten Heartbeat for a minute.
+				w.wp.heartbeat.interval( 5, 12 );
 
-	/**
-	 * Update the chart in the media modal when a media is selected, and the ones already printed.
-	 */
-	$( w ).on( 'canvasprinted.imagify', function( e, selector ) {
-		var $canvas;
+				$processing.closest( '.imagify-data-actions-container' ).each( function() {
+					var $this   = $( this ),
+						id      = w.imagify.modal.sanitizeId( $this.data( 'id' ) ),
+						context = w.imagify.modal.sanitizeContext( $this.data( 'context' ) );
 
-		selector = selector || '.imagify-consumption-chart';
-		$canvas  = $( selector );
+					w.imagify.modal.lockItem( context, id );
+				} );
+			}
+		},
 
-		w.imagify.drawMeAChart( $canvas );
+		// Charts ==================================================================================
 
-		if ( ! working ) {
+		/**
+		 * Update the chart in the media modal when a media is selected, and the ones already printed.
+		 *
+		 * @param {object} e        Event.
+		 * @param {string} selector A CSS selector.
+		 */
+		updateChart: function( e, selector ) {
+			var $canvas;
+
+			selector = selector || '.imagify-consumption-chart';
+			$canvas  = $( selector );
+
+			w.imagify.drawMeAChart( $canvas );
+
 			$canvas.closest( '.imagify-datas-list' ).siblings( '.imagify-datas-details' ).hide();
+		},
+
+		// Optimization ============================================================================
+
+		/**
+		 * Process to one of these actions: restore, optimize, re-optimize, or optimize missing sizes.
+		 *
+		 * @param {object} e Event.
+		 */
+		processOptimization: function( e ) {
+			var $obj            = $( this ),
+				$container      = $obj.parents( '.imagify-data-actions-container' ),
+				id              = w.imagify.modal.sanitizeId( $container.data( 'id' ) ),
+				context         = w.imagify.modal.sanitizeContext( $container.data( 'context' ) ),
+				href, processingTemplate;
+
+			e.preventDefault();
+
+			if ( w.imagify.modal.isItemLocked( context, id ) ) {
+				return;
+			}
+
+			w.imagify.modal.lockItem( context, id );
+
+			href               = $obj.attr( 'href' );
+			processingTemplate = w.imagify.template( 'imagify-button-processing' );
+
+			$container.html( processingTemplate( {
+				label: $obj.data( 'processing-label' )
+			} ) );
+
+			$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ) )
+				.done( function( response ) {
+					if ( response.data && response.data.html ) {
+						// The work is done.
+						w.imagify.modal.displayProcessResult( context, id, response.data.html );
+					} else {
+						// Still processing in background: we're waiting for the result by poking Heartbeat.
+						// Set the heartbeat interval to 5 sec for 60 seconds (12 ticks).
+						w.wp.heartbeat.interval( 5, 12 );
+					}
+				} );
+		},
+
+		// Heartbeat ===============================================================================
+
+		/**
+		 * Tell if we can use Heartbeat.
+		 *
+		 * @return {bool}
+		 */
+		hasHeartbeat: function() {
+			return w.imagifyModal && w.imagifyModal.heartbeatId && w.wp && w.wp.heartbeat ? true : false;
+		},
+
+		/**
+		 * Send the media IDs and their status to heartbeat.
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		addToHeartbeat: function ( e, data ) {
+			var $containers = $( '.imagify-data-actions-container' );
+
+			if ( ! $containers.length ) {
+				return;
+			}
+
+			data[ w.imagifyModal.heartbeatId ] = {};
+
+			$containers.each( function() {
+				var $this   = $( this ),
+					id      = w.imagify.modal.sanitizeId( $this.data( 'id' ) ),
+					context = w.imagify.modal.sanitizeContext( $this.data( 'context' ) ),
+					locked  = w.imagify.modal.isItemLocked( context, id ) ? 1 : 0;
+
+				data[ w.imagifyModal.heartbeatId ][ context ] = data[ w.imagifyModal.heartbeatId ][ context ] || {};
+				data[ w.imagifyModal.heartbeatId ][ context ][ '_' + id ] = locked;
+			} );
+		},
+
+		/**
+		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		processHeartbeat: function ( e, data ) {
+			if ( typeof data[ w.imagifyModal.heartbeatId ] === 'undefined' ) {
+				return;
+			}
+
+			$.each( data[ w.imagifyModal.heartbeatId ], function( contextId, htmlContent ) {
+				var context, id;
+
+				context = $.trim( contextId ).match( /^(.+)_(\d+)$/ );
+
+				if ( ! context ) {
+					return;
+				}
+
+				id      = w.imagify.modal.sanitizeId( context[2] );
+				context = w.imagify.modal.sanitizeContext( context[1] );
+
+				w.imagify.modal.displayProcessResult( context, id, htmlContent );
+			} );
+		},
+
+		// DOM manipulation tools ==================================================================
+
+		/**
+		 * Display the process result.
+		 *
+		 * @param {string} context     The media context.
+		 * @param {int}    id          The media ID.
+		 * @param {string} htmlContent The HTML to insert.
+		 */
+		displayProcessResult: function( context, id, htmlContent ) {
+			var $containers = w.imagify.modal.getContainers( context, id );
+
+			$containers.html( htmlContent );
+			w.imagify.modal.unlockItem( context, id );
+
+			if ( ! w.imagify.modal.working.length ) {
+				w.imagify.modal.openSlide( $containers );
+			}
+		},
+
+		/**
+		 * Open a slide rapidly.
+		 *
+		 * @param {object} $containers A jQuery collection.
+		 */
+		openSlide: function( $containers ) {
+			$containers.each( function() {
+				var $container = $( this ),
+					text       = $container.find( '.imagify-datas-more-action a' ).data( 'close' );
+
+				$container.find( '.imagify-datas-more-action a' ).addClass( 'is-open' ).find( '.the-text' ).text( text );
+				$container.find( '.imagify-datas-details' ).show().addClass( 'is-open' );
+			} );
+		},
+
+		/**
+		 * Toggle slide in custom column.
+		 *
+		 * @param {object} e Event.
+		 */
+		toggleSlide: function( e ) {
+			var $this = $( this );
+
+			e.preventDefault();
+
+			if ( $this.hasClass( 'is-open' ) ) {
+				$( $this.attr( 'href' ) ).slideUp( 300 ).removeClass( 'is-open' );
+				$this.removeClass( 'is-open' ).find( '.the-text' ).text( $this.data( 'open' ) );
+			} else {
+				$( $this.attr( 'href' ) ).slideDown( 300 ).addClass( 'is-open' );
+				$this.addClass( 'is-open' ).find( '.the-text' ).text( $this.data( 'close' ) );
+			}
+		},
+
+		/**
+		 * Get all containers matching the given context and id.
+		 *
+		 * @param  {string} context The media context.
+		 * @param  {int}    id      The media ID.
+		 * @return {object}         A jQuery collection.
+		 */
+		getContainers: function( context, id ) {
+			return $( '.imagify-data-actions-container[data-id="' + id + '"][data-context="' + context + '"]' );
+		},
+
+		// Sanitization ============================================================================
+
+		/**
+		 * Sanitize a media ID.
+		 *
+		 * @param  {int|string} id A media ID.
+		 * @return {int}
+		 */
+		sanitizeId: function( id ) {
+			return parseInt( id, 10 );
+		},
+
+		/**
+		 * Sanitize a media context.
+		 *
+		 * @param  {string} context A media context.
+		 * @return {string}
+		 */
+		sanitizeContext: function( context ) {
+			context = context.replace( '/[^a-z0-9_-]/gi', '' ).toLowerCase();
+			return context ? context : 'wp';
+		},
+
+		// Locks ===================================================================================
+
+		/**
+		 * Lock an item.
+		 *
+		 * @param {string} context The media context.
+		 * @param {int}    id      The media ID.
+		 */
+		lockItem: function( context, id ) {
+			if ( ! this.isItemLocked( context, id ) ) {
+				this.working.push( context + '_' + id );
+			}
+		},
+
+		/**
+		 * Unlock an item.
+		 *
+		 * @param {string} context The media context.
+		 * @param {int}    id      The media ID.
+		 */
+		unlockItem: function( context, id ) {
+			var name = context + '_' + id,
+				i    = _.indexOf( this.working, name );
+
+			if ( i > -1 ) {
+				this.working.splice( i, 1 );
+			}
+		},
+
+		/**
+		 * Tell if an item is locked.
+		 *
+		 * @param  {string} context The media context.
+		 * @param  {int}    id      The media ID.
+		 * @return {bool}
+		 */
+		isItemLocked: function( context, id ) {
+			return _.indexOf( this.working, context + '_' + id ) > -1;
 		}
-	} )
-		.trigger( 'canvasprinted.imagify' );
+	};
+
+	w.imagify.modal.init();
 
 } )(jQuery, document, window);

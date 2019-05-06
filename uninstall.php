@@ -13,25 +13,26 @@ delete_option( 'ngg_imagify_data_db_version' );
 delete_option( $wpdb->prefix . 'ngg_imagify_data_db_version' );
 
 // Delete all transients.
+delete_site_transient( 'imagify_activation' );
 delete_site_transient( 'imagify_check_licence_1' );
 delete_site_transient( 'imagify_user' );
 delete_site_transient( 'imagify_themes_plugins_to_sync' );
 delete_site_transient( 'do_imagify_rating_cron' );
 delete_site_transient( 'imagify_seen_rating_notice' );
 delete_site_transient( 'imagify_user_images_count' );
+delete_transient( 'imagify_activation' );
 delete_transient( 'imagify_bulk_optimization_level' );
 delete_transient( 'imagify_bulk_optimization_infos' );
 delete_transient( 'imagify_large_library' );
 delete_transient( 'imagify_max_image_size' );
 delete_transient( 'imagify_user' );
+delete_transient( 'imagify_stat_without_webp' );
 
 // Delete transients.
 $transients = implode( '" OR option_name LIKE "', array(
-	'\_transient\_%imagify-async-in-progress-%',
-	'\_transient\_%imagify-ngg-async-in-progress-%',
 	'\_transient\_%imagify-auto-optimize-%',
-	'\_site\_transient\_%imagify-file-async-in-progress-%',
 	'\_transient\_%imagify\_rpc\_%',
+	'\_transient\_imagify\_%\_process\_locked',
 	'\_site\_transient\_imagify\_%\_process\_lock%',
 ) );
 $wpdb->query( "DELETE from $wpdb->options WHERE option_name LIKE \"$transients\"" ); // WPCS: unprepared SQL ok.

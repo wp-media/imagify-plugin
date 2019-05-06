@@ -14,7 +14,7 @@ class Imagify_Settings {
 	 * @var   string
 	 * @since 1.7
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.0.1';
 
 	/**
 	 * The settings group.
@@ -178,7 +178,17 @@ class Imagify_Settings {
 		 */
 		$values = $this->populate_custom_folders( $values );
 
-		return $values;
+		/**
+		 * Filter settings when saved via the settings page.
+		 *
+		 * @since  1.9
+		 * @author Grégory Viguier
+		 *
+		 * @param array $values The option values.
+		 */
+		$values = apply_filters( 'imagify_settings_on_save', $values );
+
+		return (array) $values;
 	}
 
 	/**
@@ -312,7 +322,7 @@ class Imagify_Settings {
 	 * @access public
 	 */
 	public function get_capability() {
-		return imagify_get_capacity();
+		return imagify_get_context( 'wp' )->get_capacity( 'manage' );
 	}
 
 	/**
@@ -411,7 +421,7 @@ class Imagify_Settings {
 				$value  = null;
 
 				if ( isset( $_POST[ $option ] ) ) {
-					$value = $_POST[ $option ];
+					$value = wp_unslash( $_POST[ $option ] );
 					if ( ! is_array( $value ) ) {
 						$value = trim( $value );
 					}
@@ -603,6 +613,88 @@ class Imagify_Settings {
 			</p>
 			<?php
 		}
+	}
+
+	/**
+	 * Display a radio list group.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param array $args {
+	 *     Arguments.
+	 *
+	 *     @type string $option_name   The option name. E.g. 'disallowed-sizes'. Mandatory.
+	 *     @type string $legend        Label to use for the <legend> tag.
+	 *     @type string $info          Text to display in an "Info box" after the field. A 'aria-describedby' attribute will automatically be created.
+	 *     @type array  $values        List of values to display, in the form of 'value' => 'Label'. Mandatory.
+	 *     @type array  $attributes    A list of HTML attributes, as 'attribute' => 'value'.
+	 *     @type array  $current_value USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
+	 * }
+	 */
+	public function field_radio_list( $args ) {
+		$args = array_merge( [
+			'option_name'     => '',
+			'legend'          => '',
+			'info'            => '',
+			'values'          => [],
+			'attributes'      => [],
+			// To not use the plugin settings: use an array.
+			'current_value'   => false,
+		], $args );
+
+		if ( ! $args['option_name'] || ! $args['values'] ) {
+			return;
+		}
+
+		if ( is_array( $args['current_value'] ) ) {
+			// We don't use the plugin settings.
+			$current_value = $args['current_value'];
+		} else {
+			// This is a normal plugin setting.
+			$current_value = $this->options->get( $args['option_name'] );
+		}
+
+		$option_name_class = sanitize_html_class( $args['option_name'] );
+		$attributes        = array_merge( array(
+			'name'  => $this->option_name . '[' . $args['option_name'] . ']',
+			'id'    => 'imagify_' . $option_name_class . '_%s',
+			'class' => 'imagify-row-radio',
+		), $args['attributes'] );
+
+		$id_attribute = $attributes['id'];
+		unset( $attributes['id'] );
+		$args['attributes'] = self::build_attributes( $attributes );
+		?>
+		<fieldset class="imagify-radio-group">
+			<?php
+			if ( $args['legend'] ) {
+				?>
+				<legend class="screen-reader-text"><?php echo $args['legend']; ?></legend>
+				<?php
+			}
+
+			foreach ( $args['values'] as $value => $label ) {
+				$input_id = sprintf( $id_attribute, sanitize_html_class( $value ) );
+				?>
+				<input type="radio" value="<?php echo esc_attr( $value ); ?>" id="<?php echo $input_id; ?>"<?php echo $args['attributes']; ?> <?php checked( $current_value, $value ); ?>/>
+				<label for="<?php echo $input_id; ?>" onclick=""><?php echo $label; ?></label>
+				<br/>
+				<?php
+			}
+			?>
+		</fieldset>
+		<?php
+		if ( ! $args['info'] ) {
+			return;
+		}
+		?>
+		<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-info">
+			<span class="dashicons dashicons-info"></span>
+			<?php echo $args['info']; ?>
+		</span>
+		<?php
 	}
 
 

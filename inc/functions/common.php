@@ -2,117 +2,158 @@
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Get user capacity to operate Imagify.
+ * Get the list of the names of the Imagify context currently in use.
  *
- * @since  1.6.5
- * @since  1.6.11 Uses a string as describer for the first argument.
+ * @since  1.9
  * @author Grégory Viguier
  *
- * @param  string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'optimize-file'.
- * @return string
+ * @return array An array of strings.
  */
-function imagify_get_capacity( $describer = 'manage' ) {
-	static $edit_attachment_cap;
+function imagify_get_context_names() {
+	static $contexts;
 
-	// Back compat.
-	if ( ! is_string( $describer ) ) {
-		if ( $describer || ! is_multisite() ) {
-			$describer = 'bulk-optimize';
-		} else {
-			$describer = 'manage';
-		}
-	}
-
-	switch ( $describer ) {
-		case 'manage':
-			$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
-			break;
-		case 'optimize-file':
-			$capacity = is_multisite() ? 'manage_network_options' : 'manage_options';
-			break;
-		case 'bulk-optimize':
-			$capacity = 'manage_options';
-			break;
-		case 'optimize':
-			// This is a generic capacity: don't use it unless you have no other choices!
-			if ( ! isset( $edit_attachment_cap ) ) {
-				$edit_attachment_cap = get_post_type_object( 'attachment' );
-				$edit_attachment_cap = $edit_attachment_cap ? $edit_attachment_cap->cap->edit_posts : 'edit_posts';
-			}
-
-			$capacity = $edit_attachment_cap;
-			break;
-		case 'manual-optimize':
-			// Must be used with an Attachment ID.
-			$capacity = 'edit_post';
-			break;
-		case 'auto-optimize':
-			$capacity = 'upload_files';
-			break;
-		default:
-			$capacity = $describer;
+	if ( isset( $contexts ) ) {
+		return $contexts;
 	}
 
 	/**
-	 * Filter the user capacity used to operate Imagify.
+	 * Register new contexts.
 	 *
-	 * @since 1.0
-	 * @since 1.6.5  Added $force_mono parameter.
-	 * @since 1.6.11 Replaced $force_mono by $describer.
+	 * @since  1.9
+	 * @author Grégory Viguier
 	 *
-	 * @param string $capacity  The user capacity.
-	 * @param string $describer Capacity describer. Possible values are 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize', and 'optimize-file'.
+	 * @param array $contexts An array of context names.
 	 */
-	return apply_filters( 'imagify_capacity', $capacity, $describer );
+	$contexts = (array) apply_filters( 'imagify_register_context', [] );
+
+	$contexts = array_filter( $contexts, function( $context ) {
+		return $context && is_string( $context );
+	} );
+	$contexts = array_merge( [ 'wp', 'custom-folders' ], $contexts );
+
+	sort( $contexts );
+
+	return $contexts;
 }
 
 /**
- * Tell if the current user has the required ability to operate Imagify.
+ * Sanitize an optimization context.
  *
  * @since  1.6.11
- * @see    imagify_get_capacity()
  * @author Grégory Viguier
  *
- * @param  string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
- * @param  int    $post_id   A post ID (a gallery ID for NGG).
- * @return bool
+ * @param  string $context The context.
+ * @return string
  */
-function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
-	static $can_upload;
+function imagify_sanitize_context( $context ) {
+	return sanitize_key( $context );
+}
 
-	$post_id  = $post_id ? $post_id : null;
-	$capacity = imagify_get_capacity( $describer );
-	$user_can = false;
+/**
+ * Get the Imagify context instance.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param  string $context  The context name. Default values are 'wp' and 'custom-folders'.
+ * @return ContextInterface The context instance.
+ */
+function imagify_get_context( $context ) {
+	$class_name = imagify_get_context_class_name( $context );
+	return $class_name::get_instance();
+}
 
-	if ( 'manage' !== $describer && 'bulk-optimize' !== $describer && 'optimize-file' !== $describer ) {
-		// Describers that are not 'manage', 'bulk-optimize', and 'optimize-file' need an additional test for 'upload_files'.
-		if ( ! isset( $can_upload ) ) {
-			$can_upload = current_user_can( 'upload_files' );
-		}
+/**
+ * Get the Imagify context class name.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param  string $context The context name. Default values are 'wp' and 'custom-folders'.
+ * @return string          The context class name.
+ */
+function imagify_get_context_class_name( $context ) {
+	$context = imagify_sanitize_context( $context );
 
-		if ( $can_upload ) {
-			if ( 'upload_files' === $capacity ) {
-				// We already know it's true.
-				$user_can = true;
-			} else {
-				$user_can = current_user_can( $capacity, $post_id );
-			}
-		}
-	} else {
-		$user_can = current_user_can( $capacity );
+	switch ( $context ) {
+		case 'wp':
+			$class_name = '\\Imagify\\Context\\WP';
+			break;
+
+		case 'custom-folders':
+			$class_name = '\\Imagify\\Context\\CustomFolders';
+			break;
+
+		default:
+			$class_name = '\\Imagify\\Context\\Noop';
 	}
 
 	/**
-	 * Filter the current user ability to operate Imagify.
+	 * Filter the name of the class to use to define a context.
 	 *
-	 * @since 1.6.11
+	 * @since  1.9
+	 * @author Grégory Viguier
 	 *
-	 * @param bool   $user_can  Tell if the current user has the required ability to operate Imagify.
-	 * @param string $capacity  The user capacity.
-	 * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
-	 * @param int    $post_id   A post ID (a gallery ID for NGG).
+	 * @param int    $class_name The class name.
+	 * @param string $context    The context name.
 	 */
-	return apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $post_id );
+	$class_name = apply_filters( 'imagify_context_class_name', $class_name, $context );
+
+	return '\\' . ltrim( $class_name, '\\' );
+}
+
+/**
+ * Get the Imagify process instance depending on a context.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param  int    $media_id The media ID.
+ * @param  string $context  The context name. Default values are 'wp' and 'custom-folders'.
+ * @return ProcessInterface The optimization process instance.
+ */
+function imagify_get_optimization_process( $media_id, $context ) {
+	$class_name = imagify_get_optimization_process_class_name( $context );
+	return new $class_name( $media_id );
+}
+
+/**
+ * Get the Imagify process class name depending on a context.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param  string $context The context name. Default values are 'wp' and 'custom-folders'.
+ * @return string          The optimization process class name.
+ */
+function imagify_get_optimization_process_class_name( $context ) {
+	$context = imagify_sanitize_context( $context );
+
+	switch ( $context ) {
+		case 'wp':
+			$class_name = '\\Imagify\\Optimization\\Process\\WP';
+			break;
+
+		case 'custom-folders':
+			$class_name = '\\Imagify\\Optimization\\Process\\CustomFolders';
+			break;
+
+		default:
+			$class_name = '\\Imagify\\Optimization\\Process\\Noop';
+	}
+
+	/**
+	 * Filter the name of the class to use for the optimization.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 *
+	 * @param int    $class_name The class name.
+	 * @param string $context    The context name.
+	 */
+	$class_name = apply_filters( 'imagify_process_class_name', $class_name, $context );
+
+	return '\\' . ltrim( $class_name, '\\' );
 }
 
 /**
@@ -125,6 +166,23 @@ function imagify_current_user_can( $describer = 'manage', $post_id = null ) {
  */
 function imagify_get_filesystem() {
 	return Imagify_Filesystem::get_instance();
+}
+
+/**
+ * Convert a path (or URL) to its webp version.
+ * To keep the function simple:
+ * - Not tested if it's an image.
+ * - File existance is not tested.
+ * - If an URL is given, make sure it doesn't contain query args.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param  string $path A file path or URL.
+ * @return string
+ */
+function imagify_path_to_webp( $path ) {
+	return $path . '.webp';
 }
 
 /**
@@ -149,109 +207,9 @@ function imagify_can_optimize_custom_folders() {
 	}
 
 	// Check for user capacity.
-	if ( ! imagify_current_user_can( 'optimize-file' ) ) {
-		$can = false;
-		return $can;
-	}
+	$can = imagify_get_context( 'custom-folders' )->current_user_can( 'optimize' );
 
-	$can = true;
 	return $can;
-}
-
-/**
- * Sanitize an optimization context.
- *
- * @since  1.6.11
- * @author Grégory Viguier
- *
- * @param  string $context The context.
- * @return string
- */
-function imagify_sanitize_context( $context ) {
-	$context = preg_replace( '/[^a-zA-Z0-9_\-]/', '', $context );
-	return $context ? $context : 'wp';
-}
-
-/**
- * Classes autoloader.
- *
- * @since  1.6.12
- * @author Grégory Viguier
- *
- * @param string $class Name of the class to include.
- */
-function imagify_autoload( $class ) {
-	static $strtolower;
-
-	if ( ! isset( $strtolower ) ) {
-		$strtolower = function_exists( 'mb_strtolower' ) ? 'mb_strtolower' : 'strtolower';
-	}
-
-	// Generic classes.
-	$classes = array(
-		'Imagify_Abstract_Attachment'         => 1,
-		'Imagify_Abstract_Background_Process' => 1,
-		'Imagify_Abstract_Cron'               => 1,
-		'Imagify_Abstract_DB'                 => 1,
-		'Imagify_Abstract_Options'            => 1,
-		'Imagify_Admin_Ajax_Post'             => 1,
-		'Imagify_Assets'                      => 1,
-		'Imagify_Attachment'                  => 1,
-		'Imagify_Auto_Optimization'           => 1,
-		'Imagify_Cron_Library_Size'           => 1,
-		'Imagify_Cron_Rating'                 => 1,
-		'Imagify_Cron_Sync_Files'             => 1,
-		'Imagify_Custom_Folders'              => 1,
-		'Imagify_Data'                        => 1,
-		'Imagify_DB'                          => 1,
-		'Imagify_File_Attachment'             => 1,
-		'Imagify_Files_DB'                    => 1,
-		'Imagify_Files_Iterator'              => 1,
-		'Imagify_Files_List_Table'            => 1,
-		'Imagify_Files_Recursive_Iterator'    => 1,
-		'Imagify_Files_Scan'                  => 1,
-		'Imagify_Files_Stats'                 => 1,
-		'Imagify_Filesystem'                  => 1,
-		'Imagify_Folders_DB'                  => 1,
-		'Imagify_Notices'                     => 1,
-		'Imagify_Options'                     => 1,
-		'Imagify_Requirements'                => 1,
-		'Imagify_Settings'                    => 1,
-		'Imagify_User'                        => 1,
-		'Imagify_Views'                       => 1,
-		'Imagify'                             => 1,
-		'WP_Async_Request'                    => 1,
-		'WP_Background_Process'               => 1,
-	);
-
-	if ( isset( $classes[ $class ] ) ) {
-		$class = str_replace( '_', '-', call_user_func( $strtolower, $class ) );
-		include IMAGIFY_CLASSES_PATH . 'class-' . $class . '.php';
-		return;
-	}
-
-	// Third party classes.
-	$classes = array(
-		'Imagify_AS3CF_Attachment'                          => 'amazon-s3-and-cloudfront',
-		'Imagify_AS3CF'                                     => 'amazon-s3-and-cloudfront',
-		'Imagify_Enable_Media_Replace'                      => 'enable-media-replace',
-		'Imagify_Formidable_Pro'                            => 'formidable-pro',
-		'Imagify_NGG_Attachment'                            => 'nextgen-gallery',
-		'Imagify_NGG_DB'                                    => 'nextgen-gallery',
-		'Imagify_NGG_Dynamic_Thumbnails_Background_Process' => 'nextgen-gallery',
-		'Imagify_NGG_Storage'                               => 'nextgen-gallery',
-		'Imagify_NGG'                                       => 'nextgen-gallery',
-		'Imagify_Regenerate_Thumbnails'                     => 'regenerate-thumbnails',
-		'Imagify_WP_Retina_2x'                              => 'wp-retina-2x',
-		'Imagify_WP_Retina_2x_Core'                         => 'wp-retina-2x',
-		'Imagify_WP_Time_Capsule'                           => 'wp-time-capsule',
-	);
-
-	if ( isset( $classes[ $class ] ) ) {
-		$folder = $classes[ $class ];
-		$class  = str_replace( '_', '-', call_user_func( $strtolower, $class ) );
-		include IMAGIFY_3RD_PARTY_PATH . $folder . '/inc/classes/class-' . $class . '.php';
-	}
 }
 
 /**
@@ -451,4 +409,220 @@ function imagify_get_optimization_level_label( $level, $format = '%s' ) {
 function imagify_merge_intersect( $values, $default ) {
 	$values = array_merge( $default, (array) $values );
 	return array_intersect_key( $values, $default );
+}
+
+/**
+ * Returns true.
+ * Useful for returning true to filters easily.
+ * Similar to WP's __return_true() function, it allows to remove it from a filter without removing another one added by another plugin.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @return bool True.
+ */
+function imagify_return_true() {
+	return true;
+}
+
+/**
+ * Returns false.
+ * Useful for returning false to filters easily.
+ * Similar to WP's __return_false() function, it allows to remove it from a filter without removing another one added by another plugin.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @return bool False.
+ */
+function imagify_return_false() {
+	return false;
+}
+
+/**
+ * Marks a class as deprecated and informs when it has been used.
+ * Similar to _deprecated_constructor(), but with different strings.
+ * The current behavior is to trigger a user error if `WP_DEBUG` is true.
+ *
+ * @since  1.9
+ * @author Grégory Viguier
+ *
+ * @param string $class        The class containing the deprecated constructor.
+ * @param string $version      The version of WordPress that deprecated the function.
+ * @param string $replacement  Optional. The function that should have been called. Default null.
+ * @param string $parent_class Optional. The parent class calling the deprecated constructor. Default empty string.
+ */
+function imagify_deprecated_class( $class, $version, $replacement = null, $parent_class = '' ) {
+
+	/**
+	 * Fires when a deprecated class is called.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 *
+	 * @param string $class        The class containing the deprecated constructor.
+	 * @param string $version      The version of WordPress that deprecated the function.
+	 * @param string $replacement  Optional. The function that should have been called.
+	 * @param string $parent_class The parent class calling the deprecated constructor.
+	 */
+	do_action( 'imagify_deprecated_class_run', $class, $version, $replacement, $parent_class );
+
+	if ( ! WP_DEBUG ) {
+		return;
+	}
+
+	/**
+	 * Filters whether to trigger an error for deprecated classes.
+	 *
+	 * `WP_DEBUG` must be true in addition to the filter evaluating to true.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 *
+	 * @param bool $trigger Whether to trigger the error for deprecated classes. Default true.
+	 */
+	if ( ! apply_filters( 'imagify_deprecated_class_trigger_error', true ) ) {
+		return;
+	}
+
+	if ( function_exists( '__' ) ) {
+		if ( ! empty( $parent_class ) ) {
+			/**
+			 * With parent class.
+			 */
+			if ( ! empty( $replacement ) ) {
+				/**
+				 * With replacement.
+				 */
+				call_user_func(
+					'trigger_error',
+					sprintf(
+						/* translators: 1: PHP class name, 2: PHP parent class name, 3: version number, 4: replacement class name. */
+						__( 'The called class %1$s extending %2$s is <strong>deprecated</strong> since version %3$s! Use %4$s instead.', 'imagify' ),
+						'<code>' . $class . '</code>',
+						'<code>' . $parent_class . '</code>',
+						'<strong>' . $version . '</strong>',
+						'<code>' . $replacement . '</code>'
+					)
+				);
+				return;
+			}
+
+			/**
+			 * Without replacement.
+			 */
+			call_user_func(
+				'trigger_error',
+				sprintf(
+					/* translators: 1: PHP class name, 2: PHP parent class name, 3: version number. */
+					__( 'The called class %1$s extending %2$s is <strong>deprecated</strong> since version %3$s!', 'imagify' ),
+					'<code>' . $class . '</code>',
+					'<code>' . $parent_class . '</code>',
+					'<strong>' . $version . '</strong>'
+				)
+			);
+			return;
+		}
+
+		/**
+		 * Without parent class.
+		 */
+		if ( ! empty( $replacement ) ) {
+			/**
+			 * With replacement.
+			 */
+			call_user_func(
+				'trigger_error',
+				sprintf(
+					/* translators: 1: PHP class name, 2: version number, 3: replacement class name. */
+					__( 'The called class %1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.', 'imagify' ),
+					'<code>' . $class . '</code>',
+					'<strong>' . $version . '</strong>',
+					'<code>' . $replacement . '</code>'
+				)
+			);
+			return;
+		}
+
+		/**
+		 * Without replacement.
+		 */
+		call_user_func(
+			'trigger_error',
+			sprintf(
+				/* translators: 1: PHP class name, 2: version number. */
+				__( 'The called class %1$s is <strong>deprecated</strong> since version %2$s!', 'imagify' ),
+				'<code>' . $class . '</code>',
+				'<strong>' . $version . '</strong>'
+			)
+		);
+		return;
+	}
+
+	if ( ! empty( $parent_class ) ) {
+		/**
+		 * With parent class.
+		 */
+		if ( ! empty( $replacement ) ) {
+			/**
+			 * With replacement.
+			 */
+			call_user_func(
+				'trigger_error',
+				sprintf(
+					'The called class %1$s extending %2$s is <strong>deprecated</strong> since version %3$s! Use %4$s instead.',
+					'<code>' . $class . '</code>',
+					'<code>' . $parent_class . '</code>',
+					'<strong>' . $version . '</strong>',
+					'<code>' . $replacement . '</code>'
+				)
+			);
+			return;
+		}
+
+		/**
+		 * Without replacement.
+		 */
+		call_user_func(
+			'trigger_error',
+			sprintf(
+				'The called class %1$s extending %2$s is <strong>deprecated</strong> since version %3$s!',
+				'<code>' . $class . '</code>',
+				'<code>' . $parent_class . '</code>',
+				'<strong>' . $version . '</strong>'
+			)
+		);
+		return;
+	}
+
+	/**
+	 * Without parent class.
+	 */
+	if ( ! empty( $replacement ) ) {
+		/**
+		 * With replacement.
+		 */
+		call_user_func(
+			'trigger_error',
+			sprintf(
+				'The called class %1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.',
+				'<code>' . $class . '</code>',
+				'<strong>' . $version . '</strong>',
+				'<code>' . $replacement . '</code>'
+			)
+		);
+		return;
+	}
+
+	/**
+	 * Without replacement.
+	 */
+	call_user_func(
+		'trigger_error',
+		sprintf(
+			'The called class %1$s is <strong>deprecated</strong> since version %2$s!',
+			'<code>' . $class . '</code>',
+			'<strong>' . $version . '</strong>'
+		)
+	);
 }

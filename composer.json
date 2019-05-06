@@ -1,21 +1,60 @@
 {
-  "name": "wp-media/imagify-plugin",
-  "type": "wordpress-plugin",
-  "homepage": "https://imagify.io",
-  "license": "GPL-2.0",
-  "authors": [
-    {
-      "name": "WP Media",
-      "homepage": "https://wp-media.me/"
-    },
-    {
-      "name": "Grégory Viguier",
-      "role": "Developer"
-    }
-  ],
-  "description": "Dramaticaly reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool as a WordPress plugin.",
-  "require-dev": {
-    "squizlabs/php_codesniffer": "*",
-    "wp-coding-standards/wpcs": "dev-master"
-  }
+	"name": "wp-media/imagify-plugin",
+	"description": "Image optimization plugin for WordPress by WP Media.",
+	"keywords": [
+		"wordpress",
+		"images",
+		"optimization",
+		"performance"
+	],
+	"homepage": "https://imagify.io",
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "WP Media",
+			"homepage": "https://wp-media.me/"
+		},
+		{
+			"name": "Grégory Viguier",
+			"role": "Developer"
+		}
+	],
+	"type": "wordpress-plugin",
+	"config": {
+		"sort-packages": true
+	},
+	"support": {
+		"issues": "https://github.com/wp-media/imagify-plugin/issues",
+		"source": "https://github.com/wp-media/imagify-plugin"
+	},
+	"require": {
+		"php": ">=5.4.0",
+		"a5hleyrich/wp-background-processing": "~1.0",
+		"composer/installers": "~1.0"
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
+		"phpcompatibility/phpcompatibility-wp": "*",
+		"squizlabs/php_codesniffer": "^3.2",
+		"wp-coding-standards/wpcs": "~1.2"
+	},
+	"autoload": {
+		"classmap-authoritative": true,
+		"psr-4": {
+			"Imagify\\": "classes/",
+			"Imagify\\ThirdParty\\AS3CF\\": "inc/3rd-party/amazon-s3-and-cloudfront/classes/",
+			"Imagify\\ThirdParty\\EnableMediaReplace\\": "inc/3rd-party/enable-media-replace/classes/",
+			"Imagify\\ThirdParty\\FormidablePro\\": "inc/3rd-party/formidable-pro/classes/",
+			"Imagify\\ThirdParty\\NGG\\": "inc/3rd-party/nextgen-gallery/classes/",
+			"Imagify\\ThirdParty\\RegenerateThumbnails\\": "inc/3rd-party/regenerate-thumbnails/classes/"
+		},
+		"classmap": [
+			"inc/classes",
+			"inc/deprecated/classes"
+		],
+		"exclude-from-classmap": [
+			"inc/classes/class-imagify-plugin.php",
+			"inc/classes/class-imagify-requirements-check.php"
+		]
+	}
 }

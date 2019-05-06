@@ -2,34 +2,6 @@
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Check if Imagify is activated on the network.
- *
- * @since 1.0
- *
- * return bool True if Imagify is activated on the network.
- */
-function imagify_is_active_for_network() {
-	static $is;
-
-	if ( isset( $is ) ) {
-		return $is;
-	}
-
-	if ( ! is_multisite() ) {
-		$is = false;
-		return $is;
-	}
-
-	if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-	}
-
-	$is = is_plugin_active_for_network( plugin_basename( IMAGIFY_FILE ) );
-
-	return $is;
-}
-
-/**
  * Tell if the current screen is what we're looking for.
  *
  * @since  1.6.10
@@ -114,7 +86,7 @@ function imagify_is_screen( $identifier ) {
  * @param  array|string $arg    An array of arguments. It can contain an attachment ID and/or a context.
  * @return string               The URL of the specific admin page or action.
  */
-function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
+function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 	if ( is_array( $arg ) ) {
 		$id      = isset( $arg['attachment_id'] )      ? $arg['attachment_id']      : 0;
 		$context = isset( $arg['context'] )            ? $arg['context']            : 'wp';
@@ -122,20 +94,24 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 	}
 
 	switch ( $action ) {
-		case 'manual-override-upload':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_override_upload&attachment_id=' . $id . '&optimization_level=' . $level . '&context=' . $context ), 'imagify-manual-override-upload-' . $id . '-' . $context );
+		case 'manual-reoptimize':
+		case 'manual-override-upload': // Deprecated.
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_reoptimize&attachment_id=' . $id . '&optimization_level=' . $level . '&context=' . $context ), 'imagify-manual-reoptimize-' . $id . '-' . $context );
 
 		case 'optimize-missing-sizes':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_optimize_missing_sizes&attachment_id=' . $id . '&context=' . $context ), 'imagify-optimize-missing-sizes-' . $id . '-' . $context );
 
-		case 'manual-upload':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-manual-upload-' . $id . '-' . $context );
+		case 'generate-webp-versions':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_generate_webp_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-generate-webp-versions-' . $id . '-' . $context );
 
-		case 'restore-upload':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_restore_upload&attachment_id=' . $id . '&context=' . $context ), 'imagify-restore-upload-' . $id . '-' . $context );
+		case 'optimize':
+		case 'manual-upload': // Deprecated.
+		case 'manual-optimize':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_manual_optimize&attachment_id=' . $id . '&context=' . $context ), 'imagify-optimize-' . $id . '-' . $context );
 
-		case 'dismiss-notice':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
+		case 'restore':
+		case 'restore-upload': // Deprecated.
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_restore&attachment_id=' . $id . '&context=' . $context ), 'imagify-restore-' . $id . '-' . $context );
 
 		case 'optimize-file':
 		case 'restore-file':
@@ -163,7 +139,7 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 
 		case 'folder-errors':
 			switch ( $arg ) {
-				case 'library':
+				case 'wp':
 					return add_query_arg( array(
 						'mode'           => 'list',
 						'imagify-status' => 'errors',
@@ -174,7 +150,19 @@ function get_imagify_admin_url( $action = 'settings', $arg = array() ) {
 						'status-filter' => 'errors',
 					), get_imagify_admin_url( 'files-list' ) );
 			}
-			return '';
+			/**
+			 * Provide a URL to a page displaying optimization errors for the given context.
+			 *
+			 * @since  1.9
+			 * @author Grégory Viguier
+			 *
+			 * @param string $url The URL.
+			 * @param string $arg The context.
+			 */
+			return apply_filters( 'imagify_optimization_errors_url', '', $arg );
+
+		case 'dismiss-notice':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Imagify_Notices::DISMISS_NONCE_ACTION );
 
 		default:
 			$page = '?page=' . Imagify_Views::get_instance()->get_settings_page_slug();
@@ -208,36 +196,6 @@ function get_imagify_max_intermediate_image_size() {
 		'width'  => $width,
 		'height' => $height,
 	);
-}
-
-/**
- * Get the default Bulk Optimization buffer size.
- *
- * @since  1.5.10
- * @since  1.7 Added $sizes parameter.
- * @author Jonathan Buttigieg
- *
- * @param  int $sizes Number of image sizes per item (attachment).
- * @return int        The buffer size.
- */
-function get_imagify_bulk_buffer_size( $sizes = false ) {
-	if ( ! $sizes ) {
-		$sizes = count( get_imagify_thumbnail_sizes() );
-	}
-
-	switch ( true ) {
-		case ( $sizes >= 10 ):
-			return 1;
-
-		case ( $sizes >= 8 ):
-			return 2;
-
-		case ( $sizes >= 6 ):
-			return 3;
-
-		default:
-			return 4;
-	}
 }
 
 /**
@@ -304,23 +262,6 @@ function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
  */
 function imagify_check_nonce( $action, $query_arg = false ) {
 	if ( ! check_ajax_referer( $action, $query_arg, false ) ) {
-		imagify_die();
-	}
-}
-
-/**
- * Check for user capacity.
- *
- * @since  1.6.10
- * @since  1.6.11 Uses a capacity describer instead of a capacity itself.
- * @see    imagify_get_capacity()
- * @author Grégory Viguier
- *
- * @param string $describer Capacity describer. See imagify_get_capacity() for possible values. Can also be a "real" user capacity.
- * @param int    $post_id   A post ID.
- */
-function imagify_check_user_capacity( $describer = 'manage', $post_id = null ) {
-	if ( ! imagify_current_user_can( $describer, $post_id ) ) {
 		imagify_die();
 	}
 }

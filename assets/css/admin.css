@@ -621,8 +621,18 @@ button.imagify-link-like {
 .imagify-settings-main-content {
 	padding-bottom: 20px;
 }
-.imagify-settings-main-content p {
+.imagify-settings-main-content p,
+.imagify-settings-main-content .imagify-setting-line {
 	font-size: 14px;
+	line-height: 1.5;
+}
+
+.imagify-settings-main-content .code {
+	max-height: 10em;
+	padding: 3px 5px 2px 5px;
+	overflow: auto;
+	background: #EAEAEA;
+	background: rgba(0,0,0,.07);
 }
 
 .imagify-settings-main-content + .imagify-settings-main-content {
@@ -1218,6 +1228,10 @@ ul.imagify-datas-details.imagify-datas-details {
 	display: block;
 	width: auto;
 	float: none;
+}
+.media-sidebar .compat-field-imagify .imagify-datas-actions-links br,
+.submitbox .misc-pub-imagify .imagify-datas-actions-links br {
+	display: none;
 }
 .imagify-datas-actions-links a:only-child {
 	float: none;

@@ -25,43 +25,6 @@ if ( ! function_exists( 'curl_file_create' ) ) :
 	}
 endif;
 
-if ( ! function_exists( 'array_replace' ) ) :
-	/**
-	 * PHP-agnostic version of array_replace(): replaces elements from passed arrays into the first array.
-	 *
-	 * @since  1.6.9
-	 * @since  PHP 5.3
-	 * @source http://dk2.php.net/manual/en/function.array-replace.php
-	 *
-	 * @param  array $target       The array in which elements are replaced.
-	 * @param  array $replacements The array from which elements will be extracted.
-	 *                             More arrays from which elements will be extracted. Values from later arrays overwrite the previous values.
-	 * @return array|null          The resulting array. Null if an error occurs.
-	 */
-	function array_replace( $target = array(), $replacements = array() ) {
-		$replacements = func_get_args();
-		array_shift( $replacements );
-
-		foreach ( $replacements as $i => $add ) {
-			if ( ! is_array( $add ) ) {
-				trigger_error( __FUNCTION__ . '(): Argument #' . ( $i + 2 ) . ' is not an array', E_USER_WARNING );
-				return null;
-			}
-
-			foreach ( $add as $k => $v ) {
-				$target[ $k ] = $v;
-			}
-		}
-
-		return $target;
-	}
-endif;
-
-// SPL can be disabled on PHP 5.2.
-if ( ! function_exists( 'spl_autoload_register' ) ) :
-	require_once IMAGIFY_FUNCTIONS_PATH . 'compat-spl-autoload.php';
-endif;
-
 /** --------------------------------------------------------------------------------------------- */
 /** WORDPRESS =================================================================================== */
 /** --------------------------------------------------------------------------------------------- */
@@ -509,6 +472,36 @@ if ( ! function_exists( '_deprecated_hook' ) ) :
 				trigger_error( sprintf( __( '%1$s is <strong>deprecated</strong> since version %2$s with no alternative available.', 'imagify' ), $hook, $version ) . $message );
 			}
 		}
+	}
+endif;
+
+if ( ! function_exists( 'do_action_deprecated' ) ) :
+	/**
+	 * Fires functions attached to a deprecated action hook.
+	 *
+	 * When an action hook is deprecated, the do_action() call is replaced with
+	 * do_action_deprecated(), which triggers a deprecation notice and then fires
+	 * the original hook.
+	 *
+	 * @since 1.9
+	 * @since WP 4.6.0
+	 *
+	 * @see _deprecated_hook()
+	 *
+	 * @param string $tag         The name of the action hook.
+	 * @param array  $args        Array of additional function arguments to be passed to do_action().
+	 * @param string $version     The version of WordPress that deprecated the hook.
+	 * @param string $replacement Optional. The hook that should have been used.
+	 * @param string $message     Optional. A message regarding the change.
+	 */
+	function do_action_deprecated( $tag, $args, $version, $replacement = false, $message = null ) {
+		if ( ! has_action( $tag ) ) {
+			return;
+		}
+
+		_deprecated_hook( $tag, $version, $replacement, $message );
+
+		do_action_ref_array( $tag, $args );
 	}
 endif;
 

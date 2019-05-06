@@ -4,14 +4,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 /**
  * Imagify.io API for WordPress.
  */
-class Imagify extends Imagify_Deprecated {
+class Imagify {
 
 	/**
 	 * Class version.
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.2.1';
+	const VERSION = '1.3';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -60,7 +60,7 @@ class Imagify extends Imagify_Deprecated {
 	/**
 	 * The single instance of the class.
 	 *
-	 * @access  protected
+	 * @access protected
 	 *
 	 * @var object
 	 */
@@ -72,7 +72,7 @@ class Imagify extends Imagify_Deprecated {
 	protected function __construct() {
 		if ( ! class_exists( 'Imagify_Filesystem' ) ) {
 			// Dirty patch used when updating from 1.7.
-			include_once IMAGIFY_CLASSES_PATH . 'class-imagify-filesystem.php';
+			include_once IMAGIFY_PATH . 'inc/classes/class-imagify-filesystem.php';
 		}
 
 		$this->api_key    = get_imagify_option( 'api_key' );
@@ -123,6 +123,22 @@ class Imagify extends Imagify_Deprecated {
 			$user = $this->http_call( 'users/me/', array(
 				'timeout' => 10,
 			) );
+
+			if ( ! is_wp_error( $user ) ) {
+				$maybe_missing = [
+					'account_type'                 => 'free',
+					'quota'                        => 0,
+					'extra_quota'                  => 0,
+					'extra_quota_consumed'         => 0,
+					'consumed_current_month_quota' => 0,
+				];
+
+				foreach ( $maybe_missing as $name => $value ) {
+					if ( ! isset( $user->$name ) ) {
+						$user->$name = $value;
+					}
+				}
+			}
 		} else {
 			// Dirty patch used when updating from 1.7.
 			$user = new WP_Error();
@@ -442,6 +458,7 @@ class Imagify extends Imagify_Deprecated {
 	 *
 	 * @access private
 	 * @since  1.6.7
+	 * @throws Exception When curl_init() fails.
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $url  The URL to call.
@@ -582,23 +599,23 @@ class Imagify extends Imagify_Deprecated {
 
 		if ( 200 !== $http_code && ! empty( $response->code ) ) {
 			if ( ! empty( $response->detail ) ) {
-				return new WP_Error( $http_code, $response->detail );
+				return new WP_Error( 'error ' . $http_code, $response->detail );
 			}
 			if ( ! empty( $response->image ) ) {
 				$error = (array) $response->image;
 				$error = reset( $error );
-				return new WP_Error( $http_code, $error );
+				return new WP_Error( 'error ' . $http_code, $error );
 			}
 		}
 
 		if ( 413 === $http_code ) {
-			return new WP_Error( $http_code, 'Your image is too big to be uploaded on our server.' );
+			return new WP_Error( 'error ' . $http_code, 'Your image is too big to be uploaded on our server.' );
 		}
 
 		if ( 200 !== $http_code ) {
 			$error = trim( (string) $error );
 			$error = '' !== $error ? ' - ' . htmlentities( $error ) : '';
-			return new WP_Error( $http_code, "An error occurred ({$http_code}{$error})" );
+			return new WP_Error( 'error ' . $http_code, "Our server returned an error ({$http_code}{$error})" );
 		}
 
 		return $response;

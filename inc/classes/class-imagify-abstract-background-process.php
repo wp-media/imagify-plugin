@@ -16,7 +16,7 @@ abstract class Imagify_Abstract_Background_Process extends WP_Background_Process
 	 * @since  1.8.1
 	 * @author Grégory Viguier
 	 */
-	const VERSION = '1.0';
+	const VERSION = '1.1';
 
 	/**
 	 * Prefix used to build the global process identifier.
@@ -27,6 +27,18 @@ abstract class Imagify_Abstract_Background_Process extends WP_Background_Process
 	 * @author Grégory Viguier
 	 */
 	protected $prefix = 'imagify';
+
+	/**
+	 * Set to true to automatically displatch at the end of the page.
+	 *
+	 * @var    bool
+	 * @since  1.9
+	 * @access protected
+	 * @see    $this->save()
+	 * @see    $this->maybe_save_and_dispatch()
+	 * @author Grégory Viguier
+	 */
+	protected $auto_dispatch = false;
 
 	/**
 	 * The single instance of the class.
@@ -49,11 +61,11 @@ abstract class Imagify_Abstract_Background_Process extends WP_Background_Process
 	 * @return object Main instance.
 	 */
 	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
+		if ( ! isset( static::$_instance ) ) {
+			static::$_instance = new static();
 		}
 
-		return self::$_instance;
+		return static::$_instance;
 	}
 
 	/**
@@ -61,19 +73,23 @@ abstract class Imagify_Abstract_Background_Process extends WP_Background_Process
 	 * This is only a precaution in case something went wrong.
 	 *
 	 * @since  1.8.1
+	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		if ( did_action( self::get_deactivation_hook_name() ) ) {
+		if ( did_action( static::get_deactivation_hook_name() ) ) {
 			$this->cancel_process();
 		} else {
-			add_action( self::get_deactivation_hook_name(), array( $this, 'cancel_process' ) );
+			add_action( static::get_deactivation_hook_name(), [ $this, 'cancel_process' ] );
 		}
+
+		// Automatically save and dispatch at the end of the page if the queue is not empty.
+		add_action( 'shutdown', [ $this, 'maybe_save_and_dispatch' ], 666 ); // Evil magic number.
 	}
 
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** COMPAT ================================================================================== */
+	/** OVERRIDES =============================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
@@ -100,10 +116,48 @@ abstract class Imagify_Abstract_Background_Process extends WP_Background_Process
 		}
 	}
 
+	/**
+	 * Save the queen. No, I meant the queue.
+	 * Also empty the queue to avoid to create several batches with the same items.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return $this
+	 */
+	public function save() {
+		if ( empty( $this->data ) ) {
+			return $this;
+		}
+
+		parent::save();
+
+		$this->auto_dispatch = true;
+		$this->data          = [];
+
+		return $this;
+	}
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** TOOLS =================================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Save and dispatch if the queue is not empty.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function maybe_save_and_dispatch() {
+		$this->save();
+
+		if ( $this->auto_dispatch ) {
+			$this->dispatch();
+		}
+	}
 
 	/**
 	 * Get the cron name.
@@ -119,7 +173,7 @@ abstract class Imagify_Abstract_Background_Process extends WP_Background_Process
 	}
 
 	/**
-	 * Get the cron name.
+	 * Get the deactivation hook name.
 	 *
 	 * @since  1.8.1
 	 * @access public

@@ -5,17 +5,17 @@
  */
 window.imagify.drawMeAChart = function( canvas ) {
 	canvas.each( function() {
-		var value = parseInt( jQuery( this ).closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text() );
+		var value = parseInt( jQuery( this ).closest( '.imagify-chart' ).next( '.imagify-chart-value' ).text(), 10 );
 
-		new imagify.Chart( this, { // eslint-disable-line no-new
+		new window.imagify.Chart( this, { // eslint-disable-line no-new
 			type: 'doughnut',
 			data: {
-				datasets: [{
+				datasets: [ {
 					data:            [ value, 100 - value ],
 					backgroundColor: [ '#00B3D3', '#D8D8D8' ],
 					borderColor:     '#fff',
 					borderWidth:     1
-				}]
+				} ]
 			},
 			options: {
 				legend: {
@@ -37,43 +37,93 @@ window.imagify.drawMeAChart = function( canvas ) {
 
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
-	/**
-	 * Update the charts.
-	 */
-	$( w ).on( 'canvasprinted.imagify', function( e, selector ) {
-		var $canvas;
+	w.imagify.filesList = {
 
-		selector = selector || '.imagify-consumption-chart';
-		$canvas  = $( selector );
+		working: [],
 
-		w.imagify.drawMeAChart( $canvas );
-	} )
-		.trigger( 'canvasprinted.imagify' );
+		/*
+		 * Init.
+		 */
+		init: function () {
+			var $document = $( d ),
+				$processing;
 
-} )(jQuery, document, window);
+			// Update the chart in the media modal when a media is selected, and the ones already printed.
+			$( w ).on( 'canvasprinted.imagify', this.updateChart ).trigger( 'canvasprinted.imagify' );
 
+			if ( ! this.hasHeartbeat() ) {
+				return;
+			}
 
-(function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
+			// Handle bulk actions.
+			this.insertBulkActionTags();
 
-	/**
-	 * Handle bulk actions.
-	 */
-	var bulkActions = '<option value="imagify-bulk-optimize">' + imagifyFiles.labels.bulkActionsOptimize + '</option>';
+			$( '#doaction, #doaction2' ).on( 'click.imagify', this.processBulkAction );
 
-	if ( imagifyFiles.backupOption || $( '.file-has-backup' ).length ) {
-		// If the backup option is enabled, or if we have items that can be restored.
-		bulkActions += '<option value="imagify-bulk-restore">' + imagifyFiles.labels.bulkActionsRestore + '</option>';
-	}
+			// Optimize, restore, etc.
+			$document.on( 'click.imagify', '.button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-generate-webp, .button-imagify-restore, .button-imagify-refresh-status', this.processOptimization );
 
-	$( '.bulkactions select[name="action"] option:first-child, .bulkactions select[name="action2"] option:first-child' ).after( bulkActions );
+			$document.on( 'heartbeat-send', this.addToHeartbeat );
+			$document.on( 'heartbeat-tick', this.processHeartbeat );
 
-	/**
-	 * Process one of these actions: bulk restore, bulk optimize, or bulk refresh-status.
-	 */
-	$( '#doaction, #doaction2' )
-		.on( 'click.imagify', function( e ) {
+			// Some items may be processed in background on page load.
+			$processing = $( '.wp-list-table.imagify-files .button-imagify-processing' );
+
+			if ( $processing.length ) {
+				// Fasten Heartbeat for a minute.
+				w.wp.heartbeat.interval( 5, 12 );
+
+				$processing.closest( 'tr' ).find( '.check-column [name="bulk_select[]"]' ).each( function() {
+					var id = w.imagify.filesList.sanitizeId( this.value );
+
+					w.imagify.filesList.lockItem( w.imagifyFiles.context, id );
+				} );
+			}
+		},
+
+		// Charts ==================================================================================
+
+		/**
+		 * Update the chart in the media modal when a media is selected, and the ones already printed.
+		 *
+		 * @param {object} e        Event.
+		 * @param {string} selector A CSS selector.
+		 */
+		updateChart: function( e, selector ) {
+			var $canvas;
+
+			selector = selector || '.imagify-consumption-chart';
+			$canvas  = $( selector );
+
+			w.imagify.drawMeAChart( $canvas );
+
+			$canvas.closest( '.imagify-datas-list' ).siblings( '.imagify-datas-details' ).hide();
+		},
+
+		// Bulk optimization =======================================================================
+
+		/**
+		 * Insert the bulk actions in the <select> tag.
+		 */
+		insertBulkActionTags: function() {
+			var bulkActions = '<option value="imagify-bulk-optimize">' + w.imagifyFiles.labels.bulkActionsOptimize + '</option>';
+
+			if ( w.imagifyFiles.backupOption || $( '.file-has-backup' ).length ) {
+				// If the backup option is enabled, or if we have items that can be restored.
+				bulkActions += '<option value="imagify-bulk-restore">' + w.imagifyFiles.labels.bulkActionsRestore + '</option>';
+			}
+
+			$( '.bulkactions select[name="action"] option:first-child, .bulkactions select[name="action2"] option:first-child' ).after( bulkActions );
+		},
+
+		/**
+		 * Process one of these actions: bulk restore, bulk optimize, or bulk refresh-status.
+		 *
+		 * @param {object} e Event.
+		 */
+		processBulkAction: function( e ) {
 			var value = $( this ).prev( 'select' ).val(),
-				action, ids;
+				action;
 
 			if ( 'imagify-bulk-optimize' !== value && 'imagify-bulk-restore' !== value && 'imagify-bulk-refresh-status' !== value ) {
 				return;
@@ -81,64 +131,235 @@ window.imagify.drawMeAChart = function( canvas ) {
 
 			e.preventDefault();
 
-			action = value.replace( 'bulk-', '' );
-			ids    = $( 'input[name="bulk_select[]"]:checked' ).map( function() {
-				return this.value;
-			} ).get();
+			action = value.replace( 'imagify-bulk-', '' );
 
-			ids.forEach( function( id, index ) {
-				var $button = $( '#' + action + '-' + id );
-
-				if ( ! $button.length ) {
-					$button.closest( 'tr' ).find( '#cb-select-' + id ).prop( 'checked', false );
-					return;
-				}
-
+			$( 'input[name="bulk_select[]"]:checked' ).closest( 'tr' ).find( '.button-imagify-' + action ).each( function ( index, el ) {
 				setTimeout( function() {
-					$button.trigger( 'click.imagify' );
+					$( el ).trigger( 'click.imagify' );
 				}, index * 500 );
 			} );
-		} );
+		},
 
-	/**
-	 * Process one of these actions: optimize, re-optimize, restore, or refresh-status.
-	 */
-	$( d ).on( 'click.imagify', '.button-imagify-optimize, .button-imagify-reoptimize, .button-imagify-restore, .button-imagify-refresh-status', function( e ) {
-		var $button = $( this ),
-			$row    = $button.closest( 'tr' ),
-			$parent, href;
+		// Optimization ============================================================================
 
-		e.preventDefault();
+		/**
+		 * Process one of these actions: optimize, re-optimize, restore, or refresh-status.
+		 *
+		 * @param {object} e Event.
+		 */
+		processOptimization: function( e ) {
+			var $button   = $( this ),
+				$row      = $button.closest( 'tr' ),
+				$checkbox = $row.find( '.check-column [type="checkbox"]' ),
+				id        = imagify.filesList.sanitizeId( $checkbox.val() ),
+				context   = w.imagifyFiles.context,
+				$parent, href, processingTemplate;
 
-		if ( $row.hasClass( 'working' ) ) {
-			return;
-		}
+			e.preventDefault();
 
-		$row.addClass( 'working' );
-		$parent = $button.closest( '.column-actions, .column-status' );
-		href    = $button.attr( 'href' );
+			if ( imagify.filesList.isItemLocked( context, id ) ) {
+				return;
+			}
 
-		$parent.html( '<div class="button"><span class="imagify-spinner"></span>' + $button.data( 'waiting-label' ) + '</div>' );
+			imagify.filesList.lockItem( context, id );
 
-		$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ) )
-			.done( function( r ) {
-				if ( ! r.success ) {
-					if ( r.data.row ) {
-						$row.html( '<td class="colspanchange" colspan="' + $row.children().length + '">' + r.data.row + '</td>' );
-					} else {
-						$parent.html( r.data );
+			href               = $button.attr( 'href' );
+			processingTemplate = w.imagify.template( 'imagify-button-processing' );
+			$parent            = $button.closest( '.column-actions, .column-status' );
+
+			$parent.html( processingTemplate( {
+				label: $button.data( 'processing-label' )
+			} ) );
+
+			$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ) )
+				.done( function( r ) {
+					if ( ! r.success ) {
+						if ( r.data && r.data.row ) {
+							$row.html( '<td class="colspanchange" colspan="' + $row.children().length + '">' + r.data.row + '</td>' );
+						} else {
+							$parent.html( r.data );
+						}
+
+						$row.find( '.check-column [type="checkbox"]' ).prop( 'checked', false );
+
+						imagify.filesList.unlockItem( context, id );
+						return;
 					}
+
+					if ( r.data && r.data.columns ) {
+						// The work is done.
+						w.imagify.filesList.displayProcessResult( context, id, r.data.columns );
+					} else {
+						// Still processing in background: we're waiting for the result by poking Heartbeat.
+						// Set the heartbeat interval to 5 sec for 60 seconds (12 ticks).
+						w.wp.heartbeat.interval( 5, 12 );
+					}
+				} );
+		},
+
+		// Heartbeat ===============================================================================
+
+		/**
+		 * Tell if we can use Heartbeat.
+		 *
+		 * @return {bool}
+		 */
+		hasHeartbeat: function() {
+			return w.imagifyFiles && w.imagifyFiles.heartbeatId && w.wp && w.wp.heartbeat ? true : false;
+		},
+
+		/**
+		 * Send the media IDs and their status to heartbeat.
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		addToHeartbeat: function ( e, data ) {
+			var $boxes = $( '.wp-list-table.imagify-files .check-column [name="bulk_select[]"]' );
+
+			if ( ! $boxes.length ) {
+				return;
+			}
+
+			data[ w.imagifyFiles.heartbeatId ] = {};
+
+			$boxes.each( function() {
+				var id      = w.imagify.filesList.sanitizeId( this.value ),
+					context = w.imagifyFiles.context,
+					locked  = w.imagify.filesList.isItemLocked( context, id ) ? 1 : 0;
+
+				data[ w.imagifyFiles.heartbeatId ][ context ] = data[ w.imagifyFiles.heartbeatId ][ context ] || {};
+				data[ w.imagifyFiles.heartbeatId ][ context ][ '_' + id ] = locked;
+			} );
+		},
+
+		/**
+		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		processHeartbeat: function ( e, data ) {
+			if ( typeof data[ w.imagifyFiles.heartbeatId ] === 'undefined' ) {
+				return;
+			}
+
+			$.each( data[ w.imagifyFiles.heartbeatId ], function( contextId, columns ) {
+				var context, id;
+
+				context = $.trim( contextId ).match( /^(.+)_(\d+)$/ );
+
+				if ( ! context ) {
 					return;
 				}
 
-				$.each( r.data, function( k, v ) {
-					$row.children( '.column-' + k ).html( v );
-				} );
-			} )
-			.always( function() {
-				$row.removeClass( 'working' ).find( '.check-column [type="checkbox"]' ).prop( 'checked', false );
+				id      = w.imagify.filesList.sanitizeId( context[2] );
+				context = w.imagify.filesList.sanitizeContext( context[1] );
+
+				if ( context !== w.imagifyFiles.context ) {
+					return;
+				}
+
+				w.imagify.filesList.displayProcessResult( context, id, columns );
 			} );
-	} );
+		},
+
+		// DOM manipulation tools ==================================================================
+
+		/**
+		 * Display a successful process result.
+		 *
+		 * @param {string} context The media context.
+		 * @param {int}    id      The media ID.
+		 * @param {string} columns A list of HTML, keyed by column name.
+		 */
+		displayProcessResult: function( context, id, columns ) {
+			var $row = w.imagify.filesList.getContainers( id );
+
+			$.each( columns, function( k, v ) {
+				$row.children( '.column-' + k ).html( v );
+			} );
+
+			$row.find( '.check-column [type="checkbox"]' ).prop( 'checked', false );
+
+			w.imagify.filesList.unlockItem( context, id );
+		},
+
+		/**
+		 * Get all containers matching the given id.
+		 *
+		 * @param  {int} id The media ID.
+		 * @return {object} A jQuery collection.
+		 */
+		getContainers: function( id ) {
+			return $( '.wp-list-table.imagify-files .check-column [name="bulk_select[]"][value="' + id + '"]' ).closest( 'tr' );
+		},
+
+		// Sanitization ============================================================================
+
+		/**
+		 * Sanitize a media ID.
+		 *
+		 * @param  {int|string} id A media ID.
+		 * @return {int}
+		 */
+		sanitizeId: function( id ) {
+			return parseInt( id, 10 );
+		},
+
+		/**
+		 * Sanitize a media context.
+		 *
+		 * @param  {string} context A media context.
+		 * @return {string}
+		 */
+		sanitizeContext: function( context ) {
+			context = context.replace( '/[^a-z0-9_-]/gi', '' ).toLowerCase();
+			return context ? context : 'wp';
+		},
+
+		// Locks ===================================================================================
+
+		/**
+		 * Lock an item.
+		 *
+		 * @param {string} context The media context.
+		 * @param {int}    id      The media ID.
+		 */
+		lockItem: function( context, id ) {
+			if ( ! this.isItemLocked( context, id ) ) {
+				this.working.push( context + '_' + id );
+			}
+		},
+
+		/**
+		 * Unlock an item.
+		 *
+		 * @param {string} context The media context.
+		 * @param {int}    id      The media ID.
+		 */
+		unlockItem: function( context, id ) {
+			var name = context + '_' + id,
+				i    = _.indexOf( this.working, name );
+
+			if ( i > -1 ) {
+				this.working.splice( i, 1 );
+			}
+		},
+
+		/**
+		 * Tell if an item is locked.
+		 *
+		 * @param  {string} context The media context.
+		 * @param  {int}    id      The media ID.
+		 * @return {bool}
+		 */
+		isItemLocked: function( context, id ) {
+			return _.indexOf( this.working, context + '_' + id ) > -1;
+		}
+	};
+
+	w.imagify.filesList.init();
 
 } )(jQuery, document, window);
 

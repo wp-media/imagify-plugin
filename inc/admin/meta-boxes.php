@@ -10,51 +10,80 @@ add_action( 'attachment_submitbox_misc_actions', '_imagify_attachment_submitbox_
 function _imagify_attachment_submitbox_misc_actions() {
 	global $post;
 
-	if ( ! imagify_current_user_can( 'manual-optimize', $post->ID ) ) {
+	if ( ! imagify_get_context( 'wp' )->current_user_can( 'manual-optimize', $post->ID ) ) {
 		return;
 	}
 
-	$attachment = get_imagify_attachment( 'wp', $post->ID, 'attachment_submitbox_misc_actions' );
+	$process = imagify_get_optimization_process( $post->ID, 'wp' );
 
-	if ( ! $attachment->is_extension_supported() ) {
+	if ( ! $process->is_valid() ) {
 		return;
 	}
 
-	if ( ! $attachment->has_required_metadata() ) {
+	$media = $process->get_media();
+
+	if ( ! $media->is_supported() ) {
 		return;
 	}
 
-	if ( ! Imagify_Requirements::is_api_key_valid() && ! $attachment->is_optimized() ) {
+	if ( ! $media->has_required_media_data() ) {
+		return;
+	}
 
-		echo '<div class="misc-pub-section misc-pub-imagify"><h4>' . __( 'Imagify', 'imagify' ) . '</h4></div>';
-		echo '<div class="misc-pub-section misc-pub-imagify">';
-			echo __( 'Invalid API key', 'imagify' );
-			echo '<br/>';
-			echo '<a href="' . esc_url( get_imagify_admin_url() ) . '">' . __( 'Check your Settings', 'imagify' ) . '</a>';
-		echo '</div>';
+	$data  = $process->get_data();
+	$views = Imagify_Views::get_instance();
 
-	} elseif ( $attachment->is_optimized() || $attachment->is_already_optimized() || $attachment->has_error() ) {
-
-		echo '<div class="misc-pub-section misc-pub-imagify"><h4>' . __( 'Imagify', 'imagify' ) . '</h4></div>';
-		echo get_imagify_attachment_optimization_text( $attachment );
-
-	} elseif ( $attachment->is_running() ) {
-
-		echo '<div class="misc-pub-section misc-pub-imagify">';
-			echo '<div class="button">';
-				echo '<span class="imagify-spinner"></span>';
-				_e( 'Optimizing...', 'imagify' );
-			echo '</div>';
-		echo '</div>';
-
+	if ( ! Imagify_Requirements::is_api_key_valid() && ! $data->is_optimized() ) {
+		?>
+		<div class="misc-pub-section misc-pub-imagify"><h4><?php esc_html_e( 'Imagify', 'imagify' ); ?></h4></div>
+		<div class="misc-pub-section misc-pub-imagify">
+			<?php esc_html_e( 'Invalid API key', 'imagify' ); ?>
+			<br/>
+			<a href="<?php echo esc_url( get_imagify_admin_url() ); ?>">
+				<?php esc_html_e( 'Check your Settings', 'imagify' ); ?>
+			</a>
+		</div>
+		<?php
 	} else {
+		$is_locked = $process->is_locked();
 
-		$url = get_imagify_admin_url( 'manual-upload', array( 'attachment_id' => $post->ID ) );
-		printf( '<div class="misc-pub-section misc-pub-imagify"><a class="button-primary" href="%s">%s</a></div>', esc_url( $url ), __( 'Optimize', 'imagify' ) );
+		if ( $is_locked ) {
+			switch ( $is_locked ) {
+				case 'optimizing':
+					$lock_label = __( 'Optimizing...', 'imagify' );
+					break;
+				case 'restoring':
+					$lock_label = __( 'Restoring...', 'imagify' );
+					break;
+				default:
+					$lock_label = __( 'Processing...', 'imagify' );
+			}
+			?>
+			<div class="misc-pub-section misc-pub-imagify">
+				<?php $views->print_template( 'button/processing', [ 'label' => $lock_label ] ); ?>
+			</div>
+			<?php
+		} elseif ( $data->is_optimized() || $data->is_already_optimized() || $data->is_error() ) {
+			?>
+			<div class="misc-pub-section misc-pub-imagify"><h4><?php esc_html_e( 'Imagify', 'imagify' ); ?></h4></div>
+			<div class="misc-pub-section misc-pub-imagify imagify-data-item">
+				<?php echo get_imagify_attachment_optimization_text( $process ); ?>
+			</div>
+			<?php
+		} else {
+			$url = get_imagify_admin_url( 'optimize', array( 'attachment_id' => $post->ID ) );
+			?>
+			<div class="misc-pub-section misc-pub-imagify">
+				<a class="button-primary" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Optimize', 'imagify' ); ?></a>
+			</div>
+			<?php
+		}
 	}
 
-	if ( $attachment->is_optimized() ) {
-		echo '<input id="imagify-full-original" type="hidden" value="' . esc_url( $attachment->get_backup_url() ) . '">';
-		echo '<input id="imagify-full-original-size" type="hidden" value="' . esc_attr( $attachment->get_original_size( true, 0 ) ) . '">';
+	if ( $media->has_backup() && $data->is_optimized() ) {
+		?>
+		<input id="imagify-full-original" type="hidden" value="<?php echo esc_url( $media->get_backup_url() ); ?>">
+		<input id="imagify-full-original-size" type="hidden" value="<?php echo esc_attr( $data->get_original_size( true, 0 ) ); ?>">
+		<?php
 	}
 }

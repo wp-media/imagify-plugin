@@ -14,7 +14,7 @@ class Imagify_Assets {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.2';
+	const VERSION = '1.0.3';
 
 	/**
 	 * Prefix used for stylesheet handles.
@@ -209,19 +209,19 @@ class Imagify_Assets {
 
 		$this->register_script( 'twentytwenty', 'jquery.twentytwenty', array( 'jquery', 'event-move', 'chart', 'admin' ) )->defer_localization( 'imagifyTTT' );
 
-		$this->register_script( 'media-modal', 'media-modal', array( 'jquery', 'chart', 'admin' ) );
+		$this->register_script( 'media-modal', 'media-modal', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'admin' ) )->localize( 'imagifyModal' );
 
 		$this->register_script( 'pricing-modal', 'pricing-modal', array( 'jquery', 'admin' ) )->defer_localization( 'imagifyPricingModal' );
 
 		$this->register_script( 'library', 'library', array( 'jquery', 'media-modal' ) )->defer_localization( 'imagifyLibrary' );
 
-		$this->register_script( 'async', 'imagify-gulp', array(), '2017-07-28' );
+		$this->register_script( 'async', 'imagify-gulp' );
 
 		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
 
-		$this->register_script( 'options', 'options', array( 'jquery', 'sweetalert', 'underscore', 'admin' ) )->defer_localization( 'imagifyOptions' );
+		$this->register_script( 'options', 'options', array( 'jquery', 'heartbeat', 'sweetalert', 'underscore', 'admin' ) )->defer_localization( 'imagifyOptions' );
 
-		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'chart', 'admin' ) )->defer_localization( 'imagifyFiles' );
+		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'admin' ) )->defer_localization( 'imagifyFiles' );
 	}
 
 	/**
@@ -329,6 +329,9 @@ class Imagify_Assets {
 
 		$this->enqueue_style( 'admin' )->enqueue_script( 'media-modal' );
 
+		// When the optimization buttons are displayed in the media modal, they are fetched through ajax, so they can’t print the "processing" button template in the footer.
+		Imagify_Views::get_instance()->print_js_template_in_footer( 'button/processing' );
+
 		/**
 		 * Triggered after Imagify CSS and JS have been enqueued for the media modal.
 		 *
@@ -398,7 +401,7 @@ class Imagify_Assets {
 
 		wp_register_style(
 			$handle,
-			IMAGIFY_ASSETS_CSS_URL . $file_name . $extension,
+			IMAGIFY_URL . 'assets/css/' . $file_name . $extension,
 			$dependencies,
 			$version
 		);
@@ -488,7 +491,7 @@ class Imagify_Assets {
 
 		wp_register_script(
 			$handle,
-			IMAGIFY_ASSETS_JS_URL . $file_name . $extension,
+			IMAGIFY_URL . 'assets/js/' . $file_name . $extension,
 			$dependencies,
 			$version,
 			true
@@ -815,7 +818,7 @@ class Imagify_Assets {
 		}
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_register_script( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", array( 'jquery' ), false, true );
+		wp_register_script( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", array( 'jquery' ), false, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NoExplicitVersion
 	}
 
 	/**
@@ -843,6 +846,6 @@ class Imagify_Assets {
 			return false;
 		}
 
-		return get_imagify_option( 'api_key' ) && is_admin_bar_showing() && imagify_current_user_can() && get_imagify_option( 'admin_bar_menu' );
+		return get_imagify_option( 'api_key' ) && is_admin_bar_showing() && imagify_get_context( 'wp' )->current_user_can( 'manage' ) && get_imagify_option( 'admin_bar_menu' );
 	}
 }

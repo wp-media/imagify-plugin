@@ -15,7 +15,7 @@ $views = Imagify_Views::get_instance();
 				<?php
 				printf(
 					/* translators: %s is a data quota. */
-					esc_html__( 'You have %s space credit left' , 'imagify' ),
+					esc_html__( 'You have %s space credit left', 'imagify' ),
 					'<span class="imagify-unconsumed-percent">' . $views->get_quota_percent() . '%</span>'
 				);
 				?>

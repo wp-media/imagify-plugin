@@ -32,19 +32,17 @@ function _imagify_ngg_admin_print_styles() {
 
 	$assets->remove_deferred_localization( 'bulk', 'imagifyBulk' );
 
-	$l10n = $assets->get_localization_data( 'bulk', array(
-		'bufferSizes' => array(
-			'NGG' => get_imagify_bulk_buffer_size( 3 ),
-		),
-	) );
+	$l10n = $assets->get_localization_data( 'bulk', [
+		'bufferSizes' => [
+			'ngg' => 4,
+		],
+	] );
 
-	$l10n['ajaxActions']['libraryFetch'] = 'imagify_ngg_get_unoptimized_attachment_ids';
-
-	/** This filter is documented in inc/classes/class-imagify-assets.php */
+	/** This filter is documented in inc/functions/i18n.php */
 	$l10n['bufferSizes'] = apply_filters( 'imagify_bulk_buffer_sizes', $l10n['bufferSizes'] );
 
-	$assets->enqueue_assets( array( 'pricing-modal', 'bulk' ) )->localize( 'imagifyBulk', $l10n );
+	$assets->enqueue_assets( [ 'pricing-modal', 'bulk' ] )->localize( 'imagifyBulk', $l10n );
 
 	// Intercom.
-	add_action( 'admin_footer-' . $bulk_screen_id, array( $assets, 'print_support_script' ) );
+	add_action( 'admin_footer-' . $bulk_screen_id, [ $assets, 'print_support_script' ] );
 }

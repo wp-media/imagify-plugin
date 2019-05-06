@@ -114,6 +114,7 @@ p.imagify-api-key-invite-title {
 .imagify-setting-line {
 	border-top: 1px solid #D2D3D6;
 	padding: 25px 0 13px;
+	margin: 1em 0;
 }
 .imagify-options-subtitle + .imagify-setting-line {
 	border-top: 0;
@@ -241,7 +242,7 @@ label + .imagify-info,
 	margin-left: 38px;
 	padding-right: 25px;
 }
-label + .imagify-options-line {
+label ~ .imagify-options-line {
 	display: block;
 	margin: 8px 0 20px 40px;
 	font-size: 14px;
@@ -254,6 +255,9 @@ label + .imagify-options-line {
 label + .imagify-info {
 	margin-top: 10px;
 }
+.imagify-options-line + .imagify-info + .imagify-options-line {
+	margin-top: 20px;
+}
 .imagify-visual-label {
 	vertical-align: -5px;
 }
@@ -261,11 +265,11 @@ label[for="imagify_sizes_full"] + .imagify-info {
 	vertical-align: middle;
 }
 
-.imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label + .imagify-options-line,
+.imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label ~ .imagify-options-line,
 .imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label .imagify-visual-label {
 	opacity: .5;
 }
-.imagify-settings.imagify-settings [type="checkbox"]:checked + label + .imagify-options-line,
+.imagify-settings.imagify-settings [type="checkbox"]:checked + label ~ .imagify-options-line,
 .imagify-settings.imagify-settings [type="checkbox"]:checked + label .imagify-visual-label {
 	opacity: 1;
 }
@@ -500,14 +504,14 @@ label[for="imagify_partner_links"] {
 	justify-content: space-between;
 	font-weight: bold;
 }
-.imagify-kindof-title .imagify-button-primary {
+.imagify-settings .imagify-button-mini {
 	padding: 4px 13px 4px 10px;
 }
-.imagify-kindof-title .imagify-button-primary .dashicons {
+.imagify-settings .imagify-button-mini .dashicons-plus {
 	vertical-align: -7.5px;
 }
-.imagify-kindof-title .imagify-button-primary:hover,
-.imagify-kindof-title .imagify-button-primary:focus {
+.imagify-settings .imagify-button-mini.imagify-button-primary:hover,
+.imagify-settings .imagify-button-mini.imagify-button-primary:focus {
 	color: #FFF;
 }
 
@@ -566,6 +570,56 @@ p.imagify-custom-folder-line {
 	max-width: 6em;
 	transform: scale(1);
 	opacity: 1;
+}
+
+/* Progress bar */
+.imagify-settings .progress {
+	height: 8px;
+	margin-top: 1em;
+	background: #343A49;
+}
+.imagify-settings .bar {
+	position: relative;
+	width: 1px;
+	height: 8px;
+	background: #46B1CE;
+	-webkit-transition: width .5s;
+	transition: width .5s;
+}
+.imagify-settings .percent {
+	position: absolute;
+	top: 6px;
+	right: 0;
+	padding: 0 5px;
+	line-height: 1.85;
+	font-size: 14px;
+	font-weight: bold;
+	color: #40B1D0;
+}
+
+/* Icon rotation */
+.dashicons.rotate {
+	-webkit-animation: icon-rotate 2.6s infinite linear;
+	animation: icon-rotate 2.6s infinite linear;
+}
+
+@-webkit-keyframes icon-rotate {
+	from {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+	to {
+		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+}
+@keyframes icon-rotate {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 /* Files tree Part */

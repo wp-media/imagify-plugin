@@ -613,10 +613,10 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 }
 
 /* Custom Level Optimization Select */
-.imagify-level-selector {
+.imagify-selector {
 	position: relative;
 }
-.imagify-level-selector-list {
+.imagify-selector-list {
 	background: #FFF;
 	border: 1px solid #F4F7F9;
 	box-shadow: 0 6px 12px rgba(0, 0, 0, .1);
@@ -625,57 +625,57 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	text-transform: uppercase;
 	letter-spacing: .02em;
 }
-.imagify-level-selector-list li:first-child label {
+.imagify-selector-list li:first-child label {
 	border-radius: 3px 3px 0 0;
 }
-.imagify-level-selector-list li:last-child label {
+.imagify-selector-list li:last-child label {
 	border-radius: 0 0 3px 3px;
 }
-.imagify-level-selector-list li {
+.imagify-selector-list li {
 	margin: 0;
 }
-.imagify-level-selector-list li + li {
+.imagify-selector-list li + li {
 	border-top: 1px solid #F4F7F9;
 }
-.imagify-level-selector-list svg {
+.imagify-selector-list svg {
 	margin-right: 5px;
 }
-.imagify-level-selector-list input:checked + label,
-.imagify-level-selector-list .imagify-current-level label {
+.imagify-selector-list input:checked + label,
+.imagify-selector-list .imagify-selector-current-value label {
 	background: #343A49;
 	color: #FFF;
 }
-.imagify-level-selector-list input:checked + label:hover,
-.imagify-level-selector-list .imagify-current-level label:hover,
-.imagify-level-selector-list label:hover,
-.imagify-level-selector-list input:focus + label,
-.imagify-level-selector-list .imagify-current-level input:focus + label {
+.imagify-selector-list input:checked + label:hover,
+.imagify-selector-list .imagify-selector-current-value label:hover,
+.imagify-selector-list label:hover,
+.imagify-selector-list input:focus + label,
+.imagify-selector-list .imagify-selector-current-value input:focus + label {
 	background: #40B1D0;
 	color: #F4F7F9;
 }
-.imagify-level-selector-list input:checked + label:hover polygon,
-.imagify-level-selector-list .imagify-current-level label:hover polygon,
-.imagify-level-selector-list label:hover polygon,
-.imagify-level-selector-list input:focus + label polygon,
-.imagify-level-selector-list .imagify-current-level input:focus + label polygon {
+.imagify-selector-list input:checked + label:hover polygon,
+.imagify-selector-list .imagify-selector-current-value label:hover polygon,
+.imagify-selector-list label:hover polygon,
+.imagify-selector-list input:focus + label polygon,
+.imagify-selector-list .imagify-selector-current-value input:focus + label polygon {
 	fill: #FFF;
 }
-.imagify-level-selector-list input:checked + label:hover polygon[fill="#CCD1D6"],
-.imagify-level-selector-list .imagify-current-level label:hover polygon[fill="#CCD1D6"],
-.imagify-level-selector-list label:hover polygon[fill="#CCD1D6"],
-.imagify-level-selector-list input:focus + label polygon[fill="#CCD1D6"],
-.imagify-level-selector-list .imagify-current-level input:focus + label polygon[fill="#CCD1D6"] {
+.imagify-selector-list input:checked + label:hover polygon[fill="#CCD1D6"],
+.imagify-selector-list .imagify-selector-current-value label:hover polygon[fill="#CCD1D6"],
+.imagify-selector-list label:hover polygon[fill="#CCD1D6"],
+.imagify-selector-list input:focus + label polygon[fill="#CCD1D6"],
+.imagify-selector-list .imagify-selector-current-value input:focus + label polygon[fill="#CCD1D6"] {
 	fill: #3694AE;
 }
-.imagify-level-selector-list li label {
+.imagify-selector-list li label {
 	display: block;
 	padding: 10px;
 	transition: all .275s;
 }
-.imagify-level-selector-list polygon {
+.imagify-selector-list polygon {
 	transition: all .275s;
 }
-.imagify-level-selector-list {
+.imagify-selector-list {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -683,21 +683,21 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	transition: all .275s;
 	transform: translateY(-50%);
 }
-.imagify-level-selector-list[aria-hidden="true"] {
+.imagify-selector-list[aria-hidden="true"] {
 	opacity: 0;
 	visibility: hidden;
 	transform: translateY(-50%) scale(0);
 }
-.imagify-level-selector-list[aria-hidden="false"] {
+.imagify-selector-list[aria-hidden="false"] {
 	opacity: 1;
 	visibility: visible;
 	transform: translateY(-50%) scale(1);
 }
-.button .imagify-current-level-info {
+.button .imagify-selector-current-value-info {
 	position: relative;
 	padding-right: 20px;
 }
-.button .imagify-current-level-info:after {
+.button .imagify-selector-current-value-info:after {
 	content: '';
 	position: absolute;
 	right: 0;
@@ -866,29 +866,29 @@ td.imagify-cell-title {
 	padding-left: 0;
 }
 .imagify-cell-title label,
-.imagify-cell-original .imagify-cell-label {
+.imagify-cell-original-size .imagify-cell-label {
 	color: #1F2332;
 }
-.imagify-cell-optimized,
-.imagify-cell-original {
+.imagify-cell-optimized-size,
+.imagify-cell-original-size {
 	font-weight: 500;
 	color: #7A8996;
 	font-size: 12px;
 }
-.imagify-cell-optimized .imagify-cell-label {
+.imagify-cell-optimized-size .imagify-cell-label {
 	color: #338EA6;
 }
-.imagify-cell-images-optimized {
+.imagify-cell-count-optimized {
 	font-size: 14px;
 	font-weight: bold;
 	color: #338EA6;
 }
-.imagify-cell-errors {
+.imagify-cell-count-errors {
 	color: #C51162;
 	font-weight: bold;
 	font-size: 14px;
 }
-.imagify-cell-errors a {
+.imagify-cell-count-errors a {
 	margin-left: 5px;
 	color: #7A8996;
 	font-weight: normal;
@@ -929,12 +929,12 @@ td.imagify-cell-filename {
 .imagify-cell-level {
 	width: 145px;
 }
-.imagify-level-selector-button.imagify-level-selector-button {
+.imagify-selector-button.imagify-selector-button {
 	border: 1px solid #FFF;
 	padding: 2px 10px;
 }
-.imagify-level-selector-button.imagify-level-selector-button:hover,
-.imagify-level-selector-button.imagify-level-selector-button:focus {
+.imagify-selector-button.imagify-selector-button:hover,
+.imagify-selector-button.imagify-selector-button:focus {
 	border-color: #EEE;
 	box-shadow: 0 4px 8px rgba(0,0,0,.1);
 }
@@ -1074,13 +1074,13 @@ td.imagify-cell-filename {
 		width: calc(100% - 96px);
 	}
 	.imagify-cell-title:after,
-	.imagify-cell-images-optimized:before {
+	.imagify-cell-count-optimized:before {
 		content: '';
 		display: table;
 		clear: both;
 		width: 100%;
 	}
-	.imagify-cell-images-optimized {
+	.imagify-cell-count-optimized {
 		clear: both;
 	}
 

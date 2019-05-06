@@ -1,3 +1,5 @@
+window.imagify = window.imagify || {};
+
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 	/*
 	 * Process an API key check validity.
@@ -57,7 +59,6 @@
 			return;
 		}
 		$( 'input[aria-describedby="' + $( this ).attr( 'id' ) + '"]' ).trigger( 'click' );
-		return false;
 	} );
 
 	$( '.imagify-settings th span' ).on( 'click', function() {
@@ -392,6 +393,684 @@
 	} );
 
 } )(window, document, jQuery);
+
+
+// Generate missing webp versions ==================================================================
+/* eslint-disable no-underscore-dangle, consistent-this */
+(function(w, d, $, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
+
+	if ( ! imagifyOptions.bulk ) {
+		return;
+	}
+
+	w.imagify.optionsBulk = {
+		// Properties ==============================================================================
+		/**
+		 * When media IDs have been fetched for a context (or tried, with error), the context is removed from this list.
+		 *
+		 * @var {array} fetchQueue An array of contexts.
+		 */
+		fetchQueue:       [],
+		/**
+		 * Contexts in queue.
+		 *
+		 * @var {array} queue An array of objects: {
+		 *     @type {string} context     The context, like 'wp'.
+		 *     @type {string} optimizeURL The URL to ping to optimize a file.
+		 *     @type {array}  mediaIDs    A list of media IDs.
+		 * }
+		 */
+		queue:            [],
+		/**
+		 * List of medias being processed.
+		 *
+		 * @var {array} processingQueue An array of objects: {
+		 *     @type {string} context The context, like 'wp'.
+		 *     @type {int}    mediaID The media ID.
+		 * }
+		 */
+		processingQueue:  [],
+		/**
+		 * Stores the first error ID or message that is occurring when fetching media IDs.
+		 *
+		 * @var {string|bool} error False if no error.
+		 */
+		fetchError:       false,
+		/**
+		 * The current error ID or message.
+		 *
+		 * @var {string|bool} error False if no error.
+		 */
+		error:            false,
+		/**
+		 * Set to true at the beginning of the process.
+		 *
+		 * @var {bool} working
+		 */
+		working:          false,
+		/**
+		 * Set to true to stop the whole thing.
+		 *
+		 * @var {bool} processIsStopped
+		 */
+		processIsStopped: true,
+		/**
+		 * Total number of processed media.
+		 *
+		 * @var {int}
+		 */
+		processedMedia:   0,
+		/**
+		 * Total number of media to process.
+		 *
+		 * @var {int}
+		 */
+		totalMedia:       0,
+		/**
+		 * The button.
+		 *
+		 * @var {jQuery}
+		 */
+		$button:          null,
+		/**
+		 * The progress bar wrapper.
+		 *
+		 * @var {jQuery}
+		 */
+		$progressWrap:    null,
+		/**
+		 * The progress bar.
+		 *
+		 * @var {jQuery}
+		 */
+		$progressBar:     null,
+		/**
+		 * The progress bar text (the %).
+		 *
+		 * @var {jQuery}
+		 */
+		$progressText:    null,
+
+		// Methods =================================================================================
+
+		/*
+		 * Init.
+		 */
+		init: function () {
+			this.$button       = $( '#imagify-generate-webp-versions' );
+			this.$progressWrap = this.$button.siblings( '.imagify-progress' );
+			this.$progressBar  = this.$progressWrap.find( '.bar' );
+			this.$progressText = this.$progressBar.find( '.percent' );
+
+			// Enable/Disable the button when the "Convert to webp" checkbox is checked/unchecked.
+			$( '#imagify_convert_to_webp' )
+				.on( 'change.imagify init.imagify', { imagifyOptionsBulk: this }, this.toggleButton )
+				.trigger( 'init.imagify' );
+
+			// Launch optimization.
+			this.$button.on( 'click.imagify', { imagifyOptionsBulk: this }, this.maybeLaunchAllProcesses );
+
+			// Heartbeat for optimization queue.
+			$( d )
+				.on( 'heartbeat-send', { imagifyOptionsBulk: this }, this.addQueueHeartbeat )
+				.on( 'heartbeat-tick', { imagifyOptionsBulk: this }, this.processQueueHeartbeat )
+			// Heartbeat for requirements.
+				.on( 'heartbeat-send', this.addRequirementsHeartbeat )
+				.on( 'heartbeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsHeartbeat );
+		},
+
+		// Event callbacks =========================================================================
+
+		/**
+		 * Enable/Disable the button when the "Convert to webp" checkbox is checked/unchecked.
+		 *
+		 * @param {object} e Event object.
+		 */
+		toggleButton: function ( e ) {
+			if ( ! this.checked ) {
+				e.data.imagifyOptionsBulk.$button.attr( 'disabled', 'disabled' );
+			} else {
+				e.data.imagifyOptionsBulk.$button.removeAttr( 'disabled' );
+			}
+		},
+
+		/*
+		 * Build the queue and launch all processes.
+		 *
+		 * @param {object} e Event object.
+		 */
+		maybeLaunchAllProcesses: function ( e ) {
+			if ( ! e.data.imagifyOptionsBulk || e.data.imagifyOptionsBulk.working ) {
+				return;
+			}
+
+			if ( e.data.imagifyOptionsBulk.hasBlockingError( true ) ) {
+				return;
+			}
+
+			// Reset properties.
+			e.data.imagifyOptionsBulk.fetchQueue       = imagifyOptions.bulk.contexts;
+			e.data.imagifyOptionsBulk.queue            = [];
+			e.data.imagifyOptionsBulk.processingQueue  = [];
+			e.data.imagifyOptionsBulk.fetchError       = false;
+			e.data.imagifyOptionsBulk.error            = false;
+			e.data.imagifyOptionsBulk.working          = true;
+			e.data.imagifyOptionsBulk.processIsStopped = false;
+			e.data.imagifyOptionsBulk.processedMedia   = 0;
+			e.data.imagifyOptionsBulk.totalMedia       = 0;
+
+			// Disable the button.
+			e.data.imagifyOptionsBulk.$button.attr( 'disabled', 'disabled' ).find( '.dashicons' ).addClass( 'rotate' );
+
+			// Add a message to be displayed when the user wants to quit the page.
+			$( w ).on( 'beforeunload', e.data.imagifyOptionsBulk.getConfirmMessage );
+
+			// Fetch IDs of media to optimize.
+			e.data.imagifyOptionsBulk.fetchIDs();
+		},
+
+		/*
+		 * Get the message displayed to the user when (s)he leaves the page.
+		 *
+		 * @return {string}
+		 */
+		getConfirmMessage: function () {
+			return imagifyOptions.bulk.labels.processing;
+		},
+
+		// Heartbeat ===============================================================================
+
+		/**
+		 * Add a Heartbeat ID on "heartbeat-send" event to sync the optimization queue.
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		addQueueHeartbeat: function ( e, data ) {
+			if ( e.data.imagifyOptionsBulk && e.data.imagifyOptionsBulk.processingQueue.length ) {
+				data[ imagifyOptions.bulk.heartbeatIDs.queue ] = e.data.imagifyOptionsBulk.processingQueue;
+			}
+		},
+
+		/**
+		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * It allows to update various data periodically.
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		processQueueHeartbeat: function ( e, data ) {
+			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.heartbeatIDs.queue ] !== 'undefined' ) {
+				$.each( data[ imagifyOptions.bulk.heartbeatIDs.queue ], function ( i, mediaData ) {
+					e.data.imagifyOptionsBulk.mediaProcessed( mediaData );
+				} );
+			}
+		},
+
+		/**
+		 * Add a Heartbeat ID for requirements on "heartbeat-send" event.
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		addRequirementsHeartbeat: function ( e, data ) {
+			data[ imagifyOptions.bulk.heartbeatIDs.requirements ] = 1;
+		},
+
+		/**
+		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * It allows to update requirements status periodically.
+		 *
+		 * @param {object} e    Event object.
+		 * @param {object} data Object containing all Heartbeat IDs.
+		 */
+		processRequirementsHeartbeat: function ( e, data ) {
+			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.heartbeatIDs.requirements ] === 'undefined' ) {
+				return;
+			}
+
+			data = data[ imagifyOptions.bulk.heartbeatIDs.requirements ];
+
+			imagifyOptions.bulk.curlMissing    = data.curl_missing;
+			imagifyOptions.bulk.editorMissing  = data.editor_missing;
+			imagifyOptions.bulk.extHttpBlocked = data.external_http_blocked;
+			imagifyOptions.bulk.apiDown        = data.api_down;
+			imagifyOptions.bulk.keyIsValid     = data.key_is_valid;
+			imagifyOptions.bulk.isOverQuota    = data.is_over_quota;
+		},
+
+		// Optimization ============================================================================
+
+		/*
+		 * Fetch IDs of media to optimize.
+		 */
+		fetchIDs: function () {
+			var _this, context;
+
+			if ( this.processIsStopped ) {
+				return;
+			}
+
+			if ( ! this.fetchQueue.length ) {
+				// No more IDs to fetch.
+				if ( this.queue.length ) {
+					// We have files to process.
+					// Reset and display the progress bar.
+					this.$progressBar.removeAttr( 'style' );
+					this.$progressText.text( '0%' );
+					this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' );
+
+					this.processQueue();
+					return;
+				}
+
+				if ( ! this.fetchError ) {
+					// No files to process.
+					this.fetchError = 'no-images';
+				}
+
+				// Error, or no files to process.
+				this.stopProcess( this.fetchError );
+				this.fetchError = false;
+				return;
+			}
+
+			// Fetch IDs for the next context.
+			_this   = this;
+			context = this.fetchQueue.shift();
+
+			$.get( this.getAjaxUrl( 'getMediaIds', context ) )
+				.done( function( response ) {
+					var errorMessage;
+
+					if ( _this.processIsStopped ) {
+						return;
+					}
+
+					if ( response.data && response.data.message ) {
+						errorMessage = response.data.message;
+					} else {
+						errorMessage = imagifyOptions.bulk.ajaxErrorText;
+					}
+
+					if ( ! response.success ) {
+						// Error.
+						if ( ! _this.fetchError ) {
+							_this.fetchError = errorMessage;
+						}
+						return;
+					}
+
+					if ( ! $.isArray( response.data ) ) {
+						// Error: should be an array.
+						if ( ! _this.fetchError ) {
+							_this.fetchError = errorMessage;
+						}
+						return;
+					}
+
+					if ( ! response.data.length ) {
+						// No media to process.
+						return;
+					}
+
+					// Success.
+					_this.totalMedia += response.data.length;
+					_this.queue.push( {
+						context:     context,
+						optimizeURL: _this.getAjaxUrl( 'bulkProcess', context ),
+						mediaIDs:    response.data
+					} );
+				} )
+				.fail( function() {
+					// Error.
+					if ( ! _this.fetchError ) {
+						_this.fetchError = 'get-unoptimized-images';
+					}
+				} )
+				.always( function() {
+					// Fetch IDs for the next context.
+					_this.fetchIDs();
+				} );
+		},
+
+		/*
+		 * Fill the processing queue until the buffer size is reached.
+		 */
+		processQueue: function () {
+			var _this = this;
+
+			if ( this.processIsStopped ) {
+				return;
+			}
+
+			if ( ! this.queue.length && ! this.processingQueue.length ) {
+				return;
+			}
+
+			// Optimize the files.
+			$.each( this.queue, function ( i, item ) {
+				if ( _this.processingQueue.length >= imagifyOptions.bulk.bufferSize ) {
+					return false;
+				}
+
+				$.each( item.mediaIDs, function () {
+					_this.processMedia( {
+						context:     item.context,
+						mediaID:     item.mediaIDs.shift(),
+						optimizeURL: item.optimizeURL
+					} );
+
+					if ( ! item.mediaIDs.length ) {
+						_this.queue.shift();
+					}
+
+					if ( _this.processingQueue.length >= imagifyOptions.bulk.bufferSize ) {
+						return false;
+					}
+				} );
+			} );
+		},
+
+		/*
+		 * Process the next media.
+		 *
+		 * @param {object} item {
+		 *     @type {string} context     The context, like 'wp'.
+		 *     @type {int}    mediaID     The media ID.
+		 *     @type {string} optimizeURL The URL to ping to optimize the media.
+		 * }
+		 */
+		processMedia: function ( item ) {
+			var _this           = this,
+				defaultResponse = {
+					context: item.context,
+					mediaID: item.mediaID
+				};
+
+			this.processingQueue.push( {
+				context: item.context,
+				mediaID: item.mediaID
+			} );
+
+			$.post( {
+				url:      item.optimizeURL,
+				data:     {
+					media_id: item.mediaID,
+					context:  item.context
+				},
+				dataType: 'json'
+			} )
+				.done( function( response ) {
+					if ( response.success ) {
+						// Processing.
+						return;
+					}
+
+					// Error.
+					_this.mediaProcessed( defaultResponse );
+				} )
+				.fail( function() {
+					// Error.
+					_this.mediaProcessed( defaultResponse );
+				} );
+		},
+
+		/**
+		 * After a media has been processed.
+		 *
+		 * @param {object} response {
+		 *     The response:
+		 *
+		 *     @type {int}    mediaID The media ID.
+		 *     @type {string} context The context.
+		 * }
+		 */
+		mediaProcessed: function( response ) {
+			var _this = this;
+
+			if ( this.processIsStopped ) {
+				return;
+			}
+
+			// Remove this media from the "being processed" list.
+			$.each( this.processingQueue, function( i, mediaData ) {
+				if ( response.context === mediaData.context && response.mediaID === mediaData.mediaID ) {
+					_this.processingQueue.splice( i, 1 );
+					return false;
+				}
+			} );
+
+			++this.processedMedia;
+
+			// Update the progress bar.
+			response.progress = Math.floor( this.processedMedia / this.totalMedia * 100 );
+			this.$progressBar.css( 'width', response.progress + '%' );
+			this.$progressText.text( response.progress + '%' );
+
+			if ( this.queue.length || this.processingQueue.length ) {
+				this.processQueue();
+			} else if ( this.totalMedia === this.processedMedia ) {
+				this.queueEmpty();
+			}
+		},
+
+		/*
+		 * End.
+		 */
+		queueEmpty: function () {
+			var errorArgs = {};
+
+			// Maybe display an error.
+			if ( false !== this.error ) {
+				if ( 'invalid-api-key' === this.error ) {
+					errorArgs = {
+						title: imagifyOptions.bulk.labels.invalidAPIKeyTitle,
+						type:  'info'
+					};
+				}
+				else if ( 'over-quota' === this.error ) {
+					errorArgs = {
+						title:             imagifyOptions.bulk.labels.overQuotaTitle,
+						html:              $( '#tmpl-imagify-overquota-alert' ).html(),
+						type:              'info',
+						customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
+						showConfirmButton: false
+					};
+				}
+				else if ( 'get-unoptimized-images' === this.error || 'consumed-all-data' === this.error ) {
+					errorArgs = {
+						title: imagifyOptions.bulk.labels.getUnoptimizedImagesErrorTitle,
+						html:  imagifyOptions.bulk.labels.getUnoptimizedImagesErrorText,
+						type:  'info'
+					};
+				}
+				else if ( 'no-images' === this.error ) {
+					errorArgs = {
+						title: imagifyOptions.bulk.labels.nothingToDoTitle,
+						html:  imagifyOptions.bulk.labels.nothingToDoText,
+						type:  'info'
+					};
+				} else {
+					errorArgs = {
+						title: imagifyOptions.bulk.labels.error,
+						html:  this.error,
+						type:  'info'
+					};
+				}
+
+				this.displayError( errorArgs );
+
+				// Reset the error.
+				this.error = false;
+			}
+
+			// Reset.
+			this.fetchQueue       = [];
+			this.queue            = [];
+			this.processingQueue  = [];
+			this.fetchError       = false;
+			this.working          = false;
+			this.processIsStopped = false;
+			this.processedMedia   = 0;
+			this.totalMedia       = 0;
+
+			// Unlink the message displayed when the user wants to quit the page.
+			$( w ).off( 'beforeunload', this.getConfirmMessage );
+
+			// Reset the progress bar.
+			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' );
+			this.$progressBar.removeAttr( 'style' );
+			this.$progressText.text( '0%' );
+
+			// Enable the button.
+			this.$button.removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
+		},
+
+		// Tools ===================================================================================
+
+		/*
+		 * Tell if we have a blocking error. Can also display an error message in a swal.
+		 *
+		 * @param  {bool} displayErrorMessage False to not display any error message.
+		 * @return {bool}
+		 */
+		hasBlockingError: function ( displayErrorMessage ) {
+			displayErrorMessage = undefined !== displayErrorMessage && displayErrorMessage;
+
+			if ( imagifyOptions.bulk.curlMissing ) {
+				if ( displayErrorMessage ) {
+					this.displayError( {
+						html: imagifyOptions.bulk.labels.curlMissing
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyOptions.bulk.editorMissing ) {
+				if ( displayErrorMessage ) {
+					this.displayError( {
+						html: imagifyOptions.bulk.labels.editorMissing
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyOptions.bulk.extHttpBlocked ) {
+				if ( displayErrorMessage ) {
+					this.displayError( {
+						html: imagifyOptions.bulk.labels.extHttpBlocked
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyOptions.bulk.apiDown ) {
+				if ( displayErrorMessage ) {
+					this.displayError( {
+						html: imagifyOptions.bulk.labels.apiDown
+					} );
+				}
+				return true;
+			}
+
+			if ( ! imagifyOptions.bulk.keyIsValid ) {
+				if ( displayErrorMessage ) {
+					this.displayError( {
+						title: imagifyOptions.bulk.labels.invalidAPIKeyTitle,
+						type:  'info'
+					} );
+				}
+				return true;
+			}
+
+			if ( imagifyOptions.bulk.isOverQuota ) {
+				if ( displayErrorMessage ) {
+					this.displayError( {
+						title:             imagifyOptions.bulk.labels.overQuotaTitle,
+						html:              $( '#tmpl-imagify-overquota-alert' ).html(),
+						type:              'info',
+						customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
+						showConfirmButton: false
+					} );
+				}
+				return true;
+			}
+
+			return false;
+		},
+
+		/*
+		 * Display an error message in a modal.
+		 *
+		 * @param {string} title The modal title.
+		 * @param {string} text  The modal text.
+		 * @param {object} args  Other less common args.
+		 */
+		displayError: function ( title, text, args ) {
+			var def = {
+				title:             '',
+				html:              '',
+				type:              'error',
+				customClass:       '',
+				width:             620,
+				padding:           0,
+				showCloseButton:   true,
+				showConfirmButton: true
+			};
+
+			if ( $.isPlainObject( title ) ) {
+				args = $.extend( {}, def, title );
+			} else {
+				args = args || {};
+				args = $.extend( {}, def, {
+					title: title || '',
+					html:  text  || ''
+				}, args );
+			}
+
+			args.title        = args.title || imagifyOptions.bulk.labels.error;
+			args.customClass += ' imagify-sweet-alert';
+
+			swal( args ).catch( swal.noop );
+		},
+
+		/*
+		 * Get the URL used for ajax requests.
+		 *
+		 * @param  {string} action  An ajax action, or part of it.
+		 * @param  {string} context The context.
+		 * @return {string}
+		 */
+		getAjaxUrl: function ( action, context ) {
+			var url;
+
+			url  = ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyOptions.bulk.ajaxNonce;
+			url += '&action=' + imagifyOptions.bulk.ajaxActions[ action ];
+			url += '&context=' + context;
+			url += '&imagify_action=generate_webp';
+
+			return url;
+		},
+
+		/*
+		 * Stop everything and set an error.
+		 *
+		 * @param {string} errorId An error ID.
+		 */
+		stopProcess: function ( errorId ) {
+			this.processIsStopped = true;
+
+			this.error = errorId;
+
+			this.queueEmpty();
+		}
+	};
+
+	w.imagify.optionsBulk.init();
+
+} )(window, document, jQuery);
+/* eslint-enable no-underscore-dangle, consistent-this */
 
 
 // "Select all" checkboxes =========================================================================

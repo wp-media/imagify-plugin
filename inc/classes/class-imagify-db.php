@@ -114,19 +114,25 @@ class Imagify_DB {
 	 * Get Imagify mime types, ready to be used in a `IN ()` clause.
 	 *
 	 * @since  1.6.13
+	 * @since  1.9 Added $type parameter.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return string A comma separated list of mime types.
+	 * @param  string $type One of 'image', 'not-image'. Any other value will return all mime types.
+	 * @return string       A comma separated list of mime types.
 	 */
-	public static function get_mime_types() {
-		static $mime_types;
+	public static function get_mime_types( $type = null ) {
+		static $mime_types = [];
 
-		if ( ! isset( $mime_types ) ) {
-			$mime_types = self::prepare_values_list( imagify_get_mime_types() );
+		if ( empty( $type ) ) {
+			$type = 'all';
 		}
 
-		return $mime_types;
+		if ( ! isset( $mime_types[ $type ] ) ) {
+			$mime_types[ $type ] = self::prepare_values_list( imagify_get_mime_types( $type ) );
+		}
+
+		return $mime_types[ $type ];
 	}
 
 	/**
@@ -435,6 +441,8 @@ class Imagify_DB {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
+		$wpdb->hide_errors();
+
 		$schema_query    = trim( $schema_query );
 		$charset_collate = $wpdb->get_charset_collate();
 
@@ -460,5 +468,97 @@ class Imagify_DB {
 		$result        = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $escaped_table ) );
 
 		return $result === $table_name;
+	}
+
+	/**
+	 * Cache transients used for optimization process locks.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param string $context   The context.
+	 * @param array  $media_ids The media IDs.
+	 */
+	public static function cache_process_locks( $context, $media_ids ) {
+		global $wpdb;
+
+		if ( ! $context || ! $media_ids || wp_using_ext_object_cache() ) {
+			return;
+		}
+
+		// Sanitize the IDs.
+		$media_ids = array_filter( $media_ids );
+		$media_ids = array_unique( $media_ids, true );
+
+		if ( ! $media_ids ) {
+			return;
+		}
+
+		$context_instance   = imagify_get_context( $context );
+		$context            = $context_instance->get_name();
+		$process_class_name = imagify_get_optimization_process_class_name( $context );
+		$transient_name     = sprintf( $process_class_name::LOCK_NAME, $context, '%' );
+		$is_network_wide    = $context_instance->is_network_wide();
+
+		// Do 1 DB query per context (and cache results) before doing 1 get_transient() (2 DB queries) per media ID.
+		$prefix = $is_network_wide ? '_site_transient_' : '_transient_';
+
+		if ( $is_network_wide && is_multisite() ) {
+			$network_id     = function_exists( 'get_current_network_id' ) ? get_current_network_id() : (int) $wpdb->siteid;
+			$cache_prefix   = "$network_id:";
+			$notoptions_key = "$network_id:notoptions";
+			$cache_group    = 'site-options';
+			$results        = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT meta_key as name, meta_value as value FROM $wpdb->sitemeta WHERE ( meta_key LIKE %s OR meta_key LIKE %s ) AND site_id = %d",
+					$prefix . $transient_name,
+					$prefix . 'timeout_' . $transient_name,
+					$network_id
+				),
+				OBJECT_K
+			); // WPCS: unprepared SQL ok.
+		} else {
+			$cache_prefix   = '';
+			$notoptions_key = 'notoptions';
+			$cache_group    = 'options';
+			$results        = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT option_name as name, option_value as value FROM $wpdb->options WHERE ( option_name LIKE %s OR option_name LIKE %s )",
+					$prefix . $transient_name,
+					$prefix . 'timeout_' . $transient_name
+				),
+				OBJECT_K
+			); // WPCS: unprepared SQL ok.
+		}
+
+		$not_exist = [];
+
+		foreach ( [ '', 'timeout_' ] as $maybe_timeout ) {
+			foreach ( $media_ids as $id ) {
+				$option_name = $prefix . $maybe_timeout . str_replace( '%', $id, $transient_name );
+
+				if ( isset( $results[ $option_name ] ) ) {
+					// Cache the value.
+					$value = $results[ $option_name ]->value;
+					$value = maybe_unserialize( $value );
+					wp_cache_set( "$cache_prefix$option_name", $value, $cache_group );
+				} else {
+					// No value.
+					$not_exist[ $option_name ] = true;
+				}
+			}
+		}
+
+		if ( ! $not_exist ) {
+			return;
+		}
+
+		// Cache the options that don't exist in the DB.
+		$notoptions = wp_cache_get( $notoptions_key, $cache_group );
+		$notoptions = is_array( $notoptions ) ? $notoptions : [];
+		$notoptions = array_merge( $notoptions, $not_exist );
+
+		wp_cache_set( $notoptions_key, $notoptions, $cache_group );
 	}
 }
