@@ -140,7 +140,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 == Changelog ==
 = 1.9.0 - 2019/05/06 =
 * New: webp support. For each image or thumbnail, Imagify can create a webp version of it. But since creating these images without using them does not make really sense, Imagify can also display your webp images on your site. All of this can be enabled in the settings. For the images that are already optimized, you get the possibility to create the webp versions separately (one by one or in the settings page), but only if you kept a backup copy of the original images.
-* Improvement: the optimization process has been entirely rebuilt. This new process allows you to optimize as many thumnail sizes that you want. It also implies that many classes, functions, and hooks have been deprecated.
+* Improvement: the optimization process has been entirely rebuilt. This new process allows you to optimize as many thumbnail sizes that you want. It also implies that many classes, functions, and hooks have been deprecated.
 * Improvement: compatibility with Flywheel.
 * Improvement: some error messages are now more accurate.
 * Fix: made sure to stop the optimization process if the backup process fails. Since the optimization process has been rebuilt, some other bugs have been fixed along the way.
