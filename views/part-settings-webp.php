@@ -10,7 +10,7 @@ $settings = Imagify_Settings::get_instance();
 		<?php
 		$settings->field_checkbox( [
 			'option_name' => 'convert_to_webp',
-			'label'       => __( 'Convert images to webp format', 'imagify' ),
+			'label'       => __( 'Create webp versions of images', 'imagify' ),
 			'attributes'  => [
 				'aria-describedby' => 'describe-convert_to_webp',
 			],
