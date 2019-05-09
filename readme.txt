@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 4.0.0
-Tested up to: 5.1.1
-Stable tag: 1.9.0
+Tested up to: 5.2
+Stable tag: 1.9.1
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -138,6 +138,10 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.1 - 2019/05/09 =
+* Improvement: prevent "Generating missing webp versions" being stuck at 0% in the settings page by displaying a "done/total" label instead.
+* Improvement: improved our "re-registering" of the Heartbeat library, that some plugins may deactivate.
+
 = 1.9.0 - 2019/05/06 =
 * New: webp support. For each image or thumbnail, Imagify can create a webp version of it. But since creating these images without using them does not make really sense, Imagify can also display your webp images on your site. All of this can be enabled in the settings. For the images that are already optimized, you get the possibility to create the webp versions separately (one by one or in the settings page), but only if you kept a backup copy of the original images.
 * Improvement: the optimization process has been entirely rebuilt. This new process allows you to optimize as many thumbnail sizes that you want. It also implies that many classes, functions, and hooks have been deprecated.
