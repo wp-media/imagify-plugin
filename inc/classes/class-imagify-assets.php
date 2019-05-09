@@ -796,6 +796,8 @@ class Imagify_Assets {
 	 * @param  string $handle Name of the script. Should be unique.
 	 */
 	protected function maybe_register_heartbeat( $handle ) {
+		global $wp_version;
+
 		if ( wp_script_is( 'heartbeat', 'registered' ) ) {
 			return;
 		}
@@ -805,7 +807,8 @@ class Imagify_Assets {
 			$handle = self::JS_PREFIX . $handle;
 		}
 
-		$dependencies = wp_scripts()->query( $handle );
+		$wp_scripts   = wp_scripts();
+		$dependencies = $wp_scripts->query( $handle );
 
 		if ( ! $dependencies || ! $dependencies->deps ) {
 			return;
@@ -818,7 +821,26 @@ class Imagify_Assets {
 		}
 
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		wp_register_script( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", array( 'jquery' ), false, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NoExplicitVersion
+		$depts  = [ 'jquery' ];
+
+		if ( version_compare( $wp_version, '5.0.0' ) >= 0 ) {
+			$depts[] = 'wp-hooks';
+		}
+
+		wp_register_script( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", $depts, false, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NoExplicitVersion
+
+		if ( $wp_scripts->get_data( 'heartbeat', 'data' ) ) {
+			return;
+		}
+
+		/** This filter is documented in /wp-includes/script-loader.php */
+		$data = apply_filters( 'heartbeat_settings', [] );
+
+		if ( empty( $data['nonce'] ) ) {
+			$data = wp_heartbeat_settings( $data );
+		}
+
+		wp_localize_script( 'heartbeat', 'heartbeatSettings', $data );
 	}
 
 	/**

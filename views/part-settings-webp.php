@@ -10,7 +10,7 @@ $settings = Imagify_Settings::get_instance();
 		<?php
 		$settings->field_checkbox( [
 			'option_name' => 'convert_to_webp',
-			'label'       => __( 'Convert images to webp format', 'imagify' ),
+			'label'       => __( 'Create webp versions of images', 'imagify' ),
 			'attributes'  => [
 				'aria-describedby' => 'describe-convert_to_webp',
 			],
@@ -107,7 +107,7 @@ $settings = Imagify_Settings::get_instance();
 
 				<div aria-hidden="true" class="imagify-progress hidden">
 					<div class="progress">
-						<div class="bar"><div class="percent">0%</div></div>
+						<div class="bar"><div class="percent">0</div></div>
 					</div>
 				</div>
 			</div>
