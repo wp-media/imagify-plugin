@@ -107,7 +107,7 @@ $settings = Imagify_Settings::get_instance();
 
 				<div aria-hidden="true" class="imagify-progress hidden">
 					<div class="progress">
-						<div class="bar"><div class="percent">0%</div></div>
+						<div class="bar"><div class="percent">0</div></div>
 					</div>
 				</div>
 			</div>

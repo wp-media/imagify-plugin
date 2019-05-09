@@ -657,7 +657,7 @@ window.imagify = window.imagify || {};
 					// We have files to process.
 					// Reset and display the progress bar.
 					this.$progressBar.removeAttr( 'style' );
-					this.$progressText.text( '0%' );
+					this.$progressText.text( '0' + ( this.totalMedia ? '/' + this.totalMedia : '' ) );
 					this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' );
 
 					this.processQueue();
@@ -846,7 +846,7 @@ window.imagify = window.imagify || {};
 			// Update the progress bar.
 			response.progress = Math.floor( this.processedMedia / this.totalMedia * 100 );
 			this.$progressBar.css( 'width', response.progress + '%' );
-			this.$progressText.text( response.progress + '%' );
+			this.$progressText.text( this.processedMedia + '/' + this.totalMedia );
 
 			if ( this.queue.length || this.processingQueue.length ) {
 				this.processQueue();
@@ -921,7 +921,7 @@ window.imagify = window.imagify || {};
 			// Reset the progress bar.
 			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' );
 			this.$progressBar.removeAttr( 'style' );
-			this.$progressText.text( '0%' );
+			this.$progressText.text( '0' );
 
 			// Enable the button.
 			this.$button.removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
