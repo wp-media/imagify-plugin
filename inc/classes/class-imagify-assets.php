@@ -7,14 +7,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.6.10
  * @author Grégory Viguier
  */
-class Imagify_Assets {
+class Imagify_Assets extends Imagify_Assets_Deprecated {
 
 	/**
 	 * Class version.
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.0.3';
+	const VERSION = '1.0.4';
 
 	/**
 	 * Prefix used for stylesheet handles.
@@ -125,9 +125,6 @@ class Imagify_Assets {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles_and_scripts' ), IMAGIFY_INT_MAX );
 		add_action( 'wp_enqueue_media',      array( $this, 'enqueue_media_modal' ) );
-
-		add_action( 'admin_footer-media_page_imagify-bulk-optimization', array( $this, 'print_support_script' ) );
-		add_action( 'admin_footer-settings_page_imagify',                array( $this, 'print_support_script' ) );
 	}
 
 	/**

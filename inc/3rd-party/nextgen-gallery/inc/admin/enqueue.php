@@ -42,6 +42,4 @@ function _imagify_ngg_admin_print_styles() {
 	$l10n['bufferSizes'] = apply_filters( 'imagify_bulk_buffer_sizes', $l10n['bufferSizes'] );
 
 	$assets->enqueue_assets( [ 'pricing-modal', 'bulk' ] )->localize( 'imagifyBulk', $l10n );
-
-
 }
