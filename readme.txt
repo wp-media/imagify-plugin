@@ -138,6 +138,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.2 - 2019/05/16 =
+* Fix: Don't display Intercom anymore
+
 = 1.9.1 - 2019/05/09 =
 * Improvement: prevent "Generating missing webp versions" being stuck at 0% in the settings page by displaying a "done/total" label instead.
 * Improvement: improved our "re-registering" of the Heartbeat library, that some plugins may deactivate.
