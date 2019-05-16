@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 4.0.0
 Tested up to: 5.2
-Stable tag: 1.9.1
+Stable tag: 1.9.2
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -139,7 +139,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 = 1.9.2 - 2019/05/16 =
-* Fix: Don't display Intercom anymore
+* Fix: don’t display support bubble anymore.
 
 = 1.9.1 - 2019/05/09 =
 * Improvement: prevent "Generating missing webp versions" being stuck at 0% in the settings page by displaying a "done/total" label instead.
