@@ -58,6 +58,8 @@ class Imagify_Plugin {
 			Imagify_Admin_Ajax_Post::get_instance()->init();
 			Imagify_Settings::get_instance()->init();
 			Imagify_Views::get_instance()->init();
+			\Imagify\Imagifybeat\Core::get_instance()->init();
+			\Imagify\Imagifybeat\Actions::get_instance()->init();
 		}
 
 		if ( ! wp_doing_ajax() ) {
