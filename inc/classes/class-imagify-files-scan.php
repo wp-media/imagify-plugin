@@ -143,7 +143,7 @@ class Imagify_Files_Scan {
 			}
 		}
 
-		foreach ( $folders as $folder ) {
+		foreach ( $folders as $folder => $i ) {
 			if ( strpos( $file_path, $folder ) === 0 ) {
 				return true;
 			}
