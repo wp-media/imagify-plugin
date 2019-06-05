@@ -704,6 +704,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			wp_send_json_error( $result->get_error_message() );
 		}
 
+		$process = imagify_get_optimization_process( $media_id, 'custom-folders' );
 		$this->file_optimization_output( $process );
 	}
 
