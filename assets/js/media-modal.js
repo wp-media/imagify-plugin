@@ -55,23 +55,18 @@ window.imagify.drawMeAChart = function( canvas ) {
 
 			$document.on( 'click', '.imagify-datas-more-action a', this.toggleSlide );
 
-			if ( ! this.hasHeartbeat() ) {
-				return;
-			}
-
 			// Optimize, restore, etc.
 			$document.on( 'click', '.button-imagify-restore, .button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-optimize-missing-sizes, .button-imagify-generate-webp', this.processOptimization );
 
-			$document.on( 'heartbeat-send', this.addToHeartbeat );
-			$document.on( 'heartbeat-tick', this.processHeartbeat );
+			$document.on( 'imagifybeat-send', this.addToImagifybeat );
+			$document.on( 'imagifybeat-tick', this.processImagifybeat );
 
 			// Some items may be processed in background on page load.
 			$processing = $( '.imagify-data-actions-container .button-imagify-processing' );
 
 			if ( $processing.length ) {
-				// Fasten Heartbeat for a minute.
-				w.wp.heartbeat.interval( 5, 12 );
-
+				// Some media are already being processed.
+				// Lock the items, so we can check their status with Imagifybeat.
 				$processing.closest( '.imagify-data-actions-container' ).each( function() {
 					var $this   = $( this ),
 						id      = w.imagify.modal.sanitizeId( $this.data( 'id' ) ),
@@ -79,6 +74,9 @@ window.imagify.drawMeAChart = function( canvas ) {
 
 					w.imagify.modal.lockItem( context, id );
 				} );
+
+				// Fasten Imagifybeat.
+				w.imagify.beat.interval( 15 );
 			}
 		},
 
@@ -136,38 +134,29 @@ window.imagify.drawMeAChart = function( canvas ) {
 						// The work is done.
 						w.imagify.modal.displayProcessResult( context, id, response.data.html );
 					} else {
-						// Still processing in background: we're waiting for the result by poking Heartbeat.
-						// Set the heartbeat interval to 5 sec for 60 seconds (12 ticks).
-						w.wp.heartbeat.interval( 5, 12 );
+						// Still processing in background: we're waiting for the result by poking Imagifybeat.
+						// Set the Imagifybeat interval to 15 seconds.
+						w.imagify.beat.interval( 15 );
 					}
 				} );
 		},
 
-		// Heartbeat ===============================================================================
+		// Imagifybeat =============================================================================
 
 		/**
-		 * Tell if we can use Heartbeat.
-		 *
-		 * @return {bool}
-		 */
-		hasHeartbeat: function() {
-			return w.imagifyModal && w.imagifyModal.heartbeatId && w.wp && w.wp.heartbeat ? true : false;
-		},
-
-		/**
-		 * Send the media IDs and their status to heartbeat.
+		 * Send the media IDs and their status to Imagifybeat.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		addToHeartbeat: function ( e, data ) {
+		addToImagifybeat: function ( e, data ) {
 			var $containers = $( '.imagify-data-actions-container' );
 
 			if ( ! $containers.length ) {
 				return;
 			}
 
-			data[ w.imagifyModal.heartbeatId ] = {};
+			data[ w.imagifyModal.imagifybeatID ] = {};
 
 			$containers.each( function() {
 				var $this   = $( this ),
@@ -175,23 +164,23 @@ window.imagify.drawMeAChart = function( canvas ) {
 					context = w.imagify.modal.sanitizeContext( $this.data( 'context' ) ),
 					locked  = w.imagify.modal.isItemLocked( context, id ) ? 1 : 0;
 
-				data[ w.imagifyModal.heartbeatId ][ context ] = data[ w.imagifyModal.heartbeatId ][ context ] || {};
-				data[ w.imagifyModal.heartbeatId ][ context ][ '_' + id ] = locked;
+				data[ w.imagifyModal.imagifybeatID ][ context ] = data[ w.imagifyModal.imagifybeatID ][ context ] || {};
+				data[ w.imagifyModal.imagifybeatID ][ context ][ '_' + id ] = locked;
 			} );
 		},
 
 		/**
-		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		processHeartbeat: function ( e, data ) {
-			if ( typeof data[ w.imagifyModal.heartbeatId ] === 'undefined' ) {
+		processImagifybeat: function ( e, data ) {
+			if ( typeof data[ w.imagifyModal.imagifybeatID ] === 'undefined' ) {
 				return;
 			}
 
-			$.each( data[ w.imagifyModal.heartbeatId ], function( contextId, htmlContent ) {
+			$.each( data[ w.imagifyModal.imagifybeatID ], function( contextId, htmlContent ) {
 				var context, id;
 
 				context = $.trim( contextId ).match( /^(.+)_(\d+)$/ );
@@ -223,7 +212,11 @@ window.imagify.drawMeAChart = function( canvas ) {
 			w.imagify.modal.unlockItem( context, id );
 
 			if ( ! w.imagify.modal.working.length ) {
+				// Work is done.
+				// Open the last container being processed.
 				w.imagify.modal.openSlide( $containers );
+				// Reset Imagifybeat interval.
+				w.imagify.beat.resetInterval();
 			}
 		},
 
