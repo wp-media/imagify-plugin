@@ -123,7 +123,6 @@ class Imagify_Plugin {
 		}
 
 		require_once $inc_path . 'admin/upgrader.php';
-		require_once $inc_path . 'admin/heartbeat.php';
 		require_once $inc_path . 'admin/upload.php';
 		require_once $inc_path . 'admin/media.php';
 		require_once $inc_path . 'admin/meta-boxes.php';
