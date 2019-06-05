@@ -1108,7 +1108,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				sprintf(
 					/* translators: %s is an error message. */
 					__( 'Resizement failed: %s', 'imagify' ),
-					$resized_path->get_message()
+					$resized_path->get_error_message()
 				)
 			);
 		}
@@ -1123,7 +1123,7 @@ abstract class AbstractProcess implements ProcessInterface {
 					sprintf(
 						/* translators: %s is an error message. */
 						__( 'Backup failed: %s', 'imagify' ),
-						$backuped->get_message()
+						$backuped->get_error_message()
 					)
 				);
 			}
