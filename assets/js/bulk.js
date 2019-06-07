@@ -202,25 +202,25 @@ window.imagify = window.imagify || {};
 
 			if ( imagifyBulk.ajaxActions.getStats && $( '.imagify-bulk-table [data-group-id="library"][data-context="wp"]' ).length ) {
 				// On large WP library, don't request stats periodically, only when everything is done.
-				imagifyBulk.heartbeatIDs.stats = false;
+				imagifyBulk.imagifybeatIDs.stats = false;
 			}
 
-			if ( imagifyBulk.heartbeatIDs.stats ) {
-				// Heartbeat for stats.
+			if ( imagifyBulk.imagifybeatIDs.stats ) {
+				// Imagifybeat for stats.
 				$document
-					.on( 'heartbeat-send', this.addStatsHeartbeat )
-					.on( 'heartbeat-tick', this.processStatsHeartbeat );
+					.on( 'imagifybeat-send', this.addStatsImagifybeat )
+					.on( 'imagifybeat-tick', this.processStatsImagifybeat );
 			}
 
-			// Heartbeat for optimization queue.
+			// Imagifybeat for optimization queue.
 			$document
-				.on( 'heartbeat-send', this.addQueueHeartbeat )
-				.on( 'heartbeat-tick', this.processQueueHeartbeat );
+				.on( 'imagifybeat-send', this.addQueueImagifybeat )
+				.on( 'imagifybeat-tick', this.processQueueImagifybeat );
 
-			// Heartbeat for requirements.
+			// Imagifybeat for requirements.
 			$document
-				.on( 'heartbeat-send', this.addRequirementsHeartbeat )
-				.on( 'heartbeat-tick', this.processRequirementsHeartbeat );
+				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
+				.on( 'imagifybeat-tick', this.processRequirementsImagifybeat );
 		},
 
 		/*
@@ -544,7 +544,7 @@ window.imagify = window.imagify || {};
 		/**
 		 * Print optimization stats.
 		 *
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		updateStats: function ( data ) {
 			var donutData;
@@ -796,6 +796,10 @@ window.imagify = window.imagify || {};
 				// Display the "waiting" folder row and hide the "normal" one.
 				w.imagify.bulk.displayFolderRow( 'waiting', $row );
 			} );
+
+			// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
+			w.imagify.beat.interval( 15 );
+			w.imagify.beat.disableSuspend();
 
 			// Process the queue.
 			$w.trigger( 'processQueue.imagify' );
@@ -1080,6 +1084,10 @@ window.imagify = window.imagify || {};
 					return;
 				}
 
+				// Reset Imagifybeat interval and enable suspend.
+				w.imagify.beat.resetInterval();
+				w.imagify.beat.enableSuspend();
+
 				// Update folder type status.
 				if ( ! $.isEmptyObject( w.imagify.bulk.status ) && ! w.imagify.bulk.status[ item.groupID ].isError ) {
 					w.imagify.bulk.status[ item.groupID ].id = 'done';
@@ -1131,14 +1139,18 @@ window.imagify = window.imagify || {};
 				noImages  = true,
 				errorMsg  = '';
 
+			// Reset Imagifybeat interval and enable suspend.
+			w.imagify.beat.resetInterval();
+			w.imagify.beat.enableSuspend();
+
 			// Display the share box.
 			w.imagify.bulk.displayShareBox();
 
 			// Reset the queue.
 			w.imagify.bulk.folderTypesQueue = [];
 
-			// Fetch and display generic stats if stats via heartbeat are disabled.
-			if ( ! imagifyBulk.heartbeatIDs.stats ) {
+			// Fetch and display generic stats if stats via Imagifybeat are disabled.
+			if ( ! imagifyBulk.imagifybeatIDs.stats ) {
 				$.get( w.imagify.bulk.getAjaxUrl( 'getStats' ), {
 					types: w.imagify.bulk.getFolderTypes()
 				} )
@@ -1247,81 +1259,81 @@ window.imagify = window.imagify || {};
 			w.open( this.href, '', 'status=no, scrollbars=no, menubar=no, top=' + clientTop + ', left=' + clientLeft + ', width=' + width + ', height=' + height );
 		},
 
-		// Heartbeat ===============================================================================
+		// Imagifybeat =============================================================================
 
 		/**
-		 * Add a Heartbeat ID for global stats on "heartbeat-send" event.
+		 * Add a Imagifybeat ID for global stats on "imagifybeat-send" event.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		addStatsHeartbeat: function ( e, data ) {
-			data[ imagifyBulk.heartbeatIDs.stats ] = Object.keys( w.imagify.bulk.getFolderTypes() );
+		addStatsImagifybeat: function ( e, data ) {
+			data[ imagifyBulk.imagifybeatIDs.stats ] = Object.keys( w.imagify.bulk.getFolderTypes() );
 		},
 
 		/**
-		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 * It allows to update various data periodically.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		processStatsHeartbeat: function ( e, data ) {
-			if ( typeof data[ imagifyBulk.heartbeatIDs.stats ] !== 'undefined' ) {
-				w.imagify.bulk.updateStats( data[ imagifyBulk.heartbeatIDs.stats ] );
+		processStatsImagifybeat: function ( e, data ) {
+			if ( typeof data[ imagifyBulk.imagifybeatIDs.stats ] !== 'undefined' ) {
+				w.imagify.bulk.updateStats( data[ imagifyBulk.imagifybeatIDs.stats ] );
 			}
 		},
 
 		/**
-		 * Add a Heartbeat ID on "heartbeat-send" event to sync the optimization queue.
+		 * Add a Imagifybeat ID on "imagifybeat-send" event to sync the optimization queue.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		addQueueHeartbeat: function ( e, data ) {
+		addQueueImagifybeat: function ( e, data ) {
 			if ( w.imagify.bulk.processingMedia.length ) {
-				data[ imagifyBulk.heartbeatIDs.queue ] = w.imagify.bulk.processingMedia;
+				data[ imagifyBulk.imagifybeatIDs.queue ] = w.imagify.bulk.processingMedia;
 			}
 		},
 
 		/**
-		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 * It allows to update various data periodically.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		processQueueHeartbeat: function ( e, data ) {
-			if ( typeof data[ imagifyBulk.heartbeatIDs.queue ] !== 'undefined' ) {
-				$.each( data[ imagifyBulk.heartbeatIDs.queue ], function ( i, mediaData ) {
+		processQueueImagifybeat: function ( e, data ) {
+			if ( typeof data[ imagifyBulk.imagifybeatIDs.queue ] !== 'undefined' ) {
+				$.each( data[ imagifyBulk.imagifybeatIDs.queue ], function ( i, mediaData ) {
 					$( w ).trigger( 'mediaProcessed.imagify', [ mediaData ] );
 				} );
 			}
 		},
 
 		/**
-		 * Add a Heartbeat ID for requirements on "heartbeat-send" event.
+		 * Add a Imagifybeat ID for requirements on "imagifybeat-send" event.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		addRequirementsHeartbeat: function ( e, data ) {
-			data[ imagifyBulk.heartbeatIDs.requirements ] = 1;
+		addRequirementsImagifybeat: function ( e, data ) {
+			data[ imagifyBulk.imagifybeatIDs.requirements ] = 1;
 		},
 
 		/**
-		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 * It allows to update requirements status periodically.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		processRequirementsHeartbeat: function ( e, data ) {
-			if ( typeof data[ imagifyBulk.heartbeatIDs.requirements ] === 'undefined' ) {
+		processRequirementsImagifybeat: function ( e, data ) {
+			if ( typeof data[ imagifyBulk.imagifybeatIDs.requirements ] === 'undefined' ) {
 				return;
 			}
 
-			data = data[ imagifyBulk.heartbeatIDs.requirements ];
+			data = data[ imagifyBulk.imagifybeatIDs.requirements ];
 
 			imagifyBulk.curlMissing    = data.curl_missing;
 			imagifyBulk.editorMissing  = data.editor_missing;

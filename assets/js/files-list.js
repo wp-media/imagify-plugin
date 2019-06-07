@@ -51,10 +51,6 @@ window.imagify.drawMeAChart = function( canvas ) {
 			// Update the chart in the media modal when a media is selected, and the ones already printed.
 			$( w ).on( 'canvasprinted.imagify', this.updateChart ).trigger( 'canvasprinted.imagify' );
 
-			if ( ! this.hasHeartbeat() ) {
-				return;
-			}
-
 			// Handle bulk actions.
 			this.insertBulkActionTags();
 
@@ -63,21 +59,23 @@ window.imagify.drawMeAChart = function( canvas ) {
 			// Optimize, restore, etc.
 			$document.on( 'click.imagify', '.button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-generate-webp, .button-imagify-restore, .button-imagify-refresh-status', this.processOptimization );
 
-			$document.on( 'heartbeat-send', this.addToHeartbeat );
-			$document.on( 'heartbeat-tick', this.processHeartbeat );
+			$document.on( 'imagifybeat-send', this.addToImagifybeat );
+			$document.on( 'imagifybeat-tick', this.processImagifybeat );
 
 			// Some items may be processed in background on page load.
 			$processing = $( '.wp-list-table.imagify-files .button-imagify-processing' );
 
 			if ( $processing.length ) {
-				// Fasten Heartbeat for a minute.
-				w.wp.heartbeat.interval( 5, 12 );
-
+				// Some media are already being processed.
+				// Lock the items, so we can check their status with Imagifybeat.
 				$processing.closest( 'tr' ).find( '.check-column [name="bulk_select[]"]' ).each( function() {
 					var id = w.imagify.filesList.sanitizeId( this.value );
 
 					w.imagify.filesList.lockItem( w.imagifyFiles.context, id );
 				} );
+
+				// Fasten Imagifybeat.
+				w.imagify.beat.interval( 15 );
 			}
 		},
 
@@ -190,61 +188,52 @@ window.imagify.drawMeAChart = function( canvas ) {
 						// The work is done.
 						w.imagify.filesList.displayProcessResult( context, id, r.data.columns );
 					} else {
-						// Still processing in background: we're waiting for the result by poking Heartbeat.
-						// Set the heartbeat interval to 5 sec for 60 seconds (12 ticks).
-						w.wp.heartbeat.interval( 5, 12 );
+						// Still processing in background: we're waiting for the result by poking Imagifybeat.
+						// Set the Imagifybeat interval to 15 seconds.
+						w.imagify.beat.interval( 15 );
 					}
 				} );
 		},
 
-		// Heartbeat ===============================================================================
+		// Imagifybeat =============================================================================
 
 		/**
-		 * Tell if we can use Heartbeat.
-		 *
-		 * @return {bool}
-		 */
-		hasHeartbeat: function() {
-			return w.imagifyFiles && w.imagifyFiles.heartbeatId && w.wp && w.wp.heartbeat ? true : false;
-		},
-
-		/**
-		 * Send the media IDs and their status to heartbeat.
+		 * Send the media IDs and their status to Imagifybeat.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		addToHeartbeat: function ( e, data ) {
+		addToImagifybeat: function ( e, data ) {
 			var $boxes = $( '.wp-list-table.imagify-files .check-column [name="bulk_select[]"]' );
 
 			if ( ! $boxes.length ) {
 				return;
 			}
 
-			data[ w.imagifyFiles.heartbeatId ] = {};
+			data[ w.imagifyFiles.imagifybeatID ] = {};
 
 			$boxes.each( function() {
 				var id      = w.imagify.filesList.sanitizeId( this.value ),
 					context = w.imagifyFiles.context,
 					locked  = w.imagify.filesList.isItemLocked( context, id ) ? 1 : 0;
 
-				data[ w.imagifyFiles.heartbeatId ][ context ] = data[ w.imagifyFiles.heartbeatId ][ context ] || {};
-				data[ w.imagifyFiles.heartbeatId ][ context ][ '_' + id ] = locked;
+				data[ w.imagifyFiles.imagifybeatID ][ context ] = data[ w.imagifyFiles.imagifybeatID ][ context ] || {};
+				data[ w.imagifyFiles.imagifybeatID ][ context ][ '_' + id ] = locked;
 			} );
 		},
 
 		/**
-		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		processHeartbeat: function ( e, data ) {
-			if ( typeof data[ w.imagifyFiles.heartbeatId ] === 'undefined' ) {
+		processImagifybeat: function ( e, data ) {
+			if ( typeof data[ w.imagifyFiles.imagifybeatID ] === 'undefined' ) {
 				return;
 			}
 
-			$.each( data[ w.imagifyFiles.heartbeatId ], function( contextId, columns ) {
+			$.each( data[ w.imagifyFiles.imagifybeatID ], function( contextId, columns ) {
 				var context, id;
 
 				context = $.trim( contextId ).match( /^(.+)_(\d+)$/ );
@@ -283,6 +272,12 @@ window.imagify.drawMeAChart = function( canvas ) {
 			$row.find( '.check-column [type="checkbox"]' ).prop( 'checked', false );
 
 			w.imagify.filesList.unlockItem( context, id );
+
+			if ( ! w.imagify.filesList.working.length ) {
+				// Work is done.
+				// Reset Imagifybeat interval.
+				w.imagify.beat.resetInterval();
+			}
 		},
 
 		/**
