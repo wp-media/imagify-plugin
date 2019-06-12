@@ -527,13 +527,13 @@ window.imagify = window.imagify || {};
 			// Launch optimization.
 			this.$button.on( 'click.imagify', { imagifyOptionsBulk: this }, this.maybeLaunchAllProcesses );
 
-			// Heartbeat for optimization queue.
+			// Imagifybeat for optimization queue.
 			$( d )
-				.on( 'heartbeat-send', { imagifyOptionsBulk: this }, this.addQueueHeartbeat )
-				.on( 'heartbeat-tick', { imagifyOptionsBulk: this }, this.processQueueHeartbeat )
-			// Heartbeat for requirements.
-				.on( 'heartbeat-send', this.addRequirementsHeartbeat )
-				.on( 'heartbeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsHeartbeat );
+				.on( 'imagifybeat-send', { imagifyOptionsBulk: this }, this.addQueueImagifybeat )
+				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processQueueImagifybeat )
+			// Imagifybeat for requirements.
+				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
+				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsImagifybeat );
 		},
 
 		// Event callbacks =========================================================================
@@ -582,6 +582,10 @@ window.imagify = window.imagify || {};
 			// Add a message to be displayed when the user wants to quit the page.
 			$( w ).on( 'beforeunload.imagify', e.data.imagifyOptionsBulk.getConfirmMessage );
 
+			// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
+			w.imagify.beat.interval( 15 );
+			w.imagify.beat.disableSuspend();
+
 			// Fetch IDs of media to optimize.
 			e.data.imagifyOptionsBulk.fetchIDs();
 		},
@@ -595,58 +599,58 @@ window.imagify = window.imagify || {};
 			return imagifyOptions.bulk.labels.processing;
 		},
 
-		// Heartbeat ===============================================================================
+		// Imagifybeat =============================================================================
 
 		/**
-		 * Add a Heartbeat ID on "heartbeat-send" event to sync the optimization queue.
+		 * Add a Imagifybeat ID on "imagifybeat-send" event to sync the optimization queue.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		addQueueHeartbeat: function ( e, data ) {
+		addQueueImagifybeat: function ( e, data ) {
 			if ( e.data.imagifyOptionsBulk && e.data.imagifyOptionsBulk.processingQueue.length ) {
-				data[ imagifyOptions.bulk.heartbeatIDs.queue ] = e.data.imagifyOptionsBulk.processingQueue;
+				data[ imagifyOptions.bulk.imagifybeatIDs.queue ] = e.data.imagifyOptionsBulk.processingQueue;
 			}
 		},
 
 		/**
-		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 * It allows to update various data periodically.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		processQueueHeartbeat: function ( e, data ) {
-			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.heartbeatIDs.queue ] !== 'undefined' ) {
-				$.each( data[ imagifyOptions.bulk.heartbeatIDs.queue ], function ( i, mediaData ) {
+		processQueueImagifybeat: function ( e, data ) {
+			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.imagifybeatIDs.queue ] !== 'undefined' ) {
+				$.each( data[ imagifyOptions.bulk.imagifybeatIDs.queue ], function ( i, mediaData ) {
 					e.data.imagifyOptionsBulk.mediaProcessed( mediaData );
 				} );
 			}
 		},
 
 		/**
-		 * Add a Heartbeat ID for requirements on "heartbeat-send" event.
+		 * Add a Imagifybeat ID for requirements on "imagifybeat-send" event.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		addRequirementsHeartbeat: function ( e, data ) {
-			data[ imagifyOptions.bulk.heartbeatIDs.requirements ] = 1;
+		addRequirementsImagifybeat: function ( e, data ) {
+			data[ imagifyOptions.bulk.imagifybeatIDs.requirements ] = 1;
 		},
 
 		/**
-		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 * It allows to update requirements status periodically.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		processRequirementsHeartbeat: function ( e, data ) {
-			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.heartbeatIDs.requirements ] === 'undefined' ) {
+		processRequirementsImagifybeat: function ( e, data ) {
+			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.imagifybeatIDs.requirements ] === 'undefined' ) {
 				return;
 			}
 
-			data = data[ imagifyOptions.bulk.heartbeatIDs.requirements ];
+			data = data[ imagifyOptions.bulk.imagifybeatIDs.requirements ];
 
 			imagifyOptions.bulk.curlMissing    = data.curl_missing;
 			imagifyOptions.bulk.editorMissing  = data.editor_missing;
@@ -931,6 +935,10 @@ window.imagify = window.imagify || {};
 			this.processIsStopped = false;
 			this.processedMedia   = 0;
 			this.totalMedia       = 0;
+
+			// Reset Imagifybeat interval and enable suspend.
+			w.imagify.beat.resetInterval();
+			w.imagify.beat.enableSuspend();
 
 			// Unlink the message displayed when the user wants to quit the page.
 			$( w ).off( 'beforeunload.imagify', this.getConfirmMessage );
