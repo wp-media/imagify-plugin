@@ -44,7 +44,7 @@ $settings = Imagify_Settings::get_instance();
 					<?php
 					$cdn_source = \Imagify\Webp\Picture\Display::get_instance()->get_cdn_source();
 
-					if ( $cdn_source['url'] ) {
+					if ( 'option' !== $cdn_source['source'] ) {
 						if ( 'constant' === $cdn_source['source'] ) {
 							printf(
 								/* translators: 1 is an URL, 2 is a php constant name. */
