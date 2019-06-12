@@ -7,7 +7,7 @@ window.imagify = window.imagify || {};
 	var busy = false,
 		xhr  = false;
 
-	$( '#imagify-settings #api_key' ).on( 'blur', function() {
+	$( '#imagify-settings #api_key' ).on( 'blur.imagify', function() {
 		var obj   = $( this ),
 			value = obj.val();
 
@@ -54,28 +54,34 @@ window.imagify = window.imagify || {};
 	/**
 	 * Check the boxes by clicking "labels" (aria-describedby items).
 	 */
-	$( '.imagify-options-line' ).css( 'cursor', 'pointer' ).on( 'click', function( e ) {
+	$( '.imagify-options-line' ).css( 'cursor', 'pointer' ).on( 'click.imagify', function( e ) {
 		if ( 'INPUT' === e.target.nodeName ) {
 			return;
 		}
-		$( 'input[aria-describedby="' + $( this ).attr( 'id' ) + '"]' ).trigger( 'click' );
+		$( 'input[aria-describedby="' + $( this ).attr( 'id' ) + '"]' ).trigger( 'click.imagify' );
 	} );
 
-	$( '.imagify-settings th span' ).on( 'click', function() {
-		var $input = $( this ).parent().next( 'td' ).find( 'input:checkbox' );
+	$( '.imagify-settings th span' ).on( 'click.imagify', function() {
+		var $input = $( this ).parent().next( 'td' ).find( ':checkbox' );
 
 		if ( 1 === $input.length ) {
-			$input.trigger( 'click' );
+			$input.trigger( 'click.imagify' );
 		}
 	} );
 
 	/**
 	 * Auto check on options-line input value change.
 	 */
-	$( '.imagify-options-line' ).find( 'input' ).on( 'change focus', function() {
-		var $checkbox = $( this ).closest( '.imagify-options-line' ).prev( 'label' ).prev( 'input' );
+	$( '.imagify-options-line' ).find( 'input' ).on( 'change.imagify focus.imagify', function() {
+		var $checkbox;
 
-		if ( ! $checkbox[0].checked ) {
+		if ( 'checkbox' === this.type && ! this.checked ) {
+			return;
+		}
+
+		$checkbox = $( this ).closest( '.imagify-options-line' ).prev( 'label' ).prev( ':checkbox' );
+
+		if ( $checkbox.length && ! $checkbox[0].checked ) {
 			$checkbox.prop( 'checked', true );
 		}
 	} );
@@ -83,7 +89,7 @@ window.imagify = window.imagify || {};
 	/**
 	 * Imagify Backup alert.
 	 */
-	$( '.imagify-settings-section' ).find( '#imagify_backup' ).on( 'change', function() {
+	$( '[name="imagify_settings[backup]"]' ).on( 'change.imagify', function() {
 		var $_this         = $( this ),
 			$backupMessage = $_this.siblings( '#backup-dir-is-writable' ),
 			params         = {
@@ -128,6 +134,17 @@ window.imagify = window.imagify || {};
 			}
 		);
 	} );
+
+	/**
+	 * Fade CDN URL field.
+	 */
+	$( '[name="imagify_settings[display_webp_method]"]' ).on( 'change.imagify init.imagify', function( e ) {
+		if ( 'picture' === e.target.value ) {
+			$( e.target ).closest( '.imagify-radio-group' ).next( '.imagify-options-line' ).removeClass( 'imagify-faded' );
+		} else {
+			$( e.target ).closest( '.imagify-radio-group' ).next( '.imagify-options-line' ).addClass( 'imagify-faded' );
+		}
+	} ).filter( ':checked' ).trigger( 'init.imagify' );
 
 } )(jQuery, document, window);
 
@@ -563,7 +580,7 @@ window.imagify = window.imagify || {};
 			e.data.imagifyOptionsBulk.$button.attr( 'disabled', 'disabled' ).find( '.dashicons' ).addClass( 'rotate' );
 
 			// Add a message to be displayed when the user wants to quit the page.
-			$( w ).on( 'beforeunload', e.data.imagifyOptionsBulk.getConfirmMessage );
+			$( w ).on( 'beforeunload.imagify', e.data.imagifyOptionsBulk.getConfirmMessage );
 
 			// Fetch IDs of media to optimize.
 			e.data.imagifyOptionsBulk.fetchIDs();
@@ -916,7 +933,7 @@ window.imagify = window.imagify || {};
 			this.totalMedia       = 0;
 
 			// Unlink the message displayed when the user wants to quit the page.
-			$( w ).off( 'beforeunload', this.getConfirmMessage );
+			$( w ).off( 'beforeunload.imagify', this.getConfirmMessage );
 
 			// Reset the progress bar.
 			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' );
