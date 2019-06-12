@@ -458,14 +458,14 @@ class Imagify_Settings {
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_checkbox( $args ) {
-		$args = array_merge( array(
+		$args = array_merge( [
 			'option_name'   => '',
 			'label'         => '',
 			'info'          => '',
-			'attributes'    => array(),
+			'attributes'    => [],
 			// To not use the plugin settings: use an integer.
 			'current_value' => null,
-		), $args );
+		], $args );
 
 		if ( ! $args['option_name'] || ! $args['label'] ) {
 			return;
@@ -473,17 +473,17 @@ class Imagify_Settings {
 
 		if ( is_numeric( $args['current_value'] ) || is_bool( $args['current_value'] ) ) {
 			// We don't use the plugin settings.
-			$current_value = (int) (bool) $args['current_values'];
+			$current_value = (int) (bool) $args['current_value'];
 		} else {
 			// This is a normal plugin setting.
 			$current_value = $this->options->get( $args['option_name'] );
 		}
 
 		$option_name_class = sanitize_html_class( $args['option_name'] );
-		$attributes        = array(
+		$attributes        = [
 			'name' => $this->option_name . '[' . $args['option_name'] . ']',
 			'id'   => 'imagify_' . $option_name_class,
-		);
+		];
 
 		if ( $args['info'] && empty( $attributes['aria-describedby'] ) ) {
 			$attributes['aria-describedby'] = 'describe-' . $option_name_class;
@@ -524,17 +524,16 @@ class Imagify_Settings {
 	 *                    {current_values}  array  USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_checkbox_list( $args ) {
-
-		$args = array_merge( array(
+		$args = array_merge( [
 			'option_name'     => '',
 			'legend'          => '',
-			'values'          => array(),
-			'disabled_values' => array(),
+			'values'          => [],
+			'disabled_values' => [],
 			'reverse_check'   => false,
-			'attributes'      => array(),
+			'attributes'      => [],
 			// To not use the plugin settings: use an array.
 			'current_values'  => false,
-		), $args );
+		], $args );
 
 		if ( ! $args['option_name'] || ! $args['values'] ) {
 			return;
@@ -549,11 +548,11 @@ class Imagify_Settings {
 		}
 
 		$option_name_class = sanitize_html_class( $args['option_name'] );
-		$attributes        = array_merge( array(
+		$attributes        = array_merge( [
 			'name'  => $this->option_name . '[' . $args['option_name'] . ( $args['reverse_check'] ? '-checked' : '' ) . '][]',
 			'id'    => 'imagify_' . $option_name_class . '_%s',
 			'class' => 'imagify-row-check',
-		), $args['attributes'] );
+		], $args['attributes'] );
 
 		$id_attribute = $attributes['id'];
 		unset( $attributes['id'] );
@@ -657,11 +656,11 @@ class Imagify_Settings {
 		}
 
 		$option_name_class = sanitize_html_class( $args['option_name'] );
-		$attributes        = array_merge( array(
+		$attributes        = array_merge( [
 			'name'  => $this->option_name . '[' . $args['option_name'] . ']',
 			'id'    => 'imagify_' . $option_name_class . '_%s',
 			'class' => 'imagify-row-radio',
-		), $args['attributes'] );
+		], $args['attributes'] );
 
 		$id_attribute = $attributes['id'];
 		unset( $attributes['id'] );
@@ -694,6 +693,115 @@ class Imagify_Settings {
 			<span class="dashicons dashicons-info"></span>
 			<?php echo $args['info']; ?>
 		</span>
+		<?php
+	}
+
+	/**
+	 * Display a text box.
+	 *
+	 * @since  1.9.3
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param array $args Arguments:
+	 *                    {option_name}   string   The option name. E.g. 'disallowed-sizes'. Mandatory.
+	 *                    {label}         string   The label to use.
+	 *                    {info}          string   Text to display in an "Info box" after the field. A 'aria-describedby' attribute will automatically be created.
+	 *                    {attributes}    array    A list of HTML attributes, as 'attribute' => 'value'.
+	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
+	 */
+	public function field_text_box( $args ) {
+		$args = array_merge( [
+			'option_name'   => '',
+			'label'         => '',
+			'info'          => '',
+			'attributes'    => [],
+			// To not use the plugin settings.
+			'current_value' => null,
+		], $args );
+
+		if ( ! $args['option_name'] || ! $args['label'] ) {
+			return;
+		}
+
+		if ( is_numeric( $args['current_value'] ) || is_string( $args['current_value'] ) ) {
+			// We don't use the plugin settings.
+			$current_value = $args['current_value'];
+		} else {
+			// This is a normal plugin setting.
+			$current_value = $this->options->get( $args['option_name'] );
+		}
+
+		$option_name_class = sanitize_html_class( $args['option_name'] );
+		$attributes        = [
+			'name' => $this->option_name . '[' . $args['option_name'] . ']',
+			'id'   => 'imagify_' . $option_name_class,
+		];
+
+		if ( $args['info'] && empty( $attributes['aria-describedby'] ) ) {
+			$attributes['aria-describedby'] = 'describe-' . $option_name_class;
+		}
+
+		$attributes         = array_merge( $attributes, $args['attributes'] );
+		$args['attributes'] = self::build_attributes( $attributes );
+		?>
+		<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
+		<label for="<?php echo $attributes['id']; ?>" onclick=""><?php echo $args['label']; ?></label>
+		<input type="text" value="<?php echo esc_attr( $current_value ); ?>"<?php echo $args['attributes']; ?> />
+		<?php
+		if ( ! $args['info'] ) {
+			return;
+		}
+		?>
+		<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-info">
+			<span class="dashicons dashicons-info"></span>
+			<?php echo $args['info']; ?>
+		</span>
+		<?php
+	}
+
+	/**
+	 * Display a simple hidden input.
+	 *
+	 * @since  1.9.3
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param array $args Arguments:
+	 *                    {option_name}   string   The option name. E.g. 'disallowed-sizes'. Mandatory.
+	 *                    {attributes}    array    A list of HTML attributes, as 'attribute' => 'value'.
+	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
+	 */
+	public function field_hidden( $args ) {
+		$args = array_merge( [
+			'option_name'   => '',
+			'attributes'    => [],
+			// To not use the plugin settings.
+			'current_value' => null,
+		], $args );
+
+		if ( ! $args['option_name'] ) {
+			return;
+		}
+
+		if ( is_numeric( $args['current_value'] ) || is_string( $args['current_value'] ) ) {
+			// We don't use the plugin settings.
+			$current_value = $args['current_value'];
+		} else {
+			// This is a normal plugin setting.
+			$current_value = $this->options->get( $args['option_name'] );
+		}
+
+		$option_name_class = sanitize_html_class( $args['option_name'] );
+		$attributes        = [
+			'name' => $this->option_name . '[' . $args['option_name'] . ']',
+			'id'   => 'imagify_' . $option_name_class,
+		];
+
+		$attributes         = array_merge( $attributes, $args['attributes'] );
+		$args['attributes'] = self::build_attributes( $attributes );
+		?>
+		<input type="hidden" value="<?php echo esc_attr( $current_value ); ?>"<?php echo $args['attributes']; ?> />
 		<?php
 	}
 
