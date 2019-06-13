@@ -643,7 +643,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				$response = $this->maybe_resize( $thumb_size, $file );
 
 				if ( ! is_wp_error( $response ) ) {
-					// Resizement succeeded: optimize the file.
+					// Resizing succeeded: optimize the file.
 					$response = $file->optimize( [
 						'backup'             => ! $response['backuped'] && $this->can_backup( $size ),
 						'backup_path'        => $media->get_raw_backup_path(),
@@ -1082,7 +1082,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				'no_dimensions',
 				sprintf(
 					/* translators: %s is an error message. */
-					__( 'Resizement failed: %s', 'imagify' ),
+					__( 'Resizing failed: %s', 'imagify' ),
 					__( 'Imagify could not get the image dimensions.', 'imagify' )
 				)
 			);
@@ -1107,7 +1107,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				'resize_failure',
 				sprintf(
 					/* translators: %s is an error message. */
-					__( 'Resizement failed: %s', 'imagify' ),
+					__( 'Resizing failed: %s', 'imagify' ),
 					$resized_path->get_error_message()
 				)
 			);
