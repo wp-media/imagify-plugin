@@ -135,7 +135,7 @@ $settings = Imagify_Settings::get_instance();
 					echo esc_html(
 						sprintf(
 							/* translators: %s is a formatted number (don’t use %d). */
-							_n( 'It seems that you have %s media without webp versions. You can generate them here if a backup copy is available.', 'It seems that you have %s media without webp versions. You can generate them here if backup copies are available.', $count, 'imagify' ),
+							_n( 'It seems that you have %s optimized image without webp versions. You can generate them here if a backup copy is available.', 'It seems that you have %s optimized images without webp versions. You can generate them here if backup copies are available.', $count, 'imagify' ),
 							number_format_i18n( $count )
 						)
 					);
