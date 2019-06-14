@@ -44,6 +44,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'convert_to_webp'     => 0,
 		'display_webp'        => 0,
 		'display_webp_method' => 'picture',
+		'cdn_url'             => '',
 		'exif'                => 0,
 		'disallowed-sizes'    => array(),
 		'admin_bar_menu'      => 0,
@@ -190,6 +191,19 @@ class Imagify_Options extends Imagify_Abstract_Options {
 				// For an invalid value, return the "reset" value.
 				$reset_values = $this->get_reset_values();
 				return $reset_values[ $key ];
+
+			case 'cdn_url':
+				$cdn_source = \Imagify\Webp\Picture\Display::get_instance()->get_cdn_source( $value );
+
+				if ( 'option' !== $cdn_source['source'] ) {
+					/**
+					 * If the URL is defined via constant or filter, unset the option.
+					 * This is useful when the CDN is disabled: there is no need to do anything then.
+					 */
+					return '';
+				}
+
+				return $cdn_source['url'];
 		}
 
 		return false;

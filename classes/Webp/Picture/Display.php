@@ -50,7 +50,7 @@ class Display {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'template_redirect', [ $this, 'start_content_process' ], 6 );
+		add_action( 'template_redirect', [ $this, 'start_content_process' ], -1000 );
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -167,10 +167,16 @@ class Display {
 	 */
 	protected function build_picture_tag( $image ) {
 		$to_remove = [
-			'alt'           => '',
-			'data-lazy-src' => '',
-			'data-src'      => '',
-			'sizes'         => '',
+			'alt'              => '',
+			'data-lazy-src'    => '',
+			'data-src'         => '',
+			'src'              => '',
+			'data-lazy-srcset' => '',
+			'data-srcset'      => '',
+			'srcset'           => '',
+			'data-lazy-sizes'  => '',
+			'data-sizes'       => '',
+			'sizes'            => '',
 		];
 
 		$attributes = array_diff_key( $image['attributes'], $to_remove );
@@ -216,9 +222,10 @@ class Display {
 	 * @return string       A <source> tag.
 	 */
 	protected function build_source_tag( $image ) {
-		$attributes = [
-			'type'   => 'image/webp',
-			'srcset' => [
+		$srcset_source = ! empty( $image['srcset_attribute'] ) ? $image['srcset_attribute'] : $image['src_attribute'] . 'set';
+		$attributes    = [
+			'type'         => 'image/webp',
+			$srcset_source => [
 				$image['src']['webp_url'],
 			],
 		];
@@ -232,14 +239,27 @@ class Display {
 					continue;
 				}
 
-				$attributes['srcset'][] = $srcset['webp_url'] . ' ' . $srcset['descriptor'];
+				$attributes[ $srcset_source ][] = $srcset['webp_url'] . ' ' . $srcset['descriptor'];
 			}
 		}
 
-		$attributes['srcset'] = implode( ', ', $attributes['srcset'] );
+		$attributes[ $srcset_source ] = implode( ', ', $attributes[ $srcset_source ] );
 
-		if ( ! empty( $image['attributes']['sizes'] ) ) {
-			$attributes['sizes'] = $image['attributes']['sizes'];
+		foreach ( [ 'data-lazy-srcset', 'data-srcset', 'srcset' ] as $srcset_attr ) {
+			if ( ! empty( $image['attributes'][ $srcset_attr ] ) && $srcset_attr !== $srcset_source ) {
+				$attributes[ $srcset_attr ] = $image['attributes'][ $srcset_attr ];
+			}
+		}
+
+		if ( 'srcset' !== $srcset_source && empty( $attributes['srcset'] ) && ! empty( $image['attributes']['src'] ) ) {
+			// Lazyload: the "src" attr should contain a placeholder (a data image or a blank.gif ).
+			$attributes['srcset'] = $image['attributes']['src'];
+		}
+
+		foreach ( [ 'data-lazy-sizes', 'data-sizes', 'sizes' ] as $sizes_attr ) {
+			if ( ! empty( $image['attributes'][ $sizes_attr ] ) ) {
+				$attributes[ $sizes_attr ] = $image['attributes'][ $sizes_attr ];
+			}
 		}
 
 		/**
@@ -268,19 +288,6 @@ class Display {
 	 * @return string       A <img> tag.
 	 */
 	protected function build_img_tag( $image ) {
-		$attributes        = $image['attributes'];
-		$attributes['src'] = $image['src']['url'];
-
-		if ( ! empty( $image['srcset'] ) ) {
-			$attributes['srcset'] = [];
-
-			foreach ( $image['srcset'] as $srcset ) {
-				$attributes['srcset'][] = $srcset['url'] . ' ' . $srcset['descriptor'];
-			}
-
-			$attributes['srcset'] = implode( ', ', $attributes['srcset'] );
-		}
-
 		$to_remove = [
 			'class'  => '',
 			'height' => '',
@@ -290,7 +297,7 @@ class Display {
 			'width'  => '',
 		];
 
-		$attributes = array_diff_key( $attributes, $to_remove );
+		$attributes = array_diff_key( $image['attributes'], $to_remove );
 
 		/**
 		 * Filter the attributes to be added to the <img> tag.
@@ -385,6 +392,10 @@ class Display {
 			}
 
 			foreach ( $image['srcset'] as $j => $srcset ) {
+				if ( ! is_array( $srcset ) ) {
+					continue;
+				}
+
 				if ( empty( $srcset['webp_exists'] ) || empty( $srcset['webp_url'] ) ) {
 					unset( $images[ $i ]['srcset'][ $j ]['webp_url'] );
 				}
@@ -444,7 +455,16 @@ class Display {
 		}
 
 		// Deal with the src attribute.
-		if ( empty( $attributes['src'] ) ) {
+		$src_source = false;
+
+		foreach ( [ 'data-lazy-src', 'data-src', 'src' ] as $src_attr ) {
+			if ( ! empty( $attributes[ $src_attr ] ) ) {
+				$src_source = $src_attr;
+				break;
+			}
+		}
+
+		if ( ! $src_source ) {
 			// No src attribute.
 			return false;
 		}
@@ -455,7 +475,7 @@ class Display {
 			$extensions = implode( '|', $extensions );
 		}
 
-		if ( ! preg_match( '@^(?<src>(?:https?:)?//.+\.(?<extension>' . $extensions . '))(?<query>\?.*)?$@i', $attributes['src'], $src ) ) {
+		if ( ! preg_match( '@^(?<src>(?:https?:)?//.+\.(?<extension>' . $extensions . '))(?<query>\?.*)?$@i', $attributes[ $src_source ], $src ) ) {
 			// Not a supported image format.
 			return false;
 		}
@@ -465,22 +485,33 @@ class Display {
 		$webp_url .= ! empty( $src['query'] ) ? $src['query'] : '';
 
 		$data = [
-			'tag'        => $image,
-			'attributes' => $attributes,
-			'src'        => [
-				'url'         => $attributes['src'],
+			'tag'              => $image,
+			'attributes'       => $attributes,
+			'src_attribute'    => $src_source,
+			'src'              => [
+				'url'         => $attributes[ $src_source ],
 				'webp_url'    => $webp_url,
 				'webp_path'   => $webp_path,
 				'webp_exists' => $webp_path && $this->filesystem->exists( $webp_path ),
 			],
-			'srcset'     => [],
+			'srcset_attribute' => false,
+			'srcset'           => [],
 		];
 
-		unset( $data['attributes']['src'], $data['attributes']['srcset'] );
-
 		// Deal with the srcset attribute.
-		if ( ! empty( $attributes['srcset'] ) ) {
-			$srcset = explode( ',', $attributes['srcset'] );
+		$srcset_source = false;
+
+		foreach ( [ 'data-lazy-srcset', 'data-srcset', 'srcset' ] as $srcset_attr ) {
+			if ( ! empty( $attributes[ $srcset_attr ] ) ) {
+				$srcset_source = $srcset_attr;
+				break;
+			}
+		}
+
+		if ( $srcset_source ) {
+			$data['srcset_attribute'] = $srcset_source;
+
+			$srcset = explode( ',', $attributes[ $srcset_source ] );
 
 			foreach ( $srcset as $srcs ) {
 				$srcs = preg_split( '/\s+/', trim( $srcs ) );
@@ -533,7 +564,7 @@ class Display {
 			return false;
 		}
 
-		if ( ! isset( $data['tag'], $data['attributes'], $data['src'], $data['srcset'] ) ) {
+		if ( ! isset( $data['tag'], $data['attributes'], $data['src_attribute'], $data['src'], $data['srcset_attribute'], $data['srcset'] ) ) {
 			return false;
 		}
 
@@ -565,21 +596,36 @@ class Display {
 	 * @return string|bool The file path. False on failure.
 	 */
 	protected function url_to_path( $url ) {
-		static $scheme;
 		static $uploads_url;
 		static $uploads_dir;
 		static $root_url;
 		static $root_dir;
+		static $cdn_url;
+		static $domain_url;
 
-		if ( ! isset( $scheme ) ) {
-			$scheme      = is_ssl() ? 'https' : 'http';
-			$uploads_url = set_url_scheme( $this->filesystem->get_upload_baseurl(), $scheme );
+		if ( ! isset( $uploads_url ) ) {
+			$uploads_url = set_url_scheme( $this->filesystem->get_upload_baseurl() );
 			$uploads_dir = $this->filesystem->get_upload_basedir( true );
-			$root_url    = set_url_scheme( $this->filesystem->get_site_root_url(), $scheme );
+			$root_url    = set_url_scheme( $this->filesystem->get_site_root_url() );
 			$root_dir    = $this->filesystem->get_site_root();
+			$cdn_url     = $this->get_cdn_source();
+			$cdn_url     = $cdn_url['url'] ? set_url_scheme( $cdn_url['url'] ) : false;
+			$domain_url  = false;
+
+			if ( $cdn_url ) {
+				$domain_url = wp_parse_url( $root_url );
+
+				if ( ! empty( $domain_url['scheme'] ) && ! empty( $domain_url['host'] ) ) {
+					$domain_url = $domain_url['scheme'] . '://' . $domain_url['host'] . '/';
+				}
+			}
 		}
 
-		$url = set_url_scheme( $url, $scheme );
+		$url = set_url_scheme( $url );
+
+		if ( $domain_url && stripos( $url, $cdn_url ) === 0 ) {
+			$url = str_ireplace( $cdn_url, $domain_url, $url );
+		}
 
 		if ( stripos( $url, $uploads_url ) === 0 ) {
 			return str_ireplace( $uploads_url, $uploads_dir, $url );
@@ -590,5 +636,109 @@ class Display {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the CDN "source".
+	 *
+	 * @since  1.9.3
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $option_url An URL to use instead of the one stored in the option. It is used only if no constant/filter.
+	 * @return array  {
+	 *     @type string $source Where does it come from? Possible values are 'constant', 'filter', or 'option'.
+	 *     @type string $name   Who? Can be a constant name, a plugin name, or an empty string.
+	 *     @type string $url    The CDN URL, with a trailing slash. An empty string if no URL is set.
+	 * }
+	 */
+	public function get_cdn_source( $option_url = '' ) {
+		if ( defined( 'IMAGIFY_CDN_URL' ) && IMAGIFY_CDN_URL && is_string( IMAGIFY_CDN_URL ) ) {
+			// Use a constant.
+			$source = [
+				'source' => 'constant',
+				'name'   => 'IMAGIFY_CDN_URL',
+				'url'    => IMAGIFY_CDN_URL,
+			];
+		} else {
+			// Maybe use a filter.
+			$filter_source = [
+				'name' => null,
+				'url'  => null,
+			];
+
+			/**
+			 * Provide a custom CDN source.
+			 *
+			 * @since  1.9.3
+			 * @author Grégory Viguier
+			 *
+			 * @param array $filter_source {
+			 *     @type $name string The name of which provides the URL (plugin name, etc).
+			 *     @type $url  string The CDN URL.
+			 * }
+			 */
+			$filter_source = apply_filters( 'imagify_cdn_source', $filter_source );
+
+			if ( ! empty( $filter_source['url'] ) ) {
+				$source = [
+					'source' => 'filter',
+					'name'   => ! empty( $filter_source['name'] ) ? $filter_source['name'] : '',
+					'url'    => $filter_source['url'],
+				];
+			}
+		}
+
+		if ( empty( $source['url'] ) ) {
+			// No constant, no filter: use the option.
+			$source = [
+				'source' => 'option',
+				'name'   => '',
+				'url'    => $option_url && is_string( $option_url ) ? $option_url : get_imagify_option( 'cdn_url' ),
+			];
+		}
+
+		if ( empty( $source['url'] ) ) {
+			// Nothing set.
+			return [
+				'source' => 'option',
+				'name'   => '',
+				'url'    => '',
+			];
+		}
+
+		$source['url'] = $this->sanitize_cdn_url( $source['url'] );
+
+		if ( empty( $source['url'] ) ) {
+			// Not an URL.
+			return [
+				'source' => 'option',
+				'name'   => '',
+				'url'    => '',
+			];
+		}
+
+		return $source;
+	}
+
+	/**
+	 * Sanitize the CDN URL value.
+	 *
+	 * @since  1.9.3
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $url The URL to sanitize.
+	 * @return string
+	 */
+	public function sanitize_cdn_url( $url ) {
+		$url = sanitize_text_field( $url );
+
+		if ( ! $url || ! preg_match( '@^https?://.+\.[^.]+@i', $url ) ) {
+			// Not an URL.
+			return '';
+		}
+
+		return trailingslashit( $url );
 	}
 }
