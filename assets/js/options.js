@@ -7,7 +7,7 @@ window.imagify = window.imagify || {};
 	var busy = false,
 		xhr  = false;
 
-	$( '#imagify-settings #api_key' ).on( 'blur', function() {
+	$( '#imagify-settings #api_key' ).on( 'blur.imagify', function() {
 		var obj   = $( this ),
 			value = obj.val();
 
@@ -54,28 +54,34 @@ window.imagify = window.imagify || {};
 	/**
 	 * Check the boxes by clicking "labels" (aria-describedby items).
 	 */
-	$( '.imagify-options-line' ).css( 'cursor', 'pointer' ).on( 'click', function( e ) {
+	$( '.imagify-options-line' ).css( 'cursor', 'pointer' ).on( 'click.imagify', function( e ) {
 		if ( 'INPUT' === e.target.nodeName ) {
 			return;
 		}
-		$( 'input[aria-describedby="' + $( this ).attr( 'id' ) + '"]' ).trigger( 'click' );
+		$( 'input[aria-describedby="' + $( this ).attr( 'id' ) + '"]' ).trigger( 'click.imagify' );
 	} );
 
-	$( '.imagify-settings th span' ).on( 'click', function() {
-		var $input = $( this ).parent().next( 'td' ).find( 'input:checkbox' );
+	$( '.imagify-settings th span' ).on( 'click.imagify', function() {
+		var $input = $( this ).parent().next( 'td' ).find( ':checkbox' );
 
 		if ( 1 === $input.length ) {
-			$input.trigger( 'click' );
+			$input.trigger( 'click.imagify' );
 		}
 	} );
 
 	/**
 	 * Auto check on options-line input value change.
 	 */
-	$( '.imagify-options-line' ).find( 'input' ).on( 'change focus', function() {
-		var $checkbox = $( this ).closest( '.imagify-options-line' ).prev( 'label' ).prev( 'input' );
+	$( '.imagify-options-line' ).find( 'input' ).on( 'change.imagify focus.imagify', function() {
+		var $checkbox;
 
-		if ( ! $checkbox[0].checked ) {
+		if ( 'checkbox' === this.type && ! this.checked ) {
+			return;
+		}
+
+		$checkbox = $( this ).closest( '.imagify-options-line' ).prev( 'label' ).prev( ':checkbox' );
+
+		if ( $checkbox.length && ! $checkbox[0].checked ) {
 			$checkbox.prop( 'checked', true );
 		}
 	} );
@@ -83,7 +89,7 @@ window.imagify = window.imagify || {};
 	/**
 	 * Imagify Backup alert.
 	 */
-	$( '.imagify-settings-section' ).find( '#imagify_backup' ).on( 'change', function() {
+	$( '[name="imagify_settings[backup]"]' ).on( 'change.imagify', function() {
 		var $_this         = $( this ),
 			$backupMessage = $_this.siblings( '#backup-dir-is-writable' ),
 			params         = {
@@ -128,6 +134,17 @@ window.imagify = window.imagify || {};
 			}
 		);
 	} );
+
+	/**
+	 * Fade CDN URL field.
+	 */
+	$( '[name="imagify_settings[display_webp_method]"]' ).on( 'change.imagify init.imagify', function( e ) {
+		if ( 'picture' === e.target.value ) {
+			$( e.target ).closest( '.imagify-radio-group' ).next( '.imagify-options-line' ).removeClass( 'imagify-faded' );
+		} else {
+			$( e.target ).closest( '.imagify-radio-group' ).next( '.imagify-options-line' ).addClass( 'imagify-faded' );
+		}
+	} ).filter( ':checked' ).trigger( 'init.imagify' );
 
 } )(jQuery, document, window);
 
@@ -510,13 +527,13 @@ window.imagify = window.imagify || {};
 			// Launch optimization.
 			this.$button.on( 'click.imagify', { imagifyOptionsBulk: this }, this.maybeLaunchAllProcesses );
 
-			// Heartbeat for optimization queue.
+			// Imagifybeat for optimization queue.
 			$( d )
-				.on( 'heartbeat-send', { imagifyOptionsBulk: this }, this.addQueueHeartbeat )
-				.on( 'heartbeat-tick', { imagifyOptionsBulk: this }, this.processQueueHeartbeat )
-			// Heartbeat for requirements.
-				.on( 'heartbeat-send', this.addRequirementsHeartbeat )
-				.on( 'heartbeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsHeartbeat );
+				.on( 'imagifybeat-send', { imagifyOptionsBulk: this }, this.addQueueImagifybeat )
+				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processQueueImagifybeat )
+			// Imagifybeat for requirements.
+				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
+				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsImagifybeat );
 		},
 
 		// Event callbacks =========================================================================
@@ -563,7 +580,11 @@ window.imagify = window.imagify || {};
 			e.data.imagifyOptionsBulk.$button.attr( 'disabled', 'disabled' ).find( '.dashicons' ).addClass( 'rotate' );
 
 			// Add a message to be displayed when the user wants to quit the page.
-			$( w ).on( 'beforeunload', e.data.imagifyOptionsBulk.getConfirmMessage );
+			$( w ).on( 'beforeunload.imagify', e.data.imagifyOptionsBulk.getConfirmMessage );
+
+			// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
+			w.imagify.beat.interval( 15 );
+			w.imagify.beat.disableSuspend();
 
 			// Fetch IDs of media to optimize.
 			e.data.imagifyOptionsBulk.fetchIDs();
@@ -578,58 +599,58 @@ window.imagify = window.imagify || {};
 			return imagifyOptions.bulk.labels.processing;
 		},
 
-		// Heartbeat ===============================================================================
+		// Imagifybeat =============================================================================
 
 		/**
-		 * Add a Heartbeat ID on "heartbeat-send" event to sync the optimization queue.
+		 * Add a Imagifybeat ID on "imagifybeat-send" event to sync the optimization queue.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		addQueueHeartbeat: function ( e, data ) {
+		addQueueImagifybeat: function ( e, data ) {
 			if ( e.data.imagifyOptionsBulk && e.data.imagifyOptionsBulk.processingQueue.length ) {
-				data[ imagifyOptions.bulk.heartbeatIDs.queue ] = e.data.imagifyOptionsBulk.processingQueue;
+				data[ imagifyOptions.bulk.imagifybeatIDs.queue ] = e.data.imagifyOptionsBulk.processingQueue;
 			}
 		},
 
 		/**
-		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 * It allows to update various data periodically.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		processQueueHeartbeat: function ( e, data ) {
-			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.heartbeatIDs.queue ] !== 'undefined' ) {
-				$.each( data[ imagifyOptions.bulk.heartbeatIDs.queue ], function ( i, mediaData ) {
+		processQueueImagifybeat: function ( e, data ) {
+			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.imagifybeatIDs.queue ] !== 'undefined' ) {
+				$.each( data[ imagifyOptions.bulk.imagifybeatIDs.queue ], function ( i, mediaData ) {
 					e.data.imagifyOptionsBulk.mediaProcessed( mediaData );
 				} );
 			}
 		},
 
 		/**
-		 * Add a Heartbeat ID for requirements on "heartbeat-send" event.
+		 * Add a Imagifybeat ID for requirements on "imagifybeat-send" event.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		addRequirementsHeartbeat: function ( e, data ) {
-			data[ imagifyOptions.bulk.heartbeatIDs.requirements ] = 1;
+		addRequirementsImagifybeat: function ( e, data ) {
+			data[ imagifyOptions.bulk.imagifybeatIDs.requirements ] = 1;
 		},
 
 		/**
-		 * Listen for the custom event "heartbeat-tick" on $(document).
+		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 * It allows to update requirements status periodically.
 		 *
 		 * @param {object} e    Event object.
-		 * @param {object} data Object containing all Heartbeat IDs.
+		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
-		processRequirementsHeartbeat: function ( e, data ) {
-			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.heartbeatIDs.requirements ] === 'undefined' ) {
+		processRequirementsImagifybeat: function ( e, data ) {
+			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.imagifybeatIDs.requirements ] === 'undefined' ) {
 				return;
 			}
 
-			data = data[ imagifyOptions.bulk.heartbeatIDs.requirements ];
+			data = data[ imagifyOptions.bulk.imagifybeatIDs.requirements ];
 
 			imagifyOptions.bulk.curlMissing    = data.curl_missing;
 			imagifyOptions.bulk.editorMissing  = data.editor_missing;
@@ -915,8 +936,12 @@ window.imagify = window.imagify || {};
 			this.processedMedia   = 0;
 			this.totalMedia       = 0;
 
+			// Reset Imagifybeat interval and enable suspend.
+			w.imagify.beat.resetInterval();
+			w.imagify.beat.enableSuspend();
+
 			// Unlink the message displayed when the user wants to quit the page.
-			$( w ).off( 'beforeunload', this.getConfirmMessage );
+			$( w ).off( 'beforeunload.imagify', this.getConfirmMessage );
 
 			// Reset the progress bar.
 			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' );

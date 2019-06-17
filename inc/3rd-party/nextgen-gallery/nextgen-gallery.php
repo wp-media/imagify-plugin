@@ -24,5 +24,4 @@ if ( is_admin() ) {
 	require IMAGIFY_PATH . 'inc/3rd-party/nextgen-gallery/inc/admin/menu.php';
 	require IMAGIFY_PATH . 'inc/3rd-party/nextgen-gallery/inc/admin/gallery.php';
 	require IMAGIFY_PATH . 'inc/3rd-party/nextgen-gallery/inc/admin/bulk.php';
-	require IMAGIFY_PATH . 'inc/3rd-party/nextgen-gallery/inc/admin/heartbeat.php';
 }

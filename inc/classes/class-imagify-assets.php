@@ -206,7 +206,9 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 
 		$this->register_script( 'twentytwenty', 'jquery.twentytwenty', array( 'jquery', 'event-move', 'chart', 'admin' ) )->defer_localization( 'imagifyTTT' );
 
-		$this->register_script( 'media-modal', 'media-modal', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'admin' ) )->localize( 'imagifyModal' );
+		$this->register_script( 'beat', 'beat', array( 'jquery' ) )->localize( 'imagifybeatSettings' );
+
+		$this->register_script( 'media-modal', 'media-modal', array( 'jquery', 'beat', 'underscore', 'chart', 'admin' ) )->localize( 'imagifyModal' );
 
 		$this->register_script( 'pricing-modal', 'pricing-modal', array( 'jquery', 'admin' ) )->defer_localization( 'imagifyPricingModal' );
 
@@ -214,11 +216,11 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 
 		$this->register_script( 'async', 'imagify-gulp' );
 
-		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
+		$this->register_script( 'bulk', 'bulk', array( 'jquery', 'beat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ) )->defer_localization( 'imagifyBulk' );
 
-		$this->register_script( 'options', 'options', array( 'jquery', 'heartbeat', 'sweetalert', 'underscore', 'admin' ) )->defer_localization( 'imagifyOptions' );
+		$this->register_script( 'options', 'options', array( 'jquery', 'beat', 'sweetalert', 'underscore', 'admin' ) )->defer_localization( 'imagifyOptions' );
 
-		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'heartbeat', 'underscore', 'chart', 'admin' ) )->defer_localization( 'imagifyFiles' );
+		$this->register_script( 'files-list', 'files-list', array( 'jquery', 'beat', 'underscore', 'chart', 'admin' ) )->defer_localization( 'imagifyFiles' );
 	}
 
 	/**
@@ -491,8 +493,6 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 			$this->current_handle      = $handle;
 			$this->current_handle_type = 'js';
 
-			$this->maybe_register_heartbeat( $handle );
-
 			if ( ! empty( $this->scripts[ $handle ] ) ) {
 				// If we registered it, it's one of our scripts.
 				$handle = self::JS_PREFIX . $handle;
@@ -754,63 +754,6 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		}
 
 		return $depts;
-	}
-
-	/**
-	 * Make sure Heartbeat is registered if the given script requires it.
-	 * Lots of people love deregister Heartbeat.
-	 *
-	 * @since  1.6.11
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $handle Name of the script. Should be unique.
-	 */
-	protected function maybe_register_heartbeat( $handle ) {
-		global $wp_version;
-
-		if ( wp_script_is( 'heartbeat', 'registered' ) ) {
-			return;
-		}
-
-		if ( ! empty( $this->scripts[ $handle ] ) ) {
-			// If we registered it, it's one of our scripts.
-			$handle = self::JS_PREFIX . $handle;
-		}
-
-		$wp_scripts   = wp_scripts();
-		$dependencies = $wp_scripts->query( $handle );
-
-		if ( ! $dependencies || ! $dependencies->deps ) {
-			return;
-		}
-
-		$dependencies = array_flip( $dependencies->deps );
-
-		if ( ! isset( $dependencies['heartbeat'] ) ) {
-			return;
-		}
-
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-		$depts  = [ 'jquery' ];
-
-		if ( version_compare( $wp_version, '5.0.0' ) >= 0 ) {
-			$depts[] = 'wp-hooks';
-		}
-
-		wp_register_script( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", $depts, false, true ); // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.NoExplicitVersion
-
-		if ( $wp_scripts->get_data( 'heartbeat', 'data' ) ) {
-			return;
-		}
-
-		/** This filter is documented in /wp-includes/script-loader.php */
-		$data = apply_filters( 'heartbeat_settings', [] );
-
-		if ( empty( $data['nonce'] ) ) {
-			$data = wp_heartbeat_settings( $data );
-		}
-
-		wp_localize_script( 'heartbeat', 'heartbeatSettings', $data );
 	}
 
 	/**

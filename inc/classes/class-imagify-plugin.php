@@ -58,6 +58,8 @@ class Imagify_Plugin {
 			Imagify_Admin_Ajax_Post::get_instance()->init();
 			Imagify_Settings::get_instance()->init();
 			Imagify_Views::get_instance()->init();
+			\Imagify\Imagifybeat\Core::get_instance()->init();
+			\Imagify\Imagifybeat\Actions::get_instance()->init();
 		}
 
 		if ( ! wp_doing_ajax() ) {
@@ -121,7 +123,6 @@ class Imagify_Plugin {
 		}
 
 		require_once $inc_path . 'admin/upgrader.php';
-		require_once $inc_path . 'admin/heartbeat.php';
 		require_once $inc_path . 'admin/upload.php';
 		require_once $inc_path . 'admin/media.php';
 		require_once $inc_path . 'admin/meta-boxes.php';

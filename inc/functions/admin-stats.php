@@ -350,15 +350,16 @@ function imagify_count_saving_data( $key = '' ) {
 					continue;
 				}
 
-				$original_data = $attachment_data['sizes']['full'];
-
-				if ( empty( $original_data['success'] ) ) {
+				if ( empty( $attachment_data['sizes']['full']['success'] ) ) {
 					/**
-					 * Case where this attachment has multiple '_imagify_status' metas, and is fetched (in the above query) as a "success" while the '_imagify_data' says otherwise.
-					 * Don't ask how it's possible, I don't know.
+					 * - Case where this attachment has multiple '_imagify_status' metas, and is fetched (in the above query) as a "success" while the '_imagify_data' says otherwise.
+					 * - Case where this meta has no "full" entry.
+					 * Don't ask how it's possible, I don't know ¯\(°_o)/¯
 					 */
 					continue;
 				}
+
+				$original_data = $attachment_data['sizes']['full'];
 
 				++$count;
 

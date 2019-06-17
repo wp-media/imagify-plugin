@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
 Requires at least: 4.0.0
-Tested up to: 5.2
-Stable tag: 1.9.2
+Tested up to: 5.2.1
+Stable tag: 1.9.3
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -138,6 +138,16 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.3 - 2019/06/17 =
+* Improvement: better compatibility with CDNs when displaying webp images with `&lt;picture&gt;` tags. There is now a new setting field to fill in the CDN URL in use.
+* Improvement: don’t use Heartbeat anymore. This speeds up the optimization process and prevents other plugins to break everything when they remove Heartbeat.
+* Fix: a fatal error upon plugin deactivation.
+* Fix: an occasional fatal error preventing the optimization process to work.
+* Fix: conflict with plugins using an ancient version of Composer.
+* Fix: php notices displayed on the bulk optimization page on rare cases.
+* Fix: a php notice about "Non-string needles" with php 7.3.
+* Fix: a php notice displayed when restoring a custom file.
+
 = 1.9.2 - 2019/05/16 =
 * Fix: don’t display support bubble anymore.
 

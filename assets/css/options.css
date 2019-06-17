@@ -181,12 +181,6 @@ p.imagify-api-key-invite-title {
 	padding-top: 35px;
 }
 
-.imagify-settings input[type="text"] {
-	color: #4A4A4A;
-	font-weight: 600;
-	box-shadow: none;
-}
-
 .imagify-settings div.submit.submit {
 	border-top: 1px solid #D9D9D9;
 	margin-top: 2em;
@@ -242,12 +236,14 @@ label + .imagify-info,
 	margin-left: 38px;
 	padding-right: 25px;
 }
+.imagify-options-line {
+	-webkit-transition: opacity .3s;
+	transition: opacity .3s;
+}
 label ~ .imagify-options-line {
 	display: block;
 	margin: 8px 0 20px 40px;
 	font-size: 14px;
-	-webkit-transition: opacity .3s;
-	transition: opacity .3s;
 }
 .imagify-options-line + .imagify-info {
 	margin-left: 38px;
@@ -266,12 +262,20 @@ label[for="imagify_sizes_full"] + .imagify-info {
 }
 
 .imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label ~ .imagify-options-line,
-.imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label .imagify-visual-label {
+.imagify-settings.imagify-settings [type="checkbox"]:not(:checked) + label .imagify-visual-label,
+:checked + label ~ .imagify-options-line :checked + label ~ .imagify-options-line .imagify-faded {
 	opacity: .5;
 }
 .imagify-settings.imagify-settings [type="checkbox"]:checked + label ~ .imagify-options-line,
-.imagify-settings.imagify-settings [type="checkbox"]:checked + label .imagify-visual-label {
+.imagify-settings.imagify-settings [type="checkbox"]:checked + label .imagify-visual-label,
+.imagify-settings.imagify-settings :not(:checked) + label ~ .imagify-options-line :not(:checked) + label ~ .imagify-options-line {
 	opacity: 1;
+}
+
+.imagify-radio-group + .imagify-options-line {
+	display: block;
+	margin: 0 0 0 1.7em;
+	font-size: 14px;
 }
 
 .imagify-checkbox-marged {
@@ -279,8 +283,9 @@ label[for="imagify_sizes_full"] + .imagify-info {
 	margin-left: 45px;
 }
 
-#imagify_resize_larger_w {
-	width: 5em;
+.imagify-settings [type="text"],
+.imagify-settings [type="number"] {
+	width: 20em;
 	height: auto;
 	padding: 6px;
 	margin: 0 6px;
@@ -289,6 +294,31 @@ label[for="imagify_sizes_full"] + .imagify-info {
 	border-radius: 2px;
 	color: #338EA6;
 	font-weight: bold;
+}
+.imagify-settings [type="number"] {
+	width: 5em;
+}
+.imagify-settings ::-webkit-input-placeholder {
+	color: #B1B1B1;
+	font-weight: 400;
+}
+.imagify-settings ::-moz-placeholder {
+	color: #B1B1B1;
+	font-weight: 400;
+	opacity: 1;
+}
+.imagify-settings :-ms-input-placeholder {
+	color: #B1B1B1;
+	font-weight: 400;
+}
+.imagify-settings :-moz-placeholder {
+	color: #B1B1B1;
+	font-weight: 400;
+	opacity: 1;
+}
+.imagify-settings ::placeholder {
+	color: #B1B1B1;
+	font-weight: 400;
 }
 
 .imagify-menu-bar-img {
