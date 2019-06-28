@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class CustomFolders extends AbstractContext {
-	use \Imagify\Traits\FakeSingletonTrait;
+	use \Imagify\Traits\InstanceGetterTrait;
 
 	/**
 	 * Context "short name".

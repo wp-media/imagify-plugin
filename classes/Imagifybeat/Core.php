@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Core {
-	use \Imagify\Traits\FakeSingletonTrait;
+	use \Imagify\Traits\InstanceGetterTrait;
 
 	/**
 	 * Class init: launch hooks.

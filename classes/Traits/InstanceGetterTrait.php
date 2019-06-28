@@ -9,9 +9,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * This is temporary, until we get a DI container.
  *
  * @since  1.9
+ * @since  1.9.4 Renamed FakeSingletonTrait into InstanceGetterTrait.
  * @author Grégory Viguier
  */
-trait FakeSingletonTrait {
+trait InstanceGetterTrait {
 
 	/**
 	 * The "not-so-single" instance of the class.
@@ -21,7 +22,7 @@ trait FakeSingletonTrait {
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
-	protected static $_instance;
+	protected static $instance;
 
 	/**
 	 * Get the main Instance.
@@ -33,10 +34,10 @@ trait FakeSingletonTrait {
 	 * @return object Main instance.
 	 */
 	public static function get_instance() {
-		if ( ! isset( static::$_instance ) ) {
-			static::$_instance = new static();
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
 		}
 
-		return static::$_instance;
+		return static::$instance;
 	}
 }

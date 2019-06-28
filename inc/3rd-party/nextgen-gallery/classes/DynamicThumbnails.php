@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class DynamicThumbnails {
-	use \Imagify\Traits\FakeSingletonTrait;
+	use \Imagify\Traits\InstanceGetterTrait;
 
 	/**
 	 * The queue containing the sizes, grouped by image ID.

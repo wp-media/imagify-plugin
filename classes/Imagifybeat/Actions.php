@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Actions {
-	use \Imagify\Traits\FakeSingletonTrait;
+	use \Imagify\Traits\InstanceGetterTrait;
 
 	/**
 	 * The list of action IDs.

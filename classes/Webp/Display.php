@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Display {
-	use \Imagify\Traits\FakeSingletonTrait;
+	use \Imagify\Traits\InstanceGetterTrait;
 
 	/**
 	 * Server conf object.
