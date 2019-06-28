@@ -285,7 +285,13 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 		static $route;
 
 		if ( ! isset( $route ) ) {
-			$route = '/' . trim( \RegenerateThumbnails()->rest_api->namespace, '/' ) . '/regenerate/';
+			$regen = \RegenerateThumbnails();
+
+			if ( ( empty( $regen->rest_api ) || ! is_object( $regen->rest_api ) ) && method_exists( $regen, 'rest_api_init' ) ) {
+				$regen->rest_api_init();
+			}
+
+			$route = '/' . trim( $regen->rest_api->namespace, '/' ) . '/regenerate/';
 		}
 
 		return $route;
