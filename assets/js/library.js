@@ -43,7 +43,7 @@
 
 			ids.forEach( function( id, index ) {
 				setTimeout( function() {
-					$( '.imagify-data-actions-container[data-id="' + id + '"][data-context="wp"] .button-imagify-' + action ).first().trigger( 'click' );
+					$( 'table .imagify-data-actions-container[data-id="' + id + '"] .button-imagify-' + action ).first().trigger( 'click' );
 				}, index * 300 );
 			} );
 		} );
