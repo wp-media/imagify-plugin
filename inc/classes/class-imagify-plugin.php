@@ -42,6 +42,8 @@ class Imagify_Plugin {
 	public function init() {
 		$this->include_files();
 
+		class_alias( '\\Imagify\\Traits\\InstanceGetterTrait', '\\Imagify\\Traits\\FakeSingletonTrait' );
+
 		Imagify_Auto_Optimization::get_instance()->init();
 		Imagify_Options::get_instance()->init();
 		Imagify_Data::get_instance()->init();
