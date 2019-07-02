@@ -1,9 +1,9 @@
-=== Imagify Image Optimizer ===
+=== Imagify - WebP & Image Compression ===
 Contributors: wp_media, GregLone
-Tags: compress image, images, performance, optimization, photos, upload, resize, gif, png, jpg, reduce image size, retina
+Tags: compress image, images, performance, optimization, webp
 Requires at least: 4.0.0
-Tested up to: 5.2.1
-Stable tag: 1.9.3
+Tested up to: 5.2.2
+Stable tag: 1.9.3.1
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -11,8 +11,8 @@ Dramatically reduce image file sizes without losing quality, make your website l
 
 Speed up your website with lighter images without losing quality.
 
-Imagify is the most advanced image compression tool, you can now use this power directly in WordPress.
-After enabling it, all your images including thumbnails will be automatically optimized when uploaded into WordPress. You can also use Imagify to convert and serve WebP images for free.
+Imagify is the most advanced tool to optimize images. You can now use this power directly in WordPress.
+After enabling it, all your images including thumbnails will be automatically optimized when uploaded into WordPress. You can also use Imagify to convert WebP images for free.
 
 WooCommerce and NextGen Gallery compatible.
 
@@ -33,6 +33,21 @@ Three level of compression are available:
 - Ultra, our strongest compression method using a lossy algorithm.
 
 With the backup option, you can change your mind whenever you want by restoring your images to their original version or optimize them to another compression level.
+
+= HOW ABOUT WEBP IMAGES? =
+Now, for each image you optimize with the Imagify plugin, you’ll also get its **WebP version** (if you tick the option in the settings); in your Media library, this will result in the following image versions:
+- full-sized optimized image,
+- full-sized WebP image,
+- optimized thumbnails,
+- WebP thumbnails.
+
+The optimization will also work for images included in your themes and plugins.
+
+If you want, Imagify can also display WebP images on your front-end in two ways:
+- `<picture>` tag,
+- rewrite rules in the .htaccess file.
+
+If you kept a backup copy of the original images, you have the possibility to **create their WebP version separately** (one by one or via the bulk optimization).
 
 = What our users think of Imagify? =
 
@@ -138,6 +153,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.3.1 - 2019/07/03 =
+* Fix: conflict with plugins using an ancient version of Composer.
+
 = 1.9.3 - 2019/06/17 =
 * Improvement: better compatibility with CDNs when displaying webp images with `&lt;picture&gt;` tags. There is now a new setting field to fill in the CDN URL in use.
 * Improvement: don’t use Heartbeat anymore. This speeds up the optimization process and prevents other plugins to break everything when they remove Heartbeat.
