@@ -49,10 +49,10 @@ class Apache extends \Imagify\WriteFile\AbstractApacheDirConfFile {
 	RewriteCond %{HTTP_ACCEPT} image/webp
 
 	# Check if WebP replacement image exists.
-	RewriteCond %{DOCUMENT_ROOT}' . $home_root . '$1.$2.webp -f
+	RewriteCond %{REQUEST_FILENAME}.webp -f
 
 	# Serve WebP image instead.
-	RewriteRule (.+)\.(' . $extensions . ')$ $1.$2.webp [T=image/webp]
+	RewriteRule (.+)\.(' . $extensions . ')$ $1.$2.webp [T=image/webp,NC]
 </IfModule>
 
 <IfModule mod_headers.c>
