@@ -4,11 +4,11 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 if ( defined( 'RML_FILE' ) ) :
 
 	/**
-	 * Prevent WP Real Media Library to use its outdated version of SweetAlert where we need ours.
+	 * Prevent WP Real Media Library to use its outdated version of SweetAlert where we need ours, and to mess with our CSS styles.
 	 */
 	add_action( 'current_screen', 'imagify_wprml_init' );
 	/**
-	 * Dequeue WP Real Media Library's version of SweetAlert when we need ours.
+	 * Dequeue all WP Real Media Library's styles and scripts where we use ours.
 	 *
 	 * @since  1.6.13
 	 * @author Grégory Viguier
@@ -21,7 +21,7 @@ if ( defined( 'RML_FILE' ) ) :
 		}
 		$done = true;
 
-		if ( ! class_exists( 'MatthiasWeb\RealMediaLibrary\general\Backend' ) ) {
+		if ( ! class_exists( '\\MatthiasWeb\\RealMediaLibrary\\general\\Backend' ) ) {
 			return;
 		}
 
@@ -46,16 +46,29 @@ if ( defined( 'RML_FILE' ) ) :
 	}
 
 	/**
-	 * Prevent WP Real Media Library to enqueue its version of SweetAlert.
+	 * Prevent WP Real Media Library to enqueue its styles and scripts.
 	 *
 	 * @since  1.6.13
 	 * @author Grégory Viguier
 	 */
 	function imagify_wprml_dequeue() {
-		$instance = call_user_func( array( 'MatthiasWeb\RealMediaLibrary\general\Backend', 'getInstance' ) );
+		$instance = \MatthiasWeb\RealMediaLibrary\general\Backend::getInstance();
 
-		remove_action( 'admin_enqueue_scripts', array( $instance, 'admin_enqueue_scripts' ), 0 );
-		remove_action( 'admin_footer',          array( $instance, 'admin_footer' ) );
+		remove_action( 'admin_enqueue_scripts', [ $instance, 'admin_enqueue_scripts' ], 0 );
+		remove_action( 'admin_footer',          [ $instance, 'admin_footer' ] );
+
+		if ( class_exists( '\\MatthiasWeb\\RealMediaLibrary\\general\\FolderShortcode' ) ) {
+			$instance = \MatthiasWeb\RealMediaLibrary\general\FolderShortcode::getInstance();
+
+			remove_action( 'admin_head',            [ $instance, 'admin_head' ] );
+			remove_action( 'admin_enqueue_scripts', [ $instance, 'admin_enqueue_scripts' ] );
+		}
+
+		if ( class_exists( '\\MatthiasWeb\\RealMediaLibrary\\comp\\PageBuilders' ) ) {
+			$instance = \MatthiasWeb\RealMediaLibrary\comp\PageBuilders::getInstance();
+
+			remove_action( 'init', [ $instance, 'init' ] );
+		}
 	}
 
 endif;
