@@ -42,7 +42,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'resize_larger'       => 0,
 		'resize_larger_w'     => 0,
 		'convert_to_webp'     => 0,
-		'keep_large_webp'     => 0,
 		'display_webp'        => 0,
 		'display_webp_method' => 'picture',
 		'cdn_url'             => '',
@@ -152,7 +151,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'backup':
 			case 'resize_larger':
 			case 'convert_to_webp':
-			case 'keep_large_webp':
 			case 'display_webp':
 			case 'exif':
 			case 'admin_bar_menu':
