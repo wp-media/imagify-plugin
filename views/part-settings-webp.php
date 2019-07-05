@@ -20,6 +20,15 @@ $settings = Imagify_Settings::get_instance();
 		<div class="imagify-options-line">
 			<?php
 			$settings->field_checkbox( [
+				'option_name' => 'keep_large_webp',
+				'label'       => __( 'Keep webp images that are larger than their non-webp version', 'imagify' ),
+			] );
+			?>
+		</div>
+
+		<div class="imagify-options-line">
+			<?php
+			$settings->field_checkbox( [
 				'option_name' => 'display_webp',
 				'label'       => __( 'Display images in webp format on the site', 'imagify' ),
 			] );
