@@ -710,7 +710,21 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @return \sdtClass|\WP_Error                        Optimized image data. A \WP_Error object on error.
 	 */
 	protected function compare_webp_file_size( $args ) {
-		if ( $this->get_option( 'keep_large_webp' ) || is_wp_error( $args['response'] ) || ! $args['file']->is_image() ) {
+		static $keep_large_webp;
+
+		if ( ! isset( $keep_large_webp ) ) {
+			/**
+			 * Allow to not store webp images that are larger than their non-webp version.
+			 *
+			 * @since  1.9.4
+			 * @author Grégory Viguier
+			 *
+			 * @param bool $keep_large_webp Set to false if you prefer your visitors hover your Pagespeed score. Default value is true.
+			 */
+			$keep_large_webp = apply_filters( 'imagify_keep_large_webp', true );
+		}
+
+		if ( $keep_large_webp || is_wp_error( $args['response'] ) || ! $args['file']->is_image() ) {
 			return $args['response'];
 		}
 
