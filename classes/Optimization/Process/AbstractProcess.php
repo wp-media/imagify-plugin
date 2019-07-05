@@ -1390,7 +1390,16 @@ abstract class AbstractProcess implements ProcessInterface {
 			return false;
 		}
 
-		return (bool) $this->get_data()->get_size_data( 'full' . static::WEBP_SUFFIX, 'success' );
+		$data = $this->get_data()->get_optimization_data();
+
+		if ( empty( $data['sizes'] ) ) {
+			return false;
+		}
+
+		$needle = static::WEBP_SUFFIX . '";a:4:{s:7:"success";b:1;';
+		$data   = maybe_serialize( $data['sizes'] );
+
+		return is_string( $data ) && strpos( $data, $needle );
 	}
 
 

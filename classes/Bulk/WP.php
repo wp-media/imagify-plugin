@@ -210,7 +210,7 @@ class WP extends AbstractBulk {
 				$nodata_where
 			ORDER BY p.ID DESC
 			LIMIT 0, %d",
-			'%' . $wpdb->esc_like( '"full' . $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
+			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
 			imagify_get_unoptimized_attachment_limit()
 		) );
 
@@ -302,7 +302,7 @@ class WP extends AbstractBulk {
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
 				$nodata_where",
-			'%' . $wpdb->esc_like( '"full' . $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
 		) );
 	}
 
