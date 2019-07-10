@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
-	use \Imagify\Traits\FakeSingletonTrait;
+	use \Imagify\Traits\InstanceGetterTrait;
 
 	/**
 	 * Class version.

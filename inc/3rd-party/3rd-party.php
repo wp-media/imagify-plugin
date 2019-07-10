@@ -19,6 +19,7 @@ require IMAGIFY_PATH . 'inc/3rd-party/yoast-seo.php';
  * Hosting.
  */
 require IMAGIFY_PATH . 'inc/3rd-party/hosting/flywheel.php';
+require IMAGIFY_PATH . 'inc/3rd-party/hosting/pressable.php';
 require IMAGIFY_PATH . 'inc/3rd-party/hosting/siteground.php';
 require IMAGIFY_PATH . 'inc/3rd-party/hosting/wordpress-com.php';
 require IMAGIFY_PATH . 'inc/3rd-party/hosting/wpengine.php';

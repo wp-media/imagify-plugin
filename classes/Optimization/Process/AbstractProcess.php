@@ -444,10 +444,10 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @param  string $size               The media size.
 	 * @param  int    $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
-	 * @return array|WP_Error             The optimization data. A \WP_Error instance on failure.
+	 * @return \sdtClass|\WP_Error        Optimized image data. A \WP_Error object on error.
 	 */
 	public function optimize_size( $size, $optimization_level = null ) {
-		if ( ! $this->is_valid() ) {
+		if ( ! $this->is_valid() ) { // Bail out.
 			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
@@ -463,7 +463,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			$webp       = true;
 		}
 
-		if ( empty( $sizes[ $thumb_size ]['path'] ) ) {
+		if ( empty( $sizes[ $thumb_size ]['path'] ) ) { // Bail out.
 			// This size is not in our list.
 			return new \WP_Error(
 				'unknown_size',
@@ -475,7 +475,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			);
 		}
 
-		if ( $this->get_data()->get_size_data( $size, 'success' ) ) {
+		if ( $this->get_data()->get_size_data( $size, 'success' ) ) { // Bail out.
 			// This size is already optimized with Imagify, and must not be optimized again.
 			if ( $webp ) {
 				return new \WP_Error(
@@ -509,7 +509,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			// We want a webp version but the source file is already optimized by Imagify.
 			$result = $this->create_temporary_copy( $thumb_size, $sizes );
 
-			if ( ! $result ) {
+			if ( ! $result ) { // Bail out.
 				// Could not create a copy of the non-webp version.
 				$response = new \WP_Error(
 					'non_webp_copy_failed',
@@ -532,9 +532,9 @@ abstract class AbstractProcess implements ProcessInterface {
 			$path_is_temp = true;
 		}
 
-		$file = new File( $path );
+		$file = new File( $path ); // Original file or temporary copy.
 
-		if ( ! $file->is_supported( $media->get_allowed_mime_types() ) ) {
+		if ( ! $file->is_supported( $media->get_allowed_mime_types() ) ) { // Bail out.
 			// This file type is not supported.
 			$extension = $file->get_extension();
 
@@ -563,7 +563,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return $response;
 		}
 
-		if ( $webp && ! $file->is_image() ) {
+		if ( $webp && ! $file->is_image() ) { // Bail out.
 			if ( $path_is_temp ) {
 				$this->filesystem->delete( $path );
 			}
@@ -600,10 +600,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		if ( ! is_wp_error( $response ) ) {
 			if ( $is_disabled ) {
 				// This size must not be optimized.
-				if ( $path_is_temp ) {
-					$this->filesystem->delete( $path );
-				}
-
 				$response = new \WP_Error(
 					'unauthorized_size',
 					sprintf(
@@ -613,10 +609,6 @@ abstract class AbstractProcess implements ProcessInterface {
 					)
 				);
 			} elseif ( ! $this->filesystem->exists( $file->get_path() ) ) {
-				if ( $path_is_temp ) {
-					$this->filesystem->delete( $path );
-				}
-
 				$response = new \WP_Error(
 					'file_not_exists',
 					sprintf(
@@ -626,10 +618,6 @@ abstract class AbstractProcess implements ProcessInterface {
 					)
 				);
 			} elseif ( ! $this->filesystem->is_writable( $file->get_path() ) ) {
-				if ( $path_is_temp ) {
-					$this->filesystem->delete( $path );
-				}
-
 				$response = new \WP_Error(
 					'file_not_writable',
 					sprintf(
@@ -652,6 +640,15 @@ abstract class AbstractProcess implements ProcessInterface {
 						'keep_exif'          => $this->can_keep_exif( $size ),
 						'context'            => $media->get_context(),
 						'original_size'      => $response['file_size'],
+					] );
+
+					$response = $this->compare_webp_file_size( [
+						'response'            => $response,
+						'file'                => $file,
+						'is_webp'             => $webp,
+						'non_webp_thumb_size' => $thumb_size,
+						'non_webp_file_path'  => $sizes[ $thumb_size ]['path'], // Don't use $path nor $file->get_path(), it may return the path to a temporary file.
+						'optimization_level'  => $optimization_level,
 					] );
 				}
 			}
@@ -678,15 +675,129 @@ abstract class AbstractProcess implements ProcessInterface {
 			return $data;
 		}
 
+		// Delete the temporary copy.
+		$this->filesystem->delete( $path );
+
+		if ( is_wp_error( $response ) ) {
+			return $data;
+		}
+
 		// Rename the optimized file.
 		$destination_path = str_replace( static::TMP_SUFFIX . '.', '.', $file->get_path() );
 
 		$this->filesystem->move( $file->get_path(), $destination_path, true );
 
-		// Delete the temporary copy.
-		$this->filesystem->delete( $path );
-
 		return $data;
+	}
+
+	/**
+	 * Compare the file size of a file and its webp version: if the webp version is heavier than the non-webp file, delete it.
+	 *
+	 * @since  1.9.4
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  array $args {
+	 *     A list of mandatory arguments.
+	 *
+	 *     @type \sdtClass|\WP_Error $response            Optimized image data. A \WP_Error object on error.
+	 *     @type File                $file                The File instance of the file currently being optimized.
+	 *     @type bool                $is_webp             Tell if we're requesting a webp file.
+	 *     @type string              $non_webp_thumb_size Name of the corresponding non-webp thumbnail size. If we're not creating a webp file, this corresponds to the current thumbnail size.
+	 *     @type string              $non_webp_file_path  Path to the corresponding non-webp file. If we're not creating a webp file, this corresponds to the current file path.
+	 *     @type string              $optimization_level  The optimization level.
+	 * }
+	 * @return \sdtClass|\WP_Error                        Optimized image data. A \WP_Error object on error.
+	 */
+	protected function compare_webp_file_size( $args ) {
+		static $keep_large_webp;
+
+		if ( ! isset( $keep_large_webp ) ) {
+			/**
+			 * Allow to not store webp images that are larger than their non-webp version.
+			 *
+			 * @since  1.9.4
+			 * @author Grégory Viguier
+			 *
+			 * @param bool $keep_large_webp Set to false if you prefer your visitors over your Pagespeed score. Default value is true.
+			 */
+			$keep_large_webp = apply_filters( 'imagify_keep_large_webp', true );
+		}
+
+		if ( $keep_large_webp || is_wp_error( $args['response'] ) || ! $args['file']->is_image() ) {
+			return $args['response'];
+		}
+
+		// Optimization succeeded.
+		if ( $args['is_webp'] ) {
+			/**
+			 * We just created a webp version:
+			 * Check if it is lighter than the (maybe optimized) non-webp file.
+			 */
+			$data = $this->get_data()->get_size_data( $args['non_webp_thumb_size'] );
+
+			if ( ! $data ) {
+				// We haven’t tried to optimize the non-webp size yet.
+				return $args['response'];
+			}
+
+			if ( ! empty( $data['optimized_size'] ) ) {
+				// The non-webp size is optimized, we know the file size.
+				$non_webp_file_size = $data['optimized_size'];
+			} else {
+				// The non-webp size is "already optimized" or "error": grab the file size directly from the file.
+				$non_webp_file_size = $this->filesystem->size( $args['non_webp_file_path'] );
+			}
+
+			if ( ! $non_webp_file_size || $non_webp_file_size > $args['response']->new_size ) {
+				// The new webp file is lighter.
+				return $args['response'];
+			}
+
+			// The new webp file is heavier than the non-webp file: delete it and return an error.
+			$this->filesystem->delete( $args['file']->get_path() );
+
+			return new \WP_Error(
+				'webp_heavy',
+				sprintf(
+					/* translators: %s is a size name. */
+					__( 'The webp version of the size %s is heavier than its non-webp version.', 'imagify' ),
+					'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
+				)
+			);
+		}
+
+		/**
+		 * We just created a non-webp version:
+		 * Check if its webp version file is lighter than this one.
+		 */
+		$webp_size      = $args['non_webp_thumb_size'] . static::WEBP_SUFFIX;
+		$webp_file_size = $this->get_data()->get_size_data( $webp_size, 'optimized_size' );
+
+		if ( ! $webp_file_size || $webp_file_size < $args['response']->new_size ) {
+			// The webp file is lighter than this one.
+			return $args['response'];
+		}
+
+		// The new optimized file is lighter than the webp file: delete the webp file and store an error.
+		$webp_path = $args['file']->get_path_to_webp();
+
+		if ( $webp_path && $this->filesystem->is_writable( $webp_path ) ) {
+			$this->filesystem->delete( $webp_path );
+		}
+
+		$webp_response = new \WP_Error(
+			'webp_heavy',
+			sprintf(
+				/* translators: %s is a size name. */
+				__( 'The webp version of the size %s is heavier than its non-webp version.', 'imagify' ),
+				'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
+			)
+		);
+
+		$this->update_size_optimization_data( $webp_response, $webp_size, $args['optimization_level'] );
+
+		return $args['response'];
 	}
 
 	/**
@@ -1390,7 +1501,16 @@ abstract class AbstractProcess implements ProcessInterface {
 			return false;
 		}
 
-		return (bool) $this->get_data()->get_size_data( 'full' . static::WEBP_SUFFIX, 'success' );
+		$data = $this->get_data()->get_optimization_data();
+
+		if ( empty( $data['sizes'] ) ) {
+			return false;
+		}
+
+		$needle = static::WEBP_SUFFIX . '";a:4:{s:7:"success";b:1;';
+		$data   = maybe_serialize( $data['sizes'] );
+
+		return is_string( $data ) && strpos( $data, $needle );
 	}
 
 
