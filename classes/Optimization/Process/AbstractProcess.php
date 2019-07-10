@@ -719,7 +719,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			 * @since  1.9.4
 			 * @author Grégory Viguier
 			 *
-			 * @param bool $keep_large_webp Set to false if you prefer your visitors hover your Pagespeed score. Default value is true.
+			 * @param bool $keep_large_webp Set to false if you prefer your visitors over your Pagespeed score. Default value is true.
 			 */
 			$keep_large_webp = apply_filters( 'imagify_keep_large_webp', true );
 		}
