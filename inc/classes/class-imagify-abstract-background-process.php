@@ -77,6 +77,24 @@ abstract class Imagify_Abstract_Background_Process extends WP_Background_Process
 	 * @author Grégory Viguier
 	 */
 	public function init() {
+		$this->query_url = admin_url( 'admin-ajax.php' );
+
+		/**
+		 * Filter the URL to use for background processes.
+		 *
+		 * @since  1.9.5
+		 * @author Grégory Viguier
+		 *
+		 * @param string $query_url An URL.
+		 * @param object $this      This class instance.
+		 */
+		$this->query_url = apply_filters( 'imagify_background_process_url', $this->query_url, $this );
+
+		if ( ! $this->query_url || ! is_string( $this->query_url ) || ! preg_match( '@^https?://@', $this->query_url ) ) {
+			$this->query_url = admin_url( 'admin-ajax.php' );
+		}
+
+		// Deactivation hook.
 		if ( did_action( static::get_deactivation_hook_name() ) ) {
 			$this->cancel_process();
 		} else {

@@ -9,13 +9,13 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since 1.4
  */
 function imagify_do_async_job( $body ) {
-	$args = array(
+	$args = [
 		'timeout'   => 0.01,
 		'blocking'  => false,
 		'body'      => $body,
-		'cookies'   => isset( $_COOKIE ) && is_array( $_COOKIE ) ? $_COOKIE : array(),
+		'cookies'   => isset( $_COOKIE ) && is_array( $_COOKIE ) ? $_COOKIE : [],
 		'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
-	);
+	];
 
 	/**
 	 * Filter the arguments used to launch an async job.
@@ -35,7 +35,7 @@ function imagify_do_async_job( $body ) {
 		 * In old WP versions, the field "option_name" in the wp_options table was limited to 64 characters.
 		 * From 64, remove 19 characters for "_transient_timeout_" = 45.
 		 * Then remove 12 characters for "imagify_rpc_" (transient name) = 33.
-		 * Hopefully, a md5 is 32 characters long.
+		 * Luckily, a md5 is 32 characters long.
 		 */
 		$rpc_id = md5( maybe_serialize( $body ) );
 
@@ -49,5 +49,18 @@ function imagify_do_async_job( $body ) {
 		set_transient( 'imagify_rpc_' . $rpc_id, get_current_user_id(), 30 );
 	}
 
-	wp_remote_post( admin_url( 'admin-ajax.php' ), $args );
+	$url = admin_url( 'admin-ajax.php' );
+
+	/**
+	 * Filter the URL to use for async jobs.
+	 *
+	 * @since  1.9.5
+	 * @author Grégory Viguier
+	 *
+	 * @param string $url An URL.
+	 * @param array  $args      An array of arguments passed to wp_remote_post().
+	 */
+	$url = apply_filters( 'imagify_async_job_url', $url, $args );
+
+	wp_remote_post( $url, $args );
 }
