@@ -52,6 +52,7 @@ class Imagify_Plugin {
 		Imagify_Cron_Library_Size::get_instance()->init();
 		Imagify_Cron_Rating::get_instance()->init();
 		Imagify_Cron_Sync_Files::get_instance()->init();
+		\Imagify\Auth\Basic::get_instance()->init();
 		\Imagify\Job\MediaOptimization::get_instance()->init();
 		\Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->init();
 
