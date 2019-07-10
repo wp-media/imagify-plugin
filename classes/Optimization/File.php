@@ -413,7 +413,7 @@ class File {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param  array $args      {
+	 * @param  array $args         {
 	 *     Optional. An array of arguments.
 	 *
 	 *     @type bool   $backup             False to prevent backup. True to follow the user's setting. A backup can't be forced.
@@ -424,7 +424,7 @@ class File {
 	 *     @type string $context            The context.
 	 *     @type int    $original_size      The file size, sent to the API.
 	 * }
-	 * @return array|\WP_Error   Optimized image data. A \WP_Error object on error.
+	 * @return \sdtClass|\WP_Error Optimized image data. A \WP_Error object on error.
 	 */
 	public function optimize( $args = [] ) {
 		$args = array_merge( [
