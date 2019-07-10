@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, webp
 Requires at least: 4.0.0
 Tested up to: 5.2.2
-Stable tag: 1.9.3
+Stable tag: 1.9.4
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -11,7 +11,7 @@ Dramatically reduce image file sizes without losing quality, make your website l
 
 Speed up your website with lighter images without losing quality.
 
-Imagify is the most advanced image compression tool, you can now use this power directly in WordPress.
+Imagify is the most advanced tool to optimize images. You can now use this power directly in WordPress.
 After enabling it, all your images including thumbnails will be automatically optimized when uploaded into WordPress. You can also use Imagify to convert WebP images for free.
 
 WooCommerce and NextGen Gallery compatible.
@@ -153,6 +153,19 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.4 - 2019/07/10 =
+* Improvement: if a webp image is larger than its non-webp version, it is now possible to not keep it. This can be done by using the filter `imagify_keep_large_webp`.
+* Improvement: compatibility with Pressable.
+* Improvement: renamed a php class to prevent some hosts to wrongly flag it as "suspicious" and trigger a fatal error.
+* Improvement: better compatibility with WP Real Media Library plugin.
+* Fix: rewrite rules for webp could not work on some servers.
+* Fix: when using `&lt;picture&gt;` tags for webp, some attributes could disappear if they were written on multiple lines.
+* Fix: the bulk method would not work in the NextGen Gallery list.
+* Fix: php notice `Trying to get property "namespace" for a non object`.
+
+= 1.9.3.1 - 2019/07/03 =
+* Fix: conflict with plugins using an ancient version of Composer.
+
 = 1.9.3 - 2019/06/17 =
 * Improvement: better compatibility with CDNs when displaying webp images with `&lt;picture&gt;` tags. There is now a new setting field to fill in the CDN URL in use.
 * Improvement: don’t use Heartbeat anymore. This speeds up the optimization process and prevents other plugins to break everything when they remove Heartbeat.

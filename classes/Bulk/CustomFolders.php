@@ -104,7 +104,7 @@ class CustomFolders extends AbstractBulk {
 				AND fi.status = 'success'
 				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )
 			ORDER BY fi.file_id DESC",
-			'%' . $wpdb->esc_like( '"full' . $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
 		) );
 
 		$wpdb->flush();
@@ -165,7 +165,7 @@ class CustomFolders extends AbstractBulk {
 				AND fi.status = 'success'
 				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )
 			ORDER BY fi.file_id DESC",
-			'%' . $wpdb->esc_like( '"full' . $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
 		) );
 	}
 

@@ -133,7 +133,7 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 				data.status = 'success'
 				AND data.data NOT LIKE %s
 			ORDER BY ngg.pid DESC",
-			'%' . $wpdb->esc_like( '"full' . $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
 		) );
 
 		$wpdb->flush();
@@ -187,7 +187,7 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 				data.status = 'success'
 				AND data.data NOT LIKE %s
 			ORDER BY ngg.pid DESC",
-			'%' . $wpdb->esc_like( '"full' . $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
 		) );
 	}
 
