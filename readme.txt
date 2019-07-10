@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, webp
 Requires at least: 4.0.0
 Tested up to: 5.2.2
-Stable tag: 1.9.3.1
+Stable tag: 1.9.4
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
