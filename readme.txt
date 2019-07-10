@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: compress image, images, performance, optimization, webp
 Requires at least: 4.0.0
 Tested up to: 5.2.2
-Stable tag: 1.9.3
+Stable tag: 1.9.3.1
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
@@ -11,7 +11,7 @@ Dramatically reduce image file sizes without losing quality, make your website l
 
 Speed up your website with lighter images without losing quality.
 
-Imagify is the most advanced image compression tool, you can now use this power directly in WordPress.
+Imagify is the most advanced tool to optimize images. You can now use this power directly in WordPress.
 After enabling it, all your images including thumbnails will be automatically optimized when uploaded into WordPress. You can also use Imagify to convert WebP images for free.
 
 WooCommerce and NextGen Gallery compatible.
@@ -153,6 +153,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.3.1 - 2019/07/03 =
+* Fix: conflict with plugins using an ancient version of Composer.
+
 = 1.9.3 - 2019/06/17 =
 * Improvement: better compatibility with CDNs when displaying webp images with `&lt;picture&gt;` tags. There is now a new setting field to fill in the CDN URL in use.
 * Improvement: don’t use Heartbeat anymore. This speeds up the optimization process and prevents other plugins to break everything when they remove Heartbeat.
