@@ -153,6 +153,16 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.4 - 2019/07/10 =
+* Improvement: if a webp image is larger than its non-webp version, it is now possible to not keep it. This can be done by using the filter `imagify_keep_large_webp`.
+* Improvement: compatibility with Pressable.
+* Improvement: renamed a php class to prevent some hosts to wrongly flag it as "suspicious" and trigger a fatal error.
+* Improvement: better compatibility with WP Real Media Library plugin.
+* Fix: rewrite rules for webp could not work on some servers.
+* Fix: when using `&lt;picture&gt;` tags for webp, some attributes could disappear if they were written on multiple lines.
+* Fix: the bulk method would not work in the NextGen Gallery list.
+* Fix: php notice `Trying to get property "namespace" for a non object`.
+
 = 1.9.3.1 - 2019/07/03 =
 * Fix: conflict with plugins using an ancient version of Composer.
 
