@@ -175,10 +175,17 @@ class WP extends AbstractBulk {
 	 * Get ids of all optimized media without webp versions.
 	 *
 	 * @since  1.9
+	 * @since  1.9.5 The method doesn't return the IDs directly anymore.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return array A list of media IDs.
+	 * @return array {
+	 *     @type array $ids    A list of media IDs.
+	 *     @type array $errors {
+	 *         @type array $no_file_path A list of media IDs.
+	 *         @type array $no_backup    A list of media IDs.
+	 *     }
+	 * }
 	 */
 	public function get_optimized_media_ids_without_webp() {
 		global $wpdb;
@@ -216,10 +223,18 @@ class WP extends AbstractBulk {
 
 		$wpdb->flush();
 		unset( $mime_types, $statuses, $webp_suffix );
-		$ids = array_filter( array_map( 'absint', $ids ) );
+
+		$ids  = array_filter( array_map( 'absint', $ids ) );
+		$data = [
+			'ids'    => [],
+			'errors' => [
+				'no_file_path' => [],
+				'no_backup'    => [],
+			],
+		];
 
 		if ( ! $ids ) {
-			return [];
+			return $data;
 		}
 
 		$metas = \Imagify_DB::get_metas( [
@@ -239,17 +254,18 @@ class WP extends AbstractBulk {
 		 */
 		do_action( 'imagify_bulk_generate_webp_before_file_existence_tests', $ids, $metas, 'wp' );
 
-		$data = [];
-
 		foreach ( $ids as $i => $id ) {
 			if ( empty( $metas['filenames'][ $id ] ) ) {
-				// Problem.
+				// Problem. Should not happen, thanks to the wpdb query.
+				$data['errors']['no_file_path'][] = $id;
 				continue;
 			}
 
 			$file_path = get_imagify_attached_file( $metas['filenames'][ $id ] );
 
-			if ( ! $file_path || ! $this->filesystem->exists( $file_path ) ) {
+			if ( ! $file_path ) {
+				// Main file not found.
+				$data['errors']['no_file_path'][] = $id;
 				continue;
 			}
 
@@ -257,10 +273,11 @@ class WP extends AbstractBulk {
 
 			if ( ! $this->filesystem->exists( $backup_path ) ) {
 				// No backup, no webp.
+				$data['errors']['no_backup'][] = $id;
 				continue;
 			}
 
-			$data[] = $id;
+			$data['ids'][] = $id;
 		} // End foreach().
 
 		return $data;
