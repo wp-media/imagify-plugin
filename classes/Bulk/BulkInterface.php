@@ -27,10 +27,17 @@ interface BulkInterface {
 	 * Get ids of all optimized media without webp versions.
 	 *
 	 * @since  1.9
+	 * @since  1.9.5 The method doesn't return the IDs directly anymore.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return array A list of media IDs.
+	 * @return array {
+	 *     @type array $ids    A list of media IDs.
+	 *     @type array $errors {
+	 *         @type array $no_file_path A list of media IDs.
+	 *         @type array $no_backup    A list of media IDs.
+	 *     }
+	 * }
 	 */
 	public function get_optimized_media_ids_without_webp();
 
