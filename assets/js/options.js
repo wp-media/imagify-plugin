@@ -566,7 +566,7 @@ window.imagify = window.imagify || {};
 			}
 
 			// Reset properties.
-			e.data.imagifyOptionsBulk.fetchQueue       = imagifyOptions.bulk.contexts;
+			e.data.imagifyOptionsBulk.fetchQueue       = imagifyOptions.bulk.contexts.slice();
 			e.data.imagifyOptionsBulk.queue            = [];
 			e.data.imagifyOptionsBulk.processingQueue  = [];
 			e.data.imagifyOptionsBulk.fetchError       = false;
@@ -910,6 +910,13 @@ window.imagify = window.imagify || {};
 					errorArgs = {
 						title: imagifyOptions.bulk.labels.nothingToDoTitle,
 						html:  imagifyOptions.bulk.labels.nothingToDoText,
+						type:  'info'
+					};
+				}
+				else if ( 'no-backup' === this.error ) {
+					errorArgs = {
+						title: imagifyOptions.bulk.labels.nothingToDoTitle,
+						html:  imagifyOptions.bulk.labels.nothingToDoNoBackupText,
 						type:  'info'
 					};
 				} else {

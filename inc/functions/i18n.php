@@ -107,6 +107,7 @@ function get_imagify_localize_script_translations( $context ) {
 						'processing'                     => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
 						'nothingToDoTitle'               => __( 'Hold on!', 'imagify' ),
 						'nothingToDoText'                => __( 'All your optimized images already have a webp version. Congratulations!', 'imagify' ),
+						'nothingToDoNoBackupText'        => __( 'Because the selected images did not have a backup copy, Imagify was unable to create webp versions.', 'imagify' ),
 						'error'                          => __( 'Error', 'imagify' ),
 						'ajaxErrorText'                  => __( 'The operation failed.', 'imagify' ),
 						'getUnoptimizedImagesErrorTitle' => __( 'Oops, There is something wrong!', 'imagify' ),
