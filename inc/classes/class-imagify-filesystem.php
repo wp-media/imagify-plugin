@@ -594,6 +594,50 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		return is_array( $exif ) ? $exif : array();
 	}
 
+	/**
+	 * Tell if a file is an animated gif.
+	 *
+	 * @since  1.9.5
+	 * @access public
+	 * @source https://www.php.net/manual/en/function.imagecreatefromgif.php#104473
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $file_path Path to the file.
+	 * @return bool|null         Null if the file cannot be read.
+	 */
+	public function is_animated_gif( $file_path ) {
+		if ( $this->path_info( $file_path, 'extension' ) !== 'gif' ) {
+			// Not a gif file.
+			return false;
+		}
+
+		$fh = @fopen( $file_path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
+
+		if ( ! $fh ) {
+			// Could not open the file.
+			return null;
+		}
+
+		/**
+		 * An animated gif contains multiple "frames", with each frame having a header made up of:
+		 * - a static 4-byte sequence (\x00\x21\xF9\x04),
+		 * - 4 variable bytes,
+		 * - a static 2-byte sequence (\x00\x2C) (some variants may use \x00\x21 ?).
+		 */
+		$count = 0;
+
+		// We read through the file til we reach the end of the file, or we've found at least 2 frame headers.
+		while ( ! feof( $fh ) && $count < 2 ) {
+			// Read 100kb at a time.
+			$chunk  = fread( $fh, 1024 * 100 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fread
+			$count += preg_match_all( '#\x00\x21\xF9\x04.{4}\x00(\x2C|\x21)#s', $chunk, $matches );
+		}
+
+		fclose( $fh ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+
+		return $count > 1;
+	}
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** WORK WITH PATHS ========================================================================= */
