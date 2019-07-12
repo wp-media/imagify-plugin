@@ -617,6 +617,11 @@ abstract class AbstractProcess implements ProcessInterface {
 						'<code>' . esc_html( $this->filesystem->make_path_relative( $file->get_path() ) ) . '</code>'
 					)
 				);
+			} elseif ( $webp && ! $this->can_create_webp_version( $file->get_path() ) ) {
+				$response = new \WP_Error(
+					'is_animated_gif',
+					__( 'This file is an animated gif: since Imagify does not support animated webp, webp creation for animated gif is disabled.', 'imagify' )
+				);
 			} elseif ( ! $this->filesystem->is_writable( $file->get_path() ) ) {
 				$response = new \WP_Error(
 					'file_not_writable',
@@ -1511,6 +1516,49 @@ abstract class AbstractProcess implements ProcessInterface {
 		$data   = maybe_serialize( $data['sizes'] );
 
 		return is_string( $data ) && strpos( $data, $needle );
+	}
+
+	/**
+	 * Tell if a webp version can be created for the given file.
+	 * Make sure the file is an image before using this method.
+	 *
+	 * @since  1.9.5
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param string $file_path Path to the file.
+	 * @return bool
+	 */
+	public function can_create_webp_version( $file_path ) {
+		if ( ! $file_path ) {
+			return false;
+		}
+
+		/**
+		 * Tell if a webp version can be created for the given file.
+		 * The file is an image.
+		 *
+		 * @since  1.9.5
+		 * @author Grégory Viguier
+		 *
+		 * @param bool   $can       True to create a webp version, false otherwise. Null by default.
+		 * @param string $file_path Path to the file.
+		 */
+		$can = apply_filters( 'imagify_pre_can_create_webp_version', null, $file_path );
+
+		if ( isset( $can ) ) {
+			return (bool) $can;
+		}
+
+		$is_animated_gif = $this->filesystem->is_animated_gif( $file_path );
+
+		if ( is_bool( $is_animated_gif ) ) {
+			// Ok if it’s not an animated gif.
+			return ! $is_animated_gif;
+		}
+
+		// At this point $is_animated_gif is null, which means the file cannot be read (yet).
+		return true;
 	}
 
 
