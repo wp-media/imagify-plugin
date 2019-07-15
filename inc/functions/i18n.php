@@ -130,7 +130,7 @@ function get_imagify_localize_script_translations( $context ) {
 			return $translations;
 
 		case 'pricing-modal':
-			return [
+			$translations = [
 				'labels' => [
 					'errorCouponAPI'   => __( 'Error with checking this coupon.', 'imagify' ),
 					/* translators: 1 is a percentage, 2 is a coupon code. */
@@ -138,6 +138,15 @@ function get_imagify_localize_script_translations( $context ) {
 					'errorPriceAPI'    => __( 'Something went wrong with getting our updated offers. Please retry later.', 'imagify' ),
 				],
 			];
+
+			if ( Imagify_Requirements::is_api_key_valid() ) {
+				$translations['userDataCache'] = [
+					'deleteAction' => 'imagify_delete_user_data_cache',
+					'deleteNonce'  => wp_create_nonce( 'imagify_delete_user_data_cache' ),
+				];
+			}
+
+			return $translations;
 
 		case 'twentytwenty':
 			$image = [
