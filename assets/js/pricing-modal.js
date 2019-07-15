@@ -1106,6 +1106,14 @@
 			checkout_datas.onetime = JSON.parse( $onetime_offer.attr( 'data-offer' ) );
 		}
 
+		// Clear user account cache.
+		if ( imagifyPricingModal.userDataCache ) {
+			$.post( ajaxurl, {
+				action:   imagifyPricingModal.userDataCache.deleteAction,
+				_wpnonce: imagifyPricingModal.userDataCache.deleteNonce
+			} );
+		}
+
 		// Change views to go to checkout/payment view.
 		imagifyModal.switchToView( imagifyModal.$paymentView );
 

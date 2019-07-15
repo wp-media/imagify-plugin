@@ -419,3 +419,17 @@ function imagify_cache_user() {
 
 	return $data;
 }
+
+/**
+ * Delete cached Imagify user data.
+ *
+ * @since  1.9.5
+ * @author Grégory Viguier
+ */
+function imagify_delete_cached_user() {
+	if ( imagify_is_active_for_network() ) {
+		delete_site_transient( 'imagify_user' );
+	} else {
+		delete_transient( 'imagify_user' );
+	}
+}

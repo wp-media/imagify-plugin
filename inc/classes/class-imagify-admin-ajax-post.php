@@ -69,6 +69,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		'imagify_get_images_counts',
 		'imagify_update_estimate_sizes',
 		'imagify_get_user_data',
+		'imagify_delete_user_data_cache',
 		// Various.
 		'nopriv_imagify_rpc',
 	];
@@ -1247,6 +1248,25 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		}
 
 		wp_send_json_success( $user );
+	}
+
+	/**
+	 * Delete the Imagify User data cache.
+	 *
+	 * @since  1.9.5
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_delete_user_data_cache_callback() {
+		imagify_check_nonce( 'imagify_delete_user_data_cache' );
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+		}
+
+		imagify_delete_cached_user();
+
+		wp_send_json_success();
 	}
 
 
