@@ -475,7 +475,7 @@ class Display {
 			$extensions = implode( '|', $extensions );
 		}
 
-		if ( ! preg_match( '@^(?<src>(?:https?:)?//.+\.(?<extension>' . $extensions . '))(?<query>\?.*)?$@i', $attributes[ $src_source ], $src ) ) {
+		if ( ! preg_match( '@^(?<src>(?:(?:https?:)?//|/).+\.(?<extension>' . $extensions . '))(?<query>\?.*)?$@i', $attributes[ $src_source ], $src ) ) {
 			// Not a supported image format.
 			return false;
 		}
@@ -603,6 +603,9 @@ class Display {
 		static $cdn_url;
 		static $domain_url;
 
+		/**
+		 * $url, $uploads_url, $root_url, and $cdn_url are passed through `set_url_scheme()` only to make sure `stripos()` doesn't fail over a stupid http/https difference.
+		 */
 		if ( ! isset( $uploads_url ) ) {
 			$uploads_url = set_url_scheme( $this->filesystem->get_upload_baseurl() );
 			$uploads_dir = $this->filesystem->get_upload_basedir( true );
@@ -610,23 +613,29 @@ class Display {
 			$root_dir    = $this->filesystem->get_site_root();
 			$cdn_url     = $this->get_cdn_source();
 			$cdn_url     = $cdn_url['url'] ? set_url_scheme( $cdn_url['url'] ) : false;
-			$domain_url  = false;
+			$domain_url  = wp_parse_url( $root_url );
 
-			if ( $cdn_url ) {
-				$domain_url = wp_parse_url( $root_url );
-
-				if ( ! empty( $domain_url['scheme'] ) && ! empty( $domain_url['host'] ) ) {
-					$domain_url = $domain_url['scheme'] . '://' . $domain_url['host'] . '/';
-				}
+			if ( ! empty( $domain_url['scheme'] ) && ! empty( $domain_url['host'] ) ) {
+				$domain_url = $domain_url['scheme'] . '://' . $domain_url['host'] . '/';
+			} else {
+				$domain_url = false;
 			}
+		}
+
+		// Get the right URL format.
+		if ( $domain_url && strpos( $url, '/' ) === 0 ) {
+			// URL like `/path/to/image.jpg.webp`.
+			$url = $domain_url . ltrim( $url, '/' );
 		}
 
 		$url = set_url_scheme( $url );
 
 		if ( $domain_url && stripos( $url, $cdn_url ) === 0 ) {
+			// CDN.
 			$url = str_ireplace( $cdn_url, $domain_url, $url );
 		}
 
+		// Return the path.
 		if ( stripos( $url, $uploads_url ) === 0 ) {
 			return str_ireplace( $uploads_url, $uploads_dir, $url );
 		}
