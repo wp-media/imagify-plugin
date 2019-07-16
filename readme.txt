@@ -1,15 +1,15 @@
 === Imagify - WebP & Image Compression ===
 Contributors: wp_media, GregLone
-Tags: compress image, images, performance, optimization, webp
+Tags: compress image, images, optimize, performance, webp
 Requires at least: 4.0.0
 Tested up to: 5.2.2
-Stable tag: 1.9.4
+Stable tag: 1.9.5
 
 Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
 
 == Description ==
 
-Speed up your website with lighter images without losing quality.
+Speed up your website with our image optimizer and get lighter images without losing quality.
 
 Imagify is the most advanced tool to optimize images. You can now use this power directly in WordPress.
 After enabling it, all your images including thumbnails will be automatically optimized when uploaded into WordPress. You can also use Imagify to convert WebP images for free.
@@ -18,7 +18,7 @@ WooCommerce and NextGen Gallery compatible.
 
 = What is Image Compression? =
 
-Learn more about image compression, check that: [https://imagify.io/images-compression](https://imagify.io/images-compression)
+Learn more about image compression, check that: [https://imagify.io/images-compression](https://imagify.io/images-compression).
 
 = Why use Imagify to optimize your images? =
 
@@ -35,7 +35,7 @@ Three level of compression are available:
 With the backup option, you can change your mind whenever you want by restoring your images to their original version or optimize them to another compression level.
 
 = HOW ABOUT WEBP IMAGES? =
-Now, for each image you optimize with the Imagify plugin, you’ll also get its **WebP version** (if you tick the option in the settings); in your Media library, this will result in the following image versions:
+Now, for each image you optimize with the Imagify plugin, you will also get its **WebP version** (if you tick the option in the settings); in your Media library, this will result in the following image versions:
 - full-sized optimized image,
 - full-sized WebP image,
 - optimized thumbnails,
@@ -104,7 +104,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 = Which formats can be optimized? =
 
-Imagify can optimize jpg, png and gif (whether animated or not) formats.
+Imagify can optimize images such as jpg, png and gif (whether animated or not) formats and for each image you optimize you also get its WebP version if you tick the option in the settings (except for animated gif).
 
 = Can I use the plugin with a free account? =
 
@@ -153,6 +153,13 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.5 - 2019/07/16 =
+* Improvement: Basic Authentication support. If it does not work automatically, you can still define the constants `IMAGIFY_AUTH_USER` and `IMAGIFY_AUTH_PASSWORD` in your `wp-config.php` file.
+* Improvement: webp images are not created for animated gif images by default anymore. Use the filter `imagify_pre_can_create_webp_version` if you still want to create an unanimated webp version of them.
+* Improvement: when creating webp images from the settings page, we made more clear when all the images are missing a backup copy.
+* Improvement: clear the 5 minutes data cache when buying quota from the plugin.
+* Improvement: when displaying webp images with the `&lt;picture&gt;` tag, allow to use relative URLs (starting with `/`).
+
 = 1.9.4 - 2019/07/10 =
 * Improvement: if a webp image is larger than its non-webp version, it is now possible to not keep it. This can be done by using the filter `imagify_keep_large_webp`.
 * Improvement: compatibility with Pressable.
