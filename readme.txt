@@ -1,6 +1,6 @@
 === Imagify - WebP & Image Compression ===
 Contributors: wp_media, GregLone
-Tags: compress image, images, performance, optimization, webp
+Tags: compress image, images, optimize, performance, webp
 Requires at least: 4.0.0
 Tested up to: 5.2.2
 Stable tag: 1.9.4
@@ -9,7 +9,7 @@ Dramatically reduce image file sizes without losing quality, make your website l
 
 == Description ==
 
-Speed up your website with lighter images without losing quality.
+Speed up your website with our image optimizer and get lighter images without losing quality.
 
 Imagify is the most advanced tool to optimize images. You can now use this power directly in WordPress.
 After enabling it, all your images including thumbnails will be automatically optimized when uploaded into WordPress. You can also use Imagify to convert WebP images for free.
@@ -104,7 +104,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 = Which formats can be optimized? =
 
-Imagify can optimize jpg, png and gif (whether animated or not) formats.
+Imagify can optimize images such as jpg, png and gif (whether animated or not) formats and for each image you optimize you also get its WebP version if you tick the option in the settings (except for animated gif).
 
 = Can I use the plugin with a free account? =
 
