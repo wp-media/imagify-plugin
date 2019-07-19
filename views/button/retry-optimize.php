@@ -21,7 +21,19 @@ $html_atts = $this->build_attributes( $data['atts'] );
 
 if ( ! empty( $data['error'] ) ) {
 	?>
-	<strong><?php echo esc_html( imagify_translate_api_message( $data['error'] ) ); ?></strong>
+	<strong>
+		<?php
+		echo wp_kses(
+			imagify_translate_api_message( $data['error'] ),
+			[
+				'br'     => true,
+				'code'   => true,
+				'em'     => true,
+				'strong' => true,
+			]
+		);
+		?>
+	</strong>
 	<br/>
 	<?php
 }
