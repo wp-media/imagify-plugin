@@ -741,6 +741,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$this->retry_button( $item );
 		$this->reoptimize_buttons( $item );
 		$this->generate_webp_versions_button( $item );
+		$this->delete_webp_versions_button( $item );
 		$this->restore_button( $item );
 	}
 
@@ -853,7 +854,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prints buttons to re-optimize the file to other levels.
+	 * Prints a button to generate webp versions if they are missing.
 	 *
 	 * @since  1.7
 	 * @access protected
@@ -863,6 +864,23 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 */
 	protected function generate_webp_versions_button( $item ) {
 		$button = get_imagify_attachment_generate_webp_versions_link( $item->process );
+
+		if ( $button ) {
+			echo $button . '<br/>';
+		}
+	}
+
+	/**
+	 * Prints a button to delete webp versions when the status is "already_optimized".
+	 *
+	 * @since  1.9.6
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param object $item The current item. It must contain at least a $process property.
+	 */
+	protected function delete_webp_versions_button( $item ) {
+		$button = get_imagify_attachment_delete_webp_versions_link( $item->process );
 
 		if ( $button ) {
 			echo $button . '<br/>';
