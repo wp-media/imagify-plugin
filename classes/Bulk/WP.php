@@ -44,7 +44,7 @@ class WP extends AbstractBulk {
 		] );
 		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"
-			SELECT p.ID
+			SELECT DISTINCT p.ID
 			FROM $wpdb->posts AS p
 				$nodata_join
 			LEFT JOIN $wpdb->postmeta AS mt1
@@ -63,7 +63,6 @@ class WP extends AbstractBulk {
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
 				$nodata_where
-			GROUP BY p.ID
 			ORDER BY
 				CASE mt1.meta_value
 					WHEN 'already_optimized' THEN 2
@@ -210,7 +209,7 @@ class WP extends AbstractBulk {
 				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_data' )
 			WHERE
 				p.post_mime_type IN ( $mime_types )
-				AND mt1.meta_value = 'success'
+				AND ( mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
 				AND mt2.meta_value NOT LIKE %s
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
@@ -314,7 +313,7 @@ class WP extends AbstractBulk {
 				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_data' )
 			WHERE
 				p.post_mime_type IN ( $mime_types )
-				AND mt1.meta_value = 'success'
+				AND ( mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
 				AND mt2.meta_value NOT LIKE %s
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
