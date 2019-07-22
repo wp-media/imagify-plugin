@@ -294,6 +294,11 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	if ( version_compare( $site_version, '1.8.2' ) < 0 ) {
 		Imagify_Options::get_instance()->set( 'partner_links', 1 );
 	}
+
+	// 1.9.6
+	if ( version_compare( $site_version, '1.9.6' ) < 0 ) {
+		\Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->clear_cache();
+	}
 }
 
 add_action( 'upgrader_process_complete', 'imagify_maybe_reset_opcache', 20, 2 );

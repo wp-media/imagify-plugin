@@ -1,6 +1,6 @@
 # Imagify Image Optimizer
 
-Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
+Optimize images in one click: reduce image file sizes, convert WebP, keep your images beautiful… and boost your loading time and your SEO!
 
 Speed up your website with our image optimizer and get lighter images without losing quality.
 

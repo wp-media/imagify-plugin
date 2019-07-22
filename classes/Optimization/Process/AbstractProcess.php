@@ -258,8 +258,20 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new \WP_Error( 'media_not_supported', __( 'This media is not supported.', 'imagify' ) );
 		}
 
-		if ( $this->get_data()->is_optimized() ) {
+		$data = $this->get_data();
+
+		if ( $data->is_optimized() ) {
 			return new \WP_Error( 'optimized', __( 'This media has already been optimized by Imagify.', 'imagify' ) );
+		}
+
+		if ( $data->is_already_optimized() && $this->has_webp() ) {
+			// If already optimized but has webp, delete webp versions and optimization data.
+			$data->delete_optimization_data();
+			$deleted = $this->delete_webp_files();
+
+			if ( is_wp_error( $deleted ) ) {
+				return new \WP_Error( 'webp_not_deleted', __( 'Previous webp files could not be deleted.', 'imagify' ) );
+			}
 		}
 
 		$sizes = $media->get_media_files();
@@ -444,7 +456,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @param  string $size               The media size.
 	 * @param  int    $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
-	 * @return \sdtClass|\WP_Error        Optimized image data. A \WP_Error object on error.
+	 * @return array|\WP_Error            Optimized image data. A \WP_Error object on error.
 	 */
 	public function optimize_size( $size, $optimization_level = null ) {
 		if ( ! $this->is_valid() ) { // Bail out.
@@ -1373,7 +1385,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		$data = $this->get_data();
 
-		if ( ! $data->is_optimized() ) {
+		if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {
 			return new \WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
 		}
 
@@ -1408,20 +1420,22 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * This doesn't delete the related optimization data.
 	 *
 	 * @since  1.9
+	 * @since  1.9.6 Return WP_Error or true.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param bool $keep_full Set to true to keep the full size.
+	 * @param  bool $keep_full Set to true to keep the full size.
+	 * @return bool|\WP_Error  True on success. A \WP_Error object on failure.
 	 */
 	public function delete_webp_files( $keep_full = false ) {
 		if ( ! $this->is_valid() ) {
-			return;
+			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
 		$media = $this->get_media();
 
 		if ( ! $media->is_image() ) {
-			return;
+			return new \WP_Error( 'media_not_an_image', __( 'This media is not an image.', 'imagify' ) );
 		}
 
 		$files = $media->get_media_files();
@@ -1431,14 +1445,33 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( ! $files ) {
-			return;
+			return true;
 		}
+
+		$error_count = 0;
 
 		foreach ( $files as $file ) {
 			if ( 0 === strpos( $file['mime-type'], 'image/' ) ) {
-				$this->delete_webp_file( $file['path'] );
+				$deleted = $this->delete_webp_file( $file['path'] );
+
+				if ( is_wp_error( $deleted ) ) {
+					++$error_count;
+				}
 			}
 		}
+
+		if ( $error_count ) {
+			return new \WP_Error(
+				'files_not_deleted',
+				sprintf(
+					/* translators: %s is a formatted number, don’t use %d. */
+					_n( '%s file could not be deleted.', '%s files could not be deleted.', $error_count, 'imagify' ),
+					number_format_i18n( $error_count )
+				)
+			);
+		}
+
+		return true;
 	}
 
 	/**
@@ -1446,22 +1479,65 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * This doesn't delete the related optimization data.
 	 *
 	 * @since  1.9
+	 * @since  1.9.6 Return WP_Error or true.
 	 * @access protected
 	 * @author Grégory Viguier
 	 *
-	 * @param string $file_path Path to the non-webp file.
+	 * @param  string $file_path Path to the non-webp file.
+	 * @return bool|\WP_Error    True on success. A \WP_Error object on failure.
 	 */
 	protected function delete_webp_file( $file_path ) {
 		if ( ! $file_path ) {
-			return;
+			return new \WP_Error( 'no_path', __( 'Path to non-webp file not provided.', 'imagify' ) );
 		}
 
 		$webp_file = new File( $file_path );
 		$webp_path = $webp_file->get_path_to_webp();
 
-		if ( $webp_path && $this->filesystem->is_writable( $webp_path ) && $this->filesystem->is_file( $webp_path ) ) {
-			$this->filesystem->delete( $webp_path, false, 'f' );
+		if ( ! $webp_path ) {
+			return new \WP_Error( 'no_webp_path', __( 'Could not get the path to the webp file.', 'imagify' ) );
 		}
+
+		if ( ! $this->filesystem->exists( $webp_path ) ) {
+			return true;
+		}
+
+		if ( ! $this->filesystem->is_writable( $webp_path ) ) {
+			return new \WP_Error(
+				'file_not_writable',
+				sprintf(
+					/* translators: %s is a file path. */
+					__( 'The file %s does not seem to be writable.', 'imagify' ),
+					'<code>' . esc_html( $this->filesystem->make_path_relative( $webp_path ) ) . '</code>'
+				)
+			);
+		}
+
+		if ( ! $this->filesystem->is_file( $webp_path ) ) {
+			return new \WP_Error(
+				'not_a_file',
+				sprintf(
+					/* translators: %s is a file path. */
+					__( 'This does not seem to be a file: %s.', 'imagify' ),
+					'<code>' . esc_html( $this->filesystem->make_path_relative( $webp_path ) ) . '</code>'
+				)
+			);
+		}
+
+		$deleted = $this->filesystem->delete( $webp_path, false, 'f' );
+
+		if ( ! $deleted ) {
+			return new \WP_Error(
+				'file_not_deleted',
+				sprintf(
+					/* translators: %s is a file path. */
+					__( 'The file %s could not be deleted.', 'imagify' ),
+					'<code>' . esc_html( $this->filesystem->make_path_relative( $webp_path ) ) . '</code>'
+				)
+			);
+		}
+
+		return true;
 	}
 
 	/**
@@ -1788,7 +1864,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * @param int    $level      The optimization level.
 		 * @param object $media_data The DataInterface instance of the media.
 		 */
-		$data = apply_filters( "imagify{$_unauthorized}_file_optimization_data", $data, $response, $size, $level, $this->get_data() );
+		$data = (array) apply_filters( "imagify{$_unauthorized}_file_optimization_data", $data, $response, $size, $level, $this->get_data() );
 
 		// Store.
 		$this->get_data()->update_size_optimization_data( $size, $data );

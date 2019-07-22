@@ -28,6 +28,7 @@
 }
 #wp-admin-bar-imagify-profile .imagify-progress {
 	height: 1.5em;
+	font-size: 1em;
 }
 .imagify-progress {
 	transition: width .3s;

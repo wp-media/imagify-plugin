@@ -24,6 +24,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 	$reoptimize_link          = get_imagify_attachment_reoptimize_link( $process );
 	$reoptimize_link         .= get_imagify_attachment_optimize_missing_thumbnails_link( $process );
 	$reoptimize_link         .= get_imagify_attachment_generate_webp_versions_link( $process );
+	$reoptimize_link         .= get_imagify_attachment_delete_webp_versions_link( $process );
 	$reoptimize_output        = $reoptimize_link ? $reoptimize_link : '';
 	$reoptimize_output_before = '<div class="imagify-datas-actions-links">';
 	$reoptimize_output_after  = '</div><!-- .imagify-datas-actions-links -->';
@@ -332,7 +333,9 @@ function get_imagify_attachment_generate_webp_versions_link( $process ) {
 		return '';
 	}
 
-	if ( ! $process->get_data()->is_optimized() ) {
+	$data = $process->get_data();
+
+	if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {
 		return '';
 	}
 
@@ -369,6 +372,52 @@ function get_imagify_attachment_generate_webp_versions_link( $process ) {
 	] );
 
 	return $output . '<br/>';
+}
+
+/**
+ * Get the link to delete webp versions when the status is "already_optimized".
+ *
+ * @since  1.9.6
+ * @author Grégory Viguier
+ *
+ * @param  ProcessInterface $process The optimization process object.
+ * @return string                    The output to print.
+ */
+function get_imagify_attachment_delete_webp_versions_link( $process ) {
+	if ( ! $process->is_valid() ) {
+		return '';
+	}
+
+	$media    = $process->get_media();
+	$context  = $media->get_context();
+	$media_id = $media->get_id();
+
+	if ( ! imagify_get_context( $context )->current_user_can( 'manual-restore', $media_id ) ) {
+		imagify_die();
+	}
+
+	$data = $process->get_data();
+
+	if ( ! $data->is_already_optimized() || ! $process->has_webp() ) {
+		return '';
+	}
+
+	$class = '';
+	$url   = get_imagify_admin_url( 'delete-webp-versions', [
+		'attachment_id' => $media_id,
+		'context'       => $context,
+	] );
+
+	if ( ! Imagify_Views::get_instance()->is_media_page() ) {
+		$class .= 'button-imagify-delete-webp';
+	}
+
+	return Imagify_Views::get_instance()->get_template( 'button/delete-webp', [
+		'url'  => $url,
+		'atts' => [
+			'class' => $class,
+		],
+	] );
 }
 
 /**

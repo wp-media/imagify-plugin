@@ -104,6 +104,9 @@ function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 		case 'generate-webp-versions':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_generate_webp_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-generate-webp-versions-' . $id . '-' . $context );
 
+		case 'delete-webp-versions':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_delete_webp_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-delete-webp-versions-' . $id . '-' . $context );
+
 		case 'optimize':
 		case 'manual-upload': // Deprecated.
 		case 'manual-optimize':
