@@ -57,7 +57,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 			$( '#doaction, #doaction2' ).on( 'click.imagify', this.processBulkAction );
 
 			// Optimize, restore, etc.
-			$document.on( 'click.imagify', '.button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-generate-webp, .button-imagify-restore, .button-imagify-refresh-status', this.processOptimization );
+			$document.on( 'click.imagify', '.button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-generate-webp, .button-imagify-delete-webp, .button-imagify-restore, .button-imagify-refresh-status', this.processOptimization );
 
 			$document.on( 'imagifybeat-send', this.addToImagifybeat );
 			$document.on( 'imagifybeat-tick', this.processImagifybeat );

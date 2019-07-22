@@ -108,7 +108,7 @@ class CustomFolders extends AbstractBulk {
 				ON ( fi.folder_id = fo.folder_id )
 			WHERE
 				fi.mime_type IN ( $mime_types )
-				AND fi.status = 'success'
+				AND ( fi.status = 'success' OR fi.status = 'already_optimized' )
 				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )
 			ORDER BY fi.file_id DESC",
 			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
@@ -178,9 +178,8 @@ class CustomFolders extends AbstractBulk {
 				ON ( fi.folder_id = fo.folder_id )
 			WHERE
 				fi.mime_type IN ( $mime_types )
-				AND fi.status = 'success'
-				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )
-			ORDER BY fi.file_id DESC",
+				AND ( fi.status = 'success' OR fi.status = 'already_optimized' )
+				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )",
 			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
 		) );
 	}

@@ -33,6 +33,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		'imagify_manual_reoptimize',
 		'imagify_optimize_missing_sizes',
 		'imagify_generate_webp_versions',
+		'imagify_delete_webp_versions',
 		'imagify_restore',
 		// Custom folders optimization.
 		'imagify_optimize_file',
@@ -235,6 +236,44 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 */
 	protected function generate_webp_versions( $media_id, $context ) {
 		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
+	}
+
+	/**
+	 * Delete webp images for media that are "already_optimize".
+	 *
+	 * @since  1.9.6
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param  int    $media_id The media ID.
+	 * @param  string $context  The context.
+	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
+	 */
+	protected function delete_webp_versions( $media_id, $context ) {
+		$process = imagify_get_optimization_process( $media_id, $context );
+
+		if ( ! $process->is_valid() ) {
+			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+		}
+
+		$data = $process->get_data();
+
+		if ( ! $data->is_already_optimized() ) {
+			return new \WP_Error( 'not_already_optimized', __( 'This media does not have the right optimization status.', 'imagify' ) );
+		}
+
+		if ( ! $process->has_webp() ) {
+			return true;
+		}
+
+		$data->delete_optimization_data();
+		$deleted = $process->delete_webp_files();
+
+		if ( is_wp_error( $deleted ) ) {
+			return new \WP_Error( 'webp_not_deleted', __( 'Previous webp files could not be deleted.', 'imagify' ) );
+		}
+
+		return true;
 	}
 
 	/**
@@ -564,6 +603,41 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		}
 
 		$result = $this->generate_webp_versions( $media_id, $context );
+
+		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
+
+		if ( is_wp_error( $result ) ) {
+			// Return an error message.
+			$output = $result->get_error_message();
+
+			wp_send_json_error( [ 'html' => $output ] );
+		}
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Generate webp images if they are missing.
+	 *
+	 * @since  1.9.6
+	 * @access public
+	 * @author Grégory Viguier
+	 */
+	public function imagify_delete_webp_versions_callback() {
+		$context  = $this->get_context();
+		$media_id = $this->get_media_id();
+
+		if ( ! $media_id || ! $context ) {
+			imagify_die( __( 'Invalid request', 'imagify' ) );
+		}
+
+		imagify_check_nonce( 'imagify-delete-webp-versions-' . $media_id . '-' . $context );
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'manual-restore', $media_id ) ) {
+			imagify_die();
+		}
+
+		$result = $this->delete_webp_versions( $media_id, $context );
 
 		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
 

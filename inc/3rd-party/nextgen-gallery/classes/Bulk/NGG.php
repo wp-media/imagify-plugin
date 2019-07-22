@@ -43,7 +43,7 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 		$data      = [];
 		$images    = $wpdb->get_results( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"
-			SELECT picture.pid as id, picture.filename, idata.optimization_level, idata.status, idata.data
+			SELECT DISTINCT picture.pid as id, picture.filename, idata.optimization_level, idata.status, idata.data
 			FROM $ngg_table as picture
 			LEFT JOIN $wpdb->ngg_imagify_data as idata
 			ON picture.pid = idata.pid
@@ -137,7 +137,7 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 			INNER JOIN $data_table AS data
 				ON ( ngg.pid = data.pid )
 			WHERE
-				data.status = 'success'
+				( data.status = 'success' OR data.status = 'already_optimized' )
 				AND data.data NOT LIKE %s
 			ORDER BY ngg.pid DESC",
 			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
@@ -205,9 +205,8 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 			INNER JOIN $data_table AS data
 				ON ( ngg.pid = data.pid )
 			WHERE
-				data.status = 'success'
-				AND data.data NOT LIKE %s
-			ORDER BY ngg.pid DESC",
+				( data.status = 'success' OR data.status = 'already_optimized' )
+				AND data.data NOT LIKE %s",
 			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
 		) );
 	}

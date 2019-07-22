@@ -239,12 +239,17 @@ interface ProcessInterface {
 
 	/**
 	 * Delete the webp images.
+	 * This doesn't delete the related optimization data.
 	 *
 	 * @since  1.9
+	 * @since  1.9.6 Return WP_Error or true.
 	 * @access public
 	 * @author Grégory Viguier
+	 *
+	 * @param  bool $keep_full Set to true to keep the full size.
+	 * @return bool|\WP_Error  True on success. A \WP_Error object on failure.
 	 */
-	public function delete_webp_files();
+	public function delete_webp_files( $keep_full = false );
 
 	/**
 	 * Tell if a thumbnail size is an "Imagify webp" size.

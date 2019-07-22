@@ -56,7 +56,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 			$document.on( 'click', '.imagify-datas-more-action a', this.toggleSlide );
 
 			// Optimize, restore, etc.
-			$document.on( 'click', '.button-imagify-restore, .button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-optimize-missing-sizes, .button-imagify-generate-webp', this.processOptimization );
+			$document.on( 'click', '.button-imagify-restore, .button-imagify-optimize, .button-imagify-manual-reoptimize, .button-imagify-optimize-missing-sizes, .button-imagify-generate-webp, .button-imagify-delete-webp', this.processOptimization );
 
 			$document.on( 'imagifybeat-send', this.addToImagifybeat );
 			$document.on( 'imagifybeat-tick', this.processImagifybeat );

@@ -207,15 +207,16 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 		if ( 'full' === $current_size ) {
 			if ( is_wp_error( $data ) ) {
 				// Don't go further if there is an error.
-				$item['task']  = 'after';
+				$item['sizes'] = [];
 				$item['error'] = $data;
-				return $item;
-			}
 
-			if ( ! $this->optimization_process->get_data()->is_optimized() ) {
-				// Don't go thurther if the full size has not the "success" status.
-				$item['task'] = 'after';
-				return $item;
+			} elseif ( 'already_optimized' === $data['status'] ) {
+				// Status is "already_optimized", try to create webp versions only.
+				$item['sizes'] = array_filter( $item['sizes'], [ $this->optimization_process, 'is_size_webp' ] );
+
+			} elseif ( 'success' !== $data['status'] ) {
+				// Don't go further if the full size has not the "success" status.
+				$item['sizes'] = [];
 			}
 		}
 
@@ -224,7 +225,7 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 			$item['task'] = 'after';
 		}
 
-		// Optimize the next file.
+		// Optimize the next file or go to the next task.
 		return $item;
 	}
 
