@@ -1,11 +1,11 @@
-=== Imagify - WebP & Image Compression ===
+=== Imagify – WebP & Image Compression and Optimization ===
 Contributors: wp_media, GregLone
-Tags: compress image, images, optimize, performance, webp
+Tags: optimize images, images, optimize, performance, webp
 Requires at least: 4.0.0
 Tested up to: 5.2.2
 Stable tag: 1.9.5
 
-Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth.
+Optimize images in one click: reduce image file sizes, convert WebP, keep your images beautiful… and boost your loading time and your SEO!
 
 == Description ==
 
@@ -158,7 +158,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Improvement: webp images are not created for animated gif images by default anymore. Use the filter `imagify_pre_can_create_webp_version` if you still want to create an unanimated webp version of them.
 * Improvement: when creating webp images from the settings page, we made more clear when all the images are missing a backup copy.
 * Improvement: clear the 5 minutes data cache when buying quota from the plugin.
-* Improvement: when displaying webp images with the `&lt;picture&gt;` tag, allow to use relative URLs (starting with `/`).
+* Improvement: when displaying webp images with the `<picture>` tag, allow to use relative URLs (starting with `/`).
 
 = 1.9.4 - 2019/07/10 =
 * Improvement: if a webp image is larger than its non-webp version, it is now possible to not keep it. This can be done by using the filter `imagify_keep_large_webp`.
@@ -166,7 +166,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Improvement: renamed a php class to prevent some hosts to wrongly flag it as "suspicious" and trigger a fatal error.
 * Improvement: better compatibility with WP Real Media Library plugin.
 * Fix: rewrite rules for webp could not work on some servers.
-* Fix: when using `&lt;picture&gt;` tags for webp, some attributes could disappear if they were written on multiple lines.
+* Fix: when using `<picture>` tags for webp, some attributes could disappear if they were written on multiple lines.
 * Fix: the bulk method would not work in the NextGen Gallery list.
 * Fix: php notice `Trying to get property "namespace" for a non object`.
 
@@ -174,7 +174,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 * Fix: conflict with plugins using an ancient version of Composer.
 
 = 1.9.3 - 2019/06/17 =
-* Improvement: better compatibility with CDNs when displaying webp images with `&lt;picture&gt;` tags. There is now a new setting field to fill in the CDN URL in use.
+* Improvement: better compatibility with CDNs when displaying webp images with `<picture>` tags. There is now a new setting field to fill in the CDN URL in use.
 * Improvement: don’t use Heartbeat anymore. This speeds up the optimization process and prevents other plugins to break everything when they remove Heartbeat.
 * Fix: a fatal error upon plugin deactivation.
 * Fix: an occasional fatal error preventing the optimization process to work.
