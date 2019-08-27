@@ -192,7 +192,7 @@ class Display {
 		 */
 		$attributes = apply_filters( 'imagify_picture_attributes', $attributes, $image );
 
-		$output = '<picture' . $this->build_attributes( $attributes ) . ">\n";
+		$output = '<picture' . $this->build_attributes( $attributes, 'picture' ) . ">\n";
 		/**
 		 * Allow to add more <source> tags to the <picture> tag.
 		 *
@@ -273,7 +273,7 @@ class Display {
 		 */
 		$attributes = apply_filters( 'imagify_picture_source_attributes', $attributes, $image );
 
-		return '<source' . $this->build_attributes( $attributes ) . "/>\n";
+		return '<source' . $this->build_attributes( $attributes, 'source' ) . "/>\n";
 	}
 
 	/**
@@ -310,7 +310,7 @@ class Display {
 		 */
 		$attributes = apply_filters( 'imagify_picture_img_attributes', $attributes, $image );
 
-		return '<img' . $this->build_attributes( $attributes ) . "/>\n";
+		return '<img' . $this->build_attributes( $attributes, 'img' ) . "/>\n";
 	}
 
 	/**
@@ -323,15 +323,27 @@ class Display {
 	 * @param  array $attributes A list of attribute pairs.
 	 * @return string            HTML attributes.
 	 */
-	protected function build_attributes( $attributes ) {
+	protected function build_attributes( $attributes, $type = false ) {
 		if ( ! $attributes || ! is_array( $attributes ) ) {
 			return '';
 		}
 
 		$out = '';
+		$css = array();
 
 		foreach ( $attributes as $attribute => $value ) {
 			$out .= ' ' . $attribute . '="' . esc_attr( $value ) . '"';
+			
+			if( $attribute === "width" || $attribute === "height" ) { $css[] = $attribute . ':' . $value .'px'; }
+			
+		}
+		
+		if( $type && $type === "picture" && !empty($css) ) {
+			
+			$css = implode(';', $css);
+			
+			$out .= ' style="' . $css . ';"';
+			
 		}
 
 		return $out;
