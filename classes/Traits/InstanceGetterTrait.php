@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * This is temporary, until we get a DI container.
  *
  * @since  1.9
- * @since  1.9.4 Renamed FakeSingletonTrait into InstanceGetterTrait.
+ * @since  1.9.4 Renamed into InstanceGetterTrait.
  * @author Grégory Viguier
  */
 trait InstanceGetterTrait {
