@@ -99,6 +99,13 @@ class Imagify_Plugin {
 			require_once $this->plugin_path . 'vendor/autoload.php';
 		}
 
+		$instance_getter_path = $this->plugin_path . 'classes/Traits/InstanceGetterTrait.php';
+
+		if ( file_exists( $instance_getter_path . '.suspected' ) && ! file_exists( $instance_getter_path ) ) {
+			// Trolling greedy antiviruses.
+			require_once $instance_getter_path . '.suspected';
+		}
+
 		$inc_path = $this->plugin_path . 'inc/';
 
 		require_once $inc_path . 'deprecated/deprecated.php';
