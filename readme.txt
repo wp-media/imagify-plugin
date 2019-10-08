@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: optimize images, images, optimize, performance, webp
 Requires at least: 4.0.0
 Tested up to: 5.2.2
-Stable tag: 1.9.6
+Stable tag: 1.9.7
 
 Optimize images in one click: reduce image file sizes, convert WebP, keep your images beautiful… and boost your loading time and your SEO!
 
@@ -153,6 +153,11 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.7 - 2019/10/08 =
+* Improvement: prevent greedy antiviruses from crashing the website by renaming our highly dangerous php file with a ".suspected" suffix.
+* Improvement: on the settings page, display the "Save & Go to Bulk Optimizer" button only if the user has the ability to bulk optimize.
+* Fix: display the "Welcome" banner correctly when it is shown on the WP Rocket’s settings page.
+
 = 1.9.6 - 2019/07/22 =
 * Improvement: now images that are "already optimized" can also get webp versions.
 * Fix: progress bar height in the admin bar for Chrome and Safari.
