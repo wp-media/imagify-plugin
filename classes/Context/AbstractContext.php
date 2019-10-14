@@ -64,16 +64,6 @@ abstract class AbstractContext implements ContextInterface {
 	protected $thumbnail_sizes;
 
 	/**
-	 * Tell if the optimization process is allowed resize in this context.
-	 *
-	 * @var    bool
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected $can_resize;
-
-	/**
 	 * Tell if the optimization process is allowed to backup in this context.
 	 *
 	 * @var    bool
@@ -167,7 +157,7 @@ abstract class AbstractContext implements ContextInterface {
 	 * @return bool
 	 */
 	public function can_resize() {
-		return $this->can_resize;
+		return $this->get_resizing_threshold() > 0;
 	}
 
 	/**
