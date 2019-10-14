@@ -124,7 +124,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 		if ( ! $is_library_page ) {
 			$output .= '<input id="imagify-original-src" type="hidden" value="' . esc_url( $media->get_backup_url() ) . '">';
 			$output .= '<input id="imagify-original-size" type="hidden" value="' . $data->get_original_size() . '">';
-			$output .= '<input id="imagify-full-src" type="hidden" value="' . esc_url( $media->get_original_url() ) . '">';
+			$output .= '<input id="imagify-full-src" type="hidden" value="' . esc_url( $media->get_fullsize_url() ) . '">';
 
 			if ( $media->is_image() ) {
 				$dimensions = $media->get_dimensions();

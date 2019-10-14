@@ -237,7 +237,7 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 		 * The optimized full-sized file is kept and renamed, and will be put back in place at the end of the optimization process.
 		 */
 		$filesystem    = \Imagify_Filesystem::get_instance();
-		$file_path     = $media->get_raw_original_path();
+		$file_path     = $media->get_raw_fullsize_path();
 		$tmp_file_path = static::get_temporary_file_path( $file_path );
 
 		if ( $filesystem->exists( $file_path ) ) {
@@ -258,7 +258,7 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 	 * @param int $media_id Media ID.
 	 */
 	protected function put_optimized_file_back( $media_id ) {
-		$file_path     = $this->get_process( $media_id )->get_media()->get_raw_original_path();
+		$file_path     = $this->get_process( $media_id )->get_media()->get_raw_fullsize_path();
 		$tmp_file_path = static::get_temporary_file_path( $file_path );
 		$filesystem    = \Imagify_Filesystem::get_instance();
 
