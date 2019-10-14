@@ -44,6 +44,7 @@
 	"autoload": {
 		"psr-4": {
 			"Imagify\\": "classes/",
+			"Imagify\\Deprecated\\Traits\\": "inc/deprecated/Traits/",
 			"Imagify\\ThirdParty\\AS3CF\\": "inc/3rd-party/amazon-s3-and-cloudfront/classes/",
 			"Imagify\\ThirdParty\\EnableMediaReplace\\": "inc/3rd-party/enable-media-replace/classes/",
 			"Imagify\\ThirdParty\\FormidablePro\\": "inc/3rd-party/formidable-pro/classes/",
