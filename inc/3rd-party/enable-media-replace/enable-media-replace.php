@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
-if ( function_exists( 'enable_media_replace' ) ) :
+if ( function_exists( 'enable_media_replace' ) || class_exists( '\\EnableMediaReplace\\EnableMediaReplacePlugin' ) ) :
 
 	class_alias( '\\Imagify\\ThirdParty\\EnableMediaReplace\\Main', '\\Imagify_Enable_Media_Replace' );
 
