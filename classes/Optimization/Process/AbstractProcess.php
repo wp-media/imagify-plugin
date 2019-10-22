@@ -1249,7 +1249,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			);
 		}
 
-		$resize_width = $this->get_option( 'resize_larger_w' );
+		$resize_width = $media->get_context_instance()->get_resizing_threshold();
 
 		if ( $resize_width >= $dimensions['width'] ) {
 			// No need to resize.
