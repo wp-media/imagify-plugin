@@ -970,7 +970,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		/**
 		 * Delete the webp versions.
 		 * If the full size file and the original file are not the same, the full size is considered like a thumbnail.
-		 * In that case we must also delete the webp file assocoated to the full size.
+		 * In that case we must also delete the webp file associated to the full size.
 		 */
 		$keep_full_webp = $media->get_raw_original_path() === $media->get_raw_fullsize_path();
 		$this->delete_webp_files( $keep_full_webp );
