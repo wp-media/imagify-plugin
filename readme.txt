@@ -154,7 +154,7 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 
 == Changelog ==
 = 1.9.8 - 2019/10/24 =
-* Improvement: add filter, imagify_mime_types, to set/unset accepted mime types
+* Improvement: add filter, imagify_mime_types, to unset accepted mime types
 
 = 1.9.7 - 2019/10/08 =
 * Improvement: prevent greedy antiviruses from crashing the website by renaming our highly dangerous php file with a ".suspected" suffix.

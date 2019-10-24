@@ -13,6 +13,13 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 function imagify_get_mime_types( $type = null ) {
 	$mimes = array();
 
+	$accepted_mime_types = array(
+		'jpg|jpeg|jpe',
+		'png',
+		'gif',
+		'pdf'
+	);
+
 	if ( 'not-image' !== $type ) {
 		$mimes = array(
 			'jpg|jpeg|jpe' => 'image/jpeg',
