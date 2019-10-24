@@ -153,6 +153,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.8 - 2019/10/24 =
+* Improvement: add filter, imagify_mime_types, to set/unset accepted mime types
+
 = 1.9.7 - 2019/10/08 =
 * Improvement: prevent greedy antiviruses from crashing the website by renaming our highly dangerous php file with a ".suspected" suffix.
 * Improvement: on the settings page, display the "Save & Go to Bulk Optimizer" button only if the user has the ability to bulk optimize.
