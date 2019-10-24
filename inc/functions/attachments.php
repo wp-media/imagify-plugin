@@ -11,14 +11,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @return array        The mime types.
  */
 function imagify_get_mime_types( $type = null ) {
-	$mimes = array();
-
 	$accepted_mime_types = array(
 		'jpg|jpeg|jpe',
 		'png',
 		'gif',
 		'pdf'
 	);
+
+	$mimes = array();
 
 	if ( 'not-image' !== $type ) {
 		$mimes = array(
@@ -32,7 +32,14 @@ function imagify_get_mime_types( $type = null ) {
 		$mimes['pdf'] = 'application/pdf';
 	}
 
-	$mimes = apply_filters( 'imagify_mime_types', $mimes );
+	$mimes     = apply_filters( 'imagify_mime_types', $mimes );
+	$mime_keys = array_keys( $mimes );
+
+	foreach ( $mime_keys as $mime_key ) {
+		if ( ! in_array( $mime_key, $accepted_mime_types ) ) {
+			unset( $mimes[ $mime_key ] );
+		}
+	}
 
 	return $mimes;
 }
