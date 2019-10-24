@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 /**
  * Trait containing deprecated methods of the class \Imagify\Media\CustomFolders.
  *
- * @since  1.9.7
+ * @since  1.9.8
  * @author Grégory Viguier
  */
 trait CustomFoldersDeprecatedTrait {
@@ -15,7 +15,7 @@ trait CustomFoldersDeprecatedTrait {
 	 * Get the original media's URL.
 	 *
 	 * @since  1.9
-	 * @since  1.9.7 Deprecated
+	 * @since  1.9.8 Deprecated
 	 * @access public
 	 * @author Grégory Viguier
 	 * @deprecated
@@ -23,7 +23,7 @@ trait CustomFoldersDeprecatedTrait {
 	 * @return string|bool The file URL. False on failure.
 	 */
 	public function get_original_url() {
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.9.7', '( new \Imagify\Media\CustomFolders( $id ) )->get_fullsize_url()' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.9.8', '( new \Imagify\Media\CustomFolders( $id ) )->get_fullsize_url()' );
 
 		if ( ! $this->is_valid() ) {
 			return false;
