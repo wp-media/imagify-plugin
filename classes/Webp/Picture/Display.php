@@ -225,17 +225,12 @@ class Display {
 		$srcset_source = ! empty( $image['srcset_attribute'] ) ? $image['srcset_attribute'] : $image['src_attribute'] . 'set';
 		$attributes    = [
 			'type'         => 'image/webp',
-			$srcset_source => [
-				$image['src']['webp_url'],
-			],
+			$srcset_source => [],
 		];
 
 		if ( ! empty( $image['srcset'] ) ) {
 			foreach ( $image['srcset'] as $srcset ) {
 				if ( empty( $srcset['webp_url'] ) ) {
-					continue;
-				}
-				if ( $srcset['webp_url'] === $image['src']['webp_url'] ) {
 					continue;
 				}
 
