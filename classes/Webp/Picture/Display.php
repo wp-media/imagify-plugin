@@ -168,6 +168,8 @@ class Display {
 	protected function build_picture_tag( $image ) {
 		$to_remove = [
 			'alt'              => '',
+			'height'           => '',
+			'width'            => '',
 			'data-lazy-src'    => '',
 			'data-src'         => '',
 			'src'              => '',
@@ -290,11 +292,9 @@ class Display {
 	protected function build_img_tag( $image ) {
 		$to_remove = [
 			'class'  => '',
-			'height' => '',
 			'id'     => '',
 			'style'  => '',
 			'title'  => '',
-			'width'  => '',
 		];
 
 		$attributes = array_diff_key( $image['attributes'], $to_remove );
