@@ -630,7 +630,7 @@ class Display {
 
 		$url = set_url_scheme( $url );
 
-		if ( $domain_url && stripos( $url, $cdn_url ) === 0 ) {
+		if ( $cdn_url && $domain_url && stripos( $url, $cdn_url ) === 0 ) {
 			// CDN.
 			$url = str_ireplace( $cdn_url, $domain_url, $url );
 		}
