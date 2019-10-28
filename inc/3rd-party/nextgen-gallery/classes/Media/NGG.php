@@ -180,7 +180,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 	/**
 	 * Get the URL of the media’s full size file.
 	 *
-	 * @since  1.9.7
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -201,7 +201,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 	/**
 	 * Get the path to the media’s full size file, even if the file doesn't exist.
 	 *
-	 * @since  1.9.7
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *

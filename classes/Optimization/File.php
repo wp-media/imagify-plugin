@@ -173,7 +173,7 @@ class File {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Resize an image if it is bigger than the maximum width defined in the settings.
+	 * Resize (and rotate) an image if it is bigger than the maximum width provided.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -186,7 +186,7 @@ class File {
 	 *     @type int $width  The image width.
 	 *     @type int $height The image height.
 	 * }
-	 * @param  int   $max_width Maximum width defined in the settings.
+	 * @param  int   $max_width Maximum width to resize to.
 	 * @return string|WP_Error  Path the the resized image. A WP_Error object on failure.
 	 */
 	public function resize( $dimensions = [], $max_width = 0 ) {
@@ -194,6 +194,13 @@ class File {
 
 		if ( is_wp_error( $can_be_processed ) ) {
 			return $can_be_processed;
+		}
+
+		if ( ! $max_width ) {
+			return new \WP_Error(
+				'no_resizing_threshold',
+				__( 'No threshold provided for resizing.', 'imagify' )
+			);
 		}
 
 		if ( ! $this->is_image() ) {
@@ -219,23 +226,48 @@ class File {
 			$orientation = isset( $exif['Orientation'] ) ? (int) $exif['Orientation'] : 1;
 
 			switch ( $orientation ) {
+				case 2:
+					// Flip horizontally.
+					$editor->flip( true, false );
+					break;
 				case 3:
-					$editor->rotate( 180 );
+					// Rotate 180 degrees or flip horizontally and vertically.
+					// Flipping seems faster/uses less resources.
+					$editor->flip( true, true );
+					break;
+				case 4:
+					// Flip vertically.
+					$editor->flip( false, true );
+					break;
+				case 5:
+					// Rotate 90 degrees counter-clockwise and flip vertically.
+					$result = $editor->rotate( 90 );
+
+					if ( ! is_wp_error( $result ) ) {
+						$editor->flip( false, true );
+					}
 					break;
 				case 6:
-					$editor->rotate( -90 );
+					// Rotate 90 degrees clockwise (270 counter-clockwise).
+					$editor->rotate( 270 );
+					break;
+				case 7:
+					// Rotate 90 degrees counter-clockwise and flip horizontally.
+					$result = $editor->rotate( 90 );
+
+					if ( ! is_wp_error( $result ) ) {
+						$editor->flip( true, false );
+					}
 					break;
 				case 8:
+					// Rotate 90 degrees counter-clockwise.
 					$editor->rotate( 90 );
+					break;
 			}
 		}
 
 		if ( ! $dimensions ) {
 			$dimensions = $this->get_dimensions();
-		}
-
-		if ( ! $max_width ) {
-			$max_width = $this->get_option( 'resize_larger_w' );
 		}
 
 		// Prevent removal of the exif data when resizing (only works with Imagick).

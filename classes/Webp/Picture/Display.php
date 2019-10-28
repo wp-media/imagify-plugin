@@ -168,6 +168,8 @@ class Display {
 	protected function build_picture_tag( $image ) {
 		$to_remove = [
 			'alt'              => '',
+			'height'           => '',
+			'width'            => '',
 			'data-lazy-src'    => '',
 			'data-src'         => '',
 			'src'              => '',
@@ -225,17 +227,12 @@ class Display {
 		$srcset_source = ! empty( $image['srcset_attribute'] ) ? $image['srcset_attribute'] : $image['src_attribute'] . 'set';
 		$attributes    = [
 			'type'         => 'image/webp',
-			$srcset_source => [
-				$image['src']['webp_url'],
-			],
+			$srcset_source => [],
 		];
 
 		if ( ! empty( $image['srcset'] ) ) {
 			foreach ( $image['srcset'] as $srcset ) {
 				if ( empty( $srcset['webp_url'] ) ) {
-					continue;
-				}
-				if ( $srcset['webp_url'] === $image['src']['webp_url'] ) {
 					continue;
 				}
 
@@ -290,11 +287,9 @@ class Display {
 	protected function build_img_tag( $image ) {
 		$to_remove = [
 			'class'  => '',
-			'height' => '',
 			'id'     => '',
 			'style'  => '',
 			'title'  => '',
-			'width'  => '',
 		];
 
 		$attributes = array_diff_key( $image['attributes'], $to_remove );
@@ -630,7 +625,7 @@ class Display {
 
 		$url = set_url_scheme( $url );
 
-		if ( $domain_url && stripos( $url, $cdn_url ) === 0 ) {
+		if ( $cdn_url && $domain_url && stripos( $url, $cdn_url ) === 0 ) {
 			// CDN.
 			$url = str_ireplace( $cdn_url, $domain_url, $url );
 		}

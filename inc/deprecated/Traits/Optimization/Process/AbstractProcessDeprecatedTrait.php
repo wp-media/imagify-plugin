@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 /**
  * Trait containing deprecated methods of the class \Imagify\Optimization\Process\AbstractProcess.
  *
- * @since  1.9.7
+ * @since
  * @author Grégory Viguier
  */
 trait AbstractProcessDeprecatedTrait {
@@ -15,7 +15,7 @@ trait AbstractProcessDeprecatedTrait {
 	 * Get the File instance.
 	 *
 	 * @since  1.9
-	 * @since  1.9.7 Deprecated
+	 * @since   Deprecated
 	 * @access public
 	 * @author Grégory Viguier
 	 * @deprecated
@@ -27,7 +27,7 @@ trait AbstractProcessDeprecatedTrait {
 		$class_name = explode( '\\', trim( $full_class, '\\' ) );
 		$class_name = end( $class_name );
 
-		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.9.7', '( new \Imagify\Optimization\Process\\' . $class_name . '( $id ) )->get_fullsize_file()' );
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '', '( new \Imagify\Optimization\Process\\' . $class_name . '( $id ) )->get_fullsize_file()' );
 
 		if ( isset( $this->file ) ) {
 			return $this->file;

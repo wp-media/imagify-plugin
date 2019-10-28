@@ -38,7 +38,7 @@ class AS3 implements PushCDNInterface {
 	 * Tell if we’re playing in WP 5.3’s garden.
 	 *
 	 * @var    bool
-	 * @since  1.9.7
+	 * @since  1.9.8
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
@@ -495,7 +495,7 @@ class AS3 implements PushCDNInterface {
 	/**
 	 * Tell if we’re playing in WP 5.3’s garden.
 	 *
-	 * @since  1.9.7
+	 * @since  1.9.8
 	 * @access protected
 	 * @author Grégory Viguier
 	 *
