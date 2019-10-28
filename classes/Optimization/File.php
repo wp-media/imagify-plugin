@@ -173,7 +173,7 @@ class File {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Resize an image if it is bigger than the maximum width defined in the settings.
+	 * Resize an image if it is bigger than the maximum width provided.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -186,7 +186,7 @@ class File {
 	 *     @type int $width  The image width.
 	 *     @type int $height The image height.
 	 * }
-	 * @param  int   $max_width Maximum width defined in the settings.
+	 * @param  int   $max_width Maximum width to resize to.
 	 * @return string|WP_Error  Path the the resized image. A WP_Error object on failure.
 	 */
 	public function resize( $dimensions = [], $max_width = 0 ) {
@@ -194,6 +194,13 @@ class File {
 
 		if ( is_wp_error( $can_be_processed ) ) {
 			return $can_be_processed;
+		}
+
+		if ( ! $max_width ) {
+			return new \WP_Error(
+				'no_resizing_threshold',
+				__( 'No threshold provided for resizing.', 'imagify' )
+			);
 		}
 
 		if ( ! $this->is_image() ) {
@@ -232,10 +239,6 @@ class File {
 
 		if ( ! $dimensions ) {
 			$dimensions = $this->get_dimensions();
-		}
-
-		if ( ! $max_width ) {
-			$max_width = $this->get_option( 'resize_larger_w' );
 		}
 
 		// Prevent removal of the exif data when resizing (only works with Imagick).

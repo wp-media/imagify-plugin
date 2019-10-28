@@ -179,7 +179,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * Get the File instance of the original file.
 	 *
-	 * @since  1.9.7
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -202,7 +202,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * Get the File instance of the full size file.
 	 *
-	 * @since  1.9.7
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -970,7 +970,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		/**
 		 * Delete the webp versions.
 		 * If the full size file and the original file are not the same, the full size is considered like a thumbnail.
-		 * In that case we must also delete the webp file assocoated to the full size.
+		 * In that case we must also delete the webp file associated to the full size.
 		 */
 		$keep_full_webp = $media->get_raw_original_path() === $media->get_raw_fullsize_path();
 		$this->delete_webp_files( $keep_full_webp );
@@ -1249,7 +1249,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			);
 		}
 
-		$resize_width = $this->get_option( 'resize_larger_w' );
+		$resize_width = $media->get_context_instance()->get_resizing_threshold();
 
 		if ( $resize_width >= $dimensions['width'] ) {
 			// No need to resize.
