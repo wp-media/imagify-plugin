@@ -526,9 +526,9 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	public function column_title( $item ) {
 		$item  = $this->maybe_set_item_folder( $item );
 		$media = $item->process->get_media();
-		$url   = $media->get_original_url();
+		$url   = $media->get_fullsize_url();
 		$base  = ! empty( $item->folder_path ) ? Imagify_Files_Scan::remove_placeholder( $item->folder_path ) : '';
-		$title = $this->filesystem->make_path_relative( $media->get_original_path(), $base );
+		$title = $this->filesystem->make_path_relative( $media->get_fullsize_path(), $base );
 
 		list( $mime ) = explode( '/', $media->get_mime_type() );
 
@@ -946,7 +946,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		$file_path = $media->get_original_path();
+		$file_path = $media->get_fullsize_path();
 
 		if ( ! $file_path ) {
 			return;
@@ -963,7 +963,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		echo $this->views->get_template( 'button/compare-images', [
 			'url'          => $backup_url,
 			'backup_url'   => $backup_url,
-			'original_url' => $media->get_original_url(),
+			'original_url' => $media->get_fullsize_url(),
 			'media_id'     => $media->get_id(),
 			'width'        => $dimensions['width'],
 			'height'       => $dimensions['height'],

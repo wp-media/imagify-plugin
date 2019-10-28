@@ -214,8 +214,8 @@ class WP extends AbstractProcess {
 		$metadata          = wp_get_attachment_metadata( $media_id );
 		$metadata['sizes'] = ! empty( $metadata['sizes'] ) && is_array( $metadata['sizes'] ) ? $metadata['sizes'] : [];
 
-		$destination_dir = $this->filesystem->dir_path( $media->get_raw_original_path() );
-		$file            = new File( $media->get_backup_path() );
+		$destination_dir = $this->filesystem->dir_path( $media->get_raw_fullsize_path() );
+		$backup_file     = new File( $media->get_backup_path() );
 		$without_errors  = [];
 		$has_new_data    = false;
 
@@ -225,7 +225,7 @@ class WP extends AbstractProcess {
 			$thumbnail_data['path'] = $destination_dir . $thumbnail_data['file'];
 
 			if ( ! $this->filesystem->exists( $thumbnail_data['path'] ) ) {
-				$result = $file->create_thumbnail( $thumbnail_data );
+				$result = $backup_file->create_thumbnail( $thumbnail_data );
 
 				if ( is_array( $result ) ) {
 					// New file.

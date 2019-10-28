@@ -23,6 +23,16 @@ class WP extends AbstractContext {
 	protected $context = 'wp';
 
 	/**
+	 * Images max width for this context. This is used when resizing.
+	 *
+	 * @var    int
+	 * @since  1.9.8
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $resizing_threshold;
+
+	/**
 	 * Get the thumbnail sizes for this context, except the full size.
 	 *
 	 * @since  1.9
@@ -50,22 +60,27 @@ class WP extends AbstractContext {
 	}
 
 	/**
-	 * Tell if the optimization process is allowed resize in this context.
+	 * Get images max width for this context. This is used when resizing.
+	 * 0 means to not resize.
 	 *
-	 * @since  1.9
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @return bool
+	 * @return int
 	 */
-	public function can_resize() {
-		if ( isset( $this->can_resize ) ) {
-			return $this->can_resize;
+	public function get_resizing_threshold() {
+		if ( isset( $this->resizing_threshold ) ) {
+			return $this->resizing_threshold;
 		}
 
-		$this->can_resize = get_imagify_option( 'resize_larger' ) && get_imagify_option( 'resize_larger_w' ) > 0;
+		if ( ! get_imagify_option( 'resize_larger' ) ) {
+			$this->resizing_threshold = 0;
+		} else {
+			$this->resizing_threshold = max( 0, get_imagify_option( 'resize_larger_w' ) );
+		}
 
-		return $this->can_resize;
+		return $this->resizing_threshold;
 	}
 
 	/**

@@ -194,7 +194,7 @@ class Imagify_Custom_Folders {
 		}
 
 		if ( ! $args['file_path'] && $args['file_id'] ) {
-			$args['file_path'] = $process->get_media()->get_original_path();
+			$args['file_path'] = $process->get_media()->get_fullsize_path();
 		}
 
 		if ( ! $args['backup_path'] && $args['file_path'] ) {
@@ -254,7 +254,7 @@ class Imagify_Custom_Folders {
 
 		$filesystem = imagify_get_filesystem();
 		$media      = $process->get_media();
-		$file_path  = $media->get_original_path();
+		$file_path  = $media->get_fullsize_path();
 		$mime_type  = $filesystem->get_mime_type( $file_path );
 		$is_image   = $mime_type && strpos( $mime_type, 'image/' ) === 0;
 		$webp_path  = $is_image ? imagify_path_to_webp( $file_path ) : false;

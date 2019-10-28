@@ -89,7 +89,7 @@ interface PushCDNInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param  string $file_name Name of the file. Leave empty for the full size file.
+	 * @param  string $file_name Name of the file. Leave empty for the full size file. Use 'original' to get the path to the original file.
 	 * @return string            Path to the file.
 	 */
 	public function get_file_path( $file_name = false );

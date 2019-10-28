@@ -164,7 +164,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 		$wp_webp_data      = $wp_data->get_size_data( $webp_size_name );
 
 		// Get the path to the webp image if it exists.
-		$wp_full_path_webp = $wp_process->get_file()->get_path_to_webp();
+		$wp_full_path_webp = $wp_process->get_fullsize_file()->get_path_to_webp();
 
 		if ( $wp_full_path_webp && ! $filesystem->exists( $wp_full_path_webp ) ) {
 			$wp_full_path_webp = false;
@@ -202,7 +202,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 		if ( $wp_full_path_webp && $wp_webp_data ) {
 			// We have the file and the data.
 			// Copy the file.
-			$ngg_full_file      = new File( $ngg_media->get_raw_original_path() );
+			$ngg_full_file      = new File( $ngg_media->get_raw_fullsize_path() );
 			$ngg_full_path_webp = $ngg_full_file->get_path_to_webp(); // Destination.
 
 			if ( $ngg_full_path_webp ) {

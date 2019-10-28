@@ -153,7 +153,7 @@ class CustomFolders extends AbstractData {
 			$old_data['status']             = $data['status'];
 			$old_data['modified']           = 0;
 
-			$file_path = $this->get_media()->get_original_path();
+			$file_path = $this->get_media()->get_fullsize_path();
 
 			if ( $file_path ) {
 				$old_data['hash'] = md5_file( $file_path );
@@ -263,7 +263,7 @@ class CustomFolders extends AbstractData {
 		$imagify_columns = $column_defaults;
 
 		// Also set the new file hash.
-		$file_path = $this->get_media()->get_original_path();
+		$file_path = $this->get_media()->get_fullsize_path();
 
 		if ( $file_path ) {
 			$imagify_columns['hash'] = md5_file( $file_path );

@@ -88,7 +88,7 @@ function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 	$actions['imagify-compare'] = Imagify_Views::get_instance()->get_template( 'button/compare-images', [
 		'url'          => get_edit_post_link( $media->get_id() ) . '#imagify-compare',
 		'backup_url'   => $media->get_backup_url(),
-		'original_url' => $media->get_original_url(),
+		'original_url' => $media->get_fullsize_url(),
 		'media_id'     => $media->get_id(),
 		'width'        => $dimensions['width'],
 		'height'       => $dimensions['height'],
