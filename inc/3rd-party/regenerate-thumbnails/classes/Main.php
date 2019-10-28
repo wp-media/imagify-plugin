@@ -57,6 +57,11 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 			return;
 		}
 
+		if ( function_exists( 'wp_get_original_image_path' ) ) {
+			// Nothing to do with WP 5.3+, auto-optimization does everything by itself \o/.
+			return;
+		}
+
 		add_filter( 'rest_dispatch_request',                [ $this, 'maybe_init_attachment' ], 4, 4 );
 		add_filter( 'wp_generate_attachment_metadata',      [ $this, 'launch_async_optimization' ], IMAGIFY_INT_MAX - 30, 2 );
 		add_action( 'imagify_after_' . static::HOOK_SUFFIX, [ $this, 'after_regenerate_thumbnails' ], 8, 2 );
