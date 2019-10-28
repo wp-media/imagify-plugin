@@ -254,7 +254,7 @@ abstract class AbstractMedia implements MediaInterface {
 	/**
 	 * Get the path to the media’s full size file if the file exists.
 	 *
-	 * @since  1.9.7
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *

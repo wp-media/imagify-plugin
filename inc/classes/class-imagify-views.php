@@ -160,7 +160,7 @@ class Imagify_Views {
 		$wp_context = imagify_get_context( 'wp' );
 
 		// Sub-menu item: bulk optimization.
-		add_media_page( __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), $wp_context->get_capacity( 'bulk-optimize' ), $this->get_bulk_page_slug(), array( $this, 'display_bulk_page' ) );
+		add_media_page( __( 'Bulk Optimization', 'imagify' ), __( 'Bulk Optimization', 'imagify' ), $wp_context->get_capacity( 'bulk-optimize' ), $this->get_bulk_page_slug(), [ $this, 'display_bulk_page' ] );
 
 		if ( imagify_is_active_for_network() ) {
 			return;
@@ -172,16 +172,16 @@ class Imagify_Views {
 		if ( imagify_can_optimize_custom_folders() ) {
 			// Sub-menu item: custom folders list.
 			$cf_context = imagify_get_context( 'custom-folders' );
-			$screen_id  = add_media_page( __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), $cf_context->current_user_can( 'optimize' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+			$screen_id  = add_media_page( __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), $cf_context->get_capacity( 'optimize' ), $this->get_files_page_slug(), [ $this, 'display_files_list' ] );
 
 			if ( $screen_id ) {
 				// Load the data for this page.
-				add_action( 'load-' . $screen_id, array( $this, 'load_files_list' ) );
+				add_action( 'load-' . $screen_id, [ $this, 'load_files_list' ] );
 			}
 		}
 
 		// Sub-menu item: settings.
-		add_options_page( 'Imagify', 'Imagify', $wp_context->get_capacity( 'manage' ), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
+		add_options_page( 'Imagify', 'Imagify', $wp_context->get_capacity( 'manage' ), $this->get_settings_page_slug(), [ $this, 'display_settings_page' ] );
 	}
 
 	/**

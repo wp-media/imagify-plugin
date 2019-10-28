@@ -49,7 +49,7 @@ interface ProcessInterface {
 	/**
 	 * Get the File instance of the original file.
 	 *
-	 * @since  1.9.7
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
@@ -60,7 +60,7 @@ interface ProcessInterface {
 	/**
 	 * Get the File instance of the full size file.
 	 *
-	 * @since  1.9.7
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
