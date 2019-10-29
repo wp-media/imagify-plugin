@@ -118,7 +118,7 @@ class Imagify_Auto_Optimization {
 			remove_filter( 'wp_generate_attachment_metadata',      [ $this, 'allow_auto_optimization_when_generating_thumbnails' ], $prio );
 			remove_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $prio );
 			// Upload failure handling.
-			remove_action( 'wp_ajax_media_create_image_subsizes',  [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], 5 );
+			remove_action( 'wp_ajax_media_create_image_subsizes',  [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 );
 		}
 
 		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
