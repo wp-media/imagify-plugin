@@ -107,7 +107,7 @@ class DynamicThumbnails {
 				continue;
 			}
 
-			$sizes = array_unique( $sizes, true );
+			$sizes = array_unique( $sizes );
 
 			foreach ( $sizes as $i => $size ) {
 				$size_status = $data->get_size_data( $size, 'success' );
