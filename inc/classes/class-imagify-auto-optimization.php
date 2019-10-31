@@ -34,6 +34,16 @@ class Imagify_Auto_Optimization {
 	protected $attachments = [];
 
 	/**
+	 * The ID of the attachment that failed to be uploaded.
+	 *
+	 * @var    int
+	 * @since  1.9.8
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $upload_failure_id = 0;
+
+	/**
 	 * Used to prevent an auto-optimization locally.
 	 *
 	 * @var    array
@@ -42,6 +52,16 @@ class Imagify_Auto_Optimization {
 	 * @author Grégory Viguier
 	 */
 	private static $prevented = [];
+
+	/**
+	 * Used to prevent an auto-optimization internally.
+	 *
+	 * @var    array
+	 * @since  1.9.8
+	 * @access private
+	 * @author Grégory Viguier
+	 */
+	private static $prevented_internally = [];
 
 	/**
 	 * Init.
@@ -66,6 +86,8 @@ class Imagify_Auto_Optimization {
 			add_filter( 'big_image_size_threshold',             [ $this, 'prevent_auto_optimization_when_generating_thumbnails' ], $prio, 4 );
 			add_filter( 'wp_generate_attachment_metadata',      [ $this, 'allow_auto_optimization_when_generating_thumbnails' ], $prio, 2 );
 			add_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $prio, 2 );
+			// Upload failure recovering.
+			add_action( 'wp_ajax_media-create-image-subsizes',  [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 ); // Before WP’s hook (priority 1).
 		}
 
 		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
@@ -83,6 +105,7 @@ class Imagify_Auto_Optimization {
 	public function remove_hooks() {
 		$prio = IMAGIFY_INT_MAX - 30;
 
+		// Automatic optimization tunel.
 		remove_action( 'add_attachment',                                 [ $this, 'store_upload_ids' ], $prio );
 		remove_filter( 'wp_update_attachment_metadata',                  [ $this, 'store_ids_to_optimize' ], $prio );
 		remove_action( 'updated_post_meta',                              [ $this, 'do_auto_optimization_after_meta_update' ], $prio );
@@ -94,8 +117,11 @@ class Imagify_Auto_Optimization {
 			remove_filter( 'big_image_size_threshold',             [ $this, 'prevent_auto_optimization_when_generating_thumbnails' ], $prio );
 			remove_filter( 'wp_generate_attachment_metadata',      [ $this, 'allow_auto_optimization_when_generating_thumbnails' ], $prio );
 			remove_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $prio );
+			// Upload failure handling.
+			remove_action( 'wp_ajax_media_create_image_subsizes',  [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 );
 		}
 
+		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
 		remove_action( 'imagify_before_update_wp_media_data_dimensions', [ __CLASS__, 'prevent_optimization' ], 5 );
 		remove_action( 'imagify_after_update_wp_media_data_dimensions',  [ __CLASS__, 'allow_optimization' ], 5 );
 	}
@@ -393,6 +419,11 @@ class Imagify_Auto_Optimization {
 		unset( $this->attachments[ $attachment_id ] );
 	}
 
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** WP 5.3+ HOOKS =========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
 	/**
 	 * With WP 5.3+, prevent auto-optimization inside wp_generate_attachment_metadata() because it triggers a wp_update_attachment_metadata() for each thumbnail size.
 	 *
@@ -409,7 +440,7 @@ class Imagify_Auto_Optimization {
 	 * @return int                   The threshold value in pixels.
 	 */
 	public function prevent_auto_optimization_when_generating_thumbnails( $threshold, $imagesize, $file, $attachment_id ) {
-		static::prevent_optimization( $attachment_id );
+		static::prevent_optimization_internally( $attachment_id );
 		return $threshold;
 	}
 
@@ -426,8 +457,98 @@ class Imagify_Auto_Optimization {
 	 * @return array                An array of attachment meta data.
 	 */
 	public function allow_auto_optimization_when_generating_thumbnails( $metadata, $attachment_id ) {
-		static::allow_optimization( $attachment_id );
+		static::allow_optimization_internally( $attachment_id );
 		return $metadata;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** HOOKS FOR WP 5.3+’S UPLOAD FAILURE RECOVERING =========================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * With WP 5.3+, prevent auto-optimization when WP tries to create thumbnails after an upload error, because it triggers wp_update_attachment_metadata() for each thumbnail size.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @see    wp_ajax_media_create_image_subsizes()
+	 * @see    wp_update_image_subsizes()
+	 * @author Grégory Viguier
+	 */
+	public function prevent_auto_optimization_when_recovering_from_upload_failure() {
+		if ( ! check_ajax_referer( 'media-form', false, false ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'upload_files' ) ) {
+			return;
+		}
+
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'auto-optimize' ) ) {
+			return;
+		}
+
+		$attachment_id = ! empty( $_POST['attachment_id'] ) ? (int) $_POST['attachment_id'] : 0;
+
+		if ( ! $attachment_id ) {
+			return;
+		}
+
+		if ( ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+			return;
+		}
+
+		$this->upload_failure_id = $attachment_id;
+
+		static::prevent_optimization_internally( $attachment_id );
+
+		// Auto-optimization will be done on shutdown.
+		ob_start( [ $this, 'maybe_do_auto_optimization_after_recovering_from_upload_failure' ] );
+	}
+
+	/**
+	 * Maybe launch auto-optimization after recovering from an upload failure, when all thumbnails are created.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @see    wp_ajax_media_create_image_subsizes()
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $content Buffer’s content.
+	 * @return string          Buffer’s content.
+	 */
+	public function maybe_do_auto_optimization_after_recovering_from_upload_failure( $content ) {
+		if ( empty( $content ) ) {
+			return $content;
+		}
+
+		if ( ! $this->upload_failure_id ) {
+			// Uh?
+			return $content;
+		}
+
+		if ( ! get_post( $this->upload_failure_id ) ) {
+			return $content;
+		}
+
+		$json = @json_decode( $content );
+
+		if ( empty( $json->success ) ) {
+			return $content;
+		}
+
+		$attachment_id = $this->upload_failure_id;
+		$metadata      = wp_get_attachment_metadata( $attachment_id );
+
+		$this->upload_failure_id         = 0;
+		$this->uploads[ $attachment_id ] = 1; // New upload.
+
+		static::allow_optimization_internally( $attachment_id );
+
+		// Launch the process.
+		$this->store_ids_to_optimize( $metadata, $attachment_id );
+
+		return $content;
 	}
 
 
@@ -493,6 +614,32 @@ class Imagify_Auto_Optimization {
 	 * @return bool
 	 */
 	public static function is_optimization_prevented( $attachment_id ) {
-		return ! empty( self::$prevented[ $attachment_id ] );
+		return ! empty( self::$prevented[ $attachment_id ] ) || ! empty( self::$prevented_internally[ $attachment_id ] );
+	}
+
+	/**
+	 * Prevent an auto-optimization internally.
+	 *
+	 * @since  1.9.8
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param int $attachment_id Current attachment ID.
+	 */
+	protected static function prevent_optimization_internally( $attachment_id ) {
+		self::$prevented_internally[ $attachment_id ] = 1;
+	}
+
+	/**
+	 * Allow an auto-optimization internally.
+	 *
+	 * @since  1.9.8
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @param int $attachment_id Current attachment ID.
+	 */
+	protected static function allow_optimization_internally( $attachment_id ) {
+		unset( self::$prevented_internally[ $attachment_id ] );
 	}
 }
