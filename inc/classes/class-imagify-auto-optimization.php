@@ -515,7 +515,7 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Maybe launch auto-optimization after recovering from an upload failure, when all thumbnails are created.
 	 *
-	 * @since  1.9
+	 * @since  1.9.8
 	 * @access public
 	 * @see    wp_ajax_media_create_image_subsizes()
 	 * @author Grégory Viguier
