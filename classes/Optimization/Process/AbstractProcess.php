@@ -405,6 +405,9 @@ abstract class AbstractProcess implements ProcessInterface {
 					if ( 'image/webp' === $files[ $size_name ]['mime-type'] ) {
 						continue;
 					}
+					if ( in_array( $size_name . static::WEBP_SUFFIX, $sizes, true ) ) {
+						continue;
+					}
 
 					array_unshift( $sizes, $size_name . static::WEBP_SUFFIX );
 				}
@@ -436,6 +439,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			}
 		}
 
+		$sizes              = array_unique( $sizes );
 		$optimization_level = $this->sanitize_optimization_level( $optimization_level );
 
 		/**
@@ -462,7 +466,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 */
 		MediaOptimization::get_instance()->push_to_queue( [
 			'id'                 => $media->get_id(),
-			'sizes'              => array_unique( $sizes ),
+			'sizes'              => $sizes,
 			'optimization_level' => $optimization_level,
 			'process_class'      => get_class( $this ),
 			'data'               => $args,
