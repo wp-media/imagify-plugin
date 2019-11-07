@@ -214,7 +214,9 @@ class WP extends AbstractMedia {
 			require_once ABSPATH . 'wp-admin/includes/image.php';
 		}
 
-		$metadata = wp_generate_attachment_metadata( $this->get_id(), $this->get_raw_original_path() );
+		// Store the path to the current full size file before generating the thumbnails.
+		$old_full_size_path = $this->get_raw_fullsize_path();
+		$metadata           = wp_generate_attachment_metadata( $this->get_id(), $this->get_raw_original_path() );
 
 		if ( empty( $metadata['file'] ) ) {
 			// Σ(ﾟДﾟ).
@@ -228,7 +230,6 @@ class WP extends AbstractMedia {
 		 * WP 5.3+ will rename the full size file if the resizing threshold has changed (not the same as the one used to generate it previously).
 		 * This will force WP to keep the previous file name.
 		 */
-		$old_full_size_path      = $this->get_raw_fullsize_path();
 		$old_full_size_file_name = $this->filesystem->file_name( $old_full_size_path );
 		$new_full_size_file_name = $this->filesystem->file_name( $metadata['file'] );
 

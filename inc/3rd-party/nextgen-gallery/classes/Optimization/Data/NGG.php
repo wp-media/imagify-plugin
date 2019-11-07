@@ -69,6 +69,11 @@ class NGG extends \Imagify\Optimization\Data\AbstractData {
 		$data['status'] = $row['status'];
 		$data['level']  = $row['optimization_level'];
 		$data['level']  = is_numeric( $data['level'] ) ? (int) $data['level'] : false;
+		$data['stats']  = [
+			'original_size'  => 0,
+			'optimized_size' => 0,
+			'percent'        => 0,
+		];
 
 		if ( ! empty( $row['data']['sizes'] ) && is_array( $row['data']['sizes'] ) ) {
 			$data['sizes'] = $row['data']['sizes'];
@@ -139,7 +144,6 @@ class NGG extends \Imagify\Optimization\Data\AbstractData {
 		$old_data = array_merge( $this->get_reset_data(), $this->get_row() );
 
 		$old_data['data']['sizes'] = ! empty( $old_data['data']['sizes'] ) && is_array( $old_data['data']['sizes'] ) ? $old_data['data']['sizes'] : [];
-		$old_data['data']['stats'] = ! empty( $old_data['data']['stats'] ) && is_array( $old_data['data']['stats'] ) ? $old_data['data']['stats'] : [];
 
 		if ( 'full' === $size ) {
 			/**
@@ -185,6 +189,48 @@ class NGG extends \Imagify\Optimization\Data\AbstractData {
 		}
 
 		$this->delete_row();
+	}
+
+	/**
+	 * Delete the optimization data for the given sizes.
+	 * If all sizes are removed, all optimization data is deleted.
+	 * Status and level are not modified nor removed if the "full" size is removed. This leaves the media in a Schrödinger state.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param array $sizes A list of sizes to remove.
+	 */
+	public function delete_sizes_optimization_data( array $sizes ) {
+		if ( ! $sizes || ! $this->is_valid() ) {
+			return;
+		}
+
+		$data = array_merge( $this->get_reset_data(), $this->get_row() );
+
+		$data['data']['sizes'] = ! empty( $data['data']['sizes'] ) && is_array( $data['data']['sizes'] ) ? $data['data']['sizes'] : [];
+
+		if ( ! $data['data']['sizes'] ) {
+			return;
+		}
+
+		$remaining_sizes_data = array_diff_key( $data['data']['sizes'], array_flip( $sizes ) );
+
+		if ( ! $remaining_sizes_data ) {
+			// All sizes have been removed: delete everything.
+			$this->delete_optimization_data();
+			return;
+		}
+
+		if ( count( $remaining_sizes_data ) === count( $data['data']['sizes'] ) ) {
+			// Nothing has been removed.
+			return;
+		}
+
+		$data['data']['sizes'] = $remaining_sizes_data;
+
+		$this->update_row( $data );
 	}
 
 	/**

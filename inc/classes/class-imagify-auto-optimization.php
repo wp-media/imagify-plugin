@@ -84,7 +84,7 @@ class Imagify_Auto_Optimization {
 		if ( version_compare( $wp_version, '5.3-alpha1' ) >= 0 ) {
 			// WP 5.3+.
 			add_filter( 'big_image_size_threshold',             [ $this, 'prevent_auto_optimization_when_generating_thumbnails' ], $prio, 4 );
-			add_filter( 'wp_generate_attachment_metadata',      [ $this, 'allow_auto_optimization_when_generating_thumbnails' ], $prio, 2 );
+			add_filter( 'wp_generate_attachment_metadata',      [ $this, 'allow_auto_optimization_when_generating_thumbnails' ], $prio, 3 );
 			add_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $prio, 2 );
 			// Upload failure recovering.
 			add_action( 'wp_ajax_media-create-image-subsizes',  [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 ); // Before WP’s hook (priority 1).
@@ -452,11 +452,17 @@ class Imagify_Auto_Optimization {
 	 * @see    $this->prevent_auto_optimization_when_generating_thumbnails()
 	 * @author Grégory Viguier
 	 *
-	 * @param  array $metadata      An array of attachment meta data.
-	 * @param  int   $attachment_id Current attachment ID.
-	 * @return array                An array of attachment meta data.
+	 * @param  array  $metadata      An array of attachment meta data.
+	 * @param  int    $attachment_id Current attachment ID.
+	 * @param  string $context       Additional context. Can be 'create' when metadata was initially created for new attachment or 'update' when the metadata was updated.
+	 * @return array                 An array of attachment meta data.
 	 */
-	public function allow_auto_optimization_when_generating_thumbnails( $metadata, $attachment_id ) {
+	public function allow_auto_optimization_when_generating_thumbnails( $metadata, $attachment_id, $context = null ) {
+		if ( ! empty( $context ) && 'create' !== $context ) {
+			return $metadata;
+		}
+
+		// Fired from wp_generate_attachment_metadata(): $context is empty (WP < 5.3) or equal to 'create' (>P >= 5.3).
 		static::allow_optimization_internally( $attachment_id );
 		return $metadata;
 	}
