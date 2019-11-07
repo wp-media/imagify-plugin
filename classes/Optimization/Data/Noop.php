@@ -140,6 +140,19 @@ class Noop implements DataInterface {
 	public function delete_optimization_data() {}
 
 	/**
+	 * Delete the optimization data for the given sizes.
+	 * If all sizes are removed, all optimization data is deleted.
+	 * Status and level are not modified nor removed if the "full" size is removed. This leaves the media in a Schrödinger state.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param array $sizes A list of sizes to remove.
+	 */
+	public function delete_sizes_optimization_data( array $sizes ) {}
+
+	/**
 	 * Get the media's optimization level.
 	 *
 	 * @since  1.9
