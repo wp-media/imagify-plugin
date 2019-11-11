@@ -2,8 +2,8 @@
 Contributors: wp_media, GregLone
 Tags: optimize images, images, optimize, performance, webp
 Requires at least: 4.0.0
-Tested up to: 5.2.2
-Stable tag: 1.9.7
+Tested up to: 5.3
+Stable tag: 1.9.8
 
 Optimize images in one click: reduce image file sizes, convert WebP, keep your images beautiful… and boost your loading time and your SEO!
 
@@ -153,6 +153,15 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.8 - 2019/11/11 =
+* Improvement: compatibility with WordPress 5.3!
+* New: among other things, WordPress 5.3 automatically resizes large images on upload, using a predefined threshold value that can be changed only by filter (no setting fields are provided). Imagify’s "Resize larger images" setting field is now used to tweak this threshold.
+* Caution: to be able to work on WordPress 5.3, some adjustments have been made to our compatibility with Enable Media Replace and Regenerate Thumbnails. However, these plugins must be updated to work with WordPress 5.3: do not use them until then.
+* Improvement: moved the `width` and `height` attributes from the `<picture>` tag to the `<img>` tag to be valid HTML markup.
+* Fix: added a missing descriptor in `srcset` attribute when using `<picture>` tags to display webp images. This should also fix an issue with LasyLoad.
+* Fix: fixed an issue with the user capacity used for "Other Media" menu item.
+* Fix: a php notice `stripos(): Non-string needles will be interpreted as strings in the future.`.
+
 = 1.9.7 - 2019/10/08 =
 * Improvement: prevent greedy antiviruses from crashing the website by renaming our highly dangerous php file with a ".suspected" suffix.
 * Improvement: on the settings page, display the "Save & Go to Bulk Optimizer" button only if the user has the ability to bulk optimize.
