@@ -321,7 +321,7 @@ abstract class AbstractData implements DataInterface {
 
 		if ( $use_webp && ! empty( $data['sizes'][ $webp_size_name ]['success'] ) ) {
 			// Try with the webp file first.
-			$filepath = $media->get_raw_original_path();
+			$filepath = $media->get_raw_fullsize_path();
 			$filepath = $filepath ? imagify_path_to_webp( $filepath ) : false;
 
 			if ( ! $filepath || ! $this->filesystem->exists( $filepath ) ) {
@@ -331,7 +331,7 @@ abstract class AbstractData implements DataInterface {
 
 		if ( ! $filepath ) {
 			// No webp? The full size then.
-			$filepath = $media->get_original_path();
+			$filepath = $media->get_fullsize_path();
 		}
 
 		if ( ! $filepath ) {

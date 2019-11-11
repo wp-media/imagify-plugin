@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 abstract class AbstractProcess implements ProcessInterface {
+	use \Imagify\Deprecated\Traits\Optimization\Process\AbstractProcessDeprecatedTrait;
 
 	/**
 	 * The suffix used in the thumbnail size name.
@@ -176,15 +177,15 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Get the File instance.
+	 * Get the File instance of the original file.
 	 *
-	 * @since  1.9
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return File|false
 	 */
-	public function get_file() {
+	public function get_original_file() {
 		if ( isset( $this->file ) ) {
 			return $this->file;
 		}
@@ -193,6 +194,29 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( $this->get_media() ) {
 			$this->file = new File( $this->get_media()->get_raw_original_path() );
+		}
+
+		return $this->file;
+	}
+
+	/**
+	 * Get the File instance of the full size file.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return File|false
+	 */
+	public function get_fullsize_file() {
+		if ( isset( $this->file ) ) {
+			return $this->file;
+		}
+
+		$this->file = false;
+
+		if ( $this->get_media() ) {
+			$this->file = new File( $this->get_media()->get_raw_fullsize_path() );
 		}
 
 		return $this->file;
@@ -381,6 +405,9 @@ abstract class AbstractProcess implements ProcessInterface {
 					if ( 'image/webp' === $files[ $size_name ]['mime-type'] ) {
 						continue;
 					}
+					if ( in_array( $size_name . static::WEBP_SUFFIX, $sizes, true ) ) {
+						continue;
+					}
 
 					array_unshift( $sizes, $size_name . static::WEBP_SUFFIX );
 				}
@@ -402,7 +429,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 				if ( $webp ) {
 					// We have at least one webp conversion to do: create a temporary backup.
-					$backuped = $this->get_file()->backup( $media->get_raw_backup_path() );
+					$backuped = $this->get_original_file()->backup( $media->get_raw_backup_path() );
 
 					if ( $backuped ) {
 						// See \Imagify\Job\MediaOptimization->delete_backup().
@@ -412,6 +439,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			}
 		}
 
+		$sizes              = array_unique( $sizes );
 		$optimization_level = $this->sanitize_optimization_level( $optimization_level );
 
 		/**
@@ -438,7 +466,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 */
 		MediaOptimization::get_instance()->push_to_queue( [
 			'id'                 => $media->get_id(),
-			'sizes'              => array_unique( $sizes ),
+			'sizes'              => $sizes,
 			'optimization_level' => $optimization_level,
 			'process_class'      => get_class( $this ),
 			'data'               => $args,
@@ -652,6 +680,7 @@ abstract class AbstractProcess implements ProcessInterface {
 					$response = $file->optimize( [
 						'backup'             => ! $response['backuped'] && $this->can_backup( $size ),
 						'backup_path'        => $media->get_raw_backup_path(),
+						'backup_source'      => 'full' === $thumb_size ? $media->get_original_path() : null,
 						'optimization_level' => $optimization_level,
 						'convert'            => $webp ? 'webp' : '',
 						'keep_exif'          => $this->can_keep_exif( $size ),
@@ -847,22 +876,22 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		$this->lock( 'restoring' );
 
-		$backup_path = $media->get_backup_path();
-		$media_path  = $media->get_raw_original_path();
+		$backup_path   = $media->get_backup_path();
+		$original_path = $media->get_raw_original_path();
 
-		if ( $backup_path === $media_path ) {
+		if ( $backup_path === $original_path ) {
 			// Uh?!
 			$this->unlock();
 			return new \WP_Error( 'same_path', __( 'Image path and backup path are identical.', 'imagify' ) );
 		}
 
-		$dest_dir = $this->filesystem->dir_path( $media_path );
+		$dest_dir = $this->filesystem->dir_path( $original_path );
 
 		if ( ! $this->filesystem->exists( $dest_dir ) ) {
 			$this->filesystem->make_dir( $dest_dir );
 		}
 
-		$dest_file_is_writable = ! $this->filesystem->exists( $media_path ) || $this->filesystem->is_writable( $media_path );
+		$dest_file_is_writable = ! $this->filesystem->exists( $original_path ) || $this->filesystem->is_writable( $original_path );
 
 		if ( ! $dest_file_is_writable || ! $this->filesystem->is_writable( $dest_dir ) ) {
 			$this->unlock();
@@ -887,14 +916,14 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( ! is_wp_error( $response ) ) {
 			// Create the original image from the backup.
-			$response = $this->filesystem->copy( $backup_path, $media_path, true );
+			$response = $this->filesystem->copy( $backup_path, $original_path, true );
 
 			if ( ! $response ) {
 				// Failure.
 				$response = new \WP_Error( 'copy_failed', __( 'The backup file could not be copied over the optimized one.', 'imagify' ) );
 			} else {
 				// Backup successfully copied.
-				$this->filesystem->chmod_file( $media_path );
+				$this->filesystem->chmod_file( $original_path );
 
 				// Remove old optimization data.
 				$this->get_data()->delete_optimization_data();
@@ -904,7 +933,7 @@ abstract class AbstractProcess implements ProcessInterface {
 					$media->update_dimensions();
 
 					// Delete the webp version.
-					$this->delete_webp_file( $media_path );
+					$this->delete_webp_file( $original_path );
 
 					// Restore the thumbnails.
 					$response = $this->restore_thumbnails();
@@ -940,10 +969,18 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @return bool|WP_Error True on success. A \WP_Error instance on failure.
 	 */
 	protected function restore_thumbnails() {
-		// Delete the webp versions.
-		$this->delete_webp_files( true );
+		$media = $this->get_media();
+
+		/**
+		 * Delete the webp versions.
+		 * If the full size file and the original file are not the same, the full size is considered like a thumbnail.
+		 * In that case we must also delete the webp file associated to the full size.
+		 */
+		$keep_full_webp = $media->get_raw_original_path() === $media->get_raw_fullsize_path();
+		$this->delete_webp_files( $keep_full_webp );
+
 		// Generate new thumbnails.
-		return $this->get_media()->generate_thumbnails();
+		return $media->generate_thumbnails();
 	}
 
 
@@ -1144,7 +1181,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 */
 	protected function get_temporary_copy_path( $size, $sizes = null ) {
 		if ( 'full' === $size ) {
-			$path = $this->get_media()->get_raw_original_path();
+			$path = $this->get_media()->get_raw_fullsize_path();
 		} else {
 			if ( ! isset( $sizes ) ) {
 				$sizes = $this->get_media()->get_media_files();
@@ -1216,7 +1253,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			);
 		}
 
-		$resize_width = $this->get_option( 'resize_larger_w' );
+		$resize_width = $media->get_context_instance()->get_resizing_threshold();
 
 		if ( $resize_width >= $dimensions['width'] ) {
 			// No need to resize.
@@ -1242,7 +1279,8 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( $this->can_backup( $size ) ) {
-			$backuped = $file->backup( $media->get_raw_backup_path() );
+			$source   = 'full' === $size ? $media->get_original_path() : null;
+			$backuped = $file->backup( $media->get_raw_backup_path(), $source );
 
 			if ( is_wp_error( $backuped ) ) {
 				// The backup failed.

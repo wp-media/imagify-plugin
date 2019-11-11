@@ -10,6 +10,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class NGG extends \Imagify\Media\AbstractMedia {
+	use \Imagify\Deprecated\Traits\Media\NGGDeprecatedTrait;
 
 	/**
 	 * Context (where the media "comes from").
@@ -151,15 +152,41 @@ class NGG extends \Imagify\Media\AbstractMedia {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the original media's URL.
+	 * Get the original file path, even if the file doesn't exist.
 	 *
 	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
+	 * @return string|bool The file path. False on failure.
+	 */
+	public function get_raw_original_path() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( $this->get_cdn() ) {
+			return $this->get_cdn()->get_file_path( 'original' );
+		}
+
+		return ! empty( $this->image->imagePath ) ? $this->image->imagePath : false;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** FULL SIZE FILE ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the URL of the media’s full size file.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
 	 * @return string|bool The file URL. False on failure.
 	 */
-	public function get_original_url() {
+	public function get_fullsize_url() {
 		if ( ! $this->is_valid() ) {
 			return false;
 		}
@@ -172,15 +199,15 @@ class NGG extends \Imagify\Media\AbstractMedia {
 	}
 
 	/**
-	 * Get the original media's path.
+	 * Get the path to the media’s full size file, even if the file doesn't exist.
 	 *
-	 * @since  1.9
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string|bool The file path. False on failure.
 	 */
-	public function get_raw_original_path() {
+	public function get_raw_fullsize_path() {
 		if ( ! $this->is_valid() ) {
 			return false;
 		}
@@ -357,18 +384,18 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			$sizes = $this->get_media_files();
 		}
 
-		return $sizes && $this->get_raw_original_path();
+		return $sizes && ! empty( $this->image->imagePath );
 	}
 
 	/**
-	 * Get the list of the files of this media, including the original file.
+	 * Get the list of the files of this media, including the full size file.
 	 *
 	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array {
-	 *     An array with the size names as keys ('full' is used for the original file), and arrays of data as values:
+	 *     An array with the size names as keys ('full' is used for the full size file), and arrays of data as values:
 	 *
 	 *     @type string $size      The size name.
 	 *     @type string $path      Absolute path to the file.
@@ -383,9 +410,9 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			return [];
 		}
 
-		$original_path = $this->get_raw_original_path();
+		$fullsize_path = $this->get_raw_fullsize_path();
 
-		if ( ! $original_path ) {
+		if ( ! $fullsize_path ) {
 			return [];
 		}
 
@@ -393,7 +420,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		$all_sizes  = [
 			'full' => [
 				'size'      => 'full',
-				'path'      => $original_path,
+				'path'      => $fullsize_path,
 				'width'     => $dimensions['width'],
 				'height'    => $dimensions['height'],
 				'mime-type' => $this->get_mime_type(),
@@ -499,7 +526,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		$data    = [
 			'width'  => $dimensions['width'],
 			'height' => $dimensions['height'],
-			'md5'    => md5_file( $this->get_raw_original_path() ),
+			'md5'    => md5_file( $this->get_raw_fullsize_path() ),
 		];
 
 		foreach ( $data as $k => $v ) {

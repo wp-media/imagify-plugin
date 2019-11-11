@@ -140,4 +140,63 @@ class WP extends AbstractData {
 		delete_post_meta( $id, '_imagify_status' );
 		delete_post_meta( $id, '_imagify_optimization_level' );
 	}
+
+	/**
+	 * Delete the optimization data for the given sizes.
+	 * If all sizes are removed, all optimization data is deleted.
+	 * Status and level are not modified nor removed if the "full" size is removed. This leaves the media in a Schrödinger state.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @param array $sizes A list of sizes to remove.
+	 */
+	public function delete_sizes_optimization_data( array $sizes ) {
+		if ( ! $sizes || ! $this->is_valid() ) {
+			return;
+		}
+
+		$media_id = $this->get_media()->get_id();
+		$data     = get_post_meta( $media_id, '_imagify_data', true );
+
+		if ( empty( $data['sizes'] ) || ! is_array( $data['sizes'] ) ) {
+			return;
+		}
+
+		$remaining_sizes_data = array_diff_key( $data['sizes'], array_flip( $sizes ) );
+
+		if ( ! $remaining_sizes_data ) {
+			// All sizes have been removed: delete everything.
+			$this->delete_optimization_data();
+			return;
+		}
+
+		if ( count( $remaining_sizes_data ) === count( $data['sizes'] ) ) {
+			// Nothing has been removed.
+			return;
+		}
+
+		$data['sizes'] = $remaining_sizes_data;
+
+		// Update stats.
+		$data['stats'] = [
+			'original_size'  => 0,
+			'optimized_size' => 0,
+			'percent'        => 0,
+		];
+
+		foreach ( $data['sizes'] as $size_data ) {
+			if ( empty( $size_data['success'] ) ) {
+				continue;
+			}
+
+			$data['stats']['original_size']  += $size_data['original_size'];
+			$data['stats']['optimized_size'] += $size_data['optimized_size'];
+		}
+
+		$data['stats']['percent'] = round( ( ( $data['stats']['original_size'] - $data['stats']['optimized_size'] ) / $data['stats']['original_size'] ) * 100, 2 );
+
+		update_post_meta( $media_id, '_imagify_data', $data );
+	}
 }

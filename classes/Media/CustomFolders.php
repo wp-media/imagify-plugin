@@ -11,6 +11,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  */
 class CustomFolders extends AbstractMedia {
 	use \Imagify\Traits\MediaRowTrait;
+	use \Imagify\Deprecated\Traits\Media\CustomFoldersDeprecatedTrait;
 
 	/**
 	 * Context (where the media "comes from").
@@ -90,15 +91,47 @@ class CustomFolders extends AbstractMedia {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the original media's URL.
+	 * Get the original media's path.
 	 *
 	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
+	 * @return string|bool The file path. False on failure.
+	 */
+	public function get_raw_original_path() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( $this->get_cdn() ) {
+			return $this->get_cdn()->get_file_path( 'original' );
+		}
+
+		$row = $this->get_row();
+
+		if ( ! $row || empty( $row['path'] ) ) {
+			return false;
+		}
+
+		return \Imagify_Files_Scan::remove_placeholder( $row['path'] );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** FULL SIZE FILE ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the URL of the media’s full size file.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
 	 * @return string|bool The file URL. False on failure.
 	 */
-	public function get_original_url() {
+	public function get_fullsize_url() {
 		if ( ! $this->is_valid() ) {
 			return false;
 		}
@@ -117,15 +150,15 @@ class CustomFolders extends AbstractMedia {
 	}
 
 	/**
-	 * Get the original media's path.
+	 * Get the path to the media’s full size file, even if the file doesn't exist.
 	 *
-	 * @since  1.9
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string|bool The file path. False on failure.
 	 */
-	public function get_raw_original_path() {
+	public function get_raw_fullsize_path() {
 		if ( ! $this->is_valid() ) {
 			return false;
 		}
@@ -224,14 +257,14 @@ class CustomFolders extends AbstractMedia {
 	}
 
 	/**
-	 * Get the list of the files of this media, including the original file.
+	 * Get the list of the files of this media, including the full size file.
 	 *
 	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array {
-	 *     An array with the size names as keys ('full' is used for the original file), and arrays of data as values:
+	 *     An array with the size names as keys ('full' is used for the full size file), and arrays of data as values:
 	 *
 	 *     @type string $size      The size name.
 	 *     @type string $path      Absolute path to the file.
@@ -246,9 +279,9 @@ class CustomFolders extends AbstractMedia {
 			return [];
 		}
 
-		$original_path = $this->get_raw_original_path();
+		$fullsize_path = $this->get_raw_fullsize_path();
 
-		if ( ! $original_path ) {
+		if ( ! $fullsize_path ) {
 			return [];
 		}
 
@@ -256,7 +289,7 @@ class CustomFolders extends AbstractMedia {
 		$sizes      = [
 			'full' => [
 				'size'      => 'full',
-				'path'      => $original_path,
+				'path'      => $fullsize_path,
 				'width'     => $dimensions['width'],
 				'height'    => $dimensions['height'],
 				'mime-type' => $this->get_mime_type(),

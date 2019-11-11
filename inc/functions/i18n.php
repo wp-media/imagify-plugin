@@ -164,7 +164,7 @@ function get_imagify_localize_script_translations( $context ) {
 					if ( $media->is_image() ) {
 						$dimensions = $media->get_dimensions();
 						$image = [
-							'src'    => $media->get_original_url(),
+							'src'    => $media->get_fullsize_url(),
 							'width'  => $dimensions['width'],
 							'height' => $dimensions['height'],
 						];

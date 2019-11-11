@@ -68,7 +68,7 @@ class Main {
 	 * @return array
 	 */
 	public function set_cdn_source( $source ) {
-		if ( ! function_exists( 'get_rocket_cdn_cnames' ) || ! function_exists( 'get_rocket_option' ) ) {
+		if ( ! function_exists( 'get_rocket_option' ) ) {
 			return $source;
 		}
 
@@ -76,9 +76,21 @@ class Main {
 			return $source;
 		}
 
-		$url = get_rocket_cdn_cnames( [ 'all', 'images' ] );
+		$container = apply_filters( 'rocket_container', null );
 
-		if ( ! $url ) {
+		if ( is_object( $container ) && method_exists( $container, 'get' ) ) {
+			$cdn = $container->get( 'cdn' );
+
+			if ( $cdn && method_exists( $cdn, 'get_cdn_urls' ) ) {
+				$url = $cdn->get_cdn_urls( [ 'all', 'images' ] );
+			}
+		}
+
+		if ( ! isset( $url ) && function_exists( 'get_rocket_cdn_cnames' ) ) {
+			$url = get_rocket_cdn_cnames( [ 'all', 'images' ] );
+		}
+
+		if ( empty( $url ) ) {
 			return $source;
 		}
 

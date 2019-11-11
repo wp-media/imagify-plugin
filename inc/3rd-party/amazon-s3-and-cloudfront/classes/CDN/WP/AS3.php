@@ -35,6 +35,16 @@ class AS3 implements PushCDNInterface {
 	protected $filesystem;
 
 	/**
+	 * Tell if we’re playing in WP 5.3’s garden.
+	 *
+	 * @var    bool
+	 * @since  1.9.8
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $is_wp53;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since  1.9
@@ -309,16 +319,34 @@ class AS3 implements PushCDNInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param  string $file_name Name of the file. Leave empty for the full size file.
+	 * @param  string $file_name Name of the file. Leave empty for the full size file. Use 'original' to get the path to the original file.
 	 * @return string            Path to the file.
 	 */
 	public function get_file_path( $file_name = false ) {
-		$file_path = get_attached_file( $this->id, true );
-
-		if ( $file_name ) {
-			// It's not the full size.
-			$file_path = $this->filesystem->dir_path( $file_path ) . $file_name;
+		if ( ! $file_name ) {
+			// Full size.
+			return get_attached_file( $this->id, true );
 		}
+
+		if ( 'original' === $file_name ) {
+			// Original file.
+			if ( $this->is_wp_53() ) {
+				// `wp_get_original_image_path()` may return false.
+				$file_path = wp_get_original_image_path( $this->id );
+			} else {
+				$file_path = false;
+			}
+
+			if ( ! $file_path ) {
+				$file_path = get_attached_file( $this->id, true );
+			}
+
+			return $file_path;
+		}
+
+		// Thumbnail.
+		$file_path = get_attached_file( $this->id, true );
+		$file_path = $this->filesystem->dir_path( $file_path ) . $file_name;
 
 		return $file_path;
 	}
@@ -462,5 +490,24 @@ class AS3 implements PushCDNInterface {
 
 		// If the attachment has a 'filesize' metadata, that means the local files are meant to be deleted.
 		return (bool) get_post_meta( $this->id, 'wpos3_filesize_total', true );
+	}
+
+	/**
+	 * Tell if we’re playing in WP 5.3’s garden.
+	 *
+	 * @since  1.9.8
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	protected function is_wp_53() {
+		if ( isset( $this->is_wp53 ) ) {
+			return $this->is_wp53;
+		}
+
+		$this->is_wp53 = function_exists( 'wp_get_original_image_path' );
+
+		return $this->is_wp53;
 	}
 }

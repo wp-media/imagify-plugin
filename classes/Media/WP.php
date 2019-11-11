@@ -10,6 +10,17 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class WP extends AbstractMedia {
+	use \Imagify\Deprecated\Traits\Media\WPDeprecatedTrait;
+
+	/**
+	 * Tell if we’re playing in WP 5.3’s garden.
+	 *
+	 * @var    bool
+	 * @since  1.9.8
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $is_wp53;
 
 	/**
 	 * The constructor.
@@ -58,15 +69,52 @@ class WP extends AbstractMedia {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the original media's URL.
+	 * Get the original file path, even if the file doesn't exist.
 	 *
 	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
+	 * @return string|bool The file path. False on failure.
+	 */
+	public function get_raw_original_path() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( $this->get_cdn() ) {
+			return $this->get_cdn()->get_file_path( 'original' );
+		}
+
+		if ( $this->is_wp_53() ) {
+			// `wp_get_original_image_path()` may return false.
+			$path = wp_get_original_image_path( $this->id );
+		} else {
+			$path = false;
+		}
+
+		if ( ! $path ) {
+			$path = get_attached_file( $this->id );
+		}
+
+		return $path ? $path : false;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** FULL SIZE FILE ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the URL of the media’s full size file.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
 	 * @return string|bool The file URL. False on failure.
 	 */
-	public function get_original_url() {
+	public function get_fullsize_url() {
 		if ( ! $this->is_valid() ) {
 			return false;
 		}
@@ -81,15 +129,15 @@ class WP extends AbstractMedia {
 	}
 
 	/**
-	 * Get the original media's path.
+	 * Get the path to the media’s full size file, even if the file doesn't exist.
 	 *
-	 * @since  1.9
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string|bool The file path. False on failure.
 	 */
-	public function get_raw_original_path() {
+	public function get_raw_fullsize_path() {
 		if ( ! $this->is_valid() ) {
 			return false;
 		}
@@ -149,6 +197,7 @@ class WP extends AbstractMedia {
 
 	/**
 	 * Create the media thumbnails.
+	 * With WP 5.3+, this will also generate a new full size file if the original file is wider or taller than a defined threshold.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -165,10 +214,34 @@ class WP extends AbstractMedia {
 			require_once ABSPATH . 'wp-admin/includes/image.php';
 		}
 
-		$metadata = wp_generate_attachment_metadata( $this->get_id(), $this->get_raw_original_path() );
+		// Store the path to the current full size file before generating the thumbnails.
+		$old_full_size_path = $this->get_raw_fullsize_path();
+		$metadata           = wp_generate_attachment_metadata( $this->get_id(), $this->get_raw_original_path() );
 
-		if ( empty( $metadata['sizes'] ) ) {
-			return new \WP_Error( 'thumbnails_creation_filure', __( 'New thumbnails could not be created.', 'imagify' ) );
+		if ( empty( $metadata['file'] ) ) {
+			// Σ(ﾟДﾟ).
+			update_post_meta( $this->get_id(), '_wp_attachment_metadata', $metadata );
+
+			return true;
+		}
+
+		/**
+		 * Don't change the full size file name.
+		 * WP 5.3+ will rename the full size file if the resizing threshold has changed (not the same as the one used to generate it previously).
+		 * This will force WP to keep the previous file name.
+		 */
+		$old_full_size_file_name = $this->filesystem->file_name( $old_full_size_path );
+		$new_full_size_file_name = $this->filesystem->file_name( $metadata['file'] );
+
+		if ( $new_full_size_file_name !== $old_full_size_file_name ) {
+			$new_full_size_path = $this->filesystem->dir_path( $old_full_size_path ) . $new_full_size_file_name;
+
+			$moved = $this->filesystem->move( $new_full_size_path, $old_full_size_path, true );
+
+			if ( $moved ) {
+				$metadata['file'] = $this->filesystem->dir_path( $metadata['file'] ) . $old_full_size_file_name;
+				update_post_meta( $this->get_id(), '_wp_attached_file', $metadata['file'] );
+			}
 		}
 
 		update_post_meta( $this->get_id(), '_wp_attachment_metadata', $metadata );
@@ -205,14 +278,14 @@ class WP extends AbstractMedia {
 	}
 
 	/**
-	 * Get the list of the files of this media, including the original file.
+	 * Get the list of the files of this media, including the full size file.
 	 *
 	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array {
-	 *     An array with the size names as keys ('full' is used for the original file), and arrays of data as values:
+	 *     An array with the size names as keys ('full' is used for the full size file), and arrays of data as values:
 	 *
 	 *     @type string $size      The size name.
 	 *     @type string $path      Absolute path to the file.
@@ -227,9 +300,9 @@ class WP extends AbstractMedia {
 			return [];
 		}
 
-		$original_path = $this->get_raw_original_path();
+		$fullsize_path = $this->get_raw_fullsize_path();
 
-		if ( ! $original_path ) {
+		if ( ! $fullsize_path ) {
 			return [];
 		}
 
@@ -237,7 +310,7 @@ class WP extends AbstractMedia {
 		$all_sizes  = [
 			'full' => [
 				'size'      => 'full',
-				'path'      => $original_path,
+				'path'      => $fullsize_path,
 				'width'     => $dimensions['width'],
 				'height'    => $dimensions['height'],
 				'mime-type' => $this->get_mime_type(),
@@ -257,7 +330,7 @@ class WP extends AbstractMedia {
 			return $all_sizes;
 		}
 
-		$dir_path              = $this->filesystem->dir_path( $original_path );
+		$dir_path              = $this->filesystem->dir_path( $fullsize_path );
 		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
 		$is_active_for_network = imagify_is_active_for_network();
 
@@ -304,7 +377,7 @@ class WP extends AbstractMedia {
 	 * Update the media data dimensions.
 	 *
 	 * @since  1.9
-	 * @access public
+	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param array $dimensions {
@@ -329,5 +402,29 @@ class WP extends AbstractMedia {
 		$metadata['height'] = $dimensions['height'];
 
 		update_post_meta( $this->get_id(), '_wp_attachment_metadata', $metadata );
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** INTERNAL TOOLS ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Tell if we’re playing in WP 5.3’s garden.
+	 *
+	 * @since  1.9.8
+	 * @access protected
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	protected function is_wp_53() {
+		if ( isset( $this->is_wp53 ) ) {
+			return $this->is_wp53;
+		}
+
+		$this->is_wp53 = function_exists( 'wp_get_original_image_path' );
+
+		return $this->is_wp53;
 	}
 }

@@ -58,3 +58,12 @@ function imagify_add_webp_type( $ext2type ) {
 	}
 	return $ext2type;
 }
+
+/**
+ * Set WP’s "big images threshold" to Imagify’s resizing value.
+ *
+ * @since  1.9.8
+ * @since  WP 5.3
+ * @author Grégory Viguier
+ */
+add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'get_resizing_threshold' ], IMAGIFY_INT_MAX );

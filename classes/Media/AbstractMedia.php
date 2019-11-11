@@ -237,13 +237,41 @@ abstract class AbstractMedia implements MediaInterface {
 			return false;
 		}
 
-		$backup_path = $this->get_raw_original_path();
+		$original_path = $this->get_raw_original_path();
 
-		if ( ! $backup_path || ! $this->filesystem->exists( $backup_path ) ) {
+		if ( ! $original_path || ! $this->filesystem->exists( $original_path ) ) {
 			return false;
 		}
 
-		return $backup_path;
+		return $original_path;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** FULL SIZE FILE ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the path to the media’s full size file if the file exists.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string|bool The file path. False if it doesn't exist.
+	 */
+	public function get_fullsize_path() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		$original_path = $this->get_raw_fullsize_path();
+
+		if ( ! $original_path || ! $this->filesystem->exists( $original_path ) ) {
+			return false;
+		}
+
+		return $original_path;
 	}
 
 
@@ -398,7 +426,7 @@ abstract class AbstractMedia implements MediaInterface {
 			return false;
 		}
 
-		$dimensions = $this->filesystem->get_image_size( $this->get_raw_original_path() );
+		$dimensions = $this->filesystem->get_image_size( $this->get_raw_fullsize_path() );
 
 		if ( ! $dimensions ) {
 			// Could not get the new dimensions.
@@ -487,7 +515,7 @@ abstract class AbstractMedia implements MediaInterface {
 			return $this->file_type;
 		}
 
-		$path = $this->get_raw_original_path();
+		$path = $this->get_raw_fullsize_path();
 
 		if ( ! $path ) {
 			return $this->file_type;
@@ -506,7 +534,7 @@ abstract class AbstractMedia implements MediaInterface {
 	 * @see    $this->get_media_files()
 	 * @author Grégory Viguier
 	 *
-	 * @param  array $files An array with the size names as keys ('full' is used for the original file), and arrays of data as values.
+	 * @param  array $files An array with the size names as keys ('full' is used for the full size file), and arrays of data as values.
 	 * @return array
 	 */
 	protected function filter_media_files( $files ) {
@@ -516,7 +544,7 @@ abstract class AbstractMedia implements MediaInterface {
 		 * @since  1.9
 		 * @author Grégory Viguier
 		 *
-		 * @param array          $files An array with the size names as keys ('full' is used for the original file), and arrays of data as values.
+		 * @param array          $files An array with the size names as keys ('full' is used for the full size file), and arrays of data as values.
 		 * @param MediaInterface $media This instance.
 		 */
 		return (array) apply_filters( 'imagify_media_files', $files, $this );

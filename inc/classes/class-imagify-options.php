@@ -90,6 +90,25 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			$this->default_values['api_key'] = (string) IMAGIFY_API_KEY;
 		}
 
+		if ( function_exists( 'wp_get_original_image_path' ) ) {
+			$this->reset_values['resize_larger'] = 1;
+
+			$filter_cb = [ imagify_get_context( 'wp' ), 'get_resizing_threshold' ];
+			$filtered  = has_filter( 'big_image_size_threshold', $filter_cb );
+
+			if ( $filtered ) {
+				remove_filter( 'big_image_size_threshold', $filter_cb, IMAGIFY_INT_MAX );
+			}
+
+			/** This filter is documented in wp-admin/includes/image.php */
+			$this->reset_values['resize_larger_w'] = (int) apply_filters( 'big_image_size_threshold', 2560, [ 0, 0 ], '', 0 );
+			$this->reset_values['resize_larger_w'] = $this->sanitize_and_validate_value( 'resize_larger_w', $this->reset_values['resize_larger_w'], $this->default_values['resize_larger_w'] );
+
+			if ( $filtered ) {
+				add_filter( 'big_image_size_threshold', $filter_cb, IMAGIFY_INT_MAX );
+			}
+		}
+
 		$this->network_option = imagify_is_active_for_network();
 
 		parent::__construct();
@@ -160,7 +179,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'resize_larger_w':
 				if ( $value <= 0 ) {
 					// Invalid.
-					return 0;
+					return $default;
 				}
 				if ( ! isset( $max_sizes ) ) {
 					$max_sizes = get_imagify_max_intermediate_image_size();

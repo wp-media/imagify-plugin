@@ -10,6 +10,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Noop implements MediaInterface {
+	use \Imagify\Deprecated\Traits\Media\NoopDeprecatedTrait;
 
 	/**
 	 * Tell if the given entry can be accepted in the constructor.
@@ -97,19 +98,6 @@ class Noop implements MediaInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the original media's URL.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return string|bool The file URL. False on failure.
-	 */
-	public function get_original_url() {
-		return false;
-	}
-
-	/**
 	 * Get the original file path, even if the file doesn't exist.
 	 *
 	 * @since  1.9
@@ -132,6 +120,50 @@ class Noop implements MediaInterface {
 	 * @return string|bool The file path. False if it doesn't exist.
 	 */
 	public function get_original_path() {
+		return false;
+	}
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** FULL SIZE FILE ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the URL of the media’s full size file.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string|bool The file URL. False on failure.
+	 */
+	public function get_fullsize_url() {
+		return false;
+	}
+
+	/**
+	 * Get the path to the media’s full size file, even if the file doesn't exist.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string|bool The file path. False on failure.
+	 */
+	public function get_raw_fullsize_path() {
+		return false;
+	}
+
+	/**
+	 * Get the path to the media’s full size file if the file exists.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string|bool The file path. False if it doesn't exist.
+	 */
+	public function get_fullsize_path() {
 		return false;
 	}
 

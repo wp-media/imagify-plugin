@@ -55,16 +55,6 @@ class NGG extends \Imagify\Context\AbstractContext {
 	protected $thumbnail_sizes = [];
 
 	/**
-	 * Tell if the optimization process is allowed resize in this context.
-	 *
-	 * @var    bool
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected $can_resize = false;
-
-	/**
 	 * Tell if the optimization process is allowed to backup in this context.
 	 *
 	 * @var    bool
@@ -83,6 +73,20 @@ class NGG extends \Imagify\Context\AbstractContext {
 	 * @author Grégory Viguier
 	 */
 	protected $can_keep_exif = true;
+
+	/**
+	 * Get images max width for this context. This is used when resizing.
+	 * 0 means to not resize.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return int
+	 */
+	public function get_resizing_threshold() {
+		return 0;
+	}
 
 	/**
 	 * Get user capacity to operate Imagify in this context.

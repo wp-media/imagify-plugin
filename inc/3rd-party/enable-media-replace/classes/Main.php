@@ -52,6 +52,16 @@ class Main extends \Imagify_Enable_Media_Replace_Deprecated {
 	protected $old_backup_path;
 
 	/**
+	 * List of paths to the old webp files.
+	 *
+	 * @var    array
+	 * @since  1.9.8
+	 * @access protected
+	 * @author Grégory Viguier
+	 */
+	protected $old_webp_paths = [];
+
+	/**
 	 * Launch the hooks before the files and data are replaced.
 	 *
 	 * @since  1.6.9
@@ -72,6 +82,21 @@ class Main extends \Imagify_Enable_Media_Replace_Deprecated {
 		$tmp_name = wp_unslash( $_FILES['userfile']['tmp_name'] );
 
 		if ( ! is_uploaded_file( $tmp_name ) ) {
+			$this->media_id = 0;
+			return $unfiltered;
+		}
+
+		// Store the old backup file path.
+		$this->get_process();
+
+		if ( ! $this->process ) {
+			$this->media_id = 0;
+			return $unfiltered;
+		}
+
+		$this->old_backup_path = $this->process->get_media()->get_backup_path();
+
+		if ( ! $this->old_backup_path ) {
 			$this->media_id = 0;
 			return $unfiltered;
 		}
@@ -114,13 +139,24 @@ class Main extends \Imagify_Enable_Media_Replace_Deprecated {
 			return $new_filename;
 		}
 
-		$backup_path = $this->process->get_media()->get_backup_path();
+		$media       = $this->process->get_media();
+		$backup_path = $media->get_backup_path();
 
 		if ( $backup_path ) {
 			$this->old_backup_path = $backup_path;
+
+			// Keep track of existing webp files.
+			$media_files = $media->get_media_files();
+
+			if ( $media_files ) {
+				foreach ( $media_files as $media_file ) {
+					$this->old_webp_paths[] = imagify_path_to_webp( $media_file['path'] );
+				}
+			}
 		} else {
 			$this->media_id        = 0;
 			$this->old_backup_path = false;
+			$this->old_webp_paths  = [];
 		}
 
 		return $new_filename;
@@ -143,12 +179,17 @@ class Main extends \Imagify_Enable_Media_Replace_Deprecated {
 
 		$filesystem = \Imagify_Filesystem::get_instance();
 
-		if ( ! $filesystem->exists( $this->old_backup_path ) ) {
-			return;
+		if ( $filesystem->exists( $this->old_backup_path ) ) {
+			$filesystem->delete( $this->old_backup_path );
+			$this->old_backup_path = false;
 		}
 
-		$filesystem->delete( $this->old_backup_path );
-		$this->old_backup_path = false;
+		if ( $this->old_webp_paths ) {
+			// If the files have been renamed, delete old webp files.
+			$this->old_webp_paths = array_filter( $this->old_webp_paths, [ $filesystem, 'exists' ] );
+			array_map( [ $filesystem, 'delete' ], $this->old_webp_paths );
+			$this->old_webp_paths = [];
+		}
 	}
 
 

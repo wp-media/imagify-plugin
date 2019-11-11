@@ -489,7 +489,7 @@ class Imagify_DB {
 
 		// Sanitize the IDs.
 		$media_ids = array_filter( $media_ids );
-		$media_ids = array_unique( $media_ids, true );
+		$media_ids = array_unique( $media_ids );
 
 		if ( ! $media_ids ) {
 			return;

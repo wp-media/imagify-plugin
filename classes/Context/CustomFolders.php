@@ -41,14 +41,18 @@ class CustomFolders extends AbstractContext {
 	protected $thumbnail_sizes = [];
 
 	/**
-	 * Tell if the optimization process is allowed resize in this context.
+	 * Get images max width for this context. This is used when resizing.
+	 * 0 means to not resize.
 	 *
-	 * @var    bool
-	 * @since  1.9
-	 * @access protected
+	 * @since  1.9.8
+	 * @access public
 	 * @author Grégory Viguier
+	 *
+	 * @return int
 	 */
-	protected $can_resize = false;
+	public function get_resizing_threshold() {
+		return 0;
+	}
 
 	/**
 	 * Tell if the optimization process is allowed to backup in this context.

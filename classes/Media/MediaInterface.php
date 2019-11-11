@@ -88,17 +88,6 @@ interface MediaInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the original media's URL.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return string|bool The file URL. False on failure.
-	 */
-	public function get_original_url();
-
-	/**
 	 * Get the original file path, even if the file doesn't exist.
 	 *
 	 * @since  1.9
@@ -119,6 +108,44 @@ interface MediaInterface {
 	 * @return string|bool The file path. False if it doesn't exist.
 	 */
 	public function get_original_path();
+
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** FULL SIZE FILE ========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Get the URL of the media’s full size file.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string|bool The file URL. False on failure.
+	 */
+	public function get_fullsize_url();
+
+	/**
+	 * Get the path to the media’s full size file, even if the file doesn't exist.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string|bool The file path. False on failure.
+	 */
+	public function get_raw_fullsize_path();
+
+	/**
+	 * Get the path to the media’s full size file if the file exists.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return string|bool The file path. False if it doesn't exist.
+	 */
+	public function get_fullsize_path();
 
 
 	/** ----------------------------------------------------------------------------------------- */

@@ -47,15 +47,26 @@ interface ProcessInterface {
 	public function get_media();
 
 	/**
-	 * Get the File instance.
+	 * Get the File instance of the original file.
 	 *
-	 * @since  1.9
+	 * @since  1.9.8
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return File|false
 	 */
-	public function get_file();
+	public function get_original_file();
+
+	/**
+	 * Get the File instance of the full size file.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return File|false
+	 */
+	public function get_fullsize_file();
 
 	/**
 	 * Tell if the current media is valid.

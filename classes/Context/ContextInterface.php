@@ -79,6 +79,18 @@ interface ContextInterface {
 	public function get_thumbnail_sizes();
 
 	/**
+	 * Get images max width for this context. This is used when resizing.
+	 * 0 means to not resize.
+	 *
+	 * @since  1.9.8
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return int
+	 */
+	public function get_resizing_threshold();
+
+	/**
 	 * Tell if the optimization process is allowed resize in this context.
 	 *
 	 * @since  1.9
