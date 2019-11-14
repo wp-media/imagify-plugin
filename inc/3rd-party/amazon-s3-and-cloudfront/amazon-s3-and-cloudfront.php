@@ -23,6 +23,11 @@ function imagify_load_as3cf_compat() {
 			return false;
 		}
 
+		if ( version_compare( $version, '2.3' ) >= 0 ) {
+			// A new version that removes a punlic method.
+			return false;
+		}
+
 		return true;
 	}
 
@@ -36,6 +41,11 @@ function imagify_load_as3cf_compat() {
 
 		if ( ! function_exists( 'amazon_web_services_init' ) && version_compare( $version, '1.6' ) < 0 ) {
 			// Old version, plugin Amazon Web Services is required.
+			return false;
+		}
+
+		if ( version_compare( $version, '2.3' ) >= 0 ) {
+			// A new version that removes a punlic method.
 			return false;
 		}
 
