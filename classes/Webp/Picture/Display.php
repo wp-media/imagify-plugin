@@ -240,6 +240,10 @@ class Display {
 			}
 		}
 
+		if ( empty( $attributes[ $srcset_source ] ) ) {
+			$attributes[ $srcset_source ][] = $image['src']['webp_url'];
+		}
+
 		$attributes[ $srcset_source ] = implode( ', ', $attributes[ $srcset_source ] );
 
 		foreach ( [ 'data-lazy-srcset', 'data-srcset', 'srcset' ] as $srcset_attr ) {

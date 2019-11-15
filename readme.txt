@@ -3,7 +3,7 @@ Contributors: wp_media, GregLone
 Tags: optimize images, images, optimize, performance, webp
 Requires at least: 4.0.0
 Tested up to: 5.3
-Stable tag: 1.9.8
+Stable tag: 1.9.8.1
 
 Optimize images in one click: reduce image file sizes, convert WebP, keep your images beautiful… and boost your loading time and your SEO!
 
@@ -153,6 +153,10 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.8.1 - 2019/11/15 =
+* Fix: webp image not showing when using the `<picture>` method and the original `<img/>` does not have a `srcset` attribute.
+* Fix: a fatal error with WP Offload Media 2.3.
+
 = 1.9.8 - 2019/11/11 =
 * Improvement: compatibility with WordPress 5.3!
 * New: among other things, WordPress 5.3 automatically resizes large images on upload, using a predefined threshold value that can be changed only by filter (no setting fields are provided). Imagify’s "Resize larger images" setting field is now used to tweak this threshold.
