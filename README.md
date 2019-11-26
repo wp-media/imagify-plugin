@@ -9,13 +9,13 @@ After enabling it, all your images including thumbnails will be automatically op
 
 WooCommerce and NextGen Gallery compatible.
 
-![Bulk Optimization](https://ps.w.org/imagify/assets/screenshot-1.png "Bulk Optimization")
+![Bulk Optimization](https://raw.githubusercontent.com/wp-media/imagify/master/.wordpress-org/screenshot-1.png "Bulk Optimization")
 
-![Settings Page](https://ps.w.org/imagify/assets/screenshot-2.png "Settings Page")
+![Settings Page](https://raw.githubusercontent.com/wp-media/imagify/master/.wordpress-org/screenshot-2.png "Settings Page")
 
-![Media Page](https://ps.w.org/imagify/assets/screenshot-3.png "Media Page")
+![Media Page](https://raw.githubusercontent.com/wp-media/imagify/master/.wordpress-org/screenshot-3.png "Media Page")
 
-![Other Media Page](https://ps.w.org/imagify/assets/screenshot-4.png "Other Media Page")
+![Other Media Page](https://raw.githubusercontent.com/wp-media/imagify/master/.wordpress-org/screenshot-4.png "Other Media Page")
 
 ## What is Image Compression?
 
@@ -83,10 +83,19 @@ Our mission is to improve the web, we are making it faster with [WP Rocket](http
 * Contact Us: [https://imagify.io/contact](https://imagify.io/contact)
 * Twitter: [https://twitter.com/imagify](https://twitter.com/imagify)
 
+## Composer installation
+
+You can use composer to install the plugin as a dependency:
+
+```
+composer require wp-media/imagify-plugin
+```
+
 ## Related Plugins
 
 * [WP Rocket](https://wp-rocket.me/): Best caching plugin to speed-up your WordPress website.
 * [Rocket Lazy Load](https://wordpress.org/plugins/rocket-lazy-load/): Best Lazy Load script to reduce the number of HTTP requests and improves the websites loading time.
+* [Increase Maximum Upload File Size](https://wordpress.org/plugins/upload-max-file-size/): Increase upload file size limit to any value with one click.
 
 License: [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html).
 
