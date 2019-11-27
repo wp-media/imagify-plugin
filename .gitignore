@@ -1,5 +1,6 @@
+# Directories
+/node_modules
+/vendor
+# Files
 .DS_Store
-composer.lock
-gruntlocalconf.json
-node_modules
-vendor
+/gruntlocalconf.json
