@@ -128,10 +128,11 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$doing_ajax = wp_doing_ajax();
 
 		foreach ( $this->ajax_post_actions as $action ) {
+			$action_callback = "{$action}_callback";
 			if ( $doing_ajax ) {
-				add_action( 'wp_ajax_' . $action, array( $this, $action . '_callback' ) );
+				add_action( 'wp_ajax_' . $action, array( $this, $action_callback ) );
 			}
-			add_action( 'admin_post_' . $action, array( $this, $action . '_callback' ) );
+			add_action( 'admin_post_' . $action, array( $this, $action_callback ) );
 		}
 
 		// Actions triggered only on admin ajax.
