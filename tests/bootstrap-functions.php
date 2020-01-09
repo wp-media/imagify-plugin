@@ -21,7 +21,7 @@ function init_test_suite( $test_suite = 'Unit' ) {
 	require_once IMAGIFY_PLUGIN_ROOT . '/vendor/autoload.php';
 	require_once __DIR__ . '/TestCaseTrait.php';
 
-	// Load Patchwork before everything else in order to allow us to redefine WordPress, 3rd party, and WP Rocket functions.
+	// Load Patchwork before everything else in order to allow us to redefine WordPress, 3rd party, and plugin's functions.
 	require_once IMAGIFY_PLUGIN_ROOT . '/vendor/antecedent/patchwork/Patchwork.php';
 }
 
