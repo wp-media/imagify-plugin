@@ -1,6 +1,6 @@
 <?php
 /**
- * Bootstraps the WP Rocket Plugin Unit Tests
+ * Bootstraps the Imagify Plugin Unit Tests
  *
  * @package Imagify\Tests\Unit
  */
