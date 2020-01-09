@@ -40,7 +40,7 @@ function get_wp_tests_dir() {
 }
 
 /**
- * Bootstraps the integration testing environment with WordPress and WP Rocket.
+ * Bootstraps the integration testing environment with WordPress and Imagify.
  *
  * @param string $wp_tests_dir The directory path to the WordPress testing environment.
  */
