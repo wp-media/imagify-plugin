@@ -34,7 +34,7 @@ abstract class TestCase extends PHPUnitTestCase {
 	 * Mock common WP functions.
 	 *
 	 * @since  1.9.9
-	 * @author Grégory Viguier
+	 * @author Tonya Mork
 	 * @access protected
 	 */
 	protected function mockCommonWpFunctions() {
