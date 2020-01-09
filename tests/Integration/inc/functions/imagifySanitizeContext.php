@@ -10,6 +10,6 @@ class Test_ImagifySanitizeContext extends TestCase {
 	 */
 	public function testShouldReturnSanitizedKey() {
 		$this->assertSame( 'httpsimagifyio', imagify_sanitize_context( 'https://imagify.io/' ) );
-		$this->assertSame( 'wpmedia-imagify', imagify_sanitize_context( 'WPMedia Imagify' ) );
+		$this->assertSame( 'wpmediaimagify', imagify_sanitize_context( 'WPMedia Imagify' ) );
 	}
 }

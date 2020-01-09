@@ -10,7 +10,7 @@ class Test_ImagifySanitizeContext extends TestCase {
 	protected function setUp() {
 		parent::setUp();
 
-		require_once IMAGIFY_PLUGIN_ROOT . 'functions/common.php';
+		require_once IMAGIFY_PLUGIN_ROOT . 'inc/functions/common.php';
 	}
 
 	/**
@@ -19,10 +19,10 @@ class Test_ImagifySanitizeContext extends TestCase {
 	public function testShouldReturnSanitizedKey() {
 		$data = [
 			'httpsimagifyio' => 'https://imagify.io/',
-			'wpmedia-imagify' => 'WPMedia Imagify'
+			'wpmediaimagify' => 'WPMedia Imagify'
 		];
 		foreach ( $data as $expected => $value ) {
-			Monkey\expect( 'sanitize_key' )
+			Monkey\Functions\expect( 'sanitize_key' )
 				->once()
 				->with( $value )
 				->andReturn( $expected );
