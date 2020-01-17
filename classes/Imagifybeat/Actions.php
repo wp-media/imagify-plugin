@@ -157,7 +157,15 @@ class Actions {
 
 			if ( $optim_data->is_optimized() ) {
 				// Successfully optimized.
-				$full_size_data              = $optim_data->get_size_data();
+				$full_size_data                = $optim_data->get_size_data();
+				$full_size_data                = array_merge(
+					[
+						'original_size'  => 0,
+						'optimized_size' => 0,
+						'percent'        => 0,
+					],
+					$full_size_data
+				);
 				$response[ $imagifybeat_id ][] = [
 					'mediaID'                  => $media_atts['media_id'],
 					'context'                  => $media_atts['context'],

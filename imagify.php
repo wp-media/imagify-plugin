@@ -12,7 +12,7 @@
  * Text Domain: imagify
  * Domain Path: languages
  *
- * Copyright 2020 WP Media
+ * Copyright 2019 WP Media
  *
  * @package WP-Media\Imagify\WordPress-Plugin
  */
