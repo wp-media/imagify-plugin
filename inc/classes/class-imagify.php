@@ -526,11 +526,12 @@ class Imagify {
 			 * Tell which http version to use with cURL during image optimization.
 			 *
 			 * @since  1.8.4.1
+			 * @since  1.9.9 Default value is `false`.
 			 * @author Grégory Viguier
 			 *
-			 * @param $use_version_1_0 bool True to use version 1.0. False for 1.1. Default is true.
+			 * @param $use_version_1_0 bool True to use version 1.0. False for 1.1. Default is false.
 			 */
-			if ( apply_filters( 'imagify_curl_http_version_1_0', true ) ) {
+			if ( apply_filters( 'imagify_curl_http_version_1_0', false ) ) {
 				curl_setopt( $ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0 );
 			} else {
 				curl_setopt( $ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1 );
