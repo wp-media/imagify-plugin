@@ -357,6 +357,13 @@ function imagify_reset_opcache() {
 			return;
 		}
 
+		$opcache_enabled = ini_get( 'opcache.enable' );
+
+		if ( ! $opcache_enabled || strtolower( (string) $opcache_enabled ) === 'off' ) {
+			$can_reset = false;
+			return;
+		}
+
 		$restrict_api = ini_get( 'opcache.restrict_api' );
 
 		if ( $restrict_api && strpos( __FILE__, $restrict_api ) !== 0 ) {
