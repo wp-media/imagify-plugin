@@ -66,18 +66,13 @@ class Actions {
 			return $response;
 		}
 
-		$is_blocked    = \Imagify_Requirements::is_imagify_blocked();
-		$is_api_up     = \Imagify_Requirements::is_api_up();
-		$is_key_valid  = \Imagify_Requirements::is_api_key_valid();
-		$is_over_quota = \Imagify_Requirements::is_over_quota();
-
 		$response[ $imagifybeat_id ] = [
 			'curl_missing'          => ! \Imagify_Requirements::supports_curl(),
 			'editor_missing'        => ! \Imagify_Requirements::supports_image_editor(),
-			'external_http_blocked' => $is_blocked,
-			'api_down'              => $is_blocked || ! $is_api_up,
-			'key_is_valid'          => ! $is_blocked && $is_api_up && $is_key_valid,
-			'is_over_quota'         => ! $is_blocked && $is_api_up && $is_key_valid && $is_over_quota,
+			'external_http_blocked' => \Imagify_Requirements::is_imagify_blocked(),
+			'api_down'              => ! \Imagify_Requirements::is_api_up(),
+			'key_is_valid'          => \Imagify_Requirements::is_api_key_valid(),
+			'is_over_quota'         => \Imagify_Requirements::is_over_quota(),
 		];
 
 		return $response;

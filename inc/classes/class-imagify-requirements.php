@@ -8,16 +8,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Imagify_Requirements {
-
-	/**
-	 * Class version.
-	 *
-	 * @var    string
-	 * @since  1.7.1
-	 * @author Grégory Viguier
-	 */
-	const VERSION = '1.0';
-
 	/**
 	 * Cache the test results.
 	 *
@@ -301,11 +291,12 @@ class Imagify_Requirements {
 	 * Test for the Imagify account quota.
 	 *
 	 * @since  1.7.1
+	 * @since  1.9.9 Return false when the API cannot be reached.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  bool $reset_cache True to get a fresh value.
-	 * @return bool
+	 * @return bool              True when over quota. False otherwise, even when the API cannot be reached.
 	 */
 	public static function is_over_quota( $reset_cache = false ) {
 		if ( ! $reset_cache && isset( self::$supports['over_quota'] ) ) {
@@ -314,7 +305,7 @@ class Imagify_Requirements {
 
 		$user = new Imagify_User();
 
-		self::$supports['over_quota'] = $user->is_over_quota();
+		self::$supports['over_quota'] = $user->get_error() ? false : $user->is_over_quota();
 
 		return self::$supports['over_quota'];
 	}
