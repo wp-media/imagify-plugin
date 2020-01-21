@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Imagifybeat;
 
-use Imagify_Requirements as Requirements;
+use Imagify_Requirements;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
@@ -69,12 +69,12 @@ class Actions {
 		}
 
 		$response[ $imagifybeat_id ] = [
-			'curl_missing'          => ! Requirements::supports_curl(),
-			'editor_missing'        => ! Requirements::supports_image_editor(),
-			'external_http_blocked' => Requirements::is_imagify_blocked(),
-			'api_down'              => ! Requirements::is_api_up(),
-			'key_is_valid'          => Requirements::is_api_key_valid(),
-			'is_over_quota'         => Requirements::is_over_quota(),
+			'curl_missing'          => ! Imagify_Requirements::supports_curl(),
+			'editor_missing'        => ! Imagify_Requirements::supports_image_editor(),
+			'external_http_blocked' => Imagify_Requirements::is_imagify_blocked(),
+			'api_down'              => ! Imagify_Requirements::is_api_up(),
+			'key_is_valid'          => Imagify_Requirements::is_api_key_valid(),
+			'is_over_quota'         => Imagify_Requirements::is_over_quota(),
 		];
 
 		return $response;

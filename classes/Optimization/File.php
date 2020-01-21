@@ -1,6 +1,8 @@
 <?php
 namespace Imagify\Optimization;
 
+use Imagify_Requirements;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -477,7 +479,7 @@ class File {
 		}
 
 		// Check if external HTTP requests are blocked.
-		if ( \Imagify_Requirements::is_imagify_blocked() ) {
+		if ( Imagify_Requirements::is_imagify_blocked() ) {
 			return new \WP_Error( 'http_block_external', __( 'External HTTP requests are blocked.', 'imagify' ) );
 		}
 
