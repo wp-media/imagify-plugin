@@ -357,9 +357,9 @@ function imagify_reset_opcache() {
 			return;
 		}
 
-		$opcache_enabled = ini_get( 'opcache.enable' );
+		$opcache_enabled = filter_var( ini_get( 'opcache.enable' ), FILTER_VALIDATE_BOOLEAN );
 
-		if ( ! $opcache_enabled || strtolower( (string) $opcache_enabled ) === 'off' ) {
+		if ( ! $opcache_enabled ) {
 			$can_reset = false;
 			return;
 		}
