@@ -61,5 +61,10 @@ abstract class TestCase extends PHPUnitTestCase {
 		foreach ( $functions as $function ) {
 			Monkey\Functions\when( $function )->echoArg();
 		}
+
+		Monkey\Functions\when( 'is_wp_error' )
+			->alias( function() {
+				return $thing instanceof WP_Error;
+			} );
 	}
 }
