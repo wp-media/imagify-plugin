@@ -197,7 +197,7 @@ class Imagify_User {
 		$previous_percent = Imagify_Data::get_instance()->get( 'previous_quota_percent' );
 
 		// Percent is not 100% anymore.
-		if ( 100 === $previous_percent && $percent < 100 ) {
+		if ( 100.0 === (float) $previous_percent && $percent < 100 ) {
 			/**
 			 * Triggered when the consumed quota percent decreases below 100%.
 			 *
@@ -210,7 +210,7 @@ class Imagify_User {
 		}
 
 		// Percent is not >= 80% anymore.
-		if ( $previous_percent >= 80 && $percent < 80 ) {
+		if ( (float) $previous_percent >= 80.0 && $percent < 80 ) {
 			/**
 			 * Triggered when the consumed quota percent decreases below 80%.
 			 *
@@ -223,7 +223,7 @@ class Imagify_User {
 			do_action( 'imagify_not_almost_over_quota_anymore', $percent, $previous_percent );
 		}
 
-		if ( $previous_percent !== $percent ) {
+		if ( (float) $previous_percent !== (float) $percent ) {
 			Imagify_Data::get_instance()->set( 'previous_quota_percent', $percent );
 		}
 
@@ -241,8 +241,7 @@ class Imagify_User {
 	 * @return float|int
 	 */
 	public function get_percent_unconsumed_quota() {
-		$percent = 100 - $this->get_percent_consumed_quota();
-		return $percent;
+		return 100 - $this->get_percent_consumed_quota();
 	}
 
 	/**
@@ -254,11 +253,7 @@ class Imagify_User {
 	 * @return bool
 	 */
 	public function is_free() {
-		if ( 1 === $this->plan_id ) {
-			return true;
-		}
-
-		return false;
+		return 1 === $this->plan_id;
 	}
 
 	/**
@@ -275,7 +270,7 @@ class Imagify_User {
 			return false;
 		}
 
-		if ( $this->is_free() && 100 === $this->get_percent_consumed_quota() ) {
+		if ( $this->is_free() && 100.0 === (float) $this->get_percent_consumed_quota() ) {
 			return true;
 		}
 
