@@ -1,10 +1,10 @@
 <?php
 namespace Imagify\Tests\Unit\inc\classes\ImagifyUser;
 
-use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
-use Mockery;
 use Imagify\Tests\Unit\TestCase;
+use Mockery;
+
 use Imagify_Data;
 use Imagify_User;
 

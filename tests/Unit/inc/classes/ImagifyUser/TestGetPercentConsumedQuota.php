@@ -1,10 +1,10 @@
 <?php
 namespace Imagify\Tests\Unit\inc\classes\ImagifyUser;
 
-use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
-use Mockery;
 use Imagify\Tests\Unit\TestCase;
+use Mockery;
+
 use Imagify_Data;
 use Imagify_User;
 
@@ -91,6 +91,9 @@ class TestGetPercentConsumedQuota extends TestCase {
 		$this->assertSame( ( new Imagify_User() )->get_percent_consumed_quota(), 90.0 );
 
 		$userData->consumed_current_month_quota = 500; // Current consumed quota 50%.
+
+		Functions\when( 'get_imagify_user' )->justReturn( $userData );
+
 		$imagify_data_mock->shouldReceive( 'get' )
 			->never();
 

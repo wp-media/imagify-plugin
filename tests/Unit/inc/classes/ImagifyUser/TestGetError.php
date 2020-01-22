@@ -1,8 +1,10 @@
 <?php
 namespace Imagify\Tests\Unit\inc\classes\ImagifyUser;
 
-use Imagify\Tests\Unit\TestCase;
 use Brain\Monkey\Functions;
+use Imagify\Tests\Unit\TestCase;
+
+use Imagify_User;
 
 /**
  * Tests for Imagify_User->get_error().
@@ -29,7 +31,7 @@ class TestGetError extends TestCase {
 
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
 
-		$this->assertFalse( ( new \Imagify_User() )->get_error() );
+		$this->assertFalse( ( new Imagify_User() )->get_error() );
 	}
 
 	/**
@@ -43,6 +45,6 @@ class TestGetError extends TestCase {
 
 		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
 
-		$this->assertSame( ( new \Imagify_User() )->get_error(), $wp_error );
+		$this->assertSame( ( new Imagify_User() )->get_error(), $wp_error );
 	}
 }
