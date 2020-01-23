@@ -1,8 +1,8 @@
 <?php
-namespace Imagify\Tests\Integration\inc\classes\ImagifyUser;
+namespace Imagify\tests\Integration\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
-use Imagify\Tests\Integration\TestCase;
+use Imagify\tests\Integration\TestCase;
 
 use Imagify_User;
 use WP_Error;
@@ -10,7 +10,8 @@ use WP_Error;
 /**
  * Tests for Imagify_User->get_error().
  *
- * @group OldClasses
+ * @covers Imagify_User::get_error
+ * @group  ImagifyAPI
  */
 class TestGetError extends TestCase {
 	/**

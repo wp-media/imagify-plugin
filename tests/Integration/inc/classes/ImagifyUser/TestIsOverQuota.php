@@ -1,8 +1,8 @@
 <?php
-namespace Imagify\Tests\Integration\inc\classes\ImagifyUser;
+namespace Imagify\tests\Integration\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
-use Imagify\Tests\Integration\TestCase;
+use Imagify\tests\Integration\TestCase;
 
 use Imagify_Data;
 use Imagify_User;
@@ -11,7 +11,8 @@ use WP_Error;
 /**
  * Tests for Imagify_User->is_over_quota().
  *
- * @group OldClasses
+ * @covers Imagify_User::is_over_quota
+ * @group  ImagifyAPI
  */
 class TestIsOverQuota extends TestCase {
 	/**

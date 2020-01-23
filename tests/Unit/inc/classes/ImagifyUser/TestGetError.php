@@ -1,15 +1,16 @@
 <?php
-namespace Imagify\Tests\Unit\inc\classes\ImagifyUser;
+namespace Imagify\tests\Unit\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
-use Imagify\Tests\Unit\TestCase;
+use Imagify\tests\Unit\TestCase;
 
 use Imagify_User;
 
 /**
  * Tests for Imagify_User->get_error().
  *
- * @group OldClasses
+ * @covers Imagify_User::get_error
+ * @group  ImagifyAPI
  */
 class TestGetError extends TestCase {
 	/**

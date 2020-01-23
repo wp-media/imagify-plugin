@@ -1,8 +1,8 @@
 <?php
-namespace Imagify\Tests\Unit\inc\classes\ImagifyUser;
+namespace Imagify\tests\Unit\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
-use Imagify\Tests\Unit\TestCase;
+use Imagify\tests\Unit\TestCase;
 use Mockery;
 
 use Imagify_Data;
@@ -11,7 +11,8 @@ use Imagify_User;
 /**
  * Tests for Imagify_User->get_percent_consumed_quota().
  *
- * @group OldClasses
+ * @covers Imagify_User::get_percent_consumed_quota
+ * @group  ImagifyAPI
  */
 class TestGetPercentConsumedQuota extends TestCase {
 
