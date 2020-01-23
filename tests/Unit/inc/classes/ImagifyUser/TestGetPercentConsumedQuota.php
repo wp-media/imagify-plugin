@@ -14,7 +14,7 @@ use Imagify_User;
  * @covers Imagify_User::get_percent_consumed_quota
  * @group  ImagifyAPI
  */
-class TestGetPercentConsumedQuota extends TestCase {
+class Test_GetPercentConsumedQuota extends TestCase {
 
 	/**
 	 * Test Imagify_User->get_percent_consumed_quota() should return 0 when couldn’t fetch user account data.

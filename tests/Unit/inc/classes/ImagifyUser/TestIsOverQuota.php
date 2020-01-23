@@ -14,7 +14,7 @@ use Imagify_User;
  * @covers Imagify_User::is_over_quota
  * @group  ImagifyAPI
  */
-class TestIsOverQuota extends TestCase {
+class Test_IsOverQuota extends TestCase {
 	/**
 	 * Test Imagify_User->is_over_quota() should return false when couldn’t fetch user account data.
 	 */

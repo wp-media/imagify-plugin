@@ -12,7 +12,7 @@ use Imagify_User;
  * @covers Imagify_User::get_error
  * @group  ImagifyAPI
  */
-class TestGetError extends TestCase {
+class Test_GetError extends TestCase {
 	/**
 	 * Test Imagify_User->get_error() should return false when succesfully fetched user account data.
 	 */
