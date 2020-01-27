@@ -210,6 +210,7 @@ function imagify_translate_api_message( $message ) {
 		'Could not initialize a new cURL handle'                                                   => __( 'Could not initialize a new cURL handle.', 'imagify' ),
 		'Unknown error occurred'                                                                   => __( 'Unknown error occurred.', 'imagify' ),
 		'Your image is too big to be uploaded on our server'                                       => __( 'Your file is too big to be uploaded on our server.', 'imagify' ),
+		'Our server returned an invalid response'                                                  => __( 'Our server returned an invalid response.', 'imagify' ),
 		'cURL isn\'t installed on the server'                                                      => __( 'cURL is not available on the server.', 'imagify' ),
 		// API messages.
 		'Authentification not provided'                                                            => __( 'Authentication not provided.', 'imagify' ),
