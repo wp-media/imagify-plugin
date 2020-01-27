@@ -63,7 +63,7 @@ abstract class TestCase extends PHPUnitTestCase {
 		}
 
 		Monkey\Functions\when( 'is_wp_error' )
-			->alias( function() {
+			->alias( function( $thing ) {
 				return $thing instanceof WP_Error;
 			} );
 	}
