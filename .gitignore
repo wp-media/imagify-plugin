@@ -1,6 +1,6 @@
 # Directories
 /node_modules
-/tests/env/local
+/tests/Integration/env/local
 /vendor
 # Files
 .DS_Store
