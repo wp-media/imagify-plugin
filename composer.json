@@ -54,8 +54,8 @@
 			"Imagify\\ThirdParty\\NGG\\": "inc/3rd-party/nextgen-gallery/classes/",
 			"Imagify\\ThirdParty\\RegenerateThumbnails\\": "inc/3rd-party/regenerate-thumbnails/classes/",
 			"Imagify\\ThirdParty\\WPRocket\\": "inc/3rd-party/wp-rocket/classes/",
-			"Imagify\\Tests\\Unit\\": "tests/Unit",
-			"Imagify\\Tests\\Integration\\": "tests/Integration"
+			"Imagify\\tests\\Unit\\": "tests/Unit",
+			"Imagify\\tests\\Integration\\": "tests/Integration"
 		},
 		"classmap": [
 			"inc/classes",
