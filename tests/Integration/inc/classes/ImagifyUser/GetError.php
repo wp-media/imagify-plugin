@@ -1,11 +1,10 @@
 <?php
-namespace Imagify\tests\Integration\inc\classes\ImagifyUser;
 
-use Imagify\tests\Integration\TestCase;
-use Mockery;
+namespace Imagify\tests\Integration\inc\classes\ImagifyUser;
 
 use Imagify;
 use Imagify_User;
+use Imagify\tests\Integration\TestCase;
 use WP_Error;
 
 /**
@@ -15,12 +14,48 @@ use WP_Error;
  * @group  ImagifyAPI
  */
 class Test_GetError extends TestCase {
-	/**
-	 * Name of the API credentials config file.
-	 *
-	 * @var string
-	 */
 	protected $api_credentials_config_file = 'imagify-api';
+
+	private $invalidApiKey = '1234567890abcdefghijklmnopqrstuvwxyz';
+
+	private $originalImagifyInstance;
+	private $originalUserInstance;
+	private $originalImagifyInstanceSecureKey;
+	//private $originalImagifyInstanceApiKey;
+	private $originalApiKeyOption;
+
+	public function setUp() {
+		parent::setUp();
+
+		// Store previous state and nullify values.
+		$this->originalImagifyInstance = $this->resetPropertyValue( 'instance', Imagify::class );
+		$this->originalUserInstance    = $this->resetPropertyValue( 'user', Imagify::class );
+
+		if ( $this->originalImagifyInstance ) {
+			$this->originalImagifyInstanceSecureKey = $this->resetPropertyValue( 'secure_key', $this->originalImagifyInstance );
+		} else {
+			$this->originalImagifyInstanceSecureKey = null;
+		}
+
+		$this->originalApiKeyOption = get_imagify_option( 'api_key' );
+	}
+
+	public function tearDown() {
+		parent::tearDown();
+
+		// Reset state.
+		$modifiedImagifyInstance = $this->setPropertyValue( 'instance', Imagify::class, $this->originalImagifyInstance );
+
+		remove_filter( 'http_request_args', [ $modifiedImagifyInstance, 'force_api_key_header' ], IMAGIFY_INT_MAX + 25 );
+
+		$this->setPropertyValue( 'user', Imagify::class, $this->originalUserInstance );
+
+		if ( $this->originalImagifyInstance ) {
+			$this->setPropertyValue( 'secure_key', $this->originalImagifyInstance, $this->originalImagifyInstanceSecureKey );
+		}
+
+		update_imagify_option( 'api_key', $this->originalApiKeyOption );
+	}
 
 	/**
 	 * Test Imagify_User->get_error() should return false when succesfully fetched user account data.
@@ -28,33 +63,33 @@ class Test_GetError extends TestCase {
 	public function testShouldReturnFalseWhenFetchedUserData() {
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
-		$imagify_mock = Mockery::mock( Imagify::class )->shouldReceive( 'get_user' )->once()->getMock();
-		// Change the Imagify::$user to the mock.
-		$ref = $this->get_reflective_property( 'user', get_class( $imagify_mock ) );
-		$ref->setValue( null );
-		$ref = $this->get_reflective_property( 'user', Imagify::class );
-		$ref->setValue( null );
-		$ref = $this->get_reflective_property( 'instance', Imagify::class );
-		$ref->setValue( $imagify_mock );
+		// Verify the static $user property is null.
+		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
 
-		$this->assertFalse( ( new Imagify_User() )->get_error() );
+		$user = new Imagify_User();
+
+		$this->assertFalse( $user->get_error() );
+
+		$user_data = $this->getPropertyValue( 'user', Imagify::class );
+		$this->assertInstanceOf( \stdClass::class, $user_data );
+		$this->assertTrue( property_exists( $user_data, 'account_type' ) );
 	}
 
 	/**
 	 * Test Imagify_User->get_error() should return a WP_Error object when couldn’t fetch user account data.
 	 */
 	public function testShouldReturnErrorWhenCouldNotFetchUserData() {
-		update_imagify_option( 'api_key', '1234567890abcdefghijklmnopqrstuvwxyz' );
+		update_imagify_option( 'api_key', $this->invalidApiKey );
 
-		$imagify_mock = Mockery::mock( Imagify::class )->shouldReceive( 'get_user' )->once()->getMock();
-		// Change the Imagify::$user to the mock.
-		$ref = $this->get_reflective_property( 'user', get_class( $imagify_mock ) );
-		$ref->setValue( null );
-		$ref = $this->get_reflective_property( 'user', Imagify::class );
-		$ref->setValue( null );
-		$ref = $this->get_reflective_property( 'instance', Imagify::class );
-		$ref->setValue( $imagify_mock );
+		// Verify the static $user property is null.
+		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
 
-		$this->assertFalse( ( new Imagify_User() )->get_error() );
+		$user = new Imagify_User();
+
+		$this->assertInstanceOf( WP_Error::class, $user->get_error() );
+
+		$user_data = $this->getPropertyValue( 'user', Imagify::class );
+		$this->assertInstanceOf( WP_Error::class, $user_data );
+		$this->assertContains( 'Invalid token', $user_data->get_error_message() );
 	}
 }

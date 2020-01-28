@@ -16,21 +16,45 @@ use WP_Error;
 class Test_GetError extends TestCase {
 	protected $api_credentials_config_file = 'imagify-api';
 
+	private $invalidApiKey = '1234567890abcdefghijklmnopqrstuvwxyz';
+
+	private $originalImagifyInstance;
+	private $originalUserInstance;
+	private $originalImagifyInstanceSecureKey;
+	//private $originalImagifyInstanceApiKey;
+	private $originalApiKeyOption;
+
 	public function setUp() {
 		parent::setUp();
 
-		$this->resetStaticUser();
+		// Store previous state and nullify values.
+		$this->originalImagifyInstance = $this->resetPropertyValue( 'instance', Imagify::class );
+		$this->originalUserInstance    = $this->resetPropertyValue( 'user', Imagify::class );
+
+		if ( $this->originalImagifyInstance ) {
+			$this->originalImagifyInstanceSecureKey = $this->resetPropertyValue( 'secure_key', $this->originalImagifyInstance );
+		} else {
+			$this->originalImagifyInstanceSecureKey = null;
+		}
+
+		$this->originalApiKeyOption = get_imagify_option( 'api_key' );
 	}
 
 	public function tearDown() {
 		parent::tearDown();
 
 		// Reset state.
-		$this->resetStaticUser();
-	}
+		$modifiedImagifyInstance = $this->setPropertyValue( 'instance', Imagify::class, $this->originalImagifyInstance );
 
-	function resetStaticUser() {
-		$this->resetStaticProperty( 'user', Imagify::class );
+		remove_filter( 'http_request_args', [ $modifiedImagifyInstance, 'force_api_key_header' ], IMAGIFY_INT_MAX + 25 );
+
+		$this->setPropertyValue( 'user', Imagify::class, $this->originalUserInstance );
+
+		if ( $this->originalImagifyInstance ) {
+			$this->setPropertyValue( 'secure_key', $this->originalImagifyInstance, $this->originalImagifyInstanceSecureKey );
+		}
+
+		update_imagify_option( 'api_key', $this->originalApiKeyOption );
 	}
 
 	/**
@@ -40,12 +64,13 @@ class Test_GetError extends TestCase {
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
 		// Verify the static $user property is null.
-		$this->assertNull( $this->getStaticPropertyValue( 'user', Imagify::class ) );
+		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
 
 		$user = new Imagify_User();
 
 		$this->assertFalse( $user->get_error() );
-		$user_data = $this->getStaticPropertyValue( 'user', Imagify::class );
+
+		$user_data = $this->getPropertyValue( 'user', Imagify::class );
 		$this->assertInstanceOf( \stdClass::class, $user_data );
 		$this->assertTrue( property_exists( $user_data, 'account_type' ) );
 	}
@@ -54,39 +79,17 @@ class Test_GetError extends TestCase {
 	 * Test Imagify_User->get_error() should return a WP_Error object when couldn’t fetch user account data.
 	 */
 	public function testShouldReturnErrorWhenCouldNotFetchUserData() {
-		update_imagify_option( 'api_key', '1234567890abcdefghijklmnopqrstuvwxyz' );
-		$imagify = Imagify::get_instance();
-		$api_key = $this->get_reflective_property( 'api_key', $imagify );
-		$api_key->setValue( $imagify, 'invalid_api_token' );
+		update_imagify_option( 'api_key', $this->invalidApiKey );
 
 		// Verify the static $user property is null.
-		$this->assertNull( $this->getStaticPropertyValue( 'user', Imagify::class ) );
-
-		// Callback is needed to force an invalid API key. TODO Resolve why not pulling from the API token. Then remove this callback.
-		$callback = function( $args, $url ) use ( $imagify ) {
-			if ( 'https://app.imagify.io/api/users/me/' !== $url ) {
-				return $args;
-			}
-			$prop = $this->get_reflective_property( 'secure_key', $imagify );
-			$secure_key = $prop->getValue( $imagify );
-
-			$args['headers']['Authorization'] = 'token 1234567890abcdefghijklmnopqrstuvwxyz';
-			if ( isset($args[ $secure_key ] )) {
-				$args[ $secure_key ] = 'token 1234567890abcdefghijklmnopqrstuvwxyz';
-			}
-
-			return $args;
-		};
-
-		add_filter( 'http_request_args', $callback, IMAGIFY_INT_MAX - 200, 2 );
+		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
 
 		$user = new Imagify_User();
 
-		remove_filter( 'http_request_args', $callback, 9999, 2 );
+		$this->assertInstanceOf( WP_Error::class, $user->get_error() );
 
-		$this->assertInstanceOf( WP_Error::class, $this->getStaticPropertyValue( 'user', Imagify::class ) );
-		$error = $user->get_error();
-		$this->assertContains( 'Invalid token header.', $error->get_error_message() );
-
+		$user_data = $this->getPropertyValue( 'user', Imagify::class );
+		$this->assertInstanceOf( WP_Error::class, $user_data );
+		$this->assertContains( 'Invalid token', $user_data->get_error_message() );
 	}
 }
