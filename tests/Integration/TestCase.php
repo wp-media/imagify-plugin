@@ -16,7 +16,7 @@ abstract class TestCase extends WP_UnitTestCase {
 
 	/**
 	 * Name of the API credentials config file, if applicable. Set in the test or new TestCase.
-	 * Example: 'imagify-api'.
+	 * Example: 'imagify-api.php'.
 	 *
 	 * @var string
 	 */
@@ -59,7 +59,7 @@ abstract class TestCase extends WP_UnitTestCase {
 			return '';
 		}
 
-		$config_file = dirname( __DIR__ ) . '/env/local/' . $this->api_credentials_config_file . '.php';
+		$config_file = dirname( __DIR__ ) . '/env/local/' . $this->api_credentials_config_file;
 
 		if ( ! is_readable( $config_file ) ) {
 			return '';

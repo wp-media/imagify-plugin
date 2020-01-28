@@ -14,7 +14,7 @@ use WP_Error;
  * @group  ImagifyAPI
  */
 class Test_GetError extends TestCase {
-	protected $api_credentials_config_file = 'imagify-api';
+	protected $api_credentials_config_file = 'imagify-api.php';
 
 	private $invalidApiKey = '1234567890abcdefghijklmnopqrstuvwxyz';
 
