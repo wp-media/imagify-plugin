@@ -7,18 +7,47 @@
 
 namespace Imagify\Tests;
 
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+use ReflectionProperty;
+
 trait TestCaseTrait {
+
+	/**
+	 * Set the singleton's `$_instance` property to the given instance.
+	 *
+	 * @param string $class    Name of the target class.
+	 * @param mixed  $instance Instance of the target object.
+	 *
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 */
+	protected function setSingletonInstance( $class, $instance ) {
+		$ref = $this->get_reflective_property( '_instance', $class );
+		$ref->setValue( $instance, $instance );
+	}
+
+	protected function resetStaticProperty( $property, $class ) {
+		$ref = $this->get_reflective_property( $property, $class );
+		$ref->setValue( null );
+	}
+
+	protected function getStaticPropertyValue( $property, $class ) {
+		$ref = $this->get_reflective_property( $property, $class );
+		return $ref->getValue();
+	}
+
 	/**
 	 * Get reflective access to the private/protected method.
 	 *
 	 * @param string $method_name Method name for which to gain access.
 	 * @param string $class_name  Name of the target class.
 	 *
-	 * @return \ReflectionMethod
-	 * @throws \ReflectionException Throws an exception if method does not exist.
+	 * @return ReflectionMethod
+	 * @throws ReflectionException Throws an exception if method does not exist.
 	 */
 	protected function get_reflective_method( $method_name, $class_name ) {
-		$class  = new \ReflectionClass( $class_name );
+		$class  = new ReflectionClass( $class_name );
 		$method = $class->getMethod( $method_name );
 		$method->setAccessible( true );
 
@@ -31,11 +60,11 @@ trait TestCaseTrait {
 	 * @param string       $property Property name for which to gain access.
 	 * @param string|mixed $class    Class name or instance.
 	 *
-	 * @return \ReflectionProperty|string
-	 * @throws \ReflectionException Throws an exception if property does not exist.
+	 * @return ReflectionProperty|string
+	 * @throws ReflectionException Throws an exception if property does not exist.
 	 */
 	protected function get_reflective_property( $property, $class ) {
-		$class    = new \ReflectionClass( $class );
+		$class    = new ReflectionClass( $class );
 		$property = $class->getProperty( $property );
 		$property->setAccessible( true );
 
@@ -49,8 +78,8 @@ trait TestCaseTrait {
 	 * @param string $property Property name for which to gain access.
 	 * @param mixed  $instance Instance of the target object.
 	 *
-	 * @return \ReflectionProperty|string
-	 * @throws \ReflectionException Throws an exception if property does not exist.
+	 * @return ReflectionProperty|string
+	 * @throws ReflectionException Throws an exception if property does not exist.
 	 */
 	protected function set_reflective_property( $value, $property, $instance ) {
 		$property = $this->get_reflective_property( $property, $instance );
