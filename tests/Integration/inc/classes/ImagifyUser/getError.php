@@ -2,10 +2,11 @@
 
 namespace Imagify\tests\Integration\inc\classes\ImagifyUser;
 
-use Imagify;
-use Imagify_User;
 use Imagify\tests\Integration\TestCase;
 use WP_Error;
+
+use Imagify;
+use Imagify_User;
 
 /**
  * Tests for Imagify_User->get_error().
@@ -21,7 +22,6 @@ class Test_GetError extends TestCase {
 	private $originalImagifyInstance;
 	private $originalUserInstance;
 	private $originalImagifyInstanceSecureKey;
-	//private $originalImagifyInstanceApiKey;
 	private $originalApiKeyOption;
 
 	public function setUp() {

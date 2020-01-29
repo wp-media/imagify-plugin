@@ -4,9 +4,8 @@ namespace Imagify\tests\Integration\inc\classes\ImagifyUser;
 use Brain\Monkey\Functions;
 use Imagify\tests\Integration\TestCase;
 
-use Imagify_Data;
+use Imagify;
 use Imagify_User;
-use WP_Error;
 
 /**
  * Tests for Imagify_User->is_over_quota().
@@ -15,13 +14,61 @@ use WP_Error;
  * @group  ImagifyAPI
  */
 class Test_IsOverQuota extends TestCase {
+	protected $api_credentials_config_file = 'imagify-api.php';
+
+	private $invalidApiKey = '1234567890abcdefghijklmnopqrstuvwxyz';
+
+	private $originalImagifyInstance;
+	private $originalUserInstance;
+	private $originalImagifyInstanceSecureKey;
+	private $originalApiKeyOption;
+	private $originalPreviousQuotaOption;
+
+	public function setUp() {
+		parent::setUp();
+
+		// Store previous state and nullify values.
+		$this->originalImagifyInstance = $this->resetPropertyValue( 'instance', Imagify::class );
+		$this->originalUserInstance    = $this->resetPropertyValue( 'user', Imagify::class );
+
+		if ( $this->originalImagifyInstance ) {
+			$this->originalImagifyInstanceSecureKey = $this->resetPropertyValue( 'secure_key', $this->originalImagifyInstance );
+		} else {
+			$this->originalImagifyInstanceSecureKey = null;
+		}
+
+		$this->originalApiKeyOption        = get_imagify_option( 'api_key' );
+		$this->originalPreviousQuotaOption = get_imagify_option( 'previous_quota_percent' );
+	}
+
+	public function tearDown() {
+		parent::tearDown();
+
+		// Reset state.
+		$modifiedImagifyInstance = $this->setPropertyValue( 'instance', Imagify::class, $this->originalImagifyInstance );
+
+		remove_filter( 'http_request_args', [ $modifiedImagifyInstance, 'force_api_key_header' ], IMAGIFY_INT_MAX + 25 );
+
+		$this->setPropertyValue( 'user', Imagify::class, $this->originalUserInstance );
+
+		if ( $this->originalImagifyInstance ) {
+			$this->setPropertyValue( 'secure_key', $this->originalImagifyInstance, $this->originalImagifyInstanceSecureKey );
+		}
+
+		update_imagify_option( 'api_key', $this->originalApiKeyOption );
+		update_imagify_option( 'previous_quota_percent', $this->originalPreviousQuotaOption );
+	}
+
 	/**
 	 * Test Imagify_User->is_over_quota() should return false when couldn’t fetch user account data.
 	 */
 	public function testShouldReturnFalseWhenCouldNotFetchUserData() {
-		$wp_error = new WP_Error( 'error_id', 'Error Message' );
+		update_imagify_option( 'api_key', $this->invalidApiKey );
 
-		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
+		// Verify the static $user property is null.
+		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
+
+		Functions\expect( 'imagify_round_half_five' )->never();
 
 		$this->assertFalse( ( new Imagify_User() )->is_over_quota() );
 	}
@@ -30,69 +77,58 @@ class Test_IsOverQuota extends TestCase {
 	 * Test Imagify_User->is_over_quota() should return false when paid account.
 	 */
 	public function testShouldReturnFalseWhenPaidAccount() {
-		$userData = (object) [
-			'id'                           => 1,
-			'email'                        => 'imagify@example.com',
-			'plan_id'                      => '2',
-			'plan_label'                   => 'whatever',
-			'quota'                        => 456,
-			'extra_quota'                  => 0,
-			'extra_quota_consumed'         => 0,
-			'consumed_current_month_quota' => 123,
-			'next_date_update'             => '',
-			'is_active'                    => 1,
-		];
+		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
-		Functions\when( 'get_imagify_user' )->justReturn( $userData );
+		// Verify the static $user property is null.
+		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
 
-		$this->assertFalse( ( new Imagify_User() )->is_over_quota() );
+		$imagifyUser = new Imagify_User();
+		// Make our account a paid one.
+		$imagifyUser->plan_id = 2;
+		// Even if it is supposed to be over-quota.
+		$imagifyUser->quota                        = 1000;
+		$imagifyUser->consumed_current_month_quota = 1000;
+		$imagifyUser->extra_quota                  = 5000;
+		$imagifyUser->extra_quota_consumed         = 5000;
+
+		$this->assertFalse( $imagifyUser->is_over_quota() );
 	}
 
 	/**
 	 * Test Imagify_User->is_over_quota() should return false when free and not over quota.
 	 */
 	public function testShouldReturnFalseWhenFreeNotOverQuota() {
-		$userData = (object) [
-			'id'                           => 1,
-			'email'                        => 'imagify@example.com',
-			'plan_id'                      => '1',
-			'plan_label'                   => 'free',
-			'quota'                        => 1000,
-			'extra_quota'                  => 0,
-			'extra_quota_consumed'         => 0,
-			'consumed_current_month_quota' => 900, // Current consumed quota 90%.
-			'next_date_update'             => '',
-			'is_active'                    => 1,
-		];
+		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
-		Functions\when( 'get_imagify_user' )->justReturn( $userData );
+		// Verify the static $user property is null.
+		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
 
-		Imagify_Data::get_instance()->set( 'previous_quota_percent', 90.0 ); // Previous quota was 90%.
+		$imagifyUser = new Imagify_User();
+		// Make sure the account is not over-quota.
+		$imagifyUser->quota                        = 1000;
+		$imagifyUser->consumed_current_month_quota = 200;
+		$imagifyUser->extra_quota                  = 5000;
+		$imagifyUser->extra_quota_consumed         = 300;
 
-		$this->assertFalse( ( new Imagify_User() )->is_over_quota() );
+		$this->assertFalse( $imagifyUser->is_over_quota() );
 	}
 
 	/**
 	 * Test Imagify_User->is_over_quota() should return true when free and over quota.
 	 */
 	public function testShouldReturnTrueWhenFreeOverQuota() {
-		$userData = (object) [
-			'id'                           => 1,
-			'email'                        => 'imagify@example.com',
-			'plan_id'                      => '1',
-			'plan_label'                   => 'free',
-			'quota'                        => 1000,
-			'extra_quota'                  => 0,
-			'extra_quota_consumed'         => 0,
-			'consumed_current_month_quota' => 1000, // Current consumed quota 100%.
-			'next_date_update'             => '',
-			'is_active'                    => 1,
-		];
+		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
-		Functions\when( 'get_imagify_user' )->justReturn( $userData );
+		// Verify the static $user property is null.
+		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
 
-		Imagify_Data::get_instance()->set( 'previous_quota_percent', 100.0 ); // Previous quota was 100%.
+		$imagifyUser = new Imagify_User();
+		// Make it over-quota.
+		$imagifyUser->quota                        = 1000;
+		$imagifyUser->consumed_current_month_quota = 1000;
+		$imagifyUser->extra_quota                  = 5000;
+		$imagifyUser->extra_quota_consumed         = 5000;
 
-		$this->assertTrue( ( new Imagify_User() )->is_over_quota() );
+		$this->assertTrue( $imagifyUser->is_over_quota() );
 	}
 }
