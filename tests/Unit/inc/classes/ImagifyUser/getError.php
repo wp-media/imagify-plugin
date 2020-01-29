@@ -3,6 +3,7 @@ namespace Imagify\tests\Unit\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
 use Imagify\tests\Unit\TestCase;
+use WP_Error;
 
 use Imagify_User;
 
@@ -39,13 +40,10 @@ class Test_GetError extends TestCase {
 	 * Test Imagify_User->get_error() should return a WP_Error object when couldn’t fetch user account data.
 	 */
 	public function testShouldReturnErrorWhenCouldNotFetchUserData() {
-		$wp_error = $this->getMockBuilder( '\WP_Error' )
-			->disableOriginalConstructor()
-			->setConstructorArgs( [ 'error_id', 'Error Message' ] )
-			->getMock();
+		$wp_error = new WP_Error( 'error_id', 'Error Message' );
 
 		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
 
-		$this->assertSame( ( new Imagify_User() )->get_error(), $wp_error );
+		$this->assertSame( $wp_error, ( new Imagify_User() )->get_error() );
 	}
 }
