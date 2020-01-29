@@ -1,9 +1,9 @@
 <?php
 
-namespace Imagify\Tests\Unit\Functions;
+namespace Imagify\tests\Unit\Functions;
 
 use Brain\Monkey;
-use Imagify\Tests\Unit\TestCase;
+use Imagify\tests\Unit\TestCase;
 
 class Test_ImagifySanitizeContext extends TestCase {
 

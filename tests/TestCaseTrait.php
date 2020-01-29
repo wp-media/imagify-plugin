@@ -2,10 +2,10 @@
 /**
  * Common functionality for all PHP test cases.
  *
- * @package Imagify\Tests
+ * @package Imagify\tests
  */
 
-namespace Imagify\Tests;
+namespace Imagify\tests;
 
 use ReflectionClass;
 use ReflectionException;

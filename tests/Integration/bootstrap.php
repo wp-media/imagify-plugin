@@ -2,12 +2,12 @@
 /**
  * Bootstraps the Imagify Plugin integration tests
  *
- * @package Imagify\Tests\Integration
+ * @package Imagify\tests\Integration
  */
 
-namespace Imagify\Tests\Integration;
+namespace Imagify\tests\Integration;
 
-use function Imagify\Tests\init_test_suite;
+use function Imagify\tests\init_test_suite;
 
 require_once dirname( dirname( __FILE__ ) ) . '/bootstrap-functions.php';
 init_test_suite( 'Integration' );

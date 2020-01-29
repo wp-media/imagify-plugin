@@ -8,7 +8,7 @@
 namespace Imagify\tests\Integration;
 
 use Brain\Monkey;
-use Imagify\Tests\TestCaseTrait;
+use Imagify\tests\TestCaseTrait;
 use WP_UnitTestCase;
 
 abstract class TestCase extends WP_UnitTestCase {

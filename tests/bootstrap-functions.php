@@ -2,10 +2,10 @@
 /**
  * Common bootstrap functionality.
  *
- * @package Imagify\Tests
+ * @package Imagify\tests
  */
 
-namespace Imagify\Tests;
+namespace Imagify\tests;
 
 /**
  * Initialize the test suite.
@@ -45,7 +45,7 @@ function check_readiness() {
  */
 function init_constants( $test_suite_folder ) {
 	define( 'IMAGIFY_PLUGIN_ROOT', dirname( __DIR__ ) . DIRECTORY_SEPARATOR );
-	define( 'IMAGIFY_PLUGIN_TESTS_ROOT', __DIR__ . DIRECTORY_SEPARATOR . $test_suite_folder );
+	define( 'IMAGIFY_PLUGIN_TESTS_ROOT', __DIR__ . DIRECTORY_SEPARATOR . $test_suite_folder . DIRECTORY_SEPARATOR );
 
 	if ( 'Unit' === $test_suite_folder && ! defined( 'ABSPATH' ) ) {
 		define( 'ABSPATH', IMAGIFY_PLUGIN_ROOT );

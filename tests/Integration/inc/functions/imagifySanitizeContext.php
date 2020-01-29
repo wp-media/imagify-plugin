@@ -1,8 +1,8 @@
 <?php
 
-namespace Imagify\Tests\Integration\Functions;
+namespace Imagify\tests\Integration\Functions;
 
-use Imagify\Tests\Integration\TestCase;
+use Imagify\tests\Integration\TestCase;
 
 class Test_ImagifySanitizeContext extends TestCase {
 	/**
