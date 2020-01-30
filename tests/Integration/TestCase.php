@@ -1,26 +1,20 @@
 <?php
-/**
- * Test Case for all of the integration tests.
- *
- * @package Imagify\tests\Integration
- */
 
 namespace Imagify\tests\Integration;
 
 use Brain\Monkey;
+use Imagify;
 use Imagify\tests\TestCaseTrait;
 use WP_UnitTestCase;
 
 abstract class TestCase extends WP_UnitTestCase {
 	use TestCaseTrait;
 
-	/**
-	 * Name of the API credentials config file, if applicable. Set in the test or new TestCase.
-	 * Example: 'imagify-api.php'.
-	 *
-	 * @var string
-	 */
-	protected $api_credentials_config_file;
+	protected $useApi = true;
+	protected $api_credentials_config_file = 'imagify-api.php';
+	protected $invalidApiKey = '1234567890abcdefghijklmnopqrstuvwxyz';
+	protected $originalImagifyInstance;
+	protected $originalApiKeyOption;
 
 	/**
 	 * Prepares the test environment before each test.
@@ -28,6 +22,16 @@ abstract class TestCase extends WP_UnitTestCase {
 	public function setUp() {
 		parent::setUp();
 		Monkey\setUp();
+
+		// Store original instance.
+		$this->originalImagifyInstance = Imagify::get_instance();
+
+		if ( $this->useApi ) {
+			$this->originalApiKeyOption = get_imagify_option( 'api_key' );
+		}
+
+		// Clear the static `$instance` property.
+		$this->resetPropertyValue( 'instance', $this->originalImagifyInstance );
 	}
 
 	/**
@@ -36,12 +40,22 @@ abstract class TestCase extends WP_UnitTestCase {
 	public function tearDown() {
 		Monkey\tearDown();
 		parent::tearDown();
+
+		// Restore the Imagify instance.
+		$this->setPropertyValue( 'instance', Imagify::class, $this->originalImagifyInstance );
+
+		// Restore the option.
+		if ( $this->useApi ) {
+			update_imagify_option( 'api_key', $this->originalApiKeyOption );
+		}
 	}
 
 	/**
-	 * Gets the credential's value from either an environment variable (stored locally on the machine or CI) or from a local constant defined in `tests/env/local/imagify-api.php`.
+	 * Gets the credential's value from either an environment variable (stored locally on the machine or CI) or from a
+	 * local constant defined in `tests/env/local/imagify-api.php`.
 	 *
-	 * @param  string $name Name of the environment variable or constant to find. Example: 'IMAGIFY_TESTS_API_KEY'.
+	 * @param string $name Name of the environment variable or constant to find. Example: 'IMAGIFY_TESTS_API_KEY'.
+	 *
 	 * @return string       Return the value if available. An empty string otherwise.
 	 */
 	protected function getApiCredential( $name ) {
