@@ -1,11 +1,6 @@
 <?php
-/**
- * Common functionality for all PHP test cases.
- *
- * @package Imagify\tests
- */
 
-namespace Imagify\tests;
+namespace Imagify\Tests;
 
 use ReflectionClass;
 use ReflectionException;

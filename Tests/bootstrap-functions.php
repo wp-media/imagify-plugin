@@ -1,11 +1,6 @@
 <?php
-/**
- * Common bootstrap functionality.
- *
- * @package Imagify\tests
- */
 
-namespace Imagify\tests;
+namespace Imagify\Tests;
 
 /**
  * Initialize the test suite.

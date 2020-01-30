@@ -54,8 +54,7 @@
 			"Imagify\\ThirdParty\\NGG\\": "inc/3rd-party/nextgen-gallery/classes/",
 			"Imagify\\ThirdParty\\RegenerateThumbnails\\": "inc/3rd-party/regenerate-thumbnails/classes/",
 			"Imagify\\ThirdParty\\WPRocket\\": "inc/3rd-party/wp-rocket/classes/",
-			"Imagify\\tests\\Unit\\": "tests/Unit",
-			"Imagify\\tests\\Integration\\": "tests/Integration"
+			"Imagify\\Tests\\": "Tests/"
 		},
 		"classmap": [
 			"inc/classes",
@@ -67,8 +66,8 @@
 		]
 	},
 	"scripts": {
-		"test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration tests/Unit/phpunit.xml.dist",
-		"test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration tests/Integration/phpunit.xml.dist",
+		"test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist",
+		"test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration Tests/Integration/phpunit.xml.dist",
 		"run-tests": [
 			"@test-unit",
 			"@test-integration"

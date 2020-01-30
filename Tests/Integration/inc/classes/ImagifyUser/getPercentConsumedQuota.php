@@ -1,6 +1,6 @@
 <?php
 
-namespace Imagify\tests\Integration\inc\classes\ImagifyUser;
+namespace Imagify\Tests\Integration\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
 use Imagify;

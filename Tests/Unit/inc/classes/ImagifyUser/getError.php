@@ -1,8 +1,8 @@
 <?php
-namespace Imagify\tests\Unit\inc\classes\ImagifyUser;
+namespace Imagify\Tests\Unit\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
-use Imagify\tests\Unit\TestCase;
+use Imagify\Tests\Unit\TestCase;
 use WP_Error;
 
 use Imagify_User;

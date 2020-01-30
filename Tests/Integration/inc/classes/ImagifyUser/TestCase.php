@@ -1,9 +1,9 @@
 <?php
 
-namespace Imagify\tests\Integration\inc\classes\ImagifyUser;
+namespace Imagify\Tests\Integration\inc\classes\ImagifyUser;
 
 use Imagify;
-use Imagify\tests\Integration\TestCase as BaseTestCase;
+use Imagify\Tests\Integration\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase {
 	protected $originalUserInstance;

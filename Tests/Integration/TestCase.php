@@ -1,10 +1,10 @@
 <?php
 
-namespace Imagify\tests\Integration;
+namespace Imagify\Tests\Integration;
 
 use Brain\Monkey;
 use Imagify;
-use Imagify\tests\TestCaseTrait;
+use Imagify\Tests\TestCaseTrait;
 use WP_UnitTestCase;
 
 abstract class TestCase extends WP_UnitTestCase {

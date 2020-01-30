@@ -2,14 +2,14 @@
 /**
  * Test Case for all of the unit tests.
  *
- * @package Imagify\tests\Unit
+ * @package Imagify\Tests\Unit
  */
 
-namespace Imagify\tests\Unit;
+namespace Imagify\Tests\Unit;
 
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use Brain\Monkey;
-use Imagify\tests\TestCaseTrait;
+use Imagify\Tests\TestCaseTrait;
 use WP_Error;
 
 abstract class TestCase extends PHPUnitTestCase {
