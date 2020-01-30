@@ -53,8 +53,7 @@
 			"Imagify\\ThirdParty\\FormidablePro\\": "inc/3rd-party/formidable-pro/classes/",
 			"Imagify\\ThirdParty\\NGG\\": "inc/3rd-party/nextgen-gallery/classes/",
 			"Imagify\\ThirdParty\\RegenerateThumbnails\\": "inc/3rd-party/regenerate-thumbnails/classes/",
-			"Imagify\\ThirdParty\\WPRocket\\": "inc/3rd-party/wp-rocket/classes/",
-			"Imagify\\Tests\\": "Tests/"
+			"Imagify\\ThirdParty\\WPRocket\\": "inc/3rd-party/wp-rocket/classes/"
 		},
 		"classmap": [
 			"inc/classes",
@@ -62,8 +61,12 @@
 		],
 		"exclude-from-classmap": [
 			"inc/classes/class-imagify-plugin.php",
-			"inc/classes/class-imagify-requirements-check.php"
+			"inc/classes/class-imagify-requirements-check.php",
+			"/Tests/"
 		]
+	},
+	"autoload-dev": {
+		"psr-4": { "Imagify\\Tests\\": "Tests/"	}
 	},
 	"scripts": {
 		"test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist",
