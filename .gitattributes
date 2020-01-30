@@ -3,7 +3,7 @@
 /.github export-ignore
 /.wordpress-org export-ignore
 /bin export-ignore
-/tests export-ignore
+/Tests export-ignore
 
 # Files
 /.distignore export-ignore
