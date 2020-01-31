@@ -346,30 +346,41 @@ function imagify_maybe_reset_opcache( $wp_upgrader, $hook_extra ) {
  * Reset PHP opcache.
  *
  * @since  1.8.1
+ * @since  1.9.9 Added $reset_function_cache parameter and return boolean.
  * @author Grégory Viguier
+ *
+ * @param  bool $reset_function_cache Set to true to bypass the cache.
+ * @return bool                       Return true if the opcode cache was reset (or reset in a previous call), or false if the opcode cache is disabled.
  */
-function imagify_reset_opcache() {
+function imagify_reset_opcache( $reset_function_cache = false ) {
 	static $can_reset;
 
-	if ( ! isset( $can_reset ) ) {
+	if ( $reset_function_cache || ! isset( $can_reset ) ) {
 		if ( ! function_exists( 'opcache_reset' ) ) {
 			$can_reset = false;
-			return;
+			return false;
 		}
 
-		$restrict_api = ini_get( 'opcache.restrict_api' );
+		$opcache_enabled = filter_var( ini_get( 'opcache.enable' ), FILTER_VALIDATE_BOOLEAN ); // phpcs:ignore PHPCompatibility.IniDirectives.NewIniDirectives.opcache_enableFound
+
+		if ( ! $opcache_enabled ) {
+			$can_reset = false;
+			return false;
+		}
+
+		$restrict_api = ini_get( 'opcache.restrict_api' ); // phpcs:ignore PHPCompatibility.IniDirectives.NewIniDirectives.opcache_restrict_apiFound
 
 		if ( $restrict_api && strpos( __FILE__, $restrict_api ) !== 0 ) {
 			$can_reset = false;
-			return;
+			return false;
 		}
 
 		$can_reset = true;
 	}
 
 	if ( ! $can_reset ) {
-		return;
+		return false;
 	}
 
-	opcache_reset();
+	return opcache_reset(); // phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.opcache_resetFound
 }
