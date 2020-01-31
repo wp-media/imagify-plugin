@@ -2,7 +2,7 @@
 namespace Imagify\Tests\Unit\inc\admin;
 
 use Brain\Monkey;
-use Imagify\tests\Unit\TestCase;
+use Imagify\Tests\Unit\TestCase;
 
 /**
  * @covers imagify_reset_opcache
