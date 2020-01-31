@@ -39,7 +39,7 @@ class Test_ImagifyResetOpcache extends TestCase {
 
 		// Make sure OPcache is not empty.
 		ini_set( 'opcache.restrict_api', '' );
-		$this->assertTrue( @opcache_compile_file( $this->test_file_path, 'Test file was not added to cache.' ) );
+		@opcache_compile_file( $this->test_file_path, 'Test file was not added to cache.' );
 		$this->assertTrue( opcache_is_script_cached( $this->test_file_path ), 'Test file is not cached.' );
 
 		// Now the real test.
@@ -55,7 +55,7 @@ class Test_ImagifyResetOpcache extends TestCase {
 
 		// Make sure OPcache is not empty.
 		ini_set( 'opcache.restrict_api', '' );
-		$this->assertTrue( @opcache_compile_file( $this->test_file_path, 'Test file was not added to cache.' ) );
+		@opcache_compile_file( $this->test_file_path, 'Test file was not added to cache.' );
 		$this->assertTrue( opcache_is_script_cached( $this->test_file_path ), 'Test file is not cached.' );
 
 		// Now the real test: restrict.
