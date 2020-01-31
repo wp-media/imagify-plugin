@@ -361,14 +361,14 @@ function imagify_reset_opcache( $reset_function_cache = false ) {
 			return false;
 		}
 
-		$opcache_enabled = filter_var( ini_get( 'opcache.enable' ), FILTER_VALIDATE_BOOLEAN );
+		$opcache_enabled = filter_var( ini_get( 'opcache.enable' ), FILTER_VALIDATE_BOOLEAN ); // phpcs:ignore PHPCompatibility.IniDirectives.NewIniDirectives.opcache_enableFound
 
 		if ( ! $opcache_enabled ) {
 			$can_reset = false;
 			return false;
 		}
 
-		$restrict_api = ini_get( 'opcache.restrict_api' );
+		$restrict_api = ini_get( 'opcache.restrict_api' ); // phpcs:ignore PHPCompatibility.IniDirectives.NewIniDirectives.opcache_restrict_apiFound
 
 		if ( $restrict_api && strpos( __FILE__, $restrict_api ) !== 0 ) {
 			$can_reset = false;
@@ -382,5 +382,5 @@ function imagify_reset_opcache( $reset_function_cache = false ) {
 		return false;
 	}
 
-	return opcache_reset();
+	return opcache_reset(); // phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.opcache_resetFound
 }
