@@ -7,14 +7,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since 1.0
  */
 class Imagify_User {
-
-	/**
-	 * Class version.
-	 *
-	 * @var string
-	 */
-	const VERSION = '1.0.1';
-
 	/**
 	 * The Imagify user ID.
 	 *
@@ -116,6 +108,17 @@ class Imagify_User {
 	public $is_active;
 
 	/**
+	 * Store a \WP_Error object if the request to fetch the user data failed.
+	 * False overwise.
+	 *
+	 * @var    bool|\WP_Error
+	 * @since  1.9.9
+	 * @access private
+	 * @author Grégory Viguier
+	 */
+	private $error;
+
+	/**
 	 * The constructor.
 	 *
 	 * @since 1.0
@@ -126,6 +129,7 @@ class Imagify_User {
 		$user = get_imagify_user();
 
 		if ( is_wp_error( $user ) ) {
+			$this->error = $user;
 			return;
 		}
 
@@ -139,6 +143,20 @@ class Imagify_User {
 		$this->consumed_current_month_quota = $user->consumed_current_month_quota;
 		$this->next_date_update             = $user->next_date_update;
 		$this->is_active                    = $user->is_active;
+		$this->error                        = false;
+	}
+
+	/**
+	 * Get the possible error returned when fetching user data.
+	 *
+	 * @since  1.9.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return bool|\WP_Error A \WP_Error object if the request to fetch the user data failed. False overwise.
+	 */
+	public function get_error() {
+		return $this->error;
 	}
 
 	/**
@@ -151,6 +169,10 @@ class Imagify_User {
 	 */
 	public function get_percent_consumed_quota() {
 		static $done = false;
+
+		if ( $this->get_error() ) {
+			return 0;
+		}
 
 		$quota          = $this->quota;
 		$consumed_quota = $this->consumed_current_month_quota;
@@ -168,41 +190,44 @@ class Imagify_User {
 			$percent = min( max( 0, $percent ), 100 );
 		}
 
-		if ( ! $done ) {
-			$previous_percent = Imagify_Data::get_instance()->get( 'previous_quota_percent' );
-
-			// Percent is not 100% anymore.
-			if ( 100 === $previous_percent && $percent < 100 ) {
-				/**
-				 * Triggered when the consumed quota percent decreases below 100%.
-				 *
-				 * @since  1.7
-				 * @author Grégory Viguier
-				 *
-				 * @param float|int $percent The current percentage of consumed quota.
-				 */
-				do_action( 'imagify_not_over_quota_anymore', $percent );
-			}
-			// Percent is not >= 80% anymore.
-			if ( $previous_percent >= 80 && $percent < 80 ) {
-				/**
-				 * Triggered when the consumed quota percent decreases below 80%.
-				 *
-				 * @since  1.7
-				 * @author Grégory Viguier
-				 *
-				 * @param float|int $percent          The current percentage of consumed quota.
-				 * @param float|int $previous_percent The previous percentage of consumed quota.
-				 */
-				do_action( 'imagify_not_almost_over_quota_anymore', $percent, $previous_percent );
-			}
-
-			if ( $previous_percent !== $percent ) {
-				Imagify_Data::get_instance()->set( 'previous_quota_percent', $percent );
-			}
-
-			$done = true;
+		if ( $done ) {
+			return $percent;
 		}
+
+		$previous_percent = Imagify_Data::get_instance()->get( 'previous_quota_percent' );
+
+		// Percent is not 100% anymore.
+		if ( 100.0 === (float) $previous_percent && $percent < 100 ) {
+			/**
+			 * Triggered when the consumed quota percent decreases below 100%.
+			 *
+			 * @since  1.7
+			 * @author Grégory Viguier
+			 *
+			 * @param float|int $percent The current percentage of consumed quota.
+			 */
+			do_action( 'imagify_not_over_quota_anymore', $percent );
+		}
+
+		// Percent is not >= 80% anymore.
+		if ( (float) $previous_percent >= 80.0 && $percent < 80 ) {
+			/**
+			 * Triggered when the consumed quota percent decreases below 80%.
+			 *
+			 * @since  1.7
+			 * @author Grégory Viguier
+			 *
+			 * @param float|int $percent          The current percentage of consumed quota.
+			 * @param float|int $previous_percent The previous percentage of consumed quota.
+			 */
+			do_action( 'imagify_not_almost_over_quota_anymore', $percent, $previous_percent );
+		}
+
+		if ( (float) $previous_percent !== (float) $percent ) {
+			Imagify_Data::get_instance()->set( 'previous_quota_percent', $percent );
+		}
+
+		$done = true;
 
 		return $percent;
 	}
@@ -216,8 +241,7 @@ class Imagify_User {
 	 * @return float|int
 	 */
 	public function get_percent_unconsumed_quota() {
-		$percent = 100 - $this->get_percent_consumed_quota();
-		return $percent;
+		return 100 - $this->get_percent_consumed_quota();
 	}
 
 	/**
@@ -229,27 +253,24 @@ class Imagify_User {
 	 * @return bool
 	 */
 	public function is_free() {
-		if ( 1 === $this->plan_id ) {
-			return true;
-		}
-
-		return false;
+		return 1 === $this->plan_id;
 	}
 
 	/**
 	 * Check if the user has consumed all his/her quota.
 	 *
 	 * @since 1.1.1
+	 * @since 1.9.9 Return false if the request to fetch the user data failed.
 	 *
 	 * @access public
 	 * @return bool
 	 */
 	public function is_over_quota() {
-		if ( empty( $this->id ) ) {
-			return true;
+		if ( $this->get_error() ) {
+			return false;
 		}
 
-		if ( $this->is_free() && 100 === $this->get_percent_consumed_quota() ) {
+		if ( $this->is_free() && 100.0 === (float) $this->get_percent_consumed_quota() ) {
 			return true;
 		}
 

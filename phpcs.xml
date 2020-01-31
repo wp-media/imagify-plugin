@@ -7,10 +7,12 @@
 
 	<file>.</file>
 
-	<exclude-pattern>vendor/*</exclude-pattern>
-	<exclude-pattern>inc/deprecated/*</exclude-pattern>
+	<exclude-pattern>bin/</exclude-pattern>
 	<exclude-pattern>assets/*/*.min.css</exclude-pattern>
 	<exclude-pattern>assets/*/*.min.js</exclude-pattern>
+	<exclude-pattern>inc/deprecated/*</exclude-pattern>
+	<exclude-pattern>tests/*</exclude-pattern>
+	<exclude-pattern>vendor/*</exclude-pattern>
 
 	<!-- Check for cross-version support for PHP 5.4 and higher + WP 4.0 and higher. -->
 	<config name="testVersion" value="5.4-"/>

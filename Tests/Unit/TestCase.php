@@ -10,6 +10,7 @@ namespace Imagify\Tests\Unit;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use Brain\Monkey;
 use Imagify\Tests\TestCaseTrait;
+use WP_Error;
 
 abstract class TestCase extends PHPUnitTestCase {
 	use TestCaseTrait;
@@ -20,6 +21,8 @@ abstract class TestCase extends PHPUnitTestCase {
 	protected function setUp() {
 		parent::setUp();
 		Monkey\setUp();
+
+		$this->mockCommonWpFunctions();
 	}
 
 	/**
@@ -61,5 +64,12 @@ abstract class TestCase extends PHPUnitTestCase {
 		foreach ( $functions as $function ) {
 			Monkey\Functions\when( $function )->echoArg();
 		}
+
+		include_once IMAGIFY_PLUGIN_TESTS_ROOT . '../Fixtures/WP/class-wp-error.php';
+
+		Monkey\Functions\when( 'is_wp_error' )
+			->alias( function( $thing ) {
+				return $thing instanceof WP_Error;
+			} );
 	}
 }
