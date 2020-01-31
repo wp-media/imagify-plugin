@@ -1,6 +1,8 @@
 <?php
 namespace Imagify\ThirdParty\RegenerateThumbnails;
 
+use Imagify_Requirements;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -221,7 +223,7 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 	 * @return bool
 	 */
 	protected function set_process( $media_id ) {
-		if ( ! $media_id || ! \Imagify_Requirements::is_api_key_valid() ) {
+		if ( ! $media_id || ! Imagify_Requirements::is_api_key_valid() ) {
 			return false;
 		}
 

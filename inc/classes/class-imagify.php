@@ -5,13 +5,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * Imagify.io API for WordPress.
  */
 class Imagify {
+	use \Imagify\Traits\InstanceGetterTrait;
 
-	/**
-	 * Class version.
-	 *
-	 * @var string
-	 */
-	const VERSION = '1.3';
 	/**
 	 * The Imagify API endpoint.
 	 *
@@ -38,14 +33,14 @@ class Imagify {
 	 *
 	 * @var array
 	 */
-	private $headers = array();
+	private $headers = [];
 
 	/**
 	 * All (default) HTTP headers. They must not be modified once the class is instanciated, or it will affect any following HTTP calls.
 	 *
 	 * @var array
 	 */
-	private $all_headers = array();
+	private $all_headers = [];
 
 	/**
 	 * Filesystem object.
@@ -58,13 +53,14 @@ class Imagify {
 	protected $filesystem;
 
 	/**
-	 * The single instance of the class.
+	 * Use data fetched from the API.
 	 *
+	 * @var    \stdClass|\WP_Error
+	 * @since  1.9.9
 	 * @access protected
-	 *
-	 * @var object
+	 * @author Grégory Viguier
 	 */
-	protected static $_instance;
+	protected static $user;
 
 	/**
 	 * The constructor.
@@ -85,23 +81,6 @@ class Imagify {
 	}
 
 	/**
-	 * Get the main Instance.
-	 *
-	 * @access public
-	 * @since  1.6.5
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
 	 * Get your Imagify account infos.
 	 *
 	 * @access public
@@ -110,41 +89,40 @@ class Imagify {
 	 * @return object
 	 */
 	public function get_user() {
-		static $user;
 		global $wp_current_filter;
 
-		if ( isset( $user ) ) {
-			return $user;
+		if ( isset( static::$user ) ) {
+			return static::$user;
 		}
 
-		if ( ! in_array( 'upgrader_post_install', (array) $wp_current_filter, true ) ) {
-			$this->headers = $this->all_headers;
-
-			$user = $this->http_call( 'users/me/', array(
-				'timeout' => 10,
-			) );
-
-			if ( ! is_wp_error( $user ) ) {
-				$maybe_missing = [
-					'account_type'                 => 'free',
-					'quota'                        => 0,
-					'extra_quota'                  => 0,
-					'extra_quota_consumed'         => 0,
-					'consumed_current_month_quota' => 0,
-				];
-
-				foreach ( $maybe_missing as $name => $value ) {
-					if ( ! isset( $user->$name ) ) {
-						$user->$name = $value;
-					}
-				}
-			}
-		} else {
+		if ( in_array( 'upgrader_post_install', (array) $wp_current_filter, true ) ) {
 			// Dirty patch used when updating from 1.7.
-			$user = new WP_Error();
+			static::$user = new WP_Error();
+			return static::$user;
 		}
 
-		return $user;
+		$this->headers = $this->all_headers;
+		static::$user  = $this->http_call( 'users/me/', [ 'timeout' => 10 ] );
+
+		if ( is_wp_error( static::$user ) ) {
+			return static::$user;
+		}
+
+		$maybe_missing = [
+			'account_type'                 => 'free',
+			'quota'                        => 0,
+			'extra_quota'                  => 0,
+			'extra_quota_consumed'         => 0,
+			'consumed_current_month_quota' => 0,
+		];
+
+		foreach ( $maybe_missing as $name => $value ) {
+			if ( ! isset( static::$user->$name ) ) {
+				static::$user->$name = $value;
+			}
+		}
+
+		return static::$user;
 	}
 
 	/**
@@ -157,20 +135,26 @@ class Imagify {
 	 * @return object
 	 */
 	public function create_user( $data ) {
-		$this->headers = array();
-		$data          = array_merge( $data, array(
-			'from_plugin' => true,
-			'partner'     => imagify_get_partner(),
-		) );
+		$this->headers = [];
+		$data          = array_merge(
+			$data,
+			[
+				'from_plugin' => true,
+				'partner'     => imagify_get_partner(),
+			]
+		);
 
 		if ( ! $data['partner'] ) {
 			unset( $data['partner'] );
 		}
 
-		$response = $this->http_call( 'users/', array(
-			'method'    => 'POST',
-			'post_data' => $data,
-		) );
+		$response = $this->http_call(
+			'users/',
+			[
+				'method'    => 'POST',
+				'post_data' => $data,
+			]
+		);
 
 		if ( ! is_wp_error( $response ) ) {
 			imagify_delete_partner();
@@ -191,11 +175,14 @@ class Imagify {
 	public function update_user( $data ) {
 		$this->headers = $this->all_headers;
 
-		return $this->http_call( 'users/me/', array(
-			'method'    => 'PUT',
-			'post_data' => $data,
-			'timeout'   => 10,
-		) );
+		return $this->http_call(
+			'users/me/',
+			[
+				'method'    => 'PUT',
+				'post_data' => $data,
+				'timeout'   => 10,
+			]
+		);
 	}
 
 	/**
@@ -208,15 +195,15 @@ class Imagify {
 	 * @return object
 	 */
 	public function get_status( $data ) {
-		static $status = array();
+		static $status = [];
 
 		if ( isset( $status[ $data ] ) ) {
 			return $status[ $data ];
 		}
 
-		$this->headers = array(
+		$this->headers = [
 			'Authorization' => 'Authorization: token ' . $data,
-		);
+		];
 
 		$uri     = 'status/';
 		$partner = imagify_get_partner();
@@ -225,9 +212,7 @@ class Imagify {
 			$uri .= '?partner=' . $partner;
 		}
 
-		$status[ $data ] = $this->http_call( $uri, array(
-			'timeout' => 10,
-		) );
+		$status[ $data ] = $this->http_call( $uri, [ 'timeout' => 10 ] );
 
 		return $status[ $data ];
 	}
@@ -244,13 +229,11 @@ class Imagify {
 		static $api_version;
 
 		if ( ! isset( $api_version ) ) {
-			$this->headers = array(
+			$this->headers = [
 				'Authorization' => $this->all_headers['Authorization'],
-			);
+			];
 
-			$api_version = $this->http_call( 'version/', array(
-				'timeout' => 5,
-			) );
+			$api_version = $this->http_call( 'version/', [ 'timeout' => 5 ] );
 		}
 
 		return $api_version;
@@ -281,14 +264,17 @@ class Imagify {
 	 * @return object
 	 */
 	public function upload_image( $data ) {
-		$this->headers = array(
+		$this->headers = [
 			'Authorization' => $this->all_headers['Authorization'],
-		);
+		];
 
-		return $this->http_call( 'upload/', array(
-			'method'    => 'POST',
-			'post_data' => $data,
-		) );
+		return $this->http_call(
+			'upload/',
+			[
+				'method'    => 'POST',
+				'post_data' => $data,
+			]
+		);
 	}
 
 	/**
@@ -303,10 +289,13 @@ class Imagify {
 	public function fetch_image( $data ) {
 		$this->headers = $this->all_headers;
 
-		return $this->http_call( 'fetch/', array(
-			'method'    => 'POST',
-			'post_data' => wp_json_encode( $data ),
-		) );
+		return $this->http_call(
+			'fetch/',
+			[
+				'method'    => 'POST',
+				'post_data' => wp_json_encode( $data ),
+			]
+		);
 	}
 
 	/**
@@ -391,12 +380,15 @@ class Imagify {
 	 * @param  array  $args The request args.
 	 * @return object
 	 */
-	private function http_call( $url, $args = array() ) {
-		$args = array_merge( array(
-			'method'    => 'GET',
-			'post_data' => null,
-			'timeout'   => 45,
-		), $args );
+	private function http_call( $url, $args = [] ) {
+		$args = array_merge(
+			[
+				'method'    => 'GET',
+				'post_data' => null,
+				'timeout'   => 45,
+			],
+			$args
+		);
 
 		$endpoint = trim( $url, '/' );
 		/**
@@ -415,11 +407,14 @@ class Imagify {
 			return $this->curl_http_call( $url, $args );
 		}
 
-		$args = array_merge( array(
-			'headers'   => array(),
-			'body'      => $args['post_data'],
-			'sslverify' => apply_filters( 'https_ssl_verify', false ),
-		), $args );
+		$args = array_merge(
+			[
+				'headers'   => [],
+				'body'      => $args['post_data'],
+				'sslverify' => apply_filters( 'https_ssl_verify', false ),
+			],
+			$args
+		);
 
 		unset( $args['post_data'] );
 
@@ -436,8 +431,8 @@ class Imagify {
 			// Make sure our API has not overwritten by some other plugin.
 			$args[ $this->secure_key ] = preg_replace( '/^token /', '', $args['headers']['Authorization'] );
 
-			if ( ! has_filter( 'http_request_args', array( $this, 'force_api_key_header' ) ) ) {
-				add_filter( 'http_request_args', array( $this, 'force_api_key_header' ), IMAGIFY_INT_MAX + 25, 2 );
+			if ( ! has_filter( 'http_request_args', [ $this, 'force_api_key_header' ] ) ) {
+				add_filter( 'http_request_args', [ $this, 'force_api_key_header' ], IMAGIFY_INT_MAX + 25, 2 );
 			}
 		}
 
@@ -465,7 +460,7 @@ class Imagify {
 	 * @param  array  $args The request arguments.
 	 * @return object
 	 */
-	private function curl_http_call( $url, $args = array() ) {
+	private function curl_http_call( $url, $args = [] ) {
 		// Check if curl is available.
 		if ( ! Imagify_Requirements::supports_curl() ) {
 			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
@@ -526,11 +521,12 @@ class Imagify {
 			 * Tell which http version to use with cURL during image optimization.
 			 *
 			 * @since  1.8.4.1
+			 * @since  1.9.9 Default value is `false`.
 			 * @author Grégory Viguier
 			 *
-			 * @param $use_version_1_0 bool True to use version 1.0. False for 1.1. Default is true.
+			 * @param $use_version_1_0 bool True to use version 1.0. False for 1.1. Default is false.
 			 */
-			if ( apply_filters( 'imagify_curl_http_version_1_0', true ) ) {
+			if ( apply_filters( 'imagify_curl_http_version_1_0', false ) ) {
 				curl_setopt( $ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0 );
 			} else {
 				curl_setopt( $ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1 );
@@ -616,6 +612,10 @@ class Imagify {
 			$error = trim( (string) $error );
 			$error = '' !== $error ? ' - ' . htmlentities( $error ) : '';
 			return new WP_Error( 'error ' . $http_code, "Our server returned an error ({$http_code}{$error})" );
+		}
+
+		if ( ! is_object( $response ) ) {
+			return new WP_Error( 'invalid response', 'Our server returned an invalid response.', $response );
 		}
 
 		return $response;

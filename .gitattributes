@@ -2,7 +2,8 @@
 /.git export-ignore
 /.github export-ignore
 /.wordpress-org export-ignore
-tests export-ignore
+/bin export-ignore
+/Tests export-ignore
 
 # Files
 /.distignore export-ignore

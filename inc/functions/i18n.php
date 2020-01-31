@@ -80,9 +80,9 @@ function get_imagify_localize_script_translations( $context ) {
 					'curlMissing'      => ! Imagify_Requirements::supports_curl(),
 					'editorMissing'    => ! Imagify_Requirements::supports_image_editor(),
 					'extHttpBlocked'   => Imagify_Requirements::is_imagify_blocked(),
-					'apiDown'          => Imagify_Requirements::is_imagify_blocked() || ! Imagify_Requirements::is_api_up(),
-					'keyIsValid'       => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid(),
-					'isOverQuota'      => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid() && Imagify_Requirements::is_over_quota(),
+					'apiDown'          => ! Imagify_Requirements::is_api_up(),
+					'keyIsValid'       => Imagify_Requirements::is_api_key_valid(),
+					'isOverQuota'      => Imagify_Requirements::is_over_quota(),
 					'imagifybeatIDs'   => [
 						'queue'        => $imagifybeat_actions->get_imagifybeat_id( 'bulk_optimization_status' ),
 						'requirements' => $imagifybeat_actions->get_imagifybeat_id( 'requirements' ),

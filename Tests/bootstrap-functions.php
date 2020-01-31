@@ -1,9 +1,4 @@
 <?php
-/**
- * Common bootstrap functionality.
- *
- * @package Imagify\Tests
- */
 
 namespace Imagify\Tests;
 
