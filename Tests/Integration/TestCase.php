@@ -23,15 +23,13 @@ abstract class TestCase extends WP_UnitTestCase {
 		parent::setUp();
 		Monkey\setUp();
 
-		// Store original instance.
-		$this->originalImagifyInstance = Imagify::get_instance();
-
-		if ( $this->useApi ) {
-			$this->originalApiKeyOption = get_imagify_option( 'api_key' );
+		if ( ! $this->useApi ) {
+			return;
 		}
 
-		// Clear the static `$instance` property.
-		$this->resetPropertyValue( 'instance', $this->originalImagifyInstance );
+		// Store original instance and clear the static `$instance` property.
+		$this->originalImagifyInstance = $this->setSingletonInstance( Imagify::class, null );
+		$this->originalApiKeyOption    = get_imagify_option( 'api_key' );
 	}
 
 	/**
@@ -41,13 +39,13 @@ abstract class TestCase extends WP_UnitTestCase {
 		Monkey\tearDown();
 		parent::tearDown();
 
-		// Restore the Imagify instance.
-		$this->setPropertyValue( 'instance', Imagify::class, $this->originalImagifyInstance );
-
-		// Restore the option.
-		if ( $this->useApi ) {
-			update_imagify_option( 'api_key', $this->originalApiKeyOption );
+		if ( ! $this->useApi ) {
+			return;
 		}
+
+		// Restore the Imagify instance and API key option.
+		$this->setSingletonInstance( Imagify::class, $this->originalImagifyInstance ); // $this->originalImagifyInstance can be null.
+		update_imagify_option( 'api_key', $this->originalApiKeyOption );
 	}
 
 	/**
