@@ -1,18 +1,19 @@
 /.git
 /.github
 /.wordpress-org
-/node_modules
+/bin
+/Tests
 
 /.distignore
-.DS_Store
 /.editorconfig
 /.eslintrc.json
 /.gitattributes
 /.gitignore
 /.jshintrc
+/.travis.yml
 /composer.json
 /composer.lock
-/gruntlocalconf.json
 /gruntfile.js
 /package.json
 /phpcs.xml
+/README.md
