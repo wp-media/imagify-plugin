@@ -15,7 +15,6 @@ if ( isset( $notices[ $notice ] ) ) {
 }
 
 $discount_percent = '20%';
-$discount_code    = 'IMAGIFY20';
 $dismiss_url      = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_ad&ad=' . $notice ), 'imagify-dismiss-ad' );
 ?>
 
@@ -35,12 +34,6 @@ $dismiss_url      = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dism
 		</p>
 
 		<p>
-			<span class="imagify-rocket-cta-promo">
-				<?php
-				/* translators: %s is a coupon code. */
-				printf( __( 'Coupon: %s', 'imagify' ), '<strong>' . $discount_code . '</strong>' );
-				?>
-			</span>
 			<a class="btn btn-rocket" href="<?php echo esc_url( imagify_get_wp_rocket_url() ); ?>" target="_blank">
 				<?php
 				/* translators: %s is a percentage. */
