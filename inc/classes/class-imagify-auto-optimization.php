@@ -164,7 +164,7 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 			return $metadata;
 		}
 
-		if ( $this->is_wp_53 && 'create' === $context ) {
+		if ( 'create' === $context ) {
 			$this->set_step( $attachment_id, 'upload' );
 		}
 
