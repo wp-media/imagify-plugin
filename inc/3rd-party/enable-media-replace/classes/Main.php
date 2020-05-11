@@ -83,9 +83,23 @@ class Main extends Imagify_Enable_Media_Replace_Deprecated {
 			return;
 		}
 
-		// Store the old backup file path.
-		add_filter( 'emr_unique_filename', [ $this, 'store_old_backup_path' ], 10, 3 );
-		// Delete the old backup file.
+		/**
+		 * Keep track of existing webp files.
+		 *
+		 * Whether the user chooses to rename the files or not, we will need to delete the current webp files before creating new ones:
+		 * - Rename the files: the old ones must be removed, they are useless now.
+		 * - Do not rename the files: the thumbnails may still get new names because of the suffix containing the image dimensions, which may differ (for example when thumbnails are scaled, not cropped).
+		 * In this last case, the thumbnails with the old dimensions are removed from the drive and from the WP’s post meta, so there is no need of keeping orphan webp files that would stay on the drive for ever, even after the attachment is deleted from WP.
+		 */
+		$media_files = $this->process->get_media()->get_media_files();
+
+		if ( $media_files ) {
+			foreach ( $media_files as $media_file ) {
+				$this->old_webp_paths[] = imagify_path_to_webp( $media_file['path'] );
+			}
+		}
+
+		// Delete the old backup file and old webp files.
 		add_action( 'imagify_before_auto_optimization',         [ $this, 'delete_backup' ] );
 		add_action( 'imagify_not_optimized_attachment_updated', [ $this, 'delete_backup' ] );
 	}
@@ -94,51 +108,6 @@ class Main extends Imagify_Enable_Media_Replace_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 	/** HOOKS =================================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * When the user chooses to change the file name, store the old backup file path. This path will be used later to delete the file.
-	 *
-	 * @since 1.6.9
-	 *
-	 * @param  string $new_filename The new file name.
-	 * @param  string $current_path The current file path.
-	 * @param  int    $post_id      The attachment ID.
-	 * @return string               The same file name.
-	 */
-	public function store_old_backup_path( $new_filename, $current_path, $post_id ) {
-		if ( ! $this->media_id || $post_id !== $this->media_id ) {
-			return $new_filename;
-		}
-
-		$this->get_process();
-
-		if ( ! $this->process ) {
-			$this->media_id = 0;
-			return $new_filename;
-		}
-
-		$media       = $this->process->get_media();
-		$backup_path = $media->get_backup_path();
-
-		if ( $backup_path ) {
-			$this->old_backup_path = $backup_path;
-
-			// Keep track of existing webp files.
-			$media_files = $media->get_media_files();
-
-			if ( $media_files ) {
-				foreach ( $media_files as $media_file ) {
-					$this->old_webp_paths[] = imagify_path_to_webp( $media_file['path'] );
-				}
-			}
-		} else {
-			$this->media_id        = 0;
-			$this->old_backup_path = false;
-			$this->old_webp_paths  = [];
-		}
-
-		return $new_filename;
-	}
 
 	/**
 	 * Delete previous backup file. This is done after the images have been already replaced by Enable Media Replace.
