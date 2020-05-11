@@ -1,6 +1,8 @@
 <?php
 namespace Imagify\ThirdParty\EnableMediaReplace;
 
+use Imagify\Traits\InstanceGetterTrait;
+use Imagify_Enable_Media_Replace_Deprecated;
 use Imagify_Filesystem;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
@@ -10,8 +12,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  *
  * @since 1.6.9
  */
-class Main extends \Imagify_Enable_Media_Replace_Deprecated {
-	use \Imagify\Traits\InstanceGetterTrait;
+class Main extends Imagify_Enable_Media_Replace_Deprecated {
+	use InstanceGetterTrait;
 
 	/**
 	 * The media ID.
