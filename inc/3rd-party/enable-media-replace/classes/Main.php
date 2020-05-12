@@ -91,12 +91,8 @@ class Main extends Imagify_Enable_Media_Replace_Deprecated {
 		 * - Do not rename the files: the thumbnails may still get new names because of the suffix containing the image dimensions, which may differ (for example when thumbnails are scaled, not cropped).
 		 * In this last case, the thumbnails with the old dimensions are removed from the drive and from the WP’s post meta, so there is no need of keeping orphan webp files that would stay on the drive for ever, even after the attachment is deleted from WP.
 		 */
-		$media_files = $this->process->get_media()->get_media_files();
-
-		if ( $media_files ) {
-			foreach ( $media_files as $media_file ) {
-				$this->old_webp_paths[] = imagify_path_to_webp( $media_file['path'] );
-			}
+		foreach ( $this->process->get_media()->get_media_files() as $media_file ) {
+			$this->old_webp_paths[] = imagify_path_to_webp( $media_file['path'] );
 		}
 
 		// Delete the old backup file and old webp files.
