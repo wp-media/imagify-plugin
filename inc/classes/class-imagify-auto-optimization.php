@@ -1,4 +1,7 @@
 <?php
+
+use Imagify\Traits\InstanceGetterTrait;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -9,7 +12,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since 1.8.4
  */
 class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * An array containing all the "steps" an attachment is going through.
