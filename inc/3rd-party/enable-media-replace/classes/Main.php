@@ -106,8 +106,8 @@ class Main extends Imagify_Enable_Media_Replace_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Delete previous backup file. This is done after the images have been already replaced by Enable Media Replace.
-	 * It will prevent having a backup file not corresponding to the current images.
+	 * Delete previous backup file and webp files.
+	 * This is done after the images have been already replaced by Enable Media Replace.
 	 *
 	 * @since 1.8.4
 	 *
@@ -121,12 +121,13 @@ class Main extends Imagify_Enable_Media_Replace_Deprecated {
 		$filesystem = Imagify_Filesystem::get_instance();
 
 		if ( $filesystem->exists( $this->old_backup_path ) ) {
+			// Delete old backup file.
 			$filesystem->delete( $this->old_backup_path );
 			$this->old_backup_path = false;
 		}
 
-		if ( $this->old_webp_paths ) {
-			// If the files have been renamed, delete old webp files.
+		if ( ! empty( $this->old_webp_paths ) ) {
+			// Delete old webp files.
 			$this->old_webp_paths = array_filter( $this->old_webp_paths, [ $filesystem, 'exists' ] );
 			array_map( [ $filesystem, 'delete' ], $this->old_webp_paths );
 			$this->old_webp_paths = [];
