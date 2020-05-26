@@ -4,8 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 /**
  * Compat class for Enable Media Replace plugin.
  *
- * @since  1.8.4
- * @author Grégory Viguier
+ * @since 1.8.4
  * @deprecated
  */
 class Imagify_Enable_Media_Replace_Deprecated {
@@ -13,11 +12,9 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	/**
 	 * The attachment ID.
 	 *
-	 * @var    int
-	 * @since  1.6.9
-	 * @since  1.9 Deprecated
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var   int
+	 * @since 1.6.9
+	 * @since 1.9 Deprecated
 	 * @deprecated
 	 */
 	protected $attachment_id;
@@ -25,11 +22,9 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	/**
 	 * The attachment.
 	 *
-	 * @var    Imagify_Attachment
-	 * @since  1.6.9
-	 * @since  1.9 Deprecated
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var   Imagify_Attachment
+	 * @since 1.6.9
+	 * @since 1.9 Deprecated
 	 * @deprecated
 	 */
 	protected $attachment;
@@ -38,11 +33,9 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	 * Tell if the attachment has data.
 	 * No data means not processed by Imagify, or restored.
 	 *
-	 * @var    bool
-	 * @since  1.8.4
-	 * @since  1.9 Deprecated
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var   bool
+	 * @since 1.8.4
+	 * @since 1.9 Deprecated
 	 * @deprecated
 	 */
 	protected $attachment_has_data;
@@ -50,11 +43,9 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	/**
 	 * Filesystem object.
 	 *
-	 * @var    object Imagify_Filesystem
-	 * @since  1.7.1
-	 * @since  1.8.4 Deprecated
-	 * @author Grégory Viguier
-	 * @access protected
+	 * @var   object Imagify_Filesystem
+	 * @since 1.7.1
+	 * @since 1.8.4 Deprecated
 	 * @deprecated
 	 */
 	protected $filesystem;
@@ -63,11 +54,9 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	 * Optimize the attachment files if the old ones were also optimized.
 	 * Delete the old backup file.
 	 *
-	 * @since  1.6.9
-	 * @since  1.8.4 Deprecated
-	 * @author Grégory Viguier
-	 * @see    $this->store_old_backup_path()
-	 * @access protected
+	 * @since 1.6.9
+	 * @since 1.8.4 Deprecated.
+	 * @see   $this->store_old_backup_path()
 	 * @deprecated
 	 *
 	 * @param  string $return_url The URL the user will be redirected to.
@@ -121,12 +110,59 @@ class Imagify_Enable_Media_Replace_Deprecated {
 	}
 
 	/**
+	 * When the user chooses to change the file name, store the old backup file path. This path will be used later to delete the file.
+	 *
+	 * @since 1.6.9
+	 * @since 1.9.10 Deprecated.
+	 * @deprecated
+	 *
+	 * @param  string $new_filename The new file name.
+	 * @param  string $current_path The current file path.
+	 * @param  int    $post_id      The attachment ID.
+	 * @return string               The same file name.
+	 */
+	public function store_old_backup_path( $new_filename, $current_path, $post_id ) {
+		_deprecated_function( get_class( $this ) . '::' . __FUNCTION__ . '()', '1.9.10' );
+
+		if ( ! $this->media_id || $post_id !== $this->media_id ) {
+			return $new_filename;
+		}
+
+		$this->get_process();
+
+		if ( ! $this->process ) {
+			$this->media_id = 0;
+			return $new_filename;
+		}
+
+		$media       = $this->process->get_media();
+		$backup_path = $media->get_backup_path();
+
+		if ( $backup_path ) {
+			$this->old_backup_path = $backup_path;
+
+			// Keep track of existing webp files.
+			$media_files = $media->get_media_files();
+
+			if ( $media_files ) {
+				foreach ( $media_files as $media_file ) {
+					$this->old_webp_paths[] = imagify_path_to_webp( $media_file['path'] );
+				}
+			}
+		} else {
+			$this->media_id        = 0;
+			$this->old_backup_path = false;
+			$this->old_webp_paths  = [];
+		}
+
+		return $new_filename;
+	}
+
+	/**
 	 * Get the attachment.
 	 *
-	 * @since  1.6.9
-	 * @since  1.9 Deprecated
-	 * @author Grégory Viguier
-	 * @access protected
+	 * @since 1.6.9
+	 * @since 1.9 Deprecated.
 	 * @deprecated
 	 *
 	 * @return object A Imagify_Attachment object (or any class extending it).

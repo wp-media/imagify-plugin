@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  *
  * @since 1.9.10
  */
-class Imagify_Auto_Optimization_Deprecated {
+abstract class Imagify_Auto_Optimization_Deprecated {
 
 	/**
 	 * With WP 5.3+, prevent auto-optimization inside wp_generate_attachment_metadata() because it triggers a wp_update_attachment_metadata() for each thumbnail size.

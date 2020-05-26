@@ -76,19 +76,20 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 		$this->is_wp_53 = version_compare( $wp_version, '5.3-alpha1' ) >= 0;
 
 		// Automatic optimization tunel.
+		add_action( 'add_attachment',                  [ $this, 'store_upload_ids' ], $priority );
+		add_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_store_generate_step' ], $priority, 2 );
+		add_filter( 'wp_update_attachment_metadata',   [ $this, 'store_ids_to_optimize' ], $priority, 2 );
+
 		if ( $this->is_wp_53 ) {
 			// WP 5.3+.
-			add_filter( 'wp_generate_attachment_metadata',      [ $this, 'maybe_store_generate_step' ], $priority, 3 );
-			add_filter( 'wp_update_attachment_metadata',        [ $this, 'store_ids_to_optimize' ], $priority, 2 );
 			add_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $priority, 2 );
 			// Upload failure recovering.
-			add_action( 'wp_ajax_media-create-image-subsizes',  [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 ); // Before WP’s hook (priority 1).
+			add_action( 'wp_ajax_media-create-image-subsizes', [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 ); // Before WP’s hook (priority 1).
 		} else {
-			add_action( 'add_attachment',                [ $this, 'store_upload_ids' ], $priority );
-			add_filter( 'wp_update_attachment_metadata', [ $this, 'store_ids_to_optimize' ], $priority, 2 );
 			add_action( 'updated_post_meta',             [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
 			add_action( 'added_post_meta',               [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
 		}
+
 		add_action( 'deleted_post_meta', [ $this, 'unset_optimization' ], $priority, 3 );
 
 		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
@@ -105,19 +106,20 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 		$priority = IMAGIFY_INT_MAX - 30;
 
 		// Automatic optimization tunel.
+		remove_action( 'add_attachment',                  [ $this, 'store_upload_ids' ], $priority );
+		remove_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_store_generate_step' ], $priority );
+		remove_filter( 'wp_update_attachment_metadata',   [ $this, 'store_ids_to_optimize' ], $priority );
+
 		if ( $this->is_wp_53 ) {
 			// WP 5.3+.
-			remove_filter( 'wp_generate_attachment_metadata',      [ $this, 'maybe_store_generate_step' ], $priority );
-			remove_filter( 'wp_update_attachment_metadata',        [ $this, 'store_ids_to_optimize' ], $priority );
 			remove_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $priority );
 			// Upload failure recovering.
-			remove_action( 'wp_ajax_media-create-image-subsizes',  [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 );
+			remove_action( 'wp_ajax_media-create-image-subsizes', [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 );
 		} else {
-			remove_action( 'add_attachment',                [ $this, 'store_upload_ids' ], $priority );
-			remove_filter( 'wp_update_attachment_metadata', [ $this, 'store_ids_to_optimize' ], $priority );
 			remove_action( 'updated_post_meta',             [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
 			remove_action( 'added_post_meta',               [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
 		}
+
 		remove_action( 'deleted_post_meta', [ $this, 'unset_optimization' ], $priority );
 
 		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
@@ -131,10 +133,9 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * In WP < WP 5.3, store the "upload step" when an attachment has just been uploaded.
+	 * Store the "upload step" when an attachment has just been uploaded.
 	 *
 	 * @since 1.8.4
-	 * @since 1.9.10 Used only in WP < 5.3. Also add the 'generate' step.
 	 * @see   $this->store_ids_to_optimize()
 	 *
 	 * @param int $attachment_id Current attachment ID.
@@ -142,22 +143,19 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 	public function store_upload_ids( $attachment_id ) {
 		if ( ! self::is_optimization_prevented( $attachment_id ) && imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 			$this->set_step( $attachment_id, 'upload' );
-			$this->set_step( $attachment_id, 'generate' ); // Required in $this->store_ids_to_optimize().
 		}
 	}
 
 	/**
-	 * In WP 5.3+, store the "generate step" when wp_generate_attachment_metadata() is used.
-	 * Can also store the "upload step".
+	 * Store the "generate step" when wp_generate_attachment_metadata() is used.
 	 *
 	 * @since 1.9.10
 	 *
-	 * @param  array  $metadata      An array of attachment meta data.
-	 * @param  int    $attachment_id Current attachment ID.
-	 * @param  string $context       Additional context. Can be 'create' when metadata was initially created for new attachment or 'update' when the metadata was updated.
+	 * @param  array $metadata      An array of attachment meta data.
+	 * @param  int   $attachment_id Current attachment ID.
 	 * @return array
 	 */
-	public function maybe_store_generate_step( $metadata, $attachment_id, $context = null ) {
+	public function maybe_store_generate_step( $metadata, $attachment_id ) {
 		if ( self::is_optimization_prevented( $attachment_id ) ) {
 			return $metadata;
 		}
@@ -165,10 +163,6 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 		if ( empty( $metadata ) || ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
 			$this->unset_steps( $attachment_id );
 			return $metadata;
-		}
-
-		if ( 'create' === $context ) {
-			$this->set_step( $attachment_id, 'upload' );
 		}
 
 		$this->set_step( $attachment_id, 'generate' );
