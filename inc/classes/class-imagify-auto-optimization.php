@@ -1,94 +1,96 @@
 <?php
+
+use Imagify\Traits\InstanceGetterTrait;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class that handles the auto-optimization process.
  * This occurs when a new image is uploaded, and when an optimized image is worked with (resized, etc).
- * The process will work only if wp_update_attachment_metadata() is used.
+ * The process will work only if wp_generate_attachment_metadata() and wp_update_attachment_metadata() are used.
  *
- * @since  1.8.4
- * @author Grégory Viguier
+ * @since 1.8.4
  */
-class Imagify_Auto_Optimization {
-	use \Imagify\Traits\InstanceGetterTrait;
+class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
+	use InstanceGetterTrait;
 
 	/**
-	 * An array containing the IDs (as keys) of attachments just being uploaded.
+	 * An array containing all the "steps" an attachment is going through.
+	 * This is used to decide the behavior of the automatic optimization.
 	 *
-	 * @var    array
-	 * @since  1.8.4
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var    array {
+	 *     An array of arrays with attachment ID as keys.
+	 *     Each array can contain the following:
+	 *
+	 *     @type $upload   int Set to 1 if the attachment is a new upload.
+	 *     @type $generate int Set to 1 when going though wp_generate_attachment_metadata().
+	 *     @type $update   int Set to 1 when going though wp_update_attachment_metadata().
+	 * }
+	 * @since 1.8.4
+	 * @since 1.9.10 Private.
+	 * @since 1.9.10 Items are arrays instead of 1s.
 	 */
-	protected $uploads = [];
+	private $attachments = [];
 
 	/**
-	 * An array containing the IDs (as keys) of attachments that must be optimized automatically.
-	 * The values tell if the attachment is a new upload.
+	 * Tell if we’re using WP 5.3+.
 	 *
-	 * @var    array
-	 * @since  1.8.4
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var   bool
+	 * @since 1.9.10
 	 */
-	protected $attachments = [];
+	private $is_wp_53;
 
 	/**
 	 * The ID of the attachment that failed to be uploaded.
 	 *
-	 * @var    int
-	 * @since  1.9.8
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var   int
+	 * @since 1.9.8
 	 */
 	protected $upload_failure_id = 0;
 
 	/**
 	 * Used to prevent an auto-optimization locally.
 	 *
-	 * @var    array
-	 * @since  1.8.4
-	 * @access private
-	 * @author Grégory Viguier
+	 * @var   array
+	 * @since 1.8.4
 	 */
 	private static $prevented = [];
 
 	/**
 	 * Used to prevent an auto-optimization internally.
 	 *
-	 * @var    array
-	 * @since  1.9.8
-	 * @access private
-	 * @author Grégory Viguier
+	 * @var   array
+	 * @since 1.9.8
 	 */
 	private static $prevented_internally = [];
 
 	/**
 	 * Init.
 	 *
-	 * @since  1.8.4
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.4
 	 */
 	public function init() {
 		global $wp_version;
-		$prio = IMAGIFY_INT_MAX - 30;
+
+		$priority       = IMAGIFY_INT_MAX - 30;
+		$this->is_wp_53 = version_compare( $wp_version, '5.3-alpha1' ) >= 0;
 
 		// Automatic optimization tunel.
-		add_action( 'add_attachment',                [ $this, 'store_upload_ids' ], $prio );
-		add_filter( 'wp_update_attachment_metadata', [ $this, 'store_ids_to_optimize' ], $prio, 2 );
-		add_action( 'updated_post_meta',             [ $this, 'do_auto_optimization_after_meta_update' ], $prio, 4 );
-		add_action( 'added_post_meta',               [ $this, 'do_auto_optimization_after_meta_update' ], $prio, 4 );
-		add_action( 'deleted_post_meta',             [ $this, 'unset_optimization' ], $prio, 3 );
+		add_action( 'add_attachment',                  [ $this, 'store_upload_ids' ], $priority );
+		add_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_store_generate_step' ], $priority, 2 );
+		add_filter( 'wp_update_attachment_metadata',   [ $this, 'store_ids_to_optimize' ], $priority, 2 );
 
-		if ( version_compare( $wp_version, '5.3-alpha1' ) >= 0 ) {
+		if ( $this->is_wp_53 ) {
 			// WP 5.3+.
-			add_filter( 'big_image_size_threshold',             [ $this, 'prevent_auto_optimization_when_generating_thumbnails' ], $prio, 4 );
-			add_filter( 'wp_generate_attachment_metadata',      [ $this, 'allow_auto_optimization_when_generating_thumbnails' ], $prio, 3 );
-			add_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $prio, 2 );
+			add_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $priority, 2 );
 			// Upload failure recovering.
-			add_action( 'wp_ajax_media-create-image-subsizes',  [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 ); // Before WP’s hook (priority 1).
+			add_action( 'wp_ajax_media-create-image-subsizes', [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 ); // Before WP’s hook (priority 1).
+		} else {
+			add_action( 'updated_post_meta',             [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
+			add_action( 'added_post_meta',               [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
 		}
+
+		add_action( 'deleted_post_meta', [ $this, 'unset_optimization' ], $priority, 3 );
 
 		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
 		add_action( 'imagify_before_update_wp_media_data_dimensions', [ __CLASS__, 'prevent_optimization' ], 5 );
@@ -98,28 +100,27 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Remove the hooks.
 	 *
-	 * @since  1.8.4
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.4
 	 */
 	public function remove_hooks() {
-		$prio = IMAGIFY_INT_MAX - 30;
+		$priority = IMAGIFY_INT_MAX - 30;
 
 		// Automatic optimization tunel.
-		remove_action( 'add_attachment',                                 [ $this, 'store_upload_ids' ], $prio );
-		remove_filter( 'wp_update_attachment_metadata',                  [ $this, 'store_ids_to_optimize' ], $prio );
-		remove_action( 'updated_post_meta',                              [ $this, 'do_auto_optimization_after_meta_update' ], $prio );
-		remove_action( 'added_post_meta',                                [ $this, 'do_auto_optimization_after_meta_update' ], $prio );
-		remove_action( 'deleted_post_meta',                              [ $this, 'unset_optimization' ], $prio );
+		remove_action( 'add_attachment',                  [ $this, 'store_upload_ids' ], $priority );
+		remove_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_store_generate_step' ], $priority );
+		remove_filter( 'wp_update_attachment_metadata',   [ $this, 'store_ids_to_optimize' ], $priority );
 
-		if ( version_compare( $wp_version, '5.3-alpha1' ) >= 0 ) {
+		if ( $this->is_wp_53 ) {
 			// WP 5.3+.
-			remove_filter( 'big_image_size_threshold',             [ $this, 'prevent_auto_optimization_when_generating_thumbnails' ], $prio );
-			remove_filter( 'wp_generate_attachment_metadata',      [ $this, 'allow_auto_optimization_when_generating_thumbnails' ], $prio );
-			remove_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $prio );
-			// Upload failure handling.
-			remove_action( 'wp_ajax_media_create_image_subsizes',  [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 );
+			remove_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $priority );
+			// Upload failure recovering.
+			remove_action( 'wp_ajax_media-create-image-subsizes', [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 );
+		} else {
+			remove_action( 'updated_post_meta',             [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
+			remove_action( 'added_post_meta',               [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
 		}
+
+		remove_action( 'deleted_post_meta', [ $this, 'unset_optimization' ], $priority );
 
 		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
 		remove_action( 'imagify_before_update_wp_media_data_dimensions', [ __CLASS__, 'prevent_optimization' ], 5 );
@@ -132,32 +133,50 @@ class Imagify_Auto_Optimization {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Store the ID of attachments that just have been uploaded.
-	 * We use those IDs to tell the difference later in `wp_update_attachment_metadata()`.
+	 * Store the "upload step" when an attachment has just been uploaded.
 	 *
-	 * @since  1.8.4
-	 * @access public
-	 * @see    $this->store_ids_to_optimize()
-	 * @author Grégory Viguier
+	 * @since 1.8.4
+	 * @see   $this->store_ids_to_optimize()
 	 *
 	 * @param int $attachment_id Current attachment ID.
 	 */
 	public function store_upload_ids( $attachment_id ) {
 		if ( ! self::is_optimization_prevented( $attachment_id ) && imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
-			$this->uploads[ $attachment_id ] = 1;
+			$this->set_step( $attachment_id, 'upload' );
 		}
 	}
 
 	/**
-	 * After the attachment meta data has been generated, launch an async optimization.
+	 * Store the "generate step" when wp_generate_attachment_metadata() is used.
+	 *
+	 * @since 1.9.10
+	 *
+	 * @param  array $metadata      An array of attachment meta data.
+	 * @param  int   $attachment_id Current attachment ID.
+	 * @return array
+	 */
+	public function maybe_store_generate_step( $metadata, $attachment_id ) {
+		if ( self::is_optimization_prevented( $attachment_id ) ) {
+			return $metadata;
+		}
+
+		if ( empty( $metadata ) || ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+			$this->unset_steps( $attachment_id );
+			return $metadata;
+		}
+
+		$this->set_step( $attachment_id, 'generate' );
+
+		return $metadata;
+	}
+
+	/**
+	 * After the attachment meta data has been generated (partially, since WP 5.3), init the auto-optimization.
 	 * Two cases are possible to trigger the optimization:
 	 * - It's a new upload and auto-optimization is enabled.
 	 * - It's not a new upload (it is regenerated) and the attachment is already optimized.
 	 *
-	 * @since  1.8.4
-	 * @access public
-	 * @see    $this->store_upload_ids()
-	 * @author Grégory Viguier
+	 * @since 1.8.4
 	 *
 	 * @param  array $metadata      An array of attachment meta data.
 	 * @param  int   $attachment_id Current attachment ID.
@@ -170,12 +189,16 @@ class Imagify_Auto_Optimization {
 			return $metadata;
 		}
 
-		$is_new_upload = ! empty( $this->uploads[ $attachment_id ] );
-		unset( $this->uploads[ $attachment_id ] );
-
-		if ( ! $metadata || ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+		if ( empty( $metadata ) || ! imagify_is_attachment_mime_type_supported( $attachment_id ) ) {
+			$this->unset_steps( $attachment_id );
 			return $metadata;
 		}
+
+		if ( ! $this->has_step( $attachment_id, 'generate' ) ) {
+			return $metadata;
+		}
+
+		$is_new_upload = $this->has_step( $attachment_id, 'upload' );
 
 		if ( $is_new_upload ) {
 			// It's a new upload.
@@ -187,8 +210,7 @@ class Imagify_Auto_Optimization {
 				/**
 				 * Fires when a new attachment is uploaded but auto-optimization is disabled.
 				 *
-				 * @since  1.8.4
-				 * @author Grégory Viguier
+				 * @since 1.8.4
 				 *
 				 * @param int   $attachment_id Attachment ID.
 				 * @param array $metadata      An array of attachment meta data.
@@ -201,8 +223,7 @@ class Imagify_Auto_Optimization {
 			/**
 			 * Allow to prevent automatic optimization for a specific attachment.
 			 *
-			 * @since  1.6.12
-			 * @author Grégory Viguier
+			 * @since 1.6.12
 			 *
 			 * @param bool  $optimize      True to optimize, false otherwise.
 			 * @param int   $attachment_id Attachment ID.
@@ -232,8 +253,7 @@ class Imagify_Auto_Optimization {
 				/**
 				 * Fires when an attachment is updated but not optimized yet.
 				 *
-				 * @since  1.8.4
-				 * @author Grégory Viguier
+				 * @since 1.8.4
 				 *
 				 * @param int   $attachment_id Attachment ID.
 				 * @param array $metadata      An array of attachment meta data.
@@ -246,8 +266,7 @@ class Imagify_Auto_Optimization {
 			/**
 			 * Allow to prevent automatic reoptimization for a specific attachment.
 			 *
-			 * @since  1.8.4
-			 * @author Grégory Viguier
+			 * @since 1.8.4
 			 *
 			 * @param bool  $optimize      True to optimize, false otherwise.
 			 * @param int   $attachment_id Attachment ID.
@@ -265,13 +284,12 @@ class Imagify_Auto_Optimization {
 		}
 
 		// Ready for the next step.
-		$this->attachments[ $attachment_id ] = $is_new_upload;
+		$this->set_step( $attachment_id, 'update' );
 
 		/**
 		 * Triggered after a media auto-optimization init.
 		 *
-		 * @since  1.9.8
-		 * @author Grégory Viguier
+		 * @since 1.9.8
 		 *
 		 * @param int  $attachment_id The media ID.
 		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
@@ -284,10 +302,8 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Launch auto optimization immediately after the post meta '_wp_attachment_metadata' is added or updated.
 	 *
-	 * @since  1.9
-	 * @since  1.9 Previously named do_auto_optimization().
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
+	 * @since 1.9 Previously named do_auto_optimization().
 	 *
 	 * @param int    $meta_id       ID of the metadata entry.
 	 * @param int    $attachment_id Current attachment ID.
@@ -299,39 +315,35 @@ class Imagify_Auto_Optimization {
 			return;
 		}
 
-		if ( ! isset( $this->attachments[ $attachment_id ] ) ) {
-			return;
-		}
-
 		if ( self::is_optimization_prevented( $attachment_id ) ) {
 			return;
 		}
 
-		$is_new_upload = $this->attachments[ $attachment_id ];
-		unset( $this->attachments[ $attachment_id ] );
+		if ( ! $this->has_step( $attachment_id, 'update' ) ) {
+			return;
+		}
 
-		$this->do_auto_optimization( $attachment_id, $is_new_upload );
+		$this->do_auto_optimization( $attachment_id, $this->has_step( $attachment_id, 'upload' ) );
 	}
 
 	/**
 	 * Launch auto optimization immediately after the post meta '_wp_attachment_metadata' is added or updated.
 	 *
-	 * @since  1.8.4
-	 * @since  1.9.8 Changed signature.
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.4
+	 * @since 1.9.8 Changed signature.
 	 *
 	 * @param int  $attachment_id The media ID.
 	 * @param bool $is_new_upload True if it's a new upload. False otherwize.
 	 */
 	public function do_auto_optimization( $attachment_id, $is_new_upload ) {
+		$this->unset_steps( $attachment_id );
+
 		$process = imagify_get_optimization_process( $attachment_id, 'wp' );
 
 		/**
 		 * Fires before an attachment auto-optimization is triggered.
 		 *
-		 * @since  1.8.4
-		 * @author Grégory Viguier
+		 * @since 1.8.4
 		 *
 		 * @param int  $attachment_id The attachment ID.
 		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
@@ -341,8 +353,7 @@ class Imagify_Auto_Optimization {
 		/**
 		 * Triggered before a media is auto-optimized.
 		 *
-		 * @since  1.8.4
-		 * @author Grégory Viguier
+		 * @since 1.8.4
 		 *
 		 * @param int  $attachment_id The media ID.
 		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
@@ -391,8 +402,7 @@ class Imagify_Auto_Optimization {
 		/**
 		 * Triggered after a media auto-optimization is launched.
 		 *
-		 * @since  1.8.4
-		 * @author Grégory Viguier
+		 * @since 1.8.4
 		 *
 		 * @param int  $attachment_id The media ID.
 		 * @param bool $is_new_upload True if it's a new upload. False otherwize.
@@ -403,68 +413,18 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Remove the attachment ID from the $attachments property if the post meta '_wp_attachment_metadata' is deleted.
 	 *
-	 * @since  1.8.4
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.4
 	 *
 	 * @param int    $meta_ids      An array of deleted metadata entry IDs.
 	 * @param int    $attachment_id Current attachment ID.
 	 * @param string $meta_key      Meta key.
 	 */
 	public function unset_optimization( $meta_ids, $attachment_id, $meta_key ) {
-		if ( '_wp_attachment_metadata' !== $meta_key || ! isset( $this->attachments[ $attachment_id ] ) ) {
+		if ( '_wp_attachment_metadata' !== $meta_key ) {
 			return;
 		}
 
-		unset( $this->attachments[ $attachment_id ] );
-	}
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** WP 5.3+ HOOKS =========================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * With WP 5.3+, prevent auto-optimization inside wp_generate_attachment_metadata() because it triggers a wp_update_attachment_metadata() for each thumbnail size.
-	 *
-	 * @since  1.9.8
-	 * @access public
-	 * @see    wp_generate_attachment_metadata()
-	 * @see    wp_create_image_subsizes()
-	 * @author Grégory Viguier
-	 *
-	 * @param  int    $threshold     The threshold value in pixels. Default 2560.
-	 * @param  array  $imagesize     Indexed array of the image width and height (in that order).
-	 * @param  string $file          Full path to the uploaded image file.
-	 * @param  int    $attachment_id Attachment post ID.
-	 * @return int                   The threshold value in pixels.
-	 */
-	public function prevent_auto_optimization_when_generating_thumbnails( $threshold, $imagesize, $file, $attachment_id ) {
-		static::prevent_optimization_internally( $attachment_id );
-		return $threshold;
-	}
-
-	/**
-	 * With WP 5.3+, allow auto-optimization back after wp_generate_attachment_metadata().
-	 *
-	 * @since  1.9.8
-	 * @access public
-	 * @see    $this->prevent_auto_optimization_when_generating_thumbnails()
-	 * @author Grégory Viguier
-	 *
-	 * @param  array  $metadata      An array of attachment meta data.
-	 * @param  int    $attachment_id Current attachment ID.
-	 * @param  string $context       Additional context. Can be 'create' when metadata was initially created for new attachment or 'update' when the metadata was updated.
-	 * @return array                 An array of attachment meta data.
-	 */
-	public function allow_auto_optimization_when_generating_thumbnails( $metadata, $attachment_id, $context = null ) {
-		if ( ! empty( $context ) && 'create' !== $context ) {
-			return $metadata;
-		}
-
-		// Fired from wp_generate_attachment_metadata(): $context is empty (WP < 5.3) or equal to 'create' (>P >= 5.3).
-		static::allow_optimization_internally( $attachment_id );
-		return $metadata;
+		$this->unset_steps( $attachment_id );
 	}
 
 
@@ -475,11 +435,9 @@ class Imagify_Auto_Optimization {
 	/**
 	 * With WP 5.3+, prevent auto-optimization when WP tries to create thumbnails after an upload error, because it triggers wp_update_attachment_metadata() for each thumbnail size.
 	 *
-	 * @since  1.9.8
-	 * @access public
-	 * @see    wp_ajax_media_create_image_subsizes()
-	 * @see    wp_update_image_subsizes()
-	 * @author Grégory Viguier
+	 * @since 1.9.8
+	 * @see   wp_ajax_media_create_image_subsizes()
+	 * @see   wp_update_image_subsizes()
 	 */
 	public function prevent_auto_optimization_when_recovering_from_upload_failure() {
 		if ( ! check_ajax_referer( 'media-form', false, false ) ) {
@@ -496,7 +454,7 @@ class Imagify_Auto_Optimization {
 
 		$attachment_id = ! empty( $_POST['attachment_id'] ) ? (int) $_POST['attachment_id'] : 0;
 
-		if ( ! $attachment_id ) {
+		if ( empty( $attachment_id ) ) {
 			return;
 		}
 
@@ -506,8 +464,6 @@ class Imagify_Auto_Optimization {
 
 		$this->upload_failure_id = $attachment_id;
 
-		static::prevent_optimization_internally( $attachment_id );
-
 		// Auto-optimization will be done on shutdown.
 		ob_start( [ $this, 'maybe_do_auto_optimization_after_recovering_from_upload_failure' ] );
 	}
@@ -515,10 +471,8 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Maybe launch auto-optimization after recovering from an upload failure, when all thumbnails are created.
 	 *
-	 * @since  1.9.8
-	 * @access public
-	 * @see    wp_ajax_media_create_image_subsizes()
-	 * @author Grégory Viguier
+	 * @since 1.9.8
+	 * @see   wp_ajax_media_create_image_subsizes()
 	 *
 	 * @param  string $content Buffer’s content.
 	 * @return string          Buffer’s content.
@@ -528,7 +482,7 @@ class Imagify_Auto_Optimization {
 			return $content;
 		}
 
-		if ( ! $this->upload_failure_id ) {
+		if ( empty( $this->upload_failure_id ) ) {
 			// Uh?
 			return $content;
 		}
@@ -546,12 +500,9 @@ class Imagify_Auto_Optimization {
 		$attachment_id = $this->upload_failure_id;
 		$metadata      = wp_get_attachment_metadata( $attachment_id );
 
-		$this->upload_failure_id         = 0;
-		$this->uploads[ $attachment_id ] = 1; // New upload.
-
-		static::allow_optimization_internally( $attachment_id );
-
 		// Launch the process.
+		$this->upload_failure_id = 0;
+		$this->set_step( $attachment_id, 'generate' );
 		$this->store_ids_to_optimize( $metadata, $attachment_id );
 
 		return $content;
@@ -563,16 +514,74 @@ class Imagify_Auto_Optimization {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
+	 * Set a "step" for an attachment.
+	 *
+	 * @since 1.9.10
+	 * @see   $this->attachments
+	 *
+	 * @param int    $attachment_id Current attachment ID.
+	 * @param string $step          The step to add.
+	 */
+	public function set_step( $attachment_id, $step ) {
+		if ( empty( $this->attachments[ $attachment_id ] ) ) {
+			$this->attachments[ $attachment_id ] = [];
+		}
+
+		$this->attachments[ $attachment_id ][ $step ] = 1;
+	}
+
+	/**
+	 * Unset a "step" for an attachment.
+	 *
+	 * @since 1.9.10
+	 * @see   $this->attachments
+	 *
+	 * @param int    $attachment_id Current attachment ID.
+	 * @param string $step          The step to add.
+	 */
+	public function unset_step( $attachment_id, $step ) {
+		unset( $this->attachments[ $attachment_id ][ $step ] );
+
+		if ( empty( $this->attachments[ $attachment_id ] ) ) {
+			$this->unset_steps( $attachment_id );
+		}
+	}
+
+	/**
+	 * Unset all "steps" for an attachment.
+	 *
+	 * @since 1.9.10
+	 * @see   $this->attachments
+	 *
+	 * @param int $attachment_id Current attachment ID.
+	 */
+	public function unset_steps( $attachment_id ) {
+		unset( $this->attachments[ $attachment_id ] );
+	}
+
+	/**
+	 * Tell if a "step" for an attachment exists.
+	 *
+	 * @since 1.9.10
+	 * @see   $this->attachments
+	 *
+	 * @param  int    $attachment_id Current attachment ID.
+	 * @param  string $step          The step to add.
+	 * @return bool
+	 */
+	public function has_step( $attachment_id, $step ) {
+		return ! empty( $this->attachments[ $attachment_id ][ $step ] );
+	}
+
+	/**
 	 * Prevent an auto-optimization locally.
 	 * How to use it:
 	 *     Imagify_Auto_Optimization::prevent_optimization( $attachment_id );
 	 *     wp_update_attachment_metadata( $attachment_id );
 	 *     Imagify_Auto_Optimization::allow_optimization( $attachment_id );
 	 *
-	 * @since  1.8.4
-	 * @since  1.9.8 Prevents/Allows can stack.
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.4
+	 * @since 1.9.8 Prevents/Allows can stack.
 	 *
 	 * @param int $attachment_id Current attachment ID.
 	 */
@@ -591,10 +600,8 @@ class Imagify_Auto_Optimization {
 	 *     wp_update_attachment_metadata( $attachment_id );
 	 *     Imagify_Auto_Optimization::allow_optimization( $attachment_id );
 	 *
-	 * @since  1.8.4
-	 * @since  1.9.8 Prevents/Allows can stack.
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.4
+	 * @since 1.9.8 Prevents/Allows can stack.
 	 *
 	 * @param int $attachment_id Current attachment ID.
 	 */
@@ -612,9 +619,7 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Tell if an auto-optimization is prevented locally.
 	 *
-	 * @since  1.8.4
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.4
 	 *
 	 * @param  int $attachment_id Current attachment ID.
 	 * @return bool
@@ -626,9 +631,7 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Prevent an auto-optimization internally.
 	 *
-	 * @since  1.9.8
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9.8
 	 *
 	 * @param int $attachment_id Current attachment ID.
 	 */
@@ -639,9 +642,7 @@ class Imagify_Auto_Optimization {
 	/**
 	 * Allow an auto-optimization internally.
 	 *
-	 * @since  1.9.8
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9.8
 	 *
 	 * @param int $attachment_id Current attachment ID.
 	 */
