@@ -407,13 +407,21 @@ class Imagify_Settings {
 
 		imagify_check_nonce( $this->settings_group . '-options' );
 
-		$whitelist_options = apply_filters( 'whitelist_options', array() );
+		$allowed_options = apply_filters_deprecated(
+			'whitelist_options',
+			[],
+			'5.5.0',
+			'allowed_options',
+			__( 'Please consider writing more inclusive code.' )
+		);
 
-		if ( ! isset( $whitelist_options[ $this->settings_group ] ) ) {
+		$allowed_options = apply_filters( 'allowed_options', $allowed_options );
+
+		if ( ! isset( $allowed_options[ $this->settings_group ] ) ) {
 			imagify_die( __( '<strong>ERROR</strong>: options page not found.' ) );
 		}
 
-		$options = $whitelist_options[ $this->settings_group ];
+		$options = $allowed_options[ $this->settings_group ];
 
 		if ( $options ) {
 			foreach ( $options as $option ) {
