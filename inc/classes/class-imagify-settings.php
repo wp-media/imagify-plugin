@@ -390,8 +390,8 @@ class Imagify_Settings {
 	 * `options.php` does not handle network options. Let's use `admin-post.php` for multisite installations.
 	 *
 	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 *
+	 * @return void
 	 */
 	public function update_site_option_on_network() {
 		if ( empty( $_POST['option_page'] ) || $_POST['option_page'] !== $this->settings_group ) { // WPCS: CSRF ok.
