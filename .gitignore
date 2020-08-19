@@ -2,6 +2,7 @@
 /node_modules
 /Tests/env/local
 /vendor
+/classes/Dependencies
 # Files
 .DS_Store
 /gruntlocalconf.json
