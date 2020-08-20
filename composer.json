@@ -12,11 +12,8 @@
 	"authors": [
 		{
 			"name": "WP Media",
+			"email": "contact@wp-media.me",
 			"homepage": "https://wp-media.me/"
-		},
-		{
-			"name": "Grégory Viguier",
-			"role": "Developer"
 		}
 	],
 	"type": "wordpress-plugin",
@@ -35,7 +32,7 @@
 		"dangoodman/composer-for-wordpress": "^2.0"
 	},
 	"require-dev": {
-		"php": ">=5.4.0 || ^7",
+		"php": "^5.6 || ^7",
 		"brain/monkey": "^2.0",
 		"coenjacobs/mozart": "^0.5.1",
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
