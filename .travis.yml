@@ -64,7 +64,7 @@ before_script:
 script:
     - |
         if [[ "$WP_TRAVISCI" == "phpcs" ]]; then
-            vendor/bin/phpcs --ignore="*/classes/Dependencies/*" --config-set installed_paths ../../phpcompatibility/phpcompatibility-paragonie,../../phpcompatibility/phpcompatibility-wp,../../wp-coding-standards/wpcs,../../phpcompatibility/php-compatibility
+            vendor/bin/phpcs --config-set installed_paths ../../phpcompatibility/phpcompatibility-paragonie,../../phpcompatibility/phpcompatibility-wp,../../wp-coding-standards/wpcs,../../phpcompatibility/php-compatibility
             composer phpcs
         elif [[ "$WP_TRAVISCI" == "phpstan" ]]; then
           composer require --dev szepeviktor/phpstan-wordpress
