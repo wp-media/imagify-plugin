@@ -52,7 +52,6 @@ install:
     - composer install --prefer-dist --no-interaction --no-scripts
 before_script:
     - export PATH="$HOME/.composer/vendor/bin:$PATH"
-    - composer install --no-progress
     - |
         if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
           phpenv config-rm xdebug.ini
