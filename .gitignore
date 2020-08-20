@@ -5,3 +5,4 @@
 # Files
 .DS_Store
 /gruntlocalconf.json
+composer.lock
