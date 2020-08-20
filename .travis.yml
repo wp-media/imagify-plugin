@@ -47,7 +47,7 @@ before_install:
         if [[ -f composer.lock ]] ; then
           rm composer.lock
         fi
-        - composer remove --dev --no-scripts phpstan/phpstan szepeviktor/phpstan-wordpress coenjacobs/mozart
+    - composer remove --dev --no-scripts phpstan/phpstan szepeviktor/phpstan-wordpress coenjacobs/mozart
 install:
     - composer install --prefer-dist --no-interaction --no-scripts
 before_script:
