@@ -37,7 +37,7 @@
 	"require-dev": {
 		"php": ">=5.4.0 || ^7",
 		"brain/monkey": "^2.0",
-		"coenjacobs/mozart": "^0.4.0",
+		"coenjacobs/mozart": "^0.5.1",
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
 		"deliciousbrains/wp-background-processing": "~1.0",
 		"phpcompatibility/phpcompatibility-wp": "*",
