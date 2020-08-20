@@ -89,11 +89,11 @@
 			"@test-integration"
 		],
 		"post-install-cmd": [
-			"\"vendor/bin/mozart\" compose",
+			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
 			"composer dump-autoload"
 		],
 		"post-update-cmd": [
-			"\"vendor/bin/mozart\" compose",
+			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
 			"composer dump-autoload"
 		]
 	}
