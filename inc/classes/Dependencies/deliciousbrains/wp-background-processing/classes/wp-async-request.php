@@ -10,7 +10,7 @@
  *
  * @abstract
  */
-abstract class WPMIP_WP_Async_Request {
+abstract class Imagify_WP_Async_Request {
 
 	/**
 	 * Prefix
