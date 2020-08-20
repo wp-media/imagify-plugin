@@ -11,7 +11,7 @@
  * @abstract
  * @extends WP_Async_Request
  */
-abstract class Imagify_WP_Background_Process extends WP_Async_Request {
+abstract class Imagify_WP_Background_Process extends Imagify_WP_Async_Request {
 
 	/**
 	 * Action
