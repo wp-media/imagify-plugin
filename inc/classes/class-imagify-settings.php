@@ -436,6 +436,8 @@ class Imagify_Settings {
 			return;
 		}
 
+		$allowed_options = [];
+
 		if ( version_compare( $wp_version, '5.5', '<' ) ) {
 			$allowed_options = apply_filters_deprecated(
 				'whitelist_options',
