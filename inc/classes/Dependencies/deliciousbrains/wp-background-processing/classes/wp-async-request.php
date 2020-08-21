@@ -6,7 +6,7 @@
  */
 
 /**
- * Abstract WP_Async_Request class.
+ * Abstract Imagify_WP_Async_Request class.
  *
  * @abstract
  */

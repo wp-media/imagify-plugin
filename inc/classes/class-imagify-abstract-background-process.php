@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.8.1
  * @author Grégory Viguier
  */
-abstract class Imagify_Abstract_Background_Process extends WP_Background_Process {
+abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background_Process {
 
 	/**
 	 * Class version.
