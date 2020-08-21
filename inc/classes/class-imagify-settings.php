@@ -413,7 +413,7 @@ class Imagify_Settings {
 
 		$allowed_options = apply_filters_deprecated(
 			'whitelist_options',
-			[],
+			[[]],
 			'5.5.0',
 			'allowed_options',
 			__( 'Please consider writing more inclusive code.' )

@@ -269,8 +269,10 @@ function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
 function imagify_check_nonce( $action, $query_arg = false ) {
 	if ( ! check_ajax_referer( $action, $query_arg, false ) ) {
 		imagify_die();
-		return true;
+		return false;
 	}
+
+	return true;
 }
 
 /**
