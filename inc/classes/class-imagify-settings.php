@@ -69,7 +69,6 @@ class Imagify_Settings {
 	 * @return object Main instance.
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public static function get_instance() {
 		if ( ! isset( self::$_instance ) ) {
@@ -94,11 +93,11 @@ class Imagify_Settings {
 		if ( imagify_is_active_for_network() ) {
 			add_filter( 'pre_update_site_option_' . $this->option_name, array(
 				$this,
-				'maybe_set_redirection'
+				'maybe_set_redirection',
 			), 10, 2 );
 			add_action( 'update_site_option_' . $this->option_name, array(
 				$this,
-				'after_save_network_options'
+				'after_save_network_options',
 			), 10, 3 );
 			add_action( 'admin_post_update', array( $this, 'update_site_option_on_network' ) );
 		} else {
@@ -119,7 +118,6 @@ class Imagify_Settings {
 	 * @return string
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public function get_settings_group() {
 		return $this->settings_group;
@@ -132,7 +130,6 @@ class Imagify_Settings {
 	 * @return string
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public function get_form_action() {
 		return imagify_is_active_for_network() ? admin_url( 'admin-post.php' ) : admin_url( 'options.php' );
@@ -145,7 +142,6 @@ class Imagify_Settings {
 	 * @return bool
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public function is_form_submit() {
 		return filter_input( INPUT_POST, 'option_page', FILTER_SANITIZE_STRING ) === $this->settings_group && filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING ) === 'update';
@@ -167,7 +163,6 @@ class Imagify_Settings {
 	 * @return array
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public function populate_values_on_save( $values ) {
 		if ( ! $this->is_form_submit() ) {
@@ -194,7 +189,6 @@ class Imagify_Settings {
 		 * @param array $values The option values.
 		 *
 		 * @author Grégory Viguier
-		 *
 		 */
 		$values = apply_filters( 'imagify_settings_on_save', $values );
 
@@ -211,7 +205,6 @@ class Imagify_Settings {
 	 *
 	 * @return array
 	 * @author Grégory Viguier
-	 *
 	 */
 	protected function populate_disallowed_sizes( $values ) {
 		$values['disallowed-sizes'] = array();
@@ -244,7 +237,6 @@ class Imagify_Settings {
 	 *
 	 * @return array
 	 * @author Grégory Viguier
-	 *
 	 */
 	protected function populate_custom_folders( $values ) {
 		if ( ! imagify_can_optimize_custom_folders() ) {
@@ -353,7 +345,6 @@ class Imagify_Settings {
 	 * @return mixed            The option value.
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public function maybe_set_redirection( $value, $old_value ) {
 		if ( isset( $_POST['submit-goto-bulk'] ) ) { // WPCS: CSRF ok.
@@ -374,7 +365,6 @@ class Imagify_Settings {
 	 *
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public function after_save_network_options( $option, $value, $old_value ) {
 		$this->after_save_options( $old_value, $value );
@@ -390,7 +380,6 @@ class Imagify_Settings {
 	 *
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public function after_save_options( $old_value, $value ) {
 		$old_key = isset( $old_value['api_key'] ) ? $old_value['api_key'] : '';
@@ -500,7 +489,6 @@ class Imagify_Settings {
 	 *
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public function field_checkbox( $args ) {
 		$args = array_merge( [
@@ -538,22 +526,28 @@ class Imagify_Settings {
 		$args['attributes'] = self::build_attributes( $attributes );
 		?>
 		<input type="checkbox" value="1" <?php
-		checked( $current_value, 1 ); ?><?php
-		echo $args['attributes']; ?> />
+		checked( $current_value, 1 );
+		?><?php
+		echo $args['attributes'];
+?> />
 		<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
 		<label for="<?php
-		echo $attributes['id']; ?>" onclick=""><?php
-			echo $args['label']; ?></label>
+		echo $attributes['id'];
+		?>" onclick=""><?php
+			echo $args['label'];
+?></label>
 		<?php
 		if ( ! $args['info'] ) {
 			return;
 		}
 		?>
 		<span id="<?php
-		echo $attributes['aria-describedby']; ?>" class="imagify-info">
+		echo $attributes['aria-describedby'];
+		?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
 			<?php
-			echo $args['info']; ?>
+			echo $args['info'];
+			?>
 		</span>
 		<?php
 	}
@@ -574,7 +568,6 @@ class Imagify_Settings {
 	 *
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public function field_checkbox_list( $args ) {
 		$args = array_merge( [
@@ -617,12 +610,14 @@ class Imagify_Settings {
 		$nb_of_checked     = 0;
 		?>
 		<fieldset class="imagify-check-group<?php
-		echo $nb_of_values > 5 ? ' imagify-is-scrollable' : ''; ?>">
+		echo $nb_of_values > 5 ? ' imagify-is-scrollable' : '';
+		?>">
 			<?php
 			if ( $args['legend'] ) {
 				?>
 				<legend class="screen-reader-text"><?php
-					echo $args['legend']; ?></legend>
+					echo $args['legend'];
+				?></legend>
 				<?php
 			}
 
@@ -644,14 +639,21 @@ class Imagify_Settings {
 				?>
 				<p>
 					<input type="checkbox" value="<?php
-					echo esc_attr( $value ); ?>" id="<?php
-					echo $input_id; ?>"<?php
-					echo $args['attributes']; ?> <?php
-					checked( $checked ); ?> <?php
-					disabled( $disabled ); ?>/>
+					echo esc_attr( $value );
+					?>" id="<?php
+					echo $input_id;
+?>"<?php
+					echo $args['attributes'];
+?> <?php
+					checked( $checked );
+?> <?php
+					disabled( $disabled );
+?>/>
 					<label for="<?php
-					echo $input_id; ?>" onclick=""><?php
-						echo $label; ?></label>
+					echo $input_id;
+					?>" onclick=""><?php
+						echo $label;
+?></label>
 				</p>
 				<?php
 			}
@@ -667,14 +669,18 @@ class Imagify_Settings {
 			?>
 			<p class="hide-if-no-js imagify-select-all-buttons">
 				<button type="button" class="imagify-link-like imagify-select-all<?php
-				echo $all_checked ? ' imagify-is-inactive" aria-disabled="true' : ''; ?>" data-action="select"><?php
-					_e( 'Select All', 'imagify' ); ?></button>
+				echo $all_checked ? ' imagify-is-inactive" aria-disabled="true' : '';
+				?>" data-action="select"><?php
+					_e( 'Select All', 'imagify' );
+?></button>
 
 				<span class="imagify-pipe"></span>
 
 				<button type="button" class="imagify-link-like imagify-select-all<?php
-				echo $nb_of_checked ? '' : ' imagify-is-inactive" aria-disabled="true'; ?>" data-action="unselect"><?php
-					_e( 'Unselect All', 'imagify' ); ?></button>
+				echo $nb_of_checked ? '' : ' imagify-is-inactive" aria-disabled="true';
+				?>" data-action="unselect"><?php
+					_e( 'Unselect All', 'imagify' );
+?></button>
 			</p>
 			<?php
 		}
@@ -697,7 +703,6 @@ class Imagify_Settings {
 	 * @type array  $current_value USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 * }
 	 * @author Grégory Viguier
-	 *
 	 */
 	public function field_radio_list( $args ) {
 		$args = array_merge( [
@@ -738,7 +743,8 @@ class Imagify_Settings {
 			if ( $args['legend'] ) {
 				?>
 				<legend class="screen-reader-text"><?php
-					echo $args['legend']; ?></legend>
+					echo $args['legend'];
+				?></legend>
 				<?php
 			}
 
@@ -746,13 +752,19 @@ class Imagify_Settings {
 				$input_id = sprintf( $id_attribute, sanitize_html_class( $value ) );
 				?>
 				<input type="radio" value="<?php
-				echo esc_attr( $value ); ?>" id="<?php
-				echo $input_id; ?>"<?php
-				echo $args['attributes']; ?> <?php
-				checked( $current_value, $value ); ?>/>
+				echo esc_attr( $value );
+				?>" id="<?php
+				echo $input_id;
+?>"<?php
+				echo $args['attributes'];
+?> <?php
+				checked( $current_value, $value );
+?>/>
 				<label for="<?php
-				echo $input_id; ?>" onclick=""><?php
-					echo $label; ?></label>
+				echo $input_id;
+				?>" onclick=""><?php
+					echo $label;
+?></label>
 				<br/>
 				<?php
 			}
@@ -764,10 +776,12 @@ class Imagify_Settings {
 		}
 		?>
 		<span id="<?php
-		echo $attributes['aria-describedby']; ?>" class="imagify-info">
+		echo $attributes['aria-describedby'];
+		?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
 			<?php
-			echo $args['info']; ?>
+			echo $args['info'];
+			?>
 		</span>
 		<?php
 	}
@@ -786,7 +800,6 @@ class Imagify_Settings {
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 *
 	 * @author Grégory Viguier
-	 *
 	 */
 	public function field_text_box( $args ) {
 		$args = array_merge( [
@@ -825,21 +838,27 @@ class Imagify_Settings {
 		?>
 		<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
 		<label for="<?php
-		echo $attributes['id']; ?>" onclick=""><?php
-			echo $args['label']; ?></label>
+		echo $attributes['id'];
+		?>" onclick=""><?php
+			echo $args['label'];
+?></label>
 		<input type="text" value="<?php
-		echo esc_attr( $current_value ); ?>"<?php
-		echo $args['attributes']; ?> />
+		echo esc_attr( $current_value );
+		?>"<?php
+		echo $args['attributes'];
+?> />
 		<?php
 		if ( ! $args['info'] ) {
 			return;
 		}
 		?>
 		<span id="<?php
-		echo $attributes['aria-describedby']; ?>" class="imagify-info">
+		echo $attributes['aria-describedby'];
+		?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
 			<?php
-			echo $args['info']; ?>
+			echo $args['info'];
+			?>
 		</span>
 		<?php
 	}
@@ -856,7 +875,6 @@ class Imagify_Settings {
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 *
 	 * @author Grégory Viguier
-	 *
 	 */
 	public function field_hidden( $args ) {
 		$args = array_merge( [
@@ -888,8 +906,10 @@ class Imagify_Settings {
 		$args['attributes'] = self::build_attributes( $attributes );
 		?>
 		<input type="hidden" value="<?php
-		echo esc_attr( $current_value ); ?>"<?php
-		echo $args['attributes']; ?> />
+		echo esc_attr( $current_value );
+		?>"<?php
+		echo $args['attributes'];
+?> />
 		<?php
 	}
 
@@ -905,7 +925,6 @@ class Imagify_Settings {
 	 * @return array A list of thumbnail sizes in the form of 'medium' => 'medium - 300 × 300'.
 	 * @author Grégory Viguier
 	 * @access public
-	 *
 	 */
 	public static function get_thumbnail_sizes() {
 		static $sizes;
@@ -938,7 +957,6 @@ class Imagify_Settings {
 	 *
 	 * @return string            HTML attributes.
 	 * @author Grégory Viguier
-	 *
 	 */
 	public static function build_attributes( $attributes ) {
 		if ( ! $attributes || ! is_array( $attributes ) ) {
