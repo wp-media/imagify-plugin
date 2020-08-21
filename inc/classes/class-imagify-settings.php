@@ -389,6 +389,7 @@ class Imagify_Settings {
 	/**
 	 * `options.php` does not handle network options. Let's use `admin-post.php` for multisite installations.
 	 *
+	 * @since  1.9.11 deprecate 'whitelist_options' filter.
 	 * @since  1.7
 	 *
 	 * @return void
@@ -403,9 +404,12 @@ class Imagify_Settings {
 
 		if ( ! current_user_can( $capability ) ) {
 			imagify_die();
+			return;
 		}
 
-		imagify_check_nonce( $this->settings_group . '-options' );
+		if ( ! imagify_check_nonce( $this->settings_group . '-options' ) ) {
+			return;
+		}
 
 		$allowed_options = apply_filters_deprecated(
 			'whitelist_options',
@@ -419,6 +423,7 @@ class Imagify_Settings {
 
 		if ( ! isset( $allowed_options[ $this->settings_group ] ) ) {
 			imagify_die( __( '<strong>ERROR</strong>: options page not found.' ) );
+			return;
 		}
 
 		$options = $allowed_options[ $this->settings_group ];
