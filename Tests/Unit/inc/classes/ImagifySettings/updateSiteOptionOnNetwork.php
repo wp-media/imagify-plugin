@@ -27,6 +27,12 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		Functions\when( 'imagify_is_active_for_network' )->justReturn( true );
 	}
 
+	public function tearDown() {
+		unset( $_POST['option_page'] );
+
+		return parent::tearDown();
+	}
+
 	/**
 	 * @dataProvider configTestData
 	 */

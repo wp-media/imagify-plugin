@@ -19,6 +19,12 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 
 	private $user_id;
 
+	public function tearDown() {
+		unset( $_POST['option_page'] );
+
+		return parent::tearDown();
+	}
+
 	public function provideData() {
 		return $this->getTestData( __DIR__, 'updateSiteOptionOnNetwork' );
 	}
@@ -100,7 +106,7 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 				return $settings;
 			} );
 
-		Functions\when('imagify_maybe_redirect' )
+		Functions\when( 'imagify_maybe_redirect' )
 			->justReturn();
 
 		Imagify_Settings::get_instance()->update_site_option_on_network();
