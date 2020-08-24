@@ -6,7 +6,7 @@
  */
 
 /**
- * Abstract WP_Background_Process class.
+ * Abstract Imagify_WP_Background_Process class.
  *
  * @abstract
  * @extends Imagify_WP_Async_Request
