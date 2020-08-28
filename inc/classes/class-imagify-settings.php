@@ -425,8 +425,6 @@ class Imagify_Settings {
 			return;
 		}
 
-		$allowed_options = [];
-
 		if ( version_compare( $wp_version, '5.5', '>=' ) ) {
 			$allowed_options = apply_filters_deprecated(
 				'whitelist_options',
@@ -435,6 +433,8 @@ class Imagify_Settings {
 				'allowed_options',
 				__( 'Please consider writing more inclusive code.' )
 			);
+		} else {
+			$allowed_options = apply_filters( 'whitelist_options', [] );
 		}
 
 		$allowed_options = apply_filters( 'allowed_options', $allowed_options );
