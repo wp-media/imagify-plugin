@@ -251,7 +251,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 				return false;
 			}
 
-			$this->touch(trailingslashit( $path ) . 'index.html' );
+			$this->touch(trailingslashit( $path ) . 'index.php' );
 		}
 
 		return true;
