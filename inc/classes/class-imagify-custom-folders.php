@@ -91,10 +91,11 @@ class Imagify_Custom_Folders {
 
 	public static function add_indexes() {
 		$backup_dir          = self::get_backup_dir_path();
-		$filesystem          = Imagify_Filesystem::get_instance();
-		$filesystem_iterator = new FilesystemIterator( $backup_dir );
+		$filesystem = Imagify_Filesystem::get_instance();
+		$directory = new RecursiveDirectoryIterator( $backup_dir );
+		$iterator = new RecursiveIteratorIterator( $directory );
 
-		foreach ( $filesystem_iterator as $fileinfo ) {
+		foreach ( $iterator as $fileinfo ) {
 			if ( ! $fileinfo->isDir() ) {
 				continue;
 			}
