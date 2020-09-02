@@ -89,6 +89,26 @@ class Imagify_Custom_Folders {
 		return preg_replace( '@^' . preg_quote( $site_root, '@' ) . '@', $backup_dir, $file_path );
 	}
 
+	public static function add_indexes() {
+		$backup_dir          = self::get_backup_dir_path();
+		$filesystem          = Imagify_Filesystem::get_instance();
+		$filesystem_iterator = new FilesystemIterator( $backup_dir );
+
+		foreach ( $filesystem_iterator as $fileinfo ) {
+			if ( ! $fileinfo->isDir() ) {
+				continue;
+			}
+
+			$path = $fileinfo->getRealPath();
+
+			if ( ! $filesystem->is_file( trailingslashit( $path ) . 'index.html' )
+				 && ! $filesystem->is_file( trailingslashit( $path ) . 'index.php' )
+			) {
+				$filesystem->touch( trailingslashit( $path ) . 'index.php' );
+			}
+		}
+	}
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** SINGLE FILE ============================================================================= */
