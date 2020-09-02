@@ -227,11 +227,11 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 				if ( ! $this->is_dir( $path ) ) {
 					return false;
 				}
-				
+
 				if ( ! $this->is_file( trailingslashit( $path ) . 'index.html' )
 					 && ! $this->is_file( trailingslashit( $path ) . 'index.php' )
 				) {
-					$this->touch( trailingslashit( $path ) . 'index.html' );
+					$this->touch( trailingslashit( $path ) . 'index.php' );
 				}
 
 				continue;
