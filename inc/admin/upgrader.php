@@ -304,6 +304,13 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	if ( version_compare( $site_version, '1.9.11' ) < 0 ) {
 		Imagify_Custom_Folders::add_indexes();
 
+		if ( ! isset( $filesystem ) ) {
+			$filesystem = imagify_get_filesystem();
+		}
+
+		$conf_dir = $filesystem->get_site_root() . 'conf';
+		Imagify_Custom_Folders::add_indexes( $conf_dir );
+
 		$backup_dir = get_imagify_backup_dir_path();
 		Imagify_Custom_Folders::add_indexes( $backup_dir );
 	}
