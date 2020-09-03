@@ -227,7 +227,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 				if ( ! $this->is_dir( $path ) ) {
 					return false;
 				}
-				
+
 				continue;
 			}
 
