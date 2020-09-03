@@ -89,27 +89,48 @@ class Imagify_Custom_Folders {
 		return preg_replace( '@^' . preg_quote( $site_root, '@' ) . '@', $backup_dir, $file_path );
 	}
 
-	public static function add_indexes() {
-		$backup_dir          = self::get_backup_dir_path();
+	/**
+	 * Add index.php files recursively to a given directory and all its subdirectories.
+	 *
+	 * @since 1.9.11
+	 *
+	 * @param string $backup_dir (optional) Path to the directory where we will start adding indexes.
+	 *                           Defaults to custom-folders backup dir.
+	 *
+	 * @return void
+	 */
+	public static function add_indexes( $backup_dir = '' ) {
 		$filesystem = Imagify_Filesystem::get_instance();
-		$directory = new RecursiveDirectoryIterator( $backup_dir );
-		$iterator = new RecursiveIteratorIterator( $directory );
 
-		foreach ( $iterator as $fileinfo ) {
-			if ( ! $fileinfo->isDir() ) {
-				continue;
+		if ( empty( $backup_dir ) ) {
+			$backup_dir = self::get_backup_dir_path();
+		}
+
+		if ( ! $filesystem->is_writable( $backup_dir) ) {
+			return;
+		}
+
+		try {
+			$directory = new RecursiveDirectoryIterator( $backup_dir );
+			$iterator  = new RecursiveIteratorIterator( $directory );
+
+			foreach ( $iterator as $fileinfo ) {
+				if ( ! $fileinfo->isDir() ) {
+					continue;
+				}
+
+				$path = $fileinfo->getRealPath();
+
+				if ( ! $filesystem->is_file( trailingslashit( $path ) . 'index.html' )
+					 && ! $filesystem->is_file( trailingslashit( $path ) . 'index.php' )
+				) {
+					$filesystem->touch( trailingslashit( $path ) . 'index.php' );
+				}
 			}
-
-			$path = $fileinfo->getRealPath();
-
-			if ( ! $filesystem->is_file( trailingslashit( $path ) . 'index.html' )
-				 && ! $filesystem->is_file( trailingslashit( $path ) . 'index.php' )
-			) {
-				$filesystem->touch( trailingslashit( $path ) . 'index.php' );
-			}
+		} catch (Exception $e) {
+			return;
 		}
 	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** SINGLE FILE ============================================================================= */
