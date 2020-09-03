@@ -74,6 +74,9 @@
 		"run-tests": [
 			"@test-unit",
 			"@test-integration"
-		]
+		],
+		"phpcs": "phpcs --basepath=.",
+		"phpcs-changed": "./bin/phpcs-changed.sh",
+		"phpcs:fix": "phpcbf"
 	}
 }
