@@ -7,13 +7,16 @@
 
 namespace Imagify\Tests\Unit;
 
-use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+use WPMedia\PHPUnit\Unit\TestCase as PHPUnitTestCase;
 use Brain\Monkey;
 use Imagify\Tests\TestCaseTrait;
+use ReflectionObject;
 use WP_Error;
 
 abstract class TestCase extends PHPUnitTestCase {
 	use TestCaseTrait;
+
+	protected $config;
 
 	/**
 	 * Prepares the test environment before each test.
@@ -21,6 +24,10 @@ abstract class TestCase extends PHPUnitTestCase {
 	protected function setUp() {
 		parent::setUp();
 		Monkey\setUp();
+
+		if ( empty( $this->config ) ) {
+			$this->loadTestDataConfig();
+		}
 
 		$this->mockCommonWpFunctions();
 	}
@@ -31,6 +38,23 @@ abstract class TestCase extends PHPUnitTestCase {
 	protected function tearDown() {
 		Monkey\tearDown();
 		parent::tearDown();
+	}
+
+	public function configTestData() {
+		if ( empty( $this->config ) ) {
+			$this->loadTestDataConfig();
+		}
+
+		return isset( $this->config['test_data'] )
+			? $this->config['test_data']
+			: $this->config;
+	}
+
+	protected function loadTestDataConfig() {
+		$obj      = new ReflectionObject( $this );
+		$filename = $obj->getFileName();
+
+		$this->config = $this->getTestData( dirname( $filename ), basename( $filename, '.php' ) );
 	}
 
 	/**

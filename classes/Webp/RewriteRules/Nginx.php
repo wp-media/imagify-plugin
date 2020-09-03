@@ -45,7 +45,7 @@ location ~* ^(' . $home_root . '.+)\.(' . $extensions . ')$ {
 		set $imwebp  "${imwebp}B";
 	}
 	if ($imwebp = AB) {
-		rewrite ^(.*) $1.webp final;
+		rewrite ^(.*) $1.webp;
 	}
 }' );
 	}

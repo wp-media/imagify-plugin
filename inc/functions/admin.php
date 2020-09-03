@@ -257,16 +257,22 @@ function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
 /**
  * Check for nonce.
  *
+ * @since  1.9.11 Return true when nonce is good.
  * @since  1.6.10
  * @author Grégory Viguier
  *
  * @param string      $action Action nonce.
  * @param string|bool $query_arg Optional. Key to check for the nonce in `$_REQUEST`. If false, `$_REQUEST` values will be evaluated for '_ajax_nonce', and '_wpnonce' (in that order). Default false.
+ *
+ * @return bool   True if the nonce is good; otherwise terminates.
  */
 function imagify_check_nonce( $action, $query_arg = false ) {
 	if ( ! check_ajax_referer( $action, $query_arg, false ) ) {
 		imagify_die();
+		return false;
 	}
+
+	return true;
 }
 
 /**
