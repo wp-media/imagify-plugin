@@ -303,6 +303,9 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	// 1.9.11
 	if ( version_compare( $site_version, '1.9.11' ) < 0 ) {
 		Imagify_Custom_Folders::add_indexes();
+
+		$backup_dir = get_imagify_backup_dir_path();
+		Imagify_Custom_Folders::add_indexes($backup_dir);
 	}
 }
 
