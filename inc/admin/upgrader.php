@@ -302,17 +302,7 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 
 	// 1.9.11
 	if ( version_compare( $site_version, '1.9.11' ) < 0 ) {
-		Imagify_Custom_Folders::add_indexes();
-
-		if ( ! isset( $filesystem ) ) {
-			$filesystem = imagify_get_filesystem();
-		}
-
-		$conf_dir = $filesystem->get_site_root() . 'conf';
-		Imagify_Custom_Folders::add_indexes( $conf_dir );
-
-		$backup_dir = get_imagify_backup_dir_path();
-		Imagify_Custom_Folders::add_indexes( $backup_dir );
+		imagify_secure_custom_directories();
 	}
 }
 
@@ -398,4 +388,26 @@ function imagify_reset_opcache( $reset_function_cache = false ) {
 	}
 
 	return opcache_reset(); // phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.opcache_resetFound
+}
+
+add_action( 'imagify_activation', 'imagify_secure_custom_directories' );
+/**
+ * Scan imagify directories and add `index.php` files where missing.
+ *
+ * @since 1.9.11
+ *
+ * @return void
+ */
+function imagify_secure_custom_directories() {
+	Imagify_Custom_Folders::add_indexes();
+
+	if ( ! isset( $filesystem ) ) {
+		$filesystem = imagify_get_filesystem();
+	}
+
+	$conf_dir = $filesystem->get_site_root() . 'conf';
+	Imagify_Custom_Folders::add_indexes( $conf_dir );
+
+	$backup_dir = get_imagify_backup_dir_path();
+	Imagify_Custom_Folders::add_indexes( $backup_dir );
 }
