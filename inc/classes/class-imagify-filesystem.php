@@ -229,7 +229,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 				}
 
 				if ( ! $this->is_file( trailingslashit( $path ) . 'index.html' )
-					 && ! $this->is_file( trailingslashit( $path ) . 'index.php' )
+					&& ! $this->is_file( trailingslashit( $path ) . 'index.php' )
 				) {
 					$this->touch( trailingslashit( $path ) . 'index.php' );
 				}
@@ -251,7 +251,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 				return false;
 			}
 
-			$this->touch(trailingslashit( $path ) . 'index.php' );
+			$this->touch( trailingslashit( $path ) . 'index.php' );
 		}
 
 		return true;

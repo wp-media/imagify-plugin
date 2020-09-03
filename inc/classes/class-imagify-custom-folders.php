@@ -106,7 +106,7 @@ class Imagify_Custom_Folders {
 			$backup_dir = self::get_backup_dir_path();
 		}
 
-		if ( ! $filesystem->is_writable( $backup_dir) ) {
+		if ( ! $filesystem->is_writable( $backup_dir ) ) {
 			return;
 		}
 
@@ -122,12 +122,12 @@ class Imagify_Custom_Folders {
 				$path = $fileinfo->getRealPath();
 
 				if ( ! $filesystem->is_file( trailingslashit( $path ) . 'index.html' )
-					 && ! $filesystem->is_file( trailingslashit( $path ) . 'index.php' )
+					&& ! $filesystem->is_file( trailingslashit( $path ) . 'index.php' )
 				) {
 					$filesystem->touch( trailingslashit( $path ) . 'index.php' );
 				}
 			}
-		} catch (Exception $e) {
+		} catch ( Exception $e ) {
 			return;
 		}
 	}
