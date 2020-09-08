@@ -115,7 +115,8 @@ class Imagify_Custom_Folders {
 			$iterator  = new RecursiveIteratorIterator( $directory );
 
 			foreach ( $iterator as $fileinfo ) {
-				if ( ! $fileinfo->isDir() ) {
+
+				if ( '.' !== $fileinfo->getFilename() ) {
 					continue;
 				}
 
