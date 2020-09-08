@@ -237,11 +237,11 @@ class Imagify_Filesystem {
 
 			$this->wp_filesystem->mkdir( $path );
 
+			$this->wp_filesystem->touch( trailingslashit( $path ) . 'index.php' );
+
 			if ( ! $this->wp_filesystem->exists( $path ) ) {
 				return false;
 			}
-
-			$this->wp_filesystem->touch( trailingslashit( $path ) . 'index.php' );
 		}
 
 		return true;
@@ -470,7 +470,7 @@ class Imagify_Filesystem {
 			return false;
 		}
 
-		return wp_is_writable( $file_path );
+		return $this->wp_filesystem->is_writable( $file_path );
 	}
 
 
@@ -908,10 +908,10 @@ class Imagify_Filesystem {
 			return $abspath;
 		}
 
-		$abspath = wp_normalize_path( ABSPATH );
+		$abspath = wp_normalize_path( imagify_get_constant( 'ABSPATH' ) );
 
 		// Make sure ABSPATH is not messed up: it could be defined as a relative path for example (yeah, I know, but we've seen it).
-		$test_file = wp_normalize_path( IMAGIFY_FILE );
+		$test_file = wp_normalize_path( imagify_get_constant( 'IMAGIFY_FILE' ) );
 		$pos       = strpos( $test_file, $abspath );
 
 		if ( $pos > 0 ) {
@@ -932,7 +932,7 @@ class Imagify_Filesystem {
 
 		$abspath = trailingslashit( $abspath );
 
-		if ( '/' !== substr( $abspath, 0, 1 ) && ':' !== substr( $abspath, 1, 1 ) ) {
+		if ( '/' !== substr( $abspath, 0, 1 ) && ':' !== substr( $abspath, 1, 1 ) && ! imagify_get_constant( 'IMAGIFY_IS_TESTING' ) ) {
 			$abspath = '/' . $abspath;
 		}
 

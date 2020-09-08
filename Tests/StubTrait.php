@@ -76,6 +76,7 @@ trait StubTrait {
 				if ( ! empty( $this->imagify_version ) ) {
 					return $this->imagify_version;
 				}
+				break;
 
 			case 'IMAGIFY_PLUGIN_NAME':
 				return $this->plugin_name;
@@ -101,7 +102,6 @@ trait StubTrait {
 				}
 
 				$path = str_replace( '\\', '/', $path );
-				$path = preg_replace( '|(?<=.)/+|', '/', $path );
 
 				if ( ':' === substr( $path, 1, 1 ) ) {
 					$path = ucfirst( $path );
@@ -126,5 +126,36 @@ trait StubTrait {
 				return urldecode( basename( str_replace( [ '%2F', '%5C' ], '/', urlencode( $path ) ), $suffix ) );
 			}
 		);
+	}
+
+	protected function stubSetUrlSchema(){
+		// set_url_scheme().
+		Functions\when( 'set_url_scheme' )->alias( function( $url, $scheme = null ) {
+			$orig_scheme = $scheme;
+
+			if ( ! $scheme ) {
+				$scheme = 'https';
+			} elseif ( $scheme === 'admin' || $scheme === 'login' || $scheme === 'login_post' || $scheme === 'rpc' ) {
+				$scheme = 'https';
+			} elseif ( $scheme !== 'http' && $scheme !== 'https' && $scheme !== 'relative' ) {
+				$scheme = 'https';
+			}
+
+			$url = trim( $url );
+			if ( substr( $url, 0, 2 ) === '//' ) {
+				$url = 'http:' . $url;
+			}
+
+			if ( 'relative' == $scheme ) {
+				$url = ltrim( preg_replace( '#^\w+://[^/]*#', '', $url ) );
+				if ( $url !== '' && $url[0] === '/' ) {
+					$url = '/' . ltrim( $url, "/ \t\n\r\0\x0B" );
+				}
+			} else {
+				$url = preg_replace( '#^\w+://#', $scheme . '://', $url );
+			}
+
+			return $url;
+		} );
 	}
 }

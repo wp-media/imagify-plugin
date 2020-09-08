@@ -12,7 +12,16 @@ return [
 			'expected' => [
 				'created' => true,
 			]
-		]
+		],
+
+		'directoryCreatedNewly' => [
+			'config' => [
+				'dir_name' => 'imagify-backup',
+			],
+			'expected' => [
+				'created' => true,
+			]
+		],
 	]
 
 ];

@@ -2,6 +2,7 @@
 
 return [
 	'wp-content' => [
+		'index.php' => '',
 		'themes' => [
 			'twentytwenty' => [
 				'style.php' => 'test',

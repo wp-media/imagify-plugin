@@ -17,5 +17,7 @@ abstract class FilesystemTestCase extends VirtualFilesystemTestCase {
 		$this->stubImagifyGetConstant();
 		$this->stubWpNormalizePath();
 		$this->redefineImagifyDirectFilesystem();
+
+		$this->constants['IMAGIFY_FILE'] = $this->abspath."Imagify.php";
 	}
 }
