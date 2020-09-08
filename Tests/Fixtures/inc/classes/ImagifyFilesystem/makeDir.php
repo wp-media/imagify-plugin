@@ -5,18 +5,18 @@ return [
 	//'structure' => [],
 
 	'test_data' => [
-		'directoryExistsBefore' => [
+		'directoryCreatedNewly' => [
 			'config' => [
-				'dir_name' => 'wp-content',
+				'dir_name' => 'imagify-backup',
 			],
 			'expected' => [
 				'created' => true,
 			]
 		],
 
-		'directoryCreatedNewly' => [
+		'directoryExistsBefore' => [
 			'config' => [
-				'dir_name' => 'imagify-backup',
+				'dir_name' => 'wp-content',
 			],
 			'expected' => [
 				'created' => true,

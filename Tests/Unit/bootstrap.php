@@ -29,3 +29,6 @@ function load_original_files_before_mocking() {
 }
 
 load_original_files_before_mocking();
+
+define( 'FS_CHMOD_DIR' , 0777 );
+define( 'FS_CHMOD_FILE', 0777 );

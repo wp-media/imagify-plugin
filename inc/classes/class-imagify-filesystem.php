@@ -235,13 +235,13 @@ class Imagify_Filesystem {
 				}
 			}
 
-			$this->wp_filesystem->mkdir( $path );
-
-			$this->wp_filesystem->touch( trailingslashit( $path ) . 'index.php' );
+			$this->wp_filesystem->mkdir( $path, imagify_get_filesystem_perms('dir') );
 
 			if ( ! $this->wp_filesystem->exists( $path ) ) {
 				return false;
 			}
+
+			$this->wp_filesystem->touch( trailingslashit( $path ) . 'index.php' );
 		}
 
 		return true;
@@ -438,7 +438,7 @@ class Imagify_Filesystem {
 	 * @return bool                True on success, false on failure.
 	 */
 	public function move( $source, $destination, $overwrite = false ) {
-		if ( parent::move( $source, $destination, $overwrite ) ) {
+		if ( $this->wp_filesystem->move( $source, $destination, $overwrite ) ) {
 			return $this->chmod_file( $destination );
 		}
 
@@ -446,7 +446,7 @@ class Imagify_Filesystem {
 			return false;
 		}
 
-		if ( parent::move( $source, $destination, $overwrite ) ) {
+		if ( $this->wp_filesystem->move( $source, $destination, $overwrite ) ) {
 			return $this->chmod_file( $destination );
 		}
 
