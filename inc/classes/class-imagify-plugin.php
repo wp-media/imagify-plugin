@@ -108,6 +108,7 @@ class Imagify_Plugin {
 
 		$inc_path = $this->plugin_path . 'inc/';
 
+		require_once $inc_path . 'functions/constants.php';
 		require_once $inc_path . 'deprecated/deprecated.php';
 		require_once $inc_path . 'deprecated/3rd-party.php';
 		require_once $inc_path . 'functions/compat.php';

@@ -1,16 +1,13 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
-require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
-require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
-
 /**
  * Class that enhance the WP filesystem class.
  *
  * @since  1.7.1
  * @author Grégory Viguier
  */
-class Imagify_Filesystem extends WP_Filesystem_Direct {
+class Imagify_Filesystem {
 
 	/**
 	 * Class version.
@@ -36,6 +33,13 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 */
 	protected static $_instance;
 
+	/**
+	 * WP Filesystem object.
+	 *
+	 * @var WP_Filesystem_Direct WP Filesystem instance
+	 */
+	private $wp_filesystem;
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** INSTANCIATION =========================================================================== */
@@ -49,15 +53,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 * @author Grégory Viguier
 	 */
 	public function __construct() {
-		// Define the permission constants if not already done.
-		if ( ! defined( 'FS_CHMOD_DIR' ) ) {
-			define( 'FS_CHMOD_DIR', ( fileperms( ABSPATH ) & 0777 | 0755 ) );
-		}
-		if ( ! defined( 'FS_CHMOD_FILE' ) ) {
-			define( 'FS_CHMOD_FILE', ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) );
-		}
-
-		parent::__construct( '' );
+		$this->wp_filesystem = imagify_direct_filesystem();
 	}
 
 	/**
@@ -202,11 +198,11 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		$path = untrailingslashit( wp_normalize_path( $path ) );
 
 		if ( $this->is_root( $path ) ) {
-			return $this->is_dir( $this->get_root() ) && $this->is_writable( $this->get_root() );
+			return $this->wp_filesystem->is_dir( $this->get_root() ) && $this->wp_filesystem->is_writable( $this->get_root() );
 		}
 
-		if ( $this->exists( $path ) ) {
-			return $this->is_dir( $path ) && $this->is_writable( $path );
+		if ( $this->wp_filesystem->exists( $path ) ) {
+			return $this->wp_filesystem->is_dir( $path ) && $this->wp_filesystem->is_writable( $path );
 		}
 
 		$site_root = $this->get_site_root();
@@ -223,15 +219,15 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			$parent_path = $path;
 			$path       .= '/' . $bit;
 
-			if ( $this->exists( $path ) ) {
-				if ( ! $this->is_dir( $path ) ) {
+			if ( $this->wp_filesystem->exists( $path ) ) {
+				if ( ! $this->wp_filesystem->is_dir( $path ) ) {
 					return false;
 				}
 
 				continue;
 			}
 
-			if ( ! $this->is_writable( $parent_path ) ) {
+			if ( ! $this->wp_filesystem->is_writable( $parent_path ) ) {
 				$this->chmod_dir( $parent_path );
 
 				if ( ! $this->is_writable( $parent_path ) ) {
@@ -239,13 +235,13 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 				}
 			}
 
-			$this->mkdir( $path );
+			$this->wp_filesystem->mkdir( $path );
 
-			if ( ! $this->exists( $path ) ) {
+			if ( ! $this->wp_filesystem->exists( $path ) ) {
 				return false;
 			}
 
-			$this->touch( trailingslashit( $path ) . 'index.php' );
+			$this->wp_filesystem->touch( trailingslashit( $path ) . 'index.php' );
 		}
 
 		return true;
@@ -266,7 +262,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return false;
 		}
 
-		return $this->chmod( $file_path, FS_CHMOD_FILE );
+		return $this->wp_filesystem->chmod( $file_path, imagify_get_filesystem_perms('file') );
 	}
 
 	/**
@@ -284,7 +280,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return false;
 		}
 
-		return $this->chmod( $file_path, FS_CHMOD_DIR );
+		return $this->wp_filesystem->chmod( $file_path, imagify_get_filesystem_perms('dir') );
 	}
 
 	/**
@@ -324,7 +320,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return current_time( 'mysql' );
 		}
 
-		$date = $this->mtime( $file_path );
+		$date = $this->wp_filesystem->mtime( $file_path );
 
 		if ( ! $date ) {
 			return current_time( 'mysql' );

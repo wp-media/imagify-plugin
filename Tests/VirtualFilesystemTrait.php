@@ -2,6 +2,7 @@
 
 namespace Imagify\Tests;
 
+use Brain\Monkey\Functions;
 use org\bovigo\vfs\vfsStream;
 
 trait VirtualFilesystemTrait {
@@ -81,4 +82,11 @@ trait VirtualFilesystemTrait {
 		$dir = $this->filesystem->getDir( $path );
 		$dir->chmod( $permission ); // Only the root user.
 	}
+
+	protected function redefineImagifyDirectFilesystem() {
+		// Redefine imagify_direct_filesystem() to use the virtual filesystem.
+		Functions\when( 'imagify_direct_filesystem' )->justReturn( $this->filesystem );
+	}
+
+
 }

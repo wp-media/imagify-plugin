@@ -19,7 +19,7 @@
 	"type": "wordpress-plugin",
 	"config": {
 		"classloader-suffix": "WPMediaImagifyWordPressPlugin",
-		"classmap-authoritative": true,
+
 		"sort-packages": true
 	},
 	"support": {
