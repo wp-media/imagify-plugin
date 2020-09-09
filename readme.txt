@@ -153,6 +153,12 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.11 - 2020/09/09 =
+* Fix: Fix settings error on multi-sites with WordPress 5.5
+* Fix: Write the correct conf file for use with webp rewrites on nginx
+* Improvement: Namespace composer dependencies to avoid possible naming collisions.
+* Security: Add blank index.php to imagify-created backup folders to disable public access. 
+
 = 1.9.10 - 2020/05/26 =
 * Fix: Correctly optimize thumbnails during auto-optimization of image upload
 * Fix: Fix broken compatibility with Enable Media Replace plugin after WordPress 5.3
