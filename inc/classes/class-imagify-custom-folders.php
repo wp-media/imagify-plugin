@@ -120,12 +120,12 @@ class Imagify_Custom_Folders {
 					continue;
 				}
 
-				$path = $fileinfo->getRealPath();
+				$path = trailingslashit( $fileinfo->getRealPath() );
 
-				if ( ! $filesystem->is_file( trailingslashit( $path ) . 'index.html' )
-					&& ! $filesystem->is_file( trailingslashit( $path ) . 'index.php' )
+				if ( ! $filesystem->is_file( $path . 'index.html' )
+					&& ! $filesystem->is_file( $path . 'index.php' )
 				) {
-					$filesystem->touch( trailingslashit( $path ) . 'index.php' );
+					$filesystem->touch( $path . 'index.php' );
 				}
 			}
 		} catch ( Exception $e ) {
