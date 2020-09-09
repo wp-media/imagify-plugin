@@ -235,7 +235,7 @@ class Imagify_Filesystem {
 				}
 			}
 
-			$this->wp_filesystem->mkdir( $path, imagify_get_filesystem_perms('dir') );
+			$this->wp_filesystem->mkdir( $path, imagify_get_filesystem_perms( 'dir' ) );
 
 			if ( ! $this->wp_filesystem->exists( $path ) ) {
 				return false;
@@ -262,7 +262,7 @@ class Imagify_Filesystem {
 			return false;
 		}
 
-		return $this->wp_filesystem->chmod( $file_path, imagify_get_filesystem_perms('file') );
+		return $this->wp_filesystem->chmod( $file_path, imagify_get_filesystem_perms( 'file' ) );
 	}
 
 	/**
@@ -280,7 +280,7 @@ class Imagify_Filesystem {
 			return false;
 		}
 
-		return $this->wp_filesystem->chmod( $file_path, imagify_get_filesystem_perms('dir') );
+		return $this->wp_filesystem->chmod( $file_path, imagify_get_filesystem_perms( 'dir' ) );
 	}
 
 	/**
