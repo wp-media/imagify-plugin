@@ -1,4 +1,4 @@
-=== Imagify – Optimize Images & Convert WebP ===
+=== Imagify – Image Optimization & Convert WebP ===
 Contributors: wp_media
 Tags: convert webp, webp, optimize images, optimize, images
 Requires at least: 4.0.0
