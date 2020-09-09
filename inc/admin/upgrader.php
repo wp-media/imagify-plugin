@@ -402,7 +402,7 @@ function imagify_secure_custom_directories() {
 	$filesystem = imagify_get_filesystem();
 
 	Imagify_Custom_Folders::add_indexes();
-	
+
 	$conf_dir = $filesystem->get_site_root() . 'conf';
 	Imagify_Custom_Folders::add_indexes( $conf_dir );
 
