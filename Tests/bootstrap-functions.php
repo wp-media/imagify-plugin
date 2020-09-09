@@ -41,9 +41,6 @@ function check_readiness() {
 function init_constants( $test_suite_folder ) {
 	define( 'IMAGIFY_PLUGIN_ROOT', dirname( __DIR__ ) . DIRECTORY_SEPARATOR );
 	define( 'IMAGIFY_PLUGIN_TESTS_ROOT', __DIR__ . DIRECTORY_SEPARATOR . $test_suite_folder . DIRECTORY_SEPARATOR );
-	define( 'IMAGIFY_PLUGIN_TESTS_FIXTURES_DIR', __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' );
-
-	define( 'IMAGIFY_IS_TESTING', true );
 
 	if ( 'Unit' === $test_suite_folder && ! defined( 'ABSPATH' ) ) {
 		define( 'ABSPATH', IMAGIFY_PLUGIN_ROOT );

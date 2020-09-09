@@ -626,16 +626,3 @@ function imagify_deprecated_class( $class, $version, $replacement = null, $paren
 		)
 	);
 }
-
-/**
- * Instanciate the filesystem class
- *
- * @since
- *
- * @return object WP_Filesystem_Direct instance
- */
-function imagify_direct_filesystem() {
-	require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
-	require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
-	return new WP_Filesystem_Direct( new StdClass() );
-}

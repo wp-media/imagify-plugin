@@ -62,6 +62,3 @@ function bootstrap_integration_suite( $wp_tests_dir ) {
 }
 
 bootstrap_integration_suite( get_wp_tests_dir() );
-
-define( 'FS_CHMOD_DIR', imagify_get_filesystem_perms('dir') );
-define( 'FS_CHMOD_FILE', imagify_get_filesystem_perms('file') );
