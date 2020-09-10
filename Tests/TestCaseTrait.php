@@ -10,6 +10,32 @@ use ReflectionProperty;
 trait TestCaseTrait {
 
 	/**
+	 * Gets the test data, if it exists, for this test class.
+	 *
+	 * @param string $dir      Directory of the test class.
+	 * @param string $filename Test data filename without the .php extension.
+	 *
+	 * @return array array of test data.
+	 */
+	protected function getTestData( $dir, $filename ) {
+		if ( empty( $dir ) || empty( $filename ) ) {
+			return [];
+		}
+
+		$dir = str_replace( [ 'Integration', 'Unit' ], 'Fixtures', $dir );
+		$dir = rtrim( $dir, '\\/' );
+		$testdata = "$dir/{$filename}.php";
+
+		$fixture_contents = is_readable( $testdata )
+			? require $testdata
+			: [];
+
+		return isset($fixture_contents['test_data'] )
+			? $fixture_contents['test_data']
+			: $fixture_contents;
+	}
+
+	/**
 	 * Set the singleton's `$instance` property to the given instance.
 	 *
 	 * @param string $class    Name of the target class.

@@ -5,9 +5,9 @@ namespace Imagify\Tests\Integration;
 use Brain\Monkey;
 use Imagify;
 use Imagify\Tests\TestCaseTrait;
-use WP_UnitTestCase;
+use WPMedia\PHPUnit\Integration\TestCase as BaseTestCase;
 
-abstract class TestCase extends WP_UnitTestCase {
+abstract class TestCase extends BaseTestCase {
 	use TestCaseTrait;
 
 	protected $useApi = true;

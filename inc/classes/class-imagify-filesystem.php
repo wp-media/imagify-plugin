@@ -227,6 +227,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 				if ( ! $this->is_dir( $path ) ) {
 					return false;
 				}
+
 				continue;
 			}
 
@@ -243,6 +244,8 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			if ( ! $this->exists( $path ) ) {
 				return false;
 			}
+
+			$this->touch( trailingslashit( $path ) . 'index.php' );
 		}
 
 		return true;

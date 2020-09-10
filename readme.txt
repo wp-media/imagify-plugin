@@ -1,9 +1,9 @@
-=== Imagify – WebP & Image Compression and Optimization ===
-Contributors: wp_media, GregLone
-Tags: convert webp, optimize images, images, webp, resize
+=== Imagify – Image Optimization & Convert WebP ===
+Contributors: wp_media
+Tags: convert webp, webp, optimize images, optimize, images
 Requires at least: 4.0.0
-Tested up to: 5.4.1
-Stable tag: 1.9.10
+Tested up to: 5.5.1
+Stable tag: 1.9.11
 
 Optimize images in one click: reduce image file sizes, convert WebP, keep your images beautiful… and boost your loading time and your SEO!
 
@@ -153,6 +153,12 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 4. Other Media Page
 
 == Changelog ==
+= 1.9.11 - 2020/09/09 =
+* Fix: Fix settings error on multi-sites with WordPress 5.5
+* Fix: Write the correct conf file for use with webp rewrites on nginx
+* Improvement: Namespace composer dependencies to avoid possible naming collisions.
+* Security: Add blank index.php to imagify-created backup folders to disable public access. 
+
 = 1.9.10 - 2020/05/26 =
 * Fix: Correctly optimize thumbnails during auto-optimization of image upload
 * Fix: Fix broken compatibility with Enable Media Replace plugin after WordPress 5.3
