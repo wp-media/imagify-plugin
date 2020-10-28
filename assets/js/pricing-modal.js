@@ -343,8 +343,8 @@
 						prices_datas = prices_response.data; // console.log(prices_response);
 						promo_datas  = discount_response.data;
 						offers       = {
-							mo: prices_datas.monthlies,
-							ot: prices_datas.onetimes
+							mo: [],
+							ot: []
 						};
 						consumption  = {
 							month: images_datas.average_month_size.raw / Math.pow( 1024, 2 ), // Bytes to MB.
@@ -357,25 +357,17 @@
 						$estim_block = $( '.imagify-estimation-block' );
 
 						// Remove inactive offers.
-						console.log(offers.mo);
-						$.each(offers.mo, function (index, value) {
-							//console.log(index, value);
-							if (typeof value.active !== 'undefined') {
-								if (false === value.active) {
-									offers.mo.splice(index, 1);
+						$.each(prices_datas.monthlies, function (index, value) {
+							if ('undefined' !== typeof value.active && true === value.active) {
+								if ('free' === value.label) {
+									freeQuota = value.quota;
 								}
-							}
-
-							if ('free' === value.label) {
-								freeQuota = value.quota;
+								offers.mo.push(value);
 							}
 						});
-						$.each(offers.ot, function (index, value) {
-							//console.log(value)
-							if (typeof value.active !== 'undefined') {
-								if (false === value.active) {
-									offers.ot.splice(index, 1);
-								}
+						$.each(prices_datas.onetimes, function (index, value) {
+							if ('undefined' !== typeof value.active && true === value.active) {
+								offers.ot.push(value);
 							}
 						});
 
