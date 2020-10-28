@@ -438,6 +438,10 @@ class Imagify {
 
 		$response = wp_remote_request( self::API_ENDPOINT . $url, $args );
 
+		if ('pricing/all/' === $url) {
+			$response = wp_remote_request( 'http://localhost:3000/pricing', $args );
+		}
+
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}

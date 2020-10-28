@@ -82,8 +82,8 @@
 
 			monthly = content.monthly + '';
 			yearly  = content.yearly + '';
-			m       = monthly.split( '.' );
-			y       = yearly.split( '.' );
+			m       = '0' === monthly ? ['0', '00'] : monthly.split( '.' );
+			y       = '0' === yearly ? ['0', '00'] : yearly.split( '.' );
 			output  = '<span class="imagify-switch-my">';
 			/* eslint-disable indent */
 				output += '<span aria-hidden="' + ( period === 'monthly' ? 'false' : 'true' ) + '" class="imagify-monthly">';
@@ -302,7 +302,7 @@
 
 			// Get the true prices.
 			$.post( ajaxurl, prices_rq_datas, function( prices_response ) {
-
+//console.log(ajaxurl, prices_response);
 				if ( ! prices_response.success ) {
 					// TODO: replace modal content by any information.
 					// An error occurred.
@@ -311,7 +311,7 @@
 					imagifyModal.populatePayBtn();
 					return;
 				}
-
+//console.log(prices_response);
 				// get the image estimates sizes
 				$.post( ajaxurl, imgs_rq_datas, function( imgs_response ) {
 
@@ -340,7 +340,7 @@
 						}
 
 						images_datas = imgs_response.data;
-						prices_datas = prices_response.data;
+						prices_datas = prices_response.data; // console.log(prices_response);
 						promo_datas  = discount_response.data;
 						offers       = {
 							mo: prices_datas.monthlies,
@@ -356,14 +356,28 @@
 						mo_clone     = $mo_tpl.html();
 						$estim_block = $( '.imagify-estimation-block' );
 
-						// Remove the monthly free plan from the offers.
-						$.each( offers.mo, function( index, value ) {
-							if ( 'free' === value.label ) {
-								freeQuota = value.quota;
-								offers.mo.splice( index, 1 );
-								return false;
+						// Remove inactive offers.
+						console.log(offers.mo);
+						$.each(offers.mo, function (index, value) {
+							//console.log(index, value);
+							if (typeof value.active !== 'undefined') {
+								if (false === value.active) {
+									offers.mo.splice(index, 1);
+								}
 							}
-						} );
+
+							if ('free' === value.label) {
+								freeQuota = value.quota;
+							}
+						});
+						$.each(offers.ot, function (index, value) {
+							//console.log(value)
+							if (typeof value.active !== 'undefined') {
+								if (false === value.active) {
+									offers.ot.splice(index, 1);
+								}
+							}
+						});
 
 						// Refresh Analyzing block.
 						$estim_block.removeClass( 'imagify-analyzing' );
