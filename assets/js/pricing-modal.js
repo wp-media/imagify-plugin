@@ -448,7 +448,9 @@
 						 * It will also pre-select a Plan and/or Onetime in both of views: pre-checkout and pricing tables.
 						 */
 						if (0 === offers.mo.length) {
-							$('.imagify-pre-checkout-offers .imagify-offer-monthlies').remove();
+							$('.imagify-pre-checkout-offers .imagify-offer-monthly').remove();
+							$('.imagify-tabs').remove();
+							$('.imagify-pricing-tab-monthly').remove();
 						} else {
 							// Now, do the MONTHLIES Markup.
 							$.each(offers.mo, function (index, value) {
@@ -486,6 +488,8 @@
 
 						if (0 === offers.ot.length) {
 							$('.imagify-pre-checkout-offers .imagify-offer-onetime').remove();
+							$('.imagify-tabs').remove();
+							$('.imagify-pricing-tab-onetime').remove();
 						} else {
 							// Do the ONETIMES Markup.
 							$.each(offers.ot, function (index, value) {
