@@ -202,24 +202,31 @@
 		},
 
 		populatePayBtn: function() {
-			var pl_datas = JSON.parse( $( '.imagify-offer-monthly' ).attr( 'data-offer' ) ),
-				ot_datas = JSON.parse( $( '.imagify-offer-onetime' ).attr( 'data-offer' ) ),
+			var $monthlyOffer = $( '.imagify-offer-monthly' ),
+				$onetimeOffer = $( '.imagify-offer-onetime' ),
+				pl_datas, ot_datas,
 				price    = 0,
 				price_pl = 0,
 				price_ot = 0;
 
-			// Calculate price_pl only if that offer is selected.
-			if ( $( '.imagify-offer-monthly' ).hasClass( 'imagify-offer-selected' ) ) {
-				if ( $( '#imagify-subscription-monthly' ).filter( ':checked' ).length ) {
-					price_pl = pl_datas[ Object.keys( pl_datas )[0] ].prices.monthly;
-				} else {
-					price_pl = pl_datas[ Object.keys( pl_datas )[0] ].prices.yearly * 12;
+			if ($monthlyOffer.length) {
+				pl_datas = JSON.parse( $monthlyOffer.attr( 'data-offer' ) );
+				// Calculate price_pl only if that offer is selected.
+				if ($monthlyOffer.hasClass('imagify-offer-selected')) {
+					if ($('#imagify-subscription-monthly').filter(':checked').length) {
+						price_pl = pl_datas[Object.keys(pl_datas)[0]].prices.monthly;
+					} else {
+						price_pl = pl_datas[Object.keys(pl_datas)[0]].prices.yearly * 12;
+					}
 				}
 			}
 
-			// Calculate price_ot only if that offer is selected.
-			if ( $( '.imagify-offer-onetime' ).hasClass( 'imagify-offer-selected' ) ) {
-				price_ot = ot_datas[ Object.keys( ot_datas )[0] ].price;
+			if ($onetimeOffer.length) {
+				ot_datas = JSON.parse( $onetimeOffer.attr( 'data-offer' ) );
+				// Calculate price_ot only if that offer is selected.
+				if ($onetimeOffer.hasClass('imagify-offer-selected')) {
+					price_ot = ot_datas[Object.keys(ot_datas)[0]].price;
+				}
 			}
 
 			// Calculate price.
@@ -358,7 +365,10 @@
 
 						// Remove inactive offers.
 						$.each(prices_datas.monthlies, function (index, value) {
-							if ('undefined' !== typeof value.active && true === value.active) {
+							if ('undefined' === typeof value.active
+								||
+								('undefined' !== typeof value.active && true === value.active)
+							) {
 								if ('free' === value.label) {
 									freeQuota = value.quota;
 								}
@@ -366,7 +376,10 @@
 							}
 						});
 						$.each(prices_datas.onetimes, function (index, value) {
-							if ('undefined' !== typeof value.active && true === value.active) {
+							if ('undefined' === typeof value.active
+								||
+								('undefined' !== typeof value.active && true === value.active)
+							) {
 								offers.ot.push(value);
 							}
 						});
@@ -434,67 +447,74 @@
 						 * Below lines will build Plan and Onetime offers lists.
 						 * It will also pre-select a Plan and/or Onetime in both of views: pre-checkout and pricing tables.
 						 */
+						if (0 === offers.mo.length) {
+							$('.imagify-pre-checkout-offers .imagify-offer-monthlies').remove();
+						} else {
+							// Now, do the MONTHLIES Markup.
+							$.each(offers.mo, function (index, value) {
+								var $tpl, $offer,
+									classes = '';
 
-						// Now, do the MONTHLIES Markup.
-						$.each( offers.mo, function( index, value ) {
-							var $tpl, $offer,
-								classes = '';
-
-							// If offer is too big (far) than estimated needs, don't show the offer.
-							if ( ( index - suggested.mo.index ) > 2 ) {
-								return true;
-							}
-
-							if ( index === suggested.mo.index ) {
-								// It's the one to display.
-								$offer = $( '.imagify-pre-checkout-offers .imagify-offer-monthly' );
-
-								if ( suggested.mo.selected ) {
-									classes = ' imagify-offer-selected';
-
-									// Add this offer as pre-selected item in pre-checkout view.
-									$offer.addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).prop( 'checked', true );
+								// If offer is too big (far) than estimated needs, don't show the offer.
+								if ((index - suggested.mo.index) > 2) {
+									return true;
 								}
 
-								// Populate the Pre-checkout view depending on user_cons.
-								imagifyModal.populateOffer( $offer, value, 'monthly' );
-							}
+								if (index === suggested.mo.index) {
+									// It's the one to display.
+									$offer = $('.imagify-pre-checkout-offers .imagify-offer-monthly');
 
-							// Populate each offer.
-							$tpl = $( mo_clone ).clone();
-							$tpl = imagifyModal.populateOffer( $tpl, value, 'monthly', classes );
+									if (suggested.mo.selected) {
+										classes = ' imagify-offer-selected';
 
-							// Complete Monthlies HTML.
-							mo_html += $tpl[0].outerHTML;
-						} );
+										// Add this offer as pre-selected item in pre-checkout view.
+										$offer.addClass('imagify-offer-selected').find('.imagify-checkbox').prop('checked', true);
+									}
 
-						// Do the ONETIMES Markup.
-						$.each( offers.ot, function( index, value ) {
-							var $tpl, $offer,
-								classes = '';
-
-							// Parent classes.
-							if ( index === suggested.ot.index ) {
-								$offer = $( '.imagify-pre-checkout-offers .imagify-offer-onetime' );
-
-								if ( suggested.ot.selected ) {
-									classes = ' imagify-offer-selected';
-
-									// Add this offer as pre-selected item in pre-checkout view.
-									$offer.addClass( 'imagify-offer-selected' ).find( '.imagify-checkbox' ).prop( 'checked', true );
+									// Populate the Pre-checkout view depending on user_cons.
+									imagifyModal.populateOffer($offer, value, 'monthly');
 								}
 
-								// Populate the Pre-checkout view depending on user_cons.
-								imagifyModal.populateOffer( $offer, value, 'onetime' );
-							}
+								// Populate each offer.
+								$tpl = $(mo_clone).clone();
+								$tpl = imagifyModal.populateOffer($tpl, value, 'monthly', classes);
 
-							// Populate each offer.
-							$tpl = $( ot_clone ).clone();
-							$tpl = imagifyModal.populateOffer( $tpl, value, 'onetime', classes );
+								// Complete Monthlies HTML.
+								mo_html += $tpl[0].outerHTML;
+							});
+						}
 
-							// complete Onetimes HTML
-							ot_html += $tpl[0].outerHTML;
-						} );
+						if (0 === offers.ot.length) {
+							$('.imagify-pre-checkout-offers .imagify-offer-onetime').remove();
+						} else {
+							// Do the ONETIMES Markup.
+							$.each(offers.ot, function (index, value) {
+								var $tpl, $offer,
+									classes = '';
+
+								// Parent classes.
+								if (index === suggested.ot.index) {
+									$offer = $('.imagify-pre-checkout-offers .imagify-offer-onetime');
+
+									if (suggested.ot.selected) {
+										classes = ' imagify-offer-selected';
+
+										// Add this offer as pre-selected item in pre-checkout view.
+										$offer.addClass('imagify-offer-selected').find('.imagify-checkbox').prop('checked', true);
+									}
+
+									// Populate the Pre-checkout view depending on user_cons.
+									imagifyModal.populateOffer($offer, value, 'onetime');
+								}
+
+								// Populate each offer.
+								$tpl = $(ot_clone).clone();
+								$tpl = imagifyModal.populateOffer($tpl, value, 'onetime', classes);
+
+								// complete Onetimes HTML
+								ot_html += $tpl[0].outerHTML;
+							});
+						}
 
 						// Fill pricing tables.
 						if ( $mo_tpl.parent().find( '.imagify-offer-line' ) ) {
