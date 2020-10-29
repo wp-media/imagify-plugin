@@ -505,6 +505,10 @@ span.imagify-price-by {
 }
 
 /* Offer selected */
+.imagify-offer-selected {
+	background: #40B1D0;
+}
+
 .imagify-offer-selected,
 .imagify-offer-selected .imagify-offer-title,
 .imagify-offer-selected .imagify-offer-size,

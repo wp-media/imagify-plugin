@@ -331,7 +331,7 @@
 					// Get the discount informations.
 					$.post( ajaxurl, prices_rq_discount, function( discount_response ) {
 						var images_datas, prices_datas, promo_datas,
-							offers, consumption, suggested,
+							offers, consumption, suggestions,
 							freeQuota = 25,
 							ot_html   = '',
 							mo_html   = '',
@@ -441,7 +441,17 @@
 						/**
 						 * Find which plan(s) should be pre-selected.
 						 */
-						suggested = imagifyModal.getSuggestedOffers( offers, consumption, freeQuota );
+						if (0 === offers.ot.length) {
+							// suggestions will be an object:
+							//{
+							// plans: [{offer:offer,selected:bool},{...},...],
+							// packs: [{offer:offer,selected:bool},{...},...]
+							//}
+							suggestions = imagifyModal.getSuggestedOffersWithoutOnetimes(offers, consumption, freeQuota);
+						}
+						else {
+							suggestions = imagifyModal.getSuggestedOffers(offers, consumption, freeQuota);
+						}
 
 						/**
 						 * Below lines will build Plan and Onetime offers lists.
@@ -453,29 +463,27 @@
 							$('.imagify-pricing-tab-monthly').remove();
 						} else {
 							// Now, do the MONTHLIES Markup.
+							var $plansOfferTemplate = $('#imagify-pre-checkout-offer-monthly-template'),
+								plansOfferClone = $plansOfferTemplate.html(),
+								plansOfferHTML = '';
 							$.each(offers.mo, function (index, value) {
-								var $tpl, $offer,
+								var $tpl, $offerTemplate,
 									classes = '';
 
-								// If offer is too big (far) than estimated needs, don't show the offer.
-								if ((index - suggested.mo.index) > 2) {
-									return true;
-								}
+								$.each(suggestions.plans, function (index, suggestion) {
+									if (value.id === suggestion.offer.id) {
+										if (suggestion.selected) {
+											classes = ' imagify-offer-selected';
+											// Add this offer as pre-selected item in pre-checkout view.
+											//$offer.addClass('imagify-offer-selected').find('.imagify-checkbox').prop('checked', true);
+										}
 
-								if (index === suggested.mo.index) {
-									// It's the one to display.
-									$offer = $('.imagify-pre-checkout-offers .imagify-offer-monthly');
+										$offerTemplate = $(plansOfferClone).clone();
+										$offerTemplate = imagifyModal.populateOffer($offerTemplate, value, 'monthly', classes);
 
-									if (suggested.mo.selected) {
-										classes = ' imagify-offer-selected';
-
-										// Add this offer as pre-selected item in pre-checkout view.
-										$offer.addClass('imagify-offer-selected').find('.imagify-checkbox').prop('checked', true);
+										plansOfferHTML += $offerTemplate[0].outerHTML;
 									}
-
-									// Populate the Pre-checkout view depending on user_cons.
-									imagifyModal.populateOffer($offer, value, 'monthly');
-								}
+								});
 
 								// Populate each offer.
 								$tpl = $(mo_clone).clone();
@@ -497,10 +505,10 @@
 									classes = '';
 
 								// Parent classes.
-								if (index === suggested.ot.index) {
+								if (index === suggestions.ot.index) {
 									$offer = $('.imagify-pre-checkout-offers .imagify-offer-onetime');
 
-									if (suggested.ot.selected) {
+									if (suggestions.ot.selected) {
 										classes = ' imagify-offer-selected';
 
 										// Add this offer as pre-selected item in pre-checkout view.
@@ -521,6 +529,13 @@
 						}
 
 						// Fill pricing tables.
+
+						if ( $plansOfferTemplate.find('.imagify-offer-content')) {
+							$plansOfferTemplate.find('.imagify-offer-content').remove();
+						}
+
+						$plansOfferTemplate.before(plansOfferHTML);
+
 						if ( $mo_tpl.parent().find( '.imagify-offer-line' ) ) {
 							$mo_tpl.parent().find( '.imagify-offer-line' ).remove();
 						}
@@ -533,6 +548,9 @@
 
 						$ot_tpl.before( ot_html );
 
+						// Re-assign $anotherBtns
+						imagifyModal.$anotherBtn = $('.imagify-choose-another-plan');
+
 						// Show the content.
 						imagifyModal.$modal.find( '.imagify-modal-loader' ).fadeOut( 300 );
 
@@ -543,6 +561,30 @@
 				// Populate Pay button.
 				imagifyModal.populatePayBtn();
 			} ); // End $.post.
+		},
+
+		getSuggestedOffersWithoutOnetimes: function (offers, consumption, freeQuota) {
+			var suggestions = {
+					plans: [],
+					packs: []
+				},
+				selected = false;
+
+			for (var offerIndex = 0; offerIndex < offers.mo.length; offerIndex++) {
+				var offer = offers.mo[offerIndex];
+
+				if (offer.quota < consumption.month) {
+					continue;
+				}
+
+				suggestions.plans.push({
+					offer: offer,
+					selected: ! selected,
+				});
+
+				selected = true;
+			}
+			return suggestions;
 		},
 
 		/**
