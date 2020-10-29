@@ -309,7 +309,7 @@
 
 			// Get the true prices.
 			$.post( ajaxurl, prices_rq_datas, function( prices_response ) {
-//console.log(ajaxurl, prices_response);
+
 				if ( ! prices_response.success ) {
 					// TODO: replace modal content by any information.
 					// An error occurred.
@@ -318,7 +318,7 @@
 					imagifyModal.populatePayBtn();
 					return;
 				}
-//console.log(prices_response);
+
 				// get the image estimates sizes
 				$.post( ajaxurl, imgs_rq_datas, function( imgs_response ) {
 
