@@ -86,7 +86,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 							</div><!-- .imagify-radio-line -->
 						</div><!-- .imagify-offer-header -->
 
-						<script type="text/html" id="imagify-pre-checkout-offer-monthly-template"><div class="imagify-offer-content imagify-flex-table">
+						<div class="imagify-offer-content imagify-flex-table">
 
 							<div class="imagify-col-checkbox">
 								<input type="checkbox" name="imagify-offer" id="imagify-offer-1gb" value="1Gb" checked="checked" class="imagify-checkbox medium">
@@ -139,7 +139,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 								<a href="#imagify-plans-selection-view" class="imagify-choose-another-plan" data-imagify-choose="plan"><?php esc_html_e( 'Choose another plan', 'imagify' ); ?></a>
 							</div>
 
-							</div><!-- .imagify-offer-content --></script>
+						</div><!-- .imagify-offer-content -->
 
 					</div><!-- .imagify-offer-line -->
 
