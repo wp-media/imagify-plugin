@@ -436,7 +436,7 @@ class Imagify {
 			}
 		}
 
-			$response = wp_remote_request( self::API_ENDPOINT . $url, $args );
+		$response = wp_remote_request( self::API_ENDPOINT . $url, $args );
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
