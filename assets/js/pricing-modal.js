@@ -347,7 +347,7 @@
 						}
 
 						images_datas = imgs_response.data;
-						prices_datas = prices_response.data; // console.log(prices_response);
+						prices_datas = prices_response.data;
 						promo_datas  = discount_response.data;
 						offers       = {
 							mo: [],
