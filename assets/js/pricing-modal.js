@@ -569,18 +569,18 @@
 		 * }
 		 */
 		getSuggestedOffers: function( offers, consumption, freeQuota ) {
-			var tmpMB     = consumption.total + consumption.month,
+			var tmpMB = consumption.total + consumption.month,
 				suggested = {
 					mo: false,
 					ot: false
 				};
 
-			if ( consumption.month <= freeQuota ) {
+			if (consumption.month <= freeQuota) {
 				/**
 				 * The free plan is enough (but we still may need a One-Time plan).
 				 */
 				suggested.mo = {
-					index:    0,
+					index: 0,
 					selected: 0
 				};
 
@@ -589,57 +589,62 @@
 				/**
 				 * Paid monthly plan.
 				 */
-				$.each( offers.mo, function( index, value ) {
-					if ( value.quota < consumption.month ) {
+				$.each(offers.mo, function (index, value) {
+					if (value.quota < consumption.month) {
 						// This plan is not big enough for the user needs.
 						return true;
 					}
 
 					// Suggested monthly plan.
 					suggested.mo = {
-						index:    index,
+						index: index,
 						selected: 1
 					};
 					return false;
-				} );
+				});
 
-				if ( false === suggested.mo ) {
+				if (false === suggested.mo) {
 					/**
 					 * If nothing is selected, that means no plan is big enough for the user's monthly consumption.
 					 * In that case we fallback to the biggest available.
 					 */
 					suggested.mo = {
-						index:    offers.mo.length - 1,
+						index: offers.mo.length - 1,
 						selected: 1
 					};
 				}
 
 				// Remaining MB.
-				tmpMB -= offers.mo[ suggested.mo.index ].quota;
+				tmpMB -= offers.mo[suggested.mo.index].quota;
 			}
 
-			if ( tmpMB <= 0 ) {
+			// If we don't have active onetime plans, we're done.
+			if (0 === offers.ot.length) {
+				return suggested;
+			}
+
+			if (tmpMB <= 0) {
 				/**
 				 * The monthly plan is big enough to optimize all the images that already are in the library.
 				 * We'll display a One-Time plan that is able to optimize the whole library, in case the user doesn't want a monthly plan, but it won't be pre-selected.
 				 */
-				$.each( offers.ot, function( index, value ) {
-					if ( value.quota < consumption.total ) {
+				$.each(offers.ot, function (index, value) {
+					if (value.quota < consumption.total) {
 						// This plan is not big enough for the user needs.
 						return true;
 					}
 
 					// Suggested monthly plan.
 					suggested.ot = {
-						index:    index,
+						index: index,
 						selected: 0
 					};
 					return false;
-				} );
+				});
 
-				if ( false === suggested.ot ) {
+				if (false === suggested.ot) {
 					suggested.ot = {
-						index:    offers.ot.length - 1,
+						index: offers.ot.length - 1,
 						selected: 0
 					};
 				}
@@ -682,7 +687,7 @@
 			// Reset monthly plan.
 			suggested.mo = false;
 
-			// Reset the remaining MB and substract the OT plan quota.
+			// Reset the remaining MB and subtract the OT plan quota.
 			tmpMB = consumption.total + consumption.month - offers.ot[ suggested.ot.index ].quota;
 
 			// Search for a new monthly plan.
