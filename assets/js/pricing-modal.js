@@ -46,26 +46,26 @@
 	 */
 	var imagifyModal = {};
 
-	if (!$('#imagify-pricing-modal').length) {
+	if (! $('#imagify-pricing-modal').length) {
 		return;
 	}
 
 	imagifyModal = {
-		$modal: $('#imagify-pricing-modal'),
-		$checkboxes: $('.imagify-offer-line .imagify-checkbox'),
-		$radios: $('.imagify-payment-modal .imagify-radio-line input'),
+		$modal:       $('#imagify-pricing-modal'),
+		$checkboxes:  $('.imagify-offer-line .imagify-checkbox'),
+		$radios:      $('.imagify-payment-modal .imagify-radio-line input'),
 		// Plans selection view & payment process view hidden by default.
-		$preView: $('#imagify-pre-checkout-view'),
-		$plansView: $('#imagify-plans-selection-view').hide(),
+		$preView:     $('#imagify-pre-checkout-view'),
+		$plansView:   $('#imagify-plans-selection-view').hide(),
 		$paymentView: $('#imagify-payment-process-view').hide(),
 		$successView: $('#imagify-success-view').hide(),
-		$anotherBtn: $('.imagify-choose-another-plan'),
-		speedFadeIn: 300,
+		$anotherBtn:  $('.imagify-choose-another-plan'),
+		speedFadeIn:  300,
 
 		getHtmlPrice: function (content, period) {
 			var monthly, yearly, m, y, output;
 
-			if (!period) {
+			if (! period) {
 				period = null;
 			}
 
@@ -104,7 +104,7 @@
 			var monthly, yearly,
 				output = '';
 
-			if (!period) {
+			if (! period) {
 				period = null;
 			}
 
@@ -152,7 +152,7 @@
 				quo = datas.quota,           // 1000 (MB) - 5000 images (monthly/onetime)
 				cos = datas.cost,            // 3.49 (onetime)
 				name = -1 === quo ? 'Unlimited' : (quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB'),
-				pcs = 'monthly' === type ? {monthly: mon, yearly: Math.round(ann / 12 * 100) / 100} : cos,
+				pcs = 'monthly' === type ? { monthly: mon, yearly: Math.round(ann / 12 * 100) / 100 } : cos,
 				pcsd = pcs, // Used if discount is active.
 				percent, $datas_c, datas_content;
 
@@ -161,7 +161,7 @@
 				percent = (100 - promo.coupon_value) / 100;
 				pcs = 'monthly' === type ? {
 					monthly: mon * percent,
-					yearly: Math.round((ann * percent) / 12 * 100) / 100
+					yearly:  Math.round((ann * percent) / 12 * 100) / 100
 				} : cos * percent;
 			}
 
@@ -261,13 +261,13 @@
 			$cptext.addClass('checking');
 
 			// Get the true prices.
-			$.post(ajaxurl, {action: 'imagify_check_coupon', coupon: code, imagifynonce: nonce}, function (response) {
+			$.post(ajaxurl, { action: 'imagify_check_coupon', coupon: code, imagifynonce: nonce }, function (response) {
 				var coupon_value;
 
 				$cptext.removeClass('checking');
 
 				// Error during the request.
-				if (!response.success) {
+				if (! response.success) {
 					$section.removeClass('validated').addClass('invalid');
 					$label.text(imagifyPricingModal.labels.errorCouponAPI);
 				} else if (response.data.success) {
@@ -291,15 +291,15 @@
 		getPricing: function ($button) {
 			var nonce = $button.data('nonce'),
 				prices_rq_datas = {
-					action: 'imagify_get_prices',
+					action:       'imagify_get_prices',
 					imagifynonce: nonce
 				},
 				imgs_rq_datas = {
-					action: 'imagify_get_images_counts',
+					action:       'imagify_get_images_counts',
 					imagifynonce: nonce
 				},
 				prices_rq_discount = {
-					action: 'imagify_get_discount',
+					action:       'imagify_get_discount',
 					imagifynonce: nonce
 				};
 
@@ -313,7 +313,7 @@
 			// Get the true prices.
 			$.post(ajaxurl, prices_rq_datas, function (prices_response) {
 
-				if (!prices_response.success) {
+				if (! prices_response.success) {
 					// TODO: replace modal content by any information.
 					// An error occurred.
 
@@ -325,7 +325,7 @@
 				// get the image estimates sizes
 				$.post(ajaxurl, imgs_rq_datas, function (imgs_response) {
 
-					if (!imgs_response.success) {
+					if (! imgs_response.success) {
 						// TODO: replace modal content by any information.
 						// An error occurred.
 						return;
@@ -343,7 +343,7 @@
 							$estim_block, $offers_block,
 							$banners, date_end, promo, discount;
 
-						if (!discount_response.success) {
+						if (! discount_response.success) {
 							// TODO: replace modal content by any information.
 							// An error occurred.
 							return;
@@ -583,7 +583,7 @@
 				 * The free plan is enough (but we still may need a One-Time plan).
 				 */
 				suggested.mo = {
-					index: 0,
+					index:    0,
 					selected: 0
 				};
 
@@ -600,7 +600,7 @@
 
 					// Suggested monthly plan.
 					suggested.mo = {
-						index: index,
+						index:    index,
 						selected: 1
 					};
 					return false;
@@ -612,7 +612,7 @@
 					 * In that case we fallback to the biggest available.
 					 */
 					suggested.mo = {
-						index: offers.mo.length - 1,
+						index:    offers.mo.length - 1,
 						selected: 1
 					};
 				}
@@ -639,7 +639,7 @@
 
 					// Suggested monthly plan.
 					suggested.ot = {
-						index: index,
+						index:    index,
 						selected: 0
 					};
 					return false;
@@ -647,7 +647,7 @@
 
 				if (false === suggested.ot) {
 					suggested.ot = {
-						index: offers.ot.length - 1,
+						index:    offers.ot.length - 1,
 						selected: 0
 					};
 				}
@@ -667,7 +667,7 @@
 
 				// Suggested one-time plan.
 				suggested.ot = {
-					index: index,
+					index:    index,
 					selected: 1
 				};
 				return false;
@@ -683,7 +683,7 @@
 			 * In that case we fallback to the biggest available, and we need to increase the monthly plan.
 			 */
 			suggested.ot = {
-				index: offers.ot.length - 1,
+				index:    offers.ot.length - 1,
 				selected: 1
 			};
 
@@ -702,7 +702,7 @@
 
 				// Suggested monthly plan.
 				suggested.mo = {
-					index: index,
+					index:    index,
 					selected: 1
 				};
 				return false;
@@ -714,7 +714,7 @@
 				 * In that case we fallback to the biggest available.
 				 */
 				suggested.mo = {
-					index: offers.mo.length - 1,
+					index:    offers.mo.length - 1,
 					selected: 1
 				};
 			}
@@ -887,7 +887,7 @@
 				onetime_id = (onetime_id + '' === '999' ? params.onetime[Object.keys(params.onetime)[0]].data : onetime_id);
 			}
 
-			if (!params.period) {
+			if (! params.period) {
 				w.imagify.info('No period defined');
 				return;
 			}
@@ -939,7 +939,7 @@
 		 * @uses imagifyModal.paymentSuccess()
 		 */
 		checkPluginMessage: function (e) {
-			var origin = e.origin || e.originalEvent.origin;
+			var origin = e.origin || e.originalEvent.origin; // eslint-disable-line no-shadow
 
 			if ('https://app.imagify.io' !== origin && 'http://dapp.imagify.io' !== origin) {
 				return;
@@ -1011,7 +1011,7 @@
 	 * @since 1.6.3 Only if field hasn't readonly attribute (discount auto-applied).
 	 */
 	$('#imagify-coupon-code').on('blur.imagify', function () {
-		if (!$(this).attr('readonly')) {
+		if (! $(this).attr('readonly')) {
 			imagifyModal.checkCoupon();
 		}
 	}).on('keydown.imagify', function (e) {
@@ -1053,7 +1053,7 @@
 
 		e.preventDefault();
 
-		imagifyModal.switchToView(imagifyModal.$plansView, {tab: tab});
+		imagifyModal.switchToView(imagifyModal.$plansView, { tab: tab });
 	});
 
 	/**
@@ -1097,7 +1097,7 @@
 		// Change datas (json).
 		$target_line.attr('data-offer', datas_str);
 
-		if (!is_onetime) {
+		if (! is_onetime) {
 			$target_line.find('.imagify-price-add-data').text($offer_line.find('.imagify-price-add-data').text());
 
 			// Trigger period selected from offer selection view to pre-checkout view.
@@ -1147,7 +1147,7 @@
 		// Clear user account cache.
 		if (imagifyPricingModal.userDataCache) {
 			$.post(ajaxurl, {
-				action: imagifyPricingModal.userDataCache.deleteAction,
+				action:   imagifyPricingModal.userDataCache.deleteAction,
 				_wpnonce: imagifyPricingModal.userDataCache.deleteNonce
 			});
 		}
