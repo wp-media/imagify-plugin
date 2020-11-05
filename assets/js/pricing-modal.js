@@ -593,8 +593,8 @@
 				 * Paid monthly plan.
 				 */
 				$.each(offers.mo, function (index, value) {
-					if (value.quota < consumption.month) {
-						// This plan is not big enough for the user needs.
+					if (value.quota < consumption.month || value.quota < consumption.total) {
+						// Monthly plan should cover either monthly consumption or library total.
 						return true;
 					}
 
