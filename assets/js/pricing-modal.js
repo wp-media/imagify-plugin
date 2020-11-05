@@ -573,53 +573,78 @@
 		 */
 		getSuggestedOffers: function (offers, consumption, freeQuota) {
 			var tmpMB = consumption.total + consumption.month,
+				plan,
+				biggestPlan = {
+					quota: 0
+				},
+				unlimitedPlan,
 				suggested = {
 					mo: false,
 					ot: false
 				};
 
-			if (consumption.month <= freeQuota) {
-				/**
-				 * The free plan is enough (but we still may need a One-Time plan).
-				 */
-				suggested.mo = {
-					index:    0,
-					selected: 0
-				};
-
-				tmpMB -= freeQuota;
-			} else {
-				/**
-				 * Paid monthly plan.
-				 */
-				$.each(offers.mo, function (index, value) {
-					if (value.quota < consumption.month || value.quota < consumption.total) {
-						// Monthly plan should cover either monthly consumption or library total.
-						return true;
-					}
-
-					// Suggested monthly plan.
-					suggested.mo = {
-						index:    index,
-						selected: 1
-					};
-					return false;
-				});
-
-				if (false === suggested.mo) {
-					/**
-					 * If nothing is selected, that means no plan is big enough for the user's monthly consumption.
-					 * In that case we fallback to the biggest available.
-					 */
-					suggested.mo = {
-						index:    offers.mo.length - 1,
-						selected: 1
+			/**
+			 * Paid monthly plan.
+			 */
+			$.each(offers.mo, function (index, value) {
+				// if this is the unlimited plan, save it; we may need to come back to it.
+				if (0 > value.quota) {
+					unlimitedPlan = {
+						index:     index,
+						suggested: 1
 					};
 				}
 
-				// Remaining MB.
-				tmpMB -= offers.mo[suggested.mo.index].quota;
+				// This is the biggest plan we've seen so far. Save it in case we need it later.
+				if (value.quota > biggestPlan.quota) {
+					biggestPlan = {
+						index:     index,
+						suggested: 1,
+						quota:     value.quota
+					};
+				}
+
+				// We are considering the free plan: Show it when library size and monthly usage are less than the free quota.
+				if ('free' === value.label && (consumption.total < freeQuota) && (consumption.month < freeQuota)) {
+					suggested.mo = {
+						index:    index,
+						selected: 0 // We don't want to pre-check the free plan as a recommendation.
+					};
+
+					return false;
+				}
+				// For all except unlimited plan: Rule out this plan if quota is less than either library size or monthly usage.
+				if ((0 >= value.quota) && (consumption.month > value.quota) || (consumption.total > value.quota)) {
+					return true;
+				}
+
+				// For all except unlimited plan: Consider this plan if its quota meets consumption needs.
+				if ((0 <= value.quota) && (consumption.month < value.quota) && (consumption.total < value.quota)) {
+					// Select this one when (1) we haven't yet selected a plan, or (2) when this plan is less quota than the current one.
+					if (('undefined' === typeof plan) || (plan.quota > value.quota)) {
+						plan = value;
+						suggested.mo = {
+							index: index,
+							selected: 1
+						}
+					}
+
+					return true;
+				}
+
+				return true;
+			});
+
+			// If we don't have a plan selected by the time we get here, we need the infinite plan, or the biggest if infinite isn't available.
+			if (false === suggested.mo) {
+				if ('undefined' !== typeof unlimitedPlan) {
+					suggested.mo = unlimitedPlan;
+				} else {
+					suggested.mo = biggestPlan;
+				}
 			}
+			// Remaining MB.
+			tmpMB -= offers.mo[suggested.mo.index].quota;
 
 			// If we don't have active onetime plans, we're done.
 			if (0 === offers.ot.length) {
