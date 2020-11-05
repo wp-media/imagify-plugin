@@ -624,9 +624,9 @@
 					if (('undefined' === typeof plan) || (plan.quota > value.quota)) {
 						plan = value;
 						suggested.mo = {
-							index: index,
+							index:    index,
 							selected: 1
-						}
+						};
 					}
 
 					return true;
