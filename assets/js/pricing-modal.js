@@ -591,7 +591,7 @@
 				if (0 > value.quota) {
 					unlimitedPlan = {
 						index:     index,
-						suggested: 1
+						selected: 1
 					};
 				}
 
@@ -599,19 +599,14 @@
 				if (value.quota > biggestPlan.quota) {
 					biggestPlan = {
 						index:     index,
-						suggested: 1,
+						selected: 1,
 						quota:     value.quota
 					};
 				}
 
-				// We are considering the free plan: Show it when library size and monthly usage are less than the free quota.
-				if ('free' === value.label && (consumption.total < freeQuota) && (consumption.month < freeQuota)) {
-					suggested.mo = {
-						index:    index,
-						selected: 0 // We don't want to pre-check the free plan as a recommendation.
-					};
-
-					return false;
+				// Skip the free plan.
+				if ('free' === value.label) {
+					return true;
 				}
 				// For all except unlimited plan: Rule out this plan if quota is less than either library size or monthly usage.
 				if ((0 >= value.quota) && (consumption.month > value.quota) || (consumption.total > value.quota)) {
@@ -625,7 +620,7 @@
 						plan = value;
 						suggested.mo = {
 							index:    index,
-							selected: 1
+							selected: (freeQuota > consumption.month) && (freeQuota > consumption.total) ? 0 : 1
 						};
 					}
 
