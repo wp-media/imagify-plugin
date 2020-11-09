@@ -11,6 +11,7 @@ jobs:
     - uses: actions/checkout@master
     - name: Build
       run: |
+        composer self-update 1.10.16
         composer install -a --no-dev
     - name: WordPress Plugin Deploy
       uses: 10up/action-wordpress-plugin-deploy@master
