@@ -254,7 +254,7 @@ window.imagify = window.imagify || {};
 		 * @return {bool} Returns whether or not the iframe is from the same origin.
 		 */
 		function isLocalFrame( frame ) {
-			var origin, src = frame.src;
+			var origin, src = frame.src; // eslint-disable-line no-shadow
 
 			/*
 			 * Need to compare strings as WebKit doesn't throw JS errors when iframes have different origin. It throws uncatchable exceptions.
