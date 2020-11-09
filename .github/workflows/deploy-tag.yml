@@ -8,11 +8,20 @@ jobs:
     name: New tag
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 7.4
+        coverage: none  # XDebug can be enabled here 'coverage: xdebug'
+        tools: composer:v1
+
     - name: Build
-      run: |
-        composer self-update 1.10.16
-        composer install -a --no-dev
+      run: composer install -a --no-dev
+        
     - name: WordPress Plugin Deploy
       uses: 10up/action-wordpress-plugin-deploy@master
       env:
