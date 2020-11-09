@@ -605,9 +605,10 @@
 				}
 
 				// Skip the free plan.
-				if ('free' === value.label) {
+				if ((0 === value.monthly_cost) && (0 === value.annual_cost)) {
 					return true;
 				}
+
 				// For all except unlimited plan: Rule out this plan if quota is less than either library size or monthly usage.
 				if ((0 >= value.quota) && (consumption.month > value.quota) || (consumption.total > value.quota)) {
 					return true;
