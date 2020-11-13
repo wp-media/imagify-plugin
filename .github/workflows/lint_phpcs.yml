@@ -20,7 +20,7 @@ jobs:
     name: WPRocket lint with PHPCS. PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
     
     env:
-      IMAGIFY_TESTS_API_KEY: ${{ secrets. IMAGIFY_TESTS_API_KEY }}
+      IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
       
     steps:
     - name: Checkout
