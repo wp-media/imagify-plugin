@@ -9,6 +9,7 @@ on:
 
 env:
   IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
+  SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
 
 jobs:
   run:
@@ -64,3 +65,4 @@ jobs:
         whoami
         env | grep -i imagify
         echo $IMAGIFY_TESTS_API_KEY
+        echo $SVN_USERNAME
