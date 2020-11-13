@@ -7,6 +7,9 @@ on:
       - develop
       - branch-*
 
+env:
+  IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
+
 jobs:
   run:
     runs-on: ${{ matrix.operating-system }}
@@ -55,7 +58,9 @@ jobs:
         restore-keys: ${{ runner.os }}-composer-
     
     - name: test
+      env:
+        IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
       run: |
         whoami
-        env
+        env | grep -i imagify
         echo $IMAGIFY_TESTS_API_KEY
