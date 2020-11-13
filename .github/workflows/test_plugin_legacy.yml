@@ -21,7 +21,7 @@ jobs:
     name: WP ${{ matrix.wp-versions }} with PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
     
     env:
-      IMAGIFY_TESTS_API_KEY: ${{ secrets. IMAGIFY_TESTS_API_KEY }}
+      IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
       
     steps:
     - name: Checkout
