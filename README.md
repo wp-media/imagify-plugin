@@ -1,11 +1,11 @@
 # Imagify Image Optimizer
 
-Optimize images in one click: reduce image file sizes, convert WebP, keep your images beautiful… and boost your loading time and your SEO!
-
-Speed up your website with our image optimizer and get lighter images without losing quality.
+Optimize images in one click: get lighter images without losing quality, convert WebP and speed up your website!
 
 Imagify is the most advanced tool to optimize images. You can now use this power directly in WordPress.
-After enabling it, all your images including thumbnails will be automatically optimized when uploaded into WordPress. You can also use Imagify to convert WebP images for free.
+
+After enabling it, all your images including thumbnails will be automatically optimized when uploaded into WordPress.
+You can also use Imagify to convert WebP images, which will additionally reduce the size of your website making it faster.
 
 WooCommerce and NextGen Gallery compatible.
 
@@ -17,17 +17,27 @@ WooCommerce and NextGen Gallery compatible.
 
 ![Other Media Page](https://raw.githubusercontent.com/wp-media/imagify/master/.wordpress-org/screenshot-4.png "Other Media Page")
 
-## What is Image Compression?
+## Why Is It Important to Optimize Images?
+
+A fast site is important primarily for visitors who may leave a website that is too slow,
+but also for SEO performance since search engines consider website speed as a ranking factor.
+
+Website size is one of the most important factors that affect the website performance:
+images can account for 50% of your loading time.
+
+By optimizing images you will quickly gain precious seconds and make your website faster.
 
 Learn more about image compression, check that: [https://imagify.io/images-compression](https://imagify.io/images-compression).
 
-## Why use Imagify to optimize your images?
+## Why Use Imagify to Optimize Images?
+
+Imagify can optimize all images: jpgs, pngs, pdfs and gifs (whether animated or not).
 
 You already have lots of unoptimized images? Not a problem, you will love the Bulk Optimizer to optimize all your existing images in one click.
 
 Imagify can directly resize your images, **you won't have to lose time anymore on resizing your images before uploading them**.
 
-Three level of compression are available:
+There are three optimization levels available - Normal, Aggressive and Ultra.
 
 * Normal, a lossless compression algorithm. The image quality won't be altered at all.
 * Aggressive, a lossy compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all.
@@ -35,7 +45,7 @@ Three level of compression are available:
 
 With the backup option, you can change your mind whenever you want by restoring your images to their original version or optimize them to another compression level.
 
-## How about webp images?
+## How About WebP images?
 Now, for each image you optimize with the Imagify plugin, you will also get its **WebP version** (if you tick the option in the settings); in your Media library, this will result in the following image versions:
 
 * full-sized optimized image,
@@ -63,7 +73,7 @@ If you kept a backup copy of the original images, you have the possibility to **
 
 ## Is Imagify Free?
 
-You can optimize for free 25MB of images (about 250 images) every month. Converting to WebP is free.
+You can optimize for free 20MB of images (about 200 images) every month. You can convert WebP for free.
 
 Need more? Have a look at our plans: [https://imagify.io/pricing](https://imagify.io/pricing).
 
@@ -75,7 +85,8 @@ Have a look at our upcoming features by following our development roadmap: [http
 
 We are [WP Media](https://wp-media.me/), the startup behind WP Rocket the best caching plugin for WordPress.
 
-Our mission is to improve the web, we are making it faster with [WP Rocket](https://wp-rocket.me/) we want to make it lighter with Imagify.
+Our mission is to improve the web, we are making it faster with [WP Rocket](https://wp-rocket.me/)
+and lighter with Imagify.
 
 ## Get in touch!
 
@@ -94,7 +105,7 @@ composer require wp-media/imagify-plugin
 ## Related Plugins
 
 * [WP Rocket](https://wp-rocket.me/): Best caching plugin to speed-up your WordPress website.
-* [Rocket Lazy Load](https://wordpress.org/plugins/rocket-lazy-load/): Best Lazy Load script to reduce the number of HTTP requests and improves the websites loading time.
+* [Lazy Load](https://wordpress.org/plugins/rocket-lazy-load/): Best Lazy Load script to reduce the number of HTTP requests and improves the websites loading time.
 * [Increase Maximum Upload File Size](https://wordpress.org/plugins/upload-max-file-size/): Increase upload file size limit to any value with one click.
 
 License: [GPLv2 or later](http://www.gnu.org/licenses/gpl-2.0.html).
