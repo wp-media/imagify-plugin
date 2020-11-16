@@ -1,4 +1,4 @@
-name: Imagify-plugin Test - Legacy
+name: Plugin Test - Legacy
 
 on:
   pull_request:
@@ -33,7 +33,7 @@ jobs:
         php-version: ${{ matrix.php-versions }}
         extensions: mysqli
         coverage: none  # XDebug can be enabled here 'coverage: xdebug'
-        tools: composer:v1, phpunit
+        tools: composer:v1
         
     - name: Start mysql service
       run: sudo /etc/init.d/mysql start
