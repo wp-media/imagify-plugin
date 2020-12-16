@@ -470,7 +470,7 @@ class Imagify {
 			$url = self::API_ENDPOINT . $url;
 			$ch  = @curl_init();
 
-			if ( ! is_resource( $ch ) && 'object' !== gettype( $ch ) && 'CurlHandle' !== get_class( $ch ) ) {
+			if ( ! is_resource( $ch ) && ( 'object' !== gettype( $ch ) && 'CurlHandle' !== get_class( $ch ) ) ) {
 				throw new Exception( 'Could not initialize a new cURL handle' );
 			}
 
