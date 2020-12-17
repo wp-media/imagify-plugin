@@ -470,7 +470,7 @@ class Imagify {
 			$url = self::API_ENDPOINT . $url;
 			$ch  = @curl_init();
 
-			if ( ! is_resource( $ch ) && ( ! is_object( $ch ) && 'CurlHandle' !== get_class( $ch ) ) ) {
+			if ( false === $ch ) {
 				throw new Exception( 'Could not initialize a new cURL handle' );
 			}
 
@@ -536,7 +536,11 @@ class Imagify {
 			$error     = curl_error( $ch );
 			$http_code = (int) curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 
-			curl_close( $ch );
+			if ( is_resource( $ch ) ) {
+				curl_close( $ch );
+			} else {
+				unset( $ch );
+			}
 		} catch ( Exception $e ) {
 			$args['headers'] = $this->headers;
 			/**
