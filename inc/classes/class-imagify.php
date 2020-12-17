@@ -468,7 +468,7 @@ class Imagify {
 
 		try {
 			$url = self::API_ENDPOINT . $url;
-			$ch  = @curl_init();
+			$ch  = curl_init();
 
 			if ( false === $ch ) {
 				throw new Exception( 'Could not initialize a new cURL handle' );
