@@ -2,8 +2,8 @@
 Contributors: wp_media
 Tags: convert webp, webp, optimize images, optimize, images
 Requires at least: 4.0.0
-Tested up to: 5.5.3
-Stable tag: 1.9.13
+Tested up to: 5.6.1
+Stable tag: 1.9.14
 
 Optimize images in one click: reduce image file sizes, convert WebP, keep your images beautiful… and boost your loading time and your SEO!
 
