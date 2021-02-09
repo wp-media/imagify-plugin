@@ -6,3 +6,4 @@
 .DS_Store
 /gruntlocalconf.json
 composer.lock
+package-lock.json
