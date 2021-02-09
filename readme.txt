@@ -210,6 +210,10 @@ No. However, you get 20MB of quota per month for free.
 4. Other Media Page
 
 == Changelog ==
+= 1.9.14 =
+* Fix: cURL not connecting to Imagify API when using PHP 8.
+* Fix: Display issue in Chrome on scrollable check groups on Imagify admin page.
+
 = 1.9.13 =
 * Improvement: Update readme with new quotas, FAQ and description info.
 
