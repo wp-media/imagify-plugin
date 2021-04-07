@@ -341,7 +341,7 @@
 							$mo_tpl, $ot_tpl,
 							ot_clone, mo_clone,
 							$estim_block, $offers_block,
-							$banners, date_end, promo, discount;
+							$banners, date_end, applied_plans, promo, discount;
 
 						if (! discount_response.success) {
 							// TODO: replace modal content by any information.
@@ -422,6 +422,19 @@
 						w.imagify_discount_datas = promo_datas;
 
 						if (promo_datas.is_active) {
+							applied_plans = promo_datas.applies_to;
+							let plan_names = [];
+
+							if (applied_plans instanceof Array) {
+								for (let plan_name of applied_plans) {
+									plan_names.push(plan_name.plan_name)
+								}
+
+								plan_names = [... new Set(plan_names)].join(', ');
+							} else {
+								plan_names = applied_plans;
+							}
+
 							$banners = $('.imagify-modal-promotion');
 							date_end = promo_datas.date_end.split('T')[0];
 							promo = promo_datas.coupon_value;
@@ -435,6 +448,7 @@
 
 							// Populate banners.
 							$banners.find('.imagify-promotion-number').text(discount);
+							$banners.find('.imagify-promotion-plan-name').text(plan_names);
 							$banners.find('.imagify-promotion-date').text(date_end);
 
 							// Auto validate coupon.
