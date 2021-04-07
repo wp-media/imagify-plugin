@@ -173,7 +173,12 @@
 			}
 
 			// Change pricing value only if discount in percentage is active and if offer is a monthly and not a onetime.
-			if (promo.is_active && 'percentage' === promo.coupon_type && 'monthly' === type && appliesTo.includes(lab)) {
+			if (
+				promo.is_active
+				&& 'percentage' === promo.coupon_type
+				&& 'monthly' === type
+				&& (appliesTo.includes(lab) || 'all' === appliesTo[0])
+			) {
 				percent = (100 - promo.coupon_value) / 100;
 				pcs = 'monthly' === type ? {
 					monthly: mon * percent,
@@ -192,7 +197,12 @@
 			$offer.find('.imagify-number-block').html(imagifyModal.getHtmlPrice(pcs, 'monthly'));
 
 			// discount prices
-			if (promo.is_active && 'percentage' === promo.coupon_type && 'monthly' === type && appliesTo.includes(lab)) {
+			if (
+				promo.is_active
+				&& 'percentage' === promo.coupon_type
+				&& 'monthly' === type
+				&& (appliesTo.includes(lab) || 'all' === appliesTo[0])
+			) {
 
 				$offer.find('.imagify-price-block').prev('.imagify-price-discount').remove();
 				$offer.find('.imagify-price-block').before(imagifyModal.getHtmlDiscountPrice(pcsd, 'monthly'));
