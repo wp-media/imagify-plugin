@@ -154,10 +154,26 @@
 				name = -1 === quo ? 'Unlimited' : (quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB'),
 				pcs = 'monthly' === type ? { monthly: mon, yearly: Math.round(ann / 12 * 100) / 100 } : cos,
 				pcsd = pcs, // Used if discount is active.
-				percent, $datas_c, datas_content;
+				percent, $datas_c, datas_content, appliesTo = [];
+
+			if (promo.applies_to instanceof Array) {
+				var plan_list = [];
+
+				for (var plan_infos = 0; plan_infos < promo.applies_to.length; plan_infos++) {
+					plan_list.push(promo.applies_to[plan_infos].plan_name);
+				}
+
+				plan_list.forEach(function (item) {
+					if (!appliesTo.includes(item)) {
+						appliesTo.push(item);
+					}
+				});
+			} else {
+				appliesTo = [promo_datas.applies_to];
+			}
 
 			// Change pricing value only if discount in percentage is active and if offer is a monthly and not a onetime.
-			if (promo.is_active && 'percentage' === promo.coupon_type && 'monthly' === type) {
+			if (promo.is_active && 'percentage' === promo.coupon_type && 'monthly' === type && appliesTo.includes(lab)) {
 				percent = (100 - promo.coupon_value) / 100;
 				pcs = 'monthly' === type ? {
 					monthly: mon * percent,
@@ -176,7 +192,7 @@
 			$offer.find('.imagify-number-block').html(imagifyModal.getHtmlPrice(pcs, 'monthly'));
 
 			// discount prices
-			if (promo.is_active && 'percentage' === promo.coupon_type && 'monthly' === type) {
+			if (promo.is_active && 'percentage' === promo.coupon_type && 'monthly' === type && appliesTo.includes(lab)) {
 
 				$offer.find('.imagify-price-block').prev('.imagify-price-discount').remove();
 				$offer.find('.imagify-price-block').before(imagifyModal.getHtmlDiscountPrice(pcsd, 'monthly'));
