@@ -6,9 +6,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	<p class="imagify-promo-title">
 		<?php
 		printf(
-			/* translators: %s is a formatted percentage. */
-			__( '%s OFF on all the subscriptions', 'imagify' ),
-			'<span class="imagify-promotion-number"></span>'
+			/* translators: First %s is a formatted percentage, Second %s is a subscription plan name. */
+			__( '%s OFF on %s subscriptions', 'imagify' ),
+			'<span class="imagify-promotion-number"></span>',
+			'<span class="imagify-promotion-plan-name"></span>',
 		);
 		?>
 	</p>
