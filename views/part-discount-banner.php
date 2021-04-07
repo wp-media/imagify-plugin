@@ -6,8 +6,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	<p class="imagify-promo-title">
 		<?php
 		printf(
-			/* translators: First %s is a formatted percentage, Second %s is a subscription plan name. */
-			__( '%s OFF on %s subscriptions', 'imagify' ),
+			/* translators: %1$s is a formatted percentage, %2$s is a subscription plan name. */
+			__( '%1$s OFF on %2$s subscriptions', 'imagify' ),
 			'<span class="imagify-promotion-number"></span>',
 			'<span class="imagify-promotion-plan-name"></span>',
 		);
