@@ -169,7 +169,7 @@
 					}
 				});
 			} else {
-				appliesTo = [promo_datas.applies_to];
+				appliesTo = [promo.applies_to];
 			}
 
 			// Change pricing value only if discount in percentage is active and if offer is a monthly and not a onetime.
