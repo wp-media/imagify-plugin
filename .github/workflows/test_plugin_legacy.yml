@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         operating-system: [ubuntu-latest]
-        php-versions: ['5.6', '7.1']
+        php-versions: ['5.6', '7.1', '7.2']
         wp-versions: ['4.9.11']
 
     name: WP ${{ matrix.wp-versions }} with PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
@@ -58,7 +58,7 @@ jobs:
         restore-keys: ${{ runner.os }}-composer-
 
     - name: Remove unmet dependencies by legacy versions
-      run: composer remove --dev --no-scripts phpstan/phpstan szepeviktor/phpstan-wordpress coenjacobs/mozart
+      run: composer remove --dev --no-scripts coenjacobs/mozart
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-interaction --no-scripts
