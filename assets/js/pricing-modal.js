@@ -1188,7 +1188,7 @@
 	 * @uses imagifyModal.iframeSetSrc()
 	 */
 	$('#imagify-modal-checkout-btn').on('click.imagify', function (e) {
-		var $monthly_offer, $onetime_offer, checkout_datas;
+		var $monthly_offer, $onetime_offer, $coupon_code, checkout_datas;
 
 		e.preventDefault();
 
@@ -1199,7 +1199,10 @@
 
 		$monthly_offer = $('.imagify-offer-monthly');
 		$onetime_offer = $('.imagify-offer-onetime');
+		$coupon_code = $('.imagify-coupon-code');
+
 		checkout_datas = {};
+		checkout_datas.coupon = $coupon_code.val();
 
 		// If user choose a monthly plan.
 		if ($monthly_offer.hasClass('imagify-offer-selected')) {
