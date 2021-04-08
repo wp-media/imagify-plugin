@@ -154,10 +154,31 @@
 				name = -1 === quo ? 'Unlimited' : (quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB'),
 				pcs = 'monthly' === type ? { monthly: mon, yearly: Math.round(ann / 12 * 100) / 100 } : cos,
 				pcsd = pcs, // Used if discount is active.
-				percent, $datas_c, datas_content;
+				percent, $datas_c, datas_content, appliesTo = [];
+
+			if (promo.applies_to instanceof Array) {
+				var plan_list = [];
+
+				for (var plan_infos = 0; plan_infos < promo.applies_to.length; plan_infos++) {
+					plan_list.push(promo.applies_to[plan_infos].plan_name);
+				}
+
+				plan_list.forEach(function (item) {
+					if (!appliesTo.includes(item)) {
+						appliesTo.push(item);
+					}
+				});
+			} else {
+				appliesTo = [promo.applies_to];
+			}
 
 			// Change pricing value only if discount in percentage is active and if offer is a monthly and not a onetime.
-			if (promo.is_active && 'percentage' === promo.coupon_type && 'monthly' === type) {
+			if (
+				promo.is_active
+				&& 'percentage' === promo.coupon_type
+				&& 'monthly' === type
+				&& (appliesTo.includes(lab) || 'all' === appliesTo[0])
+			) {
 				percent = (100 - promo.coupon_value) / 100;
 				pcs = 'monthly' === type ? {
 					monthly: mon * percent,
@@ -176,7 +197,12 @@
 			$offer.find('.imagify-number-block').html(imagifyModal.getHtmlPrice(pcs, 'monthly'));
 
 			// discount prices
-			if (promo.is_active && 'percentage' === promo.coupon_type && 'monthly' === type) {
+			if (
+				promo.is_active
+				&& 'percentage' === promo.coupon_type
+				&& 'monthly' === type
+				&& (appliesTo.includes(lab) || 'all' === appliesTo[0])
+			) {
 
 				$offer.find('.imagify-price-block').prev('.imagify-price-discount').remove();
 				$offer.find('.imagify-price-block').before(imagifyModal.getHtmlDiscountPrice(pcsd, 'monthly'));
@@ -341,7 +367,7 @@
 							$mo_tpl, $ot_tpl,
 							ot_clone, mo_clone,
 							$estim_block, $offers_block,
-							$banners, date_end, promo, discount;
+							$banners, date_end, plan_names, promo, discount;
 
 						if (! discount_response.success) {
 							// TODO: replace modal content by any information.
@@ -422,6 +448,25 @@
 						w.imagify_discount_datas = promo_datas;
 
 						if (promo_datas.is_active) {
+							if (promo_datas.applies_to instanceof Array) {
+								plan_names = [];
+								var plan_list = [];
+
+								for (var plan_infos = 0; plan_infos < promo_datas.applies_to.length; plan_infos++) {
+									plan_list.push(promo_datas.applies_to[plan_infos].plan_name);
+								}
+
+								plan_list.forEach(function(item) {
+									if (! plan_names.includes(item)) {
+										plan_names.push(item);
+									}
+								});
+
+								plan_names = plan_names.join(', ');
+							} else {
+								plan_names = promo_datas.applies_to;
+							}
+
 							$banners = $('.imagify-modal-promotion');
 							date_end = promo_datas.date_end.split('T')[0];
 							promo = promo_datas.coupon_value;
@@ -435,6 +480,7 @@
 
 							// Populate banners.
 							$banners.find('.imagify-promotion-number').text(discount);
+							$banners.find('.imagify-promotion-plan-name').text(plan_names);
 							$banners.find('.imagify-promotion-date').text(date_end);
 
 							// Auto validate coupon.
