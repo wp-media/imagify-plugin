@@ -10,13 +10,13 @@ on:
 jobs:
   run:
     runs-on: ${{ matrix.operating-system }}
-    
+
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         operating-system: [ubuntu-latest]
         php-versions: ['7.4']
-    
+
     name: WPRocket lint with PHPStan. PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
     steps:
     - name: Checkout
@@ -29,8 +29,10 @@ jobs:
         coverage: none  # XDebug can be enabled here 'coverage: xdebug'
         tools: composer:v1
 
+	 name: Install dependencies
+      run: composer install --prefer-dist --no-interaction --no-scripts
+
     # Linting
     - name: Lint with phpstan
       run: |
-        composer require --dev szepeviktor/phpstan-wordpress
-        vendor/bin/phpstan analyze
+        composer run-stan
