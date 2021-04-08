@@ -126,4 +126,15 @@
 	<rule ref="WordPress.WP.GlobalVariablesOverride.OverrideProhibited">
 		<exclude-pattern>views/*</exclude-pattern>
 	</rule>
+
+	<!-- Rules: WordPress Coding Standards - see
+		https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards
+		WordPress-Extra includes WordPress-Core -->
+	<rule ref="WordPress-Extra">
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="WordPress.PHP.DisallowShortTernary.Found"/>
+	</rule>
+
+	<!-- Enforce short array syntax: `[]` in place of `array()`. -->
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax" />
 </ruleset>
