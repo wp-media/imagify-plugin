@@ -9,13 +9,13 @@ You can also use Imagify to convert WebP images, which will additionally reduce 
 
 WooCommerce and NextGen Gallery compatible.
 
-![Bulk Optimization](https://raw.githubusercontent.com/wp-media/imagify/master/.wordpress-org/screenshot-1.png "Bulk Optimization")
+![Bulk Optimization](https://raw.githubusercontent.com/wp-media/imagify-plugin/master/.wordpress-org/screenshot-1.png "Bulk Optimization")
 
-![Settings Page](https://raw.githubusercontent.com/wp-media/imagify/master/.wordpress-org/screenshot-2.png "Settings Page")
+![Settings Page](https://raw.githubusercontent.com/wp-media/imagify-plugin/master/.wordpress-org/screenshot-2.png "Settings Page")
 
-![Media Page](https://raw.githubusercontent.com/wp-media/imagify/master/.wordpress-org/screenshot-3.png "Media Page")
+![Media Page](https://raw.githubusercontent.com/wp-media/imagify-plugin/master/.wordpress-org/screenshot-3.png "Media Page")
 
-![Other Media Page](https://raw.githubusercontent.com/wp-media/imagify/master/.wordpress-org/screenshot-4.png "Other Media Page")
+![Other Media Page](https://raw.githubusercontent.com/wp-media/imagify-plugin/master/.wordpress-org/screenshot-4.png "Other Media Page")
 
 ## Why Is It Important to Optimize Images?
 
