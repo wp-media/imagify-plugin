@@ -4,13 +4,13 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 $settings = Imagify_Settings::get_instance();
 ?>
 <div>
-	<h3 class="imagify-options-subtitle"><?php _e( 'Webp format', 'imagify' ); ?></h3>
+	<h3 class="imagify-options-subtitle"><?php _e( 'WebP format', 'imagify' ); ?></h3>
 
 	<div class="imagify-setting-line">
 		<?php
 		$settings->field_checkbox( [
 			'option_name' => 'convert_to_webp',
-			'label'       => __( 'Create webp versions of images', 'imagify' ),
+			'label'       => __( 'Create WebP versions of images', 'imagify' ),
 			'attributes'  => [
 				'aria-describedby' => 'describe-convert_to_webp',
 			],
@@ -21,7 +21,7 @@ $settings = Imagify_Settings::get_instance();
 			<?php
 			$settings->field_checkbox( [
 				'option_name' => 'display_webp',
-				'label'       => __( 'Display images in webp format on the site', 'imagify' ),
+				'label'       => __( 'Display images in WebP format on the site', 'imagify' ),
 			] );
 			?>
 
@@ -114,7 +114,7 @@ $settings = Imagify_Settings::get_instance();
 				echo '<br/>';
 
 				/**
-				 * Add more information about webp.
+				 * Add more information about WebP.
 				 *
 				 * @since  1.9
 				 * @author Grégory Viguier
@@ -135,7 +135,7 @@ $settings = Imagify_Settings::get_instance();
 					echo esc_html(
 						sprintf(
 							/* translators: %s is a formatted number (don’t use %d). */
-							_n( 'It seems that you have %s optimized image without webp versions. You can generate them here if a backup copy is available.', 'It seems that you have %s optimized images without webp versions. You can generate them here if backup copies are available.', $count, 'imagify' ),
+							_n( 'It seems that you have %s optimized image without WebP versions. You can generate them here if a backup copy is available.', 'It seems that you have %s optimized images without WebP versions. You can generate them here if backup copies are available.', $count, 'imagify' ),
 							number_format_i18n( $count )
 						)
 					);
@@ -144,7 +144,7 @@ $settings = Imagify_Settings::get_instance();
 
 				<button id="imagify-generate-webp-versions" class="button imagify-button-primary imagify-button-mini" type="button">
 					<span class="dashicons dashicons-admin-generic"></span>
-					<span class="button-text"><?php esc_html_e( 'Generate missing webp versions', 'imagify' ); ?></span>
+					<span class="button-text"><?php esc_html_e( 'Generate missing WebP versions', 'imagify' ); ?></span>
 				</button>
 
 				<div aria-hidden="true" class="imagify-progress hidden">

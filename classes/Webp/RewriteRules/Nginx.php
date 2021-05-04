@@ -4,7 +4,7 @@ namespace Imagify\Webp\RewriteRules;
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Add and remove rewrite rules to the imagify.conf file to display webp images on the site.
+ * Add and remove rewrite rules to the imagify.conf file to display WebP images on the site.
  *
  * @since  1.9
  * @author Grégory Viguier

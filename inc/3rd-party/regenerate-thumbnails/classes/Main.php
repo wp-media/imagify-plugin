@@ -158,7 +158,7 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 		/**
 		 * Optimize the sizes that have been regenerated.
 		 */
-		// If the media has webp versions, recreate them for the sizes that have been regenerated.
+		// If the media has WebP versions, recreate them for the sizes that have been regenerated.
 		$data              = $process->get_data();
 		$optimization_data = $data->get_optimization_data();
 
@@ -170,7 +170,7 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 					continue;
 				}
 
-				// Add the webp size.
+				// Add the WebP size.
 				$sizes[ $size_name ] = [];
 			}
 		}

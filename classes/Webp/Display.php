@@ -4,7 +4,7 @@ namespace Imagify\Webp;
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Display webp images on the site.
+ * Display WebP images on the site.
  *
  * @since  1.9
  * @author Grégory Viguier
@@ -44,7 +44,7 @@ class Display {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * If display webp images, add the webp type to the .htaccess/etc file.
+	 * If display WebP images, add the WebP type to the .htaccess/etc file.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -68,10 +68,10 @@ class Display {
 		}
 
 		if ( $new_value ) {
-			// Add the webp file type.
+			// Add the WebP file type.
 			$result = $this->get_server_conf()->add();
 		} else {
-			// Remove the webp file type.
+			// Remove the WebP file type.
 			$result = $this->get_server_conf()->remove();
 		}
 
@@ -209,7 +209,7 @@ class Display {
 	}
 
 	/**
-	 * Get the webp display method by validating the given value.
+	 * Get the WebP display method by validating the given value.
 	 *
 	 * @since  1.9
 	 * @access public

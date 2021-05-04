@@ -141,7 +141,7 @@ class Imagify_Enable_Media_Replace_Deprecated {
 		if ( $backup_path ) {
 			$this->old_backup_path = $backup_path;
 
-			// Keep track of existing webp files.
+			// Keep track of existing WebP files.
 			$media_files = $media->get_media_files();
 
 			if ( $media_files ) {

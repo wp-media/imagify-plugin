@@ -60,7 +60,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		$done = true;
 
 		/**
-		 * Webp images to display with a <picture> tag.
+		 * WebP images to display with a <picture> tag.
 		 */
 		add_action( 'as3cf_init',                         [ $this, 'store_s3_settings' ] );
 		add_filter( 'imagify_webp_picture_process_image', [ $this, 'picture_tag_webp_image' ] );
@@ -82,7 +82,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		add_action( 'imagify_after_restore_media',  [ $this, 'maybe_send_media_to_cdn_after_restore' ], 8, 4 );
 
 		/**
-		 * Webp support.
+		 * WebP support.
 		 */
 		add_filter( 'as3cf_attachment_file_paths',  [ $this, 'add_webp_images_to_attachment' ], 8, 3 );
 		add_filter( 'mime_types',                   [ $this, 'add_webp_support' ] );
@@ -119,7 +119,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	}
 
 	/**
-	 * Webp images to display with a <picture> tag.
+	 * WebP images to display with a <picture> tag.
 	 *
 	 * @since  1.9
 	 * @see    \Imagify\Webp\Picture\Display->process_image()
@@ -168,7 +168,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		$webp_size_name   = 'full' . $webp_size_suffix;
 
 		if ( ! empty( $imagify_data['sizes'][ $webp_size_name ]['success'] ) ) {
-			// We have a webp image.
+			// We have a WebP image.
 			$data['src']['webp_exists'] = true;
 		}
 
@@ -233,7 +233,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 			$webp_size_name = $size_name . $webp_size_suffix;
 
 			if ( ! empty( $imagify_data['sizes'][ $webp_size_name ]['success'] ) ) {
-				// We have a webp image.
+				// We have a WebP image.
 				$data['srcset'][ $i ]['webp_exists'] = true;
 			}
 		}
@@ -275,7 +275,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	 * @param  File             $file               The file instance. If $webp is true, $file references the non-webp file.
 	 * @param  string           $thumb_size         The media size.
 	 * @param  int              $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
-	 * @param  bool             $webp               The image will be converted to webp.
+	 * @param  bool             $webp               The image will be converted to WebP.
 	 * @return null|\WP_Error                       Null. A \WP_Error object on error.
 	 */
 	public function maybe_copy_file_from_cdn_before_optimization( $response, $process, $file, $thumb_size, $optimization_level, $webp ) {
@@ -336,7 +336,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	 * After restoring a media:
 	 * - Save some data,
 	 * - Upload the files to the CDN,
-	 * - Maybe delete webp files from the CDN.
+	 * - Maybe delete WebP files from the CDN.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -372,16 +372,16 @@ class Main extends \Imagify_AS3CF_Deprecated {
 
 		$cdn->send_to_cdn( false );
 
-		// Remove webp files from CDN.
+		// Remove WebP files from CDN.
 		$webp_files = [];
 
 		if ( $files ) {
-			// Get the paths to the webp files.
+			// Get the paths to the WebP files.
 			foreach ( $files as $size_name => $file ) {
 				$webp_size_name = $size_name . $process::WEBP_SUFFIX;
 
 				if ( empty( $data['sizes'][ $webp_size_name ]['success'] ) ) {
-					// This size has no webp version.
+					// This size has no WebP version.
 					continue;
 				}
 
@@ -406,7 +406,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Add the webp files to the list of files that the CDN must handle.
+	 * Add the WebP files to the list of files that the CDN must handle.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -454,7 +454,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 			$webp_size_name = $size_name . $process::WEBP_SUFFIX;
 
 			if ( empty( $data['sizes'][ $webp_size_name ]['success'] ) ) {
-				// This size has no webp version.
+				// This size has no WebP version.
 				continue;
 			}
 
@@ -469,7 +469,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	}
 
 	/**
-	 * Add webp format to the list of allowed mime types.
+	 * Add WebP format to the list of allowed mime types.
 	 *
 	 * @since  1.9
 	 * @access public
