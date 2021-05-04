@@ -4,7 +4,7 @@ namespace Imagify\Stats;
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Class to get and cache the number of optimized media without webp versions.
+ * Class to get and cache the number of optimized media without WebP versions.
  *
  * @since  1.9
  * @author Grégory Viguier
@@ -41,7 +41,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the number of optimized media without webp versions.
+	 * Get the number of optimized media without WebP versions.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -62,7 +62,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	}
 
 	/**
-	 * Get and cache the number of optimized media without webp versions.
+	 * Get and cache the number of optimized media without WebP versions.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -128,9 +128,9 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 
 		if ( ! isset( $new_sizes['full'] ) && ! empty( $new_sizes[ $size_name ]['success'] ) ) {
 			/**
-			 * We just successfully generated the webp version of the full size.
+			 * We just successfully generated the WebP version of the full size.
 			 * The full size was not optimized at the same time, that means it was optimized previously.
-			 * Meaning: we just added a webp version to a media that was previously optimized, so there is one less optimized media without webp.
+			 * Meaning: we just added a WebP version to a media that was previously optimized, so there is one less optimized media without WebP.
 			 */
 			$this->clear_cache();
 			return;
@@ -138,7 +138,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 
 		if ( ! empty( $new_sizes['full']['success'] ) && empty( $new_sizes[ $size_name ]['success'] ) ) {
 			/**
-			 * We now have a new optimized media without webp.
+			 * We now have a new optimized media without WebP.
 			 */
 			$this->clear_cache();
 		}
@@ -166,7 +166,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 
 		if ( ! empty( $sizes['full']['success'] ) && empty( $sizes[ $size_name ]['success'] ) ) {
 			/**
-			 * This media had no webp versions.
+			 * This media had no WebP versions.
 			 */
 			$this->clear_cache();
 		}
@@ -192,7 +192,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 
 		if ( ! empty( $sizes['full']['success'] ) && empty( $sizes[ $size_name ]['success'] ) ) {
 			/**
-			 * This media had no webp versions.
+			 * This media had no WebP versions.
 			 */
 			$this->clear_cache();
 		}

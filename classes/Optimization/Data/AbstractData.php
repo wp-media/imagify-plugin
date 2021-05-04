@@ -280,7 +280,7 @@ abstract class AbstractData implements DataInterface {
 
 	/**
 	 * Get the file size of the full size file.
-	 * If the webp size is available, it is used.
+	 * If the WebP size is available, it is used.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -288,7 +288,7 @@ abstract class AbstractData implements DataInterface {
 	 *
 	 * @param  bool $human_format True to display the image human format size (1Mb).
 	 * @param  int  $decimals     Precision of number of decimal places.
-	 * @param  bool $use_webp     Use the webp size if available.
+	 * @param  bool $use_webp     Use the WebP size if available.
 	 * @return string|int
 	 */
 	public function get_optimized_size( $human_format = true, $decimals = 2, $use_webp = true ) {
@@ -320,7 +320,7 @@ abstract class AbstractData implements DataInterface {
 		$filepath = false;
 
 		if ( $use_webp && ! empty( $data['sizes'][ $webp_size_name ]['success'] ) ) {
-			// Try with the webp file first.
+			// Try with the WebP file first.
 			$filepath = $media->get_raw_fullsize_path();
 			$filepath = $filepath ? imagify_path_to_webp( $filepath ) : false;
 
@@ -330,7 +330,7 @@ abstract class AbstractData implements DataInterface {
 		}
 
 		if ( ! $filepath ) {
-			// No webp? The full size then.
+			// No WebP? The full size then.
 			$filepath = $media->get_fullsize_path();
 		}
 

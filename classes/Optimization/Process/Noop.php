@@ -287,7 +287,7 @@ class Noop implements ProcessInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Generate webp images if they are missing.
+	 * Generate WebP images if they are missing.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -300,7 +300,7 @@ class Noop implements ProcessInterface {
 	}
 
 	/**
-	 * Delete the webp images.
+	 * Delete the WebP images.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -309,14 +309,14 @@ class Noop implements ProcessInterface {
 	public function delete_webp_files() {}
 
 	/**
-	 * Tell if a thumbnail size is an "Imagify webp" size.
+	 * Tell if a thumbnail size is an "Imagify WebP" size.
 	 *
 	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size_name The size name.
-	 * @return string|bool       The unsuffixed name of the size if webp. False if not webp.
+	 * @return string|bool       The unsuffixed name of the size if WebP. False if not WebP.
 	 */
 	public function is_size_webp( $size_name ) {
 		return false;

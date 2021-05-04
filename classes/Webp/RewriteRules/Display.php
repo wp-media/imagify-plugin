@@ -4,7 +4,7 @@ namespace Imagify\Webp\RewriteRules;
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Display webp images on the site with rewrite rules.
+ * Display WebP images on the site with rewrite rules.
  *
  * @since  1.9
  * @author Grégory Viguier
@@ -40,7 +40,7 @@ class Display {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * If display webp images via rewrite rules, add the rules to the .htaccess/etc file.
+	 * If display WebP images via rewrite rules, add the rules to the .htaccess/etc file.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -52,7 +52,7 @@ class Display {
 	public function maybe_add_rewrite_rules( $values ) {
 		global $is_apache, $is_iis7, $is_nginx;
 
-		// Display webp?
+		// Display WebP?
 		$was_enabled = (bool) get_imagify_option( 'display_webp' );
 		// See \Imagify_Options->validate_values_on_update() for why we use 'convert_to_webp' here.
 		$is_enabled  = ! empty( $values['display_webp'] ) && ! empty( $values['convert_to_webp'] );
@@ -67,10 +67,10 @@ class Display {
 		$add_or_remove = false;
 
 		if ( $is_enabled && $is_rewrite && ( ! $was_enabled || ! $was_rewrite ) ) {
-			// Display webp & use rewrite method, but only if one of the values changed: add rules.
+			// Display WebP & use rewrite method, but only if one of the values changed: add rules.
 			$add_or_remove = 'add';
 		} elseif ( $was_enabled && $was_rewrite && ( ! $is_enabled || ! $is_rewrite ) ) {
-			// Was displaying webp & was using rewrite method, but only if one of the values changed: remove rules.
+			// Was displaying WebP & was using rewrite method, but only if one of the values changed: remove rules.
 			$add_or_remove = 'remove';
 		} else {
 			return $values;

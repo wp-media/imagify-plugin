@@ -854,7 +854,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prints a button to generate webp versions if they are missing.
+	 * Prints a button to generate WebP versions if they are missing.
 	 *
 	 * @since  1.7
 	 * @access protected
@@ -871,7 +871,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prints a button to delete webp versions when the status is "already_optimized".
+	 * Prints a button to delete WebP versions when the status is "already_optimized".
 	 *
 	 * @since  1.9.6
 	 * @access protected

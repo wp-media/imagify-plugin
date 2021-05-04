@@ -114,7 +114,7 @@ $settings = Imagify_Settings::get_instance();
 				echo '<br/>';
 
 				/**
-				 * Add more information about webp.
+				 * Add more information about WebP.
 				 *
 				 * @since  1.9
 				 * @author Grégory Viguier

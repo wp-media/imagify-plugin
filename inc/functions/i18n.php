@@ -116,7 +116,7 @@ function get_imagify_localize_script_translations( $context ) {
 				];
 
 				/**
-				 * Filter the number of parallel queries generating webp images by bulk method.
+				 * Filter the number of parallel queries generating WebP images by bulk method.
 				 *
 				 * @since  1.9
 				 * @author Grégory Viguier
