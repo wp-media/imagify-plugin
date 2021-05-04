@@ -289,12 +289,12 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( $data->is_already_optimized() && $this->has_webp() ) {
-			// If already optimized but has webp, delete webp versions and optimization data.
+			// If already optimized but has WebP, delete WebP versions and optimization data.
 			$data->delete_optimization_data();
 			$deleted = $this->delete_webp_files();
 
 			if ( is_wp_error( $deleted ) ) {
-				return new \WP_Error( 'webp_not_deleted', __( 'Previous webp files could not be deleted.', 'imagify' ) );
+				return new \WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
 			}
 		}
 
@@ -395,7 +395,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( $media->is_image() ) {
 			if ( $this->get_option( 'convert_to_webp' ) ) {
-				// Add webp convertion.
+				// Add WebP convertion.
 				$files = $media->get_media_files();
 
 				foreach ( $sizes as $size_name ) {
@@ -416,7 +416,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			if ( ! $media->get_context_instance()->can_backup() && ! $media->get_backup_path() && ! $this->get_data()->get_size_data( 'full', 'success' ) ) {
 				/**
 				 * Backup is NOT activated, and a backup file does NOT exist yet, and the full size is NOT optimized yet.
-				 * Webp conversion needs a backup file, even a temporary one: we’ll create one.
+				 * WebP conversion needs a backup file, even a temporary one: we’ll create one.
 				 */
 				$webp = false;
 
@@ -428,7 +428,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				}
 
 				if ( $webp ) {
-					// We have at least one webp conversion to do: create a temporary backup.
+					// We have at least one WebP conversion to do: create a temporary backup.
 					$backuped = $this->get_original_file()->backup( $media->get_raw_backup_path() );
 
 					if ( $backuped ) {
@@ -499,7 +499,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( $webp ) {
 			// We'll make sure the file is an image later.
-			$thumb_size = $webp; // Contains the name of the non-webp size.
+			$thumb_size = $webp; // Contains the name of the non-WebP size.
 			$webp       = true;
 		}
 
@@ -522,7 +522,7 @@ abstract class AbstractProcess implements ProcessInterface {
 					'size_is_successfully_optimized',
 					sprintf(
 						/* translators: %s is a size name. */
-						__( 'The webp format for the size %s already exists.', 'imagify' ),
+						__( 'The WebP format for the size %s already exists.', 'imagify' ),
 						'<code>' . esc_html( $thumb_size ) . '</code>'
 					)
 				);
@@ -546,11 +546,11 @@ abstract class AbstractProcess implements ProcessInterface {
 		$optimization_level = $this->sanitize_optimization_level( $optimization_level );
 
 		if ( $webp && $this->get_data()->get_size_data( $thumb_size, 'success' ) ) {
-			// We want a webp version but the source file is already optimized by Imagify.
+			// We want a WebP version but the source file is already optimized by Imagify.
 			$result = $this->create_temporary_copy( $thumb_size, $sizes );
 
 			if ( ! $result ) { // Bail out.
-				// Could not create a copy of the non-webp version.
+				// Could not create a copy of the non-WebP version.
 				$response = new \WP_Error(
 					'non_webp_copy_failed',
 					sprintf(
@@ -610,7 +610,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 			$response = new \WP_Error(
 				'no_webp',
-				__( 'This file is not an image and cannot be converted to webp format.', 'imagify' )
+				__( 'This file is not an image and cannot be converted to WebP format.', 'imagify' )
 			);
 
 			$this->update_size_optimization_data( $response, $size, $optimization_level );
@@ -629,10 +629,10 @@ abstract class AbstractProcess implements ProcessInterface {
 		 *
 		 * @param null|\WP_Error   $response           Null by default. Return a \WP_Error object to prevent optimization.
 		 * @param ProcessInterface $process            The optimization process instance.
-		 * @param File             $file               The file instance. If $webp is true, $file references the non-webp file.
+		 * @param File             $file               The file instance. If $webp is true, $file references the non-WebP file.
 		 * @param string           $thumb_size         The media size.
 		 * @param int              $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
-		 * @param bool             $webp               The image will be converted to webp.
+		 * @param bool             $webp               The image will be converted to WebP.
 		 * @param bool             $is_disabled        Tell if this size is disabled from optimization.
 		 */
 		$response = apply_filters( 'imagify_before_optimize_size', null, $this, $file, $thumb_size, $optimization_level, $webp, $is_disabled );
@@ -660,7 +660,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			} elseif ( $webp && ! $this->can_create_webp_version( $file->get_path() ) ) {
 				$response = new \WP_Error(
 					'is_animated_gif',
-					__( 'This file is an animated gif: since Imagify does not support animated webp, webp creation for animated gif is disabled.', 'imagify' )
+					__( 'This file is an animated gif: since Imagify does not support animated WebP, WebP creation for animated gif is disabled.', 'imagify' )
 				);
 			} elseif ( ! $this->filesystem->is_writable( $file->get_path() ) ) {
 				$response = new \WP_Error(
@@ -712,7 +712,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * @param File             $file               The file instance.
 		 * @param string           $thumb_size         The media size.
 		 * @param int              $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
-		 * @param bool             $webp               The image was supposed to be converted to webp.
+		 * @param bool             $webp               The image was supposed to be converted to WebP.
 		 * @param bool             $is_disabled        Tell if this size is disabled from optimization.
 		 */
 		do_action( 'imagify_after_optimize_size', $this, $file, $thumb_size, $optimization_level, $webp, $is_disabled );
@@ -737,7 +737,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Compare the file size of a file and its webp version: if the webp version is heavier than the non-webp file, delete it.
+	 * Compare the file size of a file and its WebP version: if the WebP version is heavier than the non-WebP file, delete it.
 	 *
 	 * @since  1.9.4
 	 * @access protected
@@ -748,9 +748,9 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 *     @type \sdtClass|\WP_Error $response            Optimized image data. A \WP_Error object on error.
 	 *     @type File                $file                The File instance of the file currently being optimized.
-	 *     @type bool                $is_webp             Tell if we're requesting a webp file.
-	 *     @type string              $non_webp_thumb_size Name of the corresponding non-webp thumbnail size. If we're not creating a webp file, this corresponds to the current thumbnail size.
-	 *     @type string              $non_webp_file_path  Path to the corresponding non-webp file. If we're not creating a webp file, this corresponds to the current file path.
+	 *     @type bool                $is_webp             Tell if we're requesting a WebP file.
+	 *     @type string              $non_webp_thumb_size Name of the corresponding non-WebP thumbnail size. If we're not creating a WebP file, this corresponds to the current thumbnail size.
+	 *     @type string              $non_webp_file_path  Path to the corresponding non-WebP file. If we're not creating a WebP file, this corresponds to the current file path.
 	 *     @type string              $optimization_level  The optimization level.
 	 * }
 	 * @return \sdtClass|\WP_Error                        Optimized image data. A \WP_Error object on error.
@@ -760,7 +760,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( ! isset( $keep_large_webp ) ) {
 			/**
-			 * Allow to not store webp images that are larger than their non-webp version.
+			 * Allow to not store WebP images that are larger than their non-WebP version.
 			 *
 			 * @since  1.9.4
 			 * @author Grégory Viguier
@@ -777,55 +777,55 @@ abstract class AbstractProcess implements ProcessInterface {
 		// Optimization succeeded.
 		if ( $args['is_webp'] ) {
 			/**
-			 * We just created a webp version:
-			 * Check if it is lighter than the (maybe optimized) non-webp file.
+			 * We just created a WebP version:
+			 * Check if it is lighter than the (maybe optimized) non-WebP file.
 			 */
 			$data = $this->get_data()->get_size_data( $args['non_webp_thumb_size'] );
 
 			if ( ! $data ) {
-				// We haven’t tried to optimize the non-webp size yet.
+				// We haven’t tried to optimize the non-WebP size yet.
 				return $args['response'];
 			}
 
 			if ( ! empty( $data['optimized_size'] ) ) {
-				// The non-webp size is optimized, we know the file size.
+				// The non-WebP size is optimized, we know the file size.
 				$non_webp_file_size = $data['optimized_size'];
 			} else {
-				// The non-webp size is "already optimized" or "error": grab the file size directly from the file.
+				// The non-WebP size is "already optimized" or "error": grab the file size directly from the file.
 				$non_webp_file_size = $this->filesystem->size( $args['non_webp_file_path'] );
 			}
 
 			if ( ! $non_webp_file_size || $non_webp_file_size > $args['response']->new_size ) {
-				// The new webp file is lighter.
+				// The new WebP file is lighter.
 				return $args['response'];
 			}
 
-			// The new webp file is heavier than the non-webp file: delete it and return an error.
+			// The new WebP file is heavier than the non-WebP file: delete it and return an error.
 			$this->filesystem->delete( $args['file']->get_path() );
 
 			return new \WP_Error(
 				'webp_heavy',
 				sprintf(
 					/* translators: %s is a size name. */
-					__( 'The webp version of the size %s is heavier than its non-webp version.', 'imagify' ),
+					__( 'The WebP version of the size %s is heavier than its non-WebP version.', 'imagify' ),
 					'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
 				)
 			);
 		}
 
 		/**
-		 * We just created a non-webp version:
-		 * Check if its webp version file is lighter than this one.
+		 * We just created a non-WebP version:
+		 * Check if its WebP version file is lighter than this one.
 		 */
 		$webp_size      = $args['non_webp_thumb_size'] . static::WEBP_SUFFIX;
 		$webp_file_size = $this->get_data()->get_size_data( $webp_size, 'optimized_size' );
 
 		if ( ! $webp_file_size || $webp_file_size < $args['response']->new_size ) {
-			// The webp file is lighter than this one.
+			// The WebP file is lighter than this one.
 			return $args['response'];
 		}
 
-		// The new optimized file is lighter than the webp file: delete the webp file and store an error.
+		// The new optimized file is lighter than the WebP file: delete the WebP file and store an error.
 		$webp_path = $args['file']->get_path_to_webp();
 
 		if ( $webp_path && $this->filesystem->is_writable( $webp_path ) ) {
@@ -836,7 +836,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			'webp_heavy',
 			sprintf(
 				/* translators: %s is a size name. */
-				__( 'The webp version of the size %s is heavier than its non-webp version.', 'imagify' ),
+				__( 'The WebP version of the size %s is heavier than its non-WebP version.', 'imagify' ),
 				'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
 			)
 		);
@@ -932,7 +932,7 @@ abstract class AbstractProcess implements ProcessInterface {
 					// Restore the original dimensions in the database.
 					$media->update_dimensions();
 
-					// Delete the webp version.
+					// Delete the WebP version.
 					$this->delete_webp_file( $original_path );
 
 					// Restore the thumbnails.
@@ -972,9 +972,9 @@ abstract class AbstractProcess implements ProcessInterface {
 		$media = $this->get_media();
 
 		/**
-		 * Delete the webp versions.
+		 * Delete the WebP versions.
 		 * If the full size file and the original file are not the same, the full size is considered like a thumbnail.
-		 * In that case we must also delete the webp file associated to the full size.
+		 * In that case we must also delete the WebP file associated to the full size.
 		 */
 		$keep_full_webp = $media->get_raw_original_path() === $media->get_raw_fullsize_path();
 		$this->delete_webp_files( $keep_full_webp );
@@ -1013,8 +1013,8 @@ abstract class AbstractProcess implements ProcessInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * If we need to create a webp version, we must create it from an unoptimized image.
-	 * The full size is always optimized before the webp version creation, and in some cases it’s the same for the thumbnails.
+	 * If we need to create a WebP version, we must create it from an unoptimized image.
+	 * The full size is always optimized before the WebP version creation, and in some cases it’s the same for the thumbnails.
 	 * Then we use the backup file to create temporary files.
 	 */
 
@@ -1082,7 +1082,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( 'full' === $size ) {
 			/**
-			 * We create a copy of the backup to be able to create a webp version from it.
+			 * We create a copy of the backup to be able to create a WebP version from it.
 			 * That means the optimization process will resize the file if needed, so there is nothing more to do here.
 			 */
 			return true;
@@ -1335,7 +1335,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( 'full' !== $size && 'full' . static::WEBP_SUFFIX !== $size ) {
-			// We resize only the main file and its webp version.
+			// We resize only the main file and its WebP version.
 			return false;
 		}
 
@@ -1385,7 +1385,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( 'full' !== $size && 'full' . static::WEBP_SUFFIX !== $size ) {
-			// We keep exif only on the main file and its webp version.
+			// We keep exif only on the main file and its WebP version.
 			return false;
 		}
 
@@ -1398,7 +1398,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Generate webp images if they are missing.
+	 * Generate WebP images if they are missing.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -1414,7 +1414,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		$media = $this->get_media();
 
 		if ( ! $media->is_image() ) {
-			return new \WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to webp format.', 'imagify' ) );
+			return new \WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to WebP format.', 'imagify' ) );
 		}
 
 		if ( ! $media->has_backup() ) {
@@ -1428,7 +1428,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( $this->has_webp() ) {
-			return new \WP_Error( 'has_webp', __( 'This media already has webp versions.', 'imagify' ) );
+			return new \WP_Error( 'has_webp', __( 'This media already has WebP versions.', 'imagify' ) );
 		}
 
 		$files = $media->get_media_files();
@@ -1444,7 +1444,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( ! $sizes ) {
-			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to webp format.', 'imagify' ) );
+			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to WebP format.', 'imagify' ) );
 		}
 
 		$optimization_level = $data->get_optimization_level();
@@ -1454,7 +1454,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Delete the webp images.
+	 * Delete the WebP images.
 	 * This doesn't delete the related optimization data.
 	 *
 	 * @since  1.9
@@ -1513,7 +1513,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Delete a webp image, given its non-webp version's path.
+	 * Delete a WebP image, given its non-WebP version's path.
 	 * This doesn't delete the related optimization data.
 	 *
 	 * @since  1.9
@@ -1521,19 +1521,19 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @access protected
 	 * @author Grégory Viguier
 	 *
-	 * @param  string $file_path Path to the non-webp file.
+	 * @param  string $file_path Path to the non-WebP file.
 	 * @return bool|\WP_Error    True on success. A \WP_Error object on failure.
 	 */
 	protected function delete_webp_file( $file_path ) {
 		if ( ! $file_path ) {
-			return new \WP_Error( 'no_path', __( 'Path to non-webp file not provided.', 'imagify' ) );
+			return new \WP_Error( 'no_path', __( 'Path to non-WebP file not provided.', 'imagify' ) );
 		}
 
 		$webp_file = new File( $file_path );
 		$webp_path = $webp_file->get_path_to_webp();
 
 		if ( ! $webp_path ) {
-			return new \WP_Error( 'no_webp_path', __( 'Could not get the path to the webp file.', 'imagify' ) );
+			return new \WP_Error( 'no_webp_path', __( 'Could not get the path to the WebP file.', 'imagify' ) );
 		}
 
 		if ( ! $this->filesystem->exists( $webp_path ) ) {
@@ -1579,14 +1579,14 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Tell if a thumbnail size is an "Imagify webp" size.
+	 * Tell if a thumbnail size is an "Imagify WebP" size.
 	 *
 	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size_name The size name.
-	 * @return string|bool       The unsuffixed name of the size if webp. False if not webp.
+	 * @return string|bool       The unsuffixed name of the size if WebP. False if not WebP.
 	 */
 	public function is_size_webp( $size_name ) {
 		static $suffix;
@@ -1603,7 +1603,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Tell if the media has webp versions.
+	 * Tell if the media has WebP versions.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -1633,7 +1633,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Tell if a webp version can be created for the given file.
+	 * Tell if a WebP version can be created for the given file.
 	 * Make sure the file is an image before using this method.
 	 *
 	 * @since  1.9.5
@@ -1649,13 +1649,13 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		/**
-		 * Tell if a webp version can be created for the given file.
+		 * Tell if a WebP version can be created for the given file.
 		 * The file is an image.
 		 *
 		 * @since  1.9.5
 		 * @author Grégory Viguier
 		 *
-		 * @param bool   $can       True to create a webp version, false otherwise. Null by default.
+		 * @param bool   $can       True to create a WebP version, false otherwise. Null by default.
 		 * @param string $file_path Path to the file.
 		 */
 		$can = apply_filters( 'imagify_pre_can_create_webp_version', null, $file_path );

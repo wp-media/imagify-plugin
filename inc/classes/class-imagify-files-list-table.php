@@ -643,7 +643,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 					$has_webp = $item->process->has_webp() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
 					?>
 					<li class="imagify-data-item">
-						<span class="data"><?php esc_html_e( 'Webp generated:', 'imagify' ); ?></span>
+						<span class="data"><?php esc_html_e( 'WebP generated:', 'imagify' ); ?></span>
 						<strong class="data-value"><?php echo esc_html( $has_webp ); ?></strong>
 					</li>
 					<?php
@@ -854,7 +854,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prints a button to generate webp versions if they are missing.
+	 * Prints a button to generate WebP versions if they are missing.
 	 *
 	 * @since  1.7
 	 * @access protected
@@ -871,7 +871,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prints a button to delete webp versions when the status is "already_optimized".
+	 * Prints a button to delete WebP versions when the status is "already_optimized".
 	 *
 	 * @since  1.9.6
 	 * @access protected

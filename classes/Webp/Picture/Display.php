@@ -4,7 +4,7 @@ namespace Imagify\Webp\Picture;
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Display webp images on the site with <picture> tags.
+ * Display WebP images on the site with <picture> tags.
  *
  * @since  1.9
  * @author Grégory Viguier
@@ -440,19 +440,19 @@ class Display {
 	 *
 	 * @param  string $image An image html tag.
 	 * @return array|false {
-	 *     An array of data if the image has a webp version. False otherwise.
+	 *     An array of data if the image has a WebP version. False otherwise.
 	 *
 	 *     @type string $tag        The image tag.
 	 *     @type array  $attributes The image attributes (minus src and srcset).
 	 *     @type array  $src        {
 	 *         @type string $url      URL to the original image.
-	 *         @type string $webp_url URL to the webp version.
+	 *         @type string $webp_url URL to the WebP version.
 	 *     }
 	 *     @type array  $srcset     {
 	 *         An array or arrays. Not set if not applicable.
 	 *
 	 *         @type string $url        URL to the original image.
-	 *         @type string $webp_url   URL to the webp version. Not set if not applicable.
+	 *         @type string $webp_url   URL to the WebP version. Not set if not applicable.
 	 *         @type string $descriptor A src descriptor.
 	 *     }
 	 * }
