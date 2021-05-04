@@ -294,7 +294,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			$deleted = $this->delete_webp_files();
 
 			if ( is_wp_error( $deleted ) ) {
-				return new \WP_Error( 'webp_not_deleted', __( 'Previous webp files could not be deleted.', 'imagify' ) );
+				return new \WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
 			}
 		}
 
@@ -522,7 +522,7 @@ abstract class AbstractProcess implements ProcessInterface {
 					'size_is_successfully_optimized',
 					sprintf(
 						/* translators: %s is a size name. */
-						__( 'The webp format for the size %s already exists.', 'imagify' ),
+						__( 'The WebP format for the size %s already exists.', 'imagify' ),
 						'<code>' . esc_html( $thumb_size ) . '</code>'
 					)
 				);
@@ -610,7 +610,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 			$response = new \WP_Error(
 				'no_webp',
-				__( 'This file is not an image and cannot be converted to webp format.', 'imagify' )
+				__( 'This file is not an image and cannot be converted to WebP format.', 'imagify' )
 			);
 
 			$this->update_size_optimization_data( $response, $size, $optimization_level );
@@ -660,7 +660,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			} elseif ( $webp && ! $this->can_create_webp_version( $file->get_path() ) ) {
 				$response = new \WP_Error(
 					'is_animated_gif',
-					__( 'This file is an animated gif: since Imagify does not support animated webp, webp creation for animated gif is disabled.', 'imagify' )
+					__( 'This file is an animated gif: since Imagify does not support animated WebP, WebP creation for animated gif is disabled.', 'imagify' )
 				);
 			} elseif ( ! $this->filesystem->is_writable( $file->get_path() ) ) {
 				$response = new \WP_Error(
@@ -807,7 +807,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				'webp_heavy',
 				sprintf(
 					/* translators: %s is a size name. */
-					__( 'The webp version of the size %s is heavier than its non-webp version.', 'imagify' ),
+					__( 'The WebP version of the size %s is heavier than its non-WebP version.', 'imagify' ),
 					'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
 				)
 			);
@@ -836,7 +836,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			'webp_heavy',
 			sprintf(
 				/* translators: %s is a size name. */
-				__( 'The webp version of the size %s is heavier than its non-webp version.', 'imagify' ),
+				__( 'The WebP version of the size %s is heavier than its non-WebP version.', 'imagify' ),
 				'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
 			)
 		);
@@ -1414,7 +1414,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		$media = $this->get_media();
 
 		if ( ! $media->is_image() ) {
-			return new \WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to webp format.', 'imagify' ) );
+			return new \WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to WebP format.', 'imagify' ) );
 		}
 
 		if ( ! $media->has_backup() ) {
@@ -1428,7 +1428,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( $this->has_webp() ) {
-			return new \WP_Error( 'has_webp', __( 'This media already has webp versions.', 'imagify' ) );
+			return new \WP_Error( 'has_webp', __( 'This media already has WebP versions.', 'imagify' ) );
 		}
 
 		$files = $media->get_media_files();
@@ -1444,7 +1444,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( ! $sizes ) {
-			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to webp format.', 'imagify' ) );
+			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to WebP format.', 'imagify' ) );
 		}
 
 		$optimization_level = $data->get_optimization_level();
@@ -1526,14 +1526,14 @@ abstract class AbstractProcess implements ProcessInterface {
 	 */
 	protected function delete_webp_file( $file_path ) {
 		if ( ! $file_path ) {
-			return new \WP_Error( 'no_path', __( 'Path to non-webp file not provided.', 'imagify' ) );
+			return new \WP_Error( 'no_path', __( 'Path to non-WebP file not provided.', 'imagify' ) );
 		}
 
 		$webp_file = new File( $file_path );
 		$webp_path = $webp_file->get_path_to_webp();
 
 		if ( ! $webp_path ) {
-			return new \WP_Error( 'no_webp_path', __( 'Could not get the path to the webp file.', 'imagify' ) );
+			return new \WP_Error( 'no_webp_path', __( 'Could not get the path to the WebP file.', 'imagify' ) );
 		}
 
 		if ( ! $this->filesystem->exists( $webp_path ) ) {

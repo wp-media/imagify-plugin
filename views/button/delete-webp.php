@@ -22,7 +22,7 @@ $html_atts = $this->build_attributes( $data['atts'] );
 
 <a href="<?php echo esc_url( $data['url'] ); ?>"<?php echo $html_atts; ?>>
 	<span class="dashicons dashicons-image-rotate"></span>
-	<?php esc_html_e( 'Delete webp images', 'imagify' ); ?>
+	<?php esc_html_e( 'Delete WebP images', 'imagify' ); ?>
 </a>
 
 <?php
