@@ -211,7 +211,7 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 				$item['error'] = $data;
 
 			} elseif ( 'already_optimized' === $data['status'] ) {
-				// Status is "already_optimized", try to create webp versions only.
+				// Status is "already_optimized", try to create WebP versions only.
 				$item['sizes'] = array_filter( $item['sizes'], [ $this->optimization_process, 'is_size_webp' ] );
 
 			} elseif ( 'success' !== $data['status'] ) {

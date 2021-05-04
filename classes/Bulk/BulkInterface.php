@@ -24,7 +24,7 @@ interface BulkInterface {
 	public function get_unoptimized_media_ids( $optimization_level );
 
 	/**
-	 * Get ids of all optimized media without webp versions.
+	 * Get ids of all optimized media without WebP versions.
 	 *
 	 * @since  1.9
 	 * @since  1.9.5 The method doesn't return the IDs directly anymore.
@@ -42,7 +42,7 @@ interface BulkInterface {
 	public function get_optimized_media_ids_without_webp();
 
 	/**
-	 * Tell if there are optimized media without webp versions.
+	 * Tell if there are optimized media without WebP versions.
 	 *
 	 * @since  1.9
 	 * @access public

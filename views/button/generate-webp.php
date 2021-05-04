@@ -23,7 +23,7 @@ $html_atts = $this->build_attributes( $data['atts'] );
 <a href="<?php echo esc_url( $data['url'] ); ?>"<?php echo $html_atts; ?>>
 	<span class="dashicons dashicons-admin-generic"></span>
 	<?php
-	esc_html_e( 'Generate webp versions', 'imagify' );
+	esc_html_e( 'Generate WebP versions', 'imagify' );
 	?>
 </a>
 

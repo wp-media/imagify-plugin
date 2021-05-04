@@ -454,7 +454,7 @@ class File {
 	 *     @type string $backup_path        If a backup must be done, this is the path to use. Default is the backup path used for the WP Media Library.
 	 *     @type int    $optimization_level The optimization level (2=ultra, 1=aggressive, 0=normal).
 	 *     @type bool   $keep_exif          To keep exif data or not.
-	 *     @type string $convert            Set to 'webp' to convert the image to webp.
+	 *     @type string $convert            Set to 'webp' to convert the image to WebP.
 	 *     @type string $context            The context.
 	 *     @type int    $original_size      The file size, sent to the API.
 	 * }
@@ -768,7 +768,7 @@ class File {
 	}
 
 	/**
-	 * Replace the file extension by webp.
+	 * Replace the file extension by WebP.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -789,7 +789,7 @@ class File {
 	}
 
 	/**
-	 * Tell if the file is a webp image.
+	 * Tell if the file is a WebP image.
 	 * Rejects "path/to/.webp" files.
 	 *
 	 * @since  1.9

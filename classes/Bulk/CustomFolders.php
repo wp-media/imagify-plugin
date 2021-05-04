@@ -76,7 +76,7 @@ class CustomFolders extends AbstractBulk {
 	}
 
 	/**
-	 * Get ids of all optimized media without webp versions.
+	 * Get ids of all optimized media without WebP versions.
 	 *
 	 * @since  1.9
 	 * @since  1.9.5 The method doesn't return the IDs directly anymore.
@@ -142,7 +142,7 @@ class CustomFolders extends AbstractBulk {
 			$backup_path = \Imagify_Custom_Folders::get_file_backup_path( $file_path );
 
 			if ( ! $this->filesystem->exists( $backup_path ) ) {
-				// No backup, no webp.
+				// No backup, no WebP.
 				$data['errors']['no_backup'][] = $file_id;
 				continue;
 			}
@@ -154,7 +154,7 @@ class CustomFolders extends AbstractBulk {
 	}
 
 	/**
-	 * Tell if there are optimized media without webp versions.
+	 * Tell if there are optimized media without WebP versions.
 	 *
 	 * @since  1.9
 	 * @access public

@@ -224,7 +224,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	}
 
 	/**
-	 * Generate webp images if they are missing.
+	 * Generate WebP images if they are missing.
 	 *
 	 * @since  1.9
 	 * @access protected
@@ -239,7 +239,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	}
 
 	/**
-	 * Delete webp images for media that are "already_optimize".
+	 * Delete WebP images for media that are "already_optimize".
 	 *
 	 * @since  1.9.6
 	 * @access protected
@@ -270,7 +270,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$deleted = $process->delete_webp_files();
 
 		if ( is_wp_error( $deleted ) ) {
-			return new \WP_Error( 'webp_not_deleted', __( 'Previous webp files could not be deleted.', 'imagify' ) );
+			return new \WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
 		}
 
 		return true;
@@ -329,7 +329,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 				$data = $bulk->get_optimized_media_ids_without_webp();
 
 				if ( ! $data['ids'] && $data['errors']['no_backup'] ) {
-					// No backup, no webp.
+					// No backup, no WebP.
 					$data = 'no-backup';
 				} elseif ( ! $data['ids'] && $data['errors']['no_file_path'] ) {
 					// Error.
@@ -582,7 +582,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	}
 
 	/**
-	 * Generate webp images if they are missing.
+	 * Generate WebP images if they are missing.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -617,7 +617,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	}
 
 	/**
-	 * Generate webp images if they are missing.
+	 * Generate WebP images if they are missing.
 	 *
 	 * @since  1.9.6
 	 * @access public

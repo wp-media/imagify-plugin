@@ -412,7 +412,7 @@ window.imagify = window.imagify || {};
 } )(window, document, jQuery);
 
 
-// Generate missing webp versions ==================================================================
+// Generate missing WebP versions ==================================================================
 /* eslint-disable no-underscore-dangle, consistent-this */
 (function(w, d, $, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
@@ -519,7 +519,7 @@ window.imagify = window.imagify || {};
 			this.$progressBar  = this.$progressWrap.find( '.bar' );
 			this.$progressText = this.$progressBar.find( '.percent' );
 
-			// Enable/Disable the button when the "Convert to webp" checkbox is checked/unchecked.
+			// Enable/Disable the button when the "Convert to WebP" checkbox is checked/unchecked.
 			$( '#imagify_convert_to_webp' )
 				.on( 'change.imagify init.imagify', { imagifyOptionsBulk: this }, this.toggleButton )
 				.trigger( 'init.imagify' );
@@ -539,7 +539,7 @@ window.imagify = window.imagify || {};
 		// Event callbacks =========================================================================
 
 		/**
-		 * Enable/Disable the button when the "Convert to webp" checkbox is checked/unchecked.
+		 * Enable/Disable the button when the "Convert to WebP" checkbox is checked/unchecked.
 		 *
 		 * @param {object} e Event object.
 		 */

@@ -106,8 +106,8 @@ function get_imagify_localize_script_translations( $context ) {
 						'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
 						'processing'                     => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
 						'nothingToDoTitle'               => __( 'Hold on!', 'imagify' ),
-						'nothingToDoText'                => __( 'All your optimized images already have a webp version. Congratulations!', 'imagify' ),
-						'nothingToDoNoBackupText'        => __( 'Because the selected images did not have a backup copy, Imagify was unable to create webp versions.', 'imagify' ),
+						'nothingToDoText'                => __( 'All your optimized images already have a WebP version. Congratulations!', 'imagify' ),
+						'nothingToDoNoBackupText'        => __( 'Because the selected images did not have a backup copy, Imagify was unable to create WebP versions.', 'imagify' ),
 						'error'                          => __( 'Error', 'imagify' ),
 						'ajaxErrorText'                  => __( 'The operation failed.', 'imagify' ),
 						'getUnoptimizedImagesErrorTitle' => __( 'Oops, There is something wrong!', 'imagify' ),
@@ -116,7 +116,7 @@ function get_imagify_localize_script_translations( $context ) {
 				];
 
 				/**
-				 * Filter the number of parallel queries generating webp images by bulk method.
+				 * Filter the number of parallel queries generating WebP images by bulk method.
 				 *
 				 * @since  1.9
 				 * @author Grégory Viguier
@@ -253,7 +253,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'nothingToDoTitle'               => __( 'Hold on!', 'imagify' ),
 					'nothingToDoText'                => [
 						'optimize'      => __( 'All your media files have been optimized by Imagify. Congratulations!', 'imagify' ),
-						'generate_webp' => __( 'All your optimized images already have a webp version. Congratulations!', 'imagify' ),
+						'generate_webp' => __( 'All your optimized images already have a WebP version. Congratulations!', 'imagify' ),
 					],
 					'optimizing'                     => __( 'Optimizing', 'imagify' ),
 					'error'                          => __( 'Error', 'imagify' ),
