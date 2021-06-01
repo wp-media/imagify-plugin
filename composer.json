@@ -19,7 +19,6 @@
 	"type": "wordpress-plugin",
 	"config": {
 		"classloader-suffix": "WPMediaImagifyWordPressPlugin",
-		"classmap-authoritative": true,
 		"sort-packages": true
 	},
 	"support": {
@@ -60,8 +59,7 @@
 		],
 		"exclude-from-classmap": [
 			"inc/classes/class-imagify-plugin.php",
-			"inc/classes/class-imagify-requirements-check.php",
-			"/Tests/"
+			"inc/classes/class-imagify-requirements-check.php"
 		]
 	},
 	"autoload-dev": {
@@ -97,6 +95,6 @@
 			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
 			"composer dump-autoload"
 		],
-		"code-coverage": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration tests/Unit/phpunit.xml.dist --coverage-clover=tests/report/coverage.clover"
+		"code-coverage": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist --coverage-clover=tests/report/coverage.clover"
 	}
 }
