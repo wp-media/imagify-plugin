@@ -854,7 +854,7 @@ p.imagify-section-title.imagify-section-title {
 	margin-bottom: 0;
 }
 .imagify-check-group.imagify-is-scrollable {
-	max-height: 15em;
+	height: 15em;
 	overflow-y: auto;
 	padding: 8px;
 	margin: 1.5em 0 0 -8px;

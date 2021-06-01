@@ -169,7 +169,7 @@ function imagify_get_filesystem() {
 }
 
 /**
- * Convert a path (or URL) to its webp version.
+ * Convert a path (or URL) to its WebP version.
  * To keep the function simple:
  * - Not tested if it's an image.
  * - File existance is not tested.

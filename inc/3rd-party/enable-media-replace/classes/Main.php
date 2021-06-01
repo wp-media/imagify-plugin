@@ -40,7 +40,7 @@ class Main extends Imagify_Enable_Media_Replace_Deprecated {
 	protected $old_backup_path;
 
 	/**
-	 * List of paths to the old webp files.
+	 * List of paths to the old WebP files.
 	 *
 	 * @var   array
 	 * @since 1.9.8
@@ -84,18 +84,18 @@ class Main extends Imagify_Enable_Media_Replace_Deprecated {
 		}
 
 		/**
-		 * Keep track of existing webp files.
+		 * Keep track of existing WebP files.
 		 *
-		 * Whether the user chooses to rename the files or not, we will need to delete the current webp files before creating new ones:
+		 * Whether the user chooses to rename the files or not, we will need to delete the current WebP files before creating new ones:
 		 * - Rename the files: the old ones must be removed, they are useless now.
 		 * - Do not rename the files: the thumbnails may still get new names because of the suffix containing the image dimensions, which may differ (for example when thumbnails are scaled, not cropped).
-		 * In this last case, the thumbnails with the old dimensions are removed from the drive and from the WP’s post meta, so there is no need of keeping orphan webp files that would stay on the drive for ever, even after the attachment is deleted from WP.
+		 * In this last case, the thumbnails with the old dimensions are removed from the drive and from the WP’s post meta, so there is no need of keeping orphan WebP files that would stay on the drive for ever, even after the attachment is deleted from WP.
 		 */
 		foreach ( $this->process->get_media()->get_media_files() as $media_file ) {
 			$this->old_webp_paths[] = imagify_path_to_webp( $media_file['path'] );
 		}
 
-		// Delete the old backup file and old webp files.
+		// Delete the old backup file and old WebP files.
 		add_action( 'imagify_before_auto_optimization',         [ $this, 'delete_backup' ] );
 		add_action( 'imagify_not_optimized_attachment_updated', [ $this, 'delete_backup' ] );
 	}
@@ -106,7 +106,7 @@ class Main extends Imagify_Enable_Media_Replace_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Delete previous backup file and webp files.
+	 * Delete previous backup file and WebP files.
 	 * This is done after the images have been already replaced by Enable Media Replace.
 	 *
 	 * @since 1.8.4
@@ -127,7 +127,7 @@ class Main extends Imagify_Enable_Media_Replace_Deprecated {
 		}
 
 		if ( ! empty( $this->old_webp_paths ) ) {
-			// Delete old webp files.
+			// Delete old WebP files.
 			$this->old_webp_paths = array_filter( $this->old_webp_paths, [ $filesystem, 'exists' ] );
 			array_map( [ $filesystem, 'delete' ], $this->old_webp_paths );
 			$this->old_webp_paths = [];

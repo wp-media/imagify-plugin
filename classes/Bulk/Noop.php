@@ -26,7 +26,7 @@ class Noop implements BulkInterface {
 	}
 
 	/**
-	 * Get ids of all optimized media without webp versions.
+	 * Get ids of all optimized media without WebP versions.
 	 *
 	 * @since  1.9
 	 * @since  1.9.5 The method doesn't return the IDs directly anymore.
@@ -52,7 +52,7 @@ class Noop implements BulkInterface {
 	}
 
 	/**
-	 * Tell if there are optimized media without webp versions.
+	 * Tell if there are optimized media without WebP versions.
 	 *
 	 * @since  1.9
 	 * @access public

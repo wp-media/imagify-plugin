@@ -4,7 +4,7 @@ namespace Imagify\Webp\Picture;
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
- * Display webp images on the site with <picture> tags.
+ * Display WebP images on the site with <picture> tags.
  *
  * @since  1.9
  * @author Grégory Viguier
@@ -193,6 +193,17 @@ class Display {
 		 * @param array $data       Data built from the originale <img> tag. See $this->process_image().
 		 */
 		$attributes = apply_filters( 'imagify_picture_attributes', $attributes, $image );
+		
+		/**
+		 * Remove Gutenberg specific attributes from picture tag, leave them on img tag.
+		 * Optional: $attributes['class'] = 'imagify-webp-cover-wrapper'; for website admin styling ease.
+		 */
+		if ( ! empty( $image['attributes']['class'] ) && strpos( $image['attributes']['class'], 'wp-block-cover__image-background' ) !== false ) {
+        	unset( $attributes['style'] );
+			unset( $attributes['class'] );
+			unset( $attributes['data-object-fit'] );
+			unset( $attributes['data-object-position'] );
+		}
 
 		$output = '<picture' . $this->build_attributes( $attributes ) . ">\n";
 		/**
@@ -289,14 +300,28 @@ class Display {
 	 * @return string       A <img> tag.
 	 */
 	protected function build_img_tag( $image ) {
-		$to_remove = [
-			'class'  => '',
-			'id'     => '',
-			'style'  => '',
-			'title'  => '',
-		];
+		
+		/**
+		 * Gutenberg fix.
+		 * Check for the 'wp-block-cover__image-background' class on the original image, and leave that class and style attributes if found.
+		 */
+		if ( ! empty( $image['attributes']['class'] ) && strpos( $image['attributes']['class'], 'wp-block-cover__image-background' ) !== false ) {
+        	$to_remove = [
+				'id'     => '',
+				'title'  => '',
+			];
 
-		$attributes = array_diff_key( $image['attributes'], $to_remove );
+			$attributes = array_diff_key( $image['attributes'], $to_remove );
+    	} else {
+			$to_remove = [
+				'class'  => '',
+				'id'     => '',
+				'style'  => '',
+				'title'  => '',
+			];
+
+			$attributes = array_diff_key( $image['attributes'], $to_remove );
+		}
 
 		/**
 		 * Filter the attributes to be added to the <img> tag.
@@ -415,19 +440,19 @@ class Display {
 	 *
 	 * @param  string $image An image html tag.
 	 * @return array|false {
-	 *     An array of data if the image has a webp version. False otherwise.
+	 *     An array of data if the image has a WebP version. False otherwise.
 	 *
 	 *     @type string $tag        The image tag.
 	 *     @type array  $attributes The image attributes (minus src and srcset).
 	 *     @type array  $src        {
 	 *         @type string $url      URL to the original image.
-	 *         @type string $webp_url URL to the webp version.
+	 *         @type string $webp_url URL to the WebP version.
 	 *     }
 	 *     @type array  $srcset     {
 	 *         An array or arrays. Not set if not applicable.
 	 *
 	 *         @type string $url        URL to the original image.
-	 *         @type string $webp_url   URL to the webp version. Not set if not applicable.
+	 *         @type string $webp_url   URL to the WebP version. Not set if not applicable.
 	 *         @type string $descriptor A src descriptor.
 	 *     }
 	 * }

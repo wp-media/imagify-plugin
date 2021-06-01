@@ -150,7 +150,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	}
 
 	/**
-	 * Webp for the full size.
+	 * WebP for the full size.
 	 * Look for an existing copy locally:
 	 * - if it exists, copy it (and its optimization data),
 	 * - if not, add it to the optimization queue.
@@ -158,12 +158,12 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	$add_full_webp = $wp_media->is_image() && get_imagify_option( 'convert_to_webp' );
 
 	if ( $add_full_webp ) {
-		// It's a supported image and webp conversion is enabled.
+		// It's a supported image and WebP conversion is enabled.
 		$wp_full_path_webp = false;
 		$webp_size_name    = 'full' . $wp_process::WEBP_SUFFIX;
 		$wp_webp_data      = $wp_data->get_size_data( $webp_size_name );
 
-		// Get the path to the webp image if it exists.
+		// Get the path to the WebP image if it exists.
 		$wp_full_path_webp = $wp_process->get_fullsize_file()->get_path_to_webp();
 
 		if ( $wp_full_path_webp && ! $filesystem->exists( $wp_full_path_webp ) ) {
@@ -171,11 +171,11 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 		}
 
 		if ( $wp_full_path_webp ) {
-			// We know we have a webp version. Make sure we have the right data.
+			// We know we have a WebP version. Make sure we have the right data.
 			$wp_webp_data['success'] = true;
 
 			if ( empty( $wp_webp_data['original_size'] ) ) {
-				// The webp data is missing.
+				// The WebP data is missing.
 				$full_size_weight = $wp_full_size_data['original_size'];
 
 				if ( ! $full_size_weight && $wp_backup_path ) {
@@ -189,7 +189,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 			}
 
 			if ( ! empty( $wp_webp_data['original_size'] ) && empty( $wp_webp_data['optimized_size'] ) ) {
-				// The webp file size.
+				// The WebP file size.
 				$wp_webp_data['optimized_size'] = $filesystem->size( $wp_full_path_webp );
 			}
 
@@ -216,7 +216,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 			}
 
 			if ( ! $add_full_webp ) {
-				// The webp file has been successfully copied: now, copy the data.
+				// The WebP file has been successfully copied: now, copy the data.
 				$ngg_process->get_data()->update_size_optimization_data( $webp_size_name, $wp_webp_data );
 			}
 		}
@@ -227,7 +227,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	unset( $sizes['full'] );
 
 	if ( $add_full_webp ) {
-		// We could not use a local webp copy: ask for a new one.
+		// We could not use a local WebP copy: ask for a new one.
 		$sizes[ $webp_size_name ] = [];
 	}
 
@@ -282,7 +282,7 @@ function imagify_ngg_cleanup_after_media_deletion( $image_id, $image ) {
 
 	/**
 	 * The backup file has already been deleted by NGG.
-	 * Delete the webp versions and the optimization data.
+	 * Delete the WebP versions and the optimization data.
 	 */
 	$process->delete_webp_files();
 	$process->get_data()->delete_optimization_data();

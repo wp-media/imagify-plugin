@@ -238,7 +238,7 @@ interface ProcessInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Generate webp images if they are missing.
+	 * Generate WebP images if they are missing.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -249,7 +249,7 @@ interface ProcessInterface {
 	public function generate_webp_versions();
 
 	/**
-	 * Delete the webp images.
+	 * Delete the WebP images.
 	 * This doesn't delete the related optimization data.
 	 *
 	 * @since  1.9
@@ -263,19 +263,19 @@ interface ProcessInterface {
 	public function delete_webp_files( $keep_full = false );
 
 	/**
-	 * Tell if a thumbnail size is an "Imagify webp" size.
+	 * Tell if a thumbnail size is an "Imagify WebP" size.
 	 *
 	 * @since  1.9
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size_name The size name.
-	 * @return string|bool       The unsuffixed name of the size if webp. False if not webp.
+	 * @return string|bool       The unsuffixed name of the size if WebP. False if not WebP.
 	 */
 	public function is_size_webp( $size_name );
 
 	/**
-	 * Tell if the media has webp versions.
+	 * Tell if the media has WebP versions.
 	 *
 	 * @since  1.9
 	 * @access public

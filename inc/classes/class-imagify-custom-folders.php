@@ -261,7 +261,7 @@ class Imagify_Custom_Folders {
 			$filesystem->delete( $args['backup_path'] );
 		}
 
-		// Webp.
+		// WebP.
 		$mime_type = $filesystem->get_mime_type( $args['file_path'] );
 		$is_image  = $mime_type && strpos( $mime_type, 'image/' ) === 0;
 		$webp_path = $is_image ? imagify_path_to_webp( $args['file_path'] ) : false;
@@ -321,7 +321,7 @@ class Imagify_Custom_Folders {
 			// Remove the corresponding folder if inactive and have no files left.
 			self::remove_empty_inactive_folders( $folder_id );
 
-			// Delete the webp version.
+			// Delete the WebP version.
 			if ( $has_webp ) {
 				$filesystem->delete( $webp_path );
 			}
@@ -382,7 +382,7 @@ class Imagify_Custom_Folders {
 					self::remove_empty_inactive_folders( $old_data['folder_id'] );
 				}
 
-				// Delete the webp version.
+				// Delete the WebP version.
 				if ( $has_webp ) {
 					$filesystem->delete( $webp_path );
 				}
@@ -402,7 +402,7 @@ class Imagify_Custom_Folders {
 			if ( $is_image ) {
 				$size = $filesystem->get_image_size( $file_path );
 
-				// Delete the webp version.
+				// Delete the WebP version.
 				if ( $has_webp ) {
 					$filesystem->delete( $webp_path );
 				}
@@ -445,7 +445,7 @@ class Imagify_Custom_Folders {
 				'original_size' => $filesystem->size( $path ),
 			] );
 
-			// Webp.
+			// WebP.
 			$webp_size = 'full' . $process::WEBP_SUFFIX;
 
 			if ( $has_webp && empty( $old_data['data'][ $webp_size ]['success'] ) ) {

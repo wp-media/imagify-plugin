@@ -90,7 +90,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 
 	if ( $media->is_image() ) {
 		$has_webp = $process->has_webp() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
-		$output  .= $output_before . '<span class="data">' . __( 'Webp generated:', 'imagify' ) . '</span> <strong class="big">' . esc_html( $has_webp ) . '</strong>' . $output_after;
+		$output  .= $output_before . '<span class="data">' . __( 'WebP generated:', 'imagify' ) . '</span> <strong class="big">' . esc_html( $has_webp ) . '</strong>' . $output_after;
 
 		$total_optimized_thumbnails = $data->get_optimized_sizes_count();
 
@@ -310,7 +310,7 @@ function get_imagify_attachment_optimize_missing_thumbnails_link( $process ) {
 }
 
 /**
- * Get the link to generate webp versions if they are missing.
+ * Get the link to generate WebP versions if they are missing.
  *
  * @since  1.9
  * @author Grégory Viguier
@@ -346,7 +346,7 @@ function get_imagify_attachment_generate_webp_versions_link( $process ) {
 	$context = $media->get_context();
 
 	/**
-	 * Allow to not display the "Generate webp versions" link.
+	 * Allow to not display the "Generate WebP versions" link.
 	 *
 	 * @since  1.9
 	 * @author Grégory Viguier
@@ -375,7 +375,7 @@ function get_imagify_attachment_generate_webp_versions_link( $process ) {
 }
 
 /**
- * Get the link to delete webp versions when the status is "already_optimized".
+ * Get the link to delete WebP versions when the status is "already_optimized".
  *
  * @since  1.9.6
  * @author Grégory Viguier
