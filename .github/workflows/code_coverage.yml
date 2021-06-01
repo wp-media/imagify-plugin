@@ -55,6 +55,9 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-interaction --no-scripts
 
+	- name: Code Coverage
+      run: composer code-coverage
+
     - name: Run codacy-coverage-reporter
       uses: codacy/codacy-coverage-reporter-action@v1
       with:
