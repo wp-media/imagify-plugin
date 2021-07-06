@@ -872,7 +872,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		 *
 		 * @param array $notice_ids An array of notice "IDs".
 		 */
-		return apply_filters( 'imagify_notices', self::$notice_ids );
+		return (array) apply_filters( 'imagify_notices', self::$notice_ids );
 	}
 
 	/**
