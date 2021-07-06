@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			/* translators: %1$s is a formatted percentage, %2$s is a subscription plan name. */
 			__( '%1$s OFF on %2$s subscriptions', 'imagify' ),
 			'<span class="imagify-promotion-number"></span>',
-			'<span class="imagify-promotion-plan-name"></span>',
+			'<span class="imagify-promotion-plan-name"></span>'
 		);
 		?>
 	</p>

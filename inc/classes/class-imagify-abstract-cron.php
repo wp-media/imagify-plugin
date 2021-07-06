@@ -262,7 +262,7 @@ abstract class Imagify_Abstract_Cron {
 	 * @return int Timestamp.
 	 */
 	public static function get_next_timestamp( $event_time = '00:00' ) {
-		$current_time_int = (int) date( 'Gis' );
+		$current_time_int = (int) gmdate( 'Gis' );
 		$event_time_int   = (int) str_replace( ':', '', $event_time . '00' );
 		$event_time       = explode( ':', $event_time );
 		$event_hour       = (int) $event_time[0];
@@ -271,7 +271,7 @@ abstract class Imagify_Abstract_Cron {
 
 		if ( $event_time_int <= $current_time_int ) {
 			// The event time is passed, we need to schedule the event tomorrow.
-			return mktime( $event_hour, $event_minute, 0, (int) date( 'n' ), (int) date( 'j' ) + 1 ) - $offset;
+			return mktime( $event_hour, $event_minute, 0, (int) gmdate( 'n' ), (int) gmdate( 'j' ) + 1 ) - $offset;
 		}
 
 		// We haven't passed the event time yet, schedule the event today.
