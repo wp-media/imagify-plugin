@@ -164,7 +164,7 @@
 				}
 
 				plan_list.forEach(function (item) {
-					if (!appliesTo.includes(item)) {
+					if (! appliesTo.includes(item)) {
 						appliesTo.push(item);
 					}
 				});
