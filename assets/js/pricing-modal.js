@@ -265,9 +265,9 @@
 			//$( '.imagify-global-amount' ).text( price ); // Not used.
 
 			if ('0.00' === price || 0 === price) {
-				$('#imagify-modal-checkout-btn').attr('disabled', 'disabled').addClass('imagify-button-disabled');
+				$('#imagify-modal-checkout-btn').prop('disabled', true).addClass('imagify-button-disabled');
 			} else {
-				$('#imagify-modal-checkout-btn').removeAttr('disabled').removeClass('imagify-button-disabled');
+				$('#imagify-modal-checkout-btn').prop('disabled', false).removeClass('imagify-button-disabled');
 			}
 		},
 
