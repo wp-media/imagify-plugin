@@ -861,7 +861,10 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	 * Get all notice IDs.
 	 *
 	 * @since  1.6.10
+	 * @since  1.10 Cast return value to array.
 	 * @author Grégory Viguier
+	 *
+	 * @return array The filtered notice ids.
 	 */
 	protected function get_notice_ids() {
 		/**
