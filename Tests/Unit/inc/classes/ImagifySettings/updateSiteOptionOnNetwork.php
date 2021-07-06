@@ -9,10 +9,6 @@ use Imagify\Tests\Unit\TestCase;
 /**
  * @covers Imagify_Settings::update_site_option_on_network
  *
- * @uses   imagify_check_nonce()
- * @uses   imagify_die()
- * @uses   imagify_maybe_redirect()
- *
  * @group  ImagifySettings
  */
 class Test_UpdateSiteOptionOnNetwork extends TestCase {
