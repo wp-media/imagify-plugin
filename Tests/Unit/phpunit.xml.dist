@@ -4,7 +4,7 @@
          bootstrap="bootstrap.php"
          backupGlobals="false"
          colors="true"
-         beStrictAboutCoversAnnotation="true"
+         beStrictAboutCoversAnnotation="false"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTestsThatDoNotTestAnything="true"
          beStrictAboutTodoAnnotatedTests="true"
@@ -15,13 +15,13 @@
 
     <testsuites>
         <testsuite name="unit">
-            <directory suffix=".php">.</directory>
+            <directory suffix=".php">inc</directory>
         </testsuite>
     </testsuites>
 
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">.</directory>
-        </whitelist>
-    </filter>
+	<filter>
+		<whitelist addUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">../../inc</directory>
+		</whitelist>
+	</filter>
 </phpunit>
