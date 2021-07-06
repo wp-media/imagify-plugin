@@ -39,12 +39,12 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		Functions\when( 'imagify_check_nonce' )->justReturn( $config['nonce_check'] );
 
 		if ( empty( $config['option_page'] )
-		     || 'imagify' !== $config['option_page']
+			 || 'imagify' !== $config['option_page']
 		) {
 			$this->shouldBailOut( $config );
 		} elseif ( $config['missing_options']
-		           || ! $config['user_can']
-		           || ! $config['nonce_check']
+				   || ! $config['user_can']
+				   || ! $config['nonce_check']
 		) {
 			$this->shouldDie( $config );
 		} else {
