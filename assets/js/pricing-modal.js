@@ -203,6 +203,7 @@
 				&& 'monthly' === type
 				&& (appliesTo.includes(lab) || 'all' === appliesTo[0])
 			) {
+
 				$offer.find('.imagify-price-block').prev('.imagify-price-discount').remove();
 				$offer.find('.imagify-price-block').before(imagifyModal.getHtmlDiscountPrice(pcsd, 'monthly'));
 			}
@@ -211,7 +212,7 @@
 			$offer.find('.imagify-approx-nb').text(quo * 5);
 
 			if ('monthly' === type) {
-				// Additional price.
+				// Additionnal price.
 				$offer.find('.imagify-price-add-data').text('$' + add);
 			}
 
@@ -1152,12 +1153,7 @@
 		$target_line.find('.imagify-number-block').html(price + monthly_txt);
 
 		// Change discount.
-		if ('undefined' !== typeof discount && 0 === $target_line.find('.imagify-price-discount').length) {
-			$target_line.find('.imagify-price-block').before('<span class="imagify-price-discount"></span>');
-			$target_line.find('.imagify-price-discount').html(discount);
-		} else {
-			$target_line.find('.imagify-price-discount').remove();
-		}
+		$target_line.find('.imagify-price-discount').html(discount);
 
 		// Change approx images nb.
 		$target_line.find('.imagify-approx-nb').text(imgs);
