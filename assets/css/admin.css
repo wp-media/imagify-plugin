@@ -279,7 +279,7 @@ body.imagify-modal-is-open {
 }
 
 /* Buttons */
-.imagify-settings .button,
+.imagify-settings .button:not(.wp-core-ui),
 .imagify-welcome .button,
 .imagify-notice .button,
 .imagify-button.imagify-button,
