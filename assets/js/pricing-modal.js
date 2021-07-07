@@ -164,7 +164,7 @@
 				}
 
 				plan_list.forEach(function (item) {
-					if (!appliesTo.includes(item)) {
+					if (! appliesTo.includes(item)) {
 						appliesTo.push(item);
 					}
 				});
@@ -1008,7 +1008,7 @@
 		checkPluginMessage: function (e) {
 			var origin = e.origin || e.originalEvent.origin; // eslint-disable-line no-shadow
 
-			if ('https://app.imagify.io' !== origin && 'http://dapp.imagify.io' !== origin) {
+			if ('https://app.imagify.io' !== origin && 'https://app.staging.imagify.io' !== origin && 'https://app.tst.imagify.io' !== origin) {
 				return;
 			}
 
