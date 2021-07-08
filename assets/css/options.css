@@ -286,6 +286,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 .imagify-settings [type="text"],
 .imagify-settings [type="number"] {
 	width: 20em;
+	max-width: 100%;
 	height: auto;
 	padding: 6px;
 	margin: 0 6px;
@@ -324,6 +325,7 @@ label[for="imagify_sizes_full"] + .imagify-info {
 .imagify-menu-bar-img {
 	box-sizing: border-box;
 	max-width: 100%;
+	width: 350px;
 	height: auto;
 	margin-top: 0;
 	border: 1px solid #8BA6B4;
@@ -899,4 +901,19 @@ input:checked + label .imagify-fake-checkbox:after,
 	font-size: 12px;
 	font-weight: 500;
 	color: #A2AFBC;
+}
+@media (max-width: 782px) {
+	.imagify-settings.imagify-have-rocket{
+		margin-right: 10px;
+	}
+	label + .imagify-info, .imagify-visual-label{
+		max-width: calc(100% - 50px);
+		padding-right: 0;
+	}
+	.imagify-options-title{
+		font-size: 22px;
+	}
+	.imagify-user-plan-label{
+		margin-right: -5px;
+	}
 }

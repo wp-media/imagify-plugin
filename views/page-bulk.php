@@ -89,11 +89,12 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 					$user = new Imagify_User();
 					?>
 					<div class="imagify-options-title">
-						<p class="imagify-meteo-title">
+						<div class="imagify-th-titles imagify-flex imagify-vcenter">
 							<span class="dashicons dashicons-admin-users"></span>
-							<?php esc_html_e( 'Your Account', 'imagify' ); ?>
-						</p>
-
+							<p class="imagify-meteo-title">
+								<?php esc_html_e( 'Your Account', 'imagify' ); ?>
+							</p>
+						</div>
 						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View your profile', 'imagify' ); ?></a>
 
 						<p class="imagify-meteo-subs">

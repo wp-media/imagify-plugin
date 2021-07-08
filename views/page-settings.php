@@ -145,7 +145,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 
 			<div class="imagify-settings-main-content imagify-pb0<?php echo $hidden_class; ?>">
 				<div class="imagify-settings-section imagify-clear">
-					<div class="imagify-col">
+					<div>
 						<h2 class="imagify-options-title"><?php _e( 'Display Options', 'imagify' ); ?></h2>
 
 						<p class="imagify-options-subtitle"><?php _e( 'Show Toolbar Menu', 'imagify' ); ?></p>

@@ -1479,3 +1479,62 @@ ul.imagify-datas-details.imagify-datas-details {
 		background: #F4F7F9;
 	}
 }
+@media (max-width: 730px) {
+	.imagify-settings .imagify-documentation-link-box{
+		margin-top: 2em;
+	}
+}
+
+@media (max-width: 782px) {
+	input[type="radio"], input[type="checkbox"] {
+		height: 1.5625rem;
+		width: 1.5625rem;
+		margin: 1px;
+	}
+	[class*="imagify-"] .button-text{
+		font-size: 13px;
+	}
+	.imagify-account-info-col .imagify-settings-section{
+		padding: 0 10px;
+	}
+	.imagify-settings-section{
+		padding: 10px;
+	}
+	.imagify-check-group.imagify-is-scrollable{
+		margin: auto;
+	}
+	.imagify-settings-section .imagify-col,
+	.imagify-col.imagify-col.imagify-shared-with-account-col,
+	.imagify-media-lib-section .imagify-col,
+	.imagify-custom-folders-section .imagify-col,
+	.imagify-shared-with-account-col {
+		width:100%;
+		float: none;
+		padding-right: 0;
+	}
+	.imagify-col.imagify-col.imagify-account-info-col,
+	.imagify-media-lib-section .imagify-account-info-col,
+	.imagify-custom-folders-section .imagify-account-info-col,
+	.imagify-account-info-col{
+		width: 100%;
+		float: none;
+		padding-left: 0;
+		padding-right: 0;
+	}
+	.imagify-lb-text{
+		font-size: 20px;
+	}
+	.imagify-vcenter{
+		-webkit-flex-direction: column;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-direction: normal;
+		-webkit-box-orient: vertical;
+		-moz-box-direction: normal;
+		-moz-box-orient: vertical;
+		align-items: center;
+	}
+	.imagify-pr2.imagify-pr2{
+		padding-right: 0em;
+	}
+}
