@@ -32,6 +32,14 @@ class Display {
 	protected $filesystem;
 
 	/**
+	 * Pre-existing picture tags extracted html.
+	 *
+	 * @var array
+	 * @since 1.10.0
+	 */
+	private $picture_tags;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since  1.9
@@ -148,7 +156,7 @@ class Display {
 			$content = str_replace( $image['tag'], $tag, $content );
 		}
 
-		return $content;
+		return $this->reinsert_picture_tags( $content );
 	}
 
 	/**
@@ -164,13 +172,35 @@ class Display {
 	 * @return string HTML content without pre-existing <picture> tags.
 	 */
 	private function remove_picture_tags( $html ) {
-		$replace = preg_replace( '#<picture[^>]*>.*?<\/picture\s*>#mis', '', $html );
+		return preg_replace_callback(
+			'#<picture[^>]*>.*?<\/picture\s*>#mis',
+			function( $matches ) {
+				$this->picture_tags[] = $matches[0];
+				return '<!--imagify-picture-tag-placeholder-->';
+			},
+			$html
+		);
+	}
 
-		if ( null === $replace ) {
-			return $html;
-		}
-
-		return $replace;
+	/**
+	 * Re-insert pre-existing <picture> tags back to their original positions.
+	 *
+	 * Used in conjunction with remove_picture_tags() to re-construct HTML after having replaced non-nested images.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param string $html Content of the page without pre-existing <picture> tags.
+	 *
+	 * @return string HTML content with pre-existing <picture> tags re-inserted.
+	 */
+	private function reinsert_picture_tags( $html ) {
+		return preg_replace_callback(
+			'#<!--imagify-picture-tag-placeholder-->#mis',
+			function() {
+					return array_shift( $this->picture_tags );
+			},
+			$html
+		);
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
