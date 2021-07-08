@@ -1,11 +1,30 @@
 <?php
 namespace Imagify\ThirdParty\WooCommerce;
 
+/**
+ * Compatibility for WooCommerce.
+ *
+ * @since 1.10.0
+ */
 class WooCommerce {
+	/**
+	 * Initialize compatibility functionality.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @return void
+	 */
 	public function init() {
 		add_action( 'woocommerce_single_product_summary', [ $this, 'variable_products_webp_compat' ] );
 	}
 
+	/**
+	 * Add Variable Products Webp Compatibility.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @return void
+	 */
 	public function variable_products_webp_compat() {
 		global $product;
 
@@ -28,7 +47,17 @@ class WooCommerce {
 		);
 	}
 
-	function remove_wp_post_image_class( $attributes, $image ) {
+	/**
+	 * Remove wp-post-image class from picture tags.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array $attributes The picture tag attributes.
+	 * @param array $image      The original image tag data.
+	 *
+	 * @return array The picture tage attributes with modified or removed 'class'.
+	 */
+	public function remove_wp_post_image_class( $attributes, $image ) {
 		if ( isset( $attributes['class'] ) ) {
 			$attributes['class'] = str_replace( 'wp-post-image', '', $attributes['class'] );
 		}
@@ -40,7 +69,17 @@ class WooCommerce {
 		return $attributes;
 	}
 
-	function maybe_add_wp_post_image_class_on_picture_internal_tags( $attributes, $image ) {
+	/**
+	 * Add wp-post-image class to source and image tags internal to a picture tag.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param array $attributes The source or img tag attributes.
+	 * @param array $image      The original image tag data.
+	 *
+	 * @return array Source or image tag attributes with modified 'class'.
+	 */
+	public function maybe_add_wp_post_image_class_on_picture_internal_tags( $attributes, $image ) {
 		if (
 			! empty( $image['attributes']['class'] )
 			&& strpos( $image['attributes']['class'], 'wp-post-image' ) !== false
@@ -54,5 +93,4 @@ class WooCommerce {
 	}
 }
 
-$imagify_woocommerce_compat = new WooCommerce();
-$imagify_woocommerce_compat->init();
+( new WooCommerce() )->init();

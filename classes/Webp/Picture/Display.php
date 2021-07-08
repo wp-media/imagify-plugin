@@ -193,13 +193,13 @@ class Display {
 		 * @param array $data       Data built from the originale <img> tag. See $this->process_image().
 		 */
 		$attributes = apply_filters( 'imagify_picture_attributes', $attributes, $image );
-		
+
 		/**
 		 * Remove Gutenberg specific attributes from picture tag, leave them on img tag.
 		 * Optional: $attributes['class'] = 'imagify-webp-cover-wrapper'; for website admin styling ease.
 		 */
 		if ( ! empty( $image['attributes']['class'] ) && strpos( $image['attributes']['class'], 'wp-block-cover__image-background' ) !== false ) {
-        	unset( $attributes['style'] );
+			unset( $attributes['style'] );
 			unset( $attributes['class'] );
 			unset( $attributes['data-object-fit'] );
 			unset( $attributes['data-object-position'] );
@@ -300,19 +300,19 @@ class Display {
 	 * @return string       A <img> tag.
 	 */
 	protected function build_img_tag( $image ) {
-		
+
 		/**
 		 * Gutenberg fix.
 		 * Check for the 'wp-block-cover__image-background' class on the original image, and leave that class and style attributes if found.
 		 */
 		if ( ! empty( $image['attributes']['class'] ) && strpos( $image['attributes']['class'], 'wp-block-cover__image-background' ) !== false ) {
-        	$to_remove = [
+			$to_remove = [
 				'id'     => '',
 				'title'  => '',
 			];
 
 			$attributes = array_diff_key( $image['attributes'], $to_remove );
-    	} else {
+		} else {
 			$to_remove = [
 				'class'  => '',
 				'id'     => '',
