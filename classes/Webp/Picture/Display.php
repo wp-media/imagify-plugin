@@ -300,7 +300,6 @@ class Display {
 	 * @return string       A <img> tag.
 	 */
 	protected function build_img_tag( $image ) {
-
 		/**
 		 * Gutenberg fix.
 		 * Check for the 'wp-block-cover__image-background' class on the original image, and leave that class and style attributes if found.
