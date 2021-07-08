@@ -56,7 +56,7 @@ if ( ! function_exists( 'wp_json_encode' ) ) :
 		}
 
 		// Prepare the data for JSON serialization.
-		$args[0] = _wp_json_prepare_data( $data );
+		$args[0] = $data;
 
 		$json = @call_user_func_array( 'json_encode', $args );
 
@@ -77,57 +77,6 @@ if ( ! function_exists( 'wp_json_encode' ) ) :
 	}
 endif;
 
-if ( ! function_exists( '_wp_json_prepare_data' ) ) :
-	/**
-	 * Prepares response data to be serialized to JSON.
-	 *
-	 * This supports the JsonSerializable interface for PHP 5.2-5.3 as well.
-	 *
-	 * @since  1.6.5
-	 * @since  WP 4.4.0
-	 * @access private
-	 *
-	 * @param  mixed $data Native representation.
-	 * @return bool|int|float|null|string|array Data ready for `json_encode()`.
-	 */
-	function _wp_json_prepare_data( $data ) {
-		if ( ! defined( 'WP_JSON_SERIALIZE_COMPATIBLE' ) || WP_JSON_SERIALIZE_COMPATIBLE === false ) {
-			return $data;
-		}
-
-		switch ( gettype( $data ) ) {
-			case 'boolean':
-			case 'integer':
-			case 'double':
-			case 'string':
-			case 'NULL':
-				// These values can be passed through.
-				return $data;
-
-			case 'array':
-				// Arrays must be mapped in case they also return objects.
-				return array_map( '_wp_json_prepare_data', $data );
-
-			case 'object':
-				// If this is an incomplete object (__PHP_Incomplete_Class), bail.
-				if ( ! is_object( $data ) ) {
-					return null;
-				}
-
-				if ( $data instanceof JsonSerializable ) {
-					$data = $data->jsonSerialize();
-				} else {
-					$data = get_object_vars( $data );
-				}
-
-				// Now, pass the array (or whatever was returned from jsonSerialize through).
-				return _wp_json_prepare_data( $data );
-
-			default:
-				return null;
-		}
-	}
-endif;
 
 if ( ! function_exists( '_wp_json_sanity_check' ) ) :
 	/**
