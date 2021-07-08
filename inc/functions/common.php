@@ -223,8 +223,8 @@ function imagify_can_optimize_custom_folders() {
  * @return string The URL.
  */
 function imagify_get_external_url( $target, $query_args = array() ) {
-	$site_url = IMAGIFY_APP_DOMAIN.'/';
-	$app_url  = IMAGIFY_APP_DOMAIN.'/#/';
+	$site_url = IMAGIFY_APP_DOMAIN . '/';
+	$app_url  = IMAGIFY_APP_DOMAIN . '/#/';
 
 	switch ( $target ) {
 		case 'plugin':

@@ -30,6 +30,7 @@ define( 'IMAGIFY_ASSETS_IMG_URL', IMAGIFY_URL . 'assets/images/' );
 define( 'IMAGIFY_MAX_BYTES',      5242880 );
 define( 'IMAGIFY_INT_MAX',        PHP_INT_MAX - 30 );
 define( 'IMAGIFY_APP_DOMAIN',     'https://app.imagify.io' );
+define( 'IMAGIFY_APP_API_URL',     IMAGIFY_APP_DOMAIN . '/api/' );
 
 add_action( 'plugins_loaded', '_imagify_init' );
 /**
