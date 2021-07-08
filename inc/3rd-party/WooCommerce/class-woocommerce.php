@@ -53,11 +53,10 @@ class WooCommerce {
 	 * @since 1.10.0
 	 *
 	 * @param array $attributes The picture tag attributes.
-	 * @param array $image      The original image tag data.
 	 *
 	 * @return array The picture tage attributes with modified or removed 'class'.
 	 */
-	public function remove_wp_post_image_class( $attributes, $image ) {
+	public function remove_wp_post_image_class( $attributes ) {
 		if ( isset( $attributes['class'] ) ) {
 			$attributes['class'] = str_replace( 'wp-post-image', '', $attributes['class'] );
 		}
