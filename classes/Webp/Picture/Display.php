@@ -37,7 +37,7 @@ class Display {
 	 * @var array
 	 * @since 1.10.0
 	 */
-	private $picture_tags;
+	private $picture_tags = [];
 
 	/**
 	 * Constructor.
@@ -194,6 +194,10 @@ class Display {
 	 * @return string HTML content with pre-existing <picture> tags re-inserted.
 	 */
 	private function reinsert_picture_tags( $html ) {
+		if ( empty( $this->picture_tags ) ) {
+			return $html;
+		}
+
 		return preg_replace_callback(
 			'#<!--imagify-picture-tag-placeholder-->#mis',
 			function() {
