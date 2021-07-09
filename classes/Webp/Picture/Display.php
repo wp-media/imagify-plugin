@@ -136,10 +136,10 @@ class Display {
 	 * @return string
 	 */
 	public function process_content( $content ) {
-		$html_no_picture_tags= $this->remove_picture_tags( $content );
+		$html_no_picture_tags = $this->remove_picture_tags( $content );
 		$images = $this->get_images( $html_no_picture_tags );
 
-		if ( ! $images ) { return 'no images';
+		if ( ! $images ) {
 			return $content;
 		}
 
@@ -148,7 +148,7 @@ class Display {
 			$content = str_replace( $image['tag'], $tag, $content );
 		}
 
-		return $content;	}
+		return $content;    }
 
 	/**
 	 * Remove pre-existing <picture> tags.
