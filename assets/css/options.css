@@ -907,7 +907,7 @@ input:checked + label .imagify-fake-checkbox:after,
 	}
 
 	label + .imagify-info, .imagify-visual-label {
-		max-width: calc(100% - 50px);
+		max-width: calc(100% - 65px);
 		padding-right: 0;
 	}
 
