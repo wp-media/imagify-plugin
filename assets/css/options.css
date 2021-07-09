@@ -64,7 +64,6 @@ p.imagify-api-key-invite-title {
 .imagify-no-api-key .imagify-api-line {
 	margin: 3em 0 0 0;
 	padding: 2em 0 0;
-	border-top: 1px solid #D5D6D9;
 }
 .imagify-no-api-key .imagify-api-line input[type="text"] {
 	margin-top: 5px;
@@ -903,17 +902,31 @@ input:checked + label .imagify-fake-checkbox:after,
 	color: #A2AFBC;
 }
 @media (max-width: 782px) {
-	.imagify-settings.imagify-have-rocket{
+	.imagify-settings.imagify-have-rocket {
 		margin-right: 10px;
 	}
-	label + .imagify-info, .imagify-visual-label{
+
+	label + .imagify-info, .imagify-visual-label {
 		max-width: calc(100% - 50px);
 		padding-right: 0;
 	}
-	.imagify-options-title{
+
+	.imagify-options-title {
 		font-size: 22px;
 	}
-	.imagify-user-plan-label{
+
+	.imagify-user-plan-label {
 		margin-right: -5px;
+	}
+
+	.imagify-col.imagify-main {
+		width:100%;
+		padding-right: 10px;
+	}
+	.imagify-col + .imagify-col{
+		padding:0px 10px 0px 0px;
+	}
+	.imagify-no-api-key .imagify-api-line input[type="text"]{
+		margin-left: 0;
 	}
 }

@@ -106,13 +106,13 @@ if ( ! is_network_admin() ) {
 								<p><?php _e( 'Only one of your current themes is in the optimization process, would you like to also optimize the other one?', 'imagify' ); ?></p>
 
 								<button id="imagify-add-themes-to-custom-folder"
-								        class="button imagify-button-clean imagify-add-themes" type="button"
-								        data-theme="<?php echo esc_attr( $theme['path'] ) . '#///#' . esc_attr( $theme['label'] ); ?>">
+										class="button imagify-button-clean imagify-add-themes" type="button"
+										data-theme="<?php echo esc_attr( $theme['path'] ) . '#///#' . esc_attr( $theme['label'] ); ?>">
 									<span class="dashicons dashicons-plus"></span>
 									<span class="button-text"><?php
 										/* translators: %s is a theme name. */
 										printf( __( 'Add %s to optimization', 'imagify' ), '<strong>' . $theme['name'] . '</strong>' );
-										?></span>
+									?></span>
 								</button>
 								<?php
 							} else {
@@ -123,8 +123,8 @@ if ( ! is_network_admin() ) {
 								<p><?php echo _n( 'Would you like to optimize your theme?', 'Would you like to optimize your themes?', $themes_count, 'imagify' ); ?></p>
 
 								<button id="imagify-add-themes-to-custom-folder"
-								        class="button imagify-button-clean imagify-add-themes" type="button"
-								        data-theme="<?php echo implode( '" data-theme-parent="', $themes ); ?>">
+										class="button imagify-button-clean imagify-add-themes" type="button"
+										data-theme="<?php echo implode( '" data-theme-parent="', $themes ); ?>">
 									<span class="dashicons dashicons-plus"></span>
 									<span
 										class="button-text"><?php echo _n( 'Add the theme to optimization', 'Add the themes to optimization', $themes_count, 'imagify' ); ?></span>
@@ -140,14 +140,12 @@ if ( ! is_network_admin() ) {
 					<span><?php _e( 'Select folders for optimization.', 'imagify' ); ?></span>
 					<span>
 				<button id="imagify-add-custom-folder"
-				        class="button imagify-button-mini imagify-button-primary imagify-add-custom-folder"
-				        type="button">
+						class="button imagify-button-mini imagify-button-primary imagify-add-custom-folder"
+						type="button">
 					<span class="dashicons dashicons-plus"></span>
 					<span class="button-text"><?php _e( 'Add folders', 'imagify' ); ?></span>
 				</button>
-				<img class="imagify-loader" aria-hidden="true" alt="<?php esc_attr_e( 'Loading...', 'imagify' ); ?>"
-				     src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'loader-balls.svg' ); ?>" width="38"
-				     height="24"/>
+				<img class="imagify-loader" aria-hidden="true" alt="<?php esc_attr_e( 'Loading...', 'imagify' ); ?>" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'loader-balls.svg' ); ?>" width="38" height="24"/>
 			</span>
 				</p>
 
