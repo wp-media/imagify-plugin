@@ -12,9 +12,9 @@
 	"devDependencies": {
 		"autoprefixer": "^7.0.1",
 		"grunt": "^1.0.1",
-		"grunt-contrib-cssmin": "^1.0.1",
-		"grunt-contrib-uglify": "^2.1.0",
+		"grunt-contrib-cssmin": "^4.0.0",
+		"grunt-contrib-uglify": "^5.0.1",
 		"grunt-eslint": "^20.0.0",
-		"grunt-postcss": "^0.8.0"
+		"grunt-postcss": "^0.9.0"
 	}
 }

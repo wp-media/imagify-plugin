@@ -152,25 +152,11 @@
 				quo = datas.quota,           // 1000 (MB) - 5000 images (monthly/onetime)
 				cos = datas.cost,            // 3.49 (onetime)
 				name = -1 === quo ? 'Unlimited' : (quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB'),
-				pcs = 'monthly' === type ? { monthly: mon, yearly: Math.round(ann / 12 * 100) / 100 } : cos,
+				pcs = 'monthly' === type ? {monthly: mon, yearly: Math.round(ann / 12 * 100) / 100} : cos,
 				pcsd = pcs, // Used if discount is active.
 				percent, $datas_c, datas_content, appliesTo = [];
 
-			if (promo.applies_to instanceof Array) {
-				var plan_list = [];
-
-				for (var plan_infos = 0; plan_infos < promo.applies_to.length; plan_infos++) {
-					plan_list.push(promo.applies_to[plan_infos].plan_name);
-				}
-
-				plan_list.forEach(function (item) {
-					if (!appliesTo.includes(item)) {
-						appliesTo.push(item);
-					}
-				});
-			} else {
-				appliesTo = [promo.applies_to];
-			}
+			appliesTo = imagifyModal.getPromoAppliesTo(promo);
 
 			// Change pricing value only if discount in percentage is active and if offer is a monthly and not a onetime.
 			if (
@@ -197,17 +183,15 @@
 			$offer.find('.imagify-number-block').html(imagifyModal.getHtmlPrice(pcs, 'monthly'));
 
 			// discount prices
+			$offer.find('.imagify-price-block').prev('.imagify-price-discount').remove();
 			if (
 				promo.is_active
 				&& 'percentage' === promo.coupon_type
 				&& 'monthly' === type
 				&& (appliesTo.includes(lab) || 'all' === appliesTo[0])
 			) {
-
-				$offer.find('.imagify-price-block').prev('.imagify-price-discount').remove();
 				$offer.find('.imagify-price-block').before(imagifyModal.getHtmlDiscountPrice(pcsd, 'monthly'));
 			}
-
 			// Nb images.
 			$offer.find('.imagify-approx-nb').text(quo * 5);
 
@@ -220,9 +204,9 @@
 			$datas_c = $offer.find('.imagify-payment-btn-select-plan').length ? $offer.find('.imagify-payment-btn-select-plan') : $offer;
 
 			if ('monthly' === type) {
-				datas_content = '{"' + lab + '":{"id":' + id + ',"name":"' + name + '","data":' + quo + ',"dataf":"' + name + '","imgs":' + (quo * 5) + ',"prices":{"monthly":' + pcs.monthly + ',"yearly":' + pcs.yearly + ',"add":' + add + '}}}';
+				datas_content = '{"' + lab + '":{"id":' + id + ',"name":"' + name + '","label":"' + lab + '","data":' + quo + ',"dataf":"' + name + '","imgs":' + (quo * 5) + ',"prices":{"monthly":' + pcs.monthly + ',"yearly":' + pcs.yearly + ',"add":' + add + '}}}';
 			} else {
-				datas_content = '{"ot' + lab + '":{"id":' + id + ',"name":"' + name + '","data":' + quo + ',"dataf":"' + name + '","imgs":' + (quo * 5) + ',"price":' + pcs + '}}';
+				datas_content = '{"ot' + lab + '":{"id":' + id + ',"name":"' + name + '","label":"' + lab + '","data":' + quo + ',"dataf":"' + name + '","imgs":' + (quo * 5) + ',"price":' + pcs + '}}';
 			}
 
 			$datas_c.attr('data-offer', datas_content);
@@ -275,19 +259,22 @@
 			var code = $('#imagify-coupon-code').val(),
 				$cptext, $label, $section, nonce;
 
-			if ('' === code) {
-				return;
-			}
-
 			$cptext = $('.imagify-coupon-text');
 			$label = $cptext.find('label');
 			$section = $('.imagify-coupon-section');
+
+			if ('' === code) {
+				$section.removeClass('validated').removeClass('invalid');
+				$label.html(imagifyPricingModal.labels.defaultCouponLabel);
+				return;
+			}
+
 			nonce = $('#imagify-get-pricing-modal').data('nonce');
 
 			$cptext.addClass('checking');
 
 			// Get the true prices.
-			$.post(ajaxurl, { action: 'imagify_check_coupon', coupon: code, imagifynonce: nonce }, function (response) {
+			$.post(ajaxurl, {action: 'imagify_check_coupon', coupon: code, imagifynonce: nonce}, function (response) {
 				var coupon_value;
 
 				$cptext.removeClass('checking');
@@ -330,6 +317,7 @@
 				};
 
 			imagifyModal.$modal.find('.imagify-modal-loader').hide().show();
+			imagifyModal.$modal.addClass('imagify-modal-loading');
 
 			/**
 			 * TODO: change the way to waterfall requests.
@@ -441,6 +429,7 @@
 
 							// Show the modal content.
 							imagifyModal.$modal.find('.imagify-modal-loader').fadeOut(300);
+							imagifyModal.$modal.removeClass('imagify-modal-loading');
 							return;
 						}
 
@@ -456,7 +445,7 @@
 									plan_list.push(promo_datas.applies_to[plan_infos].plan_name);
 								}
 
-								plan_list.forEach(function(item) {
+								plan_list.forEach(function (item) {
 									if (! plan_names.includes(item)) {
 										plan_names.push(item);
 									}
@@ -472,8 +461,6 @@
 							promo = promo_datas.coupon_value;
 							discount = 'percentage' === promo_datas.coupon_type ? promo + '%' : '$' + promo;
 
-							// Fill coupon code.
-							$('#imagify-coupon-code').val(promo_datas.label).attr('readonly', true);
 
 							// Show banners.
 							$banners.addClass('active').attr('aria-hidden', 'false');
@@ -483,8 +470,6 @@
 							$banners.find('.imagify-promotion-plan-name').text(plan_names);
 							$banners.find('.imagify-promotion-date').text(date_end);
 
-							// Auto validate coupon.
-							imagifyModal.checkCoupon();
 						}
 
 						/**
@@ -521,7 +506,6 @@
 										// Add this offer as pre-selected item in pre-checkout view.
 										$offer.addClass('imagify-offer-selected').find('.imagify-checkbox').prop('checked', true);
 									}
-
 									// Populate the Pre-checkout view depending on user_cons.
 									imagifyModal.populateOffer($offer, value, 'monthly');
 								}
@@ -568,7 +552,15 @@
 								ot_html += $tpl[0].outerHTML;
 							});
 						}
-
+						if (promo_datas){
+							var appliseTo = imagifyModal.getPromoAppliesTo(promo_datas);
+							if ( appliseTo.includes(suggested.mo.plan_label) || appliseTo.includes(suggested.ot.plan_label) ){
+								$('#imagify-coupon-code').val(promo_datas.label);
+							}
+							if (promo_datas.is_active) {
+								imagifyModal.checkCoupon();
+							}
+						}
 						// Fill pricing tables.
 						if ($mo_tpl.parent().find('.imagify-offer-line')) {
 							$mo_tpl.parent().find('.imagify-offer-line').remove();
@@ -584,6 +576,7 @@
 
 						// Show the content.
 						imagifyModal.$modal.find('.imagify-modal-loader').fadeOut(300);
+						imagifyModal.$modal.removeClass('imagify-modal-loading');
 
 					}); // Third AJAX request to get discount information.
 
@@ -629,6 +622,14 @@
 					ot: false
 				};
 
+			if (0 > offers.ot.length){
+				var last_ot_plan_id = offers.ot[offers.ot.length - 1].id;
+				var last_ot_plan_label = offers.ot[offers.ot.length - 1].label;
+			}
+			if (0 > offers.ot.length){
+				var last_mo_plan_id = offers.mo[offers.mo.length - 1].id;
+				var last_mo_plan_label = offers.mo[offers.mo.length - 1].label;
+			}
 			/**
 			 * Paid monthly plan.
 			 */
@@ -636,17 +637,21 @@
 				// if this is the unlimited plan, save it; we may need to come back to it.
 				if (0 > value.quota) {
 					unlimitedPlan = {
-						index:     index,
-						selected: 1
+						index:      index,
+						selected:   1,
+						plan_id:    value.id,
+						plan_label: value.label
 					};
 				}
 
 				// This is the biggest plan we've seen so far. Save it in case we need it later.
 				if (value.quota > biggestPlan.quota) {
 					biggestPlan = {
-						index:     index,
-						selected: 1,
-						quota:     value.quota
+						index:      index,
+						selected:   1,
+						quota:      value.quota,
+						plan_id:    value.id,
+						plan_label: value.label
 					};
 				}
 
@@ -666,8 +671,10 @@
 					if (('undefined' === typeof plan) || (plan.quota > value.quota)) {
 						plan = value;
 						suggested.mo = {
-							index:    index,
-							selected: (freeQuota > consumption.month) && (freeQuota > consumption.total) ? 0 : 1
+							index:      index,
+							selected:   (freeQuota > consumption.month) && (freeQuota > consumption.total) ? 0 : 1,
+							plan_id:    value.id,
+							plan_label: value.label
 						};
 					}
 
@@ -706,16 +713,20 @@
 
 					// Suggested monthly plan.
 					suggested.ot = {
-						index:    index,
-						selected: 0
+						index:      index,
+						selected:   0,
+						plan_id:    value.id,
+						plan_label: value.label
 					};
 					return false;
 				});
 
 				if (false === suggested.ot) {
 					suggested.ot = {
-						index:    offers.ot.length - 1,
-						selected: 0
+						index:      offers.ot.length - 1,
+						selected:   0,
+						plan_id:    last_ot_plan_id,
+						plan_label: last_ot_plan_label
 					};
 				}
 
@@ -734,8 +745,10 @@
 
 				// Suggested one-time plan.
 				suggested.ot = {
-					index:    index,
-					selected: 1
+					index:      index,
+					selected:   1,
+					plan_id:    value.id,
+					plan_label: value.label
 				};
 				return false;
 			});
@@ -750,8 +763,10 @@
 			 * In that case we fallback to the biggest available, and we need to increase the monthly plan.
 			 */
 			suggested.ot = {
-				index:    offers.ot.length - 1,
-				selected: 1
+				index:      offers.ot.length - 1,
+				selected:   1,
+				plan_id:    last_ot_plan_id,
+				plan_label: last_ot_plan_label
 			};
 
 			// Reset monthly plan.
@@ -769,8 +784,10 @@
 
 				// Suggested monthly plan.
 				suggested.mo = {
-					index:    index,
-					selected: 1
+					index:      index,
+					selected:   1,
+					plan_id:    value.id,
+					plan_label: value.label
 				};
 				return false;
 			});
@@ -781,8 +798,10 @@
 				 * In that case we fallback to the biggest available.
 				 */
 				suggested.mo = {
-					index:    offers.mo.length - 1,
-					selected: 1
+					index:      offers.mo.length - 1,
+					selected:   1,
+					plan_id:    last_mo_plan_id,
+					plan_label: last_mo_plan_label
 				};
 			}
 
@@ -871,6 +890,7 @@
 		},
 
 		switchToView: function ($view, data) {
+
 			var viewId = $view.attr('id'),
 				$modalContent = imagifyModal.$modal.children('.imagify-modal-content');
 
@@ -1023,6 +1043,25 @@
 					imagifyModal.paymentSuccess();
 					break;
 			}
+		},
+		getPromoAppliesTo: function(promo){
+			var appliesTo = [];
+			if (promo.applies_to instanceof Array) {
+				var plan_list = [];
+
+				for (var plan_infos = 0; plan_infos < promo.applies_to.length; plan_infos++) {
+					plan_list.push(promo.applies_to[plan_infos].plan_name);
+				}
+
+				plan_list.forEach(function (item) {
+					if (! appliesTo.includes(item)) {
+						appliesTo.push(item);
+					}
+				});
+			} else {
+				appliesTo = [promo.applies_to];
+			}
+			return appliesTo;
 		}
 	};
 
@@ -1060,6 +1099,12 @@
 	 */
 	$(d).on('modalClosed.imagify', '.imagify-payment-modal', function () {
 		// Reset viewing class & aria-labelledby.
+		$('#imagify-coupon-code').val('');
+
+		/*$('.imagify-pre-checkout-offers .imagify-offer-onetime .imagify-offer-content').html('');
+		$('.imagify-pre-checkout-offers .imagify-offer-monthly .imagify-offer-content').html('');*/
+
+
 		$(this).find('.imagify-modal-content').removeClass('imagify-success-viewing imagify-iframe-viewing');
 
 		// Reset first view after fadeout ~= 300 ms.
@@ -1067,6 +1112,11 @@
 			$('.imagify-modal-views').hide();
 			$('#imagify-pre-checkout-view').show();
 		}, 300);
+
+		//delay scrolltop top to avoid flickering
+		setTimeout(function () {
+			$('.imagify-payment-modal').find('.imagify-modal-content').scrollTop(0);
+		}, 400);
 	});
 
 	/**
@@ -1120,7 +1170,7 @@
 
 		e.preventDefault();
 
-		imagifyModal.switchToView(imagifyModal.$plansView, { tab: tab });
+		imagifyModal.switchToView(imagifyModal.$plansView, {tab: tab});
 	});
 
 	/**
@@ -1142,7 +1192,8 @@
 			monthly_txt = is_onetime ? '' : '<span class="imagify-price-by">' + $offer_line.find('.imagify-price-by').text() + '</span>',
 			discount = $offer_line.find('.imagify-price-discount').html(),
 			imgs = $offer_line.find('.imagify-approx-nb').text(),
-			offer_size = $offer_line.find('.imagify-offer-size').text();
+			offer_size = $offer_line.find('.imagify-offer-size').text(),
+			$coupon_input = $('#imagify-coupon-code');
 
 		e.preventDefault();
 
@@ -1153,7 +1204,15 @@
 		$target_line.find('.imagify-number-block').html(price + monthly_txt);
 
 		// Change discount.
-		$target_line.find('.imagify-price-discount').html(discount);
+		if (discount) {
+			if ($target_line.find('.imagify-price-discount').length <= 0) {
+				$target_line.find('.imagify-col-price').prepend('<span class="imagify-price-discount"></span>');
+			}
+			$target_line.find('.imagify-price-discount').html(discount);
+			$target_line.find('.imagify-price-discount').show();
+		} else {
+			$target_line.find('.imagify-price-discount').hide();
+		}
 
 		// Change approx images nb.
 		$target_line.find('.imagify-approx-nb').text(imgs);
@@ -1175,6 +1234,18 @@
 			}
 			$target_line.find('.imagify-inline-options').find('input:radio:checked').trigger('change.imagify');
 		}
+
+		$coupon_input = $('#imagify-coupon-code');
+		$coupon_input.val('');
+
+		if ( w.imagify_discount_datas ){
+			var appliseTo = imagifyModal.getPromoAppliesTo(w.imagify_discount_datas);
+			if ( appliseTo.includes(datas[Object.keys(datas)[0]].label) ){
+				$coupon_input.val(w.imagify_discount_datas.label);
+			}
+		}
+
+		imagifyModal.checkCoupon();
 
 		// Update price information in button.
 		imagifyModal.populatePayBtn();
