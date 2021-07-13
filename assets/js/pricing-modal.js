@@ -158,6 +158,22 @@
 
 			appliesTo = imagifyModal.getPromoAppliesTo(promo);
 
+			if (promo.applies_to instanceof Array) {
+				var plan_list = [];
+
+				for (var plan_infos = 0; plan_infos < promo.applies_to.length; plan_infos++) {
+					plan_list.push(promo.applies_to[plan_infos].plan_name);
+				}
+
+				plan_list.forEach(function (item) {
+					if (! appliesTo.includes(item)) {
+						appliesTo.push(item);
+					}
+				});
+			} else {
+				appliesTo = [promo.applies_to];
+			}
+
 			// Change pricing value only if discount in percentage is active and if offer is a monthly and not a onetime.
 			if (
 				promo.is_active
@@ -249,9 +265,9 @@
 			//$( '.imagify-global-amount' ).text( price ); // Not used.
 
 			if ('0.00' === price || 0 === price) {
-				$('#imagify-modal-checkout-btn').attr('disabled', 'disabled').addClass('imagify-button-disabled');
+				$('#imagify-modal-checkout-btn').prop('disabled', true).addClass('imagify-button-disabled');
 			} else {
-				$('#imagify-modal-checkout-btn').removeAttr('disabled').removeClass('imagify-button-disabled');
+				$('#imagify-modal-checkout-btn').prop('disabled', false).removeClass('imagify-button-disabled');
 			}
 		},
 
@@ -1028,7 +1044,7 @@
 		checkPluginMessage: function (e) {
 			var origin = e.origin || e.originalEvent.origin; // eslint-disable-line no-shadow
 
-			if ('https://app.imagify.io' !== origin && 'http://dapp.imagify.io' !== origin) {
+			if ( imagifyPricingModal.imagify_app_domain !== origin ) {
 				return;
 			}
 
