@@ -18,7 +18,7 @@ jQuery.extend( window.imagify, {
 		jQuery( target ).css( 'display', 'flex' ).hide().fadeIn( 400 ).attr( {
 			'aria-hidden': 'false',
 			'tabindex':    '0'
-		} ).focus().removeAttr( 'tabindex' ).addClass( 'modal-is-open' );
+		} ).trigger('focus').removeAttr( 'tabindex' ).addClass( 'modal-is-open' );
 
 		jQuery( 'body' ).addClass( 'imagify-modal-is-open' );
 	},
@@ -84,7 +84,7 @@ jQuery.extend( window.imagify, {
 			var $modal = $( this ).closest( '.imagify-modal' );
 
 			if ( $modal.attr( 'aria-hidden' ) === 'false' ) {
-				$modal.attr( 'tabindex', '0' ).focus().removeAttr( 'tabindex' );
+				$modal.attr( 'tabindex', '0' ).trigger('focus').removeAttr( 'tabindex' );
 			}
 		} )
 		// On click on dropped layer of modal, close modal.
