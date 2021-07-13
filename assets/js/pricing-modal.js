@@ -569,8 +569,8 @@
 							});
 						}
 						if (promo_datas){
-							var appliseTo = imagifyModal.getPromoAppliesTo(promo_datas);
-							if ( appliseTo.includes(suggested.mo.plan_label) || appliseTo.includes(suggested.ot.plan_label) ){
+							var applies_to = imagifyModal.getPromoAppliesTo(promo_datas);
+							if ( applies_to.includes(suggested.mo.plan_label) || applies_to.includes(suggested.ot.plan_label) ){
 								$('#imagify-coupon-code').val(promo_datas.label);
 							}
 							if (promo_datas.is_active) {
@@ -1251,8 +1251,8 @@
 		$coupon_input.val('');
 
 		if ( w.imagify_discount_datas ){
-			var appliseTo = imagifyModal.getPromoAppliesTo(w.imagify_discount_datas);
-			if ( appliseTo.includes(datas[Object.keys(datas)[0]].label) ){
+			var applies_to = imagifyModal.getPromoAppliesTo(w.imagify_discount_datas);
+			if ( applies_to.includes(datas[Object.keys(datas)[0]].label) ){
 				$coupon_input.val(w.imagify_discount_datas.label);
 			}
 		}
