@@ -113,8 +113,8 @@ function imagify_pass_requirements() {
 			'plugin_name'    => 'Imagify',
 			'plugin_file'    => IMAGIFY_FILE,
 			'plugin_version' => IMAGIFY_VERSION,
-			'wp_version'     => '4.0',
-			'php_version'    => '5.4',
+			'wp_version'     => '5.3',
+			'php_version'    => '7.0',
 		)
 	);
 
