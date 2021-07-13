@@ -1008,7 +1008,7 @@
 		checkPluginMessage: function (e) {
 			var origin = e.origin || e.originalEvent.origin; // eslint-disable-line no-shadow
 
-			if ('https://app.imagify.io' !== origin && 'http://dapp.imagify.io' !== origin) {
+			if ( imagifyPricingModal.imagify_app_domain !== origin ) {
 				return;
 			}
 
