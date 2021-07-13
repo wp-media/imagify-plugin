@@ -279,7 +279,8 @@ body.imagify-modal-is-open {
 }
 
 /* Buttons */
-.imagify-settings .button,
+.imagify-main-content .button,
+.imagify-settings-section .button,
 .imagify-welcome .button,
 .imagify-notice .button,
 .imagify-button.imagify-button,
