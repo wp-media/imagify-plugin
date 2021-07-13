@@ -10,21 +10,7 @@ $overquota_url = imagify_get_external_url( 'subscription', array(
 <div class="imagify-swal-subtitle"><?php esc_html_e( 'Upgrade your account to continue optimizing your images.', 'imagify' ); ?></div>
 <div class="imagify-swal-content imagify-txt-start">
 	<?php if ( Imagify_Requirements::is_api_key_valid() ) { ?>
-		<strong><?php esc_html_e( 'To continue optimizing your images, you can:', 'imagify' ); ?></strong>
-		<ul class="imagify-count-list">
-			<li>
-				<?php
-				/* translators: 1 is the beginning of strong tag 2 is the closing tag. */
-				printf( esc_html__( '%1$sUpgrade your subscription%2$s to optimize more images per month', 'imagify' ), '<strong>', '</strong>&nbsp;' );
-				?>
-			</li>
-			<li>
-				<?php
-				/* translators: 1 is the beginning of strong tag 2 is the closing tag. */
-				printf( esc_html__( '%1$sBuy a One Time plan%2$s to optimize the remaining images only', 'imagify' ), '<strong>', '</strong>&nbsp;' );
-				?>
-			</li>
-		</ul>
+		<strong><?php esc_html_e( 'To continue optimizing your images, you can upgrade your subscription.', 'imagify' ); ?></strong>
 	<?php } ?>
 </div>
 <div class="imagify-swal-buttonswrapper">
