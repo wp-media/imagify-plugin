@@ -31,7 +31,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 		update_imagify_option( 'api_key', $this->invalidApiKey );
 
 		// Verify the static $user property is null.
-		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
+		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
 		Functions\expect( 'imagify_round_half_five' )->never();
 
@@ -42,7 +42,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
 		// Verify the static $user property is null.
-		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
+		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
 		Imagify_Data::get_instance()->set( 'previous_quota_percent', 100.0 ); // Previous quota was 100%.
 
