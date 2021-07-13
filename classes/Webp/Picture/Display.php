@@ -136,7 +136,8 @@ class Display {
 	 * @return string
 	 */
 	public function process_content( $content ) {
-		$images = $this->get_images( $content );
+		$html_no_picture_tags = $this->remove_picture_tags( $content );
+		$images = $this->get_images( $html_no_picture_tags );
 
 		if ( ! $images ) {
 			return $content;
@@ -147,7 +148,28 @@ class Display {
 			$content = str_replace( $image['tag'], $tag, $content );
 		}
 
-		return $content;
+		return $content;    }
+
+	/**
+	 * Remove pre-existing <picture> tags.
+	 *
+	 * We shouldn't replace images already nested inside picture tags
+	 * that are already in the page.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @param string $html Content of the page.
+	 *
+	 * @return string HTML content without pre-existing <picture> tags.
+	 */
+	private function remove_picture_tags( $html ) {
+		$replace = preg_replace( '#<picture[^>]*>.*?<\/picture\s*>#mis', '', $html );
+
+		if ( null === $replace ) {
+			return $html;
+		}
+
+		return $replace;
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
