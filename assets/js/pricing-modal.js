@@ -154,9 +154,9 @@
 				name = -1 === quo ? 'Unlimited' : (quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB'),
 				pcs = 'monthly' === type ? {monthly: mon, yearly: Math.round(ann / 12 * 100) / 100} : cos,
 				pcsd = pcs, // Used if discount is active.
-				percent, $datas_c, datas_content, appliesTo = [];
+				percent, $datas_c, datas_content, applies_to = [];
 
-			appliesTo = imagifyModal.getPromoAppliesTo(promo);
+			applies_to = imagifyModal.getPromoAppliesTo(promo);
 
 			if (promo.applies_to instanceof Array) {
 				var plan_list = [];
@@ -166,12 +166,12 @@
 				}
 
 				plan_list.forEach(function (item) {
-					if (! appliesTo.includes(item)) {
-						appliesTo.push(item);
+					if (! applies_to.includes(item)) {
+						applies_to.push(item);
 					}
 				});
 			} else {
-				appliesTo = [promo.applies_to];
+				applies_to = [promo.applies_to];
 			}
 
 			// Change pricing value only if discount in percentage is active and if offer is a monthly and not a onetime.
@@ -179,7 +179,7 @@
 				promo.is_active
 				&& 'percentage' === promo.coupon_type
 				&& 'monthly' === type
-				&& (appliesTo.includes(lab) || 'all' === appliesTo[0])
+				&& (applies_to.includes(lab) || 'all' === applies_to[0])
 			) {
 				percent = (100 - promo.coupon_value) / 100;
 				pcs = 'monthly' === type ? {
@@ -204,7 +204,7 @@
 				promo.is_active
 				&& 'percentage' === promo.coupon_type
 				&& 'monthly' === type
-				&& (appliesTo.includes(lab) || 'all' === appliesTo[0])
+				&& (applies_to.includes(lab) || 'all' === applies_to[0])
 			) {
 				$offer.find('.imagify-price-block').before(imagifyModal.getHtmlDiscountPrice(pcsd, 'monthly'));
 			}
@@ -1061,7 +1061,7 @@
 			}
 		},
 		getPromoAppliesTo: function(promo){
-			var appliesTo = [];
+			var applies_to = [];
 			if (promo.applies_to instanceof Array) {
 				var plan_list = [];
 
@@ -1070,14 +1070,14 @@
 				}
 
 				plan_list.forEach(function (item) {
-					if (! appliesTo.includes(item)) {
-						appliesTo.push(item);
+					if (! applies_to.includes(item)) {
+						applies_to.push(item);
 					}
 				});
 			} else {
-				appliesTo = [promo.applies_to];
+				applies_to = [promo.applies_to];
 			}
-			return appliesTo;
+			return applies_to;
 		}
 	};
 
@@ -1116,10 +1116,6 @@
 	$(d).on('modalClosed.imagify', '.imagify-payment-modal', function () {
 		// Reset viewing class & aria-labelledby.
 		$('#imagify-coupon-code').val('');
-
-		/*$('.imagify-pre-checkout-offers .imagify-offer-onetime .imagify-offer-content').html('');
-		$('.imagify-pre-checkout-offers .imagify-offer-monthly .imagify-offer-content').html('');*/
-
 
 		$(this).find('.imagify-modal-content').removeClass('imagify-success-viewing imagify-iframe-viewing');
 
