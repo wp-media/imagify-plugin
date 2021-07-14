@@ -265,11 +265,11 @@ window.imagify = window.imagify || {};
 			selected = [],
 			$folders;
 
-		if ( $button.attr( 'disabled' ) ) {
+		if ( $button.prop('disabled') ) {
 			return;
 		}
 
-		$button.attr( 'disabled', 'disabled' ).next( 'img' ).attr( 'aria-hidden', 'false' );
+		$button.prop( 'disabled', true ).next( 'img' ).attr( 'aria-hidden', 'false' );
 
 		$folders = $( '#imagify-custom-folders-selected' );
 
@@ -324,7 +324,7 @@ window.imagify = window.imagify || {};
 				} );
 			} )
 			.always( function(){
-				$button.removeAttr( 'disabled' ).next( 'img' ).attr( 'aria-hidden', 'true' );
+				$button.prop( 'disabled', false ).next( 'img' ).attr( 'aria-hidden', 'true' );
 			} );
 	} );
 
@@ -334,11 +334,11 @@ window.imagify = window.imagify || {};
 			$tree    = $button.nextAll( '.imagify-folders-sub-tree' ),
 			selected = [];
 
-		if ( $button.attr( 'disabled' ) || $button.siblings( ':checkbox' ).is( ':checked' ) ) {
+		if ( $button.prop('disabled') || $button.siblings( ':checkbox' ).is( ':checked' ) ) {
 			return;
 		}
 
-		$button.attr( 'disabled', 'disabled' ).addClass( 'imagify-loading' );
+		$button.prop( 'disabled', true ).addClass( 'imagify-loading' );
 
 		if ( $tree.length ) {
 			if ( $button.hasClass( 'imagify-is-open' ) ) {
@@ -348,7 +348,7 @@ window.imagify = window.imagify || {};
 				$tree.removeClass( 'hidden' );
 				$button.addClass( 'imagify-is-open' );
 			}
-			$button.removeAttr( 'disabled' ).removeClass( 'imagify-loading' );
+			$button.prop( 'disabled', false ).removeClass( 'imagify-loading' );
 			return;
 		}
 
@@ -383,7 +383,7 @@ window.imagify = window.imagify || {};
 				} );
 			} )
 			.always( function(){
-				$button.removeAttr( 'disabled' ).removeClass( 'imagify-loading' );
+				$button.prop( 'disabled', false ).removeClass( 'imagify-loading' );
 			} );
 	} );
 
@@ -545,9 +545,9 @@ window.imagify = window.imagify || {};
 		 */
 		toggleButton: function ( e ) {
 			if ( ! this.checked ) {
-				e.data.imagifyOptionsBulk.$button.attr( 'disabled', 'disabled' );
+				e.data.imagifyOptionsBulk.$button.prop( 'disabled', true );
 			} else {
-				e.data.imagifyOptionsBulk.$button.removeAttr( 'disabled' );
+				e.data.imagifyOptionsBulk.$button.prop( 'disabled', false );
 			}
 		},
 
@@ -577,7 +577,7 @@ window.imagify = window.imagify || {};
 			e.data.imagifyOptionsBulk.totalMedia       = 0;
 
 			// Disable the button.
-			e.data.imagifyOptionsBulk.$button.attr( 'disabled', 'disabled' ).find( '.dashicons' ).addClass( 'rotate' );
+			e.data.imagifyOptionsBulk.$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
 
 			// Add a message to be displayed when the user wants to quit the page.
 			$( w ).on( 'beforeunload.imagify', e.data.imagifyOptionsBulk.getConfirmMessage );
@@ -956,7 +956,7 @@ window.imagify = window.imagify || {};
 			this.$progressText.text( '0' );
 
 			// Enable the button.
-			this.$button.removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
+			this.$button.prop( 'disabled', false ).find( '.dashicons' ).removeClass( 'rotate' );
 		},
 
 		// Tools ===================================================================================
