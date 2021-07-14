@@ -288,10 +288,20 @@
 					$label.text(imagifyPricingModal.labels.errorCouponAPI);
 				} else if (response.data.success) {
 					coupon_value = 'percentage' === response.data.coupon_type ? response.data.value + '%' : '$' + response.data.value;
-					$section.removeClass('invalid').addClass('validated');
-					$label.html(imagifyPricingModal.labels.successCouponAPI);
-					$label.find('.imagify-coupon-offer').text(coupon_value);
-					$label.find('.imagify-coupon-word').text(code);
+					var $selected_plan_line = $('.imagify-pre-checkout-view .imagify-pre-checkout-offers .imagify-offer-line');
+					var	offer_data = JSON.parse($selected_plan_line.attr('data-offer'));
+					var applies_to = imagifyModal.getPromoAppliesTo(response.data);
+					if ( applies_to.includes(offer_data[Object.keys(offer_data)[0]].label ) || "all" === applies_to[0] ){
+						$section.removeClass('invalid').addClass('validated');
+						$label.html(imagifyPricingModal.labels.successCouponAPI);
+						$label.find('.imagify-coupon-offer').text(coupon_value);
+						$label.find('.imagify-coupon-word').text(code);
+					} else {
+						$section.removeClass('validated').addClass('invalid');
+						$label.html(imagifyPricingModal.labels.errorCouponPlan);
+						$('#imagify-coupon-code').val('');
+
+					}
 				} else {
 					$section.removeClass('validated').addClass('invalid');
 					$label.text(response.data.detail);
@@ -1293,7 +1303,6 @@
 		imagifyModal.switchToView(imagifyModal.$paymentView);
 
 		checkout_datas.period = imagifyModal.getPeriod();
-
 		imagifyModal.iframeSetSrc(checkout_datas);
 	});
 

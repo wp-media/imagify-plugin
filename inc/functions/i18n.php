@@ -138,6 +138,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'successCouponAPI' => sprintf( _x( '%1$s off with %2$s', 'coupon validated', 'imagify' ), '<span class="imagify-coupon-offer"></span>', '<strong class="imagify-coupon-word"></strong>' ),
 					'errorPriceAPI'    => __( 'Something went wrong with getting our updated offers. Please retry later.', 'imagify' ),
 					'defaultCouponLabel'    => __( 'If you have a <strong>coupon code</strong><br> use it here:', 'imagify' ),
+					'errorCouponPlan'    => __( 'This coupon is not valid with this plan.', 'imagify' ),
 				],
 			];
 
