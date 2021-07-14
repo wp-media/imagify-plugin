@@ -1332,4 +1332,9 @@ p.imagify-modal-sidebar-title.imagify-modal-sidebar-title {
 		top: 5px;
 		right: 5px;
 	}
+	.imagify-col-checkbox .imagify-checkbox.imagify-checkbox:not(:checked) + label:after,
+	.imagify-col-checkbox .imagify-checkbox.imagify-checkbox:checked + label:after{
+		top: -1px;
+		left: 10px;
+	}
 }
