@@ -151,6 +151,7 @@ p.imagify-api-key-invite-title {
 	flex-basis: 40%;
 	flex-shrink: 1;
 	padding-left: 20px;
+	margin-top: 20px;
 	color: #626E7B;
 	box-sizing: border-box;
 }
@@ -928,5 +929,10 @@ input:checked + label .imagify-fake-checkbox:after,
 	}
 	.imagify-no-api-key .imagify-api-line input[type="text"]{
 		margin-left: 0;
+	}
+}
+@media (max-width: 513px) {
+	.imagify-setting-optim-level .imagify-visual-comparison-text{
+		margin-top: 20px;
 	}
 }
