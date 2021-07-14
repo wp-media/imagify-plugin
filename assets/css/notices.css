@@ -355,4 +355,12 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	.imagify-flex-notice-content .imagify-notice-content .imagify-notice-quota {
 		width: 100%;
 	}
+
+	.imagify-notice-quota-btn-container{
+		text-align: center;
+		width: 100%;
+	}
+	.imagify-notice-quota-btn-container .imagify-button{
+		display: inline-block;
+	}
 }
