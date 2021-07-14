@@ -158,27 +158,13 @@
 
 			applies_to = imagifyModal.getPromoAppliesTo(promo);
 
-			if (promo.applies_to instanceof Array) {
-				var plan_list = [];
-
-				for (var plan_infos = 0; plan_infos < promo.applies_to.length; plan_infos++) {
-					plan_list.push(promo.applies_to[plan_infos].plan_name);
-				}
-
-				plan_list.forEach(function (item) {
-					if (! applies_to.includes(item)) {
-						applies_to.push(item);
-					}
-				});
-			} else {
-				applies_to = [promo.applies_to];
-			}
 
 			// Change pricing value only if discount in percentage is active and if offer is a monthly and not a onetime.
 			if (
 				promo.is_active
 				&& 'percentage' === promo.coupon_type
 				&& 'monthly' === type
+				&& (0 < mon)
 				&& (applies_to.includes(lab) || 'all' === applies_to[0])
 			) {
 				percent = (100 - promo.coupon_value) / 100;
@@ -204,6 +190,7 @@
 				promo.is_active
 				&& 'percentage' === promo.coupon_type
 				&& 'monthly' === type
+				&& (0 < mon)
 				&& (applies_to.includes(lab) || 'all' === applies_to[0])
 			) {
 				$offer.find('.imagify-price-block').before(imagifyModal.getHtmlDiscountPrice(pcsd, 'monthly'));
@@ -570,7 +557,7 @@
 						}
 						if (promo_datas){
 							var applies_to = imagifyModal.getPromoAppliesTo(promo_datas);
-							if ( applies_to.includes(suggested.mo.plan_label) || applies_to.includes(suggested.ot.plan_label) ){
+							if ( applies_to.includes(suggested.mo.plan_label) || applies_to.includes(suggested.ot.plan_label) || 'all' === applies_to[0]){
 								$('#imagify-coupon-code').val(promo_datas.label);
 							}
 							if (promo_datas.is_active) {
@@ -1252,7 +1239,7 @@
 
 		if ( w.imagify_discount_datas ){
 			var applies_to = imagifyModal.getPromoAppliesTo(w.imagify_discount_datas);
-			if ( applies_to.includes(datas[Object.keys(datas)[0]].label) ){
+			if ( applies_to.includes(datas[Object.keys(datas)[0]].label ) || "all" === applies_to[0] ){
 				$coupon_input.val(w.imagify_discount_datas.label);
 			}
 		}
