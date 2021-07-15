@@ -19,7 +19,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 	<div class="imagify-col imagify-main">
 
 		<?php $this->print_template( 'part-settings-header' ); ?>
-
+<div class="imagify-main-content">
 		<form action="<?php echo esc_url( $settings->get_form_action() ); ?>" id="imagify-settings" method="post">
 
 			<div class="imagify-settings-main-content<?php echo Imagify_Requirements::is_api_key_valid() ? '' : ' imagify-no-api-key'; ?>">
@@ -211,6 +211,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 				?>
 			</div>
 		</form>
+	</div>
 	</div>
 
 	<?php

@@ -131,6 +131,7 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'pricing-modal':
 			$translations = [
+				'imagify_app_domain'  => IMAGIFY_APP_DOMAIN,
 				'labels' => [
 					'errorCouponAPI'   => __( 'Error with checking this coupon.', 'imagify' ),
 					/* translators: 1 is a percentage, 2 is a coupon code. */

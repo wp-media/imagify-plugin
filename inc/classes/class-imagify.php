@@ -12,7 +12,7 @@ class Imagify {
 	 *
 	 * @var string
 	 */
-	const API_ENDPOINT = 'https://app.imagify.io/api/';
+	const API_ENDPOINT = IMAGIFY_APP_API_URL;
 
 	/**
 	 * The Imagify API key.

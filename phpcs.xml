@@ -103,10 +103,6 @@
 		</properties>
 	</rule>
 
-	<rule ref="WordPress.PHP.DevelopmentFunctions.error_log_trigger_error">
-		<exclude-pattern>inc/functions/compat.php</exclude-pattern>
-	</rule>
-
 	<rule ref="WordPress.Security.NonceVerification">
 		<properties>
 			<property name="customNonceVerificationFunctions" value="imagify_check_nonce" type="array"/>
@@ -117,10 +113,6 @@
 		<properties>
 			<property name="customUnslashingSanitizingFunctions" value="imagify_sanitize_context,empty,isset,is_numeric" type="array"/>
 		</properties>
-	</rule>
-
-	<rule ref="WordPress.WP.AlternativeFunctions.parse_url_parse_url">
-		<exclude-pattern>inc/functions/compat.php</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.WP.GlobalVariablesOverride.OverrideProhibited">

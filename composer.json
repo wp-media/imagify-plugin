@@ -26,21 +26,21 @@
 		"source": "https://github.com/wp-media/imagify-plugin"
 	},
 	"require": {
-		"php": ">=5.4.0",
+		"php": ">=7.0",
 		"composer/installers": "~1.0",
 		"dangoodman/composer-for-wordpress": "^2.0"
 	},
 	"require-dev": {
-		"php": "^5.6 || ^7",
+		"php": "^7 || ^8",
 		"brain/monkey": "^2.0",
 		"coenjacobs/mozart": "^0.7",
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
 		"deliciousbrains/wp-background-processing": "~1.0",
 		"phpcompatibility/phpcompatibility-wp": "^2.0",
-		"phpunit/phpunit": "^5.7 || ^7",
+		"phpunit/phpunit": "^7.5",
 		"roave/security-advisories": "dev-master",
 		"wp-coding-standards/wpcs": "^2",
-		"wp-media/phpunit": "^1.0"
+		"wp-media/phpunit": "^2.0"
 	},
 	"autoload": {
 		"psr-4": {

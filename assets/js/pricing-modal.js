@@ -164,7 +164,7 @@
 				}
 
 				plan_list.forEach(function (item) {
-					if (!appliesTo.includes(item)) {
+					if (! appliesTo.includes(item)) {
 						appliesTo.push(item);
 					}
 				});
@@ -265,9 +265,9 @@
 			//$( '.imagify-global-amount' ).text( price ); // Not used.
 
 			if ('0.00' === price || 0 === price) {
-				$('#imagify-modal-checkout-btn').attr('disabled', 'disabled').addClass('imagify-button-disabled');
+				$('#imagify-modal-checkout-btn').prop('disabled', true).addClass('imagify-button-disabled');
 			} else {
-				$('#imagify-modal-checkout-btn').removeAttr('disabled').removeClass('imagify-button-disabled');
+				$('#imagify-modal-checkout-btn').prop('disabled', false).removeClass('imagify-button-disabled');
 			}
 		},
 
@@ -1008,7 +1008,7 @@
 		checkPluginMessage: function (e) {
 			var origin = e.origin || e.originalEvent.origin; // eslint-disable-line no-shadow
 
-			if ('https://app.imagify.io' !== origin && 'http://dapp.imagify.io' !== origin) {
+			if ( imagifyPricingModal.imagify_app_domain !== origin ) {
 				return;
 			}
 

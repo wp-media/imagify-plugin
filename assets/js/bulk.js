@@ -651,9 +651,9 @@ window.imagify = window.imagify || {};
 
 			// Enable or disable the Optimization button.
 			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
-				$( '#imagify-bulk-action' ).removeAttr( 'disabled' );
+				$( '#imagify-bulk-action' ).prop( 'disabled', false );
 			} else {
-				$( '#imagify-bulk-action' ).attr( 'disabled', 'disabled' );
+				$( '#imagify-bulk-action' ).prop( 'disabled', true );
 			}
 		},
 
@@ -690,7 +690,7 @@ window.imagify = window.imagify || {};
 		maybeLaunchAllProcesses: function () {
 			var $infosModal;
 
-			if ( $( this ).attr( 'disabled' ) ) {
+			if ( $( this ).prop('disabled') ) {
 				return;
 			}
 
@@ -743,7 +743,7 @@ window.imagify = window.imagify || {};
 				skip    = true;
 
 			// Disable the button.
-			$button.attr( 'disabled', 'disabled' ).find( '.dashicons' ).addClass( 'rotate' );
+			$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
 
 			// Add a message to be displayed when the user wants to quit the page.
 			$w.on( 'beforeunload', this.getConfirmMessage );
@@ -1230,7 +1230,7 @@ window.imagify = window.imagify || {};
 
 			// Enable (or not) the main button.
 			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
-				$( '#imagify-bulk-action' ).removeAttr( 'disabled' ).find( '.dashicons' ).removeClass( 'rotate' );
+				$( '#imagify-bulk-action' ).prop( 'disabled', false ).find( '.dashicons' ).removeClass( 'rotate' );
 			} else {
 				$( '#imagify-bulk-action' ).find( '.dashicons' ).removeClass( 'rotate' );
 			}
