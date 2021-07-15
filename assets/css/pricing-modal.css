@@ -1152,3 +1152,189 @@ p.imagify-modal-sidebar-title.imagify-modal-sidebar-title {
 	float: right;
 	font-weight: bold;
 }
+@media (max-width: 782px) {
+	.imagify-payment-modal .imagify-modal-content{
+		width: 90%;
+		min-width: auto;
+		-webkit-flex-direction: column;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-direction: normal;
+		-webkit-box-orient: vertical;
+		-moz-box-direction: normal;
+		-moz-box-orient: vertical;
+		align-items: center;
+	}
+	.imagify-payment-modal .imagify-modal-main{
+		width: 100%;
+	}
+	.imagify-payment-modal .imagify-modal-sidebar{
+		width: 100%;
+
+	}
+	.imagify-modal-section.section-gray{
+		padding: 10px 10px 15px;
+	}
+	.imagify-modal-section{
+		padding: 0 10px;
+	}
+	.imagify-submit-line{
+		-webkit-flex-direction: column;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-direction: normal;
+		-webkit-box-orient: vertical;
+		-moz-box-direction: normal;
+		-moz-box-orient: vertical;
+		align-items: center;
+	}
+	.imagify-coupon-section{
+		-webkit-flex-direction: column;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-direction: normal;
+		-webkit-box-orient: vertical;
+		-moz-box-direction: normal;
+		-moz-box-orient: vertical;
+		align-items: center;
+		margin-bottom: 20px;
+	}
+	.imagify-coupon-section .imagify-coupon-text{
+		text-align: center;
+		width: 100%;
+		padding: 0;
+		margin-bottom: 20px;
+	}
+
+	.imagify-modal-cols{
+		-webkit-flex-direction: column;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-direction: normal;
+		-webkit-box-orient: vertical;
+		-moz-box-direction: normal;
+		-moz-box-orient: vertical;
+		align-items: center;
+	}
+	.imagify-col{
+		padding: 0;
+		float: none;
+		width: 100%;
+	}
+	.imagify-payment-modal .imagify-iconed{
+		margin: 1.5em auto;
+		max-width: 260px;
+	}
+	.imagify-offer-header{
+		padding: 0;
+	}
+	.imagify-offer-header .imagify-inline-options input[type="radio"]:not(:checked) + label,
+	.imagify-offer-header .imagify-inline-options input[type="radio"]:checked + label{
+		padding: 7px 15px;
+	}
+	.imagify-offer-header .imagify-inline-options input[type="radio"]:checked + label{
+		padding: 7px 15px;
+	}
+	.imagify-offer-header .imagify-offer-title.imagify-switch-my .imagify-monthly,
+	.imagify-offer-header .imagify-offer-title.imagify-switch-my .imagify-yearly{
+		padding: 10px 5px;
+		font-size: 12px;
+	}
+	.imagify-offer-size{
+		font-size: 18px;
+	}
+	.imagify-col-other-actions{
+		padding: 10px;
+		text-align: center;
+	}
+	.imagify-2-free{
+		padding: 2px 5px;
+	}
+	.imagify-2-free.imagify-b-right {
+		position: absolute;
+		bottom: 100%;
+		left: 0;
+		right: 0;
+		padding: 2px 5px;
+		margin-bottom: 0px;
+		margin-left: 0px;
+		font-size: 0.8em;
+		letter-spacing: 0;
+		text-transform: none;
+		text-align: center;
+		color: #FFF;
+		background: #10121A;
+		border-radius: 2px;
+	}
+	.imagify-2-free.imagify-b-right:after{
+		content: "";
+		position: absolute;
+		left: 50%;
+		top: unset;
+		bottom: -6px;
+		margin-left: -3px;
+		border-top: 3px solid #10121A;
+		border-left: 3px solid transparent;
+		border-right: 3px solid transparent;
+	}
+	div.imagify-col-price{
+		-webkit-flex-direction: column;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-direction: normal;
+		-webkit-box-orient: vertical;
+		-moz-box-direction: normal;
+		-moz-box-orient: vertical;
+		align-items: center;
+	}
+	.imagify-flex-table .imagify-price-complement{
+		padding: 5px 0 0 0;
+		margin: 0;
+		text-align: center;
+	}
+	div.imagify-col-details{
+		padding: 10px 0px 10px 10px;
+	}
+	.imagify-pricing-table .imagify-col-other-actions{
+		padding: 0 10px 0 0;
+	}
+	.imagify-pricing-table .imagify-button-secondary{
+		font-size: 12px;
+		white-space: normal;
+		line-height: 14px;
+		padding: 10px;
+	}
+	.imagify-price-big{
+		font-size: 24px;
+	}
+	span.imagify-price-mini{
+		font-size: 12px;
+	}
+	.imagify-col-checkbox label{
+		padding-left: 30px !important;
+	}
+	.medium.imagify-checkbox:not(:checked) + label:before,
+	.medium.imagify-checkbox:checked + label:before{
+		width: 15px;
+		height: 15px;
+	}
+	div.imagify-col-checkbox{
+		padding: 0;
+	}
+	.imagify-offer-monthly .imagify-flex-table .imagify-price-block,
+	.imagify-offer-monthlies .imagify-price-block{
+		padding: 0;
+	}
+	.imagify-pricing-table{
+		margin: 0 .5em;
+	}
+	.imagify-payment-modal .close-btn{
+		top: 5px;
+		right: 5px;
+	}
+	.imagify-col-checkbox .imagify-checkbox.imagify-checkbox:not(:checked) + label:after,
+	.imagify-col-checkbox .imagify-checkbox.imagify-checkbox:checked + label:after{
+		top: -1px;
+		left: 10px;
+	}
+}
