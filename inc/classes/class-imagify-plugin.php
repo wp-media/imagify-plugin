@@ -110,7 +110,6 @@ class Imagify_Plugin {
 
 		require_once $inc_path . 'deprecated/deprecated.php';
 		require_once $inc_path . 'deprecated/3rd-party.php';
-		require_once $inc_path . 'functions/compat.php';
 		require_once $inc_path . 'functions/common.php';
 		require_once $inc_path . 'functions/options.php';
 		require_once $inc_path . 'functions/formatting.php';

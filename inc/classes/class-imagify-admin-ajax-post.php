@@ -454,7 +454,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
 		$folder_types = filter_input( INPUT_GET, 'types', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY );
-		$folder_types = is_array( $folder_types ) ? array_filter( $folder_types ) : [];
+		$folder_types = is_array( $folder_types ) ? array_filter( $folder_types, 'is_string' ) : [];
 
 		if ( ! $folder_types ) {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
