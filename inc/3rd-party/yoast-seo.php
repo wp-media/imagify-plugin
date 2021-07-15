@@ -10,6 +10,9 @@ if ( defined( 'WPSEO_VERSION' ) && is_admin() && ! wp_doing_ajax() ) :
 	 * @since 1.4.1
 	 */
 	function _imagify_dequeue_yoastseo_script() {
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return;
+		}
 		$current_screen = get_current_screen();
 
 		if ( isset( $current_screen ) && 'post' === $current_screen->base && 'attachment' === $current_screen->post_type ) {
