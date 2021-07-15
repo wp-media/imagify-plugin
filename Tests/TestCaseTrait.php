@@ -90,23 +90,6 @@ trait TestCaseTrait {
 		return $previous;
 	}
 
-	/**
-	 * Get the value of a private/protected property.
-	 *
-	 * @param string        $property Property name for which to gain access.
-	 * @param string|object $class    Class name for a static property, or instance for an instance property.
-	 *
-	 * @return mixed
-	 * @throws ReflectionException Throws an exception if property does not exist.
-	 *
-	 */
-	protected function getPropertyValue( $property, $class ) {
-		$ref = $this->get_reflective_property( $property, $class );
-
-		return $ref->getValue();
-	}
-
-
 	/** ----------------------------------------------------------------------------------------- */
 	/** REFLECTIONS ============================================================================= */
 	/** ----------------------------------------------------------------------------------------- */

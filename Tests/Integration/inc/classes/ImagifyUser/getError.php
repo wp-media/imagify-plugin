@@ -20,13 +20,13 @@ class Test_GetError extends TestCase {
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
 		// Verify the static $user property is null.
-		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
+		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
 		$user = new Imagify_User();
 
 		$this->assertFalse( $user->get_error() );
 
-		$user_data = $this->getPropertyValue( 'user', Imagify::class );
+		$user_data = $this->getNonPublicPropertyValue( 'user', Imagify::class );
 		$this->assertInstanceOf( stdClass::class, $user_data );
 		$this->assertTrue( property_exists( $user_data, 'account_type' ) );
 	}
@@ -38,13 +38,13 @@ class Test_GetError extends TestCase {
 		update_imagify_option( 'api_key', $this->invalidApiKey );
 
 		// Verify the static $user property is null.
-		$this->assertNull( $this->getPropertyValue( 'user', Imagify::class ) );
+		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
 		$user = new Imagify_User();
 
 		$this->assertInstanceOf( WP_Error::class, $user->get_error() );
 
-		$user_data = $this->getPropertyValue( 'user', Imagify::class );
+		$user_data = $this->getNonPublicPropertyValue( 'user', Imagify::class );
 		$this->assertInstanceOf( WP_Error::class, $user_data );
 		$this->assertContains( 'Invalid token', $user_data->get_error_message() );
 	}
