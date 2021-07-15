@@ -209,6 +209,18 @@ No. However, you get 20MB of quota per month for free.
 4. Other Media Page
 
 == Changelog ==
+= 1.10 - 2021/07/15 =
+* The plugin minimum compatible versions are now PHP 7.0 and WordPress 5.3
+* Enhancement: Correctly display WordPress cover blocks when WebP and picture tag replacement is enabled (#546)
+* Enhancement: Update our jQuery code to be compatible with the new jQuery version included in WordPress (#545)
+* 3rd party compatibility: Correctly display WooCommerce variable products images when WebP and picture tag replacement is enabled (#495)
+* Bugfix: Prevent nested picture tags when picture tag replacement is enabled (#537)
+* Bugfix: Prevent a fatal error related to get_current_screen() in some cases (#567)
+* Bugfix: Fixes some display issues related to the promotions in the checkout process (#556, #557)
+* Bugfix: Fixes some display issues on the settings & bulk optimization pages on mobile (#566)
+* Bugfix: Prevent PHP warning in some cases on the bulk optimization process (#565)
+* Bugfix: Prevent PHP notice in somes cases for the $images_count variable (#573)
+
 = 1.9.14 =
 * Fix: cURL not connecting to Imagify API when using PHP 8.
 * Fix: Display issue in Chrome on scrollable check groups on Imagify admin page.
