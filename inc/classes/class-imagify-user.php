@@ -190,6 +190,8 @@ class Imagify_User {
 			$percent = min( max( 0, $percent ), 100 );
 		}
 
+		$percent = (float) $percent;
+
 		if ( $done ) {
 			return $percent;
 		}
