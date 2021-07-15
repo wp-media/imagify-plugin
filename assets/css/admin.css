@@ -1394,6 +1394,9 @@ ul.imagify-datas-details.imagify-datas-details {
 	box-shadow: 1px 1px 4px rgba(0,0,0,.7);
 	border-radius: 3px;
 }
+.imagify-modal-loading .imagify-modal-content{
+	overflow: hidden;
+}
 #imagify-visual-comparison .imagify-modal-content,
 .imagify-visual-comparison .imagify-modal-content {
 	max-width: 1400px;
@@ -1438,6 +1441,7 @@ ul.imagify-datas-details.imagify-datas-details {
 .js .imagify-modal .close-btn {
 	display: block;
 	visibility: visible;
+	z-index: 12;
 }
 
 /* Attachments specifics */
