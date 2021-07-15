@@ -4,10 +4,12 @@
 	padding-left: 20px;
 	list-style-type: disc
 }
+
 .imagify-plugins-error li {
-	width:300px;
-	line-height:30px
+	width: 300px;
+	line-height: 30px
 }
+
 @media (max-width: 570px) {
 	.imagify-plugins-error li {
 		width: auto;
@@ -45,39 +47,47 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	box-shadow: none;
 	color: #FFF;
 }
-@media (max-width:782px) {
+
+@media (max-width: 782px) {
 	.imagify-notice.imagify-notice,
 	.imagify-welcome {
 		margin-right: 12px;
 	}
 }
+
 @media (max-width: 450px) {
 	.imagify-notice.imagify-notice {
 		-webkit-box-orient: vertical;
 		-webkit-box-direction: normal;
 		-webkit-flex-direction: column;
-		    -ms-flex-direction: column;
-		        flex-direction: column;
+		-ms-flex-direction: column;
+		flex-direction: column;
 	}
 }
+
 .wrap .imagify-notice {
 	margin: 5px 15px 2px;
 	position: relative;
 }
+
 .imagify-notice-logo {
 	padding: 18px 23px;
 	background: #40B1D0;
 }
+
 .imagify-notice-logo .imagify-logo {
 	opacity: 1;
 }
+
 .imagify-flex-notice-content .imagify-notice-logo {
 	display: flex;
 	align-items: center;
 }
+
 .updated .imagify-notice-logo {
 	background: #8BC34A;
 }
+
 .error .imagify-notice-logo {
 	background: #C51162;
 }
@@ -89,35 +99,44 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 .imagify-notice-content {
 	padding: 5px 23px;
 }
+
 .imagify-notice-content.imagify-notice-content p {
 	margin: 0.65em 0;
 }
+
 .imagify-flex-notice-content .imagify-notice-content {
 	display: flex;
 	flex-wrap: wrap;
 	padding: 0;
 }
+
 .imagify-flex-notice-content .imagify-notice-content > * {
 	padding: 10px 20px;
 }
+
 .imagify-flex-notice-content .imagify-meteo-icon img {
 	height: 100%;
 	margin-top: 6px;
 }
+
 .imagify-notice-quota [class^="imagify-bar-"] {
 	background: #1F2332;
 }
+
 .imagify-notice-quota .imagify-space-left p {
 	margin: 0;
 }
+
 .imagify-flex-notice-content .imagify-notice-content .imagify-notice-quota {
 	padding-right: 24px;
 	padding-left: 8px;
 	background: #343A49;
 }
+
 .imagify-notice a {
 	color: #40B1D0;
 }
+
 .imagify-notice a:hover,
 .imagify-notice a:focus {
 	color: #FEE102;
@@ -141,38 +160,47 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 .imagify-welcome {
 	margin: 30px 20px 0 0;
 }
+
 .imagify-welcome .baseline {
 	display: inline-block;
 	margin: .2em 0 0 2em;
 	font-size: 17px;
 }
+
 .imagify-welcome .imagify-logo {
 	vertical-align: middle;
 }
+
 .imagify-welcome-remove {
 	position: absolute;
-	top: 50%; right: 15px;
+	top: 50%;
+	right: 15px;
 	margin-top: -8px;
 	color: #FFF;
 	text-decoration: none;
 }
+
 /* Welcome columns */
 .imagify-columns [class^="col-"] img {
 	float: left;
 	margin-right: 18px;
 }
+
 .imagify-col-content {
 	overflow: hidden;
 }
+
 .imagify-col-title {
 	margin: 0 0 15px 0;
 	font-size: 23px;
 }
+
 .counter .imagify-col-title:before {
 	counter-increment: cols;
 	content: counter(cols) ". ";
 	color: #40B1D0;
 }
+
 .imagify-col-desc {
 	color: #5F758E;
 	margin-bottom: 2em;
@@ -196,39 +224,49 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	color: #FFF;
 	background: #1F2332;
 }
+
 .media_page_imagify-bulk-optimization .imagify-rkt-notice {
 	margin-left: 2px;
 	margin-right: 20px;
 }
+
 @media (max-width: 782px) {
 	.media_page_imagify-bulk-optimization .imagify-rkt-notice {
 		margin-left: 0;
 		margin-right: 12px;
 	}
 }
+
 .imagify-rkt-notice .imagify-cross {
 	position: absolute;
-	right: 8px; top: 50%;
-	width: 22px; height: 22px;
+	right: 8px;
+	top: 50%;
+	width: 22px;
+	height: 22px;
 	padding: 0;
 	margin-top: -11px;
 	background: transparent;
-	color: rgba(255,255,255,.5);
+	color: rgba(255, 255, 255, .5);
 	text-decoration: none;
 	border-radius: 50%;
 	transition: all .275s;
 }
+
 .imagify-rkt-notice .imagify-cross .dashicons {
 	position: relative;
-	top: 2px; left: 1px;
+	top: 2px;
+	left: 1px;
 	transition: all .275s;
 }
+
 .imagify-rkt-notice .imagify-cross:hover {
 	background: #FFF;
 }
+
 .imagify-rkt-notice .imagify-cross:hover .dashicons {
 	color: #412355;
 }
+
 .imagify-rkt-notice .imagify-rkt-cta,
 .imagify-rkt-notice .imagify-rkt-logo,
 .imagify-rkt-notice .imagify-rkt-coupon {
@@ -236,23 +274,27 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	-ms-flex-negative: 0;
 	flex-shrink: 0;
 }
+
 .imagify-rkt-notice .imagify-rkt-logo {
-	width: 150px!important; /* !important because of a dirtugly WP Engine code */
+	width: 150px !important; /* !important because of a dirtugly WP Engine code */
 	text-align: center;
 	padding: 0 25px 0 30px;
 	line-height: 0.8;
 }
+
 .imagify-rkt-notice .imagify-rkt-msg {
-	width: 100%!important; /* !important because of a dirtugly WP Engine code */
+	width: 100% !important; /* !important because of a dirtugly WP Engine code */
 	color: #FFF;
 	padding: 0 15px;
 	font-size: 14px;
 	line-height: 1.6;
 }
+
 .imagify-rkt-notice .imagify-rkt-coupon {
-	width: 150px!important; /* !important because of a dirtugly WP Engine code */
+	width: 150px !important; /* !important because of a dirtugly WP Engine code */
 	padding: 0 15px;
 }
+
 .imagify-rkt-notice .imagify-rkt-coupon-code {
 	padding: 5px 10px;
 	font-size: 23px;
@@ -260,8 +302,9 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	border: 1px dashed #F56640;
 	color: #F56640;
 }
+
 .imagify-rkt-notice .imagify-rkt-cta {
-	width: 250px!important; /* !important because of a dirtugly WP Engine code */
+	width: 250px !important; /* !important because of a dirtugly WP Engine code */
 	-webkit-box-flex: 1;
 	-webkit-flex-grow: 1;
 	-ms-flex-positive: 1;
@@ -270,6 +313,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	-ms-flex-preferred-size: 200px;
 	flex-basis: 200px;
 }
+
 .imagify-rkt-notice .button.button {
 	position: relative;
 	top: -1px;
@@ -280,25 +324,43 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	padding: 9px 18px 9px;
 	background: #F56640;
 	box-shadow: none;
-	text-shadow: none!important;
+	text-shadow: none !important;
 }
+
 @media (max-width: 880px) {
 	.imagify-rkt-notice {
 		-webkit-flex-wrap: wrap;
 		-ms-flex-wrap: wrap;
 		flex-wrap: wrap;
 	}
+
 	.imagify-rkt-notice .imagify-rkt-msg,
 	.imagify-rkt-notice .imagify-rkt-cta,
 	.imagify-rkt-notice .imagify-rkt-logo {
 		text-align: left;
 		padding: 5px 15px;
 	}
+
 	.imagify-cross.imagify-cross {
 		top: 8px;
 		margin-top: 0;
 	}
+
 	.imagify-rkt-notice .imagify-cross .dashicons {
 		top: 1px;
+	}
+}
+
+@media (max-width: 782px) {
+	.imagify-flex-notice-content .imagify-notice-content .imagify-notice-quota {
+		width: 100%;
+	}
+
+	.imagify-notice-quota-btn-container{
+		text-align: center;
+		width: 100%;
+	}
+	.imagify-notice-quota-btn-container .imagify-button{
+		display: inline-block;
 	}
 }
