@@ -1,10 +1,10 @@
-=== Imagify – Optimize your Images & Convert WebP ===
+=== Imagify – Optimize Images & Convert WebP ===
 Contributors: wp_media
-Tags: convert webp, webp, optimize images, optimize, images
+Tags: optimize images, convert webp, webp converter, image optimization, compress images
 Tested up to: 5.8
 Stable tag: 1.10
 
-Optimize images in one click: reduce image file sizes, convert WebP, keep your images beautiful… and boost your loading time and your SEO!
+Optimize images in one click: compress images, reduce image file sizes, convert WebP, keep your images beautiful… and boost your loading time and your SEO!
 
 == Description ==
 
@@ -26,9 +26,9 @@ By optimizing images you will quickly gain precious seconds and make your websit
 
 Learn more about image compression, check that: [https://imagify.io/images-compression](https://imagify.io/images-compression).
 
-= Why use Imagify to optimize images? =
+= WHY USE IMAGIFY TO OPTIMIZE IMAGES? =
 
-Imagify can optimize all images: jpgs, pngs, pdfs and gifs (whether animated or not).
+Imagify, our image compressor, can optimize all images: jpgs, pngs, pdfs and gifs (whether animated or not).
 
 You already have lots of unoptimized images? Not a problem, you will love the Bulk Optimizer to optimize all your existing images in one click.
 
@@ -36,28 +36,40 @@ Imagify can directly resize your images, **you won't have to lose time anymore o
 
 There are three optimization levels available - Normal, Aggressive and Ultra.
 
-- Normal, a lossless compression algorithm. The image quality won't be altered at all.
-- Aggressive, a lossy compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all.
-- Ultra, our strongest compression method using a lossy algorithm.
+- Normal, a lossless image compression algorithm. The image quality won't be altered at all.
+- Aggressive, a lossy image compression algorithm. Stronger compression with a tiny loss of quality most of the time this is not even noticeable at all.
+- Ultra, our strongest image compression method using a lossy algorithm.
 
-With the backup option, you can change your mind whenever you want by restoring your images to their original version or optimize them to another compression level.
+With the backup option, you can change your mind whenever you want by restoring your images to their original version or optimize them to another image compression level.
 
 = HOW ABOUT WEBP IMAGES? =
-Now, for each image you optimize with the Imagify plugin, you will also get its **WebP version** (if you tick the option in the settings); in your Media library, this will result in the following image versions:
+For each image you optimize with the Imagify plugin, you will also get its **WebP version** (if you tick the option in the settings); in your Media library, this will result in the following image versions:
 - full-sized optimized image,
 - full-sized WebP image,
 - optimized thumbnails,
 - WebP thumbnails.
 
-The optimization will also work for images included in your themes and plugins.
+The optimization will also work for images included in your themes, plugins, and any images located outside of your Media Library folders via our "Custom Folders" setting.
 
-If you want, Imagify can also display WebP images on your front-end in two ways:
+If you want, Imagify can also display WebP images on your front-end using two methods that also provide fallback support for browsers that can't display WebP images yet:
 - `<picture>` tag,
-- rewrite rules in the .htaccess file.
+– rewrite rules in the .htaccess file (Apache) or nginx.conf (NGINX - must be added manually)
 
-If you kept a backup copy of the original images, you have the possibility to **create their WebP version separately** (one by one or via the bulk optimization).
+If you keep a backup copy of the original images, you have the possibility to **create their WebP version separately** (one by one or via the bulk optimization feature).
 
-= What our users think of Imagify? =
+= WHY IS IMAGIFY THE BEST CHOICE WHEN IT COMES TO OPTIMIZING YOUR CORE WEB VITALS? =
+
+Did you know that using our image compressor will also make Google PageSpeed Insights happy?
+
+When it comes to the impact of images on Core Web Vitals, Google recommends serving images in next-gen formats (WebP, JPEG 2000/XR) and properly sized images. Imagify does just that!
+
+After enabling Imagify, all your images, including thumbnails, will be automatically optimized when uploaded into WordPress. By reducing the weight of your images (without sacrificing their quality!), you will boost your loading time and your Largest Contentful Paint performance. Imagify also addresses Google’s recommendation by converting your images to the next-gen WebP format.
+
+Imagify can help you get your PageSpeed Insights score into the green.
+
+= WHAT DO OUR USERS THINK OF IMAGIFY? =
+
+Here’s what our users have to say about us after optimizing their images with Imagify:
 
 > "Imagify is an awesome tool that is powerful & easy to use. It's fast, rivals and surpasses other established plugins/software. Awesome!" — [Simon Harper](https://twitter.com/SRHDesign/status/663758140505235456)
 >
@@ -66,23 +78,23 @@ If you kept a backup copy of the original images, you have the possibility to **
 > "Clearly Imagify is the most awesome WordPress plugin to compress images on your website! A must try" — [Eric Walter](https://twitter.com/EricWaltR/status/679053496382038016)
 >
 
-= Is Imagify Free? =
+= IS IMAGIFY FREE? =
 
-You can optimize for free 20MB of images (about 200 images) every month. You can convert WebP for free.
+You can optimize for free 20MB of images (that’s about 200 images) every month. You can also convert to the next-gen WebP format for free.
 
-Need more? Have a look at our plans: [https://imagify.io/pricing](https://imagify.io/pricing)
+Need to compress more images? Have a look at our plans: [https://imagify.io/pricing](https://imagify.io/pricing)
 
-= What's next? =
+= WANT IMAGE OPTIMIZATION TIPS? =
 
-Have a look at our upcoming features by following our development roadmap: [https://trello.com/b/3Q8ZnSN6/imagify-roadmap](https://trello.com/b/3Q8ZnSN6/imagify-roadmap)
+If you want to know more about using WebP images on WordPress, improving your PageSpeed score with Imagify, or compressing multiple images online, take a look at our blog: [https://imagify.io/blog/](https://imagify.io/blog/)
 
-= Who we are? =
+It’s packed with advice on image compression and so much more!
 
-We are [WP Media](https://wp-media.me/), the startup behind WP Rocket the best caching plugin for WordPress.
+= WHO ARE WE? =
 
-Our mission is to improve the web, we are making it faster with [WP Rocket](https://wp-rocket.me/) and lighter with Imagify.
+We are [WP Media](https://wp-media.me/), the startup behind WP Rocket, the best caching plugin for WordPress.
 
-= Get in touch! =
+= GET IN TOUCH! =
 
 * Website: [Imagify.io](https://imagify.io)
 * Contact Us: [https://imagify.io/contact](https://imagify.io/contact)
@@ -110,15 +122,48 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Frequently Asked Questions ==
 
+= How can I measure the impact of Imagify on speed score? =
+
+You can use GTMetrix and Google PageSpeed Insights to check the relevant suggestions. It is recommended to test the following metrics before and after the image optimization:
+
+* Total Page Size (GTMetrix)
+* Optimize images (GTMetrix)
+* Serve images in next-gen formats (PageSpeed Insights)
+* Efficiently encode images (PageSpeed Insights)
+
+= What makes Imagify better than other image optimizer tools? =
+
+Imagify is an extremely powerful image optimizer: our advanced compressing algorithm will reduce the weight of your images without sacrificing their quality.
+
+Imagify is also super easy to use. Thanks to its intuitive design, you can easily get familiar with the interface and services without thinking about it.
+
+And our dedicated customer support will help you fix any issue with your image optimizing process. Support is available via contact form, either on our website, or directly on your Imagify plugin settings page.
+
+= How many websites can I optimize with Imagify? =
+
+You can use Imagify on as many websites as you wish. Your image optimization quota will be shared evenly across all of the websites.
+
+If you need more control over how your Imagify subscription is used, you should create sub-accounts to allocate a quota for each.
+
+= How does WebP feature work on not supported browsers? =
+
+Imagify will deliver images in the original format for browsers that don’t support the next-gen WebP format automatically, so there is nothing further to be done.
+
+= Is Imagify compatible with NextGEN? =
+
+Yes, Imagify is fully compatible with NextGEN Gallery, the most popular photo gallery plugin for WordPress. All Imagify optimization features related to NextGEN Gallery images are located and usable within the NextGEN Gallery menus and pages. So when you add images to your NextGEN galleries, you’ll be able to optimize them as well.
+
 = Which formats can be optimized? =
 
-Imagify can optimize JPG, PNG, PDF and GIFs (whether animated or not).
+Imagify can optimize JPG, PNG, PDF files and GIFs (whether animated or not).
 
-=How should I know which compression level is best for me?=
+When you optimize JPG, PNG, and GIF files, Imagify will also create WebP versions of your original images and all your thumbnail sizes (if you have this option enabled).
 
-There are three compression levels available - Normal, Aggressive and Ultra.
+= How should I know which image compression level is best for me? =
 
-Normal compression is a "lossless" optimization. This means there is no loss of image quality. 
+There are three image compression levels available - Normal, Aggressive and Ultra.
+
+Normal compression is a "lossless" image optimization. This means there is no loss of image quality.
 
 Aggressive and Ultra compression are more powerful, so the picture quality will be somewhat reduced. The weight of the image will be much less.
 
@@ -128,13 +173,13 @@ It would be best, however, to test the 3 levels of compression on a smaller amou
 
 =How does the optimization process work?=
 
-The image optimization process is performed on our servers. Once done, Imagify returns the optimized image to your server. We do not edit images’ title or any other information, so there is nothing further to be done on your end. Your original images will be moved to a dedicated backup folder (just make sure to keep the Backup option active in Imagify settings).
+The image optimization process is performed on our servers. Once done, Imagify returns the optimized image to your server. We do not edit images’ titles or any other information, so there is nothing further to be done on your end. Your original images will be moved to a dedicated backup folder (just make sure to keep the Backup option active in Imagify settings).
 
 =How long are images stored by Imagify?=
 
 Once your images have been optimized via the WP plugin, they stay on your end forever (even if you delete the Imagify account).
 
-During the optimization process, images sent via the API or WordPress plugin are stored for one hour on our server (they are already sent back to your site and stay there safely). 
+During the optimization process, images sent via the API or WordPress plugin are stored for one hour on our server (they are already sent back to your site and stay there safely).
 
 Using the online application, images are stored for 24 hours (with a free account) and for unlimited time if you have a paid subscription.
 
@@ -152,7 +197,7 @@ Do not waste your time resizing and optimizing your images in Photoshop. Imagify
 
 =Is the EXIF data of images removed?=
 
-By default EXIF data is removed. It is possible to keep it with the WordPress plugin by enabling the option in Imagify Settings page.
+By default EXIF data is removed. It is possible to keep it with the WordPress plugin by enabling the option in the Imagify Settings page.
 
 =I used Kraken, Optimus, EWWW or WP Smush, will Imagify further optimize my images?=
 
@@ -164,39 +209,39 @@ No. Imagify automatically replaces the images with an optimized image. The backu
 
 = Is it possible to re-optimize images with a different level? =
 
-Yes. By activating the backup option in the plugin, you can re-optimize each image with a different compression level.
+Yes. By activating the backup option in the plugin, you can re-optimize each image with a different image compression level.
 
 = What happens when the plugin is disabled? =
 
 When the plugin is disabled, your existing images remain optimized. Backups of the original images are still available if you have enabled the images backup option.
 
-=On which web hosts can the plugin be used?=
+= On which web hosts can the plugin be used? =
 
 The plugin can be used on all hosts including "managed hosting" providers like WP Engine.
 
-=Is Imagify compatible with Multi-Site?=
+= Is Imagify compatible with Multi-Site? =
 
 Yes, Imagify is 100% compatible with multi-site.
 
-=Can we use Imagify on WordPress.com?=
+= Can we use Imagify on WordPress.com? =
 
-It is possible to use Imagify plugin on WordPress.com if you have a Business account.
+It is possible to use the Imagify plugin on WordPress.com if you have a Business account.
 
 =Do you offer support?=
 
-Yes, the Imagify team offers full email support. You can contact us via [https://imagify.io/contact/](https://imagify.io/contact/).
+Yes, the Imagify team offers full email support for image optimization questions. You can contact us via [https://imagify.io/contact/](https://imagify.io/contact/).
 
-When is support available?
+= When is support available? =
 
-Our support is currently available Monday-Friday 8AM-6PM CET. We answer every email so you can expect the answer from us within 24h max (unless during the weekends).
+Our support is currently available Monday-Friday 8AM-10PM CET. We answer every email so you can expect the answer from us within 24h max (unless during the weekends).
 
 =Is registration free?=
 
-Yes and no credit card is required.
+Yes, and no credit card is required.
 
-=Do you offer a trial version?=
+= Do you offer a trial version? =
 
-No. However, you get 20MB of quota per month for free.
+No. However, you get 20MB of quota per month for free to optimize your images (around 200 images).
 
 == Screenshots ==
 
@@ -235,7 +280,7 @@ No. However, you get 20MB of quota per month for free.
 * Fix: Fix settings error on multi-sites with WordPress 5.5
 * Fix: Write the correct conf file for use with WebP rewrites on nginx
 * Improvement: Namespace composer dependencies to avoid possible naming collisions.
-* Security: Add blank index.php to imagify-created backup folders to disable public access. 
+* Security: Add blank index.php to imagify-created backup folders to disable public access.
 
 = 1.9.10 - 2020/05/26 =
 * Fix: Correctly optimize thumbnails during auto-optimization of image upload
