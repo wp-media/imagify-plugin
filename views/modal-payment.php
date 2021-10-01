@@ -287,7 +287,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 										<?php
 										printf(
 											/* translators: %s is a formatted price. */
-											__( '%s per<br>additionnal Gb', 'imagify' ),
+											__( '%s per<br>additional Gb', 'imagify' ),
 											'<span class="imagify-price-add-data"></span>'
 										);
 										?>
