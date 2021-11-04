@@ -8,11 +8,12 @@ $hidden_class = Imagify_Requirements::is_api_key_valid() ? '' : ' hidden';
 $lang         = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
 
 /* Ads notice */
+$plugins = get_plugins();
 $notice  = 'wp-rocket';
 $user_id = get_current_user_id();
 $notices = get_user_meta( $user_id, '_imagify_ignore_ads', true );
 $notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
-$wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket';
+$wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-rocket.php'] ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket';
 ?>
 <div class="wrap imagify-settings <?php echo $wrapper_class; ?> imagify-clearfix">
 

@@ -1,8 +1,10 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
-if ( defined( 'WP_ROCKET_VERSION' ) ) {
-	return '';
+$plugins = get_plugins();
+
+if( isset( $plugins['wp-rocket/wp-rocket.php'] ) ) {
+    return '';
 }
 
 $notice  = 'wp-rocket';
