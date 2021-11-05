@@ -3,8 +3,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $plugins = get_plugins();
 
-if( isset( $plugins['wp-rocket/wp-rocket.php'] ) ) {
-    return '';
+if ( isset( $plugins['wp-rocket/wp-rocket.php'] ) ) {
+	return '';
 }
 
 $notice  = 'wp-rocket';
