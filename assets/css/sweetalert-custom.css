@@ -42,6 +42,7 @@ body[class*="_imagify"] .swal2-container.swal2-shown {
 .imagify-swal-error-header .swal2-title {
 	background: #C51162;
 	text-align: center;
+	line-height: 1.15;
 }
 .imagify-sweet-alert .imagify-swal-subtitle {
 	padding: 0 32px 28px;
@@ -77,6 +78,8 @@ body[class*="_imagify"] .swal2-container.swal2-shown {
 	background-color: #40b1d0 !important;
 	text-shadow: none!important;
 	box-shadow: 0 3px 0 #338ea6;
+	white-space: normal;
+	line-height: 1.5;
 }
 .imagify-swal-buttonswrapper a.button.imagify-button-primary:focus,
 .imagify-swal-buttonswrapper a.button.imagify-button-primary:hover {
