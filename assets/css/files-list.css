@@ -6,6 +6,7 @@
 	height: auto;
 	padding: 2px 20px 3px 6px;
 	margin: 15px 12px 0 0;
+	max-width: 100%;
 }
 .imagify-files-list .filter-items .button {
 	height: auto;
