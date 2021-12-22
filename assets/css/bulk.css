@@ -88,7 +88,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress {
 body[class*="_imagify-ngg-bulk-optimization"] .media-item .percent {
 	position: absolute;
 	top: 6px;
-	right: -26px;
+	right: -28px;
 	text-shadow: none;
 	width: auto;
 	padding: 0 5px;
