@@ -12,6 +12,7 @@ require IMAGIFY_PATH . 'inc/3rd-party/nextgen-gallery/nextgen-gallery.php';
 require IMAGIFY_PATH . 'inc/3rd-party/regenerate-thumbnails/regenerate-thumbnails.php';
 require IMAGIFY_PATH . 'inc/3rd-party/screets-lc.php';
 require IMAGIFY_PATH . 'inc/3rd-party/wp-real-media-library.php';
+require IMAGIFY_PATH . 'inc/3rd-party/wp-cloudflare-super-page-cache.php';
 require IMAGIFY_PATH . 'inc/3rd-party/wp-rocket/wp-rocket.php';
 require IMAGIFY_PATH . 'inc/3rd-party/yoast-seo.php';
 require IMAGIFY_PATH . 'inc/3rd-party/WooCommerce/class-woocommerce.php';
