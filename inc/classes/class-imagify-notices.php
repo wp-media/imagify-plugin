@@ -608,7 +608,9 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 			return $display;
 		}
 
-		if ( defined( 'WP_ROCKET_VERSION' ) || self::notice_is_dismissed( 'wp-rocket' ) ) {
+		$plugins = get_plugins();
+
+		if ( isset( $plugins['wp-rocket/wp-rocket.php'] ) || self::notice_is_dismissed( 'wp-rocket' ) ) {
 			return $display;
 		}
 
