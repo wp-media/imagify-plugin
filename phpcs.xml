@@ -2,25 +2,14 @@
 <ruleset name="Imagify">
 	<description>Image optimization plugin for WordPress by WP Media.</description>
 
-	<arg name="extensions" value="php"/>
-	<!-- <arg value="s"/> -->
-
 	<file>.</file>
 
 	<exclude-pattern>bin/</exclude-pattern>
-	<exclude-pattern>assets/*/*.min.css</exclude-pattern>
-	<exclude-pattern>assets/*/*.min.js</exclude-pattern>
+	<exclude-pattern>assets/</exclude-pattern>
 	<exclude-pattern>inc/deprecated/*</exclude-pattern>
 	<exclude-pattern>tests/*</exclude-pattern>
 	<exclude-pattern>vendor/*</exclude-pattern>
 	<exclude-pattern>classes/Dependencies</exclude-pattern>
-
-	<arg value="sp"/><!-- Show sniff and progress -->
-	<arg name="colors"/><!-- Show results with colors -->
-	<arg name="parallel" value="50"/><!-- Enables parallel processing when available for faster results. -->
-	<arg name="extensions" value="php"/><!-- Limit to PHP files -->
-
-	<!-- ** HOW TO SCAN ** -->
 
 	<arg value="sp"/><!-- Show sniff and progress -->
 	<arg name="colors"/><!-- Show results with colors -->
