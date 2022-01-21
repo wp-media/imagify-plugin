@@ -514,6 +514,9 @@ window.imagify = window.imagify || {};
 		 * Init.
 		 */
 		init: function () {
+			this.$missingWebpElement = $('.generate-missing-webp');
+			this.$missingWebpMessage = $('.generate-missing-webp p');
+
 			this.$button       = $( '#imagify-generate-webp-versions' );
 			this.$progressWrap = this.$button.siblings( '.imagify-progress' );
 			this.$progressBar  = this.$progressWrap.find( '.bar' );
@@ -666,14 +669,15 @@ window.imagify = window.imagify || {};
 		 * Fetch IDs of media to optimize.
 		 */
 		fetchIDs: function () {
-			var _this, context;
+			var _this,
+				context;
 
 			if ( this.processIsStopped ) {
 				return;
 			}
 
 			if ( ! this.fetchQueue.length ) {
-				// No more IDs to fetch.
+				this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
 				if ( this.queue.length ) {
 					// We have files to process.
 					// Reset and display the progress bar.
