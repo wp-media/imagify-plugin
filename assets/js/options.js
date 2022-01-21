@@ -958,9 +958,10 @@ window.imagify = window.imagify || {};
 			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' );
 			this.$progressBar.removeAttr( 'style' );
 			this.$progressText.text( '0' );
+			this.$missingWebpElement.hide().attr('aria-hidden', 'true');
 
 			// Enable the button.
-			this.$button.prop( 'disabled', false ).find( '.dashicons' ).removeClass( 'rotate' );
+			this.$button.find( '.dashicons' ).removeClass( 'rotate' );
 		},
 
 		// Tools ===================================================================================
