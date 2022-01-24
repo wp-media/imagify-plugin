@@ -292,34 +292,7 @@ class WP extends AbstractBulk {
 	 * @return int The number of media.
 	 */
 	public function has_optimized_media_without_webp() {
-		global $wpdb;
-
-		$mime_types   = \Imagify_DB::get_mime_types( 'image' );
-		$statuses     = \Imagify_DB::get_post_statuses();
-		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause( [
-			'prepared' => true,
-		] );
-		$webp_suffix  = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::WEBP_SUFFIX' );
-
-		return (int) $wpdb->get_var( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
-			SELECT COUNT(p.ID)
-			FROM $wpdb->posts AS p
-				$nodata_join
-			LEFT JOIN $wpdb->postmeta AS mt1
-				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
-			LEFT JOIN $wpdb->postmeta AS mt2
-				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_data' )
-			WHERE
-				p.post_mime_type IN ( $mime_types )
-				AND ( mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
-				AND mt2.meta_value NOT LIKE %s
-				AND p.post_type = 'attachment'
-				AND p.post_status IN ( $statuses )
-				$nodata_where",
-			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
-		) );
+		return count( $this->get_optimized_media_ids_without_webp()['ids'] );
 	}
 
 	/**
