@@ -85,4 +85,18 @@ abstract class AbstractBulk implements BulkInterface {
 
 		return $data;
 	}
+
+	/**
+	 * Tell if there are optimized media without WebP versions.
+	 *
+	 * @since  1.9
+	 * @access public
+	 * @author Grégory Viguier
+	 *
+	 * @return int The number of media.
+	 */
+	public function has_optimized_media_without_webp() {
+		return count( $this->get_optimized_media_ids_without_webp()['ids'] );
+	}
+
 }
