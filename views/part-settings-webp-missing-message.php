@@ -4,8 +4,8 @@
 		sprintf(
 		/* translators: %s is a formatted number (don’t use %d). */
 			_n(
-				'It seems that you have %s optimized image without WebP versions. You can generate them here if a backup copy is available.',
-				'It seems that you have %s optimized images without WebP versions. You can generate them here if backup copies are available.',
+				'It seems that you have %s optimized image without WebP versions. You can generate it here.',
+				'It seems that you have %s optimized images without WebP versions. You can generate them here.',
 				$data['count'],
 				'imagify'
 			),
