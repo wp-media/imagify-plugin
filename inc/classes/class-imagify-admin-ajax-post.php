@@ -327,6 +327,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			case 'generate_webp':
 				$this->check_can_optimize();
 				$data = $bulk->get_optimized_media_ids_without_webp();
+				delete_transient( 'imagify_stat_without_webp' );
 
 				if ( ! $data['ids'] && $data['errors']['no_backup'] ) {
 					// No backup, no WebP.
