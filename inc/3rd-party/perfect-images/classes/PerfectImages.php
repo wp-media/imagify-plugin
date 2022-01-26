@@ -11,21 +11,9 @@ namespace Imagify\ThirdParty\PerfectImages;
 class PerfectImages {
 
 	/**
-	 * Class version.
-	 *
-	 * @var    string
-	 * @since  1.8
-	 * @author Grégory Viguier
-	 */
-	const VERSION = '1.0.1';
-
-	/**
 	 * Core instance.
 	 *
 	 * @var    object Imagify_WP_Retina_2x_Core
-	 * @since  1.8
-	 * @access protected
-	 * @author Grégory Viguier
 	 */
 	protected $core;
 
@@ -33,23 +21,11 @@ class PerfectImages {
 	 * The single instance of the class.
 	 *
 	 * @var    object Imagify_WP_Retina_2x
-	 * @since  1.8
-	 * @access protected
-	 * @author Grégory Viguier
 	 */
 	protected static $_instance;
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** INSTANCE ================================================================================ */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Get the main Instance.
-	 *
-	 * @since  1.8
-	 * @access public
-	 * @author Grégory Viguier
 	 *
 	 * @return object Main instance.
 	 */
@@ -62,22 +38,14 @@ class PerfectImages {
 	}
 
 	/**
-	 * The constructor.
-	 *
-	 * @since  1.8
-	 * @access protected
-	 * @author Grégory Viguier
+	 * Constructor.
 	 */
 	protected function __construct() {}
 
 	/**
-	 * Get the core Instance.
+	 * Get an instance of Imagify's PerfectImagesCore.
 	 *
-	 * @since  1.8
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Imagify_WP_Retina_2x_Core instance.
+	 * @return object PerfectImagesCore instance.
 	 */
 	public function get_core() {
 		if ( ! isset( $this->core ) ) {
@@ -87,17 +55,8 @@ class PerfectImages {
 		return $this->core;
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** INIT ==================================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Launch the hooks.
-	 *
-	 * @since  1.8
-	 * @access public
-	 * @author Grégory Viguier
 	 */
 	public function init() {
 		// Deal with Imagify when WPR2X is working.
@@ -116,11 +75,6 @@ class PerfectImages {
 		add_filter( 'imagify_fill_unauthorized_thumbnail_data', array( $this, 'maybe_optimize_unauthorized_retina_version_hook' ), 10, 7 );
 		add_action( 'after_imagify_restore_attachment',         array( $this, 'restore_retina_images_hook' ) );
 	}
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** AJAX CALLBACKS ========================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * (Re)generate the retina thumbnails (except the full size).

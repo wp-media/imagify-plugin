@@ -11,21 +11,9 @@ namespace Imagify\ThirdParty\PerfectImages;
 class PerfectImagesCore {
 
 	/**
-	 * Class version.
-	 *
-	 * @var    string
-	 * @since  1.8
-	 * @author Grégory Viguier
-	 */
-	const VERSION = '1.1';
-
-	/**
 	 * Filesystem object.
 	 *
 	 * @var    object Imagify_Filesystem
-	 * @since  1.8
-	 * @access protected
-	 * @author Grégory Viguier
 	 */
 	protected $filesystem;
 
@@ -33,27 +21,15 @@ class PerfectImagesCore {
 	 * Used to store methods that should not run for a time being.
 	 *
 	 * @var    array
-	 * @since  1.8
-	 * @access protected
-	 * @author Grégory Viguier
 	 */
 	protected static $prevented = array();
 
 	/**
-	 * The constructor.
-	 *
-	 * @since  1.8
-	 * @access public
-	 * @author Grégory Viguier
+	 * Constructor.
 	 */
 	public function __construct() {
 		$this->filesystem = Imagify_Filesystem::get_instance();
 	}
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** GENERATE RETINA IMAGES ================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * Generate retina images (except full size), and optimize them if the non-retina images are.
