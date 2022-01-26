@@ -2,27 +2,26 @@
 
 namespace Imagify\ThirdParty\PerfectImages;
 
+use Imagify_Assets;
+
 /**
- * Class that handles compatibility with WP Retina 2x plugin.
- *
- * @since  1.8
- * @author Grégory Viguier
+ * Perfect Images plugin compatibility.
  */
 class PerfectImages {
 
 	/**
-	 * Core instance.
+	 * PerfectImagesCore instance.
 	 *
-	 * @var    object Imagify_WP_Retina_2x_Core
+	 * @var PerfectImagesCore
 	 */
 	protected $core;
 
 	/**
 	 * The single instance of the class.
 	 *
-	 * @var    object Imagify_WP_Retina_2x
+	 * @var PerfectImages
 	 */
-	protected static $_instance;
+	protected static $instance;
 
 	/**
 	 * Get the main Instance.
@@ -30,11 +29,11 @@ class PerfectImages {
 	 * @return object Main instance.
 	 */
 	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
+		if ( ! isset( self::$instance ) ) {
+			self::$instance = new self();
 		}
 
-		return self::$_instance;
+		return self::$instance;
 	}
 
 	/**

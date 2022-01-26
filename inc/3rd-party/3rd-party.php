@@ -9,6 +9,7 @@ require IMAGIFY_PATH . 'inc/3rd-party/amp/amp.php';
 require IMAGIFY_PATH . 'inc/3rd-party/enable-media-replace/enable-media-replace.php';
 require IMAGIFY_PATH . 'inc/3rd-party/formidable-pro/formidable-pro.php';
 require IMAGIFY_PATH . 'inc/3rd-party/nextgen-gallery/nextgen-gallery.php';
+require IMAGIFY_PATH . 'inc/3rd-party/perfect-images/perfect-images.php';
 require IMAGIFY_PATH . 'inc/3rd-party/regenerate-thumbnails/regenerate-thumbnails.php';
 require IMAGIFY_PATH . 'inc/3rd-party/screets-lc.php';
 require IMAGIFY_PATH . 'inc/3rd-party/wp-real-media-library.php';
