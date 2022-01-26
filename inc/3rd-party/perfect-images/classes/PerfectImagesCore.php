@@ -1,5 +1,6 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+
+namespace Imagify\ThirdParty\PerfectImages;
 
 /**
  * Class that handles all the main tools for compatibility with WP Retina 2x plugin.
@@ -7,7 +8,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.8
  * @author Grégory Viguier
  */
-class Imagify_WP_Retina_2x_Core {
+class PerfectImagesCore {
 
 	/**
 	 * Class version.
