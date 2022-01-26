@@ -214,7 +214,7 @@ class PerfectImages {
 	 * @author Grégory Viguier
 	 */
 	public function enqueue_scripts() {
-		if ( ! $this->user_can() ) {
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'auto-optimize' ) ) {
 			return;
 		}
 
@@ -430,23 +430,12 @@ class PerfectImages {
 	 * @author Grégory Viguier
 	 */
 	public function check_user_capacity() {
-		if ( ! $this->user_can() ) {
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'auto-optimize' ) ) {
 			$this->send_json( array(
 				'success' => false,
 				'message' => __( 'Sorry, you are not allowed to do that.', 'imagify' ),
 			) );
 		}
-	}
-
-	/**
-	 * Tell if the current user can re-optimize files.
-	 *
-	 * @since  1.8
-	 * @access public
-	 * @author Grégory Viguier
-	 */
-	public function user_can() {
-		return imagify_current_user_can( 'auto-optimize' );
 	}
 
 	/**
