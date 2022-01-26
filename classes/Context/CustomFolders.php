@@ -55,25 +55,6 @@ class CustomFolders extends AbstractContext {
 	}
 
 	/**
-	 * Tell if the optimization process is allowed to backup in this context.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return bool
-	 */
-	public function can_backup() {
-		if ( isset( $this->can_backup ) ) {
-			return $this->can_backup;
-		}
-
-		$this->can_backup = get_imagify_option( 'backup' );
-
-		return $this->can_backup;
-	}
-
-	/**
 	 * Tell if the optimization process is allowed to keep exif in this context.
 	 *
 	 * @since  1.9

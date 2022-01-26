@@ -170,7 +170,12 @@ abstract class AbstractContext implements ContextInterface {
 	 * @return bool
 	 */
 	public function can_backup() {
-		return $this->can_backup;
+		if ( isset( $this->can_backup ) ) {
+			return $this->can_backup;
+		}
+
+		$this->can_backup = get_imagify_option( 'backup' );
+
 	}
 
 	/**
