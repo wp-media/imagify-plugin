@@ -52,10 +52,7 @@ function imagify_sanitize_context( $context ) {
 /**
  * Get the Imagify context instance.
  *
- * @since  1.9
- * @author Grégory Viguier
- *
- * @param  string $context  The context name. Default values are 'wp' and 'custom-folders'.
+ * @param  string $context  The context name. Available values are 'wp' and 'custom-folders'.
  * @return ContextInterface The context instance.
  */
 function imagify_get_context( $context ) {
