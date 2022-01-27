@@ -64,7 +64,10 @@
 		]
 	},
 	"autoload-dev": {
-		"psr-4": { "Imagify\\Tests\\": "Tests/" }
+		"psr-4": {
+			"Imagify\\Tests\\": "Tests/",
+			"Imagify\\Tests\\Unit\\Inc\\ThirdParty\\": "Tests/Unit/inc/3rd-party/"
+		}
 	},
 	"extra": {
 		"mozart": {
