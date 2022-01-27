@@ -1,8 +1,6 @@
 <?php
 namespace Imagify\Media;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Media class for the medias in the WP library.
  *

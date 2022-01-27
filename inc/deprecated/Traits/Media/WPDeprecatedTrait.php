@@ -1,8 +1,6 @@
 <?php
 namespace Imagify\Deprecated\Traits\Media;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Trait containing deprecated methods of the class \Imagify\Media\WP.
  *

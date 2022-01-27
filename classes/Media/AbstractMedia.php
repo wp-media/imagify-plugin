@@ -4,8 +4,6 @@ namespace Imagify\Media;
 use Imagify\CDN\PushCDNInterface;
 use Imagify\Context\ContextInterface;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Abstract used for "media groups" (aka attachments).
  *
