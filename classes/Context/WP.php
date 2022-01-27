@@ -82,7 +82,7 @@ class WP extends AbstractContext {
 
 		return $this->resizing_threshold;
 	}
-	
+
 	/**
 	 * Tell if the optimization process is allowed to keep exif in this context.
 	 *
