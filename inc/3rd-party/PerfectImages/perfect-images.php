@@ -1,6 +1,6 @@
 <?php
 
-use Imagify\ThirdParty\PerfectImages\PerfectImages;
+use Imagify\ThirdParty\Classes\PerfectImages;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 

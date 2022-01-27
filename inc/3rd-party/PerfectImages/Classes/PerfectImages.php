@@ -2,6 +2,7 @@
 
 namespace Imagify\ThirdParty\PerfectImages;
 
+use Imagify\Media\MediaInterface;
 use Imagify_Assets;
 
 /**
@@ -73,6 +74,21 @@ class PerfectImages {
 		add_filter( 'imagify_fill_thumbnail_data',              array( $this, 'optimize_retina_version_hook' ), 10, 8 );
 		add_filter( 'imagify_fill_unauthorized_thumbnail_data', array( $this, 'maybe_optimize_unauthorized_retina_version_hook' ), 10, 7 );
 		add_action( 'after_imagify_restore_attachment',         array( $this, 'restore_retina_images_hook' ) );
+
+		add_filter( 'imagify_media_files', [ $this, 'add_2x_images_to_sizes_for_optimization', 10, 2 ] );
+	}
+
+	/**
+	 * Add @2x image sizes to the sizes of a given media optimization.
+	 *
+	 * @param array          $files File sizes to optimize. @see Media\WP::get_media_files().
+	 * @param MediaInterface $media The Media for optimization.
+	 *
+	 * @return array Modified file sizes.
+	 */
+	public function add_2x_images_to_sizes_for_optimization( array $files, MediaInterface $media ): array {
+
+		return $files;
 	}
 
 	/**
