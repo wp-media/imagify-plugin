@@ -1,5 +1,8 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+
+namespace Imagify\ThirdParty\PerfectImages;
+
+use Imagify_Assets;
 
 /**
  * Class that handles compatibility with WP Retina 2x plugin.
@@ -7,36 +10,21 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.8
  * @author Grégory Viguier
  */
-class Imagify_WP_Retina_2x {
-
-	/**
-	 * Class version.
-	 *
-	 * @var    string
-	 * @since  1.8
-	 * @author Grégory Viguier
-	 */
-	const VERSION = '1.0.1';
+class PerfectImages {
 
 	/**
 	 * Core instance.
 	 *
-	 * @var    object Imagify_WP_Retina_2x_Core
-	 * @since  1.8
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var    object PerfectImagesCore
 	 */
 	protected $core;
 
 	/**
-	 * The single instance of the class.
+	 * The single instance of this class.
 	 *
-	 * @var    object Imagify_WP_Retina_2x
-	 * @since  1.8
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var    object PerfectImages
 	 */
-	protected static $_instance;
+	protected static $instance;
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -53,11 +41,11 @@ class Imagify_WP_Retina_2x {
 	 * @return object Main instance.
 	 */
 	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
+		if ( ! isset( self::$instance ) ) {
+			self::$instance = new self();
 		}
 
-		return self::$_instance;
+		return self::$instance;
 	}
 
 	/**
@@ -80,7 +68,7 @@ class Imagify_WP_Retina_2x {
 	 */
 	public function get_core() {
 		if ( ! isset( $this->core ) ) {
-			$this->core = new Imagify_WP_Retina_2x_Core();
+			$this->core = new PerfectImagesCore();
 		}
 
 		return $this->core;
@@ -277,8 +265,7 @@ class Imagify_WP_Retina_2x {
 				'wr2x_delete_full' => wp_create_nonce( 'imagify_wr2x_delete_full' ),
 				'wr2x_replace'     => wp_create_nonce( 'imagify_wr2x_replace' ),
 				'wr2x_upload'      => wp_create_nonce( 'imagify_wr2x_upload' ),
-			) );
-			$assets->enqueue( 'wp-retina-2x' );
+			) )->enqueue();
 		}
 	}
 
@@ -470,12 +457,8 @@ class Imagify_WP_Retina_2x {
 
 	/**
 	 * Check for user capacity.
-	 *
-	 * @since  1.8
-	 * @access public
-	 * @author Grégory Viguier
 	 */
-	public function check_user_capacity() {
+	private function check_user_capacity() {
 		if ( ! $this->user_can() ) {
 			$this->send_json( array(
 				'success' => false,
@@ -487,12 +470,10 @@ class Imagify_WP_Retina_2x {
 	/**
 	 * Tell if the current user can re-optimize files.
 	 *
-	 * @since  1.8
-	 * @access public
-	 * @author Grégory Viguier
+	 * @return bool
 	 */
-	public function user_can() {
-		return imagify_current_user_can( 'auto-optimize' );
+	private function user_can(): bool {
+		return imagify_get_context( 'wp' )->current_user_can( 'auto-optimize' );
 	}
 
 	/**
