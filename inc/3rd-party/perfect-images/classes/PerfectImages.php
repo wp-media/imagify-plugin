@@ -2,7 +2,13 @@
 
 namespace Imagify\ThirdParty\PerfectImages;
 
+use Imagify\Media\MediaInterface;
+use Imagify\Optimization\Process\WP as Process;
+use Imagify\Optimization\Data\WP as Data;
+use Imagify\Media\WP as Media;
 use Imagify_Assets;
+use Imagify_Options;
+use Imagify_Settings;
 
 /**
  * Class that handles compatibility with WP Retina 2x plugin.
@@ -26,6 +32,12 @@ class PerfectImages {
 	 */
 	protected static $instance;
 
+	/**
+	 * Retina sizes to be optimized.
+	 *
+	 * @var array
+	 */
+	private $retina_sizes = [];
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** INSTANCE ================================================================================ */
@@ -87,23 +99,102 @@ class PerfectImages {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		// Deal with Imagify when WPR2X is working.
-		add_action( 'wp_ajax_wr2x_generate',                    array( $this, 'wr2x_generate_ajax_cb' ), 5 );
-		add_action( 'wp_ajax_wr2x_delete',                      array( $this, 'wr2x_delete_all_retina_ajax_cb' ), 5 );
-		add_action( 'wp_ajax_wr2x_delete_full',                 array( $this, 'wr2x_delete_full_retina_ajax_cb' ), 5 );
-		add_action( 'wp_ajax_wr2x_replace',                     array( $this, 'wr2x_replace_all_ajax_cb' ), 5 );
-		add_action( 'wp_ajax_wr2x_upload',                      array( $this, 'wr2x_replace_full_retina_ajax_cb' ), 5 );
 		add_action( 'imagify_assets_enqueued',                  array( $this, 'enqueue_scripts' ) );
-		add_action( 'wr2x_retina_file_removed',                 array( $this, 'remove_retina_thumbnail_data_hook' ), 10, 2 );
-		// Deal with Imagify when WP is working.
-		add_action( 'delete_attachment',                        array( $this, 'delete_full_retina_backup_file_hook' ) );
-		// Deal with retina thumbnails when Imagify processes the "normal" images.
-		add_filter( 'imagify_fill_full_size_data',              array( $this, 'optimize_full_retina_version_hook' ), 10, 8 );
-		add_filter( 'imagify_fill_thumbnail_data',              array( $this, 'optimize_retina_version_hook' ), 10, 8 );
-		add_filter( 'imagify_fill_unauthorized_thumbnail_data', array( $this, 'maybe_optimize_unauthorized_retina_version_hook' ), 10, 7 );
-		add_action( 'after_imagify_restore_attachment',         array( $this, 'restore_retina_images_hook' ) );
+
+		add_action( 'wr2x_retina_file_added', [ $this, 'add_retina_size'], 10, 3 );
+		add_action( 'wr2x_generate_retina', [ $this, 'optimize_retina_sizes'] );
+		add_action( 'imagify_media_files', [ $this, 'add_retina_sizes_meta'] );
+
+		// Deal with Imagify when WPR2X is working.
+//		add_action( 'wp_ajax_wr2x_generate',                    array( $this, 'wr2x_generate_ajax_cb' ), 5 );
+//		add_action( 'wp_ajax_wr2x_delete',                      array( $this, 'wr2x_delete_all_retina_ajax_cb' ), 5 );
+//		add_action( 'wp_ajax_wr2x_delete_full',                 array( $this, 'wr2x_delete_full_retina_ajax_cb' ), 5 );
+//		add_action( 'wp_ajax_wr2x_replace',                     array( $this, 'wr2x_replace_all_ajax_cb' ), 5 );
+//		add_action( 'wp_ajax_wr2x_upload',                      array( $this, 'wr2x_replace_full_retina_ajax_cb' ), 5 );
+//		add_action( 'wr2x_retina_file_removed',                 array( $this, 'remove_retina_thumbnail_data_hook' ), 10, 2 );
+//		// Deal with Imagify when WP is working.
+//		add_action( 'delete_attachment',                        array( $this, 'delete_full_retina_backup_file_hook' ) );
+//		// Deal with retina thumbnails when Imagify processes the "normal" images.
+//		add_filter( 'imagify_fill_full_size_data',              array( $this, 'optimize_full_retina_version_hook' ), 10, 8 );
+//		add_filter( 'imagify_fill_thumbnail_data',              array( $this, 'optimize_retina_version_hook' ), 10, 8 );
+//		add_filter( 'imagify_fill_unauthorized_thumbnail_data', array( $this, 'maybe_optimize_unauthorized_retina_version_hook' ), 10, 7 );
+//		add_action( 'after_imagify_restore_attachment',         array( $this, 'restore_retina_images_hook' ) );
 	}
 
+	/**
+	 * Add a newly generated retina size that will need to be optimized.
+	 *
+	 * @hooked wr2x_retina_file_added
+	 *
+	 * @param int    $media_id
+	 * @param string $retina_file
+	 * @param string $size_name
+	 */
+	public function add_retina_size( int $media_id, string $retina_file, string $size_name ) {
+		$this->retina_sizes[] = [
+			'media_id' => $media_id,
+			'retina_file' => $retina_file,
+			'size_name' => $size_name,
+		];
+	}
+
+	/**
+	 * Optimize newly generated retina sizes.
+	 *
+	 * @hooked wr2x_generate_retina
+	 *
+	 * @param int $media_id The attachment id of the retina images to optimize.
+	 */
+	public function optimize_retina_sizes( int $media_id ) {
+		$sizes = [];
+
+		foreach ( $this->retina_sizes as $size ) {
+			if ( $media_id === $size['media_id'] ) {
+				$sizes[] = $size['size_name'] . '@2x';
+			}
+		}
+
+		if ( empty( $sizes ) ) {
+			return;
+		}
+
+		$process = new Process( new Data( new Media( $media_id ) ) );
+
+		$media_opt_level = $process->get_data()->get_optimization_level();
+		$optimization_level = $media_opt_level ?: Imagify_Options::get_instance()->get( 'optimization_level' );
+
+		$process->optimize_sizes( $sizes, $optimization_level );
+	}
+
+	/**
+	 * Filter a Media's get_media_files() response to include retina size data.
+	 *
+	 * @hooked imagify_media_files
+	 *
+	 * @param array          $sizes The Media's size data.
+	 *
+	 * @return array Sizes data that includes retina sizes.
+	 */
+	public function add_retina_sizes_meta( array $sizes ): array {
+		foreach ( $sizes as $size => $size_data ) {
+			$retina_path = wr2x_get_retina( $size_data['path'] );
+
+			if ( empty( $retina_path ) ) {
+				continue;
+			}
+
+			$sizes[$size . '@2x'] = [
+				'size'      => $size . '@2x',
+				'path'      => $retina_path,
+				'width'     => $size_data['width'] * 2,
+				'height'    => $size_data['height'] * 2,
+				'mime-type' => $size_data['mime-type'],
+				'disabled'  => false,
+			];
+		}
+
+		return $sizes;
+	}
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** AJAX CALLBACKS ========================================================================== */
