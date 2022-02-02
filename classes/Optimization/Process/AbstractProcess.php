@@ -1,6 +1,7 @@
 <?php
 namespace Imagify\Optimization\Process;
 
+use Imagify\Deprecated\Traits\Optimization\Process\AbstractProcessDeprecatedTrait;
 use Imagify\Job\MediaOptimization;
 use Imagify\Optimization\Data\DataInterface;
 use Imagify\Optimization\File;
@@ -14,7 +15,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 abstract class AbstractProcess implements ProcessInterface {
-	use \Imagify\Deprecated\Traits\Optimization\Process\AbstractProcessDeprecatedTrait;
+	use AbstractProcessDeprecatedTrait;
 
 	/**
 	 * The suffix used in the thumbnail size name.
