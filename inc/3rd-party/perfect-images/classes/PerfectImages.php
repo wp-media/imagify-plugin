@@ -2,13 +2,11 @@
 
 namespace Imagify\ThirdParty\PerfectImages;
 
-use Imagify\Media\MediaInterface;
 use Imagify\Optimization\Process\WP as Process;
 use Imagify\Optimization\Data\WP as Data;
 use Imagify\Media\WP as Media;
 use Imagify_Assets;
 use Imagify_Options;
-use Imagify_Settings;
 
 /**
  * Class that handles compatibility with WP Retina 2x plugin.
@@ -105,6 +103,9 @@ class PerfectImages {
 		add_action( 'wr2x_generate_retina', [ $this, 'optimize_retina_sizes'] );
 		add_action( 'imagify_media_files', [ $this, 'add_retina_sizes_meta'] );
 
+		add_action( 'wr2x_retina_file_removed', [ $this, 'remove_retina_webp_size'], 10, 2 );
+		add_action( 'wr2x_retina_file_removed', [ $this, 'remove_imagify_retina_data'], 10, 2 );
+
 		// Deal with Imagify when WPR2X is working.
 //		add_action( 'wp_ajax_wr2x_generate',                    array( $this, 'wr2x_generate_ajax_cb' ), 5 );
 //		add_action( 'wp_ajax_wr2x_delete',                      array( $this, 'wr2x_delete_all_retina_ajax_cb' ), 5 );
@@ -194,6 +195,52 @@ class PerfectImages {
 		}
 
 		return $sizes;
+	}
+
+	/**
+	 * Remove a retina-related webp file whose Perfect Images retina version has been deleted.
+	 *
+	 * @hooked wr2x_retina_file_removed
+	 *
+	 * @param int    $media_id    The media attachment ID.
+	 * @param string $retina_file The retina filepath.
+	 */
+	public function remove_retina_webp_size( int $media_id, string $retina_file ) {
+		$meta = wp_get_attachment_metadata( $media_id );
+
+		$retina_webp_filepath = $this->get_retina_webp_filepath( $meta['file'], $retina_file );
+
+		if ( file_exists( $retina_webp_filepath ) ) {
+			unlink( $retina_webp_filepath );
+		}
+	}
+
+	/**
+	 * Remove retina-related imagify data concerning a deleted Perfect Images retina file.
+	 *
+	 * @hooked wr2x_retina_file_removed
+	 *
+	 * @param int    $media_id    The media attachment ID.
+	 * @param string $retina_file The retina filepath.
+	 */
+	public function remove_imagify_retina_data( int $media_id, string $retina_file ) {
+		$meta               = wp_get_attachment_metadata( $media_id );
+		$retina_file_info   = pathinfo( $retina_file );
+		$original_size_name = preg_replace(
+			                      '/@2x/',
+			                      '',
+			                      $retina_file_info['filename']
+		                      )
+		                      . '.' . $retina_file_info['extension'];
+
+		$imagify_size_names = $this->get_retina_imagify_data_size_names( $meta['sizes'], $original_size_name );
+
+		if ( empty( $imagify_size_names ) ) {
+			return;
+		}
+
+		$imagify_data = new Data( new Media( $media_id ) );
+		$imagify_data->delete_sizes_optimization_data( $imagify_size_names );
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -749,5 +796,48 @@ class PerfectImages {
 			'success' => false,
 			'message' => $result->get_error_message(),
 		) );
+	}
+
+	/**
+	 * Get the retina webp filepath associated with a Perfect Images retina file.
+	 *
+	 * @param string $attachment_file The attachment file from WP's attachment meta.
+	 * @param string $retina_file The retina file from Perfect Images.
+	 *
+	 * @return string The full retina-webp file path.
+	 */
+	private function get_retina_webp_filepath( string $attachment_file, string $retina_file ): string {
+		$pathinfo             = pathinfo( $attachment_file );
+		$directory            = $pathinfo['dirname'];
+		$uploads              = wp_upload_dir();
+		$basedir              = $uploads['basedir'];
+		$retina_webp_filepath = trailingslashit( $basedir ) . trailingslashit( $directory ) . $retina_file . '.webp';
+
+		return $retina_webp_filepath;
+	}
+
+	/**
+	 * Get size names as used in an Imagify::AbstractData instance for retina images.
+	 *
+	 * Given an array of size data items from WP's attachment meta,
+	 * and the filename of the original image derived from a Perfect Images retina filename,
+	 * we get a list of size names for all retina-size images that will be found in Imagify's Data instance.
+	 *
+	 * @param array $sizes Sizes from WP's attachment meta.
+	 * @param string $original_size_name The original image filename from which Perfect Images has created a retina filename.
+	 *
+	 * @return array A list of image size names related to the retina file in an Imagify Data Instance.
+	 */
+	private function get_retina_imagify_data_size_names( array $sizes, string $original_size_name ): array {
+		$imagify_size_names = [];
+
+		foreach ( $sizes as $size => $size_data ) {
+			if ( $original_size_name === $size_data['file'] ) {
+				$imagify_size_names[] = $size . '@2x';
+				$imagify_size_names[] = $size . '@2x@imagify-webp';
+			}
+		}
+
+		return $imagify_size_names;
 	}
 }
