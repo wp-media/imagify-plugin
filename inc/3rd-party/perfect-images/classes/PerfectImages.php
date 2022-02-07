@@ -40,13 +40,9 @@ class PerfectImages {
 	/**
 	 * Get the main Instance.
 	 *
-	 * @return object Main instance.
-	 * @author Grégory Viguier
-	 *
-	 * @since  1.8
-	 * @access public
+	 * @return PerfectImages Main instance.
 	 */
-	public static function get_instance() {
+	public static function get_instance(): PerfectImages {
 		if ( ! isset( self::$instance ) ) {
 			self::$instance = new self();
 		}
@@ -62,11 +58,7 @@ class PerfectImages {
 	}
 
 	/**
-	 * Launch the hooks.
-	 *
-	 * @since  1.8
-	 * @access public
-	 * @author Grégory Viguier
+	 * Initialize the hooks.
 	 */
 	public function init() {
 		add_action( 'wr2x_before_regenerate', [ $this, 'restore_originally_uploaded_image' ] );
@@ -131,9 +123,9 @@ class PerfectImages {
 	 *
 	 * @hooked wr2x_retina_file_added
 	 *
-	 * @param int    $media_id
-	 * @param string $retina_file
-	 * @param string $size_name
+	 * @param int    $media_id    The media attachment ID.
+	 * @param string $retina_file The retina filename.
+	 * @param string $size_name   The size name.
 	 */
 	public function add_retina_size( int $media_id, string $retina_file, string $size_name ) {
 		$this->retina_sizes[] = [
@@ -231,11 +223,10 @@ class PerfectImages {
 		$meta               = wp_get_attachment_metadata( $media_id );
 		$retina_file_info   = pathinfo( $retina_file );
 		$original_size_name = preg_replace(
-			                      '/@2x/',
-			                      '',
-			                      $retina_file_info['filename']
-		                      )
-		                      . '.' . $retina_file_info['extension'];
+			'/@2x/',
+			'',
+			$retina_file_info['filename']
+		) . '.' . $retina_file_info['extension'];
 
 		$imagify_size_names = $this->get_retina_imagify_data_size_names( $meta['sizes'], $original_size_name );
 
