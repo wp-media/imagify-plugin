@@ -9,10 +9,7 @@ use Imagify_Filesystem;
 use Imagify_Options;
 
 /**
- * Class that handles compatibility with WP Retina 2x plugin.
- *
- * @since  1.8
- * @author Grégory Viguier
+ * Class that handles compatibility with Perfect Images plugin.
  */
 class PerfectImages {
 
