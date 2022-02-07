@@ -86,11 +86,15 @@ class PerfectImages {
 	public function restore_originally_uploaded_image( int $media_id ) {
 		$media = new Media( $media_id );
 
-		if ( empty( $fullsize_path = $media->get_raw_fullsize_path() ) ) {
+		$fullsize_path = $media->get_raw_fullsize_path();
+
+		if ( empty( $fullsize_path ) ) {
 			return;
 		}
 
-		if ( empty( $original_path = $media->get_original_path() ) ) {
+		$original_path = $media->get_original_path();
+
+		if ( empty( $original_path ) ) {
 			return;
 		}
 
@@ -99,7 +103,9 @@ class PerfectImages {
 			return;
 		}
 
-		if ( empty( $backup_path = $media->get_raw_backup_path() ) ) {
+		$backup_path = $media->get_raw_backup_path();
+
+		if ( empty( $backup_path ) ) {
 			return;
 		}
 
