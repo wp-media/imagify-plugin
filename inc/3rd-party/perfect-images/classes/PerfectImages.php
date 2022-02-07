@@ -5,10 +5,8 @@ namespace Imagify\ThirdParty\PerfectImages;
 use Imagify\Optimization\Process\WP as Process;
 use Imagify\Optimization\Data\WP as Data;
 use Imagify\Media\WP as Media;
-use Imagify_Assets;
 use Imagify_Filesystem;
 use Imagify_Options;
-use WP_Rocket\Admin\Options_Data;
 
 /**
  * Class that handles compatibility with WP Retina 2x plugin.
@@ -17,13 +15,6 @@ use WP_Rocket\Admin\Options_Data;
  * @author Grégory Viguier
  */
 class PerfectImages {
-
-	/**
-	 * Core instance.
-	 *
-	 * @var    object PerfectImagesCore
-	 */
-	protected $core;
 
 	/**
 	 * The single instance of this class.
@@ -45,10 +36,6 @@ class PerfectImages {
 	 * @var array
 	 */
 	private $retina_sizes = [];
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** INSTANCE ================================================================================ */
-	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * Get the main Instance.
@@ -73,28 +60,6 @@ class PerfectImages {
 	protected function __construct() {
 		$this->filesystem = Imagify_Filesystem::get_instance();
 	}
-
-	/**
-	 * Get the core Instance.
-	 *
-	 * @return object Imagify_WP_Retina_2x_Core instance.
-	 * @author Grégory Viguier
-	 *
-	 * @since  1.8
-	 * @access public
-	 */
-	public function get_core() {
-		if ( ! isset( $this->core ) ) {
-			$this->core = new PerfectImagesCore();
-		}
-
-		return $this->core;
-	}
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** INIT ==================================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * Launch the hooks.
@@ -359,13 +324,12 @@ class PerfectImages {
 	 * @return string The full retina-webp file path.
 	 */
 	private function get_retina_webp_filepath( string $attachment_file, string $retina_file ): string {
-		$pathinfo             = pathinfo( $attachment_file );
-		$directory            = $pathinfo['dirname'];
-		$uploads              = wp_upload_dir();
-		$basedir              = $uploads['basedir'];
-		$retina_webp_filepath = trailingslashit( $basedir ) . trailingslashit( $directory ) . $retina_file . '.webp';
+		$pathinfo  = pathinfo( $attachment_file );
+		$directory = $pathinfo['dirname'];
+		$uploads   = wp_upload_dir();
+		$basedir   = $uploads['basedir'];
 
-		return $retina_webp_filepath;
+		return trailingslashit( $basedir ) . trailingslashit( $directory ) . $retina_file . '.webp';
 	}
 
 	/**
@@ -400,7 +364,7 @@ class PerfectImages {
 	 *
 	 * @return string A temporary file path for the optimized full-sized file.
 	 */
-	private function get_temporary_file_path( $file_path ) {
+	private function get_temporary_file_path( string $file_path ): string {
 		return $file_path . '_backup';
 	}
 }
