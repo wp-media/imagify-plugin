@@ -176,6 +176,10 @@ class PerfectImages {
 	 * @return array Sizes data that includes retina sizes.
 	 */
 	public function add_retina_sizes_meta( array $sizes ): array {
+		if ( ! function_exists( 'wr2x_get_retina' ) ) {
+			return $sizes;
+		}
+
 		foreach ( $sizes as $size => $size_data ) {
 			$retina_path = wr2x_get_retina( $size_data['path'] );
 
