@@ -251,16 +251,7 @@ class PerfectImages {
 		$optimization_data = $process->get_data()->get_optimization_data();
 
 		if ( ! empty( $optimization_data['sizes'] ) ) {
-			foreach ( array_keys( $optimization_data['sizes'] ) as $size_name ) {
-				$non_webp_size_name = $process->is_size_webp( $size_name );
-
-				if ( ! $non_webp_size_name || ! isset( $sizes[ $non_webp_size_name ] ) ) {
-					continue;
-				}
-
-				// Add the WebP size.
-				$sizes[ $size_name ] = [];
-			}
+			$sizes = $this->add_webp_sizes( $optimization_data, $process, $sizes );
 		}
 
 		$sizes              = array_keys( $sizes );
@@ -364,5 +355,28 @@ class PerfectImages {
 	 */
 	private function get_temporary_file_path( string $file_path ): string {
 		return $file_path . '_backup';
+	}
+
+	/**
+	 * Add webp sizes names to the sizes to be processed.
+	 *
+	 * @param array   $optimization_data Optimization data.
+	 * @param Process $process           The Imagify Process instance.
+	 * @param array   $sizes             The names of sizes to be processed.
+	 *
+	 * @return array Sizes array with any webp names added.
+	 */
+	private function add_webp_sizes( array $optimization_data, Process $process, array $sizes ): array {
+		foreach ( array_keys( $optimization_data['sizes'] ) as $size_name ) {
+			$non_webp_size_name = $process->is_size_webp( $size_name );
+
+			if ( ! $non_webp_size_name || ! isset( $sizes[ $non_webp_size_name ] ) ) {
+				continue;
+			}
+
+			$sizes[ $size_name ] = [];
+		}
+
+		return $sizes;
 	}
 }
