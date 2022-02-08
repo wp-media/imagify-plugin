@@ -75,7 +75,7 @@ class PerfectImages {
 	/**
 	 * Restore the optimized full-sized file and replace it by the original backup file.
 	 *
-	 * This is to have the original user-uploaded (rather than the optimized full-size) image is in place
+	 * This is to have the original user-uploaded (rather than the optimized full-size) image in place
 	 * when Perfect Images (re)generates any new images.
 	 *
 	 * @param int $media_id A media attachment ID.
@@ -83,35 +83,12 @@ class PerfectImages {
 	public function restore_originally_uploaded_image( int $media_id ) {
 		$media = new Media( $media_id );
 
+		if ( ! $this->can_restore_original( $media ) ) {
+			return;
+		}
+
 		$fullsize_path = $media->get_raw_fullsize_path();
-
-		if ( empty( $fullsize_path ) ) {
-			return;
-		}
-
-		$original_path = $media->get_original_path();
-
-		if ( empty( $original_path ) ) {
-			return;
-		}
-
-		/** If these are not the same, WP will rebuild the full-size from the original along with the thumbnails. */
-		if ( $fullsize_path !== $original_path ) {
-			return;
-		}
-
 		$backup_path = $media->get_raw_backup_path();
-
-		if ( empty( $backup_path ) ) {
-			return;
-		}
-
-		$data = new Data( $media );
-
-		if ( ! $data->is_optimized() ) {
-			return;
-		}
-
 		$tmp_file_path = $this->get_temporary_file_path( $fullsize_path );
 
 		if ( $this->filesystem->exists( $fullsize_path ) ) {
@@ -312,6 +289,29 @@ class PerfectImages {
 		$this->filesystem->move( $tmp_file_path, $file_path, true );
 	}
 
+	/**
+	 * Check that we can restore an originally uploaded file to the full-size image path.
+	 *
+	 * To restore, all the following conditions must all be true:
+	 * 1. We must have previously optimized the image,
+	 * 2. We must have path info for the original, full-size, and backup paths, and
+	 * 3. Original path is the same as the full-size math (otherwise, WP will create a new full-size from the original).
+	 *
+	 * @param Media $media An Imagify Media Instance.
+	 *
+	 * @return bool
+	 */
+	private function can_restore_original( Media $media ): bool {
+		$data = new Data( $media );
+		$fullsize_path = $media->get_raw_fullsize_path();
+		$original_path = $media->get_original_path();
+
+		return $data->is_optimized() &&
+			! empty( $fullsize_path ) &&
+			! empty( $original_path ) &&
+			$fullsize_path === $original_path &&
+			! empty( $media->get_raw_backup_path() );
+	}
 
 	/**
 	 * Get the retina webp filepath associated with a Perfect Images retina file.
