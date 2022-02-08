@@ -274,7 +274,7 @@ class PerfectImages {
 		$optimization_data = $process->get_data()->get_optimization_data();
 
 		if ( ! empty( $optimization_data['sizes'] ) ) {
-			foreach ( $optimization_data['sizes'] as $size_name => $size_data ) {
+			foreach ( array_keys( $optimization_data['sizes'] ) as $size_name ) {
 				$non_webp_size_name = $process->is_size_webp( $size_name );
 
 				if ( ! $non_webp_size_name || ! isset( $sizes[ $non_webp_size_name ] ) ) {
