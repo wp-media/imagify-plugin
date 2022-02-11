@@ -123,6 +123,13 @@ class PerfectImages {
 	 * @param int $media_id The attachment id of the retina images to optimize.
 	 */
 	public function optimize_retina_sizes( int $media_id ) {
+		$process = new Process( new Data( new Media( $media_id ) ) );
+
+		// if this is a new upload, bail out -- we'll optimize everything after the upload completes.
+		if ( empty( $process->get_data()->get_optimization_data()['sizes'] ) ) {
+			return;
+		}
+
 		$sizes = [];
 
 		foreach ( $this->retina_sizes as $size ) {
@@ -134,8 +141,6 @@ class PerfectImages {
 		if ( empty( $sizes ) ) {
 			return;
 		}
-
-		$process = new Process( new Data( new Media( $media_id ) ) );
 
 		$media_opt_level    = $process->get_data()->get_optimization_level();
 		$optimization_level = $media_opt_level ?: Imagify_Options::get_instance()->get( 'optimization_level' );
