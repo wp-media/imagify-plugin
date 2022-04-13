@@ -1,5 +1,5 @@
-=== Imagify – Optimize Images & Convert WebP ===
-Contributors: wp_media
+=== Imagify – Compress & Optimize Images, Convert WebP ===
+Contributors: wp_rocket
 Tags: optimize images, convert webp, webp converter, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
 Tested up to: 5.9
 Stable tag: 1.10
@@ -44,7 +44,7 @@ Did you know that image optimization and web performance go hand in hand? In fac
 
 Images are one of the largest influencing factors in the Core Web Vitals. Image compression will ensure that your images load faster and improve your overall website performance, including your Core Web Vitals metrics. If you’re looking to improve user experience and speed up your WordPress site, images are a good place to start.
 
-Even Google tells you to take care of your images! If you have ever run a performance audit on PageSpeed Insights, you might have seen the “serve images in next-gen formats” opportunity popping up. Another PageSpeed Insights recommendation related to images is to “efficiently encode images”. When you use Imagify, you will be able to address both recommendations and fix your images for a faster website.
+Even Google tells you to take care of your images! If you have ever run a performance audit on PageSpeed Insights, you might have seen the [“serve images in next-gen formats”](https://imagify.io/blog/serve-next-gen-formats-wordpress/) opportunity popping up. Another PageSpeed Insights recommendation related to images is to [“efficiently encode images”](https://imagify.io/blog/efficiently-encode-images-wordpress/). When you use Imagify, you will be able to address both recommendations and fix your images for a faster website.
 
 = What Do Our Users Think Of Imagify? =
 
@@ -86,6 +86,8 @@ It’s packed with advice on image compression and so much more!
 *[How to Resize and Compress Multiple Images Online (Easy Methods)](https://imagify.io/blog/how-to-resize-compress-multiple-images-online/)
 
 *[How to Make Photos Load Faster on WordPress: 6 Key Tactics](https://imagify.io/blog/how-to-make-photos-load-faster-wordpress/)
+
+*[How to Optimize Images for Page Speed (and Google)](https://imagify.io/blog/optimize-images-page-speed-google/)
 
 = Who Are We? =
 
