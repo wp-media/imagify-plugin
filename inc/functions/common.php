@@ -246,11 +246,6 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 			$url = 'https://www.facebook.com/sharer/sharer.php?u=' . $url;
 			break;
 
-		case 'exif':
-			/* translators: URL to a Wikipedia page explaining what EXIF means. */
-			$url = __( 'https://en.wikipedia.org/wiki/Exchangeable_image_file_format', 'imagify' );
-			break;
-
 		case 'contact':
 			$lang  = imagify_get_current_lang_in( 'fr' );
 			$paths = array(

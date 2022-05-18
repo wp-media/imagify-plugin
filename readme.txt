@@ -198,7 +198,7 @@ Do not waste your time resizing and optimizing your images in Photoshop. Imagify
 
 =Is the EXIF data of images removed?=
 
-By default EXIF data is removed. It is possible to keep it with the WordPress plugin by enabling the option in the Imagify Settings page.
+EXIF data is not removed.
 
 =I used Kraken, Optimus, EWWW or WP Smush, will Imagify further optimize my images?=
 

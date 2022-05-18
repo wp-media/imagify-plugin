@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Context;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use \Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Fallback class for contexts.
@@ -10,13 +10,12 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Noop implements ContextInterface {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * Get the context "short name".
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string
@@ -29,7 +28,6 @@ class Noop implements ContextInterface {
 	 * Tell if the context is network-wide.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -42,7 +40,6 @@ class Noop implements ContextInterface {
 	 * Get the type of files this context allows.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @see    imagify_get_mime_types()
 	 * @author Grégory Viguier
 	 *
@@ -59,7 +56,6 @@ class Noop implements ContextInterface {
 	 * Get the thumbnail sizes for this context, except the full size.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array {
@@ -81,7 +77,6 @@ class Noop implements ContextInterface {
 	 * 0 means to not resize.
 	 *
 	 * @since  1.9.8
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return int
@@ -91,10 +86,21 @@ class Noop implements ContextInterface {
 	}
 
 	/**
+	 * Tell if the optimization process is allowed resize in this context.
+	 *
+	 * @since  1.9
+	 * @author Grégory Viguier
+	 *
+	 * @return bool
+	 */
+	public function can_resize() {
+		return false;
+	}
+
+	/**
 	 * Tell if the optimization process is allowed to backup in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -104,23 +110,9 @@ class Noop implements ContextInterface {
 	}
 
 	/**
-	 * Tell if the optimization process is allowed to keep exif in this context.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return bool
-	 */
-	public function can_keep_exif() {
-		return true;
-	}
-
-	/**
 	 * Tell if the current user is allowed to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $describer Capacity describer. See $this->get_capacity() for possible values. Can also be a "real" user capacity.
@@ -135,7 +127,6 @@ class Noop implements ContextInterface {
 	 * Tell if a user is allowed to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  int    $user_id   A user ID.
@@ -151,7 +142,6 @@ class Noop implements ContextInterface {
 	 * Get user capacity to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
