@@ -1,7 +1,5 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
-$default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 ?>
 <tr class="imagify-row-folder-type" data-group-id="<?php echo $data['group_id']; ?>" data-context="<?php echo $data['context']; ?>">
 	<td class="imagify-cell-checkbox">
@@ -32,10 +30,9 @@ $default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 		$this->print_template( 'input/selector', [
 			'current_label' => __( 'Current level:', 'imagify' ),
 			'name'          => 'level[' . $data['group_id'] . ']',
-			'value'         => $default_level,
+			'value'         => 2,
 			'values'        => [
 				0 => imagify_get_optimization_level_label( 0, '%ICON% %s' ),
-				1 => imagify_get_optimization_level_label( 1, '%ICON% %s' ),
 				2 => imagify_get_optimization_level_label( 2, '%ICON% %s' ),
 			],
 		] );
