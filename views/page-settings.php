@@ -40,45 +40,6 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 
 							<h2 class="imagify-options-title"><?php _e( 'General Settings', 'imagify' ); ?></h2>
 
-							<p class="imagify-options-subtitle" id="imagify-optimization-level-label">
-								<?php _e( 'Optimization Level', 'imagify' ); ?>
-
-								<span class="imagify-info">
-									<span class="dashicons dashicons-info"></span>
-									<a href="#imagify-more-info" class="imagify-modal-trigger"><?php _e( 'More info?', 'imagify' ); ?></a>
-								</span>
-							</p>
-
-							<div class="imagify-setting-optim-level">
-								<p class="imagify-inline-options">
-									<input type="radio" id="imagify-optimization_level_normal" name="<?php echo $option_name; ?>[optimization_level]" value="0" <?php checked( $options->get( 'optimization_level' ), 0 ); ?> aria-describedby="imagify-optimization-level-label">
-									<label for="imagify-optimization_level_normal">
-										<?php _e( 'Normal', 'imagify' ); ?>
-									</label>
-
-									<input type="radio" id="imagify-optimization_level_aggro" name="<?php echo $option_name; ?>[optimization_level]" value="1" <?php checked( $options->get( 'optimization_level' ), 1 ); ?>  aria-describedby="imagify-optimization-level-label">
-									<label for="imagify-optimization_level_aggro">
-										<?php _e( 'Aggressive', 'imagify' ); ?>
-									</label>
-
-									<input type="radio" id="imagify-optimization_level_ultra" name="<?php echo $option_name; ?>[optimization_level]" value="2" <?php checked( $options->get( 'optimization_level' ), 2 ); ?> aria-describedby="imagify-optimization-level-label">
-									<label for="imagify-optimization_level_ultra">
-										<?php _e( 'Ultra', 'imagify' ); ?>
-									</label>
-								</p>
-
-								<p class="imagify-visual-comparison-text">
-									<?php
-									printf(
-										/* translators: 1 is a button tag start, 2 is the button tag end. */
-										__( 'Need help to choose? %1$sTry the Visual Comparison%2$s', 'imagify' ),
-										'<button type="button" class="button button-primary button-mini-flat imagify-visual-comparison-btn imagify-modal-trigger" data-target="#imagify-visual-comparison">',
-										'</button>'
-									);
-									?>
-								</p>
-							</div>
-
 							<p class="imagify-setting-line">
 							<?php
 							$settings->field_checkbox( array(
