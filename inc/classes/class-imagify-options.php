@@ -33,7 +33,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 */
 	protected $default_values = array(
 		'api_key'             => '',
-		'optimization_level'  => 0,
+		'optimization_level'  => 2,
 		'auto_optimize'       => 0,
 		'backup'              => 0,
 		'resize_larger'       => 0,
@@ -55,7 +55,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 * @since  1.7
 	 */
 	protected $reset_values = array(
-		'optimization_level' => 1,
+		'optimization_level' => 2,
 		'auto_optimize'      => 1,
 		'backup'             => 1,
 		'convert_to_webp'    => 1,
