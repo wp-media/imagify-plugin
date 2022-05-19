@@ -235,13 +235,13 @@ function get_imagify_attachment_reoptimize_link( $process ) {
 	if ( $media_level < 1 ) {
 		$url_args['optimization_level'] = 2;
 		$data['optimization_level']     = 2;
-		$data['url']                    = get_imagify_admin_url( 'reoptimize-file', $url_args );
+		$data['url']                    = get_imagify_admin_url( 'manual-reoptimize', $url_args );
 
 		$output .= $views->get_template( 'button/re-optimize', $data );
 	} elseif ( $media_level > 0 ) {
 		$url_args['optimization_level'] = 0;
 		$data['optimization_level']     = 0;
-		$data['url']                    = get_imagify_admin_url( 'reoptimize-file', $url_args );
+		$data['url']                    = get_imagify_admin_url( 'manual-reoptimize', $url_args );
 
 		$output .= $views->get_template( 'button/re-optimize', $data );
 	}
