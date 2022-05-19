@@ -125,19 +125,25 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		if ( wp_doing_ajax() ) {
-			// Actions triggered only on admin ajax.
-			$actions = array_merge( $this->ajax_post_actions, $this->ajax_only_actions );
+		$doing_ajax = wp_doing_ajax();
 
-			foreach ( $actions as $action ) {
+		foreach ( $this->ajax_post_actions as $action ) {
+			$action_callback = "{$action}_callback";
+			if ( $doing_ajax ) {
+				add_action( 'wp_ajax_' . $action, array( $this, $action_callback ) );
+			}
+			add_action( 'admin_post_' . $action, array( $this, $action_callback ) );
+		}
+
+		// Actions triggered only on admin ajax.
+		if ( $doing_ajax ) {
+			foreach ( $this->ajax_only_actions as $action ) {
 				add_action( 'wp_ajax_' . $action, array( $this, $action . '_callback' ) );
 			}
 		}
 
-		// Actions triggered on both admin ajax and admin post.
-		$actions = array_merge( $this->ajax_post_actions, $this->post_only_actions );
-
-		foreach ( $actions as $action ) {
+		// Actions triggered on admin post.
+		foreach ( $this->post_only_actions as $action ) {
 			add_action( 'admin_post_' . $action, array( $this, $action . '_callback' ) );
 		}
 	}
