@@ -142,7 +142,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			}
 		}
 
-		// Actions triggered on both admin ajax and admin post.
+		// Actions triggered on admin post.
 		foreach ( $this->post_only_actions as $action ) {
 			add_action( 'admin_post_' . $action, array( $this, $action . '_callback' ) );
 		}
