@@ -51,6 +51,7 @@ class Display {
 	 */
 	public function init() {
 		add_action( 'template_redirect', [ $this, 'start_content_process' ], -1000 );
+		add_filter( 'imagify_process_webp_content', [ $this, 'process_content' ] );
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -148,7 +149,8 @@ class Display {
 			$content = str_replace( $image['tag'], $tag, $content );
 		}
 
-		return $content;    }
+		return $content;
+	}
 
 	/**
 	 * Remove pre-existing <picture> tags.
