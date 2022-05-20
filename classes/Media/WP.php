@@ -1,6 +1,8 @@
 <?php
 namespace Imagify\Media;
 
+use Imagify\Deprecated\Traits\Media\WPDeprecatedTrait;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -10,7 +12,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class WP extends AbstractMedia {
-	use \Imagify\Deprecated\Traits\Media\WPDeprecatedTrait;
+	use WPDeprecatedTrait;
 
 	/**
 	 * Tell if we’re playing in WP 5.3’s garden.

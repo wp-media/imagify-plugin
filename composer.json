@@ -50,6 +50,7 @@
 			"Imagify\\ThirdParty\\EnableMediaReplace\\": "inc/3rd-party/enable-media-replace/classes/",
 			"Imagify\\ThirdParty\\FormidablePro\\": "inc/3rd-party/formidable-pro/classes/",
 			"Imagify\\ThirdParty\\NGG\\": "inc/3rd-party/nextgen-gallery/classes/",
+			"Imagify\\ThirdParty\\PerfectImages\\": "inc/3rd-party/perfect-images/classes",
 			"Imagify\\ThirdParty\\RegenerateThumbnails\\": "inc/3rd-party/regenerate-thumbnails/classes/",
 			"Imagify\\ThirdParty\\WPRocket\\": "inc/3rd-party/wp-rocket/classes/"
 		},
