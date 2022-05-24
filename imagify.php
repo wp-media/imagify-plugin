@@ -6,16 +6,14 @@
  * Version: 1.10
  * Requires at least: 5.3
  * Requires PHP: 7.0
- * Author: WP Media
- * Author URI: https://wp-media.me/
+ * Author: WP Rocket
+ * Author URI: https://wp-rocket.me/
  * Licence: GPLv2
  *
  * Text Domain: imagify
  * Domain Path: languages
  *
- * Copyright 2019 WP Media
- *
- * @package WP-Media\Imagify\WordPress-Plugin
+ * Copyright 2022 WP Media
  */
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
@@ -37,7 +35,6 @@ if ( ! defined( 'IMAGIFY_APP_DOMAIN' ) ) {
 }
 define( 'IMAGIFY_APP_API_URL',     IMAGIFY_APP_DOMAIN . '/api/' );
 
-add_action( 'plugins_loaded', '_imagify_init' );
 /**
  * Plugin init.
  *
@@ -65,6 +62,7 @@ function _imagify_init() {
 
 	$plugin->init();
 }
+add_action( 'plugins_loaded', '_imagify_init' );
 
 /**
  * Check if Imagify is activated on the network.
@@ -144,7 +142,6 @@ function imagify_load_translations() {
 	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
 }
 
-register_activation_hook( IMAGIFY_FILE, 'imagify_set_activation' );
 /**
  * Set a transient on plugin activation, it will be used later to trigger activation hooks after the plugin is loaded.
  * The transient contains the ID of the user that activated the plugin.
@@ -164,8 +161,8 @@ function imagify_set_activation() {
 		set_transient( 'imagify_activation', get_current_user_id(), 30 );
 	}
 }
+register_activation_hook( IMAGIFY_FILE, 'imagify_set_activation' );
 
-register_deactivation_hook( IMAGIFY_FILE, 'imagify_deactivation' );
 /**
  * Trigger a hook on plugin deactivation.
  *
@@ -185,3 +182,5 @@ function imagify_deactivation() {
 	 */
 	do_action( 'imagify_deactivation' );
 }
+register_deactivation_hook( IMAGIFY_FILE, 'imagify_deactivation' );
+
