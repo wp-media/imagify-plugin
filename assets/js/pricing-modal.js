@@ -199,7 +199,7 @@
 			$offer.find('.imagify-approx-nb').text(quo * 5);
 
 			if ('monthly' === type) {
-				// Additionnal price.
+				// Additional price.
 				$offer.find('.imagify-price-add-data').text('$' + add);
 			}
 

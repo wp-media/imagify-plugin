@@ -96,19 +96,7 @@ function get_imagify_plans_prices() {
 }
 
 /**
- * Get Imagify Plans Prices.
- *
- * @since  1.5
- * @author Geoffrey Crofte
- *
- * @return object
- */
-function get_imagify_packs_prices() {
-	return imagify()->get_packs_prices();
-}
-
-/**
- * Get Imagify All Prices (plan & packs).
+ * Get Imagify All Prices (plans).
  *
  * @since  1.5.4
  * @author Geoffrey Crofte

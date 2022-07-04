@@ -40,7 +40,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'saveApiKeyTitle'             => __( 'Connect to Imagify!', 'imagify' ),
 					'saveApiKeyText'              => __( 'Paste your API key below:', 'imagify' ),
 					'saveApiKeyConfirmButtonText' => __( 'Connect me', 'imagify' ),
-					'ApiKeyErrorEmpty'            => __( 'You need to specify your api key!', 'imagify' ),
+					'ApiKeyErrorEmpty'            => __( 'You need to specify your API key!', 'imagify' ),
 					'ApiKeyCheckSuccessTitle'     => __( 'Congratulations!', 'imagify' ),
 					'ApiKeyCheckSuccessText'      => __( 'Your API key is valid. You can now configure the Imagify settings to optimize your images.', 'imagify' ),
 				],
