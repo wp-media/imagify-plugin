@@ -19,7 +19,11 @@
 	"type": "wordpress-plugin",
 	"config": {
 		"classloader-suffix": "WPMediaImagifyWordPressPlugin",
-		"sort-packages": true
+		"sort-packages": true,
+		"allow-plugins": {
+			"composer/installers": true,
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
 	},
 	"support": {
 		"issues": "https://github.com/wp-media/imagify-plugin/issues",
