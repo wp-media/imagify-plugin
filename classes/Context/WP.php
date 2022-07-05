@@ -1,8 +1,6 @@
 <?php
 namespace Imagify\Context;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Context class used for the WP media library.
  *
@@ -17,7 +15,6 @@ class WP extends AbstractContext {
 	 *
 	 * @var    string
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $context = 'wp';
@@ -27,7 +24,6 @@ class WP extends AbstractContext {
 	 *
 	 * @var    int
 	 * @since  1.9.8
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $resizing_threshold;
@@ -36,7 +32,6 @@ class WP extends AbstractContext {
 	 * Get the thumbnail sizes for this context, except the full size.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array {
@@ -64,7 +59,6 @@ class WP extends AbstractContext {
 	 * 0 means to not resize.
 	 *
 	 * @since  1.9.8
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return int
@@ -87,7 +81,6 @@ class WP extends AbstractContext {
 	 * Tell if the optimization process is allowed to backup in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -103,29 +96,9 @@ class WP extends AbstractContext {
 	}
 
 	/**
-	 * Tell if the optimization process is allowed to keep exif in this context.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return bool
-	 */
-	public function can_keep_exif() {
-		if ( isset( $this->can_keep_exif ) ) {
-			return $this->can_keep_exif;
-		}
-
-		$this->can_keep_exif = get_imagify_option( 'exif' );
-
-		return $this->can_keep_exif;
-	}
-
-	/**
 	 * Get user capacity to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.

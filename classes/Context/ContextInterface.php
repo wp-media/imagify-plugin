@@ -1,8 +1,6 @@
 <?php
 namespace Imagify\Context;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Interface to use for contexts.
  *
@@ -15,7 +13,6 @@ interface ContextInterface {
 	 * Get the main Instance.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @return object Main instance.
@@ -26,7 +23,6 @@ interface ContextInterface {
 	 * Get the context "short name".
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string
@@ -37,7 +33,6 @@ interface ContextInterface {
 	 * Tell if the context is network-wide.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -48,7 +43,6 @@ interface ContextInterface {
 	 * Get the type of files this context allows.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @see    imagify_get_mime_types()
 	 * @author Grégory Viguier
 	 *
@@ -63,7 +57,6 @@ interface ContextInterface {
 	 * Get the thumbnail sizes for this context, except the full size.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array {
@@ -83,7 +76,6 @@ interface ContextInterface {
 	 * 0 means to not resize.
 	 *
 	 * @since  1.9.8
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return int
@@ -94,7 +86,6 @@ interface ContextInterface {
 	 * Tell if the optimization process is allowed resize in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -105,7 +96,6 @@ interface ContextInterface {
 	 * Tell if the optimization process is allowed to backup in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -113,21 +103,9 @@ interface ContextInterface {
 	public function can_backup();
 
 	/**
-	 * Tell if the optimization process is allowed to keep exif in this context.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return bool
-	 */
-	public function can_keep_exif();
-
-	/**
 	 * Tell if the current user is allowed to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $describer Capacity describer. See $this->get_capacity() for possible values. Can also be a "real" user capacity.
@@ -140,7 +118,6 @@ interface ContextInterface {
 	 * Tell if a user is allowed to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  int    $user_id   A user ID.
@@ -155,7 +132,6 @@ interface ContextInterface {
 	 *
 	 * @since  1.9
 	 * @since  1.9 The describer 'auto-optimize' is not used anymore.
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.

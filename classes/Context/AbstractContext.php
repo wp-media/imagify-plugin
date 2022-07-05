@@ -1,8 +1,6 @@
 <?php
 namespace Imagify\Context;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Abstract used for contexts.
  *
@@ -16,7 +14,6 @@ abstract class AbstractContext implements ContextInterface {
 	 *
 	 * @var    string
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $context;
@@ -26,7 +23,6 @@ abstract class AbstractContext implements ContextInterface {
 	 *
 	 * @var    bool
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $is_network_wide = false;
@@ -39,7 +35,6 @@ abstract class AbstractContext implements ContextInterface {
 	 *     - 'image' to allow only images.
 	 *     - 'not-image' to allow only pdf files.
 	 * @since  1.9
-	 * @access protected
 	 * @see    imagify_get_mime_types()
 	 * @author Grégory Viguier
 	 */
@@ -58,7 +53,6 @@ abstract class AbstractContext implements ContextInterface {
 	 *     @type string $name   The size name.
 	 * }
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $thumbnail_sizes;
@@ -68,26 +62,14 @@ abstract class AbstractContext implements ContextInterface {
 	 *
 	 * @var    bool
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $can_backup;
 
 	/**
-	 * Tell if the optimization process is allowed to keep exif in this context.
-	 *
-	 * @var    bool
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected $can_keep_exif;
-
-	/**
 	 * Get the context "short name".
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string
@@ -100,7 +82,6 @@ abstract class AbstractContext implements ContextInterface {
 	 * Tell if the context is network-wide.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -113,7 +94,6 @@ abstract class AbstractContext implements ContextInterface {
 	 * Get the type of files this context allows.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @see    imagify_get_mime_types()
 	 * @author Grégory Viguier
 	 *
@@ -130,7 +110,6 @@ abstract class AbstractContext implements ContextInterface {
 	 * Get the thumbnail sizes for this context, except the full size.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array {
@@ -151,7 +130,6 @@ abstract class AbstractContext implements ContextInterface {
 	 * Tell if the optimization process is allowed resize in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -164,7 +142,6 @@ abstract class AbstractContext implements ContextInterface {
 	 * Tell if the optimization process is allowed to backup in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -174,23 +151,9 @@ abstract class AbstractContext implements ContextInterface {
 	}
 
 	/**
-	 * Tell if the optimization process is allowed to keep exif in this context.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return bool
-	 */
-	public function can_keep_exif() {
-		return $this->can_keep_exif;
-	}
-
-	/**
 	 * Tell if the current user is allowed to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $describer Capacity describer. See $this->get_capacity() for possible values. Can also be a "real" user capacity.
@@ -205,7 +168,6 @@ abstract class AbstractContext implements ContextInterface {
 	 * Tell if a user is allowed to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  int|\WP_User $user_id   A user ID or \WP_User object. Fallback to the current user ID.
@@ -276,7 +238,6 @@ abstract class AbstractContext implements ContextInterface {
 	 * Filter a user capacity used to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $capacity  The user capacity.

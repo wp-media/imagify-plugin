@@ -232,20 +232,18 @@ function get_imagify_attachment_reoptimize_link( $process ) {
 		];
 	}
 
-	foreach ( [ 2, 1, 0 ] as $level ) {
-		/**
-		 * Display a link if:
-		 * - the level is lower than the one used to optimize the media,
-		 * - or, the level is higher and the media is not already optimized.
-		 */
-		if ( $media_level < $level || ( $media_level > $level && ! $is_already_optimized ) ) {
-			$url_args['optimization_level'] = $level;
-			$data['optimization_level']     = $level;
-			$data['url']                    = get_imagify_admin_url( 'manual-reoptimize', $url_args );
+	if ( $media_level < 1 ) {
+		$url_args['optimization_level'] = 2;
+		$data['optimization_level']     = 2;
+		$data['url']                    = get_imagify_admin_url( 'manual-reoptimize', $url_args );
 
-			$output .= $views->get_template( 'button/re-optimize', $data );
-			$output .= '<br/>';
-		}
+		$output .= $views->get_template( 'button/re-optimize', $data );
+	} elseif ( $media_level > 0 ) {
+		$url_args['optimization_level'] = 0;
+		$data['optimization_level']     = 0;
+		$data['url']                    = get_imagify_admin_url( 'manual-reoptimize', $url_args );
+
+		$output .= $views->get_template( 'button/re-optimize', $data );
 	}
 
 	return $output;
