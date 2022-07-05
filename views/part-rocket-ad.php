@@ -1,7 +1,9 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
-if ( defined( 'WP_ROCKET_VERSION' ) ) {
+$plugins = get_plugins();
+
+if ( isset( $plugins['wp-rocket/wp-rocket.php'] ) ) {
 	return '';
 }
 
@@ -28,8 +30,8 @@ $dismiss_url      = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dism
 
 		<p class="imagify-sidebar-description">
 			<?php
-			/* translators: 1 is a "bold" tag opening, 2 is the "bold" tag closing. Please use a non-breaking space for WP Rocket. */
-			printf( __( 'WP Rocket is a %1$sspeed optimization plugin for WordPress%2$s helping you to implement a variety of speed-boosting features to your WordPress site.', 'imagify' ), '<strong>', '</strong>' );
+			/* translators: 1 is a "bold" tag opening, 2 is the "bold" tag closing. Please use a non-breaking space for WP Rocket. */
+			printf( __( 'WP Rocket is a %1$sspeed optimization plugin for WordPress%2$s helping you to implement a variety of speed-boosting features to your WordPress site.', 'imagify' ), '<strong>', '</strong>' );
 			?>
 		</p>
 
