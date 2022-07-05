@@ -2,7 +2,7 @@
 Contributors: wp_rocket
 Tags: optimize images, convert webp, webp converter, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
 Tested up to: 6.0
-Stable tag: 1.10
+Stable tag: 2.0
 
 Compress images & convert WebP with the best WordPress image optimization plugin. Optimize images in 1-click & resize images with our image optimizer!
 
@@ -255,6 +255,16 @@ No. However, you get 20MB of quota per month for free to optimize your images (a
 4. Other Media Page
 
 == Changelog ==
+= 2.0 =
+- Enhancement: Add compatibility with our new smart compression system (#663)
+- Enhancement: Optimize initialization of some of the code (#473)
+- Enhancement: Add new filter `imagify_process_webp_content` (#653)
+- Bugfix: Prevent PHP warning when displaying the pricing modal (#666)
+- 3rd party compatibility: Pass missing parameter to the `http_headers_useragent` filter (#612)
+- 3rd party compatibility: Prevent conflict with WP Cloudflare super page cache (#609)
+- Bugfix: Fix various UI issues (#604, #586, #592, #594)
+- i18n: Fix typos & improve strings (#621)
+
 = 1.10 - 2021/07/15 =
 * The plugin minimum compatible versions are now PHP 7.0 and WordPress 5.3
 * Enhancement: Correctly display WordPress cover blocks when WebP and picture tag replacement is enabled (#546)
