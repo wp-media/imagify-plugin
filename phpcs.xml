@@ -28,8 +28,8 @@
 	<arg name="extensions" value="php"/><!-- Limit to PHP files -->
 
 	<!-- Check for cross-version support for PHP 5.4 and higher + WP 4.0 and higher. -->
-	<config name="testVersion" value="5.4-"/>
-	<config name="minimum_supported_wp_version" value="4.0"/>
+	<config name="testVersion" value="7.0-"/>
+	<config name="minimum_supported_wp_version" value="5.3"/>
 
 	<!-- Run against the PHPCompatibility ruleset dedicated to WP. -->
 	<rule ref="PHPCompatibilityWP">
@@ -48,6 +48,7 @@
 		<exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/><!-- Maybe someday. -->
 		<exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine"/><!-- Maybe someday. -->
 		<exclude name="Squiz.Commenting.FileComment.Missing"/><!-- Nope nope nope. -->
+		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
 		<exclude name="Squiz.PHP.EmbeddedPhp.ContentBeforeOpen"/><!-- Total bullshit. -->
 		<exclude name="Squiz.PHP.EmbeddedPhp.ContentAfterEnd"/><!-- Same. -->
 		<exclude name="Squiz.PHP.CommentedOutCode.Found"/><!-- LOL, this thing is totally broken. -->

@@ -1,7 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin&#8217; uh?' );
 
-add_action( 'admin_init', '_imagify_upgrader' );
 /**
  * Tell WP what to do when admin is loaded aka upgrader.
  *
@@ -75,6 +74,7 @@ function _imagify_upgrader() {
 		Imagify_Data::get_instance()->set( 'version', IMAGIFY_VERSION );
 	}
 }
+add_action( 'admin_init', '_imagify_upgrader' );
 
 /**
  * Upgrade the upgrader:
@@ -160,7 +160,6 @@ function imagify_upgrader_upgrade() {
 	Imagify_Data::get_instance()->set( 'version', $network_version );
 }
 
-add_action( 'imagify_first_network_install', '_imagify_first_install' );
 /**
  * Keeps this function up to date at each version.
  *
@@ -170,8 +169,8 @@ function _imagify_first_install() {
 	// Set a transient to know when we will have to display a notice to ask the user to rate the plugin.
 	set_site_transient( 'imagify_seen_rating_notice', true, DAY_IN_SECONDS * 3 );
 }
+add_action( 'imagify_first_network_install', '_imagify_first_install' );
 
-add_action( 'imagify_upgrade', '_imagify_new_upgrade', 10, 2 );
 /**
  * What to do when Imagify is updated, depending on versions.
  *
@@ -304,93 +303,13 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	if ( version_compare( $site_version, '1.9.11' ) < 0 ) {
 		imagify_secure_custom_directories();
 	}
+
+	if ( version_compare( $site_version, '2.0' ) < 0 ) {
+		Imagify_Options::get_instance()->set( 'optimization_level', 2 );
+	}
 }
+add_action( 'imagify_upgrade', '_imagify_new_upgrade', 10, 2 );
 
-add_action( 'upgrader_process_complete', 'imagify_maybe_reset_opcache', 20, 2 );
-/**
- * Maybe reset opcache after Imagify update.
- *
- * @since  1.7.1.2
- * @author Grégory Viguier
- *
- * @param object $wp_upgrader Plugin_Upgrader instance.
- * @param array  $hook_extra  {
- *     Array of bulk item update data.
- *
- *     @type string $action  Type of action. Default 'update'.
- *     @type string $type    Type of update process. Accepts 'plugin', 'theme', 'translation', or 'core'.
- *     @type bool   $bulk    Whether the update process is a bulk update. Default true.
- *     @type array  $plugins Array of the basename paths of the plugins' main files.
- * }
- */
-function imagify_maybe_reset_opcache( $wp_upgrader, $hook_extra ) {
-	static $imagify_path;
-
-	if ( ! isset( $hook_extra['action'], $hook_extra['type'], $hook_extra['plugins'] ) ) {
-		return;
-	}
-
-	if ( 'update' !== $hook_extra['action'] || 'plugin' !== $hook_extra['type'] || ! is_array( $hook_extra['plugins'] ) ) {
-		return;
-	}
-
-	$plugins = array_flip( $hook_extra['plugins'] );
-
-	if ( ! isset( $imagify_path ) ) {
-		$imagify_path = plugin_basename( IMAGIFY_FILE );
-	}
-
-	if ( ! isset( $plugins[ $imagify_path ] ) ) {
-		return;
-	}
-
-	imagify_reset_opcache();
-}
-
-/**
- * Reset PHP opcache.
- *
- * @since  1.8.1
- * @since  1.9.9 Added $reset_function_cache parameter and return boolean.
- * @author Grégory Viguier
- *
- * @param  bool $reset_function_cache Set to true to bypass the cache.
- * @return bool                       Return true if the opcode cache was reset (or reset in a previous call), or false if the opcode cache is disabled.
- */
-function imagify_reset_opcache( $reset_function_cache = false ) {
-	static $can_reset;
-
-	if ( $reset_function_cache || ! isset( $can_reset ) ) {
-		if ( ! function_exists( 'opcache_reset' ) ) {
-			$can_reset = false;
-			return false;
-		}
-
-		$opcache_enabled = filter_var( ini_get( 'opcache.enable' ), FILTER_VALIDATE_BOOLEAN ); // phpcs:ignore PHPCompatibility.IniDirectives.NewIniDirectives.opcache_enableFound
-
-		if ( ! $opcache_enabled ) {
-			$can_reset = false;
-			return false;
-		}
-
-		$restrict_api = ini_get( 'opcache.restrict_api' ); // phpcs:ignore PHPCompatibility.IniDirectives.NewIniDirectives.opcache_restrict_apiFound
-
-		if ( $restrict_api && strpos( __FILE__, $restrict_api ) !== 0 ) {
-			$can_reset = false;
-			return false;
-		}
-
-		$can_reset = true;
-	}
-
-	if ( ! $can_reset ) {
-		return false;
-	}
-
-	return opcache_reset(); // phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.opcache_resetFound
-}
-
-add_action( 'imagify_activation', 'imagify_secure_custom_directories' );
 /**
  * Scan imagify directories and add `index.php` files where missing.
  *
@@ -409,3 +328,4 @@ function imagify_secure_custom_directories() {
 	$backup_dir = get_imagify_backup_dir_path();
 	Imagify_Custom_Folders::add_indexes( $backup_dir );
 }
+add_action( 'imagify_activation', 'imagify_secure_custom_directories' );

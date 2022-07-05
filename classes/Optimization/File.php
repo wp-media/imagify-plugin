@@ -3,8 +3,6 @@ namespace Imagify\Optimization;
 
 use Imagify_Requirements;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * A generic optimization class focussed on the file itself.
  *
@@ -18,7 +16,6 @@ class File {
 	 *
 	 * @var    string
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $path;
@@ -28,7 +25,6 @@ class File {
 	 *
 	 * @var    bool
 	 * @since  1.9
-	 * @access protected
 	 * @see    $this->is_image()
 	 * @author Grégory Viguier
 	 */
@@ -39,7 +35,6 @@ class File {
 	 *
 	 * @var    array
 	 * @since  1.9
-	 * @access protected
 	 * @see    $this->get_file_type()
 	 * @author Grégory Viguier
 	 */
@@ -50,7 +45,6 @@ class File {
 	 *
 	 * @var    \Imagify_Filesystem
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $filesystem;
@@ -60,7 +54,6 @@ class File {
 	 *
 	 * @var    \WP_Image_Editor_Imagick|\WP_Image_Editor_GD|WP_Error.
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $editor;
@@ -70,7 +63,6 @@ class File {
 	 *
 	 * @var    array
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $options = [];
@@ -79,7 +71,6 @@ class File {
 	 * The constructor.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $file_path Absolute path to the file.
@@ -93,7 +84,6 @@ class File {
 	 * Tell if the file is valid.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -106,7 +96,6 @@ class File {
 	 * Tell if the file can be processed.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool|WP_Error
@@ -178,7 +167,6 @@ class File {
 	 * Resize (and rotate) an image if it is bigger than the maximum width provided.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 * @author Remy Perona
 	 *
@@ -301,7 +289,6 @@ class File {
 	 * Warning: If the destination file already exists, it will be overwritten.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  array $destination {
@@ -386,7 +373,6 @@ class File {
 	 *
 	 * @since  1.9
 	 * @since  1.9.8 Added $backup_source argument.
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $backup_path   The backup path.
@@ -444,7 +430,6 @@ class File {
 	 * Optimize a file with Imagify.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  array $args         {
@@ -453,7 +438,6 @@ class File {
 	 *     @type bool   $backup             False to prevent backup. True to follow the user's setting. A backup can't be forced.
 	 *     @type string $backup_path        If a backup must be done, this is the path to use. Default is the backup path used for the WP Media Library.
 	 *     @type int    $optimization_level The optimization level (2=ultra, 1=aggressive, 0=normal).
-	 *     @type bool   $keep_exif          To keep exif data or not.
 	 *     @type string $convert            Set to 'webp' to convert the image to WebP.
 	 *     @type string $context            The context.
 	 *     @type int    $original_size      The file size, sent to the API.
@@ -466,7 +450,6 @@ class File {
 			'backup_path'        => null,
 			'backup_source'      => null,
 			'optimization_level' => 0,
-			'keep_exif'          => true,
 			'convert'            => '',
 			'context'            => 'wp',
 			'original_size'      => 0,
@@ -519,7 +502,7 @@ class File {
 			'normal'        => 0 === $args['optimization_level'],
 			'aggressive'    => 1 === $args['optimization_level'],
 			'ultra'         => 2 === $args['optimization_level'],
-			'keep_exif'     => $args['keep_exif'],
+			'keep_exif'     => true,
 			'original_size' => $args['original_size'],
 			'context'       => $args['context'],
 		];
@@ -596,7 +579,6 @@ class File {
 	 * Get an image editor instance (WP_Image_Editor_Imagick, WP_Image_Editor_GD).
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @return WP_Image_Editor_Imagick|WP_Image_Editor_GD|WP_Error
@@ -631,7 +613,6 @@ class File {
 	 * Get the image editor methods we will use.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @return array
@@ -666,7 +647,6 @@ class File {
 	 * Check if a file exceeds the weight limit (> 5mo).
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -685,7 +665,6 @@ class File {
 	 * Tell if the current file is supported for a given context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @see    imagify_get_mime_types()
 	 * @author Grégory Viguier
 	 *
@@ -700,7 +679,6 @@ class File {
 	 * Tell if the file is an image.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -719,7 +697,6 @@ class File {
 	 * Tell if the file is a pdf.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -732,7 +709,6 @@ class File {
 	 * Get the file mime type.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string
@@ -745,7 +721,6 @@ class File {
 	 * Get the file extension.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string|null
@@ -758,7 +733,6 @@ class File {
 	 * Get the file path.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string
@@ -771,7 +745,6 @@ class File {
 	 * Replace the file extension by WebP.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string|bool The file path on success. False if not an image or on failure.
@@ -793,7 +766,6 @@ class File {
 	 * Rejects "path/to/.webp" files.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -806,7 +778,6 @@ class File {
 	 * Get the file mime type + file extension.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @see    wp_check_filetype()
 	 * @author Grégory Viguier
 	 *
@@ -838,7 +809,6 @@ class File {
 	 * If the media is an image, get its width and height.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array
@@ -863,7 +833,6 @@ class File {
 	 * Get a plugin’s option.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $option_name The option nme.

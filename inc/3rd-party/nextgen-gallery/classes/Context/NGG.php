@@ -1,7 +1,8 @@
 <?php
 namespace Imagify\ThirdParty\NGG\Context;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Context\AbstractContext;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Context class used for the WP media library.
@@ -9,15 +10,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.9
  * @author Grégory Viguier
  */
-class NGG extends \Imagify\Context\AbstractContext {
-	use \Imagify\Traits\InstanceGetterTrait;
+class NGG extends AbstractContext {
+	use InstanceGetterTrait;
 
 	/**
 	 * Context "short name".
 	 *
 	 * @var    string
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $context = 'ngg';
@@ -30,7 +30,6 @@ class NGG extends \Imagify\Context\AbstractContext {
 	 *     - 'image' to allow only images.
 	 *     - 'not-image' to allow only pdf files.
 	 * @since  1.9
-	 * @access protected
 	 * @see    imagify_get_mime_types()
 	 * @author Grégory Viguier
 	 */
@@ -49,7 +48,6 @@ class NGG extends \Imagify\Context\AbstractContext {
 	 *     @type string $name   The size name.
 	 * }
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 */
 	protected $thumbnail_sizes = [];
@@ -59,27 +57,15 @@ class NGG extends \Imagify\Context\AbstractContext {
 	 *
 	 * @var    bool
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $can_backup = true;
-
-	/**
-	 * Tell if the optimization process is allowed to keep exif in this context.
-	 *
-	 * @var    bool
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected $can_keep_exif = true;
 
 	/**
 	 * Get images max width for this context. This is used when resizing.
 	 * 0 means to not resize.
 	 *
 	 * @since  1.9.8
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return int
@@ -92,7 +78,6 @@ class NGG extends \Imagify\Context\AbstractContext {
 	 * Get user capacity to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.

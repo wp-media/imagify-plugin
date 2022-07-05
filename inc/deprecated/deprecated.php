@@ -1663,3 +1663,92 @@ if ( is_admin() ) :
 	}
 
 endif;
+
+/**
+ * Maybe reset opcache after Imagify update.
+ *
+ * @since  1.7.1.2
+ * @since  2.0
+ * @author Grégory Viguier
+ *
+ * @param object $wp_upgrader Plugin_Upgrader instance.
+ * @param array  $hook_extra  {
+ *     Array of bulk item update data.
+ *
+ *     @type string $action  Type of action. Default 'update'.
+ *     @type string $type    Type of update process. Accepts 'plugin', 'theme', 'translation', or 'core'.
+ *     @type bool   $bulk    Whether the update process is a bulk update. Default true.
+ *     @type array  $plugins Array of the basename paths of the plugins' main files.
+ * }
+ */
+function imagify_maybe_reset_opcache( $wp_upgrader, $hook_extra ) {
+	_deprecated_function( __FUNCTION__ . '()', '2.0' );
+
+	static $imagify_path;
+
+	if ( ! isset( $hook_extra['action'], $hook_extra['type'], $hook_extra['plugins'] ) ) {
+		return;
+	}
+
+	if ( 'update' !== $hook_extra['action'] || 'plugin' !== $hook_extra['type'] || ! is_array( $hook_extra['plugins'] ) ) {
+		return;
+	}
+
+	$plugins = array_flip( $hook_extra['plugins'] );
+
+	if ( ! isset( $imagify_path ) ) {
+		$imagify_path = plugin_basename( IMAGIFY_FILE );
+	}
+
+	if ( ! isset( $plugins[ $imagify_path ] ) ) {
+		return;
+	}
+
+	imagify_reset_opcache();
+}
+
+/**
+ * Reset PHP opcache.
+ *
+ * @since  1.8.1
+ * @since  1.9.9 Added $reset_function_cache parameter and return boolean.
+ * @since  2.0 deprecated
+ * @author Grégory Viguier
+ *
+ * @param  bool $reset_function_cache Set to true to bypass the cache.
+ * @return bool                       Return true if the opcode cache was reset (or reset in a previous call), or false if the opcode cache is disabled.
+ */
+function imagify_reset_opcache( $reset_function_cache = false ) {
+	_deprecated_function( __FUNCTION__ . '()', '2.0' );
+
+	static $can_reset;
+
+	if ( $reset_function_cache || ! isset( $can_reset ) ) {
+		if ( ! function_exists( 'opcache_reset' ) ) {
+			$can_reset = false;
+			return false;
+		}
+
+		$opcache_enabled = filter_var( ini_get( 'opcache.enable' ), FILTER_VALIDATE_BOOLEAN ); // phpcs:ignore PHPCompatibility.IniDirectives.NewIniDirectives.opcache_enableFound
+
+		if ( ! $opcache_enabled ) {
+			$can_reset = false;
+			return false;
+		}
+
+		$restrict_api = ini_get( 'opcache.restrict_api' ); // phpcs:ignore PHPCompatibility.IniDirectives.NewIniDirectives.opcache_restrict_apiFound
+
+		if ( $restrict_api && strpos( __FILE__, $restrict_api ) !== 0 ) {
+			$can_reset = false;
+			return false;
+		}
+
+		$can_reset = true;
+	}
+
+	if ( ! $can_reset ) {
+		return false;
+	}
+
+	return opcache_reset(); // phpcs:ignore PHPCompatibility.FunctionUse.NewFunctions.opcache_resetFound
+}

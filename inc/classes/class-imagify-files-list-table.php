@@ -33,7 +33,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 *
 	 * @var    array
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $folders = array();
@@ -43,7 +42,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 *
 	 * @var    object Imagify_Filesystem
 	 * @since  1.7.1
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $filesystem;
@@ -53,7 +51,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 *
 	 * @var    object Imagify_Views
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $views;
@@ -62,7 +59,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Constructor.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param array $args An associative array of arguments.
@@ -85,7 +81,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Prepares the list of items for displaying.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function prepare_items() {
@@ -233,7 +228,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Message to be displayed when there are no items.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function no_items() {
@@ -302,7 +296,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Display views.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function views() {
@@ -420,7 +413,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Get an associative array ( option_name => option_title ) with the list of bulk actions available on this table.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array
@@ -436,7 +428,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * 'internal-name' => 'Title'
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array
@@ -462,7 +453,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * The second format will make the initial sorting order be descending.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return array
@@ -480,7 +470,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Get a column contents.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $column The column "name": "cb", "title", "optimization_level", etc.
@@ -501,7 +490,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Handles the checkbox column output.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -518,7 +506,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Handles the title column output.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -569,7 +556,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Handles the parent folder column output.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -605,7 +591,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Handles the optimization data column output.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -658,7 +643,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Handles the status column output.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -694,7 +678,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Handles the optimization level column output.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -711,7 +694,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Handles the actions column output.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -749,7 +731,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Prints a button to optimize the file.
 	 *
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -778,7 +759,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Prints a button to retry to optimize the file.
 	 *
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -810,7 +790,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Prints buttons to re-optimize the file to other levels.
 	 *
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -836,20 +815,18 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$data        = [];
 		$url_args    = [ 'attachment_id' => $media->get_id() ];
 
-		foreach ( [ 2, 1, 0 ] as $level ) {
-			/**
-			 * Display a link if:
-			 * - the level is lower than the one used to optimize the media,
-			 * - or, the level is higher and the media is not already optimized.
-			 */
-			if ( $media_level < $level || ( $media_level > $level && ! $is_already_optimized ) ) {
-				$url_args['optimization_level'] = $level;
-				$data['optimization_level']     = $level;
-				$data['url']                    = get_imagify_admin_url( 'reoptimize-file', $url_args );
+		if ( $media_level < 1 ) {
+			$url_args['optimization_level'] = 2;
+			$data['optimization_level']     = 2;
+			$data['url']                    = get_imagify_admin_url( 'reoptimize-file', $url_args );
 
-				echo $this->views->get_template( 'button/re-optimize', $data );
-				echo '<br/>';
-			}
+			echo $this->views->get_template( 'button/re-optimize', $data );
+		} elseif ( $media_level > 0 ) {
+			$url_args['optimization_level'] = 0;
+			$data['optimization_level']     = 0;
+			$data['url']                    = get_imagify_admin_url( 'reoptimize-file', $url_args );
+
+			echo $this->views->get_template( 'button/re-optimize', $data );
 		}
 	}
 
@@ -857,7 +834,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Prints a button to generate WebP versions if they are missing.
 	 *
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -874,7 +850,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Prints a button to delete WebP versions when the status is "already_optimized".
 	 *
 	 * @since  1.9.6
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -891,7 +866,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Prints a button to restore the file.
 	 *
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -915,7 +889,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Prints a button to check if the file has been modified or not.
 	 *
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -933,7 +906,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Prints a button for the comparison tool (before / after optimization).
 	 *
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
@@ -981,7 +953,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * It may happen if the $item doesn't come from the prepare() method.
 	 *
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  object $item The current item. It must contain at least a $process property.
@@ -1018,7 +989,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Get the name of the default primary column.
 	 *
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @return string Name of the default primary column, in this case, 'title'.
@@ -1031,7 +1001,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Get a list of CSS classes for the WP_List_Table table tag.
 	 *
 	 * @since  1.7
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @return array List of CSS classes for the table tag.
@@ -1044,7 +1013,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Allow to save the screen options when submitted by the user.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  bool|int $status Screen option value. Default false to skip.
@@ -1064,7 +1032,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Get the requested folder filter.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string
@@ -1084,7 +1051,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * Get the requested status filter.
 	 *
 	 * @since  1.7
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string

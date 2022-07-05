@@ -1,11 +1,11 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Imagify.io API for WordPress.
  */
 class Imagify {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * The Imagify API endpoint.
@@ -47,7 +47,6 @@ class Imagify {
 	 *
 	 * @var    object Imagify_Filesystem
 	 * @since  1.7.1
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $filesystem;
@@ -57,7 +56,6 @@ class Imagify {
 	 *
 	 * @var    \stdClass|\WP_Error
 	 * @since  1.9.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected static $user;
@@ -83,7 +81,6 @@ class Imagify {
 	/**
 	 * Get your Imagify account infos.
 	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @return object
@@ -128,7 +125,6 @@ class Imagify {
 	/**
 	 * Create a user on your Imagify account.
 	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @param  array $data All user data.
@@ -166,7 +162,6 @@ class Imagify {
 	/**
 	 * Update an existing user on your Imagify account.
 	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @param  string $data All user data.
@@ -188,7 +183,6 @@ class Imagify {
 	/**
 	 * Check your Imagify API key status.
 	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @param  string $data The license key.
@@ -220,7 +214,6 @@ class Imagify {
 	/**
 	 * Get the Imagify API version.
 	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @return object
@@ -242,7 +235,6 @@ class Imagify {
 	/**
 	 * Get Public Info.
 	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @return object
@@ -256,7 +248,6 @@ class Imagify {
 	/**
 	 * Optimize an image from its binary content.
 	 *
-	 * @access public
 	 * @since 1.6.5
 	 * @since 1.6.7 $data['image'] can contain the file path (prefered) or the result of `curl_file_create()`.
 	 *
@@ -280,7 +271,6 @@ class Imagify {
 	/**
 	 * Optimize an image from its URL.
 	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @param  string $data All options. Details here: --.
@@ -301,7 +291,6 @@ class Imagify {
 	/**
 	 * Get prices for plans.
 	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @return object
@@ -313,23 +302,8 @@ class Imagify {
 	}
 
 	/**
-	 * Get prices for packs (One Time).
+	 * Get all prices (Plans included).
 	 *
-	 * @access public
-	 * @since  1.6.5
-	 *
-	 * @return object
-	 */
-	public function get_packs_prices() {
-		$this->headers = $this->all_headers;
-
-		return $this->http_call( 'pricing/pack/' );
-	}
-
-	/**
-	 * Get all prices (packs & plans included).
-	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @return object
@@ -341,9 +315,8 @@ class Imagify {
 	}
 
 	/**
-	 * Get all prices (packs & plans included).
+	 * Get coupon code data.
 	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @param  string $coupon A coupon code.
@@ -358,7 +331,6 @@ class Imagify {
 	/**
 	 * Get information about current discount.
 	 *
-	 * @access public
 	 * @since  1.6.5
 	 *
 	 * @return object
@@ -372,7 +344,6 @@ class Imagify {
 	/**
 	 * Make an HTTP call using curl.
 	 *
-	 * @access private
 	 * @since  1.6.5
 	 * @since  1.6.7 Use `wp_remote_request()` when possible (when we don't need to send an image).
 	 *
@@ -451,7 +422,6 @@ class Imagify {
 	/**
 	 * Make an HTTP call using curl.
 	 *
-	 * @access private
 	 * @since  1.6.7
 	 * @throws Exception When curl_init() fails.
 	 * @author Grégory Viguier
@@ -504,7 +474,7 @@ class Imagify {
 				curl_setopt( $ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS );
 			}
 
-			$user_agent = apply_filters( 'http_headers_useragent', 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ) );
+			$user_agent = apply_filters( 'http_headers_useragent', 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ), $url );
 
 			curl_setopt( $ch, CURLOPT_URL, $url );
 			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
@@ -580,7 +550,6 @@ class Imagify {
 	/**
 	 * Handle the request response and maybe trigger an error.
 	 *
-	 * @access private
 	 * @since  1.6.7
 	 * @author Grégory Viguier
 	 *
@@ -629,7 +598,6 @@ class Imagify {
 	 * Generate a random key.
 	 * Similar to wp_generate_password() but without filter.
 	 *
-	 * @access private
 	 * @since  1.8.4
 	 * @see    wp_generate_password()
 	 * @author Grégory Viguier
@@ -651,7 +619,6 @@ class Imagify {
 	/**
 	 * Filter the arguments used in an HTTP request, to make sure our API key has not been overwritten by some other plugin.
 	 *
-	 * @access public
 	 * @since  1.8.4
 	 * @author Grégory Viguier
 	 *

@@ -312,12 +312,6 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	color: #40B1D0;
 }
 
-.imagify-col-content {
-	background: #F4F7F9;
-	border-left: 1px solid #ddd;
-	border-right: 1px solid #ddd;
-}
-
 .imagify-col-content .imagify-block-secondary {
 	margin-left: -1px;
 	margin-right: -1px;
