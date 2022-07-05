@@ -1,15 +1,24 @@
 /* Filter block */
 .imagify-files-list .wp-filter {
-	padding: 15px 20px;
+	padding: 0 20px 15px;
 }
 .imagify-files-list .filter-items select {
 	height: auto;
-	padding: 6px;
-	margin-right: 12px;
+	padding: 2px 20px 3px 6px;
+	margin: 15px 12px 0 0;
+	max-width: 100%;
 }
 .imagify-files-list .filter-items .button {
 	height: auto;
 	padding: 2px 12px 3px;
+	margin-top: 15px;
+}
+@media screen and (max-width: 782px) {
+	.imagify-files-list .filter-items .button {
+		margin-bottom: 0;
+		line-height: 2.15384615;
+		padding: 0 12px;
+	}
 }
 
 /* Empty table */
