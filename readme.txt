@@ -12,7 +12,7 @@ Compress images & convert WebP with the best WordPress image optimization plugin
 
 [Imagify](https://imagify.io/) is the most advanced image optimization plugin to help you resize and compress images. You can now use its power directly in WordPress to optimize images and reduce the weight of the photos you want to add to your site – all in just one click and without sacrificing their quality. 
 
-Imagify is the best WordPress image optimizer. The plugin lets you optimize images in one go with its bulk optimization option. You can resize your images on the fly and, with 3 compression levels to choose from, your images are automatically optimized in the selected compression level. If needed, you can always restore your images to their original versions.
+Imagify is the best WordPress image optimizer. The plugin lets you optimize images in one go with its bulk optimization option. You can resize your images on the fly – they will be automatically optimized at the best compression level. If needed, you can always restore your images to their original versions.
 
 On top of optimizing images, you’ll choose the best WebP plugin for WordPress. Imagify also converts your images to WebP, a next-gen format for lighter images that will speed up your WordPress site, improve user experience, and even SEO. Convert WebP will make a difference in images optimization, you’ll see that from yourself.
 
@@ -24,7 +24,7 @@ Imagify is a great image compressor and the ultimate solution to optimize images
 
 Many of your high-quality images may be in sizes that are much too large. To reduce image size and compress large images, Imagify has a setting that allows you to choose a maximum width for all of your images, and if you upload images that are larger than that size, it will resize large images for you during optimization. Imagify will resize images proportionally without cropping them.
 
-With such a great image optimizer like Imagify, you can choose between two types of image compression: [lossy compression and lossless compression](https://imagify.io/blog/lossless-vs-lossy-image-compression/). The Normal image compression level uses lossless compression, meaning there should be no difference in image quality after image optimization. The Aggressive and Ultra levels both use lossy compression, meaning you could notice some slight differences in image quality, but you will reduce image size even more! 
+With such a great image optimizer like Imagify, you’ll get your images automatically optimized at the best compression level and quality – thanks to the Smart Compression Mode.
 
 When using our image compression tool, Imagify, you will enjoy smaller file sizes and faster loading times. But the best part is that you will optimize images and reduce their weight without losing quality: why should you have to choose between beauty and speed? If you want to compress images, it’s now easier than ever with Imagify!
 
@@ -50,7 +50,7 @@ Even Google tells you to take care of your images! If you have ever run a perfor
 
 Here’s what our users have to say about us after optimizing their images with Imagify:
 
->"Images are other media are the largest parts on your web pages (most likely). Therefore don't forget to optimise images for the web before adding to your site. For WordPress there are many optimisation plugins available. My favourite is Imagify" — [Mark Wilkinson](https://twitter.com/wpmark/status/1479128422395830273)
+>"Images and other media are the largest parts on your web pages (most likely). Therefore don't forget to optimize images for the web before adding to your site. For WordPress there are many optimisation plugins available. My favourite is Imagify" — [Mark Wilkinson](https://twitter.com/wpmark/status/1479128422395830273)
 >
 
 >”To give your images a slimming treatment, without altering them aesthetically, there is a great plugin on WordPress: Imagify. Simple, efficient and functional, it’s really worth a look.”— [WP Marmite](https://twitter.com/wpmarmite_en/status/1383072818649255937)
@@ -103,7 +103,7 @@ Our mission is to improve the web, we are making it faster with [WP Rocket](http
 
 = Related Plugins =
 * [WP Rocket](https://wp-rocket.me/): Best caching plugin to speed-up your WordPress website.
-* [Lazy Load](https://wordpress.org/plugins/rocket-lazy-load/): Best Lazy Load script to reduce the number of HTTP requests and improves the website's loading time.
+* [Lazy Load](https://wordpress.org/plugins/rocket-lazy-load/): Best Lazy Load script to reduce the number of HTTP requests and improve the website's loading time.
 
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -162,15 +162,7 @@ When you optimize JPG, PNG, and GIF files, Imagify will also create WebP version
 
 = How should I know which image compression level is best for me? =
 
-There are three image compression levels available - Normal, Aggressive and Ultra.
-
-Normal compression is a "lossless" image optimization. This means there is no loss of image quality after compression.
-
-Aggressive and Ultra compression are more powerful, so the picture quality will be somewhat reduced. The weight of the compressed image will be much less.
-
-We recommend Aggressive as the best balanced level that reduces the size of the image but does not affect the quality.
-
-It would be best, however, to test the 3 levels of compression on a smaller amount of images and see how it affects the quality of your image. Once you see which compression level suits your needs, you can easily run the others via Bulk optimization or Media Library page.
+Don’t worry! Imagify comes with the Smart Compression Mode. It means that your images will be automatically optimized for the best possible compression ratio and quality. There’s nothing else to do – just enjoy your lighter and faster images.
 
 =How does the optimization process work?=
 
@@ -178,7 +170,7 @@ The image optimization process is performed on our servers. Once done, Imagify r
 
 =How long are images stored by Imagify?=
 
-Once your images have been optimized via the WP plugin, compressed images stay on your end forever (even if you delete the Imagify account).
+Once your images have been optimized via the WP plugin, the compressed images stay on your end forever (even if you delete the Imagify account).
 
 During the optimization process, compressed images sent via the API or WordPress plugin are stored for one hour on our server (they are already sent back to your site and stay there safely).
 
@@ -210,7 +202,7 @@ No. Imagify automatically replaces the original images with an optimized image. 
 
 = Is it possible to re-optimize images with a different level? =
 
-Yes. By activating the backup option in the plugin, you can re-optimize each compressed image with a different image compression level.
+Yes. By activating the backup option in the plugin, you can re-optimize each image to lossless compression with a single click.
 
 = What happens when the plugin is disabled? =
 
