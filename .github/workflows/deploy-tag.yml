@@ -10,20 +10,20 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@master
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: 7.4
         coverage: none  # XDebug can be enabled here 'coverage: xdebug'
-        tools: composer:v1
+        tools: composer:v2
 
     - name: Build
       run: composer install -a --no-dev
-        
+
     - name: WordPress Plugin Deploy
-      uses: 10up/action-wordpress-plugin-deploy@master
+      uses: 10up/action-wordpress-plugin-deploy@stable
       env:
         SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
         SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
