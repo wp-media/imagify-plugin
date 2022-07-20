@@ -8,11 +8,12 @@ $hidden_class = Imagify_Requirements::is_api_key_valid() ? '' : ' hidden';
 $lang         = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
 
 /* Ads notice */
+$plugins = get_plugins();
 $notice  = 'wp-rocket';
 $user_id = get_current_user_id();
 $notices = get_user_meta( $user_id, '_imagify_ignore_ads', true );
 $notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
-$wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket';
+$wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-rocket.php'] ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket';
 ?>
 <div class="wrap imagify-settings <?php echo $wrapper_class; ?> imagify-clearfix">
 
@@ -39,45 +40,6 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 						<div class="imagify-settings-section">
 
 							<h2 class="imagify-options-title"><?php _e( 'General Settings', 'imagify' ); ?></h2>
-
-							<p class="imagify-options-subtitle" id="imagify-optimization-level-label">
-								<?php _e( 'Optimization Level', 'imagify' ); ?>
-
-								<span class="imagify-info">
-									<span class="dashicons dashicons-info"></span>
-									<a href="#imagify-more-info" class="imagify-modal-trigger"><?php _e( 'More info?', 'imagify' ); ?></a>
-								</span>
-							</p>
-
-							<div class="imagify-setting-optim-level">
-								<p class="imagify-inline-options">
-									<input type="radio" id="imagify-optimization_level_normal" name="<?php echo $option_name; ?>[optimization_level]" value="0" <?php checked( $options->get( 'optimization_level' ), 0 ); ?> aria-describedby="imagify-optimization-level-label">
-									<label for="imagify-optimization_level_normal">
-										<?php _e( 'Normal', 'imagify' ); ?>
-									</label>
-
-									<input type="radio" id="imagify-optimization_level_aggro" name="<?php echo $option_name; ?>[optimization_level]" value="1" <?php checked( $options->get( 'optimization_level' ), 1 ); ?>  aria-describedby="imagify-optimization-level-label">
-									<label for="imagify-optimization_level_aggro">
-										<?php _e( 'Aggressive', 'imagify' ); ?>
-									</label>
-
-									<input type="radio" id="imagify-optimization_level_ultra" name="<?php echo $option_name; ?>[optimization_level]" value="2" <?php checked( $options->get( 'optimization_level' ), 2 ); ?> aria-describedby="imagify-optimization-level-label">
-									<label for="imagify-optimization_level_ultra">
-										<?php _e( 'Ultra', 'imagify' ); ?>
-									</label>
-								</p>
-
-								<p class="imagify-visual-comparison-text">
-									<?php
-									printf(
-										/* translators: 1 is a button tag start, 2 is the button tag end. */
-										__( 'Need help to choose? %1$sTry the Visual Comparison%2$s', 'imagify' ),
-										'<button type="button" class="button button-primary button-mini-flat imagify-visual-comparison-btn imagify-modal-trigger" data-target="#imagify-visual-comparison">',
-										'</button>'
-									);
-									?>
-								</p>
-							</div>
 
 							<p class="imagify-setting-line">
 							<?php
@@ -106,20 +68,6 @@ $wrapper_class = isset( $notices[ $notice ] ) || defined( 'WP_ROCKET_VERSION' ) 
 									printf( __( 'The backup folder %s cannot be created or is not writable by the server, original images cannot be saved!', 'imagify' ), "<code>$backup_path</code>" );
 									?>
 								</strong>
-							</p>
-
-							<p class="imagify-setting-line">
-								<?php
-								$info  = __( 'EXIF data is information stored in your pictures like shutter speed, exposure compensation, ISO, etc...', 'imagify' );
-								$info .= ' <a href="' . esc_url( imagify_get_external_url( 'exif' ) ) . '" target="_blank">' . __( 'Learn more', 'imagify' ) . '</a><br/><br/>';
-								$info .= __( 'If you are a photographer, you may be interested in this option if you are displaying info like the model of your camera on your pages. Also, keeping EXIF data can fix some colorimetric problems.', 'imagify' );
-
-								$settings->field_checkbox( array(
-									'option_name' => 'exif',
-									'label'       => __( 'Keep all EXIF data from your images', 'imagify' ),
-									'info'        => $info,
-								) );
-								?>
 							</p>
 						</div>
 					</div>

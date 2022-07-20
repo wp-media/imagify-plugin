@@ -1,11 +1,10 @@
 <?php
 namespace Imagify\Optimization\Process;
 
+use Imagify\Deprecated\Traits\Optimization\Process\AbstractProcessDeprecatedTrait;
 use Imagify\Job\MediaOptimization;
 use Imagify\Optimization\Data\DataInterface;
 use Imagify\Optimization\File;
-
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Abstract class used to optimize medias.
@@ -14,7 +13,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 abstract class AbstractProcess implements ProcessInterface {
-	use \Imagify\Deprecated\Traits\Optimization\Process\AbstractProcessDeprecatedTrait;
+	use AbstractProcessDeprecatedTrait;
 
 	/**
 	 * The suffix used in the thumbnail size name.
@@ -49,7 +48,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @var    DataInterface
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $data;
@@ -59,7 +57,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @var    array
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $data_format = [
@@ -76,7 +73,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @var    File
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $file;
@@ -86,7 +82,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @var    Imagify_Filesystem
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $filesystem;
@@ -96,7 +91,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @var    array
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $options = [];
@@ -105,7 +99,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * The constructor.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @see    self::constructor_accepts()
 	 * @author Grégory Viguier
 	 *
@@ -129,7 +122,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Tell if the given entry can be accepted in the constructor.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  mixed $id Whatever.
@@ -150,7 +142,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Get the data instance.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return DataInterface|false
@@ -163,7 +154,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Get the media instance.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return MediaInterface|false
@@ -180,7 +170,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Get the File instance of the original file.
 	 *
 	 * @since  1.9.8
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return File|false
@@ -203,7 +192,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Get the File instance of the full size file.
 	 *
 	 * @since  1.9.8
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return File|false
@@ -226,7 +214,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Tell if the current media is valid.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -239,7 +226,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Tell if the current user is allowed to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $describer Capacity describer. See \Imagify\Context\ContextInterface->get_capacity() for possible values. Can also be a "real" user capacity.
@@ -264,7 +250,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Optimize a media files.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
@@ -311,7 +296,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Re-optimize a media files with a different level.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
@@ -356,7 +340,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Optimize several file sizes by pushing tasks into the queue.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @see    MediaOptimization->task_before()
 	 * @see    MediaOptimization->task_after()
 	 * @author Grégory Viguier
@@ -479,7 +462,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Optimize one file with Imagify directly.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size               The media size.
@@ -683,7 +665,7 @@ abstract class AbstractProcess implements ProcessInterface {
 						'backup_source'      => 'full' === $thumb_size ? $media->get_original_path() : null,
 						'optimization_level' => $optimization_level,
 						'convert'            => $webp ? 'webp' : '',
-						'keep_exif'          => $this->can_keep_exif( $size ),
+						'keep_exif'          => true,
 						'context'            => $media->get_context(),
 						'original_size'      => $response['file_size'],
 					] );
@@ -740,7 +722,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Compare the file size of a file and its WebP version: if the WebP version is heavier than the non-WebP file, delete it.
 	 *
 	 * @since  1.9.4
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  array $args {
@@ -850,7 +831,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Restore the media files from the backup file.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool|WP_Error True on success. A \WP_Error instance on failure.
@@ -963,7 +943,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Restore the thumbnails.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @return bool|WP_Error True on success. A \WP_Error instance on failure.
@@ -992,7 +971,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Delete the backup file.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function delete_backup() {
@@ -1022,7 +1000,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Create a temporary copy of a size file.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size  The image size name.
@@ -1172,7 +1149,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Get the path to a temporary copy of a size file.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size  The image size name.
@@ -1212,7 +1188,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Maybe resize an image.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size   The size name.
@@ -1322,7 +1297,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Tell if a size should be resized.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size The size name.
@@ -1350,7 +1324,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Tell if a size should be backuped.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size The size name.
@@ -1369,29 +1342,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		return $this->get_media()->get_context_instance()->can_backup();
 	}
 
-	/**
-	 * Tell if a size should keep exif.
-	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $size The size name.
-	 * @return bool
-	 */
-	protected function can_keep_exif( $size ) {
-		if ( ! $this->is_valid() ) {
-			return false;
-		}
-
-		if ( 'full' !== $size && 'full' . static::WEBP_SUFFIX !== $size ) {
-			// We keep exif only on the main file and its WebP version.
-			return false;
-		}
-
-		return $this->get_media()->get_context_instance()->can_keep_exif();
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** WEBP ==================================================================================== */
@@ -1401,7 +1351,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Generate WebP images if they are missing.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
@@ -1459,7 +1408,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since  1.9
 	 * @since  1.9.6 Return WP_Error or true.
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  bool $keep_full Set to true to keep the full size.
@@ -1518,7 +1466,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since  1.9
 	 * @since  1.9.6 Return WP_Error or true.
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $file_path Path to the non-WebP file.
@@ -1582,7 +1529,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Tell if a thumbnail size is an "Imagify WebP" size.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size_name The size name.
@@ -1606,7 +1552,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Tell if the media has WebP versions.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -1637,7 +1582,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Make sure the file is an image before using this method.
 	 *
 	 * @since  1.9.5
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param string $file_path Path to the file.
@@ -1684,7 +1628,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Tell if a process is running for this media.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string|bool The action if locked ('optimizing' or 'restoring'). False if not locked.
@@ -1710,7 +1653,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Set the running status to "running" for 10 minutes.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param string $action The action performed behind this lock: 'optimizing' or 'restoring'.
@@ -1733,7 +1675,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Unset the running status.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function unlock() {
@@ -1752,7 +1693,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Get the name of the transient that stores the lock status.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @return string|bool The name on success. False on failure.
@@ -1775,7 +1715,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Validate the lock action.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $action The action performed behind this lock: 'optimizing' or 'restoring'.
@@ -1804,7 +1743,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Tell if a size already has optimization data.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size The size name.
@@ -1820,7 +1758,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Update the optimization data for a size.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  object $response The API response.
@@ -1919,7 +1856,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Get a plugin’s option.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $option_name The option nme.
@@ -1940,7 +1876,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * If not provided (false, null), fallback to the level set in the plugin's settings.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 *
 	 * @param  mixed $optimization_level The optimization level.

@@ -246,11 +246,6 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 			$url = 'https://www.facebook.com/sharer/sharer.php?u=' . $url;
 			break;
 
-		case 'exif':
-			/* translators: URL to a Wikipedia page explaining what EXIF means. */
-			$url = __( 'https://en.wikipedia.org/wiki/Exchangeable_image_file_format', 'imagify' );
-			break;
-
 		case 'contact':
 			$lang  = imagify_get_current_lang_in( 'fr' );
 			$paths = array(
@@ -370,10 +365,8 @@ function imagify_get_optimization_level_label( $level, $format = '%s' ) {
 
 		switch ( $level ) {
 			case 2:
-				$icon .= '<polygon points="11.6054688 11.6054688 8.7890625 11.6054688 8.7890625 0.39453125 11.6054688 0.39453125"/><polygon points="7.39453125 11.6054688 4.60546875 11.6054688 4.60546875 3.89453125 7.39453125 3.89453125"/><polygon points="3.2109375 11.6054688 0.39453125 11.6054688 0.39453125 6 3.2109375 6"/>';
-				break;
 			case 1:
-				$icon .= '<polygon fill="#CCD1D6" points="11.6054688 11.6054688 8.7890625 11.6054688 8.7890625 0.39453125 11.6054688 0.39453125"/><polygon points="7.39453125 11.6054688 4.60546875 11.6054688 4.60546875 3.89453125 7.39453125 3.89453125"/><polygon points="3.2109375 11.6054688 0.39453125 11.6054688 0.39453125 6 3.2109375 6"/>';
+				$icon .= '<polygon points="11.6054688 11.6054688 8.7890625 11.6054688 8.7890625 0.39453125 11.6054688 0.39453125"/><polygon points="7.39453125 11.6054688 4.60546875 11.6054688 4.60546875 3.89453125 7.39453125 3.89453125"/><polygon points="3.2109375 11.6054688 0.39453125 11.6054688 0.39453125 6 3.2109375 6"/>';
 				break;
 			case 0:
 				$icon .= '<polygon fill="#CCD1D6" points="11.6054688 11.6054688 8.7890625 11.6054688 8.7890625 0.39453125 11.6054688 0.39453125"/><polygon fill="#CCD1D6" points="7.39453125 11.6054688 4.60546875 11.6054688 4.60546875 3.89453125 7.39453125 3.89453125"/><polygon points="3.2109375 11.6054688 0.39453125 11.6054688 0.39453125 6 3.2109375 6"/>';
@@ -386,11 +379,10 @@ function imagify_get_optimization_level_label( $level, $format = '%s' ) {
 
 	switch ( $level ) {
 		case 2:
-			return sprintf( $format, __( 'Ultra', 'imagify' ) );
 		case 1:
-			return sprintf( $format, __( 'Aggressive', 'imagify' ) );
+			return sprintf( $format, __( 'Smart', 'imagify' ) );
 		case 0:
-			return sprintf( $format, __( 'Normal', 'imagify' ) );
+			return sprintf( $format, __( 'Lossless', 'imagify' ) );
 	}
 
 	return '';

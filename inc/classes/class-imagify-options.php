@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class that handles the plugin options.
@@ -21,7 +20,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 *
 	 * @var    string
 	 * @since  1.7
-	 * @access protected
 	 */
 	protected $identifier = 'settings';
 
@@ -32,11 +30,10 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 *
 	 * @var    array
 	 * @since  1.7
-	 * @access protected
 	 */
 	protected $default_values = array(
 		'api_key'             => '',
-		'optimization_level'  => 0,
+		'optimization_level'  => 2,
 		'auto_optimize'       => 0,
 		'backup'              => 0,
 		'resize_larger'       => 0,
@@ -45,7 +42,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'display_webp'        => 0,
 		'display_webp_method' => 'picture',
 		'cdn_url'             => '',
-		'exif'                => 0,
 		'disallowed-sizes'    => array(),
 		'admin_bar_menu'      => 0,
 		'partner_links'       => 0,
@@ -57,10 +53,9 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 *
 	 * @var    array
 	 * @since  1.7
-	 * @access protected
 	 */
 	protected $reset_values = array(
-		'optimization_level' => 1,
+		'optimization_level' => 2,
 		'auto_optimize'      => 1,
 		'backup'             => 1,
 		'convert_to_webp'    => 1,
@@ -73,7 +68,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 *
 	 * @var    object
 	 * @since  1.7
-	 * @access protected
 	 */
 	protected static $_instance;
 
@@ -83,7 +77,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
-	 * @access protected
 	 */
 	protected function __construct() {
 		if ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
@@ -119,7 +112,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
-	 * @access public
 	 *
 	 * @return object Main instance.
 	 */
@@ -141,7 +133,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
-	 * @access public
 	 *
 	 * @param  string $key     The option key.
 	 * @param  mixed  $value   The value.
@@ -171,7 +162,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'resize_larger':
 			case 'convert_to_webp':
 			case 'display_webp':
-			case 'exif':
 			case 'admin_bar_menu':
 			case 'partner_links':
 				return 1;
@@ -233,7 +223,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 *
 	 * @since  1.7
 	 * @author Grégory Viguier
-	 * @access public
 	 *
 	 * @param  string $values The option value.
 	 * @return array

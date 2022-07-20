@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Context;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use \Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Context class used for the custom folders.
@@ -10,14 +10,13 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class CustomFolders extends AbstractContext {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * Context "short name".
 	 *
 	 * @var    string
 	 * @since  1.9
-	 * @access protected
 	 * @author Grégory Viguier
 	 */
 	protected $context = 'custom-folders';
@@ -35,7 +34,6 @@ class CustomFolders extends AbstractContext {
 	 *     @type string $name   The size name.
 	 * }
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 */
 	protected $thumbnail_sizes = [];
@@ -45,7 +43,6 @@ class CustomFolders extends AbstractContext {
 	 * 0 means to not resize.
 	 *
 	 * @since  1.9.8
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return int
@@ -58,7 +55,6 @@ class CustomFolders extends AbstractContext {
 	 * Tell if the optimization process is allowed to backup in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return bool
@@ -74,29 +70,9 @@ class CustomFolders extends AbstractContext {
 	}
 
 	/**
-	 * Tell if the optimization process is allowed to keep exif in this context.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return bool
-	 */
-	public function can_keep_exif() {
-		if ( isset( $this->can_keep_exif ) ) {
-			return $this->can_keep_exif;
-		}
-
-		$this->can_keep_exif = get_imagify_option( 'exif' );
-
-		return $this->can_keep_exif;
-	}
-
-	/**
 	 * Get user capacity to operate Imagify in this context.
 	 *
 	 * @since  1.9
-	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.

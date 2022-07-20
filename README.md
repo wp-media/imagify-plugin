@@ -134,7 +134,7 @@ Normal compression is a "lossless" optimization. This means there is no loss of 
 
 ### Is the EXIF data of images removed?
 
-By default EXIF data is removed. It is however possible to keep it by enabling the option.
+EXIF data is not removed.
 
 ### Will the original images be deleted?
 

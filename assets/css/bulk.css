@@ -88,7 +88,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress {
 body[class*="_imagify-ngg-bulk-optimization"] .media-item .percent {
 	position: absolute;
 	top: 6px;
-	right: 0;
+	right: -28px;
 	text-shadow: none;
 	width: auto;
 	padding: 0 5px;
@@ -310,12 +310,6 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	height: 38px;
 	margin-right: 4px;
 	color: #40B1D0;
-}
-
-.imagify-col-content {
-	background: #F4F7F9;
-	border-left: 1px solid #ddd;
-	border-right: 1px solid #ddd;
 }
 
 .imagify-col-content .imagify-block-secondary {
@@ -669,11 +663,16 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 	background: #FFF;
 }
 
-.imagify-bulk-table .imagify-row-progress {
-	display: none;
+@media (max-width: 782px) {
+	.imagify-row-folder-type,
+	tr.imagify-row-working,
+	tr.imagify-row-waiting {
+		padding-top: 20px;
+	}
 }
 
 .imagify-bulk-table .imagify-row-progress {
+	display: none;
 	height: 8px;
 	padding: 0;
 }
