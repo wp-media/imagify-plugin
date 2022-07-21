@@ -1,6 +1,4 @@
 === Imagify – Optimize Images & Convert WebP ===
-Author: Imagify – Optimize Images & Convert WebP
-Author URI: https://imagify.io
 Contributors: wp_rocket, imagify
 Tags: optimize images, convert webp, webp converter, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
 Tested up to: 6.0
