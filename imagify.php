@@ -6,8 +6,8 @@
  * Version: 2.0
  * Requires at least: 5.3
  * Requires PHP: 7.0
- * Author: WP Rocket
- * Author URI: https://wp-rocket.me/
+ * Author: Imagify – Optimize Images & Convert WebP
+ * Author URI: https://imagify.io
  * Licence: GPLv2
  *
  * Text Domain: imagify
