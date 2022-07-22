@@ -1,6 +1,6 @@
 === Imagify – Optimize Images & Convert WebP | Compress Images Easily ===
 Contributors: wp_rocket, imagify
-Tags: optimize images, convert webp, webp converter, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
+Tags: optimize images, convert webp, webp, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
 Tested up to: 6.0
 Stable tag: 2.0
 License: GPLv2 or later
