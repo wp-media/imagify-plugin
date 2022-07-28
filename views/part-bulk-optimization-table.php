@@ -50,7 +50,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 				<tbody>
 					<?php
 					foreach ( $data['groups'] as $group ) {
-						$context_data = Imagify_Admin_Ajax_Post::get_instance()->get_bulk_instance( $group['context'] )->get_context_data();
+						$context_data = \Imagify\Bulk\Bulk::get_instance()->get_bulk_instance( $group['context'] )->get_context_data();
 						$group        = array_merge( $group, $context_data );
 
 						$this->print_template( 'part-bulk-optimization-table-row-folder-type', $group );
