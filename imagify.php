@@ -35,34 +35,11 @@ if ( ! defined( 'IMAGIFY_APP_DOMAIN' ) ) {
 }
 define( 'IMAGIFY_APP_API_URL',     IMAGIFY_APP_DOMAIN . '/api/' );
 
-/**
- * Plugin init.
- *
- * @since 1.0
- */
-function _imagify_init() {
-	// Nothing to do during autosave.
-	if ( defined( 'DOING_AUTOSAVE' ) ) {
-		return;
-	}
 
-	// Check for WordPress and PHP version.
-	if ( ! imagify_pass_requirements() ) {
-		return;
-	}
-
-	// Init the plugin.
-	require_once IMAGIFY_PATH . 'inc/classes/class-imagify-plugin.php';
-
-	$plugin = new Imagify_Plugin(
-		array(
-			'plugin_path' => IMAGIFY_PATH,
-		)
-	);
-
-	$plugin->init();
+// Check for WordPress and PHP version.
+if ( imagify_pass_requirements() ) {
+	require_once IMAGIFY_PATH . 'inc/main.php';
 }
-add_action( 'plugins_loaded', '_imagify_init' );
 
 /**
  * Check if Imagify is activated on the network.

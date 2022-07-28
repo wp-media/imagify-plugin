@@ -41,9 +41,11 @@
 		"coenjacobs/mozart": "^0.7",
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
 		"deliciousbrains/wp-background-processing": "~1.0",
+		"mnsami/composer-custom-directory-installer": "^2.0",
 		"phpcompatibility/phpcompatibility-wp": "^2.0",
 		"phpunit/phpunit": "^7.5",
 		"roave/security-advisories": "dev-master",
+		"woocommerce/action-scheduler": "^3.4",
 		"wp-coding-standards/wpcs": "^2",
 		"wp-media/phpunit": "2.0"
 	},
@@ -71,6 +73,9 @@
 		"psr-4": { "Imagify\\Tests\\": "Tests/" }
 	},
 	"extra": {
+		"installer-paths": {
+			"./inc/Dependencies/ActionScheduler/": ["woocommerce/action-scheduler"]
+		},
 		"mozart": {
 			"dep_namespace": "Imagify\\Dependencies\\",
 			"dep_directory": "/classes/Dependencies/",
