@@ -65,7 +65,9 @@ class Imagify_Plugin {
 			\Imagify\Imagifybeat\Actions::get_instance()->init();
 		}
 
-		if ( ! wp_doing_ajax() ) {
+		if ( wp_doing_ajax() ) {
+			\Imagify\Optimization\UserImageEdit::get_instance()->init();
+		} else {
 			Imagify_Assets::get_instance()->init();
 		}
 
