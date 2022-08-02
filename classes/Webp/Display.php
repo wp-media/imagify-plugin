@@ -1,33 +1,29 @@
 <?php
 namespace Imagify\Webp;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Notices\Notices;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Display WebP images on the site.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
 class Display {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * Server conf object.
 	 *
 	 * @var    \Imagify\WriteFile\WriteFileInterface
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	protected $server_conf;
 
 	/**
 	 * Init.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function init() {
 		add_filter( 'imagify_settings_on_save',   [ $this, 'maybe_add_rewrite_rules' ] );
@@ -46,9 +42,7 @@ class Display {
 	/**
 	 * If display WebP images, add the WebP type to the .htaccess/etc file.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param  array $values The option values.
 	 * @return array
@@ -81,9 +75,9 @@ class Display {
 
 		// Display an error message.
 		if ( is_multisite() && strpos( wp_get_referer(), network_admin_url( '/' ) ) === 0 ) {
-			\Imagify_Notices::get_instance()->add_network_temporary_notice( $result->get_error_message() );
+			Notices::get_instance()->add_network_temporary_notice( $result->get_error_message() );
 		} else {
-			\Imagify_Notices::get_instance()->add_site_temporary_notice( $result->get_error_message() );
+			Notices::get_instance()->add_site_temporary_notice( $result->get_error_message() );
 		}
 
 		return $values;
@@ -92,9 +86,7 @@ class Display {
 	/**
 	 * If the conf file is not writable, add a warning.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function maybe_add_webp_info() {
 		$conf = $this->get_server_conf();
@@ -130,9 +122,7 @@ class Display {
 	/**
 	 * Add rules on plugin activation.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function activate() {
 		$conf = $this->get_server_conf();
@@ -153,9 +143,7 @@ class Display {
 	/**
 	 * Remove rules on plugin deactivation.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function deactivate() {
 		$conf = $this->get_server_conf();
@@ -187,9 +175,7 @@ class Display {
 	/**
 	 * Get the path to the directory conf file.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param  bool $relative True to get a path relative to the site’s root.
 	 * @return string|bool    The file path. False on failure.
@@ -211,9 +197,7 @@ class Display {
 	/**
 	 * Get the WebP display method by validating the given value.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param  array $values The option values.
 	 * @return string        'picture' or 'rewrite'.
@@ -231,9 +215,7 @@ class Display {
 	 * Get the server conf instance.
 	 * Note: nothing needed for nginx.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @return \Imagify\WriteFile\WriteFileInterface
 	 */
