@@ -1,13 +1,14 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+declare(strict_types=1);
+
+namespace Imagify\Notices;
 
 /**
  * Class that handles the admin notices.
  *
- * @since  1.6.10
- * @author Grégory Viguier
+ * @since 1.6.10
  */
-class Imagify_Notices extends Imagify_Notices_Deprecated {
+class Notices {
 
 	/**
 	 * Class version.
@@ -123,8 +124,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Get the main Instance.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return object Main instance.
 	 */
@@ -139,8 +139,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Launch the hooks.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 */
 	public function init() {
 		// For generic purpose.
@@ -161,8 +160,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Maybe display some notices.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 */
 	public function render_notices() {
 		foreach ( $this->get_notice_ids() as $notice_id ) {
@@ -188,8 +186,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Process a dismissed notice.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 * @see    _do_admin_post_imagify_dismiss_notice()
 	 */
 	public function admin_post_dismiss_notice() {
@@ -221,9 +218,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Stop the rating cron when the notice is dismissed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 * @see    _imagify_clear_scheduled_rating()
+	 * @since 1.6.10
+	 * @see _imagify_clear_scheduled_rating()
 	 *
 	 * @param string $notice The notice name.
 	 */
@@ -237,9 +233,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Disable a plugin which can be in conflict with Imagify.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 * @see    _imagify_deactivate_plugin()
+	 * @since 1.6.10
+	 * @see _imagify_deactivate_plugin()
 	 */
 	public function deactivate_plugin() {
 		imagify_check_nonce( self::DEACTIVATE_PLUGIN_NONCE_ACTION );
@@ -265,8 +260,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Renew the "almost-over-quota" notice when the consumed quota percent decreases back below 80%.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 */
 	public function renew_almost_over_quota_notice() {
 		global $wpdb;
@@ -304,8 +298,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'welcome-steps' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -337,8 +330,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'wrong-api-key' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -370,8 +362,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'plugins-to-deactivate' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return array An array of plugins to deactivate.
 	 */
@@ -394,8 +385,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'plugins-to-deactivate' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -427,8 +417,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'grid-view' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -468,8 +457,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'almost-over-quota' notice should be displayed.
 	 *
-	 * @since  1.7.0
-	 * @author Geoffrey Crofte
+	 * @since 1.7.0
 	 *
 	 * @return bool|object An Imagify user object. False otherwise.
 	 */
@@ -508,8 +496,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'backup-folder-not-writable' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -547,8 +534,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'rating' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool|int
 	 */
@@ -586,8 +572,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'wp-rocket' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -626,9 +611,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Maybe display some notices.
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 */
 	public function render_temporary_notices() {
 		if ( is_network_admin() ) {
@@ -653,9 +636,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Get temporary notices for the network.
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 *
 	 * @return array
 	 */
@@ -674,9 +655,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Create a temporary notice for the network.
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 *
 	 * @param array|object|string $notice_data Some data, with the message to display.
 	 */
@@ -709,9 +688,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Get temporary notices for the current site.
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 *
 	 * @return array
 	 */
@@ -730,9 +707,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Create a temporary notice for the current site.
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 *
 	 * @param array|string $notice_data Some data, with the message to display.
 	 */
@@ -765,8 +740,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Renew a dismissed Imagify notice.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @param string $notice  A notice ID.
 	 * @param int    $user_id A user ID.
@@ -791,9 +765,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Dismiss an Imagify notice.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 * @see    imagify_dismiss_notice()
+	 * @since 1.6.10
+	 * @see imagify_dismiss_notice()
 	 *
 	 * @param  string $notice  A notice ID.
 	 * @param  int    $user_id A user ID.
@@ -818,9 +791,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if an Imagify notice is dismissed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 * @see    imagify_notice_is_dismissed()
+	 * @since 1.6.10
+	 * @see imagify_notice_is_dismissed()
 	 *
 	 * @param  string $notice  A notice ID.
 	 * @param  int    $user_id A user ID.
@@ -837,8 +809,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if one or more notices will be displayed later in the page.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -862,9 +833,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Get all notice IDs.
 	 *
-	 * @since  1.6.10
-	 * @since  1.10 Cast return value to array.
-	 * @author Grégory Viguier
+	 * @since 1.6.10
+	 * @since 1.10 Cast return value to array.
 	 *
 	 * @return array The filtered notice ids.
 	 */
@@ -872,8 +842,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		/**
 		 * Filter the notices Imagify can display.
 		 *
-		 * @since  1.6.10
-		 * @author Grégory Viguier
+		 * @since 1.6.10
 		 *
 		 * @param array $notice_ids An array of notice "IDs".
 		 */
@@ -884,8 +853,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	 * Tell if the current user can see the notices.
 	 * Notice IDs that are not listed in self::$capabilities are assumed as 'manage'.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @param  string $notice_id A notice ID.
 	 * @return bool
@@ -899,8 +867,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Get a list of plugins that can conflict with Imagify.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return array
 	 */
