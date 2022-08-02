@@ -168,25 +168,10 @@ window.imagify = window.imagify || {};
 
 			this.hasMultipleRows = $( '.imagify-bulk-table [name="group[]"]' ).length > 1;
 
-			// Selectors (like the level selectors).
-			$( '.imagify-selector-button' )
-				.on( 'click.imagify', this.openSelectorFromButton );
-
-			$( '.imagify-selector-list input' )
-				.on( 'change.imagify init.imagify', this.syncSelectorFromRadio )
-				.filter( ':checked' )
-				.trigger( 'init.imagify' );
-
-			$document
-				.on( 'keypress.imagify click.imagify', this.closeSelectors );
-
 			// Other buttons/UI.
 			$( '.imagify-bulk-table [name="group[]"]' )
 				.on( 'change.imagify init.imagify', this.toggleOptimizationButton )
 				.trigger( 'init.imagify' );
-
-			$( '.imagify-show-table-details' )
-				.on( 'click.imagify open.imagify close.imagify', this.toggleOptimizationDetails );
 
 			$( '#imagify-bulk-action' )
 				.on( 'click.imagify', this.maybeLaunchAllProcesses );
@@ -276,27 +261,6 @@ window.imagify = window.imagify || {};
 		 */
 		getConfirmMessage: function () {
 			return imagifyBulk.labels.processing;
-		},
-
-		/*
-		 * Close the given optimization level selector.
-		 *
-		 * @param {object} $lists A jQuery object.
-		 * @param {int}    timer  Timer in ms to close the selector.
-		 */
-		closeLevelSelector: function ( $lists, timer ) {
-			if ( ! $lists || ! $lists.length ) {
-				return;
-			}
-
-			if ( undefined !== timer && timer > 0 ) {
-				w.setTimeout( function() {
-					w.imagify.bulk.closeLevelSelector( $lists );
-				}, timer );
-				return;
-			}
-
-			$lists.attr( 'aria-hidden', 'true' );
 		},
 
 		/*
@@ -423,81 +387,6 @@ window.imagify = window.imagify || {};
 		},
 
 		/*
-		 * Display an error message in a file row.
-		 *
-		 * @param  {function} $row The row template.
-		 * @param  {string}   text The error text.
-		 * @return {element}       The row jQuery element.
-		 */
-		displayErrorInRow: function ( $row, text ) {
-			var $toReplace, colspan;
-
-			$row       = $( $row() );
-			$toReplace = $row.find( '.imagify-cell-status ~ td' );
-			colspan    = $toReplace.length;
-			text       = text || '';
-
-			$toReplace.remove();
-			$row.find( '.imagify-cell-status' ).after( '<td colspan="' + colspan + '">' + text + '</td>' );
-
-			return $row;
-		},
-
-		/*
-		 * Display one of the 3 "folder" rows.
-		 *
-		 * @param {string}  state One of the 3 states: 'resting' (it's the "normal" row), 'waiting' (waiting for other optimizations to finish), and 'working'.
-		 * @param {element} $row  jQuery element of the "normal" row.
-		 */
-		displayFolderRow: function ( state, $row ) {
-			var $newRow, spinnerTemplate, spinnerColor, text;
-
-			if ( 'resting' === state ) {
-				$row.next( '.imagify-row-waiting, .imagify-row-working' ).remove();
-				$row.imagifyShow();
-				return;
-			}
-
-			// This part won't work to display multiple $newRow.
-			$newRow = $row.next( '.imagify-row-waiting, .imagify-row-working' );
-
-			if ( 'waiting' === state ) {
-				spinnerColor = '#d2d3d6';
-				text         = imagifyBulk.labels.waitingOtimizationsText;
-			} else {
-				spinnerColor = '#40b1d0';
-				text         = imagifyBulk.labels.imagesOptimizedText.replace( '%s', '<span>0</span>' );
-			}
-
-			if ( $newRow.length ) {
-				if ( ! $newRow.hasClass( 'imagify-row-' + state ) ) {
-					// Should happen when switching from 'waiting' to 'working'.
-					$newRow.attr( 'class', 'imagify-row-' + state );
-					$newRow.find( '.imagify-cell-checkbox svg' ).attr( 'fill', spinnerColor );
-					$newRow.children( '.imagify-cell-count-optimized' ).html( text );
-				}
-
-				$row.imagifyHide();
-				$newRow.imagifyShow();
-				return;
-			}
-
-			// Build the new row, based on a clone of the original one.
-			$newRow = $row.clone().attr( {
-				'class':       'imagify-row-' + state,
-				'aria-hidden': 'false'
-			} );
-
-			spinnerTemplate = w.imagify.template( 'imagify-spinner' );
-			$newRow.children( '.imagify-cell-checkbox' ).html( spinnerTemplate() ).find( 'svg' ).attr( 'fill', spinnerColor );
-			$newRow.children( '.imagify-cell-title' ).html( '<span class="imagify-cell-label">' + $newRow.children( '.imagify-cell-title' ).text() + '</span>' );
-			$newRow.children( '.imagify-cell-count-optimized' ).html( text );
-			$newRow.children( '.imagify-cell-count-errors, .imagify-cell-optimized-size, .imagify-cell-original-size, .imagify-cell-level' ).text( '' );
-
-			$row.imagifyHide().after( $newRow );
-		},
-
-		/*
 		 * Display the share box.
 		 */
 		displayShareBox: function () {
@@ -600,45 +489,6 @@ window.imagify = window.imagify || {};
 		// Event callbacks =========================================================================
 
 		/*
-		 * Selector (like optimization level selector): on button click, open the dropdown and focus the current radio input.
-		 * The dropdown must be open or the focus event won't be triggered.
-		 *
-		 * @param {object} e jQuery's Event object.
-		 */
-		openSelectorFromButton: function ( e ) {
-			var $list = $( '#' + $( this ).attr( 'aria-controls' ) );
-			// Stop click event from bubbling: this will allow to close the selector list if anything else id clicked.
-			e.stopPropagation();
-			// Close other lists.
-			$( '.imagify-selector-list' ).not( $list ).attr( 'aria-hidden', 'true' );
-			// Open the corresponding list and focus the radio.
-			$list.attr( 'aria-hidden', 'false' ).find( ':checked' ).trigger( 'focus.imagify' );
-		},
-
-		/*
-		 * Selector: on radio change, make the row "current" and update the button text.
-		 */
-		syncSelectorFromRadio: function () {
-			var $row = $( this ).closest( '.imagify-selector-choice' );
-			// Update rows attributes.
-			$row.addClass( 'imagify-selector-current-value' ).attr( 'aria-current', 'true' ).siblings( '.imagify-selector-choice' ).removeClass( 'imagify-selector-current-value' ).attr( 'aria-current', 'false' );
-			// Change the button text.
-			$row.closest( '.imagify-selector-list' ).siblings( '.imagify-selector-button' ).find( '.imagify-selector-current-value-info' ).html( $row.find( 'label' ).html() );
-		},
-
-		/*
-		 * Selector: on Escape or Enter kaystroke, close the dropdown.
-		 *
-		 * @param {object} e jQuery's Event object.
-		 */
-		closeSelectors: function ( e ) {
-			if ( 'keypress' === e.type && 27 !== e.keyCode && 13 !== e.keyCode ) {
-				return;
-			}
-			w.imagify.bulk.closeLevelSelector( $( '.imagify-selector-list[aria-hidden="false"]' ) );
-		},
-
-		/*
 		 * Enable or disable the Optimization button depending on the checked checkboxes.
 		 * Also, if there is only 1 checkbox in the page, don't allow it to be unchecked.
 		 */
@@ -654,33 +504,6 @@ window.imagify = window.imagify || {};
 				$( '#imagify-bulk-action' ).prop( 'disabled', false );
 			} else {
 				$( '#imagify-bulk-action' ).prop( 'disabled', true );
-			}
-		},
-
-		/*
-		 * Display/Hide optimization details.
-		 *
-		 * @param {object} e jQuery's Event object.
-		 */
-		toggleOptimizationDetails: function ( e ) {
-			var $button  = $( this ),
-				$details = $button.closest( '.imagify-bulk-table' ).find( '.imagify-bulk-table-details' ),
-				openDetails;
-
-			if ( 'open' === e.type ) {
-				openDetails = true;
-			} else if ( 'close' === e.type ) {
-				openDetails = false;
-			} else {
-				openDetails = $details.hasClass( 'hidden' );
-			}
-
-			if ( openDetails ) {
-				$button.html( $button.data( 'label-hide' ) + '<span class="dashicons dashicons-no-alt"></span>' );
-				$details.imagifyShow();
-			} else {
-				$button.html( $button.data( 'label-show' ) + '<span class="dashicons dashicons-menu"></span>' );
-				$details.imagifyHide();
 			}
 		},
 
@@ -792,9 +615,6 @@ window.imagify = window.imagify || {};
 					skip = false;
 					return true;
 				}
-
-				// Display the "waiting" folder row and hide the "normal" one.
-				w.imagify.bulk.displayFolderRow( 'waiting', $row );
 			} );
 
 			// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
@@ -841,9 +661,6 @@ window.imagify = window.imagify || {};
 
 			// Update status.
 			w.imagify.bulk.status[ item.groupID ].id = 'fetching';
-
-			// Display the "working" folder row and hide the "normal" one.
-			w.imagify.bulk.displayFolderRow( 'working', $row );
 
 			// Fetch image IDs.
 			$.get( w.imagify.bulk.getAjaxUrl( 'getMediaIds', item ) )
@@ -893,9 +710,6 @@ window.imagify = window.imagify || {};
 						return;
 					}
 
-					// Reset the folder row.
-					w.imagify.bulk.displayFolderRow( 'resting', $row );
-
 					$( w ).trigger( 'processQueue.imagify' );
 				} )
 				.fail( function() {
@@ -913,22 +727,8 @@ window.imagify = window.imagify || {};
 		 */
 		optimizeFiles: function ( e, item, files ) {
 			var $row, $workingRow, $optimizedCount, $errorsCount, $table,
-				$progressBar, $progress, $resultsContainer,
-				optimizedCount, errorsCount, Optimizer,
-				defaultsTemplate = {
-					groupID:            item.groupID,
-					mediaID:            0,
-					thumbnail:          '', // Preview thumbnail src.
-					filename:           '',
-					status:             '',
-					icon:               '',
-					label:              '',
-					thumbnailsCount:    '',
-					originalSizeHuman:  '',
-					newSizeHuman:       '',
-					percentHuman:       '',
-					overallSavingHuman: ''
-				};
+				$progressBar, $progress,
+				optimizedCount, errorsCount, Optimizer;
 
 			if ( w.imagify.bulk.processIsStopped ) {
 				return;
@@ -950,12 +750,6 @@ window.imagify = window.imagify || {};
 			// Update folder status.
 			w.imagify.bulk.status[ item.groupID ].id = 'optimizing';
 
-			// Fill in the result table header.
-			$table.find( '.imagify-bulk-table-details thead' ).html( $( '#tmpl-imagify-file-header-' + item.groupID ).html() );
-
-			// Empty the result table body.
-			$resultsContainer = $table.find( '.imagify-bulk-table-details tbody' ).text( '' );
-
 			// Reset and display the progress bar.
 			$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
 			$progressBar.slideDown().attr( 'aria-hidden', 'false' );
@@ -972,38 +766,11 @@ window.imagify = window.imagify || {};
 				doneEvent:    'mediaProcessed.imagify'
 			} );
 
-			// Before each media optimization, add a file row displaying the optimization process.
-			Optimizer.before( function( data ) {
-				var template;
-
-				if ( w.imagify.bulk.processIsStopped ) {
-					return;
-				}
-
-				template = w.imagify.template( 'imagify-file-row-' + item.groupID );
-
-				w.imagify.bulk.processingMedia.push( {
-					context: item.context,
-					mediaID: data.mediaID
-				} );
-
-				$resultsContainer.prepend( template( $.extend( {}, defaultsTemplate, data, {
-					status: 'compressing',
-					icon:   'admin-generic rotate',
-					label:  imagifyBulk.labels.optimizing
-				} ) ) );
-			} );
-
 			// After each media optimization.
 			Optimizer.each( function( data ) {
-				var template, $fileRow;
-
 				if ( w.imagify.bulk.processIsStopped ) {
 					return;
 				}
-
-				template = w.imagify.template( 'imagify-file-row-' + item.groupID );
-				$fileRow = $( '#' + item.groupID + '-' + data.mediaID );
 
 				$.each( w.imagify.bulk.processingMedia, function( i, v ) {
 					if ( v.context !== item.context || v.mediaID !== data.mediaID ) {
@@ -1018,24 +785,6 @@ window.imagify = window.imagify || {};
 				$progress.css( 'width', data.progress + '%' ).find( '.percent' ).html( data.progress + '%' );
 
 				if ( data.success ) {
-					if ( 'already-optimized' !== data.status ) {
-						// Image successfully optimized.
-						$fileRow.replaceWith( template( $.extend( {}, defaultsTemplate, data, {
-							status: 'complete',
-							icon:   'yes',
-							label:  imagifyBulk.labels.complete
-						} ) ) );
-
-						w.imagify.bulk.drawFileChart( $( '#' + item.groupID + '-' + data.mediaID ).find( '.imagify-cell-percentage canvas' ) ); // Don't use $fileRow, its DOM is not refreshed with the new values.
-					} else {
-						// The image was already optimized.
-						$fileRow.replaceWith( w.imagify.bulk.displayErrorInRow( template( $.extend( {}, defaultsTemplate, data, {
-							status: 'complete',
-							icon:   'yes',
-							label:  imagifyBulk.labels.alreadyOptimized
-						} ) ), data.error ) );
-					}
-
 					// Update the optimized images counter.
 					if ( 'optimize' === w.imagify.bulk.imagifyAction ) {
 						optimizedCount += 1;
@@ -1043,13 +792,6 @@ window.imagify = window.imagify || {};
 					}
 					return;
 				}
-
-				// Display the error in the file row.
-				$fileRow.replaceWith( w.imagify.bulk.displayErrorInRow( template( $.extend( {}, defaultsTemplate, data, {
-					status: 'error',
-					icon:   'dismiss',
-					label:  imagifyBulk.labels.error
-				} ) ), data.error || data ) );
 
 				// Update the "working" folder row.
 				if ( ! $errorsCount.length ) {
@@ -1107,8 +849,6 @@ window.imagify = window.imagify || {};
 								$row.children( '.imagify-cell-' + dataName ).html( dataHtml );
 							} );
 						}
-
-						w.imagify.bulk.displayFolderRow( 'resting', $row );
 					} )
 					.always( function() {
 						if ( w.imagify.bulk.processIsStopped ) {
@@ -1221,9 +961,6 @@ window.imagify = window.imagify || {};
 
 			// Unlink the message displayed when the user wants to quit the page.
 			$( w ).off( 'beforeunload', w.imagify.bulk.getConfirmMessage );
-
-			// Display the "normal" folder rows (the values of the last one should being updated via ajax, don't display it for now).
-			w.imagify.bulk.displayFolderRow( 'resting', $tables.find( '.imagify-row-folder-type' ).not( '.updating' ) );
 
 			// Reset the progress bars.
 			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
@@ -1425,56 +1162,6 @@ window.imagify = window.imagify || {};
 			legend += '</ul>';
 
 			d.getElementById( 'imagify-overview-chart-legend' ).innerHTML = legend;
-		},
-
-		/**
-		 * Mini chart.
-		 * Used for the charts on each file row.
-		 *
-		 * @param {element} canvas A jQuery canvas element.
-		 */
-		drawFileChart: function ( canvas ) {
-			var donuts = this.charts.files.donuts;
-
-			canvas.each( function() {
-				var value = parseInt( $( this ).closest( '.imagify-chart' ).next( '.imagipercent' ).text().replace( '%', '' ), 10 );
-
-				if ( undefined !== donuts[ this.id ] ) {
-					// Update existing donut.
-					donuts[ this.id ].data.datasets[0].data[0] = value;
-					donuts[ this.id ].data.datasets[0].data[1] = 100 - value;
-					donuts[ this.id ].update();
-					return;
-				}
-
-				// Create new donut.
-				donuts[ this.id ] = new w.imagify.Chart( this, {
-					type: 'doughnut',
-					data: {
-						datasets: [{
-							data:            [ value, 100 - value ],
-							backgroundColor: [ '#00B3D3', '#D8D8D8' ],
-							borderColor:     '#fff',
-							borderWidth:     1
-						}]
-					},
-					options: {
-						legend: {
-							display: false
-						},
-						events:    [],
-						animation: {
-							easing: 'easeOutBounce'
-						},
-						tooltips: {
-							enabled: false
-						},
-						responsive: false
-					}
-				} );
-			} );
-
-			this.charts.files.donuts = donuts;
 		},
 
 		/*
