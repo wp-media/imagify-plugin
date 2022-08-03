@@ -3,12 +3,15 @@ declare(strict_types=1);
 
 namespace Imagify\Notices;
 
+use Imagify\Traits\InstanceGetterTrait;
+
 /**
  * Class that handles the admin notices.
  *
  * @since 1.6.10
  */
 class Notices {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -103,13 +106,6 @@ class Notices {
 	);
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @var object
-	 */
-	protected static $_instance;
-
-	/**
 	 * The constructor.
 	 *
 	 * @return void
@@ -120,21 +116,6 @@ class Notices {
 	/** ----------------------------------------------------------------------------------------- */
 	/** INIT ==================================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since 1.6.10
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	/**
 	 * Launch the hooks.
@@ -175,7 +156,7 @@ class Notices {
 
 			if ( $data ) {
 				// The notice must be displayed: render the view.
-				Imagify_Views::get_instance()->print_template( 'notice-' . $notice_id, $data );
+				\Imagify_Views::get_instance()->print_template( 'notice-' . $notice_id, $data );
 			}
 		}
 
@@ -226,7 +207,7 @@ class Notices {
 	public function clear_scheduled_rating( $notice ) {
 		if ( 'rating' === $notice ) {
 			set_site_transient( 'do_imagify_rating_cron', 'no' );
-			Imagify_Cron_Rating::get_instance()->unschedule_event();
+			\Imagify_Cron_Rating::get_instance()->unschedule_event();
 		}
 	}
 
@@ -351,7 +332,7 @@ class Notices {
 			return $display;
 		}
 
-		if ( self::notice_is_dismissed( 'wrong-api-key' ) || ! get_imagify_option( 'api_key' ) || Imagify_Requirements::is_api_key_valid() ) {
+		if ( self::notice_is_dismissed( 'wrong-api-key' ) || ! get_imagify_option( 'api_key' ) || \Imagify_Requirements::is_api_key_valid() ) {
 			return $display;
 		}
 
@@ -406,7 +387,7 @@ class Notices {
 			return $display;
 		}
 
-		if ( self::notice_is_dismissed( 'http-block-external' ) || ! Imagify_Requirements::is_imagify_blocked() ) {
+		if ( self::notice_is_dismissed( 'http-block-external' ) || ! \Imagify_Requirements::is_imagify_blocked() ) {
 			return $display;
 		}
 
@@ -446,7 +427,7 @@ class Notices {
 		}
 
 		// Don't display the notice if the API key isn't valid.
-		if ( ! Imagify_Requirements::is_api_key_valid() ) {
+		if ( ! \Imagify_Requirements::is_api_key_valid() ) {
 			return $display;
 		}
 
@@ -482,7 +463,7 @@ class Notices {
 			return $display;
 		}
 
-		$user = new Imagify_User();
+		$user = new \Imagify_User();
 
 		// Don't display the notice if the user's unconsumed quota is superior to 20%.
 		if ( $user->get_percent_unconsumed_quota() > 20 ) {
@@ -523,7 +504,7 @@ class Notices {
 			return $display;
 		}
 
-		if ( Imagify_Requirements::attachments_backup_dir_is_writable() ) {
+		if ( \Imagify_Requirements::attachments_backup_dir_is_writable() ) {
 			return $display;
 		}
 
@@ -624,7 +605,7 @@ class Notices {
 			return;
 		}
 
-		$views = Imagify_Views::get_instance();
+		$views = \Imagify_Views::get_instance();
 
 		foreach ( $notices as $i => $notice_data ) {
 			$notices[ $i ]['type'] = ! empty( $notice_data['type'] ) ? $notice_data['type'] : 'error';
