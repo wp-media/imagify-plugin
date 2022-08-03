@@ -10,24 +10,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 				<p class="imagify-th-title"><?php echo $data['title']; ?></p>
 			</div>
 		</div>
-
-		<div class="imagify-th-action">
-			<button class="button imagify-button-clean imagify-show-table-details" type="button" data-label-show="<?php esc_attr_e( 'View Details', 'imagify' ); ?>" data-label-hide="<?php esc_attr_e( 'Hide Details', 'imagify' ); ?>">
-				<?php esc_html_e( 'View Details', 'imagify' ); ?>
-				<span class="dashicons dashicons-menu"></span>
-			</button>
-		</div>
 	</div>
 
 	<div class="imagify-bulk-table-content">
 		<div class="imagify-bulk-table-container">
-			<table class="imagify-bulk-table-details hidden" aria-hidden="true">
-				<thead>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-
 			<div aria-hidden="true" class="imagify-row-progress hidden">
 				<div class="media-item">
 					<div class="progress">
@@ -60,17 +46,4 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			</table>
 		</div><!-- .imagify-bulk-table-container -->
 	</div><!-- .imagify-bulk-table-content -->
-
-	<?php
-	foreach ( $data['groups'] as $group ) {
-		?>
-		<script type="text/html" id="tmpl-imagify-file-header-<?php echo $group['group_id']; ?>">
-			<?php $this->print_template( 'part-bulk-optimization-header-row-' . $group['group_id'] ); ?>
-		</script>
-		<script type="text/html" id="tmpl-imagify-file-row-<?php echo $group['group_id']; ?>">
-			<?php $this->print_template( 'part-bulk-optimization-underscore-file-row-' . $group['group_id'] ); ?>
-		</script>
-		<?php
-	}
-	?>
 </div>
