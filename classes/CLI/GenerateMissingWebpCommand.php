@@ -10,6 +10,8 @@ class GenerateMissingWebpCommand extends AbstractCommand {
 	 */
 	public function __invoke( $arguments, $options ) {
 		Bulk::get_instance()->run_generate_webp( $arguments );
+
+		\WP_CLI::log( 'Imagify missing WebP generation triggered.' );
 	}
 
 	/**

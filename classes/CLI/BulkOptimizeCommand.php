@@ -10,6 +10,8 @@ class BulkOptimizeCommand extends AbstractCommand {
 	 */
 	public function __invoke( $arguments, $options ) {
 		Bulk::get_instance()->run_optimize( $arguments );
+
+		\WP_CLI::log( 'Imagify bulk optimization triggered.' );
 	}
 
 	/**
