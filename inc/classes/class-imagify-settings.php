@@ -79,23 +79,23 @@ class Imagify_Settings {
 	 * @since 1.7
 	 */
 	public function init() {
-		add_filter( 'sanitize_option_' . $this->option_name, array( $this, 'populate_values_on_save' ), 5 );
-		add_action( 'admin_init', array( $this, 'register' ) );
-		add_filter( 'option_page_capability_' . $this->settings_group, array( $this, 'get_capability' ) );
+		add_filter( 'sanitize_option_' . $this->option_name, [ $this, 'populate_values_on_save' ], 5 );
+		add_action( 'admin_init', [ $this, 'register' ] );
+		add_filter( 'option_page_capability_' . $this->settings_group, [ $this, 'get_capability' ] );
 
 		if ( imagify_is_active_for_network() ) {
-			add_filter( 'pre_update_site_option_' . $this->option_name, array(
+			add_filter( 'pre_update_site_option_' . $this->option_name, [
 				$this,
 				'maybe_set_redirection',
-			), 10, 2 );
-			add_action( 'update_site_option_' . $this->option_name, array(
+			], 10, 2 );
+			add_action( 'update_site_option_' . $this->option_name, [
 				$this,
 				'after_save_network_options',
-			), 10, 3 );
-			add_action( 'admin_post_update', array( $this, 'update_site_option_on_network' ) );
+			], 10, 3 );
+			add_action( 'admin_post_update', [ $this, 'update_site_option_on_network' ] );
 		} else {
-			add_filter( 'pre_update_option_' . $this->option_name, array( $this, 'maybe_set_redirection' ), 10, 2 );
-			add_action( 'update_option_' . $this->option_name, array( $this, 'after_save_options' ), 10, 2 );
+			add_filter( 'pre_update_option_' . $this->option_name, [ $this, 'maybe_set_redirection' ], 10, 2 );
+			add_action( 'update_option_' . $this->option_name, [ $this, 'after_save_options' ], 10, 2 );
 		}
 	}
 
@@ -154,7 +154,7 @@ class Imagify_Settings {
 			return $values;
 		}
 
-		$values = is_array( $values ) ? $values : array();
+		$values = is_array( $values ) ? $values : [];
 
 		/**
 		 * Disabled thumbnail sizes.
@@ -188,10 +188,10 @@ class Imagify_Settings {
 	 * @return array
 	 */
 	protected function populate_disallowed_sizes( $values ) {
-		$values['disallowed-sizes'] = array();
+		$values['disallowed-sizes'] = [];
 
 		if ( isset( $values['disallowed-sizes-reversed'] ) && is_array( $values['disallowed-sizes-reversed'] ) ) {
-			$checked = ! empty( $values['disallowed-sizes-checked'] ) && is_array( $values['disallowed-sizes-checked'] ) ? array_flip( $values['disallowed-sizes-checked'] ) : array();
+			$checked = ! empty( $values['disallowed-sizes-checked'] ) && is_array( $values['disallowed-sizes-checked'] ) ? array_flip( $values['disallowed-sizes-checked'] ) : [];
 
 			if ( ! empty( $values['disallowed-sizes-reversed'] ) ) {
 				foreach ( $values['disallowed-sizes-reversed'] as $size_key ) {
@@ -434,7 +434,7 @@ class Imagify_Settings {
 		/**
 		 * Redirect back to the settings page that was submitted.
 		 */
-		imagify_maybe_redirect( false, array( 'settings-updated' => 'true' ) );
+		imagify_maybe_redirect( false, [ 'settings-updated' => 'true' ] );
 	}
 
 
