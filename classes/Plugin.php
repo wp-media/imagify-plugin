@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Imagify;
 
+use Imagify\Cli\BulkOptimizeCommand;
+use Imagify\CLI\GenerateMissingWebpCommand;
 use Imagify\Notices\Notices;
 
 /**
@@ -72,6 +74,9 @@ class Plugin {
 
 		// Load plugin translations.
 		imagify_load_translations();
+
+		imagify_add_command( new BulkOptimizeCommand() );
+		imagify_add_command( new GenerateMissingWebpCommand() );
 
 		/**
 		 * Fires when Imagify is fully loaded.
