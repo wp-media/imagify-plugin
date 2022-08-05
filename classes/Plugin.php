@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Imagify;
 
+use Imagify\Notices\Notices;
+
 /**
  * Main plugin class.
  */
@@ -52,7 +54,7 @@ class Plugin {
 		\Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->init();
 
 		if ( is_admin() ) {
-			\Imagify_Notices::get_instance()->init();
+			Notices::get_instance()->init();
 			\Imagify_Admin_Ajax_Post::get_instance()->init();
 			\Imagify_Settings::get_instance()->init();
 			\Imagify_Views::get_instance()->init();
