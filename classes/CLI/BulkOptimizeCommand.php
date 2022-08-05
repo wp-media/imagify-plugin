@@ -6,29 +6,29 @@ use Imagify\Bulk\Bulk;
 
 class BulkOptimizeCommand extends AbstractCommand {
 	/**
-     * {@inheritdoc}
-     */
+	 * {@inheritdoc}
+	 */
 	public function __invoke( $arguments, $options ) {
 		Bulk::get_instance()->run_optimize( $arguments );
 	}
 
 	/**
-     * {@inheritdoc}
-     */
+	 * {@inheritdoc}
+	 */
 	protected function get_command_name() {
 		return 'bulk-optimize';
 	}
 
 	/**
-     * {@inheritdoc}
-     */
+	 * {@inheritdoc}
+	 */
 	public function get_description() {
 		return 'Run the bulk optimization';
 	}
 
 	/**
-     * {@inheritdoc}
-     */
+	 * {@inheritdoc}
+	 */
 	public function get_synopsis() {
 		return [
 			[
