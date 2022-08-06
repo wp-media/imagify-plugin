@@ -844,7 +844,7 @@ class Imagify_Custom_Folders {
 			return array();
 		}
 
-		$files_from_db = call_user_func_array( 'array_merge', $files_from_db );
+		$files_from_db = call_user_func_array( 'array_merge', array_values( $files_from_db ) );
 
 		if ( $already_optimized ) {
 			// Put the files already optimized at the end of the list.
