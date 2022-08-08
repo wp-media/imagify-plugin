@@ -12,8 +12,8 @@ class Bulk {
 	 * @since 2.1
 	 */
 	public function init() {
-		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ] );
-		add_action( 'imagify_convert_webp', [ $this, 'generate_webp_versions' ] );
+		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 2 );
+		add_action( 'imagify_convert_webp', [ $this, 'generate_webp_versions' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_bulk_optimize', 'bulk_optimize_callback' );
 		add_action( 'wp_ajax_imagify_get_folder_type_data', 'get_folder_type_data_callback' );
 		add_action( 'wp_ajax_imagify_bulk_info_seen', 'bulk_info_seen_callback' );
@@ -25,16 +25,16 @@ class Bulk {
 	 *
 	 * @since 2.1
 	 */
-	public function optimize_media( array $args ) {
-		if ( ! $args['id'] || ! $args['context'] ) {
+	public function optimize_media( string $media_id, string $context ) {
+		if ( ! $media_id || ! $context ) {
 			return;
 		}
 
-		if ( ! imagify_get_context( $args['context'] )->current_user_can( 'bulk-optimize', $args['id'] ) ) {
+		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize', $media_id ) ) {
 			return;
 		}
 
-		$this->force_optimize( $args['id'], $args['context'], 2 );
+		$this->force_optimize( $media_id, $context, 2 );
 	}
 
 	/**
@@ -163,7 +163,7 @@ class Bulk {
 	 * @param  int    $level    The optimization level.
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
-	private function force_optimize( $media_id, $context, $level ) {
+	private function force_optimize( int $media_id, string $context, int $level ) {
 		$process = imagify_get_optimization_process( $media_id, $context );
 		$data    = $process->get_data();
 
@@ -187,8 +187,8 @@ class Bulk {
 	 *
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function generate_webp_versions( $args ) {
-		return imagify_get_optimization_process( $args['id'], $args['context'] )->generate_webp_versions();
+	public function generate_webp_versions( string $media_id, string $context ) {
+		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
 	}
 
 	/**
