@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Imagify\CLI;
 
@@ -8,7 +9,7 @@ interface CommandInterface {
 	 *
 	 * @return string
 	 */
-	public function get_name();
+	public function get_name(): string;
 
 	 /**
 	 * Executes the command.
@@ -23,12 +24,12 @@ interface CommandInterface {
 	 *
 	 * @return array
 	 */
-	public function get_synopsis();
+	public function get_synopsis(): array;
 
 	/**
 	 * Get the command description.
 	 *
 	 * @return string
 	 */
-	public function get_description();
+	public function get_description(): string;
 }
