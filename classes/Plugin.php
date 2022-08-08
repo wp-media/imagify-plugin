@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify;
 
+use Imagify\Bulk\Bulk;
 use Imagify\Notices\Notices;
 
 /**
@@ -52,6 +53,7 @@ class Plugin {
 		\Imagify\Auth\Basic::get_instance()->init();
 		\Imagify\Job\MediaOptimization::get_instance()->init();
 		\Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->init();
+		Bulk::get_instance()->init();
 
 		if ( is_admin() ) {
 			Notices::get_instance()->init();
