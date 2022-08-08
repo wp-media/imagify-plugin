@@ -287,11 +287,11 @@ function imagify_generate_webp( $contexts ) {
  */
 function imagify_add_command( CommandInterface $command ) {
 	if ( ! defined('WP_CLI' ) || ! WP_CLI || ! class_exists( '\WP_CLI' ) ) {
-        return;
-    }
+		return;
+	}
 
-    \WP_CLI::add_command( $command->get_name(), $command, [
-        'shortdesc' => $command->get_description(),
-        'synopsis' => $command->get_synopsis(),
-    ] );
+	\WP_CLI::add_command( $command->get_name(), $command, [
+		'shortdesc' => $command->get_description(),
+		'synopsis' => $command->get_synopsis(),
+	] );
 }
