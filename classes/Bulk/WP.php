@@ -22,8 +22,9 @@ class WP extends AbstractBulk {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  int $optimization_level The optimization level.
-	 * @return array                   A list of unoptimized media. Array keys are media IDs prefixed with an underscore character, array values are the main file’s URL.
+	 * @param int $optimization_level The optimization level.
+	 *
+	 * @return array A list of unoptimized media IDs.
 	 */
 	public function get_unoptimized_media_ids( $optimization_level ) {
 		global $wpdb;
