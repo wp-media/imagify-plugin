@@ -157,7 +157,7 @@ class WP extends AbstractBulk {
 				continue;
 			}
 
-			$data[ '_' . $id ] = esc_url( get_imagify_attachment_url( $metas['filenames'][ $id ] ) );
+			$data[] = $id;
 		} // End foreach().
 
 		return $data;

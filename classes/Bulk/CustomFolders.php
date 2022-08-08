@@ -67,7 +67,7 @@ class CustomFolders extends AbstractBulk {
 
 		// We need to output file URLs.
 		foreach ( $files as $k => $file ) {
-			$files[ $k ] = esc_url( Imagify_Files_Scan::remove_placeholder( $file['path'], 'url' ) );
+			$files[ $k ] = $file['file_id'];
 		}
 
 		return $files;
