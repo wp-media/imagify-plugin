@@ -25,7 +25,7 @@ class Bulk {
 	 *
 	 * @since 2.1
 	 */
-	public function optimize_media( string $media_id, string $context ) {
+	public function optimize_media( int $media_id, string $context ) {
 		if ( ! $media_id || ! $context ) {
 			return;
 		}
@@ -187,7 +187,7 @@ class Bulk {
 	 *
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function generate_webp_versions( string $media_id, string $context ) {
+	public function generate_webp_versions( int $media_id, string $context ) {
 		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
 	}
 
