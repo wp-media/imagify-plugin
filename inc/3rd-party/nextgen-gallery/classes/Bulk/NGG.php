@@ -30,7 +30,7 @@ class NGG extends AbstractBulk {
 	public function get_unoptimized_media_ids( $optimization_level ) {
 		global $wpdb;
 
-		@set_time_limit( 0 );
+		$this->set_no_time_limit();
 
 		$storage   = C_Gallery_Storage::get_instance();
 		$ngg_table = $wpdb->prefix . 'ngg_pictures';
@@ -116,7 +116,7 @@ class NGG extends AbstractBulk {
 	public function get_optimized_media_ids_without_webp() {
 		global $wpdb;
 
-		@set_time_limit( 0 );
+		$this->set_no_time_limit();
 
 		$storage     = C_Gallery_Storage::get_instance();
 		$ngg_table   = $wpdb->prefix . 'ngg_pictures';

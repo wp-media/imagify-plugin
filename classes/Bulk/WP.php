@@ -28,7 +28,7 @@ class WP extends AbstractBulk {
 	public function get_unoptimized_media_ids( $optimization_level ) {
 		global $wpdb;
 
-		@set_time_limit( 0 );
+		$this->set_no_time_limit();
 
 		$mime_types   = Imagify_DB::get_mime_types();
 		$statuses     = Imagify_DB::get_post_statuses();
@@ -180,7 +180,7 @@ class WP extends AbstractBulk {
 	public function get_optimized_media_ids_without_webp() {
 		global $wpdb;
 
-		@set_time_limit( 0 );
+		$this->set_no_time_limit();
 
 		$mime_types   = Imagify_DB::get_mime_types( 'image' );
 		$statuses     = Imagify_DB::get_post_statuses();

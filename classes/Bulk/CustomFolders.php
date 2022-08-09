@@ -31,7 +31,7 @@ class CustomFolders extends AbstractBulk {
 	 * @return array                   A list of unoptimized media. Array keys are media IDs prefixed with an underscore character, array values are the main file’s URL.
 	 */
 	public function get_unoptimized_media_ids( $optimization_level ) {
-		@set_time_limit( 0 );
+		$this->set_no_time_limit();
 
 		/**
 		 * Get the folders from DB.
@@ -90,7 +90,7 @@ class CustomFolders extends AbstractBulk {
 	public function get_optimized_media_ids_without_webp() {
 		global $wpdb;
 
-		@set_time_limit( 0 );
+		$this->set_no_time_limit();
 
 		$files_table   = Imagify_Files_DB::get_instance()->get_table_name();
 		$folders_table = Imagify_Folders_DB::get_instance()->get_table_name();
