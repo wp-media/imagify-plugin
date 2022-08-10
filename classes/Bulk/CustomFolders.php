@@ -66,7 +66,6 @@ class CustomFolders extends AbstractBulk {
 			return [];
 		}
 
-		// We need to output file URLs.
 		foreach ( $files as $k => $file ) {
 			$files[ $k ] = $file['file_id'];
 		}
