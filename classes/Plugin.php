@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify;
 
-use Imagify\Cli\BulkOptimizeCommand;
+use Imagify\CLI\BulkOptimizeCommand;
 use Imagify\CLI\GenerateMissingWebpCommand;
 use Imagify\Notices\Notices;
 
