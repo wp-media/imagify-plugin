@@ -28,7 +28,8 @@ class CustomFolders extends AbstractBulk {
 	 * @since 1.9
 	 *
 	 * @param  int $optimization_level The optimization level.
-	 * @return array                   A list of unoptimized media. Array keys are media IDs prefixed with an underscore character, array values are the main file’s URL.
+	 *
+	 * @return array A list of unoptimized media IDs.
 	 */
 	public function get_unoptimized_media_ids( $optimization_level ) {
 		$this->set_no_time_limit();
@@ -65,9 +66,8 @@ class CustomFolders extends AbstractBulk {
 			return [];
 		}
 
-		// We need to output file URLs.
 		foreach ( $files as $k => $file ) {
-			$files[ $k ] = esc_url( Imagify_Files_Scan::remove_placeholder( $file['path'], 'url' ) );
+			$files[ $k ] = $file['file_id'];
 		}
 
 		return $files;
