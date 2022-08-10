@@ -80,4 +80,20 @@ abstract class AbstractBulk implements BulkInterface {
 
 		return $data;
 	}
+
+	/**
+	 * Attempts to set no limit to the PHP timeout for time intensive processes.
+	 *
+	 * @return void
+	 */
+	protected function set_no_time_limit() {
+		if (
+			function_exists( 'set_time_limit' )
+			&&
+			false === strpos( ini_get( 'disable_functions' ), 'set_time_limit' )
+			&& ! ini_get( 'safe_mode' ) // phpcs:ignore PHPCompatibility.IniDirectives.RemovedIniDirectives.safe_modeDeprecatedRemoved
+		) {
+			@set_time_limit( 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		}
+	}
 }
