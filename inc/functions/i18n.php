@@ -250,7 +250,6 @@ function get_imagify_localize_script_translations( $context ) {
 					'apiDown'                        => __( 'Sorry, our servers are temporarily unavailable. Please, try again in a couple of minutes.', 'imagify' ),
 					'invalidAPIKeyTitle'             => __( 'Your API key is not valid!', 'imagify' ),
 					'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
-					'processing'                     => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
 					'waitTitle'                      => __( 'Please wait...', 'imagify' ),
 					'waitText'                       => __( 'We are trying to get your unoptimized media files, it may take time depending on the number of files.', 'imagify' ),
 					'nothingToDoTitle'               => __( 'Hold on!', 'imagify' ),
@@ -268,9 +267,6 @@ function get_imagify_localize_script_translations( $context ) {
 					'notice'                         => _x( 'Notice', 'noun', 'imagify' ),
 					/* translators: %s is a number. Don't use %d. */
 					'nbrErrors'                      => __( '%s error(s)', 'imagify' ),
-					/* translators: 1 and 2 are file sizes. Don't use HTML entities here (like &nbsp;). */
-					'textToShare'                    => __( 'Discover @imagify, the new compression tool to optimize your images for free. I saved %1$s out of %2$s!', 'imagify' ),
-					'twitterShareURL'                => imagify_get_external_url( 'share-twitter' ),
 					'getUnoptimizedImagesErrorTitle' => __( 'Oops, There is something wrong!', 'imagify' ),
 					'getUnoptimizedImagesErrorText'  => __( 'An unknown error occurred when we tried to get all your unoptimized media files. Try again and if the issue still persists, please contact us!', 'imagify' ),
 					'waitingOtimizationsText'        => __( 'Waiting other optimizations to finish.', 'imagify' ),
