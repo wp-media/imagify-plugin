@@ -14,10 +14,10 @@ class Bulk {
 	public function init() {
 		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 2 );
 		add_action( 'imagify_convert_webp', [ $this, 'generate_webp_versions' ], 10, 2 );
-		add_action( 'wp_ajax_imagify_bulk_optimize', 'bulk_optimize_callback' );
-		add_action( 'wp_ajax_imagify_get_folder_type_data', 'get_folder_type_data_callback' );
-		add_action( 'wp_ajax_imagify_bulk_info_seen', 'bulk_info_seen_callback' );
-		add_action( 'wp_ajax_imagify_bulk_get_stats', 'bulk_get_stats_callback' );
+		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
+		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
+		add_action( 'wp_ajax_imagify_bulk_info_seen', [ $this, 'bulk_info_seen_callback' ] );
+		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
 	}
 
 	/**
@@ -145,7 +145,8 @@ class Bulk {
 	 * @since 2.1
 	 *
 	 * @param  string $context The context name. Default values are 'wp' and 'custom-folders'.
-	 * @return BulkInterface   The optimization process instance.
+	 *
+	 * @return BulkInterface The optimization process instance.
 	 */
 	public function get_bulk_instance( string $context ): BulkInterface {
 		$class_name = $this->get_bulk_class_name( $context );
@@ -161,7 +162,8 @@ class Bulk {
 	 * @param  int    $media_id The media ID.
 	 * @param  string $context  The context.
 	 * @param  int    $level    The optimization level.
-	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
+	 *
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
 	private function force_optimize( int $media_id, string $context, int $level ) {
 		$process = imagify_get_optimization_process( $media_id, $context );
@@ -185,7 +187,7 @@ class Bulk {
 	 *
 	 * @since 2.1
 	 *
-	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
 	public function generate_webp_versions( int $media_id, string $context ) {
 		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
