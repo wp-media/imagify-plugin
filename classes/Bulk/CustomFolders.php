@@ -150,35 +150,6 @@ class CustomFolders extends AbstractBulk {
 	}
 
 	/**
-	 * Tell if there are optimized media without WebP versions.
-	 *
-	 * @since 1.9
-	 *
-	 * @return int The number of media.
-	 */
-	public function has_optimized_media_without_webp() {
-		global $wpdb;
-
-		$files_table   = Imagify_Files_DB::get_instance()->get_table_name();
-		$folders_table = Imagify_Folders_DB::get_instance()->get_table_name();
-		$mime_types    = Imagify_DB::get_mime_types( 'image' );
-		$webp_suffix   = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::WEBP_SUFFIX' );
-
-		return (int) $wpdb->get_var( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
-			SELECT COUNT(fi.file_id)
-			FROM $files_table as fi
-			INNER JOIN $folders_table AS fo
-				ON ( fi.folder_id = fo.folder_id )
-			WHERE
-				fi.mime_type IN ( $mime_types )
-				AND ( fi.status = 'success' OR fi.status = 'already_optimized' )
-				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )",
-			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
-		) );
-	}
-
-	/**
 	 * Get the context data.
 	 *
 	 * @since 1.9

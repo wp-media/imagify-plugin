@@ -96,4 +96,15 @@ abstract class AbstractBulk implements BulkInterface {
 			@set_time_limit( 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		}
 	}
+
+	/**
+	 * Tell if there are optimized media without WebP versions.
+	 *
+	 * @since 1.9
+	 *
+	 * @return int The number of media.
+	 */
+	public function has_optimized_media_without_webp() {
+		return count( $this->get_optimized_media_ids_without_webp()['ids'] );
+	}
 }
