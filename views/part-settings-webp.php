@@ -1,4 +1,9 @@
 <?php
+
+use Imagify\Stats\OptimizedMediaWithoutWebp;
+use Imagify\Webp\Display;
+use Imagify\Webp\Picture\Display as PictureDisplay;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $settings = Imagify_Settings::get_instance();
@@ -42,7 +47,7 @@ $settings = Imagify_Settings::get_instance();
 
 				<div class="imagify-options-line">
 					<?php
-					$cdn_source = \Imagify\Webp\Picture\Display::get_instance()->get_cdn_source();
+					$cdn_source = PictureDisplay::get_instance()->get_cdn_source();
 
 					if ( 'option' !== $cdn_source['source'] ) {
 						if ( 'constant' === $cdn_source['source'] ) {
@@ -88,7 +93,7 @@ $settings = Imagify_Settings::get_instance();
 			<div id="describe-display_webp_method" class="imagify-info">
 				<span class="dashicons dashicons-info"></span>
 				<?php
-				$conf_file_path = \Imagify\Webp\Display::get_instance()->get_file_path( true );
+				$conf_file_path = Display::get_instance()->get_file_path( true );
 
 				if ( $conf_file_path ) {
 					printf(
@@ -125,22 +130,12 @@ $settings = Imagify_Settings::get_instance();
 		</div>
 
 		<?php
-		$count = \Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->get_cached_stat();
+		$count = OptimizedMediaWithoutWebp::get_instance()->get_cached_stat();
 
 		if ( $count ) {
 			?>
-			<div class="imagify-options-line hide-if-no-js">
-				<p>
-					<?php
-					echo esc_html(
-						sprintf(
-							/* translators: %s is a formatted number (don’t use %d). */
-							_n( 'It seems that you have %s optimized image without WebP versions. You can generate them here if a backup copy is available.', 'It seems that you have %s optimized images without WebP versions. You can generate them here if backup copies are available.', $count, 'imagify' ),
-							number_format_i18n( $count )
-						)
-					);
-					?>
-				</p>
+			<div class="imagify-options-line hide-if-no-js generate-missing-webp">
+				<?php $this->print_template( 'part-settings-webp-missing-message', [ 'count' => $count ] ); ?>
 
 				<button id="imagify-generate-webp-versions" class="button imagify-button-primary imagify-button-mini" type="button">
 					<span class="dashicons dashicons-admin-generic"></span>
