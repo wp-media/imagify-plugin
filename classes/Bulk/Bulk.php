@@ -77,6 +77,8 @@ class Bulk {
 			return;
 		}
 
+		delete_transient( 'imagify_stat_without_webp' );
+
 		foreach ( $contexts as $context ) {
 			$media     = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
 			$media_ids = [];
