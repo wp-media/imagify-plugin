@@ -168,6 +168,10 @@ class Bulk {
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
 	private function force_optimize( int $media_id, string $context, int $level ) {
+		if ( ! $this->can_optimize() ) {
+			return false;
+		}
+
 		$process = imagify_get_optimization_process( $media_id, $context );
 		$data    = $process->get_data();
 
@@ -192,6 +196,10 @@ class Bulk {
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
 	public function generate_webp_versions( int $media_id, string $context ) {
+		if ( ! $this->can_optimize() ) {
+			return false;
+		}
+
 		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
 	}
 
