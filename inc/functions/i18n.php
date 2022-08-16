@@ -1,19 +1,24 @@
 <?php
+
+use Imagify\Imagifybeat\Actions;
+use Imagify\Imagifybeat\Core;
+use Imagify\Stats\OptimizedMediaWithoutWebp;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Get all translations we can use with wp_localize_script().
  *
- * @since  1.5
- * @author Jonathan Buttigieg
+ * @since 1.5
  *
- * @param  string $context       The translation context.
- * @return array  $translations  The translations.
+ * @param string $context The translation context.
+ *
+ * @return array $translations The translations.
  */
 function get_imagify_localize_script_translations( $context ) {
 	global $post_id;
 
-	$imagifybeat_actions = \Imagify\Imagifybeat\Actions::get_instance();
+	$imagifybeat_actions = Actions::get_instance();
 
 	switch ( $context ) {
 		case 'admin-bar':
@@ -74,7 +79,7 @@ function get_imagify_localize_script_translations( $context ) {
 				],
 			];
 
-			if ( \Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->get_cached_stat() ) {
+			if ( OptimizedMediaWithoutWebp::get_instance()->get_cached_stat() ) {
 				$contexts             = imagify_get_context_names();
 				$translations['bulk'] = [
 					'curlMissing'      => ! Imagify_Requirements::supports_curl(),
@@ -104,7 +109,6 @@ function get_imagify_localize_script_translations( $context ) {
 						'apiDown'                        => __( 'Sorry, our servers are temporarily unavailable. Please, try again in a couple of minutes.', 'imagify' ),
 						'invalidAPIKeyTitle'             => __( 'Your API key is not valid!', 'imagify' ),
 						'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
-						'processing'                     => __( 'Imagify is still processing. Are you sure you want to leave this page?', 'imagify' ),
 						'nothingToDoTitle'               => __( 'Hold on!', 'imagify' ),
 						'nothingToDoText'                => __( 'All your optimized images already have a WebP version. Congratulations!', 'imagify' ),
 						'nothingToDoNoBackupText'        => __( 'Because the selected images did not have a backup copy, Imagify was unable to create WebP versions.', 'imagify' ),
@@ -192,7 +196,7 @@ function get_imagify_localize_script_translations( $context ) {
 			];
 
 		case 'beat':
-			return \Imagify\Imagifybeat\Core::get_instance()->get_settings();
+			return Core::get_instance()->get_settings();
 
 		case 'media-modal':
 			return [
