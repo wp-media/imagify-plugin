@@ -15,6 +15,7 @@ class Bulk {
 		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 2 );
 		add_action( 'imagify_convert_webp', [ $this, 'generate_webp_versions' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
+		add_action( 'wp_ajax_imagify_missing_webp_generation', [ $this, 'missing_webp_callback' ] );
 		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_info_seen', [ $this, 'bulk_info_seen_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
@@ -254,8 +255,24 @@ class Bulk {
 			imagify_die();
 		}
 
-
 		$this->run_optimize( $context );
+	}
+
+	/**
+	 * Launch the missing WebP versions generation
+	 *
+	 * @return void
+	 */
+	public function missing_webp_callback() {
+		imagify_check_nonce( 'imagify-bulk-optimize' );
+
+		$context = $this->get_context();
+
+		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+			imagify_die();
+		}
+
+		$this->run_generate_webp( $context );
 	}
 
 	/**
