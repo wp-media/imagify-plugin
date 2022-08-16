@@ -514,6 +514,9 @@ window.imagify = window.imagify || {};
 		 * Init.
 		 */
 		init: function () {
+			this.$missingWebpElement = $('.generate-missing-webp');
+			this.$missingWebpMessage = $('.generate-missing-webp p');
+
 			this.$button       = $( '#imagify-generate-webp-versions' );
 			this.$progressWrap = this.$button.siblings( '.imagify-progress' );
 			this.$progressBar  = this.$progressWrap.find( '.bar' );
@@ -579,24 +582,12 @@ window.imagify = window.imagify || {};
 			// Disable the button.
 			e.data.imagifyOptionsBulk.$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
 
-			// Add a message to be displayed when the user wants to quit the page.
-			$( w ).on( 'beforeunload.imagify', e.data.imagifyOptionsBulk.getConfirmMessage );
-
 			// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
 			w.imagify.beat.interval( 15 );
 			w.imagify.beat.disableSuspend();
 
 			// Fetch IDs of media to optimize.
 			e.data.imagifyOptionsBulk.fetchIDs();
-		},
-
-		/*
-		 * Get the message displayed to the user when (s)he leaves the page.
-		 *
-		 * @return {string}
-		 */
-		getConfirmMessage: function () {
-			return imagifyOptions.bulk.labels.processing;
 		},
 
 		// Imagifybeat =============================================================================
@@ -673,7 +664,8 @@ window.imagify = window.imagify || {};
 			}
 
 			if ( ! this.fetchQueue.length ) {
-				// No more IDs to fetch.
+				this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
+
 				if ( this.queue.length ) {
 					// We have files to process.
 					// Reset and display the progress bar.
@@ -947,16 +939,14 @@ window.imagify = window.imagify || {};
 			w.imagify.beat.resetInterval();
 			w.imagify.beat.enableSuspend();
 
-			// Unlink the message displayed when the user wants to quit the page.
-			$( w ).off( 'beforeunload.imagify', this.getConfirmMessage );
-
 			// Reset the progress bar.
 			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' );
 			this.$progressBar.removeAttr( 'style' );
 			this.$progressText.text( '0' );
+			this.$missingWebpElement.hide().attr('aria-hidden', 'true');
 
 			// Enable the button.
-			this.$button.prop( 'disabled', false ).find( '.dashicons' ).removeClass( 'rotate' );
+			this.$button.find( '.dashicons' ).removeClass( 'rotate' );
 		},
 
 		// Tools ===================================================================================
