@@ -93,15 +93,14 @@ function get_imagify_localize_script_translations( $context ) {
 						'requirements' => $imagifybeat_actions->get_imagifybeat_id( 'requirements' ),
 					],
 					'ajaxActions'      => [
-						'getMediaIds' => 'imagify_get_media_ids',
-						'bulkProcess' => 'imagify_bulk_optimize',
+						'MissingWebp' => 'imagify_missing_webp_generation',
 					],
 					'ajaxNonce'        => wp_create_nonce( 'imagify-bulk-optimize' ),
 					'contexts'         => $contexts,
 					'labels'           => [
 						'curlMissing'                    => __( 'cURL is not available on the server.', 'imagify' ),
 						'editorMissing'                  => sprintf(
-							/* translators: %s is a "More info?" link. */
+							// translators: %s is a "More info?" link.
 							__( 'No php extensions are available to edit images on the server. ImageMagick or GD is required. %s', 'imagify' ),
 							'<a href="' . esc_url( imagify_get_external_url( 'documentation-imagick-gd' ) ) . '" target="_blank">' . __( 'More info?', 'imagify' ) . '</a>'
 						),
