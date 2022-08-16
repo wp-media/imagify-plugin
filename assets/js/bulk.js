@@ -74,7 +74,6 @@ window.imagify = window.imagify || {};
 
 }( jQuery ));
 
-
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	w.imagify.bulk = {
@@ -100,10 +99,6 @@ window.imagify = window.imagify || {};
 			},
 			files: {
 				donuts: {}
-			},
-			share: {
-				canvas: false,
-				donut:  false
 			}
 		},
 		/**
@@ -175,9 +170,6 @@ window.imagify = window.imagify || {};
 
 			$( '#imagify-bulk-action' )
 				.on( 'click.imagify', this.maybeLaunchAllProcesses );
-
-			$( '.imagify-share-networks a' )
-				.on( 'click.imagify', this.share );
 
 			// Optimization events.
 			$( w )
@@ -252,15 +244,6 @@ window.imagify = window.imagify || {};
 			} );
 
 			return w.imagify.bulk.folderTypesData;
-		},
-
-		/*
-		 * Get the message displayed to the user when (s)he leaves the page.
-		 *
-		 * @return {string}
-		 */
-		getConfirmMessage: function () {
-			return imagifyBulk.labels.processing;
 		},
 
 		/*
@@ -384,50 +367,6 @@ window.imagify = window.imagify || {};
 			args.customClass += ' imagify-sweet-alert';
 
 			swal( args ).catch( swal.noop );
-		},
-
-		/*
-		 * Display the share box.
-		 */
-		displayShareBox: function () {
-			var text2share = imagifyBulk.labels.textToShare,
-				percent, gainHuman, originalSizeHuman,
-				$complete;
-
-			if ( ! this.globalGain || this.folderTypesQueue.length ) {
-				this.globalGain          = 0;
-				this.globalOriginalSize  = 0;
-				this.globalOptimizedSize = 0;
-				return;
-			}
-
-			percent           = ( 100 - 100 * ( this.globalOptimizedSize / this.globalOriginalSize ) ).toFixed( 2 );
-			gainHuman         = w.imagify.humanSize( this.globalGain, 1 );
-			originalSizeHuman = w.imagify.humanSize( this.globalOriginalSize, 1 );
-
-			text2share = text2share.replace( '%1$s', gainHuman );
-			text2share = text2share.replace( '%2$s', originalSizeHuman );
-			text2share = encodeURIComponent( text2share );
-
-			$complete = $( '.imagify-row-complete' );
-			$complete.find( '.imagify-ac-rt-total-gain' ).html( gainHuman );
-			$complete.find( '.imagify-ac-rt-total-original' ).html( originalSizeHuman );
-			$complete.find( '.imagify-ac-chart' ).attr( 'data-percent', percent );
-			$complete.find( '.imagify-sn-twitter' ).attr( 'href', imagifyBulk.labels.twitterShareURL + '&amp;text=' + text2share );
-
-			// Chart.
-			this.drawShareChart();
-
-			$complete.addClass( 'done' ).imagifyShow();
-
-			$( 'html, body' ).animate( {
-				scrollTop: $complete.offset().top
-			}, 200 );
-
-			// Reset the stats.
-			this.globalGain          = 0;
-			this.globalOriginalSize  = 0;
-			this.globalOptimizedSize = 0;
 		},
 
 		/**
@@ -568,16 +507,10 @@ window.imagify = window.imagify || {};
 			// Disable the button.
 			$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
 
-			// Add a message to be displayed when the user wants to quit the page.
-			$w.on( 'beforeunload', this.getConfirmMessage );
-
 			// Hide the "Complete" message.
 			$( '.imagify-row-complete' ).imagifyHide( 200, function() {
 				$( this ).removeClass( 'done' );
 			} );
-
-			// Close the optimization details.
-			$( '.imagify-show-table-details' ).trigger( 'close.imagify' );
 
 			// Make sure to reset properties.
 			this.folderTypesQueue     = [];
@@ -883,9 +816,6 @@ window.imagify = window.imagify || {};
 			w.imagify.beat.resetInterval();
 			w.imagify.beat.enableSuspend();
 
-			// Display the share box.
-			w.imagify.bulk.displayShareBox();
-
 			// Reset the queue.
 			w.imagify.bulk.folderTypesQueue = [];
 
@@ -959,9 +889,6 @@ window.imagify = window.imagify || {};
 			// Reset status.
 			w.imagify.bulk.status = {};
 
-			// Unlink the message displayed when the user wants to quit the page.
-			$( w ).off( 'beforeunload', w.imagify.bulk.getConfirmMessage );
-
 			// Reset the progress bars.
 			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
 
@@ -971,29 +898,6 @@ window.imagify = window.imagify || {};
 			} else {
 				$( '#imagify-bulk-action' ).find( '.dashicons' ).removeClass( 'rotate' );
 			}
-		},
-
-		/**
-		 * Open a popup window when the user clicks on a share link.
-		 *
-		 * @param {object} e jQuery Event object.
-		 */
-		share: function ( e ) {
-			var width  = 700,
-				height = 290,
-				clientLeft, clientTop;
-
-			e.preventDefault();
-
-			if ( w.innerWidth ) {
-				clientLeft = ( w.innerWidth - width ) / 2;
-				clientTop  = ( w.innerHeight - height ) / 2;
-			} else {
-				clientLeft = ( d.body.clientWidth - width ) / 2;
-				clientTop  = ( d.body.clientHeight - height ) / 2;
-			}
-
-			w.open( this.href, '', 'status=no, scrollbars=no, menubar=no, top=' + clientTop + ', left=' + clientLeft + ', width=' + width + ', height=' + height );
 		},
 
 		// Imagifybeat =============================================================================
@@ -1162,58 +1066,6 @@ window.imagify = window.imagify || {};
 			legend += '</ul>';
 
 			d.getElementById( 'imagify-overview-chart-legend' ).innerHTML = legend;
-		},
-
-		/*
-		 * Share Chart.
-		 * Used for the chart in the share box.
-		 */
-		drawShareChart: function () {
-			var value;
-
-			if ( ! this.charts.share.canvas ) {
-				this.charts.share.canvas = d.getElementById( 'imagify-ac-chart' );
-
-				if ( ! this.charts.share.canvas ) {
-					return;
-				}
-			}
-
-			value = parseInt( $( this.charts.share.canvas ).closest( '.imagify-ac-chart' ).attr( 'data-percent' ), 10 );
-
-			if ( this.charts.share.donut ) {
-				// Update existing donut.
-				this.charts.share.donut.data.datasets[0].data[0] = value;
-				this.charts.share.donut.data.datasets[0].data[1] = 100 - value;
-				this.charts.share.donut.update();
-				return;
-			}
-
-			// Create new donut.
-			this.charts.share.donut = new w.imagify.Chart( this.charts.share.canvas, {
-				type: 'doughnut',
-				data: {
-					datasets: [{
-						data:            [ value, 100 - value ],
-						backgroundColor: [ '#40B1D0', '#FFFFFF' ],
-						borderWidth:     0
-					}]
-				},
-				options: {
-					legend: {
-						display: false
-					},
-					events:    [],
-					animation: {
-						easing: 'easeOutBounce'
-					},
-					tooltips: {
-						enabled: false
-					},
-					responsive:       false,
-					cutoutPercentage: 70
-				}
-			} );
 		}
 	};
 
