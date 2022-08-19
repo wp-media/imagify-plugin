@@ -71,11 +71,11 @@ class Bulk {
 	 *
 	 * @param array $contexts An array of contexts (WP/Custom folders).
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function run_generate_webp( array $contexts ) {
 		if ( ! $this->can_optimize() ) {
-			return;
+			return 'over-quota';
 		}
 
 		delete_transient( 'imagify_stat_without_webp' );
@@ -86,13 +86,17 @@ class Bulk {
 
 			if ( ! $media['ids'] && $media['errors']['no_backup'] ) {
 				// No backup, no WebP.
-				return;
+				return 'no-backup';
 			} elseif ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
 				// Error.
-				return;
+				return __( 'The path to the selected files could not be retrieved.', 'imagify' );
 			}
 
 			$media_ids = $media['ids'];
+
+			if ( empty( $media_ids ) ) {
+				return 'no-images';
+			}
 
 			foreach ( $media_ids as $media_id ) {
 				as_enqueue_async_action(
@@ -105,6 +109,8 @@ class Bulk {
 				);
 			}
 		}
+
+		return 'success';
 	}
 
 	/**
@@ -276,7 +282,13 @@ class Bulk {
 			}
 		}
 
-		$this->run_generate_webp( $contexts );
+		$data = $this->run_generate_webp( $contexts );
+
+		if ( 'success' !== $data ) {
+			wp_send_json_error( [ 'message' => $data ] );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
