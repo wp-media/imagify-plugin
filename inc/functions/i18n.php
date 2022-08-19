@@ -227,7 +227,6 @@ function get_imagify_localize_script_translations( $context ) {
 				],
 				'waitImageUrl'    => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
 				'ajaxActions'     => [
-					'getMediaIds'   => 'imagify_get_media_ids',
 					'bulkProcess'   => 'imagify_bulk_optimize',
 					'getFolderData' => 'imagify_get_folder_type_data',
 					'bulkInfoSeen'  => 'imagify_bulk_info_seen',
