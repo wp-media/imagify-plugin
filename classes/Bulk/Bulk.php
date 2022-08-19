@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Bulk;
 
-use \Imagify\Traits\InstanceGetterTrait;
+use Imagify\Traits\InstanceGetterTrait;
 
 class Bulk {
 	use InstanceGetterTrait;
@@ -249,13 +249,15 @@ class Bulk {
 	public function bulk_optimize_callback() {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
-		$context = $this->get_context();
+		$contexts = explode( '_', sanitize_key( wp_unslash( $_GET['context'] ) ) );
 
-		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
-			imagify_die();
+		foreach ( $contexts as $context ) {
+			if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+				imagify_die();
+			}
 		}
 
-		$this->run_optimize( $context );
+		$this->run_optimize( $contexts );
 	}
 
 	/**
@@ -266,13 +268,15 @@ class Bulk {
 	public function missing_webp_callback() {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
-		$context = $this->get_context();
+		$contexts = explode( '_', sanitize_key( wp_unslash( $_GET['context'] ) ) );
 
-		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
-			imagify_die();
+		foreach ( $contexts as $context ) {
+			if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+				imagify_die();
+			}
 		}
 
-		$this->run_generate_webp( $context );
+		$this->run_generate_webp( $contexts );
 	}
 
 	/**
