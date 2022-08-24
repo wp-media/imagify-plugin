@@ -89,7 +89,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'keyIsValid'       => Imagify_Requirements::is_api_key_valid(),
 					'isOverQuota'      => Imagify_Requirements::is_over_quota(),
 					'imagifybeatIDs'   => [
-						'queue'        => $imagifybeat_actions->get_imagifybeat_id( 'bulk_optimization_status' ),
+						'progress'     => $imagifybeat_actions->get_imagifybeat_id( 'options_optimization_status' ),
 						'requirements' => $imagifybeat_actions->get_imagifybeat_id( 'requirements' ),
 					],
 					'ajaxActions'      => [
