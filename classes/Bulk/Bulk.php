@@ -80,9 +80,10 @@ class Bulk {
 
 		delete_transient( 'imagify_stat_without_webp' );
 
+		$media_ids = [];
+
 		foreach ( $contexts as $context ) {
-			$media     = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
-			$media_ids = [];
+			$media = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
 
 			if ( ! $media['ids'] && $media['errors']['no_backup'] ) {
 				// No backup, no WebP.
@@ -92,22 +93,22 @@ class Bulk {
 				return __( 'The path to the selected files could not be retrieved.', 'imagify' );
 			}
 
-			$media_ids = $media['ids'];
+			$media_ids = array_merge( $media_ids, $media['ids'] );
+		}
 
-			if ( empty( $media_ids ) ) {
-				return 'no-images';
-			}
+		if ( empty( $media_ids ) ) {
+			return 'no-images';
+		}
 
-			foreach ( $media_ids as $media_id ) {
-				as_enqueue_async_action(
-					'imagify_convert_webp',
-					[
-						'id'      => $media_id,
-						'context' => $context,
-					],
-					"imagify-{$context}-convert-webp"
-				);
-			}
+		foreach ( $media_ids as $media_id ) {
+			as_enqueue_async_action(
+				'imagify_convert_webp',
+				[
+					'id'      => $media_id,
+					'context' => $context,
+				],
+				"imagify-{$context}-convert-webp"
+			);
 		}
 
 		return 'success';
