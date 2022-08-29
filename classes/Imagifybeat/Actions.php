@@ -217,8 +217,8 @@ class Actions {
 			return $response;
 		}
 
-		$progress = 0;
-		$total    = get_transient( 'imagify_missing_webp_total' );
+		$remaining = 0;
+		$total     = get_transient( 'imagify_missing_webp_total' );
 
 		if ( false === $total ) {
 			return $response;
@@ -228,12 +228,12 @@ class Actions {
 
 		foreach ( $data[ $imagifybeat_id ] as $context ) {
 			$media     = $bulk->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
-			$progress += count( $media['ids'] );
+			$remaining += count( $media['ids'] );
 		}
 
 		$response[ $imagifybeat_id ] = [
-			'progress' => $progress,
-			'total'    => $total,
+			'remaining' => $remaining,
+			'total'     => (int) $total,
 		];
 
 		return $response;

@@ -572,12 +572,12 @@ window.imagify = window.imagify || {};
 
 			images_status = data[ imagifyOptions.bulk.imagifybeatIDs.progress ];
 
-			if ( images_status.progress === 0 ) {
+			if ( images_status.remaining === 0 ) {
 				e.data.imagifyOptionsBulk.processFinished();
 				return;
 			}
 
-			processed = images_status.total - images_status.progress;
+			processed = images_status.total - images_status.remaining;
 			progress = Math.floor( processed / images_status.total * 100 );
 			e.data.imagifyOptionsBulk.$progressBar.css( 'width', progress + '%' );
 			e.data.imagifyOptionsBulk.$progressText.text( processed + '/' + images_status.total );
@@ -627,13 +627,6 @@ window.imagify = window.imagify || {};
 				return;
 			}
 
-			this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
-
-			// Reset and display the progress bar.
-			this.$progressBar.removeAttr( 'style' );
-			this.$progressText.text( '0' + ( this.totalMedia ? '/' + this.totalMedia : '' ) );
-			this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' );
-
 			_this = this;
 
 			$.get( this.getAjaxUrl( 'MissingWebp', imagifyOptions.bulk.contexts ) )
@@ -641,6 +634,14 @@ window.imagify = window.imagify || {};
 					var errorMessage;
 
 					if ( _this.processIsStopped ) {
+						return;
+					}
+
+					if ( ! $.isArray( response.data ) ) {
+						// Error: should be an array.
+						if ( ! _this.error ) {
+							_this.error = errorMessage;
+						}
 						return;
 					}
 
@@ -658,20 +659,18 @@ window.imagify = window.imagify || {};
 						return;
 					}
 
-					if ( ! $.isArray( response.data ) ) {
-						// Error: should be an array.
-						if ( ! _this.error ) {
-							_this.error = errorMessage;
-						}
-						return;
-					}
-
 					if ( ! response.data.length ) {
 						// No media to process.
 						_this.error = 'no-images';
 
 						return;
 					}
+
+					_this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
+
+					// Reset and display the progress bar.
+					_this.$progressText.text( '0' + ( response.data.total ? '/' + response.data.total : '' ) );
+					_this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
 				} )
 				.fail( function() {
 					// Error.
@@ -680,8 +679,7 @@ window.imagify = window.imagify || {};
 					}
 				} );
 
-			if ( ! this.error ) {
-				console.log( this.error );
+			if ( this.error ) {
 				// Error, or no files to process.
 				this.stopProcess( this.error );
 				this.error = false;
@@ -747,7 +745,6 @@ window.imagify = window.imagify || {};
 			}
 
 			// Reset.
-			this.fetchError       = false;
 			this.working          = false;
 			this.processIsStopped = false;
 
@@ -756,12 +753,9 @@ window.imagify = window.imagify || {};
 			w.imagify.beat.enableSuspend();
 
 			// Reset the progress bar.
-			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' );
-			this.$progressBar.removeAttr( 'style' );
+			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' ).addClass( 'hidden' );
 			this.$progressText.text( '0' );
 			this.$missingWebpElement.hide().attr('aria-hidden', 'true');
-
-			// Enable the button.
 			this.$button.find( '.dashicons' ).removeClass( 'rotate' );
 		},
 
