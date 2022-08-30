@@ -35,7 +35,7 @@ class Bulk {
 			return;
 		}
 
-		$this->force_optimize( $media_id, $context, 2 );
+		return $this->force_optimize( $media_id, $context, 2 );
 	}
 
 	/**
@@ -52,7 +52,6 @@ class Bulk {
 
 		foreach ( $contexts as $context ) {
 			$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( 2 );
-
 			foreach ( $media_ids as $media_id ) {
 				as_enqueue_async_action(
 					'imagify_optimize_media',
@@ -62,6 +61,8 @@ class Bulk {
 					],
 					"imagify-{$context}-optimize-media"
 				);
+
+				set_transient( "imagify_{$context}_optimize_total", count( $media_ids ), HOUR_IN_SECONDS );
 			}
 		}
 	}
@@ -71,11 +72,14 @@ class Bulk {
 	 *
 	 * @param array $contexts An array of contexts (WP/Custom folders).
 	 *
-	 * @return string
+	 * @return array
 	 */
 	public function run_generate_webp( array $contexts ) {
 		if ( ! $this->can_optimize() ) {
-			return 'over-quota';
+			return [
+				'success' => false,
+				'message' => 'over-quota',
+			];
 		}
 
 		delete_transient( 'imagify_stat_without_webp' );
@@ -87,17 +91,26 @@ class Bulk {
 
 			if ( ! $media['ids'] && $media['errors']['no_backup'] ) {
 				// No backup, no WebP.
-				return 'no-backup';
+				return [
+					'success' => false,
+					'message' => 'no-backup',
+				];
 			} elseif ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
 				// Error.
-				return __( 'The path to the selected files could not be retrieved.', 'imagify' );
+				return [
+					'success' => false,
+					'message' => __( 'The path to the selected files could not be retrieved.', 'imagify' ),
+				];
 			}
 
 			$media_ids = array_merge( $media_ids, $media['ids'] );
 		}
 
 		if ( empty( $media_ids ) ) {
-			return 'no-images';
+			return [
+				'success' => false,
+				'message' => 'no-images',
+			];
 		}
 
 		foreach ( $media_ids as $media_id ) {
@@ -111,7 +124,14 @@ class Bulk {
 			);
 		}
 
-		return 'success';
+		$total = count( $media_ids );
+
+		set_transient( 'imagify_missing_webp_total', $total, HOUR_IN_SECONDS );
+
+		return [
+			'success' => true,
+			'message' => $total,
+		];
 	}
 
 	/**
@@ -285,11 +305,11 @@ class Bulk {
 
 		$data = $this->run_generate_webp( $contexts );
 
-		if ( 'success' !== $data ) {
-			wp_send_json_error( [ 'message' => $data ] );
+		if ( false === $data['success'] ) {
+			wp_send_json_error( [ 'message' => $data['message'] ] );
 		}
 
-		wp_send_json_success();
+		wp_send_json_success( [ 'total' => $data['message'] ] );
 	}
 
 	/**
