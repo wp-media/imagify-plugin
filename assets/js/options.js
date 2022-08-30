@@ -439,7 +439,7 @@ window.imagify = window.imagify || {};
 		 *
 		 * @var {bool} processIsStopped
 		 */
-		processIsStopped: true,
+		processIsStopped: false,
 		/**
 		 * The button.
 		 *
@@ -629,19 +629,13 @@ window.imagify = window.imagify || {};
 
 			_this = this;
 
+			console.log( _this );
+
 			$.get( this.getAjaxUrl( 'MissingWebp', imagifyOptions.bulk.contexts ) )
 				.done( function( response ) {
 					var errorMessage;
 
 					if ( _this.processIsStopped ) {
-						return;
-					}
-
-					if ( ! $.isArray( response.data ) ) {
-						// Error: should be an array.
-						if ( ! _this.error ) {
-							_this.error = errorMessage;
-						}
 						return;
 					}
 
@@ -659,7 +653,7 @@ window.imagify = window.imagify || {};
 						return;
 					}
 
-					if ( ! response.data.length ) {
+					if ( 0 == response.data.total ) {
 						// No media to process.
 						_this.error = 'no-images';
 
