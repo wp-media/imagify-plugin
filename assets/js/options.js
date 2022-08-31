@@ -629,8 +629,6 @@ window.imagify = window.imagify || {};
 
 			_this = this;
 
-			console.log( _this );
-
 			$.get( this.getAjaxUrl( 'MissingWebp', imagifyOptions.bulk.contexts ) )
 				.done( function( response ) {
 					var errorMessage;
@@ -648,14 +646,14 @@ window.imagify = window.imagify || {};
 					if ( ! response.success ) {
 						// Error.
 						if ( ! _this.error ) {
-							_this.error = errorMessage;
+							_this.stopProcess( errorMessage );
 						}
 						return;
 					}
 
 					if ( 0 == response.data.total ) {
 						// No media to process.
-						_this.error = 'no-images';
+						_this.stopProcess( 'no-images' );
 
 						return;
 					}
@@ -669,16 +667,9 @@ window.imagify = window.imagify || {};
 				.fail( function() {
 					// Error.
 					if ( ! _this.error ) {
-						_this.error = 'get-unoptimized-images';
+						_this.stopProcess( 'get-unoptimized-images' );
 					}
 				} );
-
-			if ( this.error ) {
-				// Error, or no files to process.
-				this.stopProcess( this.error );
-				this.error = false;
-				return;
-			}
 		},
 
 		/*
