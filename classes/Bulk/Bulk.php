@@ -113,7 +113,11 @@ class Bulk {
 			];
 		}
 
+		$total = 0;
+
 		foreach ( $medias as $context => $media_ids ) {
+			$total += count( $media_ids );
+
 			foreach( $media_ids as $media_id ) {
 				as_enqueue_async_action(
 					'imagify_convert_webp',
@@ -125,8 +129,6 @@ class Bulk {
 				);
 			}
 		}
-
-		$total = count( $media_ids );
 
 		set_transient( 'imagify_missing_webp_total', $total, HOUR_IN_SECONDS );
 
