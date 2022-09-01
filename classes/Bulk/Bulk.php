@@ -84,7 +84,7 @@ class Bulk {
 
 		delete_transient( 'imagify_stat_without_webp' );
 
-		$media_ids = [];
+		$medias = [];
 
 		foreach ( $contexts as $context ) {
 			$media = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
@@ -103,25 +103,27 @@ class Bulk {
 				];
 			}
 
-			$media_ids = array_merge( $media_ids, $media['ids'] );
+			$medias[ $context ] = $media['ids'];
 		}
 
-		if ( empty( $media_ids ) ) {
+		if ( empty( $medias ) ) {
 			return [
 				'success' => false,
 				'message' => 'no-images',
 			];
 		}
 
-		foreach ( $media_ids as $media_id ) {
-			as_enqueue_async_action(
-				'imagify_convert_webp',
-				[
-					'id'      => $media_id,
-					'context' => $context,
-				],
-				"imagify-{$context}-convert-webp"
-			);
+		foreach ( $medias as $context => $media_ids ) {
+			foreach( $media_ids as $media_id ) {
+				as_enqueue_async_action(
+					'imagify_convert_webp',
+					[
+						'id'      => $media_id,
+						'context' => $context,
+					],
+					"imagify-{$context}-convert-webp"
+				);
+			}
 		}
 
 		$total = count( $media_ids );
