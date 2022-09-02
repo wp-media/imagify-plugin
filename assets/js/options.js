@@ -494,6 +494,29 @@ window.imagify = window.imagify || {};
 			// Imagifybeat for requirements.
 				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
 				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsImagifybeat );
+
+			if ( false != imagifyOptions.bulk.progress_webp.total && false !== imagifyOptions.bulk.progress_webp.remaining ) {
+				// Reset properties.
+				w.imagify.optionsBulk.error            = false;
+				w.imagify.optionsBulk.working          = true;
+				w.imagify.optionsBulk.processIsStopped = false;
+
+				// Disable the button.
+				this.$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
+
+				// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
+				w.imagify.beat.interval( 15 );
+				w.imagify.beat.disableSuspend();
+
+				this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
+
+				processed = imagifyOptions.bulk.progress_webp.total - imagifyOptions.bulk.progress_webp.remaining;
+				progress = Math.floor( processed / imagifyOptions.bulk.progress_webp.total * 100 );
+				this.$progressBar.css( 'width', progress + '%' );
+				this.$progressText.text( processed + '/' + imagifyOptions.bulk.progress_webp.total );
+
+				this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
+			}
 		},
 
 		// Event callbacks =========================================================================
