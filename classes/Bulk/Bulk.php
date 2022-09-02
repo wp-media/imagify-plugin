@@ -130,6 +130,7 @@ class Bulk {
 			}
 		}
 
+		set_transient( 'imagify_missing_webp_remaining', $total, HOUR_IN_SECONDS );
 		set_transient( 'imagify_missing_webp_total', $total, HOUR_IN_SECONDS );
 
 		return [
