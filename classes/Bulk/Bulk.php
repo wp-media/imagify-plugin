@@ -61,9 +61,9 @@ class Bulk {
 					],
 					"imagify-{$context}-optimize-media"
 				);
-
-				set_transient( "imagify_{$context}_optimize_total", count( $media_ids ), HOUR_IN_SECONDS );
 			}
+
+			set_transient( "imagify_{$context}_optimize_total", count( $media_ids ), HOUR_IN_SECONDS );
 		}
 	}
 
