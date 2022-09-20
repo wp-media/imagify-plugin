@@ -102,15 +102,6 @@ window.imagify = window.imagify || {};
 			}
 		},
 		/**
-		 * Folder types in queue.
-		 * An array of objects: {
-		 *     @type {string} groupID The group ID, like 'library'.
-		 *     @type {string} context The context, like 'wp'.
-		 *     @type {int}    level   The optimization level: 0, 1, or 2.
-		 * }
-		 */
-		folderTypesQueue:     [],
-		/**
 		 * Status of each folder type. Type IDs are used as keys.
 		 * Each object contains: {
 		 *     @type {bool}   isError Tell if the status is considered as an error.
@@ -122,12 +113,8 @@ window.imagify = window.imagify || {};
 		displayedWaitMessage: false,
 		// Tell how many rows are available.
 		hasMultipleRows:      true,
-		// The action to perform (like 'optimize').
-		imagifyAction:        '',
 		// Set to true to stop the whole thing.
 		processIsStopped:     false,
-		// List of medias being processed.
-		processingMedia:      [],
 		// Global stats.
 		globalGain:           0,
 		globalOriginalSize:   0,
@@ -138,17 +125,12 @@ window.imagify = window.imagify || {};
 		 * @var {object} {
 		 *     An object of objects. The keys are like: {groupID|context}.
 		 *
-		 *     @type {string} groupID     The group ID.
-		 *     @type {string} context     The context.
-		 *     @type {int}    level       The optimization.
-		 *     @type {string} optimizeURL The URL to ping to optimize a file.
-		 *     @type {array}  mediaIDs    A list of file IDs.
-		 *     @type {object} files       File IDs as keys (prefixed by an underscore), File URLs as values.
+		 *     @type {string} groupID The group ID.
+		 *     @type {string} context The context.
 		 * }
 		 */
 		folderTypesData:      {},
-		// Default thumbnail.
-		defaultThumb:         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAhBAMAAAClyt9cAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtQTFRFR3BMjo6Oh4eHqqqq4uLigoKC+fn5fn5+fHx8SBBv5wAAAAF0Uk5TAEDm2GYAAABWSURBVCjPY2BgEBIEAyERBhgQUoKAIAc0EXXjEDQRRTNzBzRdBokhaGoM2CQc0NQwJJegqWFgM3VAUSNsbGwugCKiqBQUpIAiAgICoyIDKyIIB0JAEQA54jRBweNV0AAAAABJRU5ErkJggg==',
+		contexts:             [],
 
 		// Methods =================================================================================
 
@@ -212,10 +194,6 @@ window.imagify = window.imagify || {};
 
 			if ( item && item.context ) {
 				url += '&context=' + item.context;
-			}
-
-			if ( 'getMediaIds' === action || 'bulkProcess' === action ) {
-				url += '&imagify_action=' + w.imagify.bulk.imagifyAction;
 			}
 
 			return url;
@@ -513,11 +491,9 @@ window.imagify = window.imagify || {};
 			} );
 
 			// Make sure to reset properties.
-			this.folderTypesQueue     = [];
 			this.status               = {};
 			this.displayedWaitMessage = false;
 			this.processIsStopped     = false;
-			this.imagifyAction        = 'optimize';
 			this.globalGain           = 0;
 			this.globalOriginalSize   = 0;
 			this.globalOptimizedSize  = 0;
@@ -525,16 +501,9 @@ window.imagify = window.imagify || {};
 			$( '.imagify-bulk-table [name="group[]"]:checked' ).each( function() {
 				var $checkbox = $( this ),
 					$row      = $checkbox.closest( '.imagify-row-folder-type' ),
-					groupID   = $row.data( 'group-id' ),
-					context   = $row.data( 'context' ),
-					level     = $row.find( '.imagify-cell-level [name="level[' + groupID + ']"]:checked' ).val();
+					groupID   = $row.data( 'group-id' );
 
-				// Build the queue.
-				w.imagify.bulk.folderTypesQueue.push( {
-					groupID: groupID,
-					context: context,
-					level:   undefined === level ? -1 : parseInt( level, 10 )
-				} );
+				w.imagify.bulk.contexts.push( $row.data( 'context' ) );
 
 				// Set the status.
 				w.imagify.bulk.status[ groupID ] = {
@@ -562,14 +531,7 @@ window.imagify = window.imagify || {};
 		 * Process the first item in the queue.
 		 */
 		processQueue: function () {
-			var $row, item;
-
 			if ( w.imagify.bulk.processIsStopped ) {
-				return;
-			}
-
-			if ( ! w.imagify.bulk.folderTypesQueue.length ) {
-				$( w ).trigger( 'queueEmpty.imagify' );
 				return;
 			}
 
@@ -586,17 +548,11 @@ window.imagify = window.imagify || {};
 				w.imagify.bulk.displayedWaitMessage = true;
 			}
 
-			/**
-			 * Fetch files for the first folder type in the queue.
-			 */
-			item = w.imagify.bulk.folderTypesQueue.shift();
-			$row = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
-
 			// Update status.
 			w.imagify.bulk.status[ item.groupID ].id = 'fetching';
 
 			// Fetch image IDs.
-			$.get( w.imagify.bulk.getAjaxUrl( 'getMediaIds', item ) )
+			$.get( w.imagify.bulk.getAjaxUrl( 'bulkProcess', w.imagify.bulk.contexts ) )
 				.done( function( response ) {
 					var errorMessage;
 
@@ -620,34 +576,18 @@ window.imagify = window.imagify || {};
 
 					if ( ! response.data || ! ( $.isPlainObject( response.data ) || $.isArray( response.data ) ) ) {
 						// Error: should be an array if empty, or an object otherwize.
-						w.imagify.bulk.stopProcess( errorMessage, item );
+						w.imagify.bulk.stopProcess( errorMessage );
 						return;
 					}
 
 					// Success.
 					if ( ! $.isEmptyObject( response.data ) ) {
-						// Optimize the files.
-						$( w ).trigger( 'optimizeFiles.imagify', [ item, response.data ] );
 						return;
 					}
-
-					// No images.
-					w.imagify.bulk.status[ item.groupID ].id = 'no-images';
-
-					if ( w.imagify.bulk.hasMultipleRows ) {
-						$( '#cb-select-' + item.groupID ).prop( 'checked', false );
-					}
-
-					if ( ! w.imagify.bulk.folderTypesQueue.length ) {
-						$( w ).trigger( 'queueEmpty.imagify' );
-						return;
-					}
-
-					$( w ).trigger( 'processQueue.imagify' );
 				} )
 				.fail( function() {
 					// Error.
-					w.imagify.bulk.stopProcess( 'get-unoptimized-images', item );
+					w.imagify.bulk.stopProcess( 'get-unoptimized-images' );
 				} );
 		},
 
@@ -695,7 +635,6 @@ window.imagify = window.imagify || {};
 				bufferSize:   imagifyBulk.bufferSizes[ item.context ],
 				ajaxUrl:      w.imagify.bulk.getAjaxUrl( 'bulkProcess', item ),
 				files:        files,
-				defaultThumb: w.imagify.bulk.defaultThumb,
 				doneEvent:    'mediaProcessed.imagify'
 			} );
 
@@ -704,15 +643,6 @@ window.imagify = window.imagify || {};
 				if ( w.imagify.bulk.processIsStopped ) {
 					return;
 				}
-
-				$.each( w.imagify.bulk.processingMedia, function( i, v ) {
-					if ( v.context !== item.context || v.mediaID !== data.mediaID ) {
-						return true;
-					}
-
-					w.imagify.bulk.processingMedia.splice( i, 1 );
-					return false;
-				} );
 
 				// Update the progress bar.
 				$progress.css( 'width', data.progress + '%' ).find( '.percent' ).html( data.progress + '%' );
@@ -815,9 +745,6 @@ window.imagify = window.imagify || {};
 			// Reset Imagifybeat interval and enable suspend.
 			w.imagify.beat.resetInterval();
 			w.imagify.beat.enableSuspend();
-
-			// Reset the queue.
-			w.imagify.bulk.folderTypesQueue = [];
 
 			// Fetch and display generic stats if stats via Imagifybeat are disabled.
 			if ( ! imagifyBulk.imagifybeatIDs.stats ) {
