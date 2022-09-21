@@ -25,6 +25,19 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	<td class="imagify-cell-original-size-size">
 		<?php echo $data['original-size']; ?>
 	</td>
+	<td class="imagify-cell-level">
+		<?php
+		$this->print_template( 'input/selector', [
+			'current_label' => __( 'Current level:', 'imagify' ),
+			'name'          => 'level[' . $data['group_id'] . ']',
+			'value'         => $data['level'],
+			'values'        => [
+				0 => imagify_get_optimization_level_label( 0, '%ICON% %s' ),
+				2 => imagify_get_optimization_level_label( 2, '%ICON% %s' ),
+			],
+		] );
+		?>
+	</td>
 </tr>
 
 <tr>
