@@ -1,25 +1,20 @@
 <?php
 
+use Imagify\Traits\InstanceGetterTrait;
+
 /**
  * Class that handles the plugin options.
  *
  * @since 1.7
  */
 class Imagify_Options extends Imagify_Abstract_Options {
-
-	/**
-	 * Class version.
-	 *
-	 * @var   string
-	 * @since 1.7
-	 */
-	const VERSION = '1.1';
+	use InstanceGetterTrait;
 
 	/**
 	 * Suffix used in the name of the option.
 	 *
-	 * @var    string
-	 * @since  1.7
+	 * @var   string
+	 * @since 1.7
 	 */
 	protected $identifier = 'settings';
 
@@ -28,12 +23,13 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 * These are the "zero state" values.
 	 * Don't use null as value.
 	 *
-	 * @var    array
-	 * @since  1.7
+	 * @var   array
+	 * @since 1.7
 	 */
-	protected $default_values = array(
+	protected $default_values = [
 		'api_key'             => '',
 		'optimization_level'  => 2,
+		'lossless'            => 0,
 		'auto_optimize'       => 0,
 		'backup'              => 0,
 		'resize_larger'       => 0,
@@ -42,41 +38,32 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'display_webp'        => 0,
 		'display_webp_method' => 'picture',
 		'cdn_url'             => '',
-		'disallowed-sizes'    => array(),
+		'disallowed-sizes'    => [],
 		'admin_bar_menu'      => 0,
 		'partner_links'       => 0,
-	);
+	];
 
 	/**
 	 * The Imagify main option values used when they are set the first time or reset.
 	 * Values identical to default values are not listed.
 	 *
-	 * @var    array
-	 * @since  1.7
+	 * @var   array
+	 * @since 1.7
 	 */
-	protected $reset_values = array(
+	protected $reset_values = [
 		'optimization_level' => 2,
 		'auto_optimize'      => 1,
 		'backup'             => 1,
 		'convert_to_webp'    => 1,
 		'admin_bar_menu'     => 1,
 		'partner_links'      => 1,
-	);
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.7
-	 */
-	protected static $_instance;
+	];
 
 	/**
 	 * The constructor.
 	 * Side note: $this->hook_identifier value is "option".
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 */
 	protected function __construct() {
 		if ( defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
@@ -107,23 +94,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		parent::__construct();
 	}
 
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-
 	/** ----------------------------------------------------------------------------------------- */
 	/** SANITIZATION, VALIDATION ================================================================ */
 	/** ----------------------------------------------------------------------------------------- */
@@ -131,8 +101,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	/**
 	 * Sanitize and validate an option value. Basic casts have been made.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 *
 	 * @param  string $key     The option key.
 	 * @param  mixed  $value   The value.
@@ -159,6 +128,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 
 			case 'auto_optimize':
 			case 'backup':
+			case 'lossless':
 			case 'resize_larger':
 			case 'convert_to_webp':
 			case 'display_webp':
@@ -221,8 +191,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	/**
 	 * Validate Imagify's options before storing them. Basic sanitization and validation have been made, row by row.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 *
 	 * @param  string $values The option value.
 	 * @return array
