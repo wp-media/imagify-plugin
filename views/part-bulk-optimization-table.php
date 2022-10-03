@@ -45,6 +45,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 						<th class="imagify-cell-count-errors"><?php esc_html_e( 'Errors', 'imagify' ); ?></th>
 						<th class="imagify-cell-optimized-size-size"><?php esc_html_e( 'Optimized Size', 'imagify' ); ?></th>
 						<th class="imagify-cell-original-size-size"><?php esc_html_e( 'Original Size', 'imagify' ); ?></th>
+						<th class="imagify-cell-level"><?php esc_html_e( 'Level Selection', 'imagify' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -52,6 +53,13 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 					foreach ( $data['groups'] as $group ) {
 						$context_data = Imagify_Admin_Ajax_Post::get_instance()->get_bulk_instance( $group['context'] )->get_context_data();
 						$group        = array_merge( $group, $context_data );
+						$default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
+
+						if ( Imagify_Options::get_instance()->get( 'lossless' ) ) {
+							$default_level = 0;
+						}
+
+						$group['level'] = $default_level;
 
 						$this->print_template( 'part-bulk-optimization-table-row-folder-type', $group );
 					}
