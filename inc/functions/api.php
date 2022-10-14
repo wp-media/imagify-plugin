@@ -260,11 +260,12 @@ function imagify_translate_api_message( $message ) {
  * Runs the bulk optimization
  *
  * @param array $contexts An array of contexts (WP/Custom folders).
+ * @param int   $optimization level Optimization level to use.
  *
  * @return void
  */
-function imagify_bulk_optimize( $contexts ) {
-	Imagify\Bulk\Bulk::get_instance()->run_optimize( $contexts );
+function imagify_bulk_optimize( $contexts, $optimization_level ) {
+	Imagify\Bulk\Bulk::get_instance()->run_optimize( $contexts, $optimization_level );
 }
 
 /**
