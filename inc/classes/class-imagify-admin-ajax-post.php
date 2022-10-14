@@ -1195,6 +1195,10 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$level  = filter_input( $method, $parameter );
 
 		if ( ! is_numeric( $level ) || $level < 0 || $level > 2 ) {
+			if ( get_imagify_option( 'lossless' ) ) {
+				return 0;
+			}
+
 			return get_imagify_option( 'optimization_level' );
 		}
 

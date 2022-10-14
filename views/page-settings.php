@@ -69,6 +69,16 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-r
 									?>
 								</strong>
 							</p>
+
+							<p class="imagify-setting-line">
+							<?php
+							$settings->field_checkbox( array(
+								'option_name' => 'lossless',
+								'label'       => __( 'Lossless compression', 'imagify' ),
+								'info'        => __( 'By default, Imagify optimizes your images by using a smart compression to get the best compression rate with an optimal quality.', 'imagify' ) . '<br><br>' . __( 'If you are a photographer or focus on the quality of your images rather than the performance, you may be interested in this option to make sure not a single pixel looks different in the optimized image compared with the original.', 'imagify' ),
+							) );
+							?>
+							</p>
 						</div>
 					</div>
 
