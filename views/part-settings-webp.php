@@ -142,9 +142,27 @@ $settings = Imagify_Settings::get_instance();
 					<span class="button-text"><?php esc_html_e( 'Generate missing WebP versions', 'imagify' ); ?></span>
 				</button>
 
-				<div aria-hidden="true" class="imagify-progress hidden">
+				<?php
+				$remaining = get_transient( 'imagify_missing_webp_remaining' );
+				$total     = get_transient( 'imagify_missing_webp_total' );
+				$progress  = 0;
+				$aria      = ' aria-hidden="true"';
+				$class     = 'hidden';
+				$style     = '';
+
+				if ( false !== $remaining ) {
+					$aria      = '';
+					$class     = '';
+					$processed = $total - $remaining;
+					$progress  = $processed . '/' . $total;
+					$percent   = $processed / $total * 100;
+					$style     = 'style="width:' . $percent . '%;"';
+				}
+				?>
+
+				<div <?php echo $aria; ?> class="imagify-progress <?php echo $class; ?>">
 					<div class="progress">
-						<div class="bar"><div class="percent">0</div></div>
+						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $progress; ?></div></div>
 					</div>
 				</div>
 			</div>
