@@ -26,8 +26,8 @@ class Bulk {
 	 *
 	 * @since 2.1
 	 */
-	public function optimize_media( int $media_id, string $context ) {
-		if ( ! $media_id || ! $context ) {
+	public function optimize_media( int $media_id, string $context, int $optimization_level ) {
+		if ( ! $media_id || ! $context || ! is_numeric( $optimization_level ) ) {
 			return;
 		}
 
@@ -35,29 +35,32 @@ class Bulk {
 			return;
 		}
 
-		return $this->force_optimize( $media_id, $context, 2 );
+		$this->force_optimize( $media_id, $context, $optimization_level );
 	}
 
 	/**
 	 * Runs the bulk optimization
 	 *
 	 * @param array $contexts An array of contexts (WP/Custom folders).
+	 * @param int   $optimization_level Optimization level.
 	 *
 	 * @return void
 	 */
-	public function run_optimize( array $contexts ) {
+	public function run_optimize( array $contexts, int $optimization_level ) {
 		if ( ! $this->can_optimize() ) {
 			return;
 		}
 
 		foreach ( $contexts as $context ) {
-			$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( 2 );
+			$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
+
 			foreach ( $media_ids as $media_id ) {
 				as_enqueue_async_action(
 					'imagify_optimize_media',
 					[
 						'id'      => $media_id,
 						'context' => $context,
+						'level'   => $optimization_level,
 					],
 					"imagify-{$context}-optimize-media"
 				);
@@ -267,6 +270,32 @@ class Bulk {
 		$context = filter_input( $method, $parameter, FILTER_SANITIZE_STRING );
 
 		return imagify_sanitize_context( $context );
+	}
+
+	/**
+	 * Get the submitted optimization level.
+	 *
+	 * @since  1.7
+	 * @since  1.9 Added $method and $parameter parameters.
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $method The method used: 'GET' (default), or 'POST'.
+	 * @param  string $parameter The name of the parameter to look for.
+	 * @return int
+	 */
+	public function get_optimization_level( $method = 'GET', $parameter = 'optimization_level' ) {
+		$method = 'POST' === $method ? INPUT_POST : INPUT_GET;
+		$level  = filter_input( $method, $parameter );
+
+		if ( ! is_numeric( $level ) || $level < 0 || $level > 2 ) {
+			if ( get_imagify_option( 'lossless' ) ) {
+				return 0;
+			}
+
+			return get_imagify_option( 'optimization_level' );
+		}
+
+		return (int) $level;
 	}
 
 	/** ----------------------------------------------------------------------------------------- */

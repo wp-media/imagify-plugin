@@ -10,7 +10,13 @@ class BulkOptimizeCommand extends AbstractCommand {
 	 * {@inheritdoc}
 	 */
 	public function __invoke( $arguments, $options ) {
-		Bulk::get_instance()->run_optimize( $arguments );
+		$level = 2;
+
+		if ( isset( $options['lossless'] ) ) {
+			$level = 0;
+		}
+
+		Bulk::get_instance()->run_optimize( $arguments, $level );
 
 		\WP_CLI::log( 'Imagify bulk optimization triggered.' );
 	}
@@ -40,6 +46,12 @@ class BulkOptimizeCommand extends AbstractCommand {
 				'description' => 'The context(s) to run the bulk optimization for. Possible values are wp and custom-folders.',
 				'optional'    => false,
 				'repeating'   => true,
+			],
+			[
+				'type'        => 'flag',
+				'name'        => 'lossless',
+				'description' => 'Use lossless compression.',
+				'optional'    => true,
 			],
 		];
 	}
