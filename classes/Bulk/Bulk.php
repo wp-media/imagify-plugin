@@ -14,6 +14,7 @@ class Bulk {
 	public function init() {
 		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 2 );
 		add_action( 'imagify_convert_webp', [ $this, 'generate_webp_versions' ], 10, 2 );
+		add_action( 'imagify_convert_webp_finished', [ $this, 'clear_webp_transients' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
 		add_action( 'wp_ajax_imagify_missing_webp_generation', [ $this, 'missing_webp_callback' ] );
 		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
@@ -136,10 +137,22 @@ class Bulk {
 		set_transient( 'imagify_missing_webp_remaining', $total, HOUR_IN_SECONDS );
 		set_transient( 'imagify_missing_webp_total', $total, HOUR_IN_SECONDS );
 
+		as_enqueue_async_action( 'imagify_convert_webp_finished', [], 'imagify-convert-webp' );
+
 		return [
 			'success' => true,
 			'message' => $total,
 		];
+	}
+
+	/**
+	 * Clears the WebP transients when the process is finished
+	 *
+	 * @return void
+	 */
+	public function clear_webp_transients() {
+		delete_transient( 'imagify_missing_webp_remaining' );
+		delete_transient( 'imagify_missing_webp_total' );
 	}
 
 	/**
