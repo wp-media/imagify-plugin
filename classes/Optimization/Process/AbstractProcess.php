@@ -1174,13 +1174,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			];
 		}
 
-		$media      = $this->get_media();
-		$dimensions = $media->get_dimensions();
-
-		if ( ! $dimensions['width'] ) {
-			// The dimensions don't seem to be in the database anymore: try to get them directly from the file.
-			$dimensions = $file->get_dimensions();
-		}
+		$dimensions = $file->get_dimensions();
 
 		if ( ! $dimensions['width'] ) {
 			// Could not get the image dimensions.
@@ -1194,6 +1188,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			);
 		}
 
+		$media        = $this->get_media();
 		$resize_width = $media->get_context_instance()->get_resizing_threshold();
 
 		if ( $resize_width >= $dimensions['width'] ) {
