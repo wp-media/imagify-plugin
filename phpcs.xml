@@ -41,6 +41,7 @@
 
 	<!-- Run against the WordPress ruleset. -->
 	<rule ref="WordPress">
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 		<exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/><!-- Excluded as long as it doesn't ignore comments. -->
 		<exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning"/><!-- Too many false positives. -->
 		<exclude name="Generic.Functions.FunctionCallArgumentSpacing.TooMuchSpaceAfterComma"/><!-- Completely broken. -->
@@ -84,7 +85,11 @@
 		<exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped"/>
 		<exclude name="WordPress.Security.EscapeOutput.UnsafePrintingFunction"/>
 	</rule>
-
+	<rule ref="WordPress.Files.FileName">
+        <properties>
+            <property name="strict_class_file_names" value="false" />
+        </properties>
+    </rule>
 	<rule ref="WordPress.DB.DirectDatabaseQuery.SchemaChange">
 		<exclude-pattern>uninstall.php</exclude-pattern>
 	</rule>

@@ -260,7 +260,7 @@ function imagify_translate_api_message( $message ) {
  * Runs the bulk optimization
  *
  * @param array $contexts An array of contexts (WP/Custom folders).
- * @param int   $optimization level Optimization level to use.
+ * @param int   $optimization_level Optimization level to use.
  *
  * @return void
  */
@@ -287,7 +287,7 @@ function imagify_generate_webp( $contexts ) {
  * @return void
  */
 function imagify_add_command( CommandInterface $command ) {
-	if ( ! defined('WP_CLI' ) || ! WP_CLI || ! class_exists( '\WP_CLI' ) ) {
+	if ( ! defined( 'WP_CLI' ) || ! WP_CLI || ! class_exists( '\WP_CLI' ) ) {
 		return;
 	}
 

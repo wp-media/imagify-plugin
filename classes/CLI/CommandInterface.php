@@ -11,7 +11,7 @@ interface CommandInterface {
 	 */
 	public function get_name(): string;
 
-	 /**
+	/**
 	 * Executes the command.
 	 *
 	 * @param array $arguments Positional argument.

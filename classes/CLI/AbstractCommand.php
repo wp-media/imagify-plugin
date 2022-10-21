@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Imagify\CLI;
 
+/**
+ * Abstrat class for CLI Command
+ */
 abstract class AbstractCommand implements CommandInterface {
 	/**
 	 * {@inheritdoc}
