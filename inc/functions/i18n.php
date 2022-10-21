@@ -98,7 +98,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'ajaxNonce'        => wp_create_nonce( 'imagify-bulk-optimize' ),
 					'contexts'         => $contexts,
 					'progress_webp'    => [
-						'remaining' => get_transient( 'imagify_missing_webp_remaining' ),
+						'remaining' => OptimizedMediaWithoutWebp::get_instance()->get_stat(),
 						'total' => get_transient( 'imagify_missing_webp_total' ),
 					],
 					'labels'           => [
