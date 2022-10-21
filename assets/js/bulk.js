@@ -196,6 +196,10 @@ window.imagify = window.imagify || {};
 				url += '&context=' + item.context;
 			}
 
+			if ( item && item.level ) {
+				url += '&optimization_level=' + item.level;
+			}
+
 			return url;
 		},
 
@@ -491,6 +495,7 @@ window.imagify = window.imagify || {};
 			} );
 
 			// Make sure to reset properties.
+			this.folderTypesQueue     = [];
 			this.status               = {};
 			this.displayedWaitMessage = false;
 			this.processIsStopped     = false;
@@ -502,8 +507,15 @@ window.imagify = window.imagify || {};
 				var $checkbox = $( this ),
 					$row      = $checkbox.closest( '.imagify-row-folder-type' ),
 					groupID   = $row.data( 'group-id' );
+					context   = $row.data( 'context' ),
+					level     = $row.find( '.imagify-cell-level [name="level[' + groupID + ']"]:checked' ).val();
 
-				w.imagify.bulk.contexts.push( $row.data( 'context' ) );
+				// Build the queue.
+				w.imagify.bulk.folderTypesQueue.push( {
+					groupID: groupID,
+					context: context,
+					level:   undefined === level ? -1 : parseInt( level, 10 )
+				} );
 
 				// Set the status.
 				w.imagify.bulk.status[ groupID ] = {
@@ -548,11 +560,13 @@ window.imagify = window.imagify || {};
 				w.imagify.bulk.displayedWaitMessage = true;
 			}
 
+			item = w.imagify.bulk.folderTypesQueue.shift();
+
 			// Update status.
 			w.imagify.bulk.status[ item.groupID ].id = 'fetching';
 
 			// Fetch image IDs.
-			$.get( w.imagify.bulk.getAjaxUrl( 'bulkProcess', w.imagify.bulk.contexts ) )
+			$.get( w.imagify.bulk.getAjaxUrl( 'bulkProcess', item ) )
 				.done( function( response ) {
 					var errorMessage;
 
@@ -576,7 +590,7 @@ window.imagify = window.imagify || {};
 
 					if ( ! response.data || ! ( $.isPlainObject( response.data ) || $.isArray( response.data ) ) ) {
 						// Error: should be an array if empty, or an object otherwize.
-						w.imagify.bulk.stopProcess( errorMessage );
+						w.imagify.bulk.stopProcess( errorMessage, item );
 						return;
 					}
 
@@ -587,7 +601,7 @@ window.imagify = window.imagify || {};
 				} )
 				.fail( function() {
 					// Error.
-					w.imagify.bulk.stopProcess( 'get-unoptimized-images' );
+					w.imagify.bulk.stopProcess( 'get-unoptimized-images', item );
 				} );
 		},
 
@@ -745,6 +759,7 @@ window.imagify = window.imagify || {};
 			// Reset Imagifybeat interval and enable suspend.
 			w.imagify.beat.resetInterval();
 			w.imagify.beat.enableSuspend();
+			w.imagify.bulk.folderTypesQueue = [];
 
 			// Fetch and display generic stats if stats via Imagifybeat are disabled.
 			if ( ! imagifyBulk.imagifybeatIDs.stats ) {
