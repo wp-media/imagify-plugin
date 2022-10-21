@@ -143,14 +143,14 @@ $settings = Imagify_Settings::get_instance();
 				</button>
 
 				<?php
-				$remaining = get_transient( 'imagify_missing_webp_remaining' );
+				$remaining = OptimizedMediaWithoutWebp::get_instance()->get_stat();
 				$total     = get_transient( 'imagify_missing_webp_total' );
 				$progress  = 0;
 				$aria      = ' aria-hidden="true"';
 				$class     = 'hidden';
 				$style     = '';
 
-				if ( false !== $remaining ) {
+				if ( false !== $total ) {
 					$aria      = '';
 					$class     = '';
 					$processed = $total - $remaining;
