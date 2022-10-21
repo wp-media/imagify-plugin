@@ -134,25 +134,12 @@ class Bulk {
 			}
 		}
 
-		set_transient( 'imagify_missing_webp_remaining', $total, HOUR_IN_SECONDS );
 		set_transient( 'imagify_missing_webp_total', $total, HOUR_IN_SECONDS );
-
-		as_enqueue_async_action( 'imagify_convert_webp_finished', [], 'imagify-convert-webp' );
 
 		return [
 			'success' => true,
 			'message' => $total,
 		];
-	}
-
-	/**
-	 * Clears the WebP transients when the process is finished
-	 *
-	 * @return void
-	 */
-	public function clear_webp_transients() {
-		delete_transient( 'imagify_missing_webp_remaining' );
-		delete_transient( 'imagify_missing_webp_total' );
 	}
 
 	/**
