@@ -14,6 +14,7 @@
 	<exclude-pattern>tests/*</exclude-pattern>
 	<exclude-pattern>vendor/*</exclude-pattern>
 	<exclude-pattern>classes/Dependencies</exclude-pattern>
+	<exclude-pattern>inc/Dependencies</exclude-pattern>
 
 	<arg value="sp"/><!-- Show sniff and progress -->
 	<arg name="colors"/><!-- Show results with colors -->
