@@ -99,7 +99,16 @@ window.imagify = window.imagify || {};
 			},
 			files: {
 				donuts: {}
-			}
+			},
+			/**
+			 * Folder types in queue.
+			 * An array of objects: {
+			 *     @type {string} groupID The group ID, like 'library'.
+			 *     @type {string} context The context, like 'wp'.
+			 *     @type {int}    level   The optimization level: 0, 1, or 2.
+			 * }
+			 */
+			folderTypesQueue:     [],
 		},
 		/**
 		 * Status of each folder type. Type IDs are used as keys.
@@ -130,7 +139,6 @@ window.imagify = window.imagify || {};
 		 * }
 		 */
 		folderTypesData:      {},
-		contexts:             [],
 
 		// Methods =================================================================================
 
@@ -506,7 +514,7 @@ window.imagify = window.imagify || {};
 			$( '.imagify-bulk-table [name="group[]"]:checked' ).each( function() {
 				var $checkbox = $( this ),
 					$row      = $checkbox.closest( '.imagify-row-folder-type' ),
-					groupID   = $row.data( 'group-id' );
+					groupID   = $row.data( 'group-id' ),
 					context   = $row.data( 'context' ),
 					level     = $row.find( '.imagify-cell-level [name="level[' + groupID + ']"]:checked' ).val();
 
@@ -543,6 +551,8 @@ window.imagify = window.imagify || {};
 		 * Process the first item in the queue.
 		 */
 		processQueue: function () {
+			var item;
+
 			if ( w.imagify.bulk.processIsStopped ) {
 				return;
 			}
