@@ -23,7 +23,8 @@
 		"allow-plugins": {
 			"composer/installers": true,
 			"dealerdirect/phpcodesniffer-composer-installer": true,
-			"dangoodman/composer-for-wordpress": true
+			"dangoodman/composer-for-wordpress": true,
+			"mnsami/composer-custom-directory-installer": true
 		}
 	},
 	"support": {
