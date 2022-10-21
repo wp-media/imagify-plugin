@@ -42,33 +42,30 @@ class Bulk {
 	/**
 	 * Runs the bulk optimization
 	 *
-	 * @param array $contexts An array of contexts (WP/Custom folders).
-	 * @param int   $optimization_level Optimization level.
+	 * @param string $context Current context (WP/Custom folders).
+	 * @param int    $optimization_level Optimization level.
 	 *
 	 * @return void
 	 */
-	public function run_optimize( array $contexts, int $optimization_level ) {
+	public function run_optimize( string $context, int $optimization_level ) {
 		if ( ! $this->can_optimize() ) {
 			return;
 		}
 
-		foreach ( $contexts as $context ) {
-			$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
+		$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
 
-			foreach ( $media_ids as $media_id ) {
-				as_enqueue_async_action(
-					'imagify_optimize_media',
-					[
-						'id'      => $media_id,
-						'context' => $context,
-						'level'   => $optimization_level,
-					],
-					"imagify-{$context}-optimize-media"
-				);
-			}
+		foreach ( $media_ids as $media_id ) {
+			as_enqueue_async_action(
+				'imagify_optimize_media',
+				[
+					'id'      => $media_id,
+					'context' => $context,
+					'level'   => $optimization_level,
+				],
+				"imagify-{$context}-optimize-media"
+			);
 
-			set_transient( "imagify_{$context}_optimize_total", count( $media_ids ), HOUR_IN_SECONDS );
-		}
+		set_transient( "imagify_{$context}_optimize_total", count( $media_ids ), HOUR_IN_SECONDS );
 	}
 
 	/**
@@ -310,15 +307,14 @@ class Bulk {
 	public function bulk_optimize_callback() {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
-		$contexts = explode( '_', sanitize_key( wp_unslash( $_GET['context'] ) ) );
+		$context = $this->get_context();
+		$level   = $this->get_optimization_level();
 
-		foreach ( $contexts as $context ) {
-			if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
 				imagify_die();
 			}
-		}
 
-		$this->run_optimize( $contexts );
+		$this->run_optimize( $context, $level );
 	}
 
 	/**
