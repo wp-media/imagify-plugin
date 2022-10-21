@@ -16,7 +16,9 @@ class BulkOptimizeCommand extends AbstractCommand {
 			$level = 0;
 		}
 
-		Bulk::get_instance()->run_optimize( $arguments, $level );
+		foreach ( $arguments as $context ) {
+			Bulk::get_instance()->run_optimize( $context, $level );
+		}
 
 		\WP_CLI::log( 'Imagify bulk optimization triggered.' );
 	}
