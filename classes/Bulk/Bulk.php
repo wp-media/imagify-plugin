@@ -12,7 +12,7 @@ class Bulk {
 	 * @since 2.1
 	 */
 	public function init() {
-		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 2 );
+		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 3 );
 		add_action( 'imagify_convert_webp', [ $this, 'generate_webp_versions' ], 10, 2 );
 		add_action( 'imagify_convert_webp_finished', [ $this, 'clear_webp_transients' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
@@ -45,14 +45,26 @@ class Bulk {
 	 * @param string $context Current context (WP/Custom folders).
 	 * @param int    $optimization_level Optimization level.
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function run_optimize( string $context, int $optimization_level ) {
 		if ( ! $this->can_optimize() ) {
-			return;
+			return [
+				'success' => false,
+				'message' => 'over-quota',
+			];
 		}
 
 		$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
+
+		if ( empty( $media_ids ) ) {
+			return [
+				'success' => false,
+				'message' => 'no-images',
+			];
+		}
+
+		$total = count( $media_ids );
 
 		foreach ( $media_ids as $media_id ) {
 			as_enqueue_async_action(
@@ -65,8 +77,13 @@ class Bulk {
 				"imagify-{$context}-optimize-media"
 			);
 
-			set_transient( "imagify_{$context}_optimize_total", count( $media_ids ), HOUR_IN_SECONDS );
+			set_transient( "imagify_{$context}_optimize_total", $total, HOUR_IN_SECONDS );
 		}
+
+		return [
+			'success' => true,
+			'message' => $total,
+		];
 	}
 
 	/**
