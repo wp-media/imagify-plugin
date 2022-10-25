@@ -551,8 +551,6 @@ window.imagify = window.imagify || {};
 		 * Process the first item in the queue.
 		 */
 		processQueue: function () {
-			var item;
-
 			if ( w.imagify.bulk.processIsStopped ) {
 				return;
 			}
@@ -570,49 +568,67 @@ window.imagify = window.imagify || {};
 				w.imagify.bulk.displayedWaitMessage = true;
 			}
 
-			item = w.imagify.bulk.folderTypesQueue.shift();
+			w.imagify.bulk.folderTypesQueue.forEach( ( item ) => {
+				// Update status.
+				w.imagify.bulk.status[ item.groupID ].id = 'fetching';
 
-			// Update status.
-			w.imagify.bulk.status[ item.groupID ].id = 'fetching';
+				// Start async process for current context
+				$.get( w.imagify.bulk.getAjaxUrl( 'bulkProcess', item ) )
+					.done( function( response ) {
+						var errorMessage;
 
-			// Start async process for current context
-			$.get( w.imagify.bulk.getAjaxUrl( 'bulkProcess', item ) )
-				.done( function( response ) {
-					var errorMessage;
+						swal.close();
 
-					swal.close();
+						if ( w.imagify.bulk.processIsStopped ) {
+							return;
+						}
 
-					if ( w.imagify.bulk.processIsStopped ) {
-						return;
-					}
+						if ( response.data && response.data.message ) {
+							errorMessage = response.data.message;
+						} else {
+							errorMessage = imagifyBulk.ajaxErrorText;
+						}
 
-					if ( response.data && response.data.message ) {
-						errorMessage = response.data.message;
-					} else {
-						errorMessage = imagifyBulk.ajaxErrorText;
-					}
+						if ( ! response.success ) {
+							// Error.
+							w.imagify.bulk.stopProcess( errorMessage, item );
+							return;
+						}
 
-					if ( ! response.success ) {
+						if ( ! response.data || ! ( $.isPlainObject( response.data ) || $.isArray( response.data ) ) ) {
+							// Error: should be an array if empty, or an object otherwize.
+							w.imagify.bulk.stopProcess( errorMessage, item );
+							return;
+						}
+
+						// Success.
+						if ( ! $.isEmptyObject( response.data ) ) {
+							var $row, $workingRow, $optimizedCount, $errorsCount, $table, $progressBar, $progress, optimizedCount, errorsCount;
+
+							$row         = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
+							$workingRow  = $row.next( '.imagify-row-working' );
+							$errorsCount = $workingRow.find( '.imagify-cell-count-errors span' );
+							errorsCount  = parseInt( $errorsCount.text(), 10 );
+							$table       = $row.closest( '.imagify-bulk-table' );
+							$progressBar = $table.find( '.imagify-row-progress' );
+							$progress    = $progressBar.find( '.bar' );
+							$optimizedCount = $workingRow.find( '.imagify-cell-count-optimized span' );
+							optimizedCount  = parseInt( $optimizedCount.text(), 10 );
+
+							w.imagify.bulk.status[ item.groupID ].id = 'optimizing';
+
+							// Reset and display the progress bar.
+							$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
+							$progressBar.slideDown().attr( 'aria-hidden', 'false' );
+
+							return;
+						}
+					} )
+					.fail( function() {
 						// Error.
-						w.imagify.bulk.stopProcess( errorMessage, item );
-						return;
-					}
-
-					if ( ! response.data || ! ( $.isPlainObject( response.data ) || $.isArray( response.data ) ) ) {
-						// Error: should be an array if empty, or an object otherwize.
-						w.imagify.bulk.stopProcess( errorMessage, item );
-						return;
-					}
-
-					// Success.
-					if ( ! $.isEmptyObject( response.data ) ) {
-						return;
-					}
-				} )
-				.fail( function() {
-					// Error.
-					w.imagify.bulk.stopProcess( 'get-unoptimized-images', item );
-				} );
+						w.imagify.bulk.stopProcess( 'get-unoptimized-images', item );
+					} );
+			} );
 		},
 
 		/*
@@ -650,17 +666,6 @@ window.imagify = window.imagify || {};
 			// Reset and display the progress bar.
 			$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
 			$progressBar.slideDown().attr( 'aria-hidden', 'false' );
-
-			// Optimize the files.
-			Optimizer = new w.imagify.Optimizer( {
-				groupID:      item.groupID,
-				context:      item.context,
-				level:        item.level,
-				bufferSize:   imagifyBulk.bufferSizes[ item.context ],
-				ajaxUrl:      w.imagify.bulk.getAjaxUrl( 'bulkProcess', item ),
-				files:        files,
-				doneEvent:    'mediaProcessed.imagify'
-			} );
 
 			// After each media optimization.
 			Optimizer.each( function( data ) {
