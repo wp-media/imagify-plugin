@@ -332,7 +332,13 @@ class Bulk {
 				imagify_die();
 			}
 
-		$this->run_optimize( $context, $level );
+		$data = $this->run_optimize( $context, $level );
+
+		if ( false === $data['success'] ) {
+			wp_send_json_error( [ 'message' => $data['message'] ] );
+		}
+
+		wp_send_json_success( [ 'total' => $data['message'] ] );
 	}
 
 	/**
