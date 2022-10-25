@@ -5,9 +5,15 @@ namespace Imagify\CLI;
 
 use Imagify\Bulk\Bulk;
 
+/**
+ * Command class for the bulk optimization
+ */
 class BulkOptimizeCommand extends AbstractCommand {
 	/**
-	 * {@inheritdoc}
+	 * Executes the command.
+	 *
+	 * @param array $arguments Positional argument.
+	 * @param array $options Optional arguments.
 	 */
 	public function __invoke( $arguments, $options ) {
 		$level = 2;

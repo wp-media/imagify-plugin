@@ -3,6 +3,9 @@ namespace Imagify\Bulk;
 
 use Imagify\Traits\InstanceGetterTrait;
 
+/**
+ * Bulk optimization
+ */
 class Bulk {
 	use InstanceGetterTrait;
 
@@ -26,6 +29,10 @@ class Bulk {
 	 * Process a media with the requested imagify bulk action.
 	 *
 	 * @since 2.1
+	 *
+	 * @param int    $media_id Media ID.
+	 * @param string $context Current context.
+	 * @param int    $optimization_level Optimization level.
 	 */
 	public function optimize_media( int $media_id, string $context, int $optimization_level ) {
 		if ( ! $media_id || ! $context || ! is_numeric( $optimization_level ) ) {
@@ -244,7 +251,10 @@ class Bulk {
 	 *
 	 * @since 2.1
 	 *
-	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
+	 * @param int    $media_id Media ID.
+	 * @param string $context Current context.
+	 *
+	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	public function generate_webp_versions( int $media_id, string $context ) {
 		if ( ! $this->can_optimize() ) {

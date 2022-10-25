@@ -7,7 +7,6 @@ use Imagify\Traits\InstanceGetterTrait;
  * Compat class for WP Rocket plugin.
  *
  * @since 1.9.3
-
  */
 class Main {
 	use InstanceGetterTrait;

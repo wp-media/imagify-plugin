@@ -5,9 +5,15 @@ namespace Imagify\CLI;
 
 use Imagify\Bulk\Bulk;
 
+/**
+ * Command class for the missing WebP generation
+ */
 class GenerateMissingWebpCommand extends AbstractCommand {
 	/**
-	 * {@inheritdoc}
+	 * Executes the command.
+	 *
+	 * @param array $arguments Positional argument.
+	 * @param array $options Optional arguments.
 	 */
 	public function __invoke( $arguments, $options ) {
 		Bulk::get_instance()->run_generate_webp( $arguments );
