@@ -575,7 +575,7 @@ window.imagify = window.imagify || {};
 			// Update status.
 			w.imagify.bulk.status[ item.groupID ].id = 'fetching';
 
-			// Fetch image IDs.
+			// Start async process for current context
 			$.get( w.imagify.bulk.getAjaxUrl( 'bulkProcess', item ) )
 				.done( function( response ) {
 					var errorMessage;
@@ -884,9 +884,7 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		addQueueImagifybeat: function ( e, data ) {
-			if ( w.imagify.bulk.processingMedia.length ) {
-				data[ imagifyBulk.imagifybeatIDs.queue ] = w.imagify.bulk.processingMedia;
-			}
+
 		},
 
 		/**
