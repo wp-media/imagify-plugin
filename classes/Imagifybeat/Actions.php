@@ -118,84 +118,25 @@ class Actions {
 			return $response;
 		}
 
-		$statuses = [];
-
-		foreach ( $data[ $imagifybeat_id ] as $item ) {
-			if ( empty( $statuses[ $item['context'] ] ) ) {
-				$statuses[ $item['context'] ] = [];
-			}
-
-			$statuses[ $item['context'] ][ '_' . $item['mediaID'] ] = 1;
-		}
-
-		$results = $this->get_modified_optimization_statuses( $statuses );
-
-		if ( ! $results ) {
+		if ( ! isset( $data[ $imagifybeat_id ] ) ) {
 			return $response;
 		}
 
-		$response[ $imagifybeat_id ] = [];
+		$bulk      = Bulk::get_instance();
+		$remaining = 0;
+		$total     = 0;
 
-		// Sanitize received data and grab some other info.
-		foreach ( $results as $context_id => $media_atts ) {
-			$process    = imagify_get_optimization_process( $media_atts['media_id'], $media_atts['context'] );
-			$optim_data = $process->get_data();
+		foreach ( $data[ $imagifybeat_id ] as $group ) {
+			$media_ids = $bulk->get_bulk_instance( $group['context'] )->get_unoptimized_media_ids( $group['level'] );
 
-			if ( $optim_data->is_optimized() ) {
-				// Successfully optimized.
-				$full_size_data                = $optim_data->get_size_data();
-				$full_size_data                = array_merge(
-					[
-						'original_size'  => 0,
-						'optimized_size' => 0,
-						'percent'        => 0,
-					],
-					$full_size_data
-				);
-				$response[ $imagifybeat_id ][] = [
-					'mediaID'                  => $media_atts['media_id'],
-					'context'                  => $media_atts['context'],
-					'success'                  => true,
-					'status'                   => 'optimized',
-					// Raw data.
-					'originalOverallSize'      => $full_size_data['original_size'],
-					'newOverallSize'           => $full_size_data['optimized_size'],
-					'overallSaving'            => $full_size_data['original_size'] - $full_size_data['optimized_size'],
-					'thumbnailsCount'          => $optim_data->get_optimized_sizes_count(),
-					// Human readable data.
-					'originalSizeHuman'        => imagify_size_format( $full_size_data['original_size'], 2 ),
-					'newSizeHuman'             => imagify_size_format( $full_size_data['optimized_size'], 2 ),
-					'overallSavingHuman'       => imagify_size_format( $full_size_data['original_size'] - $full_size_data['optimized_size'], 2 ),
-					'originalOverallSizeHuman' => imagify_size_format( $full_size_data['original_size'], 2 ),
-					'percentHuman'             => $full_size_data['percent'] . '%',
-				];
-			} elseif ( $optim_data->is_already_optimized() ) {
-				// Already optimized.
-				$response[ $imagifybeat_id ][] = [
-					'mediaID' => $media_atts['media_id'],
-					'context' => $media_atts['context'],
-					'success' => true,
-					'status'  => 'already-optimized',
-				];
-			} else {
-				// Error.
-				$full_size_data = $optim_data->get_size_data();
-				$message        = ! empty( $full_size_data['error'] ) ? $full_size_data['error'] : '';
-				$status         = 'error';
-
-				if ( 'You\'ve consumed all your data. You have to upgrade your account to continue' === $message ) {
-					$status = 'over-quota';
-				}
-
-				$response[ $imagifybeat_id ][] = [
-					'mediaID' => $media_atts['media_id'],
-					'context' => $media_atts['context'],
-					'success' => false,
-					'status'  => $status,
-					'error'   => imagify_translate_api_message( $message ),
-				];
-			}
+			$remaining += count( $media_ids );
+			$total     += (int) get_transient( 'imagify_' . $group['context'] . '_optimize_total' );
 		}
+
+		$response[ $imagifybeat_id ] = [
+			'remaining' => $remaining,
+			'total'     => $total,
+		];
 
 		return $response;
 	}
