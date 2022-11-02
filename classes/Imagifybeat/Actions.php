@@ -122,20 +122,24 @@ class Actions {
 			return $response;
 		}
 
-		$bulk      = Bulk::get_instance();
-		$remaining = 0;
-		$total     = 0;
+		$bulk        = Bulk::get_instance();
+		$remaining   = 0;
+		$total       = 0;
+		$groups_data = [];
 
 		foreach ( $data[ $imagifybeat_id ] as $group ) {
 			$media_ids = $bulk->get_bulk_instance( $group['context'] )->get_unoptimized_media_ids( $group['level'] );
 
 			$remaining += count( $media_ids );
 			$total     += (int) get_transient( 'imagify_' . $group['context'] . '_optimize_total' );
+
+			$groups_data[ $group['context'] ] = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
 		}
 
 		$response[ $imagifybeat_id ] = [
-			'remaining' => $remaining,
-			'total'     => $total,
+			'remaining'   => $remaining,
+			'total'       => $total,
+			'groups_data' => $groups_data,
 		];
 
 		return $response;
