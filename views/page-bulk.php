@@ -177,8 +177,21 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			<div class="imagify-pr2">
 				<p>
 					<?php wp_nonce_field( 'imagify-bulk-optimize', 'imagifybulkuploadnonce' ); ?>
-					<button id="imagify-bulk-action" type="button" class="button button-primary">
-						<span class="dashicons dashicons-admin-generic"></span>
+					<?php
+					$disabled = '';
+					$class    = '';
+					$total    = 0;
+					$total   += (int) get_transient( 'imagify_wp_optimize_total' );
+					$total   += (int) get_transient( 'imagify_custom_folders_optimize_total' );
+
+					if ( 0 !== $total ) {
+						$disabled = 'disabled="disabled"';
+						$class    = 'rotate';
+					}
+
+					?>
+					<button id="imagify-bulk-action" type="button" class="button button-primary" <?php echo $disabled; ?>>
+						<span class="dashicons dashicons-admin-generic <?php echo $class; ?>"></span>
 						<span class="button-text"><?php _e( 'Imagif’em all', 'imagify' ); ?></span>
 					</button>
 				</p>
