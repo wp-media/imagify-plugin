@@ -176,7 +176,6 @@ window.imagify = window.imagify || {};
 			// Optimization events.
 			$( w )
 				.on( 'processQueue.imagify', this.processQueue )
-				.on( 'optimizeFiles.imagify', this.optimizeFiles )
 				.on( 'queueEmpty.imagify', this.queueEmpty );
 
 			if ( imagifyBulk.ajaxActions.getStats && $( '.imagify-bulk-table [data-group-id="library"][data-context="wp"]' ).length ) {
@@ -238,7 +237,8 @@ window.imagify = window.imagify || {};
 				var $this = $( this ),
 					data  = {
 						groupID: $this.data( 'group-id' ),
-						context: $this.data( 'context' )
+						context: $this.data( 'context' ),
+						level:   $this.find( '.imagify-cell-level [name="level[' + $this.data( 'group-id' ) + ']"]:checked' ).val()
 					},
 					key   = data.groupID + '|' + data.context;
 
@@ -684,19 +684,12 @@ window.imagify = window.imagify || {};
 
 						// Success.
 						if ( ! $.isEmptyObject( response.data ) ) {
-							var $row, $workingRow, $optimizedCount, $errorsCount, $table, $progressBar, $progress, optimizedCount, errorsCount;
+							var $row, $table, $progressBar, $progress;
 
 							$row         = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
-							$workingRow  = $row.next( '.imagify-row-working' );
-							$errorsCount = $workingRow.find( '.imagify-cell-count-errors span' );
-							errorsCount  = parseInt( $errorsCount.text(), 10 );
 							$table       = $row.closest( '.imagify-bulk-table' );
 							$progressBar = $table.find( '.imagify-row-progress' );
 							$progress    = $progressBar.find( '.bar' );
-							$optimizedCount = $workingRow.find( '.imagify-cell-count-optimized span' );
-							optimizedCount  = parseInt( $optimizedCount.text(), 10 );
-
-							w.imagify.bulk.status[ item.groupID ].id = 'optimizing';
 
 							// Reset and display the progress bar.
 							$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
@@ -710,136 +703,6 @@ window.imagify = window.imagify || {};
 						w.imagify.bulk.stopProcess( 'get-unoptimized-images', item );
 					} );
 			} );
-		},
-
-		/*
-		 * Optimize files.
-		 *
-		 * @param {object} e     jQuery's Event object.
-		 * @param {object} item  Current folder type (from the queue).
-		 * @param {object} files A list of file IDs (keys, the IDs are prefixed by an underscore) and URLs (values).
-		 */
-		optimizeFiles: function ( e, item, files ) {
-			var $row, $workingRow, $optimizedCount, $errorsCount, $table,
-				$progressBar, $progress,
-				optimizedCount, errorsCount, Optimizer;
-
-			if ( w.imagify.bulk.processIsStopped ) {
-				return;
-			}
-
-			$row         = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
-			$workingRow  = $row.next( '.imagify-row-working' );
-			$errorsCount = $workingRow.find( '.imagify-cell-count-errors span' );
-			errorsCount  = parseInt( $errorsCount.text(), 10 );
-			$table       = $row.closest( '.imagify-bulk-table' );
-			$progressBar = $table.find( '.imagify-row-progress' );
-			$progress    = $progressBar.find( '.bar' );
-
-			if ( 'optimize' === w.imagify.bulk.imagifyAction ) {
-				$optimizedCount = $workingRow.find( '.imagify-cell-count-optimized span' );
-				optimizedCount  = parseInt( $optimizedCount.text(), 10 );
-			}
-
-			// Update folder status.
-			w.imagify.bulk.status[ item.groupID ].id = 'optimizing';
-
-			// Reset and display the progress bar.
-			$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
-			$progressBar.slideDown().attr( 'aria-hidden', 'false' );
-
-			// After each media optimization.
-			Optimizer.each( function( data ) {
-				if ( w.imagify.bulk.processIsStopped ) {
-					return;
-				}
-
-				// Update the progress bar.
-				$progress.css( 'width', data.progress + '%' ).find( '.percent' ).html( data.progress + '%' );
-
-				if ( data.success ) {
-					// Update the optimized images counter.
-					if ( 'optimize' === w.imagify.bulk.imagifyAction ) {
-						optimizedCount += 1;
-						$optimizedCount.text( optimizedCount );
-					}
-					return;
-				}
-
-				// Update the "working" folder row.
-				if ( ! $errorsCount.length ) {
-					errorsCount  = 1;
-					$errorsCount = $workingRow.find( '.imagify-cell-count-errors' ).html( imagifyBulk.labels.imagesErrorText.replace( '%s', '<span>1</span>' ) ).find( 'span' );
-				} else {
-					errorsCount += 1;
-					$errorsCount.text( errorsCount );
-				}
-
-				if ( 'over-quota' === data.status ) {
-					// No more data, stop everything.
-					Optimizer.stopProcess();
-					w.imagify.bulk.stopProcess( data.status, item );
-				}
-			} );
-
-			// After all image optimizations.
-			Optimizer.done( function( data ) {
-				// Uncheck the checkbox.
-				if ( w.imagify.bulk.hasMultipleRows ) {
-					$( '#cb-select-' + item.groupID ).prop( 'checked', false );
-				}
-
-				if ( data.globalOriginalSize ) {
-					w.imagify.bulk.globalGain          += parseInt( data.globalGain, 10 );
-					w.imagify.bulk.globalOriginalSize  += parseInt( data.globalOriginalSize, 10 );
-					w.imagify.bulk.globalOptimizedSize += parseInt( data.globalOptimizedSize, 10 );
-				}
-
-				if ( w.imagify.bulk.processIsStopped ) {
-					return;
-				}
-
-				// Reset Imagifybeat interval and enable suspend.
-				w.imagify.beat.resetInterval();
-				w.imagify.beat.enableSuspend();
-
-				// Update folder type status.
-				if ( ! $.isEmptyObject( w.imagify.bulk.status ) && ! w.imagify.bulk.status[ item.groupID ].isError ) {
-					w.imagify.bulk.status[ item.groupID ].id = 'done';
-				}
-
-				// Update the folder row.
-				$row.addClass( 'updating' );
-
-				$.get( w.imagify.bulk.getAjaxUrl( 'getFolderData', item ) )
-					.done( function( response ) {
-						if ( w.imagify.bulk.processIsStopped ) {
-							return;
-						}
-
-						if ( response.success ) {
-							$.each( response.data, function( dataName, dataHtml ) {
-								$row.children( '.imagify-cell-' + dataName ).html( dataHtml );
-							} );
-						}
-					} )
-					.always( function() {
-						if ( w.imagify.bulk.processIsStopped ) {
-							return;
-						}
-
-						$row.removeClass( 'updating' );
-
-						if ( ! w.imagify.bulk.folderTypesQueue.length ) {
-							$( w ).trigger( 'queueEmpty.imagify' );
-						} else {
-							$( w ).trigger( 'processQueue.imagify' );
-						}
-					} );
-			} );
-
-			// Run.
-			Optimizer.run();
 		},
 
 		/*
@@ -970,7 +833,7 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		addQueueImagifybeat: function ( e, data ) {
-
+			data[ imagifyBulk.imagifybeatIDs.queue ] = Object.values( w.imagify.bulk.getFolderTypes() );
 		},
 
 		/**
@@ -982,9 +845,42 @@ window.imagify = window.imagify || {};
 		 */
 		processQueueImagifybeat: function ( e, data ) {
 			if ( typeof data[ imagifyBulk.imagifybeatIDs.queue ] !== 'undefined' ) {
-				$.each( data[ imagifyBulk.imagifybeatIDs.queue ], function ( i, mediaData ) {
-					$( w ).trigger( 'mediaProcessed.imagify', [ mediaData ] );
-				} );
+				queue = data[ imagifyBulk.imagifybeatIDs.queue ];
+
+				if ( 0 == queue.total ) {
+					$( w ).trigger( 'queueEmpty.imagify' );
+					return;
+				}
+
+				processed = queue.total - queue.remaining;
+
+				if ( processed == queue.total ) {
+					$( w ).trigger( 'queueEmpty.imagify' );
+					return;
+				}
+
+				if ( w.imagify.bulk.hasBlockingError( true ) ) {
+					$( w ).trigger( 'queueEmpty.imagify' );
+					return;
+				}
+
+				if ( queue.hasOwnProperty( 'groups_data' ) ) {
+					Object.entries( queue.groups_data ).forEach( ( item ) => {
+						$row = $( '[data-context=' + item[0] + ']' );
+
+						$row.children( '.imagify-cell-count-optimized' ).first().html( item[1]['count-optimized'] );
+						$row.children( '.imagify-cell-count-errors' ).first().html( item[1]['count-errors'] );
+						$row.children( '.imagify-cell-optimized-size-size' ).first().html( item[1]['optimized-size'] );
+						$row.children( '.imagify-cell-original-size-size' ).first().html( item[1]['original-size'] );
+					} );
+				}
+
+				progress  = Math.floor( processed / queue.total * 100 );
+				$progress = $( '.imagify-row-progress' );
+				$bar      = $progress.find( '.bar' );
+
+				$bar.css( 'width', progress + '%' ).find( '.percent' ).html( progress + '%' );
+				$progress.slideDown().attr( 'aria-hidden', 'false' );
 			}
 		},
 
