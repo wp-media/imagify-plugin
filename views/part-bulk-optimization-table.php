@@ -1,4 +1,6 @@
 <?php
+use Imagify\Bulk\Bulk;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 ?>
 
@@ -12,12 +14,38 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		</div>
 	</div>
 
+	<?php
+	$bulk      = Bulk::get_instance();
+	$remaining = 0;
+	$total     = 0;
+
+	foreach ( ['wp', 'custom-folders'] as $group ) {
+		$media_ids = $bulk->get_bulk_instance( $group )->get_unoptimized_media_ids( 2 );
+
+		$remaining += count( $media_ids );
+		$total     += (int) get_transient( 'imagify_' . $group . '_optimize_total' );
+	}
+
+	$aria_hidden = 'aria-hidden="true"';
+	$hidden  = 'hidden';
+	$style   = '';
+	$percent = 0;
+
+	if ( 0 !== $total ) {
+		$aria_hidden = '';
+		$hidden  = '';
+		$processed = $total - $remaining;
+		$percent   = round( $processed / $total * 100 );
+		$style = 'style=width:' . $percent . '%;';
+	}
+	?>
+
 	<div class="imagify-bulk-table-content">
 		<div class="imagify-bulk-table-container">
-			<div aria-hidden="true" class="imagify-row-progress hidden">
+			<div <?php echo $aria_hidden; ?> class="imagify-row-progress <?php echo $hidden; ?>">
 				<div class="media-item">
 					<div class="progress">
-						<div class="bar"><div class="percent">0%</div></div>
+						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $percent ?>%</div></div>
 					</div>
 				</div>
 			</div>
@@ -37,7 +65,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 				<tbody>
 					<?php
 					foreach ( $data['groups'] as $group ) {
-						$context_data = \Imagify\Bulk\Bulk::get_instance()->get_bulk_instance( $group['context'] )->get_context_data();
+						$context_data = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
 						$group        = array_merge( $group, $context_data );
 						$default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 
