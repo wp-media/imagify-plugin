@@ -847,14 +847,7 @@ window.imagify = window.imagify || {};
 			if ( typeof data[ imagifyBulk.imagifybeatIDs.queue ] !== 'undefined' ) {
 				queue = data[ imagifyBulk.imagifybeatIDs.queue ];
 
-				if ( 0 == queue.total ) {
-					$( w ).trigger( 'queueEmpty.imagify' );
-					return;
-				}
-
-				processed = queue.total - queue.remaining;
-
-				if ( processed == queue.total ) {
+				if ( 100 == queue.percentage ) {
 					$( w ).trigger( 'queueEmpty.imagify' );
 					return;
 				}
@@ -875,11 +868,10 @@ window.imagify = window.imagify || {};
 					} );
 				}
 
-				progress  = Math.floor( processed / queue.total * 100 );
 				$progress = $( '.imagify-row-progress' );
 				$bar      = $progress.find( '.bar' );
 
-				$bar.css( 'width', progress + '%' ).find( '.percent' ).html( progress + '%' );
+				$bar.css( 'width', queue.percentage + '%' ).find( '.percent' ).html( queue.percentage + '%' );
 				$progress.slideDown().attr( 'aria-hidden', 'false' );
 			}
 		},
