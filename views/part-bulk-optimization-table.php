@@ -15,37 +15,37 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	</div>
 
 	<?php
-	$bulk      = Bulk::get_instance();
-	$remaining = 0;
-	$total     = 0;
+	$types = [];
 
-	foreach ( ['wp', 'custom-folders'] as $group ) {
-		$media_ids = $bulk->get_bulk_instance( $group )->get_unoptimized_media_ids( 2 );
-
-		$remaining += count( $media_ids );
-		$total     += (int) get_transient( 'imagify_' . $group . '_optimize_total' );
+	foreach ( $data['groups'] as $group ) {
+		$types[ $group['group_id'] . '|' . $group['context'] ] = true;
 	}
 
+	$stats = imagify_get_bulk_stats( $types, [
+		'fullset'    => false,
+		'formatting' => false,
+	] );
+
+	$bulk = Bulk::get_instance();
 	$aria_hidden = 'aria-hidden="true"';
 	$hidden  = 'hidden';
 	$style   = '';
-	$percent = 0;
+	$display = '';
 
-	if ( 0 !== $total ) {
+	if ( 100 !== $stats['optimized_attachments_percent'] ) {
 		$aria_hidden = '';
 		$hidden  = '';
-		$processed = $total - $remaining;
-		$percent   = round( $processed / $total * 100 );
-		$style = 'style=width:' . $percent . '%;';
+		$style = 'style="width:' . $stats['optimized_attachments_percent'] . '%;"';
+		$display = 'style="display:block;"';
 	}
 	?>
 
 	<div class="imagify-bulk-table-content">
 		<div class="imagify-bulk-table-container">
-			<div <?php echo $aria_hidden; ?> class="imagify-row-progress <?php echo $hidden; ?>">
+			<div <?php echo $aria_hidden; ?> class="imagify-row-progress <?php echo $hidden; ?>" <?php echo $display; ?>>
 				<div class="media-item">
 					<div class="progress">
-						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $percent ?>%</div></div>
+						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $stats['optimized_attachments_percent'] ?>%</div></div>
 					</div>
 				</div>
 			</div>
