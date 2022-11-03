@@ -100,16 +100,16 @@ window.imagify = window.imagify || {};
 			files: {
 				donuts: {}
 			},
-			/**
-			 * Folder types in queue.
-			 * An array of objects: {
-			 *     @type {string} groupID The group ID, like 'library'.
-			 *     @type {string} context The context, like 'wp'.
-			 *     @type {int}    level   The optimization level: 0, 1, or 2.
-			 * }
-			 */
-			folderTypesQueue:     [],
 		},
+		/**
+		 * Folder types in queue.
+		 * An array of objects: {
+		 *     @type {string} groupID The group ID, like 'library'.
+		 *     @type {string} context The context, like 'wp'.
+		 *     @type {int}    level   The optimization level: 0, 1, or 2.
+		 * }
+		 */
+		folderTypesQueue:     [],
 		/**
 		 * Status of each folder type. Type IDs are used as keys.
 		 * Each object contains: {
