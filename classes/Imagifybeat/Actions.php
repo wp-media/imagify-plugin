@@ -123,22 +123,22 @@ class Actions {
 		}
 
 		$bulk        = Bulk::get_instance();
-		$remaining   = 0;
-		$total       = 0;
 		$groups_data = [];
+		$types       = [];
 
 		foreach ( $data[ $imagifybeat_id ] as $group ) {
-			$media_ids = $bulk->get_bulk_instance( $group['context'] )->get_unoptimized_media_ids( $group['level'] );
-
-			$remaining += count( $media_ids );
-			$total     += (int) get_transient( 'imagify_' . $group['context'] . '_optimize_total' );
+			$types[ $group['groupID'] . '|' . $group['context'] ] = true;
 
 			$groups_data[ $group['context'] ] = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
 		}
 
+		$stats = imagify_get_bulk_stats( $types, [
+			'fullset'    => false,
+			'formatting' => false,
+		] );
+
 		$response[ $imagifybeat_id ] = [
-			'remaining'   => $remaining,
-			'total'       => $total,
+			'percentage'  => $stats['optimized_attachments_percent'],
 			'groups_data' => $groups_data,
 		];
 
