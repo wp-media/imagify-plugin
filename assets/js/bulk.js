@@ -401,6 +401,44 @@ window.imagify = window.imagify || {};
 			swal( args ).catch( swal.noop );
 		},
 
+		/*
+		 * Display the share box.
+		 */
+		displayShareBox: function () {
+			var percent, gainHuman, originalSizeHuman,
+				$complete;
+
+			if ( ! this.globalGain || this.folderTypesQueue.length ) {
+				this.globalGain          = 0;
+				this.globalOriginalSize  = 0;
+				this.globalOptimizedSize = 0;
+				return;
+			}
+
+			percent           = ( 100 - 100 * ( this.globalOptimizedSize / this.globalOriginalSize ) ).toFixed( 2 );
+			gainHuman         = w.imagify.humanSize( this.globalGain, 1 );
+			originalSizeHuman = w.imagify.humanSize( this.globalOriginalSize, 1 );
+
+			$complete = $( '.imagify-row-complete' );
+			$complete.find( '.imagify-ac-rt-total-gain' ).html( gainHuman );
+			$complete.find( '.imagify-ac-rt-total-original' ).html( originalSizeHuman );
+			$complete.find( '.imagify-ac-chart' ).attr( 'data-percent', percent );
+
+			// Chart.
+			this.drawShareChart();
+
+			$complete.addClass( 'done' ).imagifyShow();
+
+			$( 'html, body' ).animate( {
+				scrollTop: $complete.offset().top
+			}, 200 );
+
+			// Reset the stats.
+			this.globalGain          = 0;
+			this.globalOriginalSize  = 0;
+			this.globalOptimizedSize = 0;
+		},
+
 		/**
 		 * Print optimization stats.
 		 *
@@ -572,8 +610,7 @@ window.imagify = window.imagify || {};
 		 */
 		launchAllProcesses: function () {
 			var $w      = $( w ),
-				$button = $( '#imagify-bulk-action' ),
-				skip    = true;
+				$button = $( '#imagify-bulk-action' );
 
 			// Disable the button.
 			$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
@@ -611,13 +648,6 @@ window.imagify = window.imagify || {};
 					isError: false,
 					id:      'waiting'
 				};
-
-				// Display a "waiting" message + spinner into the folder rows.
-				if ( skip ) {
-					// No need to do that for the first one, we'll display a "working" row instead.
-					skip = false;
-					return true;
-				}
 			} );
 
 			// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
@@ -990,6 +1020,58 @@ window.imagify = window.imagify || {};
 			legend += '</ul>';
 
 			d.getElementById( 'imagify-overview-chart-legend' ).innerHTML = legend;
+		},
+
+		/*
+		 * Share Chart.
+		 * Used for the chart in the share box.
+		 */
+		drawShareChart: function () {
+			var value;
+
+			if ( ! this.charts.share.canvas ) {
+				this.charts.share.canvas = d.getElementById( 'imagify-ac-chart' );
+
+				if ( ! this.charts.share.canvas ) {
+					return;
+				}
+			}
+
+			value = parseInt( $( this.charts.share.canvas ).closest( '.imagify-ac-chart' ).attr( 'data-percent' ), 10 );
+
+			if ( this.charts.share.donut ) {
+				// Update existing donut.
+				this.charts.share.donut.data.datasets[0].data[0] = value;
+				this.charts.share.donut.data.datasets[0].data[1] = 100 - value;
+				this.charts.share.donut.update();
+				return;
+			}
+
+			// Create new donut.
+			this.charts.share.donut = new w.imagify.Chart( this.charts.share.canvas, {
+				type: 'doughnut',
+				data: {
+					datasets: [{
+						data:            [ value, 100 - value ],
+						backgroundColor: [ '#40B1D0', '#FFFFFF' ],
+						borderWidth:     0
+					}]
+				},
+				options: {
+					legend: {
+						display: false
+					},
+					events:    [],
+					animation: {
+						easing: 'easeOutBounce'
+					},
+					tooltips: {
+						enabled: false
+					},
+					responsive:       false,
+					cutoutPercentage: 70
+				}
+			} );
 		}
 	};
 
