@@ -409,8 +409,7 @@ window.imagify = window.imagify || {};
 		 * Display the share box.
 		 */
 		displayShareBox: function () {
-			var percent, gainHuman, originalSizeHuman,
-				$complete;
+			var $complete;
 
 			if ( ! this.globalGain || this.folderTypesQueue.length ) {
 				this.globalGain          = 0;
@@ -419,14 +418,10 @@ window.imagify = window.imagify || {};
 				return;
 			}
 
-			percent           = ( 100 - 100 * ( this.globalOptimizedSize / this.globalOriginalSize ) ).toFixed( 2 );
-			gainHuman         = w.imagify.humanSize( this.globalGain, 1 );
-			originalSizeHuman = w.imagify.humanSize( this.globalOriginalSize, 1 );
-
 			$complete = $( '.imagify-row-complete' );
-			$complete.find( '.imagify-ac-rt-total-gain' ).html( gainHuman );
-			$complete.find( '.imagify-ac-rt-total-original' ).html( originalSizeHuman );
-			$complete.find( '.imagify-ac-chart' ).attr( 'data-percent', percent );
+			$complete.find( '.imagify-ac-rt-total-gain' ).html( this.globalOptimizedSize );
+			$complete.find( '.imagify-ac-rt-total-original' ).html( this.globalOriginalSize );
+			$complete.find( '.imagify-ac-chart' ).attr( 'data-percent', this.globalGain );
 
 			// Chart.
 			this.drawShareChart();
@@ -482,6 +477,10 @@ window.imagify = window.imagify || {};
 				data.optimized_attachments,
 				data.errors_attachments
 			] );
+
+			w.imagify.bulk.globalGain = data.optimized_percent;
+			w.imagify.bulk.globalOriginalSize = data.original_human;
+			w.imagify.bulk.globalOptimizedSize = data.optimized_human;
 
 			/**
 			 * Stats block.
