@@ -100,6 +100,10 @@ window.imagify = window.imagify || {};
 			files: {
 				donuts: {}
 			},
+			share: {
+				canvas: false,
+				donut:  false
+			}
 		},
 		/**
 		 * Folder types in queue.
@@ -748,6 +752,11 @@ window.imagify = window.imagify || {};
 			// Reset Imagifybeat interval and enable suspend.
 			w.imagify.beat.resetInterval();
 			w.imagify.beat.enableSuspend();
+
+			// Display the share box.
+			w.imagify.bulk.displayShareBox();
+
+			// Reset the queue.
 			w.imagify.bulk.folderTypesQueue = [];
 
 			// Fetch and display generic stats if stats via Imagifybeat are disabled.
