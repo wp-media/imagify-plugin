@@ -71,8 +71,6 @@ class Bulk {
 			];
 		}
 
-		$total = count( $media_ids );
-
 		foreach ( $media_ids as $media_id ) {
 			as_enqueue_async_action(
 				'imagify_optimize_media',
@@ -83,13 +81,13 @@ class Bulk {
 				],
 				"imagify-{$context}-optimize-media"
 			);
-
-			set_transient( "imagify_{$context}_optimize_total", $total, HOUR_IN_SECONDS );
 		}
+
+		set_transient( 'imagify_optimize_running', 1, HOUR_IN_SECONDS );
 
 		return [
 			'success' => true,
-			'message' => $total,
+			'message' => 'success',
 		];
 	}
 
