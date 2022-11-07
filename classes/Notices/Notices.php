@@ -606,7 +606,7 @@ class Notices {
 			return [];
 		}
 
-		if ( false === get_transient( 'bulk_optimization_complete' ) ) {
+		if ( false === get_transient( 'imagify_bulk_optimization_complete' ) ) {
 			return [];
 		}
 
@@ -622,6 +622,8 @@ class Notices {
 		}
 
 		$data['bulk_page_url'] = admin_url( 'upload.php?page=imagify-bulk-optimization' );
+
+		delete_transient( 'imagify_bulk_optimization_complete' );
 
 		return $data;
 	}
