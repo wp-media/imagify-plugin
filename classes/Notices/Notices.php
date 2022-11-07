@@ -606,6 +606,10 @@ class Notices {
 			return [];
 		}
 
+		if ( false === get_transient( 'bulk_optimization_complete' ) ) {
+			return [];
+		}
+
 		$data = imagify_get_bulk_stats(
 			[
 				'library|wp' => true,
