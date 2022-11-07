@@ -1,4 +1,6 @@
 <?php
+use Imagify\Bulk\Bulk;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 ?>
 
@@ -12,12 +14,38 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		</div>
 	</div>
 
+	<?php
+	$types = [];
+
+	foreach ( $data['groups'] as $group ) {
+		$types[ $group['group_id'] . '|' . $group['context'] ] = true;
+	}
+
+	$stats = imagify_get_bulk_stats( $types, [
+		'fullset'    => false,
+		'formatting' => false,
+	] );
+
+	$bulk = Bulk::get_instance();
+	$aria_hidden = 'aria-hidden="true"';
+	$hidden  = 'hidden';
+	$style   = '';
+	$display = '';
+
+	if ( 100 !== $stats['optimized_attachments_percent'] ) {
+		$aria_hidden = '';
+		$hidden  = '';
+		$style = 'style="width:' . $stats['optimized_attachments_percent'] . '%;"';
+		$display = 'style="display:block;"';
+	}
+	?>
+
 	<div class="imagify-bulk-table-content">
 		<div class="imagify-bulk-table-container">
-			<div aria-hidden="true" class="imagify-row-progress hidden">
+			<div <?php echo $aria_hidden; ?> class="imagify-row-progress <?php echo $hidden; ?>" <?php echo $display; ?>>
 				<div class="media-item">
 					<div class="progress">
-						<div class="bar"><div class="percent">0%</div></div>
+						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $stats['optimized_attachments_percent'] ?>%</div></div>
 					</div>
 				</div>
 			</div>
@@ -37,7 +65,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 				<tbody>
 					<?php
 					foreach ( $data['groups'] as $group ) {
-						$context_data = \Imagify\Bulk\Bulk::get_instance()->get_bulk_instance( $group['context'] )->get_context_data();
+						$context_data = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
 						$group        = array_merge( $group, $context_data );
 						$default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 

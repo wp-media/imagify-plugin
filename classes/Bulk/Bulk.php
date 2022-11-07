@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Bulk;
 
-use \Imagify\Traits\InstanceGetterTrait;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Bulk optimization
@@ -15,12 +15,14 @@ class Bulk {
 	 * @since 2.1
 	 */
 	public function init() {
-		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 2 );
+		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 3 );
 		add_action( 'imagify_convert_webp', [ $this, 'generate_webp_versions' ], 10, 2 );
-		add_action( 'wp_ajax_imagify_bulk_optimize', 'bulk_optimize_callback' );
-		add_action( 'wp_ajax_imagify_get_folder_type_data', 'get_folder_type_data_callback' );
-		add_action( 'wp_ajax_imagify_bulk_info_seen', 'bulk_info_seen_callback' );
-		add_action( 'wp_ajax_imagify_bulk_get_stats', 'bulk_get_stats_callback' );
+		add_action( 'imagify_convert_webp_finished', [ $this, 'clear_webp_transients' ], 10, 2 );
+		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
+		add_action( 'wp_ajax_imagify_missing_webp_generation', [ $this, 'missing_webp_callback' ] );
+		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
+		add_action( 'wp_ajax_imagify_bulk_info_seen', [ $this, 'bulk_info_seen_callback' ] );
+		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
 	}
 
 	/**
@@ -47,31 +49,46 @@ class Bulk {
 	/**
 	 * Runs the bulk optimization
 	 *
-	 * @param array $contexts An array of contexts (WP/Custom folders).
-	 * @param int   $optimization_level Optimization level.
+	 * @param string $context Current context (WP/Custom folders).
+	 * @param int    $optimization_level Optimization level.
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public function run_optimize( array $contexts, int $optimization_level ) {
+	public function run_optimize( string $context, int $optimization_level ) {
 		if ( ! $this->can_optimize() ) {
-			return;
+			return [
+				'success' => false,
+				'message' => 'over-quota',
+			];
 		}
 
-		foreach ( $contexts as $context ) {
-			$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
+		$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
 
-			foreach ( $media_ids as $media_id ) {
-				as_enqueue_async_action(
-					'imagify_optimize_media',
-					[
-						'id'      => $media_id,
-						'context' => $context,
-						'level'   => $optimization_level,
-					],
-					"imagify-{$context}-optimize-media"
-				);
-			}
+		if ( empty( $media_ids ) ) {
+			return [
+				'success' => false,
+				'message' => 'no-images',
+			];
 		}
+
+		foreach ( $media_ids as $media_id ) {
+			as_enqueue_async_action(
+				'imagify_optimize_media',
+				[
+					'id'      => $media_id,
+					'context' => $context,
+					'level'   => $optimization_level,
+				],
+				"imagify-{$context}-optimize-media"
+			);
+		}
+
+		set_transient( 'imagify_optimize_running', 1, HOUR_IN_SECONDS );
+
+		return [
+			'success' => true,
+			'message' => 'success',
+		];
 	}
 
 	/**
@@ -79,28 +96,53 @@ class Bulk {
 	 *
 	 * @param array $contexts An array of contexts (WP/Custom folders).
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function run_generate_webp( array $contexts ) {
 		if ( ! $this->can_optimize() ) {
-			return;
+			return [
+				'success' => false,
+				'message' => 'over-quota',
+			];
 		}
 
+		delete_transient( 'imagify_stat_without_webp' );
+
+		$medias = [];
+
 		foreach ( $contexts as $context ) {
-			$media     = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
-			$media_ids = [];
+			$media = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
 
 			if ( ! $media['ids'] && $media['errors']['no_backup'] ) {
 				// No backup, no WebP.
-				return;
+				return [
+					'success' => false,
+					'message' => 'no-backup',
+				];
 			} elseif ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
 				// Error.
-				return;
+				return [
+					'success' => false,
+					'message' => __( 'The path to the selected files could not be retrieved.', 'imagify' ),
+				];
 			}
 
-			$media_ids = $media['ids'];
+			$medias[ $context ] = $media['ids'];
+		}
 
-			foreach ( $media_ids as $media_id ) {
+		if ( empty( $medias ) ) {
+			return [
+				'success' => false,
+				'message' => 'no-images',
+			];
+		}
+
+		$total = 0;
+
+		foreach ( $medias as $context => $media_ids ) {
+			$total += count( $media_ids );
+
+			foreach( $media_ids as $media_id ) {
 				as_enqueue_async_action(
 					'imagify_convert_webp',
 					[
@@ -111,6 +153,13 @@ class Bulk {
 				);
 			}
 		}
+
+		set_transient( 'imagify_missing_webp_total', $total, HOUR_IN_SECONDS );
+
+		return [
+			'success' => true,
+			'message' => $total,
+		];
 	}
 
 	/**
@@ -154,7 +203,8 @@ class Bulk {
 	 * @since 2.1
 	 *
 	 * @param  string $context The context name. Default values are 'wp' and 'custom-folders'.
-	 * @return BulkInterface   The optimization process instance.
+	 *
+	 * @return BulkInterface The optimization process instance.
 	 */
 	public function get_bulk_instance( string $context ): BulkInterface {
 		$class_name = $this->get_bulk_class_name( $context );
@@ -170,9 +220,14 @@ class Bulk {
 	 * @param  int    $media_id The media ID.
 	 * @param  string $context  The context.
 	 * @param  int    $level    The optimization level.
-	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
+	 *
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
 	private function force_optimize( int $media_id, string $context, int $level ) {
+		if ( ! $this->can_optimize() ) {
+			return false;
+		}
+
 		$process = imagify_get_optimization_process( $media_id, $context );
 		$data    = $process->get_data();
 
@@ -200,6 +255,10 @@ class Bulk {
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	public function generate_webp_versions( int $media_id, string $context ) {
+		if ( ! $this->can_optimize() ) {
+			return false;
+		}
+
 		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
 	}
 
@@ -275,12 +334,44 @@ class Bulk {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
 		$context = $this->get_context();
+		$level   = $this->get_optimization_level();
 
 		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
-			imagify_die();
+				imagify_die();
+			}
+
+		$data = $this->run_optimize( $context, $level );
+
+		if ( false === $data['success'] ) {
+			wp_send_json_error( [ 'message' => $data['message'] ] );
 		}
 
-		$this->run_optimize( $context );
+		wp_send_json_success( [ 'total' => $data['message'] ] );
+	}
+
+	/**
+	 * Launch the missing WebP versions generation
+	 *
+	 * @return void
+	 */
+	public function missing_webp_callback() {
+		imagify_check_nonce( 'imagify-bulk-optimize' );
+
+		$contexts = explode( '_', sanitize_key( wp_unslash( $_GET['context'] ) ) );
+
+		foreach ( $contexts as $context ) {
+			if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+				imagify_die();
+			}
+		}
+
+		$data = $this->run_generate_webp( $contexts );
+
+		if ( false === $data['success'] ) {
+			wp_send_json_error( [ 'message' => $data['message'] ] );
+		}
+
+		wp_send_json_success( [ 'total' => $data['message'] ] );
 	}
 
 	/**

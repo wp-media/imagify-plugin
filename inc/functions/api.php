@@ -265,7 +265,9 @@ function imagify_translate_api_message( $message ) {
  * @return void
  */
 function imagify_bulk_optimize( $contexts, $optimization_level ) {
-	Imagify\Bulk\Bulk::get_instance()->run_optimize( $contexts, $optimization_level );
+	foreach ( $contexts as $context ) {
+		Imagify\Bulk\Bulk::get_instance()->run_optimize( $context, $optimization_level );
+	}
 }
 
 /**

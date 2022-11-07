@@ -44,17 +44,6 @@ class Noop extends AbstractBulk {
 	}
 
 	/**
-	 * Tell if there are optimized media without WebP versions.
-	 *
-	 * @since 1.9
-	 *
-	 * @return int The number of media.
-	 */
-	public function has_optimized_media_without_webp() {
-		return 0;
-	}
-
-	/**
 	 * Get the context data.
 	 *
 	 * @since 1.9

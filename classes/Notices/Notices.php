@@ -606,13 +606,22 @@ class Notices {
 			return [];
 		}
 
-		$data = get_transient( 'bulk_optimization_complete' );
-
-		if ( false === $data ) {
+		if ( false === get_transient( 'bulk_optimization_complete' ) ) {
 			return [];
 		}
 
-		$data['bulk_page_url'] = admin_url( 'uploads.php?page=imagify-bulk-optimization' );
+		$data = imagify_get_bulk_stats(
+			[
+				'library|wp' => true,
+				'custom-folders|custom-folders' => true,
+			]
+		);
+
+		if ( empty( $data ) ) {
+			return [];
+		}
+
+		$data['bulk_page_url'] = admin_url( 'upload.php?page=imagify-bulk-optimization' );
 
 		return $data;
 	}
