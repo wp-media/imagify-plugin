@@ -256,7 +256,7 @@ class Imagify_User {
 		return (
 			$this->is_free()
 			&&
-			100 == round( $this->get_percent_consumed_quota() )
+			floatval( 100 ) === round( $this->get_percent_consumed_quota() )
 		);
 	}
 }

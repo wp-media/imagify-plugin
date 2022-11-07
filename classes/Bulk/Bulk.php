@@ -142,7 +142,7 @@ class Bulk {
 		foreach ( $medias as $context => $media_ids ) {
 			$total += count( $media_ids );
 
-			foreach( $media_ids as $media_id ) {
+			foreach ( $media_ids as $media_id ) {
 				as_enqueue_async_action(
 					'imagify_convert_webp',
 					[
@@ -337,8 +337,8 @@ class Bulk {
 		$level   = $this->get_optimization_level();
 
 		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
-				imagify_die();
-			}
+			imagify_die();
+		}
 
 		$data = $this->run_optimize( $context, $level );
 

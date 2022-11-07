@@ -45,7 +45,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			<div <?php echo $aria_hidden; ?> class="imagify-row-progress <?php echo $hidden; ?>" <?php echo $display; ?>>
 				<div class="media-item">
 					<div class="progress">
-						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $stats['optimized_attachments_percent'] ?>%</div></div>
+						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $stats['optimized_attachments_percent']; ?>%</div></div>
 					</div>
 				</div>
 			</div>
