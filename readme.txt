@@ -253,6 +253,10 @@ No. However, you get 20MB of quota per month for free to optimize your images (a
 
 == Changelog ==
 = 2.1 =
+- Enhancement: Update the bulk optimization to work without keeping the browser page open. The bulk optimization can also be launched from CLI now
+- Enhancement: Re-introduce a lossless compression option
+- Bugfix: Correctly resize the WebP full image if it's bigger than the defined maximum size
+- Bugfix: Prevent error related to set_time_limit() function if it's disabled
 
 = 2.0 =
 - Enhancement: Add compatibility with our new smart compression system (#663)
