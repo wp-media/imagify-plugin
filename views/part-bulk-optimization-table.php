@@ -32,7 +32,11 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	$style   = '';
 	$display = '';
 
-	if ( 100 !== $stats['optimized_attachments_percent'] ) {
+	if (
+		floatval( 0 ) !== $stats['optimized_attachments_percent']
+		&&
+		floatval( 100 ) !== $stats['optimized_attachments_percent']
+	) {
 		$aria_hidden = '';
 		$hidden  = '';
 		$style = 'style="width:' . $stats['optimized_attachments_percent'] . '%;"';
