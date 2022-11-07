@@ -682,7 +682,7 @@ window.imagify = window.imagify || {};
 				w.imagify.bulk.displayedWaitMessage = true;
 			}
 
-			w.imagify.bulk.folderTypesQueue.forEach( ( item ) => {
+			w.imagify.bulk.folderTypesQueue.forEach( function( item ) {
 				// Update status.
 				w.imagify.bulk.status[ item.groupID ].id = 'fetching';
 
@@ -812,7 +812,7 @@ window.imagify = window.imagify || {};
 					w.imagify.bulk.displayError( errorArgs );
 				}
 				else if ( noImages ) {
-					if ( imagifyBulk.labels.nothingToDoText.hasOwnProperty( w.imagify.bulk.imagifyAction ) ) {
+					if ( Object.prototype.hasOwnProperty.call( imagifyBulk.labels.nothingToDoText, w.imagify.bulk.imagifyAction ) ) {
 						errorMsg = imagifyBulk.labels.nothingToDoText[ w.imagify.bulk.imagifyAction ];
 					} else {
 						errorMsg = imagifyBulk.labels.nothingToDoText.optimize;
@@ -882,10 +882,12 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
+			var queue, $row, $progress, $bar;
+
 			if ( typeof data[ imagifyBulk.imagifybeatIDs.queue ] !== 'undefined' ) {
 				queue = data[ imagifyBulk.imagifybeatIDs.queue ];
 
-				if ( 100 == queue.percentage ) {
+				if ( 100 === queue.percentage ) {
 					$( w ).trigger( 'queueEmpty.imagify' );
 					return;
 				}
@@ -895,8 +897,8 @@ window.imagify = window.imagify || {};
 					return;
 				}
 
-				if ( queue.hasOwnProperty( 'groups_data' ) ) {
-					Object.entries( queue.groups_data ).forEach( ( item ) => {
+				if ( Object.prototype.hasOwnProperty.call( queue, 'groups_data' ) ) {
+					Object.entries( queue.groups_data ).forEach( function( item ) {
 						$row = $( '[data-context=' + item[0] + ']' );
 
 						$row.children( '.imagify-cell-count-optimized' ).first().html( item[1]['count-optimized'] );

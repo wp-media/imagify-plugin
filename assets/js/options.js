@@ -471,6 +471,7 @@ window.imagify = window.imagify || {};
 		 * Init.
 		 */
 		init: function () {
+			var processed, progress;
 			this.$missingWebpElement = $('.generate-missing-webp');
 			this.$missingWebpMessage = $('.generate-missing-webp p');
 
@@ -495,7 +496,7 @@ window.imagify = window.imagify || {};
 				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
 				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsImagifybeat );
 
-			if ( false != imagifyOptions.bulk.progress_webp.total && false !== imagifyOptions.bulk.progress_webp.remaining ) {
+			if ( false !== imagifyOptions.bulk.progress_webp.total && false !== imagifyOptions.bulk.progress_webp.remaining ) {
 				// Reset properties.
 				w.imagify.optionsBulk.error            = false;
 				w.imagify.optionsBulk.working          = true;
@@ -584,6 +585,8 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
+			var images_status, processed, progress;
+
 			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.imagifybeatIDs.progress ] === 'undefined' ) {
 				return;
 			}
@@ -674,7 +677,7 @@ window.imagify = window.imagify || {};
 						return;
 					}
 
-					if ( 0 == response.data.total ) {
+					if ( 0 === response.data.total ) {
 						// No media to process.
 						_this.stopProcess( 'no-images' );
 
