@@ -23,6 +23,54 @@ class Bulk {
 		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_info_seen', [ $this, 'bulk_info_seen_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
+		add_action( 'imagify_after_optimize', [ $this, 'check_optimization_status' ], 10, 2 );
+	}
+
+	/**
+	 * Checks bulk optimization status after each optimization task
+	 *
+	 * @param ProcessInterface $process The optimization process.
+	 * @param array            $item    The item being processed.
+	 *
+	 * @return void
+	 */
+	public function check_optimization_status( $process, $item ) {
+		$custom_folders = get_transient( 'imagify_custom-folders_optimize_running' );
+		$library_wp     = get_transient( 'imagify_wp_optimize_running' );
+
+		if (
+			! $custom_folders
+			&&
+			! $library_wp
+		) {
+			return;
+		}
+
+		$remaining = 0;
+
+		if ( false !== $custom_folders ) {
+			if ( false !== strpos( $item['process_class'], 'CustomFolders' ) ) {
+				$custom_folders--;
+
+				set_transient( 'imagify_custom-folders_optimize_running', $custom_folders, DAY_IN_SECONDS );
+
+				$remaining += $custom_folders;
+			}
+		}
+
+		if ( false !== $library_wp ) {
+			if ( false !== strpos( $item['process_class'], 'WP' ) ) {
+				$library_wp--;
+
+				set_transient( 'imagify_wp_optimize_running', $library_wp, DAY_IN_SECONDS );
+
+				$remaining += $library_wp;
+			}
+		}
+
+		if ( 0 === $remaining ) {
+			set_transient( 'imagify_bulk_optimization_complete', 1, DAY_IN_SECONDS );
+		}
 	}
 
 	/**
@@ -83,7 +131,7 @@ class Bulk {
 			);
 		}
 
-		set_transient( 'imagify_optimize_running', 1, HOUR_IN_SECONDS );
+		set_transient( "imagify_{$context}_optimize_running", count( $media_ids ), DAY_IN_SECONDS );
 
 		return [
 			'success' => true,
