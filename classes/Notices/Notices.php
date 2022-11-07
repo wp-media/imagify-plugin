@@ -608,8 +608,8 @@ class Notices {
 
 		$data = imagify_get_bulk_stats(
 			[
-				'library|wp',
-				'custom-folders|custom-folders',
+				'library|wp' => true,
+				'custom-folders|custom-folders' => true,
 			]
 		);
 
@@ -617,7 +617,7 @@ class Notices {
 			return [];
 		}
 
-		$data['bulk_page_url'] = admin_url( 'uploads.php?page=imagify-bulk-optimization' );
+		$data['bulk_page_url'] = admin_url( 'upload.php?page=imagify-bulk-optimization' );
 
 		return $data;
 	}
