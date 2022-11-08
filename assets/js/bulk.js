@@ -203,6 +203,12 @@ window.imagify = window.imagify || {};
 			$document
 				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
 				.on( 'imagifybeat-tick', this.processRequirementsImagifybeat );
+
+			if ( imagifyBulk.optimizing ) {
+				// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
+				w.imagify.beat.interval( 15 );
+				w.imagify.beat.disableSuspend();
+			}
 		},
 
 		/*
@@ -545,6 +551,10 @@ window.imagify = window.imagify || {};
 			// Prevent uncheck if there is only one checkbox.
 			if ( ! w.imagify.bulk.hasMultipleRows && ! this.checked ) {
 				$( this ).prop( 'checked', true );
+				return;
+			}
+
+			if ( imagifyBulk.optimizing ) {
 				return;
 			}
 
