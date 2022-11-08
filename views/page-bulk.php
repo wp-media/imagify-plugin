@@ -181,8 +181,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 					$disabled = '';
 					$class    = '';
 					$total    = 0;
-					$total   += (int) get_transient( 'imagify_wp_optimize_total' );
-					$total   += (int) get_transient( 'imagify_custom_folders_optimize_total' );
+					$total   += (int) get_transient( 'imagify_wp_optimize_running' );
+					$total   += (int) get_transient( 'imagify_custom-folders_optimize_running' );
 
 					if ( 0 !== $total ) {
 						$disabled = 'disabled="disabled"';
