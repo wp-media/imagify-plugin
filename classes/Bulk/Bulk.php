@@ -24,6 +24,19 @@ class Bulk {
 		add_action( 'wp_ajax_imagify_bulk_info_seen', [ $this, 'bulk_info_seen_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
 		add_action( 'imagify_after_optimize', [ $this, 'check_optimization_status' ], 10, 2 );
+		add_action( 'imagify_deactivation', [ $this, 'delete_transients_data' ] );
+	}
+
+	/**
+	 * Delete transients data on deactivation
+	 *
+	 * @return void
+	 */
+	public function delete_transients_data() {
+		delete_transient( 'imagify_custom-folders_optimize_running' );
+		delete_transient( 'imagify_wp_optimize_running' );
+		delete_transient( 'imagify_bulk_optimization_complete' );
+		delete_transient( 'imagify_missing_webp_total' );
 	}
 
 	/**
