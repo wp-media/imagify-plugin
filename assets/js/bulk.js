@@ -746,11 +746,11 @@ window.imagify = window.imagify || {};
 			w.imagify.beat.resetInterval();
 			w.imagify.beat.enableSuspend();
 
-			// Display the share box.
-			w.imagify.bulk.displayShareBox();
-
 			// Reset the queue.
 			w.imagify.bulk.folderTypesQueue = [];
+
+			// Display the share box.
+			w.imagify.bulk.displayShareBox();
 
 			// Fetch and display generic stats if stats via Imagifybeat are disabled.
 			if ( ! imagifyBulk.imagifybeatIDs.stats ) {
@@ -767,7 +767,9 @@ window.imagify = window.imagify || {};
 			// Maybe display error.
 			if ( ! $.isEmptyObject( w.imagify.bulk.status ) ) {
 				$.each( w.imagify.bulk.status, function( groupID, typeStatus ) {
-					if ( 'no-images' !== typeStatus.id ) {
+					if ( ! typeStatus.isError ) {
+						noImages = false;
+					} else if ( 'no-images' !== typeStatus.id && typeStatus.isError ) {
 						hasError = typeStatus.id;
 						noImages = false;
 						return false;
