@@ -1,5 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+
+delete_transient( 'imagify_bulk_optimization_complete' );
 ?>
 
 <div class="notice notice-success is-dismissible">
