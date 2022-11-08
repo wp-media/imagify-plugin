@@ -289,8 +289,6 @@ window.imagify = window.imagify || {};
 		 * @param {object} item    The current item.
 		 */
 		stopProcess: function ( errorId, item ) {
-			this.processIsStopped = true;
-
 			w.imagify.bulk.status[ item.groupID ] = {
 				isError: true,
 				id:      errorId
@@ -665,6 +663,8 @@ window.imagify = window.imagify || {};
 		 * Process the first item in the queue.
 		 */
 		processQueue: function () {
+			var $row, $table, $progressBar, $progress;
+
 			if ( w.imagify.bulk.processIsStopped ) {
 				return;
 			}
@@ -693,10 +693,6 @@ window.imagify = window.imagify || {};
 
 						swal.close();
 
-						if ( w.imagify.bulk.processIsStopped ) {
-							return;
-						}
-
 						if ( response.data && response.data.message ) {
 							errorMessage = response.data.message;
 						} else {
@@ -716,8 +712,8 @@ window.imagify = window.imagify || {};
 						}
 
 						// Success.
-						if ( ! $.isEmptyObject( response.data ) ) {
-							var $row, $table, $progressBar, $progress;
+						if ( response.success ) {
+							w.imagify.bulk.status[ item.groupID ].id = 'optimizing';
 
 							$row         = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
 							$table       = $row.closest( '.imagify-bulk-table' );
@@ -727,8 +723,6 @@ window.imagify = window.imagify || {};
 							// Reset and display the progress bar.
 							$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
 							$progressBar.slideDown().attr( 'aria-hidden', 'false' );
-
-							return;
 						}
 					} )
 					.fail( function() {
@@ -773,14 +767,8 @@ window.imagify = window.imagify || {};
 			// Maybe display error.
 			if ( ! $.isEmptyObject( w.imagify.bulk.status ) ) {
 				$.each( w.imagify.bulk.status, function( groupID, typeStatus ) {
-					if ( typeStatus.isError ) {
-						// One error is enough to display a message.
-						hasError = typeStatus.id;
-						noImages = false;
-						return false;
-					}
 					if ( 'no-images' !== typeStatus.id ) {
-						// All groups must have this ID.
+						hasError = typeStatus.id;
 						noImages = false;
 						return false;
 					}
