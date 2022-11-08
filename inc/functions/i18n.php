@@ -240,6 +240,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'wp'             => 4,
 					'custom-folders' => 4,
 				],
+				'optimizing' => get_transient( 'imagify_custom-folders_optimize_running' ) || get_transient( 'imagify_wp_optimize_running' ),
 				'labels'          => [
 					'overviewChartLabels'            => [
 						'unoptimized' => __( 'Unoptimized', 'imagify' ),
