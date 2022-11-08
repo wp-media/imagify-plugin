@@ -295,6 +295,8 @@ window.imagify = window.imagify || {};
 		 * @param {object} item    The current item.
 		 */
 		stopProcess: function ( errorId, item ) {
+			w.imagify.bulk.processIsStopped = true;
+
 			w.imagify.bulk.status[ item.groupID ] = {
 				isError: true,
 				id:      errorId
