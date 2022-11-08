@@ -318,6 +318,9 @@ window.imagify = window.imagify || {};
 						html: imagifyBulk.labels.curlMissing
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -327,6 +330,9 @@ window.imagify = window.imagify || {};
 						html: imagifyBulk.labels.editorMissing
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -336,6 +342,9 @@ window.imagify = window.imagify || {};
 						html: imagifyBulk.labels.extHttpBlocked
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -345,6 +354,9 @@ window.imagify = window.imagify || {};
 						html: imagifyBulk.labels.apiDown
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -355,6 +367,9 @@ window.imagify = window.imagify || {};
 						type:  'info'
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -368,6 +383,9 @@ window.imagify = window.imagify || {};
 						showConfirmButton: false
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -892,7 +910,7 @@ window.imagify = window.imagify || {};
 					return;
 				}
 
-				if ( w.imagify.bulk.hasBlockingError( true ) ) {
+				if ( ! w.imagify.bulk.processIsStopped && w.imagify.bulk.hasBlockingError( true ) ) {
 					$( w ).trigger( 'queueEmpty.imagify' );
 					return;
 				}
