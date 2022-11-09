@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class handling background processes.
@@ -8,15 +7,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background_Process {
-
-	/**
-	 * Class version.
-	 *
-	 * @var    string
-	 * @since  1.8.1
-	 * @author Grégory Viguier
-	 */
-	const VERSION = '1.1';
+	protected $queue_lock_time = DAY_IN_SECONDS;
 
 	/**
 	 * Prefix used to build the global process identifier.
