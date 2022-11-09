@@ -7,6 +7,11 @@
  * @author Grégory Viguier
  */
 abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background_Process {
+	/**
+	 * The lock time for the queue
+	 *
+	 * @var int
+	 */
 	protected $queue_lock_time = DAY_IN_SECONDS;
 
 	/**
