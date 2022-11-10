@@ -125,6 +125,9 @@ class Actions {
 		$bulk        = Bulk::get_instance();
 		$groups_data = [];
 		$types       = [];
+		$remaining   = 0;
+		$remaining  += (int) get_transient( 'imagify_wp_optimize_running' );
+		$remaining  += (int) get_transient( 'imagify_custom-folders_optimize_running' );
 
 		foreach ( $data[ $imagifybeat_id ] as $group ) {
 			$types[ $group['groupID'] . '|' . $group['context'] ] = true;
@@ -132,14 +135,9 @@ class Actions {
 			$groups_data[ $group['context'] ] = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
 		}
 
-		$stats = imagify_get_bulk_stats( $types, [
-			'fullset'    => false,
-			'formatting' => false,
-		] );
-
 		$response[ $imagifybeat_id ] = [
-			'percentage'  => $stats['optimized_attachments_percent'],
 			'groups_data' => $groups_data,
+			'remaining'   => $remaining,
 		];
 
 		return $response;

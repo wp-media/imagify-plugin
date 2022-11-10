@@ -902,12 +902,20 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
-			var queue, $row, $progress, $bar;
+			var queue, stats, $row, $progress, $bar;
+
+			if ( typeof data[ imagifyBulk.imagifybeatIDs.stats ] !== 'undefined' ) {
+				stats = data[ imagifyBulk.imagifybeatIDs.stats ];
+				if ( 100 === stats.optimized_attachments_percent ) {
+					$( w ).trigger( 'queueEmpty.imagify' );
+					return;
+				}
+			}
 
 			if ( typeof data[ imagifyBulk.imagifybeatIDs.queue ] !== 'undefined' ) {
 				queue = data[ imagifyBulk.imagifybeatIDs.queue ];
 
-				if ( 100 === queue.percentage ) {
+				if ( 0 === queue.remaining ) {
 					$( w ).trigger( 'queueEmpty.imagify' );
 					return;
 				}
@@ -931,7 +939,7 @@ window.imagify = window.imagify || {};
 				$progress = $( '.imagify-row-progress' );
 				$bar      = $progress.find( '.bar' );
 
-				$bar.css( 'width', queue.percentage + '%' ).find( '.percent' ).html( queue.percentage + '%' );
+				$bar.css( 'width', stats.optimized_attachments_percent + '%' ).find( '.percent' ).html( stats.optimized_attachments_percent + '%' );
 				$progress.slideDown().attr( 'aria-hidden', 'false' );
 			}
 		},
