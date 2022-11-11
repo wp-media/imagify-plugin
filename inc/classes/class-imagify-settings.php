@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Notices\Notices;
 
 /**
  * Class that handles the plugin settings.
@@ -12,7 +12,7 @@ class Imagify_Settings {
 	 * Class version.
 	 *
 	 * @since 1.7
-	 * @var   string
+	 * @var string
 	 */
 	const VERSION = '1.0.1';
 
@@ -20,7 +20,7 @@ class Imagify_Settings {
 	 * The settings group.
 	 *
 	 * @since 1.7
-	 * @var   string
+	 * @var string
 	 */
 	protected $settings_group;
 
@@ -28,7 +28,7 @@ class Imagify_Settings {
 	 * The option name.
 	 *
 	 * @since 1.7
-	 * @var   string
+	 * @var string
 	 */
 	protected $option_name;
 
@@ -36,25 +36,22 @@ class Imagify_Settings {
 	 * The options instance.
 	 *
 	 * @since 1.7
-	 * @var   object
+	 * @var object
 	 */
 	protected $options;
 
 	/**
 	 * The single instance of the class.
 	 *
-	 * @since  1.7
-	 * @access protected
-	 * @var    object
+	 * @since 1.7
+	 * @var object
 	 */
 	protected static $_instance;
 
 	/**
 	 * The constructor.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access protected
+	 * @since 1.7
 	 */
 	protected function __construct() {
 		$this->options        = Imagify_Options::get_instance();
@@ -65,10 +62,8 @@ class Imagify_Settings {
 	/**
 	 * Get the main Instance.
 	 *
-	 * @since  1.7
+	 * @since 1.7
 	 * @return object Main instance.
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public static function get_instance() {
 		if ( ! isset( self::$_instance ) ) {
@@ -81,28 +76,26 @@ class Imagify_Settings {
 	/**
 	 * Launch the hooks.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 */
 	public function init() {
-		add_filter( 'sanitize_option_' . $this->option_name, array( $this, 'populate_values_on_save' ), 5 );
-		add_action( 'admin_init', array( $this, 'register' ) );
-		add_filter( 'option_page_capability_' . $this->settings_group, array( $this, 'get_capability' ) );
+		add_filter( 'sanitize_option_' . $this->option_name, [ $this, 'populate_values_on_save' ], 5 );
+		add_action( 'admin_init', [ $this, 'register' ] );
+		add_filter( 'option_page_capability_' . $this->settings_group, [ $this, 'get_capability' ] );
 
 		if ( imagify_is_active_for_network() ) {
-			add_filter( 'pre_update_site_option_' . $this->option_name, array(
+			add_filter( 'pre_update_site_option_' . $this->option_name, [
 				$this,
 				'maybe_set_redirection',
-			), 10, 2 );
-			add_action( 'update_site_option_' . $this->option_name, array(
+			], 10, 2 );
+			add_action( 'update_site_option_' . $this->option_name, [
 				$this,
 				'after_save_network_options',
-			), 10, 3 );
-			add_action( 'admin_post_update', array( $this, 'update_site_option_on_network' ) );
+			], 10, 3 );
+			add_action( 'admin_post_update', [ $this, 'update_site_option_on_network' ] );
 		} else {
-			add_filter( 'pre_update_option_' . $this->option_name, array( $this, 'maybe_set_redirection' ), 10, 2 );
-			add_action( 'update_option_' . $this->option_name, array( $this, 'after_save_options' ), 10, 2 );
+			add_filter( 'pre_update_option_' . $this->option_name, [ $this, 'maybe_set_redirection' ], 10, 2 );
+			add_action( 'update_option_' . $this->option_name, [ $this, 'after_save_options' ], 10, 2 );
 		}
 	}
 
@@ -114,10 +107,8 @@ class Imagify_Settings {
 	/**
 	 * Get the name of the settings group.
 	 *
-	 * @since  1.7
+	 * @since 1.7
 	 * @return string
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public function get_settings_group() {
 		return $this->settings_group;
@@ -126,10 +117,8 @@ class Imagify_Settings {
 	/**
 	 * Get the URL to use as form action.
 	 *
-	 * @since  1.7
+	 * @since 1.7
 	 * @return string
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public function get_form_action() {
 		return imagify_is_active_for_network() ? admin_url( 'admin-post.php' ) : admin_url( 'options.php' );
@@ -138,10 +127,8 @@ class Imagify_Settings {
 	/**
 	 * Tell if we're submitting the settings form.
 	 *
-	 * @since  1.7
+	 * @since 1.7
 	 * @return bool
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public function is_form_submit() {
 		return filter_input( INPUT_POST, 'option_page', FILTER_SANITIZE_STRING ) === $this->settings_group && filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING ) === 'update';
@@ -156,20 +143,18 @@ class Imagify_Settings {
 	 * On form submit, handle some specific values.
 	 * This must be hooked before Imagify_Options::sanitize_and_validate_on_update().
 	 *
-	 * @since  1.7
+	 * @since 1.7
 	 *
 	 * @param array $values The option values.
 	 *
 	 * @return array
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public function populate_values_on_save( $values ) {
 		if ( ! $this->is_form_submit() ) {
 			return $values;
 		}
 
-		$values = is_array( $values ) ? $values : array();
+		$values = is_array( $values ) ? $values : [];
 
 		/**
 		 * Disabled thumbnail sizes.
@@ -184,11 +169,9 @@ class Imagify_Settings {
 		/**
 		 * Filter settings when saved via the settings page.
 		 *
-		 * @since  1.9
+		 * @since 1.9
 		 *
 		 * @param array $values The option values.
-		 *
-		 * @author Grégory Viguier
 		 */
 		$values = apply_filters( 'imagify_settings_on_save', $values );
 
@@ -198,19 +181,17 @@ class Imagify_Settings {
 	/**
 	 * On form submit, handle disallowed thumbnail sizes.
 	 *
-	 * @since  1.7
-	 * @access protected
+	 * @since 1.7
 	 *
 	 * @param array $values The option values.
 	 *
 	 * @return array
-	 * @author Grégory Viguier
 	 */
 	protected function populate_disallowed_sizes( $values ) {
-		$values['disallowed-sizes'] = array();
+		$values['disallowed-sizes'] = [];
 
 		if ( isset( $values['disallowed-sizes-reversed'] ) && is_array( $values['disallowed-sizes-reversed'] ) ) {
-			$checked = ! empty( $values['disallowed-sizes-checked'] ) && is_array( $values['disallowed-sizes-checked'] ) ? array_flip( $values['disallowed-sizes-checked'] ) : array();
+			$checked = ! empty( $values['disallowed-sizes-checked'] ) && is_array( $values['disallowed-sizes-checked'] ) ? array_flip( $values['disallowed-sizes-checked'] ) : [];
 
 			if ( ! empty( $values['disallowed-sizes-reversed'] ) ) {
 				foreach ( $values['disallowed-sizes-reversed'] as $size_key ) {
@@ -230,13 +211,11 @@ class Imagify_Settings {
 	/**
 	 * On form submit, handle the custom folders.
 	 *
-	 * @since  1.7
-	 * @access protected
+	 * @since 1.7
 	 *
 	 * @param array $values The option values.
 	 *
 	 * @return array
-	 * @author Grégory Viguier
 	 */
 	protected function populate_custom_folders( $values ) {
 		if ( ! imagify_can_optimize_custom_folders() ) {
@@ -314,9 +293,7 @@ class Imagify_Settings {
 	/**
 	 * Add Imagify' settings to the settings API whitelist.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 */
 	public function register() {
 		register_setting( $this->settings_group, $this->option_name );
@@ -325,9 +302,7 @@ class Imagify_Settings {
 	/**
 	 * Set the user capacity needed to save Imagify's main options from the settings page.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 */
 	public function get_capability() {
 		return imagify_get_context( 'wp' )->get_capacity( 'manage' );
@@ -343,8 +318,6 @@ class Imagify_Settings {
 	 * @param mixed $old_value The old option value.
 	 *
 	 * @return mixed            The option value.
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public function maybe_set_redirection( $value, $old_value ) {
 		if ( isset( $_POST['submit-goto-bulk'] ) ) { // WPCS: CSRF ok.
@@ -362,9 +335,6 @@ class Imagify_Settings {
 	 * @param string $option    Name of the network option.
 	 * @param mixed  $value     Current value of the network option.
 	 * @param mixed  $old_value Old value of the network option.
-	 *
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public function after_save_network_options( $option, $value, $old_value ) {
 		$this->after_save_options( $old_value, $value );
@@ -377,9 +347,6 @@ class Imagify_Settings {
 	 *
 	 * @param mixed $old_value The old option value.
 	 * @param mixed $value     The new option value.
-	 *
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public function after_save_options( $old_value, $value ) {
 		$old_key = isset( $old_value['api_key'] ) ? $old_value['api_key'] : '';
@@ -391,9 +358,9 @@ class Imagify_Settings {
 
 		// Handle API key validation cache and notices.
 		if ( Imagify_Requirements::is_api_key_valid( true ) ) {
-			Imagify_Notices::dismiss_notice( 'wrong-api-key' );
+			Notices::dismiss_notice( 'wrong-api-key' );
 		} else {
-			Imagify_Notices::renew_notice( 'wrong-api-key' );
+			Notices::renew_notice( 'wrong-api-key' );
 		}
 	}
 
@@ -467,7 +434,7 @@ class Imagify_Settings {
 		/**
 		 * Redirect back to the settings page that was submitted.
 		 */
-		imagify_maybe_redirect( false, array( 'settings-updated' => 'true' ) );
+		imagify_maybe_redirect( false, [ 'settings-updated' => 'true' ] );
 	}
 
 
@@ -486,9 +453,6 @@ class Imagify_Settings {
 	 *                    {info}          string   Text to display in an "Info box" after the field. A 'aria-describedby' attribute will automatically be created.
 	 *                    {attributes}    array    A list of HTML attributes, as 'attribute' => 'value'.
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
-	 *
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public function field_checkbox( $args ) {
 		$args = array_merge( [
@@ -565,9 +529,6 @@ class Imagify_Settings {
 	 *                    {reverse_check}   bool   If true, the values that will be stored in the option are the ones that are unchecked. It requires special treatment when saving (detect what values are unchecked).
 	 *                    {attributes}      array  A list of HTML attributes, as 'attribute' => 'value'.
 	 *                    {current_values}  array  USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
-	 *
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public function field_checkbox_list( $args ) {
 		$args = array_merge( [
@@ -690,7 +651,6 @@ class Imagify_Settings {
 	 * Display a radio list group.
 	 *
 	 * @since  1.9
-	 * @access public
 	 *
 	 * @param array $args          {
 	 *                             Arguments.
@@ -702,7 +662,6 @@ class Imagify_Settings {
 	 * @type array  $attributes    A list of HTML attributes, as 'attribute' => 'value'.
 	 * @type array  $current_value USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 * }
-	 * @author Grégory Viguier
 	 */
 	public function field_radio_list( $args ) {
 		$args = array_merge( [
@@ -789,8 +748,7 @@ class Imagify_Settings {
 	/**
 	 * Display a text box.
 	 *
-	 * @since  1.9.3
-	 * @access public
+	 * @since 1.9.3
 	 *
 	 * @param array $args Arguments:
 	 *                    {option_name}   string   The option name. E.g. 'disallowed-sizes'. Mandatory.
@@ -798,8 +756,6 @@ class Imagify_Settings {
 	 *                    {info}          string   Text to display in an "Info box" after the field. A 'aria-describedby' attribute will automatically be created.
 	 *                    {attributes}    array    A list of HTML attributes, as 'attribute' => 'value'.
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
-	 *
-	 * @author Grégory Viguier
 	 */
 	public function field_text_box( $args ) {
 		$args = array_merge( [
@@ -866,15 +822,12 @@ class Imagify_Settings {
 	/**
 	 * Display a simple hidden input.
 	 *
-	 * @since  1.9.3
-	 * @access public
+	 * @since 1.9.3
 	 *
 	 * @param array $args Arguments:
 	 *                    {option_name}   string   The option name. E.g. 'disallowed-sizes'. Mandatory.
 	 *                    {attributes}    array    A list of HTML attributes, as 'attribute' => 'value'.
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
-	 *
-	 * @author Grégory Viguier
 	 */
 	public function field_hidden( $args ) {
 		$args = array_merge( [
@@ -923,8 +876,6 @@ class Imagify_Settings {
 	 *
 	 * @since  1.7
 	 * @return array A list of thumbnail sizes in the form of 'medium' => 'medium - 300 × 300'.
-	 * @author Grégory Viguier
-	 * @access public
 	 */
 	public static function get_thumbnail_sizes() {
 		static $sizes;
@@ -950,13 +901,11 @@ class Imagify_Settings {
 	/**
 	 * Create HTML attributes from an array.
 	 *
-	 * @since  1.7
-	 * @access public
+	 * @since 1.7
 	 *
 	 * @param array $attributes A list of attribute pairs.
 	 *
-	 * @return string            HTML attributes.
-	 * @author Grégory Viguier
+	 * @return string HTML attributes.
 	 */
 	public static function build_attributes( $attributes ) {
 		if ( ! $attributes || ! is_array( $attributes ) ) {

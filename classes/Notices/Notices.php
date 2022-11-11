@@ -1,13 +1,17 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+declare(strict_types=1);
+
+namespace Imagify\Notices;
+
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that handles the admin notices.
  *
- * @since  1.6.10
- * @author Grégory Viguier
+ * @since 1.6.10
  */
-class Imagify_Notices extends Imagify_Notices_Deprecated {
+class Notices {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -51,7 +55,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	 *
 	 * @var array
 	 */
-	protected static $notice_ids = array(
+	protected static $notice_ids = [
 		// This warning is displayed when the API key is empty. Dismissible.
 		'welcome-steps',
 		// This warning is displayed when the API key is wrong. Dismissible.
@@ -70,7 +74,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		'rating',
 		// Add a message about WP Rocket on the "Bulk Optimization" screen. Dismissible.
 		'wp-rocket',
-	);
+		'bulk-optimization-complete',
+	];
 
 	/**
 	 * List of user capabilities to use for each notice.
@@ -78,19 +83,20 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	 *
 	 * @var array
 	 */
-	protected static $capabilities = array(
+	protected static $capabilities = [
 		'grid-view'                  => 'optimize',
 		'backup-folder-not-writable' => 'bulk-optimize',
 		'rating'                     => 'bulk-optimize',
 		'wp-rocket'                  => 'bulk-optimize',
-	);
+		'bulk-optimization-complete' => 'bulk-optimize',
+	];
 
 	/**
 	 * List of plugins that conflict with Imagify.
 	 *
 	 * @var array
 	 */
-	protected static $conflicting_plugins = array(
+	protected static $conflicting_plugins = [
 		'wp-smush'     => 'wp-smushit/wp-smush.php',                                   // WP Smush.
 		'wp-smush-pro' => 'wp-smush-pro/wp-smush.php',                                 // WP Smush Pro.
 		'kraken'       => 'kraken-image-optimizer/kraken.php',                         // Kraken.io.
@@ -99,14 +105,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		'ewww'         => 'ewww-image-optimizer/ewww-image-optimizer.php',             // EWWW Image Optimizer.
 		'ewww-cloud'   => 'ewww-image-optimizer-cloud/ewww-image-optimizer-cloud.php', // EWWW Image Optimizer Cloud.
 		'imagerecycle' => 'imagerecycle-pdf-image-compression/wp-image-recycle.php',   // ImageRecycle.
-	);
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var object
-	 */
-	protected static $_instance;
+	];
 
 	/**
 	 * The constructor.
@@ -121,36 +120,19 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
 	 * Launch the hooks.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 */
 	public function init() {
 		// For generic purpose.
-		add_action( 'all_admin_notices',                     array( $this, 'render_notices' ) );
-		add_action( 'wp_ajax_imagify_dismiss_notice',        array( $this, 'admin_post_dismiss_notice' ) );
-		add_action( 'admin_post_imagify_dismiss_notice',     array( $this, 'admin_post_dismiss_notice' ) );
+		add_action( 'all_admin_notices',                     [ $this, 'render_notices' ] );
+		add_action( 'wp_ajax_imagify_dismiss_notice',        [ $this, 'admin_post_dismiss_notice' ] );
+		add_action( 'admin_post_imagify_dismiss_notice',     [ $this, 'admin_post_dismiss_notice' ] );
 		// For specific notices.
-		add_action( 'imagify_dismiss_notice',                array( $this, 'clear_scheduled_rating' ) );
-		add_action( 'admin_post_imagify_deactivate_plugin',  array( $this, 'deactivate_plugin' ) );
-		add_action( 'imagify_not_almost_over_quota_anymore', array( $this, 'renew_almost_over_quota_notice' ) );
+		add_action( 'imagify_dismiss_notice',                [ $this, 'clear_scheduled_rating' ] );
+		add_action( 'admin_post_imagify_deactivate_plugin',  [ $this, 'deactivate_plugin' ] );
+		add_action( 'imagify_not_almost_over_quota_anymore', [ $this, 'renew_almost_over_quota_notice' ] );
 	}
 
 
@@ -161,8 +143,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Maybe display some notices.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 */
 	public function render_notices() {
 		foreach ( $this->get_notice_ids() as $notice_id ) {
@@ -173,11 +154,11 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 				continue;
 			}
 
-			$data = call_user_func( array( $this, $callback ) );
+			$data = call_user_func( [ $this, $callback ] );
 
 			if ( $data ) {
 				// The notice must be displayed: render the view.
-				Imagify_Views::get_instance()->print_template( 'notice-' . $notice_id, $data );
+				\Imagify_Views::get_instance()->print_template( 'notice-' . $notice_id, $data );
 			}
 		}
 
@@ -188,8 +169,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Process a dismissed notice.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 * @see    _do_admin_post_imagify_dismiss_notice()
 	 */
 	public function admin_post_dismiss_notice() {
@@ -221,25 +201,23 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Stop the rating cron when the notice is dismissed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 * @see    _imagify_clear_scheduled_rating()
+	 * @since 1.6.10
+	 * @see _imagify_clear_scheduled_rating()
 	 *
 	 * @param string $notice The notice name.
 	 */
 	public function clear_scheduled_rating( $notice ) {
 		if ( 'rating' === $notice ) {
 			set_site_transient( 'do_imagify_rating_cron', 'no' );
-			Imagify_Cron_Rating::get_instance()->unschedule_event();
+			\Imagify_Cron_Rating::get_instance()->unschedule_event();
 		}
 	}
 
 	/**
 	 * Disable a plugin which can be in conflict with Imagify.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 * @see    _imagify_deactivate_plugin()
+	 * @since 1.6.10
+	 * @see _imagify_deactivate_plugin()
 	 */
 	public function deactivate_plugin() {
 		imagify_check_nonce( self::DEACTIVATE_PLUGIN_NONCE_ACTION );
@@ -265,8 +243,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Renew the "almost-over-quota" notice when the consumed quota percent decreases back below 80%.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 */
 	public function renew_almost_over_quota_notice() {
 		global $wpdb;
@@ -278,7 +255,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		}
 
 		// Prevent multiple queries to the DB by caching user metas.
-		$not_cached = array();
+		$not_cached = [];
 
 		foreach ( $results as $result ) {
 			if ( ! wp_cache_get( $result->umeta_id, 'user_meta' ) ) {
@@ -304,8 +281,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'welcome-steps' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -337,8 +313,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'wrong-api-key' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -359,7 +334,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 			return $display;
 		}
 
-		if ( self::notice_is_dismissed( 'wrong-api-key' ) || ! get_imagify_option( 'api_key' ) || Imagify_Requirements::is_api_key_valid() ) {
+		if ( self::notice_is_dismissed( 'wrong-api-key' ) || ! get_imagify_option( 'api_key' ) || \Imagify_Requirements::is_api_key_valid() ) {
 			return $display;
 		}
 
@@ -370,8 +345,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'plugins-to-deactivate' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return array An array of plugins to deactivate.
 	 */
@@ -394,8 +368,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'plugins-to-deactivate' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -416,7 +389,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 			return $display;
 		}
 
-		if ( self::notice_is_dismissed( 'http-block-external' ) || ! Imagify_Requirements::is_imagify_blocked() ) {
+		if ( self::notice_is_dismissed( 'http-block-external' ) || ! \Imagify_Requirements::is_imagify_blocked() ) {
 			return $display;
 		}
 
@@ -427,8 +400,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'grid-view' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -457,7 +429,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		}
 
 		// Don't display the notice if the API key isn't valid.
-		if ( ! Imagify_Requirements::is_api_key_valid() ) {
+		if ( ! \Imagify_Requirements::is_api_key_valid() ) {
 			return $display;
 		}
 
@@ -468,8 +440,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'almost-over-quota' notice should be displayed.
 	 *
-	 * @since  1.7.0
-	 * @author Geoffrey Crofte
+	 * @since 1.7.0
 	 *
 	 * @return bool|object An Imagify user object. False otherwise.
 	 */
@@ -494,7 +465,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 			return $display;
 		}
 
-		$user = new Imagify_User();
+		$user = new \Imagify_User();
 
 		// Don't display the notice if the user's unconsumed quota is superior to 20%.
 		if ( $user->get_percent_unconsumed_quota() > 20 ) {
@@ -508,8 +479,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'backup-folder-not-writable' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -536,7 +506,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 			return $display;
 		}
 
-		if ( Imagify_Requirements::attachments_backup_dir_is_writable() ) {
+		if ( \Imagify_Requirements::attachments_backup_dir_is_writable() ) {
 			return $display;
 		}
 
@@ -547,8 +517,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'rating' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool|int
 	 */
@@ -586,8 +555,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if the 'wp-rocket' notice should be displayed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -618,6 +586,45 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		return $display;
 	}
 
+	/**
+	 * Tell if the bulk optimization complete notice should be displayed
+	 *
+	 * @since 2.1
+	 *
+	 * @return array
+	 */
+	public function display_bulk_optimization_complete(): array {
+		if ( ! $this->user_can( 'bulk-optimization-complete' ) ) {
+			return [];
+		}
+
+		if ( imagify_is_screen( 'bulk' ) ) {
+			return [];
+		}
+
+		if ( self::notice_is_dismissed( 'bulk-optimization-complete' ) ) {
+			return [];
+		}
+
+		if ( false === get_transient( 'imagify_bulk_optimization_complete' ) ) {
+			return [];
+		}
+
+		$data = imagify_get_bulk_stats(
+			[
+				'library|wp' => true,
+				'custom-folders|custom-folders' => true,
+			]
+		);
+
+		if ( empty( $data ) ) {
+			return [];
+		}
+
+		$data['bulk_page_url'] = admin_url( 'upload.php?page=imagify-bulk-optimization' );
+
+		return $data;
+	}
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** TEMPORARY NOTICES ======================================================================= */
@@ -626,11 +633,9 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Maybe display some notices.
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 */
-	public function render_temporary_notices() {
+	protected function render_temporary_notices() {
 		if ( is_network_admin() ) {
 			$notices = $this->get_network_temporary_notices();
 		} else {
@@ -641,7 +646,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 			return;
 		}
 
-		$views = Imagify_Views::get_instance();
+		$views = \Imagify_Views::get_instance();
 
 		foreach ( $notices as $i => $notice_data ) {
 			$notices[ $i ]['type'] = ! empty( $notice_data['type'] ) ? $notice_data['type'] : 'error';
@@ -653,36 +658,32 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Get temporary notices for the network.
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 *
 	 * @return array
 	 */
-	public function get_network_temporary_notices() {
+	protected function get_network_temporary_notices() {
 		$notices = get_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
 
 		if ( false === $notices ) {
-			return array();
+			return [];
 		}
 
 		delete_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
 
-		return $notices && is_array( $notices ) ? $notices : array();
+		return $notices && is_array( $notices ) ? $notices : [];
 	}
 
 	/**
 	 * Create a temporary notice for the network.
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 *
 	 * @param array|object|string $notice_data Some data, with the message to display.
 	 */
 	public function add_network_temporary_notice( $notice_data ) {
 		$notices = get_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
-		$notices = is_array( $notices ) ? $notices : array();
+		$notices = is_array( $notices ) ? $notices : [];
 
 		if ( is_wp_error( $notice_data ) ) {
 			$notice_data = $notice_data->get_error_messages();
@@ -690,9 +691,9 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		}
 
 		if ( is_string( $notice_data ) ) {
-			$notice_data = array(
+			$notice_data = [
 				'message' => $notice_data,
-			);
+			];
 		} elseif ( is_object( $notice_data ) ) {
 			$notice_data = (array) $notice_data;
 		}
@@ -709,41 +710,37 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Get temporary notices for the current site.
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 *
 	 * @return array
 	 */
-	public function get_site_temporary_notices() {
+	protected function get_site_temporary_notices() {
 		$notices = get_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
 
 		if ( false === $notices ) {
-			return array();
+			return [];
 		}
 
 		delete_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
 
-		return $notices && is_array( $notices ) ? $notices : array();
+		return $notices && is_array( $notices ) ? $notices : [];
 	}
 
 	/**
 	 * Create a temporary notice for the current site.
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.7
 	 *
 	 * @param array|string $notice_data Some data, with the message to display.
 	 */
 	public function add_site_temporary_notice( $notice_data ) {
 		$notices = get_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME );
-		$notices = is_array( $notices ) ? $notices : array();
+		$notices = is_array( $notices ) ? $notices : [];
 
 		if ( is_string( $notice_data ) ) {
-			$notice_data = array(
+			$notice_data = [
 				'message' => $notice_data,
-			);
+			];
 		} elseif ( is_object( $notice_data ) ) {
 			$notice_data = (array) $notice_data;
 		}
@@ -765,8 +762,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Renew a dismissed Imagify notice.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @param string $notice  A notice ID.
 	 * @param int    $user_id A user ID.
@@ -774,7 +770,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	public static function renew_notice( $notice, $user_id = 0 ) {
 		$user_id = $user_id ? (int) $user_id : get_current_user_id();
 		$notices = get_user_meta( $user_id, self::DISMISS_META_NAME, true );
-		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
 
 		if ( ! isset( $notices[ $notice ] ) ) {
 			return;
@@ -791,9 +787,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Dismiss an Imagify notice.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 * @see    imagify_dismiss_notice()
+	 * @since 1.6.10
+	 * @see imagify_dismiss_notice()
 	 *
 	 * @param  string $notice  A notice ID.
 	 * @param  int    $user_id A user ID.
@@ -801,7 +796,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	public static function dismiss_notice( $notice, $user_id = 0 ) {
 		$user_id = $user_id ? (int) $user_id : get_current_user_id();
 		$notices = get_user_meta( $user_id, self::DISMISS_META_NAME, true );
-		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
 
 		if ( isset( $notices[ $notice ] ) ) {
 			return;
@@ -818,9 +813,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if an Imagify notice is dismissed.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
-	 * @see    imagify_notice_is_dismissed()
+	 * @since 1.6.10
+	 * @see imagify_notice_is_dismissed()
 	 *
 	 * @param  string $notice  A notice ID.
 	 * @param  int    $user_id A user ID.
@@ -829,7 +823,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	public static function notice_is_dismissed( $notice, $user_id = 0 ) {
 		$user_id = $user_id ? (int) $user_id : get_current_user_id();
 		$notices = get_user_meta( $user_id, self::DISMISS_META_NAME, true );
-		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+		$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
 
 		return isset( $notices[ $notice ] );
 	}
@@ -837,8 +831,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Tell if one or more notices will be displayed later in the page.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return bool
 	 */
@@ -846,7 +839,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		foreach ( self::$notice_ids as $notice_id ) {
 			$callback = 'display_' . str_replace( '-', '_', $notice_id );
 
-			if ( method_exists( $this, $callback ) && call_user_func( array( $this, $callback ) ) ) {
+			if ( method_exists( $this, $callback ) && call_user_func( [ $this, $callback ] ) ) {
 				return true;
 			}
 		}
@@ -862,9 +855,8 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Get all notice IDs.
 	 *
-	 * @since  1.6.10
-	 * @since  1.10 Cast return value to array.
-	 * @author Grégory Viguier
+	 * @since 1.6.10
+	 * @since 1.10 Cast return value to array.
 	 *
 	 * @return array The filtered notice ids.
 	 */
@@ -872,8 +864,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 		/**
 		 * Filter the notices Imagify can display.
 		 *
-		 * @since  1.6.10
-		 * @author Grégory Viguier
+		 * @since 1.6.10
 		 *
 		 * @param array $notice_ids An array of notice "IDs".
 		 */
@@ -884,8 +875,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	 * Tell if the current user can see the notices.
 	 * Notice IDs that are not listed in self::$capabilities are assumed as 'manage'.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @param  string $notice_id A notice ID.
 	 * @return bool
@@ -899,8 +889,7 @@ class Imagify_Notices extends Imagify_Notices_Deprecated {
 	/**
 	 * Get a list of plugins that can conflict with Imagify.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
 	 * @return array
 	 */

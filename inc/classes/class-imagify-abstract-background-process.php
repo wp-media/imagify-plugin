@@ -1,80 +1,45 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class handling background processes.
  *
  * @since  1.8.1
- * @author Grégory Viguier
  */
 abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background_Process {
+	use InstanceGetterTrait;
 
 	/**
-	 * Class version.
+	 * The lock time for the queue
 	 *
-	 * @var    string
-	 * @since  1.8.1
-	 * @author Grégory Viguier
+	 * @var int
 	 */
-	const VERSION = '1.1';
+	protected $queue_lock_time = DAY_IN_SECONDS;
 
 	/**
 	 * Prefix used to build the global process identifier.
 	 *
-	 * @var    string
-	 * @since  1.8.1
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var string
+	 * @since 1.8.1
 	 */
 	protected $prefix = 'imagify';
 
 	/**
 	 * Set to true to automatically displatch at the end of the page.
 	 *
-	 * @var    bool
-	 * @since  1.9
-	 * @access protected
-	 * @see    $this->save()
-	 * @see    $this->maybe_save_and_dispatch()
-	 * @author Grégory Viguier
+	 * @var bool
+	 * @since 1.9
+	 * @see $this->save()
+	 * @see $this->maybe_save_and_dispatch()
 	 */
 	protected $auto_dispatch = false;
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.8.1
-	 * @access protected
-	 * @author Grégory Viguier
-	 */
-	protected static $_instance;
-
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.8.1
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( static::$_instance ) ) {
-			static::$_instance = new static();
-		}
-
-		return static::$_instance;
-	}
 
 	/**
 	 * Init: launch a hook that will clear the scheduled events and empty the queue when the plugin is disabled.
 	 * This is only a precaution in case something went wrong.
 	 *
-	 * @since  1.8.1
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.1
 	 */
 	public function init() {
 		$this->query_url = admin_url( 'admin-ajax.php' );
@@ -82,8 +47,7 @@ abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background
 		/**
 		 * Filter the URL to use for background processes.
 		 *
-		 * @since  1.9.5
-		 * @author Grégory Viguier
+		 * @since 1.9.5
 		 *
 		 * @param string $query_url An URL.
 		 * @param object $this      This class instance.
@@ -115,9 +79,7 @@ abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background
 	 * Stop processing queue items, clear cronjob and delete batch.
 	 * This is a copy of the parent's method, in case an older version of WP_Background_Process is loaded instead of this one (an old version without this method).
 	 *
-	 * @since  1.8.1
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.1
 	 */
 	public function cancel_process() {
 		if ( method_exists( $this, 'cancel_process' ) ) {
@@ -138,9 +100,7 @@ abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background
 	 * Save the queen. No, I meant the queue.
 	 * Also empty the queue to avoid to create several batches with the same items.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @return $this
 	 */
@@ -165,9 +125,7 @@ abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background
 	/**
 	 * Save and dispatch if the queue is not empty.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function maybe_save_and_dispatch() {
 		$this->save();
@@ -180,9 +138,7 @@ abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background
 	/**
 	 * Get the cron name.
 	 *
-	 * @since  1.8.1
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.1
 	 *
 	 * @return string
 	 */
@@ -193,9 +149,7 @@ abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background
 	/**
 	 * Get the deactivation hook name.
 	 *
-	 * @since  1.8.1
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.8.1
 	 *
 	 * @return string
 	 */

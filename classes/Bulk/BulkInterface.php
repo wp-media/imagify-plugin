@@ -1,22 +1,16 @@
 <?php
 namespace Imagify\Bulk;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Interface to use for bulk.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
 interface BulkInterface {
-
 	/**
 	 * Get all unoptimized media ids.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param  int $optimization_level The optimization level.
 	 * @return array                   A list of unoptimized media. Array keys are media IDs prefixed with an underscore character, array values are the main file’s URL.
@@ -26,10 +20,8 @@ interface BulkInterface {
 	/**
 	 * Get ids of all optimized media without WebP versions.
 	 *
-	 * @since  1.9
-	 * @since  1.9.5 The method doesn't return the IDs directly anymore.
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
+	 * @since 1.9.5 The method doesn't return the IDs directly anymore.
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.
@@ -44,9 +36,7 @@ interface BulkInterface {
 	/**
 	 * Tell if there are optimized media without WebP versions.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @return int The number of media.
 	 */
@@ -55,9 +45,7 @@ interface BulkInterface {
 	/**
 	 * Get the context data.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @return array {
 	 *     The formated data.

@@ -423,37 +423,6 @@ window.imagify = window.imagify || {};
 	w.imagify.optionsBulk = {
 		// Properties ==============================================================================
 		/**
-		 * When media IDs have been fetched for a context (or tried, with error), the context is removed from this list.
-		 *
-		 * @var {array} fetchQueue An array of contexts.
-		 */
-		fetchQueue:       [],
-		/**
-		 * Contexts in queue.
-		 *
-		 * @var {array} queue An array of objects: {
-		 *     @type {string} context     The context, like 'wp'.
-		 *     @type {string} optimizeURL The URL to ping to optimize a file.
-		 *     @type {array}  mediaIDs    A list of media IDs.
-		 * }
-		 */
-		queue:            [],
-		/**
-		 * List of medias being processed.
-		 *
-		 * @var {array} processingQueue An array of objects: {
-		 *     @type {string} context The context, like 'wp'.
-		 *     @type {int}    mediaID The media ID.
-		 * }
-		 */
-		processingQueue:  [],
-		/**
-		 * Stores the first error ID or message that is occurring when fetching media IDs.
-		 *
-		 * @var {string|bool} error False if no error.
-		 */
-		fetchError:       false,
-		/**
 		 * The current error ID or message.
 		 *
 		 * @var {string|bool} error False if no error.
@@ -470,19 +439,7 @@ window.imagify = window.imagify || {};
 		 *
 		 * @var {bool} processIsStopped
 		 */
-		processIsStopped: true,
-		/**
-		 * Total number of processed media.
-		 *
-		 * @var {int}
-		 */
-		processedMedia:   0,
-		/**
-		 * Total number of media to process.
-		 *
-		 * @var {int}
-		 */
-		totalMedia:       0,
+		processIsStopped: false,
 		/**
 		 * The button.
 		 *
@@ -514,6 +471,10 @@ window.imagify = window.imagify || {};
 		 * Init.
 		 */
 		init: function () {
+			var processed, progress;
+			this.$missingWebpElement = $('.generate-missing-webp');
+			this.$missingWebpMessage = $('.generate-missing-webp p');
+
 			this.$button       = $( '#imagify-generate-webp-versions' );
 			this.$progressWrap = this.$button.siblings( '.imagify-progress' );
 			this.$progressBar  = this.$progressWrap.find( '.bar' );
@@ -525,7 +486,7 @@ window.imagify = window.imagify || {};
 				.trigger( 'init.imagify' );
 
 			// Launch optimization.
-			this.$button.on( 'click.imagify', { imagifyOptionsBulk: this }, this.maybeLaunchAllProcesses );
+			this.$button.on( 'click.imagify', { imagifyOptionsBulk: this }, this.maybeLaunchMissingWebpProcess );
 
 			// Imagifybeat for optimization queue.
 			$( d )
@@ -534,6 +495,29 @@ window.imagify = window.imagify || {};
 			// Imagifybeat for requirements.
 				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
 				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsImagifybeat );
+
+			if ( false !== imagifyOptions.bulk.progress_webp.total && false !== imagifyOptions.bulk.progress_webp.remaining ) {
+				// Reset properties.
+				w.imagify.optionsBulk.error            = false;
+				w.imagify.optionsBulk.working          = true;
+				w.imagify.optionsBulk.processIsStopped = false;
+
+				// Disable the button.
+				this.$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
+
+				// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
+				w.imagify.beat.interval( 15 );
+				w.imagify.beat.disableSuspend();
+
+				this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
+
+				processed = imagifyOptions.bulk.progress_webp.total - imagifyOptions.bulk.progress_webp.remaining;
+				progress = Math.floor( processed / imagifyOptions.bulk.progress_webp.total * 100 );
+				this.$progressBar.css( 'width', progress + '%' );
+				this.$progressText.text( processed + '/' + imagifyOptions.bulk.progress_webp.total );
+
+				this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
+			}
 		},
 
 		// Event callbacks =========================================================================
@@ -552,11 +536,11 @@ window.imagify = window.imagify || {};
 		},
 
 		/*
-		 * Build the queue and launch all processes.
+		 * Maybe launch the missing WebP generation process.
 		 *
 		 * @param {object} e Event object.
 		 */
-		maybeLaunchAllProcesses: function ( e ) {
+		maybeLaunchMissingWebpProcess: function ( e ) {
 			if ( ! e.data.imagifyOptionsBulk || e.data.imagifyOptionsBulk.working ) {
 				return;
 			}
@@ -566,37 +550,19 @@ window.imagify = window.imagify || {};
 			}
 
 			// Reset properties.
-			e.data.imagifyOptionsBulk.fetchQueue       = imagifyOptions.bulk.contexts.slice();
-			e.data.imagifyOptionsBulk.queue            = [];
-			e.data.imagifyOptionsBulk.processingQueue  = [];
-			e.data.imagifyOptionsBulk.fetchError       = false;
 			e.data.imagifyOptionsBulk.error            = false;
 			e.data.imagifyOptionsBulk.working          = true;
 			e.data.imagifyOptionsBulk.processIsStopped = false;
-			e.data.imagifyOptionsBulk.processedMedia   = 0;
-			e.data.imagifyOptionsBulk.totalMedia       = 0;
 
 			// Disable the button.
 			e.data.imagifyOptionsBulk.$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
-
-			// Add a message to be displayed when the user wants to quit the page.
-			$( w ).on( 'beforeunload.imagify', e.data.imagifyOptionsBulk.getConfirmMessage );
 
 			// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
 			w.imagify.beat.interval( 15 );
 			w.imagify.beat.disableSuspend();
 
-			// Fetch IDs of media to optimize.
-			e.data.imagifyOptionsBulk.fetchIDs();
-		},
-
-		/*
-		 * Get the message displayed to the user when (s)he leaves the page.
-		 *
-		 * @return {string}
-		 */
-		getConfirmMessage: function () {
-			return imagifyOptions.bulk.labels.processing;
+			// Launch missing WebP generation process
+			e.data.imagifyOptionsBulk.launchProcess();
 		},
 
 		// Imagifybeat =============================================================================
@@ -608,9 +574,7 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		addQueueImagifybeat: function ( e, data ) {
-			if ( e.data.imagifyOptionsBulk && e.data.imagifyOptionsBulk.processingQueue.length ) {
-				data[ imagifyOptions.bulk.imagifybeatIDs.queue ] = e.data.imagifyOptionsBulk.processingQueue;
-			}
+			data[ imagifyOptions.bulk.imagifybeatIDs.progress ] = imagifyOptions.bulk.contexts;
 		},
 
 		/**
@@ -621,11 +585,28 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
-			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.imagifybeatIDs.queue ] !== 'undefined' ) {
-				$.each( data[ imagifyOptions.bulk.imagifybeatIDs.queue ], function ( i, mediaData ) {
-					e.data.imagifyOptionsBulk.mediaProcessed( mediaData );
-				} );
+			var images_status, processed, progress;
+
+			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.imagifybeatIDs.progress ] === 'undefined' ) {
+				return;
 			}
+
+			if ( e.data.imagifyOptionsBulk.processIsStopped ) {
+				e.data.imagifyOptionsBulk.processFinished();
+				return;
+			}
+
+			images_status = data[ imagifyOptions.bulk.imagifybeatIDs.progress ];
+
+			if ( images_status.remaining === 0 ) {
+				e.data.imagifyOptionsBulk.processFinished();
+				return;
+			}
+
+			processed = images_status.total - images_status.remaining;
+			progress = Math.floor( processed / images_status.total * 100 );
+			e.data.imagifyOptionsBulk.$progressBar.css( 'width', progress + '%' );
+			e.data.imagifyOptionsBulk.$progressText.text( processed + '/' + images_status.total );
 		},
 
 		/**
@@ -663,44 +644,18 @@ window.imagify = window.imagify || {};
 		// Optimization ============================================================================
 
 		/*
-		 * Fetch IDs of media to optimize.
+		 * launch the missing WebP generation process.
 		 */
-		fetchIDs: function () {
-			var _this, context;
+		launchProcess: function () {
+			var _this;
 
 			if ( this.processIsStopped ) {
 				return;
 			}
 
-			if ( ! this.fetchQueue.length ) {
-				// No more IDs to fetch.
-				if ( this.queue.length ) {
-					// We have files to process.
-					// Reset and display the progress bar.
-					this.$progressBar.removeAttr( 'style' );
-					this.$progressText.text( '0' + ( this.totalMedia ? '/' + this.totalMedia : '' ) );
-					this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' );
+			_this = this;
 
-					this.processQueue();
-					return;
-				}
-
-				if ( ! this.fetchError ) {
-					// No files to process.
-					this.fetchError = 'no-images';
-				}
-
-				// Error, or no files to process.
-				this.stopProcess( this.fetchError );
-				this.fetchError = false;
-				return;
-			}
-
-			// Fetch IDs for the next context.
-			_this   = this;
-			context = this.fetchQueue.shift();
-
-			$.get( this.getAjaxUrl( 'getMediaIds', context ) )
+			$.get( this.getAjaxUrl( 'MissingWebp', imagifyOptions.bulk.contexts ) )
 				.done( function( response ) {
 					var errorMessage;
 
@@ -716,170 +671,37 @@ window.imagify = window.imagify || {};
 
 					if ( ! response.success ) {
 						// Error.
-						if ( ! _this.fetchError ) {
-							_this.fetchError = errorMessage;
+						if ( ! _this.error ) {
+							_this.stopProcess( errorMessage );
 						}
 						return;
 					}
 
-					if ( ! $.isArray( response.data ) ) {
-						// Error: should be an array.
-						if ( ! _this.fetchError ) {
-							_this.fetchError = errorMessage;
-						}
-						return;
-					}
-
-					if ( ! response.data.length ) {
+					if ( 0 === response.data.total ) {
 						// No media to process.
+						_this.stopProcess( 'no-images' );
+
 						return;
 					}
 
-					// Success.
-					_this.totalMedia += response.data.length;
-					_this.queue.push( {
-						context:     context,
-						optimizeURL: _this.getAjaxUrl( 'bulkProcess', context ),
-						mediaIDs:    response.data
-					} );
+					_this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
+
+					// Reset and display the progress bar.
+					_this.$progressText.text( '0' + ( response.data.total ? '/' + response.data.total : '' ) );
+					_this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
 				} )
 				.fail( function() {
 					// Error.
-					if ( ! _this.fetchError ) {
-						_this.fetchError = 'get-unoptimized-images';
-					}
-				} )
-				.always( function() {
-					// Fetch IDs for the next context.
-					_this.fetchIDs();
-				} );
-		},
-
-		/*
-		 * Fill the processing queue until the buffer size is reached.
-		 */
-		processQueue: function () {
-			var _this = this;
-
-			if ( this.processIsStopped ) {
-				return;
-			}
-
-			if ( ! this.queue.length && ! this.processingQueue.length ) {
-				return;
-			}
-
-			// Optimize the files.
-			$.each( this.queue, function ( i, item ) {
-				if ( _this.processingQueue.length >= imagifyOptions.bulk.bufferSize ) {
-					return false;
-				}
-
-				$.each( item.mediaIDs, function () {
-					_this.processMedia( {
-						context:     item.context,
-						mediaID:     item.mediaIDs.shift(),
-						optimizeURL: item.optimizeURL
-					} );
-
-					if ( ! item.mediaIDs.length ) {
-						_this.queue.shift();
-					}
-
-					if ( _this.processingQueue.length >= imagifyOptions.bulk.bufferSize ) {
-						return false;
+					if ( ! _this.error ) {
+						_this.stopProcess( 'get-unoptimized-images' );
 					}
 				} );
-			} );
-		},
-
-		/*
-		 * Process the next media.
-		 *
-		 * @param {object} item {
-		 *     @type {string} context     The context, like 'wp'.
-		 *     @type {int}    mediaID     The media ID.
-		 *     @type {string} optimizeURL The URL to ping to optimize the media.
-		 * }
-		 */
-		processMedia: function ( item ) {
-			var _this           = this,
-				defaultResponse = {
-					context: item.context,
-					mediaID: item.mediaID
-				};
-
-			this.processingQueue.push( {
-				context: item.context,
-				mediaID: item.mediaID
-			} );
-
-			$.post( {
-				url:      item.optimizeURL,
-				data:     {
-					media_id: item.mediaID,
-					context:  item.context
-				},
-				dataType: 'json'
-			} )
-				.done( function( response ) {
-					if ( response.success ) {
-						// Processing.
-						return;
-					}
-
-					// Error.
-					_this.mediaProcessed( defaultResponse );
-				} )
-				.fail( function() {
-					// Error.
-					_this.mediaProcessed( defaultResponse );
-				} );
-		},
-
-		/**
-		 * After a media has been processed.
-		 *
-		 * @param {object} response {
-		 *     The response:
-		 *
-		 *     @type {int}    mediaID The media ID.
-		 *     @type {string} context The context.
-		 * }
-		 */
-		mediaProcessed: function( response ) {
-			var _this = this;
-
-			if ( this.processIsStopped ) {
-				return;
-			}
-
-			// Remove this media from the "being processed" list.
-			$.each( this.processingQueue, function( i, mediaData ) {
-				if ( response.context === mediaData.context && response.mediaID === mediaData.mediaID ) {
-					_this.processingQueue.splice( i, 1 );
-					return false;
-				}
-			} );
-
-			++this.processedMedia;
-
-			// Update the progress bar.
-			response.progress = Math.floor( this.processedMedia / this.totalMedia * 100 );
-			this.$progressBar.css( 'width', response.progress + '%' );
-			this.$progressText.text( this.processedMedia + '/' + this.totalMedia );
-
-			if ( this.queue.length || this.processingQueue.length ) {
-				this.processQueue();
-			} else if ( this.totalMedia === this.processedMedia ) {
-				this.queueEmpty();
-			}
 		},
 
 		/*
 		 * End.
 		 */
-		queueEmpty: function () {
+		processFinished: function () {
 			var errorArgs = {};
 
 			// Maybe display an error.
@@ -899,7 +721,7 @@ window.imagify = window.imagify || {};
 						showConfirmButton: false
 					};
 				}
-				else if ( 'get-unoptimized-images' === this.error || 'consumed-all-data' === this.error ) {
+				else if ( 'get-unoptimized-images' === this.error ) {
 					errorArgs = {
 						title: imagifyOptions.bulk.labels.getUnoptimizedImagesErrorTitle,
 						html:  imagifyOptions.bulk.labels.getUnoptimizedImagesErrorText,
@@ -934,29 +756,18 @@ window.imagify = window.imagify || {};
 			}
 
 			// Reset.
-			this.fetchQueue       = [];
-			this.queue            = [];
-			this.processingQueue  = [];
-			this.fetchError       = false;
 			this.working          = false;
 			this.processIsStopped = false;
-			this.processedMedia   = 0;
-			this.totalMedia       = 0;
 
 			// Reset Imagifybeat interval and enable suspend.
 			w.imagify.beat.resetInterval();
 			w.imagify.beat.enableSuspend();
 
-			// Unlink the message displayed when the user wants to quit the page.
-			$( w ).off( 'beforeunload.imagify', this.getConfirmMessage );
-
 			// Reset the progress bar.
-			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' );
-			this.$progressBar.removeAttr( 'style' );
+			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' ).addClass( 'hidden' );
 			this.$progressText.text( '0' );
-
-			// Enable the button.
-			this.$button.prop( 'disabled', false ).find( '.dashicons' ).removeClass( 'rotate' );
+			this.$missingWebpElement.hide().attr('aria-hidden', 'true');
+			this.$button.find( '.dashicons' ).removeClass( 'rotate' );
 		},
 
 		// Tools ===================================================================================
@@ -1071,16 +882,15 @@ window.imagify = window.imagify || {};
 		 * Get the URL used for ajax requests.
 		 *
 		 * @param  {string} action  An ajax action, or part of it.
-		 * @param  {string} context The context.
+		 * @param  {array} context The contexts.
 		 * @return {string}
 		 */
-		getAjaxUrl: function ( action, context ) {
+		getAjaxUrl: function ( action, contexts ) {
 			var url;
 
 			url  = ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyOptions.bulk.ajaxNonce;
 			url += '&action=' + imagifyOptions.bulk.ajaxActions[ action ];
-			url += '&context=' + context;
-			url += '&imagify_action=generate_webp';
+			url += '&context=' + contexts.join('_');
 
 			return url;
 		},
@@ -1095,7 +905,7 @@ window.imagify = window.imagify || {};
 
 			this.error = errorId;
 
-			this.queueEmpty();
+			this.processFinished();
 		}
 	};
 

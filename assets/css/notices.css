@@ -364,3 +364,13 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 		display: inline-block;
 	}
 }
+
+.imagify-notice-bulk-complete {
+	display: flex;
+	align-items: center;
+	padding: 12px 0;
+}
+
+.imagify-notice-bulk-complete-logo {
+	padding-right: 12px;
+}

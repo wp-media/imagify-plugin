@@ -1,26 +1,22 @@
 <?php
 namespace Imagify\ThirdParty\WPRocket;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Compat class for WP Rocket plugin.
  *
- * @since  1.9.3
- * @author Grégory Viguier
+ * @since 1.9.3
  */
 class Main {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * Launch the hooks.
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 */
 	public function init() {
-		add_action( 'admin_init',         [ $this, 'dequeue_sweetalert' ] );
 		add_filter( 'imagify_cdn_source', [ $this, 'set_cdn_source' ] );
 	}
 
@@ -30,34 +26,9 @@ class Main {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Remove all Imagify admin notices + CSS & JS files on WP Rocket (< 3.0) options screen to avoid conflict with older version of SweetAlert.
-	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
-	 */
-	public function dequeue_sweetalert() {
-		if ( ! defined( 'WP_ROCKET_VERSION' ) || ! defined( 'WP_ROCKET_PLUGIN_SLUG' ) ) {
-			return;
-		}
-
-		if ( version_compare( WP_ROCKET_VERSION, '3.0' ) >= 0 ) {
-			return;
-		}
-
-		if ( ! imagify_is_screen( 'settings_page_' . WP_ROCKET_PLUGIN_SLUG ) && ! imagify_is_screen( 'settings_page_' . WP_ROCKET_PLUGIN_SLUG . '-network' ) ) {
-			return;
-		}
-
-		remove_action( 'all_admin_notices',     [ \Imagify_Notices::get_instance(), 'render_notices' ] );
-		remove_action( 'admin_enqueue_scripts', [ \Imagify_Assets::get_instance(), 'enqueue_styles_and_scripts' ], IMAGIFY_INT_MAX );
-	}
-
-	/**
 	 * Provide a custom CDN source.
 	 *
-	 * @since  1.9.3
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
 	 * @param  array $source {
 	 *     An array of arguments.

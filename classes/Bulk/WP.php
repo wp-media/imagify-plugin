@@ -1,45 +1,40 @@
 <?php
 namespace Imagify\Bulk;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify_DB;
 
 /**
  * Class to use for bulk for WP attachments.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
 class WP extends AbstractBulk {
-
 	/**
 	 * Context "short name".
 	 *
-	 * @var    string
+	 * @var string
 	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
 	 */
 	protected $context = 'wp';
 
 	/**
 	 * Get all unoptimized media ids.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @param  int $optimization_level The optimization level.
-	 * @return array                   A list of unoptimized media. Array keys are media IDs prefixed with an underscore character, array values are the main file’s URL.
+	 * @param int $optimization_level The optimization level.
+	 *
+	 * @return array A list of unoptimized media IDs.
 	 */
 	public function get_unoptimized_media_ids( $optimization_level ) {
 		global $wpdb;
 
-		@set_time_limit( 0 );
+		$this->set_no_time_limit();
 
-		$mime_types   = \Imagify_DB::get_mime_types();
-		$statuses     = \Imagify_DB::get_post_statuses();
-		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause( [
+		$mime_types   = Imagify_DB::get_mime_types();
+		$statuses     = Imagify_DB::get_post_statuses();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( [
 			'prepared' => true,
 		] );
 		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
@@ -82,7 +77,7 @@ class WP extends AbstractBulk {
 			return [];
 		}
 
-		$metas = \Imagify_DB::get_metas( [
+		$metas = Imagify_DB::get_metas( [
 			// Get attachments filename.
 			'filenames'           => '_wp_attached_file',
 			// Get attachments data.
@@ -130,10 +125,9 @@ class WP extends AbstractBulk {
 		$ids = array_values( $ids );
 
 		/**
-		 * Triggered before testing for file existence.
+		 * Fires before testing for file existence.
 		 *
-		 * @since  1.6.7
-		 * @author Grégory Viguier
+		 * @since 1.6.7
 		 *
 		 * @param array $ids                An array of attachment IDs.
 		 * @param array $metas              An array of the data fetched from the database.
@@ -164,7 +158,7 @@ class WP extends AbstractBulk {
 				continue;
 			}
 
-			$data[ '_' . $id ] = esc_url( get_imagify_attachment_url( $metas['filenames'][ $id ] ) );
+			$data[] = $id;
 		} // End foreach().
 
 		return $data;
@@ -173,10 +167,8 @@ class WP extends AbstractBulk {
 	/**
 	 * Get ids of all optimized media without WebP versions.
 	 *
-	 * @since  1.9
-	 * @since  1.9.5 The method doesn't return the IDs directly anymore.
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
+	 * @since 1.9.5 The method doesn't return the IDs directly anymore.
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.
@@ -189,12 +181,12 @@ class WP extends AbstractBulk {
 	public function get_optimized_media_ids_without_webp() {
 		global $wpdb;
 
-		@set_time_limit( 0 );
+		$this->set_no_time_limit();
 
-		$mime_types   = \Imagify_DB::get_mime_types( 'image' );
-		$statuses     = \Imagify_DB::get_post_statuses();
-		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause( [
+		$mime_types   = Imagify_DB::get_mime_types( 'image' );
+		$statuses     = Imagify_DB::get_post_statuses();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( [
 			'prepared' => true,
 		] );
 		$webp_suffix  = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::WEBP_SUFFIX' );
@@ -236,16 +228,15 @@ class WP extends AbstractBulk {
 			return $data;
 		}
 
-		$metas = \Imagify_DB::get_metas( [
+		$metas = Imagify_DB::get_metas( [
 			// Get attachments filename.
 			'filenames' => '_wp_attached_file',
 		], $ids );
 
 		/**
-		 * Triggered before testing for file existence.
+		 * Fires before testing for file existence.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param array  $ids     An array of attachment IDs.
 		 * @param array  $metas An array of the data fetched from the database.
@@ -283,51 +274,9 @@ class WP extends AbstractBulk {
 	}
 
 	/**
-	 * Tell if there are optimized media without WebP versions.
-	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return int The number of media.
-	 */
-	public function has_optimized_media_without_webp() {
-		global $wpdb;
-
-		$mime_types   = \Imagify_DB::get_mime_types( 'image' );
-		$statuses     = \Imagify_DB::get_post_statuses();
-		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause( [
-			'prepared' => true,
-		] );
-		$webp_suffix  = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::WEBP_SUFFIX' );
-
-		return (int) $wpdb->get_var( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
-			SELECT COUNT(p.ID)
-			FROM $wpdb->posts AS p
-				$nodata_join
-			LEFT JOIN $wpdb->postmeta AS mt1
-				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
-			LEFT JOIN $wpdb->postmeta AS mt2
-				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_data' )
-			WHERE
-				p.post_mime_type IN ( $mime_types )
-				AND ( mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
-				AND mt2.meta_value NOT LIKE %s
-				AND p.post_type = 'attachment'
-				AND p.post_status IN ( $statuses )
-				$nodata_where",
-			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
-		) );
-	}
-
-	/**
 	 * Get the context data.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @return array {
 	 *     The formated data.

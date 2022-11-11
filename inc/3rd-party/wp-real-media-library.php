@@ -1,17 +1,15 @@
 <?php
+use Imagify\Notices\Notices;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 if ( defined( 'RML_FILE' ) ) :
-
-	/**
-	 * Prevent WP Real Media Library to use its outdated version of SweetAlert where we need ours, and to mess with our CSS styles.
-	 */
-	add_action( 'current_screen', 'imagify_wprml_init' );
 	/**
 	 * Dequeue all WP Real Media Library's styles and scripts where we use ours.
 	 *
-	 * @since  1.6.13
-	 * @author Grégory Viguier
+	 * Prevent WP Real Media Library to use its outdated version of SweetAlert where we need ours, and to mess with our CSS styles.
+	 *
+	 * @since 1.6.13
 	 */
 	function imagify_wprml_init() {
 		static $done = false;
@@ -25,7 +23,7 @@ if ( defined( 'RML_FILE' ) ) :
 			return;
 		}
 
-		$notices = Imagify_Notices::get_instance();
+		$notices = Notices::get_instance();
 
 		if ( $notices->has_notices() && ( $notices->display_welcome_steps() || $notices->display_wrong_api_key() ) ) {
 			// We display a notice that uses SweetAlert.
@@ -44,12 +42,12 @@ if ( defined( 'RML_FILE' ) ) :
 			imagify_wprml_dequeue();
 		}
 	}
+	add_action( 'current_screen', 'imagify_wprml_init' );
 
 	/**
 	 * Prevent WP Real Media Library to enqueue its styles and scripts.
 	 *
-	 * @since  1.6.13
-	 * @author Grégory Viguier
+	 * @since 1.6.13
 	 */
 	function imagify_wprml_dequeue() {
 		$instance = \MatthiasWeb\RealMediaLibrary\general\Backend::getInstance();

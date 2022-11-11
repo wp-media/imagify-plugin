@@ -823,6 +823,13 @@ class File {
 
 		$values = $this->filesystem->get_image_size( $this->path );
 
+		if ( empty( $values ) ) {
+			return [
+				'width'  => 0,
+				'height' => 0,
+			];
+		}
+
 		return [
 			'width'  => $values['width'],
 			'height' => $values['height'],

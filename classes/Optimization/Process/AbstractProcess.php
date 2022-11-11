@@ -1618,7 +1618,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		$media    = $this->get_media();
 		$callback = $media->get_context_instance()->is_network_wide() ? 'set_site_transient' : 'set_transient';
 
-		call_user_func( $callback, $name, $action, 10 * MINUTE_IN_SECONDS );
+		call_user_func( $callback, $name, $action, DAY_IN_SECONDS );
 	}
 
 	/**
