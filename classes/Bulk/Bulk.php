@@ -89,6 +89,27 @@ class Bulk {
 	}
 
 	/**
+	 * Decrease optimization running counter for the given context
+	 *
+	 * @param string $context Context to update.
+	 *
+	 * @return int
+	 */
+	private function decrease_counter( string $context ): int {
+		$counter = get_transient( "imagify_{$context}_optimize_running" );
+
+		if ( false === $counter ) {
+			return 0;
+		}
+
+		$counter--;
+
+		set_transient( "imagify_{$context}_optimize_running", $counter, DAY_IN_SECONDS );
+
+		return $counter;
+	}
+
+	/**
 	 * Process a media with the requested imagify bulk action.
 	 *
 	 * @since 2.1
@@ -99,10 +120,14 @@ class Bulk {
 	 */
 	public function optimize_media( int $media_id, string $context, int $optimization_level ) {
 		if ( ! $media_id || ! $context || ! is_numeric( $optimization_level ) ) {
+			$this->decrease_counter( $context );
+
 			return;
 		}
 
 		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize', $media_id ) ) {
+			$this->decrease_counter( $context );
+
 			return;
 		}
 
@@ -288,6 +313,8 @@ class Bulk {
 	 */
 	private function force_optimize( int $media_id, string $context, int $level ) {
 		if ( ! $this->can_optimize() ) {
+			$this->decrease_counter( $context );
+
 			return false;
 		}
 
@@ -299,6 +326,8 @@ class Bulk {
 			$result = $process->restore();
 
 			if ( is_wp_error( $result ) ) {
+				$this->decrease_counter( $context );
+
 				// Return an error message.
 				return $result;
 			}
