@@ -713,9 +713,6 @@ window.imagify = window.imagify || {};
 			}
 
 			w.imagify.bulk.folderTypesQueue.forEach( function( item ) {
-				// Update status.
-				w.imagify.bulk.status[ item.groupID ].id = 'fetching';
-
 				// Start async process for current context
 				$.get( w.imagify.bulk.getAjaxUrl( 'bulkProcess', item ) )
 					.done( function( response ) {
@@ -743,8 +740,6 @@ window.imagify = window.imagify || {};
 
 						// Success.
 						if ( response.success ) {
-							w.imagify.bulk.status[ item.groupID ].id = 'optimizing';
-
 							$row         = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
 							$table       = $row.closest( '.imagify-bulk-table' );
 							$progressBar = $table.find( '.imagify-row-progress' );
