@@ -63,21 +63,21 @@ class Bulk {
 
 		if ( false !== $custom_folders ) {
 			if ( false !== strpos( $item['process_class'], 'CustomFolders' ) ) {
-				$custom_folders--;
+				$custom_folders['remaining']--;
 
 				set_transient( 'imagify_custom-folders_optimize_running', $custom_folders, DAY_IN_SECONDS );
 
-				$remaining += $custom_folders;
+				$remaining += $custom_folders['remaining'];
 			}
 		}
 
 		if ( false !== $library_wp ) {
 			if ( false !== strpos( $item['process_class'], 'WP' ) ) {
-				$library_wp--;
+				$library_wp['remaining']--;
 
 				set_transient( 'imagify_wp_optimize_running', $library_wp, DAY_IN_SECONDS );
 
-				$remaining += $library_wp;
+				$remaining += $library_wp['remaining'];
 			}
 		}
 
@@ -93,20 +93,19 @@ class Bulk {
 	 *
 	 * @param string $context Context to update.
 	 *
-	 * @return int
+	 * @return void
 	 */
-	private function decrease_counter( string $context ): int {
+	private function decrease_counter( string $context ) {
 		$counter = get_transient( "imagify_{$context}_optimize_running" );
 
 		if ( false === $counter ) {
-			return 0;
+			return;
 		}
 
-		$counter--;
+		$counter['total']     = $counter['total'] - 1;
+		$counter['remaining'] = $counter['remaining'] - 1;
 
 		set_transient( "imagify_{$context}_optimize_running", $counter, DAY_IN_SECONDS );
-
-		return $counter;
 	}
 
 	/**
@@ -171,7 +170,12 @@ class Bulk {
 			);
 		}
 
-		set_transient( "imagify_{$context}_optimize_running", count( $media_ids ), DAY_IN_SECONDS );
+		$data = [
+			'total'     => count( $media_ids ),
+			'remaining' => count( $media_ids ),
+		];
+
+		set_transient( "imagify_{$context}_optimize_running", $data, DAY_IN_SECONDS );
 
 		return [
 			'success' => true,

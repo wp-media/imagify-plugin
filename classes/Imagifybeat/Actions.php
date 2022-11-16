@@ -125,19 +125,31 @@ class Actions {
 		$bulk        = Bulk::get_instance();
 		$groups_data = [];
 		$types       = [];
+		$total       = 0;
 		$remaining   = 0;
-		$remaining  += (int) get_transient( 'imagify_wp_optimize_running' );
-		$remaining  += (int) get_transient( 'imagify_custom-folders_optimize_running' );
+		$percentage  = 0;
 
 		foreach ( $data[ $imagifybeat_id ] as $group ) {
 			$types[ $group['groupID'] . '|' . $group['context'] ] = true;
 
+			$transient = get_transient( "imagify_{$group['context']}_optimize_running" );
+
+			if ( false !== $transient ) {
+				$total     += $transient['total'];
+				$remaining += $transient['remaining'];
+			}
+
 			$groups_data[ $group['context'] ] = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
+		}
+
+		if ( 0 !== $total ) {
+			$percentage = ( $total - $remaining ) / $total * 100;
 		}
 
 		$response[ $imagifybeat_id ] = [
 			'groups_data' => $groups_data,
 			'remaining'   => $remaining,
+			'percentage'  => round( $percentage ),
 		];
 
 		return $response;

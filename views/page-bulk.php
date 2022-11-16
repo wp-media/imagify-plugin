@@ -180,11 +180,12 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 					<?php
 					$disabled = '';
 					$class    = '';
-					$total    = 0;
-					$total   += (int) get_transient( 'imagify_wp_optimize_running' );
-					$total   += (int) get_transient( 'imagify_custom-folders_optimize_running' );
 
-					if ( 0 !== $total ) {
+					if (
+						false !== get_transient( 'imagify_wp_optimize_running' )
+						||
+						false !== get_transient( 'imagify_custom-folders_optimize_running' )
+					) {
 						$disabled = 'disabled="disabled"';
 						$class    = 'rotate';
 					}
