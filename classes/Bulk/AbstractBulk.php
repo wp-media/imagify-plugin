@@ -59,6 +59,10 @@ abstract class AbstractBulk implements BulkInterface {
 
 		$data = wp_parse_args( $data, $defaults );
 
+		$data = array_map( function( $item ) {
+			return empty( $item ) ? '' : $item;
+		}, $data );
+
 		/* translators: %s is a formatted number, dont use %d. */
 		$data['count-optimized'] = sprintf( _n( '%s Media File Optimized', '%s Media Files Optimized', $data['count-optimized'], 'imagify' ), '<span>' . number_format_i18n( $data['count-optimized'] ) . '</span>' );
 
