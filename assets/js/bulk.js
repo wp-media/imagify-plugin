@@ -430,6 +430,60 @@ window.imagify = window.imagify || {};
 		},
 
 		/*
+		 * Display one of the 3 "folder" rows.
+		 *
+		 * @param {string}  state One of the 3 states: 'resting' (it's the "normal" row), 'waiting' (waiting for other optimizations to finish), and 'working'.
+		 * @param {element} $row  jQuery element of the "normal" row.
+		 */
+		displayFolderRow: function ( state, $row ) {
+			var $newRow, spinnerTemplate, spinnerColor, text;
+
+			if ( 'resting' === state ) {
+				$row.next( '.imagify-row-waiting, .imagify-row-working' ).remove();
+				$row.imagifyShow();
+				return;
+			}
+
+			// This part won't work to display multiple $newRow.
+			$newRow = $row.next( '.imagify-row-waiting, .imagify-row-working' );
+
+			if ( 'waiting' === state ) {
+				spinnerColor = '#d2d3d6';
+				text         = imagifyBulk.labels.waitingOtimizationsText;
+			} else {
+				spinnerColor = '#40b1d0';
+				text         = imagifyBulk.labels.imagesOptimizedText.replace( '%s', '<span>0</span>' );
+			}
+
+			if ( $newRow.length ) {
+				if ( ! $newRow.hasClass( 'imagify-row-' + state ) ) {
+					// Should happen when switching from 'waiting' to 'working'.
+					$newRow.attr( 'class', 'imagify-row-' + state );
+					$newRow.find( '.imagify-cell-checkbox svg' ).attr( 'fill', spinnerColor );
+					$newRow.children( '.imagify-cell-count-optimized' ).html( text );
+				}
+
+				$row.imagifyHide();
+				$newRow.imagifyShow();
+				return;
+			}
+
+			// Build the new row, based on a clone of the original one.
+			$newRow = $row.clone().attr( {
+				'class':       'imagify-row-' + state,
+				'aria-hidden': 'false'
+			} );
+
+			spinnerTemplate = w.imagify.template( 'imagify-spinner' );
+			$newRow.children( '.imagify-cell-checkbox' ).html( spinnerTemplate() ).find( 'svg' ).attr( 'fill', spinnerColor );
+			$newRow.children( '.imagify-cell-title' ).html( '<span class="imagify-cell-label">' + $newRow.children( '.imagify-cell-title' ).text() + '</span>' );
+			$newRow.children( '.imagify-cell-count-optimized' ).html( text );
+			$newRow.children( '.imagify-cell-count-errors, .imagify-cell-optimized-size, .imagify-cell-original-size, .imagify-cell-level' ).text( '' );
+
+			$row.imagifyHide().after( $newRow );
+		},
+
+		/*
 		 * Display the share box.
 		 */
 		displayShareBox: function () {
@@ -679,6 +733,8 @@ window.imagify = window.imagify || {};
 					isError: false,
 					id:      'waiting'
 				};
+
+				w.imagify.bulk.displayFolderRow( 'working', $row );
 			} );
 
 			// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
@@ -843,6 +899,9 @@ window.imagify = window.imagify || {};
 			// Reset status.
 			w.imagify.bulk.status = {};
 
+			// Display the "normal" folder rows (the values of the last one should being updated via ajax, don't display it for now).
+			w.imagify.bulk.displayFolderRow( 'resting', $tables.find( '.imagify-row-folder-type' ).not( '.updating' ) );
+
 			// Reset the progress bars.
 			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
 
@@ -897,15 +956,7 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
-			var queue, stats, $row, $progress, $bar;
-
-			if ( typeof data[ imagifyBulk.imagifybeatIDs.stats ] !== 'undefined' ) {
-				stats = data[ imagifyBulk.imagifybeatIDs.stats ];
-				if ( 100 === stats.optimized_attachments_percent ) {
-					$( w ).trigger( 'queueEmpty.imagify' );
-					return;
-				}
-			}
+			var queue, $row, $progress, $bar;
 
 			if ( typeof data[ imagifyBulk.imagifybeatIDs.queue ] !== 'undefined' ) {
 				queue = data[ imagifyBulk.imagifybeatIDs.queue ];
@@ -934,7 +985,7 @@ window.imagify = window.imagify || {};
 				$progress = $( '.imagify-row-progress' );
 				$bar      = $progress.find( '.bar' );
 
-				$bar.css( 'width', stats.optimized_attachments_percent + '%' ).find( '.percent' ).html( stats.optimized_attachments_percent + '%' );
+				$bar.css( 'width', queue.percentage + '%' ).find( '.percent' ).html( queue.percentage + '%' );
 				$progress.slideDown().attr( 'aria-hidden', 'false' );
 			}
 		},
