@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 				<p>
 					<?php
 					printf(
-						/* translators: 1 and 2 are data sizes. */
+						// translators: %1$s = number of images, %2$s = data size, %3$s = data size.
 						__( 'You optimized %1$s images and saved %2$s out of %3$s', 'imagify' ),
 						'<strong class="imagify-ac-rt-total-images"></strong>',
 						'<strong class="imagify-ac-rt-total-gain"></strong>',
