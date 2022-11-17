@@ -59,6 +59,28 @@ class Bulk {
 			return;
 		}
 
+		$data     = $process->get_data();
+		$progress = get_transient( 'imagify_bulk_optimization_result' );
+
+		if ( $data->is_optimized() ) {
+			$size_data = $data->get_size_data();
+
+			if ( false === $progress ) {
+				$progress = [
+					'total'          => 0,
+					'original_size'  => 0,
+					'optimized_size' => 0,
+ 				];
+			}
+
+			$progress['total']++;
+
+			$progress['original_size']  = $size_data['original_size'];
+			$progress['optimized_size'] = $size_data['optimized_size'];
+
+			set_transient( 'imagify_bulk_optimization_result', $progress, DAY_IN_SECONDS );
+		}
+
 		$remaining = 0;
 
 		if ( false !== $custom_folders ) {

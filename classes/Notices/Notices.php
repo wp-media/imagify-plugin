@@ -610,18 +610,15 @@ class Notices {
 			return [];
 		}
 
-		$data = imagify_get_bulk_stats(
-			[
-				'library|wp' => true,
-				'custom-folders|custom-folders' => true,
-			]
-		);
+		$data = get_transient( 'imagify_bulk_optimization_result' );
 
 		if ( empty( $data ) ) {
 			return [];
 		}
 
-		$data['bulk_page_url'] = admin_url( 'upload.php?page=imagify-bulk-optimization' );
+		$data['original_size']  = imagify_size_format( $data['original_size'], 2 );
+		$data['optimized_size'] = imagify_size_format( $data['optimized_size'], 2 );
+		$data['bulk_page_url']  = admin_url( 'upload.php?page=imagify-bulk-optimization' );
 
 		return $data;
 	}

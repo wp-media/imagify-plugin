@@ -150,6 +150,7 @@ class Actions {
 			'groups_data' => $groups_data,
 			'remaining'   => $remaining,
 			'percentage'  => round( $percentage ),
+			'result'      => get_transient( 'imagify_bulk_optimization_result' ),
 		];
 
 		return $response;
