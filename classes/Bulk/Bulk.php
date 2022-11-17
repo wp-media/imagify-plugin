@@ -75,8 +75,8 @@ class Bulk {
 
 			$progress['total']++;
 
-			$progress['original_size']  = $size_data['original_size'];
-			$progress['optimized_size'] = $size_data['optimized_size'];
+			$progress['original_size']  += $size_data['original_size'];
+			$progress['optimized_size'] += $size_data['optimized_size'];
 
 			set_transient( 'imagify_bulk_optimization_result', $progress, DAY_IN_SECONDS );
 		}

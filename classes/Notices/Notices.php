@@ -616,8 +616,10 @@ class Notices {
 			return [];
 		}
 
+		$global_gain = $data['original_size'] - $data['optimized_size'];
+
 		$data['original_size']  = imagify_size_format( $data['original_size'], 2 );
-		$data['optimized_size'] = imagify_size_format( $data['optimized_size'], 2 );
+		$data['optimized_size'] = imagify_size_format( $global_gain, 2 );
 		$data['bulk_page_url']  = admin_url( 'upload.php?page=imagify-bulk-optimization' );
 
 		return $data;
