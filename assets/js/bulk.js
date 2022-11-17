@@ -956,7 +956,7 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
-			var queue, $row, $progress, $bar;
+			var queue, $rows, $progress, $bar;
 
 			if ( typeof data[ imagifyBulk.imagifybeatIDs.queue ] !== 'undefined' ) {
 				queue = data[ imagifyBulk.imagifybeatIDs.queue ];
@@ -973,12 +973,14 @@ window.imagify = window.imagify || {};
 
 				if ( Object.prototype.hasOwnProperty.call( queue, 'groups_data' ) ) {
 					Object.entries( queue.groups_data ).forEach( function( item ) {
-						$row = $( '[data-context=' + item[0] + ']' );
+						$rows = $( '[data-context=' + item[0] + ']' );
 
-						$row.children( '.imagify-cell-count-optimized' ).first().html( item[1]['count-optimized'] );
-						$row.children( '.imagify-cell-count-errors' ).first().html( item[1]['count-errors'] );
-						$row.children( '.imagify-cell-optimized-size-size' ).first().html( item[1]['optimized-size'] );
-						$row.children( '.imagify-cell-original-size-size' ).first().html( item[1]['original-size'] );
+						$rows.each( function() {
+							$(this).children( '.imagify-cell-count-optimized' ).first().html( item[1]['count-optimized'] );
+							$(this).children( '.imagify-cell-count-errors' ).first().html( item[1]['count-errors'] );
+							$(this).children( '.imagify-cell-optimized-size-size' ).first().html( item[1]['optimized-size'] );
+							$(this).children( '.imagify-cell-original-size-size' ).first().html( item[1]['original-size'] );
+						} );
 					} );
 				}
 
