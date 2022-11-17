@@ -70,7 +70,7 @@ class Bulk {
 					'total'          => 0,
 					'original_size'  => 0,
 					'optimized_size' => 0,
- 				];
+				];
 			}
 
 			$progress['total']++;
