@@ -431,60 +431,6 @@ window.imagify = window.imagify || {};
 		},
 
 		/*
-		 * Display one of the 3 "folder" rows.
-		 *
-		 * @param {string}  state One of the 3 states: 'resting' (it's the "normal" row), 'waiting' (waiting for other optimizations to finish), and 'working'.
-		 * @param {element} $row  jQuery element of the "normal" row.
-		 */
-		displayFolderRow: function ( state, $row ) {
-			var $newRow, spinnerTemplate, spinnerColor, text;
-
-			if ( 'resting' === state ) {
-				$row.next( '.imagify-row-waiting, .imagify-row-working' ).remove();
-				$row.imagifyShow();
-				return;
-			}
-
-			// This part won't work to display multiple $newRow.
-			$newRow = $row.next( '.imagify-row-waiting, .imagify-row-working' );
-
-			if ( 'waiting' === state ) {
-				spinnerColor = '#d2d3d6';
-				text         = imagifyBulk.labels.waitingOtimizationsText;
-			} else {
-				spinnerColor = '#40b1d0';
-				text         = imagifyBulk.labels.imagesOptimizedText.replace( '%s', '<span>0</span>' );
-			}
-
-			if ( $newRow.length ) {
-				if ( ! $newRow.hasClass( 'imagify-row-' + state ) ) {
-					// Should happen when switching from 'waiting' to 'working'.
-					$newRow.attr( 'class', 'imagify-row-' + state );
-					$newRow.find( '.imagify-cell-checkbox svg' ).attr( 'fill', spinnerColor );
-					$newRow.children( '.imagify-cell-count-optimized' ).html( text );
-				}
-
-				$row.imagifyHide();
-				$newRow.imagifyShow();
-				return;
-			}
-
-			// Build the new row, based on a clone of the original one.
-			$newRow = $row.clone().attr( {
-				'class':       'imagify-row-' + state,
-				'aria-hidden': 'false'
-			} );
-
-			spinnerTemplate = w.imagify.template( 'imagify-spinner' );
-			$newRow.children( '.imagify-cell-checkbox' ).html( spinnerTemplate() ).find( 'svg' ).attr( 'fill', spinnerColor );
-			$newRow.children( '.imagify-cell-title' ).html( '<span class="imagify-cell-label">' + $newRow.children( '.imagify-cell-title' ).text() + '</span>' );
-			$newRow.children( '.imagify-cell-count-optimized' ).html( text );
-			$newRow.children( '.imagify-cell-count-errors, .imagify-cell-optimized-size, .imagify-cell-original-size, .imagify-cell-level' ).text( '' );
-
-			$row.imagifyHide().after( $newRow );
-		},
-
-		/*
 		 * Display the share box.
 		 */
 		displayShareBox: function () {
@@ -736,8 +682,6 @@ window.imagify = window.imagify || {};
 					isError: false,
 					id:      'waiting'
 				};
-
-				w.imagify.bulk.displayFolderRow( 'working', $row );
 			} );
 
 			// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
@@ -803,6 +747,9 @@ window.imagify = window.imagify || {};
 							$table       = $row.closest( '.imagify-bulk-table' );
 							$progressBar = $table.find( '.imagify-row-progress' );
 							$progress    = $progressBar.find( '.bar' );
+
+							$row.find( '.imagify-cell-checkbox-loader' ).removeClass( 'hidden' ).attr( 'aria-hidden', 'false' );
+							$row.find( '.imagify-cell-checkbox-box' ).addClass( 'hidden' ).attr( 'aria-hidden', 'true' );
 
 							// Reset and display the progress bar.
 							$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
@@ -902,11 +849,16 @@ window.imagify = window.imagify || {};
 			// Reset status.
 			w.imagify.bulk.status = {};
 
-			// Display the "normal" folder rows (the values of the last one should being updated via ajax, don't display it for now).
-			w.imagify.bulk.displayFolderRow( 'resting', $tables.find( '.imagify-row-folder-type' ).not( '.updating' ) );
-
 			// Reset the progress bars.
 			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
+
+			$tables.find( '.imagify-cell-checkbox-loader' ).each( function() {
+				$(this).addClass( 'hidden' ).attr( 'aria-hidden', 'true' );
+			} );
+
+			$tables.find( '.imagify-cell-checkbox-box' ).each( function() {
+				$(this).removeClass( 'hidden' ).attr( 'aria-hidden', 'false' );
+			} );
 
 			// Enable (or not) the main button.
 			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
@@ -959,7 +911,7 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
-			var queue, $rows, $progress, $bar;
+			var queue, $row, $progress, $bar;
 
 			if ( typeof data[ imagifyBulk.imagifybeatIDs.queue ] !== 'undefined' ) {
 				queue = data[ imagifyBulk.imagifybeatIDs.queue ];
@@ -978,14 +930,12 @@ window.imagify = window.imagify || {};
 
 				if ( Object.prototype.hasOwnProperty.call( queue, 'groups_data' ) ) {
 					Object.entries( queue.groups_data ).forEach( function( item ) {
-						$rows = $( '[data-context=' + item[0] + ']' );
+						$row = $( '[data-context=' + item[0] + ']' );
 
-						$rows.each( function() {
-							$(this).children( '.imagify-cell-count-optimized' ).first().html( item[1]['count-optimized'] );
-							$(this).children( '.imagify-cell-count-errors' ).first().html( item[1]['count-errors'] );
-							$(this).children( '.imagify-cell-optimized-size-size' ).first().html( item[1]['optimized-size'] );
-							$(this).children( '.imagify-cell-original-size-size' ).first().html( item[1]['original-size'] );
-						} );
+						$row.children( '.imagify-cell-count-optimized' ).first().html( item[1]['count-optimized'] );
+						$row.children( '.imagify-cell-count-errors' ).first().html( item[1]['count-errors'] );
+						$row.children( '.imagify-cell-optimized-size-size' ).first().html( item[1]['optimized-size'] );
+						$row.children( '.imagify-cell-original-size-size' ).first().html( item[1]['original-size'] );
 					} );
 				}
 

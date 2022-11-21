@@ -89,6 +89,20 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 						$group['level'] = $default_level;
 
+						$running = get_transient( "imagify_{$group['context']}_optimize_running" );
+
+						$group['spinner_class']  = 'hidden';
+						$group['spinner_aria']   = 'aria-hidden="true"';
+						$group['checkbox_class'] = '';
+						$group['checkbox_aria']  = 'aria-hidden="false"';
+
+						if ( false !== $running ) {
+							$group['spinner_class']  = '';
+							$group['spinner_aria']   = 'aria-hidden="false"';
+							$group['checkbox_class'] = 'hidden';
+							$group['checkbox_aria']  = 'aria-hidden="true"';
+						}
+
 						$this->print_template( 'part-bulk-optimization-table-row-folder-type', $group );
 					}
 					?>

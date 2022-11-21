@@ -238,9 +238,5 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		}
 	}
 	?>
-
-	<script type="text/html" id="tmpl-imagify-spinner">
-		<?php $this->print_template( 'part-bulk-optimization-spinner' ); ?>
-	</script>
 </div>
 <?php
