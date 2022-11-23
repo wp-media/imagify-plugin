@@ -226,7 +226,7 @@ window.imagify = window.imagify || {};
 				url += '&context=' + item.context;
 			}
 
-			if ( item && item.level ) {
+			if ( item && Number.isInteger( item.level ) ) {
 				url += '&optimization_level=' + item.level;
 			}
 
