@@ -63,8 +63,11 @@ abstract class AbstractBulk implements BulkInterface {
 			return empty( $item ) ? '' : $item;
 		}, $data );
 
-		/* translators: %s is a formatted number, dont use %d. */
-		$data['count-optimized'] = sprintf( _n( '%s Media File Optimized', '%s Media Files Optimized', $data['count-optimized'], 'imagify' ), '<span>' . number_format_i18n( $data['count-optimized'] ) . '</span>' );
+		if ( ! empty( $data['count-optimized'] ) ) {
+			// translators: %s is a formatted number, dont use %d.
+			$data['count-optimized'] = sprintf( _n( '%s Media File Optimized', '%s Media Files Optimized', $data['count-optimized'], 'imagify' ), '<span>' . number_format_i18n( $data['count-optimized'] ) . '</span>' );
+
+		}
 
 		if ( ! empty( $data['count-errors'] ) ) {
 			/* translators: %s is a formatted number, dont use %d. */
