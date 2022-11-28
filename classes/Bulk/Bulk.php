@@ -192,7 +192,9 @@ class Bulk {
 					],
 					"imagify-{$context}-optimize-media"
 				);
-			} catch ( Exception $exception ) {}
+			} catch ( Exception $exception ) {
+				// no catching yet.
+			}
 
 		}
 
@@ -270,7 +272,9 @@ class Bulk {
 						],
 						"imagify-{$context}-convert-webp"
 					);
-				} catch ( Exception $exception ) {}
+				} catch ( Exception $exception ) {
+					// no catching yet.
+				}
 			}
 		}
 
