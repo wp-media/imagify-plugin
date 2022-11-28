@@ -1,6 +1,7 @@
 <?php
 namespace Imagify\Bulk;
 
+use Exception;
 use Imagify\Traits\InstanceGetterTrait;
 
 /**
@@ -181,15 +182,18 @@ class Bulk {
 		}
 
 		foreach ( $media_ids as $media_id ) {
-			as_enqueue_async_action(
-				'imagify_optimize_media',
-				[
-					'id'      => $media_id,
-					'context' => $context,
-					'level'   => $optimization_level,
-				],
-				"imagify-{$context}-optimize-media"
-			);
+			try {
+				as_enqueue_async_action(
+					'imagify_optimize_media',
+					[
+						'id'      => $media_id,
+						'context' => $context,
+						'level'   => $optimization_level,
+					],
+					"imagify-{$context}-optimize-media"
+				);
+			} catch ( Exception $exception ) {}
+
 		}
 
 		$data = [
@@ -257,14 +261,16 @@ class Bulk {
 			$total += count( $media_ids );
 
 			foreach ( $media_ids as $media_id ) {
-				as_enqueue_async_action(
-					'imagify_convert_webp',
-					[
-						'id'      => $media_id,
-						'context' => $context,
-					],
-					"imagify-{$context}-convert-webp"
-				);
+				try {
+					as_enqueue_async_action(
+						'imagify_convert_webp',
+						[
+							'id'      => $media_id,
+							'context' => $context,
+						],
+						"imagify-{$context}-convert-webp"
+					);
+				} catch ( Exception $exception ) {}
 			}
 		}
 
