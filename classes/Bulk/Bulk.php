@@ -128,6 +128,14 @@ class Bulk {
 		$counter['total']     = $counter['total'] - 1;
 		$counter['remaining'] = $counter['remaining'] - 1;
 
+		if (
+			0 === $counter['total']
+			&&
+			0 >= $counter['remaining']
+		) {
+			delete_transient( "imagify_{$context}_optimize_running" );
+		}
+
 		set_transient( "imagify_{$context}_optimize_running", $counter, 10 * MINUTE_IN_SECONDS );
 	}
 
