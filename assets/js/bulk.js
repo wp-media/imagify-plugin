@@ -577,6 +577,8 @@ window.imagify = window.imagify || {};
 			}
 
 			if ( imagifyBulk.optimizing ) {
+				$( '#imagify-bulk-action' ).prop( 'disabled', true );
+
 				return;
 			}
 
