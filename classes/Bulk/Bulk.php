@@ -104,7 +104,7 @@ class Bulk {
 			}
 		}
 
-		if ( 0 === $remaining ) {
+		if ( 0 >= $remaining ) {
 			delete_transient( 'imagify_custom-folders_optimize_running' );
 			delete_transient( 'imagify_wp_optimize_running' );
 			set_transient( 'imagify_bulk_optimization_complete', 1, DAY_IN_SECONDS );
