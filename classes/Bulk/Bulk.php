@@ -155,12 +155,6 @@ class Bulk {
 			return;
 		}
 
-		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize', $media_id ) ) {
-			$this->decrease_counter( $context );
-
-			return;
-		}
-
 		$this->force_optimize( $media_id, $context, $optimization_level );
 	}
 
