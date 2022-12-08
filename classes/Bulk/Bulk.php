@@ -88,7 +88,7 @@ class Bulk {
 			if ( false !== strpos( $item['process_class'], 'CustomFolders' ) ) {
 				$custom_folders['remaining']--;
 
-				set_transient( 'imagify_custom-folders_optimize_running', $custom_folders, 10 * MINUTE_IN_SECONDS );
+				set_transient( 'imagify_custom-folders_optimize_running', $custom_folders, DAY_IN_SECONDS );
 
 				$remaining += $custom_folders['remaining'];
 			}
@@ -98,7 +98,7 @@ class Bulk {
 			if ( false !== strpos( $item['process_class'], 'WP' ) ) {
 				$library_wp['remaining']--;
 
-				set_transient( 'imagify_wp_optimize_running', $library_wp, 10 * MINUTE_IN_SECONDS );
+				set_transient( 'imagify_wp_optimize_running', $library_wp, DAY_IN_SECONDS );
 
 				$remaining += $library_wp['remaining'];
 			}
@@ -136,7 +136,7 @@ class Bulk {
 			delete_transient( "imagify_{$context}_optimize_running" );
 		}
 
-		set_transient( "imagify_{$context}_optimize_running", $counter, 10 * MINUTE_IN_SECONDS );
+		set_transient( "imagify_{$context}_optimize_running", $counter, DAY_IN_SECONDS );
 	}
 
 	/**
@@ -204,7 +204,7 @@ class Bulk {
 			'remaining' => count( $media_ids ),
 		];
 
-		set_transient( "imagify_{$context}_optimize_running", $data, 10 * MINUTE_IN_SECONDS );
+		set_transient( "imagify_{$context}_optimize_running", $data, DAY_IN_SECONDS );
 
 		return [
 			'success' => true,
