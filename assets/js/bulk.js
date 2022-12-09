@@ -129,6 +129,7 @@ window.imagify = window.imagify || {};
 		// Set to true to stop the whole thing.
 		processIsStopped:     false,
 		// Global stats.
+		globalOptimizedCount: 0,
 		globalGain:           0,
 		globalOriginalSize:   0,
 		globalOptimizedSize:  0,
@@ -225,7 +226,7 @@ window.imagify = window.imagify || {};
 				url += '&context=' + item.context;
 			}
 
-			if ( item && item.level ) {
+			if ( item && Number.isInteger( item.level ) ) {
 				url += '&optimization_level=' + item.level;
 			}
 
@@ -433,19 +434,23 @@ window.imagify = window.imagify || {};
 		 * Display the share box.
 		 */
 		displayShareBox: function () {
-			var $complete;
+			var $complete, globalSaved;
 
 			if ( ! this.globalGain || this.folderTypesQueue.length ) {
-				this.globalGain          = 0;
-				this.globalOriginalSize  = 0;
-				this.globalOptimizedSize = 0;
+				this.globalOptimizedCount = 0;
+				this.globalGain           = 0;
+				this.globalOriginalSize   = 0;
+				this.globalOptimizedSize  = 0;
 				return;
 			}
 
+			globalSaved = this.globalOriginalSize - this.globalOptimizedSize;
+
 			$complete = $( '.imagify-row-complete' );
-			$complete.find( '.imagify-ac-rt-total-gain' ).html( this.globalOptimizedSize );
-			$complete.find( '.imagify-ac-rt-total-original' ).html( this.globalOriginalSize );
-			$complete.find( '.imagify-ac-chart' ).attr( 'data-percent', this.globalGain );
+			$complete.find( '.imagify-ac-rt-total-images' ).html( this.globalOptimizedCount );
+			$complete.find( '.imagify-ac-rt-total-gain' ).html( w.imagify.humanSize( globalSaved, 1 ) );
+			$complete.find( '.imagify-ac-rt-total-original' ).html( w.imagify.humanSize( this.globalOriginalSize, 1 ) );
+			$complete.find( '.imagify-ac-chart' ).attr( 'data-percent', Math.round( this.globalGain ) );
 
 			// Chart.
 			this.drawShareChart();
@@ -457,9 +462,10 @@ window.imagify = window.imagify || {};
 			}, 200 );
 
 			// Reset the stats.
-			this.globalGain          = 0;
-			this.globalOriginalSize  = 0;
-			this.globalOptimizedSize = 0;
+			this.globalOptimizedCount = 0;
+			this.globalGain           = 0;
+			this.globalOriginalSize   = 0;
+			this.globalOptimizedSize  = 0;
 		},
 
 		/**
@@ -501,10 +507,6 @@ window.imagify = window.imagify || {};
 				data.optimized_attachments,
 				data.errors_attachments
 			] );
-
-			w.imagify.bulk.globalGain = data.optimized_percent;
-			w.imagify.bulk.globalOriginalSize = data.original_human;
-			w.imagify.bulk.globalOptimizedSize = data.optimized_human;
 
 			/**
 			 * Stats block.
@@ -575,6 +577,8 @@ window.imagify = window.imagify || {};
 			}
 
 			if ( imagifyBulk.optimizing ) {
+				$( '#imagify-bulk-action' ).prop( 'disabled', true );
+
 				return;
 			}
 
@@ -656,6 +660,7 @@ window.imagify = window.imagify || {};
 			this.status               = {};
 			this.displayedWaitMessage = false;
 			this.processIsStopped     = false;
+			this.globalOptimizedCount = 0;
 			this.globalGain           = 0;
 			this.globalOriginalSize   = 0;
 			this.globalOptimizedSize  = 0;
@@ -744,6 +749,9 @@ window.imagify = window.imagify || {};
 							$table       = $row.closest( '.imagify-bulk-table' );
 							$progressBar = $table.find( '.imagify-row-progress' );
 							$progress    = $progressBar.find( '.bar' );
+
+							$row.find( '.imagify-cell-checkbox-loader' ).removeClass( 'hidden' ).attr( 'aria-hidden', 'false' );
+							$row.find( '.imagify-cell-checkbox-box' ).addClass( 'hidden' ).attr( 'aria-hidden', 'true' );
 
 							// Reset and display the progress bar.
 							$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
@@ -846,6 +854,14 @@ window.imagify = window.imagify || {};
 			// Reset the progress bars.
 			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
 
+			$tables.find( '.imagify-cell-checkbox-loader' ).each( function() {
+				$(this).addClass( 'hidden' ).attr( 'aria-hidden', 'true' );
+			} );
+
+			$tables.find( '.imagify-cell-checkbox-box' ).each( function() {
+				$(this).removeClass( 'hidden' ).attr( 'aria-hidden', 'false' );
+			} );
+
 			// Enable (or not) the main button.
 			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
 				$( '#imagify-bulk-action' ).prop( 'disabled', false ).find( '.dashicons' ).removeClass( 'rotate' );
@@ -897,22 +913,16 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
-			var queue, stats, $row, $progress, $bar;
-
-			if ( typeof data[ imagifyBulk.imagifybeatIDs.stats ] !== 'undefined' ) {
-				stats = data[ imagifyBulk.imagifybeatIDs.stats ];
-				if ( 100 === stats.optimized_attachments_percent ) {
-					$( w ).trigger( 'queueEmpty.imagify' );
-					return;
-				}
-			}
+			var queue, $row, $progress, $bar;
 
 			if ( typeof data[ imagifyBulk.imagifybeatIDs.queue ] !== 'undefined' ) {
 				queue = data[ imagifyBulk.imagifybeatIDs.queue ];
 
-				if ( 0 === queue.remaining ) {
-					$( w ).trigger( 'queueEmpty.imagify' );
-					return;
+				if ( false !== queue.result ) {
+					w.imagify.bulk.globalOriginalSize = queue.result.original_size;
+					w.imagify.bulk.globalOptimizedSize = queue.result.optimized_size;
+					w.imagify.bulk.globalOptimizedCount = queue.result.total;
+					w.imagify.bulk.globalGain = w.imagify.bulk.globalOptimizedSize * 100 / w.imagify.bulk.globalOriginalSize;
 				}
 
 				if ( ! w.imagify.bulk.processIsStopped && w.imagify.bulk.hasBlockingError( true ) ) {
@@ -931,10 +941,15 @@ window.imagify = window.imagify || {};
 					} );
 				}
 
+				if ( 0 === queue.remaining ) {
+					$( w ).trigger( 'queueEmpty.imagify' );
+					return;
+				}
+
 				$progress = $( '.imagify-row-progress' );
 				$bar      = $progress.find( '.bar' );
 
-				$bar.css( 'width', stats.optimized_attachments_percent + '%' ).find( '.percent' ).html( stats.optimized_attachments_percent + '%' );
+				$bar.css( 'width', queue.percentage + '%' ).find( '.percent' ).html( queue.percentage + '%' );
 				$progress.slideDown().attr( 'aria-hidden', 'false' );
 			}
 		},

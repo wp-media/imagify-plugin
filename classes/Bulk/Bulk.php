@@ -1,6 +1,7 @@
 <?php
 namespace Imagify\Bulk;
 
+use Exception;
 use Imagify\Traits\InstanceGetterTrait;
 
 /**
@@ -59,29 +60,51 @@ class Bulk {
 			return;
 		}
 
+		$data     = $process->get_data();
+		$progress = get_transient( 'imagify_bulk_optimization_result' );
+
+		if ( $data->is_optimized() ) {
+			$size_data = $data->get_size_data();
+
+			if ( false === $progress ) {
+				$progress = [
+					'total'          => 0,
+					'original_size'  => 0,
+					'optimized_size' => 0,
+				];
+			}
+
+			$progress['total']++;
+
+			$progress['original_size']  += $size_data['original_size'];
+			$progress['optimized_size'] += $size_data['optimized_size'];
+
+			set_transient( 'imagify_bulk_optimization_result', $progress, DAY_IN_SECONDS );
+		}
+
 		$remaining = 0;
 
 		if ( false !== $custom_folders ) {
 			if ( false !== strpos( $item['process_class'], 'CustomFolders' ) ) {
-				$custom_folders--;
+				$custom_folders['remaining']--;
 
 				set_transient( 'imagify_custom-folders_optimize_running', $custom_folders, DAY_IN_SECONDS );
 
-				$remaining += $custom_folders;
+				$remaining += $custom_folders['remaining'];
 			}
 		}
 
 		if ( false !== $library_wp ) {
 			if ( false !== strpos( $item['process_class'], 'WP' ) ) {
-				$library_wp--;
+				$library_wp['remaining']--;
 
 				set_transient( 'imagify_wp_optimize_running', $library_wp, DAY_IN_SECONDS );
 
-				$remaining += $library_wp;
+				$remaining += $library_wp['remaining'];
 			}
 		}
 
-		if ( 0 === $remaining ) {
+		if ( 0 >= $remaining ) {
 			delete_transient( 'imagify_custom-folders_optimize_running' );
 			delete_transient( 'imagify_wp_optimize_running' );
 			set_transient( 'imagify_bulk_optimization_complete', 1, DAY_IN_SECONDS );
@@ -93,20 +116,27 @@ class Bulk {
 	 *
 	 * @param string $context Context to update.
 	 *
-	 * @return int
+	 * @return void
 	 */
-	private function decrease_counter( string $context ): int {
+	private function decrease_counter( string $context ) {
 		$counter = get_transient( "imagify_{$context}_optimize_running" );
 
 		if ( false === $counter ) {
-			return 0;
+			return;
 		}
 
-		$counter--;
+		$counter['total']     = $counter['total'] - 1;
+		$counter['remaining'] = $counter['remaining'] - 1;
+
+		if (
+			0 === $counter['total']
+			&&
+			0 >= $counter['remaining']
+		) {
+			delete_transient( "imagify_{$context}_optimize_running" );
+		}
 
 		set_transient( "imagify_{$context}_optimize_running", $counter, DAY_IN_SECONDS );
-
-		return $counter;
 	}
 
 	/**
@@ -120,12 +150,6 @@ class Bulk {
 	 */
 	public function optimize_media( int $media_id, string $context, int $optimization_level ) {
 		if ( ! $media_id || ! $context || ! is_numeric( $optimization_level ) ) {
-			$this->decrease_counter( $context );
-
-			return;
-		}
-
-		if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize', $media_id ) ) {
 			$this->decrease_counter( $context );
 
 			return;
@@ -160,18 +184,27 @@ class Bulk {
 		}
 
 		foreach ( $media_ids as $media_id ) {
-			as_enqueue_async_action(
-				'imagify_optimize_media',
-				[
-					'id'      => $media_id,
-					'context' => $context,
-					'level'   => $optimization_level,
-				],
-				"imagify-{$context}-optimize-media"
-			);
+			try {
+				as_enqueue_async_action(
+					'imagify_optimize_media',
+					[
+						'id'      => $media_id,
+						'context' => $context,
+						'level'   => $optimization_level,
+					],
+					"imagify-{$context}-optimize-media"
+				);
+			} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+				// nothing to do.
+			}
 		}
 
-		set_transient( "imagify_{$context}_optimize_running", count( $media_ids ), DAY_IN_SECONDS );
+		$data = [
+			'total'     => count( $media_ids ),
+			'remaining' => count( $media_ids ),
+		];
+
+		set_transient( "imagify_{$context}_optimize_running", $data, DAY_IN_SECONDS );
 
 		return [
 			'success' => true,
@@ -231,14 +264,18 @@ class Bulk {
 			$total += count( $media_ids );
 
 			foreach ( $media_ids as $media_id ) {
-				as_enqueue_async_action(
-					'imagify_convert_webp',
-					[
-						'id'      => $media_id,
-						'context' => $context,
-					],
-					"imagify-{$context}-convert-webp"
-				);
+				try {
+					as_enqueue_async_action(
+						'imagify_convert_webp',
+						[
+							'id'      => $media_id,
+							'context' => $context,
+						],
+						"imagify-{$context}-convert-webp"
+					);
+				} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+					// nothing to do.
+				}
 			}
 		}
 

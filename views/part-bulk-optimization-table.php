@@ -16,15 +16,24 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 	<?php
 	$types = [];
+	$total       = 0;
+	$remaining   = 0;
+	$percentage  = 0;
 
 	foreach ( $data['groups'] as $group ) {
 		$types[ $group['group_id'] . '|' . $group['context'] ] = true;
+
+		$transient = get_transient( "imagify_{$group['context']}_optimize_running" );
+
+		if ( false !== $transient ) {
+			$total     += $transient['total'];
+			$remaining += $transient['remaining'];
+		}
 	}
 
-	$stats = imagify_get_bulk_stats( $types, [
-		'fullset'    => false,
-		'formatting' => false,
-	] );
+	if ( 0 !== $total ) {
+		$percentage = ( $total - $remaining ) / $total * 100;
+	}
 
 	$bulk = Bulk::get_instance();
 	$aria_hidden = 'aria-hidden="true"';
@@ -33,14 +42,15 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	$display = '';
 
 	if (
-		floatval( 0 ) !== $stats['optimized_attachments_percent']
+		0 !== $percentage
 		&&
-		floatval( 100 ) !== $stats['optimized_attachments_percent']
+		100 !== $percentage
 	) {
+		$percentage  = round( $percentage );
 		$aria_hidden = '';
-		$hidden  = '';
-		$style = 'style="width:' . $stats['optimized_attachments_percent'] . '%;"';
-		$display = 'style="display:block;"';
+		$hidden      = '';
+		$style       = 'style="width:' . $percentage . '%;"';
+		$display     = 'style="display:block;"';
 	}
 	?>
 
@@ -49,7 +59,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			<div <?php echo $aria_hidden; ?> class="imagify-row-progress <?php echo $hidden; ?>" <?php echo $display; ?>>
 				<div class="media-item">
 					<div class="progress">
-						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $stats['optimized_attachments_percent']; ?>%</div></div>
+						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $percentage; ?>%</div></div>
 					</div>
 				</div>
 			</div>
@@ -78,6 +88,20 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 						}
 
 						$group['level'] = $default_level;
+
+						$running = get_transient( "imagify_{$group['context']}_optimize_running" );
+
+						$group['spinner_class']  = 'hidden';
+						$group['spinner_aria']   = 'aria-hidden="true"';
+						$group['checkbox_class'] = '';
+						$group['checkbox_aria']  = 'aria-hidden="false"';
+
+						if ( false !== $running ) {
+							$group['spinner_class']  = '';
+							$group['spinner_aria']   = 'aria-hidden="false"';
+							$group['checkbox_class'] = 'hidden';
+							$group['checkbox_aria']  = 'aria-hidden="true"';
+						}
 
 						$this->print_template( 'part-bulk-optimization-table-row-folder-type', $group );
 					}

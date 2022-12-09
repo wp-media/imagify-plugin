@@ -75,6 +75,7 @@ class Notices {
 		// Add a message about WP Rocket on the "Bulk Optimization" screen. Dismissible.
 		'wp-rocket',
 		'bulk-optimization-complete',
+		'bulk-optimization-running',
 	];
 
 	/**
@@ -89,6 +90,7 @@ class Notices {
 		'rating'                     => 'bulk-optimize',
 		'wp-rocket'                  => 'bulk-optimize',
 		'bulk-optimization-complete' => 'bulk-optimize',
+		'bulk-optimization-running'  => 'bulk-optimize',
 	];
 
 	/**
@@ -484,7 +486,6 @@ class Notices {
 	 * @return bool
 	 */
 	public function display_backup_folder_not_writable() {
-		global $post_id;
 		static $display;
 
 		if ( isset( $display ) ) {
@@ -610,16 +611,53 @@ class Notices {
 			return [];
 		}
 
-		$data = imagify_get_bulk_stats(
-			[
-				'library|wp' => true,
-				'custom-folders|custom-folders' => true,
-			]
-		);
+		$data = get_transient( 'imagify_bulk_optimization_result' );
 
 		if ( empty( $data ) ) {
 			return [];
 		}
+
+		$global_gain = $data['original_size'] - $data['optimized_size'];
+
+		$data['original_size']  = imagify_size_format( $data['original_size'], 2 );
+		$data['optimized_size'] = imagify_size_format( $global_gain, 2 );
+		$data['bulk_page_url']  = admin_url( 'upload.php?page=imagify-bulk-optimization' );
+
+		return $data;
+	}
+
+	/**
+	 * Tell if the bulk optimization running notice should be displayed
+	 *
+	 * @since 2.1
+	 *
+	 * @return array
+	 */
+	public function display_bulk_optimization_running(): array {
+		if ( ! $this->user_can( 'bulk-optimization-running' ) ) {
+			return [];
+		}
+
+		if ( imagify_is_screen( 'bulk' ) ) {
+			return [];
+		}
+
+		if ( self::notice_is_dismissed( 'bulk-optimization-running' ) ) {
+			return [];
+		}
+
+		$custom_folders = get_transient( 'imagify_custom-folders_optimize_running' );
+		$library_wp     = get_transient( 'imagify_wp_optimize_running' );
+
+		if (
+			! $custom_folders
+			&&
+			! $library_wp
+		) {
+			return [];
+		}
+
+		$data = [];
 
 		$data['bulk_page_url'] = admin_url( 'upload.php?page=imagify-bulk-optimization' );
 
