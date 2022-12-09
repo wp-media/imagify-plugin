@@ -194,7 +194,9 @@ class Bulk {
 					],
 					"imagify-{$context}-optimize-media"
 				);
-			} catch ( Exception $exception ) {} // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+				// nothing to do.
+			}
 		}
 
 		$data = [
@@ -271,7 +273,9 @@ class Bulk {
 						],
 						"imagify-{$context}-convert-webp"
 					);
-				} catch ( Exception $exception ) {} // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+				} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+					// nothing to do.
+				}
 			}
 		}
 
