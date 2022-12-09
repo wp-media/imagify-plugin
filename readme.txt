@@ -1,8 +1,10 @@
-=== Imagify – Optimize Images & Convert WebP ===
-Contributors: wp_rocket
-Tags: optimize images, convert webp, webp converter, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
+=== Imagify – Optimize Images & Convert WebP | Compress Images Easily ===
+Contributors: wp_rocket, imagify
+Tags: optimize images, convert webp, webp, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
 Tested up to: 6.1
-Stable tag: 2.1
+Stable tag: 2.0
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Compress images & convert WebP with the best WordPress image optimization plugin. Optimize images in 1-click & resize images with our image optimizer!
 
@@ -33,7 +35,7 @@ With such a great image optimizer like Imagify, you’ll get your images automat
 
 When using our image compression tool, Imagify, you will enjoy smaller file sizes and faster loading times. But the best part is that you will optimize images and reduce their weight without losing quality: why should you have to choose between beauty and speed? If you want to compress images, it’s now easier than ever with Imagify!
 
-= Convert Images to the WebP Format  =
+= Convert WebP for Superior Image Compression  =
 
 Thanks to Imagify, you can take a step further in your image optimization process. You can also convert all your images to next-gen image formats such as WebP. WebP format offers superior image compression and quality and is a way to optimize images and speed up their loading times on websites. To convert images to next-gen format, using the Imagify plugin will save you a precious amount of time. 
 
