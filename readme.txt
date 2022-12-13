@@ -255,10 +255,10 @@ No. However, you get 20MB of quota per month for free to optimize your images (a
 
 == Changelog ==
 = 2.1 =
-- Enhancement: Update the bulk optimization to work without keeping the browser page open. The bulk optimization can also be launched from CLI now
-- Enhancement: Re-introduce a lossless compression option
-- Bugfix: Correctly resize the WebP full image if it's bigger than the defined maximum size
-- Bugfix: Prevent error related to set_time_limit() function if it's disabled
+- Enhancement: Re-add lossless compression option (#686)
+- Enhancement: New async bulk optimization, allowing to run the bulk optimization without keeping the browser open. Also possible to run the bulk optimization from an API function or a WP CLI command (#674)
+- Bugfix: Correctly resize the WebP generated file to the maximum defined size from the settings (#521)
+- Bugfix: Prevent error related to set_time_limit() function on some environments (#671)
 
 = 2.0 =
 - Enhancement: Add compatibility with our new smart compression system (#663)
