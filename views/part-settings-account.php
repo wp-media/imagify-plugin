@@ -30,7 +30,13 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 <div class="imagify-settings-section">
 
 	<?php
-	if ( Imagify_Requirements::is_api_key_valid() ) {
+	$imagify_user = new Imagify_User();
+
+	if (
+		$imagify_user->is_free()
+		&&
+		Imagify_Requirements::is_api_key_valid()
+	) {
 		?>
 		<div class="imagify-col-content imagify-block-secondary imagify-mt2">
 			<?php
