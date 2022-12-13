@@ -1,26 +1,28 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+declare(strict_types=1);
+
+namespace Imagify;
+
+use Imagify\Bulk\Bulk;
+use Imagify\CLI\BulkOptimizeCommand;
+use Imagify\CLI\GenerateMissingWebpCommand;
+use Imagify\Notices\Notices;
 
 /**
  * Main plugin class.
  */
-class Imagify_Plugin {
+class Plugin {
 	/**
 	 * Absolute path to the plugin (with trailing slash).
 	 *
-	 * @var    string
-	 * @since  1.9
-	 * @access private
-	 * @author Grégory Viguier
+	 * @var string
 	 */
 	private $plugin_path;
 
 	/**
-	 * Require files.
+	 * Instantiate the class.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param array $plugin_args {
 	 *     An array of arguments.
@@ -35,38 +37,37 @@ class Imagify_Plugin {
 	/**
 	 * Plugin init.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function init() {
 		$this->include_files();
 
 		class_alias( '\\Imagify\\Traits\\InstanceGetterTrait', '\\Imagify\\Traits\\FakeSingletonTrait' );
 
-		Imagify_Auto_Optimization::get_instance()->init();
-		Imagify_Options::get_instance()->init();
-		Imagify_Data::get_instance()->init();
-		Imagify_Folders_DB::get_instance()->init();
-		Imagify_Files_DB::get_instance()->init();
-		Imagify_Cron_Library_Size::get_instance()->init();
-		Imagify_Cron_Rating::get_instance()->init();
-		Imagify_Cron_Sync_Files::get_instance()->init();
+		\Imagify_Auto_Optimization::get_instance()->init();
+		\Imagify_Options::get_instance()->init();
+		\Imagify_Data::get_instance()->init();
+		\Imagify_Folders_DB::get_instance()->init();
+		\Imagify_Files_DB::get_instance()->init();
+		\Imagify_Cron_Library_Size::get_instance()->init();
+		\Imagify_Cron_Rating::get_instance()->init();
+		\Imagify_Cron_Sync_Files::get_instance()->init();
 		\Imagify\Auth\Basic::get_instance()->init();
 		\Imagify\Job\MediaOptimization::get_instance()->init();
 		\Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->init();
+		Bulk::get_instance()->init();
 
 		if ( is_admin() ) {
-			Imagify_Notices::get_instance()->init();
-			Imagify_Admin_Ajax_Post::get_instance()->init();
-			Imagify_Settings::get_instance()->init();
-			Imagify_Views::get_instance()->init();
+			Notices::get_instance()->init();
+			\Imagify_Admin_Ajax_Post::get_instance()->init();
+			\Imagify_Settings::get_instance()->init();
+			\Imagify_Views::get_instance()->init();
 			\Imagify\Imagifybeat\Core::get_instance()->init();
 			\Imagify\Imagifybeat\Actions::get_instance()->init();
 		}
 
 		if ( ! wp_doing_ajax() ) {
-			Imagify_Assets::get_instance()->init();
+			\Imagify_Assets::get_instance()->init();
 		}
 
 		\Imagify\Webp\Display::get_instance()->init();
@@ -75,6 +76,9 @@ class Imagify_Plugin {
 
 		// Load plugin translations.
 		imagify_load_translations();
+
+		imagify_add_command( new BulkOptimizeCommand() );
+		imagify_add_command( new GenerateMissingWebpCommand() );
 
 		/**
 		 * Fires when Imagify is fully loaded.
@@ -90,15 +94,9 @@ class Imagify_Plugin {
 	/**
 	 * Include plugin files.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function include_files() {
-		if ( file_exists( $this->plugin_path . 'vendor/autoload.php' ) ) {
-			require_once $this->plugin_path . 'vendor/autoload.php';
-		}
-
 		$instance_getter_path = $this->plugin_path . 'classes/Traits/InstanceGetterTrait.php';
 
 		if ( file_exists( $instance_getter_path . '.suspected' ) && ! file_exists( $instance_getter_path ) ) {
@@ -108,6 +106,7 @@ class Imagify_Plugin {
 
 		$inc_path = $this->plugin_path . 'inc/';
 
+		require_once $inc_path . '/Dependencies/ActionScheduler/action-scheduler.php';
 		require_once $inc_path . 'deprecated/deprecated.php';
 		require_once $inc_path . 'deprecated/3rd-party.php';
 		require_once $inc_path . 'functions/common.php';
@@ -141,10 +140,8 @@ class Imagify_Plugin {
 	/**
 	 * Trigger a hook on plugin activation after the plugin is loaded.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @see    imagify_set_activation()
-	 * @author Grégory Viguier
+	 * @since 1.9
+	 * @see   imagify_set_activation()
 	 */
 	public function maybe_activate() {
 		if ( imagify_is_active_for_network() ) {
@@ -166,8 +163,7 @@ class Imagify_Plugin {
 		/**
 		 * Imagify activation.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param int $user_id ID of the user activating the plugin.
 		 */

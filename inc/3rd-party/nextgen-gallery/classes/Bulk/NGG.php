@@ -1,44 +1,38 @@
 <?php
 namespace Imagify\ThirdParty\NGG\Bulk;
 
-use \Imagify\ThirdParty\NGG\DB;
-
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use C_Gallery_Storage;
+use Imagify\Bulk\AbstractBulk;
+use Imagify\ThirdParty\NGG\DB;
 
 /**
  * Class to use for bulk for NextGen Gallery.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
-class NGG extends \Imagify\Bulk\AbstractBulk {
-
+class NGG extends AbstractBulk {
 	/**
 	 * Context "short name".
 	 *
-	 * @var    string
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var string
+	 * @since 1.9
 	 */
 	protected $context = 'ngg';
 
 	/**
 	 * Get all unoptimized media ids.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param  int $optimization_level The optimization level.
-	 * @return array                   A list of unoptimized media. Array keys are media IDs prefixed with an underscore character, array values are the main file’s URL.
+	 * @return array                   A list of unoptimized media IDs.
 	 */
 	public function get_unoptimized_media_ids( $optimization_level ) {
 		global $wpdb;
 
-		@set_time_limit( 0 );
+		$this->set_no_time_limit();
 
-		$storage   = \C_Gallery_Storage::get_instance();
+		$storage   = C_Gallery_Storage::get_instance();
 		$ngg_table = $wpdb->prefix . 'ngg_pictures';
 		$data      = [];
 		$images    = $wpdb->get_results( $wpdb->prepare( // WPCS: unprepared SQL ok.
@@ -99,7 +93,7 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 				continue;
 			}
 
-			$data[ '_' . $id ] = esc_url( $storage->get_image_url( $id ) );
+			$data[] = $id;
 		} // End foreach().
 
 		return $data;
@@ -108,10 +102,8 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 	/**
 	 * Get ids of all optimized media without WebP versions.
 	 *
-	 * @since  1.9
-	 * @since  1.9.5 The method doesn't return the IDs directly anymore.
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
+	 * @since 1.9.5 The method doesn't return the IDs directly anymore.
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.
@@ -124,9 +116,9 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 	public function get_optimized_media_ids_without_webp() {
 		global $wpdb;
 
-		@set_time_limit( 0 );
+		$this->set_no_time_limit();
 
-		$storage     = \C_Gallery_Storage::get_instance();
+		$storage     = C_Gallery_Storage::get_instance();
 		$ngg_table   = $wpdb->prefix . 'ngg_pictures';
 		$data_table  = DB::get_instance()->get_table_name();
 		$webp_suffix = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::WEBP_SUFFIX' );
@@ -185,9 +177,7 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 	/**
 	 * Tell if there are optimized media without WebP versions.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @return int The number of media.
 	 */
@@ -214,9 +204,7 @@ class NGG extends \Imagify\Bulk\AbstractBulk {
 	/**
 	 * Get the context data.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @return array {
 	 *     The formated data.

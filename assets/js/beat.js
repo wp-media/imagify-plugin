@@ -810,7 +810,7 @@ window.imagify = window.imagify || {};
 		 */
 		function isQueued( handle ) {
 			if ( handle ) {
-				return settings.queue.hasOwnProperty( handle );
+				return Object.prototype.hasOwnProperty.call( settings.queue, handle );
 			}
 		}
 

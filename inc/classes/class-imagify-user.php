@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Imagify User class.
@@ -12,8 +11,7 @@ class Imagify_User {
 	 *
 	 * @since 1.0
 	 *
-	 * @var    string
-	 * @access public
+	 * @var string
 	 */
 	public $id;
 
@@ -22,8 +20,7 @@ class Imagify_User {
 	 *
 	 * @since 1.0
 	 *
-	 * @var    string
-	 * @access public
+	 * @var string
 	 */
 	public $email;
 
@@ -32,8 +29,7 @@ class Imagify_User {
 	 *
 	 * @since 1.0
 	 *
-	 * @var    int
-	 * @access public
+	 * @var int
 	 */
 	public $plan_id;
 
@@ -42,8 +38,7 @@ class Imagify_User {
 	 *
 	 * @since 1.2
 	 *
-	 * @var    string
-	 * @access public
+	 * @var string
 	 */
 	public $plan_label;
 
@@ -52,8 +47,7 @@ class Imagify_User {
 	 *
 	 * @since 1.0
 	 *
-	 * @var    int
-	 * @access public
+	 * @var int
 	 */
 	public $quota;
 
@@ -62,8 +56,7 @@ class Imagify_User {
 	 *
 	 * @since 1.0
 	 *
-	 * @var    int
-	 * @access public
+	 * @var int
 	 */
 	public $extra_quota;
 
@@ -72,8 +65,7 @@ class Imagify_User {
 	 *
 	 * @since 1.0
 	 *
-	 * @var    int
-	 * @access public
+	 * @var int
 	 */
 	public $extra_quota_consumed;
 
@@ -82,8 +74,7 @@ class Imagify_User {
 	 *
 	 * @since 1.0
 	 *
-	 * @var    int
-	 * @access public
+	 * @var int
 	 */
 	public $consumed_current_month_quota;
 
@@ -92,8 +83,7 @@ class Imagify_User {
 	 *
 	 * @since 1.1.1
 	 *
-	 * @var    date
-	 * @access public
+	 * @var Date
 	 */
 	public $next_date_update;
 
@@ -102,8 +92,7 @@ class Imagify_User {
 	 *
 	 * @since 1.0.1
 	 *
-	 * @var    bool
-	 * @access public
+	 * @var bool
 	 */
 	public $is_active;
 
@@ -111,10 +100,8 @@ class Imagify_User {
 	 * Store a \WP_Error object if the request to fetch the user data failed.
 	 * False overwise.
 	 *
-	 * @var    bool|\WP_Error
-	 * @since  1.9.9
-	 * @access private
-	 * @author Grégory Viguier
+	 * @var bool|\WP_Error
+	 * @since 1.9.9
 	 */
 	private $error;
 
@@ -149,9 +136,7 @@ class Imagify_User {
 	/**
 	 * Get the possible error returned when fetching user data.
 	 *
-	 * @since  1.9.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.9
 	 *
 	 * @return bool|\WP_Error A \WP_Error object if the request to fetch the user data failed. False overwise.
 	 */
@@ -164,7 +149,6 @@ class Imagify_User {
 	 *
 	 * @since 1.0
 	 *
-	 * @access public
 	 * @return float|int
 	 */
 	public function get_percent_consumed_quota() {
@@ -239,7 +223,6 @@ class Imagify_User {
 	 *
 	 * @since 1.0
 	 *
-	 * @access public
 	 * @return float|int
 	 */
 	public function get_percent_unconsumed_quota() {
@@ -251,7 +234,6 @@ class Imagify_User {
 	 *
 	 * @since 1.1.1
 	 *
-	 * @access public
 	 * @return bool
 	 */
 	public function is_free() {
@@ -264,7 +246,6 @@ class Imagify_User {
 	 * @since 1.1.1
 	 * @since 1.9.9 Return false if the request to fetch the user data failed.
 	 *
-	 * @access public
 	 * @return bool
 	 */
 	public function is_over_quota() {
@@ -272,10 +253,10 @@ class Imagify_User {
 			return false;
 		}
 
-		if ( $this->is_free() && 100.0 === (float) $this->get_percent_consumed_quota() ) {
-			return true;
-		}
-
-		return false;
+		return (
+			$this->is_free()
+			&&
+			floatval( 100 ) === round( $this->get_percent_consumed_quota() )
+		);
 	}
 }

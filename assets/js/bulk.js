@@ -74,7 +74,6 @@ window.imagify = window.imagify || {};
 
 }( jQuery ));
 
-
 (function($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
 
 	w.imagify.bulk = {
@@ -127,13 +126,10 @@ window.imagify = window.imagify || {};
 		displayedWaitMessage: false,
 		// Tell how many rows are available.
 		hasMultipleRows:      true,
-		// The action to perform (like 'optimize').
-		imagifyAction:        '',
 		// Set to true to stop the whole thing.
 		processIsStopped:     false,
-		// List of medias being processed.
-		processingMedia:      [],
 		// Global stats.
+		globalOptimizedCount: 0,
 		globalGain:           0,
 		globalOriginalSize:   0,
 		globalOptimizedSize:  0,
@@ -143,17 +139,11 @@ window.imagify = window.imagify || {};
 		 * @var {object} {
 		 *     An object of objects. The keys are like: {groupID|context}.
 		 *
-		 *     @type {string} groupID     The group ID.
-		 *     @type {string} context     The context.
-		 *     @type {int}    level       The optimization.
-		 *     @type {string} optimizeURL The URL to ping to optimize a file.
-		 *     @type {array}  mediaIDs    A list of file IDs.
-		 *     @type {object} files       File IDs as keys (prefixed by an underscore), File URLs as values.
+		 *     @type {string} groupID The group ID.
+		 *     @type {string} context The context.
 		 * }
 		 */
 		folderTypesData:      {},
-		// Default thumbnail.
-		defaultThumb:         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAhBAMAAAClyt9cAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtQTFRFR3BMjo6Oh4eHqqqq4uLigoKC+fn5fn5+fHx8SBBv5wAAAAF0Uk5TAEDm2GYAAABWSURBVCjPY2BgEBIEAyERBhgQUoKAIAc0EXXjEDQRRTNzBzRdBokhaGoM2CQc0NQwJJegqWFgM3VAUSNsbGwugCKiqBQUpIAiAgICoyIDKyIIB0JAEQA54jRBweNV0AAAAABJRU5ErkJggg==',
 
 		// Methods =================================================================================
 
@@ -185,19 +175,12 @@ window.imagify = window.imagify || {};
 				.on( 'change.imagify init.imagify', this.toggleOptimizationButton )
 				.trigger( 'init.imagify' );
 
-			$( '.imagify-show-table-details' )
-				.on( 'click.imagify open.imagify close.imagify', this.toggleOptimizationDetails );
-
 			$( '#imagify-bulk-action' )
 				.on( 'click.imagify', this.maybeLaunchAllProcesses );
-
-			$( '.imagify-share-networks a' )
-				.on( 'click.imagify', this.share );
 
 			// Optimization events.
 			$( w )
 				.on( 'processQueue.imagify', this.processQueue )
-				.on( 'optimizeFiles.imagify', this.optimizeFiles )
 				.on( 'queueEmpty.imagify', this.queueEmpty );
 
 			if ( imagifyBulk.ajaxActions.getStats && $( '.imagify-bulk-table [data-group-id="library"][data-context="wp"]' ).length ) {
@@ -221,6 +204,12 @@ window.imagify = window.imagify || {};
 			$document
 				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
 				.on( 'imagifybeat-tick', this.processRequirementsImagifybeat );
+
+			if ( imagifyBulk.optimizing ) {
+				// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
+				w.imagify.beat.interval( 15 );
+				w.imagify.beat.disableSuspend();
+			}
 		},
 
 		/*
@@ -237,8 +226,8 @@ window.imagify = window.imagify || {};
 				url += '&context=' + item.context;
 			}
 
-			if ( 'getMediaIds' === action || 'bulkProcess' === action ) {
-				url += '&imagify_action=' + w.imagify.bulk.imagifyAction;
+			if ( item && Number.isInteger( item.level ) ) {
+				url += '&optimization_level=' + item.level;
 			}
 
 			return url;
@@ -259,7 +248,8 @@ window.imagify = window.imagify || {};
 				var $this = $( this ),
 					data  = {
 						groupID: $this.data( 'group-id' ),
-						context: $this.data( 'context' )
+						context: $this.data( 'context' ),
+						level:   $this.find( '.imagify-cell-level [name="level[' + $this.data( 'group-id' ) + ']"]:checked' ).val()
 					},
 					key   = data.groupID + '|' + data.context;
 
@@ -306,7 +296,7 @@ window.imagify = window.imagify || {};
 		 * @param {object} item    The current item.
 		 */
 		stopProcess: function ( errorId, item ) {
-			this.processIsStopped = true;
+			w.imagify.bulk.processIsStopped = true;
 
 			w.imagify.bulk.status[ item.groupID ] = {
 				isError: true,
@@ -331,6 +321,9 @@ window.imagify = window.imagify || {};
 						html: imagifyBulk.labels.curlMissing
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -340,6 +333,9 @@ window.imagify = window.imagify || {};
 						html: imagifyBulk.labels.editorMissing
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -349,6 +345,9 @@ window.imagify = window.imagify || {};
 						html: imagifyBulk.labels.extHttpBlocked
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -358,6 +357,9 @@ window.imagify = window.imagify || {};
 						html: imagifyBulk.labels.apiDown
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -368,6 +370,9 @@ window.imagify = window.imagify || {};
 						type:  'info'
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -381,6 +386,9 @@ window.imagify = window.imagify || {};
 						showConfirmButton: false
 					} );
 				}
+
+				w.imagify.bulk.processIsStopped = true;
+
 				return true;
 			}
 
@@ -423,108 +431,26 @@ window.imagify = window.imagify || {};
 		},
 
 		/*
-		 * Display an error message in a file row.
-		 *
-		 * @param  {function} $row The row template.
-		 * @param  {string}   text The error text.
-		 * @return {element}       The row jQuery element.
-		 */
-		displayErrorInRow: function ( $row, text ) {
-			var $toReplace, colspan;
-
-			$row       = $( $row() );
-			$toReplace = $row.find( '.imagify-cell-status ~ td' );
-			colspan    = $toReplace.length;
-			text       = text || '';
-
-			$toReplace.remove();
-			$row.find( '.imagify-cell-status' ).after( '<td colspan="' + colspan + '">' + text + '</td>' );
-
-			return $row;
-		},
-
-		/*
-		 * Display one of the 3 "folder" rows.
-		 *
-		 * @param {string}  state One of the 3 states: 'resting' (it's the "normal" row), 'waiting' (waiting for other optimizations to finish), and 'working'.
-		 * @param {element} $row  jQuery element of the "normal" row.
-		 */
-		displayFolderRow: function ( state, $row ) {
-			var $newRow, spinnerTemplate, spinnerColor, text;
-
-			if ( 'resting' === state ) {
-				$row.next( '.imagify-row-waiting, .imagify-row-working' ).remove();
-				$row.imagifyShow();
-				return;
-			}
-
-			// This part won't work to display multiple $newRow.
-			$newRow = $row.next( '.imagify-row-waiting, .imagify-row-working' );
-
-			if ( 'waiting' === state ) {
-				spinnerColor = '#d2d3d6';
-				text         = imagifyBulk.labels.waitingOtimizationsText;
-			} else {
-				spinnerColor = '#40b1d0';
-				text         = imagifyBulk.labels.imagesOptimizedText.replace( '%s', '<span>0</span>' );
-			}
-
-			if ( $newRow.length ) {
-				if ( ! $newRow.hasClass( 'imagify-row-' + state ) ) {
-					// Should happen when switching from 'waiting' to 'working'.
-					$newRow.attr( 'class', 'imagify-row-' + state );
-					$newRow.find( '.imagify-cell-checkbox svg' ).attr( 'fill', spinnerColor );
-					$newRow.children( '.imagify-cell-count-optimized' ).html( text );
-				}
-
-				$row.imagifyHide();
-				$newRow.imagifyShow();
-				return;
-			}
-
-			// Build the new row, based on a clone of the original one.
-			$newRow = $row.clone().attr( {
-				'class':       'imagify-row-' + state,
-				'aria-hidden': 'false'
-			} );
-
-			spinnerTemplate = w.imagify.template( 'imagify-spinner' );
-			$newRow.children( '.imagify-cell-checkbox' ).html( spinnerTemplate() ).find( 'svg' ).attr( 'fill', spinnerColor );
-			$newRow.children( '.imagify-cell-title' ).html( '<span class="imagify-cell-label">' + $newRow.children( '.imagify-cell-title' ).text() + '</span>' );
-			$newRow.children( '.imagify-cell-count-optimized' ).html( text );
-			$newRow.children( '.imagify-cell-count-errors, .imagify-cell-optimized-size, .imagify-cell-original-size, .imagify-cell-level' ).text( '' );
-
-			$row.imagifyHide().after( $newRow );
-		},
-
-		/*
 		 * Display the share box.
 		 */
 		displayShareBox: function () {
-			var text2share = imagifyBulk.labels.textToShare,
-				percent, gainHuman, originalSizeHuman,
-				$complete;
+			var $complete, globalSaved;
 
 			if ( ! this.globalGain || this.folderTypesQueue.length ) {
-				this.globalGain          = 0;
-				this.globalOriginalSize  = 0;
-				this.globalOptimizedSize = 0;
+				this.globalOptimizedCount = 0;
+				this.globalGain           = 0;
+				this.globalOriginalSize   = 0;
+				this.globalOptimizedSize  = 0;
 				return;
 			}
 
-			percent           = ( 100 - 100 * ( this.globalOptimizedSize / this.globalOriginalSize ) ).toFixed( 2 );
-			gainHuman         = w.imagify.humanSize( this.globalGain, 1 );
-			originalSizeHuman = w.imagify.humanSize( this.globalOriginalSize, 1 );
-
-			text2share = text2share.replace( '%1$s', gainHuman );
-			text2share = text2share.replace( '%2$s', originalSizeHuman );
-			text2share = encodeURIComponent( text2share );
+			globalSaved = this.globalOriginalSize - this.globalOptimizedSize;
 
 			$complete = $( '.imagify-row-complete' );
-			$complete.find( '.imagify-ac-rt-total-gain' ).html( gainHuman );
-			$complete.find( '.imagify-ac-rt-total-original' ).html( originalSizeHuman );
-			$complete.find( '.imagify-ac-chart' ).attr( 'data-percent', percent );
-			$complete.find( '.imagify-sn-twitter' ).attr( 'href', imagifyBulk.labels.twitterShareURL + '&amp;text=' + text2share );
+			$complete.find( '.imagify-ac-rt-total-images' ).html( this.globalOptimizedCount );
+			$complete.find( '.imagify-ac-rt-total-gain' ).html( w.imagify.humanSize( globalSaved, 1 ) );
+			$complete.find( '.imagify-ac-rt-total-original' ).html( w.imagify.humanSize( this.globalOriginalSize, 1 ) );
+			$complete.find( '.imagify-ac-chart' ).attr( 'data-percent', Math.round( this.globalGain ) );
 
 			// Chart.
 			this.drawShareChart();
@@ -536,9 +462,10 @@ window.imagify = window.imagify || {};
 			}, 200 );
 
 			// Reset the stats.
-			this.globalGain          = 0;
-			this.globalOriginalSize  = 0;
-			this.globalOptimizedSize = 0;
+			this.globalOptimizedCount = 0;
+			this.globalGain           = 0;
+			this.globalOriginalSize   = 0;
+			this.globalOptimizedSize  = 0;
 		},
 
 		/**
@@ -649,38 +576,17 @@ window.imagify = window.imagify || {};
 				return;
 			}
 
+			if ( imagifyBulk.optimizing ) {
+				$( '#imagify-bulk-action' ).prop( 'disabled', true );
+
+				return;
+			}
+
 			// Enable or disable the Optimization button.
 			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
 				$( '#imagify-bulk-action' ).prop( 'disabled', false );
 			} else {
 				$( '#imagify-bulk-action' ).prop( 'disabled', true );
-			}
-		},
-
-		/*
-		 * Display/Hide optimization details.
-		 *
-		 * @param {object} e jQuery's Event object.
-		 */
-		toggleOptimizationDetails: function ( e ) {
-			var $button  = $( this ),
-				$details = $button.closest( '.imagify-bulk-table' ).find( '.imagify-bulk-table-details' ),
-				openDetails;
-
-			if ( 'open' === e.type ) {
-				openDetails = true;
-			} else if ( 'close' === e.type ) {
-				openDetails = false;
-			} else {
-				openDetails = $details.hasClass( 'hidden' );
-			}
-
-			if ( openDetails ) {
-				$button.html( $button.data( 'label-hide' ) + '<span class="dashicons dashicons-no-alt"></span>' );
-				$details.imagifyShow();
-			} else {
-				$button.html( $button.data( 'label-show' ) + '<span class="dashicons dashicons-menu"></span>' );
-				$details.imagifyHide();
 			}
 		},
 
@@ -739,29 +645,22 @@ window.imagify = window.imagify || {};
 		 */
 		launchAllProcesses: function () {
 			var $w      = $( w ),
-				$button = $( '#imagify-bulk-action' ),
-				skip    = true;
+				$button = $( '#imagify-bulk-action' );
 
 			// Disable the button.
 			$button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
-
-			// Add a message to be displayed when the user wants to quit the page.
-			$w.on( 'beforeunload', this.getConfirmMessage );
 
 			// Hide the "Complete" message.
 			$( '.imagify-row-complete' ).imagifyHide( 200, function() {
 				$( this ).removeClass( 'done' );
 			} );
 
-			// Close the optimization details.
-			$( '.imagify-show-table-details' ).trigger( 'close.imagify' );
-
 			// Make sure to reset properties.
 			this.folderTypesQueue     = [];
 			this.status               = {};
 			this.displayedWaitMessage = false;
 			this.processIsStopped     = false;
-			this.imagifyAction        = 'optimize';
+			this.globalOptimizedCount = 0;
 			this.globalGain           = 0;
 			this.globalOriginalSize   = 0;
 			this.globalOptimizedSize  = 0;
@@ -785,16 +684,6 @@ window.imagify = window.imagify || {};
 					isError: false,
 					id:      'waiting'
 				};
-
-				// Display a "waiting" message + spinner into the folder rows.
-				if ( skip ) {
-					// No need to do that for the first one, we'll display a "working" row instead.
-					skip = false;
-					return true;
-				}
-
-				// Display the "waiting" folder row and hide the "normal" one.
-				w.imagify.bulk.displayFolderRow( 'waiting', $row );
 			} );
 
 			// Fasten Imagifybeat: 1 tick every 15 seconds, and disable suspend.
@@ -809,14 +698,9 @@ window.imagify = window.imagify || {};
 		 * Process the first item in the queue.
 		 */
 		processQueue: function () {
-			var $row, item;
+			var $row, $table, $progressBar, $progress;
 
 			if ( w.imagify.bulk.processIsStopped ) {
-				return;
-			}
-
-			if ( ! w.imagify.bulk.folderTypesQueue.length ) {
-				$( w ).trigger( 'queueEmpty.imagify' );
 				return;
 			}
 
@@ -833,300 +717,52 @@ window.imagify = window.imagify || {};
 				w.imagify.bulk.displayedWaitMessage = true;
 			}
 
-			/**
-			 * Fetch files for the first folder type in the queue.
-			 */
-			item = w.imagify.bulk.folderTypesQueue.shift();
-			$row = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
-
-			// Update status.
-			w.imagify.bulk.status[ item.groupID ].id = 'fetching';
-
-			// Display the "working" folder row and hide the "normal" one.
-			w.imagify.bulk.displayFolderRow( 'working', $row );
-
-			// Fetch image IDs.
-			$.get( w.imagify.bulk.getAjaxUrl( 'getMediaIds', item ) )
-				.done( function( response ) {
-					var errorMessage;
-
-					swal.close();
-
-					if ( w.imagify.bulk.processIsStopped ) {
-						return;
-					}
-
-					if ( response.data && response.data.message ) {
-						errorMessage = response.data.message;
-					} else {
-						errorMessage = imagifyBulk.ajaxErrorText;
-					}
-
-					if ( ! response.success ) {
-						// Error.
-						w.imagify.bulk.stopProcess( errorMessage, item );
-						return;
-					}
-
-					if ( ! response.data || ! ( $.isPlainObject( response.data ) || $.isArray( response.data ) ) ) {
-						// Error: should be an array if empty, or an object otherwize.
-						w.imagify.bulk.stopProcess( errorMessage, item );
-						return;
-					}
-
-					// Success.
-					if ( ! $.isEmptyObject( response.data ) ) {
-						// Optimize the files.
-						$( w ).trigger( 'optimizeFiles.imagify', [ item, response.data ] );
-						return;
-					}
-
-					// No images.
-					w.imagify.bulk.status[ item.groupID ].id = 'no-images';
-
-					if ( w.imagify.bulk.hasMultipleRows ) {
-						$( '#cb-select-' + item.groupID ).prop( 'checked', false );
-					}
-
-					if ( ! w.imagify.bulk.folderTypesQueue.length ) {
-						$( w ).trigger( 'queueEmpty.imagify' );
-						return;
-					}
-
-					// Reset the folder row.
-					w.imagify.bulk.displayFolderRow( 'resting', $row );
-
-					$( w ).trigger( 'processQueue.imagify' );
-				} )
-				.fail( function() {
-					// Error.
-					w.imagify.bulk.stopProcess( 'get-unoptimized-images', item );
-				} );
-		},
-
-		/*
-		 * Optimize files.
-		 *
-		 * @param {object} e     jQuery's Event object.
-		 * @param {object} item  Current folder type (from the queue).
-		 * @param {object} files A list of file IDs (keys, the IDs are prefixed by an underscore) and URLs (values).
-		 */
-		optimizeFiles: function ( e, item, files ) {
-			var $row, $workingRow, $optimizedCount, $errorsCount, $table,
-				$progressBar, $progress, $resultsContainer,
-				optimizedCount, errorsCount, Optimizer,
-				defaultsTemplate = {
-					groupID:            item.groupID,
-					mediaID:            0,
-					thumbnail:          '', // Preview thumbnail src.
-					filename:           '',
-					status:             '',
-					icon:               '',
-					label:              '',
-					thumbnailsCount:    '',
-					originalSizeHuman:  '',
-					newSizeHuman:       '',
-					percentHuman:       '',
-					overallSavingHuman: ''
-				};
-
-			if ( w.imagify.bulk.processIsStopped ) {
-				return;
-			}
-
-			$row         = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
-			$workingRow  = $row.next( '.imagify-row-working' );
-			$errorsCount = $workingRow.find( '.imagify-cell-count-errors span' );
-			errorsCount  = parseInt( $errorsCount.text(), 10 );
-			$table       = $row.closest( '.imagify-bulk-table' );
-			$progressBar = $table.find( '.imagify-row-progress' );
-			$progress    = $progressBar.find( '.bar' );
-
-			if ( 'optimize' === w.imagify.bulk.imagifyAction ) {
-				$optimizedCount = $workingRow.find( '.imagify-cell-count-optimized span' );
-				optimizedCount  = parseInt( $optimizedCount.text(), 10 );
-			}
-
-			// Update folder status.
-			w.imagify.bulk.status[ item.groupID ].id = 'optimizing';
-
-			// Fill in the result table header.
-			$table.find( '.imagify-bulk-table-details thead' ).html( $( '#tmpl-imagify-file-header-' + item.groupID ).html() );
-
-			// Empty the result table body.
-			$resultsContainer = $table.find( '.imagify-bulk-table-details tbody' ).text( '' );
-
-			// Reset and display the progress bar.
-			$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
-			$progressBar.slideDown().attr( 'aria-hidden', 'false' );
-
-			// Optimize the files.
-			Optimizer = new w.imagify.Optimizer( {
-				groupID:      item.groupID,
-				context:      item.context,
-				level:        item.level,
-				bufferSize:   imagifyBulk.bufferSizes[ item.context ],
-				ajaxUrl:      w.imagify.bulk.getAjaxUrl( 'bulkProcess', item ),
-				files:        files,
-				defaultThumb: w.imagify.bulk.defaultThumb,
-				doneEvent:    'mediaProcessed.imagify'
-			} );
-
-			// Before each media optimization, add a file row displaying the optimization process.
-			Optimizer.before( function( data ) {
-				var template;
-
-				if ( w.imagify.bulk.processIsStopped ) {
-					return;
-				}
-
-				template = w.imagify.template( 'imagify-file-row-' + item.groupID );
-
-				w.imagify.bulk.processingMedia.push( {
-					context: item.context,
-					mediaID: data.mediaID
-				} );
-
-				$resultsContainer.prepend( template( $.extend( {}, defaultsTemplate, data, {
-					status: 'compressing',
-					icon:   'admin-generic rotate',
-					label:  imagifyBulk.labels.optimizing
-				} ) ) );
-			} );
-
-			// After each media optimization.
-			Optimizer.each( function( data ) {
-				var template, $fileRow;
-
-				if ( w.imagify.bulk.processIsStopped ) {
-					return;
-				}
-
-				template = w.imagify.template( 'imagify-file-row-' + item.groupID );
-				$fileRow = $( '#' + item.groupID + '-' + data.mediaID );
-
-				$.each( w.imagify.bulk.processingMedia, function( i, v ) {
-					if ( v.context !== item.context || v.mediaID !== data.mediaID ) {
-						return true;
-					}
-
-					w.imagify.bulk.processingMedia.splice( i, 1 );
-					return false;
-				} );
-
-				// Update the progress bar.
-				$progress.css( 'width', data.progress + '%' ).find( '.percent' ).html( data.progress + '%' );
-
-				if ( data.success ) {
-					if ( 'already-optimized' !== data.status ) {
-						// Image successfully optimized.
-						$fileRow.replaceWith( template( $.extend( {}, defaultsTemplate, data, {
-							status: 'complete',
-							icon:   'yes',
-							label:  imagifyBulk.labels.complete
-						} ) ) );
-
-						w.imagify.bulk.drawFileChart( $( '#' + item.groupID + '-' + data.mediaID ).find( '.imagify-cell-percentage canvas' ) ); // Don't use $fileRow, its DOM is not refreshed with the new values.
-					} else {
-						// The image was already optimized.
-						$fileRow.replaceWith( w.imagify.bulk.displayErrorInRow( template( $.extend( {}, defaultsTemplate, data, {
-							status: 'complete',
-							icon:   'yes',
-							label:  imagifyBulk.labels.alreadyOptimized
-						} ) ), data.error ) );
-					}
-
-					// Update the optimized images counter.
-					if ( 'optimize' === w.imagify.bulk.imagifyAction ) {
-						optimizedCount += 1;
-						$optimizedCount.text( optimizedCount );
-					}
-					return;
-				}
-
-				// Display the error in the file row.
-				$fileRow.replaceWith( w.imagify.bulk.displayErrorInRow( template( $.extend( {}, defaultsTemplate, data, {
-					status: 'error',
-					icon:   'dismiss',
-					label:  imagifyBulk.labels.error
-				} ) ), data.error || data ) );
-
-				// Update the "working" folder row.
-				if ( ! $errorsCount.length ) {
-					errorsCount  = 1;
-					$errorsCount = $workingRow.find( '.imagify-cell-count-errors' ).html( imagifyBulk.labels.imagesErrorText.replace( '%s', '<span>1</span>' ) ).find( 'span' );
-				} else {
-					errorsCount += 1;
-					$errorsCount.text( errorsCount );
-				}
-
-				if ( 'over-quota' === data.status ) {
-					// No more data, stop everything.
-					Optimizer.stopProcess();
-					w.imagify.bulk.stopProcess( data.status, item );
-				}
-			} );
-
-			// After all image optimizations.
-			Optimizer.done( function( data ) {
-				// Uncheck the checkbox.
-				if ( w.imagify.bulk.hasMultipleRows ) {
-					$( '#cb-select-' + item.groupID ).prop( 'checked', false );
-				}
-
-				if ( data.globalOriginalSize ) {
-					w.imagify.bulk.globalGain          += parseInt( data.globalGain, 10 );
-					w.imagify.bulk.globalOriginalSize  += parseInt( data.globalOriginalSize, 10 );
-					w.imagify.bulk.globalOptimizedSize += parseInt( data.globalOptimizedSize, 10 );
-				}
-
-				if ( w.imagify.bulk.processIsStopped ) {
-					return;
-				}
-
-				// Reset Imagifybeat interval and enable suspend.
-				w.imagify.beat.resetInterval();
-				w.imagify.beat.enableSuspend();
-
-				// Update folder type status.
-				if ( ! $.isEmptyObject( w.imagify.bulk.status ) && ! w.imagify.bulk.status[ item.groupID ].isError ) {
-					w.imagify.bulk.status[ item.groupID ].id = 'done';
-				}
-
-				// Update the folder row.
-				$row.addClass( 'updating' );
-
-				$.get( w.imagify.bulk.getAjaxUrl( 'getFolderData', item ) )
+			w.imagify.bulk.folderTypesQueue.forEach( function( item ) {
+				// Start async process for current context
+				$.get( w.imagify.bulk.getAjaxUrl( 'bulkProcess', item ) )
 					.done( function( response ) {
-						if ( w.imagify.bulk.processIsStopped ) {
-							return;
-						}
+						var errorMessage;
 
-						if ( response.success ) {
-							$.each( response.data, function( dataName, dataHtml ) {
-								$row.children( '.imagify-cell-' + dataName ).html( dataHtml );
-							} );
-						}
+						swal.close();
 
-						w.imagify.bulk.displayFolderRow( 'resting', $row );
-					} )
-					.always( function() {
-						if ( w.imagify.bulk.processIsStopped ) {
-							return;
-						}
-
-						$row.removeClass( 'updating' );
-
-						if ( ! w.imagify.bulk.folderTypesQueue.length ) {
-							$( w ).trigger( 'queueEmpty.imagify' );
+						if ( response.data && response.data.message ) {
+							errorMessage = response.data.message;
 						} else {
-							$( w ).trigger( 'processQueue.imagify' );
+							errorMessage = imagifyBulk.ajaxErrorText;
 						}
+
+						if ( ! response.success ) {
+							// Error.
+							w.imagify.bulk.stopProcess( errorMessage, item );
+							return;
+						}
+
+						if ( ! response.data || ! ( $.isPlainObject( response.data ) || $.isArray( response.data ) ) ) {
+							// Error: should be an array if empty, or an object otherwize.
+							w.imagify.bulk.stopProcess( errorMessage, item );
+							return;
+						}
+
+						// Success.
+						if ( response.success ) {
+							$row         = $( '#cb-select-' + item.groupID ).closest( '.imagify-row-folder-type' );
+							$table       = $row.closest( '.imagify-bulk-table' );
+							$progressBar = $table.find( '.imagify-row-progress' );
+							$progress    = $progressBar.find( '.bar' );
+
+							$row.find( '.imagify-cell-checkbox-loader' ).removeClass( 'hidden' ).attr( 'aria-hidden', 'false' );
+							$row.find( '.imagify-cell-checkbox-box' ).addClass( 'hidden' ).attr( 'aria-hidden', 'true' );
+
+							// Reset and display the progress bar.
+							$progress.css( 'width', '0%' ).find( '.percent' ).text( '0%' );
+							$progressBar.slideDown().attr( 'aria-hidden', 'false' );
+						}
+					} )
+					.fail( function() {
+						// Error.
+						w.imagify.bulk.stopProcess( 'get-unoptimized-images', item );
 					} );
 			} );
-
-			// Run.
-			Optimizer.run();
 		},
 
 		/*
@@ -1143,11 +779,11 @@ window.imagify = window.imagify || {};
 			w.imagify.beat.resetInterval();
 			w.imagify.beat.enableSuspend();
 
-			// Display the share box.
-			w.imagify.bulk.displayShareBox();
-
 			// Reset the queue.
 			w.imagify.bulk.folderTypesQueue = [];
+
+			// Display the share box.
+			w.imagify.bulk.displayShareBox();
 
 			// Fetch and display generic stats if stats via Imagifybeat are disabled.
 			if ( ! imagifyBulk.imagifybeatIDs.stats ) {
@@ -1164,14 +800,10 @@ window.imagify = window.imagify || {};
 			// Maybe display error.
 			if ( ! $.isEmptyObject( w.imagify.bulk.status ) ) {
 				$.each( w.imagify.bulk.status, function( groupID, typeStatus ) {
-					if ( typeStatus.isError ) {
-						// One error is enough to display a message.
-						hasError = typeStatus.id;
+					if ( ! typeStatus.isError ) {
 						noImages = false;
-						return false;
-					}
-					if ( 'no-images' !== typeStatus.id ) {
-						// All groups must have this ID.
+					} else if ( 'no-images' !== typeStatus.id && typeStatus.isError ) {
+						hasError = typeStatus.id;
 						noImages = false;
 						return false;
 					}
@@ -1203,7 +835,7 @@ window.imagify = window.imagify || {};
 					w.imagify.bulk.displayError( errorArgs );
 				}
 				else if ( noImages ) {
-					if ( imagifyBulk.labels.nothingToDoText.hasOwnProperty( w.imagify.bulk.imagifyAction ) ) {
+					if ( Object.prototype.hasOwnProperty.call( imagifyBulk.labels.nothingToDoText, w.imagify.bulk.imagifyAction ) ) {
 						errorMsg = imagifyBulk.labels.nothingToDoText[ w.imagify.bulk.imagifyAction ];
 					} else {
 						errorMsg = imagifyBulk.labels.nothingToDoText.optimize;
@@ -1219,14 +851,16 @@ window.imagify = window.imagify || {};
 			// Reset status.
 			w.imagify.bulk.status = {};
 
-			// Unlink the message displayed when the user wants to quit the page.
-			$( w ).off( 'beforeunload', w.imagify.bulk.getConfirmMessage );
-
-			// Display the "normal" folder rows (the values of the last one should being updated via ajax, don't display it for now).
-			w.imagify.bulk.displayFolderRow( 'resting', $tables.find( '.imagify-row-folder-type' ).not( '.updating' ) );
-
 			// Reset the progress bars.
 			$tables.find( '.imagify-row-progress' ).slideUp().attr( 'aria-hidden', 'true' ).find( '.bar' ).removeAttr( 'style' ).find( '.percent' ).text( '0%' );
+
+			$tables.find( '.imagify-cell-checkbox-loader' ).each( function() {
+				$(this).addClass( 'hidden' ).attr( 'aria-hidden', 'true' );
+			} );
+
+			$tables.find( '.imagify-cell-checkbox-box' ).each( function() {
+				$(this).removeClass( 'hidden' ).attr( 'aria-hidden', 'false' );
+			} );
 
 			// Enable (or not) the main button.
 			if ( $( '.imagify-bulk-table [name="group[]"]:checked' ).length ) {
@@ -1234,29 +868,6 @@ window.imagify = window.imagify || {};
 			} else {
 				$( '#imagify-bulk-action' ).find( '.dashicons' ).removeClass( 'rotate' );
 			}
-		},
-
-		/**
-		 * Open a popup window when the user clicks on a share link.
-		 *
-		 * @param {object} e jQuery Event object.
-		 */
-		share: function ( e ) {
-			var width  = 700,
-				height = 290,
-				clientLeft, clientTop;
-
-			e.preventDefault();
-
-			if ( w.innerWidth ) {
-				clientLeft = ( w.innerWidth - width ) / 2;
-				clientTop  = ( w.innerHeight - height ) / 2;
-			} else {
-				clientLeft = ( d.body.clientWidth - width ) / 2;
-				clientTop  = ( d.body.clientHeight - height ) / 2;
-			}
-
-			w.open( this.href, '', 'status=no, scrollbars=no, menubar=no, top=' + clientTop + ', left=' + clientLeft + ', width=' + width + ', height=' + height );
 		},
 
 		// Imagifybeat =============================================================================
@@ -1291,9 +902,7 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		addQueueImagifybeat: function ( e, data ) {
-			if ( w.imagify.bulk.processingMedia.length ) {
-				data[ imagifyBulk.imagifybeatIDs.queue ] = w.imagify.bulk.processingMedia;
-			}
+			data[ imagifyBulk.imagifybeatIDs.queue ] = Object.values( w.imagify.bulk.getFolderTypes() );
 		},
 
 		/**
@@ -1304,10 +913,44 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
+			var queue, $row, $progress, $bar;
+
 			if ( typeof data[ imagifyBulk.imagifybeatIDs.queue ] !== 'undefined' ) {
-				$.each( data[ imagifyBulk.imagifybeatIDs.queue ], function ( i, mediaData ) {
-					$( w ).trigger( 'mediaProcessed.imagify', [ mediaData ] );
-				} );
+				queue = data[ imagifyBulk.imagifybeatIDs.queue ];
+
+				if ( false !== queue.result ) {
+					w.imagify.bulk.globalOriginalSize = queue.result.original_size;
+					w.imagify.bulk.globalOptimizedSize = queue.result.optimized_size;
+					w.imagify.bulk.globalOptimizedCount = queue.result.total;
+					w.imagify.bulk.globalGain = w.imagify.bulk.globalOptimizedSize * 100 / w.imagify.bulk.globalOriginalSize;
+				}
+
+				if ( ! w.imagify.bulk.processIsStopped && w.imagify.bulk.hasBlockingError( true ) ) {
+					$( w ).trigger( 'queueEmpty.imagify' );
+					return;
+				}
+
+				if ( Object.prototype.hasOwnProperty.call( queue, 'groups_data' ) ) {
+					Object.entries( queue.groups_data ).forEach( function( item ) {
+						$row = $( '[data-context=' + item[0] + ']' );
+
+						$row.children( '.imagify-cell-count-optimized' ).first().html( item[1]['count-optimized'] );
+						$row.children( '.imagify-cell-count-errors' ).first().html( item[1]['count-errors'] );
+						$row.children( '.imagify-cell-optimized-size-size' ).first().html( item[1]['optimized-size'] );
+						$row.children( '.imagify-cell-original-size-size' ).first().html( item[1]['original-size'] );
+					} );
+				}
+
+				if ( 0 === queue.remaining ) {
+					$( w ).trigger( 'queueEmpty.imagify' );
+					return;
+				}
+
+				$progress = $( '.imagify-row-progress' );
+				$bar      = $progress.find( '.bar' );
+
+				$bar.css( 'width', queue.percentage + '%' ).find( '.percent' ).html( queue.percentage + '%' );
+				$progress.slideDown().attr( 'aria-hidden', 'false' );
 			}
 		},
 
@@ -1425,56 +1068,6 @@ window.imagify = window.imagify || {};
 			legend += '</ul>';
 
 			d.getElementById( 'imagify-overview-chart-legend' ).innerHTML = legend;
-		},
-
-		/**
-		 * Mini chart.
-		 * Used for the charts on each file row.
-		 *
-		 * @param {element} canvas A jQuery canvas element.
-		 */
-		drawFileChart: function ( canvas ) {
-			var donuts = this.charts.files.donuts;
-
-			canvas.each( function() {
-				var value = parseInt( $( this ).closest( '.imagify-chart' ).next( '.imagipercent' ).text().replace( '%', '' ), 10 );
-
-				if ( undefined !== donuts[ this.id ] ) {
-					// Update existing donut.
-					donuts[ this.id ].data.datasets[0].data[0] = value;
-					donuts[ this.id ].data.datasets[0].data[1] = 100 - value;
-					donuts[ this.id ].update();
-					return;
-				}
-
-				// Create new donut.
-				donuts[ this.id ] = new w.imagify.Chart( this, {
-					type: 'doughnut',
-					data: {
-						datasets: [{
-							data:            [ value, 100 - value ],
-							backgroundColor: [ '#00B3D3', '#D8D8D8' ],
-							borderColor:     '#fff',
-							borderWidth:     1
-						}]
-					},
-					options: {
-						legend: {
-							display: false
-						},
-						events:    [],
-						animation: {
-							easing: 'easeOutBounce'
-						},
-						tooltips: {
-							enabled: false
-						},
-						responsive: false
-					}
-				} );
-			} );
-
-			this.charts.files.donuts = donuts;
 		},
 
 		/*

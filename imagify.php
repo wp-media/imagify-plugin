@@ -3,7 +3,7 @@
  * Plugin Name: Imagify
  * Plugin URI: https://wordpress.org/plugins/imagify/
  * Description: Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool.
- * Version: 2.0
+ * Version: 2.1
  * Requires at least: 5.3
  * Requires PHP: 7.0
  * Author: Imagify – Optimize Images & Convert WebP
@@ -19,7 +19,7 @@
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 // Imagify defines.
-define( 'IMAGIFY_VERSION',        '2.0' );
+define( 'IMAGIFY_VERSION',        '2.1' );
 define( 'IMAGIFY_SLUG',           'imagify' );
 define( 'IMAGIFY_FILE',           __FILE__ );
 define( 'IMAGIFY_PATH',           realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
@@ -35,34 +35,11 @@ if ( ! defined( 'IMAGIFY_APP_DOMAIN' ) ) {
 }
 define( 'IMAGIFY_APP_API_URL',     IMAGIFY_APP_DOMAIN . '/api/' );
 
-/**
- * Plugin init.
- *
- * @since 1.0
- */
-function _imagify_init() {
-	// Nothing to do during autosave.
-	if ( defined( 'DOING_AUTOSAVE' ) ) {
-		return;
-	}
 
-	// Check for WordPress and PHP version.
-	if ( ! imagify_pass_requirements() ) {
-		return;
-	}
-
-	// Init the plugin.
-	require_once IMAGIFY_PATH . 'inc/classes/class-imagify-plugin.php';
-
-	$plugin = new Imagify_Plugin(
-		array(
-			'plugin_path' => IMAGIFY_PATH,
-		)
-	);
-
-	$plugin->init();
+// Check for WordPress and PHP version.
+if ( imagify_pass_requirements() ) {
+	require_once IMAGIFY_PATH . 'inc/main.php';
 }
-add_action( 'plugins_loaded', '_imagify_init' );
 
 /**
  * Check if Imagify is activated on the network.

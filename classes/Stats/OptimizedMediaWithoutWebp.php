@@ -1,33 +1,28 @@
 <?php
 namespace Imagify\Stats;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Bulk\Bulk;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class to get and cache the number of optimized media without WebP versions.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
 class OptimizedMediaWithoutWebp implements StatInterface {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * Name of the transient storing the cached result.
 	 *
-	 * @var    string
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var string
 	 */
 	const NAME = 'imagify_stat_without_webp';
 
 	/**
 	 * Launch hooks.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function init() {
 		add_action( 'imagify_after_optimize',      [ $this, 'maybe_clear_cache_after_optimization' ], 10, 2 );
@@ -43,19 +38,17 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	/**
 	 * Get the number of optimized media without WebP versions.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @return int
 	 */
 	public function get_stat() {
-		$ajax_post = \Imagify_Admin_Ajax_Post::get_instance();
-		$stat      = 0;
+		$bulk = Bulk::get_instance();
+		$stat = 0;
 
 		// Sum the counts of each context.
 		foreach ( imagify_get_context_names() as $context ) {
-			$stat += $ajax_post->get_bulk_instance( $context )->has_optimized_media_without_webp();
+			$stat += $bulk->get_bulk_instance( $context )->has_optimized_media_without_webp();
 		}
 
 		return $stat;
@@ -64,9 +57,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	/**
 	 * Get and cache the number of optimized media without WebP versions.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @return int
 	 */
@@ -92,9 +83,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	/**
 	 * Clear the stat cache.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function clear_cache() {
 		delete_transient( static::NAME );
@@ -108,9 +97,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	/**
 	 * Clear cache after optimizing a media.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param ProcessInterface $process The optimization process.
 	 * @param array            $item    The item being processed.
@@ -147,9 +134,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	/**
 	 * Clear cache after restoring a media.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param ProcessInterface $process The optimization process.
 	 * @param bool|WP_Error    $response The result of the operation: true on success, a WP_Error object on failure.
@@ -175,9 +160,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	/**
 	 * Clear cache on media deletion.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param ProcessInterface $process An optimization process.
 	 */

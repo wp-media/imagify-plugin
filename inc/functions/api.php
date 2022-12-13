@@ -1,11 +1,12 @@
 <?php
+use Imagify\CLI\CommandInterface;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Returns the main instance of the Imagify class.
  *
  * @since  1.6.5
- * @author Grégory Viguier
  *
  * @return object The Imagify instance.
  */
@@ -86,8 +87,7 @@ function upload_imagify_image( $data ) {
 /**
  * Get Imagify Plans Prices.
  *
- * @since  1.5
- * @author Geoffrey Crofte
+ * @since 1.5
  *
  * @return object
  */
@@ -98,8 +98,7 @@ function get_imagify_plans_prices() {
 /**
  * Get Imagify All Prices (plans).
  *
- * @since  1.5.4
- * @author Geoffrey Crofte
+ * @since 1.5.4
  *
  * @return object
  */
@@ -110,8 +109,7 @@ function get_imagify_all_prices() {
 /**
  * Check if Coupon Code exists.
  *
- * @since  1.6
- * @author Geoffrey Crofte
+ * @since 1.6
  *
  * @param  string $coupon the coupon code to check.
  * @return object
@@ -123,8 +121,7 @@ function check_imagify_coupon_code( $coupon ) {
 /**
  * Check if Discount/Promotion is available.
  *
- * @since  1.6.3
- * @author Geoffrey Crofte
+ * @since 1.6.3
  *
  * @return object
  */
@@ -135,8 +132,7 @@ function check_imagify_discount() {
 /**
  * Get Maximum image size for free plan.
  *
- * @since  1.5.6
- * @author Remy Perona
+ * @since 1.5.6
  *
  * @return string
  */
@@ -158,10 +154,10 @@ function get_imagify_max_image_size() {
 /**
  * Translate a message from our servers.
  *
- * @since  1.6.10
- * @author Grégory Viguier
- * @see    Imagify::curl_http_call()
- * @see    Imagify::handle_response()
+ * @since 1.6.10
+ *
+ * @see Imagify::curl_http_call()
+ * @see Imagify::handle_response()
  *
  * @param  string $message The message from the server (in English).
  * @return string          If in our list, the translated message. The original message otherwise.
@@ -258,4 +254,47 @@ function imagify_translate_api_message( $message ) {
 	}
 
 	return $message;
+}
+
+/**
+ * Runs the bulk optimization
+ *
+ * @param array $contexts An array of contexts (WP/Custom folders).
+ * @param int   $optimization_level Optimization level to use.
+ *
+ * @return void
+ */
+function imagify_bulk_optimize( $contexts, $optimization_level ) {
+	foreach ( $contexts as $context ) {
+		Imagify\Bulk\Bulk::get_instance()->run_optimize( $context, $optimization_level );
+	}
+}
+
+/**
+ * Runs the WebP generation
+ *
+ * @param array $contexts An array of contexts (WP/Custom folders).
+ *
+ * @return void
+ */
+function imagify_generate_webp( $contexts ) {
+	Imagify\Bulk\Bulk::get_instance()->run_generate_webp( $contexts );
+}
+
+/**
+ * Add command to WP CLI
+ *
+ * @param CommandInterface $command Command object.
+ *
+ * @return void
+ */
+function imagify_add_command( CommandInterface $command ) {
+	if ( ! defined( 'WP_CLI' ) || ! WP_CLI || ! class_exists( '\WP_CLI' ) ) {
+		return;
+	}
+
+	\WP_CLI::add_command( $command->get_name(), $command, [
+		'shortdesc' => $command->get_description(),
+		'synopsis' => $command->get_synopsis(),
+	] );
 }

@@ -1,7 +1,7 @@
 === Imagify – Optimize Images & Convert WebP | Compress Images Easily ===
 Contributors: wp_rocket, imagify
 Tags: optimize images, convert webp, webp, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
-Tested up to: 6.0
+Tested up to: 6.1
 Stable tag: 2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -14,15 +14,20 @@ Compress images & convert WebP with the best WordPress image optimization plugin
 
 [Imagify](https://imagify.io/) is the most advanced image optimization plugin to help you resize and compress images. You can now use its power directly in WordPress to optimize images and reduce the weight of the photos you want to add to your site – all in just one click and without sacrificing their quality. 
 
-Imagify is the best WordPress image optimizer. The plugin lets you optimize images in one go with its bulk optimization option. You can resize your images on the fly – they will be automatically optimized at the best compression level. If needed, you can always restore your images to their original versions.
+Imagify is the best WordPress image optimizer. The plugin lets you optimize images in one go with its asynchronous bulk optimization option. You can resize your images on the fly – they will be automatically optimized at the best compression level. If needed, you can always restore your images to their original versions.
 
 On top of optimizing images, you’ll choose the best WebP plugin for WordPress. Imagify also converts your images to WebP, a next-gen format for lighter images that will speed up your WordPress site, improve user experience, and even SEO. Convert WebP will make a difference in images optimization, you’ll see that from yourself.
 
 Lastly, it’s easy to use the best image compression plugin for better site performance. Speed up your WordPress site and improve Core Web Vitals thanks to Imagify’s state-of-the-art image optimization process.
 
+Our video explains why Imagify is the easiest image optimization plugin and shows how it makes your website faster thanks to lighter images.
+
+[youtube https://www.youtube.com/watch?v=ZgMwWvUZFu4&feature=youtu.be]
+
+
 = Resize and Compress Images Without Losing Quality =
 
-Imagify is a great image compressor and the ultimate solution to optimize images. You are able to resize and compress images from the most common image formats as well as PDF format. In case you have many images to optimize, you can also resize images in bulk thanks to our bulk optimization option. In just one click, you will be able to compress multiple images super easily.
+Imagify is a great image compressor and the ultimate solution to optimize images. You are able to resize and compress images from the most common image formats as well as PDF format. In case you have many images to optimize, you can also resize images in bulk thanks to our async bulk optimization option. In just one click, you will be able to compress multiple images super easily. Imagify compresses all your images in the background, so you can leave the page and not worry about anything.
 
 Many of your high-quality images may be in sizes that are much too large. To reduce image size and compress large images, Imagify has a setting that allows you to choose a maximum width for all of your images, and if you upload images that are larger than that size, it will resize large images for you during optimization. Imagify will resize images proportionally without cropping them.
 
@@ -249,6 +254,12 @@ No. However, you get 20MB of quota per month for free to optimize your images (a
 4. Other Media Page
 
 == Changelog ==
+= 2.1 =
+- Enhancement: Re-add lossless compression option (#686)
+- Enhancement: New async bulk optimization, allowing to run the bulk optimization without keeping the browser open. Also possible to run the bulk optimization from an API function or a WP CLI command (#674)
+- Bugfix: Correctly resize the WebP generated file to the maximum defined size from the settings (#521)
+- Bugfix: Prevent error related to set_time_limit() function on some environments (#671)
+
 = 2.0 =
 - Enhancement: Add compatibility with our new smart compression system (#663)
 - Enhancement: Optimize initialization of some of the code (#473)

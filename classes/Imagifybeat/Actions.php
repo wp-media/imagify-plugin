@@ -2,26 +2,24 @@
 namespace Imagify\Imagifybeat;
 
 use Imagify_Requirements;
-
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Traits\InstanceGetterTrait;
+use Imagify\Bulk\Bulk;
 
 /**
  * Imagifybeat actions.
  *
- * @since  1.9.3
- * @author Grégory Viguier
+ * @since 1.9.3
  */
 class Actions {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * The list of action IDs.
 	 * Keys are related to method names, values are Imagifybeat IDs.
 	 *
-	 * @var    array
-	 * @since  1.9.3
-	 * @access private
-	 * @author Grégory Viguier
+	 * @var array
+	 *
+	 * @since 1.9.3
 	 */
 	private $imagifybeat_ids = [
 		'requirements'                       => 'imagify_requirements',
@@ -35,16 +33,13 @@ class Actions {
 	/**
 	 * Class init: launch hooks.
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 */
 	public function init() {
 		foreach ( $this->imagifybeat_ids as $action => $imagifybeat_id ) {
 			add_filter( 'imagifybeat_received', [ $this, 'add_' . $action . '_to_response' ], 10, 2 );
 		}
 	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** IMAGIFYBEAT CALLBACKS =================================================================== */
@@ -53,9 +48,7 @@ class Actions {
 	/**
 	 * Add requirements to Imagifybeat data.
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
 	 * @param  array $response The Imagifybeat response.
 	 * @param  array $data     The $_POST data sent.
@@ -83,9 +76,7 @@ class Actions {
 	/**
 	 * Add bulk stats to Imagifybeat data.
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
 	 * @param  array $response The Imagifybeat response.
 	 * @param  array $data     The $_POST data sent.
@@ -114,9 +105,7 @@ class Actions {
 	 * Look for media where status has changed, compared to what Imagifybeat sends.
 	 * This is used in the bulk optimization page.
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
 	 * @param  array $response The Imagifybeat response.
 	 * @param  array $data     The $_POST data sent.
@@ -129,84 +118,40 @@ class Actions {
 			return $response;
 		}
 
-		$statuses = [];
-
-		foreach ( $data[ $imagifybeat_id ] as $item ) {
-			if ( empty( $statuses[ $item['context'] ] ) ) {
-				$statuses[ $item['context'] ] = [];
-			}
-
-			$statuses[ $item['context'] ][ '_' . $item['mediaID'] ] = 1;
-		}
-
-		$results = $this->get_modified_optimization_statuses( $statuses );
-
-		if ( ! $results ) {
+		if ( ! isset( $data[ $imagifybeat_id ] ) ) {
 			return $response;
 		}
 
-		$response[ $imagifybeat_id ] = [];
+		$bulk        = Bulk::get_instance();
+		$groups_data = [];
+		$types       = [];
+		$total       = 0;
+		$remaining   = 0;
+		$percentage  = 0;
 
-		// Sanitize received data and grab some other info.
-		foreach ( $results as $context_id => $media_atts ) {
-			$process    = imagify_get_optimization_process( $media_atts['media_id'], $media_atts['context'] );
-			$optim_data = $process->get_data();
+		foreach ( $data[ $imagifybeat_id ] as $group ) {
+			$types[ $group['groupID'] . '|' . $group['context'] ] = true;
 
-			if ( $optim_data->is_optimized() ) {
-				// Successfully optimized.
-				$full_size_data                = $optim_data->get_size_data();
-				$full_size_data                = array_merge(
-					[
-						'original_size'  => 0,
-						'optimized_size' => 0,
-						'percent'        => 0,
-					],
-					$full_size_data
-				);
-				$response[ $imagifybeat_id ][] = [
-					'mediaID'                  => $media_atts['media_id'],
-					'context'                  => $media_atts['context'],
-					'success'                  => true,
-					'status'                   => 'optimized',
-					// Raw data.
-					'originalOverallSize'      => $full_size_data['original_size'],
-					'newOverallSize'           => $full_size_data['optimized_size'],
-					'overallSaving'            => $full_size_data['original_size'] - $full_size_data['optimized_size'],
-					'thumbnailsCount'          => $optim_data->get_optimized_sizes_count(),
-					// Human readable data.
-					'originalSizeHuman'        => imagify_size_format( $full_size_data['original_size'], 2 ),
-					'newSizeHuman'             => imagify_size_format( $full_size_data['optimized_size'], 2 ),
-					'overallSavingHuman'       => imagify_size_format( $full_size_data['original_size'] - $full_size_data['optimized_size'], 2 ),
-					'originalOverallSizeHuman' => imagify_size_format( $full_size_data['original_size'], 2 ),
-					'percentHuman'             => $full_size_data['percent'] . '%',
-				];
-			} elseif ( $optim_data->is_already_optimized() ) {
-				// Already optimized.
-				$response[ $imagifybeat_id ][] = [
-					'mediaID' => $media_atts['media_id'],
-					'context' => $media_atts['context'],
-					'success' => true,
-					'status'  => 'already-optimized',
-				];
-			} else {
-				// Error.
-				$full_size_data = $optim_data->get_size_data();
-				$message        = ! empty( $full_size_data['error'] ) ? $full_size_data['error'] : '';
-				$status         = 'error';
+			$transient = get_transient( "imagify_{$group['context']}_optimize_running" );
 
-				if ( 'You\'ve consumed all your data. You have to upgrade your account to continue' === $message ) {
-					$status = 'over-quota';
-				}
-
-				$response[ $imagifybeat_id ][] = [
-					'mediaID' => $media_atts['media_id'],
-					'context' => $media_atts['context'],
-					'success' => false,
-					'status'  => $status,
-					'error'   => imagify_translate_api_message( $message ),
-				];
+			if ( false !== $transient ) {
+				$total     += $transient['total'];
+				$remaining += $transient['remaining'];
 			}
+
+			$groups_data[ $group['context'] ] = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
 		}
+
+		if ( 0 !== $total ) {
+			$percentage = ( $total - $remaining ) / $total * 100;
+		}
+
+		$response[ $imagifybeat_id ] = [
+			'groups_data' => $groups_data,
+			'remaining'   => $remaining,
+			'percentage'  => round( $percentage ),
+			'result'      => get_transient( 'imagify_bulk_optimization_result' ),
+		];
 
 		return $response;
 	}
@@ -215,8 +160,7 @@ class Actions {
 	 * Look for media where status has changed, compared to what Imagifybeat sends.
 	 * This is used in the settings page.
 	 *
-	 * @since  1.9
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param  array $response The Imagifybeat response.
 	 * @param  array $data     The $_POST data sent.
@@ -229,30 +173,24 @@ class Actions {
 			return $response;
 		}
 
-		$statuses = [];
+		$remaining = 0;
+		$total     = get_transient( 'imagify_missing_webp_total' );
 
-		foreach ( $data[ $imagifybeat_id ] as $item ) {
-			if ( empty( $statuses[ $item['context'] ] ) ) {
-				$statuses[ $item['context'] ] = [];
-			}
-
-			$statuses[ $item['context'] ][ '_' . $item['mediaID'] ] = 1;
-		}
-
-		$results = $this->get_modified_optimization_statuses( $statuses );
-
-		if ( ! $results ) {
+		if ( false === $total ) {
 			return $response;
 		}
 
-		$response[ $imagifybeat_id ] = [];
+		$bulk = Bulk::get_instance();
 
-		foreach ( $results as $result ) {
-			$response[ $imagifybeat_id ][] = [
-				'mediaID' => $result['media_id'],
-				'context' => $result['context'],
-			];
+		foreach ( $data[ $imagifybeat_id ] as $context ) {
+			$media     = $bulk->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
+			$remaining += count( $media['ids'] );
 		}
+
+		$response[ $imagifybeat_id ] = [
+			'remaining' => $remaining,
+			'total'     => (int) $total,
+		];
 
 		return $response;
 	}
@@ -261,9 +199,7 @@ class Actions {
 	 * Look for media where status has changed, compared to what Imagifybeat sends.
 	 * This is used in the WP Media Library.
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
 	 * @param  array $response The Imagifybeat response.
 	 * @param  array $data     The $_POST data sent.
@@ -296,9 +232,7 @@ class Actions {
 	 * Look for media where status has changed, compared to what Imagifybeat sends.
 	 * This is used in the custom folders list (the "Other Media" page).
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
 	 * @param  array $response The Imagifybeat response.
 	 * @param  array $data     The $_POST data sent.
@@ -340,14 +274,12 @@ class Actions {
 	/**
 	 * Look for media where status has changed, compared to what Imagifybeat sends.
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
 	 * @param  array $data The data received.
 	 * @return array
 	 */
-	public function get_modified_optimization_statuses( $data ) {
+	private function get_modified_optimization_statuses( $data ) {
 		if ( ! $data ) {
 			return [];
 		}
@@ -408,9 +340,7 @@ class Actions {
 	/**
 	 * Get an Imagifybeat ID, given an action.
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
 	 * @param  string $action An action corresponding to the ID we want.
 	 * @return string|bool    The ID. False on failure.
@@ -426,9 +356,7 @@ class Actions {
 	/**
 	 * Get an Imagifybeat ID, given a callback name.
 	 *
-	 * @since  1.9.3
-	 * @access private
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
 	 * @param  string $callback A method’s name.
 	 * @return string|bool      The ID. False on failure.

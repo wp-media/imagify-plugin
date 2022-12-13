@@ -992,14 +992,11 @@
 				return;
 			}
 
-			key = imagifyModal.getApiKey();
 			rt_onetime = onetime_id;
 			rt_yearly = 'yearly' === params.period ? monthly_id : 0;
 			rt_monthly = 'monthly' === params.period ? monthly_id : 0;
 			coupon = $('#imagify-coupon-code').val();
 			rt_coupon = '' === coupon ? 'none' : coupon;
-			// Not used but...
-			amount = parseFloat($('.imagify-global-amount').text()).toFixed(2);
 
 			// Compose route.
 			// pay_src + :ontimeplan(0)/:monthlyplan(0)/:yearlyplan(0)/:coupon(none)/
