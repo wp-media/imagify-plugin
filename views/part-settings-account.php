@@ -68,8 +68,7 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 		if ( Imagify_Requirements::is_api_key_valid() ) {
 			?>
 			<h2 class="imagify-options-title">
-				<?php esc_html_e( 'Account Type', 'imagify' ); ?>
-				<strong class="imagify-user-plan-label"><?php echo $user ? esc_html( $user->plan_label ) : ''; ?></strong>
+				<?php esc_html_e( 'API Key', 'imagify' ); ?>
 			</h2>
 			<?php
 		} else {
