@@ -189,10 +189,15 @@ function imagify_translate_api_message( $message ) {
 
 	$trim_message = trim( $message, '. ' );
 
-	$messages = array(
+	$messages = [
 		// Local messages from Imagify::curl_http_call() and Imagify::handle_response().
 		'Could not initialize a new cURL handle'                                                   => __( 'Could not initialize a new cURL handle.', 'imagify' ),
-		'Unknown error occurred'                                                                   => __( 'Unknown error occurred.', 'imagify' ),
+		'Unknown error occurred'                                                                   => sprintf(
+			// translators: %1$s = opening link tag, %2$s = closing link tag.
+			__( 'An unknown error occurred: %1$sMore info and possible solutions%2$s', 'imagify' ),
+			'<a href="https://imagify.io/documentation/optimization-is-stuck/" rel="noopener" target="_blank">',
+			'</a>'
+		),
 		'Your image is too big to be uploaded on our server'                                       => __( 'Your file is too big to be uploaded on our server.', 'imagify' ),
 		'Our server returned an invalid response'                                                  => __( 'Our server returned an invalid response.', 'imagify' ),
 		'cURL isn\'t installed on the server'                                                      => __( 'cURL is not available on the server.', 'imagify' ),
@@ -217,7 +222,7 @@ function imagify_translate_api_message( $message ) {
 		'You\'ve consumed all your data. You have to upgrade your account to continue'             => __( 'You have consumed all your data. You have to upgrade your account to continue.', 'imagify' ),
 		'Invalid token'                                                                            => __( 'Invalid API key', 'imagify' ),
 		'Upload a valid image. The file you uploaded was either not an image or a corrupted image' => __( 'Invalid or corrupted file.', 'imagify' ),
-	);
+	];
 
 	if ( isset( $messages[ $trim_message ] ) ) {
 		return $messages[ $trim_message ];
