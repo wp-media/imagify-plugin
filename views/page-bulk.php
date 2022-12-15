@@ -96,11 +96,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 							</p>
 						</div>
 						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View your profile', 'imagify' ); ?></a>
-
-						<p class="imagify-meteo-subs">
-							<span class="screen-reader-text"><?php _e( 'Your subscription:', 'imagify' ); ?></span>
-							<strong class="imagify-user-plan imagify-user-plan-label"><?php echo $user->plan_label; ?></strong>
-						</p>
 					</div>
 
 					<?php if ( $user && 1 === $user->plan_id ) { ?>
