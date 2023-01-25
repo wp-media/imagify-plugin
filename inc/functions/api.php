@@ -303,3 +303,12 @@ function imagify_add_command( CommandInterface $command ) {
 		'synopsis' => $command->get_synopsis(),
 	] );
 }
+
+/**
+ * Checks if the API key is valid
+ *
+ * @return bool
+ */
+function imagify_is_api_key_valid() {
+	return Imagify_Requirements::is_api_key_valid();
+}
