@@ -11,13 +11,6 @@ abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background
 	use InstanceGetterTrait;
 
 	/**
-	 * The lock time for the queue
-	 *
-	 * @var int
-	 */
-	protected $queue_lock_time = DAY_IN_SECONDS;
-
-	/**
 	 * Prefix used to build the global process identifier.
 	 *
 	 * @var string
