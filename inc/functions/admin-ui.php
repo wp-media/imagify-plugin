@@ -331,6 +331,10 @@ function get_imagify_attachment_generate_webp_versions_link( $process ) {
 		return '';
 	}
 
+	if ( 'image/webp' === $media->get_mime_type() ) {
+		return '';
+	}
+
 	$data = $process->get_data();
 
 	if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {

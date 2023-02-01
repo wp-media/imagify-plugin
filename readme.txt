@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, convert webp, webp, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
 Tested up to: 6.1
-Stable tag: 2.1
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -163,7 +163,7 @@ Yes, Imagify is fully compatible with NextGEN Gallery, the most popular photo ga
 
 = Which formats can be optimized? =
 
-Imagify can optimize JPG, PNG, PDF files and GIFs (whether animated or not).
+Imagify can optimize JPG, PNG, WebP, PDF files and GIFs (whether animated or not).
 
 When you optimize JPG, PNG, and GIF files, Imagify will also create WebP versions of your original images and all your thumbnail sizes (if you have this option enabled).
 
@@ -254,6 +254,15 @@ No. However, you get 20MB of quota per month for free to optimize your images (a
 4. Other Media Page
 
 == Changelog ==
+= 2.1.1 =
+- Enhancement: Allow WebP images to be optimized by Imagify from the plugin (#611)
+- Enhancement: Improve error message displayed when an unknown error occured (#637)
+- Enhancement: Update Action Scheduler to v3.5.4 (#708)
+- Enhancement: Only display plan suggestion for users on free plan (#69)
+- Bugfix: Prevent optimization from getting stuck on websites with big images libraries (#707)
+- Bugfix: Prevent PHP8 ArgumentCountError (#682)
+
+
 = 2.1 =
 - Enhancement: Re-add lossless compression option (#686)
 - Enhancement: New async bulk optimization, allowing to run the bulk optimization without keeping the browser open. Also possible to run the bulk optimization from an API function or a WP CLI command (#674)

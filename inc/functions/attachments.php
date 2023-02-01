@@ -11,14 +11,15 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @return array        The mime types.
  */
 function imagify_get_mime_types( $type = null ) {
-	$mimes = array();
+	$mimes = [];
 
 	if ( 'not-image' !== $type ) {
-		$mimes = array(
+		$mimes = [
 			'jpg|jpeg|jpe' => 'image/jpeg',
 			'png'          => 'image/png',
 			'gif'          => 'image/gif',
-		);
+			'webp'         => 'image/webp',
+		];
 	}
 
 	if ( 'image' !== $type ) {

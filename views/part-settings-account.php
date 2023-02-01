@@ -30,7 +30,13 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 <div class="imagify-settings-section">
 
 	<?php
-	if ( Imagify_Requirements::is_api_key_valid() ) {
+	$imagify_user = new Imagify_User();
+
+	if (
+		$imagify_user->is_free()
+		&&
+		Imagify_Requirements::is_api_key_valid()
+	) {
 		?>
 		<div class="imagify-col-content imagify-block-secondary imagify-mt2">
 			<?php
@@ -68,8 +74,7 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 		if ( Imagify_Requirements::is_api_key_valid() ) {
 			?>
 			<h2 class="imagify-options-title">
-				<?php esc_html_e( 'Account Type', 'imagify' ); ?>
-				<strong class="imagify-user-plan-label"><?php echo $user ? esc_html( $user->plan_label ) : ''; ?></strong>
+				<?php esc_html_e( 'API Key', 'imagify' ); ?>
 			</h2>
 			<?php
 		} else {
@@ -96,7 +101,7 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 		?>
 
 		<div class="imagify-api-line">
-			<label for="api_key"><?php echo $options->get( 'api_key' ) ? esc_html__( 'API Key', 'imagify' ) : esc_html__( 'Enter Your API Key Below', 'imagify' ); ?></label>
+			<label for="api_key" class="screen-reader-text"><?php echo $options->get( 'api_key' ) ? esc_html__( 'API Key', 'imagify' ) : esc_html__( 'Enter Your API Key Below', 'imagify' ); ?></label>
 			<input type="text" size="35" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="<?php echo $options->get_option_name(); ?>[api_key]" id="api_key">
 			<?php
 			if ( Imagify_Requirements::is_api_key_valid() ) {
