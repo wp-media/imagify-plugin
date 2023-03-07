@@ -25,7 +25,10 @@
 			"dealerdirect/phpcodesniffer-composer-installer": true,
 			"dangoodman/composer-for-wordpress": true,
 			"mnsami/composer-custom-directory-installer": true
-		}
+		},
+        "platform": {
+            "php": "7.2"
+        }
 	},
 	"support": {
 		"issues": "https://github.com/wp-media/imagify-plugin/issues",
