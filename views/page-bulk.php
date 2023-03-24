@@ -1,4 +1,7 @@
 <?php
+
+use Imagify\User\User;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 ?>
 <div class="wrap imagify-settings imagify-bulk">
@@ -86,7 +89,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 				<?php
 				if ( ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || ! IMAGIFY_HIDDEN_ACCOUNT ) && Imagify_Requirements::is_api_key_valid() ) {
-					$user = new Imagify_User();
+					$user = new User();
 					?>
 					<div class="imagify-options-title">
 						<div class="imagify-th-titles imagify-flex imagify-vcenter">

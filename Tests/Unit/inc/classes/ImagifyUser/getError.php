@@ -3,19 +3,18 @@ namespace Imagify\Tests\Unit\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
 use Imagify\Tests\Unit\TestCase;
+use Imagify\User\User;
 use WP_Error;
 
-use Imagify_User;
-
 /**
- * Tests for Imagify_User->get_error().
+ * Tests for \Imagify\User\User->get_error().
  *
- * @covers Imagify_User::get_error
+ * @covers \Imagify\User\User::get_error
  * @group  ImagifyAPI
  */
 class Test_GetError extends TestCase {
 	/**
-	 * Test Imagify_User->get_error() should return false when succesfully fetched user account data.
+	 * Test \Imagify\User\User->get_error() should return false when succesfully fetched user account data.
 	 */
 	public function testShouldReturnFalseWhenFetchedUserData() {
 		$userData = (object) [
@@ -33,17 +32,17 @@ class Test_GetError extends TestCase {
 
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
 
-		$this->assertFalse( ( new Imagify_User() )->get_error() );
+		$this->assertFalse( ( new User() )->get_error() );
 	}
 
 	/**
-	 * Test Imagify_User->get_error() should return a WP_Error object when couldn’t fetch user account data.
+	 * Test \Imagify\User\User->get_error() should return a WP_Error object when couldn’t fetch user account data.
 	 */
 	public function testShouldReturnErrorWhenCouldNotFetchUserData() {
 		$wp_error = new WP_Error( 'error_id', 'Error Message' );
 
 		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
 
-		$this->assertSame( $wp_error, ( new Imagify_User() )->get_error() );
+		$this->assertSame( $wp_error, ( new User() )->get_error() );
 	}
 }

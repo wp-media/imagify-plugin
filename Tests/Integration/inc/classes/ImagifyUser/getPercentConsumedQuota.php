@@ -4,11 +4,11 @@ namespace Imagify\Tests\Integration\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
 use Imagify;
+use Imagify\User\User;
 use Imagify_Data;
-use Imagify_User;
 
 /**
- * @covers Imagify_User::get_percent_consumed_quota
+ * @covers \Imagify\User\User::get_percent_consumed_quota
  * @group  ImagifyAPI
  */
 class Test_GetPercentConsumedQuota extends TestCase {
@@ -35,7 +35,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 
 		Functions\expect( 'imagify_round_half_five' )->never();
 
-		$this->assertSame( 0, ( new Imagify_User() )->get_percent_consumed_quota() );
+		$this->assertSame( 0, ( new User() )->get_percent_consumed_quota() );
 	}
 
 	public function testShouldReturnQuotaWhenFetchedUserData() {
@@ -46,7 +46,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 
 		Imagify_Data::get_instance()->set( 'previous_quota_percent', 100.0 ); // Previous quota was 100%.
 
-		$newQuota = ( new Imagify_User() )->get_percent_consumed_quota();
+		$newQuota = ( new User() )->get_percent_consumed_quota();
 
 		$this->assertNotSame( 0, $newQuota );
 
