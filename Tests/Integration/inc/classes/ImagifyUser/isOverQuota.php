@@ -78,6 +78,8 @@ class Test_IsOverQuota extends TestCase {
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
 		$imagifyUser = new User();
+		//
+		$imagifyUser->plan_id                      = 1;
 		// Make it over-quota.
 		$imagifyUser->quota                        = 1000;
 		$imagifyUser->consumed_current_month_quota = 1000;
