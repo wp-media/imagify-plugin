@@ -185,19 +185,6 @@ class Imagify_User {
 		$previous_percent = Imagify_Data::get_instance()->get( 'previous_quota_percent' );
 
 
-        if($percent === 100) {
-            /**
-             * Triggered when the consumed quota percent decreases below 80%.
-             *
-             * @since  1.7
-             * @author Grégory Viguier
-             *
-             * @param float|int $percent          The current percentage of consumed quota.
-             * @param float|int $previous_percent The previous percentage of consumed quota.
-             */
-            do_action( 'imagify_not_almost_over_quota_anymore', $percent, $previous_percent );
-        }
-
 		// Percent is not 100% anymore.
 		if ( 100.0 === (float) $previous_percent && $percent < 100 ) {
 			/**
@@ -265,7 +252,6 @@ class Imagify_User {
 	 * @return bool
 	 */
 	public function is_over_quota() {
-        //return true;
 		if ( $this->get_error() ) {
 			return false;
 		}
