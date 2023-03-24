@@ -1,5 +1,6 @@
 <?php
 namespace Imagify\User;
+
 use Date;
 use Imagify_Data;
 use WP_Error;
@@ -141,8 +142,7 @@ class User {
 	 * Get the possible error returned when fetching user data.
 	 *
 	 * @return bool|WP_Error A \WP_Error object if the request to fetch the user data failed. False overwise.
-	 *@since 1.9.9
-	 *
+	 * @since 1.9.9
 	 */
 	public function get_error() {
 		return $this->error;
@@ -200,7 +200,7 @@ class User {
 		}
 
 		// Percent is not >= 80% anymore.
-		if ( ( (float) $previous_percent >= 80.0 && $percent < 80 ) || $percent === 100 ) {
+		if ( ( (float) $previous_percent >= 80.0 && $percent < 80 ) ) {
 			/**
 			 * Triggered when the consumed quota percent decreases below 80%.
 			 *
