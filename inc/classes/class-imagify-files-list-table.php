@@ -99,8 +99,8 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$file_ids = array();
 		$where    = '';
 
-		$sent_orderby  = htmlspecialchars( wp_unslash( $_GET['orderby'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$sent_order    = htmlspecialchars( wp_unslash( $_GET['order'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$sent_orderby  = htmlspecialchars( wp_unslash( $_GET['orderby'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$sent_order    = htmlspecialchars( wp_unslash( $_GET['order'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		$folder_filter = self::get_folder_filter();
 		$status_filter = self::get_status_filter();
 
@@ -1031,7 +1031,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			'unoptimized' => 1,
 			'errors'      => 1,
 		);
-		$filter = trim( htmlspecialchars( wp_unslash( $_GET['status-filter'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$filter = trim( htmlspecialchars( wp_unslash( $_GET['status-filter'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		$filter = isset( $values[ $filter ] ) ? $filter : '';
 
 		return $filter;
