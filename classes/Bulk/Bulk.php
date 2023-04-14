@@ -419,7 +419,7 @@ class Bulk {
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
-		$context = 'POST' === $method ? $_POST[ $parameter ] : $_GET[$parameter ];
+		$context = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$context = htmlspecialchars( $context );
 
 		return imagify_sanitize_context( $context );

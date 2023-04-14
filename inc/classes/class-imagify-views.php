@@ -412,7 +412,7 @@ class Imagify_Views {
 	public function is_settings_page() {
 		global $pagenow;
 
-		$page = htmlspecialchars( $_GET['page'] );
+		$page = htmlspecialchars( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		if ( $this->get_settings_page_slug() !== $page ) {
 			return false;
@@ -435,7 +435,7 @@ class Imagify_Views {
 	public function is_bulk_page() {
 		global $pagenow;
 
-		$page = htmlspecialchars( $_GET['page'] );
+		$page = htmlspecialchars( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		return 'upload.php' === $pagenow && $this->get_bulk_page_slug() === $page;
 	}
@@ -450,7 +450,7 @@ class Imagify_Views {
 	public function is_files_page() {
 		global $pagenow;
 
-		$page = htmlspecialchars( $_GET['page'] );
+		$page = htmlspecialchars( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		return 'upload.php' === $pagenow && $this->get_files_page_slug() === $page;
 	}
@@ -465,7 +465,7 @@ class Imagify_Views {
 	public function is_wp_library_page() {
 		global $pagenow;
 
-		$page = htmlspecialchars( $_GET['page'] );
+		$page = htmlspecialchars( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		return 'upload.php' === $pagenow && ! $page;
 	}
