@@ -1215,7 +1215,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
-		$context = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$context = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		$context = htmlspecialchars( $context );
 
 		return imagify_sanitize_context( $context );
@@ -1252,7 +1252,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_folder_type( $method = 'GET', $parameter = 'folder_type' ) {
-		$folder_type = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$folder_type = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		return htmlspecialchars( $folder_type );
 	}
@@ -1268,7 +1268,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_imagify_action( $method = 'GET', $parameter = 'imagify_action' ) {
-		$action = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$action = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		$action = htmlspecialchars( $action );
 
 		return $action ? $action : 'optimize';
