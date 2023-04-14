@@ -1148,7 +1148,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$notice = filter_input( INPUT_GET, 'ad', FILTER_SANITIZE_STRING );
+		$notice = htmlspecialchars( $_GET['ad'] );
 
 		if ( ! $notice ) {
 			imagify_maybe_redirect();
@@ -1215,8 +1215,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
-		$method  = 'POST' === $method ? INPUT_POST : INPUT_GET;
-		$context = filter_input( $method, $parameter, FILTER_SANITIZE_STRING );
+		$context = 'POST' === $method ? $_POST[ $parameter ] : $_GET[$parameter ];
+		$context = htmlspecialchars( $context );
 
 		return imagify_sanitize_context( $context );
 	}
@@ -1246,14 +1246,15 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $method    The method used: 'GET' (default), or 'POST'.
-	 * @param  string $parameter The name of the parameter to look for.
+	 * @param string $method    The method used: 'GET' (default), or 'POST'.
+	 * @param string $parameter The name of the parameter to look for.
+	 *
 	 * @return string
 	 */
 	public function get_folder_type( $method = 'GET', $parameter = 'folder_type' ) {
-		$method = 'POST' === $method ? INPUT_POST : INPUT_GET;
+		$folder_type = 'POST' === $method ? $_POST[ $parameter ] : $_GET[$parameter ];
 
-		return filter_input( $method, $parameter, FILTER_SANITIZE_STRING );
+		return htmlspecialchars( $folder_type );
 	}
 
 	/**
@@ -1261,13 +1262,14 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $method    The method used: 'GET' (default), or 'POST'.
-	 * @param  string $parameter The name of the parameter to look for.
+	 * @param string $method    The method used: 'GET' (default), or 'POST'.
+	 * @param string $parameter The name of the parameter to look for.
+	 *
 	 * @return string
 	 */
 	public function get_imagify_action( $method = 'GET', $parameter = 'imagify_action' ) {
-		$method = 'POST' === $method ? INPUT_POST : INPUT_GET;
-		$action = filter_input( $method, $parameter, FILTER_SANITIZE_STRING );
+		$action = 'POST' === $method ? $_POST[ $parameter ] : $_GET[$parameter ];
+		$action = htmlspecialchars( $action );
 
 		return $action ? $action : 'optimize';
 	}

@@ -131,9 +131,8 @@ class Imagify_Settings {
 	 * @return bool
 	 */
 	public function is_form_submit() {
-		return filter_input( INPUT_POST, 'option_page', FILTER_SANITIZE_STRING ) === $this->settings_group && filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING ) === 'update';
+		return htmlspecialchars( $_POST['option_page'] ) === $this->settings_group && htmlspecialchars( $_POST['action'] ) === 'update';
 	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** ON FORM SUBMIT ========================================================================== */

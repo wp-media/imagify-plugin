@@ -4,15 +4,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 /**
  * Class that handles templates and menus.
  *
- * @since  1.7
- * @author Grégory Viguier
+ * @since 1.7
  */
 class Imagify_Views {
 
 	/**
 	 * Class version.
 	 *
-	 * @var   string
+	 * @var string
 	 * @since 1.7
 	 */
 	const VERSION = '1.1';
@@ -20,64 +19,56 @@ class Imagify_Views {
 	/**
 	 * Slug used for the settings page URL.
 	 *
-	 * @var    string
-	 * @since  1.7
-	 * @access protected
+	 * @var string
+	 * @since 1.7
 	 */
 	protected $slug_settings;
 
 	/**
 	 * Slug used for the bulk optimization page URL.
 	 *
-	 * @var    string
-	 * @since  1.7
-	 * @access protected
+	 * @var string
+	 * @since 1.7
 	 */
 	protected $slug_bulk;
 
 	/**
 	 * Slug used for the "custom folders" page URL.
 	 *
-	 * @var    string
-	 * @since  1.7
-	 * @access protected
+	 * @var string
+	 * @since 1.7
 	 */
 	protected $slug_files;
 
 	/**
 	 * A list of JS templates to print at the end of the page.
 	 *
-	 * @var    array
-	 * @since  1.9
-	 * @access protected
+	 * @var array
+	 * @since 1.9
 	 */
 	protected $templates_in_footer = [];
 
 	/**
 	 * Stores the "custom folders" files list instance.
 	 *
-	 * @var    object Imagify_Files_List_Table
-	 * @since  1.7
-	 * @access protected
+	 * @var Imagify_Files_List_Table
+	 * @since 1.7
 	 */
 	protected $list_table;
 
 	/**
 	 * Filesystem object.
 	 *
-	 * @var    object Imagify_Filesystem
-	 * @since  1.7.1
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var Imagify_Filesystem
+	 * @since 1.7.1
 	 */
 	protected $filesystem;
 
 	/**
 	 * The single instance of the class.
 	 *
-	 * @var    object
-	 * @since  1.7
-	 * @access protected
+	 * @var object
+	 * @since 1.7
 	 */
 	protected static $_instance;
 
@@ -89,9 +80,7 @@ class Imagify_Views {
 	/**
 	 * The constructor.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access protected
+	 * @since 1.7
 	 */
 	protected function __construct() {
 		$this->slug_settings = IMAGIFY_SLUG;
@@ -103,9 +92,7 @@ class Imagify_Views {
 	/**
 	 * Get the main Instance.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 *
 	 * @return object Main instance.
 	 */
@@ -120,9 +107,7 @@ class Imagify_Views {
 	/**
 	 * Launch the hooks.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 */
 	public function init() {
 		// Menu items.
@@ -152,9 +137,7 @@ class Imagify_Views {
 	/**
 	 * Add sub-menus for all sites.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 */
 	public function add_site_menus() {
 		$wp_context = imagify_get_context( 'wp' );
@@ -187,9 +170,7 @@ class Imagify_Views {
 	/**
 	 * Add menu and sub-menus in the network admin when Imagify is network-activated.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 */
 	public function add_network_menus() {
 		global $submenu;
@@ -232,9 +213,7 @@ class Imagify_Views {
 	/**
 	 * Add links to the plugin row in the plugins list.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 *
 	 * @param  array $actions An array of action links.
 	 * @return array
@@ -254,9 +233,7 @@ class Imagify_Views {
 	/**
 	 * The main settings page.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 */
 	public function display_settings_page() {
 		$this->print_template( 'page-settings' );
@@ -265,9 +242,7 @@ class Imagify_Views {
 	/**
 	 * The bulk optimization page.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 */
 	public function display_bulk_page() {
 		$types = array();
@@ -363,9 +338,7 @@ class Imagify_Views {
 	/**
 	 * The page displaying the "custom folders" files.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 */
 	public function display_files_list() {
 		$this->print_template( 'page-files-list' );
@@ -374,9 +347,7 @@ class Imagify_Views {
 	/**
 	 * Initiate the "custom folders" list table data.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 */
 	public function load_files_list() {
 		// Instantiate the list.
@@ -396,9 +367,7 @@ class Imagify_Views {
 	/**
 	 * Get the settings page slug.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 *
 	 * @return string
 	 */
@@ -409,9 +378,7 @@ class Imagify_Views {
 	/**
 	 * Get the bulk optimization page slug.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 *
 	 * @return string
 	 */
@@ -422,9 +389,7 @@ class Imagify_Views {
 	/**
 	 * Get the "custom folders" files page slug.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 *
 	 * @return string
 	 */
@@ -440,16 +405,14 @@ class Imagify_Views {
 	/**
 	 * Tell if we’re displaying the settings page.
 	 *
-	 * @since  1.9
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.9
 	 *
 	 * @return bool
 	 */
 	public function is_settings_page() {
 		global $pagenow;
 
-		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$page = htmlspecialchars( $_GET['page'] );
 
 		if ( $this->get_settings_page_slug() !== $page ) {
 			return false;
@@ -465,16 +428,14 @@ class Imagify_Views {
 	/**
 	 * Tell if we’re displaying the bulk optimization page.
 	 *
-	 * @since  1.9
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.9
 	 *
 	 * @return bool
 	 */
 	public function is_bulk_page() {
 		global $pagenow;
 
-		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$page = htmlspecialchars( $_GET['page'] );
 
 		return 'upload.php' === $pagenow && $this->get_bulk_page_slug() === $page;
 	}
@@ -482,16 +443,14 @@ class Imagify_Views {
 	/**
 	 * Tell if we’re displaying the custom files list page.
 	 *
-	 * @since  1.9
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.9
 	 *
 	 * @return bool
 	 */
 	public function is_files_page() {
 		global $pagenow;
 
-		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$page = htmlspecialchars( $_GET['page'] );
 
 		return 'upload.php' === $pagenow && $this->get_files_page_slug() === $page;
 	}
@@ -499,16 +458,14 @@ class Imagify_Views {
 	/**
 	 * Tell if we’re displaying the WP media library page.
 	 *
-	 * @since  1.9
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.9
 	 *
 	 * @return bool
 	 */
 	public function is_wp_library_page() {
 		global $pagenow;
 
-		$page = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$page = htmlspecialchars( $_GET['page'] );
 
 		return 'upload.php' === $pagenow && ! $page;
 	}
@@ -516,9 +473,7 @@ class Imagify_Views {
 	/**
 	 * Tell if we’re displaying a media page.
 	 *
-	 * @since  1.9
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.9
 	 *
 	 * @return bool
 	 */
@@ -536,9 +491,7 @@ class Imagify_Views {
 	/**
 	 * Get the remaining quota in percent.
 	 *
-	 * @since  1.8.1
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.8.1
 	 *
 	 * @return int
 	 */
@@ -558,9 +511,7 @@ class Imagify_Views {
 	/**
 	 * Get the HTML class used for the quota (to change the color when out of quota for example).
 	 *
-	 * @since  1.8.1
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.8.1
 	 *
 	 * @return string
 	 */
@@ -588,9 +539,7 @@ class Imagify_Views {
 	/**
 	 * Get the HTML tag used for the quota (the weather-like icon).
 	 *
-	 * @since  1.8.1
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.8.1
 	 *
 	 * @return string
 	 */
@@ -622,9 +571,7 @@ class Imagify_Views {
 	/**
 	 * Get a template contents.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 *
 	 * @param  string $template The template name.
 	 * @param  mixed  $data     Some data to pass to the template.
@@ -648,9 +595,7 @@ class Imagify_Views {
 	/**
 	 * Print a template.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 *
 	 * @param string $template The template name.
 	 * @param mixed  $data     Some data to pass to the template.
@@ -662,9 +607,7 @@ class Imagify_Views {
 	/**
 	 * Add a template to the list of JS templates to print at the end of the page.
 	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.7
 	 *
 	 * @param string $template The template name.
 	 */
@@ -691,9 +634,7 @@ class Imagify_Views {
 	/**
 	 * Print the JS templates that have been added to the "queue".
 	 *
-	 * @since  1.9
-	 * @author Grégory Viguier
-	 * @access public
+	 * @since 1.9
 	 */
 	public function print_js_templates() {
 		if ( ! $this->templates_in_footer ) {
@@ -717,9 +658,7 @@ class Imagify_Views {
 	/**
 	 * Create HTML attributes from an array.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param  array $attributes A list of attribute pairs.
 	 * @return string            HTML attributes.
