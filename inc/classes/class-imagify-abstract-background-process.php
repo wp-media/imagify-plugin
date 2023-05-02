@@ -19,6 +19,13 @@ abstract class Imagify_Abstract_Background_Process extends Imagify_WP_Background
 	protected $prefix = 'imagify';
 
 	/**
+	 * URL to query on.
+	 *
+	 * @var string
+	 */
+	protected $query_url = '';
+
+	/**
 	 * Set to true to automatically displatch at the end of the page.
 	 *
 	 * @var bool
