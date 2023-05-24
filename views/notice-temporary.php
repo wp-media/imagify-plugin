@@ -15,7 +15,7 @@ foreach ( $notices as $type => $type_notices ) {
 	?>
 	<div class="<?php echo $type; ?> settings-error notice is-dismissible">
 		<?php foreach ( $type_notices as $details ) { ?>
-			<p><strong><?php echo $details['message']; ?></strong></p>
+			<p><strong><?php echo esc_html( $details['message'] ); ?></strong></p>
 		<?php } ?>
 	</div>
 	<?php
