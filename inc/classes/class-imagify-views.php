@@ -465,7 +465,7 @@ class Imagify_Views {
 	public function is_wp_library_page() {
 		global $pagenow;
 
-		return 'upload.php' === $pagenow && ! isset( $_GET['page'] );
+		return 'upload.php' === $pagenow && ! isset( $_GET['page'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
