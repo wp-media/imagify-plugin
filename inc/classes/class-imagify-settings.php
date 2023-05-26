@@ -131,9 +131,8 @@ class Imagify_Settings {
 	 * @return bool
 	 */
 	public function is_form_submit() {
-		return filter_input( INPUT_POST, 'option_page', FILTER_SANITIZE_STRING ) === $this->settings_group && filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING ) === 'update';
+		return htmlspecialchars( wp_unslash( $_POST['option_page'] ) ) === $this->settings_group && htmlspecialchars( wp_unslash( $_POST['action'] ) ) === 'update'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** ON FORM SUBMIT ========================================================================== */
