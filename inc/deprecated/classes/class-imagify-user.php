@@ -1,9 +1,10 @@
 <?php
 
 /**
- * Imagify User class.
+ * Deprecated class that handles Imagify User class.
  *
  * @since 1.0
+ * @deprecated
  */
 class Imagify_User {
 	/**
@@ -153,7 +154,6 @@ class Imagify_User {
 	 */
 	public function get_percent_consumed_quota() {
 		static $done = false;
-
 		if ( $this->get_error() ) {
 			return 0;
 		}
@@ -176,11 +176,14 @@ class Imagify_User {
 
 		$percent = (float) $percent;
 
+        $percent = 100;
+
 		if ( $done ) {
 			return $percent;
 		}
 
 		$previous_percent = Imagify_Data::get_instance()->get( 'previous_quota_percent' );
+
 
 		// Percent is not 100% anymore.
 		if ( 100.0 === (float) $previous_percent && $percent < 100 ) {

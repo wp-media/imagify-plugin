@@ -3,32 +3,32 @@ namespace Imagify\Tests\Unit\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
 use Imagify\Tests\Unit\TestCase;
+use Imagify\User\User;
 use Mockery;
 use WP_Error;
 
 use Imagify_Data;
-use Imagify_User;
 
 /**
- * Tests for Imagify_User->is_over_quota().
+ * Tests for Imagify\User\User->is_over_quota().
  *
- * @covers Imagify_User::is_over_quota
+ * @covers \Imagify\User\User::is_over_quota
  * @group  ImagifyAPI
  */
 class Test_IsOverQuota extends TestCase {
 	/**
-	 * Test Imagify_User->is_over_quota() should return false when couldn’t fetch user account data.
+	 * Test Imagify\User\User->is_over_quota() should return false when couldn’t fetch user account data.
 	 */
 	public function testShouldReturnFalseWhenCouldNotFetchUserData() {
 		$wp_error = new WP_Error( 'error_id', 'Error Message' );
 
 		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
 
-		$this->assertFalse( ( new Imagify_User() )->is_over_quota() );
+		$this->assertFalse( ( new User() )->is_over_quota() );
 	}
 
 	/**
-	 * Test Imagify_User->is_over_quota() should return false when paid account.
+	 * Test Imagify\User\User->is_over_quota() should return false when paid account.
 	 */
 	public function testShouldReturnFalseWhenPaidAccount() {
 		$userData = (object) [
@@ -46,11 +46,11 @@ class Test_IsOverQuota extends TestCase {
 
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
 
-		$this->assertFalse( ( new Imagify_User() )->is_over_quota() );
+		$this->assertFalse( ( new User() )->is_over_quota() );
 	}
 
 	/**
-	 * Test Imagify_User->is_over_quota() should return false when free and not over quota.
+	 * Test Imagify\User\User->is_over_quota() should return false when free and not over quota.
 	 */
 	public function testShouldReturnFalseWhenFreeNotOverQuota() {
 		$userData = (object) [
@@ -68,11 +68,11 @@ class Test_IsOverQuota extends TestCase {
 
 		$this->createMocks( $userData, 90 );
 
-		$this->assertFalse( ( new Imagify_User() )->is_over_quota() );
+		$this->assertFalse( ( new User() )->is_over_quota() );
 	}
 
 	/**
-	 * Test Imagify_User->is_over_quota() should return true when free and over quota.
+	 * Test Imagify\User\User->is_over_quota() should return true when free and over quota.
 	 */
 	public function testShouldReturnTrueWhenFreeOverQuota() {
 		$userData = (object) [
@@ -90,7 +90,7 @@ class Test_IsOverQuota extends TestCase {
 
 		$this->createMocks( $userData, 100 );
 
-		$this->assertTrue( ( new Imagify_User() )->is_over_quota() );
+		$this->assertTrue( ( new User() )->is_over_quota() );
 	}
 
 	private function createMocks( $userData, $dataPreviousQuotaPercent ) {

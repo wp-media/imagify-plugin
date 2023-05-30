@@ -3,22 +3,22 @@ namespace Imagify\Tests\Unit\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
 use Imagify\Tests\Unit\TestCase;
+use Imagify\User\User;
 use Mockery;
 use WP_Error;
 
 use Imagify_Data;
-use Imagify_User;
 
 /**
- * Tests for Imagify_User->get_percent_consumed_quota().
+ * Tests for \Imagify\User\User->get_percent_consumed_quota().
  *
- * @covers Imagify_User::get_percent_consumed_quota
+ * @covers \Imagify\User\User::get_percent_consumed_quota
  * @group  ImagifyAPI
  */
 class Test_GetPercentConsumedQuota extends TestCase {
 
 	/**
-	 * Test Imagify_User->get_percent_consumed_quota() should return 0 when couldn’t fetch user account data.
+	 * Test \Imagify\User\User->get_percent_consumed_quota() should return 0 when couldn’t fetch user account data.
 	 */
 	public function testShouldReturnZeroWhenCouldNotFetchUserData() {
 		$wp_error = new WP_Error( 'error_id', 'Error Message' );
@@ -26,11 +26,11 @@ class Test_GetPercentConsumedQuota extends TestCase {
 		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
 		Functions\expect( 'imagify_round_half_five' )->never();
 
-		$this->assertSame( ( new Imagify_User() )->get_percent_consumed_quota(), 0 );
+		$this->assertSame( ( new User() )->get_percent_consumed_quota(), 0 );
 	}
 
 	/**
-	 * Test Imagify_User->get_percent_consumed_quota() should return a quota when able to fetch user account data.
+	 * Test \Imagify\User\User->get_percent_consumed_quota() should return a quota when able to fetch user account data.
 	 */
 	public function testShouldReturnQuotaWhenFetchedUserData() {
 		$userData = (object) [
@@ -65,7 +65,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 		$imagify_data_mock->expects( 'set' )
 			->never();
 
-		$this->assertSame( ( new Imagify_User() )->get_percent_consumed_quota(), 90.0 );
+		$this->assertSame( ( new User() )->get_percent_consumed_quota(), 90.0 );
 
 		$userData->consumed_current_month_quota = 500; // Current consumed quota 50%.
 
@@ -74,6 +74,6 @@ class Test_GetPercentConsumedQuota extends TestCase {
 		$imagify_data_mock->shouldReceive( 'get' )
 			->never();
 
-		$this->assertSame( ( new Imagify_User() )->get_percent_consumed_quota(), 50.0 );
+		$this->assertSame( ( new User() )->get_percent_consumed_quota(), 50.0 );
 	}
 }

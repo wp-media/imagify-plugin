@@ -1,5 +1,6 @@
 <?php
 use Imagify\Notices\Notices;
+use Imagify\User\User;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
@@ -400,7 +401,7 @@ function imagify_cache_user() {
 		return false;
 	}
 
-	$user    = new Imagify_User();
+	$user    = new User();
 	$data    = (object) get_object_vars( $user );
 	$methods = get_class_methods( $user );
 

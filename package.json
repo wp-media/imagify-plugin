@@ -16,5 +16,8 @@
 		"grunt-contrib-uglify": "^5.0.1",
 		"grunt-eslint": "^24.0.0",
 		"grunt-postcss": "^0.9.0"
+	},
+	"scripts": {
+		"build": "grunt"
 	}
 }

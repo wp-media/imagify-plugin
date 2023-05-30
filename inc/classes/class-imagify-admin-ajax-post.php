@@ -1,6 +1,7 @@
 <?php
 
 use Imagify\Traits\InstanceGetterTrait;
+use Imagify\User\User;
 
 /**
  * Class that handles admin ajax/post callbacks.
@@ -220,13 +221,13 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$process = imagify_get_optimization_process( $media_id, $context );
 
 		if ( ! $process->is_valid() ) {
-			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
 		$data = $process->get_data();
 
 		if ( ! $data->is_already_optimized() ) {
-			return new \WP_Error( 'not_already_optimized', __( 'This media does not have the right optimization status.', 'imagify' ) );
+			return new WP_Error( 'not_already_optimized', __( 'This media does not have the right optimization status.', 'imagify' ) );
 		}
 
 		if ( ! $process->has_webp() ) {
@@ -237,7 +238,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$deleted = $process->delete_webp_files();
 
 		if ( is_wp_error( $deleted ) ) {
-			return new \WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
+			return new WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
 		}
 
 		return true;
@@ -841,7 +842,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$user             = new Imagify_User();
+		$user             = new User();
 		$views            = Imagify_Views::get_instance();
 		$unconsumed_quota = $views->get_quota_percent();
 		$message          = '';

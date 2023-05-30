@@ -1125,4 +1125,15 @@ window.imagify = window.imagify || {};
 
 	w.imagify.bulk.init();
 
+	if (imagifyBulk.isOverQuota) {
+		w.imagify.bulk.displayError( {
+			title:             imagifyBulk.labels.overQuotaTitle,
+			html:              $( '#tmpl-imagify-overquota-alert' ).html(),
+			type:              'info',
+			customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
+			showConfirmButton: false
+		} );
+	}
+
+
 } )(jQuery, document, window);

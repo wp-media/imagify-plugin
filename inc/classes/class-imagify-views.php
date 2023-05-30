@@ -1,4 +1,7 @@
 <?php
+
+use Imagify\User\User;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -500,7 +503,7 @@ class Imagify_Views {
 			return $quota;
 		}
 
-		$user  = new Imagify_User();
+		$user  = new User();
 		$quota = $user->get_percent_unconsumed_quota();
 
 		return $quota;

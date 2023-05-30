@@ -1,4 +1,7 @@
 <?php
+
+use Imagify\User\User;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
@@ -30,7 +33,7 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 <div class="imagify-settings-section">
 
 	<?php
-	$imagify_user = new Imagify_User();
+	$imagify_user = new User();
 
 	if (
 		$imagify_user->is_free()

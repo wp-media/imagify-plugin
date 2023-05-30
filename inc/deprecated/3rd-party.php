@@ -1,4 +1,7 @@
 <?php
+
+use Imagify\User\User;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_site_option( 'ngg_options' ) ) :
@@ -60,7 +63,7 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 
 		add_filter( 'imagify_count_saving_data', 'imagify_ngg_count_saving_data', 8 );
 		$saving_data = imagify_count_saving_data();
-		$user        = new Imagify_User();
+		$user        = new User();
 
 		$response['imagify_bulk_data'] = array(
 			// User account.

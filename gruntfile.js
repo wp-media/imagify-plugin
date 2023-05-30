@@ -86,4 +86,5 @@ module.exports = function( grunt ) {
 	grunt.registerTask( 'jsh',    [ 'eslint' ] );
 	grunt.registerTask( 'esl',    [ 'eslint' ] );
 	grunt.registerTask( 'minify', [ 'eslint', 'uglify', 'postcss', 'cssmin' ] );
+	grunt.registerTask('default', ['css', 'minify']);
 };
