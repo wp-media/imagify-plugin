@@ -95,6 +95,7 @@ class CustomFolders extends AbstractBulk {
 		$files_table   = Imagify_Files_DB::get_instance()->get_table_name();
 		$folders_table = Imagify_Folders_DB::get_instance()->get_table_name();
 		$mime_types    = Imagify_DB::get_mime_types( 'image' );
+		$mime_types   = str_replace( ",'image/webp'", '', $mime_types );
 		$webp_suffix   = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::WEBP_SUFFIX' );
 		$files         = $wpdb->get_results( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"

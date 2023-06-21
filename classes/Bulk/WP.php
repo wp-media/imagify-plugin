@@ -184,6 +184,7 @@ class WP extends AbstractBulk {
 		$this->set_no_time_limit();
 
 		$mime_types   = Imagify_DB::get_mime_types( 'image' );
+		$mime_types   = str_replace( ",'image/webp'", '', $mime_types );
 		$statuses     = Imagify_DB::get_post_statuses();
 		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
 		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( [
