@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Imagify\Notices;
 
 use Imagify\Traits\InstanceGetterTrait;
+use Imagify\User\User;
 
 /**
  * Class that handles the admin notices.
@@ -467,7 +468,7 @@ class Notices {
 			return $display;
 		}
 
-		$user = new \Imagify_User();
+		$user = new User();
 
 		// Don't display the notice if the user's unconsumed quota is superior to 20%.
 		if ( $user->get_percent_unconsumed_quota() > 20 ) {

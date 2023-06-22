@@ -413,13 +413,14 @@ class Bulk {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $method The method used: 'GET' (default), or 'POST'.
-	 * @param  string $parameter The name of the parameter to look for.
+	 * @param string $method The method used: 'GET' (default), or 'POST'.
+	 * @param string $parameter The name of the parameter to look for.
+	 *
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
-		$method  = 'POST' === $method ? INPUT_POST : INPUT_GET;
-		$context = filter_input( $method, $parameter, FILTER_SANITIZE_STRING );
+		$context = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$context = htmlspecialchars( $context );
 
 		return imagify_sanitize_context( $context );
 	}
@@ -557,7 +558,7 @@ class Bulk {
 	public function bulk_get_stats_callback() {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
-		$folder_types = filter_input( INPUT_GET, 'types', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY );
+		$folder_types = filter_input( INPUT_GET, 'types', FILTER_REQUIRE_ARRAY );
 		$folder_types = is_array( $folder_types ) ? array_filter( $folder_types, 'is_string' ) : [];
 
 		if ( ! $folder_types ) {

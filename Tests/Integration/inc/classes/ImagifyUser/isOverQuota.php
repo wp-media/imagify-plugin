@@ -4,10 +4,10 @@ namespace Imagify\Tests\Integration\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
 use Imagify;
-use Imagify_User;
+use Imagify\User\User;
 
 /**
- * @covers Imagify_User::is_over_quota
+ * @covers \Imagify\User\User::is_over_quota
  * @group  ImagifyAPI
  */
 class Test_IsOverQuota extends TestCase {
@@ -34,7 +34,7 @@ class Test_IsOverQuota extends TestCase {
 
 		Functions\expect( 'imagify_round_half_five' )->never();
 
-		$this->assertFalse( ( new Imagify_User() )->is_over_quota() );
+		$this->assertFalse( ( new User() )->is_over_quota() );
 	}
 
 	public function testShouldReturnFalseWhenPaidAccount() {
@@ -43,7 +43,7 @@ class Test_IsOverQuota extends TestCase {
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
-		$imagifyUser = new Imagify_User();
+		$imagifyUser = new User();
 		// Make our account a paid one.
 		$imagifyUser->plan_id = 2;
 		// Even if it is supposed to be over-quota.
@@ -61,7 +61,7 @@ class Test_IsOverQuota extends TestCase {
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
-		$imagifyUser = new Imagify_User();
+		$imagifyUser = new User();
 		// Make sure the account is not over-quota.
 		$imagifyUser->quota                        = 1000;
 		$imagifyUser->consumed_current_month_quota = 200;
@@ -77,7 +77,9 @@ class Test_IsOverQuota extends TestCase {
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
-		$imagifyUser = new Imagify_User();
+		$imagifyUser = new User();
+		//
+		$imagifyUser->plan_id                      = 1;
 		// Make it over-quota.
 		$imagifyUser->quota                        = 1000;
 		$imagifyUser->consumed_current_month_quota = 1000;

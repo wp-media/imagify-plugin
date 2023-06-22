@@ -1,6 +1,7 @@
 <?php
 
 use Imagify\Traits\InstanceGetterTrait;
+use Imagify\User\User;
 
 /**
  * Class that handles admin ajax/post callbacks.
@@ -220,13 +221,13 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$process = imagify_get_optimization_process( $media_id, $context );
 
 		if ( ! $process->is_valid() ) {
-			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
 		$data = $process->get_data();
 
 		if ( ! $data->is_already_optimized() ) {
-			return new \WP_Error( 'not_already_optimized', __( 'This media does not have the right optimization status.', 'imagify' ) );
+			return new WP_Error( 'not_already_optimized', __( 'This media does not have the right optimization status.', 'imagify' ) );
 		}
 
 		if ( ! $process->has_webp() ) {
@@ -237,7 +238,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$deleted = $process->delete_webp_files();
 
 		if ( is_wp_error( $deleted ) ) {
-			return new \WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
+			return new WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
 		}
 
 		return true;
@@ -841,7 +842,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$user             = new Imagify_User();
+		$user             = new User();
 		$views            = Imagify_Views::get_instance();
 		$unconsumed_quota = $views->get_quota_percent();
 		$message          = '';
@@ -1148,7 +1149,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$notice = filter_input( INPUT_GET, 'ad', FILTER_SANITIZE_STRING );
+		$notice = htmlspecialchars( wp_unslash( $_GET['ad'] ) );
 
 		if ( ! $notice ) {
 			imagify_maybe_redirect();
@@ -1215,8 +1216,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
-		$method  = 'POST' === $method ? INPUT_POST : INPUT_GET;
-		$context = filter_input( $method, $parameter, FILTER_SANITIZE_STRING );
+		$context = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$context = htmlspecialchars( $context );
 
 		return imagify_sanitize_context( $context );
 	}
@@ -1246,14 +1247,15 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $method    The method used: 'GET' (default), or 'POST'.
-	 * @param  string $parameter The name of the parameter to look for.
+	 * @param string $method    The method used: 'GET' (default), or 'POST'.
+	 * @param string $parameter The name of the parameter to look for.
+	 *
 	 * @return string
 	 */
 	public function get_folder_type( $method = 'GET', $parameter = 'folder_type' ) {
-		$method = 'POST' === $method ? INPUT_POST : INPUT_GET;
+		$folder_type = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
-		return filter_input( $method, $parameter, FILTER_SANITIZE_STRING );
+		return htmlspecialchars( $folder_type );
 	}
 
 	/**
@@ -1261,13 +1263,14 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $method    The method used: 'GET' (default), or 'POST'.
-	 * @param  string $parameter The name of the parameter to look for.
+	 * @param string $method    The method used: 'GET' (default), or 'POST'.
+	 * @param string $parameter The name of the parameter to look for.
+	 *
 	 * @return string
 	 */
 	public function get_imagify_action( $method = 'GET', $parameter = 'imagify_action' ) {
-		$method = 'POST' === $method ? INPUT_POST : INPUT_GET;
-		$action = filter_input( $method, $parameter, FILTER_SANITIZE_STRING );
+		$action = 'POST' === $method ? wp_unslash( $_POST[ $parameter ] ) : wp_unslash( $_GET[ $parameter ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$action = htmlspecialchars( $action );
 
 		return $action ? $action : 'optimize';
 	}
