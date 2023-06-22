@@ -3,6 +3,7 @@ namespace Imagify\Webp\RewriteRules;
 
 use Imagify\Notices\Notices;
 use Imagify\Traits\InstanceGetterTrait;
+use Imagify\WriteFile\AbstractWriteDirConfFile;
 
 /**
  * Display WebP images on the site with rewrite rules.
@@ -11,6 +12,13 @@ use Imagify\Traits\InstanceGetterTrait;
  */
 class Display {
 	use InstanceGetterTrait;
+
+	/**
+	 * Configuration file writer.
+	 *
+	 * @var AbstractWriteDirConfFile
+	 */
+	protected $server_conf;
 
 	/**
 	 * Option value.
