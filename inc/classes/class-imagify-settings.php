@@ -131,7 +131,7 @@ class Imagify_Settings {
 	 * @return bool
 	 */
 	public function is_form_submit() {
-		if ( ! isset( $_POST['option_page'], $_POST['action'] ) ) {
+		if ( ! isset( $_POST['option_page'], $_POST['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return false;
 		}
 
