@@ -191,8 +191,8 @@ class Display {
 	 */
 	protected function build_picture_tag( $image ) {
 		/**
-  		 * List of ignored <img> attributes.
-	 	 */
+		 * List of ignored <img> attributes.
+		 */
 		$to_remove = [
 			'alt'              => '',
 			'height'           => '',
@@ -233,7 +233,7 @@ class Display {
 			unset( $attributes['data-object-fit'] );
 			unset( $attributes['data-object-position'] );
 		}
-		
+
 		/**
 		 * Image Blocks with an Aspect Ratio set.
 		 * Remove Gutenberg specific attributes from picture tag, leave them on img tag.
@@ -361,7 +361,7 @@ class Display {
 				'title'  => '',
 			];
 		}
-		
+
 		$attributes = array_diff_key( $image['attributes'], $to_remove );
 
 		/**
