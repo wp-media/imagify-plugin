@@ -190,6 +190,9 @@ class Display {
 	 * @return string       A <picture> tag.
 	 */
 	protected function build_picture_tag( $image ) {
+		/**
+  		 * List of ignored <img> attributes.
+	 	 */
 		$to_remove = [
 			'alt'              => '',
 			'height'           => '',
@@ -203,6 +206,8 @@ class Display {
 			'data-lazy-sizes'  => '',
 			'data-sizes'       => '',
 			'sizes'            => '',
+			'decoding'         => '',
+			'fetchpriority'    => '',
 		];
 
 		$attributes = array_diff_key( $image['attributes'], $to_remove );
@@ -219,14 +224,23 @@ class Display {
 		$attributes = apply_filters( 'imagify_picture_attributes', $attributes, $image );
 
 		/**
+		 * Cover Blocks.
 		 * Remove Gutenberg specific attributes from picture tag, leave them on img tag.
-		 * Optional: $attributes['class'] = 'imagify-webp-cover-wrapper'; for website admin styling ease.
 		 */
 		if ( ! empty( $image['attributes']['class'] ) && strpos( $image['attributes']['class'], 'wp-block-cover__image-background' ) !== false ) {
 			unset( $attributes['style'] );
 			unset( $attributes['class'] );
 			unset( $attributes['data-object-fit'] );
 			unset( $attributes['data-object-position'] );
+		}
+		
+		/**
+		 * Image Blocks with an Aspect Ratio set.
+		 * Remove Gutenberg specific attributes from picture tag, leave them on img tag.
+		 */
+		if ( ! empty( $image['attributes']['style'] ) && strpos( $image['attributes']['style'], 'aspect-ratio:' ) !== false ) {
+			unset( $attributes['style'] );
+			unset( $attributes['class'] );
 		}
 
 		$output = '<picture' . $this->build_attributes( $attributes ) . ">\n";
@@ -325,16 +339,20 @@ class Display {
 	 */
 	protected function build_img_tag( $image ) {
 		/**
-		 * Gutenberg fix.
+		 * Gutenberg fixes.
 		 * Check for the 'wp-block-cover__image-background' class on the original image, and leave that class and style attributes if found.
+		 * Check for aspect-ratio inline style since WP 6.3
 		 */
 		if ( ! empty( $image['attributes']['class'] ) && strpos( $image['attributes']['class'], 'wp-block-cover__image-background' ) !== false ) {
 			$to_remove = [
 				'id'     => '',
 				'title'  => '',
 			];
-
-			$attributes = array_diff_key( $image['attributes'], $to_remove );
+		} elseif ( ! empty( $image['attributes']['style'] ) && strpos( $image['attributes']['style'], 'aspect-ratio:' ) !== false ) {
+			$to_remove = [
+				'id'     => '',
+				'title'  => '',
+			];
 		} else {
 			$to_remove = [
 				'class'  => '',
@@ -342,9 +360,9 @@ class Display {
 				'style'  => '',
 				'title'  => '',
 			];
-
-			$attributes = array_diff_key( $image['attributes'], $to_remove );
 		}
+		
+		$attributes = array_diff_key( $image['attributes'], $to_remove );
 
 		/**
 		 * Filter the attributes to be added to the <img> tag.
