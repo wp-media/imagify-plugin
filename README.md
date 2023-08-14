@@ -151,3 +151,9 @@ Do not waste your time resizing and optimizing your images in Photoshop. Imagify
 ### What happens when the plugin is disabled?
 
 When the plugin is disabled, your existing images remain optimized. Backups of the original images are still available if you have enabled the images backup option.
+
+## Security Policy  
+  
+### Reporting Security Bugs  
+  
+Please report security bugs found in the site-reviews plugin's source code through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/imagify). The Patchstack team will assist you with verification, CVE assignment and take care of notifying the developers of this plugin.

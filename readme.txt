@@ -243,6 +243,10 @@ Yes, and no credit card is required.
 
 No. However, you get 20MB of quota per month for free to optimize your images (around 200 images).
 
+= Where do I report security bugs found in this plugin? =  
+  
+You can report any security bugs found in the source code of the site-reviews plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/imagify). The Patchstack team will assist you with verification, CVE assignment and take care of notifying the developers of this plugin.
+
 == Screenshots ==
 
 1. Bulk Optimization
