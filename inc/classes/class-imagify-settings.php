@@ -131,6 +131,10 @@ class Imagify_Settings {
 	 * @return bool
 	 */
 	public function is_form_submit() {
+		if ( ! isset( $_POST['option_page'], $_POST['action'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			return false;
+		}
+
 		return htmlspecialchars( wp_unslash( $_POST['option_page'] ) ) === $this->settings_group && htmlspecialchars( wp_unslash( $_POST['action'] ) ) === 'update'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
 
