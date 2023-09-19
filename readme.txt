@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, convert webp, webp, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
 Tested up to: 6.3
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -258,6 +258,13 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.1.2 =
+- Bugfix: Prevent deprecation notice with PHP 8.1 & 8.2 (#721, #723)
+- Bugfix: Escape error message before display (#729)
+- Bugfix: Don't count WebP images in the generate missing WebP images versions (#713)
+- Bugfix: Improve information related to out of quota on bulk optimization (#714)
+- Bugfix: Fix optimization filter type working with file filters on media library (#670)
+
 = 2.1.1 =
 - Enhancement: Allow WebP images to be optimized by Imagify from the plugin (#611)
 - Enhancement: Improve error message displayed when an unknown error occured (#637)
