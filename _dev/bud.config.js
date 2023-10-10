@@ -11,7 +11,7 @@ module.exports = async bud => {
 	bud.runtime('single')
 
 	await bud
-		.setPath('@dist', '../assets/js/admin')
+		.setPath('@dist', '../assets/admin')
 		.entry({
 			chart: 'chart.js',
 			bulk: 'bulk.js',
