@@ -133,6 +133,7 @@ function imagify_has_attachments_without_required_metadata() {
 		FROM $wpdb->posts AS p
 			$nodata_join
 		WHERE
+		    1 = 1
 			$nodata_where
 		LIMIT 1"
 	);
