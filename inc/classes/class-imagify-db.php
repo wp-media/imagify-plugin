@@ -162,8 +162,8 @@ class Imagify_DB {
 	 * @param string $id_field An ID field to match the metadata ID against in the JOIN clause.
 	 *                          Default is the posts table `ID` field, using the `p` alias: `p.ID`.
 	 *                          In case of "false" value or PEBKAC, fallback to the same field without alias.
-	 * @param bool $matching Set to false to get a query to fetch metas NOT matching the file extensions.
-	 * @param bool $test Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 * @param bool   $matching Set to false to get a query to fetch metas NOT matching the file extensions.
+	 * @param bool   $test Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
 	 * @param string $special_join_conditions Special conditions to apply on the join.
 	 *
 	 * @return string
@@ -191,7 +191,7 @@ class Imagify_DB {
 		$first = true;
 
 		foreach ( self::get_required_wp_metadata_aliases() as $meta_name => $alias ) {
-			if($first) {
+			if ( $first ) {
 				$first = false;
 				$clause .= "
 			$join JOIN $wpdb->postmeta AS $alias
