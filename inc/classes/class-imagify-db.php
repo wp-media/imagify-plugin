@@ -323,11 +323,11 @@ class Imagify_DB {
 			return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
 		}
 
-		$extensions = array_map(function ($ex)  {
-			return strrev($ex);
+		$extensions = array_map(function ( $ex ) {
+			return strrev( $ex );
 		}, $extensions);
 
-		$regex = '^' . implode('\..*|^', $extensions) . '\..*';
+		$regex = '^' . implode( '\..*|^', $extensions ) . '\..*';
 
 		if ( $matching ) {
 			$query[ $key ] = "AND REVERSE (LOWER( $alias.meta_value )) REGEXP '$regex'";
