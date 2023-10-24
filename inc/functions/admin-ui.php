@@ -49,6 +49,10 @@ function get_imagify_attachment_optimization_text( $process ) {
 		$output .= $output_before . '<span class="data">' . __( 'New Filesize:', 'imagify' ) . '</span> <strong class="big">' . $data->get_optimized_size() . '</strong>' . $output_after;
 	}
 
+	if ( key_exists('message', $data) ) {
+		$output .= $output_before . '<span class="data">' . $data['message'] . '</span>' . $output_after;
+	}
+
 	$chart = '';
 
 	if ( ! $is_media_page ) {
