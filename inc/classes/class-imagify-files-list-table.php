@@ -612,6 +612,10 @@ class Imagify_Files_List_Table extends WP_List_Table {
 						<span class="data"><?php esc_html_e( 'WebP generated:', 'imagify' ); ?></span>
 						<strong class="data-value"><?php echo esc_html( $has_webp ); ?></strong>
 					</li>
+					<li class="imagify-data-item">
+						<span class="data"><?php esc_html_e( 'WebP generated:', 'imagify' ); ?></span>
+						<strong class="data-value"><?php echo esc_html( $has_webp ); ?></strong>
+					</li>
 					<?php
 				}
 			}
