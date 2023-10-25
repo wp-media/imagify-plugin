@@ -42,6 +42,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 	}
 
 	$data               = $process->get_data();
+	$optimized_data     = $data->get_optimization_data();
 	$attachment_id      = $media->get_id();
 	$optimization_level = imagify_get_optimization_level_label( $data->get_optimization_level() );
 
@@ -49,8 +50,8 @@ function get_imagify_attachment_optimization_text( $process ) {
 		$output .= $output_before . '<span class="data">' . __( 'New Filesize:', 'imagify' ) . '</span> <strong class="big">' . $data->get_optimized_size() . '</strong>' . $output_after;
 	}
 
-	if ( key_exists('message', $data) ) {
-		$output .= $output_before . '<span class="data">' . $data['message'] . '</span>' . $output_after;
+	if ( key_exists( 'message', $optimized_data ) ) {
+		$output .= $output_before . '<span class="data">' . __( 'Convert:', 'imagify' ) . '</span> <strong class="big">' . $optimized_data['message'] . '</strong>' . $output_after;
 	}
 
 	$chart = '';

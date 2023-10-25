@@ -443,7 +443,7 @@ class Imagify {
 		 * @param string $url URL from the call.
 		 * @param array $args Arguments from the call.
 		 */
-		$response = apply_filters('pre_imagify_request', null, $url, $args);
+		$response = apply_filters( 'pre_imagify_request', null, $url, $args );
 
 		if ( $response ) {
 			return $response;
