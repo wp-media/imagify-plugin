@@ -43,7 +43,9 @@ function imagify_count_attachments() {
 		SELECT COUNT( p.ID )
 		FROM $wpdb->posts AS p
 			$nodata_join
-		WHERE 1 = 1
+		WHERE p.post_mime_type IN ( $mime_types )
+			AND p.post_type = 'attachment'
+			AND p.post_status IN ( $statuses )
 			$nodata_where"
 	);
 
