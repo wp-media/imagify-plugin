@@ -42,6 +42,7 @@ class Test_IsOverQuota extends TestCase {
 			'consumed_current_month_quota' => 123,
 			'next_date_update'             => '',
 			'is_active'                    => 1,
+			'is_monthly'                   => true,
 		];
 
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
@@ -64,6 +65,7 @@ class Test_IsOverQuota extends TestCase {
 			'consumed_current_month_quota' => 900, // Current consumed quota 90%.
 			'next_date_update'             => '',
 			'is_active'                    => 1,
+			'is_monthly'                   => true,
 		];
 
 		$this->createMocks( $userData, 90 );
@@ -86,6 +88,7 @@ class Test_IsOverQuota extends TestCase {
 			'consumed_current_month_quota' => 1000, // Current consumed quota 100%.
 			'next_date_update'             => '',
 			'is_active'                    => 1,
+			'is_monthly'                   => true,
 		];
 
 		$this->createMocks( $userData, 100 );
