@@ -88,8 +88,11 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			<div class="imagify-col imagify-account-info-col">
 
 				<?php
-				if ( ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || ! IMAGIFY_HIDDEN_ACCOUNT ) && Imagify_Requirements::is_api_key_valid() ) {
-					$user = new User();
+				if (
+					( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || ! IMAGIFY_HIDDEN_ACCOUNT )
+					&&
+					Imagify_Requirements::is_api_key_valid()
+				) {
 					?>
 					<div class="imagify-options-title">
 						<div class="imagify-th-titles imagify-flex imagify-vcenter">
@@ -100,60 +103,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 						</div>
 						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View your profile', 'imagify' ); ?></a>
 					</div>
-
-					<?php if ( $user && 1 === $user->plan_id ) { ?>
-						<div class="imagify-col-content">
-							<div class="imagify-flex imagify-vcenter">
-								<span class="imagify-meteo-icon imagify-noshrink"><?php echo $this->get_quota_icon(); ?></span>
-								<div class="imagify-space-left imagify-full-width">
-
-									<p>
-										<?php
-										printf(
-											/* translators: %s is a data quota. */
-											__( 'You have %s space credit left', 'imagify' ),
-											'<span class="imagify-unconsumed-percent">' . $this->get_quota_percent() . '%</span>'
-										);
-										?>
-									</p>
-
-									<div class="<?php echo $this->get_quota_class(); ?>">
-										<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $this->get_quota_percent() . '%'; ?>;"></div>
-									</div>
-								</div>
-							</div>
-							<?php
-							/**
-							 * Filter whether the plan chooser section is displayed.
-							 *
-							 * @param $show_new bool Default to true: display the section.
-							 */
-							if ( apply_filters( 'imagify_show_new_to_imagify', true ) ) {
-								?>
-								<div class="imagify-block-secondary">
-									<p class="imagify-section-title imagify-h3-like">
-										<?php
-										if ( ! $this->get_quota_percent() ) {
-											esc_html_e( 'Oops, It\'s Over!', 'imagify' );
-										} elseif ( $this->get_quota_percent() <= 20 ) {
-											esc_html_e( 'Oops, It\'s almost over!', 'imagify' );
-										} else {
-											esc_html_e( 'You\'re new to Imagify?', 'imagify' );
-										}
-										?>
-									</p>
-									<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
-
-									<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-button-big imagify-full-width">
-										<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
-										<span class="button-text"><?php _e( 'What plan do I need?', 'imagify' ); ?></span>
-									</button>
-								</div>
-								<?php
-							}
-							?>
-						</div><!-- .imagify-col-content -->
-					<?php } // End if(). ?>
+					<?php $this->print_template( 'part-upsell' ); ?>
 				<?php } // End if(). ?>
 
 			</div><!-- .imagify-account-info-col -->
