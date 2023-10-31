@@ -253,6 +253,24 @@ class User {
 	}
 
 	/**
+	 * Check if the user is a growth account
+	 *
+	 * @return bool
+	 */
+	public function is_growth() {
+		return ( 16 === $this->plan_id || 18 === $this->plan_id );
+	}
+
+	/**
+	 * Check if the user is an infinite account
+	 *
+	 * @return bool
+	 */
+	public function is_infinite() {
+		return ( 15 === $this->plan_id || 17 === $this->plan_id );
+	}
+
+	/**
 	 * Check if the user has consumed all his/her quota.
 	 *
 	 * @since 1.1.1
