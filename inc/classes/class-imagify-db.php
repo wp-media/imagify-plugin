@@ -310,6 +310,9 @@ class Imagify_DB {
 			$extensions = array_keys( imagify_get_mime_types() );
 			$extensions = implode( '|', $extensions );
 			$extensions = explode( '|', $extensions );
+			$extensions = array_map(function ( $ex ) {
+				return strrev( $ex );
+			}, $extensions);
 		}
 
 		if ( ! $alias ) {
@@ -322,10 +325,6 @@ class Imagify_DB {
 		if ( isset( $query[ $key ] ) ) {
 			return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
 		}
-
-		$extensions = array_map(function ( $ex ) {
-			return strrev( $ex );
-		}, $extensions);
 
 		$regex = '^' . implode( '\..*|^', $extensions ) . '\..*';
 
