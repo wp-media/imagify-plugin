@@ -159,18 +159,20 @@ class Imagify_DB {
 	 * It returns an empty string if the database has no attachments without the required metadada.
 	 * It also triggers Imagify_DB::unlimit_joins().
 	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @param  string $id_field An ID field to match the metadata ID against in the JOIN clause.
+	 * @param string $id_field An ID field to match the metadata ID against in the JOIN clause.
 	 *                          Default is the posts table `ID` field, using the `p` alias: `p.ID`.
 	 *                          In case of "false" value or PEBKAC, fallback to the same field without alias.
-	 * @param  bool   $matching Set to false to get a query to fetch metas NOT matching the file extensions.
-	 * @param  bool   $test     Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 * @param bool   $matching Set to false to get a query to fetch metas NOT matching the file extensions.
+	 * @param bool   $test Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 * @param string $special_join_conditions Special conditions to apply on the join.
+	 *
 	 * @return string
+	 * @author Grégory Viguier
+	 *
+	 * @since  1.7
+	 * @access public
 	 */
-	public static function get_required_wp_metadata_join_clause( $id_field = 'p.ID', $matching = true, $test = true ) {
+	public static function get_required_wp_metadata_join_clause( $id_field = 'p.ID', $matching = true, $test = true, $special_join_conditions = '' ) {
 		global $wpdb;
 
 		if ( $test && ! imagify_has_attachments_without_required_metadata() ) {
@@ -186,7 +188,16 @@ class Imagify_DB {
 
 		$join = $matching ? 'INNER' : 'LEFT';
 
+		$first = true;
+
 		foreach ( self::get_required_wp_metadata_aliases() as $meta_name => $alias ) {
+			if ( $first ) {
+				$first = false;
+				$clause .= "
+			$join JOIN $wpdb->postmeta AS $alias
+				ON ( $id_field = $alias.post_id AND $alias.meta_key = '$meta_name' $special_join_conditions )";
+				continue;
+			}
 			$clause .= "
 			$join JOIN $wpdb->postmeta AS $alias
 				ON ( $id_field = $alias.post_id AND $alias.meta_key = '$meta_name' )";
@@ -299,6 +310,9 @@ class Imagify_DB {
 			$extensions = array_keys( imagify_get_mime_types() );
 			$extensions = implode( '|', $extensions );
 			$extensions = explode( '|', $extensions );
+			$extensions = array_map(function ( $ex ) {
+				return strrev( $ex );
+			}, $extensions);
 		}
 
 		if ( ! $alias ) {
@@ -312,10 +326,12 @@ class Imagify_DB {
 			return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
 		}
 
+		$regex = '^' . implode( '\..*|^', $extensions ) . '\..*';
+
 		if ( $matching ) {
-			$query[ $key ] = "AND ( LOWER( $alias.meta_value ) LIKE '%." . implode( "' OR LOWER( $alias.meta_value ) LIKE '%.", $extensions ) . "' )";
+			$query[ $key ] = "AND REVERSE (LOWER( $alias.meta_value )) REGEXP '$regex'";
 		} else {
-			$query[ $key ] = "OR ( LOWER( $alias.meta_value ) NOT LIKE '%." . implode( "' AND LOWER( $alias.meta_value ) NOT LIKE '%.", $extensions ) . "' )";
+			$query[ $key ] = "AND REVERSE (LOWER( $alias.meta_value )) NOT REGEXP '$regex'";
 		}
 
 		return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
