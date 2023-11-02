@@ -1056,7 +1056,7 @@ window.imagify = window.imagify || {};
                         }
                     },
                     responsive:       false,
-					cutout: 85
+					cutout: 75
                 }
             } );
 
