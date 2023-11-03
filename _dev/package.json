@@ -1,0 +1,15 @@
+{
+	"name": "imagify_dev",
+	"version": "1.0.0",
+	"dependencies": {
+	},
+	"devDependencies": {
+		"@roots/bud": "^6.11.0",
+		"chart.js": "^4.4.0"
+	},
+	"scripts": {
+		"dev": "bud dev",
+		"build": "bud build",
+		"bud": "bud"
+	}
+}
