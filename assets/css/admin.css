@@ -1543,36 +1543,3 @@ ul.imagify-datas-details.imagify-datas-details {
 		padding-right: 0em;
 	}
 }
-
-.imagify-upsell-admin-bar {
-	position:relative !important;
-	background: #c51161;
-	margin-top: 10px !important;
-	padding: 20px !important;
-}
-
-.imagify-upsell-admin-bar p {
-	color: #fff;
-}
-
-.imagify-upsell-admin-bar-button {
-	display: block !important;
-	border: 1px solid #fff !important;
-	border-radius: 5px !important;
-	color: #fff !important;
-	font-weight: bold !important;
-	padding: 5px 10px !important;
-	text-align: center;
-	text-decoration: none;
-	height: auto !important;
-	margin-top: 10px !important;
-}
-
-.imagify-upsell-dismiss::before {
-	position: absolute;
-    top: 5px;
-    right: 5px;
-	content: "\2715";
-    color: #fff;
-    font-size: 1em;
-}
