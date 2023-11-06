@@ -77,6 +77,7 @@ class Notices {
 		'wp-rocket',
 		'bulk-optimization-complete',
 		'bulk-optimization-running',
+		'upsell-admin-bar',
 	];
 
 	/**
@@ -273,6 +274,7 @@ class Notices {
 		// Renew the notice for all users.
 		foreach ( $results as $result ) {
 			self::renew_notice( 'almost-over-quota', $result->user_id );
+			self::renew_notice( 'upsell-admin-bar', $result->user_id );
 		}
 	}
 
