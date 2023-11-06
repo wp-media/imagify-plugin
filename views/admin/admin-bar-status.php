@@ -22,24 +22,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		</div>
 	</div>
 	<?php endif; ?>
-	<?php if ( $data['unconsumed_quota'] <= 20 ) : ?>
-	<div class="imagify-error">
+	<div class="imagify-upsell-admin-bar">
+		<?php if ( $data['unconsumed_quota'] <= 20 ) : ?>
 		<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong><?php esc_html_e( 'Oops, It\'s almost over!', 'imagify' ); ?></strong></p>
-		<p><?php printf(
-			/* translators: %s is a line break. */
-			__( 'You have almost used all your credit.%sDon\'t forget to upgrade your subscription to continue optimizing your images.', 'imagify' ), '<br/><br/>' ); ?></p>
-		<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php esc_html_e( 'View My Subscription', 'imagify' ); ?></a></p>
-	</div>
-	 <?php elseif ( 0 === $data['unconsumed_quota'] ) : ?>
-	<div class="imagify-error">';
+		<?php elseif ( 0 === $data['unconsumed_quota'] ) : ?>
 		<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong><?php esc_html_e( 'Oops, It\'s Over!', 'imagify' ); ?></strong></p>
-		<p><?php printf(
-					/* translators: 1 is a data quota, 2 is a date. */
-					__( 'You have consumed all your credit for this month. You will have <strong>%1$s back on %2$s</strong>.', 'imagify' ),
-					imagify_size_format( $data['user_quota'] * pow( 1024, 2 ) ),
-					date_i18n( get_option( 'date_format' ), strtotime( $data['next_date_update'] ) )
-		); ?></p>
-		<p class="center txt-center text-center"><a class="btn imagify-btn-ghost" href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php esc_html_e( 'Upgrade My Subscription', 'imagify' ); ?></a></p>
+		<?php endif; ?>
+		<p><?php echo $data['text']; ?></p>
+		<p class="center txt-center text-center"><a class="imagify-upsell-admin-bar-button" href="<?php echo esc_url( $data['upgrade_link'] ); ?>" target="_blank"><?php echo $data['button_text']; ?></a></p>
+		<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-admin-bar' ) ); ?>" class="imagify-notice-dismiss imagify-upsell-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>
-	<?php endif; ?>
 </div>
