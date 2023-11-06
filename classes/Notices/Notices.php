@@ -242,6 +242,39 @@ class Notices {
 		wp_send_json_success();
 	}
 
+	/**
+	 * Renew the "almost-over-quota" notice when the consumed quota percent decreases back below 80%.
+	 *
+	 * @since 1.7
+	 */
+	public function renew_almost_over_quota_notice() {
+		global $wpdb;
+
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE %s", self::DISMISS_META_NAME, '%almost-over-quota%' ) );
+
+		if ( ! $results ) {
+			return;
+		}
+
+		// Prevent multiple queries to the DB by caching user metas.
+		$not_cached = [];
+
+		foreach ( $results as $result ) {
+			if ( ! wp_cache_get( $result->umeta_id, 'user_meta' ) ) {
+				$not_cached[] = $result->umeta_id;
+			}
+		}
+
+		if ( $not_cached ) {
+			update_meta_cache( 'user', $not_cached );
+		}
+
+		// Renew the notice for all users.
+		foreach ( $results as $result ) {
+			self::renew_notice( 'upsell-banner', $result->user_id );
+		}
+	}
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** NOTICES ================================================================================= */

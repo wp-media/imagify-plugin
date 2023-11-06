@@ -15,19 +15,6 @@ $notices      = get_user_meta( $user_id, '_imagify_ignore_notices', true );
 $notices      = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
 
 if (
-	$unconsumed_quota > 20
-	&&
-	isset( $notices['upsell-banner'] )
-) {
-	unset( $notices['upsell-banner'] );
-	$notices = array_flip( $notices );
-	$notices = array_filter( $notices );
-	$notices = array_values( $notices );
-
-	update_user_meta( $user_id, '_imagify_ignore_notices', $notices );
-}
-
-if (
 	Imagify_Requirements::is_api_key_valid()
 	&&
 	! $infinite
@@ -62,7 +49,7 @@ if (
 		$price = esc_html__( 'From $4.99/month only, keep going with image optimization!', 'imagify' );
 		$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/?utm_source=plugin&utm_medium=upsell_banner';
 	} elseif ( $imagify_user->is_growth() ) {
-		$upgrade = esc_esc_html__html_e( 'Upgrade your plan now to keep optimizing your images.', 'imagify' );
+		$upgrade = esc_html__( 'Upgrade your plan now to keep optimizing your images.', 'imagify' );
 
 		if ( $imagify_user->is_monthly ) {
 			$price = esc_html__( 'For $9.99/month only, choose unlimited image optimization!', 'imagify' );
@@ -77,7 +64,7 @@ if (
 	<p><?php echo $price; ?></p>
 
 	<a href="<?php echo esc_url( $upgrade_link ); ?>" target="_blank" rel="noopener noreferrer" class="imagify-upsell-button"><span class="imagify-upsell-arrow"><?php esc_html_e( 'Upgrade now', 'imagify' ); ?></span></a>
-	<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-banner' ) ); ?>" class="imagify-notice-dismiss imagify-upsell-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php _e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-banner' ) ); ?>" class="imagify-notice-dismiss imagify-upsell-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 </div><!-- .imagify-col-content -->
 	<?php
 }
