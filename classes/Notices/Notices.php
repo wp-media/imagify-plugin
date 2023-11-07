@@ -250,8 +250,9 @@ class Notices {
 	public function renew_almost_over_quota_notice() {
 		global $wpdb;
 
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE %s", self::DISMISS_META_NAME, '%almost-over-quota%' ) );
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE %s", self::DISMISS_META_NAME, '%upsell%' ) );
 
+		error_log( var_export( $results, true ) );
 		if ( ! $results ) {
 			return;
 		}
