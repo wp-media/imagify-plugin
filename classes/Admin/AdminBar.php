@@ -6,6 +6,9 @@ use Imagify\Traits\InstanceGetterTrait;
 use Imagify\User\User;
 use Imagify_Views;
 
+/**
+ * Admin bar handler
+ */
 class AdminBar {
 	use InstanceGetterTrait;
 
@@ -45,7 +48,7 @@ class AdminBar {
 			$button_text  = esc_html__( 'Upgrade My Plan', 'rocket' );
 			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/?utm_source=plugin&utm_medium=notification';
 		} elseif ( $user->is_growth() ) {
-			$text = esc_html__( 'Switch to Infinite plan for unlimited optimization:', 'rocket' )  . '<br>';
+			$text = esc_html__( 'Switch to Infinite plan for unlimited optimization:', 'rocket' ) . '<br>';
 
 			if ( $user->is_monthly ) {
 				$text         .= esc_html__( 'For $9.99/month, optimize as many images as you like!', 'rocket' );
