@@ -102,6 +102,13 @@ class User {
 	public $is_active;
 
 	/**
+	 * If the account is monthly or yearly.
+	 *
+	 * @var bool
+	 */
+	public $is_monthly;
+
+	/**
 	 * Store a \WP_Error object if the request to fetch the user data failed.
 	 * False overwise.
 	 *
@@ -135,6 +142,7 @@ class User {
 		$this->consumed_current_month_quota = $user->consumed_current_month_quota;
 		$this->next_date_update             = $user->next_date_update;
 		$this->is_active                    = $user->is_active;
+		$this->is_monthly                   = $user->is_monthly;
 		$this->error                        = false;
 	}
 
@@ -242,6 +250,24 @@ class User {
 	 */
 	public function is_free() {
 		return 1 === $this->plan_id;
+	}
+
+	/**
+	 * Check if the user is a growth account
+	 *
+	 * @return bool
+	 */
+	public function is_growth() {
+		return ( 16 === $this->plan_id || 18 === $this->plan_id );
+	}
+
+	/**
+	 * Check if the user is an infinite account
+	 *
+	 * @return bool
+	 */
+	public function is_infinite() {
+		return ( 15 === $this->plan_id || 17 === $this->plan_id );
 	}
 
 	/**
