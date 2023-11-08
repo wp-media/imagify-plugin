@@ -330,7 +330,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .media-item .progress .bar {
 
 .imagify-col-content .imagify-meteo-icon {
 	height: 64px;
-	margin: 15px 15px 15px 20px;
+	margin: 15px 15px 15px 0;
 }
 
 .imagify-col-content .imagify-section-title + p {

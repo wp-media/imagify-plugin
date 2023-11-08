@@ -28,6 +28,7 @@ class Test_GetError extends TestCase {
 			'consumed_current_month_quota' => 123,
 			'next_date_update'             => '',
 			'is_active'                    => 1,
+			'is_monthly'                   => true,
 		];
 
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );

@@ -1,0 +1,14 @@
+{
+  "chart": {
+    "js": [
+      "js/runtime.js",
+      "js/chart.js"
+    ]
+  },
+  "bulk": {
+    "js": [
+      "js/runtime.js",
+      "js/bulk.js"
+    ]
+  }
+}

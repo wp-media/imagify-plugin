@@ -936,3 +936,19 @@ input:checked + label .imagify-fake-checkbox:after,
 		margin-top: 20px;
 	}
 }
+
+.imagify-col-content .imagify-space-left {
+	margin: 15px 30px 15px 0;
+}
+
+.imagify-col-content .imagify-space-left p {
+	margin: 0 0 10px 0;
+	font-size: 19px;
+	font-weight: 500;
+	color: #343A49;
+}
+
+.imagify-col-content .imagify-meteo-icon {
+	height: 64px;
+	margin: 15px 15px 15px 0;
+}

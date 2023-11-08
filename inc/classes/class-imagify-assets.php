@@ -186,7 +186,8 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 
 		$this->register_script( 'sweetalert', 'sweetalert2', [ 'promise-polyfill' ], '4.6.6' )->localize( 'imagifySwal' );
 
-		$this->register_script( 'chart', 'chart', [], '2.7.1.0' );
+		$this->register_bud_script( 'runtime', 'runtime' );
+		$this->register_bud_script( 'chart', 'chart', [ 'runtime' ], '4.4.0' );
 
 		$this->register_script( 'event-move', 'jquery.event.move', [ 'jquery' ], '2.0.1' );
 
@@ -211,7 +212,7 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 
 		$this->register_script( 'async', 'imagify-gulp' );
 
-		$this->register_script( 'bulk', 'bulk', [ 'jquery', 'beat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ] )->defer_localization( 'imagifyBulk' );
+		$this->register_bud_script( 'bulk', 'bulk', [ 'jquery', 'beat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ] )->defer_localization( 'imagifyBulk' );
 
 		$this->register_script( 'options', 'options', [ 'jquery', 'beat', 'sweetalert', 'underscore', 'admin' ] )->defer_localization( 'imagifyOptions' );
 
@@ -451,6 +452,42 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		wp_register_script(
 			$handle,
 			IMAGIFY_URL . 'assets/js/' . $file_name . $extension,
+			$dependencies,
+			$version,
+			true
+		);
+
+		return $this;
+	}
+
+	/**
+	 * Register a script.
+	 *
+	 * @since 1.6.10
+	 *
+	 * @param  string      $handle       Name of the script. Should be unique.
+	 * @param  string|null $file_name    The file name, without the extension. If null, $handle is used.
+	 * @param  array       $dependencies An array of registered script handles this script depends on.
+	 * @param  string|null $version      String specifying script version number. If set to null, the plugin version is used. If SCRIPT_DEBUG is true, a random string is used.
+	 * @return object                    This class instance.
+	 */
+	public function register_bud_script( $handle, $file_name = null, $dependencies = [], $version = null ) {
+		// If we register it, it's one of our scripts.
+		$this->scripts[ $handle ]  = 1;
+		// Set the current handler and handler type.
+		$this->current_handle      = $handle;
+		$this->current_handle_type = 'js';
+
+		$file_name    = $file_name        ? $file_name     : $handle;
+		$version      = $version          ? $version       : IMAGIFY_VERSION;
+		$version      = $this->is_debug() ? self::$version : $version;
+		$extension    = '.js';
+		$handle       = self::JS_PREFIX . $handle;
+		$dependencies = $this->prefix_dependencies( $dependencies );
+
+		wp_register_script(
+			$handle,
+			IMAGIFY_URL . 'assets/admin/js/' . $file_name . $extension,
 			$dependencies,
 			$version,
 			true
