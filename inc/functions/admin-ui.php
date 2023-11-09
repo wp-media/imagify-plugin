@@ -94,7 +94,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 	$output .= $output_before . '<span class="data">' . __( 'Level:', 'imagify' ) . '</span> <strong>' . $optimization_level . '</strong>' . $output_after;
 
 	if ( $media->is_image() ) {
-		$has_webp = $process->has_webp() && ! key_exists( 'message', $optimized_data ) ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
+		$has_webp = $process->has_webp() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
 		$output  .= $output_before . '<span class="data">' . __( 'WebP generated:', 'imagify' ) . '</span> <strong class="big">' . esc_html( $has_webp ) . '</strong>' . $output_after;
 
 		$total_optimized_thumbnails = $data->get_optimized_sizes_count();
