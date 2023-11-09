@@ -530,7 +530,7 @@ class File {
 			return new \WP_Error( 'temp_file_not_found', $temp_file->get_error_message() );
 		}
 
-		if(property_exists($response, 'message' )) {
+		if ( property_exists( $response, 'message' ) ) {
 			$args['convert'] = '';
 		}
 
