@@ -656,6 +656,11 @@ abstract class AbstractProcess implements ProcessInterface {
 						'non_webp_file_path'  => $sizes[ $thumb_size ]['path'], // Don't use $path nor $file->get_path(), it may return the path to a temporary file.
 						'optimization_level'  => $optimization_level,
 					] );
+
+					if(property_exists( $response, 'message' )) {
+						$path_is_temp = false;
+					}
+
 				}
 			}
 		}
@@ -731,7 +736,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		// Optimization succeeded.
-		if ( $args['is_webp'] ) {
+		if (! property_exists( $args['response'], 'message' ) && $args['is_webp'] ) {
 			/**
 			 * We just created a WebP version:
 			 * Check if it is lighter than the (maybe optimized) non-WebP file.
@@ -776,7 +781,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		$webp_size      = $args['non_webp_thumb_size'] . static::WEBP_SUFFIX;
 		$webp_file_size = $this->get_data()->get_size_data( $webp_size, 'optimized_size' );
 
-		if ( ! $webp_file_size || $webp_file_size < $args['response']->new_size ) {
+		if ( property_exists( $args['response'], 'message' ) || ! $webp_file_size || $webp_file_size < $args['response']->new_size ) {
 			// The WebP file is lighter than this one.
 			return $args['response'];
 		}
@@ -966,7 +971,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Then we use the backup file to create temporary files.
 	 */
 
-	/**
+	/**w
 	 * Create a temporary copy of a size file.
 	 *
 	 * @since 1.9
@@ -1787,6 +1792,8 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * @param object $media_data The DataInterface instance of the media.
 		 */
 		$data = (array) apply_filters( "imagify{$_unauthorized}_file_optimization_data", $data, $response, $size, $level, $this->get_data() );
+
+		$size = str_replace('@imagify-webp', '', $size);
 
 		// Store.
 		$this->get_data()->update_size_optimization_data( $size, $data );
