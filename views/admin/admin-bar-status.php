@@ -26,6 +26,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		</div>
 	</div>
 	<?php endif; ?>
+	<?php if ( $data['plan_with_quota'] && $data['unconsumed_quota'] <= 20 ) : ?>
 	<div class="imagify-upsell-admin-bar">
 		<?php if ( $data['unconsumed_quota'] <= 20 ) : ?>
 		<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong><?php esc_html_e( 'Oops, It\'s almost over!', 'imagify' ); ?></strong></p>
@@ -36,4 +37,5 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		<p class="center txt-center text-center"><a class="imagify-upsell-admin-bar-button" href="<?php echo esc_url( $data['upgrade_link'] ); ?>" target="_blank"><?php echo $data['button_text']; ?></a></p>
 		<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-admin-bar' ) ); ?>" class="imagify-notice-dismiss imagify-upsell-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>
+	<?php endif; ?>
 </div>
