@@ -657,10 +657,9 @@ abstract class AbstractProcess implements ProcessInterface {
 						'optimization_level'  => $optimization_level,
 					] );
 
-					if(property_exists( $response, 'message' )) {
+					if ( property_exists( $response, 'message' ) ) {
 						$path_is_temp = false;
 					}
-
 				}
 			}
 		}
@@ -736,7 +735,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		// Optimization succeeded.
-		if (! property_exists( $args['response'], 'message' ) && $args['is_webp'] ) {
+		if ( ! property_exists( $args['response'], 'message' ) && $args['is_webp'] ) {
 			/**
 			 * We just created a WebP version:
 			 * Check if it is lighter than the (maybe optimized) non-WebP file.
@@ -1793,7 +1792,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 */
 		$data = (array) apply_filters( "imagify{$_unauthorized}_file_optimization_data", $data, $response, $size, $level, $this->get_data() );
 
-		$size = str_replace('@imagify-webp', '', $size);
+		$size = str_replace( '@imagify-webp', '', $size );
 
 		// Store.
 		$this->get_data()->update_size_optimization_data( $size, $data );
