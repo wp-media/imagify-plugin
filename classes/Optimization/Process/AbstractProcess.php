@@ -970,7 +970,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Then we use the backup file to create temporary files.
 	 */
 
-	/**w
+	/**
 	 * Create a temporary copy of a size file.
 	 *
 	 * @since 1.9
@@ -1792,8 +1792,9 @@ abstract class AbstractProcess implements ProcessInterface {
 		 */
 		$data = (array) apply_filters( "imagify{$_unauthorized}_file_optimization_data", $data, $response, $size, $level, $this->get_data() );
 
-		$size = str_replace( '@imagify-webp', '', $size );
-
+		if ( property_exists( $response, 'message' ) ) {
+			$size = str_replace( '@imagify-webp', '', $size );
+		}
 		// Store.
 		$this->get_data()->update_size_optimization_data( $size, $data );
 
