@@ -50,7 +50,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 		$output .= $output_before . '<span class="data">' . __( 'New Filesize:', 'imagify' ) . '</span> <strong class="big">' . $data->get_optimized_size() . '</strong>' . $output_after;
 	}
 
-	if ( key_exists( 'message', $optimized_data ) ) {
+	if ( key_exists( 'message', $optimized_data ) && $optimized_data['message'] ) {
 		$output .= $output_before . '<span class="data">' . __( 'Convert:', 'imagify' ) . '</span> <strong class="big">' . $optimized_data['message'] . '</strong>' . $output_after;
 	}
 
