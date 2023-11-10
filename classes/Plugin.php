@@ -7,6 +7,7 @@ use Imagify\Bulk\Bulk;
 use Imagify\CLI\BulkOptimizeCommand;
 use Imagify\CLI\GenerateMissingWebpCommand;
 use Imagify\Notices\Notices;
+use Imagify\Admin\AdminBar;
 
 /**
  * Main plugin class.
@@ -56,6 +57,7 @@ class Plugin {
 		\Imagify\Job\MediaOptimization::get_instance()->init();
 		\Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->init();
 		Bulk::get_instance()->init();
+		AdminBar::get_instance()->init();
 
 		if ( is_admin() ) {
 			Notices::get_instance()->init();

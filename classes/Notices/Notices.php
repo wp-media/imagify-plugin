@@ -76,6 +76,7 @@ class Notices {
 		'bulk-optimization-complete',
 		'bulk-optimization-running',
 		'upsell-banner',
+		'upsell-admin-bar',
 	];
 
 	/**
@@ -272,6 +273,7 @@ class Notices {
 		// Renew the notice for all users.
 		foreach ( $results as $result ) {
 			self::renew_notice( 'upsell-banner', $result->user_id );
+			self::renew_notice( 'upsell-admin-bar', $result->user_id );
 		}
 	}
 
