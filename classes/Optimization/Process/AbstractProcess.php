@@ -659,6 +659,10 @@ abstract class AbstractProcess implements ProcessInterface {
 
 					if ( property_exists( $response, 'message' ) ) {
 						$path_is_temp = false;
+						if($path !== $sizes[ $thumb_size ]['path']) {
+							$this->filesystem->delete($path);
+						}
+						$path = $sizes[ $thumb_size ]['path'];
 					}
 				}
 			}
