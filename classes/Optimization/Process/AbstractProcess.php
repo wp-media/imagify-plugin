@@ -1561,13 +1561,13 @@ abstract class AbstractProcess implements ProcessInterface {
 			return false;
 		}
 
-		$keys = array_keys($sizes);
-		$non_webp_keys = array_values(array_filter($keys, function ($key) {
-			return strpos($key, static::WEBP_SUFFIX) === false;
+		$keys = array_keys( $sizes );
+		$non_webp_keys = array_values(array_filter($keys, function ( $key ) {
+			return strpos( $key, static::WEBP_SUFFIX ) === false;
 		}));
 
-		return array_reduce($non_webp_keys, function ($is_fully, $key) use ($sizes) {
-			return key_exists($key. self::WEBP_SUFFIX, $sizes) && $is_fully;
+		return array_reduce($non_webp_keys, function ( $is_fully, $key ) use ( $sizes ) {
+			return key_exists( $key . self::WEBP_SUFFIX, $sizes ) && $is_fully;
 		}, true);
 	}
 
