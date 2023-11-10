@@ -1540,6 +1540,38 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
+	 * Tell if the media has all WebP versions.
+	 *
+	 * @return bool
+	 */
+	public function is_full_webp() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( ! $this->get_media()->is_image() ) {
+			return false;
+		}
+
+		$data = $this->get_data()->get_optimization_data();
+
+		$sizes = $data['sizes'];
+
+		if ( empty( $sizes ) ) {
+			return false;
+		}
+
+		$keys = array_keys($sizes);
+		$non_webp_keys = array_values(array_filter($keys, function ($key) {
+			return strpos($key, static::WEBP_SUFFIX) === false;
+		}));
+
+		return array_reduce($non_webp_keys, function ($is_fully, $key) use ($sizes) {
+			return key_exists($key. self::WEBP_SUFFIX, $sizes) && $is_fully;
+		}, true);
+	}
+
+	/**
 	 * Tell if a WebP version can be created for the given file.
 	 * Make sure the file is an image before using this method.
 	 *

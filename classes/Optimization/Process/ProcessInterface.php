@@ -275,6 +275,13 @@ interface ProcessInterface {
 	public function is_size_webp( $size_name );
 
 	/**
+	 * Tell if the media has all WebP versions.
+	 *
+	 * @return bool
+	 */
+	public function is_full_webp();
+
+	/**
 	 * Tell if the media has WebP versions.
 	 *
 	 * @since  1.9
