@@ -199,7 +199,7 @@ function imagify_translate_api_message( $message ) {
 			'</a>'
 		),
 		'Your image is too big to be uploaded on our server'                                       => __( 'Your file is too big to be uploaded on our server.', 'imagify' ),
-		'Webp is less performant than original'                                                    => __( 'Webp is less performant than original', 'imagify' ),
+		'Webp is less performant than original'                                                    => __( 'WebP file is larger than the original image', 'imagify' ),
 		'Our server returned an invalid response'                                                  => __( 'Our server returned an invalid response.', 'imagify' ),
 		'cURL isn\'t installed on the server'                                                      => __( 'cURL is not available on the server.', 'imagify' ),
 		// API messages.
