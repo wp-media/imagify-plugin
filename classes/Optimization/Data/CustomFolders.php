@@ -159,6 +159,10 @@ class CustomFolders extends AbstractData {
 				$old_data['hash'] = md5_file( $file_path );
 			}
 
+			if ( key_exists( 'message', $data ) ) {
+				$old_data['message'] = $data['message'];
+			}
+
 			if ( ! $data['success'] ) {
 				/**
 				 * Error.

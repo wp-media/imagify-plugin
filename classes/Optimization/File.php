@@ -530,6 +530,10 @@ class File {
 			return new \WP_Error( 'temp_file_not_found', $temp_file->get_error_message() );
 		}
 
+		if ( property_exists( $response, 'message' ) ) {
+			$args['convert'] = '';
+		}
+
 		if ( 'webp' === $args['convert'] ) {
 			$destination_path = $this->get_path_to_webp();
 			$this->path       = $destination_path;

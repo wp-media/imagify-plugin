@@ -164,7 +164,7 @@ function get_imagify_max_image_size() {
  */
 function imagify_translate_api_message( $message ) {
 	if ( ! $message ) {
-		return imagify_translate_api_message( 'Unknown error occurred' );
+		$message = 'Unknown error occurred';
 	}
 
 	if ( is_wp_error( $message ) ) {
@@ -199,6 +199,7 @@ function imagify_translate_api_message( $message ) {
 			'</a>'
 		),
 		'Your image is too big to be uploaded on our server'                                       => __( 'Your file is too big to be uploaded on our server.', 'imagify' ),
+		'Webp is less performant than original'                                                    => __( 'WebP file is larger than the original image', 'imagify' ),
 		'Our server returned an invalid response'                                                  => __( 'Our server returned an invalid response.', 'imagify' ),
 		'cURL isn\'t installed on the server'                                                      => __( 'cURL is not available on the server.', 'imagify' ),
 		// API messages.

@@ -436,6 +436,19 @@ class Imagify {
 			return new WP_Error( 'curl', 'cURL isn\'t installed on the server.' );
 		}
 
+		/**
+		 * Allows to mock Imagify calls to the API.
+		 *
+		 * @param stdClass|null $response Response from the call.
+		 * @param string $url URL from the call.
+		 * @param array $args Arguments from the call.
+		 */
+		$response = apply_filters( 'pre_imagify_request', null, $url, $args );
+
+		if ( $response ) {
+			return $response;
+		}
+
 		try {
 			$url = self::API_ENDPOINT . $url;
 			$ch  = curl_init();

@@ -656,6 +656,14 @@ abstract class AbstractProcess implements ProcessInterface {
 						'non_webp_file_path'  => $sizes[ $thumb_size ]['path'], // Don't use $path nor $file->get_path(), it may return the path to a temporary file.
 						'optimization_level'  => $optimization_level,
 					] );
+
+					if ( property_exists( $response, 'message' ) ) {
+						$path_is_temp = false;
+						if ( $path !== $sizes[ $thumb_size ]['path'] ) {
+							$this->filesystem->delete( $path );
+						}
+						$path = $sizes[ $thumb_size ]['path'];
+					}
 				}
 			}
 		}
@@ -731,7 +739,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		// Optimization succeeded.
-		if ( $args['is_webp'] ) {
+		if ( ! property_exists( $args['response'], 'message' ) && $args['is_webp'] ) {
 			/**
 			 * We just created a WebP version:
 			 * Check if it is lighter than the (maybe optimized) non-WebP file.
@@ -776,7 +784,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		$webp_size      = $args['non_webp_thumb_size'] . static::WEBP_SUFFIX;
 		$webp_file_size = $this->get_data()->get_size_data( $webp_size, 'optimized_size' );
 
-		if ( ! $webp_file_size || $webp_file_size < $args['response']->new_size ) {
+		if ( property_exists( $args['response'], 'message' ) || ! $webp_file_size || $webp_file_size < $args['response']->new_size ) {
 			// The WebP file is lighter than this one.
 			return $args['response'];
 		}
@@ -1532,6 +1540,38 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
+	 * Tell if the media has all WebP versions.
+	 *
+	 * @return bool
+	 */
+	public function is_full_webp() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( ! $this->get_media()->is_image() ) {
+			return false;
+		}
+
+		$data = $this->get_data()->get_optimization_data();
+
+		$sizes = $data['sizes'];
+
+		if ( empty( $sizes ) ) {
+			return false;
+		}
+
+		$keys = array_keys( $sizes );
+		$non_webp_keys = array_values(array_filter($keys, function ( $key ) {
+			return strpos( $key, static::WEBP_SUFFIX ) === false;
+		}));
+
+		return array_reduce($non_webp_keys, function ( $is_fully, $key ) use ( $sizes ) {
+			return key_exists( $key . self::WEBP_SUFFIX, $sizes ) && $is_fully;
+		}, true);
+	}
+
+	/**
 	 * Tell if a WebP version can be created for the given file.
 	 * Make sure the file is an image before using this method.
 	 *
@@ -1757,6 +1797,9 @@ abstract class AbstractProcess implements ProcessInterface {
 
 			// Size data.
 			$data['success']        = true;
+			if ( property_exists( $response, 'message' ) ) {
+				$data['message']  = imagify_translate_api_message( $response->message );
+			}
 			$data['original_size']  = $response->original_size;
 			$data['optimized_size'] = $response->new_size;
 		}
@@ -1785,6 +1828,9 @@ abstract class AbstractProcess implements ProcessInterface {
 		 */
 		$data = (array) apply_filters( "imagify{$_unauthorized}_file_optimization_data", $data, $response, $size, $level, $this->get_data() );
 
+		if ( property_exists( $response, 'message' ) ) {
+			$size = str_replace( '@imagify-webp', '', $size );
+		}
 		// Store.
 		$this->get_data()->update_size_optimization_data( $size, $data );
 
