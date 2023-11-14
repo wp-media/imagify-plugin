@@ -15,8 +15,7 @@ if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
 }
 
 if ( Imagify_Requirements::is_api_key_valid() ) {
-	$user         = imagify_get_cached_user();
-	$hidden_class = '';
+	$user = imagify_get_cached_user();
 
 	if ( ! $user ) {
 		// Lazyload user.
@@ -25,8 +24,6 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 			'_wpnonce' => wp_create_nonce( 'imagify_get_user_data' ),
 		) );
 	}
-} else {
-	$hidden_class = ' hidden';
 }
 ?>
 <div class="imagify-settings-section">

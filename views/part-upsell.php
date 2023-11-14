@@ -13,19 +13,20 @@ $upgrade_link = '';
 $user_id      = get_current_user_id();
 $notices      = get_user_meta( $user_id, '_imagify_ignore_notices', true );
 $notices      = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
+$api_key_valid = Imagify_Requirements::is_api_key_valid();
 
 if (
 	$imagify_user->is_free()
 	&&
-	Imagify_Requirements::is_api_key_valid()
+	$api_key_valid
 	&&
 	$unconsumed_quota > 20
 ) {
 	?>
 	<div class="imagify-col-content imagify-block-secondary imagify-mt2">
-		<div class="best-plan<?php echo $hidden_class; ?>">
+		<div class="best-plan<?php echo $api_key_valid ? '': ' hidden'; ?>">
 			<h3 class="imagify-user-best-plan-title">
-				<?php  esc_html_e( 'You\'re new to Imagify?', 'imagify' ); ?>
+				<?php esc_html_e( 'You\'re new to Imagify?', 'imagify' ); ?>
 			</h3>
 			<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
 			<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-full-width">
