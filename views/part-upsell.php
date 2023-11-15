@@ -24,7 +24,7 @@ if (
 ) {
 	?>
 	<div class="imagify-col-content imagify-block-secondary imagify-mt2">
-		<div class="best-plan<?php echo $api_key_valid ? '': ' hidden'; ?>">
+		<div class="best-plan<?php echo $api_key_valid ? '' : ' hidden'; ?>">
 			<h3 class="imagify-user-best-plan-title">
 				<?php esc_html_e( 'You\'re new to Imagify?', 'imagify' ); ?>
 			</h3>
