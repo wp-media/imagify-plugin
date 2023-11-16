@@ -42,11 +42,16 @@ function get_imagify_attachment_optimization_text( $process ) {
 	}
 
 	$data               = $process->get_data();
+	$optimized_data     = $data->get_optimization_data();
 	$attachment_id      = $media->get_id();
 	$optimization_level = imagify_get_optimization_level_label( $data->get_optimization_level() );
 
 	if ( ! $is_media_page ) {
 		$output .= $output_before . '<span class="data">' . __( 'New Filesize:', 'imagify' ) . '</span> <strong class="big">' . $data->get_optimized_size() . '</strong>' . $output_after;
+	}
+
+	if ( key_exists( 'message', $optimized_data ) && $optimized_data['message'] ) {
+		$output .= $output_before . '<span class="data">' . __( 'Convert:', 'imagify' ) . '</span> <strong class="big">' . $optimized_data['message'] . '</strong>' . $output_after;
 	}
 
 	$chart = '';
@@ -90,6 +95,10 @@ function get_imagify_attachment_optimization_text( $process ) {
 
 	if ( $media->is_image() ) {
 		$has_webp = $process->has_webp() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
+
+		if ( $process->has_webp() ) {
+			$has_webp = $process->is_full_webp() ? __( 'Yes', 'imagify' ) : __( 'Partially', 'imagify' );
+		}
 		$output  .= $output_before . '<span class="data">' . __( 'WebP generated:', 'imagify' ) . '</span> <strong class="big">' . esc_html( $has_webp ) . '</strong>' . $output_after;
 
 		$total_optimized_thumbnails = $data->get_optimized_sizes_count();

@@ -25,6 +25,7 @@ abstract class AbstractData implements DataInterface {
 	 */
 	protected $default_optimization_data = [
 		'status' => '',
+		'message' => '',
 		'level'  => false,
 		'sizes'  => [],
 		'stats'  => [

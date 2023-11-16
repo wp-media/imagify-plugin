@@ -1543,3 +1543,45 @@ ul.imagify-datas-details.imagify-datas-details {
 		padding-right: 0em;
 	}
 }
+
+.imagify-upsell {
+	position:relative;
+	background: #c51161;
+	padding: 20px 40px;
+}
+
+.imagify-upsell p {
+	color: #fff !important;
+}
+
+.imagify-upsell-button {
+	display: block;
+	background: #fff;
+	border-radius: 5px;
+	color: #c51161 !important;
+	font-weight: bold;
+	padding: 10px;
+	text-align: center;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+.imagify-upsell-arrow::after {
+	content: '\2192';
+	font-size: large;
+	margin-left: 5px;
+	vertical-align: top;
+}
+
+.imagify-upsell-dismiss::before {
+	position: absolute;
+    top: 5px;
+    right: 5px;
+	content: "\2715";
+    color: #2e3243;
+    font-size: 2em;
+}
+
+.imagify-upsell .imagify-meteo-icon {
+	filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(104deg) brightness(103%) contrast(103%);
+}

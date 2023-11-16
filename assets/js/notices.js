@@ -6,7 +6,7 @@
 	 */
 	$( '.imagify-notice-dismiss' ).on( 'click.imagify', function( e ) {
 		var $this   = $( this ),
-			$parent = $this.parents( '.imagify-welcome, .imagify-notice, .imagify-rkt-notice' ),
+			$parent = $this.parents( '.imagify-welcome, .imagify-notice, .imagify-rkt-notice, .imagify-upsell, .imagify-upsell-admin-bar' ),
 			href    = $this.attr( 'href' );
 
 		e.preventDefault();

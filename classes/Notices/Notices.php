@@ -67,8 +67,6 @@ class Notices {
 		'http-block-external',
 		// This warning is displayed when the grid view is active on the library. Dismissible.
 		'grid-view',
-		// This warning is displayed to warn the user that the quota is almost consumed for the current month. Dismissible.
-		'almost-over-quota',
 		// This warning is displayed if the backup folder is not writable. NOT dismissible.
 		'backup-folder-not-writable',
 		// This notice is displayed to rate the plugin after 100 optimizations & 7 days after the first installation. Dismissible.
@@ -77,6 +75,8 @@ class Notices {
 		'wp-rocket',
 		'bulk-optimization-complete',
 		'bulk-optimization-running',
+		'upsell-banner',
+		'upsell-admin-bar',
 	];
 
 	/**
@@ -251,7 +251,7 @@ class Notices {
 	public function renew_almost_over_quota_notice() {
 		global $wpdb;
 
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE %s", self::DISMISS_META_NAME, '%almost-over-quota%' ) );
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE %s", self::DISMISS_META_NAME, '%upsell%' ) );
 
 		if ( ! $results ) {
 			return;
@@ -272,7 +272,8 @@ class Notices {
 
 		// Renew the notice for all users.
 		foreach ( $results as $result ) {
-			self::renew_notice( 'almost-over-quota', $result->user_id );
+			self::renew_notice( 'upsell-banner', $result->user_id );
+			self::renew_notice( 'upsell-admin-bar', $result->user_id );
 		}
 	}
 
@@ -437,45 +438,6 @@ class Notices {
 		}
 
 		$display = true;
-		return $display;
-	}
-
-	/**
-	 * Tell if the 'almost-over-quota' notice should be displayed.
-	 *
-	 * @since 1.7.0
-	 *
-	 * @return bool|object An Imagify user object. False otherwise.
-	 */
-	public function display_almost_over_quota() {
-		static $display;
-
-		if ( isset( $display ) ) {
-			return $display;
-		}
-
-		$display = false;
-
-		if ( ! $this->user_can( 'almost-over-quota' ) ) {
-			return $display;
-		}
-
-		if ( ! imagify_is_screen( 'imagify-settings' ) && ! imagify_is_screen( 'bulk' ) ) {
-			return $display;
-		}
-
-		if ( self::notice_is_dismissed( 'almost-over-quota' ) ) {
-			return $display;
-		}
-
-		$user = new User();
-
-		// Don't display the notice if the user's unconsumed quota is superior to 20%.
-		if ( $user->get_percent_unconsumed_quota() > 20 ) {
-			return $display;
-		}
-
-		$display = $user;
 		return $display;
 	}
 

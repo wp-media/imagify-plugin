@@ -33,7 +33,10 @@ function imagify_count_attachments() {
 
 	$mime_types   = Imagify_DB::get_mime_types();
 	$statuses     = Imagify_DB::get_post_statuses();
-	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause('p.ID', true, true,
+		"AND p.post_mime_type IN ( $mime_types )
+			AND p.post_type = 'attachment'
+			AND p.post_status IN ( $statuses )");
 	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
