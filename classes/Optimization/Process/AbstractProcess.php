@@ -729,9 +729,9 @@ abstract class AbstractProcess implements ProcessInterface {
 			 *
 			 * @since 1.9.4
 			 *
-			 * @param bool $keep_large_webp Set to false if you prefer your visitors over your Pagespeed score. Default value is true.
+			 * @param bool $keep_large_webp Set to false if you prefer your visitors over your Pagespeed score. Default value is false.
 			 */
-			$keep_large_webp = apply_filters( 'imagify_keep_large_webp', true );
+			$keep_large_webp = apply_filters( 'imagify_keep_large_webp', false );
 		}
 
 		if ( $keep_large_webp || is_wp_error( $args['response'] ) || ! $args['file']->is_image() ) {
