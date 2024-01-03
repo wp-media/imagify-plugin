@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, convert webp, webp converter, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
 Tested up to: 6.4
-Stable tag: 2.1.3
+Stable tag: 2.1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -258,6 +258,9 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.1.3.1 = 
+- Bugfix: missing styling on some banners when using minified versions of the CSS files (#765)
+
 = 2.1.3 =
 - Enhancement: Update chart.js (#742)
 - Enhancement: Improve messaging around WebP images when they are larger than the original (#751)
