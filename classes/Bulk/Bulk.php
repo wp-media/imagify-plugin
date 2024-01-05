@@ -18,6 +18,7 @@ class Bulk {
 	public function init() {
 		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 3 );
 		add_action( 'imagify_convert_webp', [ $this, 'generate_webp_versions' ], 10, 2 );
+		add_action( 'imagify_convert_avif', [ $this, 'generate_avif_versions' ], 10, 2 );
 		add_action( 'imagify_convert_webp_finished', [ $this, 'clear_webp_transients' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
 		add_action( 'wp_ajax_imagify_missing_webp_generation', [ $this, 'missing_webp_callback' ] );
@@ -389,6 +390,23 @@ class Bulk {
 		}
 
 		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
+	}
+	/**
+	 * Generate AVIF images if they are missing.
+	 *
+	 * @since 2.2
+	 *
+	 * @param int    $media_id Media ID.
+	 * @param string $context Current context.
+	 *
+	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
+	 */
+	public function generate_avif_versions( int $media_id, string $context ) {
+		if ( ! $this->can_optimize() ) {
+			return false;
+		}
+
+		return imagify_get_optimization_process( $media_id, $context )->generate_avif_versions();
 	}
 
 	/**

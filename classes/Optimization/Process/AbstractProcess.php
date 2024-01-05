@@ -24,6 +24,14 @@ abstract class AbstractProcess implements ProcessInterface {
 	const WEBP_SUFFIX = '@imagify-webp';
 
 	/**
+	 * The suffix used in the thumbnail size name.
+	 *
+	 * @var   string
+	 * @since 2.2
+	 */
+	const AVIF_SUFFIX = '@imagify-avif';
+
+	/**
 	 * The suffix used in file name to create a temporary copy of the full size.
 	 *
 	 * @var   string
@@ -1879,5 +1887,91 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		return \Imagify_Options::get_instance()->sanitize_and_validate( 'optimization_level', $optimization_level );
+	}
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** AVIF =========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Generate AVIF images if they are missing.
+	 *
+	 * @since 2.2
+	 *
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
+	 */
+	public function generate_avif_versions() {
+		if ( ! $this->is_valid() ) {
+			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+		}
+
+		$media = $this->get_media();
+
+		if ( ! $media->is_image() ) {
+			return new WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to AVIF format.', 'imagify' ) );
+		}
+
+		if ( ! $media->has_backup() ) {
+			return new WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
+		}
+
+		$data = $this->get_data();
+
+		if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {
+			return new WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
+		}
+
+		if ( $this->has_avif() ) {
+			return new WP_Error( 'has_avif', __( 'This media already has AVIF versions.', 'imagify' ) );
+		}
+
+		$files = $media->get_media_files();
+		$sizes = [];
+		$args  = [
+			'hook_suffix' => 'generate_avif_versions',
+		];
+
+		foreach ( $files as $size_name => $file ) {
+			if ( 'image/avif' !== $files[ $size_name ]['mime-type'] ) {
+				array_unshift( $sizes, $size_name . static::AVIF_SUFFIX );
+			}
+		}
+
+		if ( ! $sizes ) {
+			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to AVIF format.', 'imagify' ) );
+		}
+
+		$optimization_level = $data->get_optimization_level();
+
+		// Optimize.
+		return $this->optimize_sizes_avif( $sizes, $optimization_level, $args );
+	}
+
+	/**
+	 * Tell if the media has AVIF versions.
+	 *
+	 * @since 2.2
+	 *
+	 * @return bool
+	 */
+	public function has_avif() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( ! $this->get_media()->is_image() ) {
+			return false;
+		}
+
+		$data = $this->get_data()->get_optimization_data();
+
+		if ( empty( $data['sizes'] ) ) {
+			return false;
+		}
+
+		$needle = static::AVIF_SUFFIX . '";a:4:{s:7:"success";b:1;';
+		$data   = maybe_serialize( $data['sizes'] );
+
+		return is_string( $data ) && strpos( $data, $needle );
 	}
 }
