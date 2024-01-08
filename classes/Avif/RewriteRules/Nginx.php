@@ -1,20 +1,18 @@
 <?php
 namespace Imagify\Avif\RewriteRules;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\WriteFile\AbstractNginxDirConfFile;
 
 /**
  * Add and remove rewrite rules to the imagify.conf file to display AVIF images on the site.
  *
- * @author Gael Robin
  */
-class Nginx extends \Imagify\WriteFile\AbstractNginxDirConfFile {
+class Nginx extends AbstractNginxDirConfFile {
 
 	/**
 	 * Name of the tag used as block delimiter.
 	 *
 	 * @var    string
-	 * @author Gael Robin
 	 */
 	const TAG_NAME = 'Imagify: rewrite rules for avif';
 
@@ -22,7 +20,6 @@ class Nginx extends \Imagify\WriteFile\AbstractNginxDirConfFile {
 	 * Get unfiltered new contents to write into the file.
 	 *
 	 * @access protected
-	 * @author Gael Robin
 	 *
 	 * @return string
 	 */

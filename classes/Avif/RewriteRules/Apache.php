@@ -1,20 +1,18 @@
 <?php
 namespace Imagify\Avif\RewriteRules;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\WriteFile\AbstractApacheDirConfFile;
 
 /**
  * Add and remove rewrite rules to the .htaccess file to display AVIF images on the site.
  *
- * @author Gael Robin
  */
-class Apache extends \Imagify\WriteFile\AbstractApacheDirConfFile {
+class Apache extends AbstractApacheDirConfFile {
 
 	/**
 	 * Name of the tag used as block delimiter.
 	 *
 	 * @var    string
-	 * @author Gael Robin
 	 */
 	const TAG_NAME = 'Imagify: rewrite rules for avif';
 
@@ -22,7 +20,6 @@ class Apache extends \Imagify\WriteFile\AbstractApacheDirConfFile {
 	 * Get unfiltered new contents to write into the file.
 	 *
 	 * @access protected
-	 * @author Gael Robin
 	 *
 	 * @return string
 	 */
