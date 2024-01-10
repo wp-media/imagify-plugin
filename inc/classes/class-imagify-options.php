@@ -204,7 +204,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			unset( $values['resize_larger'], $values['resize_larger_w'] );
 		}
 
-		// Don't display wepb if conversion is disabled.
+		// Don't display AVIF if conversion is disabled.
 		if ( empty( $values['convert_to_avif'] ) ) {
 			unset( $values['convert_to_avif'], $values['display_avif'] );
 		}

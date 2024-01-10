@@ -186,6 +186,26 @@ function imagify_path_to_webp( $path ) {
 }
 
 /**
+ * Convert a path (or URL) to its next-gen version.
+ * To keep the function simple:
+ * - Not tested if it's an image.
+ * - File existance is not tested.
+ * - If an URL is given, make sure it doesn't contain query args.
+ *
+ * @since  2.2
+ *
+ * @param  string $path A file path or URL.
+ * @param  string $format format we are targeting.
+ * @return string
+ */
+function imagify_path_to_next_gen( $path, string $format ) {
+	if ( 'webp' === $format ) {
+		return $path . '.webp';
+	} elseif ( 'avif' === $format ) {
+		return $path . '.avif';
+	}
+}
+/**
  * Tell if the current user can optimize custom folders.
  *
  * @since  1.7

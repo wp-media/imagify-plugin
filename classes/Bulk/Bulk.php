@@ -17,10 +17,11 @@ class Bulk {
 	 */
 	public function init() {
 		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 3 );
-		add_action( 'imagify_convert_webp', [ $this, 'generate_webp_versions' ], 10, 2 );
-		add_action( 'imagify_convert_avif', [ $this, 'generate_avif_versions' ], 10, 2 );
+		add_action( 'imagify_convert_webp', [ $this, 'generate_next_gen_versions' ], 10, 2 );
+		add_action( 'imagify_convert_avif', [ $this, 'generate_next_gen_versions' ], 10, 2 );
 		add_action( 'imagify_convert_webp_finished', [ $this, 'clear_webp_transients' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
+		add_action( 'imagify_bulk_optimize', [ $this, 'bulk_optimize' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_missing_webp_generation', [ $this, 'missing_webp_callback' ] );
 		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_info_seen', [ $this, 'bulk_info_seen_callback' ] );
@@ -311,13 +312,13 @@ class Bulk {
 		}
 
 		/**
-		* Filter the name of the class to use for bulk process.
-		*
-		* @since 1.9
-		*
-		* @param int    $class_name The class name.
-		* @param string $context    The context name.
-		*/
+		 * Filter the name of the class to use for bulk process.
+		 *
+		 * @since 1.9
+		 *
+		 * @param int    $class_name The class name.
+		 * @param string $context    The context name.
+		 */
 		$class_name = apply_filters( 'imagify_bulk_class_name', $class_name, $context );
 
 		return '\\' . ltrim( $class_name, '\\' );
@@ -384,12 +385,12 @@ class Bulk {
 	 *
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function generate_webp_versions( int $media_id, string $context ) {
+	public function generate_next_gen_versions( int $media_id, string $context ) {
 		if ( ! $this->can_optimize() ) {
 			return false;
 		}
 
-		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
+		return imagify_get_optimization_process( $media_id, $context )->generate_next_gen_versions();
 	}
 	/**
 	 * Generate AVIF images if they are missing.
@@ -473,6 +474,16 @@ class Bulk {
 	/** BULK OPTIMIZATION CALLBACKS ============================================================= */
 	/** ----------------------------------------------------------------------------------------- */
 
+	/**
+	 * Launch the bulk optimization without going through AJAX.
+	 *
+	 * @param   string $context Current context (WP/Custom folders).
+	 * @param   int    $level Optimization level.
+	 * @return void
+	 */
+	public function bulk_optimize( $context, $level ) {
+		$this->run_optimize( $context, $level );
+	}
 	/**
 	 * Launch the bulk optimization action
 	 *

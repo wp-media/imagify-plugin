@@ -27,7 +27,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		'imagify_manual_optimize',
 		'imagify_manual_reoptimize',
 		'imagify_optimize_missing_sizes',
-		'imagify_generate_webp_versions',
+		'imagify_generate_next_gen_versions',
 		'imagify_delete_webp_versions',
 		'imagify_restore',
 		// Custom folders optimization.
@@ -202,8 +202,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @param  string $context  The context.
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
-	protected function generate_webp_versions( $media_id, $context ) {
-		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
+	protected function generate_next_gen_versions( $media_id, $context ) {
+		return imagify_get_optimization_process( $media_id, $context )->generate_next_gen_versions();
 	}
 
 	/**
@@ -228,12 +228,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			return new WP_Error( 'not_already_optimized', __( 'This media does not have the right optimization status.', 'imagify' ) );
 		}
 
-		if ( ! $process->has_webp() ) {
+		if ( ! $process->has_next_gen() ) {
 			return true;
 		}
 
 		$data->delete_optimization_data();
-		$deleted = $process->delete_webp_files();
+		$deleted = $process->delete_next_gen_files();
 
 		if ( is_wp_error( $deleted ) ) {
 			return new WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
@@ -363,7 +363,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 *
 	 * @since 1.9
 	 */
-	public function imagify_generate_webp_versions_callback() {
+	public function imagify_generate_next_gen_versions_callback() {
 		$context  = $this->get_context();
 		$media_id = $this->get_media_id();
 
@@ -377,7 +377,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$result = $this->generate_webp_versions( $media_id, $context );
+		$result = $this->generate_next_gen_versions( $media_id, $context );
 
 		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
 

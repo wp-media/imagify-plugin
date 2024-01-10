@@ -284,7 +284,7 @@ function imagify_ngg_cleanup_after_media_deletion( $image_id, $image ) {
 	 * The backup file has already been deleted by NGG.
 	 * Delete the WebP versions and the optimization data.
 	 */
-	$process->delete_webp_files();
+	$process->delete_next_gen_files();
 	$process->get_data()->delete_optimization_data();
 }
 

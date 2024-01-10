@@ -443,7 +443,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		}
 
 		foreach ( $paths as $size_name => $file_path ) {
-			if ( 'thumb' === $size_name || 'backup' === $size_name || $process->is_size_webp( $size_name ) ) {
+			if ( 'thumb' === $size_name || 'backup' === $size_name || $process->is_size_next_gen( $size_name ) ) {
 				continue;
 			}
 

@@ -38,7 +38,7 @@ function imagify_cleanup_after_media_deletion( $process ) {
 	 * The optimization data will be automatically deleted by WP (post metas).
 	 * Delete the WebP versions and the backup file.
 	 */
-	$process->delete_webp_files();
+	$process->delete_next_gen_files();
 	$process->delete_backup();
 }
 
