@@ -1,5 +1,5 @@
 <?php
-namespace Imagify\Webp\Picture;
+namespace Imagify\Picture;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
@@ -259,24 +259,65 @@ class Display {
 	 * @return string       A <source> tag.
 	 */
 	protected function build_source_tag( $image ) {
+		$source = '';
+
+		foreach ( ['webp', 'avif'] as $image_type ) {
+			$attributes = $this->build_source_attributes( $image, $image_type );
+
+			if ( empty( $attributes ) ) {
+				continue;
+			}
+
+			$source .= '<source' . $this->build_attributes( $attributes ) . "/>\n";
+		}
+
+		return $source;
+	}
+
+	/**
+	 * Build the attribute for the source tag.
+	 *
+	 * @param array $image An array of data.
+	 * @param string $image_type Type of image.
+	 * @return array
+	 */
+	protected function build_source_attributes( array $image, string $image_type ): array {
+		$mime_type = '';
+		$url = '';
+
+		switch ( $image_type ) {
+			case 'webp':
+				$mime_type = 'image/webp';
+				$url = 'webp_url';
+				break;
+			case 'avif':
+				$mime_type = 'image/avif';
+				$url = 'avif_url';
+				break;
+		}
+
 		$srcset_source = ! empty( $image['srcset_attribute'] ) ? $image['srcset_attribute'] : $image['src_attribute'] . 'set';
 		$attributes    = [
-			'type'         => 'image/webp',
+			'type'         => $mime_type,
 			$srcset_source => [],
 		];
 
 		if ( ! empty( $image['srcset'] ) ) {
 			foreach ( $image['srcset'] as $srcset ) {
-				if ( empty( $srcset['webp_url'] ) ) {
+				if ( empty( $srcset[ $url ] ) ) {
 					continue;
 				}
 
-				$attributes[ $srcset_source ][] = $srcset['webp_url'] . ' ' . $srcset['descriptor'];
+				$attributes[ $srcset_source ][] = $srcset[ $url ] . ' ' . $srcset['descriptor'];
 			}
 		}
 
+		if ( empty( $attributes[ $srcset_source ] ) && empty( $image['src'][ $url ] ) ) {
+			return [];
+		}
+
 		if ( empty( $attributes[ $srcset_source ] ) ) {
-			$attributes[ $srcset_source ][] = $image['src']['webp_url'];
+			$attributes[ $srcset_source ][] = $image['src'][ $url ];
 		}
 
 		$attributes[ $srcset_source ] = implode( ', ', $attributes[ $srcset_source ] );
@@ -309,7 +350,7 @@ class Display {
 		 */
 		$attributes = apply_filters( 'imagify_picture_source_attributes', $attributes, $image );
 
-		return '<source' . $this->build_attributes( $attributes ) . "/>\n";
+		return $attributes;
 	}
 
 	/**
@@ -426,12 +467,23 @@ class Display {
 		}
 
 		foreach ( $images as $i => $image ) {
-			if ( empty( $image['src']['webp_exists'] ) || empty( $image['src']['webp_url'] ) ) {
+			if ( ( empty( $image['src']['webp_exists'] ) || empty( $image['src']['webp_url'] ) ) && 
+			( empty( $image['src']['avif_exists'] ) || empty( $image['src']['avif_url'] ) ) ) {
+
 				unset( $images[ $i ] );
 				continue;
 			}
 
+			if ( empty( $image['src']['webp_exists'] ) || empty( $image['src']['webp_url'] ) ) {
+				unset( $images[ $i ]['src']['webp_url'] );
+			}
+
+			if ( empty( $image['src']['avif_exists'] ) || empty( $image['src']['avif_url'] ) ) {
+				unset( $images[ $i ]['src']['avif_url'] );
+			}
+
 			unset( $images[ $i ]['src']['webp_path'], $images[ $i ]['src']['webp_exists'] );
+			unset( $images[ $i ]['src']['avif_path'], $images[ $i ]['src']['avif_exists'] );
 
 			if ( empty( $image['srcset'] ) || ! is_array( $image['srcset'] ) ) {
 				unset( $images[ $i ]['srcset'] );
@@ -443,11 +495,22 @@ class Display {
 					continue;
 				}
 
+				if ( ( empty( $srcset['webp_exists'] ) || empty( $srcset['webp_url'] ) ) && 
+				( empty( $srcset['avif_exists'] ) || empty( $srcset['avif_url'] ) ) ) {
+					unset( $images[ $i ]['srcset'][ $j ]['webp_url'] );
+					unset( $images[ $i ]['srcset'][ $j ]['avif_url'] );
+				}
+
 				if ( empty( $srcset['webp_exists'] ) || empty( $srcset['webp_url'] ) ) {
 					unset( $images[ $i ]['srcset'][ $j ]['webp_url'] );
 				}
+	
+				if ( empty( $srcset['avif_exists'] ) || empty( $srcset['avif_url'] ) ) {
+					unset( $images[ $i ]['srcset'][ $j ]['avif_url'] );
+				}
 
 				unset( $images[ $i ]['srcset'][ $j ]['webp_path'], $images[ $i ]['srcset'][ $j ]['webp_exists'] );
+				unset( $images[ $i ]['srcset'][ $j ]['avif_path'], $images[ $i ]['srcset'][ $j ]['avif_exists'] );
 			}
 		}
 
@@ -525,11 +588,7 @@ class Display {
 		if ( ! preg_match( '@^(?<src>(?:(?:https?:)?//|/).+\.(?<extension>' . $extensions . '))(?<query>\?.*)?$@i', $attributes[ $src_source ], $src ) ) {
 			// Not a supported image format.
 			return false;
-		}
-
-		$webp_url  = imagify_path_to_webp( $src['src'] );
-		$webp_path = $this->url_to_path( $webp_url );
-		$webp_url .= ! empty( $src['query'] ) ? $src['query'] : '';
+		}		
 
 		$data = [
 			'tag'              => $image,
@@ -537,13 +596,14 @@ class Display {
 			'src_attribute'    => $src_source,
 			'src'              => [
 				'url'         => $attributes[ $src_source ],
-				'webp_url'    => $webp_url,
-				'webp_path'   => $webp_path,
-				'webp_exists' => $webp_path && $this->filesystem->exists( $webp_path ),
 			],
 			'srcset_attribute' => false,
 			'srcset'           => [],
 		];
+
+		foreach( $this->get_next_gen_image_data_set( $src ) as $key => $value ) {
+			$data['src'][ $key ] = $value;
+		}
 
 		// Deal with the srcset attribute.
 		$srcset_source = false;
@@ -556,6 +616,8 @@ class Display {
 		}
 
 		if ( $srcset_source ) {
+			$srcset_data = [];
+			
 			$data['srcset_attribute'] = $srcset_source;
 
 			$srcset = explode( ',', $attributes[ $srcset_source ] );
@@ -582,17 +644,16 @@ class Display {
 					continue;
 				}
 
-				$webp_url  = imagify_path_to_webp( $src['src'] );
-				$webp_path = $this->url_to_path( $webp_url );
-				$webp_url .= ! empty( $src['query'] ) ? $src['query'] : '';
-
-				$data['srcset'][] = [
+				$srcset_data = [
 					'url'         => $srcs[0],
 					'descriptor'  => $srcs[1],
-					'webp_url'    => $webp_url,
-					'webp_path'   => $webp_path,
-					'webp_exists' => $webp_path && $this->filesystem->exists( $webp_path ),
 				];
+
+				foreach ( $this->get_next_gen_image_data_set( $src ) as $key => $value ) {
+					$srcset_data[ $key ] = $value;
+				}
+
+				$data['srcset'][] = $srcset_data;
 			}
 		}
 
@@ -616,6 +677,33 @@ class Display {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Get the next gen image(webp & avif) data set.
+	 *
+	 * @param array $src Array of url/path segments.
+	 * @return array
+	 */
+	protected function get_next_gen_image_data_set( array $src ): array {
+		$webp_url  = imagify_path_to_next_gen( $src['src'], 'webp' );
+		$webp_path = $this->url_to_path( $webp_url );
+
+		$avif_url = imagify_path_to_next_gen( $src['src'], 'avif' );
+		$avif_path = $this->url_to_path( $avif_url );
+		$query_string = ! empty( $src['query'] ) ? $src['query'] : '';
+
+		return [
+			// WebP data set.
+			'webp_url' => $webp_url . $query_string,
+			'webp_path' => $webp_path,
+			'webp_exists' => $webp_path && $this->filesystem->exists( $webp_path ),
+
+			// Avif data set.
+			'avif_url' => $avif_url . $query_string,
+			'avif_path' => $avif_path,
+			'avif_exists' => $avif_path && $this->filesystem->exists( $avif_path ),
+		];
 	}
 
 	/**
