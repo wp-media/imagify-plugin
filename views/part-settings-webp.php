@@ -2,7 +2,7 @@
 
 use Imagify\Stats\OptimizedMediaWithoutWebp;
 use Imagify\Webp\Display;
-use Imagify\Webp\Picture\Display as PictureDisplay;
+use Imagify\Picture\Display as PictureDisplay;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
