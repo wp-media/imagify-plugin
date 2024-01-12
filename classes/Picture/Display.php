@@ -261,7 +261,7 @@ class Display {
 	protected function build_source_tag( $image ) {
 		$source = '';
 
-		foreach ( ['webp', 'avif'] as $image_type ) {
+		foreach ( [ 'webp', 'avif' ] as $image_type ) {
 			$attributes = $this->build_source_attributes( $image, $image_type );
 
 			if ( empty( $attributes ) ) {
@@ -277,7 +277,7 @@ class Display {
 	/**
 	 * Build the attribute for the source tag.
 	 *
-	 * @param array $image An array of data.
+	 * @param array  $image An array of data.
 	 * @param string $image_type Type of image.
 	 * @return array
 	 */
@@ -467,7 +467,7 @@ class Display {
 		}
 
 		foreach ( $images as $i => $image ) {
-			if ( ( empty( $image['src']['webp_exists'] ) || empty( $image['src']['webp_url'] ) ) && 
+			if ( ( empty( $image['src']['webp_exists'] ) || empty( $image['src']['webp_url'] ) ) &&
 			( empty( $image['src']['avif_exists'] ) || empty( $image['src']['avif_url'] ) ) ) {
 
 				unset( $images[ $i ] );
@@ -495,7 +495,7 @@ class Display {
 					continue;
 				}
 
-				if ( ( empty( $srcset['webp_exists'] ) || empty( $srcset['webp_url'] ) ) && 
+				if ( ( empty( $srcset['webp_exists'] ) || empty( $srcset['webp_url'] ) ) &&
 				( empty( $srcset['avif_exists'] ) || empty( $srcset['avif_url'] ) ) ) {
 					unset( $images[ $i ]['srcset'][ $j ]['webp_url'] );
 					unset( $images[ $i ]['srcset'][ $j ]['avif_url'] );
@@ -504,7 +504,7 @@ class Display {
 				if ( empty( $srcset['webp_exists'] ) || empty( $srcset['webp_url'] ) ) {
 					unset( $images[ $i ]['srcset'][ $j ]['webp_url'] );
 				}
-	
+
 				if ( empty( $srcset['avif_exists'] ) || empty( $srcset['avif_url'] ) ) {
 					unset( $images[ $i ]['srcset'][ $j ]['avif_url'] );
 				}
@@ -588,7 +588,7 @@ class Display {
 		if ( ! preg_match( '@^(?<src>(?:(?:https?:)?//|/).+\.(?<extension>' . $extensions . '))(?<query>\?.*)?$@i', $attributes[ $src_source ], $src ) ) {
 			// Not a supported image format.
 			return false;
-		}		
+		}
 
 		$data = [
 			'tag'              => $image,
@@ -601,7 +601,7 @@ class Display {
 			'srcset'           => [],
 		];
 
-		foreach( $this->get_next_gen_image_data_set( $src ) as $key => $value ) {
+		foreach ( $this->get_next_gen_image_data_set( $src ) as $key => $value ) {
 			$data['src'][ $key ] = $value;
 		}
 
@@ -617,7 +617,7 @@ class Display {
 
 		if ( $srcset_source ) {
 			$srcset_data = [];
-			
+
 			$data['srcset_attribute'] = $srcset_source;
 
 			$srcset = explode( ',', $attributes[ $srcset_source ] );
