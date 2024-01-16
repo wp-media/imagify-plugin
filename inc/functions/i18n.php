@@ -93,7 +93,7 @@ function get_imagify_localize_script_translations( $context ) {
 						'requirements' => $imagifybeat_actions->get_imagifybeat_id( 'requirements' ),
 					],
 					'ajaxActions'      => [
-						'MissingWebp' => 'imagify_missing_webp_generation',
+						'MissingNextGen' => 'imagify_missing_nextgen_generation',
 					],
 					'ajaxNonce'        => wp_create_nonce( 'imagify-bulk-optimize' ),
 					'contexts'         => $contexts,

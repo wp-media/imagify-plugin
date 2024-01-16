@@ -5,7 +5,7 @@ namespace Imagify;
 
 use Imagify\Bulk\Bulk;
 use Imagify\CLI\BulkOptimizeCommand;
-use Imagify\CLI\GenerateMissingWebpCommand;
+use Imagify\CLI\GenerateMissingNextgenCommand;
 use Imagify\Notices\Notices;
 use Imagify\Admin\AdminBar;
 
@@ -80,7 +80,7 @@ class Plugin {
 		imagify_load_translations();
 
 		imagify_add_command( new BulkOptimizeCommand() );
-		imagify_add_command( new GenerateMissingWebpCommand() );
+		imagify_add_command( new GenerateMissingNextgenCommand() );
 
 		/**
 		 * Fires when Imagify is fully loaded.

@@ -20,7 +20,7 @@ class Bulk {
 		add_action( 'imagify_convert_webp', [ $this, 'generate_webp_versions' ], 10, 2 );
 		add_action( 'imagify_convert_webp_finished', [ $this, 'clear_webp_transients' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
-		add_action( 'wp_ajax_imagify_missing_webp_generation', [ $this, 'missing_webp_callback' ] );
+		add_action( 'wp_ajax_imagify_missing_nextgen_generation', [ $this, 'missing_nextgen_callback' ] );
 		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_info_seen', [ $this, 'bulk_info_seen_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
@@ -219,7 +219,7 @@ class Bulk {
 	 *
 	 * @return array
 	 */
-	public function run_generate_webp( array $contexts ) {
+	public function run_generate_nextgen( array $contexts ) {
 		if ( ! $this->can_optimize() ) {
 			return [
 				'success' => false,
@@ -484,7 +484,7 @@ class Bulk {
 	 *
 	 * @return void
 	 */
-	public function missing_webp_callback() {
+	public function missing_nextgen_callback() {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
 		$contexts = explode( '_', sanitize_key( wp_unslash( $_GET['context'] ) ) );
@@ -495,7 +495,7 @@ class Bulk {
 			}
 		}
 
-		$data = $this->run_generate_webp( $contexts );
+		$data = $this->run_generate_nextgen( $contexts );
 
 		if ( false === $data['success'] ) {
 			wp_send_json_error( [ 'message' => $data['message'] ] );
