@@ -103,11 +103,11 @@ function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 		case 'optimize-missing-sizes':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_optimize_missing_sizes&attachment_id=' . $id . '&context=' . $context ), 'imagify-optimize-missing-sizes-' . $id . '-' . $context );
 
-		case 'generate-webp-versions':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_generate_webp_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-generate-webp-versions-' . $id . '-' . $context );
+		case 'generate-nextgen-versions':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_generate_nextgen_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-generate-nextgen-versions-' . $id . '-' . $context );
 
-		case 'delete-webp-versions':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_delete_webp_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-delete-webp-versions-' . $id . '-' . $context );
+		case 'delete-nextgen-versions':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_delete_nextgen_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-delete-nextgen-versions-' . $id . '-' . $context );
 
 		case 'optimize':
 		case 'manual-upload': // Deprecated.

@@ -700,7 +700,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$this->optimize_button( $item );
 		$this->retry_button( $item );
 		$this->reoptimize_buttons( $item );
-		$this->generate_webp_versions_button( $item );
+		$this->generate_nextgen_versions_button( $item );
 		$this->delete_webp_versions_button( $item );
 		$this->restore_button( $item );
 	}
@@ -806,13 +806,13 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prints a button to generate WebP versions if they are missing.
+	 * Prints a button to generate Next gen versions if they are missing.
 	 *
 	 * @since 1.7
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
 	 */
-	protected function generate_webp_versions_button( $item ) {
+	protected function generate_nextgen_versions_button( $item ) {
 		$button = get_imagify_attachment_generate_webp_versions_link( $item->process );
 
 		if ( $button ) {
