@@ -87,7 +87,7 @@
 			"packages": [
 				"deliciousbrains/wp-background-processing",
 				"league/container",
-				"event-manager"
+				"wp-media/event-manager"
 			]
 		}
 	},
