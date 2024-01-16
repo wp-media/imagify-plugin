@@ -122,7 +122,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	 * WebP images to display with a <picture> tag.
 	 *
 	 * @since  1.9
-	 * @see    \Imagify\Webp\Picture\Display->process_image()
+	 * @see    \Imagify\Picture\Display->process_image()
 	 * @author Grégory Viguier
 	 *
 	 * @param  array $data An array of data for this image.

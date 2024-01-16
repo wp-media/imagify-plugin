@@ -172,7 +172,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 				return $reset_values[ $key ];
 
 			case 'cdn_url':
-				$cdn_source = \Imagify\Webp\Picture\Display::get_instance()->get_cdn_source( $value );
+				$cdn_source = \Imagify\Picture\Display::get_instance()->get_cdn_source( $value );
 
 				if ( 'option' !== $cdn_source['source'] ) {
 					/**
