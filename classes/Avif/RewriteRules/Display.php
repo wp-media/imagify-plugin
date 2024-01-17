@@ -45,14 +45,13 @@ class Display {
 		global $is_apache, $is_nginx;
 
 		// Display AVIF?
-		$was_enabled = (bool) get_imagify_option( 'display_avif' );
+		$was_enabled = (bool) get_imagify_option( 'display_next_gen_method' );
 		// See \Imagify_Options->validate_values_on_update() for why we use 'convert_to_avif' here.
-		$is_enabled  = ! empty( $values['display_avif'] ) && ! empty( $values['convert_to_avif'] );
+		$is_enabled  = ! empty( $values['display_next_gen_method'] ) && ! empty( $values['convert_to_next_gen'] );
 
 		// Which method?
-		$old_value = get_imagify_option( 'display_avif_method' );
-		$new_value = ! empty( $values['display_avif_method'] ) ? $values['display_avif_method'] : '';
-
+		$old_value = get_imagify_option( 'display_next_gen_method' );
+		$new_value = ! empty( $values['display_next_gen_method'] ) ? $values['display_next_gen_method'] : '';
 		// Decide when to add or remove rules.
 		$is_rewrite    = self::OPTION_VALUE === $new_value;
 		$was_rewrite   = self::OPTION_VALUE === $old_value;
@@ -145,10 +144,10 @@ class Display {
 		if ( ! $conf ) {
 			return;
 		}
-		if ( ! get_imagify_option( 'display_avif' ) ) {
+		if ( ! get_imagify_option( 'display_next_gen' ) ) {
 			return;
 		}
-		if ( self::OPTION_VALUE !== get_imagify_option( 'display_avif_method' ) ) {
+		if ( self::OPTION_VALUE !== get_imagify_option( 'display_next_gen_method' ) ) {
 			return;
 		}
 		if ( is_wp_error( $conf->is_file_writable() ) ) {
@@ -167,10 +166,10 @@ class Display {
 		if ( ! $conf ) {
 			return;
 		}
-		if ( ! get_imagify_option( 'display_avif' ) ) {
+		if ( ! get_imagify_option( 'display_next_gen' ) ) {
 			return;
 		}
-		if ( self::OPTION_VALUE !== get_imagify_option( 'display_avif_method' ) ) {
+		if ( self::OPTION_VALUE !== get_imagify_option( 'display_next_gen_method' ) ) {
 			return;
 		}
 
