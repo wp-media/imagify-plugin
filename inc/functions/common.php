@@ -199,19 +199,18 @@ function imagify_path_to_webp( $path ) {
  * @return string
  */
 function imagify_path_to_next_gen( $path, string $format ) {
-	$extension = '';
-
 	switch ( $format ) {
 		case 'webp':
-			$extension = '.webp';
+			$path = $path . '.webp';
 			break;
 		case 'avif':
-			$extension = '.avif';
+			$path = $path . '.avif';
 			break;
 	}
 
-	return $path . $extension;
+	return $path;
 }
+
 /**
  * Tell if the current user can optimize custom folders.
  *
