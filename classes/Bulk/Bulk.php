@@ -216,10 +216,11 @@ class Bulk {
 	 * Runs the WebP generation
 	 *
 	 * @param array $contexts An array of contexts (WP/Custom folders).
+	 * @param array $formats An array of format to generate
 	 *
 	 * @return array
 	 */
-	public function run_generate_nextgen( array $contexts ) {
+	public function run_generate_nextgen( array $contexts, array $formats ) {
 		if ( ! $this->can_optimize() ) {
 			return [
 				'success' => false,
@@ -495,7 +496,10 @@ class Bulk {
 			}
 		}
 
-		$data = $this->run_generate_nextgen( $contexts );
+		$format_option = get_imagify_option( 'convert_to_avif' ) ? ['avif'] : [];
+		$formats = apply_filters( 'imagify_nextgen_images_formats', $format_option );
+
+		$data = $this->run_generate_nextgen( $contexts, $formats );
 
 		if ( false === $data['success'] ) {
 			wp_send_json_error( [ 'message' => $data['message'] ] );
