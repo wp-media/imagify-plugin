@@ -216,7 +216,7 @@ class Bulk {
 	 * Runs the WebP generation
 	 *
 	 * @param array $contexts An array of contexts (WP/Custom folders).
-	 * @param array $formats An array of format to generate
+	 * @param array $formats An array of format to generate.
 	 *
 	 * @return array
 	 */
@@ -496,7 +496,7 @@ class Bulk {
 			}
 		}
 
-		$format_option = get_imagify_option( 'convert_to_avif' ) ? ['avif'] : [];
+		$format_option = get_imagify_option( 'convert_to_avif' ) ? [ 'avif' ] : [];
 		$formats = apply_filters( 'imagify_nextgen_images_formats', $format_option );
 
 		$data = $this->run_generate_nextgen( $contexts, $formats );
