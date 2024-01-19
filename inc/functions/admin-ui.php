@@ -368,7 +368,7 @@ function get_imagify_attachment_generate_next_gen_versions_link( $process ) {
 	 * @param ProcessInterface $process The optimization process object.
 	 * @param string           $context The context.
 	 */
-	$display = apply_filters( 'imagify_display_generate_next_gen_versions_link', true, $process, $context );
+	$display = apply_filters( 'imagify_display_generate_next_gen_versions_link', $display, $process, $context );
 
 	// Stop the process if the filter is false.
 	if ( ! $display ) {

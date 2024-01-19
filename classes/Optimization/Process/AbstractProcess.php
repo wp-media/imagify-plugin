@@ -1693,7 +1693,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * @param bool   $can       True to create a WebP version, false otherwise. Null by default.
 		 * @param string $file_path Path to the file.
 		 */
-		$can = apply_filters( 'imagify_pre_can_create_next_gen_version', null, $file_path );
+		$can = apply_filters( 'imagify_pre_can_create_next_gen_version', $can, $file_path );
 
 		if ( isset( $can ) ) {
 			return (bool) $can;
