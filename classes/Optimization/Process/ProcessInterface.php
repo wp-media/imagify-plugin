@@ -246,7 +246,7 @@ interface ProcessInterface {
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function generate_webp_versions();
+	public function generate_nextgen_versions();
 
 	/**
 	 * Delete the WebP images.
@@ -260,7 +260,7 @@ interface ProcessInterface {
 	 * @param  bool $keep_full Set to true to keep the full size.
 	 * @return bool|\WP_Error  True on success. A \WP_Error object on failure.
 	 */
-	public function delete_webp_files( $keep_full = false );
+	public function delete_nextgen_files( $keep_full = false );
 
 	/**
 	 * Tell if a thumbnail size is an "Imagify WebP" size.

@@ -259,7 +259,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		if ( $data->is_already_optimized() && $this->has_webp() ) {
 			// If already optimized but has WebP, delete WebP versions and optimization data.
 			$data->delete_optimization_data();
-			$deleted = $this->delete_webp_files();
+			$deleted = $this->delete_nextgen_files();
 
 			if ( is_wp_error( $deleted ) ) {
 				return new WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
@@ -935,7 +935,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * In that case we must also delete the WebP file associated to the full size.
 		 */
 		$keep_full_webp = $media->get_raw_original_path() === $media->get_raw_fullsize_path();
-		$this->delete_webp_files( $keep_full_webp );
+		$this->delete_nextgen_files( $keep_full_webp );
 
 		// Generate new thumbnails.
 		return $media->generate_thumbnails();
@@ -1321,7 +1321,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function generate_webp_versions() {
+	public function generate_nextgen_versions() {
 		if ( ! $this->is_valid() ) {
 			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
@@ -1349,7 +1349,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		$files = $media->get_media_files();
 		$sizes = [];
 		$args  = [
-			'hook_suffix' => 'generate_webp_versions',
+			'hook_suffix' => 'generate_nextgen_versions',
 		];
 
 		foreach ( $files as $size_name => $file ) {
@@ -1378,7 +1378,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @param  bool $keep_full Set to true to keep the full size.
 	 * @return bool|WP_Error  True on success. A \WP_Error object on failure.
 	 */
-	public function delete_webp_files( $keep_full = false ) {
+	public function delete_nextgen_files( $keep_full = false ) {
 		if ( ! $this->is_valid() ) {
 			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}

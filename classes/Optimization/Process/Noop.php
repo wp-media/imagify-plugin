@@ -287,7 +287,7 @@ class Noop implements ProcessInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Generate WebP images if they are missing.
+	 * Generate Nextgen images if they are missing.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -295,7 +295,7 @@ class Noop implements ProcessInterface {
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function generate_webp_versions() {
+	public function generate_nextgen_versions() {
 		return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 	}
 
@@ -306,7 +306,7 @@ class Noop implements ProcessInterface {
 	 * @access public
 	 * @author Grégory Viguier
 	 */
-	public function delete_webp_files() {}
+	public function delete_nextgen_files() {}
 
 	/**
 	 * Tell if a thumbnail size is an "Imagify WebP" size.
