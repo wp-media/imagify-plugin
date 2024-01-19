@@ -71,26 +71,30 @@ add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'get_resi
 /**
  * Add filters to manage images formats that will be generated
  *
- * @param array $formats The format values. Default values are 'webp' and 'avif'.
- *
  * @return array;
  */
-function imagify_nextgen_images_format( array $formats ) {
-	// If no formats is passed, bail early and default to webp.
-	if ( empty( $formats ) ) {
-		return [ 'webp' ];
-	}
+function imagify_nextgen_images_formats() {
+	$formats = [
+		'webp',
+	];
 
-	if ( isset( $formats['webp'], $formats['avif'] )
-		&& ( $formats['avif'] && $formats['webp'] )
-	) {
-		return [ 'avif', 'webp' ];
+	if ( get_imagify_option( 'convert_to_avif' ) ) {
+		$formats[] = 'avif';
+	}
+	$default = $formats;
+
+	/**
+	 * Filters the array of next gen formats to generate with Imagify
+	 *
+	 * @since 2.2
+	 *
+	 * @param array $formats Array of image formats
+	 */
+	$formats = apply_filters( 'imagify_nextgen_images_formats', $formats );
+
+	if ( ! is_array( $formats ) ) {
+		$formats = $default;
 	}
 
 	return $formats;
 }
-
-/**
- * Filter to get the image format to generate.
-*/
-add_filter( 'imagify_nextgen_images_formats', 'imagify_nextgen_images_format' );
