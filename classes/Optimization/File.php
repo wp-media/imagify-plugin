@@ -535,7 +535,11 @@ class File {
 			$args['convert'] = '';
 		}
 
-		if ( 'webp' === $args['convert'] || 'avif' === $args['convert'] ) {
+		$formats = [
+			'webp',
+			'avif',
+		];
+		if ( in_array( $args['convert'], $formats, true ) ) {
 			$destination_path = $this->get_path_to_next_gen( $args['convert'] );
 			$this->path       = $destination_path;
 			$this->file_type  = null;
