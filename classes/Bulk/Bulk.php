@@ -496,8 +496,7 @@ class Bulk {
 			}
 		}
 
-		$format_option = get_imagify_option( 'convert_to_avif' ) ? [ 'avif' ] : [];
-		$formats = apply_filters( 'imagify_nextgen_images_formats', $format_option );
+		$formats = imagify_nextgen_images_formats();
 
 		$data = $this->run_generate_nextgen( $contexts, $formats );
 
