@@ -41,6 +41,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'disallowed-sizes'    => [],
 		'admin_bar_menu'      => 0,
 		'partner_links'       => 0,
+		'convert_to_avif'     => 0,
 	];
 
 	/**
@@ -134,6 +135,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'display_webp':
 			case 'admin_bar_menu':
 			case 'partner_links':
+			case 'convert_to_avif':
 				return 1;
 
 			case 'resize_larger_w':
@@ -202,9 +204,9 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			unset( $values['resize_larger'], $values['resize_larger_w'] );
 		}
 
-		// Don't display wepb if conversion is disabled.
-		if ( empty( $values['convert_to_webp'] ) ) {
-			unset( $values['convert_to_webp'], $values['display_webp'] );
+		// Don't display AVIF if conversion is disabled.
+		if ( empty( $values['convert_to_avif'] ) ) {
+			unset( $values['convert_to_avif'], $values['display_avif'] );
 		}
 
 		return $values;

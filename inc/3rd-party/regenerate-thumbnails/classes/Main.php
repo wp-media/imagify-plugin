@@ -164,7 +164,7 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 
 		if ( ! empty( $optimization_data['sizes'] ) ) {
 			foreach ( $optimization_data['sizes'] as $size_name => $size_data ) {
-				$non_webp_size_name = $process->is_size_webp( $size_name );
+				$non_webp_size_name = $process->is_size_next_gen( $size_name );
 
 				if ( ! $non_webp_size_name || ! isset( $sizes[ $non_webp_size_name ] ) ) {
 					continue;

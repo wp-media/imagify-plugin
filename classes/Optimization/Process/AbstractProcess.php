@@ -24,6 +24,14 @@ abstract class AbstractProcess implements ProcessInterface {
 	const WEBP_SUFFIX = '@imagify-webp';
 
 	/**
+	 * The suffix used in the thumbnail size name.
+	 *
+	 * @var   string
+	 * @since 2.2
+	 */
+	const AVIF_SUFFIX = '@imagify-avif';
+
+	/**
 	 * The suffix used in file name to create a temporary copy of the full size.
 	 *
 	 * @var   string
@@ -88,6 +96,14 @@ abstract class AbstractProcess implements ProcessInterface {
 	protected $options = [];
 
 	/**
+	 * Tells the format we are currently processing
+	 *
+	 * @var  string
+	 * @since 2.2
+	 */
+	protected $format;
+
+	/**
 	 * The constructor.
 	 *
 	 * @since 1.9
@@ -107,6 +123,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$this->filesystem = \Imagify_Filesystem::get_instance();
+		$this->format = $this->get_current_format();
 	}
 
 	/**
@@ -256,13 +273,13 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new WP_Error( 'optimized', __( 'This media has already been optimized by Imagify.', 'imagify' ) );
 		}
 
-		if ( $data->is_already_optimized() && $this->has_webp() ) {
+		if ( $data->is_already_optimized() && $this->has_next_gen() ) {
 			// If already optimized but has WebP, delete WebP versions and optimization data.
 			$data->delete_optimization_data();
-			$deleted = $this->delete_webp_files();
+			$deleted = $this->delete_next_gen_files();
 
 			if ( is_wp_error( $deleted ) ) {
-				return new WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
+				return new WP_Error( 'next_gen_not_deleted', __( 'Previous Next-Gen files could not be deleted.', 'imagify' ) );
 			}
 		}
 
@@ -325,10 +342,13 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @see   MediaOptimization->task_before()
 	 * @see   MediaOptimization->task_after()
 	 *
+	 * @since 2.2
+	 * Addition of the image format
+	 *
 	 * @param  array $sizes              An array of media sizes (strings). Use "full" for the size of the main file.
 	 * @param  int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @param  array $args               {
-	 *     An array of optionnal arguments.
+	 *    An array of optionnal arguments.
 	 *
 	 *     @type string $hook_suffix Suffix used to trigger hooks before and after optimization.
 	 * }
@@ -358,40 +378,40 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( $media->is_image() ) {
-			if ( $this->get_option( 'convert_to_webp' ) ) {
-				// Add WebP convertion.
+			if ( $this->get_option( 'convert_to_avif' ) ) {
+				// Add Next-Gen convertion.
 				$files = $media->get_media_files();
 
 				foreach ( $sizes as $size_name ) {
 					if ( empty( $files[ $size_name ] ) ) {
 						continue;
 					}
-					if ( 'image/webp' === $files[ $size_name ]['mime-type'] ) {
+					if ( $this->get_mime_type( $this->format ) === $files[ $size_name ]['mime-type'] ) {
 						continue;
 					}
-					if ( in_array( $size_name . static::WEBP_SUFFIX, $sizes, true ) ) {
+					if ( in_array( $size_name . $this->format, $sizes, true ) ) {
 						continue;
 					}
 
-					array_unshift( $sizes, $size_name . static::WEBP_SUFFIX );
+					array_unshift( $sizes, $size_name . $this->format );
 				}
 			}
 
 			if ( ! $media->get_context_instance()->can_backup() && ! $media->get_backup_path() && ! $this->get_data()->get_size_data( 'full', 'success' ) ) {
 				/**
 				 * Backup is NOT activated, and a backup file does NOT exist yet, and the full size is NOT optimized yet.
-				 * WebP conversion needs a backup file, even a temporary one: we’ll create one.
+				 * Next-Gen conversion needs a backup file, even a temporary one: we’ll create one.
 				 */
-				$webp = false;
+				$next_gen = false;
 
 				foreach ( $sizes as $size_name ) {
-					if ( $this->is_size_webp( $size_name ) ) {
-						$webp = true;
+					if ( $this->is_size_next_gen( $size_name ) ) {
+						$next_gen = true;
 						break;
 					}
 				}
 
-				if ( $webp ) {
+				if ( $next_gen ) {
 					// We have at least one WebP conversion to do: create a temporary backup.
 					$backuped = $this->get_original_file()->backup( $media->get_raw_backup_path() );
 
@@ -455,13 +475,13 @@ abstract class AbstractProcess implements ProcessInterface {
 		$media        = $this->get_media();
 		$sizes        = $media->get_media_files();
 		$thumb_size   = $size;
-		$webp         = $this->is_size_webp( $size );
+		$next_gen     = $this->is_size_next_gen( $size );
 		$path_is_temp = false;
 
-		if ( $webp ) {
+		if ( $next_gen ) {
 			// We'll make sure the file is an image later.
-			$thumb_size = $webp; // Contains the name of the non-WebP size.
-			$webp       = true;
+			$thumb_size = $next_gen; // Contains the name of the non-WebP size.
+			$next_gen       = true;
 		}
 
 		if ( empty( $sizes[ $thumb_size ]['path'] ) ) { // Bail out.
@@ -469,7 +489,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new WP_Error(
 				'unknown_size',
 				sprintf(
-					/* translators: %s is a size name. */
+				/* translators: %s is a size name. */
 					__( 'The size %s is unknown.', 'imagify' ),
 					'<code>' . esc_html( $thumb_size ) . '</code>'
 				)
@@ -478,12 +498,12 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( $this->get_data()->get_size_data( $size, 'success' ) ) { // Bail out.
 			// This size is already optimized with Imagify, and must not be optimized again.
-			if ( $webp ) {
+			if ( $next_gen ) {
 				return new WP_Error(
 					'size_is_successfully_optimized',
 					sprintf(
-						/* translators: %s is a size name. */
-						__( 'The WebP format for the size %s already exists.', 'imagify' ),
+					/* translators: %s is a size name. */
+						__( 'The Next-Gen format for the size %s already exists.', 'imagify' ),
 						'<code>' . esc_html( $thumb_size ) . '</code>'
 					)
 				);
@@ -491,7 +511,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				return new WP_Error(
 					'size_is_successfully_optimized',
 					sprintf(
-						/* translators: %s is a size name. */
+					/* translators: %s is a size name. */
 						__( 'The size %s is already optimized by Imagify.', 'imagify' ),
 						'<code>' . esc_html( $thumb_size ) . '</code>'
 					)
@@ -506,16 +526,16 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		$optimization_level = $this->sanitize_optimization_level( $optimization_level );
 
-		if ( $webp && $this->get_data()->get_size_data( $thumb_size, 'success' ) ) {
+		if ( $next_gen && $this->get_data()->get_size_data( $thumb_size, 'success' ) ) {
 			// We want a WebP version but the source file is already optimized by Imagify.
 			$result = $this->create_temporary_copy( $thumb_size, $sizes );
 
 			if ( ! $result ) { // Bail out.
 				// Could not create a copy of the non-WebP version.
 				$response = new WP_Error(
-					'non_webp_copy_failed',
+					'non_next_gen_copy_failed',
 					sprintf(
-						/* translators: %s is a size name. */
+					/* translators: %s is a size name. */
 						__( 'Could not create an unoptimized copy of the size %s.', 'imagify' ),
 						'<code>' . esc_html( $thumb_size ) . '</code>'
 					)
@@ -548,7 +568,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				$response = new WP_Error(
 					'extension_not_supported',
 					sprintf(
-						/* translators: %s is a file extension. */
+					/* translators: %s is a file extension. */
 						__( '%s cannot be optimized.', 'imagify' ),
 						'<code>' . esc_html( strtolower( $extension ) ) . '</code>'
 					)
@@ -564,14 +584,14 @@ abstract class AbstractProcess implements ProcessInterface {
 			return $response;
 		}
 
-		if ( $webp && ! $file->is_image() ) { // Bail out.
+		if ( $next_gen && ! $file->is_image() ) { // Bail out.
 			if ( $path_is_temp ) {
 				$this->filesystem->delete( $path );
 			}
 
 			$response = new WP_Error(
-				'no_webp',
-				__( 'This file is not an image and cannot be converted to WebP format.', 'imagify' )
+				'no_next_gen',
+				__( 'This file is not an image and cannot be converted to Next-Gen format.', 'imagify' )
 			);
 
 			$this->update_size_optimization_data( $response, $size, $optimization_level );
@@ -595,7 +615,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * @param bool             $webp               The image will be converted to WebP.
 		 * @param bool             $is_disabled        Tell if this size is disabled from optimization.
 		 */
-		$response = apply_filters( 'imagify_before_optimize_size', null, $this, $file, $thumb_size, $optimization_level, $webp, $is_disabled );
+		$response = apply_filters( 'imagify_before_optimize_size', null, $this, $file, $thumb_size, $optimization_level, $next_gen, $is_disabled );
 
 		if ( ! is_wp_error( $response ) ) {
 			if ( $is_disabled ) {
@@ -603,7 +623,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				$response = new WP_Error(
 					'unauthorized_size',
 					sprintf(
-						/* translators: %s is a size name. */
+					/* translators: %s is a size name. */
 						__( 'The size %s is not authorized to be optimized. Update your Imagify settings if you want to optimize it.', 'imagify' ),
 						'<code>' . esc_html( $thumb_size ) . '</code>'
 					)
@@ -612,12 +632,12 @@ abstract class AbstractProcess implements ProcessInterface {
 				$response = new WP_Error(
 					'file_not_exists',
 					sprintf(
-						/* translators: %s is a file path. */
+					/* translators: %s is a file path. */
 						__( 'The file %s does not seem to exist.', 'imagify' ),
 						'<code>' . esc_html( $this->filesystem->make_path_relative( $file->get_path() ) ) . '</code>'
 					)
 				);
-			} elseif ( $webp && ! $this->can_create_webp_version( $file->get_path() ) ) {
+			} elseif ( $next_gen && ! $this->can_create_next_gen_version( $file->get_path() ) ) {
 				$response = new WP_Error(
 					'is_animated_gif',
 					__( 'This file is an animated gif: since Imagify does not support animated WebP, WebP creation for animated gif is disabled.', 'imagify' )
@@ -626,7 +646,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				$response = new WP_Error(
 					'file_not_writable',
 					sprintf(
-						/* translators: %s is a file path. */
+					/* translators: %s is a file path. */
 						__( 'The file %s does not seem to be writable.', 'imagify' ),
 						'<code>' . esc_html( $this->filesystem->make_path_relative( $file->get_path() ) ) . '</code>'
 					)
@@ -642,19 +662,19 @@ abstract class AbstractProcess implements ProcessInterface {
 						'backup_path'        => $media->get_raw_backup_path(),
 						'backup_source'      => 'full' === $thumb_size ? $media->get_original_path() : null,
 						'optimization_level' => $optimization_level,
-						'convert'            => $webp ? 'webp' : '',
+						'convert'            => $next_gen ? ( static::AVIF_SUFFIX === $this->format  ? 'avif' : 'webp' ) : '',
 						'keep_exif'          => true,
 						'context'            => $media->get_context(),
 						'original_size'      => $response['file_size'],
 					] );
 
-					$response = $this->compare_webp_file_size( [
-						'response'            => $response,
-						'file'                => $file,
-						'is_webp'             => $webp,
-						'non_webp_thumb_size' => $thumb_size,
-						'non_webp_file_path'  => $sizes[ $thumb_size ]['path'], // Don't use $path nor $file->get_path(), it may return the path to a temporary file.
-						'optimization_level'  => $optimization_level,
+					$response = $this->compare_next_gen_file_size( [
+						'response'                  => $response,
+						'file'                      => $file,
+						'non_next_gen_thumb_size'   => $next_gen,
+						'non_next_gen_file_path'    => $thumb_size,
+						'non_webp_file_path'        => $sizes[ $thumb_size ]['path'], // Don't use $path nor $file->get_path(), it may return the path to a temporary file.
+						'optimization_level'        => $optimization_level,
 					] );
 
 					if ( property_exists( $response, 'message' ) ) {
@@ -682,7 +702,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * @param bool             $webp               The image was supposed to be converted to WebP.
 		 * @param bool             $is_disabled        Tell if this size is disabled from optimization.
 		 */
-		do_action( 'imagify_after_optimize_size', $this, $file, $thumb_size, $optimization_level, $webp, $is_disabled );
+		do_action( 'imagify_after_optimize_size', $this, $file, $thumb_size, $optimization_level, $next_gen, $is_disabled );
 
 		if ( ! $path_is_temp ) {
 			return $data;
@@ -703,6 +723,112 @@ abstract class AbstractProcess implements ProcessInterface {
 		return $data;
 	}
 
+	/**
+	 * Compare the file size of a file and its Next-Gen version: if the Next-Gen version is heavier than the non-WebP file, delete it.
+	 *
+	 * @since 2.2
+	 *
+	 * @param  array $args {
+	 *     A list of mandatory arguments.
+	 *
+	 *     @type \sdtClass|\WP_Error $response            Optimized image data. A \WP_Error object on error.
+	 *     @type File                $file                The File instance of the file currently being optimized.
+	 *     @type bool                $is_next_gen             Tell if we're requesting a WebP file.
+	 *     @type string              $non_next_gen_thumb_size Name of the corresponding non-next-gen thumbnail size. If we're not creating a Next-Gen file, this corresponds to the current thumbnail size.
+	 *     @type string              $non_next_gen_file_path  Path to the corresponding non-next-gen file. If we're not creating a Next-Gen file, this corresponds to the current file path.
+	 *     @type string              $optimization_level  The optimization level.
+	 * }
+	 * @return \sdtClass|WP_Error                        Optimized image data. A WP_Error object on error.
+	 */
+	protected function compare_next_gen_file_size( $args ) {
+		static $keep_large_next_gen;
+
+		if ( ! isset( $keep_large_next_gen ) ) {
+			/**
+			 * Allow to not store WebP images that are larger than their non-WebP version.
+			 *
+			 * @since 1.9.4
+			 *
+			 * @param bool $keep_large_webp Set to false if you prefer your visitors over your Pagespeed score. Default value is true.
+			 */
+			$keep_large_next_gen = apply_filters( 'imagify_keep_large_next_gen', true );
+		}
+
+		if ( $keep_large_next_gen || is_wp_error( $args['response'] ) || ! $args['file']->is_image() ) {
+			return $args['response'];
+		}
+
+		// Optimization succeeded.
+		if ( ! property_exists( $args['response'], 'message' ) && $args['is_next_gen'] ) {
+			/**
+			 * We just created a WebP version:
+			 * Check if it is lighter than the (maybe optimized) non-WebP file.
+			 */
+			$data = $this->get_data()->get_size_data( $args['non_next_gen_thumb_size'] );
+
+			if ( ! $data ) {
+				// We haven’t tried to optimize the non-WebP size yet.
+				return $args['response'];
+			}
+
+			if ( ! empty( $data['optimized_size'] ) ) {
+				// The non-WebP size is optimized, we know the file size.
+				$non_next_gen_file_size = $data['optimized_size'];
+			} else {
+				// The non-WebP size is "already optimized" or "error": grab the file size directly from the file.
+				$non_next_gen_file_size = $this->filesystem->size( $args['non_next_gen_file_path'] );
+			}
+
+			if ( ! $non_next_gen_file_size || $non_next_gen_file_size > $args['response']->new_size ) {
+				// The new WebP file is lighter.
+				return $args['response'];
+			}
+
+			// The new WebP file is heavier than the non-WebP file: delete it and return an error.
+			$this->filesystem->delete( $args['file']->get_path() );
+
+			return new WP_Error(
+				'next_gen_heavy',
+				sprintf(
+				/* translators: %s is a size name. */
+					__( 'The Next-Gen version of the size %s is heavier than its non-next-gen version.', 'imagify' ),
+					'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
+				)
+			);
+		}
+
+		/**
+		 * We just created a non-WebP version:
+		 * Check if its WebP version file is lighter than this one.
+		 */
+		$next_gen_size      = $args['non_next_gen_thumb_size'] . $this->format;
+		$next_gen_file_size = $this->get_data()->get_size_data( $next_gen_size, 'optimized_size' );
+
+		if ( property_exists( $args['response'], 'message' ) || ! $next_gen_file_size || $next_gen_file_size < $args['response']->new_size ) {
+			// The WebP file is lighter than this one.
+			return $args['response'];
+		}
+
+		// The new optimized file is lighter than the next-gen file: delete the next-gen file and store an error.
+		$next_gen_path = $args['file']->get_path_to_next_gen( $this->format );
+
+		if ( $next_gen_path && $this->filesystem->is_writable( $next_gen_path ) ) {
+			$this->filesystem->delete( $next_gen_path );
+		}
+
+		$webp_response = new WP_Error(
+			'next_gen_heavy',
+			sprintf(
+			/* translators: %s is a size name. */
+				__( 'The Next-Gen version of the size %s is heavier than its non-next-gen version.', 'imagify' ),
+				'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
+			)
+		);
+
+		$this->update_size_optimization_data( $webp_response, $next_gen_size, $args['optimization_level'] );
+
+		return $args['response'];
+	}
 	/**
 	 * Compare the file size of a file and its WebP version: if the WebP version is heavier than the non-WebP file, delete it.
 	 *
@@ -770,7 +896,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new WP_Error(
 				'webp_heavy',
 				sprintf(
-					/* translators: %s is a size name. */
+				/* translators: %s is a size name. */
 					__( 'The WebP version of the size %s is heavier than its non-WebP version.', 'imagify' ),
 					'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
 				)
@@ -799,7 +925,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		$webp_response = new WP_Error(
 			'webp_heavy',
 			sprintf(
-				/* translators: %s is a size name. */
+			/* translators: %s is a size name. */
 				__( 'The WebP version of the size %s is heavier than its non-WebP version.', 'imagify' ),
 				'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
 			)
@@ -894,7 +1020,7 @@ abstract class AbstractProcess implements ProcessInterface {
 					$media->update_dimensions();
 
 					// Delete the WebP version.
-					$this->delete_webp_file( $original_path );
+					$this->delete_next_gen_file( $original_path );
 
 					// Restore the thumbnails.
 					$response = $this->restore_thumbnails();
@@ -935,7 +1061,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * In that case we must also delete the WebP file associated to the full size.
 		 */
 		$keep_full_webp = $media->get_raw_original_path() === $media->get_raw_fullsize_path();
-		$this->delete_webp_files( $keep_full_webp );
+		$this->delete_next_gen_files( $keep_full_webp );
 
 		// Generate new thumbnails.
 		return $media->generate_thumbnails();
@@ -1189,7 +1315,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new WP_Error(
 				'no_dimensions',
 				sprintf(
-					/* translators: %s is an error message. */
+				/* translators: %s is an error message. */
 					__( 'Resizing failed: %s', 'imagify' ),
 					__( 'Imagify could not get the image dimensions.', 'imagify' )
 				)
@@ -1215,7 +1341,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new WP_Error(
 				'resize_failure',
 				sprintf(
-					/* translators: %s is an error message. */
+				/* translators: %s is an error message. */
 					__( 'Resizing failed: %s', 'imagify' ),
 					$resized_path->get_error_message()
 				)
@@ -1231,7 +1357,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				return new WP_Error(
 					'backup_failure',
 					sprintf(
-						/* translators: %s is an error message. */
+					/* translators: %s is an error message. */
 						__( 'Backup failed: %s', 'imagify' ),
 						$backuped->get_error_message()
 					)
@@ -1310,75 +1436,36 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 
+
 	/** ----------------------------------------------------------------------------------------- */
-	/** WEBP ==================================================================================== */
+	/** WEBP & AVIF ============================================================================= */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Generate WebP images if they are missing.
+	 * Get MIME type based on the image format.
 	 *
-	 * @since 1.9
-	 *
-	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
+	 * @param string $format Image format ('webp' or 'avif').
+	 * @return string|bool   The MIME type if valid format, false otherwise.
 	 */
-	public function generate_webp_versions() {
-		if ( ! $this->is_valid() ) {
-			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
-		}
-
-		$media = $this->get_media();
-
-		if ( ! $media->is_image() ) {
-			return new WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to WebP format.', 'imagify' ) );
-		}
-
-		if ( ! $media->has_backup() ) {
-			return new WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
-		}
-
-		$data = $this->get_data();
-
-		if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {
-			return new WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
-		}
-
-		if ( $this->has_webp() ) {
-			return new WP_Error( 'has_webp', __( 'This media already has WebP versions.', 'imagify' ) );
-		}
-
-		$files = $media->get_media_files();
-		$sizes = [];
-		$args  = [
-			'hook_suffix' => 'generate_webp_versions',
+	private function get_mime_type( $format ) {
+		$mime_types = [
+			static::AVIF_SUFFIX => 'image/avif',
+			static::WEBP_SUFFIX => 'image/webp',
 		];
 
-		foreach ( $files as $size_name => $file ) {
-			if ( 'image/webp' !== $files[ $size_name ]['mime-type'] ) {
-				array_unshift( $sizes, $size_name . static::WEBP_SUFFIX );
-			}
-		}
-
-		if ( ! $sizes ) {
-			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to WebP format.', 'imagify' ) );
-		}
-
-		$optimization_level = $data->get_optimization_level();
-
-		// Optimize.
-		return $this->optimize_sizes( $sizes, $optimization_level, $args );
+		return isset( $mime_types[ $format ] ) ? $mime_types[ $format ] : false;
 	}
 
 	/**
-	 * Delete the WebP images.
+	 * Delete the next gen format images.
 	 * This doesn't delete the related optimization data.
 	 *
-	 * @since 1.9
-	 * @since 1.9.6 Return WP_Error or true.
+	 * @since 2.2
 	 *
 	 * @param  bool $keep_full Set to true to keep the full size.
 	 * @return bool|WP_Error  True on success. A \WP_Error object on failure.
 	 */
-	public function delete_webp_files( $keep_full = false ) {
+	public function delete_next_gen_files( $keep_full = false ) {
 		if ( ! $this->is_valid() ) {
 			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
@@ -1403,7 +1490,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		foreach ( $files as $file ) {
 			if ( 0 === strpos( $file['mime-type'], 'image/' ) ) {
-				$deleted = $this->delete_webp_file( $file['path'] );
+				$deleted = $this->delete_next_gen_file( $file['path'] );
 
 				if ( is_wp_error( $deleted ) ) {
 					++$error_count;
@@ -1415,7 +1502,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new WP_Error(
 				'files_not_deleted',
 				sprintf(
-					/* translators: %s is a formatted number, don’t use %d. */
+				/* translators: %s is a formatted number, don’t use %d. */
 					_n( '%s file could not be deleted.', '%s files could not be deleted.', $error_count, 'imagify' ),
 					number_format_i18n( $error_count )
 				)
@@ -1426,62 +1513,61 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Delete a WebP image, given its non-WebP version's path.
+	 * Delete a next gen format image, given its non-WebP version's path.
 	 * This doesn't delete the related optimization data.
 	 *
-	 * @since 1.9
-	 * @since 1.9.6 Return WP_Error or true.
+	 * @since 2.2
 	 *
-	 * @param  string $file_path Path to the non-WebP file.
+	 * @param  string $file_path Path to the non-next-gen file.
 	 * @return bool|WP_Error    True on success. A \WP_Error object on failure.
 	 */
-	protected function delete_webp_file( $file_path ) {
+	protected function delete_next_gen_file( $file_path ) {
 		if ( ! $file_path ) {
-			return new WP_Error( 'no_path', __( 'Path to non-WebP file not provided.', 'imagify' ) );
+			return new WP_Error( 'no_path', __( 'Path to non-next-gen file not provided.', 'imagify' ) );
 		}
 
-		$webp_file = new File( $file_path );
-		$webp_path = $webp_file->get_path_to_webp();
+		$next_gen_file = new File( $file_path );
+		$next_gen_path = $next_gen_file->get_path_to_next_gen( $this->format );
 
-		if ( ! $webp_path ) {
-			return new WP_Error( 'no_webp_path', __( 'Could not get the path to the WebP file.', 'imagify' ) );
+		if ( ! $next_gen_path ) {
+			return new WP_Error( 'no_$next_gen_path', __( 'Could not get the path to the Next-Gen format file.', 'imagify' ) );
 		}
 
-		if ( ! $this->filesystem->exists( $webp_path ) ) {
+		if ( ! $this->filesystem->exists( $next_gen_path ) ) {
 			return true;
 		}
 
-		if ( ! $this->filesystem->is_writable( $webp_path ) ) {
+		if ( ! $this->filesystem->is_writable( $next_gen_path ) ) {
 			return new WP_Error(
 				'file_not_writable',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The file %s does not seem to be writable.', 'imagify' ),
-					'<code>' . esc_html( $this->filesystem->make_path_relative( $webp_path ) ) . '</code>'
+					'<code>' . esc_html( $this->filesystem->make_path_relative( $next_gen_path ) ) . '</code>'
 				)
 			);
 		}
 
-		if ( ! $this->filesystem->is_file( $webp_path ) ) {
+		if ( ! $this->filesystem->is_file( $next_gen_path ) ) {
 			return new WP_Error(
 				'not_a_file',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'This does not seem to be a file: %s.', 'imagify' ),
-					'<code>' . esc_html( $this->filesystem->make_path_relative( $webp_path ) ) . '</code>'
+					'<code>' . esc_html( $this->filesystem->make_path_relative( $next_gen_path ) ) . '</code>'
 				)
 			);
 		}
 
-		$deleted = $this->filesystem->delete( $webp_path, false, 'f' );
+		$deleted = $this->filesystem->delete( $next_gen_path, false, 'f' );
 
 		if ( ! $deleted ) {
 			return new WP_Error(
 				'file_not_deleted',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The file %s could not be deleted.', 'imagify' ),
-					'<code>' . esc_html( $this->filesystem->make_path_relative( $webp_path ) ) . '</code>'
+					'<code>' . esc_html( $this->filesystem->make_path_relative( $next_gen_path ) ) . '</code>'
 				)
 			);
 		}
@@ -1489,19 +1575,30 @@ abstract class AbstractProcess implements ProcessInterface {
 		return true;
 	}
 
+
 	/**
-	 * Tell if a thumbnail size is an "Imagify WebP" size.
+	 * Gives the next-gen image format we are processing.
+	 *
+	 * @return string Current format we are targeting.
+	 */
+	public function get_current_format() {
+		return $this->get_option( 'convert_to_avif' ) ? static::AVIF_SUFFIX : static::WEBP_SUFFIX;
+	}
+
+	/**
+	 * Tell if a thumbnail size is an "Imagify Next-Gen" size.
 	 *
 	 * @since 1.9
+	 * @since 2.2 addition of the format parameter.
 	 *
 	 * @param  string $size_name The size name.
 	 * @return string|bool       The unsuffixed name of the size if WebP. False if not WebP.
 	 */
-	public function is_size_webp( $size_name ) {
+	public function is_size_next_gen( $size_name ) {
 		static $suffix;
 
 		if ( ! isset( $suffix ) ) {
-			$suffix = preg_quote( static::WEBP_SUFFIX, '/' );
+			$suffix = preg_quote( $this->format, '/' );
 		}
 
 		if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
@@ -1512,13 +1609,13 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Tell if the media has WebP versions.
+	 * Tell if the media has a next gen format.
 	 *
-	 * @since 1.9
+	 * @since 2.2
 	 *
 	 * @return bool
 	 */
-	public function has_webp() {
+	public function has_next_gen() {
 		if ( ! $this->is_valid() ) {
 			return false;
 		}
@@ -1533,18 +1630,18 @@ abstract class AbstractProcess implements ProcessInterface {
 			return false;
 		}
 
-		$needle = static::WEBP_SUFFIX . '";a:4:{s:7:"success";b:1;';
+		$needle = $this->format . '";a:4:{s:7:"success";b:1;';
 		$data   = maybe_serialize( $data['sizes'] );
 
 		return is_string( $data ) && strpos( $data, $needle );
 	}
 
 	/**
-	 * Tell if the media has all WebP versions.
+	 * Tell if the media has all Next-Gen versions.
 	 *
 	 * @return bool
 	 */
-	public function is_full_webp() {
+	public function is_full_next_gen() {
 		if ( ! $this->is_valid() ) {
 			return false;
 		}
@@ -1563,16 +1660,16 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		$keys = array_keys( $sizes );
 		$non_webp_keys = array_values(array_filter($keys, function ( $key ) {
-			return strpos( $key, static::WEBP_SUFFIX ) === false;
+			return strpos( $key, $this->format ) === false;
 		}));
 
 		return array_reduce($non_webp_keys, function ( $is_fully, $key ) use ( $sizes ) {
-			return key_exists( $key . self::WEBP_SUFFIX, $sizes ) && $is_fully;
+			return key_exists( $key . $this->format, $sizes ) && $is_fully;
 		}, true);
 	}
 
 	/**
-	 * Tell if a WebP version can be created for the given file.
+	 * Tell if a Next-Gen version can be created for the given file.
 	 * Make sure the file is an image before using this method.
 	 *
 	 * @since 1.9.5
@@ -1580,10 +1677,12 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @param string $file_path Path to the file.
 	 * @return bool
 	 */
-	public function can_create_webp_version( $file_path ) {
+	public function can_create_next_gen_version( $file_path ) {
 		if ( ! $file_path ) {
 			return false;
 		}
+
+		$can = apply_filters_deprecated( 'imagify_pre_can_create_webp_version', array( null, $file_path ), '2.2', 'imagify_pre_can_create_next_gen_version' );
 
 		/**
 		 * Tell if a WebP version can be created for the given file.
@@ -1594,7 +1693,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * @param bool   $can       True to create a WebP version, false otherwise. Null by default.
 		 * @param string $file_path Path to the file.
 		 */
-		$can = apply_filters( 'imagify_pre_can_create_webp_version', null, $file_path );
+		$can = apply_filters( 'imagify_pre_can_create_next_gen_version', $can, $file_path );
 
 		if ( isset( $can ) ) {
 			return (bool) $can;
@@ -1611,6 +1710,64 @@ abstract class AbstractProcess implements ProcessInterface {
 		return true;
 	}
 
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** WEBP ==================================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Generate WebP images if they are missing.
+	 *
+	 * @since 1.9
+	 *
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
+	 */
+	public function generate_next_gen_versions() {
+		if ( ! $this->is_valid() ) {
+			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+		}
+
+		$media = $this->get_media();
+
+		if ( ! $media->is_image() ) {
+			return new WP_Error( 'no_next_gen', __( 'This media is not an image and cannot be converted to next-gen format.', 'imagify' ) );
+		}
+
+		if ( ! $media->has_backup() ) {
+			return new WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
+		}
+
+		$data = $this->get_data();
+
+		if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {
+			return new WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
+		}
+
+		if ( $this->has_next_gen() ) {
+			return new WP_Error( 'has_next_gen', __( 'This media already has next-gen versions.', 'imagify' ) );
+		}
+
+		$files = $media->get_media_files();
+		$sizes = [];
+		$args  = [
+			'hook_suffix' => 'generate_next_gen_versions',
+		];
+
+		foreach ( $files as $size_name => $file ) {
+			if ( $this->get_mime_type( $this->format ) !== $files[ $size_name ]['mime-type'] ) {
+				array_unshift( $sizes, $size_name . $this->format );
+			}
+		}
+
+		if ( ! $sizes ) {
+			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to WebP format.', 'imagify' ) );
+		}
+
+		$optimization_level = $data->get_optimization_level();
+
+		// Optimize.
+		return $this->optimize_sizes( $sizes, $optimization_level, $args );
+	}
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** PROCESS STATUS ========================================================================== */
@@ -1744,6 +1901,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Update the optimization data for a size.
 	 *
 	 * @since 1.9
+	 * @since 2.2 - Addition of the format in the call.
 	 *
 	 * @param  object $response The API response.
 	 * @param  string $size     The size name.
@@ -1829,7 +1987,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		$data = (array) apply_filters( "imagify{$_unauthorized}_file_optimization_data", $data, $response, $size, $level, $this->get_data() );
 
 		if ( property_exists( $response, 'message' ) ) {
-			$size = str_replace( '@imagify-webp', '', $size );
+			$size = str_replace( $this->format, '', $size );
 		}
 		// Store.
 		$this->get_data()->update_size_optimization_data( $size, $data );
@@ -1879,5 +2037,91 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		return \Imagify_Options::get_instance()->sanitize_and_validate( 'optimization_level', $optimization_level );
+	}
+
+	/** ----------------------------------------------------------------------------------------- */
+	/** AVIF =========================================================================== */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Generate AVIF images if they are missing.
+	 *
+	 * @since 2.2
+	 *
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
+	 */
+	public function generate_avif_versions() {
+		if ( ! $this->is_valid() ) {
+			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+		}
+
+		$media = $this->get_media();
+
+		if ( ! $media->is_image() ) {
+			return new WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to AVIF format.', 'imagify' ) );
+		}
+
+		if ( ! $media->has_backup() ) {
+			return new WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
+		}
+
+		$data = $this->get_data();
+
+		if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {
+			return new WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
+		}
+
+		if ( $this->has_avif() ) {
+			return new WP_Error( 'has_avif', __( 'This media already has AVIF versions.', 'imagify' ) );
+		}
+
+		$files = $media->get_media_files();
+		$sizes = [];
+		$args  = [
+			'hook_suffix' => 'generate_avif_versions',
+		];
+
+		foreach ( $files as $size_name => $file ) {
+			if ( 'image/avif' !== $files[ $size_name ]['mime-type'] ) {
+				array_unshift( $sizes, $size_name . static::AVIF_SUFFIX );
+			}
+		}
+
+		if ( ! $sizes ) {
+			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to AVIF format.', 'imagify' ) );
+		}
+
+		$optimization_level = $data->get_optimization_level();
+
+		// Optimize.
+		return $this->optimize_sizes( $sizes, $optimization_level, $args );
+	}
+
+	/**
+	 * Tell if the media has AVIF versions.
+	 *
+	 * @since 2.2
+	 *
+	 * @return bool
+	 */
+	public function has_avif() {
+		if ( ! $this->is_valid() ) {
+			return false;
+		}
+
+		if ( ! $this->get_media()->is_image() ) {
+			return false;
+		}
+
+		$data = $this->get_data()->get_optimization_data();
+
+		if ( empty( $data['sizes'] ) ) {
+			return false;
+		}
+
+		$needle = static::AVIF_SUFFIX . '";a:4:{s:7:"success";b:1;';
+		$data   = maybe_serialize( $data['sizes'] );
+
+		return is_string( $data ) && strpos( $data, $needle );
 	}
 }
