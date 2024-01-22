@@ -113,7 +113,7 @@ class File {
 			return new \WP_Error(
 				'not_exists',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The file %s does not seem to exist.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $this->path ) ) . '</code>'
 				)
@@ -124,7 +124,7 @@ class File {
 			return new \WP_Error(
 				'not_a_file',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'This does not seem to be a file: %s.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $this->path ) ) . '</code>'
 				)
@@ -135,7 +135,7 @@ class File {
 			return new \WP_Error(
 				'not_writable',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The file %s does not seem to be writable.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $this->path ) ) . '</code>'
 				)
@@ -148,7 +148,7 @@ class File {
 			return new \WP_Error(
 				'folder_not_writable',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The folder %s does not seem to be writable.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $parent_folder ) ) . '</code>'
 				)
@@ -197,7 +197,7 @@ class File {
 			return new \WP_Error(
 				'not_an_image',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The file %s does not seem to be an image, and cannot be resized.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $this->path ) ) . '</code>'
 				)
@@ -321,7 +321,7 @@ class File {
 			return new \WP_Error(
 				'not_an_image',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The file %s does not seem to be an image, and cannot be resized.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $this->path ) ) . '</code>'
 				)
@@ -474,7 +474,7 @@ class File {
 		 *
 		 * @param string $path Absolute path to the media file.
 		 * @param array  $args Arguments passed to the method.
-		*/
+		 */
 		do_action( 'imagify_before_optimize_file', $this->path, $args );
 
 		/**
@@ -485,7 +485,7 @@ class File {
 		 *
 		 * @param string $path   Absolute path to the image file.
 		 * @param bool   $backup True if a backup will be make.
-		*/
+		 */
 		do_action_deprecated( 'before_do_imagify', [ $this->path, $args['backup'] ], '1.9', 'imagify_before_optimize_file' );
 
 		if ( $args['backup'] ) {
@@ -509,6 +509,7 @@ class File {
 
 		if ( $args['convert'] ) {
 			$data['convert'] = $args['convert'];
+			$format = $args['convert'];
 		}
 
 		$response = upload_imagify_image( [
@@ -534,8 +535,12 @@ class File {
 			$args['convert'] = '';
 		}
 
-		if ( 'webp' === $args['convert'] ) {
-			$destination_path = $this->get_path_to_webp();
+		$formats = [
+			'webp',
+			'avif',
+		];
+		if ( in_array( $args['convert'], $formats, true ) ) {
+			$destination_path = $this->get_path_to_next_gen( $args['convert'] );
 			$this->path       = $destination_path;
 			$this->file_type  = null;
 			$this->editor     = null;
@@ -557,7 +562,7 @@ class File {
 		 *
 		 * @param string $path   Absolute path to the image file.
 		 * @param bool   $backup True if a backup has been made.
-		*/
+		 */
 		do_action_deprecated( 'after_do_imagify', [ $this->path, $args['backup'] ], '1.9', 'imagify_before_optimize_file' );
 
 		/**
@@ -568,7 +573,7 @@ class File {
 		 *
 		 * @param string $path Absolute path to the media file.
 		 * @param array  $args Arguments passed to the method.
-		*/
+		 */
 		do_action( 'imagify_after_optimize_file', $this->path, $args );
 
 		return $response;
@@ -603,7 +608,7 @@ class File {
 		$this->editor = new \WP_Error(
 			'image_editor',
 			sprintf(
-				/* translators: %1$s is an error message, %2$s is a "More info?" link. */
+			/* translators: %1$s is an error message, %2$s is a "More info?" link. */
 				__( 'No php extensions are available to edit images on the server. ImageMagick or GD is required. The internal error is: %1$s. %2$s', 'imagify' ),
 				$this->editor->get_error_message(),
 				'<a href="' . esc_url( imagify_get_external_url( 'documentation-imagick-gd' ) ) . '" target="_blank">' . __( 'More info?', 'imagify' ) . '</a>'
@@ -766,6 +771,26 @@ class File {
 	}
 
 	/**
+	 * Replace the file extension by its next-gen format extension.
+	 *
+	 * @since  2.2
+	 *
+	 * @param string $format the format we are targeting.
+	 * @return string|bool The file path on success. False if not an image or on failure.
+	 */
+	public function get_path_to_next_gen( string $format ) {
+		if ( ! $this->is_image() ) {
+			return false;
+		}
+
+		if ( $this->is_webp() || $this->is_avif() ) {
+			return false;
+		}
+
+		return imagify_path_to_next_gen( $this->path, $format );
+	}
+
+	/**
 	 * Tell if the file is a WebP image.
 	 * Rejects "path/to/.webp" files.
 	 *
@@ -776,6 +801,18 @@ class File {
 	 */
 	public function is_webp() {
 		return preg_match( '@(?!^|/|\\\)\.webp$@i', $this->path );
+	}
+
+	/**
+	 * Tell if the file is an AVIF image.
+	 * Rejects "path/to/.avif" files.
+	 *
+	 * @since  2.2
+	 *
+	 * @return bool
+	 */
+	public function is_avif() {
+		return preg_match( '@(?!^|/|\\\)\.avif$@i', $this->path );
 	}
 
 	/**

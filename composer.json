@@ -42,12 +42,14 @@
 		"coenjacobs/mozart": "^0.7",
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
 		"deliciousbrains/wp-background-processing": "~1.0",
+		"league/container": "^3.0",
 		"mnsami/composer-custom-directory-installer": "^2.0",
 		"phpcompatibility/phpcompatibility-wp": "^2.0",
 		"phpunit/phpunit": "^7.5",
 		"roave/security-advisories": "dev-master",
 		"woocommerce/action-scheduler": "^3.4",
 		"wp-coding-standards/wpcs": "^2",
+		"wp-media/event-manager": "^3.1",
 		"wp-media/phpunit": "2.0"
 	},
 	"autoload": {
@@ -83,7 +85,9 @@
 			"classmap_directory": "/inc/classes/Dependencies/",
 			"classmap_prefix": "Imagify_",
 			"packages": [
-				"deliciousbrains/wp-background-processing"
+				"deliciousbrains/wp-background-processing",
+				"league/container",
+				"wp-media/event-manager"
 			]
 		}
 	},

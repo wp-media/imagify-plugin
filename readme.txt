@@ -361,13 +361,13 @@ You can report any security bugs found in the source code of the site-reviews pl
 
 = 1.9.5 - 2019/07/16 =
 * Improvement: Basic Authentication support. If it does not work automatically, you can still define the constants `IMAGIFY_AUTH_USER` and `IMAGIFY_AUTH_PASSWORD` in your `wp-config.php` file.
-* Improvement: WebP images are not created for animated gif images by default anymore. Use the filter `imagify_pre_can_create_webp_version` if you still want to create an unanimated WebP version of them.
+* Improvement: WebP images are not created for animated gif images by default anymore. Use the filter `imagify_pre_can_create_next_gen_version` if you still want to create an unanimated WebP version of them.
 * Improvement: when creating WebP images from the settings page, we made more clear when all the images are missing a backup copy.
 * Improvement: clear the 5 minutes data cache when buying quota from the plugin.
 * Improvement: when displaying WebP images with the `<picture>` tag, allow to use relative URLs (starting with `/`).
 
 = 1.9.4 - 2019/07/10 =
-* Improvement: if a WebP image is larger than its non-webp version, it is now possible to not keep it. This can be done by using the filter `imagify_keep_large_webp`.
+* Improvement: if a next-gen image is larger than its non-next-gen version, it is now possible to not keep it. This can be done by using the filter `imagify_keep_large_next_gen`.
 * Improvement: compatibility with Pressable.
 * Improvement: renamed a php class to prevent some hosts to wrongly flag it as "suspicious" and trigger a fatal error.
 * Improvement: better compatibility with WP Real Media Library plugin.
