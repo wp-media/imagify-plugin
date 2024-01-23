@@ -6,9 +6,9 @@ namespace Imagify\CLI;
 use Imagify\Bulk\Bulk;
 
 /**
- * Command class for the missing WebP generation
+ * Command class for the missing Nextgen generation
  */
-class GenerateMissingWebpCommand extends AbstractCommand {
+class GenerateMissingNextgenCommand extends AbstractCommand {
 	/**
 	 * Executes the command.
 	 *
