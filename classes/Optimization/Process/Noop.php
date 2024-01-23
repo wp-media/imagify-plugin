@@ -21,6 +21,14 @@ class Noop implements ProcessInterface {
 	const WEBP_SUFFIX = '@imagify-webp';
 
 	/**
+	 * The suffix used in the thumbnail size name.
+	 *
+	 * @var   string
+	 * @since 2.2
+	 */
+	const AVIF_SUFFIX = '@imagify-avif';
+
+	/**
 	 * The suffix used in file name to create a temporary copy of the full size.
 	 *
 	 * @var    string
@@ -300,25 +308,27 @@ class Noop implements ProcessInterface {
 	}
 
 	/**
-	 * Delete the WebP images.
+	 * Delete the next gen format images.
+	 * This doesn't delete the related optimization data.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 2.2
+	 *
+	 * @param  bool $keep_full Set to true to keep the full size.
+	 * @return bool|WP_Error  True on success. A \WP_Error object on failure.
 	 */
-	public function delete_nextgen_files() {}
+	public function delete_nextgen_files( $keep_full = false ) {
+		return false;
+	}
 
 	/**
-	 * Tell if a thumbnail size is an "Imagify WebP" size.
+	 * Tell if a thumbnail size is an "Imagify Next-Gen" size.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since  2.2
 	 *
 	 * @param  string $size_name The size name.
-	 * @return string|bool       The unsuffixed name of the size if WebP. False if not WebP.
+	 * @return string|bool       The unsuffixed name of the size if Next-Gen. False if not a Next-Gen.
 	 */
-	public function is_size_webp( $size_name ) {
+	public function is_size_next_gen( $size_name ) {
 		return false;
 	}
 

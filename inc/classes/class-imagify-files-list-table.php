@@ -606,7 +606,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 				</li>
 				<?php
 				if ( $item->process->get_media()->is_image() ) {
-					$has_webp = $item->process->has_webp() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
+					$has_webp = $item->process->has_next_gen() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
 					?>
 					<li class="imagify-data-item">
 						<span class="data"><?php esc_html_e( 'WebP generated:', 'imagify' ); ?></span>
@@ -813,7 +813,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @param object $item The current item. It must contain at least a $process property.
 	 */
 	protected function generate_nextgen_versions_button( $item ) {
-		$button = get_imagify_attachment_generate_webp_versions_link( $item->process );
+		$button = get_imagify_attachment_generate_nextgen_versions_link( $item->process );
 
 		if ( $button ) {
 			echo $button . '<br/>';

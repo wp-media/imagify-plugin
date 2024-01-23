@@ -228,7 +228,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			return new WP_Error( 'not_already_optimized', __( 'This media does not have the right optimization status.', 'imagify' ) );
 		}
 
-		if ( ! $process->has_webp() ) {
+		if ( ! $process->has_next_gen() ) {
 			return true;
 		}
 

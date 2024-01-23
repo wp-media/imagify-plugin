@@ -39,6 +39,7 @@ function imagify_cleanup_after_media_deletion( $process ) {
 	 * Delete the Nextgen versions and the backup file.
 	 */
 	$process->delete_nextgen_files();
+
 	$process->delete_backup();
 }
 
@@ -67,3 +68,34 @@ function imagify_add_webp_type( $ext2type ) {
  * @author Grégory Viguier
  */
 add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'get_resizing_threshold' ], IMAGIFY_INT_MAX );
+
+/**
+ * Add filters to manage images formats that will be generated
+ *
+ * @return array;
+ */
+function imagify_nextgen_images_formats() {
+	$formats = [
+		'webp',
+	];
+
+	if ( get_imagify_option( 'convert_to_avif' ) ) {
+		$formats[] = 'avif';
+	}
+	$default = $formats;
+
+	/**
+	 * Filters the array of next gen formats to generate with Imagify
+	 *
+	 * @since 2.2
+	 *
+	 * @param array $formats Array of image formats
+	 */
+	$formats = apply_filters( 'imagify_nextgen_images_formats', $formats );
+
+	if ( ! is_array( $formats ) ) {
+		$formats = $default;
+	}
+
+	return $formats;
+}

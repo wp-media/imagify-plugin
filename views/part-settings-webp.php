@@ -2,31 +2,38 @@
 
 use Imagify\Stats\OptimizedMediaWithoutWebp;
 use Imagify\Webp\Display;
-use Imagify\Webp\Picture\Display as PictureDisplay;
+use Imagify\Picture\Display as PictureDisplay;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $settings = Imagify_Settings::get_instance();
 ?>
 <div>
-	<h3 class="imagify-options-subtitle"><?php _e( 'WebP format', 'imagify' ); ?></h3>
+	<h3 class="imagify-options-subtitle"><?php _e( 'Next-Gen image format', 'imagify' ); ?></h3>
 
 	<div class="imagify-setting-line">
 		<?php
 		$settings->field_checkbox( [
-			'option_name' => 'convert_to_webp',
-			'label'       => __( 'Create WebP versions of images', 'imagify' ),
+			'option_name' => 'convert_to_avif',
+			'label'       => __( 'Create AVIF versions of images', 'imagify' ),
 			'attributes'  => [
-				'aria-describedby' => 'describe-convert_to_webp',
+				'aria-describedby' => 'describe-convert_to_avif',
 			],
 		] );
 		?>
+		<div class="imagify-info">
+			<span class="dashicons dashicons-info"></span>
+			<?php esc_html_e( 'Enabling this option will start the process of creating AVIF version of your images automatically.', 'imagify' ); ?>
+		</div>
+	</div>
+
+	<div class="imagify-setting-line">
 
 		<div class="imagify-options-line">
 			<?php
 			$settings->field_checkbox( [
 				'option_name' => 'display_webp',
-				'label'       => __( 'Display images in WebP format on the site', 'imagify' ),
+				'label'       => __( 'Display images in Next-Gen format on the site', 'imagify' ),
 			] );
 			?>
 
@@ -139,7 +146,7 @@ $settings = Imagify_Settings::get_instance();
 
 				<button id="imagify-generate-webp-versions" class="button imagify-button-primary imagify-button-mini" type="button">
 					<span class="dashicons dashicons-admin-generic"></span>
-					<span class="button-text"><?php esc_html_e( 'Generate missing WebP versions', 'imagify' ); ?></span>
+					<span class="button-text"><?php esc_html_e( 'Generate missing next-gen images versions', 'imagify' ); ?></span>
 				</button>
 
 				<?php

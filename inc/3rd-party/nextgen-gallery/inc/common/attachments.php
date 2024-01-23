@@ -285,6 +285,7 @@ function imagify_ngg_cleanup_after_media_deletion( $image_id, $image ) {
 	 * Delete the WebP versions and the optimization data.
 	 */
 	$process->delete_nextgen_files();
+
 	$process->get_data()->delete_optimization_data();
 }
 

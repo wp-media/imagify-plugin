@@ -234,7 +234,7 @@ interface ProcessInterface {
 
 
 	/** ----------------------------------------------------------------------------------------- */
-	/** WEBP ==================================================================================== */
+	/** WEBP & AVIF============================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
@@ -249,49 +249,42 @@ interface ProcessInterface {
 	public function generate_nextgen_versions();
 
 	/**
-	 * Delete the WebP images.
+	 * Delete the next gen format images.
 	 * This doesn't delete the related optimization data.
 	 *
-	 * @since  1.9
-	 * @since  1.9.6 Return WP_Error or true.
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 2.2
 	 *
 	 * @param  bool $keep_full Set to true to keep the full size.
-	 * @return bool|\WP_Error  True on success. A \WP_Error object on failure.
+	 * @return bool|WP_Error  True on success. A \WP_Error object on failure.
 	 */
 	public function delete_nextgen_files( $keep_full = false );
 
 	/**
-	 * Tell if a thumbnail size is an "Imagify WebP" size.
+	 * Tell if a thumbnail size is an "Imagify Next-Gen" size.
 	 *
-	 * @since  1.9
+	 * @since  2.2
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @param  string $size_name The size name.
 	 * @return string|bool       The unsuffixed name of the size if WebP. False if not WebP.
 	 */
-	public function is_size_webp( $size_name );
+	public function is_size_next_gen( $size_name );
 
 	/**
 	 * Tell if the media has all WebP versions.
 	 *
 	 * @return bool
 	 */
-	public function is_full_webp();
+	public function is_full_next_gen();
 
 	/**
-	 * Tell if the media has WebP versions.
+	 * Tell if the media has a next gen format.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
-	 *
+	 * @since 2.2
 	 * @return bool
 	 */
-	public function has_webp();
-
+	public function has_next_gen();
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** PROCESS STATUS ========================================================================== */
