@@ -5,7 +5,6 @@ use Imagify\WriteFile\AbstractNginxDirConfFile;
 
 /**
  * Add and remove rewrite rules to the imagify.conf file to display AVIF images on the site.
- *
  */
 class Nginx extends AbstractNginxDirConfFile {
 

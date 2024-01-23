@@ -5,7 +5,6 @@ use Imagify\WriteFile\AbstractApacheDirConfFile;
 
 /**
  * Add and remove rewrite rules to the .htaccess file to display AVIF images on the site.
- *
  */
 class Apache extends AbstractApacheDirConfFile {
 

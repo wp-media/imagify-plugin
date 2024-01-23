@@ -1444,7 +1444,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * Get MIME type based on the image format.
 	 *
-	 * @param string $format Image format ('webp' or 'avif').
 	 * @return string|bool   The MIME type if valid format, false otherwise.
 	 */
 	public function generate_nextgen_versions() {
@@ -1494,7 +1493,11 @@ abstract class AbstractProcess implements ProcessInterface {
 		return $this->optimize_sizes( $sizes, $optimization_level, $args );
 	}
 
-
+	/**
+	 * Get mime type
+	 *
+	 * @param string $format nextgen image format.
+	 */
 	private function get_mime_type( $format ) {
 		$mime_types = [
 			static::AVIF_SUFFIX => 'image/avif',
