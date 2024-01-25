@@ -273,7 +273,6 @@ class Bulk {
 						[
 							'id'      => $media_id,
 							'context' => $context,
-							'format'  => static::,
 						],
 						"imagify-{$context}-convert-webp"
 					);

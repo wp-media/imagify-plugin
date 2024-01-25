@@ -246,7 +246,7 @@ interface ProcessInterface {
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function generate_next_gen_versions();
+	public function generate_nextgen_versions();
 
 	/**
 	 * Delete the next gen format images.
@@ -257,7 +257,7 @@ interface ProcessInterface {
 	 * @param  bool $keep_full Set to true to keep the full size.
 	 * @return bool|WP_Error  True on success. A \WP_Error object on failure.
 	 */
-	public function delete_next_gen_files( $keep_full = false );
+	public function delete_nextgen_files( $keep_full = false );
 
 	/**
 	 * Tell if a thumbnail size is an "Imagify Next-Gen" size.

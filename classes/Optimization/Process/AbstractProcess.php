@@ -276,7 +276,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		if ( $data->is_already_optimized() && $this->has_next_gen() ) {
 			// If already optimized but has WebP, delete WebP versions and optimization data.
 			$data->delete_optimization_data();
-			$deleted = $this->delete_next_gen_files();
+			$deleted = $this->delete_nextgen_files();
 
 			if ( is_wp_error( $deleted ) ) {
 				return new WP_Error( 'next_gen_not_deleted', __( 'Previous Next-Gen files could not be deleted.', 'imagify' ) );
@@ -810,7 +810,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		// The new optimized file is lighter than the next-gen file: delete the next-gen file and store an error.
-		$next_gen_path = $args['file']->get_path_to_next_gen( $this->format );
+		$next_gen_path = $args['file']->get_path_to_nextgen( $this->format );
 
 		if ( $next_gen_path && $this->filesystem->is_writable( $next_gen_path ) ) {
 			$this->filesystem->delete( $next_gen_path );
@@ -1020,7 +1020,7 @@ abstract class AbstractProcess implements ProcessInterface {
 					$media->update_dimensions();
 
 					// Delete the WebP version.
-					$this->delete_next_gen_file( $original_path );
+					$this->delete_nextgen_file( $original_path );
 
 					// Restore the thumbnails.
 					$response = $this->restore_thumbnails();
@@ -1061,7 +1061,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * In that case we must also delete the WebP file associated to the full size.
 		 */
 		$keep_full_webp = $media->get_raw_original_path() === $media->get_raw_fullsize_path();
-		$this->delete_next_gen_files( $keep_full_webp );
+		$this->delete_nextgen_files( $keep_full_webp );
 
 		// Generate new thumbnails.
 		return $media->generate_thumbnails();
@@ -1444,8 +1444,59 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * Get MIME type based on the image format.
 	 *
-	 * @param string $format Image format ('webp' or 'avif').
 	 * @return string|bool   The MIME type if valid format, false otherwise.
+	 */
+	public function generate_nextgen_versions() {
+		if ( ! $this->is_valid() ) {
+			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+		}
+
+		$media = $this->get_media();
+
+		if ( ! $media->is_image() ) {
+			return new WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to WebP format.', 'imagify' ) );
+		}
+
+		if ( ! $media->has_backup() ) {
+			return new WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
+		}
+
+		$data = $this->get_data();
+
+		if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {
+			return new WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
+		}
+
+		if ( $this->has_webp() ) {
+			return new WP_Error( 'has_webp', __( 'This media already has WebP versions.', 'imagify' ) );
+		}
+
+		$files = $media->get_media_files();
+		$sizes = [];
+		$args  = [
+			'hook_suffix' => 'generate_nextgen_versions',
+		];
+
+		foreach ( $files as $size_name => $file ) {
+			if ( 'image/webp' !== $files[ $size_name ]['mime-type'] ) {
+				array_unshift( $sizes, $size_name . static::WEBP_SUFFIX );
+			}
+		}
+
+		if ( ! $sizes ) {
+			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to WebP format.', 'imagify' ) );
+		}
+
+		$optimization_level = $data->get_optimization_level();
+
+		// Optimize.
+		return $this->optimize_sizes( $sizes, $optimization_level, $args );
+	}
+
+	/**
+	 * Get mime type
+	 *
+	 * @param string $format nextgen image format.
 	 */
 	private function get_mime_type( $format ) {
 		$mime_types = [
@@ -1465,7 +1516,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @param  bool $keep_full Set to true to keep the full size.
 	 * @return bool|WP_Error  True on success. A \WP_Error object on failure.
 	 */
-	public function delete_next_gen_files( $keep_full = false ) {
+	public function delete_nextgen_files( $keep_full = false ) {
 		if ( ! $this->is_valid() ) {
 			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
@@ -1490,7 +1541,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		foreach ( $files as $file ) {
 			if ( 0 === strpos( $file['mime-type'], 'image/' ) ) {
-				$deleted = $this->delete_next_gen_file( $file['path'] );
+				$deleted = $this->delete_nextgen_file( $file['path'] );
 
 				if ( is_wp_error( $deleted ) ) {
 					++$error_count;
@@ -1521,13 +1572,13 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @param  string $file_path Path to the non-next-gen file.
 	 * @return bool|WP_Error    True on success. A \WP_Error object on failure.
 	 */
-	protected function delete_next_gen_file( $file_path ) {
+	protected function delete_nextgen_file( $file_path ) {
 		if ( ! $file_path ) {
 			return new WP_Error( 'no_path', __( 'Path to non-next-gen file not provided.', 'imagify' ) );
 		}
 
 		$next_gen_file = new File( $file_path );
-		$next_gen_path = $next_gen_file->get_path_to_next_gen( $this->format );
+		$next_gen_path = $next_gen_file->get_path_to_nextgen( $this->format );
 
 		if ( ! $next_gen_path ) {
 			return new WP_Error( 'no_$next_gen_path', __( 'Could not get the path to the Next-Gen format file.', 'imagify' ) );

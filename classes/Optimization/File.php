@@ -540,7 +540,7 @@ class File {
 			'avif',
 		];
 		if ( in_array( $args['convert'], $formats, true ) ) {
-			$destination_path = $this->get_path_to_next_gen( $args['convert'] );
+			$destination_path = $this->get_path_to_nextgen( $args['convert'] );
 			$this->path       = $destination_path;
 			$this->file_type  = null;
 			$this->editor     = null;
@@ -778,7 +778,7 @@ class File {
 	 * @param string $format the format we are targeting.
 	 * @return string|bool The file path on success. False if not an image or on failure.
 	 */
-	public function get_path_to_next_gen( string $format ) {
+	public function get_path_to_nextgen( string $format ) {
 		if ( ! $this->is_image() ) {
 			return false;
 		}
