@@ -787,7 +787,7 @@ class File {
 			return false;
 		}
 
-		return imagify_path_to_next_gen( $this->path, $format );
+		return imagify_path_to_nextgen( $this->path, $format );
 	}
 
 	/**
