@@ -1,13 +1,12 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Picture;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
- * Display WebP images on the site with <picture> tags.
+ * Display Next-gen images on the site with <picture> tags.
  *
  * @since  1.9
- * @author Grégory Viguier
  */
 class Display {
 	use \Imagify\Traits\InstanceGetterTrait;
@@ -15,28 +14,23 @@ class Display {
 	/**
 	 * Option value.
 	 *
-	 * @var    string
+	 * @var string
 	 * @since  1.9
-	 * @author Grégory Viguier
 	 */
 	const OPTION_VALUE = 'picture';
 
 	/**
 	 * Filesystem object.
 	 *
-	 * @var    \Imagify_Filesystem
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var \Imagify_Filesystem
+	 * @since 1.9
 	 */
 	protected $filesystem;
 
 	/**
 	 * Constructor.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function __construct() {
 		$this->filesystem = \Imagify_Filesystem::get_instance();
@@ -45,9 +39,7 @@ class Display {
 	/**
 	 * Init.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function init() {
 		add_action( 'template_redirect', [ $this, 'start_content_process' ], -1000 );
@@ -61,28 +53,29 @@ class Display {
 	/**
 	 * Start buffering the page content.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
+	 *
+	 * @return void
 	 */
 	public function start_content_process() {
-		if ( ! get_imagify_option( 'display_webp' ) ) {
+		if ( ! get_imagify_option( 'display_nextgen' ) ) {
 			return;
 		}
 
-		if ( self::OPTION_VALUE !== get_imagify_option( 'display_webp_method' ) ) {
+		if ( self::OPTION_VALUE !== get_imagify_option( 'display_nextgen_method' ) ) {
 			return;
 		}
+
+		$allow = apply_filters_deprecated( 'imagify_allow_picture_tags_for_webp', [true ], '2.2', 'imagify_allow_picture_tags_for_nextgen' );
 
 		/**
 		 * Prevent the replacement of <img> tags into <picture> tags.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param bool $allow True to allow the use of <picture> tags (default). False to prevent their use.
 		 */
-		$allow = apply_filters( 'imagify_allow_picture_tags_for_webp', true );
+		$allow = apply_filters( 'imagify_allow_picture_tags_for_nextgen', true );
 
 		if ( ! $allow ) {
 			return;
@@ -94,11 +87,10 @@ class Display {
 	/**
 	 * Maybe process the page content.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @param  string $buffer The buffer content.
+	 * @param string $buffer The buffer content.
+	 *
 	 * @return string
 	 */
 	public function maybe_process_buffer( $buffer ) {
@@ -116,8 +108,7 @@ class Display {
 		/**
 		 * Filter the page content after Imagify.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param string $buffer The page content.
 		 */
@@ -129,11 +120,10 @@ class Display {
 	/**
 	 * Process the content.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @param  string $content The content.
+	 * @param string $content The content.
+	 *
 	 * @return string
 	 */
 	public function process_content( $content ) {
@@ -181,13 +171,12 @@ class Display {
 	/**
 	 * Build the <picture> tag to insert.
 	 *
-	 * @since  1.9
-	 * @see    $this->process_image()
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9
+	 * @see  $this->process_image()
 	 *
-	 * @param  array $image An array of data.
-	 * @return string       A <picture> tag.
+	 * @param array $image An array of data.
+	 *
+	 * @return string A <picture> tag.
 	 */
 	protected function build_picture_tag( $image ) {
 		$to_remove = [
@@ -210,8 +199,7 @@ class Display {
 		/**
 		 * Filter the attributes to be added to the <picture> tag.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param array $attributes A list of attributes to be added to the <picture> tag.
 		 * @param array $data       Data built from the originale <img> tag. See $this->process_image().
@@ -233,8 +221,7 @@ class Display {
 		/**
 		 * Allow to add more <source> tags to the <picture> tag.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param string $more_source_tags Additional <source> tags.
 		 * @param array  $data             Data built from the originale <img> tag. See $this->process_image().
@@ -250,13 +237,12 @@ class Display {
 	/**
 	 * Build the <source> tag to insert in the <picture>.
 	 *
-	 * @since  1.9
-	 * @see    $this->process_image()
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9
+	 * @see $this->process_image()
 	 *
-	 * @param  array $image An array of data.
-	 * @return string       A <source> tag.
+	 * @param array $image An array of data.
+	 *
+	 * @return string A <source> tag.
 	 */
 	protected function build_source_tag( $image ) {
 		$source = '';
@@ -279,6 +265,7 @@ class Display {
 	 *
 	 * @param array  $image An array of data.
 	 * @param string $image_type Type of image.
+	 *
 	 * @return array
 	 */
 	protected function build_source_attributes( array $image, string $image_type ): array {
@@ -342,8 +329,7 @@ class Display {
 		/**
 		 * Filter the attributes to be added to the <source> tag.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param array $attributes A list of attributes to be added to the <source> tag.
 		 * @param array $data       Data built from the original <img> tag. See $this->process_image().
@@ -356,13 +342,12 @@ class Display {
 	/**
 	 * Build the <img> tag to insert in the <picture>.
 	 *
-	 * @since  1.9
-	 * @see    $this->process_image()
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9
+	 * @see $this->process_image()
 	 *
-	 * @param  array $image An array of data.
-	 * @return string       A <img> tag.
+	 * @param array $image An array of data.
+	 *
+	 * @return string A <img> tag.
 	 */
 	protected function build_img_tag( $image ) {
 		/**
@@ -390,8 +375,7 @@ class Display {
 		/**
 		 * Filter the attributes to be added to the <img> tag.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param array $attributes A list of attributes to be added to the <img> tag.
 		 * @param array $data       Data built from the originale <img> tag. See $this->process_image().
@@ -404,12 +388,11 @@ class Display {
 	/**
 	 * Create HTML attributes from an array.
 	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @param  array $attributes A list of attribute pairs.
-	 * @return string            HTML attributes.
+	 * @param array $attributes A list of attribute pairs.
+	 *
+	 * @return string HTML attributes.
 	 */
 	protected function build_attributes( $attributes ) {
 		if ( ! $attributes || ! is_array( $attributes ) ) {
@@ -432,11 +415,10 @@ class Display {
 	/**
 	 * Get a list of images in a content.
 	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @param  string $content The content.
+	 * @param string $content The content.
+	 *
 	 * @return array
 	 */
 	protected function get_images( $content ) {
@@ -453,9 +435,8 @@ class Display {
 		/**
 		 * Filter the images to display with a <picture> tag.
 		 *
-		 * @since  1.9
-		 * @see    $this->process_image()
-		 * @author Grégory Viguier
+		 * @since 1.9
+		 * @see $this->process_image()
 		 *
 		 * @param array  $images A list of arrays.
 		 * @param string $content The page content.
@@ -520,9 +501,7 @@ class Display {
 	/**
 	 * Process an image tag and get an array containing some data.
 	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param  string $image An image html tag.
 	 * @return array|false {
@@ -601,7 +580,7 @@ class Display {
 			'srcset'           => [],
 		];
 
-		foreach ( $this->get_next_gen_image_data_set( $src ) as $key => $value ) {
+		foreach ( $this->get_nextgen_image_data_set( $src ) as $key => $value ) {
 			$data['src'][ $key ] = $value;
 		}
 
@@ -649,7 +628,7 @@ class Display {
 					'descriptor'  => $srcs[1],
 				];
 
-				foreach ( $this->get_next_gen_image_data_set( $src ) as $key => $value ) {
+				foreach ( $this->get_nextgen_image_data_set( $src ) as $key => $value ) {
 					$srcset_data[ $key ] = $value;
 				}
 
@@ -660,8 +639,7 @@ class Display {
 		/**
 		 * Filter a processed image tag.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param array  $data  An array of data for this image.
 		 * @param string $image An image html tag.
@@ -680,16 +658,17 @@ class Display {
 	}
 
 	/**
-	 * Get the next gen image(webp & avif) data set.
+	 * Get the next-gen image(webp & avif) data set.
 	 *
 	 * @param array $src Array of url/path segments.
+	 *
 	 * @return array
 	 */
-	protected function get_next_gen_image_data_set( array $src ): array {
-		$webp_url  = imagify_path_to_next_gen( $src['src'], 'webp' );
+	protected function get_nextgen_image_data_set( array $src ): array {
+		$webp_url  = imagify_path_to_nextgen( $src['src'], 'webp' );
 		$webp_path = $this->url_to_path( $webp_url );
 
-		$avif_url = imagify_path_to_next_gen( $src['src'], 'avif' );
+		$avif_url = imagify_path_to_nextgen( $src['src'], 'avif' );
 		$avif_path = $this->url_to_path( $avif_url );
 		$query_string = ! empty( $src['query'] ) ? $src['query'] : '';
 
@@ -709,11 +688,10 @@ class Display {
 	/**
 	 * Tell if a content is HTML.
 	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @param  string $content The content.
+	 * @param string $content The content.
+	 *
 	 * @return bool
 	 */
 	protected function is_html( $content ) {
@@ -723,11 +701,10 @@ class Display {
 	/**
 	 * Convert a file URL to an absolute path.
 	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @param  string $url A file URL.
+	 * @param string $url A file URL.
+	 *
 	 * @return string|bool The file path. False on failure.
 	 */
 	protected function url_to_path( $url ) {
@@ -785,11 +762,10 @@ class Display {
 	/**
 	 * Get the CDN "source".
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
-	 * @param  string $option_url An URL to use instead of the one stored in the option. It is used only if no constant/filter.
+	 * @param string $option_url An URL to use instead of the one stored in the option. It is used only if no constant/filter.
+	 *
 	 * @return array  {
 	 *     @type string $source Where does it come from? Possible values are 'constant', 'filter', or 'option'.
 	 *     @type string $name   Who? Can be a constant name, a plugin name, or an empty string.
@@ -814,8 +790,7 @@ class Display {
 			/**
 			 * Provide a custom CDN source.
 			 *
-			 * @since  1.9.3
-			 * @author Grégory Viguier
+			 * @since 1.9.3
 			 *
 			 * @param array $filter_source {
 			 *     @type $name string The name of which provides the URL (plugin name, etc).
@@ -868,9 +843,7 @@ class Display {
 	/**
 	 * Sanitize the CDN URL value.
 	 *
-	 * @since  1.9.3
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9.3
 	 *
 	 * @param  string $url The URL to sanitize.
 	 * @return string
