@@ -1,5 +1,5 @@
 <?php
-namespace WP_Rocket\Event_Management;
+namespace Imagify\EventManagement;
 
 /**
  * A Subscriber knows what specific WordPress events it wants to listen to.
@@ -9,7 +9,7 @@ namespace WP_Rocket\Event_Management;
  *
  * @author Carl Alexander <contact@carlalexander.ca>
  */
-interface Subscriber_Interface {
+interface SubscriberInterface {
 	/**
 	 * Returns an array of events that this subscriber wants to listen to.
 	 *

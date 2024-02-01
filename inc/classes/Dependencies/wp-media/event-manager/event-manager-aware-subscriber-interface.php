@@ -1,14 +1,14 @@
 <?php
-namespace WP_Rocket\Event_Management;
+namespace Imagify\EventManagement;
 
-interface Event_Manager_Aware_Subscriber_Interface extends Subscriber_Interface {
+interface EventManagerAwareSubscriberInterface extends SubscriberInterface {
 	/**
 	 * Set the WordPress event manager for the subscriber.
 	 *
 	 * @since 3.1
 	 * @author Remy Perona
 	 *
-	 * @param Event_Manager $event_manager Event_Manager instance.
+	 * @param EventManager $event_manager EventManager instance.
 	 */
-	public function set_event_manager( Event_Manager $event_manager );
+	public function set_event_manager( EventManager $event_manager );
 }

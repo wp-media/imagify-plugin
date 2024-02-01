@@ -1,5 +1,5 @@
 <?php
-namespace WP_Rocket\Event_Management;
+namespace Imagify\EventManagement;
 
 /**
  * The event manager manages events using the WordPress plugin API.
@@ -7,7 +7,7 @@ namespace WP_Rocket\Event_Management;
  * @since 3.1
  * @author Carl Alexander <contact@carlalexander.ca>
  */
-class Event_Manager {
+class EventManager {
 	/**
 	 * Adds a callback to a specific hook of the WordPress plugin API.
 	 *
