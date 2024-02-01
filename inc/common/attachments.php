@@ -72,7 +72,7 @@ add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'get_resi
 /**
  * Add filters to manage images formats that will be generated
  *
- * @return array;
+ * @return array
  */
 function imagify_nextgen_images_formats() {
 	$formats = [
