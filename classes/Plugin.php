@@ -130,8 +130,6 @@ class Plugin {
 			\Imagify_Assets::get_instance()->init();
 		}
 
-		\Imagify\Webp\Display::get_instance()->init();
-
 		add_action( 'init', [ $this, 'maybe_activate' ] );
 
 		// Load plugin translations.
@@ -248,6 +246,7 @@ class Plugin {
 	private function get_service_providers() {
 		return [
 			'Imagify\Picture\ServiceProvider',
+			'Imagify\Webp\ServiceProvider',
 		];
 	}
 
