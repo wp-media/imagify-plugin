@@ -3,7 +3,6 @@ namespace Imagify\Webp;
 
 use Imagify\Notices\Notices;
 use Imagify\Traits\InstanceGetterTrait;
-use Imagify\Picture\Display as PictureDisplay;
 
 /**
  * Display WebP images on the site.
@@ -32,7 +31,7 @@ class Display {
 		add_action( 'imagify_activation',         [ $this, 'activate' ] );
 		add_action( 'imagify_deactivation',       [ $this, 'deactivate' ] );
 
-		PictureDisplay::get_instance()->init();
+
 		RewriteRules\Display::get_instance()->init();
 	}
 

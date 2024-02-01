@@ -3,47 +3,46 @@ declare(strict_types=1);
 
 namespace Imagify\Picture;
 
+use Imagify\EventManagement\SubscriberInterface;
+use Imagify_Filesystem;
+
 /**
  * Display Next-gen images on the site with <picture> tags.
  *
  * @since  1.9
  */
-class Display {
-	use \Imagify\Traits\InstanceGetterTrait;
-
+class Display implements SubscriberInterface {
 	/**
 	 * Option value.
 	 *
 	 * @var string
-	 * @since  1.9
 	 */
 	const OPTION_VALUE = 'picture';
 
 	/**
 	 * Filesystem object.
 	 *
-	 * @var \Imagify_Filesystem
-	 * @since 1.9
+	 * @var Imagify_Filesystem
 	 */
 	protected $filesystem;
 
 	/**
 	 * Constructor.
-	 *
-	 * @since 1.9
 	 */
-	public function __construct() {
-		$this->filesystem = \Imagify_Filesystem::get_instance();
+	public function __construct( Imagify_Filesystem $filesystem ) {
+		$this->filesystem = $filesystem;
 	}
 
 	/**
-	 * Init.
+	 * Array of events this subscriber listens to
 	 *
-	 * @since 1.9
+	 * @return array
 	 */
-	public function init() {
-		add_action( 'template_redirect', [ $this, 'start_content_process' ], -1000 );
-		add_filter( 'imagify_process_webp_content', [ $this, 'process_content' ] );
+	public static function get_subscribed_events() {
+		return [
+			'template_redirect'            => [ 'start_content_process', -1000 ],
+			'imagify_process_webp_content' => 'process_content',
+		];
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
