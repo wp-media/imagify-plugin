@@ -1,31 +1,29 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Webp\RewriteRules;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\WriteFile\AbstractNginxDirConfFile;
 
 /**
  * Add and remove rewrite rules to the imagify.conf file to display WebP images on the site.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
-class Nginx extends \Imagify\WriteFile\AbstractNginxDirConfFile {
+class Nginx extends AbstractNginxDirConfFile {
 
 	/**
 	 * Name of the tag used as block delemiter.
 	 *
-	 * @var    string
-	 * @since  1.9
-	 * @author Grégory Viguier
+	 * @var string
+	 * @since 1.9
 	 */
 	const TAG_NAME = 'Imagify: rewrite rules for webp';
 
 	/**
 	 * Get unfiltered new contents to write into the file.
 	 *
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @return string
 	 */
