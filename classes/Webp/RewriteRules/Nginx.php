@@ -29,6 +29,7 @@ class Nginx extends AbstractNginxDirConfFile {
 	 */
 	protected function get_raw_new_contents() {
 		$extensions = $this->get_extensions_pattern();
+		$extensions = str_replace( '|webp', '', $extensions );
 		$home_root  = wp_parse_url( home_url( '/' ) );
 		$home_root  = $home_root['path'];
 
