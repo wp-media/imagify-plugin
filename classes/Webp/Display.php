@@ -5,6 +5,7 @@ namespace Imagify\Webp;
 
 use Imagify\EventManagement\SubscriberInterface;
 use Imagify\Notices\Notices;
+use Imagify\Traits\InstanceGetterTrait;
 use Imagify\WriteFile\WriteFileInterface;
 
 /**
@@ -13,6 +14,8 @@ use Imagify\WriteFile\WriteFileInterface;
  * @since 1.9
  */
 class Display implements SubscriberInterface {
+	use InstanceGetterTrait;
+
 	/**
 	 * Server conf object.
 	 *
