@@ -55,10 +55,10 @@ class Display implements SubscriberInterface {
 			return $values;
 		}
 
-		if ( $enabled ) {
+		if ( $enabled &&  $values['display_nextgen'] ) {
 			// Add the WebP file type.
 			$result = $this->get_server_conf()->add();
-		} else {
+		} elseif ( !$enabled || ! $values['display_nextgen'] ) {
 			// Remove the WebP file type.
 			$result = $this->get_server_conf()->remove();
 		}
