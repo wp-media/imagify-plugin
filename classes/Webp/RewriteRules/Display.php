@@ -144,10 +144,10 @@ class Display implements SubscriberInterface {
 		if ( ! $conf ) {
 			return;
 		}
-		if ( ! get_imagify_option( 'display_webp' ) ) {
+		if ( ! get_imagify_option( 'display_nextgen' ) ) {
 			return;
 		}
-		if ( self::OPTION_VALUE !== get_imagify_option( 'display_webp_method' ) ) {
+		if ( self::OPTION_VALUE !== get_imagify_option( 'display_nextgen_method' ) ) {
 			return;
 		}
 		if ( is_wp_error( $conf->is_file_writable() ) ) {
@@ -168,10 +168,10 @@ class Display implements SubscriberInterface {
 		if ( ! $conf ) {
 			return;
 		}
-		if ( ! get_imagify_option( 'display_webp' ) ) {
+		if ( ! get_imagify_option( 'display_nextgen' ) ) {
 			return;
 		}
-		if ( self::OPTION_VALUE !== get_imagify_option( 'display_webp_method' ) ) {
+		if ( self::OPTION_VALUE !== get_imagify_option( 'display_nextgen_method' ) ) {
 			return;
 		}
 
