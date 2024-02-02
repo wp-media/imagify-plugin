@@ -2,7 +2,6 @@
 
 use Imagify\Stats\OptimizedMediaWithoutWebp;
 use Imagify\Webp\Display;
-use Imagify\Picture\Display as PictureDisplay;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
@@ -54,7 +53,7 @@ $settings = Imagify_Settings::get_instance();
 
 				<div class="imagify-options-line">
 					<?php
-					$cdn_source = PictureDisplay::get_instance()->get_cdn_source();
+					$cdn_source = apply_filters( 'imagify_cdn_source_url', '' );
 
 					if ( 'option' !== $cdn_source['source'] ) {
 						if ( 'constant' === $cdn_source['source'] ) {
