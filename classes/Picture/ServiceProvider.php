@@ -33,4 +33,13 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->share( 'picture_display', Display::class )
 			->addArgument( $this->getContainer()->get( 'filesystem' ) );
 	}
+
+	/**
+	 * Returns the subscribers array
+	 *
+	 * @return array
+	 */
+	public function get_subscribers() {
+		return $this->subscribers;
+	}
 }

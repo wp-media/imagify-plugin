@@ -36,4 +36,13 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->share( 'webp_display', Display::class );
 		$this->getContainer()->share( 'webp_rewrite_rules', RewriteRules::class );
 	}
+
+	/**
+	 * Returns the subscribers array
+	 *
+	 * @return array
+	 */
+	public function get_subscribers() {
+		return $this->subscribers;
+	}
 }
