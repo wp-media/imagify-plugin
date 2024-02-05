@@ -146,7 +146,7 @@ $settings = Imagify_Settings::get_instance();
 
 				<button id="imagify-generate-webp-versions" class="button imagify-button-primary imagify-button-mini" type="button">
 					<span class="dashicons dashicons-admin-generic"></span>
-					<span class="button-text"><?php esc_html_e( 'Generate missing next-gen images versions', 'imagify' ); ?></span>
+					<span class="button-text"><?php esc_html_e( 'Generate missing Next-Gen images versions', 'imagify' ); ?></span>
 				</button>
 
 				<?php
