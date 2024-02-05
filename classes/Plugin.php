@@ -85,7 +85,7 @@ class Plugin {
 			return;
 		}
 
-		$this->container->add(
+		$this->container->share(
 			'event_manager',
 			function () {
 				return new EventManager();
@@ -260,11 +260,11 @@ class Plugin {
 	 * @return void
 	 */
 	private function load_subscribers( ServiceProviderInterface $service_provider ) {
-		if ( empty( $service_provider->subscribers ) ) {
+		if ( empty( $service_provider->get_subscribers() ) ) {
 			return;
 		}
 
-		foreach ( $service_provider->subscribers as $subscriber ) {
+		foreach ( $service_provider->get_subscribers() as $subscriber ) {
 			$subscriber_object = $this->container->get( $subscriber );
 
 			if ( $subscriber_object instanceof SubscriberInterface ) {
