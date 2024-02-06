@@ -21,6 +21,8 @@ function imagify_init() {
 		return;
 	}
 
+	$providers = require_once IMAGIFY_PATH . 'config/providers.php';
+
 	$plugin = new Plugin(
 		new Container(),
 		array(
@@ -28,6 +30,6 @@ function imagify_init() {
 		)
 	);
 
-	$plugin->init();
+	$plugin->init( $providers );
 }
 add_action( 'plugins_loaded', 'imagify_init' );

@@ -78,9 +78,11 @@ class Plugin {
 	/**
 	 * Plugin init.
 	 *
+	 * @param array Array of service providers.
+	 *
 	 * @since 1.9
 	 */
-	public function init() {
+	public function init( $providers ) {
 		if ( $this->is_loaded() ) {
 			return;
 		}
@@ -138,7 +140,7 @@ class Plugin {
 		imagify_add_command( new BulkOptimizeCommand() );
 		imagify_add_command( new GenerateMissingNextgenCommand() );
 
-		foreach ( $this->get_service_providers() as $service_provider ) {
+		foreach ( $providers as $service_provider ) {
 			$provider_instance = new $service_provider();
 			$this->container->addServiceProvider( $provider_instance );
 
@@ -236,20 +238,6 @@ class Plugin {
 		 * @param int $user_id ID of the user activating the plugin.
 		 */
 		do_action( 'imagify_activation', (int) $user_id );
-	}
-
-	/**
-	 * Get list of service providers' classes.
-	 *
-	 * @return array Service providers.
-	 */
-	private function get_service_providers() {
-		return [
-			'Imagify\Avif\ServiceProvider',
-			'Imagify\CDN\ServiceProvider',
-			'Imagify\Picture\ServiceProvider',
-			'Imagify\Webp\ServiceProvider',
-		];
 	}
 
 	/**
