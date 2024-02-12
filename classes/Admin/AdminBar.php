@@ -44,7 +44,7 @@ class AdminBar {
 
 		if ( $user->is_free() ) {
 			$text         = esc_html__( 'Upgrade your plan now for more!', 'rocket' ) . '<br>' .
-			esc_html__( 'From $4.99/month only, keep going with image optimization!', 'rocket' );
+			esc_html__( 'From $5.99/month only, keep going with image optimization!', 'rocket' );
 			$button_text  = esc_html__( 'Upgrade My Plan', 'rocket' );
 			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/?utm_source=plugin&utm_medium=notification';
 		} elseif ( $user->is_growth() ) {

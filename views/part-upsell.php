@@ -70,7 +70,7 @@ if (
 	<?php
 	if ( $imagify_user->is_free() ) {
 		$upgrade = esc_html__( 'Upgrade your plan now for more!', 'imagify' );
-		$price = esc_html__( 'From $4.99/month only, keep going with image optimization!', 'imagify' );
+		$price = esc_html__( 'From $5.99/month only, keep going with image optimization!', 'imagify' );
 		$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/?utm_source=plugin&utm_medium=upsell_banner';
 	} elseif ( $imagify_user->is_growth() ) {
 		$upgrade = esc_html__( 'Upgrade your plan now to keep optimizing your images.', 'imagify' );
