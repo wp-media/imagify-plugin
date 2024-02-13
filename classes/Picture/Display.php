@@ -722,7 +722,7 @@ class Display implements SubscriberInterface {
 			$uploads_dir = $this->filesystem->get_upload_basedir( true );
 			$root_url    = set_url_scheme( $this->filesystem->get_site_root_url() );
 			$root_dir    = $this->filesystem->get_site_root();
-			$cdn_url     = $this->get_cdn_source();
+			$cdn_url     = apply_filters( 'imagify_cdn_source_url', '' );
 			$cdn_url     = $cdn_url['url'] ? set_url_scheme( $cdn_url['url'] ) : false;
 			$domain_url  = wp_parse_url( $root_url );
 
