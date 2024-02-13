@@ -68,6 +68,8 @@ class Display implements SubscriberInterface {
 			return $values;
 		}
 
+		$result = false;
+
 		if ( $enabled && $is_rewrite && ! $was_rewrite ) {
 			// Add the rewrite rules.
 			$result = $this->get_server_conf()->add();
