@@ -53,10 +53,12 @@ class Display implements SubscriberInterface {
 		$is_enabled  = ! empty( $values['display_nextgen'] );
 
 		// Which method?
+		$old_value = get_imagify_option( 'display_nextgen_method' );
 		$new_value = ! empty( $values['display_nextgen_method'] ) ? $values['display_nextgen_method'] : '';
 
 		// Decide when to add or remove rules.
 		$is_rewrite  = self::OPTION_VALUE === $new_value;
+		$was_rewrite = self::OPTION_VALUE === $old_value;
 
 		if ( ! $this->get_server_conf() ) {
 			return $values;
@@ -64,20 +66,10 @@ class Display implements SubscriberInterface {
 
 		$result = false;
 
-		if (
-			! $was_enabled
-			&&
-			$is_enabled
-			&&
-			$is_rewrite
-		) {
+		if ( $is_enabled && $is_rewrite && ( ! $was_enabled || ! $was_rewrite ) ) {
 			// Add the rewrite rules.
 			$result = $this->get_server_conf()->add();
-		} elseif (
-			! $is_enabled
-			||
-			! $is_rewrite
-		) {
+		} elseif ( $was_enabled && $was_rewrite && ( ! $is_enabled || ! $is_rewrite ) ) {
 			// Remove the rewrite rules.
 			$result = $this->get_server_conf()->remove();
 		}
