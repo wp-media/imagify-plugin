@@ -229,7 +229,11 @@ class Display {
 			unset( $attributes['data-object-position'] );
 		}
 
-		$output = '<picture' . $this->build_attributes( $attributes ) . ">\n";
+		$picture_attributes = array_filter( $attributes, function ( $attribute ) {
+			return strpos( $attribute, 'data-wp' ) === false;
+		}, ARRAY_FILTER_USE_KEY );
+
+		$output = '<picture' . $this->build_attributes( $picture_attributes ) . ">\n";
 		/**
 		 * Allow to add more <source> tags to the <picture> tag.
 		 *
