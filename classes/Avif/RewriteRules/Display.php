@@ -32,7 +32,7 @@ class Display implements SubscriberInterface {
 	 */
 	public static function get_subscribed_events() {
 		return [
-			'imagify_settings_on_save'   => [ 'maybe_add_rewrite_rules', 13 ],
+			'imagify_settings_on_save'   => [ 'maybe_add_rewrite_rules', 10 ],
 			'imagify_settings_webp_info' => 'maybe_add_avif_info',
 			'imagify_activation'         => 'activate',
 			'imagify_deactivation'       => 'deactivate',
@@ -49,17 +49,14 @@ class Display implements SubscriberInterface {
 	 * @return array
 	 */
 	public function maybe_add_rewrite_rules( $values ) {
+		$was_enabled = (bool) get_imagify_option( 'display_nextgen' );
+		$is_enabled  = ! empty( $values['display_nextgen'] );
+
 		// Which method?
-		$old_value = get_imagify_option( 'display_nextgen_method' );
 		$new_value = ! empty( $values['display_nextgen_method'] ) ? $values['display_nextgen_method'] : '';
 
 		// Decide when to add or remove rules.
 		$is_rewrite  = self::OPTION_VALUE === $new_value;
-		$was_rewrite = self::OPTION_VALUE === $old_value;
-
-		if ( $is_rewrite === $was_rewrite ) {
-			return $values;
-		}
 
 		if ( ! $this->get_server_conf() ) {
 			return $values;
@@ -67,10 +64,20 @@ class Display implements SubscriberInterface {
 
 		$result = false;
 
-		if ( $is_rewrite && ! $was_rewrite ) {
+		if (
+			! $was_enabled
+			&&
+			$is_enabled
+			&&
+			$is_rewrite
+		) {
 			// Add the rewrite rules.
 			$result = $this->get_server_conf()->add();
-		} elseif ( $was_rewrite && ! $is_rewrite ) {
+		} elseif (
+			! $is_enabled
+			||
+			! $is_rewrite
+		) {
 			// Remove the rewrite rules.
 			$result = $this->get_server_conf()->remove();
 		}
