@@ -32,7 +32,7 @@ class Display implements SubscriberInterface {
 	 */
 	public static function get_subscribed_events() {
 		return [
-			'imagify_settings_on_save'   => 'maybe_add_rewrite_rules',
+			'imagify_settings_on_save'   => [ 'maybe_add_rewrite_rules', 13 ],
 			'imagify_settings_webp_info' => 'maybe_add_avif_info',
 			'imagify_activation'         => 'activate',
 			'imagify_deactivation'       => 'deactivate',
@@ -49,9 +49,6 @@ class Display implements SubscriberInterface {
 	 * @return array
 	 */
 	public function maybe_add_rewrite_rules( $values ) {
-		$formats = imagify_nextgen_images_formats();
-		$enabled = in_array( 'avif', $formats, true );
-
 		// Which method?
 		$old_value = get_imagify_option( 'display_nextgen_method' );
 		$new_value = ! empty( $values['display_nextgen_method'] ) ? $values['display_nextgen_method'] : '';
@@ -70,7 +67,7 @@ class Display implements SubscriberInterface {
 
 		$result = false;
 
-		if ( $enabled && $is_rewrite && ! $was_rewrite ) {
+		if ( $is_rewrite && ! $was_rewrite ) {
 			// Add the rewrite rules.
 			$result = $this->get_server_conf()->add();
 		} elseif ( $was_rewrite && ! $is_rewrite ) {
@@ -85,9 +82,11 @@ class Display implements SubscriberInterface {
 		// Display an error message.
 		if ( is_multisite() && strpos( wp_get_referer(), network_admin_url( '/' ) ) === 0 ) {
 			Notices::get_instance()->add_network_temporary_notice( $result->get_error_message() );
-		} else {
-			Notices::get_instance()->add_site_temporary_notice( $result->get_error_message() );
+
+			return $values;
 		}
+
+		Notices::get_instance()->add_site_temporary_notice( $result->get_error_message() );
 
 		return $values;
 	}

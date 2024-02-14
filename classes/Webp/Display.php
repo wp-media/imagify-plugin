@@ -48,17 +48,17 @@ class Display implements SubscriberInterface {
 	 * @return array
 	 */
 	public function maybe_add_rewrite_rules( $values ) {
-		$formats = imagify_nextgen_images_formats();
-		$enabled = in_array( 'webp', $formats, true );
-
 		if ( ! $this->get_server_conf() ) {
 			return $values;
 		}
 
-		if ( $enabled && isset( $values['display_nextgen'] ) ) {
+		$enabled = isset( $values['display_nextgen'] ) ? true : false;
+		$result  = false;
+
+		if ( $enabled ) {
 			// Add the WebP file type.
 			$result = $this->get_server_conf()->add();
-		} elseif ( !$enabled || ! isset( $values['display_nextgen'] ) ) {
+		} elseif ( ! $enabled ) {
 			// Remove the WebP file type.
 			$result = $this->get_server_conf()->remove();
 		}
@@ -70,9 +70,11 @@ class Display implements SubscriberInterface {
 		// Display an error message.
 		if ( is_multisite() && strpos( wp_get_referer(), network_admin_url( '/' ) ) === 0 ) {
 			Notices::get_instance()->add_network_temporary_notice( $result->get_error_message() );
-		} else {
-			Notices::get_instance()->add_site_temporary_notice( $result->get_error_message() );
+
+			return $values;
 		}
+
+		Notices::get_instance()->add_site_temporary_notice( $result->get_error_message() );
 
 		return $values;
 	}
@@ -125,9 +127,7 @@ class Display implements SubscriberInterface {
 			return;
 		}
 
-		$formats = imagify_nextgen_images_formats();
-
-		if ( ! in_array( 'webp', $formats, true ) ) {
+		if ( ! get_imagify_option( 'display_nextgen' ) ) {
 			return;
 		}
 
