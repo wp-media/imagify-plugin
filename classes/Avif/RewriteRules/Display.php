@@ -94,8 +94,6 @@ class Display implements SubscriberInterface {
 	 * If the conf file is not writable, add a warning.
 	 */
 	public function maybe_add_avif_info() {
-		global $is_nginx;
-
 		$conf = $this->get_server_conf();
 
 		if ( ! $conf ) {
@@ -119,12 +117,6 @@ class Display implements SubscriberInterface {
 			);
 
 			echo '<pre class="code">' . esc_html( $rules ) . '</pre>';
-		} elseif ( $is_nginx ) {
-			printf(
-				/* translators: %s is a file name. */
-				esc_html__( 'If you choose to use rewrite rules, the file %s will be created and must be included into the server’s configuration file (then restart the server).', 'imagify' ),
-				'<code>' . $this->get_file_path( true ) . '</code>'
-			);
 		}
 	}
 
