@@ -32,7 +32,7 @@ class Display implements SubscriberInterface {
 	 */
 	public static function get_subscribed_events() {
 		return [
-			'imagify_settings_on_save'   => [ 'maybe_add_rewrite_rules', 10 ],
+			'imagify_settings_on_save'   => [ 'maybe_add_rewrite_rules', 11 ],
 			'imagify_settings_webp_info' => 'maybe_add_avif_info',
 			'imagify_activation'         => 'activate',
 			'imagify_deactivation'       => 'deactivate',
