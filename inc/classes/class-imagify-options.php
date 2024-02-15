@@ -34,7 +34,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'backup'                 => 0,
 		'resize_larger'          => 0,
 		'resize_larger_w'        => 0,
-		'convert_to_webp'        => 0,
 		'display_nextgen'        => 0,
 		'display_nextgen_method' => 'picture',
 		'cdn_url'                => '',
@@ -55,7 +54,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'optimization_level' => 2,
 		'auto_optimize'      => 1,
 		'backup'             => 1,
-		'convert_to_webp'    => 1,
 		'admin_bar_menu'     => 1,
 		'partner_links'      => 1,
 	];
@@ -136,7 +134,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'admin_bar_menu':
 			case 'partner_links':
 			case 'convert_to_avif':
-				return 1;
+				return empty( $value ) ? 0 : 1;
 
 			case 'resize_larger_w':
 				if ( $value <= 0 ) {
@@ -202,11 +200,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		// The max width for the "Resize larger images" option can't be 0.
 		if ( empty( $values['resize_larger_w'] ) ) {
 			unset( $values['resize_larger'], $values['resize_larger_w'] );
-		}
-
-		// Don't display AVIF if conversion is disabled.
-		if ( empty( $values['convert_to_avif'] ) ) {
-			unset( $values['convert_to_avif'], $values['display_avif'] );
 		}
 
 		return $values;
