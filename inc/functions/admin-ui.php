@@ -99,7 +99,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 		if ( $process->has_next_gen() ) {
 			$has_webp = $process->is_full_next_gen() ? __( 'Yes', 'imagify' ) : __( 'Partially', 'imagify' );
 		}
-		$output  .= $output_before . '<span class="data">' . __( 'WebP generated:', 'imagify' ) . '</span> <strong class="big">' . esc_html( $has_webp ) . '</strong>' . $output_after;
+		$output  .= $output_before . '<span class="data">' . __( 'Next-Gen generated:', 'imagify' ) . '</span> <strong class="big">' . esc_html( $has_webp ) . '</strong>' . $output_after;
 
 		$total_optimized_thumbnails = $data->get_optimized_sizes_count();
 
