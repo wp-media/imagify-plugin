@@ -375,7 +375,7 @@ function get_imagify_attachment_generate_nextgen_versions_link( $process ) {
 		return '';
 	}
 
-	$url = get_imagify_admin_url( 'generate-webp-versions', [
+	$url = get_imagify_admin_url( 'generate-nextgen-versions', [
 		'attachment_id' => $media->get_id(),
 		'context'       => $context,
 	] );
