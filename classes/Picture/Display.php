@@ -246,7 +246,7 @@ class Display implements SubscriberInterface {
 	protected function build_source_tag( $image ) {
 		$source = '';
 
-		foreach ( [ 'webp', 'avif' ] as $image_type ) {
+		foreach ( [ 'avif', 'webp'  ] as $image_type ) {
 			$attributes = $this->build_source_attributes( $image, $image_type );
 
 			if ( empty( $attributes ) ) {
