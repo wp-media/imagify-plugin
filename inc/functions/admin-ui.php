@@ -24,7 +24,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 	$reoptimize_link          = get_imagify_attachment_reoptimize_link( $process );
 	$reoptimize_link         .= get_imagify_attachment_optimize_missing_thumbnails_link( $process );
 	$reoptimize_link         .= get_imagify_attachment_generate_nextgen_versions_link( $process );
-	$reoptimize_link         .= get_imagify_attachment_delete_webp_versions_link( $process );
+	$reoptimize_link         .= get_imagify_attachment_delete_nextgen_versions_link( $process );
 	$reoptimize_output        = $reoptimize_link ? $reoptimize_link : '';
 	$reoptimize_output_before = '<div class="imagify-datas-actions-links">';
 	$reoptimize_output_after  = '</div><!-- .imagify-datas-actions-links -->';
@@ -388,15 +388,15 @@ function get_imagify_attachment_generate_nextgen_versions_link( $process ) {
 }
 
 /**
- * Get the link to delete WebP versions when the status is "already_optimized".
+ * Get the link to delete next-gen versions when the status is "already_optimized".
  *
- * @since  1.9.6
- * @author Grégory Viguier
+ * @since 1.9.6
  *
  * @param  ProcessInterface $process The optimization process object.
- * @return string                    The output to print.
+ *
+ * @return string The output to print.
  */
-function get_imagify_attachment_delete_webp_versions_link( $process ) {
+function get_imagify_attachment_delete_nextgen_versions_link( $process ) {
 	if ( ! $process->is_valid() ) {
 		return '';
 	}
@@ -416,7 +416,7 @@ function get_imagify_attachment_delete_webp_versions_link( $process ) {
 	}
 
 	$class = '';
-	$url   = get_imagify_admin_url( 'delete-webp-versions', [
+	$url   = get_imagify_admin_url( 'delete-nextgen-versions', [
 		'attachment_id' => $media_id,
 		'context'       => $context,
 	] );
