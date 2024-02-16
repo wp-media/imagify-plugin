@@ -80,7 +80,7 @@ function imagify_nextgen_images_formats() {
 	];
 
 	if ( get_imagify_option( 'convert_to_avif' ) ) {
-		$formats[] = 'avif';
+		$formats = [ 'avif' ];
 	}
 	$default = $formats;
 
