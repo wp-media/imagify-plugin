@@ -198,7 +198,7 @@ function imagify_path_to_webp( $path ) {
  * @param  string $format format we are targeting.
  * @return string
  */
-function imagify_path_to_next_gen( $path, string $format ) {
+function imagify_path_to_nextgen( $path, string $format ) {
 	switch ( $format ) {
 		case 'webp':
 			$path = $path . '.webp';

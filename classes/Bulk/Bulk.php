@@ -27,7 +27,7 @@ class Bulk {
 		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
 		add_action( 'imagify_after_optimize', [ $this, 'check_optimization_status' ], 10, 2 );
 		add_action( 'imagify_deactivation', [ $this, 'delete_transients_data' ] );
-		add_action( 'update_option_imagify_settings', [ $this, 'maybe_bulk_optimize_callback' ] );
+		add_action( 'update_option_imagify_settings', [ $this, 'maybe_bulk_optimize_callback' ], 10, 2 );
 	}
 
 	/**
@@ -613,9 +613,20 @@ class Bulk {
 	 *
 	 * @since 2.2
 	 *
+	 * @param array $old_value The old option value.
+	 * @param array $value The new option value.
+	 *
 	 * @return void
 	 */
-	public function maybe_bulk_optimize_callback() {
+	public function maybe_bulk_optimize_callback( $old_value, $value ) {
+		if ( isset( $old_value['convert_to_avif'] ) && isset( $value['convert_to_avif'] ) ) {
+			return;
+		}
+
+		if ( isset( $value['convert_to_avif'] ) && ! (bool) $value['convert_to_avif'] ) {
+			return;
+		}
+
 		$level = \Imagify_Options::get_instance()->get( 'optimization_level' );
 		$contexts = $this->get_contexts();
 		foreach ( $contexts as $context ) {
