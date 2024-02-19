@@ -2,7 +2,6 @@
 
 use Imagify\Stats\OptimizedMediaWithoutWebp;
 use Imagify\Webp\Display;
-use Imagify\Picture\Display as PictureDisplay;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
@@ -32,7 +31,7 @@ $settings = Imagify_Settings::get_instance();
 		<div class="imagify-options-line">
 			<?php
 			$settings->field_checkbox( [
-				'option_name' => 'display_webp',
+				'option_name' => 'display_nextgen',
 				'label'       => __( 'Display images in Next-Gen format on the site', 'imagify' ),
 			] );
 			?>
@@ -40,7 +39,7 @@ $settings = Imagify_Settings::get_instance();
 			<div class="imagify-options-line">
 				<?php
 				$settings->field_radio_list( [
-					'option_name' => 'display_webp_method',
+					'option_name' => 'display_nextgen_method',
 					'values'      => [
 						'rewrite' => __( 'Use rewrite rules', 'imagify' ),
 						/* translators: 1 and 2 are <em> tag opening and closing. */
@@ -54,7 +53,7 @@ $settings = Imagify_Settings::get_instance();
 
 				<div class="imagify-options-line">
 					<?php
-					$cdn_source = PictureDisplay::get_instance()->get_cdn_source();
+					$cdn_source = apply_filters( 'imagify_cdn_source_url', '' );
 
 					if ( 'option' !== $cdn_source['source'] ) {
 						if ( 'constant' === $cdn_source['source'] ) {
@@ -97,7 +96,7 @@ $settings = Imagify_Settings::get_instance();
 				</div>
 			</div>
 
-			<div id="describe-display_webp_method" class="imagify-info">
+			<div id="describe-display_nextgen_method" class="imagify-info">
 				<span class="dashicons dashicons-info"></span>
 				<?php
 				$conf_file_path = Display::get_instance()->get_file_path( true );

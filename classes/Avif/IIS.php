@@ -1,14 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Imagify\Webp;
+namespace Imagify\Avif;
 
 use Imagify\WriteFile\AbstractIISDirConfFile;
 
 /**
- * Add and remove contents to the web.config file to display WebP images on the site.
- *
- * @since 1.9
+ * Add and remove contents to the web.config file to display AVIF images on the site.
  */
 class IIS extends AbstractIISDirConfFile {
 
@@ -16,14 +14,11 @@ class IIS extends AbstractIISDirConfFile {
 	 * Name of the tag used as block delemiter.
 	 *
 	 * @var string
-	 * @since 1.9
 	 */
-	const TAG_NAME = 'Imagify: webp file type';
+	const TAG_NAME = 'Imagify: avif file type';
 
 	/**
 	 * Get unfiltered new contents to write into the file.
-	 *
-	 * @since 1.9
 	 *
 	 * @return array
 	 */
@@ -31,7 +26,7 @@ class IIS extends AbstractIISDirConfFile {
 		return trim( '
 <!-- @parent /configuration/system.webServer -->
 <staticContent name="' . esc_attr( static::TAG_NAME ) . ' 1">
-	<mimeMap fileExtension=".webp" mimeType="image/webp" />
+	<mimeMap fileExtension=".avif" mimeType="image/avif" />
 </staticContent>' );
 	}
 }
