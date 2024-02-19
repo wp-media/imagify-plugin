@@ -1,22 +1,22 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Webp\RewriteRules;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\WriteFile\AbstractApacheDirConfFile;
 
 /**
  * Add and remove rewrite rules to the .htaccess file to display WebP images on the site.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
-class Apache extends \Imagify\WriteFile\AbstractApacheDirConfFile {
+class Apache extends AbstractApacheDirConfFile {
 
 	/**
 	 * Name of the tag used as block delemiter.
 	 *
-	 * @var    string
-	 * @since  1.9
-	 * @author Grégory Viguier
+	 * @var string
+	 * @since 1.9
 	 */
 	const TAG_NAME = 'Imagify: rewrite rules for webp';
 
@@ -24,14 +24,13 @@ class Apache extends \Imagify\WriteFile\AbstractApacheDirConfFile {
 	 * Get unfiltered new contents to write into the file.
 	 *
 	 * @since  1.9
-	 * @access protected
 	 * @source https://github.com/vincentorback/WebP-images-with-htaccess
-	 * @author Grégory Viguier
 	 *
 	 * @return string
 	 */
 	protected function get_raw_new_contents() {
 		$extensions = $this->get_extensions_pattern();
+		$extensions = str_replace( '|webp', '', $extensions );
 		$home_root  = wp_parse_url( home_url( '/' ) );
 		$home_root  = $home_root['path'];
 

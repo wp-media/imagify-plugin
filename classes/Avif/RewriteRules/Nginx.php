@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Avif\RewriteRules;
 
 use Imagify\WriteFile\AbstractNginxDirConfFile;
@@ -24,6 +26,7 @@ class Nginx extends AbstractNginxDirConfFile {
 	 */
 	protected function get_raw_new_contents() {
 		$extensions = $this->get_extensions_pattern();
+		$extensions = str_replace( '|avif', '', $extensions );
 		$home_root  = wp_parse_url( home_url( '/' ) );
 		$home_root  = $home_root['path'];
 
