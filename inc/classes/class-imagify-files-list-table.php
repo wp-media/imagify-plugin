@@ -702,6 +702,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$this->reoptimize_buttons( $item );
 		$this->generate_nextgen_versions_button( $item );
 		$this->delete_webp_versions_button( $item );
+		$this->delete_nextgen_versions_button( $item );
 		$this->restore_button( $item );
 	}
 
@@ -821,14 +822,14 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prints a button to delete WebP versions when the status is "already_optimized".
+	 * Prints a button to delete next-gen versions when the status is "already_optimized".
 	 *
 	 * @since 1.9.6
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
 	 */
-	protected function delete_webp_versions_button( $item ) {
-		$button = get_imagify_attachment_delete_webp_versions_link( $item->process );
+	protected function delete_nextgen_versions_button( $item ) {
+		$button = get_imagify_attachment_delete_nextgen_versions_link( $item->process );
 
 		if ( $button ) {
 			echo $button . '<br/>';

@@ -1570,16 +1570,32 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @since 2.2
 	 *
 	 * @param  string $file_path Path to the non-next-gen file.
-	 * @return bool|WP_Error    True on success. A \WP_Error object on failure.
+	 * @return void
 	 */
 	protected function delete_nextgen_file( $file_path ) {
 		if ( ! $file_path ) {
 			return new WP_Error( 'no_path', __( 'Path to non-next-gen file not provided.', 'imagify' ) );
 		}
 
+		$next_gen_ext = $this->get_nextgen_extension();
 		$next_gen_file = new File( $file_path );
-		$next_gen_path = $next_gen_file->get_path_to_nextgen( $this->format );
+		$next_gen_path = $next_gen_file->get_path_to_nextgen( $next_gen_ext );
 
+		$this->delete_file( $next_gen_path );
+
+		if ( 'avif' === $next_gen_ext ) {
+			$next_gen_path = $next_gen_file->get_path_to_nextgen( 'webp' );
+			$this->delete_file( $next_gen_path );
+		}
+	}
+
+	/**
+	 * Delete a next gen format image, given its non-WebP version's path.
+	 *
+	 * @param string $file_path Path to the non-next-gen file.
+	 * @return bool|WP_Error    True on success. A \WP_Error object on failure.
+	 */
+	protected function delete_file( string $file_path ) {
 		if ( ! $next_gen_path ) {
 			return new WP_Error( 'no_$next_gen_path', __( 'Could not get the path to the Next-Gen format file.', 'imagify' ) );
 		}
@@ -1626,7 +1642,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		return true;
 	}
 
-
 	/**
 	 * Gives the next-gen image format we are processing.
 	 *
@@ -1634,6 +1649,15 @@ abstract class AbstractProcess implements ProcessInterface {
 	 */
 	public function get_current_format() {
 		return $this->get_option( 'convert_to_avif' ) ? static::AVIF_SUFFIX : static::WEBP_SUFFIX;
+	}
+
+	/**
+	 * Gets the expected extension of next-gen image.
+	 * 
+	 * @return string Targeted extension.
+	 */
+	protected function get_nextgen_extension() {
+		return $this->get_option( 'convert_to_avif' ) ? 'avif' : 'webp';
 	}
 
 	/**
