@@ -2,6 +2,7 @@
 
 
 namespace Action_Scheduler\Migration;
+use WP_CLI;
 
 /**
  * Class Scheduler
@@ -38,7 +39,11 @@ class Scheduler {
 	 */
 	public function run_migration() {
 		$migration_runner = $this->get_migration_runner();
-		$count            = $migration_runner->run( $this->get_batch_size() );
+		try {
+			$count = $migration_runner->run( $this->get_batch_size() );
+		} catch (\Exception $e) {
+			WP_CLI::warning( $e->getMessage() );
+		}
 
 		if ( $count === 0 ) {
 			$this->mark_complete();
