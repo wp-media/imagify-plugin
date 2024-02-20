@@ -1538,7 +1538,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Delete a next gen format image, given its non-WebP version's path.
+	 * Delete a next gen format image, given its non-next-gen version's path.
 	 *
 	 * @param string $file_path Path to the non-next-gen file.
 	 * @return bool|WP_Error    True on success. A \WP_Error object on failure.
