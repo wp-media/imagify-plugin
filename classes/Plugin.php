@@ -3,16 +3,34 @@ declare(strict_types=1);
 
 namespace Imagify;
 
-use Imagify\Bulk\Bulk;
-use Imagify\CLI\BulkOptimizeCommand;
-use Imagify\CLI\GenerateMissingNextgenCommand;
-use Imagify\Notices\Notices;
 use Imagify\Admin\AdminBar;
+use Imagify\Bulk\Bulk;
+use Imagify\CLI\{BulkOptimizeCommand, GenerateMissingNextgenCommand};
+use Imagify\Dependencies\League\Container\Container;
+use Imagify\Dependencies\League\Container\ServiceProvider\ServiceProviderInterface;
+use Imagify\EventManagement\{EventManager, SubscriberInterface};
+use Imagify\Notices\Notices;
+use Imagify\Picture\Display as PictureDisplay;
+use Imagify_Filesystem;
 
 /**
  * Main plugin class.
  */
 class Plugin {
+	/**
+	 * Container instance.
+	 *
+	 * @var Container
+	 */
+	private $container;
+
+	/**
+	 * Is the plugin loaded
+	 *
+	 * @var boolean
+	 */
+	private $loaded = false;
+
 	/**
 	 * Absolute path to the plugin (with trailing slash).
 	 *
@@ -25,22 +43,64 @@ class Plugin {
 	 *
 	 * @since 1.9
 	 *
-	 * @param array $plugin_args {
+	 * @param Container $container Instance of the container.
+	 * @param array     $plugin_args {
 	 *     An array of arguments.
 	 *
 	 *     @type string $plugin_path Absolute path to the plugin (with trailing slash).
 	 * }
 	 */
-	public function __construct( $plugin_args ) {
+	public function __construct( Container $container, $plugin_args ) {
+		$this->container   = $container;
 		$this->plugin_path = $plugin_args['plugin_path'];
+
+		add_filter( 'imagify_container', [ $this, 'get_container' ] );
+	}
+
+	/**
+	 * Returns the container instance.
+	 *
+	 * @return Container
+	 */
+	public function get_container() {
+		return $this->container;
+	}
+
+	/**
+	 * Checks if the plugin is loaded
+	 *
+	 * @return boolean
+	 */
+	private function is_loaded(): bool {
+		return $this->loaded;
 	}
 
 	/**
 	 * Plugin init.
 	 *
+	 * @param array Array of service providers.
+	 *
 	 * @since 1.9
 	 */
-	public function init() {
+	public function init( $providers ) {
+		if ( $this->is_loaded() ) {
+			return;
+		}
+
+		$this->container->share(
+			'event_manager',
+			function () {
+				return new EventManager();
+			}
+		);
+
+		$this->container->share(
+			'filesystem',
+			function() {
+				return new Imagify_Filesystem();
+			}
+		);
+
 		$this->include_files();
 
 		class_alias( '\\Imagify\\Traits\\InstanceGetterTrait', '\\Imagify\\Traits\\FakeSingletonTrait' );
@@ -72,8 +132,6 @@ class Plugin {
 			\Imagify_Assets::get_instance()->init();
 		}
 
-		\Imagify\Webp\Display::get_instance()->init();
-
 		add_action( 'init', [ $this, 'maybe_activate' ] );
 
 		// Load plugin translations.
@@ -81,6 +139,14 @@ class Plugin {
 
 		imagify_add_command( new BulkOptimizeCommand() );
 		imagify_add_command( new GenerateMissingNextgenCommand() );
+
+		foreach ( $providers as $service_provider ) {
+			$provider_instance = new $service_provider();
+			$this->container->addServiceProvider( $provider_instance );
+
+			// Load each service provider's subscribers if found.
+			$this->load_subscribers( $provider_instance );
+		}
 
 		/**
 		 * Fires when Imagify is fully loaded.
@@ -91,6 +157,8 @@ class Plugin {
 		 * @param \Imagify_Plugin $plugin Instance of this class.
 		 */
 		do_action( 'imagify_loaded', $this );
+
+		$this->loaded = true;
 	}
 
 	/**
@@ -170,5 +238,26 @@ class Plugin {
 		 * @param int $user_id ID of the user activating the plugin.
 		 */
 		do_action( 'imagify_activation', (int) $user_id );
+	}
+
+	/**
+	 * Load list of event subscribers from service provider.
+	 *
+	 * @param ServiceProviderInterface $service_provider_instance Instance of service provider.
+	 *
+	 * @return void
+	 */
+	private function load_subscribers( ServiceProviderInterface $service_provider ) {
+		if ( empty( $service_provider->get_subscribers() ) ) {
+			return;
+		}
+
+		foreach ( $service_provider->get_subscribers() as $subscriber ) {
+			$subscriber_object = $this->container->get( $subscriber );
+
+			if ( $subscriber_object instanceof SubscriberInterface ) {
+				$this->container->get( 'event_manager' )->add_subscriber( $subscriber_object );
+			}
+		}
 	}
 }

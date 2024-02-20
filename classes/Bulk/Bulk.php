@@ -647,9 +647,20 @@ class Bulk {
 	 *
 	 * @since 2.2
 	 *
+	 * @param array $old_value The old option value.
+	 * @param array $value The new option value.
+	 *
 	 * @return void
 	 */
-	public function maybe_bulk_optimize_callback() {
+	public function maybe_bulk_optimize_callback( $old_value, $value ) {
+		if ( isset( $old_value['convert_to_avif'] ) && isset( $value['convert_to_avif'] ) ) {
+			return;
+		}
+
+		if ( isset( $value['convert_to_avif'] ) && ! (bool) $value['convert_to_avif'] ) {
+			return;
+		}
+
 		$level = \Imagify_Options::get_instance()->get( 'optimization_level' );
 		$contexts = $this->get_contexts();
 		foreach ( $contexts as $context ) {
