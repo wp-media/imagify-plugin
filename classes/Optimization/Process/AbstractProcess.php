@@ -1518,7 +1518,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @since 2.2
 	 *
 	 * @param  string $file_path Path to the non-next-gen file.
-	 * @return void
+	 * @return void|WP_Error A \WP_Error object on failure.
 	 */
 	protected function delete_nextgen_file( $file_path ) {
 		if ( ! $file_path ) {
@@ -1540,10 +1540,10 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * Delete a next gen format image, given its non-next-gen version's path.
 	 *
-	 * @param string $file_path Path to the non-next-gen file.
+	 * @param string $next_gen_path Path to the non-next-gen file.
 	 * @return bool|WP_Error    True on success. A \WP_Error object on failure.
 	 */
-	protected function delete_file( string $file_path ) {
+	protected function delete_file( string $next_gen_path ) {
 		if ( ! $next_gen_path ) {
 			return new WP_Error( 'no_$next_gen_path', __( 'Could not get the path to the Next-Gen format file.', 'imagify' ) );
 		}
@@ -1601,7 +1601,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 	/**
 	 * Gets the expected extension of next-gen image.
-	 * 
+	 *
 	 * @return string Targeted extension.
 	 */
 	protected function get_nextgen_extension() {
