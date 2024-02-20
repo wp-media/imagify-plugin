@@ -1508,6 +1508,20 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
+	 * Get specific format extension.
+	 *
+	 * @param string $format nextgen image format.
+	 */
+	private function get_format_extension( $format ) {
+		$extensions = [
+			static::AVIF_SUFFIX => 'avif',
+			static::WEBP_SUFFIX => 'webp',
+		];
+
+		return isset( $extensions[ $format ] ) ? $extensions[ $format ] : '';
+	}
+
+	/**
 	 * Delete the next gen format images.
 	 * This doesn't delete the related optimization data.
 	 *
@@ -1578,7 +1592,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$next_gen_file = new File( $file_path );
-		$next_gen_path = $next_gen_file->get_path_to_nextgen( $this->format );
+		$next_gen_path = $next_gen_file->get_path_to_nextgen( $this->get_format_extension( $this->format ) );
 
 		if ( ! $next_gen_path ) {
 			return new WP_Error( 'no_$next_gen_path', __( 'Could not get the path to the Next-Gen format file.', 'imagify' ) );
