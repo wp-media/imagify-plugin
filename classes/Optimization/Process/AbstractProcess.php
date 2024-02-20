@@ -1525,7 +1525,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new WP_Error( 'no_path', __( 'Path to non-next-gen file not provided.', 'imagify' ) );
 		}
 
-		$next_gen_ext = $this->get_format_extension();
+		$next_gen_ext = $this->get_format_extension( $this->format );
 		$next_gen_file = new File( $file_path );
 		$next_gen_path = $next_gen_file->get_path_to_nextgen( $next_gen_ext );
 
