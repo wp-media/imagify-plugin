@@ -1525,7 +1525,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new WP_Error( 'no_path', __( 'Path to non-next-gen file not provided.', 'imagify' ) );
 		}
 
-		$next_gen_ext = $this->get_nextgen_extension();
+		$next_gen_ext = $this->get_format_extension();
 		$next_gen_file = new File( $file_path );
 		$next_gen_path = $next_gen_file->get_path_to_nextgen( $next_gen_ext );
 
@@ -1600,12 +1600,17 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Gets the expected extension of next-gen image.
+	 * Get specific format extension.
 	 *
-	 * @return string Targeted extension.
+	 * @param string $format nextgen image format.
 	 */
-	protected function get_nextgen_extension() {
-		return $this->get_option( 'convert_to_avif' ) ? 'avif' : 'webp';
+	private function get_format_extension( $format ) {
+		$extensions = [
+			static::AVIF_SUFFIX => 'avif',
+			static::WEBP_SUFFIX => 'webp',
+		];
+
+		return isset( $extensions[ $format ] ) ? $extensions[ $format ] : '';
 	}
 
 	/**
