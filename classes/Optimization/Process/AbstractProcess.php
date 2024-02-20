@@ -1531,10 +1531,12 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		$this->delete_file( $next_gen_path );
 
-		if ( 'avif' === $next_gen_ext ) {
-			$next_gen_path = $next_gen_file->get_path_to_nextgen( 'webp' );
-			$this->delete_file( $next_gen_path );
+		if ( 'avif' !== $next_gen_ext ) {
+			return;
 		}
+		
+		$next_gen_path = $next_gen_file->get_path_to_nextgen( 'webp' );
+		$this->delete_file( $next_gen_path );
 	}
 
 	/**
