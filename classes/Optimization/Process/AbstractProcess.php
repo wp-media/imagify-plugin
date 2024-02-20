@@ -1548,12 +1548,12 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		// Delete other next-gen images if they exist.
-		foreach ( $this->extensions as $format => $ext ) {
-			if ( $next_gen_ext === $ext ) {
+		foreach ( $this->extensions as $extension ) {
+			if ( $next_gen_ext === $extension ) {
 				continue;
 			}
 
-			$this->delete_file( $next_gen_file->get_path_to_nextgen( $ext ) );
+			$this->delete_file( $next_gen_file->get_path_to_nextgen( $extension ) );
 		}
 	}
 
