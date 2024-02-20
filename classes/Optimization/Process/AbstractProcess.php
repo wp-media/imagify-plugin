@@ -1442,58 +1442,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get MIME type based on the image format.
-	 *
-	 * @return string|bool   The MIME type if valid format, false otherwise.
-	 */
-	public function generate_nextgen_versions() {
-		if ( ! $this->is_valid() ) {
-			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
-		}
-
-		$media = $this->get_media();
-
-		if ( ! $media->is_image() ) {
-			return new WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to WebP format.', 'imagify' ) );
-		}
-
-		if ( ! $media->has_backup() ) {
-			return new WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
-		}
-
-		$data = $this->get_data();
-
-		if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {
-			return new WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
-		}
-
-		if ( $this->has_webp() ) {
-			return new WP_Error( 'has_webp', __( 'This media already has WebP versions.', 'imagify' ) );
-		}
-
-		$files = $media->get_media_files();
-		$sizes = [];
-		$args  = [
-			'hook_suffix' => 'generate_nextgen_versions',
-		];
-
-		foreach ( $files as $size_name => $file ) {
-			if ( 'image/webp' !== $files[ $size_name ]['mime-type'] ) {
-				array_unshift( $sizes, $size_name . static::WEBP_SUFFIX );
-			}
-		}
-
-		if ( ! $sizes ) {
-			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to WebP format.', 'imagify' ) );
-		}
-
-		$optimization_level = $data->get_optimization_level();
-
-		// Optimize.
-		return $this->optimize_sizes( $sizes, $optimization_level, $args );
-	}
-
-	/**
 	 * Get mime type
 	 *
 	 * @param string $format nextgen image format.
@@ -1791,13 +1739,13 @@ abstract class AbstractProcess implements ProcessInterface {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Generate WebP images if they are missing.
+	 * Generate next-gen images if they are missing.
 	 *
 	 * @since 1.9
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function generate_next_gen_versions() {
+	public function generate_nextgen_versions() {
 		if ( ! $this->is_valid() ) {
 			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
@@ -1825,7 +1773,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		$files = $media->get_media_files();
 		$sizes = [];
 		$args  = [
-			'hook_suffix' => 'generate_next_gen_versions',
+			'hook_suffix' => 'generate_nextgen_versions',
 		];
 
 		foreach ( $files as $size_name => $file ) {
