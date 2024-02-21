@@ -303,6 +303,10 @@ abstract class AbstractData implements DataInterface {
 		if ( $use_webp ) {
 			$process_class_name = imagify_get_optimization_process_class_name( $media->get_context() );
 			$webp_size_name     = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
+
+			if( get_imagify_option( 'convert_to_avif' ) ) {
+				$webp_size_name     = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
+			}
 		}
 
 		if ( $use_webp && ! empty( $data['sizes'][ $webp_size_name ]['optimized_size'] ) ) {
@@ -419,6 +423,10 @@ abstract class AbstractData implements DataInterface {
 
 		$process_class_name = imagify_get_optimization_process_class_name( $this->get_media()->get_context() );
 		$webp_size_name     = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
+
+		if( get_imagify_option( 'convert_to_avif' ) ) {
+			$webp_size_name     = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
+		}
 
 		$percent = $this->get_size_data( $webp_size_name, 'percent' );
 
