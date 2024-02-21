@@ -27,7 +27,7 @@ class Bulk {
 		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
 		add_action( 'imagify_after_optimize', [ $this, 'check_optimization_status' ], 10, 2 );
 		add_action( 'imagify_deactivation', [ $this, 'delete_transients_data' ] );
-		add_action( 'update_option_imagify_settings', [ $this, 'maybe_generate_avif_on_save' ], 10 , 1 );
+		add_action( 'update_option_imagify_settings', [ $this, 'maybe_bulk_optimize_callback' ], 10 , 2 );
 	}
 
 	/**
@@ -175,16 +175,28 @@ class Bulk {
 				'message' => 'over-quota',
 			];
 		}
-		$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
+		$formats = imagify_nextgen_images_formats();
+		$media_ids = [
+			'ids' => [],
+			'errors' => [
+				'no_file_path' => [],
+				'no_backup' => [],
+			],
+		];
+		foreach ($formats as $format) {
+			$result = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
+			$media_ids['ids'] = array_merge($media_ids['ids'], $result['ids']);
+		}
 
-		if ( empty( $media_ids ) ) {
+		if ( empty( $media_ids['ids'] ) ) {
 			return [
 				'success' => false,
 				'message' => 'no-images',
 			];
 		}
+		$media_ids['ids'] = array_unique($media_ids['ids']);
 
-		foreach ( $media_ids as $media_id ) {
+		foreach ( $media_ids['ids'] as $media_id ) {
 			try {
 				as_enqueue_async_action(
 					'imagify_optimize_media',
@@ -517,34 +529,6 @@ class Bulk {
 	public function missing_nextgen_callback() {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
-		$data = $this->generate_next_gen_versions_callback();
-
-		if ( false === $data['success'] ) {
-			wp_send_json_error( [ 'message' => $data['message'] ] );
-		}
-
-		wp_send_json_success( [ 'total' => $data['message'] ] );
-	}
-
-	public function maybe_generate_avif_on_save($args = null) {
-			if (is_null($args)) {
-				imagify_die();
-			}
-
-			if ( ! array_key_exists('convert_to_avif', $args ) || $args[ 'convert_to_avif' ] != '1' ) {
-				$this->generate_next_gen_versions_callback();
-			}
-	}
-
-	/**
-	 * Launch the generation of next-gen versions on settings update
-	 *
-	 * @param array|null $context The context.
-	 *
-	 * @return array
-	 */
-	public function generate_next_gen_versions_callback() {
-
 		$contexts = $this->get_contexts();
 
 		foreach ( $contexts as $context ) {
@@ -556,18 +540,11 @@ class Bulk {
 		$formats = imagify_nextgen_images_formats();
 
 		$data = $this->run_generate_nextgen( $contexts, $formats );
-
 		if ( false === $data['success'] ) {
-			return [
-				'success' => false,
-				'message' => $data['message'],
-			];
+			wp_send_json_error( [ 'message' => $data['message'] ] );
 		}
 
-		return [
-			'success' => true,
-			'total' => $data['message'],
-		];
+		wp_send_json_success( [ 'total' => $data['message'] ] );
 	}
 
 	/**
