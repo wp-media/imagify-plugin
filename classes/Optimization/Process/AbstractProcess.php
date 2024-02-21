@@ -104,14 +104,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	protected $format;
 
 	/**
-	 * An array of valid extensions.
-	 *
-	 * @var  array
-	 * @since 2.2
-	 */
-	protected $extensions = [];
-
-	/**
 	 * The constructor.
 	 *
 	 * @since 1.9
@@ -132,10 +124,6 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		$this->filesystem = \Imagify_Filesystem::get_instance();
 		$this->format = $this->get_current_format();
-		$this->extensions = [
-			static::AVIF_SUFFIX => 'avif',
-			static::WEBP_SUFFIX => 'webp',
-		];
 	}
 
 	/**
@@ -1537,16 +1525,16 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new WP_Error( 'no_path', __( 'Path to non-next-gen file not provided.', 'imagify' ) );
 		}
 
-		$next_gen_ext = $this->get_format_extension( $this->format );
+		$extensions = imagify_nextgen_images_formats();
+
+		if ( empty( $extensions ) ) {
+			return;
+		}
+
 		$next_gen_file = new File( $file_path );
-		$this->delete_file( $next_gen_file->get_path_to_nextgen( $next_gen_ext ) );
 
-		// Delete other next-gen images if they exist.
-		foreach ( $this->extensions as $extension ) {
-			if ( $next_gen_ext === $extension ) {
-				continue;
-			}
-
+		// Delete next-gen images.
+		foreach ( $extensions as $extension ) {
 			$this->delete_file( $next_gen_file->get_path_to_nextgen( $extension ) );
 		}
 	}
@@ -1611,15 +1599,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 */
 	public function get_current_format() {
 		return $this->get_option( 'convert_to_avif' ) ? static::AVIF_SUFFIX : static::WEBP_SUFFIX;
-	}
-
-	/**
-	 * Get specific format extension.
-	 *
-	 * @param string $format nextgen image format.
-	 */
-	private function get_format_extension( $format ) {
-		return isset( $this->extensions[ $format ] ) ? $this->extensions[ $format ] : '';
 	}
 
 	/**
