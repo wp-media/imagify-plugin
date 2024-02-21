@@ -304,7 +304,7 @@ abstract class AbstractData implements DataInterface {
 			$process_class_name = imagify_get_optimization_process_class_name( $media->get_context() );
 			$webp_size_name     = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
 
-			if( get_imagify_option( 'convert_to_avif' ) ) {
+			if ( get_imagify_option( 'convert_to_avif' ) ) {
 				$webp_size_name     = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
 			}
 		}
@@ -424,7 +424,7 @@ abstract class AbstractData implements DataInterface {
 		$process_class_name = imagify_get_optimization_process_class_name( $this->get_media()->get_context() );
 		$webp_size_name     = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
 
-		if( get_imagify_option( 'convert_to_avif' ) ) {
+		if ( get_imagify_option( 'convert_to_avif' ) ) {
 			$webp_size_name     = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
 		}
 
