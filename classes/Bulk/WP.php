@@ -317,7 +317,8 @@ class WP extends AbstractBulk {
 		] );
 		$nextgen_suffix  = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::' . strtoupper( $format ) . '_SUFFIX' );
 
-		$query = "
+		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
+			"
 		   SELECT p.ID
 		   FROM $wpdb->posts AS p
 		    $nodata_join
@@ -333,9 +334,7 @@ class WP extends AbstractBulk {
 		    AND p.post_status IN ( $statuses )
 		    $nodata_where
 		   ORDER BY p.ID DESC
-		   LIMIT 0, %d";
-		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			$query,
+		   LIMIT 0, %d",
 			'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
 			imagify_get_unoptimized_attachment_limit()
 		) );
