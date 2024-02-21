@@ -38,7 +38,7 @@ interface BulkInterface {
 	 *
 	 * @since 2.2
 	 *
-	 * @param string $format Format we are looking for. (webp|avif)
+	 * @param string $format Format we are looking for. (webp|avif).
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.
@@ -48,7 +48,7 @@ interface BulkInterface {
 	 *     }
 	 * }
 	 */
-	public function get_optimized_media_ids_without_format($format);
+	public function get_optimized_media_ids_without_format( $format);
 
 
 	/**

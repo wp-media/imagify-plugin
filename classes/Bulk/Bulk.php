@@ -27,7 +27,7 @@ class Bulk {
 		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
 		add_action( 'imagify_after_optimize', [ $this, 'check_optimization_status' ], 10, 2 );
 		add_action( 'imagify_deactivation', [ $this, 'delete_transients_data' ] );
-		add_action( 'update_option_imagify_settings', [ $this, 'maybe_bulk_optimize_callback' ], 10 , 2 );
+		add_action( 'update_option_imagify_settings', [ $this, 'maybe_bulk_optimize_callback' ], 10, 2 );
 	}
 
 	/**
@@ -183,9 +183,9 @@ class Bulk {
 				'no_backup' => [],
 			],
 		];
-		foreach ($formats as $format) {
+		foreach ( $formats as $format ) {
 			$result = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
-			$media_ids['ids'] = array_merge($media_ids['ids'], $result['ids']);
+			$media_ids['ids'] = array_merge( $media_ids['ids'], $result['ids'] );
 		}
 
 		if ( empty( $media_ids['ids'] ) ) {
@@ -194,7 +194,7 @@ class Bulk {
 				'message' => 'no-images',
 			];
 		}
-		$media_ids['ids'] = array_unique($media_ids['ids']);
+		$media_ids['ids'] = array_unique( $media_ids['ids'] );
 
 		foreach ( $media_ids['ids'] as $media_id ) {
 			try {

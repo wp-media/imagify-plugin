@@ -48,7 +48,7 @@ class Noop extends AbstractBulk {
 	 *
 	 * @since 2.2
 	 *
-	 * @param string $format Format we are looking for. (webp|avif)
+	 * @param string $format Format we are looking for. (webp|avif).
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.

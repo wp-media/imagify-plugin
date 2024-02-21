@@ -279,7 +279,7 @@ class WP extends AbstractBulk {
 	 *
 	 * @since 2.2
 	 *
-	 * @param string $format Format we are looking for. (webp|avif)
+	 * @param string $format Format we are looking for. (webp|avif).
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.
@@ -296,10 +296,10 @@ class WP extends AbstractBulk {
 
 		$mime_types   = Imagify_DB::get_mime_types( 'image' );
 
-		// Remove single quotes and explode string into array
+		// Remove single quotes and explode string into array.
 		$mime_types_array = explode( ',', str_replace( "'", '', $mime_types ) );
 
-		// Iterate over array and check if string contains input
+		// Iterate over array and check if string contains input.
 		foreach ( $mime_types_array as $item ) {
 			if ( strpos( $item, $format ) !== false ) {
 				$mime = $item;
