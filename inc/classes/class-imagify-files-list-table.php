@@ -701,7 +701,6 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$this->retry_button( $item );
 		$this->reoptimize_buttons( $item );
 		$this->generate_nextgen_versions_button( $item );
-		$this->delete_webp_versions_button( $item );
 		$this->delete_nextgen_versions_button( $item );
 		$this->restore_button( $item );
 	}
