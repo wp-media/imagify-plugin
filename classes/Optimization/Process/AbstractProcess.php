@@ -1324,7 +1324,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				'full' . static::WEBP_SUFFIX !== $size
 				||
 				'full' . static::AVIF_SUFFIX !== $size
-		    )
+			)
 		) {
 			// We resize only the main file and its next-gen version.
 			return false;
@@ -1437,11 +1437,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @since 2.2
 	 *
 	 * @param  string $file_path Path to the non-next-gen file.
-<<<<<<< HEAD
 	 * @return void|WP_Error A \WP_Error object on failure.
-=======
-	 * @return bool|WP_Error    True on success. A WP_Error object on failure.
->>>>>>> feature/avif
 	 */
 	protected function delete_nextgen_file( $file_path ) {
 		if ( ! $file_path ) {
