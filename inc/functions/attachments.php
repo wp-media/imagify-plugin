@@ -19,7 +19,6 @@ function imagify_get_mime_types( $type = null ) {
 			'png'          => 'image/png',
 			'gif'          => 'image/gif',
 			'webp'         => 'image/webp',
-			'avif'         => 'image/avif',
 		];
 	}
 
