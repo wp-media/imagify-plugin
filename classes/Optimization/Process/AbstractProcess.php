@@ -104,7 +104,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	protected $format;
 
 	/**
-	 * Array of extesions to be processed.
+	 * Array of image extensions processed.
 	 *
 	 * @var array
 	 */
