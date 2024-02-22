@@ -606,11 +606,11 @@ class Imagify_Files_List_Table extends WP_List_Table {
 				</li>
 				<?php
 				if ( $item->process->get_media()->is_image() ) {
-					$has_webp = $item->process->has_next_gen() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
+					$has_nextgen = $item->process->has_next_gen() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
 					?>
 					<li class="imagify-data-item">
 						<span class="data"><?php esc_html_e( 'Next-Gen generated:', 'imagify' ); ?></span>
-						<strong class="data-value"><?php echo esc_html( $has_webp ); ?></strong>
+						<strong class="data-value"><?php echo esc_html( $has_nextgen ); ?></strong>
 					</li>
 					<?php
 				}
