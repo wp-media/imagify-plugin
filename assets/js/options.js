@@ -138,7 +138,7 @@ window.imagify = window.imagify || {};
 	/**
 	 * Fade CDN URL field.
 	 */
-	$( '[name="imagify_settings[display_webp_method]"]' ).on( 'change.imagify init.imagify', function( e ) {
+	$( '[name="imagify_settings[display_nextgen_method]"]' ).on( 'change.imagify init.imagify', function( e ) {
 		if ( 'picture' === e.target.value ) {
 			$( e.target ).closest( '.imagify-radio-group' ).next( '.imagify-options-line' ).removeClass( 'imagify-faded' );
 		} else {
@@ -655,7 +655,7 @@ window.imagify = window.imagify || {};
 
 			_this = this;
 
-			$.get( this.getAjaxUrl( 'MissingWebp', imagifyOptions.bulk.contexts ) )
+			$.get( this.getAjaxUrl( 'MissingNextGen', imagifyOptions.bulk.contexts ) )
 				.done( function( response ) {
 					var errorMessage;
 

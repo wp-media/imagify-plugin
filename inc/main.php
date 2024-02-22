@@ -1,4 +1,5 @@
 <?php
+use Imagify\Dependencies\League\Container\Container;
 use Imagify\Plugin;
 
 defined( 'ABSPATH' ) || exit;
@@ -20,12 +21,15 @@ function imagify_init() {
 		return;
 	}
 
+	$providers = require_once IMAGIFY_PATH . 'config/providers.php';
+
 	$plugin = new Plugin(
+		new Container(),
 		array(
 			'plugin_path' => IMAGIFY_PATH,
 		)
 	);
 
-	$plugin->init();
+	$plugin->init( $providers );
 }
 add_action( 'plugins_loaded', 'imagify_init' );

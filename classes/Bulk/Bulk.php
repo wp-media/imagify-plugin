@@ -27,7 +27,7 @@ class Bulk {
 		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
 		add_action( 'imagify_after_optimize', [ $this, 'check_optimization_status' ], 10, 2 );
 		add_action( 'imagify_deactivation', [ $this, 'delete_transients_data' ] );
-		add_action( 'update_option_imagify_settings', [ $this, 'maybe_bulk_optimize_callback' ] );
+		add_action( 'update_option_imagify_settings', [ $this, 'maybe_bulk_optimize_callback' ], 10, 2 );
 	}
 
 	/**
@@ -175,17 +175,28 @@ class Bulk {
 				'message' => 'over-quota',
 			];
 		}
+		$formats = imagify_nextgen_images_formats();
+		$media_ids = [
+			'ids' => [],
+			'errors' => [
+				'no_file_path' => [],
+				'no_backup' => [],
+			],
+		];
+		foreach ( $formats as $format ) {
+			$result = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
+			$media_ids['ids'] = array_merge( $media_ids['ids'], $result['ids'] );
+		}
 
-		$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
-
-		if ( empty( $media_ids ) ) {
+		if ( empty( $media_ids['ids'] ) ) {
 			return [
 				'success' => false,
 				'message' => 'no-images',
 			];
 		}
+		$media_ids['ids'] = array_unique( $media_ids['ids'] );
 
-		foreach ( $media_ids as $media_id ) {
+		foreach ( $media_ids['ids'] as $media_id ) {
 			try {
 				as_enqueue_async_action(
 					'imagify_optimize_media',
@@ -235,23 +246,24 @@ class Bulk {
 		$medias = [];
 
 		foreach ( $contexts as $context ) {
-			$media = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
+			foreach ( $formats as $format ) {
+				$media = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
+				if ( ! $media['ids'] && $media['errors']['no_backup'] ) {
+					// No backup, no WebP.
+					return [
+						'success' => false,
+						'message' => 'no-backup',
+					];
+				} elseif ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
+					// Error.
+					return [
+						'success' => false,
+						'message' => __( 'The path to the selected files could not be retrieved.', 'imagify' ),
+					];
+				}
 
-			if ( ! $media['ids'] && $media['errors']['no_backup'] ) {
-				// No backup, no WebP.
-				return [
-					'success' => false,
-					'message' => 'no-backup',
-				];
-			} elseif ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
-				// Error.
-				return [
-					'success' => false,
-					'message' => __( 'The path to the selected files could not be retrieved.', 'imagify' ),
-				];
+				$medias[ $context ] = $media['ids'];
 			}
-
-			$medias[ $context ] = $media['ids'];
 		}
 
 		if ( empty( $medias ) ) {
@@ -510,14 +522,14 @@ class Bulk {
 	}
 
 	/**
-	 * Launch the missing WebP versions generation
+	 * Launch the missing Next-gen versions generation
 	 *
 	 * @return void
 	 */
 	public function missing_nextgen_callback() {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
-		$contexts = explode( '_', sanitize_key( wp_unslash( $_GET['context'] ) ) );
+		$contexts = $this->get_contexts();
 
 		foreach ( $contexts as $context ) {
 			if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
@@ -528,7 +540,6 @@ class Bulk {
 		$formats = imagify_nextgen_images_formats();
 
 		$data = $this->run_generate_nextgen( $contexts, $formats );
-
 		if ( false === $data['success'] ) {
 			wp_send_json_error( [ 'message' => $data['message'] ] );
 		}
@@ -613,9 +624,20 @@ class Bulk {
 	 *
 	 * @since 2.2
 	 *
+	 * @param array $old_value The old option value.
+	 * @param array $value The new option value.
+	 *
 	 * @return void
 	 */
-	public function maybe_bulk_optimize_callback() {
+	public function maybe_bulk_optimize_callback( $old_value, $value ) {
+		if ( isset( $old_value['convert_to_avif'] ) && isset( $value['convert_to_avif'] ) ) {
+			return;
+		}
+
+		if ( isset( $value['convert_to_avif'] ) && ! (bool) $value['convert_to_avif'] ) {
+			return;
+		}
+
 		$level = \Imagify_Options::get_instance()->get( 'optimization_level' );
 		$contexts = $this->get_contexts();
 		foreach ( $contexts as $context ) {

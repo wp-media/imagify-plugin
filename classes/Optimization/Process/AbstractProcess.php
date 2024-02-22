@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Optimization\Process;
 
 use Imagify\Deprecated\Traits\Optimization\Process\AbstractProcessDeprecatedTrait;
@@ -18,7 +20,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * The suffix used in the thumbnail size name.
 	 *
-	 * @var   string
+	 * @var string
 	 * @since 1.9
 	 */
 	const WEBP_SUFFIX = '@imagify-webp';
@@ -26,7 +28,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * The suffix used in the thumbnail size name.
 	 *
-	 * @var   string
+	 * @var string
 	 * @since 2.2
 	 */
 	const AVIF_SUFFIX = '@imagify-avif';
@@ -34,7 +36,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * The suffix used in file name to create a temporary copy of the full size.
 	 *
-	 * @var   string
+	 * @var string
 	 * @since 1.9
 	 */
 	const TMP_SUFFIX = '@imagify-tmp';
@@ -43,7 +45,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Used for the name of the transient telling if a media is locked.
 	 * %1$s is the context, %2$s is the media ID.
 	 *
-	 * @var   string
+	 * @var string
 	 * @since 1.9
 	 */
 	const LOCK_NAME = 'imagify_%1$s_%2$s_process_locked';
@@ -51,7 +53,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * The data optimization object.
 	 *
-	 * @var   DataInterface
+	 * @var DataInterface
 	 * @since 1.9
 	 */
 	protected $data;
@@ -59,7 +61,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * The optimization data format.
 	 *
-	 * @var   array
+	 * @var array
 	 * @since 1.9
 	 */
 	protected $data_format = [
@@ -74,7 +76,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * A File instance.
 	 *
-	 * @var   File
+	 * @var File
 	 * @since 1.9
 	 */
 	protected $file;
@@ -82,7 +84,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * Filesystem object.
 	 *
-	 * @var   Imagify_Filesystem
+	 * @var Imagify_Filesystem
 	 * @since 1.9
 	 */
 	protected $filesystem;
@@ -90,7 +92,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * Used to cache the plugin’s options.
 	 *
-	 * @var   array
+	 * @var array
 	 * @since 1.9
 	 */
 	protected $options = [];
@@ -98,7 +100,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * Tells the format we are currently processing
 	 *
-	 * @var  string
+	 * @var string
 	 * @since 2.2
 	 */
 	protected $format;
@@ -117,7 +119,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * The constructor.
 	 *
 	 * @since 1.9
-	 * @see   self::constructor_accepts()
+	 * @see self::constructor_accepts()
 	 *
 	 * @param mixed $id An ID, or whatever type the constructor accepts.
 	 */
@@ -141,7 +143,8 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  mixed $id Whatever.
+	 * @param mixed $id Whatever.
+	 *
 	 * @return bool
 	 */
 	public static function constructor_accepts( $id ) {
@@ -239,7 +242,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $describer Capacity describer. See \Imagify\Context\ContextInterface->get_capacity() for possible values. Can also be a "real" user capacity.
+	 * @param string $describer Capacity describer. See \Imagify\Context\ContextInterface->get_capacity() for possible values. Can also be a "real" user capacity.
 	 * @return bool
 	 */
 	public function current_user_can( $describer ) {
@@ -252,19 +255,15 @@ abstract class AbstractProcess implements ProcessInterface {
 		return $media->get_context_instance()->current_user_can( $describer, $media->get_id() );
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** OPTIMIZATION ============================================================================ */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Optimize a media files.
 	 *
 	 * @since 1.9
 	 *
-	 * @param  int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
-	 * @param  array $args               An array of optionnal arguments.
-	 * @return bool|WP_Error             True if successfully launched. A \WP_Error instance on failure.
+	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 * @param array $args               An array of optionnal arguments.
+	 *
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
 	public function optimize( $optimization_level = null, $args = [] ) {
 		if ( ! $this->is_valid() ) {
@@ -284,7 +283,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( $data->is_already_optimized() && $this->has_next_gen() ) {
-			// If already optimized but has WebP, delete WebP versions and optimization data.
+			// If already optimized but has next-gen, delete next-gen versions and optimization data.
 			$data->delete_optimization_data();
 			$deleted = $this->delete_nextgen_files();
 
@@ -307,9 +306,10 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
-	 * @param  array $args               An array of optionnal arguments.
-	 * @return bool|WP_Error             True if successfully launched. A \WP_Error instance on failure.
+	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 * @param array $args               An array of optionnal arguments.
+	 *
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
 	public function reoptimize( $optimization_level = null, $args = [] ) {
 		if ( ! $this->is_valid() ) {
@@ -349,20 +349,21 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Optimize several file sizes by pushing tasks into the queue.
 	 *
 	 * @since 1.9
-	 * @see   MediaOptimization->task_before()
-	 * @see   MediaOptimization->task_after()
+	 * @see MediaOptimization->task_before()
+	 * @see MediaOptimization->task_after()
 	 *
 	 * @since 2.2
 	 * Addition of the image format
 	 *
-	 * @param  array $sizes              An array of media sizes (strings). Use "full" for the size of the main file.
-	 * @param  int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
-	 * @param  array $args               {
+	 * @param array $sizes              An array of media sizes (strings). Use "full" for the size of the main file.
+	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 * @param array $args               {
 	 *    An array of optionnal arguments.
 	 *
 	 *     @type string $hook_suffix Suffix used to trigger hooks before and after optimization.
 	 * }
-	 * @return bool|WP_Error             True if successfully launched. A \WP_Error instance on failure.
+	 *
+	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
 	 */
 	public function optimize_sizes( $sizes, $optimization_level = null, $args = [] ) {
 		if ( ! $this->is_valid() ) {
@@ -388,22 +389,32 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( $media->is_image() ) {
-			if ( $this->get_option( 'convert_to_avif' ) ) {
-				// Add Next-Gen convertion.
+			// Add Next-Gen conversion.
+			$formats = imagify_nextgen_images_formats();
+
+			foreach ( $formats as $format ) {
+				if ( 'avif' === $format ) {
+					$format_suffix = static::AVIF_SUFFIX;
+				} elseif ( 'webp' === $format ) {
+					$format_suffix = static::WEBP_SUFFIX;
+				}
+
 				$files = $media->get_media_files();
 
 				foreach ( $sizes as $size_name ) {
 					if ( empty( $files[ $size_name ] ) ) {
 						continue;
 					}
-					if ( $this->get_mime_type( $this->format ) === $files[ $size_name ]['mime-type'] ) {
-						continue;
-					}
-					if ( in_array( $size_name . $this->format, $sizes, true ) ) {
+
+					if ( $this->get_mime_type( $format ) === $files[ $size_name ]['mime-type'] ) {
 						continue;
 					}
 
-					array_unshift( $sizes, $size_name . $this->format );
+					if ( in_array( $size_name . $format_suffix, $sizes, true ) ) {
+						continue;
+					}
+
+					array_unshift( $sizes, $size_name . $format_suffix );
 				}
 			}
 
@@ -422,7 +433,7 @@ abstract class AbstractProcess implements ProcessInterface {
 				}
 
 				if ( $next_gen ) {
-					// We have at least one WebP conversion to do: create a temporary backup.
+					// We have at least one next-gen conversion to do: create a temporary backup.
 					$backuped = $this->get_original_file()->backup( $media->get_raw_backup_path() );
 
 					if ( $backuped ) {
@@ -473,9 +484,10 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $size               The media size.
-	 * @param  int    $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
-	 * @return array|\WP_Error            Optimized image data. A \WP_Error object on error.
+	 * @param string $size               The media size.
+	 * @param int    $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 *
+	 * @return array|WP_Error Optimized image data. A WP_Error object on error.
 	 */
 	public function optimize_size( $size, $optimization_level = null ) {
 		if ( ! $this->is_valid() ) { // Bail out.
@@ -490,7 +502,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( $next_gen ) {
 			// We'll make sure the file is an image later.
-			$thumb_size = $next_gen; // Contains the name of the non-WebP size.
+			$thumb_size = $next_gen; // Contains the name of the non-next-gen size.
 			$next_gen       = true;
 		}
 
@@ -537,11 +549,11 @@ abstract class AbstractProcess implements ProcessInterface {
 		$optimization_level = $this->sanitize_optimization_level( $optimization_level );
 
 		if ( $next_gen && $this->get_data()->get_size_data( $thumb_size, 'success' ) ) {
-			// We want a WebP version but the source file is already optimized by Imagify.
+			// We want a next-gen version but the source file is already optimized by Imagify.
 			$result = $this->create_temporary_copy( $thumb_size, $sizes );
 
 			if ( ! $result ) { // Bail out.
-				// Could not create a copy of the non-WebP version.
+				// Could not create a copy of the non-next-gen version.
 				$response = new WP_Error(
 					'non_next_gen_copy_failed',
 					sprintf(
@@ -613,11 +625,11 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		/**
 		 * Fires before optimizing a file.
-		 * Return a \WP_Error object to prevent the optimization.
+		 * Return a WP_Error object to prevent the optimization.
 		 *
 		 * @since 1.9
 		 *
-		 * @param null|WP_Error   $response           Null by default. Return a \WP_Error object to prevent optimization.
+		 * @param null|WP_Error   $response           Null by default. Return a WP_Error object to prevent optimization.
 		 * @param ProcessInterface $process            The optimization process instance.
 		 * @param File             $file               The file instance. If $webp is true, $file references the non-WebP file.
 		 * @param string           $thumb_size         The media size.
@@ -650,7 +662,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			} elseif ( $next_gen && ! $this->can_create_next_gen_version( $file->get_path() ) ) {
 				$response = new WP_Error(
 					'is_animated_gif',
-					__( 'This file is an animated gif: since Imagify does not support animated WebP, WebP creation for animated gif is disabled.', 'imagify' )
+					__( 'This file is an animated gif: since Imagify does not support animated WebP/AVIF, WebP/AVIF creation for animated gif is disabled.', 'imagify' )
 				);
 			} elseif ( ! $this->filesystem->is_writable( $file->get_path() ) ) {
 				$response = new WP_Error(
@@ -665,6 +677,16 @@ abstract class AbstractProcess implements ProcessInterface {
 				// Maybe resize the file.
 				$response = $this->maybe_resize( $thumb_size, $file );
 
+				$convert = '';
+
+				if ( $next_gen ) {
+					if ( strpos( $size, static::AVIF_SUFFIX ) ) {
+						$convert = 'avif';
+					} elseif ( strpos( $size, static::WEBP_SUFFIX ) ) {
+						$convert = 'webp';
+					}
+				}
+
 				if ( ! is_wp_error( $response ) ) {
 					// Resizing succeeded: optimize the file.
 					$response = $file->optimize( [
@@ -672,7 +694,7 @@ abstract class AbstractProcess implements ProcessInterface {
 						'backup_path'        => $media->get_raw_backup_path(),
 						'backup_source'      => 'full' === $thumb_size ? $media->get_original_path() : null,
 						'optimization_level' => $optimization_level,
-						'convert'            => $next_gen ? ( static::AVIF_SUFFIX === $this->format  ? 'avif' : 'webp' ) : '',
+						'convert'            => $convert,
 						'keep_exif'          => true,
 						'context'            => $media->get_context(),
 						'original_size'      => $response['file_size'],
@@ -681,9 +703,10 @@ abstract class AbstractProcess implements ProcessInterface {
 					$response = $this->compare_next_gen_file_size( [
 						'response'                  => $response,
 						'file'                      => $file,
-						'non_next_gen_thumb_size'   => $next_gen,
-						'non_next_gen_file_path'    => $thumb_size,
-						'non_webp_file_path'        => $sizes[ $thumb_size ]['path'], // Don't use $path nor $file->get_path(), it may return the path to a temporary file.
+						'is_next_gen'               => $next_gen,
+						'next_gen_format'           => $convert,
+						'non_next_gen_thumb_size'   => $thumb_size,
+						'non_next_gen_file_path'    => $sizes[ $thumb_size ]['path'], // Don't use $path nor $file->get_path(), it may return the path to a temporary file.
 						'optimization_level'        => $optimization_level,
 					] );
 
@@ -734,32 +757,33 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Compare the file size of a file and its Next-Gen version: if the Next-Gen version is heavier than the non-WebP file, delete it.
+	 * Compare the file size of a file and its Next-Gen version: if the Next-Gen version is heavier than the non-next-gen file, delete it.
 	 *
 	 * @since 2.2
 	 *
-	 * @param  array $args {
+	 * @param array $args {
 	 *     A list of mandatory arguments.
 	 *
-	 *     @type \sdtClass|\WP_Error $response            Optimized image data. A \WP_Error object on error.
+	 *     @type \sdtClass|WP_Error  $response            Optimized image data. A WP_Error object on error.
 	 *     @type File                $file                The File instance of the file currently being optimized.
-	 *     @type bool                $is_next_gen             Tell if we're requesting a WebP file.
+	 *     @type bool                $is_next_gen             Tell if we're requesting a next-gen file.
 	 *     @type string              $non_next_gen_thumb_size Name of the corresponding non-next-gen thumbnail size. If we're not creating a Next-Gen file, this corresponds to the current thumbnail size.
 	 *     @type string              $non_next_gen_file_path  Path to the corresponding non-next-gen file. If we're not creating a Next-Gen file, this corresponds to the current file path.
 	 *     @type string              $optimization_level  The optimization level.
 	 * }
-	 * @return \sdtClass|WP_Error                        Optimized image data. A WP_Error object on error.
+	 *
+	 * @return \sdtClass|WP_Error Optimized image data. A WP_Error object on error.
 	 */
 	protected function compare_next_gen_file_size( $args ) {
 		static $keep_large_next_gen;
 
 		if ( ! isset( $keep_large_next_gen ) ) {
 			/**
-			 * Allow to not store WebP images that are larger than their non-WebP version.
+			 * Allow to not store next-gen images that are larger than their non-next-gen version.
 			 *
 			 * @since 1.9.4
 			 *
-			 * @param bool $keep_large_webp Set to false if you prefer your visitors over your Pagespeed score. Default value is true.
+			 * @param bool $keep_large_next-gen Set to false if you prefer your visitors over your Pagespeed score. Default value is true.
 			 */
 			$keep_large_next_gen = apply_filters( 'imagify_keep_large_next_gen', true );
 		}
@@ -771,30 +795,30 @@ abstract class AbstractProcess implements ProcessInterface {
 		// Optimization succeeded.
 		if ( ! property_exists( $args['response'], 'message' ) && $args['is_next_gen'] ) {
 			/**
-			 * We just created a WebP version:
-			 * Check if it is lighter than the (maybe optimized) non-WebP file.
+			 * We just created a next-gen version:
+			 * Check if it is lighter than the (maybe optimized) non-next-gen file.
 			 */
 			$data = $this->get_data()->get_size_data( $args['non_next_gen_thumb_size'] );
 
 			if ( ! $data ) {
-				// We haven’t tried to optimize the non-WebP size yet.
+				// We haven’t tried to optimize the non-next-gen size yet.
 				return $args['response'];
 			}
 
 			if ( ! empty( $data['optimized_size'] ) ) {
-				// The non-WebP size is optimized, we know the file size.
+				// The non-next-gen size is optimized, we know the file size.
 				$non_next_gen_file_size = $data['optimized_size'];
 			} else {
-				// The non-WebP size is "already optimized" or "error": grab the file size directly from the file.
+				// The non-next-gen size is "already optimized" or "error": grab the file size directly from the file.
 				$non_next_gen_file_size = $this->filesystem->size( $args['non_next_gen_file_path'] );
 			}
 
 			if ( ! $non_next_gen_file_size || $non_next_gen_file_size > $args['response']->new_size ) {
-				// The new WebP file is lighter.
+				// The new next-gen file is lighter.
 				return $args['response'];
 			}
 
-			// The new WebP file is heavier than the non-WebP file: delete it and return an error.
+			// The new next-gen file is heavier than the non-next-gen file: delete it and return an error.
 			$this->filesystem->delete( $args['file']->get_path() );
 
 			return new WP_Error(
@@ -802,146 +826,40 @@ abstract class AbstractProcess implements ProcessInterface {
 				sprintf(
 				/* translators: %s is a size name. */
 					__( 'The Next-Gen version of the size %s is heavier than its non-next-gen version.', 'imagify' ),
-					'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
+					'<code>' . esc_html( $args['non_next_gen_thumb_size'] ) . '</code>'
 				)
 			);
 		}
 
 		/**
-		 * We just created a non-WebP version:
-		 * Check if its WebP version file is lighter than this one.
+		 * We just created a non-next-gen version:
+		 * Check if its next-gen version file is lighter than this one.
 		 */
-		$next_gen_size      = $args['non_next_gen_thumb_size'] . $this->format;
+		$next_gen_size      = $args['non_next_gen_thumb_size'] . $args['next_gen_format'];
 		$next_gen_file_size = $this->get_data()->get_size_data( $next_gen_size, 'optimized_size' );
 
 		if ( property_exists( $args['response'], 'message' ) || ! $next_gen_file_size || $next_gen_file_size < $args['response']->new_size ) {
-			// The WebP file is lighter than this one.
+			// The next-gen file is lighter than this one.
 			return $args['response'];
 		}
 
 		// The new optimized file is lighter than the next-gen file: delete the next-gen file and store an error.
-		$next_gen_path = $args['file']->get_path_to_nextgen( $this->format );
+		$next_gen_path = $args['file']->get_path_to_nextgen( $args['next_gen_format'] );
 
 		if ( $next_gen_path && $this->filesystem->is_writable( $next_gen_path ) ) {
 			$this->filesystem->delete( $next_gen_path );
 		}
 
-		$webp_response = new WP_Error(
+		$next_gen_response = new WP_Error(
 			'next_gen_heavy',
 			sprintf(
 			/* translators: %s is a size name. */
 				__( 'The Next-Gen version of the size %s is heavier than its non-next-gen version.', 'imagify' ),
-				'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
+				'<code>' . esc_html( $args['non_next_gen_thumb_size'] ) . '</code>'
 			)
 		);
 
-		$this->update_size_optimization_data( $webp_response, $next_gen_size, $args['optimization_level'] );
-
-		return $args['response'];
-	}
-	/**
-	 * Compare the file size of a file and its WebP version: if the WebP version is heavier than the non-WebP file, delete it.
-	 *
-	 * @since 1.9.4
-	 *
-	 * @param  array $args {
-	 *     A list of mandatory arguments.
-	 *
-	 *     @type \sdtClass|\WP_Error $response            Optimized image data. A \WP_Error object on error.
-	 *     @type File                $file                The File instance of the file currently being optimized.
-	 *     @type bool                $is_webp             Tell if we're requesting a WebP file.
-	 *     @type string              $non_webp_thumb_size Name of the corresponding non-WebP thumbnail size. If we're not creating a WebP file, this corresponds to the current thumbnail size.
-	 *     @type string              $non_webp_file_path  Path to the corresponding non-WebP file. If we're not creating a WebP file, this corresponds to the current file path.
-	 *     @type string              $optimization_level  The optimization level.
-	 * }
-	 * @return \sdtClass|WP_Error                        Optimized image data. A WP_Error object on error.
-	 */
-	protected function compare_webp_file_size( $args ) {
-		static $keep_large_webp;
-
-		if ( ! isset( $keep_large_webp ) ) {
-			/**
-			 * Allow to not store WebP images that are larger than their non-WebP version.
-			 *
-			 * @since 1.9.4
-			 *
-			 * @param bool $keep_large_webp Set to false if you prefer your visitors over your Pagespeed score. Default value is true.
-			 */
-			$keep_large_webp = apply_filters( 'imagify_keep_large_webp', true );
-		}
-
-		if ( $keep_large_webp || is_wp_error( $args['response'] ) || ! $args['file']->is_image() ) {
-			return $args['response'];
-		}
-
-		// Optimization succeeded.
-		if ( ! property_exists( $args['response'], 'message' ) && $args['is_webp'] ) {
-			/**
-			 * We just created a WebP version:
-			 * Check if it is lighter than the (maybe optimized) non-WebP file.
-			 */
-			$data = $this->get_data()->get_size_data( $args['non_webp_thumb_size'] );
-
-			if ( ! $data ) {
-				// We haven’t tried to optimize the non-WebP size yet.
-				return $args['response'];
-			}
-
-			if ( ! empty( $data['optimized_size'] ) ) {
-				// The non-WebP size is optimized, we know the file size.
-				$non_webp_file_size = $data['optimized_size'];
-			} else {
-				// The non-WebP size is "already optimized" or "error": grab the file size directly from the file.
-				$non_webp_file_size = $this->filesystem->size( $args['non_webp_file_path'] );
-			}
-
-			if ( ! $non_webp_file_size || $non_webp_file_size > $args['response']->new_size ) {
-				// The new WebP file is lighter.
-				return $args['response'];
-			}
-
-			// The new WebP file is heavier than the non-WebP file: delete it and return an error.
-			$this->filesystem->delete( $args['file']->get_path() );
-
-			return new WP_Error(
-				'webp_heavy',
-				sprintf(
-				/* translators: %s is a size name. */
-					__( 'The WebP version of the size %s is heavier than its non-WebP version.', 'imagify' ),
-					'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
-				)
-			);
-		}
-
-		/**
-		 * We just created a non-WebP version:
-		 * Check if its WebP version file is lighter than this one.
-		 */
-		$webp_size      = $args['non_webp_thumb_size'] . static::WEBP_SUFFIX;
-		$webp_file_size = $this->get_data()->get_size_data( $webp_size, 'optimized_size' );
-
-		if ( property_exists( $args['response'], 'message' ) || ! $webp_file_size || $webp_file_size < $args['response']->new_size ) {
-			// The WebP file is lighter than this one.
-			return $args['response'];
-		}
-
-		// The new optimized file is lighter than the WebP file: delete the WebP file and store an error.
-		$webp_path = $args['file']->get_path_to_webp();
-
-		if ( $webp_path && $this->filesystem->is_writable( $webp_path ) ) {
-			$this->filesystem->delete( $webp_path );
-		}
-
-		$webp_response = new WP_Error(
-			'webp_heavy',
-			sprintf(
-			/* translators: %s is a size name. */
-				__( 'The WebP version of the size %s is heavier than its non-WebP version.', 'imagify' ),
-				'<code>' . esc_html( $args['non_webp_thumb_size'] ) . '</code>'
-			)
-		);
-
-		$this->update_size_optimization_data( $webp_response, $webp_size, $args['optimization_level'] );
+		$this->update_size_optimization_data( $next_gen_response, $next_gen_size, $args['optimization_level'] );
 
 		return $args['response'];
 	}
@@ -951,7 +869,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 1.9
 	 *
-	 * @return bool|WP_Error True on success. A \WP_Error instance on failure.
+	 * @return bool|WP_Error True on success. A WP_Error instance on failure.
 	 */
 	public function restore() {
 		if ( ! $this->is_valid() ) {
@@ -1002,7 +920,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		/**
 		 * Fires before restoring a media.
-		 * Return a \WP_Error object to prevent the restoration.
+		 * Return a WP_Error object to prevent the restoration.
 		 *
 		 * @since 1.9
 		 *
@@ -1060,27 +978,22 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 1.9
 	 *
-	 * @return bool|WP_Error True on success. A \WP_Error instance on failure.
+	 * @return bool|WP_Error True on success. A WP_Error instance on failure.
 	 */
 	protected function restore_thumbnails() {
 		$media = $this->get_media();
 
 		/**
-		 * Delete the WebP versions.
+		 * Delete the next-gen versions.
 		 * If the full size file and the original file are not the same, the full size is considered like a thumbnail.
-		 * In that case we must also delete the WebP file associated to the full size.
+		 * In that case we must also delete the next-gen file associated to the full size.
 		 */
-		$keep_full_webp = $media->get_raw_original_path() === $media->get_raw_fullsize_path();
-		$this->delete_nextgen_files( $keep_full_webp );
+		$keep_full_next_gen = $media->get_raw_original_path() === $media->get_raw_fullsize_path();
+		$this->delete_nextgen_files( $keep_full_next_gen );
 
 		// Generate new thumbnails.
 		return $media->generate_thumbnails();
 	}
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** BACKUP FILE ============================================================================= */
-	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * Delete the backup file.
@@ -1099,25 +1012,19 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** TEMPORARY COPY OF A SIZE FILE =========================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * If we need to create a WebP version, we must create it from an unoptimized image.
-	 * The full size is always optimized before the WebP version creation, and in some cases it’s the same for the thumbnails.
-	 * Then we use the backup file to create temporary files.
-	 */
-
 	/**
 	 * Create a temporary copy of a size file.
 	 *
+	 * If we need to create a next-gen version, we must create it from an unoptimized image.
+	 * The full size is always optimized before the next-gen version creation, and in some cases it’s the same for the thumbnails.
+	 * Then we use the backup file to create temporary files.
+	 *
 	 * @since 1.9
 	 *
-	 * @param  string $size  The image size name.
-	 * @param  array  $sizes A list of thumbnail sizes being optimized.
-	 * @return bool          True if the file exists/is created. False on failure.
+	 * @param string $size  The image size name.
+	 * @param array  $sizes A list of thumbnail sizes being optimized.
+	 *
+	 * @return bool True if the file exists/is created. False on failure.
 	 */
 	protected function create_temporary_copy( $size, $sizes = null ) {
 		$media = $this->get_media();
@@ -1172,7 +1079,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( 'full' === $size ) {
 			/**
-			 * We create a copy of the backup to be able to create a WebP version from it.
+			 * We create a copy of the backup to be able to create a next-gen version from it.
 			 * That means the optimization process will resize the file if needed, so there is nothing more to do here.
 			 */
 			return true;
@@ -1262,8 +1169,9 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $size  The image size name.
-	 * @param  array  $sizes A list of thumbnail sizes being optimized.
+	 * @param string $size  The image size name.
+	 * @param array  $sizes A list of thumbnail sizes being optimized.
+	 *
 	 * @return string|bool   An image path. False on failure.
 	 */
 	protected function get_temporary_copy_path( $size, $sizes = null ) {
@@ -1290,18 +1198,14 @@ abstract class AbstractProcess implements ProcessInterface {
 		return $info['dir_path'] . $info['file_base'] . static::TMP_SUFFIX . '.' . $info['extension'];
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** RESIZE FILE ============================================================================= */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Maybe resize an image.
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $size   The size name.
-	 * @param  File   $file   A File instance.
+	 * @param string $size   The size name.
+	 * @param File   $file   A File instance.
+	 *
 	 * @return array|WP_Error A WP_Error instance on failure, an array on success as follow: {
 	 *     @type bool $resized   True when the image has been resized.
 	 *     @type bool $backuped  True when the image has been backuped.
@@ -1403,8 +1307,9 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $size The size name.
-	 * @param  File   $file A File instance.
+	 * @param string $size The size name.
+	 * @param File   $file A File instance.
+	 *
 	 * @return bool
 	 */
 	protected function can_resize( $size, $file ) {
@@ -1412,8 +1317,16 @@ abstract class AbstractProcess implements ProcessInterface {
 			return false;
 		}
 
-		if ( 'full' !== $size && 'full' . static::WEBP_SUFFIX !== $size ) {
-			// We resize only the main file and its WebP version.
+		if (
+			'full' !== $size
+			&&
+			(
+				'full' . static::WEBP_SUFFIX !== $size
+				||
+				'full' . static::AVIF_SUFFIX !== $size
+		    )
+		) {
+			// We resize only the main file and its next-gen version.
 			return false;
 		}
 
@@ -1429,7 +1342,8 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $size The size name.
+	 * @param string $size The size name.
+	 *
 	 * @return bool
 	 */
 	protected function can_backup( $size ) {
@@ -1445,12 +1359,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		return $this->get_media()->get_context_instance()->can_backup();
 	}
 
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** WEBP & AVIF ============================================================================= */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Get mime type
 	 *
@@ -1458,8 +1366,8 @@ abstract class AbstractProcess implements ProcessInterface {
 	 */
 	private function get_mime_type( $format ) {
 		$mime_types = [
-			static::AVIF_SUFFIX => 'image/avif',
-			static::WEBP_SUFFIX => 'image/webp',
+			'avif' => 'image/avif',
+			'webp' => 'image/webp',
 		];
 
 		return isset( $mime_types[ $format ] ) ? $mime_types[ $format ] : false;
@@ -1471,8 +1379,9 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 2.2
 	 *
-	 * @param  bool $keep_full Set to true to keep the full size.
-	 * @return bool|WP_Error  True on success. A \WP_Error object on failure.
+	 * @param bool $keep_full Set to true to keep the full size.
+	 *
+	 * @return bool|WP_Error True on success. A WP_Error object on failure.
 	 */
 	public function delete_nextgen_files( $keep_full = false ) {
 		if ( ! $this->is_valid() ) {
@@ -1522,13 +1431,17 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Delete a next gen format image, given its non-WebP version's path.
+	 * Delete a next gen format image, given its non-next-gen version's path.
 	 * This doesn't delete the related optimization data.
 	 *
 	 * @since 2.2
 	 *
 	 * @param  string $file_path Path to the non-next-gen file.
+<<<<<<< HEAD
 	 * @return void|WP_Error A \WP_Error object on failure.
+=======
+	 * @return bool|WP_Error    True on success. A WP_Error object on failure.
+>>>>>>> feature/avif
 	 */
 	protected function delete_nextgen_file( $file_path ) {
 		if ( ! $file_path ) {
@@ -1611,17 +1524,23 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @since 1.9
 	 * @since 2.2 addition of the format parameter.
 	 *
-	 * @param  string $size_name The size name.
-	 * @return string|bool       The unsuffixed name of the size if WebP. False if not WebP.
+	 * @param string $size_name The size name.
+	 *
+	 * @return string|bool The unsuffixed name of the size if next-gen. False if not next-gen.
 	 */
 	public function is_size_next_gen( $size_name ) {
-		static $suffix;
+		$formats = imagify_nextgen_images_formats();
+		$suffix  = [];
 
-		if ( ! isset( $suffix ) ) {
-			$suffix = preg_quote( $this->format, '/' );
+		foreach ( $formats as $format ) {
+			if ( 'avif' === $format ) {
+				$suffix[] = preg_quote( static::AVIF_SUFFIX, '/' );
+			} elseif ( 'webp' === $format ) {
+				$suffix[] = preg_quote( static::WEBP_SUFFIX, '/' );
+			}
 		}
 
-		if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
+		if ( preg_match( '/^(?<size>.+)' . implode( '|', $suffix ) . '$/', $size_name, $matches ) ) {
 			return $matches['size'];
 		}
 
@@ -1679,11 +1598,11 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$keys = array_keys( $sizes );
-		$non_webp_keys = array_values(array_filter($keys, function ( $key ) {
+		$non_next_gen_keys = array_values(array_filter($keys, function ( $key ) {
 			return strpos( $key, $this->format ) === false;
 		}));
 
-		return array_reduce($non_webp_keys, function ( $is_fully, $key ) use ( $sizes ) {
+		return array_reduce($non_next_gen_keys, function ( $is_fully, $key ) use ( $sizes ) {
 			return key_exists( $key . $this->format, $sizes ) && $is_fully;
 		}, true);
 	}
@@ -1695,6 +1614,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @since 1.9.5
 	 *
 	 * @param string $file_path Path to the file.
+	 *
 	 * @return bool
 	 */
 	public function can_create_next_gen_version( $file_path ) {
@@ -1705,12 +1625,12 @@ abstract class AbstractProcess implements ProcessInterface {
 		$can = apply_filters_deprecated( 'imagify_pre_can_create_webp_version', array( null, $file_path ), '2.2', 'imagify_pre_can_create_next_gen_version' );
 
 		/**
-		 * Tell if a WebP version can be created for the given file.
+		 * Tell if a next-gen version can be created for the given file.
 		 * The file is an image.
 		 *
 		 * @since 1.9.5
 		 *
-		 * @param bool   $can       True to create a WebP version, false otherwise. Null by default.
+		 * @param bool   $can       True to create a next-gen version, false otherwise. Null by default.
 		 * @param string $file_path Path to the file.
 		 */
 		$can = apply_filters( 'imagify_pre_can_create_next_gen_version', $can, $file_path );
@@ -1730,17 +1650,12 @@ abstract class AbstractProcess implements ProcessInterface {
 		return true;
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** WEBP ==================================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Generate next-gen images if they are missing.
 	 *
 	 * @since 1.9
 	 *
-	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
+	 * @return bool|WP_Error True if successfully launched. A WP_Error instance on failure.
 	 */
 	public function generate_nextgen_versions() {
 		if ( ! $this->is_valid() ) {
@@ -1774,13 +1689,25 @@ abstract class AbstractProcess implements ProcessInterface {
 		];
 
 		foreach ( $files as $size_name => $file ) {
-			if ( $this->get_mime_type( $this->format ) !== $files[ $size_name ]['mime-type'] ) {
-				array_unshift( $sizes, $size_name . $this->format );
+			$formats = imagify_nextgen_images_formats();
+
+			foreach ( $formats as $format ) {
+				if ( 'avif' === $format ) {
+					$format_suffix = static::AVIF_SUFFIX;
+				} elseif ( 'webp' === $format ) {
+					$format_suffix = static::WEBP_SUFFIX;
+				}
+
+				if ( $this->get_mime_type( $format ) === $files[ $size_name ]['mime-type'] ) {
+					continue;
+				}
+
+				array_unshift( $sizes, $size_name . $format_suffix );
 			}
 		}
 
 		if ( ! $sizes ) {
-			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to WebP format.', 'imagify' ) );
+			return new WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to next-gen format.', 'imagify' ) );
 		}
 
 		$optimization_level = $data->get_optimization_level();
@@ -1788,10 +1715,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		// Optimize.
 		return $this->optimize_sizes( $sizes, $optimization_level, $args );
 	}
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** PROCESS STATUS ========================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * Tell if a process is running for this media.
@@ -1898,11 +1821,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		return $action;
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** DATA ==================================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Tell if a size already has optimization data.
 	 *
@@ -1923,9 +1841,10 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @since 1.9
 	 * @since 2.2 - Addition of the format in the call.
 	 *
-	 * @param  object $response The API response.
-	 * @param  string $size     The size name.
-	 * @param  int    $level    The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 * @param object $response The API response.
+	 * @param string $size     The size name.
+	 * @param int    $level    The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 *
 	 * @return array            {
 	 *     The optimization data.
 	 *
@@ -2015,17 +1934,13 @@ abstract class AbstractProcess implements ProcessInterface {
 		return $data;
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** VARIOUS TOOLS =========================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Get a plugin’s option.
 	 *
 	 * @since 1.9
 	 *
-	 * @param  string $option_name The option nme.
+	 * @param string $option_name The option name.
+	 *
 	 * @return mixed
 	 */
 	protected function get_option( $option_name ) {
@@ -2044,7 +1959,8 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  mixed $optimization_level The optimization level.
+	 * @param mixed $optimization_level The optimization level.
+	 *
 	 * @return int
 	 */
 	protected function sanitize_optimization_level( $optimization_level ) {
@@ -2059,16 +1975,12 @@ abstract class AbstractProcess implements ProcessInterface {
 		return \Imagify_Options::get_instance()->sanitize_and_validate( 'optimization_level', $optimization_level );
 	}
 
-	/** ----------------------------------------------------------------------------------------- */
-	/** AVIF =========================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Generate AVIF images if they are missing.
 	 *
 	 * @since 2.2
 	 *
-	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
+	 * @return bool|WP_Error True if successfully launched. A WP_Error instance on failure.
 	 */
 	public function generate_avif_versions() {
 		if ( ! $this->is_valid() ) {
@@ -2108,7 +2020,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		if ( ! $sizes ) {
-			return new \WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to AVIF format.', 'imagify' ) );
+			return new WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to AVIF format.', 'imagify' ) );
 		}
 
 		$optimization_level = $data->get_optimization_level();
