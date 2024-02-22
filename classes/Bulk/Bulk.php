@@ -17,7 +17,7 @@ class Bulk {
 	 */
 	public function init() {
 		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 3 );
-		add_action( 'imagify_convert_next_gen', [ $this, 'generate_next_gen_versions' ], 10, 2 );
+		add_action( 'imagify_convert_next_gen', [ $this, 'generate_nextgen_versions' ], 10, 2 );
 		add_action( 'imagify_convert_webp_finished', [ $this, 'clear_webp_transients' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
 		add_action( 'wp_ajax_imagify_missing_nextgen_generation', [ $this, 'missing_nextgen_callback' ] );
@@ -398,12 +398,12 @@ class Bulk {
 	 *
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
-	public function generate_next_gen_versions( int $media_id, string $context ) {
+	public function generate_nextgen_versions( int $media_id, string $context ) {
 		if ( ! $this->can_optimize() ) {
 			return false;
 		}
 
-		return imagify_get_optimization_process( $media_id, $context )->generate_next_gen_versions();
+		return imagify_get_optimization_process( $media_id, $context )->generate_nextgen_versions();
 	}
 	/**
 	 * Generate AVIF images if they are missing.
