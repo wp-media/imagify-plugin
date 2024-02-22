@@ -78,7 +78,7 @@ class Plugin {
 	/**
 	 * Plugin init.
 	 *
-	 * @param array Array of service providers.
+	 * @param array $providers Array of service providers.
 	 *
 	 * @since 1.9
 	 */
@@ -243,7 +243,7 @@ class Plugin {
 	/**
 	 * Load list of event subscribers from service provider.
 	 *
-	 * @param ServiceProviderInterface $service_provider_instance Instance of service provider.
+	 * @param ServiceProviderInterface $service_provider Instance of service provider.
 	 *
 	 * @return void
 	 */

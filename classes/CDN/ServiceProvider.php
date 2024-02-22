@@ -5,6 +5,9 @@ namespace Imagify\CDN;
 
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 
+/**
+ * Service provider for CDN compatibility
+ */
 class ServiceProvider extends AbstractServiceProvider {
 	/**
 	 * Services provided by this provider

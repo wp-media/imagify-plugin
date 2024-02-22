@@ -5,6 +5,9 @@ namespace Imagify\CDN;
 
 use Imagify\EventManagement\SubscriberInterface;
 
+/**
+ * CDN subscriber
+ */
 class CDN implements SubscriberInterface {
 	/**
 	 * Array of events this subscriber listens to
