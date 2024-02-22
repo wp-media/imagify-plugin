@@ -104,6 +104,16 @@ abstract class AbstractProcess implements ProcessInterface {
 	protected $format;
 
 	/**
+	 * Array of extesions to be processed.
+	 *
+	 * @var array
+	 */
+	protected $extensions = [
+		'webp',
+		'avif',
+	];
+
+	/**
 	 * The constructor.
 	 *
 	 * @since 1.9
@@ -1525,16 +1535,10 @@ abstract class AbstractProcess implements ProcessInterface {
 			return new WP_Error( 'no_path', __( 'Path to non-next-gen file not provided.', 'imagify' ) );
 		}
 
-		$extensions = imagify_nextgen_images_formats();
-
-		if ( empty( $extensions ) ) {
-			return;
-		}
-
 		$next_gen_file = new File( $file_path );
 
 		// Delete next-gen images.
-		foreach ( $extensions as $extension ) {
+		foreach ( $this->extensions as $extension ) {
 			$this->delete_file( $next_gen_file->get_path_to_nextgen( $extension ) );
 		}
 	}
