@@ -18,7 +18,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 
 	$is_media_page            = Imagify_Views::get_instance()->is_media_page();
 	$is_library_page          = Imagify_Views::get_instance()->is_wp_library_page();
-	$output                   = $is_media_page ? '' : '<ul class="imagify-datas-list">';
+	$output                   = $is_media_page ? '' : '<ul class="imagify-datas-list" id="imagify_data_sum">';
 	$output_before            = $is_media_page ? '' : '<li class="imagify-data-item">';
 	$output_after             = $is_media_page ? '<br/>' : '</li>';
 	$reoptimize_link          = get_imagify_attachment_reoptimize_link( $process );
