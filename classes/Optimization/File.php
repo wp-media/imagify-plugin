@@ -424,10 +424,10 @@ class File {
 		}
 
 		// Check if a '-scaled' version of the image exists.
-		$scaled_path = preg_replace('/(\.)([^\.]+)$/', '-scaled.$2', $backup_source);
-		if ($this->filesystem->exists($scaled_path)) {
+		$scaled_path = preg_replace( '/(\.)([^\.]+)$/', '-scaled.$2', $backup_source );
+		if ( $this->filesystem->exists( $scaled_path ) ) {
 			// Create a backup path for the scaled image.
-			$scaled_backup_path = preg_replace('/(\.)([^\.]+)$/', '-scaled.$2', $backup_path);
+			$scaled_backup_path = preg_replace( '/(\.)([^\.]+)$/', '-scaled.$2', $backup_path );
 			// Copy the '-scaled' version to the backup.
 			$this->filesystem->copy( $scaled_path, $scaled_backup_path, $overwrite, FS_CHMOD_FILE );
 

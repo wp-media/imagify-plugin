@@ -1011,10 +1011,10 @@ abstract class AbstractProcess implements ProcessInterface {
 			$this->filesystem->delete( $backup_path );
 
 			// Check for the -scaled version in the backup.
-			$scaled_backup_path = preg_replace('/(\.)([^\.]+)$/', '-scaled.$2', $backup_path);
-			if ($this->filesystem->exists($scaled_backup_path)) {
+			$scaled_backup_path = preg_replace( '/(\.)([^\.]+)$/', '-scaled.$2', $backup_path );
+			if ( $this->filesystem->exists( $scaled_backup_path ) ) {
 				// Delete the -scaled version from the backup.
-				$this->filesystem->delete($scaled_backup_path);
+				$this->filesystem->delete( $scaled_backup_path );
 			}
 		}
 	}
