@@ -211,7 +211,7 @@
 						modalHtml += '<img class="imagify-img-after" alt="" width="' + settings.width + '" height="' + settings.height + '">';
 					modalHtml += '</div>';
 					modalHtml += '<div class="imagify-comparison-levels">';
-						modalHtml += '<div class="imagify-c-level imagify-level-original go-left">';
+						modalHtml += '<div class="imagify-c-level imagify-level-original go-left imagify-original-fize-size">';
 							modalHtml += '<p class="imagify-c-level-row">';
 								modalHtml += '<span class="label">' + imagifyTTT.labels.filesize + '</span>';
 								modalHtml += '<span class="value level">' + settings.originalSize + '</span>';
