@@ -515,7 +515,7 @@
 		// If shown image > 360, use twentytwenty.
 		if ( imagifyTTT.imageWidth > imagifyTTT.widthLimit && oriSource.src ) {
 
-			filesize = $( '.misc-pub-filesize strong' ).text();
+			filesize = $( '#imagify-full-optimized-size' ).val();
 			saving   = $( '.imagify-data-item .imagify-chart-value' ).text();
 
 			// Create button to trigger.
