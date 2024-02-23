@@ -208,7 +208,7 @@ class Noop implements DataInterface {
 
 	/**
 	 * Get the file size of the full size file.
-	 * If the WebP size is available, it is used.
+	 * If the Nextgen size is available, it is used.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -216,10 +216,10 @@ class Noop implements DataInterface {
 	 *
 	 * @param  bool $human_format True to display the image human format size (1Mb).
 	 * @param  int  $decimals     Precision of number of decimal places.
-	 * @param  bool $use_webp     Use the WebP size if available.
+	 * @param  bool $use_nextgen     Use the Nextgen size if available.
 	 * @return string|int
 	 */
-	public function get_optimized_size( $human_format = true, $decimals = 2, $use_webp = true ) {
+	public function get_optimized_size( $human_format = true, $decimals = 2, $use_nextgen = true ) {
 		return $human_format ? imagify_size_format( 0, $decimals ) : 0;
 	}
 
