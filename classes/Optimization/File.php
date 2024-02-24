@@ -438,7 +438,7 @@ class File {
 	 *     @type bool   $backup             False to prevent backup. True to follow the user's setting. A backup can't be forced.
 	 *     @type string $backup_path        If a backup must be done, this is the path to use. Default is the backup path used for the WP Media Library.
 	 *     @type int    $optimization_level The optimization level (2=ultra, 1=aggressive, 0=normal).
-	 *     @type string $convert            Set to 'webp' to convert the image to WebP.
+	 *     @type string $convert            Set to 'webp' to convert the image to WebP, 'avif' to convert image to AVIF.
 	 *     @type string $context            The context.
 	 *     @type int    $original_size      The file size, sent to the API.
 	 * }

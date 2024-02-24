@@ -226,7 +226,7 @@ class Bulk {
 	}
 
 	/**
-	 * Runs the WebP generation
+	 * Runs the next-gen generation
 	 *
 	 * @param array $contexts An array of contexts (WP/Custom folders).
 	 * @param array $formats An array of format to generate.
@@ -249,7 +249,7 @@ class Bulk {
 			foreach ( $formats as $format ) {
 				$media = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
 				if ( ! $media['ids'] && $media['errors']['no_backup'] ) {
-					// No backup, no WebP.
+					// No backup, no next-gen.
 					return [
 						'success' => false,
 						'message' => 'no-backup',
@@ -286,7 +286,7 @@ class Bulk {
 							'id'      => $media_id,
 							'context' => $context,
 						],
-						"imagify-{$context}-convert-webp"
+						"imagify-{$context}-convert-nextgen"
 					);
 				} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 					// nothing to do.
@@ -389,7 +389,7 @@ class Bulk {
 	}
 
 	/**
-	 * Generate WebP images if they are missing.
+	 * Generate next-gen images if they are missing.
 	 *
 	 * @since 2.1
 	 *
