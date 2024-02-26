@@ -1,15 +1,16 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Stats;
 
 use Imagify\Bulk\Bulk;
+use Imagify\EventManagement\SubscriberInterface;
 use Imagify\Traits\InstanceGetterTrait;
 
 /**
- * Class to get and cache the number of optimized media without WebP versions.
- *
- * @since 1.9
+ * Class to get and cache the number of optimized media without next-gen versions.
  */
-class OptimizedMediaWithoutWebp implements StatInterface {
+class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface {
 	use InstanceGetterTrait;
 
 	/**
@@ -17,28 +18,20 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	 *
 	 * @var string
 	 */
-	const NAME = 'imagify_stat_without_webp';
+	const NAME = 'imagify_stat_without_next_gen';
 
-	/**
-	 * Launch hooks.
-	 *
-	 * @since 1.9
-	 */
-	public function init() {
-		add_action( 'imagify_after_optimize',      [ $this, 'maybe_clear_cache_after_optimization' ], 10, 2 );
-		add_action( 'imagify_after_restore_media', [ $this, 'maybe_clear_cache_after_restoration' ], 10, 4 );
-		add_action( 'imagify_delete_media',        [ $this, 'maybe_clear_cache_on_deletion' ] );
+	public static function get_subscribed_events() {
+		return [
+			'imagify_after_optimize' => [ 'maybe_clear_cache_after_optimization', 10, 2 ],
+			'imagify_after_restore_media' => [ 'maybe_clear_cache_after_restoration', 10, 4 ],
+			'imagify_delete_media' => 'maybe_clear_cache_on_deletion',
+		];
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** GET/CACHE THE STAT ====================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
-	 * Get the number of optimized media without WebP versions.
+	 * Get the number of optimized media without next-gen versions.
 	 *
-	 * @since 1.9
+	 * @since 2.2
 	 *
 	 * @return int
 	 */
@@ -48,16 +41,16 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 
 		// Sum the counts of each context.
 		foreach ( imagify_get_context_names() as $context ) {
-			$stat += $bulk->get_bulk_instance( $context )->has_optimized_media_without_webp();
+			$stat += $bulk->get_bulk_instance( $context )->has_optimized_media_without_nextgen();
 		}
 
 		return $stat;
 	}
 
 	/**
-	 * Get and cache the number of optimized media without WebP versions.
+	 * Get and cache the number of optimized media without next-gen versions.
 	 *
-	 * @since 1.9
+	 * @since 2.2
 	 *
 	 * @return int
 	 */
@@ -83,21 +76,16 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	/**
 	 * Clear the stat cache.
 	 *
-	 * @since 1.9
+	 * @since 2.2
 	 */
 	public function clear_cache() {
 		delete_transient( static::NAME );
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** HOOKS =================================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Clear cache after optimizing a media.
 	 *
-	 * @since 1.9
+	 * @since 2.2
 	 *
 	 * @param ProcessInterface $process The optimization process.
 	 * @param array            $item    The item being processed.
@@ -113,11 +101,15 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 		$new_sizes = array_intersect_key( $sizes, $new_sizes );
 		$size_name = 'full' . $process::WEBP_SUFFIX;
 
+		if ( get_imagify_option( 'convert_to_avif' ) ) {
+			$size_name = 'full' . $process::AVIF_SUFFIX;
+		}
+
 		if ( ! isset( $new_sizes['full'] ) && ! empty( $new_sizes[ $size_name ]['success'] ) ) {
 			/**
-			 * We just successfully generated the WebP version of the full size.
+			 * We just successfully generated the next-gen version of the full size.
 			 * The full size was not optimized at the same time, that means it was optimized previously.
-			 * Meaning: we just added a WebP version to a media that was previously optimized, so there is one less optimized media without WebP.
+			 * Meaning: we just added a next-gen version to a media that was previously optimized, so there is one less optimized media without next-gen.
 			 */
 			$this->clear_cache();
 			return;
@@ -125,7 +117,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 
 		if ( ! empty( $new_sizes['full']['success'] ) && empty( $new_sizes[ $size_name ]['success'] ) ) {
 			/**
-			 * We now have a new optimized media without WebP.
+			 * We now have a new optimized media without next-gen.
 			 */
 			$this->clear_cache();
 		}
@@ -134,7 +126,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	/**
 	 * Clear cache after restoring a media.
 	 *
-	 * @since 1.9
+	 * @since 2.2
 	 *
 	 * @param ProcessInterface $process The optimization process.
 	 * @param bool|WP_Error    $response The result of the operation: true on success, a WP_Error object on failure.
@@ -149,9 +141,13 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 		$sizes     = isset( $data['sizes'] ) ? (array) $data['sizes'] : [];
 		$size_name = 'full' . $process::WEBP_SUFFIX;
 
+		if ( get_imagify_option( 'convert_to_avif' ) ) {
+			$size_name = 'full' . $process::AVIF_SUFFIX;
+		}
+
 		if ( ! empty( $sizes['full']['success'] ) && empty( $sizes[ $size_name ]['success'] ) ) {
 			/**
-			 * This media had no WebP versions.
+			 * This media had no next-gen versions.
 			 */
 			$this->clear_cache();
 		}
@@ -160,7 +156,7 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 	/**
 	 * Clear cache on media deletion.
 	 *
-	 * @since 1.9
+	 * @since 2.2
 	 *
 	 * @param ProcessInterface $process An optimization process.
 	 */
@@ -173,9 +169,13 @@ class OptimizedMediaWithoutWebp implements StatInterface {
 		$sizes     = isset( $data['sizes'] ) ? (array) $data['sizes'] : [];
 		$size_name = 'full' . $process::WEBP_SUFFIX;
 
+		if ( get_imagify_option( 'convert_to_avif' ) ) {
+			$size_name = 'full' . $process::AVIF_SUFFIX;
+		}
+
 		if ( ! empty( $sizes['full']['success'] ) && empty( $sizes[ $size_name ]['success'] ) ) {
 			/**
-			 * This media had no WebP versions.
+			 * This media had no next-gen versions.
 			 */
 			$this->clear_cache();
 		}

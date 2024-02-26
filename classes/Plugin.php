@@ -10,7 +10,6 @@ use Imagify\Dependencies\League\Container\Container;
 use Imagify\Dependencies\League\Container\ServiceProvider\ServiceProviderInterface;
 use Imagify\EventManagement\{EventManager, SubscriberInterface};
 use Imagify\Notices\Notices;
-use Imagify\Picture\Display as PictureDisplay;
 use Imagify_Filesystem;
 
 /**
@@ -115,7 +114,6 @@ class Plugin {
 		\Imagify_Cron_Sync_Files::get_instance()->init();
 		\Imagify\Auth\Basic::get_instance()->init();
 		\Imagify\Job\MediaOptimization::get_instance()->init();
-		\Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->init();
 		Bulk::get_instance()->init();
 		AdminBar::get_instance()->init();
 
