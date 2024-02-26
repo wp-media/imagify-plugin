@@ -496,7 +496,7 @@ window.imagify = window.imagify || {};
 				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
 				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsImagifybeat );
 
-			if ( false !== imagifyOptions.bulk.progress_webp.total && false !== imagifyOptions.bulk.progress_webp.remaining ) {
+			if ( false !== imagifyOptions.bulk.progress_next_gen.total && false !== imagifyOptions.bulk.progress_next_gen.remaining ) {
 				// Reset properties.
 				w.imagify.optionsBulk.error            = false;
 				w.imagify.optionsBulk.working          = true;
@@ -511,10 +511,10 @@ window.imagify = window.imagify || {};
 
 				this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
 
-				processed = imagifyOptions.bulk.progress_webp.total - imagifyOptions.bulk.progress_webp.remaining;
-				progress = Math.floor( processed / imagifyOptions.bulk.progress_webp.total * 100 );
+				processed = imagifyOptions.bulk.progress_next_gen.total - imagifyOptions.bulk.progress_next_gen.remaining;
+				progress = Math.floor( processed / imagifyOptions.bulk.progress_next_gen.total * 100 );
 				this.$progressBar.css( 'width', progress + '%' );
-				this.$progressText.text( processed + '/' + imagifyOptions.bulk.progress_webp.total );
+				this.$progressText.text( processed + '/' + imagifyOptions.bulk.progress_next_gen.total );
 
 				this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
 			}

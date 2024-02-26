@@ -296,7 +296,7 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 
 	// 1.9.6
 	if ( version_compare( $site_version, '1.9.6' ) < 0 ) {
-		\Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->clear_cache();
+		\Imagify\Stats\OptimizedMediaWithoutNextGen::get_instance()->clear_cache();
 	}
 
 	// 1.9.11
