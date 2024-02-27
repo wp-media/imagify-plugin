@@ -20,6 +20,11 @@ class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface
 	 */
 	const NAME = 'imagify_stat_without_next_gen';
 
+	/**
+	 * Array of events this subscriber listens to
+	 *
+	 * @return array
+	 */
 	public static function get_subscribed_events() {
 		return [
 			'imagify_after_optimize' => [ 'maybe_clear_cache_after_optimization', 10, 2 ],
