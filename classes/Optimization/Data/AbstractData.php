@@ -299,7 +299,7 @@ abstract class AbstractData implements DataInterface {
 
 		$data  = $this->get_optimization_data();
 		$media = $this->get_media();
-		$format = '.webp';
+		$format = 'webp';
 
 		if ( $use_nextgen ) {
 			$process_class_name = imagify_get_optimization_process_class_name( $media->get_context() );
@@ -307,7 +307,7 @@ abstract class AbstractData implements DataInterface {
 
 			if ( get_imagify_option( 'convert_to_avif' ) ) {
 				$nextgen_size_name     = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
-				$format = '.avif';
+				$format = 'avif';
 			}
 		}
 
