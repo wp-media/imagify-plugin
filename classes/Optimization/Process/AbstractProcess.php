@@ -1534,7 +1534,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	 */
 	public function is_size_next_gen( $size_name ) {
 		$formats = imagify_nextgen_images_formats();
-		$matches = [];
 
 		foreach ( $formats as $format ) {
 			$suffix = preg_quote( $this->get_suffix_from_format( $format ), '/' );
