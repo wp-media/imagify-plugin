@@ -1445,7 +1445,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @since 2.2
 	 *
 	 * @param  string $file_path Path to the non-next-gen file.
-	 * @param  bool $all_next_gen True: will delete every next-gen format. False: will delete only the current enabled format.
+	 * @param  bool   $all_next_gen True: will delete every next-gen format. False: will delete only the current enabled format.
 	 * @return void|WP_Error A \WP_Error object on failure.
 	 */
 	protected function delete_nextgen_file( $file_path, $all_next_gen = false ) {
@@ -1454,11 +1454,11 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$next_gen_file = new File( $file_path );
-        $formats = $this->extensions;
+		$formats = $this->extensions;
 
-        if ( ! $all_next_gen ) {
-            $formats = imagify_nextgen_images_formats();
-        }
+		if ( ! $all_next_gen ) {
+			$formats = imagify_nextgen_images_formats();
+		}
 		// Delete next-gen images.
 		foreach ( $formats as $extension ) {
 			$this->delete_file( $next_gen_file->get_path_to_nextgen( $extension ) );
