@@ -1537,23 +1537,29 @@ abstract class AbstractProcess implements ProcessInterface {
 		$matches = [];
 
 		foreach ( $formats as $format ) {
-			switch ( $format ) {
-				case 'avif':
-					$suffix = preg_quote( static::AVIF_SUFFIX, '/' );
-					if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
-						return $matches['size'];
-					}
-					break;
-				case 'webp':
-					$suffix = preg_quote( static::WEBP_SUFFIX, '/' );
-					if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
-						return $matches['size'];
-					}
-					break;
+			$suffix = preg_quote( $this->get_suffix_from_format( $format ), '/' );
+
+			if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
+				return $matches['size'];
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get suffix from format.
+	 *
+	 * @param string $format Format extension of next-gen image.
+	 * @return string
+	 */
+	private function get_suffix_from_format( string $format ): string {
+		$suffixes = [
+			'avif' => static::AVIF_SUFFIX,
+			'webp' => static::WEBP_SUFFIX,
+		];
+
+		return $suffixes[ $format ];
 	}
 
 	/**
