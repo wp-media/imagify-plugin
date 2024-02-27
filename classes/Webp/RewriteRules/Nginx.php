@@ -37,15 +37,35 @@ class Nginx extends AbstractNginxDirConfFile {
 location ~* ^(' . $home_root . '.+)\.(' . $extensions . ')$ {
 	add_header Vary Accept;
 
-	if ($http_accept ~* "webp"){
-		set $imwebp A;
-	}
-	if (-f $request_filename.webp) {
-		set $imwebp  "${imwebp}B";
-	}
-	if ($imwebp = AB) {
-		rewrite ^(.*) $1.webp;
-	}
+	set $canavif 1;
+
+    if ($http_accept !~* "avif"){
+        set $canavif 0;
+    }
+
+    if (!-f $request_filename.avif) {
+        set $canavif 0;
+
+    }
+    if ($canavif = 1){
+        rewrite ^(.*) $1.avif;
+        break;
+    }
+
+    set $canwebp 1;
+
+    if ($http_accept !~* "webp"){
+        set $canwebp 0;
+    }
+
+    if (!-f $request_filename.webp) {
+        set $canwebp 0;
+
+    }
+    if ($canwebp = 1){
+        rewrite ^(.*) $1.webp;
+        break;
+    }
 }' );
 	}
 }
