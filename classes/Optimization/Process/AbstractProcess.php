@@ -1533,7 +1533,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @return string|bool The unsuffixed name of the size if next-gen. False if not next-gen.
 	 */
 	public function is_size_next_gen( $size_name ) {
-        $formats = imagify_nextgen_images_formats();
+		$formats = imagify_nextgen_images_formats();
 		$matches = [];
 
 		foreach ( $formats as $format ) {
@@ -1543,16 +1543,18 @@ abstract class AbstractProcess implements ProcessInterface {
 					if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
 						return $matches['size'];
 					}
+					break;
 				case 'webp':
 					$suffix = preg_quote( static::WEBP_SUFFIX, '/' );
 					if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
 						return $matches['size'];
 					}
+					break;
 			}
-        }
-        
-        return false;
-    }
+		}
+
+		return false;
+	}
 
 	/**
 	 * Tell if the media has a next gen format.
