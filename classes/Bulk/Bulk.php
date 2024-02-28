@@ -21,13 +21,12 @@ class Bulk {
 		add_action( 'imagify_convert_webp_finished', [ $this, 'clear_webp_transients' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
 		add_action( 'wp_ajax_imagify_missing_nextgen_generation', [ $this, 'missing_nextgen_callback' ] );
-		add_action( 'imagify_bulk_optimize', [ $this, 'bulk_optimize' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_info_seen', [ $this, 'bulk_info_seen_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_get_stats', [ $this, 'bulk_get_stats_callback' ] );
 		add_action( 'imagify_after_optimize', [ $this, 'check_optimization_status' ], 10, 2 );
 		add_action( 'imagify_deactivation', [ $this, 'delete_transients_data' ] );
-		add_action( 'update_option_imagify_settings', [ $this, 'maybe_bulk_optimize_callback' ], 10, 2 );
+		add_action( 'update_option_imagify_settings', [ $this, 'maybe_generate_missing_nextgen' ], 10, 2 );
 	}
 
 	/**
@@ -405,23 +404,6 @@ class Bulk {
 
 		return imagify_get_optimization_process( $media_id, $context )->generate_nextgen_versions();
 	}
-	/**
-	 * Generate AVIF images if they are missing.
-	 *
-	 * @since 2.2
-	 *
-	 * @param int    $media_id Media ID.
-	 * @param string $context Current context.
-	 *
-	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
-	 */
-	public function generate_avif_versions( int $media_id, string $context ) {
-		if ( ! $this->can_optimize() ) {
-			return false;
-		}
-
-		return imagify_get_optimization_process( $media_id, $context )->generate_avif_versions();
-	}
 
 	/**
 	 * Check if the user has a valid account and has quota. Die on failure.
@@ -483,20 +465,6 @@ class Bulk {
 		return (int) $level;
 	}
 
-	/** ----------------------------------------------------------------------------------------- */
-	/** BULK OPTIMIZATION CALLBACKS ============================================================= */
-	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Launch the bulk optimization without going through AJAX.
-	 *
-	 * @param   string $context Current context (WP/Custom folders).
-	 * @param   int    $level Optimization level.
-	 * @return void
-	 */
-	public function bulk_optimize( $context, $level ) {
-		$this->run_optimize( $context, $level );
-	}
 	/**
 	 * Launch the bulk optimization action
 	 *
@@ -629,7 +597,7 @@ class Bulk {
 	 *
 	 * @return void
 	 */
-	public function maybe_bulk_optimize_callback( $old_value, $value ) {
+	public function maybe_generate_missing_nextgen( $old_value, $value ) {
 		if ( isset( $old_value['convert_to_avif'] ) && isset( $value['convert_to_avif'] ) ) {
 			return;
 		}
@@ -638,11 +606,10 @@ class Bulk {
 			return;
 		}
 
-		$level = \Imagify_Options::get_instance()->get( 'optimization_level' );
 		$contexts = $this->get_contexts();
-		foreach ( $contexts as $context ) {
-			do_action( 'imagify_bulk_optimize', $context, $level );
-		}
+		$formats  = imagify_nextgen_images_formats();
+
+		$this->run_generate_nextgen( $contexts, $formats );
 	}
 
 	/**
