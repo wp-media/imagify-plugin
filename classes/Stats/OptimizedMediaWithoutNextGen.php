@@ -27,9 +27,10 @@ class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface
 	 */
 	public static function get_subscribed_events() {
 		return [
-			'imagify_after_optimize' => [ 'maybe_clear_cache_after_optimization', 10, 2 ],
-			'imagify_after_restore_media' => [ 'maybe_clear_cache_after_restoration', 10, 4 ],
-			'imagify_delete_media' => 'maybe_clear_cache_on_deletion',
+			'imagify_after_optimize'         => [ 'maybe_clear_cache_after_optimization', 10, 2 ],
+			'imagify_after_restore_media'    => [ 'maybe_clear_cache_after_restoration', 10, 4 ],
+			'imagify_delete_media'           => 'maybe_clear_cache_on_deletion',
+			'update_option_imagify_settings' => [ 'maybe_clear_stat_cache', 9, 2 ],
 		];
 	}
 
@@ -184,5 +185,27 @@ class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface
 			 */
 			$this->clear_cache();
 		}
+	}
+
+	/**
+	 * Maybe clear the stat cache on option change
+	 *
+	 * @since 2.2
+	 *
+	 * @param array $old_value The old option value.
+	 * @param array $value The new option value.
+	 *
+	 * @return void
+	 */
+	public function maybe_clear_stat_cache( $old_value, $value ) {
+		if ( isset( $old_value['convert_to_avif'] ) && isset( $value['convert_to_avif'] ) ) {
+			return;
+		}
+
+		if ( ! isset( $value['convert_to_avif'] ) && ! $value['convert_to_avif'] ) {
+			return;
+		}
+
+		$this->clear_cache();
 	}
 }
