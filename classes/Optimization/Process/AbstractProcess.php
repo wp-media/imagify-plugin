@@ -1547,21 +1547,31 @@ abstract class AbstractProcess implements ProcessInterface {
 	 */
 	public function is_size_next_gen( $size_name ) {
 		$formats = imagify_nextgen_images_formats();
-		$suffix  = [];
 
 		foreach ( $formats as $format ) {
-			if ( 'avif' === $format ) {
-				$suffix[] = preg_quote( static::AVIF_SUFFIX, '/' );
-			} elseif ( 'webp' === $format ) {
-				$suffix[] = preg_quote( static::WEBP_SUFFIX, '/' );
+			$suffix = preg_quote( $this->get_suffix_from_format( $format ), '/' );
+
+			if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
+				return $matches['size'];
 			}
 		}
 
-		if ( preg_match( '/^(?<size>.+)' . implode( '|', $suffix ) . '$/', $size_name, $matches ) ) {
-			return $matches['size'];
-		}
-
 		return false;
+	}
+
+	/**
+	 * Get suffix from format.
+	 *
+	 * @param string $format Format extension of next-gen image.
+	 * @return string
+	 */
+	private function get_suffix_from_format( string $format ): string {
+		$suffixes = [
+			'avif' => static::AVIF_SUFFIX,
+			'webp' => static::WEBP_SUFFIX,
+		];
+
+		return $suffixes[ $format ];
 	}
 
 	/**
