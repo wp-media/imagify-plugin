@@ -38,7 +38,7 @@ function imagify_cleanup_after_media_deletion( $process ) {
 	 * The optimization data will be automatically deleted by WP (post metas).
 	 * Delete the Nextgen versions and the backup file.
 	 */
-	$process->delete_nextgen_files();
+	$process->delete_nextgen_files( false, true );
 
 	$process->delete_backup();
 }
