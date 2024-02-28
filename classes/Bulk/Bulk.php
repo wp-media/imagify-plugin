@@ -602,6 +602,10 @@ class Bulk {
 			return;
 		}
 
+		if ( ! isset( $old_value['convert_to_avif'] ) && ! isset( $value['convert_to_avif'] ) ) {
+			return;
+		}
+
 		if ( isset( $value['convert_to_avif'] ) && ! (bool) $value['convert_to_avif'] ) {
 			return;
 		}
