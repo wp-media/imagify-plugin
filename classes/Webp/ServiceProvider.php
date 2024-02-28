@@ -6,6 +6,9 @@ namespace Imagify\Webp;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 use Imagify\Webp\RewriteRules\Display as RewriteRules;
 
+/**
+ * Service provider for WebP rewrite rules
+ */
 class ServiceProvider extends AbstractServiceProvider {
 	/**
 	 * Services provided by this provider

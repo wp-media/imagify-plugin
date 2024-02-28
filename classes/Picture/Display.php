@@ -28,6 +28,8 @@ class Display implements SubscriberInterface {
 
 	/**
 	 * Constructor.
+	 *
+	 * @param Imagify_Filesystem $filesystem Filesystem instance.
 	 */
 	public function __construct( Imagify_Filesystem $filesystem ) {
 		$this->filesystem = $filesystem;
@@ -65,7 +67,7 @@ class Display implements SubscriberInterface {
 			return;
 		}
 
-		$allow = apply_filters_deprecated( 'imagify_allow_picture_tags_for_webp', [true ], '2.2', 'imagify_allow_picture_tags_for_nextgen' );
+		$allow = apply_filters_deprecated( 'imagify_allow_picture_tags_for_webp', [ true ], '2.2', 'imagify_allow_picture_tags_for_nextgen' );
 
 		/**
 		 * Prevent the replacement of <img> tags into <picture> tags.
@@ -246,7 +248,7 @@ class Display implements SubscriberInterface {
 	protected function build_source_tag( $image ) {
 		$source = '';
 
-		foreach ( [ 'avif', 'webp'  ] as $image_type ) {
+		foreach ( [ 'avif', 'webp' ] as $image_type ) {
 			$attributes = $this->build_source_attributes( $image, $image_type );
 
 			if ( empty( $attributes ) ) {

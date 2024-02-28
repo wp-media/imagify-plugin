@@ -277,14 +277,14 @@ function imagify_bulk_optimize( $contexts, $optimization_level ) {
 }
 
 /**
- * Runs the WebP generation
+ * Runs the next-gen generation
  *
  * @param array $contexts An array of contexts (WP/Custom folders).
  *
  * @return void
  */
-function imagify_generate_webp( $contexts ) {
-	Imagify\Bulk\Bulk::get_instance()->run_generate_webp( $contexts );
+function imagify_generate_nextgen( $contexts ) {
+	Imagify\Bulk\Bulk::get_instance()->run_generate_nextgen( $contexts );
 }
 
 /**

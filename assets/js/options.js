@@ -655,7 +655,7 @@ window.imagify = window.imagify || {};
 
 			_this = this;
 
-			$.get( this.getAjaxUrl( 'MissingWebp', imagifyOptions.bulk.contexts ) )
+			$.get( this.getAjaxUrl( 'MissingNextGen', imagifyOptions.bulk.contexts ) )
 				.done( function( response ) {
 					var errorMessage;
 

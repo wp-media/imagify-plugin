@@ -6,6 +6,9 @@ namespace Imagify\Avif;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 use Imagify\Avif\RewriteRules\Display as RewriteRules;
 
+/**
+ * Service provider for AVIF rewrite rules
+ */
 class ServiceProvider extends AbstractServiceProvider {
 	/**
 	 * Services provided by this provider

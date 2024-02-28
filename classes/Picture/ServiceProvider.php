@@ -5,6 +5,9 @@ namespace Imagify\Picture;
 
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 
+/**
+ * Service provider for Picture display
+ */
 class ServiceProvider extends AbstractServiceProvider {
 	/**
 	 * Services provided by this provider
