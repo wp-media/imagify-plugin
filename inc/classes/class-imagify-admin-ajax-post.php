@@ -233,7 +233,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		}
 
 		$data->delete_optimization_data();
-		$deleted = $process->delete_nextgen_files();
+		$deleted = $process->delete_nextgen_files( false, true );
 
 		if ( is_wp_error( $deleted ) ) {
 			return new WP_Error( 'nextgen_not_deleted', __( 'Previous next-gen files could not be deleted.', 'imagify' ) );

@@ -1009,6 +1009,13 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( $backup_path ) {
 			$this->filesystem->delete( $backup_path );
+
+			// Check for the -scaled version in the backup.
+			$scaled_backup_path = preg_replace( '/(\.)([^\.]+)$/', '-scaled.$2', $backup_path );
+			if ( $this->filesystem->exists( $scaled_backup_path ) ) {
+				// Delete the -scaled version from the backup.
+				$this->filesystem->delete( $scaled_backup_path );
+			}
 		}
 	}
 
@@ -1380,10 +1387,11 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @since 2.2
 	 *
 	 * @param bool $keep_full Set to true to keep the full size.
+	 * @param bool $all_next_gen True: will delete every next-gen format. False: will delete only the current enabled format.
 	 *
 	 * @return bool|WP_Error True on success. A WP_Error object on failure.
 	 */
-	public function delete_nextgen_files( $keep_full = false ) {
+	public function delete_nextgen_files( $keep_full = false, $all_next_gen = false ) {
 		if ( ! $this->is_valid() ) {
 			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
@@ -1408,7 +1416,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		foreach ( $files as $file ) {
 			if ( 0 === strpos( $file['mime-type'], 'image/' ) ) {
-				$deleted = $this->delete_nextgen_file( $file['path'] );
+				$deleted = $this->delete_nextgen_file( $file['path'], $all_next_gen );
 
 				if ( is_wp_error( $deleted ) ) {
 					++$error_count;
@@ -1436,19 +1444,24 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *
 	 * @since 2.2
 	 *
-	 * @param string $file_path Path to the non-next-gen file.
+	 * @param  string $file_path Path to the non-next-gen file.
+	 * @param  bool   $all_next_gen True: will delete every next-gen format. False: will delete only the current enabled format.
 	 *
-	 * @return void|WP_Error A WP_Error object on failure.
+	 * @return void|WP_Error A \WP_Error object on failure.
 	 */
-	protected function delete_nextgen_file( $file_path ) {
+	protected function delete_nextgen_file( $file_path, $all_next_gen = false ) {
 		if ( ! $file_path ) {
 			return new WP_Error( 'no_path', __( 'Path to non-next-gen file not provided.', 'imagify' ) );
 		}
 
 		$next_gen_file = new File( $file_path );
+		$formats = $this->extensions;
 
+		if ( ! $all_next_gen ) {
+			$formats = imagify_nextgen_images_formats();
+		}
 		// Delete next-gen images.
-		foreach ( $this->extensions as $extension ) {
+		foreach ( $formats as $extension ) {
 			$path = $next_gen_file->get_path_to_nextgen( $extension );
 
 			if ( ! $path ) {

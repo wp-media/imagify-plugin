@@ -423,6 +423,22 @@ class File {
 			) );
 		}
 
+		// Check if a '-scaled' version of the image exists.
+		$scaled_path = preg_replace( '/(\.)([^\.]+)$/', '-scaled.$2', $backup_source );
+		if ( $this->filesystem->exists( $scaled_path ) ) {
+			// Create a backup path for the scaled image.
+			$scaled_backup_path = preg_replace( '/(\.)([^\.]+)$/', '-scaled.$2', $backup_path );
+			// Copy the '-scaled' version to the backup.
+			$this->filesystem->copy( $scaled_path, $scaled_backup_path, $overwrite, FS_CHMOD_FILE );
+
+			if ( ! $this->filesystem->exists( $scaled_backup_path ) ) {
+				return new \WP_Error( 'backup_doesnt_exist', __( 'The file could not be saved.', 'imagify' ), array(
+					'file_path'   => $this->filesystem->make_path_relative( $scaled_path ),
+					'backup_path' => $this->filesystem->make_path_relative( $scaled_backup_path ),
+				) );
+			}
+		}
+
 		return true;
 	}
 
