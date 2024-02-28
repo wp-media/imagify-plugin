@@ -34,9 +34,9 @@ class Nginx extends AbstractNginxDirConfFile {
 
 		return trim( '
 location ~* ^(' . $home_root . '.+)\.(' . $extensions . ')$ {
-	add_header Vary Accept;
+    add_header Vary Accept;
 
-	set $canavif 1;
+    set $canavif 1;
 
     if ($http_accept !~* "avif"){
         set $canavif 0;
