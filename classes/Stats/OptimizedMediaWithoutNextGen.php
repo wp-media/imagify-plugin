@@ -202,7 +202,7 @@ class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface
 			return;
 		}
 
-		if ( ! isset( $value['convert_to_avif'] ) && ! $value['convert_to_avif'] ) {
+		if ( ! isset( $old_value['convert_to_avif'] ) && ! isset( $value['convert_to_avif'] ) ) {
 			return;
 		}
 
