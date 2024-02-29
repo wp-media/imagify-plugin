@@ -2003,60 +2003,6 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
-	 * Generate AVIF images if they are missing.
-	 *
-	 * @since 2.2
-	 *
-	 * @return bool|WP_Error True if successfully launched. A WP_Error instance on failure.
-	 */
-	public function generate_avif_versions() {
-		if ( ! $this->is_valid() ) {
-			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
-		}
-
-		$media = $this->get_media();
-
-		if ( ! $media->is_image() ) {
-			return new WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to AVIF format.', 'imagify' ) );
-		}
-
-		if ( ! $media->has_backup() ) {
-			return new WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
-		}
-
-		$data = $this->get_data();
-
-		if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {
-			return new WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
-		}
-
-		if ( $this->has_avif() ) {
-			return new WP_Error( 'has_avif', __( 'This media already has AVIF versions.', 'imagify' ) );
-		}
-
-		$files = $media->get_media_files();
-		$sizes = [];
-		$args  = [
-			'hook_suffix' => 'generate_avif_versions',
-		];
-
-		foreach ( $files as $size_name => $file ) {
-			if ( 'image/avif' !== $files[ $size_name ]['mime-type'] ) {
-				array_unshift( $sizes, $size_name . static::AVIF_SUFFIX );
-			}
-		}
-
-		if ( ! $sizes ) {
-			return new WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to AVIF format.', 'imagify' ) );
-		}
-
-		$optimization_level = $data->get_optimization_level();
-
-		// Optimize.
-		return $this->optimize_sizes( $sizes, $optimization_level, $args );
-	}
-
-	/**
 	 * Tell if the media has AVIF versions.
 	 *
 	 * @since 2.2
