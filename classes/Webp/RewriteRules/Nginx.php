@@ -28,7 +28,7 @@ class Nginx extends AbstractNginxDirConfFile {
 	 * @return string
 	 */
 	protected function get_raw_new_contents() {
-		$extensions = $this->get_extensions_pattern();
+		$extensions = $this->get_extensions_pattern() . '|avif';
 		$home_root  = wp_parse_url( home_url( '/' ) );
 		$home_root  = $home_root['path'];
 
