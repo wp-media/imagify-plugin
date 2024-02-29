@@ -186,6 +186,9 @@ class Bulk {
 			$result = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
 			$media_ids['ids'] = array_merge( $media_ids['ids'], $result['ids'] );
 		}
+		$get_unoptimized_media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
+
+		$media_ids['ids'] = array_merge( $media_ids['ids'], $get_unoptimized_media_ids );
 
 		if ( empty( $media_ids['ids'] ) ) {
 			return [
