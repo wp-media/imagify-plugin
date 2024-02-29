@@ -156,7 +156,11 @@ $settings = Imagify_Settings::get_instance();
 				$class     = 'hidden';
 				$style     = '';
 
-				if ( false !== $total ) {
+				if (
+					false !== $total
+					&&
+					$total > 0
+				) {
 					$aria      = '';
 					$class     = '';
 					$processed = $total - $remaining;
