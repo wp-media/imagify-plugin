@@ -18,7 +18,6 @@ class Bulk {
 	public function init() {
 		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 3 );
 		add_action( 'imagify_convert_next_gen', [ $this, 'generate_nextgen_versions' ], 10, 2 );
-		add_action( 'imagify_convert_webp_finished', [ $this, 'clear_webp_transients' ], 10, 2 );
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
 		add_action( 'wp_ajax_imagify_missing_nextgen_generation', [ $this, 'missing_nextgen_callback' ] );
 		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
@@ -38,7 +37,7 @@ class Bulk {
 		delete_transient( 'imagify_custom-folders_optimize_running' );
 		delete_transient( 'imagify_wp_optimize_running' );
 		delete_transient( 'imagify_bulk_optimization_complete' );
-		delete_transient( 'imagify_missing_webp_total' );
+		delete_transient( 'imagify_missing_next_gen_total' );
 	}
 
 	/**
@@ -240,7 +239,7 @@ class Bulk {
 			];
 		}
 
-		delete_transient( 'imagify_stat_without_webp' );
+		delete_transient( 'imagify_stat_without_next_gen' );
 
 		$medias = [];
 
@@ -293,7 +292,7 @@ class Bulk {
 			}
 		}
 
-		set_transient( 'imagify_missing_webp_total', $total, HOUR_IN_SECONDS );
+		set_transient( 'imagify_missing_next_gen_total', $total, HOUR_IN_SECONDS );
 
 		return [
 			'success' => true,

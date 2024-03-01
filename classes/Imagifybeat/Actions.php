@@ -174,7 +174,7 @@ class Actions {
 		}
 
 		$remaining = 0;
-		$total     = get_transient( 'imagify_missing_webp_total' );
+		$total     = get_transient( 'imagify_missing_next_gen_total' );
 
 		if ( false === $total ) {
 			return $response;
@@ -182,8 +182,14 @@ class Actions {
 
 		$bulk = Bulk::get_instance();
 
+		$format = 'webp';
+
+		if ( get_imagify_option( 'convert_to_avif' ) ) {
+			$format = 'avif';
+		}
+
 		foreach ( $data[ $imagifybeat_id ] as $context ) {
-			$media     = $bulk->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
+			$media     = $bulk->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
 			$remaining += count( $media['ids'] );
 		}
 
