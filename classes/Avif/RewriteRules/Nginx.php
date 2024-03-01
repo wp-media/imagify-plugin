@@ -25,24 +25,6 @@ class Nginx extends AbstractNginxDirConfFile {
 	 * @return string
 	 */
 	protected function get_raw_new_contents() {
-		$extensions = $this->get_extensions_pattern();
-		$extensions = str_replace( '|avif', '', $extensions );
-		$home_root  = wp_parse_url( home_url( '/' ) );
-		$home_root  = $home_root['path'];
-
-		return trim( '
-location ~* ^(' . $home_root . '.+)\.(' . $extensions . ')$ {
-	add_header Vary Accept;
-
-	if ($http_accept ~* "avif"){
-		set $imavif A;
-	}
-	if (-f $request_filename.avif) {
-		set $imavif  "${imavif}B";
-	}
-	if ($imavif = AB) {
-		rewrite ^(.*) $1.avif;
-	}
-}' );
+		return '';
 	}
 }
