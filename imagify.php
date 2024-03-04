@@ -6,7 +6,7 @@
  * Version: 2.2-alpha1
  * Requires at least: 5.3
  * Requires PHP: 7.0
- * Author: Imagify – Optimize Images & Convert WebP
+ * Author: Imagify – Optimize Images & Convert WebP & Avif
  * Author URI: https://imagify.io
  * Licence: GPLv2
  *
