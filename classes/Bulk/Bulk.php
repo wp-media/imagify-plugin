@@ -594,6 +594,10 @@ class Bulk {
 	 * @param array $old_value The old option value.
 	 * @param array $value The new option value.
 	 *
+	 * Please note that the convert_to_avif new value is a checkbox,
+	 * so it equals 1 when it's set otherwise it's not set.
+	 * That's why we need to use empty function when checking its value.
+	 *
 	 * @return void
 	 */
 	public function maybe_generate_missing_nextgen( $old_value, $value ) {
