@@ -305,9 +305,9 @@ abstract class AbstractData implements DataInterface {
 		$nextgen_avif_size_name = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
 		$nextgen_webp_size_name = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
 
-		if ( $use_nextgen) {
+		if ( $use_nextgen ) {
 			$size = (int) $data['sizes'][ $nextgen_webp_size_name ]['optimized_size'];
-			if (! empty( $data['sizes'][ $nextgen_avif_size_name ]['optimized_size'] ) ) {
+			if ( ! empty( $data['sizes'][ $nextgen_avif_size_name ]['optimized_size'] ) ) {
 				$size = (int) $data['sizes'][ $nextgen_avif_size_name ]['optimized_size'];
 			}
 		} elseif ( ! empty( $data['sizes']['full']['optimized_size'] ) ) {
@@ -429,7 +429,7 @@ abstract class AbstractData implements DataInterface {
 
 		$percent = $this->get_size_data( $nextgen_avif_size_name, 'percent' );
 
-		//Check for webp version if avif is not found.
+		// Check for webp version if avif is not found.
 		if ( ! $percent ) {
 			$percent = $this->get_size_data( $nextgen_webp_size_name, 'percent' );
 		}
