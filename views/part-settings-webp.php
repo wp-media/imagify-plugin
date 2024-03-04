@@ -1,6 +1,6 @@
 <?php
 
-use Imagify\Stats\OptimizedMediaWithoutWebp;
+use Imagify\Stats\OptimizedMediaWithoutNextGen;
 use Imagify\Webp\Display;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
@@ -136,7 +136,7 @@ $settings = Imagify_Settings::get_instance();
 		</div>
 
 		<?php
-		$count = OptimizedMediaWithoutWebp::get_instance()->get_cached_stat();
+		$count = OptimizedMediaWithoutNextGen::get_instance()->get_cached_stat();
 
 		if ( $count ) {
 			?>
@@ -149,14 +149,18 @@ $settings = Imagify_Settings::get_instance();
 				</button>
 
 				<?php
-				$remaining = OptimizedMediaWithoutWebp::get_instance()->get_stat();
-				$total     = get_transient( 'imagify_missing_webp_total' );
+				$remaining = OptimizedMediaWithoutNextGen::get_instance()->get_stat();
+				$total     = get_transient( 'imagify_missing_next_gen_total' );
 				$progress  = 0;
 				$aria      = ' aria-hidden="true"';
 				$class     = 'hidden';
 				$style     = '';
 
-				if ( false !== $total ) {
+				if (
+					false !== $total
+					&&
+					$total > 0
+				) {
 					$aria      = '';
 					$class     = '';
 					$processed = $total - $remaining;

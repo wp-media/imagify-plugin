@@ -1009,6 +1009,13 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		if ( $backup_path ) {
 			$this->filesystem->delete( $backup_path );
+
+			// Check for the -scaled version in the backup.
+			$scaled_backup_path = preg_replace( '/(\.)([^\.]+)$/', '-scaled.$2', $backup_path );
+			if ( $this->filesystem->exists( $scaled_backup_path ) ) {
+				// Delete the -scaled version from the backup.
+				$this->filesystem->delete( $scaled_backup_path );
+			}
 		}
 	}
 
@@ -1380,10 +1387,11 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @since 2.2
 	 *
 	 * @param bool $keep_full Set to true to keep the full size.
+	 * @param bool $all_next_gen True: will delete every next-gen format. False: will delete only the current enabled format.
 	 *
 	 * @return bool|WP_Error True on success. A WP_Error object on failure.
 	 */
-	public function delete_nextgen_files( $keep_full = false ) {
+	public function delete_nextgen_files( $keep_full = false, $all_next_gen = false ) {
 		if ( ! $this->is_valid() ) {
 			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
@@ -1408,7 +1416,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		foreach ( $files as $file ) {
 			if ( 0 === strpos( $file['mime-type'], 'image/' ) ) {
-				$deleted = $this->delete_nextgen_file( $file['path'] );
+				$deleted = $this->delete_nextgen_file( $file['path'], $all_next_gen );
 
 				if ( is_wp_error( $deleted ) ) {
 					++$error_count;
@@ -1437,18 +1445,30 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @since 2.2
 	 *
 	 * @param  string $file_path Path to the non-next-gen file.
+	 * @param  bool   $all_next_gen True: will delete every next-gen format. False: will delete only the current enabled format.
+	 *
 	 * @return void|WP_Error A \WP_Error object on failure.
 	 */
-	protected function delete_nextgen_file( $file_path ) {
+	protected function delete_nextgen_file( $file_path, $all_next_gen = false ) {
 		if ( ! $file_path ) {
 			return new WP_Error( 'no_path', __( 'Path to non-next-gen file not provided.', 'imagify' ) );
 		}
 
 		$next_gen_file = new File( $file_path );
+		$formats = $this->extensions;
 
+		if ( ! $all_next_gen ) {
+			$formats = imagify_nextgen_images_formats();
+		}
 		// Delete next-gen images.
-		foreach ( $this->extensions as $extension ) {
-			$this->delete_file( $next_gen_file->get_path_to_nextgen( $extension ) );
+		foreach ( $formats as $extension ) {
+			$path = $next_gen_file->get_path_to_nextgen( $extension );
+
+			if ( ! $path ) {
+				continue;
+			}
+
+			$this->delete_file( $path );
 		}
 	}
 
@@ -1456,10 +1476,11 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Delete a next gen format image, given its non-next-gen version's path.
 	 *
 	 * @param string $next_gen_path Path to the non-next-gen file.
-	 * @return bool|WP_Error    True on success. A \WP_Error object on failure.
+	 *
+	 * @return bool|WP_Error True on success. A WP_Error object on failure.
 	 */
 	protected function delete_file( string $next_gen_path ) {
-		if ( ! $next_gen_path ) {
+		if ( empty( $next_gen_path ) ) {
 			return new WP_Error( 'no_$next_gen_path', __( 'Could not get the path to the Next-Gen format file.', 'imagify' ) );
 		}
 
@@ -1526,21 +1547,31 @@ abstract class AbstractProcess implements ProcessInterface {
 	 */
 	public function is_size_next_gen( $size_name ) {
 		$formats = imagify_nextgen_images_formats();
-		$suffix  = [];
 
 		foreach ( $formats as $format ) {
-			if ( 'avif' === $format ) {
-				$suffix[] = preg_quote( static::AVIF_SUFFIX, '/' );
-			} elseif ( 'webp' === $format ) {
-				$suffix[] = preg_quote( static::WEBP_SUFFIX, '/' );
+			$suffix = preg_quote( $this->get_suffix_from_format( $format ), '/' );
+
+			if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
+				return $matches['size'];
 			}
 		}
 
-		if ( preg_match( '/^(?<size>.+)' . implode( '|', $suffix ) . '$/', $size_name, $matches ) ) {
-			return $matches['size'];
-		}
-
 		return false;
+	}
+
+	/**
+	 * Get suffix from format.
+	 *
+	 * @param string $format Format extension of next-gen image.
+	 * @return string
+	 */
+	private function get_suffix_from_format( string $format ): string {
+		$suffixes = [
+			'avif' => static::AVIF_SUFFIX,
+			'webp' => static::WEBP_SUFFIX,
+		];
+
+		return $suffixes[ $format ];
 	}
 
 	/**
@@ -1969,60 +2000,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		return \Imagify_Options::get_instance()->sanitize_and_validate( 'optimization_level', $optimization_level );
-	}
-
-	/**
-	 * Generate AVIF images if they are missing.
-	 *
-	 * @since 2.2
-	 *
-	 * @return bool|WP_Error True if successfully launched. A WP_Error instance on failure.
-	 */
-	public function generate_avif_versions() {
-		if ( ! $this->is_valid() ) {
-			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
-		}
-
-		$media = $this->get_media();
-
-		if ( ! $media->is_image() ) {
-			return new WP_Error( 'no_webp', __( 'This media is not an image and cannot be converted to AVIF format.', 'imagify' ) );
-		}
-
-		if ( ! $media->has_backup() ) {
-			return new WP_Error( 'no_backup', __( 'This media has no backup file.', 'imagify' ) );
-		}
-
-		$data = $this->get_data();
-
-		if ( ! $data->is_optimized() && ! $data->is_already_optimized() ) {
-			return new WP_Error( 'not_optimized', __( 'This media has not been optimized by Imagify yet.', 'imagify' ) );
-		}
-
-		if ( $this->has_avif() ) {
-			return new WP_Error( 'has_avif', __( 'This media already has AVIF versions.', 'imagify' ) );
-		}
-
-		$files = $media->get_media_files();
-		$sizes = [];
-		$args  = [
-			'hook_suffix' => 'generate_avif_versions',
-		];
-
-		foreach ( $files as $size_name => $file ) {
-			if ( 'image/avif' !== $files[ $size_name ]['mime-type'] ) {
-				array_unshift( $sizes, $size_name . static::AVIF_SUFFIX );
-			}
-		}
-
-		if ( ! $sizes ) {
-			return new WP_Error( 'no_sizes', __( 'This media does not have files that can be converted to AVIF format.', 'imagify' ) );
-		}
-
-		$optimization_level = $data->get_optimization_level();
-
-		// Optimize.
-		return $this->optimize_sizes( $sizes, $optimization_level, $args );
 	}
 
 	/**

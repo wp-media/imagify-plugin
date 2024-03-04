@@ -26,7 +26,7 @@ delete_transient( 'imagify_bulk_optimization_infos' );
 delete_transient( 'imagify_large_library' );
 delete_transient( 'imagify_max_image_size' );
 delete_transient( 'imagify_user' );
-delete_transient( 'imagify_stat_without_webp' );
+delete_transient( 'imagify_stat_without_next_gen' );
 
 // Delete transients.
 $transients = implode( '" OR option_name LIKE "', array(
