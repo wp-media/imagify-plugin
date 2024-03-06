@@ -1,70 +1,64 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Webp;
 
+use Imagify\EventManagement\SubscriberInterface;
 use Imagify\Notices\Notices;
 use Imagify\Traits\InstanceGetterTrait;
+use Imagify\WriteFile\WriteFileInterface;
 
 /**
- * Display WebP images on the site.
+ * Display WebP images on the site using picture tag.
  *
  * @since 1.9
  */
-class Display {
+class Display implements SubscriberInterface {
 	use InstanceGetterTrait;
 
 	/**
 	 * Server conf object.
 	 *
-	 * @var    \Imagify\WriteFile\WriteFileInterface
+	 * @var WriteFileInterface|null
 	 * @since 1.9
 	 */
-	protected $server_conf;
+	protected $server_conf = null;
 
 	/**
-	 * Init.
+	 * Returns an array of events this subscriber listens to
 	 *
-	 * @since 1.9
+	 * @return array
 	 */
-	public function init() {
-		add_filter( 'imagify_settings_on_save',   [ $this, 'maybe_add_rewrite_rules' ] );
-		add_action( 'imagify_settings_webp_info', [ $this, 'maybe_add_webp_info' ] );
-		add_action( 'imagify_activation',         [ $this, 'activate' ] );
-		add_action( 'imagify_deactivation',       [ $this, 'deactivate' ] );
-
-		Picture\Display::get_instance()->init();
-		RewriteRules\Display::get_instance()->init();
+	public static function get_subscribed_events() {
+		return [
+			'imagify_settings_on_save'   => [ 'maybe_add_rewrite_rules', 13 ],
+			'imagify_settings_webp_info' => 'maybe_add_webp_info',
+			'imagify_activation'         => 'activate',
+			'imagify_deactivation'       => 'deactivate',
+		];
 	}
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** HOOKS =================================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * If display WebP images, add the WebP type to the .htaccess/etc file.
 	 *
 	 * @since 1.9
 	 *
-	 * @param  array $values The option values.
+	 * @param array $values The option values.
+	 *
 	 * @return array
 	 */
 	public function maybe_add_rewrite_rules( $values ) {
-		$old_value = (bool) get_imagify_option( 'display_webp' );
-		// See \Imagify_Options->validate_values_on_update() for why we use 'convert_to_webp' here.
-		$new_value = ! empty( $values['display_webp'] ) && ! empty( $values['convert_to_webp'] );
-
-		if ( $old_value === $new_value ) {
-			// No changes.
-			return $values;
-		}
-
 		if ( ! $this->get_server_conf() ) {
 			return $values;
 		}
 
-		if ( $new_value ) {
+		$enabled = isset( $values['display_nextgen'] ) ? true : false;
+		$result  = false;
+
+		if ( $enabled ) {
 			// Add the WebP file type.
 			$result = $this->get_server_conf()->add();
-		} else {
+		} elseif ( ! $enabled ) {
 			// Remove the WebP file type.
 			$result = $this->get_server_conf()->remove();
 		}
@@ -76,9 +70,11 @@ class Display {
 		// Display an error message.
 		if ( is_multisite() && strpos( wp_get_referer(), network_admin_url( '/' ) ) === 0 ) {
 			Notices::get_instance()->add_network_temporary_notice( $result->get_error_message() );
-		} else {
-			Notices::get_instance()->add_site_temporary_notice( $result->get_error_message() );
+
+			return $values;
 		}
+
+		Notices::get_instance()->add_site_temporary_notice( $result->get_error_message() );
 
 		return $values;
 	}
@@ -130,9 +126,11 @@ class Display {
 		if ( ! $conf ) {
 			return;
 		}
-		if ( ! get_imagify_option( 'display_webp' ) ) {
+
+		if ( ! get_imagify_option( 'display_nextgen' ) ) {
 			return;
 		}
+
 		if ( is_wp_error( $conf->is_file_writable() ) ) {
 			return;
 		}
@@ -151,9 +149,6 @@ class Display {
 		if ( ! $conf ) {
 			return;
 		}
-		if ( ! get_imagify_option( 'display_webp' ) ) {
-			return;
-		}
 
 		$file_path  = $conf->get_file_path();
 		$filesystem = \Imagify_Filesystem::get_instance();
@@ -167,10 +162,6 @@ class Display {
 
 		$conf->remove();
 	}
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** TOOLS =================================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * Get the path to the directory conf file.
@@ -195,29 +186,12 @@ class Display {
 	}
 
 	/**
-	 * Get the WebP display method by validating the given value.
-	 *
-	 * @since 1.9
-	 *
-	 * @param  array $values The option values.
-	 * @return string        'picture' or 'rewrite'.
-	 */
-	public function get_display_webp_method( $values ) {
-		$options = \Imagify_Options::get_instance();
-		$default = $options->get_default_values();
-		$default = $default['display_webp_method'];
-		$method  = ! empty( $values['display_webp_method'] ) ? $values['display_webp_method'] : '';
-
-		return $options->sanitize_and_validate( 'display_webp_method', $method, $default );
-	}
-
-	/**
 	 * Get the server conf instance.
 	 * Note: nothing needed for nginx.
 	 *
 	 * @since 1.9
 	 *
-	 * @return \Imagify\WriteFile\WriteFileInterface
+	 * @return WriteFileInterface
 	 */
 	protected function get_server_conf() {
 		global $is_apache, $is_iis7;
@@ -230,8 +204,6 @@ class Display {
 			$this->server_conf = new Apache();
 		} elseif ( $is_iis7 ) {
 			$this->server_conf = new IIS();
-		} else {
-			$this->server_conf = false;
 		}
 
 		return $this->server_conf;

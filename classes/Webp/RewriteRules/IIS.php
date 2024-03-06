@@ -1,37 +1,36 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Webp\RewriteRules;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\WriteFile\AbstractIISDirConfFile;
 
 /**
  * Add and remove rewrite rules to the web.config file to display WebP images on the site.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
-class IIS extends \Imagify\WriteFile\AbstractIISDirConfFile {
+class IIS extends AbstractIISDirConfFile {
 
 	/**
 	 * Name of the tag used as block delemiter.
 	 *
-	 * @var    string
-	 * @since  1.9
-	 * @author Grégory Viguier
+	 * @var string
+	 * @since 1.9
 	 */
 	const TAG_NAME = 'Imagify: rewrite rules for webp';
 
 	/**
 	 * Get unfiltered new contents to write into the file.
 	 *
-	 * @since  1.9
-	 * @access protected
+	 * @since 1.9
 	 * @source https://github.com/igrigorik/webp-detect/blob/master/iis.config
-	 * @author Grégory Viguier
 	 *
 	 * @return string
 	 */
 	protected function get_raw_new_contents() {
 		$extensions = $this->get_extensions_pattern();
+		$extensions = str_replace( '|webp', '', $extensions );
 		$home_root  = wp_parse_url( home_url( '/' ) );
 		$home_root  = $home_root['path'];
 

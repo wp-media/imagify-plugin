@@ -606,11 +606,11 @@ class Imagify_Files_List_Table extends WP_List_Table {
 				</li>
 				<?php
 				if ( $item->process->get_media()->is_image() ) {
-					$has_webp = $item->process->has_webp() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
+					$has_nextgen = $item->process->has_next_gen() ? __( 'Yes', 'imagify' ) : __( 'No', 'imagify' );
 					?>
 					<li class="imagify-data-item">
-						<span class="data"><?php esc_html_e( 'WebP generated:', 'imagify' ); ?></span>
-						<strong class="data-value"><?php echo esc_html( $has_webp ); ?></strong>
+						<span class="data"><?php esc_html_e( 'Next-Gen generated:', 'imagify' ); ?></span>
+						<strong class="data-value"><?php echo esc_html( $has_nextgen ); ?></strong>
 					</li>
 					<?php
 				}
@@ -700,8 +700,8 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		$this->optimize_button( $item );
 		$this->retry_button( $item );
 		$this->reoptimize_buttons( $item );
-		$this->generate_webp_versions_button( $item );
-		$this->delete_webp_versions_button( $item );
+		$this->generate_nextgen_versions_button( $item );
+		$this->delete_nextgen_versions_button( $item );
 		$this->restore_button( $item );
 	}
 
@@ -806,14 +806,14 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prints a button to generate WebP versions if they are missing.
+	 * Prints a button to generate Next gen versions if they are missing.
 	 *
 	 * @since 1.7
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
 	 */
-	protected function generate_webp_versions_button( $item ) {
-		$button = get_imagify_attachment_generate_webp_versions_link( $item->process );
+	protected function generate_nextgen_versions_button( $item ) {
+		$button = get_imagify_attachment_generate_nextgen_versions_link( $item->process );
 
 		if ( $button ) {
 			echo $button . '<br/>';
@@ -821,14 +821,14 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * Prints a button to delete WebP versions when the status is "already_optimized".
+	 * Prints a button to delete next-gen versions when the status is "already_optimized".
 	 *
 	 * @since 1.9.6
 	 *
 	 * @param object $item The current item. It must contain at least a $process property.
 	 */
-	protected function delete_webp_versions_button( $item ) {
-		$button = get_imagify_attachment_delete_webp_versions_link( $item->process );
+	protected function delete_nextgen_versions_button( $item ) {
+		$button = get_imagify_attachment_delete_nextgen_versions_link( $item->process );
 
 		if ( $button ) {
 			echo $button . '<br/>';

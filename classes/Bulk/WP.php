@@ -165,10 +165,11 @@ class WP extends AbstractBulk {
 	}
 
 	/**
-	 * Get ids of all optimized media without WebP versions.
+	 * Get ids of all optimized media without Next gen versions.
 	 *
-	 * @since 1.9
-	 * @since 1.9.5 The method doesn't return the IDs directly anymore.
+	 * @since 2.2
+	 *
+	 * @param string $format Format we are looking for. (webp|avif).
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.
@@ -178,45 +179,61 @@ class WP extends AbstractBulk {
 	 *     }
 	 * }
 	 */
-	public function get_optimized_media_ids_without_webp() {
+	public function get_optimized_media_ids_without_format( $format ) {
 		global $wpdb;
 
 		$this->set_no_time_limit();
 
 		$mime_types   = Imagify_DB::get_mime_types( 'image' );
-		$mime_types   = str_replace( ",'image/webp'", '', $mime_types );
+
+		// Remove single quotes and explode string into array.
+		$mime_types_array = explode( ',', str_replace( "'", '', $mime_types ) );
+
+		// Iterate over array and check if string contains input.
+		foreach ( $mime_types_array as $item ) {
+			if ( strpos( $item, $format ) !== false ) {
+				$mime = $item;
+				break;
+			}
+		}
+		if ( ! isset( $mime ) && empty( $mime ) ) {
+			$mime = 'image/webp';
+		}
+		$mime_types   = str_replace( ",'" . $mime . "'", '', $mime_types );
 		$statuses     = Imagify_DB::get_post_statuses();
 		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
 		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( [
 			'prepared' => true,
 		] );
-		$webp_suffix  = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::WEBP_SUFFIX' );
+		$nextgen_suffix  = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::' . strtoupper( $format ) . '_SUFFIX' );
+
 		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"
-			SELECT p.ID
-			FROM $wpdb->posts AS p
-				$nodata_join
-			LEFT JOIN $wpdb->postmeta AS mt1
-				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
-			LEFT JOIN $wpdb->postmeta AS mt2
+		   SELECT p.ID
+		   FROM $wpdb->posts AS p
+		    $nodata_join
+		   LEFT JOIN $wpdb->postmeta AS mt1
+		    ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+		   LEFT JOIN $wpdb->postmeta AS mt2
 				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_data' )
-			WHERE
-				p.post_mime_type IN ( $mime_types )
-				AND ( mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
-				AND mt2.meta_value NOT LIKE %s
-				AND p.post_type = 'attachment'
-				AND p.post_status IN ( $statuses )
-				$nodata_where
-			ORDER BY p.ID DESC
-			LIMIT 0, %d",
-			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
+		   WHERE
+		    p.post_mime_type IN ( $mime_types )
+		    AND (mt1.meta_key IS NULL OR mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
+			AND mt2.meta_value NOT LIKE %s
+		    AND p.post_type = 'attachment'
+		    AND p.post_status IN ( $statuses )
+		    $nodata_where
+		   ORDER BY p.ID DESC
+		   LIMIT 0, %d",
+			'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
 			imagify_get_unoptimized_attachment_limit()
 		) );
 
 		$wpdb->flush();
-		unset( $mime_types, $statuses, $webp_suffix );
+		unset( $mime_types, $statuses, $nextgen_suffix, $mime );
 
 		$ids  = array_filter( array_map( 'absint', $ids ) );
+
 		$data = [
 			'ids'    => [],
 			'errors' => [
@@ -243,7 +260,7 @@ class WP extends AbstractBulk {
 		 * @param array  $metas An array of the data fetched from the database.
 		 * @param string $context The context.
 		 */
-		do_action( 'imagify_bulk_generate_webp_before_file_existence_tests', $ids, $metas, 'wp' );
+		do_action( 'imagify_bulk_generate_nextgen_before_file_existence_tests', $ids, $metas, 'wp' );
 
 		foreach ( $ids as $i => $id ) {
 			if ( empty( $metas['filenames'][ $id ] ) ) {

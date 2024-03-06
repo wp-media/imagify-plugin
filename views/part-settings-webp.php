@@ -1,39 +1,45 @@
 <?php
 
-use Imagify\Stats\OptimizedMediaWithoutWebp;
+use Imagify\Stats\OptimizedMediaWithoutNextGen;
 use Imagify\Webp\Display;
-use Imagify\Webp\Picture\Display as PictureDisplay;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 $settings = Imagify_Settings::get_instance();
 ?>
 <div>
-	<h3 class="imagify-options-subtitle"><?php _e( 'WebP format', 'imagify' ); ?></h3>
+	<h3 class="imagify-options-subtitle"><?php _e( 'Next-Gen image format', 'imagify' ); ?></h3>
 
 	<div class="imagify-setting-line">
 		<?php
 		$settings->field_checkbox( [
-			'option_name' => 'convert_to_webp',
-			'label'       => __( 'Create WebP versions of images', 'imagify' ),
+			'option_name' => 'convert_to_avif',
+			'label'       => __( 'Create AVIF versions of images', 'imagify' ),
 			'attributes'  => [
-				'aria-describedby' => 'describe-convert_to_webp',
+				'aria-describedby' => 'describe-convert_to_avif',
 			],
 		] );
 		?>
+		<div class="imagify-info">
+			<span class="dashicons dashicons-info"></span>
+			<?php esc_html_e( 'Enabling this option will start the process of creating AVIF version of your images automatically.', 'imagify' ); ?>
+		</div>
+	</div>
+
+	<div class="imagify-setting-line">
 
 		<div class="imagify-options-line">
 			<?php
 			$settings->field_checkbox( [
-				'option_name' => 'display_webp',
-				'label'       => __( 'Display images in WebP format on the site', 'imagify' ),
+				'option_name' => 'display_nextgen',
+				'label'       => __( 'Display images in Next-Gen format on the site', 'imagify' ),
 			] );
 			?>
 
 			<div class="imagify-options-line">
 				<?php
 				$settings->field_radio_list( [
-					'option_name' => 'display_webp_method',
+					'option_name' => 'display_nextgen_method',
 					'values'      => [
 						'rewrite' => __( 'Use rewrite rules', 'imagify' ),
 						/* translators: 1 and 2 are <em> tag opening and closing. */
@@ -47,7 +53,7 @@ $settings = Imagify_Settings::get_instance();
 
 				<div class="imagify-options-line">
 					<?php
-					$cdn_source = PictureDisplay::get_instance()->get_cdn_source();
+					$cdn_source = apply_filters( 'imagify_cdn_source_url', '' );
 
 					if ( 'option' !== $cdn_source['source'] ) {
 						if ( 'constant' === $cdn_source['source'] ) {
@@ -90,7 +96,7 @@ $settings = Imagify_Settings::get_instance();
 				</div>
 			</div>
 
-			<div id="describe-display_webp_method" class="imagify-info">
+			<div id="describe-display_nextgen_method" class="imagify-info">
 				<span class="dashicons dashicons-info"></span>
 				<?php
 				$conf_file_path = Display::get_instance()->get_file_path( true );
@@ -130,7 +136,7 @@ $settings = Imagify_Settings::get_instance();
 		</div>
 
 		<?php
-		$count = OptimizedMediaWithoutWebp::get_instance()->get_cached_stat();
+		$count = OptimizedMediaWithoutNextGen::get_instance()->get_cached_stat();
 
 		if ( $count ) {
 			?>
@@ -139,18 +145,22 @@ $settings = Imagify_Settings::get_instance();
 
 				<button id="imagify-generate-webp-versions" class="button imagify-button-primary imagify-button-mini" type="button">
 					<span class="dashicons dashicons-admin-generic"></span>
-					<span class="button-text"><?php esc_html_e( 'Generate missing WebP versions', 'imagify' ); ?></span>
+					<span class="button-text"><?php esc_html_e( 'Generate missing Next-Gen images versions', 'imagify' ); ?></span>
 				</button>
 
 				<?php
-				$remaining = OptimizedMediaWithoutWebp::get_instance()->get_stat();
-				$total     = get_transient( 'imagify_missing_webp_total' );
+				$remaining = OptimizedMediaWithoutNextGen::get_instance()->get_stat();
+				$total     = get_transient( 'imagify_missing_next_gen_total' );
 				$progress  = 0;
 				$aria      = ' aria-hidden="true"';
 				$class     = 'hidden';
 				$style     = '';
 
-				if ( false !== $total ) {
+				if (
+					false !== $total
+					&&
+					$total > 0
+				) {
 					$aria      = '';
 					$class     = '';
 					$processed = $total - $remaining;
