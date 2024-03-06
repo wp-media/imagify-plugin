@@ -261,6 +261,9 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.2 =
+- New Feature: Introduce AVIF generation feature
+
 = 2.1.3.1 = 
 - Bugfix: missing styling on some banners when using minified versions of the CSS files (#765)
 
