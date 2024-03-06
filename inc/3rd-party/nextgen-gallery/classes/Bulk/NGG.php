@@ -142,7 +142,7 @@ class NGG extends AbstractBulk {
 		) );
 
 		$wpdb->flush();
-		unset( $ngg_table, $data_table, $webp_suffix );
+		unset( $ngg_table, $data_table, $suffix );
 
 		$data = [
 			'ids'    => [],
@@ -169,7 +169,7 @@ class NGG extends AbstractBulk {
 			$backup_path = get_imagify_ngg_attachment_backup_path( $file_path );
 
 			if ( ! $this->filesystem->exists( $backup_path ) ) {
-				// No backup, no WebP.
+				// No backup, no next-gen.
 				$data['errors']['no_backup'][] = $file_id;
 				continue;
 			}
