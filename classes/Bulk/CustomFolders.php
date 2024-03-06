@@ -74,10 +74,11 @@ class CustomFolders extends AbstractBulk {
 	}
 
 	/**
-	 * Get ids of all optimized media without WebP versions.
+	 * Get ids of all optimized media without Next gen versions.
 	 *
-	 * @since 1.9
-	 * @since 1.9.5 The method doesn't return the IDs directly anymore.
+	 * @since 2.2
+	 *
+	 * @param string $format Format we are looking for. (webp|avif).
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.
@@ -87,7 +88,7 @@ class CustomFolders extends AbstractBulk {
 	 *     }
 	 * }
 	 */
-	public function get_optimized_media_ids_without_webp() {
+	public function get_optimized_media_ids_without_format( $format ) {
 		global $wpdb;
 
 		$this->set_no_time_limit();
@@ -95,9 +96,22 @@ class CustomFolders extends AbstractBulk {
 		$files_table   = Imagify_Files_DB::get_instance()->get_table_name();
 		$folders_table = Imagify_Folders_DB::get_instance()->get_table_name();
 		$mime_types    = Imagify_DB::get_mime_types( 'image' );
-		$mime_types   = str_replace( ",'image/webp'", '', $mime_types );
-		$webp_suffix   = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::WEBP_SUFFIX' );
-		$files         = $wpdb->get_results( $wpdb->prepare( // WPCS: unprepared SQL ok.
+		// Remove single quotes and explode string into array.
+		$mime_types_array = explode( ',', str_replace( "'", '', $mime_types ) );
+
+		// Iterate over array and check if string contains input.
+		foreach ( $mime_types_array as $item ) {
+			if ( strpos( $item, $format ) !== false ) {
+				$mime = $item;
+				break;
+			}
+		}
+		if ( ! isset( $mime ) && empty( $mime ) ) {
+			$mime = 'image/webp';
+		}
+		$mime_types     = str_replace( ",'" . $mime . "'", '', $mime_types );
+		$nextgen_suffix  = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::' . strtoupper( $format ) . '_SUFFIX' );
+		$files          = $wpdb->get_results( $wpdb->prepare( // WPCS: unprepared SQL ok.
 			"
 			SELECT fi.file_id, fi.path
 			FROM $files_table as fi
@@ -108,11 +122,11 @@ class CustomFolders extends AbstractBulk {
 				AND ( fi.status = 'success' OR fi.status = 'already_optimized' )
 				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )
 			ORDER BY fi.file_id DESC",
-			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+			'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
 		) );
 
 		$wpdb->flush();
-		unset( $mime_types, $files_table, $folders_table, $webp_suffix );
+		unset( $mime_types, $files_table, $folders_table, $nextgen_suffix, $mime );
 
 		$data = [
 			'ids'    => [],

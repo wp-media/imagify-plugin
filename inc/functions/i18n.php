@@ -2,7 +2,7 @@
 
 use Imagify\Imagifybeat\Actions;
 use Imagify\Imagifybeat\Core;
-use Imagify\Stats\OptimizedMediaWithoutWebp;
+use Imagify\Stats\OptimizedMediaWithoutNextGen;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
@@ -79,27 +79,27 @@ function get_imagify_localize_script_translations( $context ) {
 				],
 			];
 
-			if ( OptimizedMediaWithoutWebp::get_instance()->get_cached_stat() ) {
+			if ( OptimizedMediaWithoutNextGen::get_instance()->get_cached_stat() ) {
 				$contexts             = imagify_get_context_names();
 				$translations['bulk'] = [
-					'curlMissing'      => ! Imagify_Requirements::supports_curl(),
-					'editorMissing'    => ! Imagify_Requirements::supports_image_editor(),
-					'extHttpBlocked'   => Imagify_Requirements::is_imagify_blocked(),
-					'apiDown'          => ! Imagify_Requirements::is_api_up(),
-					'keyIsValid'       => Imagify_Requirements::is_api_key_valid(),
-					'isOverQuota'      => Imagify_Requirements::is_over_quota(),
-					'imagifybeatIDs'   => [
+					'curlMissing'       => ! Imagify_Requirements::supports_curl(),
+					'editorMissing'     => ! Imagify_Requirements::supports_image_editor(),
+					'extHttpBlocked'    => Imagify_Requirements::is_imagify_blocked(),
+					'apiDown'           => ! Imagify_Requirements::is_api_up(),
+					'keyIsValid'        => Imagify_Requirements::is_api_key_valid(),
+					'isOverQuota'       => Imagify_Requirements::is_over_quota(),
+					'imagifybeatIDs'    => [
 						'progress'     => $imagifybeat_actions->get_imagifybeat_id( 'options_optimization_status' ),
 						'requirements' => $imagifybeat_actions->get_imagifybeat_id( 'requirements' ),
 					],
-					'ajaxActions'      => [
-						'MissingWebp' => 'imagify_missing_webp_generation',
+					'ajaxActions'       => [
+						'MissingNextGen' => 'imagify_missing_nextgen_generation',
 					],
-					'ajaxNonce'        => wp_create_nonce( 'imagify-bulk-optimize' ),
-					'contexts'         => $contexts,
-					'progress_webp'    => [
-						'remaining' => OptimizedMediaWithoutWebp::get_instance()->get_stat(),
-						'total' => get_transient( 'imagify_missing_webp_total' ),
+					'ajaxNonce'         => wp_create_nonce( 'imagify-bulk-optimize' ),
+					'contexts'          => $contexts,
+					'progress_next_gen' => [
+						'remaining' => OptimizedMediaWithoutNextGen::get_instance()->get_stat(),
+						'total' => get_transient( 'imagify_missing_next_gen_total' ),
 					],
 					'labels'           => [
 						'curlMissing'                    => __( 'cURL is not available on the server.', 'imagify' ),
@@ -113,8 +113,8 @@ function get_imagify_localize_script_translations( $context ) {
 						'invalidAPIKeyTitle'             => __( 'Your API key is not valid!', 'imagify' ),
 						'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
 						'nothingToDoTitle'               => __( 'Hold on!', 'imagify' ),
-						'nothingToDoText'                => __( 'All your optimized images already have a WebP version. Congratulations!', 'imagify' ),
-						'nothingToDoNoBackupText'        => __( 'Because the selected images did not have a backup copy, Imagify was unable to create WebP versions.', 'imagify' ),
+						'nothingToDoText'                => __( 'All your optimized images already have a next-gen version. Congratulations!', 'imagify' ),
+						'nothingToDoNoBackupText'        => __( 'Because the selected images did not have a backup copy, Imagify was unable to create next-gen versions.', 'imagify' ),
 						'error'                          => __( 'Error', 'imagify' ),
 						'ajaxErrorText'                  => __( 'The operation failed.', 'imagify' ),
 						'getUnoptimizedImagesErrorTitle' => __( 'Oops, There is something wrong!', 'imagify' ),
@@ -262,7 +262,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'nothingToDoTitle'               => __( 'Hold on!', 'imagify' ),
 					'nothingToDoText'                => [
 						'optimize'      => __( 'All your media files have been optimized by Imagify. Congratulations!', 'imagify' ),
-						'generate_webp' => __( 'All your optimized images already have a WebP version. Congratulations!', 'imagify' ),
+						'generate_webp' => __( 'All your optimized images already have a next-gen version. Congratulations!', 'imagify' ),
 					],
 					'optimizing'                     => __( 'Optimizing', 'imagify' ),
 					'error'                          => __( 'Error', 'imagify' ),

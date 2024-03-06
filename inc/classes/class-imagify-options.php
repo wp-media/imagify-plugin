@@ -27,20 +27,20 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 * @since 1.7
 	 */
 	protected $default_values = [
-		'api_key'             => '',
-		'optimization_level'  => 2,
-		'lossless'            => 0,
-		'auto_optimize'       => 0,
-		'backup'              => 0,
-		'resize_larger'       => 0,
-		'resize_larger_w'     => 0,
-		'convert_to_webp'     => 0,
-		'display_webp'        => 0,
-		'display_webp_method' => 'picture',
-		'cdn_url'             => '',
-		'disallowed-sizes'    => [],
-		'admin_bar_menu'      => 0,
-		'partner_links'       => 0,
+		'api_key'                => '',
+		'optimization_level'     => 2,
+		'lossless'               => 0,
+		'auto_optimize'          => 0,
+		'backup'                 => 0,
+		'resize_larger'          => 0,
+		'resize_larger_w'        => 0,
+		'display_nextgen'        => 0,
+		'display_nextgen_method' => 'picture',
+		'cdn_url'                => '',
+		'disallowed-sizes'       => [],
+		'admin_bar_menu'         => 0,
+		'partner_links'          => 0,
+		'convert_to_avif'        => 0,
 	];
 
 	/**
@@ -54,7 +54,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'optimization_level' => 2,
 		'auto_optimize'      => 1,
 		'backup'             => 1,
-		'convert_to_webp'    => 1,
 		'admin_bar_menu'     => 1,
 		'partner_links'      => 1,
 	];
@@ -131,10 +130,11 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'lossless':
 			case 'resize_larger':
 			case 'convert_to_webp':
-			case 'display_webp':
+			case 'display_nextgen':
 			case 'admin_bar_menu':
 			case 'partner_links':
-				return 1;
+			case 'convert_to_avif':
+				return empty( $value ) ? 0 : 1;
 
 			case 'resize_larger_w':
 				if ( $value <= 0 ) {
@@ -159,7 +159,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 				$value = array_map( 'sanitize_text_field', $value );
 				return array_fill_keys( $value, 1 );
 
-			case 'display_webp_method':
+			case 'display_nextgen_method':
 				$values = [
 					'picture' => 1,
 					'rewrite' => 1,
@@ -172,7 +172,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 				return $reset_values[ $key ];
 
 			case 'cdn_url':
-				$cdn_source = \Imagify\Webp\Picture\Display::get_instance()->get_cdn_source( $value );
+				$cdn_source = apply_filters( 'imagify_cdn_source_url', $value );
 
 				if ( 'option' !== $cdn_source['source'] ) {
 					/**
@@ -200,11 +200,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		// The max width for the "Resize larger images" option can't be 0.
 		if ( empty( $values['resize_larger_w'] ) ) {
 			unset( $values['resize_larger'], $values['resize_larger_w'] );
-		}
-
-		// Don't display wepb if conversion is disabled.
-		if ( empty( $values['convert_to_webp'] ) ) {
-			unset( $values['convert_to_webp'], $values['display_webp'] );
 		}
 
 		return $values;

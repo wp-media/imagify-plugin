@@ -27,8 +27,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		'imagify_manual_optimize',
 		'imagify_manual_reoptimize',
 		'imagify_optimize_missing_sizes',
-		'imagify_generate_webp_versions',
-		'imagify_delete_webp_versions',
+		'imagify_generate_nextgen_versions',
+		'imagify_delete_nextgen_versions',
 		'imagify_restore',
 		// Custom folders optimization.
 		'imagify_optimize_file',
@@ -194,7 +194,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	}
 
 	/**
-	 * Generate WebP images if they are missing.
+	 * Generate next-gen images if they are missing.
 	 *
 	 * @since 1.9
 	 *
@@ -202,12 +202,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @param  string $context  The context.
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
-	protected function generate_webp_versions( $media_id, $context ) {
-		return imagify_get_optimization_process( $media_id, $context )->generate_webp_versions();
+	protected function generate_nextgen_versions( $media_id, $context ) {
+		return imagify_get_optimization_process( $media_id, $context )->generate_nextgen_versions();
 	}
 
 	/**
-	 * Delete WebP images for media that are "already_optimize".
+	 * Delete Next gen images for media that are "already_optimize".
 	 *
 	 * @since 1.9.6
 	 *
@@ -215,7 +215,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @param  string $context  The context.
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
-	protected function delete_webp_versions( $media_id, $context ) {
+	protected function delete_nextgen_versions( $media_id, $context ) {
 		$process = imagify_get_optimization_process( $media_id, $context );
 
 		if ( ! $process->is_valid() ) {
@@ -228,15 +228,15 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			return new WP_Error( 'not_already_optimized', __( 'This media does not have the right optimization status.', 'imagify' ) );
 		}
 
-		if ( ! $process->has_webp() ) {
+		if ( ! $process->has_next_gen() ) {
 			return true;
 		}
 
 		$data->delete_optimization_data();
-		$deleted = $process->delete_webp_files();
+		$deleted = $process->delete_nextgen_files( false, true );
 
 		if ( is_wp_error( $deleted ) ) {
-			return new WP_Error( 'webp_not_deleted', __( 'Previous WebP files could not be deleted.', 'imagify' ) );
+			return new WP_Error( 'nextgen_not_deleted', __( 'Previous next-gen files could not be deleted.', 'imagify' ) );
 		}
 
 		return true;
@@ -359,11 +359,11 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	}
 
 	/**
-	 * Generate WebP images if they are missing.
+	 * Generate next-gen images if they are missing.
 	 *
 	 * @since 1.9
 	 */
-	public function imagify_generate_webp_versions_callback() {
+	public function imagify_generate_nextgen_versions_callback() {
 		$context  = $this->get_context();
 		$media_id = $this->get_media_id();
 
@@ -371,13 +371,13 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		imagify_check_nonce( 'imagify-generate-webp-versions-' . $media_id . '-' . $context );
+		imagify_check_nonce( 'imagify-generate-nextgen-versions-' . $media_id . '-' . $context );
 
 		if ( ! imagify_get_context( $context )->current_user_can( 'manual-optimize', $media_id ) ) {
 			imagify_die();
 		}
 
-		$result = $this->generate_webp_versions( $media_id, $context );
+		$result = $this->generate_nextgen_versions( $media_id, $context );
 
 		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
 
@@ -392,11 +392,11 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	}
 
 	/**
-	 * Generate WebP images if they are missing.
+	 * Generate next-gen images if they are missing.
 	 *
 	 * @since 1.9.6
 	 */
-	public function imagify_delete_webp_versions_callback() {
+	public function imagify_delete_nextgen_versions_callback() {
 		$context  = $this->get_context();
 		$media_id = $this->get_media_id();
 
@@ -404,13 +404,13 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
 		}
 
-		imagify_check_nonce( 'imagify-delete-webp-versions-' . $media_id . '-' . $context );
+		imagify_check_nonce( 'imagify-delete-nextgen-versions-' . $media_id . '-' . $context );
 
 		if ( ! imagify_get_context( $context )->current_user_can( 'manual-restore', $media_id ) ) {
 			imagify_die();
 		}
 
-		$result = $this->delete_webp_versions( $media_id, $context );
+		$result = $this->delete_nextgen_versions( $media_id, $context );
 
 		imagify_maybe_redirect( is_wp_error( $result ) ? $result : false );
 

@@ -18,10 +18,11 @@ interface BulkInterface {
 	public function get_unoptimized_media_ids( $optimization_level );
 
 	/**
-	 * Get ids of all optimized media without WebP versions.
+	 * Get ids of all optimized media without Next gen versions.
 	 *
-	 * @since 1.9
-	 * @since 1.9.5 The method doesn't return the IDs directly anymore.
+	 * @since 2.2
+	 *
+	 * @param string $format Format we are looking for. (webp|avif).
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.
@@ -31,16 +32,17 @@ interface BulkInterface {
 	 *     }
 	 * }
 	 */
-	public function get_optimized_media_ids_without_webp();
+	public function get_optimized_media_ids_without_format( $format );
+
 
 	/**
-	 * Tell if there are optimized media without WebP versions.
+	 * Tell if there are optimized media without next-gen versions.
 	 *
-	 * @since 1.9
+	 * @since 2.2
 	 *
 	 * @return int The number of media.
 	 */
-	public function has_optimized_media_without_webp();
+	public function has_optimized_media_without_nextgen();
 
 	/**
 	 * Get the context data.
