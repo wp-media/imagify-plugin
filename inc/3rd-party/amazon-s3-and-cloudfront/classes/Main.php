@@ -266,7 +266,7 @@ class Main extends Imagify_AS3CF_Deprecated {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  null|WP_Error   $response            Null by default.
+	 * @param  null|WP_Error    $response           Null by default.
 	 * @param  ProcessInterface $process            The optimization process instance.
 	 * @param  File             $file               The file instance. If $nextgen is true, $file references the non-next-gen file.
 	 * @param  string           $thumb_size         The media size.
