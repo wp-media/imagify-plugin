@@ -154,7 +154,7 @@ class Main extends Imagify_AS3CF_Deprecated {
 		];
 
 		foreach ( $formats as $extension => $suffix ) {
-			if ( ! empty( $data['src'][$extension . '_path'] ) ) {
+			if ( ! empty( $data['src'][ $extension . '_path' ] ) ) {
 				// The file is local.
 				continue;
 			}
@@ -163,7 +163,7 @@ class Main extends Imagify_AS3CF_Deprecated {
 
 			if ( ! empty( $imagify_data['sizes'][ $size_name ]['success'] ) ) {
 				// We have a next-gen image.
-				$data['src'][$extension . '_exists'] = true;
+				$data['src'][ $extension . '_exists' ] = true;
 			}
 		}
 
@@ -194,12 +194,12 @@ class Main extends Imagify_AS3CF_Deprecated {
 			}
 
 			foreach ( $formats as $extension => $suffix ) {
-				if ( empty( $srcset_data[$extension . '_url'] ) ) {
+				if ( empty( $srcset_data[ $extension . '_url' ] ) ) {
 					// Not a supported image format.
 					continue;
 				}
 
-				if ( ! empty( $srcset_data[$extension . 'path'] ) ) {
+				if ( ! empty( $srcset_data[ $extension . 'path' ] ) ) {
 					// The file is local.
 					continue;
 				}
@@ -231,7 +231,7 @@ class Main extends Imagify_AS3CF_Deprecated {
 
 				if ( ! empty( $imagify_data['sizes'][ $nextgen_size_name ]['success'] ) ) {
 					// We have a next-gen image.
-					$data['srcset'][ $i ][$extension . '_exists'] = true;
+					$data['srcset'][ $i ][ $extension . '_exists' ] = true;
 				}
 			}
 		}
@@ -266,7 +266,7 @@ class Main extends Imagify_AS3CF_Deprecated {
 	 *
 	 * @since 1.9
 	 *
-	 * @param  null|WP_Error   $response           Null by default.
+	 * @param  null|WP_Error   $response            Null by default.
 	 * @param  ProcessInterface $process            The optimization process instance.
 	 * @param  File             $file               The file instance. If $nextgen is true, $file references the non-next-gen file.
 	 * @param  string           $thumb_size         The media size.
@@ -388,13 +388,13 @@ class Main extends Imagify_AS3CF_Deprecated {
 
 						if (
 							(
-								$extension === 'webp'
+								'webp' === $extension
 								&&
 								! $nextgen_file->is_webp()
 							)
 							||
 							(
-								$extension === 'avif'
+								'avif' === $extension
 								&&
 								! $nextgen_file->is_avif()
 							)
@@ -472,13 +472,13 @@ class Main extends Imagify_AS3CF_Deprecated {
 
 				if (
 					(
-						$format === 'webp'
+						'webp' === $format
 						&&
 						! $file->is_webp()
 					)
 					||
 					(
-						$format === 'avif'
+						'avif' === $format
 						&&
 						! $file->is_avif()
 					)
