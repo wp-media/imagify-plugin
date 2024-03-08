@@ -36,11 +36,14 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'resize_larger_w'        => 0,
 		'display_nextgen'        => 0,
 		'display_nextgen_method' => 'picture',
+		'display_webp'        => 0,
+		'display_webp_method' => 'picture',
 		'cdn_url'                => '',
 		'disallowed-sizes'       => [],
 		'admin_bar_menu'         => 0,
 		'partner_links'          => 0,
 		'convert_to_avif'        => 0,
+		'convert_to_webp'        => 0,
 	];
 
 	/**
@@ -131,6 +134,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'resize_larger':
 			case 'convert_to_webp':
 			case 'display_nextgen':
+			case 'display_webp':
 			case 'admin_bar_menu':
 			case 'partner_links':
 			case 'convert_to_avif':
@@ -160,6 +164,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 				return array_fill_keys( $value, 1 );
 
 			case 'display_nextgen_method':
+			case 'display_webp_method':
 				$values = [
 					'picture' => 1,
 					'rewrite' => 1,
