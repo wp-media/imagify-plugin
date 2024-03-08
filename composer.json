@@ -46,6 +46,7 @@
 		"mnsami/composer-custom-directory-installer": "^2.0",
 		"phpcompatibility/phpcompatibility-wp": "^2.0",
 		"phpunit/phpunit": "^7.5",
+		"psr/container": "1.0.0",
 		"roave/security-advisories": "dev-master",
 		"woocommerce/action-scheduler": "^3.4",
 		"wp-coding-standards/wpcs": "^2",
