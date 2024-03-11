@@ -176,15 +176,14 @@ class Bulk {
 
 		$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
 
-		if ( empty( $media_ids['ids'] ) ) {
+		if ( empty( $media_ids ) ) {
 			return [
 				'success' => false,
 				'message' => 'no-images',
 			];
 		}
-		$media_ids['ids'] = array_unique( $media_ids['ids'] );
 
-		foreach ( $media_ids['ids'] as $media_id ) {
+		foreach ( $media_ids as $media_id ) {
 			try {
 				as_enqueue_async_action(
 					'imagify_optimize_media',
