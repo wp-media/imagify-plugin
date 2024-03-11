@@ -307,6 +307,11 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	if ( version_compare( $site_version, '2.0' ) < 0 ) {
 		Imagify_Options::get_instance()->set( 'optimization_level', 2 );
 	}
+
+	if ( version_compare( $site_version, '2.2' ) < 0 ) {
+		Imagify_Options::get_instance()->set( 'display_nextgen', Imagify_Options::get_instance()->get( 'display_webp', 0 ) );
+		Imagify_Options::get_instance()->set( 'display_nextgen_method', Imagify_Options::get_instance()->get( 'display_webp_method' ) );
+	}
 }
 add_action( 'imagify_upgrade', '_imagify_new_upgrade', 10, 2 );
 
