@@ -83,7 +83,8 @@ function _imagify_attachment_submitbox_misc_actions() {
 	if ( $media->has_backup() && $data->is_optimized() ) {
 		?>
 		<input id="imagify-full-original" type="hidden" value="<?php echo esc_url( $media->get_backup_url() ); ?>">
-		<input id="imagify-full-original-size" type="hidden" value="<?php echo esc_attr( $data->get_original_size( true, 0 ) ); ?>">
+		<input id="imagify-full-original-size" type="hidden" value="<?php echo esc_attr( $data->get_original_size() ); ?>">
+		<input id="imagify-full-optimized-size" type="hidden" value="<?php echo esc_attr( $data->get_optimized_size() ); ?>">
 		<?php
 	}
 }
