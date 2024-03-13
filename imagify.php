@@ -5,7 +5,7 @@
  * Description: Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool.
  * Version: 2.2.0.1
  * Requires at least: 5.3
- * Requires PHP: 7.0
+ * Requires PHP: 7.3
  * Author: Imagify – Optimize Images & Convert WebP & Avif
  * Author URI: https://imagify.io
  * Licence: GPLv2
