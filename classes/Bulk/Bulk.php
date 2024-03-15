@@ -595,11 +595,6 @@ class Bulk {
 			return;
 		}
 
-		if ( empty( $value['convert_to_avif'] ) ) {
-			// new value is disabled, do nothing.
-			return;
-		}
-
 		$contexts = $this->get_contexts();
 		$formats  = imagify_nextgen_images_formats();
 
