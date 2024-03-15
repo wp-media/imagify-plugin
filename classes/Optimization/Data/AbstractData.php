@@ -305,15 +305,20 @@ abstract class AbstractData implements DataInterface {
 		$nextgen_avif_size_name = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
 		$nextgen_webp_size_name = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
 
+		$size = 0;
+
 		if ( $use_nextgen ) {
-			$size = (int) $data['sizes'][ $nextgen_webp_size_name ]['optimized_size'];
-			if ( ! empty( $data['sizes'][ $nextgen_avif_size_name ]['optimized_size'] ) ) {
+			/**Checking for success status before size, some cases the response is false
+			 * because the image is already compressed, or we have a connection timed out
+			 */
+			$size = $data['sizes'][ $nextgen_webp_size_name ]['success'] ?
+				(int) $data['sizes'][ $nextgen_webp_size_name ]['optimized_size'] : 0;
+			if ( ! empty( $data['sizes'][ $nextgen_avif_size_name ]['optimized_size'] ) &&
+				$data['sizes'][ $nextgen_avif_size_name ] ) {
 				$size = (int) $data['sizes'][ $nextgen_avif_size_name ]['optimized_size'];
 			}
 		} elseif ( ! empty( $data['sizes']['full']['optimized_size'] ) ) {
 			$size = (int) $data['sizes']['full']['optimized_size'];
-		} else {
-			$size = 0;
 		}
 
 		if ( $size ) {
