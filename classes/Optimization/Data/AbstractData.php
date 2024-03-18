@@ -310,8 +310,8 @@ abstract class AbstractData implements DataInterface {
 		if ( $use_nextgen ) {
 			/**Checking for success status before size, some cases the response is false
 			 * because the image is already compressed, or we have a connection timed out
-			 */
-			$size = $data['sizes'][ $nextgen_webp_size_name ]['success'] ?
+			 * */
+			$size = ! empty( $data['sizes'][ $nextgen_webp_size_name ] ) && $data['sizes'][ $nextgen_webp_size_name ]['success'] ?
 				(int) $data['sizes'][ $nextgen_webp_size_name ]['optimized_size'] : 0;
 			if ( ! empty( $data['sizes'][ $nextgen_avif_size_name ]['optimized_size'] ) &&
 				$data['sizes'][ $nextgen_avif_size_name ] ) {
