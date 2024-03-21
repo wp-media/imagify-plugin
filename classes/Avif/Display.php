@@ -47,13 +47,15 @@ class Display implements SubscriberInterface {
 		}
 
 		$enabled = isset( $values['display_nextgen'] ) ? true : false;
+		$was_enabled = (bool) get_imagify_option( 'display_nextgen' );
+
 		$result  = false;
 
-		if ( $enabled ) {
-			// Add the AVIF file type.
+		if ( $enabled && ! $was_enabled ) {
+			// Add the WebP file type.
 			$result = $this->get_server_conf()->add();
-		} elseif ( ! $enabled ) {
-			// Remove the AVIF file type.
+		} elseif ( ! $enabled && $was_enabled ) {
+			// Remove the WebP file type.
 			$result = $this->get_server_conf()->remove();
 		}
 
