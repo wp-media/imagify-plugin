@@ -240,7 +240,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 		foreach ( $formats as $format ) {
 			if ( 'webp' === $format ) {
 				$suffix = $wp_process::WEBP_SUFFIX;
-			} elseif( 'avif' === $format ) {
+			} elseif ( 'avif' === $format ) {
 				$suffix = $wp_process::AVIF_SUFFIX;
 			}
 
