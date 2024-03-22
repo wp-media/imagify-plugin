@@ -262,6 +262,16 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.2.1 =
+- Enhancement: Prevent updating .htaccess when switching between AVIF and WEBP generation features
+- Enhancement: Display the smallest size of the image in the Media Library image details section
+- Enhancement: Bump minimum version to PHP7.3
+- Bugfix: Fix the problem with progress bar when disabling AVIF generation
+- Bugfix: Fix a bug when number of images in the Bulk Optimization section was not correct
+- Bugfix: Fix the original/optimized image comparision bug
+- 3rd-party compatibility: Update compatibility with Next-Gen Gallery to match AVIF images
+- 3rd-party compatibility: Update compatibility with AMP, Regenerate Thumbnails and WooCommerce to work correctly with AVIF images
+
 = 2.2.0.1 =
 - Bugfix: Preserve "Display images in webp format" configuration when updating.
 
