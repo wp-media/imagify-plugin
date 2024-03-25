@@ -1,55 +1,51 @@
 <?php
 namespace Imagify\ThirdParty\AS3CF;
 
-use \Imagify\Optimization\File;
-use \Imagify\ThirdParty\AS3CF\CDN\WP\AS3 as CDN;
-
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Optimization\File;
+use Imagify\ThirdParty\AS3CF\CDN\WP\AS3 as CDN;
+use Imagify_AS3CF_Deprecated;
+use Imagify\Traits\InstanceGetterTrait;
+use Imagify_Filesystem;
+use Imagify\CDN\PushCDNInterface;
+use WP_Error;
 
 /**
  * Imagify WP Offload S3 class.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
-class Main extends \Imagify_AS3CF_Deprecated {
-	use \Imagify\Traits\InstanceGetterTrait;
+class Main extends Imagify_AS3CF_Deprecated {
+	use InstanceGetterTrait;
 
 	/**
 	 * AS3CF settings.
 	 *
-	 * @var    array
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var array
+	 * @since 1.9
 	 */
 	protected $s3_settings;
 
 	/**
 	 * Filesystem object.
 	 *
-	 * @var    \Imagify_Filesystem
-	 * @since  1.9
-	 * @access protected
-	 * @author Grégory Viguier
+	 * @var Imagify_Filesystem
+	 * @since 1.9
 	 */
 	protected $filesystem;
 
 	/**
 	 * The class constructor.
 	 *
-	 * @since  1.6.6
-	 * @author Grégory Viguier
+	 * @since 1.6.6
 	 */
 	protected function __construct() {
-		$this->filesystem = \Imagify_Filesystem::get_instance();
+		$this->filesystem = Imagify_Filesystem::get_instance();
 	}
 
 	/**
 	 * Launch the hooks.
 	 *
-	 * @since  1.6.6
-	 * @author Grégory Viguier
+	 * @since 1.6.6
 	 */
 	public function init() {
 		static $done = false;
@@ -60,10 +56,10 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		$done = true;
 
 		/**
-		 * WebP images to display with a <picture> tag.
+		 * Next-gen images to display with a <picture> tag.
 		 */
 		add_action( 'as3cf_init',                         [ $this, 'store_s3_settings' ] );
-		add_filter( 'imagify_webp_picture_process_image', [ $this, 'picture_tag_webp_image' ] );
+		add_filter( 'imagify_picture_process_image', [ $this, 'picture_tag_nextgen_image' ] );
 
 		/**
 		 * Register CDN.
@@ -82,9 +78,9 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		add_action( 'imagify_after_restore_media',  [ $this, 'maybe_send_media_to_cdn_after_restore' ], 8, 4 );
 
 		/**
-		 * WebP support.
+		 * Next-gen support.
 		 */
-		add_filter( 'as3cf_attachment_file_paths',  [ $this, 'add_webp_images_to_attachment' ], 8, 3 );
+		add_filter( 'as3cf_attachment_file_paths',  [ $this, 'add_nextgen_images_to_attachment' ], 8, 3 );
 		add_filter( 'mime_types',                   [ $this, 'add_webp_support' ] );
 
 		/**
@@ -98,17 +94,10 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		add_filter( 'imagify_total_attachment_filesize', [ $this, 'add_stats_for_s3_files' ], 8, 4 );
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** OPTIMIZATION PROCESS ==================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * On AS3CF init, store its settings.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param \Amazon_S3_And_CloudFront $as3cf AS3CF’s main instance.
 	 */
@@ -119,22 +108,17 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	}
 
 	/**
-	 * WebP images to display with a <picture> tag.
+	 * Next-gen images to display with a <picture> tag.
 	 *
-	 * @since  1.9
-	 * @see    \Imagify\Picture\Display->process_image()
-	 * @author Grégory Viguier
+	 * @since 1.9
+	 * @see \Imagify\Picture\Display->process_image()
 	 *
-	 * @param  array $data An array of data for this image.
+	 * @param array $data An array of data for this image.
+	 *
 	 * @return array
 	 */
-	public function picture_tag_webp_image( $data ) {
+	public function picture_tag_nextgen_image( $data ) {
 		global $wpdb;
-
-		if ( ! empty( $data['src']['webp_path'] ) ) {
-			// The file is local.
-			return $data;
-		}
 
 		$match = $this->is_s3_url( $data['src']['url'] );
 
@@ -164,12 +148,23 @@ class Main extends \Imagify_AS3CF_Deprecated {
 			return $data;
 		}
 
-		$webp_size_suffix = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::WEBP_SUFFIX' );
-		$webp_size_name   = 'full' . $webp_size_suffix;
+		$formats = [
+			'avif' => constant( imagify_get_optimization_process_class_name( 'wp' ) . '::AVIF_SUFFIX' ),
+			'webp' => constant( imagify_get_optimization_process_class_name( 'wp' ) . '::WEBP_SUFFIX' ),
+		];
 
-		if ( ! empty( $imagify_data['sizes'][ $webp_size_name ]['success'] ) ) {
-			// We have a WebP image.
-			$data['src']['webp_exists'] = true;
+		foreach ( $formats as $extension => $suffix ) {
+			if ( ! empty( $data['src'][ $extension . '_path' ] ) ) {
+				// The file is local.
+				continue;
+			}
+
+			$size_name   = 'full' . $suffix;
+
+			if ( ! empty( $imagify_data['sizes'][ $size_name ]['success'] ) ) {
+				// We have a next-gen image.
+				$data['src'][ $extension . '_exists' ] = true;
+			}
 		}
 
 		if ( empty( $data['srcset'] ) ) {
@@ -191,15 +186,6 @@ class Main extends \Imagify_AS3CF_Deprecated {
 
 		// Look for a corresponding size name.
 		foreach ( $data['srcset'] as $i => $srcset_data ) {
-			if ( empty( $srcset_data['webp_url'] ) ) {
-				// Not a supported image format.
-				continue;
-			}
-			if ( ! empty( $srcset_data['webp_path'] ) ) {
-				// The file is local.
-				continue;
-			}
-
 			$match = $this->is_s3_url( $srcset_data['url'] );
 
 			if ( ! $match ) {
@@ -207,34 +193,46 @@ class Main extends \Imagify_AS3CF_Deprecated {
 				continue;
 			}
 
-			// Try with no subdirs.
-			$filename = $match['filename'];
+			foreach ( $formats as $extension => $suffix ) {
+				if ( empty( $srcset_data[ $extension . '_url' ] ) ) {
+					// Not a supported image format.
+					continue;
+				}
 
-			if ( isset( $size_files[ $filename ] ) ) {
-				$size_name = $size_files[ $filename ];
-			} else {
-				// Try with subdirs.
-				$filename = $match['subdirs'] . $match['filename'];
+				if ( ! empty( $srcset_data[ $extension . 'path' ] ) ) {
+					// The file is local.
+					continue;
+				}
+
+				// Try with no subdirs.
+				$filename = $match['filename'];
 
 				if ( isset( $size_files[ $filename ] ) ) {
 					$size_name = $size_files[ $filename ];
-				} elseif ( preg_match( '@/\d+/$@', $match['subdirs'] ) ) {
-					// Last try: the subdirs may contain the S3 versioning. If not the case, we can still build a pyramid with this code.
-					$filename = preg_replace( '@/\d+/$@', '/', $match['subdirs'] ) . $match['filename'];
+				} else {
+					// Try with subdirs.
+					$filename = $match['subdirs'] . $match['filename'];
 
 					if ( isset( $size_files[ $filename ] ) ) {
 						$size_name = $size_files[ $filename ];
-					} else {
-						continue;
+					} elseif ( preg_match( '@/\d+/$@', $match['subdirs'] ) ) {
+						// Last try: the subdirs may contain the S3 versioning. If not the case, we can still build a pyramid with this code.
+						$filename = preg_replace( '@/\d+/$@', '/', $match['subdirs'] ) . $match['filename'];
+
+						if ( ! isset( $size_files[ $filename ] ) ) {
+							continue;
+						}
+
+						$size_name = $size_files[ $filename ];
 					}
 				}
-			}
 
-			$webp_size_name = $size_name . $webp_size_suffix;
+				$nextgen_size_name = $size_name . $suffix;
 
-			if ( ! empty( $imagify_data['sizes'][ $webp_size_name ]['success'] ) ) {
-				// We have a WebP image.
-				$data['srcset'][ $i ]['webp_exists'] = true;
+				if ( ! empty( $imagify_data['sizes'][ $nextgen_size_name ]['success'] ) ) {
+					// We have a next-gen image.
+					$data['srcset'][ $i ][ $extension . '_exists' ] = true;
+				}
 			}
 		}
 
@@ -244,13 +242,13 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	/**
 	 * The CDN to use for this media.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param bool|PushCDNInterface $cdn      A PushCDNInterface instance. False if no CDN is used.
 	 * @param int                   $media_id The media ID.
 	 * @param ContextInterface      $context  The context object.
+	 *
+	 * @return object
 	 */
 	public function register_cdn( $cdn, $media_id, $context ) {
 		if ( 'wp' !== $context->get_name() ) {
@@ -266,19 +264,18 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	/**
 	 * Before performing a file optimization, download the file from the CDN if it is missing.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @param  null|\WP_Error   $response           Null by default.
+	 * @param  null|WP_Error    $response           Null by default.
 	 * @param  ProcessInterface $process            The optimization process instance.
-	 * @param  File             $file               The file instance. If $webp is true, $file references the non-webp file.
+	 * @param  File             $file               The file instance. If $nextgen is true, $file references the non-next-gen file.
 	 * @param  string           $thumb_size         The media size.
 	 * @param  int              $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
-	 * @param  bool             $webp               The image will be converted to WebP.
-	 * @return null|\WP_Error                       Null. A \WP_Error object on error.
+	 * @param  bool             $nextgen            The image will be converted to WebP|AVIF.
+	 *
+	 * @return null|WP_Error Null. A WP_Error object on error.
 	 */
-	public function maybe_copy_file_from_cdn_before_optimization( $response, $process, $file, $thumb_size, $optimization_level, $webp ) {
+	public function maybe_copy_file_from_cdn_before_optimization( $response, $process, $file, $thumb_size, $optimization_level, $nextgen ) {
 		if ( is_wp_error( $response ) || 'wp' !== $process->get_media()->get_context() ) {
 			return $response;
 		}
@@ -310,9 +307,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	 * - Upload the files to the CDN,
 	 * - Maybe delete them from the server.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param ProcessInterface $process The optimization process.
 	 * @param array            $item    The item being processed.
@@ -336,11 +331,9 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	 * After restoring a media:
 	 * - Save some data,
 	 * - Upload the files to the CDN,
-	 * - Maybe delete WebP files from the CDN.
+	 * - Maybe delete next-gen files from the CDN.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param ProcessInterface $process  The optimization process.
 	 * @param bool|WP_Error    $response The result of the operation: true on success, a WP_Error object on failure.
@@ -372,52 +365,64 @@ class Main extends \Imagify_AS3CF_Deprecated {
 
 		$cdn->send_to_cdn( false );
 
-		// Remove WebP files from CDN.
-		$webp_files = [];
+		// Remove next-gen files from CDN.
+		$nextgen_files = [];
+		$formats       = [
+			'avif' => $process::AVIF_SUFFIX,
+			'webp' => $process::WEBP_SUFFIX,
+		];
 
 		if ( $files ) {
-			// Get the paths to the WebP files.
+			// Get the paths to the next-gen files.
 			foreach ( $files as $size_name => $file ) {
-				$webp_size_name = $size_name . $process::WEBP_SUFFIX;
+				foreach ( $formats as $extension => $suffix ) {
+					$nextgen_size_name = $size_name . $suffix;
 
-				if ( empty( $data['sizes'][ $webp_size_name ]['success'] ) ) {
-					// This size has no WebP version.
-					continue;
-				}
+					if ( empty( $data['sizes'][ $nextgen_size_name ]['success'] ) ) {
+						// This size has no next-gen version.
+						continue;
+					}
 
-				if ( 0 === strpos( $file['mime-type'], 'image/' ) ) {
-					$webp_file = new File( $file['path'] );
+					if ( 0 === strpos( $file['mime-type'], 'image/' ) ) {
+						$nextgen_file = new File( $file['path'] );
 
-					if ( ! $webp_file->is_webp() ) {
-						$webp_files[] = $webp_file->get_path_to_webp();
+						if (
+							(
+								'webp' === $extension
+								&&
+								! $nextgen_file->is_webp()
+							)
+							||
+							(
+								'avif' === $extension
+								&&
+								! $nextgen_file->is_avif()
+							)
+						) {
+							$nextgen_files[] = $nextgen_file->get_path_to_nextgen( $extension );
+						}
 					}
 				}
 			}
 		}
 
-		if ( $webp_files ) {
-			$cdn->remove_files_from_cdn( $webp_files );
+		if ( $nextgen_files ) {
+			$cdn->remove_files_from_cdn( $nextgen_files );
 		}
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** OPTIMIZATION PROCESS ==================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
-	 * Add the WebP files to the list of files that the CDN must handle.
+	 * Add the Next-gen files to the list of files that the CDN must handle.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
 	 * @param  array $paths         A list of file paths, keyed by size name. 'file' for the full size. Includes a 'backup' size and a 'thumb' size.
 	 * @param  int   $attachment_id The media ID.
 	 * @param  array $metadata      The attachment meta data.
+	 *
 	 * @return array
 	 */
-	public function add_webp_images_to_attachment( $paths, $attachment_id, $metadata ) {
+	public function add_nextgen_images_to_attachment( $paths, $attachment_id, $metadata ) {
 		if ( ! $paths ) {
 			// ¯\(°_o)/¯.
 			return $paths;
@@ -451,17 +456,35 @@ class Main extends \Imagify_AS3CF_Deprecated {
 				$size_name = 'full';
 			}
 
-			$webp_size_name = $size_name . $process::WEBP_SUFFIX;
+			$formats = imagify_nextgen_images_formats();
 
-			if ( empty( $data['sizes'][ $webp_size_name ]['success'] ) ) {
-				// This size has no WebP version.
-				continue;
-			}
+			foreach ( $formats as $format ) {
+				$suffix = 'avif' === $formats ? $process::AVIF_SUFFIX : $process::WEBP_SUFFIX;
 
-			$file = new File( $file_path );
+				$size_name = $size_name . $suffix;
 
-			if ( ! $file->is_webp() ) {
-				$paths[ $webp_size_name ] = $file->get_path_to_webp();
+				if ( empty( $data['sizes'][ $size_name ]['success'] ) ) {
+					// This size has no corresponding next-gen version.
+					continue;
+				}
+
+				$file = new File( $file_path );
+
+				if (
+					(
+						'webp' === $format
+						&&
+						! $file->is_webp()
+					)
+					||
+					(
+						'avif' === $format
+						&&
+						! $file->is_avif()
+					)
+				) {
+					$paths[ $size_name ] = $file->get_path_to_nextgen( $format );
+				}
 			}
 		}
 
@@ -471,12 +494,12 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	/**
 	 * Add WebP format to the list of allowed mime types.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @see    get_allowed_mime_types()
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @param  array $mime_types A list of mime types.
+	 * @see get_allowed_mime_types()
+	 *
+	 * @param array $mime_types A list of mime types.
+	 *
 	 * @return array
 	 */
 	public function add_webp_support( $mime_types ) {
@@ -484,19 +507,14 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		return $mime_types;
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** VARIOUS HOOKS =========================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * After a non-ajax optimization, remove some unnecessary arguments from the referrer used for the redirection.
 	 * Those arguments don't break anything, they're just not relevant and display obsolete admin notices.
 	 *
-	 * @since  1.6.10
-	 * @author Grégory Viguier
+	 * @since 1.6.10
 	 *
-	 * @param  string $redirect The URL to redirect to.
+	 * @param string $redirect The URL to redirect to.
+	 *
 	 * @return string
 	 */
 	public function redirect_referrer( $redirect ) {
@@ -506,14 +524,14 @@ class Main extends \Imagify_AS3CF_Deprecated {
 	/**
 	 * Provide the file sizes and the number of thumbnails for files that are only on S3.
 	 *
-	 * @since  1.6.7
-	 * @author Grégory Viguier
+	 * @since 1.6.7
 	 *
 	 * @param  bool  $size_and_count False by default.
 	 * @param  int   $image_id       The attachment ID.
 	 * @param  array $files          An array of file paths with thumbnail sizes as keys.
 	 * @param  array $image_ids      An array of all attachment IDs.
-	 * @return bool|array            False by default. Provide an array with the keys 'filesize' (containing the total filesize) and 'thumbnails' (containing the number of thumbnails).
+	 *
+	 * @return bool|array False by default. Provide an array with the keys 'filesize' (containing the total filesize) and 'thumbnails' (containing the number of thumbnails).
 	 */
 	public function add_stats_for_s3_files( $size_and_count, $image_id, $files, $image_ids ) {
 		static $data;
@@ -548,19 +566,13 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		];
 	}
 
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** TOOLS =================================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Tell if an URL is a S3 one.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @param  string $url The URL to test.
+	 * @param string $url The URL to test.
+	 *
 	 * @return array|bool  {
 	 *     An array if an S3 URL. False otherwise.
 	 *
