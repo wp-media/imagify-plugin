@@ -1,7 +1,7 @@
 === Imagify – Optimize Images & Convert WebP & AVIF | Compress Images Easily ===
 Contributors: wp_rocket, imagify
 Tags: optimize images, convert webp, webp converter, convert AVIF, webp to AVIF, AVIF plugin, AVIF converter, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
-Tested up to: 6.4
+Tested up to: 6.5
 Stable tag: 2.2.1
 Requires PHP: 7.3
 License: GPLv2 or later
@@ -265,6 +265,7 @@ You can report any security bugs found in the source code of the site-reviews pl
 = 2.2.1 =
 - Enhancement: Prevent updating .htaccess when switching between AVIF and WEBP generation features
 - Enhancement: Display the smallest size of the image in the Media Library image details section
+- Enhancement: Correctly delete all Next-Gen versions when restoring the Original Image
 - Enhancement: Bump minimum version to PHP7.3
 - Bugfix: Fix the problem with progress bar when disabling AVIF generation
 - Bugfix: Fix a bug when number of images in the Bulk Optimization section was not correct
