@@ -948,7 +948,7 @@ abstract class AbstractProcess implements ProcessInterface {
 					$media->update_dimensions();
 
 					// Delete the WebP version.
-					$this->delete_nextgen_file( $original_path );
+					$this->delete_nextgen_file( $original_path, true );
 
 					// Restore the thumbnails.
 					$response = $this->restore_thumbnails();
@@ -989,7 +989,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * In that case we must also delete the next-gen file associated to the full size.
 		 */
 		$keep_full_next_gen = $media->get_raw_original_path() === $media->get_raw_fullsize_path();
-		$this->delete_nextgen_files( $keep_full_next_gen );
+		$this->delete_nextgen_files( $keep_full_next_gen, true );
 
 		// Generate new thumbnails.
 		return $media->generate_thumbnails();

@@ -173,31 +173,17 @@ class Bulk {
 				'message' => 'over-quota',
 			];
 		}
-		$formats = imagify_nextgen_images_formats();
-		$media_ids = [
-			'ids' => [],
-			'errors' => [
-				'no_file_path' => [],
-				'no_backup' => [],
-			],
-		];
-		foreach ( $formats as $format ) {
-			$result = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
-			$media_ids['ids'] = array_merge( $media_ids['ids'], $result['ids'] );
-		}
-		$get_unoptimized_media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
 
-		$media_ids['ids'] = array_merge( $media_ids['ids'], $get_unoptimized_media_ids );
+		$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
 
-		if ( empty( $media_ids['ids'] ) ) {
+		if ( empty( $media_ids ) ) {
 			return [
 				'success' => false,
 				'message' => 'no-images',
 			];
 		}
-		$media_ids['ids'] = array_unique( $media_ids['ids'] );
 
-		foreach ( $media_ids['ids'] as $media_id ) {
+		foreach ( $media_ids as $media_id ) {
 			try {
 				as_enqueue_async_action(
 					'imagify_optimize_media',
@@ -597,20 +583,11 @@ class Bulk {
 	 * @param array $old_value The old option value.
 	 * @param array $value The new option value.
 	 *
-	 * Please note that the convert_to_avif new value is a checkbox,
-	 * so it equals 1 when it's set otherwise it's not set.
-	 * That's why we need to use empty function when checking its value.
-	 *
 	 * @return void
 	 */
 	public function maybe_generate_missing_nextgen( $old_value, $value ) {
 		if ( empty( $old_value['convert_to_avif'] ) === empty( $value['convert_to_avif'] ) ) {
 			// Old value = new value so do nothing.
-			return;
-		}
-
-		if ( empty( $value['convert_to_avif'] ) ) {
-			// new value is disabled, do nothing.
 			return;
 		}
 
