@@ -12,18 +12,22 @@ $settings = Imagify_Settings::get_instance();
 
 	<div class="imagify-setting-line">
 		<?php
-		$settings->field_checkbox( [
-			'option_name' => 'convert_to_avif',
-			'label'       => __( 'Create AVIF versions of images', 'imagify' ),
-			'attributes'  => [
-				'aria-describedby' => 'describe-convert_to_avif',
-			],
-		] );
+		$settings->field_radio_list(
+			[
+				'option_name' => 'optimization_format',
+				'legend'      => __( 'Next-gen image format', 'imagify' ),
+				'info'       	=> __( 'Select WebP for high compatibility, AVIF for superior compression. Please note that the generation process will start automatically after saving the settings.', 'imagify' ),
+				'values'      => [
+					'none' => __( 'None', 'imagify' ),
+					'webp' => __( 'WebP', 'imagify' ),
+					'avif' => __( 'AVIF', 'imagify' ),
+				],
+				'attributes'  => [
+					'aria-describedby' => 'describe-optimization_format',
+				],
+			]
+		);
 		?>
-		<div class="imagify-info">
-			<span class="dashicons dashicons-info"></span>
-			<?php esc_html_e( 'Enabling this option will start the process of creating AVIF version of your images automatically.', 'imagify' ); ?>
-		</div>
 	</div>
 
 	<div class="imagify-setting-line">
