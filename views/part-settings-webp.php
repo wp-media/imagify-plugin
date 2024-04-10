@@ -12,11 +12,17 @@ $settings = Imagify_Settings::get_instance();
 
 	<div class="imagify-setting-line">
 		<?php
+		$info = __( 'Select WebP for high compatibility, AVIF for superior compression. Please note that the generation process will start automatically after saving the settings.', 'imagify' );
+
+		if ( has_filter( 'imagify_nextgen_images_formats') ) {
+			$info = __( 'Next-Gen Images format is currently defined by the imagify_nextgen_images_format filter. Read more', 'imagify' );
+		}
+
 		$settings->field_radio_list(
 			[
 				'option_name' => 'optimization_format',
 				'legend'      => __( 'Next-gen image format', 'imagify' ),
-				'info'       	=> __( 'Select WebP for high compatibility, AVIF for superior compression. Please note that the generation process will start automatically after saving the settings.', 'imagify' ),
+				'info'        => $info,
 				'values'      => [
 					'none' => __( 'None', 'imagify' ),
 					'webp' => __( 'WebP', 'imagify' ),
