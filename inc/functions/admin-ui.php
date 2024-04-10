@@ -342,8 +342,10 @@ function get_imagify_attachment_generate_nextgen_versions_link( $process ) {
 		return '';
 	}
 
+	$format = get_imagify_option( 'optimization_format' );
+
 	if (
-		get_imagify_option( 'convert_to_avif' )
+		'avif' === $format
 		&&
 		'image/avif' === $media->get_mime_type()
 	) {

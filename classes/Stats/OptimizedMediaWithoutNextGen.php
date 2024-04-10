@@ -107,7 +107,7 @@ class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface
 		$new_sizes = array_intersect_key( $sizes, $new_sizes );
 		$size_name = 'full' . $process::WEBP_SUFFIX;
 
-		if ( get_imagify_option( 'convert_to_avif' ) ) {
+		if ( 'avif' === get_imagify_option( 'optimization_format' ) ) {
 			$size_name = 'full' . $process::AVIF_SUFFIX;
 		}
 
@@ -147,7 +147,7 @@ class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface
 		$sizes     = isset( $data['sizes'] ) ? (array) $data['sizes'] : [];
 		$size_name = 'full' . $process::WEBP_SUFFIX;
 
-		if ( get_imagify_option( 'convert_to_avif' ) ) {
+		if ( 'avif' === get_imagify_option( 'optimization_format' ) ) {
 			$size_name = 'full' . $process::AVIF_SUFFIX;
 		}
 
@@ -175,7 +175,7 @@ class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface
 		$sizes     = isset( $data['sizes'] ) ? (array) $data['sizes'] : [];
 		$size_name = 'full' . $process::WEBP_SUFFIX;
 
-		if ( get_imagify_option( 'convert_to_avif' ) ) {
+		if ( 'avif' === get_imagify_option( 'optimization_format' ) ) {
 			$size_name = 'full' . $process::AVIF_SUFFIX;
 		}
 
@@ -198,11 +198,11 @@ class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface
 	 * @return void
 	 */
 	public function maybe_clear_stat_cache( $old_value, $value ) {
-		if ( isset( $old_value['convert_to_avif'] ) && isset( $value['convert_to_avif'] ) ) {
+		if ( ! isset( $old_value['optimization_format'], $value['optimization_format'] ) ) {
 			return;
 		}
 
-		if ( ! isset( $old_value['convert_to_avif'] ) && ! isset( $value['convert_to_avif'] ) ) {
+		if ( $old_value['optimization_format'] === $value['optimization_format'] ) {
 			return;
 		}
 
