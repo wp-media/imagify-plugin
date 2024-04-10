@@ -125,7 +125,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 				}
 				return $value;
 			case 'optimization_format':
-				if ( ! in_array( $value, [ 'none', 'webp', 'avif' ], true ) ) {
+				if ( ! in_array( $value, [ 'off', 'webp', 'avif' ], true ) ) {
 					// For an invalid value, return the "reset" value.
 					$reset_values = $this->get_reset_values();
 					return $reset_values[ $key ];

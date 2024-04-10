@@ -24,9 +24,9 @@ $settings = Imagify_Settings::get_instance();
 				'legend'      => __( 'Next-gen image format', 'imagify' ),
 				'info'        => $info,
 				'values'      => [
-					'none' => __( 'None', 'imagify' ),
-					'webp' => __( 'WebP', 'imagify' ),
+					'off'  => __( 'Off', 'imagify' ),
 					'avif' => __( 'AVIF', 'imagify' ),
+					'webp' => __( 'WebP', 'imagify' ),
 				],
 				'attributes'  => [
 					'aria-describedby' => 'describe-optimization_format',

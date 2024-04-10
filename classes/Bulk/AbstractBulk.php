@@ -114,7 +114,7 @@ abstract class AbstractBulk implements BulkInterface {
 	public function has_optimized_media_without_nextgen() {
 		$format = get_imagify_option( 'optimization_format' );
 
-		if ( 'none' === $format ) {
+		if ( 'off' === $format ) {
 			return 0;
 		}
 

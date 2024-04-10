@@ -184,7 +184,7 @@ class Actions {
 
 		$format = get_imagify_option( 'optimization_format' );
 
-		if ( 'none' === $format ) {
+		if ( 'off' === $format ) {
 			return $response;
 		}
 

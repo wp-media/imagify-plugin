@@ -595,7 +595,7 @@ class Bulk {
 			return;
 		}
 
-		if ( 'none' === $value['optimization_format'] ) {
+		if ( 'off' === $value['optimization_format'] ) {
 			// No need to generate next-gen images.
 			return;
 		}

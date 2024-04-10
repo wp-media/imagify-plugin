@@ -78,7 +78,7 @@ function imagify_nextgen_images_formats() {
 	$value   = get_imagify_option( 'optimization_fornat' );
 	$formats = [];
 
-	if ( 'none' !== $value ) {
+	if ( 'off' !== $value ) {
 		$formats[ $value ] = $value;
 	}
 
