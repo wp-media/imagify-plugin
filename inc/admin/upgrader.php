@@ -313,7 +313,7 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 		$options->set( 'display_nextgen_method', $options->get( 'display_webp_method' ) );
 	}
 
-	if ( version_compare( $site_version, '2.2.2', '<') ) {
+	if ( version_compare( $site_version, '2.2.2', '<' ) ) {
 		if ( $options->get( 'convert_to_avif' ) ) {
 			$options->set( 'optimization_format', 'avif' );
 		} else {

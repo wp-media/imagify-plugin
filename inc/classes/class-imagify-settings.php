@@ -795,12 +795,12 @@ class Imagify_Settings {
 		<div class="imagify-setting-optim-level">
 			<p class="imagify-inline-options">
 			<?php
-	        foreach ( $args['values'] as $value => $label ) {
+			foreach ( $args['values'] as $value => $label ) {
 				$input_id = sprintf( $id_attribute, sanitize_html_class( $value ) );
-			 ?>
+				?>
 			<input type="radio" value="<?php echo esc_attr( $value ); ?>" id="<?php echo $input_id; ?>"<?php echo $args['attributes']; ?> <?php checked( $current_value, $value ); ?> />
-	        <label for="<?php echo $input_id; ?>" onclick=""><?php echo $label; ?></label>
-			<?php
+			<label for="<?php echo $input_id; ?>" onclick=""><?php echo $label; ?></label>
+				<?php
 			}
 			?>
 			</p>
