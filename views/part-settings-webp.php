@@ -12,25 +12,36 @@ $settings = Imagify_Settings::get_instance();
 
 	<div class="imagify-setting-line">
 		<?php
-		$info = __( 'Select WebP for high compatibility, AVIF for superior compression. Please note that the generation process will start automatically after saving the settings.', 'imagify' );
+		$message       = __( 'Select WebP for high compatibility, AVIF for superior compression. Please note that the generation process will start automatically after saving the settings.', 'imagify' );
+		$message_class = 'info';
+		$disabled      = false;
 
-		if ( has_filter( 'imagify_nextgen_images_formats') ) {
-			$info = __( 'Next-Gen Images format is currently defined by the imagify_nextgen_images_format filter. Read more', 'imagify' );
+		if ( has_filter( 'imagify_nextgen_images_formats' ) ) {
+			$message       = __( 'Next-Gen Images format is currently defined by the imagify_nextgen_images_format filter. Read more', 'imagify' );
+			$message_class = 'error';
+			$disabled      = true;
 		}
 
-		$settings->field_radio_list(
+		$attributes = [
+			'aria-describedby' => 'describe-optimization_format',
+		];
+
+		if ( $disabled ) {
+			$attributes['disabled'] = true;
+		}
+
+		$settings->field_inline_radio_list(
 			[
 				'option_name' => 'optimization_format',
 				'legend'      => __( 'Next-gen image format', 'imagify' ),
-				'info'        => $info,
+				'info'        => $message,
+				'info_class'  => $message_class,
 				'values'      => [
 					'off'  => __( 'Off', 'imagify' ),
 					'avif' => __( 'AVIF', 'imagify' ),
 					'webp' => __( 'WebP', 'imagify' ),
 				],
-				'attributes'  => [
-					'aria-describedby' => 'describe-optimization_format',
-				],
+				'attributes'  => $attributes,
 			]
 		);
 		?>
