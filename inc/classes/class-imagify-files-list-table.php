@@ -1,6 +1,10 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+}
+
 /**
  * Class that display the "custom folders" files.
  *
