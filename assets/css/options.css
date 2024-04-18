@@ -139,6 +139,10 @@ p.imagify-api-key-invite-title {
 	margin: 10px 0 0 0;
 }
 
+.imagify-setting-optim-level .imagify-error a {
+	color: #fff;
+}
+
 .imagify-setting-optim-level .imagify-inline-options {
 	flex-basis: 60%;
 	flex-grow: 1;
