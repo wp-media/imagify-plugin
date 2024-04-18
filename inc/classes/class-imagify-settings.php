@@ -793,7 +793,7 @@ class Imagify_Settings {
 		$args['attributes'] = self::build_attributes( $attributes );
 		?>
 		<div class="imagify-setting-optim-level">
-			<p class="imagify-inline-options">
+			<p class="imagify-inline-options imagify-inline-options-<?php echo esc_attr( $args['info_class'] ); ?>">
 			<?php
 			foreach ( $args['values'] as $value => $label ) {
 				$input_id = sprintf( $id_attribute, sanitize_html_class( $value ) );

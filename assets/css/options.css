@@ -147,6 +147,10 @@ p.imagify-api-key-invite-title {
 	background: #2E3243;
 	border-radius: 3px;
 }
+.imagify-setting-optim-level .imagify-inline-options-error {
+	background: rgba(46, 50, 67, 0.5);
+}
+
 .imagify-setting-optim-level .imagify-inline-options label {
 	display: block !important;
 	width: 100%;

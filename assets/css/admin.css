@@ -926,7 +926,7 @@ p.imagify-section-title.imagify-section-title {
 }
 
 .imagify-inline-options input[type="radio"]:disabled + label {
-	background: #2E3243;
+	background: rgba(46, 50, 67, 0.5);
 	cursor:default;
 }
 
