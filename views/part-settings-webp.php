@@ -17,7 +17,12 @@ $settings = Imagify_Settings::get_instance();
 		$disabled      = false;
 
 		if ( has_filter( 'imagify_nextgen_images_formats' ) ) {
-			$message       = __( 'Next-Gen Images format is currently defined by the imagify_nextgen_images_format filter. Read more', 'imagify' );
+			$message       = sprintf(
+				__( 'Next-Gen Images format is currently defined by the imagify_nextgen_images_format filter. %1$sRead more%2$s', 'imagify' ),
+				'<a href="https://imagify.io/documentation/how-to-use-the-next-gen-image-format-filter/" target="_blank">',
+				'</a>'
+			);
+
 			$message_class = 'error';
 			$disabled      = true;
 		}
