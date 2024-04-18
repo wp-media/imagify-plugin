@@ -18,6 +18,7 @@ $settings = Imagify_Settings::get_instance();
 
 		if ( has_filter( 'imagify_nextgen_images_formats' ) ) {
 			$message       = sprintf(
+				// translators: %1$s and %2$s are <a> tag opening and closing.
 				__( 'Next-Gen Images format is currently defined by the imagify_nextgen_images_format filter. %1$sRead more%2$s', 'imagify' ),
 				'<a href="https://imagify.io/documentation/how-to-use-the-next-gen-image-format-filter/" target="_blank">',
 				'</a>'
