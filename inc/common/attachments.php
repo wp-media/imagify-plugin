@@ -75,7 +75,7 @@ add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'get_resi
  * @return array
  */
 function imagify_nextgen_images_formats() {
-	$value   = get_imagify_option( 'optimization_fornat' );
+	$value   = get_imagify_option( 'optimization_format' );
 	$formats = [];
 
 	if ( 'off' !== $value ) {
