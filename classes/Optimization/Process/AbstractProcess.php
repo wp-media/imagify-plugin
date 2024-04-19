@@ -581,7 +581,12 @@ abstract class AbstractProcess implements ProcessInterface {
 			// This file type is not supported.
 			$extension = $file->get_extension();
 
-			if ( '' === $extension ) {
+			if ( ! $extension ) {
+				$response = new WP_Error(
+					'extension_not_mime',
+					__( 'This file has an extension that does not match a mime type.', 'imagify' )
+				);
+			} elseif ( '' === $extension ) {
 				$response = new WP_Error(
 					'no_extension',
 					__( 'With no extension, this file cannot be optimized.', 'imagify' )
