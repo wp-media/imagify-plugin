@@ -586,8 +586,17 @@ class Bulk {
 	 * @return void
 	 */
 	public function maybe_generate_missing_nextgen( $old_value, $value ) {
-		if ( empty( $old_value['convert_to_avif'] ) === empty( $value['convert_to_avif'] ) ) {
+		if ( ! isset( $old_value['optimization_format'], $value['optimization_format'] ) ) {
+			return;
+		}
+
+		if ( $old_value['optimization_format'] === $value['optimization_format'] ) {
 			// Old value = new value so do nothing.
+			return;
+		}
+
+		if ( 'off' === $value['optimization_format'] ) {
+			// No need to generate next-gen images.
 			return;
 		}
 

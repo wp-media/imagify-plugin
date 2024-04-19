@@ -75,14 +75,11 @@ add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'get_resi
  * @return array
  */
 function imagify_nextgen_images_formats() {
-	$formats = [
-		'webp' => 'webp',
-	];
+	$value   = get_imagify_option( 'optimization_format' );
+	$formats = [];
 
-	if ( get_imagify_option( 'convert_to_avif' ) ) {
-		$formats['avif'] = 'avif';
-
-		unset( $formats['webp'] );
+	if ( 'off' !== $value ) {
+		$formats[ $value ] = $value;
 	}
 
 	$default = $formats;

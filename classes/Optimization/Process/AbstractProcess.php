@@ -1537,7 +1537,9 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @return string Current format we are targeting.
 	 */
 	public function get_current_format() {
-		return $this->get_option( 'convert_to_avif' ) ? static::AVIF_SUFFIX : static::WEBP_SUFFIX;
+		$format = get_imagify_option( 'optimization_format' );
+
+		return ( 'avif' === $format ) ? static::AVIF_SUFFIX : static::WEBP_SUFFIX;
 	}
 
 	/**

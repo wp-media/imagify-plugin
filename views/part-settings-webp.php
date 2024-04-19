@@ -12,18 +12,47 @@ $settings = Imagify_Settings::get_instance();
 
 	<div class="imagify-setting-line">
 		<?php
-		$settings->field_checkbox( [
-			'option_name' => 'convert_to_avif',
-			'label'       => __( 'Create AVIF versions of images', 'imagify' ),
-			'attributes'  => [
-				'aria-describedby' => 'describe-convert_to_avif',
-			],
-		] );
+		$message       = __( 'Select WebP for high compatibility, AVIF for superior compression. Please note that the generation process will start automatically after saving the settings.', 'imagify' );
+		$message_class = 'info';
+		$disabled      = false;
+
+		if ( has_filter( 'imagify_nextgen_images_formats' ) ) {
+			$message       = sprintf(
+				// translators: %1$s and %2$s are <code> tag opening and closing, %3$s and %4$s are <a> tag opening and closing.
+				__( 'Next-Gen Images format is currently defined by the %1$simagify_nextgen_images_format%2$s filter. %3$sRead more%4$s', 'imagify' ),
+				'<code>',
+				'</code>',
+				'<a href="https://imagify.io/documentation/how-to-use-the-next-gen-image-format-filter/" target="_blank">',
+				'</a>'
+			);
+
+			$message_class = 'error';
+			$disabled      = true;
+		}
+
+		$attributes = [
+			'aria-describedby' => 'describe-optimization_format',
+		];
+
+		if ( $disabled ) {
+			$attributes['disabled'] = true;
+		}
+
+		$settings->field_inline_radio_list(
+			[
+				'option_name' => 'optimization_format',
+				'legend'      => __( 'Next-gen image format', 'imagify' ),
+				'info'        => $message,
+				'info_class'  => $message_class,
+				'values'      => [
+					'off'  => __( 'Off', 'imagify' ),
+					'avif' => __( 'AVIF', 'imagify' ),
+					'webp' => __( 'WebP', 'imagify' ),
+				],
+				'attributes'  => $attributes,
+			]
+		);
 		?>
-		<div class="imagify-info">
-			<span class="dashicons dashicons-info"></span>
-			<?php esc_html_e( 'Enabling this option will start the process of creating AVIF version of your images automatically.', 'imagify' ); ?>
-		</div>
 	</div>
 
 	<div class="imagify-setting-line">
