@@ -926,8 +926,9 @@ p.imagify-section-title.imagify-section-title {
 }
 
 .imagify-inline-options input[type="radio"]:disabled + label {
-	background: rgba(46, 50, 67, 0.5);
-	cursor:default;
+	background: #ccc;
+	color: #999;
+	cursor:not-allowed;
 }
 
 .imagify-inline-options .imagify-info {
