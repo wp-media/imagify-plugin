@@ -1551,7 +1551,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		foreach ( $formats as $format ) {
 			$suffix = preg_quote( $this->get_suffix_from_format( $format ), '/' );
 
-			if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
+			if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', (string) $size_name, $matches ) ) {
 				return $matches['size'];
 			}
 		}
