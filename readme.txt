@@ -262,6 +262,12 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.2.2 =
+- Enhancement: Allow to choose which Next-Gen images should be generated in UI
+- Enhancement: Guard against image size that’s not a string
+- Enhancement: Guard against file type that doesn’t match existing mime type
+- Bugfix: Fix a fatal error related to “WP_List_Table”
+
 = 2.2.1 =
 - Enhancement: Prevent updating .htaccess when switching between AVIF and WEBP generation features
 - Enhancement: Display the smallest size of the image in the Media Library image details section
