@@ -182,10 +182,10 @@ class Actions {
 
 		$bulk = Bulk::get_instance();
 
-		$format = 'webp';
+		$format = get_imagify_option( 'optimization_format' );
 
-		if ( get_imagify_option( 'convert_to_avif' ) ) {
-			$format = 'avif';
+		if ( 'off' === $format ) {
+			return $response;
 		}
 
 		foreach ( $data[ $imagifybeat_id ] as $context ) {

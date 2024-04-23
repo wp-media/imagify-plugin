@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, convert webp, webp converter, convert AVIF, webp to AVIF, AVIF plugin, AVIF converter, image optimization, compress images, image compressor, resize images, reduce image size, performance, image optimizer, core web vitals, best image optimization plugin
 Tested up to: 6.5
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 Requires PHP: 7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -262,6 +262,12 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.2.2 =
+- Enhancement: Allow to choose which Next-Gen images should be generated in UI
+- Enhancement: Guard against image size that’s not a string
+- Enhancement: Guard against file type that doesn’t match existing mime type
+- Bugfix: Fix a fatal error related to “WP_List_Table”
+
 = 2.2.1 =
 - Enhancement: Prevent updating .htaccess when switching between AVIF and WEBP generation features
 - Enhancement: Display the smallest size of the image in the Media Library image details section

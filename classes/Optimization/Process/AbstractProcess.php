@@ -581,10 +581,20 @@ abstract class AbstractProcess implements ProcessInterface {
 			// This file type is not supported.
 			$extension = $file->get_extension();
 
-			if ( '' === $extension ) {
+			if ( ! $extension ) {
+				$response = new WP_Error(
+					'extension_not_mime',
+					__( 'This file has an extension that does not match a mime type.', 'imagify' )
+				);
+			} elseif ( '' === $extension ) {
 				$response = new WP_Error(
 					'no_extension',
 					__( 'With no extension, this file cannot be optimized.', 'imagify' )
+				);
+			} elseif ( ! $extension ) {
+				$response = new WP_Error(
+					'extension_not_mime',
+					__( 'This file has an extension that does not match a mime type.', 'imagify' )
 				);
 			} else {
 				$response = new WP_Error(
@@ -1532,7 +1542,9 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @return string Current format we are targeting.
 	 */
 	public function get_current_format() {
-		return $this->get_option( 'convert_to_avif' ) ? static::AVIF_SUFFIX : static::WEBP_SUFFIX;
+		$format = get_imagify_option( 'optimization_format' );
+
+		return ( 'avif' === $format ) ? static::AVIF_SUFFIX : static::WEBP_SUFFIX;
 	}
 
 	/**
@@ -1551,7 +1563,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		foreach ( $formats as $format ) {
 			$suffix = preg_quote( $this->get_suffix_from_format( $format ), '/' );
 
-			if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', $size_name, $matches ) ) {
+			if ( preg_match( '/^(?<size>.+)' . $suffix . '$/', (string) $size_name, $matches ) ) {
 				return $matches['size'];
 			}
 		}

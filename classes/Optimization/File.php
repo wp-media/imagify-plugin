@@ -745,10 +745,9 @@ class File {
 	/**
 	 * Get the file extension.
 	 *
-	 * @since  1.9
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @return string|null
+	 * @return string|false
 	 */
 	public function get_extension() {
 		return $this->get_file_type()->ext;

@@ -44,6 +44,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'partner_links'          => 0,
 		'convert_to_avif'        => 0,
 		'convert_to_webp'        => 0,
+		'optimization_format'    => 'webp',
 	];
 
 	/**
@@ -96,10 +97,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		parent::__construct();
 	}
 
-	/** ----------------------------------------------------------------------------------------- */
-	/** SANITIZATION, VALIDATION ================================================================ */
-	/** ----------------------------------------------------------------------------------------- */
-
 	/**
 	 * Sanitize and validate an option value. Basic casts have been made.
 	 *
@@ -127,7 +124,13 @@ class Imagify_Options extends Imagify_Abstract_Options {
 					return $reset_values[ $key ];
 				}
 				return $value;
-
+			case 'optimization_format':
+				if ( ! in_array( $value, [ 'off', 'webp', 'avif' ], true ) ) {
+					// For an invalid value, return the "reset" value.
+					$reset_values = $this->get_reset_values();
+					return $reset_values[ $key ];
+				}
+				return $value;
 			case 'auto_optimize':
 			case 'backup':
 			case 'lossless':

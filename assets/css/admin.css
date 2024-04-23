@@ -908,6 +908,7 @@ p.imagify-section-title.imagify-section-title {
 	z-index: 2;
 	-webkit-transition: all .275s;
 	transition: all .275s;
+	cursor: pointer;
 }
 
 .imagify-inline-options input[type="radio"]:not(:checked) + label:first-of-type,
@@ -922,6 +923,12 @@ p.imagify-section-title.imagify-section-title {
 
 .imagify-inline-options input[type="radio"]:checked + label {
 	background: #8BC34A
+}
+
+.imagify-inline-options input[type="radio"]:disabled + label {
+	background: #ccc;
+	color: #999;
+	cursor:not-allowed;
 }
 
 .imagify-inline-options .imagify-info {

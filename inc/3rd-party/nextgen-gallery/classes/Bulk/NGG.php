@@ -124,7 +124,7 @@ class NGG extends AbstractBulk {
 		$data_table  = DB::get_instance()->get_table_name();
 		$suffix = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::WEBP_SUFFIX' );
 
-		if ( get_imagify_option( 'convert_to_avif' ) ) {
+		if ( 'avif' === get_imagify_option( 'optimization_format' ) ) {
 			$suffix = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::AVIF_SUFFIX' );
 		}
 
@@ -194,7 +194,7 @@ class NGG extends AbstractBulk {
 		$data_table  = DB::get_instance()->get_table_name();
 		$suffix = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::WEBP_SUFFIX' );
 
-		if ( get_imagify_option( 'convert_to_avif' ) ) {
+		if ( 'avif' === get_imagify_option( 'optimization_format' ) ) {
 			$suffix = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::AVIF_SUFFIX' );
 		}
 
