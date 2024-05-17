@@ -7,7 +7,7 @@ Requires PHP: 7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Compress images & convert WebP and Avif with the best and easiest WordPress image optimization plugin. Optimize and resize images in 1-click easily!
+Compress images & convert WebP and Avif with the best and easiest WordPress image optimization plugin. Resize and optimize images in 1-click easily!
 
 == Description ==
 
