@@ -175,7 +175,7 @@ When you optimize JPG, PNG, and GIF files, Imagify will also create WebP version
 
 Don’t worry! Imagify comes with the Smart Compression Mode. It means that your images will be automatically optimized for the best possible compression ratio and quality. There’s nothing else to do – just enjoy your lighter and faster images.
 
-=How does the optimization process work?=
+=How does the image optimization process work?=
 
 The image optimization process is performed on our servers. Once done, Imagify returns the optimized image to your server. We do not edit images’ titles or any other information, so there is nothing further to be done on your end than to compress images. Your original images will be moved to a dedicated backup folder (just make sure to keep the Backup option active in Imagify settings).
 
@@ -253,7 +253,7 @@ You can report any security bugs found in the source code of the site-reviews pl
 
 == Screenshots ==
 
-1. Bulk Optimization
+1. Bulk Image Optimization
 
 2. Settings Page
 
