@@ -13,7 +13,7 @@ Compress images & convert WebP and Avif with the best and easiest WordPress imag
 
 = The Best Image Optimization Plugin For WordPress =
 
-[Imagify](https://imagify.io/) is the most advanced image optimization plugin to help you resize and compress images. You can now use its power directly in WordPress to optimise images and reduce the weight of the photos you want to add to your site – all in just one click and without sacrificing their quality. 
+[Imagify](https://imagify.io/) is the most advanced image optimization plugin to help you resize and compress images. You can now use its power directly in WordPress to optimize images and reduce the weight of the photos you want to add to your site – image optimization is all done with just one click and without sacrificing their quality.
 
 Imagify is the best WordPress image optimizer. The plugin lets you optimize images in one go with its asynchronous bulk optimization option. You can resize your images on the fly – they will be automatically optimized at the best compression level. If needed, you can always restore your images to their original versions.
 
