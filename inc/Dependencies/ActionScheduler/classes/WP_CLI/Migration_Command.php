@@ -7,6 +7,7 @@ use Action_Scheduler\Migration\Config;
 use Action_Scheduler\Migration\Runner;
 use Action_Scheduler\Migration\Scheduler;
 use Action_Scheduler\Migration\Controller;
+use Exception;
 use WP_CLI;
 use WP_CLI_Command;
 
@@ -86,12 +87,14 @@ class Migration_Command extends WP_CLI_Command {
 		$sleep      = isset( $assoc_args[ 'pause' ] ) ? (int) $assoc_args[ 'pause' ] : 0;
 		\ActionScheduler_DataController::set_free_ticks( $free_on );
 		\ActionScheduler_DataController::set_sleep_time( $sleep );
-
-		do {
-			$actions_processed     = $runner->run( $batch_size );
-			$this->total_processed += $actions_processed;
-		} while ( $actions_processed > 0 );
-
+		try {
+			do {
+				$actions_processed     = $runner->run( $batch_size );
+				$this->total_processed += $actions_processed;
+			} while ( $actions_processed > 0 );
+		} catch ( Exception $e) {
+			WP_CLI::warning( $e->getMessage() );
+		}
 		if ( ! $config->get_dry_run() ) {
 			// let the scheduler know that there's nothing left to do
 			$scheduler = new Scheduler();
