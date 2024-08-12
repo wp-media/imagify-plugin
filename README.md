@@ -77,10 +77,6 @@ You can optimize for free 20MB of images (about 200 images) every month. You can
 
 Need more? Have a look at our plans: [https://imagify.io/pricing](https://imagify.io/pricing).
 
-## What's next?
-
-Have a look at our upcoming features by following our development roadmap: [https://trello.com/b/3Q8ZnSN6/imagify-roadmap](https://trello.com/b/3Q8ZnSN6/imagify-roadmap).
-
 ## Who we are?
 
 We are [WP Media](https://wp-media.me/), the startup behind WP Rocket the best caching plugin for WordPress.
