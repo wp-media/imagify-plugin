@@ -42,7 +42,7 @@ class Display implements SubscriberInterface {
 	 */
 	public static function get_subscribed_events() {
 		return [
-			'template_redirect'            => [ 'start_content_process', -1000 ],
+			'template_redirect'            => 'start_content_process',
 			'imagify_process_webp_content' => 'process_content',
 		];
 	}
