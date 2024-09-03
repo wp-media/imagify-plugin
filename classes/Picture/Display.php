@@ -637,6 +637,8 @@ class Display implements SubscriberInterface {
 			}
 		}
 
+		$data = apply_filters_deprecated( 'imagify_webp_picture_process_image', [ $data, $image ], '2.2.1', 'imagify_picture_process_image' );
+
 		/**
 		 * Filter a processed image tag.
 		 *
@@ -645,7 +647,7 @@ class Display implements SubscriberInterface {
 		 * @param array  $data  An array of data for this image.
 		 * @param string $image An image html tag.
 		 */
-		$data = apply_filters( 'imagify_webp_picture_process_image', $data, $image );
+		$data = apply_filters( 'imagify_picture_process_image', $data, $image );
 
 		if ( ! $data || ! is_array( $data ) ) {
 			return false;
