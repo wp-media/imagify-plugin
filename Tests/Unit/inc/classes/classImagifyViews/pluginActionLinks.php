@@ -44,9 +44,6 @@ class Test_PluginActionLinks extends TestCase {
         Functions\when( 'imagify_get_external_url' )->justReturn( 'https://example.org' );
         Functions\when( 'get_imagify_admin_url' )->justReturn( 'https://example.org' );
 
-        $reflection = new \ReflectionClass(Imagify_Views::class);
-        $imagify_views = $reflection->newInstanceWithoutConstructor();
-
         $plugin_action_links = $this->imagify_views->plugin_action_links([]);
         $plugin_action_links = implode( '|', $plugin_action_links );
 
@@ -63,9 +60,6 @@ class Test_PluginActionLinks extends TestCase {
         Functions\when( 'get_imagify_user' )->justReturn( (object) $this->user_data );
         Functions\when( 'imagify_get_external_url' )->justReturn( 'https://example.org' );
         Functions\when( 'get_imagify_admin_url' )->justReturn( 'https://example.org' );
-
-        $reflection = new \ReflectionClass(Imagify_Views::class);
-        $imagify_views = $reflection->newInstanceWithoutConstructor();
 
         $plugin_action_links = $this->imagify_views->plugin_action_links([]);
         $plugin_action_links = implode( '|', $plugin_action_links );
