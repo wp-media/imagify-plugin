@@ -61,11 +61,10 @@
 }
 #wpadminbar #wp-admin-bar-imagify-profile .ab-item {
 	height: auto;
-	padding: 0 13px;
+	padding: 0;
 }
 #wpadminbar #wp-admin-bar-imagify-profile {
 	min-width: 200px;
-	padding: 15px 0 10px;
 	margin-top: 0.7em;
 	background: #222;
 }
@@ -196,4 +195,21 @@
     right: 10px;
 	content: "\2715";
     color: #fff;
+}
+
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-admin-bar-upgrade-plan {
+	background: #8bc34a;
+	box-sizing: border-box;
+	border:none;
+	color: #fff;
+	cursor: pointer;
+	display: block;
+	font-weight: bold !important;
+	padding: 5px 10px;
+	text-align: left;
+	width: 100% !important;
+}
+
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-admin-bar-quota {
+	padding: 13px 15px;
 }
