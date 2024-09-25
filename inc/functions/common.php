@@ -238,90 +238,92 @@ function imagify_can_optimize_custom_folders() {
 	return $can;
 }
 
-/**
- * Simple helper to get some external URLs, like to the documentation.
- *
- * @since  1.6.12
- * @author Grégory Viguier
- *
- * @param  string $target     What we want.
- * @param  array  $query_args An array of query arguments.
- * @return string The URL.
- */
-function imagify_get_external_url( $target, $query_args = array() ) {
-	$site_url = IMAGIFY_SITE_DOMAIN . '/';
-	$app_url  = IMAGIFY_APP_DOMAIN . '/#/';
+if ( ! function_exists( 'imagify_get_external_url' ) ) {
+	/**
+	 * Simple helper to get some external URLs, like to the documentation.
+	 *
+	 * @since  1.6.12
+	 * @author Grégory Viguier
+	 *
+	 * @param  string $target     What we want.
+	 * @param  array  $query_args An array of query arguments.
+	 * @return string The URL.
+	 */
+	function imagify_get_external_url( $target, $query_args = array() ) {
+		$site_url = IMAGIFY_SITE_DOMAIN . '/';
+		$app_url  = IMAGIFY_APP_DOMAIN . '/#/';
 
-	switch ( $target ) {
-		case 'plugin':
-			/* translators: Plugin URI of the plugin/theme */
-			$url = __( 'https://wordpress.org/plugins/imagify/', 'imagify' );
-			break;
+		switch ( $target ) {
+			case 'plugin':
+				/* translators: Plugin URI of the plugin/theme */
+				$url = __( 'https://wordpress.org/plugins/imagify/', 'imagify' );
+				break;
 
-		case 'rate':
-			$url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
-			break;
+			case 'rate':
+				$url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
+				break;
 
-		case 'share-twitter':
-			$url = rawurlencode( imagify_get_external_url( 'plugin' ) );
-			$url = 'https://twitter.com/intent/tweet?source=webclient&original_referer=' . $url . '&url=' . $url . '&related=imagify&hastags=performance,web,wordpress';
-			break;
+			case 'share-twitter':
+				$url = rawurlencode( imagify_get_external_url( 'plugin' ) );
+				$url = 'https://twitter.com/intent/tweet?source=webclient&original_referer=' . $url . '&url=' . $url . '&related=imagify&hastags=performance,web,wordpress';
+				break;
 
-		case 'share-facebook':
-			$url = rawurlencode( imagify_get_external_url( 'plugin' ) );
-			$url = 'https://www.facebook.com/sharer/sharer.php?u=' . $url;
-			break;
+			case 'share-facebook':
+				$url = rawurlencode( imagify_get_external_url( 'plugin' ) );
+				$url = 'https://www.facebook.com/sharer/sharer.php?u=' . $url;
+				break;
 
-		case 'contact':
-			$lang  = imagify_get_current_lang_in( 'fr' );
-			$paths = array(
-				'en' => 'contact',
-				'fr' => 'fr/contact',
-			);
+			case 'contact':
+				$lang  = imagify_get_current_lang_in( 'fr' );
+				$paths = array(
+					'en' => 'contact',
+					'fr' => 'fr/contact',
+				);
 
-			$url = $site_url . $paths[ $lang ] . '/';
-			break;
+				$url = $site_url . $paths[ $lang ] . '/';
+				break;
 
-		case 'documentation':
-			$url = $site_url . 'documentation/';
-			break;
+			case 'documentation':
+				$url = $site_url . 'documentation/';
+				break;
 
-		case 'documentation-imagick-gd':
-			$url = $site_url . 'documentation/solve-imagemagick-gd-required/';
-			break;
+			case 'documentation-imagick-gd':
+				$url = $site_url . 'documentation/solve-imagemagick-gd-required/';
+				break;
 
-		case 'register':
-			$partner = imagify_get_partner();
+			case 'register':
+				$partner = imagify_get_partner();
 
-			if ( $partner ) {
-				$query_args['partner'] = $partner;
-			}
+				if ( $partner ) {
+					$query_args['partner'] = $partner;
+				}
 
-			$url = $app_url . 'register';
-			break;
+				$url = $app_url . 'register';
+				break;
 
-		case 'subscription':
-			$url = $app_url . 'subscription';
-			break;
+			case 'subscription':
+				$url = $app_url . 'subscription';
+				break;
 
-		case 'get-api-key':
-			$url = $app_url . 'api';
-			break;
+			case 'get-api-key':
+				$url = $app_url . 'api';
+				break;
 
-		case 'payment':
-			// Don't remove the trailing slash.
-			$url = $app_url . 'plugin/';
-			break;
+			case 'payment':
+				// Don't remove the trailing slash.
+				$url = $app_url . 'plugin/';
+				break;
 
-		default:
-			return '';
+			default:
+				return '';
+		}
+
+		if ( $query_args ) {
+			$url = add_query_arg( $query_args, $url );
+		}
+
+		return $url;
 	}
-
-	if ( $query_args ) {
-		$url = add_query_arg( $query_args, $url );
-	}
-
-	return $url;
 }
 
 /**
