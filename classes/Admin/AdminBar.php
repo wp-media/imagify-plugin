@@ -41,12 +41,17 @@ class AdminBar {
 		$text             = '';
 		$button_text      = '';
 		$upgrade_link     = '';
+		$upgrade_button   = '';
 
 		if ( $user->is_free() ) {
 			$text         = esc_html__( 'Upgrade your plan now for more!', 'rocket' ) . '<br>' .
 			esc_html__( 'From $5.99/month only, keep going with image optimization!', 'rocket' );
 			$button_text  = esc_html__( 'Upgrade My Plan', 'rocket' );
 			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/?utm_source=plugin&utm_medium=notification';
+
+			if ( $user->get_percent_unconsumed_quota() <= 20 ) {
+				$upgrade_button = '<button id="imagify-get-pricing-modal" data-nonce="' . wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ) . '" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-admin-bar-upgrade-plan">' . __( 'Upgrade Plan', 'imagify' ) . '</button>';
+			}
 		} elseif ( $user->is_growth() ) {
 			$text = esc_html__( 'Switch to Infinite plan for unlimited optimization:', 'rocket' ) . '<br>';
 
@@ -72,6 +77,7 @@ class AdminBar {
 			'text'             => $text,
 			'button_text'      => $button_text,
 			'upgrade_link'     => $upgrade_link,
+			'upgrade_button'   => $upgrade_button,
 		];
 
 		$template = $views->get_template( 'admin/admin-bar-status', $data );
