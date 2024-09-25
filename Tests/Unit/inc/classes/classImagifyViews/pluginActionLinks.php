@@ -1,5 +1,5 @@
 <?php
-namespace Imagify\Tests\Unit\inc\classes\ImagifyUser;
+namespace Imagify\Tests\Unit\inc\classes\classImagifyViews;
 
 use Brain\Monkey\Functions;
 use Imagify\Tests\Unit\TestCase;
