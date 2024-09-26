@@ -115,7 +115,6 @@ class Plugin {
 		\Imagify\Auth\Basic::get_instance()->init();
 		\Imagify\Job\MediaOptimization::get_instance()->init();
 		Bulk::get_instance()->init();
-		AdminBar::get_instance()->init();
 
 		if ( is_admin() ) {
 			Notices::get_instance()->init();
