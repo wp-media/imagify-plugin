@@ -193,7 +193,5 @@
 #wpadminbar #wp-admin-bar-imagify-profile .imagify-upsell-dismiss::before {
 	position: absolute;
     top: 5px;
-    right: 10px;
-	content: "\2715";
-    color: #fff;
+    right: 5px;
 }
