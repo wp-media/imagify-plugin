@@ -1,5 +1,6 @@
 <?php
 return [
+	'Imagify\Admin\ServiceProvider',
 	'Imagify\Avif\ServiceProvider',
 	'Imagify\CDN\ServiceProvider',
 	'Imagify\Picture\ServiceProvider',
