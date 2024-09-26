@@ -1,26 +1,25 @@
 <?php
+declare( strict_types=1 );
 
 namespace Imagify\Admin;
 
-use Imagify\Traits\InstanceGetterTrait;
+use Imagify\EventManagement\SubscriberInterface;
 use Imagify\User\User;
 use Imagify_Views;
 
 /**
  * Admin bar handler
  */
-class AdminBar {
-	use InstanceGetterTrait;
-
+class AdminBar implements SubscriberInterface {
 	/**
-	 * Launch the hooks.
+	 * Returns an array of events this subscriber listens to
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public function init() {
-		if ( wp_doing_ajax() ) {
-				add_action( 'wp_ajax_imagify_get_admin_bar_profile', array( $this, 'get_admin_bar_profile_callback' ) );
-		}
+	public static function get_subscribed_events(): array {
+		return [
+			'wp_ajax_imagify_get_admin_bar_profile' => 'get_admin_bar_profile_callback',
+		];
 	}
 
 	/**
