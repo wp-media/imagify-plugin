@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Imagify\Admin;
 
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
-use Imagify\User\User;
 
 /**
  * Service provider for Admin
