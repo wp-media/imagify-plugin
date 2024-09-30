@@ -17,7 +17,6 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	protected $provides = [
 		'admin_bar',
-		'user',
 	];
 
 	/**
@@ -35,7 +34,6 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @return void
 	 */
 	public function register() {
-		$this->getContainer()->add( 'user', User::class );
 		$this->getContainer()->share( 'admin_bar', AdminBar::class )
 			->addArgument( $this->getContainer()->get( 'user' ) );
 	}
