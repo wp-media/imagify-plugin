@@ -26,4 +26,13 @@ class ServiceProvider extends AbstractServiceProvider {
 	public function register() {
 		$this->getContainer()->add( 'user', User::class );
 	}
+
+	/**
+	 * Returns the subscribers array
+	 *
+	 * @return array
+	 */
+	public function get_subscribers() {
+		return [];
+	}
 }
