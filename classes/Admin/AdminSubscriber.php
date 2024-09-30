@@ -6,6 +6,9 @@ namespace Imagify\Admin;
 use Imagify\EventManagement\SubscriberInterface;
 use Imagify\User\User;
 
+/**
+ * Admin Subscriber
+ */
 class AdminSubscriber implements SubscriberInterface {
 
 	/**
@@ -23,7 +26,7 @@ class AdminSubscriber implements SubscriberInterface {
 	public function __construct( User $user ) {
 		$this->user = $user;
 	}
-	
+
 	/**
 	 * Returns an array of events this subscriber listens to
 	 *
@@ -33,7 +36,7 @@ class AdminSubscriber implements SubscriberInterface {
 		$basename = plugin_basename( IMAGIFY_FILE );
 
 		return [
-			'plugin_action_links_' . $basename => 'plugin_action_links',
+			'plugin_action_links_' . $basename               => 'plugin_action_links',
 			'network_admin_plugin_action_links_' . $basename => 'plugin_action_links',
 		];
 	}
