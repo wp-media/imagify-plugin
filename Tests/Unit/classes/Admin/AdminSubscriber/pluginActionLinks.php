@@ -1,6 +1,7 @@
 <?php
 namespace Imagify\Tests\Unit\classes;
 
+use Mockery;
 use Brain\Monkey\Functions;
 use Imagify\Tests\Unit\TestCase;
 use Imagify\User\User;
@@ -18,11 +19,7 @@ class Test_PluginActionLinks extends TestCase {
     public function setUp(): void {
         parent::setUp();
 
-        $this->user = $this->createMock( User::class );
-        $reflection = new \ReflectionClass( $this->user );
-        $this->plan_id = $reflection->getProperty( 'plan_id' );
-        $this->plan_id->setAccessible( true );
-
+        $this->user = Mockery::mock( User::class );
         $this->admin_subscriber = new AdminSubscriber( $this->user );
     }
 
@@ -30,7 +27,7 @@ class Test_PluginActionLinks extends TestCase {
 	 * @dataProvider configTestData
 	 */
 	public function testShouldReturnAsExpected( $config, $expected ) {
-        $this->plan_id->setValue( $this->user, $config['plan_id'] );
+        $this->user->plan_id = $config['plan_id'];
 
         Functions\when( 'imagify_get_external_url' )->justReturn( 'https://example.org' );
         Functions\when( 'get_imagify_admin_url' )->justReturn( 'https://example.org' );
