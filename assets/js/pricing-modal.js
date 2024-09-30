@@ -1100,7 +1100,7 @@
 	 * Get pricings on modal opening.
 	 * Build the pricing tables inside modal.
 	 */
-	$('#imagify-get-pricing-modal').on('click.imagify-ajax', function () {
+	$('.imagify-get-pricing-modal').on('click.imagify-ajax', function () {
 		imagifyModal.getPricing($(this));
 	});
 
