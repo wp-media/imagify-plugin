@@ -189,7 +189,6 @@ class Plugin {
 		require_once $inc_path . 'functions/i18n.php';
 		require_once $inc_path . 'functions/partners.php';
 		require_once $inc_path . 'common/attachments.php';
-		require_once $inc_path . 'common/admin-bar.php';
 		require_once $inc_path . 'common/partners.php';
 		require_once $inc_path . '3rd-party/3rd-party.php';
 
