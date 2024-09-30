@@ -1638,7 +1638,7 @@ abstract class AbstractProcess implements ProcessInterface {
 
 		$keys = array_keys( $sizes );
 		$non_next_gen_keys = array_values(array_filter($keys, function ( $key ) {
-			return strpos( $key, $this->format ) === false;
+			return strpos( (string) $key, $this->format ) === false;
 		}));
 
 		return array_reduce($non_next_gen_keys, function ( $is_fully, $key ) use ( $sizes ) {
