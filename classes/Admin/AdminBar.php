@@ -48,7 +48,7 @@ class AdminBar implements SubscriberInterface {
 			$button_text  = esc_html__( 'Upgrade My Plan', 'rocket' );
 			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/?utm_source=plugin&utm_medium=notification';
 
-			if ( $user->get_percent_unconsumed_quota() <= 20 ) {
+			if ( $user->get_percent_unconsumed_quota() > 20 ) {
 				$upgrade_button = '<button id="imagify-get-pricing-modal" data-nonce="' . wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ) . '" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-admin-bar-upgrade-plan">' . __( 'Upgrade Plan', 'imagify' ) . '</button>';
 			}
 		} elseif ( $user->is_growth() ) {
