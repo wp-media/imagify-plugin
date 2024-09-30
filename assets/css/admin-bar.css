@@ -197,7 +197,11 @@
     color: #fff;
 }
 
-#wpadminbar #wp-admin-bar-imagify-profile .imagify-admin-bar-upgrade-plan {
+#wpadminbar #wp-admin-bar-imagify-upgrade-plan .ab-empty-item {
+	padding: 0;
+}
+
+#wpadminbar .imagify-admin-bar-upgrade-plan {
 	background: #8bc34a;
 	box-sizing: border-box;
 	border:none;
@@ -205,7 +209,7 @@
 	cursor: pointer;
 	display: block;
 	font-weight: bold !important;
-	padding: 5px 10px;
+	padding: 0 10px;
 	text-align: left;
 	width: 100% !important;
 }
