@@ -26,12 +26,12 @@ if (
 	<div class="imagify-col-content imagify-block-secondary imagify-mt2">
 		<div class="best-plan<?php echo $api_key_valid ? '' : ' hidden'; ?>">
 			<h3 class="imagify-user-best-plan-title">
-				<?php esc_html_e( 'You\'re new to Imagify?', 'imagify' ); ?>
+				<?php esc_html_e( 'Unlock Imagify\'s full potential', 'imagify' ); ?>
 			</h3>
-			<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
+			<p><?php esc_html_e( 'Expand your image quota and eliminate upload limits.', 'imagify' ); ?></p>
 			<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-full-width">
-				<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
-				<span class="button-text"><?php esc_html_e( 'What plan do I need?', 'imagify' ); ?></span>
+				<span class="button-text"><?php esc_html_e( 'Upgrade Now', 'imagify' ); ?></span>
+				<i class="dashicons dashicons-arrow-right-alt" aria-hidden="true"></i>
 			</button>
 		</div>
 	</div><!-- .imagify-col-content -->
