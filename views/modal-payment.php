@@ -387,46 +387,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 		</div><!-- .imagify-modal-main -->
 
-		<div class="imagify-modal-sidebar">
-			<div class="imagify-modal-sidebar-content imagify-txt-start">
-				<p class="imagify-modal-sidebar-title"><?php esc_html_e( 'What do our users think about Imagify', 'imagify' ); ?></p>
-
-				<div class="imagify-modal-testimony">
-					<div class="imagify-modal-testimony-person">
-						<span class="imagify-modal-avatar">
-							<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>pic-srhdesign.jpg" alt="">
-						</span>
-						<p class="imagify-modal-identity">
-							<a href="https://twitter.com/SRHDesign/status/686486119249260544" target="_blank">@SRHDesign</a>
-						</p>
-					</div>
-					<div class="imagify-modal-testimony-content">
-						<p>@imagify is an awesome tool that is powerful &amp; easy to use. It's fast, rivals and surpasses other established plugins/software. Awesome!</p>
-					</div>
-				</div>
-
-				<div class="imagify-modal-testimony">
-					<div class="imagify-modal-testimony-person">
-						<span class="imagify-modal-avatar">
-							<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>pic-ericwaltr.jpg" alt="">
-						</span>
-						<p class="imagify-modal-identity">
-							<a href="https://twitter.com/EricWaltR/status/679053496382038016" target="_blank">@EricWaltr</a>
-						</p>
-					</div>
-					<div class="imagify-modal-testimony-content">
-						<p>Clearly @imagify is the most awesome tool to compress images on your website! A must try</p>
-					</div>
-				</div>
-
-				<div class="imagify-modal-sidebar-trust imagify-txt-center">
-					<p class="imagify-secondary">
-						<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>icon-lock.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>icon-lock.svg 2x" width="16" height="19" alt="">&nbsp;<?php esc_html_e( 'Secure Credit Card Payment', 'imagify' ); ?></p>
-					<p><?php esc_html_e( 'This is secure 128-bits SSL encrypted payment', 'imagify' ); ?></p>
-				</div>
-			</div>
-		</div><!-- .imagify-modal-sidebar -->
-
 		<div class="imagify-modal-loader"></div>
 	</div><!-- .imagify-modal-content-->
 </div><!-- .imagify-payment-modal -->
