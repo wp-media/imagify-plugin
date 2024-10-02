@@ -55,8 +55,8 @@
 		$checkboxes:  $('.imagify-offer-line .imagify-checkbox'),
 		$radios:      $('.imagify-payment-modal .imagify-radio-line input'),
 		// Plans selection view & payment process view hidden by default.
-		$preView:     $('#imagify-pre-checkout-view'),
-		$plansView:   $('#imagify-plans-selection-view').hide(),
+		$preView:     $('#imagify-pre-checkout-view').hide(),
+		$plansView:   $('#imagify-plans-selection-view'),
 		$paymentView: $('#imagify-payment-process-view').hide(),
 		$successView: $('#imagify-success-view').hide(),
 		$anotherBtn:  $('.imagify-choose-another-plan'),
@@ -402,6 +402,10 @@
 								if ('free' === value.label) {
 									freeQuota = value.quota;
 								}
+
+								if ('starter' === value.label) {
+									return;
+								}
 								offers.mo.push(value);
 							}
 						});
@@ -501,26 +505,12 @@
 						} else {
 							// Now, do the MONTHLIES Markup.
 							$.each(offers.mo, function (index, value) {
-								var $tpl, $offer,
+								var $tpl,
 									classes = '';
 
 								// If offer is too big (far) than estimated needs, don't show the offer.
 								if ((index - suggested.mo.index) > 2) {
 									return true;
-								}
-
-								if (index === suggested.mo.index) {
-									// It's the one to display.
-									$offer = $('.imagify-pre-checkout-offers .imagify-offer-monthly');
-
-									if (suggested.mo.selected) {
-										classes = ' imagify-offer-selected';
-
-										// Add this offer as pre-selected item in pre-checkout view.
-										$offer.addClass('imagify-offer-selected').find('.imagify-checkbox').prop('checked', true);
-									}
-									// Populate the Pre-checkout view depending on user_cons.
-									imagifyModal.populateOffer($offer, value, 'monthly');
 								}
 
 								// Populate each offer.
