@@ -125,13 +125,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 								</span>
 
 								<p class="imagify-price-complement">
-									<?php
-									printf(
-										/* translators: %s is a formatted price. */
-										__( '%s', 'imagify' ),
-										'<span class="imagify-price-add-data"></span>'
-									);
-									?>
+									<span class="imagify-price-add-data"></span>
 								</p>
 
 							</div>
