@@ -31,6 +31,17 @@
 		$_this.addClass(curr_class).attr('aria-selected', 'true');
 	});
 
+	// Plan switcher.
+	$('#toggle-plan').change(function() {
+		var isChecked = $(this).is(':checked');
+		$('.toggle-label').eq(0).css('color', isChecked ? '#c8ced5' : '#3b3f4a');
+		$('.toggle-label').eq(1).css('color', isChecked ? '#3b3f4a' : '#c8ced5');
+		$('.badge').toggleClass('badge-checked', isChecked);
+		$('#imagify_all_plan_view').toggleClass('imagify-year-selected', isChecked).toggleClass('imagify-month-selected', ! isChecked);
+		$('.arrow-container img').eq(0).toggle(! isChecked);
+		$('.arrow-container img').eq(1).toggle(isChecked);
+	});
+
 })(jQuery, document, window);
 
 
@@ -151,10 +162,13 @@
 				mon = datas.monthly_cost,    // 4.99 (monthly)
 				quo = datas.quota,           // 1000 (MB) - 5000 images (monthly/onetime)
 				cos = datas.cost,            // 3.49 (onetime)
+				label = datas.label,
 				name = -1 === quo ? 'Unlimited' : (quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB'),
 				pcs = 'monthly' === type ? {monthly: mon, yearly: Math.round(ann / 12 * 100) / 100} : cos,
 				pcsd = pcs, // Used if discount is active.
-				percent, $datas_c, datas_content, applies_to = [];
+				percent, $datas_c, datas_content, applies_to = [],
+				offer_by = '',
+				additional_data = '';
 
 			applies_to = imagifyModal.getPromoAppliesTo(promo);
 
@@ -176,13 +190,28 @@
 
 			if (typeof classes !== 'undefined') {
 				$offer.addClass('imagify-' + type + '-' + lab + classes);
+				$offer.addClass('imagify-' + type + '-' + lab + classes);
 			}
+
+			// Label.
+			$offer.find('.imagify-label-plans').text(label);
 
 			// Name.
 			$offer.find('.imagify-offer-size').text(name);
 
 			// Main prices (pcs can be an object or a string).
 			$offer.find('.imagify-number-block').html(imagifyModal.getHtmlPrice(pcs, 'monthly'));
+
+			if ('Unlimited' === name) {
+				offer_by = 'quota';
+				$offer.addClass('imagify-best-value');
+				additional_data = 'No additional cost';
+			} else {
+				offer_by = '/month';
+				additional_data = '$' + add + ' per additional Gb';
+			}
+
+			$offer.find('.imagify-offer-by').text(offer_by);
 
 			// discount prices
 			$offer.find('.imagify-price-block').prev('.imagify-price-discount').remove();
@@ -200,7 +229,7 @@
 
 			if ('monthly' === type) {
 				// Additional price.
-				$offer.find('.imagify-price-add-data').text('$' + add);
+				$offer.find('.imagify-price-add-data').text(additional_data);
 			}
 
 			// Button data-offer attr.
@@ -520,6 +549,12 @@
 								// Complete Monthlies HTML.
 								mo_html += $tpl[0].outerHTML;
 							});
+
+							// Wait for element to be ready after ajax callback before adding ribbon.
+							setTimeout(function() {
+								// Add best value ribbon to unlimited plan.
+								$('.imagify-best-value').prepend('<div class="ribbon"><span>Best Value!</span></div>');
+							}, 100);
 						}
 
 						if (0 === offers.ot.length) {
@@ -1106,7 +1141,8 @@
 		// Reset first view after fadeout ~= 300 ms.
 		setTimeout(function () {
 			$('.imagify-modal-views').hide();
-			$('#imagify-pre-checkout-view').show();
+			$('#imagify-pre-checkout-view').hide();
+			$('#imagify-plans-selection-view').show();
 		}, 300);
 
 		//delay scrolltop top to avoid flickering
