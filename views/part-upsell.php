@@ -88,7 +88,7 @@ if (
 	<p><?php echo $price; ?></p>
 
 	<a href="<?php echo esc_url( $upgrade_link ); ?>" target="_blank" rel="noopener noreferrer" class="imagify-upsell-button"><span class="imagify-upsell-arrow"><?php esc_html_e( 'Upgrade now', 'imagify' ); ?></span></a>
-	<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-banner' ) ); ?>" class="imagify-notice-dismiss imagify-upsell-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-banner' ) ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 </div><!-- .imagify-col-content -->
 	<?php
 }
