@@ -32,14 +32,14 @@
 	});
 
 	// Plan switcher.
-	$('#toggle-plan').change(function() {
+	$('#imagify-toggle-plan').change(function() {
 		var isChecked = $(this).is(':checked');
-		$('.toggle-label').eq(0).css('color', isChecked ? '#c8ced5' : '#3b3f4a');
-		$('.toggle-label').eq(1).css('color', isChecked ? '#3b3f4a' : '#c8ced5');
-		$('.badge').toggleClass('badge-checked', isChecked);
+		$('.imagify-toggle-label').eq(0).css('color', isChecked ? '#c8ced5' : '#3b3f4a');
+		$('.imagify-toggle-label').eq(1).css('color', isChecked ? '#3b3f4a' : '#c8ced5');
+		$('.imagify-badge').toggleClass('imagify-badge-checked', isChecked);
 		$('#imagify_all_plan_view').toggleClass('imagify-year-selected', isChecked).toggleClass('imagify-month-selected', ! isChecked);
-		$('.arrow-container img').eq(0).toggle(! isChecked);
-		$('.arrow-container img').eq(1).toggle(isChecked);
+		$('.imagify-arrow-container img').eq(0).toggle(! isChecked);
+		$('.imagify-arrow-container img').eq(1).toggle(isChecked);
 	});
 
 })(jQuery, document, window);
@@ -553,7 +553,7 @@
 							// Wait for element to be ready after ajax callback before adding ribbon.
 							setTimeout(function() {
 								// Add best value ribbon to unlimited plan.
-								$('.imagify-best-value').prepend('<div class="ribbon"><span>Best Value!</span></div>');
+								$('.imagify-best-value').prepend('<div class="imagify-ribbon"><span>Best Value!</span></div>');
 							}, 100);
 						}
 

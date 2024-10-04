@@ -402,6 +402,7 @@ div.imagify-col-checkbox {
 	font-weight: bold;
 	-webkit-transition: all .275s;
 	transition: all .275s;
+	text-transform: uppercase;
 }
 .imagify-offer-by {
 	font-size: 10px;
@@ -1174,6 +1175,9 @@ p.imagify-modal-sidebar-title.imagify-modal-sidebar-title {
 div.imagify-col-label {
 	width:15%;
 }
+.imagify-pricing-table .imagify-col-other-actions.imagify-choose-plan-col {
+    width: 14.5%;
+}
 @media (max-width: 782px) {
 	.imagify-payment-modal .imagify-modal-content{
 		width: 90%;
@@ -1362,7 +1366,7 @@ div.imagify-col-label {
 }
 
 /** Ribbon **/
-.ribbon {
+.imagify-ribbon {
 	position: absolute;
 	left: -5px; top: -5px;
 	z-index: 1;
@@ -1370,7 +1374,7 @@ div.imagify-col-label {
 	width: 75px; height: 75px;
 	text-align: right;
 }
-.ribbon span {
+.imagify-ribbon span {
 	font-size: 0.9em;
 	font-weight: bold;
 	color: #FFF;
@@ -1386,7 +1390,7 @@ div.imagify-col-label {
 	position: absolute;
 	top: 19px; left: -21px;
 }
-.ribbon span::before {
+.imagify-ribbon span::before {
 	content: "";
 	position: absolute; left: 0px; top: 100%;
 	z-index: -1;
@@ -1395,7 +1399,7 @@ div.imagify-col-label {
 	border-bottom: 3px solid transparent;
 	border-top: 3px solid #3FB1CF;
 }
-.ribbon span::after {
+.imagify-ribbon span::after {
 	content: "";
 	position: absolute; right: 0px; top: 100%;
 	z-index: -1;
@@ -1407,7 +1411,7 @@ div.imagify-col-label {
 /** End Ribbon **/
 
 /** Toggle Switch **/
-.toggle-container {
+.imagify-toggle-container {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1416,25 +1420,25 @@ div.imagify-col-label {
     width: 70%;
     margin: 80px auto 40px;
 }
-.toggle-container .toggle-label {
+.imagify-toggle-container .toggle-label {
     font-size: 16px;
     font-weight: 500;
 }
 .toggle-container .toggle-label:nth-of-type(2) {
     color: #c8ced5;
 }
-.switch {
+.imagify-switch {
     position: relative;
     display: inline-block;
     width: 48px;
     height: 24px;
 }
-.switch input {
+.imagify-switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
-.slider {
+.imagify-slider {
     position: absolute;
     top: 0;
     left: 0;
@@ -1445,7 +1449,7 @@ div.imagify-col-label {
     cursor: pointer;
     transition: 0.4s;
 }
-.slider:before {
+.imagify-slider:before {
     position: absolute;
     content: "";
     height: 18px;
@@ -1456,20 +1460,20 @@ div.imagify-col-label {
     border-radius: 50%;
     transition: 0.4s;
 }
-input:checked + .slider {
+input:checked + .imagify-slider {
     background-color: #97c45e;
 }
-input:checked + .slider:before {
+input:checked + .imagify-slider:before {
     transform: translateX(22px);
 }
-.badge-container {
+.imagify-badge-container {
     align-items: center;
     gap: 5px;
 	position:absolute;
 	right: 80px;
 	top: -25px;
 }
-.badge {
+.imagify-badge {
     font-size: 12px;
     padding: 4px 10px;
     border: 1px solid #b8bfc5;
@@ -1478,20 +1482,20 @@ input:checked + .slider:before {
 	font-weight: 700;
     transition: background-color 0.4s, color 0.4s;
 }
-.badge.badge-checked {
+.imagify-badge.imagify-badge-checked {
 	background-color: #E2F0D1;
 	color: #8bc34a;
 	border: 1px solid #8bc34a
 }
-.arrow-container {
+.imagify-arrow-container {
 	position: absolute;
     right: 180px;
     top: 0px;
 }
-.toggle-container img:nth-of-type(2) {
+.imagify-toggle-container img:nth-of-type(2) {
     display: none;
 }
-input:checked ~ .badge-container .badge {
+input:checked ~ .imagify-badge-container .imagify-badge {
     background-color: #97c45e;
     color: white;
     border-color: #97c45e;
