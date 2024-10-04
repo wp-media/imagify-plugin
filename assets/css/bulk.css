@@ -1304,3 +1304,14 @@ td.imagify-cell-filename {
 	}
 }
 
+.imagify-notice-dismiss {
+	text-decoration: none;
+}
+
+.imagify-notice-dismiss::before {
+	color: #fff;
+}
+
+.imagify-notice-dismiss.notice-dismiss:hover::before {
+	color: #fff;
+}

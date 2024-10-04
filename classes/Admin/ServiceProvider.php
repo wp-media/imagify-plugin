@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace Imagify\Admin;
 
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
+use Imagify\Admin\AdminSubscriber;
 
 /**
- * Service provider for Admin
+ * Service provider for Admin.
  */
 class ServiceProvider extends AbstractServiceProvider {
 	/**
@@ -16,6 +17,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	protected $provides = [
 		'admin_bar',
+		'admin_subscriber',
 	];
 
 	/**
@@ -25,6 +27,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public $subscribers = [
 		'admin_bar',
+		'admin_subscriber',
 	];
 
 	/**
@@ -33,7 +36,10 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @return void
 	 */
 	public function register() {
+
 		$this->getContainer()->share( 'admin_bar', AdminBar::class )
+			->addArgument( $this->getContainer()->get( 'user' ) );
+		$this->getContainer()->share( 'admin_subscriber', AdminSubscriber::class )
 			->addArgument( $this->getContainer()->get( 'user' ) );
 	}
 
