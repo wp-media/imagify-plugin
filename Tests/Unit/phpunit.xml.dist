@@ -16,6 +16,7 @@
     <testsuites>
         <testsuite name="unit">
             <directory suffix=".php">inc</directory>
+            <directory suffix=".php">classes</directory>
         </testsuite>
     </testsuites>
 
