@@ -143,7 +143,6 @@ class AdminBar implements SubscriberInterface {
 		$text             = '';
 		$button_text      = '';
 		$upgrade_link     = '';
-		$upgrade_button   = '';
 
 		if ( $this->user->is_free() ) {
 			$text         = esc_html__( 'Upgrade your plan now for more!', 'rocket' ) . '<br>' .
@@ -175,7 +174,6 @@ class AdminBar implements SubscriberInterface {
 			'text'             => $text,
 			'button_text'      => $button_text,
 			'upgrade_link'     => $upgrade_link,
-			'upgrade_button'   => $upgrade_button,
 		];
 
 		$template = $views->get_template( 'admin/admin-bar-status', $data );
