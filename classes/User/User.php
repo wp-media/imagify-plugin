@@ -125,7 +125,7 @@ class User {
 	 * @return void
 	 */
 	public function __construct() {
-		$user = get_imagify_user();
+		$user = imagify_get_cached_user() ?: get_imagify_user();
 
 		if ( is_wp_error( $user ) ) {
 			$this->error = $user;
