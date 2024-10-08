@@ -95,7 +95,7 @@ if (
 			<use href="#imagify_arrow_long_right"></use>
 		</svg>
 	</a>
-	<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-banner' ) ); ?>" class="imagify-notice-dismiss imagify-upsell-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+	<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-banner' ) ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 </div><!-- .imagify-col-content -->
 	<?php
 }

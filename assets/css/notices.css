@@ -21,6 +21,10 @@
 	text-decoration: none;
 }
 
+.imagify-notice-dismiss.notice-dismiss::before {
+	color: #fff;
+}
+
 /* Notices in Imagify related pages */
 .media_page_imagify-bulk-optimization .notice,
 body[class*="_imagify-ngg-bulk-optimization"] .notice,

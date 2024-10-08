@@ -120,11 +120,6 @@ class Imagify_Views {
 			add_action( 'network_admin_menu', [ $this, 'add_network_menus' ] );
 		}
 
-		// Action links in plugins list.
-		$basename = plugin_basename( IMAGIFY_FILE );
-		add_filter( 'plugin_action_links_' . $basename,               [ $this, 'plugin_action_links' ] );
-		add_filter( 'network_admin_plugin_action_links_' . $basename, [ $this, 'plugin_action_links' ] );
-
 		// Save the "per page" option value from the files list screen.
 		add_filter( 'set-screen-option', [ 'Imagify_Files_List_Table', 'save_screen_options' ], 10, 3 );
 
@@ -207,27 +202,6 @@ class Imagify_Views {
 			add_action( 'load-' . $screen_id, array( $this, 'load_files_list' ) );
 		}
 	}
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** PLUGIN ACTION LINKS ===================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Add links to the plugin row in the plugins list.
-	 *
-	 * @since 1.7
-	 *
-	 * @param  array $actions An array of action links.
-	 * @return array
-	 */
-	public function plugin_action_links( $actions ) {
-		array_unshift( $actions, sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( imagify_get_external_url( 'documentation' ) ), __( 'Documentation', 'imagify' ) ) );
-		array_unshift( $actions, sprintf( '<a href="%s">%s</a>', esc_url( get_imagify_admin_url( 'bulk-optimization' ) ), __( 'Bulk Optimization', 'imagify' ) ) );
-		array_unshift( $actions, sprintf( '<a href="%s">%s</a>', esc_url( get_imagify_admin_url() ), __( 'Settings', 'imagify' ) ) );
-		return $actions;
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** MAIN PAGE TEMPLATES ===================================================================== */
