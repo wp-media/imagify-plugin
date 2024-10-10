@@ -160,8 +160,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	</div><!-- .imagify-settings-section -->
 
 	<?php
-	$this->print_template( 'modal-payment' );
-
 	if ( Imagify_Requirements::is_api_key_valid() ) {
 		$display_infos = get_transient( 'imagify_bulk_optimization_infos' );
 

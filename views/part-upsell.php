@@ -29,7 +29,7 @@ if (
 				<?php esc_html_e( 'You\'re new to Imagify?', 'imagify' ); ?>
 			</h3>
 			<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
-			<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-full-width">
+			<button data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-get-pricing-modal imagify-modal-trigger imagify-button imagify-button-light imagify-full-width">
 				<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
 				<span class="button-text"><?php esc_html_e( 'What plan do I need?', 'imagify' ); ?></span>
 			</button>
