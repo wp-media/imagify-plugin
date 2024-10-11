@@ -276,14 +276,14 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		 * Loaded in the bulk optimization page.
 		 */
 		if ( imagify_is_screen( 'bulk' ) ) {
-			$this->enqueue_assets( [ 'pricing-modal', 'bulk' ] );
+			$this->enqueue_assets( 'bulk' );
 		}
 
 		/*
 		 * Loaded in the settings page.
 		 */
 		if ( imagify_is_screen( 'imagify-settings' ) ) {
-			$this->enqueue_assets( [ 'sweetalert', 'notices', 'twentytwenty', 'pricing-modal', 'options' ] );
+			$this->enqueue_assets( [ 'sweetalert', 'notices', 'twentytwenty', 'options' ] );
 		}
 
 		/*
@@ -292,6 +292,8 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		if ( imagify_is_screen( 'files-list' ) ) {
 			$this->enqueue_assets( [ 'files-list', 'twentytwenty' ] );
 		}
+
+		$this->enqueue_assets( 'pricing-modal' );
 
 		/**
 		 * Triggered after Imagify CSS and JS have been enqueued.

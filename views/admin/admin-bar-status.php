@@ -1,7 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 ?>
-
 <div class="imagify-admin-bar-quota">
 	<div class="imagify-abq-row">
 		<?php if ( $data['plan_with_quota'] ) : ?>

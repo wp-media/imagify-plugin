@@ -177,7 +177,6 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-r
 	$this->print_template( 'modal-settings-infos' );
 	$this->print_template( 'modal-settings-partners-infos' );
 	$this->print_template( 'modal-settings-visual-comparison' );
-	$this->print_template( 'modal-payment' );
 	?>
 
 </div>
