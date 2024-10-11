@@ -125,7 +125,12 @@ class User {
 	 * @return void
 	 */
 	public function __construct() {
-		$user = imagify_get_cached_user() ?: get_imagify_user();
+		$user = get_transient( 'imagify_user_cache' );
+
+		if ( ! $user ) {
+			$user = get_imagify_user();
+			set_transient( 'imagify_user_cache', $user, 5 * MINUTE_IN_SECONDS );
+		}
 
 		if ( is_wp_error( $user ) ) {
 			$this->error = $user;
