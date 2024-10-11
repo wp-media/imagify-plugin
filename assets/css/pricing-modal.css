@@ -506,6 +506,9 @@ span.imagify-price-by {
     text-transform: uppercase;
     font-weight: bold;
 }
+.imagify-plans-selection-view span.imagify-price-by {
+    text-indent: -66px;
+}
 
 .imagify-col-other-actions {
 	width: 18.5%;
