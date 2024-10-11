@@ -31,7 +31,7 @@ class Test_GetError extends TestCase {
 			'is_monthly'                   => true,
 		];
 
-		Functions\when( 'imagify_get_cached_user' )->justReturn( false );
+		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
 
 		$this->assertFalse( ( new User() )->get_error() );
