@@ -23,7 +23,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 	public function testShouldReturnZeroWhenCouldNotFetchUserData() {
 		$wp_error = new WP_Error( 'error_id', 'Error Message' );
 
-		Functions\when( 'get_transient' )->justReturn( false );
+		Functions\when( 'imagify_get_cached_user' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
 		Functions\expect( 'imagify_round_half_five' )->never();
 
@@ -48,7 +48,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 			'is_monthly'                   => true,
 		];
 
-		Functions\when( 'get_transient' )->justReturn( false );
+		Functions\when( 'imagify_get_cached_user' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
 		Functions\expect( 'imagify_round_half_five' )
 			->twice()
@@ -72,7 +72,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 
 		$userData->consumed_current_month_quota = 500; // Current consumed quota 50%.
 
-		Functions\when( 'get_transient' )->justReturn( $userData );
+		Functions\when( 'get_imagify_user' )->justReturn( $userData );
 
 		$imagify_data_mock->shouldReceive( 'get' )
 			->never();
