@@ -24,6 +24,7 @@ class Test_IsOverQuota extends TestCase {
 
 		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
+		Functions\when( 'set_transient')->justReturn();
 
 		$this->assertFalse( ( new User() )->is_over_quota() );
 	}
@@ -48,6 +49,7 @@ class Test_IsOverQuota extends TestCase {
 
 		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
+		Functions\when( 'set_transient')->justReturn();
 
 		$this->assertFalse( ( new User() )->is_over_quota() );
 	}
@@ -101,6 +103,7 @@ class Test_IsOverQuota extends TestCase {
 	private function createMocks( $userData, $dataPreviousQuotaPercent ) {
 		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
+		Functions\when( 'set_transient')->justReturn();
 		Functions\expect( 'imagify_round_half_five' )
 			->once()
 			->with( 0 ) // extra_quota_consumed.

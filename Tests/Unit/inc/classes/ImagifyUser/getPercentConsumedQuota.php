@@ -25,6 +25,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 
 		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
+		Functions\when( 'set_transient')->justReturn();
 		Functions\expect( 'imagify_round_half_five' )->never();
 
 		$this->assertSame( ( new User() )->get_percent_consumed_quota(), 0 );
@@ -50,6 +51,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 
 		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
+		Functions\when( 'set_transient')->justReturn();
 		Functions\expect( 'imagify_round_half_five' )
 			->twice()
 			->with( 0 ) // extra_quota_consumed.
