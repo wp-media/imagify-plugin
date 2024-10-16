@@ -29,7 +29,7 @@ if (
 				<?php esc_html_e( 'Unlock Imagify\'s full potential', 'imagify' ); ?>
 			</h3>
 			<p><?php esc_html_e( 'Expand your image quota and eliminate upload limits.', 'imagify' ); ?></p>
-			<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-full-width imagify-upsell-cta">
+			<button data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-full-width imagify-upsell-cta imagify-get-pricing-modal">
 				<span class="button-text"><?php esc_html_e( 'Upgrade Now', 'imagify' ); ?></span>
 				<svg class="imagify-svg-icon" width="23px" height="23px">
 					<use href="#imagify_arrow_long_right"></use>
