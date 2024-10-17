@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Imagify\Admin;
 
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
-use Imagify\Admin\AdminSubscriber;
 
 /**
  * Service provider for Admin.
@@ -18,6 +17,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	protected $provides = [
 		'admin_bar',
 		'admin_subscriber',
+        'plugin_family_subscriber',
 	];
 
 	/**
@@ -28,6 +28,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	public $subscribers = [
 		'admin_bar',
 		'admin_subscriber',
+        'plugin_family_subscriber',
 	];
 
 	/**
@@ -41,6 +42,8 @@ class ServiceProvider extends AbstractServiceProvider {
 			->addArgument( $this->getContainer()->get( 'user' ) );
 		$this->getContainer()->share( 'admin_subscriber', AdminSubscriber::class )
 			->addArgument( $this->getContainer()->get( 'user' ) );
+
+        $this->getContainer()->add( 'plugin_family_subscriber', PluginFamilySubscriber::class );
 	}
 
 	/**

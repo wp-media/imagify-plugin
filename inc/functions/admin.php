@@ -435,3 +435,70 @@ function imagify_delete_cached_user() {
 		delete_transient( 'imagify_user' );
 	}
 }
+
+/**
+ * Filter plugins family data by activation status.
+ *
+ * @param array $plugins Array of family plugins.
+ * @return array
+ */
+function imagify_filter_plugin_family_by_activation( array $plugins ): array {
+	$active_plugins = [];
+
+	foreach ( $plugins as $plugin => $data ) {
+		$plugin_path = $plugin . '.php';
+
+		/**
+		 * Check for activated plugins and pop them out of the array
+		 * to re-add them back using array_merge to be displayed after 
+		 * plugins that are not installed or not activated.
+		 */
+		if ( is_plugin_active( $plugin_path ) ) {
+			// set cta data of active plugins.
+			$data['cta'] = [
+				'text' => 'Activated',
+				'url' => '#',
+			];
+
+			// Send active plugin to new array.
+			$active_plugins[ $plugin ] = $data;
+
+			// Remove active plugin from current array.
+			unset( $plugins[ $plugin ] );
+			continue;
+		}
+
+		$post_url = admin_url( 'admin-post.php' );
+		$plugin_name = basename( $plugin );
+
+		$args        = array(
+			'action'           => 'imagify_install_' . $plugin_name,
+			'_wpnonce'         => wp_create_nonce( 'install_' . $plugin_name . '_from_imagify' ),
+			'_wp_http_referer' => rawurlencode( admin_url('options-general.php?page=imagify') ),
+		);
+
+		// Set Installation link
+		$plugins[ $plugin ]['cta'] = [
+			'text' => 'Install',
+			'url' => add_query_arg( $args, $post_url ),
+		];
+
+		// Create unique CTA data for WP Rocket.
+		if ( 'wp-rocket/wp-rocket' === $plugin ) {
+			$plugins[ $plugin ]['cta'] = [
+				'text' => 'Get it Now',
+				'url' => 'https://wp-rocket.me/?utm_source=imagify-coupon&utm_medium=plugin&utm_campaign=imagify',
+			];
+		}
+
+		// Set activation link.
+		if ( file_exists( WP_PLUGIN_DIR . '/'. $plugin_path ) ) {
+			$plugins[ $plugin ]['cta'] = [
+				'text' => 'Activate',
+				'url' => 'activate-link',
+			];
+		}
+	}
+
+	return array_merge( $plugins, $active_plugins );
+}
