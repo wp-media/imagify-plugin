@@ -26,12 +26,14 @@ if (
 	<div class="imagify-col-content imagify-block-secondary imagify-mt2">
 		<div class="best-plan<?php echo $api_key_valid ? '' : ' hidden'; ?>">
 			<h3 class="imagify-user-best-plan-title">
-				<?php esc_html_e( 'You\'re new to Imagify?', 'imagify' ); ?>
+				<?php esc_html_e( 'Unlock Imagify\'s full potential', 'imagify' ); ?>
 			</h3>
-			<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
-			<button data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-get-pricing-modal imagify-modal-trigger imagify-button imagify-button-light imagify-full-width">
-				<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
-				<span class="button-text"><?php esc_html_e( 'What plan do I need?', 'imagify' ); ?></span>
+			<p><?php esc_html_e( 'Expand your image quota and eliminate upload limits.', 'imagify' ); ?></p>
+			<button data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-full-width imagify-upsell-cta imagify-get-pricing-modal">
+				<span class="button-text"><?php esc_html_e( 'Upgrade Now', 'imagify' ); ?></span>
+				<svg class="imagify-svg-icon" width="23px" height="23px">
+					<use href="#imagify_arrow_long_right"></use>
+				</svg>
 			</button>
 		</div>
 	</div><!-- .imagify-col-content -->
@@ -87,9 +89,21 @@ if (
 	<p><?php echo $upgrade; ?></p>
 	<p><?php echo $price; ?></p>
 
-	<a href="<?php echo esc_url( $upgrade_link ); ?>" target="_blank" rel="noopener noreferrer" class="imagify-upsell-button"><span class="imagify-upsell-arrow"><?php esc_html_e( 'Upgrade now', 'imagify' ); ?></span></a>
+	<a href="<?php echo esc_url( $upgrade_link ); ?>" target="_blank" rel="noopener noreferrer" class="imagify-upsell-button imagify-full-width imagify-upsell-cta">
+		<?php esc_html_e( 'Upgrade now', 'imagify' ); ?>
+		<svg class="imagify-svg-icon" width="23px" height="23px">
+			<use href="#imagify_arrow_long_right"></use>
+		</svg>
+	</a>
 	<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-banner' ) ); ?>" class="imagify-notice-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 </div><!-- .imagify-col-content -->
 	<?php
 }
 ?>
+
+<svg style="display: none;">
+	<symbol id="imagify_arrow_long_right" viewBox="0 0 512.00 512.00">
+		<path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z" fill="currentColor"/>
+	</symbol>
+</svg>
+
