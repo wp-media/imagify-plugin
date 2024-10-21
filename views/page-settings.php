@@ -107,34 +107,36 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-r
 							<h2 class="imagify-options-title"><?php _e( 'Our Plugins', 'imagify' ); ?></h2>
 							<p class="imagify-options-subtitle"><?php _e( 'Build better, faster, safer', 'imagify' ); ?></p>
 							<p class="">
-								<?php  _e( 'Beyond Imagify, there\'s a whole family of plugins designed to help you build better, faster and safer websites. Each one is crafted with our unique blend of expertise, simplicity and
-outstanding support. Combine our plugins below to build incredible WordPress webistes!', 'imagify'); ?>	
+								<?php
+								_e( 'Beyond Imagify, there\'s a whole family of plugins designed to help you build better, faster and safer websites. Each one is crafted with our unique blend of expertise, simplicity and
+outstanding support. Combine our plugins below to build incredible WordPress webistes!', 'imagify');
+								?>	
 							</p>
-							<?php foreach ( $data['plugin_family'] as $plugin => $plugin_data ): ?>
+							<?php foreach ( $data['plugin_family'] as $plugin => $plugin_data ) : ?>
 								<div class="imagify-plugin-family-col">
 									<div class="imagify-card">
 										<div class="imagify-card-header">
 											<div class="imagify-card-logo">
-												<img src="<?php echo IMAGIFY_ASSETS_IMG_URL . $plugin_data['logo']['file']; ?>" width="<?= $plugin_data['logo']['width']; ?>">
+												<img src="<?php echo IMAGIFY_ASSETS_IMG_URL . esc_attr( $plugin_data['logo']['file'] ); ?>" width="<?php echo esc_attr( $plugin_data['logo']['width'] ); ?>">
 											</div>
-											<h4><?php _e( $plugin_data['title'], 'imagify' ); ?></h4>
+											<h4><?php echo esc_html( $plugin_data['title'] ); ?></h4>
 										</div>
 										<div class="imagify-card-body">
 											<p>
-												<?php _e( $plugin_data['desc'], 'imagify' ); ?>
+												<?php echo esc_html( $plugin_data['desc'] ); ?>
 											</p>
 										</div>
 										<div class="imagify-card-footer">
-											<?php if ( '#' === $plugin_data['cta']['url'] ): ?>
-												<span><?php _e( $plugin_data['cta']['text'], 'imagify' ); ?></span><span class="dashicons dashicons-yes"></span>
-											<?php else: ?>
-												<a href="<?php echo esc_url( $plugin_data['cta']['url'] ); ?>" class="imagify-card-btn imagify-btn-cta"><?php _e( $plugin_data['cta']['text'] ); ?></a>
-												<a href="<?php echo esc_url( $plugin_data['link'] ); ?>"><?php _e( 'Learn more', 'imagify' ); ?></a>
+											<?php if ( '#' === $plugin_data['cta']['url'] ) : ?>
+												<span><?php echo esc_html( $plugin_data['cta']['text'] ); ?></span><span class="dashicons dashicons-yes"></span>
+											<?php else : ?>
+												<a href="<?php echo esc_url( $plugin_data['cta']['url'] ); ?>" class="imagify-card-btn imagify-btn-cta"><?php echo esc_html( $plugin_data['cta']['text'] ); ?></a>
+												<a href="<?php echo esc_url( $plugin_data['link'] ); ?>"><?php echo esc_html( 'Learn more' ); ?></a>
 											<?php endif; ?>
 										</div>
 									</div>
 								</div>
-							<?php
+								<?php
 							endforeach;
 							/**
 							 * List of partners affected by this option.
