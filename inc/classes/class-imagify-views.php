@@ -126,6 +126,7 @@ class Imagify_Views {
 
 		// JS templates in footer.
 		add_action( 'admin_print_footer_scripts', [ $this, 'print_js_templates' ] );
+		add_action( 'admin_footer', [ $this, 'print_modal_payment' ] );
 	}
 
 
@@ -633,6 +634,12 @@ class Imagify_Views {
 		}
 	}
 
+	/**
+	 * Print the payment modal.
+	 */
+	public function print_modal_payment() {
+		$this->print_template( 'modal-payment' );
+	}
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** TOOLS =================================================================================== */

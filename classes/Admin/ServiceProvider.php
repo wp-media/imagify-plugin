@@ -16,6 +16,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @var array
 	 */
 	protected $provides = [
+		'admin_bar',
 		'admin_subscriber',
         'plugin_family',
         'plugin_family_subscriber',
@@ -27,6 +28,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @var array
 	 */
 	public $subscribers = [
+		'admin_bar',
 		'admin_subscriber',
         'plugin_family_subscriber',
 	];
@@ -37,6 +39,9 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @return void
 	 */
 	public function register() {
+
+		$this->getContainer()->share( 'admin_bar', AdminBar::class )
+			->addArgument( $this->getContainer()->get( 'user' ) );
 		$this->getContainer()->share( 'admin_subscriber', AdminSubscriber::class )
 			->addArgument( $this->getContainer()->get( 'user' ) );
 

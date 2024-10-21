@@ -980,7 +980,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		} elseif ( $user->get_percent_unconsumed_quota <= 20 ) {
 			$user->best_plan_title = __( 'Oops, It\'s almost over!', 'imagify' );
 		} else {
-			$user->best_plan_title = __( 'You\'re new to Imagify?', 'imagify' );
+			$user->best_plan_title = __( 'Unlock Imagify\'s full potential', 'imagify' );
 		}
 
 		wp_send_json_success( $user );

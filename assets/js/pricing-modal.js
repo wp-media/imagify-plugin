@@ -31,6 +31,17 @@
 		$_this.addClass(curr_class).attr('aria-selected', 'true');
 	});
 
+	// Plan switcher.
+	$('#imagify-toggle-plan').change(function() {
+		var isChecked = $(this).is(':checked');
+		$('.imagify-toggle-label').eq(0).css('color', isChecked ? '#c8ced5' : '#3b3f4a');
+		$('.imagify-toggle-label').eq(1).css('color', isChecked ? '#3b3f4a' : '#c8ced5');
+		$('.imagify-badge').toggleClass('imagify-badge-checked', isChecked);
+		$('#imagify_all_plan_view').toggleClass('imagify-year-selected', isChecked).toggleClass('imagify-month-selected', ! isChecked);
+		$('.imagify-arrow-container img').eq(0).toggle(! isChecked);
+		$('.imagify-arrow-container img').eq(1).toggle(isChecked);
+	});
+
 })(jQuery, document, window);
 
 
@@ -55,8 +66,8 @@
 		$checkboxes:  $('.imagify-offer-line .imagify-checkbox'),
 		$radios:      $('.imagify-payment-modal .imagify-radio-line input'),
 		// Plans selection view & payment process view hidden by default.
-		$preView:     $('#imagify-pre-checkout-view'),
-		$plansView:   $('#imagify-plans-selection-view').hide(),
+		$preView:     $('#imagify-pre-checkout-view').hide(),
+		$plansView:   $('#imagify-plans-selection-view'),
 		$paymentView: $('#imagify-payment-process-view').hide(),
 		$successView: $('#imagify-success-view').hide(),
 		$anotherBtn:  $('.imagify-choose-another-plan'),
@@ -151,10 +162,13 @@
 				mon = datas.monthly_cost,    // 4.99 (monthly)
 				quo = datas.quota,           // 1000 (MB) - 5000 images (monthly/onetime)
 				cos = datas.cost,            // 3.49 (onetime)
+				label = datas.label,
 				name = -1 === quo ? 'Unlimited' : (quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB'),
 				pcs = 'monthly' === type ? {monthly: mon, yearly: Math.round(ann / 12 * 100) / 100} : cos,
 				pcsd = pcs, // Used if discount is active.
-				percent, $datas_c, datas_content, applies_to = [];
+				percent, $datas_c, datas_content, applies_to = [],
+				offer_by = '',
+				additional_data = '';
 
 			applies_to = imagifyModal.getPromoAppliesTo(promo);
 
@@ -176,13 +190,28 @@
 
 			if (typeof classes !== 'undefined') {
 				$offer.addClass('imagify-' + type + '-' + lab + classes);
+				$offer.addClass('imagify-' + type + '-' + lab + classes);
 			}
+
+			// Label.
+			$offer.find('.imagify-label-plans').text(label);
 
 			// Name.
 			$offer.find('.imagify-offer-size').text(name);
 
 			// Main prices (pcs can be an object or a string).
 			$offer.find('.imagify-number-block').html(imagifyModal.getHtmlPrice(pcs, 'monthly'));
+
+			if ('Unlimited' === name) {
+				offer_by = 'quota';
+				$offer.addClass('imagify-best-value');
+				additional_data = 'No additional cost';
+			} else {
+				offer_by = '/month';
+				additional_data = '$' + add + ' per additional Gb';
+			}
+
+			$offer.find('.imagify-offer-by').text(offer_by);
 
 			// discount prices
 			$offer.find('.imagify-price-block').prev('.imagify-price-discount').remove();
@@ -200,7 +229,7 @@
 
 			if ('monthly' === type) {
 				// Additional price.
-				$offer.find('.imagify-price-add-data').text('$' + add);
+				$offer.find('.imagify-price-add-data').text(additional_data);
 			}
 
 			// Button data-offer attr.
@@ -402,6 +431,10 @@
 								if ('free' === value.label) {
 									freeQuota = value.quota;
 								}
+
+								if ('starter' === value.label) {
+									return;
+								}
 								offers.mo.push(value);
 							}
 						});
@@ -501,26 +534,12 @@
 						} else {
 							// Now, do the MONTHLIES Markup.
 							$.each(offers.mo, function (index, value) {
-								var $tpl, $offer,
+								var $tpl,
 									classes = '';
 
 								// If offer is too big (far) than estimated needs, don't show the offer.
 								if ((index - suggested.mo.index) > 2) {
 									return true;
-								}
-
-								if (index === suggested.mo.index) {
-									// It's the one to display.
-									$offer = $('.imagify-pre-checkout-offers .imagify-offer-monthly');
-
-									if (suggested.mo.selected) {
-										classes = ' imagify-offer-selected';
-
-										// Add this offer as pre-selected item in pre-checkout view.
-										$offer.addClass('imagify-offer-selected').find('.imagify-checkbox').prop('checked', true);
-									}
-									// Populate the Pre-checkout view depending on user_cons.
-									imagifyModal.populateOffer($offer, value, 'monthly');
 								}
 
 								// Populate each offer.
@@ -530,6 +549,12 @@
 								// Complete Monthlies HTML.
 								mo_html += $tpl[0].outerHTML;
 							});
+
+							// Wait for element to be ready after ajax callback before adding ribbon.
+							setTimeout(function() {
+								// Add best value ribbon to unlimited plan.
+								$('.imagify-best-value').prepend('<div class="imagify-ribbon"><span>Best Value!</span></div>');
+							}, 100);
 						}
 
 						if (0 === offers.ot.length) {
@@ -1100,7 +1125,7 @@
 	 * Get pricings on modal opening.
 	 * Build the pricing tables inside modal.
 	 */
-	$('#imagify-get-pricing-modal').on('click.imagify-ajax', function () {
+	$('.imagify-get-pricing-modal').on('click.imagify-ajax', function () {
 		imagifyModal.getPricing($(this));
 	});
 
@@ -1116,7 +1141,8 @@
 		// Reset first view after fadeout ~= 300 ms.
 		setTimeout(function () {
 			$('.imagify-modal-views').hide();
-			$('#imagify-pre-checkout-view').show();
+			$('#imagify-pre-checkout-view').hide();
+			$('#imagify-plans-selection-view').show();
 		}, 300);
 
 		//delay scrolltop top to avoid flickering

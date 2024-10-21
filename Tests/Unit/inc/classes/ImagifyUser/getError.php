@@ -31,8 +31,9 @@ class Test_GetError extends TestCase {
 			'is_monthly'                   => true,
 		];
 
-		Functions\when( 'imagify_get_cached_user' )->justReturn( false );
+		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
+		Functions\when( 'set_transient')->justReturn();
 
 		$this->assertFalse( ( new User() )->get_error() );
 	}
@@ -55,8 +56,9 @@ class Test_GetError extends TestCase {
 			'is_monthly'                   => true,
 		];
 
-		Functions\when( 'imagify_get_cached_user' )->justReturn( $userData );
+		Functions\when( 'get_transient' )->justReturn( $userData );
 		Functions\expect( 'get_imagify_user' )->never();
+		Functions\when( 'set_transient')->justReturn();
 
 		$this->assertSame( 'imagify@example.com', ( new User() )->email );
 	}
@@ -67,8 +69,9 @@ class Test_GetError extends TestCase {
 	public function testShouldReturnErrorWhenCouldNotFetchUserData() {
 		$wp_error = new WP_Error( 'error_id', 'Error Message' );
 
-		Functions\when( 'imagify_get_cached_user' )->justReturn( false );
+		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
+		Functions\when( 'set_transient')->justReturn();
 
 		$this->assertSame( $wp_error, ( new User() )->get_error() );
 	}

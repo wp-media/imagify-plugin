@@ -187,7 +187,6 @@ outstanding support. Combine our plugins below to build incredible WordPress web
 	$this->print_template( 'modal-settings-infos' );
 	$this->print_template( 'modal-settings-partners-infos' );
 	$this->print_template( 'modal-settings-visual-comparison' );
-	$this->print_template( 'modal-payment' );
 	?>
 
 </div>
