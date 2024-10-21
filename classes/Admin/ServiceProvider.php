@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Imagify\Admin;
 
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
+use WPMedia\PluginFamily\Controller\PluginFamily;
 
 /**
  * Service provider for Admin.
@@ -16,6 +17,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	protected $provides = [
 		'admin_subscriber',
+        'plugin_family',
         'plugin_family_subscriber',
 	];
 
@@ -38,7 +40,10 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->share( 'admin_subscriber', AdminSubscriber::class )
 			->addArgument( $this->getContainer()->get( 'user' ) );
 
-        $this->getContainer()->add( 'plugin_family_subscriber', PluginFamilySubscriber::class );
+        $this->getContainer()->add( 'plugin_family', PluginFamily::class );
+
+        $this->getContainer()->add( 'plugin_family_subscriber', PluginFamilySubscriber::class )
+            ->addArgument( $this->getContainer()->get( 'plugin_family' ) );
 	}
 
 	/**
