@@ -216,10 +216,10 @@ class Imagify_Views {
 	 */
 	public function display_settings_page() {
 		$plugin_family = new PluginFamily();
-		$plugin_family = $plugin_family->get_filtered_plugins( 'imagify-plugin/imagify' );
+		$plugins_array = $plugin_family->get_filtered_plugins( 'imagify-plugin/imagify' );
 
 		$data = [
-			'plugin_family' => $plugin_family['uncategorized'],
+			'plugin_family' => $plugins_array['uncategorized'],
 		];
 
 		$this->print_template( 'page-settings', $data );
