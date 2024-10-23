@@ -117,7 +117,7 @@ outstanding support. Combine our plugins below to build incredible WordPress web
 									<div class="imagify-card">
 										<div class="imagify-card-header">
 											<div class="imagify-card-logo">
-												<img src="<?php echo IMAGIFY_ASSETS_IMG_URL . esc_attr( $plugin_data['logo']['file'] ); ?>" style="width: <?php echo esc_attr( $plugin_data['logo']['width'] ); ?>">
+												<img src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . $plugin_data['logo']['file'] ); ?>" style="width: <?php echo esc_attr( $plugin_data['logo']['width'] ); ?>">
 											</div>
 											<h4><?php echo esc_html( $plugin_data['title'] ); ?></h4>
 										</div>
