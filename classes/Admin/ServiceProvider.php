@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Imagify\Admin;
 
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
-use WPMedia\PluginFamily\Controller\PluginFamily;
+use Imagify\Dependencies\WPMedia\PluginFamily\Controller\PluginFamily;
 
 /**
  * Service provider for Admin.

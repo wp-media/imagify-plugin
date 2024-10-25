@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Imagify\Admin;
 
 use Imagify\EventManagement\SubscriberInterface;
-use WPMedia\PluginFamily\Controller\{ PluginFamily, PluginFamilyInterface };
+use Imagify\Dependencies\WPMedia\PluginFamily\Controller\{ PluginFamily, PluginFamilyInterface };
 
 /**
  * Process plugin family actions.
