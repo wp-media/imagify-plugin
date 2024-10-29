@@ -110,7 +110,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-r
 								<?php
 								_e( 'Beyond Imagify, there\'s a whole family of plugins designed to help you build better, faster, and safer websites. Each one is crafted with our unique blend of expertise, simplicity, and
 outstanding support. Combine our plugins below to build incredible WordPress websites!', 'imagify');
-								?>	
+								?>
 							</p>
 							<?php foreach ( $data['plugin_family'] as $plugin => $plugin_data ) : ?>
 								<div class="imagify-plugin-family-col">
@@ -130,7 +130,7 @@ outstanding support. Combine our plugins below to build incredible WordPress web
 											<?php if ( '#' === $plugin_data['cta']['url'] ) : ?>
 												<span><?php echo esc_html( $plugin_data['cta']['text'] ); ?></span><span class="dashicons dashicons-yes"></span>
 											<?php else : ?>
-												<a href="<?php echo esc_url( $plugin_data['cta']['url'] ); ?>" class="imagify-card-btn imagify-btn-cta"><?php echo esc_html( $plugin_data['cta']['text'] ); ?></a>
+												<a href="<?php echo esc_url( $plugin_data['cta']['url'] ); ?>" class="imagify-card-btn imagify-btn-cta" target="_blank"><?php echo esc_html( $plugin_data['cta']['text'] ); ?></a>
 												<a href="<?php echo esc_url( $plugin_data['link'] ); ?>" target="_blank"><?php echo esc_html( 'Learn more' ); ?></a>
 											<?php endif; ?>
 										</div>
