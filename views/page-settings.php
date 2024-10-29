@@ -130,8 +130,8 @@ outstanding support. Combine our plugins below to build incredible WordPress web
 											<?php if ( '#' === $plugin_data['cta']['url'] ) : ?>
 												<span><?php echo esc_html( $plugin_data['cta']['text'] ); ?></span><span class="dashicons dashicons-yes"></span>
 											<?php else : ?>
-												<a href="<?php echo esc_url( $plugin_data['cta']['url'] ); ?>" class="imagify-card-btn imagify-btn-cta" target="_blank"><?php echo esc_html( $plugin_data['cta']['text'] ); ?></a>
-												<a href="<?php echo esc_url( $plugin_data['link'] ); ?>" target="_blank"><?php echo esc_html( 'Learn more' ); ?></a>
+												<a href="<?php echo esc_url( $plugin_data['cta']['url'] ); ?>" class="imagify-card-btn imagify-btn-cta" <?php echo 'Get it Now' === $plugin_data['cta']['text'] ? 'target="_blank"' : ''; ?> rel="noopener"><?php echo esc_html( $plugin_data['cta']['text'] ); ?></a>
+												<a href="<?php echo esc_url( $plugin_data['link'] ); ?>" target="_blank" rel="noopener"><?php echo esc_html( 'Learn more' ); ?></a>
 											<?php endif; ?>
 										</div>
 									</div>
