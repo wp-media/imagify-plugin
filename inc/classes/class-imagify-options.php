@@ -40,7 +40,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'display_webp_method' => 'picture',
 		'cdn_url'                => '',
 		'disallowed-sizes'       => [],
-		'admin_bar_menu'         => 0,
+		'admin_bar_menu'         => 1,
 		'partner_links'          => 0,
 		'convert_to_avif'        => 0,
 		'convert_to_webp'        => 0,
