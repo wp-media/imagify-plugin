@@ -100,6 +100,17 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-r
 						?>
 					</div>
 				</div>
+                <div class="imagify-col hidden">
+                    <p>
+                        <?php
+                        $settings->field_checkbox( array(
+                            'option_name' => 'admin_bar_menu',
+                            'label'       => __( 'I want this awesome quick access menu on my Toolbar.', 'imagify' ),
+                            'current_value'      => 1,
+                        ) );
+                        ?>
+                    </p>
+                </div>
 
 				<div class="imagify-settings-main-content imagify-pb0<?php echo $hidden_class; ?>">
 					<div class="imagify-settings-section imagify-clear">
