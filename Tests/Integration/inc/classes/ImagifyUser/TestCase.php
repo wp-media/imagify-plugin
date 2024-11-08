@@ -12,6 +12,9 @@ abstract class TestCase extends BaseTestCase {
 		parent::setUp();
 
 		$this->originalUserInstance = $this->resetPropertyValue( 'user', Imagify::class );
+
+		//Clean up the transients for API cache
+		delete_transient('imagify_user_cache');
 	}
 
 	public function tearDown() {
@@ -19,6 +22,11 @@ abstract class TestCase extends BaseTestCase {
 
 		// Restore the user on the static property.
 		$this->setPropertyValue( 'user', Imagify::class, $this->originalUserInstance );
+
+		//Clean up the transients for API cache
+		delete_transient('imagify_user_cache');
+
+
 
 	}
 }
