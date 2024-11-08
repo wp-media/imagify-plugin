@@ -155,6 +155,9 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 Please report security bugs found in the site-reviews plugin's source code through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/imagify). The Patchstack team will assist you with verification, CVE assignment and take care of notifying the developers of this plugin.
 
 ## Changelog
+### 2.2.3.1
+- Enhancement: Decrease the amount of requests to imagify servers.
+
 ### 2.2.3
 - Enhancement: Cache the calls to the license API to avoid sending unnecessary requests
 - 3rd-party compatibility: Update priority on `template_redirect` to improve compatibility with WP Rocket’s LazyLoad
