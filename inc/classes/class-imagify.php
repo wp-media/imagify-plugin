@@ -86,6 +86,10 @@ class Imagify {
 	 * @return object
 	 */
 	public function get_user() {
+		if ( empty( $this->api_key ) ) {
+			return new WP_Error( 'api_key_missing', __( 'API key required.', 'imagify' ) );
+		}
+
 		global $wp_current_filter;
 
 		if ( isset( static::$user ) ) {
