@@ -128,7 +128,8 @@ class User {
 		$user = get_transient( 'imagify_user_cache' );
 		if ( ! $user ) {
 			$user = get_imagify_user();
-			set_transient( 'imagify_user_cache', $user, 5 * MINUTE_IN_SECONDS );
+
+			set_transient( 'imagify_user_cache', $this->fill_user_for_error( $user ), 5 * MINUTE_IN_SECONDS );
 		}
 
 		if ( is_wp_error( $user ) ) {
@@ -147,7 +148,7 @@ class User {
 		$this->next_date_update             = $user->next_date_update;
 		$this->is_active                    = $user->is_active;
 		$this->is_monthly                   = $user->is_monthly;
-		$this->error                        = false;
+		$this->error                        = is_wp_error( $user );
 	}
 
 	/**
@@ -292,5 +293,21 @@ class User {
 			&&
 			floatval( 100 ) === round( $this->get_percent_consumed_quota() )
 		);
+	}
+
+	private function fill_user_for_error( $user ) {
+		$user->id = 0;
+		$user->email = '';
+		$user->plan_id = 0;
+		$user->plan_label = '';
+		$user->quota = 0;
+		$user->extra_quota = 0;
+		$user->extra_quota_consumed = 0;
+		$user->consumed_current_month_quota = 0;
+		$user->next_date_update = null;
+		$user->is_active = false;
+		$user->is_monthly = false;
+
+		return $user;
 	}
 }
