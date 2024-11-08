@@ -298,10 +298,14 @@ class User {
 	/**
 	 * Fill user object with missed details before saving the transient.
 	 *
-	 * @param WP_Error $user Error object.
-	 * @return WP_Error
+	 * @param object $user Error object.
+	 * @return object
 	 */
 	private function fill_user_for_error( $user ) {
+		if ( ! is_wp_error( $user ) ) {
+			return $user;
+		}
+
 		$user->id = 0;
 		$user->email = '';
 		$user->plan_id = 0;
