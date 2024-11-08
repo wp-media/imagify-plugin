@@ -301,7 +301,7 @@ class User {
 	 * @param WP_Error $user Error object.
 	 * @return WP_Error
 	 */
-	private function fill_user_for_error($user ) {
+	private function fill_user_for_error( $user ) {
 		$user->id = 0;
 		$user->email = '';
 		$user->plan_id = 0;
