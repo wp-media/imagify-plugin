@@ -40,7 +40,30 @@ function update_imagify_user( $data ) {
  * @return object
  */
 function get_imagify_user() {
-	return imagify()->get_user();
+	$user = get_transient( 'imagify_user_cache' );
+	if ( false !== $user ) {
+		return $user;
+	}
+
+	$user = imagify()->get_user();
+
+	// Fill user object with missed details before saving the transient.
+	if ( is_wp_error( $user ) ) {
+		$user->id = 0;
+		$user->email = '';
+		$user->plan_id = 0;
+		$user->plan_label = '';
+		$user->quota = 0;
+		$user->extra_quota = 0;
+		$user->extra_quota_consumed = 0;
+		$user->consumed_current_month_quota = 0;
+		$user->next_date_update = null;
+		$user->is_active = false;
+		$user->is_monthly = false;
+	}
+
+	set_transient( 'imagify_user_cache', $user, 5 * MINUTE_IN_SECONDS );
+	return $user;
 }
 
 /**

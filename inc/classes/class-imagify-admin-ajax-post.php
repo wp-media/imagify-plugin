@@ -819,13 +819,13 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		$api_key  = wp_unslash( $_GET['api_key'] );
 		$response = get_imagify_status( $api_key );
 
-		delete_transient( 'imagify_user_cache' );
-
 		if ( is_wp_error( $response ) ) {
 			imagify_die( $response );
 		}
 
 		update_imagify_option( 'api_key', $api_key );
+
+		delete_transient( 'imagify_user_cache' );
 
 		wp_send_json_success();
 	}

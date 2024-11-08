@@ -359,6 +359,8 @@ class Imagify_Settings {
 			return;
 		}
 
+		delete_transient( 'imagify_user_cache' );
+
 		// Handle API key validation cache and notices.
 		if ( Imagify_Requirements::is_api_key_valid( true ) ) {
 			Notices::dismiss_notice( 'wrong-api-key' );
