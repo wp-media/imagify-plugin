@@ -128,14 +128,13 @@ class User {
 		$user = get_transient( 'imagify_user_cache' );
 		if ( ! $user ) {
 			$user = get_imagify_user();
+			set_transient( 'imagify_user_cache', $user, 5 * MINUTE_IN_SECONDS );
 		}
 
 		if ( is_wp_error( $user ) ) {
 			$this->error = $user;
 			return;
 		}
-
-		set_transient( 'imagify_user_cache', $user, 5 * MINUTE_IN_SECONDS );
 
 		$this->id                           = $user->id;
 		$this->email                        = $user->email;
