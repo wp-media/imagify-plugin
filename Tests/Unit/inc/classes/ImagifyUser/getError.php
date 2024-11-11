@@ -57,8 +57,6 @@ class Test_GetError extends TestCase {
 		];
 
 		Functions\when( 'get_transient' )->justReturn( $userData );
-		Functions\expect( 'get_imagify_user' )->never();
-		Functions\when( 'set_transient')->justReturn();
 
 		$this->assertSame( 'imagify@example.com', ( new User() )->email );
 	}
@@ -69,9 +67,7 @@ class Test_GetError extends TestCase {
 	public function testShouldReturnErrorWhenCouldNotFetchUserData() {
 		$wp_error = new WP_Error( 'error_id', 'Error Message' );
 
-		Functions\when( 'get_transient' )->justReturn( false );
-		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
-		Functions\when( 'set_transient')->justReturn();
+		Functions\when( 'get_transient' )->justReturn( $wp_error );
 
 		$this->assertSame( $wp_error, ( new User() )->get_error() );
 	}
