@@ -638,7 +638,31 @@ class Imagify_Views {
 	 * Print the payment modal.
 	 */
 	public function print_modal_payment() {
-		$this->print_template( 'modal-payment' );
+		$this->print_template(
+			'modal-payment',
+			[
+				'attachments_number' => $this->get_attachments_number_modal(),
+			]
+		);
+	}
+
+	/**
+	 * Get the number of attachments to display in the payment modal.
+	 *
+	 * @return int
+	 */
+	private function get_attachments_number_modal() {
+		$transient = get_transient( 'imagify_attachments_number_modal' );
+
+		if ( false !== $transient ) {
+			return $transient;
+		}
+
+		$attachments_number = imagify_count_attachments() + Imagify_Files_Stats::count_all_files();
+
+		set_transient( 'imagify_attachments_number_modal', $attachments_number, 1 * DAY_IN_SECONDS );
+
+		return $attachments_number;
 	}
 
 	/** ----------------------------------------------------------------------------------------- */

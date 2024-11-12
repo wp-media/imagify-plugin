@@ -26,12 +26,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 							<p>
 								<span class="imagify-border-styled">
 									<?php
-									$attachments_number = imagify_count_attachments() + Imagify_Files_Stats::count_all_files();
-
 									printf(
 										/* translators: %s is a formatted number (don't use %d). */
-										_n( 'You have %s original image', 'You have %s original images', $attachments_number, 'imagify' ),
-										'</span><span class="imagify-big-number">' . number_format_i18n( $attachments_number ) . '</span><span class="imagify-border-styled">'
+										_n( 'You have %s original image', 'You have %s original images', $data['attachments_number'], 'imagify' ),
+										'</span><span class="imagify-big-number">' . number_format_i18n( $data['attachments_number'] ) . '</span><span class="imagify-border-styled">'
 									);
 									?>
 								</span>
