@@ -13,7 +13,7 @@ use Imagify\Tests\Unit\TestCase;
  */
 class Test_UpdateSiteOptionOnNetwork extends TestCase {
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		if ( ! defined( 'IMAGIFY_SLUG' ) ) {
@@ -23,10 +23,10 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		Functions\when( 'imagify_is_active_for_network' )->justReturn( true );
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		unset( $_POST['option_page'] );
 
-		return parent::tearDown();
+		parent::tearDown();
 	}
 
 	/**
