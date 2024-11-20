@@ -46,6 +46,6 @@ class Test_GetError extends TestCase {
 
 		$user_data = $this->getNonPublicPropertyValue( 'user', Imagify::class );
 		$this->assertInstanceOf( WP_Error::class, $user_data );
-		$this->assertContains( 'Invalid token', $user_data->get_error_message() );
+		$this->assertStringContainsString( 'Invalid token', $user_data->get_error_message() );
 	}
 }

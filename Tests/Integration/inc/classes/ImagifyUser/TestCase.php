@@ -8,8 +8,8 @@ use Imagify\Tests\Integration\TestCase as BaseTestCase;
 abstract class TestCase extends BaseTestCase {
 	protected $originalUserInstance;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->originalUserInstance = $this->resetPropertyValue( 'user', Imagify::class );
 
@@ -17,8 +17,8 @@ abstract class TestCase extends BaseTestCase {
 		delete_transient('imagify_user_cache');
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 
 		// Restore the user on the static property.
 		$this->setPropertyValue( 'user', Imagify::class, $this->originalUserInstance );
