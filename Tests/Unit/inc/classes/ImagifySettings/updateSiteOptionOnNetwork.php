@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Tests\Unit\inc\classes\ImagifySettings;
 
 use Brain\Monkey\Filters;
@@ -21,6 +23,8 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		}
 
 		Functions\when( 'imagify_is_active_for_network' )->justReturn( true );
+
+		$this->stubTranslationFunctions();
 	}
 
 	public function tearDown(): void {
