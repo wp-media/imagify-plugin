@@ -66,9 +66,6 @@ jobs:
     - name: Setup problem matchers for PHPUnit
       run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-    - name: Remove unmet dependencies by legacy versions
-      run: composer remove --dev --no-scripts coenjacobs/mozart
-
     - name: Require PHPUnit 7.5 for WP compatibility
       run: composer require --dev --no-scripts phpunit/phpunit "^7.5" -W
 
