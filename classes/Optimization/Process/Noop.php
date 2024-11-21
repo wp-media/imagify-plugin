@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Imagify\Optimization\Process;
 
+use Imagify\Optimization\Data\DataInterface;
+use Imagify\Media\MediaInterface;
+use Imagify\Optimization\File;
 use WP_Error;
 
 /**

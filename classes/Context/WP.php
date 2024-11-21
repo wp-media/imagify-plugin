@@ -1,14 +1,16 @@
 <?php
 namespace Imagify\Context;
 
+use \Imagify\Traits\InstanceGetterTrait;
+
 /**
  * Context class used for the WP media library.
  *
  * @since  1.9
  * @author Grégory Viguier
  */
-class WP extends AbstractContext {
-	use \Imagify\Traits\InstanceGetterTrait;
+final class WP extends AbstractContext {
+	use InstanceGetterTrait;
 
 	/**
 	 * Context "short name".

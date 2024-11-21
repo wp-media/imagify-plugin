@@ -4,13 +4,15 @@ declare(strict_types=1);
 namespace Imagify\Stats;
 
 use Imagify\Bulk\Bulk;
+use Imagify\Optimization\Process\ProcessInterface;
 use Imagify\EventManagement\SubscriberInterface;
 use Imagify\Traits\InstanceGetterTrait;
+use WP_Error;
 
 /**
  * Class to get and cache the number of optimized media without next-gen versions.
  */
-class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface {
+final class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInterface {
 	use InstanceGetterTrait;
 
 	/**

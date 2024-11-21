@@ -1,8 +1,6 @@
 <?php
 namespace Imagify\Traits;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Trait that simulates a singleton pattern.
  * The idea is more to ease the instance retrieval than to prevent multiple instances.

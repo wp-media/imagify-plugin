@@ -88,7 +88,7 @@ class User {
 	 *
 	 * @since 1.1.1
 	 *
-	 * @var Date
+	 * @var string
 	 */
 	public $next_date_update;
 

@@ -10,7 +10,7 @@ use Imagify\Bulk\Bulk;
  *
  * @since 1.9.3
  */
-class Actions {
+final class Actions {
 	use InstanceGetterTrait;
 
 	/**

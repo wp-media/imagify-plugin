@@ -9,7 +9,7 @@ use \Imagify\Traits\InstanceGetterTrait;
  * @since  1.9
  * @author Grégory Viguier
  */
-class CustomFolders extends AbstractContext {
+final class CustomFolders extends AbstractContext {
 	use InstanceGetterTrait;
 
 	/**
