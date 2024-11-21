@@ -7,6 +7,7 @@
 
 namespace Imagify\Tests\Unit;
 
+use ReflectionException;
 use ReflectionObject;
 use WPMedia\PHPUnit\Unit\TestCase as PHPUnitTestCase;
 
