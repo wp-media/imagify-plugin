@@ -7,7 +7,7 @@ use Imagify\Tests\Unit\TestCase;
 
 class Test_ImagifySanitizeContext extends TestCase {
 
-	protected function setUp() {
+	protected function setUp(): void {
 		parent::setUp();
 
 		require_once IMAGIFY_PLUGIN_ROOT . 'inc/functions/common.php';

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Tests\Unit\inc\classes\ImagifySettings;
 
 use Brain\Monkey\Filters;
@@ -13,7 +15,7 @@ use Imagify\Tests\Unit\TestCase;
  */
 class Test_UpdateSiteOptionOnNetwork extends TestCase {
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		if ( ! defined( 'IMAGIFY_SLUG' ) ) {
@@ -21,12 +23,14 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		}
 
 		Functions\when( 'imagify_is_active_for_network' )->justReturn( true );
+
+		$this->stubTranslationFunctions();
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		unset( $_POST['option_page'] );
 
-		return parent::tearDown();
+		parent::tearDown();
 	}
 
 	/**

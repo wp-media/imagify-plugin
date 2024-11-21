@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Imagify\Tests\Integration\inc\classes\ImagifySettings;
 
@@ -16,21 +17,16 @@ use Brain\Monkey\Functions;
  * @group  ImagifySettings
  */
 class Test_UpdateSiteOptionOnNetwork extends TestCase {
-
 	private $user_id;
 
-	public function tearDown() {
+	public function tear_down() {
 		unset( $_POST['option_page'] );
 
-		return parent::tearDown();
-	}
-
-	public function provideData() {
-		return $this->getTestData( __DIR__, 'updateSiteOptionOnNetwork' );
+		return parent::tear_down();
 	}
 
 	/**
-	 * @dataProvider provideData
+	 * @dataProvider configTestData
 	 */
 	public function testShouldUpdateNetworkSettings( $config, $expected ) {
 		$_POST['option_page'] = $config['option_page'];

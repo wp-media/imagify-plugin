@@ -7,37 +7,18 @@
 
 namespace Imagify\Tests\Unit;
 
-use WPMedia\PHPUnit\Unit\TestCase as PHPUnitTestCase;
-use Brain\Monkey;
-use Imagify\Tests\TestCaseTrait;
 use ReflectionObject;
-use WP_Error;
+use WPMedia\PHPUnit\Unit\TestCase as PHPUnitTestCase;
 
 abstract class TestCase extends PHPUnitTestCase {
-	use TestCaseTrait;
-
 	protected $config;
 
-	/**
-	 * Prepares the test environment before each test.
-	 */
-	protected function setUp() {
-		parent::setUp();
-		Monkey\setUp();
-
+	protected function setUp() : void {
 		if ( empty( $this->config ) ) {
 			$this->loadTestDataConfig();
 		}
 
-		$this->mockCommonWpFunctions();
-	}
-
-	/**
-	 * Cleans up the test environment after each test.
-	 */
-	protected function tearDown() {
-		Monkey\tearDown();
-		parent::tearDown();
+		parent::setUp();
 	}
 
 	public function configTestData() {
@@ -58,42 +39,43 @@ abstract class TestCase extends PHPUnitTestCase {
 	}
 
 	/**
-	 * Mock common WP functions.
+	 * Reset the value of a private/protected property.
+	 *
+	 * @param string        $property Property name for which to gain access.
+	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 *
+	 * @return mixed                   The previous value of the property.
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 *
 	 */
-	protected function mockCommonWpFunctions() {
-		Monkey\Functions\stubs(
-			[
-				'__',
-				'esc_attr__',
-				'esc_html__',
-				'_x',
-				'esc_attr_x',
-				'esc_html_x',
-				'_n',
-				'_nx',
-				'esc_attr',
-				'esc_html',
-				'esc_textarea',
-				'esc_url',
-			]
-		);
+	protected function resetPropertyValue( $property, $class ) {
+		return $this->setPropertyValue( $property, $class, null );
+	}
 
-		$functions = [
-			'_e',
-			'esc_attr_e',
-			'esc_html_e',
-			'_ex',
-		];
+	/**
+	 * Set the value of a private/protected property.
+	 *
+	 * @param string        $property Property name for which to gain access.
+	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 * @param mixed         $value    The value to set to the property.
+	 *
+	 * @return mixed                   The previous value of the property.
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 *
+	 */
+	protected function setPropertyValue( $property, $class, $value ) {
+		$ref = $this->get_reflective_property( $property, $class );
 
-		foreach ( $functions as $function ) {
-			Monkey\Functions\when( $function )->echoArg();
+		if ( is_object( $class ) ) {
+			$previous = $ref->getValue( $class );
+			// Instance property.
+			$ref->setValue( $class, $value );
+		} else {
+			$previous = $ref->getValue();
+			// Static property.
+			$ref->setValue( $value );
 		}
 
-		include_once IMAGIFY_PLUGIN_TESTS_ROOT . '../Fixtures/WP/class-wp-error.php';
-
-		Monkey\Functions\when( 'is_wp_error' )
-			->alias( function( $thing ) {
-				return $thing instanceof WP_Error;
-			} );
+		return $previous;
 	}
 }

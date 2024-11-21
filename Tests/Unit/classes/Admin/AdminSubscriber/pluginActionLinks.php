@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Tests\Unit\classes;
 
 use Mockery;
@@ -21,6 +23,9 @@ class Test_PluginActionLinks extends TestCase {
 
         $this->user = Mockery::mock( User::class );
         $this->admin_subscriber = new AdminSubscriber( $this->user );
+
+		$this->stubTranslationFunctions();
+		$this->stubEscapeFunctions();
     }
 
 	/**

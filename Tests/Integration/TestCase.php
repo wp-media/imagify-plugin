@@ -2,26 +2,27 @@
 
 namespace Imagify\Tests\Integration;
 
-use Brain\Monkey;
 use Imagify;
-use Imagify\Tests\TestCaseTrait;
+use ReflectionObject;
 use WPMedia\PHPUnit\Integration\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase {
-	use TestCaseTrait;
-
 	protected $useApi = true;
 	protected $api_credentials_config_file = 'imagify-api.php';
 	protected $invalidApiKey = '1234567890abcdefghijklmnopqrstuvwxyz';
 	protected $originalImagifyInstance;
 	protected $originalApiKeyOption;
+	protected $config;
 
 	/**
 	 * Prepares the test environment before each test.
 	 */
-	public function setUp() {
-		parent::setUp();
-		Monkey\setUp();
+	public function set_up() {
+		parent::set_up();
+
+		if ( empty( $this->config ) ) {
+			$this->loadTestDataConfig();
+		}
 
 		if ( ! $this->useApi ) {
 			return;
@@ -35,9 +36,8 @@ abstract class TestCase extends BaseTestCase {
 	/**
 	 * Cleans up the test environment after each test.
 	 */
-	public function tearDown() {
-		Monkey\tearDown();
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 
 		if ( ! $this->useApi ) {
 			return;
@@ -46,6 +46,23 @@ abstract class TestCase extends BaseTestCase {
 		// Restore the Imagify instance and API key option.
 		$this->setSingletonInstance( Imagify::class, $this->originalImagifyInstance ); // $this->originalImagifyInstance can be null.
 		update_imagify_option( 'api_key', $this->originalApiKeyOption );
+	}
+
+	public function configTestData() {
+		if ( empty( $this->config ) ) {
+			$this->loadTestDataConfig();
+		}
+
+		return isset( $this->config['test_data'] )
+			? $this->config['test_data']
+			: $this->config;
+	}
+
+	protected function loadTestDataConfig() {
+		$obj      = new ReflectionObject( $this );
+		$filename = $obj->getFileName();
+
+		$this->config = $this->getTestData( dirname( $filename ), basename( $filename, '.php' ) );
 	}
 
 	/**
@@ -85,5 +102,60 @@ abstract class TestCase extends BaseTestCase {
 		}
 
 		return constant( $name );
+	}
+
+	/**
+	 * Set the singleton's `$instance` property to the given instance.
+	 *
+	 * @param string $class    Name of the target class.
+	 * @param mixed  $instance Instance of the target object.
+	 *
+	 * @return mixed            Previous value.
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 *
+	 */
+	protected function setSingletonInstance( $class, $instance ) {
+		return $this->setPropertyValue( 'instance', $class, $instance );
+	}
+
+	/**
+	 * Set the value of a private/protected property.
+	 *
+	 * @param string        $property Property name for which to gain access.
+	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 * @param mixed         $value    The value to set to the property.
+	 *
+	 * @return mixed                   The previous value of the property.
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 *
+	 */
+	protected function setPropertyValue( $property, $class, $value ) {
+		$ref = $this->get_reflective_property( $property, $class );
+
+		if ( is_object( $class ) ) {
+			$previous = $ref->getValue( $class );
+			// Instance property.
+			$ref->setValue( $class, $value );
+		} else {
+			$previous = $ref->getValue();
+			// Static property.
+			$ref->setValue( $value );
+		}
+
+		return $previous;
+	}
+
+	/**
+	 * Reset the value of a private/protected property.
+	 *
+	 * @param string        $property Property name for which to gain access.
+	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 *
+	 * @return mixed                   The previous value of the property.
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 *
+	 */
+	protected function resetPropertyValue( $property, $class ) {
+		return $this->setPropertyValue( $property, $class, null );
 	}
 }
