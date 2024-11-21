@@ -1,17 +1,25 @@
 includes:
 	- phar://phpstan.phar/conf/bleedingEdge.neon
 parameters:
-	level: 1
+	level: 2
 	inferPrivatePropertyTypeFromConstructor: true
 	paths:
 		# Test only the new architecture for now.
 		- classes/
-		- Tests/Unit/
 	bootstrapFiles:
 	scanDirectories:
 		- inc/Dependencies/ActionScheduler
 		- tests/Fixtures/
 	scanFiles:
+		- inc/common/attachments.php
+		- inc/functions/admin.php
+		- inc/functions/admin-stats.php
+		- inc/functions/admin-ui.php
+		- inc/functions/api.php
+		- inc/functions/attachments.php
+		- inc/functions/common.php
+		- inc/functions/formatting.php
+		- inc/functions/options.php
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
 		- vendor/php-stubs/wordpress-tests-stubs/wordpress-tests-stubs.php
 		- imagify.php
@@ -22,9 +30,11 @@ parameters:
 		 - classes/Bulk/AbstractBulk.php
 		 - classes/Bulk/CustomFolders.php
 		 - classes/Bulk/WP.php
+		 - classes/CLI/
 		 - classes/Media/AbstractMedia.php
 		 - classes/Optimization/Data/AbstractData.php
 		 - classes/Optimization/File.php
+		 - classes/Optimization/Process/WP.php
 		 - classes/Optimization/Process/AbstractProcess.php
 		 - classes/Picture/Display.php
 		 - classes/Plugin.php
