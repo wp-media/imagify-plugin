@@ -350,7 +350,7 @@ final class Notices {
 	 *
 	 * @since 1.6.10
 	 *
-	 * @return array An array of plugins to deactivate.
+	 * @return array|false An array of plugins to deactivate. false if the notice should not be displayed.
 	 */
 	public function display_plugins_to_deactivate() {
 		static $display;

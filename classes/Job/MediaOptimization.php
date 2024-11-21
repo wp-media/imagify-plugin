@@ -24,7 +24,7 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	/**
 	 * The optimization process instance.
 	 *
-	 * @var   ProcessInterface
+	 * @var   ?ProcessInterface
 	 * @since 1.9
 	 */
 	protected $optimization_process;

@@ -27,7 +27,7 @@ abstract class AbstractMedia implements MediaInterface {
 	/**
 	 * Context (where the media "comes from").
 	 *
-	 * @var    ContextInterface
+	 * @var    string
 	 * @since  1.9
 	 * @access protected
 	 * @author Grégory Viguier
