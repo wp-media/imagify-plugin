@@ -6,6 +6,7 @@ parameters:
 	paths:
 		# Test only the new architecture for now.
 		- classes/
+		- Tests/Unit/
 	bootstrapFiles:
 	scanDirectories:
 		- inc/Dependencies/ActionScheduler
@@ -30,7 +31,6 @@ parameters:
 		 - classes/Bulk/AbstractBulk.php
 		 - classes/Bulk/CustomFolders.php
 		 - classes/Bulk/WP.php
-		 - classes/CLI/
 		 - classes/Media/AbstractMedia.php
 		 - classes/Optimization/Data/AbstractData.php
 		 - classes/Optimization/File.php
@@ -44,3 +44,7 @@ parameters:
 		 - classes/WriteFile/AbstractApacheDirConfFile.php
 		 - classes/WriteFile/AbstractWriteDirConfFile.php
 		 - classes/WriteFile/AbstractNginxDirConfFile.php
+		 # WP_CLI is not part of the testable paths
+		 - classes/CLI/
+		 # Don't check dependencies
+		 - classes/Dependencies/
