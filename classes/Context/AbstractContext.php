@@ -161,7 +161,7 @@ abstract class AbstractContext implements ContextInterface {
 	 * @return bool
 	 */
 	public function current_user_can( $describer, $media_id = null ) {
-		return $this->user_can( 0   , $describer, $media_id );
+		return $this->user_can( 0, $describer, $media_id );
 	}
 
 	/**
