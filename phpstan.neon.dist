@@ -10,8 +10,9 @@ parameters:
 	bootstrapFiles:
 	scanDirectories:
 		- inc/Dependencies/ActionScheduler
-		- tests/Fixtures/
+		- Tests/Fixtures/
 	scanFiles:
+		- imagify.php
 		- inc/common/attachments.php
 		- inc/functions/admin.php
 		- inc/functions/admin-stats.php
@@ -23,7 +24,6 @@ parameters:
 		- inc/functions/options.php
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
 		- vendor/php-stubs/wordpress-tests-stubs/wordpress-tests-stubs.php
-		- imagify.php
 	excludePaths:
 		 # These needs to be updated to abstract filesystem instantiation outside of Imagify_Filesystem class
 		 - classes/Avif/Display.php
