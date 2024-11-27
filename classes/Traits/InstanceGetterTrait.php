@@ -15,12 +15,12 @@ trait InstanceGetterTrait {
 	/**
 	 * The "not-so-single" instance of the class.
 	 *
-	 * @var    object
+	 * @var    ?object
 	 * @since  1.9
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
-	protected static $instance;
+	protected static $instance = null;
 
 	/**
 	 * Get the main Instance.

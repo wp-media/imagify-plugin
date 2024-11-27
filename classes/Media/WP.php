@@ -20,7 +20,7 @@ class WP extends AbstractMedia {
 	 * @access protected
 	 * @author Grégory Viguier
 	 */
-	protected $is_wp53;
+	protected $is_wp53 = false;
 
 	/**
 	 * The constructor.
@@ -419,10 +419,6 @@ class WP extends AbstractMedia {
 	 * @return bool
 	 */
 	protected function is_wp_53() {
-		if ( isset( $this->is_wp53 ) ) {
-			return $this->is_wp53;
-		}
-
 		$this->is_wp53 = function_exists( 'wp_get_original_image_path' );
 
 		return $this->is_wp53;

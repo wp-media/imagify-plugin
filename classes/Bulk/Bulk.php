@@ -156,7 +156,7 @@ final class Bulk {
 	 * @param int    $optimization_level Optimization level.
 	 */
 	public function optimize_media( int $media_id, string $context, int $optimization_level ) {
-		if ( ! $media_id || ! $context || ! is_numeric( $optimization_level ) ) {
+		if ( ! $media_id || ! $context ) {
 			$this->decrease_counter( $context );
 
 			return;
@@ -565,7 +565,7 @@ final class Bulk {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
 		$folder_types = filter_input( INPUT_GET, 'types', FILTER_REQUIRE_ARRAY );
-		$folder_types = is_array( $folder_types ) ? array_filter( $folder_types, 'is_string' ) : [];
+		$folder_types = is_array( $folder_types ) ? $folder_types : [];
 
 		if ( ! $folder_types ) {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
@@ -644,7 +644,7 @@ final class Bulk {
 		$types = apply_filters( 'imagify_bulk_page_types', $types );
 		$types = array_filter( (array) $types );
 
-		if ( isset( $types['library|wp'] ) && ! in_array( 'wp', $contexts, true ) ) {
+		if ( isset( $types['library|wp'] ) ) {
 			$contexts[] = 'wp';
 		}
 
@@ -656,12 +656,11 @@ final class Bulk {
 				if ( ! in_array( 'wp', $contexts, true ) ) {
 					$contexts[] = 'wp';
 				}
-			} elseif ( $folders_instance->has_active_folders() && ! in_array( 'custom-folders', $contexts, true ) ) {
+			} elseif ( $folders_instance->has_active_folders() ) {
 				$contexts[] = 'custom-folders';
 			}
 		}
 
 		return $contexts;
 	}
-
 }
