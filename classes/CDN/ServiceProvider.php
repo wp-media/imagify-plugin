@@ -15,7 +15,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @var array
 	 */
 	protected $provides = [
-		'cdn',
+		CDN::class,
 	];
 
 	/**
@@ -24,16 +24,27 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @var array
 	 */
 	public $subscribers = [
-		'cdn',
+		CDN::class,
 	];
+
+	/**
+	 * Check if the service provider provides a specific service.
+	 *
+	 * @param string $id The id of the service.
+	 *
+	 * @return bool
+	 */
+	public function provides( string $id ): bool {
+		return in_array( $id, $this->provides, true );
+	}
 
 	/**
 	 * Registers the provided classes
 	 *
 	 * @return void
 	 */
-	public function register() {
-		$this->getContainer()->share( 'cdn', CDN::class );
+	public function register(): void {
+		$this->getContainer()->addShared( CDN::class );
 	}
 
 	/**

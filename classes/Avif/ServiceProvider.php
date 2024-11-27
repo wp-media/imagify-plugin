@@ -16,8 +16,8 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @var array
 	 */
 	protected $provides = [
-		'avif_display',
-		'avif_rewrite_rules',
+		Display::class,
+		RewriteRules::class,
 	];
 
 	/**
@@ -26,18 +26,29 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @var array
 	 */
 	public $subscribers = [
-		'avif_display',
-		'avif_rewrite_rules',
+		Display::class,
+		RewriteRules::class,
 	];
+
+	/**
+	 * Check if the service provider provides a specific service.
+	 *
+	 * @param string $id The id of the service.
+	 *
+	 * @return bool
+	 */
+	public function provides( string $id ): bool {
+		return in_array( $id, $this->provides, true );
+	}
 
 	/**
 	 * Registers the provided classes
 	 *
 	 * @return void
 	 */
-	public function register() {
-		$this->getContainer()->share( 'avif_display', Display::class );
-		$this->getContainer()->share( 'avif_rewrite_rules', RewriteRules::class );
+	public function register(): void {
+		$this->getContainer()->addShared( Display::class );
+		$this->getContainer()->addShared( RewriteRules::class );
 	}
 
 	/**
