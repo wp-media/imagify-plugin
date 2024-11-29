@@ -36,7 +36,7 @@
 		"php": ">=7.0",
 		"composer/installers": "^1.0 || ^2.0",
 		"dangoodman/composer-for-wordpress": "^2.0",
-		"wp-media/plugin-family": "^1.0"
+		"wp-media/plugin-family": "^1.0.3"
 	},
 	"require-dev": {
 		"php": "^7 || ^8",
@@ -95,7 +95,8 @@
 				"league/container",
 				"wp-media/plugin-family"
 			]
-		}
+		},
+		"plugin_domain": "imagify"
 	},
 	"scripts": {
 		"test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist",
@@ -111,11 +112,13 @@
 		],
 		"post-install-cmd": [
 			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
-			"composer dump-autoload"
+			"composer dump-autoload",
+			"Imagify\\Dependencies\\WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
 		],
 		"post-update-cmd": [
 			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
-			"composer dump-autoload"
+			"composer dump-autoload",
+			"Imagify\\Dependencies\\WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
 		],
 		"code-coverage": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist --coverage-clover=tests/report/coverage.clover"
 	}
