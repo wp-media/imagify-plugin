@@ -1,6 +1,7 @@
 <?php
 namespace Imagify\User;
 
+use BadMethodCallException;
 use Imagify_Data;
 use WP_Error;
 
@@ -130,6 +131,13 @@ class User {
 	private $cache_duration = 6 * MINUTE_IN_SECONDS;
 
 	/**
+	 * Initialisation.
+	 *
+	 * @var bool
+	*/
+	protected $initialized = false;
+
+	/**
 	 * Initialise the user data by fetching the api data
 	 *
 	 * @return void
@@ -172,6 +180,27 @@ class User {
 		$this->next_date_update             = $user->next_date_update;
 		$this->is_active                    = $user->is_active;
 		$this->is_monthly                   = $user->is_monthly;
+	}
+
+	/**
+	 * A magic call method.
+	 * Added this method to avoid calling init_user for every method in this class.
+	 * The init_user method is lazy call here.
+	 * @param $method
+	 * @param $args
+	 *
+	 */
+	public function __call( $method, $args ) {
+		if( ! $this->initialized ) {
+			$this->init_user();
+			$this->initialized = true;
+		}
+
+		if ( method_exists( $this, $method ) ) {
+			return call_user_func_array( [ $this, $method ], $args );
+		}
+
+		throw new BadMethodCallException( "Method {$method} does not exist");
 	}
 
 	/**
