@@ -1,7 +1,6 @@
 <?php
 namespace Imagify\User;
 
-use BadMethodCallException;
 use Imagify_Data;
 use WP_Error;
 
@@ -119,39 +118,32 @@ class User {
 
 	/**
 	 * Cache key.
+	 *
 	 * @var string
-	*/
+	 */
 	private $cache_key = 'imagify_user_data';
 
 	/**
 	 * Cache duration
 	 *
 	 * @var int
-	*/
+	 */
 	private $cache_duration = 6 * MINUTE_IN_SECONDS;
 
 	/**
 	 * Initialisation.
 	 *
 	 * @var bool
-	*/
+	 */
 	protected $initialized = false;
 
 	/**
 	 * Initialise the user data by fetching the api data
 	 *
 	 * @return void
-	*/
+	 */
 	public function init_user() {
-		if (isset($this->id)) {
-			return;
-		}
-
-		$cached_user = get_transient( $this->cache_key );
-
-		if ( $cached_user ) {
-			$this->set_user_properties( $cached_user );
-
+		if ( $this->initialized ) {
 			return;
 		}
 
@@ -162,10 +154,8 @@ class User {
 			return;
 		}
 
-		// Store user data in cache.
-		set_transient( $this->cache_key, $user, $this->cache_duration );
-
 		$this->set_user_properties( $user );
+		$this->initialized = true;
 	}
 
 	private function set_user_properties( $user ) {
@@ -183,33 +173,14 @@ class User {
 	}
 
 	/**
-	 * A magic call method.
-	 * Added this method to avoid calling init_user for every method in this class.
-	 * The init_user method is lazy call here.
-	 * @param $method
-	 * @param $args
-	 *
-	 */
-	public function __call( $method, $args ) {
-		if( ! $this->initialized ) {
-			$this->init_user();
-			$this->initialized = true;
-		}
-
-		if ( method_exists( $this, $method ) ) {
-			return call_user_func_array( [ $this, $method ], $args );
-		}
-
-		throw new BadMethodCallException( "Method {$method} does not exist");
-	}
-
-	/**
 	 * Get the possible error returned when fetching user data.
 	 *
 	 * @return bool|WP_Error A \WP_Error object if the request to fetch the user data failed. False overwise.
 	 * @since 1.9.9
 	 */
 	public function get_error() {
+		$this->init_user();
+
 		return $this->error;
 	}
 
@@ -295,6 +266,7 @@ class User {
 	 * @return float|int
 	 */
 	public function get_percent_unconsumed_quota() {
+		$this->init_user();
 		return 100 - $this->get_percent_consumed_quota();
 	}
 
@@ -306,6 +278,7 @@ class User {
 	 * @return bool
 	 */
 	public function is_free() {
+		$this->init_user();
 		return 1 === $this->plan_id;
 	}
 
@@ -315,6 +288,7 @@ class User {
 	 * @return bool
 	 */
 	public function is_growth() {
+		$this->init_user();
 		return ( 16 === $this->plan_id || 18 === $this->plan_id );
 	}
 
@@ -324,6 +298,7 @@ class User {
 	 * @return bool
 	 */
 	public function is_infinite() {
+		$this->init_user();
 		return ( 15 === $this->plan_id || 17 === $this->plan_id );
 	}
 
@@ -349,8 +324,7 @@ class User {
 
 	/**
 	 * Get user Id
-	 *
-	*/
+	 */
 	public function get_id() {
 		$this->init_user();
 
