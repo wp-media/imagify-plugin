@@ -117,13 +117,15 @@ class User {
 	private $error = false;
 
 	/**
-	 * The constructor.
-	 *
-	 * @since 1.0
+	 * Initialise the user data by fetching the api data
 	 *
 	 * @return void
-	 */
-	public function __construct() {
+	*/
+	public function init_user() {
+		if (isset($this->id)) {
+			return;
+		}
+
 		$user = get_imagify_user();
 
 		if ( is_wp_error( $user ) ) {
@@ -286,5 +288,15 @@ class User {
 			&&
 			floatval( 100 ) === round( $this->get_percent_consumed_quota() )
 		);
+	}
+
+	/**
+	 * Get user Id
+	 *
+	*/
+	public function get_id() {
+		$this->init_user();
+
+		return $this->id;
 	}
 }
