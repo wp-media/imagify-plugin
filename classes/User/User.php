@@ -117,12 +117,33 @@ class User {
 	private $error = false;
 
 	/**
+	 * Cache key.
+	 * @var string
+	*/
+	private $cache_key = 'imagify_user_data';
+
+	/**
+	 * Cache duration
+	 *
+	 * @var int
+	*/
+	private $cache_duration = 6 * MINUTE_IN_SECONDS;
+
+	/**
 	 * Initialise the user data by fetching the api data
 	 *
 	 * @return void
 	*/
 	public function init_user() {
 		if (isset($this->id)) {
+			return;
+		}
+
+		$cached_user = get_transient( $this->cache_key );
+
+		if ( $cached_user ) {
+			$this->set_user_properties( $cached_user );
+
 			return;
 		}
 
@@ -133,6 +154,13 @@ class User {
 			return;
 		}
 
+		// Store user data in cache.
+		set_transient( $this->cache_key, $user, $this->cache_duration );
+
+		$this->set_user_properties( $user );
+	}
+
+	private function set_user_properties( $user ) {
 		$this->id                           = $user->id;
 		$this->email                        = $user->email;
 		$this->plan_id                      = (int) $user->plan_id;
