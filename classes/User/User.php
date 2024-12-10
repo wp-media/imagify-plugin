@@ -336,4 +336,26 @@ class User {
 
 		return $this->email;
 	}
+
+	/**
+	 * Get plan id.
+	 *
+	 * @return int
+	*/
+	public function get_plan_id() {
+		$this->init_user();
+
+		return $this->plan_id;
+	}
+
+	/**
+	 * Get user quota.
+	 *
+	 * @return int
+	 */
+	public function get_quota() {
+		$this->init_user();
+
+		return $this->quota;
+	}
 }

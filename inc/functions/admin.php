@@ -411,7 +411,7 @@ function imagify_cache_user() {
 		}
 	}
 
-	$data->quota_formatted            = imagify_size_format( $user->quota * pow( 1024, 2 ) );
+	$data->quota_formatted            = imagify_size_format( $user->get_quota() * pow( 1024, 2 ) );
 	$data->next_date_update_formatted = date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) );
 
 	if ( imagify_is_active_for_network() ) {

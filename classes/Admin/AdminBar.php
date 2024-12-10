@@ -169,7 +169,7 @@ class AdminBar implements SubscriberInterface {
 			'plan_label'       => $this->user->plan_label,
 			'plan_with_quota'  => $this->user->is_free() || $this->user->is_growth(),
 			'unconsumed_quota' => $unconsumed_quota,
-			'user_quota'       => $this->user->quota,
+			'user_quota'       => $this->user->get_quota(),
 			'next_update'      => $this->user->next_date_update,
 			'text'             => $text,
 			'button_text'      => $button_text,

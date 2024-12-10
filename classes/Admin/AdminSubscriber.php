@@ -50,9 +50,9 @@ class AdminSubscriber implements SubscriberInterface {
 	 * @return array
 	 */
 	public function plugin_action_links( $actions ) {
-		$text  = 1 !== $this->user->plan_id ? __( 'Documentation', 'imagify' ) : __( 'Upgrade', 'imagify' );
-		$url   = 1 !== $this->user->plan_id ? 'documentation' : 'subscription';
-		$class = 1 !== $this->user->plan_id ? '' : ' class="imagify-plugin-upgrade"';
+		$text  = 1 !== $this->user->get_plan_id() ? __( 'Documentation', 'imagify' ) : __( 'Upgrade', 'imagify' );
+		$url   = 1 !== $this->user->get_plan_id() ? 'documentation' : 'subscription';
+		$class = 1 !== $this->user->get_plan_id() ? '' : ' class="imagify-plugin-upgrade"';
 
 		array_unshift( $actions, sprintf( '<a href="%s" target="_blank"%s>%s</a>',
 			esc_url( imagify_get_external_url( $url ) ),
