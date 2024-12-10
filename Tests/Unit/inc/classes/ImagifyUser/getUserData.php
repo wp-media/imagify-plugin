@@ -16,7 +16,8 @@ class Test_GetUserData extends TestCase {
 	private $user;
 
 	protected function setUp(): void {
-		// Set up the User instance before each test
+		parent::setUp();
+
 		$this->user = Mockery::mock(User::class)->makePartial();
 	}
 
