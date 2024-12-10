@@ -117,20 +117,6 @@ class User {
 	private $error = false;
 
 	/**
-	 * Cache key.
-	 *
-	 * @var string
-	 */
-	private $cache_key = 'imagify_user_data';
-
-	/**
-	 * Cache duration
-	 *
-	 * @var int
-	 */
-	private $cache_duration = 6 * MINUTE_IN_SECONDS;
-
-	/**
 	 * Initialisation.
 	 *
 	 * @var bool
@@ -158,6 +144,13 @@ class User {
 		$this->initialized = true;
 	}
 
+	/**
+	 * Set user properties
+	 *
+	 * @param object $user User object data.
+	 *
+	 * @return void
+	 */
 	private function set_user_properties( $user ) {
 		$this->id                           = $user->id;
 		$this->email                        = $user->email;
@@ -324,10 +317,23 @@ class User {
 
 	/**
 	 * Get user Id
+	 *
+	 * @return string
 	 */
 	public function get_id() {
 		$this->init_user();
 
 		return $this->id;
+	}
+
+	/**
+	 * Get user email.
+	 *
+	 * @return string
+	 */
+	public function get_email() {
+		$this->init_user();
+
+		return $this->email;
 	}
 }
