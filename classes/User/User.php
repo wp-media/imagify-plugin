@@ -341,7 +341,7 @@ class User {
 	 * Get plan id.
 	 *
 	 * @return int
-	*/
+	 */
 	public function get_plan_id() {
 		$this->init_user();
 

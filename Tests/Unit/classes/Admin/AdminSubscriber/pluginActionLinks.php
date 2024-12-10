@@ -32,7 +32,8 @@ class Test_PluginActionLinks extends TestCase {
 	 * @dataProvider configTestData
 	 */
 	public function testShouldReturnAsExpected( $config, $expected ) {
-        $this->user->plan_id = $config['plan_id'];
+		$this->user->shouldReceive( 'get_plan_id' )
+			->andReturn( $config['plan_id'] );
 
         Functions\when( 'imagify_get_external_url' )->justReturn( 'https://example.org' );
         Functions\when( 'get_imagify_admin_url' )->justReturn( 'https://example.org' );
