@@ -427,6 +427,7 @@ div.imagify-col-price {
 .imagify-offer-monthly .imagify-flex-table .imagify-price-block,
 .imagify-offer-monthlies .imagify-price-block {
 	padding-top: 0;
+	max-width: 39%;
 }
 .imagify-flex-table .imagify-price-complement {
 	padding-right: 0;
@@ -1502,6 +1503,6 @@ input:checked ~ .imagify-badge-container .imagify-badge {
     background-color: #97c45e;
     color: white;
     border-color: #97c45e;
-    opacity: 1; 
+    opacity: 1;
 }
 /** End Toggle Switch **/
