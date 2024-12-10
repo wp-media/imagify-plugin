@@ -110,7 +110,7 @@ class AdminBar implements SubscriberInterface {
 		$wp_admin_bar->add_menu( array(
 			'parent' => 'imagify',
 			'id'     => 'imagify-upgrade-plan',
-			'title'  => wp_nonce_field( 'imagify-get-admin-bar-pricing' ) . '<div id="wp-admin-bar-imagify-pricing-content" class="hide-if-no-js"></div>',
+			'title'  => '<div id="wp-admin-bar-imagify-pricing-content" class="hide-if-no-js"></div>',
 		) );
 
 		$wp_admin_bar->add_menu( array(
