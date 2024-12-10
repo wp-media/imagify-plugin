@@ -1130,6 +1130,14 @@
 	});
 
 	/**
+	 * Get pricing on modal opening for admin bar menu, the button is added dynamically
+	 * Build the pricing tables inside modal.
+	 */
+	$(document).on('click', '.imagify-admin-bar-upgrade-plan', function () {
+		imagifyModal.getPricing($(this));
+	});
+
+	/**
 	 * Reset the modal on close.
 	 */
 	$(d).on('modalClosed.imagify', '.imagify-payment-modal', function () {
