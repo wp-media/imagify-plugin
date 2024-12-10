@@ -145,22 +145,22 @@ class AdminBar implements SubscriberInterface {
 		$upgrade_link     = '';
 
 		if ( $this->user->is_free() ) {
-			$text         = esc_html__( 'Upgrade your plan now for more!', 'rocket' ) . '<br>' .
-			esc_html__( 'From $5.99/month only, keep going with image optimization!', 'rocket' );
-			$button_text  = esc_html__( 'Upgrade My Plan', 'rocket' );
+			$text         = esc_html__( 'Upgrade your plan now for more!', 'imagify' ) . '<br>' .
+			esc_html__( 'From $5.99/month only, keep going with image optimization!', 'imagify' );
+			$button_text  = esc_html__( 'Upgrade My Plan', 'imagify' );
 			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/?utm_source=plugin&utm_medium=notification';
 		} elseif ( $this->user->is_growth() ) {
-			$text = esc_html__( 'Switch to Infinite plan for unlimited optimization:', 'rocket' ) . '<br>';
+			$text = esc_html__( 'Switch to Infinite plan for unlimited optimization:', 'imagify' ) . '<br>';
 
 			if ( $this->user->is_monthly ) {
-				$text         .= esc_html__( 'For $11.99/month, optimize as many images as you like!', 'rocket' );
+				$text         .= esc_html__( 'For $11.99/month, optimize as many images as you like!', 'imagify' );
 				$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite&payment_plan=1&utm_source=plugin&utm_medium=notification ';
 			} else {
-				$text         .= esc_html__( 'For $9.99/month, optimize as many images as you like!', 'rocket' );
+				$text         .= esc_html__( 'For $9.99/month, optimize as many images as you like!', 'imagify' );
 				$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite&payment_plan=2&utm_source=plugin&utm_medium=notification ';
 			}
 
-			$button_text = esc_html__( 'Switch To Infinite Plan', 'rocket' );
+			$button_text = esc_html__( 'Switch To Infinite Plan', 'imagify' );
 		}
 
 		$data = [
