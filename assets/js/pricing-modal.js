@@ -162,7 +162,7 @@
 				mon = datas.monthly_cost,    // 4.99 (monthly)
 				quo = datas.quota,           // 1000 (MB) - 5000 images (monthly/onetime)
 				cos = datas.cost,            // 3.49 (onetime)
-				label = datas.label,
+				label = datas.label.replace(/_.*$/, ''),
 				name = -1 === quo ? 'Unlimited' : (quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB'),
 				pcs = 'monthly' === type ? {monthly: mon, yearly: Math.round(ann / 12 * 100) / 100} : cos,
 				pcsd = pcs, // Used if discount is active.
