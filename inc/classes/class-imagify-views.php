@@ -76,6 +76,13 @@ class Imagify_Views {
 	 */
 	protected static $_instance;
 
+	/**
+	 * Imagify admin bar menu.
+	 *
+	 * @var bool
+	 */
+	private $admin_menu_is_present = false;
+
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** INSTANCE/INIT =========================================================================== */
@@ -126,8 +133,8 @@ class Imagify_Views {
 
 		// JS templates in footer.
 		add_action( 'admin_print_footer_scripts', [ $this, 'print_js_templates' ] );
-		add_action( 'admin_footer', [ $this, 'maybe_print_modal_payment' ] );
-		add_action( 'imagify_print_modal_payment', [ $this, 'print_modal_payment' ] );
+		add_action( 'admin_footer', [ $this, 'print_modal_payment' ] );
+		add_action( 'wp_before_admin_bar_render', [ $this, 'maybe_print_modal_payment' ] );
 	}
 
 
@@ -649,27 +656,39 @@ class Imagify_Views {
 	}
 
 	/**
+	 * Get imagify user info
+	 *
+	 * @return bool
+	*/
+	private function get_user_info(): bool {
+		$user  = new User();
+		$unconsumed_quota = $user->get_percent_unconsumed_quota();
+
+		return ( ! $user->is_infinite() && $unconsumed_quota <= 20 )
+			|| ( $user->is_free() && $unconsumed_quota > 20 );
+	}
+
+	/**
 	 * Start print the payment modal process.
 	 */
 	public function maybe_print_modal_payment() {
-		$user  = new User();
-		$print_modal = false;
-		if ( $user->is_free() && $user->get_percent_unconsumed_quota() > 20 ) {
-			$print_modal = true;
+		if ( $this->get_user_info() ) {
+			global $wp_admin_bar;
+			$this->admin_menu_is_present =  $wp_admin_bar && $wp_admin_bar->get_node( 'imagify' );
+
+			return;
 		}
 
-		do_action( 'imagify_print_modal_payment', $print_modal );
+		$this->admin_menu_is_present = false;
 	}
 
 	/**
 	 * Print the payment modal.
 	 *
-	 * @param bool $print Boolean to determine if the modal payment should be printed or not.
-	 *
 	 * @return void
 	 */
-	public function print_modal_payment( $print ) {
-		if ( is_admin_bar_showing() && $this->admin_menu_is_present() && $print ) {
+	public function print_modal_payment( ) {
+		if ( is_admin_bar_showing() && $this->admin_menu_is_present ) {
 			$this->print_template(
 				'modal-payment',
 				[
