@@ -1,6 +1,10 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
+if ( ! function_exists( 'is_plugin_active' ) ) {
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
+
 /**
  * Check if gravity form is active and no-conflict mode is enabled,
  * and you're in gravity form page.

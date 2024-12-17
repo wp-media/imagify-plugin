@@ -24,7 +24,8 @@
 			"composer/installers": true,
 			"dealerdirect/phpcodesniffer-composer-installer": true,
 			"dangoodman/composer-for-wordpress": true,
-			"mnsami/composer-custom-directory-installer": true
+			"mnsami/composer-custom-directory-installer": true,
+			"phpstan/extension-installer": true
 		}
 	},
 	"support": {
