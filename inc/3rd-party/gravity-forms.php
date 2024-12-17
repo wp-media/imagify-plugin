@@ -17,7 +17,7 @@ if ( is_plugin_active( 'gravityforms/gravityforms.php' )
 /**
  * Register imagify styles to gravity forms conflict styles
  *
- * @param array $styles Array fo registered styles
+ * @param array $styles Array fo registered styles.
  *
  * @return array
  */
@@ -33,7 +33,7 @@ function imagify_gf_noconflict_styles( $styles ) {
 /**
  * Register Imagify scripts to gravity forms conflict scripts
  *
- * @param array $scripts Array fo registered scripts
+ * @param array $scripts Array fo registered scripts.
  *
  * @return array
  */
