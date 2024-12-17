@@ -659,7 +659,7 @@ class Imagify_Views {
 	 * Get imagify user info
 	 *
 	 * @return bool
-	*/
+	 */
 	private function get_user_info(): bool {
 		$user  = new User();
 		$unconsumed_quota = $user->get_percent_unconsumed_quota();
@@ -674,7 +674,7 @@ class Imagify_Views {
 	public function maybe_print_modal_payment() {
 		if ( $this->get_user_info() ) {
 			global $wp_admin_bar;
-			$this->admin_menu_is_present =  $wp_admin_bar && $wp_admin_bar->get_node( 'imagify' );
+			$this->admin_menu_is_present = $wp_admin_bar && $wp_admin_bar->get_node( 'imagify' );
 
 			return;
 		}
@@ -687,7 +687,7 @@ class Imagify_Views {
 	 *
 	 * @return void
 	 */
-	public function print_modal_payment( ) {
+	public function print_modal_payment() {
 		if ( is_admin_bar_showing() && $this->admin_menu_is_present ) {
 			$this->print_template(
 				'modal-payment',
