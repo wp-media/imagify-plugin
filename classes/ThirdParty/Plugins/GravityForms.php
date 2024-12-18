@@ -16,14 +16,14 @@ class GravityForms implements SubscriberInterface {
 	 * @return array
 	 */
 	public static function get_subscribed_events(): array {
-		if ( class_exists( 'GFCommon' ) ) {
-			return [
-				'gform_noconflict_styles'  => 'imagify_gf_noconflict_styles',
-				'gform_noconflict_scripts' => 'imagify_gf_noconflict_scripts',
-			];
+		if ( ! class_exists( 'GFCommon' ) ) {
+			return [];
 		}
 
-		return [];
+		return [
+			'gform_noconflict_styles'  => 'imagify_gf_noconflict_styles',
+			'gform_noconflict_scripts' => 'imagify_gf_noconflict_scripts',
+		];
 	}
 
 	/**
@@ -34,12 +34,14 @@ class GravityForms implements SubscriberInterface {
 	 * @return array
 	 */
 	public function imagify_gf_noconflict_styles( $styles ): array {
-		if ( $this->is_gravity_forms_no_conflict_mode_enabled() ) {
-			$styles[] = 'imagify-admin-bar';
-			$styles[] = 'imagify-admin';
-			$styles[] = 'imagify-notices';
-			$styles[] = 'imagify-pricing-modal';
+		if ( ! $this->is_gravity_forms_no_conflict_mode_enabled() ) {
+			return $styles;
 		}
+
+		$styles[] = 'imagify-admin-bar';
+		$styles[] = 'imagify-admin';
+		$styles[] = 'imagify-notices';
+		$styles[] = 'imagify-pricing-modal';
 
 		return $styles;
 	}
@@ -52,13 +54,16 @@ class GravityForms implements SubscriberInterface {
 	 * @return array
 	 */
 	public function imagify_gf_noconflict_scripts( $scripts ): array {
-		if ( $this->is_gravity_forms_no_conflict_mode_enabled() ) {
-			$scripts[] = 'imagify-admin-bar';
-			$scripts[] = 'imagify-sweetalert';
-			$scripts[] = 'imagify-admin';
-			$scripts[] = 'imagify-notices';
-			$scripts[] = 'imagify-pricing-modal';
+		if ( ! $this->is_gravity_forms_no_conflict_mode_enabled() ) {
+			return $scripts;
 		}
+
+
+		$scripts[] = 'imagify-admin-bar';
+		$scripts[] = 'imagify-sweetalert';
+		$scripts[] = 'imagify-admin';
+		$scripts[] = 'imagify-notices';
+		$scripts[] = 'imagify-pricing-modal';
 
 		return $scripts;
 	}
@@ -71,6 +76,6 @@ class GravityForms implements SubscriberInterface {
 	private function is_gravity_forms_no_conflict_mode_enabled(): bool {
 		return is_plugin_active( 'gravityforms/gravityforms.php' )
 			&& get_option( 'gform_enable_noconflict', false )
-			&& GFForms::is_gravity_page(); // @phpstan-ignore-line
+			&& GFForms::is_gravity_page();
 	}
 }
