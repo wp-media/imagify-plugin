@@ -68,6 +68,6 @@ class GravityForms implements SubscriberInterface {
 		return is_plugin_active( 'gravityforms/gravityforms.php' )
 			&& class_exists( 'GFCommon' )
 			&& get_option( 'gform_enable_noconflict', false )
-			&& GFForms::is_gravity_page();
+			&& GFForms::is_gravity_page(); // @phpstan-ignore-line
 	}
 }

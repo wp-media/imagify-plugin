@@ -54,6 +54,6 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @return void
 	 */
 	public function register(): void {
-		$this->getContainer()->share( 'gravity_from_subscriber', GravityForms::class );
+		$this->getContainer()->addShared( 'gravity_from_subscriber', GravityForms::class );
 	}
 }
