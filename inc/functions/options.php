@@ -97,3 +97,20 @@ function imagify_load_network_options( $option_names, $prefixes = '' ) {
 
 	wp_cache_set( $notoptions_key, $notoptions, $cache_group );
 }
+
+/**
+ * Get admin stats.
+ *
+ * @param string $key Option key.
+ * @param integer $default default value to return.
+ * @return mixed
+ */
+function imagify_get_admin_stats( string $key, $default = 0 ) {
+	$stats = get_option( 'imagify_admin_stats' );
+
+	if ( ! $stats ) {
+		return $default;
+	}
+
+	return $stats[ $key ];
+}

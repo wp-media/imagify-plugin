@@ -14,12 +14,38 @@ class Controller {
      * @var array
      */
     private static $actions = [
-        'imagify_count_attachments',
-        'imagify_count_error_attachments',
-        'imagify_count_optimized_attachments',
-        'imagify_count_saving_data',
-        'imagify_calculate_total_size_images_library',
-        'imagify_calculate_average_size_images_per_month',
+        'imagify_count_attachments_as',
+        'imagify_count_error_attachments_as',
+        'imagify_count_optimized_attachments_as',
+        'imagify_count_saving_data_as',
+        'imagify_calculate_total_size_images_library_as',
+        'imagify_calculate_average_size_images_per_month_as',
+    ];
+
+    /**
+     * Stats option name.
+     *
+     * @var string
+     */
+    protected $stats_option = 'imagify_admin_stats';
+
+    /**
+     * Admin stats option.
+     *
+     * @var array
+     */
+    protected $admin_stats = [
+        'attachments_count' => 0,
+        'attachments_optimized_count' => 0,
+        'attachments_error_count' => 0,
+        'saving_data_count' => [
+            'count'          => 0,
+            'original_size'  => 0,
+            'optimized_size' => 0,
+            'percent' => 0,
+        ],
+        'images_library_total_size' => 0,
+        'images_average_size_per_month' => 0,
     ];
 
     /**
@@ -61,6 +87,40 @@ class Controller {
     }
 
     /**
+     * Register admin stat options.
+     *
+     * @return void
+     */
+    public function register_stats_option() {
+        if ( false !== get_option( $this->stats_option ) ) {
+            return;
+        }
+
+		add_option( $this->stats_option, $this->admin_stats );
+    }
+
+    /**
+     * Update stats option.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function update_stats( $key, $value ): void {
+        $stats = get_option( $this->stats_option );
+
+        if ( ! $stats ) {
+            $this->admin_stats[ $key ] = $value;
+            add_option( $this->stats_option, $this->admin_stats );
+
+            return;
+        }
+
+        $stats[ $key ] = $value;
+        update_option( $this->stats_option, $stats );
+    }
+
+    /**
      * Count number of attachments.
      *
      * @since  1.0
@@ -82,17 +142,17 @@ class Controller {
         $pre_count = apply_filters( 'imagify_count_attachments', false );
 
         if ( false !== $pre_count ) {
-            update_imagify_option( 'attachments_count', (int) $pre_count );
+            $this->update_stats( 'attachments_count', (int) $pre_count );
             return;
         }
 
-        $mime_types   = Imagify_DB::get_mime_types();
-        $statuses     = Imagify_DB::get_post_statuses();
-        $nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause('p.ID', true, true,
+        $mime_types   = \Imagify_DB::get_mime_types();
+        $statuses     = \Imagify_DB::get_post_statuses();
+        $nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause('p.ID', true, true,
             "AND p.post_mime_type IN ( $mime_types )
                 AND p.post_type = 'attachment'
                 AND p.post_status IN ( $statuses )");
-        $nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+        $nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
         $count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
             "
             SELECT COUNT( p.ID )
@@ -111,7 +171,7 @@ class Controller {
             delete_transient( 'imagify_large_library' );
         }
 
-        update_imagify_option( 'attachments_count', $count );
+        $this->update_stats( 'attachments_count', $count );
     }
 
     /**
@@ -136,14 +196,14 @@ class Controller {
         $pre_count = apply_filters( 'imagify_count_error_attachments', false );
 
         if ( false !== $pre_count ) {
-            update_imagify_option( 'attachments_error_count', (int) $pre_count );
+            $this->update_stats( 'attachments_error_count', (int) $pre_count );
             return;
         }
 
-        $mime_types   = Imagify_DB::get_mime_types();
-        $statuses     = Imagify_DB::get_post_statuses();
-        $nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
-        $nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+        $mime_types   = \Imagify_DB::get_mime_types();
+        $statuses     = \Imagify_DB::get_post_statuses();
+        $nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
+        $nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
         $count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
             "
             SELECT COUNT( DISTINCT p.ID )
@@ -158,7 +218,7 @@ class Controller {
                 $nodata_where"
         );
 
-        update_imagify_option( 'attachments_error_count', $count );
+        $this->update_stats( 'attachments_error_count', $count );
     }
 
     /**
@@ -183,14 +243,14 @@ class Controller {
         $pre_count = apply_filters( 'imagify_count_optimized_attachments', false );
 
         if ( false !== $pre_count ) {
-            update_imagify_option( 'attachments_optimized_count', (int) $pre_count );
+            $this->update_stats( 'attachments_optimized_count', (int) $pre_count );
             return;
         }
 
-        $mime_types   = Imagify_DB::get_mime_types();
-        $statuses     = Imagify_DB::get_post_statuses();
-        $nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
-        $nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+        $mime_types   = \Imagify_DB::get_mime_types();
+        $statuses     = \Imagify_DB::get_post_statuses();
+        $nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
+        $nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
         $count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
             "
             SELECT COUNT( DISTINCT p.ID )
@@ -205,7 +265,7 @@ class Controller {
                 $nodata_where"
         );
 
-        update_imagify_option( 'attachments_optimized_count', $count );
+        $this->update_stats( 'attachments_optimized_count', $count );
     }
 
     /**
@@ -245,7 +305,7 @@ class Controller {
                  */
                 $attachments['percent'] = $attachments['optimized_size'] && $attachments['original_size'] ? ceil( ( ( $attachments['original_size'] - $attachments['optimized_size'] ) / $attachments['original_size'] ) * 100 ) : 0;
 
-                update_imagify_option( 'saving_data_count', $attachments );
+                $this->update_stats( 'saving_data_count', $attachments );
                 return;
             }
 
@@ -291,10 +351,10 @@ class Controller {
             $limit = apply_filters( 'imagify_count_saving_data_limit', 15000 );
             $limit = absint( $limit );
 
-            $mime_types     = Imagify_DB::get_mime_types();
-            $statuses       = Imagify_DB::get_post_statuses();
-            $nodata_join    = Imagify_DB::get_required_wp_metadata_join_clause();
-            $nodata_where   = Imagify_DB::get_required_wp_metadata_where_clause();
+            $mime_types     = \Imagify_DB::get_mime_types();
+            $statuses       = \Imagify_DB::get_post_statuses();
+            $nodata_join    = \Imagify_DB::get_required_wp_metadata_join_clause();
+            $nodata_where   = \Imagify_DB::get_required_wp_metadata_where_clause();
             $attachment_ids = $wpdb->get_col( // WPCS: unprepared SQL ok.
                 "
                 SELECT p.ID
@@ -384,7 +444,7 @@ class Controller {
             'percent'        => $original_size && $optimized_size ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0,
         );
 
-        update_imagify_option( 'saving_data_count', $data );
+        $this->update_stats( 'saving_data_count', $data );
     }
 
     /**
@@ -401,10 +461,10 @@ class Controller {
     public function imagify_calculate_total_size_images_library(): void {
         global $wpdb;
 
-        $mime_types   = Imagify_DB::get_mime_types();
-        $statuses     = Imagify_DB::get_post_statuses();
-        $nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
-        $nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+        $mime_types   = \Imagify_DB::get_mime_types();
+        $statuses     = \Imagify_DB::get_post_statuses();
+        $nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
+        $nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
         $image_ids    = $wpdb->get_col( // WPCS: unprepared SQL ok.
             "
             SELECT p.ID
@@ -418,7 +478,7 @@ class Controller {
         " );
 
         if ( ! $image_ids ) {
-            update_imagify_option( 'images_library_total_size', 0 );
+            $this->update_stats( 'images_library_total_size', 0 );
             return;
         }
 
@@ -426,7 +486,7 @@ class Controller {
         $count_total_images  = get_imagify_option( 'attachments_count' );
 
         $total = $this->imagify_calculate_total_image_size( $image_ids, $count_latest_images, $count_total_images );
-        update_imagify_option( 'images_library_total_size', $total );
+        $this->update_stats( 'images_library_total_size', $total );
     }
 
     /**
@@ -444,10 +504,10 @@ class Controller {
     public function imagify_calculate_average_size_images_per_month(): void {
         global $wpdb;
 
-        $mime_types   = Imagify_DB::get_mime_types();
-        $statuses     = Imagify_DB::get_post_statuses();
-        $nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause( "$wpdb->posts.ID" );
-        $nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+        $mime_types   = \Imagify_DB::get_mime_types();
+        $statuses     = \Imagify_DB::get_post_statuses();
+        $nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause( "$wpdb->posts.ID" );
+        $nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
         $limit        = ' LIMIT 0, 250';
         $query        = "
             SELECT $wpdb->posts.ID
@@ -460,7 +520,7 @@ class Controller {
                 %date_query%";
 
         // Queries per month.
-        $date_query = new WP_Date_Query( array(
+        $date_query = new \WP_Date_Query( array(
             array(
                 'before' => 'now',
                 'after'  => '1 month ago',
@@ -469,7 +529,7 @@ class Controller {
 
         $partial_images_uploaded_last_month = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
-        $date_query = new WP_Date_Query( array(
+        $date_query = new \WP_Date_Query( array(
             array(
                 'before' => '1 month ago',
                 'after'  => '2 months ago',
@@ -478,7 +538,7 @@ class Controller {
 
         $partial_images_uploaded_two_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
-        $date_query = new WP_Date_Query( array(
+        $date_query = new \WP_Date_Query( array(
             array(
                 'before' => '2 month ago',
                 'after'  => '3 months ago',
@@ -491,12 +551,12 @@ class Controller {
         $partial_images_uploaded_id = array_merge( $partial_images_uploaded_last_month, $partial_images_uploaded_two_months_ago, $partial_images_uploaded_three_months_ago );
 
         if ( ! $partial_images_uploaded_id ) {
-            update_imagify_option( 'images_average_size_per_month', 0 );
+            $this->update_stats( 'images_average_size_per_month', 0 );
             return;
         }
 
         // Total for the 3 months, without the "250" limit.
-        $date_query = new WP_Date_Query( array(
+        $date_query = new \WP_Date_Query( array(
             array(
                 'before' => 'now',
                 'after'  => '3 month ago',
@@ -506,7 +566,7 @@ class Controller {
         $images_uploaded_id = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query ) ); // WPCS: unprepared SQL ok.
 
         if ( ! $images_uploaded_id ) {
-            update_imagify_option( 'images_average_size_per_month', 0 );
+            $this->update_stats( 'images_average_size_per_month', 0 );
             return;
         }
 
@@ -516,7 +576,7 @@ class Controller {
         $total_images_uploaded         = count( $images_uploaded_id );
 
         $average = $this->imagify_calculate_total_image_size( $partial_images_uploaded_id, $partial_total_images_uploaded, $total_images_uploaded ) / 3;
-        update_imagify_option( 'images_average_size_per_month', $average );
+        $this->update_stats( 'images_average_size_per_month', $average );
     }
 
     /**
@@ -530,7 +590,7 @@ class Controller {
      * @param  int   $total_images         The total number of image attachments.
      * @return int                         The estimated total size of images.
      */
-    private function imagify_calculate_total_image_size( $image_ids, $partial_total_images, $total_images ): int {
+    private function imagify_calculate_total_image_size( $image_ids, $partial_total_images, $total_images ) {
         global $wpdb;
 
         $image_ids = array_filter( array_map( 'absint', $image_ids ) );
@@ -539,7 +599,7 @@ class Controller {
             return 0;
         }
 
-        $results = Imagify_DB::get_metas( array(
+        $results = \Imagify_DB::get_metas( array(
             // Get attachments filename.
             'filenames'    => '_wp_attached_file',
             // Get attachments data.
