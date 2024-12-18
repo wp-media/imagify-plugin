@@ -16,7 +16,6 @@ require IMAGIFY_PATH . 'inc/3rd-party/wp-cloudflare-super-page-cache.php';
 require IMAGIFY_PATH . 'inc/3rd-party/wp-rocket/wp-rocket.php';
 require IMAGIFY_PATH . 'inc/3rd-party/yoast-seo.php';
 require IMAGIFY_PATH . 'inc/3rd-party/WooCommerce/class-woocommerce.php';
-require IMAGIFY_PATH . 'inc/3rd-party/gravity-forms.php';
 
 /**
  * Hosting.

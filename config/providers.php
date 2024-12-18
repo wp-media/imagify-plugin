@@ -7,4 +7,5 @@ return [
 	'Imagify\Picture\ServiceProvider',
 	'Imagify\Stats\ServiceProvider',
 	'Imagify\Webp\ServiceProvider',
+	'Imagify\ThirdParty\ServiceProvider',
 ];
