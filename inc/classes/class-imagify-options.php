@@ -45,13 +45,6 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'convert_to_avif'        => 0,
 		'convert_to_webp'        => 0,
 		'optimization_format'    => 'webp',
-		'attachments_count' => 0,
-		'attachments_optimized_count' => 0,
-		'attachments_error_count' => 0,
-		'saving_data_count' => 0,
-		'images_library_total_size' => 0,
-		'images_average_size_per_month' => 0,
-
 	];
 
 	/**
