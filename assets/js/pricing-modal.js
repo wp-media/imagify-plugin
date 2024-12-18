@@ -237,154 +237,148 @@
 					return;
 				}
 
-					// Get the discount informations.
-					$.post(ajaxurl, prices_rq_discount, function (discount_response) {
-						var prices_datas, promo_datas,
-							offers,
-							freeQuota = 25,
-							ot_html = '',
-							mo_html = '',
-							$mo_tpl,
-							mo_clone,
-							$estim_block, $offers_block,
-							$banners, date_end, plan_names, promo, discount;
+				// Get the discount informations.
+				$.post(ajaxurl, prices_rq_discount, function (discount_response) {
+					var prices_datas, promo_datas,
+						offers,
+						mo_html = '',
+						$mo_tpl,
+						mo_clone,
+						$estim_block, $offers_block,
+						$banners, date_end, plan_names, promo, discount;
 
-						if (! discount_response.success) {
-							// TODO: replace modal content by any information.
-							// An error occurred.
-							return;
-						}
+					if (! discount_response.success) {
+						// TODO: replace modal content by any information.
+						// An error occurred.
+						return;
+					}
 
-						prices_datas = prices_response.data;
-						promo_datas = discount_response.data;
-						offers = {
-							mo: []
-						};
-						$mo_tpl = $('#imagify-offer-monthly-template');
-						mo_clone = $mo_tpl.html();
-						$estim_block = $('.imagify-estimation-block');
+					prices_datas = prices_response.data;
+					promo_datas = discount_response.data;
+					offers = {
+						mo: []
+					};
+					$mo_tpl = $('#imagify-offer-monthly-template');
+					mo_clone = $mo_tpl.html();
+					$estim_block = $('.imagify-estimation-block');
 
-						// Remove inactive offers.
-						$.each(prices_datas.monthlies, function (index, value) {
-							if ('undefined' === typeof value.active
-								||
-								('undefined' !== typeof value.active && true === value.active)
-							) {
-								if ('free' === value.label) {
-									freeQuota = value.quota;
-								}
-
-								if ('starter' === value.label) {
-									return;
-								}
-								offers.mo.push(value);
+					// Remove inactive offers.
+					$.each(prices_datas.monthlies, function (index, value) {
+						if ('undefined' === typeof value.active
+							||
+							('undefined' !== typeof value.active && true === value.active)
+						) {
+							if ('starter' === value.label) {
+								return;
 							}
-						});
-
-						// Refresh Analyzing block.
-						$estim_block.removeClass('imagify-analyzing');
-
-						// Reset offer selection.
-						$('.imagify-offer-selected').removeClass('imagify-offer-selected').find('.imagify-checkbox').prop('checked', false);
-
-						// Don't create prices table if something went wrong during request.
-						if (null === offers.mo) {
-							$offers_block = $('.imagify-pre-checkout-offers');
-
-							// Hide main content.
-							$offers_block.hide().attr('aria-hidden', true);
-
-							// Show error message.
-							$offers_block.closest('.imagify-modal-views').find('.imagify-popin-message').remove();
-							$offers_block.after('<div class="imagify-popin-message imagify-error"><p>' + imagifyPricingModal.labels.errorPriceAPI + '</p></div>');
-
-							// Show the modal content.
-							imagifyModal.$modal.find('.imagify-modal-loader').fadeOut(300);
-							imagifyModal.$modal.removeClass('imagify-modal-loading');
-							return;
+							offers.mo.push(value);
 						}
+					});
 
-						// Autofill coupon code & Show banner if discount is active.
-						w.imagify_discount_datas = promo_datas;
+					// Refresh Analyzing block.
+					$estim_block.removeClass('imagify-analyzing');
 
-						if (promo_datas.is_active) {
-							if (promo_datas.applies_to instanceof Array) {
-								plan_names = [];
-								var plan_list = [];
+					// Reset offer selection.
+					$('.imagify-offer-selected').removeClass('imagify-offer-selected').find('.imagify-checkbox').prop('checked', false);
 
-								for (var plan_infos = 0; plan_infos < promo_datas.applies_to.length; plan_infos++) {
-									plan_list.push(promo_datas.applies_to[plan_infos].plan_name);
-								}
+					// Don't create prices table if something went wrong during request.
+					if (null === offers.mo) {
+						$offers_block = $('.imagify-pre-checkout-offers');
 
-								plan_list.forEach(function (item) {
-									if (! plan_names.includes(item)) {
-										plan_names.push(item);
-									}
-								});
+						// Hide main content.
+						$offers_block.hide().attr('aria-hidden', true);
 
-								plan_names = plan_names.join(', ');
-							} else {
-								plan_names = promo_datas.applies_to;
-							}
+						// Show error message.
+						$offers_block.closest('.imagify-modal-views').find('.imagify-popin-message').remove();
+						$offers_block.after('<div class="imagify-popin-message imagify-error"><p>' + imagifyPricingModal.labels.errorPriceAPI + '</p></div>');
 
-							$banners = $('.imagify-modal-promotion');
-							date_end = promo_datas.date_end.split('T')[0];
-							promo = promo_datas.coupon_value;
-							discount = 'percentage' === promo_datas.coupon_type ? promo + '%' : '$' + promo;
-
-
-							// Show banners.
-							$banners.addClass('active').attr('aria-hidden', 'false');
-
-							// Populate banners.
-							$banners.find('.imagify-promotion-number').text(discount);
-							$banners.find('.imagify-promotion-plan-name').text(plan_names);
-							$banners.find('.imagify-promotion-date').text(date_end);
-
-						}
-
-						/**
-						 * Below lines will build Plan and Onetime offers lists.
-						 * It will also pre-select a Plan and/or Onetime in both of views: pre-checkout and pricing tables.
-						 */
-						if (0 === offers.mo.length) {
-							$('.imagify-pre-checkout-offers .imagify-offer-monthly').remove();
-							$('.imagify-tabs').remove();
-							$('.imagify-pricing-tab-monthly').remove();
-						} else {
-							// Now, do the MONTHLIES Markup.
-							$.each(offers.mo, function (index, value) {
-								var $tpl,
-									classes = '';
-
-								// Populate each offer.
-								$tpl = $(mo_clone).clone();
-								$tpl = imagifyModal.populateOffer($tpl, value, 'monthly', classes);
-
-								// Complete Monthlies HTML.
-								mo_html += $tpl[0].outerHTML;
-							});
-
-							// Wait for element to be ready after ajax callback before adding ribbon.
-							setTimeout(function() {
-								// Add best value ribbon to unlimited plan.
-								$('.imagify-best-value').prepend('<div class="imagify-ribbon"><span>Best Value!</span></div>');
-							}, 100);
-						}
-
-						// Fill pricing tables.
-						if ($mo_tpl.parent().find('.imagify-offer-line')) {
-							$mo_tpl.parent().find('.imagify-offer-line').remove();
-						}
-
-						$mo_tpl.before(mo_html);
-
-
-						// Show the content.
+						// Show the modal content.
 						imagifyModal.$modal.find('.imagify-modal-loader').fadeOut(300);
 						imagifyModal.$modal.removeClass('imagify-modal-loading');
+						return;
+					}
 
-					}); // Third AJAX request to get discount information.
+					// Autofill coupon code & Show banner if discount is active.
+					w.imagify_discount_datas = promo_datas;
+
+					if (promo_datas.is_active) {
+						if (promo_datas.applies_to instanceof Array) {
+							plan_names = [];
+							var plan_list = [];
+
+							for (var plan_infos = 0; plan_infos < promo_datas.applies_to.length; plan_infos++) {
+								plan_list.push(promo_datas.applies_to[plan_infos].plan_name);
+							}
+
+							plan_list.forEach(function (item) {
+								if (! plan_names.includes(item)) {
+									plan_names.push(item);
+								}
+							});
+
+							plan_names = plan_names.join(', ');
+						} else {
+							plan_names = promo_datas.applies_to;
+						}
+
+						$banners = $('.imagify-modal-promotion');
+						date_end = promo_datas.date_end.split('T')[0];
+						promo = promo_datas.coupon_value;
+						discount = 'percentage' === promo_datas.coupon_type ? promo + '%' : '$' + promo;
+
+
+						// Show banners.
+						$banners.addClass('active').attr('aria-hidden', 'false');
+
+						// Populate banners.
+						$banners.find('.imagify-promotion-number').text(discount);
+						$banners.find('.imagify-promotion-plan-name').text(plan_names);
+						$banners.find('.imagify-promotion-date').text(date_end);
+
+					}
+
+					/**
+					 * Below lines will build Plan and Onetime offers lists.
+					 * It will also pre-select a Plan and/or Onetime in both of views: pre-checkout and pricing tables.
+					 */
+					if (0 === offers.mo.length) {
+						$('.imagify-pre-checkout-offers .imagify-offer-monthly').remove();
+						$('.imagify-tabs').remove();
+						$('.imagify-pricing-tab-monthly').remove();
+					} else {
+						// Now, do the MONTHLIES Markup.
+						$.each(offers.mo, function (index, value) {
+							var $tpl,
+								classes = '';
+
+							// Populate each offer.
+							$tpl = $(mo_clone).clone();
+							$tpl = imagifyModal.populateOffer($tpl, value, 'monthly', classes);
+
+							// Complete Monthlies HTML.
+							mo_html += $tpl[0].outerHTML;
+						});
+
+						// Wait for element to be ready after ajax callback before adding ribbon.
+						setTimeout(function() {
+							// Add best value ribbon to unlimited plan.
+							$('.imagify-best-value').prepend('<div class="imagify-ribbon"><span>Best Value!</span></div>');
+						}, 100);
+					}
+
+					// Fill pricing tables.
+					if ($mo_tpl.parent().find('.imagify-offer-line')) {
+						$mo_tpl.parent().find('.imagify-offer-line').remove();
+					}
+
+					$mo_tpl.before(mo_html);
+
+
+					// Show the content.
+					imagifyModal.$modal.find('.imagify-modal-loader').fadeOut(300);
+					imagifyModal.$modal.removeClass('imagify-modal-loading');
+
+				}); // Third AJAX request to get discount information.
 
 			}); // End $.post.
 		},
@@ -441,7 +435,6 @@
 			var $iframe = $('#imagify-payment-iframe'),
 				iframe_src = $iframe.attr('src'),
 				pay_src = $iframe.data('src'),
-				plan_id = 0,
 				// Stop it ESLint, you're drunk.
 				key, amount, // eslint-disable-line no-unused-vars
 				rt_yearly, rt_monthly, $iframeClone, tofind;
