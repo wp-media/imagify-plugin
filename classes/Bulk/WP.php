@@ -306,10 +306,10 @@ class WP extends AbstractBulk {
 	 * }
 	 */
 	public function get_context_data() {
-		$total_saving_data = imagify_count_saving_data();
+		$total_saving_data = get_imagify_option( 'saving_data_count' );
 		$data              = [
-			'count-optimized' => imagify_count_optimized_attachments(),
-			'count-errors'    => imagify_count_error_attachments(),
+			'count-optimized' => get_imagify_option( 'attachments_optimized_count' ),
+			'count-errors'    => get_imagify_option( 'attachments_error_count' ),
 			'optimized-size'  => $total_saving_data['optimized_size'],
 			'original-size'   => $total_saving_data['original_size'],
 			'errors_url'      => get_imagify_admin_url( 'folder-errors', $this->context ),

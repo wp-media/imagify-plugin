@@ -1066,8 +1066,8 @@ if ( is_admin() ) :
 			case 'wp':
 				$total_saving_data = imagify_count_saving_data();
 				$data              = array(
-					'images-optimized' => imagify_count_optimized_attachments(),
-					'errors'           => imagify_count_error_attachments(),
+					'images-optimized' => get_imagify_option( 'attachments_optimized_count' ),
+					'errors'           => get_imagify_option( 'attachments_error_count' ),
 					'optimized'        => $total_saving_data['optimized_size'],
 					'original'         => $total_saving_data['original_size'],
 					'errors_url'       => get_imagify_admin_url( 'folder-errors', $context ),

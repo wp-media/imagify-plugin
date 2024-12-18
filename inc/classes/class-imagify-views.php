@@ -658,7 +658,7 @@ class Imagify_Views {
 			return $transient;
 		}
 
-		$attachments_number = imagify_count_attachments() + Imagify_Files_Stats::count_all_files();
+		$attachments_number = get_imagify_option( 'attachments_count' ) + Imagify_Files_Stats::count_all_files();
 
 		set_transient( 'imagify_attachments_number_modal', $attachments_number, 1 * DAY_IN_SECONDS );
 

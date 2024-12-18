@@ -913,8 +913,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$raw_total_size_in_library = imagify_calculate_total_size_images_library() + Imagify_Files_Stats::get_overall_original_size();
-		$raw_average_per_month     = imagify_calculate_average_size_images_per_month() + Imagify_Files_Stats::calculate_average_size_per_month();
+		$raw_total_size_in_library = get_imagify_option( 'images_library_total_size' ) + Imagify_Files_Stats::get_overall_original_size();
+		$raw_average_per_month     = get_imagify_option( 'images_average_size_per_month' ) + Imagify_Files_Stats::calculate_average_size_per_month();
 
 		Imagify_Data::get_instance()->set( array(
 			'total_size_images_library'     => $raw_total_size_in_library,
@@ -945,8 +945,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die();
 		}
 
-		$raw_total_size_in_library = imagify_calculate_total_size_images_library() + Imagify_Files_Stats::get_overall_original_size();
-		$raw_average_per_month     = imagify_calculate_average_size_images_per_month() + Imagify_Files_Stats::calculate_average_size_per_month();
+		$raw_total_size_in_library = get_imagify_option( 'images_library_total_size' ) + Imagify_Files_Stats::get_overall_original_size();
+		$raw_average_per_month     = get_imagify_option( 'images_average_size_per_month' ) + Imagify_Files_Stats::calculate_average_size_per_month();
 
 		Imagify_Data::get_instance()->set( array(
 			'total_size_images_library'     => $raw_total_size_in_library,
