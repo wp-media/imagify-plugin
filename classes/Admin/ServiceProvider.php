@@ -6,6 +6,7 @@ namespace Imagify\Admin;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 use Imagify\Dependencies\WPMedia\PluginFamily\Controller\PluginFamily;
 use Imagify\User\User;
+use Imagify\Admin\Stats\{ Controller as AdminStatsController, Subscriber as AdminStatsSubscriber };
 
 /**
  * Service provider for Admin.
@@ -21,6 +22,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		AdminSubscriber::class,
 		PluginFamily::class,
 		PluginFamilySubscriber::class,
+		AdminStatsController::class,
 	];
 
 	/**
@@ -32,6 +34,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		AdminBar::class,
 		AdminSubscriber::class,
 		PluginFamilySubscriber::class,
+		AdminStatsSubscriber::class,
 	];
 
 	/**
@@ -59,6 +62,10 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->add( PluginFamily::class );
 		$this->getContainer()->addShared( PluginFamilySubscriber::class )
 			->addArgument( PluginFamily::class );
+
+		$this->getContainer()->add( AdminStatsController::class );
+		$this->getContainer()->addShared( AdminStatsSubscriber::class )
+			->addArgument( AdminStatsController::class );
 	}
 
 	/**
