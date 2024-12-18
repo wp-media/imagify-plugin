@@ -101,7 +101,7 @@ function imagify_load_network_options( $option_names, $prefixes = '' ) {
 /**
  * Get admin stats.
  *
- * @param string $key Option key.
+ * @param string  $key Option key.
  * @param integer $default default value to return.
  * @return mixed
  */

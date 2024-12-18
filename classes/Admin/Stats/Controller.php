@@ -8,171 +8,171 @@ namespace Imagify\Admin\Stats;
  */
 class Controller {
 
-    /**
-     * Array of actions.
-     *
-     * @var array
-     */
-    private static $actions = [
-        'imagify_count_attachments_as',
-        'imagify_count_error_attachments_as',
-        'imagify_count_optimized_attachments_as',
-        'imagify_count_saving_data_as',
-        'imagify_calculate_total_size_images_library_as',
-        'imagify_calculate_average_size_images_per_month_as',
-    ];
+	/**
+	 * Array of actions.
+	 *
+	 * @var array
+	 */
+	private static $actions = [
+		'imagify_count_attachments_as',
+		'imagify_count_error_attachments_as',
+		'imagify_count_optimized_attachments_as',
+		'imagify_count_saving_data_as',
+		'imagify_calculate_total_size_images_library_as',
+		'imagify_calculate_average_size_images_per_month_as',
+	];
 
-    /**
-     * Stats option name.
-     *
-     * @var string
-     */
-    protected $stats_option = 'imagify_admin_stats';
+	/**
+	 * Stats option name.
+	 *
+	 * @var string
+	 */
+	protected $stats_option = 'imagify_admin_stats';
 
-    /**
-     * Admin stats option.
-     *
-     * @var array
-     */
-    protected $admin_stats = [
-        'attachments_count' => 0,
-        'attachments_optimized_count' => 0,
-        'attachments_error_count' => 0,
-        'saving_data_count' => [
-            'count'          => 0,
-            'original_size'  => 0,
-            'optimized_size' => 0,
-            'percent' => 0,
-        ],
-        'images_library_total_size' => 0,
-        'images_average_size_per_month' => 0,
-    ];
+	/**
+	 * Admin stats option.
+	 *
+	 * @var array
+	 */
+	protected $admin_stats = [
+		'attachments_count' => 0,
+		'attachments_optimized_count' => 0,
+		'attachments_error_count' => 0,
+		'saving_data_count' => [
+			'count'          => 0,
+			'original_size'  => 0,
+			'optimized_size' => 0,
+			'percent' => 0,
+		],
+		'images_library_total_size' => 0,
+		'images_average_size_per_month' => 0,
+	];
 
-    /**
-     * AS Queue group.
-     *
-     * @var string
-     */
-    private $group = 'imagify-stats';
+	/**
+	 * AS Queue group.
+	 *
+	 * @var string
+	 */
+	private $group = 'imagify-stats';
 
-    /**
-     * Register actions to run in background.
-     *
-     * @return void
-     */
-    public function register_actions(): void {
-        $counter = 1;
+	/**
+	 * Register actions to run in background.
+	 *
+	 * @return void
+	 */
+	public function register_actions(): void {
+		$counter = 1;
 
-        foreach ( self::$actions as $action ) {
-            try {
-                if ( ! as_has_scheduled_action( $action, [], $this->group ) ) {
-                    // Schedule the action to run every day with a 5 second offset for each action
-                    as_schedule_recurring_action( time() + ( $counter * 5 ), DAY_IN_SECONDS, $action, [], $this->group );
-                }
-            } catch ( Exception $exception ) {
-                continue;
-            }
+		foreach ( self::$actions as $action ) {
+			try {
+				if ( ! as_has_scheduled_action( $action, [], $this->group ) ) {
+					// Schedule the action to run every day with a 5 second offset for each action.
+					as_schedule_recurring_action( time() + ( $counter * 5 ), DAY_IN_SECONDS, $action, [], $this->group );
+				}
+			} catch ( Exception $exception ) {
+				continue;
+			}
 
-            $counter++;
-        }
-    }
+			$counter++;
+		}
+	}
 
-    /**
-     * Cancel all occurrence of scheduled action.
-     *
-     * @return void
-     */
-    public function unregister_actions(): void {
-        foreach ( self::$actions as $action ) {
-            try {
-                if ( as_has_scheduled_action( $action, [], $this->group ) ) {
-                    // Remove action from schedule.
-                    as_unschedule_action( $action, [], $this->group );
-                }
-            } catch ( Exception $exception ) {
-                continue;
-            }
-        }
-    }
+	/**
+	 * Cancel all occurrence of scheduled action.
+	 *
+	 * @return void
+	 */
+	public function unregister_actions(): void {
+		foreach ( self::$actions as $action ) {
+			try {
+				if ( as_has_scheduled_action( $action, [], $this->group ) ) {
+					// Remove action from schedule.
+					as_unschedule_action( $action, [], $this->group );
+				}
+			} catch ( Exception $exception ) {
+				continue;
+			}
+		}
+	}
 
-    /**
-     * Get AS actions.
-     *
-     * @return array Array of actions.
-     */
-    public static function get_actions(): array {
-        return self::$actions;
-    }
+	/**
+	 * Get AS actions.
+	 *
+	 * @return array Array of actions.
+	 */
+	public static function get_actions(): array {
+		return self::$actions;
+	}
 
-    /**
-     * Register admin stat options.
-     *
-     * @return void
-     */
-    public function register_stats_option() {
-        if ( false !== get_option( $this->stats_option ) ) {
-            return;
-        }
+	/**
+	 * Register admin stat options.
+	 *
+	 * @return void
+	 */
+	public function register_stats_option() {
+		if ( false !== get_option( $this->stats_option ) ) {
+			return;
+		}
 
 		add_option( $this->stats_option, $this->admin_stats );
-    }
+	}
 
-    /**
-     * Update stats option.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return void
-     */
-    public function update_stats( $key, $value ): void {
-        $stats = get_option( $this->stats_option );
+	/**
+	 * Update stats option.
+	 *
+	 * @param string $key Option key.
+	 * @param mixed  $value Option value.
+	 * @return void
+	 */
+	public function update_stats( $key, $value ): void {
+		$stats = get_option( $this->stats_option );
 
-        if ( ! $stats ) {
-            $this->admin_stats[ $key ] = $value;
-            add_option( $this->stats_option, $this->admin_stats );
+		if ( ! $stats ) {
+			$this->admin_stats[ $key ] = $value;
+			add_option( $this->stats_option, $this->admin_stats );
 
-            return;
-        }
+			return;
+		}
 
-        $stats[ $key ] = $value;
-        update_option( $this->stats_option, $stats );
-    }
+		$stats[ $key ] = $value;
+		update_option( $this->stats_option, $stats );
+	}
 
-    /**
-     * Count number of attachments.
-     *
-     * @since  1.0
-     * @author Jonathan Buttigieg
-     *
-     * @return void
-     */
-    public function imagify_count_attachments(): void {
-        global $wpdb;
+	/**
+	 * Count number of attachments.
+	 *
+	 * @since  1.0
+	 * @author Jonathan Buttigieg
+	 *
+	 * @return void
+	 */
+	public function imagify_count_attachments(): void {
+		global $wpdb;
 
-        /**
-         * Filter the number of attachments.
-         * 3rd party will be able to override the result.
-         *
-         * @since 1.5
-         *
-         * @param int|bool $pre_count Default is false. Provide an integer.
-         */
-        $pre_count = apply_filters( 'imagify_count_attachments', false );
+		/**
+		 * Filter the number of attachments.
+		 * 3rd party will be able to override the result.
+		 *
+		 * @since 1.5
+		 *
+		 * @param int|bool $pre_count Default is false. Provide an integer.
+		 */
+		$pre_count = apply_filters( 'imagify_count_attachments', false );
 
-        if ( false !== $pre_count ) {
-            $this->update_stats( 'attachments_count', (int) $pre_count );
-            return;
-        }
+		if ( false !== $pre_count ) {
+			$this->update_stats( 'attachments_count', (int) $pre_count );
+			return;
+		}
 
-        $mime_types   = \Imagify_DB::get_mime_types();
-        $statuses     = \Imagify_DB::get_post_statuses();
-        $nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause('p.ID', true, true,
-            "AND p.post_mime_type IN ( $mime_types )
+		$mime_types   = \Imagify_DB::get_mime_types();
+		$statuses     = \Imagify_DB::get_post_statuses();
+		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause('p.ID', true, true,
+			"AND p.post_mime_type IN ( $mime_types )
                 AND p.post_type = 'attachment'
                 AND p.post_status IN ( $statuses )");
-        $nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
-        $count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
-            "
+		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
+		$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+			"
             SELECT COUNT( p.ID )
             FROM $wpdb->posts AS p
                 $nodata_join
@@ -180,50 +180,50 @@ class Controller {
                 AND p.post_type = 'attachment'
                 AND p.post_status IN ( $statuses )
                 $nodata_where"
-        );
+		);
 
-        if ( $count > imagify_get_unoptimized_attachment_limit() ) {
-            set_transient( 'imagify_large_library', 1 );
-        } elseif ( get_transient( 'imagify_large_library' ) ) {
-            // In case the number is decreasing under our limit.
-            delete_transient( 'imagify_large_library' );
-        }
+		if ( $count > imagify_get_unoptimized_attachment_limit() ) {
+			set_transient( 'imagify_large_library', 1 );
+		} elseif ( get_transient( 'imagify_large_library' ) ) {
+			// In case the number is decreasing under our limit.
+			delete_transient( 'imagify_large_library' );
+		}
 
-        $this->update_stats( 'attachments_count', $count );
-    }
+		$this->update_stats( 'attachments_count', $count );
+	}
 
-    /**
-     * Count number of optimized attachments with an error.
-     *
-     * @since  1.0
-     * @author Jonathan Buttigieg
-     *
-     * @return void
-     */
-    public function imagify_count_error_attachments(): void {
-        global $wpdb;
+	/**
+	 * Count number of optimized attachments with an error.
+	 *
+	 * @since  1.0
+	 * @author Jonathan Buttigieg
+	 *
+	 * @return void
+	 */
+	public function imagify_count_error_attachments(): void {
+		global $wpdb;
 
-        /**
-         * Filter the number of optimized attachments with an error.
-         * 3rd party will be able to override the result.
-         *
-         * @since 1.5
-         *
-         * @param int|bool $pre_count Default is false. Provide an integer.
-         */
-        $pre_count = apply_filters( 'imagify_count_error_attachments', false );
+		/**
+		 * Filter the number of optimized attachments with an error.
+		 * 3rd party will be able to override the result.
+		 *
+		 * @since 1.5
+		 *
+		 * @param int|bool $pre_count Default is false. Provide an integer.
+		 */
+		$pre_count = apply_filters( 'imagify_count_error_attachments', false );
 
-        if ( false !== $pre_count ) {
-            $this->update_stats( 'attachments_error_count', (int) $pre_count );
-            return;
-        }
+		if ( false !== $pre_count ) {
+			$this->update_stats( 'attachments_error_count', (int) $pre_count );
+			return;
+		}
 
-        $mime_types   = \Imagify_DB::get_mime_types();
-        $statuses     = \Imagify_DB::get_post_statuses();
-        $nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
-        $nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
-        $count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
-            "
+		$mime_types   = \Imagify_DB::get_mime_types();
+		$statuses     = \Imagify_DB::get_post_statuses();
+		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
+		$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+			"
             SELECT COUNT( DISTINCT p.ID )
             FROM $wpdb->posts AS p
                 $nodata_join
@@ -234,43 +234,43 @@ class Controller {
                 AND p.post_status IN ( $statuses )
                 AND mt1.meta_value = 'error'
                 $nodata_where"
-        );
+		);
 
-        $this->update_stats( 'attachments_error_count', $count );
-    }
+		$this->update_stats( 'attachments_error_count', $count );
+	}
 
-    /**
-     * Count number of optimized attachments (by Imagify or an other tool before).
-     *
-     * @since  1.0
-     * @author Jonathan Buttigieg
-     *
-     * @return void
-     */
-    public function imagify_count_optimized_attachments(): void {
-        global $wpdb;
+	/**
+	 * Count number of optimized attachments (by Imagify or an other tool before).
+	 *
+	 * @since  1.0
+	 * @author Jonathan Buttigieg
+	 *
+	 * @return void
+	 */
+	public function imagify_count_optimized_attachments(): void {
+		global $wpdb;
 
-        /**
-         * Filter the number of optimized attachments.
-         * 3rd party will be able to override the result.
-         *
-         * @since 1.5
-         *
-         * @param int|bool $pre_count Default is false. Provide an integer.
-         */
-        $pre_count = apply_filters( 'imagify_count_optimized_attachments', false );
+		/**
+		 * Filter the number of optimized attachments.
+		 * 3rd party will be able to override the result.
+		 *
+		 * @since 1.5
+		 *
+		 * @param int|bool $pre_count Default is false. Provide an integer.
+		 */
+		$pre_count = apply_filters( 'imagify_count_optimized_attachments', false );
 
-        if ( false !== $pre_count ) {
-            $this->update_stats( 'attachments_optimized_count', (int) $pre_count );
-            return;
-        }
+		if ( false !== $pre_count ) {
+			$this->update_stats( 'attachments_optimized_count', (int) $pre_count );
+			return;
+		}
 
-        $mime_types   = \Imagify_DB::get_mime_types();
-        $statuses     = \Imagify_DB::get_post_statuses();
-        $nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
-        $nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
-        $count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
-            "
+		$mime_types   = \Imagify_DB::get_mime_types();
+		$statuses     = \Imagify_DB::get_post_statuses();
+		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
+		$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+			"
             SELECT COUNT( DISTINCT p.ID )
             FROM $wpdb->posts AS p
                 $nodata_join
@@ -281,100 +281,100 @@ class Controller {
                 AND p.post_status IN ( $statuses )
                 AND mt1.meta_value IN ( 'success', 'already_optimized' )
                 $nodata_where"
-        );
+		);
 
-        $this->update_stats( 'attachments_optimized_count', $count );
-    }
+		$this->update_stats( 'attachments_optimized_count', $count );
+	}
 
-    /**
-     * Count percent, original & optimized size of all images optimized by Imagify.
-     *
-     * @since  1.0
-     * @since  1.6.7 Revamped to handle huge libraries.
-     * @author Jonathan Buttigieg
-     *
-     * @return void
-     */
-    public function imagify_count_saving_data(): void {
-        global $wpdb;
+	/**
+	 * Count percent, original & optimized size of all images optimized by Imagify.
+	 *
+	 * @since  1.0
+	 * @since  1.6.7 Revamped to handle huge libraries.
+	 * @author Jonathan Buttigieg
+	 *
+	 * @return void
+	 */
+	public function imagify_count_saving_data(): void {
+		global $wpdb;
 
-        /**
-         * Filter the query to get all optimized attachments.
-         * 3rd party will be able to override the result.
-         *
-         * @since 1.5
-         * @since 1.6.7 This filter should return an array containing the following keys: 'count', 'original_size', and 'optimized_size'.
-         *
-         * @param bool|array $attachments An array containing the keys ('count', 'original_size', and 'optimized_size'), or an array of attachments (back compat', deprecated), or false.
-         */
-        $attachments = apply_filters( 'imagify_count_saving_data', false );
+		/**
+		 * Filter the query to get all optimized attachments.
+		 * 3rd party will be able to override the result.
+		 *
+		 * @since 1.5
+		 * @since 1.6.7 This filter should return an array containing the following keys: 'count', 'original_size', and 'optimized_size'.
+		 *
+		 * @param bool|array $attachments An array containing the keys ('count', 'original_size', and 'optimized_size'), or an array of attachments (back compat', deprecated), or false.
+		 */
+		$attachments = apply_filters( 'imagify_count_saving_data', false );
 
-        $original_size  = 0;
-        $optimized_size = 0;
-        $count          = 0;
+		$original_size  = 0;
+		$optimized_size = 0;
+		$count          = 0;
 
-        if ( is_array( $attachments ) ) {
-            /**
-             * Bypass.
-             */
-            if ( isset( $attachments['count'], $attachments['original_size'], $attachments['optimized_size'] ) ) {
-                /**
-                 * We have the results we need.
-                 */
-                $attachments['percent'] = $attachments['optimized_size'] && $attachments['original_size'] ? ceil( ( ( $attachments['original_size'] - $attachments['optimized_size'] ) / $attachments['original_size'] ) * 100 ) : 0;
+		if ( is_array( $attachments ) ) {
+			/**
+			 * Bypass.
+			 */
+			if ( isset( $attachments['count'], $attachments['original_size'], $attachments['optimized_size'] ) ) {
+				/**
+				 * We have the results we need.
+				 */
+				$attachments['percent'] = $attachments['optimized_size'] && $attachments['original_size'] ? ceil( ( ( $attachments['original_size'] - $attachments['optimized_size'] ) / $attachments['original_size'] ) * 100 ) : 0;
 
-                $this->update_stats( 'saving_data_count', $attachments );
-                return;
-            }
+				$this->update_stats( 'saving_data_count', $attachments );
+				return;
+			}
 
-            /**
-             * Back compat'.
-             * The following shouldn't be used. Sites with a huge library won't like it.
-             */
-            $attachments = array_map( 'maybe_unserialize', (array) $attachments );
+			/**
+			 * Back compat'.
+			 * The following shouldn't be used. Sites with a huge library won't like it.
+			 */
+			$attachments = array_map( 'maybe_unserialize', (array) $attachments );
 
-            if ( $attachments ) {
-                foreach ( $attachments as $attachment_data ) {
-                    if ( ! $attachment_data ) {
-                        continue;
-                    }
+			if ( $attachments ) {
+				foreach ( $attachments as $attachment_data ) {
+					if ( ! $attachment_data ) {
+						continue;
+					}
 
-                    ++$count;
-                    $original_data = $attachment_data['sizes']['full'];
+					++$count;
+					$original_data = $attachment_data['sizes']['full'];
 
-                    // Increment the original sizes.
-                    $original_size  += $original_data['original_size']  ? $original_data['original_size']  : 0;
-                    $optimized_size += $original_data['optimized_size'] ? $original_data['optimized_size'] : 0;
+					// Increment the original sizes.
+					$original_size  += $original_data['original_size']  ? $original_data['original_size']  : 0;
+					$optimized_size += $original_data['optimized_size'] ? $original_data['optimized_size'] : 0;
 
-                    unset( $attachment_data['sizes']['full'] );
+					unset( $attachment_data['sizes']['full'] );
 
-                    // Increment the thumbnails sizes.
-                    if ( $attachment_data['sizes'] ) {
-                        foreach ( $attachment_data['sizes'] as $size_data ) {
-                            if ( ! empty( $size_data['success'] ) ) {
-                                $original_size  += $size_data['original_size']  ? $size_data['original_size']  : 0;
-                                $optimized_size += $size_data['optimized_size'] ? $size_data['optimized_size'] : 0;
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            /**
-             * Filter the chunk size of the requests fetching the data.
-             * 15,000 seems to be a good balance between memory used, speed, and number of DB hits.
-             *
-             * @param int $limit The maximum number of elements per chunk.
-             */
-            $limit = apply_filters( 'imagify_count_saving_data_limit', 15000 );
-            $limit = absint( $limit );
+					// Increment the thumbnails sizes.
+					if ( $attachment_data['sizes'] ) {
+						foreach ( $attachment_data['sizes'] as $size_data ) {
+							if ( ! empty( $size_data['success'] ) ) {
+								$original_size  += $size_data['original_size']  ? $size_data['original_size']  : 0;
+								$optimized_size += $size_data['optimized_size'] ? $size_data['optimized_size'] : 0;
+							}
+						}
+					}
+				}
+			}
+		} else {
+			/**
+			 * Filter the chunk size of the requests fetching the data.
+			 * 15,000 seems to be a good balance between memory used, speed, and number of DB hits.
+			 *
+			 * @param int $limit The maximum number of elements per chunk.
+			 */
+			$limit = apply_filters( 'imagify_count_saving_data_limit', 15000 );
+			$limit = absint( $limit );
 
-            $mime_types     = \Imagify_DB::get_mime_types();
-            $statuses       = \Imagify_DB::get_post_statuses();
-            $nodata_join    = \Imagify_DB::get_required_wp_metadata_join_clause();
-            $nodata_where   = \Imagify_DB::get_required_wp_metadata_where_clause();
-            $attachment_ids = $wpdb->get_col( // WPCS: unprepared SQL ok.
-                "
+			$mime_types     = \Imagify_DB::get_mime_types();
+			$statuses       = \Imagify_DB::get_post_statuses();
+			$nodata_join    = \Imagify_DB::get_required_wp_metadata_join_clause();
+			$nodata_where   = \Imagify_DB::get_required_wp_metadata_where_clause();
+			$attachment_ids = $wpdb->get_col( // WPCS: unprepared SQL ok.
+				"
                 SELECT p.ID
                 FROM $wpdb->posts AS p
                     $nodata_join
@@ -386,105 +386,105 @@ class Controller {
                     AND mt1.meta_value = 'success'
                     $nodata_where
                 ORDER BY CAST( p.ID AS UNSIGNED )"
-            );
-            $wpdb->flush();
+			);
+			$wpdb->flush();
 
-            $attachment_ids = array_map( 'absint', array_unique( $attachment_ids ) );
-            $attachment_ids = array_chunk( $attachment_ids, $limit );
+			$attachment_ids = array_map( 'absint', array_unique( $attachment_ids ) );
+			$attachment_ids = array_chunk( $attachment_ids, $limit );
 
-            while ( $attachment_ids ) {
-                $limit_ids = array_shift( $attachment_ids );
-                $limit_ids = implode( ',', $limit_ids );
+			while ( $attachment_ids ) {
+				$limit_ids = array_shift( $attachment_ids );
+				$limit_ids = implode( ',', $limit_ids );
 
-                $attachments = $wpdb->get_col( // WPCS: unprepared SQL ok.
-                    "
+				$attachments = $wpdb->get_col( // WPCS: unprepared SQL ok.
+					"
                     SELECT meta_value
                     FROM $wpdb->postmeta
                     WHERE post_id IN ( $limit_ids )
                         AND meta_key = '_imagify_data'"
-                );
-                $wpdb->flush();
+				);
+				$wpdb->flush();
 
-                unset( $limit_ids );
+				unset( $limit_ids );
 
-                if ( ! $attachments ) {
-                    // Uh?!
-                    continue;
-                }
+				if ( ! $attachments ) {
+					// Uh?!
+					continue;
+				}
 
-                $attachments = array_map( 'maybe_unserialize', $attachments );
+				$attachments = array_map( 'maybe_unserialize', $attachments );
 
-                foreach ( $attachments as $attachment_data ) {
-                    if ( ! $attachment_data ) {
-                        continue;
-                    }
+				foreach ( $attachments as $attachment_data ) {
+					if ( ! $attachment_data ) {
+						continue;
+					}
 
-                    if ( empty( $attachment_data['sizes']['full']['success'] ) ) {
-                        /**
-                         * - Case where this attachment has multiple '_imagify_status' metas, and is fetched (in the above query) as a "success" while the '_imagify_data' says otherwise.
-                         * - Case where this meta has no "full" entry.
-                         * Don't ask how it's possible, I don't know ¯\(°_o)/¯
-                         */
-                        continue;
-                    }
+					if ( empty( $attachment_data['sizes']['full']['success'] ) ) {
+						/**
+						 * - Case where this attachment has multiple '_imagify_status' metas, and is fetched (in the above query) as a "success" while the '_imagify_data' says otherwise.
+						 * - Case where this meta has no "full" entry.
+						 * Don't ask how it's possible, I don't know ¯\(°_o)/¯
+						 */
+						continue;
+					}
 
-                    $original_data = $attachment_data['sizes']['full'];
+					$original_data = $attachment_data['sizes']['full'];
 
-                    ++$count;
+					++$count;
 
-                    // Increment the original sizes.
-                    $original_size  += ! empty( $original_data['original_size'] )  ? $original_data['original_size']  : 0;
-                    $optimized_size += ! empty( $original_data['optimized_size'] ) ? $original_data['optimized_size'] : 0;
+					// Increment the original sizes.
+					$original_size  += ! empty( $original_data['original_size'] )  ? $original_data['original_size']  : 0;
+					$optimized_size += ! empty( $original_data['optimized_size'] ) ? $original_data['optimized_size'] : 0;
 
-                    unset( $attachment_data['sizes']['full'], $original_data );
+					unset( $attachment_data['sizes']['full'], $original_data );
 
-                    // Increment the thumbnails sizes.
-                    if ( $attachment_data['sizes'] ) {
-                        foreach ( $attachment_data['sizes'] as $size_data ) {
-                            if ( ! empty( $size_data['success'] ) ) {
-                                $original_size  += ! empty( $size_data['original_size'] )  ? $size_data['original_size']  : 0;
-                                $optimized_size += ! empty( $size_data['optimized_size'] ) ? $size_data['optimized_size'] : 0;
-                            }
-                        }
-                    }
+					// Increment the thumbnails sizes.
+					if ( $attachment_data['sizes'] ) {
+						foreach ( $attachment_data['sizes'] as $size_data ) {
+							if ( ! empty( $size_data['success'] ) ) {
+								$original_size  += ! empty( $size_data['original_size'] )  ? $size_data['original_size']  : 0;
+								$optimized_size += ! empty( $size_data['optimized_size'] ) ? $size_data['optimized_size'] : 0;
+							}
+						}
+					}
 
-                    unset( $size_data );
-                }
+					unset( $size_data );
+				}
 
-                unset( $attachments, $attachment_data );
-            } // End while().
-        } // End if().
+				unset( $attachments, $attachment_data );
+			} // End while().
+		} // End if().
 
-        $data = array(
-            'count'          => $count,
-            'original_size'  => $original_size,
-            'optimized_size' => $optimized_size,
-            'percent'        => $original_size && $optimized_size ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0,
-        );
+		$data = array(
+			'count'          => $count,
+			'original_size'  => $original_size,
+			'optimized_size' => $optimized_size,
+			'percent'        => $original_size && $optimized_size ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0,
+		);
 
-        $this->update_stats( 'saving_data_count', $data );
-    }
+		$this->update_stats( 'saving_data_count', $data );
+	}
 
-    /**
-     * Calculate the estimated total size of the images not optimized.
-     *
-     * We estimate the total size of the images in the library by getting the latest 250 images and their thumbnails
-     * add up their filesizes, and doing some maths to get the total size.
-     *
-     * @since  1.6
-     * @author Remy Perona
-     *
-     * @return void
-     */
-    public function imagify_calculate_total_size_images_library(): void {
-        global $wpdb;
+	/**
+	 * Calculate the estimated total size of the images not optimized.
+	 *
+	 * We estimate the total size of the images in the library by getting the latest 250 images and their thumbnails
+	 * add up their filesizes, and doing some maths to get the total size.
+	 *
+	 * @since  1.6
+	 * @author Remy Perona
+	 *
+	 * @return void
+	 */
+	public function imagify_calculate_total_size_images_library(): void {
+		global $wpdb;
 
-        $mime_types   = \Imagify_DB::get_mime_types();
-        $statuses     = \Imagify_DB::get_post_statuses();
-        $nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
-        $nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
-        $image_ids    = $wpdb->get_col( // WPCS: unprepared SQL ok.
-            "
+		$mime_types   = \Imagify_DB::get_mime_types();
+		$statuses     = \Imagify_DB::get_post_statuses();
+		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
+		$image_ids    = $wpdb->get_col( // WPCS: unprepared SQL ok.
+			"
             SELECT p.ID
             FROM $wpdb->posts AS p
                 $nodata_join
@@ -495,39 +495,39 @@ class Controller {
             LIMIT 250
         " );
 
-        if ( ! $image_ids ) {
-            $this->update_stats( 'images_library_total_size', 0 );
-            return;
-        }
+		if ( ! $image_ids ) {
+			$this->update_stats( 'images_library_total_size', 0 );
+			return;
+		}
 
-        $count_latest_images = count( $image_ids );
-        $count_total_images  = get_imagify_option( 'attachments_count' );
+		$count_latest_images = count( $image_ids );
+		$count_total_images  = get_imagify_option( 'attachments_count' );
 
-        $total = $this->imagify_calculate_total_image_size( $image_ids, $count_latest_images, $count_total_images );
-        $this->update_stats( 'images_library_total_size', $total );
-    }
+		$total = $this->imagify_calculate_total_image_size( $image_ids, $count_latest_images, $count_total_images );
+		$this->update_stats( 'images_library_total_size', $total );
+	}
 
-    /**
-     * Calculate the estimated average size of the images uploaded per month.
-     *
-     * We estimate the average size of the images uploaded in the library per month by getting the latest 250 images and their thumbnails
-     * for the 3 latest months, add up their filesizes, and doing some maths to get the total average size.
-     *
-     * @since  1.6
-     * @since  1.7 Use wpdb instead of WP_Query.
-     * @author Remy Perona
-     *
-     * @return void
-     */
-    public function imagify_calculate_average_size_images_per_month(): void {
-        global $wpdb;
+	/**
+	 * Calculate the estimated average size of the images uploaded per month.
+	 *
+	 * We estimate the average size of the images uploaded in the library per month by getting the latest 250 images and their thumbnails
+	 * for the 3 latest months, add up their filesizes, and doing some maths to get the total average size.
+	 *
+	 * @since  1.6
+	 * @since  1.7 Use wpdb instead of WP_Query.
+	 * @author Remy Perona
+	 *
+	 * @return void
+	 */
+	public function imagify_calculate_average_size_images_per_month(): void {
+		global $wpdb;
 
-        $mime_types   = \Imagify_DB::get_mime_types();
-        $statuses     = \Imagify_DB::get_post_statuses();
-        $nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause( "$wpdb->posts.ID" );
-        $nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
-        $limit        = ' LIMIT 0, 250';
-        $query        = "
+		$mime_types   = \Imagify_DB::get_mime_types();
+		$statuses     = \Imagify_DB::get_post_statuses();
+		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause( "$wpdb->posts.ID" );
+		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
+		$limit        = ' LIMIT 0, 250';
+		$query        = "
             SELECT $wpdb->posts.ID
             FROM $wpdb->posts
                 $nodata_join
@@ -537,205 +537,205 @@ class Controller {
                 $nodata_where
                 %date_query%";
 
-        // Queries per month.
-        $date_query = new \WP_Date_Query( array(
-            array(
-                'before' => 'now',
-                'after'  => '1 month ago',
-            ),
-        ) );
+		// Queries per month.
+		$date_query = new \WP_Date_Query( array(
+			array(
+				'before' => 'now',
+				'after'  => '1 month ago',
+			),
+		) );
 
-        $partial_images_uploaded_last_month = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
+		$partial_images_uploaded_last_month = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
-        $date_query = new \WP_Date_Query( array(
-            array(
-                'before' => '1 month ago',
-                'after'  => '2 months ago',
-            ),
-        ) );
+		$date_query = new \WP_Date_Query( array(
+			array(
+				'before' => '1 month ago',
+				'after'  => '2 months ago',
+			),
+		) );
 
-        $partial_images_uploaded_two_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
+		$partial_images_uploaded_two_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
-        $date_query = new \WP_Date_Query( array(
-            array(
-                'before' => '2 month ago',
-                'after'  => '3 months ago',
-            ),
-        ) );
+		$date_query = new \WP_Date_Query( array(
+			array(
+				'before' => '2 month ago',
+				'after'  => '3 months ago',
+			),
+		) );
 
-        $partial_images_uploaded_three_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
+		$partial_images_uploaded_three_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
-        // Total for the 3 months.
-        $partial_images_uploaded_id = array_merge( $partial_images_uploaded_last_month, $partial_images_uploaded_two_months_ago, $partial_images_uploaded_three_months_ago );
+		// Total for the 3 months.
+		$partial_images_uploaded_id = array_merge( $partial_images_uploaded_last_month, $partial_images_uploaded_two_months_ago, $partial_images_uploaded_three_months_ago );
 
-        if ( ! $partial_images_uploaded_id ) {
-            $this->update_stats( 'images_average_size_per_month', 0 );
-            return;
-        }
+		if ( ! $partial_images_uploaded_id ) {
+			$this->update_stats( 'images_average_size_per_month', 0 );
+			return;
+		}
 
-        // Total for the 3 months, without the "250" limit.
-        $date_query = new \WP_Date_Query( array(
-            array(
-                'before' => 'now',
-                'after'  => '3 month ago',
-            ),
-        ) );
+		// Total for the 3 months, without the "250" limit.
+		$date_query = new \WP_Date_Query( array(
+			array(
+				'before' => 'now',
+				'after'  => '3 month ago',
+			),
+		) );
 
-        $images_uploaded_id = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query ) ); // WPCS: unprepared SQL ok.
+		$images_uploaded_id = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query ) ); // WPCS: unprepared SQL ok.
 
-        if ( ! $images_uploaded_id ) {
-            $this->update_stats( 'images_average_size_per_month', 0 );
-            return;
-        }
+		if ( ! $images_uploaded_id ) {
+			$this->update_stats( 'images_average_size_per_month', 0 );
+			return;
+		}
 
-        // Number of image attachments uploaded for the 3 latest months, limited to 250 per month.
-        $partial_total_images_uploaded = count( $partial_images_uploaded_id );
-        // Total number of image attachments uploaded for the 3 latest months.
-        $total_images_uploaded         = count( $images_uploaded_id );
+		// Number of image attachments uploaded for the 3 latest months, limited to 250 per month.
+		$partial_total_images_uploaded = count( $partial_images_uploaded_id );
+		// Total number of image attachments uploaded for the 3 latest months.
+		$total_images_uploaded         = count( $images_uploaded_id );
 
-        $average = $this->imagify_calculate_total_image_size( $partial_images_uploaded_id, $partial_total_images_uploaded, $total_images_uploaded ) / 3;
-        $this->update_stats( 'images_average_size_per_month', $average );
-    }
+		$average = $this->imagify_calculate_total_image_size( $partial_images_uploaded_id, $partial_total_images_uploaded, $total_images_uploaded ) / 3;
+		$this->update_stats( 'images_average_size_per_month', $average );
+	}
 
-    /**
-     * Returns the estimated total size of images.
-     *
-     * @since  1.6
-     * @author Remy Perona
-     *
-     * @param  array $image_ids            Array of image IDs.
-     * @param  int   $partial_total_images The number of image attachments we're doing the calculation with.
-     * @param  int   $total_images         The total number of image attachments.
-     * @return int                         The estimated total size of images.
-     */
-    private function imagify_calculate_total_image_size( $image_ids, $partial_total_images, $total_images ) {
-        global $wpdb;
+	/**
+	 * Returns the estimated total size of images.
+	 *
+	 * @since  1.6
+	 * @author Remy Perona
+	 *
+	 * @param  array $image_ids            Array of image IDs.
+	 * @param  int   $partial_total_images The number of image attachments we're doing the calculation with.
+	 * @param  int   $total_images         The total number of image attachments.
+	 * @return int                         The estimated total size of images.
+	 */
+	private function imagify_calculate_total_image_size( $image_ids, $partial_total_images, $total_images ) {
+		global $wpdb;
 
-        $image_ids = array_filter( array_map( 'absint', $image_ids ) );
+		$image_ids = array_filter( array_map( 'absint', $image_ids ) );
 
-        if ( ! $image_ids ) {
-            return 0;
-        }
+		if ( ! $image_ids ) {
+			return 0;
+		}
 
-        $results = \Imagify_DB::get_metas( array(
-            // Get attachments filename.
-            'filenames'    => '_wp_attached_file',
-            // Get attachments data.
-            'data'         => '_wp_attachment_metadata',
-            // Get Imagify data.
-            'imagify_data' => '_imagify_data',
-            // Get attachments status.
-            'statuses'     => '_imagify_status',
-        ), $image_ids );
+		$results = \Imagify_DB::get_metas( array(
+			// Get attachments filename.
+			'filenames'    => '_wp_attached_file',
+			// Get attachments data.
+			'data'         => '_wp_attachment_metadata',
+			// Get Imagify data.
+			'imagify_data' => '_imagify_data',
+			// Get attachments status.
+			'statuses'     => '_imagify_status',
+		), $image_ids );
 
-        // Number of image attachments we're doing the calculation with. In case array_filter() removed results.
-        $partial_total_images              = count( $image_ids );
-        // Total size of unoptimized size.
-        $partial_size_images               = 0;
-        // Total number of thumbnails.
-        $partial_total_intermediate_images = 0;
+		// Number of image attachments we're doing the calculation with. In case array_filter() removed results.
+		$partial_total_images              = count( $image_ids );
+		// Total size of unoptimized size.
+		$partial_size_images               = 0;
+		// Total number of thumbnails.
+		$partial_total_intermediate_images = 0;
 
-        $filesystem            = imagify_get_filesystem();
-        $is_active_for_network = imagify_is_active_for_network();
-        $disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
+		$filesystem            = imagify_get_filesystem();
+		$is_active_for_network = imagify_is_active_for_network();
+		$disallowed_sizes      = get_imagify_option( 'disallowed-sizes' );
 
-        foreach ( $image_ids as $i => $image_id ) {
-            $attachment_status = isset( $results['statuses'][ $image_id ] ) ? $results['statuses'][ $image_id ] : false;
+		foreach ( $image_ids as $i => $image_id ) {
+			$attachment_status = isset( $results['statuses'][ $image_id ] ) ? $results['statuses'][ $image_id ] : false;
 
-            if ( 'success' === $attachment_status ) {
-                /**
-                 * The image files have been optimized.
-                 */
-                // Original size.
-                $partial_size_images               += isset( $results['imagify_data'][ $image_id ]['stats']['original_size'] ) ? $results['imagify_data'][ $image_id ]['stats']['original_size'] : 0;
-                // Number of thumbnails.
-                $partial_total_intermediate_images += count( $results['imagify_data'][ $image_id ]['sizes'] );
-                unset(
-                    $image_ids[ $i ],
-                    $results['filenames'][ $image_id ],
-                    $results['data'][ $image_id ],
-                    $results['imagify_data'][ $image_id ],
-                    $results['statuses'][ $image_id ]
-                );
-                continue;
-            }
+			if ( 'success' === $attachment_status ) {
+				/**
+				 * The image files have been optimized.
+				 */
+				// Original size.
+				$partial_size_images               += isset( $results['imagify_data'][ $image_id ]['stats']['original_size'] ) ? $results['imagify_data'][ $image_id ]['stats']['original_size'] : 0;
+				// Number of thumbnails.
+				$partial_total_intermediate_images += count( $results['imagify_data'][ $image_id ]['sizes'] );
+				unset(
+					$image_ids[ $i ],
+					$results['filenames'][ $image_id ],
+					$results['data'][ $image_id ],
+					$results['imagify_data'][ $image_id ],
+					$results['statuses'][ $image_id ]
+				);
+				continue;
+			}
 
-            /**
-             * The image files are not optimized.
-             */
-            // Create an array containing all this attachment files.
-            $files = array(
-                'full' => get_imagify_attached_file( $results['filenames'][ $image_id ] ),
-            );
+			/**
+			 * The image files are not optimized.
+			 */
+			// Create an array containing all this attachment files.
+			$files = array(
+				'full' => get_imagify_attached_file( $results['filenames'][ $image_id ] ),
+			);
 
-            $sizes = isset( $results['data'][ $image_id ]['sizes'] ) ? $results['data'][ $image_id ]['sizes'] : array();
+			$sizes = isset( $results['data'][ $image_id ]['sizes'] ) ? $results['data'][ $image_id ]['sizes'] : array();
 
-            if ( $sizes && is_array( $sizes ) ) {
-                if ( ! $is_active_for_network ) {
-                    $sizes = array_diff_key( $sizes, $disallowed_sizes );
-                }
+			if ( $sizes && is_array( $sizes ) ) {
+				if ( ! $is_active_for_network ) {
+					$sizes = array_diff_key( $sizes, $disallowed_sizes );
+				}
 
-                if ( $sizes ) {
-                    $full_dirname = $filesystem->dir_path( $files['full'] );
+				if ( $sizes ) {
+					$full_dirname = $filesystem->dir_path( $files['full'] );
 
-                    foreach ( $sizes as $size_key => $size_data ) {
-                        $files[ $size_key ] = $full_dirname . '/' . $size_data['file'];
-                    }
-                }
-            }
+					foreach ( $sizes as $size_key => $size_data ) {
+						$files[ $size_key ] = $full_dirname . '/' . $size_data['file'];
+					}
+				}
+			}
 
-            /**
-             * Allow to provide all files size and the number of thumbnails.
-             *
-             * @since  1.6.7
-             * @author Grégory Viguier
-             *
-             * @param  bool  $size_and_count False by default.
-             * @param  int   $image_id       The attachment ID.
-             * @param  array $files          An array of file paths with thumbnail sizes as keys.
-             * @param  array $image_ids      An array of all attachment IDs.
-             * @return bool|array            False by default. Provide an array with the keys 'filesize' (containing the total filesize) and 'thumbnails' (containing the number of thumbnails).
-             */
-            $size_and_count = apply_filters( 'imagify_total_attachment_filesize', false, $image_id, $files, $image_ids );
+			/**
+			 * Allow to provide all files size and the number of thumbnails.
+			 *
+			 * @since  1.6.7
+			 * @author Grégory Viguier
+			 *
+			 * @param  bool  $size_and_count False by default.
+			 * @param  int   $image_id       The attachment ID.
+			 * @param  array $files          An array of file paths with thumbnail sizes as keys.
+			 * @param  array $image_ids      An array of all attachment IDs.
+			 * @return bool|array            False by default. Provide an array with the keys 'filesize' (containing the total filesize) and 'thumbnails' (containing the number of thumbnails).
+			 */
+			$size_and_count = apply_filters( 'imagify_total_attachment_filesize', false, $image_id, $files, $image_ids );
 
-            if ( is_array( $size_and_count ) ) {
-                $partial_size_images               += $size_and_count['filesize'];
-                $partial_total_intermediate_images += $size_and_count['thumbnails'];
-            } else {
-                foreach ( $files as $file ) {
-                    if ( $filesystem->exists( $file ) ) {
-                        $partial_size_images += $filesystem->size( $file );
-                    }
-                }
+			if ( is_array( $size_and_count ) ) {
+				$partial_size_images               += $size_and_count['filesize'];
+				$partial_total_intermediate_images += $size_and_count['thumbnails'];
+			} else {
+				foreach ( $files as $file ) {
+					if ( $filesystem->exists( $file ) ) {
+						$partial_size_images += $filesystem->size( $file );
+					}
+				}
 
-                unset( $files['full'] );
-                $partial_total_intermediate_images += count( $files );
-            }
+				unset( $files['full'] );
+				$partial_total_intermediate_images += count( $files );
+			}
 
-            unset(
-                $image_ids[ $i ],
-                $results['filenames'][ $image_id ],
-                $results['data'][ $image_id ],
-                $results['imagify_data'][ $image_id ],
-                $results['statuses'][ $image_id ]
-            );
-        } // End foreach().
+			unset(
+				$image_ids[ $i ],
+				$results['filenames'][ $image_id ],
+				$results['data'][ $image_id ],
+				$results['imagify_data'][ $image_id ],
+				$results['statuses'][ $image_id ]
+			);
+		} // End foreach().
 
-        // Number of thumbnails per attachment = Number of thumbnails / Number of attachments.
-        $intermediate_images_per_image = $partial_total_intermediate_images / $partial_total_images;
-        /**
-         * Note: Number of attachments ($partial_total_images) === Number of full sizes.
-         * Average image size = Size of the images / ( Number of full sizes + Number of thumbnails ).
-         * Average image size = Size of the images / Number of images.
-         */
-        $average_size_images           = $partial_size_images / ( $partial_total_images + $partial_total_intermediate_images );
-        /**
-         * Note: Total number of attachments ($total_images) === Total number of full sizes.
-         * Total images size = Average image size * ( Total number of full sizes + ( Number of thumbnails per attachment * Total number of attachments ) ).
-         * Total images size = Average image size * ( Total number of full sizes + Total number of thumbnails ).
-         */
-        $total_size_images             = $average_size_images * ( $total_images + ( $intermediate_images_per_image * $total_images ) );
+		// Number of thumbnails per attachment = Number of thumbnails / Number of attachments.
+		$intermediate_images_per_image = $partial_total_intermediate_images / $partial_total_images;
+		/**
+		 * Note: Number of attachments ($partial_total_images) === Number of full sizes.
+		 * Average image size = Size of the images / ( Number of full sizes + Number of thumbnails ).
+		 * Average image size = Size of the images / Number of images.
+		 */
+		$average_size_images           = $partial_size_images / ( $partial_total_images + $partial_total_intermediate_images );
+		/**
+		 * Note: Total number of attachments ($total_images) === Total number of full sizes.
+		 * Total images size = Average image size * ( Total number of full sizes + ( Number of thumbnails per attachment * Total number of attachments ) ).
+		 * Total images size = Average image size * ( Total number of full sizes + Total number of thumbnails ).
+		 */
+		$total_size_images             = $average_size_images * ( $total_images + ( $intermediate_images_per_image * $total_images ) );
 
-        return $total_size_images;
-    }
+		return $total_size_images;
+	}
 }
