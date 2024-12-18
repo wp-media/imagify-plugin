@@ -1,5 +1,8 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+
+$pos = strpos( $data['plan_label'], '_' );
+$plan_label = false !== $pos ? substr( $data['plan_label'], 0, $pos ) : $data['plan_label'];
 ?>
 <div class="imagify-admin-bar-quota">
 	<div class="imagify-abq-row">
@@ -8,7 +11,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		<?php endif; ?>
 		<div class="imagify-account">
 			<p class="imagify-meteo-title"><?php esc_html_e( 'Account status', 'imagify' ); ?></p>
-			<p class="imagify-meteo-subs"><?php esc_html_e( 'Your subscription:', 'imagify' ); ?> &nbsp;<strong class="imagify-user-plan"><?php echo strstr( $data['plan_label'], '_', true ); ?></strong></p>
+			<p class="imagify-meteo-subs"><?php esc_html_e( 'Your subscription:', 'imagify' ); ?> &nbsp;<strong class="imagify-user-plan"><?php echo $plan_label; ?></strong></p>
 		</div>
 	</div>
 	<?php if ( $data['plan_with_quota'] ) : ?>
