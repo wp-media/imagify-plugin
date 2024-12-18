@@ -58,7 +58,6 @@ class GravityForms implements SubscriberInterface {
 			return $scripts;
 		}
 
-
 		$scripts[] = 'imagify-admin-bar';
 		$scripts[] = 'imagify-sweetalert';
 		$scripts[] = 'imagify-admin';
