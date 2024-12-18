@@ -62,7 +62,7 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 		}
 
 		add_filter( 'imagify_count_saving_data', 'imagify_ngg_count_saving_data', 8 );
-		$saving_data =  get_imagify_option( 'saving_data_count' );
+		$saving_data =  imagify_get_admin_stats( 'saving_data_count' );
 		$user        = new User();
 
 		$response['imagify_bulk_data'] = array(
@@ -213,7 +213,7 @@ if ( class_exists( 'C_NextGEN_Bootstrap' ) && class_exists( 'Mixin' ) && get_sit
 		}
 
 		// Already filtered in imagify_ngg_bulk_page_data().
-		$total_saving_data =  get_imagify_option( 'saving_data_count' );
+		$total_saving_data =  imagify_get_admin_stats( 'saving_data_count' );
 
 		return [
 			'images-optimized' => imagify_ngg_count_optimized_attachments(),
