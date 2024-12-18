@@ -35,9 +35,10 @@ class Subscriber implements SubscriberInterface {
         $events = [];
 
         $events['init'] = 'register_actions';
+        $events['admin_init'] = 'register_stats_option';
 
         foreach ( Controller::get_actions() as $action ) {
-            $events[ $action ] = $action;
+            $events[ $action ] = str_replace( '_as', '', $action );
         }
 
         return $events;
@@ -50,6 +51,15 @@ class Subscriber implements SubscriberInterface {
      */
     public function register_actions(): void {
         $this->controller->register_actions();
+    }
+
+    /**
+     * Register admin stat options.
+     *
+     * @return void
+     */
+    public function register_stats_option(): void {
+        $this->controller->register_stats_option();
     }
 
     /**
