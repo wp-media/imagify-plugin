@@ -3,6 +3,10 @@ declare( strict_types=1 );
 
 namespace Imagify\Admin\Stats;
 
+use Exception;
+use Imagify_DB;
+use WP_Date_Query;
+
 /**
  * Admin stats processor.
  */
@@ -164,13 +168,13 @@ class Controller {
 			return;
 		}
 
-		$mime_types   = \Imagify_DB::get_mime_types();
-		$statuses     = \Imagify_DB::get_post_statuses();
-		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause('p.ID', true, true,
+		$mime_types   = Imagify_DB::get_mime_types();
+		$statuses     = Imagify_DB::get_post_statuses();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause('p.ID', true, true,
 			"AND p.post_mime_type IN ( $mime_types )
                 AND p.post_type = 'attachment'
                 AND p.post_status IN ( $statuses )");
-		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 		$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 			"
             SELECT COUNT( p.ID )
@@ -218,10 +222,10 @@ class Controller {
 			return;
 		}
 
-		$mime_types   = \Imagify_DB::get_mime_types();
-		$statuses     = \Imagify_DB::get_post_statuses();
-		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
+		$mime_types   = Imagify_DB::get_mime_types();
+		$statuses     = Imagify_DB::get_post_statuses();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 		$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 			"
             SELECT COUNT( DISTINCT p.ID )
@@ -265,10 +269,10 @@ class Controller {
 			return;
 		}
 
-		$mime_types   = \Imagify_DB::get_mime_types();
-		$statuses     = \Imagify_DB::get_post_statuses();
-		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
+		$mime_types   = Imagify_DB::get_mime_types();
+		$statuses     = Imagify_DB::get_post_statuses();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 		$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 			"
             SELECT COUNT( DISTINCT p.ID )
@@ -369,10 +373,10 @@ class Controller {
 			$limit = apply_filters( 'imagify_count_saving_data_limit', 15000 );
 			$limit = absint( $limit );
 
-			$mime_types     = \Imagify_DB::get_mime_types();
-			$statuses       = \Imagify_DB::get_post_statuses();
-			$nodata_join    = \Imagify_DB::get_required_wp_metadata_join_clause();
-			$nodata_where   = \Imagify_DB::get_required_wp_metadata_where_clause();
+			$mime_types     = Imagify_DB::get_mime_types();
+			$statuses       = Imagify_DB::get_post_statuses();
+			$nodata_join    = Imagify_DB::get_required_wp_metadata_join_clause();
+			$nodata_where   = Imagify_DB::get_required_wp_metadata_where_clause();
 			$attachment_ids = $wpdb->get_col( // WPCS: unprepared SQL ok.
 				"
                 SELECT p.ID
@@ -479,10 +483,10 @@ class Controller {
 	public function imagify_calculate_total_size_images_library(): void {
 		global $wpdb;
 
-		$mime_types   = \Imagify_DB::get_mime_types();
-		$statuses     = \Imagify_DB::get_post_statuses();
-		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
+		$mime_types   = Imagify_DB::get_mime_types();
+		$statuses     = Imagify_DB::get_post_statuses();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 		$image_ids    = $wpdb->get_col( // WPCS: unprepared SQL ok.
 			"
             SELECT p.ID
@@ -522,10 +526,10 @@ class Controller {
 	public function imagify_calculate_average_size_images_per_month(): void {
 		global $wpdb;
 
-		$mime_types   = \Imagify_DB::get_mime_types();
-		$statuses     = \Imagify_DB::get_post_statuses();
-		$nodata_join  = \Imagify_DB::get_required_wp_metadata_join_clause( "$wpdb->posts.ID" );
-		$nodata_where = \Imagify_DB::get_required_wp_metadata_where_clause();
+		$mime_types   = Imagify_DB::get_mime_types();
+		$statuses     = Imagify_DB::get_post_statuses();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause( "$wpdb->posts.ID" );
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 		$limit        = ' LIMIT 0, 250';
 		$query        = "
             SELECT $wpdb->posts.ID
@@ -538,7 +542,7 @@ class Controller {
                 %date_query%";
 
 		// Queries per month.
-		$date_query = new \WP_Date_Query( array(
+		$date_query = new WP_Date_Query( array(
 			array(
 				'before' => 'now',
 				'after'  => '1 month ago',
@@ -547,7 +551,7 @@ class Controller {
 
 		$partial_images_uploaded_last_month = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
-		$date_query = new \WP_Date_Query( array(
+		$date_query = new WP_Date_Query( array(
 			array(
 				'before' => '1 month ago',
 				'after'  => '2 months ago',
@@ -556,7 +560,7 @@ class Controller {
 
 		$partial_images_uploaded_two_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
-		$date_query = new \WP_Date_Query( array(
+		$date_query = new WP_Date_Query( array(
 			array(
 				'before' => '2 month ago',
 				'after'  => '3 months ago',
@@ -574,7 +578,7 @@ class Controller {
 		}
 
 		// Total for the 3 months, without the "250" limit.
-		$date_query = new \WP_Date_Query( array(
+		$date_query = new WP_Date_Query( array(
 			array(
 				'before' => 'now',
 				'after'  => '3 month ago',
@@ -617,7 +621,7 @@ class Controller {
 			return 0;
 		}
 
-		$results = \Imagify_DB::get_metas( array(
+		$results = Imagify_DB::get_metas( array(
 			// Get attachments filename.
 			'filenames'    => '_wp_attached_file',
 			// Get attachments data.
