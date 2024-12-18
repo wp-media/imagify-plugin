@@ -3,11 +3,13 @@ namespace Imagify\Bulk;
 
 use Exception;
 use Imagify\Traits\InstanceGetterTrait;
+use Imagify\Optimization\Process\ProcessInterface;
+use WP_Error;
 
 /**
  * Bulk optimization
  */
-class Bulk {
+final class Bulk {
 	use InstanceGetterTrait;
 
 	/**
@@ -17,7 +19,7 @@ class Bulk {
 	 */
 	public function init() {
 		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 3 );
-		add_action( 'imagify_convert_next_gen', [ $this, 'generate_nextgen_versions' ], 10, 2 );
+		add_action( 'imagify_convert_next_gen', [ $this, 'generate_nextgen_versions' ], 10, 2 ); // @phpstan-ignore-line
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
 		add_action( 'wp_ajax_imagify_missing_nextgen_generation', [ $this, 'missing_nextgen_callback' ] );
 		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
@@ -61,6 +63,11 @@ class Bulk {
 		}
 
 		$data     = $process->get_data();
+
+		if ( ! $data ) {
+			return;
+		}
+
 		$progress = get_transient( 'imagify_bulk_optimization_result' );
 
 		if ( $data->is_optimized() ) {
@@ -149,7 +156,7 @@ class Bulk {
 	 * @param int    $optimization_level Optimization level.
 	 */
 	public function optimize_media( int $media_id, string $context, int $optimization_level ) {
-		if ( ! $media_id || ! $context || ! is_numeric( $optimization_level ) ) {
+		if ( ! $media_id || ! $context ) {
 			$this->decrease_counter( $context );
 
 			return;
@@ -316,7 +323,7 @@ class Bulk {
 		 *
 		 * @since 1.9
 		 *
-		 * @param int    $class_name The class name.
+		 * @param string $class_name The class name.
 		 * @param string $context    The context name.
 		 */
 		$class_name = apply_filters( 'imagify_bulk_class_name', $class_name, $context );
@@ -558,7 +565,7 @@ class Bulk {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
 		$folder_types = filter_input( INPUT_GET, 'types', FILTER_REQUIRE_ARRAY );
-		$folder_types = is_array( $folder_types ) ? array_filter( $folder_types, 'is_string' ) : [];
+		$folder_types = is_array( $folder_types ) ? $folder_types : [];
 
 		if ( ! $folder_types ) {
 			imagify_die( __( 'Invalid request', 'imagify' ) );
@@ -637,7 +644,7 @@ class Bulk {
 		$types = apply_filters( 'imagify_bulk_page_types', $types );
 		$types = array_filter( (array) $types );
 
-		if ( isset( $types['library|wp'] ) && ! in_array( 'wp', $contexts, true ) ) {
+		if ( isset( $types['library|wp'] ) ) {
 			$contexts[] = 'wp';
 		}
 
@@ -649,12 +656,11 @@ class Bulk {
 				if ( ! in_array( 'wp', $contexts, true ) ) {
 					$contexts[] = 'wp';
 				}
-			} elseif ( $folders_instance->has_active_folders() && ! in_array( 'custom-folders', $contexts, true ) ) {
+			} elseif ( $folders_instance->has_active_folders() ) {
 				$contexts[] = 'custom-folders';
 			}
 		}
 
 		return $contexts;
 	}
-
 }

@@ -3,8 +3,6 @@ namespace Imagify\Optimization\Data;
 
 use Imagify\Media\MediaInterface;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Abstract class used to handle the optimization data of "media groups" (aka attachments).
  *

@@ -4,14 +4,13 @@ declare(strict_types=1);
 namespace Imagify\Notices;
 
 use Imagify\Traits\InstanceGetterTrait;
-use Imagify\User\User;
 
 /**
  * Class that handles the admin notices.
  *
  * @since 1.6.10
  */
-class Notices {
+final class Notices {
 	use InstanceGetterTrait;
 
 	/**
@@ -178,7 +177,7 @@ class Notices {
 	public function admin_post_dismiss_notice() {
 		imagify_check_nonce( self::DISMISS_NONCE_ACTION );
 
-		$notice  = ! empty( $_GET['notice'] ) ? esc_html( wp_unslash( $_GET['notice'] ) ) : false;
+		$notice  = ! empty( $_GET['notice'] ) ? esc_html( wp_unslash( $_GET['notice'] ) ) : '';
 		$notices = $this->get_notice_ids();
 		$notices = array_flip( $notices );
 
@@ -193,7 +192,7 @@ class Notices {
 		 *
 		 * @since 1.4.2
 		 *
-		 * @param int $notice The notice slug
+		 * @param string $notice The notice slug
 		*/
 		do_action( 'imagify_dismiss_notice', $notice );
 
@@ -351,7 +350,7 @@ class Notices {
 	 *
 	 * @since 1.6.10
 	 *
-	 * @return array An array of plugins to deactivate.
+	 * @return array|false An array of plugins to deactivate. false if the notice should not be displayed.
 	 */
 	public function display_plugins_to_deactivate() {
 		static $display;
@@ -900,7 +899,7 @@ class Notices {
 		 *
 		 * @since 1.0
 		 *
-		 * @param string $plugins List of recommended plugins to deactivate.
+		 * @param array $plugins List of recommended plugins to deactivate.
 		*/
 		$plugins = apply_filters( 'imagify_plugins_to_deactivate', self::$conflicting_plugins );
 

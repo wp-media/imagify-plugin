@@ -5,6 +5,7 @@ namespace Imagify\Admin;
 
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 use Imagify\Dependencies\WPMedia\PluginFamily\Controller\PluginFamily;
+use Imagify\User\User;
 
 /**
  * Service provider for Admin.
@@ -16,10 +17,10 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @var array
 	 */
 	protected $provides = [
-		'admin_bar',
-		'admin_subscriber',
-		'plugin_family',
-		'plugin_family_subscriber',
+		AdminBar::class,
+		AdminSubscriber::class,
+		PluginFamily::class,
+		PluginFamilySubscriber::class,
 	];
 
 	/**
@@ -28,27 +29,36 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @var array
 	 */
 	public $subscribers = [
-		'admin_bar',
-		'admin_subscriber',
-		'plugin_family_subscriber',
+		AdminBar::class,
+		AdminSubscriber::class,
+		PluginFamilySubscriber::class,
 	];
+
+	/**
+	 * Check if the service provider provides a specific service.
+	 *
+	 * @param string $id The id of the service.
+	 *
+	 * @return bool
+	 */
+	public function provides( string $id ): bool {
+		return in_array( $id, $this->provides, true );
+	}
 
 	/**
 	 * Registers the provided classes
 	 *
 	 * @return void
 	 */
-	public function register() {
+	public function register(): void {
+		$this->getContainer()->addShared( AdminBar::class )
+			->addArgument( User::class );
+		$this->getContainer()->addShared( AdminSubscriber::class )
+			->addArgument( User::class );
 
-		$this->getContainer()->share( 'admin_bar', AdminBar::class )
-			->addArgument( $this->getContainer()->get( 'user' ) );
-		$this->getContainer()->share( 'admin_subscriber', AdminSubscriber::class )
-			->addArgument( $this->getContainer()->get( 'user' ) );
-
-		$this->getContainer()->add( 'plugin_family', PluginFamily::class );
-
-		$this->getContainer()->add( 'plugin_family_subscriber', PluginFamilySubscriber::class )
-			->addArgument( $this->getContainer()->get( 'plugin_family' ) );
+		$this->getContainer()->add( PluginFamily::class );
+		$this->getContainer()->addShared( PluginFamilySubscriber::class )
+			->addArgument( PluginFamily::class );
 	}
 
 	/**

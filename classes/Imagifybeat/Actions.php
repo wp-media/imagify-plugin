@@ -10,7 +10,7 @@ use Imagify\Bulk\Bulk;
  *
  * @since 1.9.3
  */
-class Actions {
+final class Actions {
 	use InstanceGetterTrait;
 
 	/**
@@ -301,7 +301,7 @@ class Actions {
 			// Sanitize the IDs: IDs come as strings, prefixed with an undescore character (to prevent JavaScript from screwing everything).
 			$media_ids = array_keys( $media_statuses );
 			$media_ids = array_map( function( $media_id ) {
-				return (int) substr( $media_id, 1 );
+				return substr( $media_id, 1 );
 			}, $media_ids );
 			$media_ids = array_filter( $media_ids );
 

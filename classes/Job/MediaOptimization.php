@@ -10,7 +10,7 @@ use WP_Error;
  *
  * @since 1.9
  */
-class MediaOptimization extends \Imagify_Abstract_Background_Process {
+final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	use InstanceGetterTrait;
 
 	/**
@@ -24,7 +24,7 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	/**
 	 * The optimization process instance.
 	 *
-	 * @var   ProcessInterface
+	 * @var   ?ProcessInterface
 	 * @since 1.9
 	 */
 	protected $optimization_process;

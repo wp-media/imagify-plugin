@@ -86,14 +86,14 @@ class Plugin {
 			return;
 		}
 
-		$this->container->share(
+		$this->container->addShared(
 			'event_manager',
 			function () {
 				return new EventManager();
 			}
 		);
 
-		$this->container->share(
+		$this->container->addShared(
 			'filesystem',
 			function() {
 				return new Imagify_Filesystem();

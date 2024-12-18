@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Imagify\Optimization\Process;
 
+use Imagify\Optimization\Data\DataInterface;
+use Imagify\Media\MediaInterface;
+use Imagify\Optimization\File;
 use WP_Error;
 
 /**
@@ -75,6 +78,28 @@ class Noop implements ProcessInterface {
 	 * @return MediaInterface|false
 	 */
 	public function get_media() {
+		return false;
+	}
+
+	/**
+	 * Get the File instance of the original file.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @return File|false
+	 */
+	public function get_original_file() {
+		return false;
+	}
+
+	/**
+	 * Get the File instance of the full size file.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @return File|false
+	 */
+	public function get_fullsize_file() {
 		return false;
 	}
 
@@ -275,6 +300,26 @@ class Noop implements ProcessInterface {
 	 * @return string|bool The unsuffixed name of the size if Next-Gen. False if not a Next-Gen.
 	 */
 	public function is_size_next_gen( $size_name ) {
+		return false;
+	}
+
+	/**
+	 * Tell if the media has all next-gen versions.
+	 *
+	 * @return bool
+	 */
+	public function is_full_next_gen() {
+		return false;
+	}
+
+	/**
+	 * Tell if the media has a next-gen format.
+	 *
+	 * @since 2.2
+	 *
+	 * @return bool
+	 */
+	public function has_next_gen() {
 		return false;
 	}
 

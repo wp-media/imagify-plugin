@@ -1,7 +1,10 @@
 <?php
 namespace Imagify\Media;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\CDN\PushCDNInterface;
+use Imagify\Context\ContextInterface;
+use Imagify\Deprecated\Traits\Media\NoopDeprecatedTrait;
+use WP_Error;
 
 /**
  * Fallback class for "media groups" (aka attachments).
@@ -10,7 +13,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Noop implements MediaInterface {
-	use \Imagify\Deprecated\Traits\Media\NoopDeprecatedTrait;
+	use NoopDeprecatedTrait;
 
 	/**
 	 * Tell if the given entry can be accepted in the constructor.

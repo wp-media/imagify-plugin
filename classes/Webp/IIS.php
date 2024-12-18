@@ -25,7 +25,7 @@ class IIS extends AbstractIISDirConfFile {
 	 *
 	 * @since 1.9
 	 *
-	 * @return array
+	 * @return string
 	 */
 	protected function get_raw_new_contents() {
 		return trim( '

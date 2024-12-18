@@ -15,16 +15,27 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @var array
 	 */
 	protected $provides = [
-		'user',
+		User::class,
 	];
+
+	/**
+	 * Check if the service provider provides a specific service.
+	 *
+	 * @param string $id The id of the service.
+	 *
+	 * @return bool
+	 */
+	public function provides( string $id ): bool {
+		return in_array( $id, $this->provides, true );
+	}
 
 	/**
 	 * Registers the provided classes
 	 *
 	 * @return void
 	 */
-	public function register() {
-		$this->getContainer()->add( 'user', User::class );
+	public function register(): void {
+		$this->getContainer()->add( User::class );
 	}
 
 	/**

@@ -56,7 +56,7 @@ function imagify_sanitize_context( $context ) {
  * @author Grégory Viguier
  *
  * @param  string $context  The context name. Default values are 'wp' and 'custom-folders'.
- * @return ContextInterface The context instance.
+ * @return \Imagify\Context\ContextInterface The context instance.
  */
 function imagify_get_context( $context ) {
 	$class_name = imagify_get_context_class_name( $context );
@@ -110,7 +110,7 @@ function imagify_get_context_class_name( $context ) {
  *
  * @param  int    $media_id The media ID.
  * @param  string $context  The context name. Default values are 'wp' and 'custom-folders'.
- * @return ProcessInterface The optimization process instance.
+ * @return \Imagify\Optimization\Process\ProcessInterface The optimization process instance.
  */
 function imagify_get_optimization_process( $media_id, $context ) {
 	$class_name = imagify_get_optimization_process_class_name( $context );

@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Optimization\Data;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Media\MediaInterface;
 
 /**
  * Interface to use to handle the optimization data of "media groups" (aka attachments).

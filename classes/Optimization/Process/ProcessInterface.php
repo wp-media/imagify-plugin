@@ -3,12 +3,32 @@ declare(strict_types=1);
 
 namespace Imagify\Optimization\Process;
 
+use Imagify\Media\MediaInterface;
+use Imagify\Optimization\Data\DataInterface;
+use Imagify\Optimization\File;
+use WP_Error;
+
 /**
  * Interface to use to optimize medias.
  *
  * @since 1.9
  */
 interface ProcessInterface {
+	/**
+	 * The suffix used in the thumbnail size name.
+	 *
+	 * @var string
+	 * @since 1.9
+	 */
+	const WEBP_SUFFIX = '@imagify-webp';
+
+	/**
+	 * The suffix used in the thumbnail size name.
+	 *
+	 * @var string
+	 * @since 2.2
+	 */
+	const AVIF_SUFFIX = '@imagify-avif';
 
 	/**
 	 * Tell if the given entry can be accepted in the constructor.

@@ -20,7 +20,7 @@ class IIS extends AbstractIISDirConfFile {
 	/**
 	 * Get unfiltered new contents to write into the file.
 	 *
-	 * @return array
+	 * @return string
 	 */
 	protected function get_raw_new_contents() {
 		return trim( '

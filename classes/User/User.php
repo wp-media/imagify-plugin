@@ -1,7 +1,6 @@
 <?php
 namespace Imagify\User;
 
-use Date;
 use Imagify_Data;
 use WP_Error;
 
@@ -88,7 +87,7 @@ class User {
 	 *
 	 * @since 1.1.1
 	 *
-	 * @var Date
+	 * @var string
 	 */
 	public $next_date_update;
 
@@ -115,7 +114,7 @@ class User {
 	 * @var bool|WP_Error
 	 * @since 1.9.9
 	 */
-	private $error;
+	private $error = false;
 
 	/**
 	 * The constructor.
@@ -143,7 +142,6 @@ class User {
 		$this->next_date_update             = $user->next_date_update;
 		$this->is_active                    = $user->is_active;
 		$this->is_monthly                   = $user->is_monthly;
-		$this->error                        = is_wp_error( $user );
 	}
 
 	/**

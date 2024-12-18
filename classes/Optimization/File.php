@@ -2,9 +2,10 @@
 namespace Imagify\Optimization;
 
 use Imagify_Requirements;
+use WP_Error;
 
 /**
- * A generic optimization class focussed on the file itself.
+ * A generic optimization class focused on the file itself.
  *
  * @since  1.9
  * @author Grégory Viguier
@@ -318,7 +319,7 @@ class File {
 		}
 
 		if ( ! $this->is_image() ) {
-			return new \WP_Error(
+			return new WP_Error(
 				'not_an_image',
 				sprintf(
 				/* translators: %s is a file path. */
@@ -338,7 +339,7 @@ class File {
 		$result = $editor->multi_resize( [ $destination ] );
 
 		if ( ! $result ) {
-			return new \WP_Error( 'image_resize_error', __( 'The thumbnail could not be created.', 'imagify' ) );
+			return new WP_Error( 'image_resize_error', __( 'The thumbnail could not be created.', 'imagify' ) );
 		}
 
 		$result = reset( $result );
@@ -362,7 +363,7 @@ class File {
 		$moved = $this->filesystem->move( $source_thumb_path, $destination_thumb_path, true );
 
 		if ( ! $moved ) {
-			return new \WP_Error( 'move_error', __( 'The file could not be moved to its final destination.', 'imagify' ) );
+			return new WP_Error( 'move_error', __( 'The file could not be moved to its final destination.', 'imagify' ) );
 		}
 
 		return $result;

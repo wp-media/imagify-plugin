@@ -1,0 +1,51 @@
+includes:
+	- phar://phpstan.phar/conf/bleedingEdge.neon
+parameters:
+	level: 5
+	inferPrivatePropertyTypeFromConstructor: true
+	treatPhpDocTypesAsCertain: false
+	paths:
+		# Test only the new architecture for now.
+		- classes/
+		- Tests/Unit/
+	bootstrapFiles:
+	scanDirectories:
+		- inc/Dependencies/ActionScheduler
+		- Tests/Fixtures/
+	scanFiles:
+		- imagify.php
+		- inc/common/attachments.php
+		- inc/functions/admin.php
+		- inc/functions/admin-stats.php
+		- inc/functions/admin-ui.php
+		- inc/functions/api.php
+		- inc/functions/attachments.php
+		- inc/functions/common.php
+		- inc/functions/formatting.php
+		- inc/functions/options.php
+		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+		- vendor/php-stubs/wordpress-tests-stubs/wordpress-tests-stubs.php
+	excludePaths:
+		 # These needs to be updated to abstract filesystem instantiation outside of Imagify_Filesystem class
+		 - classes/Avif/Display.php
+		 - classes/Avif/RewriteRules/Display.php
+		 - classes/Bulk/AbstractBulk.php
+		 - classes/Bulk/CustomFolders.php
+		 - classes/Bulk/WP.php
+		 - classes/Media/AbstractMedia.php
+		 - classes/Optimization/Data/AbstractData.php
+		 - classes/Optimization/File.php
+		 - classes/Optimization/Process/WP.php
+		 - classes/Optimization/Process/AbstractProcess.php
+		 - classes/Picture/Display.php
+		 - classes/Plugin.php
+		 - classes/Webp/RewriteRules/Display.php
+		 - classes/Webp/Display.php
+		 - classes/WriteFile/AbstractIISDirConfFile.php
+		 - classes/WriteFile/AbstractApacheDirConfFile.php
+		 - classes/WriteFile/AbstractWriteDirConfFile.php
+		 - classes/WriteFile/AbstractNginxDirConfFile.php
+		 # WP_CLI is not part of the testable paths
+		 - classes/CLI/
+		 # Don't check dependencies
+		 - classes/Dependencies/

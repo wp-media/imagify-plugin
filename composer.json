@@ -44,15 +44,19 @@
 		"coenjacobs/mozart": "^0.7",
 		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
 		"deliciousbrains/wp-background-processing": "~1.0",
-		"league/container": "^3.0",
+		"league/container": "^4.2",
 		"mnsami/composer-custom-directory-installer": "^2.0",
+		"php-stubs/wordpress-tests-stubs": "^6.5",
 		"phpcompatibility/phpcompatibility-wp": "^2.0",
-		"phpunit/phpunit": "^7.5",
+		"phpstan/extension-installer": "^1.3",
+		"phpstan/phpstan-mockery": "^1.1",
+		"phpstan/phpstan-phpunit": "^1.4",
+		"phpunit/phpunit": "^7.5 || ^8 || ^9",
 		"roave/security-advisories": "dev-master",
+		"szepeviktor/phpstan-wordpress": "^1.3",
 		"woocommerce/action-scheduler": "^3.4",
 		"wp-coding-standards/wpcs": "^2",
-		"wp-media/event-manager": "^3.1",
-		"wp-media/phpunit": "2.0"
+		"wp-media/phpunit": "3.0"
 	},
 	"autoload": {
 		"psr-4": {
@@ -89,7 +93,6 @@
 			"packages": [
 				"deliciousbrains/wp-background-processing",
 				"league/container",
-				"wp-media/event-manager",
 				"wp-media/plugin-family"
 			]
 		}
@@ -101,6 +104,7 @@
 		"phpcs": "phpcs --basepath=.",
 		"phpcs-changed": "./bin/phpcs-changed.sh",
 		"phpcs:fix": "phpcbf",
+		"run-stan": "vendor/bin/phpstan analyze --memory-limit=2G --no-progress",
 		"run-tests": [
 			"@test-unit",
 			"@test-integration"

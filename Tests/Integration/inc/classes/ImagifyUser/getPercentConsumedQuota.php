@@ -14,14 +14,14 @@ use Imagify_Data;
 class Test_GetPercentConsumedQuota extends TestCase {
 	private $originalPreviousQuotaOption;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->originalPreviousQuotaOption = get_imagify_option( 'previous_quota_percent' );
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 
 		// Restore the original option.
 		update_imagify_option( 'previous_quota_percent', $this->originalPreviousQuotaOption );

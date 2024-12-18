@@ -450,9 +450,10 @@ function get_imagify_attachment_delete_nextgen_versions_link( $process ) {
  * @since  1.9 Function signature changed.
  * @author Jonathan Buttigieg
  *
- * @param  ProcessInterface $process        The optimization process object.
- * @param  bool             $with_container Set to false to not return the HTML container.
- * @return string                           The output to print.
+ * @param \Imagify\Optimization\Process\ProcessInterface $process The optimization process object.
+ * @param bool                                           $with_container Set to false to not return the HTML container.
+ *
+ * @return string The output to print.
  */
 function get_imagify_media_column_content( $process, $with_container = true ) {
 	if ( ! $process->is_valid() ) {
