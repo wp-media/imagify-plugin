@@ -78,6 +78,24 @@ class Controller {
     }
 
     /**
+     * Cancel all occurrence of scheduled action.
+     *
+     * @return void
+     */
+    public function unregister_actions(): void {
+        foreach ( self::$actions as $action ) {
+            try {
+                if ( as_has_scheduled_action( $action, [], $this->group ) ) {
+                    // Remove action from schedule.
+                    as_unschedule_action( $action, [], $this->group );
+                }
+            } catch ( Exception $exception ) {
+                continue;
+            }
+        }
+    }
+
+    /**
      * Get AS actions.
      *
      * @return array Array of actions.

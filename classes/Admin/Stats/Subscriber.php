@@ -36,6 +36,7 @@ class Subscriber implements SubscriberInterface {
 
         $events['init'] = 'register_actions';
         $events['admin_init'] = 'register_stats_option';
+        $events['imagify_deactivation'] = 'unregister_actions';
 
         foreach ( Controller::get_actions() as $action ) {
             $events[ $action ] = str_replace( '_as', '', $action );
@@ -51,6 +52,15 @@ class Subscriber implements SubscriberInterface {
      */
     public function register_actions(): void {
         $this->controller->register_actions();
+    }
+
+    /**
+     * Cancel all occurrence of scheduled action.
+     *
+     * @return void
+     */
+    public function unregister_actions(): void {
+        $this->controller->unregister_actions();
     }
 
     /**
