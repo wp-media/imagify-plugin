@@ -16,10 +16,14 @@ class GravityForms implements SubscriberInterface {
 	 * @return array
 	 */
 	public static function get_subscribed_events(): array {
-		return [
-			'gform_noconflict_styles'  => 'imagify_gf_noconflict_styles',
-			'gform_noconflict_scripts' => 'imagify_gf_noconflict_scripts',
-		];
+		if ( class_exists( 'GFCommon' ) ) {
+			return [
+				'gform_noconflict_styles'  => 'imagify_gf_noconflict_styles',
+				'gform_noconflict_scripts' => 'imagify_gf_noconflict_scripts',
+			];
+		}
+
+		return [];
 	}
 
 	/**
@@ -66,7 +70,6 @@ class GravityForms implements SubscriberInterface {
 	 */
 	private function is_gravity_forms_no_conflict_mode_enabled(): bool {
 		return is_plugin_active( 'gravityforms/gravityforms.php' )
-			&& class_exists( 'GFCommon' )
 			&& get_option( 'gform_enable_noconflict', false )
 			&& GFForms::is_gravity_page(); // @phpstan-ignore-line
 	}
