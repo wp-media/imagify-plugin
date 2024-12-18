@@ -226,7 +226,7 @@ class NGG extends AbstractBulk {
 	 * }
 	 */
 	public function get_context_data() {
-		$total_saving_data =  get_imagify_option( 'saving_data_count' );
+		$total_saving_data =  imagify_get_admin_stats( 'saving_data_count' );
 		$data              = [
 			'count-optimized' => imagify_ngg_count_optimized_attachments(),
 			'count-errors'    => imagify_ngg_count_error_attachments(),

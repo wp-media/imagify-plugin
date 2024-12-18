@@ -51,9 +51,9 @@ function _imagify_attachments_filter_dropdown() {
 		return;
 	}
 
-	$optimized   = get_imagify_option( 'attachments_optimized_count' );
+	$optimized   = imagify_get_admin_stats( 'attachments_optimized_count' );
 	$unoptimized = imagify_count_unoptimized_attachments();
-	$errors      = get_imagify_option( 'attachments_error_count' );
+	$errors      = imagify_get_admin_stats( 'attachments_error_count' );
 	$status      = isset( $_GET['imagify-status'] ) ? wp_unslash( $_GET['imagify-status'] ) : 0; // WPCS: CSRF ok.
 	$options     = array(
 		'optimized'   => _x( 'Optimized', 'Media Files', 'imagify' ),

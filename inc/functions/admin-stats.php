@@ -24,7 +24,7 @@ function imagify_count_unoptimized_attachments() {
 		return (int) $pre_count;
 	}
 
-	$count = get_imagify_option( 'attachments_count' ) - get_imagify_option( 'attachments_optimized_count' ) - get_imagify_option( 'attachments_error_count' );
+	$count = get_imagify_option( 'attachments_count' ) - imagify_get_admin_stats( 'attachments_optimized_count' ) - imagify_get_admin_stats( 'attachments_error_count' );
 	return $count;
 }
 
@@ -51,8 +51,8 @@ function imagify_percent_optimized_attachments() {
 		return (int) $percent;
 	}
 
-	$total_attachments           = get_imagify_option( 'attachments_count' );
-	$total_optimized_attachments = get_imagify_option( 'attachments_optimized_count' );
+	$total_attachments           = imagify_get_admin_stats( 'attachments_count' );
+	$total_optimized_attachments = imagify_get_admin_stats( 'attachments_optimized_count' );
 
 	if ( ! $total_attachments || ! $total_optimized_attachments ) {
 		return 0;
@@ -99,13 +99,13 @@ function imagify_get_bulk_stats( $types, $args = array() ) {
 		/**
 		 * Library.
 		 */
-		$saving_data = get_imagify_option( 'saving_data_count' );
+		$saving_data = imagify_get_admin_stats( 'saving_data_count' );
 
 		// Global chart.
-		$data['total_attachments']             += get_imagify_option( 'attachments_count' );
-		$data['unoptimized_attachments']       += get_imagify_option( 'attachments_unoptimized_count' );
-		$data['optimized_attachments']         += get_imagify_option( 'attachments_optimized_count' );
-		$data['errors_attachments']            += get_imagify_option( 'attachments_error_count' );
+		$data['total_attachments']             += imagify_get_admin_stats( 'attachments_count' );
+		$data['unoptimized_attachments']       += imagify_count_unoptimized_attachments();
+		$data['optimized_attachments']         += imagify_get_admin_stats( 'attachments_optimized_count' );
+		$data['errors_attachments']            += imagify_get_admin_stats( 'attachments_error_count' );
 		// Stats block.
 		$data['already_optimized_attachments'] += $saving_data['count'];
 		$data['original_human']                += $saving_data['original_size'];
