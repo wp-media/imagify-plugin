@@ -73,8 +73,7 @@ class GravityForms implements SubscriberInterface {
 	 * @return bool
 	 */
 	private function is_gravity_forms_no_conflict_mode_enabled(): bool {
-		return is_plugin_active( 'gravityforms/gravityforms.php' )
-			&& get_option( 'gform_enable_noconflict', false )
+		return get_option( 'gform_enable_noconflict', false )
 			&& GFForms::is_gravity_page();
 	}
 }

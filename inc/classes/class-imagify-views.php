@@ -643,19 +643,6 @@ class Imagify_Views {
 	}
 
 	/**
-	 * Check if menu is present
-	 *
-	 * @return bool
-	 */
-	private function admin_menu_is_present(): bool {
-		global $wp_admin_bar;
-
-		$imagify_menu_id = 'imagify';
-
-		return $wp_admin_bar && $wp_admin_bar->get_node( $imagify_menu_id );
-	}
-
-	/**
 	 * Get imagify user info
 	 *
 	 * @return bool
