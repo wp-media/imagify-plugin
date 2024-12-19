@@ -107,17 +107,11 @@ class AdminBar implements SubscriberInterface {
 			return;
 		}
 
-		if (
-			$this->user->is_free()
-			&&
-			$this->user->get_percent_unconsumed_quota() > 20
-		) {
-			$wp_admin_bar->add_menu( [
-				'parent' => 'imagify',
-				'id'     => 'imagify-upgrade-plan',
-				'title'  => '<button data-nonce="' . wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ) . '" data-target="#imagify-pricing-modal" type="button" class="imagify-get-pricing-modal imagify-modal-trigger imagify-admin-bar-upgrade-plan">' . __( 'Upgrade Plan', 'imagify' ) . '</button>',
-			] );
-		}
+		$wp_admin_bar->add_menu( array(
+			'parent' => 'imagify',
+			'id'     => 'imagify-upgrade-plan',
+			'title'  => '<div id="wp-admin-bar-imagify-pricing-content" class="hide-if-no-js"></div>',
+		) );
 
 		$wp_admin_bar->add_menu( array(
 			'parent' => 'imagify',
@@ -169,14 +163,19 @@ class AdminBar implements SubscriberInterface {
 			'plan_label'       => $this->user->plan_label,
 			'plan_with_quota'  => $this->user->is_free() || $this->user->is_growth(),
 			'unconsumed_quota' => $unconsumed_quota,
-			'user_quota'       => $this->user->quota,
+			'user_quota'       => $this->user->get_quota(),
 			'next_update'      => $this->user->next_date_update,
 			'text'             => $text,
 			'button_text'      => $button_text,
 			'upgrade_link'     => $upgrade_link,
 		];
 
-		$template = $views->get_template( 'admin/admin-bar-status', $data );
+		$template = [
+			'admin_bar_status'  => $views->get_template( 'admin/admin-bar-status', $data ),
+			'admin_bar_pricing' => $views->get_template( 'admin/admin-bar-pricing', [
+				'upgrade_pricing'  => $this->user->is_free() && ( $this->user->get_percent_unconsumed_quota() > 20 ),
+			] ),
+		];
 
 		wp_send_json_success( $template );
 	}

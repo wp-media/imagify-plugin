@@ -58,7 +58,7 @@ class Test_GetError extends TestCase {
 
 		Functions\when( 'get_transient' )->justReturn( $userData );
 
-		$this->assertSame( 'imagify@example.com', ( new User() )->email );
+		$this->assertSame( 'imagify@example.com', ( new User() )->get_email() );
 	}
 
 	/**
