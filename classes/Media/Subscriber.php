@@ -12,7 +12,7 @@ use Imagify\Media\Upload\Upload;
 class Subscriber implements SubscriberInterface {
 
 	/**
-	 * @var Upload
+	 * @var Upload Upload Instance.
 	 */
 	private $upload;
 	/**
@@ -41,6 +41,9 @@ class Subscriber implements SubscriberInterface {
 	 * @return void
 	 */
 	public function imagify_attachments_filter_dropdown() {
+		if ( ! \Imagify_Views::get_instance()->is_wp_library_page() ) {
+			return;
+		}
 		$this->upload->add_imagify_filter_to_attachments_dropdown();
 	}
 }
