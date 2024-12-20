@@ -39,7 +39,7 @@ class Upload {
 		echo '<option value="0" selected="selected">' . __( 'All Media Files', 'imagify' ) . '</option>';
 
 		foreach ( $options as $value => $label ) {
-			$filter_value = isset( $data[$value] ) ? ' (' . $data[$value] . ')' : '';
+			$filter_value = isset( $data[ $value ] ) ? ' (' . $data[ $value ] . ')' : '';
 			echo '<option value="' . $value . '" ' . selected( $status, $value, false ) . '>' . $label . $filter_value . '</option>';
 		}
 		echo '</select>&nbsp;';
