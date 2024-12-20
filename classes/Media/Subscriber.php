@@ -12,7 +12,9 @@ use Imagify\Media\Upload\Upload;
 class Subscriber implements SubscriberInterface {
 
 	/**
-	 * @var Upload Upload Instance.
+	 * Upload instance.
+	 *
+	 * @var Upload
 	 */
 	private $upload;
 	/**
