@@ -148,10 +148,10 @@ class AdminBar implements SubscriberInterface {
 
 			if ( $this->user->is_monthly ) {
 				$text         .= esc_html__( 'For $11.99/month, optimize as many images as you like!', 'imagify' );
-				$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite_3&payment_plan=1&utm_source=plugin&utm_medium=notification ';
+				$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite&payment_plan=1&utm_source=plugin&utm_medium=notification ';
 			} else {
 				$text         .= esc_html__( 'For $9.99/month, optimize as many images as you like!', 'imagify' );
-				$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite_3&payment_plan=2&utm_source=plugin&utm_medium=notification ';
+				$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite&payment_plan=2&utm_source=plugin&utm_medium=notification ';
 			}
 
 			$button_text = esc_html__( 'Switch To Infinite Plan', 'imagify' );
