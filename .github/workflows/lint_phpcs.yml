@@ -6,6 +6,8 @@ on:
       - trunk
       - develop
       - branch-*
+      - feature/*
+      - enhancement/*
 
 jobs:
   run:

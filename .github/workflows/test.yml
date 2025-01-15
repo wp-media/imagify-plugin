@@ -1,11 +1,13 @@
 name: Unit/Integration tests
 
 on:
-    pull_request:
-        branches:
-            - trunk
-            - develop
-            - branch-*
+  pull_request:
+    branches:
+      - trunk
+      - develop
+      - branch-*
+      - feature/*
+      - enhancement/*
 
 jobs:
     run:
