@@ -342,7 +342,7 @@ class Imagify_DB {
 	 *                    bool   $prepared Set to true if the query will be prepared with using $wpdb->prepare().
 	 *  }.
 	 * @return string A query.
-	*/
+	 */
 	public static function get_required_exist_wp_metadata_where_clause( $args = array() ) {
 		static $query = array();
 
