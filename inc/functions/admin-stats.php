@@ -95,16 +95,19 @@ function imagify_count_error_attachments() {
 	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
-		SELECT COUNT( DISTINCT p.ID )
-		FROM $wpdb->posts AS p
-			$nodata_join
-		INNER JOIN $wpdb->postmeta AS mt1
-			ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
-		WHERE p.post_mime_type IN ( $mime_types )
-			AND p.post_type = 'attachment'
-			AND p.post_status IN ( $statuses )
-			AND mt1.meta_value = 'error'
-			$nodata_where"
+		SELECT COUNT(*)
+		FROM (
+			SELECT p.ID
+			FROM $wpdb->posts AS p
+				$nodata_join
+			INNER JOIN $wpdb->postmeta AS mt1
+				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+			WHERE p.post_mime_type IN ( $mime_types )
+				AND p.post_type = 'attachment'
+				AND p.post_status IN ( $statuses )
+				AND mt1.meta_value = 'error'
+				$nodata_where GROUP BY p.ID
+		) AS imagify_count_error"
 	);
 
 	return $count;

@@ -115,27 +115,21 @@ function imagify_has_attachments_without_required_metadata() {
 
 	$mime_types   = Imagify_DB::get_mime_types();
 	$statuses     = Imagify_DB::get_post_statuses();
-	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause(
+	$exist_data = Imagify_DB::get_required_wp_metadata_exist_clause(
 		'p.ID',
-		false,
 		false,
 		"AND p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )"
 	);
-	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( array(
-		'matching' => false,
-		'test'     => false,
-	) );
 	$has          = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT p.ID
 		FROM $wpdb->posts AS p
-			$nodata_join
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
-			$nodata_where
+			$exist_data
 		LIMIT 1"
 	);
 

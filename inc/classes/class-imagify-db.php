@@ -206,6 +206,65 @@ class Imagify_DB {
 		return $clause;
 	}
 
+
+	/**
+	 * Get the Sub query(exists) clause to use to get only attachments that have the required WP metadata.
+	 * It returns an empty string if the database has no attachments without the required metadada.
+	 *
+	 * @param string $id_field An ID field to match the metadata ID against in the WHERE clause.
+	 *                          Default is the posts table `ID` field, using the `p` alias: `p.ID`.
+	 * @param bool   $test Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 * @param string $special_join_conditions Special conditions to apply on the join.
+	 *
+	 * @return string
+	 */
+	public static function get_required_wp_metadata_exist_clause( $id_field = 'p.ID', $test = true, $special_join_conditions = '' ) {
+		global $wpdb;
+
+		if ( $test && ! imagify_has_attachments_without_required_metadata() ) {
+			return '';
+		}
+
+		self::unlimit_joins();
+		$clause = '';
+
+		if ( ! $id_field || ! is_string( $id_field ) ) {
+			$id_field = "$wpdb->posts.ID";
+		}
+		$additional_clause = self::get_required_exist_wp_metadata_where_clause(  array(
+			'matching' => false,
+			'test'     => false,
+		)  );
+
+		$first          = true;
+		$initial_clause = '';
+
+		foreach ( self::get_required_wp_metadata_aliases() as $meta_name => $alias ) {
+			if ( $first ) {
+				$first = false;
+				$initial_clause = "
+                    OR NOT EXISTS(
+                        SELECT 1 FROM $wpdb->postmeta AS $alias WHERE
+                        $alias.post_id = $id_field AND $alias.meta_key = '$meta_name' $special_join_conditions
+                    )
+                    OR EXISTS(
+                        SELECT 1 FROM $wpdb->postmeta AS $alias WHERE
+                        $alias.post_id = $id_field AND $alias.meta_key = '$meta_name' $special_join_conditions
+                        $additional_clause
+                    )
+                ";
+				continue;
+			}
+
+			$clause .= "
+                    NOT EXISTS (
+                    SELECT 1 FROM $wpdb->postmeta AS $alias WHERE
+                    $alias.post_id = $id_field AND $alias.meta_key = '$meta_name')";
+		}
+
+		return "AND( $clause $initial_clause )";
+	}
+
 	/**
 	 * Get the SQL part to be used in a WHERE clause, to get only attachments that have (in)valid '_wp_attached_file' and '_wp_attachment_metadata' metadatas.
 	 * It returns an empty string if the database has no attachments without the required metadada.
@@ -262,9 +321,67 @@ class Imagify_DB {
 		$extensions = self::get_extensions_where_clause( $args );
 
 		if ( $matching ) {
-			$query[ $key ] = "AND $alias_1.meta_value NOT LIKE '%://%' AND $alias_1.meta_value NOT LIKE '_:\\\\\%' $extensions";
+			$query[ $key ] = "AND $alias_1.meta_value NOT LIKE '%://%' AND $alias_1.meta_value NOT LIKE '_:\\\\\%' AND $extensions";
 		} else {
-			$query[ $key ] = "AND ( $alias_2.meta_value IS NULL OR $alias_1.meta_value IS NULL OR $alias_1.meta_value LIKE '%://%' OR $alias_1.meta_value LIKE '_:\\\\\%' $extensions )";
+			$query[ $key ] = "AND ( $alias_2.meta_value IS NULL OR $alias_1.meta_value IS NULL OR $alias_1.meta_value LIKE '%://%' OR $alias_1.meta_value LIKE '_:\\\\\%' AND $extensions )";
+		}
+
+		return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
+	}
+
+	/**
+	 * Get the SQL part to be used in a WHERE clause, to get only attachments that have (in)valid '_wp_attached_file' and '_wp_attachment_metadata' metadatas.
+	 *  It returns an empty string if the database has no attachments without the required metadada.
+	 *
+	 * @param array $args {
+	 *                    Optional. An array of arguments.
+	 *
+	 *                    string $aliases  The aliases to use for the meta values.
+	 *                    bool   $matching Set to false to get a query to fetch invalid metas.
+	 *                    bool   $test     Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 *                    bool   $prepared Set to true if the query will be prepared with using $wpdb->prepare().
+	 *  }.
+	 * @return string A query.
+	*/
+	public static function get_required_exist_wp_metadata_where_clause( $args = array() ) {
+		static $query = array();
+
+		$args = imagify_merge_intersect( $args, array(
+			'aliases'  => array(),
+			'matching' => true,
+			'test'     => true,
+			'prepared' => false,
+		) );
+
+		list( $aliases, $matching, $test, $prepared ) = array_values( $args );
+
+		if ( $test && ! imagify_has_attachments_without_required_metadata() ) {
+			return '';
+		}
+
+		if ( $aliases && is_string( $aliases ) ) {
+			$aliases = array(
+				'_wp_attached_file' => $aliases,
+			);
+		} elseif ( ! is_array( $aliases ) ) {
+			$aliases = array();
+		}
+
+		$aliases = imagify_merge_intersect( $aliases, self::get_required_wp_metadata_aliases() );
+		$key     = implode( '|', $aliases ) . '|' . (int) $matching;
+
+		if ( isset( $query[ $key ] ) ) {
+			return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
+		}
+
+		unset( $args['prepared'] );
+		$alias_1    = $aliases['_wp_attached_file'];
+		$extensions = self::get_extensions_where_clause( $args );
+
+		if ( $matching ) {
+			$query[ $key ] = "AND $alias_1.meta_value NOT LIKE '%://%' AND $alias_1.meta_value NOT LIKE '_:\\\\\%' OR NOT ( $extensions )";
+		} else {
+			$query[ $key ] = "AND ( $alias_1.meta_value LIKE '%://%' OR $alias_1.meta_value LIKE '_:\\\\\%' OR NOT ( $extensions ) )";
 		}
 
 		return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
@@ -329,9 +446,9 @@ class Imagify_DB {
 		$regex = '^' . implode( '\..*|^', $extensions ) . '\..*';
 
 		if ( $matching ) {
-			$query[ $key ] = "AND REVERSE (LOWER( $alias.meta_value )) REGEXP '$regex'";
+			$query[ $key ] = "REVERSE (LOWER( $alias.meta_value )) REGEXP '$regex'";
 		} else {
-			$query[ $key ] = "AND REVERSE (LOWER( $alias.meta_value )) NOT REGEXP '$regex'";
+			$query[ $key ] = "REVERSE (LOWER( $alias.meta_value )) NOT REGEXP '$regex'";
 		}
 
 		return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
