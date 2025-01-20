@@ -79,10 +79,10 @@ if (
 
 		if ( $imagify_user->is_monthly ) {
 			$price = esc_html__( 'For $11.99/month only, choose unlimited image optimization!', 'imagify' );
-			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite_3&payment_plan=1&utm_source=plugin&utm_medium=upsell_banner';
+			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite&payment_plan=1&utm_source=plugin&utm_medium=upsell_banner';
 		} else {
 			$price = esc_html__( 'For $9.99/month only, choose unlimited image optimization!', 'imagify' );
-			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite_3&payment_plan=2&utm_source=plugin&utm_medium=upsell_banner';
+			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite&payment_plan=2&utm_source=plugin&utm_medium=upsell_banner';
 		}
 	}
 	?>
