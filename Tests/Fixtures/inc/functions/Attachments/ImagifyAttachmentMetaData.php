@@ -9,16 +9,17 @@ return [
 					'private' => 'Private',
 					'future' => 'Future'
 				],
+				'reset' => true
 
 			],
 			'expected' => true
 		],
-		/*'testNoAttachmentsExistWithoutMetadata' => [
+		'testNoAttachmentsExistWithoutMetadata' => [
 			'config' => [
 				'statuses' => [],
-
+				'reset' => true
 			],
-			'expected' => true
-		]*/
+			'expected' => false
+		]
 	],
 ];

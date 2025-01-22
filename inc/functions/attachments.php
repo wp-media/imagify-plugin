@@ -100,14 +100,19 @@ function imagify_get_post_statuses() {
 /**
  * Tell if the site has attachments (only the ones Imagify would optimize) without the required WP metadata.
  *
+ * @param bool $reset Reset the static method to null when set to true, defaulted to false.
  * @since  1.7
  * @author Grégory Viguier
  *
  * @return bool
  */
-function imagify_has_attachments_without_required_metadata() {
+function imagify_has_attachments_without_required_metadata( $reset = false ) {
 	global $wpdb;
 	static $has;
+
+	if ( $reset ) {
+		$has = null;
+	}
 
 	if ( isset( $has ) ) {
 		return $has;

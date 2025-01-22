@@ -55,13 +55,14 @@ class Test_ImagifyAttachmentMetadata extends TestCase {
 	{
 		$this->wpdb->set_var( $expected );
 
-		Functions\expect( 'get_post_stati' )
-			->times( 1 )
-			->andReturn( $config['statuses'] );
+		if( $expected ) {
+			Functions\expect('get_post_stati')
+				->times(1)
+				->andReturn($config['statuses']);
+			Functions\expect( 'esc_sql' )->andReturnFirstArg();
+		}
 
-		Functions\expect( 'esc_sql' )->andReturnFirstArg();
-
-		$result = imagify_has_attachments_without_required_metadata();
+		$result = imagify_has_attachments_without_required_metadata( $config['reset'] );
 
 		if( $expected ) {
 			$this->assertTrue( $result );
