@@ -388,6 +388,46 @@ class Imagify_DB {
 	}
 
 	/**
+	 * Prepare query arguments.
+	 *
+	 * @param array $args {
+	 *                     Optional. An array of arguments.
+	 *
+	 *                     string $aliases  The aliases to use for the meta values.
+	 *                     bool   $matching Set to false to get a query to fetch invalid metas.
+	 *                     bool   $test     Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 *                     bool   $prepared Set to true if the query will be prepared with using $wpdb->prepare().
+	 *   }.
+	 *
+	 * @return array
+	 */
+	private function prepare_query_args( $args ) {
+		return imagify_merge_intersect( $args, [
+			'aliases'  => [],
+			'matching' => true,
+			'test'     => true,
+			'prepared' => false,
+		] );
+	}
+
+	/**
+	 * Generate query.
+	 *
+	 * @param bool   $matching Matching.
+	 * @param string $alias Query alias.
+	 * @param string $regex Query Regex.
+	 *
+	 * @return string
+	 */
+	private function generate_query( $matching, $alias, $regex ) {
+		if ( $matching ) {
+			return "REVERSE (LOWER( $alias.meta_value )) REGEXP '$regex'";
+		}
+
+		return "REVERSE (LOWER( $alias.meta_value )) NOT REGEXP '$regex'";
+	}
+
+	/**
 	 * Get the SQL part to be used in a WHERE clause, to get only attachments that have a valid file extensions.
 	 * It returns an empty string if the database has no attachments without the required metadada.
 	 *
@@ -410,12 +450,9 @@ class Imagify_DB {
 		static $extensions;
 		static $query = array();
 
-		$args = imagify_merge_intersect( $args, array(
-			'alias'    => array(),
-			'matching' => true,
-			'test'     => true,
-			'prepared' => false,
-		) );
+		$instance = new self();
+
+		$args = $instance->prepare_query_args( $args );
 
 		list( $alias, $matching, $test, $prepared ) = array_values( $args );
 
@@ -445,11 +482,7 @@ class Imagify_DB {
 
 		$regex = '^' . implode( '\..*|^', $extensions ) . '\..*';
 
-		if ( $matching ) {
-			$query[ $key ] = "REVERSE (LOWER( $alias.meta_value )) REGEXP '$regex'";
-		} else {
-			$query[ $key ] = "REVERSE (LOWER( $alias.meta_value )) NOT REGEXP '$regex'";
-		}
+		$query[ $key ] = $instance->generate_query( $matching, $alias, $regex );
 
 		return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
 	}
