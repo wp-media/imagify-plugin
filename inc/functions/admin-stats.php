@@ -33,11 +33,15 @@ function imagify_count_attachments() {
 
 	$mime_types   = Imagify_DB::get_mime_types();
 	$statuses     = Imagify_DB::get_post_statuses();
-	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause('p.ID', true, true,
-		"AND p.post_mime_type IN ( $mime_types )
+	$nodata_join  = '';
+	$nodata_where = '';
+	if ( ! imagify_has_attachments_without_required_metadata() ) {
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause('p.ID', true, true,
+			"AND p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )");
-	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+	}
 	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( p.ID )
@@ -91,8 +95,12 @@ function imagify_count_error_attachments() {
 
 	$mime_types   = Imagify_DB::get_mime_types();
 	$statuses     = Imagify_DB::get_post_statuses();
-	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
-	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+	$nodata_join  = '';
+	$nodata_where = '';
+	if ( ! imagify_has_attachments_without_required_metadata() ) {
+		$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+	}
 	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT(*)
@@ -145,8 +153,13 @@ function imagify_count_optimized_attachments() {
 
 	$mime_types   = Imagify_DB::get_mime_types();
 	$statuses     = Imagify_DB::get_post_statuses();
-	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
-	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+	$nodata_join  = '';
+	$nodata_where = '';
+	if ( ! imagify_has_attachments_without_required_metadata() ) {
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+	}
+
 	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( DISTINCT p.ID )

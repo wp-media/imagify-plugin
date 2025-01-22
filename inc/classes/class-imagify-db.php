@@ -236,20 +236,15 @@ class Imagify_DB {
 			'test'     => false,
 		)  );
 
-		$first          = true;
-		$initial_clause = '';
+		$first = true;
 
 		foreach ( self::get_required_wp_metadata_aliases() as $meta_name => $alias ) {
 			if ( $first ) {
 				$first = false;
-				$initial_clause = "
-                    OR NOT EXISTS(
+				$clause .= "
+                    EXISTS(
                         SELECT 1 FROM $wpdb->postmeta AS $alias WHERE
-                        $alias.post_id = $id_field AND $alias.meta_key = '$meta_name' $special_join_conditions
-                    )
-                    OR EXISTS(
-                        SELECT 1 FROM $wpdb->postmeta AS $alias WHERE
-                        $alias.post_id = $id_field AND $alias.meta_key = '$meta_name' $special_join_conditions
+                        $alias.post_id = $id_field AND $alias.meta_key = '$meta_name'
                         $additional_clause
                     )
                 ";
@@ -257,12 +252,12 @@ class Imagify_DB {
 			}
 
 			$clause .= "
-                    NOT EXISTS (
+                    OR NOT EXISTS (
                     SELECT 1 FROM $wpdb->postmeta AS $alias WHERE
                     $alias.post_id = $id_field AND $alias.meta_key = '$meta_name')";
 		}
 
-		return "AND( $clause $initial_clause )";
+		return "AND( $clause  )";
 	}
 
 	/**
