@@ -122,10 +122,7 @@ function imagify_has_attachments_without_required_metadata( $reset = false ) {
 	$statuses     = Imagify_DB::get_post_statuses();
 	$exist_data = Imagify_DB::get_required_wp_metadata_exist_clause(
 		'p.ID',
-		false,
-		"AND p.post_mime_type IN ( $mime_types )
-			AND p.post_type = 'attachment'
-			AND p.post_status IN ( $statuses )"
+		false
 	);
 	$has          = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"

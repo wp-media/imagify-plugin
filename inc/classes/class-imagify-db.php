@@ -214,11 +214,10 @@ class Imagify_DB {
 	 * @param string $id_field An ID field to match the metadata ID against in the WHERE clause.
 	 *                          Default is the posts table `ID` field, using the `p` alias: `p.ID`.
 	 * @param bool   $test Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
-	 * @param string $special_join_conditions Special conditions to apply on the join.
 	 *
 	 * @return string
 	 */
-	public static function get_required_wp_metadata_exist_clause( $id_field = 'p.ID', $test = true, $special_join_conditions = '' ) {
+	public static function get_required_wp_metadata_exist_clause( $id_field = 'p.ID', $test = true ) {
 		global $wpdb;
 
 		if ( $test && ! imagify_has_attachments_without_required_metadata() ) {
