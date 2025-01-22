@@ -4,16 +4,14 @@ namespace functions\Attachments;
 
 use Imagify\Tests\Unit\TestCase;
 use Brain\Monkey\Functions;
-use Imagify_DB;
-use Mockery;
-use ReflectionFunction;
 use wpdb;
 
 /**
  * Test class covering inc/functions/attachments::imagify_has_attachments_without_required_metadata
- * @group  HealthCheck
  */
 class Test_ImagifyAttachmentMetadata extends TestCase {
+
+	private $wpdb;
 
 	public static function setUpBeforeClass(): void {
 		parent::setUpBeforeClass();
@@ -28,22 +26,13 @@ class Test_ImagifyAttachmentMetadata extends TestCase {
 
 		$this->wpdb->posts = 'wp_posts';
 
-
 		require_once IMAGIFY_PLUGIN_ROOT . 'inc/functions/attachments.php';
 		require_once IMAGIFY_PLUGIN_ROOT . 'inc/functions/common.php';
-
-		$this->reset_static_variable();
 	}
 
-	public function reset_static_variable() {
-		$reflection = new ReflectionFunction('imagify_has_attachments_without_required_metadata');
-		$closure = $reflection->getClosure();
-		$closure->bindTo(null, null);
-	}
 
 	protected function tearDown(): void {
 		unset( $GLOBALS['wpdb'] );
-		$this->reset_static_variable();
 
 		parent::tearDown();
 	}
