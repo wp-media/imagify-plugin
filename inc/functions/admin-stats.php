@@ -321,8 +321,12 @@ function imagify_count_saving_data( $key = '' ) {
 
 		$mime_types     = Imagify_DB::get_mime_types();
 		$statuses       = Imagify_DB::get_post_statuses();
-		$nodata_join    = Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where   = Imagify_DB::get_required_wp_metadata_where_clause();
+		$nodata_join  = '';
+		$nodata_where = '';
+		if ( ! imagify_has_attachments_without_required_metadata() ) {
+			$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
+			$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
+		}
 		$attachment_ids = $wpdb->get_col( // WPCS: unprepared SQL ok.
 			"
 			SELECT p.ID

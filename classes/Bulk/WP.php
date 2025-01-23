@@ -201,10 +201,15 @@ class WP extends AbstractBulk {
 		}
 		$mime_types   = str_replace( ",'" . $mime . "'", '', $mime_types );
 		$statuses     = Imagify_DB::get_post_statuses();
-		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( [
-			'prepared' => true,
-		] );
+		$nodata_join  = '';
+		$nodata_where = '';
+		if ( ! imagify_has_attachments_without_required_metadata() ) {
+			$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+			$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( [
+				'prepared' => true,
+			] );
+		}
+
 		$nextgen_suffix  = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::' . strtoupper( $format ) . '_SUFFIX' );
 
 		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
