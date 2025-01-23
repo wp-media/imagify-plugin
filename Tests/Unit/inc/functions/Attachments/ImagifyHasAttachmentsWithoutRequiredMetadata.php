@@ -7,9 +7,10 @@ use Brain\Monkey\Functions;
 use wpdb;
 
 /**
- * Test class covering inc/functions/attachments::imagify_has_attachments_without_required_metadata
+ *
+ * @covers imagify_has_attachments_without_required_metadata
  */
-class Test_ImagifyAttachmentMetadata extends TestCase {
+class Test_ImagifyHasAttachmentsWithoutRequiredMetadata extends TestCase {
 
 	private $wpdb;
 
@@ -25,9 +26,6 @@ class Test_ImagifyAttachmentMetadata extends TestCase {
 		$GLOBALS['wpdb'] = $this->wpdb = new wpdb( 'dbuser', 'dbpassword', 'dbname', 'dbhost' );
 
 		$this->wpdb->posts = 'wp_posts';
-
-		require_once IMAGIFY_PLUGIN_ROOT . 'inc/functions/attachments.php';
-		require_once IMAGIFY_PLUGIN_ROOT . 'inc/functions/common.php';
 	}
 
 
@@ -40,8 +38,7 @@ class Test_ImagifyAttachmentMetadata extends TestCase {
 	/**
 	 * @dataProvider configTestData
 	 */
-	public function testShouldReturnExpected( $config, $expected )
-	{
+	public function testShouldReturnExpected( $config, $expected ) {
 		$this->wpdb->set_var( $expected );
 
 		if( $expected ) {
