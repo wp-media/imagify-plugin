@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 						<div class="imagify-toggle-container">
 							<span class="imagify-toggle-label">Monthly</span>
 							<label class="imagify-switch">
-								<input type="checkbox" id="imagify-toggle-plan">
+								<input type="checkbox" id="imagify-toggle-plan" checked>
 								<span class="imagify-slider"></span>
 							</label>
 							<span class="imagify-toggle-label">Yearly</span>
@@ -34,7 +34,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 							</div>
 						</div>
 
-						<div class="imagify-pricing-table imagify-month-selected" id="imagify_all_plan_view">
+						<div class="imagify-pricing-table imagify-year-selected" id="imagify_all_plan_view">
 
 						<script type="text/html" id="imagify-offer-monthly-template"><div class="imagify-offer-line imagify-offer-monthlies imagify-flex-table">
 								<div class="imagify-col-details imagify-col-label">

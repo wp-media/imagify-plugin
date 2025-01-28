@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 6.7
-Stable tag: 2.2.4
+Stable tag: 2.2.5
 Requires PHP: 7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -266,6 +266,11 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.2.5 =
+- Enhancement: Optimize SQL queries inside the plugin to calculate necessary data faster
+- Enhancement: Improve the design of the banners inside the plugin
+- Enhancement: Correct the upgrade link
+
 = 2.2.4 =
 - Enhancement: Deactivate by default calculation of the media elements used for the filters in the Media Library view.
 - Enhancement: Remove unnecessary calls to the API on each page load.

@@ -2,9 +2,14 @@
 name: PHPUnit Code Coverage
 
 on:
-  push:
+  pull_request:
     branches:
+      - trunk
       - develop
+      - branch-*
+      - feature/*
+      - enhancement/*
+      - fix/*
 
 jobs:
   run:

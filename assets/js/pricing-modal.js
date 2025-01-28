@@ -1,6 +1,8 @@
 // Imagify tabs ====================================================================================
 (function ($, d, w, undefined) { // eslint-disable-line no-unused-vars, no-shadow, no-shadow-restricted-names
-
+	$('.imagify-badge').addClass('imagify-badge-checked');
+	$('.imagify-toggle-label').eq(0).css('color', '#c8ced5');
+	$('.imagify-toggle-label').eq(1).css('color', '#3b3f4a');
 	// Plan switcher.
 	$('#imagify-toggle-plan').change(function() {
 		var isChecked = $(this).is(':checked');
@@ -347,6 +349,7 @@
 						$('.imagify-pricing-tab-monthly').remove();
 					} else {
 						// Now, do the MONTHLIES Markup.
+						offers.mo = offers.mo.reverse();
 						$.each(offers.mo, function (index, value) {
 							var $tpl,
 								classes = '';

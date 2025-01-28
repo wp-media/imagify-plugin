@@ -155,6 +155,11 @@ When the plugin is disabled, your existing images remain optimized. Backups of t
 Please report security bugs found in the site-reviews plugin's source code through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/imagify). The Patchstack team will assist you with verification, CVE assignment and take care of notifying the developers of this plugin.
 
 ## Changelog
+### 2.2.5
+- Enhancement: Optimize SQL queries inside the plugin to calculate necessary data faster.
+- Enhancement: Improve the design of the banners inside the plugin.
+- Enhancement: Correct the upgrade link.
+
 ### 2.2.4
 - Enhancement: Deactivate by default calculation of the media elements used for the filters in the Media Library view.
 - Enhancement: Remove unnecessary calls to the API on each page load.

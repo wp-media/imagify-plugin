@@ -6,6 +6,9 @@ on:
       - trunk
       - develop
       - branch-*
+      - feature/*
+      - enhancement/*
+      - fix/*
 
 jobs:
   run:
@@ -36,6 +39,9 @@ jobs:
         extensions: mysqli
         coverage: none  # XDebug can be enabled here 'coverage: xdebug'
         tools: composer:v2, phpunit
+
+    - name: Install SVN
+      run: sudo apt-get install subversion
 
     - name: Start mysql service
       run: sudo /etc/init.d/mysql start
