@@ -455,54 +455,54 @@ class Imagify {
 
 		try {
 			$url = self::API_ENDPOINT . $url;
-			$ch  = curl_init();
+			$ch  = curl_init(); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_init
 
 			if ( false === $ch ) {
 				throw new Exception( 'Could not initialize a new cURL handle' );
 			}
 
 			if ( isset( $args['post_data']['image'] ) && is_string( $args['post_data']['image'] ) && $this->filesystem->exists( $args['post_data']['image'] ) ) {
-				$args['post_data']['image'] = curl_file_create( $args['post_data']['image'] );
+				$args['post_data']['image'] = curl_file_create( $args['post_data']['image'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_file_create
 			}
 
 			// Handle proxies.
 			$proxy = new WP_HTTP_Proxy();
 
 			if ( $proxy->is_enabled() && $proxy->send_through_proxy( $url ) ) {
-				curl_setopt( $ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP );
-				curl_setopt( $ch, CURLOPT_PROXY, $proxy->host() );
-				curl_setopt( $ch, CURLOPT_PROXYPORT, $proxy->port() );
+				curl_setopt( $ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+				curl_setopt( $ch, CURLOPT_PROXY, $proxy->host() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+				curl_setopt( $ch, CURLOPT_PROXYPORT, $proxy->port() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 
 				if ( $proxy->use_authentication() ) {
-					curl_setopt( $ch, CURLOPT_PROXYAUTH, CURLAUTH_ANY );
-					curl_setopt( $ch, CURLOPT_PROXYUSERPWD, $proxy->authentication() );
+					curl_setopt( $ch, CURLOPT_PROXYAUTH, CURLAUTH_ANY ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+					curl_setopt( $ch, CURLOPT_PROXYUSERPWD, $proxy->authentication() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 				}
 			}
 
 			if ( 'POST' === $args['method'] ) {
-				curl_setopt( $ch, CURLOPT_POST, true );
-				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] );
+				curl_setopt( $ch, CURLOPT_POST, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 			} elseif ( 'PUT' === $args['method'] ) {
-				curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'PUT' );
-				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] );
+				curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'PUT' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+				curl_setopt( $ch, CURLOPT_POSTFIELDS, $args['post_data'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 			}
 
 			if ( defined( 'CURLOPT_PROTOCOLS' ) ) {
-				curl_setopt( $ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS );
+				curl_setopt( $ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 			}
 
 			$user_agent = apply_filters( 'http_headers_useragent', 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ), $url );
 
-			curl_setopt( $ch, CURLOPT_URL, $url );
-			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-			curl_setopt( $ch, CURLOPT_HEADER, false );
-			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
-			curl_setopt( $ch, CURLOPT_TIMEOUT, $args['timeout'] );
-			curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $args['timeout'] );
-			curl_setopt( $ch, CURLOPT_USERAGENT, $user_agent );
-			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, false );
-			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
-			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+			curl_setopt( $ch, CURLOPT_URL, $url ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_HEADER, false ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_TIMEOUT, $args['timeout'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $args['timeout'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_USERAGENT, $user_agent ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			@curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, false ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 
 			/**
 			 * Tell which http version to use with cURL during image optimization.
@@ -514,17 +514,17 @@ class Imagify {
 			 * @param $use_version_1_0 bool True to use version 1.0. False for 1.1. Default is false.
 			 */
 			if ( apply_filters( 'imagify_curl_http_version_1_0', false ) ) {
-				curl_setopt( $ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0 );
+				curl_setopt( $ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 			} else {
-				curl_setopt( $ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1 );
+				curl_setopt( $ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 			}
 
-			$response  = curl_exec( $ch );
-			$error     = curl_error( $ch );
-			$http_code = (int) curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+			$response  = curl_exec( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_exec
+			$error     = curl_error( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_error
+			$http_code = (int) curl_getinfo( $ch, CURLINFO_HTTP_CODE ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_getinfo
 
 			if ( is_resource( $ch ) ) {
-				curl_close( $ch );
+				curl_close( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_close
 			} else {
 				unset( $ch );
 			}
@@ -543,7 +543,7 @@ class Imagify {
 			do_action( 'imagify_curl_http_response', $url, $args, $e );
 
 			return new WP_Error( 'curl', 'An error occurred (' . $e->getMessage() . ')' );
-		} // End try().
+		}
 
 		$args['headers'] = $this->headers;
 
