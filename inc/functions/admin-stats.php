@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Count number of attachments.
@@ -35,14 +35,20 @@ function imagify_count_attachments() {
 	$statuses     = Imagify_DB::get_post_statuses();
 	$nodata_join  = '';
 	$nodata_where = '';
+
 	if ( ! imagify_has_attachments_without_required_metadata() ) {
-		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause('p.ID', true, true,
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause(
+			'p.ID',
+			true,
+			true,
 			"AND p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
-			AND p.post_status IN ( $statuses )");
+			AND p.post_status IN ( $statuses )"
+		);
 		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 	}
-	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+
+	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( p.ID )
 		FROM $wpdb->posts AS p
@@ -97,11 +103,13 @@ function imagify_count_error_attachments() {
 	$statuses     = Imagify_DB::get_post_statuses();
 	$nodata_join  = '';
 	$nodata_where = '';
+
 	if ( ! imagify_has_attachments_without_required_metadata() ) {
-		$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
 		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 	}
-	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+
+	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT(*)
 		FROM (
@@ -155,12 +163,13 @@ function imagify_count_optimized_attachments() {
 	$statuses     = Imagify_DB::get_post_statuses();
 	$nodata_join  = '';
 	$nodata_where = '';
+
 	if ( ! imagify_has_attachments_without_required_metadata() ) {
 		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
 		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 	}
 
-	$count        = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$count = (int) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT COUNT( DISTINCT p.ID )
 		FROM $wpdb->posts AS p
@@ -293,7 +302,7 @@ function imagify_count_saving_data( $key = '' ) {
 				$original_data = $attachment_data['sizes']['full'];
 
 				// Increment the original sizes.
-				$original_size  += $original_data['original_size']  ? $original_data['original_size']  : 0;
+				$original_size  += $original_data['original_size'] ? $original_data['original_size'] : 0;
 				$optimized_size += $original_data['optimized_size'] ? $original_data['optimized_size'] : 0;
 
 				unset( $attachment_data['sizes']['full'] );
@@ -302,7 +311,7 @@ function imagify_count_saving_data( $key = '' ) {
 				if ( $attachment_data['sizes'] ) {
 					foreach ( $attachment_data['sizes'] as $size_data ) {
 						if ( ! empty( $size_data['success'] ) ) {
-							$original_size  += $size_data['original_size']  ? $size_data['original_size']  : 0;
+							$original_size  += $size_data['original_size'] ? $size_data['original_size'] : 0;
 							$optimized_size += $size_data['optimized_size'] ? $size_data['optimized_size'] : 0;
 						}
 					}
@@ -323,10 +332,12 @@ function imagify_count_saving_data( $key = '' ) {
 		$statuses       = Imagify_DB::get_post_statuses();
 		$nodata_join  = '';
 		$nodata_where = '';
+
 		if ( ! imagify_has_attachments_without_required_metadata() ) {
-			$nodata_join = Imagify_DB::get_required_wp_metadata_join_clause();
+			$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
 			$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause();
 		}
+
 		$attachment_ids = $wpdb->get_col( // WPCS: unprepared SQL ok.
 			"
 			SELECT p.ID
