@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 $html_atts = '';
 
@@ -22,7 +22,7 @@ $level_labels = [
 	1 => __( 'Smart', 'imagify' ),
 	2 => __( 'Smart', 'imagify' ),
 ];
-$level_label = $level_labels[ $data['optimization_level'] ];
+$level_label  = $level_labels[ $data['optimization_level'] ];
 
 $html_atts = $this->build_attributes( $data['atts'] );
 ?>
