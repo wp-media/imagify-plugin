@@ -13,7 +13,6 @@ on:
 jobs:
   run:
     runs-on: ${{ matrix.operating-system }}
-    continue-on-error: true
     strategy:
       matrix:
         operating-system: [ubuntu-latest]
@@ -36,4 +35,5 @@ jobs:
       run: composer install --prefer-dist --no-interaction --no-scripts
 
     - name: Lint with phpcs
+      continue-on-error: true
       run: composer phpcs
