@@ -34,40 +34,44 @@ class WP extends AbstractBulk {
 		$mime_types   = Imagify_DB::get_mime_types();
 		$statuses     = Imagify_DB::get_post_statuses();
 		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
-		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( [
-			'prepared' => true,
-		] );
-		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
-			SELECT DISTINCT p.ID
-			FROM $wpdb->posts AS p
-				$nodata_join
-			LEFT JOIN $wpdb->postmeta AS mt1
-				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
-			LEFT JOIN $wpdb->postmeta AS mt2
-				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_optimization_level' )
-			WHERE
-				p.post_mime_type IN ( $mime_types )
-				AND (
-					mt1.meta_value = 'error'
-					OR
-					mt2.meta_value != %d
-					OR
-					mt2.post_id IS NULL
-				)
-				AND p.post_type = 'attachment'
-				AND p.post_status IN ( $statuses )
-				$nodata_where
-			ORDER BY
-				CASE mt1.meta_value
-					WHEN 'already_optimized' THEN 2
-					ELSE 1
-				END ASC,
-				p.ID DESC
-			LIMIT 0, %d",
-			$optimization_level,
-			imagify_get_unoptimized_attachment_limit()
-		) );
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause(
+			[
+				'prepared' => true,
+			]
+		);
+		$ids          = $wpdb->get_col(
+			$wpdb->prepare( // WPCS: unprepared SQL ok.
+				"
+				SELECT DISTINCT p.ID
+				FROM $wpdb->posts AS p
+					$nodata_join
+				LEFT JOIN $wpdb->postmeta AS mt1
+					ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+				LEFT JOIN $wpdb->postmeta AS mt2
+					ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_optimization_level' )
+				WHERE
+					p.post_mime_type IN ( $mime_types )
+					AND (
+						mt1.meta_value = 'error'
+						OR
+						mt2.meta_value != %d
+						OR
+						mt2.post_id IS NULL
+					)
+					AND p.post_type = 'attachment'
+					AND p.post_status IN ( $statuses )
+					$nodata_where
+				ORDER BY
+					CASE mt1.meta_value
+						WHEN 'already_optimized' THEN 2
+						ELSE 1
+					END ASC,
+					p.ID DESC
+				LIMIT 0, %d",
+				$optimization_level,
+				imagify_get_unoptimized_attachment_limit()
+			)
+		);
 
 		$wpdb->flush();
 		unset( $mime_types );
@@ -77,20 +81,23 @@ class WP extends AbstractBulk {
 			return [];
 		}
 
-		$metas = Imagify_DB::get_metas( [
-			// Get attachments filename.
-			'filenames'           => '_wp_attached_file',
-			// Get attachments data.
-			'data'                => '_imagify_data',
-			// Get attachments optimization level.
-			'optimization_levels' => '_imagify_optimization_level',
-			// Get attachments status.
-			'statuses'            => '_imagify_status',
-		], $ids );
+		$metas = Imagify_DB::get_metas(
+			[
+				// Get attachments filename.
+				'filenames'           => '_wp_attached_file',
+				// Get attachments data.
+				'data'                => '_imagify_data',
+				// Get attachments optimization level.
+				'optimization_levels' => '_imagify_optimization_level',
+				// Get attachments status.
+				'statuses'            => '_imagify_status',
+			],
+			$ids
+		);
 
 		// First run.
 		foreach ( $ids as $i => $id ) {
-			$attachment_status             = isset( $metas['statuses'][ $id ] )            ? $metas['statuses'][ $id ]            : false;
+			$attachment_status             = isset( $metas['statuses'][ $id ] ) ? $metas['statuses'][ $id ] : false;
 			$attachment_optimization_level = isset( $metas['optimization_levels'][ $id ] ) ? $metas['optimization_levels'][ $id ] : false;
 			$attachment_error              = '';
 
@@ -150,7 +157,7 @@ class WP extends AbstractBulk {
 			}
 
 			$attachment_backup_path        = get_imagify_attachment_backup_path( $file_path );
-			$attachment_status             = isset( $metas['statuses'][ $id ] )            ? $metas['statuses'][ $id ]            : false;
+			$attachment_status             = isset( $metas['statuses'][ $id ] ) ? $metas['statuses'][ $id ] : false;
 			$attachment_optimization_level = isset( $metas['optimization_levels'][ $id ] ) ? $metas['optimization_levels'][ $id ] : false;
 
 			// Don't try to re-optimize if there is no backup file.
@@ -159,7 +166,7 @@ class WP extends AbstractBulk {
 			}
 
 			$data[] = $id;
-		} // End foreach().
+		}
 
 		return $data;
 	}
@@ -184,7 +191,7 @@ class WP extends AbstractBulk {
 
 		$this->set_no_time_limit();
 
-		$mime_types   = Imagify_DB::get_mime_types( 'image' );
+		$mime_types = Imagify_DB::get_mime_types( 'image' );
 
 		// Remove single quotes and explode string into array.
 		$mime_types_array = explode( ',', str_replace( "'", '', $mime_types ) );
@@ -205,39 +212,43 @@ class WP extends AbstractBulk {
 		$nodata_where = '';
 		if ( ! imagify_has_attachments_without_required_metadata() ) {
 			$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
-			$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( [
-				'prepared' => true,
-			] );
+			$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause(
+				[
+					'prepared' => true,
+				]
+			);
 		}
 
-		$nextgen_suffix  = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::' . strtoupper( $format ) . '_SUFFIX' );
+		$nextgen_suffix = constant( imagify_get_optimization_process_class_name( 'wp' ) . '::' . strtoupper( $format ) . '_SUFFIX' );
 
-		$ids          = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
-		   SELECT p.ID
-		   FROM $wpdb->posts AS p
-		    $nodata_join
-		   LEFT JOIN $wpdb->postmeta AS mt1
-		    ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
-		   LEFT JOIN $wpdb->postmeta AS mt2
-				ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_data' )
-		   WHERE
-		    p.post_mime_type IN ( $mime_types )
-		    AND (mt1.meta_key IS NULL OR mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
-			AND mt2.meta_value NOT LIKE %s
-		    AND p.post_type = 'attachment'
-		    AND p.post_status IN ( $statuses )
-		    $nodata_where
-		   ORDER BY p.ID DESC
-		   LIMIT 0, %d",
-			'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
-			imagify_get_unoptimized_attachment_limit()
-		) );
+		$ids = $wpdb->get_col(
+			$wpdb->prepare( // WPCS: unprepared SQL ok.
+				"
+			SELECT p.ID
+			FROM $wpdb->posts AS p
+				$nodata_join
+			LEFT JOIN $wpdb->postmeta AS mt1
+				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+			LEFT JOIN $wpdb->postmeta AS mt2
+					ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_data' )
+			WHERE
+				p.post_mime_type IN ( $mime_types )
+				AND (mt1.meta_key IS NULL OR mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
+				AND mt2.meta_value NOT LIKE %s
+				AND p.post_type = 'attachment'
+				AND p.post_status IN ( $statuses )
+				$nodata_where
+			ORDER BY p.ID DESC
+			LIMIT 0, %d",
+				'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
+				imagify_get_unoptimized_attachment_limit()
+			)
+		);
 
 		$wpdb->flush();
 		unset( $mime_types, $statuses, $nextgen_suffix, $mime );
 
-		$ids  = array_filter( array_map( 'absint', $ids ) );
+		$ids = array_filter( array_map( 'absint', $ids ) );
 
 		$data = [
 			'ids'    => [],
@@ -251,10 +262,13 @@ class WP extends AbstractBulk {
 			return $data;
 		}
 
-		$metas = Imagify_DB::get_metas( [
-			// Get attachments filename.
-			'filenames' => '_wp_attached_file',
-		], $ids );
+		$metas = Imagify_DB::get_metas(
+			[
+				// Get attachments filename.
+				'filenames' => '_wp_attached_file',
+			],
+			$ids
+		);
 
 		/**
 		 * Fires before testing for file existence.
@@ -291,7 +305,7 @@ class WP extends AbstractBulk {
 			}
 
 			$data['ids'][] = $id;
-		} // End foreach().
+		}
 
 		return $data;
 	}
