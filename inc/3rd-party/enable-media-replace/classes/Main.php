@@ -96,7 +96,7 @@ class Main extends Imagify_Enable_Media_Replace_Deprecated {
 		}
 
 		// Delete the old backup file and old next-gen files.
-		add_action( 'imagify_before_auto_optimization',         [ $this, 'delete_backup' ] );
+		add_action( 'imagify_before_auto_optimization', [ $this, 'delete_backup' ] );
 		add_action( 'imagify_not_optimized_attachment_updated', [ $this, 'delete_backup' ] );
 	}
 
