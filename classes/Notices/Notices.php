@@ -128,12 +128,12 @@ final class Notices {
 	 */
 	public function init() {
 		// For generic purpose.
-		add_action( 'all_admin_notices',                     [ $this, 'render_notices' ] );
-		add_action( 'wp_ajax_imagify_dismiss_notice',        [ $this, 'admin_post_dismiss_notice' ] );
-		add_action( 'admin_post_imagify_dismiss_notice',     [ $this, 'admin_post_dismiss_notice' ] );
+		add_action( 'all_admin_notices', [ $this, 'render_notices' ] );
+		add_action( 'wp_ajax_imagify_dismiss_notice', [ $this, 'admin_post_dismiss_notice' ] );
+		add_action( 'admin_post_imagify_dismiss_notice', [ $this, 'admin_post_dismiss_notice' ] );
 		// For specific notices.
-		add_action( 'imagify_dismiss_notice',                [ $this, 'clear_scheduled_rating' ] );
-		add_action( 'admin_post_imagify_deactivate_plugin',  [ $this, 'deactivate_plugin' ] );
+		add_action( 'imagify_dismiss_notice', [ $this, 'clear_scheduled_rating' ] );
+		add_action( 'admin_post_imagify_deactivate_plugin', [ $this, 'deactivate_plugin' ] );
 		add_action( 'imagify_not_almost_over_quota_anymore', [ $this, 'renew_almost_over_quota_notice' ] );
 	}
 
