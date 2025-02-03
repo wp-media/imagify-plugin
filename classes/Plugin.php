@@ -95,7 +95,7 @@ class Plugin {
 
 		$this->container->addShared(
 			'filesystem',
-			function() {
+			function () {
 				return new Imagify_Filesystem();
 			}
 		);
