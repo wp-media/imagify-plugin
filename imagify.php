@@ -16,24 +16,24 @@
  * Copyright 2024 WP Media
  */
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 // Imagify defines.
-define( 'IMAGIFY_VERSION',        '2.2.5' );
-define( 'IMAGIFY_SLUG',           'imagify' );
-define( 'IMAGIFY_FILE',           __FILE__ );
-define( 'IMAGIFY_PATH',           realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
-define( 'IMAGIFY_URL',            plugin_dir_url( IMAGIFY_FILE ) );
+define( 'IMAGIFY_VERSION', '2.2.5' );
+define( 'IMAGIFY_SLUG', 'imagify' );
+define( 'IMAGIFY_FILE', __FILE__ );
+define( 'IMAGIFY_PATH', realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
+define( 'IMAGIFY_URL', plugin_dir_url( IMAGIFY_FILE ) );
 define( 'IMAGIFY_ASSETS_IMG_URL', IMAGIFY_URL . 'assets/images/' );
-define( 'IMAGIFY_MAX_BYTES',      5242880 );
-define( 'IMAGIFY_INT_MAX',        PHP_INT_MAX - 30 );
+define( 'IMAGIFY_MAX_BYTES', 5242880 );
+define( 'IMAGIFY_INT_MAX', PHP_INT_MAX - 30 );
 if ( ! defined( 'IMAGIFY_SITE_DOMAIN' ) ) {
 	define( 'IMAGIFY_SITE_DOMAIN', 'https://imagify.io' );
 }
 if ( ! defined( 'IMAGIFY_APP_DOMAIN' ) ) {
-	define( 'IMAGIFY_APP_DOMAIN',     'https://app.imagify.io' );
+	define( 'IMAGIFY_APP_DOMAIN', 'https://app.imagify.io' );
 }
-define( 'IMAGIFY_APP_API_URL',     IMAGIFY_APP_DOMAIN . '/api/' );
+define( 'IMAGIFY_APP_API_URL', IMAGIFY_APP_DOMAIN . '/api/' );
 
 
 // Check for WordPress and PHP version.
@@ -160,4 +160,3 @@ function imagify_deactivation() {
 	do_action( 'imagify_deactivation' );
 }
 register_deactivation_hook( IMAGIFY_FILE, 'imagify_deactivation' );
-
