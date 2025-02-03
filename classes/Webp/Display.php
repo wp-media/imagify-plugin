@@ -52,10 +52,10 @@ class Display implements SubscriberInterface {
 			return $values;
 		}
 
-		$enabled = isset( $values['display_nextgen'] ) ? true : false;
+		$enabled     = isset( $values['display_nextgen'] ) ? true : false;
 		$was_enabled = (bool) get_imagify_option( 'display_nextgen' );
 
-		$result  = false;
+		$result = false;
 
 		if ( $enabled && ! $was_enabled ) {
 			// Add the WebP file type.
