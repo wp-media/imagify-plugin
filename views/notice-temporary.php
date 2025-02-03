@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 $notices = array();
 
@@ -11,9 +11,9 @@ foreach ( $data as $notice_data ) {
 	$notices[ $notice_data['type'] ][] = $notice_data;
 }
 
-foreach ( $notices as $type => $type_notices ) {
+foreach ( $notices as $type_id => $type_notices ) {
 	?>
-	<div class="<?php echo $type; ?> settings-error notice is-dismissible">
+	<div class="<?php echo $type_id; ?> settings-error notice is-dismissible">
 		<?php foreach ( $type_notices as $details ) { ?>
 			<p><strong><?php echo wp_kses( $details['message'], [ 'code' => [] ] ); ?></strong></p>
 		<?php } ?>
