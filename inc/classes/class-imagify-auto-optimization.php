@@ -2,8 +2,6 @@
 
 use Imagify\Traits\InstanceGetterTrait;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Class that handles the auto-optimization process.
  * This occurs when a new image is uploaded, and when an optimized image is worked with (resized, etc).
@@ -76,9 +74,9 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 		$this->is_wp_53 = version_compare( $wp_version, '5.3-alpha1' ) >= 0;
 
 		// Automatic optimization tunel.
-		add_action( 'add_attachment',                  [ $this, 'store_upload_ids' ], $priority );
+		add_action( 'add_attachment', [ $this, 'store_upload_ids' ], $priority );
 		add_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_store_generate_step' ], $priority, 2 );
-		add_filter( 'wp_update_attachment_metadata',   [ $this, 'store_ids_to_optimize' ], $priority, 2 );
+		add_filter( 'wp_update_attachment_metadata', [ $this, 'store_ids_to_optimize' ], $priority, 2 );
 
 		if ( $this->is_wp_53 ) {
 			// WP 5.3+.
@@ -86,15 +84,15 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 			// Upload failure recovering.
 			add_action( 'wp_ajax_media-create-image-subsizes', [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 ); // Before WP’s hook (priority 1).
 		} else {
-			add_action( 'updated_post_meta',             [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
-			add_action( 'added_post_meta',               [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
+			add_action( 'updated_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
+			add_action( 'added_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
 		}
 
 		add_action( 'deleted_post_meta', [ $this, 'unset_optimization' ], $priority, 3 );
 
 		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
 		add_action( 'imagify_before_update_wp_media_data_dimensions', [ __CLASS__, 'prevent_optimization' ], 5 );
-		add_action( 'imagify_after_update_wp_media_data_dimensions',  [ __CLASS__, 'allow_optimization' ], 5 );
+		add_action( 'imagify_after_update_wp_media_data_dimensions', [ __CLASS__, 'allow_optimization' ], 5 );
 	}
 
 	/**
@@ -106,9 +104,9 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 		$priority = IMAGIFY_INT_MAX - 30;
 
 		// Automatic optimization tunel.
-		remove_action( 'add_attachment',                  [ $this, 'store_upload_ids' ], $priority );
+		remove_action( 'add_attachment', [ $this, 'store_upload_ids' ], $priority );
 		remove_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_store_generate_step' ], $priority );
-		remove_filter( 'wp_update_attachment_metadata',   [ $this, 'store_ids_to_optimize' ], $priority );
+		remove_filter( 'wp_update_attachment_metadata', [ $this, 'store_ids_to_optimize' ], $priority );
 
 		if ( $this->is_wp_53 ) {
 			// WP 5.3+.
@@ -116,15 +114,15 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 			// Upload failure recovering.
 			remove_action( 'wp_ajax_media-create-image-subsizes', [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 );
 		} else {
-			remove_action( 'updated_post_meta',             [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
-			remove_action( 'added_post_meta',               [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
+			remove_action( 'updated_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
+			remove_action( 'added_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
 		}
 
 		remove_action( 'deleted_post_meta', [ $this, 'unset_optimization' ], $priority );
 
 		// Prevent to re-optimize when updating the image width and height (when resizing the full image).
 		remove_action( 'imagify_before_update_wp_media_data_dimensions', [ __CLASS__, 'prevent_optimization' ], 5 );
-		remove_action( 'imagify_after_update_wp_media_data_dimensions',  [ __CLASS__, 'allow_optimization' ], 5 );
+		remove_action( 'imagify_after_update_wp_media_data_dimensions', [ __CLASS__, 'allow_optimization' ], 5 );
 	}
 
 
@@ -491,7 +489,7 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 			return $content;
 		}
 
-		$json = @json_decode( $content );
+		$json = json_decode( $content );
 
 		if ( empty( $json->success ) ) {
 			return $content;
