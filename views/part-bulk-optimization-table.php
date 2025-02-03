@@ -1,7 +1,7 @@
 <?php
 use Imagify\Bulk\Bulk;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 ?>
 
 <div class="imagify-bulk-table">
@@ -15,10 +15,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	</div>
 
 	<?php
-	$types = [];
-	$total       = 0;
-	$remaining   = 0;
-	$percentage  = 0;
+	$types      = [];
+	$total      = 0;
+	$remaining  = 0;
+	$percentage = 0;
 
 	foreach ( $data['groups'] as $group ) {
 		$types[ $group['group_id'] . '|' . $group['context'] ] = true;
@@ -35,11 +35,11 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		$percentage = ( $total - $remaining ) / $total * 100;
 	}
 
-	$bulk = Bulk::get_instance();
+	$bulk        = Bulk::get_instance();
 	$aria_hidden = 'aria-hidden="true"';
-	$hidden  = 'hidden';
-	$style   = '';
-	$display = '';
+	$hidden      = 'hidden';
+	$style       = '';
+	$display     = '';
 
 	if (
 		0 !== $percentage
@@ -79,8 +79,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 				<tbody>
 					<?php
 					foreach ( $data['groups'] as $group ) {
-						$context_data = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
-						$group        = array_merge( $group, $context_data );
+						$context_data  = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
+						$group         = array_merge( $group, $context_data );
 						$default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 
 						if ( Imagify_Options::get_instance()->get( 'lossless' ) ) {
