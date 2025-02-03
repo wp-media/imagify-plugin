@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Context;
 
-use \Imagify\Traits\InstanceGetterTrait;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Context class used for the WP media library.
