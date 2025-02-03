@@ -1,10 +1,9 @@
 <?php
 namespace Imagify\ThirdParty\AS3CF;
 
-use \Imagify\Optimization\File;
-use \Imagify\ThirdParty\AS3CF\CDN\WP\AS3 as CDN;
-
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Optimization\File;
+use Imagify\ThirdParty\AS3CF\CDN\WP\AS3 as CDN;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Imagify WP Offload S3 class.
@@ -13,7 +12,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Main extends \Imagify_AS3CF_Deprecated {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * AS3CF settings.
@@ -62,7 +61,7 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		/**
 		 * WebP images to display with a <picture> tag.
 		 */
-		add_action( 'as3cf_init',                         [ $this, 'store_s3_settings' ] );
+		add_action( 'as3cf_init', [ $this, 'store_s3_settings' ] );
 		add_filter( 'imagify_webp_picture_process_image', [ $this, 'picture_tag_webp_image' ] );
 
 		/**
@@ -74,18 +73,18 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		 * Optimization process.
 		 */
 		add_filter( 'imagify_before_optimize_size', [ $this, 'maybe_copy_file_from_cdn_before_optimization' ], 8, 6 );
-		add_action( 'imagify_after_optimize',       [ $this, 'maybe_send_media_to_cdn_after_optimization' ], 8, 2 );
+		add_action( 'imagify_after_optimize', [ $this, 'maybe_send_media_to_cdn_after_optimization' ], 8, 2 );
 
 		/**
 		 * Restoration process.
 		 */
-		add_action( 'imagify_after_restore_media',  [ $this, 'maybe_send_media_to_cdn_after_restore' ], 8, 4 );
+		add_action( 'imagify_after_restore_media', [ $this, 'maybe_send_media_to_cdn_after_restore' ], 8, 4 );
 
 		/**
 		 * WebP support.
 		 */
-		add_filter( 'as3cf_attachment_file_paths',  [ $this, 'add_webp_images_to_attachment' ], 8, 3 );
-		add_filter( 'mime_types',                   [ $this, 'add_webp_support' ] );
+		add_filter( 'as3cf_attachment_file_paths', [ $this, 'add_webp_images_to_attachment' ], 8, 3 );
+		add_filter( 'mime_types', [ $this, 'add_webp_support' ] );
 
 		/**
 		 * Redirections.
@@ -528,10 +527,13 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		}
 
 		if ( ! isset( $data ) ) {
-			$data = \Imagify_DB::get_metas( [
-				// Get the filesizes.
-				's3_filesize' => 'wpos3_filesize_total',
-			], $image_ids );
+			$data = \Imagify_DB::get_metas(
+				[
+					// Get the filesizes.
+					's3_filesize' => 'wpos3_filesize_total',
+				],
+				$image_ids
+			);
 
 			$data = array_map( 'absint', $data['s3_filesize'] );
 		}
@@ -592,12 +594,15 @@ class Main extends \Imagify_AS3CF_Deprecated {
 		}
 
 		if ( is_array( $is ) ) {
-			return imagify_merge_intersect( $is, [
-				'key'        => '',
-				'year_month' => '',
-				'subdirs'    => '',
-				'filename'   => '',
-			] );
+			return imagify_merge_intersect(
+				$is,
+				[
+					'key'        => '',
+					'year_month' => '',
+					'subdirs'    => '',
+					'filename'   => '',
+				]
+			);
 		}
 
 		if ( ! isset( $uploads_dir ) ) {
@@ -623,9 +628,12 @@ class Main extends \Imagify_AS3CF_Deprecated {
 
 		unset( $match[0] );
 
-		return array_merge( [
-			'year_month' => '',
-			'subdirs'    => '',
-		], $match );
+		return array_merge(
+			[
+				'year_month' => '',
+				'subdirs'    => '',
+			],
+			$match
+		);
 	}
 }
