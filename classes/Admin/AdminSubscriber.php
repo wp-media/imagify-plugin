@@ -36,7 +36,7 @@ class AdminSubscriber implements SubscriberInterface {
 		$basename = plugin_basename( IMAGIFY_FILE );
 
 		return [
-			'plugin_action_links_' . $basename               => 'plugin_action_links',
+			'plugin_action_links_' . $basename => 'plugin_action_links',
 			'network_admin_plugin_action_links_' . $basename => 'plugin_action_links',
 		];
 	}
@@ -54,14 +54,34 @@ class AdminSubscriber implements SubscriberInterface {
 		$url   = 1 !== $this->user->get_plan_id() ? 'documentation' : 'subscription';
 		$class = 1 !== $this->user->get_plan_id() ? '' : ' class="imagify-plugin-upgrade"';
 
-		array_unshift( $actions, sprintf( '<a href="%s" target="_blank"%s>%s</a>',
-			esc_url( imagify_get_external_url( $url ) ),
-			$class,
-			$text
-		) );
+		array_unshift(
+			$actions,
+			sprintf(
+				'<a href="%s" target="_blank"%s>%s</a>',
+				esc_url( imagify_get_external_url( $url ) ),
+				$class,
+				$text
+			)
+		);
 
-		array_unshift( $actions, sprintf( '<a href="%s">%s</a>', esc_url( get_imagify_admin_url( 'bulk-optimization' ) ), __( 'Bulk Optimization', 'imagify' ) ) );
-		array_unshift( $actions, sprintf( '<a href="%s">%s</a>', esc_url( get_imagify_admin_url() ), __( 'Settings', 'imagify' ) ) );
+		array_unshift(
+			$actions,
+			sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( get_imagify_admin_url( 'bulk-optimization' ) ),
+				__( 'Bulk Optimization', 'imagify' )
+			)
+		);
+
+		array_unshift(
+			$actions,
+			sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( get_imagify_admin_url() ),
+				__( 'Settings', 'imagify' )
+			)
+		);
+
 		return $actions;
 	}
 }
