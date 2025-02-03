@@ -40,6 +40,4 @@ jobs:
       run: composer install --prefer-dist --no-interaction --no-scripts
 
     - name: Lint with phpcs
-      run: |
-        vendor/bin/phpcs --config-set installed_paths ../../phpcompatibility/phpcompatibility-paragonie,../../phpcompatibility/phpcompatibility-wp,../../wp-coding-standards/wpcs,../../phpcompatibility/php-compatibility
-        composer phpcs
+      run: composer phpcs
