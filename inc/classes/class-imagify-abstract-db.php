@@ -873,7 +873,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 		}
 
 		$serialized_data = array_map(
-			function( $value ) {
+			function ( $value ) {
 				// Try not to store empty serialized arrays.
 				return [] === $value ? null : maybe_serialize( $value );
 			},
