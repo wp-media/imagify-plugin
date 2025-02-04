@@ -84,14 +84,8 @@ class Imagify_Settings {
 		add_filter( 'option_page_capability_' . $this->settings_group, [ $this, 'get_capability' ] );
 
 		if ( imagify_is_active_for_network() ) {
-			add_filter( 'pre_update_site_option_' . $this->option_name, [
-				$this,
-				'maybe_set_redirection',
-			], 10, 2 );
-			add_action( 'update_site_option_' . $this->option_name, [
-				$this,
-				'after_save_network_options',
-			], 10, 3 );
+			add_filter( 'pre_update_site_option_' . $this->option_name, [ $this, 'maybe_set_redirection' ], 10, 2 );
+			add_action( 'update_site_option_' . $this->option_name, [ $this, 'after_save_network_options' ], 10, 3 );
 			add_action( 'admin_post_update', [ $this, 'update_site_option_on_network' ] );
 		} else {
 			add_filter( 'pre_update_option_' . $this->option_name, [ $this, 'maybe_set_redirection' ], 10, 2 );
@@ -322,7 +316,7 @@ class Imagify_Settings {
 	 *
 	 * @return mixed            The option value.
 	 */
-	public function maybe_set_redirection( $value, $old_value ) {
+	public function maybe_set_redirection( $value, $old_value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( isset( $_POST['submit-goto-bulk'] ) ) { // WPCS: CSRF ok.
 			$_REQUEST['_wp_http_referer'] = esc_url_raw( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) );
 		}
@@ -460,14 +454,17 @@ class Imagify_Settings {
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_checkbox( $args ) {
-		$args = array_merge( [
-			'option_name'   => '',
-			'label'         => '',
-			'info'          => '',
-			'attributes'    => [],
-			// To not use the plugin settings: use an integer.
-			'current_value' => null,
-		], $args );
+		$args = array_merge(
+			[
+				'option_name'   => '',
+				'label'         => '',
+				'info'          => '',
+				'attributes'    => [],
+				// To not use the plugin settings: use an integer.
+				'current_value' => null,
+			],
+			$args
+		);
 
 		if ( ! $args['option_name'] || ! $args['label'] ) {
 			return;
@@ -560,11 +557,14 @@ class Imagify_Settings {
 		}
 
 		$option_name_class = sanitize_html_class( $args['option_name'] );
-		$attributes        = array_merge( [
-			'name'  => $this->option_name . '[' . $args['option_name'] . ( $args['reverse_check'] ? '-checked' : '' ) . '][]',
-			'id'    => 'imagify_' . $option_name_class . '_%s',
-			'class' => 'imagify-row-check',
-		], $args['attributes'] );
+		$attributes        = array_merge(
+			[
+				'name'  => $this->option_name . '[' . $args['option_name'] . ( $args['reverse_check'] ? '-checked' : '' ) . '][]',
+				'id'    => 'imagify_' . $option_name_class . '_%s',
+				'class' => 'imagify-row-check',
+			],
+			$args['attributes']
+		);
 
 		$id_attribute = $attributes['id'];
 		unset( $attributes['id'] );
