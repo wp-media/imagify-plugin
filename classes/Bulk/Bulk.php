@@ -62,7 +62,7 @@ final class Bulk {
 			return;
 		}
 
-		$data     = $process->get_data();
+		$data = $process->get_data();
 
 		if ( ! $data ) {
 			return;
@@ -81,7 +81,7 @@ final class Bulk {
 				];
 			}
 
-			$progress['total']++;
+			++$progress['total'];
 
 			$progress['original_size']  += $size_data['original_size'];
 			$progress['optimized_size'] += $size_data['optimized_size'];
@@ -93,7 +93,7 @@ final class Bulk {
 
 		if ( false !== $custom_folders ) {
 			if ( false !== strpos( $item['process_class'], 'CustomFolders' ) ) {
-				$custom_folders['remaining']--;
+				--$custom_folders['remaining'];
 
 				set_transient( 'imagify_custom-folders_optimize_running', $custom_folders, DAY_IN_SECONDS );
 
@@ -103,7 +103,7 @@ final class Bulk {
 
 		if ( false !== $library_wp ) {
 			if ( false !== strpos( $item['process_class'], 'WP' ) ) {
-				$library_wp['remaining']--;
+				--$library_wp['remaining'];
 
 				set_transient( 'imagify_wp_optimize_running', $library_wp, DAY_IN_SECONDS );
 
@@ -622,7 +622,7 @@ final class Bulk {
 	 */
 	public function get_contexts() {
 		$contexts = [];
-		$types = [];
+		$types    = [];
 
 		// Library: in each site.
 		if ( ! is_network_admin() ) {
@@ -630,7 +630,15 @@ final class Bulk {
 		}
 
 		// Custom folders: in network admin only if network activated, in each site otherwise.
-		if ( imagify_can_optimize_custom_folders() && ( imagify_is_active_for_network() && is_network_admin() || ! imagify_is_active_for_network() ) ) {
+		if (
+			imagify_can_optimize_custom_folders()
+			&&
+			(
+				( imagify_is_active_for_network() && is_network_admin() )
+				||
+				! imagify_is_active_for_network()
+			)
+		) {
 			$types['custom-folders|custom-folders'] = 1;
 		}
 
@@ -652,7 +660,6 @@ final class Bulk {
 			$folders_instance = \Imagify_Folders_DB::get_instance();
 
 			if ( ! $folders_instance->has_items() ) {
-				// New Feature!
 				if ( ! in_array( 'wp', $contexts, true ) ) {
 					$contexts[] = 'wp';
 				}
