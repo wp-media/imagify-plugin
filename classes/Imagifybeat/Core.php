@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Imagifybeat;
 
-use \Imagify\Traits\InstanceGetterTrait;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Imagifybeat core.
@@ -20,7 +20,7 @@ final class Core {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'wp_ajax_imagifybeat',        [ $this, 'core_handler' ], 1 );
+		add_action( 'wp_ajax_imagifybeat', [ $this, 'core_handler' ], 1 );
 		add_filter( 'imagifybeat_refresh_nonces', [ $this, 'refresh_imagifybeat_nonces' ] );
 	}
 
