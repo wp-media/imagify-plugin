@@ -203,7 +203,7 @@ class Imagify_Views {
 
 		// Change the sub-menu label.
 		if ( ! empty( $submenu[ $this->get_bulk_page_slug() ] ) ) {
-			$submenu[ $this->get_bulk_page_slug() ][0][0] = __( 'Bulk Optimization', 'imagify' ); // phcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+			$submenu[ $this->get_bulk_page_slug() ][0][0] = __( 'Bulk Optimization', 'imagify' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
 
 		if ( $screen_id ) {
