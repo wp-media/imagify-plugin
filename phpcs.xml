@@ -36,11 +36,9 @@
 	<!-- Run against the WordPress ruleset. -->
 	<rule ref="WordPress">
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
-		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 		<exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/><!-- Excluded as long as it doesn't ignore comments. -->
 		<exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning"/><!-- Too many false positives. -->
 		<exclude name="Generic.Functions.FunctionCallArgumentSpacing.TooMuchSpaceAfterComma"/><!-- Completely broken. -->
-		<exclude name="Generic.PHP.NoSilencedErrors.Discouraged"/><!-- I've been told that silence is golden. -->
 		<exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket"/><!-- Maybe someday. -->
 		<exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/><!-- Maybe someday. -->
 		<exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine"/><!-- Maybe someday. -->
@@ -56,10 +54,7 @@
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_key"/><!-- Maybe someday. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query"/><!-- Maybe someday. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value"/><!-- Maybe someday. -->
-		<exclude name="WordPress.PHP.NoSilencedErrors.Discouraged"/><!-- Silence is golden. -->
 		<exclude name="WordPress.WhiteSpace.OperatorSpacing.SpacingBefore"/><!-- Nope. Allow ternary tests to be aligned. -->
-		<exclude name="WordPress.WP.CapitalPDangit.Misspelled"/><!-- False positives. -->
-		<exclude name="WordPress.WP.GlobalVariablesOverride.Prohibited"/><!-- Why the fuck are YOU allowed to name your variables $path and $type, and not me? -->
 		<!-- Will be handled later. -->
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
 		<exclude name="WordPress.DB.PreparedSQL.DeprecatedWhitelistCommentFound"/>
