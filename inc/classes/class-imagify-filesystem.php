@@ -547,7 +547,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			'type'     => (int) $size[2],
 			'attr'     => $size[3],
 			'channels' => isset( $size['channels'] ) ? (int) $size['channels'] : null,
-			'bits'     => isset( $size['bits'] )? (int) $size['bits'] : null,
+			'bits'     => isset( $size['bits'] ) ? (int) $size['bits'] : null,
 			'mime'     => $size['mime'],
 		);
 	}
@@ -613,7 +613,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return false;
 		}
 
-		$fh = @fopen( $file_path, 'rb' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		$fh = @fopen( $file_path, 'rb' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 
 		if ( ! $fh ) {
 			// Could not open the file.
@@ -635,7 +635,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			$count += preg_match_all( '#\x00\x21\xF9\x04.{4}\x00(\x2C|\x21)#s', $chunk, $matches );
 		}
 
-		fclose( $fh );
+		fclose( $fh ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
 		return $count > 1;
 	}
