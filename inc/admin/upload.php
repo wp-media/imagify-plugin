@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 add_filter( 'manage_media_columns', '_imagify_manage_media_columns' );
 /**
@@ -79,17 +79,20 @@ function _imagify_sort_attachments_by_status( $vars ) {
 			return $vars;
 	}
 
-	$vars = array_merge( $vars, array(
-		'meta_query' => array(
-			'relation' => 'or',
-			array(
-				'key'     => $meta_key,
-				'value'   => $status,
-				'compare' => $meta_compare,
-			),
-			$relation,
-		),
-	) );
+	$vars = array_merge(
+		$vars,
+		[
+			'meta_query' => [
+				'relation' => 'or',
+				[
+					'key'     => $meta_key,
+					'value'   => $status,
+					'compare' => $meta_compare,
+				],
+				$relation,
+			],
+		]
+	);
 
 	if ( ! key_exists( 'post_mime_type', $vars ) ) {
 		$vars['post_mime_type'] = imagify_get_mime_types();
