@@ -1929,7 +1929,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			$data['success'] = true;
 
 			if ( property_exists( $response, 'message' ) ) {
-				$data['message']  = imagify_translate_api_message( $response->message );
+				$data['message'] = imagify_translate_api_message( $response->message );
 			}
 
 			$data['original_size']  = $response->original_size;
