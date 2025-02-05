@@ -328,8 +328,8 @@ function imagify_count_saving_data( $key = '' ) {
 		$limit = apply_filters( 'imagify_count_saving_data_limit', 15000 );
 		$limit = absint( $limit );
 
-		$mime_types     = Imagify_DB::get_mime_types();
-		$statuses       = Imagify_DB::get_post_statuses();
+		$mime_types   = Imagify_DB::get_mime_types();
+		$statuses     = Imagify_DB::get_post_statuses();
 		$nodata_join  = '';
 		$nodata_where = '';
 
@@ -398,7 +398,7 @@ function imagify_count_saving_data( $key = '' ) {
 				++$count;
 
 				// Increment the original sizes.
-				$original_size  += ! empty( $original_data['original_size'] )  ? $original_data['original_size']  : 0;
+				$original_size  += ! empty( $original_data['original_size'] ) ? $original_data['original_size'] : 0;
 				$optimized_size += ! empty( $original_data['optimized_size'] ) ? $original_data['optimized_size'] : 0;
 
 				unset( $attachment_data['sizes']['full'], $original_data );
@@ -407,7 +407,7 @@ function imagify_count_saving_data( $key = '' ) {
 				if ( $attachment_data['sizes'] ) {
 					foreach ( $attachment_data['sizes'] as $size_data ) {
 						if ( ! empty( $size_data['success'] ) ) {
-							$original_size  += ! empty( $size_data['original_size'] )  ? $size_data['original_size']  : 0;
+							$original_size  += ! empty( $size_data['original_size'] ) ? $size_data['original_size'] : 0;
 							$optimized_size += ! empty( $size_data['optimized_size'] ) ? $size_data['optimized_size'] : 0;
 						}
 					}
@@ -462,7 +462,8 @@ function imagify_calculate_total_size_images_library() {
 			AND p.post_status IN ( $statuses )
 			$nodata_where
 		LIMIT 250
-	" );
+	"
+	);
 
 	if ( ! $image_ids ) {
 		return 0;
@@ -505,30 +506,36 @@ function imagify_calculate_average_size_images_per_month() {
 			%date_query%";
 
 	// Queries per month.
-	$date_query = new WP_Date_Query( array(
+	$date_query = new WP_Date_Query(
 		array(
-			'before' => 'now',
-			'after'  => '1 month ago',
-		),
-	) );
+			array(
+				'before' => 'now',
+				'after'  => '1 month ago',
+			),
+		)
+	);
 
 	$partial_images_uploaded_last_month = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
-	$date_query = new WP_Date_Query( array(
+	$date_query = new WP_Date_Query(
 		array(
-			'before' => '1 month ago',
-			'after'  => '2 months ago',
-		),
-	) );
+			array(
+				'before' => '1 month ago',
+				'after'  => '2 months ago',
+			),
+		)
+	);
 
 	$partial_images_uploaded_two_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
-	$date_query = new WP_Date_Query( array(
+	$date_query = new WP_Date_Query(
 		array(
-			'before' => '2 month ago',
-			'after'  => '3 months ago',
-		),
-	) );
+			array(
+				'before' => '2 month ago',
+				'after'  => '3 months ago',
+			),
+		)
+	);
 
 	$partial_images_uploaded_three_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
@@ -540,12 +547,14 @@ function imagify_calculate_average_size_images_per_month() {
 	}
 
 	// Total for the 3 months, without the "250" limit.
-	$date_query = new WP_Date_Query( array(
+	$date_query = new WP_Date_Query(
 		array(
-			'before' => 'now',
-			'after'  => '3 month ago',
-		),
-	) );
+			array(
+				'before' => 'now',
+				'after'  => '3 month ago',
+			),
+		)
+	);
 
 	$images_uploaded_id = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query ) ); // WPCS: unprepared SQL ok.
 
@@ -581,16 +590,19 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 		return 0;
 	}
 
-	$results = Imagify_DB::get_metas( array(
-		// Get attachments filename.
-		'filenames'    => '_wp_attached_file',
-		// Get attachments data.
-		'data'         => '_wp_attachment_metadata',
-		// Get Imagify data.
-		'imagify_data' => '_imagify_data',
-		// Get attachments status.
-		'statuses'     => '_imagify_status',
-	), $image_ids );
+	$results = Imagify_DB::get_metas(
+		array(
+			// Get attachments filename.
+			'filenames'    => '_wp_attached_file',
+			// Get attachments data.
+			'data'         => '_wp_attachment_metadata',
+			// Get Imagify data.
+			'imagify_data' => '_imagify_data',
+			// Get attachments status.
+			'statuses'     => '_imagify_status',
+		),
+		$image_ids
+	);
 
 	// Number of image attachments we're doing the calculation with. In case array_filter() removed results.
 	$partial_total_images = count( $image_ids );
@@ -720,10 +732,13 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
  */
 function imagify_get_bulk_stats( $types, $args = array() ) {
 	$types = $types && is_array( $types ) ? $types : array();
-	$args  = array_merge( array(
-		'fullset'    => false,
-		'formatting' => true,
-	), (array) $args );
+	$args  = array_merge(
+		array(
+			'fullset'    => false,
+			'formatting' => true,
+		),
+		(array) $args
+	);
 
 	$data = array(
 		// Global chart.
@@ -744,10 +759,10 @@ function imagify_get_bulk_stats( $types, $args = array() ) {
 		$saving_data = imagify_count_saving_data();
 
 		// Global chart.
-		$data['total_attachments']             += imagify_count_attachments();
-		$data['unoptimized_attachments']       += imagify_count_unoptimized_attachments();
-		$data['optimized_attachments']         += imagify_count_optimized_attachments();
-		$data['errors_attachments']            += imagify_count_error_attachments();
+		$data['total_attachments']       += imagify_count_attachments();
+		$data['unoptimized_attachments'] += imagify_count_unoptimized_attachments();
+		$data['optimized_attachments']   += imagify_count_optimized_attachments();
+		$data['errors_attachments']      += imagify_count_error_attachments();
 		// Stats block.
 		$data['already_optimized_attachments'] += $saving_data['count'];
 		$data['original_human']                += $saving_data['original_size'];
@@ -759,10 +774,10 @@ function imagify_get_bulk_stats( $types, $args = array() ) {
 		 * Custom folders.
 		 */
 		// Global chart.
-		$data['total_attachments']             += Imagify_Files_Stats::count_all_files();
-		$data['unoptimized_attachments']       += Imagify_Files_Stats::count_no_status_files();
-		$data['optimized_attachments']         += Imagify_Files_Stats::count_optimized_files();
-		$data['errors_attachments']            += Imagify_Files_Stats::count_error_files();
+		$data['total_attachments']       += Imagify_Files_Stats::count_all_files();
+		$data['unoptimized_attachments'] += Imagify_Files_Stats::count_no_status_files();
+		$data['optimized_attachments']   += Imagify_Files_Stats::count_optimized_files();
+		$data['errors_attachments']      += Imagify_Files_Stats::count_error_files();
 		// Stats block.
 		$data['already_optimized_attachments'] += Imagify_Files_Stats::count_success_files();
 		$data['original_human']                += Imagify_Files_Stats::get_original_size();
