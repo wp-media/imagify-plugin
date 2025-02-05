@@ -114,8 +114,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 							<p class="imagify-options-subtitle"><?php _e( 'Build better, faster, safer', 'imagify' ); ?></p>
 							<p class="">
 								<?php
-								_e( 'Beyond Imagify, there\'s a whole family of plugins designed to help you build better, faster, and safer websites. Each one is crafted with our unique blend of expertise, simplicity, and
-outstanding support. Combine our plugins below to build incredible WordPress websites!', 'imagify');
+								_e( 'Beyond Imagify, there\'s a whole family of plugins designed to help you build better, faster, and safer websites. Each one is crafted with our unique blend of expertise, simplicity, and outstanding support. Combine our plugins below to build incredible WordPress websites!', 'imagify' );
 								?>
 							</p>
 							<?php foreach ( $data['plugin_family'] as $plugin_name => $plugin_data ) : ?>
