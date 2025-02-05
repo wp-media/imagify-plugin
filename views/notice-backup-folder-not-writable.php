@@ -1,9 +1,12 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
-$this->print_template( 'notice-header', array(
-	'classes' => array( 'error' ),
-) );
+$this->print_template(
+	'notice-header',
+	[
+		'classes' => [ 'error' ],
+	]
+);
 
 $backup_path = $this->filesystem->make_path_relative( get_imagify_backup_dir_path( true ) );
 
