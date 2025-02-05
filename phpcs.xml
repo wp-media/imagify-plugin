@@ -91,8 +91,4 @@
 			</property>
 		</properties>
 	</rule>
-
-	<rule ref="WordPress.WP.GlobalVariablesOverride.OverrideProhibited">
-		<exclude-pattern>views/*</exclude-pattern>
-	</rule>
 </ruleset>
