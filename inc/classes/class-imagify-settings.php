@@ -533,16 +533,19 @@ class Imagify_Settings {
 	 *                    {current_values}  array  USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_checkbox_list( $args ) {
-		$args = array_merge( [
-			'option_name'     => '',
-			'legend'          => '',
-			'values'          => [],
-			'disabled_values' => [],
-			'reverse_check'   => false,
-			'attributes'      => [],
-			// To not use the plugin settings: use an array.
-			'current_values'  => false,
-		], $args );
+		$args = array_merge(
+			[
+				'option_name'     => '',
+				'legend'          => '',
+				'values'          => [],
+				'disabled_values' => [],
+				'reverse_check'   => false,
+				'attributes'      => [],
+				// To not use the plugin settings: use an array.
+				'current_values'  => false,
+			],
+			$args
+		);
 
 		if ( ! $args['option_name'] || ! $args['values'] ) {
 			return;
@@ -669,15 +672,18 @@ class Imagify_Settings {
 	 * }
 	 */
 	public function field_radio_list( $args ) {
-		$args = array_merge( [
-			'option_name'   => '',
-			'legend'        => '',
-			'info'          => '',
-			'values'        => [],
-			'attributes'    => [],
-			// To not use the plugin settings: use an array.
-			'current_value' => false,
-		], $args );
+		$args = array_merge(
+			[
+				'option_name'   => '',
+				'legend'        => '',
+				'info'          => '',
+				'values'        => [],
+				'attributes'    => [],
+				// To not use the plugin settings: use an array.
+				'current_value' => false,
+			],
+			$args
+		);
 
 		if ( ! $args['option_name'] || ! $args['values'] ) {
 			return;
@@ -692,11 +698,14 @@ class Imagify_Settings {
 		}
 
 		$option_name_class = sanitize_html_class( $args['option_name'] );
-		$attributes        = array_merge( [
-			'name'  => $this->option_name . '[' . $args['option_name'] . ']',
-			'id'    => 'imagify_' . $option_name_class . '_%s',
-			'class' => 'imagify-row-radio',
-		], $args['attributes'] );
+		$attributes        = array_merge(
+			[
+				'name'  => $this->option_name . '[' . $args['option_name'] . ']',
+				'id'    => 'imagify_' . $option_name_class . '_%s',
+				'class' => 'imagify-row-radio',
+			],
+			$args['attributes']
+		);
 
 		$id_attribute = $attributes['id'];
 		unset( $attributes['id'] );
@@ -784,11 +793,14 @@ class Imagify_Settings {
 		}
 
 		$option_name_class = sanitize_html_class( $args['option_name'] );
-		$attributes        = array_merge( [
-			'name'  => $this->option_name . '[' . $args['option_name'] . ']',
-			'id'    => 'imagify_' . $option_name_class . '_%s',
-			'class' => 'imagify-row-radio',
-		], $args['attributes'] );
+		$attributes        = array_merge(
+			[
+				'name'  => $this->option_name . '[' . $args['option_name'] . ']',
+				'id'    => 'imagify_' . $option_name_class . '_%s',
+				'class' => 'imagify-row-radio',
+			],
+			$args['attributes']
+		);
 
 		$id_attribute = $attributes['id'];
 		unset( $attributes['id'] );
@@ -831,14 +843,17 @@ class Imagify_Settings {
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_text_box( $args ) {
-		$args = array_merge( [
-			'option_name'   => '',
-			'label'         => '',
-			'info'          => '',
-			'attributes'    => [],
-			// To not use the plugin settings.
-			'current_value' => null,
-		], $args );
+		$args = array_merge(
+			[
+				'option_name'   => '',
+				'label'         => '',
+				'info'          => '',
+				'attributes'    => [],
+				// To not use the plugin settings.
+				'current_value' => null,
+			],
+			$args
+		);
 
 		if ( ! $args['option_name'] || ! $args['label'] ) {
 			return;
@@ -903,12 +918,15 @@ class Imagify_Settings {
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_hidden( $args ) {
-		$args = array_merge( [
-			'option_name'   => '',
-			'attributes'    => [],
-			// To not use the plugin settings.
-			'current_value' => null,
-		], $args );
+		$args = array_merge(
+			[
+				'option_name'   => '',
+				'attributes'    => [],
+				// To not use the plugin settings.
+				'current_value' => null,
+			],
+			$args
+		);
 
 		if ( ! $args['option_name'] ) {
 			return;
