@@ -40,10 +40,10 @@ function imagify_ngg_bulk_stats( $data, $types ) {
 	remove_filter( 'imagify_count_saving_data', 'imagify_ngg_count_saving_data', 8 );
 
 	// Global chart.
-	$data['total_attachments']             += imagify_ngg_count_attachments();
-	$data['unoptimized_attachments']       += imagify_ngg_count_unoptimized_attachments();
-	$data['optimized_attachments']         += imagify_ngg_count_optimized_attachments();
-	$data['errors_attachments']            += imagify_ngg_count_error_attachments();
+	$data['total_attachments']       += imagify_ngg_count_attachments();
+	$data['unoptimized_attachments'] += imagify_ngg_count_unoptimized_attachments();
+	$data['optimized_attachments']   += imagify_ngg_count_optimized_attachments();
+	$data['errors_attachments']      += imagify_ngg_count_error_attachments();
 	// Stats block.
 	$data['already_optimized_attachments'] += $total_saving_data['count'];
 	$data['original_human']                += $total_saving_data['original_size'];
