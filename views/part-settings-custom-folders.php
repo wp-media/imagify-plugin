@@ -153,7 +153,8 @@ if ( ! is_network_admin() ) {
 					<?php
 					if ( $custom_folders ) {
 						foreach ( $custom_folders as $placeholder => $label ) {
-							$this->print_template( 'part-settings-row-custom-folder',
+							$this->print_template(
+								'part-settings-row-custom-folder',
 								[
 									'value' => $placeholder,
 									'label' => $label,
