@@ -373,7 +373,6 @@ function imagify_count_saving_data( $key = '' ) {
 			unset( $limit_ids );
 
 			if ( ! $attachments ) {
-				// Uh?!
 				continue;
 			}
 
@@ -417,8 +416,8 @@ function imagify_count_saving_data( $key = '' ) {
 			}
 
 			unset( $attachments, $attachment_data );
-		} // End while().
-	} // End if().
+		}
+	}
 
 	$data = array(
 		'count'          => $count,
@@ -695,7 +694,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 			$results['imagify_data'][ $image_id ],
 			$results['statuses'][ $image_id ]
 		);
-	} // End foreach().
+	}
 
 	// Number of thumbnails per attachment = Number of thumbnails / Number of attachments.
 	$intermediate_images_per_image = $partial_total_intermediate_images / $partial_total_images;
