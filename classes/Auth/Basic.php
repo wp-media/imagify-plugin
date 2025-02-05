@@ -22,9 +22,9 @@ final class Basic {
 	 */
 	public function init() {
 		add_filter( 'imagify_background_process_url', [ $this, 'get_auth_url' ] );
-		add_filter( 'imagify_async_job_url',          [ $this, 'get_auth_url' ] );
-		add_filter( 'imagify_internal_request_url',   [ $this, 'get_auth_url' ] );
-		add_filter( 'cron_request',                   [ $this, 'cron_request_args' ] );
+		add_filter( 'imagify_async_job_url', [ $this, 'get_auth_url' ] );
+		add_filter( 'imagify_internal_request_url', [ $this, 'get_auth_url' ] );
+		add_filter( 'cron_request', [ $this, 'cron_request_args' ] );
 	}
 
 	/**
