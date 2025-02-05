@@ -96,9 +96,12 @@ abstract class Imagify_Abstract_Options {
 			$this->autoload = $this->autoload ? 'yes' : 'no';
 		}
 
-		$this->default_values = array_merge( array(
-			'version' => '',
-		), $this->default_values );
+		$this->default_values = array_merge(
+			array(
+				'version' => '',
+			),
+			$this->default_values
+		);
 	}
 
 	/**
