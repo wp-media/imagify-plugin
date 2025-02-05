@@ -447,7 +447,7 @@ class Imagify_Custom_Folders {
 				$new_data,
 				[
 					'file_date'     => $file_date,
-					'width'         => $size ? $size['width']  : 0,
+					'width'         => $size ? $size['width'] : 0,
 					'height'        => $size ? $size['height'] : 0,
 					'original_size' => $filesystem->size( $path ),
 				]
@@ -1070,10 +1070,12 @@ class Imagify_Custom_Folders {
 				continue;
 			}
 
-			$folder_ids[] = $folders_db->insert( array(
-				'path'   => $placeholder,
-				'active' => 1,
-			) );
+			$folder_ids[] = $folders_db->insert(
+				array(
+					'path'   => $placeholder,
+					'active' => 1,
+				)
+			);
 		}
 
 		return array_filter( $folder_ids );
