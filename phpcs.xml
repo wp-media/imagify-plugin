@@ -48,10 +48,6 @@
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value"/><!-- Maybe someday. -->
 		<!-- Will be handled later. -->
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
-		<exclude name="WordPress.DB.PreparedSQL.DeprecatedWhitelistCommentFound"/>
-		<exclude name="WordPress.DB.PreparedSQLPlaceholders.DeprecatedWhitelistCommentFound"/>
-		<exclude name="WordPress.Security.NonceVerification.DeprecatedWhitelistCommentFound"/>
-		<exclude name="WordPress.WP.GlobalVariablesOverride.DeprecatedWhitelistCommentFound"/>
 		<exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotSanitized"/>
 		<exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotValidated"/>
 		<exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped"/>
