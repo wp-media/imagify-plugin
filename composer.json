@@ -104,7 +104,7 @@
 		"install-codestandards": "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run",
 		"phpcs": "vendor/bin/phpcs",
 		"phpcs-changed": "./bin/phpcs-changed.sh",
-		"phpcs:fix": "phpcbf",
+		"phpcbf": "vendor/bin/phpcbf",
 		"run-stan": "vendor/bin/phpstan analyze --memory-limit=2G --no-progress",
 		"run-tests": [
 			"@test-unit",
