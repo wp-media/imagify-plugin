@@ -2,18 +2,18 @@
 
 use Imagify\User\User;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
-$imagify_user = new User();
+$imagify_user     = new User();
 $unconsumed_quota = $imagify_user ? $imagify_user->get_percent_unconsumed_quota() : 0;
-$infinite     = $imagify_user->is_infinite();
-$upgrade      = '';
-$price        = '';
-$upgrade_link = '';
-$user_id      = get_current_user_id();
-$notices      = get_user_meta( $user_id, '_imagify_ignore_notices', true );
-$notices      = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
-$api_key_valid = Imagify_Requirements::is_api_key_valid();
+$infinite         = $imagify_user->is_infinite();
+$upgrade          = '';
+$price            = '';
+$upgrade_link     = '';
+$user_id          = get_current_user_id();
+$notices          = get_user_meta( $user_id, '_imagify_ignore_notices', true );
+$notices          = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
+$api_key_valid    = Imagify_Requirements::is_api_key_valid();
 
 if (
 	$imagify_user->is_free()
@@ -71,17 +71,17 @@ if (
 	</div>
 	<?php
 	if ( $imagify_user->is_free() ) {
-		$upgrade = esc_html__( 'Upgrade your plan now for more!', 'imagify' );
-		$price = esc_html__( 'From $5.99/month only, keep going with image optimization!', 'imagify' );
+		$upgrade      = esc_html__( 'Upgrade your plan now for more!', 'imagify' );
+		$price        = esc_html__( 'From $5.99/month only, keep going with image optimization!', 'imagify' );
 		$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/?utm_source=plugin&utm_medium=upsell_banner';
 	} elseif ( $imagify_user->is_growth() ) {
 		$upgrade = esc_html__( 'Upgrade your plan now to keep optimizing your images.', 'imagify' );
 
 		if ( $imagify_user->is_monthly ) {
-			$price = esc_html__( 'For $11.99/month only, choose unlimited image optimization!', 'imagify' );
+			$price        = esc_html__( 'For $11.99/month only, choose unlimited image optimization!', 'imagify' );
 			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite&payment_plan=1&utm_source=plugin&utm_medium=upsell_banner';
 		} else {
-			$price = esc_html__( 'For $9.99/month only, choose unlimited image optimization!', 'imagify' );
+			$price        = esc_html__( 'For $9.99/month only, choose unlimited image optimization!', 'imagify' );
 			$upgrade_link = IMAGIFY_APP_DOMAIN . '/subscription/plan_switch/?label=infinite&payment_plan=2&utm_source=plugin&utm_medium=upsell_banner';
 		}
 	}
