@@ -91,7 +91,7 @@ function imagify_is_screen( $identifier ) {
 function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 	if ( is_array( $arg ) ) {
 		$id      = isset( $arg['attachment_id'] ) ? $arg['attachment_id'] : 0;
-		$context = isset( $arg['context'] )  ? $arg['context'] : 'wp';
+		$context = isset( $arg['context'] ) ? $arg['context'] : 'wp';
 		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : '';
 	}
 
@@ -322,7 +322,8 @@ function imagify_die( $message = null ) {
 
 	if ( wp_get_referer() ) {
 		$message .= '</p><p>';
-		$message .= sprintf( '<a href="%s">%s</a>',
+		$message .= sprintf(
+			'<a href="%s">%s</a>',
 			esc_url( remove_query_arg( 'updated', wp_get_referer() ) ),
 			/* translators: This sentense already exists in WordPress. */
 			__( 'Go back', 'imagify' )
