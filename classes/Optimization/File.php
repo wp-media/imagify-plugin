@@ -470,15 +470,18 @@ class File {
 	 * @return \sdtClass|\WP_Error Optimized image data. A \WP_Error object on error.
 	 */
 	public function optimize( $args = [] ) {
-		$args = array_merge( [
-			'backup'             => true,
-			'backup_path'        => null,
-			'backup_source'      => null,
-			'optimization_level' => 0,
-			'convert'            => '',
-			'context'            => 'wp',
-			'original_size'      => 0,
-		], $args );
+		$args = array_merge(
+			[
+				'backup'             => true,
+				'backup_path'        => null,
+				'backup_source'      => null,
+				'optimization_level' => 0,
+				'convert'            => '',
+				'context'            => 'wp',
+				'original_size'      => 0,
+			],
+			$args
+		);
 
 		$can_be_processed = $this->can_be_processed();
 
@@ -534,7 +537,7 @@ class File {
 
 		if ( $args['convert'] ) {
 			$data['convert'] = $args['convert'];
-			$format = $args['convert'];
+			$format          = $args['convert'];
 		}
 
 		$response = upload_imagify_image(
@@ -624,9 +627,12 @@ class File {
 			return $this->editor;
 		}
 
-		$this->editor = wp_get_image_editor( $this->path, [
-			'methods' => $this->get_editor_methods(),
-		] );
+		$this->editor = wp_get_image_editor(
+			$this->path,
+			[
+				'methods' => $this->get_editor_methods(),
+			]
+		);
 
 		if ( ! is_wp_error( $this->editor ) ) {
 			return $this->editor;
