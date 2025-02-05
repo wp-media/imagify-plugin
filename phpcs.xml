@@ -37,24 +37,15 @@
 	<rule ref="WordPress">
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
-		<exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning"/><!-- Too many false positives. -->
-		<exclude name="Generic.Functions.FunctionCallArgumentSpacing.TooMuchSpaceAfterComma"/><!-- Completely broken. -->
-		<exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket"/><!-- Maybe someday. -->
-		<exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/><!-- Maybe someday. -->
-		<exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine"/><!-- Maybe someday. -->
 		<exclude name="Squiz.Commenting.FileComment.Missing"/><!-- Nope nope nope. -->
 		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
 		<exclude name="Squiz.PHP.EmbeddedPhp.ContentBeforeOpen"/><!-- Total bullshit. -->
 		<exclude name="Squiz.PHP.EmbeddedPhp.ContentAfterEnd"/><!-- Same. -->
-		<exclude name="Squiz.PHP.CommentedOutCode.Found"/><!-- LOL, this thing is totally broken. -->
-		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned"/><!-- Same. -->
-		<exclude name="WordPress.Arrays.MultipleStatementAlignment.LongIndexSpaceBeforeDoubleArrow"/><!-- Same. -->
 		<exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery"/><!-- LOL. Yeah, sure. -->
 		<exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching"/><!-- Using static vars IS caching. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_key"/><!-- Maybe someday. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query"/><!-- Maybe someday. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value"/><!-- Maybe someday. -->
-		<exclude name="WordPress.WhiteSpace.OperatorSpacing.SpacingBefore"/><!-- Nope. Allow ternary tests to be aligned. -->
 		<!-- Will be handled later. -->
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
 		<exclude name="WordPress.DB.PreparedSQL.DeprecatedWhitelistCommentFound"/>
