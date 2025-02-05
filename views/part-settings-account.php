@@ -1,8 +1,6 @@
 <?php
 
-use Imagify\User\User;
-
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
 	if ( ! defined( 'IMAGIFY_API_KEY' ) || ! IMAGIFY_API_KEY ) {
@@ -19,10 +17,14 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 
 	if ( ! $user ) {
 		// Lazyload user.
-		Imagify_Assets::get_instance()->localize_script( 'options', 'imagifyUser', array(
-			'action'   => 'imagify_get_user_data',
-			'_wpnonce' => wp_create_nonce( 'imagify_get_user_data' ),
-		) );
+		Imagify_Assets::get_instance()->localize_script(
+			'options',
+			'imagifyUser',
+			[
+				'action'   => 'imagify_get_user_data',
+				'_wpnonce' => wp_create_nonce( 'imagify_get_user_data' ),
+			]
+		);
 	}
 }
 ?>
@@ -88,4 +90,4 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 	}
 	?>
 </div>
-<?php
+
