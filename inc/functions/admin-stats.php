@@ -556,7 +556,7 @@ function imagify_calculate_average_size_images_per_month() {
 	// Number of image attachments uploaded for the 3 latest months, limited to 250 per month.
 	$partial_total_images_uploaded = count( $partial_images_uploaded_id );
 	// Total number of image attachments uploaded for the 3 latest months.
-	$total_images_uploaded         = count( $images_uploaded_id );
+	$total_images_uploaded = count( $images_uploaded_id );
 
 	return imagify_calculate_total_image_size( $partial_images_uploaded_id, $partial_total_images_uploaded, $total_images_uploaded ) / 3;
 }
@@ -593,9 +593,9 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 	), $image_ids );
 
 	// Number of image attachments we're doing the calculation with. In case array_filter() removed results.
-	$partial_total_images              = count( $image_ids );
+	$partial_total_images = count( $image_ids );
 	// Total size of unoptimized size.
-	$partial_size_images               = 0;
+	$partial_size_images = 0;
 	// Total number of thumbnails.
 	$partial_total_intermediate_images = 0;
 
@@ -611,7 +611,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 			 * The image files have been optimized.
 			 */
 			// Original size.
-			$partial_size_images               += isset( $results['imagify_data'][ $image_id ]['stats']['original_size'] ) ? $results['imagify_data'][ $image_id ]['stats']['original_size'] : 0;
+			$partial_size_images += isset( $results['imagify_data'][ $image_id ]['stats']['original_size'] ) ? $results['imagify_data'][ $image_id ]['stats']['original_size'] : 0;
 			// Number of thumbnails.
 			$partial_total_intermediate_images += count( $results['imagify_data'][ $image_id ]['sizes'] );
 			unset(
@@ -692,13 +692,13 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 	 * Average image size = Size of the images / ( Number of full sizes + Number of thumbnails ).
 	 * Average image size = Size of the images / Number of images.
 	 */
-	$average_size_images           = $partial_size_images / ( $partial_total_images + $partial_total_intermediate_images );
+	$average_size_images = $partial_size_images / ( $partial_total_images + $partial_total_intermediate_images );
 	/**
 	 * Note: Total number of attachments ($total_images) === Total number of full sizes.
 	 * Total images size = Average image size * ( Total number of full sizes + ( Number of thumbnails per attachment * Total number of attachments ) ).
 	 * Total images size = Average image size * ( Total number of full sizes + Total number of thumbnails ).
 	 */
-	$total_size_images             = $average_size_images * ( $total_images + ( $intermediate_images_per_image * $total_images ) );
+	$total_size_images = $average_size_images * ( $total_images + ( $intermediate_images_per_image * $total_images ) );
 
 	return $total_size_images;
 }
