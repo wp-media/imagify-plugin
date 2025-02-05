@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 if ( ! class_exists( 'WP_List_Table' ) ) {
 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
@@ -60,10 +59,12 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @param array $args An associative array of arguments.
 	 */
 	public function __construct( $args = array() ) {
-		parent::__construct( array(
-			'plural' => 'imagify-files',
-			'screen' => isset( $args['screen'] ) ? convert_to_screen( $args['screen'] ) : null,
-		) );
+		parent::__construct(
+			[
+				'plural' => 'imagify-files',
+				'screen' => isset( $args['screen'] ) ? convert_to_screen( $args['screen'] ) : null,
+			]
+		);
 
 		$this->modes = array(
 			'list' => __( 'List View', 'imagify' ),
@@ -81,11 +82,14 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	public function prepare_items() {
 		global $wpdb;
 
-		add_screen_option( 'per_page', array(
-			'label'   => __( 'Number of files per page', 'imagify' ),
-			'default' => 20,
-			'option'  => self::PER_PAGE_OPTION,
-		) );
+		add_screen_option(
+			'per_page',
+			[
+				'label'   => __( 'Number of files per page', 'imagify' ),
+				'default' => 20,
+				'option'  => self::PER_PAGE_OPTION,
+			]
+		);
 
 		$files_db      = Imagify_Files_DB::get_instance();
 		$files_table   = $files_db->get_table_name();
@@ -144,10 +148,12 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		}
 
 		// Pagination.
-		$this->set_pagination_args( array(
-			'total_items' => (int) $wpdb->get_var( "SELECT COUNT($files_key_esc) FROM $files_table $where" ), // WPCS: unprepared SQL ok.
-			'per_page'    => $per_page,
-		) );
+		$this->set_pagination_args(
+			[
+				'total_items' => (int) $wpdb->get_var( "SELECT COUNT($files_key_esc) FROM $files_table $where" ), // WPCS: unprepared SQL ok.
+				'per_page'    => $per_page,
+			]
+		);
 
 		// Get items.
 		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $files_table $where ORDER BY $orderby $order LIMIT %d, %d", $offset, $per_page ) ); // WPCS: unprepared SQL ok.
@@ -314,6 +320,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		foreach ( $folders as $folder ) {
 			if ( '{{ROOT}}/' === $folder->path ) {
 				$root_id = $folder->folder_id;
+
 				$folder_filters[ $folder->folder_id ] = '/';
 			} else {
 				$folder_filters[ $folder->folder_id ] = '/' . trim( $this->filesystem->make_path_relative( Imagify_Files_Scan::remove_placeholder( $folder->path ) ), '/' );
@@ -695,9 +702,12 @@ class Imagify_Files_List_Table extends WP_List_Table {
 		}
 
 		if ( $item->process->is_locked() ) {
-			Imagify_Views::get_instance()->print_template( 'button-processing', [
-				'label' => __( 'Optimizing...', 'imagify' ),
-			] );
+			Imagify_Views::get_instance()->print_template(
+				'button-processing',
+				[
+					'label' => __( 'Optimizing...', 'imagify' ),
+				]
+			);
 			return;
 		}
 
@@ -724,16 +734,22 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		$media = $item->process->get_media();
 		$class = $media->has_backup() ? ' file-has-backup' : '';
-		$url   = get_imagify_admin_url( 'optimize-file', [
-			'attachment_id' => $media->get_id(),
-		] );
+		$url   = get_imagify_admin_url(
+			'optimize-file',
+			[
+				'attachment_id' => $media->get_id(),
+			]
+		);
 
-		echo $this->views->get_template( 'button/optimize', [
-			'url'  => $url,
-			'atts' => [
-				'class' => 'button-primary button-imagify-optimize' . $class,
-			],
-		] );
+		echo $this->views->get_template(
+			'button/optimize',
+			[
+				'url'  => $url,
+				'atts' => [
+					'class' => 'button-primary button-imagify-optimize' . $class,
+				],
+			]
+		);
 	}
 
 	/**
@@ -753,16 +769,22 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		$media = $item->process->get_media();
 		$class = $media->has_backup() ? ' file-has-backup' : '';
-		$url   = get_imagify_admin_url( 'optimize-file', [
-			'attachment_id' => $media->get_id(),
-		] );
+		$url   = get_imagify_admin_url(
+			'optimize-file',
+			[
+				'attachment_id' => $media->get_id(),
+			]
+		);
 
-		echo $this->views->get_template( 'button/retry-optimize', [
-			'url'  => $url,
-			'atts' => [
-				'class' => 'button button-imagify-optimize' . $class,
-			],
-		] );
+		echo $this->views->get_template(
+			'button/retry-optimize',
+			[
+				'url'  => $url,
+				'atts' => [
+					'class' => 'button button-imagify-optimize' . $class,
+				],
+			]
+		);
 		echo '<br/>';
 	}
 
@@ -854,9 +876,12 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			return;
 		}
 
-		$url = get_imagify_admin_url( 'restore-file', array(
-			'attachment_id' => $media->get_id(),
-		) );
+		$url = get_imagify_admin_url(
+			'restore-file',
+			array(
+				'attachment_id' => $media->get_id(),
+			)
+		);
 
 		echo $this->views->get_template( 'button/restore', [ 'url' => $url ] );
 	}
@@ -869,9 +894,12 @@ class Imagify_Files_List_Table extends WP_List_Table {
 	 * @param object $item The current item. It must contain at least a $process property.
 	 */
 	protected function refresh_status_button( $item ) {
-		$url = get_imagify_admin_url( 'refresh-file-modified', array(
-			'attachment_id' => $item->process->get_media()->get_id(),
-		) );
+		$url = get_imagify_admin_url(
+			'refresh-file-modified',
+			array(
+				'attachment_id' => $item->process->get_media()->get_id(),
+			)
+		);
 
 		echo '<br/>';
 		echo $this->views->get_template( 'button/refresh-status', [ 'url' => $url ] );
@@ -906,14 +934,17 @@ class Imagify_Files_List_Table extends WP_List_Table {
 
 		$backup_url = $media->get_backup_url();
 
-		echo $this->views->get_template( 'button/compare-images', [
-			'url'          => $backup_url,
-			'backup_url'   => $backup_url,
-			'original_url' => $media->get_fullsize_url(),
-			'media_id'     => $media->get_id(),
-			'width'        => $dimensions['width'],
-			'height'       => $dimensions['height'],
-		] );
+		echo $this->views->get_template(
+			'button/compare-images',
+			[
+				'url'          => $backup_url,
+				'backup_url'   => $backup_url,
+				'original_url' => $media->get_fullsize_url(),
+				'media_id'     => $media->get_id(),
+				'width'        => $dimensions['width'],
+				'height'       => $dimensions['height'],
+			]
+		);
 
 		if ( wp_doing_ajax() ) {
 			?>
