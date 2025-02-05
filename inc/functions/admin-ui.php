@@ -411,9 +411,12 @@ function get_imagify_attachment_generate_nextgen_versions_link( $process ) {
 		]
 	);
 
-	$output = Imagify_Views::get_instance()->get_template( 'button/generate-webp', [
-		'url' => $url,
-	] );
+	$output = Imagify_Views::get_instance()->get_template(
+		'button/generate-webp',
+		[
+			'url' => $url,
+		]
+	);
 
 	return $output . '<br/>';
 }
