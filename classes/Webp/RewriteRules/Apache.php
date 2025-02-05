@@ -34,7 +34,8 @@ class Apache extends AbstractApacheDirConfFile {
 		$home_root  = wp_parse_url( home_url( '/' ) );
 		$home_root  = $home_root['path'];
 
-		return trim( '
+		return trim(
+			'
 <IfModule mod_setenvif.c>
 	# Vary: Accept for all the requests to jpeg, png, and gif.
 	SetEnvIf Request_URI "\.(' . $extensions . ')$" REQUEST_image
@@ -56,6 +57,7 @@ class Apache extends AbstractApacheDirConfFile {
 
 <IfModule mod_headers.c>
 	Header append Vary Accept env=REQUEST_image
-</IfModule>' );
+</IfModule>'
+		);
 	}
 }

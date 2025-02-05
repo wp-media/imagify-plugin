@@ -28,10 +28,12 @@ class IIS extends AbstractIISDirConfFile {
 	 * @return string
 	 */
 	protected function get_raw_new_contents() {
-		return trim( '
+		return trim(
+			'
 <!-- @parent /configuration/system.webServer -->
 <staticContent name="' . esc_attr( static::TAG_NAME ) . ' 1">
 	<mimeMap fileExtension=".webp" mimeType="image/webp" />
-</staticContent>' );
+</staticContent>'
+		);
 	}
 }

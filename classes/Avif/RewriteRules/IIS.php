@@ -30,7 +30,8 @@ class IIS extends AbstractIISDirConfFile {
 		$home_root  = wp_parse_url( home_url( '/' ) );
 		$home_root  = $home_root['path'];
 
-		return trim( '
+		return trim(
+			'
 <!-- @parent /configuration/system.webServer/rewrite/rules -->
 <rule name="' . esc_attr( static::TAG_NAME ) . ' 2">
 	<match url="^(' . $home_root . '.+)\.(' . $extensions . ')$" ignoreCase="true" />
@@ -53,6 +54,7 @@ class IIS extends AbstractIISDirConfFile {
 	<preCondition name="IsAvif">
 		<add input="{ACCEPTS_AVIF}" pattern="true" ignoreCase="false" />
 	</preCondition>
-</preConditions>' );
+</preConditions>'
+		);
 	}
 }
