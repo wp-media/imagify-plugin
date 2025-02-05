@@ -1,8 +1,5 @@
 <?php
-
-use Imagify\User\User;
-
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 ?>
 <div class="wrap imagify-settings imagify-bulk">
 
@@ -104,7 +101,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View your profile', 'imagify' ); ?></a>
 					</div>
 					<?php $this->print_template( 'part-upsell' ); ?>
-				<?php } // End if(). ?>
+				<?php } ?>
 
 			</div><!-- .imagify-account-info-col -->
 
@@ -115,7 +112,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 		$this->print_template( 'part-bulk-optimization-table', $data );
 
-		// New Feature!
 		if ( ! empty( $data['no-custom-folders'] ) ) {
 			$this->print_template( 'part-bulk-optimization-newbie' );
 		}
@@ -173,11 +169,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			?>
 			<script type="text/html" id="tmpl-imagify-bulk-infos">
 				<?php
-				$this->print_template( 'part-bulk-optimization-infos', array(
-					'quota'       => $data['unconsumed_quota'],
-					'quota_class' => $data['quota_class'],
-					'library'     => ! empty( $data['groups']['library'] ),
-				) );
+				$this->print_template(
+					'part-bulk-optimization-infos',
+					[
+						'quota'       => $data['unconsumed_quota'],
+						'quota_class' => $data['quota_class'],
+						'library'     => ! empty( $data['groups']['library'] ),
+					]
+				);
 				?>
 			</script>
 			<?php
@@ -185,4 +184,3 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	}
 	?>
 </div>
-<?php
