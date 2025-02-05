@@ -908,7 +908,6 @@ class Imagify_Custom_Folders {
 		$results       = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids ) ORDER BY $files_key_esc;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 		if ( ! $results ) {
-			// WAT?!
 			return;
 		}
 
