@@ -25,7 +25,8 @@ Our video explains why Imagify is the easiest image optimization plugin and show
 
 [youtube https://www.youtube.com/watch?v=ZgMwWvUZFu4&feature=youtu.be]
 
-✨ Imagify Image Optimizer Key Features: 
+✨ Imagify Image Optimizer Key Features:
+
 * Resize and compress images for the most common formats, including PDF
 * Smart Compression to balance image optimization quality and performance automatically
 * Automatic WebP conversion
@@ -94,17 +95,12 @@ If you want to know more about using WebP images on WordPress, improving your Pa
 
 It’s packed with advice on image compression and so much more!
 
-*[How to Convert Images to WebP on WordPress with Imagify](https://imagify.io/blog/how-to-convert-images-to-webp/)
-
-*[How to Optimize Images on WordPress for Performance and SEO](https://imagify.io/blog/image-optimization-manual-for-wordpress/)
-
-*[How to Reduce Image Size Without Losing Quality (and Save Space)](https://imagify.io/blog/reduce-image-size-without-losing-quality/)
-
-*[How to Resize and Compress Multiple Images Online (Easy Methods)](https://imagify.io/blog/how-to-resize-compress-multiple-images-online/)
-
-*[How to Make Photos Load Faster on WordPress: 6 Key Tactics](https://imagify.io/blog/how-to-make-photos-load-faster-wordpress/)
-
-*[How to Optimize Images for Page Speed (and Google)](https://imagify.io/blog/optimize-images-page-speed-google/)
+* [How to Convert Images to WebP on WordPress with Imagify](https://imagify.io/blog/how-to-convert-images-to-webp/)
+* [How to Optimize Images on WordPress for Performance and SEO](https://imagify.io/blog/image-optimization-manual-for-wordpress/)
+* [How to Reduce Image Size Without Losing Quality (and Save Space)](https://imagify.io/blog/reduce-image-size-without-losing-quality/)
+* [How to Resize and Compress Multiple Images Online (Easy Methods)](https://imagify.io/blog/how-to-resize-compress-multiple-images-online/)
+* [How to Make Photos Load Faster on WordPress: 6 Key Tactics](https://imagify.io/blog/how-to-make-photos-load-faster-wordpress/)
+* [How to Optimize Images for Page Speed (and Google)](https://imagify.io/blog/optimize-images-page-speed-google/)
 
 = 👥 Who Are We? =
 
@@ -182,15 +178,15 @@ When you optimize JPG, PNG, and GIF files, Imagify will also create WebP and AVI
 
 Don’t worry! Imagify comes with the Smart Compression Mode. It means that your images will be automatically optimized for the best possible compression ratio and quality. There’s nothing else to do – just enjoy your lighter and faster images.
 
-=How does the image optimization process work?=
+= How does the image optimization process work? =
 
 The image optimization process is performed on our servers. Once done, Imagify returns the optimized image to your server. We do not edit images’ titles or any other information, so there is nothing further to be done on your end than to compress images. Your original images will be moved to a dedicated backup folder (just make sure to keep the Backup option active in Imagify settings).
 
-=How to enable the Webp Converter?=
+= How to enable the Webp Converter? =
 
 With Imagify v2.2, the creation of WebP images is enabled by default. This means that when Imagify optimizes your images using its built-in WebP optimizer, a WebP version will automatically be generated, provided you have disabled the “Create AVIF versions of images” option in your plugin settings. Although the WebP files won’t be directly visible in your Media Library, you can verify their creation by checking for the “Next-Gen generated: yes” indication in the Imagify column of your Media Library.
 
-=How long are images stored by Imagify?=
+= How long are images stored by Imagify? =
 
 Once your images have been optimized via the WP plugin, the compressed images stay on your end forever (even if you delete the Imagify account).
 
@@ -198,23 +194,23 @@ During the optimization process, compressed images sent via the API or WordPress
 
 Using the online application, compressed images are stored for 24 hours (with a free account) and for unlimited time if you have a paid subscription.
 
-=Can I restore images after compression?=
+= Can I restore images after compression? =
 
 Yes, as long as the Backup option is active in Imagify settings (it is active by default when you activate the WP Plugin).
 
-=If I remove Imagify, will my images stay compressed?=
+= If I remove Imagify, will my images stay compressed? =
 
 Yes, your images will stay compressed even after removing Imagify (and even after you delete your Imagify account).
 
-=If I use Imagify, do I need to continue optimizing and resizing my images with Photoshop?=
+= If I use Imagify, do I need to continue optimizing and resizing my images with Photoshop? =
 
 Do not waste your time resizing and optimizing your images in Photoshop. Imagify takes care of everything to compress your images!
 
-=Is the EXIF data of images removed?=
+= Is the EXIF data of images removed? =
 
 EXIF data is not removed.
 
-=I used Kraken, Optimus, EWWW or WP Smush, will Imagify further optimize my images?=
+= I used Kraken, Optimus, EWWW or WP Smush, will Imagify further optimize my images? =
 
 Absolutely. Most of the time, Imagify will still be able to optimize your images even if you have already compressed them with another tool.
 
@@ -250,7 +246,7 @@ Yes, the Imagify team offers full email support for image optimization questions
 
 Our support is currently available Monday-Friday 8AM-10PM CET. We answer every email so you can expect the answer from us within 24h max (unless during the weekends).
 
-=Is registration free?=
+= Is registration free? =
 
 Yes, and no credit card is required.
 
