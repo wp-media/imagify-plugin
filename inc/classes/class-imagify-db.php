@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Imagify DB class. It reunites tools to work with the DB.
@@ -192,7 +191,7 @@ class Imagify_DB {
 
 		foreach ( self::get_required_wp_metadata_aliases() as $meta_name => $alias ) {
 			if ( $first ) {
-				$first = false;
+				$first   = false;
 				$clause .= "
 			$join JOIN $wpdb->postmeta AS $alias
 				ON ( $id_field = $alias.post_id AND $alias.meta_key = '$meta_name' $special_join_conditions )";
@@ -230,16 +229,18 @@ class Imagify_DB {
 		if ( ! $id_field || ! is_string( $id_field ) ) {
 			$id_field = "$wpdb->posts.ID";
 		}
-		$additional_clause = self::get_required_exist_wp_metadata_where_clause(  array(
-			'matching' => false,
-			'test'     => false,
-		)  );
+		$additional_clause = self::get_required_exist_wp_metadata_where_clause(
+			[
+				'matching' => false,
+				'test'     => false,
+			]
+		);
 
 		$first = true;
 
 		foreach ( self::get_required_wp_metadata_aliases() as $meta_name => $alias ) {
 			if ( $first ) {
-				$first = false;
+				$first   = false;
 				$clause .= "
                     EXISTS(
                         SELECT 1 FROM $wpdb->postmeta AS $alias WHERE
@@ -281,12 +282,15 @@ class Imagify_DB {
 	public static function get_required_wp_metadata_where_clause( $args = array() ) {
 		static $query = array();
 
-		$args = imagify_merge_intersect( $args, array(
-			'aliases'  => array(),
-			'matching' => true,
-			'test'     => true,
-			'prepared' => false,
-		) );
+		$args = imagify_merge_intersect(
+			$args,
+			[
+				'aliases'  => array(),
+				'matching' => true,
+				'test'     => true,
+				'prepared' => false,
+			]
+		);
 
 		list( $aliases, $matching, $test, $prepared ) = array_values( $args );
 
@@ -340,12 +344,15 @@ class Imagify_DB {
 	public static function get_required_exist_wp_metadata_where_clause( $args = array() ) {
 		static $query = array();
 
-		$args = imagify_merge_intersect( $args, array(
-			'aliases'  => array(),
-			'matching' => true,
-			'test'     => true,
-			'prepared' => false,
-		) );
+		$args = imagify_merge_intersect(
+			$args,
+			[
+				'aliases'  => array(),
+				'matching' => true,
+				'test'     => true,
+				'prepared' => false,
+			]
+		);
 
 		list( $aliases, $matching, $test, $prepared ) = array_values( $args );
 
@@ -396,12 +403,15 @@ class Imagify_DB {
 	 * @return array
 	 */
 	private function prepare_query_args( $args ) {
-		return imagify_merge_intersect( $args, [
-			'aliases'  => [],
-			'matching' => true,
-			'test'     => true,
-			'prepared' => false,
-		] );
+		return imagify_merge_intersect(
+			$args,
+			[
+				'aliases'  => [],
+				'matching' => true,
+				'test'     => true,
+				'prepared' => false,
+			]
+		);
 	}
 
 	/**
@@ -458,9 +468,12 @@ class Imagify_DB {
 			$extensions = array_keys( imagify_get_mime_types() );
 			$extensions = implode( '|', $extensions );
 			$extensions = explode( '|', $extensions );
-			$extensions = array_map(function ( $ex ) {
-				return strrev( $ex );
-			}, $extensions);
+			$extensions = array_map(
+				function ( $ex ) {
+					return strrev( $ex );
+				},
+				$extensions
+			);
 		}
 
 		if ( ! $alias ) {

@@ -64,7 +64,7 @@ final class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInt
 	 */
 	public function get_cached_stat() {
 		$contexts = implode( '|', imagify_get_context_names() );
-		$stat     = get_transient( static::NAME );
+		$stat     = get_transient( self::NAME );
 
 		if ( isset( $stat['stat'], $stat['contexts'] ) && $stat['contexts'] === $contexts ) {
 			// The number is stored and the contexts are the same.
@@ -76,7 +76,7 @@ final class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInt
 			'stat'     => $this->get_stat(),
 		];
 
-		set_transient( static::NAME, $stat, 2 * DAY_IN_SECONDS );
+		set_transient( self::NAME, $stat, 2 * DAY_IN_SECONDS );
 
 		return $stat['stat'];
 	}
@@ -87,7 +87,7 @@ final class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInt
 	 * @since 2.2
 	 */
 	public function clear_cache() {
-		delete_transient( static::NAME );
+		delete_transient( self::NAME );
 	}
 
 	/**
@@ -99,7 +99,7 @@ final class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInt
 	 * @param array            $item    The item being processed.
 	 */
 	public function maybe_clear_cache_after_optimization( $process, $item ) {
-		if ( ! $process->get_media()->is_image() || false === get_transient( static::NAME ) ) {
+		if ( ! $process->get_media()->is_image() || false === get_transient( self::NAME ) ) {
 			return;
 		}
 
@@ -142,7 +142,7 @@ final class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInt
 	 * @param array            $data     The optimization data, before deleting it.
 	 */
 	public function maybe_clear_cache_after_restoration( $process, $response, $files, $data ) {
-		if ( ! $process->get_media()->is_image() || false === get_transient( static::NAME ) ) {
+		if ( ! $process->get_media()->is_image() || false === get_transient( self::NAME ) ) {
 			return;
 		}
 
@@ -169,7 +169,7 @@ final class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInt
 	 * @param ProcessInterface $process An optimization process.
 	 */
 	public function maybe_clear_cache_on_deletion( $process ) {
-		if ( false === get_transient( static::NAME ) ) {
+		if ( false === get_transient( self::NAME ) ) {
 			return;
 		}
 

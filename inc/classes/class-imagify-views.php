@@ -3,7 +3,6 @@
 use Imagify\User\User;
 use Imagify\Dependencies\WPMedia\PluginFamily\Model\PluginFamily;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class that handles templates and menus.
@@ -204,7 +203,7 @@ class Imagify_Views {
 
 		// Change the sub-menu label.
 		if ( ! empty( $submenu[ $this->get_bulk_page_slug() ] ) ) {
-			$submenu[ $this->get_bulk_page_slug() ][0][0] = __( 'Bulk Optimization', 'imagify' ); // WPCS: override ok.
+			$submenu[ $this->get_bulk_page_slug() ][0][0] = __( 'Bulk Optimization', 'imagify' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
 
 		if ( $screen_id ) {
@@ -257,7 +256,15 @@ class Imagify_Views {
 				$types['library|wp'] = 1;
 			}
 
-			if ( imagify_can_optimize_custom_folders() && ( imagify_is_active_for_network() && is_network_admin() || ! imagify_is_active_for_network() ) ) {
+			if (
+				imagify_can_optimize_custom_folders()
+				&&
+				(
+					( imagify_is_active_for_network() && is_network_admin() )
+					||
+					! imagify_is_active_for_network()
+				)
+			) {
 				/**
 				 * Custom folders: in network admin only if network activated, in each site otherwise.
 				 */
@@ -295,7 +302,6 @@ class Imagify_Views {
 
 		if ( isset( $types['custom-folders|custom-folders'] ) ) {
 			if ( ! Imagify_Folders_DB::get_instance()->has_items() ) {
-				// New Feature!
 				$data['no-custom-folders'] = true;
 			} elseif ( Imagify_Folders_DB::get_instance()->has_active_folders() ) {
 				// Group.
@@ -310,9 +316,15 @@ class Imagify_Views {
 		}
 
 		// Add generic stats.
-		$data = array_merge( $data, imagify_get_bulk_stats( $types, array(
-			'fullset' => true,
-		) ) );
+		$data = array_merge(
+			$data,
+			imagify_get_bulk_stats(
+				$types,
+				[
+					'fullset' => true,
+				]
+			)
+		);
 
 		/**
 		 * Filter the data to use on the bulk optimization page.
@@ -345,9 +357,11 @@ class Imagify_Views {
 	 */
 	public function load_files_list() {
 		// Instantiate the list.
-		$this->list_table = new Imagify_Files_List_Table( array(
-			'screen' => 'imagify-files',
-		) );
+		$this->list_table = new Imagify_Files_List_Table(
+			[
+				'screen' => 'imagify-files',
+			]
+		);
 
 		// Query the Items.
 		$this->list_table->prepare_items();
@@ -569,7 +583,7 @@ class Imagify_Views {
 	 * @param  mixed  $data     Some data to pass to the template.
 	 * @return string|bool      The page contents. False if the template doesn't exist.
 	 */
-	public function get_template( $template, $data = array() ) {
+	public function get_template( $template, $data = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$path = str_replace( '_', '-', $template );
 		$path = IMAGIFY_PATH . 'views/' . $template . '.php';
 
@@ -648,7 +662,7 @@ class Imagify_Views {
 	 * @return bool
 	 */
 	private function get_user_info(): bool {
-		$user  = new User();
+		$user             = new User();
 		$unconsumed_quota = $user->get_percent_unconsumed_quota();
 
 		return ( ! $user->is_infinite() && $unconsumed_quota <= 20 )

@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
@@ -172,8 +171,8 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 
 		$output = pathinfo( $file_path );
 
-		$output['dirname']   = $this->is_root( $output['dirname'] ) ? $this->get_root()    : trailingslashit( $output['dirname'] );
-		$output['extension'] = isset( $output['extension'] )        ? $output['extension'] : null;
+		$output['dirname']   = $this->is_root( $output['dirname'] ) ? $this->get_root() : trailingslashit( $output['dirname'] );
+		$output['extension'] = isset( $output['extension'] ) ? $output['extension'] : null;
 
 		// '/www/htdocs/inc/lib.inc.php'
 		return array(
@@ -375,7 +374,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		if ( $wp_plugin_paths && is_array( $wp_plugin_paths ) ) {
 			if ( ! $plugin_paths ) {
 				foreach ( $wp_plugin_paths as $dir => $real_dir ) {
-					$dir = $this->normalize_path_for_comparison( $dir );
+					$dir                  = $this->normalize_path_for_comparison( $dir );
 					$plugin_paths[ $dir ] = $this->normalize_path_for_comparison( $real_dir );
 				}
 			}
@@ -534,7 +533,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return array();
 		}
 
-		$size = @getimagesize( $file_path );
+		$size = @getimagesize( $file_path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
 		if ( ! $size || ! isset( $size[0], $size[1] ) ) {
 			return array();
@@ -548,7 +547,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			'type'     => (int) $size[2],
 			'attr'     => $size[3],
 			'channels' => isset( $size['channels'] ) ? (int) $size['channels'] : null,
-			'bits'     => isset( $size['bits'] )     ? (int) $size['bits']     : null,
+			'bits'     => isset( $size['bits'] ) ? (int) $size['bits'] : null,
 			'mime'     => $size['mime'],
 		);
 	}
@@ -592,7 +591,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return array();
 		}
 
-		$exif = @exif_read_data( $file_path, $sections, $arrays, $thumbnail );
+		$exif = @exif_read_data( $file_path, $sections, $arrays, $thumbnail ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
 		return is_array( $exif ) ? $exif : array();
 	}
@@ -614,7 +613,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return false;
 		}
 
-		$fh = @fopen( $file_path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fopen
+		$fh = @fopen( $file_path, 'rb' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 
 		if ( ! $fh ) {
 			// Could not open the file.
@@ -632,11 +631,11 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		// We read through the file til we reach the end of the file, or we've found at least 2 frame headers.
 		while ( ! feof( $fh ) && $count < 2 ) {
 			// Read 100kb at a time.
-			$chunk  = fread( $fh, 1024 * 100 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fread
+			$chunk  = fread( $fh, 1024 * 100 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
 			$count += preg_match_all( '#\x00\x21\xF9\x04.{4}\x00(\x2C|\x21)#s', $chunk, $matches );
 		}
 
-		fclose( $fh ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fclose
+		fclose( $fh ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 
 		return $count > 1;
 	}

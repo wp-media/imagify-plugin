@@ -187,7 +187,7 @@ class CustomFolders extends AbstractData {
 			/**
 			 * WebP version or any other size.
 			 */
-			$old_data['data'] = ! empty( $old_data['data'] ) && is_array( $old_data['data'] ) ? $old_data['data'] : [];
+			$old_data['data']          = ! empty( $old_data['data'] ) && is_array( $old_data['data'] ) ? $old_data['data'] : [];
 			$old_data['data']['sizes'] = ! empty( $old_data['data']['sizes'] ) && is_array( $old_data['data']['sizes'] ) ? $old_data['data']['sizes'] : [];
 
 			if ( ! $data['success'] ) {

@@ -322,7 +322,7 @@ class CustomFolders extends AbstractMedia {
 		$row = $this->get_row();
 
 		return [
-			'width'  => ! empty( $row['width'] )  ? $row['width']  : 0,
+			'width'  => ! empty( $row['width'] ) ? $row['width'] : 0,
 			'height' => ! empty( $row['height'] ) ? $row['height'] : 0,
 		];
 	}

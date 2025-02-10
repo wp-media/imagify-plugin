@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class handling everything that is related to "custom folders optimization".
@@ -175,8 +174,8 @@ class Imagify_Files_Scan {
 			// Server.
 			$site_root . 'cgi-bin',                        // `cgi-bin`
 			// WordPress.
-			$abspath . 'wp-admin',                         // `wp-admin`
-			$abspath . WPINC,                              // `wp-includes`
+			$abspath . 'wp-admin',
+			$abspath . WPINC,
 			WP_CONTENT_DIR . '/mu-plugins',                // MU plugins.
 			WP_CONTENT_DIR . '/upgrade',                   // Upgrade.
 			// Plugins.
@@ -533,8 +532,8 @@ class Imagify_Files_Scan {
 			$ngg_root = $filesystem->normalize_dir_path( WP_CONTENT_DIR );
 			$ngg_root = trim( $ngg_root, '/' ); // Something like `abs-path/to/wp-content`.
 
-			$exploded_root      = explode( '/', $ngg_root );
-			$exploded_galleries = explode( '/', $galleries_path );
+			$exploded_root         = explode( '/', $ngg_root );
+			$exploded_galleries    = explode( '/', $galleries_path );
 			$first_gallery_dirname = reset( $exploded_galleries );
 			$last_root_dirname     = end( $exploded_root );
 

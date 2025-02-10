@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\ThirdParty\NGG\Optimization\Data;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Traits\MediaRowTrait;
 
 /**
  * Optimization data class for the custom folders.
@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class NGG extends \Imagify\Optimization\Data\AbstractData {
-	use \Imagify\Traits\MediaRowTrait;
+	use MediaRowTrait;
 
 	/**
 	 * The attachment SQL DB class.
@@ -253,10 +253,13 @@ class NGG extends \Imagify\Optimization\Data\AbstractData {
 		$primary_key     = $db_instance->get_primary_key();
 		$column_defaults = $db_instance->get_column_defaults();
 
-		return array_diff_key( $column_defaults, [
-			'data_id'    => 0,
-			$primary_key => 0,
-		] );
+		return array_diff_key(
+			$column_defaults,
+			[
+				'data_id'    => 0,
+				$primary_key => 0,
+			]
+		);
 	}
 
 	/**

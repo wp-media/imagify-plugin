@@ -1,10 +1,13 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
-$this->print_template( 'notice-header', array(
-	'title'   => __( 'Your API key isn\'t valid!', 'imagify' ),
-	'classes' => array( 'error' ),
-) );
+$this->print_template(
+	'notice-header',
+	[
+		'title'   => __( 'Your API key isn\'t valid!', 'imagify' ),
+		'classes' => [ 'error' ],
+	]
+);
 ?>
 <p>
 	<?php wp_nonce_field( 'imagify-signup', 'imagifysignupnonce', false ); ?>
@@ -19,6 +22,9 @@ $this->print_template( 'notice-header', array(
 	?>
 </p>
 <?php
-$this->print_template( 'notice-footer', array(
-	'dismissible' => 'wrong-api-key',
-) );
+$this->print_template(
+	'notice-footer',
+	[
+		'dismissible' => 'wrong-api-key',
+	]
+);

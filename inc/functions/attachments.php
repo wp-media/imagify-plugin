@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Get all mime types which could be optimized by Imagify.
@@ -118,13 +118,13 @@ function imagify_has_attachments_without_required_metadata( $reset = false ) {
 		return $has;
 	}
 
-	$mime_types   = Imagify_DB::get_mime_types();
-	$statuses     = Imagify_DB::get_post_statuses();
+	$mime_types = Imagify_DB::get_mime_types();
+	$statuses   = Imagify_DB::get_post_statuses();
 	$exist_data = Imagify_DB::get_required_wp_metadata_exist_clause(
 		'p.ID',
 		false
 	);
-	$has          = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$has        = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT p.ID
 		FROM $wpdb->posts AS p
@@ -288,7 +288,7 @@ function get_imagify_thumbnail_sizes() {
 	$intermediate_image_sizes = get_intermediate_image_sizes();
 	$intermediate_image_sizes = array_flip( $intermediate_image_sizes );
 	// Additional image size attributes.
-	$additional_image_sizes   = wp_get_additional_image_sizes();
+	$additional_image_sizes = wp_get_additional_image_sizes();
 
 	// Create the full array with sizes and crop info.
 	foreach ( $intermediate_image_sizes as $size_name => $s ) {

@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 $settings     = Imagify_Settings::get_instance();
 $options      = Imagify_Options::get_instance();
@@ -8,12 +8,12 @@ $hidden_class = Imagify_Requirements::is_api_key_valid() ? '' : ' hidden';
 $lang         = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
 
 /* Ads notice */
-$plugins = get_plugins();
-$notice  = 'wp-rocket';
-$user_id = get_current_user_id();
-$notices = get_user_meta( $user_id, '_imagify_ignore_ads', true );
-$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
-$wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-rocket.php'] ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket';
+$plugins_list  = get_plugins();
+$notice        = 'wp-rocket';
+$user_id       = get_current_user_id();
+$notices       = get_user_meta( $user_id, '_imagify_ignore_ads', true );
+$notices       = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+$wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket/wp-rocket.php'] ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket';
 ?>
 <div class="wrap imagify-settings <?php echo $wrapper_class; ?> imagify-clearfix">
 
@@ -43,21 +43,25 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-r
 
 							<p class="imagify-setting-line">
 							<?php
-							$settings->field_checkbox( array(
-								'option_name' => 'auto_optimize',
-								'label'       => __( 'Auto-Optimize images on upload', 'imagify' ),
-								'info'        => __( 'Automatically optimize every image you upload to WordPress.', 'imagify' ),
-							) );
+							$settings->field_checkbox(
+								[
+									'option_name' => 'auto_optimize',
+									'label'       => __( 'Auto-Optimize images on upload', 'imagify' ),
+									'info'        => __( 'Automatically optimize every image you upload to WordPress.', 'imagify' ),
+								]
+							);
 							?>
 							</p>
 
 							<p class="imagify-setting-line">
 								<?php
-								$settings->field_checkbox( array(
-									'option_name' => 'backup',
-									'label'       => __( 'Backup original images', 'imagify' ),
-									'info'        => __( 'Keep your original images in a separate folder before optimization process.', 'imagify' ),
-								) );
+								$settings->field_checkbox(
+									[
+										'option_name' => 'backup',
+										'label'       => __( 'Backup original images', 'imagify' ),
+										'info'        => __( 'Keep your original images in a separate folder before optimization process.', 'imagify' ),
+									]
+								);
 
 								$backup_error_class = $options->get( 'backup' ) && ! Imagify_Requirements::attachments_backup_dir_is_writable() ? '' : ' hidden';
 								?>
@@ -72,11 +76,13 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-r
 
 							<p class="imagify-setting-line">
 							<?php
-							$settings->field_checkbox( array(
-								'option_name' => 'lossless',
-								'label'       => __( 'Lossless compression', 'imagify' ),
-								'info'        => __( 'By default, Imagify optimizes your images by using a smart compression to get the best compression rate with an optimal quality.', 'imagify' ) . '<br><br>' . __( 'If you are a photographer or focus on the quality of your images rather than the performance, you may be interested in this option to make sure not a single pixel looks different in the optimized image compared with the original.', 'imagify' ),
-							) );
+							$settings->field_checkbox(
+								[
+									'option_name' => 'lossless',
+									'label'       => __( 'Lossless compression', 'imagify' ),
+									'info'        => __( 'By default, Imagify optimizes your images by using a smart compression to get the best compression rate with an optimal quality.', 'imagify' ) . '<br><br>' . __( 'If you are a photographer or focus on the quality of your images rather than the performance, you may be interested in this option to make sure not a single pixel looks different in the optimized image compared with the original.', 'imagify' ),
+								]
+							);
 							?>
 							</p>
 						</div>
@@ -108,11 +114,10 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins['wp-rocket/wp-r
 							<p class="imagify-options-subtitle"><?php _e( 'Build better, faster, safer', 'imagify' ); ?></p>
 							<p class="">
 								<?php
-								_e( 'Beyond Imagify, there\'s a whole family of plugins designed to help you build better, faster, and safer websites. Each one is crafted with our unique blend of expertise, simplicity, and
-outstanding support. Combine our plugins below to build incredible WordPress websites!', 'imagify');
+								_e( 'Beyond Imagify, there\'s a whole family of plugins designed to help you build better, faster, and safer websites. Each one is crafted with our unique blend of expertise, simplicity, and outstanding support. Combine our plugins below to build incredible WordPress websites!', 'imagify' );
 								?>
 							</p>
-							<?php foreach ( $data['plugin_family'] as $plugin => $plugin_data ) : ?>
+							<?php foreach ( $data['plugin_family'] as $plugin_name => $plugin_data ) : ?>
 								<div class="imagify-plugin-family-col">
 									<div class="imagify-card">
 										<div class="imagify-card-header">
@@ -148,7 +153,7 @@ outstanding support. Combine our plugins below to build incredible WordPress web
 							 * @param  array $partners An array of partner names.
 							 * @return array
 							 */
-							$partners = apply_filters( 'imagify_deactivatable_partners', array() );
+							$partners = apply_filters( 'imagify_deactivatable_partners', [] );
 
 							if ( $partners ) {
 								?>
@@ -162,10 +167,12 @@ outstanding support. Combine our plugins below to build incredible WordPress web
 
 								<p>
 									<?php
-									$settings->field_checkbox( array(
-										'option_name' => 'partner_links',
-										'label'       => __( 'Display Partner Links', 'imagify' ),
-									) );
+									$settings->field_checkbox(
+										[
+											'option_name' => 'partner_links',
+											'label'       => __( 'Display Partner Links', 'imagify' ),
+										]
+									);
 									?>
 								</p>
 								<?php
@@ -192,4 +199,4 @@ outstanding support. Combine our plugins below to build incredible WordPress web
 	?>
 
 </div>
-<?php
+

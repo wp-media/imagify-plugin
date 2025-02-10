@@ -69,7 +69,7 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 			return;
 		}
 
-		add_filter( 'rest_dispatch_request',                [ $this, 'maybe_init_attachment' ], 4, 4 );
+		add_filter( 'rest_dispatch_request', [ $this, 'maybe_init_attachment' ], 4, 4 );
 		add_action( 'imagify_after_' . static::HOOK_SUFFIX, [ $this, 'after_regenerate_thumbnails' ], 8, 2 );
 	}
 

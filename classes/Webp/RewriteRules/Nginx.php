@@ -32,7 +32,8 @@ class Nginx extends AbstractNginxDirConfFile {
 		$home_root  = wp_parse_url( home_url( '/' ) );
 		$home_root  = $home_root['path'];
 
-		return trim( '
+		return trim(
+			'
 location ~* ^(' . $home_root . '.+)\.(' . $extensions . ')$ {
     add_header Vary Accept;
 
@@ -65,6 +66,7 @@ location ~* ^(' . $home_root . '.+)\.(' . $extensions . ')$ {
         rewrite ^(.*) $1.webp;
         break;
     }
-}' );
+}'
+		);
 	}
 }

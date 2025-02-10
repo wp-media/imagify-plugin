@@ -357,10 +357,10 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		$this->current_handle      = $handle;
 		$this->current_handle_type = 'css';
 
-		$file_name    = $file_name        ? $file_name     : $handle;
-		$version      = $version          ? $version       : IMAGIFY_VERSION;
+		$file_name    = $file_name ? $file_name : $handle;
+		$version      = $version ? $version : IMAGIFY_VERSION;
 		$version      = $this->is_debug() ? self::$version : $version;
-		$extension    = $this->is_debug() ? '.css'         : '.min.css';
+		$extension    = $this->is_debug() ? '.css' : '.min.css';
 		$handle       = self::CSS_PREFIX . $handle;
 		$dependencies = $this->prefix_dependencies( $dependencies, 'css' );
 
@@ -439,15 +439,15 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 	 */
 	public function register_script( $handle, $file_name = null, $dependencies = [], $version = null ) {
 		// If we register it, it's one of our scripts.
-		$this->scripts[ $handle ]  = 1;
+		$this->scripts[ $handle ] = 1;
 		// Set the current handler and handler type.
 		$this->current_handle      = $handle;
 		$this->current_handle_type = 'js';
 
-		$file_name    = $file_name        ? $file_name     : $handle;
-		$version      = $version          ? $version       : IMAGIFY_VERSION;
+		$file_name    = $file_name ? $file_name : $handle;
+		$version      = $version ? $version : IMAGIFY_VERSION;
 		$version      = $this->is_debug() ? self::$version : $version;
-		$extension    = $this->is_debug() ? '.js'          : '.min.js';
+		$extension    = $this->is_debug() ? '.js' : '.min.js';
 		$handle       = self::JS_PREFIX . $handle;
 		$dependencies = $this->prefix_dependencies( $dependencies );
 
@@ -475,13 +475,13 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 	 */
 	public function register_bud_script( $handle, $file_name = null, $dependencies = [], $version = null ) {
 		// If we register it, it's one of our scripts.
-		$this->scripts[ $handle ]  = 1;
+		$this->scripts[ $handle ] = 1;
 		// Set the current handler and handler type.
 		$this->current_handle      = $handle;
 		$this->current_handle_type = 'js';
 
-		$file_name    = $file_name        ? $file_name     : $handle;
-		$version      = $version          ? $version       : IMAGIFY_VERSION;
+		$file_name    = $file_name ? $file_name : $handle;
+		$version      = $version ? $version : IMAGIFY_VERSION;
 		$version      = $this->is_debug() ? self::$version : $version;
 		$extension    = '.js';
 		$handle       = self::JS_PREFIX . $handle;
@@ -779,7 +779,7 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 	 * @return bool
 	 */
 	protected function is_debug() {
-		return defined( 'IMAGIFY_DEBUG' ) && IMAGIFY_DEBUG || defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
+		return ( defined( 'IMAGIFY_DEBUG' ) && IMAGIFY_DEBUG ) || ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG );
 	}
 
 	/**

@@ -59,9 +59,12 @@ abstract class AbstractBulk implements BulkInterface {
 
 		$data = wp_parse_args( $data, $defaults );
 
-		$data = array_map( function( $item ) {
-			return empty( $item ) ? '' : $item;
-		}, $data );
+		$data = array_map(
+			function ( $item ) {
+				return empty( $item ) ? '' : $item;
+			},
+			$data
+		);
 
 		if ( ! empty( $data['count-optimized'] ) ) {
 			// translators: %s is a formatted number, dont use %d.

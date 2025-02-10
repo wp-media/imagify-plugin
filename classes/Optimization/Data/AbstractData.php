@@ -22,11 +22,11 @@ abstract class AbstractData implements DataInterface {
 	 * @author Grégory Viguier
 	 */
 	protected $default_optimization_data = [
-		'status' => '',
+		'status'  => '',
 		'message' => '',
-		'level'  => false,
-		'sizes'  => [],
-		'stats'  => [
+		'level'   => false,
+		'sizes'   => [],
+		'stats'   => [
 			'original_size'  => 0,
 			'optimized_size' => 0,
 			'percent'        => 0,
@@ -231,7 +231,7 @@ abstract class AbstractData implements DataInterface {
 
 		foreach ( $data['sizes'] as $size ) {
 			if ( ! empty( $size['success'] ) ) {
-				$count++;
+				++$count;
 			}
 		}
 
@@ -426,9 +426,9 @@ abstract class AbstractData implements DataInterface {
 			return round( (float) 0, 2 );
 		}
 
-		$process_class_name = imagify_get_optimization_process_class_name( $this->get_media()->get_context() );
-		$nextgen_webp_size_name     = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
-		$nextgen_avif_size_name     = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
+		$process_class_name     = imagify_get_optimization_process_class_name( $this->get_media()->get_context() );
+		$nextgen_webp_size_name = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
+		$nextgen_avif_size_name = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
 
 		$percent = $this->get_size_data( $nextgen_avif_size_name, 'percent' );
 
@@ -440,7 +440,7 @@ abstract class AbstractData implements DataInterface {
 		if ( ! $percent ) {
 			$percent = $this->get_size_data( 'full', 'percent' );
 		}
-		$percent = $percent ?: 0;
+		$percent = $percent ? $percent : 0;
 
 		return round( (float) $percent, 2 );
 	}

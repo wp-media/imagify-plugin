@@ -104,10 +104,10 @@ class Imagify_Options extends Imagify_Abstract_Options {
 	 *
 	 * @param  string $key     The option key.
 	 * @param  mixed  $value   The value.
-	 * @param  mixed  $default The default value.
+	 * @param  mixed  $default_value The default value.
 	 * @return mixed
 	 */
-	public function sanitize_and_validate_value( $key, $value, $default ) {
+	public function sanitize_and_validate_value( $key, $value, $default_value ) {
 		static $max_sizes;
 
 		switch ( $key ) {
@@ -146,7 +146,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'resize_larger_w':
 				if ( $value <= 0 ) {
 					// Invalid.
-					return $default;
+					return $default_value;
 				}
 				if ( ! isset( $max_sizes ) ) {
 					$max_sizes = get_imagify_max_intermediate_image_size();
@@ -159,7 +159,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 
 			case 'disallowed-sizes':
 				if ( ! $value ) {
-					return $default;
+					return $default_value;
 				}
 
 				$value = array_keys( $value );

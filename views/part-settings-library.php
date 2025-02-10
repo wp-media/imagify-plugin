@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 $settings    = Imagify_Settings::get_instance();
 $options     = Imagify_Options::get_instance();
@@ -71,7 +71,8 @@ $option_name = $options->get_option_name();
 					printf(
 					/* translators: 1 is a "bold" tag start, 2 is the "bold" tag end. */
 						esc_html__( 'The %1$soriginal size%2$s is %1$sautomatically optimized%2$s by Imagify.', 'imagify' ),
-						'<strong>', '</strong>'
+						'<strong>',
+						'</strong>'
 					);
 					?>
 					<br>

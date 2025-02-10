@@ -121,7 +121,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$this->filesystem = \Imagify_Filesystem::get_instance();
-		$this->format = $this->get_current_format();
+		$this->format     = $this->get_current_format();
 	}
 
 	/**
@@ -423,7 +423,6 @@ abstract class AbstractProcess implements ProcessInterface {
 					$backuped = $this->get_original_file()->backup( $media->get_raw_backup_path() );
 
 					if ( $backuped ) {
-						// See \Imagify\Job\MediaOptimization->delete_backup().
 						$args['delete_backup'] = true;
 					}
 				}
@@ -454,13 +453,15 @@ abstract class AbstractProcess implements ProcessInterface {
 		 * Push the item to the queue, save the queue in the DB, empty the queue.
 		 * A "batch" is then created in the DB with this unique item, it is then free to loop through its steps (files) without another item interfering (each media optimization has its own dedicated batch/queue).
 		 */
-		MediaOptimization::get_instance()->push_to_queue( [
-			'id'                 => $media->get_id(),
-			'sizes'              => $sizes,
-			'optimization_level' => $optimization_level,
-			'process_class'      => get_class( $this ),
-			'data'               => $args,
-		] )->save();
+		MediaOptimization::get_instance()->push_to_queue(
+			[
+				'id'                 => $media->get_id(),
+				'sizes'              => $sizes,
+				'optimization_level' => $optimization_level,
+				'process_class'      => get_class( $this ),
+				'data'               => $args,
+			]
+		)->save();
 
 		return true;
 	}
@@ -489,7 +490,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		if ( $next_gen ) {
 			// We'll make sure the file is an image later.
 			$thumb_size = $next_gen; // Contains the name of the non-next-gen size.
-			$next_gen       = true;
+			$next_gen   = true;
 		}
 
 		if ( empty( $sizes[ $thumb_size ]['path'] ) ) { // Bail out.
@@ -685,26 +686,30 @@ abstract class AbstractProcess implements ProcessInterface {
 
 				if ( ! is_wp_error( $response ) ) {
 					// Resizing succeeded: optimize the file.
-					$response = $file->optimize( [
-						'backup'             => ! $response['backuped'] && $this->can_backup( $size ),
-						'backup_path'        => $media->get_raw_backup_path(),
-						'backup_source'      => 'full' === $thumb_size ? $media->get_original_path() : null,
-						'optimization_level' => $optimization_level,
-						'convert'            => $convert,
-						'keep_exif'          => true,
-						'context'            => $media->get_context(),
-						'original_size'      => $response['file_size'],
-					] );
+					$response = $file->optimize(
+						[
+							'backup'             => ! $response['backuped'] && $this->can_backup( $size ),
+							'backup_path'        => $media->get_raw_backup_path(),
+							'backup_source'      => 'full' === $thumb_size ? $media->get_original_path() : null,
+							'optimization_level' => $optimization_level,
+							'convert'            => $convert,
+							'keep_exif'          => true,
+							'context'            => $media->get_context(),
+							'original_size'      => $response['file_size'],
+						]
+					);
 
-					$response = $this->compare_next_gen_file_size( [
-						'response'                  => $response,
-						'file'                      => $file,
-						'is_next_gen'               => $next_gen,
-						'next_gen_format'           => $convert,
-						'non_next_gen_thumb_size'   => $thumb_size,
-						'non_next_gen_file_path'    => $sizes[ $thumb_size ]['path'], // Don't use $path nor $file->get_path(), it may return the path to a temporary file.
-						'optimization_level'        => $optimization_level,
-					] );
+					$response = $this->compare_next_gen_file_size(
+						[
+							'response'                => $response,
+							'file'                    => $file,
+							'is_next_gen'             => $next_gen,
+							'next_gen_format'         => $convert,
+							'non_next_gen_thumb_size' => $thumb_size,
+							'non_next_gen_file_path'  => $sizes[ $thumb_size ]['path'], // Don't use $path nor $file->get_path(), it may return the path to a temporary file.
+							'optimization_level'      => $optimization_level,
+						]
+					);
 
 					if ( property_exists( $response, 'message' ) ) {
 						$path_is_temp = false;
@@ -892,7 +897,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		$original_path = $media->get_raw_original_path();
 
 		if ( $backup_path === $original_path ) {
-			// Uh?!
 			$this->unlock();
 			return new WP_Error( 'same_path', __( 'Image path and backup path are identical.', 'imagify' ) );
 		}
@@ -1134,7 +1138,6 @@ abstract class AbstractProcess implements ProcessInterface {
 				$thumb_dimensions = $this->filesystem->get_image_size( $size_data['path'] );
 
 				if ( ! $thumb_dimensions || ! $thumb_dimensions['width'] || ! $thumb_dimensions['height'] ) {
-					// ( ; Д ; )
 					return false;
 				}
 
@@ -1145,13 +1148,15 @@ abstract class AbstractProcess implements ProcessInterface {
 			}
 		}
 
-		$resized = $tmp_file->create_thumbnail( [
-			'path'            => $tmp_path,
-			'width'           => $size_data['width'],
-			'height'          => $size_data['height'],
-			'crop'            => $size_data['crop'],
-			'adjust_filename' => false,
-		] );
+		$resized = $tmp_file->create_thumbnail(
+			[
+				'path'            => $tmp_path,
+				'width'           => $size_data['width'],
+				'height'          => $size_data['height'],
+				'crop'            => $size_data['crop'],
+				'adjust_filename' => false,
+			]
+		);
 
 		if ( is_wp_error( $resized ) ) {
 			return false;
@@ -1451,7 +1456,7 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$next_gen_file = new File( $file_path );
-		$formats = $this->extensions;
+		$formats       = $this->extensions;
 
 		if ( ! $all_next_gen ) {
 			$formats = imagify_nextgen_images_formats();
@@ -1623,13 +1628,23 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		$keys = array_keys( $sizes );
-		$non_next_gen_keys = array_values(array_filter($keys, function ( $key ) {
-			return strpos( (string) $key, $this->format ) === false;
-		}));
 
-		return array_reduce($non_next_gen_keys, function ( $is_fully, $key ) use ( $sizes ) {
-			return key_exists( $key . $this->format, $sizes ) && $is_fully;
-		}, true);
+		$non_next_gen_keys = array_values(
+			array_filter(
+				$keys,
+				function ( $key ) {
+					return strpos( (string) $key, $this->format ) === false;
+				}
+			)
+		);
+
+		return array_reduce(
+			$non_next_gen_keys,
+			function ( $is_fully, $key ) use ( $sizes ) {
+				return key_exists( $key . $this->format, $sizes ) && $is_fully;
+			},
+			true
+		);
 	}
 
 	/**
@@ -1907,21 +1922,26 @@ abstract class AbstractProcess implements ProcessInterface {
 			/**
 			 * Success.
 			 */
-			$response = (object) array_merge( [
-				'original_size' => 0,
-				'new_size'      => 0,
-				'percent'       => 0,
-			], (array) $response );
+			$response = (object) array_merge(
+				[
+					'original_size' => 0,
+					'new_size'      => 0,
+					'percent'       => 0,
+				],
+				(array) $response
+			);
 
 			// Status.
 			$data['status'] = 'success';
 			$data['error']  = null;
 
 			// Size data.
-			$data['success']        = true;
+			$data['success'] = true;
+
 			if ( property_exists( $response, 'message' ) ) {
-				$data['message']  = imagify_translate_api_message( $response->message );
+				$data['message'] = imagify_translate_api_message( $response->message );
 			}
+
 			$data['original_size']  = $response->original_size;
 			$data['optimized_size'] = $response->new_size;
 		}

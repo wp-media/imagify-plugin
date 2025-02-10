@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class that handles the cron that calculate and cache the library size.
@@ -83,9 +82,11 @@ class Imagify_Cron_Library_Size extends Imagify_Abstract_Cron {
 	 * @author Grégory Viguier
 	 */
 	public function do_event() {
-		imagify_do_async_job( array(
-			'action'      => 'imagify_update_estimate_sizes',
-			'_ajax_nonce' => wp_create_nonce( 'update_estimate_sizes' ),
-		) );
+		imagify_do_async_job(
+			[
+				'action'      => 'imagify_update_estimate_sizes',
+				'_ajax_nonce' => wp_create_nonce( 'update_estimate_sizes' ),
+			]
+		);
 	}
 }
