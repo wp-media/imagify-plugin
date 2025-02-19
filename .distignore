@@ -2,6 +2,7 @@
 /.github
 /.wordpress-org
 /bin
+/_dev
 /Tests
 
 /.distignore
@@ -10,10 +11,11 @@
 /.gitattributes
 /.gitignore
 /.jshintrc
-/.travis.yml
 /composer.json
 /composer.lock
 /gruntfile.js
 /package.json
 /phpcs.xml
 /README.md
+/SECURITY.md
+/phpstan.neon.dist
