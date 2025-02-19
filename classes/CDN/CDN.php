@@ -58,7 +58,7 @@ class CDN implements SubscriberInterface {
 			 *     @type $url  string The CDN URL.
 			 * }
 			 */
-			$filter_source = apply_filters( 'imagify_cdn_source', $filter_source );
+			$filter_source = wpm_apply_filters_typed( 'array', 'imagify_cdn_source', $filter_source );
 
 			if ( ! empty( $filter_source['url'] ) ) {
 				$source = [

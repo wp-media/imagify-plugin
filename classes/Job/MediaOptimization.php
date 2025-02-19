@@ -102,7 +102,7 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 		 * @param ProcessInterface $process  The optimization process.
 		 * @param array            $item     The item being processed. See $this->task().
 		 */
-		$data = apply_filters( 'imagify_before_optimize', [], $wp_error, $this->optimization_process, $item );
+		$data = apply_filters( 'imagify_before_optimize', [], $wp_error, $this->optimization_process, $item ); // @phpstan-ignore-line
 
 		if ( is_wp_error( $data ) ) {
 			$wp_error = $data;
@@ -137,7 +137,7 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 		 * @param ProcessInterface $process  The optimization process.
 		 * @param array            $item     The item being processed. See $this->task().
 		 */
-		$data = apply_filters( "imagify_before_{$hook_suffix}", [], $wp_error, $this->optimization_process, $item );
+		$data = apply_filters( "imagify_before_{$hook_suffix}", [], $wp_error, $this->optimization_process, $item ); // @phpstan-ignore-line
 
 		if ( is_wp_error( $data ) ) {
 			$wp_error = $data;

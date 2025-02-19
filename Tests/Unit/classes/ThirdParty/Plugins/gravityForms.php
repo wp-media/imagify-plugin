@@ -8,7 +8,6 @@ use Imagify\ThirdParty\Plugins\GravityForms;
 use Mockery;
 use GFForms;
 use Brain\Monkey\Functions;
-use Brain\Monkey;
 
 /**
  * Tests for \Imagify\ThirdParty\Plugins\GravityForms.
@@ -32,13 +31,13 @@ class Test_GravityForms extends TestCase{
 
 		$gravity_forms = new GravityForms();
 
-		$styles = apply_filters( 'gform_noconflict_styles', [] );
+		$styles = apply_filters( 'gform_noconflict_styles', [] ); // @phpstan-ignore-line
 		$styles = $gravity_forms->imagify_gf_noconflict_styles( $styles );
 		foreach ( $expected['styles'] as $style ) {
 			$this->assertContains( $style, $styles );
 		}
 
-		$scripts = apply_filters( 'gform_noconflict_scripts', [] );
+		$scripts = apply_filters( 'gform_noconflict_scripts', [] ); // @phpstan-ignore-line
 		$scripts = $gravity_forms->imagify_gf_noconflict_scripts( $scripts );
 		foreach ( $expected['scripts'] as $script ) {
 			$this->assertContains( $script, $scripts);
