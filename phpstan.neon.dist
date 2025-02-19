@@ -49,3 +49,5 @@ parameters:
 		 - classes/CLI/
 		 # Don't check dependencies
 		 - classes/Dependencies/
+rules:
+	- Imagify\Tests\phpstan\Rules\DiscourageApplyFilters
