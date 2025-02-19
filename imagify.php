@@ -104,20 +104,12 @@ function imagify_pass_requirements() {
 /**
  * Load plugin translations.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
 function imagify_load_translations() {
-	static $done = false;
-
-	if ( $done ) {
-		return;
-	}
-
-	$done = true;
-
 	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
 }
+add_action( 'init', 'imagify_load_translations' );
 
 /**
  * Set a transient on plugin activation, it will be used later to trigger activation hooks after the plugin is loaded.
