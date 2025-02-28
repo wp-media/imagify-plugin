@@ -39,8 +39,6 @@
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 		<exclude name="Squiz.Commenting.FileComment.Missing"/><!-- Nope nope nope. -->
 		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
-		<exclude name="Squiz.PHP.EmbeddedPhp.ContentBeforeOpen"/><!-- Total bullshit. -->
-		<exclude name="Squiz.PHP.EmbeddedPhp.ContentAfterEnd"/><!-- Same. -->
 		<exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery"/><!-- LOL. Yeah, sure. -->
 		<exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching"/><!-- Using static vars IS caching. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_key"/><!-- Maybe someday. -->
