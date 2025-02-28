@@ -24,7 +24,8 @@ $plan_label = false !== $pos ? substr( $data['plan_label'], 0, $pos ) : $data['p
 					__( 'You have %s space credit left', 'imagify' ),
 					'<span class="imagify-unconsumed-percent">' . $data['unconsumed_quota'] . '%</span>'
 				);
-			?></p>
+			?>
+			</p>
 			<div class="<?php echo esc_attr( $data['quota_class'] ); ?>">
 				<div style="width: <?php echo esc_attr( $data['unconsumed_quota'] ); ?>%;" class="imagify-unconsumed-bar imagify-progress"></div>
 			</div>
