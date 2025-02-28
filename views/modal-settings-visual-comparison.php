@@ -27,34 +27,42 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			data-original-label="<?php esc_attr_e( 'Original', 'imagify' ); ?>"
 			data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-original.jpg"
 			data-original-dim="1220x350"
-			data-original-alt="<?php
+			data-original-alt="
+			<?php
 				/* translators: %s is a formatted file size. */
 				printf( esc_attr__( 'Original photography about %s', 'imagify' ), imagify_size_format( 343040 ) );
-			?>"
+			?>
+			"
 
 			data-normal-label="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
 			data-normal-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-normal.jpg"
 			data-normal-dim="1220x350"
-			data-normal-alt="<?php
+			data-normal-alt="
+			<?php
 				/* translators: %s is a formatted file size. */
 				printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 301056 ) );
-			?>"
+			?>
+			"
 
 			data-aggressive-label="<?php esc_attr_e( 'Aggressive', 'imagify' ); ?>"
 			data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-aggressive.jpg"
 			data-aggressive-dim="1220x350"
-			data-aggressive-alt="<?php
+			data-aggressive-alt="
+			<?php
 				/* translators: %s is a formatted file size. */
 				printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 108544 ) );
-			?>"
+			?>
+			"
 
 			data-ultra-label="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
 			data-ultra-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-ultra.jpg"
 			data-ultra-dim="1220x350"
-			data-ultra-alt="<?php
+			data-ultra-alt="
+			<?php
 				/* translators: %s is a formatted file size. */
 				printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 46080 ) );
-			?>"></div>
+			?>
+			"></div>
 
 		<div class="imagify-comparison-levels">
 			<div class="imagify-c-level imagify-level-original go-left">
