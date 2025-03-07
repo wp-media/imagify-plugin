@@ -28,7 +28,7 @@ Our video explains why Imagify is the easiest image optimization plugin and show
 ✨ Imagify Image Optimizer Key Features:
 
 * Resize and compress images for the most common formats, including PDF
-* Smart Compression to balance image optimization quality and performance automatically
+* Optimize images with Smart Compression to balance image optimization quality and performance automatically
 * Automatic WebP conversion
 * AVIF conversion in one click
 * Async bulk optimization
@@ -56,7 +56,7 @@ Imagify can also display the AVIF images directly on your front-end. But because
 WebP is definitively an excellent replacement for jpeg, png, and gif images, and the same goes for AVIF, which improves your image performance even further. Imagify offers WebP conversion for all image formats: you can convert gif to WebP, jpeg to WebP, and even png to WebP. You can also benefit from AVIF conversion and convert gif to AVIF, jpg and jpeg to AVIF, png to AVIF, and even WebP to AVIF!
 Whatever your favorite image format, let Imagify optimise your images!
 
-= ⚡ Optimise Images to Make Your Site Faster and Improve Core Web Vitals = 
+= ⚡ Optimize Images to Make Your Site Faster and Improve Core Web Vitals = 
 
 Did you know that image optimization and web performance go hand in hand? In fact, when it comes to web page speed, one of the first things you should do is optimize your images. Large and heavy image sizes will indeed slow down your website and provide a bad user experience to your visitors – and that’s why you should compress images. On the contrary, when you optimise images and improve image loading speed, you should see a direct improvement in your website speed and performance. With Imagify, it’s time to say goodbye to images taking too long to load.
 
