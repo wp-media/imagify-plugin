@@ -1,7 +1,7 @@
 === Imagify Image Optimization – Compress Images | Convert WebP | Convert AVIF | Optimize Images ===
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
-Tested up to: 6.7
+Tested up to: 6.8
 Stable tag: 2.2.5
 Requires PHP: 7.3
 License: GPLv2 or later
