@@ -1,4 +1,4 @@
-=== Imagify Image Optimization – Compress Images | Convert WebP | Convert AVIF | Optimize Images ===
+=== Imagify Image Optimization – Optimize Images | Compress Images | Convert WebP | Convert AVIF ===
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 6.8
@@ -7,7 +7,7 @@ Requires PHP: 7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Compress images & convert WebP and AVIF with the best and easiest WordPress image optimization plugin. Resize and optimize images in 1-click easily!
+Optimize images in one click: compress images, convert to WebP & AVIF, resize, and boost your site with the easiest WordPress image optimization plugin!
 
 == Description ==
 
