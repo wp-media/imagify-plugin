@@ -109,10 +109,12 @@ if ( ! is_network_admin() ) {
 										class="button imagify-button-clean imagify-add-themes" type="button"
 										data-theme="<?php echo esc_attr( $theme['path'] ) . '#///#' . esc_attr( $theme['label'] ); ?>">
 									<span class="dashicons dashicons-plus"></span>
-									<span class="button-text"><?php
+									<span class="button-text">
+									<?php
 										/* translators: %s is a theme name. */
 										printf( __( 'Add %s to optimization', 'imagify' ), '<strong>' . $theme['name'] . '</strong>' );
-									?></span>
+									?>
+									</span>
 								</button>
 								<?php
 							} else {
