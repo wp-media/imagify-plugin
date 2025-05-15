@@ -230,16 +230,12 @@ class Imagify_Requirements_Check {
 	/**
 	 * Warn if PHP version is less than 5.4 and offers to rollback.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function print_notice() {
 		if ( ! $this->current_user_can() ) {
 			return;
 		}
-
-		imagify_load_translations();
 
 		$message      = array();
 		$required     = array();
@@ -273,9 +269,7 @@ class Imagify_Requirements_Check {
 	/**
 	 * Do the rollback.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function rollback() {
 		check_ajax_referer( 'imagify_rollback' );
@@ -283,8 +277,6 @@ class Imagify_Requirements_Check {
 		if ( ! $this->current_user_can() ) {
 			wp_die();
 		}
-
-		imagify_load_translations();
 
 		$plugin_transient = get_site_transient( 'update_plugins' );
 		$plugin_basename  = plugin_basename( $this->plugin_file );
