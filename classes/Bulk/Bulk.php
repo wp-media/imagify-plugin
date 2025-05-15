@@ -326,7 +326,7 @@ final class Bulk {
 		 * @param string $class_name The class name.
 		 * @param string $context    The context name.
 		 */
-		$class_name = apply_filters( 'imagify_bulk_class_name', $class_name, $context );
+		$class_name = wpm_apply_filters_typed( 'string', 'imagify_bulk_class_name', $class_name, $context );
 
 		return '\\' . ltrim( $class_name, '\\' );
 	}
@@ -649,7 +649,7 @@ final class Bulk {
 		 *
 		 * @param array $types The folder types displayed on the page. If a folder type is "library", the context should be suffixed after a pipe character. They are passed as array keys.
 		 */
-		$types = apply_filters( 'imagify_bulk_page_types', $types );
+		$types = wpm_apply_filters_typed( 'array', 'imagify_bulk_page_types', $types );
 		$types = array_filter( (array) $types );
 
 		if ( isset( $types['library|wp'] ) ) {

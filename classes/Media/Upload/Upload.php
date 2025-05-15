@@ -20,7 +20,7 @@ class Upload {
 		 *
 		 * @param bool  $boolean True if the query should be run. False otherwise.
 		 */
-		if ( apply_filters( 'imagify_display_library_stats', false ) ) {
+		if ( wpm_apply_filters_typed( 'boolean', 'imagify_display_library_stats', false ) ) {
 			$data['optimized']   = imagify_count_optimized_attachments();
 			$data['unoptimized'] = imagify_count_unoptimized_attachments();
 			$data['errors']      = imagify_count_error_attachments();

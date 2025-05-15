@@ -868,7 +868,7 @@ final class Notices {
 		 *
 		 * @param array $notice_ids An array of notice "IDs".
 		 */
-		return (array) apply_filters( 'imagify_notices', self::$notice_ids );
+		return (array) wpm_apply_filters_typed( 'array', 'imagify_notices', self::$notice_ids );
 	}
 
 	/**
@@ -901,7 +901,7 @@ final class Notices {
 		 *
 		 * @param array $plugins List of recommended plugins to deactivate.
 		*/
-		$plugins = apply_filters( 'imagify_plugins_to_deactivate', self::$conflicting_plugins );
+		$plugins = wpm_apply_filters_typed( 'array',  'imagify_plugins_to_deactivate', self::$conflicting_plugins );
 
 		return array_filter( $plugins, 'is_plugin_active' );
 	}
