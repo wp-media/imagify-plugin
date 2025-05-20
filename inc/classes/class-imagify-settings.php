@@ -491,18 +491,11 @@ class Imagify_Settings {
 		$attributes         = array_merge( $attributes, $args['attributes'] );
 		$args['attributes'] = self::build_attributes( $attributes );
 		?>
-		<input type="checkbox" value="1"
-		<?php
-		checked( $current_value, 1 );
-		?>
-		<?php
-		echo $args['attributes'];
-		?>
-/>
+		<input type="checkbox" value="1" <?php checked( $current_value, 1 ); ?> <?php echo $args['attributes']; ?> />
 		<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
 		<label for="<?php echo $attributes['id']; ?>" onclick="">
 		<?php echo $args['label']; ?>
-</label>
+		</label>
 		<?php
 		if ( ! $args['info'] ) {
 			return;
@@ -628,7 +621,7 @@ class Imagify_Settings {
 
 				<span class="imagify-pipe"></span>
 
-				<button type="button" class="imagify-link-like imagify-select-all <?php echo $nb_of_checked ? '' : ' imagify-is-inactive" aria-disabled="true'; ?>	" data-action="unselect">
+				<button type="button" class="imagify-link-like imagify-select-all <?php echo $nb_of_checked ? '' : ' imagify-is-inactive" aria-disabled="true'; ?>  " data-action="unselect">
 				<?php
 					_e( 'Unselect All', 'imagify' );
 				?>
