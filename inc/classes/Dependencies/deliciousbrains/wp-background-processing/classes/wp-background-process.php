@@ -931,6 +931,7 @@ abstract class Imagify_WP_Background_Process extends Imagify_WP_Async_Request {
 	 * @return string
 	 */
 	public function get_chain_id() {
+		// The line below is a custom fix while waiting for the upstream package to be updated.
 		if ( empty( $this->chain_id ) && wp_doing_ajax() && isset( $_REQUEST['action'] ) && $_REQUEST['action'] === $this->identifier ) {
 			check_ajax_referer( $this->identifier, 'nonce' );
 
