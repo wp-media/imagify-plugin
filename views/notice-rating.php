@@ -1,9 +1,12 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
-$this->print_template( 'notice-header', array(
-	'classes' => array( 'updated' ),
-) );
+$this->print_template(
+	'notice-header',
+	[
+		'classes' => [ 'updated' ],
+	]
+);
 ?>
 <p>
 	<?php
@@ -31,6 +34,9 @@ $this->print_template( 'notice-header', array(
 	<a class="stars" target="_blank" href="<?php echo esc_url( imagify_get_external_url( 'rate' ) ); ?>">☆☆☆☆☆</a>
 </p>
 <?php
-$this->print_template( 'notice-footer', array(
-	'dismissible' => 'rating',
-) );
+$this->print_template(
+	'notice-footer',
+	[
+		'dismissible' => 'rating',
+	]
+);

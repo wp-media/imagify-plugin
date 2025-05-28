@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Abstract class to handle a part of the plugin options.
@@ -97,9 +96,12 @@ abstract class Imagify_Abstract_Options {
 			$this->autoload = $this->autoload ? 'yes' : 'no';
 		}
 
-		$this->default_values = array_merge( array(
-			'version' => '',
-		), $this->default_values );
+		$this->default_values = array_merge(
+			array(
+				'version' => '',
+			),
+			$this->default_values
+		);
 	}
 
 	/**
@@ -467,7 +469,7 @@ abstract class Imagify_Abstract_Options {
 			$reset_values = array_merge( $reset_values, $new_values );
 		}
 
-		$this->reset_values = $reset_values;
+		$this->reset_values           = $reset_values;
 		$this->reset_values['cached'] = 1;
 
 		return $reset_values;
@@ -487,19 +489,19 @@ abstract class Imagify_Abstract_Options {
 	 *
 	 * @param  string $key     The option key.
 	 * @param  mixed  $value   The value.
-	 * @param  mixed  $default The default value.
+	 * @param  mixed  $default_value The default value.
 	 * @return mixed
 	 */
-	public function sanitize_and_validate( $key, $value, $default = null ) {
-		if ( ! isset( $default ) ) {
+	public function sanitize_and_validate( $key, $value, $default_value = null ) {
+		if ( ! isset( $default_value ) ) {
 			$default_values = $this->get_default_values();
-			$default        = $default_values[ $key ];
+			$default_value  = $default_values[ $key ];
 		}
 
 		// Cast the value.
-		$value = self::cast( $value, $default );
+		$value = self::cast( $value, $default_value );
 
-		if ( $value === $default ) {
+		if ( $value === $default_value ) {
 			return $value;
 		}
 
@@ -508,7 +510,7 @@ abstract class Imagify_Abstract_Options {
 			return sanitize_text_field( $value );
 		}
 
-		return $this->sanitize_and_validate_value( $key, $value, $default );
+		return $this->sanitize_and_validate_value( $key, $value, $default_value );
 	}
 
 	/**
@@ -518,12 +520,12 @@ abstract class Imagify_Abstract_Options {
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @param  string $key     The option key.
-	 * @param  mixed  $value   The value.
-	 * @param  mixed  $default The default value.
+	 * @param  string $key           The option key.
+	 * @param  mixed  $value         The value.
+	 * @param  mixed  $default_value The default value.
 	 * @return mixed
 	 */
-	abstract public function sanitize_and_validate_value( $key, $value, $default );
+	abstract public function sanitize_and_validate_value( $key, $value, $default_value );
 
 	/**
 	 * Sanitize and validate Imagify's options before storing them.
@@ -583,24 +585,24 @@ abstract class Imagify_Abstract_Options {
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @param  mixed $value   The value to cast.
-	 * @param  mixed $default The default value.
+	 * @param  mixed $value         The value to cast.
+	 * @param  mixed $default_value The default value.
 	 * @return mixed
 	 */
-	public static function cast( $value, $default ) {
-		if ( is_array( $default ) ) {
+	public static function cast( $value, $default_value ) {
+		if ( is_array( $default_value ) ) {
 			return is_array( $value ) ? $value : array();
 		}
 
-		if ( is_int( $default ) ) {
+		if ( is_int( $default_value ) ) {
 			return (int) $value;
 		}
 
-		if ( is_bool( $default ) ) {
+		if ( is_bool( $default_value ) ) {
 			return (bool) $value;
 		}
 
-		if ( is_float( $default ) ) {
+		if ( is_float( $default_value ) ) {
 			return round( (float) $value, 3 );
 		}
 
@@ -614,10 +616,10 @@ abstract class Imagify_Abstract_Options {
 	 * @author Grégory Viguier
 	 * @access public
 	 *
-	 * @param  float $float The float.
+	 * @param  float $value The value.
 	 * @return float|int
 	 */
-	public static function maybe_cast_float_as_int( $float ) {
-		return ( $float / (int) $float ) === (float) 1 ? (int) $float : $float;
+	public static function maybe_cast_float_as_int( $value ) {
+		return ( $value / (int) $value ) === (float) 1 ? (int) $value : $value;
 	}
 }

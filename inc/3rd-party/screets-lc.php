@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 if ( function_exists( 'fn_lc_fix_ssl_upload_url' ) && defined( 'SLC_VERSION' ) && version_compare( SLC_VERSION, '2.2.8' ) < 0 ) :
 
@@ -7,7 +7,7 @@ if ( function_exists( 'fn_lc_fix_ssl_upload_url' ) && defined( 'SLC_VERSION' ) &
 	 * Fixes a bug in Screets Live Chat plugin (prior version 2.2.8), preventing wp_get_upload_dir() to work properly.
 	 */
 	remove_filter( 'upload_dir', 'fn_lc_fix_ssl_upload_url' );
-	add_filter( 'upload_dir',    'imagify_screets_lc_fix_ssl_upload_url' );
+	add_filter( 'upload_dir', 'imagify_screets_lc_fix_ssl_upload_url' );
 	/**
 	 * Filters the uploads directory data to force https URLs.
 	 *

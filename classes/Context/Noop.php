@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Context;
 
-use \Imagify\Traits\InstanceGetterTrait;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Fallback class for contexts.

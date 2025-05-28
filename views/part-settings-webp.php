@@ -3,7 +3,7 @@
 use Imagify\Stats\OptimizedMediaWithoutNextGen;
 use Imagify\Webp\Display;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 $settings = Imagify_Settings::get_instance();
 ?>
@@ -17,7 +17,7 @@ $settings = Imagify_Settings::get_instance();
 		$disabled      = false;
 
 		if ( has_filter( 'imagify_nextgen_images_formats' ) ) {
-			$message       = sprintf(
+			$message = sprintf(
 				// translators: %1$s and %2$s are <code> tag opening and closing, %3$s and %4$s are <a> tag opening and closing.
 				__( 'Next-Gen Images format is currently defined by the %1$simagify_nextgen_images_format%2$s filter. %3$sRead more%4$s', 'imagify' ),
 				'<code>',
@@ -59,25 +59,29 @@ $settings = Imagify_Settings::get_instance();
 
 		<div class="imagify-options-line">
 			<?php
-			$settings->field_checkbox( [
-				'option_name' => 'display_nextgen',
-				'label'       => __( 'Display images in Next-Gen format on the site', 'imagify' ),
-			] );
+			$settings->field_checkbox(
+				[
+					'option_name' => 'display_nextgen',
+					'label'       => __( 'Display images in Next-Gen format on the site', 'imagify' ),
+				]
+			);
 			?>
 
 			<div class="imagify-options-line">
 				<?php
-				$settings->field_radio_list( [
-					'option_name' => 'display_nextgen_method',
-					'values'      => [
-						'rewrite' => __( 'Use rewrite rules', 'imagify' ),
-						/* translators: 1 and 2 are <em> tag opening and closing. */
-						'picture' => sprintf( __( 'Use &lt;picture&gt; tags %1$s(preferred)%2$s', 'imagify' ), '<em>', '</em>' ),
-					],
-					'attributes'  => [
-						'aria-describedby' => 'describe-convert_to_webp',
-					],
-				] );
+				$settings->field_radio_list(
+					[
+						'option_name' => 'display_nextgen_method',
+						'values'      => [
+							'rewrite' => __( 'Use rewrite rules', 'imagify' ),
+							/* translators: 1 and 2 are <em> tag opening and closing. */
+							'picture' => sprintf( __( 'Use &lt;picture&gt; tags %1$s(preferred)%2$s', 'imagify' ), '<em>', '</em>' ),
+						],
+						'attributes'  => [
+							'aria-describedby' => 'describe-convert_to_webp',
+						],
+					]
+				);
 				?>
 
 				<div class="imagify-options-line">
@@ -107,19 +111,23 @@ $settings = Imagify_Settings::get_instance();
 							);
 						}
 
-						$settings->field_hidden( [
-							'option_name'   => 'cdn_url',
-							'current_value' => $cdn_source['url'],
-						] );
+						$settings->field_hidden(
+							[
+								'option_name'   => 'cdn_url',
+								'current_value' => $cdn_source['url'],
+							]
+						);
 					} else {
-						$settings->field_text_box( [
-							'option_name' => 'cdn_url',
-							'label'       => __( 'If you use a CDN, specify the URL:', 'imagify' ),
-							'attributes'  => [
-								'size'        => 30,
-								'placeholder' => __( 'https://cdn.example.com', 'imagify' ),
-							],
-						] );
+						$settings->field_text_box(
+							[
+								'option_name' => 'cdn_url',
+								'label'       => __( 'If you use a CDN, specify the URL:', 'imagify' ),
+								'attributes'  => [
+									'size'        => 30,
+									'placeholder' => __( 'https://cdn.example.com', 'imagify' ),
+								],
+							]
+						);
 					}
 					?>
 				</div>

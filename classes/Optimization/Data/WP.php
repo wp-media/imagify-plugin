@@ -1,8 +1,6 @@
 <?php
 namespace Imagify\Optimization\Data;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Optimization data class for the medias in the WP library.
  * This class constructor accepts:
@@ -89,12 +87,15 @@ class WP extends AbstractData {
 			$old_data['stats'] = [];
 		}
 
-		$old_data['stats'] = array_merge( [
-			'original_size'  => 0,
-			'optimized_size' => 0,
-			'percent'        => 0,
-			'message'        => '',
-		], $old_data['stats'] );
+		$old_data['stats'] = array_merge(
+			[
+				'original_size'  => 0,
+				'optimized_size' => 0,
+				'percent'        => 0,
+				'message'        => '',
+			],
+			$old_data['stats']
+		);
 
 		if ( key_exists( 'message', $data ) ) {
 			$old_data['message'] = $data['message'];

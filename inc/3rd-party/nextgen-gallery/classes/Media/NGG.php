@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\ThirdParty\NGG\Media;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Deprecated\Traits\Media\NGGDeprecatedTrait;
 
 /**
  * Media class for the medias from NextGen Gallery.
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class NGG extends \Imagify\Media\AbstractMedia {
-	use \Imagify\Deprecated\Traits\Media\NGGDeprecatedTrait;
+	use NGGDeprecatedTrait;
 
 	/**
 	 * Context (where the media "comes from").
@@ -277,10 +277,9 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
-		$image_data = $this->storage->_image_mapper->find( $this->get_id() ); // stdClass Object.
+		$image_data = $this->storage->_image_mapper->find( $this->get_id() );
 
 		if ( ! $image_data ) {
-			// ¯\(°_o)/¯
 			return new \WP_Error( 'no_ngg_image', __( 'Image not found in NextGen Gallery data.', 'imagify' ) );
 		}
 
@@ -304,7 +303,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			}
 
 			$params    = $this->storage->get_image_size_params( $image_data, $size_name );
-			$thumbnail = @$this->storage->generate_image_clone( // Don't remove this @ or the sky will fall.
+			$thumbnail = @$this->storage->generate_image_clone( // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 				$backup_path,
 				$this->storage->get_image_abspath( $image_data, $size_name ),
 				$params
@@ -336,7 +335,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			}
 
 			$image_data->meta_data[ $size_name ] = $size_meta;
-		} // End foreach().
+		}
 
 		// Keep our property up to date.
 		$this->image->_ngiw->_cache['meta_data'] = $image_data->meta_data;
@@ -433,26 +432,29 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		}
 
 		// Remove common values (that have no value for us here, lol). Also remove 'full' and 'backup'.
-		$image_data = array_diff_key( $this->image->meta_data, [
-			'full'              => 1,
-			'backup'            => 1,
-			'width'             => 1,
-			'height'            => 1,
-			'md5'               => 1,
-			'aperture'          => 1,
-			'credit'            => 1,
-			'camera'            => 1,
-			'caption'           => 1,
-			'created_timestamp' => 1,
-			'copyright'         => 1,
-			'focal_length'      => 1,
-			'iso'               => 1,
-			'shutter_speed'     => 1,
-			'flash'             => 1,
-			'title'             => 1,
-			'keywords'          => 1,
-			'saved'             => 1,
-		] );
+		$image_data = array_diff_key(
+			$this->image->meta_data,
+			[
+				'full'              => 1,
+				'backup'            => 1,
+				'width'             => 1,
+				'height'            => 1,
+				'md5'               => 1,
+				'aperture'          => 1,
+				'credit'            => 1,
+				'camera'            => 1,
+				'caption'           => 1,
+				'created_timestamp' => 1,
+				'copyright'         => 1,
+				'focal_length'      => 1,
+				'iso'               => 1,
+				'shutter_speed'     => 1,
+				'flash'             => 1,
+				'title'             => 1,
+				'keywords'          => 1,
+				'saved'             => 1,
+			]
+		);
 
 		if ( ! $image_data ) {
 			return $this->filter_media_files( $all_sizes );
@@ -502,7 +504,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		}
 
 		return [
-			'width'  => ! empty( $this->image->meta_data['width'] )  ? (int) $this->image->meta_data['width']  : 0,
+			'width'  => ! empty( $this->image->meta_data['width'] ) ? (int) $this->image->meta_data['width'] : 0,
 			'height' => ! empty( $this->image->meta_data['height'] ) ? (int) $this->image->meta_data['height'] : 0,
 		];
 	}
@@ -532,6 +534,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		foreach ( $data as $k => $v ) {
 			if ( ! isset( $this->image->meta_data[ $k ] ) || $this->image->meta_data[ $k ] !== $v ) {
 				$this->image->meta_data[ $k ] = $v;
+
 				$changed = true;
 			}
 		}

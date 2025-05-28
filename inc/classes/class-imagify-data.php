@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class that handles the plugin data.
@@ -80,10 +79,10 @@ class Imagify_Data extends Imagify_Abstract_Options {
 	 *
 	 * @param  string $key     The option key.
 	 * @param  mixed  $value   The value.
-	 * @param  mixed  $default The default value.
+	 * @param  mixed  $default_value The default value.
 	 * @return mixed
 	 */
-	public function sanitize_and_validate_value( $key, $value, $default ) {
+	public function sanitize_and_validate_value( $key, $value, $default_value ) {
 		switch ( $key ) {
 			case 'total_size_images_library':
 			case 'average_size_images_per_month':

@@ -214,7 +214,7 @@ abstract class AbstractContext implements ContextInterface {
 			 * @param int    $media_id  A media ID.
 			 * @param string $context   The context name.
 			 */
-			$user_can = (bool) apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $media_id, $this->get_name() );
+			$user_can = wpm_apply_filters_typed( 'boolean', 'imagify_current_user_can', $user_can, $capacity, $describer, $media_id, $this->get_name() );
 		} else {
 			$user_can = user_can( $user, $capacity, $media_id );
 		}
@@ -222,8 +222,7 @@ abstract class AbstractContext implements ContextInterface {
 		/**
 		 * Tell if the given user is allowed to operate Imagify in this context.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param bool   $user_can  Tell if the given user is allowed to operate Imagify in this context.
 		 * @param int    $user_id   The user ID.
@@ -232,7 +231,7 @@ abstract class AbstractContext implements ContextInterface {
 		 * @param int    $media_id  A media ID.
 		 * @param string $context   The context name.
 		 */
-		return (bool) apply_filters( 'imagify_user_can', $user_can, $user_id, $capacity, $describer, $media_id, $this->get_name() );
+		return wpm_apply_filters_typed( 'boolean', 'imagify_user_can', $user_can, $user_id, $capacity, $describer, $media_id, $this->get_name() );
 	}
 
 	/**
@@ -258,6 +257,6 @@ abstract class AbstractContext implements ContextInterface {
 		 * @param string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
 		 * @param string $context   The context name.
 		 */
-		return (string) apply_filters( 'imagify_capacity', $capacity, $describer, $this->get_name() );
+		return wpm_apply_filters_typed( 'string', 'imagify_capacity', $capacity, $describer, $this->get_name() );
 	}
 }

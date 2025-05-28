@@ -129,7 +129,7 @@ class Display implements SubscriberInterface {
 	 */
 	public function process_content( $content ) {
 		$html_no_picture_tags = $this->remove_picture_tags( $content );
-		$images = $this->get_images( $html_no_picture_tags );
+		$images               = $this->get_images( $html_no_picture_tags );
 
 		if ( ! $images ) {
 			return $content;
@@ -271,16 +271,16 @@ class Display implements SubscriberInterface {
 	 */
 	protected function build_source_attributes( array $image, string $image_type ): array {
 		$mime_type = '';
-		$url = '';
+		$url       = '';
 
 		switch ( $image_type ) {
 			case 'webp':
 				$mime_type = 'image/webp';
-				$url = 'webp_url';
+				$url       = 'webp_url';
 				break;
 			case 'avif':
 				$mime_type = 'image/avif';
-				$url = 'avif_url';
+				$url       = 'avif_url';
 				break;
 		}
 
@@ -357,17 +357,17 @@ class Display implements SubscriberInterface {
 		 */
 		if ( ! empty( $image['attributes']['class'] ) && strpos( $image['attributes']['class'], 'wp-block-cover__image-background' ) !== false ) {
 			$to_remove = [
-				'id'     => '',
-				'title'  => '',
+				'id'    => '',
+				'title' => '',
 			];
 
 			$attributes = array_diff_key( $image['attributes'], $to_remove );
 		} else {
 			$to_remove = [
-				'class'  => '',
-				'id'     => '',
-				'style'  => '',
-				'title'  => '',
+				'class' => '',
+				'id'    => '',
+				'style' => '',
+				'title' => '',
 			];
 
 			$attributes = array_diff_key( $image['attributes'], $to_remove );
@@ -575,7 +575,7 @@ class Display implements SubscriberInterface {
 			'attributes'       => $attributes,
 			'src_attribute'    => $src_source,
 			'src'              => [
-				'url'         => $attributes[ $src_source ],
+				'url' => $attributes[ $src_source ],
 			],
 			'srcset_attribute' => false,
 			'srcset'           => [],
@@ -625,8 +625,8 @@ class Display implements SubscriberInterface {
 				}
 
 				$srcset_data = [
-					'url'         => $srcs[0],
-					'descriptor'  => $srcs[1],
+					'url'        => $srcs[0],
+					'descriptor' => $srcs[1],
 				];
 
 				foreach ( $this->get_nextgen_image_data_set( $src ) as $key => $value ) {
@@ -669,19 +669,19 @@ class Display implements SubscriberInterface {
 		$webp_url  = imagify_path_to_nextgen( $src['src'], 'webp' );
 		$webp_path = $this->url_to_path( $webp_url );
 
-		$avif_url = imagify_path_to_nextgen( $src['src'], 'avif' );
-		$avif_path = $this->url_to_path( $avif_url );
+		$avif_url     = imagify_path_to_nextgen( $src['src'], 'avif' );
+		$avif_path    = $this->url_to_path( $avif_url );
 		$query_string = ! empty( $src['query'] ) ? $src['query'] : '';
 
 		return [
 			// WebP data set.
-			'webp_url' => $webp_url . $query_string,
-			'webp_path' => $webp_path,
+			'webp_url'    => $webp_url . $query_string,
+			'webp_path'   => $webp_path,
 			'webp_exists' => $webp_path && $this->filesystem->exists( $webp_path ),
 
 			// Avif data set.
-			'avif_url' => $avif_url . $query_string,
-			'avif_path' => $avif_path,
+			'avif_url'    => $avif_url . $query_string,
+			'avif_path'   => $avif_path,
 			'avif_exists' => $avif_path && $this->filesystem->exists( $avif_path ),
 		];
 	}

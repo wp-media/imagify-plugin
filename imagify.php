@@ -3,7 +3,7 @@
  * Plugin Name: Imagify
  * Plugin URI: https://wordpress.org/plugins/imagify/
  * Description: Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool.
- * Version: 2.2.5
+ * Version: 2.2.6
  * Requires at least: 5.3
  * Requires PHP: 7.3
  * Author: Imagify Image Optimizer – Optimize Images & Convert WebP & Avif
@@ -16,24 +16,24 @@
  * Copyright 2024 WP Media
  */
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 // Imagify defines.
-define( 'IMAGIFY_VERSION',        '2.2.5' );
-define( 'IMAGIFY_SLUG',           'imagify' );
-define( 'IMAGIFY_FILE',           __FILE__ );
-define( 'IMAGIFY_PATH',           realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
-define( 'IMAGIFY_URL',            plugin_dir_url( IMAGIFY_FILE ) );
+define( 'IMAGIFY_VERSION', '2.2.6' );
+define( 'IMAGIFY_SLUG', 'imagify' );
+define( 'IMAGIFY_FILE', __FILE__ );
+define( 'IMAGIFY_PATH', realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
+define( 'IMAGIFY_URL', plugin_dir_url( IMAGIFY_FILE ) );
 define( 'IMAGIFY_ASSETS_IMG_URL', IMAGIFY_URL . 'assets/images/' );
-define( 'IMAGIFY_MAX_BYTES',      5242880 );
-define( 'IMAGIFY_INT_MAX',        PHP_INT_MAX - 30 );
+define( 'IMAGIFY_MAX_BYTES', 5242880 );
+define( 'IMAGIFY_INT_MAX', PHP_INT_MAX - 30 );
 if ( ! defined( 'IMAGIFY_SITE_DOMAIN' ) ) {
 	define( 'IMAGIFY_SITE_DOMAIN', 'https://imagify.io' );
 }
 if ( ! defined( 'IMAGIFY_APP_DOMAIN' ) ) {
-	define( 'IMAGIFY_APP_DOMAIN',     'https://app.imagify.io' );
+	define( 'IMAGIFY_APP_DOMAIN', 'https://app.imagify.io' );
 }
-define( 'IMAGIFY_APP_API_URL',     IMAGIFY_APP_DOMAIN . '/api/' );
+define( 'IMAGIFY_APP_API_URL', IMAGIFY_APP_DOMAIN . '/api/' );
 
 
 // Check for WordPress and PHP version.
@@ -104,20 +104,12 @@ function imagify_pass_requirements() {
 /**
  * Load plugin translations.
  *
- * @since  1.9
- * @author Grégory Viguier
+ * @since 1.9
  */
 function imagify_load_translations() {
-	static $done = false;
-
-	if ( $done ) {
-		return;
-	}
-
-	$done = true;
-
 	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
 }
+add_action( 'init', 'imagify_load_translations' );
 
 /**
  * Set a transient on plugin activation, it will be used later to trigger activation hooks after the plugin is loaded.
@@ -160,4 +152,3 @@ function imagify_deactivation() {
 	do_action( 'imagify_deactivation' );
 }
 register_deactivation_hook( IMAGIFY_FILE, 'imagify_deactivation' );
-

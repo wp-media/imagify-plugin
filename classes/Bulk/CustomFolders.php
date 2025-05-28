@@ -37,9 +37,11 @@ class CustomFolders extends AbstractBulk {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders = Imagify_Custom_Folders::get_folders( [
-			'active' => true,
-		] );
+		$folders = Imagify_Custom_Folders::get_folders(
+			[
+				'active' => true,
+			]
+		);
 
 		if ( ! $folders ) {
 			return [];
@@ -58,9 +60,12 @@ class CustomFolders extends AbstractBulk {
 		/**
 		 * Get the files from DB, and from the folders.
 		 */
-		$files = Imagify_Custom_Folders::get_files_from_folders( $folders, [
-			'optimization_level' => $optimization_level,
-		] );
+		$files = Imagify_Custom_Folders::get_files_from_folders(
+			$folders,
+			[
+				'optimization_level' => $optimization_level,
+			]
+		);
 
 		if ( ! $files ) {
 			return [];
@@ -110,9 +115,10 @@ class CustomFolders extends AbstractBulk {
 			$mime = 'image/webp';
 		}
 		$mime_types     = str_replace( ",'" . $mime . "'", '', $mime_types );
-		$nextgen_suffix  = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::' . strtoupper( $format ) . '_SUFFIX' );
-		$files          = $wpdb->get_results( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
+		$nextgen_suffix = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::' . strtoupper( $format ) . '_SUFFIX' );
+		$files          = $wpdb->get_results(
+			$wpdb->prepare( // WPCS: unprepared SQL ok.
+				"
 			SELECT fi.file_id, fi.path
 			FROM $files_table as fi
 			INNER JOIN $folders_table AS fo
@@ -122,8 +128,9 @@ class CustomFolders extends AbstractBulk {
 				AND ( fi.status = 'success' OR fi.status = 'already_optimized' )
 				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )
 			ORDER BY fi.file_id DESC",
-			'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
-		) );
+				'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+			)
+		);
 
 		$wpdb->flush();
 		unset( $mime_types, $files_table, $folders_table, $nextgen_suffix, $mime );
@@ -159,7 +166,7 @@ class CustomFolders extends AbstractBulk {
 			}
 
 			$data['ids'][] = $file_id;
-		} // End foreach().
+		}
 
 		return $data;
 	}

@@ -20,15 +20,15 @@ class Upload {
 		 *
 		 * @param bool  $boolean True if the query should be run. False otherwise.
 		 */
-		if ( apply_filters( 'imagify_display_library_stats', false ) ) {
+		if ( wpm_apply_filters_typed( 'boolean', 'imagify_display_library_stats', false ) ) {
 			$data['optimized']   = imagify_count_optimized_attachments();
 			$data['unoptimized'] = imagify_count_unoptimized_attachments();
 			$data['errors']      = imagify_count_error_attachments();
 
 		}
 
-		$status      = isset( $_GET['imagify-status'] ) ? wp_unslash( $_GET['imagify-status'] ) : 0; // WPCS: CSRF ok.
-		$options     = array(
+		$status  = isset( $_GET['imagify-status'] ) ? wp_unslash( $_GET['imagify-status'] ) : 0; // WPCS: CSRF ok.
+		$options = array(
 			'optimized'   => _x( 'Optimized', 'Media Files', 'imagify' ),
 			'unoptimized' => _x( 'Unoptimized', 'Media Files', 'imagify' ),
 			'errors'      => _x( 'Errors', 'Media Files', 'imagify' ),

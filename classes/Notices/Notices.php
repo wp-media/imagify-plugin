@@ -128,12 +128,12 @@ final class Notices {
 	 */
 	public function init() {
 		// For generic purpose.
-		add_action( 'all_admin_notices',                     [ $this, 'render_notices' ] );
-		add_action( 'wp_ajax_imagify_dismiss_notice',        [ $this, 'admin_post_dismiss_notice' ] );
-		add_action( 'admin_post_imagify_dismiss_notice',     [ $this, 'admin_post_dismiss_notice' ] );
+		add_action( 'all_admin_notices', [ $this, 'render_notices' ] );
+		add_action( 'wp_ajax_imagify_dismiss_notice', [ $this, 'admin_post_dismiss_notice' ] );
+		add_action( 'admin_post_imagify_dismiss_notice', [ $this, 'admin_post_dismiss_notice' ] );
 		// For specific notices.
-		add_action( 'imagify_dismiss_notice',                [ $this, 'clear_scheduled_rating' ] );
-		add_action( 'admin_post_imagify_deactivate_plugin',  [ $this, 'deactivate_plugin' ] );
+		add_action( 'imagify_dismiss_notice', [ $this, 'clear_scheduled_rating' ] );
+		add_action( 'admin_post_imagify_deactivate_plugin', [ $this, 'deactivate_plugin' ] );
 		add_action( 'imagify_not_almost_over_quota_anymore', [ $this, 'renew_almost_over_quota_notice' ] );
 	}
 
@@ -868,7 +868,7 @@ final class Notices {
 		 *
 		 * @param array $notice_ids An array of notice "IDs".
 		 */
-		return (array) apply_filters( 'imagify_notices', self::$notice_ids );
+		return (array) wpm_apply_filters_typed( 'array', 'imagify_notices', self::$notice_ids );
 	}
 
 	/**
@@ -901,7 +901,7 @@ final class Notices {
 		 *
 		 * @param array $plugins List of recommended plugins to deactivate.
 		*/
-		$plugins = apply_filters( 'imagify_plugins_to_deactivate', self::$conflicting_plugins );
+		$plugins = wpm_apply_filters_typed( 'array',  'imagify_plugins_to_deactivate', self::$conflicting_plugins );
 
 		return array_filter( $plugins, 'is_plugin_active' );
 	}

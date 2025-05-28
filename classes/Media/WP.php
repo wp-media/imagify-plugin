@@ -219,7 +219,6 @@ class WP extends AbstractMedia {
 		$metadata           = wp_generate_attachment_metadata( $this->get_id(), $this->get_raw_original_path() );
 
 		if ( empty( $metadata['file'] ) ) {
-			// Σ(ﾟДﾟ).
 			update_post_meta( $this->get_id(), '_wp_attachment_metadata', $metadata );
 
 			return true;

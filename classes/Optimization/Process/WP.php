@@ -218,7 +218,7 @@ class WP extends AbstractProcess {
 			return [];
 		}
 
-		$media             = $this->get_media();
+		$media = $this->get_media();
 
 		if ( ! $media ) {
 			return [];

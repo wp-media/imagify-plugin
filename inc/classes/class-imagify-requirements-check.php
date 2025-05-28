@@ -1,6 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin&#8217; uh?' );
-
 /**
  * Class to check if the current WordPress and PHP versions meet our requirements.
  *
@@ -126,7 +124,7 @@ class Imagify_Requirements_Check {
 	 */
 	public function check() {
 		if ( ! $this->php_passes() || ! $this->wp_passes() ) {
-			add_action( 'admin_notices',               array( $this, 'print_notice' ) );
+			add_action( 'admin_notices', array( $this, 'print_notice' ) );
 			add_action( 'admin_post_imagify_rollback', array( $this, 'rollback' ) );
 
 			return false;
@@ -199,7 +197,7 @@ class Imagify_Requirements_Check {
 		$describer = 'manage';
 		$capacity  = $this->is_active_for_network() ? 'manage_network_options' : 'manage_options';
 		// This filter is documented in classes/Context/AbstractContext.php.
-		$capacity  = (string) apply_filters( 'imagify_capacity', $capacity, $describer, 'wp' );
+		$capacity = (string) apply_filters( 'imagify_capacity', $capacity, $describer, 'wp' );
 
 		$user_can = current_user_can( $capacity );
 		// This filter is documented in classes/Context/AbstractContext.php.
@@ -232,16 +230,12 @@ class Imagify_Requirements_Check {
 	/**
 	 * Warn if PHP version is less than 5.4 and offers to rollback.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function print_notice() {
 		if ( ! $this->current_user_can() ) {
 			return;
 		}
-
-		imagify_load_translations();
 
 		$message      = array();
 		$required     = array();
@@ -275,9 +269,7 @@ class Imagify_Requirements_Check {
 	/**
 	 * Do the rollback.
 	 *
-	 * @since  1.9
-	 * @access public
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 */
 	public function rollback() {
 		check_ajax_referer( 'imagify_rollback' );
@@ -285,8 +277,6 @@ class Imagify_Requirements_Check {
 		if ( ! $this->current_user_can() ) {
 			wp_die();
 		}
-
-		imagify_load_translations();
 
 		$plugin_transient = get_site_transient( 'update_plugins' );
 		$plugin_basename  = plugin_basename( $this->plugin_file );

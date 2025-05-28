@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Imagify DB base class.
@@ -253,8 +252,8 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	public function get_by( $column_where, $column_value ) {
 		global $wpdb;
 
-		$placeholder   = $this->get_placeholder( $column_where );
-		$column_where  = esc_sql( $column_where );
+		$placeholder  = $this->get_placeholder( $column_where );
+		$column_where = esc_sql( $column_where );
 
 		$result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE $column_where = $placeholder LIMIT 1;", $column_value ), ARRAY_A ); // WPCS: unprepared SQL ok, PreparedSQLPlaceholders replacement count ok.
 
@@ -577,7 +576,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	protected function set_table_not_ready() {
 		global $wpdb;
 
-		$this->table_created  = false;
+		$this->table_created = false;
 		unset( $wpdb->{$this->table} );
 
 		if ( $this->table_is_global ) {
@@ -873,10 +872,13 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 			return $data;
 		}
 
-		$serialized_data = array_map( function( $array ) {
-			// Try not to store empty serialized arrays.
-			return [] === $array ? null : maybe_serialize( $array );
-		}, $serialized_data );
+		$serialized_data = array_map(
+			function ( $value ) {
+				// Try not to store empty serialized arrays.
+				return [] === $value ? null : maybe_serialize( $value );
+			},
+			$serialized_data
+		);
 
 		return array_merge( $data, $serialized_data );
 	}

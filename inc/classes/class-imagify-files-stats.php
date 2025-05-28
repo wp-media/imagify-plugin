@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class handling stats related to "custom folders optimization".
@@ -233,7 +233,7 @@ class Imagify_Files_Stats {
 				break;
 
 			default:
-				// "success", "already_optimized", "error".
+				// success, already_optimized or error.
 				$status = "status = '$status'";
 		}
 

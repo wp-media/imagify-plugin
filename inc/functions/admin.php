@@ -2,7 +2,7 @@
 use Imagify\Notices\Notices;
 use Imagify\User\User;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Tell if the current screen is what we're looking for.
@@ -90,8 +90,8 @@ function imagify_is_screen( $identifier ) {
  */
 function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 	if ( is_array( $arg ) ) {
-		$id      = isset( $arg['attachment_id'] )      ? $arg['attachment_id']      : 0;
-		$context = isset( $arg['context'] )            ? $arg['context']            : 'wp';
+		$id      = isset( $arg['attachment_id'] ) ? $arg['attachment_id'] : 0;
+		$context = isset( $arg['context'] ) ? $arg['context'] : 'wp';
 		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : '';
 	}
 
@@ -145,15 +145,21 @@ function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 		case 'folder-errors':
 			switch ( $arg ) {
 				case 'wp':
-					return add_query_arg( array(
-						'mode'           => 'list',
-						'imagify-status' => 'errors',
-					), admin_url( 'upload.php' ) );
+					return add_query_arg(
+						[
+							'mode'           => 'list',
+							'imagify-status' => 'errors',
+						],
+						admin_url( 'upload.php' )
+					);
 
 				case 'custom-folders':
-					return add_query_arg( array(
-						'status-filter' => 'errors',
-					), get_imagify_admin_url( 'files-list' ) );
+					return add_query_arg(
+						[
+							'status-filter' => 'errors',
+						],
+						get_imagify_admin_url( 'files-list' )
+					);
 			}
 			/**
 			 * Provide a URL to a page displaying optimization errors for the given context.
@@ -245,11 +251,14 @@ function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
 	}
 
 	// Query args.
-	$query = array_merge( array(
-		'utm_source'   => 'imagify-coupon',
-		'utm_medium'   => 'plugin',
-		'utm_campaign' => 'imagify',
-	), $query );
+	$query = array_merge(
+		[
+			'utm_source'   => 'imagify-coupon',
+			'utm_medium'   => 'plugin',
+			'utm_campaign' => 'imagify',
+		],
+		$query
+	);
 
 	return add_query_arg( $query, $wprocket_url );
 }
@@ -291,7 +300,7 @@ function imagify_die( $message = null ) {
 
 	if ( is_array( $message ) ) {
 		if ( ! empty( $message['error'] ) ) {
-			$message['error']  = imagify_translate_api_message( $message['error'] );
+			$message['error'] = imagify_translate_api_message( $message['error'] );
 		} elseif ( ! empty( $message['detail'] ) ) {
 			$message['detail'] = imagify_translate_api_message( $message['detail'] );
 		}
@@ -313,7 +322,8 @@ function imagify_die( $message = null ) {
 
 	if ( wp_get_referer() ) {
 		$message .= '</p><p>';
-		$message .= sprintf( '<a href="%s">%s</a>',
+		$message .= sprintf(
+			'<a href="%s">%s</a>',
 			esc_url( remove_query_arg( 'updated', wp_get_referer() ) ),
 			/* translators: This sentense already exists in WordPress. */
 			__( 'Go back', 'imagify' )

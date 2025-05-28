@@ -28,9 +28,11 @@ class Apache extends AbstractApacheDirConfFile {
 	 * @return string
 	 */
 	protected function get_raw_new_contents() {
-		return trim( '
+		return trim(
+			'
 <IfModule mod_mime.c>
 	AddType image/webp .webp
-</IfModule>' );
+</IfModule>'
+		);
 	}
 }

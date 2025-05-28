@@ -1,6 +1,17 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
+// translators: %s is a formatted file size.
+$original_alt = sprintf( esc_attr__( 'Original photography about %s', 'imagify' ), imagify_size_format( 343040 ) );
+
+// translators: %s is a formatted file size.
+$normal_alt = sprintf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 301056 ) );
+
+// translators: %s is a formatted file size.
+$aggressive_alt = sprintf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 108544 ) );
+
+// translators: %s is a formatted file size.
+$ultra_alt = sprintf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 46080 ) );
 ?>
 
 <div class="imagify-modal" id="imagify-visual-comparison">
@@ -27,34 +38,23 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			data-original-label="<?php esc_attr_e( 'Original', 'imagify' ); ?>"
 			data-original-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-original.jpg"
 			data-original-dim="1220x350"
-			data-original-alt="<?php
-				/* translators: %s is a formatted file size. */
-				printf( esc_attr__( 'Original photography about %s', 'imagify' ), imagify_size_format( 343040 ) );
-			?>"
+			data-original-alt="<?php echo $original_alt; ?>"
 
 			data-normal-label="<?php esc_attr_e( 'Normal', 'imagify' ); ?>"
 			data-normal-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-normal.jpg"
 			data-normal-dim="1220x350"
-			data-normal-alt="<?php
-				/* translators: %s is a formatted file size. */
-				printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 301056 ) );
-			?>"
+			data-normal-alt="<?php echo $normal_alt; ?>"
 
 			data-aggressive-label="<?php esc_attr_e( 'Aggressive', 'imagify' ); ?>"
 			data-aggressive-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-aggressive.jpg"
 			data-aggressive-dim="1220x350"
-			data-aggressive-alt="<?php
-				/* translators: %s is a formatted file size. */
-				printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 108544 ) );
-			?>"
+			data-aggressive-alt=" <?php echo $aggressive_alt; ?>"
 
 			data-ultra-label="<?php esc_attr_e( 'Ultra', 'imagify' ); ?>"
 			data-ultra-img="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>mushrooms-ultra.jpg"
 			data-ultra-dim="1220x350"
-			data-ultra-alt="<?php
-				/* translators: %s is a formatted file size. */
-				printf( esc_attr__( 'Optimized photography about %s', 'imagify' ), imagify_size_format( 46080 ) );
-			?>"></div>
+			data-ultra-alt="<?php echo $ultra_alt; ?>">
+		</div>
 
 		<div class="imagify-comparison-levels">
 			<div class="imagify-c-level imagify-level-original go-left">

@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Basis class that handles events.
@@ -83,9 +82,9 @@ abstract class Imagify_Abstract_Cron {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'init',                       array( $this, 'schedule_event' ) );
-		add_action( $this->get_event_name(),      array( $this, 'do_event' ) );
-		add_filter( 'cron_schedules',             array( $this, 'maybe_add_recurrence' ) );
+		add_action( 'init', array( $this, 'schedule_event' ) );
+		add_action( $this->get_event_name(), array( $this, 'do_event' ) );
+		add_filter( 'cron_schedules', array( $this, 'maybe_add_recurrence' ) );
 
 		if ( did_action( static::get_deactivation_hook_name() ) ) {
 			$this->unschedule_event();

@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Imagifybeat;
 
-use \Imagify\Traits\InstanceGetterTrait;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Imagifybeat core.
@@ -20,7 +20,7 @@ final class Core {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'wp_ajax_imagifybeat',        [ $this, 'core_handler' ], 1 );
+		add_action( 'wp_ajax_imagifybeat', [ $this, 'core_handler' ], 1 );
 		add_filter( 'imagifybeat_refresh_nonces', [ $this, 'refresh_imagifybeat_nonces' ] );
 	}
 
@@ -57,14 +57,13 @@ final class Core {
 			/**
 			 * Filters the nonces to send.
 			 *
-			 * @since  1.9.3
-			 * @author Grégory Viguier
+			 * @since 1.9.3
 			 *
 			 * @param array  $response  The Imagifybeat response.
 			 * @param array  $data      The $_POST data sent.
 			 * @param string $screen_id The screen id.
 			 */
-			$response = apply_filters( 'imagifybeat_refresh_nonces', $response, $data, $screen_id );
+			$response = wpm_apply_filters_typed( 'array', 'imagifybeat_refresh_nonces', $response, $data, $screen_id );
 
 			if ( false === $nonce_state ) {
 				// User is logged in but nonces have expired.
@@ -77,26 +76,24 @@ final class Core {
 			/**
 			 * Filters the Imagifybeat response received.
 			 *
-			 * @since  1.9.3
-			 * @author Grégory Viguier
+			 * @since 1.9.3
 			 *
 			 * @param array  $response  The Imagifybeat response.
 			 * @param array  $data      The $_POST data sent.
 			 * @param string $screen_id The screen id.
 			 */
-			$response = apply_filters( 'imagifybeat_received', $response, $data, $screen_id );
+			$response = wpm_apply_filters_typed( 'array', 'imagifybeat_received', $response, $data, $screen_id );
 		}
 
 		/**
 		 * Filters the Imagifybeat response sent.
 		 *
-		 * @since  1.9.3
-		 * @author Grégory Viguier
+		 * @since 1.9.3
 		 *
 		 * @param array  $response  The Imagifybeat response.
 		 * @param string $screen_id The screen id.
 		 */
-		$response = apply_filters( 'imagifybeat_send', $response, $screen_id );
+		$response = wpm_apply_filters_typed( 'array', 'imagifybeat_send', $response, $screen_id );
 
 		/**
 		 * Fires when Imagifybeat ticks in logged-in environments.
@@ -162,11 +159,10 @@ final class Core {
 		/**
 		 * Filters the Imagifybeat settings.
 		 *
-		 * @since  1.9.3
-		 * @author Grégory Viguier
+		 * @since 1.9.3
 		 *
 		 * @param array $settings Imagifybeat settings array.
 		 */
-		return (array) apply_filters( 'imagifybeat_settings', $settings );
+		return (array) wpm_apply_filters_typed( 'array', 'imagifybeat_settings', $settings );
 	}
 }

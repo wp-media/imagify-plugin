@@ -3,24 +3,19 @@
 	<description>Image optimization plugin for WordPress by WP Media.</description>
 
 	<arg name="extensions" value="php"/>
-	<!-- <arg value="s"/> -->
 
-	<file>.</file>
+	<!-- Strip the filepaths down to the relevant bit. -->
+	<arg name="basepath" value="."/>
 
-	<exclude-pattern>bin/</exclude-pattern>
-	<exclude-pattern>assets/*/*.min.css</exclude-pattern>
-	<exclude-pattern>assets/*/*.min.js</exclude-pattern>
+	<file>classes/</file>
+	<file>inc/</file>
+	<file>views/</file>
+	<file>imagify.php</file>
+	<file>uninstall.php</file>
+
 	<exclude-pattern>inc/deprecated/*</exclude-pattern>
-	<exclude-pattern>tests/*</exclude-pattern>
-	<exclude-pattern>vendor/*</exclude-pattern>
 	<exclude-pattern>classes/Dependencies</exclude-pattern>
 	<exclude-pattern>inc/Dependencies</exclude-pattern>
-	<exclude-pattern>node_modules</exclude-pattern>
-
-	<arg value="sp"/><!-- Show sniff and progress -->
-	<arg name="colors"/><!-- Show results with colors -->
-	<arg name="parallel" value="50"/><!-- Enables parallel processing when available for faster results. -->
-	<arg name="extensions" value="php"/><!-- Limit to PHP files -->
 
 	<!-- ** HOW TO SCAN ** -->
 
@@ -36,51 +31,21 @@
 	<!-- Run against the PHPCompatibility ruleset dedicated to WP. -->
 	<rule ref="PHPCompatibilityWP">
 		<include-pattern>*\.php$</include-pattern>
-		<exclude name="PHPCompatibility.PHP.NewFunctions.curl_file_createFound"/><!-- Defined in Imagify 1.0. -->
-		<exclude name="PHPCompatibility.FunctionUse.NewFunctions.curl_file_createFound"/><!-- Same for VSCode. -->
 	</rule>
 
 	<!-- Run against the WordPress ruleset. -->
 	<rule ref="WordPress">
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
-		<exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/><!-- Excluded as long as it doesn't ignore comments. -->
-		<exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning"/><!-- Too many false positives. -->
-		<exclude name="Generic.Functions.FunctionCallArgumentSpacing.TooMuchSpaceAfterComma"/><!-- Completely broken. -->
-		<exclude name="Generic.PHP.NoSilencedErrors.Discouraged"/><!-- I've been told that silence is golden. -->
-		<exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket"/><!-- Maybe someday. -->
-		<exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/><!-- Maybe someday. -->
-		<exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine"/><!-- Maybe someday. -->
 		<exclude name="Squiz.Commenting.FileComment.Missing"/><!-- Nope nope nope. -->
 		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
-		<exclude name="Squiz.PHP.EmbeddedPhp.ContentBeforeOpen"/><!-- Total bullshit. -->
-		<exclude name="Squiz.PHP.EmbeddedPhp.ContentAfterEnd"/><!-- Same. -->
-		<exclude name="Squiz.PHP.CommentedOutCode.Found"/><!-- LOL, this thing is totally broken. -->
-		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned"/><!-- Same. -->
-		<exclude name="WordPress.Arrays.MultipleStatementAlignment.LongIndexSpaceBeforeDoubleArrow"/><!-- Same. -->
 		<exclude name="WordPress.DB.DirectDatabaseQuery.DirectQuery"/><!-- LOL. Yeah, sure. -->
 		<exclude name="WordPress.DB.DirectDatabaseQuery.NoCaching"/><!-- Using static vars IS caching. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_key"/><!-- Maybe someday. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query"/><!-- Maybe someday. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value"/><!-- Maybe someday. -->
-		<exclude name="WordPress.PHP.NoSilencedErrors.Discouraged"/><!-- Silence is golden. -->
-		<exclude name="WordPress.WhiteSpace.OperatorSpacing.SpacingBefore"/><!-- Nope. Allow ternary tests to be aligned. -->
-		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_close"/><!-- We 👏 Need 👏 It 👏 ! -->
-		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_error"/><!-- Same. -->
-		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_exec"/><!-- Same. -->
-		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_file_create"/><!-- Same. -->
-		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_getinfo"/><!-- Same. -->
-		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_http_version_1_0"/><!-- Same. -->
-		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_http_version_1_1"/><!-- Same. -->
-		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_init"/><!-- Same. -->
-		<exclude name="WordPress.WP.AlternativeFunctions.curl_curl_setopt"/><!-- Same. -->
-		<exclude name="WordPress.WP.CapitalPDangit.Misspelled"/><!-- False positives. -->
-		<exclude name="WordPress.WP.GlobalVariablesOverride.Prohibited"/><!-- Why the fuck are YOU allowed to name your variables $path and $type, and not me? -->
 		<!-- Will be handled later. -->
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
-		<exclude name="WordPress.DB.PreparedSQL.DeprecatedWhitelistCommentFound"/>
-		<exclude name="WordPress.DB.PreparedSQLPlaceholders.DeprecatedWhitelistCommentFound"/>
-		<exclude name="WordPress.Security.NonceVerification.DeprecatedWhitelistCommentFound"/>
-		<exclude name="WordPress.WP.GlobalVariablesOverride.DeprecatedWhitelistCommentFound"/>
 		<exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotSanitized"/>
 		<exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotValidated"/>
 		<exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped"/>
@@ -91,47 +56,37 @@
             <property name="strict_class_file_names" value="false" />
         </properties>
     </rule>
-	<rule ref="WordPress.DB.DirectDatabaseQuery.SchemaChange">
-		<exclude-pattern>uninstall.php</exclude-pattern>
-	</rule>
-
-	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
-		<exclude-pattern>classes/*/</exclude-pattern>
-		<exclude-pattern>inc/3rd-party/*/classes/</exclude-pattern>
-	</rule>
-
-	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
-		<exclude-pattern>classes/*/</exclude-pattern>
-		<exclude-pattern>inc/3rd-party/*/classes/</exclude-pattern>
-	</rule>
 
 	<rule ref="WordPress.NamingConventions.ValidVariableName">
 		<properties>
-			<property name="customPropertiesWhitelist" value="Packs,Plans,fileName,parentNode,preserveWhiteSpace,formatOutput,firstChild" type="array"/>
+			<property name="allowed_custom_properties" type="array">
+				<element value="Packs" />
+				<element value="Plans" />
+				<element value="fileName" />
+				<element value="parentNode" />
+				<element value="preserveWhiteSpace" />
+				<element value="formatOutput" />
+				<element value="firstChild" />
+			</property>
 		</properties>
 	</rule>
 
 	<rule ref="WordPress.Security.NonceVerification">
 		<properties>
-			<property name="customNonceVerificationFunctions" value="imagify_check_nonce" type="array"/>
+			<property name="customNonceVerificationFunctions" type="array">
+				<element value="imagify_check_nonce" />
+			</property>
 		</properties>
 	</rule>
 
 	<rule ref="WordPress.Security.ValidatedSanitizedInput">
 		<properties>
-			<property name="customUnslashingSanitizingFunctions" value="imagify_sanitize_context,empty,isset,is_numeric" type="array"/>
+			<property name="customUnslashingSanitizingFunctions" type="array">
+				<element value="imagify_sanitize_context" />
+				<element value="empty" />
+				<element value="is_numeric" />
+				<element value="isset" />
+			</property>
 		</properties>
-	</rule>
-
-	<rule ref="WordPress.WP.GlobalVariablesOverride.OverrideProhibited">
-		<exclude-pattern>views/*</exclude-pattern>
-	</rule>
-
-	<!-- Rules: WordPress Coding Standards - see
-		https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards
-		WordPress-Extra includes WordPress-Core -->
-	<rule ref="WordPress-Extra">
-		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
-		<exclude name="WordPress.PHP.DisallowShortTernary.Found"/>
 	</rule>
 </ruleset>

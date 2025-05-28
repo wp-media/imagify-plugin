@@ -1,7 +1,7 @@
 <?php
 use Imagify\CLI\CommandInterface;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Returns the main instance of the Imagify class.
@@ -49,17 +49,17 @@ function get_imagify_user() {
 
 	// Fill user object with missed details before saving the transient.
 	if ( is_wp_error( $user ) ) {
-		$user->id = 0;
-		$user->email = '';
-		$user->plan_id = 0;
-		$user->plan_label = '';
-		$user->quota = 0;
-		$user->extra_quota = 0;
-		$user->extra_quota_consumed = 0;
+		$user->id                           = 0;
+		$user->email                        = '';
+		$user->plan_id                      = 0;
+		$user->plan_label                   = '';
+		$user->quota                        = 0;
+		$user->extra_quota                  = 0;
+		$user->extra_quota_consumed         = 0;
 		$user->consumed_current_month_quota = 0;
-		$user->next_date_update = null;
-		$user->is_active = false;
-		$user->is_monthly = false;
+		$user->next_date_update             = null;
+		$user->is_active                    = false;
+		$user->is_monthly                   = false;
 	}
 
 	set_transient( 'imagify_user_cache', $user, 5 * MINUTE_IN_SECONDS );
@@ -214,37 +214,37 @@ function imagify_translate_api_message( $message ) {
 
 	$messages = [
 		// Local messages from Imagify::curl_http_call() and Imagify::handle_response().
-		'Could not initialize a new cURL handle'                                                   => __( 'Could not initialize a new cURL handle.', 'imagify' ),
-		'Unknown error occurred'                                                                   => sprintf(
+		'Could not initialize a new cURL handle'        => __( 'Could not initialize a new cURL handle.', 'imagify' ),
+		'Unknown error occurred'                        => sprintf(
 			// translators: %1$s = opening link tag, %2$s = closing link tag.
 			__( 'An unknown error occurred: %1$sMore info and possible solutions%2$s', 'imagify' ),
 			'<a href="https://imagify.io/documentation/optimization-is-stuck/" rel="noopener" target="_blank">',
 			'</a>'
 		),
-		'Your image is too big to be uploaded on our server'                                       => __( 'Your file is too big to be uploaded on our server.', 'imagify' ),
-		'Webp is less performant than original'                                                    => __( 'WebP file is larger than the original image', 'imagify' ),
-		'Our server returned an invalid response'                                                  => __( 'Our server returned an invalid response.', 'imagify' ),
-		'cURL isn\'t installed on the server'                                                      => __( 'cURL is not available on the server.', 'imagify' ),
+		'Your image is too big to be uploaded on our server' => __( 'Your file is too big to be uploaded on our server.', 'imagify' ),
+		'Webp is less performant than original'         => __( 'WebP file is larger than the original image', 'imagify' ),
+		'Our server returned an invalid response'       => __( 'Our server returned an invalid response.', 'imagify' ),
+		'cURL isn\'t installed on the server'           => __( 'cURL is not available on the server.', 'imagify' ),
 		// API messages.
-		'Authentification not provided'                                                            => __( 'Authentication not provided.', 'imagify' ),
-		'Cannot create client token'                                                               => __( 'Cannot create client token.', 'imagify' ),
-		'Confirm your account to continue optimizing image'                                        => __( 'Confirm your account to continue optimizing files.', 'imagify' ),
-		'Coupon doesn\'t exist'                                                                    => __( 'Coupon does not exist.', 'imagify' ),
-		'Email field shouldn\'t be empty'                                                          => __( 'Email field should not be empty.', 'imagify' ),
-		'Email or Password field shouldn\'t be empty'                                              => __( 'This account already exists.', 'imagify' ),
-		'Error uploading to data Storage'                                                          => __( 'Error uploading to Data Storage.', 'imagify' ),
-		'Not able to connect to Data Storage API to get the token'                                 => __( 'Unable to connect to Data Storage API to get the token.', 'imagify' ),
-		'Not able to connect to Data Storage API'                                                  => __( 'Unable to connect to Data Storage API.', 'imagify' ),
-		'Not able to retrieve the token from DataStorage API'                                      => __( 'Unable to retrieve the token from Data Storage API.', 'imagify' ),
-		'This email is already registered, you should try another email'                           => __( 'This email is already registered, you should try another email.', 'imagify' ),
-		'This user doesn\'t exit'                                                                  => __( 'This user does not exist.', 'imagify' ),
-		'Too many request, be patient'                                                             => __( 'Too many requests, please be patient.', 'imagify' ),
-		'Unable to regenerate access token'                                                        => __( 'Unable to regenerate access token.', 'imagify' ),
-		'User not valid'                                                                           => __( 'User not valid.', 'imagify' ),
-		'WELL DONE. This image is already compressed, no further compression required'             => __( 'WELL DONE. This media file is already optimized, no further optimization is required.', 'imagify' ),
-		'You are not authorized to perform this action'                                            => __( 'You are not authorized to perform this action.', 'imagify' ),
-		'You\'ve consumed all your data. You have to upgrade your account to continue'             => __( 'You have consumed all your data. You have to upgrade your account to continue.', 'imagify' ),
-		'Invalid token'                                                                            => __( 'Invalid API key', 'imagify' ),
+		'Authentification not provided'                 => __( 'Authentication not provided.', 'imagify' ),
+		'Cannot create client token'                    => __( 'Cannot create client token.', 'imagify' ),
+		'Confirm your account to continue optimizing image' => __( 'Confirm your account to continue optimizing files.', 'imagify' ),
+		'Coupon doesn\'t exist'                         => __( 'Coupon does not exist.', 'imagify' ),
+		'Email field shouldn\'t be empty'               => __( 'Email field should not be empty.', 'imagify' ),
+		'Email or Password field shouldn\'t be empty'   => __( 'This account already exists.', 'imagify' ),
+		'Error uploading to data Storage'               => __( 'Error uploading to Data Storage.', 'imagify' ),
+		'Not able to connect to Data Storage API to get the token' => __( 'Unable to connect to Data Storage API to get the token.', 'imagify' ),
+		'Not able to connect to Data Storage API'       => __( 'Unable to connect to Data Storage API.', 'imagify' ),
+		'Not able to retrieve the token from DataStorage API' => __( 'Unable to retrieve the token from Data Storage API.', 'imagify' ),
+		'This email is already registered, you should try another email' => __( 'This email is already registered, you should try another email.', 'imagify' ),
+		'This user doesn\'t exit'                       => __( 'This user does not exist.', 'imagify' ),
+		'Too many request, be patient'                  => __( 'Too many requests, please be patient.', 'imagify' ),
+		'Unable to regenerate access token'             => __( 'Unable to regenerate access token.', 'imagify' ),
+		'User not valid'                                => __( 'User not valid.', 'imagify' ),
+		'WELL DONE. This image is already compressed, no further compression required' => __( 'WELL DONE. This media file is already optimized, no further optimization is required.', 'imagify' ),
+		'You are not authorized to perform this action' => __( 'You are not authorized to perform this action.', 'imagify' ),
+		'You\'ve consumed all your data. You have to upgrade your account to continue' => __( 'You have consumed all your data. You have to upgrade your account to continue.', 'imagify' ),
+		'Invalid token'                                 => __( 'Invalid API key', 'imagify' ),
 		'Upload a valid image. The file you uploaded was either not an image or a corrupted image' => __( 'Invalid or corrupted file.', 'imagify' ),
 	];
 
@@ -322,10 +322,14 @@ function imagify_add_command( CommandInterface $command ) {
 		return;
 	}
 
-	\WP_CLI::add_command( $command->get_name(), $command, [
-		'shortdesc' => $command->get_description(),
-		'synopsis' => $command->get_synopsis(),
-	] );
+	\WP_CLI::add_command(
+		$command->get_name(),
+		$command,
+		[
+			'shortdesc' => $command->get_description(),
+			'synopsis'  => $command->get_synopsis(),
+		]
+	);
 }
 
 /**

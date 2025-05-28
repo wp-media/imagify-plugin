@@ -84,14 +84,8 @@ class Imagify_Settings {
 		add_filter( 'option_page_capability_' . $this->settings_group, [ $this, 'get_capability' ] );
 
 		if ( imagify_is_active_for_network() ) {
-			add_filter( 'pre_update_site_option_' . $this->option_name, [
-				$this,
-				'maybe_set_redirection',
-			], 10, 2 );
-			add_action( 'update_site_option_' . $this->option_name, [
-				$this,
-				'after_save_network_options',
-			], 10, 3 );
+			add_filter( 'pre_update_site_option_' . $this->option_name, [ $this, 'maybe_set_redirection' ], 10, 2 );
+			add_action( 'update_site_option_' . $this->option_name, [ $this, 'after_save_network_options' ], 10, 3 );
 			add_action( 'admin_post_update', [ $this, 'update_site_option_on_network' ] );
 		} else {
 			add_filter( 'pre_update_option_' . $this->option_name, [ $this, 'maybe_set_redirection' ], 10, 2 );
@@ -322,7 +316,7 @@ class Imagify_Settings {
 	 *
 	 * @return mixed            The option value.
 	 */
-	public function maybe_set_redirection( $value, $old_value ) {
+	public function maybe_set_redirection( $value, $old_value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( isset( $_POST['submit-goto-bulk'] ) ) { // WPCS: CSRF ok.
 			$_REQUEST['_wp_http_referer'] = esc_url_raw( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) );
 		}
@@ -460,14 +454,17 @@ class Imagify_Settings {
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_checkbox( $args ) {
-		$args = array_merge( [
-			'option_name'   => '',
-			'label'         => '',
-			'info'          => '',
-			'attributes'    => [],
-			// To not use the plugin settings: use an integer.
-			'current_value' => null,
-		], $args );
+		$args = array_merge(
+			[
+				'option_name'   => '',
+				'label'         => '',
+				'info'          => '',
+				'attributes'    => [],
+				// To not use the plugin settings: use an integer.
+				'current_value' => null,
+			],
+			$args
+		);
 
 		if ( ! $args['option_name'] || ! $args['label'] ) {
 			return;
@@ -494,29 +491,19 @@ class Imagify_Settings {
 		$attributes         = array_merge( $attributes, $args['attributes'] );
 		$args['attributes'] = self::build_attributes( $attributes );
 		?>
-		<input type="checkbox" value="1" <?php
-		checked( $current_value, 1 );
-		?><?php
-		echo $args['attributes'];
-?> />
+		<input type="checkbox" value="1" <?php checked( $current_value, 1 ); ?> <?php echo $args['attributes']; ?> />
 		<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
-		<label for="<?php
-		echo $attributes['id'];
-		?>" onclick=""><?php
-			echo $args['label'];
-?></label>
+		<label for="<?php echo $attributes['id']; ?>" onclick="">
+		<?php echo $args['label']; ?>
+		</label>
 		<?php
 		if ( ! $args['info'] ) {
 			return;
 		}
 		?>
-		<span id="<?php
-		echo $attributes['aria-describedby'];
-		?>" class="imagify-info">
+		<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
-			<?php
-			echo $args['info'];
-			?>
+			<?php echo $args['info']; ?>
 		</span>
 		<?php
 	}
@@ -536,16 +523,19 @@ class Imagify_Settings {
 	 *                    {current_values}  array  USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_checkbox_list( $args ) {
-		$args = array_merge( [
-			'option_name'     => '',
-			'legend'          => '',
-			'values'          => [],
-			'disabled_values' => [],
-			'reverse_check'   => false,
-			'attributes'      => [],
-			// To not use the plugin settings: use an array.
-			'current_values'  => false,
-		], $args );
+		$args = array_merge(
+			[
+				'option_name'     => '',
+				'legend'          => '',
+				'values'          => [],
+				'disabled_values' => [],
+				'reverse_check'   => false,
+				'attributes'      => [],
+				// To not use the plugin settings: use an array.
+				'current_values'  => false,
+			],
+			$args
+		);
 
 		if ( ! $args['option_name'] || ! $args['values'] ) {
 			return;
@@ -560,11 +550,14 @@ class Imagify_Settings {
 		}
 
 		$option_name_class = sanitize_html_class( $args['option_name'] );
-		$attributes        = array_merge( [
-			'name'  => $this->option_name . '[' . $args['option_name'] . ( $args['reverse_check'] ? '-checked' : '' ) . '][]',
-			'id'    => 'imagify_' . $option_name_class . '_%s',
-			'class' => 'imagify-row-check',
-		], $args['attributes'] );
+		$attributes        = array_merge(
+			[
+				'name'  => $this->option_name . '[' . $args['option_name'] . ( $args['reverse_check'] ? '-checked' : '' ) . '][]',
+				'id'    => 'imagify_' . $option_name_class . '_%s',
+				'class' => 'imagify-row-check',
+			],
+			$args['attributes']
+		);
 
 		$id_attribute = $attributes['id'];
 		unset( $attributes['id'] );
@@ -575,15 +568,13 @@ class Imagify_Settings {
 		$display_check_all = $nb_of_values > 3;
 		$nb_of_checked     = 0;
 		?>
-		<fieldset class="imagify-check-group<?php
-		echo $nb_of_values > 5 ? ' imagify-is-scrollable' : '';
-		?>">
+		<fieldset class="imagify-check-group <?php echo $nb_of_values > 5 ? ' imagify-is-scrollable' : ''; ?>">
 			<?php
 			if ( $args['legend'] ) {
 				?>
-				<legend class="screen-reader-text"><?php
-					echo $args['legend'];
-				?></legend>
+				<legend class="screen-reader-text">
+				<?php echo $args['legend']; ?>
+				</legend>
 				<?php
 			}
 
@@ -604,22 +595,10 @@ class Imagify_Settings {
 				}
 				?>
 				<p>
-					<input type="checkbox" value="<?php
-					echo esc_attr( $value );
-					?>" id="<?php
-					echo $input_id;
-?>"<?php
-					echo $args['attributes'];
-?> <?php
-					checked( $checked );
-?> <?php
-					disabled( $disabled );
-?>/>
-					<label for="<?php
-					echo $input_id;
-					?>" onclick=""><?php
-						echo $label;
-?></label>
+					<input type="checkbox" value="<?php echo esc_attr( $value ); ?>" id="<?php echo $input_id; ?>" <?php echo $args['attributes']; ?> <?php checked( $checked ); ?> <?php disabled( $disabled ); ?> />
+					<label for="<?php echo $input_id; ?>" onclick="">
+					<?php echo $label; ?>
+					</label>
 				</p>
 				<?php
 			}
@@ -634,19 +613,19 @@ class Imagify_Settings {
 			}
 			?>
 			<p class="hide-if-no-js imagify-select-all-buttons">
-				<button type="button" class="imagify-link-like imagify-select-all<?php
-				echo $all_checked ? ' imagify-is-inactive" aria-disabled="true' : '';
-				?>" data-action="select"><?php
+				<button type="button" class="imagify-link-like imagify-select-all <?php echo $all_checked ? ' imagify-is-inactive" aria-disabled="true' : ''; ?>" data-action="select">
+				<?php
 					_e( 'Select All', 'imagify' );
-?></button>
+				?>
+				</button>
 
 				<span class="imagify-pipe"></span>
 
-				<button type="button" class="imagify-link-like imagify-select-all<?php
-				echo $nb_of_checked ? '' : ' imagify-is-inactive" aria-disabled="true';
-				?>" data-action="unselect"><?php
+				<button type="button" class="imagify-link-like imagify-select-all <?php echo $nb_of_checked ? '' : ' imagify-is-inactive" aria-disabled="true'; ?>  " data-action="unselect">
+				<?php
 					_e( 'Unselect All', 'imagify' );
-?></button>
+				?>
+				</button>
 			</p>
 			<?php
 		}
@@ -669,15 +648,18 @@ class Imagify_Settings {
 	 * }
 	 */
 	public function field_radio_list( $args ) {
-		$args = array_merge( [
-			'option_name'   => '',
-			'legend'        => '',
-			'info'          => '',
-			'values'        => [],
-			'attributes'    => [],
-			// To not use the plugin settings: use an array.
-			'current_value' => false,
-		], $args );
+		$args = array_merge(
+			[
+				'option_name'   => '',
+				'legend'        => '',
+				'info'          => '',
+				'values'        => [],
+				'attributes'    => [],
+				// To not use the plugin settings: use an array.
+				'current_value' => false,
+			],
+			$args
+		);
 
 		if ( ! $args['option_name'] || ! $args['values'] ) {
 			return;
@@ -692,11 +674,14 @@ class Imagify_Settings {
 		}
 
 		$option_name_class = sanitize_html_class( $args['option_name'] );
-		$attributes        = array_merge( [
-			'name'  => $this->option_name . '[' . $args['option_name'] . ']',
-			'id'    => 'imagify_' . $option_name_class . '_%s',
-			'class' => 'imagify-row-radio',
-		], $args['attributes'] );
+		$attributes        = array_merge(
+			[
+				'name'  => $this->option_name . '[' . $args['option_name'] . ']',
+				'id'    => 'imagify_' . $option_name_class . '_%s',
+				'class' => 'imagify-row-radio',
+			],
+			$args['attributes']
+		);
 
 		$id_attribute = $attributes['id'];
 		unset( $attributes['id'] );
@@ -706,29 +691,21 @@ class Imagify_Settings {
 			<?php
 			if ( $args['legend'] ) {
 				?>
-				<legend class="screen-reader-text"><?php
+				<legend class="screen-reader-text">
+				<?php
 					echo $args['legend'];
-				?></legend>
+				?>
+				</legend>
 				<?php
 			}
 
 			foreach ( $args['values'] as $value => $label ) {
 				$input_id = sprintf( $id_attribute, sanitize_html_class( $value ) );
 				?>
-				<input type="radio" value="<?php
-				echo esc_attr( $value );
-				?>" id="<?php
-				echo $input_id;
-?>"<?php
-				echo $args['attributes'];
-?> <?php
-				checked( $current_value, $value );
-?>/>
-				<label for="<?php
-				echo $input_id;
-				?>" onclick=""><?php
-					echo $label;
-?></label>
+				<input type="radio" value="<?php echo esc_attr( $value ); ?>" id="<?php echo $input_id; ?>" <?php echo $args['attributes']; ?> <?php checked( $current_value, $value ); ?> />
+				<label for="<?php echo $input_id; ?>" onclick="">
+				<?php echo $label; ?>
+				</label>
 				<br/>
 				<?php
 			}
@@ -739,13 +716,9 @@ class Imagify_Settings {
 			return;
 		}
 		?>
-		<span id="<?php
-		echo $attributes['aria-describedby'];
-		?>" class="imagify-info">
+		<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
-			<?php
-			echo $args['info'];
-			?>
+			<?php echo $args['info']; ?>
 		</span>
 		<?php
 	}
@@ -784,11 +757,14 @@ class Imagify_Settings {
 		}
 
 		$option_name_class = sanitize_html_class( $args['option_name'] );
-		$attributes        = array_merge( [
-			'name'  => $this->option_name . '[' . $args['option_name'] . ']',
-			'id'    => 'imagify_' . $option_name_class . '_%s',
-			'class' => 'imagify-row-radio',
-		], $args['attributes'] );
+		$attributes        = array_merge(
+			[
+				'name'  => $this->option_name . '[' . $args['option_name'] . ']',
+				'id'    => 'imagify_' . $option_name_class . '_%s',
+				'class' => 'imagify-row-radio',
+			],
+			$args['attributes']
+		);
 
 		$id_attribute = $attributes['id'];
 		unset( $attributes['id'] );
@@ -806,13 +782,9 @@ class Imagify_Settings {
 			}
 			?>
 			</p>
-			<span id="<?php
-			echo $attributes['aria-describedby'];
-			?>" class="imagify-<?php echo esc_attr( $args['info_class'] ); ?>">
+			<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-<?php echo esc_attr( $args['info_class'] ); ?>">
 				<span class="dashicons dashicons-info"></span>
-				<?php
-				echo $args['info'];
-				?>
+				<?php echo $args['info']; ?>
 			</span>
 		</div>
 		<?php
@@ -831,14 +803,17 @@ class Imagify_Settings {
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_text_box( $args ) {
-		$args = array_merge( [
-			'option_name'   => '',
-			'label'         => '',
-			'info'          => '',
-			'attributes'    => [],
-			// To not use the plugin settings.
-			'current_value' => null,
-		], $args );
+		$args = array_merge(
+			[
+				'option_name'   => '',
+				'label'         => '',
+				'info'          => '',
+				'attributes'    => [],
+				// To not use the plugin settings.
+				'current_value' => null,
+			],
+			$args
+		);
 
 		if ( ! $args['option_name'] || ! $args['label'] ) {
 			return;
@@ -866,28 +841,18 @@ class Imagify_Settings {
 		$args['attributes'] = self::build_attributes( $attributes );
 		?>
 		<!-- Empty onclick attribute to make clickable labels on iTruc & Mac -->
-		<label for="<?php
-		echo $attributes['id'];
-		?>" onclick=""><?php
-			echo $args['label'];
-?></label>
-		<input type="text" value="<?php
-		echo esc_attr( $current_value );
-		?>"<?php
-		echo $args['attributes'];
-?> />
+		<label for="<?php echo $attributes['id']; ?>" onclick="">
+		<?php echo $args['label']; ?>
+		</label>
+		<input type="text" value="<?php echo esc_attr( $current_value ); ?>" <?php echo $args['attributes']; ?> />
 		<?php
 		if ( ! $args['info'] ) {
 			return;
 		}
 		?>
-		<span id="<?php
-		echo $attributes['aria-describedby'];
-		?>" class="imagify-info">
+		<span id="<?php echo $attributes['aria-describedby']; ?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
-			<?php
-			echo $args['info'];
-			?>
+			<?php echo $args['info']; ?>
 		</span>
 		<?php
 	}
@@ -903,12 +868,15 @@ class Imagify_Settings {
 	 *                    {current_value} int|bool USE ONLY WHEN DEALING WITH DATA THAT IS NOT SAVED IN THE PLUGIN OPTIONS. If not provided, the field will automatically get the value from the options.
 	 */
 	public function field_hidden( $args ) {
-		$args = array_merge( [
-			'option_name'   => '',
-			'attributes'    => [],
-			// To not use the plugin settings.
-			'current_value' => null,
-		], $args );
+		$args = array_merge(
+			[
+				'option_name'   => '',
+				'attributes'    => [],
+				// To not use the plugin settings.
+				'current_value' => null,
+			],
+			$args
+		);
 
 		if ( ! $args['option_name'] ) {
 			return;
@@ -931,11 +899,7 @@ class Imagify_Settings {
 		$attributes         = array_merge( $attributes, $args['attributes'] );
 		$args['attributes'] = self::build_attributes( $attributes );
 		?>
-		<input type="hidden" value="<?php
-		echo esc_attr( $current_value );
-		?>"<?php
-		echo $args['attributes'];
-?> />
+		<input type="hidden" value="<?php echo esc_attr( $current_value ); ?>" <?php echo $args['attributes']; ?> />
 		<?php
 	}
 

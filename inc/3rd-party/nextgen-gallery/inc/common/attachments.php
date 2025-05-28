@@ -1,8 +1,8 @@
 <?php
-use \Imagify\Optimization\File;
-use \Imagify\ThirdParty\NGG;
+use Imagify\Optimization\File;
+use Imagify\ThirdParty\NGG;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 add_action( 'ngg_after_new_images_added', '_imagify_ngg_optimize_attachment', IMAGIFY_INT_MAX, 2 );
 /**
@@ -110,21 +110,24 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	$wp_full_size_data  = $wp_data->get_size_data();
 	$optimization_level = $wp_data->get_optimization_level();
 
-	NGG\DB::get_instance()->update( $image->pid, [
-		'pid'                => $image->pid,
-		'optimization_level' => $optimization_level,
-		'status'             => $wp_data->get_optimization_status(),
-		'data'               => [
-			'sizes' => [
-				'full' => $wp_full_size_data,
+	NGG\DB::get_instance()->update(
+		$image->pid,
+		[
+			'pid'                => $image->pid,
+			'optimization_level' => $optimization_level,
+			'status'             => $wp_data->get_optimization_status(),
+			'data'               => [
+				'sizes' => [
+					'full' => $wp_full_size_data,
+				],
+				'stats' => [
+					'original_size'  => $wp_full_size_data['original_size'],
+					'optimized_size' => $wp_full_size_data['optimized_size'],
+					'percent'        => $wp_full_size_data['percent'],
+				],
 			],
-			'stats' => [
-				'original_size'  => $wp_full_size_data['original_size'],
-				'optimized_size' => $wp_full_size_data['optimized_size'],
-				'percent'        => $wp_full_size_data['percent'],
-			],
-		],
-	] );
+		]
+	);
 
 	$ngg_process = imagify_get_optimization_process( $image->pid, 'ngg' );
 
@@ -207,7 +210,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 			if ( $wp_full_path_nextgen && $wp_nextgen_data ) {
 				// We have the file and the data.
 				// Copy the file.
-				$ngg_full_file      = new File( $ngg_media->get_raw_fullsize_path() );
+				$ngg_full_file         = new File( $ngg_media->get_raw_fullsize_path() );
 				$ngg_full_path_nextgen = $ngg_full_file->get_path_to_nextgen( $extension ); // Destination.
 
 				if ( $ngg_full_path_nextgen ) {

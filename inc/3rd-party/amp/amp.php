@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Compatibility with AMP plugin from WordPress.com VIP.
@@ -17,6 +17,6 @@ if ( function_exists( 'is_amp_endpoint' ) ) :
 	 */
 	function imagify_amp_disable_picture_on_endpoint( $allow ) {
 		return $allow && ! is_amp_endpoint();
-	};
+	}
 
 endif;

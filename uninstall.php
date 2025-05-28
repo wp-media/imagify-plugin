@@ -1,5 +1,5 @@
 <?php
-defined( 'WP_UNINSTALL_PLUGIN' ) || die( 'Cheatin&#8217; uh?' );
+defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 global $wpdb;
 
@@ -31,12 +31,15 @@ delete_transient( 'imagify_attachments_number_modal' );
 delete_transient( 'imagify_user_cache' );
 
 // Delete transients.
-$transients = implode( '" OR option_name LIKE "', array(
-	'\_transient\_%imagify-auto-optimize-%',
-	'\_transient\_%imagify\_rpc\_%',
-	'\_transient\_imagify\_%\_process\_locked',
-	'\_site\_transient\_imagify\_%\_process\_lock%',
-) );
+$transients = implode(
+	'" OR option_name LIKE "',
+	[
+		'\_transient\_%imagify-auto-optimize-%',
+		'\_transient\_%imagify\_rpc\_%',
+		'\_transient\_imagify\_%\_process\_locked',
+		'\_site\_transient\_imagify\_%\_process\_lock%',
+	]
+);
 $wpdb->query( "DELETE from $wpdb->options WHERE option_name LIKE \"$transients\"" ); // WPCS: unprepared SQL ok.
 
 // Clear scheduled hooks.

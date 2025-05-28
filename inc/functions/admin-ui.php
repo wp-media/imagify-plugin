@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Get the optimization data list for a specific media.
@@ -80,10 +80,10 @@ function get_imagify_attachment_optimization_text( $process ) {
 		// New list.
 		$output .= '</ul>';
 		$output .= '<p class="imagify-datas-more-action">';
-			$output .= '<a href="#imagify-view-details-' . $attachment_id . '" data-close="' . __( 'Close details', 'imagify' ) . '" data-open="' . __( 'View details', 'imagify' ) . '">';
-				$output .= '<span class="the-text">' . __( 'View details', 'imagify' ) . '</span>';
-				$output .= '<span class="dashicons dashicons-arrow-down-alt2"></span>';
-			$output .= '</a>';
+		$output .= '<a href="#imagify-view-details-' . $attachment_id . '" data-close="' . __( 'Close details', 'imagify' ) . '" data-open="' . __( 'View details', 'imagify' ) . '">';
+		$output .= '<span class="the-text">' . __( 'View details', 'imagify' ) . '</span>';
+		$output .= '<span class="dashicons dashicons-arrow-down-alt2"></span>';
+		$output .= '</a>';
 		$output .= '</p>';
 		$output .= '<ul id="imagify-view-details-' . $attachment_id . '" class="imagify-datas-list imagify-datas-details">';
 
@@ -99,7 +99,7 @@ function get_imagify_attachment_optimization_text( $process ) {
 		if ( $process->has_next_gen() ) {
 			$has_nextgen = $process->is_full_next_gen() ? __( 'Yes', 'imagify' ) : __( 'Partially', 'imagify' );
 		}
-		$output  .= $output_before . '<span class="data">' . __( 'Next-Gen generated:', 'imagify' ) . '</span> <strong class="big">' . esc_html( $has_nextgen ) . '</strong>' . $output_after;
+		$output .= $output_before . '<span class="data">' . __( 'Next-Gen generated:', 'imagify' ) . '</span> <strong class="big">' . esc_html( $has_nextgen ) . '</strong>' . $output_after;
 
 		$total_optimized_thumbnails = $data->get_optimized_sizes_count();
 
@@ -118,17 +118,23 @@ function get_imagify_attachment_optimization_text( $process ) {
 	$output .= $reoptimize_output;
 
 	if ( $media->has_backup() ) {
-		$url = get_imagify_admin_url( 'restore', [
-			'attachment_id' => $attachment_id,
-			'context'       => $media->get_context(),
-		] );
+		$url = get_imagify_admin_url(
+			'restore',
+			[
+				'attachment_id' => $attachment_id,
+				'context'       => $media->get_context(),
+			]
+		);
 
-		$output .= Imagify_Views::get_instance()->get_template( 'button/restore', [
-			'url'  => $url,
-			'atts' => [
-				'class' => $is_media_page ? '' : null,
-			],
-		] );
+		$output .= Imagify_Views::get_instance()->get_template(
+			'button/restore',
+			[
+				'url'  => $url,
+				'atts' => [
+					'class' => $is_media_page ? '' : null,
+				],
+			]
+		);
 
 		if ( ! $is_library_page ) {
 			$output .= '<input id="imagify-original-src" type="hidden" value="' . esc_url( $media->get_backup_url() ) . '">';
@@ -172,22 +178,28 @@ function get_imagify_attachment_error_text( $process ) {
 
 	$class = 'button';
 	$media = $process->get_media();
-	$url   = get_imagify_admin_url( 'optimize', [
-		'attachment_id' => $media->get_id(),
-		'context'       => $media->get_context(),
-	] );
+	$url   = get_imagify_admin_url(
+		'optimize',
+		[
+			'attachment_id' => $media->get_id(),
+			'context'       => $media->get_context(),
+		]
+	);
 
 	if ( ! Imagify_Views::get_instance()->is_media_page() ) {
 		$class .= ' button-imagify-optimize';
 	}
 
-	return Imagify_Views::get_instance()->get_template( 'button/retry-optimize', [
-		'url'   => $url,
-		'error' => $data['sizes']['full']['error'],
-		'atts'  => [
-			'class' => $class,
-		],
-	] );
+	return Imagify_Views::get_instance()->get_template(
+		'button/retry-optimize',
+		[
+			'url'   => $url,
+			'error' => $data['sizes']['full']['error'],
+			'atts'  => [
+				'class' => $class,
+			],
+		]
+	);
 }
 
 /**
@@ -305,15 +317,21 @@ function get_imagify_attachment_optimize_missing_thumbnails_link( $process ) {
 		return '';
 	}
 
-	$url = get_imagify_admin_url( 'optimize-missing-sizes', [
-		'attachment_id' => $media->get_id(),
-		'context'       => $context,
-	] );
+	$url = get_imagify_admin_url(
+		'optimize-missing-sizes',
+		[
+			'attachment_id' => $media->get_id(),
+			'context'       => $context,
+		]
+	);
 
-	return Imagify_Views::get_instance()->get_template( 'button/optimize-missing-sizes', [
-		'url'   => $url,
-		'count' => count( $missing_sizes ),
-	] );
+	return Imagify_Views::get_instance()->get_template(
+		'button/optimize-missing-sizes',
+		[
+			'url'   => $url,
+			'count' => count( $missing_sizes ),
+		]
+	);
 }
 
 /**
@@ -385,14 +403,20 @@ function get_imagify_attachment_generate_nextgen_versions_link( $process ) {
 		return '';
 	}
 
-	$url = get_imagify_admin_url( 'generate-nextgen-versions', [
-		'attachment_id' => $media->get_id(),
-		'context'       => $context,
-	] );
+	$url = get_imagify_admin_url(
+		'generate-nextgen-versions',
+		[
+			'attachment_id' => $media->get_id(),
+			'context'       => $context,
+		]
+	);
 
-	$output = Imagify_Views::get_instance()->get_template( 'button/generate-webp', [
-		'url' => $url,
-	] );
+	$output = Imagify_Views::get_instance()->get_template(
+		'button/generate-webp',
+		[
+			'url' => $url,
+		]
+	);
 
 	return $output . '<br/>';
 }
@@ -426,21 +450,27 @@ function get_imagify_attachment_delete_nextgen_versions_link( $process ) {
 	}
 
 	$class = '';
-	$url   = get_imagify_admin_url( 'delete-nextgen-versions', [
-		'attachment_id' => $media_id,
-		'context'       => $context,
-	] );
+	$url   = get_imagify_admin_url(
+		'delete-nextgen-versions',
+		[
+			'attachment_id' => $media_id,
+			'context'       => $context,
+		]
+	);
 
 	if ( ! Imagify_Views::get_instance()->is_media_page() ) {
 		$class .= 'button-imagify-delete-webp';
 	}
 
-	return Imagify_Views::get_instance()->get_template( 'button/delete-webp', [
-		'url'  => $url,
-		'atts' => [
-			'class' => $class,
-		],
-	] );
+	return Imagify_Views::get_instance()->get_template(
+		'button/delete-webp',
+		[
+			'url'  => $url,
+			'atts' => [
+				'class' => $class,
+			],
+		]
+	);
 }
 
 /**
@@ -504,24 +534,36 @@ function get_imagify_media_column_content( $process, $with_container = true ) {
 		}
 
 		if ( ! $with_container ) {
-			return $views->get_template( 'button/processing', [ 'label' => $lock_label ] );
+			return $views->get_template(
+				'button/processing',
+				[ 'label' => $lock_label ]
+			);
 		}
 
-		return $views->get_template( 'container/data-actions', [
-			'media_id' => $media_id,
-			'context'  => $context,
-			'content'  => $views->get_template( 'button/processing', [ 'label' => $lock_label ] ),
-		] );
+		return $views->get_template(
+			'container/data-actions',
+			[
+				'media_id' => $media_id,
+				'context'  => $context,
+				'content'  => $views->get_template( 'button/processing', [ 'label' => $lock_label ] ),
+			]
+		);
 	}
 
 	// Check if the image was optimized.
 	if ( ! $data->get_optimization_status() ) {
-		$output = Imagify_Views::get_instance()->get_template( 'button/optimize', [
-			'url' => get_imagify_admin_url( 'manual-optimize', [
-				'attachment_id' => $media_id,
-				'context'       => $context,
-			] ),
-		] );
+		$output = Imagify_Views::get_instance()->get_template(
+			'button/optimize',
+			[
+				'url' => get_imagify_admin_url(
+					'manual-optimize',
+					[
+						'attachment_id' => $media_id,
+						'context'       => $context,
+					]
+				),
+			]
+		);
 
 		if ( $media->has_backup() ) {
 			$output .= '<span class="attachment-has-backup hidden"></span>';
@@ -534,9 +576,12 @@ function get_imagify_media_column_content( $process, $with_container = true ) {
 		return $output;
 	}
 
-	return $views->get_template( 'container/data-actions', [
-		'media_id' => $media_id,
-		'context'  => $context,
-		'content'  => $output,
-	] );
+	return $views->get_template(
+		'container/data-actions',
+		[
+			'media_id' => $media_id,
+			'context'  => $context,
+			'content'  => $output,
+		]
+	);
 }

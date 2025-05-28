@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 if ( ! imagify_can_optimize_custom_folders() ) {
 	return;
@@ -50,7 +50,7 @@ if ( ! is_network_admin() ) {
 			$added                    = false;
 			$rel_path                 = strtolower( $theme['label'] );
 
-			foreach ( $custom_folders as $path => $label ) {
+			foreach ( $custom_folders as $path_name => $label ) {
 				if ( strpos( $rel_path, strtolower( $label ) ) === 0 ) {
 					$added = true;
 					break;
@@ -109,15 +109,17 @@ if ( ! is_network_admin() ) {
 										class="button imagify-button-clean imagify-add-themes" type="button"
 										data-theme="<?php echo esc_attr( $theme['path'] ) . '#///#' . esc_attr( $theme['label'] ); ?>">
 									<span class="dashicons dashicons-plus"></span>
-									<span class="button-text"><?php
+									<span class="button-text">
+									<?php
 										/* translators: %s is a theme name. */
 										printf( __( 'Add %s to optimization', 'imagify' ), '<strong>' . $theme['name'] . '</strong>' );
-									?></span>
+									?>
+									</span>
 								</button>
 								<?php
 							} else {
-								foreach ( $themes as $path => $theme ) {
-									$themes[ $path ] = esc_attr( $theme['path'] ) . '#///#' . esc_attr( $theme['label'] );
+								foreach ( $themes as $path_name => $theme ) {
+									$themes[ $path_name ] = esc_attr( $theme['path'] ) . '#///#' . esc_attr( $theme['label'] );
 								}
 								?>
 								<p><?php echo _n( 'Would you like to optimize your theme?', 'Would you like to optimize your themes?', $themes_count, 'imagify' ); ?></p>
@@ -153,10 +155,13 @@ if ( ! is_network_admin() ) {
 					<?php
 					if ( $custom_folders ) {
 						foreach ( $custom_folders as $placeholder => $label ) {
-							$this->print_template( 'part-settings-row-custom-folder', array(
-								'value' => $placeholder,
-								'label' => $label,
-							) );
+							$this->print_template(
+								'part-settings-row-custom-folder',
+								[
+									'value' => $placeholder,
+									'label' => $label,
+								]
+							);
 						}
 					}
 					?>
@@ -179,13 +184,16 @@ if ( ! is_network_admin() ) {
 
 				<script type="text/html" id="tmpl-imagify-custom-folder">
 					<?php
-					$this->print_template( 'part-settings-row-custom-folder', array(
-						'value' => '{{ data.value }}',
-						'label' => '{{ data.label }}',
-					) );
+					$this->print_template(
+						'part-settings-row-custom-folder',
+						[
+							'value' => '{{ data.value }}',
+							'label' => '{{ data.label }}',
+						]
+					);
 					?>
 				</script>
 			</div>
 		</div>
 	</div>
-<?php
+

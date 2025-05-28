@@ -189,7 +189,7 @@ final class Actions {
 		}
 
 		foreach ( $data[ $imagifybeat_id ] as $context ) {
-			$media     = $bulk->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
+			$media      = $bulk->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
 			$remaining += count( $media['ids'] );
 		}
 
@@ -258,9 +258,11 @@ final class Actions {
 		}
 
 		$admin_ajax_post = \Imagify_Admin_Ajax_Post::get_instance();
-		$list_table      = new \Imagify_Files_List_Table( [
-			'screen' => 'imagify-files',
-		] );
+		$list_table      = new \Imagify_Files_List_Table(
+			[
+				'screen' => 'imagify-files',
+			]
+		);
 
 		// Sanitize received data and grab some other info.
 		foreach ( $response[ $imagifybeat_id ] as $context_id => $media_atts ) {
@@ -300,9 +302,12 @@ final class Actions {
 
 			// Sanitize the IDs: IDs come as strings, prefixed with an undescore character (to prevent JavaScript from screwing everything).
 			$media_ids = array_keys( $media_statuses );
-			$media_ids = array_map( function( $media_id ) {
-				return substr( $media_id, 1 );
-			}, $media_ids );
+			$media_ids = array_map(
+				function ( $media_id ) {
+					return substr( $media_id, 1 );
+				},
+				$media_ids
+			);
 			$media_ids = array_filter( $media_ids );
 
 			if ( ! $media_ids ) {

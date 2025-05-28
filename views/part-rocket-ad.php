@@ -1,16 +1,16 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
-$plugins = get_plugins();
+$plugins_list = get_plugins();
 
-if ( isset( $plugins['wp-rocket/wp-rocket.php'] ) ) {
+if ( isset( $plugins_list['wp-rocket/wp-rocket.php'] ) ) {
 	return '';
 }
 
 $notice  = 'wp-rocket';
 $user_id = get_current_user_id();
 $notices = get_user_meta( $user_id, '_imagify_ignore_ads', true );
-$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+$notices = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
 
 if ( isset( $notices[ $notice ] ) ) {
 	return;
@@ -54,5 +54,3 @@ $dismiss_url      = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dism
 	<a class="imagify-sidebar-close" href="<?php echo esc_url( $dismiss_url ); ?>"><span class="screen-reader-text"><?php _e( 'Remove the ad', 'imagify' ); ?></span><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></a>
 	</div>
 </div>
-
-<?php
