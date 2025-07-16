@@ -47,7 +47,7 @@ When using our image compression tool, Imagify, you will enjoy smaller file size
 
 Thanks to Imagify, you can take a step further in your image optimization process. You can also convert all your images to next-gen image formats such as WebP and AVIF. WebP format, as well as the AVIF format, offers superior image compression and quality and is a way to optimise images and speed up their loading times on websites. By utilizing Imagify’s AVIF and WebP optimizer, you can efficiently convert images to these next-gen formats, saving you a precious amount of time.
 
-With Imagify, WebP conversion and compression are indeed super easy. Wondering how the convert WebP option works? Imagify will automatically enable WebP and convert your images to WebP. You can also easily convert WebP images to AVIF.
+With Imagify, WebP conversion and compression are indeed super easy. Wondering how the convert WebP option works? Imagify will automatically enable WebP and convert your images to WebP.
 
 If the "Create Next-gen formats versions" option is enabled, the AVIF version of optimized images will be created automatically. Simple as that! Thanks to the best WebP and AVIF plugin for WordPress, you’ll be able to take advantage of the automatic convert WebP feature in no time, plus you’ll always have the convert AVIF option.
 
