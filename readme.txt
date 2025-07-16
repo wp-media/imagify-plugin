@@ -49,11 +49,11 @@ Thanks to Imagify, you can take a step further in your image optimization proces
 
 With Imagify, WebP conversion and compression are indeed super easy. Wondering how the convert WebP option works? Imagify will automatically enable WebP and convert your images to WebP.
 
-If the "Create Next-gen formats versions" option is enabled, the AVIF version of optimized images will be created automatically. Simple as that! Thanks to the best WebP and AVIF plugin for WordPress, you’ll be able to take advantage of the automatic convert WebP feature in no time, plus you’ll always have the convert AVIF option.
+What about converting your images to AVIF? You can just select the AVIF option under the Optimization/Next-gen image format tab. Simply as that! Thanks to the best WebP and AVIF plugin for WordPress, you’ll be able to take advantage of the automatic convert WebP feature in no time, plus you’ll always have the convert AVIF option.
 
-Imagify can also display the AVIF images directly on your front-end. But because some browser versions don’t support AVIF yet, Imagify lets you have both optimized versions of the original format images and the WebP versions ready. Imagify will serve the AVIF version if a visitor's browser supports it and the WebP format if not (if you have previously converted the images to WebP).
+Imagify can also display the AVIF images directly on your front-end. But because some browser versions don’t support AVIF yet, Imagify lets you have both optimized versions of the original format images and the WebP versions ready. Imagify offers the automatic fallback. It means that it will serve the AVIF version if a visitor's browser supports it and the WebP format if not (if you have previously converted the images to WebP).
 
-WebP is definitively an excellent replacement for jpeg, png, and gif images, and the same goes for AVIF, which improves your image performance even further. Imagify offers WebP conversion for all image formats: you can convert gif to WebP, jpeg to WebP, and even png to WebP. You can also benefit from AVIF conversion and convert gif to AVIF, jpg and jpeg to AVIF, png to AVIF, and even WebP to AVIF!
+WebP is definitively an excellent replacement for jpeg, png, and gif images, and the same goes for AVIF, which improves your image performance even further. Imagify offers WebP conversion for all image formats: you can convert gif to WebP, jpeg to WebP, and even png to WebP. You can also benefit from AVIF conversion and convert gif to AVIF, jpg and jpeg to AVIF, png to AVIF.
 Whatever your favorite image format, let Imagify optimise your images!
 
 = ⚡ Optimize Images to Make Your Site Faster and Improve Core Web Vitals = 
