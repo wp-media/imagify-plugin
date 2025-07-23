@@ -1,5 +1,7 @@
 <?php
 
+use Imagify\Traits\InstanceGetterTrait;
+
 require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 
@@ -10,6 +12,7 @@ require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
  * @author Grégory Viguier
  */
 class Imagify_Filesystem extends WP_Filesystem_Direct {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -26,15 +29,6 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 * @author Grégory Viguier
 	 */
 	const PATTERN_DELIMITER = '@';
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @access protected
-	 */
-	protected static $_instance;
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** INSTANCIATION =========================================================================== */
@@ -57,23 +51,6 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		}
 
 		parent::__construct( '' );
-	}
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7.1
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 

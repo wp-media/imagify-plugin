@@ -1,5 +1,7 @@
 <?php
 
+use Imagify\Traits\InstanceGetterTrait;
+
 /**
  * Imagify DB base class.
  *
@@ -7,6 +9,7 @@
  * @source https://gist.github.com/pippinsplugins/e220a7f0f0f2fbe64608
  */
 abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implements \Imagify\DB\DBInterface {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -22,15 +25,6 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	 * @since 1.7
 	 */
 	const TABLE_VERSION_OPTION_SUFFIX = '_db_version';
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.5
-	 * @access protected
-	 */
-	protected static $_instance;
 
 	/**
 	 * The suffix used in the name of the database table (so, without the wpdb prefix).
@@ -120,23 +114,6 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 		}
 
 		$this->set_table_ready();
-	}
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.6.5
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 	/**
