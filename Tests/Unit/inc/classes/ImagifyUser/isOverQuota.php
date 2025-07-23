@@ -110,8 +110,8 @@ class Test_IsOverQuota extends TestCase {
 			->andReturn( 0.0 );
 
 		$imagify_data_mock = Mockery::mock( Imagify_Data::class );
-		// Change the Imagify_Data::$_instance to the mock.
-		$this->setPropertyValue( '_instance', Imagify_Data::class, $imagify_data_mock );
+		// Change the Imagify_Data::$instance to the mock.
+		$this->setPropertyValue( 'instance', Imagify_Data::class, $imagify_data_mock );
 
 		$imagify_data_mock->shouldReceive( 'get' )
 			->atMost()
