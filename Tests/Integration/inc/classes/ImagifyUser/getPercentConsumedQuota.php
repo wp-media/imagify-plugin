@@ -18,7 +18,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 		parent::set_up();
 
 		$option = get_option( 'imagify_data', [] );
-		$this->originalPreviousQuotaOption = $option['previous_quota_percent'];
+		$this->originalPreviousQuotaOption = isset( $option['previous_quota_percent'] ) ? $option['previous_quota_percent'] : 0.0;
 	}
 
 	public function tear_down() {
