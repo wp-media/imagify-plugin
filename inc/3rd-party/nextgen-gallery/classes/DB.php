@@ -1,8 +1,6 @@
 <?php
 namespace Imagify\ThirdParty\NGG;
 
-use Imagify\Traits\InstanceGetterTrait;
-
 /**
  * Imagify NextGen Gallery DB class.
  *
@@ -10,8 +8,6 @@ use Imagify\Traits\InstanceGetterTrait;
  * @author Jonathan Buttigieg
  */
 class DB extends \Imagify_Abstract_DB {
-	use InstanceGetterTrait;
-
 	/**
 	 * Class version.
 	 *
