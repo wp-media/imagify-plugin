@@ -1,15 +1,11 @@
 <?php
 
-use Imagify\Traits\InstanceGetterTrait;
-
 /**
  * Class that handles the plugin data.
  *
  * @since 1.7
  */
 class Imagify_Data extends Imagify_Abstract_Options {
-	use InstanceGetterTrait;
-
 	/**
 	 * Class version.
 	 *
