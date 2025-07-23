@@ -50,9 +50,11 @@ class Test_GetPercentConsumedQuota extends TestCase {
 
 		$this->assertNotSame( 0, $newQuota );
 
+		$option = get_option( 'imagify_data' );
+
 		if ( 100.0 !== $newQuota ) {
 			// Since the new quota is not 100%, the new value must have been saved:
-			$this->assertSame( $newQuota, Imagify_Data::get_instance()->get( 'previous_quota_percent' ) );
+			$this->assertSame( $newQuota, $option['previous_quota_percent'] );
 		}
 	}
 }
