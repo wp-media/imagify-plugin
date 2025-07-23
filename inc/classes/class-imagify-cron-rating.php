@@ -1,7 +1,5 @@
 <?php
 
-use Imagify\Traits\InstanceGetterTrait;
-
 /**
  * Class that handles the plugin rating cron.
  *
@@ -9,8 +7,6 @@ use Imagify\Traits\InstanceGetterTrait;
  * @author Grégory Viguier
  */
 class Imagify_Cron_Rating extends Imagify_Abstract_Cron {
-	use InstanceGetterTrait;
-
 	/**
 	 * Class version.
 	 *

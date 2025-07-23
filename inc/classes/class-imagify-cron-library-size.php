@@ -1,7 +1,5 @@
 <?php
 
-use Imagify\Traits\InstanceGetterTrait;
-
 /**
  * Class that handles the cron that calculate and cache the library size.
  *
@@ -9,8 +7,6 @@ use Imagify\Traits\InstanceGetterTrait;
  * @author Grégory Viguier
  */
 class Imagify_Cron_Library_Size extends Imagify_Abstract_Cron {
-	use InstanceGetterTrait;
-
 	/**
 	 * Class version.
 	 *
