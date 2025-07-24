@@ -703,7 +703,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		}
 
 		$folder = sanitize_text_field( wp_unslash( $_POST['folder'] ) );
-		$folder = sanitize_text_field( $folder );
+		$folder = trailingslashit( $folder );
 		$folder = realpath( $this->filesystem->get_site_root() . ltrim( $folder, '/' ) );
 
 		if ( ! $folder ) {
@@ -1181,7 +1181,6 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		}
 
 		$context = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-		$context = htmlspecialchars( $context );
 
 		return imagify_sanitize_context( $context );
 	}
@@ -1224,7 +1223,7 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 		$folder_type = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
-		return htmlspecialchars( $folder_type );
+		return $folder_type;
 	}
 
 	/**

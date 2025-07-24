@@ -434,7 +434,6 @@ final class Bulk {
 		}
 
 		$context = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-		$context = htmlspecialchars( $context );
 
 		return imagify_sanitize_context( $context );
 	}
