@@ -177,7 +177,7 @@ final class Notices {
 	public function admin_post_dismiss_notice() {
 		imagify_check_nonce( self::DISMISS_NONCE_ACTION );
 
-		$notice  = ! empty( $_GET['notice'] ) ? esc_html( wp_unslash( $_GET['notice'] ) ) : '';
+		$notice  = ! empty( $_GET['notice'] ) ? sanitize_text_field( wp_unslash( $_GET['notice'] ) ) : '';
 		$notices = $this->get_notice_ids();
 		$notices = array_flip( $notices );
 
@@ -228,7 +228,7 @@ final class Notices {
 			imagify_die();
 		}
 
-		$plugin  = esc_html( wp_unslash( $_GET['plugin'] ) );
+		$plugin  = sanitize_text_field( wp_unslash( $_GET['plugin'] ) );
 		$plugins = $this->get_conflicting_plugins();
 		$plugins = array_flip( $plugins );
 

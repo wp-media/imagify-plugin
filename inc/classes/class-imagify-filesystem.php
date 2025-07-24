@@ -826,13 +826,18 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return $root_path;
 		}
 
+		if ( empty( $_SERVER['DOCUMENT_ROOT'] ) ) {
+			return $root_path;
+		}
+
 		/**
 		 * For a multisite in its own directory, get_home_path() returns the expected path only for the main site.
 		 *
 		 * Friend, each time an attempt is made to improve this method, and especially this part, please increment the following counter.
 		 * Improvement attempts: 3.
 		 */
-		$document_root     = realpath( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ); // `realpath()` is needed for those cases where $_SERVER['DOCUMENT_ROOT'] is totally different from ABSPATH.
+		$document_root = realpath( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// `realpath()` is needed for those cases where $_SERVER['DOCUMENT_ROOT'] is totally different from ABSPATH.
 		$document_root     = trailingslashit( str_replace( '\\', '/', $document_root ) );
 		$path_current_site = trim( str_replace( '\\', '/', PATH_CURRENT_SITE ), '/' );
 		$root_path         = trailingslashit( wp_normalize_path( $document_root . $path_current_site ) );

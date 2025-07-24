@@ -420,7 +420,11 @@ class Imagify_Views {
 	public function is_settings_page() {
 		global $pagenow;
 
-		$page = htmlspecialchars( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $_GET['page'] ) ) {
+			return false;
+		}
+
+		$page = sanitize_text_field( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		if ( $this->get_settings_page_slug() !== $page ) {
 			return false;
@@ -443,7 +447,11 @@ class Imagify_Views {
 	public function is_bulk_page() {
 		global $pagenow;
 
-		$page = htmlspecialchars( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $_GET['page'] ) ) {
+			return false;
+		}
+
+		$page = sanitize_text_field( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		return 'upload.php' === $pagenow && $this->get_bulk_page_slug() === $page;
 	}
@@ -458,7 +466,11 @@ class Imagify_Views {
 	public function is_files_page() {
 		global $pagenow;
 
-		$page = htmlspecialchars( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $_GET['page'] ) ) {
+			return false;
+		}
+
+		$page = sanitize_text_field( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		return 'upload.php' === $pagenow && $this->get_files_page_slug() === $page;
 	}
