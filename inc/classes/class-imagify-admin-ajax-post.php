@@ -1243,7 +1243,6 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 		}
 
 		$action = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-		$action = htmlspecialchars( $action );
 
 		return $action ? $action : 'optimize';
 	}
