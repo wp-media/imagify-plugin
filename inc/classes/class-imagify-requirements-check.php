@@ -263,7 +263,7 @@ class Imagify_Requirements_Check {
 		/* translators: %s = Previous plugin version. */
 		$message .= '<p class="submit"><a href="' . esc_url( $rollback_url ) . '" class="button">' . sprintf( __( 'Re-install version %s', 'imagify' ), $this->get_last_version() ) . '</a></p>';
 
-		echo '<div class="notice notice-error">' . $message . '</div>';
+		echo '<div class="notice notice-error">' . $message . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -326,7 +326,7 @@ class Imagify_Requirements_Check {
 		wp_die(
 			'',
 			/* translators: %s is the plugin name. */
-			sprintf( __( '%s Update Rollback', 'imagify' ), $this->plugin_name ),
+			sprintf( esc_html__( '%s Update Rollback', 'imagify' ), esc_html( $this->plugin_name ) ),
 			array( 'response' => 200 )
 		);
 	}
