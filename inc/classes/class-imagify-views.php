@@ -607,7 +607,7 @@ class Imagify_Views {
 	 * @param mixed  $data     Some data to pass to the template.
 	 */
 	public function print_template( $template, $data = array() ) {
-		echo $this->get_template( $template, $data );
+		echo $this->get_template( $template, $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -650,7 +650,7 @@ class Imagify_Views {
 		foreach ( $this->templates_in_footer as $template => $data ) {
 			$template_id = str_replace( [ '/', '_' ], '-', $template );
 
-			echo '<script type="text/html" id="tmpl-imagify-' . $template_id . '">';
+			echo '<script type="text/html" id="tmpl-imagify-' . esc_attr( $template_id ) . '">';
 				$this->print_template( $template, $data );
 			echo '</script>';
 		}
