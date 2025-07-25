@@ -36,7 +36,7 @@ function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
 
 	$process = imagify_get_optimization_process( $attachment_id, 'wp' );
 
-	echo get_imagify_media_column_content( $process );
+	echo get_imagify_media_column_content( $process ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 add_filter( 'request', '_imagify_sort_attachments_by_status' );
