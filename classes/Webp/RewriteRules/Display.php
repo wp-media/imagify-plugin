@@ -120,7 +120,7 @@ class Display implements SubscriberInterface {
 			printf(
 				/* translators: %s is a file name. */
 				esc_html__( 'If you choose to use rewrite rules, you will have to add the following lines manually to the %s file:', 'imagify' ),
-				'<code>' . $this->get_file_path( true ) . '</code>'
+				'<code>' . $this->get_file_path( true ) . '</code>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			);
 
 			echo '<pre class="code">' . esc_html( $rules ) . '</pre>';
@@ -128,7 +128,7 @@ class Display implements SubscriberInterface {
 			printf(
 				/* translators: %s is a file name. */
 				esc_html__( 'If you choose to use rewrite rules, the file %s will be created and must be included into the server’s configuration file (then restart the server).', 'imagify' ),
-				'<code>' . $this->get_file_path( true ) . '</code>'
+				'<code>' . $this->get_file_path( true ) . '</code>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			);
 		}
 	}
