@@ -67,7 +67,7 @@ function _imagify_attachment_submitbox_misc_actions() {
 			?>
 			<div class="misc-pub-section misc-pub-imagify"><h4><?php esc_html_e( 'Imagify', 'imagify' ); ?></h4></div>
 			<div class="misc-pub-section misc-pub-imagify imagify-data-item">
-				<?php echo get_imagify_attachment_optimization_text( $process ); ?>
+				<?php echo get_imagify_attachment_optimization_text( $process ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</div>
 			<?php
 		} else {
