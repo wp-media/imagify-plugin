@@ -13,7 +13,7 @@ foreach ( $data as $notice_data ) {
 
 foreach ( $notices as $type_id => $type_notices ) {
 	?>
-	<div class="<?php echo $type_id; ?> settings-error notice is-dismissible">
+	<div class="<?php echo esc_attr( $type_id ); ?> settings-error notice is-dismissible">
 		<?php foreach ( $type_notices as $details ) { ?>
 			<p><strong><?php echo wp_kses( $details['message'], [ 'code' => [] ] ); ?></strong></p>
 		<?php } ?>
