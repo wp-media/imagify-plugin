@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			?>
 
 			<div class="imagify-modal-views imagify-plans-selection-view" id="imagify-plans-selection-view" aria-hidden="true">
-				<p class="imagify-modal-title"><?php _e( 'Choose the Perfect Plan for Your Needs', 'imagify' ); ?></p>
+				<p class="imagify-modal-title"><?php esc_html_e( 'Choose the Perfect Plan for Your Needs', 'imagify' ); ?></p>
 				<div class="imagify-tabs-contents">
 					<div class="imagify-tab-content imagify-current" id="imagify-pricing-tab-monthly" role="tabpanel">
 						<div class="imagify-modal-section">
@@ -50,7 +50,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 											<?php
 											printf(
 												/* translators: %s is a formatted number (don't use %d). */
-												__( 'approx: %s images', 'imagify' ),
+												esc_html__( 'approx: %s images', 'imagify' ),
 												'<span class="imagify-approx-nb"></span>'
 											);
 											?>
@@ -72,7 +72,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 										<?php
 										printf(
 											/* translators: %s is a formatted price. */
-											__( 'Unlimited upload size<br />Unlimited websites<br />%s', 'imagify' ),
+											esc_html__( 'Unlimited upload size<br />Unlimited websites<br />%s', 'imagify' ),
 											'<span class="imagify-price-add-data"></span>'
 										);
 										?>
@@ -109,7 +109,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			?>
 
 			<div class="imagify-modal-views imagify-success-view" id="imagify-success-view" aria-hidden="true">
-				<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>big-blue-check.png" width="113" height="109" alt="">
+				<img src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL ); ?>big-blue-check.png" width="113" height="109" alt="">
 				<p><?php esc_html_e( 'Thank you for being awesome!', 'imagify' ); ?></p>
 			</div><!-- .imagify-modal-views -->
 
