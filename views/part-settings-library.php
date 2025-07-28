@@ -42,7 +42,7 @@ $option_name = $options->get_option_name();
 					printf(
 					/* translators: 1 is a number of pixels. */
 						esc_html__( 'This option is recommended to reduce larger images. You can save up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %dpx.', 'imagify' ),
-						esc_attr( $max_sizes['width'] )
+						esc_html( $max_sizes['width'] )
 					);
 					echo ' ';
 
