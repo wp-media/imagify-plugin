@@ -148,7 +148,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'admin_init', array( $this, 'maybe_upgrade_table' ) );
+		add_action( 'admin_init', [ $this, 'maybe_upgrade_table' ] );
 	}
 
 	/**
@@ -233,7 +233,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	 */
 	public function get( $row_id ) {
 		if ( $row_id <= 0 ) {
-			return array();
+			return [];
 		}
 
 		return $this->get_by( $this->primary_key, $row_id );
@@ -446,7 +446,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	 * @param  string $where  A column name.
 	 * @return bool
 	 */
-	public function update( $row_id, $data = array(), $where = '' ) {
+	public function update( $row_id, $data = [], $where = '' ) {
 		global $wpdb;
 
 		if ( $row_id <= 0 ) {
@@ -477,7 +477,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 		// Reorder $column_formats to match the order of columns given in $data.
 		$column_formats = array_merge( $data, $column_formats );
 
-		return (bool) $wpdb->update( $this->table_name, $data, array( $where => $row_id ), $column_formats, $this->get_placeholder( $where ) );
+		return (bool) $wpdb->update( $this->table_name, $data, [ $where => $row_id ], $column_formats, $this->get_placeholder( $where ) );
 	}
 
 	/**
@@ -580,9 +580,9 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 		unset( $wpdb->{$this->table} );
 
 		if ( $this->table_is_global ) {
-			$wpdb->global_tables = array_diff( $wpdb->global_tables, array( $this->table ) );
+			$wpdb->global_tables = array_diff( $wpdb->global_tables, [ $this->table ] );
 		} else {
-			$wpdb->tables = array_diff( $wpdb->tables, array( $this->table ) );
+			$wpdb->tables = array_diff( $wpdb->tables, [ $this->table ] );
 		}
 	}
 

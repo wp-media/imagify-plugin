@@ -43,7 +43,7 @@ abstract class Imagify_Abstract_Options {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $reset_values = array();
+	protected $reset_values = [];
 
 	/**
 	 * Tell if the option should be autoloaded by WP.
@@ -97,9 +97,9 @@ abstract class Imagify_Abstract_Options {
 		}
 
 		$this->default_values = array_merge(
-			array(
+			[
 				'version' => '',
-			),
+			],
 			$this->default_values
 		);
 	}
@@ -129,7 +129,7 @@ abstract class Imagify_Abstract_Options {
 	 * @access public
 	 */
 	public function init() {
-		add_filter( 'sanitize_option_' . $this->get_option_name(), array( $this, 'sanitize_and_validate_on_update' ), 50 );
+		add_filter( 'sanitize_option_' . $this->get_option_name(), [ $this, 'sanitize_and_validate_on_update' ], 50 );
 	}
 
 
@@ -219,7 +219,7 @@ abstract class Imagify_Abstract_Options {
 		$args = func_get_args();
 
 		if ( isset( $args[1] ) && is_string( $args[0] ) ) {
-			$values = array( $args[0] => $args[1] );
+			$values = [ $args[0] => $args[1] ];
 		}
 
 		if ( ! is_array( $values ) ) {
@@ -342,7 +342,7 @@ abstract class Imagify_Abstract_Options {
 		$values = $this->is_network_option() ? get_site_option( $this->get_option_name() ) : get_option( $this->get_option_name() );
 
 		if ( false !== $values && ! is_array( $values ) ) {
-			return array();
+			return [];
 		}
 
 		return $values;
@@ -417,8 +417,8 @@ abstract class Imagify_Abstract_Options {
 		 * @param array $new_values     New default option values.
 		 * @param array $default_values Plugin default option values.
 		 */
-		$new_values = apply_filters( 'imagify_default_' . $this->get_hook_identifier() . '_values', array(), $default_values );
-		$new_values = is_array( $new_values ) ? $new_values : array();
+		$new_values = apply_filters( 'imagify_default_' . $this->get_hook_identifier() . '_values', [], $default_values );
+		$new_values = is_array( $new_values ) ? $new_values : [];
 
 		if ( $new_values ) {
 			// Don't allow new values to overwrite the plugin values.
@@ -538,7 +538,7 @@ abstract class Imagify_Abstract_Options {
 	 * @return array
 	 */
 	public function sanitize_and_validate_on_update( $values ) {
-		$values         = is_array( $values ) ? $values : array();
+		$values         = is_array( $values ) ? $values : [];
 		$default_values = $this->get_default_values();
 
 		if ( $values ) {
@@ -591,7 +591,7 @@ abstract class Imagify_Abstract_Options {
 	 */
 	public static function cast( $value, $default_value ) {
 		if ( is_array( $default_value ) ) {
-			return is_array( $value ) ? $value : array();
+			return is_array( $value ) ? $value : [];
 		}
 
 		if ( is_int( $default_value ) ) {

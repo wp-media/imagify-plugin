@@ -251,7 +251,7 @@ function imagify_can_optimize_custom_folders() {
  * @param  array  $query_args An array of query arguments.
  * @return string The URL.
  */
-function imagify_get_external_url( $target, $query_args = array() ) {
+function imagify_get_external_url( $target, $query_args = [] ) {
 	$site_url = IMAGIFY_SITE_DOMAIN . '/';
 	$app_url  = IMAGIFY_APP_DOMAIN . '/#/';
 
@@ -267,10 +267,10 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 
 		case 'contact':
 			$lang  = imagify_get_current_lang_in( 'fr' );
-			$paths = array(
+			$paths = [
 				'en' => 'contact',
 				'fr' => 'fr/contact',
-			);
+			];
 
 			$url = $site_url . $paths[ $lang ] . '/';
 			break;

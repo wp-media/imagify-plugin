@@ -92,13 +92,13 @@ class DB extends \Imagify_Abstract_DB {
 	 * @return array
 	 */
 	public function get_columns() {
-		return array(
+		return [
 			'data_id'            => '%d',
 			'pid'                => '%d',
 			'optimization_level' => '%s',
 			'status'             => '%s',
 			'data'               => '%s',
-		);
+		];
 	}
 
 	/**
@@ -111,13 +111,13 @@ class DB extends \Imagify_Abstract_DB {
 	 * @return array
 	 */
 	public function get_column_defaults() {
-		return array(
+		return [
 			'data_id'            => 0,
 			'pid'                => 0,
 			'optimization_level' => '',
 			'status'             => '',
-			'data'               => array(),
-		);
+			'data'               => [],
+		];
 	}
 
 	/**

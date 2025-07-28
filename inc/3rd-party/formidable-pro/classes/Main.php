@@ -34,8 +34,8 @@ class Main {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'parse_query', array( $this, 'maybe_remove_media_library_filter' ) );
-		add_action( 'posts_selection', array( $this, 'maybe_put_media_library_filter_back' ) );
+		add_action( 'parse_query', [ $this, 'maybe_remove_media_library_filter' ] );
+		add_action( 'posts_selection', [ $this, 'maybe_put_media_library_filter_back' ] );
 	}
 
 	/**

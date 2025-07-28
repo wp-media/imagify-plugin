@@ -88,7 +88,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 * @return array
 	 */
 	public function get_columns() {
-		return array(
+		return [
 			'file_id'            => '%d',
 			'folder_id'          => '%d',
 			'file_date'          => '%s',
@@ -105,7 +105,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			'status'             => '%s',
 			'error'              => '%s',
 			'data'               => '%s',
-		);
+		];
 	}
 
 	/**
@@ -118,7 +118,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 * @return array
 	 */
 	public function get_column_defaults() {
-		return array(
+		return [
 			'file_id'            => 0,
 			'folder_id'          => 0,
 			'file_date'          => '0000-00-00 00:00:00',
@@ -135,7 +135,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			'status'             => null,
 			'error'              => null,
 			'data'               => [],
-		);
+		];
 	}
 
 	/**

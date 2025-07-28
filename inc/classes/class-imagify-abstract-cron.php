@@ -82,14 +82,14 @@ abstract class Imagify_Abstract_Cron {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'init', array( $this, 'schedule_event' ) );
-		add_action( $this->get_event_name(), array( $this, 'do_event' ) );
-		add_filter( 'cron_schedules', array( $this, 'maybe_add_recurrence' ) );
+		add_action( 'init', [ $this, 'schedule_event' ] );
+		add_action( $this->get_event_name(), [ $this, 'do_event' ] );
+		add_filter( 'cron_schedules', [ $this, 'maybe_add_recurrence' ] );
 
 		if ( did_action( static::get_deactivation_hook_name() ) ) {
 			$this->unschedule_event();
 		} else {
-			add_action( static::get_deactivation_hook_name(), array( $this, 'unschedule_event' ) );
+			add_action( static::get_deactivation_hook_name(), [ $this, 'unschedule_event' ] );
 		}
 	}
 
@@ -144,11 +144,11 @@ abstract class Imagify_Abstract_Cron {
 	 * @return array
 	 */
 	public function maybe_add_recurrence( $schedules ) {
-		$default_schedules = array(
+		$default_schedules = [
 			'hourly'     => 1,
 			'twicedaily' => 1,
 			'daily'      => 1,
-		);
+		];
 
 		$event_recurrence = $this->get_event_recurrence();
 
@@ -156,12 +156,12 @@ abstract class Imagify_Abstract_Cron {
 			return $schedules;
 		}
 
-		$recurrences = array(
-			'weekly' => array(
+		$recurrences = [
+			'weekly' => [
 				'interval' => WEEK_IN_SECONDS,
 				'display'  => __( 'Once Weekly', 'imagify' ),
-			),
-		);
+			],
+		];
 
 		if ( method_exists( $this, 'get_event_recurrence_attributes' ) ) {
 			$recurrences[ $event_recurrence ] = $this->get_event_recurrence_attributes();

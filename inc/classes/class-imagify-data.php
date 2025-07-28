@@ -33,11 +33,11 @@ class Imagify_Data extends Imagify_Abstract_Options {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $default_values = array(
+	protected $default_values = [
 		'total_size_images_library'     => 0.0,
 		'average_size_images_per_month' => 0.0,
 		'previous_quota_percent'        => 0.0,
-	);
+	];
 
 	/**
 	 * The single instance of the class.
