@@ -901,7 +901,7 @@ final class Notices {
 		 *
 		 * @param array $plugins List of recommended plugins to deactivate.
 		*/
-		$plugins = wpm_apply_filters_typed( 'array',  'imagify_plugins_to_deactivate', self::$conflicting_plugins );
+		$plugins = wpm_apply_filters_typed( 'array', 'imagify_plugins_to_deactivate', self::$conflicting_plugins );
 
 		return array_filter( $plugins, 'is_plugin_active' );
 	}

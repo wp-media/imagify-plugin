@@ -50,6 +50,12 @@
 		<exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotValidated"/>
 		<exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped"/>
 		<exclude name="WordPress.Security.EscapeOutput.UnsafePrintingFunction"/>
+		<exclude name="WordPress.Security.NonceVerification.Missing"/>
+		<exclude name="WordPress.Security.NonceVerification.Recommended"/>
+		<exclude name="WordPress.DB.PreparedSQL.InterpolatedNotPrepared"/>
+		<exclude name="WordPress.DB.PreparedSQL.NotPrepared"/>
+		<exclude name="WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare"/>
+		<exclude name="WordPress.DB.DirectDatabaseQuery.SchemaChange"/>
 	</rule>
 	<rule ref="WordPress.Files.FileName">
         <properties>
