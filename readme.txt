@@ -23,7 +23,7 @@ Lastly, it’s easy to use the best image compression plugin for better site per
 
 Our video explains why Imagify is the easiest image optimization plugin and shows how it makes your website faster thanks to lighter images.
 
-[youtube https://www.youtube.com/watch?v=ZgMwWvUZFu4&feature=youtu.be]
+[youtube https://www.youtube.com/watch?v=qbqV5yEZ6Og]
 
 ✨ Optimize Images – The Imagify Image Optimizer Key Features:
 
