@@ -108,6 +108,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 				</div>
 
 				<div class="imagify-settings-main-content imagify-pb0<?php echo $hidden_class; ?>">
+					<?php if ( $data['display_plugin_family'] ) : ?>
 					<div class="imagify-settings-section imagify-clear">
 						<div>
 							<h2 class="imagify-options-title"><?php _e( 'Our Plugins', 'imagify' ); ?></h2>
@@ -180,7 +181,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 							?>
 						</div>
 					</div>
-
+					<?php endif; ?>
 					<?php
 					if ( Imagify_Requirements::is_api_key_valid() ) {
 						$this->print_template( 'part-settings-footer' );
