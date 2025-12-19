@@ -6,7 +6,6 @@
  * @since 1.7
  */
 class Imagify_Data extends Imagify_Abstract_Options {
-
 	/**
 	 * Class version.
 	 *
@@ -38,33 +37,6 @@ class Imagify_Data extends Imagify_Abstract_Options {
 		'average_size_images_per_month' => 0.0,
 		'previous_quota_percent'        => 0.0,
 	);
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.7
-	 * @access protected
-	 */
-	protected static $_instance;
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** SANITIZATION, VALIDATION ================================================================ */

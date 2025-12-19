@@ -1,11 +1,14 @@
 <?php
 
+use Imagify\Traits\InstanceGetterTrait;
+
 /**
  * Abstract class to handle a part of the plugin options.
  *
  * @since 1.7
  */
 abstract class Imagify_Abstract_Options {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -74,15 +77,6 @@ abstract class Imagify_Abstract_Options {
 	private $hook_identifier;
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.7
-	 * @access protected
-	 */
-	protected static $_instance;
-
-	/**
 	 * The constructor.
 	 *
 	 * @since  1.7
@@ -102,23 +96,6 @@ abstract class Imagify_Abstract_Options {
 			),
 			$this->default_values
 		);
-	}
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 	/**

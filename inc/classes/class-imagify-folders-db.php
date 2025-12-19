@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * DB class that handles files in "custom folders".
@@ -8,22 +7,12 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Imagify_Folders_DB extends Imagify_Abstract_DB {
-
 	/**
 	 * Class version.
 	 *
 	 * @var string
 	 */
 	const VERSION = '1.0.1';
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.7
-	 * @access protected
-	 */
-	protected static $_instance;
 
 	/**
 	 * The suffix used in the name of the database table (so, without the wpdb prefix).
@@ -60,23 +49,6 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @access protected
 	 */
 	protected $primary_key = 'folder_id';
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	/**
 	 * Whitelist of columns.
