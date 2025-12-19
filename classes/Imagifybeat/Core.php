@@ -40,7 +40,7 @@ final class Core {
 
 		$data        = [];
 		$response    = [];
-		$nonce_state = wp_verify_nonce( wp_unslash( $_POST['_nonce'] ), 'imagifybeat-nonce' );
+		$nonce_state = wp_verify_nonce( sanitize_key( wp_unslash( $_POST['_nonce'] ) ), 'imagifybeat-nonce' );
 
 		// Screen_id is the same as $current_screen->id and the JS global 'pagenow'.
 		if ( ! empty( $_POST['screen_id'] ) ) {
@@ -50,7 +50,7 @@ final class Core {
 		}
 
 		if ( ! empty( $_POST['data'] ) ) {
-			$data = wp_unslash( (array) $_POST['data'] );
+			$data = wp_unslash( (array) $_POST['data'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 
 		if ( 1 !== $nonce_state ) {

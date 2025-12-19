@@ -109,7 +109,7 @@ class Imagify_Settings {
 			return false;
 		}
 
-		return htmlspecialchars( wp_unslash( $_POST['option_page'] ) ) === $this->settings_group && htmlspecialchars( wp_unslash( $_POST['action'] ) ) === 'update'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return sanitize_text_field( wp_unslash( $_POST['option_page'] ) ) === $this->settings_group && sanitize_text_field( wp_unslash( $_POST['action'] ) ) === 'update'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -399,7 +399,7 @@ class Imagify_Settings {
 				$value  = null;
 
 				if ( isset( $_POST[ $option ] ) ) {
-					$value = wp_unslash( $_POST[ $option ] );
+					$value = wp_unslash( $_POST[ $option ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					if ( ! is_array( $value ) ) {
 						$value = trim( $value );
 					}

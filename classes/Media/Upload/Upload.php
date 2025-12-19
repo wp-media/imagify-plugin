@@ -27,7 +27,7 @@ class Upload {
 
 		}
 
-		$status  = isset( $_GET['imagify-status'] ) ? wp_unslash( $_GET['imagify-status'] ) : 0; // WPCS: CSRF ok.
+		$status  = isset( $_GET['imagify-status'] ) ? sanitize_text_field( wp_unslash( $_GET['imagify-status'] ) ) : 0;
 		$options = [
 			'optimized'   => _x( 'Optimized', 'Media Files', 'imagify' ),
 			'unoptimized' => _x( 'Unoptimized', 'Media Files', 'imagify' ),

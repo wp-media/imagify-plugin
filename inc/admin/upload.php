@@ -50,11 +50,11 @@ add_filter( 'request', '_imagify_sort_attachments_by_status' );
  * @return array
  */
 function _imagify_sort_attachments_by_status( $vars ) {
-	if ( empty( $_GET['imagify-status'] ) || ! Imagify_Views::get_instance()->is_wp_library_page() ) { // WPCS: CSRF ok.
+	if ( empty( $_GET['imagify-status'] ) || ! Imagify_Views::get_instance()->is_wp_library_page() ) {
 		return $vars;
 	}
 
-	$status       = wp_unslash( $_GET['imagify-status'] ); // WPCS: CSRF ok.
+	$status       = sanitize_text_field( wp_unslash( $_GET['imagify-status'] ) );
 	$meta_key     = '_imagify_status';
 	$meta_compare = '=';
 	$relation     = [];
