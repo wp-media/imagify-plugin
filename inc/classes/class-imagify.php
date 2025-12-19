@@ -136,7 +136,8 @@ class Imagify {
 	 */
 	public function create_user( $data ) {
 		$this->headers = [];
-		$data          = array_merge(
+
+		$data = array_merge(
 			$data,
 			[
 				'from_plugin' => true,
@@ -156,7 +157,9 @@ class Imagify {
 			]
 		);
 
-		if ( ! is_wp_error( $response ) ) {
+		if ( ! is_wp_error( $response ) && isset( $data['partner'] ) ) {
+			imagify_save_partner_hide_our_plugins( $data['partner'] );
+
 			imagify_delete_partner();
 		}
 

@@ -13,6 +13,14 @@ add_action( 'update_option_' . Imagify_Options::get_instance()->get_option_name(
  */
 function imagify_maybe_delete_partner_on_option_update( $old_value, $new_value ) {
 	if ( empty( $old_value['api_key'] ) && ! empty( $new_value['api_key'] ) ) {
+		$partner = imagify_get_partner();
+
+		if ( false === $partner ) {
+			return;
+		}
+
+		imagify_save_partner_hide_our_plugins( $partner );
+
 		imagify_delete_partner();
 	}
 }
