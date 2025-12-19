@@ -8,7 +8,7 @@ $wprocket_url = imagify_get_wp_rocket_url();
 	<a href="<?php echo esc_url( $dismiss_url ); ?>" class="imagify-notice-dismiss imagify-cross"><span class="dashicons dashicons-no"></span></a>
 
 	<p class="imagify-rkt-logo">
-		<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.svg 1x, <?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.svg 2x" alt="WP Rocket" width="118" height="32">
+		<img src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL ); ?>logo-wprocket.png" srcset="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL ); ?>logo-wprocket.svg 1x, <?php echo esc_url( IMAGIFY_ASSETS_IMG_URL ); ?>logo-wprocket.svg 2x" alt="WP Rocket" width="118" height="32">
 	</p>
 	<p class="imagify-rkt-msg">
 		<?php

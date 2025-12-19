@@ -331,7 +331,7 @@ function imagify_die( $message = null ) {
 	}
 
 	/* translators: %s is the plugin name. */
-	wp_die( $message, sprintf( __( '%s Failure Notice', 'imagify' ), 'Imagify' ), 403 );
+	wp_die( $message, sprintf( esc_html__( '%s Failure Notice', 'imagify' ), 'Imagify' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 /**

@@ -17,10 +17,10 @@ delete_transient( 'imagify_bulk_optimization_result' );
 			<?php
 				printf(
 					// translators: %1$s = number of images optimized, %2$s = size saved, %3$s = total size, %4$s = opening link tag, %5$s = closing link tag.
-					__( 'We have optimized %1$s images and you have just saved %2$s out of %3$s. %4$sCheck your stats%5$s' ),
-					$data['total'],
-					$data['optimized_size'],
-					$data['original_size'],
+					esc_html__( 'We have optimized %1$s images and you have just saved %2$s out of %3$s. %4$sCheck your stats%5$s' ),
+					esc_html( $data['total'] ),
+					esc_html( $data['optimized_size'] ),
+					esc_html( $data['original_size'] ),
 					'<a href="' . esc_url( $data['bulk_page_url'] ) . '">',
 					'</a>'
 				);

@@ -29,7 +29,7 @@ if (
 				<?php esc_html_e( 'Unlock Imagify\'s full potential', 'imagify' ); ?>
 			</h3>
 			<p><?php esc_html_e( 'Expand your image quota and eliminate upload limits.', 'imagify' ); ?></p>
-			<button data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-full-width imagify-upsell-cta imagify-get-pricing-modal">
+			<button data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ) ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-full-width imagify-upsell-cta imagify-get-pricing-modal">
 				<span class="button-text"><?php esc_html_e( 'Upgrade Now', 'imagify' ); ?></span>
 				<svg class="imagify-svg-icon" width="23px" height="23px">
 					<use href="#imagify_arrow_long_right"></use>
@@ -52,20 +52,20 @@ if (
 	?>
 <div class="imagify-col-content imagify-upsell">
 	<div class="imagify-flex imagify-vcenter">
-		<span class="imagify-meteo-icon imagify-noshrink"><?php echo $this->get_quota_icon(); ?></span>
+		<span class="imagify-meteo-icon imagify-noshrink"><?php echo $this->get_quota_icon(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 		<div class="imagify-space-left imagify-full-width">
 			<p>
 				<?php
 				printf(
 					/* translators: %s is a data quota. */
-					__( 'You have %s space credit left', 'imagify' ),
-					'<span class="imagify-unconsumed-percent">' . $this->get_quota_percent() . '%</span>'
+					esc_html__( 'You have %s space credit left', 'imagify' ),
+					'<span class="imagify-unconsumed-percent">' . esc_html( $this->get_quota_percent() ) . '%</span>'
 				);
 				?>
 			</p>
 
-			<div class="<?php echo $this->get_quota_class(); ?>">
-				<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $this->get_quota_percent() . '%'; ?>;"></div>
+			<div class="<?php echo esc_attr( $this->get_quota_class() ); ?>">
+				<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo esc_attr( $this->get_quota_percent() ) . '%'; ?>;"></div>
 			</div>
 		</div>
 	</div>
@@ -86,8 +86,8 @@ if (
 		}
 	}
 	?>
-	<p><?php echo $upgrade; ?></p>
-	<p><?php echo $price; ?></p>
+	<p><?php echo $upgrade; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
+	<p><?php echo $price; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 
 	<a href="<?php echo esc_url( $upgrade_link ); ?>" target="_blank" rel="noopener noreferrer" class="imagify-upsell-button imagify-full-width imagify-upsell-cta">
 		<?php esc_html_e( 'Upgrade now', 'imagify' ); ?>

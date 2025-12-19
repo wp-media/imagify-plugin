@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 $settings = Imagify_Settings::get_instance();
 ?>
 <div>
-	<h3 class="imagify-options-subtitle"><?php _e( 'Next-Gen image format', 'imagify' ); ?></h3>
+	<h3 class="imagify-options-subtitle"><?php esc_html_e( 'Next-Gen image format', 'imagify' ); ?></h3>
 
 	<div class="imagify-setting-line">
 		<?php
@@ -207,9 +207,9 @@ $settings = Imagify_Settings::get_instance();
 				}
 				?>
 
-				<div <?php echo $aria; ?> class="imagify-progress <?php echo $class; ?>">
+				<div <?php echo $aria; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> class="imagify-progress <?php echo esc_attr( $class ); ?>">
 					<div class="progress">
-						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $progress; ?></div></div>
+						<div class="bar" <?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><div class="percent"><?php echo esc_html( $progress ); ?></div></div>
 					</div>
 				</div>
 			</div>

@@ -20,7 +20,7 @@ if ( ! isset( $data['atts']['data-processing-label'] ) ) {
 $html_atts = $this->build_attributes( $data['atts'] );
 ?>
 
-<a href="<?php echo esc_url( $data['url'] ); ?>"<?php echo $html_atts; ?>>
+<a href="<?php echo esc_url( $data['url'] ); ?>"<?php echo $html_atts; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<span class="dashicons dashicons-image-rotate"></span>
 	<?php esc_html_e( 'Delete Next-Gen images', 'imagify' ); ?>
 </a>

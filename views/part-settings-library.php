@@ -30,7 +30,7 @@ $option_name = $options->get_option_name();
 			printf(
 			/* translators: 1 is a text input for a number of pixels (don't use %d). */
 				esc_html__( 'to maximum %s pixels width', 'imagify' ),
-				'<input type="number" id="imagify_resize_larger_w" min="' . $max_sizes['width'] . '" name="' . $option_name . '[resize_larger_w]" value="' . ( $resize_larger_w ? $resize_larger_w : '' ) . '" size="5">'
+				'<input type="number" id="imagify_resize_larger_w" min="' . esc_attr( $max_sizes['width'] ) . '" name="' . esc_attr( $option_name . '[resize_larger_w]' ) . '" value="' . esc_attr( $resize_larger_w ? $resize_larger_w : '' ) . '" size="5">'
 			);
 			?>
 			</label>
@@ -42,7 +42,7 @@ $option_name = $options->get_option_name();
 					printf(
 					/* translators: 1 is a number of pixels. */
 						esc_html__( 'This option is recommended to reduce larger images. You can save up to 80%% after resizing. The new width should not be less than your largest thumbnail width, which is actually %dpx.', 'imagify' ),
-						$max_sizes['width']
+						esc_html( $max_sizes['width'] )
 					);
 					echo ' ';
 
