@@ -57,7 +57,7 @@ function _imagify_sort_attachments_by_status( $vars ) {
 	$status       = sanitize_text_field( wp_unslash( $_GET['imagify-status'] ) );
 	$meta_key     = '_imagify_status';
 	$meta_compare = '=';
-	$relation     = array();
+	$relation     = [];
 
 	switch ( $status ) {
 		case 'unoptimized':
@@ -66,11 +66,11 @@ function _imagify_sort_attachments_by_status( $vars ) {
 			break;
 		case 'optimized':
 			$status   = 'success';
-			$relation = array(
+			$relation = [
 				'key'     => $meta_key,
 				'value'   => 'already_optimized',
 				'compare' => $meta_compare,
-			);
+			];
 			break;
 		case 'errors':
 			$status = 'error';

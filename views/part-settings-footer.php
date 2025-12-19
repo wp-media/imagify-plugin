@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 				'secondary imagify-button-secondary', // Type/classes.
 				'submit-goto-bulk', // Name (id).
 				true, // Wrap.
-				array() // Other attributes.
+				[] // Other attributes.
 			);
 		}
 	}

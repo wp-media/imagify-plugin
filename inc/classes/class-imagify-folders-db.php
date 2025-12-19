@@ -60,11 +60,11 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @return array
 	 */
 	public function get_columns() {
-		return array(
+		return [
 			'folder_id' => '%d',
 			'path'      => '%s',
 			'active'    => '%d',
-		);
+		];
 	}
 
 	/**
@@ -77,11 +77,11 @@ class Imagify_Folders_DB extends Imagify_Abstract_DB {
 	 * @return array
 	 */
 	public function get_column_defaults() {
-		return array(
+		return [
 			'folder_id' => 0,
 			'path'      => '',
 			'active'    => 0,
-		);
+		];
 	}
 
 	/**

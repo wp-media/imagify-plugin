@@ -25,9 +25,9 @@ function imagify_init() {
 
 	$plugin = new Plugin(
 		new Container(),
-		array(
+		[
 			'plugin_path' => IMAGIFY_PATH,
-		)
+		]
 	);
 
 	$plugin->init( $providers );

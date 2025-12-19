@@ -5,14 +5,14 @@ $settings     = Imagify_Settings::get_instance();
 $options      = Imagify_Options::get_instance();
 $option_name  = $options->get_option_name();
 $hidden_class = Imagify_Requirements::is_api_key_valid() ? '' : ' hidden';
-$lang         = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
+$lang         = imagify_get_current_lang_in( [ 'de', 'es', 'fr', 'it' ] );
 
 /* Ads notice */
 $plugins_list  = get_plugins();
 $notice        = 'wp-rocket';
 $user_id       = get_current_user_id();
 $notices       = get_user_meta( $user_id, '_imagify_ignore_ads', true );
-$notices       = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+$notices       = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
 $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket/wp-rocket.php'] ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket';
 ?>
 <div class="wrap imagify-settings <?php echo $wrapper_class; ?> imagify-clearfix">
