@@ -1066,7 +1066,7 @@ class Imagify_Files_List_Table extends WP_List_Table {
 			'unoptimized' => 1,
 			'errors'      => 1,
 		];
-		$filter = isset( $_GET['status-filter'] ) ? trim( htmlspecialchars( wp_unslash( $_GET['status-filter'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$filter = isset( $_GET['status-filter'] ) ? trim( sanitize_text_field( wp_unslash( $_GET['status-filter'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		$filter = isset( $values[ $filter ] ) ? $filter : '';
 
 		return $filter;
