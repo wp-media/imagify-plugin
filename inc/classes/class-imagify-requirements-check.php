@@ -325,6 +325,7 @@ class Imagify_Requirements_Check {
 
 		wp_die(
 			'',
+			// translators: %s is the plugin name.
 			sprintf( esc_html__( '%s Update Rollback', 'imagify' ), esc_html( $this->plugin_name ) ),
 			[ 'response' => 200 ]
 		);
