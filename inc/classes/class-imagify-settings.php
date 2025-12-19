@@ -1,5 +1,6 @@
 <?php
 use Imagify\Notices\Notices;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that handles the plugin settings.
@@ -7,6 +8,7 @@ use Imagify\Notices\Notices;
  * @since 1.7
  */
 class Imagify_Settings {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -41,14 +43,6 @@ class Imagify_Settings {
 	protected $options;
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @since 1.7
-	 * @var object
-	 */
-	protected static $_instance;
-
-	/**
 	 * The constructor.
 	 *
 	 * @since 1.7
@@ -57,20 +51,6 @@ class Imagify_Settings {
 		$this->options        = Imagify_Options::get_instance();
 		$this->option_name    = $this->options->get_option_name();
 		$this->settings_group = IMAGIFY_SLUG;
-	}
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since 1.7
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 	/**
@@ -129,7 +109,7 @@ class Imagify_Settings {
 			return false;
 		}
 
-		return htmlspecialchars( wp_unslash( $_POST['option_page'] ) ) === $this->settings_group && htmlspecialchars( wp_unslash( $_POST['action'] ) ) === 'update'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return sanitize_text_field( wp_unslash( $_POST['option_page'] ) ) === $this->settings_group && sanitize_text_field( wp_unslash( $_POST['action'] ) ) === 'update'; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -419,7 +399,7 @@ class Imagify_Settings {
 				$value  = null;
 
 				if ( isset( $_POST[ $option ] ) ) {
-					$value = wp_unslash( $_POST[ $option ] );
+					$value = wp_unslash( $_POST[ $option ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 					if ( ! is_array( $value ) ) {
 						$value = trim( $value );
 					}

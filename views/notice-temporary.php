@@ -1,11 +1,11 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-$notices = array();
+$notices = [];
 
 foreach ( $data as $notice_data ) {
 	if ( empty( $notices[ $notice_data['type'] ] ) ) {
-		$notices[ $notice_data['type'] ] = array();
+		$notices[ $notice_data['type'] ] = [];
 	}
 
 	$notices[ $notice_data['type'] ][] = $notice_data;

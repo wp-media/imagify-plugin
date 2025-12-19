@@ -7,17 +7,17 @@ if ( ! imagify_can_optimize_custom_folders() ) {
 
 // Get folders, remove excluded ones, sort them, add labels.
 $custom_folders = Imagify_Folders_DB::get_instance()->get_active_folders_column( 'path' );
-$themes         = array();
+$themes         = [];
 
 if ( $custom_folders ) {
 	$custom_folders = array_combine( $custom_folders, $custom_folders );
-	$custom_folders = array_map( array( 'Imagify_Files_Scan', 'remove_placeholder' ), $custom_folders );
+	$custom_folders = array_map( [ 'Imagify_Files_Scan', 'remove_placeholder' ], $custom_folders );
 	$custom_folders = array_map( 'trailingslashit', $custom_folders );
-	$custom_folders = array_filter( $custom_folders, array( 'Imagify_Files_Scan', 'is_path_autorized' ) );
+	$custom_folders = array_filter( $custom_folders, [ 'Imagify_Files_Scan', 'is_path_autorized' ] );
 }
 
 if ( $custom_folders ) {
-	$custom_folders = array_map( array( $this->filesystem, 'make_path_relative' ), $custom_folders );
+	$custom_folders = array_map( [ $this->filesystem, 'make_path_relative' ], $custom_folders );
 	$custom_folders = array_map( 'untrailingslashit', $custom_folders );
 	natcasesort( $custom_folders );
 	$custom_folders = array_map( 'trailingslashit', $custom_folders );
@@ -30,9 +30,9 @@ if ( $custom_folders ) {
 // Current used theme(s).
 if ( ! is_network_admin() ) {
 	$current_theme    = wp_get_theme();
-	$themes_not_added = array();
+	$themes_not_added = [];
 
-	foreach ( array( $current_theme, $current_theme->parent() ) as $theme ) {
+	foreach ( [ $current_theme, $current_theme->parent() ] as $theme ) {
 		if ( ! $theme || ! $theme->exists() ) {
 			continue;
 		}
@@ -40,11 +40,11 @@ if ( ! is_network_admin() ) {
 		$theme_path = trailingslashit( $theme->get_stylesheet_directory() );
 
 		if ( ! Imagify_Files_Scan::is_path_forbidden( $theme_path ) ) {
-			$theme = array(
+			$theme = [
 				'name'  => $theme->display( 'Name' ),
 				'path'  => Imagify_Files_Scan::add_placeholder( $theme_path ),
 				'label' => $this->filesystem->make_path_relative( $theme_path ),
-			);
+			];
 
 			$themes[ $theme['path'] ] = $theme;
 			$added                    = false;
