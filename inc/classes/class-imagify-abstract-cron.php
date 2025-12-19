@@ -1,5 +1,7 @@
 <?php
 
+use Imagify\Traits\InstanceGetterTrait;
+
 /**
  * Basis class that handles events.
  *
@@ -7,6 +9,7 @@
  * @author Grégory Viguier
  */
 abstract class Imagify_Abstract_Cron {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -42,33 +45,6 @@ abstract class Imagify_Abstract_Cron {
 	 * @access protected
 	 */
 	protected $event_time = '';
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.7
-	 * @access protected
-	 */
-	protected static $_instance;
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** INIT ==================================================================================== */

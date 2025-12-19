@@ -2,7 +2,7 @@
 
 use Imagify\User\User;
 use Imagify\Dependencies\WPMedia\PluginFamily\Model\PluginFamily;
-
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that handles templates and menus.
@@ -10,6 +10,7 @@ use Imagify\Dependencies\WPMedia\PluginFamily\Model\PluginFamily;
  * @since 1.7
  */
 class Imagify_Views {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -68,14 +69,6 @@ class Imagify_Views {
 	protected $filesystem;
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @var object
-	 * @since 1.7
-	 */
-	protected static $_instance;
-
-	/**
 	 * Imagify admin bar menu.
 	 *
 	 * @var bool
@@ -97,21 +90,6 @@ class Imagify_Views {
 		$this->slug_bulk     = IMAGIFY_SLUG . '-bulk-optimization';
 		$this->slug_files    = IMAGIFY_SLUG . '-files';
 		$this->filesystem    = Imagify_Filesystem::get_instance();
-	}
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since 1.7
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 	/**

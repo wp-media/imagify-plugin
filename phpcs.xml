@@ -45,7 +45,6 @@
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query"/><!-- Maybe someday. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value"/><!-- Maybe someday. -->
 		<!-- Will be handled later. -->
-		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
 		<exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotSanitized"/>
 		<exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotValidated"/>
 		<exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped"/>
