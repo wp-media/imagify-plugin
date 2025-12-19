@@ -384,7 +384,7 @@ function get_imagify_attachment_generate_nextgen_versions_link( $process ) {
 
 	$context = $media->get_context();
 
-	$display = apply_filters_deprecated( 'imagify_display_generate_webp_versions_link', array( true, $process, $context ), '2.2', 'imagify_display_generate_next_gen_versions_link' );
+	$display = apply_filters_deprecated( 'imagify_display_generate_webp_versions_link', [ true, $process, $context ], '2.2', 'imagify_display_generate_next_gen_versions_link' );
 
 	/**
 	 * Allow to not display the "Generate next-gen versions" link.

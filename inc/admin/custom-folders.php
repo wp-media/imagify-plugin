@@ -21,7 +21,7 @@ function imagify_sync_theme_plugin_files_on_update( $response, $hook_extra, $res
 	}
 
 	$folders_to_sync = get_site_transient( 'imagify_themes_plugins_to_sync' );
-	$folders_to_sync = is_array( $folders_to_sync ) ? $folders_to_sync : array();
+	$folders_to_sync = is_array( $folders_to_sync ) ? $folders_to_sync : [];
 
 	$folders_to_sync[] = $result['destination'];
 
@@ -75,12 +75,12 @@ function imagify_sync_theme_plugin_files_after_update() {
 		// Sync the folder files.
 		Imagify_Custom_Folders::synchronize_files_from_folders(
 			[
-				$folder['folder_id'] => array(
+				$folder['folder_id'] => [
 					'folder_id'   => $folder['folder_id'],
 					'path'        => $placeholder,
 					'active'      => $folder['active'],
 					'folder_path' => $folder_path,
-				),
+				],
 			]
 		);
 	}

@@ -71,7 +71,7 @@ function _imagify_attachment_submitbox_misc_actions() {
 			</div>
 			<?php
 		} else {
-			$url = get_imagify_admin_url( 'optimize', array( 'attachment_id' => $post->ID ) );
+			$url = get_imagify_admin_url( 'optimize', [ 'attachment_id' => $post->ID ] );
 			?>
 			<div class="misc-pub-section misc-pub-imagify">
 				<a class="button-primary" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Optimize', 'imagify' ); ?></a>

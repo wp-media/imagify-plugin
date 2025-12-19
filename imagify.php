@@ -87,13 +87,13 @@ function imagify_pass_requirements() {
 	require_once IMAGIFY_PATH . 'inc/classes/class-imagify-requirements-check.php';
 
 	$requirement_checks = new Imagify_Requirements_Check(
-		array(
+		[
 			'plugin_name'    => 'Imagify',
 			'plugin_file'    => IMAGIFY_FILE,
 			'plugin_version' => IMAGIFY_VERSION,
 			'wp_version'     => '5.3',
 			'php_version'    => '7.0',
-		)
+		]
 	);
 
 	$check = $requirement_checks->check();

@@ -33,6 +33,7 @@
 		<include-pattern>*\.php$</include-pattern>
 	</rule>
 
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax" />
 	<!-- Run against the WordPress ruleset. -->
 	<rule ref="WordPress">
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>

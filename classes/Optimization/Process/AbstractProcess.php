@@ -1662,7 +1662,7 @@ abstract class AbstractProcess implements ProcessInterface {
 			return false;
 		}
 
-		$can = apply_filters_deprecated( 'imagify_pre_can_create_webp_version', array( null, $file_path ), '2.2', 'imagify_pre_can_create_next_gen_version' );
+		$can = apply_filters_deprecated( 'imagify_pre_can_create_webp_version', [ null, $file_path ], '2.2', 'imagify_pre_can_create_next_gen_version' );
 
 		/**
 		 * Tell if a next-gen version can be created for the given file.
