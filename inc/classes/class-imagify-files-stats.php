@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class handling stats related to "custom folders optimization".
@@ -200,7 +200,7 @@ class Imagify_Files_Stats {
 	 */
 	public static function count_files( $status = 'all' ) {
 		global $wpdb;
-		static $count = array();
+		static $count = [];
 
 		$status = self::validate_status( $status );
 
@@ -233,7 +233,7 @@ class Imagify_Files_Stats {
 				break;
 
 			default:
-				// "success", "already_optimized", "error".
+				// success, already_optimized or error.
 				$status = "status = '$status'";
 		}
 
@@ -357,7 +357,7 @@ class Imagify_Files_Stats {
 	 */
 	public static function get_size( $type = null ) {
 		global $wpdb;
-		static $sizes = array();
+		static $sizes = [];
 
 		$type = 'optimized' === $type ? 'optimized_size' : 'original_size';
 
@@ -405,7 +405,8 @@ class Imagify_Files_Stats {
 		}
 
 		$table_name = $files_db->get_table_name();
-		$size       = round( $wpdb->get_var( "SELECT SUM( original_size ) FROM $table_name" ) ); // WPCS: unprepared SQL ok.
+		$sql        = $wpdb->get_var( "SELECT SUM( original_size ) FROM $table_name" ); // WPCS: unprepared SQL ok.
+		$size       = is_null( $sql ) ? 0 : round( $sql );
 
 		return $size;
 	}
@@ -435,7 +436,8 @@ class Imagify_Files_Stats {
 		}
 
 		$table_name = $files_db->get_table_name();
-		$average    = round( $wpdb->get_var( "SELECT AVG( size ) AS average_size_per_month FROM ( SELECT SUM( original_size ) AS size FROM $table_name GROUP BY YEAR( file_date ), MONTH( file_date ) ) AS size_per_month" ) ); // WPCS: unprepared SQL ok.
+		$sql        = $wpdb->get_var( "SELECT AVG( size ) AS average_size_per_month FROM ( SELECT SUM( original_size ) AS size FROM $table_name GROUP BY YEAR( file_date ), MONTH( file_date ) ) AS size_per_month" ); // WPCS: unprepared SQL ok.
+		$average    = is_null( $sql ) ? 0 : round( $sql );
 
 		return $average;
 	}
@@ -459,7 +461,7 @@ class Imagify_Files_Stats {
 	 * @return string         Fallback to 'all' if the status is not valid.
 	 */
 	public static function validate_status( $status = 'all' ) {
-		$statuses = array(
+		$statuses = [
 			'all'               => 1,
 			'success'           => 1,
 			'already_optimized' => 1,
@@ -467,7 +469,7 @@ class Imagify_Files_Stats {
 			'none'              => 1,
 			'optimized'         => 1,
 			'unoptimized'       => 1,
-		);
+		];
 
 		return isset( $statuses[ $status ] ) ? $status : 'all';
 	}

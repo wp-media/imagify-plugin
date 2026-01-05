@@ -1,25 +1,31 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-?>
+defined( 'ABSPATH' ) || exit;
 
+$pos        = strpos( $data['plan_label'], '_' );
+$plan_label = false !== $pos ? substr( $data['plan_label'], 0, $pos ) : $data['plan_label'];
+?>
 <div class="imagify-admin-bar-quota">
 	<div class="imagify-abq-row">
 		<?php if ( $data['plan_with_quota'] ) : ?>
-		<div class="imagify-meteo-icon"><?php echo $data['quota_icon']; ?></div>
+		<div class="imagify-meteo-icon"><?php echo $data['quota_icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
 		<?php endif; ?>
 		<div class="imagify-account">
 			<p class="imagify-meteo-title"><?php esc_html_e( 'Account status', 'imagify' ); ?></p>
-			<p class="imagify-meteo-subs"><?php esc_html_e( 'Your subscription:', 'imagify' ); ?> &nbsp;<strong class="imagify-user-plan"><?php echo $data['plan_label']; ?></strong></p>
+			<p class="imagify-meteo-subs"><?php esc_html_e( 'Your subscription:', 'imagify' ); ?> &nbsp;<strong class="imagify-user-plan"><?php echo esc_html( $plan_label ); ?></strong></p>
 		</div>
 	</div>
 	<?php if ( $data['plan_with_quota'] ) : ?>
 	<div class="imagify-abq-row">
 		<div class="imagify-space-left">
-			<p><?php
+			<p>
+			<?php
 				printf(
 				// translators: %s = percentage.
-				__( 'You have %s space credit left', 'imagify' ), '<span class="imagify-unconsumed-percent">' . $data['unconsumed_quota'] . '%</span>' );
-				?></p>
+					esc_html__( 'You have %s space credit left', 'imagify' ),
+					'<span class="imagify-unconsumed-percent">' . esc_html( $data['unconsumed_quota'] ) . '%</span>'
+				);
+			?>
+			</p>
 			<div class="<?php echo esc_attr( $data['quota_class'] ); ?>">
 				<div style="width: <?php echo esc_attr( $data['unconsumed_quota'] ); ?>%;" class="imagify-unconsumed-bar imagify-progress"></div>
 			</div>
@@ -33,9 +39,9 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		<?php elseif ( 0 === $data['unconsumed_quota'] ) : ?>
 		<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong><?php esc_html_e( 'Oops, It\'s Over!', 'imagify' ); ?></strong></p>
 		<?php endif; ?>
-		<p><?php echo $data['text']; ?></p>
-		<p class="center txt-center text-center"><a class="imagify-upsell-admin-bar-button" href="<?php echo esc_url( $data['upgrade_link'] ); ?>" target="_blank"><?php echo $data['button_text']; ?></a></p>
-		<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-admin-bar' ) ); ?>" class="imagify-notice-dismiss imagify-upsell-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
+		<p><?php echo esc_html( $data['text'] ); ?></p>
+		<p class="center txt-center text-center"><a class="imagify-upsell-admin-bar-button" href="<?php echo esc_url( $data['upgrade_link'] ); ?>" target="_blank"><?php echo esc_html( $data['button_text'] ); ?></a></p>
+		<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-admin-bar' ) ); ?>" class="imagify-notice-dismiss imagify-upsell-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>
 	<?php endif; ?>
 </div>

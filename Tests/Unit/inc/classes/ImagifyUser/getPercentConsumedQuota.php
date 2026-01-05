@@ -23,7 +23,9 @@ class Test_GetPercentConsumedQuota extends TestCase {
 	public function testShouldReturnZeroWhenCouldNotFetchUserData() {
 		$wp_error = new WP_Error( 'error_id', 'Error Message' );
 
+		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $wp_error );
+		Functions\when( 'set_transient')->justReturn();
 		Functions\expect( 'imagify_round_half_five' )->never();
 
 		$this->assertSame( ( new User() )->get_percent_consumed_quota(), 0 );
@@ -47,15 +49,17 @@ class Test_GetPercentConsumedQuota extends TestCase {
 			'is_monthly'                   => true,
 		];
 
+		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_user' )->justReturn( $userData );
+		Functions\when( 'set_transient')->justReturn();
 		Functions\expect( 'imagify_round_half_five' )
 			->twice()
 			->with( 0 ) // extra_quota_consumed.
 			->andReturn( 0.0 );
 
 		$imagify_data_mock = Mockery::mock( Imagify_Data::class );
-		// Change the Imagify_Data::$_instance to the mock.
-		$this->setPropertyValue( '_instance', Imagify_Data::class, $imagify_data_mock );
+		// Change the Imagify_Data::$instance to the mock.
+		$this->setPropertyValue( 'instance', Imagify_Data::class, $imagify_data_mock );
 
 		$imagify_data_mock->shouldReceive( 'get' )
 			->atMost()

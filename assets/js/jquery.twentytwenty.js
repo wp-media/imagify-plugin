@@ -211,7 +211,7 @@
 						modalHtml += '<img class="imagify-img-after" alt="" width="' + settings.width + '" height="' + settings.height + '">';
 					modalHtml += '</div>';
 					modalHtml += '<div class="imagify-comparison-levels">';
-						modalHtml += '<div class="imagify-c-level imagify-level-original go-left">';
+						modalHtml += '<div class="imagify-c-level imagify-level-original go-left imagify-original-fize-size">';
 							modalHtml += '<p class="imagify-c-level-row">';
 								modalHtml += '<span class="label">' + imagifyTTT.labels.filesize + '</span>';
 								modalHtml += '<span class="value level">' + settings.originalSize + '</span>';
@@ -515,7 +515,7 @@
 		// If shown image > 360, use twentytwenty.
 		if ( imagifyTTT.imageWidth > imagifyTTT.widthLimit && oriSource.src ) {
 
-			filesize = $( '.misc-pub-filesize strong' ).text();
+			filesize = $( '#imagify-full-optimized-size' ).val();
 			saving   = $( '.imagify-data-item .imagify-chart-value' ).text();
 
 			// Create button to trigger.
@@ -574,7 +574,7 @@
 				originalUrl:   $this.data( 'backup-src' ),
 				optimizedUrl:  $this.data( 'full-src' ),
 				originalSize:  $datas.find( '.original' ).text(),
-				optimizedSize: $datas.find( '.imagify-data-item .big' ).text(),
+				optimizedSize: $datas.find( '#imagify_data_sum .big' ).text(),
 				saving:        $datas.find( '.imagify-chart-value' ).text(),
 				modalAppendTo: $this.closest( '.column-primary' ),
 				trigger:       $this,
@@ -630,7 +630,7 @@
 							originalUrl:   originalSrc,
 							optimizedUrl:  $( '#imagify-full-src' ).val(),
 							originalSize:  $( '#imagify-original-size' ).val(),
-							optimizedSize: $datas.find( '.imagify-data-item .big' ).text(),
+							optimizedSize: $datas.find( '#imagify_data_sum .big' ).text(),
 							saving:        $datas.find( '.imagify-chart-value' ).text(),
 							modalAppendTo: $( '.media-frame-content .thumbnail-image' ),
 							trigger:       $( '#imagify-media-frame-comparison-btn' ),

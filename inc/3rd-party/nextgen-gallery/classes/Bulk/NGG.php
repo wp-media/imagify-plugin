@@ -35,19 +35,22 @@ class NGG extends AbstractBulk {
 		$storage   = C_Gallery_Storage::get_instance();
 		$ngg_table = $wpdb->prefix . 'ngg_pictures';
 		$data      = [];
-		$images    = $wpdb->get_results( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
-			SELECT DISTINCT picture.pid as id, picture.filename, idata.optimization_level, idata.status, idata.data
-			FROM $ngg_table as picture
-			LEFT JOIN $wpdb->ngg_imagify_data as idata
-			ON picture.pid = idata.pid
-			WHERE idata.pid IS NULL
-				OR idata.optimization_level != %d
-				OR idata.status = 'error'
-			LIMIT %d",
-			$optimization_level,
-			imagify_get_unoptimized_attachment_limit()
-		), ARRAY_A );
+		$images    = $wpdb->get_results(
+			$wpdb->prepare( // WPCS: unprepared SQL ok.
+				"
+				SELECT DISTINCT picture.pid as id, picture.filename, idata.optimization_level, idata.status, idata.data
+				FROM $ngg_table as picture
+				LEFT JOIN $wpdb->ngg_imagify_data as idata
+				ON picture.pid = idata.pid
+				WHERE idata.pid IS NULL
+					OR idata.optimization_level != %d
+					OR idata.status = 'error'
+				LIMIT %d",
+				$optimization_level,
+				imagify_get_unoptimized_attachment_limit()
+			),
+			ARRAY_A
+		);
 
 		if ( ! $images ) {
 			return [];
@@ -94,16 +97,17 @@ class NGG extends AbstractBulk {
 			}
 
 			$data[] = $id;
-		} // End foreach().
+		}
 
 		return $data;
 	}
 
 	/**
-	 * Get ids of all optimized media without WebP versions.
+	 * Get ids of all optimized media without next-gen versions.
 	 *
-	 * @since 1.9
-	 * @since 1.9.5 The method doesn't return the IDs directly anymore.
+	 * @since 2.2
+	 *
+	 * @param string $format Format we are looking for. (webp|avif).
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.
@@ -113,30 +117,37 @@ class NGG extends AbstractBulk {
 	 *     }
 	 * }
 	 */
-	public function get_optimized_media_ids_without_webp() {
+	public function get_optimized_media_ids_without_format( $format ) {
 		global $wpdb;
 
 		$this->set_no_time_limit();
 
-		$storage     = C_Gallery_Storage::get_instance();
-		$ngg_table   = $wpdb->prefix . 'ngg_pictures';
-		$data_table  = DB::get_instance()->get_table_name();
-		$webp_suffix = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::WEBP_SUFFIX' );
-		$files       = $wpdb->get_col( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
-			SELECT ngg.pid
-			FROM $ngg_table as ngg
-			INNER JOIN $data_table AS data
-				ON ( ngg.pid = data.pid )
-			WHERE
-				( data.status = 'success' OR data.status = 'already_optimized' )
-				AND data.data NOT LIKE %s
-			ORDER BY ngg.pid DESC",
-			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
-		) );
+		$storage    = C_Gallery_Storage::get_instance();
+		$ngg_table  = $wpdb->prefix . 'ngg_pictures';
+		$data_table = DB::get_instance()->get_table_name();
+		$suffix     = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::WEBP_SUFFIX' );
+
+		if ( 'avif' === get_imagify_option( 'optimization_format' ) ) {
+			$suffix = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::AVIF_SUFFIX' );
+		}
+
+		$files = $wpdb->get_col(
+			$wpdb->prepare( // WPCS: unprepared SQL ok.
+				"
+				SELECT ngg.pid
+				FROM $ngg_table as ngg
+				INNER JOIN $data_table AS data
+					ON ( ngg.pid = data.pid )
+				WHERE
+					( data.status = 'success' OR data.status = 'already_optimized' )
+					AND data.data NOT LIKE %s
+				ORDER BY ngg.pid DESC",
+				'%' . $wpdb->esc_like( $suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+			)
+		);
 
 		$wpdb->flush();
-		unset( $ngg_table, $data_table, $webp_suffix );
+		unset( $ngg_table, $data_table, $suffix );
 
 		$data = [
 			'ids'    => [],
@@ -163,42 +174,48 @@ class NGG extends AbstractBulk {
 			$backup_path = get_imagify_ngg_attachment_backup_path( $file_path );
 
 			if ( ! $this->filesystem->exists( $backup_path ) ) {
-				// No backup, no WebP.
+				// No backup, no next-gen.
 				$data['errors']['no_backup'][] = $file_id;
 				continue;
 			}
 
 			$data['ids'][] = $file_id;
-		} // End foreach().
+		}
 
 		return $data;
 	}
 
 	/**
-	 * Tell if there are optimized media without WebP versions.
+	 * Tell if there are optimized media without next-gen versions.
 	 *
-	 * @since 1.9
+	 * @since 2.2
 	 *
 	 * @return int The number of media.
 	 */
-	public function has_optimized_media_without_webp() {
+	public function has_optimized_media_without_nextgen() {
 		global $wpdb;
 
-		$ngg_table   = $wpdb->prefix . 'ngg_pictures';
-		$data_table  = DB::get_instance()->get_table_name();
-		$webp_suffix = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::WEBP_SUFFIX' );
+		$ngg_table  = $wpdb->prefix . 'ngg_pictures';
+		$data_table = DB::get_instance()->get_table_name();
+		$suffix     = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::WEBP_SUFFIX' );
 
-		return (int) $wpdb->get_var( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
-			SELECT COUNT(ngg.pid)
-			FROM $ngg_table as ngg
-			INNER JOIN $data_table AS data
-				ON ( ngg.pid = data.pid )
-			WHERE
-				( data.status = 'success' OR data.status = 'already_optimized' )
-				AND data.data NOT LIKE %s",
-			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
-		) );
+		if ( 'avif' === get_imagify_option( 'optimization_format' ) ) {
+			$suffix = constant( imagify_get_optimization_process_class_name( 'ngg' ) . '::AVIF_SUFFIX' );
+		}
+
+		return (int) $wpdb->get_var(
+			$wpdb->prepare( // WPCS: unprepared SQL ok.
+				"
+				SELECT COUNT(ngg.pid)
+				FROM $ngg_table as ngg
+				INNER JOIN $data_table AS data
+					ON ( ngg.pid = data.pid )
+				WHERE
+					( data.status = 'success' OR data.status = 'already_optimized' )
+					AND data.data NOT LIKE %s",
+				'%' . $wpdb->esc_like( $suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+			)
+		);
 	}
 
 	/**

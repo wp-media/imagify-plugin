@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 add_filter( 'attachment_fields_to_edit', '_imagify_attachment_fields_to_edit', IMAGIFY_INT_MAX, 2 );
 /**
@@ -25,13 +25,13 @@ function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
 
 	$process = imagify_get_optimization_process( $post->ID, 'wp' );
 
-	$form_fields['imagify'] = array(
+	$form_fields['imagify'] = [
 		'label'         => 'Imagify',
 		'input'         => 'html',
 		'html'          => get_imagify_media_column_content( $process ),
 		'show_in_edit'  => true,
 		'show_in_modal' => true,
-	);
+	];
 
 	return $form_fields;
 }
@@ -85,14 +85,17 @@ function _imagify_add_actions_to_media_list_row( $actions, $post ) {
 	}
 
 	// Else, add action link for comparison (JS triggered).
-	$actions['imagify-compare'] = Imagify_Views::get_instance()->get_template( 'button/compare-images', [
-		'url'          => get_edit_post_link( $media->get_id() ) . '#imagify-compare',
-		'backup_url'   => $media->get_backup_url(),
-		'original_url' => $media->get_fullsize_url(),
-		'media_id'     => $media->get_id(),
-		'width'        => $dimensions['width'],
-		'height'       => $dimensions['height'],
-	] );
+	$actions['imagify-compare'] = Imagify_Views::get_instance()->get_template(
+		'button/compare-images',
+		[
+			'url'          => get_edit_post_link( $media->get_id() ) . '#imagify-compare',
+			'backup_url'   => $media->get_backup_url(),
+			'original_url' => $media->get_fullsize_url(),
+			'media_id'     => $media->get_id(),
+			'width'        => $dimensions['width'],
+			'height'       => $dimensions['height'],
+		]
+	);
 
 	return $actions;
 }

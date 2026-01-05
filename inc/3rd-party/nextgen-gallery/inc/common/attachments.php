@@ -1,8 +1,8 @@
 <?php
-use \Imagify\Optimization\File;
-use \Imagify\ThirdParty\NGG;
+use Imagify\Optimization\File;
+use Imagify\ThirdParty\NGG;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 add_action( 'ngg_after_new_images_added', '_imagify_ngg_optimize_attachment', IMAGIFY_INT_MAX, 2 );
 /**
@@ -110,21 +110,24 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	$wp_full_size_data  = $wp_data->get_size_data();
 	$optimization_level = $wp_data->get_optimization_level();
 
-	NGG\DB::get_instance()->update( $image->pid, [
-		'pid'                => $image->pid,
-		'optimization_level' => $optimization_level,
-		'status'             => $wp_data->get_optimization_status(),
-		'data'               => [
-			'sizes' => [
-				'full' => $wp_full_size_data,
+	NGG\DB::get_instance()->update(
+		$image->pid,
+		[
+			'pid'                => $image->pid,
+			'optimization_level' => $optimization_level,
+			'status'             => $wp_data->get_optimization_status(),
+			'data'               => [
+				'sizes' => [
+					'full' => $wp_full_size_data,
+				],
+				'stats' => [
+					'original_size'  => $wp_full_size_data['original_size'],
+					'optimized_size' => $wp_full_size_data['optimized_size'],
+					'percent'        => $wp_full_size_data['percent'],
+				],
 			],
-			'stats' => [
-				'original_size'  => $wp_full_size_data['original_size'],
-				'optimized_size' => $wp_full_size_data['optimized_size'],
-				'percent'        => $wp_full_size_data['percent'],
-			],
-		],
-	] );
+		]
+	);
 
 	$ngg_process = imagify_get_optimization_process( $image->pid, 'ngg' );
 
@@ -150,74 +153,80 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	}
 
 	/**
-	 * WebP for the full size.
+	 * Next-gen for the full size.
 	 * Look for an existing copy locally:
 	 * - if it exists, copy it (and its optimization data),
 	 * - if not, add it to the optimization queue.
 	 */
-	$add_full_webp = $wp_media->is_image() && get_imagify_option( 'convert_to_webp' );
+	$add_full_nextgen = $wp_media->is_image();
 
-	if ( $add_full_webp ) {
-		// It's a supported image and WebP conversion is enabled.
-		$wp_full_path_webp = false;
-		$webp_size_name    = 'full' . $wp_process::WEBP_SUFFIX;
-		$wp_webp_data      = $wp_data->get_size_data( $webp_size_name );
+	if ( $add_full_nextgen ) {
+		$formats = [
+			'avif' => $wp_process::AVIF_SUFFIX,
+			'webp' => $wp_process::WEBP_SUFFIX,
+		];
 
-		// Get the path to the WebP image if it exists.
-		$wp_full_path_webp = $wp_process->get_fullsize_file()->get_path_to_webp();
+		foreach ( $formats as $extension => $suffix ) {
+			$wp_full_path_nextgen = false;
+			$nextgen_size_name    = 'full' . $suffix;
+			$wp_nextgen_data      = $wp_data->get_size_data( $nextgen_size_name );
 
-		if ( $wp_full_path_webp && ! $filesystem->exists( $wp_full_path_webp ) ) {
-			$wp_full_path_webp = false;
-		}
+			// Get the path to the next-gen image if it exists.
+			$wp_full_path_nextgen = $wp_process->get_fullsize_file()->get_path_to_nextgen( $extension );
 
-		if ( $wp_full_path_webp ) {
-			// We know we have a WebP version. Make sure we have the right data.
-			$wp_webp_data['success'] = true;
+			if ( $wp_full_path_nextgen && ! $filesystem->exists( $wp_full_path_nextgen ) ) {
+				$wp_full_path_nextgen = false;
+			}
 
-			if ( empty( $wp_webp_data['original_size'] ) ) {
-				// The WebP data is missing.
-				$full_size_weight = $wp_full_size_data['original_size'];
+			if ( $wp_full_path_nextgen ) {
+				// We know we have a next-gen version. Make sure we have the right data.
+				$wp_nextgen_data['success'] = true;
 
-				if ( ! $full_size_weight && $wp_backup_path ) {
-					// For some reason we don't have the original file weight, but we can get it from the backup file.
-					$full_size_weight = $filesystem->size( $wp_backup_path );
+				if ( empty( $wp_nextgen_data['original_size'] ) ) {
+					// The next-gen data is missing.
+					$full_size_weight = $wp_full_size_data['original_size'];
 
-					if ( $full_size_weight ) {
-						$wp_webp_data['original_size'] = $full_size_weight;
+					if ( ! $full_size_weight && $wp_backup_path ) {
+						// For some reason we don't have the original file weight, but we can get it from the backup file.
+						$full_size_weight = $filesystem->size( $wp_backup_path );
+
+						if ( $full_size_weight ) {
+							$wp_nextgen_data['original_size'] = $full_size_weight;
+						}
 					}
 				}
-			}
 
-			if ( ! empty( $wp_webp_data['original_size'] ) && empty( $wp_webp_data['optimized_size'] ) ) {
-				// The WebP file size.
-				$wp_webp_data['optimized_size'] = $filesystem->size( $wp_full_path_webp );
-			}
+				if ( ! empty( $wp_nextgen_data['original_size'] ) && empty( $wp_nextgen_data['optimized_size'] ) ) {
+					// The next-gen file size.
+					$wp_nextgen_data['optimized_size'] = $filesystem->size( $wp_full_path_nextgen );
+				}
 
-			if ( empty( $wp_webp_data['original_size'] ) || empty( $wp_webp_data['optimized_size'] ) ) {
-				// We must have both original and optimized sizes.
-				$wp_webp_data = [];
-			}
-		}
-
-		if ( $wp_full_path_webp && $wp_webp_data ) {
-			// We have the file and the data.
-			// Copy the file.
-			$ngg_full_file      = new File( $ngg_media->get_raw_fullsize_path() );
-			$ngg_full_path_webp = $ngg_full_file->get_path_to_webp(); // Destination.
-
-			if ( $ngg_full_path_webp ) {
-				$copied = $filesystem->copy( $wp_full_path_webp, $ngg_full_path_webp, true );
-
-				if ( $copied ) {
-					// Success.
-					$filesystem->chmod_file( $ngg_full_path_webp );
-					$add_full_webp = false;
+				if ( empty( $wp_nextgen_data['original_size'] ) || empty( $wp_nextgen_data['optimized_size'] ) ) {
+					// We must have both original and optimized sizes.
+					$wp_nextgen_data = [];
 				}
 			}
 
-			if ( ! $add_full_webp ) {
-				// The WebP file has been successfully copied: now, copy the data.
-				$ngg_process->get_data()->update_size_optimization_data( $webp_size_name, $wp_webp_data );
+			if ( $wp_full_path_nextgen && $wp_nextgen_data ) {
+				// We have the file and the data.
+				// Copy the file.
+				$ngg_full_file         = new File( $ngg_media->get_raw_fullsize_path() );
+				$ngg_full_path_nextgen = $ngg_full_file->get_path_to_nextgen( $extension ); // Destination.
+
+				if ( $ngg_full_path_nextgen ) {
+					$copied = $filesystem->copy( $wp_full_path_nextgen, $ngg_full_path_nextgen, true );
+
+					if ( $copied ) {
+						// Success.
+						$filesystem->chmod_file( $ngg_full_path_nextgen );
+						$add_full_nextgen = false;
+					}
+				}
+
+				if ( ! $add_full_nextgen ) {
+					// The next-gen file has been successfully copied: now, copy the data.
+					$ngg_process->get_data()->update_size_optimization_data( $nextgen_size_name, $wp_nextgen_data );
+				}
 			}
 		}
 	}
@@ -226,9 +235,20 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 	$sizes = $ngg_media->get_media_files();
 	unset( $sizes['full'] );
 
-	if ( $add_full_webp ) {
-		// We could not use a local WebP copy: ask for a new one.
-		$sizes[ $webp_size_name ] = [];
+	if ( $add_full_nextgen ) {
+		// We could not use a local next-gen copy: ask for a new one.
+
+		$formats = imagify_nextgen_images_formats();
+
+		foreach ( $formats as $format ) {
+			if ( 'webp' === $format ) {
+				$suffix = $wp_process::WEBP_SUFFIX;
+			} elseif ( 'avif' === $format ) {
+				$suffix = $wp_process::AVIF_SUFFIX;
+			}
+
+			$sizes[ 'full' . $suffix ] = [];
+		}
 	}
 
 	if ( ! $sizes ) {
@@ -282,9 +302,10 @@ function imagify_ngg_cleanup_after_media_deletion( $image_id, $image ) {
 
 	/**
 	 * The backup file has already been deleted by NGG.
-	 * Delete the WebP versions and the optimization data.
+	 * Delete the next-gen versions and the optimization data.
 	 */
-	$process->delete_webp_files();
+	$process->delete_nextgen_files();
+
 	$process->get_data()->delete_optimization_data();
 }
 

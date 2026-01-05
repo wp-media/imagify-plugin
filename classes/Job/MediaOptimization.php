@@ -10,7 +10,7 @@ use WP_Error;
  *
  * @since 1.9
  */
-class MediaOptimization extends \Imagify_Abstract_Background_Process {
+final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	use InstanceGetterTrait;
 
 	/**
@@ -24,7 +24,7 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	/**
 	 * The optimization process instance.
 	 *
-	 * @var   ProcessInterface
+	 * @var   ?ProcessInterface
 	 * @since 1.9
 	 */
 	protected $optimization_process;
@@ -102,7 +102,7 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 		 * @param ProcessInterface $process  The optimization process.
 		 * @param array            $item     The item being processed. See $this->task().
 		 */
-		$data = apply_filters( 'imagify_before_optimize', [], $wp_error, $this->optimization_process, $item );
+		$data = apply_filters( 'imagify_before_optimize', [], $wp_error, $this->optimization_process, $item ); // @phpstan-ignore-line
 
 		if ( is_wp_error( $data ) ) {
 			$wp_error = $data;
@@ -137,7 +137,7 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 		 * @param ProcessInterface $process  The optimization process.
 		 * @param array            $item     The item being processed. See $this->task().
 		 */
-		$data = apply_filters( "imagify_before_{$hook_suffix}", [], $wp_error, $this->optimization_process, $item );
+		$data = apply_filters( "imagify_before_{$hook_suffix}", [], $wp_error, $this->optimization_process, $item ); // @phpstan-ignore-line
 
 		if ( is_wp_error( $data ) ) {
 			$wp_error = $data;
@@ -187,8 +187,8 @@ class MediaOptimization extends \Imagify_Abstract_Background_Process {
 				$item['error'] = $data;
 
 			} elseif ( 'already_optimized' === $data['status'] ) {
-				// Status is "already_optimized", try to create WebP versions only.
-				$item['sizes'] = array_filter( $item['sizes'], [ $this->optimization_process, 'is_size_webp' ] );
+				// Status is "already_optimized", try to create next-gen versions only.
+				$item['sizes'] = array_filter( $item['sizes'], [ $this->optimization_process, 'is_size_next_gen' ] );
 
 			} elseif ( 'success' !== $data['status'] ) {
 				// Don't go further if the full size has not the "success" status.

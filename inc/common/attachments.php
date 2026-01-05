@@ -22,7 +22,7 @@ function imagify_trigger_delete_attachment_hook( $post_id ) {
 
 add_action( 'imagify_delete_media', 'imagify_cleanup_after_media_deletion' );
 /**
- * Delete the backup file and the WebP files when an attachement is deleted.
+ * Delete the backup file and the next-gen files when an attachement is deleted.
  *
  * @since  1.9
  * @author Grégory Viguier
@@ -36,15 +36,16 @@ function imagify_cleanup_after_media_deletion( $process ) {
 
 	/**
 	 * The optimization data will be automatically deleted by WP (post metas).
-	 * Delete the WebP versions and the backup file.
+	 * Delete the Nextgen versions and the backup file.
 	 */
-	$process->delete_webp_files();
+	$process->delete_nextgen_files( false, true );
+
 	$process->delete_backup();
 }
 
-add_filter( 'ext2type', 'imagify_add_webp_type' );
+add_filter( 'ext2type', 'imagify_add_avif_type' );
 /**
- * Add the WebP extension to wp_get_ext_types().
+ * Add the AVIF extension to wp_get_ext_types().
  *
  * @since  1.9
  * @author Grégory Viguier
@@ -52,9 +53,9 @@ add_filter( 'ext2type', 'imagify_add_webp_type' );
  * @param  array $ext2type Multi-dimensional array with extensions for a default set of file types.
  * @return array
  */
-function imagify_add_webp_type( $ext2type ) {
-	if ( ! in_array( 'webp', $ext2type['image'], true ) ) {
-		$ext2type['image'][] = 'webp';
+function imagify_add_avif_type( $ext2type ) {
+	if ( ! in_array( 'avif', $ext2type['image'], true ) ) {
+		$ext2type['image'][] = 'avif';
 	}
 	return $ext2type;
 }
@@ -67,3 +68,34 @@ function imagify_add_webp_type( $ext2type ) {
  * @author Grégory Viguier
  */
 add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'get_resizing_threshold' ], IMAGIFY_INT_MAX );
+
+/**
+ * Add filters to manage images formats that will be generated
+ *
+ * @return array
+ */
+function imagify_nextgen_images_formats() {
+	$value   = get_imagify_option( 'optimization_format' );
+	$formats = [];
+
+	if ( 'off' !== $value ) {
+		$formats[ $value ] = $value;
+	}
+
+	$default = $formats;
+
+	/**
+	 * Filters the array of next gen formats to generate with Imagify
+	 *
+	 * @since 2.2
+	 *
+	 * @param array $formats Array of image formats
+	 */
+	$formats = apply_filters( 'imagify_nextgen_images_formats', $formats );
+
+	if ( ! is_array( $formats ) ) {
+		$formats = $default;
+	}
+
+	return $formats;
+}

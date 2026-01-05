@@ -10,7 +10,7 @@ use Imagify\Bulk\Bulk;
  *
  * @since 1.9.3
  */
-class Actions {
+final class Actions {
 	use InstanceGetterTrait;
 
 	/**
@@ -174,7 +174,7 @@ class Actions {
 		}
 
 		$remaining = 0;
-		$total     = get_transient( 'imagify_missing_webp_total' );
+		$total     = get_transient( 'imagify_missing_next_gen_total' );
 
 		if ( false === $total ) {
 			return $response;
@@ -182,8 +182,14 @@ class Actions {
 
 		$bulk = Bulk::get_instance();
 
+		$format = get_imagify_option( 'optimization_format' );
+
+		if ( 'off' === $format ) {
+			return $response;
+		}
+
 		foreach ( $data[ $imagifybeat_id ] as $context ) {
-			$media     = $bulk->get_bulk_instance( $context )->get_optimized_media_ids_without_webp();
+			$media      = $bulk->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
 			$remaining += count( $media['ids'] );
 		}
 
@@ -252,9 +258,11 @@ class Actions {
 		}
 
 		$admin_ajax_post = \Imagify_Admin_Ajax_Post::get_instance();
-		$list_table      = new \Imagify_Files_List_Table( [
-			'screen' => 'imagify-files',
-		] );
+		$list_table      = new \Imagify_Files_List_Table(
+			[
+				'screen' => 'imagify-files',
+			]
+		);
 
 		// Sanitize received data and grab some other info.
 		foreach ( $response[ $imagifybeat_id ] as $context_id => $media_atts ) {
@@ -294,9 +302,12 @@ class Actions {
 
 			// Sanitize the IDs: IDs come as strings, prefixed with an undescore character (to prevent JavaScript from screwing everything).
 			$media_ids = array_keys( $media_statuses );
-			$media_ids = array_map( function( $media_id ) {
-				return (int) substr( $media_id, 1 );
-			}, $media_ids );
+			$media_ids = array_map(
+				function ( $media_id ) {
+					return substr( $media_id, 1 );
+				},
+				$media_ids
+			);
 			$media_ids = array_filter( $media_ids );
 
 			if ( ! $media_ids ) {

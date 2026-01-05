@@ -1,7 +1,7 @@
 <?php
-use \Imagify\ThirdParty\NGG\DB;
+use Imagify\ThirdParty\NGG\DB;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Count number of attachments.
@@ -64,7 +64,7 @@ function imagify_ngg_count_optimized_attachments() {
 
 	$ngg_db = DB::get_instance();
 	$key    = $ngg_db->get_primary_key();
-	$count  = (int) $ngg_db->get_var_in( "COUNT($key)", 'status', array( 'success', 'already_optimized' ) );
+	$count  = (int) $ngg_db->get_var_in( "COUNT($key)", 'status', [ 'success', 'already_optimized' ] );
 
 	return $count;
 }
@@ -160,7 +160,7 @@ function imagify_ngg_count_saving_data( $attachments ) {
 			$original_data = $attachment_data['sizes']['full'];
 
 			// Increment the original sizes.
-			$original_size  += $original_data['original_size']  ? $original_data['original_size']  : 0;
+			$original_size  += $original_data['original_size'] ? $original_data['original_size'] : 0;
 			$optimized_size += $original_data['optimized_size'] ? $original_data['optimized_size'] : 0;
 
 			unset( $attachment_data['sizes']['full'], $original_data );
@@ -168,7 +168,7 @@ function imagify_ngg_count_saving_data( $attachments ) {
 			// Increment the thumbnails sizes.
 			foreach ( $attachment_data['sizes'] as $size_data ) {
 				if ( ! empty( $size_data['success'] ) ) {
-					$original_size  += $size_data['original_size']  ? $size_data['original_size']  : 0;
+					$original_size  += $size_data['original_size'] ? $size_data['original_size'] : 0;
 					$optimized_size += $size_data['optimized_size'] ? $size_data['optimized_size'] : 0;
 				}
 			}
@@ -186,13 +186,13 @@ function imagify_ngg_count_saving_data( $attachments ) {
 			$wpdb->flush();
 		} else {
 			// Save one request, don't go back to the beginning of the loop.
-			$attachments = array();
+			$attachments = [];
 		}
-	} // End while().
+	}
 
-	return array(
+	return [
 		'count'          => $count,
 		'original_size'  => $original_size,
 		'optimized_size' => $optimized_size,
-	);
+	];
 }

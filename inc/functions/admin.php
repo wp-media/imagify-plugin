@@ -2,7 +2,7 @@
 use Imagify\Notices\Notices;
 use Imagify\User\User;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Tell if the current screen is what we're looking for.
@@ -90,8 +90,8 @@ function imagify_is_screen( $identifier ) {
  */
 function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 	if ( is_array( $arg ) ) {
-		$id      = isset( $arg['attachment_id'] )      ? $arg['attachment_id']      : 0;
-		$context = isset( $arg['context'] )            ? $arg['context']            : 'wp';
+		$id      = isset( $arg['attachment_id'] ) ? $arg['attachment_id'] : 0;
+		$context = isset( $arg['context'] ) ? $arg['context'] : 'wp';
 		$level   = isset( $arg['optimization_level'] ) ? $arg['optimization_level'] : '';
 	}
 
@@ -103,11 +103,11 @@ function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 		case 'optimize-missing-sizes':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_optimize_missing_sizes&attachment_id=' . $id . '&context=' . $context ), 'imagify-optimize-missing-sizes-' . $id . '-' . $context );
 
-		case 'generate-webp-versions':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_generate_webp_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-generate-webp-versions-' . $id . '-' . $context );
+		case 'generate-nextgen-versions':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_generate_nextgen_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-generate-nextgen-versions-' . $id . '-' . $context );
 
-		case 'delete-webp-versions':
-			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_delete_webp_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-delete-webp-versions-' . $id . '-' . $context );
+		case 'delete-nextgen-versions':
+			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_delete_nextgen_versions&attachment_id=' . $id . '&context=' . $context ), 'imagify-delete-nextgen-versions-' . $id . '-' . $context );
 
 		case 'optimize':
 		case 'manual-upload': // Deprecated.
@@ -145,15 +145,21 @@ function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 		case 'folder-errors':
 			switch ( $arg ) {
 				case 'wp':
-					return add_query_arg( array(
-						'mode'           => 'list',
-						'imagify-status' => 'errors',
-					), admin_url( 'upload.php' ) );
+					return add_query_arg(
+						[
+							'mode'           => 'list',
+							'imagify-status' => 'errors',
+						],
+						admin_url( 'upload.php' )
+					);
 
 				case 'custom-folders':
-					return add_query_arg( array(
-						'status-filter' => 'errors',
-					), get_imagify_admin_url( 'files-list' ) );
+					return add_query_arg(
+						[
+							'status-filter' => 'errors',
+						],
+						get_imagify_admin_url( 'files-list' )
+					);
 			}
 			/**
 			 * Provide a URL to a page displaying optimization errors for the given context.
@@ -196,10 +202,10 @@ function get_imagify_max_intermediate_image_size() {
 		}
 	}
 
-	return array(
+	return [
 		'width'  => $width,
 		'height' => $height,
-	);
+	];
 }
 
 /**
@@ -213,26 +219,26 @@ function get_imagify_max_intermediate_image_size() {
  * @param  array  $query An array of query arguments (utm_*).
  * @return string The URL.
  */
-function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
+function imagify_get_wp_rocket_url( $path = false, $query = [] ) {
 	$wprocket_url = 'https://wp-rocket.me/';
 
 	// Current lang.
-	$lang = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
+	$lang = imagify_get_current_lang_in( [ 'de', 'es', 'fr', 'it' ] );
 
 	if ( 'en' !== $lang ) {
 		$wprocket_url .= $lang . '/';
 	}
 
 	// URI.
-	$paths = array(
-		'pricing' => array(
+	$paths = [
+		'pricing' => [
 			'de' => 'preise',
 			'en' => 'pricing',
 			'es' => 'precios',
 			'fr' => 'offres',
 			'it' => 'offerte',
-		),
-	);
+		],
+	];
 
 	if ( $path ) {
 		$path = trim( $path, '/' );
@@ -245,11 +251,14 @@ function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
 	}
 
 	// Query args.
-	$query = array_merge( array(
-		'utm_source'   => 'imagify-coupon',
-		'utm_medium'   => 'plugin',
-		'utm_campaign' => 'imagify',
-	), $query );
+	$query = array_merge(
+		[
+			'utm_source'   => 'imagify-coupon',
+			'utm_medium'   => 'plugin',
+			'utm_campaign' => 'imagify',
+		],
+		$query
+	);
 
 	return add_query_arg( $query, $wprocket_url );
 }
@@ -291,7 +300,7 @@ function imagify_die( $message = null ) {
 
 	if ( is_array( $message ) ) {
 		if ( ! empty( $message['error'] ) ) {
-			$message['error']  = imagify_translate_api_message( $message['error'] );
+			$message['error'] = imagify_translate_api_message( $message['error'] );
 		} elseif ( ! empty( $message['detail'] ) ) {
 			$message['detail'] = imagify_translate_api_message( $message['detail'] );
 		}
@@ -313,7 +322,8 @@ function imagify_die( $message = null ) {
 
 	if ( wp_get_referer() ) {
 		$message .= '</p><p>';
-		$message .= sprintf( '<a href="%s">%s</a>',
+		$message .= sprintf(
+			'<a href="%s">%s</a>',
 			esc_url( remove_query_arg( 'updated', wp_get_referer() ) ),
 			/* translators: This sentense already exists in WordPress. */
 			__( 'Go back', 'imagify' )
@@ -321,7 +331,7 @@ function imagify_die( $message = null ) {
 	}
 
 	/* translators: %s is the plugin name. */
-	wp_die( $message, sprintf( __( '%s Failure Notice', 'imagify' ), 'Imagify' ), 403 );
+	wp_die( $message, sprintf( esc_html__( '%s Failure Notice', 'imagify' ), 'Imagify' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 /**
@@ -332,7 +342,7 @@ function imagify_die( $message = null ) {
  * @param string       $message     A message to display in an admin notice once redirected.
  * @param array|string $args_or_url An array of query args to add to the redirection URL. If a string, the complete URL.
  */
-function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
+function imagify_maybe_redirect( $message = false, $args_or_url = [] ) {
 	if ( wp_doing_ajax() ) {
 		return;
 	}
@@ -411,7 +421,7 @@ function imagify_cache_user() {
 		}
 	}
 
-	$data->quota_formatted            = imagify_size_format( $user->quota * pow( 1024, 2 ) );
+	$data->quota_formatted            = imagify_size_format( $user->get_quota() * pow( 1024, 2 ) );
 	$data->next_date_update_formatted = date_i18n( get_option( 'date_format' ), strtotime( $user->next_date_update ) );
 
 	if ( imagify_is_active_for_network() ) {

@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Imagify DB class. It reunites tools to work with the DB.
@@ -61,7 +60,7 @@ class Imagify_DB {
 	 */
 	public static function prepare_values_list( $values ) {
 		$values = esc_sql( (array) $values );
-		$values = array_map( array( __CLASS__, 'quote_string' ), $values );
+		$values = array_map( [ __CLASS__, 'quote_string' ], $values );
 		return implode( ',', $values );
 	}
 
@@ -192,7 +191,7 @@ class Imagify_DB {
 
 		foreach ( self::get_required_wp_metadata_aliases() as $meta_name => $alias ) {
 			if ( $first ) {
-				$first = false;
+				$first   = false;
 				$clause .= "
 			$join JOIN $wpdb->postmeta AS $alias
 				ON ( $id_field = $alias.post_id AND $alias.meta_key = '$meta_name' $special_join_conditions )";
@@ -204,6 +203,61 @@ class Imagify_DB {
 		}
 
 		return $clause;
+	}
+
+
+	/**
+	 * Get the Sub query(exists) clause to use to get only attachments that have the required WP metadata.
+	 * It returns an empty string if the database has no attachments without the required metadada.
+	 *
+	 * @param string $id_field An ID field to match the metadata ID against in the WHERE clause.
+	 *                          Default is the posts table `ID` field, using the `p` alias: `p.ID`.
+	 * @param bool   $test Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 *
+	 * @return string
+	 */
+	public static function get_required_wp_metadata_exist_clause( $id_field = 'p.ID', $test = true ) {
+		global $wpdb;
+
+		if ( $test && ! imagify_has_attachments_without_required_metadata() ) {
+			return '';
+		}
+
+		self::unlimit_joins();
+		$clause = '';
+
+		if ( ! $id_field || ! is_string( $id_field ) ) {
+			$id_field = "$wpdb->posts.ID";
+		}
+		$additional_clause = self::get_required_exist_wp_metadata_where_clause(
+			[
+				'matching' => false,
+				'test'     => false,
+			]
+		);
+
+		$first = true;
+
+		foreach ( self::get_required_wp_metadata_aliases() as $meta_name => $alias ) {
+			if ( $first ) {
+				$first   = false;
+				$clause .= "
+                    EXISTS(
+                        SELECT 1 FROM $wpdb->postmeta AS $alias WHERE
+                        $alias.post_id = $id_field AND $alias.meta_key = '$meta_name'
+                        $additional_clause
+                    )
+                ";
+				continue;
+			}
+
+			$clause .= "
+                    OR NOT EXISTS (
+                    SELECT 1 FROM $wpdb->postmeta AS $alias WHERE
+                    $alias.post_id = $id_field AND $alias.meta_key = '$meta_name')";
+		}
+
+		return "AND( $clause  )";
 	}
 
 	/**
@@ -225,15 +279,18 @@ class Imagify_DB {
 	 * }.
 	 * @return string A query.
 	 */
-	public static function get_required_wp_metadata_where_clause( $args = array() ) {
-		static $query = array();
+	public static function get_required_wp_metadata_where_clause( $args = [] ) {
+		static $query = [];
 
-		$args = imagify_merge_intersect( $args, array(
-			'aliases'  => array(),
-			'matching' => true,
-			'test'     => true,
-			'prepared' => false,
-		) );
+		$args = imagify_merge_intersect(
+			$args,
+			[
+				'aliases'  => [],
+				'matching' => true,
+				'test'     => true,
+				'prepared' => false,
+			]
+		);
 
 		list( $aliases, $matching, $test, $prepared ) = array_values( $args );
 
@@ -242,11 +299,11 @@ class Imagify_DB {
 		}
 
 		if ( $aliases && is_string( $aliases ) ) {
-			$aliases = array(
+			$aliases = [
 				'_wp_attached_file' => $aliases,
-			);
+			];
 		} elseif ( ! is_array( $aliases ) ) {
-			$aliases = array();
+			$aliases = [];
 		}
 
 		$aliases = imagify_merge_intersect( $aliases, self::get_required_wp_metadata_aliases() );
@@ -262,12 +319,116 @@ class Imagify_DB {
 		$extensions = self::get_extensions_where_clause( $args );
 
 		if ( $matching ) {
-			$query[ $key ] = "AND $alias_1.meta_value NOT LIKE '%://%' AND $alias_1.meta_value NOT LIKE '_:\\\\\%' $extensions";
+			$query[ $key ] = "AND $alias_1.meta_value NOT LIKE '%://%' AND $alias_1.meta_value NOT LIKE '_:\\\\\%' AND $extensions";
 		} else {
-			$query[ $key ] = "AND ( $alias_2.meta_value IS NULL OR $alias_1.meta_value IS NULL OR $alias_1.meta_value LIKE '%://%' OR $alias_1.meta_value LIKE '_:\\\\\%' $extensions )";
+			$query[ $key ] = "AND ( $alias_2.meta_value IS NULL OR $alias_1.meta_value IS NULL OR $alias_1.meta_value LIKE '%://%' OR $alias_1.meta_value LIKE '_:\\\\\%' AND $extensions )";
 		}
 
 		return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
+	}
+
+	/**
+	 * Get the SQL part to be used in a WHERE clause, to get only attachments that have (in)valid '_wp_attached_file' and '_wp_attachment_metadata' metadatas.
+	 *  It returns an empty string if the database has no attachments without the required metadada.
+	 *
+	 * @param array $args {
+	 *                    Optional. An array of arguments.
+	 *
+	 *                    string $aliases  The aliases to use for the meta values.
+	 *                    bool   $matching Set to false to get a query to fetch invalid metas.
+	 *                    bool   $test     Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 *                    bool   $prepared Set to true if the query will be prepared with using $wpdb->prepare().
+	 *  }.
+	 * @return string A query.
+	 */
+	public static function get_required_exist_wp_metadata_where_clause( $args = [] ) {
+		static $query = [];
+
+		$args = imagify_merge_intersect(
+			$args,
+			[
+				'aliases'  => [],
+				'matching' => true,
+				'test'     => true,
+				'prepared' => false,
+			]
+		);
+
+		list( $aliases, $matching, $test, $prepared ) = array_values( $args );
+
+		if ( $test && ! imagify_has_attachments_without_required_metadata() ) {
+			return '';
+		}
+
+		if ( $aliases && is_string( $aliases ) ) {
+			$aliases = [
+				'_wp_attached_file' => $aliases,
+			];
+		} elseif ( ! is_array( $aliases ) ) {
+			$aliases = [];
+		}
+
+		$aliases = imagify_merge_intersect( $aliases, self::get_required_wp_metadata_aliases() );
+		$key     = implode( '|', $aliases ) . '|' . (int) $matching;
+
+		if ( isset( $query[ $key ] ) ) {
+			return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
+		}
+
+		unset( $args['prepared'] );
+		$alias_1    = $aliases['_wp_attached_file'];
+		$extensions = self::get_extensions_where_clause( $args );
+
+		if ( $matching ) {
+			$query[ $key ] = "AND $alias_1.meta_value NOT LIKE '%://%' AND $alias_1.meta_value NOT LIKE '_:\\\\\%' OR NOT ( $extensions )";
+		} else {
+			$query[ $key ] = "AND ( $alias_1.meta_value LIKE '%://%' OR $alias_1.meta_value LIKE '_:\\\\\%' OR NOT ( $extensions ) )";
+		}
+
+		return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
+	}
+
+	/**
+	 * Prepare query arguments.
+	 *
+	 * @param array $args {
+	 *                     Optional. An array of arguments.
+	 *
+	 *                     string $aliases  The aliases to use for the meta values.
+	 *                     bool   $matching Set to false to get a query to fetch invalid metas.
+	 *                     bool   $test     Test if the site has attachments without required metadata before returning the query. False to bypass the test and get the query anyway.
+	 *                     bool   $prepared Set to true if the query will be prepared with using $wpdb->prepare().
+	 *   }.
+	 *
+	 * @return array
+	 */
+	private function prepare_query_args( $args ) {
+		return imagify_merge_intersect(
+			$args,
+			[
+				'aliases'  => [],
+				'matching' => true,
+				'test'     => true,
+				'prepared' => false,
+			]
+		);
+	}
+
+	/**
+	 * Generate query.
+	 *
+	 * @param bool   $matching Matching.
+	 * @param string $alias Query alias.
+	 * @param string $regex Query Regex.
+	 *
+	 * @return string
+	 */
+	private function generate_query( $matching, $alias, $regex ) {
+		if ( $matching ) {
+			return "REVERSE (LOWER( $alias.meta_value )) REGEXP '$regex'";
+		}
+
+		return "REVERSE (LOWER( $alias.meta_value )) NOT REGEXP '$regex'";
 	}
 
 	/**
@@ -291,14 +452,11 @@ class Imagify_DB {
 	 */
 	public static function get_extensions_where_clause( $args = false ) {
 		static $extensions;
-		static $query = array();
+		static $query = [];
 
-		$args = imagify_merge_intersect( $args, array(
-			'alias'    => array(),
-			'matching' => true,
-			'test'     => true,
-			'prepared' => false,
-		) );
+		$instance = new self();
+
+		$args = $instance->prepare_query_args( $args );
 
 		list( $alias, $matching, $test, $prepared ) = array_values( $args );
 
@@ -310,9 +468,12 @@ class Imagify_DB {
 			$extensions = array_keys( imagify_get_mime_types() );
 			$extensions = implode( '|', $extensions );
 			$extensions = explode( '|', $extensions );
-			$extensions = array_map(function ( $ex ) {
-				return strrev( $ex );
-			}, $extensions);
+			$extensions = array_map(
+				function ( $ex ) {
+					return strrev( $ex );
+				},
+				$extensions
+			);
 		}
 
 		if ( ! $alias ) {
@@ -328,11 +489,7 @@ class Imagify_DB {
 
 		$regex = '^' . implode( '\..*|^', $extensions ) . '\..*';
 
-		if ( $matching ) {
-			$query[ $key ] = "AND REVERSE (LOWER( $alias.meta_value )) REGEXP '$regex'";
-		} else {
-			$query[ $key ] = "AND REVERSE (LOWER( $alias.meta_value )) NOT REGEXP '$regex'";
-		}
+		$query[ $key ] = $instance->generate_query( $matching, $alias, $regex );
 
 		return $prepared ? str_replace( '%', '%%', $query[ $key ] ) : $query[ $key ];
 	}
@@ -347,10 +504,10 @@ class Imagify_DB {
 	 * @return array An array with the meta name as key and its alias as value.
 	 */
 	public static function get_required_wp_metadata_aliases() {
-		return array(
+		return [
 			'_wp_attached_file'       => 'imrwpmt1',
 			'_wp_attachment_metadata' => 'imrwpmt2',
-		);
+		];
 	}
 
 	/**
@@ -368,10 +525,10 @@ class Imagify_DB {
 	 */
 	public static function combine_query_results( $keys, $values, $keep_keys_order = false ) {
 		if ( ! $keys || ! $values ) {
-			return array();
+			return [];
 		}
 
-		$result = array();
+		$result = [];
 		$keys   = array_flip( $keys );
 
 		foreach ( $values as $v ) {
@@ -415,7 +572,7 @@ class Imagify_DB {
 		global $wpdb;
 
 		if ( ! $ids ) {
-			return array_fill_keys( array_keys( $metas ), array() );
+			return array_fill_keys( array_keys( $metas ), [] );
 		}
 
 		$sql_ids = implode( ',', $ids );

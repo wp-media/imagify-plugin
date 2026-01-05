@@ -2,7 +2,7 @@
 
 use Imagify\Imagifybeat\Actions;
 use Imagify\Imagifybeat\Core;
-use Imagify\Stats\OptimizedMediaWithoutWebp;
+use Imagify\Stats\OptimizedMediaWithoutNextGen;
 
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
@@ -79,29 +79,29 @@ function get_imagify_localize_script_translations( $context ) {
 				],
 			];
 
-			if ( OptimizedMediaWithoutWebp::get_instance()->get_cached_stat() ) {
+			if ( OptimizedMediaWithoutNextGen::get_instance()->get_cached_stat() ) {
 				$contexts             = imagify_get_context_names();
 				$translations['bulk'] = [
-					'curlMissing'      => ! Imagify_Requirements::supports_curl(),
-					'editorMissing'    => ! Imagify_Requirements::supports_image_editor(),
-					'extHttpBlocked'   => Imagify_Requirements::is_imagify_blocked(),
-					'apiDown'          => ! Imagify_Requirements::is_api_up(),
-					'keyIsValid'       => Imagify_Requirements::is_api_key_valid(),
-					'isOverQuota'      => Imagify_Requirements::is_over_quota(),
-					'imagifybeatIDs'   => [
+					'curlMissing'       => ! Imagify_Requirements::supports_curl(),
+					'editorMissing'     => ! Imagify_Requirements::supports_image_editor(),
+					'extHttpBlocked'    => Imagify_Requirements::is_imagify_blocked(),
+					'apiDown'           => ! Imagify_Requirements::is_api_up(),
+					'keyIsValid'        => Imagify_Requirements::is_api_key_valid(),
+					'isOverQuota'       => Imagify_Requirements::is_over_quota(),
+					'imagifybeatIDs'    => [
 						'progress'     => $imagifybeat_actions->get_imagifybeat_id( 'options_optimization_status' ),
 						'requirements' => $imagifybeat_actions->get_imagifybeat_id( 'requirements' ),
 					],
-					'ajaxActions'      => [
-						'MissingWebp' => 'imagify_missing_webp_generation',
+					'ajaxActions'       => [
+						'MissingNextGen' => 'imagify_missing_nextgen_generation',
 					],
-					'ajaxNonce'        => wp_create_nonce( 'imagify-bulk-optimize' ),
-					'contexts'         => $contexts,
-					'progress_webp'    => [
-						'remaining' => OptimizedMediaWithoutWebp::get_instance()->get_stat(),
-						'total' => get_transient( 'imagify_missing_webp_total' ),
+					'ajaxNonce'         => wp_create_nonce( 'imagify-bulk-optimize' ),
+					'contexts'          => $contexts,
+					'progress_next_gen' => [
+						'remaining' => OptimizedMediaWithoutNextGen::get_instance()->get_stat(),
+						'total'     => get_transient( 'imagify_missing_next_gen_total' ),
 					],
-					'labels'           => [
+					'labels'            => [
 						'curlMissing'                    => __( 'cURL is not available on the server.', 'imagify' ),
 						'editorMissing'                  => sprintf(
 							// translators: %s is a "More info?" link.
@@ -113,8 +113,8 @@ function get_imagify_localize_script_translations( $context ) {
 						'invalidAPIKeyTitle'             => __( 'Your API key is not valid!', 'imagify' ),
 						'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
 						'nothingToDoTitle'               => __( 'Hold on!', 'imagify' ),
-						'nothingToDoText'                => __( 'All your optimized images already have a WebP version. Congratulations!', 'imagify' ),
-						'nothingToDoNoBackupText'        => __( 'Because the selected images did not have a backup copy, Imagify was unable to create WebP versions.', 'imagify' ),
+						'nothingToDoText'                => __( 'All your optimized images already have a next-gen version. Congratulations!', 'imagify' ),
+						'nothingToDoNoBackupText'        => __( 'Because the selected images did not have a backup copy, Imagify was unable to create next-gen versions.', 'imagify' ),
 						'error'                          => __( 'Error', 'imagify' ),
 						'ajaxErrorText'                  => __( 'The operation failed.', 'imagify' ),
 						'getUnoptimizedImagesErrorTitle' => __( 'Oops, There is something wrong!', 'imagify' ),
@@ -138,13 +138,17 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'pricing-modal':
 			$translations = [
-				'imagify_app_domain'  => IMAGIFY_APP_DOMAIN,
-				'labels' => [
-					'errorCouponAPI'   => __( 'Error with checking this coupon.', 'imagify' ),
-					/* translators: 1 is a percentage, 2 is a coupon code. */
-					'successCouponAPI' => sprintf( _x( '%1$s off with %2$s', 'coupon validated', 'imagify' ), '<span class="imagify-coupon-offer"></span>', '<strong class="imagify-coupon-word"></strong>' ),
-					'errorPriceAPI'    => __( 'Something went wrong with getting our updated offers. Please retry later.', 'imagify' ),
-					'defaultCouponLabel'    => __( 'If you have a <strong>coupon code</strong><br> use it here:', 'imagify' ),
+				'imagify_app_domain' => IMAGIFY_APP_DOMAIN,
+				'labels'             => [
+					'errorCouponAPI'     => __( 'Error with checking this coupon.', 'imagify' ),
+					'successCouponAPI'   => sprintf(
+						/* translators: 1 is a percentage, 2 is a coupon code. */
+						_x( '%1$s off with %2$s', 'coupon validated', 'imagify' ),
+						'<span class="imagify-coupon-offer"></span>',
+						'<strong class="imagify-coupon-word"></strong>'
+					),
+					'errorPriceAPI'      => __( 'Something went wrong with getting our updated offers. Please retry later.', 'imagify' ),
+					'defaultCouponLabel' => __( 'If you have a <strong>coupon code</strong><br> use it here:', 'imagify' ),
 					'errorCouponPlan'    => __( 'This coupon is not valid with this plan.', 'imagify' ),
 				],
 			];
@@ -173,7 +177,7 @@ function get_imagify_localize_script_translations( $context ) {
 
 					if ( $media->is_image() ) {
 						$dimensions = $media->get_dimensions();
-						$image = [
+						$image      = [
 							'src'    => $media->get_fullsize_url(),
 							'width'  => $dimensions['width'],
 							'height' => $dimensions['height'],
@@ -218,30 +222,30 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'bulk':
 			$translations = [
-				'curlMissing'     => ! Imagify_Requirements::supports_curl(),
-				'editorMissing'   => ! Imagify_Requirements::supports_image_editor(),
-				'extHttpBlocked'  => Imagify_Requirements::is_imagify_blocked(),
-				'apiDown'         => Imagify_Requirements::is_imagify_blocked() || ! Imagify_Requirements::is_api_up(),
-				'keyIsValid'      => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid(),
-				'isOverQuota'     => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid() && Imagify_Requirements::is_over_quota(),
-				'imagifybeatIDs'   => [
+				'curlMissing'    => ! Imagify_Requirements::supports_curl(),
+				'editorMissing'  => ! Imagify_Requirements::supports_image_editor(),
+				'extHttpBlocked' => Imagify_Requirements::is_imagify_blocked(),
+				'apiDown'        => Imagify_Requirements::is_imagify_blocked() || ! Imagify_Requirements::is_api_up(),
+				'keyIsValid'     => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid(),
+				'isOverQuota'    => ! Imagify_Requirements::is_imagify_blocked() && Imagify_Requirements::is_api_up() && Imagify_Requirements::is_api_key_valid() && Imagify_Requirements::is_over_quota(),
+				'imagifybeatIDs' => [
 					'stats'        => $imagifybeat_actions->get_imagifybeat_id( 'bulk_optimization_stats' ),
 					'queue'        => $imagifybeat_actions->get_imagifybeat_id( 'bulk_optimization_status' ),
 					'requirements' => $imagifybeat_actions->get_imagifybeat_id( 'requirements' ),
 				],
-				'waitImageUrl'    => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
-				'ajaxActions'     => [
+				'waitImageUrl'   => IMAGIFY_ASSETS_IMG_URL . 'popin-loader.svg',
+				'ajaxActions'    => [
 					'bulkProcess'   => 'imagify_bulk_optimize',
 					'getFolderData' => 'imagify_get_folder_type_data',
 					'bulkInfoSeen'  => 'imagify_bulk_info_seen',
 				],
-				'ajaxNonce'       => wp_create_nonce( 'imagify-bulk-optimize' ),
-				'bufferSizes'     => [
+				'ajaxNonce'      => wp_create_nonce( 'imagify-bulk-optimize' ),
+				'bufferSizes'    => [
 					'wp'             => 4,
 					'custom-folders' => 4,
 				],
-				'optimizing' => get_transient( 'imagify_custom-folders_optimize_running' ) || get_transient( 'imagify_wp_optimize_running' ),
-				'labels'          => [
+				'optimizing'     => get_transient( 'imagify_custom-folders_optimize_running' ) || get_transient( 'imagify_wp_optimize_running' ),
+				'labels'         => [
 					'overviewChartLabels'            => [
 						'unoptimized' => __( 'Unoptimized', 'imagify' ),
 						'optimized'   => __( 'Optimized', 'imagify' ),
@@ -262,7 +266,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'nothingToDoTitle'               => __( 'Hold on!', 'imagify' ),
 					'nothingToDoText'                => [
 						'optimize'      => __( 'All your media files have been optimized by Imagify. Congratulations!', 'imagify' ),
-						'generate_webp' => __( 'All your optimized images already have a WebP version. Congratulations!', 'imagify' ),
+						'generate_webp' => __( 'All your optimized images already have a next-gen version. Congratulations!', 'imagify' ),
 					],
 					'optimizing'                     => __( 'Optimizing', 'imagify' ),
 					'error'                          => __( 'Error', 'imagify' ),
@@ -329,5 +333,5 @@ function get_imagify_localize_script_translations( $context ) {
 
 		default:
 			return [];
-	} // End switch().
+	}
 }

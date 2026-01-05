@@ -127,12 +127,22 @@ p.imagify-api-key-invite-title {
 	align-items: center;
 }
 
-.imagify-setting-optim-level {
-	padding: 8px 0 18px;
-}
 .imagify-setting-optim-level > p {
 	margin: 0;
 }
+
+.imagify-setting-optim-level .imagify-info {
+	margin-top: 10px;
+}
+
+.imagify-setting-optim-level .imagify-error {
+	margin: 10px 0 0 0;
+}
+
+.imagify-setting-optim-level .imagify-error a {
+	color: #fff;
+}
+
 .imagify-setting-optim-level .imagify-inline-options {
 	flex-basis: 60%;
 	flex-grow: 1;
@@ -141,6 +151,10 @@ p.imagify-api-key-invite-title {
 	background: #2E3243;
 	border-radius: 3px;
 }
+.imagify-setting-optim-level .imagify-inline-options-error {
+	background: #ccc;
+}
+
 .imagify-setting-optim-level .imagify-inline-options label {
 	display: block !important;
 	width: 100%;

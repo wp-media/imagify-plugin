@@ -4,14 +4,13 @@ declare(strict_types=1);
 namespace Imagify\Notices;
 
 use Imagify\Traits\InstanceGetterTrait;
-use Imagify\User\User;
 
 /**
  * Class that handles the admin notices.
  *
  * @since 1.6.10
  */
-class Notices {
+final class Notices {
 	use InstanceGetterTrait;
 
 	/**
@@ -129,12 +128,12 @@ class Notices {
 	 */
 	public function init() {
 		// For generic purpose.
-		add_action( 'all_admin_notices',                     [ $this, 'render_notices' ] );
-		add_action( 'wp_ajax_imagify_dismiss_notice',        [ $this, 'admin_post_dismiss_notice' ] );
-		add_action( 'admin_post_imagify_dismiss_notice',     [ $this, 'admin_post_dismiss_notice' ] );
+		add_action( 'all_admin_notices', [ $this, 'render_notices' ] );
+		add_action( 'wp_ajax_imagify_dismiss_notice', [ $this, 'admin_post_dismiss_notice' ] );
+		add_action( 'admin_post_imagify_dismiss_notice', [ $this, 'admin_post_dismiss_notice' ] );
 		// For specific notices.
-		add_action( 'imagify_dismiss_notice',                [ $this, 'clear_scheduled_rating' ] );
-		add_action( 'admin_post_imagify_deactivate_plugin',  [ $this, 'deactivate_plugin' ] );
+		add_action( 'imagify_dismiss_notice', [ $this, 'clear_scheduled_rating' ] );
+		add_action( 'admin_post_imagify_deactivate_plugin', [ $this, 'deactivate_plugin' ] );
 		add_action( 'imagify_not_almost_over_quota_anymore', [ $this, 'renew_almost_over_quota_notice' ] );
 	}
 
@@ -178,7 +177,7 @@ class Notices {
 	public function admin_post_dismiss_notice() {
 		imagify_check_nonce( self::DISMISS_NONCE_ACTION );
 
-		$notice  = ! empty( $_GET['notice'] ) ? esc_html( wp_unslash( $_GET['notice'] ) ) : false;
+		$notice  = ! empty( $_GET['notice'] ) ? sanitize_text_field( wp_unslash( $_GET['notice'] ) ) : '';
 		$notices = $this->get_notice_ids();
 		$notices = array_flip( $notices );
 
@@ -193,7 +192,7 @@ class Notices {
 		 *
 		 * @since 1.4.2
 		 *
-		 * @param int $notice The notice slug
+		 * @param string $notice The notice slug
 		*/
 		do_action( 'imagify_dismiss_notice', $notice );
 
@@ -229,7 +228,7 @@ class Notices {
 			imagify_die();
 		}
 
-		$plugin  = esc_html( wp_unslash( $_GET['plugin'] ) );
+		$plugin  = sanitize_text_field( wp_unslash( $_GET['plugin'] ) );
 		$plugins = $this->get_conflicting_plugins();
 		$plugins = array_flip( $plugins );
 
@@ -351,7 +350,7 @@ class Notices {
 	 *
 	 * @since 1.6.10
 	 *
-	 * @return array An array of plugins to deactivate.
+	 * @return array|false An array of plugins to deactivate. false if the notice should not be displayed.
 	 */
 	public function display_plugins_to_deactivate() {
 		static $display;
@@ -869,7 +868,7 @@ class Notices {
 		 *
 		 * @param array $notice_ids An array of notice "IDs".
 		 */
-		return (array) apply_filters( 'imagify_notices', self::$notice_ids );
+		return (array) wpm_apply_filters_typed( 'array', 'imagify_notices', self::$notice_ids );
 	}
 
 	/**
@@ -900,9 +899,9 @@ class Notices {
 		 *
 		 * @since 1.0
 		 *
-		 * @param string $plugins List of recommended plugins to deactivate.
+		 * @param array $plugins List of recommended plugins to deactivate.
 		*/
-		$plugins = apply_filters( 'imagify_plugins_to_deactivate', self::$conflicting_plugins );
+		$plugins = wpm_apply_filters_typed( 'array', 'imagify_plugins_to_deactivate', self::$conflicting_plugins );
 
 		return array_filter( $plugins, 'is_plugin_active' );
 	}

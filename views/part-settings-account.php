@@ -1,14 +1,12 @@
 <?php
 
-use Imagify\User\User;
-
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 if ( defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) && IMAGIFY_HIDDEN_ACCOUNT ) {
 	if ( ! defined( 'IMAGIFY_API_KEY' ) || ! IMAGIFY_API_KEY ) {
 		$options = Imagify_Options::get_instance();
 		?>
-		<input type="hidden" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="<?php echo $options->get_option_name(); ?>[api_key]">
+		<input type="hidden" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="<?php echo esc_attr( $options->get_option_name() ); ?>[api_key]">
 		<?php
 	}
 	return;
@@ -19,10 +17,14 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 
 	if ( ! $user ) {
 		// Lazyload user.
-		Imagify_Assets::get_instance()->localize_script( 'options', 'imagifyUser', array(
-			'action'   => 'imagify_get_user_data',
-			'_wpnonce' => wp_create_nonce( 'imagify_get_user_data' ),
-		) );
+		Imagify_Assets::get_instance()->localize_script(
+			'options',
+			'imagifyUser',
+			[
+				'action'   => 'imagify_get_user_data',
+				'_wpnonce' => wp_create_nonce( 'imagify_get_user_data' ),
+			]
+		);
 	}
 }
 ?>
@@ -62,7 +64,7 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 
 		<div class="imagify-api-line">
 			<label for="api_key" class="screen-reader-text"><?php echo $options->get( 'api_key' ) ? esc_html__( 'API Key', 'imagify' ) : esc_html__( 'Enter Your API Key Below', 'imagify' ); ?></label>
-			<input type="text" size="35" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="<?php echo $options->get_option_name(); ?>[api_key]" id="api_key">
+			<input type="text" size="35" value="<?php echo esc_attr( $options->get( 'api_key' ) ); ?>" name="<?php echo esc_attr( $options->get_option_name() ); ?>[api_key]" id="api_key">
 			<?php
 			if ( Imagify_Requirements::is_api_key_valid() ) {
 				?>
@@ -88,4 +90,4 @@ if ( Imagify_Requirements::is_api_key_valid() ) {
 	}
 	?>
 </div>
-<?php
+

@@ -138,7 +138,7 @@ window.imagify = window.imagify || {};
 	/**
 	 * Fade CDN URL field.
 	 */
-	$( '[name="imagify_settings[display_webp_method]"]' ).on( 'change.imagify init.imagify', function( e ) {
+	$( '[name="imagify_settings[display_nextgen_method]"]' ).on( 'change.imagify init.imagify', function( e ) {
 		if ( 'picture' === e.target.value ) {
 			$( e.target ).closest( '.imagify-radio-group' ).next( '.imagify-options-line' ).removeClass( 'imagify-faded' );
 		} else {
@@ -496,7 +496,7 @@ window.imagify = window.imagify || {};
 				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
 				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsImagifybeat );
 
-			if ( false !== imagifyOptions.bulk.progress_webp.total && false !== imagifyOptions.bulk.progress_webp.remaining ) {
+			if ( false !== imagifyOptions.bulk.progress_next_gen.total && false !== imagifyOptions.bulk.progress_next_gen.remaining ) {
 				// Reset properties.
 				w.imagify.optionsBulk.error            = false;
 				w.imagify.optionsBulk.working          = true;
@@ -511,10 +511,10 @@ window.imagify = window.imagify || {};
 
 				this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
 
-				processed = imagifyOptions.bulk.progress_webp.total - imagifyOptions.bulk.progress_webp.remaining;
-				progress = Math.floor( processed / imagifyOptions.bulk.progress_webp.total * 100 );
+				processed = imagifyOptions.bulk.progress_next_gen.total - imagifyOptions.bulk.progress_next_gen.remaining;
+				progress = Math.floor( processed / imagifyOptions.bulk.progress_next_gen.total * 100 );
 				this.$progressBar.css( 'width', progress + '%' );
-				this.$progressText.text( processed + '/' + imagifyOptions.bulk.progress_webp.total );
+				this.$progressText.text( processed + '/' + imagifyOptions.bulk.progress_next_gen.total );
 
 				this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
 			}
@@ -655,7 +655,7 @@ window.imagify = window.imagify || {};
 
 			_this = this;
 
-			$.get( this.getAjaxUrl( 'MissingWebp', imagifyOptions.bulk.contexts ) )
+			$.get( this.getAjaxUrl( 'MissingNextGen', imagifyOptions.bulk.contexts ) )
 				.done( function( response ) {
 					var errorMessage;
 

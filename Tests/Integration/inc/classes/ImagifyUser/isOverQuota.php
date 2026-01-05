@@ -13,14 +13,14 @@ use Imagify\User\User;
 class Test_IsOverQuota extends TestCase {
 	private $originalPreviousQuotaOption;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->originalPreviousQuotaOption = get_imagify_option( 'previous_quota_percent' );
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 
 		// Restore the original option.
 		update_imagify_option( 'previous_quota_percent', $this->originalPreviousQuotaOption );
@@ -62,6 +62,7 @@ class Test_IsOverQuota extends TestCase {
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
 		$imagifyUser = new User();
+		$imagifyUser->init_user();
 		// Make sure the account is not over-quota.
 		$imagifyUser->quota                        = 1000;
 		$imagifyUser->consumed_current_month_quota = 200;
@@ -78,6 +79,7 @@ class Test_IsOverQuota extends TestCase {
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
 		$imagifyUser = new User();
+		$imagifyUser->init_user();
 		//
 		$imagifyUser->plan_id                      = 1;
 		// Make it over-quota.

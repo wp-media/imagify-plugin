@@ -1,24 +1,24 @@
 <?php
 use Imagify\Bulk\Bulk;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 ?>
 
 <div class="imagify-bulk-table">
 	<div class="imagify-table-header imagify-flex imagify-vcenter imagify-resting">
 		<div class="imagify-th-titles imagify-flex imagify-vcenter">
-			<span class="dashicons dashicons-<?php echo $data['icon']; ?>"></span>
+			<span class="dashicons dashicons-<?php echo esc_attr( $data['icon'] ); ?>"></span>
 			<div class="imagify-th-titles">
-				<p class="imagify-th-title"><?php echo $data['title']; ?></p>
+				<p class="imagify-th-title"><?php echo esc_html( $data['title'] ); ?></p>
 			</div>
 		</div>
 	</div>
 
 	<?php
-	$types = [];
-	$total       = 0;
-	$remaining   = 0;
-	$percentage  = 0;
+	$types      = [];
+	$total      = 0;
+	$remaining  = 0;
+	$percentage = 0;
 
 	foreach ( $data['groups'] as $group ) {
 		$types[ $group['group_id'] . '|' . $group['context'] ] = true;
@@ -35,11 +35,11 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 		$percentage = ( $total - $remaining ) / $total * 100;
 	}
 
-	$bulk = Bulk::get_instance();
+	$bulk        = Bulk::get_instance();
 	$aria_hidden = 'aria-hidden="true"';
-	$hidden  = 'hidden';
-	$style   = '';
-	$display = '';
+	$hidden      = 'hidden';
+	$style       = '';
+	$display     = '';
 
 	if (
 		0 !== $percentage
@@ -56,10 +56,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 	<div class="imagify-bulk-table-content">
 		<div class="imagify-bulk-table-container">
-			<div <?php echo $aria_hidden; ?> class="imagify-row-progress <?php echo $hidden; ?>" <?php echo $display; ?>>
+			<div <?php echo $aria_hidden; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> class="imagify-row-progress <?php echo esc_attr( $hidden ); ?>" <?php echo $display; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 				<div class="media-item">
 					<div class="progress">
-						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $percentage; ?>%</div></div>
+						<div class="bar" <?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><div class="percent"><?php echo esc_html( $percentage ); ?>%</div></div>
 					</div>
 				</div>
 			</div>
@@ -79,8 +79,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 				<tbody>
 					<?php
 					foreach ( $data['groups'] as $group ) {
-						$context_data = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
-						$group        = array_merge( $group, $context_data );
+						$context_data  = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
+						$group         = array_merge( $group, $context_data );
 						$default_level = Imagify_Options::get_instance()->get( 'optimization_level' );
 
 						if ( Imagify_Options::get_instance()->get( 'lossless' ) ) {

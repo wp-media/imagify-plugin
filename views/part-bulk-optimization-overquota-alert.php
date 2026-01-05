@@ -1,11 +1,14 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
-$overquota_url = imagify_get_external_url( 'subscription', array(
-	'utm_source'  => 'plugin',
-	'utm_medium'  => 'imagify-wp',
-	'utm_content' => 'over-quota',
-) );
+$overquota_url = imagify_get_external_url(
+	'subscription',
+	[
+		'utm_source'  => 'plugin',
+		'utm_medium'  => 'imagify-wp',
+		'utm_content' => 'over-quota',
+	]
+);
 ?>
 <div class="imagify-swal-subtitle"><?php esc_html_e( 'Upgrade your account to continue optimizing your images.', 'imagify' ); ?></div>
 <div class="imagify-swal-content imagify-txt-start">

@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 add_action( 'imagify_assets_enqueued', '_imagify_ngg_admin_print_styles' );
 /**
@@ -16,7 +16,13 @@ function _imagify_ngg_admin_print_styles() {
 	/**
 	 * Manage Gallery Images.
 	 */
-	if ( imagify_is_screen( 'nggallery-manage-images' ) || isset( $_GET['gid'] ) && ! empty( $_GET['pid'] ) && imagify_is_screen( 'nggallery-manage-gallery' ) ) { // WPCS: CSRF ok.
+	if (
+		imagify_is_screen( 'nggallery-manage-images' )
+		||
+		(
+			isset( $_GET['gid'] ) && ! empty( $_GET['pid'] ) && imagify_is_screen( 'nggallery-manage-gallery' ) // WPCS: CSRF ok.
+		)
+	) {
 		$assets->enqueue_style( 'admin' )->enqueue_script( 'library' );
 		return;
 	}
@@ -32,11 +38,14 @@ function _imagify_ngg_admin_print_styles() {
 
 	$assets->remove_deferred_localization( 'bulk', 'imagifyBulk' );
 
-	$l10n = $assets->get_localization_data( 'bulk', [
-		'bufferSizes' => [
-			'ngg' => 4,
-		],
-	] );
+	$l10n = $assets->get_localization_data(
+		'bulk',
+		[
+			'bufferSizes' => [
+				'ngg' => 4,
+			],
+		]
+	);
 
 	/** This filter is documented in inc/functions/i18n.php */
 	$l10n['bufferSizes'] = apply_filters( 'imagify_bulk_buffer_sizes', $l10n['bufferSizes'] );

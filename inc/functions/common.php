@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Get the list of the names of the Imagify context currently in use.
@@ -26,9 +26,12 @@ function imagify_get_context_names() {
 	 */
 	$contexts = (array) apply_filters( 'imagify_register_context', [] );
 
-	$contexts = array_filter( $contexts, function( $context ) {
-		return $context && is_string( $context );
-	} );
+	$contexts = array_filter(
+		$contexts,
+		function ( $context ) {
+			return $context && is_string( $context );
+		}
+	);
 	$contexts = array_merge( [ 'wp', 'custom-folders' ], $contexts );
 
 	sort( $contexts );
@@ -56,7 +59,7 @@ function imagify_sanitize_context( $context ) {
  * @author Grégory Viguier
  *
  * @param  string $context  The context name. Default values are 'wp' and 'custom-folders'.
- * @return ContextInterface The context instance.
+ * @return \Imagify\Context\ContextInterface The context instance.
  */
 function imagify_get_context( $context ) {
 	$class_name = imagify_get_context_class_name( $context );
@@ -110,7 +113,7 @@ function imagify_get_context_class_name( $context ) {
  *
  * @param  int    $media_id The media ID.
  * @param  string $context  The context name. Default values are 'wp' and 'custom-folders'.
- * @return ProcessInterface The optimization process instance.
+ * @return \Imagify\Optimization\Process\ProcessInterface The optimization process instance.
  */
 function imagify_get_optimization_process( $media_id, $context ) {
 	$class_name = imagify_get_optimization_process_class_name( $context );
@@ -186,6 +189,32 @@ function imagify_path_to_webp( $path ) {
 }
 
 /**
+ * Convert a path (or URL) to its next-gen version.
+ * To keep the function simple:
+ * - Not tested if it's an image.
+ * - File existance is not tested.
+ * - If an URL is given, make sure it doesn't contain query args.
+ *
+ * @since  2.2
+ *
+ * @param  string $path A file path or URL.
+ * @param  string $format format we are targeting.
+ * @return string
+ */
+function imagify_path_to_nextgen( $path, string $format ) {
+	switch ( $format ) {
+		case 'webp':
+			$path = $path . '.webp';
+			break;
+		case 'avif':
+			$path = $path . '.avif';
+			break;
+	}
+
+	return $path;
+}
+
+/**
  * Tell if the current user can optimize custom folders.
  *
  * @since  1.7
@@ -222,7 +251,7 @@ function imagify_can_optimize_custom_folders() {
  * @param  array  $query_args An array of query arguments.
  * @return string The URL.
  */
-function imagify_get_external_url( $target, $query_args = array() ) {
+function imagify_get_external_url( $target, $query_args = [] ) {
 	$site_url = IMAGIFY_SITE_DOMAIN . '/';
 	$app_url  = IMAGIFY_APP_DOMAIN . '/#/';
 
@@ -236,22 +265,12 @@ function imagify_get_external_url( $target, $query_args = array() ) {
 			$url = 'https://wordpress.org/support/view/plugin-reviews/imagify?rate=5#postform';
 			break;
 
-		case 'share-twitter':
-			$url = rawurlencode( imagify_get_external_url( 'plugin' ) );
-			$url = 'https://twitter.com/intent/tweet?source=webclient&original_referer=' . $url . '&url=' . $url . '&related=imagify&hastags=performance,web,wordpress';
-			break;
-
-		case 'share-facebook':
-			$url = rawurlencode( imagify_get_external_url( 'plugin' ) );
-			$url = 'https://www.facebook.com/sharer/sharer.php?u=' . $url;
-			break;
-
 		case 'contact':
 			$lang  = imagify_get_current_lang_in( 'fr' );
-			$paths = array(
+			$paths = [
 				'en' => 'contact',
 				'fr' => 'fr/contact',
-			);
+			];
 
 			$url = $site_url . $paths[ $lang ] . '/';
 			break;
@@ -394,13 +413,13 @@ function imagify_get_optimization_level_label( $level, $format = '%s' ) {
  * @since  1.7
  * @author Grégory Viguier
  *
- * @param  array $values  The array we're interested in.
- * @param  array $default The array we use as boundaries.
+ * @param  array $values         The array we're interested in.
+ * @param  array $default_values The array we use as boundaries.
  * @return array
  */
-function imagify_merge_intersect( $values, $default ) {
-	$values = array_merge( $default, (array) $values );
-	return array_intersect_key( $values, $default );
+function imagify_merge_intersect( $values, $default_values ) {
+	$values = array_merge( $default_values, (array) $values );
+	return array_intersect_key( $values, $default_values );
 }
 
 /**
@@ -439,12 +458,12 @@ function imagify_return_false() {
  * @since  1.9
  * @author Grégory Viguier
  *
- * @param string $class        The class containing the deprecated constructor.
+ * @param string $class_name   The class containing the deprecated constructor.
  * @param string $version      The version of WordPress that deprecated the function.
  * @param string $replacement  Optional. The function that should have been called. Default null.
  * @param string $parent_class Optional. The parent class calling the deprecated constructor. Default empty string.
  */
-function imagify_deprecated_class( $class, $version, $replacement = null, $parent_class = '' ) {
+function imagify_deprecated_class( $class_name, $version, $replacement = null, $parent_class = '' ) {
 
 	/**
 	 * Fires when a deprecated class is called.
@@ -452,12 +471,12 @@ function imagify_deprecated_class( $class, $version, $replacement = null, $paren
 	 * @since  1.9
 	 * @author Grégory Viguier
 	 *
-	 * @param string $class        The class containing the deprecated constructor.
+	 * @param string $class_name   The class containing the deprecated constructor.
 	 * @param string $version      The version of WordPress that deprecated the function.
 	 * @param string $replacement  Optional. The function that should have been called.
 	 * @param string $parent_class The parent class calling the deprecated constructor.
 	 */
-	do_action( 'imagify_deprecated_class_run', $class, $version, $replacement, $parent_class );
+	do_action( 'imagify_deprecated_class_run', $class_name, $version, $replacement, $parent_class );
 
 	if ( ! WP_DEBUG ) {
 		return;
@@ -491,7 +510,7 @@ function imagify_deprecated_class( $class, $version, $replacement = null, $paren
 					sprintf(
 						/* translators: 1: PHP class name, 2: PHP parent class name, 3: version number, 4: replacement class name. */
 						__( 'The called class %1$s extending %2$s is <strong>deprecated</strong> since version %3$s! Use %4$s instead.', 'imagify' ),
-						'<code>' . $class . '</code>',
+						'<code>' . $class_name . '</code>',
 						'<code>' . $parent_class . '</code>',
 						'<strong>' . $version . '</strong>',
 						'<code>' . $replacement . '</code>'
@@ -508,7 +527,7 @@ function imagify_deprecated_class( $class, $version, $replacement = null, $paren
 				sprintf(
 					/* translators: 1: PHP class name, 2: PHP parent class name, 3: version number. */
 					__( 'The called class %1$s extending %2$s is <strong>deprecated</strong> since version %3$s!', 'imagify' ),
-					'<code>' . $class . '</code>',
+					'<code>' . $class_name . '</code>',
 					'<code>' . $parent_class . '</code>',
 					'<strong>' . $version . '</strong>'
 				)
@@ -528,7 +547,7 @@ function imagify_deprecated_class( $class, $version, $replacement = null, $paren
 				sprintf(
 					/* translators: 1: PHP class name, 2: version number, 3: replacement class name. */
 					__( 'The called class %1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.', 'imagify' ),
-					'<code>' . $class . '</code>',
+					'<code>' . $class_name . '</code>',
 					'<strong>' . $version . '</strong>',
 					'<code>' . $replacement . '</code>'
 				)
@@ -544,7 +563,7 @@ function imagify_deprecated_class( $class, $version, $replacement = null, $paren
 			sprintf(
 				/* translators: 1: PHP class name, 2: version number. */
 				__( 'The called class %1$s is <strong>deprecated</strong> since version %2$s!', 'imagify' ),
-				'<code>' . $class . '</code>',
+				'<code>' . $class_name . '</code>',
 				'<strong>' . $version . '</strong>'
 			)
 		);
@@ -563,7 +582,7 @@ function imagify_deprecated_class( $class, $version, $replacement = null, $paren
 				'trigger_error',
 				sprintf(
 					'The called class %1$s extending %2$s is <strong>deprecated</strong> since version %3$s! Use %4$s instead.',
-					'<code>' . $class . '</code>',
+					'<code>' . $class_name . '</code>',
 					'<code>' . $parent_class . '</code>',
 					'<strong>' . $version . '</strong>',
 					'<code>' . $replacement . '</code>'
@@ -579,7 +598,7 @@ function imagify_deprecated_class( $class, $version, $replacement = null, $paren
 			'trigger_error',
 			sprintf(
 				'The called class %1$s extending %2$s is <strong>deprecated</strong> since version %3$s!',
-				'<code>' . $class . '</code>',
+				'<code>' . $class_name . '</code>',
 				'<code>' . $parent_class . '</code>',
 				'<strong>' . $version . '</strong>'
 			)
@@ -598,7 +617,7 @@ function imagify_deprecated_class( $class, $version, $replacement = null, $paren
 			'trigger_error',
 			sprintf(
 				'The called class %1$s is <strong>deprecated</strong> since version %2$s! Use %3$s instead.',
-				'<code>' . $class . '</code>',
+				'<code>' . $class_name . '</code>',
 				'<strong>' . $version . '</strong>',
 				'<code>' . $replacement . '</code>'
 			)
@@ -613,7 +632,7 @@ function imagify_deprecated_class( $class, $version, $replacement = null, $paren
 		'trigger_error',
 		sprintf(
 			'The called class %1$s is <strong>deprecated</strong> since version %2$s!',
-			'<code>' . $class . '</code>',
+			'<code>' . $class_name . '</code>',
 			'<strong>' . $version . '</strong>'
 		)
 	);

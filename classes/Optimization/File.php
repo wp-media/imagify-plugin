@@ -2,9 +2,10 @@
 namespace Imagify\Optimization;
 
 use Imagify_Requirements;
+use WP_Error;
 
 /**
- * A generic optimization class focussed on the file itself.
+ * A generic optimization class focused on the file itself.
  *
  * @since  1.9
  * @author Grégory Viguier
@@ -113,7 +114,7 @@ class File {
 			return new \WP_Error(
 				'not_exists',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The file %s does not seem to exist.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $this->path ) ) . '</code>'
 				)
@@ -124,7 +125,7 @@ class File {
 			return new \WP_Error(
 				'not_a_file',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'This does not seem to be a file: %s.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $this->path ) ) . '</code>'
 				)
@@ -135,7 +136,7 @@ class File {
 			return new \WP_Error(
 				'not_writable',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The file %s does not seem to be writable.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $this->path ) ) . '</code>'
 				)
@@ -148,7 +149,7 @@ class File {
 			return new \WP_Error(
 				'folder_not_writable',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The folder %s does not seem to be writable.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $parent_folder ) ) . '</code>'
 				)
@@ -197,7 +198,7 @@ class File {
 			return new \WP_Error(
 				'not_an_image',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The file %s does not seem to be an image, and cannot be resized.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $this->path ) ) . '</code>'
 				)
@@ -318,10 +319,10 @@ class File {
 		}
 
 		if ( ! $this->is_image() ) {
-			return new \WP_Error(
+			return new WP_Error(
 				'not_an_image',
 				sprintf(
-					/* translators: %s is a file path. */
+				/* translators: %s is a file path. */
 					__( 'The file %s does not seem to be an image, and cannot be resized.', 'imagify' ),
 					'<code>' . esc_html( $this->filesystem->make_path_relative( $this->path ) ) . '</code>'
 				)
@@ -338,7 +339,7 @@ class File {
 		$result = $editor->multi_resize( [ $destination ] );
 
 		if ( ! $result ) {
-			return new \WP_Error( 'image_resize_error', __( 'The thumbnail could not be created.', 'imagify' ) );
+			return new WP_Error( 'image_resize_error', __( 'The thumbnail could not be created.', 'imagify' ) );
 		}
 
 		$result = reset( $result );
@@ -362,7 +363,7 @@ class File {
 		$moved = $this->filesystem->move( $source_thumb_path, $destination_thumb_path, true );
 
 		if ( ! $moved ) {
-			return new \WP_Error( 'move_error', __( 'The file could not be moved to its final destination.', 'imagify' ) );
+			return new WP_Error( 'move_error', __( 'The file could not be moved to its final destination.', 'imagify' ) );
 		}
 
 		return $result;
@@ -417,10 +418,34 @@ class File {
 
 		// Make sure the backup copy exists.
 		if ( ! $this->filesystem->exists( $backup_path ) ) {
-			return new \WP_Error( 'backup_doesnt_exist', __( 'The file could not be saved.', 'imagify' ), array(
-				'file_path'   => $this->filesystem->make_path_relative( $path ),
-				'backup_path' => $this->filesystem->make_path_relative( $backup_path ),
-			) );
+			return new \WP_Error(
+				'backup_doesnt_exist',
+				__( 'The file could not be saved.', 'imagify' ),
+				[
+					'file_path'   => $this->filesystem->make_path_relative( $path ),
+					'backup_path' => $this->filesystem->make_path_relative( $backup_path ),
+				]
+			);
+		}
+
+		// Check if a '-scaled' version of the image exists.
+		$scaled_path = preg_replace( '/(\.)([^\.]+)$/', '-scaled.$2', $backup_source );
+		if ( $this->filesystem->exists( $scaled_path ) ) {
+			// Create a backup path for the scaled image.
+			$scaled_backup_path = preg_replace( '/(\.)([^\.]+)$/', '-scaled.$2', $backup_path );
+			// Copy the '-scaled' version to the backup.
+			$this->filesystem->copy( $scaled_path, $scaled_backup_path, $overwrite, FS_CHMOD_FILE );
+
+			if ( ! $this->filesystem->exists( $scaled_backup_path ) ) {
+				return new \WP_Error(
+					'backup_doesnt_exist',
+					__( 'The file could not be saved.', 'imagify' ),
+					[
+						'file_path'   => $this->filesystem->make_path_relative( $scaled_path ),
+						'backup_path' => $this->filesystem->make_path_relative( $scaled_backup_path ),
+					]
+				);
+			}
 		}
 
 		return true;
@@ -438,22 +463,25 @@ class File {
 	 *     @type bool   $backup             False to prevent backup. True to follow the user's setting. A backup can't be forced.
 	 *     @type string $backup_path        If a backup must be done, this is the path to use. Default is the backup path used for the WP Media Library.
 	 *     @type int    $optimization_level The optimization level (2=ultra, 1=aggressive, 0=normal).
-	 *     @type string $convert            Set to 'webp' to convert the image to WebP.
+	 *     @type string $convert            Set to 'webp' to convert the image to WebP, 'avif' to convert image to AVIF.
 	 *     @type string $context            The context.
 	 *     @type int    $original_size      The file size, sent to the API.
 	 * }
 	 * @return \sdtClass|\WP_Error Optimized image data. A \WP_Error object on error.
 	 */
 	public function optimize( $args = [] ) {
-		$args = array_merge( [
-			'backup'             => true,
-			'backup_path'        => null,
-			'backup_source'      => null,
-			'optimization_level' => 0,
-			'convert'            => '',
-			'context'            => 'wp',
-			'original_size'      => 0,
-		], $args );
+		$args = array_merge(
+			[
+				'backup'             => true,
+				'backup_path'        => null,
+				'backup_source'      => null,
+				'optimization_level' => 0,
+				'convert'            => '',
+				'context'            => 'wp',
+				'original_size'      => 0,
+			],
+			$args
+		);
 
 		$can_be_processed = $this->can_be_processed();
 
@@ -474,7 +502,7 @@ class File {
 		 *
 		 * @param string $path Absolute path to the media file.
 		 * @param array  $args Arguments passed to the method.
-		*/
+		 */
 		do_action( 'imagify_before_optimize_file', $this->path, $args );
 
 		/**
@@ -485,7 +513,7 @@ class File {
 		 *
 		 * @param string $path   Absolute path to the image file.
 		 * @param bool   $backup True if a backup will be make.
-		*/
+		 */
 		do_action_deprecated( 'before_do_imagify', [ $this->path, $args['backup'] ], '1.9', 'imagify_before_optimize_file' );
 
 		if ( $args['backup'] ) {
@@ -509,12 +537,15 @@ class File {
 
 		if ( $args['convert'] ) {
 			$data['convert'] = $args['convert'];
+			$format          = $args['convert'];
 		}
 
-		$response = upload_imagify_image( [
-			'image' => $this->path,
-			'data'  => wp_json_encode( $data ),
-		] );
+		$response = upload_imagify_image(
+			[
+				'image' => $this->path,
+				'data'  => wp_json_encode( $data ),
+			]
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return new \WP_Error( 'api_error', $response->get_error_message() );
@@ -534,8 +565,12 @@ class File {
 			$args['convert'] = '';
 		}
 
-		if ( 'webp' === $args['convert'] ) {
-			$destination_path = $this->get_path_to_webp();
+		$formats = [
+			'webp',
+			'avif',
+		];
+		if ( in_array( $args['convert'], $formats, true ) ) {
+			$destination_path = $this->get_path_to_nextgen( $args['convert'] );
 			$this->path       = $destination_path;
 			$this->file_type  = null;
 			$this->editor     = null;
@@ -557,7 +592,7 @@ class File {
 		 *
 		 * @param string $path   Absolute path to the image file.
 		 * @param bool   $backup True if a backup has been made.
-		*/
+		 */
 		do_action_deprecated( 'after_do_imagify', [ $this->path, $args['backup'] ], '1.9', 'imagify_before_optimize_file' );
 
 		/**
@@ -568,7 +603,7 @@ class File {
 		 *
 		 * @param string $path Absolute path to the media file.
 		 * @param array  $args Arguments passed to the method.
-		*/
+		 */
 		do_action( 'imagify_after_optimize_file', $this->path, $args );
 
 		return $response;
@@ -592,9 +627,12 @@ class File {
 			return $this->editor;
 		}
 
-		$this->editor = wp_get_image_editor( $this->path, [
-			'methods' => $this->get_editor_methods(),
-		] );
+		$this->editor = wp_get_image_editor(
+			$this->path,
+			[
+				'methods' => $this->get_editor_methods(),
+			]
+		);
 
 		if ( ! is_wp_error( $this->editor ) ) {
 			return $this->editor;
@@ -603,7 +641,7 @@ class File {
 		$this->editor = new \WP_Error(
 			'image_editor',
 			sprintf(
-				/* translators: %1$s is an error message, %2$s is a "More info?" link. */
+			/* translators: %1$s is an error message, %2$s is a "More info?" link. */
 				__( 'No php extensions are available to edit images on the server. ImageMagick or GD is required. The internal error is: %1$s. %2$s', 'imagify' ),
 				$this->editor->get_error_message(),
 				'<a href="' . esc_url( imagify_get_external_url( 'documentation-imagick-gd' ) ) . '" target="_blank">' . __( 'More info?', 'imagify' ) . '</a>'
@@ -724,10 +762,9 @@ class File {
 	/**
 	 * Get the file extension.
 	 *
-	 * @since  1.9
-	 * @author Grégory Viguier
+	 * @since 1.9
 	 *
-	 * @return string|null
+	 * @return string|false
 	 */
 	public function get_extension() {
 		return $this->get_file_type()->ext;
@@ -766,6 +803,26 @@ class File {
 	}
 
 	/**
+	 * Replace the file extension by its next-gen format extension.
+	 *
+	 * @since  2.2
+	 *
+	 * @param string $format the format we are targeting.
+	 * @return string|bool The file path on success. False if not an image or on failure.
+	 */
+	public function get_path_to_nextgen( string $format ) {
+		if ( ! $this->is_image() ) {
+			return false;
+		}
+
+		if ( $this->is_webp() || $this->is_avif() ) {
+			return false;
+		}
+
+		return imagify_path_to_nextgen( $this->path, $format );
+	}
+
+	/**
 	 * Tell if the file is a WebP image.
 	 * Rejects "path/to/.webp" files.
 	 *
@@ -776,6 +833,18 @@ class File {
 	 */
 	public function is_webp() {
 		return preg_match( '@(?!^|/|\\\)\.webp$@i', $this->path );
+	}
+
+	/**
+	 * Tell if the file is an AVIF image.
+	 * Rejects "path/to/.avif" files.
+	 *
+	 * @since  2.2
+	 *
+	 * @return bool
+	 */
+	public function is_avif() {
+		return preg_match( '@(?!^|/|\\\)\.avif$@i', $this->path );
 	}
 
 	/**
