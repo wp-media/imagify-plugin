@@ -98,7 +98,7 @@ class Imagify_Requirements_Check {
 	 * }
 	 */
 	public function __construct( $args ) {
-		foreach ( array( 'plugin_name', 'plugin_file', 'plugin_version', 'wp_last_version', 'php_last_version', 'wp_version', 'php_version' ) as $setting ) {
+		foreach ( [ 'plugin_name', 'plugin_file', 'plugin_version', 'wp_last_version', 'php_last_version', 'wp_version', 'php_version' ] as $setting ) {
 			if ( isset( $args[ $setting ] ) ) {
 				$this->$setting = $args[ $setting ];
 			}
@@ -124,8 +124,8 @@ class Imagify_Requirements_Check {
 	 */
 	public function check() {
 		if ( ! $this->php_passes() || ! $this->wp_passes() ) {
-			add_action( 'admin_notices', array( $this, 'print_notice' ) );
-			add_action( 'admin_post_imagify_rollback', array( $this, 'rollback' ) );
+			add_action( 'admin_notices', [ $this, 'print_notice' ] );
+			add_action( 'admin_post_imagify_rollback', [ $this, 'rollback' ] );
 
 			return false;
 		}
@@ -237,8 +237,8 @@ class Imagify_Requirements_Check {
 			return;
 		}
 
-		$message      = array();
-		$required     = array();
+		$message      = [];
+		$required     = [];
 		$rollback_url = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_rollback' ), 'imagify_rollback' );
 
 		if ( ! $this->php_passes() ) {
@@ -263,7 +263,7 @@ class Imagify_Requirements_Check {
 		/* translators: %s = Previous plugin version. */
 		$message .= '<p class="submit"><a href="' . esc_url( $rollback_url ) . '" class="button">' . sprintf( __( 'Re-install version %s', 'imagify' ), $this->get_last_version() ) . '</a></p>';
 
-		echo '<div class="notice notice-error">' . $message . '</div>';
+		echo '<div class="notice notice-error">' . $message . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -291,17 +291,17 @@ class Imagify_Requirements_Check {
 		} elseif ( ! empty( $plugin_transient->no_update[ $plugin_basename ] ) ) {
 			$tmp_obj = $plugin_transient->no_update[ $plugin_basename ];
 		} else {
-			$tmp_obj = (object) array(
+			$tmp_obj = (object) [
 				'id'          => 'w.org/plugins/' . $plugin_folder,
 				'slug'        => $plugin_folder,
 				'plugin'      => $plugin_basename,
 				'new_version' => $last_version,
 				'url'         => 'https://wordpress.org/plugins/' . $plugin_folder . '/',
 				'package'     => 'https://downloads.wordpress.org/plugin/' . $package_filename,
-				'icons'       => array(),
-				'banners'     => array(),
-				'banners_rtl' => array(),
-			);
+				'icons'       => [],
+				'banners'     => [],
+				'banners_rtl' => [],
+			];
 		}
 
 		$tmp_obj->new_version = $last_version;
@@ -325,9 +325,9 @@ class Imagify_Requirements_Check {
 
 		wp_die(
 			'',
-			/* translators: %s is the plugin name. */
-			sprintf( __( '%s Update Rollback', 'imagify' ), $this->plugin_name ),
-			array( 'response' => 200 )
+			// translators: %s is the plugin name.
+			sprintf( esc_html__( '%s Update Rollback', 'imagify' ), esc_html( $this->plugin_name ) ),
+			[ 'response' => 200 ]
 		);
 	}
 }

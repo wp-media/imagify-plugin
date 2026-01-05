@@ -54,7 +54,7 @@ class Imagify_Files_Scan {
 			// For the site's root, we don't look in sub-folders.
 			$dir    = new DirectoryIterator( $folder );
 			$dir    = new Imagify_Files_Iterator( $dir, false );
-			$images = array();
+			$images = [];
 
 			foreach ( new IteratorIterator( $dir ) as $file ) {
 				$images[] = $file->getPathname();
@@ -170,7 +170,7 @@ class Imagify_Files_Scan {
 		$filesystem = imagify_get_filesystem();
 		$site_root  = $filesystem->get_site_root();
 		$abspath    = $filesystem->get_abspath();
-		$folders    = array(
+		$folders    = [
 			// Server.
 			$site_root . 'cgi-bin',                        // `cgi-bin`
 			// WordPress.
@@ -189,7 +189,7 @@ class Imagify_Files_Scan {
 			Imagify_Custom_Folders::get_backup_dir_path(), // Imagify "Custom folders" backup: /imagify-backup.
 			IMAGIFY_PATH,                                  // Imagify plugin: /wp-content/plugins/imagify.
 			self::get_shortpixel_path(),                   // ShortPixel: /wp-content/uploads/ShortpixelBackups.
-		);
+		];
 
 		if ( ! is_multisite() ) {
 			$uploads_dir   = $filesystem->get_upload_basedir( true );
@@ -205,7 +205,7 @@ class Imagify_Files_Scan {
 			$folders[] = $uploads_dir . 'woocommerce_uploads'; // WooCommerce uploads: /wp-content/uploads/woocommerce_uploads.
 		}
 
-		$folders = array_map( array( $filesystem, 'normalize_dir_path' ), $folders );
+		$folders = array_map( [ $filesystem, 'normalize_dir_path' ], $folders );
 
 		/**
 		 * Add folders to the list of forbidden ones.
@@ -216,7 +216,7 @@ class Imagify_Files_Scan {
 		 * @param array $added_folders List of absolute paths.
 		 * @param array $folders       List of folders already forbidden.
 		 */
-		$added_folders = apply_filters( 'imagify_add_forbidden_folders', array(), $folders );
+		$added_folders = apply_filters( 'imagify_add_forbidden_folders', [], $folders );
 		$added_folders = array_filter( (array) $added_folders );
 		$added_folders = array_filter( $added_folders, 'is_string' );
 
@@ -224,7 +224,7 @@ class Imagify_Files_Scan {
 			return $folders;
 		}
 
-		$added_folders = array_map( array( $filesystem, 'normalize_dir_path' ), $added_folders );
+		$added_folders = array_map( [ $filesystem, 'normalize_dir_path' ], $added_folders );
 
 		$folders = array_merge( $folders, $added_folders );
 		$folders = array_flip( array_flip( $folders ) );
@@ -251,7 +251,7 @@ class Imagify_Files_Scan {
 			return $folders;
 		}
 
-		$folders = array();
+		$folders = [];
 
 		// Media Library: /wp\-content/uploads/(sites/\d+/)?\d{4}/\d{2}/.
 		$folders[] = self::get_media_library_pattern();
@@ -279,7 +279,7 @@ class Imagify_Files_Scan {
 		 * @param array $added_folders List of patterns.
 		 * @param array $folders       List of patterns already forbidden.
 		 */
-		$added_folders = apply_filters( 'imagify_add_forbidden_folder_patterns', array(), $folders );
+		$added_folders = apply_filters( 'imagify_add_forbidden_folder_patterns', [], $folders );
 		$added_folders = array_filter( (array) $added_folders );
 		$added_folders = array_filter( $added_folders, 'is_string' );
 
@@ -330,7 +330,7 @@ class Imagify_Files_Scan {
 			return $file_names;
 		}
 
-		$file_names = array(
+		$file_names = [
 			'.',
 			'..',
 			'.DS_Store',
@@ -344,7 +344,7 @@ class Imagify_Files_Scan {
 			'languages',
 			'node_modules',
 			'Thumbs.db',
-		);
+		];
 		$file_names = array_map( 'strtolower', $file_names );
 
 		/**
@@ -356,7 +356,7 @@ class Imagify_Files_Scan {
 		 * @param array $added_file_names List of file names.
 		 * @param array $file_names       List of file names already forbidden.
 		 */
-		$added_file_names = apply_filters( 'imagify_add_forbidden_file_names', array(), $file_names );
+		$added_file_names = apply_filters( 'imagify_add_forbidden_file_names', [], $file_names );
 
 		if ( ! $added_file_names || ! is_array( $added_file_names ) ) {
 			return $file_names;
@@ -445,15 +445,15 @@ class Imagify_Files_Scan {
 		}
 
 		$filesystem   = imagify_get_filesystem();
-		$replacements = array(
+		$replacements = [
 			'{{PLUGINS}}/'    => WP_PLUGIN_DIR,
 			'{{MU_PLUGINS}}/' => WPMU_PLUGIN_DIR,
 			'{{THEMES}}/'     => WP_CONTENT_DIR . '/themes',
 			'{{UPLOADS}}/'    => $filesystem->get_main_upload_basedir(),
 			'{{CONTENT}}/'    => WP_CONTENT_DIR,
 			'{{ROOT}}/'       => $filesystem->get_site_root(),
-		);
-		$replacements = array_map( array( $filesystem, 'normalize_dir_path' ), $replacements );
+		];
+		$replacements = array_map( [ $filesystem, 'normalize_dir_path' ], $replacements );
 
 		return $replacements;
 	}
@@ -475,14 +475,14 @@ class Imagify_Files_Scan {
 		}
 
 		$filesystem   = imagify_get_filesystem();
-		$replacements = array(
+		$replacements = [
 			'{{PLUGINS}}/'    => plugins_url( '/' ),
 			'{{MU_PLUGINS}}/' => plugins_url( '/', WPMU_PLUGIN_DIR . '/.' ),
 			'{{THEMES}}/'     => content_url( 'themes/' ),
 			'{{UPLOADS}}/'    => $filesystem->get_main_upload_baseurl(),
 			'{{CONTENT}}/'    => content_url( '/' ),
 			'{{ROOT}}/'       => $filesystem->get_site_root_url(),
-		);
+		];
 
 		return $replacements;
 	}
@@ -673,7 +673,7 @@ class Imagify_Files_Scan {
 		}
 
 		$galleries_path = self::normalize_path_for_regex( $galleries_path );
-		$galleries_path = str_replace( array( '%blog_name%', '%blog_id%' ), array( '.+', '\d+' ), $galleries_path );
+		$galleries_path = str_replace( [ '%blog_name%', '%blog_id%' ], [ '.+', '\d+' ], $galleries_path );
 
 		return $galleries_path;
 	}

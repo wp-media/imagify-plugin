@@ -25,13 +25,13 @@ function _imagify_attachment_fields_to_edit( $form_fields, $post ) {
 
 	$process = imagify_get_optimization_process( $post->ID, 'wp' );
 
-	$form_fields['imagify'] = array(
+	$form_fields['imagify'] = [
 		'label'         => 'Imagify',
 		'input'         => 'html',
 		'html'          => get_imagify_media_column_content( $process ),
 		'show_in_edit'  => true,
 		'show_in_modal' => true,
-	);
+	];
 
 	return $form_fields;
 }

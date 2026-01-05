@@ -200,7 +200,7 @@ class Imagify_Files_Stats {
 	 */
 	public static function count_files( $status = 'all' ) {
 		global $wpdb;
-		static $count = array();
+		static $count = [];
 
 		$status = self::validate_status( $status );
 
@@ -357,7 +357,7 @@ class Imagify_Files_Stats {
 	 */
 	public static function get_size( $type = null ) {
 		global $wpdb;
-		static $sizes = array();
+		static $sizes = [];
 
 		$type = 'optimized' === $type ? 'optimized_size' : 'original_size';
 
@@ -461,7 +461,7 @@ class Imagify_Files_Stats {
 	 * @return string         Fallback to 'all' if the status is not valid.
 	 */
 	public static function validate_status( $status = 'all' ) {
-		$statuses = array(
+		$statuses = [
 			'all'               => 1,
 			'success'           => 1,
 			'already_optimized' => 1,
@@ -469,7 +469,7 @@ class Imagify_Files_Stats {
 			'none'              => 1,
 			'optimized'         => 1,
 			'unoptimized'       => 1,
-		);
+		];
 
 		return isset( $statuses[ $status ] ) ? $status : 'all';
 	}

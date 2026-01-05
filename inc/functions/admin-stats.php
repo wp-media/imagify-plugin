@@ -419,12 +419,12 @@ function imagify_count_saving_data( $key = '' ) {
 		}
 	}
 
-	$data = array(
+	$data = [
 		'count'          => $count,
 		'original_size'  => $original_size,
 		'optimized_size' => $optimized_size,
 		'percent'        => $original_size && $optimized_size ? ceil( ( ( $original_size - $optimized_size ) / $original_size ) * 100 ) : 0,
-	);
+	];
 
 	if ( ! empty( $key ) ) {
 		return isset( $data[ $key ] ) ? $data[ $key ] : 0;
@@ -506,34 +506,34 @@ function imagify_calculate_average_size_images_per_month() {
 
 	// Queries per month.
 	$date_query = new WP_Date_Query(
-		array(
-			array(
+		[
+			[
 				'before' => 'now',
 				'after'  => '1 month ago',
-			),
-		)
+			],
+		]
 	);
 
 	$partial_images_uploaded_last_month = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
 	$date_query = new WP_Date_Query(
-		array(
-			array(
+		[
+			[
 				'before' => '1 month ago',
 				'after'  => '2 months ago',
-			),
-		)
+			],
+		]
 	);
 
 	$partial_images_uploaded_two_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
 
 	$date_query = new WP_Date_Query(
-		array(
-			array(
+		[
+			[
 				'before' => '2 month ago',
 				'after'  => '3 months ago',
-			),
-		)
+			],
+		]
 	);
 
 	$partial_images_uploaded_three_months_ago = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query . $limit ) ); // WPCS: unprepared SQL ok.
@@ -547,12 +547,12 @@ function imagify_calculate_average_size_images_per_month() {
 
 	// Total for the 3 months, without the "250" limit.
 	$date_query = new WP_Date_Query(
-		array(
-			array(
+		[
+			[
 				'before' => 'now',
 				'after'  => '3 month ago',
-			),
-		)
+			],
+		]
 	);
 
 	$images_uploaded_id = $wpdb->get_col( str_replace( '%date_query%', $date_query->get_sql(), $query ) ); // WPCS: unprepared SQL ok.
@@ -590,7 +590,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 	}
 
 	$results = Imagify_DB::get_metas(
-		array(
+		[
 			// Get attachments filename.
 			'filenames'    => '_wp_attached_file',
 			// Get attachments data.
@@ -599,7 +599,7 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 			'imagify_data' => '_imagify_data',
 			// Get attachments status.
 			'statuses'     => '_imagify_status',
-		),
+		],
 		$image_ids
 	);
 
@@ -639,11 +639,11 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
 		 * The image files are not optimized.
 		 */
 		// Create an array containing all this attachment files.
-		$files = array(
+		$files = [
 			'full' => get_imagify_attached_file( $results['filenames'][ $image_id ] ),
-		);
+		];
 
-		$sizes = isset( $results['data'][ $image_id ]['sizes'] ) ? $results['data'][ $image_id ]['sizes'] : array();
+		$sizes = isset( $results['data'][ $image_id ]['sizes'] ) ? $results['data'][ $image_id ]['sizes'] : [];
 
 		if ( $sizes && is_array( $sizes ) ) {
 			if ( ! $is_active_for_network ) {
@@ -729,17 +729,17 @@ function imagify_calculate_total_image_size( $image_ids, $partial_total_images, 
  * }
  * @return array
  */
-function imagify_get_bulk_stats( $types, $args = array() ) {
-	$types = $types && is_array( $types ) ? $types : array();
+function imagify_get_bulk_stats( $types, $args = [] ) {
+	$types = $types && is_array( $types ) ? $types : [];
 	$args  = array_merge(
-		array(
+		[
 			'fullset'    => false,
 			'formatting' => true,
-		),
+		],
 		(array) $args
 	);
 
-	$data = array(
+	$data = [
 		// Global chart.
 		'total_attachments'             => 0,
 		'unoptimized_attachments'       => 0,
@@ -749,7 +749,7 @@ function imagify_get_bulk_stats( $types, $args = array() ) {
 		'already_optimized_attachments' => 0,
 		'original_human'                => 0,
 		'optimized_human'               => 0,
-	);
+	];
 
 	if ( isset( $types['library|wp'] ) ) {
 		/**

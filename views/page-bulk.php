@@ -41,7 +41,7 @@ defined( 'ABSPATH' ) || exit;
 
 							<p><?php esc_html_e( 'Optimized size', 'imagify' ); ?></p>
 							<div class="imagify-bar-primary base-transparent right-outside-number">
-								<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo max( 100 - $data['optimized_percent'], 0 ); ?>%"><span class="imagify-barnb"><?php echo esc_html( $data['optimized_human'] ); ?></span></div>
+								<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo esc_attr( max( 100 - $data['optimized_percent'], 0 ) ); ?>%"><span class="imagify-barnb"><?php echo esc_html( $data['optimized_human'] ); ?></span></div>
 							</div>
 
 						</div>
@@ -98,7 +98,7 @@ defined( 'ABSPATH' ) || exit;
 								<?php esc_html_e( 'Your Account', 'imagify' ); ?>
 							</p>
 						</div>
-						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View your profile', 'imagify' ); ?></a>
+						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php esc_html_e( 'View your profile', 'imagify' ); ?></a>
 					</div>
 					<?php $this->print_template( 'part-upsell' ); ?>
 				<?php } ?>
@@ -135,9 +135,9 @@ defined( 'ABSPATH' ) || exit;
 					}
 
 					?>
-					<button id="imagify-bulk-action" type="button" class="button button-primary" <?php echo $disabled; ?>>
-						<span class="dashicons dashicons-admin-generic <?php echo $class; ?>"></span>
-						<span class="button-text"><?php _e( 'Imagif’em all', 'imagify' ); ?></span>
+					<button id="imagify-bulk-action" type="button" class="button button-primary" <?php echo $disabled; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+						<span class="dashicons dashicons-admin-generic <?php echo esc_attr( $class ); ?>"></span>
+						<span class="button-text"><?php esc_html_e( 'Imagif’em all', 'imagify' ); ?></span>
 					</button>
 				</p>
 			</div>

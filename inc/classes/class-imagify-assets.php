@@ -1,5 +1,6 @@
 <?php
 use Imagify\Notices\Notices;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that handles stylesheets and JavaScripts.
@@ -7,6 +8,7 @@ use Imagify\Notices\Notices;
  * @since 1.6.10
  */
 class Imagify_Assets extends Imagify_Assets_Deprecated {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -72,13 +74,6 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 	protected static $version;
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @var object
-	 */
-	protected static $_instance;
-
-	/**
 	 * The constructor.
 	 *
 	 * @return void
@@ -93,21 +88,6 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 	/** PUBLIC METHODS ========================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since 1.6.10
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	/**
 	 * Launch the hooks.

@@ -27,20 +27,20 @@ class Upload {
 
 		}
 
-		$status  = isset( $_GET['imagify-status'] ) ? wp_unslash( $_GET['imagify-status'] ) : 0; // WPCS: CSRF ok.
-		$options = array(
+		$status  = isset( $_GET['imagify-status'] ) ? sanitize_text_field( wp_unslash( $_GET['imagify-status'] ) ) : 0;
+		$options = [
 			'optimized'   => _x( 'Optimized', 'Media Files', 'imagify' ),
 			'unoptimized' => _x( 'Unoptimized', 'Media Files', 'imagify' ),
 			'errors'      => _x( 'Errors', 'Media Files', 'imagify' ),
-		);
+		];
 
-		echo '<label class="screen-reader-text" for="filter-by-optimization-status">' . __( 'Filter by status', 'imagify' ) . '</label>';
+		echo '<label class="screen-reader-text" for="filter-by-optimization-status">' . esc_html__( 'Filter by status', 'imagify' ) . '</label>';
 		echo '<select id="filter-by-optimization-status" name="imagify-status">';
-		echo '<option value="0" selected="selected">' . __( 'All Media Files', 'imagify' ) . '</option>';
+		echo '<option value="0" selected="selected">' . esc_html__( 'All Media Files', 'imagify' ) . '</option>';
 
 		foreach ( $options as $value => $label ) {
 			$filter_value = isset( $data[ $value ] ) ? ' (' . $data[ $value ] . ')' : '';
-			echo '<option value="' . $value . '" ' . selected( $status, $value, false ) . '>' . $label . $filter_value . '</option>';
+			echo '<option value="' . esc_attr( $value ) . '" ' . selected( $status, $value, false ) . '>' . esc_html( $label ) . esc_html( $filter_value ) . '</option>';
 		}
 		echo '</select>&nbsp;';
 	}

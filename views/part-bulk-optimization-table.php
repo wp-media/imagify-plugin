@@ -7,9 +7,9 @@ defined( 'ABSPATH' ) || exit;
 <div class="imagify-bulk-table">
 	<div class="imagify-table-header imagify-flex imagify-vcenter imagify-resting">
 		<div class="imagify-th-titles imagify-flex imagify-vcenter">
-			<span class="dashicons dashicons-<?php echo $data['icon']; ?>"></span>
+			<span class="dashicons dashicons-<?php echo esc_attr( $data['icon'] ); ?>"></span>
 			<div class="imagify-th-titles">
-				<p class="imagify-th-title"><?php echo $data['title']; ?></p>
+				<p class="imagify-th-title"><?php echo esc_html( $data['title'] ); ?></p>
 			</div>
 		</div>
 	</div>
@@ -56,10 +56,10 @@ defined( 'ABSPATH' ) || exit;
 
 	<div class="imagify-bulk-table-content">
 		<div class="imagify-bulk-table-container">
-			<div <?php echo $aria_hidden; ?> class="imagify-row-progress <?php echo $hidden; ?>" <?php echo $display; ?>>
+			<div <?php echo $aria_hidden; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> class="imagify-row-progress <?php echo esc_attr( $hidden ); ?>" <?php echo $display; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 				<div class="media-item">
 					<div class="progress">
-						<div class="bar" <?php echo $style; ?>><div class="percent"><?php echo $percentage; ?>%</div></div>
+						<div class="bar" <?php echo $style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><div class="percent"><?php echo esc_html( $percentage ); ?>%</div></div>
 					</div>
 				</div>
 			</div>

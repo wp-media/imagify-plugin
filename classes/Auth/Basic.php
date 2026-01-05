@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Auth;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that allows the use of Basic Auth for internal requests.
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 final class Basic {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * Class init: launch hooks.
@@ -55,7 +55,7 @@ final class Basic {
 			$user = IMAGIFY_AUTH_USER;
 			$pass = IMAGIFY_AUTH_PASSWORD;
 		} else {
-			$auth_type = ! empty( $_SERVER['AUTH_TYPE'] ) ? strtolower( wp_unslash( $_SERVER['AUTH_TYPE'] ) ) : '';
+			$auth_type = ! empty( $_SERVER['AUTH_TYPE'] ) ? strtolower( sanitize_text_field( wp_unslash( $_SERVER['AUTH_TYPE'] ) ) ) : '';
 
 			if ( 'basic' === $auth_type && ! empty( $_SERVER['PHP_AUTH_USER'] ) && ! empty( $_SERVER['PHP_AUTH_PW'] ) ) {
 				$user = sanitize_text_field( wp_unslash( $_SERVER['PHP_AUTH_USER'] ) );
