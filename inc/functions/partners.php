@@ -53,4 +53,3 @@ function imagify_save_partner_hide_our_plugins( $partner ) {
 
 	add_option( 'imagify_partner_hide_our_plugins', $partner );
 }
-
