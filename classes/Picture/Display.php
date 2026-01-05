@@ -218,9 +218,13 @@ class Display implements SubscriberInterface {
 			unset( $attributes['data-object-position'] );
 		}
 
-		$picture_attributes = array_filter( $attributes, function ( $attribute ) {
-			return strpos( $attribute, 'data-wp' ) === false;
-		}, ARRAY_FILTER_USE_KEY );
+		$picture_attributes = array_filter(
+			$attributes,
+			function ( $attribute ) {
+				return strpos( $attribute, 'data-wp' ) === false;
+			},
+			ARRAY_FILTER_USE_KEY
+		);
 
 		$output = '<picture' . $this->build_attributes( $picture_attributes ) . ">\n";
 		/**
