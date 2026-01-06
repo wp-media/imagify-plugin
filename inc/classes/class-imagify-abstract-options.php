@@ -1,15 +1,11 @@
 <?php
 
-use Imagify\Traits\InstanceGetterTrait;
-
 /**
  * Abstract class to handle a part of the plugin options.
  *
  * @since 1.7
  */
 abstract class Imagify_Abstract_Options {
-	use InstanceGetterTrait;
-
 	/**
 	 * Class version.
 	 *

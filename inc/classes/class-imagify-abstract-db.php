@@ -1,7 +1,5 @@
 <?php
 
-use Imagify\Traits\InstanceGetterTrait;
-
 /**
  * Imagify DB base class.
  *
@@ -9,8 +7,6 @@ use Imagify\Traits\InstanceGetterTrait;
  * @source https://gist.github.com/pippinsplugins/e220a7f0f0f2fbe64608
  */
 abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implements \Imagify\DB\DBInterface {
-	use InstanceGetterTrait;
-
 	/**
 	 * Class version.
 	 *
