@@ -38,7 +38,7 @@ $list_id = 'imagify-' . $list_id . '-selector-list';
 			?>
 			<li class="imagify-selector-choice<?php echo $val === $data['value'] ? ' imagify-selector-current-value" aria-current="true' : ''; ?>" role="option">
 				<input type="radio" name="<?php echo esc_attr( $data['name'] ); ?>" value="<?php echo esc_attr( $val ); ?>" id="<?php echo esc_attr( $input_id ); ?>" <?php checked( $val, $data['value'] ); ?> class="screen-reader-text">
-				<label for="<?php echo esc_attr( $input_id ); ?>"><?php echo  $label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
+				<label for="<?php echo esc_attr( $input_id ); ?>"><?php echo $label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
 			</li>
 			<?php
 		}
