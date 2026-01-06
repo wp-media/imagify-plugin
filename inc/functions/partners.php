@@ -46,7 +46,7 @@ function imagify_delete_partner() {
  */
 function imagify_save_partner_hide_our_plugins( $partner ) {
 	$partners = [
-		18 // Extendify.
+		18, // Extendify.
 	];
 
 	if ( ! in_array( $partner, $partners, true ) ) {
