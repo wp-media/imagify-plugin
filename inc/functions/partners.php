@@ -49,9 +49,9 @@ function imagify_save_partner_hide_our_plugins( $partner ) {
 		18, // Extendify.
 	];
 
-	if ( ! in_array( $partner, $partners, true ) ) {
+	if ( ! in_array( (int) $partner, $partners, true ) ) {
 		return;
 	}
 
-	add_option( 'imagify_partner_hide_our_plugins', $partner );
+	update_option( 'imagify_partner_hide_our_plugins', $partner );
 }
