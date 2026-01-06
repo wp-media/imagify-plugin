@@ -11,6 +11,7 @@ delete_site_option( 'imagify_folders_db_version' );
 delete_option( 'imagify_data' );
 delete_option( 'ngg_imagify_data_db_version' );
 delete_option( $wpdb->prefix . 'ngg_imagify_data_db_version' );
+delete_option( 'imagify_partner_hide_our_plugins' );
 
 // Delete all transients.
 delete_site_transient( 'imagify_activation' );
