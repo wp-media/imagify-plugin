@@ -107,7 +107,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 					</div>
 				</div>
 
-			<div class="imagify-settings-main-content imagify-pb0<?php echo esc_attr( $hidden_class ); ?>">
+				<div class="imagify-settings-main-content imagify-pb0<?php echo esc_attr( $hidden_class ); ?>">
 				<?php if ( ! $data['hide_plugin_family'] ) : ?>
 					<div class="imagify-settings-section imagify-clear">
 						<div>
