@@ -11,7 +11,7 @@ use Imagify\Tests\Unit\TestCase;
  * @covers ::imagify_maybe_delete_partner_on_option_update
  */
 class ImagifyMaybeDeletePartnerOnOptionUpdateTest extends TestCase {
-	public static function set_up_before_class(): void {
+	public static function set_up_before_class() {
 		parent::set_up_before_class();
 
 		require_once IMAGIFY_PLUGIN_ROOT . 'inc/common/partners.php';
