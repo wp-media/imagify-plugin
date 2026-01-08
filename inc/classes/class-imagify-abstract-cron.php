@@ -1,7 +1,5 @@
 <?php
 
-use Imagify\Traits\InstanceGetterTrait;
-
 /**
  * Basis class that handles events.
  *
@@ -9,8 +7,6 @@ use Imagify\Traits\InstanceGetterTrait;
  * @author Grégory Viguier
  */
 abstract class Imagify_Abstract_Cron {
-	use InstanceGetterTrait;
-
 	/**
 	 * Class version.
 	 *
