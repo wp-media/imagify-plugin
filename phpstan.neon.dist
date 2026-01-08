@@ -23,6 +23,7 @@ parameters:
 		- inc/functions/common.php
 		- inc/functions/formatting.php
 		- inc/functions/options.php
+		- inc/functions/partners.php
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
 		- vendor/php-stubs/wordpress-tests-stubs/wordpress-tests-stubs.php
 	excludePaths:
