@@ -1,5 +1,7 @@
 <?php
 
+use Imagify\Traits\InstanceGetterTrait;
+
 /**
  * DB class that handles files in "custom folders".
  *
@@ -7,6 +9,8 @@
  * @author Grégory Viguier
  */
 class Imagify_Folders_DB extends Imagify_Abstract_DB {
+	use InstanceGetterTrait;
+
 	/**
 	 * Class version.
 	 *

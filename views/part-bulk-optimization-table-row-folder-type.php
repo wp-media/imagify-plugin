@@ -17,16 +17,16 @@ defined( 'ABSPATH' ) || exit;
 		<label for="cb-select-<?php echo esc_attr( $data['group_id'] ); ?>"><?php echo esc_html( $data['title'] ); ?></label>
 	</td>
 	<td class="imagify-cell-count-optimized">
-		<?php echo esc_html( $data['count-optimized'] ); ?>
+		<?php echo $data['count-optimized']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	</td>
 	<td class="imagify-cell-count-errors">
-		<?php echo esc_html( $data['count-errors'] ); ?>
+		<?php echo $data['count-errors']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	</td>
 	<td class="imagify-cell-optimized-size-size">
-		<?php echo esc_html( $data['optimized-size'] ); ?>
+		<?php echo $data['optimized-size']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	</td>
 	<td class="imagify-cell-original-size-size">
-		<?php echo esc_html( $data['original-size'] ); ?>
+		<?php echo $data['original-size']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	</td>
 	<td class="imagify-cell-level">
 		<?php
