@@ -1,11 +1,15 @@
 <?php
 
+use Imagify\Traits\InstanceGetterTrait;
+
 /**
  * Class that scans the custom folders to keep files in sync in the database.
  *
  * @since  1.7
  */
 class Imagify_Cron_Sync_Files extends Imagify_Abstract_Cron {
+	use InstanceGetterTrait;
+
 	/**
 	 * Class version.
 	 *
