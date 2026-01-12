@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
-add_action( 'update_option_' . Imagify_Options::get_instance()->get_option_name(), 'imagify_maybe_delete_partner_on_option_update', 10, 2 );
+add_action( 'update_option_imagify_settings', 'imagify_maybe_delete_partner_on_option_update', 10, 2 );
 /**
  * After the first API key has been successfully added, make sure the partner ID is deleted.
  *
@@ -13,11 +13,19 @@ add_action( 'update_option_' . Imagify_Options::get_instance()->get_option_name(
  */
 function imagify_maybe_delete_partner_on_option_update( $old_value, $new_value ) {
 	if ( empty( $old_value['api_key'] ) && ! empty( $new_value['api_key'] ) ) {
+		$partner = imagify_get_partner();
+
+		if ( false === $partner ) {
+			return;
+		}
+
+		imagify_save_partner_hide_our_plugins( $partner );
+
 		imagify_delete_partner();
 	}
 }
 
-add_action( 'update_site_option_' . Imagify_Options::get_instance()->get_option_name(), 'imagify_maybe_delete_partner_on_network_option_update', 10, 3 );
+add_action( 'update_site_option_imagify_settings', 'imagify_maybe_delete_partner_on_network_option_update', 10, 3 );
 /**
  * After the first API key has been successfully added to the network option, make sure the partner ID is deleted.
  *

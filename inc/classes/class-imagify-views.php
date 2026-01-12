@@ -204,7 +204,8 @@ class Imagify_Views {
 		$plugins_array = $plugin_family->get_filtered_plugins( 'imagify/imagify' );
 
 		$data = [
-			'plugin_family' => $plugins_array['uncategorized'],
+			'hide_plugin_family' => (bool) get_option( 'imagify_partner_hide_our_plugins' ),
+			'plugin_family'      => $plugins_array['uncategorized'],
 		];
 
 		$this->print_template( 'page-settings', $data );
