@@ -5,6 +5,9 @@ namespace Imagify\ThirdParty\Hostings;
 
 use Imagify\EventManagement\SubscriberInterface;
 
+/**
+ * Extendify compatibility class
+ */
 class Extendify implements SubscriberInterface {
 	/**
 	 * Returns an array of events that this subscriber wants to listen to.
