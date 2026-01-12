@@ -195,9 +195,12 @@ p.imagify-api-key-invite-title {
 	padding-top: 35px;
 }
 
+.imagify-settings .imagify-plugin-family-section {
+	margin-bottom: 2em;
+}
+
 .imagify-settings div.submit.submit {
 	border-top: 1px solid #D9D9D9;
-	margin-top: 2em;
 	padding: 18px 0 7px 30px;
 }
 .imagify-settings .hidden + div.submit.submit {
