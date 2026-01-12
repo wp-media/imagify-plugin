@@ -158,8 +158,6 @@ class Imagify {
 		);
 
 		if ( ! is_wp_error( $response ) && isset( $data['partner'] ) ) {
-			imagify_save_partner_hide_our_plugins( $data['partner'] );
-
 			imagify_delete_partner();
 		}
 
