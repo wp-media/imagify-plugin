@@ -34,24 +34,3 @@ function imagify_delete_partner() {
 		delete_option( 'imagifyp_id' );
 	}
 }
-
-/**
- * Save the partner ID to hide our other plugins if needed
- *
- * @since 2.2.7
- *
- * @param string|bool $partner Partner ID.
- *
- * @return void
- */
-function imagify_save_partner_hide_our_plugins( $partner ) {
-	$partners = [
-		'extendify',
-	];
-
-	if ( ! in_array( $partner, $partners, true ) ) {
-		return;
-	}
-
-	update_option( 'imagify_partner_hide_our_plugins', $partner );
-}

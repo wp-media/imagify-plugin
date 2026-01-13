@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Imagify\ThirdParty;
 
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
+use Imagify\ThirdParty\Hostings\Extendify;
 use Imagify\ThirdParty\Plugins\GravityForms;
 
 /**
@@ -17,6 +18,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	protected $provides = [
 		'gravity_from_subscriber',
+		Extendify::class,
 	];
 
 	/**
@@ -26,6 +28,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public $subscribers = [
 		'gravity_from_subscriber',
+		Extendify::class,
 	];
 
 	/**
@@ -55,5 +58,6 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public function register(): void {
 		$this->getContainer()->addShared( 'gravity_from_subscriber', GravityForms::class );
+		$this->getContainer()->addShared( Extendify::class );
 	}
 }
