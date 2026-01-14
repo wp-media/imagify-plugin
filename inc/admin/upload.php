@@ -36,7 +36,7 @@ function _imagify_manage_media_custom_column( $column_name, $attachment_id ) {
 
 	$process = imagify_get_optimization_process( $attachment_id, 'wp' );
 
-	echo get_imagify_media_column_content( $process );
+	echo get_imagify_media_column_content( $process ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 add_filter( 'request', '_imagify_sort_attachments_by_status' );
@@ -50,14 +50,14 @@ add_filter( 'request', '_imagify_sort_attachments_by_status' );
  * @return array
  */
 function _imagify_sort_attachments_by_status( $vars ) {
-	if ( empty( $_GET['imagify-status'] ) || ! Imagify_Views::get_instance()->is_wp_library_page() ) { // WPCS: CSRF ok.
+	if ( empty( $_GET['imagify-status'] ) || ! Imagify_Views::get_instance()->is_wp_library_page() ) {
 		return $vars;
 	}
 
-	$status       = wp_unslash( $_GET['imagify-status'] ); // WPCS: CSRF ok.
+	$status       = sanitize_text_field( wp_unslash( $_GET['imagify-status'] ) );
 	$meta_key     = '_imagify_status';
 	$meta_compare = '=';
-	$relation     = array();
+	$relation     = [];
 
 	switch ( $status ) {
 		case 'unoptimized':
@@ -66,11 +66,11 @@ function _imagify_sort_attachments_by_status( $vars ) {
 			break;
 		case 'optimized':
 			$status   = 'success';
-			$relation = array(
+			$relation = [
 				'key'     => $meta_key,
 				'value'   => 'already_optimized',
 				'compare' => $meta_compare,
-			);
+			];
 			break;
 		case 'errors':
 			$status = 'error';

@@ -60,7 +60,7 @@ class Imagify_DB {
 	 */
 	public static function prepare_values_list( $values ) {
 		$values = esc_sql( (array) $values );
-		$values = array_map( array( __CLASS__, 'quote_string' ), $values );
+		$values = array_map( [ __CLASS__, 'quote_string' ], $values );
 		return implode( ',', $values );
 	}
 
@@ -279,13 +279,13 @@ class Imagify_DB {
 	 * }.
 	 * @return string A query.
 	 */
-	public static function get_required_wp_metadata_where_clause( $args = array() ) {
-		static $query = array();
+	public static function get_required_wp_metadata_where_clause( $args = [] ) {
+		static $query = [];
 
 		$args = imagify_merge_intersect(
 			$args,
 			[
-				'aliases'  => array(),
+				'aliases'  => [],
 				'matching' => true,
 				'test'     => true,
 				'prepared' => false,
@@ -299,11 +299,11 @@ class Imagify_DB {
 		}
 
 		if ( $aliases && is_string( $aliases ) ) {
-			$aliases = array(
+			$aliases = [
 				'_wp_attached_file' => $aliases,
-			);
+			];
 		} elseif ( ! is_array( $aliases ) ) {
-			$aliases = array();
+			$aliases = [];
 		}
 
 		$aliases = imagify_merge_intersect( $aliases, self::get_required_wp_metadata_aliases() );
@@ -341,13 +341,13 @@ class Imagify_DB {
 	 *  }.
 	 * @return string A query.
 	 */
-	public static function get_required_exist_wp_metadata_where_clause( $args = array() ) {
-		static $query = array();
+	public static function get_required_exist_wp_metadata_where_clause( $args = [] ) {
+		static $query = [];
 
 		$args = imagify_merge_intersect(
 			$args,
 			[
-				'aliases'  => array(),
+				'aliases'  => [],
 				'matching' => true,
 				'test'     => true,
 				'prepared' => false,
@@ -361,11 +361,11 @@ class Imagify_DB {
 		}
 
 		if ( $aliases && is_string( $aliases ) ) {
-			$aliases = array(
+			$aliases = [
 				'_wp_attached_file' => $aliases,
-			);
+			];
 		} elseif ( ! is_array( $aliases ) ) {
-			$aliases = array();
+			$aliases = [];
 		}
 
 		$aliases = imagify_merge_intersect( $aliases, self::get_required_wp_metadata_aliases() );
@@ -452,7 +452,7 @@ class Imagify_DB {
 	 */
 	public static function get_extensions_where_clause( $args = false ) {
 		static $extensions;
-		static $query = array();
+		static $query = [];
 
 		$instance = new self();
 
@@ -504,10 +504,10 @@ class Imagify_DB {
 	 * @return array An array with the meta name as key and its alias as value.
 	 */
 	public static function get_required_wp_metadata_aliases() {
-		return array(
+		return [
 			'_wp_attached_file'       => 'imrwpmt1',
 			'_wp_attachment_metadata' => 'imrwpmt2',
-		);
+		];
 	}
 
 	/**
@@ -525,10 +525,10 @@ class Imagify_DB {
 	 */
 	public static function combine_query_results( $keys, $values, $keep_keys_order = false ) {
 		if ( ! $keys || ! $values ) {
-			return array();
+			return [];
 		}
 
-		$result = array();
+		$result = [];
 		$keys   = array_flip( $keys );
 
 		foreach ( $values as $v ) {
@@ -572,7 +572,7 @@ class Imagify_DB {
 		global $wpdb;
 
 		if ( ! $ids ) {
-			return array_fill_keys( array_keys( $metas ), array() );
+			return array_fill_keys( array_keys( $metas ), [] );
 		}
 
 		$sql_ids = implode( ',', $ids );

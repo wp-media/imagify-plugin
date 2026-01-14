@@ -2,7 +2,7 @@
 
 use Imagify\User\User;
 use Imagify\Dependencies\WPMedia\PluginFamily\Model\PluginFamily;
-
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that handles templates and menus.
@@ -10,6 +10,7 @@ use Imagify\Dependencies\WPMedia\PluginFamily\Model\PluginFamily;
  * @since 1.7
  */
 class Imagify_Views {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -68,14 +69,6 @@ class Imagify_Views {
 	protected $filesystem;
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @var object
-	 * @since 1.7
-	 */
-	protected static $_instance;
-
-	/**
 	 * Imagify admin bar menu.
 	 *
 	 * @var bool
@@ -97,21 +90,6 @@ class Imagify_Views {
 		$this->slug_bulk     = IMAGIFY_SLUG . '-bulk-optimization';
 		$this->slug_files    = IMAGIFY_SLUG . '-files';
 		$this->filesystem    = Imagify_Filesystem::get_instance();
-	}
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since 1.7
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 	/**
@@ -186,20 +164,20 @@ class Imagify_Views {
 
 		if ( ! imagify_can_optimize_custom_folders() ) {
 			// Main item: settings (edge case).
-			add_menu_page( 'Imagify', 'Imagify', $wp_context->get_capacity( 'manage' ), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
+			add_menu_page( 'Imagify', 'Imagify', $wp_context->get_capacity( 'manage' ), $this->get_settings_page_slug(), [ $this, 'display_settings_page' ] );
 			return;
 		}
 
 		$cf_context = imagify_get_context( 'custom-folders' );
 
 		// Main item: bulk optimization (custom folders).
-		add_menu_page( __( 'Bulk Optimization', 'imagify' ), 'Imagify', $cf_context->current_user_can( 'bulk-optimize' ), $this->get_bulk_page_slug(), array( $this, 'display_bulk_page' ) );
+		add_menu_page( __( 'Bulk Optimization', 'imagify' ), 'Imagify', $cf_context->current_user_can( 'bulk-optimize' ), $this->get_bulk_page_slug(), [ $this, 'display_bulk_page' ] );
 
 		// Sub-menu item: custom folders list.
-		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), $cf_context->current_user_can( 'bulk-optimize' ), $this->get_files_page_slug(), array( $this, 'display_files_list' ) );
+		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), $cf_context->current_user_can( 'bulk-optimize' ), $this->get_files_page_slug(), [ $this, 'display_files_list' ] );
 
 		// Sub-menu item: settings.
-		add_submenu_page( $this->get_bulk_page_slug(), 'Imagify', __( 'Settings', 'imagify' ), $wp_context->get_capacity( 'manage' ), $this->get_settings_page_slug(), array( $this, 'display_settings_page' ) );
+		add_submenu_page( $this->get_bulk_page_slug(), 'Imagify', __( 'Settings', 'imagify' ), $wp_context->get_capacity( 'manage' ), $this->get_settings_page_slug(), [ $this, 'display_settings_page' ] );
 
 		// Change the sub-menu label.
 		if ( ! empty( $submenu[ $this->get_bulk_page_slug() ] ) ) {
@@ -208,7 +186,7 @@ class Imagify_Views {
 
 		if ( $screen_id ) {
 			// On the "Other Media optimized by Imagify" page, load the data.
-			add_action( 'load-' . $screen_id, array( $this, 'load_files_list' ) );
+			add_action( 'load-' . $screen_id, [ $this, 'load_files_list' ] );
 		}
 	}
 
@@ -226,7 +204,8 @@ class Imagify_Views {
 		$plugins_array = $plugin_family->get_filtered_plugins( 'imagify/imagify' );
 
 		$data = [
-			'plugin_family' => $plugins_array['uncategorized'],
+			'hide_plugin_family' => wpm_apply_filters_typed( 'boolean', 'imagify_hide_plugin_family', false ),
+			'plugin_family'      => $plugins_array['uncategorized'],
 		];
 
 		$this->print_template( 'page-settings', $data );
@@ -238,15 +217,15 @@ class Imagify_Views {
 	 * @since 1.7
 	 */
 	public function display_bulk_page() {
-		$types = array();
-		$data  = array(
+		$types = [];
+		$data  = [
 			// Limits.
 			'unoptimized_attachment_limit' => 0,
 			// What to optimize.
 			'icon'                         => 'images-alt2',
 			'title'                        => __( 'Optimize your media files', 'imagify' ),
-			'groups'                       => array(),
-		);
+			'groups'                       => [],
+		];
 
 		if ( imagify_is_screen( 'bulk' ) ) {
 			if ( ! is_network_admin() ) {
@@ -287,7 +266,7 @@ class Imagify_Views {
 			// Limits.
 			$data['unoptimized_attachment_limit'] += imagify_get_unoptimized_attachment_limit();
 			// Group.
-			$data['groups']['library'] = array(
+			$data['groups']['library'] = [
 				/**
 				 * The group_id corresponds to the file names like 'part-bulk-optimization-results-row-{$group_id}'.
 				 * It is also used in get_imagify_localize_script_translations().
@@ -297,7 +276,7 @@ class Imagify_Views {
 				'title'    => __( 'Media Library', 'imagify' ),
 				/* translators: 1 is the opening of a link, 2 is the closing of this link. */
 				'footer'   => sprintf( __( 'You can also re-optimize your media files from your %1$sMedia Library%2$s screen.', 'imagify' ), '<a href="' . esc_url( admin_url( 'upload.php' ) ) . '">', '</a>' ),
-			);
+			];
 		}
 
 		if ( isset( $types['custom-folders|custom-folders'] ) ) {
@@ -305,13 +284,13 @@ class Imagify_Views {
 				$data['no-custom-folders'] = true;
 			} elseif ( Imagify_Folders_DB::get_instance()->has_active_folders() ) {
 				// Group.
-				$data['groups']['custom-folders'] = array(
+				$data['groups']['custom-folders'] = [
 					'group_id' => 'custom-folders',
 					'context'  => 'custom-folders',
 					'title'    => __( 'Custom folders', 'imagify' ),
 					/* translators: 1 is the opening of a link, 2 is the closing of this link. */
 					'footer'   => sprintf( __( 'You can re-optimize your media files more finely directly in the %1$smedia management%2$s.', 'imagify' ), '<a href="' . esc_url( get_imagify_admin_url( 'files-list' ) ) . '">', '</a>' ),
-				);
+				];
 			}
 		}
 
@@ -420,7 +399,11 @@ class Imagify_Views {
 	public function is_settings_page() {
 		global $pagenow;
 
-		$page = htmlspecialchars( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $_GET['page'] ) ) {
+			return false;
+		}
+
+		$page = sanitize_text_field( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		if ( $this->get_settings_page_slug() !== $page ) {
 			return false;
@@ -443,7 +426,11 @@ class Imagify_Views {
 	public function is_bulk_page() {
 		global $pagenow;
 
-		$page = htmlspecialchars( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $_GET['page'] ) ) {
+			return false;
+		}
+
+		$page = sanitize_text_field( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		return 'upload.php' === $pagenow && $this->get_bulk_page_slug() === $page;
 	}
@@ -458,7 +445,11 @@ class Imagify_Views {
 	public function is_files_page() {
 		global $pagenow;
 
-		$page = htmlspecialchars( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $_GET['page'] ) ) {
+			return false;
+		}
+
+		$page = sanitize_text_field( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		return 'upload.php' === $pagenow && $this->get_files_page_slug() === $page;
 	}
@@ -583,7 +574,7 @@ class Imagify_Views {
 	 * @param  mixed  $data     Some data to pass to the template.
 	 * @return string|bool      The page contents. False if the template doesn't exist.
 	 */
-	public function get_template( $template, $data = array() ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	public function get_template( $template, $data = [] ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$path = str_replace( '_', '-', $template );
 		$path = IMAGIFY_PATH . 'views/' . $template . '.php';
 
@@ -606,8 +597,8 @@ class Imagify_Views {
 	 * @param string $template The template name.
 	 * @param mixed  $data     Some data to pass to the template.
 	 */
-	public function print_template( $template, $data = array() ) {
-		echo $this->get_template( $template, $data );
+	public function print_template( $template, $data = [] ) {
+		echo $this->get_template( $template, $data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -650,7 +641,7 @@ class Imagify_Views {
 		foreach ( $this->templates_in_footer as $template => $data ) {
 			$template_id = str_replace( [ '/', '_' ], '-', $template );
 
-			echo '<script type="text/html" id="tmpl-imagify-' . $template_id . '">';
+			echo '<script type="text/html" id="tmpl-imagify-' . esc_attr( $template_id ) . '">';
 				$this->print_template( $template, $data );
 			echo '</script>';
 		}

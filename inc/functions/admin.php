@@ -202,10 +202,10 @@ function get_imagify_max_intermediate_image_size() {
 		}
 	}
 
-	return array(
+	return [
 		'width'  => $width,
 		'height' => $height,
-	);
+	];
 }
 
 /**
@@ -219,26 +219,26 @@ function get_imagify_max_intermediate_image_size() {
  * @param  array  $query An array of query arguments (utm_*).
  * @return string The URL.
  */
-function imagify_get_wp_rocket_url( $path = false, $query = array() ) {
+function imagify_get_wp_rocket_url( $path = false, $query = [] ) {
 	$wprocket_url = 'https://wp-rocket.me/';
 
 	// Current lang.
-	$lang = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
+	$lang = imagify_get_current_lang_in( [ 'de', 'es', 'fr', 'it' ] );
 
 	if ( 'en' !== $lang ) {
 		$wprocket_url .= $lang . '/';
 	}
 
 	// URI.
-	$paths = array(
-		'pricing' => array(
+	$paths = [
+		'pricing' => [
 			'de' => 'preise',
 			'en' => 'pricing',
 			'es' => 'precios',
 			'fr' => 'offres',
 			'it' => 'offerte',
-		),
-	);
+		],
+	];
 
 	if ( $path ) {
 		$path = trim( $path, '/' );
@@ -331,7 +331,7 @@ function imagify_die( $message = null ) {
 	}
 
 	/* translators: %s is the plugin name. */
-	wp_die( $message, sprintf( __( '%s Failure Notice', 'imagify' ), 'Imagify' ), 403 );
+	wp_die( $message, sprintf( esc_html__( '%s Failure Notice', 'imagify' ), 'Imagify' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 /**
@@ -342,7 +342,7 @@ function imagify_die( $message = null ) {
  * @param string       $message     A message to display in an admin notice once redirected.
  * @param array|string $args_or_url An array of query args to add to the redirection URL. If a string, the complete URL.
  */
-function imagify_maybe_redirect( $message = false, $args_or_url = array() ) {
+function imagify_maybe_redirect( $message = false, $args_or_url = [] ) {
 	if ( wp_doing_ajax() ) {
 		return;
 	}

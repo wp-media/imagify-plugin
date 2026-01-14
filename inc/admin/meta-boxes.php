@@ -67,11 +67,11 @@ function _imagify_attachment_submitbox_misc_actions() {
 			?>
 			<div class="misc-pub-section misc-pub-imagify"><h4><?php esc_html_e( 'Imagify', 'imagify' ); ?></h4></div>
 			<div class="misc-pub-section misc-pub-imagify imagify-data-item">
-				<?php echo get_imagify_attachment_optimization_text( $process ); ?>
+				<?php echo get_imagify_attachment_optimization_text( $process ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</div>
 			<?php
 		} else {
-			$url = get_imagify_admin_url( 'optimize', array( 'attachment_id' => $post->ID ) );
+			$url = get_imagify_admin_url( 'optimize', [ 'attachment_id' => $post->ID ] );
 			?>
 			<div class="misc-pub-section misc-pub-imagify">
 				<a class="button-primary" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Optimize', 'imagify' ); ?></a>

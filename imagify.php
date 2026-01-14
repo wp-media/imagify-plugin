@@ -3,7 +3,7 @@
  * Plugin Name: Imagify
  * Plugin URI: https://wordpress.org/plugins/imagify/
  * Description: Dramatically reduce image file sizes without losing quality, make your website load faster, boost your SEO and save money on your bandwidth using Imagify, the new most advanced image optimization tool.
- * Version: 2.2.6
+ * Version: 2.2.7
  * Requires at least: 5.3
  * Requires PHP: 7.3
  * Author: Imagify Image Optimizer – Optimize Images & Convert WebP & Avif
@@ -19,7 +19,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Imagify defines.
-define( 'IMAGIFY_VERSION', '2.2.6' );
+define( 'IMAGIFY_VERSION', '2.2.7' );
 define( 'IMAGIFY_SLUG', 'imagify' );
 define( 'IMAGIFY_FILE', __FILE__ );
 define( 'IMAGIFY_PATH', realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
@@ -87,13 +87,13 @@ function imagify_pass_requirements() {
 	require_once IMAGIFY_PATH . 'inc/classes/class-imagify-requirements-check.php';
 
 	$requirement_checks = new Imagify_Requirements_Check(
-		array(
+		[
 			'plugin_name'    => 'Imagify',
 			'plugin_file'    => IMAGIFY_FILE,
 			'plugin_version' => IMAGIFY_VERSION,
 			'wp_version'     => '5.3',
 			'php_version'    => '7.0',
-		)
+		]
 	);
 
 	$check = $requirement_checks->check();

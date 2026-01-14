@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 6.9
-Stable tag: 2.2.6
+Stable tag: 2.2.7
 Requires PHP: 7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -269,6 +269,10 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.2.7 =
+- Enhancement: improve code to follow correctly various WordPress coding standards rules
+- Ehnacement: Add a new filter `imagify_hide_plugin_family` to hide the Our Plugins section on the settings page 
+
 = 2.2.6 =
 - Bugfix: Fix warning related to translation files being loaded too early, improving plugin stability during image optimization. 
 - 3rd-party library: Update bundled Action Scheduler to v3.9.2. 

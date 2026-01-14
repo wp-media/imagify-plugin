@@ -5,17 +5,17 @@ $settings     = Imagify_Settings::get_instance();
 $options      = Imagify_Options::get_instance();
 $option_name  = $options->get_option_name();
 $hidden_class = Imagify_Requirements::is_api_key_valid() ? '' : ' hidden';
-$lang         = imagify_get_current_lang_in( array( 'de', 'es', 'fr', 'it' ) );
+$lang         = imagify_get_current_lang_in( [ 'de', 'es', 'fr', 'it' ] );
 
 /* Ads notice */
 $plugins_list  = get_plugins();
 $notice        = 'wp-rocket';
 $user_id       = get_current_user_id();
 $notices       = get_user_meta( $user_id, '_imagify_ignore_ads', true );
-$notices       = $notices && is_array( $notices ) ? array_flip( $notices ) : array();
+$notices       = $notices && is_array( $notices ) ? array_flip( $notices ) : [];
 $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket/wp-rocket.php'] ) ? 'imagify-have-rocket' : 'imagify-dont-have-rocket';
 ?>
-<div class="wrap imagify-settings <?php echo $wrapper_class; ?> imagify-clearfix">
+<div class="wrap imagify-settings <?php echo esc_attr( $wrapper_class ); ?> imagify-clearfix">
 
 	<div class="imagify-col imagify-main">
 
@@ -36,10 +36,10 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 					}
 					?>
 
-					<div class="imagify-col imagify-shared-with-account-col<?php echo $hidden_class; ?>">
+					<div class="imagify-col imagify-shared-with-account-col<?php echo esc_attr( $hidden_class ); ?>">
 						<div class="imagify-settings-section">
 
-							<h2 class="imagify-options-title"><?php _e( 'General Settings', 'imagify' ); ?></h2>
+							<h2 class="imagify-options-title"><?php esc_html_e( 'General Settings', 'imagify' ); ?></h2>
 
 							<p class="imagify-setting-line">
 							<?php
@@ -65,11 +65,11 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 
 								$backup_error_class = $options->get( 'backup' ) && ! Imagify_Requirements::attachments_backup_dir_is_writable() ? '' : ' hidden';
 								?>
-								<br/><strong id="backup-dir-is-writable" class="imagify-error<?php echo $backup_error_class; ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_check_backup_dir_is_writable' ) ); ?>">
+								<br/><strong id="backup-dir-is-writable" class="imagify-error<?php echo esc_attr( $backup_error_class ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_check_backup_dir_is_writable' ) ); ?>">
 									<?php
 									$backup_path = $this->filesystem->make_path_relative( get_imagify_backup_dir_path( true ) );
 									/* translators: %s is a file path. */
-									printf( __( 'The backup folder %s cannot be created or is not writable by the server, original images cannot be saved!', 'imagify' ), "<code>$backup_path</code>" );
+									printf( esc_html__( 'The backup folder %s cannot be created or is not writable by the server, original images cannot be saved!', 'imagify' ), "<code>$backup_path</code>" ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 									?>
 								</strong>
 							</p>
@@ -95,10 +95,10 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 					<?php } ?>
 				</div>
 
-				<div class="imagify-settings-main-content<?php echo $hidden_class; ?>">
+				<div class="imagify-settings-main-content<?php echo esc_attr( $hidden_class ); ?>">
 
 					<div class="imagify-settings-section imagify-clear">
-						<h2 class="imagify-options-title"><?php _e( 'Optimization', 'imagify' ); ?></h2>
+						<h2 class="imagify-options-title"><?php esc_html_e( 'Optimization', 'imagify' ); ?></h2>
 						<?php
 						$this->print_template( 'part-settings-webp' );
 						$this->print_template( 'part-settings-library' );
@@ -107,14 +107,15 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 					</div>
 				</div>
 
-				<div class="imagify-settings-main-content imagify-pb0<?php echo $hidden_class; ?>">
-					<div class="imagify-settings-section imagify-clear">
+				<div class="imagify-settings-main-content imagify-pb0<?php echo esc_attr( $hidden_class ); ?>">
+				<?php if ( ! $data['hide_plugin_family'] ) : ?>
+					<div class="imagify-settings-section imagify-clear imagify-plugin-family-section">
 						<div>
-							<h2 class="imagify-options-title"><?php _e( 'Our Plugins', 'imagify' ); ?></h2>
-							<p class="imagify-options-subtitle"><?php _e( 'Build better, faster, safer', 'imagify' ); ?></p>
+							<h2 class="imagify-options-title"><?php esc_html_e( 'Our Plugins', 'imagify' ); ?></h2>
+							<p class="imagify-options-subtitle"><?php esc_html_e( 'Build better, faster, safer', 'imagify' ); ?></p>
 							<p class="">
 								<?php
-								_e( 'Beyond Imagify, there\'s a whole family of plugins designed to help you build better, faster, and safer websites. Each one is crafted with our unique blend of expertise, simplicity, and outstanding support. Combine our plugins below to build incredible WordPress websites!', 'imagify' );
+								esc_html_e( 'Beyond Imagify, there\'s a whole family of plugins designed to help you build better, faster, and safer websites. Each one is crafted with our unique blend of expertise, simplicity, and outstanding support. Combine our plugins below to build incredible WordPress websites!', 'imagify' );
 								?>
 							</p>
 							<?php foreach ( $data['plugin_family'] as $plugin_name => $plugin_data ) : ?>
@@ -161,7 +162,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 								<p class="imagify-options-subtitle" id="imagify-partners-label">
 									<span class="imagify-info">
 										<span class="dashicons dashicons-info"></span>
-										<a href="#imagify-partners-info" class="imagify-modal-trigger"><?php _e( 'More info?', 'imagify' ); ?></a>
+										<a href="#imagify-partners-info" class="imagify-modal-trigger"><?php esc_html_e( 'More info?', 'imagify' ); ?></a>
 									</span>
 								</p>
 
@@ -180,7 +181,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 							?>
 						</div>
 					</div>
-
+					<?php endif; ?>
 					<?php
 					if ( Imagify_Requirements::is_api_key_valid() ) {
 						$this->print_template( 'part-settings-footer' );

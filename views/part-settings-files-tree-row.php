@@ -1,9 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-$disabled_attr  = disabled( true, $data['checkbox_selected'], false );
 $disabled_class = $data['checkbox_selected'] ? ' disabled' : '';
-$folder_icon    = '<svg width="20px" height="17px" viewBox="0 0 20 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-608.000000, -318.000000)" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(609.000000, 319.000000)" stroke="#000000" stroke-width="2"><path d="M0,14.1428571 L18,14.1428571 L18,1.92857143 L7.71428571,1.92857143 L5.14285714,0 L0,0 L0,14.1428571 Z M18,5.14285714 L0,5.14285714 L18,5.14285714 Z"></path></g></g></svg>';
 
 if ( $data['checkbox_selected'] ) {
 	// translators: %s is a folder path.
@@ -20,29 +18,29 @@ if ( $data['checkbox_selected'] ) {
 
 <li <?php echo $data['checkbox_selected'] ? ' class="imagify-folder-already-selected"' : ''; ?>>
 	<?php if ( empty( $data['no_button'] ) ) : ?>
-		<button type="button" class="imagify-folder" data-folder="<?php echo $data['relative_path']; ?>"<?php echo $disabled_attr; ?> title="<?php echo $button_title; ?>">
+		<button type="button" class="imagify-folder" data-folder="<?php echo esc_attr( $data['relative_path'] ); ?>"<?php disabled( true, $data['checkbox_selected'] ); ?> title="<?php echo esc_attr( $button_title ); ?>">
 			<?php if ( ! $data['checkbox_selected'] ) { ?>
 				<span class="imagify-loader"><img alt="<?php esc_attr_e( 'Loading...', 'imagify' ); ?>" src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL . 'spinner.gif' ); ?>" width="20" height="20"/></span>
 			<?php } ?>
-			<span class="imagify-folder-icon"><?php echo $folder_icon; ?></span>
+			<span class="imagify-folder-icon"><svg width="20px" height="17px" viewBox="0 0 20 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-608.000000, -318.000000)" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(609.000000, 319.000000)" stroke="#000000" stroke-width="2"><path d="M0,14.1428571 L18,14.1428571 L18,1.92857143 L7.71428571,1.92857143 L5.14285714,0 L0,0 L0,14.1428571 Z M18,5.14285714 L0,5.14285714 L18,5.14285714 Z"></path></g></g></svg></span>
 		</button>
 	<?php else : ?>
-		<span class="imagify-folder<?php echo $disabled_class; ?>">
-			<span class="imagify-folder-icon"><?php echo $folder_icon; ?></span>
+		<span class="imagify-folder<?php echo esc_attr( $disabled_class ); ?>">
+			<span class="imagify-folder-icon"><svg width="20px" height="17px" viewBox="0 0 20 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-608.000000, -318.000000)" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(609.000000, 319.000000)" stroke="#000000" stroke-width="2"><path d="M0,14.1428571 L18,14.1428571 L18,1.92857143 L7.71428571,1.92857143 L5.14285714,0 L0,0 L0,14.1428571 Z M18,5.14285714 L0,5.14285714 L18,5.14285714 Z"></path></g></g></svg></span>
 		</span>
 	<?php endif; ?>
 
-	<input type="checkbox" name="imagify-custom-files[]" value="<?php echo $data['checkbox_value']; ?>" id="imagify-custom-folder-<?php echo $data['checkbox_id']; ?>" class="screen-reader-text"<?php echo $disabled_attr; ?>/>
+	<input type="checkbox" name="imagify-custom-files[]" value="<?php echo esc_attr( $data['checkbox_value'] ); ?>" id="imagify-custom-folder-<?php echo esc_attr( $data['checkbox_id'] ); ?>" class="screen-reader-text" <?php disabled( true, $data['checkbox_selected'] ); ?> />
 
-	<label for="imagify-custom-folder-<?php echo $data['checkbox_id']; ?>" title="<?php echo $folder_title; ?>">
+	<label for="imagify-custom-folder-<?php echo esc_attr( $data['checkbox_id'] ); ?>" title="<?php echo esc_attr( $folder_title ); ?>">
 		<?php echo esc_html( $data['label'] ); ?>
 
 		<span class="imagify-add-ed-folder">
 			<?php
 			if ( $data['checkbox_selected'] ) {
-				_e( 'Folder Added', 'imagify' );
+				esc_html_e( 'Folder Added', 'imagify' );
 			} else {
-				_ex( 'Add Folder', 'checkbox label', 'imagify' );
+				echo esc_html_x( 'Add Folder', 'checkbox label', 'imagify' );
 			}
 			?>
 			<span class="imagify-fake-checkbox"></span>

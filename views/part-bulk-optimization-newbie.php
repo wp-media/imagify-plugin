@@ -3,12 +3,12 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 ?>
 
 <div class="imagify-bulk-table imagify-newbie">
-	<p class="imagify-new-feature"><?php _e( 'New Feature!', 'imagify' ); ?></p>
+	<p class="imagify-new-feature"><?php esc_html_e( 'New Feature!', 'imagify' ); ?></p>
 	<div class="imagify-table-header imagify-flex imagify-vcenter">
 		<div class="imagify-th-titles imagify-flex imagify-vcenter">
 			<span class="dashicons dashicons-admin-plugins"></span>
 			<div class="imagify-th-titles">
-				<p class="imagify-th-title"><?php _e( 'Optimize the images from your site\'s folders', 'imagify' ); ?></p>
+				<p class="imagify-th-title"><?php esc_html_e( 'Optimize the images from your site\'s folders', 'imagify' ); ?></p>
 			</div>
 		</div>
 		<div class="imagify-th-action">

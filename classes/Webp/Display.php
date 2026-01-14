@@ -111,7 +111,7 @@ class Display implements SubscriberInterface {
 		printf(
 			/* translators: %s is a file name. */
 			esc_html__( 'Imagify does not seem to be able to edit or create a %s file, you will have to add the following lines manually to it:', 'imagify' ),
-			'<code>' . $this->get_file_path( true ) . '</code>'
+			'<code>' . $this->get_file_path( true ) . '</code>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 
 		echo '<pre class="code">' . esc_html( $rules ) . '</pre>';

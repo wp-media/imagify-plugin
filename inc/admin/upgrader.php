@@ -227,17 +227,17 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 				'post_type'              => 'attachment',
 				'post_status'            => imagify_get_post_statuses(),
 				'post_mime_type'         => imagify_get_mime_types(),
-				'meta_query'             => array(
+				'meta_query'             => [
 					'relation' => 'AND',
-					array(
+					[
 						'key'     => '_imagify_data',
 						'compare' => 'EXISTS',
-					),
-					array(
+					],
+					[
 						'key'     => '_imagify_optimization_level',
 						'compare' => 'NOT EXISTS',
-					),
-				),
+					],
+				],
 				'posts_per_page'         => -1,
 				'update_post_term_cache' => false,
 				'no_found_rows'          => true,

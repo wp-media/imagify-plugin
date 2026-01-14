@@ -23,15 +23,15 @@ $dismiss_url      = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dism
 <div class="imagify-col imagify-sidebar">
 	<div class="imagify-sidebar-section">
 		<p class="imagify-sidebar-title">
-			<?php _e( 'We recommend for you', 'corporate' ); ?>
+			<?php esc_html_e( 'We recommend for you', 'corporate' ); ?>
 		</p>
 
-		<img src="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.png" srcset="<?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.svg 1x, <?php echo IMAGIFY_ASSETS_IMG_URL; ?>logo-wprocket.svg 2x" alt="WP Rocket" width="232" height="63">
+		<img src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL ); ?>logo-wprocket.png" srcset="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL ); ?>logo-wprocket.svg 1x, <?php echo esc_url( IMAGIFY_ASSETS_IMG_URL ); ?>logo-wprocket.svg 2x" alt="WP Rocket" width="232" height="63">
 
 		<p class="imagify-sidebar-description">
 			<?php
 			/* translators: 1 is a "bold" tag opening, 2 is the "bold" tag closing. Please use a non-breaking space for WP Rocket. */
-			printf( __( 'WP Rocket is a %1$sspeed optimization plugin for WordPress%2$s helping you to implement a variety of speed-boosting features to your WordPress site.', 'imagify' ), '<strong>', '</strong>' );
+			printf( esc_html__( 'WP Rocket is a %1$sspeed optimization plugin for WordPress%2$s helping you to implement a variety of speed-boosting features to your WordPress site.', 'imagify' ), '<strong>', '</strong>' );
 			?>
 		</p>
 
@@ -39,18 +39,18 @@ $dismiss_url      = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dism
 			<a class="btn btn-rocket" href="<?php echo esc_url( imagify_get_wp_rocket_url() ); ?>" target="_blank">
 				<?php
 				/* translators: %s is a percentage. */
-				printf( __( 'Get %s OFF Now!', 'imagify' ), $discount_percent );
+				printf( esc_html__( 'Get %s OFF Now!', 'imagify' ), esc_html( $discount_percent ) );
 				?>
 			</a>
 		</p>
 
 		<ul>
-			<li><?php _e( 'Improve your Google PageSpeed Score.', 'imagify' ); ?></li>
-			<li><?php _e( 'Boost your SEO.', 'imagify' ); ?></li>
-			<li><?php _e( 'WooCommerce compatibility.', 'imagify' ); ?></li>
-			<li><?php _e( 'Immediate results.', 'imagify' ); ?></li>
+			<li><?php esc_html_e( 'Improve your Google PageSpeed Score.', 'imagify' ); ?></li>
+			<li><?php esc_html_e( 'Boost your SEO.', 'imagify' ); ?></li>
+			<li><?php esc_html_e( 'WooCommerce compatibility.', 'imagify' ); ?></li>
+			<li><?php esc_html_e( 'Immediate results.', 'imagify' ); ?></li>
 		</ul>
 
-	<a class="imagify-sidebar-close" href="<?php echo esc_url( $dismiss_url ); ?>"><span class="screen-reader-text"><?php _e( 'Remove the ad', 'imagify' ); ?></span><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></a>
+	<a class="imagify-sidebar-close" href="<?php echo esc_url( $dismiss_url ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Remove the ad', 'imagify' ); ?></span><i class="dashicons dashicons-no-alt" aria-hidden="true"></i></a>
 	</div>
 </div>

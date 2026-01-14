@@ -47,7 +47,7 @@ function imagify_load_network_options( $option_names, $prefixes = '' ) {
 	}
 
 	// Get values.
-	$not_exist    = array();
+	$not_exist    = [];
 	$option_names = array_flip( array_flip( $option_names ) );
 	$options      = '';
 
@@ -92,7 +92,7 @@ function imagify_load_network_options( $option_names, $prefixes = '' ) {
 
 	// Cache the options that don't exist in the DB.
 	$notoptions = wp_cache_get( $notoptions_key, $cache_group );
-	$notoptions = is_array( $notoptions ) ? $notoptions : array();
+	$notoptions = is_array( $notoptions ) ? $notoptions : [];
 	$notoptions = array_merge( $notoptions, $not_exist );
 
 	wp_cache_set( $notoptions_key, $notoptions, $cache_group );

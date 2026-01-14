@@ -22,11 +22,11 @@ function imagify_siteground_change_user_agent( $r, $url ) {
 		return $r;
 	}
 
-	$paths = array(
+	$paths = [
 		'/wp-admin/admin-ajax.php',
 		'/wp-admin/admin-post.php',
 		'/wp-cron.php',
-	);
+	];
 
 	if ( ! isset( $site_url ) ) {
 		$site_url = wp_parse_url( site_url( '/' ) );

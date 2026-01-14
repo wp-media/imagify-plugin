@@ -1,5 +1,7 @@
 <?php
 
+use Imagify\Traits\InstanceGetterTrait;
+
 require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 
@@ -10,6 +12,7 @@ require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
  * @author Grégory Viguier
  */
 class Imagify_Filesystem extends WP_Filesystem_Direct {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -26,15 +29,6 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 * @author Grégory Viguier
 	 */
 	const PATTERN_DELIMITER = '@';
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @access protected
-	 */
-	protected static $_instance;
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** INSTANCIATION =========================================================================== */
@@ -57,23 +51,6 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		}
 
 		parent::__construct( '' );
-	}
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7.1
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 
@@ -140,21 +117,21 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 				return '';
 			}
 
-			return array(
+			return [
 				'dir_path'  => '',
 				'file_name' => '',
 				'extension' => null,
 				'file_base' => '',
-			);
+			];
 		}
 
 		if ( isset( $option ) ) {
-			$options = array(
+			$options = [
 				'dir_path'  => PATHINFO_DIRNAME,
 				'file_name' => PATHINFO_BASENAME,
 				'extension' => PATHINFO_EXTENSION,
 				'file_base' => PATHINFO_FILENAME,
-			);
+			];
 
 			if ( ! isset( $options[ $option ] ) ) {
 				return '';
@@ -175,12 +152,12 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		$output['extension'] = isset( $output['extension'] ) ? $output['extension'] : null;
 
 		// '/www/htdocs/inc/lib.inc.php'
-		return array(
+		return [
 			'dir_path'  => $output['dirname'],   // '/www/htdocs/inc/'
 			'file_name' => $output['basename'],  // 'lib.inc.php'
 			'extension' => $output['extension'], // 'php'
 			'file_base' => $output['filename'],  // 'lib.inc'
-		);
+		];
 	}
 
 	/**
@@ -348,7 +325,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 */
 	public function is_symlinked( $file_path ) {
 		static $site_root;
-		static $plugin_paths = array();
+		static $plugin_paths = [];
 		global $wp_plugin_paths;
 
 		if ( ! $file_path ) {
@@ -530,16 +507,16 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 */
 	public function get_image_size( $file_path ) {
 		if ( ! $file_path ) {
-			return array();
+			return [];
 		}
 
 		$size = @getimagesize( $file_path ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
 		if ( ! $size || ! isset( $size[0], $size[1] ) ) {
-			return array();
+			return [];
 		}
 
-		return array(
+		return [
 			0          => (int) $size[0],
 			1          => (int) $size[1],
 			'width'    => (int) $size[0],
@@ -549,7 +526,7 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			'channels' => isset( $size['channels'] ) ? (int) $size['channels'] : null,
 			'bits'     => isset( $size['bits'] ) ? (int) $size['bits'] : null,
 			'mime'     => $size['mime'],
-		);
+		];
 	}
 
 	/**
@@ -588,12 +565,12 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 */
 	public function get_image_exif( $file_path, $sections = null, $arrays = false, $thumbnail = false ) {
 		if ( ! $file_path || ! $this->can_get_exif() ) {
-			return array();
+			return [];
 		}
 
 		$exif = @exif_read_data( $file_path, $sections, $arrays, $thumbnail ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
-		return is_array( $exif ) ? $exif : array();
+		return is_array( $exif ) ? $exif : [];
 	}
 
 	/**
@@ -826,13 +803,18 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 			return $root_path;
 		}
 
+		if ( empty( $_SERVER['DOCUMENT_ROOT'] ) ) {
+			return $root_path;
+		}
+
 		/**
 		 * For a multisite in its own directory, get_home_path() returns the expected path only for the main site.
 		 *
 		 * Friend, each time an attempt is made to improve this method, and especially this part, please increment the following counter.
 		 * Improvement attempts: 3.
 		 */
-		$document_root     = realpath( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ); // `realpath()` is needed for those cases where $_SERVER['DOCUMENT_ROOT'] is totally different from ABSPATH.
+		$document_root = realpath( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// `realpath()` is needed for those cases where $_SERVER['DOCUMENT_ROOT'] is totally different from ABSPATH.
 		$document_root     = trailingslashit( str_replace( '\\', '/', $document_root ) );
 		$path_current_site = trim( str_replace( '\\', '/', PATH_CURRENT_SITE ), '/' );
 		$root_path         = trailingslashit( wp_normalize_path( $document_root . $path_current_site ) );
