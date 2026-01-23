@@ -100,8 +100,7 @@
 				"packages": [
 					"wp-media/apply-filters-typed"
 				]
-			},
-			"delete_vendor_packages": true
+			}
 		},
 		"plugin_domain": "imagify"
 	},
@@ -124,12 +123,11 @@
 		],
 		"post-install-cmd": [
 			"@prefix-namespaces",
-			"Imagify\\Dependencies\\WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
+			"WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
 		],
 		"post-update-cmd": [
 			"@prefix-namespaces",
-			"composer dump-autoload",
-			"Imagify\\Dependencies\\WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
+			"WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
 		],
 		"post-autoload-dump": [
 			"php bin/strauss.phar include-autoloader"
