@@ -75,6 +75,9 @@ jobs:
     - name: Require PHPUnit 7.5 for WP compatibility
       run: composer require --dev --no-scripts phpunit/phpunit "^7.5" -W
 
+    - name: Install Strauss
+      run: sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'
+
     - name: Install dependencies
       run: composer install --no-interaction
 
