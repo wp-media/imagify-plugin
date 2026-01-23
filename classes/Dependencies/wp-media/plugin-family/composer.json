@@ -1,0 +1,48 @@
+{
+    "name": "wp-media/plugin-family",
+    "description": "Organizes and displays WP Media plugin family across other members.",
+	"license": "GPL-3.0-or-later",
+	"authors": [
+		{
+			"name": "WP Media",
+			"email": "contact@wp-media.me",
+			"homepage": "https://wp-media.me"
+		}
+	],
+	"config": {
+		"sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        }
+	},
+    "require": {
+        "wp-media/apply-filters-typed": "^1.0"
+    },
+    "require-dev": {
+        "phpcompatibility/phpcompatibility-wp": "^2.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+        "wp-coding-standards/wpcs": "^3",
+        "wp-media/phpunit": "^3",
+        "phpstan/extension-installer": "^1.4",
+        "szepeviktor/phpstan-wordpress": "^1.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "WPMedia\\PluginFamily\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WPMedia\\PluginFamily\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+		"install-codestandards": "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run",
+		"phpcs": "phpcs --basepath=.",
+		"phpcs:fix": "phpcbf",
+        "test-unit": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration tests/Unit/phpunit.xml.dist --coverage-php tests/report/unit.cov",
+        "report-code-coverage": "\"vendor/bin/phpcov\" merge tests/report --clover tests/report/coverage.clover",
+        "phpstan": "vendor/bin/phpstan analyze --memory-limit=2G --no-progress"
+	}
+}

@@ -1,0 +1,36 @@
+{
+  "name": "plugin-family",
+  "version": "1.0.5",
+  "description": "Organizes and displays WP Media plugin family across other members.",
+  "main": "src/assets/js/index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "wp-scripts start assets-src/js/index.js assets-src/js/admin.js",
+    "build": "wp-scripts build assets-src/js/index.js assets-src/js/admin.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wp-media/plugin-family.git"
+  },
+  "author": "WP Media",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/wp-media/plugin-family/issues"
+  },
+  "homepage": "https://github.com/wp-media/plugin-family#readme",
+  "devDependencies": {
+    "@wordpress/scripts": "^30.19.0"
+  },
+  "dependencies": {
+    "@wordpress/api-fetch": "^7.26.0",
+    "@wordpress/block-editor": "^14.21.0",
+    "@wordpress/components": "^29.12.0",
+    "@wordpress/compose": "^7.26.0",
+    "@wordpress/element": "^6.26.0",
+    "@wordpress/hooks": "^4.26.0",
+    "@wordpress/i18n": "^5.26.0",
+    "@wordpress/icons": "^10.26.0"
+  }
+}
