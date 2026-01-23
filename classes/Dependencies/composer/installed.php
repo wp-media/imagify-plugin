@@ -2,9 +2,9 @@
   'root' => 
   array (
     'name' => 'wp-media/imagify-plugin',
-    'pretty_version' => 'dev-trunk',
-    'version' => 'dev-trunk',
-    'reference' => '1446c626872338f9c7ea82df6919294d6852c5b8',
+    'pretty_version' => 'dev-develop',
+    'version' => 'dev-develop',
+    'reference' => '8131c548f32c92671ab1047e0393e8feafe06d91',
     'type' => 'wordpress-plugin',
     'install_path' => __DIR__ . '/../',
     'aliases' => 
