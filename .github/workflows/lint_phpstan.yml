@@ -33,7 +33,7 @@ jobs:
         tools: composer:v2
 
     - name: Install dependencies
-      run: composer install --prefer-dist --no-interaction --no-scripts
+      run: composer install --no-interaction
 
     - name: Lint with PHP Stan
       run: composer run-stan -- --error-format=github
