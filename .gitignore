@@ -9,3 +9,4 @@
 /_dev/node_modules
 .phpunit.result.cache
 bin/strauss.phar
+composer.lock

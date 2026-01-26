@@ -15,6 +15,7 @@
 /.jshintrc export-ignore
 /composer.lock export-ignore
 /gruntfile.js export-ignore
+/package-lock.json export-ignore
 /phpcs.xml export-ignore
 /phpstan.neon.dist export-ignore
 /README.md export-ignore
