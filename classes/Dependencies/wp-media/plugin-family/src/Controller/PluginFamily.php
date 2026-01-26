@@ -408,7 +408,7 @@ class PluginFamily implements PluginFamilyInterface {
 		check_ajax_referer( 'install-imagify-nonce' );
 
 		if ( ! current_user_can( is_multisite() ? 'manage_network_plugins' : 'install_plugins' ) ) {
-			wp_send_json_error( __( 'Not Allowed', '%domain%' ) );
+			wp_send_json_error( __( 'Not Allowed', 'imagify' ) );
 		}
 
 		if ( ! $this->is_imagify_installed() ) {
@@ -420,13 +420,13 @@ class PluginFamily implements PluginFamilyInterface {
 			wp_send_json_error( $activated->get_error_message() );
 		}
 
-		$this->set_imagify_partner( '%imagifypartnerid%' );
+		$this->set_imagify_partner( '' );
 		/**
 		 * Fires after Imagify is installed and activated via Plugin Family.
 		 * Allows integrators to track installation/activation.
 		 */
 		do_action( 'wpmedia_plugin_family_imagify_installed' );
-		wp_send_json_success( __( 'Imagify installed! Click here to start using it.', '%domain%' ) );
+		wp_send_json_success( __( 'Imagify installed! Click here to start using it.', 'imagify' ) );
 	}
 
 	/**
@@ -490,7 +490,7 @@ class PluginFamily implements PluginFamilyInterface {
 			'ajax_url'         => admin_url( 'admin-ajax.php' ),
 			'nonce'            => wp_create_nonce( 'install-imagify-nonce' ),
 			'plugins_page_url' => admin_url( 'plugins.php' ),
-			'notice_text'      => ! empty( $this->notice_text ) ? $this->notice_text : __( 'Boost your site\'s performance by compressing images with Imagify, developed by WP Rocket.', '%domain%' ),
+			'notice_text'      => ! empty( $this->notice_text ) ? $this->notice_text : __( 'Boost your site\'s performance by compressing images with Imagify, developed by WP Rocket.', 'imagify' ),
 		];
 
 		wp_add_inline_script(
@@ -551,7 +551,7 @@ class PluginFamily implements PluginFamilyInterface {
 			? $this->notice_text
 			: sprintf(
 				// translators: %1$s = Plugin Name.
-				__( '%1$s recommends you to optimize your images for even better website performance.', '%domain%' ),
+				__( '%1$s recommends you to optimize your images for even better website performance.', 'imagify' ),
 				'WP Rocket'
 			);
 		include_once __DIR__ . '/../View/promote-imagify-uploader.php';
@@ -566,11 +566,11 @@ class PluginFamily implements PluginFamilyInterface {
 		check_ajax_referer( 'install-imagify-nonce' );
 
 		if ( ! current_user_can( is_multisite() ? 'manage_network_plugins' : 'install_plugins' ) ) {
-			wp_send_json_error( __( 'Not Allowed', '%domain%' ) );
+			wp_send_json_error( __( 'Not Allowed', 'imagify' ) );
 		}
 
 		update_option( 'plugin_family_dismiss_promote_imagify', true );
-		wp_send_json_success( __( 'Dismissed.', '%domain%' ) );
+		wp_send_json_success( __( 'Dismissed.', 'imagify' ) );
 	}
 
 	/**

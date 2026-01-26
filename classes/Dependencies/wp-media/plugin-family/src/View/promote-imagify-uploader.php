@@ -13,6 +13,6 @@ defined( 'ABSPATH' ) || exit;
 				<?php echo esc_html( $notice ); ?>
 			</p>
 		<?php } ?>
-		<button id="pluginfamily_install_imagify"><?php esc_html_e( 'Install Imagify Plugin', '%domain%' ); ?></button>
+		<button id="pluginfamily_install_imagify"><?php esc_html_e( 'Install Imagify Plugin', 'imagify' ); ?></button>
 	</div>
 </script>
