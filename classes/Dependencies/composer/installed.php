@@ -4,7 +4,7 @@
     'name' => 'wp-media/imagify-plugin',
     'pretty_version' => 'dev-develop',
     'version' => 'dev-develop',
-    'reference' => '8131c548f32c92671ab1047e0393e8feafe06d91',
+    'reference' => '9375183e36158fd4178186fdacd0627a06fac490',
     'type' => 'wordpress-plugin',
     'install_path' => __DIR__ . '/../',
     'aliases' => 
