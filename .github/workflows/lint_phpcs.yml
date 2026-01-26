@@ -1,4 +1,4 @@
-name: PHP CodeSniffer lint
+name: PHPCS
 
 on:
   pull_request:
@@ -18,11 +18,11 @@ jobs:
         operating-system: [ubuntu-latest]
         php-versions: ['8.3']
 
-    name: WPRocket lint with PHPCS. PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
+    name: PHP ${{ matrix.php-versions }}
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -37,5 +37,5 @@ jobs:
     - name: Install dependencies
       run: composer install --no-interaction
 
-    - name: Lint with phpcs
+    - name: Run PHPCS
       run: composer phpcs

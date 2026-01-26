@@ -1,4 +1,4 @@
-name: PHP Stan lint
+name: PHPStan
 
 on:
   pull_request:
@@ -15,15 +15,14 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
 
     strategy:
-      fail-fast: false
       matrix:
         operating-system: [ubuntu-latest]
-        php-versions: ['8.2']
+        php-versions: ['8.3']
 
-    name: WPRocket lint with PHP Stan. PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
+    name: PHP ${{ matrix.php-versions }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -38,6 +37,6 @@ jobs:
     - name: Install dependencies
       run: composer install --no-interaction
 
-    - name: Lint with PHP Stan
+    - name: Run PHPStan
       run: composer run-stan -- --error-format=github
 
