@@ -79,7 +79,7 @@ jobs:
       run: sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'
 
     - name: Install dependencies
-      run: composer install --no-interaction
+      run: composer install --no-interaction --ignore-platform-reqs
 
     - name: Install tests
       run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1:3306 ${{ matrix.wp-versions }}
