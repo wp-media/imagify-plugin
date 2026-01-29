@@ -72,9 +72,6 @@ jobs:
     - name: Setup problem matchers for PHPUnit
       run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-    - name: Require PHPUnit 7.5 for WP compatibility
-      run: composer require --dev --no-scripts phpunit/phpunit "^7.5" -W
-
     - name: Install dependencies
       run: composer install --prefer-dist --no-interaction --no-scripts
 
