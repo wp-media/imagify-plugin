@@ -85,6 +85,7 @@
 		"strauss": {
 			"namespace_prefix": "Imagify\\Dependencies\\",
 			"classmap_prefix": "Imagify_",
+			"delete_vendor_packages": true,
 			"packages": [
 				"deliciousbrains/wp-background-processing",
 				"league/container",
