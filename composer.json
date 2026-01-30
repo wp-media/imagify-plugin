@@ -85,17 +85,12 @@
 		"strauss": {
 			"namespace_prefix": "Imagify\\Dependencies\\",
 			"classmap_prefix": "Imagify_",
-			"delete_vendor_packages": true,
+			"target_directory": "vendor",
 			"packages": [
 				"deliciousbrains/wp-background-processing",
 				"league/container",
 				"wp-media/plugin-family"
 			],
-			"exclude_from_copy": {
-				"packages": [
-					"wp-media/apply-filters-typed"
-				]
-			},
 			"exclude_from_prefix": {
 				"packages": [
 					"wp-media/apply-filters-typed"
@@ -129,9 +124,6 @@
 		"post-update-cmd": [
 			"@prefix-namespaces",
 			"Imagify\\Dependencies\\WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
-		],
-		"post-autoload-dump": [
-			"php bin/strauss.phar include-autoloader"
 		],
 		"code-coverage": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist --coverage-clover=tests/report/coverage.clover"
 	}
