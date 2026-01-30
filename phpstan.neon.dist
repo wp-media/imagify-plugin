@@ -49,7 +49,5 @@ parameters:
 		 - classes/WriteFile/AbstractNginxDirConfFile.php
 		 # WP_CLI is not part of the testable paths
 		 - classes/CLI/
-		 # Don't check dependencies
-		 - classes/Dependencies/
 rules:
 	- Imagify\Tests\phpstan\Rules\DiscourageApplyFilters
