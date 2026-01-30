@@ -2,6 +2,7 @@
 /node_modules
 /Tests/env/local
 /vendor
+/vendor-prefixed
 
 # Files
 .DS_Store
