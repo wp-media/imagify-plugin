@@ -271,7 +271,7 @@ You can report any security bugs found in the source code of the site-reviews pl
 == Changelog ==
 = 2.2.7 =
 - Enhancement: improve code to follow correctly various WordPress coding standards rules
-- Ehnacement: Add a new filter `imagify_hide_plugin_family` to hide the Our Plugins section on the settings page 
+- Enhancement: Add a new filter `imagify_hide_plugin_family` to hide the Our Plugins section on the settings page 
 
 = 2.2.6 =
 - Bugfix: Fix warning related to translation files being loaded too early, improving plugin stability during image optimization. 
