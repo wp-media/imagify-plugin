@@ -12,6 +12,7 @@ parameters:
 	scanDirectories:
 		- inc/Dependencies/ActionScheduler
 		- Tests/Fixtures/
+		- Tests/phpstan/Rules
 	scanFiles:
 		- imagify.php
 		- inc/common/attachments.php
@@ -53,3 +54,4 @@ parameters:
 		 - classes/Dependencies/
 rules:
 	- Imagify\Tests\phpstan\Rules\DiscourageApplyFilters
+	- Imagify\Tests\phpstan\Rules\SubscriberCallbackRule
