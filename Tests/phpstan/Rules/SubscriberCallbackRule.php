@@ -184,25 +184,28 @@ class SubscriberCallbackRule implements Rule
 	}
 
 	/**
-	 * Get hook type (@filter or @action) from array item PHPDoc comment
+	 * Get hook type (@filter or @action) from array item comment
 	 */
 	private function getHookType( ArrayItem $item ): ?string
 	{
-		$docComment = $item->getDocComment();
+		$comments = $item->getAttribute( 'comments' );
 
-		if ( $docComment === null ) {
+		if ( empty( $comments ) ) {
 			return null;
 		}
 
-		$text = $docComment->getText();
+		// Check all comments attached to this node
+		foreach ( $comments as $comment ) {
+			$text = $comment->getText();
 
-		// Match @filter or @action
-		if ( preg_match( '/@filter\b/i', $text ) ) {
-			return 'filter';
-		}
+			// Match // @filter or // @action
+			if ( preg_match( '/\/\/\s*@filter\b/i', $text ) ) {
+				return 'filter';
+			}
 
-		if ( preg_match( '/@action\b/i', $text ) ) {
-			return 'action';
+			if ( preg_match( '/\/\/\s*@action\b/i', $text ) ) {
+				return 'action';
+			}
 		}
 
 		return null;
