@@ -21,9 +21,9 @@ class GravityForms implements SubscriberInterface {
 		}
 
 		return [
-			/** @filter */
+			// @filter
 			'gform_noconflict_styles'  => 'imagify_gf_noconflict_styles',
-			/** @filter */
+			// @filter
 			'gform_noconflict_scripts' => 'imagify_gf_noconflict_scripts',
 		];
 	}

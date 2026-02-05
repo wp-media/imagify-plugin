@@ -16,7 +16,7 @@ class Extendify implements SubscriberInterface {
 	 */
 	public static function get_subscribed_events(): array {
 		return [
-			/** @filter */
+			// @filter
 			'imagify_hide_plugin_family' => 'hide_plugin_family',
 		];
 	}

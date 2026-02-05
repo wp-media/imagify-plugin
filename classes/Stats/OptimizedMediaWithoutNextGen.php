@@ -29,13 +29,13 @@ final class OptimizedMediaWithoutNextGen implements StatInterface, SubscriberInt
 	 */
 	public static function get_subscribed_events() {
 		return [
-			/** @action */
+			// @action
 			'imagify_after_optimize'         => [ 'maybe_clear_cache_after_optimization', 10, 2 ],
-			/** @action */
+			// @action
 			'imagify_after_restore_media'    => [ 'maybe_clear_cache_after_restoration', 10, 4 ],
-			/** @action */
+			// @action
 			'imagify_delete_media'           => 'maybe_clear_cache_on_deletion',
-			/** @action */
+			// @action
 			'update_option_imagify_settings' => [ 'maybe_clear_stat_cache', 9, 2 ],
 		];
 	}
