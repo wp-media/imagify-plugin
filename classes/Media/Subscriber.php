@@ -33,6 +33,7 @@ class Subscriber implements SubscriberInterface {
 	 */
 	public static function get_subscribed_events(): array {
 		return [
+			// @action
 			'restrict_manage_posts' => 'imagify_attachments_filter_dropdown',
 		];
 	}

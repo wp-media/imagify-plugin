@@ -16,6 +16,7 @@ class CDN implements SubscriberInterface {
 	 */
 	public static function get_subscribed_events() {
 		return [
+			// @filter
 			'imagify_cdn_source_url' => 'get_cdn_source',
 		];
 	}
