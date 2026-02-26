@@ -68,6 +68,8 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	protected $post_only_actions = [
 		// Custom folders optimization.
 		'imagify_scan_custom_folders',
+		// Settings page.
+		'imagify_reset_internal_state',
 		// Various.
 		'imagify_dismiss_ad',
 	];
@@ -1133,6 +1135,31 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 
 		imagify_maybe_redirect();
 		wp_send_json_success();
+	}
+
+	/**
+	 * Reset Imagify internal optimization state from the settings page.
+	 *
+	 * @since 2.2.8
+	 *
+	 * @return void
+	 */
+	public function imagify_reset_internal_state_callback() {
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			imagify_die();
+			return;
+		}
+
+		imagify_check_nonce( 'imagify-reset-internal-state' );
+
+		$result = imagify_reset_internal_state();
+
+		if ( is_wp_error( $result ) ) {
+			imagify_maybe_redirect( $result );
+			return;
+		}
+
+		imagify_maybe_redirect( __( 'Imagify internal state has been reset.', 'imagify' ) );
 	}
 
 

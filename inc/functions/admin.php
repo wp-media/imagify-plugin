@@ -377,6 +377,144 @@ function imagify_maybe_redirect( $message = false, $args_or_url = [] ) {
 }
 
 /**
+ * Reset transient and queue data related to Imagify internal optimization state.
+ *
+ * This is intended for troubleshooting stuck optimization states without
+ * deleting user settings.
+ *
+ * @since 2.2.8
+ *
+ * @return bool|WP_Error True on success. WP_Error if any cleanup query failed.
+ */
+function imagify_reset_internal_state() {
+	global $wpdb;
+
+	$errors = new WP_Error();
+
+	$site_transients = [
+		'imagify_check_licence_1',
+		'imagify_user',
+		'imagify_themes_plugins_to_sync',
+		'do_imagify_rating_cron',
+		'imagify_seen_rating_notice',
+		'imagify_user_images_count',
+		'imagify_check_api_version',
+		'imagify_optimize_media_process_lock',
+	];
+
+	$transients = [
+		'imagify_bulk_optimization_level',
+		'imagify_bulk_optimization_infos',
+		'imagify_bulk_optimization_result',
+		'imagify_bulk_optimization_complete',
+		'imagify_custom-folders_optimize_running',
+		'imagify_wp_optimize_running',
+		'imagify_missing_next_gen_total',
+		'imagify_large_library',
+		'imagify_max_image_size',
+		'imagify_user',
+		'imagify_stat_without_next_gen',
+		'imagify_attachments_number_modal',
+		'imagify_user_cache',
+	];
+
+	foreach ( $site_transients as $transient ) {
+		delete_site_transient( $transient );
+	}
+
+	foreach ( $transients as $transient ) {
+		delete_transient( $transient );
+	}
+
+	imagify_delete_cached_user();
+
+	$like_patterns = [
+		'_transient_%imagify-auto-optimize-%',
+		'_transient_timeout_%imagify-auto-optimize-%',
+		'_transient_%imagify\_rpc\_%',
+		'_transient_timeout_%imagify\_rpc\_%',
+		'_transient_imagify\_%\_process\_locked',
+		'_transient_timeout_imagify\_%\_process\_locked',
+		'_site_transient_imagify\_%\_process\_lock%',
+		'_site_transient_timeout_imagify\_%\_process\_lock%',
+	];
+
+	$options_sql = 'DELETE FROM ' . $wpdb->options . ' WHERE ' . implode( ' OR ', array_fill( 0, count( $like_patterns ), 'option_name LIKE %s' ) );
+	$deleted     = $wpdb->query( $wpdb->prepare( $options_sql, $like_patterns ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+	if ( false === $deleted ) {
+		$errors->add( 'imagify_reset_options_transients', __( 'An error occurred while clearing transient data.', 'imagify' ) );
+	}
+
+	$batch_prefix = $wpdb->esc_like( 'imagify_optimize_media_batch_' ) . '%';
+
+	if ( is_multisite() ) {
+		$network_id = get_current_network_id();
+
+		$sitemeta_patterns = [
+			$network_id,
+			$batch_prefix,
+			'imagify_optimize_media_status',
+		];
+
+		$sitemeta_sql = 'DELETE FROM ' . $wpdb->sitemeta . ' WHERE site_id = %d AND ( meta_key LIKE %s OR meta_key = %s )';
+		$deleted      = $wpdb->query( $wpdb->prepare( $sitemeta_sql, $sitemeta_patterns ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+		if ( false === $deleted ) {
+			$errors->add( 'imagify_reset_batches', __( 'An error occurred while clearing optimization batches.', 'imagify' ) );
+		}
+
+		$sitemeta_like_patterns = array_merge( [ $network_id ], $like_patterns );
+		$sitemeta_sql           = 'DELETE FROM ' . $wpdb->sitemeta . ' WHERE site_id = %d AND (' . implode( ' OR ', array_fill( 0, count( $like_patterns ), 'meta_key LIKE %s' ) ) . ')';
+		$deleted                = $wpdb->query( $wpdb->prepare( $sitemeta_sql, $sitemeta_like_patterns ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+		if ( false === $deleted ) {
+			$errors->add( 'imagify_reset_sitemeta_transients', __( 'An error occurred while clearing network transient data.', 'imagify' ) );
+		}
+	} else {
+		$options_patterns = [
+			$batch_prefix,
+			'imagify_optimize_media_status',
+		];
+
+		$options_sql = 'DELETE FROM ' . $wpdb->options . ' WHERE option_name LIKE %s OR option_name = %s';
+		$deleted     = $wpdb->query( $wpdb->prepare( $options_sql, $options_patterns ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+		if ( false === $deleted ) {
+			$errors->add( 'imagify_reset_batches', __( 'An error occurred while clearing optimization batches.', 'imagify' ) );
+		}
+	}
+
+	// Cancel pending async jobs that can keep the UI in a stuck state.
+	if ( function_exists( 'as_unschedule_all_actions' ) ) {
+		$action_scheduler_groups = [
+			'imagify-wp-optimize-media',
+			'imagify-custom-folders-optimize-media',
+			'imagify-wp-convert-nextgen',
+			'imagify-custom-folders-convert-nextgen',
+		];
+
+		foreach ( $action_scheduler_groups as $group ) {
+			as_unschedule_all_actions( 'imagify_optimize_media', [], $group );
+			as_unschedule_all_actions( 'imagify_convert_next_gen', [], $group );
+		}
+
+		as_unschedule_all_actions( 'imagify_optimize_media' );
+		as_unschedule_all_actions( 'imagify_convert_next_gen' );
+	}
+
+	wp_clear_scheduled_hook( 'imagify_rating_event' );
+	wp_clear_scheduled_hook( 'imagify_update_library_size_calculations_event' );
+	wp_clear_scheduled_hook( 'imagify_optimize_media_cron' );
+
+	if ( ! $errors->has_errors() ) {
+		return true;
+	}
+
+	return $errors;
+}
+
+/**
  * Get cached Imagify user data.
  * This is usefull to prevent triggering an HTTP request to our server on every page load, but it can be used only where the data doesn't need to be in real time.
  *
