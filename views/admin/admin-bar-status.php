@@ -1,8 +1,9 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-$pos        = strpos( $data['plan_label'], '_' );
-$plan_label = false !== $pos ? substr( $data['plan_label'], 0, $pos ) : $data['plan_label'];
+$plan_label_value = (string) $data['plan_label'];
+$pos              = strpos( $plan_label_value, '_' );
+$plan_label       = false !== $pos ? substr( $plan_label_value, 0, $pos ) : $plan_label_value;
 ?>
 <div class="imagify-admin-bar-quota">
 	<div class="imagify-abq-row">
