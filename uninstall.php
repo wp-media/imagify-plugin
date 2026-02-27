@@ -15,6 +15,7 @@ delete_option( $wpdb->prefix . 'ngg_imagify_data_db_version' );
 // Delete all transients.
 delete_site_transient( 'imagify_activation' );
 delete_site_transient( 'imagify_check_licence_1' );
+delete_site_transient( 'imagify_check_api_version' );
 delete_site_transient( 'imagify_user' );
 delete_site_transient( 'imagify_themes_plugins_to_sync' );
 delete_site_transient( 'do_imagify_rating_cron' );
@@ -27,6 +28,7 @@ delete_transient( 'imagify_large_library' );
 delete_transient( 'imagify_max_image_size' );
 delete_transient( 'imagify_user' );
 delete_transient( 'imagify_stat_without_next_gen' );
+delete_transient( 'imagify_bulk_optimization_result' );
 delete_transient( 'imagify_attachments_number_modal' );
 delete_transient( 'imagify_user_cache' );
 
