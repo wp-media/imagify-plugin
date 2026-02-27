@@ -737,7 +737,7 @@ window.imagify = window.imagify || {};
                             return;
                         }
 
-                        if ( ! response.data || ! ( $.isPlainObject( response.data ) || $.isArray( response.data ) ) ) {
+                        if ( ! response.data || ! ( $.isPlainObject( response.data ) || Array.isArray( response.data ) ) ) {
                             // Error: should be an array if empty, or an object otherwize.
                             w.imagify.bulk.stopProcess( errorMessage, item );
                             return;
@@ -1003,7 +1003,7 @@ window.imagify = window.imagify || {};
                 }
             }
 
-            data = data && $.isArray( data ) ? data : [];
+            data = data && Array.isArray( data ) ? data : [];
 
             if ( this.charts.overview.donut ) {
                 // Update existing donut.
