@@ -428,12 +428,14 @@ final class Bulk {
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
 			// No context.
 			return 'noop';
 		}
 
-		$context = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$context = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) );
 
 		return imagify_sanitize_context( $context );
 	}

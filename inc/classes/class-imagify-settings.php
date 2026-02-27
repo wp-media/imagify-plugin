@@ -1,7 +1,6 @@
 <?php
 use Imagify\Notices\Notices;
 use Imagify\Traits\InstanceGetterTrait;
-
 /**
  * Class that handles the plugin settings.
  *
@@ -297,7 +296,8 @@ class Imagify_Settings {
 	 * @return mixed            The option value.
 	 */
 	public function maybe_set_redirection( $value, $old_value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
-		if ( isset( $_POST['submit-goto-bulk'] ) ) { // WPCS: CSRF ok.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST['submit-goto-bulk'] ) ) {
 			$_REQUEST['_wp_http_referer'] = esc_url_raw( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) );
 		}
 

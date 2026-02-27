@@ -46,8 +46,6 @@
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query"/><!-- Maybe someday. -->
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value"/><!-- Maybe someday. -->
 		<!-- Will be handled later. -->
-		<exclude name="WordPress.Security.NonceVerification.Missing"/>
-		<exclude name="WordPress.Security.NonceVerification.Recommended"/>
 		<exclude name="WordPress.DB.PreparedSQL.InterpolatedNotPrepared"/>
 		<exclude name="WordPress.DB.PreparedSQL.NotPrepared"/>
 		<exclude name="WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare"/>

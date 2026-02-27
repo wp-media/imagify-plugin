@@ -1,7 +1,6 @@
 <?php
 
 use Imagify\Traits\InstanceGetterTrait;
-
 /**
  * Class that handles admin ajax/post callbacks.
  *
@@ -1175,12 +1174,14 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
 			// No context.
 			return 'noop';
 		}
 
-		$context = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$context = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) );
 
 		return imagify_sanitize_context( $context );
 	}
@@ -1216,12 +1217,14 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_folder_type( $method = 'GET', $parameter = 'folder_type' ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
 			// No folder type.
 			return 'noop';
 		}
 
-		$folder_type = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$folder_type = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) );
 
 		return $folder_type;
 	}
@@ -1237,12 +1240,14 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_imagify_action( $method = 'GET', $parameter = 'imagify_action' ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
 			// No action.
 			return 'optimize';
 		}
 
-		$action = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$action = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) );
 
 		return $action ? $action : 'optimize';
 	}

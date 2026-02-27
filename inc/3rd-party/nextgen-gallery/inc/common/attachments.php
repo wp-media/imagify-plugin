@@ -20,9 +20,11 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 		return;
 	}
 
-	$is_maybe_library_import = ! empty( $_POST['action'] ) && 'import_media_library' === $_POST['action'] && ! empty( $_POST['attachment_ids'] ) && is_array( $_POST['attachment_ids'] ); // WPCS: CSRF ok.
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing
+	$is_maybe_library_import = ! empty( $_POST['action'] ) && 'import_media_library' === $_POST['action'] && ! empty( $_POST['attachment_ids'] ) && is_array( $_POST['attachment_ids'] );
 
-	if ( $is_maybe_library_import && ! empty( $_POST['nextgen_upload_image_sec'] ) ) { // WPCS: CSRF ok.
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing
+	if ( $is_maybe_library_import && ! empty( $_POST['nextgen_upload_image_sec'] ) ) {
 		/**
 		 * The images are imported from the library.
 		 * In this case, those images are dealt with in _imagify_ngg_media_library_imported_image_data().
@@ -30,7 +32,8 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 		return;
 	}
 
-	if ( $is_maybe_library_import && ( ! empty( $_POST['gallery_id'] ) || ! empty( $_POST['gallery_name'] ) ) ) { // WPCS: CSRF ok.
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing
+	if ( $is_maybe_library_import && ( ! empty( $_POST['gallery_id'] ) || ! empty( $_POST['gallery_name'] ) ) ) {
 		/**
 		 * Same thing but for NGG 2.0 probably.
 		 */
