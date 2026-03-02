@@ -2,10 +2,11 @@
 /node_modules
 /Tests/env/local
 /vendor
+
 # Files
 .DS_Store
 /gruntlocalconf.json
-composer.lock
-package-lock.json
 /_dev/node_modules
 .phpunit.result.cache
+bin/strauss.phar
+composer.lock

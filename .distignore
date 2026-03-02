@@ -15,6 +15,7 @@
 /composer.lock
 /gruntfile.js
 /package.json
+/package-lock.json
 /phpcs.xml
 /README.md
 /SECURITY.md
