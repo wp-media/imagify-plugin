@@ -315,7 +315,7 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 			$item['task'] = 'before';
 		}
 
-		if ( ! $item['task'] || ! method_exists( $this, 'task_' . $item['task'] ) ) {
+		if ( ! method_exists( $this, 'task_' . $item['task'] ) ) {
 			return false;
 		}
 
