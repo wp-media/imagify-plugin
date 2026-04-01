@@ -1,4 +1,4 @@
-=== Imagify Image Optimization – Optimize Images | Compress Images | Convert WebP | Convert AVIF ===
+=== Imagify: Optimize Images for Top Speed (Compress & Convert to WebP/AVIF) ===
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 6.9
@@ -11,7 +11,7 @@ Optimize images in 1-click: compress images, convert to WebP & AVIF, resize, and
 
 == Description ==
 
-= 🏆 The Best Image Optimization Plugin For WordPress = 
+=== 🏆 The Best Image Optimization Plugin For WordPress === 
 
 [Imagify](https://imagify.io/) is the most advanced image optimization plugin to help you optimize images. In fact, you can easily resize and compress images, and convert them to WebP and Avif. You can now use its power directly in WordPress to optimize images and reduce the weight of the photos you want to add to your site – image optimization is all done with just one click and without sacrificing their quality.
 
@@ -25,7 +25,7 @@ Our video explains why Imagify is the easiest image optimization plugin and show
 
 [youtube https://www.youtube.com/watch?v=qbqV5yEZ6Og]
 
-✨ Optimize Images – The Imagify Image Optimizer Key Features:
+=== ✨ Optimize Images – The Imagify Image Optimizer Key Features: ===
 
 * Resize and compress images for the most common formats, including PDF
 * Optimize images with Smart Compression to balance image optimization quality and performance automatically
@@ -33,7 +33,7 @@ Our video explains why Imagify is the easiest image optimization plugin and show
 * AVIF conversion in one click
 * Async bulk optimization
 
-= 📸 Optimize Images: Resize and Compress Images Without Losing Quality = 
+=== 📸 Optimize Images: Resize and Compress Images Without Losing Quality === 
 
 Imagify is a great image compressor and the ultimate solution to optimise images. You are able to resize and compress images from the most common image formats as well as PDF format. In case you have many images to optimize, you can also resize images in bulk thanks to our async bulk optimization option. In just one click, you will be able to compress multiple images super easily. Imagify compresses all your images in the background, so you can leave the page and not worry about anything.
 
@@ -43,7 +43,7 @@ With such a great image optimizer like Imagify, you’ll get your images automat
 
 When using our image compression tool, Imagify, you will enjoy smaller file sizes and faster loading times. But the best part is that you will optimise images and reduce their weight without losing quality: why should you have to choose between beauty and speed? If you want to compress images, it’s now easier than ever with Imagify!
 
-= 🔄 Convert to WebP and AVIF Formats =
+=== 🔄 Convert to WebP and AVIF Formats ===
 
 Thanks to Imagify, you can take a step further in your image optimization process. You can also convert all your images to next-gen image formats such as WebP and AVIF. WebP format, as well as the AVIF format, offers superior image compression and quality and is a way to optimise images and speed up their loading times on websites. By utilizing Imagify’s AVIF and WebP optimizer, you can efficiently convert images to these next-gen formats, saving you a precious amount of time.
 
@@ -56,7 +56,7 @@ Imagify can also display the AVIF images directly on your front-end. But because
 WebP is definitively an excellent replacement for jpeg, png, and gif images, and the same goes for AVIF, which improves your image performance even further. Imagify offers WebP conversion for all image formats: you can convert gif to WebP, jpeg to WebP, and even png to WebP. You can also benefit from AVIF conversion and convert gif to AVIF, jpg and jpeg to AVIF, png to AVIF.
 Whatever your favorite image format, let Imagify optimise your images!
 
-= ⚡ Optimize Images to Make Your Site Faster and Improve Core Web Vitals = 
+=== ⚡ Optimize Images to Make Your Site Faster and Improve Core Web Vitals === 
 
 Did you know that image optimization and web performance go hand in hand? In fact, when it comes to web page speed, one of the first things you should do is optimize your images. Large and heavy image sizes will indeed slow down your website and provide a bad user experience to your visitors – and that’s why you should compress images. On the contrary, when you optimise images and improve image loading speed, you should see a direct improvement in your website speed and performance. With Imagify, it’s time to say goodbye to images taking too long to load.
 
@@ -64,7 +64,7 @@ Images are one of the largest influencing factors in the Core Web Vitals. Image 
 
 Even Google tells you to take care of your images! If you have ever run a performance audit on PageSpeed Insights, you might have seen the [“serve images in next-gen formats”](https://imagify.io/blog/serve-next-gen-formats-wordpress/) opportunity popping up. Another PageSpeed Insights recommendation related to images is to [“efficiently encode images”](https://imagify.io/blog/efficiently-encode-images-wordpress/). When you use Imagify, you will be able to address both recommendations and fix your images for a faster website.
 
-= 💬 What Do Our Users Think Of Imagify? =
+=== 💬 What Do Our Users Think Of Imagify? ===
 
 Here’s what our users have to say about us after optimizing their images with Imagify:
 
@@ -83,13 +83,13 @@ Here’s what our users have to say about us after optimizing their images with 
 > "Clearly Imagify is the most awesome WordPress plugin to compress images on your website! A must try" — [Eric Walter](https://twitter.com/EricWaltR/status/679053496382038016)
 >
 
-= 💰 Is Imagify Free? =
+=== 💰 Is Imagify Free? ===
 
 You can optimize for free 20MB of images (that’s about 200 images) every month. You can also convert to the next-gen WebP format for free.
 
 Need to compress more images? Have a look at our plans: [https://imagify.io/pricing](https://imagify.io/pricing)
 
-= 💡 Want Image Optimization Tips? =
+=== 💡 Want Image Optimization Tips? ===
 
 If you want to optimize images and know more about using WebP images on WordPress, improving your PageSpeed score with Imagify, or compressing multiple images online, take a look at our blog: [https://imagify.io/blog/](https://imagify.io/blog/)
 
@@ -102,19 +102,19 @@ It’s packed with advice on image compression and so much more!
 * [How to Make Photos Load Faster on WordPress: 6 Key Tactics](https://imagify.io/blog/how-to-make-photos-load-faster-wordpress/)
 * [How to Optimize Images for Page Speed (and Google)](https://imagify.io/blog/optimize-images-page-speed-google/)
 
-= 👥 Who Are We? =
+=== 👥 Who Are We? ===
 
 We are [WP Media](https://wp-media.me/), the company behind WP Rocket, the best caching plugin for WordPress.
 
 Our mission is to improve the web, we are making it faster with [WP Rocket](https://wp-rocket.me/) and lighter with Imagify.
 
-= ✉️ Get In Touch! =
+=== ✉️ Get In Touch! ===
 
 * Website: [Imagify.io](https://imagify.io)
 * Contact Us: [https://imagify.io/contact](https://imagify.io/contact)
 * Twitter: [https://twitter.com/imagify](https://twitter.com/imagify)
 
-= 🚀 Related Plugins =
+=== 🚀 Related Plugins ===
 
 * [WP Rocket](https://wp-rocket.me/): Best caching plugin to speed-up your WordPress website.
 * [Lazy Load](https://wordpress.org/plugins/rocket-lazy-load/): Best Lazy Load script to reduce the number of HTTP requests and improve the website's loading time.
