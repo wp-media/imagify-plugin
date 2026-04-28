@@ -102,16 +102,6 @@ function imagify_pass_requirements() {
 }
 
 /**
- * Load plugin translations.
- *
- * @since 1.9
- */
-function imagify_load_translations() {
-	load_plugin_textdomain( 'imagify', false, dirname( plugin_basename( IMAGIFY_FILE ) ) . '/languages/' );
-}
-add_action( 'init', 'imagify_load_translations' );
-
-/**
  * Set a transient on plugin activation, it will be used later to trigger activation hooks after the plugin is loaded.
  * The transient contains the ID of the user that activated the plugin.
  *
