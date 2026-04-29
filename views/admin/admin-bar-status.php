@@ -39,7 +39,7 @@ $plan_label = false !== $pos ? substr( $data['plan_label'], 0, $pos ) : $data['p
 		<?php elseif ( 0 === $data['unconsumed_quota'] ) : ?>
 		<p><i class="dashicons dashicons-warning" aria-hidden="true"></i><strong><?php esc_html_e( 'Oops, It\'s Over!', 'imagify' ); ?></strong></p>
 		<?php endif; ?>
-		<p><?php echo esc_html( $data['text'] ); ?></p>
+		<p><?php echo wp_kses( $data['text'], [ 'br' => [] ] ); ?></p>
 		<p class="center txt-center text-center"><a class="imagify-upsell-admin-bar-button" href="<?php echo esc_url( $data['upgrade_link'] ); ?>" target="_blank"><?php echo esc_html( $data['button_text'] ); ?></a></p>
 		<a href="<?php echo esc_url( get_imagify_admin_url( 'dismiss-notice', 'upsell-admin-bar' ) ); ?>" class="imagify-notice-dismiss imagify-upsell-dismiss notice-dismiss" title="<?php esc_attr_e( 'Dismiss this notice', 'imagify' ); ?>"><span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'imagify' ); ?></span></a>
 	</div>
