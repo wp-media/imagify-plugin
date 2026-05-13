@@ -133,6 +133,10 @@ function imagify_deactivation() {
 		return;
 	}
 
+	// Clean up site transients.
+	delete_site_transient( 'imagify_check_api_version' );
+	delete_site_transient( 'imagify_check_licence_1' );
+
 	/**
 	 * Imagify deactivation.
 	 *
