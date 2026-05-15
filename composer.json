@@ -119,12 +119,12 @@
 			"@composer dump-autoload"
 		],
 		"post-install-cmd": [
-			"@prefix-namespaces",
-			"Imagify\\Dependencies\\WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
+			"WPMedia\\PluginFamily\\PostInstall::apply_text_domain",
+			"@prefix-namespaces"
 		],
 		"post-update-cmd": [
-			"@prefix-namespaces",
-			"Imagify\\Dependencies\\WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
+			"WPMedia\\PluginFamily\\PostInstall::apply_text_domain",
+			"@prefix-namespaces"
 		],
 		"code-coverage": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist --coverage-clover=tests/report/coverage.clover"
 	}
