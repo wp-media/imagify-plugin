@@ -20,17 +20,21 @@ test.describe( 'Imagify account connection', () => {
 	} );
 
 	test( 'Entering an invalid API key shows an error', async ( { page } ) => {
-		test.skip( !! process.env.CI && ! process.env.IMAGIFY_TESTS_API_KEY, 'Requires API key to validate response' );
+		// Imagify validates the key by calling its API, so an actual network call is
+		// required for the error notice to appear. Skip if no key is configured — we
+		// cannot reliably produce a "bad key" response without a real account.
+		test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — cannot produce a bad-key API response' );
 
 		const settings = new SettingsPage( page );
 		await settings.goto();
 
-		await settings.apiKeyInput.fill( 'invalid-key-000' );
+		// Submit a deliberately wrong key so the API rejects it.
+		await settings.apiKeyInput.fill( 'invalid-key-000000000000000000000000000000' );
 		await settings.saveButton.click();
 		await page.waitForLoadState( 'networkidle' );
 
-		// Imagify should render an error notice or inline validation message.
-		const error = page.locator( '.notice-error, .imagify-notice-error, .imagify-error' ).first();
+		// Imagify renders the "wrong API key" notice with a standard WP .notice.error class.
+		const error = page.locator( '.notice.error, .notice-error' ).first();
 		await expect( error ).toBeVisible( { timeout: 10_000 } );
 	} );
 

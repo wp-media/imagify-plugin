@@ -12,9 +12,10 @@ export class BulkOptimizationPage {
 
 	constructor( page: Page ) {
 		this.page = page;
-		this.optimizeButton = page.getByRole( 'button', { name: /optimize/i } ).first();
-		this.progressBar    = page.locator( '.imagify-bulk-optimization-progress, .imagify-progress' ).first();
-		this.statsTable     = page.locator( '.imagify-bulk-table, .imagify-stats-table' ).first();
+		// The main "Imagif'em all" button.
+		this.optimizeButton = page.locator( '#imagify-bulk-action' );
+		this.progressBar    = page.locator( '.imagify-row-progress' ).first();
+		this.statsTable     = page.locator( '.imagify-bulk-table' ).first();
 	}
 
 	async goto(): Promise<void> {

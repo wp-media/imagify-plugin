@@ -5,8 +5,9 @@ import { SettingsPage } from '../pages/settings';
 /**
  * Imagify Settings page tests.
  *
- * Focuses on the settings UI rendering and saving behavior.
- * Does not depend on a live API key.
+ * Without a valid API key only the account section (API key input + save
+ * button) is visible. The Lossless, WebP/AVIF, and Library sections are
+ * hidden and require IMAGIFY_TESTS_API_KEY to be tested.
  */
 test.describe( 'Imagify settings', () => {
 	test.beforeEach( async ( { page } ) => {
@@ -28,21 +29,26 @@ test.describe( 'Imagify settings', () => {
 		await expect( settings.saveButton ).toBeVisible();
 	} );
 
-	test( 'Optimization level options are present', async ( { page } ) => {
+	test( 'Lossless compression option is present (requires API key)', async ( { page } ) => {
+		test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — settings sections hidden without valid key' );
+
 		const settings = new SettingsPage( page );
 		await settings.goto();
 
-		// Imagify exposes Normal, Aggressive, and Ultra levels.
-		const optionLabels = page.locator( 'label' ).filter( { hasText: /normal|aggressive|ultra/i } );
-		await expect( optionLabels ).not.toHaveCount( 0 );
+		// Imagify uses a "Lossless compression" checkbox, not Normal/Aggressive/Ultra labels.
+		const losslessLabel = page.locator( 'label' ).filter( { hasText: /lossless/i } );
+		await expect( losslessLabel ).toBeVisible();
 	} );
 
-	test( 'WebP/AVIF next-gen format toggles are present', async ( { page } ) => {
+	test( 'WebP/AVIF next-gen format toggles are present (requires API key)', async ( { page } ) => {
+		test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — settings sections hidden without valid key' );
+
 		const settings = new SettingsPage( page );
 		await settings.goto();
 
-		const webpOption = page.locator( 'input[name*="webp"], label' ).filter( { hasText: /webp/i } ).first();
-		await expect( webpOption ).toBeVisible();
+		// The format radio buttons use label[for="imagify_optimization_format_webp"] etc.
+		const webpLabel = page.locator( 'label[for="imagify_optimization_format_webp"]' );
+		await expect( webpLabel ).toBeVisible();
 	} );
 
 	test( 'Saving settings without changing values succeeds', async ( { page } ) => {

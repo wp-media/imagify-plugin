@@ -12,8 +12,8 @@ export class MediaLibraryPage {
 
 	constructor( page: Page ) {
 		this.page = page;
-		// The column header injected by Imagify.
-		this.imagifyColumn = page.locator( 'th.column-imagify_status, th#imagify_status' ).first();
+		// The column header injected by Imagify. Key registered as 'imagify_optimized_file'.
+		this.imagifyColumn = page.locator( 'th#imagify_optimized_file, th.column-imagify_optimized_file' ).first();
 	}
 
 	async goto(): Promise<void> {
@@ -32,7 +32,7 @@ export class MediaLibraryPage {
 	}
 
 	async getFirstAttachmentStatus(): Promise<string> {
-		const status = this.page.locator( 'td.column-imagify_status' ).first();
+		const status = this.page.locator( 'td.column-imagify_optimized_file' ).first();
 		return ( await status.textContent() ) ?? '';
 	}
 
