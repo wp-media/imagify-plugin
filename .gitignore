@@ -10,3 +10,12 @@
 .phpunit.result.cache
 bin/strauss.phar
 composer.lock
+
+# E2E testing
+/Tests/e2e/node_modules
+/Tests/e2e/playwright-report
+/Tests/e2e/test-results
+/.e2e-screenshots
+
+# Local issue sync
+/.TemporaryItems
