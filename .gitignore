@@ -2,6 +2,7 @@
 /node_modules
 /Tests/env/local
 /vendor
+/.TemporaryItems
 
 # Files
 .DS_Store
