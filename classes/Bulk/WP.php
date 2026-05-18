@@ -172,6 +172,74 @@ class WP extends AbstractBulk {
 	}
 
 	/**
+	 * Get ids of all optimized media that have a backup file (can be restored).
+	 *
+	 * @since 2.2.9
+	 *
+	 * @return int[] List of media IDs.
+	 */
+	public function get_optimized_media_ids(): array {
+		global $wpdb;
+
+		$this->set_no_time_limit();
+
+		$mime_types   = Imagify_DB::get_mime_types();
+		$statuses     = Imagify_DB::get_post_statuses();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause(
+			[
+				'prepared' => true,
+			]
+		);
+
+		$ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			"SELECT DISTINCT p.ID
+			FROM $wpdb->posts AS p
+				$nodata_join
+			INNER JOIN $wpdb->postmeta AS mt1
+				ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+			WHERE
+				p.post_mime_type IN ( $mime_types )
+				AND ( mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
+				AND p.post_type = 'attachment'
+				AND p.post_status IN ( $statuses )
+				$nodata_where
+			ORDER BY p.ID DESC"
+		);
+
+		$wpdb->flush();
+		unset( $mime_types, $statuses );
+
+		$ids = array_filter( array_map( 'absint', $ids ) );
+
+		if ( ! $ids ) {
+			return [];
+		}
+
+		$metas = Imagify_DB::get_metas(
+			[ 'filenames' => '_wp_attached_file' ],
+			$ids
+		);
+
+		$result = [];
+
+		foreach ( $ids as $id ) {
+			if ( empty( $metas['filenames'][ $id ] ) ) {
+				continue;
+			}
+
+			$file_path   = get_imagify_attached_file( $metas['filenames'][ $id ] );
+			$backup_path = get_imagify_attachment_backup_path( $file_path );
+
+			if ( $file_path && $this->filesystem->exists( $backup_path ) ) {
+				$result[] = $id;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Get ids of all optimized media without Next gen versions.
 	 *
 	 * @since 2.2

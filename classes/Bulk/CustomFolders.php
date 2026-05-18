@@ -79,6 +79,58 @@ class CustomFolders extends AbstractBulk {
 	}
 
 	/**
+	 * Get ids of all optimized media that have a backup file (can be restored).
+	 *
+	 * @since 2.2.9
+	 *
+	 * @return int[] List of media IDs.
+	 */
+	public function get_optimized_media_ids(): array {
+		global $wpdb;
+
+		$this->set_no_time_limit();
+
+		$files_table   = Imagify_Files_DB::get_instance()->get_table_name();
+		$folders_table = Imagify_Folders_DB::get_instance()->get_table_name();
+
+		$files = $wpdb->get_results( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			"SELECT fi.file_id, fi.path
+			FROM $files_table AS fi
+			INNER JOIN $folders_table AS fo
+				ON ( fi.folder_id = fo.folder_id )
+			WHERE
+				fi.status = 'success' OR fi.status = 'already_optimized'
+			ORDER BY fi.file_id DESC"
+		);
+
+		$wpdb->flush();
+		unset( $files_table, $folders_table );
+
+		if ( ! $files ) {
+			return [];
+		}
+
+		$result = [];
+
+		foreach ( $files as $file ) {
+			$file_id = absint( $file->file_id );
+
+			if ( empty( $file->path ) ) {
+				continue;
+			}
+
+			$file_path   = Imagify_Files_Scan::remove_placeholder( $file->path );
+			$backup_path = Imagify_Custom_Folders::get_file_backup_path( $file_path );
+
+			if ( $this->filesystem->exists( $backup_path ) ) {
+				$result[] = $file_id;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Get ids of all optimized media without Next gen versions.
 	 *
 	 * @since 2.2

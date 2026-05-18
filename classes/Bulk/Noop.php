@@ -20,6 +20,17 @@ class Noop extends AbstractBulk {
 	}
 
 	/**
+	 * Get ids of all optimized media that have a backup file (can be restored).
+	 *
+	 * @since 2.2.9
+	 *
+	 * @return int[] List of media IDs.
+	 */
+	public function get_optimized_media_ids(): array {
+		return [];
+	}
+
+	/**
 	 *   * Get ids of all optimized media without Next gen versions.
 	 *
 	 * @since 2.2

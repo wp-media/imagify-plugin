@@ -45,6 +45,15 @@ interface BulkInterface {
 	public function has_optimized_media_without_nextgen();
 
 	/**
+	 * Get ids of all optimized media that have a backup file (can be restored).
+	 *
+	 * @since 2.2.9
+	 *
+	 * @return int[] List of media IDs.
+	 */
+	public function get_optimized_media_ids(): array;
+
+	/**
 	 * Get the context data.
 	 *
 	 * @since 1.9
