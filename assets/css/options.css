@@ -564,6 +564,42 @@ label[for="imagify_partner_links"] {
 	color: #FFF;
 }
 
+/* Responsive styles for Generate missing Next-Gen images button */
+@media (max-width: 782px) {
+	.generate-missing-webp {
+		margin-left: 0;
+	}
+
+	#imagify-generate-webp-versions {
+		display: block;
+		width: 100%;
+		text-align: center;
+		padding: 8px 13px;
+		font-size: 13px;
+	}
+
+	#imagify-generate-webp-versions .dashicons {
+		vertical-align: middle;
+		margin-right: 5px;
+	}
+
+	#imagify-generate-webp-versions .button-text {
+		display: inline;
+		vertical-align: middle;
+	}
+}
+
+@media (max-width: 600px) {
+	#imagify-generate-webp-versions {
+		font-size: 12px;
+		padding: 6px 10px;
+	}
+
+	#imagify-generate-webp-versions .button-text {
+		word-break: break-word;
+	}
+}
+
 p.imagify-custom-folder-line {
 	position: relative;
 	margin: 0;
