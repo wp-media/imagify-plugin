@@ -39,7 +39,7 @@ All tests run against a local WordPress environment managed by `@wordpress/env` 
 ```bash
 # From the repository root
 bash bin/dev-up.sh       # Start wp-env + activate plugin + seed test data
-cd tests/e2e
+cd Tests/e2e
 npm install
 npx playwright install chromium
 ```
@@ -47,7 +47,7 @@ npx playwright install chromium
 ### Running
 
 ```bash
-cd tests/e2e
+cd Tests/e2e
 npm test                 # Headless, list reporter
 npm run test:headed      # With browser UI visible
 npm run test:ui          # Playwright interactive UI mode
@@ -61,9 +61,9 @@ npm run report           # Open the last HTML report
 | `IMAGIFY_BASE_URL` | `http://localhost:8888` | Override the WordPress base URL |
 | `IMAGIFY_ADMIN_USER` | `admin` | WP admin username |
 | `IMAGIFY_ADMIN_PASS` | `password` | WP admin password |
-| `IMAGIFY_API_KEY` | _(unset)_ | Real Imagify API key — required for optimization tests |
+| `IMAGIFY_TESTS_API_KEY` | _(unset)_ | Real Imagify API key — required for optimization tests |
 
-Set `IMAGIFY_API_KEY` to run tests that call the Imagify API. Without it, those tests are automatically skipped.
+Set `IMAGIFY_TESTS_API_KEY` to run tests that call the Imagify API. Without it, those tests are automatically skipped.
 
 ---
 
@@ -77,7 +77,7 @@ Each major admin surface has a Page Object class. Use them instead of raw select
 import { SettingsPage } from '../pages/settings';
 const settings = new SettingsPage( page );
 await settings.goto();
-await settings.setApiKey( process.env.IMAGIFY_API_KEY! );
+await settings.setApiKey( process.env.IMAGIFY_TESTS_API_KEY! );
 ```
 
 Key members: `apiKeyInput`, `saveButton`, `successNotice`, `goto()`, `setApiKey()`, `getApiKey()`, `expectNoFatalError()`.
@@ -130,11 +130,11 @@ const value = wpCli( 'option get imagify_settings --format=json' );
 
 ### `hasApiKey()` — `Tests/e2e/fixtures/wp-cli.ts`
 
-Returns `true` if `IMAGIFY_API_KEY` is set. Use with `test.skip` to gate API-dependent tests:
+Returns `true` if `IMAGIFY_TESTS_API_KEY` is set. Use with `test.skip` to gate API-dependent tests:
 
 ```typescript
 import { hasApiKey } from '../fixtures/wp-cli';
-test.skip( ! hasApiKey(), 'IMAGIFY_API_KEY not set' );
+test.skip( ! hasApiKey(), 'IMAGIFY_TESTS_API_KEY not set' );
 ```
 
 ---
@@ -153,7 +153,7 @@ Any test that triggers image optimization through the Imagify API must be guarde
 
 ```typescript
 test( 'Optimizing an image succeeds', async ( { page } ) => {
-    test.skip( ! process.env.IMAGIFY_API_KEY, 'IMAGIFY_API_KEY not set — skipping live optimization test' );
+    test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — skipping live optimization test' );
     // ... test body
 } );
 ```
@@ -218,7 +218,7 @@ The E2E workflow (`.github/workflows/e2e.yml`) runs on pull requests that touch:
 - `.wp-env.json`, `bin/dev-up.sh`, `bin/dev-seed.sh` — environment config
 - `composer.json`, `.github/workflows/e2e.yml`
 
-The `IMAGIFY_API_KEY` secret must be set in the GitHub repository settings for API-dependent tests to run. Without it, those tests are automatically skipped and the suite still passes.
+The `IMAGIFY_TESTS_API_KEY` secret must be set in the GitHub repository settings for API-dependent tests to run. Without it, those tests are automatically skipped and the suite still passes.
 
 ---
 

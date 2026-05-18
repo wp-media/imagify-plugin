@@ -4,7 +4,7 @@
 # Idempotent: safe to re-run; conflicts are silently ignored.
 #
 # What it does:
-#   1. Sets the Imagify API key from IMAGIFY_API_KEY env var (if set).
+#   1. Sets the Imagify API key from IMAGIFY_TESTS_API_KEY env var (if set).
 #   2. Uploads a small test JPEG to the media library so optimization tests
 #      have something to act on.
 
@@ -15,16 +15,16 @@ wp() { npx --yes @wordpress/env run cli wp "$@"; }
 echo "  • Configuring Imagify options..."
 wp option update imagify_settings '{"api_key":""}' --format=json >/dev/null 2>&1 || true
 
-if [[ -n "${IMAGIFY_API_KEY:-}" ]]; then
-	echo "  • Setting API key from IMAGIFY_API_KEY..."
+if [[ -n "${IMAGIFY_TESTS_API_KEY:-}" ]]; then
+	echo "  • Setting API key from IMAGIFY_TESTS_API_KEY..."
 	wp eval "
 		\$settings = get_option( 'imagify_settings', [] );
-		\$settings['api_key'] = '${IMAGIFY_API_KEY}';
+		\$settings['api_key'] = '${IMAGIFY_TESTS_API_KEY}';
 		update_option( 'imagify_settings', \$settings );
 	" >/dev/null
 else
-	echo "  • IMAGIFY_API_KEY not set — skipping API key configuration."
-	echo "    Set IMAGIFY_API_KEY to enable optimization tests."
+	echo "  • IMAGIFY_TESTS_API_KEY not set — skipping API key configuration."
+	echo "    Set IMAGIFY_TESTS_API_KEY to enable optimization tests."
 fi
 
 echo "  • Uploading a test image to the media library..."

@@ -21,9 +21,9 @@ export function runFromRepoRoot( command: string ): string {
 }
 
 /**
- * Returns true if the IMAGIFY_API_KEY env var is set to a non-empty string.
+ * Returns true if the IMAGIFY_TESTS_API_KEY env var is set to a non-empty string.
  * Use to skip tests that require a live API key.
  */
 export function hasApiKey(): boolean {
-	return !! process.env.IMAGIFY_API_KEY;
+	return !! process.env.IMAGIFY_TESTS_API_KEY;
 }

@@ -5,7 +5,7 @@ import { SettingsPage } from '../pages/settings';
 /**
  * Account connection tests.
  *
- * Tests that require a real API key are skipped when IMAGIFY_API_KEY is unset.
+ * Tests that require a real API key are skipped when IMAGIFY_TESTS_API_KEY is unset.
  */
 test.describe( 'Imagify account connection', () => {
 	test.beforeEach( async ( { page } ) => {
@@ -20,7 +20,7 @@ test.describe( 'Imagify account connection', () => {
 	} );
 
 	test( 'Entering an invalid API key shows an error', async ( { page } ) => {
-		test.skip( !! process.env.CI && ! process.env.IMAGIFY_API_KEY, 'Requires API key to validate response' );
+		test.skip( !! process.env.CI && ! process.env.IMAGIFY_TESTS_API_KEY, 'Requires API key to validate response' );
 
 		const settings = new SettingsPage( page );
 		await settings.goto();
@@ -35,12 +35,12 @@ test.describe( 'Imagify account connection', () => {
 	} );
 
 	test( 'Valid API key connects the account', async ( { page } ) => {
-		test.skip( ! process.env.IMAGIFY_API_KEY, 'IMAGIFY_API_KEY not set — skipping live connection test' );
+		test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — skipping live connection test' );
 
 		const settings = new SettingsPage( page );
 		await settings.goto();
 
-		await settings.apiKeyInput.fill( process.env.IMAGIFY_API_KEY! );
+		await settings.apiKeyInput.fill( process.env.IMAGIFY_TESTS_API_KEY! );
 		await settings.saveButton.click();
 		await page.waitForLoadState( 'networkidle' );
 

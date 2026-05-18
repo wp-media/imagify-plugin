@@ -44,12 +44,12 @@ jobs:
       - name: Boot wp-env
         run: bash bin/dev-up.sh --no-seed
         env:
-          IMAGIFY_API_KEY: ${{ secrets.IMAGIFY_API_KEY }}
+          IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
 
       - name: Seed test data
         run: bash bin/dev-seed.sh
         env:
-          IMAGIFY_API_KEY: ${{ secrets.IMAGIFY_API_KEY }}
+          IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
 
       - name: Install Playwright
         working-directory: Tests/e2e
@@ -61,7 +61,7 @@ jobs:
         working-directory: Tests/e2e
         env:
           CI: 'true'
-          IMAGIFY_API_KEY: ${{ secrets.IMAGIFY_API_KEY }}
+          IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
         run: npm test
 
       - name: Upload Playwright report

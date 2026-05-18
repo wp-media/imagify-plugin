@@ -8,7 +8,7 @@ import { MediaLibraryPage } from '../pages/media-library';
  * Verifies that Imagify injects its optimization column and that the
  * per-image optimization UI renders correctly.
  *
- * Optimization tests that call the API are skipped when IMAGIFY_API_KEY is unset.
+ * Optimization tests that call the API are skipped when IMAGIFY_TESTS_API_KEY is unset.
  */
 test.describe( 'Media library — Imagify column', () => {
 	test.beforeEach( async ( { page } ) => {

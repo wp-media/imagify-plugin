@@ -81,7 +81,7 @@ Full E2E testing documentation: [`docs/E2E_TESTING.md`](docs/E2E_TESTING.md)
 
 The test directory is `Tests/e2e/` (capital T, consistent with the existing `Tests/` PHPUnit directory).
 
-The E2E suite runs in CI via `.github/workflows/e2e.yml`. The `IMAGIFY_API_KEY` GitHub secret must be configured for optimization tests to run.
+The E2E suite runs in CI via `.github/workflows/e2e.yml`. The `IMAGIFY_TESTS_API_KEY` GitHub secret must be configured for optimization tests to run.
 
 ---
 

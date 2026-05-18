@@ -6,7 +6,7 @@ import { BulkOptimizationPage } from '../pages/bulk-optimization';
  * Bulk optimization page tests.
  *
  * The actual optimization trigger requires a valid API key. Tests that call
- * the Imagify API are skipped when IMAGIFY_API_KEY is unset.
+ * the Imagify API are skipped when IMAGIFY_TESTS_API_KEY is unset.
  */
 test.describe( 'Bulk optimization', () => {
 	test.beforeEach( async ( { page } ) => {
@@ -38,7 +38,7 @@ test.describe( 'Bulk optimization', () => {
 	} );
 
 	test( 'Starting bulk optimization triggers progress UI', async ( { page } ) => {
-		test.skip( ! process.env.IMAGIFY_API_KEY, 'IMAGIFY_API_KEY not set — skipping live optimization test' );
+		test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — skipping live optimization test' );
 
 		const bulk = new BulkOptimizationPage( page );
 		await bulk.goto();
