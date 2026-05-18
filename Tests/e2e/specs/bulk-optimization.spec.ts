@@ -32,9 +32,7 @@ test.describe( 'Bulk optimization', () => {
 		const bulk = new BulkOptimizationPage( page );
 		await bulk.goto();
 
-		// The stats table or summary block is always rendered (even with 0 optimized).
-		const statsArea = page.locator( '.imagify-bulk-stats, .imagify-stats, .imagify-data' ).first();
-		await expect( statsArea ).toBeVisible();
+		await expect( bulk.statsTable ).toBeVisible();
 	} );
 
 	test( 'Starting bulk optimization triggers progress UI', async ( { page } ) => {
