@@ -11,6 +11,9 @@
 bin/strauss.phar
 composer.lock
 
+# Local env overrides (API keys, secrets — never commit)
+/.env.local
+
 # E2E testing
 /Tests/e2e/node_modules
 /Tests/e2e/playwright-report
