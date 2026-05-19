@@ -30,6 +30,11 @@ follow this workflow:
 12. Implement minimal changes and update tests if needed. Verify test coverage for all added/modified code.
 13. Run PHPCS and static analysis; fix any new violations before committing.
 14. Commit atomically: one `git commit` per logical change set using Conventional Commits format.
+14a. **Run the full E2E suite locally** — `bash bin/test-e2e.sh`:
+   - If wp-env is not reachable (port 8888 not open), log a warning and continue — CI will catch regressions.
+   - If all tests pass, continue.
+   - If any test fails, investigate the root cause (read the error, check traces if available), fix the issue, re-commit, and re-run until the suite is fully green before proceeding.
+   Do not move to step 15 while there are known local E2E failures.
 15. Run `.aiassistant/skills/issue-workflow/scripts/init-pr-draft.sh <issue-number>`.
 16. Fill every section of the PR draft at `.TemporaryItems/Issues/imagify-plugin/pull/<issue-number>.md`. The file was already initialized from `refs/pr-template.md` by the script in step 15. Complete every section with relevant content — do not skip sections or invent a different structure. Replace all placeholder text (`*Explain…*`, `*Describe…*`, etc.) with real content. Tick the appropriate `Type of change` checkbox.
 17. Run `git push` to publish the branch.
