@@ -45,6 +45,10 @@ test.describe( 'Bulk optimization', () => {
 		);
 		test.skip( attachmentCount === 0, 'No media attachments in library — seed image did not upload' );
 
+		// Reset optimization state so there is always something to optimize,
+		// even if a previous run already processed all images.
+		wpCli( 'eval \'delete_post_meta_by_key("_imagify_data"); delete_post_meta_by_key("_imagify_status"); delete_post_meta_by_key("_imagify_optimization_level");\'' );
+
 		const bulk = new BulkOptimizationPage( page );
 		await bulk.goto();
 
