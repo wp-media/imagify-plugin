@@ -261,7 +261,20 @@ Architectural integrity is more important than speed.
 
 ---
 
-# 13. Skills Activation
+# 13. Sub-Agents
+
+Reusable specialist agents live in `.aiassistant/agents/`. Claude Code discovers them via the `.claude/agents` symlink; other tools can read them directly from `.aiassistant/agents/`.
+
+| Agent | File | Invoke when |
+|-------|------|-------------|
+| `qa-engineer` | `.aiassistant/agents/qa-engineer.md` | Validating a PR against its ticket spec — reads acceptance criteria, runs functional/browser/analysis strategies, produces a structured test report |
+| `e2e-qa-tester` | `.aiassistant/agents/e2e-qa-tester.md` | Driving the browser via Playwright, walking through "How to test" steps, converting validated flows into Playwright spec files under `Tests/e2e/` |
+
+The `qa-engineer` agent delegates browser flows to `e2e-qa-tester` automatically when the change involves admin UI.
+
+---
+
+# 14. Skills Activation
 
 The repository defines AI Skills under `.aiassistant/skills/`.
 
@@ -287,7 +300,7 @@ Run `node bin/build-knowledge-graph.js` to refresh after structural changes (`--
 
 ---
 
-# 14. Repository Specs
+# 15. Repository Specs
 
 The repository may define task-specific implementation specs under `.aiassistant/specs/`.
 
