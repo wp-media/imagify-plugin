@@ -24,6 +24,11 @@ This document applies to ALL automated or AI-generated changes.
 
 Imagify is a single-edition WordPress plugin for image optimization.
 
+- **Repo:** `wp-media/imagify-plugin`
+- **Plugin slug:** `imagify`
+- **PHP namespace root:** `Imagify\`
+- **PSR-4 root:** `classes/`
+
 There is no FREE/PRO split. The codebase has two layers:
 
 - `classes/` — modern PSR-4 code, namespace `Imagify\`, `declare(strict_types=1)` required. **New features go here.**
@@ -35,13 +40,44 @@ When modifying architecture:
 
 ---
 
-# 2. Coding Standards & Static Analysis
+# 2. Technology Stack
+
+- PHP 7.3+ (strict types, PSR-4 autoloading via Composer)
+- WordPress plugin APIs (hooks, options, WP-CLI, AJAX)
+- League Container (DI container + service providers + event subscribers)
+- ActionScheduler (async background jobs)
+- Strauss (Composer dependency namespace prefixing → `Imagify\Dependencies\`)
+- JavaScript / Grunt (`_dev/` pipeline → `assets/`)
+- Playwright + TypeScript (E2E testing under `Tests/e2e/`)
+
+---
+
+# 3. Code Structure
+
+```
+classes/          New PHP code (PSR-4, Imagify\ namespace)
+inc/              Legacy PHP includes (procedural, no namespace)
+inc/classes/      Legacy class files migrating toward classes/
+assets/           Compiled frontend assets (do not edit directly)
+_dev/             Frontend source (JS, SCSS, Grunt config)
+views/            PHP view templates
+Tests/            PHPUnit tests
+Tests/e2e/        Playwright E2E tests (TypeScript)
+bin/              CLI scripts (dev-up, dev-down, dev-seed, test-e2e, build-knowledge-graph)
+docs/             Documentation (E2E_TESTING.md, etc.)
+.aiassistant/     Skill files for AI assistants
+.claude/agents/   Claude Code sub-agents (qa-engineer, e2e-qa-tester)
+```
+
+---
+
+# 4. Coding Standards & Static Analysis
 
 Source of truth:
 
-- Composer scripts (composer.json)
-- PHPCS ruleset (phpcs.xml)
-- PHPStan config (phpstan.neon.dist)
+- Composer scripts (`composer.json`)
+- PHPCS ruleset (`phpcs.xml`)
+- PHPStan config (`phpstan.neon.dist`)
 - WordPress Plugin Check: https://github.com/WordPress/plugin-check/
 - CI pipeline rules
 
@@ -55,22 +91,14 @@ AI MUST:
 - Read `composer.json` first and use the defined scripts (e.g. `phpcs`, `phpcbf`, `run-stan`, `test-unit`, `test-integration`) instead of inventing commands.
 - Auto-discover PHPCS configuration and follow it as the single source of truth.
 
-## 2.1 Tooling Auto-Discovery (MANDATORY)
+## 4.1 Tooling Auto-Discovery (MANDATORY)
 
 Before making changes that affect standards or formatting, the agent MUST locate and respect the repository configuration files.
 
 ### Required reads (in this order)
-1) `composer.json`
-    - Use scripts defined in `"scripts"` whenever possible.
-    - Prefer the exact commands used by CI.
-    - Do not invent lint/test commands.
-
-2) PHPCS ruleset (first match wins):
-    - `phpcs.xml`
-    - `phpcs.xml.dist`
-
-3) Static analysis configs (if present / referenced):
-    - `phpstan.neon.dist`
+1. `composer.json` — use scripts defined in `"scripts"` whenever possible; prefer the exact commands used by CI; do not invent lint/test commands.
+2. PHPCS ruleset (first match wins): `phpcs.xml`, `phpcs.xml.dist`
+3. Static analysis configs (if present): `phpstan.neon.dist`
 
 ### Execution rules
 - Do NOT hardcode PHPCS standards.
@@ -80,26 +108,26 @@ If no PHPCS configuration exists, stop and ask.
 
 ---
 
-# 3. Architectural Integrity
+# 5. Architectural Integrity
 
 AI must NOT:
 
-* Introduce global state.
-* Add new singletons or `InstanceGetterTrait` usage in `classes/`.
-* Bypass dependency injection patterns used in the project.
-* Couple UI logic to infrastructure logic.
-* Add new classes to `inc/classes/`.
+- Introduce global state.
+- Add new singletons or `InstanceGetterTrait` usage in `classes/`.
+- Bypass dependency injection patterns used in the project.
+- Couple UI logic to infrastructure logic.
+- Add new classes to `inc/classes/`.
 
 Follow existing patterns:
 
-* Service providers (`classes/*/ServiceProvider.php`)
-* Subscribers (`classes/*/Subscriber.php` implementing `SubscriberInterface`)
-* Container-based wiring (`config/providers.php`)
-* Strict types in all new `classes/` files
+- Service providers (`classes/*/ServiceProvider.php`)
+- Subscribers (`classes/*/Subscriber.php` implementing `SubscriberInterface`)
+- Container-based wiring (`config/providers.php`)
+- Strict types in all new `classes/` files
 
 ---
 
-# 4. Testing & Validation
+# 6. Testing & Validation
 
 For every change:
 
@@ -109,13 +137,59 @@ For every change:
 4. Do not delete tests unless clearly obsolete.
 
 If modifying templates:
-
-* Validate escaping correctness.
-* Ensure no functional regressions.
+- Validate escaping correctness.
+- Ensure no functional regressions.
 
 ---
 
-# 5. AI Working Protocol
+# 7. E2E Testing
+
+Two Claude Code sub-agents in `.claude/agents/` support QA workflows:
+
+| Agent | Use when |
+|-------|----------|
+| `qa-engineer` | Validating a PR against its ticket spec (strategy selection, test report) |
+| `e2e-qa-tester` | Driving the browser via Playwright, converting flows to spec files |
+
+Full E2E testing documentation: [`docs/E2E_TESTING.md`](docs/E2E_TESTING.md)
+
+The test directory is `Tests/e2e/` (capital T, consistent with the existing `Tests/` PHPUnit directory).
+
+The E2E suite runs in CI via `.github/workflows/e2e.yml`. The `IMAGIFY_TESTS_API_KEY` GitHub secret must be configured for optimization tests to run.
+
+---
+
+# 8. Local Development
+
+```bash
+# Start the local WordPress environment (Docker via wp-env)
+bash bin/dev-up.sh
+
+# Stop (preserves data) / full wipe
+bash bin/dev-down.sh
+bash bin/dev-down.sh --clean
+
+# Seed test data (idempotent)
+bash bin/dev-seed.sh
+
+# Run E2E tests locally (sources .env.local for API key automatically)
+bash bin/test-e2e.sh
+bash bin/test-e2e.sh --headed     # watch the browser
+bash bin/test-e2e.sh --ui         # Playwright interactive UI
+bash bin/test-e2e.sh specs/smoke  # single spec
+```
+
+Create `.env.local` at the repo root (gitignored) with:
+```
+IMAGIFY_TESTS_API_KEY=your-key-here
+```
+
+- Site: `http://localhost:8888`
+- Admin: `http://localhost:8888/wp-admin` — `admin` / `password`
+
+---
+
+# 9. AI Working Protocol
 
 AI must work in small, incremental changes.
 
@@ -126,11 +200,11 @@ After each logical change set:
 
 AI must NOT:
 
-* Perform massive automated refactors without approval.
-* Reorganize files without explicit instruction.
-* Rewrite entire classes when a minimal fix is sufficient.
+- Perform massive automated refactors without approval.
+- Reorganize files without explicit instruction.
+- Rewrite entire classes when a minimal fix is sufficient.
 
-## 5.1 Git Commit & Push Policy
+## 9.1 Git Commit & Push Policy
 
 By default, AI may only **suggest** commit messages and must not run `git commit` or `git push`.
 
@@ -144,40 +218,40 @@ By default, AI may only **suggest** commit messages and must not run `git commit
 Atomic commit rules:
 - Each commit must pass PHPCS and static analysis before being committed.
 - Commit message format: `type(scope): short description` (Conventional Commits).
+- No `Co-Authored-By` lines in commits.
 - Do not squash unrelated changes into a single commit.
 - Do not amend commits that have already been pushed.
 
 ---
 
-# 6. PR Hygiene
+# 10. PR Hygiene
 
 Changes must:
 
-* Be minimal.
-* Be scoped.
-* Have clear intent.
-* Avoid noise in diff.
-* Avoid unrelated formatting changes.
+- Be minimal and scoped.
+- Have clear intent.
+- Avoid noise in diff.
+- Avoid unrelated formatting changes.
 
 ---
 
-# 7. Security First
+# 11. Security First
 
 Always assume:
 
-* User input is untrusted.
-* Remote API responses are untrusted.
-* Stored values may be tampered with.
+- User input is untrusted.
+- Remote API responses are untrusted.
+- Stored values may be tampered with.
 
 Never:
 
-* Store sensitive values in plain text without review.
-* Introduce unsafe serialization.
-* Echo unescaped dynamic data.
+- Store sensitive values in plain text without review.
+- Introduce unsafe serialization.
+- Echo unescaped dynamic data.
 
 ---
 
-# 8. When in Doubt
+# 12. When in Doubt
 
 Stop.
 Explain the ambiguity.
@@ -185,19 +259,23 @@ Ask for clarification.
 
 Architectural integrity is more important than speed.
 
-# 9. Skills Activation
+---
+
+# 13. Skills Activation
 
 The repository defines AI Skills under `.aiassistant/skills/`.
 
 Agents MUST activate the relevant skill depending on the task:
 
-- Template or UI changes → WordPress Compliance Skill
-- Structural or architectural changes → Imagify Architecture Skill
-- Service modifications → Both skills
-- Codebase exploration / dependency tracing → Knowledge Graph Skill
-- Working on a GitHub issue → Issue Workflow Skill
+| Task | Skill |
+|------|-------|
+| Template or UI changes | WordPress Compliance |
+| Structural or architectural changes | Imagify Architecture |
+| Service modifications | Both skills |
+| Codebase exploration / dependency tracing | Knowledge Graph |
+| Working on a GitHub issue | Issue Workflow |
 
-# 9.1 Knowledge Graph
+## 13.1 Knowledge Graph
 
 A pre-built dependency graph is available at `.aiassistant/graph/dependency-graph.json`.
 
@@ -207,25 +285,18 @@ Before exploring the codebase structure (finding a class, tracing dependencies, 
 
 Run `node bin/build-knowledge-graph.js` to refresh after structural changes (`--full` to force rebuild).
 
-# 10. Repository Identity
+---
 
-Canonical GitHub repository: `wp-media/imagify-plugin`
+# 14. Repository Specs
 
-Unless explicitly instructed otherwise, all GitHub issue, PR, and branch workflows must assume this repository.
-
-# 11. Repository Specs
-
-The repository may define task-specific implementation specs under:
-
-`.aiassistant/specs/`
+The repository may define task-specific implementation specs under `.aiassistant/specs/`.
 
 Specs provide detailed guidance for recurring technical problems
 (e.g. PHPCS warnings, architecture migrations, WordPress compliance patterns).
 
-When a relevant spec exists, agents must follow it in addition to:
+When a relevant spec exists, agents must follow it in addition to AGENTS.md and the applicable skills.
 
-- AGENTS.md
-- the applicable skills
+---
 
 # AI Task Priority
 
