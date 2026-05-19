@@ -947,6 +947,16 @@ input:checked + label .imagify-fake-checkbox:after,
 	.imagify-no-api-key .imagify-api-line input[type="text"]{
 		margin-left: 0;
 	}
+
+	label ~ .imagify-options-line.generate-missing-webp {
+		margin-left: 0;
+	}
+	#imagify-generate-webp-versions {
+		width: 100%;
+		box-sizing: border-box;
+		text-align: center;
+		word-break: break-word;
+	}
 }
 @media (max-width: 513px) {
 	.imagify-setting-optim-level .imagify-visual-comparison-text{
