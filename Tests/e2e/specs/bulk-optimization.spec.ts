@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { loginAsAdmin } from '../fixtures/auth';
+import { wpCli } from '../fixtures/wp-cli';
 import { BulkOptimizationPage } from '../pages/bulk-optimization';
 
 /**
@@ -37,6 +38,12 @@ test.describe( 'Bulk optimization', () => {
 
 	test( 'Starting bulk optimization triggers progress UI', async ( { page } ) => {
 		test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — skipping live optimization test' );
+
+		const attachmentCount = parseInt(
+			wpCli( 'post list --post_type=attachment --post_status=inherit --format=count' ).trim(),
+			10
+		);
+		test.skip( attachmentCount === 0, 'No media attachments in library — seed image did not upload' );
 
 		const bulk = new BulkOptimizationPage( page );
 		await bulk.goto();
