@@ -34,7 +34,68 @@ follow this workflow:
 16. Fill the PR draft at `.TemporaryItems/Issues/imagify-plugin/pull/<issue-number>.md` using `refs/pr-template.md` as guide.
 17. Run `git push` to publish the branch.
 18. Create the GitHub PR using the filled draft (set as draft if implementation is still in progress).
-19. Monitor PR CI status checks until all pass. Report any failures with actionable details.
+19. **Invoke the `qa-engineer` sub-agent** — pass it the issue number and PR number. It will:
+    - Read the issue spec and PR diff.
+    - Select validation strategies (API, Browser, Analysis) based on what changed.
+    - Delegate browser/UI flows to the `e2e-qa-tester` sub-agent when the change touches admin UI.
+    - Write any missing Playwright tests under `Tests/e2e/` and verify they pass locally (`bash bin/test-e2e.sh`).
+    - Commit new or updated test files to the branch and push before handing back a report.
+    - Return a structured test report (see format in `.aiassistant/agents/qa-engineer.md`).
+20. If `qa-engineer` reports **FAIL** or **PARTIAL**: fix the identified blockers, re-commit, re-push, and re-run the agent before continuing.
+21. If `qa-engineer` reports **READY TO MERGE**: convert the PR from draft to ready-for-review.
+22. Monitor PR CI status checks until all pass. Report any failures with actionable details.
+
+## QA Pipeline — Sub-Agent Invocation
+
+After the PR is created (step 18), QA runs automatically via two sub-agents defined in `.aiassistant/agents/`.
+
+### qa-engineer (orchestrator)
+
+Invoke after every PR. Provide:
+- The issue number (for acceptance criteria)
+- The PR number (for diff and "How to test" section)
+
+```
+Invoke sub-agent: qa-engineer
+Inputs: issue #<N>, PR #<M>
+```
+
+The agent selects strategies automatically:
+- **API/functional** — if backend logic changed (AJAX, hooks, WP-CLI, data processing)
+- **Browser/UI** — if admin UI changed; delegates to `e2e-qa-tester`
+- **Analysis fallback** — if local environment is unavailable
+
+### e2e-qa-tester (browser specialist)
+
+Invoked by `qa-engineer` automatically for UI changes. Can also be invoked directly:
+
+```
+Invoke sub-agent: e2e-qa-tester
+Inputs: issue #<N> or PR #<M>, acceptance criteria or "How to test" steps
+```
+
+It will:
+1. Boot `wp-env` if not running (`bash bin/dev-up.sh`)
+2. Walk through the "How to test" steps in the browser
+3. Write deterministic Playwright specs under `Tests/e2e/specs/`
+4. Run `bash bin/test-e2e.sh` to confirm they pass
+5. Commit the new specs to the branch
+
+### Decision tree
+
+```
+PR created
+  └─ invoke qa-engineer
+       ├─ backend only   → Strategy A (API/WP-CLI)
+       ├─ UI touched     → Strategy B → delegate to e2e-qa-tester
+       │                    └─ new tests committed → push → CI reruns
+       └─ env unavailable → Strategy C (Analysis)
+
+qa-engineer returns READY TO MERGE → mark PR ready for review
+qa-engineer returns FAIL/PARTIAL   → fix blockers → re-run qa-engineer
+```
+
+---
 
 ## Tooling — Prefer MCPs, Fall Back to Shell
 
