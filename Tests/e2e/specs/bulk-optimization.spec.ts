@@ -41,7 +41,7 @@ test.describe( 'Bulk optimization', () => {
 		const bulk = new BulkOptimizationPage( page );
 		await bulk.goto();
 
-		await bulk.optimizeButton.click();
+		await bulk.startOptimization();
 
 		// After starting, Imagify should show a progress indicator.
 		await expect( bulk.progressBar ).toBeVisible( { timeout: 15_000 } );

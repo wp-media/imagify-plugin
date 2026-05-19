@@ -18,6 +18,19 @@ export class BulkOptimizationPage {
 		this.statsTable     = page.locator( '.imagify-bulk-table' ).first();
 	}
 
+	async startOptimization(): Promise<void> {
+		await this.optimizeButton.click();
+		// On first run, Imagify shows a SweetAlert2 info modal before starting.
+		// Dismiss it so launchAllProcesses() is called.
+		const modal = this.page.locator( '.swal2-popup.imagify-before-bulk-infos' );
+		try {
+			await modal.waitFor( { state: 'visible', timeout: 3_000 } );
+			await modal.locator( '.swal2-confirm' ).click();
+		} catch {
+			// No modal — optimization started directly.
+		}
+	}
+
 	async goto(): Promise<void> {
 		await this.page.goto( '/wp-admin/upload.php?page=imagify-bulk-optimization' );
 		await this.page.waitForLoadState( 'networkidle' );
