@@ -33,8 +33,9 @@ test.describe( 'Imagify account connection', () => {
 		await settings.saveButton.click();
 		await page.waitForLoadState( 'networkidle' );
 
-		// Imagify renders the "wrong API key" notice with a standard WP .notice.error class.
-		const error = page.locator( '.notice.error, .notice-error' ).first();
+		// Imagify renders the invalid-key indicator as #imagify-check-api-container
+		// without the imagify-valid class (not a standard WP .notice-error).
+		const error = page.locator( '#imagify-check-api-container:not(.imagify-valid)' );
 		await expect( error ).toBeVisible( { timeout: 10_000 } );
 	} );
 
