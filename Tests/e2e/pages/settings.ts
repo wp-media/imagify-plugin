@@ -13,7 +13,7 @@ export class SettingsPage {
 	constructor( page: Page ) {
 		this.page = page;
 		this.apiKeyInput  = page.locator( '#imagify-api-key, [name="imagify_settings[api_key]"]' ).first();
-		this.saveButton   = page.getByRole( 'button', { name: /save/i } );
+		this.saveButton   = page.locator( '#submit' );
 		this.successNotice = page.locator( '.notice-success, .updated' ).first();
 	}
 
