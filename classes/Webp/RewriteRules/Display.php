@@ -101,6 +101,10 @@ class Display implements SubscriberInterface {
 	public function maybe_add_webp_info() {
 		global $is_nginx;
 
+		if ( 'avif' === get_imagify_option( 'optimization_format' ) ) {
+			return;
+		}
+
 		$conf = $this->get_server_conf();
 
 		if ( ! $conf ) {

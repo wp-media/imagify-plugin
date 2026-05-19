@@ -94,6 +94,10 @@ class Display implements SubscriberInterface {
 	 * If the conf file is not writable, add a warning.
 	 */
 	public function maybe_add_avif_info() {
+		if ( 'avif' !== get_imagify_option( 'optimization_format' ) ) {
+			return;
+		}
+
 		$conf = $this->get_server_conf();
 
 		if ( ! $conf ) {
