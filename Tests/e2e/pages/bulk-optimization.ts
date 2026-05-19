@@ -20,12 +20,13 @@ export class BulkOptimizationPage {
 
 	async startOptimization(): Promise<void> {
 		await this.optimizeButton.click();
-		// On first run, Imagify shows a SweetAlert2 info modal before starting.
-		// Dismiss it so launchAllProcesses() is called.
-		const modal = this.page.locator( '.swal2-popup.imagify-before-bulk-infos' );
+		// On first run, Imagify shows a "before bulk" info modal. Dismiss it by
+		// clicking the confirm button. Use text matching so we're not tied to
+		// SweetAlert2's internal class names (they changed between v6 and v7).
+		const confirmButton = this.page.getByRole( 'button', { name: /start the optimization/i } );
 		try {
-			await modal.waitFor( { state: 'visible', timeout: 3_000 } );
-			await modal.locator( '.swal2-confirm' ).click();
+			await confirmButton.waitFor( { state: 'visible', timeout: 3_000 } );
+			await confirmButton.click();
 		} catch {
 			// No modal — optimization started directly.
 		}
