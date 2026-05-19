@@ -47,7 +47,9 @@ follow this workflow:
     - Commit new or updated test files to the branch and push before handing back a report.
     - Return a structured test report (see format in `.aiassistant/agents/qa-engineer.md`).
 20. If `qa-engineer` reports **FAIL** or **PARTIAL**: fix the identified blockers, re-commit, re-push, and re-run the agent before continuing.
-21. If `qa-engineer` reports **READY TO MERGE**: convert the PR from draft to ready-for-review.
+21. If `qa-engineer` reports **READY TO MERGE**:
+    1. **Update the PR body** — edit the **"What was tested"** section under `## Detailed scenario` to include the full QA report: strategies used, each acceptance criterion with its validation method and result, and smoke-test outcomes. Use `gh pr edit <PR_number> --body "..."` with the updated body. Also update the local draft at `.TemporaryItems/Issues/imagify-plugin/pull/<issue-number>.md` to match.
+    2. **Convert the PR from draft to ready-for-review**: `gh pr ready <PR_number>`.
 22. Monitor PR CI status checks until all pass. Report any failures with actionable details.
 
 ## QA Pipeline — Sub-Agent Invocation
@@ -96,7 +98,7 @@ PR created
        │                    └─ new tests committed → push → CI reruns
        └─ env unavailable → Strategy C (Analysis)
 
-qa-engineer returns READY TO MERGE → mark PR ready for review
+qa-engineer returns READY TO MERGE → update PR body with QA findings → mark PR ready for review
 qa-engineer returns FAIL/PARTIAL   → fix blockers → re-run qa-engineer
 ```
 
