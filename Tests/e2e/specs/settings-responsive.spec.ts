@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { loginAsAdmin } from '../fixtures/auth';
-import { wpCli } from '../fixtures/wp-cli';
+import { seedOptimizedImage } from '../fixtures/seed';
 
 /**
  * Responsive layout tests for the Imagify Settings page.
@@ -22,6 +22,10 @@ const MOBILE_VIEWPORT = { width: 782, height: 900 };
 const DESKTOP_VIEWPORT = { width: 1440, height: 900 };
 
 test.describe( 'Settings page — responsive layout', () => {
+	test.beforeAll( () => {
+		seedOptimizedImage();
+	} );
+
 	test.beforeEach( async ( { page } ) => {
 		await loginAsAdmin( page );
 	} );
@@ -50,15 +54,6 @@ test.describe( 'Settings page — responsive layout', () => {
 		await page.waitForLoadState( 'networkidle' );
 
 		const button = page.locator( '#imagify-generate-webp-versions' );
-		const buttonCount = await button.count();
-
-		if ( buttonCount === 0 ) {
-			// Button is only shown when there are images without next-gen versions.
-			// Skip the assertion but do not fail — the button not appearing is a
-			// valid state on a fresh install with no optimized images.
-			test.skip( true, 'Button #imagify-generate-webp-versions is not in the DOM (no missing next-gen images to generate) — responsive rule cannot be asserted' );
-			return;
-		}
 
 		// The button must be visible at mobile width.
 		await expect( button ).toBeVisible();
@@ -82,12 +77,6 @@ test.describe( 'Settings page — responsive layout', () => {
 		await page.waitForLoadState( 'networkidle' );
 
 		const button = page.locator( '#imagify-generate-webp-versions' );
-		const buttonCount = await button.count();
-
-		if ( buttonCount === 0 ) {
-			test.skip( true, 'Button #imagify-generate-webp-versions is not in the DOM — skipping desktop non-regression check' );
-			return;
-		}
 
 		await expect( button ).toBeVisible();
 
@@ -104,12 +93,6 @@ test.describe( 'Settings page — responsive layout', () => {
 		await page.waitForLoadState( 'networkidle' );
 
 		const container = page.locator( '.imagify-options-line.generate-missing-webp' );
-		const containerCount = await container.count();
-
-		if ( containerCount === 0 ) {
-			test.skip( true, '.generate-missing-webp container is not in the DOM — skipping margin assertion' );
-			return;
-		}
 
 		// The CSS rule sets margin-left: 0, overriding the default 40px from
 		// `label ~ .imagify-options-line`. Verify margin-left is 0px.

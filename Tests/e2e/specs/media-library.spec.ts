@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { loginAsAdmin } from '../fixtures/auth';
 import { MediaLibraryPage } from '../pages/media-library';
+import { seedOptimizedImage } from '../fixtures/seed';
 
 /**
  * Media library integration tests.
@@ -11,6 +12,10 @@ import { MediaLibraryPage } from '../pages/media-library';
  * Optimization tests that call the API are skipped when IMAGIFY_TESTS_API_KEY is unset.
  */
 test.describe( 'Media library — Imagify column', () => {
+	test.beforeAll( () => {
+		seedOptimizedImage();
+	} );
+
 	test.beforeEach( async ( { page } ) => {
 		await loginAsAdmin( page );
 	} );
@@ -35,12 +40,6 @@ test.describe( 'Media library — Imagify column', () => {
 		await page.waitForLoadState( 'networkidle' );
 
 		const firstLink = page.locator( 'td.title a.row-title' ).first();
-		const count = await firstLink.count();
-		if ( count === 0 ) {
-			test.skip( true, 'No media attachments in library — run bin/dev-seed.sh first' );
-			return;
-		}
-
 		await firstLink.click();
 		await page.waitForLoadState( 'networkidle' );
 
