@@ -39,7 +39,7 @@ test.describe( 'Media library — Imagify column', () => {
 		await page.goto( '/wp-admin/upload.php?mode=list' );
 		await page.waitForLoadState( 'networkidle' );
 
-		const firstLink = page.locator( 'td.title a.row-title' ).first();
+		const firstLink = page.locator( 'td.title a' ).first();
 		await firstLink.click();
 		await page.waitForLoadState( 'networkidle' );
 
