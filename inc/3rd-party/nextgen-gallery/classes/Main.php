@@ -116,11 +116,20 @@ class Main {
 	/**
 	 * Add custom NGG mixin to override its functions.
 	 *
+	 * The POPE mixin API (C_Gallery_Storage + Mixin) was removed in NextGEN Gallery v4.x.
+	 * Guard both class checks to avoid a fatal error on v4.x installs while preserving
+	 * the behaviour on v3.x.
+	 *
 	 * @since  1.5
+	 * @since  2.2.8 Skip silently when the mixin API is unavailable (NGG v4.x+).
 	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function add_mixin() {
+		if ( ! class_exists( 'Mixin' ) || ! class_exists( 'C_Gallery_Storage' ) ) {
+			return;
+		}
+
 		\C_Gallery_Storage::get_instance()->get_wrapped_instance()->add_mixin( '\\Imagify\\ThirdParty\\NGG\\NGGStorage' );
 	}
 }
