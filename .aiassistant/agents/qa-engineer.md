@@ -130,7 +130,7 @@ After generating the report, post it as a PR comment so it is immediately visibl
 
 **Post the comment regardless of the overall result** (PASS, FAIL, or PARTIAL) — reviewers need to see the QA status at all times.
 
-If screenshots were captured by the `e2e-qa-tester` agent, check `.e2e-screenshots/` and append a `### Screenshots` section at the bottom of the comment listing each file path. Screenshots are local (not uploaded to GitHub), so list their paths so reviewers know where to find them.
+If screenshots were captured by the `e2e-qa-tester` agent and published to GitHub (via the commit-SHA method), append a `### Screenshots` section with inline images using the SHA-based raw URLs. If publishing failed, list local paths instead.
 
 Use the GitHub MCP tool (preferred) or fall back to `gh` CLI:
 
@@ -184,10 +184,11 @@ REPORT
 - "[scenario]": [reason why it cannot be automated]
 
 ### Screenshots
-<!-- Include this section only if e2e-qa-tester captured screenshots -->
-The following screenshots were captured during browser testing and are available locally in `.e2e-screenshots/`:
-- `.e2e-screenshots/<name>-step1.png`
-- `.e2e-screenshots/<name>-step2.png`
+<!-- Include this section only if e2e-qa-tester captured and published screenshots -->
+| Step | Screenshot |
+|------|-----------|
+| [description] | ![step1](https://raw.githubusercontent.com/wp-media/imagify-plugin/SHA/.e2e-screenshots/filename.png) |
+| [description] | ![step2](https://raw.githubusercontent.com/wp-media/imagify-plugin/SHA/.e2e-screenshots/filename2.png) |
 ```
 
 If all criteria pass: print **READY TO MERGE** clearly.
