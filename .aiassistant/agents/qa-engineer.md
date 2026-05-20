@@ -124,6 +124,31 @@ Produce the test report in the format below. Be specific — "tested locally" is
 
 ---
 
+### Step 5b — Post the report as a PR comment
+
+After generating the report, post it as a PR comment so it is immediately visible to all reviewers.
+
+**Post the comment regardless of the overall result** (PASS, FAIL, or PARTIAL) — reviewers need to see the QA status at all times.
+
+If screenshots were captured by the `e2e-qa-tester` agent, check `.e2e-screenshots/` and append a `### Screenshots` section at the bottom of the comment listing each file path. Screenshots are local (not uploaded to GitHub), so list their paths so reviewers know where to find them.
+
+Use the GitHub MCP tool (preferred) or fall back to `gh` CLI:
+
+**MCP (preferred):**
+```
+mcp__github__add_issue_comment(owner="wp-media", repo="imagify-plugin", issue_number=<PR_number>, body=<full report>)
+```
+
+**Fallback:**
+```bash
+gh pr comment <PR_number> --body "$(cat <<'REPORT'
+[full report content]
+REPORT
+)"
+```
+
+---
+
 ## Output format
 
 ```
@@ -157,6 +182,12 @@ Produce the test report in the format below. Be specific — "tested locally" is
 
 ### Tests that could not be automated
 - "[scenario]": [reason why it cannot be automated]
+
+### Screenshots
+<!-- Include this section only if e2e-qa-tester captured screenshots -->
+The following screenshots were captured during browser testing and are available locally in `.e2e-screenshots/`:
+- `.e2e-screenshots/<name>-step1.png`
+- `.e2e-screenshots/<name>-step2.png`
 ```
 
 If all criteria pass: print **READY TO MERGE** clearly.

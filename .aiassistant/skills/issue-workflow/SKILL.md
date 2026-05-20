@@ -45,6 +45,7 @@ follow this workflow:
     - Delegate browser/UI flows to the `e2e-qa-tester` sub-agent when the change touches admin UI.
     - Write any missing Playwright tests under `Tests/e2e/` and verify they pass locally (`bash bin/test-e2e.sh`).
     - Commit new or updated test files to the branch and push before handing back a report.
+    - **Post the QA report as a PR comment** (always, regardless of outcome) — the comment includes the full structured report and a list of any screenshots captured in `.e2e-screenshots/`.
     - Return a structured test report (see format in `.aiassistant/agents/qa-engineer.md`).
 20. If `qa-engineer` reports **FAIL** or **PARTIAL**: fix the identified blockers, re-commit, re-push, and re-run the agent before continuing.
 21. If `qa-engineer` reports **READY TO MERGE**:
@@ -96,8 +97,10 @@ PR created
        ├─ backend only   → Strategy A (API/WP-CLI)
        ├─ UI touched     → Strategy B → delegate to e2e-qa-tester
        │                    └─ new tests committed → push → CI reruns
+       │                    └─ screenshots saved to .e2e-screenshots/
        └─ env unavailable → Strategy C (Analysis)
 
+qa-engineer always posts a PR comment with the full report + screenshot list
 qa-engineer returns READY TO MERGE → update PR body with QA findings → mark PR ready for review
 qa-engineer returns FAIL/PARTIAL   → fix blockers → re-run qa-engineer
 ```
