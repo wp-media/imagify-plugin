@@ -197,6 +197,10 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 	</div>
 
 	<?php
+	if ( current_user_can( 'manage_options' ) ) {
+		$this->print_template( 'part-settings-tools' );
+	}
+
 	$this->print_template( 'part-rocket-ad' );
 	$this->print_template( 'modal-settings-infos' );
 	$this->print_template( 'modal-settings-partners-infos' );
