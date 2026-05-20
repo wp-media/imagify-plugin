@@ -75,7 +75,7 @@ $settings = Imagify_Settings::get_instance();
 						'values'      => [
 							'rewrite' => __( 'Use rewrite rules', 'imagify' ),
 							/* translators: 1 and 2 are <em> tag opening and closing. */
-							'picture' => sprintf( __( 'Use &lt;picture&gt; tags %1$s(preferred)%2$s', 'imagify' ), '<em>', '</em>' ),
+							'picture' => sprintf( __( 'Use &lt;picture&gt; tags %1$s(CDN-compatible)%2$s', 'imagify' ), '<em>', '</em>' ),
 						],
 						'attributes'  => [
 							'aria-describedby' => 'describe-convert_to_webp',
@@ -152,7 +152,7 @@ $settings = Imagify_Settings::get_instance();
 
 				printf(
 					/* translators: 1 and 2 are HTML tag names, 3 is a <strong> tag opening, 4 is the <strong> tag closing. */
-					esc_html__( 'The second option replaces the %1$s tags with %2$s tags. %3$sThis is the preferred solution but some themes may break%4$s, so make sure to verify that everything seems fine.', 'imagify' ),
+					esc_html__( 'The second option replaces the %1$s tags with %2$s tags in your page source. Required when using a CDN. %3$sWarning: this may break your site layout — some themes, sliders, WooCommerce pages, or galleries can be affected. Background images are not covered by this method.%4$s Always review your site after enabling, and consider using rewrite rules if you are not on a CDN.', 'imagify' ),
 					'<code>&lt;img&gt;</code>',
 					'<code>&lt;picture&gt;</code>',
 					'<strong>',
