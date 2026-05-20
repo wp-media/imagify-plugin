@@ -74,7 +74,7 @@ Once a flow is green manually, write a deterministic spec under `tests/e2e/specs
 - **Determinism rules:** never `setTimeout` / arbitrary `waitForTimeout`. Always assert with `expect(locator).toBeVisible({ timeout: ... })` or other web-first assertions.
 - **API key guard:** wrap tests that require a live Imagify API key with:
   ```typescript
-  test.skip( ! process.env.IMAGIFY_API_KEY, 'IMAGIFY_API_KEY not set' );
+  test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set' );
   ```
 - Fixture data goes in `tests/e2e/fixtures/`.
 
