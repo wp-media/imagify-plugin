@@ -38,7 +38,10 @@ follow this workflow:
 15. Run `.aiassistant/skills/issue-workflow/scripts/init-pr-draft.sh <issue-number>`.
 16. Fill every section of the PR draft at `.TemporaryItems/Issues/imagify-plugin/pull/<issue-number>.md`. The file was already initialized from `refs/pr-template.md` by the script in step 15. Complete every section with relevant content — do not skip sections or invent a different structure. Replace all placeholder text (`*Explain…*`, `*Describe…*`, etc.) with real content. Tick the appropriate `Type of change` checkbox.
 17. Run `git push` to publish the branch.
-18. Create the GitHub PR using the **exact content of the filled draft** as the PR body. Do not summarise or rewrite it — copy it verbatim. Set as draft if implementation is still in progress.
+18. Create the GitHub PR using the **exact content of the filled draft** as the PR body. Do not summarise or rewrite it — copy it verbatim. Set as draft if implementation is still in progress. Assign the PR to yourself immediately after creation:
+    ```bash
+    gh pr edit <PR_number> --add-assignee @me
+    ```
 19. **Invoke the `qa-engineer` sub-agent** — pass it the issue number and PR number. It will:
     - Read the issue spec and PR diff.
     - Select validation strategies (API, Browser, Analysis) based on what changed.
@@ -135,7 +138,7 @@ If an MCP tool is not available in the current session, fall back to the shell e
 ### PR creation
 | Preferred (MCP) | Fallback |
 |---|---|
-| `mcp_github_github_create_pull_request` | Provide the filled draft manually |
+| `mcp__GitKraken__pull_request_create` with `assign_to_me: true` | `gh pr create ... && gh pr edit <number> --add-assignee @me` |
 
 ### CI monitoring
 | Preferred (MCP) | Fallback |
