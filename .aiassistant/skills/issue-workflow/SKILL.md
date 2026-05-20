@@ -22,8 +22,8 @@ follow this workflow:
 6. If relationships are unclear or missing (including Issue Type being `unknown` because Issue Types are disabled, or Project `Type` being `unknown` because the issue is not in a Project or access is missing), proceed as a standalone issue unless an Epic signal is present. Only ask for an epic/sub-issue number when at least one explicit Epic signal or parent/sub-issue is detected.
 7. Summarize the issue, feasibility, constraints, and blockers.
 8. If a truly blocking ambiguity exists, ask before coding. Otherwise proceed conservatively.
-9. Run `.aiassistant/skills/issue-workflow/scripts/make-issue-branch.sh <issue-number> "<issue-title>" "origin/chore/add-ai-assistant"`.
-   Always pass `origin/chore/add-ai-assistant` as the third argument so the branch is based on the correct commit regardless of the current working branch in the session or worktree.10. Follow `AGENTS.md`.
+9. Run `.aiassistant/skills/issue-workflow/scripts/make-issue-branch.sh <issue-number> "<issue-title>" "origin/develop"`.
+   Always pass `origin/develop` as the third argument so the branch is always based on the latest remote develop, regardless of the current working branch or worktree state. Use a different base ref only when the user explicitly requests it.10. Follow `AGENTS.md`.
 11. Activate the relevant skills:
    - `imagify-architecture`
    - `wordpress-compliance`
