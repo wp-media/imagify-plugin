@@ -49,6 +49,11 @@ class Display implements SubscriberInterface {
 	 * @return array
 	 */
 	public function maybe_add_rewrite_rules( $values ) {
+		$new_format = ! empty( $values['optimization_format'] ) ? $values['optimization_format'] : get_imagify_option( 'optimization_format' );
+		if ( 'avif' !== $new_format ) {
+			return $values;
+		}
+
 		$was_enabled = (bool) get_imagify_option( 'display_nextgen' );
 		$is_enabled  = ! empty( $values['display_nextgen'] );
 
