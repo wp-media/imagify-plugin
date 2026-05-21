@@ -45,7 +45,7 @@
 			customClass:         'imagify-sweet-alert imagify-sweet-alert-signup',
 			inputValidator:      function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
-					if ( $.trim( inputValue ) === '' || ! inputValue ) {
+					if ( String( inputValue ).trim() === '' || ! inputValue ) {
 						reject( imagifyNotices.labels.signupErrorEmptyEmail );
 					} else {
 						resolve();
@@ -94,7 +94,7 @@
 			customClass:         'imagify-sweet-alert imagify-sweet-alert-signup',
 			inputValidator:      function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
-					if ( $.trim( inputValue ) === '' || ! inputValue ) {
+					if ( String( inputValue ).trim() === '' || ! inputValue ) {
 						reject( imagifyNotices.labels.ApiKeyErrorEmpty );
 					} else {
 						resolve();

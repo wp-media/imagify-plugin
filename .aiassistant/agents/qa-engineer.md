@@ -124,6 +124,31 @@ Produce the test report in the format below. Be specific — "tested locally" is
 
 ---
 
+### Step 5b — Post the report as a PR comment
+
+After generating the report, post it as a PR comment so it is immediately visible to all reviewers.
+
+**Post the comment regardless of the overall result** (PASS, FAIL, or PARTIAL) — reviewers need to see the QA status at all times.
+
+If screenshots were captured by the `e2e-qa-tester` agent and published to GitHub (via the commit-SHA method), append a `### Screenshots` section with inline images using the SHA-based raw URLs. If publishing failed, list local paths instead.
+
+Use the GitHub MCP tool (preferred) or fall back to `gh` CLI:
+
+**MCP (preferred):**
+```
+mcp__github__add_issue_comment(owner="wp-media", repo="imagify-plugin", issue_number=<PR_number>, body=<full report>)
+```
+
+**Fallback:**
+```bash
+gh pr comment <PR_number> --body "$(cat <<'REPORT'
+[full report content]
+REPORT
+)"
+```
+
+---
+
 ## Output format
 
 ```
@@ -157,6 +182,13 @@ Produce the test report in the format below. Be specific — "tested locally" is
 
 ### Tests that could not be automated
 - "[scenario]": [reason why it cannot be automated]
+
+### Screenshots
+<!-- Include this section only if e2e-qa-tester captured and published screenshots -->
+| Step | Screenshot |
+|------|-----------|
+| [description] | ![step1](https://raw.githubusercontent.com/wp-media/imagify-plugin/SHA/.e2e-screenshots/filename.png) |
+| [description] | ![step2](https://raw.githubusercontent.com/wp-media/imagify-plugin/SHA/.e2e-screenshots/filename2.png) |
 ```
 
 If all criteria pass: print **READY TO MERGE** clearly.
