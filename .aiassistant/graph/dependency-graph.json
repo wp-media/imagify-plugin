@@ -1,0 +1,4465 @@
+{
+  "generated_at": "2026-05-18T08:45:21.191Z",
+  "base_commit": "73c1dbc4124bb647ccda0d7896f761d8fa694676",
+  "node_count": 322,
+  "nodes": {
+    "_dev/src/bulk.js": {
+      "language": "js",
+      "imports": []
+    },
+    "_dev/src/chart.js": {
+      "language": "js",
+      "imports": [
+        "chart.js/auto"
+      ]
+    },
+    "assets/admin/js/bulk.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/admin/js/chart.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/admin/js/runtime.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/admin-bar.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/admin-bar.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/admin.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/admin.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/beat.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/beat.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/es6-promise.auto.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/es6-promise.auto.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/files-list.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/files-list.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/imagify-gulp.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/imagify-gulp.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/jquery.event.move.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/jquery.event.move.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/jquery.twentytwenty.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/jquery.twentytwenty.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/library.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/library.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/media-modal.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/media-modal.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/notices.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/notices.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/options.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/options.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/pricing-modal.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/pricing-modal.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/sweetalert2.js": {
+      "language": "js",
+      "imports": []
+    },
+    "assets/js/sweetalert2.min.js": {
+      "language": "js",
+      "imports": []
+    },
+    "classes/Admin/AdminBar.php": {
+      "language": "php",
+      "namespace": "Imagify\\Admin",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AdminBar",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify\\User\\User",
+        "Imagify_Views",
+        "WP_Admin_Bar"
+      ]
+    },
+    "classes/Admin/AdminSubscriber.php": {
+      "language": "php",
+      "namespace": "Imagify\\Admin",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AdminSubscriber",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify\\User\\User"
+      ]
+    },
+    "classes/Admin/PluginFamilySubscriber.php": {
+      "language": "php",
+      "namespace": "Imagify\\Admin",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "PluginFamilySubscriber",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface",
+            "PluginFamilyInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify\\Dependencies\\WPMedia\\PluginFamily\\Controller\\PluginFamily",
+        "Imagify\\Dependencies\\WPMedia\\PluginFamily\\Controller\\PluginFamilyInterface"
+      ]
+    },
+    "classes/Admin/ServiceProvider.php": {
+      "language": "php",
+      "namespace": "Imagify\\Admin",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ServiceProvider",
+          "extends": [
+            "AbstractServiceProvider"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Dependencies\\League\\Container\\ServiceProvider\\AbstractServiceProvider",
+        "Imagify\\Dependencies\\WPMedia\\PluginFamily\\Controller\\PluginFamily",
+        "Imagify\\User\\User"
+      ]
+    },
+    "classes/Auth/Basic.php": {
+      "language": "php",
+      "namespace": "Imagify\\Auth",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Basic",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/Avif/Apache.php": {
+      "language": "php",
+      "namespace": "Imagify\\Avif",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Apache",
+          "extends": [
+            "AbstractApacheDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\WriteFile\\AbstractApacheDirConfFile"
+      ]
+    },
+    "classes/Avif/Display.php": {
+      "language": "php",
+      "namespace": "Imagify\\Avif",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Display",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify\\Notices\\Notices",
+        "Imagify\\WriteFile\\WriteFileInterface"
+      ]
+    },
+    "classes/Avif/IIS.php": {
+      "language": "php",
+      "namespace": "Imagify\\Avif",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "IIS",
+          "extends": [
+            "AbstractIISDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\WriteFile\\AbstractIISDirConfFile"
+      ]
+    },
+    "classes/Avif/RewriteRules/Apache.php": {
+      "language": "php",
+      "namespace": "Imagify\\Avif\\RewriteRules",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Apache",
+          "extends": [
+            "AbstractApacheDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\WriteFile\\AbstractApacheDirConfFile"
+      ]
+    },
+    "classes/Avif/RewriteRules/Display.php": {
+      "language": "php",
+      "namespace": "Imagify\\Avif\\RewriteRules",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Display",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify\\Notices\\Notices",
+        "Imagify\\WriteFile\\WriteFileInterface"
+      ]
+    },
+    "classes/Avif/RewriteRules/IIS.php": {
+      "language": "php",
+      "namespace": "Imagify\\Avif\\RewriteRules",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "IIS",
+          "extends": [
+            "AbstractIISDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\WriteFile\\AbstractIISDirConfFile"
+      ]
+    },
+    "classes/Avif/RewriteRules/Nginx.php": {
+      "language": "php",
+      "namespace": "Imagify\\Avif\\RewriteRules",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Nginx",
+          "extends": [
+            "AbstractNginxDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\WriteFile\\AbstractNginxDirConfFile"
+      ]
+    },
+    "classes/Avif/ServiceProvider.php": {
+      "language": "php",
+      "namespace": "Imagify\\Avif",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ServiceProvider",
+          "extends": [
+            "AbstractServiceProvider"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Dependencies\\League\\Container\\ServiceProvider\\AbstractServiceProvider",
+        "Imagify\\Avif\\RewriteRules\\Display"
+      ]
+    },
+    "classes/Bulk/AbstractBulk.php": {
+      "language": "php",
+      "namespace": "Imagify\\Bulk",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AbstractBulk",
+          "extends": [],
+          "implements": [
+            "BulkInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify_Filesystem"
+      ]
+    },
+    "classes/Bulk/Bulk.php": {
+      "language": "php",
+      "namespace": "Imagify\\Bulk",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Bulk",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Exception",
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "Imagify\\Optimization\\Process\\ProcessInterface",
+        "WP_Error",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/Bulk/BulkInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\Bulk",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "BulkInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/Bulk/CustomFolders.php": {
+      "language": "php",
+      "namespace": "Imagify\\Bulk",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CustomFolders",
+          "extends": [
+            "AbstractBulk"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify_Custom_Folders",
+        "Imagify_Files_Scan",
+        "Imagify_Files_DB",
+        "Imagify_Folders_DB",
+        "Imagify_DB",
+        "Imagify_Files_Stats"
+      ]
+    },
+    "classes/Bulk/Noop.php": {
+      "language": "php",
+      "namespace": "Imagify\\Bulk",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Noop",
+          "extends": [
+            "AbstractBulk"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/Bulk/WP.php": {
+      "language": "php",
+      "namespace": "Imagify\\Bulk",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "WP",
+          "extends": [
+            "AbstractBulk"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify_DB"
+      ]
+    },
+    "classes/CDN/CDN.php": {
+      "language": "php",
+      "namespace": "Imagify\\CDN",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CDN",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface"
+      ]
+    },
+    "classes/CDN/PushCDNInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\CDN",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "PushCDNInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/CDN/ServiceProvider.php": {
+      "language": "php",
+      "namespace": "Imagify\\CDN",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ServiceProvider",
+          "extends": [
+            "AbstractServiceProvider"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Dependencies\\League\\Container\\ServiceProvider\\AbstractServiceProvider"
+      ]
+    },
+    "classes/CLI/AbstractCommand.php": {
+      "language": "php",
+      "namespace": "Imagify\\CLI",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AbstractCommand",
+          "extends": [],
+          "implements": [
+            "CommandInterface"
+          ]
+        }
+      ],
+      "imports": []
+    },
+    "classes/CLI/BulkOptimizeCommand.php": {
+      "language": "php",
+      "namespace": "Imagify\\CLI",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "BulkOptimizeCommand",
+          "extends": [
+            "AbstractCommand"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Bulk\\Bulk"
+      ]
+    },
+    "classes/CLI/CommandInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\CLI",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "CommandInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/CLI/GenerateMissingNextgenCommand.php": {
+      "language": "php",
+      "namespace": "Imagify\\CLI",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "GenerateMissingNextgenCommand",
+          "extends": [
+            "AbstractCommand"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Bulk\\Bulk"
+      ]
+    },
+    "classes/Context/AbstractContext.php": {
+      "language": "php",
+      "namespace": "Imagify\\Context",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AbstractContext",
+          "extends": [],
+          "implements": [
+            "ContextInterface"
+          ]
+        }
+      ],
+      "imports": []
+    },
+    "classes/Context/ContextInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\Context",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "ContextInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/Context/CustomFolders.php": {
+      "language": "php",
+      "namespace": "Imagify\\Context",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CustomFolders",
+          "extends": [
+            "AbstractContext"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/Context/Noop.php": {
+      "language": "php",
+      "namespace": "Imagify\\Context",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Noop",
+          "extends": [],
+          "implements": [
+            "ContextInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/Context/WP.php": {
+      "language": "php",
+      "namespace": "Imagify\\Context",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "WP",
+          "extends": [
+            "AbstractContext"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/DB/DBInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\DB",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "DBInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/Imagifybeat/Actions.php": {
+      "language": "php",
+      "namespace": "Imagify\\Imagifybeat",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Actions",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify_Requirements",
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "Imagify\\Bulk\\Bulk",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/Imagifybeat/Core.php": {
+      "language": "php",
+      "namespace": "Imagify\\Imagifybeat",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Core",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/Job/MediaOptimization.php": {
+      "language": "php",
+      "namespace": "Imagify\\Job",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "MediaOptimization",
+          "extends": [
+            "\\Imagify_Abstract_Background_Process"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Optimization\\Process\\ProcessInterface",
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "WP_Error",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/Media/AbstractMedia.php": {
+      "language": "php",
+      "namespace": "Imagify\\Media",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AbstractMedia",
+          "extends": [],
+          "implements": [
+            "MediaInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\CDN\\PushCDNInterface",
+        "Imagify\\Context\\ContextInterface"
+      ]
+    },
+    "classes/Media/CustomFolders.php": {
+      "language": "php",
+      "namespace": "Imagify\\Media",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CustomFolders",
+          "extends": [
+            "AbstractMedia"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\MediaRowTrait",
+        "Imagify\\Deprecated\\Traits\\Media\\CustomFoldersDeprecatedTrait",
+        "WP_Error",
+        "MediaRowTrait",
+        "CustomFoldersDeprecatedTrait"
+      ]
+    },
+    "classes/Media/MediaInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\Media",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "MediaInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\CDN\\PushCDNInterface",
+        "Imagify\\Context\\ContextInterface",
+        "WP_Error"
+      ]
+    },
+    "classes/Media/Noop.php": {
+      "language": "php",
+      "namespace": "Imagify\\Media",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Noop",
+          "extends": [],
+          "implements": [
+            "MediaInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\CDN\\PushCDNInterface",
+        "Imagify\\Context\\ContextInterface",
+        "Imagify\\Deprecated\\Traits\\Media\\NoopDeprecatedTrait",
+        "WP_Error",
+        "NoopDeprecatedTrait"
+      ]
+    },
+    "classes/Media/ServiceProvider.php": {
+      "language": "php",
+      "namespace": "Imagify\\Media",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ServiceProvider",
+          "extends": [
+            "AbstractServiceProvider"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Dependencies\\League\\Container\\ServiceProvider\\AbstractServiceProvider",
+        "Imagify\\Media\\Upload\\Upload"
+      ]
+    },
+    "classes/Media/Subscriber.php": {
+      "language": "php",
+      "namespace": "Imagify\\Media",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Subscriber",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify\\Media\\Upload\\Upload"
+      ]
+    },
+    "classes/Media/Upload/Upload.php": {
+      "language": "php",
+      "namespace": "Imagify\\Media\\Upload",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Upload",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/Media/WP.php": {
+      "language": "php",
+      "namespace": "Imagify\\Media",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "WP",
+          "extends": [
+            "AbstractMedia"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "WP_Error",
+        "\\Imagify\\Deprecated\\Traits\\Media\\WPDeprecatedTrait"
+      ]
+    },
+    "classes/Notices/Notices.php": {
+      "language": "php",
+      "namespace": "Imagify\\Notices",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Notices",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/Optimization/Data/AbstractData.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization\\Data",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AbstractData",
+          "extends": [],
+          "implements": [
+            "DataInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\Media\\MediaInterface"
+      ]
+    },
+    "classes/Optimization/Data/CustomFolders.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization\\Data",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CustomFolders",
+          "extends": [
+            "AbstractData"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\MediaRowTrait",
+        "MediaRowTrait"
+      ]
+    },
+    "classes/Optimization/Data/DataInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization\\Data",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "DataInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Media\\MediaInterface"
+      ]
+    },
+    "classes/Optimization/Data/Noop.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization\\Data",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Noop",
+          "extends": [],
+          "implements": [
+            "DataInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\Media\\MediaInterface"
+      ]
+    },
+    "classes/Optimization/Data/WP.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization\\Data",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "WP",
+          "extends": [
+            "AbstractData"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/Optimization/File.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "File",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify_Requirements",
+        "WP_Error"
+      ]
+    },
+    "classes/Optimization/Process/AbstractProcess.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization\\Process",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AbstractProcess",
+          "extends": [],
+          "implements": [
+            "ProcessInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify_Filesystem",
+        "Imagify\\Deprecated\\Traits\\Optimization\\Process\\AbstractProcessDeprecatedTrait",
+        "Imagify\\Job\\MediaOptimization",
+        "Imagify\\Optimization\\Data\\DataInterface",
+        "Imagify\\Optimization\\File",
+        "Imagify\\Media\\MediaInterface",
+        "WP_Error",
+        "AbstractProcessDeprecatedTrait"
+      ]
+    },
+    "classes/Optimization/Process/CustomFolders.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization\\Process",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CustomFolders",
+          "extends": [
+            "AbstractProcess"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "WP_Error"
+      ]
+    },
+    "classes/Optimization/Process/Noop.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization\\Process",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Noop",
+          "extends": [],
+          "implements": [
+            "ProcessInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\Optimization\\Data\\DataInterface",
+        "Imagify\\Media\\MediaInterface",
+        "Imagify\\Optimization\\File",
+        "WP_Error"
+      ]
+    },
+    "classes/Optimization/Process/ProcessInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization\\Process",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "ProcessInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Media\\MediaInterface",
+        "Imagify\\Optimization\\Data\\DataInterface",
+        "Imagify\\Optimization\\File",
+        "WP_Error"
+      ]
+    },
+    "classes/Optimization/Process/WP.php": {
+      "language": "php",
+      "namespace": "Imagify\\Optimization\\Process",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "WP",
+          "extends": [
+            "AbstractProcess"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Optimization\\File",
+        "WP_Error"
+      ]
+    },
+    "classes/Picture/Display.php": {
+      "language": "php",
+      "namespace": "Imagify\\Picture",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Display",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify_Filesystem"
+      ]
+    },
+    "classes/Picture/ServiceProvider.php": {
+      "language": "php",
+      "namespace": "Imagify\\Picture",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ServiceProvider",
+          "extends": [
+            "AbstractServiceProvider"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Dependencies\\League\\Container\\ServiceProvider\\AbstractServiceProvider"
+      ]
+    },
+    "classes/Plugin.php": {
+      "language": "php",
+      "namespace": "Imagify",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Plugin",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Admin\\AdminBar",
+        "Imagify\\Bulk\\Bulk",
+        "Imagify\\CLI\\BulkOptimizeCommand",
+        "Imagify\\CLI\\GenerateMissingNextgenCommand",
+        "Imagify\\Dependencies\\League\\Container\\Container",
+        "Imagify\\Dependencies\\League\\Container\\ServiceProvider\\ServiceProviderInterface",
+        "Imagify\\EventManagement\\EventManager",
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify\\Notices\\Notices",
+        "Imagify_Filesystem"
+      ]
+    },
+    "classes/Stats/OptimizedMediaWithoutNextGen.php": {
+      "language": "php",
+      "namespace": "Imagify\\Stats",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "OptimizedMediaWithoutNextGen",
+          "extends": [],
+          "implements": [
+            "StatInterface",
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\Bulk\\Bulk",
+        "Imagify\\Optimization\\Process\\ProcessInterface",
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "WP_Error",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/Stats/ServiceProvider.php": {
+      "language": "php",
+      "namespace": "Imagify\\Stats",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ServiceProvider",
+          "extends": [
+            "AbstractServiceProvider"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Dependencies\\League\\Container\\ServiceProvider\\AbstractServiceProvider"
+      ]
+    },
+    "classes/Stats/StatInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\Stats",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "StatInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/ThirdParty/Hostings/Extendify.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\Hostings",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Extendify",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface"
+      ]
+    },
+    "classes/ThirdParty/Plugins/GravityForms.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\Plugins",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "GravityForms",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "GFForms",
+        "Imagify\\EventManagement\\SubscriberInterface"
+      ]
+    },
+    "classes/ThirdParty/ServiceProvider.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ServiceProvider",
+          "extends": [
+            "AbstractServiceProvider"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Dependencies\\League\\Container\\ServiceProvider\\AbstractServiceProvider",
+        "Imagify\\ThirdParty\\Hostings\\Extendify",
+        "Imagify\\ThirdParty\\Plugins\\GravityForms"
+      ]
+    },
+    "classes/Traits/InstanceGetterTrait.php": {
+      "language": "php",
+      "namespace": "Imagify\\Traits",
+      "symbols": [
+        {
+          "kind": "trait",
+          "name": "InstanceGetterTrait",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/Traits/MediaRowTrait.php": {
+      "language": "php",
+      "namespace": "Imagify\\Traits",
+      "symbols": [
+        {
+          "kind": "trait",
+          "name": "MediaRowTrait",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/User/ServiceProvider.php": {
+      "language": "php",
+      "namespace": "Imagify\\User",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ServiceProvider",
+          "extends": [
+            "AbstractServiceProvider"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Dependencies\\League\\Container\\ServiceProvider\\AbstractServiceProvider"
+      ]
+    },
+    "classes/User/User.php": {
+      "language": "php",
+      "namespace": "Imagify\\User",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "User",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify_Data",
+        "WP_Error"
+      ]
+    },
+    "classes/Webp/Apache.php": {
+      "language": "php",
+      "namespace": "Imagify\\Webp",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Apache",
+          "extends": [
+            "AbstractApacheDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\WriteFile\\AbstractApacheDirConfFile"
+      ]
+    },
+    "classes/Webp/Display.php": {
+      "language": "php",
+      "namespace": "Imagify\\Webp",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Display",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify\\Notices\\Notices",
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "Imagify\\WriteFile\\WriteFileInterface",
+        "InstanceGetterTrait"
+      ]
+    },
+    "classes/Webp/IIS.php": {
+      "language": "php",
+      "namespace": "Imagify\\Webp",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "IIS",
+          "extends": [
+            "AbstractIISDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\WriteFile\\AbstractIISDirConfFile"
+      ]
+    },
+    "classes/Webp/RewriteRules/Apache.php": {
+      "language": "php",
+      "namespace": "Imagify\\Webp\\RewriteRules",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Apache",
+          "extends": [
+            "AbstractApacheDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\WriteFile\\AbstractApacheDirConfFile"
+      ]
+    },
+    "classes/Webp/RewriteRules/Display.php": {
+      "language": "php",
+      "namespace": "Imagify\\Webp\\RewriteRules",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Display",
+          "extends": [],
+          "implements": [
+            "SubscriberInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\EventManagement\\SubscriberInterface",
+        "Imagify\\Notices\\Notices",
+        "Imagify\\WriteFile\\WriteFileInterface"
+      ]
+    },
+    "classes/Webp/RewriteRules/IIS.php": {
+      "language": "php",
+      "namespace": "Imagify\\Webp\\RewriteRules",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "IIS",
+          "extends": [
+            "AbstractIISDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\WriteFile\\AbstractIISDirConfFile"
+      ]
+    },
+    "classes/Webp/RewriteRules/Nginx.php": {
+      "language": "php",
+      "namespace": "Imagify\\Webp\\RewriteRules",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Nginx",
+          "extends": [
+            "AbstractNginxDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\WriteFile\\AbstractNginxDirConfFile"
+      ]
+    },
+    "classes/Webp/ServiceProvider.php": {
+      "language": "php",
+      "namespace": "Imagify\\Webp",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ServiceProvider",
+          "extends": [
+            "AbstractServiceProvider"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Dependencies\\League\\Container\\ServiceProvider\\AbstractServiceProvider",
+        "Imagify\\Webp\\RewriteRules\\Display"
+      ]
+    },
+    "classes/WriteFile/AbstractApacheDirConfFile.php": {
+      "language": "php",
+      "namespace": "Imagify\\WriteFile",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AbstractApacheDirConfFile",
+          "extends": [
+            "AbstractWriteDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/WriteFile/AbstractIISDirConfFile.php": {
+      "language": "php",
+      "namespace": "Imagify\\WriteFile",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AbstractIISDirConfFile",
+          "extends": [
+            "AbstractWriteDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/WriteFile/AbstractNginxDirConfFile.php": {
+      "language": "php",
+      "namespace": "Imagify\\WriteFile",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AbstractNginxDirConfFile",
+          "extends": [
+            "AbstractWriteDirConfFile"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "classes/WriteFile/AbstractWriteDirConfFile.php": {
+      "language": "php",
+      "namespace": "Imagify\\WriteFile",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AbstractWriteDirConfFile",
+          "extends": [],
+          "implements": [
+            "WriteFileInterface"
+          ]
+        }
+      ],
+      "imports": []
+    },
+    "classes/WriteFile/WriteFileInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\WriteFile",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "WriteFileInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/3rd-party/3rd-party.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/WooCommerce/class-woocommerce.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\WooCommerce",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "WooCommerce",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/3rd-party/amazon-s3-and-cloudfront/amazon-s3-and-cloudfront.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/amazon-s3-and-cloudfront/classes/CDN/WP/AS3.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\AS3CF\\CDN\\WP",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "AS3",
+          "extends": [],
+          "implements": [
+            "PushCDNInterface"
+          ]
+        }
+      ],
+      "imports": [
+        "Imagify\\CDN\\PushCDNInterface",
+        "Imagify\\Context\\ContextInterface"
+      ]
+    },
+    "inc/3rd-party/amazon-s3-and-cloudfront/classes/Main.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\AS3CF",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Main",
+          "extends": [
+            "\\Imagify_AS3CF_Deprecated"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Optimization\\File",
+        "Imagify\\ThirdParty\\AS3CF\\CDN\\WP\\AS3",
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/3rd-party/amp/amp.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/enable-media-replace/classes/Main.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\EnableMediaReplace",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Main",
+          "extends": [
+            "Imagify_Enable_Media_Replace_Deprecated"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "Imagify_Enable_Media_Replace_Deprecated",
+        "Imagify_Filesystem",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/3rd-party/enable-media-replace/enable-media-replace.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/formidable-pro/classes/Main.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\FormidablePro",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Main",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/3rd-party/formidable-pro/formidable-pro.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": [
+        "Imagify\\ThirdParty\\FormidablePro"
+      ]
+    },
+    "inc/3rd-party/hosting/flywheel.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/hosting/pressable.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/hosting/siteground.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/hosting/wordpress-com.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/hosting/wpengine.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/nextgen-gallery/classes/Bulk/NGG.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\NGG\\Bulk",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "NGG",
+          "extends": [
+            "AbstractBulk"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "C_Gallery_Storage",
+        "Imagify\\Bulk\\AbstractBulk",
+        "Imagify\\ThirdParty\\NGG\\DB"
+      ]
+    },
+    "inc/3rd-party/nextgen-gallery/classes/Context/NGG.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\NGG\\Context",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "NGG",
+          "extends": [
+            "AbstractContext"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Context\\AbstractContext",
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/3rd-party/nextgen-gallery/classes/DB.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\NGG",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "DB",
+          "extends": [
+            "\\Imagify_Abstract_DB"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/3rd-party/nextgen-gallery/classes/DynamicThumbnails.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\NGG",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "DynamicThumbnails",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/3rd-party/nextgen-gallery/classes/Main.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\NGG",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Main",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/3rd-party/nextgen-gallery/classes/Media/NGG.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\NGG\\Media",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "NGG",
+          "extends": [
+            "\\Imagify\\Media\\AbstractMedia"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Deprecated\\Traits\\Media\\NGGDeprecatedTrait",
+        "NGGDeprecatedTrait"
+      ]
+    },
+    "inc/3rd-party/nextgen-gallery/classes/NGGStorage.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\NGG",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "NGGStorage",
+          "extends": [
+            "\\Mixin"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/3rd-party/nextgen-gallery/classes/Optimization/Data/NGG.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\NGG\\Optimization\\Data",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "NGG",
+          "extends": [
+            "\\Imagify\\Optimization\\Data\\AbstractData"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\MediaRowTrait",
+        "MediaRowTrait"
+      ]
+    },
+    "inc/3rd-party/nextgen-gallery/classes/Optimization/Process/NGG.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\NGG\\Optimization\\Process",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "NGG",
+          "extends": [
+            "\\Imagify\\Optimization\\Process\\AbstractProcess"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Optimization\\File"
+      ]
+    },
+    "inc/3rd-party/nextgen-gallery/inc/admin/bulk.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/nextgen-gallery/inc/admin/enqueue.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/nextgen-gallery/inc/admin/gallery.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/nextgen-gallery/inc/admin/menu.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/nextgen-gallery/inc/common/attachments.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": [
+        "Imagify\\Optimization\\File",
+        "Imagify\\ThirdParty\\NGG"
+      ]
+    },
+    "inc/3rd-party/nextgen-gallery/inc/functions/admin-stats.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": [
+        "Imagify\\ThirdParty\\NGG\\DB"
+      ]
+    },
+    "inc/3rd-party/nextgen-gallery/inc/functions/attachments.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/nextgen-gallery/inc/functions/common.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/nextgen-gallery/nextgen-gallery.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": [
+        "Imagify\\ThirdParty\\NGG"
+      ]
+    },
+    "inc/3rd-party/regenerate-thumbnails/classes/Main.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\RegenerateThumbnails",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Main",
+          "extends": [
+            "\\Imagify_Regenerate_Thumbnails_Deprecated"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify_Requirements",
+        "\\Imagify\\Traits\\InstanceGetterTrait"
+      ]
+    },
+    "inc/3rd-party/regenerate-thumbnails/regenerate-thumbnails.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/screets-lc.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/wp-cloudflare-super-page-cache.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/wp-real-media-library.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": [
+        "Imagify\\Notices\\Notices"
+      ]
+    },
+    "inc/3rd-party/wp-rocket/classes/Main.php": {
+      "language": "php",
+      "namespace": "Imagify\\ThirdParty\\WPRocket",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Main",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/3rd-party/wp-rocket/wp-rocket.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/3rd-party/yoast-seo.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/action-scheduler.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_ActionClaim.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_ActionClaim",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_ActionFactory.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_ActionFactory",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_AdminView.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_AdminView",
+          "extends": [
+            "ActionScheduler_AdminView_Deprecated"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_AsyncRequest_QueueRunner.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_AsyncRequest_QueueRunner",
+          "extends": [
+            "WP_Async_Request"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_Compatibility.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Compatibility",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_DataController.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_DataController",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Action_Scheduler\\Migration\\Controller"
+      ]
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_DateTime.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_DateTime",
+          "extends": [
+            "DateTime"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_Exception.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "ActionScheduler_Exception",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_FatalErrorMonitor.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_FatalErrorMonitor",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_InvalidActionException.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_InvalidActionException",
+          "extends": [
+            "\\InvalidArgumentException"
+          ],
+          "implements": [
+            "ActionScheduler_Exception"
+          ]
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_ListTable.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_ListTable",
+          "extends": [
+            "ActionScheduler_Abstract_ListTable"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_LogEntry.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_LogEntry",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_NullLogEntry.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_NullLogEntry",
+          "extends": [
+            "ActionScheduler_LogEntry"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_OptionLock.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_OptionLock",
+          "extends": [
+            "ActionScheduler_Lock"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_QueueCleaner.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_QueueCleaner",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_QueueRunner.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_QueueRunner",
+          "extends": [
+            "ActionScheduler_Abstract_QueueRunner"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_RecurringActionScheduler.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_RecurringActionScheduler",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_SystemInformation.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_SystemInformation",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_Versions.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Versions",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_WPCommentCleaner.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_WPCommentCleaner",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/ActionScheduler_wcSystemStatus.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_wcSystemStatus",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Cancel_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI\\Action",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Cancel_Command",
+          "extends": [
+            "\\ActionScheduler_WPCLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Create_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI\\Action",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Create_Command",
+          "extends": [
+            "\\ActionScheduler_WPCLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Delete_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI\\Action",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Delete_Command",
+          "extends": [
+            "\\ActionScheduler_WPCLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Generate_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI\\Action",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Generate_Command",
+          "extends": [
+            "\\ActionScheduler_WPCLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Get_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI\\Action",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Get_Command",
+          "extends": [
+            "\\ActionScheduler_WPCLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/List_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI\\Action",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "List_Command",
+          "extends": [
+            "\\ActionScheduler_WPCLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Next_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI\\Action",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Next_Command",
+          "extends": [
+            "\\ActionScheduler_WPCLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Run_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI\\Action",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Run_Command",
+          "extends": [
+            "\\ActionScheduler_WPCLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/ActionScheduler_WPCLI_Clean_Command.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_WPCLI_Clean_Command",
+          "extends": [
+            "WP_CLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/ActionScheduler_WPCLI_QueueRunner.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_WPCLI_QueueRunner",
+          "extends": [
+            "ActionScheduler_Abstract_QueueRunner"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Action_Scheduler\\WP_CLI\\ProgressBar"
+      ]
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/ActionScheduler_WPCLI_Scheduler_command.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_WPCLI_Scheduler_command",
+          "extends": [
+            "WP_CLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Action_Command",
+          "extends": [
+            "\\WP_CLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/Migration_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Migration_Command",
+          "extends": [
+            "WP_CLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Action_Scheduler\\Migration\\Config",
+        "Action_Scheduler\\Migration\\Runner",
+        "Action_Scheduler\\Migration\\Scheduler",
+        "Action_Scheduler\\Migration\\Controller",
+        "WP_CLI",
+        "WP_CLI_Command"
+      ]
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/ProgressBar.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ProgressBar",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/WP_CLI/System_Command.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\WP_CLI",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "System_Command",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "ActionScheduler_SystemInformation",
+        "WP_CLI"
+      ]
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Action_Scheduler\\WP_CLI\\Migration_Command",
+        "Action_Scheduler\\Migration\\Controller"
+      ]
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Abstract_ListTable.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Abstract_ListTable",
+          "extends": [
+            "WP_List_Table"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Abstract_QueueRunner.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Abstract_QueueRunner",
+          "extends": [
+            "ActionScheduler_Abstract_QueueRunner_Deprecated"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Abstract_RecurringSchedule.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Abstract_RecurringSchedule",
+          "extends": [
+            "ActionScheduler_Abstract_Schedule"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Abstract_Schedule.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Abstract_Schedule",
+          "extends": [
+            "ActionScheduler_Schedule_Deprecated"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Abstract_Schema.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Abstract_Schema",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Lock.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Lock",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Logger.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Logger",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Store.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Store",
+          "extends": [
+            "ActionScheduler_Store_Deprecated"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_TimezoneHelper.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_TimezoneHelper",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_WPCLI_Command.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_WPCLI_Command",
+          "extends": [
+            "\\WP_CLI_Command"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/actions/ActionScheduler_Action.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Action",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/actions/ActionScheduler_CanceledAction.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_CanceledAction",
+          "extends": [
+            "ActionScheduler_FinishedAction"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/actions/ActionScheduler_FinishedAction.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_FinishedAction",
+          "extends": [
+            "ActionScheduler_Action"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/actions/ActionScheduler_NullAction.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_NullAction",
+          "extends": [
+            "ActionScheduler_Action"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_DBLogger.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_DBLogger",
+          "extends": [
+            "ActionScheduler_Logger"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_DBStore.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_DBStore",
+          "extends": [
+            "ActionScheduler_Store"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_HybridStore.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_HybridStore",
+          "extends": [
+            "Store"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "ActionScheduler_Store",
+        "Action_Scheduler\\Migration\\Runner",
+        "Action_Scheduler\\Migration\\Config",
+        "Action_Scheduler\\Migration\\Controller"
+      ]
+    },
+    "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_wpCommentLogger.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_wpCommentLogger",
+          "extends": [
+            "ActionScheduler_Logger"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_wpPostStore.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_wpPostStore",
+          "extends": [
+            "ActionScheduler_Store"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_wpPostStore_PostStatusRegistrar.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_wpPostStore_PostStatusRegistrar",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_wpPostStore_PostTypeRegistrar.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_wpPostStore_PostTypeRegistrar",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_wpPostStore_TaxonomyRegistrar.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_wpPostStore_TaxonomyRegistrar",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/migration/ActionMigrator.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\Migration",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionMigrator",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/migration/ActionScheduler_DBStoreMigrator.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_DBStoreMigrator",
+          "extends": [
+            "ActionScheduler_DBStore"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/migration/BatchFetcher.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\Migration",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "BatchFetcher",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "ActionScheduler_Store"
+      ]
+    },
+    "inc/Dependencies/ActionScheduler/classes/migration/Config.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\Migration",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Config",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Action_Scheduler\\WP_CLI\\ProgressBar",
+        "ActionScheduler_Logger",
+        "ActionScheduler_Store"
+      ]
+    },
+    "inc/Dependencies/ActionScheduler/classes/migration/Controller.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\Migration",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Controller",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "ActionScheduler_DataController",
+        "ActionScheduler_LoggerSchema",
+        "ActionScheduler_StoreSchema",
+        "Action_Scheduler\\WP_CLI\\ProgressBar"
+      ]
+    },
+    "inc/Dependencies/ActionScheduler/classes/migration/DryRun_ActionMigrator.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\Migration",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "DryRun_ActionMigrator",
+          "extends": [
+            "ActionMigrator"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/migration/DryRun_LogMigrator.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\Migration",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "DryRun_LogMigrator",
+          "extends": [
+            "LogMigrator"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/migration/LogMigrator.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\Migration",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "LogMigrator",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "ActionScheduler_Logger"
+      ]
+    },
+    "inc/Dependencies/ActionScheduler/classes/migration/Runner.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\Migration",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Runner",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/migration/Scheduler.php": {
+      "language": "php",
+      "namespace": "Action_Scheduler\\Migration",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Scheduler",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_CanceledSchedule.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_CanceledSchedule",
+          "extends": [
+            "ActionScheduler_SimpleSchedule"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_CronSchedule.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_CronSchedule",
+          "extends": [
+            "ActionScheduler_Abstract_RecurringSchedule"
+          ],
+          "implements": [
+            "ActionScheduler_Schedule"
+          ]
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_IntervalSchedule.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_IntervalSchedule",
+          "extends": [
+            "ActionScheduler_Abstract_RecurringSchedule"
+          ],
+          "implements": [
+            "ActionScheduler_Schedule"
+          ]
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_NullSchedule.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_NullSchedule",
+          "extends": [
+            "ActionScheduler_SimpleSchedule"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_Schedule.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "ActionScheduler_Schedule",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_SimpleSchedule.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_SimpleSchedule",
+          "extends": [
+            "ActionScheduler_Abstract_Schedule"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/schema/ActionScheduler_LoggerSchema.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_LoggerSchema",
+          "extends": [
+            "ActionScheduler_Abstract_Schema"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/classes/schema/ActionScheduler_StoreSchema.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_StoreSchema",
+          "extends": [
+            "ActionScheduler_Abstract_Schema"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/deprecated/ActionScheduler_Abstract_QueueRunner_Deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Abstract_QueueRunner_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/deprecated/ActionScheduler_AdminView_Deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_AdminView_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/deprecated/ActionScheduler_Schedule_Deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Schedule_Deprecated",
+          "extends": [],
+          "implements": [
+            "ActionScheduler_Schedule"
+          ]
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/deprecated/ActionScheduler_Store_Deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "ActionScheduler_Store_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/deprecated/functions.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/functions.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/WP_Async_Request.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "WP_Async_Request",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CronExpression",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_AbstractField.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CronExpression_AbstractField",
+          "extends": [],
+          "implements": [
+            "CronExpression_FieldInterface"
+          ]
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_DayOfMonthField.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CronExpression_DayOfMonthField",
+          "extends": [
+            "CronExpression_AbstractField"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_DayOfWeekField.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CronExpression_DayOfWeekField",
+          "extends": [
+            "CronExpression_AbstractField"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_FieldFactory.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CronExpression_FieldFactory",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_FieldInterface.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "CronExpression_FieldInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_HoursField.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CronExpression_HoursField",
+          "extends": [
+            "CronExpression_AbstractField"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_MinutesField.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CronExpression_MinutesField",
+          "extends": [
+            "CronExpression_AbstractField"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_MonthField.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CronExpression_MonthField",
+          "extends": [
+            "CronExpression_AbstractField"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_YearField.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "CronExpression_YearField",
+          "extends": [
+            "CronExpression_AbstractField"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/admin/custom-folders.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/admin/media.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/admin/meta-boxes.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/admin/upgrader.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/admin/upload.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/classes/Dependencies/wp-media/event-manager/EventManager.php": {
+      "language": "php",
+      "namespace": "Imagify\\EventManagement",
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "EventManager",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/Dependencies/wp-media/event-manager/EventManagerAwareSubscriberInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\EventManagement",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "EventManagerAwareSubscriberInterface",
+          "extends": [
+            "SubscriberInterface"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/Dependencies/wp-media/event-manager/SubscriberInterface.php": {
+      "language": "php",
+      "namespace": "Imagify\\EventManagement",
+      "symbols": [
+        {
+          "kind": "interface",
+          "name": "SubscriberInterface",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-abstract-background-process.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Abstract_Background_Process",
+          "extends": [
+            "Imagify_WP_Background_Process"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-abstract-cron.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Abstract_Cron",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-abstract-db.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Abstract_DB",
+          "extends": [
+            "Imagify_Abstract_DB_Deprecated"
+          ],
+          "implements": [
+            "\\Imagify\\DB\\DBInterface"
+          ]
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-abstract-options.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Abstract_Options",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-admin-ajax-post.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Admin_Ajax_Post",
+          "extends": [
+            "Imagify_Admin_Ajax_Post_Deprecated"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-assets.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Assets",
+          "extends": [
+            "Imagify_Assets_Deprecated"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Notices\\Notices",
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-auto-optimization.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Auto_Optimization",
+          "extends": [
+            "Imagify_Auto_Optimization_Deprecated"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-cron-library-size.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Cron_Library_Size",
+          "extends": [
+            "Imagify_Abstract_Cron"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-cron-rating.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Cron_Rating",
+          "extends": [
+            "Imagify_Abstract_Cron"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-cron-sync-files.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Cron_Sync_Files",
+          "extends": [
+            "Imagify_Abstract_Cron"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-custom-folders.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Custom_Folders",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-data.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Data",
+          "extends": [
+            "Imagify_Abstract_Options"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-db.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_DB",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-files-db.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Files_DB",
+          "extends": [
+            "Imagify_Abstract_DB"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-files-iterator.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Files_Iterator",
+          "extends": [
+            "FilterIterator"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-files-list-table.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Files_List_Table",
+          "extends": [
+            "WP_List_Table"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-files-recursive-iterator.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Files_Recursive_Iterator",
+          "extends": [
+            "RecursiveFilterIterator"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-files-scan.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Files_Scan",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-files-stats.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Files_Stats",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-filesystem.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Filesystem",
+          "extends": [
+            "WP_Filesystem_Direct"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-folders-db.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Folders_DB",
+          "extends": [
+            "Imagify_Abstract_DB"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-options.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Options",
+          "extends": [
+            "Imagify_Abstract_Options"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-requirements-check.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Requirements_Check",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/classes/class-imagify-requirements.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Requirements",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\User\\User"
+      ]
+    },
+    "inc/classes/class-imagify-settings.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Settings",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Notices\\Notices",
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify-views.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Views",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\User\\User",
+        "Imagify\\Dependencies\\WPMedia\\PluginFamily\\Model\\PluginFamily",
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/classes/class-imagify.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": [
+        "Imagify\\Traits\\InstanceGetterTrait",
+        "InstanceGetterTrait"
+      ]
+    },
+    "inc/common/attachments.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/common/partners.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/deprecated/3rd-party.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": [
+        "Imagify\\User\\User"
+      ]
+    },
+    "inc/deprecated/Traits/Media/CustomFoldersDeprecatedTrait.php": {
+      "language": "php",
+      "namespace": "Imagify\\Deprecated\\Traits\\Media",
+      "symbols": [
+        {
+          "kind": "trait",
+          "name": "CustomFoldersDeprecatedTrait",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/Traits/Media/NGGDeprecatedTrait.php": {
+      "language": "php",
+      "namespace": "Imagify\\Deprecated\\Traits\\Media",
+      "symbols": [
+        {
+          "kind": "trait",
+          "name": "NGGDeprecatedTrait",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/Traits/Media/NoopDeprecatedTrait.php": {
+      "language": "php",
+      "namespace": "Imagify\\Deprecated\\Traits\\Media",
+      "symbols": [
+        {
+          "kind": "trait",
+          "name": "NoopDeprecatedTrait",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/Traits/Media/WPDeprecatedTrait.php": {
+      "language": "php",
+      "namespace": "Imagify\\Deprecated\\Traits\\Media",
+      "symbols": [
+        {
+          "kind": "trait",
+          "name": "WPDeprecatedTrait",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/Traits/Optimization/Process/AbstractProcessDeprecatedTrait.php": {
+      "language": "php",
+      "namespace": "Imagify\\Deprecated\\Traits\\Optimization\\Process",
+      "symbols": [
+        {
+          "kind": "trait",
+          "name": "AbstractProcessDeprecatedTrait",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-abstract-attachment.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Abstract_Attachment",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-abstract-db-deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Abstract_DB_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-admin-ajax-post-deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Admin_Ajax_Post_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-as3cf-attachment.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_AS3CF_Attachment",
+          "extends": [
+            "Imagify_Attachment"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-as3cf-deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_AS3CF_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-assets-deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Assets_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-attachment.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Attachment",
+          "extends": [
+            "Imagify_Abstract_Attachment"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-auto-optimization-deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Auto_Optimization_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-enable-media-replace-deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Enable_Media_Replace_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-file-attachment.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_File_Attachment",
+          "extends": [
+            "Imagify_Attachment"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-ngg-attachment.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_NGG_Attachment",
+          "extends": [
+            "Imagify_Attachment"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-ngg-dynamic-thumbnails-background-process.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_NGG_Dynamic_Thumbnails_Background_Process",
+          "extends": [
+            "Imagify_Abstract_Background_Process"
+          ],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-notices-deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Notices_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-regenerate-thumbnails-deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_Regenerate_Thumbnails_Deprecated",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/classes/class-imagify-user.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [
+        {
+          "kind": "class",
+          "name": "Imagify_User",
+          "extends": [],
+          "implements": []
+        }
+      ],
+      "imports": []
+    },
+    "inc/deprecated/deprecated.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/functions/admin-stats.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/functions/admin-ui.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/functions/admin.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": [
+        "Imagify\\Notices\\Notices",
+        "Imagify\\User\\User"
+      ]
+    },
+    "inc/functions/api.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": [
+        "Imagify\\CLI\\CommandInterface"
+      ]
+    },
+    "inc/functions/attachments.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/functions/common.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/functions/formatting.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/functions/i18n.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": [
+        "Imagify\\Imagifybeat\\Actions",
+        "Imagify\\Imagifybeat\\Core",
+        "Imagify\\Stats\\OptimizedMediaWithoutNextGen"
+      ]
+    },
+    "inc/functions/media.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/functions/options.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/functions/partners.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/functions/process.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": []
+    },
+    "inc/main.php": {
+      "language": "php",
+      "namespace": null,
+      "symbols": [],
+      "imports": [
+        "Imagify\\Dependencies\\League\\Container\\Container",
+        "Imagify\\Plugin"
+      ]
+    }
+  },
+  "symbol_index": {
+    "Imagify\\Admin\\AdminBar": "classes/Admin/AdminBar.php",
+    "Imagify\\Admin\\AdminSubscriber": "classes/Admin/AdminSubscriber.php",
+    "Imagify\\Admin\\PluginFamilySubscriber": "classes/Admin/PluginFamilySubscriber.php",
+    "Imagify\\Admin\\ServiceProvider": "classes/Admin/ServiceProvider.php",
+    "Imagify\\Auth\\Basic": "classes/Auth/Basic.php",
+    "Imagify\\Avif\\Apache": "classes/Avif/Apache.php",
+    "Imagify\\Avif\\Display": "classes/Avif/Display.php",
+    "Imagify\\Avif\\IIS": "classes/Avif/IIS.php",
+    "Imagify\\Avif\\RewriteRules\\Apache": "classes/Avif/RewriteRules/Apache.php",
+    "Imagify\\Avif\\RewriteRules\\Display": "classes/Avif/RewriteRules/Display.php",
+    "Imagify\\Avif\\RewriteRules\\IIS": "classes/Avif/RewriteRules/IIS.php",
+    "Imagify\\Avif\\RewriteRules\\Nginx": "classes/Avif/RewriteRules/Nginx.php",
+    "Imagify\\Avif\\ServiceProvider": "classes/Avif/ServiceProvider.php",
+    "Imagify\\Bulk\\AbstractBulk": "classes/Bulk/AbstractBulk.php",
+    "Imagify\\Bulk\\Bulk": "classes/Bulk/Bulk.php",
+    "Imagify\\Bulk\\BulkInterface": "classes/Bulk/BulkInterface.php",
+    "Imagify\\Bulk\\CustomFolders": "classes/Bulk/CustomFolders.php",
+    "Imagify\\Bulk\\Noop": "classes/Bulk/Noop.php",
+    "Imagify\\Bulk\\WP": "classes/Bulk/WP.php",
+    "Imagify\\CDN\\CDN": "classes/CDN/CDN.php",
+    "Imagify\\CDN\\PushCDNInterface": "classes/CDN/PushCDNInterface.php",
+    "Imagify\\CDN\\ServiceProvider": "classes/CDN/ServiceProvider.php",
+    "Imagify\\CLI\\AbstractCommand": "classes/CLI/AbstractCommand.php",
+    "Imagify\\CLI\\BulkOptimizeCommand": "classes/CLI/BulkOptimizeCommand.php",
+    "Imagify\\CLI\\CommandInterface": "classes/CLI/CommandInterface.php",
+    "Imagify\\CLI\\GenerateMissingNextgenCommand": "classes/CLI/GenerateMissingNextgenCommand.php",
+    "Imagify\\Context\\AbstractContext": "classes/Context/AbstractContext.php",
+    "Imagify\\Context\\ContextInterface": "classes/Context/ContextInterface.php",
+    "Imagify\\Context\\CustomFolders": "classes/Context/CustomFolders.php",
+    "Imagify\\Context\\Noop": "classes/Context/Noop.php",
+    "Imagify\\Context\\WP": "classes/Context/WP.php",
+    "Imagify\\DB\\DBInterface": "classes/DB/DBInterface.php",
+    "Imagify\\Imagifybeat\\Actions": "classes/Imagifybeat/Actions.php",
+    "Imagify\\Imagifybeat\\Core": "classes/Imagifybeat/Core.php",
+    "Imagify\\Job\\MediaOptimization": "classes/Job/MediaOptimization.php",
+    "Imagify\\Media\\AbstractMedia": "classes/Media/AbstractMedia.php",
+    "Imagify\\Media\\CustomFolders": "classes/Media/CustomFolders.php",
+    "Imagify\\Media\\MediaInterface": "classes/Media/MediaInterface.php",
+    "Imagify\\Media\\Noop": "classes/Media/Noop.php",
+    "Imagify\\Media\\ServiceProvider": "classes/Media/ServiceProvider.php",
+    "Imagify\\Media\\Subscriber": "classes/Media/Subscriber.php",
+    "Imagify\\Media\\Upload\\Upload": "classes/Media/Upload/Upload.php",
+    "Imagify\\Media\\WP": "classes/Media/WP.php",
+    "Imagify\\Notices\\Notices": "classes/Notices/Notices.php",
+    "Imagify\\Optimization\\Data\\AbstractData": "classes/Optimization/Data/AbstractData.php",
+    "Imagify\\Optimization\\Data\\CustomFolders": "classes/Optimization/Data/CustomFolders.php",
+    "Imagify\\Optimization\\Data\\DataInterface": "classes/Optimization/Data/DataInterface.php",
+    "Imagify\\Optimization\\Data\\Noop": "classes/Optimization/Data/Noop.php",
+    "Imagify\\Optimization\\Data\\WP": "classes/Optimization/Data/WP.php",
+    "Imagify\\Optimization\\File": "classes/Optimization/File.php",
+    "Imagify\\Optimization\\Process\\AbstractProcess": "classes/Optimization/Process/AbstractProcess.php",
+    "Imagify\\Optimization\\Process\\CustomFolders": "classes/Optimization/Process/CustomFolders.php",
+    "Imagify\\Optimization\\Process\\Noop": "classes/Optimization/Process/Noop.php",
+    "Imagify\\Optimization\\Process\\ProcessInterface": "classes/Optimization/Process/ProcessInterface.php",
+    "Imagify\\Optimization\\Process\\WP": "classes/Optimization/Process/WP.php",
+    "Imagify\\Picture\\Display": "classes/Picture/Display.php",
+    "Imagify\\Picture\\ServiceProvider": "classes/Picture/ServiceProvider.php",
+    "Imagify\\Plugin": "classes/Plugin.php",
+    "Imagify\\Stats\\OptimizedMediaWithoutNextGen": "classes/Stats/OptimizedMediaWithoutNextGen.php",
+    "Imagify\\Stats\\ServiceProvider": "classes/Stats/ServiceProvider.php",
+    "Imagify\\Stats\\StatInterface": "classes/Stats/StatInterface.php",
+    "Imagify\\ThirdParty\\Hostings\\Extendify": "classes/ThirdParty/Hostings/Extendify.php",
+    "Imagify\\ThirdParty\\Plugins\\GravityForms": "classes/ThirdParty/Plugins/GravityForms.php",
+    "Imagify\\ThirdParty\\ServiceProvider": "classes/ThirdParty/ServiceProvider.php",
+    "Imagify\\Traits\\InstanceGetterTrait": "classes/Traits/InstanceGetterTrait.php",
+    "Imagify\\Traits\\MediaRowTrait": "classes/Traits/MediaRowTrait.php",
+    "Imagify\\User\\ServiceProvider": "classes/User/ServiceProvider.php",
+    "Imagify\\User\\User": "classes/User/User.php",
+    "Imagify\\Webp\\Apache": "classes/Webp/Apache.php",
+    "Imagify\\Webp\\Display": "classes/Webp/Display.php",
+    "Imagify\\Webp\\IIS": "classes/Webp/IIS.php",
+    "Imagify\\Webp\\RewriteRules\\Apache": "classes/Webp/RewriteRules/Apache.php",
+    "Imagify\\Webp\\RewriteRules\\Display": "classes/Webp/RewriteRules/Display.php",
+    "Imagify\\Webp\\RewriteRules\\IIS": "classes/Webp/RewriteRules/IIS.php",
+    "Imagify\\Webp\\RewriteRules\\Nginx": "classes/Webp/RewriteRules/Nginx.php",
+    "Imagify\\Webp\\ServiceProvider": "classes/Webp/ServiceProvider.php",
+    "Imagify\\WriteFile\\AbstractApacheDirConfFile": "classes/WriteFile/AbstractApacheDirConfFile.php",
+    "Imagify\\WriteFile\\AbstractIISDirConfFile": "classes/WriteFile/AbstractIISDirConfFile.php",
+    "Imagify\\WriteFile\\AbstractNginxDirConfFile": "classes/WriteFile/AbstractNginxDirConfFile.php",
+    "Imagify\\WriteFile\\AbstractWriteDirConfFile": "classes/WriteFile/AbstractWriteDirConfFile.php",
+    "Imagify\\WriteFile\\WriteFileInterface": "classes/WriteFile/WriteFileInterface.php",
+    "Imagify\\ThirdParty\\WooCommerce\\WooCommerce": "inc/3rd-party/WooCommerce/class-woocommerce.php",
+    "Imagify\\ThirdParty\\AS3CF\\CDN\\WP\\AS3": "inc/3rd-party/amazon-s3-and-cloudfront/classes/CDN/WP/AS3.php",
+    "Imagify\\ThirdParty\\AS3CF\\Main": "inc/3rd-party/amazon-s3-and-cloudfront/classes/Main.php",
+    "Imagify\\ThirdParty\\EnableMediaReplace\\Main": "inc/3rd-party/enable-media-replace/classes/Main.php",
+    "Imagify\\ThirdParty\\FormidablePro\\Main": "inc/3rd-party/formidable-pro/classes/Main.php",
+    "Imagify\\ThirdParty\\NGG\\Bulk\\NGG": "inc/3rd-party/nextgen-gallery/classes/Bulk/NGG.php",
+    "Imagify\\ThirdParty\\NGG\\Context\\NGG": "inc/3rd-party/nextgen-gallery/classes/Context/NGG.php",
+    "Imagify\\ThirdParty\\NGG\\DB": "inc/3rd-party/nextgen-gallery/classes/DB.php",
+    "Imagify\\ThirdParty\\NGG\\DynamicThumbnails": "inc/3rd-party/nextgen-gallery/classes/DynamicThumbnails.php",
+    "Imagify\\ThirdParty\\NGG\\Main": "inc/3rd-party/nextgen-gallery/classes/Main.php",
+    "Imagify\\ThirdParty\\NGG\\Media\\NGG": "inc/3rd-party/nextgen-gallery/classes/Media/NGG.php",
+    "Imagify\\ThirdParty\\NGG\\NGGStorage": "inc/3rd-party/nextgen-gallery/classes/NGGStorage.php",
+    "Imagify\\ThirdParty\\NGG\\Optimization\\Data\\NGG": "inc/3rd-party/nextgen-gallery/classes/Optimization/Data/NGG.php",
+    "Imagify\\ThirdParty\\NGG\\Optimization\\Process\\NGG": "inc/3rd-party/nextgen-gallery/classes/Optimization/Process/NGG.php",
+    "Imagify\\ThirdParty\\RegenerateThumbnails\\Main": "inc/3rd-party/regenerate-thumbnails/classes/Main.php",
+    "Imagify\\ThirdParty\\WPRocket\\Main": "inc/3rd-party/wp-rocket/classes/Main.php",
+    "ActionScheduler_ActionClaim": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_ActionClaim.php",
+    "ActionScheduler_ActionFactory": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_ActionFactory.php",
+    "ActionScheduler_AdminView": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_AdminView.php",
+    "ActionScheduler_AsyncRequest_QueueRunner": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_AsyncRequest_QueueRunner.php",
+    "ActionScheduler_Compatibility": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_Compatibility.php",
+    "ActionScheduler_DataController": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_DataController.php",
+    "ActionScheduler_DateTime": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_DateTime.php",
+    "ActionScheduler_Exception": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_Exception.php",
+    "ActionScheduler_FatalErrorMonitor": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_FatalErrorMonitor.php",
+    "ActionScheduler_InvalidActionException": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_InvalidActionException.php",
+    "ActionScheduler_ListTable": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_ListTable.php",
+    "ActionScheduler_LogEntry": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_LogEntry.php",
+    "ActionScheduler_NullLogEntry": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_NullLogEntry.php",
+    "ActionScheduler_OptionLock": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_OptionLock.php",
+    "ActionScheduler_QueueCleaner": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_QueueCleaner.php",
+    "ActionScheduler_QueueRunner": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_QueueRunner.php",
+    "ActionScheduler_RecurringActionScheduler": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_RecurringActionScheduler.php",
+    "ActionScheduler_SystemInformation": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_SystemInformation.php",
+    "ActionScheduler_Versions": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_Versions.php",
+    "ActionScheduler_WPCommentCleaner": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_WPCommentCleaner.php",
+    "ActionScheduler_wcSystemStatus": "inc/Dependencies/ActionScheduler/classes/ActionScheduler_wcSystemStatus.php",
+    "Action_Scheduler\\WP_CLI\\Action\\Cancel_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Cancel_Command.php",
+    "Action_Scheduler\\WP_CLI\\Action\\Create_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Create_Command.php",
+    "Action_Scheduler\\WP_CLI\\Action\\Delete_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Delete_Command.php",
+    "Action_Scheduler\\WP_CLI\\Action\\Generate_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Generate_Command.php",
+    "Action_Scheduler\\WP_CLI\\Action\\Get_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Get_Command.php",
+    "Action_Scheduler\\WP_CLI\\Action\\List_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/List_Command.php",
+    "Action_Scheduler\\WP_CLI\\Action\\Next_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Next_Command.php",
+    "Action_Scheduler\\WP_CLI\\Action\\Run_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action/Run_Command.php",
+    "ActionScheduler_WPCLI_Clean_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/ActionScheduler_WPCLI_Clean_Command.php",
+    "ActionScheduler_WPCLI_QueueRunner": "inc/Dependencies/ActionScheduler/classes/WP_CLI/ActionScheduler_WPCLI_QueueRunner.php",
+    "ActionScheduler_WPCLI_Scheduler_command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/ActionScheduler_WPCLI_Scheduler_command.php",
+    "Action_Scheduler\\WP_CLI\\Action_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/Action_Command.php",
+    "Action_Scheduler\\WP_CLI\\Migration_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/Migration_Command.php",
+    "Action_Scheduler\\WP_CLI\\ProgressBar": "inc/Dependencies/ActionScheduler/classes/WP_CLI/ProgressBar.php",
+    "Action_Scheduler\\WP_CLI\\System_Command": "inc/Dependencies/ActionScheduler/classes/WP_CLI/System_Command.php",
+    "ActionScheduler": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler.php",
+    "ActionScheduler_Abstract_ListTable": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Abstract_ListTable.php",
+    "ActionScheduler_Abstract_QueueRunner": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Abstract_QueueRunner.php",
+    "ActionScheduler_Abstract_RecurringSchedule": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Abstract_RecurringSchedule.php",
+    "ActionScheduler_Abstract_Schedule": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Abstract_Schedule.php",
+    "ActionScheduler_Abstract_Schema": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Abstract_Schema.php",
+    "ActionScheduler_Lock": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Lock.php",
+    "ActionScheduler_Logger": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Logger.php",
+    "ActionScheduler_Store": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_Store.php",
+    "ActionScheduler_TimezoneHelper": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_TimezoneHelper.php",
+    "ActionScheduler_WPCLI_Command": "inc/Dependencies/ActionScheduler/classes/abstracts/ActionScheduler_WPCLI_Command.php",
+    "ActionScheduler_Action": "inc/Dependencies/ActionScheduler/classes/actions/ActionScheduler_Action.php",
+    "ActionScheduler_CanceledAction": "inc/Dependencies/ActionScheduler/classes/actions/ActionScheduler_CanceledAction.php",
+    "ActionScheduler_FinishedAction": "inc/Dependencies/ActionScheduler/classes/actions/ActionScheduler_FinishedAction.php",
+    "ActionScheduler_NullAction": "inc/Dependencies/ActionScheduler/classes/actions/ActionScheduler_NullAction.php",
+    "ActionScheduler_DBLogger": "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_DBLogger.php",
+    "ActionScheduler_DBStore": "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_DBStore.php",
+    "ActionScheduler_HybridStore": "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_HybridStore.php",
+    "ActionScheduler_wpCommentLogger": "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_wpCommentLogger.php",
+    "ActionScheduler_wpPostStore": "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_wpPostStore.php",
+    "ActionScheduler_wpPostStore_PostStatusRegistrar": "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_wpPostStore_PostStatusRegistrar.php",
+    "ActionScheduler_wpPostStore_PostTypeRegistrar": "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_wpPostStore_PostTypeRegistrar.php",
+    "ActionScheduler_wpPostStore_TaxonomyRegistrar": "inc/Dependencies/ActionScheduler/classes/data-stores/ActionScheduler_wpPostStore_TaxonomyRegistrar.php",
+    "Action_Scheduler\\Migration\\ActionMigrator": "inc/Dependencies/ActionScheduler/classes/migration/ActionMigrator.php",
+    "ActionScheduler_DBStoreMigrator": "inc/Dependencies/ActionScheduler/classes/migration/ActionScheduler_DBStoreMigrator.php",
+    "Action_Scheduler\\Migration\\BatchFetcher": "inc/Dependencies/ActionScheduler/classes/migration/BatchFetcher.php",
+    "Action_Scheduler\\Migration\\Config": "inc/Dependencies/ActionScheduler/classes/migration/Config.php",
+    "Action_Scheduler\\Migration\\Controller": "inc/Dependencies/ActionScheduler/classes/migration/Controller.php",
+    "Action_Scheduler\\Migration\\DryRun_ActionMigrator": "inc/Dependencies/ActionScheduler/classes/migration/DryRun_ActionMigrator.php",
+    "Action_Scheduler\\Migration\\DryRun_LogMigrator": "inc/Dependencies/ActionScheduler/classes/migration/DryRun_LogMigrator.php",
+    "Action_Scheduler\\Migration\\LogMigrator": "inc/Dependencies/ActionScheduler/classes/migration/LogMigrator.php",
+    "Action_Scheduler\\Migration\\Runner": "inc/Dependencies/ActionScheduler/classes/migration/Runner.php",
+    "Action_Scheduler\\Migration\\Scheduler": "inc/Dependencies/ActionScheduler/classes/migration/Scheduler.php",
+    "ActionScheduler_CanceledSchedule": "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_CanceledSchedule.php",
+    "ActionScheduler_CronSchedule": "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_CronSchedule.php",
+    "ActionScheduler_IntervalSchedule": "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_IntervalSchedule.php",
+    "ActionScheduler_NullSchedule": "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_NullSchedule.php",
+    "ActionScheduler_Schedule": "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_Schedule.php",
+    "ActionScheduler_SimpleSchedule": "inc/Dependencies/ActionScheduler/classes/schedules/ActionScheduler_SimpleSchedule.php",
+    "ActionScheduler_LoggerSchema": "inc/Dependencies/ActionScheduler/classes/schema/ActionScheduler_LoggerSchema.php",
+    "ActionScheduler_StoreSchema": "inc/Dependencies/ActionScheduler/classes/schema/ActionScheduler_StoreSchema.php",
+    "ActionScheduler_Abstract_QueueRunner_Deprecated": "inc/Dependencies/ActionScheduler/deprecated/ActionScheduler_Abstract_QueueRunner_Deprecated.php",
+    "ActionScheduler_AdminView_Deprecated": "inc/Dependencies/ActionScheduler/deprecated/ActionScheduler_AdminView_Deprecated.php",
+    "ActionScheduler_Schedule_Deprecated": "inc/Dependencies/ActionScheduler/deprecated/ActionScheduler_Schedule_Deprecated.php",
+    "ActionScheduler_Store_Deprecated": "inc/Dependencies/ActionScheduler/deprecated/ActionScheduler_Store_Deprecated.php",
+    "WP_Async_Request": "inc/Dependencies/ActionScheduler/lib/WP_Async_Request.php",
+    "CronExpression": "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression.php",
+    "CronExpression_AbstractField": "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_AbstractField.php",
+    "CronExpression_DayOfMonthField": "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_DayOfMonthField.php",
+    "CronExpression_DayOfWeekField": "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_DayOfWeekField.php",
+    "CronExpression_FieldFactory": "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_FieldFactory.php",
+    "CronExpression_FieldInterface": "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_FieldInterface.php",
+    "CronExpression_HoursField": "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_HoursField.php",
+    "CronExpression_MinutesField": "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_MinutesField.php",
+    "CronExpression_MonthField": "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_MonthField.php",
+    "CronExpression_YearField": "inc/Dependencies/ActionScheduler/lib/cron-expression/CronExpression_YearField.php",
+    "Imagify\\EventManagement\\EventManager": "inc/classes/Dependencies/wp-media/event-manager/EventManager.php",
+    "Imagify\\EventManagement\\EventManagerAwareSubscriberInterface": "inc/classes/Dependencies/wp-media/event-manager/EventManagerAwareSubscriberInterface.php",
+    "Imagify\\EventManagement\\SubscriberInterface": "inc/classes/Dependencies/wp-media/event-manager/SubscriberInterface.php",
+    "Imagify_Abstract_Background_Process": "inc/classes/class-imagify-abstract-background-process.php",
+    "Imagify_Abstract_Cron": "inc/classes/class-imagify-abstract-cron.php",
+    "Imagify_Abstract_DB": "inc/classes/class-imagify-abstract-db.php",
+    "Imagify_Abstract_Options": "inc/classes/class-imagify-abstract-options.php",
+    "Imagify_Admin_Ajax_Post": "inc/classes/class-imagify-admin-ajax-post.php",
+    "Imagify_Assets": "inc/classes/class-imagify-assets.php",
+    "Imagify_Auto_Optimization": "inc/classes/class-imagify-auto-optimization.php",
+    "Imagify_Cron_Library_Size": "inc/classes/class-imagify-cron-library-size.php",
+    "Imagify_Cron_Rating": "inc/classes/class-imagify-cron-rating.php",
+    "Imagify_Cron_Sync_Files": "inc/classes/class-imagify-cron-sync-files.php",
+    "Imagify_Custom_Folders": "inc/classes/class-imagify-custom-folders.php",
+    "Imagify_Data": "inc/classes/class-imagify-data.php",
+    "Imagify_DB": "inc/classes/class-imagify-db.php",
+    "Imagify_Files_DB": "inc/classes/class-imagify-files-db.php",
+    "Imagify_Files_Iterator": "inc/classes/class-imagify-files-iterator.php",
+    "Imagify_Files_List_Table": "inc/classes/class-imagify-files-list-table.php",
+    "Imagify_Files_Recursive_Iterator": "inc/classes/class-imagify-files-recursive-iterator.php",
+    "Imagify_Files_Scan": "inc/classes/class-imagify-files-scan.php",
+    "Imagify_Files_Stats": "inc/classes/class-imagify-files-stats.php",
+    "Imagify_Filesystem": "inc/classes/class-imagify-filesystem.php",
+    "Imagify_Folders_DB": "inc/classes/class-imagify-folders-db.php",
+    "Imagify_Options": "inc/classes/class-imagify-options.php",
+    "Imagify_Requirements_Check": "inc/classes/class-imagify-requirements-check.php",
+    "Imagify_Requirements": "inc/classes/class-imagify-requirements.php",
+    "Imagify_Settings": "inc/classes/class-imagify-settings.php",
+    "Imagify_Views": "inc/classes/class-imagify-views.php",
+    "Imagify": "inc/classes/class-imagify.php",
+    "Imagify\\Deprecated\\Traits\\Media\\CustomFoldersDeprecatedTrait": "inc/deprecated/Traits/Media/CustomFoldersDeprecatedTrait.php",
+    "Imagify\\Deprecated\\Traits\\Media\\NGGDeprecatedTrait": "inc/deprecated/Traits/Media/NGGDeprecatedTrait.php",
+    "Imagify\\Deprecated\\Traits\\Media\\NoopDeprecatedTrait": "inc/deprecated/Traits/Media/NoopDeprecatedTrait.php",
+    "Imagify\\Deprecated\\Traits\\Media\\WPDeprecatedTrait": "inc/deprecated/Traits/Media/WPDeprecatedTrait.php",
+    "Imagify\\Deprecated\\Traits\\Optimization\\Process\\AbstractProcessDeprecatedTrait": "inc/deprecated/Traits/Optimization/Process/AbstractProcessDeprecatedTrait.php",
+    "Imagify_Abstract_Attachment": "inc/deprecated/classes/class-imagify-abstract-attachment.php",
+    "Imagify_Abstract_DB_Deprecated": "inc/deprecated/classes/class-imagify-abstract-db-deprecated.php",
+    "Imagify_Admin_Ajax_Post_Deprecated": "inc/deprecated/classes/class-imagify-admin-ajax-post-deprecated.php",
+    "Imagify_AS3CF_Attachment": "inc/deprecated/classes/class-imagify-as3cf-attachment.php",
+    "Imagify_AS3CF_Deprecated": "inc/deprecated/classes/class-imagify-as3cf-deprecated.php",
+    "Imagify_Assets_Deprecated": "inc/deprecated/classes/class-imagify-assets-deprecated.php",
+    "Imagify_Attachment": "inc/deprecated/classes/class-imagify-attachment.php",
+    "Imagify_Auto_Optimization_Deprecated": "inc/deprecated/classes/class-imagify-auto-optimization-deprecated.php",
+    "Imagify_Enable_Media_Replace_Deprecated": "inc/deprecated/classes/class-imagify-enable-media-replace-deprecated.php",
+    "Imagify_File_Attachment": "inc/deprecated/classes/class-imagify-file-attachment.php",
+    "Imagify_NGG_Attachment": "inc/deprecated/classes/class-imagify-ngg-attachment.php",
+    "Imagify_NGG_Dynamic_Thumbnails_Background_Process": "inc/deprecated/classes/class-imagify-ngg-dynamic-thumbnails-background-process.php",
+    "Imagify_Notices_Deprecated": "inc/deprecated/classes/class-imagify-notices-deprecated.php",
+    "Imagify_Regenerate_Thumbnails_Deprecated": "inc/deprecated/classes/class-imagify-regenerate-thumbnails-deprecated.php",
+    "Imagify_User": "inc/deprecated/classes/class-imagify-user.php"
+  }
+}
