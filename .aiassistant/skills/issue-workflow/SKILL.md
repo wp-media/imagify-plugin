@@ -22,8 +22,8 @@ follow this workflow:
 6. If relationships are unclear or missing (including Issue Type being `unknown` because Issue Types are disabled, or Project `Type` being `unknown` because the issue is not in a Project or access is missing), proceed as a standalone issue unless an Epic signal is present. Only ask for an epic/sub-issue number when at least one explicit Epic signal or parent/sub-issue is detected.
 7. Summarize the issue, feasibility, constraints, and blockers.
 8. If a truly blocking ambiguity exists, ask before coding. Otherwise proceed conservatively.
-9. Run `.aiassistant/skills/issue-workflow/scripts/make-issue-branch.sh <issue-number> "<issue-title>" "origin/chore/add-ai-assistant"`.
-   Always pass `origin/chore/add-ai-assistant` as the third argument so the branch is based on the correct commit regardless of the current working branch in the session or worktree.10. Follow `AGENTS.md`.
+9. Run `.aiassistant/skills/issue-workflow/scripts/make-issue-branch.sh <issue-number> "<issue-title>" "origin/develop"`.
+   Always pass `origin/develop` as the third argument so the branch is always based on the latest remote develop, regardless of the current working branch or worktree state. Use a different base ref only when the user explicitly requests it.10. Follow `AGENTS.md`.
 11. Activate the relevant skills:
    - `imagify-architecture`
    - `wordpress-compliance`
@@ -38,7 +38,10 @@ follow this workflow:
 15. Run `.aiassistant/skills/issue-workflow/scripts/init-pr-draft.sh <issue-number>`.
 16. Fill every section of the PR draft at `.TemporaryItems/Issues/imagify-plugin/pull/<issue-number>.md`. The file was already initialized from `refs/pr-template.md` by the script in step 15. Complete every section with relevant content — do not skip sections or invent a different structure. Replace all placeholder text (`*Explain…*`, `*Describe…*`, etc.) with real content. Tick the appropriate `Type of change` checkbox.
 17. Run `git push` to publish the branch.
-18. Create the GitHub PR using the **exact content of the filled draft** as the PR body. Do not summarise or rewrite it — copy it verbatim. Set as draft if implementation is still in progress.
+18. Create the GitHub PR using the **exact content of the filled draft** as the PR body. Do not summarise or rewrite it — copy it verbatim. Set as draft if implementation is still in progress. Assign the PR to yourself immediately after creation:
+    ```bash
+    gh pr edit <PR_number> --add-assignee @me
+    ```
 19. **Invoke the `qa-engineer` sub-agent** — pass it the issue number and PR number. It will:
     - Read the issue spec and PR diff.
     - Select validation strategies (API, Browser, Analysis) based on what changed.
@@ -135,7 +138,7 @@ If an MCP tool is not available in the current session, fall back to the shell e
 ### PR creation
 | Preferred (MCP) | Fallback |
 |---|---|
-| `mcp_github_github_create_pull_request` | Provide the filled draft manually |
+| `mcp__GitKraken__pull_request_create` with `assign_to_me: true` | `gh pr create ... && gh pr edit <number> --add-assignee @me` |
 
 ### CI monitoring
 | Preferred (MCP) | Fallback |
