@@ -348,6 +348,7 @@ body.imagify-modal-is-open {
 [class*="imagify-"] .button .dashicons {
 	margin-right: 5px;
 	vertical-align: middle;
+	line-height: 1;
 }
 
 .imagify-settings .button-primary.button-primary,
@@ -463,6 +464,7 @@ button.imagify-link-like {
 .imagify-button-primary.imagify-button-primary .dashicons,
 .imagify-button-secondary.imagify-button-secondary .dashicons {
 	vertical-align: middle;
+	line-height: 1;
 }
 
 [class*="imagify-"] .button-text {
