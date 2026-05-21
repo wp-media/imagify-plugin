@@ -69,13 +69,11 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 									<span class="imagify-recommend" aria-hidden="true"><?php esc_html_e( 'We recommend for you', 'imagify' ); ?></span>
 
 									<p class="imagify-price-complement">
-										<?php
-										printf(
-											/* translators: %s is a formatted price. */
-											esc_html__( 'Unlimited upload size<br />Unlimited websites<br />%s', 'imagify' ),
-											'<span class="imagify-price-add-data"></span>'
-										);
-										?>
+										<?php echo esc_html__( 'Unlimited upload size', 'imagify' ); ?>
+										<br />
+										<?php echo esc_html__( 'Unlimited websites', 'imagify' ); ?>
+										<br />
+										<span class="imagify-price-add-data"></span>
 									</p>
 
 								</div><!-- .imagify-col-price -->

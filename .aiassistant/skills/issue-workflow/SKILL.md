@@ -22,27 +22,38 @@ follow this workflow:
 6. If relationships are unclear or missing (including Issue Type being `unknown` because Issue Types are disabled, or Project `Type` being `unknown` because the issue is not in a Project or access is missing), proceed as a standalone issue unless an Epic signal is present. Only ask for an epic/sub-issue number when at least one explicit Epic signal or parent/sub-issue is detected.
 7. Summarize the issue, feasibility, constraints, and blockers.
 8. If a truly blocking ambiguity exists, ask before coding. Otherwise proceed conservatively.
-9. Run `.aiassistant/skills/issue-workflow/scripts/make-issue-branch.sh <issue-number> "<issue-title>"`.
-10. Follow `AGENTS.md`.
+9. Run `.aiassistant/skills/issue-workflow/scripts/make-issue-branch.sh <issue-number> "<issue-title>" "origin/develop"`.
+   Always pass `origin/develop` as the third argument so the branch is always based on the latest remote develop, regardless of the current working branch or worktree state. Use a different base ref only when the user explicitly requests it.10. Follow `AGENTS.md`.
 11. Activate the relevant skills:
    - `imagify-architecture`
    - `wordpress-compliance`
 12. Implement minimal changes and update tests if needed. Verify test coverage for all added/modified code.
 13. Run PHPCS and static analysis; fix any new violations before committing.
 14. Commit atomically: one `git commit` per logical change set using Conventional Commits format.
+14a. **Run the full E2E suite locally** — `bash bin/test-e2e.sh`:
+   - If wp-env is not reachable (port 8888 not open), log a warning and continue — CI will catch regressions.
+   - If all tests pass, continue.
+   - If any test fails, investigate the root cause (read the error, check traces if available), fix the issue, re-commit, and re-run until the suite is fully green before proceeding.
+   Do not move to step 15 while there are known local E2E failures.
 15. Run `.aiassistant/skills/issue-workflow/scripts/init-pr-draft.sh <issue-number>`.
-16. Fill the PR draft at `.TemporaryItems/Issues/imagify-plugin/pull/<issue-number>.md` using `refs/pr-template.md` as guide.
+16. Fill every section of the PR draft at `.TemporaryItems/Issues/imagify-plugin/pull/<issue-number>.md`. The file was already initialized from `refs/pr-template.md` by the script in step 15. Complete every section with relevant content — do not skip sections or invent a different structure. Replace all placeholder text (`*Explain…*`, `*Describe…*`, etc.) with real content. Tick the appropriate `Type of change` checkbox.
 17. Run `git push` to publish the branch.
-18. Create the GitHub PR using the filled draft (set as draft if implementation is still in progress).
+18. Create the GitHub PR using the **exact content of the filled draft** as the PR body. Do not summarise or rewrite it — copy it verbatim. Set as draft if implementation is still in progress. Assign the PR to yourself immediately after creation:
+    ```bash
+    gh pr edit <PR_number> --add-assignee @me
+    ```
 19. **Invoke the `qa-engineer` sub-agent** — pass it the issue number and PR number. It will:
     - Read the issue spec and PR diff.
     - Select validation strategies (API, Browser, Analysis) based on what changed.
     - Delegate browser/UI flows to the `e2e-qa-tester` sub-agent when the change touches admin UI.
     - Write any missing Playwright tests under `Tests/e2e/` and verify they pass locally (`bash bin/test-e2e.sh`).
     - Commit new or updated test files to the branch and push before handing back a report.
+    - **Post the QA report as a PR comment** (always, regardless of outcome) — the comment includes the full structured report and a list of any screenshots captured in `.e2e-screenshots/`.
     - Return a structured test report (see format in `.aiassistant/agents/qa-engineer.md`).
 20. If `qa-engineer` reports **FAIL** or **PARTIAL**: fix the identified blockers, re-commit, re-push, and re-run the agent before continuing.
-21. If `qa-engineer` reports **READY TO MERGE**: convert the PR from draft to ready-for-review.
+21. If `qa-engineer` reports **READY TO MERGE**:
+    1. **Update the PR body** — edit the **"What was tested"** section under `## Detailed scenario` to include the full QA report: strategies used, each acceptance criterion with its validation method and result, and smoke-test outcomes. Use `gh pr edit <PR_number> --body "..."` with the updated body. Also update the local draft at `.TemporaryItems/Issues/imagify-plugin/pull/<issue-number>.md` to match.
+    2. **Convert the PR from draft to ready-for-review**: `gh pr ready <PR_number>`.
 22. Monitor PR CI status checks until all pass. Report any failures with actionable details.
 
 ## QA Pipeline — Sub-Agent Invocation
@@ -89,9 +100,11 @@ PR created
        ├─ backend only   → Strategy A (API/WP-CLI)
        ├─ UI touched     → Strategy B → delegate to e2e-qa-tester
        │                    └─ new tests committed → push → CI reruns
+       │                    └─ screenshots saved to .e2e-screenshots/
        └─ env unavailable → Strategy C (Analysis)
 
-qa-engineer returns READY TO MERGE → mark PR ready for review
+qa-engineer always posts a PR comment with the full report + screenshot list
+qa-engineer returns READY TO MERGE → update PR body with QA findings → mark PR ready for review
 qa-engineer returns FAIL/PARTIAL   → fix blockers → re-run qa-engineer
 ```
 
@@ -125,7 +138,7 @@ If an MCP tool is not available in the current session, fall back to the shell e
 ### PR creation
 | Preferred (MCP) | Fallback |
 |---|---|
-| `mcp_github_github_create_pull_request` | Provide the filled draft manually |
+| `mcp__GitKraken__pull_request_create` with `assign_to_me: true` | `gh pr create ... && gh pr edit <number> --add-assignee @me` |
 
 ### CI monitoring
 | Preferred (MCP) | Fallback |
