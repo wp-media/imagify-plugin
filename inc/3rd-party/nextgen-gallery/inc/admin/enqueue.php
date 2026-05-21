@@ -22,7 +22,7 @@ function _imagify_ngg_fix_spa_bulk_link() {
 	?>
 	<script>
 	document.addEventListener( 'click', function( e ) {
-		var a = e.target.closest( 'a[href*="page=<?php echo $slug; ?>"]' );
+		var a = e.target.closest( 'a[href*="page=<?php echo esc_attr( $slug ); ?>"]' );
 		if ( a ) {
 			e.stopImmediatePropagation();
 			e.preventDefault();

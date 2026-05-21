@@ -23,7 +23,7 @@ function _imagify_ngg_bulk_optimization_menu() {
 		__( 'Bulk Optimization', 'imagify' ),
 		$capacity,
 		imagify_get_ngg_bulk_screen_slug(),
-		function() {
+		function () {
 			Imagify_Views::get_instance()->display_bulk_page();
 		}
 	);
