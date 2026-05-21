@@ -1,125 +1,150 @@
 import { test, expect } from '@playwright/test';
 import { loginAsAdmin } from '../fixtures/auth';
+import { wpCli } from '../fixtures/wp-cli';
 
 /**
  * NextGEN Gallery v4.x compatibility spec.
  *
  * Validates that Imagify's NGG integration loads without fatal errors when
- * NextGEN Gallery v4.x is active. The primary fix in PR #1059 removes the
- * stale `class_exists('Mixin')` guard from the bootstrap file and adds a
- * defensive check inside `add_mixin()` to silently no-op on NGG v4.x.
+ * NextGEN Gallery v4.x is active AND that the Bulk Optimization submenu is
+ * visible in the NGG v4 sidebar and navigates to the correct page.
  *
- * Related PR:   #1059  (fix/1020-compatibility-imagify-controls-nextgen)
+ * Fixes covered:
+ *  - PR #1059: removes stale `class_exists('Mixin')` bootstrap guard.
+ *  - imagify_get_ngg_parent_menu_slug(): returns 'imagely' on NGG v4 so the
+ *    Bulk Optimization submenu registers under the correct top-level menu.
+ *
+ * Related PR:    #1059  (fix/1020-compatibility-imagify-controls-nextgen)
  * Related issue: #1020
  *
- * IMPORTANT: Tests in this file are skipped when the env var
- * `IMAGIFY_NGG_INSTALLED` is not set. In standard CI, NGG is not installed by
- * default; set that env var and activate the plugin before running this suite.
- *
- * When `IMAGIFY_NGG_INSTALLED` IS set (local testing with NGG active):
- *   npx @wordpress/env run cli wp plugin install nextgen-gallery --activate
- *   IMAGIFY_NGG_INSTALLED=1 npx playwright test specs/ngg-compat.spec.ts
+ * Per-image optimization note:
+ *   The per-image Imagify column is NOT available in the new NGG v4 React
+ *   gallery UI. NGG v4 replaced the PHP-rendered table (which exposed
+ *   `ngg_manage_images_number_of_columns` filters) with a React SPA whose
+ *   image context menu is fully hardcoded with no PHP extension hooks.
+ *   See PR #1059 comment for the full technical explanation.
  */
-test.describe( 'NextGEN Gallery v4.x compatibility', () => {
-	test.beforeEach( async ( { page } ) => {
-		test.skip(
-			! process.env.IMAGIFY_NGG_INSTALLED,
-			'IMAGIFY_NGG_INSTALLED is not set — skipping NGG compatibility tests. ' +
-			'Run: npx @wordpress/env run cli wp plugin install nextgen-gallery --activate ' +
-			'then re-run with IMAGIFY_NGG_INSTALLED=1',
-		);
-		await loginAsAdmin( page );
-	} );
 
-	// -----------------------------------------------------------------------
-	// Test 3 — No fatal errors with NGG v4.x active (primary acceptance criterion)
-	// -----------------------------------------------------------------------
+/**
+ * Install and activate NextGEN Gallery before the suite runs.
+ * This is idempotent: wp-cli exits 0 whether NGG was already installed or not.
+ */
+test.beforeAll( () => {
+	wpCli( 'plugin install nextgen-gallery --activate --force' );
+} );
 
-	test( 'Imagify settings page loads without fatal errors when NGG is active', async ( { page } ) => {
-		await page.goto( '/wp-admin/options-general.php?page=imagify', { waitUntil: 'domcontentloaded' } );
+test.beforeEach( async ( { page } ) => {
+	await loginAsAdmin( page );
+} );
 
-		await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
-		await expect( page ).toHaveURL( /page=imagify/ );
-	} );
+// ---------------------------------------------------------------------------
+// Smoke — no fatal errors when both plugins are active
+// ---------------------------------------------------------------------------
 
-	test( 'Imagify bulk optimization page loads without fatal errors when NGG is active', async ( { page } ) => {
-		await page.goto( '/wp-admin/upload.php?page=imagify-bulk-optimization', { waitUntil: 'domcontentloaded' } );
+test( 'Imagify settings page loads without fatal errors when NGG is active', async ( { page } ) => {
+	await page.goto( '/wp-admin/options-general.php?page=imagify', { waitUntil: 'domcontentloaded' } );
 
-		await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
-		await expect( page ).toHaveURL( /page=imagify-bulk-optimization/ );
-	} );
+	await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
+	await expect( page ).toHaveURL( /page=imagify/ );
+} );
 
-	test( 'WordPress admin dashboard loads without PHP fatal errors when NGG v4 is active', async ( { page } ) => {
-		await page.goto( '/wp-admin/', { waitUntil: 'domcontentloaded' } );
+test( 'Imagify bulk optimization page loads without fatal errors when NGG is active', async ( { page } ) => {
+	await page.goto( '/wp-admin/upload.php?page=imagify-bulk-optimization', { waitUntil: 'domcontentloaded' } );
 
-		const bodyText = await page.locator( 'body' ).innerText();
-		expect( bodyText ).not.toMatch( /Fatal error/i );
-		expect( bodyText ).not.toMatch( /PHP Fatal/i );
-		expect( bodyText ).not.toMatch( /C_Gallery_Storage/i );
-		expect( bodyText ).not.toMatch( /class Mixin/i );
-	} );
+	await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
+	await expect( page ).toHaveURL( /page=imagify-bulk-optimization/ );
+} );
 
-	// -----------------------------------------------------------------------
-	// Test 1 — NGG Bulk Optimization page is accessible via direct URL
-	// -----------------------------------------------------------------------
+test( 'WordPress admin dashboard loads without PHP fatal errors when NGG v4 is active', async ( { page } ) => {
+	await page.goto( '/wp-admin/', { waitUntil: 'domcontentloaded' } );
 
-	test( 'NGG Imagify bulk optimization page is accessible via direct URL', async ( { page } ) => {
-		// The page slug `imagify-ngg-bulk-optimization` is registered via
-		// add_submenu_page('nextgen-gallery', ...). In NGG v4.x it may not appear
-		// in the sidebar (NGG changed its menu slug to `imagely`), but the page
-		// itself is accessible and must not throw a fatal error.
-		await page.goto( '/wp-admin/admin.php?page=imagify-ngg-bulk-optimization', { waitUntil: 'domcontentloaded' } );
+	const bodyText = await page.locator( 'body' ).innerText();
+	expect( bodyText ).not.toMatch( /Fatal error/i );
+	expect( bodyText ).not.toMatch( /PHP Fatal/i );
+	expect( bodyText ).not.toMatch( /C_Gallery_Storage/i );
+	expect( bodyText ).not.toMatch( /class Mixin/i );
+} );
 
-		await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
+// ---------------------------------------------------------------------------
+// Core acceptance criterion — Bulk Optimization submenu in NGG v4 sidebar
+// ---------------------------------------------------------------------------
 
-		const bodyText = await page.locator( 'body' ).innerText();
-		expect( bodyText ).not.toMatch( /Fatal error/i );
-	} );
+test( 'Bulk Optimization submenu is visible in the NGG v4 Imagely sidebar menu', async ( { page } ) => {
+	// NGG v4 registers its top-level menu under the slug 'imagely'. Navigate
+	// there so the sidebar expands and exposes its submenus.
+	await page.goto( '/wp-admin/admin.php?page=imagely', { waitUntil: 'domcontentloaded' } );
 
-	// -----------------------------------------------------------------------
-	// NGG v4.x — Mixin class check (the core fix)
-	// -----------------------------------------------------------------------
+	const submenuLink = page.locator( '#adminmenu a[href*="page=imagify-ngg-bulk-optimization"]' );
+	await expect( submenuLink ).toBeVisible( { timeout: 10_000 } );
+	await expect( submenuLink ).toContainText( 'Bulk Optimization' );
 
-	test( 'NGG gallery admin page loads without PHP fatal error', async ( { page } ) => {
-		// In NGG v4.x the main gallery admin is page=imagely; page=nextgen-gallery
-		// is also available for backward compatibility.
-		await page.goto( '/wp-admin/admin.php?page=imagely', { waitUntil: 'domcontentloaded' } );
+	await page.screenshot( { path: 'screenshots/ngg-bulk-submenu-visible.png', fullPage: false } );
+} );
 
-		await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
+test( 'Clicking Bulk Optimization submenu navigates to the Imagify NGG bulk page', async ( { page } ) => {
+	await page.goto( '/wp-admin/admin.php?page=imagely', { waitUntil: 'domcontentloaded' } );
 
-		const bodyText = await page.locator( 'body' ).innerText();
-		expect( bodyText ).not.toMatch( /Fatal error/i );
-		expect( bodyText ).not.toMatch( /C_Gallery_Storage/i );
-	} );
+	const submenuLink = page.locator( '#adminmenu a[href*="page=imagify-ngg-bulk-optimization"]' );
+	await expect( submenuLink ).toBeVisible( { timeout: 10_000 } );
 
-	// -----------------------------------------------------------------------
-	// Plugin deactivation / reactivation smoke test
-	// -----------------------------------------------------------------------
+	// Validate the href contains the correct slug, then navigate directly to avoid
+	// being intercepted by the NGG v4 React SPA client-side router.
+	const href = await submenuLink.getAttribute( 'href' );
+	expect( href ).toMatch( /page=imagify-ngg-bulk-optimization/ );
 
-	test( 'Imagify can be deactivated and reactivated cleanly with NGG v4.x active', async ( { page } ) => {
-		await page.goto( '/wp-admin/plugins.php', { waitUntil: 'domcontentloaded' } );
+	await page.goto( '/wp-admin/admin.php?page=imagify-ngg-bulk-optimization', { waitUntil: 'domcontentloaded' } );
 
-		// Locate the Imagify row via the checkbox value (most stable selector in WP plugins table).
-		const imagifyRow = page.locator( 'tr:has(input[value*="imagify-plugin"])' );
+	await expect( page ).toHaveURL( /page=imagify-ngg-bulk-optimization/ );
+	await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
 
-		const deactivateLink = imagifyRow.locator( 'a', { hasText: /Deactivate/i } );
-		await expect( deactivateLink ).toBeVisible( { timeout: 10_000 } );
-		await deactivateLink.click();
-		await page.waitForURL( /plugins\.php/, { timeout: 10_000 } );
+	const bodyText = await page.locator( 'body' ).innerText();
+	expect( bodyText ).not.toMatch( /Fatal error/i );
+	// The Imagify bulk page renders a .imagify-bulk wrapper (views/page-bulk.php).
+	await expect( page.locator( '.imagify-bulk' ).first() ).toBeVisible( { timeout: 10_000 } );
 
-		await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
+	await page.screenshot( { path: 'screenshots/ngg-bulk-page.png', fullPage: true } );
+} );
 
-		// Re-activate Imagify.
-		const imagifyRowAfter = page.locator( 'tr:has(input[value*="imagify-plugin"])' );
-		const activateLink = imagifyRowAfter.locator( 'a', { hasText: /^Activate$/i } );
-		await expect( activateLink ).toBeVisible( { timeout: 10_000 } );
-		await activateLink.click();
-		await page.waitForURL( /plugins\.php/, { timeout: 10_000 } );
+// ---------------------------------------------------------------------------
+// Regression guard — NGG v4 gallery admin page
+// ---------------------------------------------------------------------------
 
-		await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
+test( 'NGG v4 gallery admin page loads without PHP fatal error', async ( { page } ) => {
+	await page.goto( '/wp-admin/admin.php?page=imagely', { waitUntil: 'domcontentloaded' } );
 
-		// Confirm Imagify is active again.
-		const imagifyRowFinal = page.locator( 'tr:has(input[value*="imagify-plugin"])' );
-		await expect( imagifyRowFinal.locator( 'a', { hasText: /Deactivate/i } ) ).toBeVisible();
-	} );
+	await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
+
+	const bodyText = await page.locator( 'body' ).innerText();
+	expect( bodyText ).not.toMatch( /Fatal error/i );
+	expect( bodyText ).not.toMatch( /C_Gallery_Storage/i );
+} );
+
+// ---------------------------------------------------------------------------
+// Plugin deactivation / reactivation smoke test
+// ---------------------------------------------------------------------------
+
+test( 'Imagify can be deactivated and reactivated cleanly with NGG v4.x active', async ( { page } ) => {
+	await page.goto( '/wp-admin/plugins.php', { waitUntil: 'domcontentloaded' } );
+
+	// In wp-env the plugin folder is mapped as 'imagify' (see .wp-env.json mappings),
+	// so the plugin row input value is 'imagify/imagify.php', not 'imagify-plugin/...'.
+	const imagifyRow = page.locator( 'tr' ).filter( { has: page.locator( 'td strong:has-text("Imagify")' ) } );
+
+	const deactivateLink = imagifyRow.locator( 'a', { hasText: /Deactivate/i } );
+	await expect( deactivateLink ).toBeVisible( { timeout: 10_000 } );
+	await deactivateLink.click();
+	await page.waitForURL( /plugins\.php/, { timeout: 10_000 } );
+
+	await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
+
+	const imagifyRowAfter = page.locator( 'tr' ).filter( { has: page.locator( 'td strong:has-text("Imagify")' ) } );
+	const activateLink = imagifyRowAfter.locator( 'a', { hasText: /^Activate$/i } );
+	await expect( activateLink ).toBeVisible( { timeout: 10_000 } );
+	await activateLink.click();
+	await page.waitForURL( /plugins\.php/, { timeout: 10_000 } );
+
+	await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
+
+	const imagifyRowFinal = page.locator( 'tr' ).filter( { has: page.locator( 'td strong:has-text("Imagify")' ) } );
+	await expect( imagifyRowFinal.locator( 'a', { hasText: /Deactivate/i } ) ).toBeVisible();
 } );

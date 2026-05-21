@@ -131,6 +131,14 @@ function imagify_ngg_count_saving_data( $attachments ) {
 		return $attachments;
 	}
 
+	if ( ! isset( $wpdb->ngg_imagify_data ) ) {
+		return [
+			'count'          => 0,
+			'original_size'  => 0,
+			'optimized_size' => 0,
+		];
+	}
+
 	$original_size  = 0;
 	$optimized_size = 0;
 	$count          = 0;

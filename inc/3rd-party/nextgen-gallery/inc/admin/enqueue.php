@@ -1,6 +1,38 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
+add_action( 'admin_head', '_imagify_ngg_fix_spa_bulk_link' );
+/**
+ * Prevent the NGG v4 React SPA from intercepting clicks on the Imagify Bulk
+ * Optimization submenu link.
+ *
+ * NGG v4 attaches a bubble-phase click listener to the document that captures
+ * all <a> clicks and routes them through its client-side router, which doesn't
+ * know about the Imagify page and falls back to the Galleries tab. A capture-
+ * phase listener registered before the SPA boots intercepts the click first
+ * and forces a real browser navigation via window.location.href.
+ *
+ * @since 2.2.9
+ */
+function _imagify_ngg_fix_spa_bulk_link() {
+	if ( ! class_exists( 'Imagely\NGG\Admin\App' ) ) {
+		return;
+	}
+	$slug = esc_js( imagify_get_ngg_bulk_screen_slug() );
+	?>
+	<script>
+	document.addEventListener( 'click', function( e ) {
+		var a = e.target.closest( 'a[href*="page=<?php echo $slug; ?>"]' );
+		if ( a ) {
+			e.stopImmediatePropagation();
+			e.preventDefault();
+			window.location.href = a.href;
+		}
+	}, true );
+	</script>
+	<?php
+}
+
 add_action( 'imagify_assets_enqueued', '_imagify_ngg_admin_print_styles' );
 /**
  * Add some CSS and JS for NGG compatibility.
