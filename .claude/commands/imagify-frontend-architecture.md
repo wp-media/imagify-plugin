@@ -1,0 +1,1 @@
+../../.aiassistant/skills/imagify-frontend-architecture/SKILL.md
