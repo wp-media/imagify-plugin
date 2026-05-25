@@ -25,12 +25,18 @@ HTML attribute: `esc_attr()`
 URL: `esc_url()`
 Allowed HTML: `wp_kses_post()`
 
+## JavaScript
+
+- Do not use jQuery. Use native DOM APIs (`document.querySelector`, `addEventListener`, `fetch`, etc.).
+- jQuery is available in WordPress but its use introduces an unnecessary dependency and conflicts with modern bundling practices.
+
 ## Anti-patterns
 
 - Echoing raw variables
 - Introducing unescaped output
 - Storing sensitive values in plain text
 - Bypassing repository PHPCS configuration
+- Using jQuery in new or modified JS code
 
 ## Related Specs
 
