@@ -118,6 +118,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 								esc_html_e( 'Beyond Imagify, there\'s a whole family of plugins designed to help you build better, faster, and safer websites. Each one is crafted with our unique blend of expertise, simplicity, and outstanding support. Combine our plugins below to build incredible WordPress websites!', 'imagify' );
 								?>
 							</p>
+							<div class="imagify-plugin-family-cards">
 							<?php foreach ( $data['plugin_family'] as $plugin_name => $plugin_data ) : ?>
 								<div class="imagify-plugin-family-col">
 									<div class="imagify-card">
@@ -144,6 +145,9 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 								</div>
 								<?php
 							endforeach;
+							?>
+							</div>
+							<?php
 							/**
 							 * List of partners affected by this option.
 							 * For internal use only.

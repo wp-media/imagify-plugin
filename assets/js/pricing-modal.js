@@ -4,7 +4,7 @@
 	$('.imagify-toggle-label').eq(0).css('color', '#c8ced5');
 	$('.imagify-toggle-label').eq(1).css('color', '#3b3f4a');
 	// Plan switcher.
-	$('#imagify-toggle-plan').change(function() {
+	$('#imagify-toggle-plan').on('change', function() {
 		var isChecked = $(this).is(':checked');
 		$('.imagify-toggle-label').eq(0).css('color', isChecked ? '#c8ced5' : '#3b3f4a');
 		$('.imagify-toggle-label').eq(1).css('color', isChecked ? '#3b3f4a' : '#c8ced5');

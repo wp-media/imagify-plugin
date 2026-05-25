@@ -1,8 +1,8 @@
-=== Imagify Image Optimization – Optimize Images | Compress Images | Convert WebP | Convert AVIF ===
+=== Imagify: Optimize Images for Top Speed (Compress & Convert to WebP/AVIF) ===
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 7.0
-Stable tag: 2.2.7
+Stable tag: 2.2.8
 Requires PHP: 7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -269,6 +269,13 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.2.8 =
+- Bugfix: Fix jQuery deprecation notices
+- Bugfix: Fix PHP deprecation notices
+- Bugfix: Fix the  _load_textdomain_just_in_time PHP notice
+- Enhancement: Make sure to remove the transients when uninstalling Imagify
+- Enhancement: Fix UI glitches
+
 = 2.2.7 =
 - Enhancement: improve code to follow correctly various WordPress coding standards rules
 - Enhancement: Add a new filter `imagify_hide_plugin_family` to hide the Our Plugins section on the settings page 

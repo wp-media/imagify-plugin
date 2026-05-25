@@ -11,7 +11,7 @@ window.imagify = window.imagify || {};
 		var obj   = $( this ),
 			value = obj.val();
 
-		if ( $.trim( value ) === '' ) {
+		if ( String( value ).trim() === '' ) {
 			return false;
 		}
 

@@ -183,7 +183,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 			$.each( data[ w.imagifyModal.imagifybeatID ], function( contextId, htmlContent ) {
 				var context, id;
 
-				context = $.trim( contextId ).match( /^(.+)_(\d+)$/ );
+				context = String( contextId ).trim().match( /^(.+)_(\d+)$/ );
 
 				if ( ! context ) {
 					return;

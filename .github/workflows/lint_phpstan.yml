@@ -1,4 +1,4 @@
-name: PHP Stan lint
+name: PHPStan
 
 on:
   pull_request:
@@ -15,15 +15,14 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
 
     strategy:
-      fail-fast: false
       matrix:
         operating-system: [ubuntu-latest]
-        php-versions: ['8.2']
+        php-versions: ['8.3']
 
-    name: WPRocket lint with PHP Stan. PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
+    name: PHP ${{ matrix.php-versions }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -32,9 +31,12 @@ jobs:
         coverage: none  # XDebug can be enabled here 'coverage: xdebug'
         tools: composer:v2
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-interaction --no-scripts
+    - name: Install Strauss
+      run: sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'
 
-    - name: Lint with PHP Stan
+    - name: Install dependencies
+      run: composer install --no-interaction
+
+    - name: Run PHPStan
       run: composer run-stan -- --error-format=github
 

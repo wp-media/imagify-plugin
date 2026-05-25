@@ -1,0 +1,104 @@
+{
+  "name": "imagify-plugin",
+  "repo": "wp-media/imagify-plugin",
+  "type": "wordpress-plugin",
+  "description": "Imagify image optimization plugin — single edition.",
+  "entrypoints": {
+    "plugin_bootstrap": "imagify.php",
+    "uninstall": "uninstall.php"
+  },
+  "areas": [
+    {
+      "path": "classes/",
+      "role": "namespaced-php",
+      "notes": "Modern PSR-4 codebase. Namespace root: Imagify\\. New features go here. declare(strict_types=1) required."
+    },
+    {
+      "path": "inc/classes/",
+      "role": "legacy-php",
+      "notes": "Legacy classmap classes with Imagify_ prefix. Being migrated out. Do not add new classes here."
+    },
+    {
+      "path": "inc/3rd-party/",
+      "role": "third-party-integrations",
+      "notes": "PSR-4 integration classes for WooCommerce, AS3CF, NGG, WP Rocket, etc."
+    },
+    {
+      "path": "inc/Dependencies/",
+      "role": "vendored-deps",
+      "notes": "Bundled dependencies (ActionScheduler). Do not edit."
+    },
+    {
+      "path": "inc/functions/",
+      "role": "legacy-functions",
+      "notes": "Global helper functions. Being migrated to services."
+    },
+    {
+      "path": "inc/admin/",
+      "role": "legacy-admin",
+      "notes": "Legacy admin includes."
+    },
+    {
+      "path": "inc/common/",
+      "role": "legacy-common",
+      "notes": "Shared legacy includes."
+    },
+    {
+      "path": "inc/deprecated/",
+      "role": "deprecated",
+      "notes": "Deprecated classes and traits. Do not add to."
+    },
+    {
+      "path": "views/",
+      "role": "templates",
+      "notes": "PHP templates for admin UI, buttons, containers."
+    },
+    {
+      "path": "assets/",
+      "role": "built-assets",
+      "notes": "Compiled JS/CSS/images for production."
+    },
+    {
+      "path": "_dev/",
+      "role": "source-assets",
+      "notes": "Asset source files (JS/CSS before compilation)."
+    },
+    {
+      "path": "config/",
+      "role": "config",
+      "notes": "Plugin config files. providers.php lists all service providers."
+    },
+    {
+      "path": "bin/",
+      "role": "tooling",
+      "notes": "CLI scripts and helpers."
+    },
+    {
+      "path": "Tests/",
+      "role": "tests",
+      "notes": "PHPUnit unit and integration tests."
+    },
+    {
+      "path": "vendor/",
+      "role": "third-party",
+      "notes": "Composer dependencies (do not edit)."
+    },
+    {
+      "path": "node_modules/",
+      "role": "third-party",
+      "notes": "NPM dependencies (do not edit)."
+    }
+  ],
+  "tooling": {
+    "composer": "composer.json",
+    "phpcs": "phpcs.xml",
+    "phpstan": "phpstan.neon.dist",
+    "node": "package.json"
+  },
+  "notes": [
+    "Single edition — no FREE/PRO split.",
+    "Prefer minimal diffs and avoid unrelated formatting changes.",
+    "New features go in classes/ with the Imagify\\ namespace.",
+    "Do not add to inc/classes/ — migrate out instead."
+  ]
+}

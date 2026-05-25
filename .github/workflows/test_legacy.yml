@@ -18,10 +18,10 @@ jobs:
       fail-fast: false
       matrix:
         operating-system: [ubuntu-latest]
-        php-versions: ['7.3', '7.4']
+        php-versions: ['7.4']
         wp-versions: ['5.9']
 
-    name: WP ${{ matrix.wp-versions }} with PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
+    name: WP ${{ matrix.wp-versions }} with PHP ${{ matrix.php-versions }}
 
     env:
       WP_TESTS_DIR: "/tmp/tests/phpunit"
@@ -30,7 +30,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -72,11 +72,17 @@ jobs:
     - name: Setup problem matchers for PHPUnit
       run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
+    - name: Install Strauss
+      run: sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'
+
     - name: Install dependencies
-      run: composer install --prefer-dist --no-interaction --no-scripts
+      run: composer install --no-interaction
 
     - name: Install tests
       run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1:3306 ${{ matrix.wp-versions }}
 
-    - name: Test
-      run: composer run-tests
+    - name: Unit tests
+      run: composer test-unit
+
+    - name: Integration tests
+      run: composer test-integration

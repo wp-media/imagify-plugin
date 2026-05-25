@@ -2,10 +2,24 @@
 /node_modules
 /Tests/env/local
 /vendor
+/.TemporaryItems
+
 # Files
 .DS_Store
 /gruntlocalconf.json
-composer.lock
-package-lock.json
 /_dev/node_modules
 .phpunit.result.cache
+bin/strauss.phar
+composer.lock
+
+# Local env overrides (API keys, secrets — never commit)
+/.env.local
+
+# E2E testing
+/Tests/e2e/node_modules
+/Tests/e2e/playwright-report
+/Tests/e2e/test-results
+/.e2e-screenshots
+
+# Local issue sync (issue-workflow skill cache)
+# /.TemporaryItems already listed above
