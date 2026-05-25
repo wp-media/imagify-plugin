@@ -110,12 +110,20 @@ class Display implements SubscriberInterface {
 		$writable = $conf->is_file_writable();
 
 		if ( is_wp_error( $writable ) ) {
+			static $notice_printed = false;
+
+			if ( $notice_printed ) {
+				return;
+			}
+
 			$rules = $conf->get_new_contents();
 
 			if ( ! $rules ) {
 				// Uh?
 				return;
 			}
+
+			$notice_printed = true;
 
 			printf(
 				/* translators: %s is a file name. */
