@@ -23,3 +23,10 @@ composer.lock
 
 # Local issue sync (issue-workflow skill cache)
 # /.TemporaryItems already listed above
+
+
+#Ignore insiders AI rules
+.github/instructions/codacy.instructions.md
+
+# Claude Code user-local settings
+.claude/settings.local.json
