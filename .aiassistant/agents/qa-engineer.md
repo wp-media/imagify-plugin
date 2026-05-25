@@ -192,6 +192,30 @@ REPORT
 | [description] | ![step2](https://raw.githubusercontent.com/wp-media/imagify-plugin/SHA/.e2e-screenshots/filename2.png) |
 ```
 
+## Structured output for the orchestrator
+
+After producing the report, return a machine-readable summary using this exact format at the end of your response:
+
+```
+### Orchestrator Summary
+
+**Blockers** (acceptance criteria not met — must fix):
+- [criterion]: [what failed] — [what to fix]
+<!-- or: none -->
+
+**Nice-to-have** (out-of-scope improvements — note, do not fix):
+- [description]
+<!-- or: none -->
+
+**Unexpected findings** (issues found outside acceptance criteria):
+- [description] — suggested classification: blocker | nice-to-have | unclear
+<!-- or: none -->
+
+**Overall: READY TO MERGE | FAIL | PARTIAL**
+```
+
+The orchestrator uses this summary to decide next steps. It will ask the user to classify any finding tagged `unclear` before proceeding.
+
 If all criteria pass: print **READY TO MERGE** clearly.
 If blocked: list each blocker with a suggested fix.
 
