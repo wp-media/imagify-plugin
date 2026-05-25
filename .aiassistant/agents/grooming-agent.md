@@ -42,7 +42,13 @@ Consider: is there a more specific class, a better lifecycle hook, or an earlier
 - Root-cause fix: addresses why the problem occurs.
 - Workaround: patches the symptom (transient, flag, fallback, catch-and-ignore). Use only if root-cause fix is not feasible, and state why.
 
-**c. Are there edge cases the issue does not mention?**
+**c. Does the buggy method itself belong in its current class?**
+This is a separate question from where the fix goes — ask it first.
+- If a method name contains a feature-specific term but lives in a `Common`, `Shared`, or otherwise generic class, treat this as a likely architectural misplacement.
+- Check whether a more specific class already exists that should own this logic. If it does, the correct fix is to move the method there — not to patch it in place.
+- A name/location mismatch is always a signal to investigate before proposing any implementation.
+
+**d. Are there edge cases the issue does not mention?**
 List them. The implementation must handle them.
 
 ---
