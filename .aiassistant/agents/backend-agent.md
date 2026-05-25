@@ -34,14 +34,19 @@ Follow the spec's **Implementation Plan** for backend files only. Do not touch J
 
 ---
 
-### Step 3 — Verify
+### Step 3 — DOD L1 (self-check)
+
+Run quality checks and **self-correct any failures before committing**:
 
 ```bash
 composer test-unit
 composer phpcs-changed
 ```
 
-Fix all violations before returning. If a step fails and cannot be fixed, report it clearly.
+- If a check fails: fix the violation, then re-run until it passes.
+- Do not suppress violations or skip a check.
+- Only proceed to commit when all checks pass.
+- If a failure cannot be fixed after reasonable effort, report it clearly before stopping.
 
 ---
 
