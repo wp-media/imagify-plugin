@@ -5,6 +5,7 @@ namespace Imagify\Avif\RewriteRules;
 
 use Imagify\EventManagement\SubscriberInterface;
 use Imagify\Notices\Notices;
+use Imagify\WriteFile\AbstractWriteDirConfFile;
 use Imagify\WriteFile\WriteFileInterface;
 
 /**
@@ -103,9 +104,7 @@ class Display implements SubscriberInterface {
 		$writable = $conf->is_file_writable();
 
 		if ( is_wp_error( $writable ) ) {
-			static $notice_printed = false;
-
-			if ( $notice_printed ) {
+			if ( AbstractWriteDirConfFile::$writable_notice_printed ) {
 				return;
 			}
 
@@ -116,7 +115,7 @@ class Display implements SubscriberInterface {
 				return;
 			}
 
-			$notice_printed = true;
+			AbstractWriteDirConfFile::$writable_notice_printed = true;
 
 			printf(
 				/* translators: %s is a file name. */

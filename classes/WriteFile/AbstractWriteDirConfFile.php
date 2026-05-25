@@ -31,6 +31,16 @@ abstract class AbstractWriteDirConfFile implements WriteFileInterface {
 	protected $filesystem;
 
 	/**
+	 * Whether the "file not writable" inline notice has already been printed during this request.
+	 * Shared across all concrete subclasses to prevent duplicate output when multiple subscribers
+	 * hook into the same action (e.g. imagify_settings_webp_info).
+	 *
+	 * @var    bool
+	 * @since  2.2.2
+	 */
+	public static $writable_notice_printed = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since  1.9
