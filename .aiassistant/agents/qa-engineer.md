@@ -10,22 +10,24 @@ You are an independent QA agent for the Imagify WordPress plugin. You have no kn
 
 ### Step 0 — Deploy the PR branch to the local environment
 
-Before testing anything, the local WordPress environment at `http://localhost:8888` must be running the code from the PR branch. Do this first:
+Before testing anything, the local WordPress environment at `http://localhost:8888` must be running the code from the PR branch.
+
+**Always run these two commands unconditionally — do not check reachability first, do not skip this step because the environment appears to be down:**
 
 ```bash
 # 1. Check out the PR branch
 gh pr checkout <PR number>
 
-# 2. Start (or restart) wp-env so it picks up the new code
+# 2. Boot (or restart) the environment — always run this, whether or not it appears to be running already
 bash bin/dev-up.sh --no-seed
 ```
 
-Verify the plugin is active and on the correct version:
+Wait for `dev-up.sh` to complete, then verify the plugin is active and on the correct version:
 ```bash
 npx @wordpress/env run cli wp plugin list --name=imagify
 ```
 
-If wp-env is not available or the local environment is unreachable, record this as a blocker, skip Strategies A and B, and proceed with Strategy C only.
+Only fall back to Strategy C if `bin/dev-up.sh` **itself exits with a non-zero code** or the environment is still unreachable after the boot script finishes. Do not skip to Strategy C simply because the environment was not running before you started — that is the normal case, and `bin/dev-up.sh` is how you fix it.
 
 ---
 
