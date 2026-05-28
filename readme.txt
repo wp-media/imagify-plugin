@@ -25,45 +25,6 @@ Our video explains why Imagify is the easiest image optimization plugin and show
 
 [youtube https://www.youtube.com/watch?v=qbqV5yEZ6Og]
 
-=== ✨ Optimize Images – The Imagify Image Optimizer Key Features: ===
-
-* Resize and compress images for the most common formats, including PDF
-* Optimize images with Smart Compression to balance image optimization quality and performance automatically
-* Automatic WebP conversion
-* AVIF conversion in one click
-* Async bulk optimization
-
-=== 📸 Optimize Images: Resize and Compress Images Without Losing Quality === 
-
-Imagify is a great image compressor and the ultimate solution to optimise images. You are able to resize and compress images from the most common image formats as well as PDF format. In case you have many images to optimize, you can also resize images in bulk thanks to our async bulk optimization option. In just one click, you will be able to compress multiple images super easily. Imagify compresses all your images in the background, so you can leave the page and not worry about anything.
-
-Many of your high-quality images may be in sizes that are much too large. To reduce image size and compress large images, Imagify has a setting that allows you to choose a maximum width for all of your images, and if you upload images that are larger than that size, it will resize large images for you during optimization. Imagify will resize images proportionally without cropping them.
-
-With such a great image optimizer like Imagify, you’ll get your images automatically optimized at the best compression level and quality – thanks to the Smart Compression Mode.
-
-When using our image compression tool, Imagify, you will enjoy smaller file sizes and faster loading times. But the best part is that you will optimise images and reduce their weight without losing quality: why should you have to choose between beauty and speed? If you want to compress images, it’s now easier than ever with Imagify!
-
-=== 🔄 Convert to WebP and AVIF Formats ===
-
-Thanks to Imagify, you can take a step further in your image optimization process. You can also convert all your images to next-gen image formats such as WebP and AVIF. WebP format, as well as the AVIF format, offers superior image compression and quality and is a way to optimise images and speed up their loading times on websites. By utilizing Imagify’s AVIF and WebP optimizer, you can efficiently convert images to these next-gen formats, saving you a precious amount of time.
-
-With Imagify, WebP conversion and compression are indeed super easy. Wondering how the convert WebP option works? Imagify will automatically enable WebP and convert your images to WebP.
-
-What about converting your images to AVIF? You can just select the AVIF option under the Optimization/Next-gen image format tab. Simply as that! Thanks to the best WebP and AVIF plugin for WordPress, you’ll be able to take advantage of the automatic convert WebP feature in no time, plus you’ll always have the convert AVIF option.
-
-Imagify can also display the AVIF images directly on your front-end. But because some browser versions don’t support AVIF yet, Imagify lets you have both optimized versions of the original format images and the WebP versions ready. Imagify offers the automatic fallback. It means that it will serve the AVIF version if a visitor's browser supports it and the WebP format if not (if you have previously converted the images to WebP).
-
-WebP is definitively an excellent replacement for jpeg, png, and gif images, and the same goes for AVIF, which improves your image performance even further. Imagify offers WebP conversion for all image formats: you can convert gif to WebP, jpeg to WebP, and even png to WebP. You can also benefit from AVIF conversion and convert gif to AVIF, jpg and jpeg to AVIF, png to AVIF.
-Whatever your favorite image format, let Imagify optimise your images!
-
-=== ⚡ Optimize Images to Make Your Site Faster and Improve Core Web Vitals === 
-
-Did you know that image optimization and web performance go hand in hand? In fact, when it comes to web page speed, one of the first things you should do is optimize your images. Large and heavy image sizes will indeed slow down your website and provide a bad user experience to your visitors – and that’s why you should compress images. On the contrary, when you optimise images and improve image loading speed, you should see a direct improvement in your website speed and performance. With Imagify, it’s time to say goodbye to images taking too long to load.
-
-Images are one of the largest influencing factors in the Core Web Vitals. Image compression will ensure your images load faster and improve your overall website performance, including your Core Web Vitals metrics. If you’re looking to improve user experience and speed up your WordPress site, images are a good place to start.
-
-Even Google tells you to take care of your images! If you have ever run a performance audit on PageSpeed Insights, you might have seen the [“serve images in next-gen formats”](https://imagify.io/blog/serve-next-gen-formats-wordpress/) opportunity popping up. Another PageSpeed Insights recommendation related to images is to [“efficiently encode images”](https://imagify.io/blog/efficiently-encode-images-wordpress/). When you use Imagify, you will be able to address both recommendations and fix your images for a faster website.
-
 === 💬 What Do Our Users Think Of Imagify? ===
 
 Here’s what our users have to say about us after optimizing their images with Imagify:
