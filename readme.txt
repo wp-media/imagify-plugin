@@ -21,13 +21,13 @@ Whether you are uploading new images or optimizing an existing media library, Im
 
 What sets Imagify apart: 
 
-WebP and AVIF conversion included in the free plan, so you can use next-gen image formats right away. 
+* WebP and AVIF conversion included in the free plan, so you can use next-gen image formats right away. 
 
-Easy to use, with no advanced configuration to learn. 
+* Easy to use, with no advanced configuration to learn. 
 
-Smart image compression that does the job for you and reduces file size while preserving image quality. 
+* Smart image compression that does the job for you and reduces file size while preserving image quality. 
 
-Bulk image optimization that runs in the background. 
+* Bulk image optimization that runs in the background. 
 
 Watch the video and see for yourself why Imagify is the easiest image optimizer to make your images lighter and save time: 
 
@@ -37,23 +37,23 @@ Watch the video and see for yourself why Imagify is the easiest image optimizer 
 ✨ Optimize Images with Imagify – Features at glance: 
  
 
-Smart Compression (Does the job for you) – Automatically balances image quality and performance. You don’t need to tweak settings. Imagify optimizes every image for the best compression rate while preserving visual quality, so you save time and get consistent results without having to choose any settings. 
+* Smart Compression (Does the job for you) – Automatically balances image quality and performance. You don’t need to tweak settings. Imagify optimizes every image for the best compression rate while preserving visual quality, so you save time and get consistent results without having to choose any settings. 
 
-Lossless Compression (Optional) – Prefer pixel-perfect quality? Choose lossless compression. This option is ideal for photographers and quality-focused websites. 
+* Lossless Compression (Optional) – Prefer pixel-perfect quality? Choose lossless compression. This option is ideal for photographers and quality-focused websites. 
 
-Next-Gen Formats: WebP and AVIF (In one click) – Convert your images to WebP for wide compatibility or AVIF for superior compression in one click. This helps improve your Google PageSpeed performance score and Core Web Vitals grades. 
+* Next-Gen Formats: WebP and AVIF (In one click) – Convert your images to WebP for wide compatibility or AVIF for superior compression in one click. This helps improve your Google PageSpeed performance score and Core Web Vitals grades. 
 
-Resize Large Images Automatically – Resize oversized images to a maximum width of up to 2560 pixels on upload or during optimization. This can reduce file size by up to 80 percent while keeping images optimized on all devices.  
+* Resize Large Images Automatically – Resize oversized images to a maximum width of up to 2560 pixels on upload or during optimization. This can reduce file size by up to 80 percent while keeping images optimized on all devices.  
 
-Asynchronous Bulk Optimization – Optimize your entire Media Library in the background without slowing down your site. Bulk optimization runs asynchronously, so you can keep working while Imagify handles the image optimization process for you. 
+* Asynchronous Bulk Optimization – Optimize your entire Media Library in the background without slowing down your site. Bulk optimization runs asynchronously, so you can keep working while Imagify handles the image optimization process for you. 
 
-On-the-Fly Image Resizing – Resize images directly from the app or within WordPress. This makes it easy to optimize images at the ideal size right away. 
+* On-the-Fly Image Resizing – Resize images directly from the app or within WordPress. This makes it easy to optimize images at the ideal size right away. 
 
-Original Image Backup – Keep your original images stored in a separate folder before the optimization process. This makes it easy to restore them at any time. 
+* Original Image Backup – Keep your original images stored in a separate folder before the optimization process. This makes it easy to restore them at any time. 
 
-Flexible File and Size Optimization – Choose which WordPress image sizes you want to optimize, including thumbnail, medium, large, 1536 px, and 2048 px. This helps you optimize only what you actually use and manage your monthly quota more efficiently. 
+* Flexible File and Size Optimization – Choose which WordPress image sizes you want to optimize, including thumbnail, medium, large, 1536 px, and 2048 px. This helps you optimize only what you actually use and manage your monthly quota more efficiently. 
 
-Auto-Optimize on Upload – New images are optimized automatically as soon as you upload them to WordPress. No manual steps and no forgotten images. 
+* Auto-Optimize on Upload – New images are optimized automatically as soon as you upload them to WordPress. No manual steps and no forgotten images. 
  
 ✨ In short, you have everything you need to optimize images at scale while keeping quality high and your setup simple. 
  
