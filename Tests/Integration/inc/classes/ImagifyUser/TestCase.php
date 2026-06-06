@@ -11,6 +11,11 @@ abstract class TestCase extends BaseTestCase {
 	public function set_up() {
 		parent::set_up();
 
+		// Skip API-dependent tests when no API key is configured (e.g. fork PRs without repo secrets).
+		if ( '' === $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) ) {
+			$this->markTestSkipped( 'IMAGIFY_TESTS_API_KEY is not configured.' );
+		}
+
 		$this->originalUserInstance = $this->resetPropertyValue( 'user', Imagify::class );
 
 		//Clean up the transients for API cache
