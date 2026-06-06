@@ -1,5 +1,6 @@
 <?php
 use Imagify\Plugin;
+use Imagify\Dependencies\League\Container\Container;
 
 defined( 'ABSPATH' ) || exit;
 

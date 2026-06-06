@@ -568,7 +568,7 @@ final class Bulk {
 	public function bulk_get_stats_callback() {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
-		$folder_types = filter_input( INPUT_GET, 'types', FILTER_REQUIRE_ARRAY );
+		$folder_types = filter_input( INPUT_GET, 'types', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 		$folder_types = is_array( $folder_types ) ? $folder_types : [];
 
 		if ( ! $folder_types ) {
