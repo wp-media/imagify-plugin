@@ -39,6 +39,9 @@ class Test_GetPercentConsumedQuota extends TestCase {
 		$this->assertSame( 0, ( new User() )->get_percent_consumed_quota() );
 	}
 
+	/**
+	 * @requires env IMAGIFY_TESTS_API_KEY
+	 */
 	public function testShouldReturnQuotaWhenFetchedUserData() {
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 

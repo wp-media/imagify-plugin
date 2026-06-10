@@ -37,6 +37,9 @@ class Test_IsOverQuota extends TestCase {
 		$this->assertFalse( ( new User() )->is_over_quota() );
 	}
 
+	/**
+	 * @requires env IMAGIFY_TESTS_API_KEY
+	 */
 	public function testShouldReturnFalseWhenPaidAccount() {
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
@@ -55,6 +58,9 @@ class Test_IsOverQuota extends TestCase {
 		$this->assertFalse( $imagifyUser->is_over_quota() );
 	}
 
+	/**
+	 * @requires env IMAGIFY_TESTS_API_KEY
+	 */
 	public function testShouldReturnFalseWhenFreeNotOverQuota() {
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
@@ -72,6 +78,9 @@ class Test_IsOverQuota extends TestCase {
 		$this->assertFalse( $imagifyUser->is_over_quota() );
 	}
 
+	/**
+	 * @requires env IMAGIFY_TESTS_API_KEY
+	 */
 	public function testShouldReturnTrueWhenFreeOverQuota() {
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 

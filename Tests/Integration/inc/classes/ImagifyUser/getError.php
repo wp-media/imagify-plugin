@@ -16,6 +16,9 @@ class Test_GetError extends TestCase {
 	/**
 	 * Test \Imagify\User\User->get_error() should return false when succesfully fetched user account data.
 	 */
+	/**
+	 * @requires env IMAGIFY_TESTS_API_KEY
+	 */
 	public function testShouldReturnFalseWhenFetchedUserData() {
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
