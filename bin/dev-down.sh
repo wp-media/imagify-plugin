@@ -23,11 +23,11 @@ for arg in "$@"; do
 done
 
 if [[ "$CLEAN" == "1" ]]; then
-	echo "▶ Destroying wp-env (volumes and containers)..."
+	echo "Destroying wp-env (volumes and containers)..."
 	npx --yes @wordpress/env destroy
-	echo "✅ Environment destroyed."
+	echo "Environment destroyed."
 else
-	echo "▶ Stopping wp-env..."
+	echo "Stopping wp-env..."
 	npx --yes @wordpress/env stop
-	echo "✅ Environment stopped. Data preserved. Run bin/dev-up.sh to restart."
+	echo "Environment stopped. Data preserved. Run bin/dev-start.sh to restart."
 fi

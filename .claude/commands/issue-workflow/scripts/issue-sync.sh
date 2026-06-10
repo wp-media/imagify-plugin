@@ -38,8 +38,8 @@ if [ ! -d "$ROOT_DIR" ]; then
 fi
 
 # Output location for the issue snapshot.
-OUT_DIR="${ROOT_DIR}/.TemporaryItems/Issues/imagify-plugin/issues"
-OUT_FILE="${OUT_DIR}/${ISSUE_NUMBER}.md"
+OUT_DIR="${ROOT_DIR}/.ai/issues/${ISSUE_NUMBER}"
+OUT_FILE="${OUT_DIR}/issue.md"
 
 # Related issue sync controls.
 SYNC_RELATED="${IMAGIFY_SYNC_RELATED:-1}"
@@ -120,7 +120,7 @@ extract_task_issue_numbers() {
   ' <<< "$body"
 }
 
-# Ensure the output directory exists.
+# Ensure the output directory exists (including per-issue subdirectory).
 mkdir -p "$OUT_DIR"
 
 # Fetch issue data and render a structured Markdown file.
@@ -433,7 +433,7 @@ if [ "$SYNC_RELATED" = "1" ] && [ "${#RELATED_ISSUE_NUMBERS[@]}" -gt 0 ]; then
       continue
     fi
     mark_seen_issue "$related"
-    if ! IMAGIFY_SYNC_RELATED=0 IMAGIFY_SYNC_SEEN="$SEEN_ISSUES" "$0" "$related" >/dev/null; then
+    if ! IMAGIFY_SYNC_RELATED=0 IMAGIFY_SYNC_SEEN="$SEEN_ISSUES" "${BASH_SOURCE[0]}" "$related" >/dev/null; then
       echo "Warning: failed to sync issue #${related}" >&2
     fi
   done
