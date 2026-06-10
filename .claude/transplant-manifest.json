@@ -38,6 +38,9 @@
     { "maestro_source": "commands/issue-workflow/scripts/issue-sync.sh", "output_path": ".claude/commands/issue-workflow/scripts/issue-sync.sh", "disposition": "ADAPT", "sha256": "033591b1a352edc5317e5ec7253f50ba8845886f58fcd491c27c57f814655fbc" },
     { "maestro_source": "commands/issue-workflow/scripts/make-issue-branch.sh", "output_path": ".claude/commands/issue-workflow/scripts/make-issue-branch.sh", "disposition": "ADAPT", "sha256": "52f4a70e2ee125b049d1876360da9b535a0c3381e6adf3a9b46b445e3ce8ebe2" },
     { "maestro_source": "commands/issue-workflow/scripts/init-pr-draft.sh", "output_path": ".claude/commands/issue-workflow/scripts/init-pr-draft.sh", "disposition": "KEEP_AS_IS", "sha256": "575dc564651e0e2407e76e4cd2610d532b348309784e75748af2a6fd34a0b5ca" },
-    { "maestro_source": "commands/issue-workflow/refs/pr-template.md", "output_path": ".claude/commands/issue-workflow/refs/pr-template.md", "disposition": "ADAPT", "sha256": "fe27b44d856adabbce361034821bd83235457ce6d22c1cd4d4707d0ec401836f" }
+    { "maestro_source": "commands/issue-workflow/refs/pr-template.md", "output_path": ".claude/commands/issue-workflow/refs/pr-template.md", "disposition": "ADAPT", "sha256": "fe27b44d856adabbce361034821bd83235457ce6d22c1cd4d4707d0ec401836f" },
+    { "maestro_source": "commands/orchestrator/html-log-format.md", "output_path": ".claude/commands/orchestrator/html-log-format.md", "disposition": "KEEP_AS_IS", "sha256": null },
+    { "maestro_source": "commands/orchestrator/workflows/implementation.js", "output_path": ".claude/commands/orchestrator/workflows/implementation.js", "disposition": "ADAPT", "sha256": null, "notes": "agentType maestro: prefix stripped — uses local project agents" },
+    { "maestro_source": "commands/orchestrator/workflows/quality-gates.js", "output_path": ".claude/commands/orchestrator/workflows/quality-gates.js", "disposition": "ADAPT", "sha256": null, "notes": "agentType maestro: prefix stripped — uses local project agents" }
   ]
 }
