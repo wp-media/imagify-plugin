@@ -564,6 +564,20 @@ label[for="imagify_partner_links"] {
 	color: #FFF;
 }
 
+/* Generate missing Next-Gen versions button area */
+.generate-missing-webp {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.generate-missing-webp #imagify-generate-webp-versions {
+	white-space: normal;
+	word-break: break-word;
+	max-width: 100%;
+}
+
 p.imagify-custom-folder-line {
 	position: relative;
 	margin: 0;
@@ -946,6 +960,11 @@ input:checked + label .imagify-fake-checkbox:after,
 	}
 	.imagify-no-api-key .imagify-api-line input[type="text"]{
 		margin-left: 0;
+	}
+
+	.generate-missing-webp #imagify-generate-webp-versions {
+		width: 100%;
+		text-align: center;
 	}
 }
 @media (max-width: 513px) {
