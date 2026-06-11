@@ -52,8 +52,8 @@ test.describe( 'Button icon alignment (WP 7.0 compat)', () => {
 			`Expected dashicon line-height to not be the WP 7.0 override (1.9 * font-size ≈ 28.5px), got: ${ computedLineHeight }`
 		).not.toBeCloseTo( 28.5, 0 );
 
-		// Screenshot for visual confirmation.
-		await screenshotElement( page, 'button-icon-alignment-settings', submitButton );
+		// Screenshot the actual dashicon button for visual confirmation.
+		await screenshotElement( page, 'button-icon-alignment-settings', dashiconInButton );
 	} );
 
 	test( 'Imagify button dashicons have vertical-align: middle', async ( { page } ) => {
