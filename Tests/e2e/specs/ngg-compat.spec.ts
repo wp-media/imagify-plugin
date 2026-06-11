@@ -9,7 +9,7 @@ import { screenshotElement } from '../fixtures/screenshot';
  * NextGEN Gallery v4.x is active AND that the Bulk Optimization submenu is
  * visible in the NGG sidebar.
  *
- * The primary fix in PR #1059 removes the stale `class_exists('Mixin')` guard
+ * The primary fix in PR #1084 removes the stale `class_exists('Mixin')` guard
  * from the bootstrap file and adds a defensive check inside `add_mixin()` to
  * silently no-op on NGG v4.x.
  *
@@ -18,7 +18,7 @@ import { screenshotElement } from '../fixtures/screenshot';
  * the correct top-level menu (NGG v4 changed the slug from 'nextgen-gallery'
  * to 'imagely').
  *
- * Related PR:    #1059  (fix/1020-compatibility-imagify-controls-nextgen)
+ * Related PR:    #1084  (fix/1020-ngg-v4-x-compatibility)
  * Related issue: #1020
  *
  * IMPORTANT: Tests in this file are skipped when the env var

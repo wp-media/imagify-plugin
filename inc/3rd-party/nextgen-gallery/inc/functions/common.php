@@ -31,7 +31,6 @@ function imagify_get_ngg_parent_menu_slug() {
 		return plugin_basename( NGGFOLDER );
 	}
 
-	// phpcs:ignore WordPress.WhiteSpace.OperatorSpacing -- hyphens in string literals, not operators.
 	return 'nextgen-gallery';
 }
 
@@ -49,7 +48,6 @@ function imagify_get_ngg_manage_gallery_url() {
 		return imagify_get_ngg_parent_menu_slug();
 	}
 
-	// phpcs:ignore WordPress.WhiteSpace.OperatorSpacing -- hyphens in string literals, not operators.
 	return 'nggallery-manage-gallery';
 }
 
