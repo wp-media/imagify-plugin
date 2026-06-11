@@ -24,6 +24,7 @@ parameters:
 		- inc/functions/attachments.php
 		- inc/functions/common.php
 		- inc/functions/formatting.php
+		- inc/3rd-party/nextgen-gallery/inc/functions/common.php
 		- inc/functions/options.php
 		- inc/functions/partners.php
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
