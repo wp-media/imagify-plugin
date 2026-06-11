@@ -1,7 +1,7 @@
 <?php
 use Imagify\ThirdParty\NGG;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || die( "Cheatin'\ uh?" );
 
 // Note: get_site_option( 'ngg_options' ) must be verified on a clean NGG v4 install.
 // If v4 does not populate this option, the gate should be relaxed to class_exists( 'C_NextGEN_Bootstrap' ) alone.

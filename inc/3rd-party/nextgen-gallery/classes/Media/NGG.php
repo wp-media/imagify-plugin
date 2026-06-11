@@ -182,7 +182,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the URL of the media’s full size file.
+	 * Get the URL of the media's full size file.
 	 *
 	 * @since  1.9.8
 	 * @access public
@@ -203,7 +203,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 	}
 
 	/**
-	 * Get the path to the media’s full size file, even if the file doesn't exist.
+	 * Get the path to the media's full size file, even if the file doesn't exist.
 	 *
 	 * @since  1.9.8
 	 * @access public
@@ -411,7 +411,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 	 *     @type int    $width     The file width.
 	 *     @type int    $height    The file height.
 	 *     @type string $mime-type The file mime type.
-	 *     @type bool   $disabled  True if the size is disabled in the plugin’s settings.
+	 *     @type bool   $disabled  True if the size is disabled in the plugin's settings.
 	 * }
 	 */
 	public function get_media_files() {
