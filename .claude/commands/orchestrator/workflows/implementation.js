@@ -80,7 +80,6 @@ function buildPrompt(role, dispatch, worktreePath, issueN, branch, specPath, ses
     '',
     'Run the docs skill and dod skill (layer 1) inline before committing.',
     'Commit atomically to the branch above.',
-    'Return the implementation contract JSON.',
   )
   return lines.join('\n')
 }
