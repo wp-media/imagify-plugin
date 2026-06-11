@@ -67,6 +67,16 @@ const QA_SCHEMA = {
   },
 }
 
+// Project config — baked in at transplant time
+const E2E_URL = 'http://localhost:8888'
+const E2E_BOOT = 'bash bin/dev-start.sh'
+const E2E_SETTINGS = '/wp-admin/options-general.php?page=imagify'
+const E2E_CI = 'true'
+const REPO = 'wp-media/imagify-plugin'
+const SLUG = 'imagify'
+const DISPLAY_NAME = 'Imagify'
+const ARCH_SKILL = 'imagify-architecture'
+
 const {
   issueN, prUrl, prNumber, branch, baseBranch, tempRoot, specPath,
   acceptanceCriteria, domains, uiVisible,
@@ -118,6 +128,17 @@ const qaPrompt = [
   `Domains: ${domains}`,
   `UI visible: ${uiVisible}`,
   uiNote,
+  '',
+  'Environment config:',
+  `TEMP_ROOT=${tempRoot}`,
+  `REPO=${REPO}`,
+  `SLUG=${SLUG}`,
+  `DISPLAY_NAME=${DISPLAY_NAME}`,
+  `ARCH_SKILL=${ARCH_SKILL}`,
+  `E2E_URL=${E2E_URL}`,
+  `E2E_BOOT=${E2E_BOOT}`,
+  `E2E_SETTINGS=${E2E_SETTINGS}`,
+  `E2E_CI=${E2E_CI}`,
   '',
   'Acceptance criteria:',
   acceptanceCriteria,
