@@ -338,6 +338,11 @@ function imagify_ngg_should_crop_thumbnail( $crop, $size, $size_data, $media ) {
 		if ( ! empty( $image->_ngiw ) ) {
 			$storage_per_media[ $media_id ] = $image->_ngiw->get_storage()->object;
 		} else {
+			// C_Gallery_Storage is part of the NGG v3 POPE framework and is absent on v4.
+			if ( ! imagify_ngg_has_pope_storage() ) {
+				return $crop;
+			}
+
 			$storage_per_media[ $media_id ] = \C_Gallery_Storage::get_instance()->object;
 		}
 

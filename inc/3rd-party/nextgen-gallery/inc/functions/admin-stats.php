@@ -34,6 +34,10 @@ function imagify_ngg_count_attachments() {
  * @return int The number of attachments.
  */
 function imagify_ngg_count_error_attachments() {
+	if ( ! DB::get_instance()->can_operate() ) {
+		return 0;
+	}
+
 	static $count;
 
 	if ( isset( $count ) ) {
@@ -56,6 +60,10 @@ function imagify_ngg_count_error_attachments() {
  * @return int The number of attachments.
  */
 function imagify_ngg_count_optimized_attachments() {
+	if ( ! DB::get_instance()->can_operate() ) {
+		return 0;
+	}
+
 	static $count;
 
 	if ( isset( $count ) ) {
@@ -129,6 +137,14 @@ function imagify_ngg_count_saving_data( $attachments ) {
 
 	if ( is_array( $attachments ) ) {
 		return $attachments;
+	}
+
+	if ( ! DB::get_instance()->can_operate() ) {
+		return [
+			'count'          => 0,
+			'original_size'  => 0,
+			'optimized_size' => 0,
+		];
 	}
 
 	$original_size  = 0;

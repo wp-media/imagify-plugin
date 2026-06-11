@@ -28,6 +28,10 @@ class NGG extends AbstractBulk {
 	 * @return array                   A list of unoptimized media IDs.
 	 */
 	public function get_unoptimized_media_ids( $optimization_level ) {
+		if ( ! imagify_ngg_has_pope_storage() || ! DB::get_instance()->can_operate() ) {
+			return [];
+		}
+
 		global $wpdb;
 
 		$this->set_no_time_limit();
@@ -118,6 +122,16 @@ class NGG extends AbstractBulk {
 	 * }
 	 */
 	public function get_optimized_media_ids_without_format( $format ) {
+		if ( ! imagify_ngg_has_pope_storage() || ! DB::get_instance()->can_operate() ) {
+			return [
+				'ids'    => [],
+				'errors' => [
+					'no_file_path' => [],
+					'no_backup'    => [],
+				],
+			];
+		}
+
 		global $wpdb;
 
 		$this->set_no_time_limit();
@@ -193,6 +207,10 @@ class NGG extends AbstractBulk {
 	 * @return int The number of media.
 	 */
 	public function has_optimized_media_without_nextgen() {
+		if ( ! DB::get_instance()->can_operate() ) {
+			return 0;
+		}
+
 		global $wpdb;
 
 		$ngg_table  = $wpdb->prefix . 'ngg_pictures';

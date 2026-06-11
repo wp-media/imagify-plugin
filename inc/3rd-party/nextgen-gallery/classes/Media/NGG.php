@@ -81,15 +81,19 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		// NGG storage.
 		if ( ! empty( $this->image->_ngiw ) ) {
 			$this->storage = $this->image->_ngiw->get_storage()->object;
-		} else {
+		} elseif ( imagify_ngg_has_pope_storage() ) {
+			// C_Gallery_Storage is part of the NGG v3 POPE framework; absent on v4.
 			$this->storage = \C_Gallery_Storage::get_instance()->object;
 		}
+		// else: $this->storage remains null on NGG v4 (no _ngiw and no POPE framework).
 
-		// Load nggAdmin class.
-		$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
+		// Load nggAdmin class (NGGFOLDER may be undefined on NGG v4).
+		if ( defined( 'NGGFOLDER' ) && ! class_exists( 'nggAdmin' ) ) {
+			$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
 
-		if ( ! class_exists( 'nggAdmin' ) && $this->filesystem->exists( $ngg_admin_functions_path ) ) {
-			require_once $ngg_admin_functions_path;
+			if ( $this->filesystem->exists( $ngg_admin_functions_path ) ) {
+				require_once $ngg_admin_functions_path;
+			}
 		}
 	}
 
@@ -277,6 +281,10 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
+		if ( null === $this->storage ) {
+			return new \WP_Error( 'no_ngg_storage', __( 'NextGen Gallery storage is not available.', 'imagify' ) );
+		}
+
 		$image_data = $this->storage->_image_mapper->find( $this->get_id() );
 
 		if ( ! $image_data ) {
@@ -337,9 +345,11 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			$image_data->meta_data[ $size_name ] = $size_meta;
 		}
 
-		// Keep our property up to date.
-		$this->image->_ngiw->_cache['meta_data'] = $image_data->meta_data;
-		$this->image->_ngiw->_orig_image         = $image_data;
+		// Keep our property up to date (defensively guard _ngiw in case it is absent).
+		if ( isset( $this->image->_ngiw ) ) {
+			$this->image->_ngiw->_cache['meta_data'] = $image_data->meta_data;
+			$this->image->_ngiw->_orig_image         = $image_data;
+		}
 
 		$post_id = $this->storage->_image_mapper->save( $image_data );
 
@@ -457,6 +467,10 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		);
 
 		if ( ! $image_data ) {
+			return $this->filter_media_files( $all_sizes );
+		}
+
+		if ( null === $this->storage ) {
 			return $this->filter_media_files( $all_sizes );
 		}
 
