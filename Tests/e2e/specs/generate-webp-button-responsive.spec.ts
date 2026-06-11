@@ -34,11 +34,12 @@ function ensureScreenshotsDir() {
 }
 
 /**
- * Capture a screenshot and save it under `.e2e-screenshots/`.
+ * Scroll an element into view then capture a screenshot centred on it.
  * Returns the absolute path.
  */
-async function screenshot( page: Page, name: string ): Promise<string> {
+async function screenshotElement( page: Page, name: string, locator: import('@playwright/test').Locator ): Promise<string> {
 	ensureScreenshotsDir();
+	await locator.scrollIntoViewIfNeeded();
 	const filePath = path.join( SCREENSHOTS_DIR, `${ name }.png` );
 	await page.screenshot( { path: filePath, fullPage: false } );
 	return filePath;
@@ -62,15 +63,14 @@ test.describe( 'Generate missing Next-Gen button — responsive layout (#1045)',
 		const container = page.locator( '.generate-missing-webp' );
 		const isVisible  = await container.isVisible();
 
-		if ( ! isVisible ) {
-			// If the section is hidden the test environment has no qualifying images.
-			// Skip gracefully so the suite does not produce a false FAIL.
-			test.skip(
-				true,
-				'The .generate-missing-webp section is not visible — ' +
-				'seed the imagify_stat_without_next_gen transient before running this suite.',
-			);
-		}
+		// Hard fail — skipping silently would let CI pass with zero coverage.
+		expect(
+			isVisible,
+			'The .generate-missing-webp section is not visible. ' +
+			'Seed the transient before running this suite:\n' +
+			'  npx @wordpress/env run cli wp eval \'set_transient("imagify_stat_without_next_gen", ' +
+			'array("contexts"=>"custom-folders|ngg|wp","stat"=>5), 172800);\''
+		).toBe( true );
 
 		const button = container.locator( '#imagify-generate-webp-versions' );
 		await expect( button ).toBeVisible( { timeout: 5_000 } );
@@ -97,7 +97,7 @@ test.describe( 'Generate missing Next-Gen button — responsive layout (#1045)',
 			containerBox!.x + containerBox!.width + 1,
 		);
 
-		await screenshot( page, 'generate-webp-button-desktop-1440' );
+		await screenshotElement( page, 'generate-webp-button-desktop-1440', container );
 	} );
 
 	// -----------------------------------------------------------------------
@@ -119,7 +119,7 @@ test.describe( 'Generate missing Next-Gen button — responsive layout (#1045)',
 			containerBox!.x + containerBox!.width + 1,
 		);
 
-		await screenshot( page, 'generate-webp-button-tablet-782' );
+		await screenshotElement( page, 'generate-webp-button-tablet-782', container );
 	} );
 
 	// -----------------------------------------------------------------------
@@ -141,7 +141,7 @@ test.describe( 'Generate missing Next-Gen button — responsive layout (#1045)',
 			containerBox!.x + containerBox!.width + 1,
 		);
 
-		await screenshot( page, 'generate-webp-button-mobile-375' );
+		await screenshotElement( page, 'generate-webp-button-mobile-375', container );
 	} );
 
 	// -----------------------------------------------------------------------
