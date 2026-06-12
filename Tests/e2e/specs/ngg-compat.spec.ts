@@ -131,10 +131,11 @@ test.describe( 'NextGEN Gallery v4.x compatibility', () => {
 	test( 'Imagify can be deactivated and reactivated cleanly with NGG v4.x active', async ( { page } ) => {
 		await page.goto( '/wp-admin/plugins.php', { waitUntil: 'domcontentloaded' } );
 
-		// Locate the Imagify row via the checkbox value (most stable selector in WP plugins table).
-		const imagifyRow = page.locator( 'tr:has(input[value*="imagify-plugin"])' );
+		// Locate the Imagify row via the plugin file path used in the bulk-action checkbox value.
+		// WordPress plugins table uses `imagify/imagify.php` (not `imagify-plugin`) as the value.
+		const imagifyRow = page.locator( 'tr:has(input[value*="imagify/imagify"])' );
 
-		const deactivateLink = imagifyRow.locator( 'a', { hasText: /Deactivate/i } );
+		const deactivateLink = imagifyRow.locator( 'a[href*="action=deactivate"][href*="imagify"]' );
 		await expect( deactivateLink ).toBeVisible( { timeout: 10_000 } );
 		await deactivateLink.click();
 		await page.waitForURL( /plugins\.php/, { timeout: 10_000 } );
@@ -142,8 +143,8 @@ test.describe( 'NextGEN Gallery v4.x compatibility', () => {
 		await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
 
 		// Re-activate Imagify.
-		const imagifyRowAfter = page.locator( 'tr:has(input[value*="imagify-plugin"])' );
-		const activateLink = imagifyRowAfter.locator( 'a', { hasText: /^Activate$/i } );
+		const imagifyRowAfter = page.locator( 'tr:has(input[value*="imagify/imagify"])' );
+		const activateLink = imagifyRowAfter.locator( 'a[href*="action=activate"][href*="imagify"]' );
 		await expect( activateLink ).toBeVisible( { timeout: 10_000 } );
 		await activateLink.click();
 		await page.waitForURL( /plugins\.php/, { timeout: 10_000 } );
@@ -151,7 +152,7 @@ test.describe( 'NextGEN Gallery v4.x compatibility', () => {
 		await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
 
 		// Confirm Imagify is active again.
-		const imagifyRowFinal = page.locator( 'tr:has(input[value*="imagify-plugin"])' );
-		await expect( imagifyRowFinal.locator( 'a', { hasText: /Deactivate/i } ) ).toBeVisible();
+		const imagifyRowFinal = page.locator( 'tr:has(input[value*="imagify/imagify"])' );
+		await expect( imagifyRowFinal.locator( 'a[href*="action=deactivate"][href*="imagify"]' ) ).toBeVisible();
 	} );
 } );
