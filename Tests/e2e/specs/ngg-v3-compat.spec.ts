@@ -114,7 +114,7 @@ test.describe( 'NextGEN Gallery v3.x regression', () => {
 	test( 'Imagify can be deactivated and reactivated cleanly with NGG v3 active', async ( { page } ) => {
 		await page.goto( '/wp-admin/plugins.php', { waitUntil: 'domcontentloaded' } );
 
-		const imagifyRow = page.locator( 'tr:has(input[value*="imagify-plugin"])' );
+		const imagifyRow = page.locator( 'tr:has(input[value*="imagify/imagify"])' );
 
 		const deactivateLink = imagifyRow.locator( 'a', { hasText: /Deactivate/i } );
 		await expect( deactivateLink ).toBeVisible( { timeout: 10_000 } );
@@ -123,7 +123,7 @@ test.describe( 'NextGEN Gallery v3.x regression', () => {
 
 		await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
 
-		const imagifyRowAfter = page.locator( 'tr:has(input[value*="imagify-plugin"])' );
+		const imagifyRowAfter = page.locator( 'tr:has(input[value*="imagify/imagify"])' );
 		const activateLink = imagifyRowAfter.locator( 'a', { hasText: /^Activate$/i } );
 		await expect( activateLink ).toBeVisible( { timeout: 10_000 } );
 		await activateLink.click();
@@ -131,7 +131,7 @@ test.describe( 'NextGEN Gallery v3.x regression', () => {
 
 		await expect( page.locator( '.wp-die-message, #error-page' ) ).toHaveCount( 0 );
 
-		const imagifyRowFinal = page.locator( 'tr:has(input[value*="imagify-plugin"])' );
+		const imagifyRowFinal = page.locator( 'tr:has(input[value*="imagify/imagify"])' );
 		await expect( imagifyRowFinal.locator( 'a', { hasText: /Deactivate/i } ) ).toBeVisible();
 	} );
 } );
