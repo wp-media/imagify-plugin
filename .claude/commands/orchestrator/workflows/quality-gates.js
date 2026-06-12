@@ -95,6 +95,7 @@ const dodPrompt = [
   '',
   'Read .claude/commands/dod.md for the complete check instructions, then run all Layer 2 checks.',
   'This is a fresh, independent read — do not assume Layer 1 caught everything.',
+  'When finished, you MUST call the StructuredOutput tool with your results — do not end your turn without calling it.',
 ].join('\n')
 
 const reviewPrompt = [
@@ -113,6 +114,7 @@ const reviewPrompt = [
   '',
   'Review the PR diff against the spec. Post inline comments on GitHub for every blocker.',
   'Post a summary comment on the PR.',
+  'When finished, you MUST call the StructuredOutput tool with your results — do not end your turn without calling it.',
 ].join('\n')
 
 const uiNote = uiVisible
@@ -148,6 +150,7 @@ const qaPrompt = [
   `Current model: ${currentModel}`,
   '',
   'Test the PR against the acceptance criteria. Post results as a comment on the PR.',
+  'When finished, you MUST call the StructuredOutput tool with your results — do not end your turn without calling it.',
 ].filter(line => line !== '').join('\n')
 
 const runParallel = executionMode === 'parallel'
