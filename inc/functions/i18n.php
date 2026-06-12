@@ -60,8 +60,14 @@ function get_imagify_localize_script_translations( $context ) {
 
 		case 'options':
 			$translations = [
-				'getFilesTree' => imagify_can_optimize_custom_folders() ? get_imagify_admin_url( 'get-files-tree' ) : false,
-				'labels'       => [
+				'getFilesTree'       => imagify_can_optimize_custom_folders() ? get_imagify_admin_url( 'get-files-tree' ) : false,
+				'resetInternalState' => [
+					'action'  => 'imagify_reset_internal_state',
+					'confirm' => __( 'Are you sure you want to reset the Imagify internal state? This will clear optimization locks and cancel any pending jobs.', 'imagify' ),
+					'success' => __( 'Imagify internal state has been reset successfully.', 'imagify' ),
+					'error'   => __( 'An error occurred while resetting the internal state. Please try again.', 'imagify' ),
+				],
+				'labels'             => [
 					'ValidApiKeyText'         => __( 'Your API key is valid.', 'imagify' ),
 					'waitApiKeyCheckText'     => __( 'Check in progress...', 'imagify' ),
 					'ApiKeyCheckSuccessTitle' => __( 'Congratulations!', 'imagify' ),
