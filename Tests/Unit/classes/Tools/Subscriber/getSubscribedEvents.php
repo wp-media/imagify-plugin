@@ -23,7 +23,7 @@ class Test_GetSubscribedEvents extends TestCase {
 		$events = Subscriber::get_subscribed_events();
 
 		$this->assertArrayHasKey( 'wp_ajax_imagify_reset_internal_state', $events );
-		$this->assertSame( 'handle_reset', $events['wp_ajax_imagify_reset_internal_state'] );
+		$this->assertSame( 'reset_internal_state', $events['wp_ajax_imagify_reset_internal_state'] );
 	}
 
 	/**

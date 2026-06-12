@@ -37,7 +37,7 @@ class Subscriber implements SubscriberInterface {
 	public static function get_subscribed_events(): array {
 		return [
 			// @action
-			'wp_ajax_imagify_reset_internal_state' => 'handle_reset',
+			'wp_ajax_imagify_reset_internal_state' => 'reset_internal_state',
 		];
 	}
 
@@ -48,7 +48,7 @@ class Subscriber implements SubscriberInterface {
 	 *
 	 * @return void
 	 */
-	public function handle_reset(): void {
+	public function reset_internal_state(): void {
 		imagify_check_nonce( 'imagify_reset_internal_state' );
 
 		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
