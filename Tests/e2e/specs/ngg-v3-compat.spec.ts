@@ -20,13 +20,12 @@ import { wpCli } from '../fixtures/wp-cli';
  */
 test.describe( 'NextGEN Gallery v3.x regression', () => {
 	test.beforeAll( async () => {
-		if ( ! process.env.IMAGIFY_NGG_V3 ) {
-			throw new Error(
-				'IMAGIFY_NGG_V3 is not set. NGG v3 must be available before this suite. ' +
-				'Run: npx @wordpress/env run cli wp plugin install nextgen-gallery --version=3.59.7 --activate --force, ' +
-				'then re-run with IMAGIFY_NGG_V3=1.',
-			);
-		}
+		test.skip(
+			! process.env.IMAGIFY_NGG_V3,
+			'IMAGIFY_NGG_V3 is not set. NGG v3 must be available before this suite. ' +
+			'Run: npx @wordpress/env run cli wp plugin install nextgen-gallery --version=3.59.7 --activate --force, ' +
+			'then re-run with IMAGIFY_NGG_V3=1.',
+		);
 
 		// Install and activate NGG v3.59.7 for this suite.
 		wpCli( 'plugin install nextgen-gallery --version=3.59.7 --activate --force' );

@@ -31,13 +31,12 @@ import { screenshotElement } from '../fixtures/screenshot';
  */
 test.describe( 'NextGEN Gallery v4.x compatibility', () => {
 	test.beforeEach( async ( { page } ) => {
-		if ( ! process.env.IMAGIFY_NGG_INSTALLED ) {
-			throw new Error(
-				'IMAGIFY_NGG_INSTALLED is not set. NGG must be installed + activated before this suite. ' +
-				'Run: npx @wordpress/env run cli wp plugin install nextgen-gallery --activate, ' +
-				'then re-run with IMAGIFY_NGG_INSTALLED=1.',
-			);
-		}
+		test.skip(
+			! process.env.IMAGIFY_NGG_INSTALLED,
+			'IMAGIFY_NGG_INSTALLED is not set. NGG must be installed + activated before this suite. ' +
+			'Run: npx @wordpress/env run cli wp plugin install nextgen-gallery --activate, ' +
+			'then re-run with IMAGIFY_NGG_INSTALLED=1.',
+		);
 		await loginAsAdmin( page );
 	} );
 
