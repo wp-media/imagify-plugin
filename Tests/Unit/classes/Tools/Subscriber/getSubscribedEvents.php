@@ -17,7 +17,7 @@ use Mockery;
 class Test_GetSubscribedEvents extends TestCase {
 
 	/**
-	 * get_subscribed_events() registers the AJAX reset action.
+	 * Tests that get_subscribed_events() registers the AJAX reset action.
 	 */
 	public function testRegistersAjaxResetAction(): void {
 		$events = Subscriber::get_subscribed_events();
@@ -27,7 +27,7 @@ class Test_GetSubscribedEvents extends TestCase {
 	}
 
 	/**
-	 * get_subscribed_events() does NOT include the imagify_settings_tools hook.
+	 * Tests that get_subscribed_events() does NOT include the imagify_settings_tools hook.
 	 *
 	 * The settings section is rendered directly via print_template() — no hook needed.
 	 */
@@ -38,7 +38,7 @@ class Test_GetSubscribedEvents extends TestCase {
 	}
 
 	/**
-	 * get_subscribed_events() returns exactly one event entry.
+	 * Tests that get_subscribed_events() returns exactly one event entry.
 	 */
 	public function testReturnsExactlyOneEvent(): void {
 		$events = Subscriber::get_subscribed_events();

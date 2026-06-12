@@ -24,6 +24,8 @@ class Test_Reset extends TestCase {
 	private $wpdb;
 
 	/**
+	 * Sets up the test fixture.
+	 *
 	 * @inheritDoc
 	 */
 	public function setUp(): void {
@@ -34,10 +36,13 @@ class Test_Reset extends TestCase {
 		$this->wpdb->options  = 'wp_options';
 		$this->wpdb->sitemeta = 'wp_sitemeta';
 
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$GLOBALS['wpdb'] = $this->wpdb;
 	}
 
 	/**
+	 * Tears down the test fixture.
+	 *
 	 * @inheritDoc
 	 */
 	public function tearDown(): void {
@@ -47,7 +52,7 @@ class Test_Reset extends TestCase {
 	}
 
 	/**
-	 * reset() calls delete_transient() with every bulk transient name.
+	 * Tests that reset() calls delete_transient() with every bulk transient name.
 	 */
 	public function testDeletesBulkTransients(): void {
 		$this->wpdb->shouldReceive( 'prepare' )->andReturn( 'PREPARED_SQL' );
@@ -81,7 +86,7 @@ class Test_Reset extends TestCase {
 	}
 
 	/**
-	 * reset() does NOT call delete_transient() for user/account cache transients.
+	 * Tests that reset() does NOT call delete_transient() for user/account cache transients.
 	 */
 	public function testDoesNotDeleteUserCacheTransients(): void {
 		$this->wpdb->shouldReceive( 'prepare' )->andReturn( 'PREPARED_SQL' );
@@ -118,7 +123,7 @@ class Test_Reset extends TestCase {
 	}
 
 	/**
-	 * reset() issues a $wpdb->query() for each locked transient pattern against wp_options.
+	 * Tests that reset() issues a $wpdb->query() for each locked transient pattern against wp_options.
 	 */
 	public function testRunsLikePatternQueryAgainstOptions(): void {
 		Functions\when( 'delete_transient' )->justReturn( true );
@@ -151,7 +156,7 @@ class Test_Reset extends TestCase {
 	}
 
 	/**
-	 * reset() runs a second query against sitemeta when is_multisite() is true.
+	 * Tests that reset() runs a second query against sitemeta when is_multisite() is true.
 	 */
 	public function testRunsSitemetaQueryOnMultisite(): void {
 		Functions\when( 'delete_transient' )->justReturn( true );
@@ -179,9 +184,9 @@ class Test_Reset extends TestCase {
 	}
 
 	/**
-	 * reset() skips as_unschedule_all_actions() when ActionScheduler is not loaded.
+	 * Tests that reset() skips as_unschedule_all_actions() when ActionScheduler is not loaded.
 	 *
-	 * as_unschedule_all_actions() does not exist in the test environment, so
+	 * As_unschedule_all_actions() does not exist in the test environment, so
 	 * function_exists() naturally returns false — no stubbing needed.
 	 * The 4 wpdb::query() calls for the options LIKE patterns are the proof that
 	 * reset() ran to completion without errors.

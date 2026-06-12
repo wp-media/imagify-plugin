@@ -17,7 +17,7 @@ use Imagify\Tools\InternalStateList;
 class Test_SharedList extends TestCase {
 
 	/**
-	 * get_bulk_transients() returns the expected canonical array.
+	 * Tests that get_bulk_transients() returns the expected canonical array.
 	 */
 	public function testGetBulkTransientsReturnsExpectedArray(): void {
 		$expected = [
@@ -60,7 +60,7 @@ class Test_SharedList extends TestCase {
 	}
 
 	/**
-	 * get_locked_transient_patterns() returns the expected canonical array.
+	 * Tests that get_locked_transient_patterns() returns the expected canonical array.
 	 */
 	public function testGetLockedTransientPatternsReturnsExpectedArray(): void {
 		$expected = [
@@ -74,7 +74,7 @@ class Test_SharedList extends TestCase {
 	}
 
 	/**
-	 * get_scheduler_hooks() returns the expected canonical array.
+	 * Tests that get_scheduler_hooks() returns the expected canonical array.
 	 */
 	public function testGetSchedulerHooksReturnsExpectedArray(): void {
 		$expected = [
