@@ -19,6 +19,7 @@ add_action( 'admin_enqueue_scripts', '_imagify_ngg_fix_spa_bulk_link' );
  * @since 2.3
  */
 function _imagify_ngg_fix_spa_bulk_link() {
+	// @codeCoverageIgnoreStart — requires live NGG v4 class; not available in unit tests.
 	if ( ! class_exists( 'Imagely\NGG\Admin\App' ) ) {
 		return;
 	}
@@ -37,6 +38,7 @@ function _imagify_ngg_fix_spa_bulk_link() {
 			}, true);
 		})();"
 	);
+	// @codeCoverageIgnoreEnd
 }
 
 add_action( 'imagify_assets_enqueued', '_imagify_ngg_admin_print_styles' );

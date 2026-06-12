@@ -9,6 +9,7 @@ namespace Imagify\Tests\Unit;
 
 define( 'IMAGIFY_PLUGIN_ROOT', dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR );
 define( 'IMAGIFY_PLUGIN_TESTS_FIXTURES_DIR', dirname( __DIR__ ) . '/Fixtures' );
+define( 'IMAGIFY_SLUG', 'imagify' );
 
 /**
  * The original files need to loaded into memory before we mock them with Patchwork. Add files here before the unit

@@ -2,6 +2,7 @@
 
 namespace Imagify\Tests\Unit\Inc\ThirdParty\NGG\Functions;
 
+use Brain\Monkey\Functions;
 use Imagify\Tests\Unit\TestCase;
 
 /**
@@ -19,6 +20,8 @@ use Imagify\Tests\Unit\TestCase;
  * @covers ::imagify_ngg_has_pope_storage
  * @covers ::imagify_get_ngg_parent_menu_slug
  * @covers ::imagify_get_ngg_manage_gallery_url
+ * @covers ::imagify_get_ngg_bulk_screen_slug
+ * @covers ::imagify_get_ngg_bulk_screen_id
  *
  * @group NGG
  */
@@ -37,5 +40,30 @@ class Test_NggHelpers extends TestCase {
 	public function testGetNggManageGalleryUrlFallsBackToNggalleryManageGallery() {
 		// Imagely\NGG\Admin\App absent → v3 'nggallery-manage-gallery' slug.
 		$this->assertSame( 'nggallery-manage-gallery', imagify_get_ngg_manage_gallery_url() );
+	}
+
+	public function testGetNggBulkScreenSlugReturnsImagifySlug() {
+		$this->assertSame( 'imagify-ngg-bulk-optimization', imagify_get_ngg_bulk_screen_slug() );
+	}
+
+	public function testGetNggBulkScreenIdWithNoHooksUsesParentSlug() {
+		global $admin_page_hooks;
+		$prev               = $admin_page_hooks;
+		$admin_page_hooks   = [];
+		// sanitize_title is a WP function — stub it to return the input unchanged.
+		Functions\when( 'sanitize_title' )->returnArg();
+		// With no hooks, falls back to sanitize_title('nextgen-gallery') = 'nextgen-gallery'.
+		$result             = imagify_get_ngg_bulk_screen_id();
+		$admin_page_hooks   = $prev;
+		$this->assertSame( 'nextgen-gallery_page_imagify-ngg-bulk-optimization', $result );
+	}
+
+	public function testGetNggBulkScreenIdUsesHookWhenAvailable() {
+		global $admin_page_hooks;
+		$prev                                   = $admin_page_hooks;
+		$admin_page_hooks['nextgen-gallery']    = 'gallery';
+		$result                                 = imagify_get_ngg_bulk_screen_id();
+		$admin_page_hooks                       = $prev;
+		$this->assertSame( 'gallery_page_imagify-ngg-bulk-optimization', $result );
 	}
 }

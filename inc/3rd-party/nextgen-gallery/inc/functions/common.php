@@ -23,6 +23,7 @@ function imagify_ngg_has_pope_storage() {
  * @return string
  */
 function imagify_get_ngg_parent_menu_slug() {
+	// @codeCoverageIgnoreStart — requires live NGG v4 classes or NGG v3 constant; not available in unit tests.
 	if ( class_exists( 'Imagely\NGG\Admin\App' ) ) {
 		return 'imagely';
 	}
@@ -30,6 +31,7 @@ function imagify_get_ngg_parent_menu_slug() {
 	if ( defined( 'NGGFOLDER' ) ) {
 		return plugin_basename( NGGFOLDER );
 	}
+	// @codeCoverageIgnoreEnd
 
 	return 'nextgen-gallery';
 }
@@ -44,9 +46,11 @@ function imagify_get_ngg_parent_menu_slug() {
  * @return string The page slug (without 'admin.php?page=').
  */
 function imagify_get_ngg_manage_gallery_url() {
+	// @codeCoverageIgnoreStart — requires live NGG v4 class; not available in unit tests.
 	if ( class_exists( 'Imagely\NGG\Admin\App' ) ) {
 		return imagify_get_ngg_parent_menu_slug();
 	}
+	// @codeCoverageIgnoreEnd
 
 	return 'nggallery-manage-gallery';
 }

@@ -81,6 +81,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		// NGG storage.
 		if ( ! empty( $this->image->_ngiw ) ) {
 			$this->storage = $this->image->_ngiw->get_storage()->object;
+			// @codeCoverageIgnoreStart — requires live NGG v3 POPE classes or NGGFOLDER constant; not available in unit tests.
 		} elseif ( imagify_ngg_has_pope_storage() ) {
 			// C_Gallery_Storage is part of the NGG v3 POPE framework; absent on v4.
 			$this->storage = \C_Gallery_Storage::get_instance()->object;
@@ -95,6 +96,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 				require_once $ngg_admin_functions_path;
 			}
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -281,9 +283,11 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
+		// @codeCoverageIgnoreStart — requires live NGG storage; not available in unit tests.
 		if ( null === $this->storage ) {
 			return new \WP_Error( 'no_ngg_storage', __( 'NextGen Gallery storage is not available.', 'imagify' ) );
 		}
+		// @codeCoverageIgnoreEnd
 
 		$image_data = $this->storage->_image_mapper->find( $this->get_id() );
 
@@ -346,10 +350,12 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		}
 
 		// Keep our property up to date (defensively guard _ngiw in case it is absent).
+		// @codeCoverageIgnoreStart — requires live NGG _ngiw storage object; not available in unit tests.
 		if ( isset( $this->image->_ngiw ) ) {
 			$this->image->_ngiw->_cache['meta_data'] = $image_data->meta_data;
 			$this->image->_ngiw->_orig_image         = $image_data;
 		}
+		// @codeCoverageIgnoreEnd
 
 		$post_id = $this->storage->_image_mapper->save( $image_data );
 
@@ -470,9 +476,11 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			return $this->filter_media_files( $all_sizes );
 		}
 
+		// @codeCoverageIgnoreStart — requires live NGG storage; not available in unit tests.
 		if ( null === $this->storage ) {
 			return $this->filter_media_files( $all_sizes );
 		}
+		// @codeCoverageIgnoreEnd
 
 		$ngg_data = $this->storage->_image_mapper->find( $this->get_id() );
 

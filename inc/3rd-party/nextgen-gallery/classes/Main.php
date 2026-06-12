@@ -122,10 +122,12 @@ class Main {
 	 * @author Jonathan Buttigieg
 	 */
 	public function add_mixin() {
+		// @codeCoverageIgnoreStart — requires live NGG v3 POPE classes, not available in unit tests.
 		if ( ! imagify_ngg_has_pope_storage() ) {
 			return;
 		}
 
 		\C_Gallery_Storage::get_instance()->get_wrapped_instance()->add_mixin( '\\Imagify\\ThirdParty\\NGG\\NGGStorage' );
+		// @codeCoverageIgnoreEnd
 	}
 }

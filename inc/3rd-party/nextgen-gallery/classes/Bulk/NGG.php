@@ -28,9 +28,11 @@ class NGG extends AbstractBulk {
 	 * @return array                   A list of unoptimized media IDs.
 	 */
 	public function get_unoptimized_media_ids( $optimization_level ) {
+		// @codeCoverageIgnoreStart — requires live NGG POPE classes and DB; not available in unit tests.
 		if ( ! imagify_ngg_has_pope_storage() || ! DB::get_instance()->can_operate() ) {
 			return [];
 		}
+		// @codeCoverageIgnoreEnd
 
 		global $wpdb;
 
@@ -122,6 +124,7 @@ class NGG extends AbstractBulk {
 	 * }
 	 */
 	public function get_optimized_media_ids_without_format( $format ) {
+		// @codeCoverageIgnoreStart — requires live NGG POPE classes and DB; not available in unit tests.
 		if ( ! imagify_ngg_has_pope_storage() || ! DB::get_instance()->can_operate() ) {
 			return [
 				'ids'    => [],
@@ -131,6 +134,7 @@ class NGG extends AbstractBulk {
 				],
 			];
 		}
+		// @codeCoverageIgnoreEnd
 
 		global $wpdb;
 
@@ -207,9 +211,11 @@ class NGG extends AbstractBulk {
 	 * @return int The number of media.
 	 */
 	public function has_optimized_media_without_nextgen() {
+		// @codeCoverageIgnoreStart — requires live NGG DB table; not available in unit tests.
 		if ( ! DB::get_instance()->can_operate() ) {
 			return 0;
 		}
+		// @codeCoverageIgnoreEnd
 
 		global $wpdb;
 

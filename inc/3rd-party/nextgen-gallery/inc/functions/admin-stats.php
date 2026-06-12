@@ -34,9 +34,11 @@ function imagify_ngg_count_attachments() {
  * @return int The number of attachments.
  */
 function imagify_ngg_count_error_attachments() {
+	// @codeCoverageIgnoreStart — requires live NGG DB table; not available in unit tests.
 	if ( ! DB::get_instance()->can_operate() ) {
 		return 0;
 	}
+	// @codeCoverageIgnoreEnd
 
 	static $count;
 
@@ -60,9 +62,11 @@ function imagify_ngg_count_error_attachments() {
  * @return int The number of attachments.
  */
 function imagify_ngg_count_optimized_attachments() {
+	// @codeCoverageIgnoreStart — requires live NGG DB table; not available in unit tests.
 	if ( ! DB::get_instance()->can_operate() ) {
 		return 0;
 	}
+	// @codeCoverageIgnoreEnd
 
 	static $count;
 
@@ -139,6 +143,7 @@ function imagify_ngg_count_saving_data( $attachments ) {
 		return $attachments;
 	}
 
+	// @codeCoverageIgnoreStart — requires live NGG DB table; not available in unit tests.
 	if ( ! DB::get_instance()->can_operate() ) {
 		return [
 			'count'          => 0,
@@ -146,6 +151,7 @@ function imagify_ngg_count_saving_data( $attachments ) {
 			'optimized_size' => 0,
 		];
 	}
+	// @codeCoverageIgnoreEnd
 
 	$original_size  = 0;
 	$optimized_size = 0;
