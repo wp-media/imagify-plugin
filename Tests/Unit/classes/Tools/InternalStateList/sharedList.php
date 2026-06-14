@@ -60,14 +60,14 @@ class Test_SharedList extends TestCase {
 	}
 
 	/**
-	 * Tests that get_locked_transient_patterns() returns the expected canonical array.
+	 * Tests that get_locked_transient_patterns() returns plain (unescaped) LIKE templates.
 	 */
 	public function testGetLockedTransientPatternsReturnsExpectedArray(): void {
 		$expected = [
-			'\_transient\_%imagify-auto-optimize-%',
-			'\_transient\_%imagify\_rpc\_%',
-			'\_transient\_imagify\_%\_process\_locked',
-			'\_site\_transient\_imagify\_%\_process\_lock%',
+			'_transient_%imagify-auto-optimize-%',
+			'_transient_%imagify_rpc_%',
+			'_transient_imagify_%_process_locked',
+			'_site_transient_imagify_%_process_lock%',
 		];
 
 		$this->assertSame( $expected, InternalStateList::get_locked_transient_patterns() );

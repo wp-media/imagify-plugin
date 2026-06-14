@@ -55,6 +55,11 @@ class Test_Reset extends TestCase {
 	 * Tests that reset() calls delete_transient() with every bulk transient name.
 	 */
 	public function testDeletesBulkTransients(): void {
+		$this->wpdb->shouldReceive( 'esc_like' )->andReturnUsing(
+			function ( string $value ): string {
+				return str_replace( [ '\\', '%', '_' ], [ '\\\\', '\\%', '\\_' ], $value );
+			}
+		);
 		$this->wpdb->shouldReceive( 'prepare' )->andReturn( 'PREPARED_SQL' );
 		$this->wpdb->shouldReceive( 'query' )->andReturn( 1 );
 
@@ -89,6 +94,11 @@ class Test_Reset extends TestCase {
 	 * Tests that reset() does NOT call delete_transient() for user/account cache transients.
 	 */
 	public function testDoesNotDeleteUserCacheTransients(): void {
+		$this->wpdb->shouldReceive( 'esc_like' )->andReturnUsing(
+			function ( string $value ): string {
+				return str_replace( [ '\\', '%', '_' ], [ '\\\\', '\\%', '\\_' ], $value );
+			}
+		);
 		$this->wpdb->shouldReceive( 'prepare' )->andReturn( 'PREPARED_SQL' );
 		$this->wpdb->shouldReceive( 'query' )->andReturn( 1 );
 
@@ -123,11 +133,19 @@ class Test_Reset extends TestCase {
 	}
 
 	/**
-	 * Tests that reset() issues a $wpdb->query() for each locked transient pattern against wp_options.
+	 * Tests that reset() builds LIKE patterns via esc_like() and issues a query for each against wp_options.
 	 */
 	public function testRunsLikePatternQueryAgainstOptions(): void {
 		Functions\when( 'delete_transient' )->justReturn( true );
 		Functions\when( 'is_multisite' )->justReturn( false );
+
+		// Simulate esc_like(): escape \, %, and _ with a leading backslash.
+		$this->wpdb->shouldReceive( 'esc_like' )
+			->andReturnUsing(
+				function ( string $value ): string {
+					return str_replace( [ '\\', '%', '_' ], [ '\\\\', '\\%', '\\_' ], $value );
+				}
+			);
 
 		$patterns_queried = [];
 
@@ -143,6 +161,7 @@ class Test_Reset extends TestCase {
 
 		( new ResetInternalState() )->reset();
 
+		// Expected: raw pattern parts esc_like'd, reassembled with % wildcards.
 		$expected_patterns = [
 			'\_transient\_%imagify-auto-optimize-%',
 			'\_transient\_%imagify\_rpc\_%',
@@ -162,9 +181,13 @@ class Test_Reset extends TestCase {
 		Functions\when( 'delete_transient' )->justReturn( true );
 		Functions\when( 'is_multisite' )->justReturn( true );
 
+		// Accept any esc_like() call (options-pattern parts + the explicit sitemeta prefix).
 		$this->wpdb->shouldReceive( 'esc_like' )
-			->with( '_site_transient_imagify_' )
-			->andReturn( '_site_transient_imagify_' );
+			->andReturnUsing(
+				function ( string $value ): string {
+					return str_replace( [ '\\', '%', '_' ], [ '\\\\', '\\%', '\\_' ], $value );
+				}
+			);
 
 		$this->wpdb->shouldReceive( 'prepare' )->andReturn( 'PREPARED_SQL' );
 
@@ -192,6 +215,12 @@ class Test_Reset extends TestCase {
 	 * reset() ran to completion without errors.
 	 */
 	public function testSkipsSchedulerWhenFunctionNotExists(): void {
+		$this->wpdb->shouldReceive( 'esc_like' )
+			->andReturnUsing(
+				function ( string $value ): string {
+					return str_replace( [ '\\', '%', '_' ], [ '\\\\', '\\%', '\\_' ], $value );
+				}
+			);
 		$this->wpdb->shouldReceive( 'prepare' )->andReturn( 'PREPARED_SQL' );
 
 		$query_calls = 0;

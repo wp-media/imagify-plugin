@@ -49,19 +49,21 @@ class InternalStateList {
 	}
 
 	/**
-	 * Returns LIKE patterns for process-lock and legacy RPC transients.
+	 * Returns raw LIKE pattern templates for process-lock and legacy RPC transients.
 	 *
-	 * Used in a raw SQL DELETE against $wpdb->options (and $wpdb->sitemeta on
-	 * multisite). Patterns follow the format expected by $wpdb->prepare with %s.
+	 * These are plain strings where `%` is a wildcard placeholder and `_` is a
+	 * literal underscore. Callers must pass each part through $wpdb->esc_like()
+	 * before assembling the final LIKE expression — do NOT use these strings
+	 * directly as SQL LIKE patterns.
 	 *
 	 * @return array<string>
 	 */
 	public static function get_locked_transient_patterns(): array {
 		return [
-			'\_transient\_%imagify-auto-optimize-%', // Legacy/deprecated, retained for hygiene on older installs.
-			'\_transient\_%imagify\_rpc\_%',          // Legacy/deprecated.
-			'\_transient\_imagify\_%\_process\_locked',
-			'\_site\_transient\_imagify\_%\_process\_lock%',
+			'_transient_%imagify-auto-optimize-%', // Legacy/deprecated, retained for hygiene on older installs.
+			'_transient_%imagify_rpc_%',            // Legacy/deprecated.
+			'_transient_imagify_%_process_locked',
+			'_site_transient_imagify_%_process_lock%',
 		];
 	}
 

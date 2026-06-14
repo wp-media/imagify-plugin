@@ -33,11 +33,13 @@ class ResetInternalState {
 		}
 
 		// 2. Delete process-lock and legacy RPC transients via LIKE patterns in wp_options.
-		foreach ( InternalStateList::get_locked_transient_patterns() as $pattern ) {
+		foreach ( InternalStateList::get_locked_transient_patterns() as $raw_pattern ) {
+			// Build a safe LIKE pattern: esc_like() each literal segment, preserve % wildcards.
+			$like_pattern = implode( '%', array_map( [ $wpdb, 'esc_like' ], explode( '%', $raw_pattern ) ) );
 			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->prepare(
 					"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
-					$pattern
+					$like_pattern
 				)
 			);
 		}
