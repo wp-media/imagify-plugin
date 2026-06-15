@@ -31,12 +31,17 @@ Every `{TEMP_ROOT}`, `{REPO}`, `{ARCH_SKILL}`, etc. below refers to these runtim
 - `CURRENT_MODEL` — the model name to use in the PR comment attribution line
 - `session_learnings` — AGENTS.md section 13 content; treat documented patterns as review criteria
 
-## Re-invocation
+## Re-invocation guard
 
-The orchestrator may re-invoke you up to 3 times on the same PR after fix loops. On a
-re-run: re-review the full current diff, but in your verdict focus on whether the
-previously flagged blockers are resolved. Do not re-post comments for findings you
-already posted (see the dedup rules in Steps 5 and 5b).
+Before starting, check whether you have already posted a summary comment on this PR:
+
+```bash
+EXISTING_REVIEW_ID=$(gh api repos/{REPO}/issues/$PR_NUMBER/comments \
+  --jq '[.[] | select(.body | contains("<!-- ai-pipeline:lead-review -->"))] | last | .id // empty')
+```
+
+- **No existing comment** → proceed normally.
+- **Existing comment found** → this is a re-review after a fix loop. Fetch the prior comment for context, then proceed to Step 1. In Step 5b, edit the existing comment rather than posting a new one. Focus the verdict on whether previously flagged blockers are resolved — do not re-post comments for findings already posted.
 
 ## Your process
 
@@ -240,17 +245,7 @@ Post all inline comments before continuing.
 
 Keep the comment short. One line per blocker, one line per nice-to-have. No prose, no tables.
 
-**Dedup first:** check for a previous summary comment using the HTML marker:
-
-```bash
-EXISTING_ID=$(gh api repos/{REPO}/issues/<PR_NUMBER>/comments \
-  --jq '[.[] | select(.body | contains("<!-- ai-pipeline:lead-review -->"))] | last | .id // empty')
-```
-
-- **Existing comment found** → update it in place with `gh api repos/{REPO}/issues/comments/$EXISTING_ID --method PATCH -f body="..."` instead of posting a new one.
-- **No existing comment** → post a new comment.
-
-In both cases the body must start with `<!-- ai-pipeline:lead-review -->` as its first line:
+**Dedup:** use the `$EXISTING_REVIEW_ID` from the Re-invocation guard. If an existing summary comment was found, **edit it** with `--method PATCH` instead of posting a new one. Always include the HTML marker `<!-- ai-pipeline:lead-review -->` as the very first line so future re-runs can find it.
 
 ```bash
 gh pr comment <PR_NUMBER> --body "$(cat <<'EOF'
