@@ -702,6 +702,13 @@ final class Notices {
 			return;
 		}
 
+		// Deduplicate: do not add the same message twice.
+		foreach ( $notices as $existing ) {
+			if ( isset( $existing['message'] ) && $existing['message'] === $notice_data['message'] ) {
+				return;
+			}
+		}
+
 		$notices[] = $notice_data;
 
 		set_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME, $notices, 30 );
@@ -747,6 +754,13 @@ final class Notices {
 
 		if ( ! is_array( $notice_data ) || empty( $notice_data['message'] ) ) {
 			return;
+		}
+
+		// Deduplicate: do not add the same message twice.
+		foreach ( $notices as $existing ) {
+			if ( isset( $existing['message'] ) && $existing['message'] === $notice_data['message'] ) {
+				return;
+			}
 		}
 
 		$notices[] = $notice_data;
