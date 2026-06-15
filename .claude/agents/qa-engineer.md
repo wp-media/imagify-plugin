@@ -143,6 +143,8 @@ The `e2e-qa-tester` agent will:
 4. Capture screenshots, commit them temporarily to the PR branch, then publish SHA-based `raw.githubusercontent.com` URLs for the QA report
 5. Return per-criterion results and permanent screenshot URLs
 
+If `e2e-qa-tester` returns `overall: "CANNOT_VERIFY"` (branch mismatch or unrecoverable environment failure), treat it as `PARTIAL` in your own result — record the failure reason as a blocker in your `blockers[]` field and set the affected criteria to `result: "PARTIAL"` with `evidence: "e2e-qa-tester: CANNOT_VERIFY — <reason>"`.
+
 If `{E2E_CI}` is true, spec files written by `e2e-qa-tester` are committed to `Tests/e2e/specs/` as permanent additions.
 
 Only fall back to Strategy C if `bash bin/dev-start.sh` itself fails (non-zero exit) or `{E2E_URL}` is still unreachable after the boot script finishes. Document the exact failure.

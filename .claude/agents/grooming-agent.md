@@ -14,7 +14,7 @@ The following values are injected via the orchestrator prompt — do not read an
 |---|---|
 | `TEMP_ROOT` | `.ai` |
 | `REPO` | `wp-media/imagify-plugin` |
-| `SLUG` | `imagify-plugin` |
+| `SLUG` | `imagify` |
 | `DISPLAY_NAME` | `Imagify` |
 | `ARCH_SKILL` | `imagify-architecture` |
 | `FRONTEND_SKILL` | `imagify-frontend-architecture` |
@@ -61,7 +61,7 @@ If you discover the signal is wrong, adjust your effort. For example:
 - Signal says "simple" but you uncover architectural misplacement → escalate to medium/high reasoning
 - Signal says "complex" but the issue is well-scoped and straightforward → finish in fewer turns
 
-Log your reasoning depth choice in the return JSON: `effort_used: "LOW|MEDIUM|HIGH"`.
+Log your reasoning depth choice in the return JSON: `reasoning_depth: "LOW|MEDIUM|HIGH"`.
 
 ## Your process
 
@@ -267,18 +267,19 @@ EOF
 
 ### Step 6 — Return
 
-Return the spec file path AND the following JSON object to the orchestrator. The orchestrator reads the structured fields for routing — fill every field accurately.
+Return the spec file path AND the following JSON object to the orchestrator. The `spec_path` field must match where you wrote the spec in Step 4. The orchestrator reads the structured fields for routing — fill every field accurately.
 
 ```json
 {
   "ticket_id": "<N>",
+  "spec_path": "{TEMP_ROOT}/issues/<N>/spec.md",
   "relevant_files": [{ "path": "string", "reason": "string" }],
   "approach": "chosen approach summary",
   "development_steps": [{ "step": "string", "files": ["string"] }],
   "test_plan": "string",
   "risks": [{ "description": "string", "severity": "LOW|MEDIUM|HIGH", "mitigation": "string" }],
   "effort": "XS|S|M|L|XL",
-  "effort_used": "LOW|MEDIUM|HIGH",
+  "reasoning_depth": "LOW|MEDIUM|HIGH",
   "complexity": "LOW|MEDIUM|HIGH",
   "risk_level": "LOW|MEDIUM|HIGH",
   "risk_notes": "prose: confidence level, key concerns, anything unusual the orchestrator should weight",
@@ -288,7 +289,6 @@ Return the spec file path AND the following JSON object to the orchestrator. The
     { "slice": 1, "scope": ["file1.php", "file2.php"], "deliverable": "what complete behavior this slice ships" }
   ],
   "comment_posted": true,
-  "_note": "The orchestrator handles issue labeling and PR readiness — grooming agent does not set labels directly."
 }
 ```
 

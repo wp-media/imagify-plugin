@@ -23,7 +23,7 @@ The following values are injected via the orchestrator prompt — do not read an
 |---|---|
 | `TEMP_ROOT` | `.ai` |
 | `REPO` | `wp-media/imagify-plugin` |
-| `SLUG` | `imagify-plugin` |
+| `SLUG` | `imagify` |
 | `DISPLAY_NAME` | `Imagify` |
 
 Every `{TEMP_ROOT}`, `{REPO}`, etc. below refers to these runtime values.
@@ -150,13 +150,13 @@ Return the following JSON object to the orchestrator.
     "files_created": []
   },
   "dod_layer1": {
-    "overall": "PASS|WARN",
+    "overall": "PASS|WARN|FAIL",
     "checks": [
-      { "name": "manual-validation", "status": "PASS|WARN", "evidence": "..." },
+      { "name": "manual-validation", "status": "PASS|WARN|FAIL", "evidence": "..." },
       { "name": "automated-tests", "status": "N/A", "evidence": "no JS unit suite configured for Imagify; Playwright E2E handled by QA agent" },
-      { "name": "documentation", "status": "PASS|WARN", "evidence": "..." },
-      { "name": "pr-description", "status": "PASS|WARN", "evidence": "draft filled" },
-      { "name": "ci", "status": "PASS|WARN", "evidence": "npm run build: PASS" },
+      { "name": "documentation", "status": "PASS|WARN|FAIL", "evidence": "..." },
+      { "name": "pr-description", "status": "PASS|WARN|FAIL", "evidence": "draft filled" },
+      { "name": "ci", "status": "PASS|WARN|FAIL", "evidence": "npm run build: PASS" },
       { "name": "file-scope", "status": "PASS|WARN|N/A", "evidence": "all changed files within declared scope" }
     ]
   },
@@ -170,4 +170,4 @@ Return the following JSON object to the orchestrator.
 }
 ```
 
-`dod_layer1.overall` must be `PASS` or `WARN` — never `FAIL`. Self-correct all failures before committing (Step 3b).
+Self-correct `FAIL` results before committing when possible (Step 3b). After 3 unsuccessful correction attempts, report `dod_layer1.overall: "FAIL"` — the orchestrator decides next steps.

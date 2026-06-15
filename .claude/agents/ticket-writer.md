@@ -19,7 +19,7 @@ The following values are injected via the orchestrator prompt — do not read an
 |---|---|
 | `TEMP_ROOT` | `.ai` |
 | `REPO` | `wp-media/imagify-plugin` |
-| `SLUG` | `imagify-plugin` |
+| `SLUG` | `imagify` |
 | `DISPLAY_NAME` | `Imagify` |
 
 Every `{TEMP_ROOT}`, `{REPO}`, etc. below refers to these runtime values.
@@ -181,12 +181,14 @@ Emit to the event queue and create the issue. Do NOT wait for a response — emi
 
 ## Return object
 
+The `type` field must be exactly one of: `user_story`, `bug`, `chore`, `epic`.
+
 ```json
 {
   "ticket_id": "123",
   "ticket_url": "https://github.com/{REPO}/issues/123",
   "title": "Add retry logic to API client",
-  "type": "user_story|bug|chore|epic",
+  "type": "bug",
   "description": "Full ticket content as markdown",
   "labels": ["enhancement", "Made by AI"],
   "sub_tickets": [],

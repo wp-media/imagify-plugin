@@ -26,7 +26,7 @@ The following values are injected via the orchestrator prompt — do not read an
 |---|---|
 | `TEMP_ROOT` | `.ai` |
 | `REPO` | `wp-media/imagify-plugin` |
-| `SLUG` | `imagify-plugin` |
+| `SLUG` | `imagify` |
 | `DISPLAY_NAME` | `Imagify` |
 
 Every `{TEMP_ROOT}`, `{REPO}`, `{SLUG}`, `{DISPLAY_NAME}`, etc. below refers to these runtime values.

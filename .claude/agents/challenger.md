@@ -14,7 +14,7 @@ The following values are injected via the orchestrator prompt — do not read an
 |---|---|
 | `TEMP_ROOT` | `.ai` |
 | `REPO` | `wp-media/imagify-plugin` |
-| `SLUG` | `imagify-plugin` |
+| `SLUG` | `imagify` |
 | `DISPLAY_NAME` | `Imagify` |
 | `ARCH_SKILL` | `imagify-architecture` |
 | `FRONTEND_SKILL` | `imagify-frontend-architecture` |
@@ -145,7 +145,6 @@ Do not rewrite the spec. Return the verdict and findings AND the following JSON 
     }
   ],
   "alternative_suggestions": ["required when verdict != APPROVED — 1-2 concrete alternatives"],
-  "revised_risk_level": "LOW|MEDIUM|HIGH",
   "comment_posted": true,
   "reasoning": {
     "alternatives_considered": ["other framings or scopes weighed before settling on this verdict"],

@@ -23,7 +23,7 @@ The following values are injected via the orchestrator prompt — do not read an
 |---|---|
 | `TEMP_ROOT` | `.ai` |
 | `REPO` | `wp-media/imagify-plugin` |
-| `SLUG` | `imagify-plugin` |
+| `SLUG` | `imagify` |
 | `DISPLAY_NAME` | `Imagify` |
 
 Every `{TEMP_ROOT}`, `{REPO}`, etc. below refers to these runtime values.
@@ -189,13 +189,13 @@ Return the following JSON object to the orchestrator.
     "files_created": []
   },
   "dod_layer1": {
-    "overall": "PASS|WARN",
+    "overall": "PASS|WARN|FAIL",
     "checks": [
-      { "name": "manual-validation", "status": "PASS|WARN", "evidence": "..." },
-      { "name": "automated-tests", "status": "PASS|WARN", "evidence": "N tests passed" },
-      { "name": "documentation", "status": "PASS|WARN", "evidence": "docs/... updated, or SKIP if no public API change" },
-      { "name": "pr-description", "status": "PASS|WARN", "evidence": "draft filled" },
-      { "name": "ci", "status": "PASS|WARN", "evidence": "phpcs-changed: 0 violations · run-stan: 0 errors · test-unit: 42 passed" },
+      { "name": "manual-validation", "status": "PASS|WARN|FAIL", "evidence": "..." },
+      { "name": "automated-tests", "status": "PASS|WARN|FAIL", "evidence": "N tests passed" },
+      { "name": "documentation", "status": "PASS|WARN|FAIL", "evidence": "docs/... updated, or SKIP if no public API change" },
+      { "name": "pr-description", "status": "PASS|WARN|FAIL", "evidence": "draft filled" },
+      { "name": "ci", "status": "PASS|WARN|FAIL", "evidence": "phpcs-changed: 0 violations · run-stan: 0 errors · test-unit: 42 passed" },
       { "name": "file-scope", "status": "PASS|WARN|N/A", "evidence": "all changed files within declared scope" }
     ]
   },
@@ -215,4 +215,4 @@ Return the following JSON object to the orchestrator.
 }
 ```
 
-`dod_layer1.overall` must be `PASS` or `WARN` — never `FAIL`. Self-correct all failures before committing (Step 3b).
+Self-correct `FAIL` results before committing when possible (Step 3b). After 3 unsuccessful correction attempts, report `dod_layer1.overall: "FAIL"` — the orchestrator decides next steps.

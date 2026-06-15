@@ -324,11 +324,11 @@ After the prose report, return the following JSON object to `qa-engineer`:
 
 ```json
 {
-  "overall": "PASS|FAIL|PARTIAL",
+  "overall": "PASS|FAIL|PARTIAL|CANNOT_VERIFY",
   "criteria_results": [
     {
       "criterion": "acceptance criterion text",
-      "strategy": "Browser/Playwright MCP|Spec run|Analysis fallback",
+      "method": "Browser/Playwright MCP|Spec run|Analysis fallback",
       "result": "PASS|FAIL|PARTIAL",
       "evidence": "URL navigated, element interacted with, observed outcome",
       "screenshot_url": "https://raw.githubusercontent.com/wp-media/imagify-plugin/SHA/.e2e-screenshots/filename.png — or empty string if no screenshot taken"

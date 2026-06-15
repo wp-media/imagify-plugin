@@ -1,6 +1,6 @@
 export const meta = {
-  name: 'maestro-implementation',
-  description: 'Run backend and/or frontend implementation agents for a maestro pipeline issue',
+  name: 'imagify-implementation',
+  description: 'Run backend and/or frontend implementation agents for imagify pipeline issue',
   phases: [
     { title: 'Implementation' },
   ],
@@ -12,11 +12,10 @@ export const meta = {
 //   branch           string  — feature branch name
 //   specPath         string  — absolute path to spec.md
 //   domains          string  — 'backend' | 'frontend' | 'both'
-//   executionMode    string  — 'parallel' | 'sequential'
 //   model            string  — 'sonnet' | 'opus' | 'haiku'
 //   backendDispatch  string  — full dispatch plan for backend-agent (null if frontend-only)
 //   frontendDispatch string  — full dispatch plan for frontend-agent (null if backend-only)
-//   worktrees        object  — { backend: path, frontend: path } | null (null in sequential mode)
+//   worktrees        object  — { backend: path, frontend: path } | null (null if single-domain)
 //   sessionLearnings string  — content of AGENTS.md section 13
 //   currentModel     string  — display name of the running model, e.g. "Claude Sonnet 4.6"
 // }
@@ -43,7 +42,7 @@ const IMPL_SCHEMA = {
       type: 'object',
       required: ['overall', 'checks'],
       properties: {
-        overall: { type: 'string', enum: ['PASS', 'WARN'] },
+        overall: { type: 'string', enum: ['PASS', 'WARN', 'FAIL'] },
         checks: { type: 'array', items: { type: 'object' } },
       },
     },
@@ -86,7 +85,7 @@ function buildPrompt(role, dispatch, worktreePath, issueN, branch, specPath, ses
 
 const {
   issueN, branch, specPath,
-  domains, executionMode, model,
+  domains, model,
   backendDispatch, frontendDispatch,
   worktrees,
   sessionLearnings, currentModel,
@@ -94,7 +93,7 @@ const {
 
 const needsBackend = domains === 'backend' || domains === 'both'
 const needsFrontend = domains === 'frontend' || domains === 'both'
-const runParallel = executionMode === 'parallel' && domains === 'both'
+const runParallel = domains === 'both'
 
 let backendResult = null
 let frontendResult = null

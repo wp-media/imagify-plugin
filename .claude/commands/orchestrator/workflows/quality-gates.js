@@ -1,6 +1,6 @@
 export const meta = {
-  name: 'maestro-quality-gates',
-  description: 'Run DOD L2, lead review, and QA quality gates for a maestro pipeline PR',
+  name: 'imagify-quality-gates',
+  description: 'Run DOD L2, lead review, and QA quality gates for imagify pipeline PR',
   phases: [
     { title: 'Quality Gates' },
   ],
@@ -18,7 +18,6 @@ export const meta = {
 //   acceptanceCriteria string  — numbered list of acceptance criteria
 //   domains            string  — 'backend' | 'frontend' | 'both'
 //   uiVisible          boolean — true when PHP renders visible admin output
-//   executionMode      string  — 'parallel' | 'sequential'
 //   skipLeadReview     boolean — true for XS+LOW issues
 //   skipQa             boolean — true for purely internal refactors
 //   sessionLearnings   string  — content of AGENTS.md section 13
@@ -39,7 +38,7 @@ const DOD_SCHEMA = {
 
 const REVIEW_SCHEMA = {
   type: 'object',
-  required: ['pr_url', 'verdict', 'inline_comments_posted', 'pr_commented', 'blockers', 'nice_to_haves', 'summary'],
+  required: ['pr_url', 'verdict', 'inline_comments_posted', 'pr_commented', 'blockers', 'nice_to_haves', 'summary', 'change_summary'],
   properties: {
     pr_url: { type: 'string' },
     verdict: { type: 'string', enum: ['PASS', 'REQUEST_CHANGES'] },
@@ -48,6 +47,7 @@ const REVIEW_SCHEMA = {
     blockers: { type: 'array', items: { type: 'object' } },
     nice_to_haves: { type: 'array', items: { type: 'object' } },
     summary: { type: 'string' },
+    change_summary: { type: 'string' },
   },
 }
 
@@ -80,7 +80,7 @@ const ARCH_SKILL = 'imagify-architecture'
 const {
   issueN, prUrl, prNumber, branch, baseBranch, tempRoot, specPath,
   acceptanceCriteria, domains, uiVisible,
-  executionMode, skipLeadReview, skipQa,
+  skipLeadReview, skipQa,
   sessionLearnings, currentModel,
 } = args
 
@@ -102,6 +102,8 @@ const reviewPrompt = [
   `You are the lead-reviewer for issue #${issueN}.`,
   '',
   `PR: ${prUrl}`,
+  `PR number: ${prNumber}`,
+  `REPO: ${REPO}`,
   `Spec: ${specPath}`,
   `Base branch: ${baseBranch}`,
   '',
@@ -153,48 +155,30 @@ const qaPrompt = [
   'When finished, you MUST call the StructuredOutput tool with your results — do not end your turn without calling it.',
 ].filter(line => line !== '').join('\n')
 
-const runParallel = executionMode === 'parallel'
-
 let dodResult = null
 let reviewResult = null
 let qaResult = null
 
-if (runParallel) {
-  log('Running quality gates in parallel...')
+log('Running quality gates in parallel...')
 
-  const thunks = [
-    () => agent(dodPrompt, { label: 'dod-l2', phase: 'Quality Gates', schema: DOD_SCHEMA }),
-  ]
-  if (!skipLeadReview) {
-    thunks.push(
-      () => agent(reviewPrompt, { label: 'lead-review', phase: 'Quality Gates', schema: REVIEW_SCHEMA, agentType: 'lead-reviewer' })
-    )
-  }
-  if (!skipQa) {
-    thunks.push(
-      () => agent(qaPrompt, { label: 'qa', phase: 'Quality Gates', schema: QA_SCHEMA, agentType: 'qa-engineer' })
-    )
-  }
-
-  const results = await parallel(thunks)
-  let idx = 0
-  dodResult = results[idx++]
-  if (!skipLeadReview) reviewResult = results[idx++]
-  if (!skipQa) qaResult = results[idx++]
-
-} else {
-  log('Running DOD L2...')
-  dodResult = await agent(dodPrompt, { label: 'dod-l2', phase: 'Quality Gates', schema: DOD_SCHEMA })
-
-  if (!skipLeadReview) {
-    log('Running lead review...')
-    reviewResult = await agent(reviewPrompt, { label: 'lead-review', phase: 'Quality Gates', schema: REVIEW_SCHEMA, agentType: 'lead-reviewer' })
-  }
-
-  if (!skipQa) {
-    log('Running QA...')
-    qaResult = await agent(qaPrompt, { label: 'qa', phase: 'Quality Gates', schema: QA_SCHEMA, agentType: 'qa-engineer' })
-  }
+const thunks = [
+  () => agent(dodPrompt, { label: 'dod-l2', phase: 'Quality Gates', schema: DOD_SCHEMA }),
+]
+if (!skipLeadReview) {
+  thunks.push(
+    () => agent(reviewPrompt, { label: 'lead-review', phase: 'Quality Gates', schema: REVIEW_SCHEMA, agentType: 'lead-reviewer' })
+  )
 }
+if (!skipQa) {
+  thunks.push(
+    () => agent(qaPrompt, { label: 'qa', phase: 'Quality Gates', schema: QA_SCHEMA, agentType: 'qa-engineer' })
+  )
+}
+
+const results = await parallel(thunks)
+let idx = 0
+dodResult = results[idx++]
+if (!skipLeadReview) reviewResult = results[idx++]
+if (!skipQa) qaResult = results[idx++]
 
 return { dod: dodResult, review: reviewResult, qa: qaResult }

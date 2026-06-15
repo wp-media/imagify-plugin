@@ -22,7 +22,7 @@ The following values are injected via the orchestrator prompt — do not read an
 |---|---|
 | `TEMP_ROOT` | `.ai` |
 | `REPO` | `wp-media/imagify-plugin` |
-| `SLUG` | `imagify-plugin` |
+| `SLUG` | `imagify` |
 | `DISPLAY_NAME` | `Imagify` |
 
 Every `{TEMP_ROOT}`, `{REPO}` etc. in this skill refers to these values.
@@ -46,9 +46,6 @@ Accept any of the following as a starting point:
 - Raw input (prose, Slack thread, paste) — in this case invoke the `ticket-writer` agent
   first to formalize the issue
 - `base_branch` — defaults to `origin/develop`
-- `--sequential` — optional flag to force sequential execution of all parallel agent groups
-  (implementation agents and quality gates). Use when running on platforms that don't support
-  parallel Agent spawning (e.g., GitHub Copilot). See "Execution mode" below.
 
 At startup, read `AGENTS.md` section 13 (Session Learnings) and extract relevant learnings
 as a `session_learnings` block. Pass this block in the dispatch input to every agent you
@@ -58,27 +55,6 @@ spawn. This is the single point of injection — agents do not need to read the 
 Identify and record `CURRENT_MODEL` — the model name running in this conversation (e.g.
 `Claude Haiku 4.5`). Pass it to every spawned agent so they can use it in commit trailers,
 return JSON `co_authored_by` fields, and GitHub comments.
-
----
-
-## Execution mode
-
-The orchestrator supports two execution modes:
-
-**Parallel (default):** Implementation agents run simultaneously when scopes are disjoint.
-Quality gates (DOD L2, Lead Review, QA) run in parallel. Reduces total cycle time by ~40–50%.
-Supported on Claude Code.
-
-**Sequential (fallback):** All agents run one-at-a-time. Scopes no longer dictate parallelism —
-git worktrees are not created. Quality gates run sequentially: DOD L2 → Lead Review → QA.
-**Use `--sequential` flag when:**
-- Running on GitHub Copilot (does not support parallel Agent spawning)
-- Running on other platforms without parallel support
-- Debugging or troubleshooting multi-agent flows
-- User explicitly requests it
-
-Sequential mode is slower but produces the same quality outputs. All routing tables and escalation
-logic remain identical — only timing and resource usage change.
 
 ---
 
@@ -187,145 +163,20 @@ Path: `.ai/issues/<N>/workflow-log.html`
 
 ---
 
-## JSON return contracts
+## JSON routing fields
 
-Every agent returns a typed JSON object. Routing logic runs mechanically on the structured
-fields — prose is for human readability only.
+Full schemas live in each agent's `## Step N — Return` section and in the Workflow scripts. The orchestrator routes mechanically on these fields only:
 
-### Grooming (`grooming-agent`)
-```json
-{
-  "ticket_id": "string",
-  "relevant_files": [{ "path": "string", "reason": "string" }],
-  "approach": "string",
-  "development_steps": [{ "step": "string", "files": ["string"] }],
-  "test_plan": "string",
-  "risks": [{ "description": "string", "severity": "LOW|MEDIUM|HIGH", "mitigation": "string" }],
-  "effort": "XS|S|M|L|XL",
-  "effort_used": "LOW|MEDIUM|HIGH",
-  "complexity": "LOW|MEDIUM|HIGH",
-  "risk_level": "LOW|MEDIUM|HIGH",
-  "risk_notes": "string",
-  "grooming_confidence": "LOW|MEDIUM|HIGH",
-  "open_questions": ["string"],
-  "pr_splitting_plan": [
-    { "slice": 1, "scope": ["file1", "file2"], "deliverable": "string" }
-  ],
-  "comment_posted": true
-}
-```
-
-### Challenger (`challenger`)
-```json
-{
-  "plan_version": 1,
-  "verdict": "APPROVED|NEEDS_REVISION|BLOCKED",
-  "feedback": [{ "description": "string", "severity": "MUST_HAVE|SHOULD_HAVE|COULD_HAVE|NICE_TO_HAVE", "suggestion": "string" }],
-  "alternative_suggestions": ["string"],
-  "revised_risk_level": "LOW|MEDIUM|HIGH",
-  "comment_posted": true
-}
-```
-
-### Implementation (`backend-agent` / `frontend-agent`)
-```json
-{
-  "ticket_id": "string",
-  "branch": "string",
-  "files_changed": ["string"],
-  "tests_passing": true,
-  "test_output": "string",
-  "docs": {
-    "status": "DONE|SKIP",
-    "files_updated": ["string"],
-    "files_created": ["string"]
-  },
-  "dod_layer1": {
-    "overall": "PASS|WARN",
-    "checks": [{ "name": "string", "status": "PASS|WARN", "evidence": "string" }]
-  },
-  "co_authored_by": "Claude Sonnet 4.6 <noreply@anthropic.com>",
-  "reasoning": {
-    "alternatives_considered": ["other approaches weighed before choosing this one"],
-    "hesitations": ["what was unclear or uncertain during implementation"],
-    "decision_rationale": "why the chosen approach was taken over the alternatives"
-  },
-  "backend_api": {
-    "hooks": [{ "type": "filter|action", "name": "string", "signature": "string" }],
-    "option_keys": ["string"],
-    "rest_endpoints": [{ "method": "GET|POST", "route": "string" }],
-    "ajax_actions": []
-  },
-  "notes": "string"
-}
-```
-
-### Release (`release-agent`)
-```json
-{
-  "branch_pushed": true,
-  "trailer_verified": true,
-  "pr_url": "string",
-  "pr_number": 0,
-  "pr_created": true
-}
-```
-
-### DOD L2 gate (`dod` command, layer 2)
-```json
-{
-  "overall": "PASS|WARN|FAIL",
-  "checks": [{ "name": "string", "status": "PASS|WARN|FAIL", "evidence": "string" }],
-  "blockers": [
-    { "check": "string", "description": "string", "error_excerpt": "string", "suggested_fix": "string" }
-  ],
-  "warnings": ["string"],
-  "layer1_delta": ["string"]
-}
-```
-
-### Lead review (`lead-reviewer`)
-```json
-{
-  "pr_url": "string",
-  "verdict": "PASS|REQUEST_CHANGES",
-  "inline_comments_posted": true,
-  "pr_commented": true,
-  "blockers": [{ "file": "string", "line": 0, "type": "SECURITY|LOGIC|TESTS|CONVENTIONS", "criticality": "CRITICAL|HIGH|MEDIUM|LOW", "description": "string", "fix": "string" }],
-  "nice_to_haves": [{ "file": "string", "type": "REFACTORING|NAMING|PERFORMANCE|DOCS", "description": "string" }],
-  "summary": "string"
-}
-```
-
-### QA (`qa-engineer`)
-```json
-{
-  "overall": "PASS|FAIL|PARTIAL",
-  "strategies_used": ["API|BROWSER|VISUAL|ANALYSIS"],
-  "pr_commented": true,
-  "criteria_results": [{ "criterion": "string", "method": "string", "result": "PASS|FAIL|PARTIAL", "evidence": "string" }],
-  "smoke_tests": [{ "area": "string", "result": "PASS|FAIL", "evidence": "string" }],
-  "tests_authored": ["string"],
-  "pr_comment_url": "string",
-  "existing_comment_url": "string — URL of prior QA comment if re-run, empty string on first run",
-  "blockers": ["string"],
-  "recommendations": [{ "description": "string", "severity": "MUST_HAVE|SHOULD_HAVE|COULD_HAVE|NICE_TO_HAVE" }]
-}
-```
-
-### Ticket writer (`ticket-writer`)
-```json
-{
-  "ticket_id": "string",
-  "ticket_url": "string",
-  "title": "string",
-  "type": "user_story|bug|chore|epic",
-  "description": "string",
-  "labels": ["string"],
-  "sub_tickets": ["string"],
-  "ticket_created": true
-}
-```
+| Agent | Fields the orchestrator reads |
+|---|---|
+| `grooming-agent` | `risk_level`, `effort`, `complexity`, `risk_notes`, `grooming_confidence`, `spec_path`, `open_questions[]`, `comment_posted` |
+| `challenger` | `verdict`, `feedback[*].severity` (COULD_HAVE/NICE_TO_HAVE → NTH dispatch), `alternative_suggestions` |
+| `backend-agent` / `frontend-agent` | `dod_layer1.overall` (`PASS`/`WARN`/`FAIL`), `co_authored_by`, `backend_api` (backend only — passed to frontend dispatch plan) |
+| `release-agent` | `pr_url`, `pr_number`, `pr_created`, `trailer_verified` |
+| `dod-l2` | `overall` (`PASS`/`WARN`/`FAIL`), `blockers[*].error_excerpt`, `blockers[*].suggested_fix` |
+| `lead-reviewer` | `verdict` (`PASS`/`REQUEST_CHANGES`), `blockers[*].criticality`, `blockers[*].type`, `blockers[*].fix`, `nice_to_haves[]`, `inline_comments_posted`, `pr_commented` |
+| `qa-engineer` | `overall` (`PASS`/`FAIL`/`PARTIAL`), `blockers[]`, `recommendations[*].severity`, `pr_commented` |
+| `ticket-writer` | `ticket_id`, `ticket_url`, `ticket_created` |
 
 ---
 
@@ -454,16 +305,7 @@ Handling:
 Log a ROUTING DECISION event for each open_question — either "paused for user input" or
 "proceeding with documented assumption: <text>".
 
-**NTH items (COULD_HAVE / NICE_TO_HAVE) — asynchronous, non-blocking additional work:**
-
-If grooming surfaced any `COULD_HAVE` / `NICE_TO_HAVE` items in `risks[]` or `risk_notes`,
-dispatch the `ticket-writer` agent in parallel (`mode: "nth_followup"`), non-blocking.
-The main pipeline continues without waiting. Log a PARALLEL event with ticket URLs once
-they come back.
-
-In **high-oversight mode**, surface NTH items to the user mid-flow at your discretion,
-especially when they reveal a pattern worth noting.
-In all other modes, suppress mid-flow surfacing — save for the final report.
+NTH items from grooming are dispatched later — by challenger (Step 3b), lead-reviewer (Step 8), and QA (Step 9) — when they carry MoSCoW severity. Grooming `risks[]` uses LOW/MEDIUM/HIGH risk signals, not NTH dispatch.
 
 ---
 
@@ -508,9 +350,9 @@ Track `file_scope` for each domain in context (not in a file):
 
 If a file appears in both domains, assign it to the domain owning the majority of changes; note the shared file in context so the other agent doesn't touch it.
 
-**Parallel eligibility:** scopes are disjoint when no single file path appears in both backend and frontend scopes. If `--sequential` flag was provided, treat parallel eligibility as `NO`.
+**Parallel eligibility:** scopes are disjoint when no single file path appears in both backend and frontend scopes.
 
-Log a ROUTING DECISION event: "Issue directory created — N backend files, M frontend files, execution: parallel | sequential (reason: --sequential flag | overlapping files | single domain)".
+Log a ROUTING DECISION event: "Issue directory created — N backend files, M frontend files, execution: parallel | single-domain (reason: overlapping files | single domain)".
 
 ---
 
@@ -534,13 +376,9 @@ If any point fails: **do not start implementation**. Log a ROUTING DECISION even
 Each agent runs the `docs` command and `dod` command (layer 1) inline before committing,
 then commits atomically.
 
-**Execution mode decision:**
-- If `execution_mode == "parallel"` AND scopes are disjoint → use **parallel path (05a/b-PAR)**
-- Otherwise → use **sequential path (05a/b-SEQ)**
-
 ---
 
-**Compose dispatch plans** — before calling the Workflow, write the dispatch plan for each in-scope agent. These must be complete and self-contained: agents cannot see the orchestrator context. Each dispatch plan must include the spec summary, grooming output (approach, development_steps, file_scope), and any relevant session learnings. In sequential mode, include the backend API surface returned inline from the backend agent's return JSON (`backend_api` field) in the frontend dispatch plan.
+**Compose dispatch plans** — before calling the Workflow, write the dispatch plan for each in-scope agent. These must be complete and self-contained: agents cannot see the orchestrator context. Each dispatch plan must include the spec summary, grooming output (approach, development_steps, file_scope), and any relevant session learnings. When `domains == "both"`, both agents run in parallel — the backend API surface is not available at dispatch time; frontend-agent will fall back to the spec (see its Step 1b).
 
 **In parallel mode:** Create git worktrees for isolation before calling the Workflow:
 ```bash
@@ -557,7 +395,6 @@ git worktree add .ai/issues/<N>/worktrees/frontend <branch>
     "branch": "<branch>",
     "specPath": ".ai/issues/<N>/spec.md",
     "domains": "backend|frontend|both",
-    "executionMode": "parallel|sequential",
     "model": "<resolved implementation model>",
     "backendDispatch": "<dispatch plan string — null if frontend-only>",
     "frontendDispatch": "<dispatch plan string — null if backend-only>",
@@ -595,7 +432,7 @@ Update the decisions strip Pull request field with the PR URL.
 
 ---
 
-### Steps 7–9 — Quality gates (parallel or sequential)
+### Steps 7–9 — Quality gates (parallel)
 
 After the PR is created (Step 6), GitHub Actions CI starts automatically. Quality gates execute
 in the configured mode.
@@ -621,7 +458,6 @@ CI is monitored by DOD L2 Check 5 in both modes.
     "acceptanceCriteria": "<numbered list>",
     "domains": "backend|frontend|both",
     "uiVisible": true,
-    "executionMode": "parallel|sequential",
     "skipLeadReview": false,
     "skipQa": false,
     "sessionLearnings": "<section 13 content>",
@@ -629,7 +465,7 @@ CI is monitored by DOD L2 Check 5 in both modes.
   }
   ```
 
-The Workflow runs DOD L2 (independent gate), lead-reviewer, and qa-engineer — in parallel or sequential depending on `executionMode`, skipping any gate whose flag is `true`. It returns `{ dod, review, qa }`. Route on each result as described in Steps 7, 8, and 9 below.
+The Workflow runs DOD L2 (independent gate), lead-reviewer, and qa-engineer in parallel, skipping any gate whose flag is `true`. It returns `{ dod, review, qa }`. Route on each result as described in Steps 7, 8, and 9 below.
 
 ---
 
@@ -645,9 +481,9 @@ Route on `dod_l2.overall`:
 |---|---|---|
 | `PASS` | any | No action — proceed to next gate (Lead Review, or QA if Lead Review skipped). Log GATE event. |
 | `WARN` | any | No action — proceed to next gate. Log GATE event `data-status="warn"`. In high-oversight mode, surface for confirmation. |
-| `FAIL` (CI) | `dod_loop < 2` | Diagnose the CI failure from `blockers[*].error_excerpt`. Re-invoke the relevant implementation agent with the suggested fix. Re-push. Increment `dod_loop`. Re-run quality gates (parallel or sequential per execution_mode). Log ROUTING DECISION. |
+| `FAIL` (CI) | `dod_loop < 2` | Diagnose the CI failure from `blockers[*].error_excerpt`. Re-invoke the relevant implementation agent with the suggested fix. Re-push. Increment `dod_loop`. Re-run quality gates. Log ROUTING DECISION. |
 | `FAIL` (CI) | `dod_loop >= 2` | Escalate with the exact error excerpt and suggested fix. |
-| `FAIL` (code) | `dod_loop < 1` | Increment `dod_loop`. Re-invoke the relevant implementation agent with specific blockers, re-push. **If execution_mode == "parallel": abort any in-flight Lead Review and QA.** Re-run quality gates. Log ROUTING DECISION. **If execution_mode == "sequential": skip to Step 10 (escalation) — Lead Review and QA will not run since the code is blocked.** |
+| `FAIL` (code) | `dod_loop < 1` | Increment `dod_loop`. Re-invoke the relevant implementation agent with specific blockers, re-push. Re-run quality gates. Log ROUTING DECISION. |
 | `FAIL` (code) | `dod_loop >= 1` | Escalate to user with exact errors. |
 
 Log GATE event.
@@ -661,8 +497,8 @@ Route on highest `criticality` in `blockers`:
 | Criticality | Loop count | Action |
 |---|---|---|
 | No blockers | any | No action — proceed to next gate (QA, or finalize if QA skipped). Log AGENT event. |
-| `CRITICAL` | any | Evaluate if fixable. If yes (specific missing guard, missing validation): attempt one fix loop (same as HIGH). **If execution_mode == "parallel": abort any in-flight QA.** Re-invoke QA only if at least one blocker has `type == "LOGIC"` — otherwise carry the existing QA verdict forward. If architectural/unresolved after 1 attempt → escalate immediately. Log ESCALATION event. **If execution_mode == "sequential": skip QA (will not run since code is blocked).** |
-| `HIGH` / `MEDIUM` | `review_loop < 1` | Re-invoke relevant implementation agent with the `fix` field from that blocker. Re-push. Re-invoke Lead Review. **Re-invoke QA only if at least one blocker has `type == "LOGIC"`** — if all blockers are `SECURITY`, `TESTS`, or `CONVENTIONS`, behavior did not change; carry the existing QA verdict forward (if available) or skip QA. **If execution_mode == "parallel": abort any in-flight QA before re-invoking.** Log ROUTING DECISION. |
+| `CRITICAL` | any | Evaluate if fixable. If yes (specific missing guard, missing validation): attempt one fix loop (same as HIGH). Re-invoke QA only if at least one blocker has `type == "LOGIC"` — otherwise carry the existing QA verdict forward. If architectural/unresolved after 1 attempt → escalate immediately. Log ESCALATION event. |
+| `HIGH` / `MEDIUM` | `review_loop < 1` | Re-invoke relevant implementation agent with the `fix` field from that blocker. Re-push. Re-invoke Lead Review. **Re-invoke QA only if at least one blocker has `type == "LOGIC"`** — if all blockers are `SECURITY`, `TESTS`, or `CONVENTIONS`, behavior did not change; carry the existing QA verdict forward (if available) or skip QA. Log ROUTING DECISION. |
 | `HIGH` / `MEDIUM` | `review_loop >= 1` | Escalate. |
 | `LOW` only | any | Dispatch `ticket-writer` (NICE_TO_HAVE, non-blocking). Proceed to next gate or finalize. Log PARALLEL event. |
 
@@ -685,7 +521,7 @@ Route on `overall`:
 | `PASS` | any | Proceed to finalize. |
 | `PARTIAL` | any | Surface to user for decision. Log ESCALATION event. |
 | `FAIL` | `qa_loop < 1` | Re-invoke relevant implementation agent with `qa.blockers` list. Re-push. Log ROUTING DECISION. Re-invoke `qa-engineer`. |
-| `FAIL` | `qa_loop >= 1` | Escalate with failing criteria and `alternative_suggestions`. |
+| `FAIL` | `qa_loop >= 1` | Escalate with failing criteria from `qa.blockers`. |
 
 For `unclear` unexpected findings: ask user before routing.
 

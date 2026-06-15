@@ -10,7 +10,7 @@ description: Fetch a GitHub issue and run the full grooming → implementation �
 The following values are injected via the orchestrator prompt — do not read any config file:
 - `{TEMP_ROOT}` = `.ai`
 - `{REPO}` = `wp-media/imagify-plugin`
-- `{SLUG}` = `imagify-plugin`
+- `{SLUG}` = `imagify`
 - `{E2E_URL}` = `http://localhost:8888`
 - `{E2E_BOOT}` = `bash bin/dev-start.sh`
 
@@ -55,4 +55,4 @@ Use shell commands as the primary approach. The GitHub MCP (`mcp_github_*`) may 
 
 The orchestrator command manages everything from here: calibration → grooming → spec review → dispatch → implementation → lead review → push & PR → CI → QA → finalize. It spawns the specialist agents (`grooming-agent`, `challenger`, `backend-agent`, `frontend-agent`, `release-agent`, `lead-reviewer`, `qa-engineer`, `ticket-writer`) as isolated sub-agents, but the orchestrator itself stays inline so it can surface decisions back to the user naturally.
 
-Monitor progress at `.ai/issues/<N>/workflow-log.html`.
+Track progress in context; an HTML log is written at `.ai/issues/<N>/workflow-log.html` only if the Podium plugin is enabled (see orchestrator Run log section).
