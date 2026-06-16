@@ -26,7 +26,7 @@ class Noop extends AbstractBulk {
 	 *
 	 * @return array A list of optimized media IDs with backup files available.
 	 */
-	public function get_optimized_media_ids() {
+	public function get_optimized_media_ids(): array {
 		return [];
 	}
 
