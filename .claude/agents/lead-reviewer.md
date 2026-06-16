@@ -102,11 +102,11 @@ These findings are the class of issue most likely missed in a diff-only review.
 Check every changed file against:
 
 Load the project rule files using the Read tool:
-- `.claude/commands/{ARCH_SKILL}.md`
-- `.claude/commands/compliance.md`
+- `.claude/skills/{ARCH_SKILL}/SKILL.md`
+- `.claude/skills/compliance/SKILL.md`
 
 If `{FRONTEND_SKILL}` is not null and the diff contains frontend files, also load:
-- `.claude/commands/{FRONTEND_SKILL}.md`
+- `.claude/skills/{FRONTEND_SKILL}/SKILL.md`
 
 Verify every changed file complies with all rules defined in those files, then also check:
 

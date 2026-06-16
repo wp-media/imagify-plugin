@@ -28,7 +28,7 @@ fi
 TEMP_ROOT=".ai"
 
 # Template path and output location.
-TEMPLATE="${ROOT_DIR}/.claude/commands/issue-workflow/refs/pr-template.md"
+TEMPLATE="${ROOT_DIR}/.claude/skills/issue-workflow/refs/pr-template.md"
 OUT_DIR="${ROOT_DIR}/${TEMP_ROOT}/issues/${ISSUE_NUMBER}"
 OUT_FILE="${OUT_DIR}/pull.md"
 

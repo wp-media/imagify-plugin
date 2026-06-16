@@ -100,5 +100,5 @@ For each gap:
 ## Notes
 
 - The docs root is `docs/`. The README at the repo root is for users; developer docs live in `docs/`.
-- For new capabilities, add them to the Project Config block in `.claude/commands/orchestrator.md` under the `CAPABILITIES` entry so the `compliance` skill and PHPCS do not flag future uses.
+- For new capabilities, add them to the Project Config block in `.claude/skills/orchestrator/SKILL.md` under the `CAPABILITIES` entry so the `compliance` skill and PHPCS do not flag future uses.
 - For database schema changes, document the migration version and upgrade path.

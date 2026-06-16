@@ -96,7 +96,7 @@ attempt force-push without explicit instruction.
 ### Step 3 — Initialize PR draft
 
 ```bash
-bash .claude/commands/issue-workflow/scripts/init-pr-draft.sh <N>
+bash .claude/skills/issue-workflow/scripts/init-pr-draft.sh <N>
 ```
 
 This creates `{TEMP_ROOT}/issues/<N>/pull.md` from the template.

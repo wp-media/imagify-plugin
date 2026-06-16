@@ -124,7 +124,7 @@ Read the repo's PR template:
 cat .github/PULL_REQUEST_TEMPLATE.md 2>/dev/null
 ```
 
-(Falls back to `.claude/commands/issue-workflow/refs/pr-template.md` if no GitHub
+(Falls back to `.claude/skills/issue-workflow/refs/pr-template.md` if no GitHub
 template exists — same content.)
 
 Then fetch the PR body:
