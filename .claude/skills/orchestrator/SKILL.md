@@ -163,20 +163,166 @@ Path: `.ai/issues/<N>/workflow-log.html`
 
 ---
 
-## JSON routing fields
+## JSON return contracts
 
-Full schemas live in each agent's `## Step N — Return` section and in the Workflow scripts. The orchestrator routes mechanically on these fields only:
+Every agent returns a typed JSON object. Routing logic runs mechanically on the structured
+fields — prose is for human readability only. The full schema each agent emits is below;
+the orchestrator reads only the routing-relevant fields (noted after each schema) and writes
+the full return JSON to the run log rather than accumulating it in context.
 
-| Agent | Fields the orchestrator reads |
-|---|---|
-| `grooming-agent` | `risk_level`, `effort`, `complexity`, `risk_notes`, `grooming_confidence`, `spec_path`, `open_questions[]`, `comment_posted` |
-| `challenger` | `verdict`, `feedback[*].severity` (COULD_HAVE/NICE_TO_HAVE → NTH dispatch), `alternative_suggestions` |
-| `backend-agent` / `frontend-agent` | `dod_layer1.overall` (`PASS`/`WARN`/`FAIL`), `co_authored_by`, `backend_api` (backend only — passed to frontend dispatch plan) |
-| `release-agent` | `pr_url`, `pr_number`, `pr_created`, `trailer_verified` |
-| `dod-l2` | `overall` (`PASS`/`WARN`/`FAIL`), `blockers[*].error_excerpt`, `blockers[*].suggested_fix` |
-| `lead-reviewer` | `verdict` (`PASS`/`REQUEST_CHANGES`), `blockers[*].criticality`, `blockers[*].type`, `blockers[*].fix`, `nice_to_haves[]`, `inline_comments_posted`, `pr_commented` |
-| `qa-engineer` | `overall` (`PASS`/`FAIL`/`PARTIAL`), `blockers[]`, `recommendations[*].severity`, `pr_commented` |
-| `ticket-writer` | `ticket_id`, `ticket_url`, `ticket_created` |
+### Grooming (`grooming-agent`)
+```json
+{
+  "ticket_id": "string",
+  "spec_path": ".ai/issues/<N>/spec.md",
+  "relevant_files": [{ "path": "string", "reason": "string" }],
+  "approach": "string",
+  "development_steps": [{ "step": "string", "files": ["string"] }],
+  "test_plan": "string",
+  "risks": [{ "description": "string", "severity": "LOW|MEDIUM|HIGH", "mitigation": "string" }],
+  "effort": "XS|S|M|L|XL",
+  "reasoning_depth": "LOW|MEDIUM|HIGH",
+  "complexity": "LOW|MEDIUM|HIGH",
+  "risk_level": "LOW|MEDIUM|HIGH",
+  "risk_notes": "string",
+  "grooming_confidence": "LOW|MEDIUM|HIGH",
+  "open_questions": ["string"],
+  "pr_splitting_plan": [{ "slice": 1, "scope": ["string"], "deliverable": "string" }],
+  "comment_posted": true
+}
+```
+Routes on: `risk_level`, `effort`, `complexity`, `risk_notes`, `grooming_confidence`, `spec_path`, `open_questions[]`, `comment_posted`. `reasoning_depth` is diagnostic only (the depth grooming actually applied) — log it; no routing depends on it. `pr_splitting_plan` is populated for L/XL efforts (`null` otherwise) — surface it in the post-grooming ROUTING DECISION event so the team can decide whether to split before implementation starts.
+
+### Challenger (`challenger`)
+```json
+{
+  "plan_version": 1,
+  "verdict": "APPROVED|NEEDS_REVISION|BLOCKED",
+  "feedback": [{ "description": "string", "severity": "MUST_HAVE|SHOULD_HAVE|COULD_HAVE|NICE_TO_HAVE", "suggestion": "string" }],
+  "alternative_suggestions": ["string"],
+  "comment_posted": true,
+  "reasoning": {
+    "alternatives_considered": ["string"],
+    "hesitations": ["string"],
+    "decision_rationale": "string"
+  }
+}
+```
+Routes on: `verdict`, `feedback[*].severity` (COULD_HAVE/NICE_TO_HAVE → NTH dispatch), `alternative_suggestions`. MUST_HAVE/SHOULD_HAVE items in `feedback[]` are the revision findings fed back to grooming on NEEDS_REVISION.
+
+### Implementation (`backend-agent` / `frontend-agent`)
+```json
+{
+  "ticket_id": "string",
+  "branch": "string",
+  "files_changed": ["string"],
+  "tests_passing": true,
+  "test_output": "string",
+  "docs": {
+    "status": "DONE|SKIP",
+    "files_updated": ["string"],
+    "files_created": ["string"]
+  },
+  "dod_layer1": {
+    "overall": "PASS|WARN|FAIL",
+    "checks": [{ "name": "string", "status": "PASS|WARN|FAIL|N/A", "evidence": "string" }]
+  },
+  "co_authored_by": "CURRENT_MODEL <noreply@anthropic.com>",
+  "reasoning": {
+    "alternatives_considered": ["string"],
+    "hesitations": ["string"],
+    "decision_rationale": "string"
+  },
+  "backend_api": {
+    "hooks": [{ "type": "filter|action", "name": "string", "signature": "string" }],
+    "option_keys": ["string"],
+    "rest_endpoints": [{ "method": "GET|POST", "route": "string" }],
+    "ajax_actions": ["string"]
+  },
+  "notes": "string"
+}
+```
+Routes on: `dod_layer1.overall` (`PASS`/`WARN`/`FAIL`), `co_authored_by`, `tests_passing`, `files_changed`. `backend_api` is present only in backend-agent's return — the orchestrator extracts it and passes it to the frontend-agent dispatch plan when scopes overlap.
+
+### Release (`release-agent`)
+```json
+{
+  "branch_pushed": true,
+  "trailer_verified": true,
+  "pr_url": "string",
+  "pr_number": 0,
+  "branch": "string",
+  "is_draft": true,
+  "pr_created": true,
+  "notes": "string"
+}
+```
+Routes on: `pr_url`, `pr_number`, `branch`, `is_draft`, `pr_created`, `trailer_verified`. `pr_number` is the integer parsed from the `gh pr create` URL — **never the issue number**.
+
+### DOD L2 gate (`dod` skill, layer 2)
+```json
+{
+  "overall": "PASS|WARN|FAIL",
+  "checks": [{ "name": "string", "status": "PASS|WARN|FAIL|N/A", "evidence": "string" }],
+  "blockers": [{ "check": "string", "description": "string", "error_excerpt": "string", "suggested_fix": "string" }],
+  "warnings": ["string"],
+  "layer1_delta": ["string"]
+}
+```
+Routes on: `overall` (`PASS`/`WARN`/`FAIL`), `blockers[*].error_excerpt`, `blockers[*].suggested_fix`. CI failures reference check names; code failures reference file paths.
+
+### Lead review (`lead-reviewer`)
+```json
+{
+  "pr_url": "string",
+  "verdict": "PASS|REQUEST_CHANGES",
+  "inline_comments_posted": true,
+  "pr_commented": true,
+  "blockers": [{ "file": "string", "line": 0, "type": "SECURITY|LOGIC|TESTS|CONVENTIONS", "criticality": "CRITICAL|HIGH|MEDIUM|LOW", "description": "string", "fix": "string", "suggestion": "string|null" }],
+  "nice_to_haves": [{ "file": "string", "type": "REFACTORING|NAMING|PERFORMANCE|DOCS", "severity": "SHOULD_HAVE|COULD_HAVE|NICE_TO_HAVE", "description": "string" }],
+  "change_summary": "string",
+  "summary": "string",
+  "reasoning": {
+    "alternatives_considered": ["string"],
+    "hesitations": ["string"],
+    "decision_rationale": "string"
+  }
+}
+```
+Routes on: `verdict` (`PASS`/`REQUEST_CHANGES`), `blockers[*].criticality`, `blockers[*].type`, `blockers[*].fix`, `nice_to_haves[]`, `inline_comments_posted`, `pr_commented`.
+
+### QA (`qa-engineer`)
+```json
+{
+  "overall": "PASS|FAIL|PARTIAL|CANNOT_VERIFY",
+  "strategies_used": ["API|BROWSER|VISUAL|ANALYSIS"],
+  "pr_commented": true,
+  "criteria_results": [{ "criterion": "string", "method": "string", "result": "PASS|FAIL|PARTIAL|CANNOT_VERIFY", "evidence": "string", "blocking_guard": "string — function name and file:line that blocked verification; empty string \"\" when not guard-blocked" }],
+  "blocking_guard": { "file": "string", "line": 0, "function": "string" },
+  "smoke_tests": [{ "area": "string", "result": "PASS|FAIL", "evidence": "string" }],
+  "tests_authored": ["string"],
+  "pr_comment_url": "string",
+  "existing_comment_url": "string",
+  "blockers": ["string"],
+  "recommendations": [{ "description": "string", "severity": "MUST_HAVE|SHOULD_HAVE|COULD_HAVE|NICE_TO_HAVE" }]
+}
+```
+Routes on: `overall` (`PASS`/`FAIL`/`PARTIAL`/`CANNOT_VERIFY`), `blocking_guard`, `blockers[]`, `recommendations[*].severity`, `pr_commented`. `overall` is `CANNOT_VERIFY` only when every behavioral acceptance criterion sat behind an Imagify license / quota / API guard that could not be satisfied locally; if some pass and some are unverifiable, `overall` is `PARTIAL`. Top-level `blocking_guard` is the `{ file, line, function }` object for the guard that blocked behavioral testing, or `null` when none blocked.
+
+### Ticket writer (`ticket-writer`)
+```json
+{
+  "ticket_id": "string",
+  "ticket_url": "string",
+  "title": "string",
+  "type": "user_story|bug|chore|epic",
+  "description": "string",
+  "labels": ["string"],
+  "sub_tickets": ["string"],
+  "ticket_created": true
+}
+```
+Routes on: `ticket_id`, `ticket_url`, `ticket_created`.
 
 ---
 
@@ -505,6 +651,34 @@ Route on highest `criticality` in `blockers`:
 **NTH dispatch:** `nice_to_haves` items → `ticket-writer` in parallel (non-blocking). Max 3
 total lead-reviewer invocations.
 
+**Resolve addressed review threads (required after every fix push):**
+After re-pushing the fix commit, resolve all open review threads so the PR shows a clean status before lead-reviewer re-runs. Capture the fix commit SHA, fetch every unresolved thread via the GitHub GraphQL API, post a "Fixed in <sha>" reply on each, then mark it resolved with the `resolveReviewThread` mutation:
+
+```bash
+FIX_SHA=$(git rev-parse --short HEAD)
+PR_N=<PR number>
+OWNER=wp-media
+REPO_NAME=imagify-plugin
+
+gh api graphql -f query="
+query {
+  repository(owner: \"$OWNER\", name: \"$REPO_NAME\") {
+    pullRequest(number: $PR_N) {
+      reviewThreads(first: 50) {
+        nodes { id isResolved comments(first: 1) { nodes { databaseId } } }
+      }
+    }
+  }
+}" --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false) | [.id, (.comments.nodes[0].databaseId | tostring)] | @tsv' \
+| while IFS=$'\t' read THREAD_ID COMMENT_DB_ID; do
+  gh api repos/$OWNER/$REPO_NAME/pulls/$PR_N/comments \
+    --method POST -f body="Fixed in $FIX_SHA." -F "in_reply_to=$COMMENT_DB_ID" --silent
+  gh api graphql -f query="mutation { resolveReviewThread(input: { threadId: \"$THREAD_ID\" }) { thread { isResolved } } }" --silent
+done
+```
+
+Only run this block when `lead-reviewer` previously returned `inline_comments_posted: true` and there are unresolved threads. Skip silently if the GraphQL query returns zero unresolved threads.
+
 Log AGENT event with verdict, loop count, and any NTH dispatch.
 
 ---
@@ -520,6 +694,7 @@ Route on `overall`:
 |---|---|---|
 | `PASS` | any | Proceed to finalize. |
 | `PARTIAL` | any | Surface to user for decision. Log ESCALATION event. |
+| `CANNOT_VERIFY` | any | Behavioral testing was blocked by an Imagify license / quota / API guard. **Do not treat as a pipeline failure; do NOT loop back to implementation.** Log a ROUTING DECISION event: `QA CANNOT_VERIFY: {blocking_guard.function} at {blocking_guard.file}:{blocking_guard.line}`. Surface it in the run log with a clear note about why behavioral testing was limited (no valid API key / over quota / API unreachable on the local environment). Proceed to the finalize step (Step 11) with a note that behavioral testing was blocked by a guard so a human can verify in a licensed/live environment. |
 | `FAIL` | `qa_loop < 1` | Re-invoke relevant implementation agent with `qa.blockers` list. Re-push. Log ROUTING DECISION. Re-invoke `qa-engineer`. |
 | `FAIL` | `qa_loop >= 1` | Escalate with failing criteria from `qa.blockers`. |
 
@@ -532,7 +707,8 @@ Max 3 QA invocations.
 ---
 
 **Proceed to Step 11 when:** DOD L2 is PASS or WARN (CI included in check 5), Lead Review
-has no HIGH/CRITICAL blockers (or is skipped), QA is PASS (or skipped or carried forward).
+has no HIGH/CRITICAL blockers (or is skipped), QA is PASS (or skipped, carried forward, or
+CANNOT_VERIFY with a documented blocking guard).
 
 ---
 

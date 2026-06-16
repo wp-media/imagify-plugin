@@ -30,6 +30,30 @@ implementation handoff and the PR is open. Provides an unbiased second opinion. 
 
 ---
 
+## Base branch guard (run first, before any check)
+
+At the very beginning of the DOD check procedure — before the anti-rationalization table and before any of the 6 checks — detect whether the current branch is actually based on `develop`. If it diverged from a different base, every `git diff develop..HEAD` comparison below silently inspects the wrong tree and the DOD results become misleading.
+
+```bash
+# Detect the base the current branch forked from.
+BASE_REF=$(git merge-base --fork-point develop HEAD 2>/dev/null)
+if [ -z "$BASE_REF" ]; then
+  # Fallback: list commits unique to HEAD vs develop. Empty output means HEAD is
+  # behind/at develop; non-empty with unrelated history hints at a different base.
+  git log --oneline develop..HEAD 2>/dev/null | head -5
+fi
+```
+
+If the branch is **not** based on `develop` (no shared fork point with `develop`, or it clearly branched off another base), emit a non-blocking warning and continue:
+
+```
+⚠️ Base branch is not develop. DOD results may be misleading — this branch diverged from {actual-base}.
+```
+
+This guard **warns the user only**. It does **not** fail the DOD and does **not** block the gate — proceed with all 6 checks regardless. Record the warning in the `warnings[]` field of the return JSON so the orchestrator can surface it.
+
+---
+
 ## Anti-rationalization table
 
 Before running the checks, acknowledge these. Agents are good at producing plausible reasons to skip steps — this table preempts them.
@@ -203,10 +227,10 @@ Include each failure as a separate blocker in the return JSON with:
 - `error_excerpt`: the relevant log lines
 - `suggested_fix`: one sentence on what likely caused it
 
-Also verify the `Co-Authored-By: Claude` trailer is present on every commit on the branch:
+Also verify the `Co-Authored-By` trailer is present on every commit on the branch:
 ```bash
 git log {BASE_BRANCH}..HEAD --format="%H %s" | while read sha msg; do
-  git show $sha --format="%b" -s | grep -q "Co-Authored-By: Claude" \
+  git show $sha --format="%b" -s | grep -q "Co-Authored-By:" \
     || echo "MISSING Co-Authored-By on $sha"
 done
 ```
@@ -256,13 +280,13 @@ If no `file_scope` was provided in the dispatch plan (e.g., the skill was invoke
 | 2. Automated tests    | WARN | classes/Engine/Foo/Bar.php has no test file |
 | 3. Documentation      | PASS | docs/api.md updated |
 | 4. PR description     | PASS | All sections filled |
-| 5. CI                 | FAIL | run-stan failing: custom rule in classes/Engine/Cache/Subscriber.php:142 |
+| 5. CI                 | FAIL | run-stan failing: type error in inc/classes/class-imagify-optimize.php:142 |
 | 6. File scope         | PASS | All 4 changed files within declared scope |
 
 Overall: FAIL
 
 Blockers:
-- Check 5: static analysis failing on classes/Engine/Cache/Subscriber.php:142 — see error excerpt
+- Check 5: static analysis failing on inc/classes/class-imagify-optimize.php:142 — see error excerpt
 
 Warnings (non-blocking):
 - Check 2: classes/Engine/Foo/Bar.php has no test — consider filing a ticket
@@ -301,7 +325,7 @@ Always return this JSON object in addition to the human-readable output above:
   "blockers": [
     {
       "check": "ci|manual-validation|pr-description",
-      "description": "Check 5: static analysis failing — rule violation in classes/Engine/Cache/Subscriber.php:142",
+      "description": "Check 5: static analysis failing — type error in inc/classes/class-imagify-optimize.php:142",
       "error_excerpt": "relevant log lines for CI failures — empty string for non-CI blockers",
       "suggested_fix": "replace direct API call with project-approved helper"
     }
