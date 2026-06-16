@@ -34,7 +34,7 @@ Every `{TEMP_ROOT}`, `{REPO}`, etc. below refers to these runtime values.
 
 1. Read the spec in full.
 2. Read the dispatch plan — note exactly which files you own and any constraints.
-3. Read `.claude/commands/imagify-architecture.md` and `.claude/commands/compliance.md`.
+3. Read `.claude/skills/imagify-architecture/SKILL.md` and `.claude/skills/compliance/SKILL.md`.
 4. Read each PHP file you are responsible for in full.
 
 ---
@@ -82,7 +82,7 @@ Follow the spec's **Implementation Plan** for backend files only. Do not touch J
 
 ### Step 2.5 — Documentation update
 
-Invoke the `docs` skill inline (`.claude/commands/docs.md`).
+Invoke the `docs` skill inline (`.claude/skills/docs/SKILL.md`).
 
 Pass the explicit list of PHP files you changed in Step 2 — the skill needs this rather than inferring from git.
 
@@ -96,13 +96,13 @@ Record: `docs.status`, `docs.files_updated`, `docs.files_created`.
 
 ### Step 3b — DOD L1 (self-check)
 
-Invoke the `dod` skill inline (`.claude/commands/dod.md`) with `layer: "1"`.
+Invoke the `dod` skill inline (`.claude/skills/dod/SKILL.md`) with `layer: "1"`.
 
 The skill runs the 6 checks: manual validation, automated tests, documentation, PR description, CI (local commands at this layer), and file-scope compliance. It returns `overall: "PASS" | "WARN"` plus per-check evidence.
 
 **Self-correct any FAIL before committing.** Common fixes:
 - `automated-tests` FAIL → write the missing test, fix the failing assertion
-- `ci` FAIL (PHPCS/PHPStan) → fix the violations using the patterns in `.claude/commands/compliance.md` and `specs/phpcs/`
+- `ci` FAIL (PHPCS/PHPStan) → fix the violations using the patterns in `.claude/skills/compliance/SKILL.md` and `specs/phpcs/`
 - `documentation` FAIL → re-run the docs skill, ensure the public-API change is documented
 - `pr-description` FAIL → not applicable at L1 (no PR yet)
 
@@ -117,7 +117,7 @@ The skill runs the 6 checks: manual validation, automated tests, documentation, 
 | Integration tests | `composer test-integration` |
 | Full test suite | `composer run-tests` |
 
-**PHPCS / PHPCS-changed note:** `composer phpcs-changed` is preferred for incremental checks during implementation. Run `composer phpcs` (full) only when needed. Fix all violations — do NOT add `phpcs:ignore` inline unless the compliance spec explicitly permits it (see `.claude/commands/compliance.md` and `specs/phpcs/` for correct remediation patterns).
+**PHPCS / PHPCS-changed note:** `composer phpcs-changed` is preferred for incremental checks during implementation. Run `composer phpcs` (full) only when needed. Fix all violations — do NOT add `phpcs:ignore` inline unless the compliance spec explicitly permits it (see `.claude/skills/compliance/SKILL.md` and `specs/phpcs/` for correct remediation patterns).
 
 **PHPCS excluded sniffs** (already suppressed in `phpcs.xml` — do not add ignores for these):
 - `WordPress.Security.NonceVerification.Missing`
