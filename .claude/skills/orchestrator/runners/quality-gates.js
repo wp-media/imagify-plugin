@@ -93,7 +93,7 @@ const dodPrompt = [
   `Base branch: ${baseBranch}`,
   `Temp root: ${tempRoot}`,
   '',
-  'Read .claude/commands/dod.md for the complete check instructions, then run all Layer 2 checks.',
+  'Read .claude/skills/dod/SKILL.md for the complete check instructions, then run all Layer 2 checks.',
   'This is a fresh, independent read — do not assume Layer 1 caught everything.',
   'When finished, you MUST call the StructuredOutput tool with your results — do not end your turn without calling it.',
 ].join('\n')
