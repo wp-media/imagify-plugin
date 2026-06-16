@@ -258,9 +258,10 @@ final class Bulk {
 
 			if ( is_wp_error( $result ) ) {
 				++$errors;
-			} else {
-				++$restored;
+				continue;
 			}
+
+			++$restored;
 		}
 
 		return [

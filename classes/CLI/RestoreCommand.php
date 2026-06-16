@@ -44,7 +44,7 @@ class RestoreCommand extends AbstractCommand {
 	 * @param array $arguments Positional argument.
 	 * @param array $options   Optional arguments.
 	 */
-	public function __invoke( $arguments, $options ) {
+	public function __invoke( $arguments, $options ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( empty( $arguments ) ) {
 			$arguments = array_keys( self::CONTEXT_MAP );
 		}
