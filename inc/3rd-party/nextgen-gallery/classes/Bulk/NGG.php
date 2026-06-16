@@ -103,6 +103,17 @@ class NGG extends AbstractBulk {
 	}
 
 	/**
+	 * Get all optimized media ids that can be restored.
+	 *
+	 * @since 2.3
+	 *
+	 * @return array A list of optimized media IDs with backup files available.
+	 */
+	public function get_optimized_media_ids() {
+		return [];
+	}
+
+	/**
 	 * Get ids of all optimized media without next-gen versions.
 	 *
 	 * @since 2.2

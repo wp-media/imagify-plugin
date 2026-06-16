@@ -5,7 +5,7 @@ namespace Imagify;
 
 use Imagify\Admin\AdminBar;
 use Imagify\Bulk\Bulk;
-use Imagify\CLI\{BulkOptimizeCommand, GenerateMissingNextgenCommand};
+use Imagify\CLI\{BulkOptimizeCommand, GenerateMissingNextgenCommand, RestoreCommand};
 use Imagify\Dependencies\League\Container\Container;
 use Imagify\Dependencies\League\Container\ServiceProvider\ServiceProviderInterface;
 use Imagify\EventManagement\{EventManager, SubscriberInterface};
@@ -132,6 +132,7 @@ class Plugin {
 		add_action( 'init', [ $this, 'maybe_activate' ] );
 
 		imagify_add_command( new BulkOptimizeCommand() );
+		imagify_add_command( new RestoreCommand() );
 		imagify_add_command( new GenerateMissingNextgenCommand() );
 
 		foreach ( $providers as $service_provider ) {

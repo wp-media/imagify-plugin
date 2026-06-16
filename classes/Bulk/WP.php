@@ -172,6 +172,87 @@ class WP extends AbstractBulk {
 	}
 
 	/**
+	 * Get all optimized media IDs that have a backup file available for restore.
+	 *
+	 * @return array A list of media IDs.
+	 */
+	public function get_optimized_media_ids(): array {
+		global $wpdb;
+
+		$this->set_no_time_limit();
+
+		$mime_types   = Imagify_DB::get_mime_types();
+		$statuses     = Imagify_DB::get_post_statuses();
+		$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause();
+		$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause(
+			[
+				'prepared' => true,
+			]
+		);
+		$ids          = $wpdb->get_col(
+			$wpdb->prepare( // WPCS: unprepared SQL ok.
+				"
+				SELECT DISTINCT p.ID
+				FROM $wpdb->posts AS p
+					$nodata_join
+				INNER JOIN $wpdb->postmeta AS mt1
+					ON ( p.ID = mt1.post_id AND mt1.meta_key = '_imagify_status' )
+				WHERE
+					p.post_mime_type IN ( $mime_types )
+					AND mt1.meta_value IN ( 'success', 'already_optimized' )
+					AND p.post_type = 'attachment'
+					AND p.post_status IN ( $statuses )
+					$nodata_where
+				ORDER BY p.ID DESC
+				LIMIT 0, %d",
+				imagify_get_unoptimized_attachment_limit()
+			)
+		);
+
+		$wpdb->flush();
+		unset( $mime_types, $statuses );
+		$ids = array_filter( array_map( 'absint', $ids ) );
+
+		if ( ! $ids ) {
+			return [];
+		}
+
+		$metas = Imagify_DB::get_metas(
+			[
+				// Get attachments filename.
+				'filenames' => '_wp_attached_file',
+			],
+			$ids
+		);
+
+		$data = [];
+
+		foreach ( $ids as $id ) {
+			if ( empty( $metas['filenames'][ $id ] ) ) {
+				// Problem.
+				continue;
+			}
+
+			$file_path = get_imagify_attached_file( $metas['filenames'][ $id ] );
+
+			if ( ! $file_path ) {
+				continue;
+			}
+
+			$attachment_backup_path = get_imagify_attachment_backup_path( $file_path );
+
+			if ( ! $this->filesystem->exists( $attachment_backup_path ) ) {
+				// No backup, cannot restore.
+				continue;
+			}
+
+			$data[] = $id;
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Get ids of all optimized media without Next gen versions.
 	 *
 	 * @since 2.2
