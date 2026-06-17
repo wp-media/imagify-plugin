@@ -9,6 +9,7 @@ namespace Imagify\Tests\Unit;
 
 define( 'IMAGIFY_PLUGIN_ROOT', dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR );
 define( 'IMAGIFY_PLUGIN_TESTS_FIXTURES_DIR', dirname( __DIR__ ) . '/Fixtures' );
+define( 'IMAGIFY_SLUG', 'imagify' );
 
 /**
  * The original files need to loaded into memory before we mock them with Patchwork. Add files here before the unit
@@ -21,6 +22,7 @@ function load_original_files_before_mocking() {
 		'inc/functions/api.php',
 		'inc/functions/attachments.php',
 		'inc/functions/common.php',
+		'inc/3rd-party/nextgen-gallery/inc/functions/common.php',
 	];
 	foreach ( $originals as $file ) {
 		require_once IMAGIFY_PLUGIN_ROOT . $file;

@@ -267,7 +267,7 @@ function _imagify_ngg_media_library_imported_image_data( $image, $attachment ) {
 add_action( 'ngg_generated_image', 'imagify_ngg_maybe_add_dynamic_thumbnail_to_background_process', IMAGIFY_INT_MAX, 2 );
 /**
  * Add a dynamically generated thumbnail to the background process queue.
- * Note that this won’t work when images are imported (from WP Library or uploaded), since they are already being processed, and locked.
+ * Note that this won't work when images are imported (from WP Library or uploaded), since they are already being processed, and locked.
  *
  * @since  1.8
  * @since  1.9 Doesn't use the class Imagify_NGG_Dynamic_Thumbnails_Background_Process anymore.
@@ -338,7 +338,14 @@ function imagify_ngg_should_crop_thumbnail( $crop, $size, $size_data, $media ) {
 		if ( ! empty( $image->_ngiw ) ) {
 			$storage_per_media[ $media_id ] = $image->_ngiw->get_storage()->object;
 		} else {
+			// C_Gallery_Storage is part of the NGG v3 POPE framework and is absent on v4.
+			// @codeCoverageIgnoreStart — requires live NGG POPE classes; not available in unit tests.
+			if ( ! imagify_ngg_has_pope_storage() ) {
+				return $crop;
+			}
+
 			$storage_per_media[ $media_id ] = \C_Gallery_Storage::get_instance()->object;
+			// @codeCoverageIgnoreEnd
 		}
 
 		$data_per_media[ $media_id ] = $storage_per_media[ $media_id ]->_image_mapper->find( $media_id ); // stdClass Object.
