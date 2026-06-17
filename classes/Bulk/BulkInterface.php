@@ -18,6 +18,15 @@ interface BulkInterface {
 	public function get_unoptimized_media_ids( $optimization_level );
 
 	/**
+	 * Get all optimized media ids that can be restored.
+	 *
+	 * @since 2.3
+	 *
+	 * @return array A list of optimized media IDs with backup files available.
+	 */
+	public function get_optimized_media_ids();
+
+	/**
 	 * Get ids of all optimized media without Next gen versions.
 	 *
 	 * @since 2.2

@@ -220,6 +220,61 @@ final class Bulk {
 	}
 
 	/**
+	 * Runs the bulk restore for a given context.
+	 *
+	 * Restores all optimized media to their original state synchronously.
+	 * Does not use the Action Scheduler since restore is a local file
+	 * operation that does not consume API quota.
+	 *
+	 * @since 2.3
+	 *
+	 * @param string $context Current context (WP/Custom folders).
+	 *
+	 * @return array {
+	 *     @type bool   $success  Whether the operation was successful.
+	 *     @type string $message  Status message.
+	 *     @type int    $restored Number of media successfully restored.
+	 *     @type int    $errors   Number of media that failed to restore.
+	 *     @type int    $total    Total number of media processed.
+	 * }
+	 */
+	public function run_restore( string $context ) {
+		$media_ids = $this->get_bulk_instance( $context )->get_optimized_media_ids();
+
+		if ( empty( $media_ids ) ) {
+			return [
+				'success'  => false,
+				'message'  => 'no-images',
+				'restored' => 0,
+				'errors'   => 0,
+				'total'    => 0,
+			];
+		}
+
+		$restored = 0;
+		$errors   = 0;
+
+		foreach ( $media_ids as $media_id ) {
+			$process = imagify_get_optimization_process( $media_id, $context );
+			$result  = $process->restore();
+
+			if ( is_wp_error( $result ) ) {
+				++$errors;
+			} else {
+				++$restored;
+			}
+		}
+
+		return [
+			'success'  => true,
+			'message'  => 'success',
+			'restored' => $restored,
+			'errors'   => $errors,
+			'total'    => count( $media_ids ),
+		];
+	}
+
+	/**
 	 * Runs the next-gen generation
 	 *
 	 * @param array $contexts An array of contexts (WP/Custom folders).
