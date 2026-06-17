@@ -30,6 +30,7 @@ function load_original_files_before_mocking() {
 
 	$fixtures = [
 		'/WP/class-wp-error.php',
+		'/WP/class-wp-cli.php',
 	];
 	foreach ( $fixtures as $file ) {
 		require_once IMAGIFY_PLUGIN_TESTS_FIXTURES_DIR . $file;
