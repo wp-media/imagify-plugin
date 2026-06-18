@@ -75,6 +75,10 @@ jQuery.extend( window.imagify, {
 		.on( 'click.imagify', '.imagify-modal .close-btn', function() {
 			var $modal = $( this ).closest( '.imagify-modal' );
 
+			// Move focus to body before hiding the modal to avoid Chrome warning:
+			// "Blocked aria-hidden on an element because its descendant retained focus".
+			$( d.body ).attr( 'tabindex', '-1' ).focus().removeAttr( 'tabindex' );
+
 			$modal.fadeOut( 400 ).attr( 'aria-hidden', 'true' ).removeClass( 'modal-is-open' ).trigger( 'modalClosed.imagify' );
 
 			$( 'body' ).removeClass( 'imagify-modal-is-open' );

@@ -74,7 +74,7 @@ abstract class TestCase extends PHPUnitTestCase {
 		} else {
 			$previous = $ref->getValue();
 			// Static property.
-			$ref->setValue( $value );
+			$ref->setValue( null, $value );
 		}
 
 		return $previous;

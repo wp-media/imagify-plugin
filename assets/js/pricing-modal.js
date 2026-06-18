@@ -401,6 +401,10 @@
 			var viewId = $view.attr('id'),
 				$modalContent = imagifyModal.$modal.children('.imagify-modal-content');
 
+			// Move focus to body before hiding sibling views to avoid Chrome warning:
+			// "Blocked aria-hidden on an element because its descendant retained focus".
+			$(d.body).attr('tabindex', '-1').focus().removeAttr('tabindex');
+
 			$view.siblings('.imagify-modal-views').hide().attr('aria-hidden', 'true');
 
 			// Plans view has tabs: display the right one.
