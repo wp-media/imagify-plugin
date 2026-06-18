@@ -188,6 +188,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 					<?php endif; ?>
 					<?php
 					if ( Imagify_Requirements::is_api_key_valid() ) {
+						$this->print_template( 'part-settings-tools' );
 						$this->print_template( 'part-settings-footer' );
 					}
 					?>

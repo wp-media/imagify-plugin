@@ -115,12 +115,19 @@ class Main {
 
 	/**
 	 * Add custom NGG mixin to override its functions.
+	 * No-op on NGG v4.x where the POPE framework (Mixin / C_Gallery_Storage) is absent.
 	 *
 	 * @since  1.5
 	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function add_mixin() {
+		// @codeCoverageIgnoreStart — requires live NGG v3 POPE classes, not available in unit tests.
+		if ( ! imagify_ngg_has_pope_storage() ) {
+			return;
+		}
+
 		\C_Gallery_Storage::get_instance()->get_wrapped_instance()->add_mixin( '\\Imagify\\ThirdParty\\NGG\\NGGStorage' );
+		// @codeCoverageIgnoreEnd
 	}
 }

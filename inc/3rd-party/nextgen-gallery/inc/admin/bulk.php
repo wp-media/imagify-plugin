@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || die( "Cheatin' uh?" );
 
 add_filter( 'imagify_bulk_page_types', 'imagify_ngg_bulk_page_types' );
 /**
@@ -81,7 +81,7 @@ function imagify_ngg_bulk_page_data( $data, $types ) {
 		'context'  => 'ngg',
 		'title'    => __( 'NextGen Galleries', 'imagify' ),
 		/* translators: 1 is the opening of a link, 2 is the closing of this link. */
-		'footer'   => sprintf( __( 'You can also re-optimize your images more finely directly in each %1$sgallery%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'admin.php?page=nggallery-manage-gallery' ) ) . '">', '</a>' ),
+		'footer'   => sprintf( __( 'You can also re-optimize your images more finely directly in each %1$sgallery%2$s.', 'imagify' ), '<a href="' . esc_url( admin_url( 'admin.php?page=' . imagify_get_ngg_manage_gallery_url() ) ) . '">', '</a>' ),
 	];
 
 	return $data;
@@ -100,7 +100,7 @@ add_filter( 'imagify_optimization_errors_url', 'imagify_ngg_optimization_errors_
  */
 function imagify_ngg_optimization_errors_url( $url, $context ) {
 	if ( 'ngg' === $context ) {
-		return admin_url( 'admin.php?page=nggallery-manage-gallery' );
+		return admin_url( 'admin.php?page=' . imagify_get_ngg_manage_gallery_url() );
 	}
 
 	return $url;

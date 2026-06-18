@@ -1,9 +1,9 @@
 <?php
 use Imagify\ThirdParty\NGG;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || die( "Cheatin' uh?" );
 
-if ( ! class_exists( 'C_NextGEN_Bootstrap' ) || ! class_exists( 'Mixin' ) || ! get_site_option( 'ngg_options' ) ) {
+if ( ! class_exists( 'C_NextGEN_Bootstrap' ) ) {
 	return;
 }
 

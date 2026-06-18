@@ -146,6 +146,51 @@ window.imagify = window.imagify || {};
 		}
 	} ).filter( ':checked' ).trigger( 'init.imagify' );
 
+	/**
+	 * Reset Internal State button.
+	 */
+	$( '#imagify-reset-internal-state' ).on( 'click.imagify', function() {
+		var $button   = $( this ),
+			nonce     = $button.data( 'nonce' ),
+			$feedback = $( '#imagify-reset-internal-state-feedback' );
+
+		swal( {
+			title:            imagifyOptions.resetInternalState.confirm,
+			type:             'warning',
+			customClass:      'imagify-sweet-alert',
+			padding:          0,
+			showCancelButton: true,
+			cancelButtonText: imagifySwal.labels.cancelButtonText,
+			reverseButtons:   true
+		} ).then(
+			function() {
+				$button.prop( 'disabled', true );
+				$feedback.text( '' ).removeClass( 'imagify-success imagify-error' );
+
+				$.post( ajaxurl, {
+					'action':   imagifyOptions.resetInternalState.action,
+					'_wpnonce': nonce
+				} )
+					.done( function( response ) {
+						if ( response && response.success ) {
+							$feedback.text( imagifyOptions.resetInternalState.success ).addClass( 'imagify-success' );
+						} else {
+							$feedback.text( imagifyOptions.resetInternalState.error ).addClass( 'imagify-error' );
+						}
+					} )
+					.fail( function() {
+						$feedback.text( imagifyOptions.resetInternalState.error ).addClass( 'imagify-error' );
+					} )
+					.always( function() {
+						$button.prop( 'disabled', false );
+					} );
+			},
+			function() {
+				// User cancelled — do nothing.
+			}
+		);
+	} );
+
 } )(jQuery, document, window);
 
 

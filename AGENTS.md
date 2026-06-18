@@ -300,6 +300,28 @@ Run `node bin/build-knowledge-graph.js` to refresh after structural changes (`--
 
 ---
 
+## 13.2 Session Learnings
+
+Lessons learned from past pipeline runs. Injected into every agent dispatch by the orchestrator.
+
+### E2E — Screenshots must show the target element
+
+**Rule:** Always call `locator.scrollIntoViewIfNeeded()` before `page.screenshot()`. Use the shared helper `screenshotElement()` from `Tests/e2e/fixtures/screenshot.ts` instead of calling `page.screenshot()` directly.
+
+**Why:** A screenshot taken at page-load position captures the top of the page, not the feature being tested. Screenshots showing unrelated content (e.g. General Settings header instead of the target button) provide zero QA evidence and mislead reviewers.
+
+**How to apply:** In every Playwright spec, import `screenshotElement` from `../fixtures/screenshot` and pass the target locator as the third argument. Verify each screenshot visually shows the element it documents before committing.
+
+### E2E — Never use `test.skip()` as a fallback for missing seed data
+
+**Rule:** If a required UI element is not visible due to missing seed data, use a hard `expect(...).toBe(true)` assertion, not `test.skip()`.
+
+**Why:** `test.skip()` causes the test suite to report green with zero assertions — CI passes but nothing is tested. A hard fail surfaces the missing seed as a real problem.
+
+**How to apply:** Check element visibility after navigation. If not visible, fail with a descriptive message that includes the seed command needed to fix the environment.
+
+---
+
 # 15. Repository Specs
 
 The repository may define task-specific implementation specs under `.aiassistant/specs/`.

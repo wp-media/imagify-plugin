@@ -20,6 +20,7 @@ composer.lock
 /Tests/e2e/playwright-report
 /Tests/e2e/test-results
 /.e2e-screenshots
+/Tests/e2e/.e2e-screenshots
 
-# Local issue sync (issue-workflow skill cache)
-# /.TemporaryItems already listed above
+# AI agent working directory (issue snapshots, PR drafts, locks)
+/.ai

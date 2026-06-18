@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\ThirdParty\NGG;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || die( "Cheatin' uh?" );
 
 /**
  * Imagify NextGen Gallery storage class.
