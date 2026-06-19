@@ -93,6 +93,42 @@ A `WP_CLI::warning()` is emitted if:
 
 ---
 
+## `wp imagify generate-missing-nextgen <contexts...>`
+
+Synchronously generates missing next-gen image versions (WebP, AVIF, etc.) for
+all images that do not yet have them, for one or more bulk contexts.
+
+**Class:** `Imagify\CLI\GenerateMissingNextgenCommand`
+
+### Arguments
+
+| Name | Required | Repeating | Description |
+|---|---|---|---|
+| `contexts` | yes | yes | One or more contexts to run. Valid values: `wp`, `custom-folders`. |
+
+### Examples
+
+```bash
+# Generate missing next-gen images for the WordPress media library.
+wp imagify generate-missing-nextgen wp
+
+# Generate missing next-gen images for both contexts.
+wp imagify generate-missing-nextgen wp custom-folders
+```
+
+### Behaviour
+
+1. Calls `Imagify\Bulk\Bulk::run_generate_nextgen( $contexts, $formats )`.
+2. `$formats` is resolved at runtime via `imagify_nextgen_images_formats()`, which
+   reads the `optimization_format` plugin option and applies the
+   `imagify_nextgen_images_formats` filter.
+3. If no formats are configured (option set to `off`) the method returns `no-images`
+   without processing any files.
+
+A one-line log message is emitted via `WP_CLI::log()` after the operation completes.
+
+---
+
 ## Context resolution
 
 Both bulk commands resolve the concrete `AbstractBulk` subclass through the
