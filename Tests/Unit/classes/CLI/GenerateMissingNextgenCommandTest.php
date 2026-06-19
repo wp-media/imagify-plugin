@@ -123,7 +123,7 @@ class GenerateMissingNextgenCommandTest extends TestCase {
 		( $this->command )( [ 'wp', 'custom-folders' ], [] );
 
 		$this->assertSame( [ 'wp', 'custom-folders' ], $stub->received_contexts );
-		$this->assertNotEmpty( $stub->received_formats );
+		$this->assertSame( [ 'webp' => 'webp' ], $stub->received_formats );
 	}
 
 	/**
