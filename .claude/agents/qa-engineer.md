@@ -49,6 +49,9 @@ gh pr checkout $PR_NUMBER
 
 # 3. Boot (or restart) the environment — always run this, whether or not it appears to be running already
 bash bin/dev-start.sh
+
+# 4. Seed the environment (API key + test image) — always run after boot
+bash bin/dev-seed.sh
 ```
 
 WordPress should be available at `{E2E_URL}` (admin / password).
@@ -188,9 +191,18 @@ Before executing any strategy, scan every PHP file touched by the PR — and the
 - API availability checks: `Imagify_Requirements::is_api_up()` (`inc/classes/class-imagify-requirements.php:225`)
 - Any external Imagify API HTTP call whose failure changes what is rendered or whether optimization runs
 
+**API key availability check:** Before marking any API-key guard as a blocker, verify whether the key was seeded:
+
+```bash
+npx @wordpress/env run cli wp option get imagify_settings --format=json | grep -c '"api_key":"[^"]\+'
+```
+
+If the result is `1` (key is non-empty), the API-key guards (`is_api_key_valid`, `imagify_is_api_key_valid`, `imagify_valid_key`) are **not blockers** — do not mark related criteria `CANNOT_VERIFY`. The key is seeded by `bin/dev-seed.sh` from the `IMAGIFY_TESTS_API_KEY` environment variable.
+
 For each acceptance criterion:
 1. Trace the code path it exercises in the PHP source.
 2. If a detected guard sits on that path and would evaluate to false on the local environment (no valid API key, free/over-quota plan, API unreachable), mark that criterion `CANNOT_VERIFY` immediately and record the guard's `function`, `file`, and `line`.
+   - **Exception:** API-key guards are not blockers when the key was confirmed non-empty in the check above.
 3. Do not attempt browser or API validation for a `CANNOT_VERIFY` criterion — it will produce a false result.
 4. In the report and in the JSON return, name the specific guard and its `file:line`.
 
@@ -318,7 +330,7 @@ Keep the PR comment short. Reviewers can see the diff and CI output themselves �
 |---|---|---|---|
 | [criterion 1] | API | ✅ | — |
 | [criterion 2] | Browser | ❌ | [one sentence: what was tested, what was observed] |
-| [criterion 3] | Analysis | 🚧 CANNOT_VERIFY | Blocked by `Imagify_Requirements::is_api_key_valid()` at inc/classes/class-imagify-requirements.php:258 — no valid API key on local env |
+| [criterion 3] | Analysis | 🚧 CANNOT_VERIFY | Blocked by `Imagify_Requirements::is_over_quota()` at inc/classes/class-imagify-requirements.php:299 — plan is over quota on local env |
 
 **Blockers:**
 - [criterion]: [what to fix]
