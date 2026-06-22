@@ -48,10 +48,10 @@ class Test_Register extends TestCase {
 	}
 
 	/**
-	 * Tests that register() calls wp_register_ability with execute_callback and
-	 * permission_callback in the args array.
+	 * Tests that register() calls wp_register_ability with execute_callback,
+	 * permission_callback, and show_in_rest=true in the args array.
 	 */
-	public function testCallsWpRegisterAbilityWithRequiredCallbacks(): void {
+	public function testCallsWpRegisterAbilityWithRequiredCallbacksAndShowInRest(): void {
 		Functions\when( '__' )->returnArg();
 
 		Functions\expect( 'wp_register_ability' )
@@ -60,7 +60,10 @@ class Test_Register extends TestCase {
 				'imagify/get-settings',
 				\Mockery::on(
 					function ( $args ) {
-						return isset( $args['execute_callback'] ) && isset( $args['permission_callback'] );
+						return isset( $args['execute_callback'] )
+							&& isset( $args['permission_callback'] )
+							&& isset( $args['meta']['show_in_rest'] )
+							&& true === $args['meta']['show_in_rest'];
 					}
 				)
 			);
