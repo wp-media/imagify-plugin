@@ -16,6 +16,20 @@ use Imagify\Tests\Unit\TestCase;
 class Test_Register extends TestCase {
 
 	/**
+	 * Tests that register() is a no-op when wp_register_ability is not available (WP < 6.9).
+	 *
+	 * Must run first — Brain Monkey cannot undefine a PHP function once stubbed, so this
+	 * test must execute before any other test in this class stubs wp_register_ability.
+	 */
+	public function testNoOpsWhenWpRegisterAbilityNotAvailable(): void {
+		// Do not stub wp_register_ability — function_exists() returns false here.
+		$ability = new GetSettings();
+		$ability->register();
+
+		$this->addToAssertionCount( 1 );
+	}
+
+	/**
 	 * Tests that register() calls wp_register_ability once with the correct slug when
 	 * the function exists.
 	 */

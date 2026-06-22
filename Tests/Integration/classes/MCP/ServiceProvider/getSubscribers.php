@@ -30,7 +30,7 @@ class Test_GetSubscribers extends TestCase {
 	 *
 	 * @var bool
 	 */
-	protected $use_api = false;
+	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
 	 * Tests that get_subscribers() returns ConfigSubscriber and AbilitiesSubscriber.
