@@ -309,8 +309,15 @@ You can report any security bugs found in the source code of the site-reviews pl
 
 == Changelog ==
 = 2.2.9 =
-- Bugfix: Fixed a fatal PHP error when optimizing a freshly uploaded NextGEN Gallery image with no metadata yet populated.
-- Bugfix: Fixed a fatal ArgumentCountError crashing the `wp imagify generate-missing-nextgen` WP-CLI command.
+- Enhancement: Add a new WP-CLI command to restore images in bulk.
+- Enhancement: Add a one-click Reset Internal State tool to the troubleshooting page.
+- Bugfix: Restore Imagify controls compatibility with NextGEN Gallery v4.x.
+- Bugfix: Restore button icon alignment broken by WordPress 7.0.
+- Bugfix: Fix the generate missing WebP button responsiveness.
+- Bugfix: Prevent duplicate htaccess notices and fix undefined variable warnings.
+- Bugfix: Fix incorrect flag passed to filter_input in bulk stats callback.
+- Bugfix: Fix a fatal PHP error when optimizing a freshly uploaded NextGEN Gallery image with no metadata yet populated.
+- Bugfix: Fix a fatal ArgumentCountError crashing the `wp imagify generate-missing-nextgen` WP-CLI command.
 
 = 2.2.8 =
 - Bugfix: Fix jQuery deprecation notices
