@@ -1,10 +1,14 @@
 /.git
 /.github
 /.wordpress-org
+/.claude
 /bin
 /_dev
 /Tests
 
+/.aiassistant
+/AGENTS.md
+/.wp-env.json
 /.distignore
 /.editorconfig
 /.eslintrc.json
