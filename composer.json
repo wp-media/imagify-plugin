@@ -36,6 +36,7 @@
 		"composer/installers": "^1.0 || ^2.0",
 		"deliciousbrains/wp-background-processing": "dev-master",
 		"league/container": "^4.2",
+		"woocommerce/action-scheduler": "^3.4",
 		"wp-media/apply-filters-typed": "^1.0",
 		"wp-media/plugin-family": "^1.0"
 	},
@@ -51,7 +52,6 @@
 		"phpunit/phpunit": "^8.5.52 || ^9.6.33",
 		"roave/security-advisories": "dev-master",
 		"szepeviktor/phpstan-wordpress": "^2.0",
-		"woocommerce/action-scheduler": "^3.4",
 		"wp-coding-standards/wpcs": "^3",
 		"wp-media/phpstan-wp": "^1.0",
 		"wp-media/phpunit": "3.0"
