@@ -39,7 +39,7 @@ class Test_Register extends TestCase {
 		Functions\expect( 'wp_register_ability' )
 			->once()
 			->with(
-				'imagify_get_settings',
+				'imagify/get-settings',
 				\Mockery::type( 'array' )
 			);
 
@@ -57,7 +57,7 @@ class Test_Register extends TestCase {
 		Functions\expect( 'wp_register_ability' )
 			->once()
 			->with(
-				'imagify_get_settings',
+				'imagify/get-settings',
 				\Mockery::on(
 					function ( $args ) {
 						return isset( $args['execute_callback'] ) && isset( $args['permission_callback'] );

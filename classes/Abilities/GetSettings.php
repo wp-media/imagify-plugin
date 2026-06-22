@@ -27,7 +27,7 @@ class GetSettings implements AbilitiesInterface {
 		}
 
 		wp_register_ability(
-			'imagify_get_settings',
+			'imagify/get-settings',
 			[
 				'name'                => __( 'Get Imagify settings', 'imagify' ),
 				'description'         => __( 'Returns all Imagify configuration options and their current values.', 'imagify' ),
