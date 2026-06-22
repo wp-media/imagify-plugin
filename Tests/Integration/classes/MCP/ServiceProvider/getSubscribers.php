@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 
+use Imagify\Abilities\GetSettings;
 use Imagify\MCP\AbilitiesSubscriber;
 use Imagify\MCP\ConfigSubscriber;
 use Imagify\MCP\ServiceProvider;
@@ -24,7 +25,12 @@ use Imagify\Tests\Integration\TestCase;
  */
 class Test_GetSubscribers extends TestCase {
 
-	protected $useApi = false;
+	/**
+	 * Whether to use the Imagify API for these tests.
+	 *
+	 * @var bool
+	 */
+	protected $use_api = false;
 
 	/**
 	 * Tests that get_subscribers() returns ConfigSubscriber and AbilitiesSubscriber.
@@ -72,5 +78,14 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertFalse( $provider->provides( 'some_unknown_service' ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for GetSettings.
+	 */
+	public function testProvidesTrueForGetSettings(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( GetSettings::class ) );
 	}
 }
