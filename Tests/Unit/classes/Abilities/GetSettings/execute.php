@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetSettings;
 
-use Brain\Monkey\Functions;
 use Imagify\Abilities\GetSettings;
 use Imagify\Tests\Unit\TestCase;
-use Mockery;
 
 /**
  * Tests for \Imagify\Abilities\GetSettings::execute().
+ *
+ * Uses a testable subclass to avoid re-mocking the legacy Imagify_Options
+ * singleton (the real class is already loaded by the unit test bootstrap).
  *
  * @covers \Imagify\Abilities\GetSettings::execute
  * @group  GetSettings
@@ -17,63 +18,37 @@ use Mockery;
 class Test_Execute extends TestCase {
 
 	/**
-	 * Builds a mock Imagify_Options instance and injects it as the singleton.
-	 *
-	 * @param array<string, mixed> $return_values The values that get_all() should return.
-	 * @return \Mockery\MockInterface
-	 */
-	private function mockImagifyOptions( array $return_values ): \Mockery\MockInterface {
-		$mock = Mockery::mock( 'overload:Imagify_Options' );
-		$mock->shouldReceive( 'get_all' )
-			->once()
-			->andReturn( $return_values );
-		$mock->shouldReceive( 'get_instance' )
-			->andReturn( $mock );
-
-		return $mock;
-	}
-
-	/**
 	 * Tests that execute() returns an array.
 	 */
 	public function testReturnsArray(): void {
-		$options = [
-			'optimization_level' => 2,
-			'auto_optimize'      => 1,
-			'backup'             => 1,
-			'api_key'            => 'test-key-123',
-			'version'            => '2.2.9',
-		];
+		$ability = $this->make_testable_ability(
+			[
+				'optimization_level' => 2,
+				'auto_optimize'      => 1,
+				'api_key'            => 'test-key',
+				'version'            => '2.2.9',
+			]
+		);
 
-		$mock = Mockery::mock( 'overload:Imagify_Options' );
-		$mock->shouldReceive( 'get_instance' )->andReturn( $mock );
-		$mock->shouldReceive( 'get_all' )->andReturn( $options );
-
-		$ability = new GetSettings();
-		$result  = $ability->execute();
-
-		$this->assertIsArray( $result );
+		$this->assertIsArray( $ability->execute() );
 	}
 
 	/**
-	 * Tests that execute() returns a non-empty array with expected keys.
+	 * Tests that execute() returns a non-empty result containing expected keys.
 	 */
 	public function testReturnsExpectedKeys(): void {
-		$options = [
-			'optimization_level' => 2,
-			'auto_optimize'      => 1,
-			'backup'             => 1,
-			'resize_larger'      => 0,
-			'api_key'            => 'test-key-123',
-			'version'            => '2.2.9',
-		];
+		$ability = $this->make_testable_ability(
+			[
+				'optimization_level' => 2,
+				'auto_optimize'      => 1,
+				'backup'             => 1,
+				'resize_larger'      => 0,
+				'api_key'            => 'test-key',
+				'version'            => '2.2.9',
+			]
+		);
 
-		$mock = Mockery::mock( 'overload:Imagify_Options' );
-		$mock->shouldReceive( 'get_instance' )->andReturn( $mock );
-		$mock->shouldReceive( 'get_all' )->andReturn( $options );
-
-		$ability = new GetSettings();
-		$result  = $ability->execute();
+		$result = $ability->execute();
 
 		$this->assertArrayHasKey( 'optimization_level', $result );
 		$this->assertArrayHasKey( 'auto_optimize', $result );
@@ -84,64 +59,81 @@ class Test_Execute extends TestCase {
 	 * Tests that execute() strips the internal 'version' key.
 	 */
 	public function testStripsVersionKey(): void {
-		$options = [
-			'optimization_level' => 2,
-			'auto_optimize'      => 1,
-			'api_key'            => 'test-key-123',
-			'version'            => '2.2.9',
-		];
+		$ability = $this->make_testable_ability(
+			[
+				'optimization_level' => 2,
+				'api_key'            => 'test-key',
+				'version'            => '2.2.9',
+			]
+		);
 
-		$mock = Mockery::mock( 'overload:Imagify_Options' );
-		$mock->shouldReceive( 'get_instance' )->andReturn( $mock );
-		$mock->shouldReceive( 'get_all' )->andReturn( $options );
-
-		$ability = new GetSettings();
-		$result  = $ability->execute();
-
-		$this->assertArrayNotHasKey( 'version', $result );
+		$this->assertArrayNotHasKey( 'version', $ability->execute() );
 	}
 
 	/**
 	 * Tests that execute() omits the api_key to prevent credential exposure.
 	 */
 	public function testOmitsApiKey(): void {
-		$options = [
-			'optimization_level' => 2,
-			'auto_optimize'      => 1,
-			'backup'             => 1,
-			'api_key'            => 'super-secret-api-key',
-			'version'            => '2.2.9',
-		];
+		$ability = $this->make_testable_ability(
+			[
+				'optimization_level' => 2,
+				'backup'             => 1,
+				'api_key'            => 'super-secret-api-key',
+				'version'            => '2.2.9',
+			]
+		);
 
-		$mock = Mockery::mock( 'overload:Imagify_Options' );
-		$mock->shouldReceive( 'get_instance' )->andReturn( $mock );
-		$mock->shouldReceive( 'get_all' )->andReturn( $options );
-
-		$ability = new GetSettings();
-		$result  = $ability->execute();
-
-		$this->assertArrayNotHasKey( 'api_key', $result );
+		$this->assertArrayNotHasKey( 'api_key', $ability->execute() );
 	}
 
 	/**
-	 * Tests that execute() returns a non-empty result.
+	 * Tests that execute() returns a non-empty result when settings exist.
 	 */
 	public function testReturnsNonEmptyResult(): void {
-		$options = [
-			'optimization_level' => 2,
-			'auto_optimize'      => 1,
-			'backup'             => 1,
-			'api_key'            => 'test-key',
-			'version'            => '2.2.9',
-		];
+		$ability = $this->make_testable_ability(
+			[
+				'optimization_level' => 2,
+				'auto_optimize'      => 1,
+				'api_key'            => 'test-key',
+				'version'            => '2.2.9',
+			]
+		);
 
-		$mock = Mockery::mock( 'overload:Imagify_Options' );
-		$mock->shouldReceive( 'get_instance' )->andReturn( $mock );
-		$mock->shouldReceive( 'get_all' )->andReturn( $options );
+		$this->assertNotEmpty( $ability->execute() );
+	}
 
-		$ability = new GetSettings();
-		$result  = $ability->execute();
+	/**
+	 * Build a testable GetSettings instance with injected raw settings.
+	 *
+	 * @param array<string, mixed> $raw_settings Raw options to inject.
+	 * @return GetSettings
+	 */
+	private function make_testable_ability( array $raw_settings ): GetSettings {
+		return new class( $raw_settings ) extends GetSettings {
+			/**
+			 * Injected raw settings for testing.
+			 *
+			 * @var array<string, mixed>
+			 */
+			private $raw;
 
-		$this->assertNotEmpty( $result );
+			/**
+			 * Constructor.
+			 *
+			 * @param array<string, mixed> $raw Raw settings to inject.
+			 */
+			public function __construct( array $raw ) {
+				$this->raw = $raw;
+			}
+
+			/**
+			 * Return the injected settings instead of calling the real singleton.
+			 *
+			 * @return array<string, mixed>
+			 */
+			protected function fetch_raw_settings(): array {
+				return $this->raw;
+			}
+		};
 	}
 }

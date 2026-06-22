@@ -48,15 +48,27 @@ class GetSettings implements AbilitiesInterface {
 	}
 
 	/**
+	 * Fetch the raw settings array from the options layer.
+	 *
+	 * Extracted into a protected method so that unit tests can override
+	 * this call without needing to re-mock the legacy singleton.
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected function fetch_raw_settings(): array {
+		return \Imagify_Options::get_instance()->get_all();
+	}
+
+	/**
 	 * Execute the ability: return all Imagify settings.
 	 *
-	 * Strips the internal `version` key and redacts the `api_key` to
-	 * avoid leaking the raw API key over the MCP endpoint.
+	 * Strips the internal `version` key and omits `api_key` to
+	 * avoid leaking credentials over the MCP endpoint.
 	 *
 	 * @return array<string, mixed> All user-facing Imagify options.
 	 */
 	public function execute(): array {
-		$settings = \Imagify_Options::get_instance()->get_all();
+		$settings = $this->fetch_raw_settings();
 
 		unset( $settings['version'] );
 		unset( $settings['api_key'] );
