@@ -23,10 +23,10 @@ class Test_Register extends TestCase {
 	 */
 	public function testNoOpsWhenWpRegisterAbilityNotAvailable(): void {
 		// Do not stub wp_register_ability — function_exists() returns false here.
+		$this->expectNotToPerformAssertions();
+
 		$ability = new GetSettings();
 		$ability->register();
-
-		$this->addToAssertionCount( 1 );
 	}
 
 	/**
