@@ -48,10 +48,10 @@ class Test_Register extends TestCase {
 	}
 
 	/**
-	 * Tests that register() calls wp_register_ability with execute_callback,
-	 * permission_callback, and show_in_rest=true in the args array.
+	 * Tests that register() calls wp_register_ability with the required callbacks
+	 * and the meta flags needed for REST and MCP exposure.
 	 */
-	public function testCallsWpRegisterAbilityWithRequiredCallbacksAndShowInRest(): void {
+	public function testCallsWpRegisterAbilityWithRequiredCallbacksAndMetaFlags(): void {
 		Functions\when( '__' )->returnArg();
 
 		Functions\expect( 'wp_register_ability' )
@@ -62,8 +62,8 @@ class Test_Register extends TestCase {
 					function ( $args ) {
 						return isset( $args['execute_callback'] )
 							&& isset( $args['permission_callback'] )
-							&& isset( $args['meta']['show_in_rest'] )
-							&& true === $args['meta']['show_in_rest'];
+							&& true === ( $args['meta']['show_in_rest'] ?? false )
+							&& true === ( $args['meta']['mcp']['public'] ?? false );
 					}
 				)
 			);

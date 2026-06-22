@@ -36,6 +36,9 @@ class GetSettings implements AbilitiesInterface {
 				'permission_callback' => [ $this, 'check_permissions' ],
 				'meta'                => [
 					'show_in_rest' => true,
+					'mcp'          => [
+						'public' => true,
+					],
 				],
 			]
 		);
