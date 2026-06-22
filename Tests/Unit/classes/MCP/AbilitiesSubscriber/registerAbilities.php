@@ -25,13 +25,12 @@ class Test_RegisterAbilities extends TestCase {
 	 * the function_exists() guard always passes. This test verifies the empty loop is safe.
 	 */
 	public function testNoOpsWithZeroAbilitiesFoundationState(): void {
-		Functions\when( 'wp_register_ability' )->justReturn();
+		// Assert that wp_register_ability is never invoked when no abilities are injected.
+		// Brain Monkey's expect()->never() is itself the real assertion here.
+		Functions\expect( 'wp_register_ability' )->never();
 
 		$subscriber = new AbilitiesSubscriber();
 		$subscriber->register_abilities();
-
-		// No ability->register() calls expected since no abilities were injected.
-		$this->addToAssertionCount( 1 );
 	}
 
 	/**
@@ -60,11 +59,10 @@ class Test_RegisterAbilities extends TestCase {
 	 */
 	public function testWithZeroAbilitiesDoesNotCallWpRegisterAbility(): void {
 		// Verify wp_register_ability is never invoked when no abilities are injected.
+		// Brain Monkey's expect()->never() is itself the real assertion.
 		Functions\expect( 'wp_register_ability' )->never();
 
 		$subscriber = new AbilitiesSubscriber();
 		$subscriber->register_abilities();
-
-		$this->addToAssertionCount( 1 );
 	}
 }

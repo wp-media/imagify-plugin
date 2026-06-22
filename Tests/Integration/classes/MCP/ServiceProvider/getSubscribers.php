@@ -1,21 +1,30 @@
 <?php
 declare(strict_types=1);
 
-namespace Imagify\Tests\Unit\classes\MCP\ServiceProvider;
+namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 
 use Imagify\MCP\AbilitiesSubscriber;
 use Imagify\MCP\ConfigSubscriber;
 use Imagify\MCP\ServiceProvider;
-use Imagify\Tests\Unit\TestCase;
+use Imagify\Tests\Integration\TestCase;
 
 /**
  * Tests for \Imagify\MCP\ServiceProvider::get_subscribers() and provides().
+ *
+ * These tests live in the Integration suite because ServiceProvider extends
+ * Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider
+ * (a Strauss-prefixed vendored class). The Unit bootstrap uses a hand-listed
+ * file set — NOT the full vendor autoloader — so the prefixed base class is not
+ * available there. The Integration suite bootstraps the full WP environment with
+ * the complete autoloader, making the class resolvable.
  *
  * @covers \Imagify\MCP\ServiceProvider::get_subscribers
  * @covers \Imagify\MCP\ServiceProvider::provides
  * @group  MCP
  */
 class Test_GetSubscribers extends TestCase {
+
+	protected $useApi = false;
 
 	/**
 	 * Tests that get_subscribers() returns ConfigSubscriber and AbilitiesSubscriber.

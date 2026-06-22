@@ -90,7 +90,7 @@ Subscribed by `AbilitiesSubscriber::register_abilities()`. Loops over injected `
    $this->getContainer()->addShared( AbilitiesSubscriber::class )
        ->addArguments( [ MyAbility::class ] );
    ```
-3. Call `->register()` inside `AbilitiesSubscriber::register_abilities()` via the injected instance (the loop handles this automatically once the ability is passed in the constructor).
+3. The loop in `AbilitiesSubscriber::register_abilities()` calls `->register()` on every injected ability automatically — no manual call is needed.
 
 ## Patch
 
