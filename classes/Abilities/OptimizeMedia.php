@@ -93,6 +93,16 @@ class OptimizeMedia implements AbilitiesInterface {
 			error_log( 'DEBUG: wp_register_ability returned error: ' . $result->get_error_message() );
 		} else {
 			error_log( 'DEBUG: OptimizeMedia ability registered successfully' );
+			// Verify the ability was actually registered and meta is correct
+			$ability = wp_get_ability( 'imagify/optimize_media' );
+			if ( $ability ) {
+				$meta = $ability->get_meta();
+				error_log( 'DEBUG: Ability found after registration' );
+				error_log( 'DEBUG: Meta structure: ' . wp_json_encode( $meta ) );
+				error_log( 'DEBUG: mcp.public value: ' . ( $meta['mcp']['public'] ?? 'NOT SET' ) );
+			} else {
+				error_log( 'DEBUG: ERROR - Ability not found after registration!' );
+			}
 		}
 	}
 
