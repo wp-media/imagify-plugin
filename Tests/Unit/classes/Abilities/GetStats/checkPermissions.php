@@ -19,8 +19,10 @@ class Test_CheckPermissions extends TestCase {
 	 * Tests that check_permissions() returns true when user has manage_options.
 	 */
 	public function testReturnsTrueWhenUserHasManageOptions(): void {
-		Functions\when( 'current_user_can' )
-			->justReturn( true );
+		Functions\expect( 'current_user_can' )
+			->once()
+			->with( 'manage_options' )
+			->andReturn( true );
 
 		$ability = new GetStats();
 
@@ -31,8 +33,10 @@ class Test_CheckPermissions extends TestCase {
 	 * Tests that check_permissions() returns false when user lacks manage_options.
 	 */
 	public function testReturnsFalseWhenUserLacksManageOptions(): void {
-		Functions\when( 'current_user_can' )
-			->justReturn( false );
+		Functions\expect( 'current_user_can' )
+			->once()
+			->with( 'manage_options' )
+			->andReturn( false );
 
 		$ability = new GetStats();
 
