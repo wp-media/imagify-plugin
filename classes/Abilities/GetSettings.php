@@ -23,12 +23,12 @@ class GetSettings implements AbilitiesInterface {
 		wp_register_ability(
 			'imagify/get-settings',
 			[
-				'label'                 => __( 'Get Imagify Settings', 'imagify' ),
-				'description'           => __( 'Retrieve current Imagify configuration options.', 'imagify' ),
-				'category'              => 'imagify',
-				'execute_callback'      => [ $this, 'execute' ],
-				'permission_callback'   => [ $this, 'check_permissions' ],
-				'meta'                  => [
+				'label'               => __( 'Get Imagify Settings', 'imagify' ),
+				'description'         => __( 'Retrieve current Imagify configuration options.', 'imagify' ),
+				'category'            => 'imagify',
+				'execute_callback'    => [ $this, 'execute' ],
+				'permission_callback' => [ $this, 'check_permissions' ],
+				'meta'                => [
 					'show_in_rest' => true,
 					'mcp'          => [
 						'public' => true,

@@ -23,12 +23,12 @@ class UpdateSettings implements AbilitiesInterface {
 		wp_register_ability(
 			'imagify/update-settings',
 			[
-				'label'                 => __( 'Update Imagify Settings', 'imagify' ),
-				'description'           => __( 'Update Imagify configuration options (optimization level, CDN URL, formats, etc).', 'imagify' ),
-				'category'              => 'imagify',
-				'execute_callback'      => [ $this, 'execute' ],
-				'permission_callback'   => [ $this, 'check_permissions' ],
-				'meta'                  => [
+				'label'               => __( 'Update Imagify Settings', 'imagify' ),
+				'description'         => __( 'Update Imagify configuration options (optimization level, CDN URL, formats, etc).', 'imagify' ),
+				'category'            => 'imagify',
+				'execute_callback'    => [ $this, 'execute' ],
+				'permission_callback' => [ $this, 'check_permissions' ],
+				'meta'                => [
 					'show_in_rest' => true,
 					'mcp'          => [
 						'public' => true,
@@ -52,6 +52,7 @@ class UpdateSettings implements AbilitiesInterface {
 	 *
 	 * The `$args` parameter is passed by the WP Abilities API callback wrapper.
 	 *
+	 * @param array $args Partial settings object to update (optional).
 	 * @return array|WP_Error {
 	 *     @type array $updated Keys that were changed.
 	 *     @type array $settings Full settings after the update.
