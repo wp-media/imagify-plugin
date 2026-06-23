@@ -4,7 +4,14 @@
 
 The `Imagify\MCP` module integrates Imagify with the WordPress MCP (Model Context Protocol) adapter (`wordpress/mcp-adapter`). It exposes an MCP server endpoint that AI agents can use to discover and invoke Imagify abilities.
 
-This module ships the **foundation only** (issue #1108). Zero Imagify-specific abilities are registered yet — the adapter's three built-in tools (`discover-abilities`, `get-ability-info`, `execute-ability`) are always present. Concrete abilities are added by downstream sub-issues under `classes/Abilities/`.
+The adapter's three built-in tools (`discover-abilities`, `get-ability-info`, `execute-ability`) are always present. Imagify-specific abilities are registered by downstream issues under `classes/Abilities/`.
+
+**Registered abilities:**
+
+| Slug | Class | Added in |
+|------|-------|----------|
+| `imagify/get-settings` | `Imagify\Abilities\GetSettings` | #1095 |
+| `imagify/get-account` | `Imagify\Abilities\GetAccount` | #1099 |
 
 ## Requirements
 
@@ -34,7 +41,7 @@ class_exists( \WP\MCP\Core\McpAdapter::class )
 | Method | GET / POST (JSON-RPC) |
 | Registered by | `wordpress/mcp-adapter` `DefaultServerFactory::create()` on `mcp_adapter_init` |
 
-With zero Imagify abilities the endpoint returns HTTP 200 with the adapter's default three-tool set and zero Imagify-category abilities.
+The endpoint returns HTTP 200 with the adapter's default three-tool set plus all registered Imagify-category abilities.
 
 ## Classes
 
@@ -79,7 +86,7 @@ Subscribed by `AbilitiesSubscriber::register_categories()`. Registers the `imagi
 
 ### Action: `wp_abilities_api_init`
 
-Subscribed by `AbilitiesSubscriber::register_abilities()`. Loops over injected `AbilitiesInterface` instances calling `->register()`. No-ops on WP < 6.9. With zero abilities (foundation) the loop body never executes.
+Subscribed by `AbilitiesSubscriber::register_abilities()`. Loops over injected `AbilitiesInterface` instances calling `->register()`. No-ops on WP < 6.9.
 
 ## Adding a new ability (downstream sub-issues)
 
