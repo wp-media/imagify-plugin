@@ -38,7 +38,7 @@ class Test_Register extends TestCase {
 		Functions\expect( 'wp_register_ability' )
 			->once()
 			->with(
-				'imagify/optimize_media',
+				'imagify/optimize-media',
 				\Mockery::type( 'array' )
 			);
 

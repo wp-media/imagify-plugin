@@ -7,7 +7,7 @@ namespace Imagify\Abilities;
  * MCP ability: optimize a media on-demand.
  *
  * Registers itself with the WP Abilities API under the slug
- * `imagify/optimize_media` and delegates to the existing
+ * `imagify/optimize-media` and delegates to the existing
  * `Imagify\Optimization\Process\WP` class.
  *
  * @since 2.3.0
@@ -22,17 +22,12 @@ class OptimizeMedia implements AbilitiesInterface {
 	 * @return void
 	 */
 	public function register(): void {
-		// DEBUG: Log that we're trying to register
-		error_log( 'DEBUG: OptimizeMedia::register() called' );
-
 		if ( ! function_exists( 'wp_register_ability' ) ) {
-			error_log( 'DEBUG: wp_register_ability() does not exist - WP < 6.9?' );
 			return;
 		}
 
-		error_log( 'DEBUG: About to call wp_register_ability for imagify/optimize_media' );
-		$result = wp_register_ability(
-			'imagify/optimize_media',
+		wp_register_ability(
+			'imagify/optimize-media',
 			[
 				'label'               => __( 'Optimize media', 'imagify' ),
 				'description'         => __( 'Optimizes a specific media on-demand using Imagify.', 'imagify' ),
@@ -89,21 +84,6 @@ class OptimizeMedia implements AbilitiesInterface {
 				],
 			]
 		);
-		if ( is_wp_error( $result ) ) {
-			error_log( 'DEBUG: wp_register_ability returned error: ' . $result->get_error_message() );
-		} else {
-			error_log( 'DEBUG: OptimizeMedia ability registered successfully' );
-			// Verify the ability was actually registered and meta is correct
-			$ability = wp_get_ability( 'imagify/optimize_media' );
-			if ( $ability ) {
-				$meta = $ability->get_meta();
-				error_log( 'DEBUG: Ability found after registration' );
-				error_log( 'DEBUG: Meta structure: ' . wp_json_encode( $meta ) );
-				error_log( 'DEBUG: mcp.public value: ' . ( $meta['mcp']['public'] ?? 'NOT SET' ) );
-			} else {
-				error_log( 'DEBUG: ERROR - Ability not found after registration!' );
-			}
-		}
 	}
 
 	/**
