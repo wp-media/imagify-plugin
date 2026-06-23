@@ -2,46 +2,42 @@
 
 namespace Imagify\Tests\Unit\Abilities\UpdateSettings;
 
+use Brain\Monkey\Functions;
 use Imagify\Abilities\UpdateSettings;
-use WP_UnitTestCase;
-use WP_User;
+use Imagify\Tests\Unit\TestCase;
 
 /**
  * Unit tests for UpdateSettings::check_permissions()
  *
  * @covers Imagify\Abilities\UpdateSettings::check_permissions()
  */
-class CheckPermissionsTest extends WP_UnitTestCase {
+class CheckPermissionsTest extends TestCase {
 
 	/**
-	 * Test that admin user can execute ability.
+	 * Test that user with manage_options capability can execute ability.
 	 */
 	public function test_admin_user_has_permission() {
-		$admin_user = self::factory()->user->create( [ 'role' => 'administrator' ] );
-		wp_set_current_user( $admin_user );
-
 		$ability = new UpdateSettings();
+
+		Functions\expect( 'current_user_can' )
+			->once()
+			->with( 'manage_options' )
+			->andReturn( true );
+
 		$this->assertTrue( $ability->check_permissions() );
 	}
 
 	/**
-	 * Test that non-admin user cannot execute ability.
+	 * Test that user without manage_options capability cannot execute ability.
 	 */
 	public function test_non_admin_user_denied_permission() {
-		$subscriber_user = self::factory()->user->create( [ 'role' => 'subscriber' ] );
-		wp_set_current_user( $subscriber_user );
-
 		$ability = new UpdateSettings();
-		$this->assertFalse( $ability->check_permissions() );
-	}
 
-	/**
-	 * Test that unauthenticated user cannot execute ability.
-	 */
-	public function test_unauthenticated_user_denied_permission() {
-		wp_set_current_user( 0 );
+		Functions\expect( 'current_user_can' )
+			->once()
+			->with( 'manage_options' )
+			->andReturn( false );
 
-		$ability = new UpdateSettings();
 		$this->assertFalse( $ability->check_permissions() );
 	}
 }
