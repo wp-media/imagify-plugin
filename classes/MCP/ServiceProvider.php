@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\MCP;
 
+use Imagify\Abilities\GetStats;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 
 /**
@@ -26,6 +27,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	protected $provides = [
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
+		GetStats::class,
 	];
 
 	/**
@@ -55,7 +57,9 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public function register(): void {
 		$this->getContainer()->addShared( ConfigSubscriber::class );
-		$this->getContainer()->addShared( AbilitiesSubscriber::class );
+		$this->getContainer()->addShared( GetStats::class );
+		$this->getContainer()->addShared( AbilitiesSubscriber::class )
+			->addArguments( [ GetStats::class ] );
 	}
 
 	/**
