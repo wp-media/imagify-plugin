@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 
+use Imagify\Abilities\GetMediaStatus;
 use Imagify\MCP\AbilitiesSubscriber;
 use Imagify\MCP\ConfigSubscriber;
 use Imagify\MCP\ServiceProvider;
@@ -63,6 +64,15 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertTrue( $provider->provides( AbilitiesSubscriber::class ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for GetMediaStatus.
+	 */
+	public function testProvidesTrueForGetMediaStatus(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( GetMediaStatus::class ) );
 	}
 
 	/**
