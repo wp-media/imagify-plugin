@@ -4,7 +4,7 @@
 
 The `Imagify\MCP` module integrates Imagify with the WordPress MCP (Model Context Protocol) adapter (`wordpress/mcp-adapter`). It exposes an MCP server endpoint that AI agents can use to discover and invoke Imagify abilities.
 
-This module ships the **foundation only** (issue #1108). Zero Imagify-specific abilities are registered yet — the adapter's three built-in tools (`discover-abilities`, `get-ability-info`, `execute-ability`) are always present. Concrete abilities are added by downstream sub-issues under `classes/Abilities/`.
+This module ships the **foundation** (issue #1108) plus concrete abilities added by downstream sub-issues under `classes/Abilities/`. The adapter's three built-in tools (`discover-abilities`, `get-ability-info`, `execute-ability`) are always present.
 
 ## Requirements
 
@@ -34,16 +34,23 @@ class_exists( \WP\MCP\Core\McpAdapter::class )
 | Method | GET / POST (JSON-RPC) |
 | Registered by | `wordpress/mcp-adapter` `DefaultServerFactory::create()` on `mcp_adapter_init` |
 
-With zero Imagify abilities the endpoint returns HTTP 200 with the adapter's default three-tool set and zero Imagify-category abilities.
+The endpoint returns HTTP 200 with the adapter's default three-tool set plus the registered Imagify abilities.
 
 ## Classes
 
 | Class | Responsibility |
 |-------|----------------|
 | `Imagify\Abilities\AbilitiesInterface` | Contract every Imagify MCP ability must implement. |
+| `Imagify\Abilities\RestoreMedia` | MCP ability: restore an optimized media to its original state via backup (`imagify/restore-media`). |
 | `Imagify\MCP\ConfigSubscriber` | Customizes the MCP server name and description via `mcp_adapter_default_server_config`. |
 | `Imagify\MCP\AbilitiesSubscriber` | Registers the `imagify` ability category and all injected abilities. |
 | `Imagify\MCP\ServiceProvider` | DI wiring — registered in `config/providers.php`. |
+
+## Registered abilities
+
+| Slug | Class | Input | Requires |
+|------|-------|-------|----------|
+| `imagify/restore-media` | `Imagify\Abilities\RestoreMedia` | `media_id` (integer) | `manage_options` |
 
 ## AbilitiesInterface contract
 
