@@ -139,7 +139,7 @@ class RestoreMedia implements AbilitiesInterface {
 	 * @return \Imagify\Optimization\Process\ProcessInterface|null
 	 */
 	protected function get_process( int $media_id ) {
-		if ( get_post( $media_id ) ) {
+		if ( get_post_type( $media_id ) === 'attachment' ) {
 			return imagify_get_optimization_process( $media_id, 'wp' );
 		}
 
