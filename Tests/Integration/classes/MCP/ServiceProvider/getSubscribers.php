@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 
+use Imagify\Abilities\GetNextgenCoverage;
 use Imagify\MCP\AbilitiesSubscriber;
 use Imagify\MCP\ConfigSubscriber;
 use Imagify\MCP\ServiceProvider;
@@ -63,6 +64,15 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertTrue( $provider->provides( AbilitiesSubscriber::class ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for GetNextgenCoverage.
+	 */
+	public function testProvidesTrueForGetNextgenCoverage(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( GetNextgenCoverage::class ) );
 	}
 
 	/**
