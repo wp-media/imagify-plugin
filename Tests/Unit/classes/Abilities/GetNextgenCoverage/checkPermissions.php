@@ -21,8 +21,10 @@ class Test_CheckPermissions extends TestCase {
 	 * Tests that check_permissions() returns true when current user has manage_options.
 	 */
 	public function testReturnsTrueWhenUserHasManageOptions(): void {
-		Functions\when( 'current_user_can' )
-			->justReturn( true );
+		Functions\expect( 'current_user_can' )
+			->once()
+			->with( 'manage_options' )
+			->andReturn( true );
 
 		$stat    = Mockery::mock( StatInterface::class );
 		$ability = new GetNextgenCoverage( $stat );
@@ -34,27 +36,14 @@ class Test_CheckPermissions extends TestCase {
 	 * Tests that check_permissions() returns false when current user lacks manage_options.
 	 */
 	public function testReturnsFalseWhenUserLacksManageOptions(): void {
-		Functions\when( 'current_user_can' )
-			->justReturn( false );
+		Functions\expect( 'current_user_can' )
+			->once()
+			->with( 'manage_options' )
+			->andReturn( false );
 
 		$stat    = Mockery::mock( StatInterface::class );
 		$ability = new GetNextgenCoverage( $stat );
 
 		$this->assertFalse( $ability->check_permissions() );
-	}
-
-	/**
-	 * Tests that check_permissions() calls current_user_can with 'manage_options'.
-	 */
-	public function testCallsCurrentUserCanWithManageOptions(): void {
-		Functions\expect( 'current_user_can' )
-			->once()
-			->with( 'manage_options' )
-			->andReturn( true );
-
-		$stat    = Mockery::mock( StatInterface::class );
-		$ability = new GetNextgenCoverage( $stat );
-
-		$ability->check_permissions();
 	}
 }

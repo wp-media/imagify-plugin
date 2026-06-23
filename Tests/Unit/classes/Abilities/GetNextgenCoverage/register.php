@@ -18,6 +18,20 @@ use Mockery;
 class Test_Register extends TestCase {
 
 	/**
+	 * Tests that register() is a no-op when wp_register_ability does not exist (WP < 6.9).
+	 *
+	 * Must run first — Brain Monkey cannot undefine a function once stubbed, so
+	 * wp_register_ability must be absent when this test runs.
+	 */
+	public function testNoOpWhenWpRegisterAbilityAbsent(): void {
+		$this->expectNotToPerformAssertions();
+
+		$stat    = Mockery::mock( StatInterface::class );
+		$ability = new GetNextgenCoverage( $stat );
+		$ability->register();
+	}
+
+	/**
 	 * Tests that register() registers the ability with the correct slug.
 	 *
 	 * Brain Monkey's Functions\when/expect stubs functions into the PHP process
