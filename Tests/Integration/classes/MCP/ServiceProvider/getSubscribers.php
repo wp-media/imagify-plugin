@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 
+use Imagify\Abilities\GetSettings;
+use Imagify\Abilities\UpdateSettings;
 use Imagify\MCP\AbilitiesSubscriber;
 use Imagify\MCP\ConfigSubscriber;
 use Imagify\MCP\ServiceProvider;
@@ -72,5 +74,23 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertFalse( $provider->provides( 'some_unknown_service' ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for GetSettings.
+	 */
+	public function testProvidesTrueForGetSettings(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( GetSettings::class ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for UpdateSettings.
+	 */
+	public function testProvidesTrueForUpdateSettings(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( UpdateSettings::class ) );
 	}
 }
