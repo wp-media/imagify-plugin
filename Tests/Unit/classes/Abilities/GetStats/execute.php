@@ -90,13 +90,13 @@ class Test_Execute extends TestCase {
 		Functions\when( 'imagify_count_optimized_attachments' )->justReturn( $optimized );
 		Functions\when( 'imagify_count_error_attachments' )->justReturn( $errors );
 		Functions\when( 'imagify_count_saving_data' )->alias(
-			function ( string $key ) use ( $orig_size, $opt_size, $percent ) {
-				return match ( $key ) {
+			function ( $key ) use ( $orig_size, $opt_size, $percent ) {
+				$map = [
 					'original_size'  => $orig_size,
 					'optimized_size' => $opt_size,
 					'percent'        => $percent,
-					default          => 0,
-				};
+				];
+				return isset( $map[ $key ] ) ? $map[ $key ] : 0;
 			}
 		);
 	}
