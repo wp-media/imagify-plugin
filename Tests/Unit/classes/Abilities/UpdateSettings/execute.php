@@ -10,7 +10,7 @@ use Imagify_Options;
 /**
  * Unit tests for UpdateSettings::execute()
  *
- * @covers Imagify\Abilities\UpdateSettings::execute()
+ * @covers \Imagify\Abilities\UpdateSettings::execute()
  */
 class ExecuteTest extends TestCase {
 

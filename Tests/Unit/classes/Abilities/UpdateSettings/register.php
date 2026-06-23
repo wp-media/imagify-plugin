@@ -9,7 +9,7 @@ use Imagify\Tests\Unit\TestCase;
 /**
  * Unit tests for UpdateSettings::register()
  *
- * @covers Imagify\Abilities\UpdateSettings::register()
+ * @covers \Imagify\Abilities\UpdateSettings::register()
  */
 class RegisterTest extends TestCase {
 

@@ -53,7 +53,7 @@ class UpdateSettings implements AbilitiesInterface {
 	 * The `$args` parameter is passed by the WP Abilities API callback wrapper.
 	 *
 	 * @param array $args Partial settings object to update (optional).
-	 * @return array|WP_Error {
+	 * @return array|\WP_Error {
 	 *     @type array $updated Keys that were changed.
 	 *     @type array $settings Full settings after the update.
 	 * } or WP_Error on failure.

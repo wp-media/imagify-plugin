@@ -9,7 +9,7 @@ use Imagify\Tests\Unit\TestCase;
 /**
  * Unit tests for UpdateSettings::check_permissions()
  *
- * @covers Imagify\Abilities\UpdateSettings::check_permissions()
+ * @covers \Imagify\Abilities\UpdateSettings::check_permissions()
  */
 class CheckPermissionsTest extends TestCase {
 
