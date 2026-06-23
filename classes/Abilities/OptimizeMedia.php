@@ -22,11 +22,16 @@ class OptimizeMedia implements AbilitiesInterface {
 	 * @return void
 	 */
 	public function register(): void {
+		// DEBUG: Log that we're trying to register
+		error_log( 'DEBUG: OptimizeMedia::register() called' );
+
 		if ( ! function_exists( 'wp_register_ability' ) ) {
+			error_log( 'DEBUG: wp_register_ability() does not exist - WP < 6.9?' );
 			return;
 		}
 
-		wp_register_ability(
+		error_log( 'DEBUG: About to call wp_register_ability for imagify/optimize_media' );
+		$result = wp_register_ability(
 			'imagify/optimize_media',
 			[
 				'label'               => __( 'Optimize media', 'imagify' ),
@@ -84,6 +89,11 @@ class OptimizeMedia implements AbilitiesInterface {
 				],
 			]
 		);
+		if ( is_wp_error( $result ) ) {
+			error_log( 'DEBUG: wp_register_ability returned error: ' . $result->get_error_message() );
+		} else {
+			error_log( 'DEBUG: OptimizeMedia ability registered successfully' );
+		}
 	}
 
 	/**
