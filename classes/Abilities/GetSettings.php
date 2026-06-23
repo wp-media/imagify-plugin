@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Imagify\Abilities;
 
@@ -14,7 +15,7 @@ class GetSettings implements AbilitiesInterface {
 	 *
 	 * @return void
 	 */
-	public function register() {
+	public function register(): void {
 		if ( ! function_exists( 'wp_register_ability' ) ) {
 			return;
 		}
@@ -42,7 +43,7 @@ class GetSettings implements AbilitiesInterface {
 	 *
 	 * @return bool
 	 */
-	public function check_permissions() {
+	public function check_permissions(): bool {
 		return current_user_can( 'manage_options' );
 	}
 
