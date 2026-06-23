@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 
+use Imagify\Abilities\OptimizeMedia;
 use Imagify\MCP\AbilitiesSubscriber;
 use Imagify\MCP\ConfigSubscriber;
 use Imagify\MCP\ServiceProvider;
@@ -72,5 +73,14 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertFalse( $provider->provides( 'some_unknown_service' ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for OptimizeMedia.
+	 */
+	public function testProvidesTrueForOptimizeMedia(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( OptimizeMedia::class ) );
 	}
 }
