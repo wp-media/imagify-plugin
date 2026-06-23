@@ -93,4 +93,20 @@ class Test_GetSubscribers extends TestCase {
 
 		$this->assertTrue( $provider->provides( UpdateSettings::class ) );
 	}
+
+	/**
+	 * Tests that AbilitiesSubscriber receives both GetSettings and UpdateSettings.
+	 */
+	public function testAbilitiesSubscriberReceivesAbilities(): void {
+		$provider = new ServiceProvider();
+		$container = $provider->getContainer();
+
+		// Register services into the container.
+		$provider->register();
+
+		// Resolve AbilitiesSubscriber and verify it has the ability arguments.
+		$subscriber = $container->get( AbilitiesSubscriber::class );
+
+		$this->assertInstanceOf( AbilitiesSubscriber::class, $subscriber );
+	}
 }

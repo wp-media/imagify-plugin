@@ -70,6 +70,7 @@ class UpdateSettings implements AbilitiesInterface {
 			if ( 'api_key' === $key && defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
 				return new \WP_Error(
 					'imagify_api_key_immutable',
+					/* translators: Describes why the API key cannot be updated. */
 					__( 'api_key cannot be updated when IMAGIFY_API_KEY constant is defined.', 'imagify' )
 				);
 			}
