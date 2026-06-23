@@ -49,13 +49,14 @@ class UpdateSettings implements AbilitiesInterface {
 	/**
 	 * Execute the ability: update Imagify settings.
 	 *
-	 * @param array $args Partial settings object to update.
-	 * @return array {
+	 * The `$args` parameter is passed by the WP Abilities API callback wrapper.
+	 *
+	 * @return array|WP_Error {
 	 *     @type array $updated Keys that were changed.
 	 *     @type array $settings Full settings after the update.
 	 * } or WP_Error on failure.
 	 */
-	public function execute( $args ) {
+	public function execute( $args = [] ) {
 		$options = Imagify_Options::get_instance();
 
 		// Get current settings.

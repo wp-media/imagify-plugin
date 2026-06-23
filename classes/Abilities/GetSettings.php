@@ -52,7 +52,7 @@ class GetSettings implements AbilitiesInterface {
 	 * @param array $args Unused.
 	 * @return array Full settings object.
 	 */
-	public function execute( $args ) {
+	public function execute( $args = [] ) {
 		$options = Imagify_Options::get_instance();
 		return $options->get_all();
 	}
