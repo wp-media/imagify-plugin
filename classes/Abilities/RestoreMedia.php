@@ -113,6 +113,14 @@ class RestoreMedia implements AbilitiesInterface {
 			];
 		}
 
+		if ( ! $process->get_data()->is_optimized() ) {
+			return [
+				'status'        => 'error',
+				'restored_size' => null,
+				'error_message' => 'This media is not optimized and cannot be restored.',
+			];
+		}
+
 		$result = $process->restore();
 
 		if ( is_wp_error( $result ) ) {

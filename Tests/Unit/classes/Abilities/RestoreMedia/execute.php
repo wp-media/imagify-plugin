@@ -56,16 +56,36 @@ class Test_Execute extends TestCase {
 	/**
 	 * Build a mock process object whose restore() returns the given value.
 	 *
-	 * @param mixed $return_value What restore() should return.
+	 * @param mixed $return_value  What restore() should return.
+	 * @param bool  $is_optimized  What get_data()->is_optimized() should return.
 	 * @return object
 	 */
-	private function make_process( $return_value ): object {
-		return new class( $return_value ) {
+	private function make_process( $return_value, bool $is_optimized = true ): object {
+		return new class( $return_value, $is_optimized ) {
 			/** @var mixed */
 			private $return_value;
+			/** @var bool */
+			private $is_optimized;
 
-			public function __construct( $return_value ) {
+			public function __construct( $return_value, bool $is_optimized ) {
 				$this->return_value = $return_value;
+				$this->is_optimized = $is_optimized;
+			}
+
+			public function get_data(): object {
+				$flag = $this->is_optimized;
+				return new class( $flag ) {
+					/** @var bool */
+					private $flag;
+
+					public function __construct( bool $flag ) {
+						$this->flag = $flag;
+					}
+
+					public function is_optimized(): bool {
+						return $this->flag;
+					}
+				};
 			}
 
 			public function restore() {
@@ -127,6 +147,26 @@ class Test_Execute extends TestCase {
 		$this->assertSame( 'error', $result['status'] );
 		$this->assertNull( $result['restored_size'] );
 		$this->assertSame( 'Invalid media.', $result['error_message'] );
+	}
+
+	// -------------------------------------------------------------------------
+	// Scenario: media not optimized
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Tests that execute() returns a clear error when the media is not optimized.
+	 *
+	 * Covers both "never optimized" and "already restored" cases — both share
+	 * the same condition: get_data()->is_optimized() === false.
+	 */
+	public function testReturnsErrorWhenMediaNotOptimized(): void {
+		$process = $this->make_process( true, false );
+		$ability = $this->make_ability( $process );
+		$result  = $ability->execute( [ 'media_id' => 42 ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertNull( $result['restored_size'] );
+		$this->assertSame( 'This media is not optimized and cannot be restored.', $result['error_message'] );
 	}
 
 	// -------------------------------------------------------------------------
