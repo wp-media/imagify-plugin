@@ -4,7 +4,7 @@
 
 The `Imagify\MCP` module integrates Imagify with the WordPress MCP (Model Context Protocol) adapter (`wordpress/mcp-adapter`). It exposes an MCP server endpoint that AI agents can use to discover and invoke Imagify abilities.
 
-This module ships the **foundation only** (issue #1108). Zero Imagify-specific abilities are registered yet — the adapter's three built-in tools (`discover-abilities`, `get-ability-info`, `execute-ability`) are always present. Concrete abilities are added by downstream sub-issues under `classes/Abilities/`.
+This module ships the **foundation** (issue #1108) plus the `imagify/update-settings` ability (issue #1101). The adapter's three built-in tools (`discover-abilities`, `get-ability-info`, `execute-ability`) are always present. Additional abilities are added by downstream sub-issues under `classes/Abilities/`.
 
 ## Requirements
 
@@ -34,13 +34,14 @@ class_exists( \WP\MCP\Core\McpAdapter::class )
 | Method | GET / POST (JSON-RPC) |
 | Registered by | `wordpress/mcp-adapter` `DefaultServerFactory::create()` on `mcp_adapter_init` |
 
-With zero Imagify abilities the endpoint returns HTTP 200 with the adapter's default three-tool set and zero Imagify-category abilities.
+The endpoint returns HTTP 200 with the adapter's default three-tool set plus any registered Imagify-category abilities.
 
 ## Classes
 
 | Class | Responsibility |
 |-------|----------------|
 | `Imagify\Abilities\AbilitiesInterface` | Contract every Imagify MCP ability must implement. |
+| `Imagify\Abilities\UpdateSettings` | MCP ability: updates one or more Imagify configuration settings. |
 | `Imagify\MCP\ConfigSubscriber` | Customizes the MCP server name and description via `mcp_adapter_default_server_config`. |
 | `Imagify\MCP\AbilitiesSubscriber` | Registers the `imagify` ability category and all injected abilities. |
 | `Imagify\MCP\ServiceProvider` | DI wiring — registered in `config/providers.php`. |
@@ -79,7 +80,44 @@ Subscribed by `AbilitiesSubscriber::register_categories()`. Registers the `imagi
 
 ### Action: `wp_abilities_api_init`
 
-Subscribed by `AbilitiesSubscriber::register_abilities()`. Loops over injected `AbilitiesInterface` instances calling `->register()`. No-ops on WP < 6.9. With zero abilities (foundation) the loop body never executes.
+Subscribed by `AbilitiesSubscriber::register_abilities()`. Loops over injected `AbilitiesInterface` instances calling `->register()`. No-ops on WP < 6.9.
+
+## Abilities
+
+### `imagify/update-settings`
+
+Registered by `Imagify\Abilities\UpdateSettings`. Accepts a partial settings object and updates only the supplied keys.
+
+| Key | Value |
+|-----|-------|
+| Slug | `imagify/update-settings` |
+| Class | `Imagify\Abilities\UpdateSettings` |
+| Permission | `manage_options` capability |
+| Annotations | `readonly: false`, `destructive: false`, `idempotent: true` |
+| MCP public | `true` |
+
+**Input:** a partial associative array of Imagify setting key-value pairs. Only supplied keys are changed; others remain unchanged.
+
+**Output on success:**
+```json
+{
+  "updated":  ["<key>", ...],
+  "settings": { "<key>": "<value>", ... }
+}
+```
+`updated` lists only the keys whose value actually changed. `settings` contains the full post-update settings (excluding `api_key` and `version`).
+
+**Error codes:**
+- `imagify_unknown_setting` — a supplied key is not a recognized Imagify setting.
+- `imagify_invalid_value` — a supplied value fails the constrained-field validation (`optimization_level`, `optimization_format`, `display_nextgen_method`, `display_webp_method`).
+- `imagify_api_key_immutable` — the `api_key` key was supplied while `IMAGIFY_API_KEY` constant is defined.
+
+**Constrained fields:**
+- `optimization_level`: integer `0`, `1`, or `2`
+- `optimization_format`: `"off"`, `"webp"`, or `"avif"`
+- `display_nextgen_method` / `display_webp_method`: `"picture"` or `"rewrite"`
+
+All other keys pass through to `Imagify_Options::set()`, which fires the `sanitize_option_<name>` WP filter for a final sanitization pass.
 
 ## Adding a new ability (downstream sub-issues)
 
