@@ -3,16 +3,15 @@ declare(strict_types=1);
 
 namespace Imagify\MCP;
 
+use Imagify\Abilities\GenerateMissingNextgen;
+use Imagify\Bulk\Bulk;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 
 /**
  * Service provider for the MCP (Model Context Protocol) module.
  *
- * Wires `ConfigSubscriber` and `AbilitiesSubscriber` into the DI container.
- * For the foundation `AbilitiesSubscriber` is registered with no ability
- * arguments. Downstream sub-issues extend the wiring via `addArguments()`
- * once concrete ability classes are added (see Downstream Wiring Contract
- * in spec #1108).
+ * Wires `ConfigSubscriber` and `AbilitiesSubscriber` into the DI container,
+ * along with all concrete ability classes injected into `AbilitiesSubscriber`.
  *
  * @since 2.3.0
  */
@@ -26,6 +25,8 @@ class ServiceProvider extends AbstractServiceProvider {
 	protected $provides = [
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
+		Bulk::class,
+		GenerateMissingNextgen::class,
 	];
 
 	/**
@@ -54,8 +55,16 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @return void
 	 */
 	public function register(): void {
+		$this->getContainer()->add( Bulk::class, fn() => Bulk::get_instance() );
+
+		$this->getContainer()->addShared( GenerateMissingNextgen::class )
+			->addArgument( Bulk::class );
+
 		$this->getContainer()->addShared( ConfigSubscriber::class );
 		$this->getContainer()->addShared( AbilitiesSubscriber::class );
+
+		$this->getContainer()->extend( AbilitiesSubscriber::class )
+			->addArgument( GenerateMissingNextgen::class );
 	}
 
 	/**
