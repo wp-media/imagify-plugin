@@ -138,11 +138,13 @@ class GenerateMissingNextgen implements AbilitiesInterface {
 	 * @return array{status: string, queued_count: int, error_message: string}
 	 */
 	private function error_response( string $message ): array {
-		$readable = match ( $message ) {
-			'over-quota' => __( 'Imagify account is over quota or the API key is invalid.', 'imagify' ),
-			'no-backup'  => __( 'No backup available; next-gen versions cannot be generated.', 'imagify' ),
-			default      => $message,
-		};
+		if ( 'over-quota' === $message ) {
+			$readable = __( 'Imagify account is over quota or the API key is invalid.', 'imagify' );
+		} elseif ( 'no-backup' === $message ) {
+			$readable = __( 'No backup available; next-gen versions cannot be generated.', 'imagify' );
+		} else {
+			$readable = $message;
+		}
 
 		return [
 			'status'        => 'error',
