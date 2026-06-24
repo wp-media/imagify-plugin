@@ -55,7 +55,10 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @return void
 	 */
 	public function register(): void {
-		$this->getContainer()->add( Bulk::class, fn() => Bulk::get_instance() );
+		$bulk_factory = static function () {
+			return Bulk::get_instance();
+		};
+		$this->getContainer()->add( Bulk::class, $bulk_factory );
 
 		$this->getContainer()->addShared( GenerateMissingNextgen::class )
 			->addArgument( Bulk::class );
