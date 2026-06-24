@@ -3,16 +3,15 @@ declare(strict_types=1);
 
 namespace Imagify\MCP;
 
+use Imagify\Abilities\BulkOptimize;
+use Imagify\Bulk\Bulk;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 
 /**
  * Service provider for the MCP (Model Context Protocol) module.
  *
- * Wires `ConfigSubscriber` and `AbilitiesSubscriber` into the DI container.
- * For the foundation `AbilitiesSubscriber` is registered with no ability
- * arguments. Downstream sub-issues extend the wiring via `addArguments()`
- * once concrete ability classes are added (see Downstream Wiring Contract
- * in spec #1108).
+ * Wires `ConfigSubscriber`, `AbilitiesSubscriber`, and all concrete ability
+ * classes into the DI container.
  *
  * @since 2.3.0
  */
@@ -26,6 +25,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	protected $provides = [
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
+		BulkOptimize::class,
 	];
 
 	/**
@@ -55,7 +55,10 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public function register(): void {
 		$this->getContainer()->addShared( ConfigSubscriber::class );
-		$this->getContainer()->addShared( AbilitiesSubscriber::class );
+		$this->getContainer()->addShared( BulkOptimize::class )
+			->addArgument( Bulk::get_instance() );
+		$this->getContainer()->addShared( AbilitiesSubscriber::class )
+			->addArguments( [ BulkOptimize::class ] );
 	}
 
 	/**

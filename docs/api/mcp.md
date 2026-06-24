@@ -41,9 +41,62 @@ With zero Imagify abilities the endpoint returns HTTP 200 with the adapter's def
 | Class | Responsibility |
 |-------|----------------|
 | `Imagify\Abilities\AbilitiesInterface` | Contract every Imagify MCP ability must implement. |
+| `Imagify\Abilities\BulkOptimize` | MCP ability: schedule a bulk image optimization run. |
 | `Imagify\MCP\ConfigSubscriber` | Customizes the MCP server name and description via `mcp_adapter_default_server_config`. |
 | `Imagify\MCP\AbilitiesSubscriber` | Registers the `imagify` ability category and all injected abilities. |
 | `Imagify\MCP\ServiceProvider` | DI wiring — registered in `config/providers.php`. |
+
+## Registered abilities
+
+### `imagify/bulk-optimize`
+
+Schedules a bulk image optimization run for the WordPress media library or custom folders.
+
+**Permission:** `manage_options`
+
+**Input schema:**
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `context` | `string` | Yes | Optimization context. Allowed values: `wp` (WordPress media library), `custom-folders` (custom folder sources). |
+| `optimization_level` | `integer` | No | Optimization level: `0` (normal), `1` (aggressive), `2` (ultra). Min: `0`, Max: `2`. Defaults to the global Imagify setting. |
+
+**Output schema:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `status` | `string` | `"scheduled"` when the bulk run was queued, `"error"` otherwise. |
+| `context` | `string` | The requested optimization context, echoed back. |
+| `error_message` | `string\|null` | Human-readable error message on failure, or `null` on success. |
+
+**Example — schedule a run for the media library:**
+
+```json
+{
+  "context": "wp",
+  "optimization_level": 1
+}
+```
+
+Response on success:
+
+```json
+{
+  "status": "scheduled",
+  "context": "wp",
+  "error_message": null
+}
+```
+
+Response on failure (e.g. over quota):
+
+```json
+{
+  "status": "error",
+  "context": "wp",
+  "error_message": "over-quota"
+}
+```
 
 ## AbilitiesInterface contract
 
