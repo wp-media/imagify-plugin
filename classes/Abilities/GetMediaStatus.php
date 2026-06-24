@@ -130,7 +130,8 @@ class GetMediaStatus implements AbilitiesInterface {
 			];
 		}
 
-		$opt_data = ( new WP( $media_id ) )->get_optimization_data();
+		$wp_data  = $this->create_wp_data( $media_id );
+		$opt_data = $wp_data->get_optimization_data();
 
 		$internal_status = isset( $opt_data['status'] ) ? (string) $opt_data['status'] : '';
 		$status          = $this->map_status( $internal_status );
@@ -139,7 +140,9 @@ class GetMediaStatus implements AbilitiesInterface {
 			? (int) $opt_data['level']
 			: null;
 
-		$original_size  = isset( $opt_data['stats']['original_size'] ) ? (int) $opt_data['stats']['original_size'] : 0;
+		// get_original_size(false) falls back to the filesystem when no optimization data
+		// exists yet (unoptimized media), which avoids the 0-byte read from empty meta.
+		$original_size  = $wp_data->get_original_size( false );
 		$optimized_size = isset( $opt_data['stats']['optimized_size'] ) ? (int) $opt_data['stats']['optimized_size'] : 0;
 
 		$webp_available = false;
@@ -175,6 +178,20 @@ class GetMediaStatus implements AbilitiesInterface {
 			'avif_available'     => $avif_available,
 			'error_message'      => $error_message,
 		];
+	}
+
+	/**
+	 * Instantiate the WP optimization-data object for a given media.
+	 *
+	 * Extracted to a protected method so tests can override it without hitting the database.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param int $media_id WordPress attachment ID.
+	 * @return WP
+	 */
+	protected function create_wp_data( int $media_id ): WP {
+		return new WP( $media_id );
 	}
 
 	/**

@@ -11,8 +11,8 @@ use Imagify\Tests\Unit\TestCase;
 /**
  * Tests for \Imagify\Abilities\GetMediaStatus::execute().
  *
- * Uses a testable subclass of GetMediaStatus that overrides the internal
- * `new WP( $media_id )` instantiation, avoiding any real database calls.
+ * Uses a testable subclass of GetMediaStatus that overrides `create_wp_data()`
+ * to inject a mock WP instance, so the real execute() logic is always exercised.
  *
  * @covers \Imagify\Abilities\GetMediaStatus::execute
  * @group  MCP
@@ -20,116 +20,29 @@ use Imagify\Tests\Unit\TestCase;
 class Test_Execute extends TestCase {
 
 	/**
-	 * Build a testable GetMediaStatus subclass that returns a fixed opt-data array.
+	 * Build a testable GetMediaStatus subclass with a mocked WP data object.
 	 *
-	 * @param array $opt_data The optimization data to inject.
+	 * @param array $opt_data            Optimization data returned by get_optimization_data().
+	 * @param int   $original_size_bytes Value returned by get_original_size(false).
+	 *                                   For unoptimized media this comes from the filesystem;
+	 *                                   for optimized media it is sizes.full.original_size.
 	 * @return GetMediaStatus
 	 */
-	private function make_ability( array $opt_data ): GetMediaStatus {
-		return new class( $opt_data ) extends GetMediaStatus {
-			/** @var array */
-			private $opt_data;
+	private function make_ability( array $opt_data, int $original_size_bytes = 0 ): GetMediaStatus {
+		$wp_mock = $this->createMock( WP::class );
+		$wp_mock->method( 'get_optimization_data' )->willReturn( $opt_data );
+		$wp_mock->method( 'get_original_size' )->with( false )->willReturn( $original_size_bytes );
 
-			public function __construct( array $opt_data ) {
-				$this->opt_data = $opt_data;
+		return new class( $wp_mock ) extends GetMediaStatus {
+			/** @var WP */
+			private $wp_mock;
+
+			public function __construct( WP $wp_mock ) {
+				$this->wp_mock = $wp_mock;
 			}
 
-			/**
-			 * Override execute to inject data without needing a real WP instance.
-			 *
-			 * @param array $args Input arguments.
-			 * @return array
-			 */
-			public function execute( array $args = [] ): array {
-				$media_id = isset( $args['media_id'] ) ? (int) $args['media_id'] : 0;
-
-				if ( $media_id <= 0 ) {
-					return [
-						'status'             => 'error',
-						'error_message'      => 'Invalid or missing media_id',
-						'optimization_level' => null,
-						'original_size'      => 0,
-						'optimized_size'     => 0,
-						'webp_available'     => false,
-						'avif_available'     => false,
-					];
-				}
-
-				// Delegate to parent with the injected data for the rest of the logic,
-				// but skip the `new WP()` call by passing the data directly.
-				return $this->process_opt_data( $this->opt_data );
-			}
-
-			/**
-			 * Expose the parent's processing logic without WP instantiation.
-			 *
-			 * @param array $opt_data Raw optimization data.
-			 * @return array
-			 */
-			private function process_opt_data( array $opt_data ): array {
-				// Replicate parent::execute logic without `new WP()`.
-				$internal_status = isset( $opt_data['status'] ) ? (string) $opt_data['status'] : '';
-				$status          = $this->map_status_test( $internal_status );
-
-				$level = isset( $opt_data['level'] ) && false !== $opt_data['level']
-					? (int) $opt_data['level']
-					: null;
-
-				$original_size  = isset( $opt_data['stats']['original_size'] ) ? (int) $opt_data['stats']['original_size'] : 0;
-				$optimized_size = isset( $opt_data['stats']['optimized_size'] ) ? (int) $opt_data['stats']['optimized_size'] : 0;
-
-				$webp_available = false;
-				$avif_available = false;
-
-				if ( ! empty( $opt_data['sizes'] ) && is_array( $opt_data['sizes'] ) ) {
-					foreach ( array_keys( $opt_data['sizes'] ) as $size_key ) {
-						$size_key_str = (string) $size_key;
-						if ( ! $webp_available && $this->ends_with_test( $size_key_str, ProcessInterface::WEBP_SUFFIX ) ) {
-							$webp_available = true;
-						}
-						if ( ! $avif_available && $this->ends_with_test( $size_key_str, ProcessInterface::AVIF_SUFFIX ) ) {
-							$avif_available = true;
-						}
-						if ( $webp_available && $avif_available ) {
-							break;
-						}
-					}
-				}
-
-				$error_message = null;
-				if ( 'error' === $status ) {
-					$error_message = isset( $opt_data['message'] ) && '' !== $opt_data['message']
-						? (string) $opt_data['message']
-						: null;
-				}
-
-				return [
-					'status'             => $status,
-					'optimization_level' => $level,
-					'original_size'      => $original_size,
-					'optimized_size'     => $optimized_size,
-					'webp_available'     => $webp_available,
-					'avif_available'     => $avif_available,
-					'error_message'      => $error_message,
-				];
-			}
-
-			private function map_status_test( string $internal_status ): string {
-				if ( 'success' === $internal_status || 'already_optimized' === $internal_status ) {
-					return 'success';
-				}
-				if ( 'error' === $internal_status ) {
-					return 'error';
-				}
-				return 'unoptimized';
-			}
-
-			private function ends_with_test( string $haystack, string $suffix ): bool {
-				$suffix_length = strlen( $suffix );
-				if ( 0 === $suffix_length ) {
-					return true;
-				}
-				return substr( $haystack, -$suffix_length ) === $suffix;
+			protected function create_wp_data( int $media_id ): WP {
+				return $this->wp_mock;
 			}
 		};
 	}
@@ -181,7 +94,10 @@ class Test_Execute extends TestCase {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Tests that execute() returns unoptimized status when internal status is empty.
+	 * Tests that execute() returns the actual filesystem file size for unoptimized media.
+	 *
+	 * When no optimization data exists, get_original_size(false) reads the file from
+	 * disk rather than returning 0 from empty post meta.
 	 */
 	public function testReturnsUnoptimizedWhenStatusIsEmpty(): void {
 		$opt_data = [
@@ -196,12 +112,13 @@ class Test_Execute extends TestCase {
 			],
 		];
 
-		$ability = $this->make_ability( $opt_data );
+		// Simulate the filesystem fallback returning the real file size.
+		$ability = $this->make_ability( $opt_data, 512000 );
 		$result  = $ability->execute( [ 'media_id' => 42 ] );
 
 		$this->assertSame( 'unoptimized', $result['status'] );
 		$this->assertNull( $result['optimization_level'] );
-		$this->assertSame( 0, $result['original_size'] );
+		$this->assertSame( 512000, $result['original_size'] );
 		$this->assertSame( 0, $result['optimized_size'] );
 		$this->assertFalse( $result['webp_available'] );
 		$this->assertFalse( $result['avif_available'] );
@@ -247,12 +164,13 @@ class Test_Execute extends TestCase {
 			],
 		];
 
-		$ability = $this->make_ability( $opt_data );
+		// get_original_size(false) reads sizes.full.original_size for optimized media.
+		$ability = $this->make_ability( $opt_data, 200000 );
 		$result  = $ability->execute( [ 'media_id' => 42 ] );
 
 		$this->assertSame( 'success', $result['status'] );
 		$this->assertSame( 1, $result['optimization_level'] );
-		$this->assertSame( 250000, $result['original_size'] );
+		$this->assertSame( 200000, $result['original_size'] );
 		$this->assertSame( 190000, $result['optimized_size'] );
 		$this->assertTrue( $result['webp_available'] );
 		$this->assertFalse( $result['avif_available'] );
@@ -275,7 +193,7 @@ class Test_Execute extends TestCase {
 			],
 		];
 
-		$ability = $this->make_ability( $opt_data );
+		$ability = $this->make_ability( $opt_data, 100000 );
 		$result  = $ability->execute( [ 'media_id' => 42 ] );
 
 		$this->assertSame( 'success', $result['status'] );
@@ -298,7 +216,7 @@ class Test_Execute extends TestCase {
 			'stats'   => [ 'original_size' => 200000, 'optimized_size' => 150000, 'percent' => 25 ],
 		];
 
-		$ability = $this->make_ability( $opt_data );
+		$ability = $this->make_ability( $opt_data, 200000 );
 		$result  = $ability->execute( [ 'media_id' => 42 ] );
 
 		$this->assertTrue( $result['webp_available'] );
@@ -325,7 +243,7 @@ class Test_Execute extends TestCase {
 			],
 		];
 
-		$ability = $this->make_ability( $opt_data );
+		$ability = $this->make_ability( $opt_data, 0 );
 		$result  = $ability->execute( [ 'media_id' => 42 ] );
 
 		$this->assertSame( 'error', $result['status'] );
@@ -345,7 +263,7 @@ class Test_Execute extends TestCase {
 			'stats'   => [ 'original_size' => 0, 'optimized_size' => 0, 'percent' => 0 ],
 		];
 
-		$ability = $this->make_ability( $opt_data );
+		$ability = $this->make_ability( $opt_data, 0 );
 		$result  = $ability->execute( [ 'media_id' => 42 ] );
 
 		$this->assertSame( 'error', $result['status'] );
