@@ -52,21 +52,22 @@ class ServiceProvider extends AbstractServiceProvider {
 	/**
 	 * Registers the provided services into the container.
 	 *
+	 * Bulk is registered by passing the already-initialised singleton directly
+	 * (Plugin::init() calls Bulk::get_instance()->init() before any provider
+	 * runs), so no factory closure is needed. This avoids the ~12 KB opcode
+	 * allocation that a closure would incur in CLI environments with a tight
+	 * memory limit (e.g. wp-env at 128 MB).
+	 *
 	 * @return void
 	 */
 	public function register(): void {
-		$bulk_factory = static function () {
-			return Bulk::get_instance();
-		};
-		$this->getContainer()->add( Bulk::class, $bulk_factory );
+		$this->getContainer()->addShared( Bulk::class, Bulk::get_instance() );
 
 		$this->getContainer()->addShared( GenerateMissingNextgen::class )
 			->addArgument( Bulk::class );
 
 		$this->getContainer()->addShared( ConfigSubscriber::class );
-		$this->getContainer()->addShared( AbilitiesSubscriber::class );
-
-		$this->getContainer()->extend( AbilitiesSubscriber::class )
+		$this->getContainer()->addShared( AbilitiesSubscriber::class )
 			->addArgument( GenerateMissingNextgen::class );
 	}
 
