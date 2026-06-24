@@ -220,15 +220,27 @@ class Test_Execute extends TestCase {
 		}
 
 		return new class( $mock ) extends UpdateSettings {
-			/** @var object */
+			/**
+			 * Mocked Imagify_Options instance.
+			 *
+			 * @var object
+			 */
 			private $opts;
 
-			/** @param object $opts Mocked Imagify_Options instance. */
+			/**
+			 * Constructor.
+			 *
+			 * @param object $opts Mocked Imagify_Options instance.
+			 */
 			public function __construct( $opts ) {
 				$this->opts = $opts;
 			}
 
-			/** @return \Imagify_Options */
+			/**
+			 * Return the injected mock instead of the real singleton.
+			 *
+			 * @return \Imagify_Options
+			 */
 			protected function fetch_options_instance(): \Imagify_Options {
 				return $this->opts;
 			}
