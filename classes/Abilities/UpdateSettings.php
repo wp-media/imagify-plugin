@@ -43,6 +43,114 @@ class UpdateSettings implements AbilitiesInterface {
 					'show_in_rest' => true,
 					'mcp'          => [ 'public' => true ],
 				],
+				'input_schema'        => [
+					'type'          => 'object',
+					'minProperties' => 1,
+					'properties'    => [
+						'api_key'                => [
+							'type'        => 'string',
+							'description' => __( 'Imagify API key. Cannot be updated when IMAGIFY_API_KEY constant is defined.', 'imagify' ),
+						],
+						'optimization_level'     => [
+							'type'        => 'integer',
+							'minimum'     => 0,
+							'maximum'     => 2,
+							'description' => __( 'Optimization aggressiveness: 0 = normal, 1 = aggressive, 2 = ultra.', 'imagify' ),
+						],
+						'lossless'               => [
+							'type'        => 'integer',
+							'enum'        => [ 0, 1 ],
+							'description' => __( 'Enable lossless compression (0 = off, 1 = on).', 'imagify' ),
+						],
+						'auto_optimize'          => [
+							'type'        => 'integer',
+							'enum'        => [ 0, 1 ],
+							'description' => __( 'Automatically optimize images on upload (0 = off, 1 = on).', 'imagify' ),
+						],
+						'backup'                 => [
+							'type'        => 'integer',
+							'enum'        => [ 0, 1 ],
+							'description' => __( 'Keep a backup of original images (0 = off, 1 = on).', 'imagify' ),
+						],
+						'resize_larger'          => [
+							'type'        => 'integer',
+							'enum'        => [ 0, 1 ],
+							'description' => __( 'Resize images wider than resize_larger_w (0 = off, 1 = on).', 'imagify' ),
+						],
+						'resize_larger_w'        => [
+							'type'        => 'integer',
+							'description' => __( 'Maximum image width in pixels when resize_larger is enabled.', 'imagify' ),
+						],
+						'display_nextgen'        => [
+							'type'        => 'integer',
+							'enum'        => [ 0, 1 ],
+							'description' => __( 'Serve next-gen images to supported browsers (0 = off, 1 = on).', 'imagify' ),
+						],
+						'display_nextgen_method' => [
+							'type'        => 'string',
+							'enum'        => [ 'picture', 'rewrite' ],
+							'description' => __( 'Delivery method for next-gen images: picture element or URL rewrite.', 'imagify' ),
+						],
+						'display_webp'           => [
+							'type'        => 'integer',
+							'enum'        => [ 0, 1 ],
+							'description' => __( 'Serve WebP images to supported browsers (0 = off, 1 = on).', 'imagify' ),
+						],
+						'display_webp_method'    => [
+							'type'        => 'string',
+							'enum'        => [ 'picture', 'rewrite' ],
+							'description' => __( 'Delivery method for WebP images: picture element or URL rewrite.', 'imagify' ),
+						],
+						'cdn_url'                => [
+							'type'        => 'string',
+							'description' => __( 'CDN base URL for serving optimized images.', 'imagify' ),
+						],
+						'disallowed-sizes'       => [
+							'type'        => 'object',
+							'description' => __( 'Image sizes excluded from optimization, keyed by size slug.', 'imagify' ),
+						],
+						'admin_bar_menu'         => [
+							'type'        => 'integer',
+							'enum'        => [ 0, 1 ],
+							'description' => __( 'Show Imagify entry in the WordPress admin bar (0 = off, 1 = on).', 'imagify' ),
+						],
+						'partner_links'          => [
+							'type'        => 'integer',
+							'enum'        => [ 0, 1 ],
+							'description' => __( 'Show partner links in the Imagify admin area (0 = off, 1 = on).', 'imagify' ),
+						],
+						'convert_to_avif'        => [
+							'type'        => 'integer',
+							'enum'        => [ 0, 1 ],
+							'description' => __( 'Convert images to AVIF format (0 = off, 1 = on).', 'imagify' ),
+						],
+						'convert_to_webp'        => [
+							'type'        => 'integer',
+							'enum'        => [ 0, 1 ],
+							'description' => __( 'Convert images to WebP format (0 = off, 1 = on).', 'imagify' ),
+						],
+						'optimization_format'    => [
+							'type'        => 'string',
+							'enum'        => [ 'off', 'webp', 'avif' ],
+							'description' => __( 'Output format for optimized images.', 'imagify' ),
+						],
+					],
+				],
+				'output_schema'       => [
+					'type'       => 'object',
+					'required'   => [ 'updated', 'settings' ],
+					'properties' => [
+						'updated'  => [
+							'type'        => 'array',
+							'items'       => [ 'type' => 'string' ],
+							'description' => __( 'Keys whose values changed after the update.', 'imagify' ),
+						],
+						'settings' => [
+							'type'        => 'object',
+							'description' => __( 'Full post-update settings, excluding api_key and version.', 'imagify' ),
+						],
+					],
+				],
 			]
 		);
 	}
