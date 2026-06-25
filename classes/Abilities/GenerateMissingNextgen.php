@@ -53,10 +53,6 @@ class GenerateMissingNextgen implements AbilitiesInterface {
 				'label'               => __( 'Generate missing next-gen versions', 'imagify' ),
 				'description'         => __( 'Queues generation of missing next-gen (WebP/AVIF) versions for all optimized media. Runs asynchronously via Action Scheduler.', 'imagify' ),
 				'category'            => 'imagify',
-				'input_schema'        => [
-					'type'       => 'object',
-					'properties' => [],
-				],
 				'output_schema'       => [
 					'type'       => 'object',
 					'properties' => [
