@@ -19,7 +19,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Imagify defines.
-define( 'IMAGIFY_VERSION', '2.2.9' );
+define( 'IMAGIFY_VERSION', '2.3.0-alpha1' );
 define( 'IMAGIFY_SLUG', 'imagify' );
 define( 'IMAGIFY_FILE', __FILE__ );
 define( 'IMAGIFY_PATH', realpath( plugin_dir_path( IMAGIFY_FILE ) ) . '/' );
