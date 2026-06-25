@@ -115,6 +115,25 @@ class Test_Execute extends TestCase {
 	}
 
 	/**
+	 * Tests that execute() returns WP_Error with code imagify_unknown_setting when version is supplied.
+	 */
+	public function testRejectsVersionKey(): void {
+		Functions\when( '__' )->returnArg();
+
+		$ability = $this->make_testable_ability(
+			$this->defaults,
+			$this->defaults,
+			$this->defaults,
+			false
+		);
+
+		$result = $ability->execute( [ 'version' => '2.3.0' ] );
+
+		$this->assertTrue( is_wp_error( $result ) );
+		$this->assertSame( 'imagify_unknown_setting', $result->get_error_code() );
+	}
+
+	/**
 	 * Tests that execute() returns an array with 'updated' and 'settings' keys on valid input.
 	 */
 	public function testResponseShapeContainsUpdatedAndSettings(): void {
