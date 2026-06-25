@@ -10,7 +10,7 @@ use Imagify\Tests\Integration\TestCase;
  *
  * @group Abilities
  */
-class RegisterAbilityTest extends TestCase {{
+class RegisterAbilityTest extends TestCase {
 
 	/**
 	 * Minimum WordPress version required for the Abilities API.
@@ -32,25 +32,25 @@ class RegisterAbilityTest extends TestCase {{
 	 *
 	 * @return void
 	 */
-	public function set_up() {{
+	public function set_up() {
 		global $wp_version;
 
 		parent::set_up();
 
-		if ( version_compare( $wp_version, self::MIN_WP_VERSION, '<' ) ) {{
+		if ( version_compare( $wp_version, self::MIN_WP_VERSION, '<' ) ) {
 			$this->markTestSkipped( 'WordPress Abilities API requires WordPress ' . self::MIN_WP_VERSION . ' or higher.' );
-		}}
-	}}
+		}
+	}
 
 	/**
 	 * Tear down the test.
 	 *
 	 * @return void
 	 */
-	public function tear_down() {{
+	public function tear_down() {
 		wp_set_current_user( 0 );
 		parent::tear_down();
-	}}
+	}
 
 	/**
 	 * Test ability registration and permission scenarios.
@@ -62,21 +62,21 @@ class RegisterAbilityTest extends TestCase {{
 	 *
 	 * @return void
 	 */
-	public function testShouldReturnExpected( array $config, array $expected ): void {{
+	public function testShouldReturnExpected( array $config, array $expected ): void {
 		$this->set_up_user( $config['has_permission'] );
 
 		$ability = wp_get_ability( self::ABILITY_ID );
 
 		$this->assertNotNull( $ability, 'Ability should be registered.' );
 
-		$result = $ability->execute();
+		$result = $ability->execute( $config['args'] ?? null );
 
-		if ( $expected['is_error'] ) {{
+		if ( $expected['is_error'] ) {
 			$this->assertInstanceOf( 'WP_Error', $result, 'Should return WP_Error when user lacks permission.' );
-		}} else {{
+		} else {
 			$this->assertIsArray( $result, 'Should return array when user has permission.' );
-		}}
-	}}
+		}
+	}
 
 	/**
 	 * Set up user with or without permission.
@@ -85,13 +85,13 @@ class RegisterAbilityTest extends TestCase {{
 	 *
 	 * @return void
 	 */
-	private function set_up_user( bool $has_permission ): void {{
-		if ( $has_permission ) {{
+	private function set_up_user( bool $has_permission ): void {
+		if ( $has_permission ) {
 			$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
-		}} else {{
+		} else {
 			$user_id = self::factory()->user->create( [ 'role' => 'subscriber' ] );
-		}}
+		}
 
 		wp_set_current_user( $user_id );
-	}}
-}}
+	}
+}

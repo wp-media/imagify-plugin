@@ -34,10 +34,6 @@ class GetAccount implements AbilitiesInterface {
 				'label'               => __( 'Get Imagify account status', 'imagify' ),
 				'description'         => __( 'Returns account quota, plan details, and API key validity.', 'imagify' ),
 				'category'            => 'imagify',
-				'input_schema'        => [
-					'type'       => 'object',
-					'properties' => [],
-				],
 				'output_schema'       => [
 					'type'       => 'object',
 					'properties' => [
@@ -52,15 +48,15 @@ class GetAccount implements AbilitiesInterface {
 				],
 				'execute_callback'    => [ $this, 'execute' ],
 				'permission_callback' => [ $this, 'check_permissions' ],
-				'annotations'         => [
-					'readonly'    => true,
-					'destructive' => false,
-					'idempotent'  => true,
-				],
 				'meta'                => [
 					'show_in_rest' => true,
 					'mcp'          => [
 						'public' => true,
+					],
+					'annotations'  => [
+						'readonly'    => true,
+						'destructive' => false,
+						'idempotent'  => true,
 					],
 				],
 			]
