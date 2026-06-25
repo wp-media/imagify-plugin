@@ -76,12 +76,32 @@ class Test_Execute extends TestCase {
 	}
 
 	/**
+	 * Tests that execute() returns an error response when the post is not an attachment.
+	 */
+	public function testReturnsErrorWhenPostIsNotAnAttachment(): void {
+		$post = Mockery::mock( 'WP_Post' );
+
+		Functions\when( 'get_post' )->justReturn( $post );
+		Functions\when( 'get_post_type' )->justReturn( 'post' );
+
+		$ability = new OptimizeMedia();
+		$result  = $ability->execute( [ 'media_id' => 123 ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertNull( $result['original_size'] );
+		$this->assertNull( $result['optimized_size'] );
+		$this->assertNull( $result['savings_percent'] );
+		$this->assertIsString( $result['error_message'] );
+	}
+
+	/**
 	 * Tests that execute() uses the provided optimization_level when optimizing.
 	 */
 	public function testPassesOptimizationLevelToOptimizeWhenNotOptimized(): void {
 		$post = Mockery::mock( 'WP_Post' );
 
 		Functions\when( 'get_post' )->justReturn( $post );
+		Functions\when( 'get_post_type' )->justReturn( 'attachment' );
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -126,6 +146,7 @@ class Test_Execute extends TestCase {
 		$post = Mockery::mock( 'WP_Post' );
 
 		Functions\when( 'get_post' )->justReturn( $post );
+		Functions\when( 'get_post_type' )->justReturn( 'attachment' );
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -161,6 +182,7 @@ class Test_Execute extends TestCase {
 		$post = Mockery::mock( 'WP_Post' );
 
 		Functions\when( 'get_post' )->justReturn( $post );
+		Functions\when( 'get_post_type' )->justReturn( 'attachment' );
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -193,6 +215,7 @@ class Test_Execute extends TestCase {
 		$post = Mockery::mock( 'WP_Post' );
 
 		Functions\when( 'get_post' )->justReturn( $post );
+		Functions\when( 'get_post_type' )->justReturn( 'attachment' );
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -226,6 +249,7 @@ class Test_Execute extends TestCase {
 		$post = Mockery::mock( 'WP_Post' );
 
 		Functions\when( 'get_post' )->justReturn( $post );
+		Functions\when( 'get_post_type' )->justReturn( 'attachment' );
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -255,6 +279,7 @@ class Test_Execute extends TestCase {
 		$post = Mockery::mock( 'WP_Post' );
 
 		Functions\when( 'get_post' )->justReturn( $post );
+		Functions\when( 'get_post_type' )->justReturn( 'attachment' );
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
