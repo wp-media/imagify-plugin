@@ -55,7 +55,6 @@ class BulkOptimize implements AbilitiesInterface {
 						'context'            => [
 							'type'        => 'string',
 							'description' => __( 'Optimization context: "wp" for the WordPress media library or "custom-folders" for custom folder sources.', 'imagify' ),
-							'enum'        => [ 'wp', 'custom-folders' ],
 						],
 						'optimization_level' => [
 							'type'        => 'integer',
