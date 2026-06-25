@@ -37,6 +37,7 @@ class RegisterAbilityTest extends TestCase {
 	 */
 	public function tear_down() {
 		wp_set_current_user( 0 );
+		remove_filter( 'imagify_capacity', '__return_false' );
 		parent::tear_down();
 	}
 
@@ -69,6 +70,30 @@ class RegisterAbilityTest extends TestCase {
 		foreach ( $expected['has_keys'] as $key ) {
 			$this->assertArrayHasKey( $key, $result, "Result should contain key '{$key}'." );
 		}
+	}
+
+	/**
+	 * Test that the imagify_capacity filter is honoured for an administrator.
+	 *
+	 * An admin user would normally pass the permission check. When a filter
+	 * forces the resolved capacity to an empty string (denied), the ability
+	 * must return a WP_Error.
+	 *
+	 * @return void
+	 */
+	public function testShouldDenyAccessWhenCapacityFilterReturnsFalse(): void {
+		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+
+		add_filter( 'imagify_capacity', '__return_false' );
+
+		$ability = wp_get_ability( 'imagify/get-settings' );
+
+		$this->assertNotNull( $ability, 'Ability should be registered.' );
+
+		$result = $ability->execute();
+
+		$this->assertInstanceOf( 'WP_Error', $result, 'Should return WP_Error when imagify_capacity filter denies access.' );
 	}
 
 	/**

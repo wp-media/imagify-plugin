@@ -98,12 +98,15 @@ class GetMediaStatus implements AbilitiesInterface {
 	/**
 	 * Check whether the current user may execute this ability.
 	 *
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
+	 *
 	 * @since 2.3.0
 	 *
-	 * @return bool
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
 	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
