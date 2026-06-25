@@ -130,6 +130,19 @@ class GetMediaStatus implements AbilitiesInterface {
 			];
 		}
 
+		// Verify the attachment exists.
+		if ( ! get_post( $media_id ) ) {
+			return [
+				'status'             => 'error',
+				'error_message'      => 'Media not found.',
+				'optimization_level' => null,
+				'original_size'      => 0,
+				'optimized_size'     => 0,
+				'webp_available'     => false,
+				'avif_available'     => false,
+			];
+		}
+
 		$wp_data  = $this->create_wp_data( $media_id );
 		$opt_data = $wp_data->get_optimization_data();
 

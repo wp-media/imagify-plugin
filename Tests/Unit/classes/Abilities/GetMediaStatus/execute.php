@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetMediaStatus;
 
+use Brain\Monkey\Functions;
 use Imagify\Abilities\GetMediaStatus;
 use Imagify\Optimization\Data\WP;
 use Imagify\Optimization\Process\ProcessInterface;
@@ -29,6 +30,9 @@ class Test_Execute extends TestCase {
 	 * @return GetMediaStatus
 	 */
 	private function make_ability( array $opt_data, int $original_size_bytes = 0 ): GetMediaStatus {
+		// Simulate an existing attachment so the get_post() guard passes.
+		Functions\when( 'get_post' )->justReturn( true );
+
 		$wp_mock = $this->createMock( WP::class );
 		$wp_mock->method( 'get_optimization_data' )->willReturn( $opt_data );
 		$wp_mock->method( 'get_original_size' )->with( false )->willReturn( $original_size_bytes );
@@ -87,6 +91,24 @@ class Test_Execute extends TestCase {
 
 		$this->assertSame( 'error', $result['status'] );
 		$this->assertSame( 'Invalid or missing media_id', $result['error_message'] );
+	}
+
+	/**
+	 * Tests that execute() returns error when the attachment does not exist.
+	 */
+	public function testReturnsErrorWhenAttachmentDoesNotExist(): void {
+		Functions\when( 'get_post' )->justReturn( false );
+
+		$ability = new GetMediaStatus();
+		$result  = $ability->execute( [ 'media_id' => 999 ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertSame( 'Media not found.', $result['error_message'] );
+		$this->assertNull( $result['optimization_level'] );
+		$this->assertSame( 0, $result['original_size'] );
+		$this->assertSame( 0, $result['optimized_size'] );
+		$this->assertFalse( $result['webp_available'] );
+		$this->assertFalse( $result['avif_available'] );
 	}
 
 	// -------------------------------------------------------------------------
