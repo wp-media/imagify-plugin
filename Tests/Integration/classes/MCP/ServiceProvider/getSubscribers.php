@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 
+use Imagify\Abilities\GetAccount;
 use Imagify\Abilities\GetNextgenCoverage;
 use Imagify\Abilities\GetStats;
 use Imagify\Abilities\OptimizeMedia;
@@ -103,6 +104,15 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertFalse( $provider->provides( 'some_unknown_service' ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for GetAccount.
+	 */
+	public function testProvidesTrueForGetAccount(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( GetAccount::class ) );
 	}
 
 	/**
