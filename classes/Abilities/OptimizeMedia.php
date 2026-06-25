@@ -76,15 +76,15 @@ class OptimizeMedia implements AbilitiesInterface {
 				],
 				'execute_callback'    => [ $this, 'execute' ],
 				'permission_callback' => [ $this, 'check_permissions' ],
-				'annotations'         => [
-					'readonly'    => false,
-					'destructive' => true,
-					'idempotent'  => false,
-				],
 				'meta'                => [
 					'show_in_rest' => true,
 					'mcp'          => [
 						'public' => true,
+					],
+					'annotations'  => [
+						'readonly'    => false,
+						'destructive' => true,
+						'idempotent'  => false,
 					],
 				],
 			]
