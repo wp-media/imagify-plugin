@@ -93,7 +93,7 @@ class GetNextgenCoverage implements AbilitiesInterface {
 	 */
 	public function execute(): array {
 		return [
-			'missing_nextgen_count' => $this->stat->get_cached_stat(),
+			'missing_nextgen_count' => (int) $this->stat->get_cached_stat(),
 			'nextgen_format'        => get_imagify_option( 'optimization_format' ),
 		];
 	}

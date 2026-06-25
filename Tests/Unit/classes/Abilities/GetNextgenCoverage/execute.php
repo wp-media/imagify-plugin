@@ -119,4 +119,24 @@ class Test_Execute extends TestCase {
 		$this->assertSame( 'off', $result['nextgen_format'] );
 		$this->assertSame( 12, $result['missing_nextgen_count'] );
 	}
+
+	/**
+	 * Tests that execute() casts false to integer 0 when the cache is cold.
+	 *
+	 * get_cached_stat() returns false on a cache miss via StatInterface.
+	 * The output_schema declares missing_nextgen_count as type: integer.
+	 * The cast (int) false === 0, so validate_output() must pass.
+	 */
+	public function testReturnsMissingNextgenCountAsIntegerWhenCacheReturnsFalse(): void {
+		$stat = Mockery::mock( StatInterface::class );
+		$stat->shouldReceive( 'get_cached_stat' )->once()->andReturn( false );
+
+		Functions\when( 'get_imagify_option' )->justReturn( 'webp' );
+
+		$ability = new GetNextgenCoverage( $stat );
+		$result  = $ability->execute();
+
+		$this->assertSame( 0, $result['missing_nextgen_count'] );
+		$this->assertIsInt( $result['missing_nextgen_count'] );
+	}
 }
