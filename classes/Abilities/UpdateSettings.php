@@ -44,9 +44,8 @@ class UpdateSettings implements AbilitiesInterface {
 					],
 				],
 				'input_schema'        => [
-					'type'          => 'object',
-					'minProperties' => 1,
-					'properties'    => [
+					'type'       => 'object',
+					'properties' => [
 						'api_key'                => [
 							'type'        => 'string',
 							'description' => __( 'Imagify API key. Cannot be updated when IMAGIFY_API_KEY constant is defined.', 'imagify' ),
