@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Imagify\MCP;
 
 use Imagify\Abilities\GetNextgenCoverage;
+use Imagify\Abilities\GetStats;
 use Imagify\Abilities\OptimizeMedia;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 use Imagify\Stats\OptimizedMediaWithoutNextGen;
@@ -30,6 +31,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
 		GetNextgenCoverage::class,
+		GetStats::class,
 		OptimizeMedia::class,
 	];
 
@@ -62,9 +64,10 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->addShared( ConfigSubscriber::class );
 		$this->getContainer()->addShared( GetNextgenCoverage::class )
 			->addArgument( OptimizedMediaWithoutNextGen::class );
+		$this->getContainer()->addShared( GetStats::class );
 		$this->getContainer()->addShared( OptimizeMedia::class );
 		$this->getContainer()->addShared( AbilitiesSubscriber::class )
-			->addArguments( [ GetNextgenCoverage::class, OptimizeMedia::class ] );
+			->addArguments( [ GetNextgenCoverage::class, GetStats::class, OptimizeMedia::class ] );
 	}
 
 	/**
