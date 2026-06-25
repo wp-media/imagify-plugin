@@ -2,13 +2,16 @@
 
 return [
 	'test_data' => [
-		'shouldAllowAccessWhenUserHasPermission' => [
-			'config'   => [ 'has_permission' => true ],
-			'expected' => [ 'is_error' => false ],
+		'testShouldReturnWPErrorWhenNoPermissions'              => [
+			'config'   => [ 'has_permission' => false, 'args' => [] ],
+			'expected' => [ 'is_error' => true, 'has_keys' => [] ],
 		],
-		'shouldDenyAccessWhenUserLacksPermission' => [
-			'config'   => [ 'has_permission' => false ],
-			'expected' => [ 'is_error' => true ],
+		'testShouldReturnUpdatedSettingsWhenPermissionsGranted' => [
+			'config'   => [ 'has_permission' => true, 'args' => [] ],
+			'expected' => [
+				'is_error' => false,
+				'has_keys' => [ 'updated', 'settings' ],
+			],
 		],
 	],
 ];

@@ -34,14 +34,14 @@ class UpdateSettings implements AbilitiesInterface {
 				'category'            => 'imagify',
 				'execute_callback'    => [ $this, 'execute' ],
 				'permission_callback' => [ $this, 'check_permissions' ],
-				'annotations'         => [
-					'readonly'    => false,
-					'destructive' => false,
-					'idempotent'  => true,
-				],
 				'meta'                => [
 					'show_in_rest' => true,
 					'mcp'          => [ 'public' => true ],
+					'annotations'  => [
+						'readonly'    => false,
+						'destructive' => false,
+						'idempotent'  => true,
+					],
 				],
 				'input_schema'        => [
 					'type'          => 'object',
