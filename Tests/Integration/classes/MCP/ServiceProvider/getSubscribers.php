@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 
 use Imagify\Abilities\GetAccount;
+use Imagify\Abilities\GetMediaStatus;
 use Imagify\Abilities\GetNextgenCoverage;
 use Imagify\Abilities\GetStats;
 use Imagify\Abilities\OptimizeMedia;
@@ -95,6 +96,15 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertTrue( $provider->provides( UpdateSettings::class ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for GetMediaStatus.
+	 */
+	public function testProvidesTrueForGetMediaStatus(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( GetMediaStatus::class ) );
 	}
 
 	/**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Imagify\MCP;
 
 use Imagify\Abilities\GetAccount;
+use Imagify\Abilities\GetMediaStatus;
 use Imagify\Abilities\GetNextgenCoverage;
 use Imagify\Abilities\GetStats;
 use Imagify\Abilities\OptimizeMedia;
@@ -33,6 +34,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
 		GetAccount::class,
+		GetMediaStatus::class,
 		GetNextgenCoverage::class,
 		GetStats::class,
 		OptimizeMedia::class,
@@ -67,13 +69,14 @@ class ServiceProvider extends AbstractServiceProvider {
 	public function register(): void {
 		$this->getContainer()->addShared( ConfigSubscriber::class );
 		$this->getContainer()->addShared( GetAccount::class );
+		$this->getContainer()->addShared( GetMediaStatus::class );
 		$this->getContainer()->addShared( GetNextgenCoverage::class )
 			->addArgument( OptimizedMediaWithoutNextGen::class );
 		$this->getContainer()->addShared( GetStats::class );
 		$this->getContainer()->addShared( OptimizeMedia::class );
 		$this->getContainer()->addShared( UpdateSettings::class );
 		$this->getContainer()->addShared( AbilitiesSubscriber::class )
-			->addArguments( [ GetAccount::class, GetNextgenCoverage::class, GetStats::class, OptimizeMedia::class, UpdateSettings::class ] );
+			->addArguments( [ GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetStats::class, OptimizeMedia::class, UpdateSettings::class ] );
 	}
 
 	/**
