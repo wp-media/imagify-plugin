@@ -6,21 +6,11 @@ namespace Imagify\Tests\Integration\classes\Abilities\GetSettings;
 use Imagify\Tests\Integration\TestCase;
 
 /**
- * Integration tests for imagify/get-settings ability registration and permissions.
+ * Integration tests for imagify/get-settings ability registration and output.
  *
  * @group Abilities
  */
 class RegisterAbilityTest extends TestCase {
-
-	/**
-	 * Minimum WordPress version required for the Abilities API.
-	 */
-	private const MIN_WP_VERSION = '6.9';
-
-	/**
-	 * Ability ID.
-	 */
-	private const ABILITY_ID = 'imagify/get-settings';
 
 	/**
 	 * @var bool
@@ -33,12 +23,10 @@ class RegisterAbilityTest extends TestCase {
 	 * @return void
 	 */
 	public function set_up() {
-		global $wp_version;
-
 		parent::set_up();
 
-		if ( version_compare( $wp_version, self::MIN_WP_VERSION, '<' ) ) {
-			$this->markTestSkipped( 'WordPress Abilities API requires WordPress ' . self::MIN_WP_VERSION . ' or higher.' );
+		if ( version_compare( $GLOBALS['wp_version'], '6.9', '<' ) ) {
+			$this->markTestSkipped( 'WordPress 6.9+ required for Abilities API.' );
 		}
 	}
 
@@ -53,8 +41,6 @@ class RegisterAbilityTest extends TestCase {
 	}
 
 	/**
-	 * Test ability registration and permission scenarios.
-	 *
 	 * @dataProvider configTestData
 	 *
 	 * @param array $config   Test configuration.
@@ -65,7 +51,7 @@ class RegisterAbilityTest extends TestCase {
 	public function testShouldReturnExpected( array $config, array $expected ): void {
 		$this->set_up_user( $config['has_permission'] );
 
-		$ability = wp_get_ability( self::ABILITY_ID );
+		$ability = wp_get_ability( 'imagify/get-settings' );
 
 		$this->assertNotNull( $ability, 'Ability should be registered.' );
 
@@ -73,8 +59,15 @@ class RegisterAbilityTest extends TestCase {
 
 		if ( $expected['is_error'] ) {
 			$this->assertInstanceOf( 'WP_Error', $result, 'Should return WP_Error when user lacks permission.' );
-		} else {
-			$this->assertIsArray( $result, 'Should return array when user has permission.' );
+			return;
+		}
+
+		$this->assertIsArray( $result, 'Should return array when user has permission.' );
+		$this->assertArrayNotHasKey( 'api_key', $result, 'api_key must be stripped from response.' );
+		$this->assertArrayNotHasKey( 'version', $result, 'version must be stripped from response.' );
+
+		foreach ( $expected['has_keys'] as $key ) {
+			$this->assertArrayHasKey( $key, $result, "Result should contain key '{$key}'." );
 		}
 	}
 
