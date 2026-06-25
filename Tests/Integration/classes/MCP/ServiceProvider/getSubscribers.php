@@ -6,6 +6,7 @@ namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 use Imagify\Abilities\GetAccount;
 use Imagify\Abilities\GetMediaStatus;
 use Imagify\Abilities\GetNextgenCoverage;
+use Imagify\Abilities\GetSettings;
 use Imagify\Abilities\GetStats;
 use Imagify\Abilities\OptimizeMedia;
 use Imagify\Abilities\UpdateSettings;
@@ -30,7 +31,12 @@ use Imagify\Tests\Integration\TestCase;
  */
 class Test_GetSubscribers extends TestCase {
 
-	protected $useApi = false;
+	/**
+	 * Whether to use the Imagify API for these tests.
+	 *
+	 * @var bool
+	 */
+	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
 	 * Tests that get_subscribers() returns ConfigSubscriber and AbilitiesSubscriber.
@@ -132,5 +138,14 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertTrue( $provider->provides( OptimizeMedia::class ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for GetSettings.
+	 */
+	public function testProvidesTrueForGetSettings(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( GetSettings::class ) );
 	}
 }
