@@ -82,14 +82,14 @@ class GetMediaStatus implements AbilitiesInterface {
 				],
 				'execute_callback'    => [ $this, 'execute' ],
 				'permission_callback' => [ $this, 'check_permissions' ],
-				'annotations'         => [
-					'readonly'    => true,
-					'destructive' => false,
-					'idempotent'  => true,
-				],
 				'meta'                => [
 					'show_in_rest' => true,
 					'mcp'          => [ 'public' => true ],
+					'annotations'  => [
+						'readonly'    => true,
+						'destructive' => false,
+						'idempotent'  => true,
+					],
 				],
 			]
 		);
