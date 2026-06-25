@@ -123,7 +123,7 @@ class Test_Execute extends TestCase {
 	/**
 	 * Tests that execute() casts false to integer 0 when the cache is cold.
 	 *
-	 * get_cached_stat() returns false on a cache miss via StatInterface.
+	 * When the cache is cold, get_cached_stat() returns false via StatInterface.
 	 * The output_schema declares missing_nextgen_count as type: integer.
 	 * The cast (int) false === 0, so validate_output() must pass.
 	 */
