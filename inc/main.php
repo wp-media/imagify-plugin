@@ -31,5 +31,20 @@ function imagify_init() {
 	);
 
 	$plugin->init( $providers );
+
+	// Boot the MCP adapter after providers/subscribers are wired so that
+	// ConfigSubscriber and AbilitiesSubscriber are already listening before
+	// the adapter fires `mcp_adapter_init` / `wp_abilities_api_*` actions
+	// (those fire from `rest_api_init` priority 15, well after `plugins_loaded`).
+	$can_boot_mcp_adapter =
+		class_exists( \WP\MCP\Core\McpAdapter::class )
+		&& function_exists( 'wp_register_ability' )
+		&& function_exists( 'wp_get_ability' )
+		&& function_exists( 'wp_get_abilities' )
+		&& function_exists( 'wp_register_ability_category' );
+
+	if ( $can_boot_mcp_adapter ) {
+		\WP\MCP\Core\McpAdapter::instance();
+	}
 }
 add_action( 'plugins_loaded', 'imagify_init' );
