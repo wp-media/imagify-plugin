@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Imagify\MCP;
 
 use Imagify\Abilities\BulkOptimize;
+use Imagify\Abilities\GenerateMissingNextgen;
 use Imagify\Abilities\GetAccount;
 use Imagify\Abilities\GetMediaStatus;
 use Imagify\Abilities\GetNextgenCoverage;
@@ -37,7 +38,9 @@ class ServiceProvider extends AbstractServiceProvider {
 	protected $provides = [
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
+		Bulk::class,
 		BulkOptimize::class,
+		GenerateMissingNextgen::class,
 		GetAccount::class,
 		GetMediaStatus::class,
 		GetNextgenCoverage::class,
@@ -71,12 +74,21 @@ class ServiceProvider extends AbstractServiceProvider {
 	/**
 	 * Registers the provided services into the container.
 	 *
+	 * Bulk is registered by passing the already-initialised singleton directly
+	 * (Plugin::init() calls Bulk::get_instance()->init() before any provider
+	 * runs), so no factory closure is needed. This avoids the ~12 KB opcode
+	 * allocation that a closure would incur in CLI environments with a tight
+	 * memory limit (e.g. wp-env at 128 MB).
+	 *
 	 * @return void
 	 */
 	public function register(): void {
-		$this->getContainer()->addShared( ConfigSubscriber::class );
+		$this->getContainer()->addShared( Bulk::class, Bulk::get_instance() );
 		$this->getContainer()->addShared( BulkOptimize::class )
 			->addArgument( Bulk::get_instance() );
+		$this->getContainer()->addShared( GenerateMissingNextgen::class )
+			->addArgument( Bulk::class );
+		$this->getContainer()->addShared( ConfigSubscriber::class );
 		$this->getContainer()->addShared( GetAccount::class );
 		$this->getContainer()->addShared( GetMediaStatus::class );
 		$this->getContainer()->addShared( GetNextgenCoverage::class )
@@ -87,7 +99,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->addShared( RestoreMedia::class );
 		$this->getContainer()->addShared( UpdateSettings::class );
 		$this->getContainer()->addShared( AbilitiesSubscriber::class )
-			->addArguments( [ BulkOptimize::class, GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, RestoreMedia::class, UpdateSettings::class ] );
+			->addArguments( [ BulkOptimize::class, GenerateMissingNextgen::class, GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, RestoreMedia::class, UpdateSettings::class ] );
 	}
 
 	/**

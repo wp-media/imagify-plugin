@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 
 use Imagify\Abilities\BulkOptimize;
+use Imagify\Abilities\GenerateMissingNextgen;
 use Imagify\Abilities\GetAccount;
 use Imagify\Abilities\GetMediaStatus;
 use Imagify\Abilities\GetNextgenCoverage;
@@ -12,6 +13,7 @@ use Imagify\Abilities\GetStats;
 use Imagify\Abilities\OptimizeMedia;
 use Imagify\Abilities\RestoreMedia;
 use Imagify\Abilities\UpdateSettings;
+use Imagify\Bulk\Bulk;
 use Imagify\MCP\AbilitiesSubscriber;
 use Imagify\MCP\ConfigSubscriber;
 use Imagify\MCP\ServiceProvider;
@@ -158,6 +160,24 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertTrue( $provider->provides( BulkOptimize::class ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for GenerateMissingNextgen.
+	 */
+	public function testProvidesTrueForGenerateMissingNextgen(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( GenerateMissingNextgen::class ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for Bulk.
+	 */
+	public function testProvidesTrueForBulk(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( Bulk::class ) );
 	}
 
 	/**

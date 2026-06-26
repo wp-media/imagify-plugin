@@ -42,6 +42,7 @@ The endpoint returns HTTP 200 with the adapter's default three-tool set plus all
 |-------|----------------|
 | `Imagify\Abilities\AbilitiesInterface` | Contract every Imagify MCP ability must implement. |
 | `Imagify\Abilities\BulkOptimize` | MCP ability: schedule a bulk image optimization run (`imagify/bulk-optimize`). |
+| `Imagify\Abilities\GenerateMissingNextgen` | MCP ability: queue generation of missing next-gen (WebP/AVIF) versions (`imagify/generate-missing-nextgen`). |
 | `Imagify\Abilities\OptimizeMedia` | Ability `imagify/optimize_media` — optimizes a WP media attachment on demand. |
 | `Imagify\Abilities\RestoreMedia` | MCP ability: restore an optimized media to its original state via backup (`imagify/restore-media`). |
 | `Imagify\Abilities\UpdateSettings` | MCP ability: updates one or more Imagify configuration settings. |
@@ -89,6 +90,25 @@ Schedules a bulk image optimization run for the WordPress media library or custo
 |-------|------|-------------|
 | `status` | `"scheduled"` \| `"error"` | Result status. |
 | `context` | string | The requested optimization context, echoed back. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. |
+
+### `imagify/generate-missing-nextgen`
+
+**Class:** `Imagify\Abilities\GenerateMissingNextgen`  
+**Capability required:** `manage_options`  
+**Exposed via REST:** yes (`show_in_rest: true`)  
+**MCP discoverable:** yes (`mcp.public: true`)
+
+Queues generation of missing next-gen (WebP/AVIF) versions for all optimized media by delegating to `Bulk::run_generate_nextgen()`. Runs asynchronously via Action Scheduler. No required inputs.
+
+`status=scheduled` is returned both when jobs were enqueued (`queued_count > 0`) and when there is nothing to generate (`queued_count=0`). The latter is a successful no-op, not an error.
+
+**Output schema:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"scheduled"` \| `"error"` | Result status. |
+| `queued_count` | integer | Number of images queued for next-gen generation. |
 | `error_message` | string \| null | Human-readable error on failure, null on success. |
 
 ### `imagify/optimize_media`
