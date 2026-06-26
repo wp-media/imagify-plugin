@@ -13,10 +13,8 @@ use Imagify\EventManagement\SubscriberInterface;
  * category and on `wp_abilities_api_init` to register each concrete ability
  * that is injected via the constructor.
  *
- * For the foundation this subscriber receives **zero** abilities. Downstream
- * sub-issues add ability instances as constructor arguments and append
- * `->register()` calls inside `register_abilities()` via the ServiceProvider's
- * `addArguments()` wiring (see Downstream Wiring Contract in spec #1108).
+ * All 7 ability instances are wired by `ServiceProvider` and injected at
+ * construction time. See docs/api/mcp.md for the full list of abilities.
  *
  * @since 2.3.0
  */
@@ -32,7 +30,7 @@ class AbilitiesSubscriber implements SubscriberInterface {
 	/**
 	 * Constructor.
 	 *
-	 * @param AbilitiesInterface ...$abilities Zero or more ability instances.
+	 * @param AbilitiesInterface ...$abilities Ability instances to register.
 	 */
 	public function __construct( AbilitiesInterface ...$abilities ) {
 		$this->abilities = $abilities;
@@ -77,7 +75,6 @@ class AbilitiesSubscriber implements SubscriberInterface {
 	 * Registers all injected Imagify abilities.
 	 *
 	 * No-ops gracefully when the WP Abilities API is not available (WP < 6.9).
-	 * With zero injected abilities (this foundation) the loop body never runs.
 	 *
 	 * @return void
 	 */
