@@ -264,6 +264,17 @@ class UpdateSettings implements AbilitiesInterface {
 				);
 			}
 
+			if ( 'version' === $key ) {
+				return new \WP_Error(
+					'imagify_unknown_setting',
+					sprintf(
+						/* translators: %s: the unknown setting key name. */
+						__( '"%s" is not a valid Imagify setting key.', 'imagify' ),
+						$key
+					)
+				);
+			}
+
 			if ( 'api_key' === $key && defined( 'IMAGIFY_API_KEY' ) && IMAGIFY_API_KEY ) {
 				return new \WP_Error(
 					'imagify_api_key_immutable',
