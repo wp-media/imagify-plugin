@@ -10,6 +10,7 @@ use Imagify\Abilities\GetNextgenCoverage;
 use Imagify\Abilities\GetSettings;
 use Imagify\Abilities\GetStats;
 use Imagify\Abilities\OptimizeMedia;
+use Imagify\Abilities\RestoreMedia;
 use Imagify\Abilities\UpdateSettings;
 use Imagify\MCP\AbilitiesSubscriber;
 use Imagify\MCP\ConfigSubscriber;
@@ -157,5 +158,14 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertTrue( $provider->provides( BulkOptimize::class ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for RestoreMedia.
+	 */
+	public function testProvidesTrueForRestoreMedia(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( RestoreMedia::class ) );
 	}
 }

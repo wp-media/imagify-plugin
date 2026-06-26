@@ -10,6 +10,7 @@ use Imagify\Abilities\GetNextgenCoverage;
 use Imagify\Abilities\GetSettings;
 use Imagify\Abilities\GetStats;
 use Imagify\Abilities\OptimizeMedia;
+use Imagify\Abilities\RestoreMedia;
 use Imagify\Abilities\UpdateSettings;
 use Imagify\Bulk\Bulk;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
@@ -43,6 +44,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		GetSettings::class,
 		GetStats::class,
 		OptimizeMedia::class,
+		RestoreMedia::class,
 		UpdateSettings::class,
 	];
 
@@ -82,9 +84,10 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->addShared( GetSettings::class );
 		$this->getContainer()->addShared( GetStats::class );
 		$this->getContainer()->addShared( OptimizeMedia::class );
+		$this->getContainer()->addShared( RestoreMedia::class );
 		$this->getContainer()->addShared( UpdateSettings::class );
 		$this->getContainer()->addShared( AbilitiesSubscriber::class )
-			->addArguments( [ BulkOptimize::class, GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, UpdateSettings::class ] );
+			->addArguments( [ BulkOptimize::class, GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, RestoreMedia::class, UpdateSettings::class ] );
 	}
 
 	/**

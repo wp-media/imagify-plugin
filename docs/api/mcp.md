@@ -43,6 +43,7 @@ The endpoint returns HTTP 200 with the adapter's default three-tool set plus all
 | `Imagify\Abilities\AbilitiesInterface` | Contract every Imagify MCP ability must implement. |
 | `Imagify\Abilities\BulkOptimize` | MCP ability: schedule a bulk image optimization run (`imagify/bulk-optimize`). |
 | `Imagify\Abilities\OptimizeMedia` | Ability `imagify/optimize_media` — optimizes a WP media attachment on demand. |
+| `Imagify\Abilities\RestoreMedia` | MCP ability: restore an optimized media to its original state via backup (`imagify/restore-media`). |
 | `Imagify\Abilities\UpdateSettings` | MCP ability: updates one or more Imagify configuration settings. |
 | `Imagify\MCP\ConfigSubscriber` | Customizes the MCP server name and description via `mcp_adapter_default_server_config`. |
 | `Imagify\MCP\AbilitiesSubscriber` | Registers the `imagify` ability category and all injected abilities. |
@@ -116,6 +117,29 @@ Because both methods queue asynchronous background jobs, the `optimized_size` an
 | `original_size` | integer \| null | File size in bytes before optimization, or null on error. |
 | `optimized_size` | integer \| null | File size in bytes after optimization (may be null if job not yet complete). |
 | `savings_percent` | float \| null | Percentage savings, or null on error or when sizes are unavailable. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. |
+
+### `imagify/restore-media`
+
+**Class:** `Imagify\Abilities\RestoreMedia`  
+**Capability required:** `manage_options`  
+**Exposed via REST:** yes (`show_in_rest: true`)  
+**MCP discoverable:** yes (`mcp.public: true`)
+
+Restores an optimized media to its original state using the stored backup file. Requires that backup was enabled (`backup: 1` in settings) at the time of optimization.
+
+**Input schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `media_id` | integer | yes | WordPress attachment ID to restore. |
+
+**Output schema:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"success"` \| `"error"` | Result status. |
+| `restored_size` | integer \| null | Restored original file size in bytes, or null on error. |
 | `error_message` | string \| null | Human-readable error on failure, null on success. |
 
 ## Hooks
