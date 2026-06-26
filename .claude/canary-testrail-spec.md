@@ -878,45 +878,33 @@ Open: exact storage location and the "case → recorded script" linkage (§9).
 
 ---
 
-## 10. Open questions for the audit
+## 10. Open questions — audit resolution (2026-06-26)
 
-**Cross-cutting**
-1. **TestRail MCP availability** — is a TestRail MCP server actually connected? If yes, prefer it
-   over REST in both Features 1 & 2. Confirm and document its tool names.
-2. ~~**Skill naming**~~ — **resolved:** `/testrail-scenarios` + `/testrail-run` (decoupled from
-   "release", more general). Original names `/testrail-release-setup` / `/testrail-release-process`
-   are retired.
+All questions resolved during deep audit. No open questions remain for initial implementation.
 
-**Feature 1**
-3. **`refs` API filter** — confirm `GET /get_cases/3?refs=<url>` works in this TestRail version.
-   If not, adopt the `.ai/testrail/index.json` fallback.
-4. **Section auto-creation** — always propose in YAML and create only on publish (safer), vs allow
-   auto-create? Recommended: propose-then-create-on-confirm (already the design).
-5. **Tracking/analytics-only PRs** — skip case generation, or generate a minimal "event fires"
-   case? (Relevant: the current branch wires wp-mixpanel and fires a "Media Optimized" event.)
+| # | Question | Resolution |
+|---|----------|------------|
+| 1 | TestRail MCP availability | ✅ **Connected** — `/opt/homebrew/bin/mcp-testrail` in `~/.claude/settings.json`. Tool names unconfirmed; use REST API (curl) as primary. MCP optional enhancement. |
+| 2 | Skill naming | ✅ `/testrail-scenarios` + `/testrail-run` (user confirmed) |
+| 3 | `refs` API filter | ✅ **Works** — `GET /get_cases/3?suite_id=3&refs=<url>` returns `{cases:[], size:0}` when no match. Primary dedup strategy confirmed. |
+| 4 | Section auto-creation | ✅ Propose in YAML, create only on "publish" confirm. Already designed this way. |
+| 5 | Tracking-only PRs | ✅ Generate a minimal "event fires" case verifying the event reaches the analytics endpoint. Don't skip. |
+| 6 | Multiple runs per milestone | ✅ **Real data:** one run per milestone in practice (milestone 2.3.0 → single run 1283 with 151 untested cases). Design: if multiple exist, prompt user; default to the single one. |
+| 7 | Parallelism | ✅ **Sequential** — matches existing `playwright.config.ts` (`workers: 1`, `fullyParallel: false`). WP install shared; sequential keeps DB state predictable. |
+| 8 | Recorded script persistence | ✅ `Tests/e2e/canary/TR-<case_id>/` — one dir per TestRail case ID containing step scripts. Phase B: CI runs `npx @usecanary/cli run` on these instead of re-inferring. |
+| 9 | CANARY_HOME in CI | ⚠️ **Deferred to Phase B** — not needed for Phase A (local-only Canary). Investigate `CANARY_HOME` override when CI execution is in scope. |
+| 10 | Spec generation strategy | ✅ **Fresh write** — `canary-e2e` writes TypeScript Playwright specs from scratch (same assertions as Canary steps), not a mechanical transpile. QuickJS ≠ Node. |
+| 11 | CI vs local Canary | ✅ **Local-only Canary** initially. CI runs committed Playwright specs from `Tests/e2e/specs/`. No Canary dep in CI for Phase A. |
+| 12 | WP fixture coverage | ✅ **Audited.** 6 WP snippets cover all patterns in `Tests/e2e/specs/`. Additional Imagify-specific fixtures needed in `canary-imagify-session-agent`: `#imagify-check-api-container:not(.imagify-valid)` for invalid API key (NOT `.notice-error`), `#imagify-bulk-action`, `.imagify-bulk-table`. `wp-multisite` needed for some TestRail cases — deferred. Login uses `getByLabel('Username or Email Address')` not `#user_login`. |
+| 13 | Return-contract parity | ✅ `canary-e2e` returns identical JSON to `e2e-qa-tester` plus `canary_sessions[]` and `canary_results_table` fields. Run `/contract-check` after implementation to verify. |
 
-**Feature 2**
-6. **Multiple runs per milestone** — if a milestone has several runs (smoke + full), which does
-   `/testrail-run` target? Prompt to choose, default to latest, or require `--run-id`?
-7. **Parallelism** — execute cases sequentially or bounded-parallel? Canary uses one persistent
-   browser per session; parallel cases = parallel sessions = resource/port contention to validate.
-8. **Recorded-script persistence & linkage** — where do recorded Canary scripts live for replay
-   (`Tests/e2e/canary/TR-<case_id>/`?), and how is a case linked to its script so CI replays
-   instead of re-inferring? (Phase B of §8.)
+**Additional audit findings:**
 
-**Feature 3**
-9. **Artifact location in CI** — `~/.canary/sessions/` is per-machine. If CI records (not just
-   replays Playwright specs), override via `CANARY_HOME`? Where do artifacts land?
-10. **Spec-generation strategy** — `canary-e2e` writes fresh Playwright specs passing the same
-    assertions (recommended; QuickJS ≠ Node), not a mechanical transpile. Confirm.
-11. **CI vs local Canary** — should CI boot the WP env and record fresh Canary sessions, or only
-    run committed Playwright specs (fast, no Canary dep)? Recommendation: local-only Canary
-    initially; CI runs Playwright specs only.
-12. **WP fixture coverage** — the §7.2 snippets cover patterns seen in live Imagify sessions. Audit
-    `Tests/e2e/specs/` for uncovered patterns (`wp-block-editor`, `wp-media-library-upload`,
-    `wp-multisite`).
-13. **Return-contract parity** — verify `canary-e2e`'s JSON exactly matches `e2e-qa-tester`'s so
-    `qa-engineer` needs zero branching. Run `/contract-check` once both exist.
+- **CLI syntax correction:** `id=$(npx @usecanary/cli session start --name "X")` — session ID returned from stdout, passed as `--session "$id"` to subsequent `run` commands
+- **Screenshot location:** daemon auto-captures one screenshot per step (last-opened tab) — this goes in the report. `saveScreenshot()` → `~/.canary/tmp/` (debug only, NOT in report)
+- **Trust guard:** NOT present in `session-agent.md` — no guard to remove. No confirmation requirement in pipeline use.
+- **TestRail steps are HTML:** `<p>Visit settings.</p>` — must strip with `python3 -c "import sys,re; print(re.sub('<[^>]+>','',sys.stdin.read()).strip())"`
+- **Active run 1283 (2.3.0):** 151 untested cases, status_id=3 (untested)
 
 ---
 

@@ -126,6 +126,20 @@ lean toward High autonomy even without an explicit signal.
 Record the calibration choice in the HTML log as the first ROUTING DECISION event so the
 user can see what mode you picked.
 
+### Selecting the E2E mode
+
+After calibrating the escalation threshold, ask the user (or infer from their message):
+
+**E2E mode** — If the issue involves UI/browser changes, which QA agent to use?
+- `playwright` (default) — `e2e-qa-tester`, stable, uses Playwright MCP
+- `canary` — `canary-e2e`, experimental, records trace/video/HAR via Canary CLI
+
+Signals for `canary` mode in the user's message: "use canary", "record the session", "canary mode".
+Default: `playwright` (no need to ask if the user hasn't mentioned it).
+
+Store as `e2e_mode` and pass it in the dispatch to `qa-engineer`. The flag is ignored when the
+issue has no UI/browser changes.
+
 ---
 
 ## Run log
@@ -396,6 +410,7 @@ suggests low actual risk), confirm with the user before deciding.
 | `release-agent` | `haiku` | — |
 | `ticket-writer` | `haiku` | — |
 | `e2e-qa-tester` | `sonnet` | — |
+| `canary-e2e` | `sonnet` | — |
 
 Pass the resolved model as the `model` parameter on every Agent tool spawn. For agents with frontmatter `model: haiku`, this is redundant but harmless — always pass it explicitly so the intent is clear in the orchestrator context.
 
@@ -828,7 +843,7 @@ All agents also receive `CURRENT_MODEL` and `session_learnings` (section 13 of `
 | `frontend-agent` | Issue object + spec path + dispatch plan + backend API contract (when scopes overlap) |
 | `release-agent` | Issue #, branch name, base branch, acceptance criteria, spec path |
 | `lead-reviewer` | PR URL + spec path (`.ai/issues/<N>/spec.md`) + acceptance criteria + `session_learnings` |
-| `qa-engineer` | PR number + acceptance criteria + base branch |
+| `qa-engineer` | PR number + acceptance criteria + base branch + `e2e_mode` (`"playwright"` default, or `"canary"`) |
 | `ticket-writer` (nth_followup) | Single NTH feedback item (not full context) |
 
 ---
