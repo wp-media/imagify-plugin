@@ -4,7 +4,7 @@
 
 The `Imagify\MCP` module integrates Imagify with the WordPress MCP (Model Context Protocol) adapter (`wordpress/mcp-adapter`). It exposes an MCP server endpoint that AI agents can use to discover and invoke Imagify abilities.
 
-This module ships the MCP foundation (issue #1108) plus a growing set of Imagify-specific abilities registered under `classes/Abilities/`. The adapter's three built-in tools (`discover-abilities`, `get-ability-info`, `execute-ability`) are always present.
+The adapter's three built-in tools (`discover-abilities`, `get-ability-info`, `execute-ability`) are always present. Concrete Imagify abilities are defined under `classes/Abilities/`.
 
 ## Requirements
 
@@ -34,14 +34,16 @@ class_exists( \WP\MCP\Core\McpAdapter::class )
 | Method | GET / POST (JSON-RPC) |
 | Registered by | `wordpress/mcp-adapter` `DefaultServerFactory::create()` on `mcp_adapter_init` |
 
-The endpoint returns HTTP 200 with the adapter's default three-tool set plus all registered Imagify-category abilities.
+The endpoint returns HTTP 200 with the adapter's default three-tool set plus all registered Imagify abilities.
 
 ## Classes
 
 | Class | Responsibility |
 |-------|----------------|
 | `Imagify\Abilities\AbilitiesInterface` | Contract every Imagify MCP ability must implement. |
-| `Imagify\Abilities\GenerateMissingNextgen` | Queues generation of missing next-gen (WebP/AVIF) versions for all optimized media. |
+| `Imagify\Abilities\GenerateMissingNextgen` | MCP ability: queue generation of missing next-gen (WebP/AVIF) versions (`imagify/generate-missing-nextgen`). |
+| `Imagify\Abilities\OptimizeMedia` | Ability `imagify/optimize_media` — optimizes a WP media attachment on demand. |
+| `Imagify\Abilities\UpdateSettings` | MCP ability: updates one or more Imagify configuration settings. |
 | `Imagify\MCP\ConfigSubscriber` | Customizes the MCP server name and description via `mcp_adapter_default_server_config`. |
 | `Imagify\MCP\AbilitiesSubscriber` | Registers the `imagify` ability category and all injected abilities. |
 | `Imagify\MCP\ServiceProvider` | DI wiring — registered in `config/providers.php`. |
@@ -62,6 +64,55 @@ interface AbilitiesInterface {
 - `check_permissions()` — returns `current_user_can( 'manage_options' )` (per epic #1097 spec).
 - `execute()` — returns the tool-result value (array, string, or any MCP-compatible type).
 
+## Registered abilities
+
+### `imagify/generate-missing-nextgen`
+
+**Class:** `Imagify\Abilities\GenerateMissingNextgen`  
+**Capability required:** `manage_options`  
+**Exposed via REST:** yes (`show_in_rest: true`)  
+**MCP discoverable:** yes (`mcp.public: true`)
+
+Queues generation of missing next-gen (WebP/AVIF) versions for all optimized media by delegating to `Bulk::run_generate_nextgen()`. Runs asynchronously via Action Scheduler. No required inputs.
+
+`status=scheduled` is returned both when jobs were enqueued (`queued_count > 0`) and when there is nothing to generate (`queued_count=0`). The latter is a successful no-op, not an error.
+
+**Output schema:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"scheduled"` \| `"error"` | Result status. |
+| `queued_count` | integer | Number of images queued for next-gen generation. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. |
+
+### `imagify/optimize_media`
+
+**Class:** `Imagify\Abilities\OptimizeMedia`  
+**Capability required:** `manage_options`  
+**Exposed via REST:** yes (`show_in_rest: true`)  
+**MCP discoverable:** yes (`mcp.public: true`)
+
+Optimizes a specific WordPress media library attachment on demand. Delegates to `Imagify\Optimization\Process\WP::optimize()` for first-time optimization or `::reoptimize()` when the media has already been processed.
+
+Because both methods queue asynchronous background jobs, the `optimized_size` and `savings_percent` fields in the response reflect data already stored in post meta at the time of the call. Clients should poll `imagify/get-media-status` to track the final result.
+
+**Input schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `media_id` | integer | yes | WordPress attachment ID. |
+| `optimization_level` | integer (0–2) | no | Overrides the global setting. 0 = normal, 1 = aggressive, 2 = ultra. |
+
+**Output schema:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"success"` \| `"error"` | Result status. |
+| `original_size` | integer \| null | File size in bytes before optimization, or null on error. |
+| `optimized_size` | integer \| null | File size in bytes after optimization (may be null if job not yet complete). |
+| `savings_percent` | float \| null | Percentage savings, or null on error or when sizes are unavailable. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. |
+
 ## Hooks
 
 ### Filter: `mcp_adapter_default_server_config`
@@ -80,50 +131,57 @@ Subscribed by `AbilitiesSubscriber::register_categories()`. Registers the `imagi
 
 ### Action: `wp_abilities_api_init`
 
-Subscribed by `AbilitiesSubscriber::register_abilities()`. Loops over injected `AbilitiesInterface` instances calling `->register()`. No-ops on WP < 6.9. With zero abilities (foundation) the loop body never executes.
+Subscribed by `AbilitiesSubscriber::register_abilities()`. Loops over injected `AbilitiesInterface` instances calling `->register()`. No-ops on WP < 6.9.
 
-## Registered abilities
+## Abilities
 
-### `imagify/generate-missing-nextgen`
+### `imagify/update-settings`
 
-Implemented by `Imagify\Abilities\GenerateMissingNextgen` (issue #1106).
+Registered by `Imagify\Abilities\UpdateSettings`. Accepts a partial settings object and updates only the supplied keys.
 
-Queues generation of missing next-gen (WebP/AVIF) versions for all optimized media by delegating to `Bulk::run_generate_nextgen()`. Runs asynchronously via Action Scheduler.
-
-| Field | Value |
-|-------|-------|
-| Slug | `imagify/generate-missing-nextgen` |
-| Category | `imagify` |
+| Key | Value |
+|-----|-------|
+| Slug | `imagify/update-settings` |
+| Class | `Imagify\Abilities\UpdateSettings` |
 | Permission | `manage_options` capability |
-| `readonly` | `false` |
-| `destructive` | `true` |
-| `idempotent` | `false` (re-invocation schedules duplicate jobs) |
+| Annotations | `readonly: false`, `destructive: false`, `idempotent: true` |
+| MCP public | `true` |
 
-**Output schema:**
+**Input:** a partial associative array of Imagify setting key-value pairs. Only supplied keys are changed; others remain unchanged.
 
+**Output on success:**
 ```json
 {
-  "status": "scheduled" | "error",
-  "queued_count": integer,
-  "error_message": string | null
+  "updated":  ["<key>", ...],
+  "settings": { "<key>": "<value>", ... }
 }
 ```
+`updated` lists only the keys whose value actually changed. `settings` contains the full post-update settings (excluding `api_key` and `version`).
 
-`status=scheduled` is returned both when jobs were enqueued (`queued_count > 0`) and when there is nothing to generate (`queued_count=0`). The latter occurs when all optimized media already have next-gen versions — this is a successful no-op, not an error.
+**Error codes:**
+- `imagify_unknown_setting` — a supplied key is not a recognized Imagify setting.
+- `imagify_invalid_value` — a supplied value fails the constrained-field validation (`optimization_level`, `optimization_format`, `display_nextgen_method`, `display_webp_method`).
+- `imagify_api_key_immutable` — the `api_key` key was supplied while `IMAGIFY_API_KEY` constant is defined.
 
-## Adding a new ability (downstream sub-issues)
+**Constrained fields:**
+- `optimization_level`: integer `0`, `1`, or `2`
+- `optimization_format`: `"off"`, `"webp"`, or `"avif"`
+- `display_nextgen_method` / `display_webp_method`: `"picture"` or `"rewrite"`
 
-1. Create `classes/Abilities/<AbilityName>.php` implementing `AbilitiesInterface`.
-2. In `classes/MCP/ServiceProvider.php`:
-   - Add the ability class to `$provides`.
-   - Bind it: `$this->getContainer()->addShared( MyAbility::class );`
-   - Extend the existing `AbilitiesSubscriber` definition to inject it:
-     ```php
-     $this->getContainer()->extend( AbilitiesSubscriber::class )
-         ->addArgument( MyAbility::class );
-     ```
-   - Do NOT call `addShared( AbilitiesSubscriber::class )` a second time — `extend()` operates on the existing binding.
+All other keys pass through to `Imagify_Options::set()`, which fires the `sanitize_option_<name>` WP filter for a final sanitization pass.
+
+## Adding a new ability
+
+1. Create `classes/Abilities/<AbilityName>.php` implementing `AbilitiesInterface`. See `OptimizeMedia` as a reference implementation.
+2. Add the ability as a shared service and append it to the `AbilitiesSubscriber` arguments in `classes/MCP/ServiceProvider.php`:
+   ```php
+   $this->getContainer()->addShared( MyAbility::class );
+   $this->getContainer()->addShared( AbilitiesSubscriber::class )
+       ->addArguments( [ OptimizeMedia::class, MyAbility::class ] );
+   ```
 3. The loop in `AbilitiesSubscriber::register_abilities()` calls `->register()` on every injected ability automatically — no manual call is needed.
+4. Add the class to the `$provides` array in `ServiceProvider`.
+5. Document the new ability in this file under "Registered abilities".
 
 ## Patch
 

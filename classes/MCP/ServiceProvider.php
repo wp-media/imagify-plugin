@@ -4,14 +4,25 @@ declare(strict_types=1);
 namespace Imagify\MCP;
 
 use Imagify\Abilities\GenerateMissingNextgen;
+use Imagify\Abilities\GetAccount;
+use Imagify\Abilities\GetMediaStatus;
+use Imagify\Abilities\GetNextgenCoverage;
+use Imagify\Abilities\GetSettings;
+use Imagify\Abilities\GetStats;
+use Imagify\Abilities\OptimizeMedia;
+use Imagify\Abilities\UpdateSettings;
 use Imagify\Bulk\Bulk;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
+use Imagify\Stats\OptimizedMediaWithoutNextGen;
 
 /**
  * Service provider for the MCP (Model Context Protocol) module.
  *
- * Wires `ConfigSubscriber` and `AbilitiesSubscriber` into the DI container,
- * along with all concrete ability classes injected into `AbilitiesSubscriber`.
+ * Wires `ConfigSubscriber` and `AbilitiesSubscriber` into the DI container.
+ * For the foundation `AbilitiesSubscriber` is registered with no ability
+ * arguments. Downstream sub-issues extend the wiring via `addArguments()`
+ * once concrete ability classes are added (see Downstream Wiring Contract
+ * in spec #1108).
  *
  * @since 2.3.0
  */
@@ -27,6 +38,13 @@ class ServiceProvider extends AbstractServiceProvider {
 		AbilitiesSubscriber::class,
 		Bulk::class,
 		GenerateMissingNextgen::class,
+		GetAccount::class,
+		GetMediaStatus::class,
+		GetNextgenCoverage::class,
+		GetSettings::class,
+		GetStats::class,
+		OptimizeMedia::class,
+		UpdateSettings::class,
 	];
 
 	/**
@@ -62,13 +80,19 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public function register(): void {
 		$this->getContainer()->addShared( Bulk::class, Bulk::get_instance() );
-
 		$this->getContainer()->addShared( GenerateMissingNextgen::class )
 			->addArgument( Bulk::class );
-
 		$this->getContainer()->addShared( ConfigSubscriber::class );
+		$this->getContainer()->addShared( GetAccount::class );
+		$this->getContainer()->addShared( GetMediaStatus::class );
+		$this->getContainer()->addShared( GetNextgenCoverage::class )
+			->addArgument( OptimizedMediaWithoutNextGen::class );
+		$this->getContainer()->addShared( GetSettings::class );
+		$this->getContainer()->addShared( GetStats::class );
+		$this->getContainer()->addShared( OptimizeMedia::class );
+		$this->getContainer()->addShared( UpdateSettings::class );
 		$this->getContainer()->addShared( AbilitiesSubscriber::class )
-			->addArgument( GenerateMissingNextgen::class );
+			->addArguments( [ GenerateMissingNextgen::class, GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, UpdateSettings::class ] );
 	}
 
 	/**
