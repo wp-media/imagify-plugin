@@ -49,6 +49,18 @@ class RegisterAbilityTest extends TestCase {
 		}
 	}
 
+	public function testCoverageFieldsHaveCorrectTypes(): void {
+		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+
+		$ability = wp_get_ability( 'imagify/get-nextgen-coverage' );
+		$result  = $ability->execute();
+
+		$this->assertIsInt( $result['missing_nextgen_count'] );
+		$this->assertGreaterThanOrEqual( 0, $result['missing_nextgen_count'] );
+		$this->assertIsString( $result['nextgen_format'] );
+	}
+
 	private function set_up_user( bool $has_permission ): void {
 		$user_id = self::factory()->user->create( [
 			'role' => $has_permission ? 'administrator' : 'subscriber',

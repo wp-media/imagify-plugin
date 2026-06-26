@@ -49,6 +49,27 @@ class RegisterAbilityTest extends TestCase {
 		}
 	}
 
+	public function testStatsFieldsHaveCorrectTypes(): void {
+		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+
+		$ability = wp_get_ability( 'imagify/get-stats' );
+		$result  = $ability->execute();
+
+		foreach ( [ 'wp', 'custom-folders' ] as $group ) {
+			$this->assertIsArray( $result[ $group ] );
+			$this->assertIsInt( $result[ $group ]['count_optimized'] );
+			$this->assertIsInt( $result[ $group ]['count_errors'] );
+			$this->assertIsInt( $result[ $group ]['original_size'] );
+			$this->assertIsInt( $result[ $group ]['optimized_size'] );
+			$this->assertIsFloat( $result[ $group ]['savings_percent'] );
+			$this->assertGreaterThanOrEqual( 0, $result[ $group ]['count_optimized'] );
+			$this->assertGreaterThanOrEqual( 0, $result[ $group ]['count_errors'] );
+			$this->assertGreaterThanOrEqual( 0, $result[ $group ]['original_size'] );
+			$this->assertGreaterThanOrEqual( 0, $result[ $group ]['optimized_size'] );
+		}
+	}
+
 	private function set_up_user( bool $has_permission ): void {
 		$user_id = self::factory()->user->create( [
 			'role' => $has_permission ? 'administrator' : 'subscriber',

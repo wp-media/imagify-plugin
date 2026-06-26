@@ -49,6 +49,37 @@ class RegisterAbilityTest extends TestCase {
 		}
 	}
 
+	public function testErrorResponseFieldTypesOnInvalidMediaId(): void {
+		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+
+		$ability = wp_get_ability( 'imagify/optimize-media' );
+		$result  = $ability->execute( [ 'media_id' => 0 ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertNull( $result['original_size'] );
+		$this->assertNull( $result['optimized_size'] );
+		$this->assertNull( $result['savings_percent'] );
+		$this->assertIsString( $result['error_message'] );
+		$this->assertNotEmpty( $result['error_message'] );
+	}
+
+	public function testErrorResponseForNonAttachmentPostId(): void {
+		$post_id = self::factory()->post->create();
+		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+
+		$ability = wp_get_ability( 'imagify/optimize-media' );
+		$result  = $ability->execute( [ 'media_id' => $post_id ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertIsString( $result['error_message'] );
+		$this->assertNotEmpty( $result['error_message'] );
+		$this->assertNull( $result['original_size'] );
+		$this->assertNull( $result['optimized_size'] );
+		$this->assertNull( $result['savings_percent'] );
+	}
+
 	private function set_up_user( bool $has_permission ): void {
 		$user_id = self::factory()->user->create( [
 			'role' => $has_permission ? 'administrator' : 'subscriber',
