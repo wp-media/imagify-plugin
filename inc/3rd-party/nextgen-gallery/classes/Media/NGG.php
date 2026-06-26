@@ -449,7 +449,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 
 		// Remove common values (that have no value for us here, lol). Also remove 'full' and 'backup'.
 		$image_data = array_diff_key(
-			$this->image->meta_data,
+			is_array( $this->image->meta_data ) ? $this->image->meta_data : [],
 			[
 				'full'              => 1,
 				'backup'            => 1,

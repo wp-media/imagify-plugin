@@ -2,12 +2,12 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 7.0
-Stable tag: 2.2.8
+Stable tag: 2.2.9
 Requires PHP: 7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Optimize images in 1‑click: compress, resize & convert to WebP/AVIF - free up to 20MB/month. Enjoy the easiest WordPress image optimizer to set up.
+Image optimization in 1‑click: compress, resize & convert to WebP/AVIF – free up to 20MB/month. Enjoy the easiest WordPress image optimizer to set up.
 
 == Description ==
 
@@ -308,6 +308,17 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.2.9 =
+- Enhancement: Add a new WP-CLI command to restore images in bulk.
+- Enhancement: Add a one-click Reset Internal State tool to the troubleshooting page.
+- Bugfix: Restore Imagify controls compatibility with NextGEN Gallery v4.x.
+- Bugfix: Restore button icon alignment broken by WordPress 7.0.
+- Bugfix: Fix the generate missing WebP button responsiveness.
+- Bugfix: Prevent duplicate htaccess notices and fix undefined variable warnings.
+- Bugfix: Fix incorrect flag passed to filter_input in bulk stats callback.
+- Bugfix: Fix a fatal PHP error when optimizing a freshly uploaded NextGEN Gallery image with no metadata yet populated.
+- Bugfix: Fix a fatal ArgumentCountError crashing the `wp imagify generate-missing-nextgen` WP-CLI command.
+
 = 2.2.8 =
 - Bugfix: Fix jQuery deprecation notices
 - Bugfix: Fix PHP deprecation notices

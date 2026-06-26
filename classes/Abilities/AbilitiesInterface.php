@@ -35,8 +35,10 @@ interface AbilitiesInterface {
 	/**
 	 * Execute the ability and return the tool result.
 	 *
-	 * @param array $args Input arguments passed by the MCP layer.
-	 * @return array The ability result as an associative array.
+	 * The return type is intentionally untyped because abilities may return a
+	 * tool-result array, a resource string, or any other MCP-compatible value.
+	 *
+	 * @return mixed
 	 */
-	public function execute( array $args = [] ): array;
+	public function execute();
 }

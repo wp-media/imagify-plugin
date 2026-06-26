@@ -3,8 +3,16 @@ declare(strict_types=1);
 
 namespace Imagify\MCP;
 
+use Imagify\Abilities\GetAccount;
+use Imagify\Abilities\GetMediaStatus;
+use Imagify\Abilities\GetNextgenCoverage;
+use Imagify\Abilities\GetSettings;
+use Imagify\Abilities\GetStats;
+use Imagify\Abilities\OptimizeMedia;
 use Imagify\Abilities\RestoreMedia;
+use Imagify\Abilities\UpdateSettings;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
+use Imagify\Stats\OptimizedMediaWithoutNextGen;
 
 /**
  * Service provider for the MCP (Model Context Protocol) module.
@@ -27,7 +35,14 @@ class ServiceProvider extends AbstractServiceProvider {
 	protected $provides = [
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
+		GetAccount::class,
+		GetMediaStatus::class,
+		GetNextgenCoverage::class,
+		GetSettings::class,
+		GetStats::class,
+		OptimizeMedia::class,
 		RestoreMedia::class,
+		UpdateSettings::class,
 	];
 
 	/**
@@ -57,9 +72,17 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public function register(): void {
 		$this->getContainer()->addShared( ConfigSubscriber::class );
+		$this->getContainer()->addShared( GetAccount::class );
+		$this->getContainer()->addShared( GetMediaStatus::class );
+		$this->getContainer()->addShared( GetNextgenCoverage::class )
+			->addArgument( OptimizedMediaWithoutNextGen::class );
+		$this->getContainer()->addShared( GetSettings::class );
+		$this->getContainer()->addShared( GetStats::class );
+		$this->getContainer()->addShared( OptimizeMedia::class );
 		$this->getContainer()->addShared( RestoreMedia::class );
+		$this->getContainer()->addShared( UpdateSettings::class );
 		$this->getContainer()->addShared( AbilitiesSubscriber::class )
-			->addArguments( [ RestoreMedia::class ] );
+			->addArguments( [ GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, RestoreMedia::class, UpdateSettings::class ] );
 	}
 
 	/**
