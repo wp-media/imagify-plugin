@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\MCP;
 
+use Imagify\Abilities\BulkOptimize;
 use Imagify\Abilities\GetAccount;
 use Imagify\Abilities\GetMediaStatus;
 use Imagify\Abilities\GetNextgenCoverage;
@@ -11,6 +12,7 @@ use Imagify\Abilities\GetStats;
 use Imagify\Abilities\OptimizeMedia;
 use Imagify\Abilities\RestoreMedia;
 use Imagify\Abilities\UpdateSettings;
+use Imagify\Bulk\Bulk;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
 use Imagify\Stats\OptimizedMediaWithoutNextGen;
 
@@ -35,6 +37,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	protected $provides = [
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
+		BulkOptimize::class,
 		GetAccount::class,
 		GetMediaStatus::class,
 		GetNextgenCoverage::class,
@@ -72,6 +75,8 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public function register(): void {
 		$this->getContainer()->addShared( ConfigSubscriber::class );
+		$this->getContainer()->addShared( BulkOptimize::class )
+			->addArgument( Bulk::get_instance() );
 		$this->getContainer()->addShared( GetAccount::class );
 		$this->getContainer()->addShared( GetMediaStatus::class );
 		$this->getContainer()->addShared( GetNextgenCoverage::class )
@@ -82,7 +87,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->addShared( RestoreMedia::class );
 		$this->getContainer()->addShared( UpdateSettings::class );
 		$this->getContainer()->addShared( AbilitiesSubscriber::class )
-			->addArguments( [ GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, RestoreMedia::class, UpdateSettings::class ] );
+			->addArguments( [ BulkOptimize::class, GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, RestoreMedia::class, UpdateSettings::class ] );
 	}
 
 	/**

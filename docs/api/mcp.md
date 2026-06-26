@@ -41,6 +41,7 @@ The endpoint returns HTTP 200 with the adapter's default three-tool set plus all
 | Class | Responsibility |
 |-------|----------------|
 | `Imagify\Abilities\AbilitiesInterface` | Contract every Imagify MCP ability must implement. |
+| `Imagify\Abilities\BulkOptimize` | MCP ability: schedule a bulk image optimization run (`imagify/bulk-optimize`). |
 | `Imagify\Abilities\OptimizeMedia` | Ability `imagify/optimize_media` — optimizes a WP media attachment on demand. |
 | `Imagify\Abilities\RestoreMedia` | MCP ability: restore an optimized media to its original state via backup (`imagify/restore-media`). |
 | `Imagify\Abilities\UpdateSettings` | MCP ability: updates one or more Imagify configuration settings. |
@@ -65,6 +66,30 @@ interface AbilitiesInterface {
 - `execute()` — returns the tool-result value (array, string, or any MCP-compatible type).
 
 ## Registered abilities
+
+### `imagify/bulk-optimize`
+
+**Class:** `Imagify\Abilities\BulkOptimize`  
+**Capability required:** `manage_options`  
+**Exposed via REST:** yes (`show_in_rest: true`)  
+**MCP discoverable:** yes (`mcp.public: true`)
+
+Schedules a bulk image optimization run for the WordPress media library or custom folders. The operation is asynchronous — the ability returns immediately after dispatching via Action Scheduler / WP-Cron.
+
+**Input schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `context` | string | yes | `"wp"` for the WordPress media library or `"custom-folders"` for custom folder sources. |
+| `optimization_level` | integer (0–2) | no | Overrides the global setting. 0 = normal, 1 = aggressive, 2 = ultra. |
+
+**Output schema:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"scheduled"` \| `"error"` | Result status. |
+| `context` | string | The requested optimization context, echoed back. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. |
 
 ### `imagify/optimize_media`
 
