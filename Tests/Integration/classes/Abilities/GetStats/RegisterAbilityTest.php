@@ -49,6 +49,9 @@ class RegisterAbilityTest extends TestCase {
 		}
 	}
 
+	/**
+	 * Tests that stats result fields have the correct types for all groups.
+	 */
 	public function testStatsFieldsHaveCorrectTypes(): void {
 		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
 		wp_set_current_user( $user_id );

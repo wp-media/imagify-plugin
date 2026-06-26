@@ -49,6 +49,9 @@ class RegisterAbilityTest extends TestCase {
 		}
 	}
 
+	/**
+	 * Tests that coverage result fields have the correct types.
+	 */
 	public function testCoverageFieldsHaveCorrectTypes(): void {
 		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
 		wp_set_current_user( $user_id );
@@ -61,6 +64,9 @@ class RegisterAbilityTest extends TestCase {
 		$this->assertIsString( $result['nextgen_format'] );
 	}
 
+	/**
+	 * Creates and sets a current user with or without the manage_options capability.
+	 */
 	private function set_up_user( bool $has_permission ): void {
 		$user_id = self::factory()->user->create( [
 			'role' => $has_permission ? 'administrator' : 'subscriber',

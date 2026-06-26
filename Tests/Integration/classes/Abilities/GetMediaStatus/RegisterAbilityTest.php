@@ -49,6 +49,9 @@ class RegisterAbilityTest extends TestCase {
 		}
 	}
 
+	/**
+	 * Tests that all response fields have the correct types when an invalid media ID (0) is given.
+	 */
 	public function testErrorResponseFieldTypesOnInvalidMediaId(): void {
 		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
 		wp_set_current_user( $user_id );
@@ -66,6 +69,9 @@ class RegisterAbilityTest extends TestCase {
 		$this->assertIsBool( $result['avif_available'] );
 	}
 
+	/**
+	 * Tests that all response fields have the correct types for an unoptimized attachment.
+	 */
 	public function testSuccessResponseFieldTypesForUnoptimizedAttachment(): void {
 		$attachment_id = self::factory()->attachment->create();
 		$user_id       = self::factory()->user->create( [ 'role' => 'administrator' ] );
@@ -84,6 +90,9 @@ class RegisterAbilityTest extends TestCase {
 		$this->assertIsBool( $result['avif_available'] );
 	}
 
+	/**
+	 * Creates and sets a current user with or without the manage_options capability.
+	 */
 	private function set_up_user( bool $has_permission ): void {
 		$user_id = self::factory()->user->create( [
 			'role' => $has_permission ? 'administrator' : 'subscriber',
