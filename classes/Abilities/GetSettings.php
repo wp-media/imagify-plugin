@@ -7,7 +7,7 @@ namespace Imagify\Abilities;
  * MCP ability: returns the current Imagify configuration settings.
  *
  * Registers itself with the WP Abilities API under the slug
- * `imagify_get_settings` and returns all user-facing options
+ * `imagify/get-settings` and returns all user-facing options
  * (stripping the internal `version` key and redacting `api_key`).
  *
  * @since 2.3.0
