@@ -25,7 +25,7 @@ class Test_TrackMediaOptimized extends TestCase {
 	 *
 	 * @param bool $can_track Whether tracking is allowed.
 	 *
-	 * @return array{tracking: Tracking, optin: Optin, mixpanel: TrackingPlugin}
+	 * @return array{tracking: Tracking, optin: \Mockery\MockInterface&Optin, mixpanel: \Mockery\MockInterface&TrackingPlugin}
 	 */
 	private function create_tracking( bool $can_track = true ): array {
 		$optin    = Mockery::mock( Optin::class );
