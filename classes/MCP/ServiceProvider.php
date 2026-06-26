@@ -4,14 +4,25 @@ declare(strict_types=1);
 namespace Imagify\MCP;
 
 use Imagify\Abilities\BulkOptimize;
+use Imagify\Abilities\GetAccount;
+use Imagify\Abilities\GetMediaStatus;
+use Imagify\Abilities\GetNextgenCoverage;
+use Imagify\Abilities\GetSettings;
+use Imagify\Abilities\GetStats;
+use Imagify\Abilities\OptimizeMedia;
+use Imagify\Abilities\UpdateSettings;
 use Imagify\Bulk\Bulk;
 use Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider;
+use Imagify\Stats\OptimizedMediaWithoutNextGen;
 
 /**
  * Service provider for the MCP (Model Context Protocol) module.
  *
- * Wires `ConfigSubscriber`, `AbilitiesSubscriber`, and all concrete ability
- * classes into the DI container.
+ * Wires `ConfigSubscriber` and `AbilitiesSubscriber` into the DI container.
+ * For the foundation `AbilitiesSubscriber` is registered with no ability
+ * arguments. Downstream sub-issues extend the wiring via `addArguments()`
+ * once concrete ability classes are added (see Downstream Wiring Contract
+ * in spec #1108).
  *
  * @since 2.3.0
  */
@@ -26,6 +37,13 @@ class ServiceProvider extends AbstractServiceProvider {
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
 		BulkOptimize::class,
+		GetAccount::class,
+		GetMediaStatus::class,
+		GetNextgenCoverage::class,
+		GetSettings::class,
+		GetStats::class,
+		OptimizeMedia::class,
+		UpdateSettings::class,
 	];
 
 	/**
@@ -57,8 +75,16 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->addShared( ConfigSubscriber::class );
 		$this->getContainer()->addShared( BulkOptimize::class )
 			->addArgument( Bulk::get_instance() );
+		$this->getContainer()->addShared( GetAccount::class );
+		$this->getContainer()->addShared( GetMediaStatus::class );
+		$this->getContainer()->addShared( GetNextgenCoverage::class )
+			->addArgument( OptimizedMediaWithoutNextGen::class );
+		$this->getContainer()->addShared( GetSettings::class );
+		$this->getContainer()->addShared( GetStats::class );
+		$this->getContainer()->addShared( OptimizeMedia::class );
+		$this->getContainer()->addShared( UpdateSettings::class );
 		$this->getContainer()->addShared( AbilitiesSubscriber::class )
-			->addArguments( [ BulkOptimize::class ] );
+			->addArguments( [ BulkOptimize::class, GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, UpdateSettings::class ] );
 	}
 
 	/**
