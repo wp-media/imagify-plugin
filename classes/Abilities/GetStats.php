@@ -71,10 +71,13 @@ class GetStats implements AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
+	 *
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
 	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
