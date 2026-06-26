@@ -122,8 +122,14 @@ class OptimizeMedia implements AbilitiesInterface {
 		}
 
 		// Verify the attachment exists.
-		if ( ! get_post( $media_id ) ) {
+		$post = get_post( $media_id );
+		if ( ! $post ) {
 			return $this->error_response( 'Invalid media.' );
+		}
+
+		// Verify the post is an attachment.
+		if ( 'attachment' !== get_post_type( $post ) ) {
+			return $this->error_response( 'The provided ID is not a media attachment.' );
 		}
 
 		// Determine optimization level.

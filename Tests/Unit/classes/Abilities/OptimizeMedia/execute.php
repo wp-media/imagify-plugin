@@ -18,6 +18,15 @@ use WP_Error;
 class Test_Execute extends TestCase {
 
 	/**
+	 * Stub get_post() and get_post_type() as a valid attachment.
+	 * Shared by tests that need to pass the early validation checks.
+	 */
+	private function stubValidAttachment(): void {
+		Functions\when( 'get_post' )->justReturn( Mockery::mock( 'WP_Post' ) );
+		Functions\when( 'get_post_type' )->justReturn( 'attachment' );
+	}
+
+	/**
 	 * Tests that execute() returns an error response when media_id is missing.
 	 */
 	public function testReturnsErrorWhenMediaIdIsMissing(): void {
@@ -76,12 +85,27 @@ class Test_Execute extends TestCase {
 	}
 
 	/**
+	 * Tests that execute() returns an error response when the post is not an attachment.
+	 */
+	public function testReturnsErrorWhenPostIsNotAnAttachment(): void {
+		Functions\when( 'get_post' )->justReturn( Mockery::mock( 'WP_Post' ) );
+		Functions\when( 'get_post_type' )->justReturn( 'post' );
+
+		$ability = new OptimizeMedia();
+		$result  = $ability->execute( [ 'media_id' => 123 ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertNull( $result['original_size'] );
+		$this->assertNull( $result['optimized_size'] );
+		$this->assertNull( $result['savings_percent'] );
+		$this->assertIsString( $result['error_message'] );
+	}
+
+	/**
 	 * Tests that execute() uses the provided optimization_level when optimizing.
 	 */
 	public function testPassesOptimizationLevelToOptimizeWhenNotOptimized(): void {
-		$post = Mockery::mock( 'WP_Post' );
-
-		Functions\when( 'get_post' )->justReturn( $post );
+		$this->stubValidAttachment();
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -123,9 +147,7 @@ class Test_Execute extends TestCase {
 	 * Tests that execute() uses reoptimize() when media is already optimized.
 	 */
 	public function testCallsReoptimizeWhenMediaIsOptimized(): void {
-		$post = Mockery::mock( 'WP_Post' );
-
-		Functions\when( 'get_post' )->justReturn( $post );
+		$this->stubValidAttachment();
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -158,9 +180,7 @@ class Test_Execute extends TestCase {
 	 * Tests that execute() returns an error response when optimize() returns a WP_Error.
 	 */
 	public function testReturnsErrorWhenOptimizeReturnsWpError(): void {
-		$post = Mockery::mock( 'WP_Post' );
-
-		Functions\when( 'get_post' )->justReturn( $post );
+		$this->stubValidAttachment();
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -190,9 +210,7 @@ class Test_Execute extends TestCase {
 	 * Tests that execute() returns a success response with correct shape on successful optimization.
 	 */
 	public function testReturnsSuccessResponseOnSuccessfulOptimization(): void {
-		$post = Mockery::mock( 'WP_Post' );
-
-		Functions\when( 'get_post' )->justReturn( $post );
+		$this->stubValidAttachment();
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -203,7 +221,6 @@ class Test_Execute extends TestCase {
 
 		Functions\when( 'imagify_get_optimization_process' )->justReturn( $process );
 
-		// Mock the protected methods by creating a partial mock.
 		$ability = Mockery::mock( OptimizeMedia::class )->makePartial();
 		$ability->shouldAllowMockingProtectedMethods();
 		$ability->shouldReceive( 'get_media_original_size' )->andReturn( 1000 );
@@ -223,9 +240,7 @@ class Test_Execute extends TestCase {
 	 * Tests that execute() returns a success response with null savings_percent when original_size is 0.
 	 */
 	public function testReturnsSavingsPercentNullWhenOriginalSizeIsZero(): void {
-		$post = Mockery::mock( 'WP_Post' );
-
-		Functions\when( 'get_post' )->justReturn( $post );
+		$this->stubValidAttachment();
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -236,7 +251,6 @@ class Test_Execute extends TestCase {
 
 		Functions\when( 'imagify_get_optimization_process' )->justReturn( $process );
 
-		// Mock the protected methods.
 		$ability = Mockery::mock( OptimizeMedia::class )->makePartial();
 		$ability->shouldAllowMockingProtectedMethods();
 		$ability->shouldReceive( 'get_media_original_size' )->andReturn( 0 );
@@ -252,9 +266,7 @@ class Test_Execute extends TestCase {
 	 * Tests that execute() returns a success response with null savings_percent when optimized_size is null.
 	 */
 	public function testReturnsSavingsPercentNullWhenOptimizedSizeIsNull(): void {
-		$post = Mockery::mock( 'WP_Post' );
-
-		Functions\when( 'get_post' )->justReturn( $post );
+		$this->stubValidAttachment();
 
 		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
 		$data    = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
@@ -265,7 +277,6 @@ class Test_Execute extends TestCase {
 
 		Functions\when( 'imagify_get_optimization_process' )->justReturn( $process );
 
-		// Mock the protected methods.
 		$ability = Mockery::mock( OptimizeMedia::class )->makePartial();
 		$ability->shouldAllowMockingProtectedMethods();
 		$ability->shouldReceive( 'get_media_original_size' )->andReturn( 1000 );
