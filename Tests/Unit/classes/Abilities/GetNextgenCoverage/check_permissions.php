@@ -17,6 +17,9 @@ use Mockery;
  */
 class Test_CheckPermissions extends TestCase {
 
+	/**
+	 * Tests that check_permissions() returns true when the user has the manage_options capability.
+	 */
 	public function testReturnsTrueWhenUserHasManageOptionsCapability(): void {
 		Functions\when( 'current_user_can' )->justReturn( true );
 
@@ -24,6 +27,9 @@ class Test_CheckPermissions extends TestCase {
 		$this->assertTrue( $ability->check_permissions() );
 	}
 
+	/**
+	 * Tests that check_permissions() returns false when the user lacks the manage_options capability.
+	 */
 	public function testReturnsFalseWhenUserLacksManageOptionsCapability(): void {
 		Functions\when( 'current_user_can' )->justReturn( false );
 
