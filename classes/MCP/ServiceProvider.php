@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\MCP;
 
+use Imagify\Abilities\BulkOptimize;
 use Imagify\Abilities\GenerateMissingNextgen;
 use Imagify\Abilities\GetAccount;
 use Imagify\Abilities\GetMediaStatus;
@@ -38,6 +39,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
 		Bulk::class,
+		BulkOptimize::class,
 		GenerateMissingNextgen::class,
 		GetAccount::class,
 		GetMediaStatus::class,
@@ -82,6 +84,8 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public function register(): void {
 		$this->getContainer()->addShared( Bulk::class, Bulk::get_instance() );
+		$this->getContainer()->addShared( BulkOptimize::class )
+			->addArgument( Bulk::get_instance() );
 		$this->getContainer()->addShared( GenerateMissingNextgen::class )
 			->addArgument( Bulk::class );
 		$this->getContainer()->addShared( ConfigSubscriber::class );
@@ -95,7 +99,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->addShared( RestoreMedia::class );
 		$this->getContainer()->addShared( UpdateSettings::class );
 		$this->getContainer()->addShared( AbilitiesSubscriber::class )
-			->addArguments( [ GenerateMissingNextgen::class, GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, RestoreMedia::class, UpdateSettings::class ] );
+			->addArguments( [ BulkOptimize::class, GenerateMissingNextgen::class, GetAccount::class, GetMediaStatus::class, GetNextgenCoverage::class, GetSettings::class, GetStats::class, OptimizeMedia::class, RestoreMedia::class, UpdateSettings::class ] );
 	}
 
 	/**

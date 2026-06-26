@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Integration\classes\MCP\ServiceProvider;
 
+use Imagify\Abilities\BulkOptimize;
 use Imagify\Abilities\GenerateMissingNextgen;
 use Imagify\Abilities\GetAccount;
 use Imagify\Abilities\GetMediaStatus;
@@ -150,6 +151,15 @@ class Test_GetSubscribers extends TestCase {
 		$provider = new ServiceProvider();
 
 		$this->assertTrue( $provider->provides( GetSettings::class ) );
+	}
+
+	/**
+	 * Tests that provides() returns true for BulkOptimize.
+	 */
+	public function testProvidesTrueForBulkOptimize(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( BulkOptimize::class ) );
 	}
 
 	/**
