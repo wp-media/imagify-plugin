@@ -157,10 +157,13 @@ class UpdateSettings implements AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool True when the current user has the `manage_options` capability.
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
+	 *
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
 	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
@@ -251,6 +254,17 @@ class UpdateSettings implements AbilitiesInterface {
 
 		foreach ( $args as $key => $value ) {
 			if ( ! array_key_exists( $key, $defaults ) ) {
+				return new \WP_Error(
+					'imagify_unknown_setting',
+					sprintf(
+						/* translators: %s: the unknown setting key name. */
+						__( '"%s" is not a valid Imagify setting key.', 'imagify' ),
+						$key
+					)
+				);
+			}
+
+			if ( 'version' === $key ) {
 				return new \WP_Error(
 					'imagify_unknown_setting',
 					sprintf(

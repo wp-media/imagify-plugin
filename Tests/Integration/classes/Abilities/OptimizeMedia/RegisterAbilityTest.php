@@ -22,6 +22,7 @@ class RegisterAbilityTest extends TestCase {
 
 	public function tear_down() {
 		wp_set_current_user( 0 );
+		remove_all_filters( 'imagify_capacity' );
 		parent::tear_down();
 	}
 
@@ -84,6 +85,30 @@ class RegisterAbilityTest extends TestCase {
 		$this->assertNull( $result['original_size'] );
 		$this->assertNull( $result['optimized_size'] );
 		$this->assertNull( $result['savings_percent'] );
+	}
+
+	/**
+	 * Test that the imagify_capacity filter is honoured for an administrator.
+	 *
+	 * An admin user would normally pass the permission check. When a filter
+	 * replaces the resolved capacity with 'do_not_allow' (a reserved WordPress
+	 * capability no user can be granted), the ability must return a WP_Error.
+	 *
+	 * @return void
+	 */
+	public function testShouldDenyAccessWhenCapacityFilterReturnsFalse(): void {
+		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+
+		add_filter( 'imagify_capacity', static function () { return 'do_not_allow'; } );
+
+		$ability = wp_get_ability( 'imagify/optimize-media' );
+
+		$this->assertNotNull( $ability, 'Ability should be registered.' );
+
+		$result = $ability->execute( [ 'media_id' => 0 ] );
+
+		$this->assertInstanceOf( 'WP_Error', $result, 'Should return WP_Error when imagify_capacity filter denies access.' );
 	}
 
 	/**

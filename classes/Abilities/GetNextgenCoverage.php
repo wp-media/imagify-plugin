@@ -76,12 +76,15 @@ class GetNextgenCoverage implements AbilitiesInterface {
 	/**
 	 * Checks whether the current user may execute this ability.
 	 *
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
+	 *
 	 * @since 2.3.0
 	 *
-	 * @return bool True when the current user has `manage_options`.
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
 	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
@@ -93,7 +96,7 @@ class GetNextgenCoverage implements AbilitiesInterface {
 	 */
 	public function execute(): array {
 		return [
-			'missing_nextgen_count' => $this->stat->get_cached_stat(),
+			'missing_nextgen_count' => (int) $this->stat->get_cached_stat(),
 			'nextgen_format'        => get_imagify_option( 'optimization_format' ),
 		];
 	}

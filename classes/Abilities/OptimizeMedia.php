@@ -94,10 +94,18 @@ class OptimizeMedia implements AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool True when the current user has the `manage_options` capability.
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
+	 *
+	 * Note: `manual-optimize` is not used here because `check_permissions()` is
+	 * called before `execute()` and receives no `media_id`, making the underlying
+	 * `edit_post` check ambiguous. The `manage` descriptor is the correct top-level
+	 * gate consistent with existing AJAX equivalents.
+	 *
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
 	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
@@ -114,8 +122,14 @@ class OptimizeMedia implements AbilitiesInterface {
 		}
 
 		// Verify the attachment exists.
-		if ( ! get_post( $media_id ) ) {
+		$post = get_post( $media_id );
+		if ( ! $post ) {
 			return $this->error_response( 'Invalid media.' );
+		}
+
+		// Verify the post is an attachment.
+		if ( 'attachment' !== get_post_type( $post ) ) {
+			return $this->error_response( 'The provided ID is not a media attachment.' );
 		}
 
 		// Determine optimization level.

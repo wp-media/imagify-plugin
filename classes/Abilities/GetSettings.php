@@ -7,7 +7,7 @@ namespace Imagify\Abilities;
  * MCP ability: returns the current Imagify configuration settings.
  *
  * Registers itself with the WP Abilities API under the slug
- * `imagify_get_settings` and returns all user-facing options
+ * `imagify/get-settings` and returns all user-facing options
  * (stripping the internal `version` key and redacting `api_key`).
  *
  * @since 2.3.0
@@ -52,10 +52,13 @@ class GetSettings implements AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool True when the current user has the `manage_options` capability.
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
+	 *
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
 	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**

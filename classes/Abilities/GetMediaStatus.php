@@ -98,12 +98,15 @@ class GetMediaStatus implements AbilitiesInterface {
 	/**
 	 * Check whether the current user may execute this ability.
 	 *
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
+	 *
 	 * @since 2.3.0
 	 *
-	 * @return bool
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
 	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
@@ -122,6 +125,19 @@ class GetMediaStatus implements AbilitiesInterface {
 			return [
 				'status'             => 'error',
 				'error_message'      => 'Invalid or missing media_id',
+				'optimization_level' => null,
+				'original_size'      => 0,
+				'optimized_size'     => 0,
+				'webp_available'     => false,
+				'avif_available'     => false,
+			];
+		}
+
+		// Verify the attachment exists.
+		if ( ! get_post( $media_id ) ) {
+			return [
+				'status'             => 'error',
+				'error_message'      => 'Media not found.',
 				'optimization_level' => null,
 				'original_size'      => 0,
 				'optimized_size'     => 0,
