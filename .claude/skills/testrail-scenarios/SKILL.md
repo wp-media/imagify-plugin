@@ -10,10 +10,6 @@ PR, drafts a comprehensive set of test cases (happy path, failures, edge cases, 
 guards), stages them as YAML for human review, and — on an explicit `publish` command —
 creates the cases in TestRail with deduplication.
 
-This skill is a thin dispatcher. All analysis, generation, and publication logic lives in
-the `testrail-scenario-agent`. The skill's only job is to resolve the PR list and spawn the
-agent with it.
-
 ## Invocation
 
 ```

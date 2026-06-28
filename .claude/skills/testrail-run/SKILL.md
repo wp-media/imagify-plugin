@@ -11,10 +11,6 @@ Canary browser automation (sequentially), collects pass/fail/blocked outcomes wi
 trace/video evidence, prints a results table, and — only after the user confirms — posts the
 results back to TestRail.
 
-This skill is a thin dispatcher. All fetching, execution, and posting logic lives in the
-`testrail-run-agent`. The skill's only job is to resolve which run to target and spawn the
-agent with it.
-
 ## Invocation
 
 ```

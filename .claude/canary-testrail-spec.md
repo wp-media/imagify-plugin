@@ -1,9 +1,6 @@
 # Spec: Canary × TestRail — Consolidated QA Automation for Imagify
 
-**Status:** Draft — brainstorm/design only. No implementation in this document.
-**Author:** Gaël Robin
-**Audience:** Future Claude sessions with zero prior context. This document is self-contained.
-**Next step:** Deep audit session.
+**Status:** Implemented — `test/e2e-agent` branch. All 13 audit questions resolved.
 
 ---
 
@@ -27,21 +24,6 @@ This spec consolidates three QA-automation features for the **Imagify WordPress 
 All three share one substrate: **Canary** (browser recording + QA platform) and a set of
 **battle-tested WordPress fixture snippets** wrapped in a reusable **agent inheritance pattern**
 (WP base → Imagify-specific).
-
-### The existing delivery pipeline (context)
-
-Imagify ships via an agentic Claude Code pipeline:
-
-```
-orchestrator → grooming-agent → backend-agent → lead-reviewer → qa-engineer → e2e-qa-tester → release-agent
-```
-
-- Driven by `.claude/skills/orchestrator/SKILL.md` and `.claude/skills/issue-workflow/SKILL.md`.
-- Agents live in `.claude/agents/`.
-- `qa-engineer` is the QA gate; it currently spawns `e2e-qa-tester` for UI/browser changes.
-- `e2e-qa-tester` drives the browser via `mcp__playwright`, writes specs to `Tests/e2e/specs/`,
-  and publishes screenshots via temp-branch commit + SHA `raw.githubusercontent.com` URLs.
-  **It is the current stable default and is NOT modified by any feature here.**
 
 ### What Canary is (engine + sandbox)
 
@@ -76,7 +58,7 @@ npx @usecanary/cli session end     # writes results.json + report.html + artifac
 Session ID format: `<slug>-<random8>-<short-hash>` — e.g.
 `p0-a--mcp-abilities-discovery-mqubrrhk-3f7e94`.
 
-**Artifacts per session** at `~/.canary/sessions/<id>/`:
+**Artifacts per session** at `.ai/{N}/canary/<id>/` (relocated from `~/.canary/sessions/<id>/` after `session end`; symlink left at original for the viewer):
 
 ```
 session.json      ← session metadata + step scripts (written during run)
@@ -126,16 +108,9 @@ profile/          ← browser profile
 - WP REST nonces expire (~12h TTL). Re-fetch the nonce at the start of each REST step, not just
   once at login.
 
-### The Canary replay advantage (the reason this is worth building)
+### Canary replay
 
-Canary step scripts are recorded into `session.json` and can be **replayed without Claude**:
-
-```bash
-npx @usecanary/cli run ~/.canary/sessions/<id>/steps/<step>.js
-```
-
-This means: **the first run is Claude-driven (inference cost); every subsequent replay is free**
-(zero inference). This underpins Feature 2's path to free CI reruns (see §8).
+Step scripts recorded in `session.json` replay without Claude — first run is Claude-driven; subsequent CI replays are zero-inference (see §8).
 
 ---
 
@@ -172,21 +147,6 @@ This means: **the first run is Claude-driven (inference cost); every subsequent 
                                   §8 Replay → free CI reruns
 ```
 
-**How they connect:**
-
-- **Feature 1 feeds Feature 2.** Feature 1 produces TestRail cases (human-readable steps);
-  Feature 2 reads those exact cases and executes them via Canary. They are two halves of the
-  "release QA" loop: generate coverage, then run it.
-- **Feature 2 and Feature 3 share the Canary execution substrate.** Both spawn the
-  `canary-imagify-session-agent` to drive the browser with the §6 WP fixtures. The difference is
-  the *source of truth* for what to test:
-  - Feature 3 reads `qa-plan.md` (P0/P1/P2 flows derived from a diff) — pre-merge, per PR.
-  - Feature 2 reads TestRail cases (`custom_steps_separated`) — release-time, full suite.
-- **Feature 3 is pipeline-embedded; Features 1 & 2 are standalone skills.** Feature 3 plugs into
-  the orchestrator/qa-engineer flow. Features 1 & 2 are invoked on demand (`/testrail-*`).
-- **All three reuse the agent inheritance pattern (§6).** The WP base agent is the single source
-  of truth for login/nonce/REST/AJAX; the Imagify agent extends it with plugin specifics.
-
 ---
 
 ## 2. Agent & skill inventory
@@ -197,11 +157,6 @@ This means: **the first run is Claude-driven (inference cost); every subsequent 
 |-------|---------|---------|--------|---------|
 | `/testrail-scenarios` | 1 | user invokes with PR number(s)/URL(s) or `--since-tag` | PR refs, optional `--force-pr=<n>`, optional section override | staging files under `.ai/testrail/pending/`, summary, then created case IDs on publish |
 | `/testrail-run` | 2 | user invokes with milestone name/ID or `--run-id` | milestone/run identifier, optional `--cases=<ids>` filter | results table (case → outcome + Canary artifacts), then TestRail results posted on confirm |
-
-> Names are proposals. The earlier draft used `/testrail-release-setup` and
-> `/testrail-release-process`; this spec renames to `/testrail-scenarios` and `/testrail-run` to
-> decouple from the word "release" (the features are useful per-PR too). Final names are an open
-> question (§9).
 
 ### New agents
 
@@ -232,13 +187,7 @@ This means: **the first run is Claude-driven (inference cost); every subsequent 
 
 ## 3. Feature 1 — TestRail scenario generation
 
-### 3.1 Goal
-
-Expand QA coverage beyond "what changed" by auto-drafting structured TestRail cases from PRs,
-keeping a human in the loop (review → approve → publish), and never duplicating cases for a PR
-already covered.
-
-### 3.2 Flow
+### 3.1 Flow
 
 ```
 /testrail-scenarios <pr | pr-list | --since-tag>
@@ -265,7 +214,7 @@ The review gate is **mandatory and explicit**: the agent stages, summarises, the
 creates cases in the same turn it drafts them. The user edits YAML freely (titles, steps, section,
 smoke flag) before publishing.
 
-### 3.3 Staging file format (`.ai/testrail/pending/<pr-slug>.yml`)
+### 3.2 Staging file format (`.ai/testrail/pending/<pr-slug>.yml`)
 
 ```yaml
 pr: 1133
@@ -310,7 +259,7 @@ Field mapping (staging YAML → TestRail `add_case` payload):
 | (constant) | `template_id: 2`, `type_id: 7`, `priority_id: 2` |
 | `pr_url` | `refs` |
 
-### 3.4 What scenarios the agent drafts (per PR)
+### 3.3 What scenarios the agent drafts (per PR)
 
 The agent reads PR description, diff summary, and linked issue spec, then drafts cases covering:
 
@@ -328,22 +277,11 @@ artificial cap per PR. Each case is also evaluated for `smoke_test: true` (criti
 always pass). Pure tracking/analytics PRs with no user-visible behaviour: the agent may draft a
 single minimal "event fires" case or skip — see §9.
 
-### 3.5 Deduplication
+### 3.4 Deduplication
 
-**Strategy:** TestRail's `refs` field links a PR to its cases.
+`refs = <github PR url>` on create. Dedup: `GET /get_cases/3?refs=<pr_url>` — cases found → skip; none → draft. `--force-pr=<n>` regenerates (does not delete old cases).
 
-- On create, `refs = <github PR url>`.
-- On the next run, per in-scope PR: `GET /get_cases/3?refs=<pr_url>`.
-  - cases found → skip the PR.
-  - none found → draft and stage.
-- `--force-pr=<n>` regenerates and stages new cases for a PR even if cases exist (does **not**
-  delete the old ones — manual cleanup in TestRail).
-
-**Fallback if `refs` filtering is unsupported in this TestRail version** (open question §9):
-query all cases in the relevant section and match by title prefix, OR maintain a local index at
-`.ai/testrail/index.json` (persists between runs; NOT cleaned with `pending/`).
-
-### 3.6 Section mapping
+### 3.5 Section mapping
 
 The agent picks the closest existing section; if none fits, it proposes a new subsection under
 `Regression (33)` via the `new_section` field (created only on publish, never silently).
@@ -365,29 +303,15 @@ The agent picks the closest existing section; if none fits, it proposes a new su
 | Smoke tests | flag `custom_smoketest: true` (NOT a separate section) + Smoke test section (4525) for pure smoke cases |
 | New feature, no match | propose new subsection under Regression (33) |
 
-### 3.7 MCP vs API
+### 3.6 MCP vs API
 
-TestRail may be reachable via an MCP server (not confirmed). The agent must handle both:
-
-- **If a TestRail MCP is available:** prefer its tools for `get_cases` / `add_section` /
-  `add_case` — typed, less error-prone.
-- **Otherwise (default assumption):** use the TestRail REST API (see §5) with Basic auth from
-  `TESTRAIL_USERNAME` / `TESTRAIL_API_KEY`.
-
-The agent probes for the MCP first; if absent, falls back to REST. Both paths produce identical
-staging files and identical `refs`-based dedup behaviour.
+TestRail MCP (`/opt/homebrew/bin/mcp-testrail`) is connected but tool names unconfirmed. **Use the REST API via `curl` as primary** (see §5). MCP is an optional enhancement once tool names are confirmed.
 
 ---
 
 ## 4. Feature 2 — TestRail run execution
 
-### 4.1 Goal
-
-Run an entire TestRail test run automatically via Canary browser automation, gather pass/fail/
-blocked outcomes with rich artifacts, let the user review, then post results back to TestRail with
-evidence — turning the full regression suite into an automated pass instead of a manual one.
-
-### 4.2 Flow
+### 4.1 Flow
 
 ```
 /testrail-run <milestone-name | milestone-id | --run-id=<id>>
@@ -414,7 +338,7 @@ evidence — turning the full regression suite into an automated pass instead of
 The TestRail write is gated behind explicit user confirmation. The agent never posts results in
 the same turn it executes — the user sees outcomes first.
 
-### 4.3 How Canary sessions map to TestRail cases
+### 4.2 How Canary sessions map to TestRail cases
 
 - **One Canary session per TestRail case.** Session name = `TR-<case_id>: <case title>` so the
   artifact directory and report are traceable back to the case.
@@ -426,7 +350,7 @@ the same turn it executes — the user sees outcomes first.
   Canary script using the §6 fixtures. Where a step is too ambiguous to automate, the case is
   marked **blocked** (not failed) and flagged for manual review.
 
-### 4.4 Outcome derivation (from `results.json`)
+### 4.3 Outcome derivation (from `results.json`)
 
 | Condition | TestRail status |
 |-----------|-----------------|
@@ -436,14 +360,14 @@ the same turn it executes — the user sees outcomes first.
 
 Reminder: do NOT use `consoleErrors` / `networkFailures` as fail signals (see §0).
 
-### 4.5 Evidence in the result comment
+### 4.4 Evidence in the result comment
 
 The result comment for each case includes per-step outcomes plus pointers to Canary artifacts:
 
 ```json
 {
   "status_id": 5,
-  "comment": "Automated Canary run — 2026-06-26\nSession: TR-4521--mcp-discover-abilities-xxx\n\nStep 1: ✅ Passed\nStep 2: ✅ Passed\nStep 3: ❌ Failed — assertion 'returns ability list' did not hold\n\nTrace: npx playwright show-trace ~/.canary/sessions/TR-4521--…/trace.zip\nReport: ~/.canary/sessions/TR-4521--…/report.html\nScreenshot: <raw.githubusercontent.com SHA URL, if published>",
+  "comment": "Automated Canary run — 2026-06-26\nSession: TR-4521--mcp-discover-abilities-xxx\n\nStep 1: ✅ Passed\nStep 2: ✅ Passed\nStep 3: ❌ Failed — assertion 'returns ability list' did not hold\n\nTrace: npx playwright show-trace .ai/testrail/1283/canary/TR-4521--…/trace.zip\nReport: .ai/testrail/1283/canary/TR-4521--…/report.html\nScreenshot: <raw.githubusercontent.com SHA URL, if published>",
   "elapsed": "45s"
 }
 ```
@@ -456,7 +380,7 @@ Evidence to include:
 - Optionally, published screenshot URLs (same temp-branch-commit → SHA-raw-URL mechanism as
   `e2e-qa-tester`; see §6.5) when a hosted image is wanted in TestRail.
 
-### 4.6 Failure handling
+### 4.5 Failure handling
 
 - Step fails → case marked Failed, remaining steps captured but the failure is the verdict.
 - Env unreachable / session won't start → case Blocked with reason.
@@ -534,57 +458,9 @@ Regression (33)
 
 ## 6. Feature 3 — Canary E2E in the pipeline
 
-### 6.1 Problem with today's `e2e-qa-tester`
+`canary-e2e` is a drop-in replacement for `e2e-qa-tester` selected via `e2e_mode: "canary"` at orchestrator startup. Same JSON return contract; see `.claude/agents/canary-e2e.md` for full instructions.
 
-- Improvises WP interactions (login, nonce, REST, AJAX) from scratch — wrong ~30% of the time.
-- No rich evidence: no trace, no video, no HAR — just a spec file and a screenshot URL. Debugging
-  failures is blind.
-- The QA plan lives only in the orchestrator's context — invisible to developer and reviewer.
-
-### 6.2 Vision
-
-A new `canary-e2e` agent — a **drop-in replacement** for `e2e-qa-tester` that uses Canary CLI
-instead of `mcp__playwright`. Opt-in at orchestrator startup; `e2e-qa-tester` stays the untouched
-default. Both share the **same JSON return contract**, so `qa-engineer` is agnostic to which ran.
-
-### 6.3 Mode selection at orchestrator startup
-
-During the existing calibration step the orchestrator asks one extra question:
-
-> **E2E mode** — `playwright` (default, stable) or `canary` (experimental, richer artifacts)?
-
-Answered once; stored as `e2e_mode`; passed in every downstream dispatch. If the issue has no
-UI/browser changes, the flag is ignored.
-
-```
-orchestrator startup
-  → calibration (autonomy level) + e2e_mode ("playwright" | "canary")
-  → grooming → implementation → review …
-  → qa-engineer  [receives e2e_mode]
-      diff has UI/browser changes?
-        yes + e2e_mode == "canary"     → spawn canary-e2e
-        yes + e2e_mode == "playwright" → spawn e2e-qa-tester   (current default)
-        no                             → skip E2E entirely
-      merge E2E results into the final GitHub PR comment
-```
-
-### 6.4 `canary-e2e` agent design
-
-- **Inputs:** `qa-plan.md` path, `e2e_mode: "canary"`, PR number, env (`E2E_URL`, `WP_USER`,
-  `WP_PASS`).
-- **Behaviour:** for each **P0/P1** flow in `qa-plan.md`:
-  1. Record a Canary session via `canary-imagify-session-agent` (session name = the flow label,
-     e.g. `P0-A: MCP abilities discovery`).
-  2. Read `results.json` → build a markdown results row.
-  3. Write a Playwright spec to `Tests/e2e/specs/` (translated from the flow — see §6.6).
-- **P2 flows** are documented in the plan but Canary sessions are optional.
-- **Publishes:** screenshots via temp-branch-commit → SHA raw URL (§6.5); trace replay command per
-  session.
-- **Returns:** the **same JSON shape** as `e2e-qa-tester` so `qa-engineer` needs no branching.
-- **Tools:** `Bash` (drives `npx @usecanary/cli`), `Read`, `Edit`, `Write`, `Glob`, `Grep`,
-  `WebFetch`. Notably **not** `mcp__playwright` — Canary is the browser driver.
-
-### 6.5 `qa-plan.md` format (shared by qa-engineer ↔ canary-e2e ↔ e2e-qa-tester)
+### 6.1 `qa-plan.md` format (shared by qa-engineer ↔ canary-e2e ↔ e2e-qa-tester)
 
 Produced by `qa-engineer`, written to `.ai/qa-plan.md`, consumed by whichever E2E agent runs.
 The `P0-A`/`P0-B` labels become Canary session names.
@@ -613,62 +489,25 @@ The `P0-A`/`P0-B` labels become Canary session names.
 - documented; Canary session optional
 ```
 
-### 6.6 Artifact flow & PR comment
+### 6.2 Artifact flow
 
 ```
-Developer machine (local only — NOT committed)
-  ~/.canary/sessions/<id>/  → session.json, results.json, report.html,
-                              trace.zip, video/, network.har, console.log, screenshots/
+.ai/{N}/canary/<id>/   ← sessions relocated here from ~/.canary/sessions/<id>/
 
-GitHub PR comment (posted by qa-engineer via canary-e2e's JSON):
-  ├─ qa-plan (P0/P1/P2 markdown table)
-  ├─ Canary results table (from results.json)
-  ├─ Screenshot images (raw.githubusercontent.com SHA URLs)
-  └─ "Trace: npx playwright show-trace <local path>" per session
-
-GitHub Actions CI (committed by canary-e2e):
-  Tests/e2e/specs/  ← Playwright specs derived from the flows (existing CI re-runs them)
-
-Optional future: upload ~/.canary/sessions/ as CI artifact "canary-qa-<pr>"
+GitHub PR comment: qa-plan table + Canary results table + screenshot SHA URLs
+                  + "Trace: npx playwright show-trace .ai/{N}/canary/<id>/trace.zip"
+Tests/e2e/specs/  ← Playwright specs committed by canary-e2e (CI re-runs them)
 ```
 
-**Results table format (from `results.json`):**
+### 6.3 Playwright spec translation
 
-```markdown
-### Canary QA Sessions
-
-| Flow | Steps | Result | Trace |
-|------|-------|--------|-------|
-| P0-A: MCP abilities discovery | 10/10 | ✅ PASS | `npx playwright show-trace ~/.canary/sessions/p0-a--…/trace.zip` |
-| P0-B: Settings page save | 5/6 | ❌ FAIL — step "save-settings" exit 1 | `npx playwright show-trace ~/.canary/sessions/p0-b--…/trace.zip` |
-
-### Screenshots
-
-| Step | Screenshot |
-|------|-----------|
-| login-admin | ![login](https://raw.githubusercontent.com/wp-media/imagify-plugin/SHA/.e2e-screenshots/p0-a-login-admin.png) |
-```
-
-**Screenshot publishing (same mechanism as today's `e2e-qa-tester`):**
-
-```bash
-cp ~/.canary/sessions/<id>/screenshots/*.png .e2e-screenshots/
-git add -f .e2e-screenshots/ && git commit -m "chore(qa): Canary QA screenshots" && git push
-SHA=$(git rev-parse HEAD)   # URL base: https://raw.githubusercontent.com/wp-media/imagify-plugin/$SHA/.e2e-screenshots/
-git rm --cached .e2e-screenshots/*.png && git commit -m "chore(qa): remove Canary QA screenshots" && git push
-```
-
-### 6.7 Playwright spec translation (not mechanical)
-
-`canary-e2e` writes fresh Playwright specs that pass the same assertions — it does **not** transpile
-QuickJS to Node (different runtimes, different error semantics).
+`canary-e2e` writes fresh TypeScript specs — not a transpile of QuickJS steps:
 
 | Canary QuickJS | Playwright TypeScript |
 |---|---|
 | `browser.getPage("main")` | `page` fixture |
 | `page.evaluate(async () => fetch(...))` | identical |
 | `console.log("PASS: …")` | `expect(...).toBe(...)` |
-| step exit 1 | thrown assertion |
 | no `import` | `import { test, expect } from '@playwright/test'` |
 | inlined helpers | POM methods in `Tests/e2e/pages/` |
 
@@ -689,26 +528,7 @@ WP plugins share identical WP patterns but differ in plugin specifics. Split acc
   canary-imagify-session-agent.md      # extends WP base + Imagify URLs/slugs/MCP/fixtures
 ```
 
-**`canary-wp-session-agent.md`** knows only WordPress-generic patterns: `wp-login.php` login,
-REST nonce via `admin-ajax.php?action=rest-nonce` (plain text, `.trim()`), authenticated REST
-calls (`X-WP-Nonce`), `admin-ajax.php` POST with `_ajax_nonce`, admin-notice assertions.
-
-**`canary-imagify-session-agent.md`** extends it with: Imagify admin URLs (settings, bulk
-optimization, custom folders), ability slugs, the MCP/abilities endpoint
-(`/wp-json/wp-abilities/v1/abilities`), the `imagify-abilities` fixture, Imagify selectors/notice
-patterns.
-
-The "extends" instruction at the top of the plugin agent:
-
-```markdown
-Before doing anything, read `~/.claude/agents/canary-wp-session-agent.md` in full.
-Its WP fixture snippets and rules are your base. The sections below OVERRIDE or EXTEND them.
-```
-
-**Why this split:** the WP base stays lean (never learns about Imagify/WP Rocket/BackWPup); each
-plugin repo owns a thin agent with only its specifics; fixing a WP pattern (e.g. nonce endpoint
-change) happens once and every plugin inherits it; adding a new plugin = one new file, zero changes
-to the base. Worth formalising across `wp-media` projects once the base is stable.
+WP-generic patterns (login, nonce, REST, AJAX, notices) live in the base agent only. The plugin agent reads it as its first instruction and extends it with Imagify-specific URLs, selectors, and ability slugs.
 
 ### 7.2 WP fixture snippets (canonical — never improvised, always copied verbatim)
 
@@ -798,87 +618,26 @@ const expected = [
 for (const slug of expected) console.log(slugs.includes(slug) ? `PASS: ${slug}` : `FAIL: ${slug} NOT FOUND`);
 ```
 
-### 7.3 Session-agent trust guard (critical pipeline detail)
+### 7.3 Session-agent trust guard
 
-The Canary marketplace `session-agent`/`verify-agent` refuse to act on **relayed** confirmations —
-they require a direct user message. In our pipeline these agents are invoked *transitively*
-(`orchestrator → qa-engineer → canary-e2e → canary-imagify-session-agent`, or
-`/testrail-run → testrail-run-agent → canary-imagify-session-agent`). The trust guard **must be
-removed** in our forked `canary-wp-session-agent`/`canary-imagify-session-agent`, or every nested
-spawn deadlocks waiting for a direct user confirmation that never comes.
+**Not present** in the Canary marketplace agents (confirmed in audit). No guard to remove. Both `canary-wp-session-agent` and `canary-imagify-session-agent` can be invoked transitively from the pipeline without deadlocking on a confirmation prompt.
 
 ---
 
-## 8. Canary replay advantage — free CI reruns (Feature 2 & 3)
+## 8. Canary replay (Phase B)
 
-Recorded Canary step scripts in `session.json` replay without Claude:
+Step scripts in `session.json` replay without Claude — first run is Claude-driven; subsequent replays are zero-inference.
 
-```bash
-npx @usecanary/cli run ~/.canary/sessions/<id>/steps/<step>.js   # zero inference
-```
+- **Feature 2 (Phase B):** persist scripts to `Tests/e2e/canary/TR-<case_id>/`; CI replays unchanged cases. Only new/changed cases need Claude.
+- **Feature 3:** `Tests/e2e/specs/` already provides the CI rerun path. Canary scripts can also be replayed locally to reproduce failures deterministically.
 
-Implications:
-
-- **Feature 2 — TestRail run execution:** the *first* execution of a TestRail case is Claude-driven
-  (it interprets human-readable steps into a Canary script). Once recorded, that script is the
-  durable automation for the case. A nightly/release CI job can **replay** all recorded scripts for
-  a run — no inference, deterministic, fast — and still post fresh results + artifacts to TestRail.
-  A recorded script could be associated back to its case (e.g. stored under
-  `Tests/e2e/canary/TR-<case_id>/` or referenced from the case) so the next run replays instead of
-  re-inferring. Only *new* or *changed* cases need Claude.
-- **Feature 3 — pipeline E2E:** the per-PR Canary sessions are recorded; the committed Playwright
-  specs in `Tests/e2e/specs/` already give CI a free rerun path. The Canary scripts themselves can
-  additionally be replayed locally to reproduce a failure deterministically without re-driving
-  through Claude.
-
-**Phasing:**
-- Phase A (initial): Claude executes every run (inference cost per run). Simplest; ship this first.
-- Phase B (scale): persist recorded scripts; CI replays them for unchanged cases → zero inference
-  at scale; Claude only handles new/changed cases.
-
-Open: exact storage location and the "case → recorded script" linkage (§9).
+Phase A (current): Claude executes every run. Phase B: CI replays recorded scripts.
 
 ---
 
-## 9. Files to create / modify
-
-**User-level** (`~/.claude/agents/` — shared across all WP plugin repos):
-
-| File | Action | Feature | Notes |
-|------|--------|---------|-------|
-| `~/.claude/agents/canary-wp-session-agent.md` | Create | 2, 3 | Fork of marketplace `session-agent` + WP-generic fixtures only; **trust guard removed** for pipeline use |
-| `~/.claude/agents/canary-wp-verify-agent.md` | Create (optional) | 3 | Fork of marketplace `verify-agent` + WP QA-plan format |
-
-**Project-level** (`.claude/` — Imagify only):
-
-| File | Action | Feature | Notes |
-|------|--------|---------|-------|
-| `.claude/agents/canary-imagify-session-agent.md` | Create | 2, 3 | Extends WP base; adds Imagify URLs, ability slugs, MCP endpoint, `imagify-abilities` fixture |
-| `.claude/agents/canary-e2e.md` | Create | 3 | New E2E agent — same JSON contract as `e2e-qa-tester`, Canary CLI internally |
-| `.claude/agents/testrail-scenario-agent.md` | Create | 1 | Analyse PR(s) → stage → publish cases; MCP-or-REST |
-| `.claude/agents/testrail-run-agent.md` | Create | 2 | Fetch run → orchestrate Canary execution → post results |
-| `.claude/skills/testrail-scenarios/SKILL.md` | Create | 1 | Standalone entry point for scenario generation |
-| `.claude/skills/testrail-run/SKILL.md` | Create | 2 | Standalone entry point for run execution |
-| `.claude/agents/qa-engineer.md` | Modify | 3 | Write `.ai/qa-plan.md`; receive `e2e_mode`; route to `canary-e2e`/`e2e-qa-tester` |
-| `.claude/skills/orchestrator/SKILL.md` | Modify | 3 | Add `e2e_mode` startup prompt; pass it in every dispatch |
-| `.claude/agents/e2e-qa-tester.md` | **Untouched** | 3 | Stable fallback — no changes |
-| `.github/workflows/e2e.yml` | Modify (optional) | 2, 3 | Canary artifact upload / replay job if CI runs Canary |
-| `Tests/e2e/` | Existing | 3 | Playwright specs still committed here — no structural change |
-| `.ai/testrail/pending/` | Runtime dir | 1 | Staging YAML (cleaned on publish) |
-| `.ai/testrail/index.json` | Runtime file | 1 | Dedup fallback index (only if `refs` filtering unavailable) |
-| `.ai/qa-plan.md` | Runtime file | 3 | Shared QA plan |
-
-**Environment / secrets required:**
-
-| Var | Used by | Notes |
-|-----|---------|-------|
-| `TESTRAIL_USERNAME`, `TESTRAIL_API_KEY` | 1, 2 | TestRail Basic auth |
-| `E2E_URL`, `WP_USER`, `WP_PASS` | 2, 3 | WP fixture login target |
-| `CANARY_HOME` (maybe) | 2, 3 | Override `~/.canary` artifact root in CI (§ open question) |
-
 ---
 
-## 10. Open questions — audit resolution (2026-06-26)
+## 9. Audit resolution (2026-06-26)
 
 All questions resolved during deep audit. No open questions remain for initial implementation.
 
@@ -906,18 +665,3 @@ All questions resolved during deep audit. No open questions remain for initial i
 - **TestRail steps are HTML:** `<p>Visit settings.</p>` — must strip with `python3 -c "import sys,re; print(re.sub('<[^>]+>','',sys.stdin.read()).strip())"`
 - **Active run 1283 (2.3.0):** 151 untested cases, status_id=3 (untested)
 
----
-
-## 11. Implementation order (suggested)
-
-1. **Shared base first:** `canary-wp-session-agent` (user) + `canary-imagify-session-agent`
-   (project) with the §7.2 fixtures and the trust guard removed. Everything else depends on these.
-2. **Feature 3 (pipeline E2E):** `canary-e2e` + `qa-engineer`/`orchestrator` changes. Highest
-   day-to-day value; exercises the shared agents on real PRs.
-3. **Feature 1 (scenario generation):** `/testrail-scenarios` + `testrail-scenario-agent` +
-   dedup. Produces the cases Feature 2 consumes.
-4. **Feature 2 Phase A (Claude-driven run):** `/testrail-run` + `testrail-run-agent` reusing the
-   Canary session agents; post results on confirm.
-5. **Feature 2 Phase B (replay):** persist recorded scripts; CI replays unchanged cases for zero
-   inference at scale.
-```

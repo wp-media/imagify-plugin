@@ -31,7 +31,7 @@ Auth          : Basic — $TESTRAIL_USERNAME : $TESTRAIL_API_KEY  (always in the
 Project ID    : 3
 Suite ID      : 3
 Canary CLI    : npx @usecanary/cli
-Sessions dir  : ~/.canary/sessions/<id>/
+Sessions dir  : .ai/testrail/$RUN_ID/canary/<id>/  (relocated from ~/.canary/sessions/<id>/ after session end)
 WP fixtures   : .claude/agents/canary-imagify-session-agent.md  (read for WP login/selectors)
 ```
 
@@ -163,15 +163,25 @@ If a step depends on an environment that is not available (multisite, a specific
 plugin, an external service), do NOT force a FAIL — stop the case and mark it **BLOCKED** with
 the reason (see Blocking detection).
 
-### 3f — End the session
+### 3f — End the session and relocate artifacts
 
 ```bash
 npx @usecanary/cli session end "$id"
+
+CANARY_DIR=".ai/testrail/${RUN_ID}/canary"
+mkdir -p "$CANARY_DIR"
+mv ~/.canary/sessions/"$id" "$CANARY_DIR/"
+python3 -c "
+import json; p='$CANARY_DIR/$id/session.json'
+d=json.load(open(p)); d['artifactsDir']='$(pwd)/$CANARY_DIR/$id'
+json.dump(d, open(p, 'w'), indent=2)
+"
+ln -sfn "$(pwd)/$CANARY_DIR/$id" ~/.canary/sessions/"$id"
 ```
 
 ### 3g — Determine the outcome
 
-Read `~/.canary/sessions/$id/results.json`:
+Read `.ai/testrail/${RUN_ID}/canary/$id/results.json`:
 - **PASS** — every step ran and none reported failure (`stepsFailed == 0`, all expected
   conditions held, no `FAIL:` in step output).
 - **FAIL** — any `stepsFailed > 0` or any step logged `FAIL:` / threw.
@@ -182,8 +192,7 @@ Record, per case:
 ```
 { case_id, title, session_id, outcome, trace_path, steps_passed, steps_total, elapsed, reason }
 ```
-where `trace_path` = `~/.canary/sessions/$id/trace.zip` and `elapsed` comes from
-`results.json` (total session duration).
+where `trace_path` = `.ai/testrail/${RUN_ID}/canary/$id/trace.zip` and `elapsed` comes from `results.json`.
 
 ### Blocking detection
 
@@ -198,9 +207,9 @@ After **all** cases have run:
 ```
 | Case   | Title                      | Outcome    | Steps | Trace                                            |
 |--------|----------------------------|------------|-------|--------------------------------------------------|
-| C14169 | Should correctly escape... | PASS       | 5/5   | npx playwright show-trace ~/.canary/sessions/.../trace.zip |
-| C174   | Multisite settings         | BLOCKED    | 0/3   | (needs multisite env)                            |
-| C201   | Bulk optimize 500 images   | FAIL       | 3/4   | npx playwright show-trace ~/.canary/sessions/.../trace.zip |
+| C14169 | Should correctly escape... | PASS       | 5/5   | npx playwright show-trace .ai/testrail/1283/canary/.../trace.zip |
+| C174   | Multisite settings         | BLOCKED    | 0/3   | (needs multisite env)                                            |
+| C201   | Bulk optimize 500 images   | FAIL       | 3/4   | npx playwright show-trace .ai/testrail/1283/canary/.../trace.zip |
 ```
 
 Summarise totals (N passed / M failed / K blocked) below the table.
@@ -232,7 +241,7 @@ Payload:
 ```json
 {
   "status_id": 1,
-  "comment": "Automated Canary run — 2026-06-26\n\nStep 1: ✅ Passed\nStep 2: ✅ Passed\n\nTrace: npx playwright show-trace ~/.canary/sessions/<id>/trace.zip",
+  "comment": "Automated Canary run — 2026-06-26\n\nStep 1: ✅ Passed\nStep 2: ✅ Passed\n\nTrace: npx playwright show-trace .ai/testrail/$RUN_ID/canary/<id>/trace.zip",
   "elapsed": "45s"
 }
 ```
