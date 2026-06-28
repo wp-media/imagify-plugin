@@ -53,7 +53,7 @@ You also receive from `qa-engineer`:
 
 WordPress credentials for the fixtures: `WP_USER=admin`, `WP_PASS=password`.
 
-Because `{E2E_CI}` is `true`, any Playwright spec files you write are **permanent** — commit them to `Tests/e2e/specs/`. Canary artifacts under `~/.canary/sessions/` are **local only** — never commit them.
+Because `{E2E_CI}` is `true`, any Playwright spec files you write are **permanent** — commit them to `Tests/e2e/specs/`. Canary artifacts are relocated to `.ai/{N}/canary/` after each session (`.ai/` is gitignored) — never commit them.
 
 ## Environment
 
@@ -61,7 +61,7 @@ Because `{E2E_CI}` is `true`, any Playwright spec files you write are **permanen
 - **Admin login:** `admin` / `password`
 - **Boot the env:** `{E2E_BOOT}` (`bash bin/dev-start.sh`) — idempotent, safe to re-run
 - **Seed demo content:** `bash bin/dev-seed.sh` — run at session start when state matters
-- **Canary sessions root:** `~/.canary/sessions/<id>/`
+- **Canary sessions root:** `.ai/{N}/canary/<id>/` (relocated from `~/.canary/sessions/` after `session end`; symlink left at original path so the viewer still works)
 - **Screenshots staging:** `.e2e-screenshots/` (gitignored locally; create if missing)
 - **Spec root:** `Tests/e2e/specs/`, fixtures: `Tests/e2e/fixtures/`, page objects: `Tests/e2e/pages/`
 - **Step-script temp dir:** `/tmp/canary-steps/` (create per session, `rm -rf` after `session end`)
@@ -119,13 +119,13 @@ A step passes only when **both** hold:
 
 ### Reading results.json
 
-After `session end`, the session writes `~/.canary/sessions/<id>/results.json`. Parse it with `jq` (or read it):
+After `session end` and relocation, `results.json` is at `.ai/${ISSUE_N}/canary/$id/results.json`. Parse it with `jq` (or read it):
 
 ```bash
 jq '{passed: .summary.stepsPassed, failed: .summary.stepsFailed, total: .summary.stepsTotal}' \
-  ~/.canary/sessions/"$id"/results.json
+  ".ai/${ISSUE_N}/canary/$id/results.json"
 jq -r '.steps[] | "\(.name)\tok=\(.ok)\texit=\(.exitCode)"' \
-  ~/.canary/sessions/"$id"/results.json
+  ".ai/${ISSUE_N}/canary/$id/results.json"
 ```
 
 Schema you depend on:
@@ -227,8 +227,22 @@ For **each** P0 and P1 flow in `qa-plan.md`, do the following. Reuse one browser
 2. **Step 1 — login.** Write the `wp-login` fixture (from the WP base) to `/tmp/canary-steps/login.js`, substituting `{E2E_URL}`, `{WP_USER}`, `{WP_PASS}`. Run it as `--step login`. Confirm it passed before continuing — every later step depends on the session.
 3. **One step per assertion.** Translate each flow assertion into a step script that inlines the relevant fixture(s) (navigation, REST GET/POST, AJAX, admin-notice) and logs `PASS:` / `FAIL:`. Use `getByLabel` / `getByRole` to match the Playwright POM. Always use `{ waitUntil: "networkidle" }` for navigation. Run each with a kebab-case `--step` name and `--timeout 10` where a hang is plausible.
 4. **End the session:** `npx @usecanary/cli session end "$id"` (always, even on failure).
-5. **Read `results.json`** for this session — extract `summary.stepsPassed`, `summary.stepsFailed`, `summary.stepsTotal`, and each step's `ok`/`exitCode`. Capture `trace_path` (`~/.canary/sessions/$id/trace.zip`) and `report_path` (`~/.canary/sessions/$id/report.html`). Derive the flow's PASS/FAIL/PARTIAL per the rules above.
-6. **Clean up step scripts:** `rm -rf /tmp/canary-steps`.
+5. **Relocate artifacts** to the project workspace:
+   ```bash
+   ISSUE_N=$(echo "$QA_PLAN_PATH" | grep -oE '[0-9]+' | head -1)
+   CANARY_DIR=".ai/${ISSUE_N}/canary"
+   mkdir -p "$CANARY_DIR"
+   mv ~/.canary/sessions/"$id" "$CANARY_DIR/"
+   python3 -c "
+   import json; p='$CANARY_DIR/$id/session.json'
+   d=json.load(open(p)); d['artifactsDir']='$(pwd)/$CANARY_DIR/$id'
+   json.dump(d, open(p, 'w'), indent=2)
+   "
+   ln -sfn "$(pwd)/$CANARY_DIR/$id" ~/.canary/sessions/"$id"
+   ```
+   This moves the session to `.ai/{N}/canary/<id>/`, updates `artifactsDir` so the viewer still resolves artifacts correctly, and leaves a symlink at `~/.canary/sessions/<id>` so `npx @usecanary/ui` can still find it.
+6. **Read `results.json`** for this session — extract `summary.stepsPassed`, `summary.stepsFailed`, `summary.stepsTotal`, and each step's `ok`/`exitCode`. Capture `trace_path` (`.ai/${ISSUE_N}/canary/$id/trace.zip`) and `report_path` (`.ai/${ISSUE_N}/canary/$id/report.html`). Derive the flow's PASS/FAIL/PARTIAL per the rules above.
+7. **Clean up step scripts:** `rm -rf /tmp/canary-steps`.
 
 Record a `canary_sessions[]` entry per flow (flow label, session_id, passed/failed/total, trace_path, report_path).
 
@@ -247,9 +261,10 @@ If the result is `1` (key non-empty), API-key guards are **not** blockers. If a 
 After all sessions are recorded, collect the per-step screenshots Canary captured and publish them via a temporary branch commit (same pattern as `e2e-qa-tester`):
 
 ```bash
+ISSUE_N=$(echo "$QA_PLAN_PATH" | grep -oE '[0-9]+' | head -1)
 mkdir -p .e2e-screenshots
 for id in <each session id>; do
-  cp ~/.canary/sessions/"$id"/screenshots/*.png .e2e-screenshots/ 2>/dev/null || true
+  cp ".ai/${ISSUE_N}/canary/$id/screenshots/"*.png .e2e-screenshots/ 2>/dev/null || true
 done
 git add -f .e2e-screenshots/
 git commit -m "chore(qa): Canary QA screenshots"
@@ -264,7 +279,7 @@ git commit -m "chore(qa): remove Canary QA screenshots"
 git push
 ```
 
-Capture `SHA` into your context — you need it to build per-file `raw.githubusercontent.com` URLs for the `### Screenshots` table and the return JSON. Never commit Canary session artifacts (`~/.canary/`) — they are local-only.
+Capture `SHA` into your context — you need it to build per-file `raw.githubusercontent.com` URLs for the `### Screenshots` table and the return JSON. Never commit Canary session artifacts (`.ai/{N}/canary/` — gitignored) or screenshot PNGs permanently.
 
 ---
 
@@ -350,9 +365,9 @@ gh pr comment {PR_NUMBER} --body "$(cat <<'CANARY'
 
 | Flow | Steps | Result | Trace |
 |---|---|---|---|
-| P0-A: flow name | 9/9 | ✅ PASS | `npx playwright show-trace ~/.canary/sessions/<id>/trace.zip` |
+| P0-A: flow name | 9/9 | ✅ PASS | `npx playwright show-trace .ai/{N}/canary/<id>/trace.zip` |
 
-Reports (open locally): `npx @usecanary/ui --dir ~/.canary/sessions/<id>`
+Reports (open locally): `npx @usecanary/ui --dir .ai/{N}/canary/<id>`
 CANARY
 )"
 ```
@@ -401,8 +416,8 @@ After the prose report, return this JSON object to `qa-engineer`. It is the **ex
       "passed": 9,
       "failed": 0,
       "total": 9,
-      "trace_path": "~/.canary/sessions/p0-a--flow-name-abc123/trace.zip",
-      "report_path": "~/.canary/sessions/p0-a--flow-name-abc123/report.html"
+      "trace_path": ".ai/1234/canary/p0-a--flow-name-abc123/trace.zip",
+      "report_path": ".ai/1234/canary/p0-a--flow-name-abc123/report.html"
     }
   ],
   "canary_results_table": "| Flow | Steps | Result | Trace |\n|---|---|---|---|\n| P0-A: flow name | 9/9 | ✅ PASS | ... |"
@@ -421,10 +436,10 @@ Field rules:
 
 - ✅ **Always do:** read both Canary session-agent files before recording; read `qa-plan.md` and record one session per P0/P1 flow; inline fixtures verbatim into each step script; read `results.json` for every session and derive the verdict from `summary` + per-step `ok`/`exitCode`; publish screenshots via branch commit + SHA URL; write fresh POM-based Playwright specs and commit them (E2E_CI is true); `session end` every session even on failure; post the Canary results table with the dedup marker; uninstall any plugins you installed.
 - ⚠️ **Ask first (report as blocker):** `gh` not authenticated; boot command fails; a "How to test" or QA-plan step is ambiguous; a required premium plugin is absent and cannot be installed.
-- 🚫 **Never do:** spawn a sub-agent (you have no `Agent` tool — run the CLI yourself); fork/vendor/wrap the Canary CLI; use `require`/`import`/`fs`/`path`/`process.env`/top-level `fetch` in a step script; commit Canary session artifacts (`~/.canary/`) or screenshot PNGs permanently; mechanically transpile QuickJS steps into specs; use `setTimeout`/`waitForTimeout` in specs; report PASS without a Canary step PASS line or screenshot evidence; infer PASS for a behavioral claim through a license/quota guard; install plugins not explicitly required.
+- 🚫 **Never do:** spawn a sub-agent (you have no `Agent` tool — run the CLI yourself); fork/vendor/wrap the Canary CLI; use `require`/`import`/`fs`/`path`/`process.env`/top-level `fetch` in a step script; commit Canary session artifacts (`.ai/{N}/canary/` is gitignored — keep it that way) or screenshot PNGs permanently; skip the relocation step after `session end`; mechanically transpile QuickJS steps into specs; use `setTimeout`/`waitForTimeout` in specs; report PASS without a Canary step PASS line or screenshot evidence; infer PASS for a behavioral claim through a license/quota guard; install plugins not explicitly required.
 
 ## Known limitations
 
 - **P2 flows are optional.** A P2 session failure never gates the overall verdict.
-- **Canary artifacts are local-only.** The PR comment links trace/report by local path (`npx playwright show-trace …`, `npx @usecanary/ui --dir …`); only screenshots are published as raw URLs.
+- **Canary artifacts are local-only.** Relocated to `.ai/{N}/canary/` (gitignored). The PR comment links trace/report by local path (`npx playwright show-trace .ai/{N}/canary/<id>/trace.zip`, `npx @usecanary/ui --dir .ai/{N}/canary/<id>`); only screenshots are published as raw URLs.
 - **Spec promotion path:** specs are committed directly to `Tests/e2e/specs/` (E2E_CI is true) — no separate promotion step.

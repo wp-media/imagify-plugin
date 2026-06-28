@@ -61,7 +61,7 @@ Session ID format: `<slug>-<random8>-<short-hash>` — e.g. `p0-a--mcp-abilities
 
 ### Artifact structure
 
-Every session directory at `~/.canary/sessions/<id>/` contains:
+Canary writes to `~/.canary/sessions/<id>/` initially. Our agents relocate each session to `.ai/{issue_N}/canary/<id>/` after `session end` and leave a symlink at the original path (so `npx @usecanary/ui` still works). The directory structure is the same either way:
 
 ```
 session.json      ← session metadata + step scripts (written during run)
@@ -137,41 +137,9 @@ Canary agent files of interest:
 
 ---
 
-## 1. Problem
+## 2. Architecture
 
-The current `e2e-qa-tester` agent drives the browser via `mcp__playwright` — an interactive, session-bound tool with no artifact output. It produces Playwright specs committed to `Tests/e2e/specs/`, but:
-
-- The agent improvises every WordPress interaction from scratch (login flow, nonce retrieval, REST calls, AJAX patterns) — getting them wrong about 30% of the time
-- There is no rich local evidence: no trace, no video, no HAR — just a spec file and a screenshot URL
-- The QA plan lives only in the orchestrator's context; it is not surfaced to the developer or reviewer
-- Canary sessions run today are **disconnected** from the issue workflow — triggered manually, post-merge
-- The `report.html` Canary produces is not linked from the GitHub PR comment — developers never see it
-
----
-
-## 2. Vision
-
-Introduce a **`canary-e2e` agent** — a drop-in replacement for `e2e-qa-tester` that uses Canary CLI instead of `mcp__playwright`. The user opts into it at orchestrator startup; the existing `e2e-qa-tester` stays untouched as the default.
-
-Every `orchestrator` / `issue-workflow` run with `e2e_mode: "canary"` produces:
-
-1. A **structured QA plan** (P0/P1/P2) derived from the diff — written to `.ai/qa-plan.md` so the developer and reviewer can read it
-2. **Recorded Canary sessions** per P0/P1 flow — artifacts stored locally, a results summary **posted to the GitHub PR comment** (not committed to git)
-3. **Playwright specs** written from the recorded flows — committed to `Tests/e2e/specs/` for CI to re-run
-
-The WordPress login, nonce, and REST patterns are baked into reusable snippet blocks so no agent ever has to guess them again.
-
-### Why not replace `e2e-qa-tester`?
-
-- Non-destructive: the old agent is the safe fallback; a single word at startup rolls back
-- Gradual adoption: run Canary on a few issues, compare results, decide
-- Feature parity check: can run the same issue through both agents and compare output
-
----
-
-## 3. Architecture
-
-### 3.1 What "cloning Canary" means
+### 2.1 What "cloning Canary" means
 
 Canary has two layers:
 
@@ -182,7 +150,7 @@ Canary has two layers:
 
 No separate plugin install or repo clone is needed. The CLI is already installed globally via `npx`; the skill pack files are already on disk at `~/.claude/plugins/marketplaces/canary-marketplace/`.
 
-### 3.2 Mode selection
+### 2.2 Mode selection
 
 At orchestrator startup, during the existing calibration step, the orchestrator asks:
 
@@ -204,7 +172,7 @@ orchestrator startup
 
 Both `canary-e2e` and `e2e-qa-tester` share the **same JSON return contract** — `qa-engineer` is agnostic to which one ran.
 
-### 3.3 Proposed pipeline (canary mode)
+### 2.3 Proposed pipeline (canary mode)
 
 ```
 orchestrator  [e2e_mode: "canary"]
@@ -226,7 +194,7 @@ orchestrator  [e2e_mode: "canary"]
           └─ READY TO MERGE or blockers
 ```
 
-### 3.4 New agents
+### 2.4 New agents
 
 Two WP agents replace the generic Canary marketplace agents. They live at different scopes:
 
@@ -250,7 +218,7 @@ Two WP agents replace the generic Canary marketplace agents. They live at differ
 **`canary-imagify-session-agent.md`** extends the WP base with Imagify specifics:
 - Imagify admin URLs (settings, bulk optimization, custom folders)
 - Ability slugs and MCP endpoint (`/wp-json/wp-abilities/v1/abilities`)
-- `imagify-abilities` fixture block (see section 4)
+- `imagify-abilities` fixture block (see section 3)
 - Imagify-specific selectors and notice patterns
 
 The "extends" instruction at the top of the plugin agent:
@@ -271,7 +239,7 @@ in project-level `.claude/agents/` means:
 
 This is worth formalising across `wp-media` projects when the WP base is stable enough.
 
-### 3.5 Updated existing agents
+### 2.5 Updated existing agents
 
 **`qa-engineer.md`** — becomes E2E-mode-aware:
 - Receives `e2e_mode` from the orchestrator dispatch
@@ -290,7 +258,7 @@ This is worth formalising across `wp-media` projects when the WP base is stable 
 - Writes Playwright specs to `Tests/e2e/specs/` (same as `e2e-qa-tester`)
 - Returns the **same JSON shape** as `e2e-qa-tester` so `qa-engineer` needs no branching logic
 
-### 3.6 Artifact flow
+### 2.6 Artifact flow
 
 ```
 Developer machine (local only — not committed)
@@ -318,7 +286,7 @@ Optional future: upload ~/.canary/sessions/ as CI artifact "canary-qa-<pr>"
 
 ---
 
-## 4. WordPress fixture snippets
+## 3. WordPress fixture snippets
 
 Because Canary's QuickJS sandbox has no `require()`, helpers must be inlined per step script. The `canary-wp-session-agent` carries these as **canonical copy-paste blocks** in its instructions — never re-invented, always copied verbatim.
 
@@ -435,7 +403,7 @@ for (const slug of expected) {
 
 ---
 
-## 5. QA plan format (`.ai/qa-plan.md`)
+## 4. QA plan format (`.ai/qa-plan.md`)
 
 Produced by `qa-engineer`, consumed by `e2e-qa-tester`. The `P0-A` / `P0-B` labels become Canary session names.
 
@@ -467,7 +435,7 @@ Produced by `qa-engineer`, consumed by `e2e-qa-tester`. The `P0-A` / `P0-B` labe
 
 ---
 
-## 6. Canary results → GitHub PR comment
+## 5. Canary results → GitHub PR comment
 
 The `e2e-qa-tester` extracts `results.json` from each session and formats it as markdown. This goes into the GitHub PR comment — **not committed to git**.
 
@@ -512,7 +480,7 @@ git push
 
 ---
 
-## 7. Playwright spec translation
+## 6. Playwright spec translation
 
 Each Canary step script (QuickJS) translates to a Playwright spec (Node.js TypeScript) for CI. The translation is NOT automatic — `e2e-qa-tester` writes the spec from scratch using the Canary session's step logic as reference. Key differences:
 
@@ -567,7 +535,7 @@ test.describe('MCP Abilities — Wave 2', () => {
 
 ---
 
-## 8. GitHub Actions integration
+## 7. GitHub Actions integration
 
 ### Playwright CI (already exists — no change needed)
 
@@ -591,7 +559,7 @@ This is optional for the initial implementation — the local-only approach is s
 
 ---
 
-## 9. Open questions for the audit
+## 8. Open questions for the audit
 
 1. **Artifact location in CI:** `~/.canary/sessions/` is per-machine (on dev). If CI also needs to produce Canary sessions (not just replay Playwright specs), where do artifacts land? Path may need to be overridden via `CANARY_HOME` or equivalent env var.
 
@@ -605,7 +573,7 @@ This is optional for the initial implementation — the local-only approach is s
 
 ---
 
-## 10. Files to create / modify
+## 9. Files to create / modify
 
 **User-level** (`~/.claude/agents/` — shared across all WP plugin repos):
 
@@ -628,7 +596,7 @@ This is optional for the initial implementation — the local-only approach is s
 
 ---
 
-## 11. Known Canary limitations (discovered in live sessions)
+## 10. Known Canary limitations (discovered in live sessions)
 
 - **`console.log` in QuickJS counts as "consoleErrors"** if the Playwright daemon routes all console output through the error channel. Do not use `summary.consoleErrors > 0` as a FAIL signal — check `summary.stepsFailed` instead.
 - **`networkFailures`** in the summary counts network events that returned 4xx/5xx — WP admin always generates some (favicon 404, etc.). Do not use `networkFailures > 0` as a FAIL signal.

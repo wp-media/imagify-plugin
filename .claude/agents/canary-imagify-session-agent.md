@@ -113,8 +113,21 @@ Same lifecycle as the base agent, with Imagify specifics:
    above (`imagify-abilities`, `imagify-invalid-api-key`), substituting Imagify
    URLs and selectors. Use `--timeout 10` where a hang is plausible.
 5. `npx @usecanary/cli session end "$id"`.
-6. `rm -rf /tmp/canary-steps`.
-7. Report per-step exitCode + PASS/FAIL lines and an overall verdict.
+6. **Relocate artifacts** to the project workspace (derive `CANARY_DIR` from calling context):
+   - **canary-e2e (pipeline):** `ISSUE_N=$(echo "$QA_PLAN_PATH" | grep -oE '[0-9]+' | head -1); CANARY_DIR=".ai/${ISSUE_N}/canary"`
+   - **testrail-run-agent:** `CANARY_DIR=".ai/testrail/${TESTRAIL_RUN_ID}/canary"`
+   ```bash
+   mkdir -p "$CANARY_DIR"
+   mv ~/.canary/sessions/"$id" "$CANARY_DIR/"
+   python3 -c "
+   import json; p='$CANARY_DIR/$id/session.json'
+   d=json.load(open(p)); d['artifactsDir']='$(pwd)/$CANARY_DIR/$id'
+   json.dump(d, open(p, 'w'), indent=2)
+   "
+   ln -sfn "$(pwd)/$CANARY_DIR/$id" ~/.canary/sessions/"$id"
+   ```
+7. `rm -rf /tmp/canary-steps`.
+8. Report per-step exitCode + PASS/FAIL lines and an overall verdict. Reference artifacts as `$CANARY_DIR/$id/results.json`, `$CANARY_DIR/$id/report.html`, `$CANARY_DIR/$id/trace.zip`.
 
 ## DO NOT (in addition to the base agent's rules)
 
