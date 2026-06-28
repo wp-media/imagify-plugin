@@ -3,6 +3,7 @@
   <coverage includeUncoveredFiles="true">
     <include>
       <directory suffix=".php">../../inc</directory>
+      <directory suffix=".php">../../classes</directory>
     </include>
   </coverage>
   <testsuites>

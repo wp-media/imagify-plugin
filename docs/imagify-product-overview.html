@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Imagify — Product Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:        #2B67F6;
+      --blue-light:  #5B8BF9;
+      --blue-dim:    #e8effe;
+      --green:       #1DB954;
+      --green-dim:   #e6f8ed;
+      --navy:        #1a1a2e;
+      --navy-mid:    #16213e;
+      --navy-soft:   #0f3460;
+      --text:        #1e2235;
+      --text-mid:    #4b5568;
+      --text-light:  #718096;
+      --border:      #e2e8f0;
+      --bg:          #f7f9fc;
+      --white:       #ffffff;
+      --radius:      12px;
+      --radius-lg:   20px;
+      --shadow-sm:   0 1px 4px rgba(0,0,0,.06);
+      --shadow-md:   0 4px 20px rgba(0,0,0,.08);
+      --shadow-lg:   0 12px 40px rgba(0,0,0,.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ─── Typography ────────────────────────────────────────────────────── */
+    h1, h2, h3, h4 { line-height: 1.25; font-weight: 700; }
+
+    h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); }
+    h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); color: var(--navy); }
+    h3 { font-size: 1.2rem; color: var(--navy); }
+    h4 { font-size: 1rem; color: var(--navy); }
+
+    p { color: var(--text-mid); }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── Layout Helpers ────────────────────────────────────────────────── */
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section { padding: 80px 0; }
+
+    .section-label {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: var(--blue-dim);
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+    }
+
+    .section-intro { max-width: 640px; }
+    .section-intro p { font-size: 1.1rem; margin-top: 10px; }
+
+    /* ─── Sticky Header ─────────────────────────────────────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(26, 26, 46, .96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+
+    .header-badge {
+      font-size: .72rem;
+      font-weight: 600;
+      color: rgba(255,255,255,.55);
+      border: 1px solid rgba(255,255,255,.15);
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    nav { display: flex; gap: 6px; }
+
+    nav a {
+      color: rgba(255,255,255,.65);
+      font-size: .85rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color .2s, background .2s;
+    }
+
+    nav a:hover {
+      color: var(--white);
+      background: rgba(255,255,255,.08);
+      text-decoration: none;
+    }
+
+    /* ─── Hero ──────────────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(145deg, var(--navy) 0%, var(--navy-mid) 55%, #0d2257 100%);
+      padding: 100px 0 90px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -120px; right: -120px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(43,103,246,.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: 10%;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(29,185,84,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(43,103,246,.18);
+      border: 1px solid rgba(43,103,246,.35);
+      color: var(--blue-light);
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      color: var(--white);
+      margin-bottom: 18px;
+    }
+
+    .hero h1 span { color: var(--blue-light); }
+
+    .hero-subtitle {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      color: rgba(255,255,255,.7);
+      max-width: 580px;
+      margin-bottom: 48px;
+    }
+
+    .hero-benefits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .hero-benefit {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      color: rgba(255,255,255,.85);
+      font-size: .9rem;
+      font-weight: 500;
+      padding: 10px 18px;
+      border-radius: 100px;
+    }
+
+    .hero-benefit .icon { font-size: 1rem; }
+
+    /* ─── Stats Bar ─────────────────────────────────────────────────────── */
+    .stats-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+    }
+
+    .stats-inner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 1140px;
+      margin: 0 auto;
+    }
+
+    .stat-item {
+      padding: 28px 24px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat-item:last-child { border-right: none; }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1;
+    }
+
+    .stat-number span { color: var(--blue); }
+
+    .stat-label {
+      font-size: .82rem;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    /* ─── Positioning ───────────────────────────────────────────────────── */
+    .positioning { background: var(--white); }
+
+    .positioning-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+      margin-top: 48px;
+    }
+
+    .positioning-lead {
+      font-size: 1.15rem;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .audience-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .audience-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px 20px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .audience-card .a-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .audience-card h4 { margin-bottom: 4px; }
+    .audience-card p { font-size: .9rem; }
+
+    /* ─── Problem-Solution callout ──────────────────────────────────────── */
+    .problem-callout {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+      border-radius: var(--radius-lg);
+      padding: 40px 48px;
+      color: var(--white);
+    }
+
+    .problem-callout h3 { color: var(--white); font-size: 1.3rem; margin-bottom: 16px; }
+
+    .pain-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .pain-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: .95rem;
+      color: rgba(255,255,255,.8);
+    }
+
+    .pain-list li::before {
+      content: '⚠️';
+      font-size: .85rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ─── Feature Cards ─────────────────────────────────────────────────── */
+    .features { background: var(--bg); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: box-shadow .25s, transform .25s;
+    }
+
+    .feature-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .feature-card.highlight {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px var(--blue), var(--shadow-sm);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      line-height: 1;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .feature-card h3 { margin-bottom: 8px; }
+
+    .feature-card p { font-size: .92rem; }
+
+    .feature-tag {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: .72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      padding: 3px 10px;
+      border-radius: 100px;
+      background: var(--green-dim);
+      color: #157a3a;
+    }
+
+    .feature-tag.blue {
+      background: var(--blue-dim);
+      color: #1540a8;
+    }
+
+    /* ─── Compression Levels ────────────────────────────────────────────── */
+    .compression { background: var(--white); }
+
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .level-card {
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .level-card.normal  { background: #f0faf4; border: 2px solid #a7e3be; }
+    .level-card.aggressive { background: #fff8e8; border: 2px solid #f5d98a; }
+    .level-card.ultra   { background: var(--blue-dim); border: 2px solid #9ab8fb; }
+
+    .level-card .level-icon {
+      font-size: 2.4rem;
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .level-card h3 { font-size: 1.3rem; margin-bottom: 6px; }
+
+    .level-card .level-desc { font-size: .92rem; color: var(--text-mid); margin-bottom: 16px; }
+
+    .level-badge {
+      display: inline-block;
+      font-size: .78rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+
+    .normal   .level-badge { background: #1DB954; color: var(--white); }
+    .aggressive .level-badge { background: #e5a800; color: var(--white); }
+    .ultra    .level-badge { background: var(--blue); color: var(--white); }
+
+    .savings-bar {
+      margin-top: 18px;
+      height: 6px;
+      background: rgba(0,0,0,.08);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .savings-fill {
+      height: 100%;
+      border-radius: 100px;
+    }
+
+    .normal   .savings-fill { width: 50%; background: var(--green); }
+    .aggressive .savings-fill { width: 70%; background: #e5a800; }
+    .ultra    .savings-fill { width: 85%; background: var(--blue); }
+
+    .savings-label { font-size: .78rem; color: var(--text-light); margin-top: 6px; }
+
+    /* ─── Formats ───────────────────────────────────────────────────────── */
+    .formats { background: var(--bg); }
+
+    .formats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .format-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+    }
+
+    .format-card .fmt-icon { font-size: 2.2rem; display: block; margin-bottom: 14px; }
+
+    .format-card h3 { margin-bottom: 8px; }
+
+    .fmt-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+    .fmt-badge {
+      font-size: .75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-mid);
+    }
+
+    .delivery-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 32px;
+    }
+
+    .delivery-card {
+      padding: 24px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .delivery-card h4 { margin-bottom: 8px; }
+    .delivery-card p { font-size: .88rem; }
+
+    .delivery-card .d-icon { font-size: 1.6rem; display: block; margin-bottom: 10px; }
+
+    /* ─── Contexts ──────────────────────────────────────────────────────── */
+    .contexts { background: var(--white); }
+
+    .contexts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .context-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      text-align: center;
+    }
+
+    .context-card .ctx-icon { font-size: 2.8rem; display: block; margin-bottom: 16px; }
+
+    .context-card h3 { margin-bottom: 10px; }
+
+    .ctx-use-case {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--blue);
+      background: var(--blue-dim);
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+
+    /* ─── Automation ────────────────────────────────────────────────────── */
+    .automation { background: var(--bg); }
+
+    .auto-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+      margin-top: 48px;
+    }
+
+    .auto-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+
+    .auto-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+
+    .auto-list li .al-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .auto-list li h4 { margin-bottom: 3px; }
+    .auto-list li p { font-size: .88rem; }
+
+    .cli-callout {
+      background: var(--navy);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      color: var(--white);
+    }
+
+    .cli-callout h3 { color: var(--white); margin-bottom: 12px; }
+    .cli-callout p { color: rgba(255,255,255,.72); font-size: .95rem; margin-bottom: 20px; }
+
+    .cli-features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+    .cli-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,.8);
+      font-size: .9rem;
+    }
+
+    .cli-features li::before {
+      content: '›';
+      color: var(--blue-light);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    /* ─── Plans ─────────────────────────────────────────────────────────── */
+    .plans { background: var(--white); }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .plan-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .plan-card.popular {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px var(--blue), var(--shadow-lg);
+      position: relative;
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--blue);
+      color: var(--white);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 100px;
+    }
+
+    .plan-icon { font-size: 2rem; }
+
+    .plan-name { font-size: 1.3rem; font-weight: 700; color: var(--navy); }
+
+    .plan-quota {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1;
+    }
+
+    .plan-quota span { font-size: 1rem; font-weight: 500; color: var(--text-light); }
+
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+    .plan-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: .9rem;
+      color: var(--text-mid);
+    }
+
+    .plan-features li::before {
+      content: '✓';
+      color: var(--green);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .quota-note {
+      margin-top: 40px;
+      background: var(--blue-dim);
+      border: 1px solid #c0d4fd;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .quota-note .qn-icon { font-size: 1.4rem; flex-shrink: 0; }
+
+    .quota-note p { font-size: .9rem; color: #1540a8; }
+
+    /* ─── Integrations ──────────────────────────────────────────────────── */
+    .integrations { background: var(--bg); }
+
+    .int-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .int-group {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+
+    .int-group h3 { font-size: 1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+    .int-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+    .int-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .9rem;
+      color: var(--text-mid);
+    }
+
+    .int-list li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+      flex-shrink: 0;
+    }
+
+    .multisite-banner {
+      margin-top: 32px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+      border-radius: var(--radius-lg);
+      padding: 32px 40px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--white);
+    }
+
+    .multisite-banner .ms-icon { font-size: 2.8rem; flex-shrink: 0; }
+
+    .multisite-banner h3 { color: var(--white); margin-bottom: 6px; }
+
+    .multisite-banner p { color: rgba(255,255,255,.75); font-size: .95rem; }
+
+    /* ─── Admin UX ──────────────────────────────────────────────────────── */
+    .admin { background: var(--white); }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .admin-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+    }
+
+    .admin-card .ac-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .admin-card h3 { margin-bottom: 6px; }
+    .admin-card p { font-size: .9rem; }
+
+    /* ─── Developer ─────────────────────────────────────────────────────── */
+    .developer { background: var(--navy); color: var(--white); }
+
+    .developer .section-label {
+      background: rgba(43,103,246,.25);
+      color: var(--blue-light);
+    }
+
+    .developer h2 { color: var(--white); }
+
+    .developer .section-intro p { color: rgba(255,255,255,.7); }
+
+    .dev-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+
+    .dev-card {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+
+    .dev-card .dc-icon { font-size: 1.8rem; display: block; margin-bottom: 14px; }
+
+    .dev-card h3 { color: var(--white); font-size: 1.05rem; margin-bottom: 8px; }
+
+    .dev-card p { color: rgba(255,255,255,.65); font-size: .9rem; }
+
+    /* ─── Footer ────────────────────────────────────────────────────────── */
+    footer {
+      background: #0e0e1c;
+      padding: 48px 0;
+      text-align: center;
+      color: rgba(255,255,255,.4);
+      font-size: .85rem;
+    }
+
+    footer strong { color: rgba(255,255,255,.65); }
+
+    /* ─── Callout boxes ─────────────────────────────────────────────────── */
+    .callout {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--green-dim);
+      border: 1px solid #a3d9b8;
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-top: 28px;
+    }
+
+    .callout .cl-icon { font-size: 1.3rem; flex-shrink: 0; }
+
+    .callout p { font-size: .92rem; color: #145c30; }
+
+    /* ─── Responsive ────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .stats-inner     { grid-template-columns: repeat(2, 1fr); }
+      .stat-item:nth-child(2) { border-right: none; }
+      .positioning-grid { grid-template-columns: 1fr; gap: 40px; }
+      .features-grid   { grid-template-columns: 1fr 1fr; }
+      .levels-grid     { grid-template-columns: 1fr; }
+      .formats-grid    { grid-template-columns: 1fr; }
+      .delivery-grid   { grid-template-columns: 1fr; }
+      .contexts-grid   { grid-template-columns: 1fr; }
+      .auto-grid       { grid-template-columns: 1fr; }
+      .plans-grid      { grid-template-columns: 1fr; }
+      .int-grid        { grid-template-columns: 1fr; }
+      .admin-grid      { grid-template-columns: 1fr; }
+      .dev-cards       { grid-template-columns: 1fr; }
+      nav              { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      section          { padding: 56px 0; }
+      .hero            { padding: 70px 0 60px; }
+      .features-grid   { grid-template-columns: 1fr; }
+      .stats-inner     { grid-template-columns: repeat(2, 1fr); }
+      .problem-callout { padding: 28px 24px; }
+      .multisite-banner { flex-direction: column; padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Sticky Header ──────────────────────────────────────────────────── -->
+<header>
+  <div class="header-inner">
+    <div class="header-logo">
+      <div class="logo-mark">⚡</div>
+      Imagify
+    </div>
+    <nav>
+      <a href="#positioning">Overview</a>
+      <a href="#features">Features</a>
+      <a href="#compression">Compression</a>
+      <a href="#formats">Formats</a>
+      <a href="#contexts">Contexts</a>
+      <a href="#plans">Plans</a>
+      <a href="#integrations">Integrations</a>
+    </nav>
+    <span class="header-badge">v 2.2.8</span>
+  </div>
+</header>
+
+<!-- ─── Hero ──────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container hero-content">
+    <div class="hero-eyebrow">
+      <span>⚡</span> WordPress Image Optimization
+    </div>
+    <h1>Imagify —<br /><span>Product Overview</span></h1>
+    <p class="hero-subtitle">The complete image optimization solution for WordPress — faster pages, better Core Web Vitals, and lower bandwidth costs, all from a single plugin.</p>
+    <div class="hero-benefits">
+      <div class="hero-benefit"><span class="icon">🚀</span> Faster Page Loads</div>
+      <div class="hero-benefit"><span class="icon">📊</span> Better Core Web Vitals</div>
+      <div class="hero-benefit"><span class="icon">🔍</span> Improved SEO Rankings</div>
+      <div class="hero-benefit"><span class="icon">💸</span> Lower Bandwidth Costs</div>
+      <div class="hero-benefit"><span class="icon">🔄</span> Zero Configuration Needed</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Stats Bar ──────────────────────────────────────────────────────── -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-number"><span>80</span>%</div>
+      <div class="stat-label">Average file size reduction</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number"><span>3</span></div>
+      <div class="stat-label">Compression quality levels</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number"><span>3</span></div>
+      <div class="stat-label">Optimization contexts</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number"><span>∞</span></div>
+      <div class="stat-label">Images on the Infinite plan</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Positioning ────────────────────────────────────────────────────── -->
+<section class="positioning" id="positioning">
+  <div class="container">
+    <div class="section-intro">
+      <span class="section-label">Product Positioning</span>
+      <h2>What is Imagify?</h2>
+      <p>Imagify is a WordPress plugin that automatically compresses, converts, and delivers images in the optimal format and size — so site owners get fast-loading pages without any manual effort.</p>
+    </div>
+
+    <div class="positioning-grid">
+      <div>
+        <p class="positioning-lead">Images are the single largest contributor to page weight on most WordPress sites. Unoptimized images slow down pages, hurt Google Search rankings, drain server bandwidth, and frustrate visitors — especially on mobile. Imagify eliminates all of that with a one-time setup.</p>
+        <p class="positioning-lead">Once installed, every image uploaded to WordPress is automatically compressed and converted. Existing libraries can be processed in bulk. The result is a site that loads faster, scores higher on Core Web Vitals, and costs less to run — without the site owner touching a single file manually.</p>
+
+        <div class="callout">
+          <span class="cl-icon">💡</span>
+          <p><strong>Core Web Vitals impact:</strong> Google's ranking signals include Largest Contentful Paint (LCP) and Cumulative Layout Shift (CLS) — both heavily influenced by image size and format. Imagify directly improves both metrics.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="problem-callout">
+          <h3>⚠️ The Problem Imagify Solves</h3>
+          <ul class="pain-list">
+            <li>Images account for 50–75% of a typical page's total byte weight</li>
+            <li>Unoptimized uploads silently degrade performance over time</li>
+            <li>Next-gen formats (WebP, AVIF) require complex server configuration without a plugin</li>
+            <li>Manual image editing is time-consuming and inconsistent across teams</li>
+            <li>Large original images consume unnecessary storage and bandwidth</li>
+            <li>Poor Core Web Vitals scores directly suppress Google Search rankings</li>
+          </ul>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <h3 style="margin-bottom: 16px; color: var(--navy);">Who is it for?</h3>
+          <div class="audience-cards">
+            <div class="audience-card">
+              <span class="a-icon">🛒</span>
+              <div>
+                <h4>eCommerce stores</h4>
+                <p>Product images need to be sharp and fast. Slow product pages lose conversions.</p>
+              </div>
+            </div>
+            <div class="audience-card">
+              <span class="a-icon">📸</span>
+              <div>
+                <h4>Photographers & creatives</h4>
+                <p>High-resolution portfolios and galleries delivered at optimal size without visible quality loss.</p>
+              </div>
+            </div>
+            <div class="audience-card">
+              <span class="a-icon">✍️</span>
+              <div>
+                <h4>Content publishers & agencies</h4>
+                <p>Teams uploading hundreds of images need fire-and-forget automation, not manual workflows.</p>
+              </div>
+            </div>
+            <div class="audience-card">
+              <span class="a-icon">🏢</span>
+              <div>
+                <h4>Enterprise & multisite networks</h4>
+                <p>Centralized optimization policy across dozens of sites, with CLI and cron support for DevOps teams.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Core Features ──────────────────────────────────────────────────── -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-intro">
+      <span class="section-label">Core Features</span>
+      <h2>Everything you need, nothing you don't</h2>
+      <p>Imagify covers the full image optimization lifecycle — from upload to delivery — with smart automation at every step.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card highlight">
+        <span class="feature-icon">⚡</span>
+        <h3>Auto-Optimize on Upload</h3>
+        <p>The moment an image is added to the WordPress Media Library, Imagify compresses and converts it automatically. Zero friction, zero extra steps for content editors.</p>
+        <span class="feature-tag">Zero Configuration</span>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-icon">🗜️</span>
+        <h3>Smart Image Compression</h3>
+        <p>Three quality levels — Normal, Aggressive, and Ultra — let site owners choose the right balance between visual quality and file size. Save up to 80% on file size.</p>
+        <span class="feature-tag blue">Up to 80% Savings</span>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-icon">🔄</span>
+        <h3>Backup &amp; One-Click Restore</h3>
+        <p>Original images are always preserved in a secure backup. Restore any image — or the entire library — to its original state with a single click, no data loss risk.</p>
+        <span class="feature-tag">Non-Destructive</span>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-icon">🖼️</span>
+        <h3>WebP &amp; AVIF Conversion</h3>
+        <p>Next-gen formats are automatically served to browsers that support them, with transparent fallback to JPEG/PNG for older environments. No manual configuration required.</p>
+        <span class="feature-tag blue">Automatic Fallback</span>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-icon">📦</span>
+        <h3>Bulk Optimization</h3>
+        <p>Process an entire existing media library in one go. Ideal for sites migrating to Imagify or cleaning up years of unoptimized uploads. Runs in the background without downtime.</p>
+        <span class="feature-tag">Background Processing</span>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-icon">📐</span>
+        <h3>Large Image Resizing</h3>
+        <p>Enforce maximum dimensions on upload to prevent oversized originals from ever reaching the server. A 6000px wide photo becomes 2000px before it's even stored.</p>
+        <span class="feature-tag blue">Automatic Resize</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Compression Levels ─────────────────────────────────────────────── -->
+<section class="compression" id="compression">
+  <div class="container">
+    <div class="section-intro">
+      <span class="section-label">Compression Levels</span>
+      <h2>Three levels for every use case</h2>
+      <p>Different sites have different priorities. Imagify gives site owners explicit control over the quality-versus-size trade-off.</p>
+    </div>
+
+    <div class="levels-grid">
+      <div class="level-card normal">
+        <span class="level-icon">🟢</span>
+        <h3>Normal</h3>
+        <p class="level-desc">Balanced compression that preserves visual fidelity. The right choice for portfolios, editorial photography, and any context where image quality is paramount. Compression is nearly invisible to the human eye.</p>
+        <span class="level-badge">Recommended for most sites</span>
+        <div class="savings-bar"><div class="savings-fill"></div></div>
+        <div class="savings-label">Typical savings: 30–50%</div>
+      </div>
+
+      <div class="level-card aggressive">
+        <span class="level-icon">🟡</span>
+        <h3>Aggressive</h3>
+        <p class="level-desc">Stronger compression that pushes file size down significantly while keeping the image presentable. Well suited to news sites, blogs, and product thumbnails where bandwidth efficiency outweighs perfect fidelity.</p>
+        <span class="level-badge">Best for high-volume content</span>
+        <div class="savings-bar"><div class="savings-fill"></div></div>
+        <div class="savings-label">Typical savings: 50–70%</div>
+      </div>
+
+      <div class="level-card ultra">
+        <span class="level-icon">🔵</span>
+        <h3>Ultra</h3>
+        <p class="level-desc">Maximum compression powered by the Imagify API's advanced processing pipeline. Extracts every last byte from the file. Ideal for landing pages, ads, and any context where loading speed is the top priority.</p>
+        <span class="level-badge">Maximum performance</span>
+        <div class="savings-bar"><div class="savings-fill"></div></div>
+        <div class="savings-label">Typical savings: 60–80%</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Formats & Delivery ─────────────────────────────────────────────── -->
+<section class="formats" id="formats">
+  <div class="container">
+    <div class="section-intro">
+      <span class="section-label">Next-Gen Formats &amp; Delivery</span>
+      <h2>Serve the right format to every browser, automatically</h2>
+      <p>Imagify converts images to modern formats and handles browser compatibility transparently — site owners never need to think about it.</p>
+    </div>
+
+    <div class="formats-grid">
+      <div class="format-card">
+        <span class="fmt-icon">🌐</span>
+        <h3>WebP — Universal Support</h3>
+        <p>WebP is now supported by all modern browsers and delivers 25–35% smaller files than JPEG at equivalent quality. Imagify generates WebP versions automatically alongside every uploaded image.</p>
+        <div class="fmt-badges">
+          <span class="fmt-badge">Chrome</span>
+          <span class="fmt-badge">Firefox</span>
+          <span class="fmt-badge">Safari 14+</span>
+          <span class="fmt-badge">Edge</span>
+          <span class="fmt-badge">iOS 14+</span>
+        </div>
+      </div>
+
+      <div class="format-card">
+        <span class="fmt-icon">✨</span>
+        <h3>AVIF — Next-Generation Compression</h3>
+        <p>AVIF achieves 50% smaller files than JPEG with superior quality, using the latest codec technology. Imagify generates AVIF where browser support allows, with automatic fallback to WebP or the original format.</p>
+        <div class="fmt-badges">
+          <span class="fmt-badge">Chrome 85+</span>
+          <span class="fmt-badge">Firefox 93+</span>
+          <span class="fmt-badge">Safari 16+</span>
+          <span class="fmt-badge">Edge 121+</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 48px; margin-bottom: 8px; color: var(--navy);">Two delivery methods — choose what fits your stack</h3>
+    <p style="color: var(--text-mid); max-width: 600px; margin-bottom: 4px;">How Imagify serves the converted image to the visitor's browser depends on the delivery method selected in the settings.</p>
+
+    <div class="delivery-grid">
+      <div class="delivery-card">
+        <span class="d-icon">🏷️</span>
+        <h4>HTML Picture Tag</h4>
+        <p>Imagify rewrites image markup to use the HTML <code style="font-size:.85em; background:var(--bg); padding:1px 5px; border-radius:4px;">&lt;picture&gt;</code> element with multiple format sources. Works on any host, no server configuration required. The browser picks the best format it supports.</p>
+      </div>
+
+      <div class="delivery-card">
+        <span class="d-icon">🔀</span>
+        <h4>Server-Level Rewrite</h4>
+        <p>Imagify adds rewrite rules at the web server level (Apache/Nginx). The HTML stays untouched — the server transparently substitutes the WebP or AVIF file when the browser signals support. Faster and cleaner, ideal for performance-first stacks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Optimization Contexts ─────────────────────────────────────────── -->
+<section class="contexts" id="contexts">
+  <div class="container">
+    <div class="section-intro">
+      <span class="section-label">Optimization Contexts</span>
+      <h2>Optimize images wherever they live</h2>
+      <p>Imagify is not limited to the WordPress Media Library. Images stored anywhere on the server — in themes, plugins, or gallery plugins — can all be optimized.</p>
+    </div>
+
+    <div class="contexts-grid">
+      <div class="context-card">
+        <span class="ctx-icon">🗂️</span>
+        <h3>WordPress Media Library</h3>
+        <p>The primary use case. Every image uploaded through WordPress — whether via the block editor, the classic uploader, or WooCommerce — is automatically optimized. Per-image controls appear directly in the media grid.</p>
+        <span class="ctx-use-case">Automatic &amp; bulk optimization</span>
+      </div>
+
+      <div class="context-card">
+        <span class="ctx-icon">📁</span>
+        <h3>Custom Folders</h3>
+        <p>Any directory on the server can be registered as an optimization context — theme asset folders, plugin image directories, or client upload folders outside of WordPress. Imagify scans, tracks, and optimizes them all.</p>
+        <span class="ctx-use-case">Theme &amp; plugin assets</span>
+      </div>
+
+      <div class="context-card">
+        <span class="ctx-icon">🖼️</span>
+        <h3>NextGEN Gallery</h3>
+        <p>Deep integration with the popular NextGEN Gallery plugin. Images managed inside NextGEN Gallery albums and galleries can be optimized directly through the Imagify interface, without switching between screens.</p>
+        <span class="ctx-use-case">Photographers &amp; gallery sites</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Automation & CLI ───────────────────────────────────────────────── -->
+<section class="automation" id="automation">
+  <div class="container">
+    <div class="section-intro">
+      <span class="section-label">Automation &amp; CLI</span>
+      <h2>Built for teams and automated workflows</h2>
+      <p>Imagify fits naturally into modern WordPress development and DevOps workflows — from hands-off auto-optimization to scriptable CLI commands.</p>
+    </div>
+
+    <div class="auto-grid">
+      <ul class="auto-list">
+        <li>
+          <span class="al-icon">🤖</span>
+          <div>
+            <h4>Auto-Optimize on Upload</h4>
+            <p>Images are processed the moment they land in the Media Library. Content editors never need to remember to run optimization — it simply happens.</p>
+          </div>
+        </li>
+        <li>
+          <span class="al-icon">⏰</span>
+          <div>
+            <h4>Scheduled Background Jobs</h4>
+            <p>Imagify uses WordPress cron to run optimization tasks in the background, ensuring no impact on the front-end experience during bulk processing.</p>
+          </div>
+        </li>
+        <li>
+          <span class="al-icon">📊</span>
+          <div>
+            <h4>Bulk Processing Dashboard</h4>
+            <p>A dedicated dashboard lets admins kick off a full-library optimization run and monitor progress in real time, with the ability to pause and resume.</p>
+          </div>
+        </li>
+        <li>
+          <span class="al-icon">♻️</span>
+          <div>
+            <h4>Bulk Restore</h4>
+            <p>Restore the entire media library to original files in one operation — useful when switching compression levels or migrating to a new plan tier.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="cli-callout">
+        <h3>⌨️ WP-CLI Support</h3>
+        <p>Imagify ships a full suite of WP-CLI commands, enabling DevOps teams to integrate image optimization into deployment scripts, staging pipelines, and CI/CD workflows — no browser required.</p>
+        <ul class="cli-features">
+          <li>Bulk optimize the entire media library from the command line</li>
+          <li>Bulk restore all images to their originals — essential for staging resets</li>
+          <li>Optimize or restore individual images by ID</li>
+          <li>Check optimization status and quota consumption programmatically</li>
+          <li>Ideal for post-deployment automation and scheduled server-side jobs</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Plans & Quota ──────────────────────────────────────────────────── -->
+<section class="plans" id="plans">
+  <div class="container">
+    <div class="section-intro">
+      <span class="section-label">Subscription &amp; Quota</span>
+      <h2>A plan for every site size</h2>
+      <p>Imagify uses a quota model tied to the amount of data optimized per month. Quota resets monthly, and sites can upgrade at any time.</p>
+    </div>
+
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-icon">🆓</div>
+        <div class="plan-name">Free</div>
+        <div class="plan-quota">20 MB <span>/ month</span></div>
+        <ul class="plan-features">
+          <li>All three compression levels</li>
+          <li>WebP &amp; AVIF conversion</li>
+          <li>Auto-optimize on upload</li>
+          <li>Backup &amp; restore</li>
+          <li>Monthly quota reset</li>
+          <li>Suitable for small personal sites</li>
+        </ul>
+      </div>
+
+      <div class="plan-card popular" style="position:relative;">
+        <div class="popular-badge">Most Popular</div>
+        <div class="plan-icon">📈</div>
+        <div class="plan-name">Growth</div>
+        <div class="plan-quota">Larger quota <span>/ month</span></div>
+        <ul class="plan-features">
+          <li>All Free features included</li>
+          <li>Significantly higher monthly quota</li>
+          <li>Purchasable extra byte packs when quota runs low</li>
+          <li>Priority API processing</li>
+          <li>Ideal for active blogs and eCommerce stores</li>
+          <li>Monthly quota reset cycle</li>
+        </ul>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-icon">♾️</div>
+        <div class="plan-name">Infinite</div>
+        <div class="plan-quota">Unlimited</div>
+        <ul class="plan-features">
+          <li>All Growth features included</li>
+          <li>No monthly quota cap whatsoever</li>
+          <li>Optimize as many images as needed</li>
+          <li>Best for high-volume publishers and agencies</li>
+          <li>No overage charges, ever</li>
+          <li>One flat subscription price</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quota-note">
+      <span class="qn-icon">ℹ️</span>
+      <p><strong>How quota works:</strong> Imagify tracks the total byte size of images sent to the API for optimization. Quota resets on the first day of each billing month. On the Growth plan, additional byte packs can be purchased at any time if the monthly allowance is exhausted before the reset date. Quota consumption is visible in the plugin dashboard at all times.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Integrations ───────────────────────────────────────────────────── -->
+<section class="integrations" id="integrations">
+  <div class="container">
+    <div class="section-intro">
+      <span class="section-label">Compatibility &amp; Integrations</span>
+      <h2>Works with the tools your site already uses</h2>
+      <p>Imagify is built to coexist gracefully with the WordPress ecosystem — from page builders and SEO plugins to major managed hosting providers.</p>
+    </div>
+
+    <div class="int-grid">
+      <div class="int-group">
+        <h3>🔌 Plugin Integrations</h3>
+        <ul class="int-list">
+          <li>WooCommerce — product &amp; gallery images</li>
+          <li>WP Rocket — joint performance optimization</li>
+          <li>Gravity Forms — form attachment images</li>
+          <li>Yoast SEO — optimized Open Graph images</li>
+          <li>AMP — compliant image delivery on AMP pages</li>
+          <li>NextGEN Gallery — full gallery management</li>
+        </ul>
+      </div>
+
+      <div class="int-group">
+        <h3>☁️ Hosting Compatibility</h3>
+        <ul class="int-list">
+          <li>WordPress.com (Business &amp; Commerce)</li>
+          <li>WP Engine</li>
+          <li>SiteGround</li>
+          <li>Kinsta</li>
+          <li>Cloudways</li>
+          <li>Flywheel &amp; other managed hosts</li>
+        </ul>
+      </div>
+
+      <div class="int-group">
+        <h3>🛠️ WordPress Core</h3>
+        <ul class="int-list">
+          <li>WordPress Multisite networks</li>
+          <li>Block editor (Gutenberg)</li>
+          <li>Classic editor</li>
+          <li>REST API compatible</li>
+          <li>WP-CLI integration</li>
+          <li>WordPress Cron system</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="multisite-banner">
+      <span class="ms-icon">🏗️</span>
+      <div>
+        <h3>WordPress Multisite — Full Network Support</h3>
+        <p>Imagify supports WordPress Multisite out of the box. Network administrators can manage a single API key and settings across the entire network, while individual site admins retain per-site configuration control. Quota is shared across the network, giving enterprises a single consolidated view of usage.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Admin Experience ───────────────────────────────────────────────── -->
+<section class="admin" id="admin">
+  <div class="container">
+    <div class="section-intro">
+      <span class="section-label">Admin Experience</span>
+      <h2>Designed for site owners, not just developers</h2>
+      <p>Every interaction in the Imagify admin interface is optimized for clarity and speed. Optimization tasks that used to require a developer now take a single click.</p>
+    </div>
+
+    <div class="admin-grid">
+      <div class="admin-card">
+        <div class="ac-icon">🗂️</div>
+        <div>
+          <h3>Per-Image Controls in the Media Library</h3>
+          <p>Each image in the WordPress Media Library shows its current optimization status, compression level, space saved, and quick-action buttons — all without leaving the media screen. No need to navigate to a separate settings page.</p>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="ac-icon">📦</div>
+        <div>
+          <h3>Bulk Optimization Dashboard</h3>
+          <p>A dedicated bulk optimization screen shows a summary of the entire library — how many images are optimized, how many remain, and the total space saved to date. A single button starts a full-library run, with real-time progress feedback.</p>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="ac-icon">⚡</div>
+        <div>
+          <h3>Admin Bar Quick Access</h3>
+          <p>An Imagify shortcut in the WordPress admin bar gives site administrators instant access to the bulk optimization screen and quota status from any page of the dashboard — no hunting through menus.</p>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="ac-icon">🔧</div>
+        <div>
+          <h3>One-Click Reset Internal State</h3>
+          <p>A troubleshooting tool in the plugin settings allows the plugin's internal database state to be reset with a single click — resolving stuck optimization queues and edge-case inconsistencies without the need to deactivate or reinstall the plugin.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Developer Extensibility ───────────────────────────────────────── -->
+<section class="developer" id="developer">
+  <div class="container">
+    <div class="section-intro">
+      <span class="section-label">Developer Extensibility</span>
+      <h2>Built to be extended</h2>
+      <p>Imagify exposes a rich set of extension points for technical partners, agencies, and developers who need to tailor optimization behavior to their specific use cases.</p>
+    </div>
+
+    <div class="dev-cards">
+      <div class="dev-card">
+        <span class="dc-icon">🪝</span>
+        <h3>Action &amp; Filter Hooks</h3>
+        <p>Imagify fires WordPress actions and provides filters at every major stage of the optimization lifecycle — before and after optimization, on quota changes, on format conversion, and more. Developers can intercept and modify behavior without patching core code.</p>
+      </div>
+
+      <div class="dev-card">
+        <span class="dc-icon">📂</span>
+        <h3>Custom Optimization Contexts</h3>
+        <p>The context system is open to extension. Technical partners can register entirely custom optimization contexts — pointing Imagify at any directory, data source, or image pipeline — and have those contexts managed and tracked alongside the built-in ones.</p>
+      </div>
+
+      <div class="dev-card">
+        <span class="dc-icon">🤝</span>
+        <h3>Partner Integrations</h3>
+        <p>Agencies and hosting providers can build on top of Imagify's extension points to create white-label experiences, automate optimization as part of site provisioning workflows, or surface optimization data inside their own admin interfaces.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <p><strong>Imagify</strong> — Version 2.2.8 &nbsp;·&nbsp; Product Overview Document &nbsp;·&nbsp; For internal use</p>
+    <p style="margin-top: 8px;">© WP Media &nbsp;·&nbsp; <a href="https://imagify.io" style="color: rgba(255,255,255,.45);">imagify.io</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

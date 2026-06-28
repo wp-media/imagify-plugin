@@ -108,6 +108,26 @@ class NGG extends AbstractContext {
 				$capacity = $describer;
 		}
 
+		// NGG v4 may not register the v3 custom capabilities. Fall back to 'manage_options' so
+		// the submenu and bulk page remain accessible to site administrators on v4.
+		// @codeCoverageIgnoreStart — requires live NGG v4 class; not available in unit tests.
+		if ( class_exists( 'Imagely\NGG\Admin\App' ) && ! get_role( $capacity ) && ! wp_roles()->is_role( $capacity ) ) {
+			$wp_roles = wp_roles();
+			$has_cap  = false;
+
+			foreach ( $wp_roles->roles as $role_data ) {
+				if ( ! empty( $role_data['capabilities'][ $capacity ] ) ) {
+					$has_cap = true;
+					break;
+				}
+			}
+
+			if ( ! $has_cap ) {
+				$capacity = 'manage_options';
+			}
+		}
+		// @codeCoverageIgnoreEnd
+
 		return $this->filter_capacity( $capacity, $describer );
 	}
 }

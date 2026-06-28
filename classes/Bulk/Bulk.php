@@ -220,6 +220,60 @@ final class Bulk {
 	}
 
 	/**
+	 * Runs the bulk restore for a given context.
+	 *
+	 * Restores all optimized media to their original state synchronously.
+	 * Does not consume API quota since restore is a local file operation.
+	 *
+	 * @since 2.3
+	 *
+	 * @param string $context Current context (WP/Custom folders).
+	 *
+	 * @return array {
+	 *     @type bool   $success  Whether any media was found to restore.
+	 *     @type string $message  Status message.
+	 *     @type int    $restored Number of media successfully restored.
+	 *     @type int    $errors   Number of media that failed to restore.
+	 *     @type int    $total    Total number of media processed.
+	 * }
+	 */
+	public function run_restore( string $context ) {
+		$media_ids = $this->get_bulk_instance( $context )->get_optimized_media_ids();
+
+		if ( empty( $media_ids ) ) {
+			return [
+				'success'  => false,
+				'message'  => 'no-images',
+				'restored' => 0,
+				'errors'   => 0,
+				'total'    => 0,
+			];
+		}
+
+		$restored = 0;
+		$errors   = 0;
+
+		foreach ( $media_ids as $media_id ) {
+			$result = imagify_get_optimization_process( $media_id, $context )->restore();
+
+			if ( is_wp_error( $result ) ) {
+				++$errors;
+				continue;
+			}
+
+			++$restored;
+		}
+
+		return [
+			'success'  => true,
+			'message'  => 'success',
+			'restored' => $restored,
+			'errors'   => $errors,
+			'total'    => count( $media_ids ),
+		];
+	}
+
+	/**
 	 * Runs the next-gen generation
 	 *
 	 * @param array $contexts An array of contexts (WP/Custom folders).
@@ -568,7 +622,7 @@ final class Bulk {
 	public function bulk_get_stats_callback() {
 		imagify_check_nonce( 'imagify-bulk-optimize' );
 
-		$folder_types = filter_input( INPUT_GET, 'types', FILTER_REQUIRE_ARRAY );
+		$folder_types = filter_input( INPUT_GET, 'types', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 		$folder_types = is_array( $folder_types ) ? $folder_types : [];
 
 		if ( ! $folder_types ) {

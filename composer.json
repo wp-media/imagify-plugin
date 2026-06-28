@@ -22,6 +22,7 @@
 		"sort-packages": true,
 		"allow-plugins": {
 			"composer/installers": true,
+			"cweagans/composer-patches": true,
 			"dealerdirect/phpcodesniffer-composer-installer": true,
 			"mnsami/composer-custom-directory-installer": true,
 			"phpstan/extension-installer": true
@@ -32,15 +33,18 @@
 		"source": "https://github.com/wp-media/imagify-plugin"
 	},
 	"require": {
-		"php": ">=7.3",
+		"php": ">=7.4",
 		"composer/installers": "^1.0 || ^2.0",
+		"cweagans/composer-patches": "^1.7",
 		"deliciousbrains/wp-background-processing": "dev-master",
 		"league/container": "^4.2",
+		"woocommerce/action-scheduler": "^3.4",
+		"wordpress/mcp-adapter": "^0.5.0",
 		"wp-media/apply-filters-typed": "^1.0",
 		"wp-media/plugin-family": "^1.0"
 	},
 	"require-dev": {
-		"php": ">=7.3",
+		"php": ">=7.4",
 		"dealerdirect/phpcodesniffer-composer-installer": "^1",
 		"mnsami/composer-custom-directory-installer": "^2.0",
 		"php-stubs/wordpress-tests-stubs": "^6.5",
@@ -51,7 +55,6 @@
 		"phpunit/phpunit": "^8.5.52 || ^9.6.33",
 		"roave/security-advisories": "dev-master",
 		"szepeviktor/phpstan-wordpress": "^2.0",
-		"woocommerce/action-scheduler": "^3.4",
 		"wp-coding-standards/wpcs": "^3",
 		"wp-media/phpstan-wp": "^1.0",
 		"wp-media/phpunit": "3.0"
@@ -81,7 +84,13 @@
 	},
 	"extra": {
 		"installer-paths": {
-			"./inc/Dependencies/ActionScheduler/": ["woocommerce/action-scheduler"]
+			"./inc/Dependencies/ActionScheduler/": ["woocommerce/action-scheduler"],
+			"vendor/{$vendor}/{$name}/": ["wordpress/mcp-adapter"]
+		},
+		"patches": {
+			"wordpress/mcp-adapter": {
+				"Fix PHP 8.1+ deprecated static trait method call (upstream issue #182, fixed in upstream PR #193)": "patches/wordpress/mcp-adapter/fix-static-trait-call.patch"
+			}
 		},
 		"strauss": {
 			"namespace_prefix": "Imagify\\Dependencies\\",

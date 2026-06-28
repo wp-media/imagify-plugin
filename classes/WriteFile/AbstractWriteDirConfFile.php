@@ -98,6 +98,7 @@ abstract class AbstractWriteDirConfFile implements WriteFileInterface {
 			return true;
 		}
 
+		$file_path = $this->get_file_path();
 		$file_name = $this->filesystem->make_path_relative( $file_path );
 
 		if ( 'edition_disabled' === $result->get_error_code() ) {
@@ -304,6 +305,7 @@ abstract class AbstractWriteDirConfFile implements WriteFileInterface {
 		}
 
 		$file_path = $this->get_file_path();
+		$file_name = $this->filesystem->make_path_relative( $file_path );
 
 		if ( ! $this->filesystem->exists( $file_path ) ) {
 			// This should not happen.

@@ -9,4 +9,6 @@ return [
 	'Imagify\Webp\ServiceProvider',
 	'Imagify\ThirdParty\ServiceProvider',
 	'Imagify\Media\ServiceProvider',
+	'Imagify\Tools\ServiceProvider',
+	'Imagify\MCP\ServiceProvider',
 ];

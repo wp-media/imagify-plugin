@@ -12,22 +12,22 @@ set -euo pipefail
 
 wp() { npx --yes @wordpress/env run cli wp "$@"; }
 
-echo "  • Configuring Imagify options..."
+echo "  Configuring Imagify options..."
 wp option update imagify_settings '{"api_key":""}' --format=json >/dev/null 2>&1 || true
 
 if [[ -n "${IMAGIFY_TESTS_API_KEY:-}" ]]; then
-	echo "  • Setting API key from IMAGIFY_TESTS_API_KEY..."
+	echo "  Setting API key from IMAGIFY_TESTS_API_KEY..."
 	wp eval "
 		\$settings = get_option( 'imagify_settings', [] );
 		\$settings['api_key'] = '${IMAGIFY_TESTS_API_KEY}';
 		update_option( 'imagify_settings', \$settings );
 	" >/dev/null
 else
-	echo "  • IMAGIFY_TESTS_API_KEY not set — skipping API key configuration."
+	echo "  IMAGIFY_TESTS_API_KEY not set — skipping API key configuration."
 	echo "    Set IMAGIFY_TESTS_API_KEY to enable optimization tests."
 fi
 
-echo "  • Uploading a test image to the media library..."
+echo "  Uploading a test image to the media library..."
 # Download a small public-domain JPEG inside the container then import it.
 wp eval '
 	$url = "https://picsum.photos/seed/imagify-e2e/400/300";
@@ -46,6 +46,6 @@ wp eval '
 			WP_CLI::log( "Test image imported with ID " . $id );
 		}
 	}
-' 2>/dev/null || echo "  ⚠ Image import step skipped (network not reachable inside container)."
+' 2>/dev/null || echo "  Image import step skipped (network not reachable inside container)."
 
-echo "  ✓ Seed complete."
+echo "  Seed complete."

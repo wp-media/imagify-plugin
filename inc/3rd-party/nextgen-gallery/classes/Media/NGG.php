@@ -81,16 +81,22 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		// NGG storage.
 		if ( ! empty( $this->image->_ngiw ) ) {
 			$this->storage = $this->image->_ngiw->get_storage()->object;
-		} else {
+			// @codeCoverageIgnoreStart — requires live NGG v3 POPE classes or NGGFOLDER constant; not available in unit tests.
+		} elseif ( imagify_ngg_has_pope_storage() ) {
+			// C_Gallery_Storage is part of the NGG v3 POPE framework; absent on v4.
 			$this->storage = \C_Gallery_Storage::get_instance()->object;
 		}
+		// else: $this->storage remains null on NGG v4 (no _ngiw and no POPE framework).
 
-		// Load nggAdmin class.
-		$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
+		// Load nggAdmin class (NGGFOLDER may be undefined on NGG v4).
+		if ( defined( 'NGGFOLDER' ) && ! class_exists( 'nggAdmin' ) ) {
+			$ngg_admin_functions_path = WP_PLUGIN_DIR . '/' . NGGFOLDER . '/products/photocrati_nextgen/modules/ngglegacy/admin/functions.php';
 
-		if ( ! class_exists( 'nggAdmin' ) && $this->filesystem->exists( $ngg_admin_functions_path ) ) {
-			require_once $ngg_admin_functions_path;
+			if ( $this->filesystem->exists( $ngg_admin_functions_path ) ) {
+				require_once $ngg_admin_functions_path;
+			}
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -178,7 +184,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Get the URL of the media’s full size file.
+	 * Get the URL of the media's full size file.
 	 *
 	 * @since  1.9.8
 	 * @access public
@@ -199,7 +205,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 	}
 
 	/**
-	 * Get the path to the media’s full size file, even if the file doesn't exist.
+	 * Get the path to the media's full size file, even if the file doesn't exist.
 	 *
 	 * @since  1.9.8
 	 * @access public
@@ -277,6 +283,12 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
+		// @codeCoverageIgnoreStart — requires live NGG storage; not available in unit tests.
+		if ( null === $this->storage ) {
+			return new \WP_Error( 'no_ngg_storage', __( 'NextGen Gallery storage is not available.', 'imagify' ) );
+		}
+		// @codeCoverageIgnoreEnd
+
 		$image_data = $this->storage->_image_mapper->find( $this->get_id() );
 
 		if ( ! $image_data ) {
@@ -337,9 +349,13 @@ class NGG extends \Imagify\Media\AbstractMedia {
 			$image_data->meta_data[ $size_name ] = $size_meta;
 		}
 
-		// Keep our property up to date.
-		$this->image->_ngiw->_cache['meta_data'] = $image_data->meta_data;
-		$this->image->_ngiw->_orig_image         = $image_data;
+		// Keep our property up to date (defensively guard _ngiw in case it is absent).
+		// @codeCoverageIgnoreStart — requires live NGG _ngiw storage object; not available in unit tests.
+		if ( isset( $this->image->_ngiw ) ) {
+			$this->image->_ngiw->_cache['meta_data'] = $image_data->meta_data;
+			$this->image->_ngiw->_orig_image         = $image_data;
+		}
+		// @codeCoverageIgnoreEnd
 
 		$post_id = $this->storage->_image_mapper->save( $image_data );
 
@@ -401,7 +417,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 	 *     @type int    $width     The file width.
 	 *     @type int    $height    The file height.
 	 *     @type string $mime-type The file mime type.
-	 *     @type bool   $disabled  True if the size is disabled in the plugin’s settings.
+	 *     @type bool   $disabled  True if the size is disabled in the plugin's settings.
 	 * }
 	 */
 	public function get_media_files() {
@@ -433,7 +449,7 @@ class NGG extends \Imagify\Media\AbstractMedia {
 
 		// Remove common values (that have no value for us here, lol). Also remove 'full' and 'backup'.
 		$image_data = array_diff_key(
-			$this->image->meta_data,
+			is_array( $this->image->meta_data ) ? $this->image->meta_data : [],
 			[
 				'full'              => 1,
 				'backup'            => 1,
@@ -459,6 +475,12 @@ class NGG extends \Imagify\Media\AbstractMedia {
 		if ( ! $image_data ) {
 			return $this->filter_media_files( $all_sizes );
 		}
+
+		// @codeCoverageIgnoreStart — requires live NGG storage; not available in unit tests.
+		if ( null === $this->storage ) {
+			return $this->filter_media_files( $all_sizes );
+		}
+		// @codeCoverageIgnoreEnd
 
 		$ngg_data = $this->storage->_image_mapper->find( $this->get_id() );
 
