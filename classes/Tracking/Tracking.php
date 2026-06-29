@@ -13,6 +13,51 @@ use Imagify\Optimization\Process\ProcessInterface;
 class Tracking extends BaseTracking {
 
 	/**
+	 * Track a "Media Restored" event in Mixpanel.
+	 *
+	 * Fires on `imagify_after_restore_media`. Guards on opt-in and on a
+	 * successful restore — no event is emitted when `$response` is a WP_Error.
+	 *
+	 * NOTE: `$files` is intentionally unused; it is kept in the signature to
+	 * match the four-argument hook and allow WordPress to pass it cleanly.
+	 *
+	 * @param ProcessInterface $process  The optimization process instance.
+	 * @param bool|\WP_Error   $response True on success, WP_Error on failure.
+	 * @param array            $files    The list of files before restoring (unused).
+	 * @param array            $data     The optimization data captured before deletion.
+	 *
+	 * @return void
+	 */
+	public function track_media_restored( ProcessInterface $process, $response, array $files, array $data ): void {
+		if ( ! $this->can_track() ) {
+			return;
+		}
+
+		if ( is_wp_error( $response ) ) {
+			return;
+		}
+
+		$media         = $process->get_media();
+		$media_context = $media ? $media->get_context() : '';
+
+		$raw_level          = $data['level'] ?? null;
+		$optimization_level = is_int( $raw_level ) ? $raw_level : null;
+
+		$next_gen_format = $this->resolve_next_gen_format_from_data( $data );
+
+		$event_data = array_merge(
+			$this->get_default_event_properties(),
+			[
+				'media_context'      => $media_context,
+				'optimization_level' => $optimization_level,
+				'next_gen_format'    => $next_gen_format,
+			]
+		);
+
+		$this->mixpanel->track_direct( 'Media Restored', $event_data );
+	}
+
+	/**
 	 * Track a "Media Optimized" event in Mixpanel.
 	 *
 	 * @param ProcessInterface $process The optimization process instance.
@@ -91,6 +136,33 @@ class Tracking extends BaseTracking {
 		$webp_data = $data->get_size_data( $webp_size );
 
 		if ( ! empty( $webp_data['success'] ) ) {
+			return 'webp';
+		}
+
+		return null;
+	}
+
+	/**
+	 * Resolve the next-gen format from the raw optimization data array.
+	 *
+	 * Used by `track_media_restored()` because `DataInterface::get_optimization_data()`
+	 * is deleted before the `imagify_after_restore_media` hook fires; the raw
+	 * array captured beforehand is passed as the `$data` hook argument instead.
+	 *
+	 * @param array $data The optimization data returned by DataInterface::get_optimization_data().
+	 *
+	 * @return string|null 'avif', 'webp', or null.
+	 */
+	private function resolve_next_gen_format_from_data( array $data ): ?string {
+		$sizes = $data['sizes'] ?? [];
+
+		$avif_size = 'full' . ProcessInterface::AVIF_SUFFIX;
+		if ( ! empty( $sizes[ $avif_size ]['success'] ) ) {
+			return 'avif';
+		}
+
+		$webp_size = 'full' . ProcessInterface::WEBP_SUFFIX;
+		if ( ! empty( $sizes[ $webp_size ]['success'] ) ) {
 			return 'webp';
 		}
 

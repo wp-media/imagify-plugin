@@ -52,4 +52,40 @@ class Test_GetSubscribedEvents extends TestCase {
 		$subscriber = new Subscriber( $tracking );
 		$subscriber->track_media_optimized( $process, $item );
 	}
+
+	/**
+	 * Tests that get_subscribed_events() maps imagify_after_restore_media correctly.
+	 */
+	public function testMapsImagifyAfterRestoreMediaHook(): void {
+		$events = Subscriber::get_subscribed_events();
+
+		$this->assertArrayHasKey( 'imagify_after_restore_media', $events );
+	}
+
+	/**
+	 * Tests that the restore hook maps to track_media_restored with priority 10 and 4 args.
+	 */
+	public function testRestoreHookConfigurationIsCorrect(): void {
+		$events  = Subscriber::get_subscribed_events();
+		$mapping = $events['imagify_after_restore_media'];
+
+		$this->assertSame( [ 'track_media_restored', 10, 4 ], $mapping );
+	}
+
+	/**
+	 * Tests that track_media_restored delegates to the Tracking service.
+	 */
+	public function testTrackMediaRestoredDelegatesToTracking(): void {
+		$tracking = Mockery::mock( Tracking::class );
+		$process  = Mockery::mock( ProcessInterface::class );
+		$files    = [];
+		$data     = [ 'level' => 1, 'sizes' => [] ];
+
+		$tracking->shouldReceive( 'track_media_restored' )
+			->once()
+			->with( $process, true, $files, $data );
+
+		$subscriber = new Subscriber( $tracking );
+		$subscriber->track_media_restored( $process, true, $files, $data );
+	}
 }
