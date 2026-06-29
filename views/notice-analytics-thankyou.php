@@ -27,4 +27,5 @@ defined( 'ABSPATH' ) || exit;
 			<tr><td><?php esc_html_e( 'License type', 'imagify' ); ?></td><td><?php echo esc_html( $license_type ); ?></td></tr>
 		</tbody>
 	</table>
+	<p><em><?php esc_html_e( 'We never collect your images, their content, or any personal data — only anonymous performance metrics.', 'imagify' ); ?></em></p>
 </div>

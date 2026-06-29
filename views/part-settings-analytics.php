@@ -69,7 +69,7 @@ defined( 'ABSPATH' ) || exit;
 			</tbody>
 		</table>
 		<p>
-			<em><?php esc_html_e( 'Imagify will never transmit any email addresses, IP addresses, or API keys.', 'imagify' ); ?></em>
+			<em><?php esc_html_e( 'We never collect your images, their content, or any personal data — only anonymous performance metrics.', 'imagify' ); ?></em>
 		</p>
 		<?php if ( ! $is_enabled ) : ?>
 		<p>

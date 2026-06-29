@@ -1783,22 +1783,31 @@ ul.imagify-datas-details.imagify-datas-details {
 	border-collapse: collapse;
 	margin: 12px 0;
 	border-left: 3px solid #40B1D0;
+	background-color: #F0FAFD;
+	border-radius: 4px;
+	overflow: hidden;
 }
 
 .imagify-analytics-data-table td {
 	padding: 8px 12px;
 	font-size: 13px;
-	border-bottom: 1px solid #eee;
+	border-bottom: 1px solid #D8EFF6;
 	vertical-align: top;
+	color: #2E3243;
 }
 
 .imagify-analytics-data-table td:first-child {
 	font-weight: 600;
 	width: 40%;
-	color: #2E3243;
 }
 
 .imagify-analytics-data-table tr:last-child td {
 	border-bottom: 0;
+}
+
+/* Thank-you notice text colour override */
+.imagify-analytics-thankyou-notice,
+.imagify-analytics-thankyou-notice p {
+	color: #1d2327;
 }
 
