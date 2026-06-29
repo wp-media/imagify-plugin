@@ -1802,31 +1802,3 @@ ul.imagify-datas-details.imagify-datas-details {
 	border-bottom: 0;
 }
 
-.imagify-analytics-modal-footer {
-	font-size: 12px;
-	color: #666;
-	margin: 12px 0 0;
-}
-
-.imagify-analytics-modal-cta {
-	margin-top: 16px;
-}
-
-/* Thank-you notice */
-.imagify-analytics-thankyou-notice {
-	position: relative;
-	padding: 12px 40px 12px 16px;
-	background: #fff;
-	border-left: 4px solid #40B1D0;
-}
-
-.imagify-analytics-thankyou-notice h3 {
-	margin: 0 0 8px;
-	font-size: 14px;
-	font-weight: 600;
-}
-
-.imagify-analytics-thankyou-notice p {
-	margin: 0 0 4px;
-	font-size: 13px;
-}

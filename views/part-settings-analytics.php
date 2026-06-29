@@ -39,11 +39,12 @@ defined( 'ABSPATH' ) || exit;
 
 <!-- "What info will we collect?" modal -->
 <div id="imagify-analytics-info-modal" class="imagify-modal" aria-hidden="true" role="dialog">
-	<div class="imagify-modal-inner">
-		<button class="close-btn" aria-label="<?php esc_attr_e( 'Close', 'imagify' ); ?>">
-			<span class="dashicons dashicons-no-alt"></span>
+	<div class="imagify-modal-content">
+		<button type="button" class="close-btn">
+			<i class="dashicons dashicons-no-alt" aria-hidden="true"></i>
+			<span class="screen-reader-text"><?php esc_attr_e( 'Close', 'imagify' ); ?></span>
 		</button>
-		<h2><?php esc_html_e( 'Imagify Analytics', 'imagify' ); ?></h2>
+		<p class="h2"><?php esc_html_e( 'Imagify Analytics', 'imagify' ); ?></p>
 		<p>
 			<?php
 			printf(
@@ -67,26 +68,27 @@ defined( 'ABSPATH' ) || exit;
 				<tr><td><?php esc_html_e( 'License type', 'imagify' ); ?></td><td><?php echo esc_html( $license_type ); ?></td></tr>
 			</tbody>
 		</table>
-		<p class="imagify-analytics-modal-footer">
-			<?php esc_html_e( 'Imagify will never transmit any email addresses, IP addresses, or API keys.', 'imagify' ); ?>
+		<p>
+			<em><?php esc_html_e( 'Imagify will never transmit any email addresses, IP addresses, or API keys.', 'imagify' ); ?></em>
 		</p>
 		<?php if ( ! $is_enabled ) : ?>
-		<div class="imagify-analytics-modal-cta">
+		<p>
 			<button type="button" id="imagify-analytics-enable-from-modal" class="button button-primary">
 				<?php esc_html_e( 'Activate Imagify Analytics', 'imagify' ); ?>
 			</button>
-		</div>
+		</p>
 		<?php endif; ?>
 	</div>
 </div>
 
-<!-- "Thank you" modal — shown via JS immediately after enabling -->
+<!-- "Thank you" modal — opened via JS immediately after enabling -->
 <div id="imagify-analytics-thankyou-modal" class="imagify-modal" aria-hidden="true" role="dialog">
-	<div class="imagify-modal-inner">
-		<button class="close-btn" aria-label="<?php esc_attr_e( 'Close', 'imagify' ); ?>">
-			<span class="dashicons dashicons-no-alt"></span>
+	<div class="imagify-modal-content">
+		<button type="button" class="close-btn">
+			<i class="dashicons dashicons-no-alt" aria-hidden="true"></i>
+			<span class="screen-reader-text"><?php esc_attr_e( 'Close', 'imagify' ); ?></span>
 		</button>
-		<h2><?php esc_html_e( 'Thank you!', 'imagify' ); ?></h2>
+		<p class="h2"><?php esc_html_e( 'Thank you!', 'imagify' ); ?></p>
 		<p><?php esc_html_e( 'Imagify now collects these metrics from your website:', 'imagify' ); ?></p>
 		<table class="imagify-analytics-data-table">
 			<tbody>
