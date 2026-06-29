@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\OptimizeMedia;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\OptimizeMedia;
 use Imagify\Tests\Unit\TestCase;
@@ -31,6 +32,9 @@ class Test_CheckPermissions extends TestCase {
 			}
 		};
 		Functions\when( 'imagify_get_context' )->justReturn( $context );
+		Actions\expectDone( 'imagify_mcp_permission_denied' )
+			->once()
+			->with( OptimizeMedia::ABILITY_ID, OptimizeMedia::ABILITY_NAME, 'manage' );
 
 		$this->assertFalse( ( new OptimizeMedia() )->check_permissions() );
 	}

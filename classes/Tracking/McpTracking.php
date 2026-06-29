@@ -64,9 +64,9 @@ class McpTracking extends BaseTracking {
 				'initiated_via'      => 'mcp',
 				'optimization_level' => $optimization_level,
 				'media_type'         => $media_id > 0 ? (string) get_post_mime_type( $media_id ) : '',
-				'original_size'      => (int) ( $result['original_size'] ?? 0 ),
-				'optimized_size'     => (int) ( $result['optimized_size'] ?? 0 ),
-				'savings_percent'    => (float) ( $result['savings_percent'] ?? 0.0 ),
+				'original_size'      => null !== $result['original_size'] ? (int) $result['original_size'] : null,
+				'optimized_size'     => null !== $result['optimized_size'] ? (int) $result['optimized_size'] : null,
+				'savings_percent'    => null !== $result['savings_percent'] ? (float) $result['savings_percent'] : null,
 				'next_gen_format'    => $this->resolve_next_gen_format(),
 				'execution_time_ms'  => $execution_time_ms,
 			]

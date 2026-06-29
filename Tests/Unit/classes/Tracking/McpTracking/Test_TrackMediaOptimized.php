@@ -80,7 +80,8 @@ class Test_TrackMediaOptimized extends TestCase {
 						&& 1 === $props['optimization_level']
 						&& 1000 === $props['original_size']
 						&& 800 === $props['optimized_size']
-						&& 20.0 === $props['savings_percent'];
+						&& 20.0 === $props['savings_percent']
+						&& isset( $props['execution_time_ms'] );
 				}
 			);
 
