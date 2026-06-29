@@ -22,7 +22,7 @@ class Test_TrackMediaOptimized extends TestCase {
 	 * Tests that nothing is tracked when opt-in is disabled.
 	 */
 	public function testDoesNothingWhenOptinDisabled(): void {
-		$optin    = Mockery::mock( Optin::class );
+		$optin = Mockery::mock( Optin::class );
 		$optin->shouldReceive( 'can_track' )->andReturn( false );
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
 		$mixpanel->shouldNotReceive( 'track_direct' );
@@ -35,7 +35,7 @@ class Test_TrackMediaOptimized extends TestCase {
 	 * Tests that nothing is tracked for unknown ability IDs.
 	 */
 	public function testDoesNothingForUnknownAbilityId(): void {
-		$optin    = Mockery::mock( Optin::class );
+		$optin = Mockery::mock( Optin::class );
 		$optin->shouldReceive( 'can_track' )->andReturn( true );
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
 		$mixpanel->shouldNotReceive( 'track_direct' );
@@ -48,7 +48,7 @@ class Test_TrackMediaOptimized extends TestCase {
 	 * Tests that nothing is tracked on error results.
 	 */
 	public function testDoesNothingOnErrorResult(): void {
-		$optin    = Mockery::mock( Optin::class );
+		$optin = Mockery::mock( Optin::class );
 		$optin->shouldReceive( 'can_track' )->andReturn( true );
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
 		$mixpanel->shouldNotReceive( 'track_direct' );
@@ -56,7 +56,10 @@ class Test_TrackMediaOptimized extends TestCase {
 		$tracking = new McpTracking( $optin, $mixpanel );
 		$tracking->track_media_optimized(
 			'imagify/optimize-media',
-			[ 'status' => 'error', 'error_message' => 'Something failed.' ],
+			[
+				'status'        => 'error',
+				'error_message' => 'Something failed.',
+			],
 			microtime( true ),
 			[ 'media_id' => 1 ]
 		);
@@ -102,7 +105,10 @@ class Test_TrackMediaOptimized extends TestCase {
 				'error_message'   => null,
 			],
 			microtime( true ),
-			[ 'media_id' => 42, 'optimization_level' => 1 ]
+			[
+				'media_id'           => 42,
+				'optimization_level' => 1,
+			]
 		);
 	}
 
@@ -131,9 +137,101 @@ class Test_TrackMediaOptimized extends TestCase {
 		$tracking = new McpTracking( $optin, $mixpanel );
 		$tracking->track_media_optimized(
 			'imagify/optimize-media',
-			[ 'status' => 'success', 'original_size' => 500, 'optimized_size' => 400, 'savings_percent' => 20.0, 'error_message' => null ],
+			[
+				'status'          => 'success',
+				'original_size'   => 500,
+				'optimized_size'  => 400,
+				'savings_percent' => 20.0,
+				'error_message'   => null,
+			],
 			microtime( true ),
-			[ 'media_id' => 5 ] // no optimization_level
+			[ 'media_id' => 5 ] // no optimization_level.
+		);
+	}
+
+	/**
+	 * Tests that next_gen_format is 'webp' when only WebP conversion is enabled.
+	 */
+	public function testResolvesWebpFormatWhenOnlyWebpEnabled(): void {
+		$optin = Mockery::mock( Optin::class );
+		$optin->shouldReceive( 'can_track' )->andReturn( true );
+
+		$mixpanel = Mockery::mock( TrackingPlugin::class );
+		$mixpanel->shouldReceive( 'track_direct' )
+			->once()
+			->withArgs(
+				static function ( string $event, array $props ): bool {
+					return 'webp' === $props['next_gen_format'];
+				}
+			);
+
+		Functions\when( 'get_imagify_user' )->justReturn( new \WP_Error() );
+		Functions\when( 'is_wp_error' )->justReturn( true );
+		Functions\when( 'get_current_user_id' )->justReturn( 1 );
+		Functions\when( 'get_post_mime_type' )->justReturn( 'image/jpeg' );
+		Functions\when( 'get_imagify_option' )->alias(
+			static function ( string $key ) {
+				return 'convert_to_webp' === $key ? true : false;
+			}
+		);
+
+		$tracking = new McpTracking( $optin, $mixpanel );
+		$tracking->track_media_optimized(
+			'imagify/optimize-media',
+			[
+				'status'          => 'success',
+				'original_size'   => 800,
+				'optimized_size'  => 600,
+				'savings_percent' => 25.0,
+				'error_message'   => null,
+			],
+			microtime( true ),
+			[
+				'media_id'           => 10,
+				'optimization_level' => 1,
+			]
+		);
+	}
+
+	/**
+	 * Tests that null size values are preserved as null in event properties.
+	 */
+	public function testPreservesNullSizeValues(): void {
+		$optin = Mockery::mock( Optin::class );
+		$optin->shouldReceive( 'can_track' )->andReturn( true );
+
+		$mixpanel = Mockery::mock( TrackingPlugin::class );
+		$mixpanel->shouldReceive( 'track_direct' )
+			->once()
+			->withArgs(
+				static function ( string $event, array $props ): bool {
+					return null === $props['original_size']
+						&& null === $props['optimized_size']
+						&& null === $props['savings_percent'];
+				}
+			);
+
+		Functions\when( 'get_imagify_user' )->justReturn( new \WP_Error() );
+		Functions\when( 'is_wp_error' )->justReturn( true );
+		Functions\when( 'get_current_user_id' )->justReturn( 1 );
+		Functions\when( 'get_post_mime_type' )->justReturn( 'image/jpeg' );
+		Functions\when( 'get_imagify_option' )->justReturn( false );
+
+		$tracking = new McpTracking( $optin, $mixpanel );
+		$tracking->track_media_optimized(
+			'imagify/optimize-media',
+			[
+				'status'          => 'success',
+				'original_size'   => null,
+				'optimized_size'  => null,
+				'savings_percent' => null,
+				'error_message'   => null,
+			],
+			microtime( true ),
+			[
+				'media_id'           => 0,
+				'optimization_level' => 1,
+			]
 		);
 	}
 }
