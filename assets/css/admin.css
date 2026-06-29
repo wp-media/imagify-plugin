@@ -1690,3 +1690,124 @@ ul.imagify-datas-details.imagify-datas-details {
 .imagify-upsell.imagify-col-content .imagify-space-left p {
 	font-size: 14px;
 }
+
+/* Analytics opt-in ============================================================================= */
+.imagify-analytics-section {
+	padding: 20px 24px;
+	background: #f6f7f7;
+	border-radius: 4px;
+}
+
+.imagify-analytics-optin {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.imagify-analytics-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 600;
+	color: #2E3243;
+}
+
+/* Hide native checkbox */
+.imagify-analytics-checkbox {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+/* Toggle switch track */
+.imagify-analytics-toggle-ui {
+	position: relative;
+	display: inline-block;
+	width: 48px;
+	height: 26px;
+	background: #ccc;
+	border-radius: 13px;
+	transition: background .2s ease;
+	flex-shrink: 0;
+}
+
+/* Toggle switch thumb */
+.imagify-analytics-toggle-ui::after {
+	content: '';
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	width: 20px;
+	height: 20px;
+	background: #fff;
+	border-radius: 50%;
+	box-shadow: 0 1px 3px rgba(0,0,0,.3);
+	transition: transform .2s ease;
+}
+
+.imagify-analytics-checkbox:checked ~ .imagify-analytics-toggle-ui,
+.imagify-analytics-label .imagify-analytics-checkbox:checked + .imagify-analytics-toggle-ui {
+	background: #40B1D0;
+}
+
+.imagify-analytics-checkbox:checked + .imagify-analytics-toggle-ui::after {
+	transform: translateX(22px);
+}
+
+.imagify-analytics-description {
+	margin: 0;
+	color: #666;
+	font-size: 13px;
+}
+
+.imagify-btn-link {
+	background: none;
+	border: none;
+	padding: 0;
+	color: #40B1D0;
+	text-decoration: underline;
+	cursor: pointer;
+	font-size: inherit;
+}
+
+.imagify-btn-link:hover {
+	color: #338ea6;
+}
+
+/* Analytics data table (modal + thank-you notice) */
+.imagify-analytics-data-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 12px 0;
+	border-left: 3px solid #40B1D0;
+	background-color: #F0FAFD;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.imagify-analytics-data-table td {
+	padding: 8px 12px;
+	font-size: 13px;
+	border-bottom: 1px solid #D8EFF6;
+	vertical-align: top;
+	color: #2E3243;
+}
+
+.imagify-analytics-data-table td:first-child {
+	font-weight: 600;
+	width: 40%;
+}
+
+.imagify-analytics-data-table tr:last-child td {
+	border-bottom: 0;
+}
+
+/* Thank-you notice text colour override */
+.imagify-analytics-thankyou-notice,
+.imagify-analytics-thankyou-notice p {
+	color: #1d2327;
+}
+

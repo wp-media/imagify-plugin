@@ -16,6 +16,10 @@ use Imagify\Dependencies\WPMedia\Mixpanel\TrackingPlugin;
  */
 class ServiceProvider extends AbstractServiceProvider {
 
+	const MIXPANEL_TOKEN = '517e881edc2636e99a2ecf013d8134d3';
+	const APPLICATION    = 'imagify';
+	const BRAND          = 'wp media';
+
 	/**
 	 * Services provided by this provider.
 	 *
@@ -28,6 +32,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		Subscriber::class,
 		McpTracking::class,
 		McpTrackingSubscriber::class,
+		Notices::class,
 	];
 
 	/**
@@ -38,6 +43,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	public $subscribers = [
 		Subscriber::class,
 		McpTrackingSubscriber::class,
+		Notices::class,
 	];
 
 	/**
@@ -58,10 +64,10 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public function register(): void {
 		$this->getContainer()->addShared( Optin::class )
-			->addArguments( [ 'imagify', 'manage_options' ] );
+			->addArguments( [ self::APPLICATION, 'manage_options' ] );
 
 		$this->getContainer()->addShared( TrackingPlugin::class )
-			->addArguments( [ '517e881edc2636e99a2ecf013d8134d3', 'imagify ' . IMAGIFY_VERSION, 'wp media', 'imagify' ] );
+			->addArguments( [ self::MIXPANEL_TOKEN, self::APPLICATION . ' ' . IMAGIFY_VERSION, self::BRAND, self::APPLICATION ] );
 
 		$this->getContainer()->addShared( Tracking::class )
 			->addArguments( [ Optin::class, TrackingPlugin::class ] );
@@ -74,6 +80,9 @@ class ServiceProvider extends AbstractServiceProvider {
 
 		$this->getContainer()->addShared( McpTrackingSubscriber::class )
 			->addArgument( McpTracking::class );
+
+		$this->getContainer()->addShared( Notices::class )
+			->addArgument( Optin::class );
 	}
 
 	/**
