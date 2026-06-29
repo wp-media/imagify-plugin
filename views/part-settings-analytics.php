@@ -1,33 +1,29 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 ?>
-<div class="imagify-settings-main-content">
-	<div class="imagify-settings-section imagify-analytics-section">
-		<div class="imagify-analytics-optin">
-			<label class="imagify-analytics-label" for="imagify-analytics-enabled">
-				<input
-					type="checkbox"
-					id="imagify-analytics-enabled"
-					class="imagify-analytics-checkbox"
-					value="1"
-					<?php checked( $is_enabled, true ); ?>
-					data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_tracking_optin' ) ); ?>"
-				>
-				<span class="imagify-analytics-toggle-ui" aria-hidden="true"></span>
-				<?php esc_html_e( 'Imagify Analytics', 'imagify' ); ?>
-			</label>
-			<p class="imagify-analytics-description">
-				<?php
-				printf(
-					/* translators: %1$s = opening <button> tag, %2$s = closing </button> tag */
-					esc_html__( 'I agree to share anonymous data with the development team to help improve Imagify. %1$sWhat info will we collect?%2$s', 'imagify' ),
-					'<button type="button" class="imagify-btn-link imagify-modal-trigger" href="#imagify-analytics-modal">',
-					'</button>'
-				);
-				?>
-			</p>
-		</div>
-	</div>
+<div class="imagify-analytics-optin imagify-setting-line">
+	<label class="imagify-analytics-label" for="imagify-analytics-enabled">
+		<input
+			type="checkbox"
+			id="imagify-analytics-enabled"
+			class="imagify-analytics-checkbox"
+			value="1"
+			<?php checked( $is_enabled, true ); ?>
+			data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_tracking_optin' ) ); ?>"
+		>
+		<span class="imagify-analytics-toggle-ui" aria-hidden="true"></span>
+		<?php esc_html_e( 'Imagify Analytics', 'imagify' ); ?>
+	</label>
+	<p class="imagify-analytics-description">
+		<?php
+		printf(
+			/* translators: %1$s = opening <button> tag, %2$s = closing </button> tag */
+			esc_html__( 'I agree to share anonymous data with the development team to help improve Imagify. %1$sWhat info will we collect?%2$s', 'imagify' ),
+			'<button type="button" class="imagify-btn-link imagify-modal-trigger" href="#imagify-analytics-modal">',
+			'</button>'
+		);
+		?>
+	</p>
 </div>
 
 <div id="imagify-analytics-modal" class="imagify-modal" aria-hidden="true" role="dialog">

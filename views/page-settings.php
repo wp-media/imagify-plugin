@@ -85,6 +85,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 							);
 							?>
 							</p>
+						<?php do_action( 'imagify_settings_after_lossless' ); ?>
 						</div>
 					</div>
 
@@ -194,7 +195,6 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 					?>
 				</div>
 			</form>
-			<?php do_action( 'imagify_settings_after_tools' ); ?>
 		</div>
 	</div>
 

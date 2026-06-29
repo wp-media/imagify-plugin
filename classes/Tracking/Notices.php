@@ -38,8 +38,8 @@ class Notices implements SubscriberInterface {
 	 */
 	public static function get_subscribed_events(): array {
 		return [
-			// @action imagify_settings_after_tools
-			'imagify_settings_after_tools'          => 'render_optin_section',
+			// @action imagify_settings_after_lossless
+			'imagify_settings_after_lossless'       => 'render_optin_section',
 			// @action wp_ajax_imagify_toggle_tracking_optin
 			'wp_ajax_imagify_toggle_tracking_optin' => 'ajax_toggle_optin',
 			// @action admin_notices
