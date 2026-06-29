@@ -47,12 +47,15 @@ class Test_TrackSettingsSaved extends TestCase {
 	 */
 	private function valid_new_value(): array {
 		return [
-			'optimization_level' => 1,
-			'auto_optimize'      => 1,
-			'resize_larger'      => 1,
-			'convert_to_webp'    => 1,
-			'convert_to_avif'    => 0,
-			'backup'             => 1,
+			'auto_optimize'          => 1,
+			'backup'                 => 1,
+			'lossless'               => 1,
+			'optimization_format'    => 'avif',
+			'display_nextgen'        => 1,
+			'display_nextgen_method' => 'picture',
+			'cdn_url'                => '',
+			'resize_larger'          => 1,
+			'resize_larger_w'        => 2560,
 		];
 	}
 
@@ -90,7 +93,7 @@ class Test_TrackSettingsSaved extends TestCase {
 								return false;
 							}
 						}
-						return isset( $props['context'], $props['optimization_level'] );
+						return isset( $props['context'], $props['optimization_format'] );
 					}
 				)
 			);
@@ -107,12 +110,15 @@ class Test_TrackSettingsSaved extends TestCase {
 		$mixpanel = $mocks['mixpanel'];
 
 		$new_value = [
-			'optimization_level' => '2',
-			'auto_optimize'      => '1',
-			'resize_larger'      => '1',
-			'convert_to_webp'    => '1',
-			'convert_to_avif'    => '1',
-			'backup'             => '1',
+			'auto_optimize'          => '1',
+			'backup'                 => '1',
+			'lossless'               => '1',
+			'optimization_format'    => 'webp',
+			'display_nextgen'        => '1',
+			'display_nextgen_method' => 'picture',
+			'cdn_url'                => 'https://cdn.example.com',
+			'resize_larger'          => '1',
+			'resize_larger_w'        => '1920',
 		];
 
 		$mixpanel->shouldReceive( 'track_direct' )
@@ -121,12 +127,15 @@ class Test_TrackSettingsSaved extends TestCase {
 				'Settings Saved',
 				Mockery::on(
 					function ( array $props ) {
-						return 2 === $props['optimization_level']
+						return 'webp' === $props['optimization_format']
+							&& true === $props['lossless']
 							&& true === $props['auto_optimize_on_upload']
+							&& true === $props['backup_original']
 							&& true === $props['resize_larger_images']
-							&& true === $props['next_gen_images_webp']
-							&& true === $props['next_gen_images_avif']
-							&& true === $props['backup_original'];
+							&& 1920 === $props['resize_larger_width']
+							&& true === $props['display_nextgen']
+							&& 'picture' === $props['display_nextgen_method']
+							&& true === $props['cdn_enabled'];
 					}
 				)
 			);
@@ -135,33 +144,9 @@ class Test_TrackSettingsSaved extends TestCase {
 	}
 
 	/**
-	 * Tests that optimization_level is cast to int.
+	 * Tests that optimization_format is null when missing.
 	 */
-	public function testOptimizationLevelCastToInt(): void {
-		$mocks    = $this->create_tracking();
-		$tracking = $mocks['tracking'];
-		$mixpanel = $mocks['mixpanel'];
-
-		$new_value = [ 'optimization_level' => '0' ];
-
-		$mixpanel->shouldReceive( 'track_direct' )
-			->once()
-			->with(
-				'Settings Saved',
-				Mockery::on(
-					function ( array $props ) {
-						return 0 === $props['optimization_level'] && is_int( $props['optimization_level'] );
-					}
-				)
-			);
-
-		$tracking->track_settings_saved( [], $new_value );
-	}
-
-	/**
-	 * Tests that missing optimization_level results in null.
-	 */
-	public function testOptimizationLevelNullWhenMissing(): void {
+	public function testOptimizationFormatNullWhenMissing(): void {
 		$mocks    = $this->create_tracking();
 		$tracking = $mocks['tracking'];
 		$mixpanel = $mocks['mixpanel'];
@@ -172,12 +157,56 @@ class Test_TrackSettingsSaved extends TestCase {
 				'Settings Saved',
 				Mockery::on(
 					function ( array $props ) {
-						return null === $props['optimization_level'];
+						return null === $props['optimization_format'];
 					}
 				)
 			);
 
 		$tracking->track_settings_saved( [], [] );
+	}
+
+	/**
+	 * Tests that resize_larger_width is cast to int.
+	 */
+	public function testResizeLargerWidthCastToInt(): void {
+		$mocks    = $this->create_tracking();
+		$tracking = $mocks['tracking'];
+		$mixpanel = $mocks['mixpanel'];
+
+		$mixpanel->shouldReceive( 'track_direct' )
+			->once()
+			->with(
+				'Settings Saved',
+				Mockery::on(
+					function ( array $props ) {
+						return 2560 === $props['resize_larger_width'] && is_int( $props['resize_larger_width'] );
+					}
+				)
+			);
+
+		$tracking->track_settings_saved( [], [ 'resize_larger_w' => '2560' ] );
+	}
+
+	/**
+	 * Tests that cdn_enabled is false when cdn_url is empty.
+	 */
+	public function testCdnEnabledFalseWhenCdnUrlEmpty(): void {
+		$mocks    = $this->create_tracking();
+		$tracking = $mocks['tracking'];
+		$mixpanel = $mocks['mixpanel'];
+
+		$mixpanel->shouldReceive( 'track_direct' )
+			->once()
+			->with(
+				'Settings Saved',
+				Mockery::on(
+					function ( array $props ) {
+						return false === $props['cdn_enabled'];
+					}
+				)
+			);
+
+		$tracking->track_settings_saved( [], [ 'cdn_url' => '' ] );
 	}
 
 	/**
@@ -190,10 +219,10 @@ class Test_TrackSettingsSaved extends TestCase {
 
 		$new_value = [
 			'auto_optimize'   => '0',
-			'resize_larger'   => '0',
-			'convert_to_webp' => '0',
-			'convert_to_avif' => '0',
 			'backup'          => '0',
+			'lossless'        => '0',
+			'display_nextgen' => '0',
+			'resize_larger'   => '0',
 		];
 
 		$mixpanel->shouldReceive( 'track_direct' )
@@ -203,10 +232,10 @@ class Test_TrackSettingsSaved extends TestCase {
 				Mockery::on(
 					function ( array $props ) {
 						return false === $props['auto_optimize_on_upload']
-							&& false === $props['resize_larger_images']
-							&& false === $props['next_gen_images_webp']
-							&& false === $props['next_gen_images_avif']
-							&& false === $props['backup_original'];
+							&& false === $props['backup_original']
+							&& false === $props['lossless']
+							&& false === $props['display_nextgen']
+							&& false === $props['resize_larger_images'];
 					}
 				)
 			);
@@ -224,10 +253,10 @@ class Test_TrackSettingsSaved extends TestCase {
 
 		$new_value = [
 			'auto_optimize'   => '1',
-			'resize_larger'   => '1',
-			'convert_to_webp' => '1',
-			'convert_to_avif' => '1',
 			'backup'          => '1',
+			'lossless'        => '1',
+			'display_nextgen' => '1',
+			'resize_larger'   => '1',
 		];
 
 		$mixpanel->shouldReceive( 'track_direct' )
@@ -237,10 +266,10 @@ class Test_TrackSettingsSaved extends TestCase {
 				Mockery::on(
 					function ( array $props ) {
 						return true === $props['auto_optimize_on_upload']
-							&& true === $props['resize_larger_images']
-							&& true === $props['next_gen_images_webp']
-							&& true === $props['next_gen_images_avif']
-							&& true === $props['backup_original'];
+							&& true === $props['backup_original']
+							&& true === $props['lossless']
+							&& true === $props['display_nextgen']
+							&& true === $props['resize_larger_images'];
 					}
 				)
 			);
@@ -285,8 +314,11 @@ class Test_TrackSettingsSaved extends TestCase {
 		$tracking = $mocks['tracking'];
 		$mixpanel = $mocks['mixpanel'];
 
-		$new_value  = $this->valid_new_value();
-		$garbage_old = [ 'completely' => 'irrelevant', 'data' => 12345 ];
+		$new_value   = $this->valid_new_value();
+		$garbage_old = [
+			'completely' => 'irrelevant',
+			'data'       => 12345,
+		];
 
 		$mixpanel->shouldReceive( 'track_direct' )
 			->once()
@@ -294,7 +326,7 @@ class Test_TrackSettingsSaved extends TestCase {
 				'Settings Saved',
 				Mockery::on(
 					function ( array $props ) {
-						return isset( $props['optimization_level'] );
+						return isset( $props['auto_optimize_on_upload'] );
 					}
 				)
 			);

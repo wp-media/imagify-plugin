@@ -85,12 +85,15 @@ class Tracking extends BaseTracking {
 		$event_data = array_merge(
 			$this->get_default_event_properties(),
 			[
-				'optimization_level'      => isset( $new_value['optimization_level'] ) ? (int) $new_value['optimization_level'] : null,
+				'optimization_format'     => isset( $new_value['optimization_format'] ) ? (string) $new_value['optimization_format'] : null,
+				'lossless'                => ! empty( $new_value['lossless'] ),
 				'auto_optimize_on_upload' => ! empty( $new_value['auto_optimize'] ),
-				'resize_larger_images'    => ! empty( $new_value['resize_larger'] ),
-				'next_gen_images_webp'    => ! empty( $new_value['convert_to_webp'] ),
-				'next_gen_images_avif'    => ! empty( $new_value['convert_to_avif'] ),
 				'backup_original'         => ! empty( $new_value['backup'] ),
+				'resize_larger_images'    => ! empty( $new_value['resize_larger'] ),
+				'resize_larger_width'     => isset( $new_value['resize_larger_w'] ) ? (int) $new_value['resize_larger_w'] : null,
+				'display_nextgen'         => ! empty( $new_value['display_nextgen'] ),
+				'display_nextgen_method'  => isset( $new_value['display_nextgen_method'] ) ? (string) $new_value['display_nextgen_method'] : null,
+				'cdn_enabled'             => ! empty( $new_value['cdn_url'] ),
 			]
 		);
 
