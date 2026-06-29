@@ -53,28 +53,10 @@ class Notices implements SubscriberInterface {
 	 * @return void
 	 */
 	public function render_optin_section(): void {
-		$is_enabled     = $this->optin->is_enabled();
-		$wp_version     = get_bloginfo( 'version' );
-		$php_version    = PHP_VERSION;
-		$plugin_version = IMAGIFY_VERSION;
-		$opt_level      = imagify_get_optimization_level_label( (int) get_imagify_option( 'optimization_level' ) );
-
-		$convert_webp = (bool) get_imagify_option( 'convert_to_webp' );
-		$convert_avif = (bool) get_imagify_option( 'convert_to_avif' );
-		if ( $convert_webp && $convert_avif ) {
-			$next_gen = __( 'WebP and AVIF', 'imagify' );
-		} elseif ( $convert_avif ) {
-			$next_gen = __( 'AVIF', 'imagify' );
-		} elseif ( $convert_webp ) {
-			$next_gen = __( 'WebP', 'imagify' );
-		} else {
-			$next_gen = __( 'None', 'imagify' );
-		}
-
-		$imagify_user = get_imagify_user();
-		$license_type = ! is_wp_error( $imagify_user ) && ! empty( $imagify_user->plan_label )
-			? ucfirst( $imagify_user->plan_label )
-			: __( 'N/A', 'imagify' );
+		$data               = $this->collect_data();
+		$data['is_enabled'] = $this->optin->is_enabled();
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+		extract( $data, EXTR_SKIP );
 
 		include IMAGIFY_PATH . 'views/part-settings-analytics.php';
 	}
@@ -89,6 +71,7 @@ class Notices implements SubscriberInterface {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( __( 'Unauthorized.', 'imagify' ), 403 );
+			return;
 		}
 
 		$value = isset( $_POST['value'] ) ? (int) $_POST['value'] : 0;
@@ -117,6 +100,18 @@ class Notices implements SubscriberInterface {
 
 		delete_transient( self::THANKYOU_TRANSIENT );
 
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+		extract( $this->collect_data(), EXTR_SKIP );
+
+		include IMAGIFY_PATH . 'views/notice-analytics-thankyou.php';
+	}
+
+	/**
+	 * Collect the anonymous tracking data to display in the analytics UI.
+	 *
+	 * @return array<string, string>
+	 */
+	private function collect_data(): array {
 		$wp_version     = get_bloginfo( 'version' );
 		$php_version    = PHP_VERSION;
 		$plugin_version = IMAGIFY_VERSION;
@@ -124,14 +119,13 @@ class Notices implements SubscriberInterface {
 
 		$convert_webp = (bool) get_imagify_option( 'convert_to_webp' );
 		$convert_avif = (bool) get_imagify_option( 'convert_to_avif' );
+		$next_gen     = __( 'None', 'imagify' );
 		if ( $convert_webp && $convert_avif ) {
 			$next_gen = __( 'WebP and AVIF', 'imagify' );
 		} elseif ( $convert_avif ) {
 			$next_gen = __( 'AVIF', 'imagify' );
 		} elseif ( $convert_webp ) {
 			$next_gen = __( 'WebP', 'imagify' );
-		} else {
-			$next_gen = __( 'None', 'imagify' );
 		}
 
 		$imagify_user = get_imagify_user();
@@ -139,6 +133,6 @@ class Notices implements SubscriberInterface {
 			? ucfirst( $imagify_user->plan_label )
 			: __( 'N/A', 'imagify' );
 
-		include IMAGIFY_PATH . 'views/notice-analytics-thankyou.php';
+		return compact( 'wp_version', 'php_version', 'plugin_version', 'opt_level', 'next_gen', 'license_type' );
 	}
 }
