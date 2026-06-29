@@ -64,13 +64,16 @@ class Test_AjaxToggleOptin extends TestCase {
 		Functions\when( 'check_ajax_referer' )->justReturn( true );
 		Functions\when( 'current_user_can' )->justReturn( false );
 		Functions\when( '__' )->returnArg();
-		// wp_send_json_error normally terminates; stub it and also stub success so Brain Monkey is satisfied.
-		Functions\when( 'wp_send_json_error' )->justReturn();
-		Functions\when( 'wp_send_json_success' )->justReturn();
+		// Simulate wp_send_json_error's real behaviour (it calls wp_die and never returns).
+		Functions\when( 'wp_send_json_error' )->alias(
+			static function (): never {
+				throw new \RuntimeException( 'wp_send_json_error: terminated' );
+			}
+		);
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'wp_send_json_error: terminated' );
 
 		( new Notices( $optin ) )->ajax_toggle_optin();
-
-		// If we reach here without enable/disable being called, the authorization guard worked.
-		$this->addToAssertionCount( 1 );
 	}
 }

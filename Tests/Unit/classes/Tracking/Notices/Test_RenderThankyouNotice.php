@@ -62,9 +62,8 @@ class Test_RenderThankyouNotice extends TestCase {
 
 		ob_start();
 		( new Notices( $optin ) )->render_thankyou_notice();
-		ob_get_clean();
+		$output = ob_get_clean();
 
-		// Assertion is implicit: Mockery will fail the test if delete_transient was not called once.
-		$this->addToAssertionCount( 1 );
+		$this->assertStringContainsString( 'notice-success', $output );
 	}
 }

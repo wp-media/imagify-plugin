@@ -71,7 +71,6 @@ class Notices implements SubscriberInterface {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( __( 'Unauthorized.', 'imagify' ), 403 );
-			return;
 		}
 
 		$value = isset( $_POST['value'] ) ? (int) $_POST['value'] : 0;
