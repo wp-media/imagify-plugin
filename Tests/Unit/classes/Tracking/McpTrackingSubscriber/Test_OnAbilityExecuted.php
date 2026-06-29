@@ -22,9 +22,18 @@ class Test_OnAbilityExecuted extends TestCase {
 	public function testDelegatesToBothTrackersForOptimizeMedia(): void {
 		$ability_id   = 'imagify/optimize-media';
 		$ability_name = 'Optimize media';
-		$result       = [ 'status' => 'success', 'original_size' => 1000, 'optimized_size' => 800, 'savings_percent' => 20.0, 'error_message' => null ];
+		$result       = [
+			'status'          => 'success',
+			'original_size'   => 1000,
+			'optimized_size'  => 800,
+			'savings_percent' => 20.0,
+			'error_message'   => null,
+		];
 		$start_time   = microtime( true );
-		$input_params = [ 'media_id' => 42, 'optimization_level' => 1 ];
+		$input_params = [
+			'media_id'           => 42,
+			'optimization_level' => 1,
+		];
 
 		$mcp_tracking = Mockery::mock( McpTracking::class );
 		$mcp_tracking->shouldReceive( 'track_ability_executed' )
@@ -44,16 +53,17 @@ class Test_OnAbilityExecuted extends TestCase {
 	public function testDelegatesToGenericTrackerForOtherAbilities(): void {
 		$ability_id   = 'imagify/get-stats';
 		$ability_name = 'Get Imagify optimization stats';
-		$result       = [ 'wp' => [], 'custom-folders' => [] ];
+		$result       = [
+			'wp'             => [],
+			'custom-folders' => [],
+		];
 		$start_time   = microtime( true );
 
 		$mcp_tracking = Mockery::mock( McpTracking::class );
 		$mcp_tracking->shouldReceive( 'track_ability_executed' )
 			->once()
 			->with( $ability_id, $ability_name, $start_time );
-		$mcp_tracking->shouldReceive( 'track_media_optimized' )
-			->once()
-			->with( $ability_id, $result, $start_time, [] );
+		$mcp_tracking->shouldNotReceive( 'track_media_optimized' );
 
 		$subscriber = new McpTrackingSubscriber( $mcp_tracking );
 		$subscriber->on_ability_executed( $ability_id, $ability_name, $result, $start_time, [] );
