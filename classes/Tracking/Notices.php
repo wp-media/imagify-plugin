@@ -13,6 +13,8 @@ use Imagify\EventManagement\SubscriberInterface;
  */
 class Notices implements SubscriberInterface {
 
+	const THANKYOU_TRANSIENT = 'imagify_analytics_optin_thanks';
+
 	/**
 	 * The Mixpanel opt-in service.
 	 *
@@ -40,6 +42,8 @@ class Notices implements SubscriberInterface {
 			'imagify_settings_after_lossless'       => 'render_optin_section',
 			// @action wp_ajax_imagify_toggle_tracking_optin
 			'wp_ajax_imagify_toggle_tracking_optin' => 'ajax_toggle_optin',
+			// @action admin_notices
+			'admin_notices'                         => 'render_thankyou_notice',
 		];
 	}
 
@@ -53,7 +57,7 @@ class Notices implements SubscriberInterface {
 		$wp_version     = get_bloginfo( 'version' );
 		$php_version    = PHP_VERSION;
 		$plugin_version = IMAGIFY_VERSION;
-		$opt_level    = imagify_get_optimization_level_label( (int) get_imagify_option( 'optimization_level' ) );
+		$opt_level      = imagify_get_optimization_level_label( (int) get_imagify_option( 'optimization_level' ) );
 
 		$convert_webp = (bool) get_imagify_option( 'convert_to_webp' );
 		$convert_avif = (bool) get_imagify_option( 'convert_to_avif' );
@@ -91,10 +95,50 @@ class Notices implements SubscriberInterface {
 
 		if ( 1 === $value ) {
 			$this->optin->enable();
+			set_transient( self::THANKYOU_TRANSIENT, 1, 60 );
 		} else {
 			$this->optin->disable();
 		}
 
 		wp_send_json_success();
+	}
+
+	/**
+	 * Render the "Thank you" admin notice after opt-in is first enabled.
+	 *
+	 * Triggered on the next page load via transient.
+	 *
+	 * @return void
+	 */
+	public function render_thankyou_notice(): void {
+		if ( ! get_transient( self::THANKYOU_TRANSIENT ) ) {
+			return;
+		}
+
+		delete_transient( self::THANKYOU_TRANSIENT );
+
+		$wp_version     = get_bloginfo( 'version' );
+		$php_version    = PHP_VERSION;
+		$plugin_version = IMAGIFY_VERSION;
+		$opt_level      = imagify_get_optimization_level_label( (int) get_imagify_option( 'optimization_level' ) );
+
+		$convert_webp = (bool) get_imagify_option( 'convert_to_webp' );
+		$convert_avif = (bool) get_imagify_option( 'convert_to_avif' );
+		if ( $convert_webp && $convert_avif ) {
+			$next_gen = __( 'WebP and AVIF', 'imagify' );
+		} elseif ( $convert_avif ) {
+			$next_gen = __( 'AVIF', 'imagify' );
+		} elseif ( $convert_webp ) {
+			$next_gen = __( 'WebP', 'imagify' );
+		} else {
+			$next_gen = __( 'None', 'imagify' );
+		}
+
+		$imagify_user = get_imagify_user();
+		$license_type = ! is_wp_error( $imagify_user ) && ! empty( $imagify_user->plan_label )
+			? ucfirst( $imagify_user->plan_label )
+			: __( 'N/A', 'imagify' );
+
+		include IMAGIFY_PATH . 'views/notice-analytics-thankyou.php';
 	}
 }

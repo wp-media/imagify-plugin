@@ -1047,22 +1047,16 @@ window.imagify = window.imagify || {};
 	}
 
 	$checkbox.on( 'change.imagify-analytics', function() {
-		var isChecked = $( this ).prop( 'checked' ),
-			nonce    = $( this ).data( 'nonce' );
+		var nonce = $( this ).data( 'nonce' );
 
 		$.post( ajaxurl, {
 			action: 'imagify_toggle_tracking_optin',
-			value:  isChecked ? 1 : 0,
+			value:  $( this ).prop( 'checked' ) ? 1 : 0,
 			nonce:  nonce
-		} ).done( function() {
-			if ( isChecked ) {
-				window.imagify.openModal( $( '<a href="#imagify-analytics-thankyou-modal">' ) );
-			}
 		} );
 	} );
 
 	$( document ).on( 'click.imagify-analytics', '#imagify-analytics-enable-from-modal', function() {
-		// Close the info modal, check the toggle, let the change handler show the thank-you modal.
 		$( '.imagify-modal.modal-is-open .close-btn' ).trigger( 'click.imagify' );
 		$checkbox.prop( 'checked', true ).trigger( 'change.imagify-analytics' );
 	} );
