@@ -38,6 +38,24 @@ class Test_GetSubscribedEvents extends TestCase {
 	}
 
 	/**
+	 * Tests that imagify_after_reset_internal_state is registered.
+	 */
+	public function testMapsImagifyAfterResetInternalStateHook(): void {
+		$events = Subscriber::get_subscribed_events();
+
+		$this->assertArrayHasKey( 'imagify_after_reset_internal_state', $events );
+	}
+
+	/**
+	 * Tests that the reset hook maps to track_internal_state_reset with priority 10 and 0 args.
+	 */
+	public function testResetHookConfigurationIsCorrect(): void {
+		$events = Subscriber::get_subscribed_events();
+
+		$this->assertSame( [ 'track_internal_state_reset', 10, 0 ], $events['imagify_after_reset_internal_state'] );
+	}
+
+	/**
 	 * Tests that track_media_optimized delegates to the Tracking service.
 	 */
 	public function testTrackMediaOptimizedDelegatesToTracking(): void {
@@ -51,5 +69,17 @@ class Test_GetSubscribedEvents extends TestCase {
 
 		$subscriber = new Subscriber( $tracking );
 		$subscriber->track_media_optimized( $process, $item );
+	}
+
+	/**
+	 * Tests that track_internal_state_reset delegates to the Tracking service.
+	 */
+	public function testTrackInternalStateResetDelegatesToTracking(): void {
+		$tracking = Mockery::mock( Tracking::class );
+
+		$tracking->shouldReceive( 'track_internal_state_reset' )->once();
+
+		$subscriber = new Subscriber( $tracking );
+		$subscriber->track_internal_state_reset();
 	}
 }

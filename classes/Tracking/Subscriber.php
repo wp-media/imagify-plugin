@@ -37,7 +37,9 @@ class Subscriber implements SubscriberInterface {
 	public static function get_subscribed_events(): array {
 		return [
 			// @action imagify_after_optimize
-			'imagify_after_optimize' => [ 'track_media_optimized', 10, 2 ],
+			'imagify_after_optimize'             => [ 'track_media_optimized', 10, 2 ],
+			// @action imagify_after_reset_internal_state
+			'imagify_after_reset_internal_state' => [ 'track_internal_state_reset', 10, 0 ],
 		];
 	}
 
@@ -51,5 +53,14 @@ class Subscriber implements SubscriberInterface {
 	 */
 	public function track_media_optimized( $process, $item ): void {
 		$this->tracking->track_media_optimized( $process, $item );
+	}
+
+	/**
+	 * Track an "Internal State Reset" event after the internal state is reset.
+	 *
+	 * @return void
+	 */
+	public function track_internal_state_reset(): void {
+		$this->tracking->track_internal_state_reset();
 	}
 }
