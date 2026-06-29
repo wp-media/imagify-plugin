@@ -37,7 +37,11 @@ class Subscriber implements SubscriberInterface {
 	public static function get_subscribed_events(): array {
 		return [
 			// @action imagify_after_optimize
-			'imagify_after_optimize' => [ 'track_media_optimized', 10, 2 ],
+			'imagify_after_optimize'              => [ 'track_media_optimized', 10, 2 ],
+			// @action update_option_imagify_settings fires on single-site saves.
+			'update_option_imagify_settings'      => [ 'track_settings_saved', 10, 2 ],
+			// @action update_site_option_imagify_settings fires on multisite saves.
+			'update_site_option_imagify_settings' => [ 'track_settings_saved', 10, 2 ],
 		];
 	}
 
@@ -51,5 +55,22 @@ class Subscriber implements SubscriberInterface {
 	 */
 	public function track_media_optimized( $process, $item ): void {
 		$this->tracking->track_media_optimized( $process, $item );
+	}
+
+	/**
+	 * Delegate to Tracking::track_settings_saved().
+	 *
+	 * Both update_option_imagify_settings and update_site_option_imagify_settings fire
+	 * with different arg ordering (on multisite the first arg is the option name string,
+	 * not the old value). Both args are cast to array so the strict-typed downstream
+	 * signature is always satisfied. $old_value is unused downstream.
+	 *
+	 * @param mixed $old_value Old option value, or option name string on multisite.
+	 * @param mixed $new_value New option value.
+	 *
+	 * @return void
+	 */
+	public function track_settings_saved( $old_value, $new_value ): void {
+		$this->tracking->track_settings_saved( (array) $old_value, (array) $new_value );
 	}
 }

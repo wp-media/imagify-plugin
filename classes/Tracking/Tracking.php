@@ -67,6 +67,37 @@ class Tracking extends BaseTracking {
 	}
 
 	/**
+	 * Track a "Settings Saved" event in Mixpanel.
+	 *
+	 * @param array $old_value The previous option value. Intentionally unused — kept for
+	 *                         hook-signature symmetry. On multisite the first hook arg is the
+	 *                         option name (string), not the old value, so this parameter is
+	 *                         unreliable and must not be used for business logic.
+	 * @param array $new_value The new option value.
+	 *
+	 * @return void
+	 */
+	public function track_settings_saved( array $old_value, array $new_value ): void {
+		if ( ! $this->can_track() ) {
+			return;
+		}
+
+		$event_data = array_merge(
+			$this->get_default_event_properties(),
+			[
+				'optimization_level'      => isset( $new_value['optimization_level'] ) ? (int) $new_value['optimization_level'] : null,
+				'auto_optimize_on_upload' => ! empty( $new_value['auto_optimize'] ),
+				'resize_larger_images'    => ! empty( $new_value['resize_larger'] ),
+				'next_gen_images_webp'    => ! empty( $new_value['convert_to_webp'] ),
+				'next_gen_images_avif'    => ! empty( $new_value['convert_to_avif'] ),
+				'backup_original'         => ! empty( $new_value['backup'] ),
+			]
+		);
+
+		$this->mixpanel->track_direct( 'Settings Saved', $event_data );
+	}
+
+	/**
 	 * Resolve the next-gen format generated for the full size.
 	 *
 	 * @param ProcessInterface $process The optimization process instance.
