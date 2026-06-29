@@ -76,6 +76,34 @@ class McpTracking extends BaseTracking {
 	}
 
 	/**
+	 * Track a generic "MCP Ability Executed" event for any ability invocation.
+	 *
+	 * Fires for every ability (including optimize-media) so Mixpanel dashboards
+	 * can aggregate all MCP calls by ability_id regardless of outcome.
+	 *
+	 * @param string $ability_id   Ability slug, e.g. `imagify/get-stats`.
+	 * @param string $ability_name Human-readable ability label.
+	 * @param float  $start_time   microtime(true) captured before execute() ran.
+	 * @return void
+	 */
+	public function track_ability_executed( string $ability_id, string $ability_name, float $start_time ): void {
+		if ( ! $this->can_track() ) {
+			return;
+		}
+
+		$event_data = array_merge(
+			$this->get_default_event_properties(),
+			[
+				'ability_id'        => $ability_id,
+				'ability_name'      => $ability_name,
+				'execution_time_ms' => round( ( microtime( true ) - $start_time ) * 1000, 2 ),
+			]
+		);
+
+		$this->mixpanel->track_direct( 'MCP Ability Executed', $event_data );
+	}
+
+	/**
 	 * Track an "MCP Ability Permission Denied" event.
 	 *
 	 * @param string $ability_id          Ability slug.

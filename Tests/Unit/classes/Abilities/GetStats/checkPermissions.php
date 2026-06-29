@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetStats;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\GetStats;
 use Imagify\Tests\Unit\TestCase;
@@ -31,6 +32,9 @@ class Test_CheckPermissions extends TestCase {
 			}
 		};
 		Functions\when( 'imagify_get_context' )->justReturn( $context );
+		Actions\expectDone( 'imagify_mcp_permission_denied' )
+			->once()
+			->with( 'imagify/get-stats', 'Get Imagify optimization stats', 'manage' );
 
 		$this->assertFalse( ( new GetStats() )->check_permissions() );
 	}

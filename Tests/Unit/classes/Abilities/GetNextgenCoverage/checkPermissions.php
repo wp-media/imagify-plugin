@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetNextgenCoverage;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\GetNextgenCoverage;
 use Imagify\Stats\StatInterface;
@@ -46,6 +47,9 @@ class Test_CheckPermissions extends TestCase {
 			}
 		};
 		Functions\when( 'imagify_get_context' )->justReturn( $context );
+		Actions\expectDone( 'imagify_mcp_permission_denied' )
+			->once()
+			->with( 'imagify/get-nextgen-coverage', 'Get next-gen coverage', 'manage' );
 
 		$this->assertFalse( $this->make_ability()->check_permissions() );
 	}

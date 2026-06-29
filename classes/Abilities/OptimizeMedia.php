@@ -12,10 +12,28 @@ namespace Imagify\Abilities;
  *
  * @since 2.3.0
  */
-class OptimizeMedia implements AbilitiesInterface {
+class OptimizeMedia extends AbstractAbility {
 
 	const ABILITY_ID   = 'imagify/optimize-media';
 	const ABILITY_NAME = 'Optimize media';
+
+	/**
+	 * Returns the ability slug.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return self::ABILITY_ID;
+	}
+
+	/**
+	 * Returns the human-readable ability label.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+		return self::ABILITY_NAME;
+	}
 
 	/**
 	 * Register the ability with the WP Abilities API.
@@ -107,14 +125,8 @@ class OptimizeMedia implements AbilitiesInterface {
 	 *
 	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
-	public function check_permissions(): bool {
-		$allowed = imagify_get_context( 'wp' )->current_user_can( 'manage' );
-
-		if ( ! $allowed ) {
-			do_action( 'imagify_mcp_permission_denied', self::ABILITY_ID, self::ABILITY_NAME, 'manage' );
-		}
-
-		return $allowed;
+	protected function has_permission(): bool {
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
@@ -130,7 +142,7 @@ class OptimizeMedia implements AbilitiesInterface {
 		$start_time = microtime( true );
 		$result     = $this->do_execute( $args );
 
-		do_action( 'imagify_mcp_ability_executed', self::ABILITY_ID, self::ABILITY_NAME, $result, $start_time, $args );
+		$this->fire_executed( $result, $start_time, $args );
 
 		return $result;
 	}

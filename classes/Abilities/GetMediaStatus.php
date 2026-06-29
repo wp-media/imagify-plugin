@@ -14,7 +14,25 @@ use Imagify\Optimization\Process\ProcessInterface;
  *
  * @since 2.3.0
  */
-class GetMediaStatus implements AbilitiesInterface {
+class GetMediaStatus extends AbstractAbility {
+
+	/**
+	 * Returns the ability slug.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return 'imagify/get-media-status';
+	}
+
+	/**
+	 * Returns the ability label.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+		return 'Get Media Status';
+	}
 
 	/**
 	 * Register the ability with the WP Abilities API.
@@ -96,8 +114,6 @@ class GetMediaStatus implements AbilitiesInterface {
 	}
 
 	/**
-	 * Check whether the current user may execute this ability.
-	 *
 	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
 	 * filter and multisite network-admin logic are honoured.
 	 *
@@ -105,7 +121,7 @@ class GetMediaStatus implements AbilitiesInterface {
 	 *
 	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
-	public function check_permissions(): bool {
+	protected function has_permission(): bool {
 		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
@@ -119,6 +135,21 @@ class GetMediaStatus implements AbilitiesInterface {
 	 *               optimized_size, webp_available, avif_available, and error_message.
 	 */
 	public function execute( array $args = [] ): array {
+		$start_time = microtime( true );
+		$result     = $this->do_execute( $args );
+
+		$this->fire_executed( $result, $start_time, $args );
+
+		return $result;
+	}
+
+	/**
+	 * Internal execution logic for the ability.
+	 *
+	 * @param array $args Input arguments.
+	 * @return array
+	 */
+	private function do_execute( array $args ): array {
 		$media_id = isset( $args['media_id'] ) ? (int) $args['media_id'] : 0;
 
 		if ( $media_id <= 0 ) {

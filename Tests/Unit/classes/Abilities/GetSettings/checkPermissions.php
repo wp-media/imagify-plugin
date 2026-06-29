@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetSettings;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\GetSettings;
 use Imagify\Tests\Unit\TestCase;
@@ -31,6 +32,9 @@ class Test_CheckPermissions extends TestCase {
 			}
 		};
 		Functions\when( 'imagify_get_context' )->justReturn( $context );
+		Actions\expectDone( 'imagify_mcp_permission_denied' )
+			->once()
+			->with( 'imagify/get-settings', 'Get Imagify settings', 'manage' );
 
 		$this->assertFalse( ( new GetSettings() )->check_permissions() );
 	}

@@ -45,15 +45,22 @@ class McpTrackingSubscriber implements SubscriberInterface {
 	/**
 	 * Fired after an MCP ability's execute() method returns (success or failure).
 	 *
+	 * Calls both the generic ability-executed tracker (all abilities) and the
+	 * media-optimized tracker (optimize-media success only).
+	 *
 	 * @param string $ability_id   Ability slug, e.g. `imagify/optimize-media`.
 	 * @param string $ability_name Human-readable ability label.
-	 * @param array  $result       Return value of the ability's execute() method.
+	 * @param mixed  $result       Return value of the ability's execute() method.
 	 * @param float  $start_time   microtime(true) captured before execute() ran.
 	 * @param array  $input_params Raw input params passed to execute().
 	 * @return void
 	 */
-	public function on_ability_executed( string $ability_id, string $ability_name, array $result, float $start_time, array $input_params ): void {
-		$this->mcp_tracking->track_media_optimized( $ability_id, $result, $start_time, $input_params );
+	public function on_ability_executed( string $ability_id, string $ability_name, $result, float $start_time, array $input_params ): void {
+		$this->mcp_tracking->track_ability_executed( $ability_id, $ability_name, $start_time );
+
+		if ( is_array( $result ) ) {
+			$this->mcp_tracking->track_media_optimized( $ability_id, $result, $start_time, $input_params );
+		}
 	}
 
 	/**
