@@ -8,30 +8,30 @@ use Imagify\Abilities\GetSettings;
 use Imagify\Tests\Unit\TestCase;
 
 /**
- * Tests for \Imagify\Abilities\GetSettings::check_permissions().
- *
  * @covers \Imagify\Abilities\GetSettings::check_permissions
  * @group  GetSettings
  */
 class Test_CheckPermissions extends TestCase {
 
-	/**
-	 * Tests that check_permissions() returns true when the user has the manage_options capability.
-	 */
-	public function testReturnsTrueWhenUserHasManageOptionsCapability(): void {
-		Functions\when( 'current_user_can' )->justReturn( true );
+	public function testReturnsTrueWhenContextAllows(): void {
+		$context = new class {
+			public function current_user_can( string $capability ): bool {
+				return true;
+			}
+		};
+		Functions\when( 'imagify_get_context' )->justReturn( $context );
 
-		$ability = new GetSettings();
-		$this->assertTrue( $ability->check_permissions() );
+		$this->assertTrue( ( new GetSettings() )->check_permissions() );
 	}
 
-	/**
-	 * Tests that check_permissions() returns false when the user lacks the manage_options capability.
-	 */
-	public function testReturnsFalseWhenUserLacksManageOptionsCapability(): void {
-		Functions\when( 'current_user_can' )->justReturn( false );
+	public function testReturnsFalseWhenContextDenies(): void {
+		$context = new class {
+			public function current_user_can( string $capability ): bool {
+				return false;
+			}
+		};
+		Functions\when( 'imagify_get_context' )->justReturn( $context );
 
-		$ability = new GetSettings();
-		$this->assertFalse( $ability->check_permissions() );
+		$this->assertFalse( ( new GetSettings() )->check_permissions() );
 	}
 }
