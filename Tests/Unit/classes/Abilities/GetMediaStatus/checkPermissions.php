@@ -14,6 +14,20 @@ use Imagify\Tests\Unit\TestCase;
  */
 class Test_CheckPermissions extends TestCase {
 
+	/**
+	 * Tests that get_id() returns the ability slug.
+	 */
+	public function testGetIdReturnsAbilitySlug(): void {
+		$this->assertSame( 'imagify/get-media-status', ( new GetMediaStatus() )->get_id() );
+	}
+
+	/**
+	 * Tests that get_name() returns the human-readable ability label.
+	 */
+	public function testGetNameReturnsAbilityLabel(): void {
+		$this->assertSame( 'Get Media Status', ( new GetMediaStatus() )->get_name() );
+	}
+
 	public function testReturnsTrueWhenContextAllows(): void {
 		$context = new class {
 			public function current_user_can( string $capability ): bool {

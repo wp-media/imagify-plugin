@@ -29,6 +29,20 @@ class Test_CheckPermissions extends TestCase {
 		return new GetNextgenCoverage( $stat );
 	}
 
+	/**
+	 * Tests that get_id() returns the ability slug.
+	 */
+	public function testGetIdReturnsAbilitySlug(): void {
+		$this->assertSame( 'imagify/get-nextgen-coverage', $this->make_ability()->get_id() );
+	}
+
+	/**
+	 * Tests that get_name() returns the human-readable ability label.
+	 */
+	public function testGetNameReturnsAbilityLabel(): void {
+		$this->assertSame( 'Get next-gen coverage', $this->make_ability()->get_name() );
+	}
+
 	public function testReturnsTrueWhenContextAllows(): void {
 		$context = new class {
 			public function current_user_can( string $capability ): bool {
