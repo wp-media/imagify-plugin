@@ -28,9 +28,8 @@ class Test_GetSubscribedEvents extends TestCase {
 	 */
 	public function provideExpectedHooks(): array {
 		return [
-			'settings action'  => [ 'imagify_settings_after_lossless' ],
-			'ajax action'      => [ 'wp_ajax_imagify_toggle_tracking_optin' ],
-			'admin notices'    => [ 'admin_notices' ],
+			'settings action' => [ 'imagify_settings_after_lossless' ],
+			'ajax action'     => [ 'wp_ajax_imagify_toggle_tracking_optin' ],
 		];
 	}
 
@@ -50,9 +49,8 @@ class Test_GetSubscribedEvents extends TestCase {
 	 */
 	public function provideHookMethodPairs(): array {
 		return [
-			'settings -> render'  => [ 'imagify_settings_after_lossless', 'render_optin_section' ],
-			'ajax -> toggle'      => [ 'wp_ajax_imagify_toggle_tracking_optin', 'ajax_toggle_optin' ],
-			'notices -> thankyou' => [ 'admin_notices', 'render_thankyou_notice' ],
+			'settings -> render' => [ 'imagify_settings_after_lossless', 'render_optin_section' ],
+			'ajax -> toggle'     => [ 'wp_ajax_imagify_toggle_tracking_optin', 'ajax_toggle_optin' ],
 		];
 	}
 }

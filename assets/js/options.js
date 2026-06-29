@@ -1054,12 +1054,17 @@ window.imagify = window.imagify || {};
 			action: 'imagify_toggle_tracking_optin',
 			value:  isChecked ? 1 : 0,
 			nonce:  nonce
+		} ).done( function() {
+			if ( isChecked ) {
+				window.imagify.openModal( $( '<a href="#imagify-analytics-thankyou-modal">' ) );
+			}
 		} );
 	} );
 
 	$( document ).on( 'click.imagify-analytics', '#imagify-analytics-enable-from-modal', function() {
-		$checkbox.prop( 'checked', true ).trigger( 'change.imagify-analytics' );
+		// Close the info modal, check the toggle, let the change handler show the thank-you modal.
 		$( '.imagify-modal.modal-is-open .close-btn' ).trigger( 'click.imagify' );
+		$checkbox.prop( 'checked', true ).trigger( 'change.imagify-analytics' );
 	} );
 
 })(jQuery);
