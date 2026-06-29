@@ -18,20 +18,30 @@ use Mockery;
 class Test_CheckPermissions extends TestCase {
 
 	/**
-	 * Tests that check_permissions() returns true when the user has the manage_options capability.
+	 * Tests that check_permissions() returns true when the context allows.
 	 */
-	public function testReturnsTrueWhenUserHasManageOptionsCapability(): void {
-		Functions\when( 'current_user_can' )->justReturn( true );
+	public function testReturnsTrueWhenContextAllows(): void {
+		$context = new class {
+			public function current_user_can( string $capability ): bool {
+				return true;
+			}
+		};
+		Functions\when( 'imagify_get_context' )->justReturn( $context );
 
 		$ability = new GetNextgenCoverage( Mockery::mock( StatInterface::class ) );
 		$this->assertTrue( $ability->check_permissions() );
 	}
 
 	/**
-	 * Tests that check_permissions() returns false when the user lacks the manage_options capability.
+	 * Tests that check_permissions() returns false when the context denies.
 	 */
-	public function testReturnsFalseWhenUserLacksManageOptionsCapability(): void {
-		Functions\when( 'current_user_can' )->justReturn( false );
+	public function testReturnsFalseWhenContextDenies(): void {
+		$context = new class {
+			public function current_user_can( string $capability ): bool {
+				return false;
+			}
+		};
+		Functions\when( 'imagify_get_context' )->justReturn( $context );
 
 		$ability = new GetNextgenCoverage( Mockery::mock( StatInterface::class ) );
 		$this->assertFalse( $ability->check_permissions() );
