@@ -26,6 +26,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		TrackingPlugin::class,
 		Tracking::class,
 		Subscriber::class,
+		Notices::class,
 	];
 
 	/**
@@ -35,6 +36,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	 */
 	public $subscribers = [
 		Subscriber::class,
+		Notices::class,
 	];
 
 	/**
@@ -65,6 +67,9 @@ class ServiceProvider extends AbstractServiceProvider {
 
 		$this->getContainer()->addShared( Subscriber::class )
 			->addArgument( Tracking::class );
+
+		$this->getContainer()->addShared( Notices::class )
+			->addArgument( Optin::class );
 	}
 
 	/**

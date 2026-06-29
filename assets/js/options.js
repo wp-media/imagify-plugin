@@ -1036,3 +1036,30 @@ window.imagify = window.imagify || {};
 	} );
 
 } )(window, document, jQuery);
+
+// Imagify Analytics opt-in toggle ================================================================
+(function($) {
+
+	var $checkbox = $( '#imagify-analytics-enabled' );
+
+	if ( ! $checkbox.length ) {
+		return;
+	}
+
+	$checkbox.on( 'change.imagify-analytics', function() {
+		var isChecked = $( this ).prop( 'checked' ),
+			nonce    = $( this ).data( 'nonce' );
+
+		$.post( ajaxurl, {
+			action: 'imagify_toggle_tracking_optin',
+			value:  isChecked ? 1 : 0,
+			nonce:  nonce
+		} );
+	} );
+
+	$( document ).on( 'click.imagify-analytics', '#imagify-analytics-enable-from-modal', function() {
+		$checkbox.prop( 'checked', true ).trigger( 'change.imagify-analytics' );
+		$( '.imagify-modal.modal-is-open .close-btn' ).trigger( 'click.imagify' );
+	} );
+
+})(jQuery);
