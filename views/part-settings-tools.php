@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 	</p>
 	<button type="button"
 		id="imagify-reset-internal-state"
-		class="button button-secondary"
+		class="button imagify-button-primary"
 		data-nonce="<?php echo esc_attr( wp_create_nonce( 'imagify_reset_internal_state' ) ); ?>">
 		<?php esc_html_e( 'Reset Internal State', 'imagify' ); ?>
 	</button>

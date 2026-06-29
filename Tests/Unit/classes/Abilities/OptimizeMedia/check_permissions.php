@@ -8,11 +8,16 @@ use Imagify\Abilities\OptimizeMedia;
 use Imagify\Tests\Unit\TestCase;
 
 /**
+ * Tests for \Imagify\Abilities\OptimizeMedia::check_permissions().
+ *
  * @covers \Imagify\Abilities\OptimizeMedia::check_permissions
  * @group  OptimizeMedia
  */
 class Test_CheckPermissions extends TestCase {
 
+	/**
+	 * Tests that check_permissions() returns true when the context allows.
+	 */
 	public function testReturnsTrueWhenContextAllows(): void {
 		$context = new class {
 			public function current_user_can( string $capability ): bool {
@@ -21,9 +26,13 @@ class Test_CheckPermissions extends TestCase {
 		};
 		Functions\when( 'imagify_get_context' )->justReturn( $context );
 
-		$this->assertTrue( ( new OptimizeMedia() )->check_permissions() );
+		$ability = new OptimizeMedia();
+		$this->assertTrue( $ability->check_permissions() );
 	}
 
+	/**
+	 * Tests that check_permissions() returns false when the context denies.
+	 */
 	public function testReturnsFalseWhenContextDenies(): void {
 		$context = new class {
 			public function current_user_can( string $capability ): bool {
@@ -32,6 +41,7 @@ class Test_CheckPermissions extends TestCase {
 		};
 		Functions\when( 'imagify_get_context' )->justReturn( $context );
 
-		$this->assertFalse( ( new OptimizeMedia() )->check_permissions() );
+		$ability = new OptimizeMedia();
+		$this->assertFalse( $ability->check_permissions() );
 	}
 }
