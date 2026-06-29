@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetAccount;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\GetAccount;
 use Imagify\Tests\Unit\TestCase;
@@ -100,6 +101,16 @@ class Test_Execute extends TestCase {
 		$this->assertSame( 150, $result['consumed_current_month_quota'] );
 		$this->assertSame( 100, $result['extra_quota'] );
 		$this->assertSame( 50, $result['extra_quota_consumed'] );
+	}
+
+	/**
+	 * Tests that execute() fires the imagify_mcp_ability_executed action.
+	 */
+	public function testFiresAbilityExecutedHook(): void {
+		Functions\when( 'is_wp_error' )->justReturn( true );
+		Actions\expectDone( 'imagify_mcp_ability_executed' )->once();
+
+		$this->make_testable_ability( null, new \WP_Error() )->execute();
 	}
 
 	/**

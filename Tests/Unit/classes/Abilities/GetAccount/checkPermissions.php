@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetAccount;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\GetAccount;
 use Imagify\Tests\Unit\TestCase;
@@ -12,6 +13,20 @@ use Imagify\Tests\Unit\TestCase;
  * @group  GetAccount
  */
 class Test_CheckPermissions extends TestCase {
+
+	/**
+	 * Tests that get_id() returns the ability slug.
+	 */
+	public function testGetIdReturnsAbilitySlug(): void {
+		$this->assertSame( 'imagify/get-account', ( new GetAccount() )->get_id() );
+	}
+
+	/**
+	 * Tests that get_name() returns the human-readable ability label.
+	 */
+	public function testGetNameReturnsAbilityLabel(): void {
+		$this->assertSame( 'Get Imagify account status', ( new GetAccount() )->get_name() );
+	}
 
 	public function testReturnsTrueWhenContextAllows(): void {
 		$context = new class {
@@ -31,6 +46,9 @@ class Test_CheckPermissions extends TestCase {
 			}
 		};
 		Functions\when( 'imagify_get_context' )->justReturn( $context );
+		Actions\expectDone( 'imagify_mcp_permission_denied' )
+			->once()
+			->with( 'imagify/get-account', 'Get Imagify account status', 'manage' );
 
 		$this->assertFalse( ( new GetAccount() )->check_permissions() );
 	}

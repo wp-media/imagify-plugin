@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetNextgenCoverage;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\GetNextgenCoverage;
 use Imagify\Stats\StatInterface;
@@ -16,6 +17,18 @@ use Mockery;
  * @group  MCP
  */
 class Test_Execute extends TestCase {
+
+	/**
+	 * Tests that execute() fires the imagify_mcp_ability_executed action.
+	 */
+	public function testFiresAbilityExecutedHook(): void {
+		$stat = Mockery::mock( StatInterface::class );
+		$stat->shouldReceive( 'get_cached_stat' )->andReturn( 0 );
+		Functions\when( 'get_imagify_option' )->justReturn( 'webp' );
+		Actions\expectDone( 'imagify_mcp_ability_executed' )->once();
+
+		( new GetNextgenCoverage( $stat ) )->execute();
+	}
 
 	/**
 	 * Tests that execute() returns an array with both expected keys.
