@@ -14,6 +14,9 @@ namespace Imagify\Abilities;
  */
 class OptimizeMedia implements AbilitiesInterface {
 
+	const ABILITY_ID   = 'imagify/optimize-media';
+	const ABILITY_NAME = 'Optimize media';
+
 	/**
 	 * Register the ability with the WP Abilities API.
 	 *
@@ -105,16 +108,43 @@ class OptimizeMedia implements AbilitiesInterface {
 	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
 	public function check_permissions(): bool {
-		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
+		$allowed = imagify_get_context( 'wp' )->current_user_can( 'manage' );
+
+		if ( ! $allowed ) {
+			do_action( 'imagify_mcp_permission_denied', self::ABILITY_ID, self::ABILITY_NAME, 'manage' );
+		}
+
+		return $allowed;
 	}
 
 	/**
 	 * Execute the ability: optimize the media.
 	 *
+	 * Fires `imagify_mcp_ability_executed` after the ability resolves so that
+	 * tracking and other subscribers can react to both success and failure outcomes.
+	 *
 	 * @param array $args Input arguments. Expects `media_id` (int) and optionally `optimization_level` (int).
 	 * @return array{status: string, original_size: int|null, optimized_size: int|null, savings_percent: float|null, error_message: string|null}
 	 */
 	public function execute( array $args = [] ): array {
+		$start_time = microtime( true );
+		$result     = $this->do_execute( $args );
+
+		do_action( 'imagify_mcp_ability_executed', self::ABILITY_ID, self::ABILITY_NAME, $result, $start_time, $args );
+
+		return $result;
+	}
+
+	/**
+	 * Internal execution logic for the ability.
+	 *
+	 * Separated from execute() so that the do_action hook fires for every
+	 * outcome (success and all error paths) with a single call site.
+	 *
+	 * @param array $args Input arguments.
+	 * @return array{status: string, original_size: int|null, optimized_size: int|null, savings_percent: float|null, error_message: string|null}
+	 */
+	private function do_execute( array $args ): array {
 		$media_id = isset( $args['media_id'] ) ? (int) $args['media_id'] : 0;
 
 		if ( $media_id <= 0 ) {
