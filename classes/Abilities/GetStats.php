@@ -8,7 +8,25 @@ namespace Imagify\Abilities;
  *
  * @since 2.3.0
  */
-class GetStats implements AbilitiesInterface {
+class GetStats extends AbstractAbility {
+
+	/**
+	 * Returns the ability slug.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return 'imagify/get-stats';
+	}
+
+	/**
+	 * Returns the ability label.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+		return 'Get Imagify optimization stats';
+	}
 
 	/**
 	 * Register the ability with the WP Abilities API.
@@ -71,10 +89,13 @@ class GetStats implements AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
+	 *
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
-	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+	protected function has_permission(): bool {
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
@@ -86,6 +107,23 @@ class GetStats implements AbilitiesInterface {
 	 * }
 	 */
 	public function execute(): array {
+		$start_time = microtime( true );
+		$result     = $this->do_execute();
+
+		$this->fire_executed( $result, $start_time );
+
+		return $result;
+	}
+
+	/**
+	 * Internal execution logic for the ability.
+	 *
+	 * @return array{
+	 *     wp: array{count_optimized: int, count_errors: int, original_size: int, optimized_size: int, savings_percent: float},
+	 *     custom-folders: array{count_optimized: int, count_errors: int, original_size: int, optimized_size: int, savings_percent: float}
+	 * }
+	 */
+	private function do_execute(): array {
 		$cf_original_size   = (int) \Imagify_Files_Stats::get_original_size();
 		$cf_optimized_size  = (int) \Imagify_Files_Stats::get_optimized_size();
 		$cf_savings_percent = $cf_original_size > 0

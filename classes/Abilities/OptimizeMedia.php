@@ -12,7 +12,28 @@ namespace Imagify\Abilities;
  *
  * @since 2.3.0
  */
-class OptimizeMedia implements AbilitiesInterface {
+class OptimizeMedia extends AbstractAbility {
+
+	const ABILITY_ID   = 'imagify/optimize-media';
+	const ABILITY_NAME = 'Optimize media';
+
+	/**
+	 * Returns the ability slug.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return self::ABILITY_ID;
+	}
+
+	/**
+	 * Returns the human-readable ability label.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+		return self::ABILITY_NAME;
+	}
 
 	/**
 	 * Register the ability with the WP Abilities API.
@@ -94,19 +115,48 @@ class OptimizeMedia implements AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool True when the current user has the `manage_options` capability.
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
+	 *
+	 * Note: `manual-optimize` is not used here because `check_permissions()` is
+	 * called before `execute()` and receives no `media_id`, making the underlying
+	 * `edit_post` check ambiguous. The `manage` descriptor is the correct top-level
+	 * gate consistent with existing AJAX equivalents.
+	 *
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
-	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+	protected function has_permission(): bool {
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
 	 * Execute the ability: optimize the media.
 	 *
+	 * Fires `imagify_mcp_ability_executed` after the ability resolves so that
+	 * tracking and other subscribers can react to both success and failure outcomes.
+	 *
 	 * @param array $args Input arguments. Expects `media_id` (int) and optionally `optimization_level` (int).
 	 * @return array{status: string, original_size: int|null, optimized_size: int|null, savings_percent: float|null, error_message: string|null}
 	 */
 	public function execute( array $args = [] ): array {
+		$start_time = microtime( true );
+		$result     = $this->do_execute( $args );
+
+		$this->fire_executed( $result, $start_time, $args );
+
+		return $result;
+	}
+
+	/**
+	 * Internal execution logic for the ability.
+	 *
+	 * Separated from execute() so that the do_action hook fires for every
+	 * outcome (success and all error paths) with a single call site.
+	 *
+	 * @param array $args Input arguments.
+	 * @return array{status: string, original_size: int|null, optimized_size: int|null, savings_percent: float|null, error_message: string|null}
+	 */
+	private function do_execute( array $args ): array {
 		$media_id = isset( $args['media_id'] ) ? (int) $args['media_id'] : 0;
 
 		if ( $media_id <= 0 ) {
@@ -114,8 +164,14 @@ class OptimizeMedia implements AbilitiesInterface {
 		}
 
 		// Verify the attachment exists.
-		if ( ! get_post( $media_id ) ) {
+		$post = get_post( $media_id );
+		if ( ! $post ) {
 			return $this->error_response( 'Invalid media.' );
+		}
+
+		// Verify the post is an attachment.
+		if ( 'attachment' !== get_post_type( $post ) ) {
+			return $this->error_response( 'The provided ID is not a media attachment.' );
 		}
 
 		// Determine optimization level.

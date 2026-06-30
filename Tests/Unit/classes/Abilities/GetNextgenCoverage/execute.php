@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetNextgenCoverage;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\GetNextgenCoverage;
 use Imagify\Stats\StatInterface;
@@ -16,6 +17,18 @@ use Mockery;
  * @group  MCP
  */
 class Test_Execute extends TestCase {
+
+	/**
+	 * Tests that execute() fires the imagify_mcp_ability_executed action.
+	 */
+	public function testFiresAbilityExecutedHook(): void {
+		$stat = Mockery::mock( StatInterface::class );
+		$stat->shouldReceive( 'get_cached_stat' )->andReturn( 0 );
+		Functions\when( 'get_imagify_option' )->justReturn( 'webp' );
+		Actions\expectDone( 'imagify_mcp_ability_executed' )->once();
+
+		( new GetNextgenCoverage( $stat ) )->execute();
+	}
 
 	/**
 	 * Tests that execute() returns an array with both expected keys.
@@ -118,5 +131,25 @@ class Test_Execute extends TestCase {
 
 		$this->assertSame( 'off', $result['nextgen_format'] );
 		$this->assertSame( 12, $result['missing_nextgen_count'] );
+	}
+
+	/**
+	 * Tests that execute() casts false to integer 0 when the cache is cold.
+	 *
+	 * When the cache is cold, get_cached_stat() returns false via StatInterface.
+	 * The output_schema declares missing_nextgen_count as type: integer.
+	 * The cast (int) false === 0, so validate_output() must pass.
+	 */
+	public function testReturnsMissingNextgenCountAsIntegerWhenCacheReturnsFalse(): void {
+		$stat = Mockery::mock( StatInterface::class );
+		$stat->shouldReceive( 'get_cached_stat' )->once()->andReturn( false );
+
+		Functions\when( 'get_imagify_option' )->justReturn( 'webp' );
+
+		$ability = new GetNextgenCoverage( $stat );
+		$result  = $ability->execute();
+
+		$this->assertSame( 0, $result['missing_nextgen_count'] );
+		$this->assertIsInt( $result['missing_nextgen_count'] );
 	}
 }

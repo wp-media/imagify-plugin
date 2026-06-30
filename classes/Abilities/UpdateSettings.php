@@ -12,7 +12,25 @@ namespace Imagify\Abilities;
  *
  * @since 2.3.0
  */
-class UpdateSettings implements AbilitiesInterface {
+class UpdateSettings extends AbstractAbility {
+
+	/**
+	 * Returns the ability slug.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return 'imagify/update-settings';
+	}
+
+	/**
+	 * Returns the ability label.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+		return 'Update Imagify settings';
+	}
 
 	/**
 	 * Register the ability with the WP Abilities API.
@@ -157,10 +175,13 @@ class UpdateSettings implements AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool True when the current user has the `manage_options` capability.
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
+	 *
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
-	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+	protected function has_permission(): bool {
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
@@ -243,6 +264,21 @@ class UpdateSettings implements AbilitiesInterface {
 	 * @return array|\WP_Error Array with `updated` and `settings` keys on success.
 	 */
 	public function execute( $args = [] ) {
+		$start_time = microtime( true );
+		$result     = $this->do_execute( $args );
+
+		$this->fire_executed( $result, $start_time, is_array( $args ) ? $args : [] );
+
+		return $result;
+	}
+
+	/**
+	 * Internal execution logic for the ability.
+	 *
+	 * @param mixed $args Partial settings to update.
+	 * @return array|\WP_Error
+	 */
+	private function do_execute( $args ) {
 		$options  = $this->fetch_options_instance();
 		$defaults = $options->get_default_values();
 		$before   = $options->get_all();
@@ -251,6 +287,17 @@ class UpdateSettings implements AbilitiesInterface {
 
 		foreach ( $args as $key => $value ) {
 			if ( ! array_key_exists( $key, $defaults ) ) {
+				return new \WP_Error(
+					'imagify_unknown_setting',
+					sprintf(
+						/* translators: %s: the unknown setting key name. */
+						__( '"%s" is not a valid Imagify setting key.', 'imagify' ),
+						$key
+					)
+				);
+			}
+
+			if ( 'version' === $key ) {
 				return new \WP_Error(
 					'imagify_unknown_setting',
 					sprintf(

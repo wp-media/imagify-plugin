@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\UpdateSettings;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\UpdateSettings;
 use Imagify\Tests\Unit\TestCase;
@@ -31,6 +32,23 @@ class Test_Execute extends TestCase {
 		'api_key'             => '',
 		'version'             => '',
 	];
+
+	/**
+	 * Tests that execute() fires the imagify_mcp_ability_executed action.
+	 */
+	public function testFiresAbilityExecutedHook(): void {
+		Functions\when( '__' )->returnArg();
+		Actions\expectDone( 'imagify_mcp_ability_executed' )->once();
+
+		$ability = $this->make_testable_ability(
+			$this->defaults,
+			$this->defaults,
+			$this->defaults,
+			true
+		);
+
+		$ability->execute( [] );
+	}
 
 	/**
 	 * Tests that execute() returns WP_Error with code imagify_unknown_setting for an unknown key.
@@ -112,6 +130,25 @@ class Test_Execute extends TestCase {
 
 		$this->assertTrue( is_wp_error( $result ) );
 		$this->assertSame( 'imagify_api_key_immutable', $result->get_error_code() );
+	}
+
+	/**
+	 * Tests that execute() returns WP_Error with code imagify_unknown_setting when version is supplied.
+	 */
+	public function testRejectsVersionKey(): void {
+		Functions\when( '__' )->returnArg();
+
+		$ability = $this->make_testable_ability(
+			$this->defaults,
+			$this->defaults,
+			$this->defaults,
+			false
+		);
+
+		$result = $ability->execute( [ 'version' => '2.3.0' ] );
+
+		$this->assertTrue( is_wp_error( $result ) );
+		$this->assertSame( 'imagify_unknown_setting', $result->get_error_code() );
 	}
 
 	/**

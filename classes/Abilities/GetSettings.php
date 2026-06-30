@@ -7,12 +7,30 @@ namespace Imagify\Abilities;
  * MCP ability: returns the current Imagify configuration settings.
  *
  * Registers itself with the WP Abilities API under the slug
- * `imagify_get_settings` and returns all user-facing options
+ * `imagify/get-settings` and returns all user-facing options
  * (stripping the internal `version` key and redacting `api_key`).
  *
  * @since 2.3.0
  */
-class GetSettings implements AbilitiesInterface {
+class GetSettings extends AbstractAbility {
+
+	/**
+	 * Returns the ability slug.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return 'imagify/get-settings';
+	}
+
+	/**
+	 * Returns the ability label.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+		return 'Get Imagify settings';
+	}
 
 	/**
 	 * Register the ability with the WP Abilities API.
@@ -50,12 +68,13 @@ class GetSettings implements AbilitiesInterface {
 	}
 
 	/**
-	 * Check if the current user has permission to execute this ability.
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
 	 *
-	 * @return bool True when the current user has the `manage_options` capability.
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
-	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+	protected function has_permission(): bool {
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
@@ -79,6 +98,20 @@ class GetSettings implements AbilitiesInterface {
 	 * @return array<string, mixed> All user-facing Imagify options.
 	 */
 	public function execute(): array {
+		$start_time = microtime( true );
+		$result     = $this->do_execute();
+
+		$this->fire_executed( $result, $start_time );
+
+		return $result;
+	}
+
+	/**
+	 * Internal execution logic for the ability.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function do_execute(): array {
 		$settings = $this->fetch_raw_settings();
 
 		unset( $settings['version'] );

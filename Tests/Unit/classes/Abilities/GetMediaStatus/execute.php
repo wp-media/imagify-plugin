@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetMediaStatus;
 
+use Brain\Monkey\Actions;
+use Brain\Monkey\Functions;
 use Imagify\Abilities\GetMediaStatus;
 use Imagify\Optimization\Data\WP;
 use Imagify\Optimization\Process\ProcessInterface;
@@ -29,22 +31,50 @@ class Test_Execute extends TestCase {
 	 * @return GetMediaStatus
 	 */
 	private function make_ability( array $opt_data, int $original_size_bytes = 0 ): GetMediaStatus {
+		// Simulate an existing attachment so the get_post() guard passes.
+		Functions\when( 'get_post' )->justReturn( true );
+
 		$wp_mock = $this->createMock( WP::class );
 		$wp_mock->method( 'get_optimization_data' )->willReturn( $opt_data );
 		$wp_mock->method( 'get_original_size' )->with( false )->willReturn( $original_size_bytes );
 
 		return new class( $wp_mock ) extends GetMediaStatus {
-			/** @var WP */
+			/**
+			 * Mocked WP data object.
+			 *
+			 * @var WP
+			 */
 			private $wp_mock;
 
+			/**
+			 * Constructor.
+			 *
+			 * @param WP $wp_mock Mocked WP data object.
+			 */
 			public function __construct( WP $wp_mock ) {
 				$this->wp_mock = $wp_mock;
 			}
 
+			/**
+			 * Returns the injected WP mock instead of constructing a real one.
+			 *
+			 * @param int $media_id Media ID (unused).
+			 * @return WP
+			 */
 			protected function create_wp_data( int $media_id ): WP {
 				return $this->wp_mock;
 			}
 		};
+	}
+
+	/**
+	 * Tests that execute() fires the imagify_mcp_ability_executed action.
+	 */
+	public function testFiresAbilityExecutedHook(): void {
+		Actions\expectDone( 'imagify_mcp_ability_executed' )->once();
+
+		// The early-return error path fires the hook without needing WP data mocks.
+		( new GetMediaStatus() )->execute( [ 'media_id' => 0 ] );
 	}
 
 	// -------------------------------------------------------------------------
@@ -87,6 +117,24 @@ class Test_Execute extends TestCase {
 
 		$this->assertSame( 'error', $result['status'] );
 		$this->assertSame( 'Invalid or missing media_id', $result['error_message'] );
+	}
+
+	/**
+	 * Tests that execute() returns error when the attachment does not exist.
+	 */
+	public function testReturnsErrorWhenAttachmentDoesNotExist(): void {
+		Functions\when( 'get_post' )->justReturn( false );
+
+		$ability = new GetMediaStatus();
+		$result  = $ability->execute( [ 'media_id' => 999 ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertSame( 'Media not found.', $result['error_message'] );
+		$this->assertNull( $result['optimization_level'] );
+		$this->assertSame( 0, $result['original_size'] );
+		$this->assertSame( 0, $result['optimized_size'] );
+		$this->assertFalse( $result['webp_available'] );
+		$this->assertFalse( $result['avif_available'] );
 	}
 
 	// -------------------------------------------------------------------------
@@ -138,19 +186,19 @@ class Test_Execute extends TestCase {
 			'message' => '',
 			'level'   => 1,
 			'sizes'   => [
-				'full'                                        => [
+				'full'                                 => [
 					'success'        => true,
 					'original_size'  => 200000,
 					'optimized_size' => 150000,
 					'percent'        => 25.00,
 				],
-				'full' . ProcessInterface::WEBP_SUFFIX        => [
+				'full' . ProcessInterface::WEBP_SUFFIX => [
 					'success'        => true,
 					'original_size'  => 200000,
 					'optimized_size' => 120000,
 					'percent'        => 40.00,
 				],
-				'thumbnail'                                   => [
+				'thumbnail'                            => [
 					'success'        => true,
 					'original_size'  => 50000,
 					'optimized_size' => 40000,
@@ -209,11 +257,30 @@ class Test_Execute extends TestCase {
 			'message' => '',
 			'level'   => 2,
 			'sizes'   => [
-				'full'                                        => [ 'success' => true, 'original_size' => 200000, 'optimized_size' => 150000, 'percent' => 25 ],
-				'full' . ProcessInterface::WEBP_SUFFIX        => [ 'success' => true, 'original_size' => 200000, 'optimized_size' => 120000, 'percent' => 40 ],
-				'full' . ProcessInterface::AVIF_SUFFIX        => [ 'success' => true, 'original_size' => 200000, 'optimized_size' => 100000, 'percent' => 50 ],
+				'full'                                 => [
+					'success'        => true,
+					'original_size'  => 200000,
+					'optimized_size' => 150000,
+					'percent'        => 25,
+				],
+				'full' . ProcessInterface::WEBP_SUFFIX => [
+					'success'        => true,
+					'original_size'  => 200000,
+					'optimized_size' => 120000,
+					'percent'        => 40,
+				],
+				'full' . ProcessInterface::AVIF_SUFFIX => [
+					'success'        => true,
+					'original_size'  => 200000,
+					'optimized_size' => 100000,
+					'percent'        => 50,
+				],
 			],
-			'stats'   => [ 'original_size' => 200000, 'optimized_size' => 150000, 'percent' => 25 ],
+			'stats'   => [
+				'original_size'  => 200000,
+				'optimized_size' => 150000,
+				'percent'        => 25,
+			],
 		];
 
 		$ability = $this->make_ability( $opt_data, 200000 );
@@ -260,7 +327,11 @@ class Test_Execute extends TestCase {
 			'message' => '',
 			'level'   => false,
 			'sizes'   => [],
-			'stats'   => [ 'original_size' => 0, 'optimized_size' => 0, 'percent' => 0 ],
+			'stats'   => [
+				'original_size'  => 0,
+				'optimized_size' => 0,
+				'percent'        => 0,
+			],
 		];
 
 		$ability = $this->make_ability( $opt_data, 0 );
