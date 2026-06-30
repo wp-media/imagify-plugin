@@ -44,6 +44,8 @@ class Subscriber implements SubscriberInterface {
 			'update_site_option_imagify_settings' => [ 'track_settings_saved', 10, 2 ],
 			// @action imagify_after_reset_internal_state
 			'imagify_after_reset_internal_state'  => [ 'track_internal_state_reset', 10, 0 ],
+			// @action imagify_after_restore_media
+			'imagify_after_restore_media'         => [ 'track_media_restored', 10, 4 ],
 		];
 	}
 
@@ -83,5 +85,19 @@ class Subscriber implements SubscriberInterface {
 	 */
 	public function track_internal_state_reset(): void {
 		$this->tracking->track_internal_state_reset();
+	}
+
+	/**
+	 * Track a "Media Restored" event after a media file is restored.
+	 *
+	 * @param ProcessInterface $process  The optimization process instance.
+	 * @param bool|\WP_Error   $response True on success, WP_Error on failure.
+	 * @param array            $files    The list of files before restoring.
+	 * @param array            $data     The optimization data captured before deletion.
+	 *
+	 * @return void
+	 */
+	public function track_media_restored( $process, $response, array $files, array $data ): void {
+		$this->tracking->track_media_restored( $process, $response, $files, $data );
 	}
 }
