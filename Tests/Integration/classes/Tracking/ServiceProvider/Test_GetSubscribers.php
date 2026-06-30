@@ -100,6 +100,6 @@ class Test_GetSubscribers extends TestCase {
 	 * @return Subscriber
 	 */
 	private function get_subscriber(): Subscriber {
-		return imagify()->get( Subscriber::class );
+		return apply_filters( 'imagify_container', null )->get( Subscriber::class );
 	}
 }
