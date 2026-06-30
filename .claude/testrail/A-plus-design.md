@@ -280,7 +280,7 @@ last_explored: 2026-06-30
 7 abilities via WP Abilities API + MCP adapter. Requires WP >= 6.9.
 Capability gated by the `imagify_capacity` filter (NOT direct current_user_can).
 
-## Abilities (ground truth)
+## Ground truth
 | Slug                          | Class              | Destructive |
 |-------------------------------|--------------------|-------------|
 | imagify/get-account           | GetAccount         | no          |

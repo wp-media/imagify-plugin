@@ -1,7 +1,8 @@
 ---
 name: testrail-run-agent
-description: Fetches all test cases from a TestRail run (by milestone or run ID), executes each via Canary browser automation, collects pass/fail outcomes with trace/video evidence, then (on user confirm) posts results back to TestRail.
+description: Fetches all test cases from a TestRail run (by milestone or run ID), executes each via Canary browser automation grounded by the committed feature specs, collects pass/fail outcomes with trace/video evidence, then (on user confirm) posts results back to TestRail.
 tools: [Bash, Read, Write, Glob, Grep]
+model: sonnet
 maxTurns: 200
 color: orange
 ---
@@ -33,6 +34,7 @@ Suite ID      : 3
 Canary CLI    : npx @usecanary/cli
 Sessions dir  : .ai/testrail/$RUN_ID/canary/<id>/  (relocated from ~/.canary/sessions/<id>/ after session end)
 WP fixtures   : .claude/agents/canary-imagify-session-agent.md  (read for WP login/selectors)
+Specs dir     : .claude/testrail/specs/  (committed grounding: _foundation.md + one file per feature)
 ```
 
 Never print the API key. If a `curl` returns HTTP 401, report it as an auth/config problem
@@ -75,6 +77,15 @@ curl -s -u "$TESTRAIL_USERNAME:$TESTRAIL_API_KEY" \
 
 Record `RUN_ID` and the run name.
 
+### Step 1b — Cheap drift check (warn, do not block)
+
+Before executing, check whether the grounding specs are stale vs. the code they were captured
+against. For each spec in `.claude/testrail/specs/`, read frontmatter `source_files` +
+`derived_sha`; if any source file's latest commit (`git log -1 --format=%H -- <glob>`) is newer
+than `derived_sha`, the spec is **stale**. **Warn** ("executing against stale grounding for
+<feature> — locators may be behind the code; consider `/testrail-setup <feature>`") and
+**continue** — do not block the run. This is a heads-up for the tester, not a gate.
+
 ## Step 2 — Fetch the run's tests
 
 ```bash
@@ -105,11 +116,49 @@ STRIPPED=$(echo "$HTML" | python3 -c "import sys,re,html; t=re.sub('<[^>]+>',' '
 (Collapse `<li>`/`<br>`/`<p>` boundaries into separate lines if the step packs several
 instructions into one HTML block.)
 
+### 3a-bis — Resolve the case to its feature spec (grounding)
+
+Resolve which committed spec grounds this case, then **load it** — this is the difference
+between guessing and executing against reality.
+
+1. Get the case's TestRail section id (`get_case/$CASE_ID` → `section_id`, or the section is
+   already on the fetched test).
+2. Find the feature spec whose frontmatter `testrail_sections` array **contains** that section
+   id (thin lookup; survives TestRail section reorg). Match a **whole array element**, not a
+   substring — `872` must not match `[8724]`, and `_foundation.md` (no `testrail_sections`) is
+   never a target. The element is delimited by `[`, `]`, `,`, or space:
+   ```bash
+   MATCHES=$(grep -rlE "testrail_sections:.*(\[|[ ,])$SECTION_ID([],]| |\$)" .claude/testrail/specs/)
+   ```
+3. **Resolve to exactly one spec.** Zero matches → mark the case **BLOCKED** ("no grounded spec
+   for section $SECTION_ID — run `/testrail-setup`"). More than one match → also **BLOCKED**
+   ("ambiguous: section $SECTION_ID maps to multiple specs") — never first-wins.
+4. **Always load `_foundation.md` first** (the shared base — it carries no `testrail_sections`
+   and is never a resolution target), **then the matched feature spec.** Use their sections as
+   the source of truth for this case: `Ground truth` (marks destructive operations —
+   load-bearing for seeding/teardown), `Locators`, `How to invoke`, `Prerequisites & seeding`,
+   `Verification criteria`, and `Teardown`.
+
 ### 3b — Load WP fixture knowledge
 
 Read `.claude/agents/canary-imagify-session-agent.md` for the WordPress login fixture, nonce/
 REST/AJAX helpers, and Imagify-specific selectors. You do NOT spawn that agent — you read it
-for its snippets and drive Canary yourself via Bash.
+for its snippets and drive Canary yourself via Bash. The loaded feature spec (3a-bis) takes
+precedence over fixture defaults where they differ — the spec is the freshly-grounded truth.
+
+### 3b-bis — Seed prerequisites and register teardown (state isolation)
+
+Our 66 cases run sequentially in one session and several mutate state — case N must not
+pollute case N+1. Establish a clean, known state **before** opening the browser.
+
+1. From the loaded spec's `Prerequisites & seeding`, run the WP-CLI/REST seed helpers
+   **via Bash, not the UI** (set/clear API key, force an attachment into a known state, toggle
+   a setting, snapshot settings before a mutating case). Faster and deterministic.
+2. For every mutation you seed, **push its undo onto a LIFO teardown queue** (from the spec's
+   `Teardown` section — e.g. restore an attachment, re-apply a settings snapshot, delete a
+   seeded user).
+3. If a required prerequisite cannot be seeded (missing env, helper unavailable), mark the
+   case **BLOCKED** with the reason — do not attempt the case in an unknown state.
 
 ### 3c — Start a Canary session
 
@@ -124,7 +173,7 @@ id=$(npx @usecanary/cli session start \
 Write the login fixture to a temp step file and run it:
 
 ```js
-// /tmp/canary-steps/login.js
+// $STEPS/login.js   (STEPS=/tmp/canary-steps/$id — per-session dir, no cross-run collision)
 const page = await browser.getPage("main");
 await page.goto("http://localhost:10038/wp-login.php", { waitUntil: "networkidle" });
 await page.getByLabel("Username or Email Address").fill("admin");
@@ -135,28 +184,39 @@ console.log("PASS: logged in");
 ```
 
 ```bash
-mkdir -p /tmp/canary-steps
-npx @usecanary/cli run --session "$id" --step login /tmp/canary-steps/login.js --timeout 30
+STEPS="/tmp/canary-steps/$id"; mkdir -p "$STEPS"   # per-session; cleaned up in Step 3f
+npx @usecanary/cli run --session "$id" --step login "$STEPS/login.js" --timeout 30
 ```
 
-### 3e — Run each TestRail step
+### 3e — Run each TestRail step (closed-loop, grounded by the spec)
 
-For each `{content, expected}` pair (HTML-stripped), interpret the human-readable action into
-a concrete Canary step script. Reuse selectors/helpers from the canary-imagify-session-agent
-fixture. Each step script must signal its outcome on stdout:
+For each `{content, expected}` pair (HTML-stripped), build a concrete Canary step script. The
+`content` (action) tells you **what to do**; the loaded feature spec tells you **how**
+(real `Locators` and `How to invoke` — not selectors guessed from the prose); the `expected`
+field is the **assertion oracle** — you assert against what TestRail says is correct, never
+against "the page looked ok".
+
+1. **Drive the action using the spec's grounded locators** (`getByRole`/`getByLabel`/
+   `data-testid`/`id`, in that preference). If a grounded locator no longer matches the live
+   page (it drifted), re-observe the real element on the page and use what you find — closed
+   loop, not a blind retry of a stale selector.
+2. **Assert the TestRail `expected` result**, not a tautology. The PASS condition must check
+   the specific observable outcome the `expected` field describes, cross-checked with the
+   spec's `Verification criteria`.
 
 ```js
-// ... perform the action, then assert the expected result ...
-if (/* expected condition holds */) {
-  console.log("PASS: <short reason>");
+// ... drive the action via the spec's grounded locator ...
+// assert against the TestRail EXPECTED RESULT for this step (the oracle):
+if (/* the observable condition that the TestRail `expected` describes holds */) {
+  console.log("PASS: <expected result, confirmed>");
 } else {
-  console.log("FAIL: <what was expected vs. observed>");
+  console.log("FAIL: expected <TestRail expected> but observed <actual>");
 }
 ```
 
 Run it:
 ```bash
-npx @usecanary/cli run --session "$id" --step "step-$N" /tmp/canary-steps/step-$N.js --timeout 30
+npx @usecanary/cli run --session "$id" --step "step-$N" "$STEPS/step-$N.js" --timeout 30
 ```
 
 If a step depends on an environment that is not available (multisite, a specific 3rd-party
@@ -167,6 +227,7 @@ the reason (see Blocking detection).
 
 ```bash
 npx @usecanary/cli session end "$id"
+rm -rf "$STEPS"   # per-session step scripts (STEPS=/tmp/canary-steps/$id)
 
 CANARY_DIR=".ai/testrail/${RUN_ID}/canary"
 mkdir -p "$CANARY_DIR"
@@ -193,6 +254,14 @@ Record, per case:
 { case_id, title, session_id, outcome, trace_path, steps_passed, steps_total, elapsed, reason }
 ```
 where `trace_path` = `.ai/testrail/${RUN_ID}/canary/$id/trace.zip` and `elapsed` comes from `results.json`.
+
+### 3h — Teardown (LIFO — always, even on FAIL/BLOCKED)
+
+Unwind the teardown queue from 3b-bis in **reverse order**, via Bash (WP-CLI/REST, not the
+UI). Run this **regardless of the case outcome** — a failed or blocked case must still leave a
+clean state for case N+1, or one failure cascades into false failures downstream. If a
+teardown step itself fails, log it and continue unwinding the rest; note it on the case so the
+tester knows state may be dirty.
 
 ### Blocking detection
 
@@ -259,6 +328,17 @@ with the rest. After posting, print a final confirmation listing what was posted
 
 ## DO NOT
 
+Anti-hallucination guards (these are AUTO-REJECT — fix the script, don't ship it):
+- DO NOT use a selector you guessed from the step prose while the page is reachable — use the
+  loaded spec's grounded locator, or re-observe the real element. Inferred-locator → REJECT.
+- DO NOT use an ephemeral/internal ref as a locator — use a stable one (`getByRole` preferred,
+  then `data-testid` / `id`). Ephemeral-ref-as-locator → REJECT.
+- DO NOT write a tautological assertion (`assert true`, "page loaded"). The assertion must
+  check the TestRail **expected result**. Tautological-assertion → REJECT.
+- DO NOT execute a case with no grounded spec by guessing from prose — mark it BLOCKED and
+  tell the tester to run `/testrail-setup`.
+
+Execution & posting rules:
 - DO NOT run cases in parallel. One case, one browser, at a time.
 - DO NOT post any result to TestRail before the user confirms in Step 5.
 - DO NOT mark a case FAIL when it is actually BLOCKED by a missing environment — distinguish
