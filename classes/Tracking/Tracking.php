@@ -67,6 +67,40 @@ class Tracking extends BaseTracking {
 	}
 
 	/**
+	 * Track a "Settings Saved" event in Mixpanel.
+	 *
+	 * @param array $old_value The previous option value. Intentionally unused — kept for
+	 *                         hook-signature symmetry. On multisite the first hook arg is the
+	 *                         option name (string), not the old value, so this parameter is
+	 *                         unreliable and must not be used for business logic.
+	 * @param array $new_value The new option value.
+	 *
+	 * @return void
+	 */
+	public function track_settings_saved( array $old_value, array $new_value ): void {
+		if ( ! $this->can_track() ) {
+			return;
+		}
+
+		$event_data = array_merge(
+			$this->get_default_event_properties(),
+			[
+				'optimization_format'     => isset( $new_value['optimization_format'] ) ? (string) $new_value['optimization_format'] : null,
+				'lossless'                => ! empty( $new_value['lossless'] ),
+				'auto_optimize_on_upload' => ! empty( $new_value['auto_optimize'] ),
+				'backup_original'         => ! empty( $new_value['backup'] ),
+				'resize_larger_images'    => ! empty( $new_value['resize_larger'] ),
+				'resize_larger_width'     => isset( $new_value['resize_larger_w'] ) ? (int) $new_value['resize_larger_w'] : null,
+				'display_nextgen'         => ! empty( $new_value['display_nextgen'] ),
+				'display_nextgen_method'  => isset( $new_value['display_nextgen_method'] ) ? (string) $new_value['display_nextgen_method'] : null,
+				'cdn_enabled'             => ! empty( $new_value['cdn_url'] ),
+			]
+		);
+
+		$this->mixpanel->track_direct( 'Settings Saved', $event_data );
+	}
+
+	/**
 	 * Resolve the next-gen format generated for the full size.
 	 *
 	 * @param ProcessInterface $process The optimization process instance.

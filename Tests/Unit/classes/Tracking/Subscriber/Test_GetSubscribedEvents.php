@@ -52,4 +52,58 @@ class Test_GetSubscribedEvents extends TestCase {
 		$subscriber = new Subscriber( $tracking );
 		$subscriber->track_media_optimized( $process, $item );
 	}
+
+	/**
+	 * Tests that update_option_imagify_settings maps to track_settings_saved correctly.
+	 */
+	public function testMapsUpdateOptionImagifySettingsHook(): void {
+		$events = Subscriber::get_subscribed_events();
+
+		$this->assertArrayHasKey( 'update_option_imagify_settings', $events );
+		$this->assertSame( [ 'track_settings_saved', 10, 2 ], $events['update_option_imagify_settings'] );
+	}
+
+	/**
+	 * Tests that update_site_option_imagify_settings maps to track_settings_saved correctly.
+	 */
+	public function testMapsUpdateSiteOptionImagifySettingsHook(): void {
+		$events = Subscriber::get_subscribed_events();
+
+		$this->assertArrayHasKey( 'update_site_option_imagify_settings', $events );
+		$this->assertSame( [ 'track_settings_saved', 10, 2 ], $events['update_site_option_imagify_settings'] );
+	}
+
+	/**
+	 * Tests that track_settings_saved() delegates to Tracking::track_settings_saved() with array-cast args.
+	 */
+	public function testTrackSettingsSavedDelegatesToTracking(): void {
+		$tracking  = Mockery::mock( Tracking::class );
+		$old_value = [ 'optimization_level' => 1 ];
+		$new_value = [ 'optimization_level' => 2 ];
+
+		$tracking->shouldReceive( 'track_settings_saved' )
+			->once()
+			->with( $old_value, $new_value );
+
+		$subscriber = new Subscriber( $tracking );
+		$subscriber->track_settings_saved( $old_value, $new_value );
+	}
+
+	/**
+	 * Tests multisite-style delegation where first arg is the option name string.
+	 * On multisite, update_site_option_imagify_settings passes ($option, $new_value, $old_value).
+	 * The delegator must cast the string option name to array without error.
+	 */
+	public function testTrackSettingsSavedDelegatesToTrackingWithMultisiteArgs(): void {
+		$tracking   = Mockery::mock( Tracking::class );
+		$option_name = 'imagify_settings'; // multisite: first arg is the option name
+		$new_value  = [ 'optimization_level' => 2 ];
+
+		$tracking->shouldReceive( 'track_settings_saved' )
+			->once()
+			->with( (array) $option_name, $new_value );
+
+		$subscriber = new Subscriber( $tracking );
+		$subscriber->track_settings_saved( $option_name, $new_value );
+	}
 }
