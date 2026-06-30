@@ -14,10 +14,16 @@ results back to TestRail.
 ## Invocation
 
 ```
-/testrail-run                       → the active milestone's run (single open run)
-/testrail-run --milestone 2.3.0     → resolve the run via milestone name
-/testrail-run --run-id 1283         → target a run by ID directly
+/testrail-run                              → the active milestone's run (single open run)
+/testrail-run --milestone 2.3.0           → resolve the run via milestone name
+/testrail-run --run-id 1283               → target a run by ID directly
+/testrail-run --run-id 1283 --cases 155,156,174,14169   → execute only these case IDs
 ```
+
+`--cases` accepts a comma-separated list of **case IDs** (without the `C` prefix). When
+provided, the agent fetches all tests in the run but executes **only** the listed cases —
+all others are skipped. Status filter (Untested-only) still applies within the selection
+unless overridden by the user.
 
 ## What to do
 
@@ -25,10 +31,12 @@ results back to TestRail.
    - `--run-id <id>` → pass the run ID straight to the agent; no resolution needed.
    - `--milestone <name>` → pass the milestone name; the agent resolves it to a run.
    - no argument → the agent uses the active milestone's open run.
+   - `--cases <ids>` → pass the comma-separated case ID list to the agent; it will filter
+     the fetched test list to only those IDs before executing.
 
 2. **Spawn `testrail-run-agent`** once, passing whichever of `{run-id, milestone name, or
-   "active"}` was determined. Instruct it to:
-   - resolve and fetch the run's cases,
+   "active"}` was determined, and the `--cases` filter if provided. Instruct it to:
+   - resolve and fetch the run's cases (then filter to `--cases` list if given),
    - execute each case via Canary sequentially (never in parallel),
    - print the results table,
    - **stop and ask for confirmation** before posting anything back to TestRail.

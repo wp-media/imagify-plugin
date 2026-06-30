@@ -100,6 +100,10 @@ and `custom_steps_separated` (a list of `{content, expected}`).
 By default, execute only tests whose status is **Untested** (`status_id == 3`). If the user
 asked to re-run everything, include all.
 
+**`--cases` filter:** if a comma-separated list of case IDs was passed (e.g. `155,156,174,14169`),
+keep only the tests whose `case_id` is in that list. Apply this filter **after** the status
+filter. If a requested case ID is not found in the run, report it as skipped (not an error).
+
 ## Step 3 — Execute each case (sequential)
 
 For each test, in order:
