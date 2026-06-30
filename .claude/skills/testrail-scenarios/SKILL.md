@@ -57,13 +57,23 @@ You may also pass full PR URLs instead of `#`-prefixed numbers; both are accepte
    - To publish: `/testrail-scenarios publish` (or "publish the staged scenarios").
    - To revise: edit the YAML files under `.ai/testrail/pending/` directly, then publish.
 
+6. **Offer the reviewer.** After relaying the summary, ask the user:
+   > "Would you like the TestRail reviewer to check the staged scenarios before publishing?
+   > It will flag low-signal cases, fill coverage gaps, and clean up step wording.
+   > Run `/testrail-review` or reply **yes** to launch it."
+   If the user replies yes (or any affirmative), spawn `testrail-review-agent` immediately
+   with "review all staged files" and relay its report. Otherwise proceed — the reviewer
+   is optional and skipping it is fine.
+
 ## Publish mode
 
 When invoked as `/testrail-scenarios publish`, spawn `testrail-scenario-agent` in **publish
-mode**: instruct it to read every YAML file under `.ai/testrail/pending/`, create the
+mode**: instruct it to read every YAML file under `.ai/testrail/reviewed/`, create the
 sections and cases in TestRail, print the created case IDs, and delete each published YAML
-file. Pass no PR list in this mode — the agent operates on whatever is staged. If nothing is
-staged, the agent should say so and stop.
+file. Pass no PR list in this mode — the agent operates on whatever is in `reviewed/`.
+If `reviewed/` is empty but `pending/` has files, the agent warns the user those files
+haven't been reviewed and asks whether to proceed anyway. If both are empty, the agent
+should say so and stop.
 
 ## Constraints
 
