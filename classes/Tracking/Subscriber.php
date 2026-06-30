@@ -42,6 +42,8 @@ class Subscriber implements SubscriberInterface {
 			'update_option_imagify_settings'      => [ 'track_settings_saved', 10, 2 ],
 			// @action update_site_option_imagify_settings fires on multisite saves.
 			'update_site_option_imagify_settings' => [ 'track_settings_saved', 10, 2 ],
+			// @action imagify_after_reset_internal_state
+			'imagify_after_reset_internal_state'  => [ 'track_internal_state_reset', 10, 0 ],
 		];
 	}
 
@@ -72,5 +74,14 @@ class Subscriber implements SubscriberInterface {
 	 */
 	public function track_settings_saved( $old_value, $new_value ): void {
 		$this->tracking->track_settings_saved( (array) $old_value, (array) $new_value );
+	}
+
+	/**
+	 * Track an "Internal State Reset" event after the internal state is reset.
+	 *
+	 * @return void
+	 */
+	public function track_internal_state_reset(): void {
+		$this->tracking->track_internal_state_reset();
 	}
 }
