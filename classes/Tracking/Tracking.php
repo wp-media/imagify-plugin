@@ -101,6 +101,26 @@ class Tracking extends BaseTracking {
 	}
 
 	/**
+	 * Track an "Internal State Reset" event in Mixpanel.
+	 *
+	 * @return void
+	 */
+	public function track_internal_state_reset(): void {
+		if ( ! $this->can_track() ) {
+			return;
+		}
+
+		$event_data = array_merge(
+			$this->get_default_event_properties(),
+			[
+				'is_multisite' => is_multisite(),
+			]
+		);
+
+		$this->mixpanel->track_direct( 'Internal State Reset', $event_data );
+	}
+
+	/**
 	 * Resolve the next-gen format generated for the full size.
 	 *
 	 * @param ProcessInterface $process The optimization process instance.
