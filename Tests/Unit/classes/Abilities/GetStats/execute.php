@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetStats;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\GetStats;
 use Imagify\Tests\Unit\TestCase;
@@ -18,6 +19,17 @@ use Mockery;
  * @preserveGlobalState disabled
  */
 class Test_Execute extends TestCase {
+
+	/**
+	 * Tests that execute() fires the imagify_mcp_ability_executed action.
+	 */
+	public function testFiresAbilityExecutedHook(): void {
+		$this->stubStatFunctions( 0, 0, 0, 0, 0.0 );
+		$this->stubFilesStatsMethods( 0, 0, 0, 0 );
+		Actions\expectDone( 'imagify_mcp_ability_executed' )->once();
+
+		( new GetStats() )->execute();
+	}
 
 	/**
 	 * Tests that execute() returns the expected top-level array structure.
