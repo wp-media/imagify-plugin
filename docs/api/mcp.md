@@ -41,12 +41,15 @@ The endpoint returns HTTP 200 with the adapter's default three-tool set plus all
 | Class | Responsibility |
 |-------|----------------|
 | `Imagify\Abilities\AbilitiesInterface` | Contract every Imagify MCP ability must implement. |
+| `Imagify\Abilities\BulkOptimize` | MCP ability: schedule a bulk image optimization run (`imagify/bulk-optimize`). |
+| `Imagify\Abilities\GenerateMissingNextgen` | MCP ability: queue generation of missing next-gen (WebP/AVIF) versions (`imagify/generate-missing-nextgen`). |
 | `Imagify\Abilities\GetAccount` | Ability `imagify/get-account` — returns account quota, plan details, and API key validity. |
 | `Imagify\Abilities\GetMediaStatus` | Ability `imagify/get-media-status` — returns optimization status and metrics for a media attachment. |
 | `Imagify\Abilities\GetNextgenCoverage` | Ability `imagify/get-nextgen-coverage` — returns the count of optimized images missing a next-gen version and the configured format. |
 | `Imagify\Abilities\GetSettings` | Ability `imagify/get-settings` — returns all Imagify configuration options (redacting `api_key` and `version`). |
 | `Imagify\Abilities\GetStats` | Ability `imagify/get-stats` — returns optimization statistics for WP media and custom folders. |
 | `Imagify\Abilities\OptimizeMedia` | Ability `imagify/optimize-media` — optimizes a WP media attachment on demand. |
+| `Imagify\Abilities\RestoreMedia` | MCP ability: restore an optimized media to its original state via backup (`imagify/restore-media`). |
 | `Imagify\Abilities\UpdateSettings` | MCP ability: updates one or more Imagify configuration settings. |
 | `Imagify\MCP\ConfigSubscriber` | Customizes the MCP server name and description via `mcp_adapter_default_server_config`. |
 | `Imagify\MCP\AbilitiesSubscriber` | Registers the `imagify` ability category and all injected abilities. |
@@ -69,6 +72,49 @@ interface AbilitiesInterface {
 - `execute()` — returns the tool-result value (array, string, or any MCP-compatible type).
 
 ## Registered abilities
+
+### `imagify/bulk-optimize`
+
+**Class:** `Imagify\Abilities\BulkOptimize`  
+**Capability required:** `manage_options`  
+**Exposed via REST:** yes (`show_in_rest: true`)  
+**MCP discoverable:** yes (`mcp.public: true`)
+
+Schedules a bulk image optimization run for the WordPress media library or custom folders. The operation is asynchronous — the ability returns immediately after dispatching via Action Scheduler / WP-Cron.
+
+**Input schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `context` | string | yes | `"wp"` for the WordPress media library or `"custom-folders"` for custom folder sources. |
+| `optimization_level` | integer (0–2) | no | Overrides the global setting. 0 = normal, 1 = aggressive, 2 = ultra. |
+
+**Output schema:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"scheduled"` \| `"error"` | Result status. |
+| `context` | string | The requested optimization context, echoed back. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. |
+
+### `imagify/generate-missing-nextgen`
+
+**Class:** `Imagify\Abilities\GenerateMissingNextgen`  
+**Capability required:** `manage_options`  
+**Exposed via REST:** yes (`show_in_rest: true`)  
+**MCP discoverable:** yes (`mcp.public: true`)
+
+Queues generation of missing next-gen (WebP/AVIF) versions for all optimized media by delegating to `Bulk::run_generate_nextgen()`. Runs asynchronously via Action Scheduler. No required inputs.
+
+`status=scheduled` is returned both when jobs were enqueued (`queued_count > 0`) and when there is nothing to generate (`queued_count=0`). The latter is a successful no-op, not an error.
+
+**Output schema:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"scheduled"` \| `"error"` | Result status. |
+| `queued_count` | integer | Number of images queued for next-gen generation. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. |
 
 ### `imagify/optimize-media`
 
@@ -99,6 +145,29 @@ Delegates to `Imagify\Optimization\Process\WP::optimize()` for first-time optimi
 | `original_size` | integer \| null | File size in bytes before optimization, or null on error. |
 | `optimized_size` | integer \| null | File size in bytes after optimization (may be null if the background job is not yet complete). |
 | `savings_percent` | float \| null | Percentage savings, or null on error or when sizes are unavailable. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. |
+
+### `imagify/restore-media`
+
+**Class:** `Imagify\Abilities\RestoreMedia`  
+**Capability required:** `manage_options`  
+**Exposed via REST:** yes (`show_in_rest: true`)  
+**MCP discoverable:** yes (`mcp.public: true`)
+
+Restores an optimized media to its original state using the stored backup file. Requires that backup was enabled (`backup: 1` in settings) at the time of optimization.
+
+**Input schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `media_id` | integer | yes | WordPress attachment ID to restore. |
+
+**Output schema:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"success"` \| `"error"` | Result status. |
+| `restored_size` | integer \| null | Restored original file size in bytes, or null on error. |
 | `error_message` | string \| null | Human-readable error on failure, null on success. |
 
 ## Hooks

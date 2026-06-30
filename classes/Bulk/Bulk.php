@@ -9,7 +9,7 @@ use WP_Error;
 /**
  * Bulk optimization
  */
-final class Bulk {
+final class Bulk implements BulkOptimizerInterface {
 	use InstanceGetterTrait;
 
 	/**
@@ -173,7 +173,7 @@ final class Bulk {
 	 *
 	 * @return array
 	 */
-	public function run_optimize( string $context, int $optimization_level ) {
+	public function run_optimize( string $context, int $optimization_level ): array {
 		if ( ! $this->can_optimize() ) {
 			return [
 				'success' => false,
