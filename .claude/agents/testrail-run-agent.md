@@ -165,6 +165,45 @@ asked to re-run everything, include all.
 keep only the tests whose `case_id` is in that list. Apply this filter **after** the status
 filter. If a requested case ID is not found in the run, report it as skipped (not an error).
 
+## Step 2b — Coverage pre-check (ask once per missing category, not per case)
+
+Before executing anything, resolve spec coverage for the **whole filtered test list up front**.
+Never let the same missing-spec reason surface as N separate BLOCKED cases — surface it once,
+as a decision, before any case runs.
+
+1. For each **unique** `section_id` among the filtered tests, run the same lookup as 3a-bis:
+   ```bash
+   MATCHES=$(grep -rlE "testrail_sections:.*(\[|[ ,])$SECTION_ID([],]| |\$)" .claude/testrail/specs/)
+   ```
+2. Bucket every section into `ok` (exactly one match), `missing` (zero matches), or `ambiguous`
+   (more than one match). Count the affected cases per section.
+3. If `missing` or `ambiguous` is non-empty, **stop before running any case** and print one line
+   per affected section:
+   ```
+   No grounded spec for:
+     - Section 8724 "MCP Abilities"  — 12 cases
+     - Section 4976 "Media library"  — 3 cases  (ambiguous: matches 2 specs)
+   ```
+   Then ask explicitly:
+   > Generate the missing spec(s) now (`/testrail-setup`), or mark these cases BLOCKED and
+   > continue with the rest of the run? (generate / block / select)
+   - **generate** → you cannot ground a spec yourself (no browser-driving tool for this outside
+     Canary execution, and grounding is the Explorer's job, not yours). Stop here and hand back
+     to the orchestrator: state clearly which feature name(s) need `/testrail-setup <feature>`
+     (derive a feature slug from the section name, e.g. "Media library" → `media-library`), and
+     that you should be re-invoked on the same run/case selection once grounding is done.
+   - **block** → record every case in the missing/ambiguous sections as BLOCKED with the shared
+     reason (one message per *section*, not per case) and continue to Step 3 with the remaining,
+     already-grounded cases.
+   - **select** → ask which of the listed sections to generate vs. block, then apply per-section
+     as above.
+4. Sections that resolved `ok` need no prompt — proceed straight to Step 3 for their cases.
+
+This pre-check does not replace 3a-bis's per-case resolution (a case can still turn out
+ambiguous individually if TestRail data changes mid-run) — it just means that by the time
+Step 3 runs, the user has already made an informed, one-time decision per category instead of
+being surprised by a wall of identical BLOCKED rows.
+
 ## Step 3 — Execute each case (sequential)
 
 For each test, in order:
@@ -195,9 +234,12 @@ between guessing and executing against reality.
    ```bash
    MATCHES=$(grep -rlE "testrail_sections:.*(\[|[ ,])$SECTION_ID([],]| |\$)" .claude/testrail/specs/)
    ```
-3. **Resolve to exactly one spec.** Zero matches → mark the case **BLOCKED** ("no grounded spec
-   for section $SECTION_ID — run `/testrail-setup`"). More than one match → also **BLOCKED**
-   ("ambiguous: section $SECTION_ID maps to multiple specs") — never first-wins.
+3. **Resolve to exactly one spec.** Zero or multiple matches here should be rare — Step 2b
+   already surfaced and decided every missing/ambiguous section before Step 3 started. If a
+   case still resolves to zero matches (the user chose **block** in 2b, or TestRail data
+   changed mid-run), mark it **BLOCKED** ("no grounded spec for section $SECTION_ID — run
+   `/testrail-setup`") without asking again. Multiple matches → also **BLOCKED** ("ambiguous:
+   section $SECTION_ID maps to multiple specs") — never first-wins.
 4. **Always load `_foundation.md` first** (the shared base — it carries no `testrail_sections`
    and is never a resolution target), **then the matched feature spec.** Use their sections as
    the source of truth for this case: `Ground truth` (marks destructive operations —
@@ -416,6 +458,10 @@ Anti-hallucination guards (these are AUTO-REJECT — fix the script, don't ship 
   check the TestRail **expected result**. Tautological-assertion → REJECT.
 - DO NOT execute a case with no grounded spec by guessing from prose — mark it BLOCKED and
   tell the tester to run `/testrail-setup`.
+- DO NOT ask the missing-spec question per case — resolve coverage once up front (Step 2b)
+  and ask once per missing/ambiguous *section*, not once per case.
+- DO NOT ground a spec yourself — that is the Explorer's job. If the user wants one generated,
+  stop and hand back to the orchestrator with the feature name(s) to ground.
 
 Execution & posting rules:
 - DO NOT run cases in parallel. One case, one browser, at a time.

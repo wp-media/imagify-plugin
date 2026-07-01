@@ -41,9 +41,22 @@ unless overridden by the user.
    - print the results table,
    - **stop and ask for confirmation** before posting anything back to TestRail.
 
-3. **Relay the agent's results table** to the user verbatim.
+3. **If the agent stops with a coverage question** (Step 2b — one or more TestRail sections
+   have no grounded spec), relay its list of affected sections/case-counts verbatim and ask
+   the user: generate the missing spec(s) now, mark those cases BLOCKED and continue, or
+   select per-section.
+   - **generate** (all or selected) → for each named feature, spawn `testrail-explorer-agent`
+     with that feature name (the slug the run agent derived from the section name, e.g.
+     `media-library`). Wait for it to finish grounding, then re-invoke `testrail-run-agent` on
+     the **same run/case selection** as the original call — it will now resolve those sections
+     normally instead of blocking them.
+   - **block** (all or selected) → re-engage `testrail-run-agent` telling it to proceed with
+     those sections marked BLOCKED and execute the rest.
+   - **select** → split the list per the user's answer and apply both branches above.
 
-4. **On the user's confirmation** ("yes" / "post them" / "select C123 C456"), re-engage the
+4. **Relay the agent's results table** to the user verbatim.
+
+5. **On the user's confirmation** ("yes" / "post them" / "select C123 C456"), re-engage the
    agent (or continue it) to post the chosen results to TestRail. Pass through any selection
    the user makes.
 
