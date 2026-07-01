@@ -61,9 +61,9 @@ You may also pass full PR URLs instead of `#`-prefixed numbers; both are accepte
    > "Would you like the TestRail reviewer to check the staged scenarios before publishing?
    > It will flag low-signal cases, fill coverage gaps, and clean up step wording.
    > Run `/testrail-review` or reply **yes** to launch it."
-   If the user replies yes (or any affirmative), spawn `testrail-review-agent` immediately
-   with "review all staged files" and relay its report. Otherwise proceed — the reviewer
-   is optional and skipping it is fine.
+   If the user replies yes (or any affirmative), spawn `testrail-scenario-agent` in review
+   mode immediately with "review all staged files" and relay its report. Otherwise proceed —
+   the reviewer is optional and skipping it is fine.
 
 ## Publish mode
 

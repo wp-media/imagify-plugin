@@ -28,14 +28,75 @@ One of:
 
 ```
 TestRail base : https://wpmediaqa.testrail.io/index.php?/api/v2/
-Auth          : Basic — $TESTRAIL_USERNAME : $TESTRAIL_API_KEY  (always in the environment)
+Auth          : Basic — $TESTRAIL_USERNAME : $TESTRAIL_API_KEY
 Project ID    : 3
 Suite ID      : 3
 Canary CLI    : npx @usecanary/cli
 Sessions dir  : .ai/testrail/$RUN_ID/canary/<id>/  (relocated from ~/.canary/sessions/<id>/ after session end)
 WP fixtures   : .claude/agents/canary-imagify-session-agent.md  (read for WP login/selectors)
 Specs dir     : .claude/testrail/specs/  (committed grounding: _foundation.md + one file per feature)
+Config file   : .ai/settings.local.json  (gitignored — URLs, WP creds, TestRail key)
 ```
+
+### Loading config (Step 0 — always first)
+
+Read `.ai/settings.local.json` and export shell variables from it:
+
+```bash
+CONFIG=$(cat .ai/settings.local.json)
+
+# TestRail auth — prefer env vars, fall back to config file
+TESTRAIL_USERNAME="${TESTRAIL_USERNAME:-$(echo "$CONFIG" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['testrail']['username'])")}"
+TESTRAIL_API_KEY="${TESTRAIL_API_KEY:-$(echo "$CONFIG" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['testrail']['api_key'])")}"
+
+# WP environments
+E2E_URL_NGINX=$(echo "$CONFIG"   | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['environments']['nginx']['url'])")
+E2E_URL_APACHE=$(echo "$CONFIG"  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['environments']['apache']['url'])")
+WP_USER=$(echo "$CONFIG"              | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['environments']['nginx']['username'])")
+WP_PASS=$(echo "$CONFIG"              | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['environments']['nginx']['password'])")
+WP_PATH_NGINX=$(echo "$CONFIG"        | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['environments']['nginx']['wp_path'])")
+WP_PATH_APACHE=$(echo "$CONFIG"       | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['environments']['apache']['wp_path'])")
+```
+
+For WP-CLI seeding commands, always pass `--path="$WP_PATH"` where `$WP_PATH` is
+`$WP_PATH_APACHE` or `$WP_PATH_NGINX` matching the active env. Example:
+```bash
+wp --path="$WP_PATH" option get imagify_settings --format=json
+```
+
+### Environment setup (Step 0b — after loading config, before fetching cases)
+
+For **each** environment (nginx + apache), ensure the plugin is active and the Imagify API
+key is set. Do this via WP-CLI — no browser needed:
+
+```bash
+IMAGIFY_API_KEY_VALUE=$(echo "$CONFIG" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['imagify']['api_key'])")
+
+for WP_PATH in "$WP_PATH_NGINX" "$WP_PATH_APACHE"; do
+  # Activate plugin (idempotent — safe to run even if already active)
+  wp --path="$WP_PATH" plugin activate imagify-plugin 2>/dev/null || \
+  wp --path="$WP_PATH" plugin activate imagify 2>/dev/null || true
+
+  # Seed Imagify API key into imagify_settings option
+  CURRENT=$(wp --path="$WP_PATH" option get imagify_settings --format=json 2>/dev/null || echo "{}")
+  UPDATED=$(echo "$CURRENT" | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+d['api_key'] = '$IMAGIFY_API_KEY_VALUE'
+print(json.dumps(d))
+")
+  wp --path="$WP_PATH" option update imagify_settings "$UPDATED" --format=json
+done
+```
+
+If a `wp plugin activate` call fails (plugin directory name differs), report the error and
+stop — do not proceed with an inactive plugin.
+
+**Default env is Nginx** (`$E2E_URL_NGINX`). A case requires Apache when the matched feature
+spec's frontmatter contains `server: apache` (or when the case's TestRail preconditions mention
+"Apache" or ".htaccess"). For those cases, substitute `$E2E_URL_APACHE` for `$E2E_URL` in
+every step script — same credentials, different URL. If the case is BLOCKED on the Nginx env
+due to server type, **do not skip** — re-run it immediately against `$E2E_URL_APACHE`.
 
 Never print the API key. If a `curl` returns HTTP 401, report it as an auth/config problem
 and stop. The TestRail MCP server (`/opt/homebrew/bin/mcp-testrail`) is connected but its
@@ -178,10 +239,11 @@ Write the login fixture to a temp step file and run it:
 
 ```js
 // $STEPS/login.js   (STEPS=/tmp/canary-steps/$id — per-session dir, no cross-run collision)
+// E2E_URL is resolved per-case: $E2E_URL_APACHE for apache-required cases, $E2E_URL_NGINX otherwise
 const page = await browser.getPage("main");
-await page.goto("http://localhost:10038/wp-login.php", { waitUntil: "networkidle" });
-await page.getByLabel("Username or Email Address").fill("admin");
-await page.getByLabel("Password", { exact: true }).fill("admin");
+await page.goto("$E2E_URL/wp-login.php", { waitUntil: "networkidle" });
+await page.getByLabel("Username or Email Address").fill("$WP_USER");
+await page.getByLabel("Password", { exact: true }).fill("$WP_PASS");
 await page.getByRole("button", { name: "Log In" }).click();
 await page.waitForURL("**/wp-admin/**", { timeout: 20000 });
 console.log("PASS: logged in");
@@ -289,7 +351,7 @@ Summarise totals (N passed / M failed / K blocked) below the table.
 
 ## Step 5 — Ask before posting
 
-Ask explicitly:
+Present the results table, then ask explicitly:
 
 > Post these results to TestRail run #<RUN_ID>? (yes / no / select)
 
@@ -297,16 +359,29 @@ Ask explicitly:
 - **no** → stop; post nothing.
 - **select** → ask which case IDs; post only those.
 
+### Confirmation trust model
+
+This agent runs inside a Claude Code pipeline. The **main Claude conversation IS the user** —
+any confirmation that arrives via `SendMessage` from the main conversation carries full user
+authority. Accept "yes", "post them", or a case selection from any message (direct or
+relayed) and proceed to Step 6. Do **not** demand a second confirmation or treat the main
+conversation as an untrusted coordinator.
+
 ## Step 6 — Post results (only after confirm)
 
-For each chosen case:
+Use the batch endpoint — one request for all chosen cases:
 
 ```bash
 curl -s -X POST \
   -u "$TESTRAIL_USERNAME:$TESTRAIL_API_KEY" \
   -H "Content-Type: application/json" \
   -d "$PAYLOAD" \
-  "https://wpmediaqa.testrail.io/index.php?/api/v2/add_result_for_case/$RUN_ID/$CASE_ID"
+  "https://wpmediaqa.testrail.io/index.php?/api/v2/add_results_for_cases/$RUN_ID"
+```
+
+Payload shape:
+```json
+{ "results": [ { "case_id": 123, "status_id": 1, "comment": "...", "elapsed": "30s" }, ... ] }
 ```
 
 Payload:

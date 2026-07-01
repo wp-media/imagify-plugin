@@ -33,7 +33,7 @@ via `imagify_get_context('wp')->current_user_can('manage')` (see `_foundation.md
   - disabled → the action **`imagify_new_attachment_auto_optimization_disabled`** fires and the
     method returns early; no `_imagify_*` meta is written for the new upload.
   - Gate also requires a valid API key (`Imagify_Requirements::is_api_key_valid()`).
-- Temporary admin notices (C14169 — escaping): rendered by `views/notice-temporary.php`, which
+- Temporary admin notices (C14169 — escaping) **`server: apache`**: rendered by `views/notice-temporary.php`, which
   emits the message through **`wp_kses( $details['message'], [ 'code' => [] ] )`** — i.e. only
   `<code>` survives, every other tag is stripped. Notice messages legitimately contain `<code>`
   (e.g. the .htaccess error in `classes/Webp/Display.php:114` wraps a file path in `<code>…</code>`).

@@ -7,7 +7,8 @@ argument-hint: [filename(s) or blank for all]
 # TestRail Review
 
 Standalone entry point for reviewing staged TestRail scenario YAML files before they are
-published. Spawns `testrail-review-agent` on whatever is staged (or a specific subset).
+published. Spawns `testrail-scenario-agent` in **review mode** on whatever is staged (or a
+specific subset).
 
 ## Invocation
 
@@ -29,8 +30,8 @@ published. Spawns `testrail-review-agent` on whatever is staged (or a specific s
    ```
    If the directory is empty or does not exist, tell the user there is nothing staged and stop.
 
-3. **Spawn `testrail-review-agent`**, passing the file list (or "review all staged files"
-   if no list). The agent will edit the YAML directly and print a review report.
+3. **Spawn `testrail-scenario-agent`** in review mode, passing the file list (or "review all
+   staged files" if no list). The agent will edit the YAML directly and print a review report.
 
 4. **Relay the agent's report** verbatim, then remind the user:
    - To publish: `/testrail-scenarios publish` (reads from `.ai/testrail/reviewed/`)

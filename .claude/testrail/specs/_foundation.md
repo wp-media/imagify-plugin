@@ -11,8 +11,15 @@ file plus the per-feature spec before executing any case. Locators captured live
 are role/id-based; verify against the page if the build moves.
 
 ## Environment
-- Base URL:  http://localhost:10038          (Local by Flywheel site "test-temp")
-- WP admin:  http://localhost:10038/wp-admin/
+
+URLs and credentials are read from `.ai/settings.local.json` (gitignored). Two environments:
+
+| Key | URL | Server | Use when |
+|-----|-----|--------|----------|
+| `nginx`  | http://localhost:10043 | Nginx  | default — all cases unless `server: apache` |
+| `apache` | http://localhost:10048 | Apache | cases involving `.htaccess`, rewrite rules, `$is_apache` paths |
+
+- WP admin:  `$E2E_URL/wp-admin/`
 - Login:     admin / admin via /wp-login.php
              role-based: getByLabel("Username or Email Address"), getByLabel("Password", { exact: true })
              submit:     getByRole("button", { name: "Log In" })
