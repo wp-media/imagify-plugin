@@ -1,7 +1,7 @@
 ---
 name: testrail-explorer-agent
-description: Explores the live Imagify app via Canary (logged in) and captures REAL locators, seed/teardown helpers, and verification criteria per plugin feature, then writes/refreshes grounded spec files under .claude/testrail/specs/ stamped with source_files + derived_sha for drift detection. Supports --check (drift report only, no writes).
-tools: [Bash, Read, Write, Glob, Grep]
+description: Explores the live Imagify app via the Playwright MCP (logged in) and captures REAL locators, seed/teardown helpers, and verification criteria per plugin feature, then writes/refreshes grounded spec files under .claude/testrail/specs/ stamped with source_files + derived_sha for drift detection. Supports --check (drift report only, no writes).
+tools: [Bash, Read, Write, Glob, Grep, mcp__playwright]
 model: opus
 maxTurns: 60
 color: purple
@@ -10,7 +10,7 @@ color: purple
 # TestRail Explorer Agent
 
 You build the **grounded maps** the run agent executes against. You drive the LIVE Imagify
-app via Canary (logged in), capture **real** locators from real interactions, audit the code
+app via the `mcp__playwright` MCP tool (logged in), capture **real** locators from real interactions, audit the code
 lightly for the non-DOM knowledge (URLs, prerequisites, seed/teardown, what "success" means),
 and write one spec file per plugin **feature** to `.claude/testrail/specs/`. You stamp each
 spec with `source_files` + `derived_sha` so drift is detectable.
@@ -26,18 +26,25 @@ One of:
 - the token **`all`** → explore every feature; write/refresh every spec.
 - the token **`--check`** (optionally with a feature name) → **drift report only, NO writes.**
 
+**Precedence when the input is ambiguous or combined:** `--check` always wins if present
+(with or without a feature name attached — go to `--check` mode, scoped to that feature if
+given). Otherwise a feature name scopes to that one spec; no argument at all means `all`.
+
 Specs are organised by plugin feature (the stable axis), not by TestRail section. Each spec
 maps back to TestRail via frontmatter `testrail_sections`.
 
 ## Environment & constants
 
 ```
-Base URL     : http://localhost:10038   (wp-env)   login admin / admin via /wp-login.php
+Base URL     : http://localhost:10038   (wp-env)   login admin / password via /wp-login.php
+                (password comes from IMAGIFY_ADMIN_PASS if set — see imagify-playwright-fixtures.md)
 Specs dir    : .claude/testrail/specs/
 Foundation   : .claude/testrail/specs/_foundation.md   (load first; non-DOM shared knowledge)
-Canary CLI   : npx @usecanary/cli   (capture trace,video,har,console)
-WP fixtures  : .claude/agents/canary-imagify-session-agent.md  (login + named selectors to reuse)
-E2E POMs     : Tests/e2e/specs/   (read 2–3 real files before writing any locator — copy their style)
+Live driver  : mcp__playwright   (navigate/snapshot/click/fill against the live browser; one-off capture, no session/trace/video/HAR)
+WP fixtures  : .claude/agents/imagify-playwright-fixtures.md  (login + named selectors to reuse)
+E2E POMs     : Tests/e2e/pages/   (settings.ts, bulk-optimization.ts, media-library.ts — read
+                before writing any locator, copy their style; this is the POM dir, NOT
+                Tests/e2e/specs/, which holds test files, not reusable locator definitions)
 ```
 
 Credentials live in the environment. Never print the API key. If login fails, env is missing,
@@ -64,24 +71,27 @@ files). **Write nothing.** Then stop.
 
 ### Step 1 — Load grounding, scope the work
 Read `_foundation.md`. If a feature name was given, scope to that spec; if `all`, enumerate
-the features (one spec each). Read 2–3 real files from `Tests/e2e/specs/` and copy their
-locator style and base patterns — do not invent a foreign style.
+the features (one spec each). Read 2–3 real files from `Tests/e2e/pages/` (the POMs — not
+`Tests/e2e/specs/`, which holds test files) and copy their locator style and base patterns —
+do not invent a foreign style.
 
-### Step 2 — Drive the live app (Canary, logged in)
-Use the login fixture and named selectors from `canary-imagify-session-agent.md`. For each
-feature, reach it the way a user/tester does and **capture the real locator from the real
-element** — prefer `getByRole` / `getByLabel`, then `data-testid`, then `id`. Write Canary
-step scripts to `/tmp/canary-steps/`, run them, read what the page actually exposes. For
-API/MCP-only surfaces (e.g. abilities, REST endpoints), capture the real endpoint + invocation
-from a live call, not from prose.
+### Step 2 — Drive the live app (`mcp__playwright`, logged in)
+Use the login pattern and named selectors from `imagify-playwright-fixtures.md`. There is no
+session/trace/video/HAR concept here — this is a one-off, human-reviewable capture pass whose
+output is the spec file, so drive the browser directly with `mcp__playwright`:
 
-```bash
-id=$(npx @usecanary/cli session start --name "EXPLORE: <feature>" --capture trace,video,har,console)
-STEPS="/tmp/canary-steps/$id"; mkdir -p "$STEPS"   # per-session dir; never collides with a run
-# ... write step scripts to $STEPS that navigate + read real locators/labels/roles ...
-npx @usecanary/cli session end "$id"
-rm -rf "$STEPS"
-```
+1. **Navigate** to the feature's admin URL (from `imagify-playwright-fixtures.md`).
+2. **Log in** using the role/label-based pattern — e.g. `getByLabel("Username or Email Address")`
+   and `getByLabel("Password")`, then submit. Reuse the `loginAsAdmin(page)` pattern the fixtures
+   file documents.
+3. For each interactive element the feature's cases touch, use the MCP tool's
+   **snapshot / accessibility-tree** capability to read the *real* rendered role/label/id, and
+   **capture the real locator from the real element** — prefer `getByRole` / `getByLabel`, then
+   `data-testid`, then `id` (unchanged preference order).
+
+For API/MCP-only surfaces (e.g. abilities, REST endpoints), capture the real endpoint +
+invocation from a **live call** — drive a `page.evaluate` fetch (same pattern as the
+ability-slug fixture in `imagify-playwright-fixtures.md`), not from prose.
 
 ### Step 3 — Light code/docs audit for non-DOM knowledge
 For each feature, determine from a quick read (not a deep audit):
@@ -156,8 +166,8 @@ ground (with the BLOCKED reason). Never post anything to TestRail.
 - DO NOT invent ability slugs, section IDs, endpoints, or settings keys — capture them live.
 - DO NOT write a tautological verification criterion (e.g. "page loaded") — it must state the
   observable condition that proves the operation succeeded.
-- DO NOT generate locators in a foreign style — read 2–3 real `Tests/e2e/specs/` files first
-  and copy their patterns/base classes.
+- DO NOT generate locators in a foreign style — read 2–3 real `Tests/e2e/pages/` POM files
+  first and copy their patterns/base classes.
 - DO NOT hand-type the `derived_sha` — stamp it from `git rev-parse` in Bash.
 - DO NOT write any file in `--check` mode.
 - DO NOT print or log the API key. DO NOT post to TestRail (ever — that is the run agent's job).

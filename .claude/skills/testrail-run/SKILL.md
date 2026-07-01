@@ -1,15 +1,15 @@
 ---
 name: testrail-run
-description: Fetch a TestRail test run, execute every scenario via Canary, and optionally post results back to TestRail.
+description: Fetch a TestRail test run, execute every scenario via Playwright, and optionally post results back to TestRail.
 ---
 
 # TestRail Run
 
 Entry point for executing a TestRail test run end-to-end. Resolves the target run, then
 spawns `testrail-run-agent`, which fetches every case in the run, executes each one via
-Canary browser automation (sequentially), collects pass/fail/blocked outcomes with
-trace/video evidence, prints a results table, and — only after the user confirms — posts the
-results back to TestRail.
+Playwright browser automation (sequentially — one generated `.spec.ts` per case), collects
+pass/fail/blocked outcomes with trace/video evidence, publishes a live results dashboard, and
+— only after the user confirms — posts the results back to TestRail.
 
 ## Invocation
 
@@ -37,8 +37,8 @@ unless overridden by the user.
 2. **Spawn `testrail-run-agent`** once, passing whichever of `{run-id, milestone name, or
    "active"}` was determined, and the `--cases` filter if provided. Instruct it to:
    - resolve and fetch the run's cases (then filter to `--cases` list if given),
-   - execute each case via Canary sequentially (never in parallel),
-   - print the results table,
+   - execute each case via Playwright sequentially (never in parallel),
+   - publish the live results dashboard,
    - **stop and ask for confirmation** before posting anything back to TestRail.
 
 3. **If the agent stops with a coverage question** (Step 2b — one or more TestRail sections
@@ -54,7 +54,7 @@ unless overridden by the user.
      those sections marked BLOCKED and execute the rest.
    - **select** → split the list per the user's answer and apply both branches above.
 
-4. **Relay the agent's results table** to the user verbatim.
+4. **Relay the agent's results dashboard link and summary** to the user verbatim.
 
 5. **On the user's confirmation** ("yes" / "post them" / "select C123 C456"), re-engage the
    agent (or continue it) to post the chosen results to TestRail. Pass through any selection
@@ -62,8 +62,8 @@ unless overridden by the user.
 
 ## Constraints
 
-- Execution is always sequential, matching `workers: 1` in `playwright.config.ts`.
+- Execution is always sequential, matching `workers: 1` in `Tests/e2e/testrail.config.ts`.
 - Never post results to TestRail without explicit user confirmation.
 - TestRail credentials (`TESTRAIL_USERNAME`, `TESTRAIL_API_KEY`) live in the environment;
   do not prompt for them and never print them.
-- This skill never calls the TestRail API or Canary directly. All of that is the agent's.
+- This skill never calls the TestRail API or Playwright directly. All of that is the agent's.

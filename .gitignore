@@ -21,6 +21,7 @@ composer.lock
 /Tests/e2e/test-results
 /.e2e-screenshots
 /Tests/e2e/.e2e-screenshots
+/Tests/e2e/.testrail-tmp
 
 # Generated distribution packages
 /generatedpackages

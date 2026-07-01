@@ -23,11 +23,10 @@ The following values are injected via the orchestrator prompt — do not read an
 | `E2E_BOOT` | `bash bin/dev-start.sh` |
 | `E2E_SETTINGS` | `/wp-admin/options-general.php?page=imagify` |
 | `E2E_CI` | `true` |
-| `e2e_mode` | `"playwright"` or `"canary"` (default `"playwright"`) |
 
 Every `{TEMP_ROOT}`, `{REPO}`, `{ARCH_SKILL}`, etc. below refers to these runtime values.
 
-`e2e_mode` selects which browser-QA agent runs in Strategy B: `"playwright"` (default) → `e2e-qa-tester`; `"canary"` → `canary-e2e`. Both return the same JSON shape, so the rest of your process is identical regardless of mode. If `e2e_mode` was not supplied, treat it as `"playwright"`.
+Strategy B delegates to the `e2e-qa-tester` agent.
 
 ## Your process
 
@@ -137,7 +136,7 @@ If the issue title, PR body, or acceptance criteria mention any of these keyword
 
 **Never skip Strategy B citing "CI-only environment."** This is a local environment, not a CI pipeline. If `bash bin/dev-start.sh` exits 0 and `{E2E_URL}` is reachable, you must run Strategy B. The only valid reason to skip it is a documented boot failure from Step 0.
 
-**Before invoking any E2E agent, write the structured QA plan.** Regardless of `e2e_mode`, write `{TEMP_ROOT}/qa-plan.md` derived from the diff, the spec, and the "How to test" steps. Group the user-facing flows the change touches into P0 (must pass before merge), P1 (should pass), and P2 (nice to have — sessions optional). Use this format:
+**Before invoking the E2E agent, write the structured QA plan.** Write `{TEMP_ROOT}/qa-plan.md` derived from the diff, the spec, and the "How to test" steps. Group the user-facing flows the change touches into P0 (must pass before merge), P1 (should pass), and P2 (nice to have). Use this format:
 
 ```markdown
 ## QA Plan — PR #<PR_NUMBER>
@@ -148,35 +147,31 @@ If the issue title, PR body, or acceptance criteria mention any of these keyword
 - **Steps:** 1. ... 2. ...
 - **Assertions:** ...
 - **Risk:** <files>
-- **Canary session name:** `P0-A: <flow name>`
 
 ### P1 — Should pass
 #### P1-A: ...
 
-### P2 — Nice to have (Canary sessions optional)
+### P2 — Nice to have
 ```
 
-`canary-e2e` records one session per P0/P1 flow from this file; `e2e-qa-tester` uses it as a checklist of flows to walk. Write it once, before delegating.
+`e2e-qa-tester` uses it as a checklist of flows to walk. Write it once, before delegating.
 
-**Route the E2E agent on `e2e_mode`:**
+Delegate to the **`e2e-qa-tester`** agent.
 
-- `e2e_mode == "canary"` → delegate to the **`canary-e2e`** agent.
-- `e2e_mode == "playwright"` (default) → delegate to the **`e2e-qa-tester`** agent (existing behavior).
-
-Provide the chosen agent with:
+Provide it with:
 - The path to `{TEMP_ROOT}/qa-plan.md` (`QA_PLAN_PATH`)
 - The acceptance criteria and "How to test" steps from the PR
 - The list of changed frontend files
 - The PR number (needed for screenshot publishing)
 
-The E2E agent (either one) will:
-1. Walk through the UI flows — `e2e-qa-tester` via Playwright MCP; `canary-e2e` by recording one Canary session per P0/P1 flow (trace/video/HAR/console)
-2. Write Playwright specs under `Tests/e2e/specs/` (permanent, committed to the branch — `E2E_CI` is true)
-3. Run those specs against the local environment
+The E2E agent will:
+1. Draft a Playwright spec directly from the PR's diff and existing POMs, and run it — falling
+   back to a single targeted Playwright MCP snapshot only when a drafted locator/assertion
+   turns out wrong, not as a default interactive walkthrough
+2. Write the spec under `Tests/e2e/specs/` (permanent, committed to the branch — `E2E_CI` is true)
+3. Run it against the local environment (plus one final full-file run once green)
 4. Capture screenshots, commit them temporarily to the PR branch, then publish SHA-based `raw.githubusercontent.com` URLs for the QA report
 5. Return per-criterion results and permanent screenshot URLs
-
-**Both agents return the same JSON shape**, so process the result identically. `canary-e2e` adds two extra fields (`canary_sessions`, `canary_results_table`) for richer evidence — surface them if present, but do not branch your core logic on them.
 
 If the E2E agent returns `overall: "CANNOT_VERIFY"` (branch mismatch or unrecoverable environment failure), treat it as `PARTIAL` in your own result — record the failure reason as a blocker in your `blockers[]` field and set the affected criteria to `result: "PARTIAL"` with `evidence: "<agent>: CANNOT_VERIFY — <reason>"`.
 

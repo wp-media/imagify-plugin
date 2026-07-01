@@ -170,7 +170,7 @@ Draft test cases covering, where applicable:
 - **Plugin conflicts** — relevant 3rd-party plugins active (WooCommerce, WP Rocket).
 - **Regression guard** — confirm adjacent existing behaviour still works.
 
-Each case must be concrete and executable by a human or by Canary. Use the **Step template**
+Each case must be concrete and executable by a human or by Playwright. Use the **Step template**
 (`template_id: 2`) with discrete action/expected pairs. Flag `smoke_test: true` only for the
 critical-path cases that must pass on every build.
 
@@ -181,7 +181,7 @@ These case types are consistently invalid and must never appear in the output:
 - **Unit / integration test runner cases** — any case whose `action` would be running
   `composer test-unit`, `phpunit`, `wp-env run`, or any CLI test command. If a behaviour is
   only verifiable by running the test suite, it belongs in the test suite, not in TestRail.
-  Ask instead: "can a human tester or Canary observe this outcome via the UI or a REST/MCP
+  Ask instead: "can a human tester or Playwright observe this outcome via the UI or a REST/MCP
   call?" If no, skip it.
 
 - **Source code inspection cases** — cases that require reading a PHP file, checking a
@@ -264,7 +264,7 @@ API. You do NOT publish anything.
 Your primary job here is **removal and sharpening**, not addition. A lean file with 4
 precise cases is better than a bloated file with 12.
 
-If a file covers a PR that has no real functional change observable by a human or Canary
+If a file covers a PR that has no real functional change observable by a human or Playwright
 (docblock fix, unit-test-only PR, CSS tweak), delete all its cases and leave the file
 empty with a `# skipped: no functional change` comment — or remove the file entirely and
 note it in your report.
@@ -297,7 +297,7 @@ different input). If two cases differ only by a field value, collapse them into 
 a note in `preconditions`.
 
 #### 4. Step clarity
-Each step must be executable by a human tester or by Canary without guesswork:
+Each step must be executable by a human tester or by Playwright without guesswork:
 - `action` must be a concrete UI action or API call, not a vague instruction like "use the
   feature".
 - `expected` must be a specific, observable outcome, not "it works" or "success".

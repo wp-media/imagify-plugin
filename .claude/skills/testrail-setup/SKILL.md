@@ -7,10 +7,10 @@ argument-hint: "[feature | --check | blank for all]"
 # TestRail Setup
 
 Entry point for building the **grounded maps** the run agent executes against. Spawns
-`testrail-explorer-agent`, which drives the live app via Canary, captures real locators +
-seed/teardown + verification criteria per plugin feature, and writes/refreshes the committed
-specs under `.claude/testrail/specs/`. This skill is thin — it routes and relays; all the work
-is the agent's.
+`testrail-explorer-agent`, which drives the live app via the Playwright MCP tool, captures real
+locators + seed/teardown + verification criteria per plugin feature, and writes/refreshes the
+committed specs under `.claude/testrail/specs/`. This skill is thin — it routes and relays; all
+the work is the agent's.
 
 ## Invocation
 
@@ -44,8 +44,8 @@ is the agent's.
 
 ## Constraints
 
-- This skill never drives Canary, edits specs, or audits code directly — all of that is the
-  agent's. It is an entry point, not a second copy of the agent.
+- This skill never drives the browser, edits specs, or audits code directly — all of that is
+  the agent's. It is an entry point, not a second copy of the agent.
 - This skill never posts to TestRail. Setup only grounds specs; it never touches a run.
 - `--check` must never write — it is a report only.
 - Credentials live in the environment; do not prompt for them and never print them.
