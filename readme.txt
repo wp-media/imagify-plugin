@@ -2,8 +2,8 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 7.0
-Stable tag: 2.2.9
-Requires PHP: 7.3
+Stable tag: 2.3.0
+Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -308,6 +308,16 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.3.0 =
+- New feature: Imagify now exposes 7 MCP abilities, letting AI agents (such as Claude) optimize images, update settings, check account status, and more via the WordPress MCP adapter REST endpoint.
+- New feature: Added an opt-in analytics toggle in General Settings; when enabled, MCP ability executions are tracked via Mixpanel to help improve the product — no data is sent without explicit consent.
+- Fix: The optimize-media MCP ability now rejects non-attachment post IDs with a clear error instead of proceeding silently.
+- Fix: The get-media-status MCP ability now returns a proper error for non-existent media IDs instead of a misleading "unoptimized" response.
+- Fix: The update-settings MCP ability now correctly rejects the version key to prevent silent acceptance of an immutable setting.
+- Fix: All MCP ability permission checks now correctly respect third-party capability filters and WordPress multisite network-admin logic.
+- Fix: The get-nextgen-coverage MCP ability now returns a valid integer for missing_nextgen_count even when the stat cache is empty.
+- Fix: Corrected background color of a button on the Imagify settings page.
+
 = 2.2.9 =
 - Enhancement: Add a new WP-CLI command to restore images in bulk.
 - Enhancement: Add a one-click Reset Internal State tool to the troubleshooting page.
