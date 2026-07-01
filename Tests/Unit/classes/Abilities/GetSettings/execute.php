@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\GetSettings;
 
+use Brain\Monkey\Actions;
 use Imagify\Abilities\GetSettings;
 use Imagify\Tests\Unit\TestCase;
 
@@ -16,6 +17,21 @@ use Imagify\Tests\Unit\TestCase;
  * @group  GetSettings
  */
 class Test_Execute extends TestCase {
+
+	/**
+	 * Tests that execute() fires the imagify_mcp_ability_executed action.
+	 */
+	public function testFiresAbilityExecutedHook(): void {
+		Actions\expectDone( 'imagify_mcp_ability_executed' )->once();
+
+		$this->make_testable_ability(
+			[
+				'optimization_level' => 1,
+				'api_key'            => 'k',
+				'version'            => '1',
+			]
+		)->execute();
+	}
 
 	/**
 	 * Tests that execute() returns an array.

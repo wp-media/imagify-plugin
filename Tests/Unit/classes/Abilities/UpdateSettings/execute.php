@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\classes\Abilities\UpdateSettings;
 
+use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\UpdateSettings;
 use Imagify\Tests\Unit\TestCase;
@@ -31,6 +32,23 @@ class Test_Execute extends TestCase {
 		'api_key'             => '',
 		'version'             => '',
 	];
+
+	/**
+	 * Tests that execute() fires the imagify_mcp_ability_executed action.
+	 */
+	public function testFiresAbilityExecutedHook(): void {
+		Functions\when( '__' )->returnArg();
+		Actions\expectDone( 'imagify_mcp_ability_executed' )->once();
+
+		$ability = $this->make_testable_ability(
+			$this->defaults,
+			$this->defaults,
+			$this->defaults,
+			true
+		);
+
+		$ability->execute( [] );
+	}
 
 	/**
 	 * Tests that execute() returns WP_Error with code imagify_unknown_setting for an unknown key.

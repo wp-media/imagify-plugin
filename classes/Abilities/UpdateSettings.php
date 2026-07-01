@@ -12,7 +12,25 @@ namespace Imagify\Abilities;
  *
  * @since 2.3.0
  */
-class UpdateSettings implements AbilitiesInterface {
+class UpdateSettings extends AbstractAbility {
+
+	/**
+	 * Returns the ability slug.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return 'imagify/update-settings';
+	}
+
+	/**
+	 * Returns the ability label.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+		return 'Update Imagify settings';
+	}
 
 	/**
 	 * Register the ability with the WP Abilities API.
@@ -162,7 +180,7 @@ class UpdateSettings implements AbilitiesInterface {
 	 *
 	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
-	public function check_permissions(): bool {
+	protected function has_permission(): bool {
 		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
@@ -246,6 +264,21 @@ class UpdateSettings implements AbilitiesInterface {
 	 * @return array|\WP_Error Array with `updated` and `settings` keys on success.
 	 */
 	public function execute( $args = [] ) {
+		$start_time = microtime( true );
+		$result     = $this->do_execute( $args );
+
+		$this->fire_executed( $result, $start_time, is_array( $args ) ? $args : [] );
+
+		return $result;
+	}
+
+	/**
+	 * Internal execution logic for the ability.
+	 *
+	 * @param mixed $args Partial settings to update.
+	 * @return array|\WP_Error
+	 */
+	private function do_execute( $args ) {
 		$options  = $this->fetch_options_instance();
 		$defaults = $options->get_default_values();
 		$before   = $options->get_all();

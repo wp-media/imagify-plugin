@@ -207,6 +207,28 @@ class Test_Reset extends TestCase {
 	}
 
 	/**
+	 * Tests that reset() fires the imagify_after_reset_internal_state action at the end.
+	 */
+	public function testFiresActionAfterReset(): void {
+		$this->wpdb->shouldReceive( 'esc_like' )->andReturnUsing(
+			function ( string $value ): string {
+				return str_replace( [ '\\', '%', '_' ], [ '\\\\', '\\%', '\\_' ], $value );
+			}
+		);
+		$this->wpdb->shouldReceive( 'prepare' )->andReturn( 'PREPARED_SQL' );
+		$this->wpdb->shouldReceive( 'query' )->andReturn( 1 );
+
+		Functions\when( 'delete_transient' )->justReturn( true );
+		Functions\when( 'is_multisite' )->justReturn( false );
+
+		Functions\expect( 'do_action' )
+			->once()
+			->with( 'imagify_after_reset_internal_state' );
+
+		( new ResetInternalState() )->reset();
+	}
+
+	/**
 	 * Tests that reset() skips as_unschedule_all_actions() when ActionScheduler is not loaded.
 	 *
 	 * As_unschedule_all_actions() does not exist in the test environment, so
