@@ -211,7 +211,7 @@ class WP extends AbstractMedia {
 		}
 
 		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/image.php'; // @phpstan-ignore-line
+			require_once ABSPATH . 'wp-admin/includes/image.php';
 		}
 
 		// Store the path to the current full size file before generating the thumbnails.
