@@ -28,14 +28,15 @@ class Test_GetSubscribedEvents extends TestCase {
 	 */
 	public function provideExpectedHooks(): array {
 		return [
-			'settings action' => [ 'imagify_settings_after_lossless' ],
-			'ajax action'     => [ 'wp_ajax_imagify_toggle_tracking_optin' ],
-			'admin notices'   => [ 'admin_notices' ],
+			'settings action'   => [ 'imagify_settings_after_lossless' ],
+			'ajax action'       => [ 'wp_ajax_imagify_toggle_tracking_optin' ],
+			'admin notices'     => [ 'admin_notices' ],
+			'admin-post action' => [ 'admin_post_imagify_analytics_optin' ],
 		];
 	}
 
 	/**
-	 * Tests that each hook maps to the expected method name.
+	 * Tests that each single-callback hook maps to the expected method name.
 	 *
 	 * @dataProvider provideHookMethodPairs
 	 */
@@ -50,9 +51,24 @@ class Test_GetSubscribedEvents extends TestCase {
 	 */
 	public function provideHookMethodPairs(): array {
 		return [
-			'settings -> render'  => [ 'imagify_settings_after_lossless', 'render_optin_section' ],
-			'ajax -> toggle'      => [ 'wp_ajax_imagify_toggle_tracking_optin', 'ajax_toggle_optin' ],
-			'notices -> thankyou' => [ 'admin_notices', 'render_thankyou_notice' ],
+			'settings -> render'   => [ 'imagify_settings_after_lossless', 'render_optin_section' ],
+			'ajax -> toggle'       => [ 'wp_ajax_imagify_toggle_tracking_optin', 'ajax_toggle_optin' ],
+			'admin-post -> handle' => [ 'admin_post_imagify_analytics_optin', 'handle_optin_action' ],
 		];
+	}
+
+	/**
+	 * Tests that `admin_notices` registers both the opt-in banner and the thank-you notice, in that order.
+	 */
+	public function testAdminNoticesRegistersOptinAndThankyouCallbacks(): void {
+		$events = Notices::get_subscribed_events();
+
+		$this->assertSame(
+			[
+				[ 'render_optin_notice', 9 ],
+				[ 'render_thankyou_notice', 10 ],
+			],
+			$events['admin_notices']
+		);
 	}
 }

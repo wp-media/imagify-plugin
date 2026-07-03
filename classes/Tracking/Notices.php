@@ -15,6 +15,8 @@ class Notices implements SubscriberInterface {
 
 	const THANKYOU_TRANSIENT = 'imagify_analytics_optin_thanks';
 
+	const NOTICE_DISPLAYED_OPTION = 'imagify_analytics_notice_displayed';
+
 	/**
 	 * The Mixpanel opt-in service.
 	 *
@@ -34,7 +36,7 @@ class Notices implements SubscriberInterface {
 	/**
 	 * Returns the list of events this subscriber wants to listen to.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string|array<int, array<int, int|string>>>
 	 */
 	public static function get_subscribed_events(): array {
 		return [
@@ -43,7 +45,12 @@ class Notices implements SubscriberInterface {
 			// @action wp_ajax_imagify_toggle_tracking_optin
 			'wp_ajax_imagify_toggle_tracking_optin' => 'ajax_toggle_optin',
 			// @action admin_notices
-			'admin_notices'                         => 'render_thankyou_notice',
+			'admin_notices'                         => [
+				[ 'render_optin_notice', 9 ],
+				[ 'render_thankyou_notice', 10 ],
+			],
+			// @action admin_post_imagify_analytics_optin
+			'admin_post_imagify_analytics_optin'    => 'handle_optin_action',
 		];
 	}
 
@@ -86,6 +93,60 @@ class Notices implements SubscriberInterface {
 	}
 
 	/**
+	 * Render the analytics opt-in ask banner.
+	 *
+	 * Shown once on the Imagify settings screen until the user answers Yes or No.
+	 *
+	 * @return void
+	 */
+	public function render_optin_notice(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( ! imagify_is_screen( 'imagify-settings' ) ) {
+			return;
+		}
+
+		if ( get_option( self::NOTICE_DISPLAYED_OPTION ) ) {
+			return;
+		}
+
+		if ( $this->optin->is_enabled() ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+		extract( $this->collect_data(), EXTR_SKIP );
+
+		include IMAGIFY_PATH . 'views/notice-analytics-optin.php';
+	}
+
+	/**
+	 * Handle the accept/decline action from the opt-in ask banner.
+	 *
+	 * @return void
+	 */
+	public function handle_optin_action(): void {
+		check_admin_referer( 'imagify_analytics_optin' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_safe_redirect( wp_get_referer() );
+			exit;
+		}
+
+		if ( isset( $_GET['value'] ) && 'yes' === $_GET['value'] ) {
+			$this->optin->enable();
+			set_transient( self::THANKYOU_TRANSIENT, 1, 60 );
+		}
+
+		update_option( self::NOTICE_DISPLAYED_OPTION, 1 );
+
+		wp_safe_redirect( wp_get_referer() );
+		exit;
+	}
+
+	/**
 	 * Render the "Thank you" admin notice after opt-in is first enabled.
 	 *
 	 * Triggered on the next page load via transient.
@@ -93,6 +154,14 @@ class Notices implements SubscriberInterface {
 	 * @return void
 	 */
 	public function render_thankyou_notice(): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( ! imagify_is_screen( 'imagify-settings' ) ) {
+			return;
+		}
+
 		if ( ! get_transient( self::THANKYOU_TRANSIENT ) ) {
 			return;
 		}
