@@ -10,24 +10,25 @@ use Imagify\Tracking\Notices;
 use Mockery;
 
 /**
- * Tests for \Imagify\Tracking\Notices::render_thankyou_notice().
+ * Tests for \Imagify\Tracking\Notices::render_optin_notice().
  *
- * @covers \Imagify\Tracking\Notices::render_thankyou_notice
+ * @covers \Imagify\Tracking\Notices::render_optin_notice
  * @group  Tracking
  */
-class Test_RenderThankyouNotice extends TestCase {
+class Test_RenderOptinNotice extends TestCase {
 
 	/**
 	 * Tests that the method returns early when the current user lacks capability.
 	 */
 	public function testReturnsEarlyWhenUserCannotManageOptions(): void {
 		Functions\when( 'current_user_can' )->justReturn( false );
-		Functions\expect( 'get_transient' )->never();
+		Functions\expect( 'imagify_is_screen' )->never();
 
 		$optin = Mockery::mock( Optin::class );
+		$optin->shouldNotReceive( 'is_enabled' );
 
 		ob_start();
-		( new Notices( $optin ) )->render_thankyou_notice();
+		( new Notices( $optin ) )->render_optin_notice();
 		$output = ob_get_clean();
 
 		$this->assertSame( '', $output );
@@ -39,39 +40,58 @@ class Test_RenderThankyouNotice extends TestCase {
 	public function testReturnsEarlyWhenNotOnSettingsScreen(): void {
 		Functions\when( 'current_user_can' )->justReturn( true );
 		Functions\when( 'imagify_is_screen' )->justReturn( false );
-		Functions\expect( 'get_transient' )->never();
+		Functions\expect( 'get_option' )->never();
 
 		$optin = Mockery::mock( Optin::class );
+		$optin->shouldNotReceive( 'is_enabled' );
 
 		ob_start();
-		( new Notices( $optin ) )->render_thankyou_notice();
+		( new Notices( $optin ) )->render_optin_notice();
 		$output = ob_get_clean();
 
 		$this->assertSame( '', $output );
 	}
 
 	/**
-	 * Tests that the method returns early and never calls delete_transient when the transient is absent.
+	 * Tests that the method returns early when the notice has already been answered.
 	 */
-	public function testReturnsEarlyWhenTransientIsNotSet(): void {
+	public function testReturnsEarlyWhenNoticeAlreadyDisplayed(): void {
 		Functions\when( 'current_user_can' )->justReturn( true );
 		Functions\when( 'imagify_is_screen' )->justReturn( true );
-		Functions\when( 'get_transient' )->justReturn( false );
-		Functions\expect( 'delete_transient' )->never();
+		Functions\when( 'get_option' )->justReturn( 1 );
 
 		$optin = Mockery::mock( Optin::class );
+		$optin->shouldNotReceive( 'is_enabled' );
 
 		ob_start();
-		( new Notices( $optin ) )->render_thankyou_notice();
+		( new Notices( $optin ) )->render_optin_notice();
 		$output = ob_get_clean();
 
 		$this->assertSame( '', $output );
 	}
 
 	/**
-	 * Tests that delete_transient is called when the transient exists.
+	 * Tests that the method returns early when the user already opted in.
 	 */
-	public function testDeletesTransientWhenPresent(): void {
+	public function testReturnsEarlyWhenAlreadyOptedIn(): void {
+		Functions\when( 'current_user_can' )->justReturn( true );
+		Functions\when( 'imagify_is_screen' )->justReturn( true );
+		Functions\when( 'get_option' )->justReturn( false );
+
+		$optin = Mockery::mock( Optin::class );
+		$optin->shouldReceive( 'is_enabled' )->once()->andReturn( true );
+
+		ob_start();
+		( new Notices( $optin ) )->render_optin_notice();
+		$output = ob_get_clean();
+
+		$this->assertSame( '', $output );
+	}
+
+	/**
+	 * Tests that the notice is rendered when all conditions are met.
+	 */
+	public function testRendersNoticeWhenAllConditionsMet(): void {
 		if ( ! defined( 'IMAGIFY_PATH' ) ) {
 			define( 'IMAGIFY_PATH', IMAGIFY_PLUGIN_ROOT );
 		}
@@ -81,10 +101,7 @@ class Test_RenderThankyouNotice extends TestCase {
 
 		Functions\when( 'current_user_can' )->justReturn( true );
 		Functions\when( 'imagify_is_screen' )->justReturn( true );
-		Functions\when( 'get_transient' )->justReturn( 1 );
-		Functions\expect( 'delete_transient' )
-			->once()
-			->with( Notices::THANKYOU_TRANSIENT );
+		Functions\when( 'get_option' )->justReturn( false );
 
 		Functions\when( 'get_bloginfo' )->justReturn( '7.0' );
 		Functions\when( 'get_imagify_option' )->justReturn( 1 );
@@ -94,13 +111,17 @@ class Test_RenderThankyouNotice extends TestCase {
 		Functions\when( '__' )->returnArg();
 		Functions\when( 'esc_html_e' )->alias( static function ( string $text ): void { echo $text; } );
 		Functions\when( 'esc_html' )->returnArg();
+		Functions\when( 'esc_url' )->returnArg();
+		Functions\when( 'admin_url' )->returnArg();
+		Functions\when( 'wp_nonce_url' )->returnArg();
 
 		$optin = Mockery::mock( Optin::class );
+		$optin->shouldReceive( 'is_enabled' )->once()->andReturn( false );
 
 		ob_start();
-		( new Notices( $optin ) )->render_thankyou_notice();
+		( new Notices( $optin ) )->render_optin_notice();
 		$output = ob_get_clean();
 
-		$this->assertStringContainsString( 'notice-success', $output );
+		$this->assertStringContainsString( 'imagify-analytics-optin-notice', $output );
 	}
 }
