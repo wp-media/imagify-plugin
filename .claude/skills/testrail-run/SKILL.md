@@ -14,8 +14,8 @@ case-by-case, and — only after the user confirms — posts the results back to
 proposes CI promotion candidates.
 
 The environments are ephemeral Docker containers managed by `bin/qa-env.sh` (one nginx, one
-apache — built from `bin/build-zip.sh`'s `imagify.zip`), unless a hand-maintained
-`.ai/settings.local.json` already points at reachable Local sites.
+apache — built from `bin/build-zip.sh`'s `imagify.zip`). The agent provisions them itself at
+the start of the run and **tears them down at the end** — they never outlive the run.
 
 ## Invocation
 

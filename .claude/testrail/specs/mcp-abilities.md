@@ -17,14 +17,13 @@ Imagify `manage` capability via `imagify_get_context('wp')->current_user_can('ma
 and `meta.show_in_rest = true`, so they are reachable over the Abilities REST namespace
 `wp-abilities/v1`. Registration no-ops silently when `wp_register_ability` is absent (WP < 6.9).
 
-SOURCE-OF-TRUTH NOTE (read before grounding drift): the live behaviour below was captured against
-the **nginx** site `$E2E_URL`, whose active plugin checkout is
-`/Users/gaelrobin/Local Sites/e2eimagifynginx/.../imagify-plugin` on branch `feat/mixpanel`
-(SHA 461e5839, plugin v2.2.9 header, but carrying the **2.3.0 abilities** with the
-`AbstractAbility` base + `get_id()` template). This worktree (`imagify-e2e-worktree`, SHA 542b43d4)
-carries an OLDER variant of the same classes (`implements AbilitiesInterface`, no `get_id()`); the
-slugs, schemas, input wrapper, and responses are identical at the REST surface, so the grounding
-holds. `derived_sha`/`source_files` track THIS worktree per `_foundation.md` convention.
+SOURCE-OF-TRUTH NOTE (read before grounding drift): the live behaviour below was captured
+against a `feat/mixpanel` checkout (SHA 461e5839) carrying the **2.3.0 abilities** with the
+`AbstractAbility` base + `get_id()` template, while this branch carried an older variant of the
+same classes (`implements AbilitiesInterface`, no `get_id()`). The slugs, schemas, input
+wrapper, and responses are identical at the REST surface, so the grounding holds — but this
+spec should be re-grounded (`/testrail-setup mcp-abilities`) against the qa-env once 2.3.0 is
+merged. `derived_sha`/`source_files` track this branch per `_foundation.md` convention.
 
 ## Ground truth
 The 7 abilities (slugs captured live from the discovery endpoint — all kebab-case, no underscores
@@ -152,7 +151,7 @@ live on `/wp-admin/options-general.php?page=imagify` (no data-testid on this pag
   `imagify-plugin/imagify` is active. On first explore this plugin was **inactive** in the capture env and
   ZERO imagify abilities appeared in discovery. Activate before any case:
   `POST /wp-json/wp/v2/plugins/imagify-plugin/imagify {"status":"active"}` (auth + nonce), or
-  `wp plugin activate imagify-plugin` inside the Local site shell. Verify via
+  `wp plugin activate imagify-plugin` via `$WPCMD`. Verify via
   `GET /wp-json/wp/v2/plugins/imagify-plugin/imagify` → `status:"active"`.
 - **WP >= 6.9** (live env is WP 7.0; Abilities API in core `wp-includes/abilities-api.php`). For
   C26366 (no-op on WP < 6.9): cannot be reproduced on this env (7.0); verify by code/unit — when
@@ -161,8 +160,8 @@ live on `/wp-admin/options-general.php?page=imagify` (no data-testid on this pag
 - **Auth session + nonce** (all cases): cookie jar + `X-WP-Nonce` (see `_foundation.md`).
   Anonymous = 401 (C26360 expects this).
 - **Subscriber user** (C26365 — subscriber cannot execute any ability): seed
-  `wp user create mcp_sub mcp_sub@example.com --role=subscriber --user_pass=pass` inside the Local
-  shell; log in as that user, acquire a fresh nonce, and call each `…/run` endpoint → expect a
+  `$WPCMD user create mcp_sub mcp_sub@example.com --role=subscriber --user_pass=pass`;
+  log in as that user, acquire a fresh nonce, and call each `…/run` endpoint → expect a
   permission failure (the `manage` gate denies; `has_permission()` returns false and
   `imagify_mcp_permission_denied` fires).
 - **imagify_capacity denial** (C26378): hook the `imagify_capacity` filter to return a cap the
@@ -175,7 +174,7 @@ live on `/wp-admin/options-general.php?page=imagify` (no data-testid on this pag
   (`is_api_key_valid:false`), so the zeroed shape is returned. C26361 asserts the FIELD SET (all 7
   keys present, types correct) which holds for both valid and invalid key — the invalid-key shape
   satisfies the schema. To exercise the populated path, configure a valid key first
-  (`wp option patch update imagify_settings api_key "<valid key>"` in the Local shell) — optional.
+  (`wp option patch update imagify_settings api_key "<valid key>"` via `$WPCMD`) — optional.
 - **optimize-media / get-media-status success cases** (C26363, C26374, C26385): require (a) a real
   attachment AND (b) a VALID API key (optimization calls the Imagify API). The media library on
   the capture env was EMPTY (live check returned 0 attachments). Seed an attachment via REST
@@ -277,7 +276,7 @@ Restore in reverse order of seeding. Each case is independent; undo only what it
    not, but snapshot anyway): snapshot via `GET …/get-settings/run` BEFORE the case, then restore
    the changed key via `POST …/update-settings/run` with the original value (e.g.
    `{"input":{"lossless":0}}` — live pre-test value was 0), or
-   `wp option update imagify_settings '<json snapshot>' --format=json` in the Local shell.
+   `wp option update imagify_settings '<json snapshot>' --format=json` via `$WPCMD`.
    (This explore set then reverted `lossless` to 0; verified clean.)
 2. **Restore `optimization_format`** if changed for C26382 (back to `"webp"`).
 3. **Delete any seeded attachment** (C26363/C26373/C26374/C26385) and its Imagify meta:
@@ -287,7 +286,7 @@ Restore in reverse order of seeding. Each case is independent; undo only what it
    `wp eval` hook so the admin regains `manage`.
 5. **Delete the subscriber test user** (C26365): `wp user delete mcp_sub --yes --reassign=1`.
 6. **Remove a valid API key** if one was configured only for the success cases:
-   `wp option patch update imagify_settings api_key ""` (Local shell).
+   `wp option patch update imagify_settings api_key ""` (via `$WPCMD`).
 7. **Plugin activation:** the explore left `imagify-plugin` ACTIVE (the run agent requires it
    active for every case). If the run protocol requires restoring the pre-run inactive state,
    `POST /wp-json/wp/v2/plugins/imagify-plugin/imagify {"status":"inactive"}` LAST — but note this

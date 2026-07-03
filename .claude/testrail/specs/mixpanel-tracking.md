@@ -92,7 +92,7 @@ Captured live this explore unless noted. Mixpanel token (`ServiceProvider::MIXPA
   actions fired in `AbstractAbility` (`check_permissions()` + `do_execute` wrapper).
 
 ## Locators (captured live — role-based preferred, then data-testid, then id)
-Verified live this explore on `/wp-admin/options-general.php?page=imagify` (login admin/admin;
+Verified live this explore on `/wp-admin/options-general.php?page=imagify` (logged in via `loginAsAdmin` — creds from the generated config;
 reuse the `SettingsPage` POM at `Tests/e2e/pages/settings.ts` + `wp-login` fixture). No
 `data-testid` on this UI; fall back to id/class. The opt-in checkbox was **unchecked** on a fresh
 load (matches "unchecked by default").
@@ -142,11 +142,11 @@ Mixpanel-request spy — because events are sent server-side and never reach the
   event name + properties, records them (option/transient), and returns a fake 200 to block the
   real call. This explore verified the exact path: a `get-stats` MCP run produced one
   `MCP Ability Executed` event with all documented props. Expose captured events to the test via a
-  small admin-only REST route (e.g. `GET /wp-json/imagify-spy/v1/events`) or read the option in the
-  Local site shell. Reset before each case (`DELETE` the spy option). Teardown: delete the mu-plugin.
+  small admin-only REST route (e.g. `GET /wp-json/imagify-spy/v1/events`) or read the option via
+  `$WPCMD`. Reset before each case (`DELETE` the spy option). Teardown: delete the mu-plugin.
 - **Opt-in ON** (events should fire): POST the AJAX toggle `value=1` with the live `data-nonce`
-  (preferred — exercises the real path), or in the Local shell `wp option update imagify_mixpanel_optin 1`.
-- **Opt-in OFF** (events must NOT fire): toggle `value=0`, or in the Local shell
+  (preferred — exercises the real path), or via `$WPCMD` — `wp option update imagify_mixpanel_optin 1`.
+- **Opt-in OFF** (events must NOT fire): toggle `value=0`, or via `$WPCMD`
   `wp option delete imagify_mixpanel_optin`. Default state has the option absent.
 - **`Media Optimized` (UI, trigger=auto)**: opt-in ON, `auto_optimize=1`, upload a fresh supported
   image (REST media helper in `_foundation.md`) so `imagify_after_optimize` runs with the full size.
@@ -243,9 +243,9 @@ Restore in reverse order of seeding; each case undoes only what it changed.
 4. Delete any non-admin test user seeded for the permission-denied case
    (`wp user delete <login> --yes --reassign=1`).
 5. Remove the Mixpanel-spy mu-plugin (`wp-content/mu-plugins/<spy>.php`) and delete its capture
-   option/transient. (NOTE: this explore left an orphaned `imagify_spy_events` option in the
-   localhost:10043 DB after removing the spy mu-plugin; it is inert — no code reads it — but can be
-   cleared with `wp option delete imagify_spy_events` in the Local site shell.)
+   option/transient. (An orphaned `imagify_spy_events` option is inert — no code reads it — but
+   can be cleared with `$WPCMD option delete imagify_spy_events`. On the ephemeral qa-env this
+   is moot: the whole DB is discarded at teardown.)
 6. Clear any leftover `imagify_analytics_optin_thanks` transient if a thank-you case was interrupted
    before the notice rendered (`wp transient delete imagify_analytics_optin_thanks`); normally it is
    read-once and self-clears.

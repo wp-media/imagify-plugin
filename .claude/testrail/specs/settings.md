@@ -64,7 +64,7 @@ via `imagify_get_context('wp')->current_user_can('manage')` (see `_foundation.md
     nonce + cookie per `_foundation.md`. The run href is the ability's `_links["wp:action-run"]`.
 
 ## Locators (captured live — role-based preferred, then data-testid, then id)
-Locators verified live this explore on the settings page (login admin/admin first; reuse the
+Locators verified live this explore on the settings page (log in via `loginAsAdmin` first — creds from the generated config; reuse the
 `SettingsPage` POM at `Tests/e2e/pages/settings.ts` and `wp-login` fixture). No data-testid
 attributes exist on this page; fall back is id/name.
 
@@ -111,9 +111,9 @@ attributes exist on this page; fall back is id/name.
   (set .htaccess to 444 then enable `display_nextgen` + Save — see `htaccess-notice-dedup.spec.ts`),
   which stores a notice whose message wraps a file path in `<code>`.
 - C174 (multisite, no fatal on settings change): **BLOCKED in this env** — requires a WordPress
-  **multisite** install with the plugin network-active. This Local site (test-temp) is single
-  site (the network admin URL `/wp-admin/network/settings.php?page=imagify` does not exist here).
-  Seeding a multisite is out of scope for the live env; document as a prerequisite and skip.
+  **multisite** install with the plugin network-active. The qa-env sites are single-site (the
+  network admin URL `/wp-admin/network/settings.php?page=imagify` does not exist there).
+  Document as a prerequisite and skip until a multisite qa-env variant exists.
 
 ## Verification criteria — "success" means (observable)
 - C155 (Auto-optimize ON): after toggling ON + Save, the page reloads to `?page=imagify` with
@@ -141,12 +141,12 @@ attributes exist on this page; fall back is id/name.
 Restore in reverse order of seeding. Each case is independent; undo only what it changed.
 1. Delete any attachment seeded for C155/C156 (and its Imagify meta):
    - `wp post meta delete <id> _imagify_data` ; `wp post meta delete <id> _imagify_status`
-     (inside the Local site shell), or delete the attachment entirely via REST:
+     (via `$WPCMD`), or delete the attachment entirely via REST:
      `DELETE /wp-json/wp/v2/media/<id>?force=true` (auth + nonce — see `_foundation.md`).
 2. Restore the settings snapshot taken in "Prerequisites & seeding":
    - `POST /wp-json/wp-abilities/v1/abilities/imagify/update-settings/run` with the snapshotted
      keys (in particular restore `auto_optimize` to its pre-test value — live value was **1**),
-     or `wp option update imagify_settings '<json snapshot>' --format=json` inside the Local shell.
+     or `wp option update imagify_settings '<json snapshot>' --format=json` via `$WPCMD`.
 3. C14169: if a temporary notice was triggered via the .htaccess path, restore
    `.htaccess` permissions (e.g. back to 644) and turn `display_nextgen` back to its prior value
    (UI uncheck + Save). The temporary-notices transient is read-once and auto-cleared, so no
