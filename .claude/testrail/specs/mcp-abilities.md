@@ -18,7 +18,7 @@ and `meta.show_in_rest = true`, so they are reachable over the Abilities REST na
 `wp-abilities/v1`. Registration no-ops silently when `wp_register_ability` is absent (WP < 6.9).
 
 SOURCE-OF-TRUTH NOTE (read before grounding drift): the live behaviour below was captured against
-the **nginx** site `http://localhost:10043`, whose active plugin checkout is
+the **nginx** site `$E2E_URL`, whose active plugin checkout is
 `/Users/gaelrobin/Local Sites/e2eimagifynginx/.../imagify-plugin` on branch `feat/mixpanel`
 (SHA 461e5839, plugin v2.2.9 header, but carrying the **2.3.0 abilities** with the
 `AbstractAbility` base + `get_id()` template). This worktree (`imagify-e2e-worktree`, SHA 542b43d4)
@@ -102,9 +102,9 @@ in the local part, confirming C26383):
 
 ## How to invoke (grounded from live)
 All calls require an authenticated WP session + `X-WP-Nonce` header (anonymous discovery and run
-both return HTTP **401**, confirming C26360). Acquire cookie + nonce per `_foundation.md`
-(NOTE: foundation uses port 10038; the live env for THIS feature is the nginx site **10043**).
-Base for this feature: `http://localhost:10043`.
+both return HTTP **401**, confirming C26360). Acquire cookie + nonce per `_foundation.md`.
+Base for this feature: `$E2E_URL` (the nginx env from `.ai/settings.local.json` — never a
+hardcoded port; the original capture ran against a Local nginx site).
 
 - **Discovery (C26359 / C26360):**
   `GET /wp-json/wp-abilities/v1/abilities` (authed) → JSON array; filter `name` starting `imagify/`
@@ -149,7 +149,7 @@ live on `/wp-admin/options-general.php?page=imagify` (no data-testid on this pag
 
 ## Prerequisites & seeding (per operation)
 - **Plugin MUST be active** (HARD PREREQUISITE — discovered live): the abilities only register when
-  `imagify-plugin/imagify` is active. On first explore this plugin was **inactive** on 10043 and
+  `imagify-plugin/imagify` is active. On first explore this plugin was **inactive** in the capture env and
   ZERO imagify abilities appeared in discovery. Activate before any case:
   `POST /wp-json/wp/v2/plugins/imagify-plugin/imagify {"status":"active"}` (auth + nonce), or
   `wp plugin activate imagify-plugin` inside the Local site shell. Verify via
@@ -178,8 +178,8 @@ live on `/wp-admin/options-general.php?page=imagify` (no data-testid on this pag
   (`wp option patch update imagify_settings api_key "<valid key>"` in the Local shell) — optional.
 - **optimize-media / get-media-status success cases** (C26363, C26374, C26385): require (a) a real
   attachment AND (b) a VALID API key (optimization calls the Imagify API). The media library on
-  10043 is EMPTY (live check returned 0 attachments). Seed an attachment via REST media upload
-  (helper in `_foundation.md`, adjust to port 10043), and configure a valid key. Without a valid
+  the capture env was EMPTY (live check returned 0 attachments). Seed an attachment via REST
+  media upload (helper in `_foundation.md`, against `$E2E_URL`), and configure a valid key. Without a valid
   key, optimize-media returns a `status:"error"` (API not reachable), which still satisfies the
   5-field-schema cases (C26389) but NOT the success cases. Error/validation cases (C26375-C26377,
   C26386-C26389) need NO attachment seeding and NO key — they were all captured live as-is.

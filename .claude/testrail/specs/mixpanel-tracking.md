@@ -70,7 +70,7 @@ Captured live this explore unless noted. Mixpanel token (`ServiceProvider::MIXPA
   endpoint). For tests, intercept this via a `pre_http_request` spy — DO NOT send live data.
 
 ## How to invoke (grounded from live)
-- **Analytics opt-in UI**: GET `http://localhost:10043/wp-admin/options-general.php?page=imagify`.
+- **Analytics opt-in UI**: GET `$E2E_URL/wp-admin/options-general.php?page=imagify`.
   The opt-in section renders inside the General Settings form (hook `imagify_settings_after_lossless`),
   so it requires a valid API key (same gate as General Settings; live env satisfies this).
 - **Toggle opt-in (AJAX, what the checkbox JS does — captured live)**: POST

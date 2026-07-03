@@ -1,7 +1,8 @@
 ---
 name: testrail-scenario-agent
-description: Analyses GitHub PRs and generates TestRail test scenarios, reviews staged scenarios for pertinence/coverage/redundancy/clarity, and publishes approved cases to TestRail via REST API with deduplication via refs field.
+description: Analyses GitHub PRs and generates TestRail test scenarios, reviews staged scenarios for pertinence/coverage/redundancy/clarity, and publishes approved cases to TestRail via REST API with deduplication via refs field. Captures per-case automation hints (entry URL, diff-observed selectors, oracle) into .claude/testrail/hints.yml at publish time for the run agent's Playwright translation.
 tools: [Bash, Read, Write, Glob, Grep, WebFetch]
+model: sonnet
 maxTurns: 40
 color: blue
 ---
@@ -85,9 +86,19 @@ stop; do not retry blindly.
 
 ### TestRail section map (suite 3)
 
-Use this table to map each PR/case to a section. When content introduces a feature area that
-has no fitting existing section, set `new_section` in the YAML and pick the most appropriate
-**parent** from this table for it.
+Use this table as a **heuristic starting point** — it goes stale as sections are created
+(e.g. `MCP Abilities (8724)` under API Requests and `Mixpanel Tracking (8725)` were created
+after this map was first written). Before deciding any `new_section`, fetch the live tree
+once and check whether a fitting section already exists:
+
+```bash
+curl -s -u "$TESTRAIL_USERNAME:$TESTRAIL_API_KEY" \
+  "https://wpmediaqa.testrail.io/index.php?/api/v2/get_sections/3&suite_id=3&limit=250"
+```
+
+When content introduces a feature area that has no fitting existing section (per the LIVE
+tree, not just this map), set `new_section` in the YAML and pick the most appropriate
+**parent** for it.
 
 ```
 Regression (33)
@@ -236,6 +247,10 @@ cases:
         expected: "Connection succeeds."
       - action: "Call the discover-abilities tool."
         expected: "Returns all available abilities."
+    automation_hints:
+      entry: "/wp-json/wp-abilities/v1/abilities"
+      selectors: []                     # selectors/ids you SAW in the PR diff, with file refs
+      oracle: "response array contains all 7 imagify/* slugs; anonymous call returns 401"
 ```
 
 Rules for the YAML:
@@ -244,6 +259,12 @@ Rules for the YAML:
 - `preconditions` is a YAML block scalar (`|`) of human-readable lines.
 - `steps` is a list of `{action, expected}` pairs.
 - Keep titles short, prefixed with the feature area (e.g. `MCP - `, `Bulk - `, `Settings - `).
+- `automation_hints` is where you pay the translation gap forward: **you are reading the PR
+  diff right now — the exact markup, selectors, endpoints, and option keys the case will need
+  are in your context**, and the run agent that later translates this case to a Playwright
+  spec will not have them. Capture: the entry URL/endpoint, any selector or element id you
+  actually saw in the diff (with a `file:line` ref), and the concrete observable oracle.
+  Only record what you *saw* — never invent a selector; an empty `selectors: []` is fine.
 
 ### Step 6 — Print summary and stop
 
@@ -408,7 +429,17 @@ files have not been through review yet, then ask whether to proceed anyway.
 
 ### Step A — Create the section if needed
 
-If `new_section` is set (not null):
+If `new_section` is set (not null), **first check it doesn't already exist** — TestRail
+happily creates duplicate-named sections, and a previous publish (or a QA engineer) may have
+created it already:
+
+```bash
+EXISTING_ID=$(curl -s -u "$TESTRAIL_USERNAME:$TESTRAIL_API_KEY" \
+  "https://wpmediaqa.testrail.io/index.php?/api/v2/get_sections/3&suite_id=3&limit=250" \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); secs=d.get('sections',d if isinstance(d,list) else []); print(next((s['id'] for s in secs if s['name']=='$NEW_SECTION' and s.get('parent_id')==$PARENT_SECTION_ID), ''))")
+```
+
+If `EXISTING_ID` is non-empty, use it as the target and skip creation. Otherwise create:
 
 ```bash
 SECTION_RESP=$(curl -s -X POST \
@@ -464,6 +495,24 @@ Field mapping from YAML → payload:
 
 Build the JSON with `python3 -c` / a heredoc rather than hand-concatenation, so quotes and
 newlines in step text are escaped correctly. Capture and print each created case `id`.
+
+### Step B-bis — Persist automation hints
+
+TestRail has no field for `automation_hints`, so after each case is created, append its hints
+(if any) to the committed hints ledger `.claude/testrail/hints.yml`, keyed by the **created
+case ID**:
+
+```yaml
+26359:
+  pr: 1133
+  entry: "/wp-json/wp-abilities/v1/abilities"
+  selectors: []
+  oracle: "response array contains all 7 imagify/* slugs; anonymous call returns 401"
+```
+
+Create the file if missing; never overwrite existing keys (a re-published case gets a new ID
+anyway). The run agent reads this ledger when translating the case to a Playwright spec —
+this is the moment-of-maximum-knowledge being handed forward.
 
 ### Step C — Report and clean up
 

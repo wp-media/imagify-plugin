@@ -1,0 +1,117 @@
+# Ephemeral QA environments for TestRail runs — one nginx + one apache WordPress.
+# Managed by bin/qa-env.sh (up / reset / down / status). Not for daily development —
+# devs keep using Local; the QA pipeline owns these so a run never depends on a
+# hand-built site being configured correctly.
+name: imagify-qa
+
+services:
+  db-nginx:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - db-nginx:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  db-apache:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - db-apache:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  php-nginx:
+    image: wordpress:php8.3-fpm
+    depends_on:
+      db-nginx:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db-nginx
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp-nginx:/var/www/html
+      - ../../generatedpackages:/packages:ro
+
+  web-nginx:
+    image: nginx:1.27-alpine
+    depends_on:
+      - php-nginx
+    ports:
+      - "${QA_NGINX_PORT:-8801}:80"
+    volumes:
+      - wp-nginx:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+  wp-apache:
+    image: wordpress:php8.3-apache
+    depends_on:
+      db-apache:
+        condition: service_healthy
+    ports:
+      - "${QA_APACHE_PORT:-8802}:80"
+    environment:
+      WORDPRESS_DB_HOST: db-apache
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp-apache:/var/www/html
+      - ../../generatedpackages:/packages:ro
+
+  # WP-CLI sidecars — invoked via `docker compose run --rm cli-nginx wp ...`.
+  # The run agent gets these full command prefixes from the generated
+  # .ai/settings.local.json (environments.<env>.wp_cli).
+  cli-nginx:
+    image: wordpress:cli-php8.3
+    depends_on:
+      db-nginx:
+        condition: service_healthy
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db-nginx
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp-nginx:/var/www/html
+      - ../../generatedpackages:/packages:ro
+    profiles: ["cli"]
+
+  cli-apache:
+    image: wordpress:cli-php8.3
+    depends_on:
+      db-apache:
+        condition: service_healthy
+    user: "33:33"
+    environment:
+      WORDPRESS_DB_HOST: db-apache
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp-apache:/var/www/html
+      - ../../generatedpackages:/packages:ro
+    profiles: ["cli"]
+
+volumes:
+  db-nginx:
+  db-apache:
+  wp-nginx:
+  wp-apache:

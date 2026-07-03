@@ -4,6 +4,7 @@ feature: "Imagify Settings"
 source_files: [views/page-settings.php, views/notice-temporary.php, inc/classes/class-imagify-settings.php, inc/classes/class-imagify-options.php, inc/classes/class-imagify-auto-optimization.php, classes/Notices/Notices.php, classes/Abilities/UpdateSettings.php]
 derived_sha: e4826be7
 last_explored: 2026-06-30
+apache_cases: [14169]
 ---
 
 ## Overview
@@ -33,7 +34,8 @@ via `imagify_get_context('wp')->current_user_can('manage')` (see `_foundation.md
   - disabled → the action **`imagify_new_attachment_auto_optimization_disabled`** fires and the
     method returns early; no `_imagify_*` meta is written for the new upload.
   - Gate also requires a valid API key (`Imagify_Requirements::is_api_key_valid()`).
-- Temporary admin notices (C14169 — escaping) **`server: apache`**: rendered by `views/notice-temporary.php`, which
+- Temporary admin notices (C14169 — escaping; **apache env**, flagged in frontmatter
+  `apache_cases`): rendered by `views/notice-temporary.php`, which
   emits the message through **`wp_kses( $details['message'], [ 'code' => [] ] )`** — i.e. only
   `<code>` survives, every other tag is stripped. Notice messages legitimately contain `<code>`
   (e.g. the .htaccess error in `classes/Webp/Display.php:114` wraps a file path in `<code>…</code>`).
@@ -48,7 +50,7 @@ via `imagify_get_context('wp')->current_user_can('manage')` (see `_foundation.md
   network admin and therefore requires a **multisite install** — NOT available in this env.
 
 ## How to invoke (grounded from live)
-- Admin UI (single site): GET `http://localhost:10038/wp-admin/options-general.php?page=imagify`
+- Admin UI (single site): GET `$E2E_URL/wp-admin/options-general.php?page=imagify`
   → toggle a checkbox → click Save (`#submit`, value "Save Changes"). Form POSTs to
   `options.php` (single) and redirects back to `?page=imagify` with a "Settings saved." notice.
 - Admin UI (multisite, C174): `http://<site>/wp-admin/network/settings.php?page=imagify`

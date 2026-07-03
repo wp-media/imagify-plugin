@@ -36,12 +36,13 @@ maps back to TestRail via frontmatter `testrail_sections`.
 ## Environment & constants
 
 ```
-Base URL     : http://localhost:10038   (wp-env)   login admin / password via /wp-login.php
-                (password comes from IMAGIFY_ADMIN_PASS if set — see imagify-playwright-fixtures.md)
+Base URL     : read from .ai/settings.local.json → environments.nginx.url (NEVER hardcode a
+                port; if the config is missing, run `bash bin/qa-env.sh up` to provision the
+                envs and generate it). Login creds come from the same env block.
 Specs dir    : .claude/testrail/specs/
-Foundation   : .claude/testrail/specs/_foundation.md   (load first; non-DOM shared knowledge)
+Foundation   : .claude/testrail/specs/_foundation.md   (load first; shared knowledge — env
+                config shape, POM reuse, named selectors, auth/seeding/teardown helpers)
 Live driver  : mcp__playwright   (navigate/snapshot/click/fill against the live browser; one-off capture, no session/trace/video/HAR)
-WP fixtures  : .claude/agents/imagify-playwright-fixtures.md  (login + named selectors to reuse)
 E2E POMs     : Tests/e2e/pages/   (settings.ts, bulk-optimization.ts, media-library.ts — read
                 before writing any locator, copy their style; this is the POM dir, NOT
                 Tests/e2e/specs/, which holds test files, not reusable locator definitions)
@@ -57,13 +58,15 @@ or the app is unreachable: stop and report **BLOCKED** with the reason — do no
 No browser, no writes. For each spec in `.claude/testrail/specs/`:
 
 ```bash
-# read frontmatter source_files + derived_sha, then for each glob:
-git log -1 --format=%H -- <source_file_glob>      # latest commit touching that source
+# read frontmatter source_files + derived_sha, then decide by ANCESTRY, not string compare:
+DERIVED=$(git rev-parse "$DERIVED_SHA")               # normalize short→full
+LATEST=$(git log -1 --format=%H -- <source_file_glob>)
+git merge-base --is-ancestor "$LATEST" "$DERIVED" && echo FRESH || echo STALE
 ```
 
-If any source file's latest commit is newer than the spec's `derived_sha`, mark the spec
-**STALE** and name the files that changed. Print a table (spec, status FRESH/STALE, changed
-files). **Write nothing.** Then stop.
+FRESH when the latest source commit is an ancestor of — or equal to — the stamped SHA;
+otherwise STALE — name the files that changed. Print a table (spec, status FRESH/STALE,
+changed files). **Write nothing.** Then stop.
 
 ---
 
@@ -76,11 +79,11 @@ the features (one spec each). Read 2–3 real files from `Tests/e2e/pages/` (the
 do not invent a foreign style.
 
 ### Step 2 — Drive the live app (`mcp__playwright`, logged in)
-Use the login pattern and named selectors from `imagify-playwright-fixtures.md`. There is no
+Use the login pattern and named selectors from `_foundation.md`. There is no
 session/trace/video/HAR concept here — this is a one-off, human-reviewable capture pass whose
 output is the spec file, so drive the browser directly with `mcp__playwright`:
 
-1. **Navigate** to the feature's admin URL (from `imagify-playwright-fixtures.md`).
+1. **Navigate** to the feature's admin URL (from `_foundation.md`'s admin-URL table).
 2. **Log in** using the role/label-based pattern — e.g. `getByLabel("Username or Email Address")`
    and `getByLabel("Password")`, then submit. Reuse the `loginAsAdmin(page)` pattern the fixtures
    file documents.
@@ -91,7 +94,7 @@ output is the spec file, so drive the browser directly with `mcp__playwright`:
 
 For API/MCP-only surfaces (e.g. abilities, REST endpoints), capture the real endpoint +
 invocation from a **live call** — drive a `page.evaluate` fetch (same pattern as the
-ability-slug fixture in `imagify-playwright-fixtures.md`), not from prose.
+ability-slug pattern in `_foundation.md`), not from prose.
 
 ### Step 3 — Light code/docs audit for non-DOM knowledge
 For each feature, determine from a quick read (not a deep audit):
@@ -113,6 +116,8 @@ feature: "<Human feature name>"
 source_files: [<glob>, ...]               # for drift detection
 derived_sha: <git SHA at capture time>
 last_explored: <YYYY-MM-DD>
+apache_cases: [<case id>, ...]            # OPTIONAL — case IDs that must run on the apache env
+                                          # (.htaccess / rewrite / $is_apache paths); omit when none
 ---
 
 ## Overview
@@ -146,7 +151,7 @@ Stamp `derived_sha` from the current commit and `last_explored` with today's dat
 deterministically in Bash (do not hand-type the SHA):
 
 ```bash
-SHA=$(git rev-parse --short HEAD)
+SHA=$(git rev-parse HEAD)     # FULL sha — the drift check normalizes via git rev-parse, but stamp full to be safe
 TODAY=$(date +%F)
 # patch the spec frontmatter derived_sha / last_explored with python3, not by re-typing the file
 ```

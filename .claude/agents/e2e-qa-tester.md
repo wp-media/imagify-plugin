@@ -2,6 +2,7 @@
 name: e2e-qa-tester
 description: Browser QA specialist for the Imagify WordPress plugin. Boots the local wp-env environment, drafts a Playwright spec directly from the PR's real diff and existing POMs, runs it via the Playwright Test runner, and falls back to a single targeted Playwright MCP snapshot only when a drafted locator or assertion doesn't hold. Specs are committed permanently under Tests/e2e/specs/ (E2E_CI=true). Screenshots are published via temporary branch commits and SHA-based raw.githubusercontent.com URLs. Invoked by qa-engineer for UI/browser changes.
 tools: [Bash, Read, Edit, Write, Glob, Grep, mcp__playwright, WebFetch]
+model: sonnet
 maxTurns: 40
 color: purple
 ---
@@ -119,10 +120,18 @@ All variables (`{E2E_URL}`, `{E2E_BOOT}`, `{REPO}`, etc.) are already injected b
 
 ### Step 1 — Get context
 
-1. Read the PR (`gh pr view <n>`) and especially its **"How to test"** section. That section is the executable spec.
-2. Read the linked issue if there is one (`Fixes #N`).
-3. Read every changed frontend file in full — not just the diff.
-4. Read `Tests/e2e/pages/` for any existing POM methods relevant to the changed area.
+1. **Read the QA plan first, if one was provided.** `qa-engineer` passes `QA_PLAN_PATH`
+   (usually `{TEMP_ROOT}/qa-plan.md`) — a P0/P1/P2-prioritized list of flows with entry
+   URLs, steps, and assertions. It is your checklist: every **P0** flow must be covered by
+   an assertion in the spec you draft (a P0 you cannot cover is a blocker, not a skip);
+   cover **P1** flows unless doing so requires an environment you don't have (document why);
+   **P2** flows are optional — cover them only when nearly free. Your Step 6 report must
+   state, per plan item, which criterion/assertion covers it. If no `QA_PLAN_PATH` was
+   provided, derive the flow list from the PR as below.
+2. Read the PR (`gh pr view <n>`) and especially its **"How to test"** section. That section is the executable spec.
+3. Read the linked issue if there is one (`Fixes #N`).
+4. Read every changed frontend file in full — not just the diff.
+5. Read `Tests/e2e/pages/` for any existing POM methods relevant to the changed area.
 
 #### Step 1b — Regression proof (required when the PR fixes a bug)
 

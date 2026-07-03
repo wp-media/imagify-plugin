@@ -6,10 +6,16 @@ description: Fetch a TestRail test run, execute every scenario via Playwright, a
 # TestRail Run
 
 Entry point for executing a TestRail test run end-to-end. Resolves the target run, then
-spawns `testrail-run-agent`, which fetches every case in the run, executes each one via
-Playwright browser automation (sequentially — one generated `.spec.ts` per case), collects
-pass/fail/blocked outcomes with trace/video evidence, publishes a live results dashboard, and
-— only after the user confirms — posts the results back to TestRail.
+spawns `testrail-run-agent`, which provisions (or verifies) the QA environments, fetches
+every case in the run, executes each one via Playwright (sequentially — one `.spec.ts` per
+case, **reused from the committed cache** `Tests/e2e/testrail-cases/` when the case is
+unchanged, translated fresh otherwise), keeps `.ai/testrail/<run>/results.md` updated
+case-by-case, and — only after the user confirms — posts the results back to TestRail and
+proposes CI promotion candidates.
+
+The environments are ephemeral Docker containers managed by `bin/qa-env.sh` (one nginx, one
+apache — built from `bin/build-zip.sh`'s `imagify.zip`), unless a hand-maintained
+`.ai/settings.local.json` already points at reachable Local sites.
 
 ## Invocation
 
@@ -54,16 +60,29 @@ unless overridden by the user.
      those sections marked BLOCKED and execute the rest.
    - **select** → split the list per the user's answer and apply both branches above.
 
-4. **Relay the agent's results dashboard link and summary** to the user verbatim.
+4. **Relay the agent's summary and the results file path**
+   (`.ai/testrail/<run>/results.md`) to the user verbatim.
 
-5. **On the user's confirmation** ("yes" / "post them" / "select C123 C456"), re-engage the
+5. **Relay the spec-disposition question.** At end of run the agent lists what it produced
+   under `Tests/e2e/testrail-cases/` and shortlists CI promotion candidates. Relay the
+   shortlist and the question (promote / keep all / delete specific) verbatim — the specs
+   are never deleted without the user choosing so.
+
+6. **On the user's confirmation** ("yes" / "post them" / "select C123 C456"), re-engage the
    agent (or continue it) to post the chosen results to TestRail. Pass through any selection
    the user makes.
+
+7. **If the agent stopped on its turn budget**, it wrote a partial results file — tell the
+   user the run is resumable by re-invoking `/testrail-run` with the same target (the agent
+   skips already-recorded cases).
 
 ## Constraints
 
 - Execution is always sequential, matching `workers: 1` in `Tests/e2e/testrail.config.ts`.
 - Never post results to TestRail without explicit user confirmation.
-- TestRail credentials (`TESTRAIL_USERNAME`, `TESTRAIL_API_KEY`) live in the environment;
-  do not prompt for them and never print them.
-- This skill never calls the TestRail API or Playwright directly. All of that is the agent's.
+- Never delete anything under `Tests/e2e/testrail-cases/` — that is user-gated in the
+  agent's disposition step.
+- TestRail credentials (`TESTRAIL_USERNAME`, `TESTRAIL_API_KEY`) live in the environment or
+  `.ai/settings.local.json`; do not prompt for them and never print them.
+- This skill never calls the TestRail API, Playwright, or Docker directly. All of that is
+  the agent's.
