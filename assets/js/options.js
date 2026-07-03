@@ -1062,3 +1062,13 @@ window.imagify = window.imagify || {};
 	} );
 
 })(jQuery);
+
+// Imagify Analytics opt-in notice: toggle the data preview =======================================
+(function($) {
+
+	$( document ).on( 'click.imagify-analytics', '.imagify-analytics-preview-toggle', function( e ) {
+		e.preventDefault();
+		$( this ).closest( 'p' ).next( '.imagify-analytics-data-container' ).slideToggle();
+	} );
+
+})(jQuery);
