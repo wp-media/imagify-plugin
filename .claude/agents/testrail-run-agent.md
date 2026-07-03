@@ -280,14 +280,23 @@ mkdir -p "$OUT"
 (
   cd Tests/e2e &&
   IMAGIFY_BASE_URL="$E2E_URL" IMAGIFY_ADMIN_USER="$WP_USER" IMAGIFY_ADMIN_PASS="$WP_PASS" \
-  TESTRAIL_OUTPUT_DIR="$OUT" \
+  TESTRAIL_OUTPUT_DIR="$OUT/artifacts" \
   npx playwright test --config=testrail.config.ts "testrail-cases/case-$CASE_ID.spec.ts" \
     --reporter=json > "$OUT/results.json" 2> "$OUT/stderr.log"
 )
 ```
 
-The subshell scopes the `cd` — every other step assumes repo root. **Never `2>&1` into
-results.json** — any npm/Node warning would corrupt the JSON; stderr goes to its own file.
+The subshell scopes the `cd` — every other step assumes repo root. Two hard-won rules:
+- **`TESTRAIL_OUTPUT_DIR` must be `$OUT/artifacts`, never `$OUT` itself** — Playwright
+  *cleans its outputDir at test start*, so a results.json redirected into the same directory
+  gets deleted mid-run. Reporter output (results.json, stderr.log) lives at `$OUT` root;
+  browser evidence lives under `$OUT/artifacts/`.
+- **Never `2>&1` into results.json** — any npm/Node warning would corrupt the JSON; stderr
+  goes to its own file.
+- **Node >= 18 is required** (Playwright's bundle uses global fetch/Request). Check
+  `node --version` once before the first compile gate; if the shell default is older (nvm
+  pinning Node 16 is common on Local-user machines), prefix `PATH=/opt/homebrew/bin:$PATH`
+  (or the machine's newer Node) on every playwright invocation.
 
 ### 3e — Determine the outcome
 
@@ -308,11 +317,11 @@ Steps-passed / steps-total always **exclude login** — TestRail's own step coun
 results file and posted comment must match them exactly.
 
 **Locate the evidence** — Playwright nests artifacts in a per-test subdirectory of
-`outputDir`, so resolve the real paths by glob, never assume `$OUT/trace.zip`:
+`outputDir` (`$OUT/artifacts`), so resolve the real paths by glob, never assume a flat path:
 
 ```bash
-TRACE=$(ls "$OUT"/*/trace.zip 2>/dev/null | head -1)
-VIDEO=$(ls "$OUT"/*/*.webm    2>/dev/null | head -1)
+TRACE=$(ls "$OUT"/artifacts/*/trace.zip 2>/dev/null | head -1)
+VIDEO=$(ls "$OUT"/artifacts/*/*.webm    2>/dev/null | head -1)
 ```
 
 Record per case: `{ case_id, title, outcome, trace_path, steps_passed, steps_total, elapsed,

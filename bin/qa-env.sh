@@ -113,8 +113,10 @@ PYEOF
 
   echo "== Snapshotting databases"
   mkdir -p "$SNAP_DIR"
-  wp_nginx  db export - > "$SNAP_DIR/nginx.sql"
-  wp_apache db export - > "$SNAP_DIR/apache.sql"
+  # Dump inside the DB container (client == server version, local socket) — the
+  # wordpress:cli image's newer mariadb client refuses non-SSL TCP connections.
+  dc exec -T db-nginx  sh -c 'exec mariadb-dump -uwordpress -pwordpress wordpress' > "$SNAP_DIR/nginx.sql"
+  dc exec -T db-apache sh -c 'exec mariadb-dump -uwordpress -pwordpress wordpress' > "$SNAP_DIR/apache.sql"
 
   echo "== QA environments ready"
   echo "   nginx : http://localhost:$NGINX_PORT  ($ADMIN_USER/$ADMIN_PASS)"
@@ -127,12 +129,12 @@ cmd_reset() {
   if [ "$target" = nginx ] || [ "$target" = all ]; then
     [ -f "$SNAP_DIR/nginx.sql" ] || { echo "ERROR: no nginx snapshot — run 'up' first" >&2; exit 1; }
     echo "== Restoring nginx DB snapshot"
-    wp_nginx db import - < "$SNAP_DIR/nginx.sql"
+    dc exec -T db-nginx sh -c 'exec mariadb -uwordpress -pwordpress wordpress' < "$SNAP_DIR/nginx.sql"
   fi
   if [ "$target" = apache ] || [ "$target" = all ]; then
     [ -f "$SNAP_DIR/apache.sql" ] || { echo "ERROR: no apache snapshot — run 'up' first" >&2; exit 1; }
     echo "== Restoring apache DB snapshot"
-    wp_apache db import - < "$SNAP_DIR/apache.sql"
+    dc exec -T db-apache sh -c 'exec mariadb -uwordpress -pwordpress wordpress' < "$SNAP_DIR/apache.sql"
   fi
 }
 

@@ -17,14 +17,17 @@ import { defineConfig, devices } from '@playwright/test';
  *   (
  *     cd Tests/e2e &&
  *     IMAGIFY_BASE_URL="$E2E_URL" IMAGIFY_ADMIN_USER="$WP_USER" IMAGIFY_ADMIN_PASS="$WP_PASS" \
- *     TESTRAIL_OUTPUT_DIR="$OUT" \
+ *     TESTRAIL_OUTPUT_DIR="$OUT/artifacts" \
  *     npx playwright test --config=testrail.config.ts "testrail-cases/case-$CASE_ID.spec.ts" \
  *       --reporter=json > "$OUT/results.json" 2> "$OUT/stderr.log"
  *   )
  *
- * NOTE on evidence paths: Playwright creates a per-test SUBDIRECTORY inside outputDir —
- * trace/video land at `$OUT/<test-result-dir>/trace.zip`, NOT at `$OUT/trace.zip`. Resolve
- * them by glob (`ls "$OUT"/*'/'trace.zip`), never by assuming the flat path.
+ * TESTRAIL_OUTPUT_DIR must be a SUBDIR of $OUT ($OUT/artifacts), never $OUT itself:
+ * Playwright CLEANS outputDir at test start, so a results.json redirected into the same
+ * directory is deleted mid-run (verified live 2026-07-03). Playwright then creates a
+ * per-test subdirectory inside outputDir — trace/video land at
+ * `$OUT/artifacts/<test-result-dir>/trace.zip`; resolve by glob, never a flat path.
+ * Node >= 18 is required (Playwright bundles global-fetch-based code).
  *
  * HAR capture is intentionally dropped: `use.recordHar` needs a static path per test and
  * doesn't compose with per-case dynamic naming. The trace.zip contains the network tab in

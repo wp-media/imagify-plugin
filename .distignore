@@ -1,10 +1,15 @@
 /.git
 /.github
 /.claude
+/.ai
 /.wordpress-org
 /bin
 /_dev
 /Tests
+/node_modules
+/generatedpackages
+/.e2e-screenshots
+/.e2e-temp
 
 /.distignore
 /.editorconfig

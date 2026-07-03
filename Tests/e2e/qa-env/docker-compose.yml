@@ -47,7 +47,7 @@ services:
       WORDPRESS_DB_NAME: wordpress
     volumes:
       - wp-nginx:/var/www/html
-      - ../../generatedpackages:/packages:ro
+      - ../../../generatedpackages:/packages:ro
 
   web-nginx:
     image: nginx:1.27-alpine
@@ -73,7 +73,7 @@ services:
       WORDPRESS_DB_NAME: wordpress
     volumes:
       - wp-apache:/var/www/html
-      - ../../generatedpackages:/packages:ro
+      - ../../../generatedpackages:/packages:ro
 
   # WP-CLI sidecars — invoked via `docker compose run --rm cli-nginx wp ...`.
   # The run agent gets these full command prefixes from the generated
@@ -91,7 +91,7 @@ services:
       WORDPRESS_DB_NAME: wordpress
     volumes:
       - wp-nginx:/var/www/html
-      - ../../generatedpackages:/packages:ro
+      - ../../../generatedpackages:/packages:ro
     profiles: ["cli"]
 
   cli-apache:
@@ -107,7 +107,7 @@ services:
       WORDPRESS_DB_NAME: wordpress
     volumes:
       - wp-apache:/var/www/html
-      - ../../generatedpackages:/packages:ro
+      - ../../../generatedpackages:/packages:ro
     profiles: ["cli"]
 
 volumes:
