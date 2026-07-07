@@ -26,7 +26,7 @@ function imagify_get_mime_types( $type = null ) {
 		$mimes['pdf'] = 'application/pdf';
 	}
 
-	return $mimes;
+	return apply_filters( 'imagify_get_mime_types', $mimes );
 }
 
 /**
