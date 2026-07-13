@@ -12,8 +12,34 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 abstract class AbstractIISDirConfFile extends AbstractWriteDirConfFile {
 
 	/**
+	 * Get the MIME map file extensions this class owns inside `<staticContent>`.
+	 *
+	 * Concrete classes that emit `<mimeMap>` entries (WebP, AVIF) override this
+	 * to declare the extension(s) they own, so insert_contents() can dedupe them
+	 * by `@fileExtension`. RewriteRules subclasses emit `<rule>` elements, not
+	 * `<mimeMap>`, so they inherit the empty default and are unaffected.
+	 *
+	 * @since 2.3.1
+	 *
+	 * @return array
+	 */
+	protected function get_owned_mime_extensions(): array {
+		return [];
+	}
+
+	/**
 	 * Insert new contents into the directory conf file.
 	 * Replaces existing marked info. Creates file if none exists.
+	 *
+	 * IIS invariant: `system.webServer` must contain at most ONE `<staticContent>`
+	 * collection. A second sibling `<staticContent>` makes IIS fail to parse
+	 * web.config and returns HTTP 500 for the whole site (issue #509). To honour
+	 * this, MIME mappings are emitted as leaf `<mimeMap>` fragments targeted at
+	 * `/configuration/system.webServer/staticContent`; get_node() creates that
+	 * container only when it is absent and otherwise merges into the existing one.
+	 * Imagify's own `<mimeMap>` entries are identified and de-duplicated by
+	 * `@fileExtension` (see get_owned_mime_extensions()) rather than by a `name`
+	 * marker, so both add() and remove() converge on a single collection.
 	 *
 	 * @since  1.9
 	 * @access protected
@@ -38,6 +64,23 @@ abstract class AbstractIISDirConfFile extends AbstractWriteDirConfFile {
 		if ( $old_nodes->length > 0 ) {
 			foreach ( $old_nodes as $old_node ) {
 				$old_node->parentNode->removeChild( $old_node );
+			}
+		}
+
+		/**
+		 * Remove any `<mimeMap>` this class owns (matched exactly by
+		 * `@fileExtension`) from the shared `<staticContent>` collection. This is
+		 * the ONLY removal mechanism for our leaf mimeMaps (they carry no `name`
+		 * marker), so it must run on BOTH the add() and remove() paths — hence it
+		 * sits before the empty-contents early return below.
+		 */
+		foreach ( $this->get_owned_mime_extensions() as $extension ) {
+			$mime_nodes = $xpath->query( ".//staticContent/mimeMap[@fileExtension='" . $extension . "']" );
+
+			if ( $mime_nodes && $mime_nodes->length > 0 ) {
+				foreach ( $mime_nodes as $mime_node ) {
+					$mime_node->parentNode->removeChild( $mime_node );
+				}
 			}
 		}
 

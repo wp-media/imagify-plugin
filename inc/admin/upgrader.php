@@ -324,6 +324,57 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 			$options->set( 'optimization_format', 'webp' );
 		}
 	}
+
+	// 2.3.1
+	if ( version_compare( $site_version, '2.3.1', '<' ) ) {
+		/**
+		 * Self-heal IIS web.config files broken by duplicate `<staticContent>` siblings (issue #509).
+		 *
+		 * Older versions emitted a whole `<staticContent>` collection for both the WebP and AVIF
+		 * MIME mappings. IIS allows exactly ONE `<staticContent>` under `system.webServer`, so a
+		 * second sibling made IIS return HTTP 500 for the entire site. The root-cause fix now emits
+		 * leaf `<mimeMap>` fragments merged into a single collection; this one-time migration
+		 * remediates installs that are already broken by collapsing Imagify's duplicate blocks.
+		 *
+		 * Guarded by a POSITIVE wrapping conditional (never an early `return`) so any migration
+		 * block appended after this one still runs on non-IIS servers.
+		 */
+		global $is_iis7;
+
+		if ( ! empty( $is_iis7 ) ) {
+			$webp = new \Imagify\Webp\IIS();
+			$avif = new \Imagify\Avif\IIS();
+
+			$filesystem = \Imagify_Filesystem::get_instance();
+
+			// Only heal writers whose web.config already exists and is writable; never fatal the upgrade.
+			$webp_ready = $filesystem->exists( $webp->get_file_path() ) && ! is_wp_error( $webp->is_file_writable() );
+			$avif_ready = $filesystem->exists( $avif->get_file_path() ) && ! is_wp_error( $avif->is_file_writable() );
+
+			// Remove-then-add: strip all Imagify-created `<staticContent>` containers and stray mimeMaps,
+			// collapsing the duplicate-sibling condition while preserving any foreign `<staticContent>`.
+			if ( $webp_ready ) {
+				$webp->remove();
+			}
+
+			if ( $avif_ready ) {
+				$avif->remove();
+			}
+
+			// Re-add mirroring Display::activate(): gate solely on `display_nextgen` and, when on,
+			// re-insert BOTH leaf mimeMaps (WebP and AVIF) into the single shared `<staticContent>`.
+			// Do NOT branch on `optimization_format` — Display never does.
+			if ( get_imagify_option( 'display_nextgen' ) ) {
+				if ( $webp_ready ) {
+					$webp->add();
+				}
+
+				if ( $avif_ready ) {
+					$avif->add();
+				}
+			}
+		}
+	}
 }
 add_action( 'imagify_upgrade', '_imagify_new_upgrade', 10, 2 );
 
