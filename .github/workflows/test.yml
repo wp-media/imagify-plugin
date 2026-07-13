@@ -18,10 +18,10 @@ jobs:
             fail-fast: false
             matrix:
                 operating-system: [ubuntu-latest]
-                php-versions: ['8.0', '8.1', '8.2']
+                php-versions: ['8.0', '8.1', '8.2', '8.3', '8.4']
                 wp-versions: ['latest']
 
-        name: WP ${{ matrix.wp-versions }} with PHP ${{ matrix.php-versions }} on ${{ matrix.operating-system }}.
+        name: WP ${{ matrix.wp-versions }} with PHP ${{ matrix.php-versions }}
 
         env:
             WP_TESTS_DIR: "/tmp/tests/phpunit"
@@ -30,7 +30,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -62,8 +62,11 @@ jobs:
                   key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
                   restore-keys: ${{ runner.os }}-composer-
 
+            - name: Install Strauss
+              run: sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'
+
             - name: Install dependencies
-              run: composer install --prefer-dist --no-interaction --no-scripts --ignore-platform-reqs
+              run: composer install --no-interaction
 
             - name: Install tests
               run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1:3306 ${{ matrix.wp-versions }}
@@ -71,5 +74,8 @@ jobs:
             - name: Mysql8 auth plugin workaround
               run: sudo mysql -u root -proot -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';"
 
-            - name: Test
-              run: composer run-tests
+            - name: Unit tests
+              run: composer test-unit
+
+            - name: Integration tests
+              run: composer test-integration

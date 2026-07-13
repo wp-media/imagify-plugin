@@ -220,7 +220,7 @@ function get_imagify_max_intermediate_image_size() {
  * @return string The URL.
  */
 function imagify_get_wp_rocket_url( $path = false, $query = [] ) {
-	$wprocket_url = 'https://wp-rocket.me/';
+	$wprocket_url = 'https://wp-rocket.me/wp-rocket-for-imagify-users/';
 
 	// Current lang.
 	$lang = imagify_get_current_lang_in( [ 'de', 'es', 'fr', 'it' ] );
@@ -253,9 +253,9 @@ function imagify_get_wp_rocket_url( $path = false, $query = [] ) {
 	// Query args.
 	$query = array_merge(
 		[
-			'utm_source'   => 'imagify-coupon',
-			'utm_medium'   => 'plugin',
-			'utm_campaign' => 'imagify',
+			'utm_source'   => 'imagify',
+			'utm_medium'   => 'partners',
+			'utm_campaign' => 'imagify-benefits',
 		],
 		$query
 	);

@@ -11,7 +11,7 @@ window.imagify = window.imagify || {};
 		var obj   = $( this ),
 			value = obj.val();
 
-		if ( $.trim( value ) === '' ) {
+		if ( String( value ).trim() === '' ) {
 			return false;
 		}
 
@@ -145,6 +145,51 @@ window.imagify = window.imagify || {};
 			$( e.target ).closest( '.imagify-radio-group' ).next( '.imagify-options-line' ).addClass( 'imagify-faded' );
 		}
 	} ).filter( ':checked' ).trigger( 'init.imagify' );
+
+	/**
+	 * Reset Internal State button.
+	 */
+	$( '#imagify-reset-internal-state' ).on( 'click.imagify', function() {
+		var $button   = $( this ),
+			nonce     = $button.data( 'nonce' ),
+			$feedback = $( '#imagify-reset-internal-state-feedback' );
+
+		swal( {
+			title:            imagifyOptions.resetInternalState.confirm,
+			type:             'warning',
+			customClass:      'imagify-sweet-alert',
+			padding:          0,
+			showCancelButton: true,
+			cancelButtonText: imagifySwal.labels.cancelButtonText,
+			reverseButtons:   true
+		} ).then(
+			function() {
+				$button.prop( 'disabled', true );
+				$feedback.text( '' ).removeClass( 'imagify-success imagify-error' );
+
+				$.post( ajaxurl, {
+					'action':   imagifyOptions.resetInternalState.action,
+					'_wpnonce': nonce
+				} )
+					.done( function( response ) {
+						if ( response && response.success ) {
+							$feedback.text( imagifyOptions.resetInternalState.success ).addClass( 'imagify-success' );
+						} else {
+							$feedback.text( imagifyOptions.resetInternalState.error ).addClass( 'imagify-error' );
+						}
+					} )
+					.fail( function() {
+						$feedback.text( imagifyOptions.resetInternalState.error ).addClass( 'imagify-error' );
+					} )
+					.always( function() {
+						$button.prop( 'disabled', false );
+					} );
+			},
+			function() {
+				// User cancelled — do nothing.
+			}
+		);
+	} );
 
 } )(jQuery, document, window);
 
@@ -991,3 +1036,39 @@ window.imagify = window.imagify || {};
 	} );
 
 } )(window, document, jQuery);
+
+// Imagify Analytics opt-in toggle ================================================================
+(function($) {
+
+	var $checkbox = $( '#imagify-analytics-enabled' );
+
+	if ( ! $checkbox.length ) {
+		return;
+	}
+
+	$checkbox.on( 'change.imagify-analytics', function() {
+		var nonce = $( this ).data( 'nonce' );
+
+		$.post( ajaxurl, {
+			action: 'imagify_toggle_tracking_optin',
+			value:  $( this ).prop( 'checked' ) ? 1 : 0,
+			nonce:  nonce
+		} );
+	} );
+
+	$( document ).on( 'click.imagify-analytics', '#imagify-analytics-enable-from-modal', function() {
+		$( '.imagify-modal.modal-is-open .close-btn' ).trigger( 'click.imagify' );
+		$checkbox.prop( 'checked', true ).trigger( 'change.imagify-analytics' );
+	} );
+
+})(jQuery);
+
+// Imagify Analytics opt-in notice: toggle the data preview =======================================
+(function($) {
+
+	$( document ).on( 'click.imagify-analytics', '.imagify-analytics-preview-toggle', function( e ) {
+		e.preventDefault();
+		$( this ).closest( 'p' ).next( '.imagify-analytics-data-container' ).slideToggle();
+	} );
+
+})(jQuery);

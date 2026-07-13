@@ -1,0 +1,86 @@
+name: E2E (Playwright)
+
+on:
+  pull_request:
+    paths:
+      - 'classes/**'
+      - 'inc/**'
+      - 'assets/**'
+      - 'views/**'
+      - 'Tests/e2e/**'
+      - '.wp-env.json'
+      - 'bin/dev-up.sh'
+      - 'bin/dev-seed.sh'
+      - 'composer.json'
+      - '.github/workflows/e2e.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Composer install
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Boot wp-env
+        run: bash bin/dev-up.sh --no-seed
+        env:
+          IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
+
+      - name: Seed test data
+        run: bash bin/dev-seed.sh
+        env:
+          IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
+
+      - name: Install Playwright
+        working-directory: Tests/e2e
+        run: |
+          npm ci || npm install
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright
+        working-directory: Tests/e2e
+        env:
+          CI: 'true'
+          IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
+        run: npm test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: Tests/e2e/playwright-report
+          retention-days: 14
+
+      - name: Capture wp-env debug.log
+        if: failure()
+        run: |
+          npx --yes @wordpress/env run cli "cat wp-content/debug.log" > debug.log || true
+
+      - name: Upload debug.log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wp-debug-log
+          path: debug.log
+          if-no-files-found: ignore

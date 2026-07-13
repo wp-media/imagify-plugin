@@ -35,7 +35,9 @@ class AdminBar implements SubscriberInterface {
 	 */
 	public static function get_subscribed_events(): array {
 		return [
+			// @action
 			'wp_ajax_imagify_get_admin_bar_profile' => 'get_admin_bar_profile_callback',
+			// @action
 			'admin_bar_menu'                        => [ 'add_imagify_admin_bar_menu', IMAGIFY_INT_MAX ],
 		];
 	}

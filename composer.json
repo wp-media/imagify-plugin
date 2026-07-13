@@ -22,8 +22,8 @@
 		"sort-packages": true,
 		"allow-plugins": {
 			"composer/installers": true,
+			"cweagans/composer-patches": true,
 			"dealerdirect/phpcodesniffer-composer-installer": true,
-			"dangoodman/composer-for-wordpress": true,
 			"mnsami/composer-custom-directory-installer": true,
 			"phpstan/extension-installer": true
 		}
@@ -33,30 +33,31 @@
 		"source": "https://github.com/wp-media/imagify-plugin"
 	},
 	"require": {
-		"php": ">=7.0",
+		"php": ">=7.4",
 		"composer/installers": "^1.0 || ^2.0",
-		"dangoodman/composer-for-wordpress": "^2.0",
+		"cweagans/composer-patches": "^1.7",
+		"deliciousbrains/wp-background-processing": "dev-master",
+		"league/container": "^4.2",
+		"woocommerce/action-scheduler": "^3.4",
+		"wordpress/mcp-adapter": "^0.5.0",
 		"wp-media/apply-filters-typed": "^1.0",
-		"wp-media/plugin-family": "^1.0"
+		"wp-media/plugin-family": "^1.0",
+		"wp-media/wp-mixpanel": "^1.0"
 	},
 	"require-dev": {
-		"php": "^7 || ^8",
-		"brain/monkey": "^2.0",
-		"coenjacobs/mozart": "^0.7",
+		"php": ">=7.4",
 		"dealerdirect/phpcodesniffer-composer-installer": "^1",
-		"deliciousbrains/wp-background-processing": "~1.0",
-		"league/container": "^4.2",
 		"mnsami/composer-custom-directory-installer": "^2.0",
 		"php-stubs/wordpress-tests-stubs": "^6.5",
 		"phpcompatibility/phpcompatibility-wp": "^2.0",
 		"phpstan/extension-installer": "^1.3",
-		"phpstan/phpstan-mockery": "^1.1",
-		"phpstan/phpstan-phpunit": "^1.4",
-		"phpunit/phpunit": "^7.5 || ^8 || ^9",
+		"phpstan/phpstan-mockery": "^2.0",
+		"phpstan/phpstan-phpunit": "^2.0",
+		"phpunit/phpunit": "^8.5.52 || ^9.6.33",
 		"roave/security-advisories": "dev-master",
-		"szepeviktor/phpstan-wordpress": "^1.3",
-		"woocommerce/action-scheduler": "^3.4",
+		"szepeviktor/phpstan-wordpress": "^2.0",
 		"wp-coding-standards/wpcs": "^3",
+		"wp-media/phpstan-wp": "^1.0",
 		"wp-media/phpunit": "3.0"
 	},
 	"autoload": {
@@ -84,20 +85,32 @@
 	},
 	"extra": {
 		"installer-paths": {
-			"./inc/Dependencies/ActionScheduler/": ["woocommerce/action-scheduler"]
+			"./inc/Dependencies/ActionScheduler/": ["woocommerce/action-scheduler"],
+			"vendor/{$vendor}/{$name}/": ["wordpress/mcp-adapter"]
 		},
-		"mozart": {
-			"dep_namespace": "Imagify\\Dependencies\\",
-			"dep_directory": "/classes/Dependencies/",
-			"classmap_directory": "/inc/classes/Dependencies/",
+		"patches": {
+			"wordpress/mcp-adapter": {
+				"Fix PHP 8.1+ deprecated static trait method call (upstream issue #182, fixed in upstream PR #193)": "patches/wordpress/mcp-adapter/fix-static-trait-call.patch"
+			}
+		},
+		"strauss": {
+			"namespace_prefix": "Imagify\\Dependencies\\",
 			"classmap_prefix": "Imagify_",
+			"target_directory": "vendor",
 			"packages": [
 				"deliciousbrains/wp-background-processing",
 				"league/container",
-				"wp-media/plugin-family"
-			]
+				"wp-media/plugin-family",
+				"wp-media/wp-mixpanel"
+			],
+			"exclude_from_prefix": {
+				"packages": [
+					"wp-media/apply-filters-typed"
+				]
+			}
 		},
-		"plugin_domain": "imagify"
+		"plugin_domain": "imagify",
+		"imagify_partner": ""
 	},
 	"scripts": {
 		"test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist",
@@ -111,15 +124,18 @@
 			"@test-unit",
 			"@test-integration"
 		],
+		"prefix-namespaces": [
+			"sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'",
+			"php bin/strauss.phar",
+			"@composer dump-autoload"
+		],
 		"post-install-cmd": [
-			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
-			"composer dump-autoload",
-			"Imagify\\Dependencies\\WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
+			"WPMedia\\PluginFamily\\PostInstall::apply_text_domain",
+			"@prefix-namespaces"
 		],
 		"post-update-cmd": [
-			"[ $COMPOSER_DEV_MODE -eq 0 ] || \"vendor/bin/mozart\" compose",
-			"composer dump-autoload",
-			"Imagify\\Dependencies\\WPMedia\\PluginFamily\\PostInstall::apply_text_domain"
+			"WPMedia\\PluginFamily\\PostInstall::apply_text_domain",
+			"@prefix-namespaces"
 		],
 		"code-coverage": "\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist --coverage-clover=tests/report/coverage.clover"
 	}

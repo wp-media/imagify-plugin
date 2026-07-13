@@ -10,7 +10,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v6
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -19,8 +19,11 @@ jobs:
         coverage: none  # XDebug can be enabled here 'coverage: xdebug'
         tools: composer:v2
 
+    - name: Install Strauss
+      run: sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'
+
     - name: Build
-      run: composer install -a --no-dev
+      run: composer install -o --no-dev
 
     - name: WordPress Plugin Deploy
       uses: 10up/action-wordpress-plugin-deploy@stable

@@ -16,7 +16,7 @@ class GenerateMissingNextgenCommand extends AbstractCommand {
 	 * @param array $options Optional arguments.
 	 */
 	public function __invoke( $arguments, $options ) {
-		Bulk::get_instance()->run_generate_nextgen( $arguments );
+		Bulk::get_instance()->run_generate_nextgen( $arguments, imagify_nextgen_images_formats() );
 
 		\WP_CLI::log( 'Imagify missing next-gen images generation triggered.' );
 	}

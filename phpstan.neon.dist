@@ -12,9 +12,11 @@ parameters:
 	scanDirectories:
 		- inc/Dependencies/ActionScheduler
 		- Tests/Fixtures/
+		- Tests/phpstan/Rules
 	scanFiles:
 		- imagify.php
 		- inc/common/attachments.php
+		- inc/common/partners.php
 		- inc/functions/admin.php
 		- inc/functions/admin-stats.php
 		- inc/functions/admin-ui.php
@@ -22,7 +24,9 @@ parameters:
 		- inc/functions/attachments.php
 		- inc/functions/common.php
 		- inc/functions/formatting.php
+		- inc/3rd-party/nextgen-gallery/inc/functions/common.php
 		- inc/functions/options.php
+		- inc/functions/partners.php
 		- vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
 		- vendor/php-stubs/wordpress-tests-stubs/wordpress-tests-stubs.php
 	excludePaths:
@@ -47,7 +51,5 @@ parameters:
 		 - classes/WriteFile/AbstractNginxDirConfFile.php
 		 # WP_CLI is not part of the testable paths
 		 - classes/CLI/
-		 # Don't check dependencies
-		 - classes/Dependencies/
 rules:
 	- Imagify\Tests\phpstan\Rules\DiscourageApplyFilters

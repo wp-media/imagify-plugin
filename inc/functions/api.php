@@ -307,7 +307,7 @@ function imagify_bulk_optimize( $contexts, $optimization_level ) {
  * @return void
  */
 function imagify_generate_nextgen( $contexts ) {
-	Imagify\Bulk\Bulk::get_instance()->run_generate_nextgen( $contexts );
+	Imagify\Bulk\Bulk::get_instance()->run_generate_nextgen( $contexts, imagify_nextgen_images_formats() );
 }
 
 /**

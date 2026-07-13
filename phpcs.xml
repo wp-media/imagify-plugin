@@ -24,9 +24,9 @@
 	<arg name="parallel" value="50"/><!-- Enables parallel processing when available for faster results. -->
 	<arg name="extensions" value="php"/><!-- Limit to PHP files -->
 
-	<!-- Check for cross-version support for PHP 7.3 and higher + WP 5.3 and higher. -->
+	<!-- Check for cross-version support for PHP 7.3 and higher + WP 5.9 and higher. -->
 	<config name="testVersion" value="7.3-"/>
-	<config name="minimum_supported_wp_version" value="5.3"/>
+	<config name="minimum_supported_wp_version" value="5.9"/>
 
 	<!-- Run against the PHPCompatibility ruleset dedicated to WP. -->
 	<rule ref="PHPCompatibilityWP">

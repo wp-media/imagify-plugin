@@ -36,7 +36,9 @@ class AdminSubscriber implements SubscriberInterface {
 		$basename = plugin_basename( IMAGIFY_FILE );
 
 		return [
+			// @filter
 			'plugin_action_links_' . $basename => 'plugin_action_links',
+			// @filter
 			'network_admin_plugin_action_links_' . $basename => 'plugin_action_links',
 		];
 	}

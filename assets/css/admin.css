@@ -348,6 +348,7 @@ body.imagify-modal-is-open {
 [class*="imagify-"] .button .dashicons {
 	margin-right: 5px;
 	vertical-align: middle;
+	line-height: 1;
 }
 
 .imagify-settings .button-primary.button-primary,
@@ -463,6 +464,7 @@ button.imagify-link-like {
 .imagify-button-primary.imagify-button-primary .dashicons,
 .imagify-button-secondary.imagify-button-secondary .dashicons {
 	vertical-align: middle;
+	line-height: 1;
 }
 
 [class*="imagify-"] .button-text {
@@ -1586,22 +1588,53 @@ ul.imagify-datas-details.imagify-datas-details {
 .imagify-original-fize-size .value {
 	padding-left: 15px !important;
 }
+.imagify-plugin-family-cards {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 0 -10px;
+}
+.imagify-plugin-family-col {
+	width: 25%;
+	box-sizing: border-box;
+	padding: 0 10px;
+	margin-bottom: 20px;
+	display: flex;
+	flex-direction: column;
+}
+@media (max-width: 1200px) {
+	.imagify-plugin-family-col {
+		width: 50%;
+	}
+}
+@media (max-width: 600px) {
+	.imagify-plugin-family-col {
+		width: 100%;
+	}
+}
 .imagify-card {
 	border: 1px solid #dfdfdf;
 	background-color: #f4f7f9;
 	border-radius: 5px;
-	width:95%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
 }
 .imagify-card-header {
 	margin-bottom: 10px;
 	padding-top: 25px;
 }
 .imagify-card-logo {
-	height: 42px;
+	min-height: 42px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 .imagify-card-logo img {
 	display: block;
-	margin: 0 auto 0;
+	margin: 0 auto;
+	max-width: 100%;
+	height: auto;
 }
 .imagify-card-header h4 {
 	text-align: center;
@@ -1612,7 +1645,7 @@ ul.imagify-datas-details.imagify-datas-details {
 .imagify-card-body {
 	margin-bottom: 10px;
 	padding: 0 10px 0 10px;
-	height: 87px;
+	flex: 1 1 auto;
 }
 .imagify-card-body p {
 	font-size: 1em;
@@ -1626,6 +1659,7 @@ ul.imagify-datas-details.imagify-datas-details {
 	align-items: center;
 	padding: 10px;
 	height: 40px;
+	margin-top: auto;
 }
 .imagify-card-footer span {
 	text-transform: uppercase;
@@ -1644,14 +1678,6 @@ ul.imagify-datas-details.imagify-datas-details {
 	padding: 8px 20px 8px 20px;
 	color: white;
 }
-.imagify-plugin-family-col {
-	float: left;
-	width: 25%;
-	box-sizing: border-box;
-	-webkit-flex-basis: 25%;
-	-ms-flex-preferred-size: 25%;
-	flex-basis: 25%;
-}
 .imagify-upsell-cta {
 	display: inline-flex;
     align-items: center;
@@ -1664,3 +1690,134 @@ ul.imagify-datas-details.imagify-datas-details {
 .imagify-upsell.imagify-col-content .imagify-space-left p {
 	font-size: 14px;
 }
+
+/* Analytics opt-in ============================================================================= */
+.imagify-analytics-section {
+	padding: 20px 24px;
+	background: #f6f7f7;
+	border-radius: 4px;
+}
+
+.imagify-analytics-optin {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.imagify-analytics-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 600;
+	color: #2E3243;
+}
+
+/* Hide native checkbox */
+.imagify-analytics-checkbox {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+/* Toggle switch track */
+.imagify-analytics-toggle-ui {
+	position: relative;
+	display: inline-block;
+	width: 48px;
+	height: 26px;
+	background: #ccc;
+	border-radius: 13px;
+	transition: background .2s ease;
+	flex-shrink: 0;
+}
+
+/* Toggle switch thumb */
+.imagify-analytics-toggle-ui::after {
+	content: '';
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	width: 20px;
+	height: 20px;
+	background: #fff;
+	border-radius: 50%;
+	box-shadow: 0 1px 3px rgba(0,0,0,.3);
+	transition: transform .2s ease;
+}
+
+.imagify-analytics-checkbox:checked ~ .imagify-analytics-toggle-ui,
+.imagify-analytics-label .imagify-analytics-checkbox:checked + .imagify-analytics-toggle-ui {
+	background: #40B1D0;
+}
+
+.imagify-analytics-checkbox:checked + .imagify-analytics-toggle-ui::after {
+	transform: translateX(22px);
+}
+
+.imagify-analytics-description {
+	margin: 0;
+	color: #666;
+	font-size: 13px;
+}
+
+.imagify-btn-link {
+	background: none;
+	border: none;
+	padding: 0;
+	color: #40B1D0;
+	text-decoration: underline;
+	cursor: pointer;
+	font-size: inherit;
+}
+
+.imagify-btn-link:hover {
+	color: #338ea6;
+}
+
+/* Analytics data table (modal + thank-you notice) */
+.imagify-analytics-data-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 12px 0;
+	border-left: 3px solid #40B1D0;
+	background-color: #F0FAFD;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.imagify-analytics-data-table td {
+	padding: 8px 12px;
+	font-size: 13px;
+	border-bottom: 1px solid #D8EFF6;
+	vertical-align: top;
+	color: #2E3243;
+}
+
+.imagify-analytics-data-table td:first-child {
+	font-weight: 600;
+	width: 40%;
+}
+
+.imagify-analytics-data-table tr:last-child td {
+	border-bottom: 0;
+}
+
+/* Thank-you notice text colour override */
+.imagify-analytics-thankyou-notice,
+.imagify-analytics-thankyou-notice p {
+	color: #1d2327;
+}
+
+/* Opt-in ask notice */
+.imagify-analytics-optin-notice .imagify-analytics-data-container {
+	margin-bottom: 12px;
+}
+
+.imagify-analytics-optin-notice .imagify-analytics-data-container .description {
+	color: #666;
+	font-size: 13px;
+}
+
