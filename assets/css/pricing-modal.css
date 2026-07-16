@@ -52,19 +52,6 @@
 		transition: width .3s ease, min-width .3s ease, max-width .3s ease, height .3s ease, min-height .3s ease;
 	}
 }
-/*
- * Suppresses the geometry transition above while the modal is performing its own opening
- * fade (see `openModal()` in assets/js/admin.js). Without this, a view-state modifier class
- * (`.imagify-iframe-viewing` / `.imagify-success-viewing`) toggled immediately after open —
- * e.g. a deep link / resumed session landing directly on a non-default step — would animate
- * from the default 1065px geometry on first paint instead of rendering the target step
- * instantly. Not guarded behind the reduced-motion media query since it only ever removes a
- * transition, never adds one.
- */
-.imagify-payment-modal .imagify-modal-content.imagify-modal-no-transition {
-	-webkit-transition: none !important;
-	transition: none !important;
-}
 .imagify-modal-content.imagify-iframe-viewing {
 	width: 980px;
 	height: 672px;

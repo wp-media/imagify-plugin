@@ -136,30 +136,4 @@ test.describe( 'Upgrade modal — layout shift across payment flow steps (#1066)
 		await assertNoHorizontalShiftOrScrollbar( page, modalContent );
 		await screenshotElement( page, 'pricing-modal-step-3-thank-you', modalContent );
 	} );
-
-	test( 'modal opened directly on a non-default step does not animate from a default state on first paint', async ( { page } ) => {
-		// Edge case from the spec: first paint should not "grow" from a default state when
-		// the modal is opened directly on the payment or success step (e.g. deep link /
-		// resumed session). A CSS `transition` never animates the very first computed value
-		// on load (no prior value to transition from), so we assert the box is already at
-		// its target size immediately after open, with no residual animation in progress.
-		const modalContent = await openPricingModal( page );
-
-		await modalContent.evaluate( ( el ) => el.classList.add( 'imagify-success-viewing' ) );
-
-		const widthImmediatelyAfterToggle = await modalContent.evaluate(
-			( el ) => el.getBoundingClientRect().width
-		);
-
-		await page.waitForTimeout( 400 );
-
-		const widthAfterSettling = await modalContent.evaluate(
-			( el ) => el.getBoundingClientRect().width
-		);
-
-		// Both measurements should reflect the success-viewing width (450px) within a small
-		// tolerance — i.e. no drawn-out grow animation lingering well past the transition
-		// duration declared in the CSS (.3s).
-		expect( Math.abs( widthAfterSettling - widthImmediatelyAfterToggle ) ).toBeLessThanOrEqual( 5 );
-	} );
 } );

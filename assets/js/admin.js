@@ -14,26 +14,9 @@ jQuery.extend( window.imagify, {
 	},
 	openModal: function( $link ) {
 		var target = $link.data( 'target' ) || $link.attr( 'href' ),
-			$target = jQuery( target ),
-			// Native DOM lookup (no jQuery) -- see assets/css/pricing-modal.css for the
-			// matching `.imagify-modal-no-transition` rule.
-			modalContentEl = $target.find( '.imagify-modal-content' )[ 0 ] || null;
+			$target = jQuery( target );
 
-		// Suppress the CSS geometry transition while the modal performs its own opening
-		// fade. Without this, a view-state class (e.g. `.imagify-iframe-viewing` /
-		// `.imagify-success-viewing`) toggled immediately after open -- such as a deep
-		// link / resumed session landing directly on a non-default step -- would visibly
-		// animate from the default geometry on first paint instead of rendering the
-		// target step instantly (#1066).
-		if ( modalContentEl ) {
-			modalContentEl.classList.add( 'imagify-modal-no-transition' );
-		}
-
-		$target.css( 'display', 'flex' ).hide().fadeIn( 400, function() {
-			if ( modalContentEl ) {
-				modalContentEl.classList.remove( 'imagify-modal-no-transition' );
-			}
-		} ).attr( {
+		$target.css( 'display', 'flex' ).hide().fadeIn( 400 ).attr( {
 			'aria-hidden': 'false',
 			'tabindex':    '0'
 		} ).trigger('focus').removeAttr( 'tabindex' ).addClass( 'modal-is-open' );
