@@ -56,4 +56,25 @@ class Test_ImagifyGetMimeTypes extends TestCase {
 		$this->assertSame( 'image/avif', $mimes['avif'] );
 		$this->assertArrayNotHasKey( 'pdf', $mimes );
 	}
+
+	public function testShouldDiscardMalformedFilteredMimeTypes() {
+		$callback = function ( $mimes ) {
+			$mimes['bad-bool']  = true;
+			$mimes['bad-array'] = [ 'image/png' ];
+			$mimes['not-mime']  = 'image';
+
+			return $mimes;
+		};
+
+		add_filter( 'imagify_get_mime_types', $callback );
+
+		$mimes = imagify_get_mime_types();
+
+		remove_filter( 'imagify_get_mime_types', $callback );
+
+		$this->assertArrayNotHasKey( 'bad-bool', $mimes );
+		$this->assertArrayNotHasKey( 'bad-array', $mimes );
+		$this->assertArrayNotHasKey( 'not-mime', $mimes );
+		$this->assertSame( 'image/jpeg', $mimes['jpg|jpeg|jpe'] );
+	}
 }
