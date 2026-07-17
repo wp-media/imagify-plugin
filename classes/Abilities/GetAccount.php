@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Imagify\Abilities;
 
-use Imagify\User\User;
-
 /**
  * MCP ability: returns the current Imagify account status and quota data.
  *
@@ -89,20 +87,6 @@ class GetAccount extends AbstractAbility {
 	 */
 	protected function has_permission(): bool {
 		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
-	}
-
-	/**
-	 * Fetch the initialized User instance.
-	 *
-	 * Extracted into a protected method so that unit tests can override
-	 * this call without needing to bootstrap the full Imagify API layer.
-	 *
-	 * @return User
-	 */
-	protected function fetch_user(): User {
-		$user = new User();
-		$user->init_user();
-		return $user;
 	}
 
 	/**

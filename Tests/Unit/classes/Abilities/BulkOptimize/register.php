@@ -48,7 +48,11 @@ class Test_Register extends TestCase {
 		$this->assertSame( [ $ability, 'execute' ], $captured['execute_callback'] );
 		$this->assertSame( [ $ability, 'check_permissions' ], $captured['permission_callback'] );
 		$this->assertSame( [ 'context' ], $captured['input_schema']['required'] );
-		$this->assertSame( [ 'scheduled', 'error' ], $captured['output_schema']['properties']['status']['enum'] );
+		$this->assertArrayHasKey( 'confirm', $captured['input_schema']['properties'] );
+		$this->assertSame(
+			[ 'scheduled', 'error', 'confirmation_required', 'insufficient_quota', 'invalid_api_key' ],
+			$captured['output_schema']['properties']['status']['enum']
+		);
 		$this->assertTrue( $captured['meta']['show_in_rest'] );
 		$this->assertTrue( $captured['meta']['mcp']['public'] );
 		$this->assertFalse( $captured['meta']['annotations']['destructive'] );

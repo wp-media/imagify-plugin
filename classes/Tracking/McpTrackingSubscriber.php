@@ -56,7 +56,13 @@ class McpTrackingSubscriber implements SubscriberInterface {
 	 * @return void
 	 */
 	public function on_ability_executed( string $ability_id, string $ability_name, $result, float $start_time, array $input_params ): void {
-		$this->mcp_tracking->track_ability_executed( $ability_id, $ability_name, $start_time );
+		$is_preview = is_array( $result ) && in_array(
+			$result['status'] ?? '',
+			[ 'confirmation_required', 'insufficient_quota', 'invalid_api_key' ],
+			true
+		);
+
+		$this->mcp_tracking->track_ability_executed( $ability_id, $ability_name, $start_time, $is_preview );
 
 		if ( 'imagify/optimize-media' === $ability_id && is_array( $result ) ) {
 			$this->mcp_tracking->track_media_optimized( $ability_id, $result, $start_time, $input_params );

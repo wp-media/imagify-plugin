@@ -84,4 +84,55 @@ class Test_TrackAbilityExecuted extends TestCase {
 		( new McpTracking( $optin, $mixpanel ) )
 			->track_ability_executed( 'imagify/get-account', 'Get Imagify account status', microtime( true ) );
 	}
+
+	/**
+	 * Tests that is_preview defaults to false and is included in the Mixpanel event_data.
+	 */
+	public function testIsPreviewDefaultsToFalse(): void {
+		$optin = Mockery::mock( Optin::class );
+		$optin->shouldReceive( 'can_track' )->andReturn( true );
+
+		$mixpanel = Mockery::mock( TrackingPlugin::class );
+		$mixpanel->shouldReceive( 'track_direct' )
+			->once()
+			->withArgs(
+				static function ( string $event, array $props ): bool {
+					return 'MCP Ability Executed' === $event
+						&& array_key_exists( 'is_preview', $props )
+						&& false === $props['is_preview'];
+				}
+			);
+
+		Functions\when( 'get_imagify_user' )->justReturn( new \WP_Error() );
+		Functions\when( 'is_wp_error' )->justReturn( true );
+		Functions\when( 'get_current_user_id' )->justReturn( 1 );
+
+		( new McpTracking( $optin, $mixpanel ) )
+			->track_ability_executed( 'imagify/get-stats', 'Get Imagify optimization stats', microtime( true ) );
+	}
+
+	/**
+	 * Tests that is_preview is forwarded as true in the Mixpanel event_data when passed explicitly.
+	 */
+	public function testIsPreviewTrueIsForwardedToEventData(): void {
+		$optin = Mockery::mock( Optin::class );
+		$optin->shouldReceive( 'can_track' )->andReturn( true );
+
+		$mixpanel = Mockery::mock( TrackingPlugin::class );
+		$mixpanel->shouldReceive( 'track_direct' )
+			->once()
+			->withArgs(
+				static function ( string $event, array $props ): bool {
+					return 'MCP Ability Executed' === $event
+						&& true === $props['is_preview'];
+				}
+			);
+
+		Functions\when( 'get_imagify_user' )->justReturn( new \WP_Error() );
+		Functions\when( 'is_wp_error' )->justReturn( true );
+		Functions\when( 'get_current_user_id' )->justReturn( 1 );
+
+		( new McpTracking( $optin, $mixpanel ) )
+			->track_ability_executed( 'imagify/optimize-media', 'Optimize media', microtime( true ), true );
+	}
 }
