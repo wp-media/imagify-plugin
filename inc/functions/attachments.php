@@ -26,7 +26,14 @@ function imagify_get_mime_types( $type = null ) {
 		$mimes['pdf'] = 'application/pdf';
 	}
 
-	return $mimes;
+	/**
+	 * Filter the mime types which could be optimized by Imagify.
+	 *
+	 * @since 2.3.1
+	 *
+	 * @param array $mimes The mime types, as extension => mime type pairs.
+	 */
+	return wpm_apply_filters_typed( 'array', 'imagify_get_mime_types', $mimes );
 }
 
 /**
