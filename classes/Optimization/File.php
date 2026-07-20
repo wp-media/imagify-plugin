@@ -216,45 +216,7 @@ class File {
 			$exif        = $this->filesystem->get_image_exif( $this->path );
 			$orientation = isset( $exif['Orientation'] ) ? (int) $exif['Orientation'] : 1;
 
-			switch ( $orientation ) {
-				case 2:
-					// Flip horizontally.
-					$editor->flip( true, false );
-					break;
-				case 3:
-					// Rotate 180 degrees or flip horizontally and vertically.
-					// Flipping seems faster/uses less resources.
-					$editor->flip( true, true );
-					break;
-				case 4:
-					// Flip vertically.
-					$editor->flip( false, true );
-					break;
-				case 5:
-					// Rotate 90 degrees counter-clockwise and flip vertically.
-					$result = $editor->rotate( 90 );
-
-					if ( ! is_wp_error( $result ) ) {
-						$editor->flip( false, true );
-					}
-					break;
-				case 6:
-					// Rotate 90 degrees clockwise (270 counter-clockwise).
-					$editor->rotate( 270 );
-					break;
-				case 7:
-					// Rotate 90 degrees counter-clockwise and flip horizontally.
-					$result = $editor->rotate( 90 );
-
-					if ( ! is_wp_error( $result ) ) {
-						$editor->flip( true, false );
-					}
-					break;
-				case 8:
-					// Rotate 90 degrees counter-clockwise.
-					$editor->rotate( 90 );
-					break;
-			}
+			$this->rotate_editor_by_exif_orientation( $editor, $orientation );
 		}
 
 		if ( ! $dimensions ) {
@@ -283,6 +245,111 @@ class File {
 		}
 
 		return $resized_image_path;
+	}
+
+	/**
+	 * Rotate/flip an image editor instance according to a JPEG EXIF "Orientation" value.
+	 *
+	 * @since  2.3.1
+	 *
+	 * @param  \WP_Image_Editor_Imagick|\WP_Image_Editor_GD $editor      The image editor instance.
+	 * @param  int                                          $orientation The EXIF "Orientation" value.
+	 * @return void
+	 */
+	protected function rotate_editor_by_exif_orientation( $editor, $orientation ) {
+		switch ( $orientation ) {
+			case 2:
+				// Flip horizontally.
+				$editor->flip( true, false );
+				break;
+			case 3:
+				// Rotate 180 degrees or flip horizontally and vertically.
+				// Flipping seems faster/uses less resources.
+				$editor->flip( true, true );
+				break;
+			case 4:
+				// Flip vertically.
+				$editor->flip( false, true );
+				break;
+			case 5:
+				// Rotate 90 degrees counter-clockwise and flip vertically.
+				$result = $editor->rotate( 90 );
+
+				if ( ! is_wp_error( $result ) ) {
+					$editor->flip( false, true );
+				}
+				break;
+			case 6:
+				// Rotate 90 degrees clockwise (270 counter-clockwise).
+				$editor->rotate( 270 );
+				break;
+			case 7:
+				// Rotate 90 degrees counter-clockwise and flip horizontally.
+				$result = $editor->rotate( 90 );
+
+				if ( ! is_wp_error( $result ) ) {
+					$editor->flip( true, false );
+				}
+				break;
+			case 8:
+				// Rotate 90 degrees counter-clockwise.
+				$editor->rotate( 90 );
+				break;
+		}
+	}
+
+	/**
+	 * Correct the EXIF orientation of the current file, in place, if needed.
+	 *
+	 * WordPress auto-rotates JPEGs with a non-default EXIF orientation on upload (the resulting,
+	 * rotated file has its orientation reset to 1), but Imagify's backup keeps a copy of the
+	 * original, un-rotated file. When a temporary working copy is created from that backup (for
+	 * example to generate a Next-Gen version of an already-optimized "full" size), the copy must
+	 * be rotated the same way WordPress would have rotated it, otherwise the resulting file (WebP,
+	 * AVIF...) ends up with the wrong orientation.
+	 *
+	 * This method must only ever be called on a disposable working copy: it saves the rotated
+	 * image over $this->path, and must never be used on the actual backup file.
+	 *
+	 * @since  2.3.1
+	 *
+	 * @return bool|WP_Error True if the file was rotated and saved. False if no rotation was
+	 *                       needed (or EXIF data isn't available/readable). A WP_Error object on
+	 *                       failure.
+	 */
+	public function maybe_correct_exif_orientation() {
+		if ( ! $this->filesystem->can_get_exif() || 'image/jpeg' !== $this->get_mime_type() ) {
+			return false;
+		}
+
+		$exif        = $this->filesystem->get_image_exif( $this->path );
+		$orientation = isset( $exif['Orientation'] ) ? (int) $exif['Orientation'] : 1;
+
+		if ( 1 === $orientation ) {
+			// Nothing to correct: either there is no orientation data, or the file is already
+			// upright (this also prevents rotating the same file twice).
+			return false;
+		}
+
+		$editor = $this->get_editor();
+
+		if ( is_wp_error( $editor ) ) {
+			return $editor;
+		}
+
+		$this->rotate_editor_by_exif_orientation( $editor, $orientation );
+
+		$saved = $editor->save( $this->path );
+
+		if ( is_wp_error( $saved ) ) {
+			return $saved;
+		}
+
+		// The file on disk changed: reset the cached data related to it.
+		$this->file_type = null;
+		$this->editor    = null;
+
+		return true;
 	}
 
 	/**
