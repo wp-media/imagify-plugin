@@ -46,5 +46,15 @@ function imagify_init() {
 	if ( $can_boot_mcp_adapter ) {
 		\WP\MCP\Core\McpAdapter::instance();
 	}
+
+	// Boot the shared MCP OAuth library (wp-media/mcp-oauth) so Claude Desktop
+	// (and any other MCP client) can authenticate against the isolated
+	// `mcp-oauth-server` it registers. The library self-wires its own
+	// WordPress hooks; Imagify has no custom OAuth code.
+	if ( class_exists( \WPMedia\MCP\OAuth\Bootstrap::class ) ) {
+		add_filter( 'wpmedia_mcp_oauth_server_enabled', '__return_true' );
+
+		\WPMedia\MCP\OAuth\Bootstrap::instance();
+	}
 }
 add_action( 'plugins_loaded', 'imagify_init' );
