@@ -76,6 +76,7 @@ class BulkOptimize extends AbstractAbility implements CreditConsumingAbilityInte
 						'context'            => [
 							'type'        => 'string',
 							'description' => __( 'Optimization context: "wp" for the WordPress media library or "custom-folders" for custom folder sources.', 'imagify' ),
+							'enum'        => [ 'wp', 'custom-folders' ],
 						],
 						'optimization_level' => [
 							'type'        => 'integer',
@@ -156,20 +157,23 @@ class BulkOptimize extends AbstractAbility implements CreditConsumingAbilityInte
 	 */
 	public function get_impact_estimate( array $args ): array {
 		$context = isset( $args['context'] ) ? (string) $args['context'] : '';
+		$context = ( 'custom-folders' === $context ) ? 'custom-folders' : 'wp';
 
 		if ( 'custom-folders' === $context ) {
 			$remaining = \Imagify_Files_Stats::count_unoptimized_files();
 			$total     = \Imagify_Files_Stats::count_files();
+			$label     = __( 'unoptimized images in custom folders', 'imagify' );
 		} else {
 			$remaining = imagify_count_unoptimized_attachments();
 			$total     = imagify_count_attachments();
+			$label     = __( 'unoptimized images in the WordPress media library', 'imagify' );
 		}
 
 		return [
 			'unit'  => 'image',
 			'count' => (int) $remaining,
 			'total' => (int) $total,
-			'label' => sprintf( 'unoptimized images in %s', $context ),
+			'label' => $label,
 		];
 	}
 

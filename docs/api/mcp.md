@@ -146,7 +146,7 @@ Schedules a bulk image optimization run for the WordPress media library or custo
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `context` | string | yes | `"wp"` for the WordPress media library or `"custom-folders"` for custom folder sources. |
+| `context` | string | yes | `"wp"` for the WordPress media library or `"custom-folders"` for custom folder sources. Enum: `["wp", "custom-folders"]`. |
 | `optimization_level` | integer (0–2) | no | Overrides the global setting. 0 = normal, 1 = aggressive, 2 = ultra. |
 | `confirm` | boolean | no | Set to `true` to execute after reviewing the credit-consumption preview returned by a prior call without this flag. Defaults to `false`. See [Credit confirmation flow](#credit-confirmation-flow). |
 
@@ -160,7 +160,10 @@ Schedules a bulk image optimization run for the WordPress media library or custo
 
 `get_impact_estimate()`'s `count`/`total` figures come from cheap COUNT-only queries per context:
 `imagify_count_unoptimized_attachments()` / `imagify_count_attachments()` for `"wp"`,
-`Imagify_Files_Stats::count_unoptimized_files()` / `count_files()` for `"custom-folders"`.
+`Imagify_Files_Stats::count_unoptimized_files()` / `count_files()` for `"custom-folders"`. Any
+context other than `"custom-folders"` (including an unrecognized value or a missing `context` key)
+is normalized to `"wp"` before the counts and translatable `impact.label` are computed, so the
+label always matches the branch the counts came from.
 
 ### `imagify/generate-missing-nextgen`
 
@@ -187,9 +190,11 @@ Queues generation of missing next-gen (WebP/AVIF) versions for all optimized med
 | `queued_count` | integer | Number of images queued for next-gen generation. Present only on `scheduled`/`error`. |
 | `error_message` | string \| null | Human-readable error on failure, null on success. Present only on `scheduled`/`error`. |
 
-`get_impact_estimate()`'s `count` comes from the cached `Imagify\Stats\OptimizedMediaWithoutNextGen`
-stat service (`get_cached_stat()`, injected via DI); `total` sums
-`imagify_count_optimized_attachments() + Imagify_Files_Stats::count_optimized_files()`.
+`get_impact_estimate()`'s `count` comes from the live `Imagify\Stats\OptimizedMediaWithoutNextGen`
+stat service (`get_stat()`, injected via DI — not the 2-day cached `get_cached_stat()`, since a stale
+count could exceed `total` and mislead the credit-spend decision); `total` sums
+`imagify_count_optimized_attachments() + Imagify_Files_Stats::count_optimized_files()`. `count` is
+clamped to `total` as a defensive safeguard.
 
 ### `imagify/optimize-media`
 

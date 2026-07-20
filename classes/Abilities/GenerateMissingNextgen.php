@@ -143,23 +143,27 @@ class GenerateMissingNextgen extends AbstractAbility implements CreditConsumingA
 	/**
 	 * Returns the credit-consumption impact estimate for generating missing next-gen versions.
 	 *
-	 * `count` is the number of optimized media still missing a next-gen version
-	 * (from the cached `OptimizedMediaWithoutNextGen` stat service). `total` is
-	 * the number of optimized media across both contexts, summed the same way
-	 * `OptimizedMediaWithoutNextGen::get_stat()` sums its own per-context loop.
+	 * `count` is the number of optimized media still missing a next-gen version,
+	 * computed live via `OptimizedMediaWithoutNextGen::get_stat()` (not the
+	 * 2-day cached `get_cached_stat()`) because this preview drives an AI
+	 * credit-spend decision and must not go stale relative to `total`. `total`
+	 * is the number of optimized media across both contexts, summed the same
+	 * way `OptimizedMediaWithoutNextGen::get_stat()` sums its own per-context
+	 * loop. `count` is clamped to `total` as a defensive safeguard.
 	 *
 	 * @param array $args Input arguments (unused: the estimate does not depend on input).
 	 * @return array{unit: string, count: int, total: int, label: string}
 	 */
 	public function get_impact_estimate( array $args ): array {
-		$count = (int) $this->stat->get_cached_stat();
+		$count = (int) $this->stat->get_stat();
 		$total = imagify_count_optimized_attachments() + \Imagify_Files_Stats::count_optimized_files();
+		$count = min( $count, (int) $total );
 
 		return [
 			'unit'  => 'image',
 			'count' => $count,
 			'total' => (int) $total,
-			'label' => 'optimized images missing a next-gen version',
+			'label' => __( 'optimized images missing a next-gen version', 'imagify' ),
 		];
 	}
 

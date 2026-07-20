@@ -54,7 +54,7 @@ class Test_Execute extends TestCase {
 	private function make_ability( array $bulk_result, ?StatInterface $stat = null ): GenerateMissingNextgen {
 		if ( null === $stat ) {
 			$stat = Mockery::mock( StatInterface::class );
-			$stat->shouldReceive( 'get_cached_stat' )->andReturn( 0 );
+			$stat->shouldReceive( 'get_stat' )->andReturn( 0 );
 		}
 
 		// Construct with a real Bulk instance to satisfy the type hint.
@@ -183,16 +183,19 @@ class Test_Execute extends TestCase {
 	/**
 	 * Finding 1 regression guard: get_impact_estimate()['total'] equals
 	 * imagify_count_optimized_attachments() + Imagify_Files_Stats::count_optimized_files(),
-	 * and 'count' comes from the injected StatInterface's cached stat (not a live per-context loop).
+	 * and 'count' comes from the injected StatInterface's live stat (not the 2-day cached stat),
+	 * so the preview stays consistent with 'total' — regression guard for #1186.
 	 */
 	public function testGetImpactEstimateTotalSumsBothContextsOptimizedCounts(): void {
+		Functions\stubTranslationFunctions();
 		Functions\when( 'imagify_count_optimized_attachments' )->justReturn( 15 );
 
 		$mock = Mockery::mock( 'alias:Imagify_Files_Stats' );
 		$mock->shouldReceive( 'count_optimized_files' )->once()->andReturn( 5 );
 
 		$stat = Mockery::mock( StatInterface::class );
-		$stat->shouldReceive( 'get_cached_stat' )->once()->andReturn( 7 );
+		$stat->shouldReceive( 'get_stat' )->once()->andReturn( 7 );
+		$stat->shouldNotReceive( 'get_cached_stat' );
 
 		$ability = $this->make_ability(
 			[
@@ -206,6 +209,34 @@ class Test_Execute extends TestCase {
 		$this->assertSame( 'image', $impact['unit'] );
 		$this->assertSame( 7, $impact['count'] );
 		$this->assertSame( 20, $impact['total'] );
+	}
+
+	/**
+	 * Regression guard for #1186: when the live stat somehow exceeds the total
+	 * (e.g. a transient race), 'count' must be clamped to 'total' so the AI never
+	 * sees a nonsensical "N of M" with N > M.
+	 */
+	public function testGetImpactEstimateClampsCountToTotal(): void {
+		Functions\stubTranslationFunctions();
+		Functions\when( 'imagify_count_optimized_attachments' )->justReturn( 2 );
+
+		$mock = Mockery::mock( 'alias:Imagify_Files_Stats' );
+		$mock->shouldReceive( 'count_optimized_files' )->once()->andReturn( 1 );
+
+		$stat = Mockery::mock( StatInterface::class );
+		$stat->shouldReceive( 'get_stat' )->once()->andReturn( 50 );
+
+		$ability = $this->make_ability(
+			[
+				'success' => true,
+				'message' => 0,
+			],
+			$stat
+		);
+		$impact  = $ability->get_impact_estimate( [] );
+
+		$this->assertSame( 3, $impact['total'] );
+		$this->assertSame( 3, $impact['count'] );
 	}
 
 	/**

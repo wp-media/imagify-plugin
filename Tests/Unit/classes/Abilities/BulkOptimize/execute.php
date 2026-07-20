@@ -93,6 +93,7 @@ class Test_Execute extends TestCase {
 	 * never `get_unoptimized_media_ids()` (a heavy ID+metadata JOIN query).
 	 */
 	public function testGetImpactEstimateUsesWpCountHelpersForWpContext(): void {
+		Functions\stubTranslationFunctions();
 		Functions\expect( 'imagify_count_unoptimized_attachments' )->once()->andReturn( 4 );
 		Functions\expect( 'imagify_count_attachments' )->once()->andReturn( 20 );
 
@@ -102,6 +103,41 @@ class Test_Execute extends TestCase {
 		$this->assertSame( 'image', $impact['unit'] );
 		$this->assertSame( 4, $impact['count'] );
 		$this->assertSame( 20, $impact['total'] );
+		$this->assertSame( 'unoptimized images in the WordPress media library', $impact['label'] );
+	}
+
+	/**
+	 * Regression guard for #1186: an unrecognized context value must fall back to the
+	 * 'wp' counts AND the matching 'wp' label (not a mismatched raw-slug label).
+	 */
+	public function testGetImpactEstimateFallsBackToWpCountsAndLabelForUnrecognizedContext(): void {
+		Functions\stubTranslationFunctions();
+		Functions\expect( 'imagify_count_unoptimized_attachments' )->once()->andReturn( 4 );
+		Functions\expect( 'imagify_count_attachments' )->once()->andReturn( 20 );
+
+		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
+		$impact  = $ability->get_impact_estimate( [ 'context' => 'banana' ] );
+
+		$this->assertSame( 4, $impact['count'] );
+		$this->assertSame( 20, $impact['total'] );
+		$this->assertSame( 'unoptimized images in the WordPress media library', $impact['label'] );
+	}
+
+	/**
+	 * Regression guard for #1186: a missing context key must also fall back to the
+	 * 'wp' counts AND label.
+	 */
+	public function testGetImpactEstimateFallsBackToWpCountsAndLabelForMissingContext(): void {
+		Functions\stubTranslationFunctions();
+		Functions\expect( 'imagify_count_unoptimized_attachments' )->once()->andReturn( 4 );
+		Functions\expect( 'imagify_count_attachments' )->once()->andReturn( 20 );
+
+		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
+		$impact  = $ability->get_impact_estimate( [] );
+
+		$this->assertSame( 4, $impact['count'] );
+		$this->assertSame( 20, $impact['total'] );
+		$this->assertSame( 'unoptimized images in the WordPress media library', $impact['label'] );
 	}
 
 	/**
@@ -109,6 +145,7 @@ class Test_Execute extends TestCase {
 	 * COUNT-only static methods, not Bulk::get_context_data().
 	 */
 	public function testGetImpactEstimateUsesFilesStatsCountHelpersForCustomFoldersContext(): void {
+		Functions\stubTranslationFunctions();
 		$mock = Mockery::mock( 'alias:Imagify_Files_Stats' );
 		$mock->shouldReceive( 'count_unoptimized_files' )->once()->andReturn( 6 );
 		$mock->shouldReceive( 'count_files' )->once()->andReturn( 30 );
@@ -119,6 +156,7 @@ class Test_Execute extends TestCase {
 		$this->assertSame( 'image', $impact['unit'] );
 		$this->assertSame( 6, $impact['count'] );
 		$this->assertSame( 30, $impact['total'] );
+		$this->assertSame( 'unoptimized images in custom folders', $impact['label'] );
 	}
 
 	/**
