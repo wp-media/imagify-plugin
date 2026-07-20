@@ -825,6 +825,10 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * Check the API key validity.
 	 *
 	 * @since 1.6.11
+	 * @since 2.3.1 Ignore user abort while saving the key, so the option and its
+	 *              related validity cache/notice are never left in a partial state
+	 *              when the browser cancels the request (e.g. the user clicks away
+	 *              or navigates while the check is still running).
 	 */
 	public function imagify_check_api_key_validity_callback() {
 		imagify_check_nonce( 'imagify-check-api-key', 'imagifycheckapikeynonce' );
@@ -844,9 +848,23 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( $response );
 		}
 
+		/*
+		 * From this point, the key is known to be valid. Saving the option triggers
+		 * `after_save_options()`, which performs its own request to the Imagify API
+		 * to (re)set the "valid key" cache and dismiss/renew the "wrong-api-key" notice.
+		 * If the client disconnects (e.g. the user clicks elsewhere or navigates away
+		 * while the spinner is still showing), PHP would otherwise abort mid-way,
+		 * leaving the key saved but the validity cache/notice stale or missing.
+		 * Ignoring user abort for this short, bounded sequence guarantees the option
+		 * and its validity state are always saved consistently together.
+		 */
+		$ignore_user_abort = ignore_user_abort( true );
+
 		update_imagify_option( 'api_key', $api_key );
 
 		delete_transient( 'imagify_user_cache' );
+
+		ignore_user_abort( $ignore_user_abort );
 
 		wp_send_json_success();
 	}
