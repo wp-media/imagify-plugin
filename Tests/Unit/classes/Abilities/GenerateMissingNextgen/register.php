@@ -6,6 +6,7 @@ namespace Imagify\Tests\Unit\classes\Abilities\GenerateMissingNextgen;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\GenerateMissingNextgen;
 use Imagify\Bulk\Bulk;
+use Imagify\Stats\StatInterface;
 use Imagify\Tests\Unit\TestCase;
 use Mockery;
 
@@ -43,13 +44,19 @@ class Test_Register extends TestCase {
 				)
 			);
 
-		$ability = new GenerateMissingNextgen( Bulk::get_instance() );
+		$stat = Mockery::mock( StatInterface::class );
+
+		$ability = new GenerateMissingNextgen( Bulk::get_instance(), $stat );
 		$ability->register();
 
 		$this->assertSame( 'imagify', $captured['category'] );
 		$this->assertSame( [ $ability, 'execute' ], $captured['execute_callback'] );
 		$this->assertSame( [ $ability, 'check_permissions' ], $captured['permission_callback'] );
-		$this->assertSame( [ 'scheduled', 'error' ], $captured['output_schema']['properties']['status']['enum'] );
+		$this->assertArrayHasKey( 'confirm', $captured['input_schema']['properties'] );
+		$this->assertSame(
+			[ 'scheduled', 'error', 'confirmation_required', 'insufficient_quota', 'invalid_api_key' ],
+			$captured['output_schema']['properties']['status']['enum']
+		);
 		$this->assertTrue( $captured['meta']['show_in_rest'] );
 		$this->assertTrue( $captured['meta']['mcp']['public'] );
 		$this->assertTrue( $captured['meta']['annotations']['destructive'] );

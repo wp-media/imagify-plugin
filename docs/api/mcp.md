@@ -41,6 +41,8 @@ The endpoint returns HTTP 200 with the adapter's default three-tool set plus all
 | Class | Responsibility |
 |-------|----------------|
 | `Imagify\Abilities\AbilitiesInterface` | Contract every Imagify MCP ability must implement. |
+| `Imagify\Abilities\AbstractAbility` | Base class for abilities; provides `check_permissions()`, `fire_executed()`, and `guard_credit_confirmation()` (see [Credit confirmation flow](#credit-confirmation-flow)). |
+| `Imagify\Abilities\CreditConsumingAbilityInterface` | Contract for abilities that spend Imagify quota (`get_impact_estimate()`); opts an ability into `guard_credit_confirmation()`. Implemented by `OptimizeMedia`, `BulkOptimize`, `GenerateMissingNextgen`. |
 | `Imagify\Abilities\BulkOptimize` | MCP ability: schedule a bulk image optimization run (`imagify/bulk-optimize`). |
 | `Imagify\Abilities\GenerateMissingNextgen` | MCP ability: queue generation of missing next-gen (WebP/AVIF) versions (`imagify/generate-missing-nextgen`). |
 | `Imagify\Abilities\GetAccount` | Ability `imagify/get-account` — returns account quota, plan details, and API key validity. |
@@ -73,6 +75,64 @@ interface AbilitiesInterface {
 
 ## Registered abilities
 
+### Credit confirmation flow
+
+`imagify/optimize-media`, `imagify/bulk-optimize`, and `imagify/generate-missing-nextgen` consume
+Imagify quota, so each one is gated by `Imagify\Abilities\AbstractAbility::guard_credit_confirmation()`
+before its real side effect runs. Because MCP tool calls are made by an AI agent rather than a human
+clicking a confirm dialog, the "explicit confirmation" requirement is implemented as a two-call
+protocol instead of a client-side dialog:
+
+1. **Preview call** — call the ability without `confirm` (or with `confirm: false`). The guard never
+   invokes the ability's real logic; it returns a `confirmation_required` response describing the
+   impact (unit, count, and — for `bulk-optimize`/`generate-missing-nextgen` — the total) and the
+   current quota remaining.
+2. **Confirmed call** — resend the same call with `confirm: true`. The guard re-checks the API key and
+   quota (they may have changed since the preview) and, if both are still fine, invokes the ability's
+   real logic and returns its normal result.
+
+The guard runs this exact 4-step sequence on every call, confirmed or not:
+
+1. `Imagify_Requirements::is_api_key_valid()` — if false, returns `status: invalid_api_key` and stops.
+2. `Imagify_Requirements::is_over_quota()` — if true, returns `status: insufficient_quota` and stops.
+3. `$args['confirm'] === true` (strict boolean check; `"true"` as a string does not count) — if not
+   true, returns `status: confirmation_required` and stops.
+4. Otherwise, runs the ability's real logic and returns its result unchanged.
+
+A confirmed call is **never** allowed to skip the quota re-check — only the confirmation step is
+skipped. This closes the race where quota is exhausted between the preview and the confirmed call.
+
+**`confirmation_required` response shape:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"confirmation_required"` | |
+| `message` | string | Human-readable summary of what will happen and how much quota remains. |
+| `impact` | object | `{ unit, count }` for `optimize-media`; `{ unit, count, total }` for `bulk-optimize` / `generate-missing-nextgen`. |
+| `quota_remaining` | number | Percentage of quota still available. |
+| `confirm_with` | object | `{ "confirm": true }` — tells the caller exactly which argument to resend. |
+
+**`insufficient_quota` response shape:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"insufficient_quota"` | |
+| `message` | string | Human-readable explanation that quota is exhausted. |
+| `next_date_update` | string | ISO date of the next quota reset, or `""` if unknown. |
+| `upgrade_url` | string | Link to the Imagify subscription/upgrade page. |
+
+**`invalid_api_key` response shape:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `status` | `"invalid_api_key"` | |
+| `message` | string | Human-readable explanation that the API key is invalid or missing. |
+
+Every credit-consuming ability's `input_schema` includes a `confirm` boolean property (default
+`false`, not in `required`) and every credit-consuming ability's `output_schema` `status` enum
+includes `confirmation_required`, `insufficient_quota`, and `invalid_api_key` alongside its normal
+success/error values.
+
 ### `imagify/bulk-optimize`
 
 **Class:** `Imagify\Abilities\BulkOptimize`  
@@ -86,16 +146,24 @@ Schedules a bulk image optimization run for the WordPress media library or custo
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `context` | string | yes | `"wp"` for the WordPress media library or `"custom-folders"` for custom folder sources. |
+| `context` | string | yes | `"wp"` for the WordPress media library or `"custom-folders"` for custom folder sources. Enum: `["wp", "custom-folders"]`. |
 | `optimization_level` | integer (0–2) | no | Overrides the global setting. 0 = normal, 1 = aggressive, 2 = ultra. |
+| `confirm` | boolean | no | Set to `true` to execute after reviewing the credit-consumption preview returned by a prior call without this flag. Defaults to `false`. See [Credit confirmation flow](#credit-confirmation-flow). |
 
 **Output schema:**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `status` | `"scheduled"` \| `"error"` | Result status. |
-| `context` | string | The requested optimization context, echoed back. |
-| `error_message` | string \| null | Human-readable error on failure, null on success. |
+| `status` | `"scheduled"` \| `"error"` \| `"confirmation_required"` \| `"insufficient_quota"` \| `"invalid_api_key"` | Result status. |
+| `context` | string | The requested optimization context, echoed back. Present only on `scheduled`/`error`. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. Present only on `scheduled`/`error`. |
+
+`get_impact_estimate()`'s `count`/`total` figures come from cheap COUNT-only queries per context:
+`imagify_count_unoptimized_attachments()` / `imagify_count_attachments()` for `"wp"`,
+`Imagify_Files_Stats::count_unoptimized_files()` / `count_files()` for `"custom-folders"`. Any
+context other than `"custom-folders"` (including an unrecognized value or a missing `context` key)
+is normalized to `"wp"` before the counts and translatable `impact.label` are computed, so the
+label always matches the branch the counts came from.
 
 ### `imagify/generate-missing-nextgen`
 
@@ -104,17 +172,29 @@ Schedules a bulk image optimization run for the WordPress media library or custo
 **Exposed via REST:** yes (`show_in_rest: true`)  
 **MCP discoverable:** yes (`mcp.public: true`)
 
-Queues generation of missing next-gen (WebP/AVIF) versions for all optimized media by delegating to `Bulk::run_generate_nextgen()`. Runs asynchronously via Action Scheduler. No required inputs.
+Queues generation of missing next-gen (WebP/AVIF) versions for all optimized media by delegating to `Bulk::run_generate_nextgen()`. Runs asynchronously via Action Scheduler.
 
 `status=scheduled` is returned both when jobs were enqueued (`queued_count > 0`) and when there is nothing to generate (`queued_count=0`). The latter is a successful no-op, not an error.
+
+**Input schema:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `confirm` | boolean | no | Set to `true` to execute after reviewing the credit-consumption preview returned by a prior call without this flag. Defaults to `false`. See [Credit confirmation flow](#credit-confirmation-flow). |
 
 **Output schema:**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `status` | `"scheduled"` \| `"error"` | Result status. |
-| `queued_count` | integer | Number of images queued for next-gen generation. |
-| `error_message` | string \| null | Human-readable error on failure, null on success. |
+| `status` | `"scheduled"` \| `"error"` \| `"confirmation_required"` \| `"insufficient_quota"` \| `"invalid_api_key"` | Result status. |
+| `queued_count` | integer | Number of images queued for next-gen generation. Present only on `scheduled`/`error`. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. Present only on `scheduled`/`error`. |
+
+`get_impact_estimate()`'s `count` comes from the live `Imagify\Stats\OptimizedMediaWithoutNextGen`
+stat service (`get_stat()`, injected via DI — not the 2-day cached `get_cached_stat()`, since a stale
+count could exceed `total` and mislead the credit-spend decision); `total` sums
+`imagify_count_optimized_attachments() + Imagify_Files_Stats::count_optimized_files()`. `count` is
+clamped to `total` as a defensive safeguard.
 
 ### `imagify/optimize-media`
 
@@ -136,16 +216,21 @@ Delegates to `Imagify\Optimization\Process\WP::optimize()` for first-time optimi
 |-------|------|----------|-------------|
 | `media_id` | integer | yes | WordPress attachment ID. |
 | `optimization_level` | integer (0–2) | no | Overrides the global setting. 0 = normal, 1 = aggressive, 2 = ultra. |
+| `confirm` | boolean | no | Set to `true` to execute after reviewing the credit-consumption preview returned by a prior call without this flag. Defaults to `false`. See [Credit confirmation flow](#credit-confirmation-flow). |
 
 **Output schema:**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `status` | `"success"` \| `"error"` | Result status. |
-| `original_size` | integer \| null | File size in bytes before optimization, or null on error. |
-| `optimized_size` | integer \| null | File size in bytes after optimization (may be null if the background job is not yet complete). |
-| `savings_percent` | float \| null | Percentage savings, or null on error or when sizes are unavailable. |
-| `error_message` | string \| null | Human-readable error on failure, null on success. |
+| `status` | `"success"` \| `"error"` \| `"confirmation_required"` \| `"insufficient_quota"` \| `"invalid_api_key"` | Result status. |
+| `original_size` | integer \| null | File size in bytes before optimization, or null on error. Present only on `success`/`error`. |
+| `optimized_size` | integer \| null | File size in bytes after optimization (may be null if the background job is not yet complete). Present only on `success`/`error`. |
+| `savings_percent` | float \| null | Percentage savings, or null on error or when sizes are unavailable. Present only on `success`/`error`. |
+| `error_message` | string \| null | Human-readable error on failure, null on success. Present only on `success`/`error`. |
+
+`get_impact_estimate()` always returns `{ unit: "image", count: 1, label: "this media" }` — optimizing
+a single media always costs exactly one unit, so `impact.total` is omitted from the
+`confirmation_required` response for this ability.
 
 ### `imagify/restore-media`
 

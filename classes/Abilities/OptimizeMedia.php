@@ -12,7 +12,7 @@ namespace Imagify\Abilities;
  *
  * @since 2.3.0
  */
-class OptimizeMedia extends AbstractAbility {
+class OptimizeMedia extends AbstractAbility implements CreditConsumingAbilityInterface {
 
 	const ABILITY_ID   = 'imagify/optimize-media';
 	const ABILITY_NAME = 'Optimize media';
@@ -66,6 +66,11 @@ class OptimizeMedia extends AbstractAbility {
 							'minimum'     => 0,
 							'maximum'     => 2,
 						],
+						'confirm'            => [
+							'type'        => 'boolean',
+							'description' => __( 'Set to true to execute after reviewing the credit-consumption preview returned by a prior call without this flag.', 'imagify' ),
+							'default'     => false,
+						],
 					],
 					'required'   => [ 'media_id' ],
 				],
@@ -74,8 +79,8 @@ class OptimizeMedia extends AbstractAbility {
 					'properties' => [
 						'status'          => [
 							'type'        => 'string',
-							'description' => __( 'Result status: "success" or "error".', 'imagify' ),
-							'enum'        => [ 'success', 'error' ],
+							'description' => __( 'Result status: "success", "error", "confirmation_required", "insufficient_quota", or "invalid_api_key".', 'imagify' ),
+							'enum'        => [ 'success', 'error', 'confirmation_required', 'insufficient_quota', 'invalid_api_key' ],
 						],
 						'original_size'   => [
 							'type'        => [ 'integer', 'null' ],
@@ -130,17 +135,39 @@ class OptimizeMedia extends AbstractAbility {
 	}
 
 	/**
+	 * Returns the credit-consumption impact estimate for a single media optimization.
+	 *
+	 * @param array $args Input arguments (unused: optimizing a single media always costs 1 unit).
+	 * @return array{unit: string, count: int, label: string}
+	 */
+	public function get_impact_estimate( array $args ): array {
+		return [
+			'unit'  => 'image',
+			'count' => 1,
+			'label' => 'this media',
+		];
+	}
+
+	/**
 	 * Execute the ability: optimize the media.
 	 *
-	 * Fires `imagify_mcp_ability_executed` after the ability resolves so that
-	 * tracking and other subscribers can react to both success and failure outcomes.
+	 * Wraps the real execution behind `guard_credit_confirmation()` so the
+	 * caller must pass `confirm: true` once quota is confirmed (and is not
+	 * over quota, and the API key is valid). Fires `imagify_mcp_ability_executed`
+	 * after the ability resolves so that tracking and other subscribers can
+	 * react to every outcome (previews included).
 	 *
-	 * @param array $args Input arguments. Expects `media_id` (int) and optionally `optimization_level` (int).
-	 * @return array{status: string, original_size: int|null, optimized_size: int|null, savings_percent: float|null, error_message: string|null}
+	 * @param array $args Input arguments. Expects `media_id` (int) and optionally `optimization_level` (int), `confirm` (bool).
+	 * @return array<string, mixed> Guard response (invalid_api_key/insufficient_quota/confirmation_required) or the do_execute() result shape.
 	 */
 	public function execute( array $args = [] ): array {
 		$start_time = microtime( true );
-		$result     = $this->do_execute( $args );
+		$result     = $this->guard_credit_confirmation(
+			$args,
+			function ( array $a ) {
+				return $this->do_execute( $a );
+			}
+		);
 
 		$this->fire_executed( $result, $start_time, $args );
 

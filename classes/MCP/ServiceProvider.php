@@ -87,7 +87,8 @@ class ServiceProvider extends AbstractServiceProvider {
 		$this->getContainer()->addShared( BulkOptimize::class )
 			->addArgument( Bulk::get_instance() );
 		$this->getContainer()->addShared( GenerateMissingNextgen::class )
-			->addArgument( Bulk::class );
+			->addArgument( Bulk::class )
+			->addArgument( OptimizedMediaWithoutNextGen::class );
 		$this->getContainer()->addShared( ConfigSubscriber::class );
 		$this->getContainer()->addShared( GetAccount::class );
 		$this->getContainer()->addShared( GetMediaStatus::class );

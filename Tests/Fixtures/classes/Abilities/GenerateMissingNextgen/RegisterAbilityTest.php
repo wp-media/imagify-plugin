@@ -2,15 +2,21 @@
 
 return [
 	'test_data' => [
-		'testShouldReturnWPErrorWhenNoPermissions'                => [
+		'testShouldReturnWPErrorWhenNoPermissions' => [
 			'config'   => [ 'has_permission' => false ],
-			'expected' => [ 'is_error' => true, 'has_keys' => [] ],
+			'expected' => [
+				'is_error' => true,
+				'has_keys' => [],
+			],
 		],
 		'testShouldReturnScheduledResponseWhenPermissionsGranted' => [
 			'config'   => [ 'has_permission' => true ],
 			'expected' => [
 				'is_error' => false,
-				'has_keys' => [ 'status', 'queued_count', 'error_message' ],
+				// The guard's `invalid_api_key`/`insufficient_quota`/`confirmation_required`
+				// responses only guarantee a `status` key; only a confirmed, quota-OK,
+				// valid-key call reaches do_execute()'s full error/success shape.
+				'has_keys' => [ 'status' ],
 			],
 		],
 	],
