@@ -38,19 +38,21 @@ The endpoint returns HTTP 200 with the adapter's default three-tool set plus all
 
 ## OAuth (Claude Desktop / MCP clients)
 
-Imagify bundles the shared `wp-media/mcp-oauth` library (`^1.0.1`) to expose an OAuth 2.1 + PKCE authenticated MCP server for clients such as Claude Desktop. Imagify contains **no custom OAuth code** — the library owns the entire flow (authorize / consent / token / revoke endpoints, `.well-known` discovery documents, and the isolated server registration).
+Imagify bundles the shared `wp-media/mcp-oauth` library (`^1.0.2`) to expose an OAuth 2.1 + PKCE authenticated MCP server for clients such as Claude Desktop. Imagify contains **no custom OAuth code** — the library owns the entire flow (authorize / consent / token / revoke endpoints, `.well-known` discovery documents, and the isolated server registration).
 
-The library is booted in `imagify_init()` in `inc/main.php`, guarded by `class_exists( \WPMedia\MCP\OAuth\Bootstrap::class )`, right after the `wordpress/mcp-adapter` boot:
+The library is booted in `imagify_init()` in `inc/main.php`, guarded by `class_exists( \WPMedia\MCP\OAuth\Bootstrap::class )`, inside the same `$can_boot_mcp_adapter` guard as the `wordpress/mcp-adapter` boot it depends on:
 
 ```php
-if ( class_exists( \WPMedia\MCP\OAuth\Bootstrap::class ) ) {
-    add_filter( 'wpmedia_mcp_oauth_server_enabled', '__return_true' );
+if ( $can_boot_mcp_adapter ) {
+    \WP\MCP\Core\McpAdapter::instance();
 
-    \WPMedia\MCP\OAuth\Bootstrap::instance();
+    if ( class_exists( \WPMedia\MCP\OAuth\Bootstrap::class ) ) {
+        \WPMedia\MCP\OAuth\Bootstrap::instance();
+    }
 }
 ```
 
-Imagify enables the server unconditionally via the library's `wpmedia_mcp_oauth_server_enabled` filter (default `false` upstream).
+The server is enabled by default from `wp-media/mcp-oauth` v1.0.2 onward, so no `wpmedia_mcp_oauth_server_enabled` filter is needed. It can still be disabled by filtering that value to `false`.
 
 | Key | Value |
 |-----|-------|
