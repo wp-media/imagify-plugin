@@ -15,7 +15,7 @@ return [
 		'testShouldReturnErrorArrayWhenPermissionsGranted' => [
 			'config'   => [
 				'has_permission' => true,
-				'args'           => [ 'context' => '' ],
+				'args'           => [ 'context' => 'wp' ],
 			],
 			'expected' => [
 				'is_error' => false,
