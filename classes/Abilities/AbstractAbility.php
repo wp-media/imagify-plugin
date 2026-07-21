@@ -181,8 +181,14 @@ abstract class AbstractAbility implements AbilitiesInterface {
 	/**
 	 * Builds the `confirmation_required` guard response.
 	 *
+	 * The confirmation step is kept for every account, but the messaging adapts
+	 * to the plan: quota-limited accounts get the credit-consumption wording plus
+	 * a `quota_remaining` figure, while Infinite accounts (whose plans have no
+	 * per-image quota to consume) get operation-focused wording and no
+	 * `quota_remaining` key.
+	 *
 	 * @param array $args Raw input arguments passed to execute().
-	 * @return array{status: string, message: string, impact: array, quota_remaining: float, confirm_with: array}
+	 * @return array{status: string, message: string, impact: array, quota_remaining?: float, confirm_with: array}
 	 */
 	private function confirmation_required_response( array $args ): array {
 		$impact = $this instanceof CreditConsumingAbilityInterface ? $this->get_impact_estimate( $args ) : [];
@@ -198,31 +204,55 @@ abstract class AbstractAbility implements AbilitiesInterface {
 
 		if ( isset( $impact['total'] ) ) {
 			$impact_response['total'] = (int) $impact['total'];
-
-			$message = sprintf(
-				/* translators: 1: number of units about to be consumed, 2: total number of units, 3: unit label */
-				__( 'This action will consume Imagify quota: %1$d of %2$d %3$s. Add "confirm": true to the same call to proceed.', 'imagify' ),
-				$count,
-				(int) $impact['total'],
-				$label
-			);
-		} else {
-			$message = sprintf(
-				/* translators: 1: number of units about to be consumed, 2: unit label */
-				__( 'This action will consume Imagify quota: %1$d %2$s. Add "confirm": true to the same call to proceed.', 'imagify' ),
-				$count,
-				$label
-			);
 		}
 
-		$user = $this->fetch_user();
+		$user        = $this->fetch_user();
+		$is_infinite = $user->is_infinite();
+		$has_total   = isset( $impact['total'] );
 
-		return [
-			'status'          => 'confirmation_required',
-			'message'         => $message,
-			'impact'          => $impact_response,
-			'quota_remaining' => (float) $user->get_percent_unconsumed_quota(),
-			'confirm_with'    => [ 'confirm' => true ],
+		if ( $is_infinite ) {
+			$message = $has_total
+				? sprintf(
+					/* translators: 1: number of units about to be processed, 2: total number of units, 3: unit label */
+					__( 'This action will process %1$d of %2$d %3$s. Add "confirm": true to the same call to proceed.', 'imagify' ),
+					$count,
+					(int) $impact['total'],
+					$label
+				)
+				: sprintf(
+					/* translators: 1: number of units about to be processed, 2: unit label */
+					__( 'This action will process %1$d %2$s. Add "confirm": true to the same call to proceed.', 'imagify' ),
+					$count,
+					$label
+				);
+		} else {
+			$message = $has_total
+				? sprintf(
+					/* translators: 1: number of units about to be consumed, 2: total number of units, 3: unit label */
+					__( 'This action will consume Imagify quota: %1$d of %2$d %3$s. Add "confirm": true to the same call to proceed.', 'imagify' ),
+					$count,
+					(int) $impact['total'],
+					$label
+				)
+				: sprintf(
+					/* translators: 1: number of units about to be consumed, 2: unit label */
+					__( 'This action will consume Imagify quota: %1$d %2$s. Add "confirm": true to the same call to proceed.', 'imagify' ),
+					$count,
+					$label
+				);
+		}
+
+		$response = [
+			'status'       => 'confirmation_required',
+			'message'      => $message,
+			'impact'       => $impact_response,
+			'confirm_with' => [ 'confirm' => true ],
 		];
+
+		if ( ! $is_infinite ) {
+			$response['quota_remaining'] = (float) $user->get_percent_unconsumed_quota();
+		}
+
+		return $response;
 	}
 }

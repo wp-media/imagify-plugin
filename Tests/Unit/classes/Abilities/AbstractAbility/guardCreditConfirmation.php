@@ -255,6 +255,69 @@ class Test_GuardCreditConfirmation extends TestCase {
 			$result['impact']
 		);
 		$this->assertSame( [ 'confirm' => true ], $result['confirm_with'] );
+		$this->assertArrayHasKey( 'quota_remaining', $result );
+	}
+
+	/**
+	 * Quota-limited accounts get the credit-consumption wording in the confirmation message.
+	 */
+	public function testConfirmationMessageUsesQuotaWordingForQuotaLimitedAccounts(): void {
+		$this->stub_requirements( true, false );
+
+		/** @var User&Mockery\LegacyMockInterface $user */
+		$user = Mockery::mock( User::class )->shouldIgnoreMissing();
+		$user->shouldReceive( 'is_infinite' )->andReturn( false );
+		$user->shouldReceive( 'get_percent_unconsumed_quota' )->andReturn( 42.0 );
+
+		$ability = $this->make_ability(
+			[
+				'unit'  => 'image',
+				'count' => 3,
+				'total' => 10,
+				'label' => 'unoptimized images',
+			],
+			$user
+		);
+
+		$result = $ability->call_guard( [], function () {
+			return [ 'status' => 'success' ];
+		} );
+
+		$this->assertStringContainsString( 'consume Imagify quota', $result['message'] );
+		$this->assertArrayHasKey( 'quota_remaining', $result );
+		$this->assertSame( 42.0, $result['quota_remaining'] );
+	}
+
+	/**
+	 * Infinite accounts keep the confirmation step but get operation-focused wording
+	 * (no quota-consumption phrasing) and no `quota_remaining` key.
+	 */
+	public function testConfirmationMessageDropsQuotaWordingAndKeyForInfiniteAccounts(): void {
+		$this->stub_requirements( true, false );
+
+		/** @var User&Mockery\LegacyMockInterface $user */
+		$user = Mockery::mock( User::class )->shouldIgnoreMissing();
+		$user->shouldReceive( 'is_infinite' )->andReturn( true );
+
+		$ability = $this->make_ability(
+			[
+				'unit'  => 'image',
+				'count' => 3,
+				'total' => 10,
+				'label' => 'unoptimized images',
+			],
+			$user
+		);
+
+		$result = $ability->call_guard( [], function () {
+			return [ 'status' => 'success' ];
+		} );
+
+		$this->assertSame( 'confirmation_required', $result['status'] );
+		$this->assertStringContainsString( 'This action will process 3 of 10 unoptimized images', $result['message'] );
+		$this->assertStringNotContainsString( 'quota', $result['message'] );
+		$this->assertArrayNotHasKey( 'quota_remaining', $result );
+		$this->assertSame( [ 'confirm' => true ], $result['confirm_with'] );
 	}
 
 	/**
