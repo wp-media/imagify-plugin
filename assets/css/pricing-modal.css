@@ -46,6 +46,12 @@
 	min-width: 925px;
 	padding: 0;
 }
+@media (prefers-reduced-motion: no-preference) {
+	.imagify-payment-modal .imagify-modal-content {
+		-webkit-transition: width .3s ease, min-width .3s ease, max-width .3s ease, height .3s ease, min-height .3s ease;
+		transition: width .3s ease, min-width .3s ease, max-width .3s ease, height .3s ease, min-height .3s ease;
+	}
+}
 .imagify-modal-content.imagify-iframe-viewing {
 	width: 980px;
 	height: 672px;
