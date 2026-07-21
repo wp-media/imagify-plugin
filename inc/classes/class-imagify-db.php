@@ -70,8 +70,6 @@ class Imagify_DB {
 	 * overly long SQL queries from failing on unbounded `IN ()` lists.
 	 *
 	 * @since  2.4
-	 * @access public
-	 * @author Grégory Viguier
 	 *
 	 * @param  array $values     An array of values (integers or strings).
 	 * @param  int   $sql_budget Maximum character length (rendered, comma separated) allowed per chunk.
@@ -86,7 +84,6 @@ class Imagify_DB {
 		 * Filter the SQL character budget used to chunk `IN ()` value lists.
 		 *
 		 * @since  2.4
-		 * @author Grégory Viguier
 		 *
 		 * @param int $sql_budget The character budget.
 		 */
