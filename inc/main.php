@@ -45,6 +45,15 @@ function imagify_init() {
 
 	if ( $can_boot_mcp_adapter ) {
 		\WP\MCP\Core\McpAdapter::instance();
+
+		// Boot the shared MCP OAuth library (wp-media/mcp-oauth) so Claude Desktop
+		// (and any other MCP client) can authenticate against the isolated
+		// `mcp-oauth-server` it registers. The library self-wires its own
+		// WordPress hooks and is enabled by default; Imagify has no custom OAuth
+		// code. It relies on the MCP adapter, so it only boots when the adapter can.
+		if ( class_exists( \WPMedia\MCP\OAuth\Bootstrap::class ) ) {
+			\WPMedia\MCP\OAuth\Bootstrap::instance();
+		}
 	}
 }
 add_action( 'plugins_loaded', 'imagify_init' );

@@ -36,6 +36,33 @@ class_exists( \WP\MCP\Core\McpAdapter::class )
 
 The endpoint returns HTTP 200 with the adapter's default three-tool set plus all registered Imagify abilities.
 
+## OAuth (Claude Desktop / MCP clients)
+
+Imagify bundles the shared `wp-media/mcp-oauth` library (`^1.0.2`) to expose an OAuth 2.1 + PKCE authenticated MCP server for clients such as Claude Desktop. Imagify contains **no custom OAuth code** — the library owns the entire flow (authorize / consent / token / revoke endpoints, `.well-known` discovery documents, and the isolated server registration).
+
+The library is booted in `imagify_init()` in `inc/main.php`, guarded by `class_exists( \WPMedia\MCP\OAuth\Bootstrap::class )`, inside the same `$can_boot_mcp_adapter` guard as the `wordpress/mcp-adapter` boot it depends on:
+
+```php
+if ( $can_boot_mcp_adapter ) {
+    \WP\MCP\Core\McpAdapter::instance();
+
+    if ( class_exists( \WPMedia\MCP\OAuth\Bootstrap::class ) ) {
+        \WPMedia\MCP\OAuth\Bootstrap::instance();
+    }
+}
+```
+
+The server is enabled by default from `wp-media/mcp-oauth` v1.0.2 onward, so no `wpmedia_mcp_oauth_server_enabled` filter is needed. It can still be disabled by filtering that value to `false`.
+
+| Key | Value |
+|-----|-------|
+| OAuth server path | `/wp-json/mcp/mcp-oauth-server` |
+| Discovery | `/.well-known/oauth-authorization-server`, `/.well-known/oauth-protected-resource` |
+| Tools exposed | `mcp-adapter/discover-abilities`, `mcp-adapter/get-ability-info`, `mcp-adapter/execute-ability` |
+| Auth | OAuth 2.1 + PKCE, JWT bearer tokens |
+
+The OAuth server's fixed tool list is only the three generic mcp-adapter tools, but `discover-abilities` and `execute-ability` read from the **global** WordPress Abilities registry (`wp_get_abilities()` / `wp_get_ability()`), not a fixed category — so all `imagify/*` abilities registered by `AbilitiesSubscriber` are fully discoverable and callable through the OAuth server, with no extra wiring needed. `ConfigSubscriber`'s `mcp_adapter_default_server_config` filter is unaffected — it only customizes the unauthenticated default server, not the OAuth server created by the library.
+
 ## Classes
 
 | Class | Responsibility |
