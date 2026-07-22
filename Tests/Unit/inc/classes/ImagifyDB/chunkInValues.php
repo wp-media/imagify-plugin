@@ -31,111 +31,53 @@ class Test_ChunkInValues extends TestCase {
 	}
 
 	/**
-	 * An empty input should return an empty array of chunks.
+	 * @dataProvider configTestData
 	 */
-	public function testShouldReturnEmptyArrayForEmptyInput() {
-		$this->assertSame( [], Imagify_DB::chunk_in_values( [] ) );
-	}
+	public function testShouldReturnExpectedChunks( $config, $expected ) {
+		$chunks = Imagify_DB::chunk_in_values( $config['values'], $config['budget'] );
 
-	/**
-	 * When the whole list fits under the budget, only one chunk should be returned.
-	 */
-	public function testShouldReturnSingleChunkWhenUnderBudget() {
-		$values = range( 1, 100 );
-
-		$chunks = Imagify_DB::chunk_in_values( $values, 8000 );
-
-		$this->assertCount( 1, $chunks );
-		$this->assertSame( $values, $chunks[0] );
-	}
-
-	/**
-	 * Integer IDs should be split into several chunks once the budget is exceeded,
-	 * and no value should be lost or reordered across chunks.
-	 */
-	public function testShouldSplitIntegersIntoMultipleChunksWhenOverBudget() {
-		// 1000 integer IDs, small budget forces several chunks.
-		$values = range( 100000, 100999 );
-
-		$chunks = Imagify_DB::chunk_in_values( $values, 100 );
-
-		$this->assertGreaterThan( 1, count( $chunks ) );
-
-		// Every chunk's rendered length must stay under (or at) the budget.
-		foreach ( $chunks as $chunk ) {
-			$rendered_length = strlen( implode( ',', $chunk ) );
-			$this->assertLessThanOrEqual( 100, $rendered_length );
+		if ( isset( $expected['chunk_count'] ) ) {
+			$this->assertCount( $expected['chunk_count'], $chunks );
 		}
 
-		// No value lost, order preserved.
-		$this->assertSame( $values, array_merge( ...$chunks ) );
-	}
-
-	/**
-	 * Long quoted string values (e.g. file paths) should be split into several chunks
-	 * once the rendered (quoted) length exceeds the budget.
-	 */
-	public function testShouldSplitLongStringValuesIntoMultipleChunks() {
-		$values = [];
-
-		for ( $i = 0; $i < 50; $i++ ) {
-			$values[] = str_repeat( 'a', 300 ) . $i;
+		if ( isset( $expected['min_chunks'] ) ) {
+			$this->assertGreaterThanOrEqual( $expected['min_chunks'], count( $chunks ) );
 		}
 
-		$chunks = Imagify_DB::chunk_in_values( $values, 1000 );
+		if ( ! empty( $expected['max_rendered_length'] ) ) {
+			foreach ( $chunks as $chunk ) {
+				$rendered = empty( $expected['quoted'] )
+					? implode( ',', $chunk )
+					: implode(
+						',',
+						array_map(
+							function ( $value ) {
+								return "'" . $value . "'";
+							},
+							$chunk
+						)
+					);
 
-		$this->assertGreaterThan( 1, count( $chunks ) );
-
-		foreach ( $chunks as $chunk ) {
-			$rendered = implode(
-				',',
-				array_map(
-					function ( $value ) {
-						return "'" . $value . "'";
-					},
-					$chunk
-				)
-			);
-
-			$this->assertLessThanOrEqual( 1000, strlen( $rendered ) );
-		}
-
-		$this->assertSame( $values, array_merge( ...$chunks ) );
-	}
-
-	/**
-	 * A single value that alone exceeds the budget should still be returned,
-	 * alone in its own chunk, rather than being dropped.
-	 */
-	public function testShouldKeepOversizedSingleValueAloneInItsOwnChunk() {
-		$huge_value = str_repeat( 'x', 5000 );
-		$values     = [ 1, $huge_value, 2 ];
-
-		$chunks = Imagify_DB::chunk_in_values( $values, 100 );
-
-		// The oversized value must still be present, alone in its own chunk.
-		$found = false;
-
-		foreach ( $chunks as $chunk ) {
-			if ( in_array( $huge_value, $chunk, true ) ) {
-				$this->assertCount( 1, $chunk );
-				$found = true;
+				$this->assertLessThanOrEqual( $expected['max_rendered_length'], strlen( $rendered ) );
 			}
 		}
 
-		$this->assertTrue( $found );
-		$this->assertSame( $values, array_merge( ...$chunks ) );
-	}
+		if ( isset( $expected['oversized_value'] ) ) {
+			$found = false;
 
-	/**
-	 * An invalid budget (e.g. 0 or negative) should fall back to the default budget
-	 * instead of producing a chunk per value.
-	 */
-	public function testShouldFallBackToDefaultBudgetWhenGivenInvalidValue() {
-		$values = range( 1, 10 );
-		$chunks = Imagify_DB::chunk_in_values( $values, 0 );
+			foreach ( $chunks as $chunk ) {
+				if ( in_array( $expected['oversized_value'], $chunk, true ) ) {
+					$this->assertCount( 1, $chunk );
+					$found = true;
+				}
+			}
 
-		$this->assertCount( 1, $chunks );
-		$this->assertSame( $values, $chunks[0] );
+			$this->assertTrue( $found );
+		}
+
+		if ( ! empty( $expected['preserves_order'] ) ) {
+			$merged = $chunks ? array_merge( ...$chunks ) : [];
+			$this->assertSame( $config['values'], $merged );
+		}
 	}
 }
