@@ -63,130 +63,71 @@ class MaybeCorrectExifOrientationTest extends TestCase {
 	}
 
 	/**
-	 * When EXIF data can't be read at all, nothing should happen.
+	 * @dataProvider configTestData
 	 */
-	public function testReturnsFalseWhenExifIsNotAvailable(): void {
+	public function testShouldReturnExpected( $config, $expected ): void {
 		$filesystem = Mockery::mock();
-		$filesystem->shouldReceive( 'can_get_exif' )->andReturn( false );
-		$filesystem->shouldNotReceive( 'get_image_exif' );
+		$filesystem->shouldReceive( 'can_get_exif' )->andReturn( $config['can_get_exif'] );
 
-		$file = $this->make_file( $filesystem );
+		if ( $expected['get_image_exif_called'] ) {
+			$filesystem->shouldReceive( 'get_image_exif' )
+				->with( $this->path )
+				->andReturn( [ 'Orientation' => $config['orientation'] ] );
+		} else {
+			$filesystem->shouldNotReceive( 'get_image_exif' );
+		}
 
-		$this->assertFalse( $file->maybe_correct_exif_orientation() );
-	}
+		$editor     = null;
+		$save_error = null;
 
-	/**
-	 * When the file isn't a JPEG, EXIF orientation is irrelevant.
-	 */
-	public function testReturnsFalseWhenNotJpeg(): void {
-		$filesystem = Mockery::mock();
-		$filesystem->shouldReceive( 'can_get_exif' )->andReturn( true );
-		$filesystem->shouldNotReceive( 'get_image_exif' );
+		if ( 'valid' === $config['editor'] ) {
+			$editor = Mockery::mock();
 
-		$file = $this->make_file(
-			$filesystem,
-			null,
-			(object) [
-				'ext'  => 'png',
-				'type' => 'image/png',
-			]
-		);
+			if ( null !== $expected['rotate'] ) {
+				$editor->shouldReceive( 'rotate' )->once()->with( $expected['rotate'] )->andReturn( true );
+			} else {
+				$editor->shouldNotReceive( 'rotate' );
+			}
 
-		$this->assertFalse( $file->maybe_correct_exif_orientation() );
-	}
+			if ( null !== $expected['flip'] ) {
+				$editor->shouldReceive( 'flip' )->once()->with( ...$expected['flip'] );
+			} else {
+				$editor->shouldNotReceive( 'flip' );
+			}
 
-	/**
-	 * When the orientation is already 1 (or absent), the file must not be touched: this also
-	 * guards against rotating the same working copy twice.
-	 */
-	public function testReturnsFalseWhenOrientationIsAlreadyOne(): void {
-		$filesystem = Mockery::mock();
-		$filesystem->shouldReceive( 'can_get_exif' )->andReturn( true );
-		$filesystem->shouldReceive( 'get_image_exif' )->with( $this->path )->andReturn( [ 'Orientation' => 1 ] );
+			if ( $expected['save_called'] ) {
+				if ( 'error' === $config['save'] ) {
+					$save_error = new WP_Error( 'image_save_error', 'Could not save.' );
+					$editor->shouldReceive( 'save' )->once()->with( $this->path )->andReturn( $save_error );
+				} else {
+					$editor->shouldReceive( 'save' )->once()->with( $this->path )->andReturn( [ 'path' => $this->path ] );
+				}
+			} else {
+				$editor->shouldNotReceive( 'save' );
+			}
+		} elseif ( 'error' === $config['editor'] ) {
+			$editor = new WP_Error( 'image_editor', 'No editor available.' );
+		}
 
-		$editor = Mockery::mock();
-		$editor->shouldNotReceive( 'rotate' );
-		$editor->shouldNotReceive( 'flip' );
-		$editor->shouldNotReceive( 'save' );
-
-		$file = $this->make_file( $filesystem, $editor );
-
-		$this->assertFalse( $file->maybe_correct_exif_orientation() );
-	}
-
-	/**
-	 * Orientation 6 (the common "rotated 90° CW on capture" case) must rotate the editor by 270°
-	 * and save the result back over the same (temporary) path.
-	 */
-	public function testRotatesAndSavesForOrientationSix(): void {
-		$filesystem = Mockery::mock();
-		$filesystem->shouldReceive( 'can_get_exif' )->andReturn( true );
-		$filesystem->shouldReceive( 'get_image_exif' )->with( $this->path )->andReturn( [ 'Orientation' => 6 ] );
-
-		$editor = Mockery::mock();
-		$editor->shouldReceive( 'rotate' )->once()->with( 270 );
-		$editor->shouldNotReceive( 'flip' );
-		$editor->shouldReceive( 'save' )->once()->with( $this->path )->andReturn( [ 'path' => $this->path ] );
-
-		$file = $this->make_file( $filesystem, $editor );
-
-		$this->assertTrue( $file->maybe_correct_exif_orientation() );
-	}
-
-	/**
-	 * Orientation 5 involves a rotation followed by a flip.
-	 */
-	public function testRotatesAndFlipsForOrientationFive(): void {
-		$filesystem = Mockery::mock();
-		$filesystem->shouldReceive( 'can_get_exif' )->andReturn( true );
-		$filesystem->shouldReceive( 'get_image_exif' )->with( $this->path )->andReturn( [ 'Orientation' => 5 ] );
-
-		$editor = Mockery::mock();
-		$editor->shouldReceive( 'rotate' )->once()->with( 90 )->andReturn( true );
-		$editor->shouldReceive( 'flip' )->once()->with( false, true );
-		$editor->shouldReceive( 'save' )->once()->with( $this->path )->andReturn( [ 'path' => $this->path ] );
-
-		$file = $this->make_file( $filesystem, $editor );
-
-		$this->assertTrue( $file->maybe_correct_exif_orientation() );
-	}
-
-	/**
-	 * If the editor can't be retrieved, the WP_Error must be surfaced (and nothing saved).
-	 */
-	public function testReturnsWpErrorWhenEditorFails(): void {
-		$filesystem = Mockery::mock();
-		$filesystem->shouldReceive( 'can_get_exif' )->andReturn( true );
-		$filesystem->shouldReceive( 'get_image_exif' )->with( $this->path )->andReturn( [ 'Orientation' => 6 ] );
-
-		$error = new WP_Error( 'image_editor', 'No editor available.' );
-		$file  = $this->make_file( $filesystem, $error );
+		$file_type = isset( $config['file_type'] ) ? (object) $config['file_type'] : null;
+		$file      = $this->make_file( $filesystem, $editor, $file_type );
 
 		$result = $file->maybe_correct_exif_orientation();
 
-		$this->assertInstanceOf( WP_Error::class, $result );
-		$this->assertSame( $error, $result );
-	}
+		switch ( $expected['result'] ) {
+			case 'true':
+				$this->assertTrue( $result );
+				break;
 
-	/**
-	 * If saving the rotated file fails, the WP_Error must be surfaced.
-	 */
-	public function testReturnsWpErrorWhenSaveFails(): void {
-		$filesystem = Mockery::mock();
-		$filesystem->shouldReceive( 'can_get_exif' )->andReturn( true );
-		$filesystem->shouldReceive( 'get_image_exif' )->with( $this->path )->andReturn( [ 'Orientation' => 6 ] );
+			case 'false':
+				$this->assertFalse( $result );
+				break;
 
-		$save_error = new WP_Error( 'image_save_error', 'Could not save.' );
-
-		$editor = Mockery::mock();
-		$editor->shouldReceive( 'rotate' )->once()->with( 270 );
-		$editor->shouldReceive( 'save' )->once()->with( $this->path )->andReturn( $save_error );
-
-		$file = $this->make_file( $filesystem, $editor );
-
-		$result = $file->maybe_correct_exif_orientation();
-
-		$this->assertInstanceOf( WP_Error::class, $result );
-		$this->assertSame( $save_error, $result );
+			case 'wp_error':
+				$this->assertInstanceOf( WP_Error::class, $result );
+				// The very same WP_Error instance must be surfaced, unchanged.
+				$this->assertSame( 'error' === $config['editor'] ? $editor : $save_error, $result );
+				break;
+		}
 	}
 }
