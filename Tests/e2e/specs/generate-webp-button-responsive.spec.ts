@@ -28,6 +28,7 @@ test.describe( 'Generate missing Next-Gen button — responsive layout (#1045)',
 	} );
 
 	async function gotoSettingsAndGetButton( page: Page ) {
+		test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — .generate-missing-webp section only renders with valid API key.' );
 		await page.goto( '/wp-admin/options-general.php?page=imagify', {
 			waitUntil: 'networkidle',
 		} );
