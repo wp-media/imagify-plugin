@@ -6,8 +6,9 @@ namespace Imagify\Tests\Unit\classes\Bulk;
 use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use Imagify\Bulk\Bulk;
-use Imagify\Bulk\BulkInterface;
 use Imagify\Tests\Unit\TestCase;
+use Imagify\Tests\Unit\classes\Bulk\Stubs\BulkNoBackupOnlyStub;
+use Imagify\Tests\Unit\classes\Bulk\Stubs\BulkWithIdsStub;
 use Mockery;
 
 /**
@@ -64,99 +65,5 @@ class RunGenerateNextgenTest extends TestCase {
 			],
 			$result
 		);
-	}
-}
-
-/**
- * Stub bulk: only `no_backup` errors, no eligible ids and no `no_file_path` errors.
- */
-class BulkNoBackupOnlyStub implements BulkInterface {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_unoptimized_media_ids( $optimization_level ) {
-		return [];
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_optimized_media_ids(): array {
-		return [];
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_optimized_media_ids_without_format( $format ) {
-		return [
-			'ids'    => [],
-			'errors' => [
-				'no_file_path' => [],
-				'no_backup'    => [ 1, 2 ],
-			],
-		];
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function has_optimized_media_without_nextgen() {
-		return 0;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_context_data() {
-		return [];
-	}
-}
-
-/**
- * Stub bulk: two eligible media ids, no errors.
- */
-class BulkWithIdsStub implements BulkInterface {
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_unoptimized_media_ids( $optimization_level ) {
-		return [];
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_optimized_media_ids(): array {
-		return [];
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_optimized_media_ids_without_format( $format ) {
-		return [
-			'ids'    => [ 10, 20 ],
-			'errors' => [
-				'no_file_path' => [],
-				'no_backup'    => [],
-			],
-		];
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function has_optimized_media_without_nextgen() {
-		return 0;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_context_data() {
-		return [];
 	}
 }
