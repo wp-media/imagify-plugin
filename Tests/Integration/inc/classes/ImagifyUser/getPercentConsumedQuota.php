@@ -40,6 +40,10 @@ class Test_GetPercentConsumedQuota extends TestCase {
 	}
 
 	public function testShouldReturnQuotaWhenFetchedUserData() {
+		if ( ! $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) ) {
+			$this->markTestSkipped( 'IMAGIFY_TESTS_API_KEY not set; requires a valid live API key.' );
+		}
+
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
 		// Verify the static $user property is null.

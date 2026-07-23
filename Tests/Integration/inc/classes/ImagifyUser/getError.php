@@ -17,6 +17,10 @@ class Test_GetError extends TestCase {
 	 * Test \Imagify\User\User->get_error() should return false when succesfully fetched user account data.
 	 */
 	public function testShouldReturnFalseWhenFetchedUserData() {
+		if ( ! $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) ) {
+			$this->markTestSkipped( 'IMAGIFY_TESTS_API_KEY not set; requires a valid live API key.' );
+		}
+
 		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
 
 		// Verify the static $user property is null.
