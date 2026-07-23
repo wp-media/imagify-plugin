@@ -50,6 +50,7 @@ test.describe( 'Issue #883 — .htaccess not writable: single error notice', () 
 	// Core regression — only ONE notice when .htaccess is read-only
 	// -----------------------------------------------------------------------
 
+	test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — WebP section only renders with valid API key.' );
 	test( 'Enabling display_nextgen with read-only .htaccess shows at most one error notice', async ( { page } ) => {
 		const settings = new SettingsPage( page );
 		await settings.goto();
@@ -60,11 +61,7 @@ test.describe( 'Issue #883 — .htaccess not writable: single error notice', () 
 		// Imagify uses a custom toggle: the label overlays the checkbox so we
 		// click the label (for="imagify_display_nextgen") rather than the input.
 		const displayNextgenCheckbox = page.locator( '[name="imagify_settings[display_nextgen]"]' ).first();
-		const checkboxCount = await displayNextgenCheckbox.count();
-
-		if ( checkboxCount === 0 ) {
-			test.skip( true, 'display_nextgen checkbox not visible — IMAGIFY_TESTS_API_KEY not set, WebP section hidden.' );
-		}
+		await expect( displayNextgenCheckbox ).toBeVisible( { timeout: 10_000 } );
 
 		// Ensure the checkbox is checked (enabled). Click the label which overlays
 		// the input — using force:true bypasses the intercepting label.
