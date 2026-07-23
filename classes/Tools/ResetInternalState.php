@@ -60,5 +60,7 @@ class ResetInternalState {
 				as_unschedule_all_actions( $hook );
 			}
 		}
+
+		do_action( 'imagify_after_reset_internal_state' );
 	}
 }

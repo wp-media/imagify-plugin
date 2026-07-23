@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Imagify\Abilities;
 
-use Imagify\User\User;
-
 /**
  * MCP ability: returns the current Imagify account status and quota data.
  *
@@ -14,7 +12,25 @@ use Imagify\User\User;
  *
  * @since 2.3.0
  */
-class GetAccount implements AbilitiesInterface {
+class GetAccount extends AbstractAbility {
+
+	/**
+	 * Returns the ability slug.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return 'imagify/get-account';
+	}
+
+	/**
+	 * Returns the ability label.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+		return 'Get Imagify account status';
+	}
 
 	/**
 	 * Register the ability with the WP Abilities API.
@@ -64,29 +80,13 @@ class GetAccount implements AbilitiesInterface {
 	}
 
 	/**
-	 * Check if the current user has permission to execute this ability.
-	 *
 	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
 	 * filter and multisite network-admin logic are honoured.
 	 *
 	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
-	public function check_permissions(): bool {
+	protected function has_permission(): bool {
 		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
-	}
-
-	/**
-	 * Fetch the initialized User instance.
-	 *
-	 * Extracted into a protected method so that unit tests can override
-	 * this call without needing to bootstrap the full Imagify API layer.
-	 *
-	 * @return User
-	 */
-	protected function fetch_user(): User {
-		$user = new User();
-		$user->init_user();
-		return $user;
 	}
 
 	/**
@@ -95,6 +95,20 @@ class GetAccount implements AbilitiesInterface {
 	 * @return array<string, mixed> Account quota, plan details, and API key validity.
 	 */
 	public function execute(): array {
+		$start_time = microtime( true );
+		$result     = $this->do_execute();
+
+		$this->fire_executed( $result, $start_time );
+
+		return $result;
+	}
+
+	/**
+	 * Internal execution logic for the ability.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function do_execute(): array {
 		$user     = $this->fetch_user();
 		$is_valid = ! is_wp_error( $user->get_error() );
 

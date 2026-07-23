@@ -80,6 +80,45 @@ class RegisterAbilityTest extends TestCase {
 	}
 
 	/**
+	 * Verifies that api_key is never exposed in the output.
+	 *
+	 * @return void
+	 */
+	public function testApiKeyIsAbsentFromOutput(): void {
+		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+
+		$ability = wp_get_ability( self::ABILITY_ID );
+		$result  = $ability->execute();
+
+		$this->assertArrayNotHasKey( 'api_key', $result, 'api_key must not be exposed in the output.' );
+	}
+
+	/**
+	 * Verifies all output fields have the types defined in the output schema.
+	 * Without a valid API key the error-state values are returned, but types must still match.
+	 *
+	 * @return void
+	 */
+	public function testOutputFieldTypesMatchSchema(): void {
+		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
+		wp_set_current_user( $user_id );
+
+		$ability = wp_get_ability( self::ABILITY_ID );
+		$result  = $ability->execute();
+
+		$this->assertIsString( $result['plan_label'] );
+		$this->assertIsInt( $result['quota'] );
+		$this->assertIsInt( $result['consumed_current_month_quota'] );
+		$this->assertIsInt( $result['extra_quota'] );
+		$this->assertIsInt( $result['extra_quota_consumed'] );
+		$this->assertIsString( $result['next_date_update'] );
+		$this->assertIsBool( $result['is_api_key_valid'] );
+		$this->assertGreaterThanOrEqual( 0, $result['quota'] );
+		$this->assertGreaterThanOrEqual( 0, $result['consumed_current_month_quota'] );
+	}
+
+	/**
 	 * Test that the imagify_capacity filter is honoured for an administrator.
 	 *
 	 * An admin user would normally pass the permission check. When a filter

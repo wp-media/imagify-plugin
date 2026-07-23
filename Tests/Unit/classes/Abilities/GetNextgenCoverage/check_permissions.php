@@ -7,27 +7,19 @@ use Brain\Monkey\Functions;
 use Imagify\Abilities\GetNextgenCoverage;
 use Imagify\Stats\StatInterface;
 use Imagify\Tests\Unit\TestCase;
+use Mockery;
 
 /**
+ * Tests for \Imagify\Abilities\GetNextgenCoverage::check_permissions().
+ *
  * @covers \Imagify\Abilities\GetNextgenCoverage::check_permissions
  * @group  GetNextgenCoverage
  */
 class Test_CheckPermissions extends TestCase {
 
-	private function make_ability(): GetNextgenCoverage {
-		$stat = new class implements StatInterface {
-			public function get_stat() {
-				return null;
-			}
-			public function get_cached_stat() {
-				return null;
-			}
-			public function clear_cache(): void {}
-		};
-
-		return new GetNextgenCoverage( $stat );
-	}
-
+	/**
+	 * Tests that check_permissions() returns true when the context allows.
+	 */
 	public function testReturnsTrueWhenContextAllows(): void {
 		$context = new class {
 			public function current_user_can( string $capability ): bool {
@@ -36,9 +28,13 @@ class Test_CheckPermissions extends TestCase {
 		};
 		Functions\when( 'imagify_get_context' )->justReturn( $context );
 
-		$this->assertTrue( $this->make_ability()->check_permissions() );
+		$ability = new GetNextgenCoverage( Mockery::mock( StatInterface::class ) );
+		$this->assertTrue( $ability->check_permissions() );
 	}
 
+	/**
+	 * Tests that check_permissions() returns false when the context denies.
+	 */
 	public function testReturnsFalseWhenContextDenies(): void {
 		$context = new class {
 			public function current_user_can( string $capability ): bool {
@@ -47,6 +43,7 @@ class Test_CheckPermissions extends TestCase {
 		};
 		Functions\when( 'imagify_get_context' )->justReturn( $context );
 
-		$this->assertFalse( $this->make_ability()->check_permissions() );
+		$ability = new GetNextgenCoverage( Mockery::mock( StatInterface::class ) );
+		$this->assertFalse( $ability->check_permissions() );
 	}
 }

@@ -1,9 +1,9 @@
-=== Imagify: Optimize Images for Top Speed (Compress & Convert to WebP/AVIF) ===
+=== Imagify Image Optimization: Optimize Images | Compress & Convert to WebP/AVIF ===
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 7.0
-Stable tag: 2.2.9
-Requires PHP: 7.3
+Stable tag: 2.3.1-rc1
+Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,6 +54,8 @@ Watch the video and see for yourself why Imagify is the easiest image optimizer 
 * __Flexible File and Size Optimization__ – Choose which WordPress image sizes you want to optimize, including thumbnail, medium, large, 1536 px, and 2048 px. This helps you optimize only what you actually use and manage your monthly quota more efficiently. 
 
 * __Auto-Optimize on Upload__ – New images are optimized automatically as soon as you upload them to WordPress. No manual steps and no forgotten images. 
+
+* __MCP: AI ACcess for Imagify__ – Connect Imagify to your AI tool of choice and get answers based on your Imagify data. Ask your AI about image optimization status, available quota, or whether your images have WebP and AVIF versions. You can also troubleshoot issues or optimize and restore a single image directly from the conversation. Imagify is the first image optimization plugin to offer this kind of AI connection.
  
 ✨ In short, you have everything you need to optimize images at scale while keeping quality high and your setup simple. 
  
@@ -99,6 +101,23 @@ Heavy images are one of the most common reasons pages load slowly. When images a
 Imagify helps you fix this at the source by compressing images and converting them to the next-gen formats mentioned above, so pages load faster and feel smoother to visitors. Such image optimization tasks help your site meet Google’s performance recommendations, fix PageSpeed Insights audits such as [“Serve images in next-gen formats”](https://imagify.io/blog/serve-next-gen-formats-wordpress/)” and “[“Efficiently encode images”](https://imagify.io/blog/efficiently-encode-images-wordpress/), and improve key metrics like Core Web Vitals. 
 
 With lighter images across your site, you get faster load times and better performance where it matters most and, piece on the cake, without having to fine-tune performance settings yourself! 
+
+=== 🔌 Connect your AI tool to Imagify with MCP === 
+ 
+Running multiple websites? With MCP (Model Context Protocol), you can get answers about your websites from a single conversation with your AI tool. 
+
+Connect Imagify to an MCP-compatible AI tool such as Claude, GitHub Copilot, Codex, or ChatGPT, and it can access your actual Imagify data to answer questions, troubleshoot issues, and optimize or restore a single image when you ask. MCP is enabled by default, so there's nothing to configure in Imagify itself. Just connect from your AI tool and you're ready to go. 
+
+Ask questions like: 
+* "How many images still need optimization?" 
+* "Do I have enough quota left to optimize everything?" 
+* “Why wasn't my hero image optimized?" 
+
+Your AI tool can also optimize or restore a single image when you ask it to. Nothing happens to your images unless you ask for it. 
+
+MCP is included in all Imagify plans, free and paid, at no extra cost. It works alongside the plugin, not instead of it. Bulk optimization and settings changes still happen in the Imagify plugin itself.  
+
+Requires WordPress 6.9+ and Imagify 2.3+. 
 
 === 💬 What Do Our Users Think Of Imagify? ===
 
@@ -308,6 +327,11 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.3.0 =
+- New feature: Added support for the Model Context Protocol (MCP), enabling compatible AI assistants to optimize images and manage Imagify through natural language.
+- Enhancement: Improved validation to ensure only supported image files can be optimized through MCP.
+- Fix: Improved error handling when requesting the status of media that no longer exists
+
 = 2.2.9 =
 - Enhancement: Add a new WP-CLI command to restore images in bulk.
 - Enhancement: Add a one-click Reset Internal State tool to the troubleshooting page.

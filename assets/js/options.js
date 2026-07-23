@@ -1036,3 +1036,39 @@ window.imagify = window.imagify || {};
 	} );
 
 } )(window, document, jQuery);
+
+// Imagify Analytics opt-in toggle ================================================================
+(function($) {
+
+	var $checkbox = $( '#imagify-analytics-enabled' );
+
+	if ( ! $checkbox.length ) {
+		return;
+	}
+
+	$checkbox.on( 'change.imagify-analytics', function() {
+		var nonce = $( this ).data( 'nonce' );
+
+		$.post( ajaxurl, {
+			action: 'imagify_toggle_tracking_optin',
+			value:  $( this ).prop( 'checked' ) ? 1 : 0,
+			nonce:  nonce
+		} );
+	} );
+
+	$( document ).on( 'click.imagify-analytics', '#imagify-analytics-enable-from-modal', function() {
+		$( '.imagify-modal.modal-is-open .close-btn' ).trigger( 'click.imagify' );
+		$checkbox.prop( 'checked', true ).trigger( 'change.imagify-analytics' );
+	} );
+
+})(jQuery);
+
+// Imagify Analytics opt-in notice: toggle the data preview =======================================
+(function($) {
+
+	$( document ).on( 'click.imagify-analytics', '.imagify-analytics-preview-toggle', function( e ) {
+		e.preventDefault();
+		$( this ).closest( 'p' ).next( '.imagify-analytics-data-container' ).slideToggle();
+	} );
+
+})(jQuery);
