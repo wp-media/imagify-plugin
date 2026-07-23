@@ -183,24 +183,24 @@ final class Bulk implements BulkOptimizerInterface {
 
 		$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
 
-		/**
-		 * Filter the list of media to optimize during a bulk optimization, per media.
-		 *
-		 * Return false to exclude a given media from the bulk optimization run
-		 * (e.g. to skip a specific file type such as PDFs).
-		 *
-		 * @since 2.3
-		 *
-		 * @param bool   $optimize           True to optimize this media, false to exclude it.
-		 * @param int    $media_id           The media ID (attachment ID, or custom-folder file ID).
-		 * @param string $context            The optimization context ('wp' or 'custom-folders').
-		 * @param int    $optimization_level The optimization level.
-		 */
 		$media_ids = array_values(
 			array_filter(
 				$media_ids,
 				function ( $media_id ) use ( $context, $optimization_level ) {
-					return apply_filters( 'imagify_bulk_optimize_media', true, $media_id, $context, $optimization_level );
+					/**
+					 * Filter the list of media to optimize during a bulk optimization, per media.
+					 *
+					 * Return false to exclude a given media from the bulk optimization run
+					 * (e.g. to skip a specific file type such as PDFs).
+					 *
+					 * @since 2.3
+					 *
+					 * @param bool   $optimize           True to optimize this media, false to exclude it.
+					 * @param int    $media_id           The media ID (attachment ID, or custom-folder file ID).
+					 * @param string $context            The optimization context ('wp' or 'custom-folders').
+					 * @param int    $optimization_level The optimization level.
+					 */
+					return wpm_apply_filters_typed( 'boolean', 'imagify_bulk_optimize_media', true, $media_id, $context, $optimization_level );
 				}
 			)
 		);
