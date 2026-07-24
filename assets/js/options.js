@@ -46,7 +46,10 @@ window.imagify = window.imagify || {};
 						location.reload();
 					} );
 				}
-
+			} )
+			.always( function() {
+				// Always release the lock, even when the request was aborted or failed,
+				// so a following blur can trigger a fresh check instead of staying stuck.
 				busy = false;
 			} );
 	} );
