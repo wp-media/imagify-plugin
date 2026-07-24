@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Imagify\Tests\Unit\inc\classes\ImagifyDB;
 
-use Brain\Monkey\Functions;
 use Imagify_DB;
 use Imagify\Tests\Unit\TestCase;
 
@@ -22,16 +21,16 @@ class Test_ChunkInValues extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		Functions\when( 'esc_sql' )->returnArg();
-		Functions\when( 'apply_filters' )->alias(
-			function ( $tag, $value ) {
-				return $value;
-			}
-		);
+		$this->stubEscapeFunctions();
 	}
 
 	/**
+	 * Test chunk_in_values() against the configTestData fixture.
+	 *
 	 * @dataProvider configTestData
+	 *
+	 * @param array $config   The test config (values and budget).
+	 * @param array $expected The expected assertions to run.
 	 */
 	public function testShouldReturnExpectedChunks( $config, $expected ) {
 		$chunks = Imagify_DB::chunk_in_values( $config['values'], $config['budget'] );

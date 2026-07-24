@@ -87,10 +87,12 @@ class Imagify_DB {
 		 *
 		 * @param int $sql_budget The character budget.
 		 */
-		$sql_budget = (int) apply_filters( 'imagify_db_in_clause_sql_budget', $sql_budget );
+		$given_sql_budget = $sql_budget;
+		$sql_budget       = (int) apply_filters( 'imagify_db_in_clause_sql_budget', $sql_budget );
 
 		if ( $sql_budget < 1 ) {
-			$sql_budget = 8000;
+			// Fall back to the caller's own value if it was valid, otherwise the hardcoded default.
+			$sql_budget = ( $given_sql_budget >= 1 ) ? $given_sql_budget : 8000;
 		}
 
 		$chunks        = [];
