@@ -1084,6 +1084,15 @@ abstract class AbstractProcess implements ProcessInterface {
 			return false;
 		}
 
+		/**
+		 * The backup file may be the original, un-rotated JPEG that WordPress auto-rotated on
+		 * upload (WordPress resets the orientation on the rotated file, but keeps the original
+		 * orientation in the backup). Correct the orientation of this disposable temporary copy
+		 * so that a Next-Gen version (or a thumbnail) generated from it isn't mis-oriented.
+		 * The backup file itself is never touched.
+		 */
+		$tmp_file->maybe_correct_exif_orientation();
+
 		if ( 'full' === $size ) {
 			/**
 			 * We create a copy of the backup to be able to create a next-gen version from it.
