@@ -318,13 +318,8 @@ final class Bulk implements BulkOptimizerInterface {
 		foreach ( $contexts as $context ) {
 			foreach ( $formats as $format ) {
 				$media = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
-				if ( ! $media['ids'] && $media['errors']['no_backup'] ) {
-					// No backup, no next-gen.
-					return [
-						'success' => false,
-						'message' => 'no-backup',
-					];
-				} elseif ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
+
+				if ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
 					// Error.
 					return [
 						'success' => false,
@@ -332,7 +327,9 @@ final class Bulk implements BulkOptimizerInterface {
 					];
 				}
 
-				$medias[ $context ] = $media['ids'];
+				if ( $media['ids'] ) {
+					$medias[ $context ] = $media['ids'];
+				}
 			}
 		}
 

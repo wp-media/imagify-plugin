@@ -1979,9 +1979,6 @@ abstract class AbstractProcess implements ProcessInterface {
 		 */
 		$data = (array) apply_filters( "imagify{$_unauthorized}_file_optimization_data", $data, $response, $size, $level, $this->get_data() );
 
-		if ( property_exists( $response, 'message' ) ) {
-			$size = str_replace( $this->format, '', $size );
-		}
 		// Store.
 		$this->get_data()->update_size_optimization_data( $size, $data );
 

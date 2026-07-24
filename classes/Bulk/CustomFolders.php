@@ -172,7 +172,8 @@ class CustomFolders extends AbstractBulk {
 		if ( ! isset( $mime ) && empty( $mime ) ) {
 			$mime = 'image/webp';
 		}
-		$mime_types     = str_replace( ",'" . $mime . "'", '', $mime_types );
+		$mime           = trim( $mime );
+		$mime_types     = str_replace( [ ", '" . $mime . "'", ",'" . $mime . "'" ], '', $mime_types );
 		$nextgen_suffix = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::' . strtoupper( $format ) . '_SUFFIX' );
 		$files          = $wpdb->get_results(
 			$wpdb->prepare( // WPCS: unprepared SQL ok.
@@ -180,11 +181,11 @@ class CustomFolders extends AbstractBulk {
 			SELECT fi.file_id, fi.path
 			FROM $files_table as fi
 			INNER JOIN $folders_table AS fo
-				ON ( fi.folder_id = fo.folder_id )
+				ON ( fi.folder_id = fo.folder_id AND fo.active = 1 )
 			WHERE
 				fi.mime_type IN ( $mime_types )
 				AND ( fi.status = 'success' OR fi.status = 'already_optimized' )
-				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )
+				AND fi.data NOT LIKE %s
 			ORDER BY fi.file_id DESC",
 				'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
 			)
@@ -214,7 +215,14 @@ class CustomFolders extends AbstractBulk {
 				continue;
 			}
 
-			$file_path   = Imagify_Files_Scan::remove_placeholder( $file->path );
+			$file_path = Imagify_Files_Scan::remove_placeholder( $file->path );
+
+			// Skip files whose extension already matches the target format
+			// (e.g. a .webp file stored with incorrect post_mime_type).
+			if ( strtolower( pathinfo( $file_path, PATHINFO_EXTENSION ) ) === $format ) {
+				continue;
+			}
+
 			$backup_path = Imagify_Custom_Folders::get_file_backup_path( $file_path );
 
 			if ( ! $this->filesystem->exists( $backup_path ) ) {
