@@ -9,7 +9,12 @@ use Imagify_Filesystem;
  * Base test case for Imagify_Filesystem integration tests.
  */
 abstract class TestCase extends BaseTestCase {
-	protected $use_api = false;
+	/**
+	 * This suite does not need the Imagify API.
+	 *
+	 * @var bool
+	 */
+	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
 	 * Filters added by a test, removed again in tear_down().
