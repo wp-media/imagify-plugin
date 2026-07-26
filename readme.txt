@@ -327,6 +327,9 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.3.1 =
+- Enhancement: Add the imagify_site_root_url filter, allowing multisites with domain mapping to declare the URL used to serve each subsite.
+
 = 2.3.0 =
 - New feature: Added support for the Model Context Protocol (MCP), enabling compatible AI assistants to optimize images and manage Imagify through natural language.
 - Enhancement: Improved validation to ensure only supported image files can be optimized through MCP.
