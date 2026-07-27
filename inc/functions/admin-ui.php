@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
  * @since  1.9 Function signature changed.
  * @author Jonathan Buttigieg
  *
- * @param  ProcessInterface $process The optimization process object.
+ * @param  \Imagify\Optimization\Process\ProcessInterface $process The optimization process object.
  * @return string                    The output to print.
  */
 function get_imagify_attachment_optimization_text( $process ) {

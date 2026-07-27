@@ -76,9 +76,12 @@ class Test_ImagifyTranslateApiMessage extends TestCase {
 	}
 
 	/**
-	 * Test: a non-string value is returned untouched.
+	 * Test: an empty message falls back to the unknown error wording rather than staying empty.
 	 */
-	public function testShouldReturnNonStringUnchanged() {
-		$this->assertSame( 42, imagify_translate_api_message( 42 ) );
+	public function testShouldFallBackToUnknownErrorForAnEmptyMessage() {
+		$this->assertStringContainsString(
+			'An unknown error occurred',
+			imagify_translate_api_message( '' )
+		);
 	}
 }

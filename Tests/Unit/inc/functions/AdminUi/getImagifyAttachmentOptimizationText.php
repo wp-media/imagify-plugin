@@ -48,7 +48,7 @@ class Test_GetImagifyAttachmentOptimizationText extends TestCase {
 	 *
 	 * @param array $sizes The `sizes` entry of the optimization data.
 	 *
-	 * @return Mockery\MockInterface
+	 * @return \Imagify\Optimization\Process\ProcessInterface
 	 */
 	private function get_process( array $sizes ) {
 		$data = Mockery::mock( 'Imagify\Optimization\Data\DataInterface' );
