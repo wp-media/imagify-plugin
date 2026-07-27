@@ -882,9 +882,12 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 		 * @param string $root_url URL of the site's root, with a trailing slash.
 		 * @param int    $blog_id  ID of the blog the URL was built for.
 		 */
-		$root_url = (string) apply_filters( 'imagify_site_root_url', $root_url, $blog_id );
+		$filtered_url = apply_filters( 'imagify_site_root_url', $root_url, $blog_id );
 
-		$this->site_root_urls[ $blog_id ] = $root_url ? trailingslashit( $root_url ) : home_url( '/' );
+		// Ignore anything a callback returns that is not a usable URL, rather than casting it blindly.
+		$this->site_root_urls[ $blog_id ] = is_string( $filtered_url ) && '' !== trim( $filtered_url )
+			? trailingslashit( trim( $filtered_url ) )
+			: home_url( '/' );
 
 		return $this->site_root_urls[ $blog_id ];
 	}

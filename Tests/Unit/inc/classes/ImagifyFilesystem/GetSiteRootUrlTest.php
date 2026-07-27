@@ -140,13 +140,14 @@ class GetSiteRootUrlTest extends TestCase {
 	}
 
 	/**
-	 * A filtered value that is empty falls back to home_url( '/' ).
+	 * A filtered value that is not a usable URL falls back to home_url( '/' ) rather than
+	 * being cast blindly — a badly-behaved callback must not poison the cached value.
 	 *
-	 * @dataProvider provideEmptyFilteredValues
+	 * @dataProvider provideUnusableFilteredValues
 	 *
 	 * @param mixed $filtered_value Value returned by the hooked callback.
 	 */
-	public function testShouldFallBackToHomeUrlWhenFilteredValueIsEmpty( $filtered_value ) {
+	public function testShouldFallBackToHomeUrlWhenFilteredValueIsUnusable( $filtered_value ) {
 		Filters\expectApplied( 'imagify_site_root_url' )
 			->once()
 			->andReturn( $filtered_value );
@@ -155,16 +156,21 @@ class GetSiteRootUrlTest extends TestCase {
 	}
 
 	/**
-	 * Empty-ish values a badly-behaved callback could return.
+	 * Values a badly-behaved callback could return. Casting an array to string would yield
+	 * "Array/" and raise a PHP warning; casting an object with no __toString() is fatal.
 	 *
 	 * @return array
 	 */
-	public function provideEmptyFilteredValues(): array {
+	public function provideUnusableFilteredValues(): array {
 		return [
-			'empty string' => [ '' ],
-			'null'         => [ null ],
-			'false'        => [ false ],
-			'zero'         => [ 0 ],
+			'empty string'      => [ '' ],
+			'whitespace only'   => [ "  \n" ],
+			'null'              => [ null ],
+			'false'             => [ false ],
+			'zero'              => [ 0 ],
+			'array'             => [ [ 'https://mapped-domain.example/' ] ],
+			'object'            => [ new \stdClass() ],
+			'integer'           => [ 42 ],
 		];
 	}
 
