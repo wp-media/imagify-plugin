@@ -39,25 +39,36 @@ class Test_ChunkInValues extends TestCase {
 			$this->assertCount( $expected['chunk_count'], $chunks );
 		}
 
-		if ( isset( $expected['min_chunks'] ) ) {
-			$this->assertGreaterThanOrEqual( $expected['min_chunks'], count( $chunks ) );
+		if ( isset( $expected['exact_chunks'] ) ) {
+			$this->assertSame( $expected['exact_chunks'], $chunks );
 		}
+
+		$quoted = ! empty( $expected['quoted'] );
 
 		if ( ! empty( $expected['max_rendered_length'] ) ) {
 			foreach ( $chunks as $chunk ) {
-				$rendered = empty( $expected['quoted'] )
-					? implode( ',', $chunk )
-					: implode(
-						',',
-						array_map(
-							function ( $value ) {
-								return "'" . $value . "'";
-							},
-							$chunk
-						)
-					);
+				$this->assertLessThanOrEqual(
+					$expected['max_rendered_length'],
+					strlen( $this->render( $chunk, $quoted ) )
+				);
+			}
+		}
 
-				$this->assertLessThanOrEqual( $expected['max_rendered_length'], strlen( $rendered ) );
+		if ( ! empty( $expected['fully_packed'] ) ) {
+			$budget = $expected['max_rendered_length'];
+			$count  = count( $chunks );
+
+			// Every chunk but the last must be full: the next chunk's first value
+			// could not have been appended without going over the budget.
+			for ( $i = 0; $i < $count - 1; $i++ ) {
+				$next_value = $chunks[ $i + 1 ][0];
+				$with_next  = $this->render( array_merge( $chunks[ $i ], [ $next_value ] ), $quoted );
+
+				$this->assertGreaterThan(
+					$budget,
+					strlen( $with_next ),
+					"Chunk $i is not filled up to the budget."
+				);
 			}
 		}
 
@@ -78,5 +89,28 @@ class Test_ChunkInValues extends TestCase {
 			$merged = $chunks ? array_merge( ...$chunks ) : [];
 			$this->assertSame( $config['values'], $merged );
 		}
+	}
+
+	/**
+	 * Render a chunk the way it would appear inside an `IN ()` clause.
+	 *
+	 * @param  array $chunk  The chunk values.
+	 * @param  bool  $quoted Whether the values are quoted (non integer values).
+	 * @return string
+	 */
+	private function render( array $chunk, bool $quoted ): string {
+		if ( ! $quoted ) {
+			return implode( ',', $chunk );
+		}
+
+		return implode(
+			',',
+			array_map(
+				function ( $value ) {
+					return "'" . $value . "'";
+				},
+				$chunk
+			)
+		);
 	}
 }

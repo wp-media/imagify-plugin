@@ -108,6 +108,7 @@ class Imagify_DB {
 				// Start a new chunk.
 				$chunks[]      = $current_chunk;
 				$current_chunk = [];
+				$current_len   = 0;
 				$added_len     = $rendered_len;
 			}
 
