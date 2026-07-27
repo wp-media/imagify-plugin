@@ -327,6 +327,9 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.3.1 =
+- Bugfix: The "Generate missing next-gen versions" tool no longer runs indefinitely when a WebP or AVIF version would be heavier than the optimized image.
+
 = 2.3.0 =
 - New feature: Added support for the Model Context Protocol (MCP), enabling compatible AI assistants to optimize images and manage Imagify through natural language.
 - Enhancement: Improved validation to ensure only supported image files can be optimized through MCP.
