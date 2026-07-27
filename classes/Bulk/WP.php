@@ -317,12 +317,22 @@ class WP extends AbstractBulk {
 				p.post_mime_type IN ( $mime_types )
 				AND ( mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
 				AND mt2.meta_value NOT LIKE %s
+				AND mt2.meta_value NOT LIKE %s
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
 				$nodata_where
 			ORDER BY p.ID DESC
 			LIMIT 0, %d",
 				'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
+				/**
+				 * Second predicate: skip media the API permanently refused to convert (the next-gen file
+				 * would be heavier than the original, or the file is already compressed). Those are stored
+				 * as `<size><suffix>";a:3:{s:15:"permanent_error";b:1;s:7:"success";b:0;s:5:"error";…`.
+				 * Transient failures (network, quota, timeout) serialize as a 2-element array without the
+				 * `permanent_error` key, so they keep being retried. Matching serialized data with LIKE is
+				 * fragile: the key order written in Optimization\Data\WP must not change.
+				 */
+				'%' . $wpdb->esc_like( $nextgen_suffix . '";a:3:{s:15:"permanent_error";b:1;' ) . '%',
 				imagify_get_unoptimized_attachment_limit()
 			)
 		);
