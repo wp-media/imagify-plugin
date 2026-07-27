@@ -1971,12 +1971,44 @@ abstract class AbstractProcess implements ProcessInterface {
 		$data = (array) apply_filters( "imagify{$_unauthorized}_file_optimization_data", $data, $response, $size, $level, $this->get_data() );
 
 		if ( property_exists( $response, 'message' ) ) {
-			$size = str_replace( $this->format, '', $size );
+			if ( $this->is_next_gen_size( $size ) ) {
+				/**
+				 * The API answered with a 200 and a message instead of a converted file: it declined the
+				 * conversion (the next-gen version would be heavier than the original, or the file is
+				 * already compressed). This is a permanent refusal, not a transient failure, so we store a
+				 * terminal entry under the next-gen size name. The suffix is kept, otherwise the entry would
+				 * overwrite the base size record and the media would be picked up again on every bulk run.
+				 */
+				$data['success']         = false;
+				$data['error']           = $data['message'];
+				$data['permanent_error'] = true;
+			} else {
+				$size = str_replace( $this->format, '', $size );
+			}
 		}
 		// Store.
 		$this->get_data()->update_size_optimization_data( $size, $data );
 
 		return $data;
+	}
+
+	/**
+	 * Tell if a size name refers to a next-gen (AVIF or WebP) version.
+	 *
+	 * @param string $size The size name.
+	 *
+	 * @return bool
+	 */
+	private function is_next_gen_size( $size ) {
+		$size = (string) $size;
+
+		foreach ( [ static::AVIF_SUFFIX, static::WEBP_SUFFIX ] as $suffix ) {
+			if ( '' !== $suffix && substr( $size, - strlen( $suffix ) ) === $suffix ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
