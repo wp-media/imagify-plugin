@@ -101,6 +101,22 @@ function get_imagify_attachment_optimization_text( $process ) {
 		}
 		$output .= $output_before . '<span class="data">' . __( 'Next-Gen generated:', 'imagify' ) . '</span> <strong class="big">' . esc_html( $has_nextgen ) . '</strong>' . $output_after;
 
+		// When the API permanently refused the conversion, show the reason it gave.
+		$nextgen_reason = '';
+
+		if ( ! empty( $optimized_data['sizes'] ) && is_array( $optimized_data['sizes'] ) ) {
+			foreach ( $optimized_data['sizes'] as $size_data ) {
+				if ( ! empty( $size_data['permanent_error'] ) && ! empty( $size_data['error'] ) ) {
+					$nextgen_reason = $size_data['error'];
+					break;
+				}
+			}
+		}
+
+		if ( $nextgen_reason ) {
+			$output .= $output_before . '<span class="data">' . __( 'Next-Gen status:', 'imagify' ) . '</span> <strong>' . esc_html( $nextgen_reason ) . '</strong>' . $output_after;
+		}
+
 		$total_optimized_thumbnails = $data->get_optimized_sizes_count();
 
 		if ( $total_optimized_thumbnails ) {
