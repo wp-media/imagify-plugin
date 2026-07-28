@@ -14,6 +14,16 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	use InstanceGetterTrait;
 
 	/**
+	 * Batch-key segment used to mark a batch as "urgent" (high priority).
+	 * Shared by generate_key() (write path) and get_batches() (read path) so both
+	 * always agree on the exact same string shape.
+	 *
+	 * @var   string
+	 * @since 2.4
+	 */
+	private const URGENT_KEY_SEGMENT = 'batch_urgent';
+
+	/**
 	 * Background process: the action to perform.
 	 *
 	 * @var   string
@@ -73,6 +83,119 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 		// End of the queue.
 		$this->optimization_process->unlock();
 		return false;
+	}
+
+	/**
+	 * Generate the batch key.
+	 * Overrides the vendored method to give priority ("urgent") batches a distinct
+	 * key shape, so get_batches() can order them first.
+	 *
+	 * @since 2.4
+	 *
+	 * @param int    $length Optional, length of the string to return. Default 64.
+	 * @param string $key    Optional, string with a prefix key. Default 'batch'.
+	 * @return string
+	 */
+	protected function generate_key( $length = 64, $key = 'batch' ) {
+		if ( 'batch' === $key && $this->has_priority_item_queued() ) {
+			return parent::generate_key( $length, self::URGENT_KEY_SEGMENT );
+		}
+
+		return parent::generate_key( $length, $key );
+	}
+
+	/**
+	 * Tell if any of the not-yet-persisted queued items carries a truthy 'priority' key.
+	 *
+	 * @since 2.4
+	 *
+	 * @return bool
+	 */
+	private function has_priority_item_queued(): bool {
+		if ( empty( $this->data ) || ! is_array( $this->data ) ) {
+			return false;
+		}
+
+		foreach ( $this->data as $item ) {
+			if ( is_array( $item ) && ! empty( $item['priority'] ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get batches.
+	 * Overrides the vendored method to return "urgent" (priority) batches before
+	 * normal ones, each tier still ordered FIFO (by option/meta ID) internally.
+	 *
+	 * @since 2.4
+	 *
+	 * @param int $limit Number of batches to return, defaults to all.
+	 * @return array of stdClass
+	 */
+	public function get_batches( $limit = 0 ) {
+		global $wpdb;
+
+		if ( empty( $limit ) || ! is_int( $limit ) ) {
+			$limit = 0;
+		}
+
+		$table        = $wpdb->options;
+		$column       = 'option_name';
+		$key_column   = 'option_id';
+		$value_column = 'option_value';
+
+		if ( is_multisite() ) {
+			$table        = $wpdb->sitemeta;
+			$column       = 'meta_key';
+			$key_column   = 'meta_id';
+			$value_column = 'meta_value';
+		}
+
+		$key        = $wpdb->esc_like( $this->identifier . '_batch_' ) . '%';
+		$urgent_key = $wpdb->esc_like( $this->identifier . '_' . self::URGENT_KEY_SEGMENT . '_' ) . '%';
+
+		$sql = '
+			SELECT *
+			FROM ' . $table . '
+			WHERE ' . $column . ' LIKE %s
+			ORDER BY ( ' . $column . ' LIKE %s ) DESC, ' . $key_column . ' ASC
+			';
+
+		$args = [ $key, $urgent_key ];
+
+		if ( ! empty( $limit ) ) {
+			$sql   .= ' LIMIT %d';
+			$args[] = $limit;
+		}
+
+		$items = $wpdb->get_results(
+			$wpdb->prepare(
+				$sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$args
+			)
+		);
+
+		$batches = [];
+
+		if ( ! empty( $items ) ) {
+			$allowed_classes = $this->allowed_batch_data_classes;
+
+			$batches = array_map(
+				static function ( $item ) use ( $column, $value_column, $allowed_classes ) {
+					$batch       = new \stdClass();
+					$batch->key  = $item->{$column};
+					$batch->data = static::maybe_unserialize( $item->{$value_column}, $allowed_classes );
+
+					return $batch;
+				},
+				$items
+			);
+		}
+
+		return $batches;
 	}
 
 	/**

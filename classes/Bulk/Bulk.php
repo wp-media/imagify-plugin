@@ -62,6 +62,13 @@ final class Bulk implements BulkOptimizerInterface {
 			return;
 		}
 
+		if ( empty( $item['data']['bulk'] ) ) {
+			// This completion was not enqueued by Bulk::run_optimize() (e.g. a manual click or
+			// an auto-optimize-on-upload that happens to complete while a bulk job is active):
+			// do not let it affect the bulk job's progress counters.
+			return;
+		}
+
 		$data = $process->get_data();
 
 		if ( ! $data ) {
@@ -452,7 +459,7 @@ final class Bulk implements BulkOptimizerInterface {
 			}
 		}
 
-		return $process->optimize( $level );
+		return $process->optimize( $level, [ 'bulk' => true ] );
 	}
 
 	/**

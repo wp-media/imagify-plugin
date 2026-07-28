@@ -347,6 +347,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *    An array of optionnal arguments.
 	 *
 	 *     @type string $hook_suffix Suffix used to trigger hooks before and after optimization.
+	 *     @type bool   $priority    Whether this optimization should jump ahead of the queue (e.g. new uploads, manual clicks). Default false.
 	 * }
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
@@ -449,19 +450,29 @@ abstract class AbstractProcess implements ProcessInterface {
 			$args = array_merge( $new_args, $args );
 		}
 
+		// 'priority' is a queue-mechanics flag: it must be a sibling key of 'id'/'sizes'/etc.,
+		// not nested inside 'data' (which is opaque payload forwarded verbatim to the
+		// 'imagify_before_*'/'imagify_after_*' hook callbacks). Extract it before building 'data'.
+		$is_priority = ! empty( $args['priority'] );
+		unset( $args['priority'] );
+
 		/**
 		 * Push the item to the queue, save the queue in the DB, empty the queue.
 		 * A "batch" is then created in the DB with this unique item, it is then free to loop through its steps (files) without another item interfering (each media optimization has its own dedicated batch/queue).
 		 */
-		MediaOptimization::get_instance()->push_to_queue(
-			[
-				'id'                 => $media->get_id(),
-				'sizes'              => $sizes,
-				'optimization_level' => $optimization_level,
-				'process_class'      => get_class( $this ),
-				'data'               => $args,
-			]
-		)->save();
+		$item = [
+			'id'                 => $media->get_id(),
+			'sizes'              => $sizes,
+			'optimization_level' => $optimization_level,
+			'process_class'      => get_class( $this ),
+			'data'               => $args,
+		];
+
+		if ( $is_priority ) {
+			$item['priority'] = true;
+		}
+
+		MediaOptimization::get_instance()->push_to_queue( $item )->save();
 
 		return true;
 	}
