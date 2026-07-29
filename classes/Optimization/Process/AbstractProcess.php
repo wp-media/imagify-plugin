@@ -245,6 +245,10 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Optimize a media files.
 	 *
 	 * @since 1.9
+	 * @since 2.3.2 Added the $args parameter (e.g. 'bulk', 'priority'). See self::optimize_sizes()
+	 *             for the full list. 'bulk'/'priority' are extracted before the item is queued,
+	 *             any other key ends up in the queued item's 'data', forwarded verbatim to the
+	 *             'imagify_before_*'/'imagify_after_*' hooks.
 	 *
 	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @param array $args               An array of optionnal arguments.
@@ -291,6 +295,10 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Re-optimize a media files with a different level.
 	 *
 	 * @since 1.9
+	 * @since 2.3.2 Added the $args parameter (e.g. 'bulk', 'priority'). See self::optimize_sizes()
+	 *             for the full list. 'bulk'/'priority' are extracted before the item is queued,
+	 *             any other key ends up in the queued item's 'data', forwarded verbatim to the
+	 *             'imagify_before_*'/'imagify_after_*' hooks.
 	 *
 	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @param array $args               An array of optionnal arguments.
@@ -347,7 +355,8 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *    An array of optionnal arguments.
 	 *
 	 *     @type string $hook_suffix Suffix used to trigger hooks before and after optimization.
-	 *     @type bool   $priority    Whether this optimization should jump ahead of the queue (e.g. new uploads, manual clicks). Default false.
+	 *     @type bool   $priority    Whether this optimization should jump ahead of the queue (e.g. new uploads, manual clicks). Default false. Extracted before queueing: not part of the queued item's 'data'.
+	 *     @type bool   $bulk        Whether this optimization was triggered by a bulk run (see Bulk::force_optimize()). Default false. Kept in the queued item's 'data', so it is forwarded verbatim to the 'imagify_before_*'/'imagify_after_*' hook callbacks.
 	 * }
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.

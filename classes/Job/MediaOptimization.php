@@ -59,6 +59,7 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	 *
 	 *         @type string $hook_suffix   Suffix used to trigger hooks before and after optimization. Should be always provided.
 	 *         @type bool   $delete_backup True to delete the backup file after the optimization process. This is used when a temporary backup of the original file has been created, but backup option is disabled. Default is false.
+	 *         @type bool   $bulk          True when this optimization was triggered by a bulk run (see Bulk::force_optimize()). Forwarded verbatim to the 'imagify_before_*'/'imagify_after_*' hook callbacks below. Default is false.
 	 *     }
 	 * }
 	 * @return array|bool The modified item to put back in the queue. False to remove the item from the queue.
@@ -106,6 +107,12 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 
 	/**
 	 * Tell if any of the not-yet-persisted queued items carries a truthy 'priority' key.
+	 *
+	 * A single truthy item marks the whole batch urgent, which only makes sense because
+	 * a batch is always a singleton at this point: generate_key() is called from
+	 * push_to_queue(), immediately followed by save(), one item at a time. If several
+	 * items were ever pushed to $this->data before save() is called, they would all end
+	 * up sharing the same "urgent" key as soon as one of them requests priority.
 	 *
 	 * @since 2.3.2
 	 *
