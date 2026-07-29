@@ -142,7 +142,7 @@ class Noop implements ProcessInterface {
 	 * Optimize a media files by pushing tasks into the queue.
 	 *
 	 * @since 1.9
-	 * @since 2.4 Added the $args parameter.
+	 * @since 2.3.2 Added the $args parameter.
 	 *
 	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @param array $args               An array of optionnal arguments.
@@ -157,7 +157,7 @@ class Noop implements ProcessInterface {
 	 * Re-optimize a media files with a different level.
 	 *
 	 * @since 1.9
-	 * @since 2.4 Added the $args parameter.
+	 * @since 2.3.2 Added the $args parameter.
 	 *
 	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @param array $args               An array of optionnal arguments.
@@ -172,7 +172,7 @@ class Noop implements ProcessInterface {
 	 * Optimize several file sizes by pushing tasks into the queue.
 	 *
 	 * @since 1.9
-	 * @since 2.4 Added the $args parameter.
+	 * @since 2.3.2 Added the $args parameter.
 	 *
 	 * @param array $sizes              An array of media sizes (strings). Use "full" for the size of the main file.
 	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).

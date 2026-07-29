@@ -18,7 +18,7 @@ use Mockery;
  *
  * @covers \Imagify\Bulk\Bulk::optimize_media
  * @group  BulkForceOptimize
- * @since  2.4
+ * @since  2.3.2
  *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled

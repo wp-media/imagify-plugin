@@ -19,7 +19,7 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	 * always agree on the exact same string shape.
 	 *
 	 * @var   string
-	 * @since 2.4
+	 * @since 2.3.2
 	 */
 	private const URGENT_KEY_SEGMENT = 'batch_urgent';
 
@@ -90,7 +90,7 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	 * Overrides the vendored method to give priority ("urgent") batches a distinct
 	 * key shape, so get_batches() can order them first.
 	 *
-	 * @since 2.4
+	 * @since 2.3.2
 	 *
 	 * @param int    $length Optional, length of the string to return. Default 64.
 	 * @param string $key    Optional, string with a prefix key. Default 'batch'.
@@ -107,7 +107,7 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	/**
 	 * Tell if any of the not-yet-persisted queued items carries a truthy 'priority' key.
 	 *
-	 * @since 2.4
+	 * @since 2.3.2
 	 *
 	 * @return bool
 	 */
@@ -130,7 +130,7 @@ final class MediaOptimization extends \Imagify_Abstract_Background_Process {
 	 * Overrides the vendored method to return "urgent" (priority) batches before
 	 * normal ones, each tier still ordered FIFO (by option/meta ID) internally.
 	 *
-	 * @since 2.4
+	 * @since 2.3.2
 	 *
 	 * @param int $limit Number of batches to return, defaults to all.
 	 * @return array of stdClass

@@ -16,7 +16,7 @@ use Mockery;
  *
  * @covers \Imagify\Bulk\Bulk::check_optimization_status
  * @group  BulkCheckOptimizationStatus
- * @since  2.4
+ * @since  2.3.2
  *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled

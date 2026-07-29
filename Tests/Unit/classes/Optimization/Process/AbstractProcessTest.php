@@ -22,7 +22,7 @@ use ReflectionClass;
  *
  * @covers \Imagify\Optimization\Process\AbstractProcess::optimize_sizes
  * @group  AbstractProcess
- * @since  2.4
+ * @since  2.3.2
  *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled

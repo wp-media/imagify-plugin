@@ -102,7 +102,7 @@ interface ProcessInterface {
 	 * Optimize a media files by pushing tasks into the queue.
 	 *
 	 * @since 1.9
-	 * @since 2.4 Added the $args parameter (e.g. 'bulk', 'priority').
+	 * @since 2.3.2 Added the $args parameter (e.g. 'bulk', 'priority').
 	 *
 	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @param array $args               An array of optionnal arguments.
@@ -115,7 +115,7 @@ interface ProcessInterface {
 	 * Re-optimize a media files with a different level.
 	 *
 	 * @since 1.9
-	 * @since 2.4 Added the $args parameter (e.g. 'bulk', 'priority').
+	 * @since 2.3.2 Added the $args parameter (e.g. 'bulk', 'priority').
 	 *
 	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @param array $args               An array of optionnal arguments.
@@ -128,7 +128,7 @@ interface ProcessInterface {
 	 * Optimize several file sizes by pushing tasks into the queue.
 	 *
 	 * @since 1.9
-	 * @since 2.4 Added the $args parameter (e.g. 'bulk', 'priority').
+	 * @since 2.3.2 Added the $args parameter (e.g. 'bulk', 'priority').
 	 *
 	 * @param  array $sizes              An array of media sizes (strings). Use "full" for the size of the main file.
 	 * @param  int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).

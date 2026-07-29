@@ -15,7 +15,7 @@ use Mockery;
  *
  * @covers \Imagify_Auto_Optimization::do_auto_optimization
  * @group  AutoOptimization
- * @since  2.4
+ * @since  2.3.2
  *
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
