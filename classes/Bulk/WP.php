@@ -91,6 +91,8 @@ class WP extends AbstractBulk {
 				'optimization_levels' => '_imagify_optimization_level',
 				// Get attachments status.
 				'statuses'            => '_imagify_status',
+				// Get attachments metadata, to detect a WP-scaled original.
+				'metadata'            => '_wp_attachment_metadata',
 			],
 			$ids
 		);
@@ -156,7 +158,8 @@ class WP extends AbstractBulk {
 				continue;
 			}
 
-			$attachment_backup_path        = get_imagify_attachment_backup_path( $file_path );
+			$original_path                 = $this->get_original_file_path_from_metadata( $file_path, isset( $metas['metadata'][ $id ] ) ? $metas['metadata'][ $id ] : null );
+			$attachment_backup_path        = get_imagify_attachment_backup_path( $original_path );
 			$attachment_status             = isset( $metas['statuses'][ $id ] ) ? $metas['statuses'][ $id ] : false;
 			$attachment_optimization_level = isset( $metas['optimization_levels'][ $id ] ) ? $metas['optimization_levels'][ $id ] : false;
 
