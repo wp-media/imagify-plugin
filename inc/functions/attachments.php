@@ -26,7 +26,23 @@ function imagify_get_mime_types( $type = null ) {
 		$mimes['pdf'] = 'application/pdf';
 	}
 
-	return $mimes;
+	/**
+	 * Filter the mime types which could be optimized by Imagify.
+	 *
+	 * @since 2.3.1
+	 *
+	 * @param array $mimes The mime types, as extension => mime type pairs.
+	 */
+	$mimes = wpm_apply_filters_typed( 'array', 'imagify_get_mime_types', $mimes );
+
+	// Keep only well-formed extension => mime type pairs.
+	return array_filter(
+		$mimes,
+		function ( $mime, $ext ) {
+			return is_string( $ext ) && '' !== $ext && is_string( $mime ) && preg_match( '@^[a-z-]+/[a-z0-9.+-]+$@', $mime );
+		},
+		ARRAY_FILTER_USE_BOTH
+	);
 }
 
 /**

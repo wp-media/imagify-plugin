@@ -287,7 +287,8 @@ class WP extends AbstractBulk {
 		if ( ! isset( $mime ) && empty( $mime ) ) {
 			$mime = 'image/webp';
 		}
-		$mime_types   = str_replace( ",'" . $mime . "'", '', $mime_types );
+		$mime         = trim( $mime );
+		$mime_types   = str_replace( [ ", '" . $mime . "'", ",'" . $mime . "'" ], '', $mime_types );
 		$statuses     = Imagify_DB::get_post_statuses();
 		$nodata_join  = '';
 		$nodata_where = '';
@@ -314,7 +315,7 @@ class WP extends AbstractBulk {
 					ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_data' )
 			WHERE
 				p.post_mime_type IN ( $mime_types )
-				AND (mt1.meta_key IS NULL OR mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
+				AND ( mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
 				AND mt2.meta_value NOT LIKE %s
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
@@ -374,6 +375,12 @@ class WP extends AbstractBulk {
 			if ( ! $file_path ) {
 				// Main file not found.
 				$data['errors']['no_file_path'][] = $id;
+				continue;
+			}
+
+			// Skip files whose extension already matches the target format
+			// (e.g. a .webp file stored with incorrect post_mime_type).
+			if ( strtolower( pathinfo( $file_path, PATHINFO_EXTENSION ) ) === $format ) {
 				continue;
 			}
 

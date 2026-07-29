@@ -13,7 +13,25 @@ use Imagify\Stats\StatInterface;
  *
  * @since 2.3.0
  */
-class GetNextgenCoverage implements AbilitiesInterface {
+class GetNextgenCoverage extends AbstractAbility {
+
+	/**
+	 * Returns the ability slug.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+		return 'imagify/get-nextgen-coverage';
+	}
+
+	/**
+	 * Returns the ability label.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+		return 'Get next-gen coverage';
+	}
 
 	/**
 	 * Stat service that counts optimized media without next-gen versions.
@@ -74,14 +92,15 @@ class GetNextgenCoverage implements AbilitiesInterface {
 	}
 
 	/**
-	 * Checks whether the current user may execute this ability.
+	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
+	 * filter and multisite network-admin logic are honoured.
 	 *
 	 * @since 2.3.0
 	 *
-	 * @return bool True when the current user has `manage_options`.
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
-	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+	protected function has_permission(): bool {
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
@@ -92,8 +111,22 @@ class GetNextgenCoverage implements AbilitiesInterface {
 	 * @return array{missing_nextgen_count: int, nextgen_format: string}
 	 */
 	public function execute(): array {
+		$start_time = microtime( true );
+		$result     = $this->do_execute();
+
+		$this->fire_executed( $result, $start_time );
+
+		return $result;
+	}
+
+	/**
+	 * Internal execution logic for the ability.
+	 *
+	 * @return array{missing_nextgen_count: int, nextgen_format: string}
+	 */
+	private function do_execute(): array {
 		return [
-			'missing_nextgen_count' => $this->stat->get_cached_stat(),
+			'missing_nextgen_count' => (int) $this->stat->get_cached_stat(),
 			'nextgen_format'        => get_imagify_option( 'optimization_format' ),
 		];
 	}

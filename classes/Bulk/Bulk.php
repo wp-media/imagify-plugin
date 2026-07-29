@@ -9,7 +9,7 @@ use WP_Error;
 /**
  * Bulk optimization
  */
-final class Bulk {
+final class Bulk implements BulkOptimizerInterface {
 	use InstanceGetterTrait;
 
 	/**
@@ -173,7 +173,7 @@ final class Bulk {
 	 *
 	 * @return array
 	 */
-	public function run_optimize( string $context, int $optimization_level ) {
+	public function run_optimize( string $context, int $optimization_level ): array {
 		if ( ! $this->can_optimize() ) {
 			return [
 				'success' => false,
@@ -182,6 +182,28 @@ final class Bulk {
 		}
 
 		$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
+
+		$media_ids = array_values(
+			array_filter(
+				$media_ids,
+				function ( $media_id ) use ( $context, $optimization_level ) {
+					/**
+					 * Filter the list of media to optimize during a bulk optimization, per media.
+					 *
+					 * Return false to exclude a given media from the bulk optimization run
+					 * (e.g. to skip a specific file type such as PDFs).
+					 *
+					 * @since 2.3
+					 *
+					 * @param bool   $optimize           True to optimize this media, false to exclude it.
+					 * @param int    $media_id           The media ID (attachment ID, or custom-folder file ID).
+					 * @param string $context            The optimization context ('wp' or 'custom-folders').
+					 * @param int    $optimization_level The optimization level.
+					 */
+					return wpm_apply_filters_typed( 'boolean', 'imagify_bulk_optimize_media', true, $media_id, $context, $optimization_level );
+				}
+			)
+		);
 
 		if ( empty( $media_ids ) ) {
 			return [
@@ -296,13 +318,8 @@ final class Bulk {
 		foreach ( $contexts as $context ) {
 			foreach ( $formats as $format ) {
 				$media = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
-				if ( ! $media['ids'] && $media['errors']['no_backup'] ) {
-					// No backup, no next-gen.
-					return [
-						'success' => false,
-						'message' => 'no-backup',
-					];
-				} elseif ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
+
+				if ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
 					// Error.
 					return [
 						'success' => false,
@@ -310,7 +327,9 @@ final class Bulk {
 					];
 				}
 
-				$medias[ $context ] = $media['ids'];
+				if ( $media['ids'] ) {
+					$medias[ $context ] = $media['ids'];
+				}
 			}
 		}
 

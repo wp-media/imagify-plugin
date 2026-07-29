@@ -85,6 +85,7 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 							);
 							?>
 							</p>
+						<?php do_action( 'imagify_settings_after_lossless' ); ?>
 						</div>
 					</div>
 

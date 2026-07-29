@@ -67,7 +67,9 @@ Follow the spec's **Implementation Plan** for backend files only. Do not touch J
 
 **Follow TDD: write or update tests alongside implementation.**
 
-- Unit tests in `Tests/Unit/` (capital T), integration tests in `Tests/Integration/` (capital T).
+- **Prefer integration tests** (`Tests/Integration/`) over unit tests (`Tests/Unit/`) — they exercise real WordPress context, real DI container wiring, and real hook execution, making them far more valuable for catching regressions in this codebase.
+- Write unit tests only when the logic under test is pure (no WP globals, no container, no hooks) — e.g. a standalone utility or a value-object method.
+- When in doubt between unit and integration: choose integration.
 - Integration tests use `@group FeatureName` for targeted runs.
 
 **Risk-tiered test execution** — use the command from the spec's "Test Command" section. If not specified:

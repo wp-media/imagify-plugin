@@ -41,7 +41,9 @@
 		"woocommerce/action-scheduler": "^3.4",
 		"wordpress/mcp-adapter": "^0.5.0",
 		"wp-media/apply-filters-typed": "^1.0",
-		"wp-media/plugin-family": "^1.0"
+		"wp-media/mcp-oauth": "^1.0.2",
+		"wp-media/plugin-family": "^1.0",
+		"wp-media/wp-mixpanel": "^1.0"
 	},
 	"require-dev": {
 		"php": ">=7.4",
@@ -99,7 +101,8 @@
 			"packages": [
 				"deliciousbrains/wp-background-processing",
 				"league/container",
-				"wp-media/plugin-family"
+				"wp-media/plugin-family",
+				"wp-media/wp-mixpanel"
 			],
 			"exclude_from_prefix": {
 				"packages": [
@@ -113,6 +116,7 @@
 	"scripts": {
 		"test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist",
 		"test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration Tests/Integration/phpunit.xml.dist",
+		"test-integration-abilities-catalog": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration Tests/Integration/phpunit.xml.dist --group AbilitiesCatalog",
 		"install-codestandards": "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run",
 		"phpcs": "vendor/bin/phpcs",
 		"phpcs-changed": "./bin/phpcs-changed.sh",
