@@ -28,6 +28,35 @@ final class Bulk implements BulkOptimizerInterface {
 		add_action( 'imagify_after_optimize', [ $this, 'check_optimization_status' ], 10, 2 );
 		add_action( 'imagify_deactivation', [ $this, 'delete_transients_data' ] );
 		add_action( 'update_option_imagify_settings', [ $this, 'maybe_generate_missing_nextgen' ], 10, 2 );
+		add_action( 'imagify_upgrade', [ $this, 'maybe_clear_stale_bulk_run' ], 10, 2 );
+	}
+
+	/**
+	 * Clear any bulk optimization progress left running from before 2.3.2, on upgrade.
+	 *
+	 * Queue items enqueued by a bulk run before 2.3.2 don't carry the `bulk` flag used by
+	 * self::check_optimization_status() to tell bulk completions from manual/auto ones (see
+	 * that method). If a bulk run straddles the upgrade, its remaining items complete without
+	 * that flag and are never counted, so the run's `remaining` counter never reaches zero and
+	 * the bulk page is stuck showing it as still running. Clearing the running transients lets
+	 * a fresh bulk run start clean instead.
+	 *
+	 * @since 2.3.2
+	 *
+	 * @param string $network_version Previous version stored on the network.
+	 * @param string $site_version    Previous version stored on site level.
+	 *
+	 * @return void
+	 */
+	public function maybe_clear_stale_bulk_run( $network_version, $site_version ) {
+		if ( version_compare( $site_version, '2.3.2' ) >= 0 ) {
+			return;
+		}
+
+		delete_transient( 'imagify_custom-folders_optimize_running' );
+		delete_transient( 'imagify_wp_optimize_running' );
+		delete_transient( 'imagify_bulk_optimization_result' );
+		delete_transient( 'imagify_bulk_optimization_complete' );
 	}
 
 	/**
