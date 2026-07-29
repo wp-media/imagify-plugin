@@ -21,6 +21,7 @@ final class Bulk implements BulkOptimizerInterface {
 		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 3 );
 		add_action( 'imagify_convert_next_gen', [ $this, 'generate_nextgen_versions' ], 10, 2 ); // @phpstan-ignore-line
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
+		add_action( 'wp_ajax_imagify_bulk_stop', [ $this, 'bulk_stop_callback' ] );
 		add_action( 'wp_ajax_imagify_missing_nextgen_generation', [ $this, 'missing_nextgen_callback' ] );
 		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_info_seen', [ $this, 'bulk_info_seen_callback' ] );
@@ -239,6 +240,91 @@ final class Bulk implements BulkOptimizerInterface {
 			'success' => true,
 			'message' => 'success',
 		];
+	}
+
+	/**
+	 * Stops a running bulk process for the given contexts.
+	 *
+	 * Cancels every media still waiting in the queue and clears the progress data. Media already
+	 * sent to the Imagify API cannot be cancelled: the one being processed when the stop is
+	 * requested still completes.
+	 *
+	 * @since 2.3
+	 *
+	 * @param array $contexts An array of contexts (WP/Custom folders).
+	 *
+	 * @return array {
+	 *     @type bool   $success   Whether a running process was found.
+	 *     @type string $message   Status message.
+	 *     @type int    $cancelled Number of media that were still queued.
+	 * }
+	 */
+	public function run_stop( array $contexts ): array {
+		$cancelled = 0;
+
+		foreach ( $contexts as $context ) {
+			$counter = get_transient( "imagify_{$context}_optimize_running" );
+
+			if ( false !== $counter ) {
+				$cancelled += max( 0, (int) $counter['remaining'] );
+			}
+
+			$this->cancel_pending_actions( 'imagify_optimize_media', "imagify-{$context}-optimize-media" );
+			$this->cancel_pending_actions( 'imagify_convert_next_gen', "imagify-{$context}-convert-nextgen" );
+
+			delete_transient( "imagify_{$context}_optimize_running" );
+		}
+
+		delete_transient( 'imagify_bulk_optimization_result' );
+		delete_transient( 'imagify_missing_next_gen_total' );
+
+		if ( 0 === $cancelled ) {
+			return [
+				'success'   => false,
+				'message'   => 'not-running',
+				'cancelled' => 0,
+			];
+		}
+
+		/**
+		 * Fires after a bulk process has been manually stopped.
+		 *
+		 * @since 2.3
+		 *
+		 * @param array $contexts  The contexts that were stopped.
+		 * @param int   $cancelled Number of media that were still queued.
+		 */
+		do_action( 'imagify_bulk_stopped', $contexts, $cancelled );
+
+		return [
+			'success'   => true,
+			'message'   => 'success',
+			'cancelled' => $cancelled,
+		];
+	}
+
+	/**
+	 * Cancel all the pending actions for a given hook and group.
+	 *
+	 * Actions already running are left untouched: Action Scheduler cannot interrupt them.
+	 *
+	 * @since 2.3
+	 *
+	 * @param string $hook  The action hook.
+	 * @param string $group The Action Scheduler group.
+	 *
+	 * @return void
+	 */
+	private function cancel_pending_actions( string $hook, string $group ) {
+		if ( ! function_exists( 'as_unschedule_all_actions' ) ) {
+			return;
+		}
+
+		try {
+			as_unschedule_all_actions( $hook, [], $group );
+		} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// nothing to do.
+		}
 	}
 
 	/**
@@ -559,6 +645,33 @@ final class Bulk implements BulkOptimizerInterface {
 		}
 
 		wp_send_json_success( [ 'total' => $data['message'] ] );
+	}
+
+	/**
+	 * Stop the running bulk optimization
+	 *
+	 * @since 2.3
+	 *
+	 * @return void
+	 */
+	public function bulk_stop_callback() {
+		imagify_check_nonce( 'imagify-bulk-optimize' );
+
+		$contexts = $this->get_contexts();
+
+		foreach ( $contexts as $context ) {
+			if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+				imagify_die();
+			}
+		}
+
+		$data = $this->run_stop( $contexts );
+
+		if ( false === $data['success'] ) {
+			wp_send_json_error( [ 'message' => $data['message'] ] );
+		}
+
+		wp_send_json_success( [ 'cancelled' => $data['cancelled'] ] );
 	}
 
 	/**
