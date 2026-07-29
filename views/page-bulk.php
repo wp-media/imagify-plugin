@@ -141,7 +141,7 @@ defined( 'ABSPATH' ) || exit;
 						<span class="dashicons dashicons-admin-generic <?php echo esc_attr( $class ); ?>"></span>
 						<span class="button-text"><?php esc_html_e( 'Imagif’em all', 'imagify' ); ?></span>
 					</button>
-					<button id="imagify-bulk-stop" type="button" class="button <?php echo esc_attr( $stop_hidden ); ?>" aria-hidden="<?php echo esc_attr( $stop_hidden ? 'true' : 'false' ); ?>">
+					<button id="imagify-bulk-stop" type="button" class="button button-primary <?php echo esc_attr( $stop_hidden ); ?>" aria-hidden="<?php echo esc_attr( $stop_hidden ? 'true' : 'false' ); ?>">
 						<span class="dashicons dashicons-no-alt"></span>
 						<span class="button-text"><?php esc_html_e( 'Stop the optimization', 'imagify' ); ?></span>
 					</button>
