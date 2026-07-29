@@ -256,21 +256,20 @@ final class Bulk implements BulkOptimizerInterface {
 	 * @return array {
 	 *     @type bool   $success   Whether a running process was found.
 	 *     @type string $message   Status message.
-	 *     @type int    $cancelled Number of media that were still queued.
+	 *     @type int    $cancelled Number of queued media actually cancelled.
 	 * }
 	 */
 	public function run_stop( array $contexts ): array {
-		$cancelled = 0;
+		$cancelled   = 0;
+		$was_running = false;
 
 		foreach ( $contexts as $context ) {
-			$counter = get_transient( "imagify_{$context}_optimize_running" );
-
-			if ( false !== $counter ) {
-				$cancelled += max( 0, (int) $counter['remaining'] );
+			if ( false !== get_transient( "imagify_{$context}_optimize_running" ) ) {
+				$was_running = true;
 			}
 
-			$this->cancel_pending_actions( 'imagify_optimize_media', "imagify-{$context}-optimize-media" );
-			$this->cancel_pending_actions( 'imagify_convert_next_gen', "imagify-{$context}-convert-nextgen" );
+			$cancelled += $this->cancel_pending_actions( 'imagify_optimize_media', "imagify-{$context}-optimize-media" );
+			$cancelled += $this->cancel_pending_actions( 'imagify_convert_next_gen', "imagify-{$context}-convert-nextgen" );
 
 			delete_transient( "imagify_{$context}_optimize_running" );
 		}
@@ -278,7 +277,7 @@ final class Bulk implements BulkOptimizerInterface {
 		delete_transient( 'imagify_bulk_optimization_result' );
 		delete_transient( 'imagify_missing_next_gen_total' );
 
-		if ( 0 === $cancelled ) {
+		if ( ! $was_running && 0 === $cancelled ) {
 			return [
 				'success'   => false,
 				'message'   => 'not-running',
@@ -292,7 +291,7 @@ final class Bulk implements BulkOptimizerInterface {
 		 * @since 2.3
 		 *
 		 * @param array $contexts  The contexts that were stopped.
-		 * @param int   $cancelled Number of media that were still queued.
+		 * @param int   $cancelled Number of queued media actually cancelled.
 		 */
 		do_action( 'imagify_bulk_stopped', $contexts, $cancelled );
 
@@ -308,23 +307,43 @@ final class Bulk implements BulkOptimizerInterface {
 	 *
 	 * Actions already running are left untouched: Action Scheduler cannot interrupt them.
 	 *
+	 * The pending actions are counted before being cancelled, so the caller reports what was
+	 * really removed from the queue. The `remaining` value of the progress transient cannot be
+	 * used for that: it is only decremented by the `imagify_after_optimize` hook, which never
+	 * fires when an optimization bails out early (unsupported media, already optimized, locked
+	 * process) or when the request dies, so it drifts above the real queue size.
+	 *
 	 * @since 2.3
 	 *
 	 * @param string $hook  The action hook.
 	 * @param string $group The Action Scheduler group.
 	 *
-	 * @return void
+	 * @return int Number of pending actions that were cancelled.
 	 */
-	private function cancel_pending_actions( string $hook, string $group ) {
-		if ( ! function_exists( 'as_unschedule_all_actions' ) ) {
-			return;
+	private function cancel_pending_actions( string $hook, string $group ): int {
+		if ( ! function_exists( 'as_unschedule_all_actions' ) || ! function_exists( 'as_get_scheduled_actions' ) ) {
+			return 0;
 		}
 
 		try {
+			$pending = as_get_scheduled_actions(
+				[
+					'hook'     => $hook,
+					'group'    => $group,
+					// ActionScheduler_Store::STATUS_PENDING, without depending on the class being loaded.
+					'status'   => 'pending',
+					'per_page' => -1,
+					'orderby'  => 'none',
+				],
+				'ids'
+			);
+
 			as_unschedule_all_actions( $hook, [], $group );
-		} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// nothing to do.
+		} catch ( Exception $exception ) {
+			return 0;
 		}
+
+		return is_array( $pending ) ? count( $pending ) : 0;
 	}
 
 	/**

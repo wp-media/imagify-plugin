@@ -2,10 +2,11 @@
 
 return [
 	'test_data' => [
-		'shouldReturnNotRunningWhenNothingIsRunning'     => [
+		'shouldReturnNotRunningWhenNothingIsRunningAndQueueIsEmpty' => [
 			'config'   => [
 				'contexts'   => [ 'wp' ],
 				'transients' => [],
+				'pending'    => [],
 			],
 			'expected' => [
 				'success'   => false,
@@ -14,7 +15,7 @@ return [
 			],
 		],
 
-		'shouldCancelRemainingMediaWhenRunning'          => [
+		'shouldCountTheActuallyCancelledActions'          => [
 			'config'   => [
 				'contexts'   => [ 'wp' ],
 				'transients' => [
@@ -23,15 +24,38 @@ return [
 						'remaining' => 4,
 					],
 				],
+				'pending'    => [
+					'imagify_optimize_media|imagify-wp-optimize-media' => [ 11, 12, 13 ],
+				],
 			],
 			'expected' => [
 				'success'   => true,
 				'message'   => 'success',
-				'cancelled' => 4,
+				'cancelled' => 3,
 			],
 		],
 
-		'shouldSumRemainingMediaAcrossContexts'          => [
+		'shouldIgnoreAStaleRemainingCounter'              => [
+			// The transient claims 18 media are left, but the queue is empty: the counter drifted
+			// because imagify_after_optimize never fired for the media that bailed out early.
+			'config'   => [
+				'contexts'   => [ 'wp' ],
+				'transients' => [
+					'imagify_wp_optimize_running' => [
+						'total'     => 20,
+						'remaining' => 18,
+					],
+				],
+				'pending'    => [],
+			],
+			'expected' => [
+				'success'   => true,
+				'message'   => 'success',
+				'cancelled' => 0,
+			],
+		],
+
+		'shouldSumCancelledActionsAcrossHooksAndContexts' => [
 			'config'   => [
 				'contexts'   => [ 'wp', 'custom-folders' ],
 				'transients' => [
@@ -39,27 +63,12 @@ return [
 						'total'     => 10,
 						'remaining' => 3,
 					],
-					'imagify_custom-folders_optimize_running' => [
-						'total'     => 5,
-						'remaining' => 2,
-					],
 				],
-			],
-			'expected' => [
-				'success'   => true,
-				'message'   => 'success',
-				'cancelled' => 5,
-			],
-		],
-
-		'shouldIgnoreIdleContextWhenAnotherOneIsRunning' => [
-			'config'   => [
-				'contexts'   => [ 'wp', 'custom-folders' ],
-				'transients' => [
-					'imagify_custom-folders_optimize_running' => [
-						'total'     => 9,
-						'remaining' => 7,
-					],
+				'pending'    => [
+					'imagify_optimize_media|imagify-wp-optimize-media'                 => [ 1, 2 ],
+					'imagify_convert_next_gen|imagify-wp-convert-nextgen'              => [ 3 ],
+					'imagify_optimize_media|imagify-custom-folders-optimize-media'     => [ 4, 5, 6 ],
+					'imagify_convert_next_gen|imagify-custom-folders-convert-nextgen'  => [ 7 ],
 				],
 			],
 			'expected' => [
@@ -69,20 +78,19 @@ return [
 			],
 		],
 
-		'shouldNeverReportNegativeCancelledCount'        => [
+		'shouldSucceedWhenOnlyOrphanActionsRemain'        => [
+			// No progress transient (expired), but actions are still queued: still a real stop.
 			'config'   => [
 				'contexts'   => [ 'wp' ],
-				'transients' => [
-					'imagify_wp_optimize_running' => [
-						'total'     => 10,
-						'remaining' => -2,
-					],
+				'transients' => [],
+				'pending'    => [
+					'imagify_optimize_media|imagify-wp-optimize-media' => [ 21, 22 ],
 				],
 			],
 			'expected' => [
-				'success'   => false,
-				'message'   => 'not-running',
-				'cancelled' => 0,
+				'success'   => true,
+				'message'   => 'success',
+				'cancelled' => 2,
 			],
 		],
 	],

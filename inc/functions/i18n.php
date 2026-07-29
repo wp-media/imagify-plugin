@@ -301,6 +301,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'stoppedTitle'                   => __( 'Optimization stopped', 'imagify' ),
 					/* translators: %s is a number. Don't use %d. */
 					'stoppedText'                    => __( '%s media file(s) were removed from the queue.', 'imagify' ),
+					'stoppedNothingQueuedText'       => __( 'The optimization was stopped. No media file was left in the queue.', 'imagify' ),
 					'stopErrorText'                  => __( 'The optimization could not be stopped. Please reload the page and try again.', 'imagify' ),
 				],
 			];

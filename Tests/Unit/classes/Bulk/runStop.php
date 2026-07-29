@@ -33,11 +33,18 @@ class Test_RunStop extends TestCase {
 	private $deleted = [];
 
 	/**
-	 * Action Scheduler groups passed to as_unschedule_all_actions().
+	 * Hook|group pairs passed to as_unschedule_all_actions().
 	 *
 	 * @var array
 	 */
 	private $unscheduled = [];
+
+	/**
+	 * Pending action IDs in the queue, keyed by "hook|group".
+	 *
+	 * @var array
+	 */
+	private $pending = [];
 
 	/**
 	 * Sets up the test fixture.
@@ -50,6 +57,7 @@ class Test_RunStop extends TestCase {
 		$this->transients  = [];
 		$this->deleted     = [];
 		$this->unscheduled = [];
+		$this->pending     = [];
 
 		Functions\when( 'get_transient' )->alias(
 			function ( string $transient ) {
@@ -65,7 +73,15 @@ class Test_RunStop extends TestCase {
 			}
 		);
 
-		// ActionScheduler is not loaded in unit tests: record what would have been flushed.
+		// ActionScheduler is not loaded in unit tests: serve a fake queue and record the flushes.
+		Functions\when( 'as_get_scheduled_actions' )->alias(
+			function ( array $args ) {
+				$key = $args['hook'] . '|' . $args['group'];
+
+				return isset( $this->pending[ $key ] ) ? $this->pending[ $key ] : [];
+			}
+		);
+
 		Functions\when( 'as_unschedule_all_actions' )->alias(
 			function ( string $hook, array $args = [], string $group = '' ) {
 				$this->unscheduled[] = $hook . '|' . $group;
@@ -78,11 +94,12 @@ class Test_RunStop extends TestCase {
 	 *
 	 * @dataProvider configTestData
 	 *
-	 * @param array $config   The contexts to stop and the running transients.
+	 * @param array $config   The contexts to stop, the running transients and the queued actions.
 	 * @param array $expected The expected run_stop() result.
 	 */
 	public function testShouldReturnExpectedResult( $config, $expected ): void {
 		$this->transients = $config['transients'];
+		$this->pending    = $config['pending'];
 
 		$this->assertSame( $expected, ( new Bulk() )->run_stop( $config['contexts'] ) );
 	}
@@ -143,5 +160,54 @@ class Test_RunStop extends TestCase {
 		( new Bulk() )->run_stop( [ 'wp' ] );
 
 		$this->assertSame( 0, Actions\did( 'imagify_bulk_stopped' ) );
+	}
+
+	/**
+	 * Test: only pending actions are counted, so a drifted `remaining` counter cannot inflate
+	 * the number reported to the user.
+	 */
+	public function testShouldNotTrustTheRemainingCounter(): void {
+		$this->transients = [
+			'imagify_wp_optimize_running' => [
+				'total'     => 20,
+				'remaining' => 18,
+			],
+		];
+		$this->pending    = [
+			'imagify_optimize_media|imagify-wp-optimize-media' => [ 101, 102 ],
+		];
+
+		$result = ( new Bulk() )->run_stop( [ 'wp' ] );
+
+		$this->assertSame( 2, $result['cancelled'] );
+	}
+
+	/**
+	 * Test: the pending actions are queried for the exact hook, group and status.
+	 */
+	public function testShouldQueryOnlyPendingActionsOfTheBulkGroups(): void {
+		$queried = [];
+
+		Functions\when( 'as_get_scheduled_actions' )->alias(
+			function ( array $args ) use ( &$queried ) {
+				$queried[] = $args;
+
+				return [];
+			}
+		);
+
+		( new Bulk() )->run_stop( [ 'wp' ] );
+
+		$this->assertCount( 2, $queried );
+
+		foreach ( $queried as $args ) {
+			$this->assertSame( 'pending', $args['status'] );
+			$this->assertSame( -1, $args['per_page'] );
+		}
+
+		$this->assertSame( 'imagify_optimize_media', $queried[0]['hook'] );
+		$this->assertSame( 'imagify-wp-optimize-media', $queried[0]['group'] );
+		$this->assertSame( 'imagify_convert_next_gen', $queried[1]['hook'] );
+		$this->assertSame( 'imagify-wp-convert-nextgen', $queried[1]['group'] );
 	}
 }

@@ -761,7 +761,7 @@ window.imagify = window.imagify || {};
 
                     swal( {
                         title:       imagifyBulk.labels.stoppedTitle,
-                        html:        imagifyBulk.labels.stoppedText.replace( '%s', cancelled ),
+                        html:        cancelled ? imagifyBulk.labels.stoppedText.replace( '%s', cancelled ) : imagifyBulk.labels.stoppedNothingQueuedText,
                         type:        'info',
                         customClass: 'imagify-sweet-alert',
                         padding:     0
