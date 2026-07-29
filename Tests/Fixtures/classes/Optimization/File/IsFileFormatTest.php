@@ -3,7 +3,7 @@
 return [
 	'test_data' => [
 		// A genuine WebP payload requested as 'webp' must be recognized.
-		'shouldDetectGenuineWebp'           => [
+		'shouldDetectGenuineWebp'            => [
 			'config'   => [
 				'header' => "RIFF\x00\x00\x00\x00WEBP",
 				'format' => 'webp',
@@ -14,7 +14,7 @@ return [
 		],
 
 		// A genuine AVIF payload (brand "avif") requested as 'avif' must be recognized.
-		'shouldDetectGenuineAvifBrand'      => [
+		'shouldDetectGenuineAvifBrand'       => [
 			'config'   => [
 				'header' => "\x00\x00\x00\x1cftypavif",
 				'format' => 'avif',
@@ -25,7 +25,7 @@ return [
 		],
 
 		// The "avis" brand (AVIF image sequence) must also be recognized as AVIF.
-		'shouldDetectGenuineAvifAvisBrand'  => [
+		'shouldDetectGenuineAvifAvisBrand'   => [
 			'config'   => [
 				'header' => "\x00\x00\x00\x1cftypavis",
 				'format' => 'avif',
@@ -37,7 +37,7 @@ return [
 
 		// This is the #816 failure mode: the API returned the original (non-converted) JPEG
 		// bytes instead of a WebP file. Must NOT be mistaken for the requested format.
-		'shouldRejectOriginalBytesAsWebp'   => [
+		'shouldRejectOriginalBytesAsWebp'    => [
 			'config'   => [
 				'header' => "\xFF\xD8\xFF\xE0\x00\x10JFIF\x00\x01",
 				'format' => 'webp',
@@ -48,7 +48,7 @@ return [
 		],
 
 		// Same failure mode, requested as AVIF.
-		'shouldRejectOriginalBytesAsAvif'   => [
+		'shouldRejectOriginalBytesAsAvif'    => [
 			'config'   => [
 				'header' => "\xFF\xD8\xFF\xE0\x00\x10JFIF\x00\x01",
 				'format' => 'avif',
@@ -59,7 +59,7 @@ return [
 		],
 
 		// A WebP file must not be mistaken for an AVIF file.
-		'shouldRejectWebpAsAvif'            => [
+		'shouldRejectWebpAsAvif'             => [
 			'config'   => [
 				'header' => "RIFF\x00\x00\x00\x00WEBP",
 				'format' => 'avif',
@@ -70,7 +70,7 @@ return [
 		],
 
 		// An AVIF file must not be mistaken for a WebP file.
-		'shouldRejectAvifAsWebp'            => [
+		'shouldRejectAvifAsWebp'             => [
 			'config'   => [
 				'header' => "\x00\x00\x00\x1cftypavif",
 				'format' => 'webp',
@@ -80,8 +80,31 @@ return [
 			],
 		],
 
+		// A HEIF-family major brand ("mif1") with "avif" only among the compatible brands is a
+		// legitimate AVIF file and must be recognized as such.
+		'shouldDetectAvifViaCompatibleBrand' => [
+			'config'   => [
+				'header' => "\x00\x00\x00\x18ftypmif1\x00\x00\x00\x00mif1avif",
+				'format' => 'avif',
+			],
+			'expected' => [
+				'result' => true,
+			],
+		],
+
+		// A non-AVIF ftyp box (e.g. MP4) with no "avif"/"avis" anywhere must still be rejected.
+		'shouldRejectNonAvifFtypBox'         => [
+			'config'   => [
+				'header' => "\x00\x00\x00\x14ftypmp42\x00\x00\x00\x00mp42",
+				'format' => 'avif',
+			],
+			'expected' => [
+				'result' => false,
+			],
+		],
+
 		// A too-short/empty payload can't be a valid next-gen file.
-		'shouldRejectTruncatedContent'      => [
+		'shouldRejectTruncatedContent'       => [
 			'config'   => [
 				'header' => 'short',
 				'format' => 'webp',
@@ -92,7 +115,7 @@ return [
 		],
 
 		// If the content couldn't be read at all, treat it as a mismatch (fail safe).
-		'shouldRejectWhenContentUnreadable' => [
+		'shouldRejectWhenContentUnreadable'  => [
 			'config'   => [
 				'header' => false,
 				'format' => 'webp',

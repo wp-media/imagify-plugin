@@ -953,18 +953,50 @@ class File {
 			return false;
 		}
 
-		$header = substr( $contents, 0, 12 );
-
 		if ( 'webp' === $format ) {
 			// RIFF....WEBP.
-			return 'RIFF' === substr( $header, 0, 4 ) && 'WEBP' === substr( $header, 8, 4 );
+			return 'RIFF' === substr( $contents, 0, 4 ) && 'WEBP' === substr( $contents, 8, 4 );
 		}
 
 		if ( 'avif' === $format ) {
-			// ISO-BMFF box: bytes 4-7 are "ftyp", followed by a brand like "avif"/"avis".
-			$brand = substr( $header, 8, 4 );
+			return $this->is_avif_ftyp_box( $contents );
+		}
 
-			return 'ftyp' === substr( $header, 4, 4 ) && ( 'avif' === $brand || 'avis' === $brand );
+		return false;
+	}
+
+	/**
+	 * Tell if the given content starts with an AVIF `ftyp` box, i.e. its major brand or one of
+	 * its compatible brands is `avif`/`avis`. A file can legitimately declare a major brand of
+	 * `mif1`/`msf1` (generic HEIF-family brands) while listing `avif` only among the compatible
+	 * brands, so both must be checked.
+	 *
+	 * @since 2.2
+	 *
+	 * @param string $contents The file content (or at least its leading bytes).
+	 * @return bool
+	 */
+	private function is_avif_ftyp_box( $contents ) {
+		if ( 'ftyp' !== substr( $contents, 4, 4 ) ) {
+			return false;
+		}
+
+		$avif_brands = [ 'avif', 'avis' ];
+
+		if ( in_array( substr( $contents, 8, 4 ), $avif_brands, true ) ) {
+			// Major brand.
+			return true;
+		}
+
+		// Box size (big-endian uint32), bounding how far the compatible brands list extends.
+		$box_size = unpack( 'N', substr( $contents, 0, 4 ) )[1];
+		$box_size = min( $box_size, strlen( $contents ) );
+
+		// Compatible brands: 4-byte entries, starting right after the minor version, at offset 16.
+		for ( $offset = 16; $offset + 4 <= $box_size; $offset += 4 ) {
+			if ( in_array( substr( $contents, $offset, 4 ), $avif_brands, true ) ) {
+				return true;
+			}
 		}
 
 		return false;
