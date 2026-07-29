@@ -34,12 +34,20 @@ class Test_GetDefaultEventProperties extends TestCase {
 	/**
 	 * Creates a Tracking instance with mocked dependencies.
 	 *
-	 * @return Tracking
+	 * @return array{tracking: Tracking, mixpanel: \Mockery\MockInterface&TrackingPlugin}
 	 */
-	private function create_tracking(): Tracking {
+	private function create_tracking(): array {
 		$optin    = Mockery::mock( Optin::class );
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
-		return new Tracking( $optin, $mixpanel );
+
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
+
+		$tracking = new Tracking( $optin, $mixpanel );
+
+		return compact( 'tracking', 'mixpanel' );
 	}
 
 	/**
@@ -50,7 +58,7 @@ class Test_GetDefaultEventProperties extends TestCase {
 		Functions\when( 'is_wp_error' )->justReturn( false );
 		Functions\when( 'get_current_user_id' )->justReturn( 5 );
 
-		$tracking = $this->create_tracking();
+		$tracking = $this->create_tracking()['tracking'];
 		$props    = $this->call_get_default_event_properties( $tracking );
 
 		$expected_hash = hash( 'sha256', 'user@example.com' );
@@ -70,7 +78,7 @@ class Test_GetDefaultEventProperties extends TestCase {
 		Functions\when( 'is_wp_error' )->justReturn( true );
 		Functions\when( 'get_current_user_id' )->justReturn( 0 );
 
-		$tracking = $this->create_tracking();
+		$tracking = $this->create_tracking()['tracking'];
 		$props    = $this->call_get_default_event_properties( $tracking );
 
 		$this->assertSame( '', $props['license_owner'] );
@@ -84,9 +92,80 @@ class Test_GetDefaultEventProperties extends TestCase {
 		Functions\when( 'is_wp_error' )->justReturn( false );
 		Functions\when( 'get_current_user_id' )->justReturn( 42 );
 
-		$tracking = $this->create_tracking();
+		$tracking = $this->create_tracking()['tracking'];
 		$props    = $this->call_get_default_event_properties( $tracking );
 
 		$this->assertSame( 42, $props['user_id'] );
+	}
+
+	/**
+	 * Tests that the license owner email is used to identify the user in Mixpanel.
+	 */
+	public function testIdentifiesWithLicenseOwnerEmail(): void {
+		Functions\when( 'get_imagify_user' )->justReturn( (object) [ 'email' => 'user@example.com' ] );
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'get_current_user_id' )->justReturn( 5 );
+
+		$mocks    = $this->create_tracking();
+		$tracking = $mocks['tracking'];
+		$mixpanel = $mocks['mixpanel'];
+
+		$mixpanel->shouldReceive( 'identify' )->once()->with( 'user@example.com' );
+
+		$this->call_get_default_event_properties( $tracking );
+	}
+
+	/**
+	 * Tests that the site host is used as identifier when no license email is available.
+	 */
+	public function testIdentifiesWithSiteHostWhenNoLicenseEmail(): void {
+		Functions\when( 'get_imagify_user' )->justReturn( (object) [ 'email' => '' ] );
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'get_current_user_id' )->justReturn( 0 );
+
+		$mocks    = $this->create_tracking();
+		$tracking = $mocks['tracking'];
+		$mixpanel = $mocks['mixpanel'];
+
+		$mixpanel->shouldReceive( 'identify' )->once()->with( 'example.com' );
+
+		$this->call_get_default_event_properties( $tracking );
+	}
+
+	/**
+	 * Tests that the user is identified only once, even across several tracked events.
+	 */
+	public function testIdentifiesOnlyOncePerRequest(): void {
+		Functions\when( 'get_imagify_user' )->justReturn( (object) [ 'email' => 'user@example.com' ] );
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'get_current_user_id' )->justReturn( 5 );
+
+		$mocks    = $this->create_tracking();
+		$tracking = $mocks['tracking'];
+		$mixpanel = $mocks['mixpanel'];
+
+		$mixpanel->shouldReceive( 'identify' )->once()->with( 'user@example.com' );
+
+		$this->call_get_default_event_properties( $tracking );
+		$this->call_get_default_event_properties( $tracking );
+	}
+
+	/**
+	 * Tests that no identify call is made when neither an email nor a host can be resolved.
+	 */
+	public function testDoesNotIdentifyWhenNoIdentifierAvailable(): void {
+		Functions\when( 'get_imagify_user' )->justReturn( (object) [ 'email' => '' ] );
+		Functions\when( 'is_wp_error' )->justReturn( false );
+		Functions\when( 'get_current_user_id' )->justReturn( 0 );
+
+		$optin    = Mockery::mock( Optin::class );
+		$mixpanel = Mockery::mock( TrackingPlugin::class );
+
+		Functions\when( 'get_home_url' )->justReturn( '' );
+		Functions\when( 'wp_parse_url' )->justReturn( null );
+
+		$mixpanel->shouldNotReceive( 'identify' );
+
+		$this->call_get_default_event_properties( new Tracking( $optin, $mixpanel ) );
 	}
 }
