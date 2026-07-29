@@ -221,6 +221,8 @@ class WP extends AbstractBulk {
 			[
 				// Get attachments filename.
 				'filenames' => '_wp_attached_file',
+				// Get attachments metadata, to detect a WP-scaled original.
+				'metadata'  => '_wp_attachment_metadata',
 			],
 			$ids
 		);
@@ -239,7 +241,8 @@ class WP extends AbstractBulk {
 				continue;
 			}
 
-			$attachment_backup_path = get_imagify_attachment_backup_path( $file_path );
+			$original_path          = $this->get_original_file_path_from_metadata( $file_path, isset( $metas['metadata'][ $id ] ) ? $metas['metadata'][ $id ] : null );
+			$attachment_backup_path = get_imagify_attachment_backup_path( $original_path );
 
 			if ( ! $this->filesystem->exists( $attachment_backup_path ) ) {
 				// No backup, cannot restore.
@@ -348,6 +351,8 @@ class WP extends AbstractBulk {
 			[
 				// Get attachments filename.
 				'filenames' => '_wp_attached_file',
+				// Get attachments metadata, to detect a WP-scaled original.
+				'metadata'  => '_wp_attachment_metadata',
 			],
 			$ids
 		);
@@ -384,7 +389,8 @@ class WP extends AbstractBulk {
 				continue;
 			}
 
-			$backup_path = get_imagify_attachment_backup_path( $file_path );
+			$original_path = $this->get_original_file_path_from_metadata( $file_path, isset( $metas['metadata'][ $id ] ) ? $metas['metadata'][ $id ] : null );
+			$backup_path   = get_imagify_attachment_backup_path( $original_path );
 
 			if ( ! $this->filesystem->exists( $backup_path ) ) {
 				// No backup, no WebP.
@@ -396,6 +402,33 @@ class WP extends AbstractBulk {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Get the original (pre-scaling) file path from batched `_wp_attachment_metadata`.
+	 *
+	 * When WordPress scales down an image on upload, `_wp_attached_file` (and therefore
+	 * `$file_path`) points to the scaled copy, but Imagify backups are always stored at the
+	 * path derived from the true original file (see `Imagify\Media\WP::get_raw_backup_path()`,
+	 * which relies on `wp_get_original_image_path()`). This mirrors that derivation from data
+	 * already fetched in a single batched query, instead of instantiating a media object (and
+	 * firing its own uncached meta reads) for every attachment in the loop.
+	 *
+	 * @since 2.4
+	 *
+	 * @param string $file_path Path derived from `_wp_attached_file`.
+	 * @param mixed  $metadata  The unserialized `_wp_attachment_metadata` value for this attachment,
+	 *                          or null/garbage if it couldn't be fetched or decoded.
+	 *
+	 * @return string The original-derived file path, or $file_path unchanged when there is no
+	 *                scaled original to account for.
+	 */
+	private function get_original_file_path_from_metadata( $file_path, $metadata ) {
+		if ( ! is_array( $metadata ) || empty( $metadata['original_image'] ) || ! is_string( $metadata['original_image'] ) ) {
+			return $file_path;
+		}
+
+		return trailingslashit( dirname( $file_path ) ) . $metadata['original_image'];
 	}
 
 	/**
