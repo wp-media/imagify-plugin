@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 7.0
-Stable tag: 2.3.1-rc2
+Stable tag: 2.3.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -328,6 +328,17 @@ You can report any security bugs found in the source code of the site-reviews pl
 
 == Changelog ==
 = 2.3.1 =
+- New feature: Add OAuth 2.1 + PKCE authentication for MCP clients such as Claude Desktop.
+- New feature: Expose three new MCP abilities for AI agents interacting with Imagify.
+- Enhancement: Add a documentation link to the out-of-quota popup covering all ways to keep optimizing.
+- Enhancement: Require confirmation before MCP abilities consume optimization credits.
+- Enhancement: Add a filter to exclude specific media from bulk optimization.
+- Enhancement: Add a filter to customize supported mime types.
+- Bugfix: Fix indefinite spinner and stuck progress in Generate Missing Next-Gen Images.
+- Bugfix: Fix valid API key flagged as invalid when validation request is interrupted.
+- Bugfix: Fix wrong orientation of Next-Gen images generated from EXIF-rotated backups.
+- Bugfix: Fix layout shift and scrollbar inconsistency in the upgrade modal.
+- Bugfix: Fix lightbox display issue caused by passing WordPress attributes to the picture tag.
 - Bugfix: Images are no longer reported as having a next-gen version when none was generated, because the WebP or AVIF file would have been heavier than the optimized image.
 
 = 2.3.0 =
