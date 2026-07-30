@@ -224,7 +224,10 @@ The AJAX action `imagify_missing_nextgen_generation` and the ActionScheduler hoo
 - "Imagify" column with status and weight savings.
 - Inline action buttons: Optimize, Re-optimize, Restore, Generate next-gen, Delete next-gen.
 - "Bulk Optimization" group action.
-- Filter by status: `?imagify-status=...`.
+- Filter by status: `?imagify-status=...` (`optimized`, `unoptimized`, `errors`, `missing-nextgen`).
+  `missing-nextgen` (list mode only) is applied via `Imagify\Media\Subscriber::filter_missing_nextgen_query()`
+  on `pre_get_posts`, and shows optimized WP media with no successful next-gen size recorded (mirroring
+  the predicate used for the "missing next-gen" count).
 
 **Attachment edit page**
 - Dedicated metabox with detailed status.

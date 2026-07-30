@@ -29,9 +29,10 @@ class Upload {
 
 		$status  = isset( $_GET['imagify-status'] ) ? sanitize_text_field( wp_unslash( $_GET['imagify-status'] ) ) : 0;
 		$options = [
-			'optimized'   => _x( 'Optimized', 'Media Files', 'imagify' ),
-			'unoptimized' => _x( 'Unoptimized', 'Media Files', 'imagify' ),
-			'errors'      => _x( 'Errors', 'Media Files', 'imagify' ),
+			'optimized'       => _x( 'Optimized', 'Media Files', 'imagify' ),
+			'unoptimized'     => _x( 'Unoptimized', 'Media Files', 'imagify' ),
+			'errors'          => _x( 'Errors', 'Media Files', 'imagify' ),
+			'missing-nextgen' => _x( 'Missing Next-Gen', 'Media Files', 'imagify' ),
 		];
 
 		echo '<label class="screen-reader-text" for="filter-by-optimization-status">' . esc_html__( 'Filter by status', 'imagify' ) . '</label>';
