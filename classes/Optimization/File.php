@@ -940,7 +940,7 @@ class File {
 	 * magic bytes. The file's extension can't be trusted here, since it may be a temp
 	 * file downloaded with an unpredictable name (see download_url()).
 	 *
-	 * @since 2.2
+	 * @since 2.3.2
 	 *
 	 * @param string $file_path Absolute path to the file to check.
 	 * @param string $format    'webp' or 'avif'.
@@ -971,7 +971,7 @@ class File {
 	 * `mif1`/`msf1` (generic HEIF-family brands) while listing `avif` only among the compatible
 	 * brands, so both must be checked.
 	 *
-	 * @since 2.2
+	 * @since 2.3.2
 	 *
 	 * @param string $contents The file content (or at least its leading bytes).
 	 * @return bool

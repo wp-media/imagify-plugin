@@ -1584,7 +1584,7 @@ abstract class AbstractProcess implements ProcessInterface {
 	/**
 	 * Tell if the next-gen file for a size is missing from disk.
 	 *
-	 * @since 2.2
+	 * @since 2.3.2
 	 *
 	 * @param string $size          The (next-gen) size name, e.g. "thumbnail@imagify-avif".
 	 * @param string $original_path Path to the non-next-gen version of that size.
