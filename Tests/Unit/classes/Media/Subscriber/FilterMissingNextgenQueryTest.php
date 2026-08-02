@@ -32,7 +32,24 @@ class FilterMissingNextgenQueryTest extends TestCase {
 	public function testShouldReturnExpected( $config, $expected ): void {
 		Functions\when( 'is_admin' )->justReturn( $config['is_admin'] );
 		Functions\when( 'imagify_nextgen_images_formats' )->justReturn( $config['formats'] );
-		Functions\when( 'imagify_get_mime_types' )->justReturn( 'image/jpeg,image/png' );
+		// Mirrors the real imagify_get_mime_types(): an extension => mime type map, with the PDF
+		// entry present unless the 'image' type is requested.
+		Functions\when( 'imagify_get_mime_types' )->alias(
+			function ( $type = null ) {
+				$mimes = [
+					'jpg|jpeg|jpe' => 'image/jpeg',
+					'png'          => 'image/png',
+					'gif'          => 'image/gif',
+					'webp'         => 'image/webp',
+				];
+
+				if ( 'image' !== $type ) {
+					$mimes['pdf'] = 'application/pdf';
+				}
+
+				return $mimes;
+			}
+		);
 		Functions\when( 'sanitize_key' )->alias( 'strtolower' );
 
 		if ( array_key_exists( 'get_status', $config ) && null !== $config['get_status'] ) {
@@ -61,6 +78,7 @@ class FilterMissingNextgenQueryTest extends TestCase {
 		$post_in_set         = false;
 		$mime_type_set       = false;
 		$captured_meta_query = null;
+		$captured_mime_type  = null;
 
 		$existing_post_mime_type = $config['existing_post_mime_type'] ?? null;
 
@@ -70,7 +88,7 @@ class FilterMissingNextgenQueryTest extends TestCase {
 
 		$query->shouldReceive( 'set' )
 			->andReturnUsing(
-				function ( $key, $value ) use ( &$meta_query_set, &$post_in_set, &$mime_type_set, &$captured_meta_query ) {
+				function ( $key, $value ) use ( &$meta_query_set, &$post_in_set, &$mime_type_set, &$captured_meta_query, &$captured_mime_type ) {
 					if ( 'meta_query' === $key ) {
 						$meta_query_set      = true;
 						$captured_meta_query = $value;
@@ -79,7 +97,8 @@ class FilterMissingNextgenQueryTest extends TestCase {
 						$post_in_set = true;
 					}
 					if ( 'post_mime_type' === $key ) {
-						$mime_type_set = true;
+						$mime_type_set      = true;
+						$captured_mime_type = $value;
 					}
 				}
 			);
@@ -109,6 +128,16 @@ class FilterMissingNextgenQueryTest extends TestCase {
 			$this->assertSame( '_imagify_data', $permanent_error_clause['key'] );
 			$this->assertSame( 'NOT LIKE', $permanent_error_clause['compare'] );
 			$this->assertStringStartsWith( $expected['suffix'], $permanent_error_clause['value'] );
+		}
+
+		if ( $mime_type_set ) {
+			// A PDF has no next-gen version, so it can never be missing one.
+			$this->assertNotContains( 'application/pdf', $captured_mime_type );
+
+			// An image that already is the target format is not missing that format.
+			$this->assertNotContains( $expected['excluded_mime'], $captured_mime_type );
+
+			$this->assertContains( 'image/jpeg', $captured_mime_type );
 		}
 	}
 }

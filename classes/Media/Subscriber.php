@@ -90,9 +90,15 @@ class Subscriber implements SubscriberInterface {
 			return;
 		}
 
-		$format         = key( $formats );
-		$process_class  = imagify_get_optimization_process_class_name( 'wp' );
-		$nextgen_suffix = constant( $process_class . '::' . strtoupper( $format ) . '_SUFFIX' );
+		$format         = $this->get_enabled_format( $formats );
+		$nextgen_suffix = $this->get_nextgen_suffix( $format );
+
+		if ( '' === $nextgen_suffix ) {
+			// The enabled format is not one we know how to detect: showing the whole library
+			// would be worse than showing nothing.
+			$query->set( 'post__in', [ 0 ] );
+			return;
+		}
 
 		$query->set(
 			'meta_query', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
@@ -117,7 +123,67 @@ class Subscriber implements SubscriberInterface {
 		);
 
 		if ( ! $query->get( 'post_mime_type' ) ) {
-			$query->set( 'post_mime_type', imagify_get_mime_types() );
+			$query->set( 'post_mime_type', $this->get_convertible_mime_types( $format ) );
 		}
+	}
+
+	/**
+	 * Reads the first enabled next-gen format.
+	 *
+	 * `imagify_nextgen_images_formats()` is filterable by third parties, so the array may come
+	 * back as a list (`[ 'webp' ]`) rather than the keyed shape core builds (`[ 'webp' => 'webp' ]`).
+	 * Reading the key would then yield the integer `0` — which is what made `strtoupper()` fatal
+	 * on PHP 8 — so the value is read instead, and anything that is not a string is discarded.
+	 *
+	 * @param array $formats The enabled next-gen formats.
+	 *
+	 * @return string The format in lowercase, or an empty string if it is unusable.
+	 */
+	private function get_enabled_format( array $formats ): string {
+		$format = current( $formats );
+
+		return is_string( $format ) ? strtolower( $format ) : '';
+	}
+
+	/**
+	 * Resolves the next-gen suffix (e.g. `@imagify-webp`) for the given format.
+	 *
+	 * An unrecognised format resolves to an empty string rather than raising an error, since the
+	 * format ultimately comes from a public filter.
+	 *
+	 * @param string $format The next-gen format, lowercase.
+	 *
+	 * @return string The suffix, or an empty string if the format is not recognised.
+	 */
+	private function get_nextgen_suffix( string $format ): string {
+		$process_class = imagify_get_optimization_process_class_name( 'wp' );
+		$suffixes      = [
+			'avif' => constant( $process_class . '::AVIF_SUFFIX' ),
+			'webp' => constant( $process_class . '::WEBP_SUFFIX' ),
+		];
+
+		return isset( $suffixes[ $format ] ) ? $suffixes[ $format ] : '';
+	}
+
+	/**
+	 * Lists the mime types that can hold a next-gen version of the given format.
+	 *
+	 * Mirrors `Imagify\Bulk\WP::get_optimized_media_ids_without_format()`: images only — a PDF has
+	 * no next-gen version, so it can never be "missing" one — minus the target format's own mime
+	 * type, since an image that already *is* WebP is not missing a WebP version.
+	 *
+	 * @param string $format The next-gen format being looked for, e.g. `webp`.
+	 *
+	 * @return array The mime types, as extension => mime type pairs.
+	 */
+	private function get_convertible_mime_types( string $format ): array {
+		$mime_types = imagify_get_mime_types( 'image' );
+
+		return array_filter(
+			$mime_types,
+			function ( $mime ) use ( $format ) {
+				return 'image/' . strtolower( $format ) !== $mime;
+			}
+		);
 	}
 }
