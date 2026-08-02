@@ -39,10 +39,21 @@ test.describe( 'Generate missing Next-Gen progress bar (#1217)', () => {
 
 		const container = page.locator( '.generate-missing-webp' );
 
-		expect(
-			await container.isVisible(),
-			'The .generate-missing-webp section is not visible after seeding the transients — check beforeAll.',
-		).toBe( true );
+		// The section carries `hide-if-no-js`, so it only becomes visible once WP's admin JS has
+		// swapped the `no-js` class on <html>, and the progress markup is revealed by Imagify's
+		// own init. Both are asynchronous, so this has to be a retrying assertion rather than a
+		// one-shot isVisible() read, which samples too early on a slow runner.
+		await expect(
+			container,
+			'The .generate-missing-webp section never became visible — check the transients seeded in beforeAll.',
+		).toBeVisible( { timeout: 15_000 } );
+
+		// The progress bar is only rendered while a run is in progress, which is what the
+		// imagify_missing_next_gen_total transient stands in for.
+		await expect(
+			container.locator( '.imagify-progress' ),
+			'The progress wrapper never became visible — the run-in-progress transient may not have been picked up.',
+		).toBeVisible( { timeout: 15_000 } );
 
 		return container;
 	}
