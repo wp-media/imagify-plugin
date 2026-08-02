@@ -122,22 +122,28 @@ defined( 'ABSPATH' ) || exit;
 				<p>
 					<?php wp_nonce_field( 'imagify-bulk-optimize', 'imagifybulkuploadnonce' ); ?>
 					<?php
-					$disabled = '';
-					$class    = '';
+					$disabled    = '';
+					$class       = '';
+					$stop_hidden = 'hidden';
 
 					if (
 						false !== get_transient( 'imagify_wp_optimize_running' )
 						||
 						false !== get_transient( 'imagify_custom-folders_optimize_running' )
 					) {
-						$disabled = 'disabled="disabled"';
-						$class    = 'rotate';
+						$disabled    = 'disabled="disabled"';
+						$class       = 'rotate';
+						$stop_hidden = '';
 					}
 
 					?>
 					<button id="imagify-bulk-action" type="button" class="button button-primary" <?php echo $disabled; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 						<span class="dashicons dashicons-admin-generic <?php echo esc_attr( $class ); ?>"></span>
 						<span class="button-text"><?php esc_html_e( 'Imagif’em all', 'imagify' ); ?></span>
+					</button>
+					<button id="imagify-bulk-stop" type="button" class="button button-primary <?php echo esc_attr( $stop_hidden ); ?>" aria-hidden="<?php echo esc_attr( $stop_hidden ? 'true' : 'false' ); ?>">
+						<span class="dashicons dashicons-no-alt"></span>
+						<span class="button-text"><?php esc_html_e( 'Stop the optimization', 'imagify' ); ?></span>
 					</button>
 				</p>
 			</div>

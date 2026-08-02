@@ -38,6 +38,10 @@ class Test_Reset extends TestCase {
 
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$GLOBALS['wpdb'] = $this->wpdb;
+
+		// ActionScheduler is not loaded in unit tests: stub it so reset() behaves the same
+		// whatever other test suites ran before this one.
+		Functions\when( 'as_unschedule_all_actions' )->justReturn( null );
 	}
 
 	/**
