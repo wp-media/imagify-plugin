@@ -2,35 +2,21 @@
 namespace {
 
 	if ( ! class_exists( 'Imagify_Filesystem', false ) ) {
-		/**
-		 * Lightweight stub for the legacy Imagify_Filesystem class.
+		/*
+		 * Load the real class rather than declaring a stub of it.
 		 *
-		 * The real class (inc/classes/class-imagify-filesystem.php) requires
-		 * ABSPATH and WP core filesystem classes that are not loaded in the
-		 * unit test bootstrap, so it cannot be used here. Declaring this stub
-		 * before the real class is ever referenced pre-empts the classmap
-		 * autoloader, since `Main::set_cdn_source()` reaches
-		 * `\Imagify_Filesystem::get_instance()->get_site_root_url()` on any
-		 * path that resolves a non-empty CDN URL.
+		 * `Main::set_cdn_source()` reaches `\Imagify_Filesystem::get_instance()->get_site_root_url()`
+		 * on any path that resolves a non-empty CDN URL. This used to declare a lightweight stub,
+		 * because the real class requires WP core filesystem classes from ABSPATH. The unit
+		 * bootstrap now resolves those (see register_abspath_stubs() in Tests/Unit/bootstrap.php),
+		 * so the real class loads here.
+		 *
+		 * Declaring a stub is no longer merely unnecessary, it is fatal: any other test that loads
+		 * the real file in the same process (Tests/Unit/inc/classes/ImagifyFilesystem) would hit
+		 * "Cannot redeclare class Imagify_Filesystem" and take the whole suite down. The singleton
+		 * is mocked per-test instead, in setUp().
 		 */
-		class Imagify_Filesystem {
-			/**
-			 * @var self|null
-			 */
-			private static $instance;
-
-			public static function get_instance() {
-				if ( null === self::$instance ) {
-					self::$instance = new self();
-				}
-
-				return self::$instance;
-			}
-
-			public function get_site_root_url() {
-				return 'https://example.com/';
-			}
-		}
+		require_once IMAGIFY_PLUGIN_ROOT . 'inc/classes/class-imagify-filesystem.php';
 	}
 
 	if ( ! class_exists( 'Imagify\\ThirdParty\\WPRocket\\Main', false ) ) {
@@ -68,6 +54,41 @@ namespace Imagify\Tests\Unit\inc\ThirdParty\WPRocket\Main {
 			parent::setUp();
 
 			Functions\when( 'get_rocket_option' )->justReturn( true );
+
+			$this->mockFilesystemSingleton();
+		}
+
+		protected function tearDown(): void {
+			$this->getFilesystemInstanceProperty()->setValue( null, null );
+
+			parent::tearDown();
+		}
+
+		/**
+		 * Point `Imagify_Filesystem::get_instance()` at a mock returning a fixed site root URL.
+		 *
+		 * `set_cdn_source()` only ever asks the filesystem for that URL, and the real
+		 * implementation would need WP multisite/home_url plumbing to answer. Replacing the
+		 * singleton keeps this test about set_cdn_source() and leaves the real class free to be
+		 * loaded by its own tests in the same process.
+		 */
+		private function mockFilesystemSingleton() {
+			$filesystem = \Mockery::mock( 'Imagify_Filesystem' );
+			$filesystem->shouldReceive( 'get_site_root_url' )->andReturn( 'https://example.com/' );
+
+			$this->getFilesystemInstanceProperty()->setValue( null, $filesystem );
+		}
+
+		/**
+		 * The singleton holder lives on InstanceGetterTrait, as a protected static.
+		 *
+		 * @return \ReflectionProperty
+		 */
+		private function getFilesystemInstanceProperty(): \ReflectionProperty {
+			$property = new \ReflectionProperty( \Imagify_Filesystem::class, 'instance' );
+			$property->setAccessible( true );
+
+			return $property;
 		}
 
 		/**
