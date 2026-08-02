@@ -198,12 +198,23 @@ $settings = Imagify_Settings::get_instance();
 					&&
 					$total > 0
 				) {
-					$aria      = '';
-					$class     = '';
-					$processed = $total - $remaining;
-					$progress  = $processed . '/' . $total;
-					$percent   = $processed / $total * 100;
-					$style     = 'style="width:' . $percent . '%;"';
+					$aria  = '';
+					$class = '';
+
+					/*
+					 * `$total` is a snapshot taken when the run started, while `$remaining` is
+					 * recounted on every page load. Anything growing the workload mid-run (new
+					 * uploads, or switching the Next-Gen format so every media is missing one)
+					 * pushes `$remaining` above `$total`, and `$total - $remaining` goes negative.
+					 * Report against the largest workload seen instead. Mirrors getProgress() in
+					 * assets/js/options.js.
+					 */
+					$remaining       = max( (int) $remaining, 0 );
+					$effective_total = max( (int) $total, $remaining );
+					$processed       = $effective_total - $remaining;
+					$progress        = $processed . '/' . $effective_total;
+					$percent         = $effective_total > 0 ? floor( $processed / $effective_total * 100 ) : 0;
+					$style           = 'style="width:' . $percent . '%;"';
 				}
 				?>
 
