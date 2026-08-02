@@ -72,7 +72,6 @@ abstract class BaseTracking {
 		return [
 			'context'       => 'wp_plugin',
 			'license_owner' => $license_owner,
-			'user_id'       => (int) get_current_user_id(),
 		];
 	}
 
