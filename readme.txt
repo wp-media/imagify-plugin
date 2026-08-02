@@ -339,6 +339,7 @@ You can report any security bugs found in the source code of the site-reviews pl
 - Bugfix: Fix wrong orientation of Next-Gen images generated from EXIF-rotated backups.
 - Bugfix: Fix layout shift and scrollbar inconsistency in the upgrade modal.
 - Bugfix: Fix lightbox display issue caused by passing WordPress attributes to the picture tag.
+- Bugfix: Images are no longer reported as having a next-gen version when none was generated, because the WebP or AVIF file would have been heavier than the optimized image.
 
 = 2.3.0 =
 - New feature: Added support for the Model Context Protocol (MCP), enabling compatible AI assistants to optimize images and manage Imagify through natural language.
