@@ -525,26 +525,36 @@ abstract class AbstractProcess implements ProcessInterface {
 			);
 		}
 
-		if ( $this->get_data()->get_size_data( $size, 'success' ) ) { // Bail out.
-			// This size is already optimized with Imagify, and must not be optimized again.
-			if ( $next_gen ) {
-				return new WP_Error(
-					'size_is_successfully_optimized',
-					sprintf(
-					/* translators: %s is a size name. */
-						__( 'The Next-Gen format for the size %s already exists.', 'imagify' ),
-						'<code>' . esc_html( $thumb_size ) . '</code>'
-					)
-				);
-			} else {
-				return new WP_Error(
-					'size_is_successfully_optimized',
-					sprintf(
-					/* translators: %s is a size name. */
-						__( 'The size %s is already optimized by Imagify.', 'imagify' ),
-						'<code>' . esc_html( $thumb_size ) . '</code>'
-					)
-				);
+		if ( $this->get_data()->get_size_data( $size, 'success' ) ) {
+			/*
+			 * The data says this size is already optimized. For a next-gen size, this can be
+			 * stale: an API response carrying a `message` (see File::optimize()) could have
+			 * been recorded as `success` without any next-gen file ever being written. In that
+			 * case, don't bail out: fall through and let the file be (re)generated.
+			 */
+			$next_gen_file_is_missing = $next_gen && $this->is_next_gen_file_missing( $size, $sizes[ $thumb_size ]['path'] );
+
+			if ( ! $next_gen_file_is_missing ) { // Bail out.
+				// This size is already optimized with Imagify, and must not be optimized again.
+				if ( $next_gen ) {
+					return new WP_Error(
+						'size_is_successfully_optimized',
+						sprintf(
+						/* translators: %s is a size name. */
+							__( 'The Next-Gen format for the size %s already exists.', 'imagify' ),
+							'<code>' . esc_html( $thumb_size ) . '</code>'
+						)
+					);
+				} else {
+					return new WP_Error(
+						'size_is_successfully_optimized',
+						sprintf(
+						/* translators: %s is a size name. */
+							__( 'The size %s is already optimized by Imagify.', 'imagify' ),
+							'<code>' . esc_html( $thumb_size ) . '</code>'
+						)
+					);
+				}
 			}
 		}
 
@@ -1589,6 +1599,22 @@ abstract class AbstractProcess implements ProcessInterface {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Tell if the next-gen file for a size is missing from disk.
+	 *
+	 * @since 2.3.2
+	 *
+	 * @param string $size          The (next-gen) size name, e.g. "thumbnail@imagify-avif".
+	 * @param string $original_path Path to the non-next-gen version of that size.
+	 * @return bool
+	 */
+	protected function is_next_gen_file_missing( string $size, string $original_path ): bool {
+		$format        = strpos( $size, static::AVIF_SUFFIX ) ? 'avif' : 'webp';
+		$next_gen_path = imagify_path_to_nextgen( $original_path, $format );
+
+		return ! $next_gen_path || ! $this->filesystem->exists( $next_gen_path );
 	}
 
 	/**
