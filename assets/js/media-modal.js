@@ -111,7 +111,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 				$container      = $obj.parents( '.imagify-data-actions-container' ),
 				id              = w.imagify.modal.sanitizeId( $container.data( 'id' ) ),
 				context         = w.imagify.modal.sanitizeContext( $container.data( 'context' ) ),
-				href, processingTemplate;
+				href, processingTemplate, previousHtml;
 
 			e.preventDefault();
 
@@ -123,12 +123,16 @@ window.imagify.drawMeAChart = function( canvas ) {
 
 			href               = $obj.attr( 'href' );
 			processingTemplate = w.imagify.template( 'imagify-button-processing' );
+			previousHtml       = $container.html();
 
 			$container.html( processingTemplate( {
 				label: $obj.data( 'processing-label' )
 			} ) );
 
-			$.get( href.replace( 'admin-post.php', 'admin-ajax.php' ) )
+			$.get( {
+				url:     href.replace( 'admin-post.php', 'admin-ajax.php' ),
+				timeout: 60000 // Throw an error if not completed after 60 sec.
+			} )
 				.done( function( response ) {
 					if ( response.data && response.data.html ) {
 						// The work is done.
@@ -138,6 +142,13 @@ window.imagify.drawMeAChart = function( canvas ) {
 						// Set the Imagifybeat interval to 15 seconds.
 						w.imagify.beat.interval( 15 );
 					}
+				} )
+				.fail( function() {
+					// The request errored out or timed out: unlock the item and restore the
+					// previous button state instead of leaving it stuck on "Optimizing..."
+					// until Imagifybeat's next tick catches the mismatch.
+					w.imagify.modal.unlockItem( context, id );
+					$container.html( previousHtml );
 				} );
 		},
 

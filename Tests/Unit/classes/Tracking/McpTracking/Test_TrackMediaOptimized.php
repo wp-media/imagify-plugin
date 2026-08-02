@@ -25,6 +25,11 @@ class Test_TrackMediaOptimized extends TestCase {
 		$optin = Mockery::mock( Optin::class );
 		$optin->shouldReceive( 'can_track' )->andReturn( false );
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
+
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
 		$mixpanel->shouldNotReceive( 'track_direct' );
 
 		$tracking = new McpTracking( $optin, $mixpanel );
@@ -38,6 +43,11 @@ class Test_TrackMediaOptimized extends TestCase {
 		$optin = Mockery::mock( Optin::class );
 		$optin->shouldReceive( 'can_track' )->andReturn( true );
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
+
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
 		$mixpanel->shouldNotReceive( 'track_direct' );
 
 		$tracking = new McpTracking( $optin, $mixpanel );
@@ -51,6 +61,11 @@ class Test_TrackMediaOptimized extends TestCase {
 		$optin = Mockery::mock( Optin::class );
 		$optin->shouldReceive( 'can_track' )->andReturn( true );
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
+
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
 		$mixpanel->shouldNotReceive( 'track_direct' );
 
 		$tracking = new McpTracking( $optin, $mixpanel );
@@ -73,6 +88,11 @@ class Test_TrackMediaOptimized extends TestCase {
 		$optin->shouldReceive( 'can_track' )->andReturn( true );
 
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
+
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
 		$mixpanel->shouldReceive( 'track_direct' )
 			->once()
 			->withArgs(
@@ -120,6 +140,11 @@ class Test_TrackMediaOptimized extends TestCase {
 		$optin->shouldReceive( 'can_track' )->andReturn( true );
 
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
+
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
 		$mixpanel->shouldReceive( 'track_direct' )
 			->once()
 			->withArgs(
@@ -157,6 +182,11 @@ class Test_TrackMediaOptimized extends TestCase {
 		$optin->shouldReceive( 'can_track' )->andReturn( true );
 
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
+
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
 		$mixpanel->shouldReceive( 'track_direct' )
 			->once()
 			->withArgs(
@@ -201,6 +231,11 @@ class Test_TrackMediaOptimized extends TestCase {
 		$optin->shouldReceive( 'can_track' )->andReturn( true );
 
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
+
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
 		$mixpanel->shouldReceive( 'track_direct' )
 			->once()
 			->withArgs(

@@ -65,6 +65,65 @@ class Imagify_DB {
 	}
 
 	/**
+	 * Split a list of values into chunks whose rendered `IN ()` comma separated list
+	 * stays under a character budget. This prevents hosts (e.g. WP Engine) that kill
+	 * overly long SQL queries from failing on unbounded `IN ()` lists.
+	 *
+	 * @since  2.4
+	 *
+	 * @param  array $values     An array of values (integers or strings).
+	 * @param  int   $sql_budget Maximum character length (rendered, comma separated) allowed per chunk.
+	 * @return array             An array of chunks. Each chunk is an array of values (same type as input).
+	 */
+	public static function chunk_in_values( array $values, int $sql_budget = 8000 ): array {
+		if ( ! $values ) {
+			return [];
+		}
+
+		/**
+		 * Filter the SQL character budget used to chunk `IN ()` value lists.
+		 *
+		 * @since  2.4
+		 *
+		 * @param int $sql_budget The character budget.
+		 */
+		$given_sql_budget = $sql_budget;
+		$sql_budget       = (int) apply_filters( 'imagify_db_in_clause_sql_budget', $sql_budget );
+
+		if ( $sql_budget < 1 ) {
+			// Fall back to the caller's own value if it was valid, otherwise the hardcoded default.
+			$sql_budget = ( $given_sql_budget >= 1 ) ? $given_sql_budget : 8000;
+		}
+
+		$chunks        = [];
+		$current_chunk = [];
+		$current_len   = 0;
+
+		foreach ( array_values( $values ) as $value ) {
+			$rendered_len = strlen( self::quote_string( esc_sql( $value ) ) );
+			// +1 for the comma separator, except for the first value in a chunk.
+			$added_len = $current_chunk ? $rendered_len + 1 : $rendered_len;
+
+			if ( $current_chunk && ( $current_len + $added_len ) > $sql_budget ) {
+				// Start a new chunk.
+				$chunks[]      = $current_chunk;
+				$current_chunk = [];
+				$current_len   = 0;
+				$added_len     = $rendered_len;
+			}
+
+			$current_chunk[] = $value;
+			$current_len    += $added_len;
+		}
+
+		if ( $current_chunk ) {
+			$chunks[] = $current_chunk;
+		}
+
+		return $chunks;
+	}
+
+	/**
 	 * Wrap a value in quotes, unless it's an integer.
 	 *
 	 * @since  1.6.13

@@ -19,6 +19,7 @@ define( 'IMAGIFY_SLUG', 'imagify' );
  */
 function load_original_files_before_mocking() {
 	$originals = [
+		'inc/functions/admin-ui.php',
 		'inc/functions/api.php',
 		'inc/functions/attachments.php',
 		'inc/functions/common.php',
