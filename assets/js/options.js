@@ -519,7 +519,7 @@ window.imagify = window.imagify || {};
 		 * Init.
 		 */
 		init: function () {
-			var processed, progress;
+			var progress;
 			this.$missingWebpElement = $('.generate-missing-webp');
 			this.$missingWebpMessage = $('.generate-missing-webp p');
 
@@ -559,10 +559,9 @@ window.imagify = window.imagify || {};
 
 				this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
 
-				processed = imagifyOptions.bulk.progress_next_gen.total - imagifyOptions.bulk.progress_next_gen.remaining;
-				progress = Math.floor( processed / imagifyOptions.bulk.progress_next_gen.total * 100 );
-				this.$progressBar.css( 'width', progress + '%' );
-				this.$progressText.text( processed + '/' + imagifyOptions.bulk.progress_next_gen.total );
+				progress = this.getProgress( imagifyOptions.bulk.progress_next_gen.total, imagifyOptions.bulk.progress_next_gen.remaining );
+				this.$progressBar.css( 'width', progress.percent + '%' );
+				this.$progressText.text( progress.processed + '/' + progress.total );
 
 				this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
 			}
@@ -626,6 +625,38 @@ window.imagify = window.imagify || {};
 		},
 
 		/**
+		 * Compute a display-safe progress state.
+		 *
+		 * `total` is a snapshot taken when the run started, while `remaining` is recounted on
+		 * every Imagifybeat tick. Anything that grows the workload mid-run pushes `remaining`
+		 * above `total`: uploading new media while the run is in progress, or switching the
+		 * Next-Gen format so that every media is suddenly missing one. `total - remaining` then
+		 * rendered as a negative count, and a snapshot of 0 divided by zero on top of that.
+		 *
+		 * Track the largest workload seen instead, so the count never goes negative and the
+		 * denominator reflects what is actually left to do.
+		 *
+		 * @param  {number} total     Number of media to process when the run started.
+		 * @param  {number} remaining Number of media still waiting to be processed.
+		 * @return {object}           Object with `processed`, `total` and `percent` keys.
+		 */
+		getProgress: function ( total, remaining ) {
+			var effectiveTotal, processed;
+
+			total     = Math.max( parseInt( total, 10 ) || 0, 0 );
+			remaining = Math.max( parseInt( remaining, 10 ) || 0, 0 );
+
+			effectiveTotal = Math.max( total, remaining );
+			processed      = effectiveTotal - remaining;
+
+			return {
+				processed: processed,
+				total:     effectiveTotal,
+				percent:   effectiveTotal > 0 ? Math.floor( processed / effectiveTotal * 100 ) : 0
+			};
+		},
+
+		/**
 		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 * It allows to update various data periodically.
 		 *
@@ -633,7 +664,7 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
-			var images_status, processed, progress;
+			var images_status, progress;
 
 			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.imagifybeatIDs.progress ] === 'undefined' ) {
 				return;
@@ -651,10 +682,9 @@ window.imagify = window.imagify || {};
 				return;
 			}
 
-			processed = images_status.total - images_status.remaining;
-			progress = Math.floor( processed / images_status.total * 100 );
-			e.data.imagifyOptionsBulk.$progressBar.css( 'width', progress + '%' );
-			e.data.imagifyOptionsBulk.$progressText.text( processed + '/' + images_status.total );
+			progress = e.data.imagifyOptionsBulk.getProgress( images_status.total, images_status.remaining );
+			e.data.imagifyOptionsBulk.$progressBar.css( 'width', progress.percent + '%' );
+			e.data.imagifyOptionsBulk.$progressText.text( progress.processed + '/' + progress.total );
 		},
 
 		/**
