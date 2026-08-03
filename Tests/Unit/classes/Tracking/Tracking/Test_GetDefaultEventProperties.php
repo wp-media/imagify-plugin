@@ -65,7 +65,6 @@ class Test_GetDefaultEventProperties extends TestCase {
 
 		$this->assertSame( $expected_hash, $props['license_owner'] );
 		$this->assertSame( 'wp_plugin', $props['context'] );
-		$this->assertSame( 5, $props['user_id'] );
 	}
 
 	/**
@@ -85,17 +84,16 @@ class Test_GetDefaultEventProperties extends TestCase {
 	}
 
 	/**
-	 * Tests that user_id comes from get_current_user_id().
+	 * Tests that no user_id property is sent.
 	 */
-	public function testUserIdFromGetCurrentUserId(): void {
+	public function testDoesNotSendUserId(): void {
 		Functions\when( 'get_imagify_user' )->justReturn( (object) [ 'email' => '' ] );
 		Functions\when( 'is_wp_error' )->justReturn( false );
-		Functions\when( 'get_current_user_id' )->justReturn( 42 );
 
 		$tracking = $this->create_tracking()['tracking'];
 		$props    = $this->call_get_default_event_properties( $tracking );
 
-		$this->assertSame( 42, $props['user_id'] );
+		$this->assertArrayNotHasKey( 'user_id', $props );
 	}
 
 	/**

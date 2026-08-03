@@ -431,6 +431,7 @@ All jobs are cleaned up when the plugin is deactivated.
 | `imagify_buffer` | Filter the final HTML page buffer. |
 | `imagify_cdn_source_url` | Override the CDN URL. |
 | `imagify_event_recurrence` | Change the frequency of Imagify cron jobs. |
+| `imagify_site_root_url` | Override the site root URL used for internal-URL matching (e.g. multisites with domain mapping). |
 | `imagify_event_time` | Change the trigger time for cron jobs. |
 | `imagify_bulk_stats` | Modify bulk statistics data. |
 | `imagify_unoptimized_attachment_limit` | Limit query results. |

@@ -334,6 +334,7 @@ You can report any security bugs found in the source code of the site-reviews pl
 - Enhancement: Require confirmation before MCP abilities consume optimization credits.
 - Enhancement: Add a filter to exclude specific media from bulk optimization.
 - Enhancement: Add a filter to customize supported mime types.
+- Enhancement: Add the imagify_site_root_url filter, allowing multisites with domain mapping to declare the URL used to serve each subsite.
 - Bugfix: Fix indefinite spinner and stuck progress in Generate Missing Next-Gen Images.
 - Bugfix: Fix valid API key flagged as invalid when validation request is interrupted.
 - Bugfix: Fix wrong orientation of Next-Gen images generated from EXIF-rotated backups.

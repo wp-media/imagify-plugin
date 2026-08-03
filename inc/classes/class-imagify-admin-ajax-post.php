@@ -135,7 +135,9 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	protected function optimize_media( $media_id, $context ) {
-		return imagify_get_optimization_process( $media_id, $context )->optimize();
+		// A manual click is an explicit, single-image user action: flag it as priority so it
+		// jumps ahead of any bulk optimization queue.
+		return imagify_get_optimization_process( $media_id, $context )->optimize( null, [ 'priority' => true ] );
 	}
 
 	/**
@@ -149,7 +151,9 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return bool|WP_Error    True if successfully launched. A \WP_Error instance on failure.
 	 */
 	protected function reoptimize_media( $media_id, $context, $level ) {
-		return imagify_get_optimization_process( $media_id, $context )->reoptimize( $level );
+		// A manual click is an explicit, single-image user action: flag it as priority so it
+		// jumps ahead of any bulk optimization queue.
+		return imagify_get_optimization_process( $media_id, $context )->reoptimize( $level, [ 'priority' => true ] );
 	}
 
 	/**
