@@ -214,6 +214,7 @@ function loadGraph() {
 }
 
 function saveGraph(graph) {
+	fs.mkdirSync(path.dirname(GRAPH_PATH), { recursive: true });
 	fs.writeFileSync(GRAPH_PATH, JSON.stringify(graph, null, 2) + '\n', 'utf8');
 }
 
