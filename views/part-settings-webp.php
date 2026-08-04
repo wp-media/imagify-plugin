@@ -182,7 +182,17 @@ $settings = Imagify_Settings::get_instance();
 
 				<button id="imagify-generate-webp-versions" class="button imagify-button-primary imagify-button-mini" type="button">
 					<span class="dashicons dashicons-admin-generic"></span>
-					<span class="button-text"><?php esc_html_e( 'Generate missing Next-Gen images versions', 'imagify' ); ?></span>
+					<?php
+					/*
+					 * Keep this string byte-identical to the ability label in
+					 * classes/Abilities/GenerateMissingNextgen.php: same wording means one shared
+					 * entry on translate.wordpress.org rather than two. The casing looks off next
+					 * to the rest of the UI, but the button is uppercased by CSS, so it renders as
+					 * "GENERATE MISSING NEXT-GEN VERSIONS" either way. Re-casing it here would
+					 * silently fork the two into separate strings to translate.
+					 */
+					?>
+					<span class="button-text"><?php esc_html_e( 'Generate missing next-gen versions', 'imagify' ); ?></span>
 				</button>
 
 				<?php
