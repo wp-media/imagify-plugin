@@ -18,9 +18,14 @@ The objective is to keep Imagify:
 
 This document applies to ALL automated or AI-generated changes.
 
-This repository ships no delivery pipeline of its own — agents and orchestration come from whichever
-one is installed. Everything project-specific it needs is here. Never guess a command, path, or
+Agents and orchestration come from whichever delivery pipeline is installed, not from this
+repository. Everything project-specific it needs is here — never guess a command, path, or
 convention this file documents.
+
+Two project-local skills remain under `.claude/skills/` because no installed pipeline covers them:
+`e2e` (two-tier browser test execution) and `compliance` (WordPress.org and PHPCS standards). Both
+are standalone and read their values from this file. Retire them once the pipeline provides
+equivalents.
 
 ---
 
@@ -119,6 +124,7 @@ Tests/e2e/        Playwright E2E tests (TypeScript)
 bin/              CLI scripts (dev-up, dev-down, dev-seed, test-e2e, build-knowledge-graph)
 docs/             Documentation (E2E_TESTING.md, etc.)
 .github/          CI workflows and the pull request template
+.claude/skills/   Project-local skills not covered by the installed pipeline (e2e, compliance)
 ```
 
 `assets/` is build output — edit `_dev/` and rebuild, or the next build discards the work.
