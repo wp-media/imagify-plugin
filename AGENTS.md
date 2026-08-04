@@ -18,10 +18,9 @@ The objective is to keep Imagify:
 
 This document applies to ALL automated or AI-generated changes.
 
-This repository does not ship its own delivery pipeline. Agents, skills, and orchestration come
-from whichever external pipeline is installed. Everything project-specific such a pipeline needs
-lives in this file — read it before acting, and never guess a command, path, or convention that is
-documented below.
+This repository ships no delivery pipeline of its own — agents and orchestration come from whichever
+one is installed. Everything project-specific it needs is here. Never guess a command, path, or
+convention this file documents.
 
 ---
 
@@ -61,12 +60,9 @@ Read them from here. Do not invent, re-derive, or assume them.
 | Knowledge graph | `.aiassistant/graph/dependency-graph.json` (gitignored, build locally) |
 | Knowledge graph build | `node bin/build-knowledge-graph.js` (`--full` to force, `--dry-run` for stats) |
 
-**`composer install` must run before any test or lint command.** Strauss dependency-prefixing is a
-Composer post-install hook; without it PHPCS and PHPUnit cannot resolve `Imagify\Dependencies\*`
-classes and fail with misleading autoload errors. CI does this automatically; local sessions must
-ensure it happened at least once.
-
-For the reasoning behind these commands and how to re-discover them, see section 4.1.
+**Run `composer install` before any test or lint command** — Strauss prefixing is a post-install
+hook, and without it PHPCS/PHPUnit fail to resolve `Imagify\Dependencies\*` with misleading
+autoload errors. See 4.1 for how these commands are discovered.
 
 ---
 
@@ -102,10 +98,10 @@ When modifying architecture:
   `_dev/` additionally carries its own `bud.config.js` and `package.json` — check which one a task targets.
 - Playwright + TypeScript (E2E testing under `Tests/e2e/`)
 
-**There is no JavaScript unit test runner** (no Jest, no Vitest). Do not invent or run `npm test`.
-Frontend verification is `npm run build` plus Playwright. Report JS automated-tests as `N/A` otherwise.
+**No JavaScript unit test runner exists** (no Jest, no Vitest) — never invent `npm test`. Frontend
+verification is `npm run build` plus Playwright; otherwise report JS tests as `N/A`.
 
-Key WordPress option: `imagify_settings` (holds the API key and plugin configuration).
+Key WordPress option: `imagify_settings` (API key and plugin configuration).
 
 ---
 
@@ -125,8 +121,7 @@ docs/             Documentation (E2E_TESTING.md, etc.)
 .github/          CI workflows and the pull request template
 ```
 
-`assets/` is build output. Never edit it directly — change `_dev/` and rebuild, or the next build
-silently discards the work.
+`assets/` is build output — edit `_dev/` and rebuild, or the next build discards the work.
 
 ---
 
@@ -150,20 +145,15 @@ AI MUST:
 - Read `composer.json` first and use the defined scripts (e.g. `phpcs`, `phpcbf`, `run-stan`, `test-unit`, `test-integration`) instead of inventing commands.
 - Auto-discover PHPCS configuration and follow it as the single source of truth.
 
-These PHPCS sniffs are deliberately suppressed in `phpcs.xml`. Do not add `phpcs:ignore`
-comments for them, and do not "fix" code to satisfy them:
+`WordPress.Security.NonceVerification.Missing` and `.Recommended` are deliberately suppressed in
+`phpcs.xml` — do not add `phpcs:ignore` for them, and do not "fix" code to satisfy them.
 
-- `WordPress.Security.NonceVerification.Missing`
-- `WordPress.Security.NonceVerification.Recommended`
+Use `composer phpcs-changed` while implementing; full `composer phpcs` before opening a PR.
 
-Use `composer phpcs-changed` for incremental checks while implementing; run the full
-`composer phpcs` before opening a PR.
+Text domain is `imagify`: `esc_html__( 'Label', 'imagify' )`.
 
-All i18n calls use the `imagify` text domain: `esc_html__( 'Label', 'imagify' )`.
-
-Do not use jQuery in new or modified JavaScript. Use native DOM APIs
-(`document.querySelector`, `addEventListener`, `fetch`). No inline event handlers, no unsafe
-`innerHTML`. Pass nonces to scripts via `wp_localize_script`.
+No jQuery in new or modified JavaScript — native DOM APIs only, no inline handlers, no unsafe
+`innerHTML`. Pass nonces via `wp_localize_script`.
 
 ## 4.1 Tooling Auto-Discovery (MANDATORY)
 
@@ -203,9 +193,8 @@ Follow existing patterns:
 
 Nonce action naming convention: `imagify_<feature>_<action>`.
 
-A change that touches PHP-rendered admin UI (`wp_admin_notice()`, `add_action( 'admin_notices', ... )`,
-`add_settings_error()`) is a frontend-affecting change even though it lives in PHP. Treat it as such
-when deciding scope and testing.
+PHP-rendered admin UI (`wp_admin_notice()`, `add_action( 'admin_notices', ... )`,
+`add_settings_error()`) counts as a frontend change despite living in PHP — scope and test it as one.
 
 ---
 
@@ -224,30 +213,22 @@ If modifying templates:
 
 ## 6.1 Test strategy
 
-Prefer **integration tests** (`Tests/Integration/`) over unit tests — they exercise real WordPress
-context, real DI wiring, and real hook execution. Write a unit test only for pure logic with no
-WordPress globals, container, or hooks.
+Prefer **integration tests** (`Tests/Integration/`, annotated `@group FeatureName`) — they exercise
+real WordPress context, DI wiring, and hook execution. Unit tests only for pure logic with no WP
+globals, container, or hooks.
 
-Integration tests carry `@group FeatureName` annotations for targeted runs. To run one group
-directly, bypassing the default exclude list baked into `composer test-integration`:
+Scale scope to risk: LOW = the relevant `--group`; MEDIUM = `composer test-unit` plus that group;
+HIGH = `composer run-tests`. To run one group directly, bypassing the exclude list baked into
+`composer test-integration`:
 
 ```bash
 vendor/bin/phpunit --configuration Tests/Integration/phpunit.xml.dist --group FeatureName
 ```
 
-Scale test scope to risk rather than always running everything:
-
-| Risk | Run |
-|---|---|
-| LOW | the one relevant `--group` |
-| MEDIUM | `composer test-unit`, then the relevant `--group` |
-| HIGH | `composer run-tests` (full suite) |
-
 ## 6.2 Definition of Done — file scope
 
-When checking that a change stayed inside its intended scope, these are expected and not
-scope violations: generated files (`*.min.js`, `*.min.css`), lockfiles, test files mirroring
-changed source files, and auto-formatter output.
+Not scope violations: generated files (`*.min.js`, `*.min.css`), lockfiles, tests mirroring changed
+source, auto-formatter output.
 
 ---
 
@@ -275,29 +256,23 @@ Plugin activation check: `npx @wordpress/env run cli wp plugin list --name=imagi
 
 ## 7.2 Test architecture
 
-- Config: `Tests/e2e/playwright.config.ts`
-- Specs: `Tests/e2e/specs/` — Fixtures: `Tests/e2e/fixtures/` — Page objects: `Tests/e2e/pages/`
-- Page objects (reuse these rather than duplicating selectors):
-  `settings.ts` → `SettingsPage`, `bulk-optimization.ts` → `BulkOptimizationPage`,
-  `media-library.ts` → `MediaLibraryPage`
+`Tests/e2e/` holds `playwright.config.ts`, `specs/`, `fixtures/`, and `pages/`. Reuse the page
+objects rather than duplicating selectors: `settings.ts` → `SettingsPage`, `bulk-optimization.ts`
+→ `BulkOptimizationPage`, `media-library.ts` → `MediaLibraryPage`.
 
 ## 7.3 Conventions
 
-- Never use `setTimeout` or `waitForTimeout`. Use web-first assertions with explicit timeouts.
-- Gate specs that need a live API key:
-  `test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set' );`
-- Specs authored during QA are committed permanently to `Tests/e2e/specs/`. Do not write a spec
-  and then delete it.
-- Screenshot evidence for durable report links: commit `.e2e-screenshots/` (gitignored) to the
-  branch temporarily, push, capture the commit SHA, then untrack the files in a follow-up commit.
-  The SHA-based URL resolves permanently:
+- No `setTimeout` / `waitForTimeout` — web-first assertions with explicit timeouts.
+- Gate specs needing a live key: `test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, '...' );`
+- Specs authored during QA are committed permanently. Never write one then delete it.
+- Screenshot evidence: commit `.e2e-screenshots/` (gitignored) to the branch, push, then untrack in
+  a follow-up commit. The SHA-based URL resolves permanently:
   `https://raw.githubusercontent.com/wp-media/imagify-plugin/<SHA>/.e2e-screenshots/<filename>`
 
 ## 7.4 License, quota, and API guards
 
-Imagify's optimization behavior is gated behind license, API-key, and quota checks. Before
-claiming a feature works or is broken, determine whether one of these guards short-circuited the
-code path being tested.
+Optimization behavior is gated behind license, API-key, and quota checks. Before claiming a feature
+works or is broken, check whether one of these short-circuited the tested path.
 
 | Guard | Function | Location |
 |---|---|---|
@@ -307,20 +282,18 @@ code path being tested.
 | API key valid (wrapper) | `imagify_is_api_key_valid()` | `inc/functions/api.php:340` |
 | API key valid (deprecated) | `imagify_valid_key()` | `inc/deprecated/deprecated.php:206` |
 
-**Check the precondition before calling a guard a blocker.** `bin/dev-seed.sh` seeds the key from
-the `IMAGIFY_TESTS_API_KEY` environment variable into the `imagify_settings` option. Verify it
-actually landed:
+**Check the precondition first.** `bin/dev-seed.sh` seeds `IMAGIFY_TESTS_API_KEY` into the
+`imagify_settings` option. A result of `1` means the key is present and the API-key guards are not
+blockers:
 
 ```bash
 npx @wordpress/env run cli wp option get imagify_settings --format=json | grep -c '"api_key":"[^"]\+'
 ```
 
-A result of `1` means the key is present and the API-key guards are **not** blockers.
-
-**Reporting rule.** If a guard on the tested path evaluates false locally, report the result as
-*cannot verify* and cite the guard's `file:line`. Never infer that a feature passes a behavioral
-check through a blocked guard, and never report a failure for a feature that was merely gated.
-Structural claims (file exists, hook registered, class present) remain verifiable regardless.
+**Reporting rule.** If a guard on the tested path evaluates false locally, report *cannot verify*
+citing its `file:line`. Never claim a behavioral pass through a blocked guard, and never report a
+failure for a feature that was merely gated. Structural claims (file exists, hook registered) stay
+verifiable.
 
 ---
 
