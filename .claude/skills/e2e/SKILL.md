@@ -34,7 +34,7 @@ agent's execution window.
 
 | You'll be tempted to say | Why you can't |
 |---|---|
-| "The environment probably isn't up, I'll skip" | Run `{E2E_BOOT}`. It's idempotent. If it fails, log `SKIP` with the reason — do not silently omit the step. |
+| "The environment probably isn't up, I'll skip" | Run `bash bin/dev-up.sh`. It's idempotent. If it fails, log `SKIP` with the reason — do not silently omit the step. |
 | "The change is backend-only, no need to smoke it" | The primary happy path must be verified. A backend change with no observable behavior change still needs a confirming assertion. |
 | "I already read the code, I know it works" | "Seems right" never closes a task. Run the scenario. |
 | "One scenario is too slow for this stage" | Basic tier is exactly one primary scenario. The cost is acceptable. |
@@ -43,7 +43,7 @@ agent's execution window.
 
 1. Boot the environment (idempotent — safe to run if already up):
    ```bash
-   {E2E_BOOT}
+   bash bin/dev-up.sh
    ```
    If the script exits non-zero, set `status: "SKIP"`, note the reason, and do not block
    the pipeline.
@@ -53,28 +53,20 @@ agent's execution window.
    **Backend / AJAX / REST:**
    ```bash
    # Public REST or AJAX
-   curl -s -X POST {E2E_URL}/wp-admin/admin-ajax.php \
+   curl -s -X POST http://localhost:8888/wp-admin/admin-ajax.php \
      -H "Cookie: $(cat .wp-session-cookie 2>/dev/null)" \
      -d 'action=<action>&nonce=...'
 
    # Cache headers
-   curl -sI {E2E_URL}/ | grep -E '(x-cache|cf-cache)'
+   curl -sI http://localhost:8888/ | grep -E '(x-cache|cf-cache)'
    ```
 
    **Browser (settings page, dashboard notices, interactive UI):**
-   Use the Playwright MCP directly for basic-tier smoke. Do not delegate to
-   `e2e-qa-tester` at this tier (that is the extended tier path):
-   ```
-   mcp__playwright__navigate({ url: "{E2E_URL}/wp-login.php" })
-   # login
-   mcp__playwright__fill({ selector: "#user_login", value: "admin" })
-   mcp__playwright__fill({ selector: "#user_pass", value: "password" })
-   mcp__playwright__click({ selector: "#wp-submit" })
-   # primary scenario
-   mcp__playwright__navigate({ url: "{E2E_SETTINGS}" })
-   mcp__playwright__snapshot({})
-   # Inspect snapshot output to confirm expected element/text is present
-   ```
+   Drive the browser with whatever tooling the installed pipeline provides — currently
+   `playwright-cli` via Bash. Do not delegate to `e2e-qa-tester` at this tier (that is the
+   extended tier path). Log in at `http://localhost:8888/wp-login.php` as `admin` / `password`,
+   navigate to the target page, and read the page snapshot to confirm the expected element or
+   text is present.
 
    Take at most 1–2 screenshots if helpful, but do not publish them at this tier.
 
@@ -83,11 +75,11 @@ agent's execution window.
    {
      "status": "PASS|FAIL|SKIP",
      "scenarios_tested": ["Settings page loads without errors after enabling X option"],
-     "details": "Logged in as admin, navigated to {E2E_SETTINGS}, confirmed no JS console errors and X toggle present"
+     "details": "Logged in as admin, navigated to http://localhost:8888/wp-admin/options-general.php?page=imagify, confirmed no JS console errors and X toggle present"
    }
    ```
 
-   `SKIP`: `{E2E_BOOT}` failed or environment unreachable. Record reason. Do not block
+   `SKIP`: `bash bin/dev-up.sh` failed or environment unreachable. Record reason. Do not block
    the pipeline.
 
 ### Basic tier boundaries
@@ -141,9 +133,9 @@ https://raw.githubusercontent.com/wp-media/imagify-plugin/<SHA>/.e2e-screenshots
 
 ## Project-specific notes
 
-- The boot script `{E2E_BOOT}` is **idempotent**. Always run it before testing — don't pre-check whether the environment is up.
+- The boot script `bash bin/dev-up.sh` is **idempotent**. Always run it before testing — don't pre-check whether the environment is up.
 - Admin credentials: `admin` / `password`.
-- Settings page URL: `{E2E_SETTINGS}`.
+- Settings page URL: `http://localhost:8888/wp-admin/options-general.php?page=imagify`.
 - Plugin activation check:
   ```bash
   npx @wordpress/env run cli wp plugin list --name=imagify
@@ -158,7 +150,7 @@ https://raw.githubusercontent.com/wp-media/imagify-plugin/<SHA>/.e2e-screenshots
   test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set' );
   ```
 - Run the full E2E suite via: `bash bin/test-e2e.sh` (flags: `--headed`, `--ui`, or a spec pattern).
-- The basic tier never writes Playwright spec files and is invoked by grooming-agent only. Implementation agents (backend-agent, frontend-agent) do not invoke the e2e skill — full E2E validation belongs to the qa-engineer + e2e-qa-tester tier.
+- The basic tier never writes Playwright spec files and is invoked by grooming-agent only. Implementation agents do not invoke the e2e skill — full E2E validation belongs to the qa-engineer + e2e-qa-tester tier.
 - Known admin routes:
 
   | Area | URL |
@@ -167,3 +159,44 @@ https://raw.githubusercontent.com/wp-media/imagify-plugin/<SHA>/.e2e-screenshots
   | Bulk optimization | `/wp-admin/upload.php?page=imagify-bulk-optimization` |
   | Custom folders (Files) | `/wp-admin/upload.php?page=imagify-files` |
   | Media library (list) | `/wp-admin/upload.php?mode=list` |
+
+---
+
+## License, quota, and API guards
+
+Optimization behavior is gated behind license, API-key, and quota checks. Before claiming a feature
+works or is broken, check whether one of these short-circuited the tested path.
+
+| Guard | Function | Location |
+|---|---|---|
+| API reachable | `Imagify_Requirements::is_api_up()` | `inc/classes/class-imagify-requirements.php:225` |
+| API key valid | `Imagify_Requirements::is_api_key_valid()` | `inc/classes/class-imagify-requirements.php:258` |
+| Over quota | `Imagify_Requirements::is_over_quota()` | `inc/classes/class-imagify-requirements.php:299` |
+| API key valid (wrapper) | `imagify_is_api_key_valid()` | `inc/functions/api.php:340` |
+| API key valid (deprecated) | `imagify_valid_key()` | `inc/deprecated/deprecated.php:206` |
+
+**Check the precondition first.** `bin/dev-seed.sh` seeds `IMAGIFY_TESTS_API_KEY` into the
+`imagify_settings` option. A result of `1` means the key is present and the API-key guards are not
+blockers:
+
+```bash
+npx @wordpress/env run cli wp option get imagify_settings --format=json | grep -c '"api_key":"[^"]\+'
+```
+
+**Reporting rule.** If a guard on the tested path evaluates false locally, report *cannot verify*
+citing its `file:line`. Never claim a behavioral pass through a blocked guard, and never report a
+failure for a feature that was merely gated. Structural claims (file exists, hook registered) stay
+verifiable.
+
+---
+
+## Spec conventions
+
+- No `setTimeout` / `waitForTimeout` — use web-first assertions with explicit timeouts.
+- Never use `test.skip()` as a fallback for missing seed data. It reports green with zero
+  assertions, so CI passes while nothing is tested. Assert hard instead, with a message naming the
+  seed command that fixes the environment.
+- Always call `locator.scrollIntoViewIfNeeded()` before screenshotting, or use the shared
+  `screenshotElement()` helper from `Tests/e2e/fixtures/screenshot.ts`. A screenshot taken at
+  page-load position captures the top of the page rather than the feature under test, which is zero
+  evidence and misleads reviewers.
