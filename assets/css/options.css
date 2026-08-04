@@ -570,6 +570,18 @@ label[for="imagify_partner_links"] {
 	flex-direction: column;
 	align-items: flex-start;
 	gap: 10px;
+	/*
+	 * Holds the space above the area on the container rather than on the message paragraph.
+	 * While a run is in progress the paragraph is hidden (assets/js/options.js:560), and a
+	 * `display: none` flex item takes its margins out of the layout with it — which left the
+	 * button flush against the info text above. Paired with the reset below so the idle
+	 * layout, where the paragraph is visible, is unchanged.
+	 */
+	margin-top: 14px;
+}
+
+.generate-missing-webp > p {
+	margin-top: 0;
 }
 
 .generate-missing-webp #imagify-generate-webp-versions {
