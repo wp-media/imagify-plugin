@@ -12,7 +12,7 @@ command, settings page, repo, test commands). Do not expect values to be injecte
 standalone and no orchestrator supplies them.
 
 The values used below: local environment `http://localhost:8888` (`admin` / `password`), booted with
-`bash bin/dev-up.sh`. Specs are committed permanently to `Tests/e2e/specs/`.
+`bash bin/dev-up.sh`. `Tests/e2e/specs/` is the permanent reviewed suite — QA runs do not write to it.
 
 This skill provides end-to-end test execution at two tiers. The difference is scope and depth, not
 tooling — browser driving belongs to whichever `e2e-qa-tester` agent the installed pipeline provides
@@ -111,14 +111,13 @@ Strategy selection, report format, browser flow execution, and spec authoring be
 installed pipeline's `qa-engineer` and `e2e-qa-tester` agents — read those agent definitions for
 details.
 
-Specs authored during the extended tier are **committed permanently** to `Tests/e2e/specs/` on this
-project, never authored-then-deleted. If the pipeline's agent defaults to discarding them, override
-it.
+Spec and screenshot lifecycle belongs to the pipeline's `e2e-qa-tester` — follow whatever it does
+(currently: temporary specs kept outside the repo, screenshots published to a gist). Do not commit
+QA-run artefacts to the branch.
 
-Screenshots go to `.e2e-screenshots/` (gitignored). Screenshots are published using the commit-SHA method: commit screenshots temporarily to the branch, push, capture the SHA, then remove them in a follow-up commit. Use the SHA-based raw.githubusercontent.com URL in QA reports (permanent even after file removal):
-```
-https://raw.githubusercontent.com/wp-media/imagify-plugin/<SHA>/.e2e-screenshots/<filename>
-```
+`Tests/e2e/specs/` is the **permanent, reviewed** suite: everything in it runs in CI on every future
+PR. Adding to it is a deliberate authoring task with review, never a side effect of a QA run. If a
+QA run produces a flow worth keeping, say so in the report and let a human decide.
 
 ---
 
