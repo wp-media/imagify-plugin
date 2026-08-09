@@ -6,6 +6,7 @@ namespace Imagify\Tests\Unit\classes\Abilities\GetMediaStatus;
 use Brain\Monkey\Actions;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\GetMediaStatus;
+use Imagify\Abilities\MediaResolver;
 use Imagify\Optimization\Data\WP;
 use Imagify\Optimization\Process\ProcessInterface;
 use Imagify\Tests\Unit\TestCase;
@@ -18,8 +19,41 @@ use Imagify\Tests\Unit\TestCase;
  *
  * @covers \Imagify\Abilities\GetMediaStatus::execute
  * @group  MCP
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 class Test_Execute extends TestCase {
+
+	/**
+	 * Reset the MediaResolver query factory and stub i18n functions so each
+	 * test starts with a clean slate.
+	 *
+	 * @return void
+	 */
+	protected function setUp(): void {
+		parent::setUp();
+		Functions\stubTranslationFunctions();
+		MediaResolver::set_query_factory( null );
+	}
+
+	/**
+	 * Inject a fake query factory that returns an object with the given
+	 * `posts` array. Used by filename-resolution tests.
+	 *
+	 * @param array $posts Attachment IDs returned by the fake query.
+	 * @return void
+	 */
+	private function stubFilenameQuery( array $posts ): void {
+		$obj       = new \stdClass();
+		$obj->posts = $posts;
+
+		MediaResolver::set_query_factory(
+			static function () use ( $obj ) {
+				return $obj;
+			}
+		);
+	}
 
 	/**
 	 * Build a testable GetMediaStatus subclass with a mocked WP data object.
@@ -89,7 +123,7 @@ class Test_Execute extends TestCase {
 		$result  = $ability->execute( [ 'media_id' => 0 ] );
 
 		$this->assertSame( 'error', $result['status'] );
-		$this->assertSame( 'Invalid or missing media_id', $result['error_message'] );
+		$this->assertStringContainsString( 'media_id', $result['error_message'] );
 		$this->assertNull( $result['optimization_level'] );
 		$this->assertSame( 0, $result['original_size'] );
 		$this->assertSame( 0, $result['optimized_size'] );
@@ -105,7 +139,7 @@ class Test_Execute extends TestCase {
 		$result  = $ability->execute( [] );
 
 		$this->assertSame( 'error', $result['status'] );
-		$this->assertSame( 'Invalid or missing media_id', $result['error_message'] );
+		$this->assertStringContainsString( 'media_id', $result['error_message'] );
 	}
 
 	/**
@@ -116,7 +150,53 @@ class Test_Execute extends TestCase {
 		$result  = $ability->execute( [ 'media_id' => -5 ] );
 
 		$this->assertSame( 'error', $result['status'] );
-		$this->assertSame( 'Invalid or missing media_id', $result['error_message'] );
+		$this->assertStringContainsString( 'media_id', $result['error_message'] );
+	}
+
+	/**
+	 * Tests that execute() resolves media_filename via MediaResolver.
+	 */
+	public function testResolvesByFilename(): void {
+		$opt_data = [
+			'status'  => 'success',
+			'message' => '',
+			'level'   => 1,
+			'sizes'   => [],
+			'stats'   => [
+				'original_size'  => 1000,
+				'optimized_size' => 500,
+				'percent'        => 50.0,
+			],
+		];
+
+		$ability = $this->make_ability( $opt_data, 1000 );
+		$this->stubFilenameQuery( [ 42 ] );
+
+		Functions\expect( 'sanitize_file_name' )
+			->with( 'hero.jpg' )
+			->andReturn( 'hero.jpg' );
+
+		$result = $ability->execute( [ 'media_filename' => 'hero.jpg' ] );
+
+		$this->assertSame( 'success', $result['status'] );
+		$this->assertSame( 1, $result['optimization_level'] );
+	}
+
+	/**
+	 * Tests that execute() returns error when media_filename is ambiguous.
+	 */
+	public function testReturnsErrorWhenFilenameIsAmbiguous(): void {
+		$this->stubFilenameQuery( [ 1, 2, 3 ] );
+
+		Functions\expect( 'sanitize_file_name' )
+			->with( 'shared.jpg' )
+			->andReturn( 'shared.jpg' );
+
+		$ability = new GetMediaStatus();
+		$result  = $ability->execute( [ 'media_filename' => 'shared.jpg' ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertStringContainsString( 'Multiple', $result['error_message'] );
 	}
 
 	/**

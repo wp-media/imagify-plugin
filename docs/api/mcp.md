@@ -241,7 +241,9 @@ Delegates to `Imagify\Optimization\Process\WP::optimize()` for first-time optimi
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `media_id` | integer | yes | WordPress attachment ID. |
+| `media_id` | integer | no | WordPress attachment ID. Provide this OR `media_filename` OR `media_url`. |
+| `media_filename` | string | no | Image filename (e.g. `hero-banner.jpg`). Matched by basename against `_wp_attached_file` post meta. Provide this OR `media_id` OR `media_url`. |
+| `media_url` | string (uri) | no | Absolute URL of the image. Resolved via `attachment_url_to_postid()`. Provide this OR `media_id` OR `media_filename`. |
 | `optimization_level` | integer (0–2) | no | Overrides the global setting. 0 = normal, 1 = aggressive, 2 = ultra. |
 | `confirm` | boolean | no | Set to `true` to execute after reviewing the credit-consumption preview returned by a prior call without this flag. Defaults to `false`. See [Credit confirmation flow](#credit-confirmation-flow). |
 
@@ -272,7 +274,9 @@ Restores an optimized media to its original state using the stored backup file. 
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `media_id` | integer | yes | WordPress attachment ID to restore. |
+| `media_id` | integer | no | WordPress attachment ID to restore. Provide this OR `media_filename` OR `media_url`. |
+| `media_filename` | string | no | Image filename (e.g. `hero-banner.jpg`). Matched by basename against `_wp_attached_file` post meta. Provide this OR `media_id` OR `media_url`. |
+| `media_url` | string (uri) | no | Absolute URL of the image. Resolved via `attachment_url_to_postid()`. Provide this OR `media_id` OR `media_filename`. |
 
 **Output schema:**
 
@@ -383,7 +387,9 @@ Registered by `Imagify\Abilities\GetMediaStatus`. Returns the optimization statu
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `media_id` | integer | yes | WordPress attachment ID. |
+| `media_id` | integer | no | WordPress attachment ID. Provide this OR `media_filename` OR `media_url`. |
+| `media_filename` | string | no | Image filename (e.g. `hero-banner.jpg`). Matched by basename against `_wp_attached_file` post meta. Provide this OR `media_id` OR `media_url`. |
+| `media_url` | string (uri) | no | Absolute URL of the image. Resolved via `attachment_url_to_postid()`. Provide this OR `media_id` OR `media_filename`. |
 
 **Output schema:**
 
@@ -398,6 +404,20 @@ Registered by `Imagify\Abilities\GetMediaStatus`. Returns the optimization statu
 | `error_message` | string \| null | Human-readable error message when `status` is `"error"`. `null` otherwise. |
 
 **Error behaviour:** If `media_id` is `0` or negative, or the attachment does not exist in the database, returns `status: "error"` with a descriptive `error_message`.
+
+### Identifier resolution (all media abilities)
+
+The three media abilities (`imagify/optimize-media`, `imagify/restore-media`, `imagify/get-media-status`) all accept one of three identifier inputs:
+
+- `media_id` (integer) — direct attachment ID, used as-is.
+- `media_url` (string, absolute URL) — resolved via `attachment_url_to_postid()`.
+- `media_filename` (string) — sanitized with `sanitize_file_name()` then matched by `basename()` against the `_wp_attached_file` post meta value, capped at the first 5 matches.
+
+Priority order: `media_id` > `media_url` > `media_filename`. Exactly one must be provided. If `media_id` is `0` or negative it is treated as missing and the resolver falls through to the next identifier.
+
+When `media_filename` matches more than one attachment, the ability returns an error asking the caller to retry with the numeric `media_id`. The `imagify/restore-media` ability still falls back to the `custom-folders` optimization context for `media_id` lookups (this is unchanged for filename/URL lookups, which always resolve against WP attachments).
+
+Resolution is implemented in `Imagify\Abilities\MediaResolver::resolve_id()` (final, static).
 
 ### `imagify/get-nextgen-coverage`
 

@@ -71,6 +71,28 @@ class RegisterAbilityTest extends TestCase {
 	}
 
 	/**
+	 * Tests that the registered ability's input_schema includes the new
+	 * `media_filename` and `media_url` identifier properties.
+	 */
+	public function testInputSchemaIncludesMediaFilenameAndUrlProperties(): void {
+		$ability = wp_get_ability( 'imagify/get-media-status' );
+
+		$this->assertNotNull( $ability, 'Ability should be registered.' );
+
+		$input_schema = $ability->get_input_schema();
+
+		$this->assertArrayHasKey( 'media_filename', $input_schema['properties'] );
+		$this->assertSame( 'string', $input_schema['properties']['media_filename']['type'] );
+
+		$this->assertArrayHasKey( 'media_url', $input_schema['properties'] );
+		$this->assertSame( 'string', $input_schema['properties']['media_url']['type'] );
+		$this->assertSame( 'uri', $input_schema['properties']['media_url']['format'] );
+
+		$required = $input_schema['required'] ?? [];
+		$this->assertNotContains( 'media_id', $required );
+	}
+
+	/**
 	 * Tests that all response fields have the correct types for an unoptimized attachment.
 	 */
 	public function testSuccessResponseFieldTypesForUnoptimizedAttachment(): void {

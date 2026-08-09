@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Imagify\Tests\Unit\classes\Abilities\OptimizeMedia;
 
 use Brain\Monkey\Functions;
+use Imagify\Abilities\MediaResolver;
 use Imagify\Abilities\OptimizeMedia;
 use Imagify\Tests\Unit\TestCase;
 use Mockery;
@@ -32,6 +33,24 @@ class Test_Execute extends TestCase {
 	private function stubValidAttachment(): void {
 		Functions\when( 'get_post' )->justReturn( Mockery::mock( 'WP_Post' ) );
 		Functions\when( 'get_post_type' )->justReturn( 'attachment' );
+	}
+
+	/**
+	 * Inject a fake query factory into MediaResolver so the filename path
+	 * returns the supplied attachment IDs.
+	 *
+	 * @param array $posts Attachment IDs returned by the fake query.
+	 * @return void
+	 */
+	private function stubFilenameQuery( array $posts ): void {
+		$obj       = new \stdClass();
+		$obj->posts = $posts;
+
+		MediaResolver::set_query_factory(
+			static function () use ( $obj ) {
+				return $obj;
+			}
+		);
 	}
 
 	/**
@@ -167,6 +186,80 @@ class Test_Execute extends TestCase {
 		$this->assertNull( $result['optimized_size'] );
 		$this->assertNull( $result['savings_percent'] );
 		$this->assertIsString( $result['error_message'] );
+	}
+
+	/**
+	 * Tests that execute() resolves media_filename via MediaResolver and treats the result like a numeric media_id.
+	 */
+	public function testResolvesByFilename(): void {
+		$this->stubRequirements( true, false );
+		$this->stubValidAttachment();
+		$this->stubFilenameQuery( [ 262 ] );
+
+		$process = Mockery::mock( 'Imagify\Optimization\Process\ProcessInterface' );
+		$data    = Mockery::mock();
+		$data->shouldReceive( 'is_optimized' )->andReturn( false );
+		$data->shouldReceive( 'get_optimization_data' )->andReturn( [ 'stats' => [] ] );
+		$process->shouldReceive( 'get_data' )->andReturn( $data );
+		$process->shouldReceive( 'optimize' )->andReturn( true );
+		$media = Mockery::mock();
+		$media->shouldReceive( 'get_raw_original_path' )->andReturn( '/tmp/hero.jpg' );
+		$process->shouldReceive( 'get_media' )->andReturn( $media );
+
+		Functions\when( 'imagify_get_optimization_process' )->justReturn( $process );
+
+		Functions\expect( 'sanitize_file_name' )
+			->with( 'hero.jpg' )
+			->andReturn( 'hero.jpg' );
+
+		$ability = new OptimizeMedia();
+		$result  = $ability->execute(
+			[
+				'media_filename' => 'hero.jpg',
+				'confirm'        => true,
+			]
+		);
+
+		$this->assertSame( 'success', $result['status'] );
+		$this->assertNull( $result['error_message'] );
+	}
+
+	/**
+	 * Tests that execute() returns an error when the media_filename matches multiple attachments.
+	 */
+	public function testReturnsErrorWhenFilenameIsAmbiguous(): void {
+		$this->stubRequirements( true, false );
+		$this->stubFilenameQuery( [ 10, 11, 12 ] );
+
+		Functions\expect( 'sanitize_file_name' )
+			->with( 'shared.jpg' )
+			->andReturn( 'shared.jpg' );
+
+		$ability = new OptimizeMedia();
+		$result  = $ability->execute(
+			[
+				'media_filename' => 'shared.jpg',
+				'confirm'        => true,
+			]
+		);
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertIsString( $result['error_message'] );
+		$this->assertStringContainsString( 'Multiple', $result['error_message'] );
+	}
+
+	/**
+	 * Tests that execute() returns an error when no identifier (media_id, media_url, media_filename) is provided.
+	 */
+	public function testReturnsErrorWhenNoIdentifierProvided(): void {
+		$this->stubRequirements( true, false );
+
+		$ability = new OptimizeMedia();
+		$result  = $ability->execute( [ 'confirm' => true ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertIsString( $result['error_message'] );
+		$this->assertStringContainsString( 'media_id', $result['error_message'] );
 	}
 
 	/**

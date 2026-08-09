@@ -57,12 +57,20 @@ class GetMediaStatus extends AbstractAbility {
 				'input_schema'        => [
 					'type'       => 'object',
 					'properties' => [
-						'media_id' => [
+						'media_id'       => [
 							'type'        => 'integer',
-							'description' => __( 'The WordPress attachment ID.', 'imagify' ),
+							'description' => __( 'The WordPress attachment ID. Provide this OR media_filename OR media_url.', 'imagify' ),
+						],
+						'media_filename' => [
+							'type'        => 'string',
+							'description' => __( 'The image filename (e.g. "hero-banner.jpg"). Resolved to an attachment via basename match on _wp_attached_file. Provide this OR media_id OR media_url.', 'imagify' ),
+						],
+						'media_url'      => [
+							'type'        => 'string',
+							'format'      => 'uri',
+							'description' => __( 'The absolute URL of the image. Resolved to an attachment via attachment_url_to_postid(). Provide this OR media_id OR media_filename.', 'imagify' ),
 						],
 					],
-					'required'   => [ 'media_id' ],
 				],
 				'output_schema'       => [
 					'type'       => 'object',
@@ -150,12 +158,26 @@ class GetMediaStatus extends AbstractAbility {
 	 * @return array
 	 */
 	private function do_execute( array $args ): array {
-		$media_id = isset( $args['media_id'] ) ? (int) $args['media_id'] : 0;
+		$resolved = MediaResolver::resolve_id( $args );
+
+		if ( is_wp_error( $resolved ) ) {
+			return [
+				'status'             => 'error',
+				'error_message'      => $resolved->get_error_message(),
+				'optimization_level' => null,
+				'original_size'      => 0,
+				'optimized_size'     => 0,
+				'webp_available'     => false,
+				'avif_available'     => false,
+			];
+		}
+
+		$media_id = (int) $resolved;
 
 		if ( $media_id <= 0 ) {
 			return [
 				'status'             => 'error',
-				'error_message'      => 'Invalid or missing media_id',
+				'error_message'      => 'Invalid or missing media identifier.',
 				'optimization_level' => null,
 				'original_size'      => 0,
 				'optimized_size'     => 0,

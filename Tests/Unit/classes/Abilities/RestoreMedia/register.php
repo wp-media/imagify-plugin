@@ -46,7 +46,11 @@ class Test_Register extends TestCase {
 		$this->assertSame( 'imagify', $captured['category'] );
 		$this->assertSame( [ $ability, 'execute' ], $captured['execute_callback'] );
 		$this->assertSame( [ $ability, 'check_permissions' ], $captured['permission_callback'] );
-		$this->assertSame( [ 'media_id' ], $captured['input_schema']['required'] );
+		// media_id is now optional — callers may pass media_id, media_filename, or media_url.
+		$this->assertArrayNotHasKey( 'required', $captured['input_schema'] );
+		$this->assertArrayHasKey( 'media_id', $captured['input_schema']['properties'] );
+		$this->assertArrayHasKey( 'media_filename', $captured['input_schema']['properties'] );
+		$this->assertArrayHasKey( 'media_url', $captured['input_schema']['properties'] );
 		$this->assertSame( [ 'success', 'error' ], $captured['output_schema']['properties']['status']['enum'] );
 		$this->assertTrue( $captured['meta']['show_in_rest'] );
 		$this->assertTrue( $captured['meta']['mcp']['public'] );

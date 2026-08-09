@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace Imagify\Tests\Unit\classes\Abilities\RestoreMedia;
 
 use Brain\Monkey\Functions;
+use Imagify\Abilities\MediaResolver;
 use Imagify\Abilities\RestoreMedia;
 use Imagify\Tests\Unit\TestCase;
+use Mockery;
 use WP_Error;
 
 /**
@@ -17,12 +19,45 @@ use WP_Error;
  *
  * @covers \Imagify\Abilities\RestoreMedia::execute
  * @group  RestoreMedia
+ *
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 class Test_Execute extends TestCase {
+
+	/**
+	 * Stub i18n functions and reset the MediaResolver query factory so each
+	 * test starts with a clean slate.
+	 *
+	 * @return void
+	 */
+	protected function setUp(): void {
+		parent::setUp();
+		Functions\stubTranslationFunctions();
+		MediaResolver::set_query_factory( null );
+	}
 
 	// -------------------------------------------------------------------------
 	// Helpers
 	// -------------------------------------------------------------------------
+
+	/**
+	 * Inject a fake query factory that returns an object with the given
+	 * `posts` array. Used by filename-resolution tests.
+	 *
+	 * @param array $posts Attachment IDs returned by the fake query.
+	 * @return void
+	 */
+	private function stubFilenameQuery( array $posts ): void {
+		$obj       = new \stdClass();
+		$obj->posts = $posts;
+
+		MediaResolver::set_query_factory(
+			static function () use ( $obj ) {
+				return $obj;
+			}
+		);
+	}
 
 	/**
 	 * Build a testable RestoreMedia instance.
@@ -131,6 +166,84 @@ class Test_Execute extends TestCase {
 
 		$this->assertSame( 'error', $result['status'] );
 		$this->assertNull( $result['restored_size'] );
+	}
+
+	/**
+	 * Tests that execute() resolves media_filename via MediaResolver and forwards the integer ID to get_process().
+	 */
+	public function testResolvesByFilenameAndForwardsToGetProcess(): void {
+		$this->stubFilenameQuery( [ 262 ] );
+
+		$process = Mockery::mock();
+		$process->shouldReceive( 'get_data' )->andReturn(
+			Mockery::mock()->shouldReceive( 'is_optimized' )->andReturn( true )->getMock()
+		);
+		$process->shouldReceive( 'restore' )->andReturn( true );
+		$media = Mockery::mock();
+		$media->shouldReceive( 'get_raw_original_path' )->andReturn( '/tmp/hero.jpg' );
+		$process->shouldReceive( 'get_media' )->andReturn( $media );
+
+		Functions\expect( 'sanitize_file_name' )
+			->with( 'hero.jpg' )
+			->andReturn( 'hero.jpg' );
+
+		$captured_id      = null;
+		$ability_subclass = new class( $process, 1000, $captured_id ) extends RestoreMedia {
+			/** @var mixed */
+			private $process;
+			/** @var int */
+			private $size;
+			/** @var int|null */
+			public $captured;
+
+			public function __construct( $process, int $size, &$captured ) {
+				$this->process  = $process;
+				$this->size     = $size;
+				$this->captured = &$captured;
+			}
+
+			protected function get_process( int $media_id ) {
+				$this->captured = $media_id;
+				return $this->process;
+			}
+
+			protected function get_restored_size( $process ): int {
+				return $this->size;
+			}
+		};
+
+		$result = $ability_subclass->execute( [ 'media_filename' => 'hero.jpg' ] );
+
+		$this->assertSame( 'success', $result['status'] );
+		$this->assertSame( 262, $ability_subclass->captured );
+	}
+
+	/**
+	 * Tests that execute() returns error when media_filename matches multiple attachments.
+	 */
+	public function testReturnsErrorWhenFilenameIsAmbiguous(): void {
+		$this->stubFilenameQuery( [ 10, 11, 12 ] );
+
+		Functions\expect( 'sanitize_file_name' )
+			->with( 'shared.jpg' )
+			->andReturn( 'shared.jpg' );
+
+		$ability = $this->make_ability( null );
+		$result  = $ability->execute( [ 'media_filename' => 'shared.jpg' ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertStringContainsString( 'Multiple', $result['error_message'] );
+	}
+
+	/**
+	 * Tests that execute() returns error when no identifier is provided.
+	 */
+	public function testReturnsErrorWhenNoIdentifierProvided(): void {
+		$ability = $this->make_ability( null );
+		$result  = $ability->execute( [] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertStringContainsString( 'media_id', $result['error_message'] );
 	}
 
 	// -------------------------------------------------------------------------
