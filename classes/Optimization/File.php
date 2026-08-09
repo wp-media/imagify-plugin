@@ -216,45 +216,7 @@ class File {
 			$exif        = $this->filesystem->get_image_exif( $this->path );
 			$orientation = isset( $exif['Orientation'] ) ? (int) $exif['Orientation'] : 1;
 
-			switch ( $orientation ) {
-				case 2:
-					// Flip horizontally.
-					$editor->flip( true, false );
-					break;
-				case 3:
-					// Rotate 180 degrees or flip horizontally and vertically.
-					// Flipping seems faster/uses less resources.
-					$editor->flip( true, true );
-					break;
-				case 4:
-					// Flip vertically.
-					$editor->flip( false, true );
-					break;
-				case 5:
-					// Rotate 90 degrees counter-clockwise and flip vertically.
-					$result = $editor->rotate( 90 );
-
-					if ( ! is_wp_error( $result ) ) {
-						$editor->flip( false, true );
-					}
-					break;
-				case 6:
-					// Rotate 90 degrees clockwise (270 counter-clockwise).
-					$editor->rotate( 270 );
-					break;
-				case 7:
-					// Rotate 90 degrees counter-clockwise and flip horizontally.
-					$result = $editor->rotate( 90 );
-
-					if ( ! is_wp_error( $result ) ) {
-						$editor->flip( true, false );
-					}
-					break;
-				case 8:
-					// Rotate 90 degrees counter-clockwise.
-					$editor->rotate( 90 );
-					break;
-			}
+			$this->rotate_editor_by_exif_orientation( $editor, $orientation );
 		}
 
 		if ( ! $dimensions ) {
@@ -283,6 +245,111 @@ class File {
 		}
 
 		return $resized_image_path;
+	}
+
+	/**
+	 * Rotate/flip an image editor instance according to a JPEG EXIF "Orientation" value.
+	 *
+	 * @since  2.3.1
+	 *
+	 * @param  \WP_Image_Editor_Imagick|\WP_Image_Editor_GD $editor      The image editor instance.
+	 * @param  int                                          $orientation The EXIF "Orientation" value.
+	 * @return void
+	 */
+	protected function rotate_editor_by_exif_orientation( $editor, $orientation ) {
+		switch ( $orientation ) {
+			case 2:
+				// Flip horizontally.
+				$editor->flip( true, false );
+				break;
+			case 3:
+				// Rotate 180 degrees or flip horizontally and vertically.
+				// Flipping seems faster/uses less resources.
+				$editor->flip( true, true );
+				break;
+			case 4:
+				// Flip vertically.
+				$editor->flip( false, true );
+				break;
+			case 5:
+				// Rotate 90 degrees counter-clockwise and flip vertically.
+				$result = $editor->rotate( 90 );
+
+				if ( ! is_wp_error( $result ) ) {
+					$editor->flip( false, true );
+				}
+				break;
+			case 6:
+				// Rotate 90 degrees clockwise (270 counter-clockwise).
+				$editor->rotate( 270 );
+				break;
+			case 7:
+				// Rotate 90 degrees counter-clockwise and flip horizontally.
+				$result = $editor->rotate( 90 );
+
+				if ( ! is_wp_error( $result ) ) {
+					$editor->flip( true, false );
+				}
+				break;
+			case 8:
+				// Rotate 90 degrees counter-clockwise.
+				$editor->rotate( 90 );
+				break;
+		}
+	}
+
+	/**
+	 * Correct the EXIF orientation of the current file, in place, if needed.
+	 *
+	 * WordPress auto-rotates JPEGs with a non-default EXIF orientation on upload (the resulting,
+	 * rotated file has its orientation reset to 1), but Imagify's backup keeps a copy of the
+	 * original, un-rotated file. When a temporary working copy is created from that backup (for
+	 * example to generate a Next-Gen version of an already-optimized "full" size), the copy must
+	 * be rotated the same way WordPress would have rotated it, otherwise the resulting file (WebP,
+	 * AVIF...) ends up with the wrong orientation.
+	 *
+	 * This method must only ever be called on a disposable working copy: it saves the rotated
+	 * image over $this->path, and must never be used on the actual backup file.
+	 *
+	 * @since  2.3.1
+	 *
+	 * @return bool|WP_Error True if the file was rotated and saved. False if no rotation was
+	 *                       needed (or EXIF data isn't available/readable). A WP_Error object on
+	 *                       failure.
+	 */
+	public function maybe_correct_exif_orientation() {
+		if ( ! $this->filesystem->can_get_exif() || 'image/jpeg' !== $this->get_mime_type() ) {
+			return false;
+		}
+
+		$exif        = $this->filesystem->get_image_exif( $this->path );
+		$orientation = isset( $exif['Orientation'] ) ? (int) $exif['Orientation'] : 1;
+
+		if ( 1 === $orientation ) {
+			// Nothing to correct: either there is no orientation data, or the file is already
+			// upright (this also prevents rotating the same file twice).
+			return false;
+		}
+
+		$editor = $this->get_editor();
+
+		if ( is_wp_error( $editor ) ) {
+			return $editor;
+		}
+
+		$this->rotate_editor_by_exif_orientation( $editor, $orientation );
+
+		$saved = $editor->save( $this->path );
+
+		if ( is_wp_error( $saved ) ) {
+			return $saved;
+		}
+
+		// The file on disk changed: reset the cached data related to it.
+		$this->file_type = null;
+		$this->editor    = null;
+
+		return true;
 	}
 
 	/**
@@ -561,15 +628,36 @@ class File {
 			return new \WP_Error( 'temp_file_not_found', $temp_file->get_error_message() );
 		}
 
-		if ( property_exists( $response, 'message' ) ) {
-			$args['convert'] = '';
-		}
-
-		$formats = [
+		$formats            = [
 			'webp',
 			'avif',
 		];
-		if ( in_array( $args['convert'], $formats, true ) ) {
+		$is_nextgen_request = in_array( $args['convert'], $formats, true );
+
+		if ( property_exists( $response, 'message' ) && ! $is_nextgen_request ) {
+			$args['convert'] = '';
+		}
+
+		if ( $is_nextgen_request && property_exists( $response, 'message' ) ) {
+			/*
+			 * The API can return a `message` alongside the source's own bytes instead of a
+			 * converted file (e.g. "Webp is less performant than original" or "already
+			 * compressed"). In that case the downloaded file is NOT the requested next-gen
+			 * format. Writing it to the next-gen path would create a corrupt file, and
+			 * writing it to `$this->path` would overwrite the original thumbnail. Verify the
+			 * actual bytes before doing either.
+			 */
+			if ( ! $this->is_file_format( $temp_file, $args['convert'] ) ) {
+				$this->filesystem->delete( $temp_file );
+
+				return new \WP_Error(
+					'no_next_gen_returned',
+					$response->message
+				);
+			}
+		}
+
+		if ( $is_nextgen_request ) {
 			$destination_path = $this->get_path_to_nextgen( $args['convert'] );
 			$this->path       = $destination_path;
 			$this->file_type  = null;
@@ -845,6 +933,73 @@ class File {
 	 */
 	public function is_avif() {
 		return preg_match( '@(?!^|/|\\\)\.avif$@i', $this->path );
+	}
+
+	/**
+	 * Tell if a file's actual content matches the given next-gen format, by reading its
+	 * magic bytes. The file's extension can't be trusted here, since it may be a temp
+	 * file downloaded with an unpredictable name (see download_url()).
+	 *
+	 * @since 2.3.2
+	 *
+	 * @param string $file_path Absolute path to the file to check.
+	 * @param string $format    'webp' or 'avif'.
+	 * @return bool
+	 */
+	protected function is_file_format( $file_path, $format ) {
+		$contents = $this->filesystem->get_contents( $file_path );
+
+		if ( ! is_string( $contents ) || strlen( $contents ) < 12 ) {
+			return false;
+		}
+
+		if ( 'webp' === $format ) {
+			// RIFF....WEBP.
+			return 'RIFF' === substr( $contents, 0, 4 ) && 'WEBP' === substr( $contents, 8, 4 );
+		}
+
+		if ( 'avif' === $format ) {
+			return $this->is_avif_ftyp_box( $contents );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Tell if the given content starts with an AVIF `ftyp` box, i.e. its major brand or one of
+	 * its compatible brands is `avif`/`avis`. A file can legitimately declare a major brand of
+	 * `mif1`/`msf1` (generic HEIF-family brands) while listing `avif` only among the compatible
+	 * brands, so both must be checked.
+	 *
+	 * @since 2.3.2
+	 *
+	 * @param string $contents The file content (or at least its leading bytes).
+	 * @return bool
+	 */
+	private function is_avif_ftyp_box( $contents ) {
+		if ( 'ftyp' !== substr( $contents, 4, 4 ) ) {
+			return false;
+		}
+
+		$avif_brands = [ 'avif', 'avis' ];
+
+		if ( in_array( substr( $contents, 8, 4 ), $avif_brands, true ) ) {
+			// Major brand.
+			return true;
+		}
+
+		// Box size (big-endian uint32), bounding how far the compatible brands list extends.
+		$box_size = unpack( 'N', substr( $contents, 0, 4 ) )[1];
+		$box_size = min( $box_size, strlen( $contents ) );
+
+		// Compatible brands: 4-byte entries, starting right after the minor version, at offset 16.
+		for ( $offset = 16; $offset + 4 <= $box_size; $offset += 4 ) {
+			if ( in_array( substr( $contents, $offset, 4 ), $avif_brands, true ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

@@ -194,10 +194,21 @@ class CustomFolders extends AbstractData {
 				/**
 				 * Error.
 				 */
-				$old_data['data']['sizes'][ $size ] = [
+				$size_data = [
 					'success' => false,
 					'error'   => $data['error'],
 				];
+
+				if ( ! empty( $data['permanent_error'] ) ) {
+					/**
+					 * `permanent_error` is written as the FIRST key on purpose: the bulk queries match the
+					 * serialized data with a LIKE on the `<size>";a:3:{s:15:"permanent_error";b:1;` prefix,
+					 * which only stays deterministic if the key order does.
+					 */
+					$size_data = array_merge( [ 'permanent_error' => true ], $size_data );
+				}
+
+				$old_data['data']['sizes'][ $size ] = $size_data;
 			} else {
 				/**
 				 * Success.

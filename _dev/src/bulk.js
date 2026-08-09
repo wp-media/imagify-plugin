@@ -178,6 +178,9 @@ window.imagify = window.imagify || {};
             $( '#imagify-bulk-action' )
                 .on( 'click.imagify', this.maybeLaunchAllProcesses );
 
+            $( '#imagify-bulk-stop' )
+                .on( 'click.imagify', this.maybeStopAllProcesses );
+
             // Optimization events.
             $( w )
                 .on( 'processQueue.imagify', this.processQueue )
@@ -650,6 +653,9 @@ window.imagify = window.imagify || {};
             // Disable the button.
             $button.prop( 'disabled', true ).find( '.dashicons' ).addClass( 'rotate' );
 
+            // Allow the user to stop the process.
+            this.toggleStopButton( true );
+
             // Hide the "Complete" message.
             $( '.imagify-row-complete' ).imagifyHide( 200, function() {
                 $( this ).removeClass( 'done' );
@@ -692,6 +698,94 @@ window.imagify = window.imagify || {};
 
             // Process the queue.
             $w.trigger( 'processQueue.imagify' );
+        },
+
+        /*
+         * Show or hide the "Stop the optimization" button.
+         *
+         * @param {bool} show True to show the button.
+         */
+        toggleStopButton: function ( show ) {
+            var $button = $( '#imagify-bulk-stop' );
+
+            if ( ! $button.length ) {
+                return;
+            }
+
+            if ( show ) {
+                $button.prop( 'disabled', false ).removeClass( 'hidden' ).attr( 'aria-hidden', 'false' );
+                return;
+            }
+
+            $button.addClass( 'hidden' ).attr( 'aria-hidden', 'true' );
+        },
+
+        /*
+         * Ask for confirmation before stopping the running processes.
+         */
+        maybeStopAllProcesses: function () {
+            swal( {
+                title:              imagifyBulk.labels.stopTitle,
+                html:               imagifyBulk.labels.stopText,
+                type:               'warning',
+                customClass:        'imagify-sweet-alert',
+                padding:            0,
+                showCancelButton:   true,
+                confirmButtonText:  imagifyBulk.labels.confirmStop,
+                cancelButtonText:   imagifyBulk.labels.cancelStop,
+                reverseButtons:     true
+            } ).then( function () {
+                w.imagify.bulk.stopAllProcesses();
+            } ).catch( swal.noop );
+        },
+
+        /*
+         * Stop the running processes: the queued media are removed from the queue.
+         */
+        stopAllProcesses: function () {
+            $( '#imagify-bulk-stop' ).prop( 'disabled', true );
+
+            $.get( w.imagify.bulk.getAjaxUrl( 'bulkStop' ) )
+                .done( function ( response ) {
+                    var cancelled;
+
+                    if ( ! response.success ) {
+                        // The process was not running anymore: just resolve the UI.
+                        w.imagify.bulk.endStoppedProcess();
+                        return;
+                    }
+
+                    cancelled = response.data && response.data.cancelled ? response.data.cancelled : 0;
+
+                    w.imagify.bulk.endStoppedProcess();
+
+                    swal( {
+                        title:       imagifyBulk.labels.stoppedTitle,
+                        html:        cancelled ? imagifyBulk.labels.stoppedText.replace( '%s', cancelled ) : imagifyBulk.labels.stoppedNothingQueuedText,
+                        type:        'info',
+                        customClass: 'imagify-sweet-alert',
+                        padding:     0
+                    } ).catch( swal.noop );
+                } )
+                .fail( function () {
+                    $( '#imagify-bulk-stop' ).prop( 'disabled', false );
+
+                    w.imagify.bulk.displayError( {
+                        html: imagifyBulk.labels.stopErrorText
+                    } );
+                } );
+        },
+
+        /*
+         * Reset the UI after the process has been stopped.
+         */
+        endStoppedProcess: function () {
+            w.imagify.bulk.processIsStopped = true;
+            w.imagify.bulk.folderTypesQueue = [];
+
+            w.imagify.bulk.toggleStopButton( false );
+
+            $( w ).trigger( 'queueEmpty.imagify' );
         },
 
         /*
@@ -781,6 +875,9 @@ window.imagify = window.imagify || {};
 
             // Reset the queue.
             w.imagify.bulk.folderTypesQueue = [];
+
+            // The process is over: nothing left to stop.
+            w.imagify.bulk.toggleStopButton( false );
 
             // Display the share box.
             w.imagify.bulk.displayShareBox();
