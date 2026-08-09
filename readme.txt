@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 7.0
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -327,6 +327,19 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.3.2 =
+- New feature: Add a Missing Next-Gen filter to the Media Library.
+- New feature: Add a manual stop button for bulk optimization.
+- Enhancement: Prioritize newly uploaded and manually optimized images in bulk jobs.
+- Enhancement: Chunk large database queries to avoid timeouts on restrictive hosts.
+- Fix: The Next-Gen generation progress bar is visible again.
+- Fix: The Next-Gen progress bar no longer shows a negative count.
+- Fix: Next-Gen files are generated when the API reports an image as already compressed.
+- Fix: Scaled uploads are no longer skipped by the bulk backup check.
+- Fix: Improve WP Rocket CDN detection for CDN-hosted images.
+- Fix: Restore correct capability handling for the Imagify network admin menu.
+- Fix: Updated WP Mixpanel library to fix some loading issues that could surfaced.
+
 = 2.3.1 =
 - New feature: Add OAuth 2.1 + PKCE authentication for MCP clients such as Claude Desktop.
 - New feature: Expose three new MCP abilities for AI agents interacting with Imagify.
