@@ -34,6 +34,14 @@ class Upload {
 			'errors'      => _x( 'Errors', 'Media Files', 'imagify' ),
 		];
 
+		/**
+		 * Nothing can be missing a next-gen version when no next-gen format is being generated,
+		 * so the filter would only ever return an empty list. Offer it when it can do something.
+		 */
+		if ( ! empty( imagify_nextgen_images_formats() ) ) {
+			$options['missing-nextgen'] = _x( 'Missing Next-Gen', 'Media Files', 'imagify' );
+		}
+
 		echo '<label class="screen-reader-text" for="filter-by-optimization-status">' . esc_html__( 'Filter by status', 'imagify' ) . '</label>';
 		echo '<select id="filter-by-optimization-status" name="imagify-status">';
 		echo '<option value="0" selected="selected">' . esc_html__( 'All Media Files', 'imagify' ) . '</option>';

@@ -1,341 +1,155 @@
-# Imagify – AI Coding & Architecture Guidelines
+# Imagify — project instructions for AI agents
 
-This file defines NON-NEGOTIABLE rules for any AI-assisted work
-(Claude Code, ChatGPT, JetBrains AI Assistant, Cursor, etc.)
-in this repository.
-
-Skills define behavioral guidance.
-AGENTS.md defines mandatory guardrails.
-If a conflict exists, AGENTS.md prevails.
-
-The objective is to keep Imagify:
-
-- WordPress.org compliant
-- Architecturally consistent
-- Secure
-- Maintainable
-- Review-friendly
-
-This document applies to ALL automated or AI-generated changes.
+Project Configuration values below override a pipeline's derived defaults. Behaviour — how agents
+run, dispatch, or report — belongs to the pipeline, not to this file.
 
 ---
 
-# 1. Project Overview
+## Project Configuration
 
-Imagify is a single-edition WordPress plugin for image optimization.
+| Variable | Value |
+|---|---|
+| `REPO` | `wp-media/imagify-plugin` |
+| `SLUG` / `TEXT_DOMAIN` | `imagify` |
+| `BASE_BRANCH` | `develop` |
+| Protected branches | `develop`, `master` — never commit directly |
+| Branch naming | `<prefix>/<issue>-<slug>`; prefix `fix` (bugs), `enhancement` (features, incl. `feat` commits), `test` |
+| Test (full / unit / integration) | `composer run-tests` / `composer test-unit` / `composer test-integration` |
+| Test (one group) | `vendor/bin/phpunit --configuration Tests/Integration/phpunit.xml.dist --group <Name>` |
+| Lint / auto-fix | `composer phpcs` / `composer phpcbf` |
+| Static analysis | `composer run-stan` |
+| Build frontend | `npm run build` |
+| Local env up / down / seed | `bash bin/dev-up.sh` / `bash bin/dev-down.sh` / `bash bin/dev-seed.sh` |
+| E2E runner | `bash bin/test-e2e.sh` (`--headed`, `--ui`, or a spec path) |
+| Local URL | `http://localhost:8888` — admin `admin` / `password` |
+| Settings page | `/wp-admin/options-general.php?page=imagify` |
+| Key option | `imagify_settings` (API key + config) |
+| PR template | `.github/PULL_REQUEST_TEMPLATE.md` |
 
-- **Repo:** `wp-media/imagify-plugin`
-- **Plugin slug:** `imagify`
-- **PHP namespace root:** `Imagify\`
-- **PSR-4 root:** `classes/`
-
-There is no FREE/PRO split. The codebase has two layers:
-
-- `classes/` — modern PSR-4 code, namespace `Imagify\`, `declare(strict_types=1)` required. **New features go here.**
-- `inc/classes/` — legacy classmap code, `Imagify_` prefix. **Do not add new classes here; migrate out instead.**
-
-When modifying architecture:
-- Prefer the modern `classes/` layer for all new work.
-- Follow service provider + subscriber pattern for wiring.
-
----
-
-# 2. Technology Stack
-
-- PHP 7.3+ (strict types, PSR-4 autoloading via Composer)
-- WordPress plugin APIs (hooks, options, WP-CLI, AJAX)
-- League Container (DI container + service providers + event subscribers)
-- ActionScheduler (async background jobs)
-- Strauss (Composer dependency namespace prefixing → `Imagify\Dependencies\`)
-- JavaScript / Grunt (`_dev/` pipeline → `assets/`)
-- Playwright + TypeScript (E2E testing under `Tests/e2e/`)
+`.env.local` at the repo root (gitignored) holds `IMAGIFY_TESTS_API_KEY=<key>`. The same value must
+exist as a GitHub secret for CI optimization tests.
 
 ---
 
-# 3. Code Structure
+## Traps
 
-```
-classes/          New PHP code (PSR-4, Imagify\ namespace)
-inc/              Legacy PHP includes (procedural, no namespace)
-inc/classes/      Legacy class files migrating toward classes/
-assets/           Compiled frontend assets (do not edit directly)
-_dev/             Frontend source (JS, SCSS, Grunt config)
-views/            PHP view templates
-Tests/            PHPUnit tests
-Tests/e2e/        Playwright E2E tests (TypeScript)
-bin/              CLI scripts (dev-up, dev-down, dev-seed, test-e2e, build-knowledge-graph)
-docs/             Documentation (E2E_TESTING.md, etc.)
-.aiassistant/     Skill files for AI assistants
-.claude/agents/   Claude Code sub-agents (qa-engineer, e2e-qa-tester)
-```
+Things that fail in ways you will not notice.
 
----
-
-# 4. Coding Standards & Static Analysis
-
-Source of truth:
-
-- Composer scripts (`composer.json`)
-- PHPCS ruleset (`phpcs.xml`)
-- PHPStan config (`phpstan.neon.dist`)
-- WordPress Plugin Check: https://github.com/WordPress/plugin-check/
-- CI pipeline rules
-
-Imagify must remain compatible with WordPress.org validation rules.
-
-Any change affecting public APIs, output, security, metadata, or
-plugin bootstrap behavior must be evaluated against WordPress Plugin Check expectations.
-
-AI MUST:
-
-- Read `composer.json` first and use the defined scripts (e.g. `phpcs`, `phpcbf`, `run-stan`, `test-unit`, `test-integration`) instead of inventing commands.
-- Auto-discover PHPCS configuration and follow it as the single source of truth.
-
-## 4.1 Tooling Auto-Discovery (MANDATORY)
-
-Before making changes that affect standards or formatting, the agent MUST locate and respect the repository configuration files.
-
-### Required reads (in this order)
-1. `composer.json` — use scripts defined in `"scripts"` whenever possible; prefer the exact commands used by CI; do not invent lint/test commands.
-2. PHPCS ruleset (first match wins): `phpcs.xml`, `phpcs.xml.dist`
-3. Static analysis configs (if present): `phpstan.neon.dist`
-
-### Execution rules
-- Do NOT hardcode PHPCS standards.
-- Do NOT assume WordPress-Core or WordPress-Extra unless defined in the ruleset.
-
-If no PHPCS configuration exists, stop and ask.
+- **Run `composer install` before any test or lint command.** Strauss namespace-prefixing is a
+  Composer post-install hook. Without it, PHPCS and PHPUnit cannot resolve `Imagify\Dependencies\*`
+  and fail with misleading autoload errors.
+- **`WordPress.Security.NonceVerification.Missing` and `.Recommended` are deliberately suppressed**
+  in `phpcs.xml`. Do not add `phpcs:ignore` for them and do not restructure code to satisfy them.
+- **`assets/` is build output.** Edit `_dev/` and rebuild, or the next build discards your work.
+- **There is no JavaScript unit test runner** (no Jest, no Vitest). Never invent `npm test`. Frontend
+  verification is `npm run build` plus Playwright; otherwise report JS tests as `N/A`.
+- **Optimization behaviour sits behind license, API-key and quota guards.** Before reporting that a
+  feature works or is broken, run `bash bin/dev-seed.sh` and confirm the key landed:
+  `npx @wordpress/env run cli wp option get imagify_settings --format=json | grep -c '"api_key":"[^"]\+'`
+  Only once the key is present (result `1`) may you treat a guard as a genuine blocker. Never report a
+  behavioural pass or failure *through* a blocked guard — report "cannot verify" with the guard's
+  `file:line`. Guard locations are in the `e2e` skill.
+- **A PR's number is not its issue number.** Read it back from the `gh pr create` output.
+- **PHP-rendered admin UI is a frontend change.** `wp_admin_notice()`,
+  `add_action( 'admin_notices', ... )` and `add_settings_error()` need frontend scoping and testing
+  despite living in PHP.
 
 ---
 
-# 5. Architectural Integrity
+## Architecture
 
-AI must NOT:
+Single-edition plugin — no FREE/PRO split. Namespace root `Imagify\`, PSR-4 root `classes/`.
 
-- Introduce global state.
-- Add new singletons or `InstanceGetterTrait` usage in `classes/`.
-- Bypass dependency injection patterns used in the project.
-- Couple UI logic to infrastructure logic.
-- Add new classes to `inc/classes/`.
+- `classes/` — modern PSR-4, `declare(strict_types=1)` required. **New features go here.**
+- `inc/classes/` — legacy classmap, `Imagify_` prefix, migrating toward `classes/`. **Add nothing here.**
 
-Follow existing patterns:
+In new `classes/` code:
 
-- Service providers (`classes/*/ServiceProvider.php`)
-- Subscribers (`classes/*/Subscriber.php` implementing `SubscriberInterface`)
-- Container-based wiring (`config/providers.php`)
-- Strict types in all new `classes/` files
+- No new singletons or `InstanceGetterTrait` usage. The trait is still used in `classes/Plugin.php`,
+  `classes/Bulk/Bulk.php` and elsewhere — that is legacy precedent, not a pattern to copy.
+- No bare `add_action()` / `add_filter()`. Register hooks through a `Subscriber` implementing
+  `SubscriberInterface`, listed in `ServiceProvider::get_subscribers()`.
+- Service providers live at `classes/*/ServiceProvider.php` and are registered in
+  `config/providers.php`.
+- No global state, and no UI logic coupled to infrastructure logic. The legacy `inc/` layer is
+  procedural and full of both — do not pattern-match from it.
 
----
+Nonce action naming: `imagify_<feature>_<action>`.
 
-# 6. Testing & Validation
+DI container is Strauss-prefixed: `Imagify\Dependencies\League\Container\Container` — a plain
+`use League\Container\Container;` is wrong here. Async work uses ActionScheduler, not wp-cron.
 
-For every change:
-
-1. Ensure no new PHPCS violations.
-2. Ensure static analysis still passes.
-3. Avoid altering unrelated test behavior.
-4. Do not delete tests unless clearly obsolete.
-
-If modifying templates:
-- Validate escaping correctness.
-- Ensure no functional regressions.
+Frontend source is `_dev/` (Grunt, `gruntfile.js`); `_dev/` also carries its own `bud.config.js`.
 
 ---
 
-# 7. E2E Testing
+## Coding standards
 
-Two Claude Code sub-agents in `.claude/agents/` support QA workflows:
+Source of truth: `composer.json` scripts, `phpcs.xml`, `phpstan.neon.dist`, CI. Never hardcode PHPCS
+standards or invent lint commands.
 
-| Agent | Use when |
-|-------|----------|
-| `qa-engineer` | Validating a PR against its ticket spec (strategy selection, test report) |
-| `e2e-qa-tester` | Driving the browser via Playwright, converting flows to spec files |
+Imagify must stay WordPress.org-compatible
+([Plugin Check](https://github.com/WordPress/plugin-check/)). Evaluate any change to public APIs,
+output, security, metadata, or bootstrap behaviour against it.
 
-Full E2E testing documentation: [`docs/E2E_TESTING.md`](docs/E2E_TESTING.md)
-
-The test directory is `Tests/e2e/` (capital T, consistent with the existing `Tests/` PHPUnit directory).
-
-The E2E suite runs in CI via `.github/workflows/e2e.yml`. The `IMAGIFY_TESTS_API_KEY` GitHub secret must be configured for optimization tests to run.
-
----
-
-# 8. Local Development
-
-```bash
-# Start the local WordPress environment (Docker via wp-env)
-bash bin/dev-up.sh
-
-# Stop (preserves data) / full wipe
-bash bin/dev-down.sh
-bash bin/dev-down.sh --clean
-
-# Seed test data (idempotent)
-bash bin/dev-seed.sh
-
-# Run E2E tests locally (sources .env.local for API key automatically)
-bash bin/test-e2e.sh
-bash bin/test-e2e.sh --headed     # watch the browser
-bash bin/test-e2e.sh --ui         # Playwright interactive UI
-bash bin/test-e2e.sh specs/smoke  # single spec
-```
-
-Create `.env.local` at the repo root (gitignored) with:
-```
-IMAGIFY_TESTS_API_KEY=your-key-here
-```
-
-- Site: `http://localhost:8888`
-- Admin: `http://localhost:8888/wp-admin` — `admin` / `password`
+- PHP 7.4+, strict types in all new `classes/` files.
+- Text domain `imagify`: `esc_html__( 'Label', 'imagify' )`.
+- Authorization: use the project's registered capability (`'bulk-optimize'`, `'manage'`, …) in
+  `current_user_can()`, never the coarse `manage_options`.
+- No jQuery in new or modified JavaScript — native DOM APIs only, no inline handlers, no unsafe
+  `innerHTML`. Pass nonces via `wp_localize_script`.
+- Remote responses from the Imagify API are untrusted input and are this plugin's main attack
+  surface. Validate and escape everything that comes back before storing or echoing it.
 
 ---
 
-# 9. AI Working Protocol
+## Testing
 
-AI must work in small, incremental changes.
+Prefer **integration tests** (`Tests/Integration/`, annotated `@group FeatureName`) — they exercise
+real WordPress context, DI wiring and hook execution. Unit tests only for pure logic with no WP
+globals, container or hooks.
 
-After each logical change set:
-- explain what changed
-- explain why
-- list potential edge cases
+Scale scope to risk: LOW = the relevant `--group`; MEDIUM = `composer test-unit` plus that group;
+HIGH = `composer run-tests`.
 
-AI must NOT:
-
-- Perform massive automated refactors without approval.
-- Reorganize files without explicit instruction.
-- Rewrite entire classes when a minimal fix is sufficient.
-
-## 9.1 Git Commit & Push Policy
-
-By default, AI may only **suggest** commit messages and must not run `git commit` or `git push`.
-
-**Exception — Issue Workflow:** When operating under the issue-workflow skill (triggered by `/task <number>`, `issue <number>`, or `#<number>`), the agent MAY:
-
-1. Run atomic `git commit` calls — one commit per logical, self-contained change set.
-2. Run `git push` exactly once after all commits are ready, to publish the branch.
-3. Create a GitHub Pull Request using the prepared PR draft.
-4. Monitor PR CI status checks until all pass or a failure is detected.
-
-Atomic commit rules:
-- Each commit must pass PHPCS and static analysis before being committed.
-- Commit message format: `type(scope): short description` (Conventional Commits).
-- No `Co-Authored-By` lines in commits.
-- Do not squash unrelated changes into a single commit.
-- Do not amend commits that have already been pushed.
+Not scope violations: generated files (`*.min.js`, `*.min.css`), lockfiles, tests mirroring changed
+source, auto-formatter output.
 
 ---
 
-# 10. PR Hygiene
+## Commits and PRs
 
-Changes must:
-
-- Be minimal and scoped.
-- Have clear intent.
-- Avoid noise in diff.
-- Avoid unrelated formatting changes.
-
----
-
-# 11. Security First
-
-Always assume:
-
-- User input is untrusted.
-- Remote API responses are untrusted.
-- Stored values may be tampered with.
-
-Never:
-
-- Store sensitive values in plain text without review.
-- Introduce unsafe serialization.
-- Echo unescaped dynamic data.
+- Conventional Commits: `type(scope): short description`. Each commit passes PHPCS and static
+  analysis before being made.
+- Pipeline-authored commits carry a `Co-Authored-By: <model> <noreply@anthropic.com>` trailer so
+  automated work stays auditable. Human-authored commits do not.
+- Do not squash unrelated changes. Do not amend commits already pushed.
+- Outside a pipeline working a specific ticket, only *suggest* commits — do not run `git commit` or
+  `git push`.
+- PR title: `Closes #<N>: <short title>` — never a Conventional-Commit prefix; that is for commits.
+- The PR body needs a standalone `Closes #<N>` line, not buried in prose — that is what auto-closes.
+- Apply the `Made by AI` label to every AI-created PR and issue.
+- Split work vertically: each PR one complete behaviour including its tests. Never a backend PR plus
+  a separate frontend PR for one feature, even when separate agents did the work.
+- Do not run large automated refactors or reorganize files without being asked. The legacy-to-modern
+  migration is ongoing; "cleaning up while I'm here" is not in scope.
 
 ---
 
-# 12. When in Doubt
+## On-demand references
 
-Stop.
-Explain the ambiguity.
-Ask for clarification.
-
-Architectural integrity is more important than speed.
-
----
-
-# 13. Sub-Agents
-
-Reusable specialist agents live in `.aiassistant/agents/`. Claude Code discovers them via the `.claude/agents` symlink; other tools can read them directly from `.aiassistant/agents/`.
-
-| Agent | File | Invoke when |
-|-------|------|-------------|
-| `qa-engineer` | `.aiassistant/agents/qa-engineer.md` | Validating a PR against its ticket spec — reads acceptance criteria, runs functional/browser/analysis strategies, produces a structured test report |
-| `e2e-qa-tester` | `.aiassistant/agents/e2e-qa-tester.md` | Driving the browser via Playwright, walking through "How to test" steps, converting validated flows into Playwright spec files under `Tests/e2e/` |
-
-The `qa-engineer` agent delegates browser flows to `e2e-qa-tester` automatically when the change involves admin UI.
+- **Browser testing** — admin URLs, page objects, environment variables, local running:
+  [`docs/E2E_TESTING.md`](docs/E2E_TESTING.md)
+- **QA procedure** — tiers, spec conventions, guard locations: the `e2e` skill (`.claude/skills/e2e/`)
+- **Code structure** — use the installed pipeline's knowledge-graph skill if it provides one. A local
+  builder also exists: `node bin/build-knowledge-graph.js` writes `.aiassistant/graph/` (gitignored).
+  Do not mix the two graphs in one session; if neither is current, use grep rather than stopping.
 
 ---
 
-# 14. Skills Activation
+## Priority order
 
-The repository defines AI Skills under `.aiassistant/skills/`.
-
-Agents MUST activate the relevant skill depending on the task:
-
-| Task | Skill |
-|------|-------|
-| Template or UI changes | WordPress Compliance |
-| Structural or architectural changes | Imagify Architecture |
-| Service modifications | Both skills |
-| Codebase exploration / dependency tracing | Knowledge Graph |
-| Working on a GitHub issue | Issue Workflow |
-
-## 13.1 Knowledge Graph
-
-A pre-built dependency graph is available at `.aiassistant/graph/dependency-graph.json`.
-
-Before exploring the codebase structure (finding a class, tracing dependencies, exploring namespaces), **read this file first**. It contains:
-- `nodes`: per-file namespace, declared symbols, and imports.
-- `symbol_index`: maps every fully-qualified PHP class/interface/trait/enum to its file.
-
-Run `node bin/build-knowledge-graph.js` to refresh after structural changes (`--full` to force rebuild).
-
----
-
-## 13.2 Session Learnings
-
-Lessons learned from past pipeline runs. Injected into every agent dispatch by the orchestrator.
-
-### E2E — Screenshots must show the target element
-
-**Rule:** Always call `locator.scrollIntoViewIfNeeded()` before `page.screenshot()`. Use the shared helper `screenshotElement()` from `Tests/e2e/fixtures/screenshot.ts` instead of calling `page.screenshot()` directly.
-
-**Why:** A screenshot taken at page-load position captures the top of the page, not the feature being tested. Screenshots showing unrelated content (e.g. General Settings header instead of the target button) provide zero QA evidence and mislead reviewers.
-
-**How to apply:** In every Playwright spec, import `screenshotElement` from `../fixtures/screenshot` and pass the target locator as the third argument. Verify each screenshot visually shows the element it documents before committing.
-
-### E2E — Never use `test.skip()` as a fallback for missing seed data
-
-**Rule:** If a required UI element is not visible due to missing seed data, use a hard `expect(...).toBe(true)` assertion, not `test.skip()`.
-
-**Why:** `test.skip()` causes the test suite to report green with zero assertions — CI passes but nothing is tested. A hard fail surfaces the missing seed as a real problem.
-
-**How to apply:** Check element visibility after navigation. If not visible, fail with a descriptive message that includes the seed command needed to fix the environment.
-
----
-
-# 15. Repository Specs
-
-The repository may define task-specific implementation specs under `.aiassistant/specs/`.
-
-Specs provide detailed guidance for recurring technical problems
-(e.g. PHPCS warnings, architecture migrations, WordPress compliance patterns).
-
-When a relevant spec exists, agents must follow it in addition to AGENTS.md and the applicable skills.
-
----
-
-# AI Task Priority
-
-When executing tasks, agents must prioritize:
+When these conflict, earlier wins:
 
 1. Security
 2. WordPress.org compliance
@@ -343,5 +157,3 @@ When executing tasks, agents must prioritize:
 4. Backward compatibility
 5. Minimal diffs
 6. Performance
-
-AGENTS.md remains the final authority.

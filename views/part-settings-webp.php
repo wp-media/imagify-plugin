@@ -182,7 +182,17 @@ $settings = Imagify_Settings::get_instance();
 
 				<button id="imagify-generate-webp-versions" class="button imagify-button-primary imagify-button-mini" type="button">
 					<span class="dashicons dashicons-admin-generic"></span>
-					<span class="button-text"><?php esc_html_e( 'Generate missing Next-Gen images versions', 'imagify' ); ?></span>
+					<?php
+					/*
+					 * Keep this string byte-identical to the ability label in
+					 * classes/Abilities/GenerateMissingNextgen.php: same wording means one shared
+					 * entry on translate.wordpress.org rather than two. The casing looks off next
+					 * to the rest of the UI, but the button is uppercased by CSS, so it renders as
+					 * "GENERATE MISSING NEXT-GEN VERSIONS" either way. Re-casing it here would
+					 * silently fork the two into separate strings to translate.
+					 */
+					?>
+					<span class="button-text"><?php esc_html_e( 'Generate missing next-gen versions', 'imagify' ); ?></span>
 				</button>
 
 				<?php
@@ -198,12 +208,23 @@ $settings = Imagify_Settings::get_instance();
 					&&
 					$total > 0
 				) {
-					$aria      = '';
-					$class     = '';
-					$processed = $total - $remaining;
-					$progress  = $processed . '/' . $total;
-					$percent   = $processed / $total * 100;
-					$style     = 'style="width:' . $percent . '%;"';
+					$aria  = '';
+					$class = '';
+
+					/*
+					 * `$total` is a snapshot taken when the run started, while `$remaining` is
+					 * recounted on every page load. Anything growing the workload mid-run (new
+					 * uploads, or switching the Next-Gen format so every media is missing one)
+					 * pushes `$remaining` above `$total`, and `$total - $remaining` goes negative.
+					 * Report against the largest workload seen instead. Mirrors getProgress() in
+					 * assets/js/options.js.
+					 */
+					$remaining       = max( (int) $remaining, 0 );
+					$effective_total = max( (int) $total, $remaining );
+					$processed       = $effective_total - $remaining;
+					$progress        = $processed . '/' . $effective_total;
+					$percent         = $effective_total > 0 ? floor( $processed / $effective_total * 100 ) : 0;
+					$style           = 'style="width:' . $percent . '%;"';
 				}
 				?>
 

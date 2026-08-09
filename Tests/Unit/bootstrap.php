@@ -19,6 +19,7 @@ define( 'IMAGIFY_SLUG', 'imagify' );
  */
 function load_original_files_before_mocking() {
 	$originals = [
+		'inc/functions/admin-ui.php',
 		'inc/functions/api.php',
 		'inc/functions/attachments.php',
 		'inc/functions/common.php',
@@ -39,6 +40,40 @@ function load_original_files_before_mocking() {
 }
 
 load_original_files_before_mocking();
+
+/**
+ * Make `require_once ABSPATH . 'wp-admin/includes/…'` resolvable in the unit suite.
+ *
+ * Legacy plugin classes (e.g. Imagify_Filesystem) pull WP core files from ABSPATH at file scope.
+ * yoast/wp-test-utils defines ABSPATH as `true`, so those become relative paths like
+ * `1wp-admin/includes/class-wp-filesystem-base.php`, which PHP resolves through include_path.
+ *
+ * Rather than redefining ABSPATH — which would emit a "Constant already defined" warning and break
+ * every test running in a separate process — mirror the stubs in Tests/Fixtures/WP/wp-admin/includes
+ * into an ABSPATH-prefixed directory and put that on include_path. Deriving the directory name from
+ * ABSPATH keeps this working whatever value the test-utils package settles on.
+ *
+ * @since 2.3.1
+ */
+function register_abspath_stubs() {
+	$source = IMAGIFY_PLUGIN_TESTS_FIXTURES_DIR . '/WP/wp-admin/includes/';
+	$root   = sys_get_temp_dir() . '/imagify-unit-abspath/';
+	$target = $root . ABSPATH . 'wp-admin/includes/';
+
+	if ( ! is_dir( $target ) ) {
+		mkdir( $target, 0777, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir -- WP_Filesystem is not available in the unit suite.
+	}
+
+	foreach ( [ 'class-wp-filesystem-base.php', 'class-wp-filesystem-direct.php' ] as $file ) {
+		if ( ! file_exists( $target . $file ) ) {
+			copy( $source . $file, $target . $file );
+		}
+	}
+
+	set_include_path( $root . PATH_SEPARATOR . get_include_path() ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_set_include_path
+}
+
+register_abspath_stubs();
 
 /**
  * Prepend the worktree's own classes/ and Tests/ directories to the autoloader

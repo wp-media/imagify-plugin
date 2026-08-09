@@ -628,15 +628,36 @@ class File {
 			return new \WP_Error( 'temp_file_not_found', $temp_file->get_error_message() );
 		}
 
-		if ( property_exists( $response, 'message' ) ) {
-			$args['convert'] = '';
-		}
-
-		$formats = [
+		$formats            = [
 			'webp',
 			'avif',
 		];
-		if ( in_array( $args['convert'], $formats, true ) ) {
+		$is_nextgen_request = in_array( $args['convert'], $formats, true );
+
+		if ( property_exists( $response, 'message' ) && ! $is_nextgen_request ) {
+			$args['convert'] = '';
+		}
+
+		if ( $is_nextgen_request && property_exists( $response, 'message' ) ) {
+			/*
+			 * The API can return a `message` alongside the source's own bytes instead of a
+			 * converted file (e.g. "Webp is less performant than original" or "already
+			 * compressed"). In that case the downloaded file is NOT the requested next-gen
+			 * format. Writing it to the next-gen path would create a corrupt file, and
+			 * writing it to `$this->path` would overwrite the original thumbnail. Verify the
+			 * actual bytes before doing either.
+			 */
+			if ( ! $this->is_file_format( $temp_file, $args['convert'] ) ) {
+				$this->filesystem->delete( $temp_file );
+
+				return new \WP_Error(
+					'no_next_gen_returned',
+					$response->message
+				);
+			}
+		}
+
+		if ( $is_nextgen_request ) {
 			$destination_path = $this->get_path_to_nextgen( $args['convert'] );
 			$this->path       = $destination_path;
 			$this->file_type  = null;
@@ -912,6 +933,73 @@ class File {
 	 */
 	public function is_avif() {
 		return preg_match( '@(?!^|/|\\\)\.avif$@i', $this->path );
+	}
+
+	/**
+	 * Tell if a file's actual content matches the given next-gen format, by reading its
+	 * magic bytes. The file's extension can't be trusted here, since it may be a temp
+	 * file downloaded with an unpredictable name (see download_url()).
+	 *
+	 * @since 2.3.2
+	 *
+	 * @param string $file_path Absolute path to the file to check.
+	 * @param string $format    'webp' or 'avif'.
+	 * @return bool
+	 */
+	protected function is_file_format( $file_path, $format ) {
+		$contents = $this->filesystem->get_contents( $file_path );
+
+		if ( ! is_string( $contents ) || strlen( $contents ) < 12 ) {
+			return false;
+		}
+
+		if ( 'webp' === $format ) {
+			// RIFF....WEBP.
+			return 'RIFF' === substr( $contents, 0, 4 ) && 'WEBP' === substr( $contents, 8, 4 );
+		}
+
+		if ( 'avif' === $format ) {
+			return $this->is_avif_ftyp_box( $contents );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Tell if the given content starts with an AVIF `ftyp` box, i.e. its major brand or one of
+	 * its compatible brands is `avif`/`avis`. A file can legitimately declare a major brand of
+	 * `mif1`/`msf1` (generic HEIF-family brands) while listing `avif` only among the compatible
+	 * brands, so both must be checked.
+	 *
+	 * @since 2.3.2
+	 *
+	 * @param string $contents The file content (or at least its leading bytes).
+	 * @return bool
+	 */
+	private function is_avif_ftyp_box( $contents ) {
+		if ( 'ftyp' !== substr( $contents, 4, 4 ) ) {
+			return false;
+		}
+
+		$avif_brands = [ 'avif', 'avis' ];
+
+		if ( in_array( substr( $contents, 8, 4 ), $avif_brands, true ) ) {
+			// Major brand.
+			return true;
+		}
+
+		// Box size (big-endian uint32), bounding how far the compatible brands list extends.
+		$box_size = unpack( 'N', substr( $contents, 0, 4 ) )[1];
+		$box_size = min( $box_size, strlen( $contents ) );
+
+		// Compatible brands: 4-byte entries, starting right after the minor version, at offset 16.
+		for ( $offset = 16; $offset + 4 <= $box_size; $offset += 4 ) {
+			if ( in_array( substr( $contents, $offset, 4 ), $avif_brands, true ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

@@ -362,8 +362,14 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 			/**
 			 * It's a new upload.
 			 */
-			// Optimize.
-			$process->optimize( null, [ 'is_new_upload' => 1 ] );
+			// Optimize. Flag as priority so it jumps ahead of any bulk optimization queue.
+			$process->optimize(
+				null,
+				[
+					'is_new_upload' => 1,
+					'priority'      => true,
+				]
+			);
 		} else {
 			/**
 			 * The media has already been optimized (or at least it has been tried).
