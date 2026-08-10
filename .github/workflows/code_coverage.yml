@@ -67,6 +67,7 @@ jobs:
       run: composer code-coverage
 
     - name: Run codacy-coverage-reporter
+      if: github.event.pull_request.head.repo.fork == false
       uses: codacy/codacy-coverage-reporter-action@v1
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
