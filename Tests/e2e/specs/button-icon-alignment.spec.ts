@@ -14,6 +14,7 @@ test.describe( 'Button icon alignment (WP 7.0 compat)', () => {
 		await loginAsAdmin( page );
 	} );
 
+	test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — settings page dashicons require valid API key.' );
 	test( 'Settings page submit button dashicon has line-height: inherit', async ( { page } ) => {
 		await page.goto( '/wp-admin/options-general.php?page=imagify' );
 		await page.waitForLoadState( 'networkidle' );
@@ -56,6 +57,7 @@ test.describe( 'Button icon alignment (WP 7.0 compat)', () => {
 		await screenshotElement( page, 'button-icon-alignment-settings', dashiconInButton );
 	} );
 
+	test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — settings page dashicons require valid API key.' );
 	test( 'Imagify button dashicons have vertical-align: middle', async ( { page } ) => {
 		await page.goto( '/wp-admin/options-general.php?page=imagify' );
 		await page.waitForLoadState( 'networkidle' );

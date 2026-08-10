@@ -138,8 +138,8 @@ abstract class TestCase extends BaseTestCase {
 			$ref->setValue( $class, $value );
 		} else {
 			$previous = $ref->getValue();
-			// Static property.
-			$ref->setValue( $value );
+			// Static property. Pass null as the object argument to avoid PHP 8.4 deprecation.
+			$ref->setValue( null, $value );
 		}
 
 		return $previous;
