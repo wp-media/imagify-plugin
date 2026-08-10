@@ -8,6 +8,20 @@ if ( file_exists( IMAGIFY_PATH . 'vendor/autoload.php' ) ) {
 	require_once IMAGIFY_PATH . 'vendor/autoload.php';
 }
 
+// Support Composer dependency install where Strauss prefixing hasn't run.
+// Prefixed classes exist when installed as root package; unprefixed when installed as dependency.
+// class_exists()/interface_exists() without `false` trigger the autoloader so the alias
+// resolves on first access, not just after a prior explicit load.
+if ( ! class_exists( '\Imagify\Dependencies\League\Container\Container', false ) && class_exists( '\League\Container\Container' ) ) {
+	class_alias( '\League\Container\Container', '\Imagify\Dependencies\League\Container\Container' );
+}
+if ( ! interface_exists( '\Imagify\Dependencies\League\Container\ServiceProvider\ServiceProviderInterface', false ) && interface_exists( '\League\Container\ServiceProvider\ServiceProviderInterface' ) ) {
+	class_alias( '\League\Container\ServiceProvider\ServiceProviderInterface', '\Imagify\Dependencies\League\Container\ServiceProvider\ServiceProviderInterface' );
+}
+if ( ! class_exists( '\Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider', false ) && class_exists( '\League\Container\ServiceProvider\AbstractServiceProvider' ) ) {
+	class_alias( '\League\Container\ServiceProvider\AbstractServiceProvider', '\Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider' );
+}
+
 require_once IMAGIFY_PATH . 'inc/Dependencies/ActionScheduler/action-scheduler.php';
 
 /**

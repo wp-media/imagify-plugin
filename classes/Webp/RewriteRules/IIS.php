@@ -21,6 +21,16 @@ class IIS extends AbstractIISDirConfFile {
 	const TAG_NAME = 'Imagify: rewrite rules for webp';
 
 	/**
+	 * Names of the <preCondition> entries this class owns inside the shared
+	 * <preConditions> collection.
+	 *
+	 * @return array
+	 */
+	protected function get_owned_precondition_names(): array {
+		return [ 'IsWebp' ];
+	}
+
+	/**
 	 * Get unfiltered new contents to write into the file.
 	 *
 	 * @since 1.9
@@ -54,11 +64,11 @@ class IIS extends AbstractIISDirConfFile {
 	<match serverVariable="RESPONSE_Vary" pattern=".*" />
 	<action type="Rewrite" value="Accept"/>
 </rule>
-<preConditions name="' . esc_attr( static::TAG_NAME ) . ' 4">
-	<preCondition name="IsWebp">
-		<add input="{ACCEPTS_WEBP}" pattern="true" ignoreCase="false" />
-	</preCondition>
-</preConditions>'
+
+<!-- @parent /configuration/system.webServer/rewrite/outboundRules/preConditions -->
+<preCondition name="IsWebp">
+	<add input="{ACCEPTS_WEBP}" pattern="true" ignoreCase="false" />
+</preCondition>'
 		);
 	}
 }

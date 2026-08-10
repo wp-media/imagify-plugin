@@ -32,7 +32,7 @@ abstract class AbstractIISDirConfFile extends AbstractWriteDirConfFile {
 		$marker = static::TAG_NAME;
 		$xpath  = new \DOMXPath( $doc );
 
-		// Remove previous rules.
+		// Remove previous rules marked with this class' tag.
 		$old_nodes = $xpath->query( ".//*[starts-with(@name,'$marker')]" );
 
 		if ( $old_nodes->length > 0 ) {
@@ -41,8 +41,24 @@ abstract class AbstractIISDirConfFile extends AbstractWriteDirConfFile {
 			}
 		}
 
+		// Remove the <preCondition> nodes this class owns. IIS allows only one
+		// <preConditions> collection under outboundRules, so WebP and AVIF share
+		// it. Each owns a distinct inner <preCondition> (IsWebp / IsAvif); strip
+		// ours by name before re-adding so siblings survive (issue #1180).
+		foreach ( $this->get_owned_precondition_names() as $precondition_name ) {
+			$old_preconditions = $xpath->query( ".//preConditions/preCondition[@name='$precondition_name']" );
+
+			if ( $old_preconditions && $old_preconditions->length > 0 ) {
+				foreach ( $old_preconditions as $old_precondition ) {
+					$old_precondition->parentNode->removeChild( $old_precondition );
+				}
+			}
+		}
+
 		// No new contents? Stop here.
 		if ( ! $new_contents ) {
+			$this->cleanup_empty_preconditions( $xpath );
+
 			return $this->put_file_contents( $doc );
 		}
 
@@ -64,6 +80,8 @@ abstract class AbstractIISDirConfFile extends AbstractWriteDirConfFile {
 			$this->get_node( $doc, $xpath, $path, $fragment );
 		}
 
+		$this->cleanup_empty_preconditions( $xpath );
+
 		return $this->put_file_contents( $doc );
 	}
 
@@ -78,6 +96,39 @@ abstract class AbstractIISDirConfFile extends AbstractWriteDirConfFile {
 	 */
 	protected function get_raw_file_path() {
 		return $this->filesystem->get_site_root() . 'web.config';
+	}
+
+	/**
+	 * Get the <preCondition> names this class owns inside the shared
+	 * <preConditions> collection.
+	 *
+	 * RewriteRules subclasses that emit outbound rules override this to declare
+	 * the preCondition name they own (IsWebp / IsAvif), so insert_contents() can
+	 * strip only that entry and leave siblings intact. The MIME-type classes
+	 * inherit the empty default and are unaffected.
+	 *
+	 * @return array
+	 */
+	protected function get_owned_precondition_names(): array {
+		return [];
+	}
+
+	/**
+	 * Remove <preConditions> collections left without any <preCondition> child.
+	 *
+	 * IIS treats <preConditions> as a singleton; an empty one is harmless but
+	 * pointless, so drop it after an add or a remove pass.
+	 *
+	 * @param \DOMXPath $xpath A \DOMXPath element.
+	 */
+	protected function cleanup_empty_preconditions( $xpath ) {
+		$containers = $xpath->query( './/preConditions[not(preCondition)]' );
+
+		if ( $containers && $containers->length > 0 ) {
+			foreach ( $containers as $container ) {
+				$container->parentNode->removeChild( $container );
+			}
+		}
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
