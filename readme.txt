@@ -34,7 +34,7 @@ Watch the video and see for yourself why Imagify is the easiest image optimizer 
 [youtube https://www.youtube.com/watch?v=qbqV5yEZ6Og] 
  
 
-=== ✨ Optimize Images with Imagify – Features at glance: ===
+=== ✨ Optimize Images with Imagify – Features at a Glance: ===
  
 
 * __Smart Compression (Does the job for you)__ – Automatically balances image quality and performance. You don’t need to tweak settings. Imagify optimizes every image for the best compression rate while preserving visual quality, so you save time and get consistent results without having to choose any settings. 
@@ -55,7 +55,7 @@ Watch the video and see for yourself why Imagify is the easiest image optimizer 
 
 * __Auto-Optimize on Upload__ – New images are optimized automatically as soon as you upload them to WordPress. No manual steps and no forgotten images. 
 
-* __MCP: AI ACcess for Imagify__ – Connect Imagify to your AI tool of choice and get answers based on your Imagify data. Ask your AI about image optimization status, available quota, or whether your images have WebP and AVIF versions. You can also troubleshoot issues or optimize and restore a single image directly from the conversation. Imagify is the first image optimization plugin to offer this kind of AI connection.
+* __MCP: AI Access for Imagify__ – Connect Imagify to your AI tool of choice and get answers based on your Imagify data. Ask your AI about image optimization status, available quota, or whether your images have WebP and AVIF versions. You can also troubleshoot issues or optimize and restore a single image directly from the conversation. Imagify is the first image optimization plugin to offer this kind of AI connection.
  
 ✨ In short, you have everything you need to optimize images at scale while keeping quality high and your setup simple. 
  
@@ -76,7 +76,7 @@ If images are too large, you can set a maximum width. Oversized images are autom
 
 __The part you’ll love the most:__ Imagify uses Smart Compression to automatically choose the best balance between image quality and file size, so you get lighter images without visible quality loss or having to tweak settings yourself.
 
-=== ⚙️ Enjoy image Optimization in the background ===
+=== ⚙️ Enjoy Image Optimization in the Background ===
 
 If you have many images, bulk optimization lets you optimize them all at once. The process runs in the background, so you can keep working while Imagify optimizes images for you. Original images are always preserved and can be restored at any time. 
 
@@ -119,7 +119,7 @@ MCP is included in all Imagify plans, free and paid, at no extra cost. It works 
 
 Requires WordPress 6.9+ and Imagify 2.3+. 
 
-=== 💬 What Do Our Users Think Of Imagify? ===
+=== 💬 What Do Our Users Think of Imagify? ===
 
 Here’s what our users have to say about us after optimizing their images with Imagify:
 
@@ -163,7 +163,7 @@ We are [WP Media](https://wp-media.me/), the company behind WP Rocket, the best 
 
 Our mission is to improve the web, we are making it faster with [WP Rocket](https://wp-rocket.me/) and lighter with Imagify.
 
-=== ✉️ Get In Touch! ===
+=== ✉️ Get in Touch! ===
 
 * Website: [Imagify.io](https://imagify.io)
 * Contact Us: [https://imagify.io/contact](https://imagify.io/contact)
@@ -374,7 +374,7 @@ You can report any security bugs found in the source code of the site-reviews pl
 = 2.2.8 =
 - Bugfix: Fix jQuery deprecation notices
 - Bugfix: Fix PHP deprecation notices
-- Bugfix: Fix the  _load_textdomain_just_in_time PHP notice
+- Bugfix: Fix the  _load_textdomain_just_in_time PHP notice
 - Enhancement: Make sure to remove the transients when uninstalling Imagify
 - Enhancement: Fix UI glitches
 
