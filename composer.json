@@ -54,7 +54,7 @@
 		"woocommerce/action-scheduler": "^3.4",
 		"wp-coding-standards/wpcs": "^3",
 		"wp-media/phpstan-wp": "^1.0",
-		"wp-media/phpunit": "3.0"
+		"wp-media/phpunit": "3.1"
 	},
 	"autoload": {
 		"psr-4": {
