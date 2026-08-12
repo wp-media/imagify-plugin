@@ -65,17 +65,13 @@ abstract class TestCase extends PHPUnitTestCase {
 	 *
 	 */
 	protected function setPropertyValue( $property, $class, $value ) {
-		$ref = $this->get_reflective_property( $property, $class );
+		$instance = is_object( $class ) ? $class : null;
 
-		if ( is_object( $class ) ) {
-			$previous = $ref->getValue( $class );
-			// Instance property.
-			$ref->setValue( $class, $value );
-		} else {
-			$previous = $ref->getValue();
-			// Static property.
-			$ref->setValue( $value );
-		}
+		// Read the previous value, then set the new one, delegating to the
+		// wp-media/phpunit trait which handles static properties safely
+		// (ReflectionProperty::setValue() with a single argument is deprecated as of PHP 8.3).
+		$previous = $this->getNonPublicPropertyValue( $property, $class, $instance );
+		$this->set_reflective_property( $value, $property, $class );
 
 		return $previous;
 	}
