@@ -28,6 +28,7 @@ class Test_IsOverQuota extends TestCase {
 
 	public function testShouldReturnFalseWhenCouldNotFetchUserData() {
 		update_imagify_option( 'api_key', $this->invalidApiKey );
+		$this->mockInvalidToken();
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
@@ -38,12 +39,14 @@ class Test_IsOverQuota extends TestCase {
 	}
 
 	public function testShouldReturnFalseWhenPaidAccount() {
-		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
+		update_imagify_option( 'api_key', $this->validApiKey );
+		$this->mockUserAccount();
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
 		$imagifyUser = new User();
+		$imagifyUser->init_user();
 		// Make our account a paid one.
 		$imagifyUser->plan_id = 2;
 		// Even if it is supposed to be over-quota.
@@ -56,7 +59,8 @@ class Test_IsOverQuota extends TestCase {
 	}
 
 	public function testShouldReturnFalseWhenFreeNotOverQuota() {
-		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
+		update_imagify_option( 'api_key', $this->validApiKey );
+		$this->mockUserAccount();
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
@@ -73,7 +77,8 @@ class Test_IsOverQuota extends TestCase {
 	}
 
 	public function testShouldReturnTrueWhenFreeOverQuota() {
-		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
+		update_imagify_option( 'api_key', $this->validApiKey );
+		$this->mockUserAccount();
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
