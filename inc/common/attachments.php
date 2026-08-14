@@ -67,7 +67,7 @@ function imagify_add_avif_type( $ext2type ) {
  * @since  WP 5.3
  * @author Grégory Viguier
  */
-add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'get_resizing_threshold' ], IMAGIFY_INT_MAX );
+add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'filter_big_image_size_threshold' ], IMAGIFY_INT_MAX, 4 );
 
 /**
  * Add filters to manage images formats that will be generated

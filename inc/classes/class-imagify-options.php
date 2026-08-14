@@ -76,7 +76,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		if ( function_exists( 'wp_get_original_image_path' ) ) {
 			$this->reset_values['resize_larger'] = 1;
 
-			$filter_cb = [ imagify_get_context( 'wp' ), 'get_resizing_threshold' ];
+			$filter_cb = [ imagify_get_context( 'wp' ), 'filter_big_image_size_threshold' ];
 			$filtered  = has_filter( 'big_image_size_threshold', $filter_cb );
 
 			if ( $filtered ) {
@@ -88,7 +88,9 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			$this->reset_values['resize_larger_w'] = $this->sanitize_and_validate_value( 'resize_larger_w', $this->reset_values['resize_larger_w'], $this->default_values['resize_larger_w'] );
 
 			if ( $filtered ) {
-				add_filter( 'big_image_size_threshold', $filter_cb, IMAGIFY_INT_MAX );
+				// The argument count has to be repeated here, or the callback would be
+				// registered with a single one and stop receiving the attachment ID.
+				add_filter( 'big_image_size_threshold', $filter_cb, IMAGIFY_INT_MAX, 4 );
 			}
 		}
 

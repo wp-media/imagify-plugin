@@ -70,6 +70,76 @@ final class WP extends AbstractContext {
 	}
 
 	/**
+	 * Filter WP's "big images threshold" with Imagify's resizing value.
+	 *
+	 * A `false` value means downscaling has been switched off on purpose, so it is
+	 * returned untouched. WordPress 7.1 does exactly that while the browser handles
+	 * the sub sizes: it supplies its own scaled file through the sideload endpoint,
+	 * and scaling again on the server would leave a conflicting "-scaled" file behind
+	 * and point `original_image` at it instead of the real upload.
+	 *
+	 * The value the browser scales to comes from this same filter
+	 * ({@see WP_REST_Server::get_index()}), so Imagify's setting is still honoured.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param  int|false $threshold     The threshold value in pixels, or false to disable resizing.
+	 * @param  array     $imagesize     Indexed array of the image width and height in pixels.
+	 * @param  string    $file          Full path to the uploaded image file.
+	 * @param  int       $attachment_id Attachment post ID.
+	 * @return int|false
+	 */
+	public function filter_big_image_size_threshold( $threshold, $imagesize = [], $file = '', $attachment_id = 0 ) {
+		if ( false === $threshold ) {
+			if ( $attachment_id ) {
+				self::flag_client_side_scaling( $attachment_id );
+			}
+
+			return $threshold;
+		}
+
+		return $this->get_resizing_threshold();
+	}
+
+	/**
+	 * Remember that the browser is supplying the scaled version of an attachment.
+	 *
+	 * Optimization runs in a later, asynchronous request, where the filters WordPress
+	 * set up during the upload are long gone, so the state has to be stored.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param int $attachment_id Attachment post ID.
+	 */
+	public static function flag_client_side_scaling( $attachment_id ) {
+		set_transient( self::get_client_side_scaling_flag( $attachment_id ), 1, HOUR_IN_SECONDS );
+	}
+
+	/**
+	 * Tell if the browser supplied the scaled version of an attachment.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param  int $attachment_id Attachment post ID.
+	 * @return bool
+	 */
+	public static function is_client_side_scaled( $attachment_id ) {
+		return (bool) get_transient( self::get_client_side_scaling_flag( $attachment_id ) );
+	}
+
+	/**
+	 * Get the transient name used to flag client side scaling for an attachment.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param  int $attachment_id Attachment post ID.
+	 * @return string
+	 */
+	private static function get_client_side_scaling_flag( $attachment_id ) {
+		return 'imagify_client_side_scaled_' . (int) $attachment_id;
+	}
+
+	/**
 	 * Tell if the optimization process is allowed to backup in this context.
 	 *
 	 * @since  1.9
