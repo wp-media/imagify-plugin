@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 $this->print_template(
 	'notice-header',
 	[
-		'classes' => [ 'updated' ],
+		'classes' => [ 'updated', 'imagify-notice-rating' ],
 	]
 );
 ?>
@@ -31,7 +31,7 @@ $this->print_template(
 	);
 	?>
 	<br>
-	<a class="stars" target="_blank" href="<?php echo esc_url( imagify_get_external_url( 'rate' ) ); ?>">☆☆☆☆☆</a>
+	<a class="stars" aria-hidden="true" target="_blank" href="<?php echo esc_url( imagify_get_external_url( 'rate' ) ); ?>"><?php echo str_repeat( '<span class="dashicons dashicons-star-filled"></span>', 5 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
 </p>
 <?php
 $this->print_template(
