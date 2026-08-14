@@ -36,11 +36,13 @@ class WP extends AbstractProcess {
 	 * @return bool
 	 */
 	protected function can_resize( $size, $file ) {
-		if ( ! parent::can_resize( $size, $file ) ) {
+		$media = $this->get_media();
+
+		if ( $media && \Imagify\Context\WP::is_client_side_scaled( $media->get_id() ) ) {
 			return false;
 		}
 
-		return ! \Imagify\Context\WP::is_client_side_scaled( $this->get_media()->get_id() );
+		return parent::can_resize( $size, $file );
 	}
 
 	/** ----------------------------------------------------------------------------------------- */
