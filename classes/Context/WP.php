@@ -88,6 +88,9 @@ final class WP extends AbstractContext {
 	 *
 	 * @since 2.3.3
 	 *
+	 * $imagesize and $file are part of the filter signature and nothing here reads them: the
+	 * attachment ID is the fourth argument, so they have to be declared to reach it.
+	 *
 	 * @param  int|false $threshold     The threshold value in pixels, or false to disable resizing.
 	 * @param  array     $imagesize     Indexed array of the image width and height in pixels.
 	 * @param  string    $file          Full path to the uploaded image file.
