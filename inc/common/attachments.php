@@ -70,6 +70,17 @@ function imagify_add_avif_type( $ext2type ) {
 add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'filter_big_image_size_threshold' ], IMAGIFY_INT_MAX, 4 );
 
 /**
+ * Note the uploads WordPress 7.1 hands to the browser, which scales them itself.
+ *
+ * Fires before the attachment metadata is generated, so the threshold filter above already
+ * knows about it by the time it runs.
+ *
+ * @since 2.3.3
+ * @since WP 7.1
+ */
+add_action( 'rest_after_insert_attachment', [ imagify_get_context( 'wp' ), 'maybe_flag_client_side_scaling' ], 10, 3 );
+
+/**
  * Add filters to manage images formats that will be generated
  *
  * @return array
