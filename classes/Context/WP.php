@@ -31,6 +31,17 @@ final class WP extends AbstractContext {
 	protected $resizing_threshold = 0;
 
 	/**
+	 * True once WordPress has said the browser is scaling the upload being created.
+	 *
+	 * Set on `rest_after_insert_attachment`, read by the threshold filter later in the same
+	 * request. One request creates one attachment, so there is nothing to key it by.
+	 *
+	 * @var   bool
+	 * @since 2.3.3
+	 */
+	protected $browser_is_scaling = false;
+
+	/**
 	 * Get the thumbnail sizes for this context, except the full size.
 	 *
 	 * @since  1.9
@@ -88,17 +99,11 @@ final class WP extends AbstractContext {
 	 *
 	 * @since 2.3.3
 	 *
-	 * $imagesize and $file are part of the filter signature and nothing here reads them: the
-	 * attachment ID is the fourth argument, so they have to be declared to reach it.
-	 *
-	 * @param  int|false $threshold     The threshold value in pixels, or false to disable resizing.
-	 * @param  array     $imagesize     Indexed array of the image width and height in pixels.
-	 * @param  string    $file          Full path to the uploaded image file.
-	 * @param  int       $attachment_id Attachment post ID.
+	 * @param  int|false $threshold The threshold value in pixels, or false to disable resizing.
 	 * @return int|false
 	 */
-	public function filter_big_image_size_threshold( $threshold, $imagesize = [], $file = '', $attachment_id = 0 ) {
-		if ( false === $threshold && $attachment_id && self::is_client_side_scaled( $attachment_id ) ) {
+	public function filter_big_image_size_threshold( $threshold ) {
+		if ( false === $threshold && $this->browser_is_scaling ) {
 			return $threshold;
 		}
 
@@ -113,6 +118,9 @@ final class WP extends AbstractContext {
 	 * carries `generate_sub_sizes` as `false` exactly when the browser owns the sub sizes.
 	 *
 	 * @since 2.3.3
+	 *
+	 * The threshold filter runs later in this same request, so a property is enough for it. The
+	 * transient is for the optimization, which runs in a later request of its own.
 	 *
 	 * @param object $attachment Inserted or updated attachment object. A \WP_Post when WordPress fires this.
 	 * @param object $request    Request object. A \WP_REST_Request when WordPress fires this.
@@ -130,6 +138,8 @@ final class WP extends AbstractContext {
 		if ( false !== $request->get_param( 'generate_sub_sizes' ) ) {
 			return;
 		}
+
+		$this->browser_is_scaling = true;
 
 		self::flag_client_side_scaling( $attachment->ID );
 	}

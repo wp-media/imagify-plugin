@@ -88,9 +88,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			$this->reset_values['resize_larger_w'] = $this->sanitize_and_validate_value( 'resize_larger_w', $this->reset_values['resize_larger_w'], $this->default_values['resize_larger_w'] );
 
 			if ( $filtered ) {
-				// The argument count has to be repeated here, or the callback would be
-				// registered with a single one and stop receiving the attachment ID.
-				add_filter( 'big_image_size_threshold', $filter_cb, IMAGIFY_INT_MAX, 4 );
+				add_filter( 'big_image_size_threshold', $filter_cb, IMAGIFY_INT_MAX );
 			}
 		}
 

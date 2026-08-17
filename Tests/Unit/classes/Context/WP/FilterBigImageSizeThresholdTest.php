@@ -54,14 +54,15 @@ class FilterBigImageSizeThresholdTest extends TestCase {
 	 * Test: the threshold is handed back untouched for the upload the browser scaled.
 	 */
 	public function testReturnsFalseUntouchedForABrowserScaledUpload(): void {
-		Functions\when( 'get_transient' )->alias(
-			function ( $name ) {
-				return 'imagify_client_side_scaled_123' === $name ? 1 : false;
-			}
-		);
+		Functions\when( 'set_transient' )->justReturn( true );
 		Functions\expect( 'get_imagify_option' )->never();
 
-		$this->assertFalse( ( new WP() )->filter_big_image_size_threshold( false, [ 3800, 2500 ], '/tmp/big.jpg', 123 ) );
+		$context = new WP();
+
+		// The sequence WordPress produces: the upload is noted, then the filter runs.
+		$context->maybe_flag_client_side_scaling( (object) [ 'ID' => 123 ], $this->requestReturning( false ), true );
+
+		$this->assertFalse( $context->filter_big_image_size_threshold( false ) );
 	}
 
 	/**
@@ -69,20 +70,9 @@ class FilterBigImageSizeThresholdTest extends TestCase {
 	 * Nothing scaled the file in that case, so standing down would leave it unresized.
 	 */
 	public function testOverridesAFalseThatDidNotComeFromTheBrowserFlow(): void {
-		Functions\when( 'get_transient' )->justReturn( false );
 		$this->stubResizingOption( 2560 );
 
-		$this->assertSame( 2560, ( new WP() )->filter_big_image_size_threshold( false, [ 3800, 2500 ], '/tmp/big.jpg', 123 ) );
-	}
-
-	/**
-	 * Test: a false carrying no attachment ID is overridden too, which is what happens when the
-	 * value is read outside of an upload.
-	 */
-	public function testOverridesAFalseWithoutAnAttachmentId(): void {
-		Functions\when( 'get_transient' )->justReturn( false );
-		$this->stubResizingOption( 2560 );
-
+		// No upload was noted, so this false came from somewhere else.
 		$this->assertSame( 2560, ( new WP() )->filter_big_image_size_threshold( false ) );
 	}
 
@@ -90,20 +80,18 @@ class FilterBigImageSizeThresholdTest extends TestCase {
 	 * Test: Imagify's own resizing value is applied when core did not opt out.
 	 */
 	public function testReturnsImagifyThresholdWhenResizingIsEnabled(): void {
-		Functions\when( 'get_transient' )->justReturn( false );
 		$this->stubResizingOption( 1200 );
 
-		$this->assertSame( 1200, ( new WP() )->filter_big_image_size_threshold( 2560, [ 3800, 2500 ], '/tmp/big.jpg', 123 ) );
+		$this->assertSame( 1200, ( new WP() )->filter_big_image_size_threshold( 2560 ) );
 	}
 
 	/**
 	 * Test: with the setting off, the threshold is 0 and WordPress skips its own resizing.
 	 */
 	public function testReturnsZeroWhenResizingIsDisabled(): void {
-		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'get_imagify_option' )->justReturn( 0 );
 
-		$this->assertSame( 0, ( new WP() )->filter_big_image_size_threshold( 2560, [ 3800, 2500 ], '/tmp/big.jpg', 123 ) );
+		$this->assertSame( 0, ( new WP() )->filter_big_image_size_threshold( 2560 ) );
 	}
 
 	/**

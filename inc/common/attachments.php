@@ -67,7 +67,7 @@ function imagify_add_avif_type( $ext2type ) {
  * @since  WP 5.3
  * @author Grégory Viguier
  */
-add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'filter_big_image_size_threshold' ], IMAGIFY_INT_MAX, 4 );
+add_filter( 'big_image_size_threshold', [ imagify_get_context( 'wp' ), 'filter_big_image_size_threshold' ], IMAGIFY_INT_MAX );
 
 /**
  * Note the uploads WordPress 7.1 hands to the browser, which scales them itself.
