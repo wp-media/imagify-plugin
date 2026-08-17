@@ -151,6 +151,23 @@ class Test_ClientSideUploadSequence extends TestCase {
 	}
 
 	/**
+	 * Builds one entry of the metadata `sizes` array, as WordPress stores it.
+	 *
+	 * @param  string $file   File name.
+	 * @param  int    $width  Width in pixels.
+	 * @param  int    $height Height in pixels.
+	 * @return array
+	 */
+	private function size_data( $file, $width, $height ) {
+		return [
+			'file'      => $file,
+			'width'     => $width,
+			'height'    => $height,
+			'mime-type' => 'image/jpeg',
+		];
+	}
+
+	/**
 	 * Builds the REST request WordPress hands to `rest_after_insert_attachment` when the
 	 * browser is going to send the sub sizes itself.
 	 *
@@ -191,10 +208,10 @@ class Test_ClientSideUploadSequence extends TestCase {
 		$metadata = wp_get_attachment_metadata( $attachment_id );
 
 		$metadata['sizes'] = [
-			'thumbnail'    => [ 'file' => 'thumb.jpg' ],
-			'medium'       => [ 'file' => 'medium.jpg' ],
-			'medium_large' => [ 'file' => 'medium_large.jpg' ],
-			'large'        => [ 'file' => 'large.jpg' ],
+			'thumbnail'    => $this->size_data( 'thumb.jpg', 150, 150 ),
+			'medium'       => $this->size_data( 'medium.jpg', 300, 197 ),
+			'medium_large' => $this->size_data( 'medium_large.jpg', 768, 505 ),
+			'large'        => $this->size_data( 'large.jpg', 1024, 674 ),
 		];
 
 		/** This filter is documented in wp-admin/includes/image.php */
@@ -244,8 +261,8 @@ class Test_ClientSideUploadSequence extends TestCase {
 			'width'  => 1200,
 			'height' => 900,
 			'sizes'  => [
-				'thumbnail' => [ 'file' => 'thumb.jpg' ],
-				'medium'    => [ 'file' => 'medium.jpg' ],
+				'thumbnail' => $this->size_data( 'thumb.jpg', 150, 150 ),
+				'medium'    => $this->size_data( 'medium.jpg', 300, 225 ),
 			],
 		];
 
