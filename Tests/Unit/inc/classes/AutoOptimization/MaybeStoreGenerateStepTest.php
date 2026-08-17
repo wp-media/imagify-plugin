@@ -105,6 +105,8 @@ class MaybeStoreGenerateStepTest extends TestCase {
 	 * Test: the attachment is flagged when WordPress hands the sub sizes over to the browser.
 	 */
 	public function testFlagsTheAttachmentWhenTheBrowserHandlesTheSubsizes(): void {
+		$this->stubDependencies();
+
 		$stored = [];
 
 		Functions\when( 'set_transient' )->alias(
@@ -124,6 +126,7 @@ class MaybeStoreGenerateStepTest extends TestCase {
 	 * nor when the parameter is absent entirely.
 	 */
 	public function testDoesNotFlagWhenWordPressBuildsTheSubsizes(): void {
+		$this->stubDependencies();
 		Functions\expect( 'set_transient' )->never();
 
 		$attachment = (object) [ 'ID' => 42 ];
@@ -133,9 +136,20 @@ class MaybeStoreGenerateStepTest extends TestCase {
 	}
 
 	/**
+	 * Test: an attachment Imagify cannot optimize is not flagged, since nothing would read it.
+	 */
+	public function testDoesNotFlagAnUnsupportedMimeType(): void {
+		Functions\when( 'imagify_is_attachment_mime_type_supported' )->justReturn( false );
+		Functions\expect( 'set_transient' )->never();
+
+		( new Imagify_Auto_Optimization() )->flag_awaiting_client_side_subsizes( (object) [ 'ID' => 42 ], $this->requestReturning( false ), true );
+	}
+
+	/**
 	 * Test: nothing is flagged when an existing attachment is being updated rather than created.
 	 */
 	public function testDoesNotFlagWhenUpdatingAnAttachment(): void {
+		$this->stubDependencies();
 		Functions\expect( 'set_transient' )->never();
 
 		( new Imagify_Auto_Optimization() )->flag_awaiting_client_side_subsizes( (object) [ 'ID' => 42 ], $this->requestReturning( false ), false );

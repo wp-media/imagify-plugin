@@ -99,6 +99,12 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 		 * upload of WP 7.1 needs: it stores every sub size at once, so reading them before the
 		 * write would only ever see the full size. Harmless the rest of the time, since an
 		 * optimization that already ran has cleared its steps by then.
+		 *
+		 * The trade-off is that these two hooks now fire for every post meta write on the site
+		 * rather than only on old WordPress versions. The callback returns on anything that is
+		 * not '_wp_attachment_metadata', which is the first thing it checks, so the cost is one
+		 * string comparison. Carrying the state on the attachment instead would mean an extra
+		 * read on every upload, for a narrower guarantee.
 		 */
 		add_action( 'updated_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
 		add_action( 'added_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
@@ -190,6 +196,11 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 			return;
 		}
 
+		if ( ! imagify_is_attachment_mime_type_supported( $attachment->ID ) ) {
+			// Nothing would ever read the flag for this attachment.
+			return;
+		}
+
 		set_transient( $this->get_awaiting_subsizes_transient_name( $attachment->ID ), 1, HOUR_IN_SECONDS );
 	}
 
@@ -202,7 +213,8 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 	 * @param  array  $metadata      An array of attachment meta data.
 	 * @param  int    $attachment_id Current attachment ID.
 	 * @param  string $context       Can be 'create' when the metadata was initially created for a
-	 *                               new attachment, or 'update' when it was updated. Null before WP 7.1.
+	 *                               new attachment, or 'update' when it was updated. Passed by WordPress
+	 *                               since 5.3, so only null if something else applies the filter.
 	 * @return array
 	 */
 	public function maybe_store_generate_step( $metadata, $attachment_id, $context = null ) {
