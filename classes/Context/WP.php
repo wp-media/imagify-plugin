@@ -107,6 +107,11 @@ final class WP extends AbstractContext {
 	 * Optimization runs in a later, asynchronous request, where the filters WordPress
 	 * set up during the upload are long gone, so the state has to be stored.
 	 *
+	 * The flag is left to expire rather than deleted after use: it is read once per size
+	 * being optimized, so deleting it on the first read would let the remaining sizes
+	 * resize the file. An hour is far longer than the queue needs, and the pattern is
+	 * registered in {@see \Imagify\Tools\InternalStateList} so a reset clears it.
+	 *
 	 * @since 2.3.3
 	 *
 	 * @param int $attachment_id Attachment post ID.

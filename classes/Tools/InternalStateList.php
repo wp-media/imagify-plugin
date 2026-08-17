@@ -64,6 +64,9 @@ class InternalStateList {
 			'_transient_%imagify_rpc_%',            // Legacy/deprecated.
 			'_transient_imagify_%_process_locked',
 			'_site_transient_imagify_%_process_lock%',
+			// Flags an attachment whose scaled version came from the browser, on WP 7.1+.
+			'_transient_imagify_client_side_scaled_%',
+			'_transient_timeout_imagify_client_side_scaled_%',
 		];
 	}
 
