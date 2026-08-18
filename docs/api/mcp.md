@@ -102,6 +102,33 @@ interface AbilitiesInterface {
 
 ## Registered abilities
 
+### Identifying a media
+
+`imagify/optimize-media`, `imagify/restore-media` and `imagify/get-media-status` accept three
+interchangeable identifiers, so a caller that only knows the file name or the URL of an image does
+not have to look its attachment ID up first. None of the three is required on its own — exactly one
+must be supplied (hence `no*` in the input tables):
+
+| Input | Resolution |
+|-------|------------|
+| `media_id` | Used as-is. |
+| `media_url` | `attachment_url_to_postid()`. Next-gen and thumbnail URLs (`hero-300x200.jpg.webp`) fall back to a file-name lookup on the original. |
+| `media_filename` | Exact, case-insensitive match on the base name of the `_wp_attached_file` meta. A full relative path (`2026/08/hero.jpg`) is accepted too. |
+
+`media_id` wins over `media_url`, which wins over `media_filename`. A `media_id` of `0` or less is
+treated as absent, so the next identifier is tried.
+
+Errors are explicit and actionable rather than best-effort:
+
+| Error code | When |
+|------------|------|
+| `imagify_missing_media_identifier` | None of the three inputs was usable. |
+| `imagify_media_not_found` | The URL or file name matches nothing in the library. |
+| `imagify_ambiguous_media_filename` | Several attachments share the file name. The message lists the matching IDs so the caller can retry with `media_id`. |
+
+Resolution lives in `Imagify\Abilities\MediaResolver::resolve_id()`, which returns an attachment ID
+or a `WP_Error`. Each ability turns that `WP_Error` into its own `status: "error"` output shape.
+
 ### Credit confirmation flow
 
 `imagify/optimize-media`, `imagify/bulk-optimize`, and `imagify/generate-missing-nextgen` consume
@@ -241,7 +268,9 @@ Delegates to `Imagify\Optimization\Process\WP::optimize()` for first-time optimi
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `media_id` | integer | yes | WordPress attachment ID. |
+| `media_id` | integer | no* | WordPress attachment ID. |
+| `media_filename` | string | no* | File name of the media, for example `hero-banner.jpg`. |
+| `media_url` | string | no* | Absolute URL of the media. |
 | `optimization_level` | integer (0–2) | no | Overrides the global setting. 0 = normal, 1 = aggressive, 2 = ultra. |
 | `confirm` | boolean | no | Set to `true` to execute after reviewing the credit-consumption preview returned by a prior call without this flag. Defaults to `false`. See [Credit confirmation flow](#credit-confirmation-flow). |
 
@@ -272,7 +301,9 @@ Restores an optimized media to its original state using the stored backup file. 
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `media_id` | integer | yes | WordPress attachment ID to restore. |
+| `media_id` | integer | no* | WordPress attachment ID to restore. |
+| `media_filename` | string | no* | File name of the media, for example `hero-banner.jpg`. |
+| `media_url` | string | no* | Absolute URL of the media. |
 
 **Output schema:**
 
@@ -383,7 +414,9 @@ Registered by `Imagify\Abilities\GetMediaStatus`. Returns the optimization statu
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `media_id` | integer | yes | WordPress attachment ID. |
+| `media_id` | integer | no* | WordPress attachment ID. |
+| `media_filename` | string | no* | File name of the media, for example `hero-banner.jpg`. |
+| `media_url` | string | no* | Absolute URL of the media. |
 
 **Output schema:**
 
@@ -397,7 +430,7 @@ Registered by `Imagify\Abilities\GetMediaStatus`. Returns the optimization statu
 | `avif_available` | boolean | `true` when an AVIF version of the full-size image has been generated. |
 | `error_message` | string \| null | Human-readable error message when `status` is `"error"`. `null` otherwise. |
 
-**Error behaviour:** If `media_id` is `0` or negative, or the attachment does not exist in the database, returns `status: "error"` with a descriptive `error_message`.
+**Error behaviour:** If no identifier resolves to an attachment, returns `status: "error"` with a descriptive `error_message`. See [Identifying a media](#identifying-a-media).
 
 ### `imagify/get-nextgen-coverage`
 
