@@ -174,6 +174,8 @@ class Test_Reset extends TestCase {
 			'\_site\_transient\_imagify\_%\_process\_lock%',
 			'\_transient\_imagify\_client\_side\_scaled\_%',
 			'\_transient\_timeout\_imagify\_client\_side\_scaled\_%',
+			'\_transient\_imagify\_awaiting\_subsizes\_%',
+			'\_transient\_timeout\_imagify\_awaiting\_subsizes\_%',
 		];
 
 		foreach ( $expected_patterns as $pattern ) {

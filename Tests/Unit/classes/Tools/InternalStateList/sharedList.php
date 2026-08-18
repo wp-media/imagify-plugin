@@ -70,6 +70,8 @@ class Test_SharedList extends TestCase {
 			'_site_transient_imagify_%_process_lock%',
 			'_transient_imagify_client_side_scaled_%',
 			'_transient_timeout_imagify_client_side_scaled_%',
+			'_transient_imagify_awaiting_subsizes_%',
+			'_transient_timeout_imagify_awaiting_subsizes_%',
 		];
 
 		$this->assertSame( $expected, InternalStateList::get_locked_transient_patterns() );
