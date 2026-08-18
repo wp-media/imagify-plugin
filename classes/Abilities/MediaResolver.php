@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Imagify\Abilities;
 
 use WP_Error;
-use WP_Query;
 
 /**
  * Resolves the media identifier accepted by the MCP media abilities.
@@ -164,17 +163,28 @@ final class MediaResolver {
 	 * Resolve an attachment ID from a file name.
 	 *
 	 * The `_wp_attached_file` meta stores a path relative to the uploads
-	 * directory (`2026/08/hero.jpg`), so the value is narrowed with a `LIKE`
-	 * query and then compared on its base name. Callers may pass either the
-	 * bare file name or a full relative path.
+	 * directory (`2026/08/hero.jpg`). The match is anchored on the path
+	 * separator so `hero.jpg` cannot be satisfied by `my-hero.jpg` or
+	 * `hero.jpg.bak`, and callers may pass either the bare file name or a full
+	 * relative path — supplying the directory narrows the search, which is how
+	 * two same-named files in different month folders are told apart.
+	 *
+	 * One row beyond the cap is fetched so that "more candidates than we are
+	 * willing to list" is reported as ambiguous rather than silently resolved
+	 * to whichever match happened to fall inside the window.
 	 *
 	 * @since 2.3.3
 	 *
-	 * @param string $filename File name of the media.
+	 * @global \wpdb $wpdb WordPress database abstraction object.
+	 *
+	 * @param string $filename File name, or uploads-relative path, of the media.
 	 * @return int|WP_Error
 	 */
 	private static function resolve_by_filename( string $filename ) {
-		$basename = basename( str_replace( '\\', '/', $filename ) );
+		global $wpdb;
+
+		$relative = ltrim( str_replace( '\\', '/', $filename ), '/' );
+		$basename = basename( $relative );
 
 		if ( '' === $basename ) {
 			return new WP_Error(
@@ -183,35 +193,37 @@ final class MediaResolver {
 			);
 		}
 
-		$query = new WP_Query(
-			[
-				'post_type'              => 'attachment',
-				'post_status'            => 'inherit',
-				'fields'                 => 'ids',
-				'posts_per_page'         => self::MAX_CANDIDATES,
-				'no_found_rows'          => true,
-				'ignore_sticky_posts'    => true,
-				'update_post_term_cache' => false,
-				'meta_query'             => [
-					[
-						'key'     => '_wp_attached_file',
-						'value'   => $basename,
-						'compare' => 'LIKE',
-					],
-				],
-			]
+		// A caller-supplied directory is kept, so `2026/08/hero.jpg` does not
+		// collide with `2025/01/hero.jpg`.
+		$needle = ( false !== strpos( $relative, '/' ) ) ? $relative : $basename;
+
+		// Matching in SQL: either the stored path IS the needle (a file at the
+		// uploads root, or a full relative path), or it ends with `/` + needle.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Meta LIKE lookup no core API offers; results are request-scoped.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT post_id, meta_value FROM {$wpdb->postmeta}
+				WHERE meta_key = '_wp_attached_file'
+					AND ( meta_value = %s OR meta_value LIKE %s )
+				ORDER BY post_id ASC
+				LIMIT %d",
+				$needle,
+				'%/' . $wpdb->esc_like( $needle ),
+				self::MAX_CANDIDATES + 1
+			)
 		);
 
-		// The LIKE above also matches `my-hero.jpg` or `hero.jpg.bak` when asked
-		// for `hero.jpg`, so keep only the attachments whose own base name is an
-		// exact, case-insensitive match.
+		// The comparison above follows the column collation, which is
+		// case-insensitive on a stock install but need not be. Confirm in PHP so
+		// the behaviour does not depend on how the database was created.
 		$matches = [];
 
-		foreach ( $query->posts as $candidate_id ) {
-			$attached_file = (string) get_post_meta( (int) $candidate_id, '_wp_attached_file', true );
+		foreach ( (array) $rows as $row ) {
+			$stored  = (string) $row->meta_value;
+			$subject = ( $needle === $basename ) ? basename( $stored ) : $stored;
 
-			if ( 0 === strcasecmp( basename( $attached_file ), $basename ) ) {
-				$matches[] = (int) $candidate_id;
+			if ( 0 === strcasecmp( $subject, $needle ) ) {
+				$matches[] = (int) $row->post_id;
 			}
 		}
 
@@ -222,6 +234,18 @@ final class MediaResolver {
 					/* translators: %s: media file name provided by the caller. */
 					__( 'No media in the library is named "%s".', 'imagify' ),
 					$basename
+				)
+			);
+		}
+
+		if ( count( $matches ) > self::MAX_CANDIDATES ) {
+			return new WP_Error(
+				'imagify_ambiguous_media_filename',
+				sprintf(
+					/* translators: 1: media file name provided by the caller, 2: number of attachments listed. */
+					__( 'More than %2$d media are named "%1$s". Retry with media_id, or with the full path such as "2026/08/%1$s".', 'imagify' ),
+					$basename,
+					self::MAX_CANDIDATES
 				)
 			);
 		}

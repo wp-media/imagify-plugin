@@ -104,6 +104,48 @@ class ResolveIdTest extends TestCase {
 		$this->assertStringContainsString( (string) $second, $result->get_error_message() );
 	}
 
+	/**
+	 * A bare file name shared by more attachments than the resolver is willing
+	 * to list must be reported, not resolved. Narrowing the query to a single
+	 * page of candidates and picking the lone exact match inside that page
+	 * would act on an arbitrary attachment.
+	 */
+	public function testShouldReportAmbiguityBeyondTheCandidateCap(): void {
+		for ( $i = 0; $i <= MediaResolver::MAX_CANDIDATES; $i++ ) {
+			$this->create_attachment( sprintf( '2026/%02d/hero.jpg', $i + 1 ) );
+		}
+
+		$result = MediaResolver::resolve_id( [ 'media_filename' => 'hero.jpg' ] );
+
+		$this->assertWPError( $result );
+		$this->assertSame( 'imagify_ambiguous_media_filename', $result->get_error_code() );
+	}
+
+	/**
+	 * Supplying the directory is the documented way out of that ambiguity.
+	 */
+	public function testShouldResolveAmbiguousFilenameWhenGivenItsDirectory(): void {
+		$wanted = $this->create_attachment( '2026/08/hero.jpg' );
+		$this->create_attachment( '2025/01/hero.jpg' );
+
+		$this->assertWPError( MediaResolver::resolve_id( [ 'media_filename' => 'hero.jpg' ] ) );
+		$this->assertSame( $wanted, MediaResolver::resolve_id( [ 'media_filename' => '2026/08/hero.jpg' ] ) );
+	}
+
+	/**
+	 * The anchored match must not treat a longer directory as a match: asking
+	 * for `08/hero.jpg` should not be satisfied by `2026/08/hero.jpg` only by
+	 * accident of the suffix, nor should a partial segment match.
+	 */
+	public function testShouldNotMatchPartialPathSegments(): void {
+		$this->create_attachment( '2026/08/hero.jpg' );
+
+		$result = MediaResolver::resolve_id( [ 'media_filename' => '6/08/hero.jpg' ] );
+
+		$this->assertWPError( $result );
+		$this->assertSame( 'imagify_media_not_found', $result->get_error_code() );
+	}
+
 	public function testShouldReturnErrorWhenFilenameMatchesNothing(): void {
 		$result = MediaResolver::resolve_id( [ 'media_filename' => 'nope.jpg' ] );
 
