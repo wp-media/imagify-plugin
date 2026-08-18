@@ -11,13 +11,13 @@ Image optimization in 1‑click: compress, resize & convert to WebP/AVIF – fre
 
 == Description ==
 
-=== 🏆 The Easiest Image Optimization Plugin For WordPress ===
+=== 🏆 The Easiest Image Optimization Plugin for WordPress ===
 
 [Imagify](https://imagify.io/) is the simplest image optimization plugin for WordPress to optimize images, so your website loads faster and images stay lighter. It’s designed for site owners who want quick and effective results with a very easy setup. 
 
-With Imagify, you can resize and compress images and convert them to WebP and AVIF  directly from your WordPress dashboard, with up to 20MB of images optimized each month for free. Image optimization takes just one click and does not require technical knowledge. 
+With Imagify, you can resize and compress images and convert them to WebP and AVIF  directly from your WordPress dashboard, with up to 20MB of images optimized each month for free. Automatic image optimization takes just one click and does not require technical knowledge. 
 
-Whether you are uploading new images or optimizing an existing media library, Imagify makes image optimization simple, reliable, and easy to manage. 
+Whether you're uploading new images, running bulk image optimization on an existing media library, or handling image optimization for WooCommerce product photos, Imagify makes the process simple, reliable, and easy to manage. 
 
 What sets Imagify apart: 
 
@@ -25,7 +25,7 @@ What sets Imagify apart:
 
 * __Easy to use__, with no advanced configuration to learn. 
 
-* __Smart image compression__ that does the job for you and reduces file size while preserving image quality. 
+* Smart __image compression and optimization__ that does the job for you and reduces file size while preserving image quality. 
 
 * __Bulk image optimization__ that runs in the background. 
 
@@ -37,15 +37,15 @@ Watch the video and see for yourself why Imagify is the easiest image optimizer 
 === ✨ Optimize Images with Imagify – Features at a Glance: ===
  
 
-* __Smart Compression (Does the job for you)__ – Automatically balances image quality and performance. You don’t need to tweak settings. Imagify optimizes every image for the best compression rate while preserving visual quality, so you save time and get consistent results without having to choose any settings. 
+* __Smart Compression (Does the job for you)__ – Automatically balances image quality and performance. You don’t need to tweak settings. Imagify handles __image optimization without losing quality__, so you save time and get consistent results without having to choose any settings. 
 
 * __Lossless Compression (Optional)__ – Prefer pixel-perfect quality? Choose lossless compression. This option is ideal for photographers and quality-focused websites. 
 
-* __Next-Gen Formats: WebP and AVIF (In one click)__ – Convert your images to WebP for wide compatibility or AVIF for superior compression in one click. This helps improve your Google PageSpeed performance score and Core Web Vitals grades. 
+* __Next-Gen Formats: Convert WebP and Convert AVIF in One Click__ – Convert your images to WebP for wide compatibility or AVIF for superior compression in one click. This helps improve your Google PageSpeed performance score and Core Web Vitals grades. 
 
 * __Resize Large Images Automatically__ – Resize oversized images to a maximum width of up to 2560 pixels on upload or during optimization. This can reduce file size by up to 80 percent while keeping images optimized on all devices.  
 
-* __Asynchronous Bulk Optimization__ – Optimize your entire Media Library in the background without slowing down your site. Bulk optimization runs asynchronously, so you can keep working while Imagify handles the image optimization process for you. 
+* __Asynchronous Bulk Image Optimization__ – Optimize your entire Media Library in the background without slowing down your site. Bulk optimization runs asynchronously, so you can keep working while Imagify handles the image optimization process for you – ideal for large __WordPress image compression__ jobs. 
 
 * __On-the-Fly Image Resizing__ – Resize images directly from the app or within WordPress. This makes it easy to optimize images at the ideal size right away. 
 
@@ -53,20 +53,20 @@ Watch the video and see for yourself why Imagify is the easiest image optimizer 
 
 * __Flexible File and Size Optimization__ – Choose which WordPress image sizes you want to optimize, including thumbnail, medium, large, 1536 px, and 2048 px. This helps you optimize only what you actually use and manage your monthly quota more efficiently. 
 
-* __Auto-Optimize on Upload__ – New images are optimized automatically as soon as you upload them to WordPress. No manual steps and no forgotten images. 
+* __Auto-Optimize on Upload__ – New images are optimized automatically as soon as you upload them to WordPress. No manual steps and no forgotten images: you’ll get __automatic image optimization__ from the moment you hit publish.  
 
 * __MCP: AI Access for Imagify__ – Connect Imagify to your AI tool of choice and get answers based on your Imagify data. Ask your AI about image optimization status, available quota, or whether your images have WebP and AVIF versions. You can also troubleshoot issues or optimize and restore a single image directly from the conversation. Imagify is the first image optimization plugin to offer this kind of AI connection.
  
 ✨ In short, you have everything you need to optimize images at scale while keeping quality high and your setup simple. 
  
 
-=== 💡 Why optimize images with Imagify? ===
+=== 💡 Why Optimize Images with Imagify? ===
 
-Imagify is an image optimizer built by the same team behind WP Rocket and focuses on delivering the best performance while saving you time, whether you are new to image optimization or managing a large number of images across multiple websites. 
+Imagify is an image optimizer built by the same team behind WP Rocket and focuses on delivering the best performance while saving you time, whether you are new to image optimization for WordPress or managing a large number of images across multiple websites. 
 
-Imagify helps you optimize images, convert them to WebP and AVIF, and easily improve performance, including PageSpeed scores and Core Web Vitals. You’ll make your images load quicker without spending time adjusting settings. 
+Imagify helps you compress and optimize images, convert them to WebP and AVIF, and easily improve performance, including PageSpeed scores and Core Web Vitals. You’ll make your images load quicker without spending time adjusting settings. 
 
-=== 📸 Optimize and compress images easily ===
+=== 📸 Optimize and Compress Images Easily ===
 
 Imagify helps you optimize images by reducing their file size without losing image quality. Your pages load faster, without changing how your images look to your visitors. 
 
@@ -78,9 +78,9 @@ __The part you’ll love the most:__ Imagify uses Smart Compression to automatic
 
 === ⚙️ Enjoy Image Optimization in the Background ===
 
-If you have many images, bulk optimization lets you optimize them all at once. The process runs in the background, so you can keep working while Imagify optimizes images for you. Original images are always preserved and can be restored at any time. 
+If you have many images, image optimization in bulk lets you optimize them all at once. The process runs in the background, so you can keep working while Imagify optimizes images for you. Original images are always preserved and can be restored at any time. 
 
-=== 🔄 Convert images to WebP and AVIF ===
+=== 🔄 Convert Images to WebP and AVIF ===
 
 In addition to resizing and compressing, with Imagify you can convert images to WebP and AVIF without upgrading, __as next-gen image conversion is included in all plans, including the free one.__)
 
@@ -94,7 +94,7 @@ Imagify supports next-gen conversion for all common image formats, including JPG
 
 For instance, you can convert GIF to WebP, JPEG and JPG to WebP, and even PNGto WebP. The same goes for AVIF: you can convert GIF to AVIF, JPEG and JPG to AVIF, PNG to AVIF. 
 
-=== ⚡ Boost your PageSpeed Insights score and optimize Core Web Vitals ===
+=== ⚡ Boost Your Pagespeed Insights Score and Optimize Core Web Vitals ===
 
 Heavy images are one of the most common reasons pages load slowly. When images are too large or not served in modern formats, they drag down performance and user experience. 
 
@@ -102,7 +102,7 @@ Imagify helps you fix this at the source by compressing images and converting th
 
 With lighter images across your site, you get faster load times and better performance where it matters most and, piece on the cake, without having to fine-tune performance settings yourself! 
 
-=== 🔌 Connect your AI tool to Imagify with MCP === 
+=== 🔌 Connect Your AI Tool to Imagify with MCP === 
  
 Running multiple websites? With MCP (Model Context Protocol), you can get answers about your websites from a single conversation with your AI tool. 
 
