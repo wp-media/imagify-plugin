@@ -483,7 +483,7 @@ class Imagify_Settings {
 		?>
 		<span id="<?php echo esc_attr( $attributes['aria-describedby'] ); ?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
-			<?php echo esc_html( $args['info'] ); ?>
+			<?php self::print_info( $args['info'] ); ?>
 		</span>
 		<?php
 	}
@@ -698,7 +698,7 @@ class Imagify_Settings {
 		?>
 		<span id="<?php echo esc_attr( $attributes['aria-describedby'] ); ?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
-			<?php echo esc_html( $args['info'] ); ?>
+			<?php self::print_info( $args['info'] ); ?>
 		</span>
 		<?php
 	}
@@ -764,7 +764,7 @@ class Imagify_Settings {
 			</p>
 			<span id="<?php echo esc_attr( $attributes['aria-describedby'] ); ?>" class="imagify-<?php echo esc_attr( $args['info_class'] ); ?>">
 				<span class="dashicons dashicons-info"></span>
-				<?php echo esc_html( $args['info'] ); ?>
+				<?php self::print_info( $args['info'] ); ?>
 			</span>
 		</div>
 		<?php
@@ -832,7 +832,7 @@ class Imagify_Settings {
 		?>
 		<span id="<?php echo esc_attr( $attributes['aria-describedby'] ); ?>" class="imagify-info">
 			<span class="dashicons dashicons-info"></span>
-			<?php echo esc_html( $args['info'] ); ?>
+			<?php self::print_info( $args['info'] ); ?>
 		</span>
 		<?php
 	}
@@ -936,5 +936,40 @@ class Imagify_Settings {
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Print an informative message, keeping the inline formatting it carries.
+	 *
+	 * The `info` argument of the field renderers is written as markup by its
+	 * callers: a `<br>` separating two sentences, a `<code>` naming a filter, a
+	 * link to the documentation. Passing it through `esc_html()` printed those
+	 * tags to the user instead of applying them, so it goes through a narrow
+	 * allow-list of inline tags.
+	 *
+	 * The message is already translated by the time it arrives, which is exactly
+	 * why the filtering happens here: whatever a translation introduces is held
+	 * to the same allow-list as the original string.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param string $info The message to print.
+	 * @return void
+	 */
+	public static function print_info( $info ) {
+		echo wp_kses(
+			$info,
+			[
+				'a'      => [
+					'href'   => true,
+					'rel'    => true,
+					'target' => true,
+				],
+				'br'     => [],
+				'code'   => [],
+				'em'     => [],
+				'strong' => [],
+			]
+		);
 	}
 }
