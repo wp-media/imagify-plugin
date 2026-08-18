@@ -7,18 +7,18 @@ use Imagify_Settings;
 use Imagify\Tests\Integration\TestCase;
 
 /**
- * @covers Imagify_Settings::print_info
+ * @covers Imagify_Settings::print_text
  *
  * @group  ImagifySettings
  */
-class Test_PrintInfo extends TestCase {
+class Test_PrintText extends TestCase {
 
 	/**
 	 * @dataProvider configTestData
 	 */
 	public function testShouldPrintTheExpectedMarkup( $config, $expected ) {
 		ob_start();
-		Imagify_Settings::print_info( $config['info'] );
+		Imagify_Settings::print_text( $config['text'] );
 		$output = ob_get_clean();
 
 		$this->assertSame( $expected, $output );
