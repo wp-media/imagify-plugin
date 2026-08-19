@@ -59,7 +59,7 @@
 		"szepeviktor/phpstan-wordpress": "^2.0",
 		"wp-coding-standards/wpcs": "^3",
 		"wp-media/phpstan-wp": "^1.0",
-		"wp-media/phpunit": "3.1"
+		"wp-media/phpunit": "^3.3"
 	},
 	"autoload": {
 		"psr-4": {
