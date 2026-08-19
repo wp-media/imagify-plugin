@@ -24,6 +24,13 @@ use WP_Error;
  * @preserveGlobalState disabled
  */
 class Test_Execute extends TestCase {
+	protected function setUp(): void {
+		parent::setUp();
+
+		// MediaResolver builds translated WP_Error messages when no identifier resolves.
+		Functions\stubTranslationFunctions();
+	}
+
 
 	/**
 	 * Stub get_post() and get_post_type() as a valid attachment.

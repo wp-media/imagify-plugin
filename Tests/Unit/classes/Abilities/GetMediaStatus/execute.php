@@ -20,6 +20,13 @@ use Imagify\Tests\Unit\TestCase;
  * @group  MCP
  */
 class Test_Execute extends TestCase {
+	protected function setUp(): void {
+		parent::setUp();
+
+		// MediaResolver builds translated WP_Error messages when no identifier resolves.
+		Functions\stubTranslationFunctions();
+	}
+
 
 	/**
 	 * Build a testable GetMediaStatus subclass with a mocked WP data object.
@@ -89,7 +96,7 @@ class Test_Execute extends TestCase {
 		$result  = $ability->execute( [ 'media_id' => 0 ] );
 
 		$this->assertSame( 'error', $result['status'] );
-		$this->assertSame( 'Invalid or missing media_id', $result['error_message'] );
+		$this->assertSame( 'Provide one of media_id, media_url, or media_filename to identify the media.', $result['error_message'] );
 		$this->assertNull( $result['optimization_level'] );
 		$this->assertSame( 0, $result['original_size'] );
 		$this->assertSame( 0, $result['optimized_size'] );
@@ -105,7 +112,7 @@ class Test_Execute extends TestCase {
 		$result  = $ability->execute( [] );
 
 		$this->assertSame( 'error', $result['status'] );
-		$this->assertSame( 'Invalid or missing media_id', $result['error_message'] );
+		$this->assertSame( 'Provide one of media_id, media_url, or media_filename to identify the media.', $result['error_message'] );
 	}
 
 	/**
@@ -116,7 +123,7 @@ class Test_Execute extends TestCase {
 		$result  = $ability->execute( [ 'media_id' => -5 ] );
 
 		$this->assertSame( 'error', $result['status'] );
-		$this->assertSame( 'Invalid or missing media_id', $result['error_message'] );
+		$this->assertSame( 'Provide one of media_id, media_url, or media_filename to identify the media.', $result['error_message'] );
 	}
 
 	/**

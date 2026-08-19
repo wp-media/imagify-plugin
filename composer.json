@@ -41,7 +41,7 @@
 		"woocommerce/action-scheduler": "^3.4",
 		"wordpress/mcp-adapter": "^0.5.0",
 		"wp-media/apply-filters-typed": "^1.0",
-		"wp-media/mcp-oauth": "^1.0.2",
+		"wp-media/mcp-oauth": "^1.1",
 		"wp-media/plugin-family": "^1.0",
 		"wp-media/wp-mixpanel": "^1.0"
 	},
@@ -59,7 +59,7 @@
 		"szepeviktor/phpstan-wordpress": "^2.0",
 		"wp-coding-standards/wpcs": "^3",
 		"wp-media/phpstan-wp": "^1.0",
-		"wp-media/phpunit": "3.0"
+		"wp-media/phpunit": "3.1"
 	},
 	"autoload": {
 		"psr-4": {
@@ -115,7 +115,7 @@
 	},
 	"scripts": {
 		"test-unit":"\"vendor/bin/phpunit\" --testsuite unit --colors=always --configuration Tests/Unit/phpunit.xml.dist",
-		"test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration Tests/Integration/phpunit.xml.dist",
+		"test-integration": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration Tests/Integration/phpunit.xml.dist --exclude-group AbilitiesCatalog",
 		"test-integration-abilities-catalog": "\"vendor/bin/phpunit\" --testsuite integration --colors=always --configuration Tests/Integration/phpunit.xml.dist --group AbilitiesCatalog",
 		"install-codestandards": "Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin::run",
 		"phpcs": "vendor/bin/phpcs",
