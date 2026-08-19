@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 7.0
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -327,6 +327,13 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.3.3 =
+- New feature: MCP media abilities now accept a filename or media URL, not just an attachment ID.
+- Enhancement: Respect WordPress 7.1's resize opt-out on client-side uploads to avoid double scaling.
+- Fix: Thumbnails from WordPress 7.1 client-side uploads are now optimized instead of skipped.
+- Fix: Companion files recorded by WordPress 7.1 are kept when regenerating or restoring a media.
+- Fix: The Media Library rating banner is readable again.
+
 = 2.3.2 =
 - New feature: Add a Missing Next-Gen filter to the Media Library.
 - New feature: Add a manual stop button for bulk optimization.
