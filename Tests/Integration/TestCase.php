@@ -3,7 +3,6 @@
 namespace Imagify\Tests\Integration;
 
 use Imagify;
-use ReflectionObject;
 use WPMedia\PHPUnit\Integration\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase {
@@ -12,7 +11,6 @@ abstract class TestCase extends BaseTestCase {
 	protected $invalidApiKey = '1234567890abcdefghijklmnopqrstuvwxyz';
 	protected $originalImagifyInstance;
 	protected $originalApiKeyOption;
-	protected $config;
 
 	/**
 	 * Prepares the test environment before each test.
@@ -46,23 +44,6 @@ abstract class TestCase extends BaseTestCase {
 		// Restore the Imagify instance and API key option.
 		$this->setSingletonInstance( Imagify::class, $this->originalImagifyInstance ); // $this->originalImagifyInstance can be null.
 		update_imagify_option( 'api_key', $this->originalApiKeyOption );
-	}
-
-	public function configTestData() {
-		if ( empty( $this->config ) ) {
-			$this->loadTestDataConfig();
-		}
-
-		return isset( $this->config['test_data'] )
-			? $this->config['test_data']
-			: $this->config;
-	}
-
-	protected function loadTestDataConfig() {
-		$obj      = new ReflectionObject( $this );
-		$filename = $obj->getFileName();
-
-		$this->config = $this->getTestData( dirname( $filename ), basename( $filename, '.php' ) );
 	}
 
 	/**
