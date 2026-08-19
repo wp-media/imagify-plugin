@@ -11,49 +11,45 @@ jobs:
 
     name: Dump Imagify abilities catalog (WP latest, PHP 8.2)
 
-    env:
-      WP_TESTS_DIR: "/tmp/tests/phpunit"
-      WP_CORE_DIR: "/tmp/wordpress-develop"
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
     - name: Checkout
       uses: actions/checkout@v7
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+    - name: Setup PHP + Composer
+      uses: wp-media/workflows/.github/actions/setup-php-composer@main
       with:
         php-version: '8.2'
-        coverage: none
-        tools: composer:v2, phpunit
+        # Empty overrides the action's `--no-scripts` default so Composer runs
+        # post-install/update scripts, i.e. Strauss namespace prefixing, which the
+        # integration tests need to autoload the Imagify\Dependencies\* classes.
+        composer-options: ''
 
-    - name: Install SVN
-      run: sudo apt-get install subversion
-
-    - name: Start mysql service
-      run: sudo /etc/init.d/mysql start
-
-    - name: Get composer cache directory
-      id: composercache
-      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-    - name: Cache dependencies
-      uses: actions/cache@v6
+    - name: Setup WordPress test suite
+      uses: wp-media/workflows/.github/actions/setup-wp-tests@main
       with:
-        path: ${{ steps.composercache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-        restore-keys: ${{ runner.os }}-composer-
+        wp-version: latest
 
-    - name: Install Strauss
-      run: sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'
+    # Registered here, not in the composite action: GitHub removes problem
+    # matchers added inside a composite action when it finishes, so they must
+    # be added in the caller to stay active for the test steps below.
+    - name: Setup problem matchers for PHP
+      run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
 
-    - name: Install dependencies
-      run: composer install --no-interaction
-
-    - name: Install tests
-      run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1:3306 latest
-
-    - name: Mysql8 auth plugin workaround
-      run: sudo mysql -u root -proot -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';"
+    - name: Setup problem matchers for PHPUnit
+      run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
     - name: Dump abilities catalog as JSON
       env:
