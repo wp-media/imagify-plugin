@@ -2,14 +2,13 @@
 /**
  * Tests for `window.imagify.optionsBulk.getProgress()` in assets/js/options.js.
  *
- * Run with: npm run test:js
+ * Run with: npm run test:unit
  *
  * `options.js` is a browser bundle of jQuery IIFEs, not a module, so it is loaded here inside a
  * VM context with the minimum stubs it touches at load time. That keeps the test honest: it
  * exercises the real shipped file rather than a copy of the logic.
  */
 
-const test = require( 'node:test' );
 const assert = require( 'node:assert' );
 const fs = require( 'node:fs' );
 const path = require( 'node:path' );
@@ -116,38 +115,38 @@ function getProgress( total, remaining ) {
 	};
 }
 
-test( 'the count never goes negative when uploads grow the workload mid-run (#760)', () => {
+it( 'the count never goes negative when uploads grow the workload mid-run (#760)', () => {
 	// Snapshot said 23; two uploads during the run pushed the live count to 25.
 	assert.deepStrictEqual( getProgress( 23, 25 ), { processed: 0, total: 25, percent: 0 } );
 } );
 
-test( 'a zero snapshot never divides by zero when the format is switched mid-run (#865)', () => {
+it( 'a zero snapshot never divides by zero when the format is switched mid-run (#865)', () => {
 	// Nothing was missing when the run started, then AVIF was enabled: everything is missing.
 	assert.deepStrictEqual( getProgress( 0, 17 ), { processed: 0, total: 17, percent: 0 } );
 } );
 
-test( 'a healthy run in progress is unchanged', () => {
+it( 'a healthy run in progress is unchanged', () => {
 	assert.deepStrictEqual( getProgress( 20, 8 ), { processed: 12, total: 20, percent: 60 } );
 } );
 
-test( 'a completed run still reports 100%', () => {
+it( 'a completed run still reports 100%', () => {
 	assert.deepStrictEqual( getProgress( 20, 0 ), { processed: 20, total: 20, percent: 100 } );
 } );
 
-test( 'an empty run reports 0% rather than NaN', () => {
+it( 'an empty run reports 0% rather than NaN', () => {
 	assert.deepStrictEqual( getProgress( 0, 0 ), { processed: 0, total: 0, percent: 0 } );
 } );
 
-test( 'non-numeric input degrades to zero instead of NaN', () => {
+it( 'non-numeric input degrades to zero instead of NaN', () => {
 	assert.deepStrictEqual( getProgress( null, undefined ), { processed: 0, total: 0, percent: 0 } );
 	assert.deepStrictEqual( getProgress( 'abc', 'def' ), { processed: 0, total: 0, percent: 0 } );
 } );
 
-test( 'negative input is clamped to zero', () => {
+it( 'negative input is clamped to zero', () => {
 	assert.deepStrictEqual( getProgress( -5, -3 ), { processed: 0, total: 0, percent: 0 } );
 } );
 
-test( 'the percentage stays within 0-100 for every combination up to 50', () => {
+it( 'the percentage stays within 0-100 for every combination up to 50', () => {
 	for ( let total = 0; total <= 50; total++ ) {
 		for ( let remaining = 0; remaining <= 50; remaining++ ) {
 			const { processed, percent, total: effective } = getProgress( total, remaining );
