@@ -75,3 +75,66 @@ describe( 'applyDiscount', () => {
 		expect( Number.isNaN( priced.yearly ) ).toBe( false );
 	} );
 } );
+
+describe( 'splitPrice', () => {
+	it( 'keeps two decimals as-is', () => {
+		expect( helpers.splitPrice( '4.99' ) ).toEqual( [ '4', '99' ] );
+	} );
+
+	it( 'pads a single decimal', () => {
+		expect( helpers.splitPrice( '4.9' ) ).toEqual( [ '4', '90' ] );
+	} );
+
+	it( 'truncates beyond two decimals rather than rounding', () => {
+		expect( helpers.splitPrice( '4.999' ) ).toEqual( [ '4', '99' ] );
+	} );
+
+	it( 'handles zero', () => {
+		expect( helpers.splitPrice( '0' ) ).toEqual( [ '0', '00' ] );
+	} );
+
+	it( 'handles a whole number instead of throwing', () => {
+		// Regression guard: the inline version did `'5'.split('.')[1].length` and
+		// threw a TypeError, which broke the pricing modal render entirely.
+		expect( helpers.splitPrice( 5 ) ).toEqual( [ '5', '00' ] );
+		expect( helpers.splitPrice( '10' ) ).toEqual( [ '10', '00' ] );
+	} );
+
+	it( 'accepts a number as well as a string', () => {
+		expect( helpers.splitPrice( 4.99 ) ).toEqual( [ '4', '99' ] );
+	} );
+} );
+
+describe( 'getPromoAppliesTo', () => {
+	it( 'deduplicates plan names', () => {
+		expect( helpers.getPromoAppliesTo( {
+			applies_to: [
+				{ plan_name: 'lite' },
+				{ plan_name: 'lite' },
+				{ plan_name: 'pro' }
+			]
+		} ) ).toEqual( [ 'lite', 'pro' ] );
+	} );
+
+	it( 'wraps a non-array value', () => {
+		expect( helpers.getPromoAppliesTo( { applies_to: 'all' } ) ).toEqual( [ 'all' ] );
+	} );
+
+	it( 'returns an empty list for an empty array', () => {
+		expect( helpers.getPromoAppliesTo( { applies_to: [] } ) ).toEqual( [] );
+	} );
+} );
+
+describe( 'sanitizeId', () => {
+	it( 'coerces a numeric string to an integer', () => {
+		expect( helpers.sanitizeId( '42' ) ).toBe( 42 );
+	} );
+
+	it( 'stops at the first non-digit', () => {
+		expect( helpers.sanitizeId( '42abc' ) ).toBe( 42 );
+	} );
+
+	it( 'returns NaN for something with no leading digits', () => {
+		expect( Number.isNaN( helpers.sanitizeId( 'abc' ) ) ).toBe( true );
+	} );
+} );

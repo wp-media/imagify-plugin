@@ -72,7 +72,97 @@
 		};
 	}
 
+	/**
+	 * Progress of a bulk run.
+	 *
+	 * The workload can grow mid-run (new uploads), so the largest total seen is used
+	 * as the denominator - otherwise `processed` goes negative and the percentage
+	 * exceeds 100. See #760 and #865.
+	 *
+	 * @param  {number} total     Number of media to process when the run started.
+	 * @param  {number} remaining Number of media still waiting to be processed.
+	 * @return {{processed: number, total: number, percent: number}}
+	 */
+	function getProgress( total, remaining ) {
+		var effectiveTotal, processed;
+
+		total     = Math.max( parseInt( total, 10 ) || 0, 0 );
+		remaining = Math.max( parseInt( remaining, 10 ) || 0, 0 );
+
+		effectiveTotal = Math.max( total, remaining );
+		processed      = effectiveTotal - remaining;
+
+		return {
+			processed: processed,
+			total:     effectiveTotal,
+			percent:   effectiveTotal > 0 ? Math.floor( processed / effectiveTotal * 100 ) : 0
+		};
+	}
+
+	/**
+	 * Split a price into its integer part and a two-digit decimal part.
+	 *
+	 * The pricing modal built this inline in three places. It crashed on a whole
+	 * number: `'5'.split('.')[1]` is undefined, so reading `.length` threw a
+	 * TypeError and the modal failed to render. A price with no decimal separator
+	 * now yields '00'.
+	 *
+	 * @param  {string|number} value A price, e.g. 4.99, '4.9', 5.
+	 * @return {string[]}            [ integerPart, twoDigitDecimalPart ]
+	 */
+	function splitPrice( value ) {
+		var parts    = ( '' + value ).split( '.' ),
+			decimals = parts.length > 1 ? '' + parts[ 1 ] : '';
+
+		if ( '' === decimals ) {
+			decimals = '00';
+		} else if ( 1 === decimals.length ) {
+			decimals = decimals + '0';
+		} else {
+			decimals = decimals.substring( 0, 2 );
+		}
+
+		return [ parts[ 0 ], decimals ];
+	}
+
+	/**
+	 * Plan names a promotion applies to, deduplicated.
+	 *
+	 * @param  {object} promo A promotion, whose `applies_to` is either an array of
+	 *                        objects carrying `plan_name`, or a bare value.
+	 * @return {string[]}
+	 */
+	function getPromoAppliesTo( promo ) {
+		var appliesTo = [];
+
+		if ( ! ( promo.applies_to instanceof Array ) ) {
+			return [ promo.applies_to ];
+		}
+
+		promo.applies_to.forEach( function ( plan ) {
+			if ( ! appliesTo.includes( plan.plan_name ) ) {
+				appliesTo.push( plan.plan_name );
+			}
+		} );
+
+		return appliesTo;
+	}
+
+	/**
+	 * Coerce a media ID to an integer.
+	 *
+	 * @param  {number|string} id A media ID.
+	 * @return {number}
+	 */
+	function sanitizeId( id ) {
+		return parseInt( id, 10 );
+	}
+
 	var helpers = {
+		getProgress:       getProgress,
+		getPromoAppliesTo: getPromoAppliesTo,
+		sanitizeId:        sanitizeId,
+		splitPrice:        splitPrice,
 		humanSize:         humanSize,
 		formatQuota:       formatQuota,
 		monthlyFromAnnual: monthlyFromAnnual,

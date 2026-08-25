@@ -299,7 +299,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 		 * @return {int}
 		 */
 		sanitizeId: function( id ) {
-			return parseInt( id, 10 );
+			return w.imagify.sanitizeId( id );
 		},
 
 		/**

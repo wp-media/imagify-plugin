@@ -42,9 +42,7 @@
 			}
 
 			if (typeof content !== 'object') {
-				content += ''; // Be sure content is a string.
-				content = content.split('.');
-				content[1] = content[1].length === 1 ? content[1] + '0' : ('' + content[1]).substring(0, 2);
+				content = w.imagify.splitPrice(content);
 
 				output = '<span class="imagify-price-big">' + content[0] + '</span> ';
 				output += '<span class="imagify-price-mini">.' + content[1] + '</span>';
@@ -54,17 +52,17 @@
 
 			monthly = content.monthly + '';
 			yearly = content.yearly + '';
-			m = '0' === monthly ? ['0', '00'] : monthly.split('.');
-			y = '0' === yearly ? ['0', '00'] : yearly.split('.');
+			m = w.imagify.splitPrice(monthly);
+			y = w.imagify.splitPrice(yearly);
 			output = '<span class="imagify-switch-my">';
 			/* eslint-disable indent */
 			output += '<span aria-hidden="' + (period === 'monthly' ? 'false' : 'true') + '" class="imagify-monthly">';
 			output += '<span class="imagify-price-big">' + m[0] + '</span> ';
-			output += '<span class="imagify-price-mini">.' + (m[1].length === 1 ? m[1] + '0' : ('' + m[1]).substring(0, 2)) + '</span>';
+			output += '<span class="imagify-price-mini">.' + m[1] + '</span>';
 			output += '</span> ';
 			output += '<span aria-hidden="' + (period === 'yearly' ? 'false' : 'true') + '" class="imagify-yearly">';
 			output += '<span class="imagify-price-big">' + y[0] + '</span> ';
-			output += '<span class="imagify-price-mini">.' + (y[1].length === 1 ? y[1] + '0' : ('' + y[1]).substring(0, 2)) + '</span>';
+			output += '<span class="imagify-price-mini">.' + y[1] + '</span>';
 			output += '</span>';
 			/* eslint-enable indent */
 			output += '</span>';
@@ -520,23 +518,7 @@
 			}
 		},
 		getPromoAppliesTo: function(promo){
-			var applies_to = [];
-			if (promo.applies_to instanceof Array) {
-				var plan_list = [];
-
-				for (var plan_infos = 0; plan_infos < promo.applies_to.length; plan_infos++) {
-					plan_list.push(promo.applies_to[plan_infos].plan_name);
-				}
-
-				plan_list.forEach(function (item) {
-					if (! applies_to.includes(item)) {
-						applies_to.push(item);
-					}
-				});
-			} else {
-				applies_to = [promo.applies_to];
-			}
-			return applies_to;
+			return w.imagify.getPromoAppliesTo(promo);
 		}
 	};
 
