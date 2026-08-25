@@ -19,7 +19,7 @@ abstract class AbstractIISDirConfFile extends AbstractWriteDirConfFile {
 	 * by `@fileExtension`. RewriteRules subclasses emit `<rule>` elements, not
 	 * `<mimeMap>`, so they inherit the empty default and are unaffected.
 	 *
-	 * @since 2.3.1
+	 * @since 2.3.4
 	 *
 	 * @return array
 	 */

@@ -325,8 +325,8 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 		}
 	}
 
-	// 2.3.1
-	if ( version_compare( $site_version, '2.3.1', '<' ) ) {
+	// 2.3.4
+	if ( version_compare( $site_version, '2.3.4', '<' ) ) {
 		/**
 		 * Self-heal IIS web.config files broken by duplicate `<staticContent>` siblings (issue #509).
 		 *

@@ -47,7 +47,7 @@ class IIS extends AbstractIISDirConfFile {
 	 * same file extension before inserting the fresh one, guaranteeing a single
 	 * `<staticContent>` collection with no duplicate `fileExtension` keys.
 	 *
-	 * @since 2.3.1
+	 * @since 2.3.4
 	 *
 	 * @return array
 	 */
