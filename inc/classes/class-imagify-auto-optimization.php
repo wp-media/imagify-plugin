@@ -39,6 +39,14 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 	private $is_wp_53;
 
 	/**
+	 * Attachment IDs whose optimization must wait for the metadata to be stored.
+	 *
+	 * @var   array
+	 * @since 2.3.3
+	 */
+	private $deferred = [];
+
+	/**
 	 * The ID of the attachment that failed to be uploaded.
 	 *
 	 * @var   int
@@ -75,7 +83,8 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 
 		// Automatic optimization tunel.
 		add_action( 'add_attachment', [ $this, 'store_upload_ids' ], $priority );
-		add_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_store_generate_step' ], $priority, 2 );
+		add_action( 'rest_after_insert_attachment', [ $this, 'flag_awaiting_client_side_subsizes' ], $priority, 3 );
+		add_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_store_generate_step' ], $priority, 3 );
 		add_filter( 'wp_update_attachment_metadata', [ $this, 'store_ids_to_optimize' ], $priority, 2 );
 
 		if ( $this->is_wp_53 ) {
@@ -83,10 +92,22 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 			add_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $priority, 2 );
 			// Upload failure recovering.
 			add_action( 'wp_ajax_media-create-image-subsizes', [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 ); // Before WP’s hook (priority 1).
-		} else {
-			add_action( 'updated_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
-			add_action( 'added_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
 		}
+
+		/**
+		 * Also used on WP 5.3+ to optimize once the metadata is stored, which the client side
+		 * upload of WP 7.1 needs: it stores every sub size at once, so reading them before the
+		 * write would only ever see the full size. Harmless the rest of the time, since an
+		 * optimization that already ran has cleared its steps by then.
+		 *
+		 * The trade-off is that these two hooks now fire for every post meta write on the site
+		 * rather than only on old WordPress versions. The callback returns on anything that is
+		 * not '_wp_attachment_metadata', which is the first thing it checks, so the cost is one
+		 * string comparison. Carrying the state on the attachment instead would mean an extra
+		 * read on every upload, for a narrower guarantee.
+		 */
+		add_action( 'updated_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
+		add_action( 'added_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority, 4 );
 
 		add_action( 'deleted_post_meta', [ $this, 'unset_optimization' ], $priority, 3 );
 
@@ -105,6 +126,7 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 
 		// Automatic optimization tunel.
 		remove_action( 'add_attachment', [ $this, 'store_upload_ids' ], $priority );
+		remove_action( 'rest_after_insert_attachment', [ $this, 'flag_awaiting_client_side_subsizes' ], $priority );
 		remove_filter( 'wp_generate_attachment_metadata', [ $this, 'maybe_store_generate_step' ], $priority );
 		remove_filter( 'wp_update_attachment_metadata', [ $this, 'store_ids_to_optimize' ], $priority );
 
@@ -113,10 +135,10 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 			remove_action( 'imagify_after_auto_optimization_init', [ $this, 'do_auto_optimization' ], $priority );
 			// Upload failure recovering.
 			remove_action( 'wp_ajax_media-create-image-subsizes', [ $this, 'prevent_auto_optimization_when_recovering_from_upload_failure' ], -5 );
-		} else {
-			remove_action( 'updated_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
-			remove_action( 'added_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
 		}
+
+		remove_action( 'updated_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
+		remove_action( 'added_post_meta', [ $this, 'do_auto_optimization_after_meta_update' ], $priority );
 
 		remove_action( 'deleted_post_meta', [ $this, 'unset_optimization' ], $priority );
 
@@ -145,15 +167,57 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 	}
 
 	/**
+	 * Remember that the browser will send the sub sizes of an attachment separately.
+	 *
+	 * WordPress 7.1 can let the browser process an upload. The attachment is then created
+	 * with no sub sizes at all, each one is sent afterwards through the sideload endpoint,
+	 * and a last request finalizes the metadata. Optimizing when the attachment is created
+	 * would only ever cover the full size.
+	 *
+	 * This runs before the metadata is first generated, and the flag is stored because the
+	 * sub sizes arrive in later requests.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param object $attachment Inserted or updated attachment object. A \WP_Post when WordPress fires this.
+	 * @param object $request    Request object. A \WP_REST_Request when WordPress fires this.
+	 * @param bool   $creating   True when creating an attachment, false when updating.
+	 */
+	public function flag_awaiting_client_side_subsizes( $attachment, $request, $creating ) {
+		if ( ! $creating || ! is_object( $attachment ) || ! isset( $attachment->ID ) ) {
+			return;
+		}
+
+		if ( ! is_object( $request ) || ! is_callable( [ $request, 'get_param' ] ) ) {
+			return;
+		}
+
+		if ( false !== $request->get_param( 'generate_sub_sizes' ) ) {
+			return;
+		}
+
+		if ( ! imagify_is_attachment_mime_type_supported( $attachment->ID ) ) {
+			// Nothing would ever read the flag for this attachment.
+			return;
+		}
+
+		set_transient( $this->get_awaiting_subsizes_transient_name( $attachment->ID ), 1, HOUR_IN_SECONDS );
+	}
+
+	/**
 	 * Store the "generate step" when wp_generate_attachment_metadata() is used.
 	 *
 	 * @since 1.9.10
+	 * @since 2.3.3 Added the $context parameter.
 	 *
-	 * @param  array $metadata      An array of attachment meta data.
-	 * @param  int   $attachment_id Current attachment ID.
+	 * @param  array  $metadata      An array of attachment meta data.
+	 * @param  int    $attachment_id Current attachment ID.
+	 * @param  string $context       Can be 'create' when the metadata was initially created for a
+	 *                               new attachment, or 'update' when it was updated. Passed by WordPress
+	 *                               since 5.3, so only null if something else applies the filter.
 	 * @return array
 	 */
-	public function maybe_store_generate_step( $metadata, $attachment_id ) {
+	public function maybe_store_generate_step( $metadata, $attachment_id, $context = null ) {
 		if ( self::is_optimization_prevented( $attachment_id ) ) {
 			return $metadata;
 		}
@@ -163,9 +227,68 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 			return $metadata;
 		}
 
+		if ( $this->is_awaiting_client_side_subsizes( $attachment_id ) ) {
+			if ( 'create' === $context ) {
+				/**
+				 * The browser has not sent its sub sizes yet. Optimizing now would cover the
+				 * full size only, and leave every thumbnail untouched.
+				 */
+				return $metadata;
+			}
+
+			/**
+			 * The sub sizes are in. The upload step was set in the request that created the
+			 * attachment and did not outlive it, so set it again: as far as Imagify is
+			 * concerned this still is a brand new upload.
+			 */
+			$this->clear_awaiting_client_side_subsizes( $attachment_id );
+			$this->set_step( $attachment_id, 'upload' );
+
+			/**
+			 * The sub sizes are all stored in one go, right after this, so the optimization
+			 * has to wait for that write. Reading them now would only see the full size.
+			 */
+			$this->deferred[ $attachment_id ] = 1;
+		}
+
 		$this->set_step( $attachment_id, 'generate' );
 
 		return $metadata;
+	}
+
+	/**
+	 * Tell if the browser is still to send the sub sizes of an attachment.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param  int $attachment_id Current attachment ID.
+	 * @return bool
+	 */
+	public function is_awaiting_client_side_subsizes( $attachment_id ) {
+		return (bool) get_transient( $this->get_awaiting_subsizes_transient_name( $attachment_id ) );
+	}
+
+	/**
+	 * Forget that the browser was to send the sub sizes of an attachment.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param int $attachment_id Current attachment ID.
+	 */
+	public function clear_awaiting_client_side_subsizes( $attachment_id ) {
+		delete_transient( $this->get_awaiting_subsizes_transient_name( $attachment_id ) );
+	}
+
+	/**
+	 * Get the transient name used to await the sub sizes of an attachment.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param  int $attachment_id Current attachment ID.
+	 * @return string
+	 */
+	private function get_awaiting_subsizes_transient_name( $attachment_id ) {
+		return 'imagify_awaiting_subsizes_' . (int) $attachment_id;
 	}
 
 	/**
@@ -284,6 +407,16 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 		// Ready for the next step.
 		$this->set_step( $attachment_id, 'update' );
 
+		if ( ! empty( $this->deferred[ $attachment_id ] ) ) {
+			/**
+			 * The metadata is not stored yet, so the sizes to optimize cannot be read.
+			 * $this->do_auto_optimization_after_meta_update() takes over once it is.
+			 */
+			unset( $this->deferred[ $attachment_id ] );
+
+			return $metadata;
+		}
+
 		/**
 		 * Triggered after a media auto-optimization init.
 		 *
@@ -362,8 +495,14 @@ class Imagify_Auto_Optimization extends Imagify_Auto_Optimization_Deprecated {
 			/**
 			 * It's a new upload.
 			 */
-			// Optimize.
-			$process->optimize( null, [ 'is_new_upload' => 1 ] );
+			// Optimize. Flag as priority so it jumps ahead of any bulk optimization queue.
+			$process->optimize(
+				null,
+				[
+					'is_new_upload' => 1,
+					'priority'      => true,
+				]
+			);
 		} else {
 			/**
 			 * The media has already been optimized (or at least it has been tried).

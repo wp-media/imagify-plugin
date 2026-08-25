@@ -37,10 +37,9 @@ class RestoreMedia implements AbilitiesInterface {
 					'properties' => [
 						'media_id' => [
 							'type'        => 'integer',
-							'description' => __( 'The WordPress attachment ID to restore.', 'imagify' ),
+							'description' => __( 'The WordPress attachment ID to restore. Provide media_filename or media_url instead when the ID is unknown.', 'imagify' ),
 						],
-					],
-					'required'   => [ 'media_id' ],
+					] + MediaResolver::get_input_schema_properties(),
 				],
 				'output_schema'       => [
 					'type'       => 'object',
@@ -93,13 +92,13 @@ class RestoreMedia implements AbilitiesInterface {
 	 * @return array{status: string, restored_size: int|null, error_message: string|null}
 	 */
 	public function execute( array $args = [] ): array {
-		$media_id = isset( $args['media_id'] ) ? (int) $args['media_id'] : 0;
+		$media_id = MediaResolver::resolve_id( $args );
 
-		if ( $media_id <= 0 ) {
+		if ( is_wp_error( $media_id ) ) {
 			return [
 				'status'        => 'error',
 				'restored_size' => null,
-				'error_message' => 'Invalid or missing media_id.',
+				'error_message' => $media_id->get_error_message(),
 			];
 		}
 

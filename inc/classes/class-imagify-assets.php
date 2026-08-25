@@ -246,16 +246,6 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		}
 
 		/**
-		 * Loaded in the attachment edition: AJAX-ify the optimize/restore buttons.
-		 */
-		if ( imagify_is_screen( 'attachment' ) ) {
-			$this->enqueue_script( 'media-modal' );
-
-			// The optimization buttons fire AJAX requests from JS, so the processing template must be printed in the footer.
-			Imagify_Views::get_instance()->print_js_template_in_footer( 'button/processing' );
-		}
-
-		/**
 		 * Loaded in the library.
 		 */
 		if ( imagify_is_screen( 'library' ) ) {

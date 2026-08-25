@@ -91,6 +91,8 @@ class WP extends AbstractBulk {
 				'optimization_levels' => '_imagify_optimization_level',
 				// Get attachments status.
 				'statuses'            => '_imagify_status',
+				// Get attachments metadata, to detect a WP-scaled original.
+				'metadata'            => '_wp_attachment_metadata',
 			],
 			$ids
 		);
@@ -156,7 +158,8 @@ class WP extends AbstractBulk {
 				continue;
 			}
 
-			$attachment_backup_path        = get_imagify_attachment_backup_path( $file_path );
+			$original_path                 = $this->get_original_file_path_from_metadata( $file_path, isset( $metas['metadata'][ $id ] ) ? $metas['metadata'][ $id ] : null );
+			$attachment_backup_path        = get_imagify_attachment_backup_path( $original_path );
 			$attachment_status             = isset( $metas['statuses'][ $id ] ) ? $metas['statuses'][ $id ] : false;
 			$attachment_optimization_level = isset( $metas['optimization_levels'][ $id ] ) ? $metas['optimization_levels'][ $id ] : false;
 
@@ -221,6 +224,8 @@ class WP extends AbstractBulk {
 			[
 				// Get attachments filename.
 				'filenames' => '_wp_attached_file',
+				// Get attachments metadata, to detect a WP-scaled original.
+				'metadata'  => '_wp_attachment_metadata',
 			],
 			$ids
 		);
@@ -239,7 +244,8 @@ class WP extends AbstractBulk {
 				continue;
 			}
 
-			$attachment_backup_path = get_imagify_attachment_backup_path( $file_path );
+			$original_path          = $this->get_original_file_path_from_metadata( $file_path, isset( $metas['metadata'][ $id ] ) ? $metas['metadata'][ $id ] : null );
+			$attachment_backup_path = get_imagify_attachment_backup_path( $original_path );
 
 			if ( ! $this->filesystem->exists( $attachment_backup_path ) ) {
 				// No backup, cannot restore.
@@ -287,7 +293,8 @@ class WP extends AbstractBulk {
 		if ( ! isset( $mime ) && empty( $mime ) ) {
 			$mime = 'image/webp';
 		}
-		$mime_types   = str_replace( ",'" . $mime . "'", '', $mime_types );
+		$mime         = trim( $mime );
+		$mime_types   = str_replace( [ ", '" . $mime . "'", ",'" . $mime . "'" ], '', $mime_types );
 		$statuses     = Imagify_DB::get_post_statuses();
 		$nodata_join  = '';
 		$nodata_where = '';
@@ -314,7 +321,8 @@ class WP extends AbstractBulk {
 					ON ( p.ID = mt2.post_id AND mt2.meta_key = '_imagify_data' )
 			WHERE
 				p.post_mime_type IN ( $mime_types )
-				AND (mt1.meta_key IS NULL OR mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
+				AND ( mt1.meta_value = 'success' OR mt1.meta_value = 'already_optimized' )
+				AND mt2.meta_value NOT LIKE %s
 				AND mt2.meta_value NOT LIKE %s
 				AND p.post_type = 'attachment'
 				AND p.post_status IN ( $statuses )
@@ -322,6 +330,15 @@ class WP extends AbstractBulk {
 			ORDER BY p.ID DESC
 			LIMIT 0, %d",
 				'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
+				/**
+				 * Second predicate: skip media the API permanently refused to convert (the next-gen file
+				 * would be heavier than the original, or the file is already compressed). Those are stored
+				 * as `<size><suffix>";a:3:{s:15:"permanent_error";b:1;s:7:"success";b:0;s:5:"error";…`.
+				 * Transient failures (network, quota, timeout) serialize as a 2-element array without the
+				 * `permanent_error` key, so they keep being retried. Matching serialized data with LIKE is
+				 * fragile: the key order written in Optimization\Data\WP must not change.
+				 */
+				'%' . $wpdb->esc_like( $nextgen_suffix . '";a:3:{s:15:"permanent_error";b:1;' ) . '%',
 				imagify_get_unoptimized_attachment_limit()
 			)
 		);
@@ -347,6 +364,8 @@ class WP extends AbstractBulk {
 			[
 				// Get attachments filename.
 				'filenames' => '_wp_attached_file',
+				// Get attachments metadata, to detect a WP-scaled original.
+				'metadata'  => '_wp_attachment_metadata',
 			],
 			$ids
 		);
@@ -377,7 +396,14 @@ class WP extends AbstractBulk {
 				continue;
 			}
 
-			$backup_path = get_imagify_attachment_backup_path( $file_path );
+			// Skip files whose extension already matches the target format
+			// (e.g. a .webp file stored with incorrect post_mime_type).
+			if ( strtolower( pathinfo( $file_path, PATHINFO_EXTENSION ) ) === $format ) {
+				continue;
+			}
+
+			$original_path = $this->get_original_file_path_from_metadata( $file_path, isset( $metas['metadata'][ $id ] ) ? $metas['metadata'][ $id ] : null );
+			$backup_path   = get_imagify_attachment_backup_path( $original_path );
 
 			if ( ! $this->filesystem->exists( $backup_path ) ) {
 				// No backup, no WebP.
@@ -389,6 +415,33 @@ class WP extends AbstractBulk {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Get the original (pre-scaling) file path from batched `_wp_attachment_metadata`.
+	 *
+	 * When WordPress scales down an image on upload, `_wp_attached_file` (and therefore
+	 * `$file_path`) points to the scaled copy, but Imagify backups are always stored at the
+	 * path derived from the true original file (see `Imagify\Media\WP::get_raw_backup_path()`,
+	 * which relies on `wp_get_original_image_path()`). This mirrors that derivation from data
+	 * already fetched in a single batched query, instead of instantiating a media object (and
+	 * firing its own uncached meta reads) for every attachment in the loop.
+	 *
+	 * @since 2.4
+	 *
+	 * @param string $file_path Path derived from `_wp_attached_file`.
+	 * @param mixed  $metadata  The unserialized `_wp_attachment_metadata` value for this attachment,
+	 *                          or null/garbage if it couldn't be fetched or decoded.
+	 *
+	 * @return string The original-derived file path, or $file_path unchanged when there is no
+	 *                scaled original to account for.
+	 */
+	private function get_original_file_path_from_metadata( $file_path, $metadata ) {
+		if ( ! is_array( $metadata ) || empty( $metadata['original_image'] ) || ! is_string( $metadata['original_image'] ) ) {
+			return $file_path;
+		}
+
+		return trailingslashit( dirname( $file_path ) ) . $metadata['original_image'];
 	}
 
 	/**

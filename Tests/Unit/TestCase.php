@@ -8,11 +8,9 @@
 namespace Imagify\Tests\Unit;
 
 use ReflectionException;
-use ReflectionObject;
 use WPMedia\PHPUnit\Unit\TestCase as PHPUnitTestCase;
 
 abstract class TestCase extends PHPUnitTestCase {
-	protected $config;
 
 	protected function setUp() : void {
 		if ( empty( $this->config ) ) {
@@ -20,23 +18,6 @@ abstract class TestCase extends PHPUnitTestCase {
 		}
 
 		parent::setUp();
-	}
-
-	public function configTestData() {
-		if ( empty( $this->config ) ) {
-			$this->loadTestDataConfig();
-		}
-
-		return isset( $this->config['test_data'] )
-			? $this->config['test_data']
-			: $this->config;
-	}
-
-	protected function loadTestDataConfig() {
-		$obj      = new ReflectionObject( $this );
-		$filename = $obj->getFileName();
-
-		$this->config = $this->getTestData( dirname( $filename ), basename( $filename, '.php' ) );
 	}
 
 	/**
@@ -65,17 +46,13 @@ abstract class TestCase extends PHPUnitTestCase {
 	 *
 	 */
 	protected function setPropertyValue( $property, $class, $value ) {
-		$ref = $this->get_reflective_property( $property, $class );
+		$instance = is_object( $class ) ? $class : null;
 
-		if ( is_object( $class ) ) {
-			$previous = $ref->getValue( $class );
-			// Instance property.
-			$ref->setValue( $class, $value );
-		} else {
-			$previous = $ref->getValue();
-			// Static property.
-			$ref->setValue( $value );
-		}
+		// Read the previous value, then set the new one, delegating to the
+		// wp-media/phpunit trait which handles static properties safely
+		// (ReflectionProperty::setValue() with a single argument is deprecated as of PHP 8.3).
+		$previous = $this->getNonPublicPropertyValue( $property, $class, $instance );
+		$this->set_reflective_property( $value, $property, $class );
 
 		return $previous;
 	}

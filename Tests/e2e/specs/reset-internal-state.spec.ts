@@ -19,8 +19,16 @@ test.describe( 'Reset Internal State — Troubleshooting section', () => {
 		await loginAsAdmin( page );
 	} );
 
-	test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — section only renders with valid API key.' );
 	test( 'Troubleshooting section is visible on settings page (requires API key)', async ( { page } ) => {
+		if ( ! process.env.IMAGIFY_TESTS_API_KEY ) {
+			// Hard-fail with an informative message instead of silently skipping.
+			expect(
+				process.env.IMAGIFY_TESTS_API_KEY,
+				'IMAGIFY_TESTS_API_KEY env var must be set — the Troubleshooting section is only rendered when a valid API key is configured. Set this variable to a valid key and re-run.'
+			).toBeTruthy();
+			return;
+		}
+
 		const settings = new SettingsPage( page );
 		await settings.goto();
 
@@ -30,8 +38,15 @@ test.describe( 'Reset Internal State — Troubleshooting section', () => {
 		await screenshotElement( page, 'reset-internal-state-section', section );
 	} );
 
-	test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — section only renders with valid API key.' );
 	test( 'Reset Internal State button is present and has a nonce attribute (requires API key)', async ( { page } ) => {
+		if ( ! process.env.IMAGIFY_TESTS_API_KEY ) {
+			expect(
+				process.env.IMAGIFY_TESTS_API_KEY,
+				'IMAGIFY_TESTS_API_KEY env var must be set — the Reset Internal State button is only rendered when a valid API key is configured.'
+			).toBeTruthy();
+			return;
+		}
+
 		const settings = new SettingsPage( page );
 		await settings.goto();
 
@@ -45,8 +60,15 @@ test.describe( 'Reset Internal State — Troubleshooting section', () => {
 		await screenshotElement( page, 'reset-internal-state-button', button );
 	} );
 
-	test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — section only renders with valid API key.' );
 	test( 'Reset Internal State button is clickable (requires API key)', async ( { page } ) => {
+		if ( ! process.env.IMAGIFY_TESTS_API_KEY ) {
+			expect(
+				process.env.IMAGIFY_TESTS_API_KEY,
+				'IMAGIFY_TESTS_API_KEY env var must be set — the Reset Internal State button is only rendered when a valid API key is configured.'
+			).toBeTruthy();
+			return;
+		}
+
 		const settings = new SettingsPage( page );
 		await settings.goto();
 

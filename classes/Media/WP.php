@@ -216,7 +216,14 @@ class WP extends AbstractMedia {
 
 		// Store the path to the current full size file before generating the thumbnails.
 		$old_full_size_path = $this->get_raw_fullsize_path();
+		$previous_metadata  = wp_get_attachment_metadata( $this->get_id() );
 		$metadata           = wp_generate_attachment_metadata( $this->get_id(), $this->get_raw_original_path() );
+
+		if ( ! is_array( $metadata ) ) {
+			$metadata = [];
+		}
+
+		$metadata = $this->keep_companion_files( $metadata, $previous_metadata );
 
 		if ( empty( $metadata['file'] ) ) {
 			update_post_meta( $this->get_id(), '_wp_attachment_metadata', $metadata );
@@ -246,6 +253,44 @@ class WP extends AbstractMedia {
 		update_post_meta( $this->get_id(), '_wp_attachment_metadata', $metadata );
 
 		return true;
+	}
+
+	/**
+	 * Carry the companion files WordPress stores next to an attachment over to fresh metadata.
+	 *
+	 * WordPress 7.1 can let the browser convert an upload and keep the file it started from:
+	 * the HEIC a photo was uploaded as, next to the JPEG the site serves, or the original GIF
+	 * next to the video it was turned into. Those file names live in the attachment metadata
+	 * and nowhere else, and `wp_generate_attachment_metadata()` does not produce them, so
+	 * replacing the metadata wholesale would lose them.
+	 *
+	 * Losing them means `wp_delete_attachment_files()` can no longer find those files, and they
+	 * stay on disk for good, even once the attachment is deleted.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param  array $metadata          Freshly generated attachment metadata.
+	 * @param  mixed $previous_metadata Metadata as it was stored before being regenerated.
+	 * @return array
+	 */
+	protected function keep_companion_files( $metadata, $previous_metadata ) {
+		if ( ! is_array( $previous_metadata ) ) {
+			return $metadata;
+		}
+
+		$companion_keys = [
+			'source_image',
+			'animated_video',
+			'animated_video_poster',
+		];
+
+		foreach ( $companion_keys as $key ) {
+			if ( ! empty( $previous_metadata[ $key ] ) && empty( $metadata[ $key ] ) ) {
+				$metadata[ $key ] = $previous_metadata[ $key ];
+			}
+		}
+
+		return $metadata;
 	}
 
 

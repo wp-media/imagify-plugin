@@ -170,8 +170,18 @@ class NGG extends AbstractBulk {
 				WHERE
 					( data.status = 'success' OR data.status = 'already_optimized' )
 					AND data.data NOT LIKE %s
+					AND data.data NOT LIKE %s
 				ORDER BY ngg.pid DESC",
-				'%' . $wpdb->esc_like( $suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
+				'%' . $wpdb->esc_like( $suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
+				/**
+				 * Second predicate: skip images the API permanently refused to convert (the next-gen file
+				 * would be heavier than the original, or the file is already compressed). Those are stored
+				 * as `<size><suffix>";a:3:{s:15:"permanent_error";b:1;s:7:"success";b:0;s:5:"error";…`.
+				 * Transient failures serialize as a 2-element array without the `permanent_error` key, so
+				 * they keep being retried. Matching serialized data with LIKE is fragile: the key order
+				 * written in Imagify\NGG\Optimization\Data\NGG must not change.
+				 */
+				'%' . $wpdb->esc_like( $suffix . '";a:3:{s:15:"permanent_error";b:1;' ) . '%'
 			)
 		);
 

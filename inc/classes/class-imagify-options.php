@@ -76,7 +76,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		if ( function_exists( 'wp_get_original_image_path' ) ) {
 			$this->reset_values['resize_larger'] = 1;
 
-			$filter_cb = [ imagify_get_context( 'wp' ), 'get_resizing_threshold' ];
+			$filter_cb = [ imagify_get_context( 'wp' ), 'filter_big_image_size_threshold' ];
 			$filtered  = has_filter( 'big_image_size_threshold', $filter_cb );
 
 			if ( $filtered ) {

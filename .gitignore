@@ -27,3 +27,6 @@ composer.lock
 
 # AI agent working directory (issue snapshots, PR drafts, locks)
 /.ai
+
+# Generated dependency graph (build with: node bin/build-knowledge-graph.js)
+/.aiassistant/graph

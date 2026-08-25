@@ -60,37 +60,21 @@ function _imagify_attachment_submitbox_misc_actions() {
 			}
 			?>
 			<div class="misc-pub-section misc-pub-imagify">
-				<div class="imagify-data-actions-container" data-id="<?php echo esc_attr( $post->ID ); ?>" data-context="wp">
-					<?php $views->print_template( 'button/processing', [ 'label' => $lock_label ] ); ?>
-				</div>
+				<?php $views->print_template( 'button/processing', [ 'label' => $lock_label ] ); ?>
 			</div>
 			<?php
 		} elseif ( $data->is_optimized() || $data->is_already_optimized() || $data->is_error() ) {
 			?>
 			<div class="misc-pub-section misc-pub-imagify"><h4><?php esc_html_e( 'Imagify', 'imagify' ); ?></h4></div>
 			<div class="misc-pub-section misc-pub-imagify imagify-data-item">
-				<div class="imagify-data-actions-container" data-id="<?php echo esc_attr( $post->ID ); ?>" data-context="wp">
-					<?php echo get_imagify_attachment_optimization_text( $process ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				</div>
+				<?php echo get_imagify_attachment_optimization_text( $process ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</div>
 			<?php
 		} else {
 			$url = get_imagify_admin_url( 'optimize', [ 'attachment_id' => $post->ID ] );
 			?>
 			<div class="misc-pub-section misc-pub-imagify">
-				<div class="imagify-data-actions-container" data-id="<?php echo esc_attr( $post->ID ); ?>" data-context="wp">
-					<?php
-					$views->print_template(
-						'button/optimize',
-						[
-							'url'  => $url,
-							'atts' => [
-								'class' => 'button-primary button-imagify-optimize',
-							],
-						]
-					);
-					?>
-				</div>
+				<a class="button-primary" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Optimize', 'imagify' ); ?></a>
 			</div>
 			<?php
 		}

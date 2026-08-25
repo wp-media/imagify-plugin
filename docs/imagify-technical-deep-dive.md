@@ -861,6 +861,7 @@ See section 13 in [imagify-summary.md](imagify-summary.md) for the full table. B
 | `imagify_backup_directory` | `apply_filters('imagify_backup_directory', string $path, int $attachment_id)` | Override per-attachment backup directory |
 | `imagify_api_http_request_timeout` | `apply_filters('imagify_api_http_request_timeout', int $timeout, string $endpoint)` | Override API request timeout in seconds |
 | `imagify_event_recurrence` | `apply_filters('imagify_event_recurrence', string $recurrence, string $event)` | Change cron job recurrence (e.g. `'daily'`, `'hourly'`) |
+| `imagify_site_root_url` | `apply_filters('imagify_site_root_url', string $root_url, int $blog_id)` | Override the site root URL used for internal-URL matching. Needed on multisites with domain mapping |
 
 ---
 
