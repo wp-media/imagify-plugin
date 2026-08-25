@@ -23,6 +23,7 @@ parameters:
 		- inc/functions/api.php
 		- inc/functions/attachments.php
 		- inc/functions/common.php
+		- inc/functions/dependencies.php
 		- inc/functions/formatting.php
 		- inc/3rd-party/nextgen-gallery/inc/functions/common.php
 		- inc/functions/options.php

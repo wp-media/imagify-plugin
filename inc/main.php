@@ -8,6 +8,16 @@ if ( file_exists( IMAGIFY_PATH . 'vendor/autoload.php' ) ) {
 	require_once IMAGIFY_PATH . 'vendor/autoload.php';
 }
 
+/**
+ * When Imagify is installed as a Composer dependency, Strauss never runs and the
+ * prefixed dependency classes do not exist. Alias them to their unprefixed
+ * originals on demand. Registered after Composer's autoloader, so a normal
+ * install never reaches it.
+ */
+require_once IMAGIFY_PATH . 'inc/functions/dependencies.php';
+
+imagify_register_dependencies_fallback_autoloader();
+
 require_once IMAGIFY_PATH . 'inc/Dependencies/ActionScheduler/action-scheduler.php';
 
 /**
