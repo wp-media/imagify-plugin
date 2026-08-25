@@ -9,7 +9,7 @@ use Imagify\Webp\IIS as WebpIIS;
 
 /**
  * Integration tests for the issue #509 self-heal migration in
- * inc/admin/upgrader.php::_imagify_new_upgrade() (the 2.3.1 version block):
+ * inc/admin/upgrader.php::_imagify_new_upgrade() (the 2.3.4 version block):
  * collapse duplicate Imagify-created <staticContent> siblings on upgrade.
  *
  * @covers ::_imagify_new_upgrade
@@ -127,7 +127,7 @@ class SelfHealMigrationTest extends TestCase {
 		// Sanity: the seeded broken state genuinely has two siblings.
 		$this->assertSame( 2, $this->staticContentCount() );
 
-		\_imagify_new_upgrade( '2.3.0', '2.3.0' );
+		\_imagify_new_upgrade( '2.3.3', '2.3.3' );
 
 		// Both formats live inside ONE shared collection (verifies non-XOR gating).
 		$this->assertSame( 1, $this->staticContentCount() );
@@ -147,7 +147,7 @@ class SelfHealMigrationTest extends TestCase {
 			. '</system.webServer></configuration>'
 		);
 
-		\_imagify_new_upgrade( '2.3.0', '2.3.0' );
+		\_imagify_new_upgrade( '2.3.3', '2.3.3' );
 
 		$this->assertSame( 1, $this->staticContentCount() );
 		$this->assertSame( 1, $this->mimeMapCount( '.foo' ) );
@@ -161,7 +161,7 @@ class SelfHealMigrationTest extends TestCase {
 
 		$this->seed( $this->brokenState() );
 
-		\_imagify_new_upgrade( '2.3.0', '2.3.0' );
+		\_imagify_new_upgrade( '2.3.3', '2.3.3' );
 
 		// Imagify blocks removed; no re-add. An empty <staticContent/> left behind is schema-valid.
 		$this->assertLessThanOrEqual( 1, $this->staticContentCount() );
@@ -176,7 +176,7 @@ class SelfHealMigrationTest extends TestCase {
 		$broken = $this->brokenState();
 		$this->seed( $broken );
 
-		\_imagify_new_upgrade( '2.3.0', '2.3.0' );
+		\_imagify_new_upgrade( '2.3.3', '2.3.3' );
 
 		// Untouched: positive-conditional guard means the body never ran.
 		$this->assertSame( $broken, file_get_contents( $this->config_path ) );
@@ -195,7 +195,7 @@ class SelfHealMigrationTest extends TestCase {
 		add_filter( 'imagify_disable_dir_conf_edition', $disable );
 
 		// Must not fatal.
-		\_imagify_new_upgrade( '2.3.0', '2.3.0' );
+		\_imagify_new_upgrade( '2.3.3', '2.3.3' );
 
 		remove_filter( 'imagify_disable_dir_conf_edition', $disable );
 
