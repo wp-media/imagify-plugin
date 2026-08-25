@@ -1395,7 +1395,7 @@ ul.imagify-datas-details.imagify-datas-details {
 	position: relative;
 	width: 800px;
 	max-width: 95%;
-	max-height: 90vw;
+	max-height: 90vh;
 	overflow: auto;
 	padding: 20px 25px;
 	margin: 1em auto;

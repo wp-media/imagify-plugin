@@ -124,4 +124,56 @@ class RegisterAbilityTest extends TestCase {
 		] );
 		wp_set_current_user( $user_id );
 	}
+
+	/**
+	 * The filename and URL inputs must be registered, and no input may be
+	 * required on its own since the three identifiers are interchangeable.
+	 */
+	public function testShouldRegisterFilenameAndUrlInputs(): void {
+		$ability = wp_get_ability( 'imagify/get-media-status' );
+
+		$this->assertNotNull( $ability, 'Ability should be registered.' );
+
+		$input_schema = $ability->get_input_schema();
+
+		$this->assertArrayHasKey( 'media_id', $input_schema['properties'] );
+		$this->assertArrayHasKey( 'media_filename', $input_schema['properties'] );
+		$this->assertArrayHasKey( 'media_url', $input_schema['properties'] );
+		$this->assertArrayNotHasKey( 'required', $input_schema );
+	}
+
+	/**
+	 * End-to-end proof of the feature: an attachment identified only by its file
+	 * name returns that attachment's status, not an error.
+	 */
+	public function testShouldReturnStatusForAttachmentIdentifiedByFilename(): void {
+		$attachment_id = self::factory()->attachment->create(
+			[
+				'file'           => '2026/08/status-by-name.jpg',
+				'post_mime_type' => 'image/jpeg',
+			]
+		);
+		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+
+		$ability = wp_get_ability( 'imagify/get-media-status' );
+
+		$by_id       = $ability->execute( [ 'media_id' => $attachment_id ] );
+		$by_filename = $ability->execute( [ 'media_filename' => 'status-by-name.jpg' ] );
+
+		$this->assertSame( $by_id, $by_filename, 'Resolving by file name should match resolving by ID.' );
+		$this->assertNotSame( 'error', $by_filename['status'] );
+	}
+
+	/**
+	 * An unknown file name must fail with an explicit message rather than
+	 * silently falling back to another attachment.
+	 */
+	public function testShouldReturnErrorForUnknownFilename(): void {
+		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+
+		$result = wp_get_ability( 'imagify/get-media-status' )->execute( [ 'media_filename' => 'not-in-library.jpg' ] );
+
+		$this->assertSame( 'error', $result['status'] );
+		$this->assertStringContainsString( 'not-in-library.jpg', $result['error_message'] );
+	}
 }

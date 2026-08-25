@@ -1,0 +1,82 @@
+name: Publish MCP Abilities to ARD Service
+
+on:
+  push:
+    tags:
+    - "*"
+
+jobs:
+  dump-abilities:
+    runs-on: ubuntu-latest
+
+    name: Dump Imagify abilities catalog (WP latest, PHP 8.2)
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+
+    - name: Setup PHP + Composer
+      uses: wp-media/workflows/.github/actions/setup-php-composer@main
+      with:
+        php-version: '8.2'
+        # Empty overrides the action's `--no-scripts` default so Composer runs
+        # post-install/update scripts, i.e. Strauss namespace prefixing, which the
+        # integration tests need to autoload the Imagify\Dependencies\* classes.
+        composer-options: ''
+
+    - name: Setup WordPress test suite
+      uses: wp-media/workflows/.github/actions/setup-wp-tests@main
+      with:
+        wp-version: latest
+
+    # Registered here, not in the composite action: GitHub removes problem
+    # matchers added inside a composite action when it finishes, so they must
+    # be added in the caller to stay active for the test steps below.
+    - name: Setup problem matchers for PHP
+      run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+
+    - name: Setup problem matchers for PHPUnit
+      run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+    - name: Dump abilities catalog as JSON
+      env:
+        ABILITIES_CATALOG_OUTPUT_PATH: ${{ github.workspace }}/imagify-abilities-catalog.json
+      run: composer run-script test-integration-abilities-catalog
+
+    - name: Upload abilities catalog artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: imagify-abilities-catalog
+        path: imagify-abilities-catalog.json
+        retention-days: 14
+
+    - name: Upload abilities catalog to ard-service
+      # No continue-on-error here: this workflow triggers on a tag push,
+      # so the tag/release has already happened by the time this step
+      # runs. A failure here can't block or delay the release — it can
+      # only fail to be noticed if swallowed. Letting this step fail for
+      # real surfaces it as a red workflow run (Actions tab, commit
+      # status, failure-notification emails), which is the whole point:
+      # this catalog going stale should be visible, even though it's not
+      # release-blocking.
+      env:
+        ARD_SERVICE_API_TOKEN: ${{ secrets.ARD_SERVICE_API_TOKEN }}
+      run: |
+        curl --fail -sS -X POST \
+          https://ard-service-production.public-default.k8spod4-cph3.ingress.k8s.g1i.one/api/v1/upload/imagify/manifest \
+          -H "Content-Type: application/json" \
+          -H "x-api-key: ${ARD_SERVICE_API_TOKEN}" \
+          --data @imagify-abilities-catalog.json

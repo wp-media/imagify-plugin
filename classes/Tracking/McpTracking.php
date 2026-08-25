@@ -84,9 +84,13 @@ class McpTracking extends BaseTracking {
 	 * @param string $ability_id   Ability slug, e.g. `imagify/get-stats`.
 	 * @param string $ability_name Human-readable ability label.
 	 * @param float  $start_time   microtime(true) captured before execute() ran.
+	 * @param bool   $is_preview   True when the call was a credit-consumption preview
+	 *                             (`confirmation_required`/`insufficient_quota`/`invalid_api_key`)
+	 *                             rather than a real execution. Defaults to false so
+	 *                             non-quota-sensitive abilities keep their current behavior.
 	 * @return void
 	 */
-	public function track_ability_executed( string $ability_id, string $ability_name, float $start_time ): void {
+	public function track_ability_executed( string $ability_id, string $ability_name, float $start_time, bool $is_preview = false ): void {
 		if ( ! $this->can_track() ) {
 			return;
 		}
@@ -97,6 +101,7 @@ class McpTracking extends BaseTracking {
 				'ability_id'        => $ability_id,
 				'ability_name'      => $ability_name,
 				'execution_time_ms' => round( ( microtime( true ) - $start_time ) * 1000, 2 ),
+				'is_preview'        => $is_preview,
 			]
 		);
 

@@ -13,9 +13,10 @@ jQuery.extend( window.imagify, {
 		}
 	},
 	openModal: function( $link ) {
-		var target = $link.data( 'target' ) || $link.attr( 'href' );
+		var target = $link.data( 'target' ) || $link.attr( 'href' ),
+			$target = jQuery( target );
 
-		jQuery( target ).css( 'display', 'flex' ).hide().fadeIn( 400 ).attr( {
+		$target.css( 'display', 'flex' ).hide().fadeIn( 400 ).attr( {
 			'aria-hidden': 'false',
 			'tabindex':    '0'
 		} ).trigger('focus').removeAttr( 'tabindex' ).addClass( 'modal-is-open' );

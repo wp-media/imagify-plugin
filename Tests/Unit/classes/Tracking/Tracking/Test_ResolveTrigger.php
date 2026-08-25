@@ -31,6 +31,11 @@ class Test_ResolveTrigger extends TestCase {
 		$optin    = Mockery::mock( Optin::class );
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
 
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
+
 		$this->tracking = new Tracking( $optin, $mixpanel );
 	}
 

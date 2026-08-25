@@ -1,19 +1,21 @@
-
 name: PHPUnit Code Coverage
 
 on:
   pull_request:
-    branches:
-      - trunk
-      - develop
-      - branch-*
-      - feature/*
-      - enhancement/*
-      - fix/*
+  workflow_dispatch:
+
+# Cancel all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   run:
     runs-on: ${{ matrix.operating-system }}
+    timeout-minutes: 30
 
     strategy:
       fail-fast: false
@@ -25,46 +27,36 @@ jobs:
     name: Code Coverage.
 
     env:
-      WP_TESTS_DIR: "/tmp/tests/phpunit"
-      WP_CORE_DIR: "/tmp/wordpress-develop"
       IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+    - name: Setup PHP + Composer
+      uses: wp-media/workflows/.github/actions/setup-php-composer@main
       with:
         php-version: ${{ matrix.php-versions }}
         coverage: xdebug
-        tools: composer:v2, phpunit
+        # Empty overrides the action's `--no-scripts` default so Composer runs
+        # post-install/update scripts, i.e. Strauss namespace prefixing, which the
+        # covered unit suite needs to autoload the Imagify\Dependencies\* classes.
+        composer-options: ''
 
+    # Registered here, not in the composite action: GitHub removes problem
+    # matchers added inside a composite action when it finishes, so they must
+    # be added in the caller to stay active for the test steps below.
     - name: Setup problem matchers for PHP
       run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
 
     - name: Setup problem matchers for PHPUnit
       run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-    - name: Get composer cache directory
-      id: composercache
-      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-    - name: Cache dependencies
-      uses: actions/cache@v4
-      with:
-        path: ${{ steps.composercache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-        restore-keys: ${{ runner.os }}-composer-
-
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-interaction --no-scripts
-
     - name: Code Coverage
       run: composer code-coverage
 
     - name: Run codacy-coverage-reporter
-      uses: codacy/codacy-coverage-reporter-action@v1
+      uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
         coverage-reports: tests/report/coverage.clover

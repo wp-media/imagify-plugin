@@ -9,7 +9,7 @@ use WP_Error;
 /**
  * Bulk optimization
  */
-final class Bulk {
+final class Bulk implements BulkOptimizerInterface {
 	use InstanceGetterTrait;
 
 	/**
@@ -21,6 +21,7 @@ final class Bulk {
 		add_action( 'imagify_optimize_media', [ $this, 'optimize_media' ], 10, 3 );
 		add_action( 'imagify_convert_next_gen', [ $this, 'generate_nextgen_versions' ], 10, 2 ); // @phpstan-ignore-line
 		add_action( 'wp_ajax_imagify_bulk_optimize', [ $this, 'bulk_optimize_callback' ] );
+		add_action( 'wp_ajax_imagify_bulk_stop', [ $this, 'bulk_stop_callback' ] );
 		add_action( 'wp_ajax_imagify_missing_nextgen_generation', [ $this, 'missing_nextgen_callback' ] );
 		add_action( 'wp_ajax_imagify_get_folder_type_data', [ $this, 'get_folder_type_data_callback' ] );
 		add_action( 'wp_ajax_imagify_bulk_info_seen', [ $this, 'bulk_info_seen_callback' ] );
@@ -28,6 +29,35 @@ final class Bulk {
 		add_action( 'imagify_after_optimize', [ $this, 'check_optimization_status' ], 10, 2 );
 		add_action( 'imagify_deactivation', [ $this, 'delete_transients_data' ] );
 		add_action( 'update_option_imagify_settings', [ $this, 'maybe_generate_missing_nextgen' ], 10, 2 );
+		add_action( 'imagify_upgrade', [ $this, 'maybe_clear_stale_bulk_run' ], 10, 2 );
+	}
+
+	/**
+	 * Clear any bulk optimization progress left running from before 2.3.2, on upgrade.
+	 *
+	 * Queue items enqueued by a bulk run before 2.3.2 don't carry the `bulk` flag used by
+	 * self::check_optimization_status() to tell bulk completions from manual/auto ones (see
+	 * that method). If a bulk run straddles the upgrade, its remaining items complete without
+	 * that flag and are never counted, so the run's `remaining` counter never reaches zero and
+	 * the bulk page is stuck showing it as still running. Clearing the running transients lets
+	 * a fresh bulk run start clean instead.
+	 *
+	 * @since 2.3.2
+	 *
+	 * @param string $network_version Previous version stored on the network.
+	 * @param string $site_version    Previous version stored on site level.
+	 *
+	 * @return void
+	 */
+	public function maybe_clear_stale_bulk_run( $network_version, $site_version ) {
+		if ( version_compare( $site_version, '2.3.2' ) >= 0 ) {
+			return;
+		}
+
+		delete_transient( 'imagify_custom-folders_optimize_running' );
+		delete_transient( 'imagify_wp_optimize_running' );
+		delete_transient( 'imagify_bulk_optimization_result' );
+		delete_transient( 'imagify_bulk_optimization_complete' );
 	}
 
 	/**
@@ -59,6 +89,13 @@ final class Bulk {
 			&&
 			! $library_wp
 		) {
+			return;
+		}
+
+		if ( empty( $item['data']['bulk'] ) ) {
+			// This completion was not enqueued by Bulk::run_optimize() (e.g. a manual click or
+			// an auto-optimize-on-upload that happens to complete while a bulk job is active):
+			// do not let it affect the bulk job's progress counters.
 			return;
 		}
 
@@ -173,7 +210,7 @@ final class Bulk {
 	 *
 	 * @return array
 	 */
-	public function run_optimize( string $context, int $optimization_level ) {
+	public function run_optimize( string $context, int $optimization_level ): array {
 		if ( ! $this->can_optimize() ) {
 			return [
 				'success' => false,
@@ -182,6 +219,28 @@ final class Bulk {
 		}
 
 		$media_ids = $this->get_bulk_instance( $context )->get_unoptimized_media_ids( $optimization_level );
+
+		$media_ids = array_values(
+			array_filter(
+				$media_ids,
+				function ( $media_id ) use ( $context, $optimization_level ) {
+					/**
+					 * Filter the list of media to optimize during a bulk optimization, per media.
+					 *
+					 * Return false to exclude a given media from the bulk optimization run
+					 * (e.g. to skip a specific file type such as PDFs).
+					 *
+					 * @since 2.3
+					 *
+					 * @param bool   $optimize           True to optimize this media, false to exclude it.
+					 * @param int    $media_id           The media ID (attachment ID, or custom-folder file ID).
+					 * @param string $context            The optimization context ('wp' or 'custom-folders').
+					 * @param int    $optimization_level The optimization level.
+					 */
+					return wpm_apply_filters_typed( 'boolean', 'imagify_bulk_optimize_media', true, $media_id, $context, $optimization_level );
+				}
+			)
+		);
 
 		if ( empty( $media_ids ) ) {
 			return [
@@ -217,6 +276,110 @@ final class Bulk {
 			'success' => true,
 			'message' => 'success',
 		];
+	}
+
+	/**
+	 * Stops a running bulk process for the given contexts.
+	 *
+	 * Cancels every media still waiting in the queue and clears the progress data. Media already
+	 * sent to the Imagify API cannot be cancelled: the one being processed when the stop is
+	 * requested still completes.
+	 *
+	 * @since 2.3
+	 *
+	 * @param array $contexts An array of contexts (WP/Custom folders).
+	 *
+	 * @return array {
+	 *     @type bool   $success   Whether a running process was found.
+	 *     @type string $message   Status message.
+	 *     @type int    $cancelled Number of queued media actually cancelled.
+	 * }
+	 */
+	public function run_stop( array $contexts ): array {
+		$cancelled   = 0;
+		$was_running = false;
+
+		foreach ( $contexts as $context ) {
+			if ( false !== get_transient( "imagify_{$context}_optimize_running" ) ) {
+				$was_running = true;
+			}
+
+			$cancelled += $this->cancel_pending_actions( 'imagify_optimize_media', "imagify-{$context}-optimize-media" );
+			$cancelled += $this->cancel_pending_actions( 'imagify_convert_next_gen', "imagify-{$context}-convert-nextgen" );
+
+			delete_transient( "imagify_{$context}_optimize_running" );
+		}
+
+		delete_transient( 'imagify_bulk_optimization_result' );
+		delete_transient( 'imagify_missing_next_gen_total' );
+
+		if ( ! $was_running && 0 === $cancelled ) {
+			return [
+				'success'   => false,
+				'message'   => 'not-running',
+				'cancelled' => 0,
+			];
+		}
+
+		/**
+		 * Fires after a bulk process has been manually stopped.
+		 *
+		 * @since 2.3
+		 *
+		 * @param array $contexts  The contexts that were stopped.
+		 * @param int   $cancelled Number of queued media actually cancelled.
+		 */
+		do_action( 'imagify_bulk_stopped', $contexts, $cancelled );
+
+		return [
+			'success'   => true,
+			'message'   => 'success',
+			'cancelled' => $cancelled,
+		];
+	}
+
+	/**
+	 * Cancel all the pending actions for a given hook and group.
+	 *
+	 * Actions already running are left untouched: Action Scheduler cannot interrupt them.
+	 *
+	 * The pending actions are counted before being cancelled, so the caller reports what was
+	 * really removed from the queue. The `remaining` value of the progress transient cannot be
+	 * used for that: it is only decremented by the `imagify_after_optimize` hook, which never
+	 * fires when an optimization bails out early (unsupported media, already optimized, locked
+	 * process) or when the request dies, so it drifts above the real queue size.
+	 *
+	 * @since 2.3
+	 *
+	 * @param string $hook  The action hook.
+	 * @param string $group The Action Scheduler group.
+	 *
+	 * @return int Number of pending actions that were cancelled.
+	 */
+	private function cancel_pending_actions( string $hook, string $group ): int {
+		if ( ! function_exists( 'as_unschedule_all_actions' ) || ! function_exists( 'as_get_scheduled_actions' ) ) {
+			return 0;
+		}
+
+		try {
+			$pending = as_get_scheduled_actions(
+				[
+					'hook'     => $hook,
+					'group'    => $group,
+					// ActionScheduler_Store::STATUS_PENDING, without depending on the class being loaded.
+					'status'   => 'pending',
+					'per_page' => -1,
+					'orderby'  => 'none',
+				],
+				'ids'
+			);
+
+			as_unschedule_all_actions( $hook, [], $group );
+		} catch ( Exception $exception ) {
+			return 0;
+		}
+
+		return is_array( $pending ) ? count( $pending ) : 0;
 	}
 
 	/**
@@ -296,13 +459,8 @@ final class Bulk {
 		foreach ( $contexts as $context ) {
 			foreach ( $formats as $format ) {
 				$media = $this->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
-				if ( ! $media['ids'] && $media['errors']['no_backup'] ) {
-					// No backup, no next-gen.
-					return [
-						'success' => false,
-						'message' => 'no-backup',
-					];
-				} elseif ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
+
+				if ( ! $media['ids'] && $media['errors']['no_file_path'] ) {
 					// Error.
 					return [
 						'success' => false,
@@ -310,7 +468,9 @@ final class Bulk {
 					];
 				}
 
-				$medias[ $context ] = $media['ids'];
+				if ( $media['ids'] ) {
+					$medias[ $context ] = $media['ids'];
+				}
 			}
 		}
 
@@ -433,7 +593,7 @@ final class Bulk {
 			}
 		}
 
-		return $process->optimize( $level );
+		return $process->optimize( $level, [ 'bulk' => true ] );
 	}
 
 	/**
@@ -540,6 +700,33 @@ final class Bulk {
 		}
 
 		wp_send_json_success( [ 'total' => $data['message'] ] );
+	}
+
+	/**
+	 * Stop the running bulk optimization
+	 *
+	 * @since 2.3
+	 *
+	 * @return void
+	 */
+	public function bulk_stop_callback() {
+		imagify_check_nonce( 'imagify-bulk-optimize' );
+
+		$contexts = $this->get_contexts();
+
+		foreach ( $contexts as $context ) {
+			if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+				imagify_die();
+			}
+		}
+
+		$data = $this->run_stop( $contexts );
+
+		if ( false === $data['success'] ) {
+			wp_send_json_error( [ 'message' => $data['message'] ] );
+		}
+
+		wp_send_json_success( [ 'cancelled' => $data['cancelled'] ] );
 	}
 
 	/**
