@@ -65,6 +65,9 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 				->andReturn( $config['user_can'] );
 		}
 
+		Functions\expect( 'add_settings_error' )->never();
+		Functions\expect( 'set_transient' )->never();
+
 		Imagify_Settings::get_instance()->update_site_option_on_network();
 	}
 
@@ -83,6 +86,9 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 			Filters\expectApplied( 'allowed_options' )
 				->andReturn( $config['options'] );
 		}
+
+		Functions\expect( 'add_settings_error' )->never();
+		Functions\expect( 'set_transient' )->never();
 
 		Imagify_Settings::get_instance()->update_site_option_on_network();
 	}
@@ -109,6 +115,15 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 			->once()
 			->andReturn( [ 'imagify' => $options ] );
 		Functions\when('wp_unslash')->returnArg();
+
+		Functions\expect( 'add_settings_error' )
+			->once()
+			->with( 'general', 'settings_updated', 'Settings saved.', 'success' );
+		Functions\when( 'get_settings_errors' )
+			->justReturn( [ 'settings_updated' ] );
+		Functions\expect( 'set_transient' )
+			->once()
+			->with( 'settings_errors', [ 'settings_updated' ], 30 );
 
 		Functions\expect( 'imagify_maybe_redirect' )
 			->once()

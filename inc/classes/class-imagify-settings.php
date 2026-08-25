@@ -411,6 +411,13 @@ class Imagify_Settings {
 		}
 
 		/**
+		 * `options.php` is what registers the "Settings saved." notice and stores it in the
+		 * `settings_errors` transient. We bypass it on network installations, so do it here.
+		 */
+		add_settings_error( 'general', 'settings_updated', __( 'Settings saved.' ), 'success' );
+		set_transient( 'settings_errors', get_settings_errors(), 30 );
+
+		/**
 		 * Redirect back to the settings page that was submitted.
 		 */
 		imagify_maybe_redirect( false, [ 'settings-updated' => 'true' ] );

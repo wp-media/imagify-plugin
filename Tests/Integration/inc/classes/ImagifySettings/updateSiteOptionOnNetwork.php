@@ -19,8 +19,16 @@ use Brain\Monkey\Functions;
 class Test_UpdateSiteOptionOnNetwork extends TestCase {
 	private $user_id;
 
+	public function set_up() {
+		parent::set_up();
+
+		// `add_settings_error()` writes to this global; isolate it from the other tests.
+		$GLOBALS['wp_settings_errors'] = [];
+	}
+
 	public function tear_down() {
 		unset( $_POST['option_page'] );
+		unset( $GLOBALS['wp_settings_errors'] );
 
 		return parent::tear_down();
 	}
@@ -59,6 +67,8 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		Functions\expect( 'apply_filters' )->never();
 
 		Imagify_Settings::get_instance()->update_site_option_on_network();
+
+		$this->assertSame( [], get_settings_errors() );
 	}
 
 	public function shouldDie( $config, $expected ) {
@@ -82,7 +92,11 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 			$this->expectExceptionMessage( $expected['die_message'] );
 		}
 
-		Imagify_Settings::get_instance()->update_site_option_on_network();
+		try {
+			Imagify_Settings::get_instance()->update_site_option_on_network();
+		} finally {
+			$this->assertSame( [], get_settings_errors() );
+		}
 	}
 
 	public function shouldUpdateOptions( $config, $expected ) {
@@ -110,5 +124,13 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		foreach ( $config['options'] as $option => $value ) {
 			$this->assertSame( $value, get_site_option( $option ) );
 		}
+
+		$errors = get_settings_errors();
+
+		$this->assertCount( 1, $errors );
+		$this->assertSame( 'general', $errors[0]['setting'] );
+		$this->assertSame( 'settings_updated', $errors[0]['code'] );
+		$this->assertSame( 'Settings saved.', $errors[0]['message'] );
+		$this->assertSame( 'success', $errors[0]['type'] );
 	}
 }
