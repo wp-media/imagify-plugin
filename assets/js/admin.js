@@ -44,18 +44,6 @@ jQuery.extend( window.imagify, {
 				return compiled( data );
 			};
 		} );
-	},
-	humanSize: function( bytes ) {
-		var sizes = ['B', 'kB', 'MB'],
-			i;
-
-		if ( 0 === bytes ) {
-			return '0\xA0kB';
-		}
-
-		i = parseInt( Math.floor( Math.log( bytes ) / Math.log( 1024 ) ), 10 );
-
-		return ( bytes / Math.pow( 1024, i ) ).toFixed( 2 ) + '\xA0' + sizes[ i ];
 	}
 } );
 

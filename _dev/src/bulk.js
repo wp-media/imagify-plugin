@@ -1,3 +1,5 @@
+import { findBlockingError, buildAjaxUrl, normalizeChartData } from './lib/bulk-state.js';
+
 window.imagify = window.imagify || {};
 
 (function( $, undefined ) { // eslint-disable-line no-shadow, no-shadow-restricted-names
@@ -223,17 +225,12 @@ window.imagify = window.imagify || {};
          * @return {string}
          */
         getAjaxUrl: function ( action, item ) {
-            var url = ajaxurl + w.imagify.concat + '_wpnonce=' + imagifyBulk.ajaxNonce + '&action=' + imagifyBulk.ajaxActions[ action ];
-
-            if ( item && item.context ) {
-                url += '&context=' + item.context;
-            }
-
-            if ( item && Number.isInteger( item.level ) ) {
-                url += '&optimization_level=' + item.level;
-            }
-
-            return url;
+            return buildAjaxUrl( {
+                baseUrl:      ajaxurl,
+                concat:       w.imagify.concat,
+                nonce:        imagifyBulk.ajaxNonce,
+                ajaxActions:  imagifyBulk.ajaxActions
+            }, action, item );
         },
 
         /**
@@ -318,84 +315,48 @@ window.imagify = window.imagify || {};
         hasBlockingError: function ( displayErrorMessage ) {
             displayErrorMessage = undefined !== displayErrorMessage && displayErrorMessage;
 
-            if ( imagifyBulk.curlMissing ) {
-                if ( displayErrorMessage ) {
-                    w.imagify.bulk.displayError( {
-                        html: imagifyBulk.labels.curlMissing
-                    } );
-                }
+            var code = findBlockingError( imagifyBulk );
 
-                w.imagify.bulk.processIsStopped = true;
-
-                return true;
+            if ( ! code ) {
+                return false;
             }
 
-            if ( imagifyBulk.editorMissing ) {
-                if ( displayErrorMessage ) {
-                    w.imagify.bulk.displayError( {
-                        html: imagifyBulk.labels.editorMissing
-                    } );
-                }
-
-                w.imagify.bulk.processIsStopped = true;
-
-                return true;
+            if ( displayErrorMessage ) {
+                w.imagify.bulk.displayError( w.imagify.bulk.getBlockingErrorModal( code ) );
             }
 
-            if ( imagifyBulk.extHttpBlocked ) {
-                if ( displayErrorMessage ) {
-                    w.imagify.bulk.displayError( {
-                        html: imagifyBulk.labels.extHttpBlocked
-                    } );
-                }
+            w.imagify.bulk.processIsStopped = true;
 
-                w.imagify.bulk.processIsStopped = true;
+            return true;
+        },
 
-                return true;
+        /**
+         * Modal arguments for a blocking error code.
+         *
+         * @param  {string} code A code returned by findBlockingError().
+         * @return {object}      Arguments for displayError().
+         */
+        getBlockingErrorModal: function ( code ) {
+            if ( 'invalidApiKey' === code ) {
+                return {
+                    title: imagifyBulk.labels.invalidAPIKeyTitle,
+                    type:  'info'
+                };
             }
 
-            if ( imagifyBulk.apiDown ) {
-                if ( displayErrorMessage ) {
-                    w.imagify.bulk.displayError( {
-                        html: imagifyBulk.labels.apiDown
-                    } );
-                }
-
-                w.imagify.bulk.processIsStopped = true;
-
-                return true;
+            if ( 'isOverQuota' === code ) {
+                return {
+                    title:             imagifyBulk.labels.overQuotaTitle,
+                    html:              $( '#tmpl-imagify-overquota-alert' ).html(),
+                    type:              'info',
+                    customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
+                    showConfirmButton: false
+                };
             }
 
-            if ( ! imagifyBulk.keyIsValid ) {
-                if ( displayErrorMessage ) {
-                    w.imagify.bulk.displayError( {
-                        title: imagifyBulk.labels.invalidAPIKeyTitle,
-                        type:  'info'
-                    } );
-                }
-
-                w.imagify.bulk.processIsStopped = true;
-
-                return true;
-            }
-
-            if ( imagifyBulk.isOverQuota ) {
-                if ( displayErrorMessage ) {
-                    w.imagify.bulk.displayError( {
-                        title:             imagifyBulk.labels.overQuotaTitle,
-                        html:              $( '#tmpl-imagify-overquota-alert' ).html(),
-                        type:              'info',
-                        customClass:       'imagify-swal-has-subtitle imagify-swal-error-header',
-                        showConfirmButton: false
-                    } );
-                }
-
-                w.imagify.bulk.processIsStopped = true;
-
-                return true;
-            }
-
-            return false;
+            return {
+                html: imagifyBulk.labels[ code ]
+            };
         },
 
         /*
@@ -1105,11 +1066,7 @@ window.imagify = window.imagify || {};
             if ( this.charts.overview.donut ) {
                 // Update existing donut.
                 if ( data.length ) {
-                    if ( data.reduce( function( a, b ) { return a + b; }, 0 ) === 0 ) {
-                        data[0] = 1;
-                    }
-
-                    this.charts.overview.donut.data.datasets[0].data = data;
+                    this.charts.overview.donut.data.datasets[0].data = normalizeChartData( data );
                     this.charts.overview.donut.update();
                 }
                 return;
@@ -1127,9 +1084,7 @@ window.imagify = window.imagify || {};
                 initData.datasets[0].data = data;
             }
 
-            if ( initData.datasets[0].data.reduce( function( a, b ) { return a + b; }, 0 ) === 0 ) {
-                initData.datasets[0].data[0] = 1;
-            }
+            initData.datasets[0].data = normalizeChartData( initData.datasets[0].data );
 
             this.charts.overview.donut = new w.imagify.Chart( this.charts.overview.canvas, {
                 type:    'doughnut',
