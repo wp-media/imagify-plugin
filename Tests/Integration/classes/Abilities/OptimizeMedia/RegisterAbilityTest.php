@@ -178,4 +178,21 @@ class RegisterAbilityTest extends TestCase {
 		);
 		wp_set_current_user( $user_id );
 	}
+
+	/**
+	 * The filename and URL inputs must be registered, and no input may be
+	 * required on its own since the three identifiers are interchangeable.
+	 */
+	public function testShouldRegisterFilenameAndUrlInputs(): void {
+		$ability = wp_get_ability( 'imagify/optimize-media' );
+
+		$this->assertNotNull( $ability, 'Ability should be registered.' );
+
+		$input_schema = $ability->get_input_schema();
+
+		$this->assertArrayHasKey( 'media_id', $input_schema['properties'] );
+		$this->assertArrayHasKey( 'media_filename', $input_schema['properties'] );
+		$this->assertArrayHasKey( 'media_url', $input_schema['properties'] );
+		$this->assertArrayNotHasKey( 'required', $input_schema );
+	}
 }

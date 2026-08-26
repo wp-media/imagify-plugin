@@ -641,19 +641,7 @@ window.imagify = window.imagify || {};
 		 * @return {object}           Object with `processed`, `total` and `percent` keys.
 		 */
 		getProgress: function ( total, remaining ) {
-			var effectiveTotal, processed;
-
-			total     = Math.max( parseInt( total, 10 ) || 0, 0 );
-			remaining = Math.max( parseInt( remaining, 10 ) || 0, 0 );
-
-			effectiveTotal = Math.max( total, remaining );
-			processed      = effectiveTotal - remaining;
-
-			return {
-				processed: processed,
-				total:     effectiveTotal,
-				percent:   effectiveTotal > 0 ? Math.floor( processed / effectiveTotal * 100 ) : 0
-			};
+			return w.imagify.getProgress( total, remaining );
 		},
 
 		/**

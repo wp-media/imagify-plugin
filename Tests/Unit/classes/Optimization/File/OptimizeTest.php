@@ -161,4 +161,62 @@ class OptimizeTest extends TestCase {
 			}
 		}
 	}
+
+	/**
+	 * A next-gen request on a source that is already in a next-gen format must return a
+	 * WP_Error instead of handing an empty destination path to the filesystem.
+	 *
+	 * The get_path_to_nextgen() method returns false in that case. Before the guard, that false was
+	 * passed straight to Imagify_Filesystem::move(), which throws an uncaught ValueError on
+	 * PHP 8 ("Path must not be empty"), killing the background process mid-batch.
+	 */
+	public function testShouldReturnErrorWhenNextGenDestinationIsUnavailable(): void {
+		$webp_path = '/uploads/thumbnail.webp';
+
+		Functions\when( 'wp_check_filetype' )->justReturn(
+			[
+				'ext'  => 'webp',
+				'type' => 'image/webp',
+			]
+		);
+
+		$response = (object) [
+			'image'         => 'https://api.imagify.io/dl/xyz',
+			'original_size' => 1000,
+			'new_size'      => 900,
+			'percent'       => 10,
+		];
+
+		Functions\when( 'upload_imagify_image' )->justReturn( $response );
+		Functions\when( 'download_url' )->justReturn( $this->temp_file );
+
+		$filesystem         = Mockery::mock( \stdClass::class );
+		$filesystem->errors = (object) [ 'errors' => [] ];
+		$filesystem->shouldReceive( 'exists' )->with( $webp_path )->andReturn( true );
+		$filesystem->shouldReceive( 'is_file' )->with( $webp_path )->andReturn( true );
+		$filesystem->shouldReceive( 'is_writable' )->andReturn( true );
+		$filesystem->shouldReceive( 'dir_path' )->andReturn( '/uploads/' );
+
+		// The downloaded temp file must be cleaned up rather than left behind.
+		$filesystem->shouldReceive( 'delete' )->once()->with( $this->temp_file );
+
+		// The empty destination must never reach the filesystem.
+		$filesystem->shouldNotReceive( 'move' );
+
+		$file = $this->make_file( $filesystem );
+		$this->setPropertyValue( 'path', $file, $webp_path );
+
+		$result = $file->optimize(
+			[
+				'backup'  => false,
+				'convert' => 'avif',
+			]
+		);
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'no_nextgen_destination', $result->get_error_code() );
+
+		// The source path must be left untouched.
+		$this->assertSame( $webp_path, $file->get_path() );
+	}
 }

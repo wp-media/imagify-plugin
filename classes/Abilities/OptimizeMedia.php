@@ -47,6 +47,13 @@ class OptimizeMedia extends AbstractAbility implements CreditConsumingAbilityInt
 			return;
 		}
 
+		$media_properties = [
+			'media_id' => [
+				'type'        => 'integer',
+				'description' => __( 'The WordPress attachment ID to optimize. Provide media_filename or media_url instead when the ID is unknown.', 'imagify' ),
+			],
+		] + MediaResolver::get_input_schema_properties();
+
 		wp_register_ability(
 			'imagify/optimize-media',
 			[
@@ -55,11 +62,7 @@ class OptimizeMedia extends AbstractAbility implements CreditConsumingAbilityInt
 				'category'            => 'imagify',
 				'input_schema'        => [
 					'type'       => 'object',
-					'properties' => [
-						'media_id'           => [
-							'type'        => 'integer',
-							'description' => __( 'The WordPress attachment ID to optimize.', 'imagify' ),
-						],
+					'properties' => $media_properties + [
 						'optimization_level' => [
 							'type'        => 'integer',
 							'description' => __( 'Optimization level: 0 (normal), 1 (aggressive), or 2 (ultra). If omitted, uses the global setting.', 'imagify' ),
@@ -72,7 +75,6 @@ class OptimizeMedia extends AbstractAbility implements CreditConsumingAbilityInt
 							'default'     => false,
 						],
 					],
-					'required'   => [ 'media_id' ],
 				],
 				'output_schema'       => [
 					'type'       => 'object',
@@ -184,10 +186,10 @@ class OptimizeMedia extends AbstractAbility implements CreditConsumingAbilityInt
 	 * @return array{status: string, original_size: int|null, optimized_size: int|null, savings_percent: float|null, error_message: string|null}
 	 */
 	private function do_execute( array $args ): array {
-		$media_id = isset( $args['media_id'] ) ? (int) $args['media_id'] : 0;
+		$media_id = MediaResolver::resolve_id( $args );
 
-		if ( $media_id <= 0 ) {
-			return $this->error_response( 'Invalid or missing media_id.' );
+		if ( is_wp_error( $media_id ) ) {
+			return $this->error_response( $media_id->get_error_message() );
 		}
 
 		// Verify the attachment exists.

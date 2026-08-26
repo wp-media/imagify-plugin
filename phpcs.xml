@@ -34,6 +34,18 @@
 	</rule>
 
 	<rule ref="Generic.Arrays.DisallowLongArraySyntax" />
+
+	<!--
+	  curl_close() is a deprecated no-op on PHP 8+, but the call in the legacy cURL fallback
+	  (inc/classes/class-imagify.php) is only reached on PHP 7.x, where $ch is a resource
+	  (guarded by is_resource()); on PHP 8+ the unset() branch runs instead. The linter runs on
+	  PHP `latest`, where Generic.PHP.DeprecatedFunctions flags it via runtime reflection, so scope
+	  that sniff out of this one file rather than dropping the still-needed PHP 7.x cleanup.
+	-->
+	<rule ref="Generic.PHP.DeprecatedFunctions.Deprecated">
+		<exclude-pattern>inc/classes/class-imagify.php</exclude-pattern>
+	</rule>
+
 	<!-- Run against the WordPress ruleset. -->
 	<rule ref="WordPress">
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>

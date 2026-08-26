@@ -1,161 +1,79 @@
-/* eslint-env node */
 /**
- * Tests for `window.imagify.optionsBulk.getProgress()` in assets/js/options.js.
+ * Tests for `getProgress()`.
  *
- * Run with: npm run test:js
- *
- * `options.js` is a browser bundle of jQuery IIFEs, not a module, so it is loaded here inside a
- * VM context with the minimum stubs it touches at load time. That keeps the test honest: it
- * exercises the real shipped file rather than a copy of the logic.
+ * Previously this file loaded the whole of assets/js/options.js inside a node:vm
+ * context behind a Proxy-based fake jQuery, because the function lived inside a
+ * jQuery IIFE with no export. `getProgress` now lives in assets/js/helpers.js, so
+ * this is a plain require and the sandbox is gone.
  */
+const { getProgress } = require( '../../assets/js/helpers.js' );
 
-const test = require( 'node:test' );
-const assert = require( 'node:assert' );
-const fs = require( 'node:fs' );
-const path = require( 'node:path' );
-const vm = require( 'node:vm' );
-
-/**
- * Builds a chainable no-op stand-in for a jQuery object.
- *
- * Every property access returns the same callable proxy, so any chain `options.js` builds at load
- * time resolves without us having to enumerate the jQuery surface.
- *
- * @return {Proxy} A callable, infinitely chainable proxy.
- */
-function chainable() {
-	const fn = function () {
-		return fn;
-	};
-
-	return new Proxy( fn, {
-		get( target, prop ) {
-			if ( 'length' === prop ) {
-				return 0;
-			}
-
-			if ( Symbol.toPrimitive === prop || 'toString' === prop ) {
-				return () => '';
-			}
-
-			return chainable();
-		},
-		apply() {
-			return chainable();
-		},
+describe( 'getProgress', () => {
+	it( 'never goes negative when uploads grow the workload mid-run (#760)', () => {
+		// 10 media at the start, but 12 are now waiting: the workload grew.
+		expect( getProgress( 10, 12 ) ).toEqual( {
+			processed: 0,
+			total:     12,
+			percent:   0
+		} );
 	} );
-}
 
-/**
- * Loads assets/js/options.js in a sandbox and returns the getProgress helper.
- *
- * @return {Function} The `getProgress` method bound to its object.
- */
-function loadGetProgress() {
-	const file = path.join( __dirname, '..', '..', 'assets', 'js', 'options.js' );
-	const code = fs.readFileSync( file, 'utf8' );
+	it( 'never divides by zero when the format is switched mid-run (#865)', () => {
+		expect( getProgress( 0, 0 ) ).toEqual( {
+			processed: 0,
+			total:     0,
+			percent:   0
+		} );
+	} );
 
-	const jQuery = chainable();
+	it( 'reports a healthy run in progress unchanged', () => {
+		expect( getProgress( 10, 4 ) ).toEqual( {
+			processed: 6,
+			total:     10,
+			percent:   60
+		} );
+	} );
 
-	const sandbox = {
-		window: {},
-		document: {},
-		jQuery,
-		// The bulk IIFE is guarded by `imagifyOptions.bulk`; without it optionsBulk is never
-		// defined. `progress_next_gen.total === false` keeps init() out of the render branch.
-		imagifyOptions: {
-			bulk: {
-				imagifybeatIDs: { progress: 'progress', requirements: 'requirements' },
-				progress_next_gen: { total: false, remaining: false },
-				labels: {},
-				contexts: [ 'wp' ],
-			},
-		},
-		ajaxurl: '',
-		swal: Object.assign( () => ( { then: () => {}, catch: () => {} } ), { noop: () => {} } ),
-	};
+	it( 'reports 100% for a completed run', () => {
+		expect( getProgress( 10, 0 ) ).toEqual( {
+			processed: 10,
+			total:     10,
+			percent:   100
+		} );
+	} );
 
-	sandbox.window.imagify = { concat: '?', beat: chainable(), template: () => () => '' };
-	sandbox.window.jQuery = jQuery;
-	sandbox.window.document = sandbox.document;
-	sandbox.window.window = sandbox.window;
-	sandbox.self = sandbox.window;
-	sandbox.globalThis = sandbox;
+	it( 'degrades non-numeric input to zero instead of NaN', () => {
+		expect( getProgress( 'nope', undefined ) ).toEqual( {
+			processed: 0,
+			total:     0,
+			percent:   0
+		} );
+	} );
 
-	vm.createContext( sandbox );
-	vm.runInContext( code, sandbox, { filename: 'options.js' } );
+	it( 'clamps negative input to zero', () => {
+		expect( getProgress( -5, -2 ) ).toEqual( {
+			processed: 0,
+			total:     0,
+			percent:   0
+		} );
+	} );
 
-	const bulk = sandbox.window.imagify.optionsBulk;
+	it( 'floors the percentage rather than rounding it up', () => {
+		// 1 of 3 processed is 33.33%, must not display as 34%.
+		expect( getProgress( 3, 2 ).percent ).toBe( 33 );
+	} );
 
-	assert.ok( bulk, 'window.imagify.optionsBulk should be defined after loading options.js' );
-	assert.strictEqual( typeof bulk.getProgress, 'function', 'getProgress should be a function' );
+	it( 'stays within bounds across the whole small-input space', () => {
+		for ( let total = 0; total <= 50; total++ ) {
+			for ( let remaining = 0; remaining <= 50; remaining++ ) {
+				const progress = getProgress( total, remaining );
 
-	return bulk.getProgress.bind( bulk );
-}
-
-const loaded = loadGetProgress();
-
-/**
- * Calls getProgress and copies the result into this realm.
- *
- * The helper runs inside a VM context, so its return value carries that context's `Object`
- * prototype and `deepStrictEqual` would reject structurally identical values.
- *
- * @param {*} total     Number of media to process when the run started.
- * @param {*} remaining Number of media still waiting to be processed.
- *
- * @return {object} A plain object with `processed`, `total` and `percent` keys.
- */
-function getProgress( total, remaining ) {
-	const result = loaded( total, remaining );
-
-	return {
-		processed: result.processed,
-		total: result.total,
-		percent: result.percent,
-	};
-}
-
-test( 'the count never goes negative when uploads grow the workload mid-run (#760)', () => {
-	// Snapshot said 23; two uploads during the run pushed the live count to 25.
-	assert.deepStrictEqual( getProgress( 23, 25 ), { processed: 0, total: 25, percent: 0 } );
-} );
-
-test( 'a zero snapshot never divides by zero when the format is switched mid-run (#865)', () => {
-	// Nothing was missing when the run started, then AVIF was enabled: everything is missing.
-	assert.deepStrictEqual( getProgress( 0, 17 ), { processed: 0, total: 17, percent: 0 } );
-} );
-
-test( 'a healthy run in progress is unchanged', () => {
-	assert.deepStrictEqual( getProgress( 20, 8 ), { processed: 12, total: 20, percent: 60 } );
-} );
-
-test( 'a completed run still reports 100%', () => {
-	assert.deepStrictEqual( getProgress( 20, 0 ), { processed: 20, total: 20, percent: 100 } );
-} );
-
-test( 'an empty run reports 0% rather than NaN', () => {
-	assert.deepStrictEqual( getProgress( 0, 0 ), { processed: 0, total: 0, percent: 0 } );
-} );
-
-test( 'non-numeric input degrades to zero instead of NaN', () => {
-	assert.deepStrictEqual( getProgress( null, undefined ), { processed: 0, total: 0, percent: 0 } );
-	assert.deepStrictEqual( getProgress( 'abc', 'def' ), { processed: 0, total: 0, percent: 0 } );
-} );
-
-test( 'negative input is clamped to zero', () => {
-	assert.deepStrictEqual( getProgress( -5, -3 ), { processed: 0, total: 0, percent: 0 } );
-} );
-
-test( 'the percentage stays within 0-100 for every combination up to 50', () => {
-	for ( let total = 0; total <= 50; total++ ) {
-		for ( let remaining = 0; remaining <= 50; remaining++ ) {
-			const { processed, percent, total: effective } = getProgress( total, remaining );
-
-			assert.ok( processed >= 0, `processed negative for ${ total }/${ remaining }` );
-			assert.ok( percent >= 0 && percent <= 100, `percent out of range for ${ total }/${ remaining }` );
-			assert.ok( Number.isFinite( percent ), `percent not finite for ${ total }/${ remaining }` );
-			assert.ok( processed <= effective, `processed exceeds total for ${ total }/${ remaining }` );
+				expect( Number.isFinite( progress.percent ) ).toBe( true );
+				expect( progress.percent ).toBeGreaterThanOrEqual( 0 );
+				expect( progress.percent ).toBeLessThanOrEqual( 100 );
+				expect( progress.processed ).toBeGreaterThanOrEqual( 0 );
+				expect( progress.processed ).toBeLessThanOrEqual( progress.total );
+			}
 		}
-	}
+	} );
 } );

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Imagify\Tests\Unit\classes\Tools\ResetInternalState;
 
 use Imagify\Tests\Unit\TestCase;
+use Imagify\Tools\InternalStateList;
 use Imagify\Tools\ResetInternalState;
 use Mockery;
 use Brain\Monkey\Functions;
@@ -161,7 +162,7 @@ class Test_Reset extends TestCase {
 				}
 			);
 
-		$this->wpdb->shouldReceive( 'query' )->times( 4 )->andReturn( 0 );
+		$this->wpdb->shouldReceive( 'query' )->times( count( InternalStateList::get_locked_transient_patterns() ) )->andReturn( 0 );
 
 		( new ResetInternalState() )->reset();
 
@@ -171,6 +172,10 @@ class Test_Reset extends TestCase {
 			'\_transient\_%imagify\_rpc\_%',
 			'\_transient\_imagify\_%\_process\_locked',
 			'\_site\_transient\_imagify\_%\_process\_lock%',
+			'\_transient\_imagify\_client\_side\_scaled\_%',
+			'\_transient\_timeout\_imagify\_client\_side\_scaled\_%',
+			'\_transient\_imagify\_awaiting\_subsizes\_%',
+			'\_transient\_timeout\_imagify\_awaiting\_subsizes\_%',
 		];
 
 		foreach ( $expected_patterns as $pattern ) {
@@ -263,7 +268,7 @@ class Test_Reset extends TestCase {
 
 		( new ResetInternalState() )->reset();
 
-		// 4 options-pattern queries prove reset() ran to completion.
-		$this->assertSame( 4, $query_calls );
+		// One options-pattern query per registered pattern proves reset() ran to completion.
+		$this->assertSame( count( InternalStateList::get_locked_transient_patterns() ), $query_calls );
 	}
 }

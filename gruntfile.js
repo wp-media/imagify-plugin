@@ -4,7 +4,7 @@ module.exports = function( grunt ) {
 	grunt.initConfig( {
 		// JS linter.
 		'eslint': {
-			'all': [ 'gruntfile.js', 'assets/js/*.js', '!**/*.min.js', '!assets/js/chart.js', '!assets/js/es6-promise.auto.js', '!assets/js/imagify-gulp.js', '!assets/js/jquery.event.move.js', '!assets/js/sweetalert2.js' ]
+			'all': [ 'gruntfile.js', 'assets/js/*.js', '_dev/src/lib/**/*.js', 'Tests/js/**/*.js', '!**/*.min.js', '!assets/js/es6-promise.auto.js', '!assets/js/imagify-gulp.js', '!assets/js/jquery.event.move.js', '!assets/js/sweetalert2.js' ]
 		},
 		// JS minify.
 		'uglify': {

@@ -17,7 +17,8 @@ class Test_GetError extends TestCase {
 	 * Test \Imagify\User\User->get_error() should return false when succesfully fetched user account data.
 	 */
 	public function testShouldReturnFalseWhenFetchedUserData() {
-		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
+		update_imagify_option( 'api_key', $this->validApiKey );
+		$this->mockUserAccount();
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
@@ -36,6 +37,7 @@ class Test_GetError extends TestCase {
 	 */
 	public function testShouldReturnErrorWhenCouldNotFetchUserData() {
 		update_imagify_option( 'api_key', $this->invalidApiKey );
+		$this->mockInvalidToken();
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );

@@ -176,7 +176,9 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		 */
 		$this->register_script( 'admin-bar', 'admin-bar', [ 'jquery' ] )->defer_localization( 'imagifyAdminBar' );
 
-		$this->register_script( 'admin', 'admin', [ 'jquery' ] );
+		$this->register_script( 'helpers', 'helpers' );
+
+		$this->register_script( 'admin', 'admin', [ 'jquery', 'helpers' ] );
 
 		$this->register_script( 'notices', 'notices', [ 'jquery', 'admin' ] )->defer_localization( 'imagifyNotices' ); // Needs SweetAlert on some cases.
 
