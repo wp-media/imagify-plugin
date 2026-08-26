@@ -14,29 +14,19 @@ use Imagify\Tests\Integration\TestCase;
  */
 class Test_ImagifyGetExternalUrl extends TestCase {
 	/**
-	 * Whether to use the Imagify API in these tests.
+	 * The documentation-nextgen-delivery target is what the settings page links to
+	 * when explaining the layout risk of the <picture> tag method, so its slug must
+	 * not drift silently.
 	 *
-	 * @var bool
-	 */
-	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-
-	/**
-	 * The next-gen delivery documentation target resolves to the broken-images article.
+	 * @dataProvider configTestData
 	 *
-	 * That article is what the settings page links to when explaining the layout
-	 * risk of the <picture> tag method, so the slug must not drift silently.
+	 * @param array  $config   Target and optional query args.
+	 * @param string $expected Expected URL.
 	 */
-	public function testShouldReturnTheNextGenDeliveryDocumentationUrl() {
+	public function testShouldReturnExpectedUrl( $config, $expected ) {
 		$this->assertSame(
-			IMAGIFY_SITE_DOMAIN . '/documentation/my-images-are-broken/',
-			imagify_get_external_url( 'documentation-nextgen-delivery' )
+			$expected,
+			imagify_get_external_url( $config['target'], $config['query_args'] ?? [] )
 		);
-	}
-
-	/**
-	 * An unknown target still returns an empty string.
-	 */
-	public function testShouldReturnAnEmptyStringForAnUnknownTarget() {
-		$this->assertSame( '', imagify_get_external_url( 'no-such-target' ) );
 	}
 }
