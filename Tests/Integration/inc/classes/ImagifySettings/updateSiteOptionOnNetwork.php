@@ -40,7 +40,7 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		$_POST['option_page'] = $config['option_page'];
 
 		if ( $config['user_can'] ) {
-			$this->user_id = $this->factory->user->create( [ 'role' => 'administrator', ] );
+			$this->user_id = $this->factory->user->create( [ 'role' => 'administrator' ] );
 			$admin         = get_role( 'administrator' );
 			$admin->add_cap( 'manage_network_options' );
 		} else {
@@ -50,12 +50,12 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		wp_set_current_user( $this->user_id );
 
 		if ( empty( $config['option_page'] )
-			 || 'imagify' !== $config['option_page']
+			|| 'imagify' !== $config['option_page']
 		) {
 			$this->shouldBailOut();
 		} elseif ( $config['missing_options']
-				   || ! $config['user_can']
-				   || ! $config['nonce_check']
+					|| ! $config['user_can']
+					|| ! $config['nonce_check']
 		) {
 			$this->shouldDie( $config, $expected );
 		} else {
@@ -87,7 +87,8 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 				'allowed_options',
 				function () {
 					return [];
-				} );
+				}
+			);
 
 			$this->expectExceptionMessage( $expected['die_message'] );
 		}
@@ -114,7 +115,8 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 				$settings['imagify'] = $options;
 
 				return $settings;
-			} );
+			}
+		);
 
 		Functions\when( 'imagify_maybe_redirect' )
 			->justReturn();
@@ -132,5 +134,49 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		$this->assertSame( 'settings_updated', $errors[0]['code'] );
 		$this->assertSame( 'Settings saved.', $errors[0]['message'] );
 		$this->assertSame( 'success', $errors[0]['type'] );
+	}
+
+	/**
+	 * A success notice must not be stacked on top of somebody else's error.
+	 *
+	 * Core's options.php only queues "Settings saved." when nothing else has
+	 * queued a settings error (`if ( ! count( get_settings_errors() ) )`). This
+	 * handler replaces options.php on network installs, so it has to make the same
+	 * check - otherwise a plugin that reports a real problem during the same save
+	 * request gets a contradictory "Settings saved." rendered underneath it.
+	 */
+	public function testShouldNotAddSuccessNoticeWhenAnotherErrorIsAlreadyQueued() {
+		$_POST['option_page'] = 'imagify';
+
+		$user_id = $this->factory->user->create( [ 'role' => 'administrator' ] );
+		$admin   = get_role( 'administrator' );
+		$admin->add_cap( 'manage_network_options' );
+		wp_set_current_user( $user_id );
+
+		// The nonce is bound to the current user, so it must be created after the switch.
+		$_REQUEST['_wpnonce'] = wp_create_nonce( 'imagify-options' );
+
+		// Stand in for another plugin reporting a problem on the same request.
+		add_settings_error( 'some_other_plugin', 'went_wrong', 'Something failed.', 'error' );
+
+		add_filter(
+			'allowed_options',
+			function () {
+				return [ 'imagify' => [] ];
+			}
+		);
+
+		Functions\when( 'imagify_maybe_redirect' )->justReturn();
+
+		Imagify_Settings::get_instance()->update_site_option_on_network();
+
+		$codes = wp_list_pluck( get_settings_errors(), 'code' );
+
+		$this->assertContains( 'went_wrong', $codes, 'The other plugin\'s error must survive.' );
+		$this->assertNotContains(
+			'settings_updated',
+			$codes,
+			'A false "Settings saved." must not be queued alongside an existing error.'
+		);
 	}
 }
