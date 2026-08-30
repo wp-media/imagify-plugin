@@ -23,6 +23,11 @@ class IIS extends AbstractIISDirConfFile {
 	/**
 	 * Get unfiltered new contents to write into the file.
 	 *
+	 * Emits only the leaf `<mimeMap>` targeted at the single shared
+	 * `<staticContent>` collection. IIS allows exactly one `<staticContent>`
+	 * under `system.webServer`; letting `insert_contents()` create/merge it
+	 * avoids the duplicate-collection HTTP 500 (see issue #509).
+	 *
 	 * @since 1.9
 	 *
 	 * @return string
@@ -30,10 +35,23 @@ class IIS extends AbstractIISDirConfFile {
 	protected function get_raw_new_contents() {
 		return trim(
 			'
-<!-- @parent /configuration/system.webServer -->
-<staticContent name="' . esc_attr( static::TAG_NAME ) . ' 1">
-	<mimeMap fileExtension=".webp" mimeType="image/webp" />
-</staticContent>'
+<!-- @parent /configuration/system.webServer/staticContent -->
+<mimeMap fileExtension=".webp" mimeType="image/webp" />'
 		);
+	}
+
+	/**
+	 * Get the MIME map file extensions owned by this class.
+	 *
+	 * Used by insert_contents() to dedupe existing `<mimeMap>` entries for the
+	 * same file extension before inserting the fresh one, guaranteeing a single
+	 * `<staticContent>` collection with no duplicate `fileExtension` keys.
+	 *
+	 * @since 2.3.4
+	 *
+	 * @return array
+	 */
+	protected function get_owned_mime_extensions(): array {
+		return [ '.webp' ];
 	}
 }
