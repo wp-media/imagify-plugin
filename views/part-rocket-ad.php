@@ -23,7 +23,7 @@ $dismiss_url      = wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dism
 <div class="imagify-col imagify-sidebar">
 	<div class="imagify-sidebar-section">
 		<p class="imagify-sidebar-title">
-			<?php esc_html_e( 'We recommend for you', 'corporate' ); ?>
+			<?php esc_html_e( 'We recommend for you', 'imagify' ); ?>
 		</p>
 
 		<img src="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL ); ?>logo-wprocket.png" srcset="<?php echo esc_url( IMAGIFY_ASSETS_IMG_URL ); ?>logo-wprocket.svg 1x, <?php echo esc_url( IMAGIFY_ASSETS_IMG_URL ); ?>logo-wprocket.svg 2x" alt="WP Rocket" width="232" height="63">
