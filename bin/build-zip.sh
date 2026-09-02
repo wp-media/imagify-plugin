@@ -24,6 +24,30 @@ if [ ! -f "${REPO_ROOT}/bin/strauss.phar" ]; then
 fi
 
 # ── 2. Composer install without dev dependencies (mirrors CI) ────────────────
+#
+# composer.lock is gitignored, so a fresh CI checkout has none and `composer
+# install` resolves the newest versions allowed by composer.json. Locally the
+# lock exists and pins whatever was last resolved, which silently produces a
+# zip with a DIFFERENT dependency set than the release. Set it aside so this
+# genuinely mirrors CI, and put it back afterwards.
+LOCK="${REPO_ROOT}/composer.lock"
+LOCK_BACKUP="${REPO_ROOT}/composer.lock.build-zip-backup"
+
+restore_lock() {
+  if [ -f "${LOCK_BACKUP}" ]; then
+    mv -f "${LOCK_BACKUP}" "${LOCK}"
+    echo "==> Restored your composer.lock."
+  fi
+}
+# Runs on success, failure and interrupt, so a broken build never leaves the
+# developer without their lock file.
+trap restore_lock EXIT
+
+if [ -f "${LOCK}" ]; then
+  echo "==> Setting composer.lock aside so dependencies resolve fresh (as CI does)..."
+  mv -f "${LOCK}" "${LOCK_BACKUP}"
+fi
+
 echo "==> composer install -o --no-dev..."
 composer install -o --no-dev -d "${REPO_ROOT}"
 
@@ -68,6 +92,11 @@ echo "✓ ZIP generated: ${OUTPUT}"
 echo "  Size: $(du -sh "${OUTPUT}" | cut -f1)"
 
 # ── 8. Restore dev dependencies ──────────────────────────────────────────────
+# Put the original lock back first, so the restore reinstalls exactly what the
+# developer had rather than the freshly resolved set.
+restore_lock
+trap - EXIT
+
 echo "==> Restoring dev dependencies (composer install)..."
 composer install -d "${REPO_ROOT}" --quiet
 echo "✓ Dev dependencies restored."
