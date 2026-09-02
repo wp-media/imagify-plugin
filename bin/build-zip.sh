@@ -54,6 +54,10 @@ done < "${DISTIGNORE}"
 mkdir -p "${REPO_ROOT}/generatedpackages"
 OUTPUT="${REPO_ROOT}/generatedpackages/${ZIP_NAME}"
 echo "==> Creating ZIP: ${OUTPUT}"
+# `zip -r` UPDATES an existing archive rather than replacing it, so without this
+# every build inherits the contents of every previous build - including files
+# since removed from the plugin or newly excluded by .distignore.
+rm -f "${OUTPUT}"
 (cd "${TMP_DIR}" && zip -r "${OUTPUT}" "${PLUGIN_SLUG}" -x "*.DS_Store")
 
 # ── 7. Cleanup ───────────────────────────────────────────────────────────────

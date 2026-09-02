@@ -4,6 +4,7 @@
 /.wordpress-org
 /bin
 /_dev
+/node_modules
 /Tests
 
 /.distignore
