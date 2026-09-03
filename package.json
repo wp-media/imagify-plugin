@@ -11,7 +11,7 @@
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^31.2.0",
-		"autoprefixer": "^7.0.1",
+		"autoprefixer": "^10.5.4",
 		"grunt": "^1.0.1",
 		"grunt-contrib-cssmin": "^4.0.0",
 		"grunt-contrib-uglify": "^5.0.1",
