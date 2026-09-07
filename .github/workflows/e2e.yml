@@ -30,7 +30,8 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          # Keep the Node version in one place: package.json "engines".
+          node-version-file: 'package.json'
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2

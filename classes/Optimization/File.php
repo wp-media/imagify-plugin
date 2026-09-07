@@ -659,9 +659,25 @@ class File {
 
 		if ( $is_nextgen_request ) {
 			$destination_path = $this->get_path_to_nextgen( $args['convert'] );
-			$this->path       = $destination_path;
-			$this->file_type  = null;
-			$this->editor     = null;
+
+			/*
+			 * get_path_to_nextgen() returns false when the file is not an image, or when it
+			 * already is in a next-gen format. Passing that along would hand an empty path to
+			 * the filesystem, which throws an uncaught ValueError on PHP 8 and kills the
+			 * background process mid-batch, leaving its lock behind and stalling the queue.
+			 */
+			if ( empty( $destination_path ) ) {
+				$this->filesystem->delete( $temp_file );
+
+				return new \WP_Error(
+					'no_nextgen_destination',
+					__( 'Could not determine the destination path for the next-gen file.', 'imagify' )
+				);
+			}
+
+			$this->path      = $destination_path;
+			$this->file_type = null;
+			$this->editor    = null;
 		} else {
 			$destination_path = $this->path;
 		}

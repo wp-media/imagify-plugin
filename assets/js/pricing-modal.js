@@ -42,9 +42,7 @@
 			}
 
 			if (typeof content !== 'object') {
-				content += ''; // Be sure content is a string.
-				content = content.split('.');
-				content[1] = content[1].length === 1 ? content[1] + '0' : ('' + content[1]).substring(0, 2);
+				content = w.imagify.splitPrice(content);
 
 				output = '<span class="imagify-price-big">' + content[0] + '</span> ';
 				output += '<span class="imagify-price-mini">.' + content[1] + '</span>';
@@ -54,17 +52,17 @@
 
 			monthly = content.monthly + '';
 			yearly = content.yearly + '';
-			m = '0' === monthly ? ['0', '00'] : monthly.split('.');
-			y = '0' === yearly ? ['0', '00'] : yearly.split('.');
+			m = w.imagify.splitPrice(monthly);
+			y = w.imagify.splitPrice(yearly);
 			output = '<span class="imagify-switch-my">';
 			/* eslint-disable indent */
 			output += '<span aria-hidden="' + (period === 'monthly' ? 'false' : 'true') + '" class="imagify-monthly">';
 			output += '<span class="imagify-price-big">' + m[0] + '</span> ';
-			output += '<span class="imagify-price-mini">.' + (m[1].length === 1 ? m[1] + '0' : ('' + m[1]).substring(0, 2)) + '</span>';
+			output += '<span class="imagify-price-mini">.' + m[1] + '</span>';
 			output += '</span> ';
 			output += '<span aria-hidden="' + (period === 'yearly' ? 'false' : 'true') + '" class="imagify-yearly">';
 			output += '<span class="imagify-price-big">' + y[0] + '</span> ';
-			output += '<span class="imagify-price-mini">.' + (y[1].length === 1 ? y[1] + '0' : ('' + y[1]).substring(0, 2)) + '</span>';
+			output += '<span class="imagify-price-mini">.' + y[1] + '</span>';
 			output += '</span>';
 			/* eslint-enable indent */
 			output += '</span>';
@@ -124,8 +122,8 @@
 				quo = datas.quota,           // 1000 (MB) - 5000 images (monthly/onetime)
 				cos = datas.cost,            // 3.49 (onetime)
 				label = datas.label.replace(/_.*$/, ''),
-				name = -1 === quo ? 'Unlimited' : (quo >= 1000 ? quo / 1000 + ' GB' : quo + ' MB'),
-				pcs = 'monthly' === type ? {monthly: mon, yearly: Math.round(ann / 12 * 100) / 100} : cos,
+				name = w.imagify.formatQuota(quo),
+				pcs = 'monthly' === type ? {monthly: mon, yearly: w.imagify.monthlyFromAnnual(ann)} : cos,
 				pcsd = pcs, // Used if discount is active.
 				percent, $datas_c, datas_content, applies_to = [],
 				offer_by = '',
@@ -143,10 +141,9 @@
 				&& (applies_to.includes(lab) || 'all' === applies_to[0])
 			) {
 				percent = (100 - promo.coupon_value) / 100;
-				pcs = 'monthly' === type ? {
-					monthly: mon * percent,
-					yearly:  Math.round((ann * percent) / 12 * 100) / 100
-				} : cos * percent;
+				pcs = 'monthly' === type
+					? w.imagify.applyDiscount(mon, ann, promo.coupon_value)
+					: cos * percent;
 			}
 
 			if (typeof classes !== 'undefined') {
@@ -521,23 +518,7 @@
 			}
 		},
 		getPromoAppliesTo: function(promo){
-			var applies_to = [];
-			if (promo.applies_to instanceof Array) {
-				var plan_list = [];
-
-				for (var plan_infos = 0; plan_infos < promo.applies_to.length; plan_infos++) {
-					plan_list.push(promo.applies_to[plan_infos].plan_name);
-				}
-
-				plan_list.forEach(function (item) {
-					if (! applies_to.includes(item)) {
-						applies_to.push(item);
-					}
-				});
-			} else {
-				applies_to = [promo.applies_to];
-			}
-			return applies_to;
+			return w.imagify.getPromoAppliesTo(promo);
 		}
 	};
 

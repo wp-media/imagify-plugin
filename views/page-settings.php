@@ -17,6 +17,18 @@ $wrapper_class = isset( $notices[ $notice ] ) || isset( $plugins_list['wp-rocket
 ?>
 <div class="wrap imagify-settings <?php echo esc_attr( $wrapper_class ); ?> imagify-clearfix">
 
+	<?php
+	/**
+	 * Core only requires `options-head.php` (which calls `settings_errors()`) when the page
+	 * parent is `options-general.php`. That is the case when Imagify is registered with
+	 * `add_options_page()`, but not when it is network-activated and registered with
+	 * `add_menu_page()`/`add_submenu_page()`. Print the notices ourselves in that case.
+	 */
+	if ( 'options-general.php' !== ( isset( $GLOBALS['parent_file'] ) ? $GLOBALS['parent_file'] : '' ) ) {
+		settings_errors();
+	}
+	?>
+
 	<div class="imagify-col imagify-main">
 
 		<?php $this->print_template( 'part-settings-header' ); ?>

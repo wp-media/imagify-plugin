@@ -1,0 +1,35 @@
+name: JavaScript unit tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+# Cancel all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  jest:
+    name: Jest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Setup Node
+      uses: actions/setup-node@v7
+      with:
+        # Single source of truth for the Node version: package.json "engines".
+        node-version-file: 'package.json'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run Jest
+      run: npm run test:unit

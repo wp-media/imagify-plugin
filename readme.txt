@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 7.1
-Stable tag: 2.3.3
+Stable tag: 2.3.4
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -327,6 +327,12 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.3.4 =
+- Fix: Optimization no longer stops when a next-gen destination path is unavailable.
+- Fix: The "Settings saved" notice is back on multisite when Imagify is network-activated.
+- Fix: Failing to reach the MCP OAuth discovery documents is no longer reported as a critical issue in Site Health.
+- Enhancement: Updated the WP Rocket banner copy on the bulk optimization page.
+
 = 2.3.3 =
 - New feature: MCP media abilities now accept a filename or media URL, not just an attachment ID.
 - Enhancement: Respect WordPress 7.1's resize opt-out on client-side uploads to avoid double scaling.
