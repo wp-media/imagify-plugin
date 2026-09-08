@@ -411,6 +411,20 @@ class Imagify_Settings {
 		}
 
 		/**
+		 * `options.php` is what registers the "Settings saved." notice and stores it in the
+		 * `settings_errors` transient. We bypass it on network installations, so do it here.
+		 *
+		 * The guard mirrors core: a success notice is only queued when nothing else has
+		 * reported a problem during this request, so a real error from another plugin is
+		 * never contradicted by a "Settings saved." underneath it.
+		 */
+		if ( ! count( get_settings_errors() ) ) {
+			add_settings_error( 'general', 'settings_updated', __( 'Settings saved.' ), 'success' );
+		}
+
+		set_transient( 'settings_errors', get_settings_errors(), 30 );
+
+		/**
 		 * Redirect back to the settings page that was submitted.
 		 */
 		imagify_maybe_redirect( false, [ 'settings-updated' => 'true' ] );

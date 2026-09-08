@@ -10,6 +10,7 @@
 		"url": "http://wp-media.me"
 	},
 	"devDependencies": {
+		"@wordpress/scripts": "^31.2.0",
 		"autoprefixer": "^7.0.1",
 		"grunt": "^1.0.1",
 		"grunt-contrib-cssmin": "^4.0.0",
@@ -19,6 +20,9 @@
 	},
 	"scripts": {
 		"build": "grunt",
-		"test:js": "node --test Tests/js/*.test.js"
+		"test:unit": "wp-scripts test-unit-js --config Tests/js/jest.config.js"
+	},
+	"engines": {
+		"node": "22.x"
 	}
 }
