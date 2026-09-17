@@ -18,7 +18,7 @@ use Imagify\Webp\IIS as WebpIIS;
  * @group  WriteFile
  * @group  IIS
  */
-class InsertContentsTest extends TestCase {
+class Test_InsertContents extends TestCase {
 	protected $useApi = false;
 
 	/**
@@ -109,35 +109,32 @@ class InsertContentsTest extends TestCase {
 		);
 	}
 
-	public function testShouldCreateSingleStaticContentOnFreshFile() {
-		$this->seed( '<configuration><system.webServer/></configuration>' );
+	/**
+	 * @dataProvider addTargetProvider
+	 */
+	public function testShouldCreateOrMergeIntoStaticContent( string $seed, bool $expects_foreign_mime_map ) {
+		$this->seed( $seed );
 
 		( new WebpIIS() )->add();
 
 		$this->assertStaticContentCount( 1 );
 		$this->assertMimeMapCount( '.webp', 1 );
+
+		if ( $expects_foreign_mime_map ) {
+			// Foreign mimeMap preserved.
+			$this->assertMimeMapCount( '.foo', 1 );
+		}
 	}
 
-	public function testShouldCreateSystemWebServerAndStaticContentWhenAbsent() {
-		$this->seed( '<configuration/>' );
-
-		( new WebpIIS() )->add();
-
-		$this->assertStaticContentCount( 1 );
-		$this->assertMimeMapCount( '.webp', 1 );
-	}
-
-	public function testShouldMergeIntoForeignStaticContent() {
-		$this->seed(
-			'<configuration><system.webServer><staticContent><mimeMap fileExtension=".foo" mimeType="image/foo" /></staticContent></system.webServer></configuration>'
-		);
-
-		( new WebpIIS() )->add();
-
-		$this->assertStaticContentCount( 1 );
-		$this->assertMimeMapCount( '.webp', 1 );
-		// Foreign mimeMap preserved.
-		$this->assertMimeMapCount( '.foo', 1 );
+	public function addTargetProvider(): array {
+		return [
+			'fresh file, staticContent absent' => [ '<configuration><system.webServer/></configuration>', false ],
+			'system.webServer absent'          => [ '<configuration/>', false ],
+			'foreign staticContent present'    => [
+				'<configuration><system.webServer><staticContent><mimeMap fileExtension=".foo" mimeType="image/foo" /></staticContent></system.webServer></configuration>',
+				true,
+			],
+		];
 	}
 
 	public function testShouldKeepSingleStaticContentWithBothWebpAndAvif() {

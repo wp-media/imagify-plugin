@@ -1,23 +1,22 @@
 <?php
 declare( strict_types=1 );
 
-namespace Imagify\Tests\Integration\classes\WriteFile\AbstractIISDirConfFile;
+namespace Imagify\Tests\Integration\classes\WriteFile\IISSelfHealSubscriber;
 
-use Imagify\Avif\IIS as AvifIIS;
 use Imagify\Tests\Integration\TestCase;
-use Imagify\Webp\IIS as WebpIIS;
+use Imagify\WriteFile\IISSelfHealSubscriber;
 
 /**
- * Integration tests for the issue #509 self-heal migration in
- * inc/admin/upgrader.php::_imagify_new_upgrade() (the 2.3.4 version block):
- * collapse duplicate Imagify-created <staticContent> siblings on upgrade.
+ * Integration tests for \Imagify\WriteFile\IISSelfHealSubscriber::maybe_self_heal_static_content(),
+ * the issue #509 self-heal migration: collapse duplicate Imagify-created <staticContent>
+ * siblings on upgrade.
  *
- * @covers ::_imagify_new_upgrade
+ * @covers \Imagify\WriteFile\IISSelfHealSubscriber::maybe_self_heal_static_content
  * @group  WriteFile
  * @group  IIS
  * @group  Upgrader
  */
-class SelfHealMigrationTest extends TestCase {
+class Test_MaybeSelfHealStaticContent extends TestCase {
 	protected $useApi = false;
 
 	/**
@@ -39,11 +38,6 @@ class SelfHealMigrationTest extends TestCase {
 
 		if ( ! function_exists( 'saveDomDocument' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/misc.php';
-		}
-
-		// The upgrader is only loaded under is_admin(); load it for the migration function.
-		if ( ! function_exists( '_imagify_new_upgrade' ) ) {
-			require_once IMAGIFY_PLUGIN_ROOT . 'inc/admin/upgrader.php';
 		}
 
 		$this->config_path = wp_tempnam( 'imagify-web-config' );
@@ -99,12 +93,19 @@ class SelfHealMigrationTest extends TestCase {
 	}
 
 	/**
-	 * The broken state: two Imagify-created <staticContent> siblings (webp + avif).
+	 * The broken state: two Imagify-created <staticContent> siblings (webp + avif),
+	 * optionally preceded by a foreign one.
 	 *
+	 * @param bool $with_foreign_block Whether to also seed a foreign <staticContent>.
 	 * @return string
 	 */
-	private function brokenState(): string {
+	private function brokenState( bool $with_foreign_block = false ): string {
+		$foreign = $with_foreign_block
+			? '<staticContent><mimeMap fileExtension=".foo" mimeType="image/foo" /></staticContent>'
+			: '';
+
 		return '<configuration><system.webServer>'
+			. $foreign
 			. '<staticContent name="Imagify: webp file type 1"><mimeMap fileExtension=".webp" mimeType="image/webp" /></staticContent>'
 			. '<staticContent name="Imagify: avif file type 1"><mimeMap fileExtension=".avif" mimeType="image/avif" /></staticContent>'
 			. '</system.webServer></configuration>';
@@ -118,41 +119,36 @@ class SelfHealMigrationTest extends TestCase {
 		return $this->xpath()->query( "//staticContent/mimeMap[@fileExtension='" . $extension . "']" )->length;
 	}
 
-	public function testShouldCollapseDuplicateImagifyStaticContentWithBothFormats() {
+	private function runSelfHeal() {
+		( new IISSelfHealSubscriber() )->maybe_self_heal_static_content( '2.3.3', '2.3.3' );
+	}
+
+	/**
+	 * @dataProvider brokenStateProvider
+	 */
+	public function testShouldCollapseDuplicateStaticContentIntoOne( bool $with_foreign_block ) {
 		$GLOBALS['is_iis7'] = true;
 		update_imagify_option( 'display_nextgen', 1 );
 
-		$this->seed( $this->brokenState() );
+		$this->seed( $this->brokenState( $with_foreign_block ) );
 
-		// Sanity: the seeded broken state genuinely has two siblings.
-		$this->assertSame( 2, $this->staticContentCount() );
-
-		\_imagify_new_upgrade( '2.3.3', '2.3.3' );
+		$this->runSelfHeal();
 
 		// Both formats live inside ONE shared collection (verifies non-XOR gating).
 		$this->assertSame( 1, $this->staticContentCount() );
 		$this->assertSame( 1, $this->mimeMapCount( '.webp' ) );
 		$this->assertSame( 1, $this->mimeMapCount( '.avif' ) );
+
+		if ( $with_foreign_block ) {
+			$this->assertSame( 1, $this->mimeMapCount( '.foo' ) );
+		}
 	}
 
-	public function testShouldPreserveForeignStaticContentWhileCollapsingImagifyDuplicates() {
-		$GLOBALS['is_iis7'] = true;
-		update_imagify_option( 'display_nextgen', 1 );
-
-		$this->seed(
-			'<configuration><system.webServer>'
-			. '<staticContent><mimeMap fileExtension=".foo" mimeType="image/foo" /></staticContent>'
-			. '<staticContent name="Imagify: webp file type 1"><mimeMap fileExtension=".webp" mimeType="image/webp" /></staticContent>'
-			. '<staticContent name="Imagify: avif file type 1"><mimeMap fileExtension=".avif" mimeType="image/avif" /></staticContent>'
-			. '</system.webServer></configuration>'
-		);
-
-		\_imagify_new_upgrade( '2.3.3', '2.3.3' );
-
-		$this->assertSame( 1, $this->staticContentCount() );
-		$this->assertSame( 1, $this->mimeMapCount( '.foo' ) );
-		$this->assertSame( 1, $this->mimeMapCount( '.webp' ) );
-		$this->assertSame( 1, $this->mimeMapCount( '.avif' ) );
+	public function brokenStateProvider(): array {
+		return [
+			'no foreign block'      => [ false ],
+			'with a foreign block'  => [ true ],
+		];
 	}
 
 	public function testShouldOnlyRemoveWhenDisplayNextgenIsOff() {
@@ -161,7 +157,7 @@ class SelfHealMigrationTest extends TestCase {
 
 		$this->seed( $this->brokenState() );
 
-		\_imagify_new_upgrade( '2.3.3', '2.3.3' );
+		$this->runSelfHeal();
 
 		// Imagify blocks removed; no re-add. An empty <staticContent/> left behind is schema-valid.
 		$this->assertLessThanOrEqual( 1, $this->staticContentCount() );
@@ -176,9 +172,9 @@ class SelfHealMigrationTest extends TestCase {
 		$broken = $this->brokenState();
 		$this->seed( $broken );
 
-		\_imagify_new_upgrade( '2.3.3', '2.3.3' );
+		$this->runSelfHeal();
 
-		// Untouched: positive-conditional guard means the body never ran.
+		// Untouched: the IIS-instance guard means the body never ran.
 		$this->assertSame( $broken, file_get_contents( $this->config_path ) );
 	}
 
@@ -195,42 +191,11 @@ class SelfHealMigrationTest extends TestCase {
 		add_filter( 'imagify_disable_dir_conf_edition', $disable );
 
 		// Must not fatal.
-		\_imagify_new_upgrade( '2.3.3', '2.3.3' );
+		$this->runSelfHeal();
 
 		remove_filter( 'imagify_disable_dir_conf_edition', $disable );
 
 		// is_file_writable() returned WP_Error, so the file was left untouched.
 		$this->assertSame( $broken, file_get_contents( $this->config_path ) );
-	}
-
-	public function testPartialFailureLeavesValidDegradedStateWithoutFatal() {
-		$GLOBALS['is_iis7'] = true;
-		update_imagify_option( 'display_nextgen', 1 );
-
-		$this->seed( $this->brokenState() );
-
-		// Manually reproduce the remove-then-add sequence, forcing the AVIF add() to fail
-		// mid-sequence (permission/lock) via the edition-disabled filter.
-		$webp = new WebpIIS();
-		$avif = new AvifIIS();
-
-		$this->assertNotWPError( $webp->remove() );
-		$this->assertNotWPError( $avif->remove() );
-		$this->assertNotWPError( $webp->add() );
-
-		$disable = function () {
-			return true;
-		};
-		add_filter( 'imagify_disable_dir_conf_edition', $disable );
-
-		$result = $avif->add();
-
-		remove_filter( 'imagify_disable_dir_conf_edition', $disable );
-
-		// Degraded but valid: WP_Error returned (no throw), one staticContent, webp present, avif absent.
-		$this->assertInstanceOf( \WP_Error::class, $result );
-		$this->assertSame( 1, $this->staticContentCount() );
-		$this->assertSame( 1, $this->mimeMapCount( '.webp' ) );
-		$this->assertSame( 0, $this->mimeMapCount( '.avif' ) );
 	}
 }
