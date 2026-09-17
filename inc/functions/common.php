@@ -283,6 +283,10 @@ function imagify_get_external_url( $target, $query_args = [] ) {
 			$url = $site_url . 'documentation/solve-imagemagick-gd-required/';
 			break;
 
+		case 'documentation-nextgen-delivery':
+			$url = $site_url . 'documentation/my-images-are-broken/';
+			break;
+
 		case 'register':
 			$partner = imagify_get_partner();
 

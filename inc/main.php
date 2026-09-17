@@ -7,23 +7,16 @@ if ( file_exists( IMAGIFY_PATH . 'vendor/autoload.php' ) ) {
 	require_once IMAGIFY_PATH . 'vendor/autoload.php';
 }
 
-// Support Composer dependency install where Strauss prefixing hasn't run.
-// Prefixed classes exist when installed as root package; unprefixed when installed as dependency.
-if ( ! class_exists( 'Imagify\Dependencies\League\Container\Container', false ) ) {
-	if ( class_exists( 'League\Container\Container', false ) ) {
-		class_alias( 'League\Container\Container', 'Imagify\Dependencies\League\Container\Container' );
-	}
-}
-if ( ! interface_exists( 'Imagify\Dependencies\League\Container\ServiceProvider\ServiceProviderInterface', false ) ) {
-	if ( interface_exists( 'League\Container\ServiceProvider\ServiceProviderInterface', false ) ) {
-		class_alias( 'League\Container\ServiceProvider\ServiceProviderInterface', 'Imagify\Dependencies\League\Container\ServiceProvider\ServiceProviderInterface' );
-	}
-}
-if ( ! class_exists( 'Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider', false ) ) {
-	if ( class_exists( 'League\Container\ServiceProvider\AbstractServiceProvider', false ) ) {
-		class_alias( 'League\Container\ServiceProvider\AbstractServiceProvider', 'Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider' );
-	}
-}
+/**
+ * When Imagify is installed as a Composer dependency, Strauss never runs and the
+ * prefixed dependency classes do not exist. Alias them to their unprefixed
+ * originals on demand. Registered after Composer's autoloader, so a normal
+ * install never reaches it.
+ */
+require_once IMAGIFY_PATH . 'inc/functions/dependencies.php';
+
+imagify_register_dependencies_fallback_autoloader();
+
 
 require_once IMAGIFY_PATH . 'inc/Dependencies/ActionScheduler/action-scheduler.php';
 
