@@ -73,9 +73,15 @@ abstract class AbstractIISDirConfFile extends AbstractWriteDirConfFile {
 		 * the ONLY removal mechanism for our leaf mimeMaps (they carry no `name`
 		 * marker), so it must run on BOTH the add() and remove() paths — hence it
 		 * sits before the empty-contents early return below.
+		 *
+		 * Scoped to the same absolute `/configuration/system.webServer/staticContent`
+		 * collection that get_node() targets when adding (see get_raw_new_contents()'s
+		 * `@parent` path). A relative `.//` query would also reach `<staticContent>`
+		 * collections nested in `<location>` blocks, which we never write to and must
+		 * not touch.
 		 */
 		foreach ( $this->get_owned_mime_extensions() as $extension ) {
-			$mime_nodes = $xpath->query( ".//staticContent/mimeMap[@fileExtension='" . $extension . "']" );
+			$mime_nodes = $xpath->query( "/configuration/system.webServer/staticContent/mimeMap[@fileExtension='" . $extension . "']" );
 
 			if ( $mime_nodes && $mime_nodes->length > 0 ) {
 				foreach ( $mime_nodes as $mime_node ) {

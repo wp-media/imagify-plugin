@@ -22,7 +22,7 @@ class IISSelfHealSubscriber implements SubscriberInterface {
 	 *
 	 * @var string
 	 */
-	const FIXED_IN_VERSION = '2.3.4';
+	const FIXED_IN_VERSION = '2.3.5';
 
 	/**
 	 * Returns an array of events this subscriber listens to.

@@ -15,6 +15,11 @@ class IIS extends AbstractIISDirConfFile {
 	/**
 	 * Name of the tag used as block delemiter.
 	 *
+	 * No longer written on the current leaf `<mimeMap>` (it carries no `name`
+	 * attribute), so it identifies nothing going forward. Still required so
+	 * insert_contents() can strip the legacy `<staticContent name="...">`
+	 * wrapper older versions wrote (issue #509) during the IIS self-heal.
+	 *
 	 * @var string
 	 * @since 1.9
 	 */
