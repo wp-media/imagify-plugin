@@ -324,6 +324,9 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 			$options->set( 'optimization_format', 'webp' );
 		}
 	}
+
+	// The 2.3.4 IIS `<staticContent>` self-heal migration (issue #509) is handled by
+	// \Imagify\WriteFile\IISSelfHealSubscriber, hooked on the same `imagify_upgrade` action.
 }
 add_action( 'imagify_upgrade', '_imagify_new_upgrade', 10, 2 );
 
