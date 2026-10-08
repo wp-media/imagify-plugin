@@ -96,10 +96,15 @@ class AdapterNotice implements SubscriberInterface {
 	/**
 	 * Tells whether the WordPress Abilities API (WP 6.9+) is available.
 	 *
+	 * Checks the same functions as the MCP OAuth boot gate in `imagify_init()`.
+	 *
 	 * @return bool
 	 */
 	protected function is_abilities_api_available(): bool {
-		return function_exists( 'wp_register_ability' );
+		return function_exists( 'wp_register_ability' )
+			&& function_exists( 'wp_get_ability' )
+			&& function_exists( 'wp_get_abilities' )
+			&& function_exists( 'wp_register_ability_category' );
 	}
 
 	/**
