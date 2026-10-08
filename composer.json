@@ -22,7 +22,6 @@
 		"sort-packages": true,
 		"allow-plugins": {
 			"composer/installers": true,
-			"cweagans/composer-patches": true,
 			"dealerdirect/phpcodesniffer-composer-installer": true,
 			"mnsami/composer-custom-directory-installer": true,
 			"phpstan/extension-installer": true
@@ -35,13 +34,11 @@
 	"require": {
 		"php": ">=7.4",
 		"composer/installers": "^1.0 || ^2.0",
-		"cweagans/composer-patches": "^1.7",
 		"deliciousbrains/wp-background-processing": "dev-master",
 		"league/container": "^4.2",
 		"woocommerce/action-scheduler": "^3.4",
-		"wordpress/mcp-adapter": "^0.5.0",
 		"wp-media/apply-filters-typed": "^1.0",
-		"wp-media/mcp-oauth": "^1.1",
+		"wp-media/mcp-oauth": "^2.0",
 		"wp-media/plugin-family": "^1.0",
 		"wp-media/wp-mixpanel": "^1.0"
 	},
@@ -86,13 +83,7 @@
 	},
 	"extra": {
 		"installer-paths": {
-			"./inc/Dependencies/ActionScheduler/": ["woocommerce/action-scheduler"],
-			"vendor/{$vendor}/{$name}/": ["wordpress/mcp-adapter"]
-		},
-		"patches": {
-			"wordpress/mcp-adapter": {
-				"Fix PHP 8.1+ deprecated static trait method call (upstream issue #182, fixed in upstream PR #193)": "patches/wordpress/mcp-adapter/fix-static-trait-call.patch"
-			}
+			"./inc/Dependencies/ActionScheduler/": ["woocommerce/action-scheduler"]
 		},
 		"strauss": {
 			"namespace_prefix": "Imagify\\Dependencies\\",

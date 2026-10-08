@@ -76,6 +76,8 @@ final class Notices {
 		'bulk-optimization-running',
 		'upsell-banner',
 		'upsell-admin-bar',
+		// Migration notice rendered by Imagify\MCP\AdapterNotice (not by this class). Listed so admin_post_dismiss_notice() accepts it. Dismissible.
+		'mcp-adapter',
 	];
 
 	/**

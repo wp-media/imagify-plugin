@@ -15,6 +15,7 @@ use Imagify\Abilities\RestoreMedia;
 use Imagify\Abilities\UpdateSettings;
 use Imagify\Bulk\Bulk;
 use Imagify\MCP\AbilitiesSubscriber;
+use Imagify\MCP\AdapterNotice;
 use Imagify\MCP\ConfigSubscriber;
 use Imagify\MCP\ServiceProvider;
 use Imagify\Tests\Integration\TestCase;
@@ -54,13 +55,31 @@ class Test_GetSubscribers extends TestCase {
 	}
 
 	/**
-	 * Tests that get_subscribers() returns exactly two subscribers.
+	 * Tests that get_subscribers() returns AdapterNotice.
 	 */
-	public function testReturnsTwoSubscribers(): void {
+	public function testReturnsAdapterNoticeSubscriber(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertContains( AdapterNotice::class, $provider->get_subscribers() );
+	}
+
+	/**
+	 * Tests that get_subscribers() returns exactly three subscribers.
+	 */
+	public function testReturnsThreeSubscribers(): void {
 		$provider    = new ServiceProvider();
 		$subscribers = $provider->get_subscribers();
 
-		$this->assertCount( 2, $subscribers );
+		$this->assertCount( 3, $subscribers );
+	}
+
+	/**
+	 * Tests that provides() returns true for AdapterNotice.
+	 */
+	public function testProvidesTrueForAdapterNotice(): void {
+		$provider = new ServiceProvider();
+
+		$this->assertTrue( $provider->provides( AdapterNotice::class ) );
 	}
 
 	/**
