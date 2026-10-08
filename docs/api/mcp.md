@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `Imagify\MCP` module integrates Imagify with the WordPress MCP (Model Context Protocol) adapter (`wordpress/mcp-adapter`). It exposes an MCP server endpoint that AI agents can use to discover and invoke Imagify abilities.
+The `Imagify\MCP` module integrates Imagify with the WordPress MCP (Model Context Protocol) adapter, provided by the standalone [MCP Adapter plugin](https://wordpress.org/plugins/mcp-adapter/). It exposes an MCP server endpoint that AI agents can use to discover and invoke Imagify abilities.
 
 The adapter's three built-in tools (`discover-abilities`, `get-ability-info`, `execute-ability`) are always present. Concrete Imagify abilities are defined under `classes/Abilities/`.
 
@@ -10,21 +10,24 @@ The adapter's three built-in tools (`discover-abilities`, `get-ability-info`, `e
 
 - PHP >= 7.4
 - WordPress >= 6.9 (Abilities API). On WP < 6.9 the module boots but all callbacks no-op silently.
-- The `wordpress/mcp-adapter` package (`^0.5.0`), installed via Composer.
+- The MCP Adapter plugin (WordPress.org) installed and active. Imagify does not bundle the adapter; without it, Imagify abilities are not served over MCP (they remain registered in the core Abilities API). Existing MCP users are pointed to it by a [migration notice](#migration-notice).
 
 ## Boot flow
 
-The adapter is booted inside `imagify_init()` in `inc/main.php`, **after** `$plugin->init($providers)` completes, guarded by:
+The MCP Adapter plugin boots itself; Imagify never calls `McpAdapter::instance()`. Imagify's subscribers (attached on `plugins_loaded` via `EventManager`) are always listening before the adapter fires `mcp_adapter_init` / `wp_abilities_api_*` actions from `rest_api_init` (priority 15).
+
+The only boot step left in `imagify_init()` (`inc/main.php`, run on `plugins_loaded`, **after** `$plugin->init($providers)`) is the OAuth layer, guarded by:
 
 ```php
-class_exists( \WP\MCP\Core\McpAdapter::class )
+class_exists( 'WP\MCP\Core\McpAdapter' )
+&& class_exists( \WPMedia\MCP\OAuth\Bootstrap::class )
 && function_exists( 'wp_register_ability' )
 && function_exists( 'wp_get_ability' )
 && function_exists( 'wp_get_abilities' )
 && function_exists( 'wp_register_ability_category' )
 ```
 
-`McpAdapter::instance()` defers its real work to `rest_api_init` (priority 15), so Imagify's subscribers (attached on `plugins_loaded` via `EventManager`) are always listening before the adapter fires `mcp_adapter_init` / `wp_abilities_api_*` actions.
+The adapter class is checked by string, so any loaded MCP Adapter satisfies it, whichever plugin provides it, and no adapter symbol is referenced by Imagify.
 
 ## REST endpoint
 
@@ -32,24 +35,18 @@ class_exists( \WP\MCP\Core\McpAdapter::class )
 |-----|-------|
 | Path | `/wp-json/mcp/mcp-adapter-default-server` |
 | Method | GET / POST (JSON-RPC) |
-| Registered by | `wordpress/mcp-adapter` `DefaultServerFactory::create()` on `mcp_adapter_init` |
+| Registered by | MCP Adapter plugin, `DefaultServerFactory::create()` on `mcp_adapter_init` |
 
 The endpoint returns HTTP 200 with the adapter's default three-tool set plus all registered Imagify abilities.
 
 ## OAuth (Claude Desktop / MCP clients)
 
-Imagify bundles the shared `wp-media/mcp-oauth` library (`^1.0.2`) to expose an OAuth 2.1 + PKCE authenticated MCP server for clients such as Claude Desktop. Imagify contains **no custom OAuth code** — the library owns the entire flow (authorize / consent / token / revoke endpoints, `.well-known` discovery documents, and the isolated server registration).
+Imagify bundles the shared `wp-media/mcp-oauth` library (`^2.0`) to expose an OAuth 2.1 + PKCE authenticated MCP server for clients such as Claude Desktop. Imagify contains **no custom OAuth code** — the library owns the entire flow (authorize / consent / token / revoke endpoints, `.well-known` discovery documents, and the isolated server registration).
 
-The library is booted in `imagify_init()` in `inc/main.php`, guarded by `class_exists( \WPMedia\MCP\OAuth\Bootstrap::class )`, inside the same `$can_boot_mcp_adapter` guard as the `wordpress/mcp-adapter` boot it depends on:
+The library is booted in `imagify_init()` in `inc/main.php`, with the guard described in [Boot flow](#boot-flow). The library wires nothing when no MCP Adapter is loaded:
 
 ```php
-if ( $can_boot_mcp_adapter ) {
-    \WP\MCP\Core\McpAdapter::instance();
-
-    if ( class_exists( \WPMedia\MCP\OAuth\Bootstrap::class ) ) {
-        \WPMedia\MCP\OAuth\Bootstrap::instance();
-    }
-}
+\WPMedia\MCP\OAuth\Bootstrap::instance();
 ```
 
 The server is enabled by default from `wp-media/mcp-oauth` v1.0.2 onward, so no `wpmedia_mcp_oauth_server_enabled` filter is needed. It can still be disabled by filtering that value to `false`.
@@ -82,6 +79,7 @@ The OAuth server's fixed tool list is only the three generic mcp-adapter tools, 
 | `Imagify\Abilities\UpdateSettings` | MCP ability: updates one or more Imagify configuration settings. |
 | `Imagify\MCP\ConfigSubscriber` | Customizes the MCP server name and description via `mcp_adapter_default_server_config`. |
 | `Imagify\MCP\AbilitiesSubscriber` | Registers the `imagify` ability category and all injected abilities. |
+| `Imagify\MCP\AdapterNotice` | Prints the [migration notice](#migration-notice) on `admin_notices`. |
 | `Imagify\MCP\ServiceProvider` | DI wiring — registered in `config/providers.php`. |
 
 ## AbilitiesInterface contract
@@ -515,6 +513,16 @@ The `wp` and `custom-folders` objects are always present. Fields default to `0` 
 4. Add the class to the `$provides` array in `ServiceProvider`.
 5. Document the new ability in this file under "Registered abilities".
 
-## Patch
+## Migration notice
 
-`wordpress/mcp-adapter` contains a PHP 8.1+ deprecated static-trait-method call in `RequestRouter.php`. The patch at `patches/wordpress/mcp-adapter/fix-static-trait-call.patch` is applied automatically during `composer install` via `cweagans/composer-patches`.
+`Imagify\MCP\AdapterNotice` (`classes/MCP/AdapterNotice.php`, view `views/notice-mcp-adapter.php`) asks existing MCP users to install the MCP Adapter plugin. It is a plain WordPress notice (`notice notice-info`) printed on `admin_notices`, not through the branded `Imagify\Notices\Notices` pipeline. It links to the plugin installer search (`plugin-install.php?s=mcp-adapter&tab=search&type=term`).
+
+`should_display(): bool` is true only when all of these hold:
+
+1. The Abilities API is available (`is_abilities_api_available()`, protected).
+2. The current user has `install_plugins` and the Imagify `manage` capability.
+3. No MCP Adapter is loaded (`is_adapter_loaded()`, protected, `class_exists( 'WP\MCP\Core\McpAdapter' )`).
+4. The user has used MCP: any `mcp_refresh_jti_*` user meta (OAuth connection), or a non-empty `mcp_adapter_sessions` (legacy, network-global) or `mcp_adapter_sessions_{blog_id}` user meta.
+5. The notice is not dismissed.
+
+Dismissal reuses the Imagify endpoint (`get_imagify_admin_url( 'dismiss-notice', 'mcp-adapter' )`): the id `mcp-adapter` is listed in `Imagify\Notices\Notices::$notice_ids`, and the dismissal is stored per user in the `_imagify_ignore_notices` user meta. STDIO (WP-CLI) users leave no session or OAuth meta and do not see the notice.
