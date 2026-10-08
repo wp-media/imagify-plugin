@@ -7,14 +7,14 @@ use Imagify\MCP\ServiceProvider;
 use Imagify\Tests\Integration\TestCase;
 
 /**
- * Tests for \Imagify\MCP\ServiceProvider::get_subscribers().
+ * Tests for \Imagify\MCP\ServiceProvider::provides().
  *
  * Integration suite: the Strauss-prefixed AbstractServiceProvider is not loaded by the unit bootstrap.
  *
- * @covers \Imagify\MCP\ServiceProvider::get_subscribers
+ * @covers \Imagify\MCP\ServiceProvider::provides
  * @group  MCP
  */
-class Test_GetSubscribers extends TestCase {
+class Test_Provides extends TestCase {
 
 	/**
 	 * Whether to use the Imagify API for these tests.
@@ -24,13 +24,14 @@ class Test_GetSubscribers extends TestCase {
 	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
-	 * Tests the subscribers returned by the provider.
+	 * Tests whether the provider provides the given service.
 	 *
 	 * @dataProvider configTestData
 	 *
-	 * @param array $expected Expected subscribers.
+	 * @param string $service  Service identifier.
+	 * @param bool   $expected Whether the provider provides it.
 	 */
-	public function testShouldReturnExpected( $expected ): void {
-		$this->assertSame( $expected, ( new ServiceProvider() )->get_subscribers() );
+	public function testShouldReturnExpected( $service, $expected ): void {
+		$this->assertSame( $expected, ( new ServiceProvider() )->provides( $service ) );
 	}
 }
