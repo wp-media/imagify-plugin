@@ -435,7 +435,7 @@ class WP extends AbstractMedia {
 		$metadata = wp_get_attachment_metadata( $this->id );
 
 		if ( ! is_array( $metadata ) ) {
-			$row = [];
+			$metadata = [];
 		}
 
 		if ( isset( $metadata['width'], $metadata['height'] ) && $metadata['width'] === $dimensions['width'] && $metadata['height'] === $dimensions['height'] ) {
