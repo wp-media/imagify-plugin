@@ -42,8 +42,7 @@ function imagify_init() {
 
 	$plugin->init( $providers );
 
-	// Boot the MCP OAuth library only when the standalone MCP Adapter plugin is loaded (checked by string, it is not bundled).
-	// Subscribers are wired first: the adapter fires its init actions from `rest_api_init` priority 15.
+	// The MCP Adapter is no longer bundled: boot MCP OAuth only when the standalone plugin is loaded.
 	if (
 		class_exists( 'WP\MCP\Core\McpAdapter' )
 		&& class_exists( \WPMedia\MCP\OAuth\Bootstrap::class )

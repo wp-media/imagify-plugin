@@ -1,10 +1,10 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 /**
- * Variables passed from AdapterNotice::display():
+ * Variables passed from AdapterNotice::display().
  *
- * @var string $install_url URL of the MCP Adapter search on the plugin installer screen.
- * @var string $dismiss_url Nonce-protected URL dismissing the notice for the current user.
+ * @var string $install_url
+ * @var string $dismiss_url
  */
 ?>
 <div class="notice notice-info imagify-mcp-adapter-notice">

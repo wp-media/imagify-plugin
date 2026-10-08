@@ -24,7 +24,7 @@ class Test_ImagifyInit extends TestCase {
 	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
-	 * Skips the tests when an MCP Adapter is loaded, as the gate is then legitimately open.
+	 * Skips the tests when an MCP Adapter is loaded.
 	 *
 	 * @return void
 	 */

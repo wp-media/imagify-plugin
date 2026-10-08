@@ -9,37 +9,18 @@ use Imagify\Notices\Notices;
 /**
  * Asks existing MCP users to install the standalone MCP Adapter plugin.
  *
- * Imagify no longer bundles the MCP Adapter. The notice is only shown to users
- * who have already used MCP, while no MCP Adapter is loaded. It is dismissed
- * through the shared Imagify dismiss endpoint (see `Notices::$notice_ids`).
- *
  * @since 2.3.5
  */
 class AdapterNotice implements SubscriberInterface {
 
-	/**
-	 * Notice identifier, as registered in `Notices::$notice_ids`.
-	 *
-	 * @var string
-	 */
 	const NOTICE_ID = 'mcp-adapter';
 
-	/**
-	 * User meta key (legacy, network-global) holding the MCP Adapter sessions.
-	 *
-	 * @var string
-	 */
 	const SESSIONS_META_KEY = 'mcp_adapter_sessions';
 
-	/**
-	 * User meta key prefix of the OAuth refresh tokens issued to MCP clients.
-	 *
-	 * @var string
-	 */
 	const REFRESH_META_PREFIX = 'mcp_refresh_jti_';
 
 	/**
-	 * Returns the list of events this subscriber wants to listen to.
+	 * Returns the events this subscriber listens to.
 	 *
 	 * @return array<string, string>
 	 */
@@ -51,7 +32,7 @@ class AdapterNotice implements SubscriberInterface {
 	}
 
 	/**
-	 * Prints the notice when it applies to the current user.
+	 * Prints the notice.
 	 *
 	 * @return void
 	 */
@@ -67,7 +48,7 @@ class AdapterNotice implements SubscriberInterface {
 	}
 
 	/**
-	 * Tells whether the notice must be displayed to the current user.
+	 * Tells whether the notice applies to the current user.
 	 *
 	 * @return bool
 	 */
@@ -94,9 +75,7 @@ class AdapterNotice implements SubscriberInterface {
 	}
 
 	/**
-	 * Tells whether the WordPress Abilities API (WP 6.9+) is available.
-	 *
-	 * Checks the same functions as the MCP OAuth boot gate in `imagify_init()`.
+	 * Tells whether the Abilities API is available (same checks as `imagify_init()`).
 	 *
 	 * @return bool
 	 */
@@ -110,8 +89,6 @@ class AdapterNotice implements SubscriberInterface {
 	/**
 	 * Tells whether an MCP Adapter is loaded, whichever plugin provides it.
 	 *
-	 * The class is referenced by string so no adapter symbol is needed here.
-	 *
 	 * @return bool
 	 */
 	protected function is_adapter_loaded(): bool {
@@ -119,11 +96,7 @@ class AdapterNotice implements SubscriberInterface {
 	}
 
 	/**
-	 * Tells whether the user has already used MCP.
-	 *
-	 * A user has used MCP when they hold an OAuth refresh token, or a non-empty
-	 * list of MCP Adapter sessions (legacy network-global key, or the one scoped
-	 * to the current site).
+	 * Tells whether the user holds an MCP OAuth refresh token or MCP Adapter sessions.
 	 *
 	 * @param int $user_id User ID.
 	 * @return bool

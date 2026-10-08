@@ -23,7 +23,7 @@ class Test_Display extends TestCase {
 	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
-	 * Sets up the environment: the notice is meaningless when an adapter is loaded or without the Abilities API.
+	 * Skips the tests when an MCP Adapter is loaded or the Abilities API is missing.
 	 */
 	public function set_up() {
 		parent::set_up();

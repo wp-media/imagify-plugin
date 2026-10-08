@@ -1,26 +1,22 @@
 <?php
 
 $defaults = [
-	// Every flag defaults to the "notice applies" state, so each row only overrides what it checks.
 	'abilities_api'   => true,
 	'install_plugins' => true,
 	'manage'          => true,
 	'adapter_loaded'  => false,
 	'user_id'         => 7,
 	'blog_id'         => 1,
-	// Maps a user meta key to its stored value (what get_user_meta( $id, $key, true ) returns).
 	'meta'            => [],
 ];
 
 return [
 	'test_data' => [
-		// Legacy network-global sessions key holding sessions.
 		'shouldDisplayWhenLegacySessionsKeyIsNotEmpty'   => [
 			'config'   => array_merge( $defaults, [ 'meta' => [ 'mcp_adapter_sessions' => [ 'session-1' ] ] ] ),
 			'expected' => true,
 		],
 
-		// Sessions key scoped to the current site (MCP Adapter 0.7 on multisite).
 		'shouldDisplayWhenSessionsKeyOfCurrentBlogIsNotEmpty' => [
 			'config'   => array_merge(
 				$defaults,
@@ -32,13 +28,11 @@ return [
 			'expected' => true,
 		],
 
-		// An OAuth refresh token proves a connected client, even without sessions.
 		'shouldDisplayWhenOnlyAnOAuthRefreshTokenExists' => [
 			'config'   => array_merge( $defaults, [ 'meta' => [ 'mcp_refresh_jti_abc123' => 'x' ] ] ),
 			'expected' => true,
 		],
 
-		// Dismissing another notice does not hide this one.
 		'shouldDisplayWhenAnotherNoticeIsDismissed'      => [
 			'config'   => array_merge(
 				$defaults,
@@ -111,7 +105,6 @@ return [
 			'expected' => false,
 		],
 
-		// Another site's sessions on a multisite network are not this site's usage.
 		'shouldNotDisplayWhenSessionsKeyBelongsToAnotherBlog' => [
 			'config'   => array_merge(
 				$defaults,

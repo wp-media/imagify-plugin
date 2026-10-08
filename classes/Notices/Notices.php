@@ -76,7 +76,7 @@ final class Notices {
 		'bulk-optimization-running',
 		'upsell-banner',
 		'upsell-admin-bar',
-		// Rendered by Imagify\MCP\AdapterNotice; listed here so the dismiss endpoint accepts it.
+		// Displayed by Imagify\MCP\AdapterNotice.
 		'mcp-adapter',
 	];
 
