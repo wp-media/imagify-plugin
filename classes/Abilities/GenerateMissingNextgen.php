@@ -180,8 +180,8 @@ class GenerateMissingNextgen extends AbstractAbility implements CreditConsumingA
 		$start_time = microtime( true );
 		$result     = $this->guard_credit_confirmation(
 			$args,
-			function ( array $a ) {
-				return $this->do_execute( $a );
+			function () {
+				return $this->do_execute();
 			}
 		);
 
@@ -203,10 +203,9 @@ class GenerateMissingNextgen extends AbstractAbility implements CreditConsumingA
 	 * a closure without a `[$this, 'method']` callable-array visibility problem
 	 * (this method is private, and the guard lives on AbstractAbility).
 	 *
-	 * @param array $args Input arguments (unused by the underlying Bulk call).
 	 * @return array{status: string, queued_count: int, error_message: string|null}
 	 */
-	private function do_execute( array $args ): array {
+	private function do_execute(): array {
 		$contexts = $this->bulk->get_contexts();
 		$formats  = imagify_nextgen_images_formats();
 		$result   = $this->bulk->run_generate_nextgen( $contexts, $formats );
