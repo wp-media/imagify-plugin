@@ -106,7 +106,7 @@ With lighter images across your site, you get faster load times and better perfo
  
 Running multiple websites? With MCP (Model Context Protocol), you can get answers about your websites from a single conversation with your AI tool. 
 
-Connect Imagify to an MCP-compatible AI tool such as Claude, GitHub Copilot, Codex, or ChatGPT, and it can access your actual Imagify data to answer questions, troubleshoot issues, and optimize or restore a single image when you ask. MCP is enabled by default, so there's nothing to configure in Imagify itself. Just connect from your AI tool and you're ready to go. 
+Connect Imagify to an MCP-compatible AI tool such as Claude, GitHub Copilot, Codex, or ChatGPT, and it can access your actual Imagify data to answer questions, troubleshoot issues, and optimize or restore a single image when you ask. MCP needs the free [MCP Adapter plugin](https://wordpress.org/plugins/mcp-adapter/) to be installed and activated. Once it is active, there's nothing to configure in Imagify itself: just connect from your AI tool and you're ready to go. 
 
 Ask questions like: 
 * "How many images still need optimization?" 
@@ -117,7 +117,7 @@ Your AI tool can also optimize or restore a single image when you ask it to. Not
 
 MCP is included in all Imagify plans, free and paid, at no extra cost. It works alongside the plugin, not instead of it. Bulk optimization and settings changes still happen in the Imagify plugin itself.  
 
-Requires WordPress 6.9+ and Imagify 2.3+. 
+Requires WordPress 6.9+, Imagify 2.3+ and the [MCP Adapter plugin](https://wordpress.org/plugins/mcp-adapter/). 
 
 === 💬 What Do Our Users Think of Imagify? ===
 
