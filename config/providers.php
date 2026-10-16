@@ -12,4 +12,5 @@ return [
 	'Imagify\Tools\ServiceProvider',
 	'Imagify\MCP\ServiceProvider',
 	'Imagify\Tracking\ServiceProvider',
+	'Imagify\WriteFile\ServiceProvider',
 ];
