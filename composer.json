@@ -48,7 +48,7 @@
 	"require-dev": {
 		"php": ">=7.4",
 		"dealerdirect/phpcodesniffer-composer-installer": "^1",
-		"mnsami/composer-custom-directory-installer": "^2.0",
+		"mnsami/composer-custom-directory-installer": "~2.2.1",
 		"php-stubs/wordpress-tests-stubs": "^6.5",
 		"phpcompatibility/phpcompatibility-wp": "^2.0",
 		"phpstan/extension-installer": "^1.3",
