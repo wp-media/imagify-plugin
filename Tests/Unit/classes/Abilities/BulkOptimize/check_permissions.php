@@ -13,10 +13,9 @@ use Mockery;
 /**
  * Tests for \Imagify\Abilities\BulkOptimize::check_permissions().
  *
- * Since Option B (finding 4), `check_permissions()` is inherited unmodified from
- * `AbstractAbility` and delegates to this class's `has_permission()` override; a
- * denial fires `imagify_mcp_permission_denied` with `get_required_capability()`'s
- * value (`manage_options`, not the base class's `manage` default).
+ * `check_permissions()` is inherited from `AbstractAbility`: it requires the
+ * `manage` capability in the `wp` context, then `bulk-optimize` in the context
+ * named by the input.
  *
  * @covers \Imagify\Abilities\BulkOptimize::check_permissions
  * @group  MCP
@@ -24,51 +23,85 @@ use Mockery;
 class Test_CheckPermissions extends TestCase {
 
 	/**
-	 * Tests that check_permissions() returns true for a user with manage_options.
+	 * Context/describer pairs checked so far, as "context:describer".
+	 *
+	 * @var string[]
 	 */
-	public function testReturnsTrueWhenUserCanManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( true );
+	private $checked = [];
 
-		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
-		$this->assertTrue( $ability->check_permissions() );
+	/**
+	 * Stubs imagify_get_context() so only the given "context:describer" pairs are allowed.
+	 *
+	 * @param string[] $allowed Allowed pairs, e.g. [ 'wp:manage', 'wp:bulk-optimize' ].
+	 * @return void
+	 */
+	private function allow( array $allowed ): void {
+		$checked = &$this->checked;
+
+		Functions\when( 'imagify_get_context' )->alias(
+			function ( $name ) use ( $allowed, &$checked ) {
+				return new class( $name, $allowed, $checked ) {
+					private $name;
+					private $allowed;
+					private $checked;
+
+					public function __construct( $name, array $allowed, array &$checked ) {
+						$this->name    = $name;
+						$this->allowed = $allowed;
+						$this->checked = &$checked;
+					}
+
+					public function current_user_can( $describer ): bool {
+						$this->checked[] = "{$this->name}:{$describer}";
+
+						return in_array( "{$this->name}:{$describer}", $this->allowed, true );
+					}
+				};
+			}
+		);
+	}
+
+	private function make_ability(): BulkOptimize {
+		return new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
+	}
+
+	public function testReturnsTrueWhenUserCanBulkOptimizeRequestedContext(): void {
+		$this->allow( [ 'wp:manage', 'custom-folders:bulk-optimize' ] );
+
+		$this->assertTrue( $this->make_ability()->check_permissions( [ 'context' => 'custom-folders' ] ) );
+		$this->assertSame( [ 'wp:manage', 'custom-folders:bulk-optimize' ], $this->checked );
+	}
+
+	public function testReturnsFalseWhenUserCannotManage(): void {
+		$this->allow( [ 'wp:bulk-optimize' ] );
+
+		$this->assertFalse( $this->make_ability()->check_permissions( [ 'context' => 'wp' ] ) );
 	}
 
 	/**
-	 * Tests that check_permissions() returns false for a user without manage_options.
+	 * A user allowed on the media library is still denied custom folders when
+	 * the custom-folders capability is not granted (e.g. a subsite admin).
 	 */
-	public function testReturnsFalseWhenUserCannotManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( false );
+	public function testReturnsFalseWhenUserCannotBulkOptimizeCustomFolders(): void {
+		$this->allow( [ 'wp:manage', 'wp:bulk-optimize' ] );
 
-		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
-		$this->assertFalse( $ability->check_permissions() );
+		$this->assertFalse( $this->make_ability()->check_permissions( [ 'context' => 'custom-folders' ] ) );
 	}
 
-	/**
-	 * Finding 4 regression guard: get_required_capability() returns 'manage_options', matching
-	 * has_permission()'s real capability check, so a denial reports the accurate capability
-	 * (not the AbstractAbility default of 'manage').
-	 */
-	public function testGetRequiredCapabilityReturnsManageOptions(): void {
-		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
+	public function testChecksWpContextWhenNoInputIsGiven(): void {
+		$this->allow( [ 'wp:manage', 'wp:bulk-optimize' ] );
 
-		$reflection = new \ReflectionMethod( $ability, 'get_required_capability' );
-		$reflection->setAccessible( true );
-
-		$this->assertSame( 'manage_options', $reflection->invoke( $ability ) );
+		$this->assertTrue( $this->make_ability()->check_permissions() );
+		$this->assertSame( [ 'wp:manage', 'wp:bulk-optimize' ], $this->checked );
 	}
 
-	/**
-	 * Finding 4 regression guard: a denial fires imagify_mcp_permission_denied with
-	 * 'manage_options', not the inherited 'manage' default.
-	 */
-	public function testDenialFiresPermissionDeniedActionWithManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( false );
+	public function testDenialFiresPermissionDeniedAction(): void {
+		$this->allow( [ 'wp:manage' ] );
 
 		Actions\expectDone( 'imagify_mcp_permission_denied' )
 			->once()
-			->with( BulkOptimize::ABILITY_ID, BulkOptimize::ABILITY_NAME, 'manage_options' );
+			->with( BulkOptimize::ABILITY_ID, BulkOptimize::ABILITY_NAME, 'manage' );
 
-		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
-		$ability->check_permissions();
+		$this->make_ability()->check_permissions( [ 'context' => 'custom-folders' ] );
 	}
 }

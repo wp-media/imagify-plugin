@@ -130,19 +130,25 @@ class BulkOptimize extends AbstractAbility implements CreditConsumingAbilityInte
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool True when the current user has the `manage_options` capability.
+	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */
 	protected function has_permission(): bool {
-		return (bool) current_user_can( 'manage_options' );
+		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
 	}
 
 	/**
-	 * Returns the capability required to execute this ability.
+	 * Check if the current user may bulk-optimize the requested context.
 	 *
-	 * @return string
+	 * Mirrors the legacy bulk AJAX handler, which checks `bulk-optimize` on the
+	 * context being optimized.
+	 *
+	 * @param array $input Input arguments. Expects `context` (string).
+	 * @return bool
 	 */
-	protected function get_required_capability(): string {
-		return 'manage_options';
+	protected function has_input_permission( array $input ): bool {
+		$context = ( 'custom-folders' === ( $input['context'] ?? '' ) ) ? 'custom-folders' : 'wp';
+
+		return imagify_get_context( $context )->current_user_can( 'bulk-optimize' );
 	}
 
 	/**

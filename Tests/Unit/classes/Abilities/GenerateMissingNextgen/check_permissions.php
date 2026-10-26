@@ -14,10 +14,9 @@ use Mockery;
 /**
  * Tests for \Imagify\Abilities\GenerateMissingNextgen::check_permissions().
  *
- * Since Option B (finding 4), `check_permissions()` is inherited unmodified from
- * `AbstractAbility` and delegates to this class's `has_permission()` override; a
- * denial fires `imagify_mcp_permission_denied` with `get_required_capability()`'s
- * value (`manage_options`, not the base class's `manage` default).
+ * `check_permissions()` is inherited from `AbstractAbility` and delegates to
+ * this class's `has_permission()` override: the `manage` capability in the `wp`
+ * context, plus `bulk-optimize` in every context the generation runs on.
  *
  * @covers \Imagify\Abilities\GenerateMissingNextgen::check_permissions
  * @group  MCP
@@ -25,62 +24,82 @@ use Mockery;
 class Test_CheckPermissions extends TestCase {
 
 	/**
-	 * Builds a GenerateMissingNextgen instance with a permissive StatInterface mock.
+	 * Builds a GenerateMissingNextgen instance whose Bulk returns the given contexts.
 	 *
+	 * @param string[] $contexts Contexts returned by the stubbed get_contexts().
 	 * @return GenerateMissingNextgen
 	 */
-	private function make_ability(): GenerateMissingNextgen {
-		$stat = Mockery::mock( StatInterface::class );
+	private function make_ability( array $contexts ): GenerateMissingNextgen {
+		$ability = new GenerateMissingNextgen( Bulk::get_instance(), Mockery::mock( StatInterface::class ) );
 
-		return new GenerateMissingNextgen( Bulk::get_instance(), $stat );
+		$stub = new class( $contexts ) {
+			private $contexts;
+
+			public function __construct( array $contexts ) {
+				$this->contexts = $contexts;
+			}
+
+			public function get_contexts(): array {
+				return $this->contexts;
+			}
+		};
+
+		$this->setPropertyValue( 'bulk', $ability, $stub );
+
+		return $ability;
 	}
 
 	/**
-	 * Tests that check_permissions() returns true for a user with manage_options.
+	 * Stubs imagify_get_context() so only the given "context:describer" pairs are allowed.
+	 *
+	 * @param string[] $allowed Allowed pairs, e.g. [ 'wp:manage', 'wp:bulk-optimize' ].
+	 * @return void
 	 */
-	public function testReturnsTrueWhenUserCanManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( true );
+	private function allow( array $allowed ): void {
+		Functions\when( 'imagify_get_context' )->alias(
+			function ( $name ) use ( $allowed ) {
+				return new class( $name, $allowed ) {
+					private $name;
+					private $allowed;
 
-		$ability = $this->make_ability();
-		$this->assertTrue( $ability->check_permissions() );
+					public function __construct( $name, array $allowed ) {
+						$this->name    = $name;
+						$this->allowed = $allowed;
+					}
+
+					public function current_user_can( $describer ): bool {
+						return in_array( "{$this->name}:{$describer}", $this->allowed, true );
+					}
+				};
+			}
+		);
 	}
 
-	/**
-	 * Tests that check_permissions() returns false for a user without manage_options.
-	 */
-	public function testReturnsFalseWhenUserCannotManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( false );
+	public function testReturnsTrueWhenUserCanBulkOptimizeEveryContext(): void {
+		$this->allow( [ 'wp:manage', 'wp:bulk-optimize', 'custom-folders:bulk-optimize' ] );
 
-		$ability = $this->make_ability();
-		$this->assertFalse( $ability->check_permissions() );
+		$this->assertTrue( $this->make_ability( [ 'wp', 'custom-folders' ] )->check_permissions() );
 	}
 
-	/**
-	 * Finding 4 regression guard: get_required_capability() returns 'manage_options', matching
-	 * has_permission()'s real capability check, so a denial reports the accurate capability
-	 * (not the AbstractAbility default of 'manage').
-	 */
-	public function testGetRequiredCapabilityReturnsManageOptions(): void {
-		$ability = $this->make_ability();
+	public function testReturnsFalseWhenUserCannotManage(): void {
+		$this->allow( [ 'wp:bulk-optimize' ] );
 
-		$reflection = new \ReflectionMethod( $ability, 'get_required_capability' );
-		$reflection->setAccessible( true );
-
-		$this->assertSame( 'manage_options', $reflection->invoke( $ability ) );
+		$this->assertFalse( $this->make_ability( [ 'wp' ] )->check_permissions() );
 	}
 
-	/**
-	 * Finding 4 regression guard: a denial fires imagify_mcp_permission_denied with
-	 * 'manage_options', not the inherited 'manage' default.
-	 */
-	public function testDenialFiresPermissionDeniedActionWithManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( false );
+	public function testReturnsFalseWhenUserCannotBulkOptimizeCustomFolders(): void {
+		$this->allow( [ 'wp:manage', 'wp:bulk-optimize' ] );
+
+		$this->assertFalse( $this->make_ability( [ 'wp', 'custom-folders' ] )->check_permissions() );
+	}
+
+	public function testDenialFiresPermissionDeniedAction(): void {
+		$this->allow( [] );
 
 		Actions\expectDone( 'imagify_mcp_permission_denied' )
 			->once()
-			->with( GenerateMissingNextgen::ABILITY_ID, GenerateMissingNextgen::ABILITY_NAME, 'manage_options' );
+			->with( GenerateMissingNextgen::ABILITY_ID, GenerateMissingNextgen::ABILITY_NAME, 'manage' );
 
-		$ability = $this->make_ability();
-		$ability->check_permissions();
+		$this->make_ability( [ 'wp' ] )->check_permissions();
 	}
 }
