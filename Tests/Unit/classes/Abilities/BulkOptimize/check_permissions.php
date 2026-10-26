@@ -23,24 +23,19 @@ use Mockery;
 class Test_CheckPermissions extends TestCase {
 
 	/**
-	 * Context/describer pairs checked so far, as "context:describer".
+	 * Test: the permission result and the context capabilities checked for the given input.
 	 *
-	 * @var string[]
-	 */
-	private $checked = [];
-
-	/**
-	 * Stubs imagify_get_context() so only the given "context:describer" pairs are allowed.
+	 * @dataProvider configTestData
 	 *
-	 * @param string[] $allowed Allowed pairs, e.g. [ 'wp:manage', 'wp:bulk-optimize' ].
-	 * @return void
+	 * @param array $config   The allowed "context:describer" pairs and the ability input.
+	 * @param array $expected The permission result and the "context:describer" pairs checked, in order.
 	 */
-	private function allow( array $allowed ): void {
-		$checked = &$this->checked;
+	public function testShouldReturnExpected( $config, $expected ): void {
+		$checked = [];
 
 		Functions\when( 'imagify_get_context' )->alias(
-			function ( $name ) use ( $allowed, &$checked ) {
-				return new class( $name, $allowed, $checked ) {
+			function ( $name ) use ( $config, &$checked ) {
+				return new class( $name, $config['allowed'], $checked ) {
 					private $name;
 					private $allowed;
 					private $checked;
@@ -59,49 +54,14 @@ class Test_CheckPermissions extends TestCase {
 				};
 			}
 		);
-	}
-
-	private function make_ability(): BulkOptimize {
-		return new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
-	}
-
-	public function testReturnsTrueWhenUserCanBulkOptimizeRequestedContext(): void {
-		$this->allow( [ 'wp:manage', 'custom-folders:bulk-optimize' ] );
-
-		$this->assertTrue( $this->make_ability()->check_permissions( [ 'context' => 'custom-folders' ] ) );
-		$this->assertSame( [ 'wp:manage', 'custom-folders:bulk-optimize' ], $this->checked );
-	}
-
-	public function testReturnsFalseWhenUserCannotManage(): void {
-		$this->allow( [ 'wp:bulk-optimize' ] );
-
-		$this->assertFalse( $this->make_ability()->check_permissions( [ 'context' => 'wp' ] ) );
-	}
-
-	/**
-	 * A user allowed on the media library is still denied custom folders when
-	 * the custom-folders capability is not granted (e.g. a subsite admin).
-	 */
-	public function testReturnsFalseWhenUserCannotBulkOptimizeCustomFolders(): void {
-		$this->allow( [ 'wp:manage', 'wp:bulk-optimize' ] );
-
-		$this->assertFalse( $this->make_ability()->check_permissions( [ 'context' => 'custom-folders' ] ) );
-	}
-
-	public function testChecksWpContextWhenNoInputIsGiven(): void {
-		$this->allow( [ 'wp:manage', 'wp:bulk-optimize' ] );
-
-		$this->assertTrue( $this->make_ability()->check_permissions() );
-		$this->assertSame( [ 'wp:manage', 'wp:bulk-optimize' ], $this->checked );
-	}
-
-	public function testDenialFiresPermissionDeniedAction(): void {
-		$this->allow( [ 'wp:manage' ] );
 
 		Actions\expectDone( 'imagify_mcp_permission_denied' )
-			->once()
+			->times( $expected['allowed'] ? 0 : 1 )
 			->with( BulkOptimize::ABILITY_ID, BulkOptimize::ABILITY_NAME, 'manage' );
 
-		$this->make_ability()->check_permissions( [ 'context' => 'custom-folders' ] );
+		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
+
+		$this->assertSame( $expected['allowed'], $ability->check_permissions( $config['input'] ) );
+		$this->assertSame( $expected['checked'], $checked );
 	}
 }

@@ -26,6 +26,38 @@ class Test_CheckPermissions extends TestCase {
 	}
 
 	/**
+	 * Test: the permission result for the given media context, input and allowed capabilities.
+	 *
+	 * @dataProvider configTestData
+	 *
+	 * @param array $config   The context of the resolved media (null when nothing resolves), the input and the allowed "context:describer" pairs.
+	 * @param bool  $expected The permission result.
+	 */
+	public function testShouldReturnExpected( $config, $expected ): void {
+		Functions\when( 'imagify_get_context' )->alias(
+			function ( $name ) use ( $config ) {
+				return new class( $name, $config['allowed'] ) {
+					private $name;
+					private $allowed;
+
+					public function __construct( $name, array $allowed ) {
+						$this->name    = $name;
+						$this->allowed = $allowed;
+					}
+
+					public function current_user_can( $describer, $media_id = null ): bool {
+						return in_array( "{$this->name}:{$describer}", $this->allowed, true );
+					}
+				};
+			}
+		);
+
+		$ability = $this->make_ability( $config['media_context'] );
+
+		$this->assertSame( $expected, $ability->check_permissions( $config['input'] ) );
+	}
+
+	/**
 	 * Builds a RestoreMedia instance whose get_process() returns a process for
 	 * a media in the given context, or null.
 	 *
@@ -73,70 +105,5 @@ class Test_CheckPermissions extends TestCase {
 				return $this->process;
 			}
 		};
-	}
-
-	/**
-	 * Stubs imagify_get_context() so only the given "context:describer" pairs are allowed.
-	 *
-	 * @param string[] $allowed Allowed pairs, e.g. [ 'wp:manage', 'wp:manual-restore' ].
-	 * @return void
-	 */
-	private function allow( array $allowed ): void {
-		Functions\when( 'imagify_get_context' )->alias(
-			function ( $name ) use ( $allowed ) {
-				return new class( $name, $allowed ) {
-					private $name;
-					private $allowed;
-
-					public function __construct( $name, array $allowed ) {
-						$this->name    = $name;
-						$this->allowed = $allowed;
-					}
-
-					public function current_user_can( $describer, $media_id = null ): bool {
-						return in_array( "{$this->name}:{$describer}", $this->allowed, true );
-					}
-				};
-			}
-		);
-	}
-
-	public function testReturnsFalseWhenUserCannotManage(): void {
-		$this->allow( [ 'wp:manual-restore' ] );
-
-		$this->assertFalse( $this->make_ability( 'wp' )->check_permissions( [ 'media_id' => 12 ] ) );
-	}
-
-	public function testReturnsTrueWhenUserCanRestoreLibraryMedia(): void {
-		$this->allow( [ 'wp:manage', 'wp:manual-restore' ] );
-
-		$this->assertTrue( $this->make_ability( 'wp' )->check_permissions( [ 'media_id' => 12 ] ) );
-	}
-
-	public function testReturnsTrueWhenUserCanRestoreCustomFolderFile(): void {
-		$this->allow( [ 'wp:manage', 'custom-folders:manual-restore' ] );
-
-		$this->assertTrue( $this->make_ability( 'custom-folders' )->check_permissions( [ 'media_id' => 12 ] ) );
-	}
-
-	/**
-	 * A user allowed on the media library is still denied a custom-folder file
-	 * when the custom-folders capability is not granted (e.g. a subsite admin).
-	 */
-	public function testReturnsFalseWhenUserCannotRestoreCustomFolderFile(): void {
-		$this->allow( [ 'wp:manage', 'wp:manual-restore' ] );
-
-		$this->assertFalse( $this->make_ability( 'custom-folders' )->check_permissions( [ 'media_id' => 12 ] ) );
-	}
-
-	/**
-	 * When nothing resolves there is nothing to restore: the manager is let
-	 * through so execute() can return its actionable error.
-	 */
-	public function testReturnsTrueForManagerWhenMediaDoesNotResolve(): void {
-		$this->allow( [ 'wp:manage' ] );
-
-		$this->assertTrue( $this->make_ability( null )->check_permissions( [ 'media_id' => 12 ] ) );
-		$this->assertTrue( $this->make_ability( 'custom-folders' )->check_permissions() );
 	}
 }
