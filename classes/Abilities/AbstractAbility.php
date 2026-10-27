@@ -61,6 +61,10 @@ abstract class AbstractAbility implements AbilitiesInterface {
 	 * when the ability declares an input schema. Override this when the
 	 * required capability depends on what the input targets (e.g. a context).
 	 *
+	 * The default allows any input, so `$input` is unused here by design.
+	 *
+	 * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+	 *
 	 * @param array $input Input arguments of the call, or an empty array when none were given.
 	 * @return bool True when the current user may act on the given input.
 	 */
