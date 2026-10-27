@@ -74,6 +74,7 @@ abstract class AbstractAbility implements AbilitiesInterface {
 	 * Delegates the capability check to has_permission() and
 	 * has_input_permission(), and fires `imagify_mcp_permission_denied` when
 	 * access is denied so that tracking and logging subscribers can react.
+	 * The action reports get_required_capability() whichever check denied.
 	 *
 	 * @param mixed $input Input arguments passed by the WP Abilities API, if any.
 	 * @return bool True when the current user may execute the ability.
