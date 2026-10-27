@@ -34,18 +34,12 @@ class CheckPermissionsTest extends TestCase {
 	 *
 	 * @dataProvider configTestData
 	 *
-	 * @param array $config   The site type required, whether the admin is a super admin, whether
+	 * @param array $config   The site type required (see skipUnlessSite()), whether the admin is a super admin, whether
 	 *                        `imagify_capacity` denies custom folders, and the ability input.
 	 * @param array $expected Whether the call is denied.
 	 */
 	public function testShouldReturnExpected( $config, $expected ): void {
-		if ( 'multisite' === $config['site'] && ! is_multisite() ) {
-			$this->markTestSkipped( 'Multisite only.' );
-		}
-
-		if ( 'single' === $config['site'] && is_multisite() ) {
-			$this->markTestSkipped( 'Single site only.' );
-		}
+		$this->skipUnlessSite( $config['site'] );
 
 		$user_id = self::factory()->user->create( [ 'role' => 'administrator' ] );
 
