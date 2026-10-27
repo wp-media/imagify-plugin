@@ -89,13 +89,13 @@ namespace Imagify\Abilities;
 
 interface AbilitiesInterface {
     public function register(): void;
-    public function check_permissions(): bool;
+    public function check_permissions( $input = null ): bool;
     public function execute();
 }
 ```
 
 - `register()` — calls `wp_register_ability()` (guarded by `function_exists`) wiring `execute_callback` and `permission_callback`.
-- `check_permissions()` — returns `current_user_can( 'manage_options' )` (per epic #1097 spec).
+- `check_permissions( $input = null )` — checks capabilities through `imagify_get_context( ... )->current_user_can( ... )`, so the `imagify_capacity` filter and multisite rules apply. The WP Abilities API passes the call's input, so the check can depend on what the input targets.
 - `execute()` — returns the tool-result value (array, string, or any MCP-compatible type).
 
 ## Registered abilities
@@ -188,7 +188,7 @@ success/error values.
 ### `imagify/bulk-optimize`
 
 **Class:** `Imagify\Abilities\BulkOptimize`  
-**Capability required:** `manage_options`  
+**Capability required:** the Imagify `manage` capability (`manage_network_options` when Imagify is network-activated), plus `bulk-optimize` in the requested `context` (`manage_network_options` for `custom-folders` on multisite)  
 **Exposed via REST:** yes (`show_in_rest: true`)  
 **MCP discoverable:** yes (`mcp.public: true`)
 
@@ -220,7 +220,7 @@ label always matches the branch the counts came from.
 ### `imagify/generate-missing-nextgen`
 
 **Class:** `Imagify\Abilities\GenerateMissingNextgen`  
-**Capability required:** `manage_options`  
+**Capability required:** the Imagify `manage` capability (`manage_network_options` when Imagify is network-activated), plus `bulk-optimize` in every context the generation runs on (`manage_network_options` for custom folders on multisite)  
 **Exposed via REST:** yes (`show_in_rest: true`)  
 **MCP discoverable:** yes (`mcp.public: true`)
 
@@ -289,7 +289,7 @@ a single media always costs exactly one unit, so `impact.total` is omitted from 
 ### `imagify/restore-media`
 
 **Class:** `Imagify\Abilities\RestoreMedia`  
-**Capability required:** `manage_options`  
+**Capability required:** the Imagify `manage` capability (`manage_network_options` when Imagify is network-activated), plus `manual-restore` on the resolved media (`edit_post` for a library attachment, `manage_network_options` for a custom-folder file on multisite)  
 **Exposed via REST:** yes (`show_in_rest: true`)  
 **MCP discoverable:** yes (`mcp.public: true`)
 
