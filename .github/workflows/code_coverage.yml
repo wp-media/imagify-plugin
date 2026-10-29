@@ -65,7 +65,10 @@ jobs:
     - name: Code Coverage
       run: composer code-coverage
 
+    # Dependabot-triggered runs only get Dependabot secrets, so the Codacy token
+    # is empty and the upload always fails. The coverage run above still applies.
     - name: Run codacy-coverage-reporter
+      if: github.actor != 'dependabot[bot]'
       uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
