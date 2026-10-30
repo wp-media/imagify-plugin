@@ -38,6 +38,7 @@ function get_imagify_localize_script_translations( $context ) {
 					'signupText'                  => __( 'Enter your email to get an API key:', 'imagify' ),
 					'signupConfirmButtonText'     => __( 'Sign Up', 'imagify' ),
 					'signupErrorEmptyEmail'       => __( 'You need to specify an email!', 'imagify' ),
+					'signupErrorRequestFailed'    => __( 'The request failed. Please check your connection and try again.', 'imagify' ),
 					/* translators: Don't use escaped HTML entities here (like &nbsp;). */
 					'signupSuccessTitle'          => __( 'Congratulations!', 'imagify' ),
 					'signupSuccessText'           => __( 'Your account has been successfully created. Please check your mailbox, you are going to receive an email with API key.', 'imagify' ),

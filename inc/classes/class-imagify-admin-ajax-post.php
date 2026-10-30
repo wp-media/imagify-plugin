@@ -804,9 +804,18 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 			imagify_die( __( 'Empty email address.', 'imagify' ) );
 		}
 
-		$email = sanitize_email( wp_unslash( $_GET['email'] ) );
+		$raw_email = trim( wp_unslash( $_GET['email'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized on the next line.
+		$email     = sanitize_email( $raw_email );
 
-		if ( ! is_email( $email ) ) {
+		/**
+		 * Reject anything sanitization had to alter, instead of signing the user up
+		 * under the altered address. sanitize_email() silently strips characters that
+		 * are invalid in a local part - a space, for instance - so "hanna may21@x.me"
+		 * would otherwise become the valid-looking "hannamay21@x.me" and an account
+		 * would be created for an address the user never typed, with the confirmation
+		 * mail going somewhere they cannot read.
+		 */
+		if ( ! is_email( $email ) || $email !== $raw_email ) {
 			imagify_die( __( 'Not a valid email address.', 'imagify' ) );
 		}
 

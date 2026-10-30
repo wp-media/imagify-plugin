@@ -2,7 +2,7 @@
 Contributors: wp_rocket, imagify
 Tags: optimize images, image optimization, compress images, convert webp, convert AVIF
 Tested up to: 7.1
-Stable tag: 2.3.4
+Stable tag: 2.3.5
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -106,7 +106,7 @@ With lighter images across your site, you get faster load times and better perfo
  
 Running multiple websites? With MCP (Model Context Protocol), you can get answers about your websites from a single conversation with your AI tool. 
 
-Connect Imagify to an MCP-compatible AI tool such as Claude, GitHub Copilot, Codex, or ChatGPT, and it can access your actual Imagify data to answer questions, troubleshoot issues, and optimize or restore a single image when you ask. MCP is enabled by default, so there's nothing to configure in Imagify itself. Just connect from your AI tool and you're ready to go. 
+Connect Imagify to an MCP-compatible AI tool such as Claude, GitHub Copilot, Codex, or ChatGPT, and it can access your actual Imagify data to answer questions, troubleshoot issues, and optimize or restore a single image when you ask. MCP needs the free [MCP Adapter plugin](https://wordpress.org/plugins/mcp-adapter/) to be installed and activated. Once it is active, there's nothing to configure in Imagify itself: just connect from your AI tool and you're ready to go. 
 
 Ask questions like: 
 * "How many images still need optimization?" 
@@ -117,7 +117,7 @@ Your AI tool can also optimize or restore a single image when you ask it to. Not
 
 MCP is included in all Imagify plans, free and paid, at no extra cost. It works alongside the plugin, not instead of it. Bulk optimization and settings changes still happen in the Imagify plugin itself.  
 
-Requires WordPress 6.9+ and Imagify 2.3+. 
+Requires WordPress 6.9+, Imagify 2.3+ and the [MCP Adapter plugin](https://wordpress.org/plugins/mcp-adapter/). 
 
 === 💬 What Do Our Users Think of Imagify? ===
 
@@ -327,6 +327,14 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.3.5 =
+- Enhancement: Imagify no longer bundles the MCP Adapter. To keep using MCP, install the standalone MCP Adapter plugin; a dismissible notice guides existing MCP users.
+- Enhancement: Clearer Next-Gen display settings: rewrite rules are recommended for sites without a CDN, and the layout risks of `<picture>` tags are explained with a link to the documentation.
+- Fix: No more "Another version of MCP Adapter is already loaded" conflict with the standalone MCP Adapter plugin.
+- Fix: MCP abilities now use the same capability checks as the rest of Imagify.
+- Fix: Signing up with an email address containing a "+" alias now creates the account for the right address.
+- Fix: Imagify no longer causes a fatal error when installed as a Composer dependency (e.g. Bedrock).
+
 = 2.3.4 =
 - Fix: Optimization no longer stops when a next-gen destination path is unavailable.
 - Fix: The "Settings saved" notice is back on multisite when Imagify is network-activated.

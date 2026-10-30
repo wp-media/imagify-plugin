@@ -124,14 +124,11 @@ final class Actions {
 
 		$bulk        = Bulk::get_instance();
 		$groups_data = [];
-		$types       = [];
 		$total       = 0;
 		$remaining   = 0;
 		$percentage  = 0;
 
 		foreach ( $data[ $imagifybeat_id ] as $group ) {
-			$types[ $group['groupID'] . '|' . $group['context'] ] = true;
-
 			$transient = get_transient( "imagify_{$group['context']}_optimize_running" );
 
 			if ( false !== $transient ) {

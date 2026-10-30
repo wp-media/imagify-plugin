@@ -125,19 +125,23 @@ class GenerateMissingNextgen extends AbstractAbility implements CreditConsumingA
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool True if the current user has the `manage_options` capability.
+	 * Requires the Imagify `manage` capability, plus `bulk-optimize` on every
+	 * context the generation runs on, as the legacy AJAX handler does.
+	 *
+	 * @return bool True if the current user may generate next-gen versions for every context.
 	 */
 	protected function has_permission(): bool {
-		return (bool) current_user_can( 'manage_options' );
-	}
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			return false;
+		}
 
-	/**
-	 * Returns the capability required to execute this ability.
-	 *
-	 * @return string
-	 */
-	protected function get_required_capability(): string {
-		return 'manage_options';
+		foreach ( $this->bulk->get_contexts() as $context ) {
+			if ( ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -180,8 +184,8 @@ class GenerateMissingNextgen extends AbstractAbility implements CreditConsumingA
 		$start_time = microtime( true );
 		$result     = $this->guard_credit_confirmation(
 			$args,
-			function ( array $a ) {
-				return $this->do_execute( $a );
+			function () {
+				return $this->do_execute();
 			}
 		);
 
@@ -203,10 +207,9 @@ class GenerateMissingNextgen extends AbstractAbility implements CreditConsumingA
 	 * a closure without a `[$this, 'method']` callable-array visibility problem
 	 * (this method is private, and the guard lives on AbstractAbility).
 	 *
-	 * @param array $args Input arguments (unused by the underlying Bulk call).
 	 * @return array{status: string, queued_count: int, error_message: string|null}
 	 */
-	private function do_execute( array $args ): array {
+	private function do_execute(): array {
 		$contexts = $this->bulk->get_contexts();
 		$formats  = imagify_nextgen_images_formats();
 		$result   = $this->bulk->run_generate_nextgen( $contexts, $formats );
