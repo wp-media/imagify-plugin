@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Imagify\Tests\Integration\Functions;
 
 use Imagify\Tests\Integration\TestCase;
-use ReflectionProperty;
 use WPMedia\MCP\OAuth\Auth\SecretManager;
 use WPMedia\MCP\OAuth\Bootstrap;
 
@@ -40,8 +39,7 @@ class Test_ImagifyInit extends TestCase {
 	 * Tests that the MCP OAuth library is neither instantiated nor wired without an MCP Adapter.
 	 */
 	public function testShouldNotBootMcpOAuthWithoutAdapter(): void {
-		$instance = new ReflectionProperty( Bootstrap::class, 'instance' );
-		$instance->setAccessible( true );
+		$instance = $this->get_reflective_property( 'instance', Bootstrap::class );
 
 		$this->assertFalse( $instance->isInitialized(), 'Bootstrap::instance() must not be called without an MCP Adapter.' );
 		$this->assertFalse( has_action( 'init', [ SecretManager::class, 'ensure_secret' ] ) );

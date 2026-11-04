@@ -47,8 +47,7 @@ class Test_ResolveTrigger extends TestCase {
 	 * @return string
 	 */
 	private function call_resolve_trigger( array $item ): string {
-		$ref    = new \ReflectionMethod( $this->tracking, 'resolve_trigger' );
-		$ref->setAccessible( true );
+		$ref    = $this->get_reflective_method( 'resolve_trigger', Tracking::class );
 		return $ref->invoke( $this->tracking, $item );
 	}
 

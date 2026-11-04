@@ -67,8 +67,7 @@ class Test_OptimizeHookIntegration extends TestCase {
 		$this->mock_tracking = $this->createMock( Tracking::class );
 
 		// Inject mock into the real Subscriber's private $tracking property.
-		$tracking_property = new \ReflectionProperty( Subscriber::class, 'tracking' );
-		$tracking_property->setAccessible( true );
+		$tracking_property = $this->get_reflective_property( 'tracking', Subscriber::class );
 		$tracking_property->setValue( $subscriber, $this->mock_tracking );
 	}
 
@@ -117,8 +116,7 @@ class Test_OptimizeHookIntegration extends TestCase {
 	private function job_with_process( $process ): MediaOptimization {
 		$job = MediaOptimization::get_instance();
 
-		$property = new \ReflectionProperty( MediaOptimization::class, 'optimization_process' );
-		$property->setAccessible( true );
+		$property = $this->get_reflective_property( 'optimization_process', MediaOptimization::class );
 		$property->setValue( $job, $process );
 
 		return $job;
@@ -132,8 +130,7 @@ class Test_OptimizeHookIntegration extends TestCase {
 	 * @return array
 	 */
 	private function run_task_after( MediaOptimization $job, array $item ): array {
-		$method = new \ReflectionMethod( MediaOptimization::class, 'task_after' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'task_after', MediaOptimization::class );
 
 		return $method->invoke( $job, $item );
 	}

@@ -38,12 +38,10 @@ class MediaOptimizationTest extends TestCase {
 		$reflection = new ReflectionClass( MediaOptimization::class );
 		$instance   = $reflection->newInstanceWithoutConstructor();
 
-		$identifier = $reflection->getProperty( 'identifier' );
-		$identifier->setAccessible( true );
+		$identifier = $this->get_reflective_property( 'identifier', MediaOptimization::class );
 		$identifier->setValue( $instance, 'imagify_optimize_media' );
 
-		$allowed = $reflection->getProperty( 'allowed_batch_data_classes' );
-		$allowed->setAccessible( true );
+		$allowed = $this->get_reflective_property( 'allowed_batch_data_classes', MediaOptimization::class );
 		$allowed->setValue( $instance, true );
 
 		return $instance;
@@ -59,8 +57,7 @@ class MediaOptimizationTest extends TestCase {
 	 * @return string
 	 */
 	private function callGenerateKey( MediaOptimization $instance, int $length = 64, string $key = 'batch' ): string {
-		$method = ( new ReflectionClass( $instance ) )->getMethod( 'generate_key' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'generate_key', MediaOptimization::class );
 
 		return $method->invoke( $instance, $length, $key );
 	}
@@ -72,8 +69,7 @@ class MediaOptimizationTest extends TestCase {
 	 * @param array             $data     The queue items.
 	 */
 	private function setQueuedData( MediaOptimization $instance, array $data ): void {
-		$property = ( new ReflectionClass( $instance ) )->getProperty( 'data' );
-		$property->setAccessible( true );
+		$property = $this->get_reflective_property( 'data', $instance );
 		$property->setValue( $instance, $data );
 	}
 
@@ -188,8 +184,7 @@ class MediaOptimizationTest extends TestCase {
 
 		$wpdb->shouldReceive( 'get_results' )->once()->with( 'PREPARED_SQL' )->andReturn( [] );
 
-		$method = ( new ReflectionClass( $instance ) )->getMethod( 'get_batches' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'get_batches', MediaOptimization::class );
 
 		$result = $method->invoke( $instance );
 

@@ -14,6 +14,8 @@ return [
 				'text' => 'First sentence.<br />Second sentence.',
 			],
 			'expected' => 'First sentence.<br />Second sentence.',
+			// WordPress 7.2+ KSES (HTML API) serializes void elements without the trailing slash.
+			'expected_html_api' => 'First sentence.<br>Second sentence.',
 		],
 
 		'shouldKeepCodeTags' => [
@@ -42,6 +44,8 @@ return [
 				'text' => 'Harmless.<script>alert(1)</script>',
 			],
 			'expected' => 'Harmless.alert(1)',
+			// WordPress 7.2+ KSES (HTML API) drops the script contents along with the tag.
+			'expected_html_api' => 'Harmless.',
 		],
 
 		'shouldStripEventHandlerAttribute' => [
@@ -77,6 +81,8 @@ return [
 				'text' => 'medium - 300 &times; 300',
 			],
 			'expected' => 'medium - 300 &times; 300',
+			// WordPress 7.2+ KSES (HTML API) decodes named character references it does not need to escape.
+			'expected_html_api' => 'medium - 300 × 300',
 		],
 
 		'shouldKeepAnAlreadyEscapedLabelInert' => [
@@ -84,6 +90,8 @@ return [
 				'text' => 'My &lt;b&gt;size&lt;/b&gt; - 100 &times; 100',
 			],
 			'expected' => 'My &lt;b&gt;size&lt;/b&gt; - 100 &times; 100',
+			// WordPress 7.2+ KSES (HTML API) keeps &lt; and &gt; escaped but decodes &times;.
+			'expected_html_api' => 'My &lt;b&gt;size&lt;/b&gt; - 100 × 100',
 		],
 
 		'shouldLeaveAJavascriptTemplatePlaceholderAlone' => [

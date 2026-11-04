@@ -55,8 +55,7 @@ class IsFileFormatTest extends TestCase {
 
 		$file = $this->make_file( $filesystem );
 
-		$method = ( new \ReflectionClass( File::class ) )->getMethod( 'is_file_format' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'is_file_format', File::class );
 
 		$result = $method->invoke( $file, $this->path, $config['format'] );
 

@@ -85,8 +85,7 @@ namespace Imagify\Tests\Unit\inc\ThirdParty\WPRocket\Main {
 		 * @return \ReflectionProperty
 		 */
 		private function getFilesystemInstanceProperty(): \ReflectionProperty {
-			$property = new \ReflectionProperty( \Imagify_Filesystem::class, 'instance' );
-			$property->setAccessible( true );
+			$property = $this->get_reflective_property( 'instance', \Imagify_Filesystem::class );
 
 			return $property;
 		}
