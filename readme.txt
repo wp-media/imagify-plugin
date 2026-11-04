@@ -333,7 +333,6 @@ You can report any security bugs found in the source code of the site-reviews pl
 - Fix: No more "Another version of MCP Adapter is already loaded" conflict with the standalone MCP Adapter plugin.
 - Fix: MCP abilities now use the same capability checks as the rest of Imagify.
 - Fix: Signing up with an email address containing a "+" alias now creates the account for the right address.
-- Fix: Imagify no longer causes a fatal error when installed as a Composer dependency (e.g. Bedrock).
 
 = 2.3.4 =
 - Fix: Optimization no longer stops when a next-gen destination path is unavailable.
