@@ -29,8 +29,7 @@ class AddSiteTemporaryNoticeTest extends TestCase {
 		parent::setUp();
 
 		// Reset the singleton instance before each test.
-		$ref = new \ReflectionProperty( Notices::class, 'instance' );
-		$ref->setAccessible( true );
+		$ref = $this->get_reflective_property( 'instance', Notices::class );
 		$ref->setValue( null, null );
 
 		$this->notices = Notices::get_instance();

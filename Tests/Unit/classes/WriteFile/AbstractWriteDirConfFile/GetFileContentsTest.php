@@ -53,8 +53,7 @@ class GetFileContentsTest extends TestCase {
 			->makePartial()
 			->shouldAllowMockingProtectedMethods();
 
-		$reflection = new \ReflectionProperty( AbstractWriteDirConfFile::class, 'filesystem' );
-		$reflection->setAccessible( true );
+		$reflection = $this->get_reflective_property( 'filesystem', AbstractWriteDirConfFile::class );
 		$reflection->setValue( $sut, $filesystem );
 
 		return $sut;
@@ -67,8 +66,7 @@ class GetFileContentsTest extends TestCase {
 	 * @return mixed
 	 */
 	private function invokeGetFileContents( $sut ) {
-		$method = new \ReflectionMethod( AbstractWriteDirConfFile::class, 'get_file_contents' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'get_file_contents', AbstractWriteDirConfFile::class );
 		return $method->invoke( $sut );
 	}
 
