@@ -15,7 +15,7 @@ use RuntimeException;
  * @covers \Imagify\Imagifybeat\Core::core_handler
  * @group  Imagifybeat
  */
-class Test_CoreHandler extends TestCase {
+class CoreHandlerTest extends TestCase {
 	use ImagifybeatMocksTrait;
 
 	/**

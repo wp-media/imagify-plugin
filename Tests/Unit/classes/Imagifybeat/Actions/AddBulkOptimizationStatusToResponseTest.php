@@ -15,7 +15,7 @@ use Imagify\Tests\Unit\TestCase;
  * @covers \Imagify\Imagifybeat\Actions::add_bulk_optimization_status_to_response
  * @group  Imagifybeat
  */
-class Test_AddBulkOptimizationStatusToResponse extends TestCase {
+class AddBulkOptimizationStatusToResponseTest extends TestCase {
 	use ImagifybeatMocksTrait;
 
 	/**

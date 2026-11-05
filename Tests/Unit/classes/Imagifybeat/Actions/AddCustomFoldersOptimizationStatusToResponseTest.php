@@ -17,7 +17,7 @@ use Mockery;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class Test_AddCustomFoldersOptimizationStatusToResponse extends TestCase {
+class AddCustomFoldersOptimizationStatusToResponseTest extends TestCase {
 	use ImagifybeatMocksTrait;
 
 	/**

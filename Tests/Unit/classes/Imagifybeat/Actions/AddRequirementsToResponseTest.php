@@ -17,7 +17,7 @@ use Mockery;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-class Test_AddRequirementsToResponse extends TestCase {
+class AddRequirementsToResponseTest extends TestCase {
 	use ImagifybeatMocksTrait;
 
 	/**

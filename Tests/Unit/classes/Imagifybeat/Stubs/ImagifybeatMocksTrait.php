@@ -11,6 +11,20 @@ use Imagify\Bulk\Bulk;
  */
 trait ImagifybeatMocksTrait {
 	/**
+	 * Load the fixture from the Unit/ subfolder of the fixtures folder, e.g.
+	 * Tests/Fixtures/classes/Imagifybeat/Core/Unit/CoreHandlerTest.php: the integration test of the same method has
+	 * the same class name, and its fixture sits one folder up.
+	 *
+	 * @return void
+	 */
+	protected function loadTestDataConfig() {
+		$file    = ( new \ReflectionObject( $this ) )->getFileName();
+		$fixture = str_replace( '/Tests/Unit/', '/Tests/Fixtures/', dirname( $file ) ) . '/Unit/' . basename( $file );
+
+		$this->config = is_readable( $fixture ) ? require $fixture : [];
+	}
+
+	/**
 	 * Mock imagify_get_context(): each context allows the given "context:describer" pairs.
 	 * Context names are sanitized, as imagify_get_context() does.
 	 *

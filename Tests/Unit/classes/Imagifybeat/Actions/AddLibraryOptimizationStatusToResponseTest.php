@@ -14,7 +14,7 @@ use Imagify\Tests\Unit\TestCase;
  * @covers \Imagify\Imagifybeat\Actions::add_library_optimization_status_to_response
  * @group  Imagifybeat
  */
-class Test_AddLibraryOptimizationStatusToResponse extends TestCase {
+class AddLibraryOptimizationStatusToResponseTest extends TestCase {
 	use ImagifybeatMocksTrait;
 
 	/**

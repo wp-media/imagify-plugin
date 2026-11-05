@@ -13,7 +13,7 @@ use Imagify\Tests\Unit\TestCase;
  * @covers \Imagify\Imagifybeat\Core::current_user_can_use_imagifybeat
  * @group  Imagifybeat
  */
-class Test_CurrentUserCanUseImagifybeat extends TestCase {
+class CurrentUserCanUseImagifybeatTest extends TestCase {
 	use ImagifybeatMocksTrait;
 
 	/**
