@@ -135,4 +135,30 @@ abstract class TestCase extends BaseTestCase {
 	protected function resetPropertyValue( $property, $class ) {
 		return $this->setPropertyValue( $property, $class, null );
 	}
+
+	/**
+	 * Skip the test unless it runs on the given type of site.
+	 *
+	 * Multisite runs need `WP_MULTISITE=1`; network-activated runs also need
+	 * `IMAGIFY_TESTS_NETWORK_ACTIVE=1` (see bootstrap.php).
+	 *
+	 * @param string $site 'single', 'multisite' (Imagify not network-activated), 'network-active', or 'any'.
+	 *
+	 * @return void
+	 */
+	protected function skipUnlessSite( string $site ) {
+		if ( 'any' === $site ) {
+			return;
+		}
+
+		$current = 'single';
+
+		if ( is_multisite() ) {
+			$current = imagify_is_active_for_network() ? 'network-active' : 'multisite';
+		}
+
+		if ( $site !== $current ) {
+			$this->markTestSkipped( "Runs on a {$site} site only." );
+		}
+	}
 }

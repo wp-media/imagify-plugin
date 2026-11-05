@@ -125,10 +125,9 @@ class OptimizeMedia extends AbstractAbility implements CreditConsumingAbilityInt
 	 * Routes through Imagify's capability abstraction so the `imagify_capacity`
 	 * filter and multisite network-admin logic are honoured.
 	 *
-	 * Note: `manual-optimize` is not used here because `check_permissions()` is
-	 * called before `execute()` and receives no `media_id`, making the underlying
-	 * `edit_post` check ambiguous. The `manage` descriptor is the correct top-level
-	 * gate consistent with existing AJAX equivalents.
+	 * Note: only the media library is optimized here, so the `manage` descriptor
+	 * is the top-level gate, consistent with the other abilities. No per-media
+	 * `manual-optimize` check is made on the input.
 	 *
 	 * @return bool True when the current user has the Imagify `manage` capability.
 	 */

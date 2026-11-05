@@ -28,9 +28,13 @@ interface AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
+	 * Wired as the ability's `permission_callback`: the WP Abilities API passes
+	 * the call's input when the ability declares an input schema.
+	 *
+	 * @param mixed $input Input arguments passed by the WP Abilities API, if any.
 	 * @return bool True if the current user may execute the ability.
 	 */
-	public function check_permissions(): bool;
+	public function check_permissions( $input = null ): bool;
 
 	/**
 	 * Execute the ability and return the tool result.

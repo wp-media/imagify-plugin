@@ -13,10 +13,9 @@ use Mockery;
 /**
  * Tests for \Imagify\Abilities\BulkOptimize::check_permissions().
  *
- * Since Option B (finding 4), `check_permissions()` is inherited unmodified from
- * `AbstractAbility` and delegates to this class's `has_permission()` override; a
- * denial fires `imagify_mcp_permission_denied` with `get_required_capability()`'s
- * value (`manage_options`, not the base class's `manage` default).
+ * `check_permissions()` is inherited from `AbstractAbility`: it requires the
+ * `manage` capability in the `wp` context, then `bulk-optimize` in the context
+ * named by the input.
  *
  * @covers \Imagify\Abilities\BulkOptimize::check_permissions
  * @group  MCP
@@ -24,51 +23,45 @@ use Mockery;
 class Test_CheckPermissions extends TestCase {
 
 	/**
-	 * Tests that check_permissions() returns true for a user with manage_options.
+	 * Test: the permission result and the context capabilities checked for the given input.
+	 *
+	 * @dataProvider configTestData
+	 *
+	 * @param array $config   The allowed "context:describer" pairs and the ability input.
+	 * @param array $expected The permission result and the "context:describer" pairs checked, in order.
 	 */
-	public function testReturnsTrueWhenUserCanManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( true );
+	public function testShouldReturnExpected( $config, $expected ): void {
+		$checked = [];
 
-		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
-		$this->assertTrue( $ability->check_permissions() );
-	}
+		Functions\when( 'imagify_get_context' )->alias(
+			function ( $name ) use ( $config, &$checked ) {
+				return new class( $name, $config['allowed'], $checked ) {
+					private $name;
+					private $allowed;
+					private $checked;
 
-	/**
-	 * Tests that check_permissions() returns false for a user without manage_options.
-	 */
-	public function testReturnsFalseWhenUserCannotManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( false );
+					public function __construct( $name, array $allowed, array &$checked ) {
+						$this->name    = $name;
+						$this->allowed = $allowed;
+						$this->checked = &$checked;
+					}
 
-		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
-		$this->assertFalse( $ability->check_permissions() );
-	}
+					public function current_user_can( $describer ): bool {
+						$this->checked[] = "{$this->name}:{$describer}";
 
-	/**
-	 * Finding 4 regression guard: get_required_capability() returns 'manage_options', matching
-	 * has_permission()'s real capability check, so a denial reports the accurate capability
-	 * (not the AbstractAbility default of 'manage').
-	 */
-	public function testGetRequiredCapabilityReturnsManageOptions(): void {
-		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
-
-		$reflection = new \ReflectionMethod( $ability, 'get_required_capability' );
-		$reflection->setAccessible( true );
-
-		$this->assertSame( 'manage_options', $reflection->invoke( $ability ) );
-	}
-
-	/**
-	 * Finding 4 regression guard: a denial fires imagify_mcp_permission_denied with
-	 * 'manage_options', not the inherited 'manage' default.
-	 */
-	public function testDenialFiresPermissionDeniedActionWithManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( false );
+						return in_array( "{$this->name}:{$describer}", $this->allowed, true );
+					}
+				};
+			}
+		);
 
 		Actions\expectDone( 'imagify_mcp_permission_denied' )
-			->once()
-			->with( BulkOptimize::ABILITY_ID, BulkOptimize::ABILITY_NAME, 'manage_options' );
+			->times( $expected['allowed'] ? 0 : 1 )
+			->with( BulkOptimize::ABILITY_ID, BulkOptimize::ABILITY_NAME, 'manage' );
 
 		$ability = new BulkOptimize( Mockery::mock( BulkOptimizerInterface::class ) );
-		$ability->check_permissions();
+
+		$this->assertSame( $expected['allowed'], $ability->check_permissions( $config['input'] ) );
+		$this->assertSame( $expected['checked'], $checked );
 	}
 }

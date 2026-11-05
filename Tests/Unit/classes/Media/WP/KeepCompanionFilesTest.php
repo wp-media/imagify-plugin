@@ -32,8 +32,7 @@ class KeepCompanionFilesTest extends TestCase {
 		 * skipped: it would reach for the post and the filesystem for nothing.
 		 */
 		$media  = ( new \ReflectionClass( WP::class ) )->newInstanceWithoutConstructor();
-		$method = new \ReflectionMethod( WP::class, 'keep_companion_files' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'keep_companion_files', WP::class );
 
 		return $method->invoke( $media, $metadata, $previous_metadata );
 	}

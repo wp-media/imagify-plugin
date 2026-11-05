@@ -41,8 +41,7 @@ class RemoveTest extends TestCase {
 			->shouldAllowMockingProtectedMethods();
 
 		// Bypass the real constructor by injecting the stub directly.
-		$reflection = new \ReflectionProperty( AbstractWriteDirConfFile::class, 'filesystem' );
-		$reflection->setAccessible( true );
+		$reflection = $this->get_reflective_property( 'filesystem', AbstractWriteDirConfFile::class );
 		$reflection->setValue( $sut, $filesystem );
 
 		return $sut;

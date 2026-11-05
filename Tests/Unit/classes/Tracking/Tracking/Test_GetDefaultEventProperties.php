@@ -26,8 +26,7 @@ class Test_GetDefaultEventProperties extends TestCase {
 	 * @return array<string, mixed>
 	 */
 	private function call_get_default_event_properties( Tracking $tracking ): array {
-		$ref = new \ReflectionMethod( $tracking, 'get_default_event_properties' );
-		$ref->setAccessible( true );
+		$ref = $this->get_reflective_method( 'get_default_event_properties', Tracking::class );
 		return $ref->invoke( $tracking );
 	}
 

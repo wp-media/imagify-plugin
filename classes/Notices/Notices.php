@@ -76,6 +76,8 @@ final class Notices {
 		'bulk-optimization-running',
 		'upsell-banner',
 		'upsell-admin-bar',
+		// Displayed by Imagify\MCP\AdapterNotice.
+		'mcp-adapter',
 	];
 
 	/**

@@ -33,6 +33,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+    # roave/security-advisories conflicts with every PHP release below 8.2.35, so
+    # end-of-life PHP can never install it (Roave/SecurityAdvisories#155). Drop it
+    # from require-dev on those versions only: Composer still refuses package
+    # versions with known advisories by itself (policy.advisories.block, default on).
+    - name: Drop roave/security-advisories on end-of-life PHP
+      if: contains(fromJSON('["7.4", "8.0", "8.1"]'), matrix.php-versions)
+      run: |
+        jq --tab 'del(."require-dev"."roave/security-advisories")' composer.json > composer.json.tmp
+        mv composer.json.tmp composer.json
+
     - name: Setup PHP + Composer
       uses: wp-media/workflows/.github/actions/setup-php-composer@main
       with:
@@ -55,7 +65,10 @@ jobs:
     - name: Code Coverage
       run: composer code-coverage
 
+    # Dependabot-triggered runs only get Dependabot secrets, so the Codacy token
+    # is empty and the upload always fails. The coverage run above still applies.
     - name: Run codacy-coverage-reporter
+      if: github.actor != 'dependabot[bot]'
       uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}

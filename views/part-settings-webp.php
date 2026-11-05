@@ -73,9 +73,9 @@ $settings = Imagify_Settings::get_instance();
 					[
 						'option_name' => 'display_nextgen_method',
 						'values'      => [
-							'rewrite' => __( 'Use rewrite rules', 'imagify' ),
 							/* translators: 1 and 2 are <em> tag opening and closing. */
-							'picture' => sprintf( __( 'Use &lt;picture&gt; tags %1$s(preferred)%2$s', 'imagify' ), '<em>', '</em>' ),
+							'rewrite' => sprintf( __( 'Use rewrite rules %1$s(recommended for sites without a CDN)%2$s', 'imagify' ), '<em>', '</em>' ),
+							'picture' => __( 'Use &lt;picture&gt; tags', 'imagify' ),
 						],
 						'attributes'  => [
 							'aria-describedby' => 'describe-convert_to_webp',
@@ -152,11 +152,22 @@ $settings = Imagify_Settings::get_instance();
 
 				printf(
 					/* translators: 1 and 2 are HTML tag names, 3 is a <strong> tag opening, 4 is the <strong> tag closing. */
-					esc_html__( 'The second option replaces the %1$s tags with %2$s tags. %3$sThis is the preferred solution but some themes may break%4$s, so make sure to verify that everything seems fine.', 'imagify' ),
+					esc_html__( 'The second option replaces the %1$s tags with %2$s tags. It is required if you use a CDN, and it is the only option that works when your configuration file cannot be edited. %3$sIt alters your pages code, so it can break your layout or hide images if your theme, a slider or a page builder is not compatible%4$s, and it does not cover images set in CSS, such as backgrounds.', 'imagify' ),
 					'<code>&lt;img&gt;</code>',
 					'<code>&lt;picture&gt;</code>',
 					'<strong>',
 					'</strong>'
+				);
+
+				echo '<br/>';
+
+				printf(
+					/* translators: 1 is a <strong> tag opening, 2 is the <strong> tag closing, 3 is a link opening tag, 4 is the link closing tag. */
+					esc_html__( '%1$sAfter changing this setting, clear every cache and check your pages%2$s - your homepage, a product page and any page using a slider. %3$sWhat to do if your images look broken%4$s.', 'imagify' ),
+					'<strong>',
+					'</strong>',
+					'<a href="' . esc_url( imagify_get_external_url( 'documentation-nextgen-delivery' ) ) . '" target="_blank" rel="noopener">',
+					'</a>'
 				);
 
 				echo '<br/>';

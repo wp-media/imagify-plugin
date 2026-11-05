@@ -79,10 +79,39 @@ class RestoreMedia implements AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool True when the current user has the `manage_options` capability.
+	 * Requires the Imagify `manage` capability, plus `manual-restore` on the
+	 * context the requested media belongs to, as the legacy AJAX restore
+	 * handlers do. The WP Abilities API passes the call's input here, and
+	 * resolves the media the same way execute() does.
+	 *
+	 * @param mixed $input Input arguments passed by the WP Abilities API, if any.
+	 * @return bool True when the current user may restore the requested media.
 	 */
-	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+	public function check_permissions( $input = null ): bool {
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			return false;
+		}
+
+		$media_id = MediaResolver::resolve_id( is_array( $input ) ? $input : [] );
+
+		if ( is_wp_error( $media_id ) ) {
+			// Nothing resolves, so nothing can be restored: execute() reports the error.
+			return true;
+		}
+
+		$process = $this->get_process( $media_id );
+
+		if ( null === $process ) {
+			return true;
+		}
+
+		$media = $process->get_media();
+
+		if ( ! $media ) {
+			return false;
+		}
+
+		return imagify_get_context( $media->get_context() )->current_user_can( 'manual-restore', $media_id );
 	}
 
 	/**

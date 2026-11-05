@@ -12,3 +12,33 @@ updates:
     ignore:
       # First-party shared composite actions are intentionally tracked on @main.
       - dependency-name: "wp-media/workflows"
+
+  # Dev tooling only: node_modules is never shipped in the plugin ZIP.
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/_dev"
+    target-branch: "develop"
+    schedule:
+      interval: "monthly"
+    # Caps version-update PRs only; security updates have their own fixed limit.
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    groups:
+      # Majors are left out of both groups so a breaking major (e.g. a new
+      # @wordpress/scripts) gets its own PR instead of blocking the safe bumps.
+      npm-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      npm-dev-tooling:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
