@@ -34,6 +34,11 @@ final class Core {
 	 * @author Grégory Viguier
 	 */
 	public function core_handler() {
+		// Checked before anything else, so that a user who can't use Imagify gets neither a fresh nonce nor data.
+		if ( ! $this->current_user_can_use_imagifybeat() ) {
+			wp_send_json_error( null, 403 );
+		}
+
 		if ( empty( $_POST['_nonce'] ) ) {
 			wp_send_json_error();
 		}
@@ -112,6 +117,28 @@ final class Core {
 		$response['server_time'] = time();
 
 		wp_send_json( $response );
+	}
+
+	/**
+	 * Tell if the current user is allowed to use Imagifybeat.
+	 *
+	 * Imagifybeat is used by the media library, the media modal, the bulk optimization page, the settings page and
+	 * the "Other Media" page: the user must be allowed to access at least one of them.
+	 * Each Imagifybeat listener then checks the capability required by the data it returns.
+	 *
+	 * @since 2.3.5
+	 *
+	 * @return bool
+	 */
+	public function current_user_can_use_imagifybeat() {
+		$wp_context = imagify_get_context( 'wp' );
+		$cf_context = imagify_get_context( 'custom-folders' );
+
+		return $wp_context->current_user_can( 'optimize' )
+			|| $wp_context->current_user_can( 'bulk-optimize' )
+			|| $wp_context->current_user_can( 'manage' )
+			|| $cf_context->current_user_can( 'optimize' )
+			|| $cf_context->current_user_can( 'bulk-optimize' );
 	}
 
 	/**
