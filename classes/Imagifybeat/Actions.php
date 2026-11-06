@@ -61,6 +61,15 @@ final class Actions {
 			return $response;
 		}
 
+		// Used in the settings page and the bulk optimization page.
+		if (
+			! imagify_get_context( 'wp' )->current_user_can( 'manage' )
+			&& ! imagify_get_context( 'wp' )->current_user_can( 'bulk-optimize' )
+			&& ! imagify_get_context( 'custom-folders' )->current_user_can( 'bulk-optimize' )
+		) {
+			return $response;
+		}
+
 		$response[ $imagifybeat_id ] = [
 			'curl_missing'          => ! Imagify_Requirements::supports_curl(),
 			'editor_missing'        => ! Imagify_Requirements::supports_image_editor(),
@@ -89,7 +98,29 @@ final class Actions {
 			return $response;
 		}
 
-		$folder_types = array_flip( array_filter( $data[ $imagifybeat_id ] ) );
+		if ( ! is_array( $data[ $imagifybeat_id ] ) ) {
+			return $response;
+		}
+
+		// Folder types are like '{groupID}|{context}': keep only the ones the user is allowed to bulk-optimize.
+		$folder_types = array_filter(
+			$data[ $imagifybeat_id ],
+			function ( $folder_type ) {
+				if ( ! is_string( $folder_type ) || false === strpos( $folder_type, '|' ) ) {
+					return false;
+				}
+
+				$context = substr( $folder_type, strrpos( $folder_type, '|' ) + 1 );
+
+				return imagify_get_context( $context )->current_user_can( 'bulk-optimize' );
+			}
+		);
+
+		if ( ! $folder_types ) {
+			return $response;
+		}
+
+		$folder_types = array_flip( $folder_types );
 
 		$response[ $imagifybeat_id ] = imagify_get_bulk_stats(
 			$folder_types,
@@ -118,10 +149,6 @@ final class Actions {
 			return $response;
 		}
 
-		if ( ! isset( $data[ $imagifybeat_id ] ) ) {
-			return $response;
-		}
-
 		$bulk        = Bulk::get_instance();
 		$groups_data = [];
 		$total       = 0;
@@ -129,14 +156,24 @@ final class Actions {
 		$percentage  = 0;
 
 		foreach ( $data[ $imagifybeat_id ] as $group ) {
-			$transient = get_transient( "imagify_{$group['context']}_optimize_running" );
+			$context = $this->get_bulk_optimizable_context( isset( $group['context'] ) ? $group['context'] : null );
+
+			if ( ! $context ) {
+				continue;
+			}
+
+			$transient = get_transient( "imagify_{$context}_optimize_running" );
 
 			if ( false !== $transient ) {
 				$total     += $transient['total'];
 				$remaining += $transient['remaining'];
 			}
 
-			$groups_data[ $group['context'] ] = $bulk->get_bulk_instance( $group['context'] )->get_context_data();
+			$groups_data[ $context ] = $bulk->get_bulk_instance( $context )->get_context_data();
+		}
+
+		if ( ! $groups_data ) {
+			return $response;
 		}
 
 		if ( 0 !== $total ) {
@@ -170,6 +207,11 @@ final class Actions {
 			return $response;
 		}
 
+		// Used in the settings page.
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			return $response;
+		}
+
 		$remaining = 0;
 		$total     = get_transient( 'imagify_missing_next_gen_total' );
 
@@ -186,6 +228,12 @@ final class Actions {
 		}
 
 		foreach ( $data[ $imagifybeat_id ] as $context ) {
+			$context = $this->get_bulk_optimizable_context( $context );
+
+			if ( ! $context ) {
+				continue;
+			}
+
 			$media      = $bulk->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
 			$remaining += count( $media['ids'] );
 		}
@@ -215,16 +263,16 @@ final class Actions {
 			return $response;
 		}
 
-		$response[ $imagifybeat_id ] = $this->get_modified_optimization_statuses( $data[ $imagifybeat_id ] );
+		$statuses = $this->get_allowed_processes( $this->get_modified_optimization_statuses( $data[ $imagifybeat_id ] ) );
 
-		if ( ! $response[ $imagifybeat_id ] ) {
+		// Nothing is returned when there is nothing to update, so that invalid media and media the user is not allowed to optimize can't be told apart.
+		if ( ! $statuses ) {
 			return $response;
 		}
 
-		// Sanitize received data and grab some other info.
-		foreach ( $response[ $imagifybeat_id ] as $context_id => $media_atts ) {
-			$process = imagify_get_optimization_process( $media_atts['media_id'], $media_atts['context'] );
+		$response[ $imagifybeat_id ] = [];
 
+		foreach ( $statuses as $context_id => $process ) {
 			$response[ $imagifybeat_id ][ $context_id ] = get_imagify_media_column_content( $process, false );
 		}
 
@@ -248,11 +296,22 @@ final class Actions {
 			return $response;
 		}
 
-		$response[ $imagifybeat_id ] = $this->get_modified_optimization_statuses( $data[ $imagifybeat_id ] );
+		// Used in the "Other Media" page: same capabilities as the ones required to display the page.
+		$cf_context = imagify_get_context( 'custom-folders' );
 
-		if ( ! $response[ $imagifybeat_id ] ) {
+		if ( ! $cf_context->current_user_can( 'optimize' ) && ! $cf_context->current_user_can( 'bulk-optimize' ) ) {
 			return $response;
 		}
+
+		// This page lists custom folders files only.
+		$data     = array_intersect_key( $data[ $imagifybeat_id ], [ 'custom-folders' => 1 ] );
+		$statuses = $this->get_allowed_processes( $this->get_modified_optimization_statuses( $data ) );
+
+		if ( ! $statuses ) {
+			return $response;
+		}
+
+		$response[ $imagifybeat_id ] = [];
 
 		$admin_ajax_post = \Imagify_Admin_Ajax_Post::get_instance();
 		$list_table      = new \Imagify_Files_List_Table(
@@ -261,10 +320,7 @@ final class Actions {
 			]
 		);
 
-		// Sanitize received data and grab some other info.
-		foreach ( $response[ $imagifybeat_id ] as $context_id => $media_atts ) {
-			$process = imagify_get_optimization_process( $media_atts['media_id'], $media_atts['context'] );
-
+		foreach ( $statuses as $context_id => $process ) {
 			$response[ $imagifybeat_id ][ $context_id ] = $admin_ajax_post->get_media_columns( $process, $list_table );
 		}
 
@@ -343,6 +399,52 @@ final class Actions {
 		}
 
 		return $output;
+	}
+
+	/**
+	 * Get the optimization processes of the media the current user is allowed to optimize.
+	 *
+	 * Invalid media are dropped the same way, so that they can't be told apart from media the user is not allowed to optimize.
+	 *
+	 * @since 2.3.6
+	 *
+	 * @param  array $statuses Media data, as returned by $this->get_modified_optimization_statuses().
+	 * @return array           Optimization processes, keyed like $statuses.
+	 */
+	private function get_allowed_processes( $statuses ) {
+		$processes = [];
+
+		foreach ( $statuses as $context_id => $media_atts ) {
+			$process = imagify_get_optimization_process( $media_atts['media_id'], $media_atts['context'] );
+
+			if ( $process->current_user_can( 'manual-optimize' ) ) {
+				$processes[ $context_id ] = $process;
+			}
+		}
+
+		return $processes;
+	}
+
+	/**
+	 * Validate a context name received from Imagifybeat, for the bulk optimization and settings pages.
+	 *
+	 * @since 2.3.6
+	 *
+	 * @param  mixed $context The context name received.
+	 * @return string         The sanitized context name. An empty string if invalid or if the user is not allowed to bulk-optimize in this context.
+	 */
+	private function get_bulk_optimizable_context( $context ) {
+		if ( ! is_string( $context ) || '' === $context ) {
+			return '';
+		}
+
+		$context = imagify_sanitize_context( $context );
+
+		if ( ! $context || ! imagify_get_context( $context )->current_user_can( 'bulk-optimize' ) ) {
+			return '';
+		}
+
+		return $context;
 	}
 
 	/**
