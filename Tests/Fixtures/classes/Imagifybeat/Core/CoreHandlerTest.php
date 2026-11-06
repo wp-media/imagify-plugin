@@ -1,14 +1,7 @@
 <?php
 /**
- * What each user gets from Imagifybeat, per type of site. On multisite, the requests are made on a sub-site.
- *
- * Each listener only answers users who can open the screen that polls it:
- * - Media Library / media modal: the media must be editable by the user (the test media belongs to the user, so
- *   contributors can edit it too).
- * - Bulk Optimization: 'bulk-optimize' on the context (the "Other Media" group is network-wide on multisite).
- * - Settings: 'manage' (a network setting when Imagify is network-activated).
- * - Other Media: 'optimize' / 'bulk-optimize' on the custom-folders context (super admins only on multisite).
- *
+ * What each user gets from Imagifybeat, per type of site (on multisite, requests are made on a sub-site).
+ * Each listener only answers users who can open the screen that polls it; the test media belongs to the user.
  * 'status': 'rejected' (403, no nonce), 'nonce_refreshed' (expired nonce: a fresh one, no data) or 'answered'.
  * 'allowed': the probes that return data, when answered.
  */
@@ -94,6 +87,19 @@ return [
 			'expected' => [
 				'status'  => 'nonce_refreshed',
 				'allowed' => [],
+			],
+		],
+		'shouldAnswerOwnLibraryStatusToEditor'             => [
+			'config'   => [
+				'site'  => 'any',
+				'role'  => 'editor',
+				'nonce' => 'valid',
+			],
+			'expected' => [
+				'status'  => 'answered',
+				'allowed' => [
+					'library_status',
+				],
 			],
 		],
 		'shouldRefreshNonceForAuthorOnSingleSite'          => [

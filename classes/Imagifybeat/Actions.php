@@ -228,11 +228,12 @@ final class Actions {
 		}
 
 		foreach ( $data[ $imagifybeat_id ] as $context ) {
-			if ( ! is_string( $context ) || '' === $context ) {
+			$context = $this->get_bulk_optimizable_context( $context );
+
+			if ( ! $context ) {
 				continue;
 			}
 
-			$context    = imagify_sanitize_context( $context );
 			$media      = $bulk->get_bulk_instance( $context )->get_optimized_media_ids_without_format( $format );
 			$remaining += count( $media['ids'] );
 		}
@@ -405,7 +406,7 @@ final class Actions {
 	 *
 	 * Invalid media are dropped the same way, so that they can't be told apart from media the user is not allowed to optimize.
 	 *
-	 * @since 2.3.5
+	 * @since 2.3.6
 	 *
 	 * @param  array $statuses Media data, as returned by $this->get_modified_optimization_statuses().
 	 * @return array           Optimization processes, keyed like $statuses.
@@ -425,9 +426,9 @@ final class Actions {
 	}
 
 	/**
-	 * Validate a context name received from Imagifybeat, for the bulk optimization page.
+	 * Validate a context name received from Imagifybeat, for the bulk optimization and settings pages.
 	 *
-	 * @since 2.3.5
+	 * @since 2.3.6
 	 *
 	 * @param  mixed $context The context name received.
 	 * @return string         The sanitized context name. An empty string if invalid or if the user is not allowed to bulk-optimize in this context.

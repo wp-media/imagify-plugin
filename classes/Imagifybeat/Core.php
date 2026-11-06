@@ -126,7 +126,7 @@ final class Core {
 	 * the "Other Media" page: the user must be allowed to access at least one of them.
 	 * Each Imagifybeat listener then checks the capability required by the data it returns.
 	 *
-	 * @since 2.3.5
+	 * @since 2.3.6
 	 *
 	 * @return bool
 	 */
