@@ -27,11 +27,23 @@ trait ImagifybeatMocksTrait {
 	/**
 	 * Mock imagify_get_context(): each context allows the given "context:describer" pairs.
 	 * Context names are sanitized, as imagify_get_context() does.
+	 * The registered contexts are 'wp', 'custom-folders' and the ones in the allowed pairs (third-party contexts).
 	 *
 	 * @param string[] $allowed Allowed "context:describer" pairs.
 	 */
 	protected function mockContexts( array $allowed ): void {
 		$this->stubSanitizeKey();
+
+		$names = [ 'wp', 'custom-folders' ];
+
+		foreach ( $allowed as $pair ) {
+			$names[] = strtok( $pair, ':' );
+		}
+
+		$names = array_values( array_unique( $names ) );
+		sort( $names );
+
+		Functions\when( 'imagify_get_context_names' )->justReturn( $names );
 
 		Functions\when( 'imagify_get_context' )->alias(
 			function ( $name ) use ( $allowed ) {

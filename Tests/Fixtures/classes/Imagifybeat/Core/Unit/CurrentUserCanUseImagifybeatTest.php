@@ -1,6 +1,7 @@
 <?php
 /**
- * Imagifybeat is open to users who can use at least one Imagify screen: "context:describer" pairs.
+ * Imagifybeat is open to users who can use at least one Imagify screen, third-party contexts (here 'ngg') included:
+ * "context:describer" pairs.
  */
 
 return [
@@ -32,6 +33,18 @@ return [
 		'shouldAllowNetworkBulkOptimizationUsers' => [
 			'config'   => [ 'allowed' => [ 'custom-folders:bulk-optimize' ] ],
 			'expected' => true,
+		],
+		'shouldAllowThirdPartyMediaListUsers'     => [
+			'config'   => [ 'allowed' => [ 'ngg:optimize' ] ],
+			'expected' => true,
+		],
+		'shouldAllowThirdPartyBulkOptimizationUsers' => [
+			'config'   => [ 'allowed' => [ 'ngg:bulk-optimize' ] ],
+			'expected' => true,
+		],
+		'shouldDenyWithUnrelatedThirdPartyCapability' => [
+			'config'   => [ 'allowed' => [ 'ngg:manual-optimize', 'ngg:manage' ] ],
+			'expected' => false,
 		],
 	],
 ];

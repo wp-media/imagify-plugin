@@ -1,6 +1,6 @@
 <?php
 /**
- * The requirements are sent to users of the settings and bulk optimization pages.
+ * The requirements are sent to users of the settings and bulk optimization pages, third-party ones (here 'ngg') included.
  */
 
 return [
@@ -39,6 +39,20 @@ return [
 				'data'    => [ 'imagify_requirements' => 1 ],
 			],
 			'expected' => true,
+		],
+		'shouldSendToThirdPartyBulkOptimizationUsers' => [
+			'config'   => [
+				'allowed' => [ 'ngg:bulk-optimize' ],
+				'data'    => [ 'imagify_requirements' => 1 ],
+			],
+			'expected' => true,
+		],
+		'shouldNotSendToThirdPartyMediaListUsers'  => [
+			'config'   => [
+				'allowed' => [ 'ngg:optimize' ],
+				'data'    => [ 'imagify_requirements' => 1 ],
+			],
+			'expected' => false,
 		],
 	],
 ];

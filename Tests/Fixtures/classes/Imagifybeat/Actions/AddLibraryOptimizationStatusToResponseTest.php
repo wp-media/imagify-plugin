@@ -90,5 +90,14 @@ return [
 			],
 			'expected' => false,
 		],
+		'shouldNotReturnMissingMediaToAdministrator'   => [
+			'config'   => [
+				'role'        => 'administrator',
+				'media'       => 'missing',
+				'locked'      => false,
+				'seen_locked' => 1,
+			],
+			'expected' => false,
+		],
 	],
 ];

@@ -61,12 +61,8 @@ final class Actions {
 			return $response;
 		}
 
-		// Used in the settings page and the bulk optimization page.
-		if (
-			! imagify_get_context( 'wp' )->current_user_can( 'manage' )
-			&& ! imagify_get_context( 'wp' )->current_user_can( 'bulk-optimize' )
-			&& ! imagify_get_context( 'custom-folders' )->current_user_can( 'bulk-optimize' )
-		) {
+		// Used in the settings page and the bulk optimization pages.
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) && ! $this->current_user_can_bulk_optimize() ) {
 			return $response;
 		}
 
@@ -423,6 +419,23 @@ final class Actions {
 		}
 
 		return $processes;
+	}
+
+	/**
+	 * Tell if the current user can bulk-optimize in at least one context, third-party contexts included.
+	 *
+	 * @since 2.3.6
+	 *
+	 * @return bool
+	 */
+	private function current_user_can_bulk_optimize() {
+		foreach ( imagify_get_context_names() as $context_name ) {
+			if ( imagify_get_context( $context_name )->current_user_can( 'bulk-optimize' ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

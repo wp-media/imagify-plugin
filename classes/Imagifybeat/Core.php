@@ -122,8 +122,9 @@ final class Core {
 	/**
 	 * Tell if the current user is allowed to use Imagifybeat.
 	 *
-	 * Imagifybeat is used by the media library, the media modal, the bulk optimization page, the settings page and
-	 * the "Other Media" page: the user must be allowed to access at least one of them.
+	 * Imagifybeat is used by the settings page and, in each context (media library, "Other Media", third-party contexts
+	 * like NextGEN Gallery), by the media lists and the bulk optimization pages: the user must be allowed to access at
+	 * least one of them.
 	 * Each Imagifybeat listener then checks the capability required by the data it returns.
 	 *
 	 * @since 2.3.6
@@ -131,14 +132,19 @@ final class Core {
 	 * @return bool
 	 */
 	public function current_user_can_use_imagifybeat() {
-		$wp_context = imagify_get_context( 'wp' );
-		$cf_context = imagify_get_context( 'custom-folders' );
+		if ( imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			return true;
+		}
 
-		return $wp_context->current_user_can( 'optimize' )
-			|| $wp_context->current_user_can( 'bulk-optimize' )
-			|| $wp_context->current_user_can( 'manage' )
-			|| $cf_context->current_user_can( 'optimize' )
-			|| $cf_context->current_user_can( 'bulk-optimize' );
+		foreach ( imagify_get_context_names() as $context_name ) {
+			$context = imagify_get_context( $context_name );
+
+			if ( $context->current_user_can( 'optimize' ) || $context->current_user_can( 'bulk-optimize' ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

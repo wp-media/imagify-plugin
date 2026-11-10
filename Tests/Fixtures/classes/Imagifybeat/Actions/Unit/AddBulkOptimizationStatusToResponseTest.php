@@ -110,5 +110,31 @@ return [
 				],
 			],
 		],
+		'shouldSendThirdPartyContextToItsUsers'    => [
+			'config'   => [
+				'allowed' => [ 'ngg:bulk-optimize' ],
+				'data'    => [
+					'imagify_bulk_optimization_status' => [
+						$wp_group,
+						[
+							'groupID' => 'ngg',
+							'context' => 'ngg',
+						],
+					],
+				],
+				'running' => [],
+			],
+			'expected' => [
+				'contexts' => [ 'ngg' ],
+				'status'   => [
+					'groups_data' => [
+						'ngg' => [ 'context' => 'ngg' ],
+					],
+					'remaining'   => 0,
+					'percentage'  => 0.0,
+					'result'      => false,
+				],
+			],
+		],
 	],
 ];
