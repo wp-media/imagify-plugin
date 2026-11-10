@@ -27,6 +27,20 @@ class CoreHandlerTest extends AjaxTestCase {
 	protected $action = 'imagifybeat';
 
 	/**
+	 * The Imagifybeat filters third-party code can hook into.
+	 *
+	 * @var string[]
+	 */
+	private const HOOKS = [ 'imagifybeat_refresh_nonces', 'imagifybeat_received', 'imagifybeat_send' ];
+
+	/**
+	 * How many times each Imagifybeat filter ran.
+	 *
+	 * @var int[]
+	 */
+	private $hooks_fired = [];
+
+	/**
 	 * Register the Imagifybeat hooks and block outgoing HTTP requests.
 	 *
 	 * @return void
@@ -45,6 +59,13 @@ class CoreHandlerTest extends AjaxTestCase {
 
 		// The requirements listener checks the API status.
 		add_filter( 'pre_http_request', [ $this, 'blockHttpRequest' ] );
+
+		// Third-party code hooked on the Imagifybeat filters.
+		$this->hooks_fired = array_fill_keys( self::HOOKS, 0 );
+
+		foreach ( self::HOOKS as $hook ) {
+			add_filter( $hook, [ $this, 'countHook' ] );
+		}
 	}
 
 	/**
@@ -54,6 +75,10 @@ class CoreHandlerTest extends AjaxTestCase {
 	 */
 	public function tear_down() {
 		remove_filter( 'pre_http_request', [ $this, 'blockHttpRequest' ] );
+
+		foreach ( self::HOOKS as $hook ) {
+			remove_filter( $hook, [ $this, 'countHook' ] );
+		}
 
 		unset( $_POST['_nonce'], $_POST['data'] );
 		delete_transient( 'imagify_missing_next_gen_total' );
@@ -73,7 +98,20 @@ class CoreHandlerTest extends AjaxTestCase {
 	}
 
 	/**
+	 * Count a run of the current Imagifybeat filter.
+	 *
+	 * @param  array $response The Imagifybeat response.
+	 * @return array
+	 */
+	public function countHook( $response ) {
+		++$this->hooks_fired[ current_filter() ];
+
+		return $response;
+	}
+
+	/**
 	 * Test: what the user gets for each listener, on each type of site. Each probe asks one listener for data.
+	 * The Imagifybeat filters must not run for a rejected user.
 	 *
 	 * @dataProvider configTestData
 	 *
@@ -138,6 +176,15 @@ class CoreHandlerTest extends AjaxTestCase {
 		}
 
 		$this->assertSame( $expected['allowed'], $allowed );
+
+		$requests = count( $probes );
+		$hooks    = [
+			'rejected'        => [ 0, 0, 0 ],
+			'nonce_refreshed' => [ $requests, 0, 0 ],
+			'answered'        => [ 0, $requests, $requests ],
+		];
+
+		$this->assertSame( array_combine( self::HOOKS, $hooks[ $expected['status'] ] ), $this->hooks_fired );
 	}
 
 	/**
