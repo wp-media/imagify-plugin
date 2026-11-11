@@ -7,7 +7,6 @@
 # Files
 .DS_Store
 /gruntlocalconf.json
-/_dev/node_modules
 .phpunit.result.cache
 bin/strauss.phar
 composer.lock

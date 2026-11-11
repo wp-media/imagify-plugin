@@ -17,7 +17,6 @@ updates:
   - package-ecosystem: "npm"
     directories:
       - "/"
-      - "/_dev"
     target-branch: "develop"
     schedule:
       interval: "monthly"

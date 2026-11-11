@@ -166,8 +166,7 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 
 		$this->register_script( 'sweetalert', 'sweetalert2', [ 'promise-polyfill' ], '4.6.6' )->localize( 'imagifySwal' );
 
-		$this->register_bud_script( 'runtime', 'runtime' );
-		$this->register_bud_script( 'chart', 'chart', [ 'runtime' ], '4.4.0' );
+		$this->register_bud_script( 'chart', 'chart', [], '4.5.1' );
 
 		$this->register_script( 'event-move', 'jquery.event.move', [ 'jquery' ], '2.0.1' );
 
@@ -445,7 +444,7 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 	}
 
 	/**
-	 * Register a script.
+	 * Register a bundled script from assets/admin/js/ (built from src/ by `npm run build`).
 	 *
 	 * @since 1.6.10
 	 *

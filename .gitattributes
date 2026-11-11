@@ -2,7 +2,7 @@
 /.git export-ignore
 /.github export-ignore
 /.wordpress-org export-ignore
-/_dev export-ignore
+/src export-ignore
 /bin export-ignore
 /Tests export-ignore
 
@@ -19,6 +19,7 @@
 /AGENTS.md export-ignore
 /composer.lock export-ignore
 /gruntfile.js export-ignore
+/webpack.config.js export-ignore
 /package-lock.json export-ignore
 /phpcs.xml export-ignore
 /phpstan.neon.dist export-ignore

@@ -1,8 +1,8 @@
 /**
  * Jest configuration for the JavaScript unit suite.
  *
- * Extends wp-scripts' preset - that is what supplies the Babel transform, without
- * which the ES module sources under _dev/src cannot be imported.
+ * Run through `wp-scripts test-unit-jest`. The Babel transform declared below is
+ * what lets the ES module sources under src/ be imported.
  *
  * testMatch is narrowed deliberately: the preset would also collect the 12
  * Playwright specs in Tests/e2e/specs/*.spec.ts, which import @playwright/test
@@ -15,7 +15,7 @@ module.exports = {
 	/*
 	 * The preset ships no transform, and wp-scripts expects a Babel config in the
 	 * project. Declaring it here rather than in a root babel.config.js keeps the
-	 * bud/webpack build - which has its own Babel setup - completely unaffected.
+	 * webpack build (webpack.config.js), which has its own Babel setup, unaffected.
 	 */
 	transform: {
 		'\\.[jt]sx?$': [ 'babel-jest', { presets: [ '@wordpress/babel-preset-default' ] } ]
