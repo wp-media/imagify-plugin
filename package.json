@@ -18,7 +18,7 @@
 		"babel-jest": "^30.5.2",
 		"chart.js": "^4.5.1",
 		"grunt": "^1.6.3",
-		"grunt-contrib-cssmin": "^4.0.0",
+		"grunt-contrib-cssmin": "^5.0.0",
 		"grunt-contrib-uglify": "^5.0.1",
 		"grunt-eslint": "^24.0.0",
 		"grunt-postcss": "^0.9.0",
