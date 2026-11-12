@@ -6,8 +6,18 @@
 /src
 /node_modules
 /Tests
+/docs
+/.ai
+/.aiassistant
+/.TemporaryItems
+/.e2e-screenshots
 
 /.distignore
+/.env.local
+/.npmrc
+/.nvmrc
+/.wp-env.json
+/AGENTS.md
 /.editorconfig
 /eslint.config.js
 /.gitattributes
