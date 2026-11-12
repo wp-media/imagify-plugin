@@ -12,7 +12,7 @@ use ReflectionClass;
  *
  * @covers \Imagify\Picture\Display::get_admin_bar_site_icon_tags
  * @group  PictureDisplayAdminBarSiteIcon
- * @since  2.3.1
+ * @since  2.3.6
  */
 class AdminBarSiteIconTest extends TestCase {
 

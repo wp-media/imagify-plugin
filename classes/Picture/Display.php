@@ -161,13 +161,17 @@ class Display implements SubscriberInterface {
 	 * never captures an unrelated image further down the page. Replacement is done by tag string,
 	 * so an identical tag elsewhere in the page is skipped too.
 	 *
-	 * @since 2.3.1
+	 * @since 2.3.6
 	 *
 	 * @param string $html Content of the page.
 	 *
 	 * @return string[] The <img> tags found.
 	 */
 	protected function get_admin_bar_site_icon_tags( string $html ): array {
+		if ( false === strpos( $html, 'wp-admin-bar-site-name' ) ) {
+			return [];
+		}
+
 		$pattern = '#<li\s[^>]*\bid=(["\'])wp-admin-bar-site-name\1[^>]*>\s*<a\s[^>]*>(?:(?!</a>).)*?(<img\s[^>]*>)#is';
 
 		if ( ! preg_match_all( $pattern, $html, $matches ) ) {
