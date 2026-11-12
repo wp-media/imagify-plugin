@@ -396,9 +396,19 @@
 		switchToView: function ($view, data) {
 
 			var viewId = $view.attr('id'),
-				$modalContent = imagifyModal.$modal.children('.imagify-modal-content');
+				$modalContent = imagifyModal.$modal.children('.imagify-modal-content'),
+				$hiddenViews = $view.siblings('.imagify-modal-views'),
+				moveFocus = $hiddenViews.toArray().some(function (el) {
+					return el.contains(d.activeElement);
+				});
 
-			$view.siblings('.imagify-modal-views').hide().attr('aria-hidden', 'true');
+			// Move the focus out of the views about to be hidden, but keep it inside the dialog:
+			// Chrome blocks `aria-hidden` on an element that still contains the focused element.
+			if (moveFocus) {
+				imagifyModal.$modal.attr('tabindex', '-1').get(0).focus();
+			}
+
+			$hiddenViews.hide().attr('aria-hidden', 'true');
 
 			// Plans view has tabs: display the right one.
 			if (data && data.tab) {
@@ -422,6 +432,11 @@
 			}
 
 			$view.fadeIn(imagifyModal.speedFadeIn).attr('aria-hidden', 'false');
+
+			// Now the new view is displayed: send the focus into it.
+			if (moveFocus) {
+				$view.attr('tabindex', '-1').get(0).focus();
+			}
 		},
 
 		iframeSetSrc: function (params) {
