@@ -135,12 +135,46 @@ class Display implements SubscriberInterface {
 			return $content;
 		}
 
+		$excluded = $this->get_admin_bar_site_icon_tags( $content );
+
+		if ( $excluded ) {
+			$images = array_filter(
+				$images,
+				function ( $image ) use ( $excluded ) {
+					return ! in_array( $image['tag'], $excluded, true );
+				}
+			);
+		}
+
 		foreach ( $images as $image ) {
 			$tag     = $this->build_picture_tag( $image );
 			$content = str_replace( $image['tag'], $tag, $content );
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Get the <img> tags of the admin bar site icon, which must not be wrapped in a <picture>.
+	 *
+	 * The match is bounded to the first anchor of the site name node, so a site without icon
+	 * never captures an unrelated image further down the page. Replacement is done by tag string,
+	 * so an identical tag elsewhere in the page is skipped too.
+	 *
+	 * @since 2.3.1
+	 *
+	 * @param string $html Content of the page.
+	 *
+	 * @return string[] The <img> tags found.
+	 */
+	protected function get_admin_bar_site_icon_tags( string $html ): array {
+		$pattern = '#<li\s[^>]*\bid=(["\'])wp-admin-bar-site-name\1[^>]*>\s*<a\s[^>]*>(?:(?!</a>).)*?(<img\s[^>]*>)#is';
+
+		if ( ! preg_match_all( $pattern, $html, $matches ) ) {
+			return [];
+		}
+
+		return array_values( array_unique( $matches[2] ) );
 	}
 
 	/**
