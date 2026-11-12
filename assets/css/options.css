@@ -570,12 +570,50 @@ label[for="imagify_partner_links"] {
 	flex-direction: column;
 	align-items: flex-start;
 	gap: 10px;
+	/*
+	 * Holds the space above the area on the container rather than on the message paragraph.
+	 * While a run is in progress the paragraph is hidden (assets/js/options.js:560), and a
+	 * `display: none` flex item takes its margins out of the layout with it — which left the
+	 * button flush against the info text above. Paired with the reset below so the idle
+	 * layout, where the paragraph is visible, is unchanged.
+	 */
+	margin-top: 14px;
+}
+
+.generate-missing-webp > p {
+	margin-top: 0;
 }
 
 .generate-missing-webp #imagify-generate-webp-versions {
 	white-space: normal;
 	word-break: break-word;
 	max-width: 100%;
+}
+
+/*
+ * The container above is a column flex box with `align-items: flex-start`, so every child is
+ * sized to its own content. The progress wrapper holds nothing but empty divs (the only text,
+ * `.percent`, is absolutely positioned), so it collapsed to zero width: no visible track, and
+ * the counter rendered outside the container instead of at the end of the bar.
+ */
+.generate-missing-webp .imagify-progress {
+	align-self: stretch;
+}
+
+/*
+ * The button is disabled while a generation run is in progress. WordPress core styles disabled
+ * buttons with `background: transparent !important`, which beats the Imagify background, and
+ * Imagify sets `border: 0`, so the button lost every visual boundary and read as bare uppercase
+ * text. Keep it recognisable as a button, just visibly inactive.
+ */
+.imagify-settings .generate-missing-webp #imagify-generate-webp-versions:disabled,
+.imagify-settings .generate-missing-webp #imagify-generate-webp-versions.disabled {
+	background: #9CD3E3 !important;
+	color: #FFF !important;
+	box-shadow: 0 3px 0 #7FBACC;
+	text-shadow: none;
+	cursor: default;
+	opacity: 1;
 }
 
 p.imagify-custom-folder-line {

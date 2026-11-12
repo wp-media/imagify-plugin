@@ -59,10 +59,9 @@ class GetMediaStatus extends AbstractAbility {
 					'properties' => [
 						'media_id' => [
 							'type'        => 'integer',
-							'description' => __( 'The WordPress attachment ID.', 'imagify' ),
+							'description' => __( 'The WordPress attachment ID. Provide media_filename or media_url instead when the ID is unknown.', 'imagify' ),
 						],
-					],
-					'required'   => [ 'media_id' ],
+					] + MediaResolver::get_input_schema_properties(),
 				],
 				'output_schema'       => [
 					'type'       => 'object',
@@ -150,31 +149,15 @@ class GetMediaStatus extends AbstractAbility {
 	 * @return array
 	 */
 	private function do_execute( array $args ): array {
-		$media_id = isset( $args['media_id'] ) ? (int) $args['media_id'] : 0;
+		$media_id = MediaResolver::resolve_id( $args );
 
-		if ( $media_id <= 0 ) {
-			return [
-				'status'             => 'error',
-				'error_message'      => 'Invalid or missing media_id',
-				'optimization_level' => null,
-				'original_size'      => 0,
-				'optimized_size'     => 0,
-				'webp_available'     => false,
-				'avif_available'     => false,
-			];
+		if ( is_wp_error( $media_id ) ) {
+			return $this->error_response( $media_id->get_error_message() );
 		}
 
 		// Verify the attachment exists.
 		if ( ! get_post( $media_id ) ) {
-			return [
-				'status'             => 'error',
-				'error_message'      => 'Media not found.',
-				'optimization_level' => null,
-				'original_size'      => 0,
-				'optimized_size'     => 0,
-				'webp_available'     => false,
-				'avif_available'     => false,
-			];
+			return $this->error_response( 'Media not found.' );
 		}
 
 		$wp_data  = $this->create_wp_data( $media_id );
@@ -223,6 +206,26 @@ class GetMediaStatus extends AbstractAbility {
 			'optimized_size'     => $optimized_size,
 			'webp_available'     => $webp_available,
 			'avif_available'     => $avif_available,
+			'error_message'      => $error_message,
+		];
+	}
+
+	/**
+	 * Build an error response with every output field set to a neutral value.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param string $error_message Human-readable error message.
+	 * @return array{status: string, optimization_level: null, original_size: int, optimized_size: int, webp_available: bool, avif_available: bool, error_message: string}
+	 */
+	private function error_response( string $error_message ): array {
+		return [
+			'status'             => 'error',
+			'optimization_level' => null,
+			'original_size'      => 0,
+			'optimized_size'     => 0,
+			'webp_available'     => false,
+			'avif_available'     => false,
 			'error_message'      => $error_message,
 		];
 	}

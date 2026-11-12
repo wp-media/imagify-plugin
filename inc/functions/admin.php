@@ -171,6 +171,15 @@ function get_imagify_admin_url( $action = 'settings', $arg = [] ) {
 			 */
 			return apply_filters( 'imagify_optimization_errors_url', '', $arg );
 
+		case 'missing-nextgen':
+			return add_query_arg(
+				[
+					'mode'           => 'list',
+					'imagify-status' => 'missing-nextgen',
+				],
+				admin_url( 'upload.php' )
+			);
+
 		case 'dismiss-notice':
 			return wp_nonce_url( admin_url( 'admin-post.php?action=imagify_dismiss_notice&notice=' . $arg ), Notices::DISMISS_NONCE_ACTION );
 

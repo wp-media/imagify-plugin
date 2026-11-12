@@ -8,7 +8,7 @@ The `Imagify\Tracking` module wires the `wp-media/wp-mixpanel` Composer package 
 
 | Class | Role |
 |---|---|
-| `Imagify\Tracking\BaseTracking` | Abstract base: `can_track()`, `get_default_event_properties()` |
+| `Imagify\Tracking\BaseTracking` | Abstract base: `can_track()`, `get_default_event_properties()`, `identify_user()` |
 | `Imagify\Tracking\Tracking` | Concrete: `track_media_optimized()`, `track_settings_saved()` |
 | `Imagify\Tracking\Subscriber` | Subscribes to WordPress hooks and delegates to `Tracking` |
 | `Imagify\Tracking\ServiceProvider` | Registers all module services into the DI container |
@@ -17,6 +17,29 @@ The module depends on two Strauss-prefixed vendor classes:
 
 - `Imagify\Dependencies\WPMedia\Mixpanel\Optin` — manages opt-in state
 - `Imagify\Dependencies\WPMedia\Mixpanel\TrackingPlugin` — sends events to Mixpanel
+
+---
+
+## User identification (`distinct_id`)
+
+Mixpanel needs a `distinct_id` on every event to compute user-level metrics — MAU/DAU, retention, cohorts, funnels, unique users by feature. Without it, events are only aggregatable in bulk.
+
+`BaseTracking::identify_user()` registers it by calling `TrackingPlugin::identify()`, which hashes the identifier with **sha224** and registers it as a Mixpanel *super property* on the shared Mixpanel instance — so it lands on every event sent afterwards, including MCP events. No raw email or domain ever leaves the site.
+
+| Priority | Identifier | Rationale |
+|---|---|---|
+| 1 | `get_imagify_user()->email` | Same strategy as WP Rocket: one license = one Mixpanel user across all of its sites |
+| 2 | Host of `get_home_url()` | Fallback for unlicensed sites or an unreachable API, so events still get a stable anonymized identity |
+| 3 | *(none)* | If neither resolves, `identify()` is not called and the event carries no `distinct_id` |
+
+It is called from `get_default_event_properties()` — the single choke point every tracked event goes through. That placement is deliberate:
+
+- It reuses the `get_imagify_user()` result already needed for `license_owner` (transient-cached for 5 minutes), so no extra API call.
+- It never runs on plugin bootstrap, unlike identifying in the constructor.
+
+A per-instance `identified` flag keeps it to one call per instance per request.
+
+> `distinct_id` is a Mixpanel super property, not an event property — it will not appear in `get_default_event_properties()` return values or in the `track_direct()` `$properties` argument.
 
 ---
 

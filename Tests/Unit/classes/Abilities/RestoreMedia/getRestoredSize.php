@@ -5,7 +5,6 @@ namespace Imagify\Tests\Unit\classes\Abilities\RestoreMedia;
 
 use Imagify\Abilities\RestoreMedia;
 use Imagify\Tests\Unit\TestCase;
-use ReflectionMethod;
 
 /**
  * Tests for \Imagify\Abilities\RestoreMedia::get_restored_size().
@@ -22,8 +21,7 @@ class Test_GetRestoredSize extends TestCase {
 	 * @return int
 	 */
 	private function invoke_get_restored_size( $process ): int {
-		$method = new ReflectionMethod( RestoreMedia::class, 'get_restored_size' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'get_restored_size', RestoreMedia::class );
 
 		return $method->invoke( new RestoreMedia(), $process );
 	}

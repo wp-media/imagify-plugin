@@ -18,6 +18,34 @@ use WP_Error;
 class WP extends AbstractProcess {
 
 	/** ----------------------------------------------------------------------------------------- */
+	/** RESIZING ================================================================================ */
+	/** ----------------------------------------------------------------------------------------- */
+
+	/**
+	 * Tell if a size should be resized.
+	 *
+	 * When the browser handled the upload it also produced the scaled version, using the
+	 * very threshold Imagify configured ({@see \Imagify\Context\WP::filter_big_image_size_threshold()}),
+	 * so resizing here would only shrink the untouched original that WordPress keeps
+	 * aside as `original_image`.
+	 *
+	 * @since 2.3.3
+	 *
+	 * @param  string $size The size name.
+	 * @param  File   $file A File instance.
+	 * @return bool
+	 */
+	protected function can_resize( $size, $file ) {
+		$media = $this->get_media();
+
+		if ( $media && \Imagify\Context\WP::is_client_side_scaled( $media->get_id() ) ) {
+			return false;
+		}
+
+		return parent::can_resize( $size, $file );
+	}
+
+	/** ----------------------------------------------------------------------------------------- */
 	/** MISSING THUMBNAILS ====================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
 

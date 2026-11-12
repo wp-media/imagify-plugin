@@ -50,10 +50,18 @@ class Main {
 		$container = apply_filters( 'rocket_container', null );
 
 		if ( is_object( $container ) && method_exists( $container, 'get' ) ) {
-			$cdn = $container->get( 'cdn' );
+			try {
+				// WP Rocket does not register the 'cdn' service in every context.
+				if ( ! method_exists( $container, 'has' ) || $container->has( 'cdn' ) ) {
+					$cdn = $container->get( 'cdn' );
 
-			if ( $cdn && method_exists( $cdn, 'get_cdn_urls' ) ) {
-				$url = $cdn->get_cdn_urls( [ 'all', 'images' ] );
+					if ( $cdn && method_exists( $cdn, 'get_cdn_urls' ) ) {
+						$url = $cdn->get_cdn_urls( [ 'all', 'images' ] );
+					}
+				}
+			} catch ( \Throwable $e ) {
+				// Container could not resolve or build the service: fall back to get_rocket_cdn_cnames().
+				$url = null;
 			}
 		}
 

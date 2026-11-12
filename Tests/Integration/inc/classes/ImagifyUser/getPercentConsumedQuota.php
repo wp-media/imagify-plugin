@@ -32,6 +32,7 @@ class Test_GetPercentConsumedQuota extends TestCase {
 
 	public function testShouldReturnZeroWhenCouldNotFetchUserData() {
 		update_imagify_option( 'api_key', $this->invalidApiKey );
+		$this->mockInvalidToken();
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
@@ -40,7 +41,13 @@ class Test_GetPercentConsumedQuota extends TestCase {
 	}
 
 	public function testShouldReturnQuotaWhenFetchedUserData() {
-		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
+		update_imagify_option( 'api_key', $this->validApiKey );
+		$this->mockUserAccount(
+			[
+				'quota'                        => 1000,
+				'consumed_current_month_quota' => 500,
+			]
+		);
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );

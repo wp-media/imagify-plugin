@@ -321,11 +321,13 @@ function imagify_count_saving_data( $key = '' ) {
 	} else {
 		/**
 		 * Filter the chunk size of the requests fetching the data.
-		 * 15,000 seems to be a good balance between memory used, speed, and number of DB hits.
+		 * 2,000 seems to be a good balance between memory used, speed, and number of DB hits,
+		 * while keeping the resulting `IN ()` clause well under hosts' SQL query size limits
+		 * (e.g. WP Engine's query governor).
 		 *
 		 * @param int $limit The maximum number of elements per chunk.
 		 */
-		$limit = apply_filters( 'imagify_count_saving_data_limit', 15000 );
+		$limit = apply_filters( 'imagify_count_saving_data_limit', 2000 );
 		$limit = absint( $limit );
 
 		$mime_types   = Imagify_DB::get_mime_types();
@@ -359,15 +361,25 @@ function imagify_count_saving_data( $key = '' ) {
 
 		while ( $attachment_ids ) {
 			$limit_ids = array_shift( $attachment_ids );
-			$limit_ids = implode( ',', $limit_ids );
+			// Safety net: further split the chunk if its rendered `IN ()` list would still be too long.
+			$id_chunks   = Imagify_DB::chunk_in_values( $limit_ids );
+			$attachments = [];
 
-			$attachments = $wpdb->get_col( // WPCS: unprepared SQL ok.
-				"
-				SELECT meta_value
-				FROM $wpdb->postmeta
-				WHERE post_id IN ( $limit_ids )
-					AND meta_key = '_imagify_data'"
-			);
+			foreach ( $id_chunks as $id_chunk ) {
+				$id_chunk_list = implode( ',', $id_chunk );
+
+				$chunk_attachments = $wpdb->get_col( // WPCS: unprepared SQL ok.
+					"
+					SELECT meta_value
+					FROM $wpdb->postmeta
+					WHERE post_id IN ( $id_chunk_list )
+						AND meta_key = '_imagify_data'"
+				);
+
+				if ( $chunk_attachments ) {
+					$attachments = array_merge( $attachments, $chunk_attachments );
+				}
+			}
 			$wpdb->flush();
 
 			unset( $limit_ids );

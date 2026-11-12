@@ -55,13 +55,17 @@
 			preConfirm:          function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
 					setTimeout( function() {
-						$.get( ajaxurl + w.imagify.concat + 'action=imagify_signup&email=' + inputValue + '&imagifysignupnonce=' + $( '#imagifysignupnonce' ).val() )
+						$.get( ajaxurl + w.imagify.concat + 'action=imagify_signup&email=' + encodeURIComponent( String( inputValue ).trim() ) + '&imagifysignupnonce=' + $( '#imagifysignupnonce' ).val() )
 							.done( function( response ) {
 								if ( ! response.success ) {
 									reject( response.data );
 								} else {
 									resolve();
 								}
+							} )
+							.fail( function() {
+								// Without this the promise never settles and the modal spins forever.
+								reject( imagifyNotices.labels.signupErrorRequestFailed );
 							} );
 					}, 2000 );
 				} );

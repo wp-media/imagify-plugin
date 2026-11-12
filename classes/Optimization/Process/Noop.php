@@ -142,12 +142,14 @@ class Noop implements ProcessInterface {
 	 * Optimize a media files by pushing tasks into the queue.
 	 *
 	 * @since 1.9
+	 * @since 2.3.2 Added the $args parameter.
 	 *
-	 * @param int $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 * @param array $args               An array of optionnal arguments.
 	 *
 	 * @return bool|WP_Error True if successfully launched. A WP_Error instance on failure.
 	 */
-	public function optimize( $optimization_level = null ) {
+	public function optimize( $optimization_level = null, $args = [] ) {
 		return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 	}
 
@@ -155,12 +157,14 @@ class Noop implements ProcessInterface {
 	 * Re-optimize a media files with a different level.
 	 *
 	 * @since 1.9
+	 * @since 2.3.2 Added the $args parameter.
 	 *
-	 * @param int $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 * @param array $args               An array of optionnal arguments.
 	 *
 	 * @return bool|WP_Error True if successfully launched. A WP_Error instance on failure.
 	 */
-	public function reoptimize( $optimization_level = null ) {
+	public function reoptimize( $optimization_level = null, $args = [] ) {
 		return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 	}
 
@@ -168,13 +172,15 @@ class Noop implements ProcessInterface {
 	 * Optimize several file sizes by pushing tasks into the queue.
 	 *
 	 * @since 1.9
+	 * @since 2.3.2 Added the $args parameter.
 	 *
 	 * @param array $sizes              An array of media sizes (strings). Use "full" for the size of the main file.
 	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
+	 * @param array $args               An array of optionnal arguments.
 	 *
 	 * @return bool|WP_Error True if successfully launched. A WP_Error instance on failure.
 	 */
-	public function optimize_sizes( $sizes, $optimization_level = null ) {
+	public function optimize_sizes( $sizes, $optimization_level = null, $args = [] ) {
 		return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 	}
 

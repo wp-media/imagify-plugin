@@ -245,6 +245,10 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Optimize a media files.
 	 *
 	 * @since 1.9
+	 * @since 2.3.2 Added the $args parameter (e.g. 'bulk', 'priority'). See self::optimize_sizes()
+	 *             for the full list. 'bulk'/'priority' are extracted before the item is queued,
+	 *             any other key ends up in the queued item's 'data', forwarded verbatim to the
+	 *             'imagify_before_*'/'imagify_after_*' hooks.
 	 *
 	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @param array $args               An array of optionnal arguments.
@@ -291,6 +295,10 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * Re-optimize a media files with a different level.
 	 *
 	 * @since 1.9
+	 * @since 2.3.2 Added the $args parameter (e.g. 'bulk', 'priority'). See self::optimize_sizes()
+	 *             for the full list. 'bulk'/'priority' are extracted before the item is queued,
+	 *             any other key ends up in the queued item's 'data', forwarded verbatim to the
+	 *             'imagify_before_*'/'imagify_after_*' hooks.
 	 *
 	 * @param int   $optimization_level The optimization level (0=normal, 1=aggressive, 2=ultra).
 	 * @param array $args               An array of optionnal arguments.
@@ -347,6 +355,8 @@ abstract class AbstractProcess implements ProcessInterface {
 	 *    An array of optionnal arguments.
 	 *
 	 *     @type string $hook_suffix Suffix used to trigger hooks before and after optimization.
+	 *     @type bool   $priority    Whether this optimization should jump ahead of the queue (e.g. new uploads, manual clicks). Default false. Extracted before queueing: not part of the queued item's 'data'.
+	 *     @type bool   $bulk        Whether this optimization was triggered by a bulk run (see Bulk::force_optimize()). Default false. Kept in the queued item's 'data', so it is forwarded verbatim to the 'imagify_before_*'/'imagify_after_*' hook callbacks.
 	 * }
 	 *
 	 * @return bool|WP_Error True if successfully launched. A \WP_Error instance on failure.
@@ -449,19 +459,29 @@ abstract class AbstractProcess implements ProcessInterface {
 			$args = array_merge( $new_args, $args );
 		}
 
+		// 'priority' is a queue-mechanics flag: it must be a sibling key of 'id'/'sizes'/etc.,
+		// not nested inside 'data' (which is opaque payload forwarded verbatim to the
+		// 'imagify_before_*'/'imagify_after_*' hook callbacks). Extract it before building 'data'.
+		$is_priority = ! empty( $args['priority'] );
+		unset( $args['priority'] );
+
 		/**
 		 * Push the item to the queue, save the queue in the DB, empty the queue.
 		 * A "batch" is then created in the DB with this unique item, it is then free to loop through its steps (files) without another item interfering (each media optimization has its own dedicated batch/queue).
 		 */
-		MediaOptimization::get_instance()->push_to_queue(
-			[
-				'id'                 => $media->get_id(),
-				'sizes'              => $sizes,
-				'optimization_level' => $optimization_level,
-				'process_class'      => get_class( $this ),
-				'data'               => $args,
-			]
-		)->save();
+		$item = [
+			'id'                 => $media->get_id(),
+			'sizes'              => $sizes,
+			'optimization_level' => $optimization_level,
+			'process_class'      => get_class( $this ),
+			'data'               => $args,
+		];
+
+		if ( $is_priority ) {
+			$item['priority'] = true;
+		}
+
+		MediaOptimization::get_instance()->push_to_queue( $item )->save();
 
 		return true;
 	}
@@ -505,26 +525,36 @@ abstract class AbstractProcess implements ProcessInterface {
 			);
 		}
 
-		if ( $this->get_data()->get_size_data( $size, 'success' ) ) { // Bail out.
-			// This size is already optimized with Imagify, and must not be optimized again.
-			if ( $next_gen ) {
-				return new WP_Error(
-					'size_is_successfully_optimized',
-					sprintf(
-					/* translators: %s is a size name. */
-						__( 'The Next-Gen format for the size %s already exists.', 'imagify' ),
-						'<code>' . esc_html( $thumb_size ) . '</code>'
-					)
-				);
-			} else {
-				return new WP_Error(
-					'size_is_successfully_optimized',
-					sprintf(
-					/* translators: %s is a size name. */
-						__( 'The size %s is already optimized by Imagify.', 'imagify' ),
-						'<code>' . esc_html( $thumb_size ) . '</code>'
-					)
-				);
+		if ( $this->get_data()->get_size_data( $size, 'success' ) ) {
+			/*
+			 * The data says this size is already optimized. For a next-gen size, this can be
+			 * stale: an API response carrying a `message` (see File::optimize()) could have
+			 * been recorded as `success` without any next-gen file ever being written. In that
+			 * case, don't bail out: fall through and let the file be (re)generated.
+			 */
+			$next_gen_file_is_missing = $next_gen && $this->is_next_gen_file_missing( $size, $sizes[ $thumb_size ]['path'] );
+
+			if ( ! $next_gen_file_is_missing ) { // Bail out.
+				// This size is already optimized with Imagify, and must not be optimized again.
+				if ( $next_gen ) {
+					return new WP_Error(
+						'size_is_successfully_optimized',
+						sprintf(
+						/* translators: %s is a size name. */
+							__( 'The Next-Gen format for the size %s already exists.', 'imagify' ),
+							'<code>' . esc_html( $thumb_size ) . '</code>'
+						)
+					);
+				} else {
+					return new WP_Error(
+						'size_is_successfully_optimized',
+						sprintf(
+						/* translators: %s is a size name. */
+							__( 'The size %s is already optimized by Imagify.', 'imagify' ),
+							'<code>' . esc_html( $thumb_size ) . '</code>'
+						)
+					);
+				}
 			}
 		}
 
@@ -1084,6 +1114,15 @@ abstract class AbstractProcess implements ProcessInterface {
 			return false;
 		}
 
+		/**
+		 * The backup file may be the original, un-rotated JPEG that WordPress auto-rotated on
+		 * upload (WordPress resets the orientation on the rotated file, but keeps the original
+		 * orientation in the backup). Correct the orientation of this disposable temporary copy
+		 * so that a Next-Gen version (or a thumbnail) generated from it isn't mis-oriented.
+		 * The backup file itself is never touched.
+		 */
+		$tmp_file->maybe_correct_exif_orientation();
+
 		if ( 'full' === $size ) {
 			/**
 			 * We create a copy of the backup to be able to create a next-gen version from it.
@@ -1563,6 +1602,22 @@ abstract class AbstractProcess implements ProcessInterface {
 	}
 
 	/**
+	 * Tell if the next-gen file for a size is missing from disk.
+	 *
+	 * @since 2.3.2
+	 *
+	 * @param string $size          The (next-gen) size name, e.g. "thumbnail@imagify-avif".
+	 * @param string $original_path Path to the non-next-gen version of that size.
+	 * @return bool
+	 */
+	protected function is_next_gen_file_missing( string $size, string $original_path ): bool {
+		$format        = strpos( $size, static::AVIF_SUFFIX ) ? 'avif' : 'webp';
+		$next_gen_path = imagify_path_to_nextgen( $original_path, $format );
+
+		return ! $next_gen_path || ! $this->filesystem->exists( $next_gen_path );
+	}
+
+	/**
 	 * Get suffix from format.
 	 *
 	 * @param string $format Format extension of next-gen image.
@@ -1970,13 +2025,45 @@ abstract class AbstractProcess implements ProcessInterface {
 		 */
 		$data = (array) apply_filters( "imagify{$_unauthorized}_file_optimization_data", $data, $response, $size, $level, $this->get_data() );
 
-		if ( property_exists( $response, 'message' ) ) {
-			$size = str_replace( $this->format, '', $size );
+		if ( property_exists( $response, 'message' ) && $this->is_next_gen_size( $size ) ) {
+			/**
+			 * The API answered with a 200 and a message instead of a converted file: it declined the
+			 * conversion, because the next-gen version would be heavier than the original or the file is
+			 * already compressed. No next-gen file is written to disk in that case (see
+			 * Imagify\Optimization\File::optimize()), so recording a success here would make the plugin
+			 * report a next-gen version that does not exist.
+			 *
+			 * Store a terminal entry instead, flagged as a permanent refusal so the bulk queries can skip
+			 * the media without re-sending it to the API on every run. Transient failures go through the
+			 * WP_Error branch above and are not flagged, so they keep being retried.
+			 */
+			$data['success']         = false;
+			$data['error']           = $data['message'];
+			$data['permanent_error'] = true;
 		}
 		// Store.
 		$this->get_data()->update_size_optimization_data( $size, $data );
 
 		return $data;
+	}
+
+	/**
+	 * Tell if a size name refers to a next-gen (AVIF or WebP) version.
+	 *
+	 * @param string $size The size name.
+	 *
+	 * @return bool
+	 */
+	private function is_next_gen_size( $size ) {
+		$size = (string) $size;
+
+		foreach ( [ static::AVIF_SUFFIX, static::WEBP_SUFFIX ] as $suffix ) {
+			if ( '' !== $suffix && substr( $size, - strlen( $suffix ) ) === $suffix ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

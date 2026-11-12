@@ -739,10 +739,31 @@ class Imagify_Custom_Folders {
 				}
 			}
 
-			$placeholders  = Imagify_DB::prepare_values_list( array_keys( $folders_by_placeholder ) );
 			$select_fields = "$files_key_esc, folder_id, path" . ( $optimization ? ', optimization_level, status' : '' );
 
-			$results = $wpdb->get_results( "SELECT $select_fields FROM $files_table WHERE path IN ( $placeholders ) ORDER BY folder_id, $files_key_esc;", ARRAY_A ); // WPCS: unprepared SQL ok.
+			$results = [];
+
+			foreach ( Imagify_DB::chunk_in_values( array_keys( $folders_by_placeholder ) ) as $placeholders_chunk ) {
+				$placeholders  = Imagify_DB::prepare_values_list( $placeholders_chunk );
+				$chunk_results = $wpdb->get_results( "SELECT $select_fields FROM $files_table WHERE path IN ( $placeholders );", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+				if ( $chunk_results ) {
+					$results = array_merge( $results, $chunk_results );
+				}
+			}
+
+			if ( $results ) {
+				// Re-apply the ordering that was previously done in SQL (`ORDER BY folder_id, $files_key_esc`).
+				usort(
+					$results,
+					function ( $a, $b ) use ( $files_key_esc ) {
+						if ( $a['folder_id'] !== $b['folder_id'] ) {
+							return $a['folder_id'] <=> $b['folder_id'];
+						}
+						return $a[ $files_key_esc ] <=> $b[ $files_key_esc ];
+					}
+				);
+			}
 
 			if ( $results ) {
 				// Damn...
@@ -904,12 +925,28 @@ class Imagify_Custom_Folders {
 		$files_key     = $files_db->get_primary_key();
 		$files_key_esc = esc_sql( $files_key );
 		$file_ids      = wp_list_pluck( $files, $files_key );
-		$file_ids      = Imagify_DB::prepare_values_list( $file_ids );
-		$results       = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids ) ORDER BY $files_key_esc;", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$results       = [];
+
+		foreach ( Imagify_DB::chunk_in_values( $file_ids ) as $file_ids_chunk ) {
+			$file_ids_in   = Imagify_DB::prepare_values_list( $file_ids_chunk );
+			$chunk_results = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids_in );", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+			if ( $chunk_results ) {
+				$results = array_merge( $results, $chunk_results );
+			}
+		}
 
 		if ( ! $results ) {
 			return;
 		}
+
+		// Re-apply the ordering that was previously done in SQL (`ORDER BY $files_key_esc`).
+		usort(
+			$results,
+			function ( $a, $b ) use ( $files_key_esc ) {
+				return $a[ $files_key_esc ] <=> $b[ $files_key_esc ];
+			}
+		);
 
 		// Caching the folders will prevent unecessary SQL queries in Imagify_Custom_Folders::refresh_file().
 		foreach ( $folders as $folder_id => $folder ) {
@@ -996,10 +1033,17 @@ class Imagify_Custom_Folders {
 		$folders_key   = $folders_db->get_primary_key();
 
 		$selected_paths = (array) $selected_paths;
-		$selected_in    = Imagify_DB::prepare_values_list( $selected_paths );
+		$folders        = [];
 
 		// Get folders that already are in the DB.
-		$folders = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $selected_in );", ARRAY_A ); // WPCS: unprepared SQL ok.
+		foreach ( Imagify_DB::chunk_in_values( $selected_paths ) as $selected_paths_chunk ) {
+			$selected_in   = Imagify_DB::prepare_values_list( $selected_paths_chunk );
+			$chunk_folders = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $selected_in );", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+			if ( $chunk_folders ) {
+				$folders = array_merge( $folders, $chunk_folders );
+			}
+		}
 
 		if ( ! $folders ) {
 			return $selected_paths;

@@ -14,10 +14,9 @@ use Mockery;
 /**
  * Tests for \Imagify\Abilities\GenerateMissingNextgen::check_permissions().
  *
- * Since Option B (finding 4), `check_permissions()` is inherited unmodified from
- * `AbstractAbility` and delegates to this class's `has_permission()` override; a
- * denial fires `imagify_mcp_permission_denied` with `get_required_capability()`'s
- * value (`manage_options`, not the base class's `manage` default).
+ * `check_permissions()` is inherited from `AbstractAbility` and delegates to
+ * this class's `has_permission()` override: the `manage` capability in the `wp`
+ * context, plus `bulk-optimize` in every context the generation runs on.
  *
  * @covers \Imagify\Abilities\GenerateMissingNextgen::check_permissions
  * @group  MCP
@@ -25,62 +24,55 @@ use Mockery;
 class Test_CheckPermissions extends TestCase {
 
 	/**
-	 * Builds a GenerateMissingNextgen instance with a permissive StatInterface mock.
+	 * Test: the permission result for the given contexts and allowed capabilities.
 	 *
-	 * @return GenerateMissingNextgen
+	 * @dataProvider configTestData
+	 *
+	 * @param array $config   The contexts the generation runs on and the allowed "context:describer" pairs.
+	 * @param bool  $expected The permission result.
 	 */
-	private function make_ability(): GenerateMissingNextgen {
-		$stat = Mockery::mock( StatInterface::class );
+	public function testShouldReturnExpected( $config, $expected ): void {
+		$ability = new GenerateMissingNextgen( Bulk::get_instance(), Mockery::mock( StatInterface::class ) );
 
-		return new GenerateMissingNextgen( Bulk::get_instance(), $stat );
-	}
+		// Bulk is final: swap it for a stub returning the configured contexts.
+		$this->setPropertyValue(
+			'bulk',
+			$ability,
+			new class( $config['contexts'] ) {
+				private $contexts;
 
-	/**
-	 * Tests that check_permissions() returns true for a user with manage_options.
-	 */
-	public function testReturnsTrueWhenUserCanManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( true );
+				public function __construct( array $contexts ) {
+					$this->contexts = $contexts;
+				}
 
-		$ability = $this->make_ability();
-		$this->assertTrue( $ability->check_permissions() );
-	}
+				public function get_contexts(): array {
+					return $this->contexts;
+				}
+			}
+		);
 
-	/**
-	 * Tests that check_permissions() returns false for a user without manage_options.
-	 */
-	public function testReturnsFalseWhenUserCannotManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( false );
+		Functions\when( 'imagify_get_context' )->alias(
+			function ( $name ) use ( $config ) {
+				return new class( $name, $config['allowed'] ) {
+					private $name;
+					private $allowed;
 
-		$ability = $this->make_ability();
-		$this->assertFalse( $ability->check_permissions() );
-	}
+					public function __construct( $name, array $allowed ) {
+						$this->name    = $name;
+						$this->allowed = $allowed;
+					}
 
-	/**
-	 * Finding 4 regression guard: get_required_capability() returns 'manage_options', matching
-	 * has_permission()'s real capability check, so a denial reports the accurate capability
-	 * (not the AbstractAbility default of 'manage').
-	 */
-	public function testGetRequiredCapabilityReturnsManageOptions(): void {
-		$ability = $this->make_ability();
-
-		$reflection = new \ReflectionMethod( $ability, 'get_required_capability' );
-		$reflection->setAccessible( true );
-
-		$this->assertSame( 'manage_options', $reflection->invoke( $ability ) );
-	}
-
-	/**
-	 * Finding 4 regression guard: a denial fires imagify_mcp_permission_denied with
-	 * 'manage_options', not the inherited 'manage' default.
-	 */
-	public function testDenialFiresPermissionDeniedActionWithManageOptions(): void {
-		Functions\when( 'current_user_can' )->justReturn( false );
+					public function current_user_can( $describer ): bool {
+						return in_array( "{$this->name}:{$describer}", $this->allowed, true );
+					}
+				};
+			}
+		);
 
 		Actions\expectDone( 'imagify_mcp_permission_denied' )
-			->once()
-			->with( GenerateMissingNextgen::ABILITY_ID, GenerateMissingNextgen::ABILITY_NAME, 'manage_options' );
+			->times( $expected ? 0 : 1 )
+			->with( GenerateMissingNextgen::ABILITY_ID, GenerateMissingNextgen::ABILITY_NAME, 'manage' );
 
-		$ability = $this->make_ability();
-		$ability->check_permissions();
+		$this->assertSame( $expected, $ability->check_permissions() );
 	}
 }

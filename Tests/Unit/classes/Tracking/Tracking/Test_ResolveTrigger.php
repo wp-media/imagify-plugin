@@ -31,6 +31,11 @@ class Test_ResolveTrigger extends TestCase {
 		$optin    = Mockery::mock( Optin::class );
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
 
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
+
 		$this->tracking = new Tracking( $optin, $mixpanel );
 	}
 
@@ -42,8 +47,7 @@ class Test_ResolveTrigger extends TestCase {
 	 * @return string
 	 */
 	private function call_resolve_trigger( array $item ): string {
-		$ref    = new \ReflectionMethod( $this->tracking, 'resolve_trigger' );
-		$ref->setAccessible( true );
+		$ref    = $this->get_reflective_method( 'resolve_trigger', Tracking::class );
 		return $ref->invoke( $this->tracking, $item );
 	}
 

@@ -3,21 +3,24 @@
 /.claude
 /.wordpress-org
 /bin
-/_dev
+/src
+/node_modules
 /Tests
 
 /.distignore
 /.editorconfig
-/.eslintrc.json
+/eslint.config.js
 /.gitattributes
 /.gitignore
 /.jshintrc
 /composer.json
 /composer.lock
 /gruntfile.js
+/webpack.config.js
 /package.json
 /package-lock.json
 /phpcs.xml
 /README.md
 /SECURITY.md
 /phpstan.neon.dist
+/generatedpackages

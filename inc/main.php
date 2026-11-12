@@ -8,24 +8,6 @@ if ( file_exists( IMAGIFY_PATH . 'vendor/autoload.php' ) ) {
 	require_once IMAGIFY_PATH . 'vendor/autoload.php';
 }
 
-// Support Composer dependency install where Strauss prefixing hasn't run.
-// Prefixed classes exist when installed as root package; unprefixed when installed as dependency.
-if ( ! class_exists( 'Imagify\Dependencies\League\Container\Container' ) ) {
-	if ( class_exists( 'League\Container\Container' ) ) {
-		class_alias( 'League\Container\Container', 'Imagify\Dependencies\League\Container\Container' );
-	}
-}
-if ( ! interface_exists( 'Imagify\Dependencies\League\Container\ServiceProvider\ServiceProviderInterface' ) ) {
-	if ( interface_exists( 'League\Container\ServiceProvider\ServiceProviderInterface' ) ) {
-		class_alias( 'League\Container\ServiceProvider\ServiceProviderInterface', 'Imagify\Dependencies\League\Container\ServiceProvider\ServiceProviderInterface' );
-	}
-}
-if ( ! class_exists( 'Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider' ) ) {
-	if ( class_exists( 'League\Container\ServiceProvider\AbstractServiceProvider' ) ) {
-		class_alias( 'League\Container\ServiceProvider\AbstractServiceProvider', 'Imagify\Dependencies\League\Container\ServiceProvider\AbstractServiceProvider' );
-	}
-}
-
 require_once IMAGIFY_PATH . 'inc/Dependencies/ActionScheduler/action-scheduler.php';
 
 /**
@@ -50,28 +32,16 @@ function imagify_init() {
 
 	$plugin->init( $providers );
 
-	// Boot the MCP adapter after providers/subscribers are wired so that
-	// ConfigSubscriber and AbilitiesSubscriber are already listening before
-	// the adapter fires `mcp_adapter_init` / `wp_abilities_api_*` actions
-	// (those fire from `rest_api_init` priority 15, well after `plugins_loaded`).
-	$can_boot_mcp_adapter =
-		class_exists( \WP\MCP\Core\McpAdapter::class )
+	// The MCP Adapter is no longer bundled: boot MCP OAuth only when the standalone plugin is loaded.
+	if (
+		class_exists( 'WP\MCP\Core\McpAdapter' )
+		&& class_exists( \WPMedia\MCP\OAuth\Bootstrap::class )
 		&& function_exists( 'wp_register_ability' )
 		&& function_exists( 'wp_get_ability' )
 		&& function_exists( 'wp_get_abilities' )
-		&& function_exists( 'wp_register_ability_category' );
-
-	if ( $can_boot_mcp_adapter ) {
-		\WP\MCP\Core\McpAdapter::instance();
-
-		// Boot the shared MCP OAuth library (wp-media/mcp-oauth) so Claude Desktop
-		// (and any other MCP client) can authenticate against the isolated
-		// `mcp-oauth-server` it registers. The library self-wires its own
-		// WordPress hooks and is enabled by default; Imagify has no custom OAuth
-		// code. It relies on the MCP adapter, so it only boots when the adapter can.
-		if ( class_exists( \WPMedia\MCP\OAuth\Bootstrap::class ) ) {
-			\WPMedia\MCP\OAuth\Bootstrap::instance();
-		}
+		&& function_exists( 'wp_register_ability_category' )
+	) {
+		\WPMedia\MCP\OAuth\Bootstrap::instance();
 	}
 }
 add_action( 'plugins_loaded', 'imagify_init' );

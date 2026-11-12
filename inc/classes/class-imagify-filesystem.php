@@ -30,6 +30,15 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 */
 	const PATTERN_DELIMITER = '@';
 
+	/**
+	 * Cached site root URLs, keyed by blog ID.
+	 *
+	 * @since 2.3.1
+	 *
+	 * @var array<int,string>
+	 */
+	private $site_root_urls = [];
+
 	/** ----------------------------------------------------------------------------------------- */
 	/** INSTANCIATION =========================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
@@ -826,41 +835,61 @@ class Imagify_Filesystem extends WP_Filesystem_Direct {
 	 * Get the URL of the site's root. It corresponds to the main site's home page URL.
 	 *
 	 * @since  1.8.1
+	 * @since  2.3.1 Added the imagify_site_root_url filter.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
 	 * @return string
 	 */
 	public function get_site_root_url() {
-		static $root_url;
+		$blog_id = get_current_blog_id();
 
-		if ( isset( $root_url ) ) {
-			return $root_url;
+		if ( isset( $this->site_root_urls[ $blog_id ] ) ) {
+			return $this->site_root_urls[ $blog_id ];
 		}
 
-		if ( ! is_multisite() || is_main_site() ) {
-			$root_url = home_url( '/' );
-			return $root_url;
+		$root_url = home_url( '/' );
+
+		if ( is_multisite() && ! is_main_site() ) {
+			$current_network = false;
+
+			if ( function_exists( 'get_network' ) ) {
+				$current_network = get_network();
+			} elseif ( function_exists( 'get_current_site' ) ) {
+				$current_network = get_current_site();
+			}
+
+			if ( $current_network ) {
+				$scheme   = is_ssl() ? 'https' : 'http';
+				$root_url = set_url_scheme( 'http://' . $current_network->domain . $current_network->path, $scheme );
+				$root_url = trailingslashit( $root_url );
+			}
 		}
 
-		$current_network = false;
+		/**
+		 * Filters the URL of the site's root.
+		 *
+		 * On a multisite, this URL is built from the current network's domain and path. Sites using
+		 * domain mapping are served from a domain that does not match it, which prevents Imagify from
+		 * recognizing their image URLs as internal. Use this filter to return the URL actually used to
+		 * serve the current site.
+		 *
+		 * The returned value is cached per blog for the rest of the request: callbacks must be
+		 * deterministic for a given blog ID.
+		 *
+		 * @since 2.3.1
+		 *
+		 * @param string $root_url URL of the site's root, with a trailing slash.
+		 * @param int    $blog_id  ID of the blog the URL was built for.
+		 */
+		$filtered_url = apply_filters( 'imagify_site_root_url', $root_url, $blog_id );
 
-		if ( function_exists( 'get_network' ) ) {
-			$current_network = get_network();
-		} elseif ( function_exists( 'get_current_site' ) ) {
-			$current_network = get_current_site();
-		}
+		// Ignore anything a callback returns that is not a usable URL, rather than casting it blindly.
+		$this->site_root_urls[ $blog_id ] = is_string( $filtered_url ) && '' !== trim( $filtered_url )
+			? trailingslashit( trim( $filtered_url ) )
+			: home_url( '/' );
 
-		if ( ! $current_network ) {
-			$root_url = home_url( '/' );
-			return $root_url;
-		}
-
-		$root_url = is_ssl() ? 'https' : 'http';
-		$root_url = set_url_scheme( 'http://' . $current_network->domain . $current_network->path, $root_url );
-		$root_url = trailingslashit( $root_url );
-
-		return $root_url;
+		return $this->site_root_urls[ $blog_id ];
 	}
 
 	/**

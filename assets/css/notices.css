@@ -137,12 +137,21 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 	background: #343A49;
 }
 
-.imagify-notice a {
+/**
+ * The doubled class keeps these rules ahead of core's `div.updated p` and
+ * `div.updated a`, which paint notice text #1e1e1e and links in the admin theme
+ * colour. Both are close to unreadable on the dark notice background.
+ */
+.imagify-notice.imagify-notice p {
+	color: #FFF;
+}
+
+.imagify-notice.imagify-notice a {
 	color: #40B1D0;
 }
 
-.imagify-notice a:hover,
-.imagify-notice a:focus {
+.imagify-notice.imagify-notice a:hover,
+.imagify-notice.imagify-notice a:focus {
 	color: #FEE102;
 }
 
@@ -152,6 +161,16 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
 
 .imagify-notice .imagify-rate-us.imagify-rate-us {
 	text-align: left;
+}
+
+/* Match the settings page header, which uses the same palette. */
+.imagify-notice-rating.imagify-notice {
+	background: #1F2332;
+}
+
+/* Brand blue rather than the green inherited from `.updated`. */
+.imagify-notice-rating .imagify-notice-logo {
+	background: #40B1D0;
 }
 
 .imagify-notice .imagify-rate-us .stars {

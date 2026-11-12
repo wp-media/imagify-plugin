@@ -37,10 +37,9 @@ class RestoreMedia implements AbilitiesInterface {
 					'properties' => [
 						'media_id' => [
 							'type'        => 'integer',
-							'description' => __( 'The WordPress attachment ID to restore.', 'imagify' ),
+							'description' => __( 'The WordPress attachment ID to restore. Provide media_filename or media_url instead when the ID is unknown.', 'imagify' ),
 						],
-					],
-					'required'   => [ 'media_id' ],
+					] + MediaResolver::get_input_schema_properties(),
 				],
 				'output_schema'       => [
 					'type'       => 'object',
@@ -80,10 +79,39 @@ class RestoreMedia implements AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * @return bool True when the current user has the `manage_options` capability.
+	 * Requires the Imagify `manage` capability, plus `manual-restore` on the
+	 * context the requested media belongs to, as the legacy AJAX restore
+	 * handlers do. The WP Abilities API passes the call's input here, and
+	 * resolves the media the same way execute() does.
+	 *
+	 * @param mixed $input Input arguments passed by the WP Abilities API, if any.
+	 * @return bool True when the current user may restore the requested media.
 	 */
-	public function check_permissions(): bool {
-		return (bool) current_user_can( 'manage_options' );
+	public function check_permissions( $input = null ): bool {
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			return false;
+		}
+
+		$media_id = MediaResolver::resolve_id( is_array( $input ) ? $input : [] );
+
+		if ( is_wp_error( $media_id ) ) {
+			// Nothing resolves, so nothing can be restored: execute() reports the error.
+			return true;
+		}
+
+		$process = $this->get_process( $media_id );
+
+		if ( null === $process ) {
+			return true;
+		}
+
+		$media = $process->get_media();
+
+		if ( ! $media ) {
+			return false;
+		}
+
+		return imagify_get_context( $media->get_context() )->current_user_can( 'manual-restore', $media_id );
 	}
 
 	/**
@@ -93,13 +121,13 @@ class RestoreMedia implements AbilitiesInterface {
 	 * @return array{status: string, restored_size: int|null, error_message: string|null}
 	 */
 	public function execute( array $args = [] ): array {
-		$media_id = isset( $args['media_id'] ) ? (int) $args['media_id'] : 0;
+		$media_id = MediaResolver::resolve_id( $args );
 
-		if ( $media_id <= 0 ) {
+		if ( is_wp_error( $media_id ) ) {
 			return [
 				'status'        => 'error',
 				'restored_size' => null,
-				'error_message' => 'Invalid or missing media_id.',
+				'error_message' => $media_id->get_error_message(),
 			];
 		}
 

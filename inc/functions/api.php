@@ -223,6 +223,13 @@ function imagify_translate_api_message( $message ) {
 		),
 		'Your image is too big to be uploaded on our server' => __( 'Your file is too big to be uploaded on our server.', 'imagify' ),
 		'Webp is less performant than original'         => __( 'WebP file is larger than the original image', 'imagify' ),
+
+		/*
+		 * The AVIF wording below has not been confirmed against a live API response: it mirrors the WebP
+		 * pattern. Both casings are mapped so the message is translated whichever one the API returns.
+		 */
+		'Avif is less performant than original'         => __( 'AVIF file is larger than the original image', 'imagify' ),
+		'AVIF is less performant than original'         => __( 'AVIF file is larger than the original image', 'imagify' ),
 		'Our server returned an invalid response'       => __( 'Our server returned an invalid response.', 'imagify' ),
 		'cURL isn\'t installed on the server'           => __( 'cURL is not available on the server.', 'imagify' ),
 		// API messages.

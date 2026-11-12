@@ -28,6 +28,11 @@ class Test_TrackMediaRestored extends TestCase {
 		$optin    = Mockery::mock( Optin::class );
 		$mixpanel = Mockery::mock( TrackingPlugin::class );
 
+		$mixpanel->shouldReceive( 'identify' )->byDefault();
+
+		Functions\when( 'get_home_url' )->justReturn( 'https://example.com' );
+		Functions\when( 'wp_parse_url' )->justReturn( 'example.com' );
+
 		$optin->shouldReceive( 'can_track' )->andReturn( $config['can_track'] );
 
 		Functions\when( 'get_imagify_user' )->justReturn( (object) [ 'email' => 'user@example.com' ] );

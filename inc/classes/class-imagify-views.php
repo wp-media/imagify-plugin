@@ -171,10 +171,10 @@ class Imagify_Views {
 		$cf_context = imagify_get_context( 'custom-folders' );
 
 		// Main item: bulk optimization (custom folders).
-		add_menu_page( __( 'Bulk Optimization', 'imagify' ), 'Imagify', $cf_context->current_user_can( 'bulk-optimize' ), $this->get_bulk_page_slug(), [ $this, 'display_bulk_page' ] );
+		add_menu_page( __( 'Bulk Optimization', 'imagify' ), 'Imagify', $cf_context->get_capacity( 'bulk-optimize' ), $this->get_bulk_page_slug(), [ $this, 'display_bulk_page' ] );
 
 		// Sub-menu item: custom folders list.
-		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), $cf_context->current_user_can( 'bulk-optimize' ), $this->get_files_page_slug(), [ $this, 'display_files_list' ] );
+		$screen_id = add_submenu_page( $this->get_bulk_page_slug(), __( 'Other Media optimized by Imagify', 'imagify' ), __( 'Other Media', 'imagify' ), $cf_context->get_capacity( 'bulk-optimize' ), $this->get_files_page_slug(), [ $this, 'display_files_list' ] );
 
 		// Sub-menu item: settings.
 		add_submenu_page( $this->get_bulk_page_slug(), 'Imagify', __( 'Settings', 'imagify' ), $wp_context->get_capacity( 'manage' ), $this->get_settings_page_slug(), [ $this, 'display_settings_page' ] );

@@ -19,6 +19,13 @@ use WP_Error;
  * @group  RestoreMedia
  */
 class Test_Execute extends TestCase {
+	protected function setUp(): void {
+		parent::setUp();
+
+		// MediaResolver builds translated WP_Error messages when no identifier resolves.
+		Functions\stubTranslationFunctions();
+	}
+
 
 	// -------------------------------------------------------------------------
 	// Helpers

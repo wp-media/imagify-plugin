@@ -2,41 +2,19 @@ name: PHPStan
 
 on:
   pull_request:
-    branches:
-      - trunk
-      - develop
-      - branch-*
-      - feature/*
-      - enhancement/*
-      - fix/*
+  workflow_dispatch:
+
+# Cancel all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  run:
-    runs-on: ${{ matrix.operating-system }}
-
-    strategy:
-      matrix:
-        operating-system: [ubuntu-latest]
-        php-versions: ['8.3']
-
-    name: PHP ${{ matrix.php-versions }}
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v6
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php-versions }}
-        coverage: none  # XDebug can be enabled here 'coverage: xdebug'
-        tools: composer:v2
-
-    - name: Install Strauss
-      run: sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'
-
-    - name: Install dependencies
-      run: composer install --no-interaction
-
-    - name: Run PHPStan
-      run: composer run-stan -- --error-format=github
-
+  lint:
+    uses: wp-media/workflows/.github/workflows/phpstan.yml@main
+    with:
+      # Empty (not --no-scripts) so Composer runs its post-install/update scripts,
+      # i.e. Strauss namespace prefixing: PHPStan analyses classes/ which reference
+      # the prefixed Imagify\Dependencies\* / Imagify_* classes and needs them
+      # autoloadable to resolve types.
+      composer-options: ''
