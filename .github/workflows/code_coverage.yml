@@ -26,6 +26,19 @@ jobs:
 
     name: Code Coverage.
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
       IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
 
@@ -53,6 +66,11 @@ jobs:
         # covered unit suite needs to autoload the Imagify\Dependencies\* classes.
         composer-options: ''
 
+    - name: Setup WordPress test suite
+      uses: wp-media/workflows/.github/actions/setup-wp-tests@main
+      with:
+        wp-version: ${{ matrix.wp-versions }}
+
     # Registered here, not in the composite action: GitHub removes problem
     # matchers added inside a composite action when it finishes, so they must
     # be added in the caller to stay active for the test steps below.
@@ -65,6 +83,9 @@ jobs:
     - name: Code Coverage
       run: composer code-coverage
 
+    - name: Integration Code Coverage
+      run: composer code-coverage-integration
+
     # Dependabot-triggered runs only get Dependabot secrets, so the Codacy token
     # is empty and the upload always fails. The coverage run above still applies.
     - name: Run codacy-coverage-reporter
@@ -72,4 +93,4 @@ jobs:
       uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        coverage-reports: tests/report/coverage.clover
+        coverage-reports: tests/report/coverage.clover,tests/report/coverage-integration.clover
