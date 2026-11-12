@@ -10,7 +10,7 @@
 		"url": "http://wp-media.me"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.29.13",
+		"@babel/core": "^8.1.0",
 		"@wordpress/babel-preset-default": "^8.56.0",
 		"@wordpress/jest-preset-default": "^14.2.0",
 		"@wordpress/scripts": "^37.1.0",
