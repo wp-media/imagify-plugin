@@ -1,4 +1,4 @@
-/* eslint-env browser, node */
+/* global module */
 /**
  * Imagify pure helpers.
  *

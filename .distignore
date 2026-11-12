@@ -9,7 +9,7 @@
 
 /.distignore
 /.editorconfig
-/.eslintrc.json
+/eslint.config.js
 /.gitattributes
 /.gitignore
 /.jshintrc
