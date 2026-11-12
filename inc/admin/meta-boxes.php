@@ -45,6 +45,10 @@ function _imagify_attachment_submitbox_misc_actions() {
 		</div>
 		<?php
 	} else {
+		// Always printed, so the heading is still there after the buttons are replaced in place by AJAX.
+		?>
+		<div class="misc-pub-section misc-pub-imagify"><h4><?php esc_html_e( 'Imagify', 'imagify' ); ?></h4></div>
+		<?php
 		$is_locked = $process->is_locked();
 
 		if ( $is_locked ) {
@@ -67,7 +71,6 @@ function _imagify_attachment_submitbox_misc_actions() {
 			<?php
 		} elseif ( $data->is_optimized() || $data->is_already_optimized() || $data->is_error() ) {
 			?>
-			<div class="misc-pub-section misc-pub-imagify"><h4><?php esc_html_e( 'Imagify', 'imagify' ); ?></h4></div>
 			<div class="misc-pub-section misc-pub-imagify imagify-data-item">
 				<div class="imagify-data-actions-container" data-id="<?php echo esc_attr( $post->ID ); ?>" data-context="wp">
 					<?php echo get_imagify_attachment_optimization_text( $process ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -80,15 +83,7 @@ function _imagify_attachment_submitbox_misc_actions() {
 			<div class="misc-pub-section misc-pub-imagify">
 				<div class="imagify-data-actions-container" data-id="<?php echo esc_attr( $post->ID ); ?>" data-context="wp">
 					<?php
-					$views->print_template(
-						'button/optimize',
-						[
-							'url'  => $url,
-							'atts' => [
-								'class' => 'button-primary button-imagify-optimize',
-							],
-						]
-					);
+					$views->print_template( 'button/optimize', [ 'url' => $url ] );
 					?>
 				</div>
 			</div>
