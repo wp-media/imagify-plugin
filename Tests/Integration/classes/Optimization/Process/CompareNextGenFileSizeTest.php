@@ -10,15 +10,10 @@ use WP_Error;
 /**
  * Tests for \Imagify\Optimization\Process\AbstractProcess::compare_next_gen_file_size().
  *
- * Runs against a real attachment, its real `_imagify_data` and real files on disk. The method
- * caches the `imagify_keep_large_next_gen` filter result in a function-level static, so each
- * test runs in its own process to read the filter afresh.
+ * Runs against a real attachment, its real `_imagify_data` and real files on disk.
  *
  * @covers \Imagify\Optimization\Process\AbstractProcess::compare_next_gen_file_size
  * @group  Optimization
- *
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
  */
 class CompareNextGenFileSizeTest extends TestCase {
 	/**

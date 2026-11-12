@@ -806,18 +806,14 @@ abstract class AbstractProcess implements ProcessInterface {
 	 * @return \sdtClass|WP_Error Optimized image data. A WP_Error object on error.
 	 */
 	protected function compare_next_gen_file_size( $args ) {
-		static $keep_large_next_gen;
-
-		if ( ! isset( $keep_large_next_gen ) ) {
-			/**
-			 * Allow to not store next-gen images that are larger than their non-next-gen version.
-			 *
-			 * @since 1.9.4
-			 *
-			 * @param bool $keep_large_next_gen Set to true to keep next-gen files even when they are larger than their non-next-gen version. Default value is false.
-			 */
-			$keep_large_next_gen = apply_filters( 'imagify_keep_large_next_gen', false );
-		}
+		/**
+		 * Allow to not store next-gen images that are larger than their non-next-gen version.
+		 *
+		 * @since 1.9.4
+		 *
+		 * @param bool $keep_large_next_gen Set to true to keep next-gen files even when they are larger than their non-next-gen version. Default value is false.
+		 */
+		$keep_large_next_gen = apply_filters( 'imagify_keep_large_next_gen', false );
 
 		if ( $keep_large_next_gen || is_wp_error( $args['response'] ) || ! $args['file']->is_image() ) {
 			return $args['response'];
