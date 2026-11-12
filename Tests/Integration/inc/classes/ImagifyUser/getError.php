@@ -3,26 +3,27 @@
 namespace Imagify\Tests\Integration\inc\classes\ImagifyUser;
 
 use Imagify;
-use Imagify_User;
+use Imagify\User\User;
 use stdClass;
 use WP_Error;
 
 /**
- * @covers Imagify_User::get_error
+ * @covers \Imagify\User\User::get_error
  * @group  ImagifyAPI
  */
 class Test_GetError extends TestCase {
 
 	/**
-	 * Test Imagify_User->get_error() should return false when succesfully fetched user account data.
+	 * Test \Imagify\User\User->get_error() should return false when succesfully fetched user account data.
 	 */
 	public function testShouldReturnFalseWhenFetchedUserData() {
-		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
+		update_imagify_option( 'api_key', $this->validApiKey );
+		$this->mockUserAccount();
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
-		$user = new Imagify_User();
+		$user = new User();
 
 		$this->assertFalse( $user->get_error() );
 
@@ -32,20 +33,21 @@ class Test_GetError extends TestCase {
 	}
 
 	/**
-	 * Test Imagify_User->get_error() should return a WP_Error object when couldn’t fetch user account data.
+	 * Test \Imagify\User\User->get_error() should return a WP_Error object when couldn’t fetch user account data.
 	 */
 	public function testShouldReturnErrorWhenCouldNotFetchUserData() {
 		update_imagify_option( 'api_key', $this->invalidApiKey );
+		$this->mockInvalidToken();
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
-		$user = new Imagify_User();
+		$user = new User();
 
 		$this->assertInstanceOf( WP_Error::class, $user->get_error() );
 
 		$user_data = $this->getNonPublicPropertyValue( 'user', Imagify::class );
 		$this->assertInstanceOf( WP_Error::class, $user_data );
-		$this->assertContains( 'Invalid token', $user_data->get_error_message() );
+		$this->assertStringContainsString( 'Invalid token', $user_data->get_error_message() );
 	}
 }

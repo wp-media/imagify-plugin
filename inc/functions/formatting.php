@@ -52,6 +52,6 @@ function imagify_size_format( $bytes, $decimals = -1 ) {
 		$decimals = $bytes > pow( 1024, 3 ) ? 1 : 0;
 	}
 
-	$bytes = @size_format( $bytes, $decimals );
+	$bytes = @size_format( $bytes, $decimals ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 	return str_replace( ' ', ' ', $bytes );
 }

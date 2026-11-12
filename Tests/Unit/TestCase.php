@@ -7,93 +7,53 @@
 
 namespace Imagify\Tests\Unit;
 
+use ReflectionException;
 use WPMedia\PHPUnit\Unit\TestCase as PHPUnitTestCase;
-use Brain\Monkey;
-use Imagify\Tests\TestCaseTrait;
-use ReflectionObject;
-use WP_Error;
 
 abstract class TestCase extends PHPUnitTestCase {
-	use TestCaseTrait;
 
-	protected $config;
+	protected function setUp() : void {
+		if ( empty( $this->config ) ) {
+			$this->loadTestDataConfig();
+		}
 
-	/**
-	 * Prepares the test environment before each test.
-	 */
-	protected function setUp() {
 		parent::setUp();
-		Monkey\setUp();
-
-		if ( empty( $this->config ) ) {
-			$this->loadTestDataConfig();
-		}
-
-		$this->mockCommonWpFunctions();
 	}
 
 	/**
-	 * Cleans up the test environment after each test.
+	 * Reset the value of a private/protected property.
+	 *
+	 * @param string        $property Property name for which to gain access.
+	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 *
+	 * @return mixed                   The previous value of the property.
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 *
 	 */
-	protected function tearDown() {
-		Monkey\tearDown();
-		parent::tearDown();
-	}
-
-	public function configTestData() {
-		if ( empty( $this->config ) ) {
-			$this->loadTestDataConfig();
-		}
-
-		return isset( $this->config['test_data'] )
-			? $this->config['test_data']
-			: $this->config;
-	}
-
-	protected function loadTestDataConfig() {
-		$obj      = new ReflectionObject( $this );
-		$filename = $obj->getFileName();
-
-		$this->config = $this->getTestData( dirname( $filename ), basename( $filename, '.php' ) );
+	protected function resetPropertyValue( $property, $class ) {
+		return $this->setPropertyValue( $property, $class, null );
 	}
 
 	/**
-	 * Mock common WP functions.
+	 * Set the value of a private/protected property.
+	 *
+	 * @param string        $property Property name for which to gain access.
+	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 * @param mixed         $value    The value to set to the property.
+	 *
+	 * @return mixed                   The previous value of the property.
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 *
 	 */
-	protected function mockCommonWpFunctions() {
-		Monkey\Functions\stubs(
-			[
-				'__',
-				'esc_attr__',
-				'esc_html__',
-				'_x',
-				'esc_attr_x',
-				'esc_html_x',
-				'_n',
-				'_nx',
-				'esc_attr',
-				'esc_html',
-				'esc_textarea',
-				'esc_url',
-			]
-		);
+	protected function setPropertyValue( $property, $class, $value ) {
+		$instance = is_object( $class ) ? $class : null;
 
-		$functions = [
-			'_e',
-			'esc_attr_e',
-			'esc_html_e',
-			'_ex',
-		];
+		// Read the previous value, then set the new one, delegating to the
+		// wp-media/phpunit trait which handles static properties safely
+		// (ReflectionProperty::setValue() with a single argument is deprecated as of PHP 8.3).
+		$previous = $this->getNonPublicPropertyValue( $property, $class, $instance );
+		$this->set_reflective_property( $value, $property, $class );
 
-		foreach ( $functions as $function ) {
-			Monkey\Functions\when( $function )->echoArg();
-		}
-
-		include_once IMAGIFY_PLUGIN_TESTS_ROOT . '../Fixtures/WP/class-wp-error.php';
-
-		Monkey\Functions\when( 'is_wp_error' )
-			->alias( function( $thing ) {
-				return $thing instanceof WP_Error;
-			} );
+		return $previous;
 	}
 }

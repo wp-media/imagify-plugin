@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Optimization\Data;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Traits\MediaRowTrait;
 
 /**
  * Optimization data class for the custom folders.
@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class CustomFolders extends AbstractData {
-	use \Imagify\Traits\MediaRowTrait;
+	use MediaRowTrait;
 
 	/**
 	 * The attachment SQL DB class.
@@ -44,11 +44,17 @@ class CustomFolders extends AbstractData {
 			return;
 		}
 
+		$media = $this->get_media();
+
+		if ( ! $media ) {
+			return;
+		}
+
 		// This is required by MediaRowTrait.
-		$this->id = $this->get_media()->get_id();
+		$this->id = $media->get_id();
 
 		// In this context, the media data and the optimization data are stored in the same DB table, so, no need to request twice the DB.
-		$this->row = $this->get_media()->get_row();
+		$this->row = $media->get_row(); // @phpstan-ignore-line
 	}
 
 	/**
@@ -159,6 +165,10 @@ class CustomFolders extends AbstractData {
 				$old_data['hash'] = md5_file( $file_path );
 			}
 
+			if ( key_exists( 'message', $data ) ) {
+				$old_data['message'] = $data['message'];
+			}
+
 			if ( ! $data['success'] ) {
 				/**
 				 * Error.
@@ -177,17 +187,28 @@ class CustomFolders extends AbstractData {
 			/**
 			 * WebP version or any other size.
 			 */
-			$old_data['data'] = ! empty( $old_data['data'] ) && is_array( $old_data['data'] ) ? $old_data['data'] : [];
+			$old_data['data']          = ! empty( $old_data['data'] ) && is_array( $old_data['data'] ) ? $old_data['data'] : [];
 			$old_data['data']['sizes'] = ! empty( $old_data['data']['sizes'] ) && is_array( $old_data['data']['sizes'] ) ? $old_data['data']['sizes'] : [];
 
 			if ( ! $data['success'] ) {
 				/**
 				 * Error.
 				 */
-				$old_data['data']['sizes'][ $size ] = [
+				$size_data = [
 					'success' => false,
 					'error'   => $data['error'],
 				];
+
+				if ( ! empty( $data['permanent_error'] ) ) {
+					/**
+					 * `permanent_error` is written as the FIRST key on purpose: the bulk queries match the
+					 * serialized data with a LIKE on the `<size>";a:3:{s:15:"permanent_error";b:1;` prefix,
+					 * which only stays deterministic if the key order does.
+					 */
+					$size_data = array_merge( [ 'permanent_error' => true ], $size_data );
+				}
+
+				$old_data['data']['sizes'][ $size ] = $size_data;
 			} else {
 				/**
 				 * Success.

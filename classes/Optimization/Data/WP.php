@@ -1,8 +1,6 @@
 <?php
 namespace Imagify\Optimization\Data;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Optimization data class for the medias in the WP library.
  * This class constructor accepts:
@@ -89,20 +87,39 @@ class WP extends AbstractData {
 			$old_data['stats'] = [];
 		}
 
-		$old_data['stats'] = array_merge( [
-			'original_size'  => 0,
-			'optimized_size' => 0,
-			'percent'        => 0,
-		], $old_data['stats'] );
+		$old_data['stats'] = array_merge(
+			[
+				'original_size'  => 0,
+				'optimized_size' => 0,
+				'percent'        => 0,
+				'message'        => '',
+			],
+			$old_data['stats']
+		);
+
+		if ( key_exists( 'message', $data ) ) {
+			$old_data['message'] = $data['message'];
+		}
 
 		if ( ! $data['success'] ) {
 			/**
 			 * Error.
 			 */
-			$old_data['sizes'][ $size ] = [
+			$size_data = [
 				'success' => false,
 				'error'   => $data['error'],
 			];
+
+			if ( ! empty( $data['permanent_error'] ) ) {
+				/**
+				 * `permanent_error` is written as the FIRST key on purpose: the bulk queries match the
+				 * serialized meta value with a LIKE on the `<size>";a:3:{s:15:"permanent_error";b:1;`
+				 * prefix, which only stays deterministic if the key order does.
+				 */
+				$size_data = array_merge( [ 'permanent_error' => true ], $size_data );
+			}
+
+			$old_data['sizes'][ $size ] = $size_data;
 		} else {
 			/**
 			 * Success.

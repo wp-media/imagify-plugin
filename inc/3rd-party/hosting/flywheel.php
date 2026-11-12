@@ -15,7 +15,7 @@ if ( defined( 'FLYWHEEL_CONFIG_DIR' ) ) :
 	 */
 	function imagify_flywheel_site_root( $root_path ) {
 		if ( ! empty( $_SERVER['DOCUMENT_ROOT'] ) ) {
-			return trailingslashit( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) );
+			return trailingslashit( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 
 		$upload_basedir = imagify_get_filesystem()->get_upload_basedir( true );

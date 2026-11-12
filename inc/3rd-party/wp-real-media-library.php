@@ -1,7 +1,7 @@
 <?php
 use Imagify\Notices\Notices;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 if ( defined( 'RML_FILE' ) ) :
 	/**
@@ -53,12 +53,12 @@ if ( defined( 'RML_FILE' ) ) :
 		$instance = \MatthiasWeb\RealMediaLibrary\general\Backend::getInstance();
 
 		remove_action( 'admin_enqueue_scripts', [ $instance, 'admin_enqueue_scripts' ], 0 );
-		remove_action( 'admin_footer',          [ $instance, 'admin_footer' ] );
+		remove_action( 'admin_footer', [ $instance, 'admin_footer' ] );
 
 		if ( class_exists( '\\MatthiasWeb\\RealMediaLibrary\\general\\FolderShortcode' ) ) {
 			$instance = \MatthiasWeb\RealMediaLibrary\general\FolderShortcode::getInstance();
 
-			remove_action( 'admin_head',            [ $instance, 'admin_head' ] );
+			remove_action( 'admin_head', [ $instance, 'admin_head' ] );
 			remove_action( 'admin_enqueue_scripts', [ $instance, 'admin_enqueue_scripts' ] );
 		}
 

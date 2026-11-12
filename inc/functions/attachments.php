@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Get all mime types which could be optimized by Imagify.
@@ -26,7 +26,23 @@ function imagify_get_mime_types( $type = null ) {
 		$mimes['pdf'] = 'application/pdf';
 	}
 
-	return $mimes;
+	/**
+	 * Filter the mime types which could be optimized by Imagify.
+	 *
+	 * @since 2.3.1
+	 *
+	 * @param array $mimes The mime types, as extension => mime type pairs.
+	 */
+	$mimes = wpm_apply_filters_typed( 'array', 'imagify_get_mime_types', $mimes );
+
+	// Keep only well-formed extension => mime type pairs.
+	return array_filter(
+		$mimes,
+		function ( $mime, $ext ) {
+			return is_string( $ext ) && '' !== $ext && is_string( $mime ) && preg_match( '@^[a-z-]+/[a-z0-9.+-]+$@', $mime );
+		},
+		ARRAY_FILTER_USE_BOTH
+	);
 }
 
 /**
@@ -40,7 +56,7 @@ function imagify_get_mime_types( $type = null ) {
  * @return bool
  */
 function imagify_is_attachment_mime_type_supported( $attachment_id ) {
-	static $is = array( false );
+	static $is = [ false ];
 
 	$attachment_id = absint( $attachment_id );
 
@@ -72,12 +88,12 @@ function imagify_get_post_statuses() {
 		return $statuses;
 	}
 
-	$statuses = array(
+	$statuses = [
 		'inherit' => 'inherit',
 		'private' => 'private',
-	);
+	];
 
-	$custom_statuses = get_post_stati( array( 'public' => true ) );
+	$custom_statuses = get_post_stati( [ 'public' => true ] );
 	unset( $custom_statuses['publish'] );
 
 	if ( $custom_statuses ) {
@@ -100,35 +116,38 @@ function imagify_get_post_statuses() {
 /**
  * Tell if the site has attachments (only the ones Imagify would optimize) without the required WP metadata.
  *
+ * @param bool $reset Reset the static method to null when set to true, defaulted to false.
  * @since  1.7
  * @author Grégory Viguier
  *
  * @return bool
  */
-function imagify_has_attachments_without_required_metadata() {
+function imagify_has_attachments_without_required_metadata( $reset = false ) {
 	global $wpdb;
 	static $has;
+
+	if ( $reset ) {
+		$has = null;
+	}
 
 	if ( isset( $has ) ) {
 		return $has;
 	}
 
-	$mime_types   = Imagify_DB::get_mime_types();
-	$statuses     = Imagify_DB::get_post_statuses();
-	$nodata_join  = Imagify_DB::get_required_wp_metadata_join_clause( 'p.ID', false, false );
-	$nodata_where = Imagify_DB::get_required_wp_metadata_where_clause( array(
-		'matching' => false,
-		'test'     => false,
-	) );
-	$has          = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
+	$mime_types = Imagify_DB::get_mime_types();
+	$statuses   = Imagify_DB::get_post_statuses();
+	$exist_data = Imagify_DB::get_required_wp_metadata_exist_clause(
+		'p.ID',
+		false
+	);
+	$has        = (bool) $wpdb->get_var( // WPCS: unprepared SQL ok.
 		"
 		SELECT p.ID
 		FROM $wpdb->posts AS p
-			$nodata_join
 		WHERE p.post_mime_type IN ( $mime_types )
 			AND p.post_type = 'attachment'
 			AND p.post_status IN ( $statuses )
-			$nodata_where
+			$exist_data
 		LIMIT 1"
 	);
 
@@ -285,16 +304,16 @@ function get_imagify_thumbnail_sizes() {
 	$intermediate_image_sizes = get_intermediate_image_sizes();
 	$intermediate_image_sizes = array_flip( $intermediate_image_sizes );
 	// Additional image size attributes.
-	$additional_image_sizes   = wp_get_additional_image_sizes();
+	$additional_image_sizes = wp_get_additional_image_sizes();
 
 	// Create the full array with sizes and crop info.
 	foreach ( $intermediate_image_sizes as $size_name => $s ) {
-		$intermediate_image_sizes[ $size_name ] = array(
+		$intermediate_image_sizes[ $size_name ] = [
 			'width'  => '',
 			'height' => '',
 			'crop'   => false,
 			'name'   => $size_name,
-		);
+		];
 
 		if ( isset( $additional_image_sizes[ $size_name ]['width'] ) ) {
 			// For theme-added sizes.

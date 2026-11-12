@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Imagify — Engineering Deep Dive</title>
+  <style>
+    :root {
+      --blue:    #2B67F6;
+      --blue-l:  #EBF0FE;
+      --green:   #1DB954;
+      --green-l: #E6F8ED;
+      --orange:  #F59E0B;
+      --orange-l:#FEF3C7;
+      --red:     #EF4444;
+      --red-l:   #FEE2E2;
+      --purple:  #7C3AED;
+      --purple-l:#EDE9FE;
+      --gray:    #6B7280;
+      --gray-l:  #F3F4F6;
+      --dark:    #111827;
+      --border:  #E5E7EB;
+      --radius:  10px;
+      --font:    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --mono:    "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); font-size: 15px; line-height: 1.6; color: var(--dark); background: #F8FAFC; }
+    header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2B67F6 100%); color: white; padding: 52px 40px 44px; text-align: center; }
+    header .logo { font-size: 12px; letter-spacing: 4px; text-transform: uppercase; opacity: 0.5; margin-bottom: 14px; }
+    header h1 { font-size: 42px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
+    header p { font-size: 16px; opacity: 0.75; max-width: 640px; margin: 0 auto 22px; }
+    .badge-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .version-badge { display: inline-block; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 4px 16px; font-size: 13px; font-weight: 600; }
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+    nav.toc { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 32px; margin: 36px 24px; }
+    nav.toc h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray); margin-bottom: 16px; }
+    nav.toc ol { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 6px 32px; padding-left: 20px; }
+    nav.toc li { font-size: 13.5px; }
+    nav.toc a { color: var(--blue); text-decoration: none; }
+    nav.toc a:hover { text-decoration: underline; }
+    section { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 38px 42px; margin: 20px 24px; }
+    .section-header { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 2px solid var(--border); }
+    .section-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .section-header h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .section-header p { font-size: 14px; color: var(--gray); }
+    .ic-blue   { background: var(--blue-l); }
+    .ic-green  { background: var(--green-l); }
+    .ic-orange { background: var(--orange-l); }
+    .ic-red    { background: var(--red-l); }
+    .ic-purple { background: var(--purple-l); }
+    h3 { font-size: 15.5px; font-weight: 700; color: var(--dark); margin: 26px 0 12px; display: flex; align-items: center; gap: 8px; }
+    h3::before { content: ''; display: inline-block; width: 4px; height: 16px; background: var(--blue); border-radius: 2px; }
+    h4 { font-size: 14px; font-weight: 700; color: var(--dark); margin: 16px 0 8px; }
+    p { margin-bottom: 12px; color: #374151; }
+    ul, ol { padding-left: 22px; margin-bottom: 12px; }
+    li { margin-bottom: 5px; color: #374151; }
+    li strong { color: var(--dark); }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 16px; }
+    .tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .tag-blue   { background: var(--blue-l);   color: var(--blue); }
+    .tag-green  { background: var(--green-l);  color: #15803D; }
+    .tag-orange { background: var(--orange-l); color: #92400E; }
+    .tag-red    { background: var(--red-l);    color: var(--red); }
+    .tag-purple { background: var(--purple-l); color: var(--purple); }
+    .tag-gray   { background: var(--gray-l);   color: var(--gray); }
+    code { font-family: var(--mono); font-size: 12px; background: var(--gray-l); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; color: #7C3AED; }
+    pre { font-family: var(--mono); font-size: 12.5px; background: #1E293B; color: #E2E8F0; border-radius: 8px; padding: 20px 24px; overflow-x: auto; margin: 12px 0 20px; line-height: 1.7; }
+    pre .c  { color: #64748B; }
+    pre .k  { color: #7DD3FC; }
+    pre .v  { color: #86EFAC; }
+    pre .f  { color: #FCA5A5; }
+    pre .s  { color: #FCD34D; }
+    pre .t  { color: #C4B5FD; }
+    pre .p  { color: #94A3B8; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
+    @media (max-width: 740px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .card { border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; background: #FAFAFA; }
+    .card h4 { font-size: 13.5px; font-weight: 700; margin-bottom: 8px; color: var(--dark); }
+    .card p, .card li { font-size: 13px; color: var(--gray); }
+    .card ul { margin: 0; padding-left: 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0 20px; }
+    th { background: var(--gray-l); text-align: left; padding: 9px 13px; font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray); border-bottom: 2px solid var(--border); }
+    td { padding: 9px 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #F9FAFB; }
+    td code { font-size: 11.5px; }
+    .callout { display: flex; gap: 14px; align-items: flex-start; padding: 14px 18px; border-radius: 8px; border-left: 4px solid; margin: 14px 0; font-size: 13.5px; }
+    .callout-info    { background: var(--blue-l);   border-color: var(--blue);   color: #1e3a8a; }
+    .callout-warning { background: var(--orange-l); border-color: var(--orange); color: #78350f; }
+    .callout-success { background: var(--green-l);  border-color: var(--green);  color: #14532d; }
+    .callout-purple  { background: var(--purple-l); border-color: var(--purple); color: #4C1D95; }
+    .mono-block { font-family: var(--mono); font-size: 12px; background: var(--gray-l); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; margin: 10px 0; line-height: 1.7; }
+    .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 12px 0; font-size: 13px; }
+    .flow-step { background: var(--blue-l); color: var(--blue); padding: 4px 12px; border-radius: 6px; font-weight: 600; font-size: 12px; }
+    .flow-arrow { color: var(--gray); font-size: 16px; }
+    footer { text-align: center; padding: 40px; font-size: 13px; color: var(--gray); margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Engineering Reference</div>
+  <h1>Imagify — Engineering Deep Dive</h1>
+  <p>Complete process-level reference for plugin engineers. Class hierarchies, call flows, DB schemas, hook signatures, API structures, and concurrency details.</p>
+  <div class="badge-row">
+    <span class="version-badge">Version 2.2.8</span>
+    <span class="version-badge">PHP 7.3+ · WordPress 5.3+</span>
+    <span class="version-badge">PSR-4 · League Container · ActionScheduler</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#architecture">Architecture &amp; Bootstrapping</a></li>
+    <li><a href="#namespace">Namespace &amp; PSR-4 Structure</a></li>
+    <li><a href="#optimization-process">Optimization Process — Class Hierarchy &amp; Call Flow</a></li>
+    <li><a href="#file-class">Optimization\File — Method Signatures</a></li>
+    <li><a href="#api">API Client — Endpoints &amp; Request/Response</a></li>
+    <li><a href="#metadata">WordPress Postmeta Keys &amp; Data Structures</a></li>
+    <li><a href="#settings">Settings — Option Keys, Types &amp; Defaults</a></li>
+    <li><a href="#db-schemas">Database Schemas (imagify_folders, imagify_files, ngg_imagify_data)</a></li>
+    <li><a href="#bulk">Bulk Optimization — ActionScheduler Integration</a></li>
+    <li><a href="#locking">Concurrency &amp; Locking Mechanisms</a></li>
+    <li><a href="#picture-display">Picture\Display — Output Buffer HTML Rewrite</a></li>
+    <li><a href="#ajax">AJAX &amp; Admin-Post — Full Security Table</a></li>
+    <li><a href="#cli">WP-CLI Commands — Full Signatures</a></li>
+    <li><a href="#hooks">Developer Hooks — Exact Signatures &amp; Parameter Types</a></li>
+    <li><a href="#cron">Scheduled Tasks — Cron &amp; ActionScheduler</a></li>
+    <li><a href="#multisite">Multisite Handling</a></li>
+    <li><a href="#ngg">NextGEN Gallery Integration</a></li>
+    <li><a href="#third-party">Third-Party Integrations</a></li>
+    <li><a href="#quota">Quota &amp; Account Management</a></li>
+    <li><a href="#roles">Roles &amp; Capabilities</a></li>
+    <li><a href="#tools">Troubleshooting Tools — InternalStateList &amp; Reset</a></li>
+    <li><a href="#error-handling">Error Handling Paths</a></li>
+    <li><a href="#filesystem">Filesystem Operations &amp; Paths</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════════════════ 1 ARCHITECTURE ═══════════════════ -->
+<section id="architecture">
+  <div class="section-header">
+    <div class="section-icon ic-blue">🏗️</div>
+    <div>
+      <h2>1. Architecture &amp; Bootstrapping</h2>
+      <p>Entry point, constants, DI container, service provider chain, and init sequence.</p>
+    </div>
+  </div>
+
+  <h3>Entry Point — <code>imagify.php</code></h3>
+  <p>WordPress loads <code>imagify.php</code> during the <code>plugins_loaded</code> phase. It defines all constants and registers activation/deactivation hooks before delegating to <code>inc/main.php</code>.</p>
+
+  <pre><span class="c">// imagify.php — constants defined at plugin load time</span>
+<span class="f">define</span>( <span class="s">'IMAGIFY_VERSION'</span>,        <span class="s">'2.2.8'</span> );
+<span class="f">define</span>( <span class="s">'IMAGIFY_SLUG'</span>,           <span class="s">'imagify'</span> );
+<span class="f">define</span>( <span class="s">'IMAGIFY_FILE'</span>,           <span class="k">__FILE__</span> );
+<span class="f">define</span>( <span class="s">'IMAGIFY_PATH'</span>,           <span class="f">realpath</span>( <span class="f">plugin_dir_path</span>( IMAGIFY_FILE ) ) . <span class="s">'/'</span> );
+<span class="f">define</span>( <span class="s">'IMAGIFY_URL'</span>,            <span class="f">plugin_dir_url</span>( IMAGIFY_FILE ) );
+<span class="f">define</span>( <span class="s">'IMAGIFY_ASSETS_IMG_URL'</span>, IMAGIFY_URL . <span class="s">'assets/images/'</span> );
+<span class="f">define</span>( <span class="s">'IMAGIFY_MAX_BYTES'</span>,      <span class="v">5242880</span> );   <span class="c">// 5 MB hard limit per image</span>
+<span class="f">define</span>( <span class="s">'IMAGIFY_INT_MAX'</span>,        PHP_INT_MAX - <span class="v">30</span> );
+<span class="f">define</span>( <span class="s">'IMAGIFY_SITE_DOMAIN'</span>,    <span class="s">'https://imagify.io'</span> );
+<span class="f">define</span>( <span class="s">'IMAGIFY_APP_DOMAIN'</span>,     <span class="s">'https://app.imagify.io'</span> );
+<span class="f">define</span>( <span class="s">'IMAGIFY_APP_API_URL'</span>,    IMAGIFY_APP_DOMAIN . <span class="s">'/api/'</span> );</pre>
+
+  <h3>Bootstrap Sequence</h3>
+  <div class="flow">
+    <span class="flow-step">plugins_loaded</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">imagify_init()</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">vendor/autoload.php</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">new Plugin(Container, args)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">Plugin::init($providers)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">do_action('imagify_loaded')</span>
+  </div>
+
+  <p><code>imagify_init()</code> lives in <code>inc/main.php</code>. It skips execution if <code>DOING_AUTOSAVE</code> is defined. The <code>Plugin</code> class (<code>classes/Plugin.php</code>) receives a <strong>League\Container</strong> instance and the plugin path, then orchestrates the full init sequence:</p>
+
+  <pre><span class="c">// classes/Plugin.php — init sequence (abridged)</span>
+<span class="k">public function</span> <span class="f">init</span>( <span class="t">array</span> $providers ): <span class="k">void</span> {
+    <span class="c">// 1. Register shared services</span>
+    $this->container->addShared( <span class="s">'event_manager'</span>, <span class="k">fn</span>() => <span class="k">new</span> <span class="t">EventManager</span>() );
+    $this->container->addShared( <span class="s">'filesystem'</span>,    <span class="k">fn</span>() => <span class="k">new</span> <span class="t">Imagify_Filesystem</span>() );
+
+    <span class="c">// 2. Include procedural files (functions/, common/, 3rd-party/)</span>
+    $this-><span class="f">include_files</span>();
+
+    <span class="c">// 3. Init legacy singletons</span>
+    <span class="t">Imagify_Auto_Optimization</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+    <span class="t">Imagify_Options</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+    <span class="t">Imagify_Data</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+    <span class="t">Imagify_Folders_DB</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+    <span class="t">Imagify_Files_DB</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+    <span class="t">Imagify_Cron_Library_Size</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+    <span class="t">Imagify_Cron_Rating</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+    <span class="t">Imagify_Cron_Sync_Files</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+    <span class="t">Imagify\Auth\Basic</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+    <span class="t">Imagify\Job\MediaOptimization</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+    <span class="t">Bulk</span>::<span class="f">get_instance</span>()-><span class="f">init</span>();
+
+    <span class="c">// 4. Admin-only classes</span>
+    <span class="k">if</span> ( <span class="f">is_admin</span>() ) { ... }
+
+    <span class="c">// 5. Register PSR-4 service providers + subscribers</span>
+    <span class="k">foreach</span> ( $providers <span class="k">as</span> $service_provider ) {
+        $this->container-><span class="f">addServiceProvider</span>( <span class="k">new</span> $service_provider() );
+        $this-><span class="f">load_subscribers</span>( $provider_instance );
+    }
+
+    <span class="f">do_action</span>( <span class="s">'imagify_loaded'</span>, $this );
+}</pre>
+
+  <h3>Activation / Deactivation Hooks</h3>
+  <table>
+    <thead><tr><th>Hook</th><th>Handler</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>register_activation_hook</code></td><td><code>imagify_set_activation()</code></td><td>Sets transient <code>imagify_activation</code> with current user ID (TTL 30s). On network: <code>set_site_transient</code>.</td></tr>
+      <tr><td><code>register_deactivation_hook</code></td><td><code>imagify_deactivation()</code></td><td>Deletes <code>imagify_check_api_version</code> and <code>imagify_check_licence_1</code> site transients; fires <code>imagify_deactivation</code> action.</td></tr>
+      <tr><td><code>init</code> (Plugin)</td><td><code>Plugin::maybe_activate()</code></td><td>Reads activation transient; fires <code>imagify_activation</code> action with user ID, then deletes transient.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Service Providers (config/providers.php)</h3>
+  <div class="grid-3">
+    <div class="card"><h4>Imagify\User\ServiceProvider</h4><p>Registers <code>User</code> singleton; binds account/quota service.</p></div>
+    <div class="card"><h4>Imagify\Admin\ServiceProvider</h4><p>AdminBar, PluginFamily, AdminSubscriber.</p></div>
+    <div class="card"><h4>Imagify\Avif\ServiceProvider</h4><p>AVIF rewrite-rule writers for Apache/Nginx/IIS.</p></div>
+    <div class="card"><h4>Imagify\CDN\ServiceProvider</h4><p>CDN push integration.</p></div>
+    <div class="card"><h4>Imagify\Picture\ServiceProvider</h4><p>Registers <code>Picture\Display</code> subscriber for &lt;picture&gt; tag rewriting.</p></div>
+    <div class="card"><h4>Imagify\Stats\ServiceProvider</h4><p>Stat counters (e.g. <code>OptimizedMediaWithoutNextGen</code>).</p></div>
+    <div class="card"><h4>Imagify\Webp\ServiceProvider</h4><p>WebP rewrite-rule writers.</p></div>
+    <div class="card"><h4>Imagify\ThirdParty\ServiceProvider</h4><p>GravityForms, Extendify; loads all <code>inc/3rd-party/</code> integrations.</p></div>
+    <div class="card"><h4>Imagify\Media\ServiceProvider</h4><p>Media subscribers, upload handler.</p></div>
+    <div class="card"><h4>Imagify\Tools\ServiceProvider</h4><p>Reset internal state tool, troubleshooting subscriber.</p></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 2 NAMESPACE ═══════════════════ -->
+<section id="namespace">
+  <div class="section-header">
+    <div class="section-icon ic-purple">📦</div>
+    <div>
+      <h2>2. Namespace &amp; PSR-4 Structure</h2>
+      <p>Composer autoload map, directory layout, and naming conventions.</p>
+    </div>
+  </div>
+
+  <h3>PSR-4 Autoload Map (<code>composer.json</code>)</h3>
+  <table>
+    <thead><tr><th>Namespace prefix</th><th>Directory</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>Imagify\</code></td><td><code>classes/</code></td><td>Primary PSR-4 root for all modern classes</td></tr>
+      <tr><td><code>Imagify\Deprecated\Traits\</code></td><td><code>inc/deprecated/Traits/</code></td><td>Backward compat trait shims</td></tr>
+      <tr><td><code>Imagify\ThirdParty\AS3CF\</code></td><td><code>inc/3rd-party/amazon-s3-and-cloudfront/classes/</code></td><td>S3 Offload integration</td></tr>
+      <tr><td><code>Imagify\ThirdParty\EnableMediaReplace\</code></td><td><code>inc/3rd-party/enable-media-replace/classes/</code></td><td>Enable Media Replace compat</td></tr>
+      <tr><td><code>Imagify\ThirdParty\FormidablePro\</code></td><td><code>inc/3rd-party/formidable-pro/classes/</code></td><td>Formidable Forms compat</td></tr>
+      <tr><td><code>Imagify\ThirdParty\NGG\</code></td><td><code>inc/3rd-party/nextgen-gallery/classes/</code></td><td>NextGEN Gallery integration</td></tr>
+      <tr><td><code>Imagify\ThirdParty\RegenerateThumbnails\</code></td><td><code>inc/3rd-party/regenerate-thumbnails/classes/</code></td><td>Regenerate Thumbnails compat</td></tr>
+      <tr><td><code>Imagify\ThirdParty\WPRocket\</code></td><td><code>inc/3rd-party/wp-rocket/classes/</code></td><td>WP Rocket compat</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Classmap (legacy, non-PSR-4)</h3>
+  <p><code>inc/classes/</code> and <code>inc/deprecated/classes/</code> are loaded via Composer classmap. The convention is <code>class-imagify-{name}.php</code> → <code>Imagify_{Name}</code>. Two files are explicitly excluded from the classmap: <code>class-imagify-plugin.php</code> and <code>class-imagify-requirements-check.php</code> (loaded manually before autoloader is available).</p>
+
+  <h3>Key <code>classes/</code> Sub-namespaces</h3>
+  <div class="grid-3">
+    <div class="card"><h4>Imagify\Bulk\</h4><p><code>Bulk</code>, <code>BulkInterface</code>, <code>AbstractBulk</code>, <code>WP</code>, <code>CustomFolders</code>, <code>Noop</code></p></div>
+    <div class="card"><h4>Imagify\CLI\</h4><p><code>AbstractCommand</code>, <code>BulkOptimizeCommand</code>, <code>RestoreCommand</code>, <code>GenerateMissingNextgenCommand</code></p></div>
+    <div class="card"><h4>Imagify\Context\</h4><p><code>ContextInterface</code>, <code>AbstractContext</code>, <code>WP</code>, <code>CustomFolders</code>, <code>Noop</code></p></div>
+    <div class="card"><h4>Imagify\Media\</h4><p><code>MediaInterface</code>, <code>AbstractMedia</code>, <code>WP</code>, <code>CustomFolders</code>, <code>Noop</code></p></div>
+    <div class="card"><h4>Imagify\Optimization\</h4><p><code>File</code>, <code>Process\{AbstractProcess, WP, CustomFolders, Noop}</code>, <code>Data\{AbstractData, WP, CustomFolders, Noop}</code></p></div>
+    <div class="card"><h4>Imagify\Picture\</h4><p><code>Display</code> (output buffer rewriter)</p></div>
+    <div class="card"><h4>Imagify\Job\</h4><p><code>MediaOptimization</code> (background queue worker)</p></div>
+    <div class="card"><h4>Imagify\Tools\</h4><p><code>InternalStateList</code>, <code>ResetInternalState</code>, <code>Subscriber</code></p></div>
+    <div class="card"><h4>Imagify\Traits\</h4><p><code>InstanceGetterTrait</code> (lightweight singleton), <code>MediaRowTrait</code></p></div>
+  </div>
+
+  <div class="callout callout-info">
+    ℹ️ <strong>InstanceGetterTrait</strong> provides <code>static::get_instance(): static</code> — a static singleton factory used by both PSR-4 classes and legacy <code>Imagify_*</code> classes. It stores the instance in <code>static::$_instance</code>.
+  </div>
+</section>
+
+<!-- ═══════════════════ 3 OPTIMIZATION PROCESS ═══════════════════ -->
+<section id="optimization-process">
+  <div class="section-header">
+    <div class="section-icon ic-green">⚙️</div>
+    <div>
+      <h2>3. Optimization Process — Class Hierarchy &amp; Call Flow</h2>
+      <p>Full inheritance chain from context factory to per-file API call.</p>
+    </div>
+  </div>
+
+  <h3>Class Inheritance Chain</h3>
+  <pre><span class="t">ProcessInterface</span>                          <span class="c">// classes/Optimization/Process/ProcessInterface.php</span>
+  └── <span class="t">AbstractProcess</span>                    <span class="c">// classes/Optimization/Process/AbstractProcess.php (~2100 lines)</span>
+        ├── <span class="t">Process\WP</span>                   <span class="c">// WP Media Library context</span>
+        ├── <span class="t">Process\CustomFolders</span>        <span class="c">// Custom Folders context</span>
+        └── <span class="t">Process\Noop</span>                 <span class="c">// No-op fallback
+
+DataInterface</span>                             <span class="c">// classes/Optimization/Data/DataInterface.php</span>
+  └── <span class="t">AbstractData</span>
+        ├── <span class="t">Data\WP</span>                      <span class="c">// stores _imagify_data postmeta</span>
+        ├── <span class="t">Data\CustomFolders</span>           <span class="c">// stores in imagify_files table</span>
+        └── <span class="t">Data\Noop</span>
+
+<span class="t">MediaInterface</span>                            <span class="c">// classes/Media/MediaInterface.php</span>
+  └── <span class="t">AbstractMedia</span>
+        ├── <span class="t">Media\WP</span>
+        ├── <span class="t">Media\CustomFolders</span>
+        └── <span class="t">Media\Noop</span>
+
+<span class="t">ContextInterface</span>                          <span class="c">// classes/Context/ContextInterface.php</span>
+  └── <span class="t">AbstractContext</span>
+        ├── <span class="t">Context\WP</span>
+        ├── <span class="t">Context\CustomFolders</span>
+        └── <span class="t">Context\Noop</span></pre>
+
+  <h3>Context Factory Functions</h3>
+  <pre><span class="c">// inc/functions/common.php</span>
+<span class="f">imagify_get_context</span>( <span class="t">string</span> $context ): <span class="t">ContextInterface</span>
+<span class="f">imagify_get_optimization_process</span>( <span class="t">int</span> $media_id, <span class="t">string</span> $context ): <span class="t">ProcessInterface</span>
+
+<span class="c">// Context values: 'wp' | 'custom-folders' | 'ngg' (when NGG active)</span>
+<span class="c">// Filterable via: imagify_context_class_name, imagify_process_class_name</span></pre>
+
+  <h3>AbstractProcess — Key Method Signatures</h3>
+  <table>
+    <thead><tr><th>Method</th><th>Signature</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__construct</code></td><td><code>(int|WP_Post|MediaInterface $id)</code></td><td>Accepts attachment ID, WP_Post, or MediaInterface object</td></tr>
+      <tr><td><code>optimize</code></td><td><code>(?int $optimization_level, array $args = []): bool|WP_Error</code></td><td>Main entry for single-media optimization; acquires lock, iterates sizes</td></tr>
+      <tr><td><code>reoptimize</code></td><td><code>(?int $optimization_level, array $args = []): bool|WP_Error</code></td><td>Restore then re-optimize at new level</td></tr>
+      <tr><td><code>optimize_sizes</code></td><td><code>(array $sizes, ?int $level, array $args = []): bool|WP_Error</code></td><td>Push sizes to background job queue</td></tr>
+      <tr><td><code>optimize_size</code></td><td><code>(string $size, ?int $level): bool|WP_Error</code></td><td>Optimize a single named size (e.g. <code>'full'</code>, <code>'thumbnail'</code>)</td></tr>
+      <tr><td><code>optimize_missing_thumbnails</code></td><td><code>(): bool|WP_Error</code></td><td>Find and optimize sizes missing from postmeta</td></tr>
+      <tr><td><code>restore</code></td><td><code>(): bool|WP_Error</code></td><td>Restore all sizes from backup; acquires restoring lock</td></tr>
+      <tr><td><code>delete_backup</code></td><td><code>(): bool|WP_Error</code></td><td>Remove backup files for this media</td></tr>
+      <tr><td><code>generate_nextgen_versions</code></td><td><code>(): bool|WP_Error</code></td><td>Generate WebP/AVIF variants for all optimized sizes</td></tr>
+      <tr><td><code>delete_nextgen_files</code></td><td><code>(bool $keep_full = false, bool $all_next_gen = false): void</code></td><td>Remove WebP/AVIF sidecar files</td></tr>
+      <tr><td><code>lock</code></td><td><code>(string $action = 'optimizing'): void</code></td><td>Set transient lock for 10 minutes</td></tr>
+      <tr><td><code>unlock</code></td><td><code>(): void</code></td><td>Delete lock transient</td></tr>
+      <tr><td><code>is_locked</code></td><td><code>(): string|false</code></td><td>Returns lock action string or false</td></tr>
+      <tr><td><code>update_size_optimization_data</code></td><td><code>(object $response, string $size, int $level): void</code></td><td>Persist API response data for a size</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Optimization Call Flow — Single Media</h3>
+  <div class="flow">
+    <span class="flow-step">AbstractProcess::optimize()</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">lock('optimizing')</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">get_sizes_to_optimize()</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">optimize_sizes($sizes, $level)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">MediaOptimization::push_to_queue()</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">optimize_size($size)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">File::optimize($args)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">upload_imagify_image()</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">Imagify API POST /upload/</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">download_url(response->image)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">filesystem->move()</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">update_size_optimization_data()</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">unlock()</span>
+  </div>
+
+  <h3>Per-Size Data Structure Stored</h3>
+  <pre><span class="c">// Stored in _imagify_data['sizes'][$size_name] (WP context)</span>
+<span class="c">// On success:</span>
+[
+    <span class="s">'success'</span>        => <span class="k">true</span>,
+    <span class="s">'original_size'</span>  => <span class="t">int</span>,   <span class="c">// bytes before optimization</span>
+    <span class="s">'optimized_size'</span> => <span class="t">int</span>,   <span class="c">// bytes after optimization</span>
+    <span class="s">'percent'</span>        => <span class="t">float</span>, <span class="c">// savings percentage (2 decimal places)</span>
+]
+
+<span class="c">// On error:</span>
+[
+    <span class="s">'success'</span> => <span class="k">false</span>,
+    <span class="s">'error'</span>   => <span class="t">string</span>,  <span class="c">// human-readable error message</span>
+]</pre>
+</section>
+
+<!-- ═══════════════════ 4 FILE CLASS ═══════════════════ -->
+<section id="file-class">
+  <div class="section-header">
+    <div class="section-icon ic-orange">📄</div>
+    <div>
+      <h2>4. Optimization\File — Method Signatures</h2>
+      <p>Low-level file operations: validation, resize, backup, API call, next-gen path generation.</p>
+    </div>
+  </div>
+
+  <p>Class: <code>Imagify\Optimization\File</code> — <code>classes/Optimization/File.php</code> (931 lines).</p>
+  <p>Injected with <code>Imagify_Filesystem::get_instance()</code>. Does not extend anything — purely compositional.</p>
+
+  <h3>Constructor &amp; Properties</h3>
+  <pre><span class="k">class</span> <span class="t">File</span> {
+    <span class="k">protected</span> <span class="t">string</span>             $path;       <span class="c">// absolute path to file</span>
+    <span class="k">protected</span> ?<span class="t">bool</span>              $is_image;   <span class="c">// cached result of is_image()</span>
+    <span class="k">protected</span> ?<span class="t">object</span>           $file_type;  <span class="c">// {ext, type} from wp_check_filetype()</span>
+    <span class="k">protected</span> <span class="t">Imagify_Filesystem</span> $filesystem;
+    <span class="k">protected</span> mixed              $editor;    <span class="c">// WP_Image_Editor_Imagick|WP_Image_Editor_GD|WP_Error</span>
+    <span class="k">protected</span> <span class="t">array</span>             $options;   <span class="c">// cached get_imagify_option() calls</span>
+
+    <span class="k">public function</span> <span class="f">__construct</span>( <span class="t">string</span> $file_path ) {...}
+}</pre>
+
+  <h3>Public Methods</h3>
+  <table>
+    <thead><tr><th>Method</th><th>Parameters → Return</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>is_valid()</code></td><td><code>→ bool</code></td><td>Returns true if <code>$path</code> is non-empty</td></tr>
+      <tr><td><code>can_be_processed()</code></td><td><code>→ true|WP_Error</code></td><td>Checks: path not empty, filesystem no errors, file exists, is a file, file writable, parent dir writable</td></tr>
+      <tr><td><code>optimize(array $args)</code></td><td><code>→ stdClass|WP_Error</code></td><td>Calls backup(), then <code>upload_imagify_image()</code>, downloads result, moves to destination</td></tr>
+      <tr><td><code>resize(array $dimensions, int $max_width)</code></td><td><code>→ string|WP_Error</code></td><td>Resizes via WP_Image_Editor; corrects EXIF orientation (cases 2–8); returns temp path</td></tr>
+      <tr><td><code>create_thumbnail(array $destination)</code></td><td><code>→ bool|array|WP_Error</code></td><td>Calls <code>$editor->multi_resize()</code>; moves to destination path</td></tr>
+      <tr><td><code>backup(?string $backup_path, ?string $backup_source)</code></td><td><code>→ true|false|WP_Error</code></td><td>Copies file to backup_path; also copies <code>-scaled</code> variant if exists</td></tr>
+      <tr><td><code>is_exceeded()</code></td><td><code>→ bool</code></td><td>Returns true if file size &gt; <code>IMAGIFY_MAX_BYTES</code> (5 MB)</td></tr>
+      <tr><td><code>is_supported(array $allowed_mime_types)</code></td><td><code>→ bool</code></td><td>Checks MIME type against allow-list</td></tr>
+      <tr><td><code>is_image()</code></td><td><code>→ bool</code></td><td>MIME type starts with <code>image/</code></td></tr>
+      <tr><td><code>is_pdf()</code></td><td><code>→ bool</code></td><td>MIME type is <code>application/pdf</code></td></tr>
+      <tr><td><code>is_webp()</code></td><td><code>→ bool</code></td><td>Regex: <code>@(?!^|/|\)\.webp$@i</code> — rejects bare <code>.webp</code></td></tr>
+      <tr><td><code>is_avif()</code></td><td><code>→ bool</code></td><td>Same pattern for <code>.avif</code></td></tr>
+      <tr><td><code>get_path()</code></td><td><code>→ string</code></td><td>Current absolute path (may change post-conversion)</td></tr>
+      <tr><td><code>get_path_to_webp()</code></td><td><code>→ string|false</code></td><td>Appends <code>.webp</code> to path; false if not an image or already WebP</td></tr>
+      <tr><td><code>get_path_to_nextgen(string $format)</code></td><td><code>→ string|false</code></td><td>Appends <code>.webp</code> or <code>.avif</code>; false if already next-gen</td></tr>
+      <tr><td><code>get_mime_type()</code></td><td><code>→ string</code></td><td>From cached <code>wp_check_filetype()</code></td></tr>
+      <tr><td><code>get_extension()</code></td><td><code>→ string|false</code></td><td>File extension without dot</td></tr>
+      <tr><td><code>get_dimensions()</code></td><td><code>→ array{width:int, height:int}</code></td><td>Returns <code>[0,0]</code> if not image</td></tr>
+    </tbody>
+  </table>
+
+  <h3>optimize() — Args Array</h3>
+  <pre><span class="f">optimize</span>( [
+    <span class="s">'backup'</span>             => <span class="k">true</span>,    <span class="c">// false = skip backup regardless of user setting</span>
+    <span class="s">'backup_path'</span>        => <span class="k">null</span>,    <span class="c">// string — explicit backup destination path</span>
+    <span class="s">'backup_source'</span>      => <span class="k">null</span>,    <span class="c">// string — source to backup (WP 5.3+ original)</span>
+    <span class="s">'optimization_level'</span> => <span class="v">0</span>,       <span class="c">// 0=normal/lossless, 1=aggressive, 2=ultra</span>
+    <span class="s">'convert'</span>            => <span class="s">''</span>,      <span class="c">// 'webp' | 'avif' | '' for original format</span>
+    <span class="s">'context'</span>            => <span class="s">'wp'</span>,   <span class="c">// sent to API for logging</span>
+    <span class="s">'original_size'</span>      => <span class="v">0</span>,       <span class="c">// bytes, sent to API</span>
+] );</pre>
+</section>
+
+<!-- ═══════════════════ 5 API CLIENT ═══════════════════ -->
+<section id="api">
+  <div class="section-header">
+    <div class="section-icon ic-blue">🌐</div>
+    <div>
+      <h2>5. API Client — Endpoints &amp; Request/Response</h2>
+      <p>HTTP transport, authentication, all endpoints, response schema, error handling.</p>
+    </div>
+  </div>
+
+  <p>Class: <code>Imagify</code> (legacy classmap) — <code>inc/classes/class-imagify.php</code>. Singleton via <code>InstanceGetterTrait</code>.</p>
+  <p>Base URL: <code>IMAGIFY_APP_API_URL</code> = <code>https://app.imagify.io/api/</code></p>
+
+  <h3>Authentication</h3>
+  <pre><span class="c">// Headers set in __construct() using stored API key</span>
+$this->all_headers[<span class="s">'Accept'</span>]        = <span class="s">'Accept: application/json'</span>;
+$this->all_headers[<span class="s">'Content-Type'</span>]  = <span class="s">'Content-Type: application/json'</span>;
+$this->all_headers[<span class="s">'Authorization'</span>] = <span class="s">'Authorization: token '</span> . $this->api_key;
+
+<span class="c">// upload_image() sends only Authorization header (multipart/form-data via cURL)
+// All other endpoints send all three headers</span></pre>
+
+  <h3>Transport Strategy</h3>
+  <p>The private <code>http_call()</code> method auto-selects transport: if <code>$args['post_data']['image']</code> is set, it routes to <code>curl_http_call()</code> (direct cURL for multipart file uploads); otherwise uses WordPress <code>wp_remote_request()</code>. A <code>pre_imagify_request</code> filter allows short-circuiting the cURL path.</p>
+
+  <h3>All Endpoints</h3>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>HTTP</th><th>Body / Response</th></tr></thead>
+    <tbody>
+      <tr><td><code>get_user()</code></td><td><code>users/me/</code></td><td>GET</td><td>JSON: <code>{id, email, plan_id, plan_label, quota, extra_quota, extra_quota_consumed, consumed_current_month_quota, next_date_update, is_active, is_monthly}</code></td></tr>
+      <tr><td><code>create_user($data)</code></td><td><code>users/</code></td><td>POST</td><td>JSON body; no auth header</td></tr>
+      <tr><td><code>update_user($data)</code></td><td><code>users/me/</code></td><td>PUT</td><td>JSON body with all headers</td></tr>
+      <tr><td><code>get_status($data)</code></td><td><code>status/{$data}/</code></td><td>GET</td><td>Cached in static array per type</td></tr>
+      <tr><td><code>get_api_version()</code></td><td><code>version/</code></td><td>GET</td><td>5s timeout; cached in site transient</td></tr>
+      <tr><td><code>get_public_info()</code></td><td><code>public-info</code></td><td>GET</td><td>Marketing/public plan info</td></tr>
+      <tr><td><code>upload_image($data)</code></td><td><code>upload/</code></td><td>POST (cURL multipart)</td><td><code>$data = ['image' => $path, 'data' => json_encode($opts)]</code>. Response: <code>{image: $url, ...}</code></td></tr>
+      <tr><td><code>fetch_image($data)</code></td><td><code>fetch/</code></td><td>POST (JSON)</td><td>Optimize image from URL; same response shape as upload</td></tr>
+      <tr><td><code>get_plans_prices()</code></td><td><code>pricing/plan/</code></td><td>GET</td><td>Plan pricing objects</td></tr>
+      <tr><td><code>get_all_prices()</code></td><td><code>pricing/all/</code></td><td>GET</td><td>All pricing including packs</td></tr>
+      <tr><td><code>check_coupon_code($coupon)</code></td><td><code>coupons/{$coupon}/</code></td><td>GET</td><td>Coupon validity response</td></tr>
+      <tr><td><code>check_discount()</code></td><td><code>pricing/discount/</code></td><td>GET</td><td>Active discount info</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Upload Request Body (multipart via cURL)</h3>
+  <pre><span class="c">// $data array passed to upload_image()</span>
+[
+    <span class="s">'image'</span> => <span class="s">'/absolute/path/to/image.jpg'</span>,  <span class="c">// CURLFile in cURL transport</span>
+    <span class="s">'data'</span>  => <span class="f">json_encode</span>([
+        <span class="s">'normal'</span>        => <span class="k">true</span>/<span class="k">false</span>,  <span class="c">// level === 0</span>
+        <span class="s">'aggressive'</span>    => <span class="k">true</span>/<span class="k">false</span>,  <span class="c">// level === 1</span>
+        <span class="s">'ultra'</span>         => <span class="k">true</span>/<span class="k">false</span>,  <span class="c">// level === 2</span>
+        <span class="s">'keep_exif'</span>     => <span class="k">true</span>,
+        <span class="s">'original_size'</span> => <span class="t">int</span>,
+        <span class="s">'context'</span>       => <span class="t">string</span>,     <span class="c">// 'wp' | 'custom-folders' | 'ngg'</span>
+        <span class="s">'convert'</span>       => <span class="t">string</span>,     <span class="c">// 'webp' | 'avif' — only when converting</span>
+    ]),
+]</pre>
+
+  <h3>API Response Shape (upload/fetch)</h3>
+  <pre><span class="c">// Success — stdClass</span>
+{
+    <span class="s">"image"</span>: <span class="s">"https://app.imagify.io/...temp_url..."</span>,  <span class="c">// URL for download_url()</span>
+    <span class="s">"original_size"</span>: <span class="v">123456</span>,
+    <span class="s">"new_size"</span>: <span class="v">98765</span>,
+    <span class="s">"percent"</span>: <span class="v">19.87</span>,
+    <span class="c">// "message" key present when conversion was not possible (falls back to original)</span>
+}
+
+<span class="c">// Error — WP_Error with code 'error {http_code}'
+// HTTP 401 → invalid API key
+// HTTP 413 → file too large
+// HTTP 4xx/5xx → $response->detail or $response->image error array</span></pre>
+
+  <h3>HTTP Response Handling</h3>
+  <pre><span class="k">private function</span> <span class="f">handle_response</span>( <span class="t">string</span> $response, <span class="t">int</span> $http_code, <span class="t">string</span> $error = <span class="s">''</span> ) {
+    $response = <span class="f">json_decode</span>( $response );          <span class="c">// stdClass or null</span>
+    <span class="k">if</span> ( <span class="v">200</span> !== $http_code && !<span class="f">empty</span>( $response->code ) ) {
+        <span class="c">// $response->detail → WP_Error message</span>
+        <span class="c">// $response->image  → array of field errors</span>
+        <span class="k">return new</span> <span class="t">WP_Error</span>( <span class="s">'error '</span> . $http_code, ... );
+    }
+    <span class="k">if</span> ( ! <span class="f">is_object</span>( $response ) ) {
+        <span class="k">return new</span> <span class="t">WP_Error</span>( <span class="s">'not_valid_json'</span>, ... );
+    }
+    <span class="k">return</span> $response;
+}</pre>
+
+  <div class="callout callout-warning">
+    ⚠️ <strong>Timeout defaults:</strong> <code>get_user()</code> and <code>get_status()</code> use 10s. <code>get_api_version()</code> uses 5s. All other calls default to 45s. Filterable via <code>imagify_api_http_request_timeout</code>.
+  </div>
+</section>
+
+<!-- ═══════════════════ 6 METADATA ═══════════════════ -->
+<section id="metadata">
+  <div class="section-header">
+    <div class="section-icon ic-purple">🗄️</div>
+    <div>
+      <h2>6. WordPress Postmeta Keys &amp; Data Structures</h2>
+      <p>Every key written to <code>wp_postmeta</code> by Imagify, with types and full schemas.</p>
+    </div>
+  </div>
+
+  <h3>Primary Metadata Keys (WP Media Library)</h3>
+  <p>All stored on the attachment post (post_type = <code>attachment</code>). Managed by <code>Imagify\Optimization\Data\WP</code>.</p>
+
+  <table>
+    <thead><tr><th>Meta Key</th><th>Type</th><th>Values / Schema</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>_imagify_data</code></td>
+        <td>Serialized array</td>
+        <td>
+          <code>['sizes' => [...], 'stats' => [...], 'message' => string]</code><br>
+          See schema below.
+        </td>
+      </tr>
+      <tr>
+        <td><code>_imagify_status</code></td>
+        <td>string</td>
+        <td><code>'success'</code> | <code>'already_optimized'</code> | error string | <code>''</code> (not optimized)</td>
+      </tr>
+      <tr>
+        <td><code>_imagify_optimization_level</code></td>
+        <td>int (stored as string)</td>
+        <td><code>0</code> = normal/lossless, <code>1</code> = aggressive, <code>2</code> = ultra/smart</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3><code>_imagify_data</code> Full Schema</h3>
+  <pre><span class="c">// _imagify_data serialized array structure</span>
+[
+    <span class="s">'sizes'</span>  => [
+        <span class="s">'full'</span>      => [ <span class="s">'success'</span> => <span class="k">true</span>, <span class="s">'original_size'</span> => <span class="t">int</span>, <span class="s">'optimized_size'</span> => <span class="t">int</span>, <span class="s">'percent'</span> => <span class="t">float</span> ],
+        <span class="s">'thumbnail'</span> => [ <span class="s">'success'</span> => <span class="k">true</span>, ... ],
+        <span class="s">'medium'</span>    => [ <span class="s">'success'</span> => <span class="k">false</span>, <span class="s">'error'</span> => <span class="t">string</span> ],
+        <span class="c">// ... one entry per registered image size + any custom sizes</span>
+    ],
+    <span class="s">'stats'</span>  => [
+        <span class="s">'original_size'</span>  => <span class="t">int</span>,    <span class="c">// sum across all successful sizes</span>
+        <span class="s">'optimized_size'</span> => <span class="t">int</span>,    <span class="c">// sum across all successful sizes</span>
+        <span class="s">'percent'</span>        => <span class="t">float</span>,  <span class="c">// aggregate % (2 decimal places)</span>
+    ],
+    <span class="s">'message'</span> => <span class="t">string</span>,           <span class="c">// optional message from API (e.g. already optimized)</span>
+]</pre>
+
+  <div class="callout callout-info">
+    ℹ️ <code>_imagify_status</code> and <code>_imagify_optimization_level</code> are written only when the <code>'full'</code> size is updated. They act as top-level fast-access keys mirroring <code>_imagify_data['sizes']['full']</code>.
+  </div>
+
+  <h3>Standard WordPress Keys (also modified by Imagify)</h3>
+  <table>
+    <thead><tr><th>Meta Key</th><th>Modified When</th></tr></thead>
+    <tbody>
+      <tr><td><code>_wp_attachment_metadata</code></td><td>After resize (adds/removes sizes array entries); after thumbnail generation (updates width/height); after WP 5.3 original file handling</td></tr>
+      <tr><td><code>_wp_attached_file</code></td><td>Not directly modified; read to resolve absolute paths</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════ 7 SETTINGS ═══════════════════ -->
+<section id="settings">
+  <div class="section-header">
+    <div class="section-icon ic-orange">⚙️</div>
+    <div>
+      <h2>7. Settings — Option Keys, Types &amp; Defaults</h2>
+      <p>All values stored under a single serialized option. Class: <code>Imagify_Options</code> (<code>inc/classes/class-imagify-options.php</code>).</p>
+    </div>
+  </div>
+
+  <p>Option name: <code>imagify_settings</code> (single site) or <code>imagify_settings</code> stored via <code>get_site_option</code> (network). Set via <code>get_imagify_option($key)</code> / <code>update_imagify_option($key, $value)</code>.</p>
+
+  <table>
+    <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Reset Value</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>api_key</code></td><td>string</td><td><code>''</code></td><td>—</td><td>Imagify API key. Overridable via PHP constant <code>IMAGIFY_API_KEY</code>.</td></tr>
+      <tr><td><code>optimization_level</code></td><td>int</td><td><code>2</code></td><td><code>2</code></td><td>0=lossless, 1=aggressive, 2=ultra</td></tr>
+      <tr><td><code>lossless</code></td><td>int (bool)</td><td><code>0</code></td><td>—</td><td>Force level 0 for all optimizations</td></tr>
+      <tr><td><code>auto_optimize</code></td><td>int (bool)</td><td><code>0</code></td><td><code>1</code></td><td>Auto-optimize on upload</td></tr>
+      <tr><td><code>backup</code></td><td>int (bool)</td><td><code>0</code></td><td><code>1</code></td><td>Keep backup of originals</td></tr>
+      <tr><td><code>resize_larger</code></td><td>int (bool)</td><td><code>0</code></td><td><code>1</code> (if WP 5.3+)</td><td>Resize images larger than threshold</td></tr>
+      <tr><td><code>resize_larger_w</code></td><td>int</td><td><code>0</code></td><td>From <code>big_image_size_threshold</code> filter (default 2560)</td><td>Max width in pixels for resize</td></tr>
+      <tr><td><code>display_nextgen</code></td><td>int (bool)</td><td><code>0</code></td><td>—</td><td>Enable next-gen format delivery</td></tr>
+      <tr><td><code>display_nextgen_method</code></td><td>string</td><td><code>'picture'</code></td><td>—</td><td><code>'picture'</code> = HTML rewrite; <code>'rewrite'</code> = server-side rules</td></tr>
+      <tr><td><code>display_webp</code></td><td>int (bool)</td><td><code>0</code></td><td>—</td><td>Legacy WebP delivery toggle</td></tr>
+      <tr><td><code>display_webp_method</code></td><td>string</td><td><code>'picture'</code></td><td>—</td><td>Legacy WebP method selector</td></tr>
+      <tr><td><code>cdn_url</code></td><td>string</td><td><code>''</code></td><td>—</td><td>CDN base URL for URL→path resolution</td></tr>
+      <tr><td><code>disallowed-sizes</code></td><td>array</td><td><code>[]</code></td><td>—</td><td>Size names excluded from optimization</td></tr>
+      <tr><td><code>admin_bar_menu</code></td><td>int (bool)</td><td><code>1</code></td><td><code>1</code></td><td>Show Imagify in admin bar</td></tr>
+      <tr><td><code>partner_links</code></td><td>int (bool)</td><td><code>0</code></td><td><code>1</code></td><td>Show partner links in plugin UI</td></tr>
+      <tr><td><code>convert_to_avif</code></td><td>int (bool)</td><td><code>0</code></td><td>—</td><td>Generate AVIF sidecar files</td></tr>
+      <tr><td><code>convert_to_webp</code></td><td>int (bool)</td><td><code>0</code></td><td>—</td><td>Generate WebP sidecar files</td></tr>
+      <tr><td><code>optimization_format</code></td><td>string</td><td><code>'webp'</code></td><td>—</td><td><code>'webp'</code> | <code>'avif'</code> | <code>'off'</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    ℹ️ The <code>reset_values</code> array in <code>Imagify_Options</code> contains only keys that differ from defaults; it is applied on first install or explicit reset. The option is a single serialized blob — never stored as individual keys.
+  </div>
+</section>
+
+<!-- ═══════════════════ 8 DB SCHEMAS ═══════════════════ -->
+<section id="db-schemas">
+  <div class="section-header">
+    <div class="section-icon ic-green">🗃️</div>
+    <div>
+      <h2>8. Database Schemas</h2>
+      <p>Complete DDL for all three custom tables: <code>imagify_folders</code>, <code>imagify_files</code>, and <code>ngg_imagify_data</code>.</p>
+    </div>
+  </div>
+
+  <h3>imagify_folders</h3>
+  <p>Class: <code>Imagify_Folders_DB</code> (<code>inc/classes/class-imagify-folders-db.php</code>). Global table in multisite (<code>$wpdb->base_prefix</code>). Table version: <code>100</code>.</p>
+
+  <pre><span class="k">CREATE TABLE</span> `{prefix}imagify_folders` (
+    `folder_id`  <span class="t">bigint(20) unsigned</span> NOT NULL auto_increment,
+    `path`       <span class="t">varchar(191)</span>        NOT NULL default <span class="s">''</span>,
+    `active`     <span class="t">tinyint(1) unsigned</span> NOT NULL default <span class="v">0</span>,
+    <span class="k">PRIMARY KEY</span>  (folder_id),
+    <span class="k">UNIQUE KEY</span>   path (path),
+    <span class="k">KEY</span>          active (active)
+);</pre>
+
+  <table>
+    <thead><tr><th>Column</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>folder_id</code></td><td>bigint unsigned PK</td><td>Auto-increment primary key</td></tr>
+      <tr><td><code>path</code></td><td>varchar(191) UNIQUE</td><td>Absolute path with placeholder: <code>{{ROOT}}/wp-content/uploads/gallery/</code>. Uses <code>{{ROOT}}</code> and <code>{{ABSPATH}}</code> tokens for portability.</td></tr>
+      <tr><td><code>active</code></td><td>tinyint(1)</td><td><code>1</code> = selected in settings; <code>0</code> = deactivated. Indexed for fast active-folder queries.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>imagify_files</h3>
+  <p>Class: <code>Imagify_Files_DB</code> (<code>inc/classes/class-imagify-files-db.php</code>). Global table in multisite. Table version: <code>102</code>.</p>
+
+  <pre><span class="k">CREATE TABLE</span> `{prefix}imagify_files` (
+    `file_id`            <span class="t">bigint(20) unsigned</span>  NOT NULL auto_increment,
+    `folder_id`          <span class="t">bigint(20) unsigned</span>  NOT NULL default <span class="v">0</span>,
+    `file_date`          <span class="t">datetime</span>             NOT NULL default <span class="s">'0000-00-00 00:00:00'</span>,
+    `path`               <span class="t">varchar(191)</span>         NOT NULL default <span class="s">''</span>,
+    `hash`               <span class="t">varchar(32)</span>          NOT NULL default <span class="s">''</span>,   <span class="c">-- MD5 of file</span>
+    `mime_type`          <span class="t">varchar(100)</span>         NOT NULL default <span class="s">''</span>,
+    `modified`           <span class="t">tinyint(1) unsigned</span>  NOT NULL default <span class="v">0</span>,
+    `width`              <span class="t">smallint(2) unsigned</span> NOT NULL default <span class="v">0</span>,
+    `height`             <span class="t">smallint(2) unsigned</span> NOT NULL default <span class="v">0</span>,
+    `original_size`      <span class="t">int(4) unsigned</span>      NOT NULL default <span class="v">0</span>,
+    `optimized_size`     <span class="t">int(4) unsigned</span>      default NULL,
+    `percent`            <span class="t">smallint(2) unsigned</span> default NULL,
+    `optimization_level` <span class="t">tinyint(1) unsigned</span>  default NULL,
+    `status`             <span class="t">varchar(20)</span>          default NULL,
+    `error`              <span class="t">varchar(255)</span>         default NULL,
+    `data`               <span class="t">longtext</span>             default NULL,   <span class="c">-- serialized, see below</span>
+    <span class="k">PRIMARY KEY</span>  (file_id),
+    <span class="k">UNIQUE KEY</span>   path (path),
+    <span class="k">KEY</span>          folder_id (folder_id),
+    <span class="k">KEY</span>          optimization_level (optimization_level),
+    <span class="k">KEY</span>          status (status),
+    <span class="k">KEY</span>          modified (modified)
+);</pre>
+
+  <table>
+    <thead><tr><th>Column</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>folder_id</code></td><td>FK reference to <code>imagify_folders.folder_id</code> (not enforced at DB level)</td></tr>
+      <tr><td><code>path</code></td><td>Absolute path using same <code>{{ROOT}}</code> tokens as folders table</td></tr>
+      <tr><td><code>hash</code></td><td>MD5 hash of file contents — used by <code>refresh_file()</code> to detect modifications</td></tr>
+      <tr><td><code>modified</code></td><td><code>1</code> when file has changed since last optimization (hash mismatch)</td></tr>
+      <tr><td><code>status</code></td><td><code>'success'</code> | <code>'already_optimized'</code> | <code>'error'</code> | NULL (not yet processed)</td></tr>
+      <tr><td><code>data</code></td><td>Serialized array — same shape as <code>_imagify_data</code> (sizes + stats)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>ngg_imagify_data (NextGEN Gallery)</h3>
+  <p>Class: <code>Imagify\ThirdParty\NGG\DB</code> (<code>inc/3rd-party/nextgen-gallery/classes/DB.php</code>). Per-site table (<code>$wpdb->prefix</code>). Table version: <code>100</code>.</p>
+
+  <pre><span class="k">CREATE TABLE</span> `{prefix}ngg_imagify_data` (
+    `data_id`            <span class="t">bigint(20) unsigned</span> NOT NULL auto_increment,
+    `pid`                <span class="t">bigint(20) unsigned</span> NOT NULL default <span class="v">0</span>,
+    `optimization_level` <span class="t">varchar(1)</span>          NOT NULL default <span class="s">''</span>,
+    `status`             <span class="t">varchar(30)</span>         NOT NULL default <span class="s">''</span>,
+    `data`               <span class="t">longtext</span>            default NULL,
+    <span class="k">PRIMARY KEY</span>  (data_id),
+    <span class="k">KEY</span>          pid (pid)
+);</pre>
+
+  <p><code>pid</code> is the NextGEN picture ID. <code>data</code> is serialized the same way as <code>_imagify_data</code>.</p>
+
+  <h3>Abstract DB Base Class</h3>
+  <p>All three DB classes extend <code>Imagify_Abstract_DB</code> which implements <code>Imagify\DB\DBInterface</code>. It provides:</p>
+  <div class="grid-2">
+    <div class="card">
+      <h4>Table Management</h4>
+      <ul>
+        <li><code>maybe_upgrade_table()</code> — create/upgrade on plugin init</li>
+        <li><code>create_table()</code> — issues <code>dbDelta()</code></li>
+        <li><code>can_operate(): bool</code> — true when table is ready</li>
+        <li>Version stored in option: <code>{option_prefix}_db_version</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>CRUD Methods</h4>
+      <ul>
+        <li><code>get($id)</code>, <code>get_by($col, $val)</code>, <code>get_in($col, $vals)</code></li>
+        <li><code>get_var($col, $where)</code>, <code>get_column_in($col, $ids)</code></li>
+        <li><code>insert($data)</code>, <code>update($data, $where)</code>, <code>delete($id)</code></li>
+        <li>Auto-serialize array columns before insert/update via <code>serialize_columns()</code></li>
+        <li>Auto-cast results via <code>cast_row()</code> based on column type map</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 9 BULK ═══════════════════ -->
+<section id="bulk">
+  <div class="section-header">
+    <div class="section-icon ic-blue">🚀</div>
+    <div>
+      <h2>9. Bulk Optimization — ActionScheduler Integration</h2>
+      <p>How bulk jobs are enqueued, tracked, and completed via ActionScheduler async actions.</p>
+    </div>
+  </div>
+
+  <p>Class: <code>Imagify\Bulk\Bulk</code> (<code>classes/Bulk/Bulk.php</code>). Singleton. Registered hooks in <code>init()</code>.</p>
+
+  <h3>Bulk Run Flow</h3>
+  <div class="flow">
+    <span class="flow-step">AJAX: imagify_bulk_optimize</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">bulk_optimize_callback()</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">run_optimize($context, $level)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">get_unoptimized_media_ids()</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">as_enqueue_async_action() ×N</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">set_transient 'running'</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">ActionScheduler fires 'imagify_optimize_media'</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">optimize_media($id, $ctx, $lvl)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">check_optimization_status()</span>
+  </div>
+
+  <h3>ActionScheduler Job Enqueue</h3>
+  <pre><span class="c">// Bulk::run_optimize() — one as_enqueue_async_action() per media</span>
+<span class="f">as_enqueue_async_action</span>(
+    <span class="s">'imagify_optimize_media'</span>,
+    [
+        <span class="s">'id'</span>      => (int) $media_id,
+        <span class="s">'context'</span> => (string) $context,      <span class="c">// 'wp' | 'custom-folders'</span>
+        <span class="s">'level'</span>   => (int) $optimization_level,
+    ],
+    <span class="s">"imagify-{$context}-optimize-media"</span>   <span class="c">// group name — allows cancellation per context</span>
+);
+
+<span class="c">// Next-gen generation uses a separate hook</span>
+<span class="f">as_enqueue_async_action</span>(
+    <span class="s">'imagify_convert_next_gen'</span>,
+    [ <span class="s">'id'</span> => $media_id, <span class="s">'context'</span> => $context ],
+    <span class="s">"imagify-{$context}-convert-nextgen"</span>
+);</pre>
+
+  <h3>Progress Tracking Transients</h3>
+  <table>
+    <thead><tr><th>Transient</th><th>Set When</th><th>Shape</th><th>TTL</th></tr></thead>
+    <tbody>
+      <tr><td><code>imagify_wp_optimize_running</code></td><td>Start of WP library bulk run</td><td><code>['total' => int, 'remaining' => int]</code></td><td>DAY_IN_SECONDS</td></tr>
+      <tr><td><code>imagify_custom-folders_optimize_running</code></td><td>Start of custom-folders bulk run</td><td><code>['total' => int, 'remaining' => int]</code></td><td>DAY_IN_SECONDS</td></tr>
+      <tr><td><code>imagify_bulk_optimization_result</code></td><td>After each successful optimization</td><td><code>['total' => int, 'original_size' => int, 'optimized_size' => int]</code></td><td>DAY_IN_SECONDS</td></tr>
+      <tr><td><code>imagify_bulk_optimization_complete</code></td><td>When remaining reaches 0</td><td><code>1</code></td><td>DAY_IN_SECONDS</td></tr>
+      <tr><td><code>imagify_missing_next_gen_total</code></td><td>Start of next-gen generation run</td><td><code>int</code> (total count)</td><td>HOUR_IN_SECONDS</td></tr>
+      <tr><td><code>imagify_bulk_optimization_infos</code></td><td>User dismisses info popup</td><td><code>1</code></td><td>WEEK_IN_SECONDS</td></tr>
+    </tbody>
+  </table>
+
+  <h3>ActionScheduler Job Lifecycle</h3>
+  <p>ActionScheduler is bundled at <code>inc/Dependencies/ActionScheduler/action-scheduler.php</code>. Jobs go through these states:</p>
+  <div class="flow">
+    <span class="flow-step">pending</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">in-progress</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">complete</span>
+  </div>
+  <p>On failure: <strong>failed</strong>. On cancel: <strong>canceled</strong>. The <code>check_optimization_status()</code> hook fires on <code>imagify_after_optimize</code> and decrements the running counter, deleting the transient and setting the complete transient when all jobs finish.</p>
+
+  <h3>Multisite Context Routing</h3>
+  <pre><span class="c">// Bulk::get_contexts() — determines which contexts appear on bulk page</span>
+<span class="k">if</span> ( ! <span class="f">is_network_admin</span>() ) {
+    $types[<span class="s">'library|wp'</span>] = <span class="v">1</span>;                <span class="c">// library only in site admin</span>
+}
+<span class="k">if</span> ( <span class="f">imagify_is_active_for_network</span>() && <span class="f">is_network_admin</span>() ) {
+    $types[<span class="s">'custom-folders|custom-folders'</span>] = <span class="v">1</span>;  <span class="c">// custom folders in network admin</span>
+} <span class="k">elseif</span> ( ! <span class="f">imagify_is_active_for_network</span>() ) {
+    $types[<span class="s">'custom-folders|custom-folders'</span>] = <span class="v">1</span>;  <span class="c">// custom folders in site admin</span>
+}</pre>
+</section>
+
+<!-- ═══════════════════ 10 LOCKING ═══════════════════ -->
+<section id="locking">
+  <div class="section-header">
+    <div class="section-icon ic-red">🔒</div>
+    <div>
+      <h2>10. Concurrency &amp; Locking Mechanisms</h2>
+      <p>Transient-based per-media locks that prevent duplicate concurrent optimization or restore jobs.</p>
+    </div>
+  </div>
+
+  <h3>Per-Media Process Lock</h3>
+  <p>Defined in <code>AbstractProcess</code>. Each lock is a transient named after the context and media ID.</p>
+
+  <pre><span class="c">// Transient name pattern (LOCK_NAME constant)</span>
+<span class="k">const</span> LOCK_NAME = <span class="s">'imagify_%1$s_%2$s_process_locked'</span>;
+<span class="c">// Example: 'imagify_wp_42_process_locked'
+// Example: 'imagify_custom-folders_7_process_locked'</span>
+
+<span class="c">// Network-aware: uses set_site_transient when context is_network_wide()</span>
+<span class="k">public function</span> <span class="f">lock</span>( <span class="t">string</span> $action = <span class="s">'optimizing'</span> ): <span class="k">void</span> {
+    $name     = $this-><span class="f">get_lock_name</span>();           <span class="c">// sprintf(LOCK_NAME, ctx, id)</span>
+    $callback = $media-><span class="f">get_context_instance</span>()-><span class="f">is_network_wide</span>()
+        ? <span class="s">'set_site_transient'</span> : <span class="s">'set_transient'</span>;
+    <span class="f">call_user_func</span>( $callback, $name, $action, <span class="v">10</span> * MINUTE_IN_SECONDS );
+}
+
+<span class="k">public function</span> <span class="f">is_locked</span>(): <span class="t">string</span>|<span class="k">false</span> {
+    <span class="c">// Returns 'optimizing' | 'restoring' | false</span>
+    $callback = ...<span class="s">'get_site_transient'</span> <span class="k">or</span> <span class="s">'get_transient'</span>...;
+    $action   = <span class="f">call_user_func</span>( $callback, $name );
+    <span class="k">return</span> $this-><span class="f">validate_lock_action</span>( $action );  <span class="c">// normalizes 'restore' → 'restoring'</span>
+}
+
+<span class="k">public function</span> <span class="f">unlock</span>(): <span class="k">void</span> {
+    $callback = ...<span class="s">'delete_site_transient'</span> <span class="k">or</span> <span class="s">'delete_transient'</span>...;
+    <span class="f">call_user_func</span>( $callback, $name );
+}</pre>
+
+  <h3>Lock Actions</h3>
+  <table>
+    <thead><tr><th>Value</th><th>Set By</th><th>Cleared By</th></tr></thead>
+    <tbody>
+      <tr><td><code>'optimizing'</code></td><td><code>optimize()</code> before iterating sizes</td><td><code>optimize()</code> after all sizes complete</td></tr>
+      <tr><td><code>'restoring'</code></td><td><code>restore()</code> at start</td><td><code>restore()</code> at end (success or error)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Transient Name Summary for Cleanup</h3>
+  <p>Managed by <code>Imagify\Tools\InternalStateList::get_locked_transient_patterns()</code>. Used by <code>ResetInternalState</code> for SQL LIKE deletion:</p>
+  <pre><span class="s">'_transient_%imagify-auto-optimize-%'</span>      <span class="c">// Legacy (deprecated)</span>
+<span class="s">'_transient_%imagify_rpc_%'</span>                <span class="c">// Legacy (deprecated)</span>
+<span class="s">'_transient_imagify_%_process_locked'</span>      <span class="c">// Active single-site locks</span>
+<span class="s">'_site_transient_imagify_%_process_lock%'</span>  <span class="c">// Active network-wide locks</span></pre>
+
+  <div class="callout callout-warning">
+    ⚠️ <strong>TTL is 10 minutes.</strong> If a PHP process dies mid-optimization, the lock expires automatically. The <code>Reset Internal State</code> admin tool can force-clear all locks immediately via direct SQL DELETE.
+  </div>
+</section>
+
+<!-- ═══════════════════ 11 PICTURE DISPLAY ═══════════════════ -->
+<section id="picture-display">
+  <div class="section-header">
+    <div class="section-icon ic-purple">🖼️</div>
+    <div>
+      <h2>11. Picture\Display — Output Buffer HTML Rewrite</h2>
+      <p>How <code>&lt;img&gt;</code> tags are rewritten to <code>&lt;picture&gt;</code> tags at the HTTP response level.</p>
+    </div>
+  </div>
+
+  <p>Class: <code>Imagify\Picture\Display</code> (<code>classes/Picture/Display.php</code>). Implements <code>SubscriberInterface</code>.</p>
+
+  <h3>Subscribed Events</h3>
+  <pre><span class="k">public static function</span> <span class="f">get_subscribed_events</span>(): <span class="t">array</span> {
+    <span class="k">return</span> [
+        <span class="s">'template_redirect'</span>            => <span class="s">'start_content_process'</span>,
+        <span class="s">'imagify_process_webp_content'</span> => <span class="s">'process_content'</span>,
+    ];
+}</pre>
+
+  <h3>Full Rewrite Pipeline</h3>
+  <div class="flow">
+    <span class="flow-step">template_redirect</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">start_content_process()</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">ob_start([this, 'maybe_process_buffer'])</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">PHP renders full page HTML</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">maybe_process_buffer($buffer)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">is_html() check (must contain &lt;/html&gt; and be &gt;255 chars)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">process_content($buffer)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">remove_picture_tags() — strip existing &lt;picture&gt; wrappers</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">get_images() — regex extract all &lt;img&gt; tags</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">process_image() per tag</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">filesystem->exists() check for .webp/.avif sidecars</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">build_picture_tag() → str_replace() in buffer</span>
+  </div>
+
+  <h3>Guards in <code>start_content_process()</code></h3>
+  <ul>
+    <li><code>get_imagify_option('display_nextgen')</code> must be truthy</li>
+    <li><code>get_imagify_option('display_nextgen_method')</code> must equal <code>'picture'</code> (<code>Display::OPTION_VALUE</code>)</li>
+    <li>Filter <code>imagify_allow_picture_tags_for_nextgen</code> must return true</li>
+  </ul>
+
+  <h3>Lazy-Load Support</h3>
+  <p>The parser checks these src attributes in priority order: <code>data-lazy-src</code> → <code>data-src</code> → <code>src</code>. Likewise for srcset: <code>data-lazy-srcset</code> → <code>data-srcset</code> → <code>srcset</code>. The generated <code>&lt;source&gt;</code> tag mirrors whichever attribute was active.</p>
+
+  <h3>Generated HTML Structure</h3>
+  <pre><span class="c">&lt;!-- Input --&gt;</span>
+&lt;img src="/uploads/photo.jpg" srcset="/uploads/photo-300.jpg 300w" sizes="..." alt="..."&gt;
+
+<span class="c">&lt;!-- Output (when both AVIF and WebP exist) --&gt;</span>
+&lt;picture&gt;
+  &lt;source type="image/avif" srcset="/uploads/photo.jpg.avif, /uploads/photo-300.jpg.avif 300w" sizes="..."&gt;
+  &lt;source type="image/webp" srcset="/uploads/photo.jpg.webp, /uploads/photo-300.jpg.webp 300w" sizes="..."&gt;
+  &lt;img src="/uploads/photo.jpg" srcset="/uploads/photo-300.jpg 300w" sizes="..." alt="..."&gt;
+&lt;/picture&gt;</pre>
+
+  <h3>URL → Path Resolution</h3>
+  <p><code>url_to_path()</code> converts image URLs to filesystem paths for existence checks. It handles: uploads URL, site root URL, CDN URL (via <code>imagify_cdn_source_url</code> filter), and protocol-relative URLs. Static caches are maintained per request.</p>
+
+  <h3>Filters on the Rewrite Path</h3>
+  <table>
+    <thead><tr><th>Filter</th><th>Signature</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>imagify_allow_picture_tags_for_nextgen</code></td><td><code>(bool $allow): bool</code></td><td>Global on/off switch for the rewriter</td></tr>
+      <tr><td><code>imagify_webp_picture_images_to_display</code></td><td><code>(array $images, string $content): array</code></td><td>Filter/add/remove images before rewriting</td></tr>
+      <tr><td><code>imagify_webp_picture_process_image</code></td><td><code>(array $data, string $img_tag): array|false</code></td><td>Per-image data manipulation (used by S3 Offload integration)</td></tr>
+      <tr><td><code>imagify_picture_attributes</code></td><td><code>(array $attributes, array $data): array</code></td><td>Attributes on the <code>&lt;picture&gt;</code> element</td></tr>
+      <tr><td><code>imagify_picture_source_attributes</code></td><td><code>(array $attributes, array $data): array</code></td><td>Attributes on each <code>&lt;source&gt;</code> element</td></tr>
+      <tr><td><code>imagify_picture_img_attributes</code></td><td><code>(array $attributes, array $data): array</code></td><td>Attributes on the fallback <code>&lt;img&gt;</code></td></tr>
+      <tr><td><code>imagify_additional_source_tags</code></td><td><code>(string $html, array $data): string</code></td><td>Inject extra <code>&lt;source&gt;</code> elements before the generated ones</td></tr>
+      <tr><td><code>imagify_buffer</code></td><td><code>(string $buffer): string</code></td><td>Final buffer after all replacements</td></tr>
+      <tr><td><code>imagify_cdn_source_url</code></td><td><code>(string $url): string</code></td><td>CDN base URL for URL-to-path mapping</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════ 12 AJAX ═══════════════════ -->
+<section id="ajax">
+  <div class="section-header">
+    <div class="section-icon ic-orange">🔐</div>
+    <div>
+      <h2>12. AJAX &amp; Admin-Post — Full Security Table</h2>
+      <p>Every <code>wp_ajax_*</code> and <code>admin_post_*</code> action with its nonce name and capability requirement.</p>
+    </div>
+  </div>
+
+  <p>Security is enforced by <code>imagify_check_nonce($action, $query_arg)</code> which wraps <code>check_ajax_referer()</code> and calls <code>imagify_die()</code> on failure. Capability checks use <code>imagify_get_context($ctx)->current_user_can($capability, $media_id)</code>.</p>
+
+  <h3>wp_ajax_* + admin_post_* (both)</h3>
+  <p>These are registered for both AJAX and form POST. Handler class: <code>Imagify_Admin_Ajax_Post</code>.</p>
+
+  <table>
+    <thead><tr><th>Action</th><th>Nonce Name</th><th>Capability</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>imagify_manual_optimize</code></td><td><code>imagify-optimize-{id}-{ctx}</code></td><td><code>manual-optimize</code></td><td>Optimize single attachment</td></tr>
+      <tr><td><code>imagify_manual_reoptimize</code></td><td><code>imagify-manual-reoptimize-{id}-{ctx}</code></td><td><code>manual-optimize</code></td><td>Re-optimize at different level</td></tr>
+      <tr><td><code>imagify_optimize_missing_sizes</code></td><td><code>imagify-optimize-missing-sizes-{id}-{ctx}</code></td><td><code>manual-optimize</code></td><td>Generate missing thumbnail sizes</td></tr>
+      <tr><td><code>imagify_generate_nextgen_versions</code></td><td><code>imagify-generate-nextgen-versions-{id}-{ctx}</code></td><td><code>manual-optimize</code></td><td>Generate WebP/AVIF for one attachment</td></tr>
+      <tr><td><code>imagify_delete_nextgen_versions</code></td><td><code>imagify-delete-nextgen-versions-{id}-{ctx}</code></td><td><code>manual-restore</code></td><td>Remove WebP/AVIF sidecar files</td></tr>
+      <tr><td><code>imagify_restore</code></td><td><code>imagify-restore-{id}-{ctx}</code></td><td><code>manual-restore</code></td><td>Restore attachment from backup</td></tr>
+      <tr><td><code>imagify_optimize_file</code></td><td><code>imagify_optimize_file</code></td><td><code>manual-optimize</code> (custom-folders ctx)</td><td>Optimize custom folder file</td></tr>
+      <tr><td><code>imagify_reoptimize_file</code></td><td><code>imagify_reoptimize_file</code></td><td><code>manual-optimize</code> (custom-folders ctx)</td><td>Re-optimize custom folder file</td></tr>
+      <tr><td><code>imagify_restore_file</code></td><td><code>imagify_restore_file</code></td><td><code>manual-restore</code> (custom-folders ctx)</td><td>Restore custom folder file from backup</td></tr>
+      <tr><td><code>imagify_refresh_file_modified</code></td><td><code>imagify_refresh_file_modified</code></td><td><code>manual-optimize</code> (custom-folders ctx)</td><td>Refresh file hash/modified status</td></tr>
+    </tbody>
+  </table>
+
+  <h3>wp_ajax_* only</h3>
+  <table>
+    <thead><tr><th>Action</th><th>Nonce Name</th><th>Capability / Check</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>imagify_bulk_optimize</code></td><td><code>imagify-bulk-optimize</code></td><td><code>bulk-optimize</code></td><td>Launch ActionScheduler bulk job</td></tr>
+      <tr><td><code>imagify_missing_nextgen_generation</code></td><td><code>imagify-bulk-optimize</code></td><td><code>bulk-optimize</code> per context</td><td>Generate all missing next-gen files</td></tr>
+      <tr><td><code>imagify_get_folder_type_data</code></td><td><code>imagify-bulk-optimize</code></td><td><code>bulk-optimize</code></td><td>Stats for one folder type on bulk page</td></tr>
+      <tr><td><code>imagify_bulk_info_seen</code></td><td><code>imagify-bulk-optimize</code></td><td><code>bulk-optimize</code></td><td>Set <code>imagify_bulk_optimization_infos</code> transient</td></tr>
+      <tr><td><code>imagify_bulk_get_stats</code></td><td><code>imagify-bulk-optimize</code></td><td><code>bulk-optimize</code> per folder type</td><td>Aggregate bulk page statistics</td></tr>
+      <tr><td><code>imagify_reset_internal_state</code></td><td><code>imagify_reset_internal_state</code></td><td><code>manage</code> (wp ctx)</td><td>Clear all locks, transients, AS jobs</td></tr>
+      <tr><td><code>imagify_check_backup_dir_is_writable</code></td><td><code>imagify_check_backup_dir_is_writable</code></td><td><code>manage</code> (wp ctx)</td><td>Test backup directory writability</td></tr>
+      <tr><td><code>imagify_get_files_tree</code></td><td><code>get-files-tree</code></td><td><code>manage</code> (custom-folders ctx)</td><td>Filesystem tree for folder picker</td></tr>
+      <tr><td><code>imagify_signup</code></td><td><code>imagify-signup</code> (<code>imagifysignupnonce</code>)</td><td><code>manage</code> (wp ctx)</td><td>Create Imagify account</td></tr>
+      <tr><td><code>imagify_check_api_key_validity</code></td><td><code>imagify-check-api-key</code> (<code>imagifycheckapikeynonce</code>)</td><td><code>manage</code></td><td>Validate API key against API</td></tr>
+      <tr><td><code>imagify_get_prices</code></td><td><code>imagify_get_pricing_{user_id}</code> (<code>imagifynonce</code>)</td><td><code>manage</code></td><td>Fetch plan prices</td></tr>
+      <tr><td><code>imagify_check_coupon</code></td><td><code>imagify_get_pricing_{user_id}</code> (<code>imagifynonce</code>)</td><td><code>manage</code></td><td>Validate coupon code</td></tr>
+      <tr><td><code>imagify_get_discount</code></td><td><code>imagify_get_pricing_{user_id}</code> (<code>imagifynonce</code>)</td><td><code>manage</code></td><td>Check active discount</td></tr>
+      <tr><td><code>imagify_get_images_counts</code></td><td><code>imagify_get_pricing_{user_id}</code> (<code>imagifynonce</code>)</td><td><code>manage</code></td><td>Count images per status</td></tr>
+      <tr><td><code>imagify_update_estimate_sizes</code></td><td><code>update_estimate_sizes</code></td><td><code>manage</code></td><td>Recalculate size estimates</td></tr>
+      <tr><td><code>imagify_get_user_data</code></td><td><code>imagify_get_user_data</code></td><td><code>manage</code></td><td>Fetch fresh account data from API</td></tr>
+      <tr><td><code>imagify_delete_user_data_cache</code></td><td><code>imagify_delete_user_data_cache</code></td><td><code>manage</code></td><td>Purge cached user data transient</td></tr>
+      <tr><td><code>nopriv_imagify_rpc</code></td><td><code>imagify_rpc_{rpc_id}</code> (<code>imagify_rpc_nonce</code>)</td><td>None (nonce only)</td><td>Internal RPC dispatch — re-fires as <code>wp_ajax_{action}</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>admin_post_* only</h3>
+  <table>
+    <thead><tr><th>Action</th><th>Nonce Name</th><th>Capability</th></tr></thead>
+    <tbody>
+      <tr><td><code>imagify_scan_custom_folders</code></td><td><code>imagify_scan_custom_folders</code></td><td><code>optimize</code> (custom-folders ctx)</td></tr>
+      <tr><td><code>imagify_dismiss_ad</code></td><td><code>imagify-dismiss-ad</code></td><td><code>manage</code> (wp ctx)</td></tr>
+      <tr><td><code>imagify_dismiss_notice</code></td><td><code>imagify-dismiss-notice</code></td><td>Varies per notice</td></tr>
+      <tr><td><code>imagify_deactivate_plugin</code></td><td><code>imagify-deactivate-plugin</code></td><td>Varies per notice</td></tr>
+      <tr><td><code>imagify_rollback</code></td><td><code>imagify_rollback</code></td><td><code>manage_options</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    ℹ️ Nonces with <code>{id}</code> and <code>{ctx}</code> are unique per media item and context (e.g. <code>imagify-optimize-42-wp</code>). This prevents CSRF replay across different media items.
+  </div>
+</section>
+</body>
+</html>

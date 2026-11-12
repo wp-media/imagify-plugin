@@ -16,7 +16,7 @@ abstract class AbstractContext implements ContextInterface {
 	 * @since  1.9
 	 * @author Grégory Viguier
 	 */
-	protected $context;
+	protected $context = '';
 
 	/**
 	 * Tell if the media/context is network-wide.
@@ -55,7 +55,7 @@ abstract class AbstractContext implements ContextInterface {
 	 * @since  1.9
 	 * @author Grégory Viguier
 	 */
-	protected $thumbnail_sizes;
+	protected $thumbnail_sizes = [];
 
 	/**
 	 * Tell if the optimization process is allowed to backup in this context.
@@ -64,7 +64,7 @@ abstract class AbstractContext implements ContextInterface {
 	 * @since  1.9
 	 * @author Grégory Viguier
 	 */
-	protected $can_backup;
+	protected $can_backup = false;
 
 	/**
 	 * Get the context "short name".
@@ -161,7 +161,7 @@ abstract class AbstractContext implements ContextInterface {
 	 * @return bool
 	 */
 	public function current_user_can( $describer, $media_id = null ) {
-		return $this->user_can( null, $describer, $media_id );
+		return $this->user_can( 0, $describer, $media_id );
 	}
 
 	/**
@@ -176,6 +176,7 @@ abstract class AbstractContext implements ContextInterface {
 	 * @return bool
 	 */
 	public function user_can( $user_id, $describer, $media_id = null ) {
+		$user            = 0;
 		$current_user_id = get_current_user_id();
 
 		if ( ! $user_id ) {
@@ -213,7 +214,7 @@ abstract class AbstractContext implements ContextInterface {
 			 * @param int    $media_id  A media ID.
 			 * @param string $context   The context name.
 			 */
-			$user_can = (bool) apply_filters( 'imagify_current_user_can', $user_can, $capacity, $describer, $media_id, $this->get_name() );
+			$user_can = wpm_apply_filters_typed( 'boolean', 'imagify_current_user_can', $user_can, $capacity, $describer, $media_id, $this->get_name() );
 		} else {
 			$user_can = user_can( $user, $capacity, $media_id );
 		}
@@ -221,8 +222,7 @@ abstract class AbstractContext implements ContextInterface {
 		/**
 		 * Tell if the given user is allowed to operate Imagify in this context.
 		 *
-		 * @since  1.9
-		 * @author Grégory Viguier
+		 * @since 1.9
 		 *
 		 * @param bool   $user_can  Tell if the given user is allowed to operate Imagify in this context.
 		 * @param int    $user_id   The user ID.
@@ -231,7 +231,7 @@ abstract class AbstractContext implements ContextInterface {
 		 * @param int    $media_id  A media ID.
 		 * @param string $context   The context name.
 		 */
-		return (bool) apply_filters( 'imagify_user_can', $user_can, $user_id, $capacity, $describer, $media_id, $this->get_name() );
+		return wpm_apply_filters_typed( 'boolean', 'imagify_user_can', $user_can, $user_id, $capacity, $describer, $media_id, $this->get_name() );
 	}
 
 	/**
@@ -257,6 +257,6 @@ abstract class AbstractContext implements ContextInterface {
 		 * @param string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
 		 * @param string $context   The context name.
 		 */
-		return (string) apply_filters( 'imagify_capacity', $capacity, $describer, $this->get_name() );
+		return wpm_apply_filters_typed( 'string', 'imagify_capacity', $capacity, $describer, $this->get_name() );
 	}
 }

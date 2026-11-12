@@ -3,8 +3,6 @@ namespace Imagify\Optimization\Data;
 
 use Imagify\Media\MediaInterface;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
-
 /**
  * Abstract class used to handle the optimization data of "media groups" (aka attachments).
  *
@@ -24,10 +22,11 @@ abstract class AbstractData implements DataInterface {
 	 * @author Grégory Viguier
 	 */
 	protected $default_optimization_data = [
-		'status' => '',
-		'level'  => false,
-		'sizes'  => [],
-		'stats'  => [
+		'status'  => '',
+		'message' => '',
+		'level'   => false,
+		'sizes'   => [],
+		'stats'   => [
 			'original_size'  => 0,
 			'optimized_size' => 0,
 			'percent'        => 0,
@@ -232,7 +231,7 @@ abstract class AbstractData implements DataInterface {
 
 		foreach ( $data['sizes'] as $size ) {
 			if ( ! empty( $size['success'] ) ) {
-				$count++;
+				++$count;
 			}
 		}
 
@@ -280,7 +279,7 @@ abstract class AbstractData implements DataInterface {
 
 	/**
 	 * Get the file size of the full size file.
-	 * If the WebP size is available, it is used.
+	 * If the Nextgen size is available, it is used.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -288,28 +287,36 @@ abstract class AbstractData implements DataInterface {
 	 *
 	 * @param  bool $human_format True to display the image human format size (1Mb).
 	 * @param  int  $decimals     Precision of number of decimal places.
-	 * @param  bool $use_webp     Use the WebP size if available.
+	 * @param  bool $use_nextgen     Use the Nextgen size if available.
 	 * @return string|int
 	 */
-	public function get_optimized_size( $human_format = true, $decimals = 2, $use_webp = true ) {
+	public function get_optimized_size( $human_format = true, $decimals = 2, $use_nextgen = true ) {
 		if ( ! $this->is_valid() ) {
 			return $human_format ? imagify_size_format( 0, $decimals ) : 0;
 		}
 
-		$data  = $this->get_optimization_data();
-		$media = $this->get_media();
+		$data   = $this->get_optimization_data();
+		$media  = $this->get_media();
+		$format = 'webp';
 
-		if ( $use_webp ) {
-			$process_class_name = imagify_get_optimization_process_class_name( $media->get_context() );
-			$webp_size_name     = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
-		}
+		$process_class_name     = imagify_get_optimization_process_class_name( $media->get_context() );
+		$nextgen_avif_size_name = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
+		$nextgen_webp_size_name = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
 
-		if ( $use_webp && ! empty( $data['sizes'][ $webp_size_name ]['optimized_size'] ) ) {
-			$size = (int) $data['sizes'][ $webp_size_name ]['optimized_size'];
+		$size = 0;
+
+		if ( $use_nextgen ) {
+			/**Checking for success status before size, some cases the response is false
+			 * because the image is already compressed, or we have a connection timed out
+			 * */
+			$size = ! empty( $data['sizes'][ $nextgen_webp_size_name ] ) && $data['sizes'][ $nextgen_webp_size_name ]['success'] ?
+				(int) $data['sizes'][ $nextgen_webp_size_name ]['optimized_size'] : 0;
+			if ( ! empty( $data['sizes'][ $nextgen_avif_size_name ]['optimized_size'] ) &&
+				$data['sizes'][ $nextgen_avif_size_name ] ) {
+				$size = (int) $data['sizes'][ $nextgen_avif_size_name ]['optimized_size'];
+			}
 		} elseif ( ! empty( $data['sizes']['full']['optimized_size'] ) ) {
 			$size = (int) $data['sizes']['full']['optimized_size'];
-		} else {
-			$size = 0;
 		}
 
 		if ( $size ) {
@@ -319,10 +326,13 @@ abstract class AbstractData implements DataInterface {
 		// If nothing in the database, try to get the info from the file.
 		$filepath = false;
 
-		if ( $use_webp && ! empty( $data['sizes'][ $webp_size_name ]['success'] ) ) {
-			// Try with the WebP file first.
+		if ( $use_nextgen ) {
+			if ( ! empty( $data['sizes'][ $nextgen_avif_size_name ]['success'] ) ) {
+				$format = 'avif';
+			}
+			// Try with the Nextgen file first.
 			$filepath = $media->get_raw_fullsize_path();
-			$filepath = $filepath ? imagify_path_to_webp( $filepath ) : false;
+			$filepath = $filepath ? imagify_path_to_nextgen( $filepath, $format ) : false;
 
 			if ( ! $filepath || ! $this->filesystem->exists( $filepath ) ) {
 				$filepath = false;
@@ -330,7 +340,7 @@ abstract class AbstractData implements DataInterface {
 		}
 
 		if ( ! $filepath ) {
-			// No WebP? The full size then.
+			// No Nextgen? The full size then.
 			$filepath = $media->get_fullsize_path();
 		}
 
@@ -416,15 +426,20 @@ abstract class AbstractData implements DataInterface {
 			return round( (float) 0, 2 );
 		}
 
-		$process_class_name = imagify_get_optimization_process_class_name( $this->get_media()->get_context() );
-		$webp_size_name     = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
+		$process_class_name     = imagify_get_optimization_process_class_name( $this->get_media()->get_context() );
+		$nextgen_webp_size_name = 'full' . constant( $process_class_name . '::WEBP_SUFFIX' );
+		$nextgen_avif_size_name = 'full' . constant( $process_class_name . '::AVIF_SUFFIX' );
 
-		$percent = $this->get_size_data( $webp_size_name, 'percent' );
+		$percent = $this->get_size_data( $nextgen_avif_size_name, 'percent' );
+
+		// Check for webp version if avif is not found.
+		if ( ! $percent ) {
+			$percent = $this->get_size_data( $nextgen_webp_size_name, 'percent' );
+		}
 
 		if ( ! $percent ) {
 			$percent = $this->get_size_data( 'full', 'percent' );
 		}
-
 		$percent = $percent ? $percent : 0;
 
 		return round( (float) $percent, 2 );

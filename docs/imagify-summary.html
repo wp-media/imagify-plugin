@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Imagify — Complete Technical Summary</title>
+  <style>
+    :root {
+      --blue:    #2B67F6;
+      --blue-l:  #EBF0FE;
+      --green:   #1DB954;
+      --green-l: #E6F8ED;
+      --orange:  #F59E0B;
+      --orange-l:#FEF3C7;
+      --red:     #EF4444;
+      --red-l:   #FEE2E2;
+      --purple:  #7C3AED;
+      --purple-l:#EDE9FE;
+      --gray:    #6B7280;
+      --gray-l:  #F3F4F6;
+      --dark:    #111827;
+      --border:  #E5E7EB;
+      --radius:  10px;
+      --font:    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --mono:    "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--dark);
+      background: #F8FAFC;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, #1a1f36 0%, #2B67F6 100%);
+      color: white;
+      padding: 48px 40px 40px;
+      text-align: center;
+    }
+    header .logo { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.6; margin-bottom: 12px; }
+    header h1   { font-size: 38px; font-weight: 800; margin-bottom: 10px; }
+    header p    { font-size: 16px; opacity: 0.8; max-width: 620px; margin: 0 auto 20px; }
+    .version-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── TOC ── */
+    nav.toc {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin: 36px auto;
+      max-width: 1100px;
+      margin-left: 24px;
+      margin-right: 24px;
+    }
+    nav.toc h2 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray); margin-bottom: 16px; }
+    nav.toc ol { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 6px 32px; padding-left: 20px; }
+    nav.toc li { font-size: 14px; }
+    nav.toc a  { color: var(--blue); text-decoration: none; }
+    nav.toc a:hover { text-decoration: underline; }
+
+    /* ── SECTIONS ── */
+    section {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      margin: 20px 24px;
+    }
+    section + section { margin-top: 20px; }
+
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+    .section-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .section-header p  { font-size: 14px; color: var(--gray); }
+
+    /* colour presets for icons */
+    .ic-blue   { background: var(--blue-l);   }
+    .ic-green  { background: var(--green-l);  }
+    .ic-orange { background: var(--orange-l); }
+    .ic-red    { background: var(--red-l);    }
+    .ic-purple { background: var(--purple-l); }
+
+    /* ── SUBSECTIONS ── */
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--dark);
+      margin: 24px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h3::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 16px;
+      background: var(--blue);
+      border-radius: 2px;
+    }
+
+    /* ── PROSE ── */
+    p { margin-bottom: 12px; color: #374151; }
+    ul, ol { padding-left: 22px; margin-bottom: 12px; }
+    li { margin-bottom: 5px; color: #374151; }
+    li strong { color: var(--dark); }
+
+    /* ── PILL TAGS ── */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 16px; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .tag-blue   { background: var(--blue-l);   color: var(--blue);   }
+    .tag-green  { background: var(--green-l);  color: #15803D;       }
+    .tag-orange { background: var(--orange-l); color: #92400E;       }
+    .tag-red    { background: var(--red-l);    color: var(--red);    }
+    .tag-purple { background: var(--purple-l); color: var(--purple); }
+    .tag-gray   { background: var(--gray-l);   color: var(--gray);   }
+
+    /* ── CODE ── */
+    code {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      background: var(--gray-l);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: #7C3AED;
+    }
+    pre {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      background: #1E293B;
+      color: #E2E8F0;
+      border-radius: 8px;
+      padding: 20px 24px;
+      overflow-x: auto;
+      margin: 12px 0 20px;
+      line-height: 1.65;
+    }
+    pre .c { color: #64748B; }   /* comment */
+    pre .k { color: #7DD3FC; }   /* keyword / key */
+    pre .v { color: #86EFAC; }   /* value */
+    pre .f { color: #FCA5A5; }   /* function */
+    pre .s { color: #FCD34D; }   /* string */
+
+    /* ── GRID CARDS ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0; }
+    @media (max-width: 720px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      background: #FAFAFA;
+    }
+    .card h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--dark); }
+    .card p, .card li { font-size: 13px; color: var(--gray); }
+    .card ul { margin: 0; padding-left: 16px; }
+
+    /* ── TABLE ── */
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 16px 0 20px; }
+    th { background: var(--gray-l); text-align: left; padding: 10px 14px; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray); border-bottom: 2px solid var(--border); }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #F9FAFB; }
+
+    /* ── CALLOUT ── */
+    .callout {
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 16px 20px;
+      border-radius: 8px;
+      border-left: 4px solid;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    .callout-info    { background: var(--blue-l);   border-color: var(--blue);   color: #1e3a8a; }
+    .callout-warning { background: var(--orange-l); border-color: var(--orange); color: #78350f; }
+    .callout-success { background: var(--green-l);  border-color: var(--green);  color: #14532d; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 40px;
+      font-size: 13px;
+      color: var(--gray);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ HEADER ═══════════════════════════════════ -->
+<header>
+  <div class="logo">Technical Documentation</div>
+  <h1>Imagify</h1>
+  <p>WordPress image optimisation plugin — compression, next-gen formats (WebP / AVIF), and multi-context management.</p>
+  <span class="version-badge">Version 2.2.8 · PHP 7.3+ · WordPress 5.3+</span>
+</header>
+
+<!-- ═══════════════════════════════════ TOC ═══════════════════════════════════ -->
+<nav class="toc container">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#architecture">Architecture &amp; bootstrapping</a></li>
+    <li><a href="#optimisation">Image optimisation</a></li>
+    <li><a href="#nextgen">Next-gen formats (WebP / AVIF)</a></li>
+    <li><a href="#settings">Settings &amp; configuration</a></li>
+    <li><a href="#bulk">Bulk optimisation</a></li>
+    <li><a href="#media-library">WP Media Library integration</a></li>
+    <li><a href="#custom-folders">Custom folders</a></li>
+    <li><a href="#ajax-api">AJAX &amp; Admin-Post actions</a></li>
+    <li><a href="#cli">WP-CLI commands</a></li>
+    <li><a href="#ngg">NextGEN Gallery integration</a></li>
+    <li><a href="#third-party">Other third-party integrations</a></li>
+    <li><a href="#cron">Scheduled tasks (Cron)</a></li>
+    <li><a href="#hooks">Developer hooks &amp; filters</a></li>
+    <li><a href="#quota">Quota &amp; account management</a></li>
+    <li><a href="#roles">Roles &amp; access control</a></li>
+    <li><a href="#tools">Troubleshooting tools</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════════════════════════════════ 1 — ARCHITECTURE ═══════════════════════════════════ -->
+<section id="architecture">
+  <div class="section-header">
+    <div class="section-icon ic-blue">🏗️</div>
+    <div>
+      <h2>1. Architecture &amp; Bootstrapping</h2>
+      <p>Source code organisation, service loading, and plugin lifecycle.</p>
+    </div>
+  </div>
+
+  <h3>Entry point</h3>
+  <p>The plugin starts from <code>imagify.php</code>. It defines global constants, includes the Composer autoloader, then hooks the <code>imagify_init()</code> function on <code>plugins_loaded</code>.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Key constants</h4>
+      <ul>
+        <li><code>IMAGIFY_VERSION</code> — plugin version</li>
+        <li><code>IMAGIFY_PATH</code> / <code>IMAGIFY_URL</code></li>
+        <li><code>IMAGIFY_MAX_BYTES</code> — 5 MB limit per image</li>
+        <li><code>IMAGIFY_APP_API_URL</code> — remote API URL</li>
+        <li><code>IMAGIFY_API_KEY</code> — override via PHP constant</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Autoloading &amp; DI</h4>
+      <ul>
+        <li>PSR-4 via Composer (<code>vendor/autoload.php</code>)</li>
+        <li>Dependency injection: <strong>League Container</strong></li>
+        <li>Providers declared in <code>config/providers.php</code></li>
+        <li>Main class: <code>Imagify\Plugin</code></li>
+        <li>Final hook: <code>do_action('imagify_loaded')</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Registered Service Providers</h3>
+  <div class="tags">
+    <span class="tag tag-blue">User</span>
+    <span class="tag tag-blue">Admin</span>
+    <span class="tag tag-blue">Avif</span>
+    <span class="tag tag-blue">CDN</span>
+    <span class="tag tag-blue">Picture</span>
+    <span class="tag tag-blue">Stats</span>
+    <span class="tag tag-blue">Webp</span>
+    <span class="tag tag-blue">ThirdParty</span>
+    <span class="tag tag-blue">Media</span>
+    <span class="tag tag-blue">Tools</span>
+  </div>
+
+  <h3>Initialisation sequence</h3>
+  <pre><span class="c">// 1. plugins_loaded</span>
+imagify_init()
+  └── include vendor/autoload.php
+  └── new Imagify\Plugin()
+        └── load config/providers.php        <span class="c">// register services</span>
+        └── boot Options, Data, Auth
+        └── boot Auto-Optimization
+        └── (admin only) boot Settings, Views, Imagifybeat
+  └── <span class="f">do_action</span>(<span class="s">'imagify_loaded'</span>)</pre>
+</section>
+
+<!-- ═══════════════════════════════════ 2 — OPTIMISATION ═══════════════════════════════════ -->
+<section id="optimisation">
+  <div class="section-header">
+    <div class="section-icon ic-green">⚡</div>
+    <div>
+      <h2>2. Image optimisation</h2>
+      <p>On-the-fly or bulk compression, quality levels, backup management, and resizing.</p>
+    </div>
+  </div>
+
+  <h3>Compression levels</h3>
+  <table>
+    <thead>
+      <tr><th>Level</th><th>Name</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>0</code></td><td>Normal</td><td>Light compression, maximum quality preserved.</td></tr>
+      <tr><td><code>1</code></td><td>Aggressive</td><td>Stronger compression, good quality/size trade-off.</td></tr>
+      <tr><td><code>2</code></td><td>Ultra (default)</td><td>Maximum compression — recommended for most use cases.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    All optimisation operations go through the <code>Imagify\Optimization\File</code> class, which communicates with the remote Imagify API.
+  </div>
+
+  <h3>Automatic optimisation on upload</h3>
+  <p>When the <code>auto_optimize</code> option is enabled, the <code>Imagify_Auto_Optimization</code> class hooks into <code>wp_generate_attachment_metadata</code>. Each uploaded image is optimised immediately, along with all its thumbnails.</p>
+
+  <h3>Backup system</h3>
+  <ul>
+    <li>Enabled via the <code>backup</code> option.</li>
+    <li>The original file is copied before any compression.</li>
+    <li>Backup directory is filterable via <code>imagify_backup_directory</code>.</li>
+    <li>Restoring puts the original back in place and removes optimisation metadata.</li>
+  </ul>
+
+  <h3>Large image resizing</h3>
+  <ul>
+    <li>Option <code>resize_larger</code>: when enabled, images exceeding <code>resize_larger_w</code> pixels wide are resized.</li>
+    <li>Default value: <strong>2560 px</strong> (aligned with the WP filter <code>big_image_size_threshold</code>).</li>
+  </ul>
+
+  <h3>Thumbnail management</h3>
+  <p>All sizes registered in WordPress are optimised. Sizes can be excluded via the <code>disallowed-sizes</code> blacklist in the settings.</p>
+
+  <h3>Optimisation statuses</h3>
+  <div class="tags">
+    <span class="tag tag-green">success</span>
+    <span class="tag tag-gray">already_optimized</span>
+    <span class="tag tag-red">error</span>
+    <span class="tag tag-orange">pending</span>
+  </div>
+
+  <h3>Metadata stored per attachment</h3>
+  <pre><span class="c">// Attachment post meta</span>
+_imagify_status          <span class="c">// 'success' | 'already_optimized' | 'error' | 'pending'</span>
+_imagify_data            <span class="c">// JSON — full optimisation results</span>
+_imagify_level           <span class="c">// Level used (0, 1, 2)</span>
+_imagify_next_gen_done   <span class="c">// Boolean — next-gen versions generated</span></pre>
+</section>
+
+<!-- ═══════════════════════════════════ 3 — NEXT-GEN ═══════════════════════════════════ -->
+<section id="nextgen">
+  <div class="section-header">
+    <div class="section-icon ic-purple">🖼️</div>
+    <div>
+      <h2>3. Next-gen formats (WebP / AVIF)</h2>
+      <p>Generation and delivery of modern formats to reduce image weight on the browser side.</p>
+    </div>
+  </div>
+
+  <h3>File generation</h3>
+  <p>After optimisation, Imagify can generate <strong>WebP</strong> and/or <strong>AVIF</strong> versions of each image. The <code>optimization_format</code> option controls this behaviour:</p>
+  <table>
+    <thead>
+      <tr><th>Value</th><th>Behaviour</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>'off'</code></td><td>No next-gen format.</td></tr>
+      <tr><td><code>'webp'</code></td><td>Generates WebP only.</td></tr>
+      <tr><td><code>'avif'</code></td><td>Generates WebP + AVIF (AVIF takes priority if supported).</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Display method: &lt;picture&gt;</h3>
+  <p>Class: <code>Imagify\Picture\Display</code>. The plugin starts an output buffer on <code>template_redirect</code>, scans the generated HTML, and replaces each <code>&lt;img&gt;</code> with a <code>&lt;picture&gt;</code> block containing <code>&lt;source&gt;</code> elements pointing to the WebP/AVIF files.</p>
+  <pre><span class="c">&lt;!-- Before --&gt;</span>
+&lt;img src="photo.jpg" alt="..."&gt;
+
+<span class="c">&lt;!-- After transformation --&gt;</span>
+&lt;picture&gt;
+  &lt;source srcset="photo.avif" type="image/avif"&gt;
+  &lt;source srcset="photo.webp" type="image/webp"&gt;
+  &lt;img src="photo.jpg" alt="..."&gt;
+&lt;/picture&gt;</pre>
+
+  <h3>Display method: Server rewrite</h3>
+  <p>Class: <code>Imagify\Webp\Display</code>. Rather than altering the HTML, rules are written directly into <code>.htaccess</code> (Apache) or <code>web.config</code> (IIS). The server automatically serves WebP if the browser accepts it (<code>Accept: image/webp</code>).</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Lazy Load compatibility</h4>
+      <p>The <code>data-lazy-src</code>, <code>data-src</code>, <code>data-srcset</code>, <code>data-lazy-srcset</code> attributes are detected and propagated into the generated <code>&lt;source&gt;</code> and <code>&lt;img&gt;</code> tags.</p>
+    </div>
+    <div class="card">
+      <h4>Image exclusion</h4>
+      <p>An image with the CSS class <code>imagify-no-webp</code> is ignored by the <code>&lt;picture&gt;</code> transformation.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-warning">
+    <strong>Warning:</strong> the server rewrite method requires the web server to be Apache or IIS and that the configuration files (.htaccess) be writable.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 4 — SETTINGS ═══════════════════════════════════ -->
+<section id="settings">
+  <div class="section-header">
+    <div class="section-icon ic-orange">⚙️</div>
+    <div>
+      <h2>4. Settings &amp; configuration</h2>
+      <p>All options stored in <code>imagify_settings</code> (wp_options / wp_sitemeta on multisite).</p>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>api_key</code></td><td>string</td><td><code>''</code></td><td>Imagify API key (or the <code>IMAGIFY_API_KEY</code> constant).</td></tr>
+      <tr><td><code>optimization_level</code></td><td>int</td><td><code>2</code></td><td>Compression level (0, 1, 2).</td></tr>
+      <tr><td><code>lossless</code></td><td>bool</td><td><code>0</code></td><td>Lossless compression.</td></tr>
+      <tr><td><code>auto_optimize</code></td><td>bool</td><td><code>1</code></td><td>Automatic optimisation on upload.</td></tr>
+      <tr><td><code>backup</code></td><td>bool</td><td><code>1</code></td><td>Back up the original before compression.</td></tr>
+      <tr><td><code>resize_larger</code></td><td>bool</td><td><code>0</code></td><td>Resize images that are too large.</td></tr>
+      <tr><td><code>resize_larger_w</code></td><td>int</td><td><code>0</code></td><td>Maximum width in pixels.</td></tr>
+      <tr><td><code>optimization_format</code></td><td>string</td><td><code>'webp'</code></td><td><code>'off'</code>, <code>'webp'</code>, or <code>'avif'</code>.</td></tr>
+      <tr><td><code>display_nextgen_method</code></td><td>string</td><td><code>'picture'</code></td><td><code>'picture'</code> or <code>'rewrite'</code>.</td></tr>
+      <tr><td><code>cdn_url</code></td><td>string</td><td><code>''</code></td><td>CDN URL for serving media.</td></tr>
+      <tr><td><code>disallowed-sizes</code></td><td>array</td><td><code>[]</code></td><td>Thumbnail sizes excluded from optimisation.</td></tr>
+      <tr><td><code>admin_bar_menu</code></td><td>bool</td><td><code>1</code></td><td>Show Imagify in the admin bar.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    The <code>Imagify_Settings</code> class handles option registration (<code>register_setting()</code>) and validation. It is network-aware: on multisite, network options are stored in <code>wp_sitemeta</code>.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 5 — BULK ═══════════════════════════════════ -->
+<section id="bulk">
+  <div class="section-header">
+    <div class="section-icon ic-green">🚀</div>
+    <div>
+      <h2>5. Bulk optimisation</h2>
+      <p>Batch processing of all existing images, with an asynchronous queue.</p>
+    </div>
+  </div>
+
+  <h3>Bulk architecture</h3>
+  <p>The <code>Imagify\Bulk\Bulk</code> class orchestrates bulk optimisation. It relies on <strong>ActionScheduler</strong> (bundled library) to create asynchronous jobs processed in the background.</p>
+
+  <div class="grid-3">
+    <div class="card">
+      <h4>WP Media context</h4>
+      <p>Class: <code>Imagify\Bulk\WP</code></p>
+      <p>Optimises all attachments in the WordPress media library that have not yet been optimised.</p>
+    </div>
+    <div class="card">
+      <h4>Custom Folders context</h4>
+      <p>Class: <code>Imagify\Bulk\CustomFolders</code></p>
+      <p>Optimises files indexed in the custom folders.</p>
+    </div>
+    <div class="card">
+      <h4>NGG context</h4>
+      <p>Class: <code>Imagify\Bulk\NGG</code></p>
+      <p>Optimises images from NextGEN Gallery galleries.</p>
+    </div>
+  </div>
+
+  <h3>Execution flow</h3>
+  <pre><span class="c">// Trigger (UI or CLI)</span>
+imagify_bulk_optimize (AJAX)  <span class="c">// or wp imagify bulk-optimize</span>
+  └── Imagify\Bulk\Bulk::run()
+        └── ActionScheduler::enqueue(imagify_optimize_media)
+              └── Imagify\Job\MediaOptimization::execute()
+                    └── Imagify\Optimization\File::optimize()
+                          └── Remote Imagify API</pre>
+
+  <h3>Bulk next-gen version generation</h3>
+  <p>The AJAX action <code>imagify_missing_nextgen_generation</code> and the ActionScheduler hook <code>imagify_convert_next_gen</code> allow generating WebP/AVIF versions for all already-optimised images whose next-gen files are missing.</p>
+</section>
+
+<!-- ═══════════════════════════════════ 6 — MEDIA LIBRARY ═══════════════════════════════════ -->
+<section id="media-library">
+  <div class="section-header">
+    <div class="section-icon ic-blue">📁</div>
+    <div>
+      <h2>6. WordPress Media Library integration</h2>
+      <p>Columns, actions, and buttons directly within the WordPress media interface.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>List view (Media Library)</h4>
+      <ul>
+        <li>"Imagify" column with status and weight savings.</li>
+        <li>Inline action buttons: Optimize, Re-optimize, Restore, Generate next-gen, Delete next-gen.</li>
+        <li>"Bulk Optimization" group action.</li>
+        <li>Filter by status: <code>?imagify-status=...</code>.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Attachment edit page</h4>
+      <ul>
+        <li>Dedicated metabox with detailed status.</li>
+        <li>Individual optimisation buttons.</li>
+        <li>Display of savings achieved (KB and %).</li>
+        <li>Restore link to the original.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    The WordPress admin bar can also display a shortcut to the Bulk Optimization page, controlled by the <code>admin_bar_menu</code> option.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 7 — CUSTOM FOLDERS ═══════════════════════════════════ -->
+<section id="custom-folders">
+  <div class="section-header">
+    <div class="section-icon ic-orange">📂</div>
+    <div>
+      <h2>7. Custom Folders</h2>
+      <p>Optimisation of image files located outside the WordPress media library.</p>
+    </div>
+  </div>
+
+  <h3>Principle</h3>
+  <p>Custom folders allow optimising images located anywhere on the server (themes, plugins, custom directories). They are indexed in two dedicated MySQL tables.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Table <code>imagify_folders</code></h4>
+      <ul>
+        <li>Monitored directories</li>
+        <li>Absolute path on the server</li>
+        <li>Scan status</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Table <code>imagify_files</code></h4>
+      <ul>
+        <li>Individually indexed files</li>
+        <li>Original / optimised size</li>
+        <li>Status, level, generated formats</li>
+        <li>Hash to detect modifications</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Available features</h3>
+  <ul>
+    <li><strong>Scan</strong>: automatic detection of new images in configured folders.</li>
+    <li><strong>Individual or bulk optimisation</strong> via the same ActionScheduler system.</li>
+    <li><strong>Re-optimisation</strong>: if the source file has been modified (detected by hash).</li>
+    <li><strong>Restore</strong> from backup.</li>
+    <li><strong>Cron synchronisation</strong> to detect modified/deleted files.</li>
+  </ul>
+
+  <h3>Main classes</h3>
+  <pre><span class="c">// Database access</span>
+Imagify_Files_DB        <span class="c">// CRUD on wp_imagify_files</span>
+Imagify_Folders_DB      <span class="c">// CRUD on wp_imagify_folders</span>
+Imagify_Files_Scan      <span class="c">// Filesystem scan</span>
+
+<span class="c">// Context</span>
+Imagify\Context\CustomFolders</pre>
+</section>
+
+<!-- ═══════════════════════════════════ 8 — AJAX API ═══════════════════════════════════ -->
+<section id="ajax-api">
+  <div class="section-header">
+    <div class="section-icon ic-purple">🔌</div>
+    <div>
+      <h2>8. AJAX &amp; Admin-Post actions</h2>
+      <p>All server entry points used by the administration interface.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    The plugin does not expose a standard WordPress REST API. All actions go through <code>wp_ajax_*</code> (authenticated) or <code>admin_post_*</code>. A custom "Imagifybeat" system handles real-time updates.
+  </div>
+
+  <h3>AJAX actions (<code>wp_ajax_*</code>)</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>Account &amp; API</h4>
+      <ul>
+        <li><code>imagify_signup</code></li>
+        <li><code>imagify_check_api_key_validity</code></li>
+        <li><code>imagify_get_user_data</code></li>
+        <li><code>imagify_delete_user_data_cache</code></li>
+        <li><code>imagify_get_prices</code></li>
+        <li><code>imagify_check_coupon</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Bulk &amp; stats</h4>
+      <ul>
+        <li><code>imagify_bulk_optimize</code></li>
+        <li><code>imagify_missing_nextgen_generation</code></li>
+        <li><code>imagify_bulk_get_stats</code></li>
+        <li><code>imagify_get_folder_type_data</code></li>
+        <li><code>imagify_bulk_info_seen</code></li>
+        <li><code>imagify_get_images_counts</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>UI &amp; settings</h4>
+      <ul>
+        <li><code>imagify_check_backup_dir_is_writable</code></li>
+        <li><code>imagify_get_files_tree</code></li>
+        <li><code>imagify_update_estimate_sizes</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Tools</h4>
+      <ul>
+        <li><code>imagify_reset_internal_state</code></li>
+        <li><code>imagify_rpc</code> (Imagifybeat)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Admin-Post actions (<code>admin_post_*</code>)</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>WP Media Library</h4>
+      <ul>
+        <li><code>imagify_manual_optimize</code></li>
+        <li><code>imagify_manual_reoptimize</code></li>
+        <li><code>imagify_optimize_missing_sizes</code></li>
+        <li><code>imagify_generate_nextgen_versions</code></li>
+        <li><code>imagify_delete_nextgen_versions</code></li>
+        <li><code>imagify_restore</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Custom folders</h4>
+      <ul>
+        <li><code>imagify_optimize_file</code></li>
+        <li><code>imagify_reoptimize_file</code></li>
+        <li><code>imagify_restore_file</code></li>
+        <li><code>imagify_refresh_file_modified</code></li>
+        <li><code>imagify_scan_custom_folders</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Imagifybeat</h3>
+  <p>Real-time update system (analogous to WordPress Heartbeat). Hook: <code>wp_ajax_imagifybeat</code>. Interface data (nonces, statuses) is refreshed periodically via AJAX polling, configurable by filter.</p>
+</section>
+
+<!-- ═══════════════════════════════════ 9 — CLI ═══════════════════════════════════ -->
+<section id="cli">
+  <div class="section-header">
+    <div class="section-icon ic-blue">💻</div>
+    <div>
+      <h2>9. WP-CLI commands</h2>
+      <p>Command-line interface for automating optimisation operations.</p>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <h4><code>wp imagify bulk-optimize</code></h4>
+      <p>Launches bulk optimisation for one or more contexts (<code>wp</code>, <code>custom-folders</code>).</p>
+      <ul>
+        <li>Option: <code>--optimization-level</code></li>
+        <li>Asynchronous execution via ActionScheduler</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><code>wp imagify restore</code></h4>
+      <p>Restores original images for the specified contexts (<code>library</code>, <code>custom-folders</code>).</p>
+      <ul>
+        <li>Synchronous (blocking) execution</li>
+        <li>Returns: success, errors, total</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><code>wp imagify generate-missing-nextgen</code></h4>
+      <p>Generates missing WebP/AVIF versions for all already-optimised images.</p>
+      <ul>
+        <li>Useful after enabling a next-gen format</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 10 — NGG ═══════════════════════════════════ -->
+<section id="ngg">
+  <div class="section-header">
+    <div class="section-icon ic-green">🖼️</div>
+    <div>
+      <h2>10. NextGEN Gallery integration</h2>
+      <p>Full support for the NextGEN Gallery (NGG) plugin.</p>
+    </div>
+  </div>
+
+  <p>The plugin automatically detects NextGEN Gallery and activates a dedicated context (<code>Imagify\Context\NGG</code>).</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>Features</h4>
+      <ul>
+        <li>Optimisation of NGG images (levels 0/1/2)</li>
+        <li>WebP / AVIF generation for NGG images</li>
+        <li>Restore NGG originals</li>
+        <li>Backup before compression</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Interface</h4>
+      <ul>
+        <li>"Bulk Optimization" page in the NGG menu</li>
+        <li>"Imagify" column in "Manage Images"</li>
+        <li>Verified compatibility: NGG v4.x (<code>imagify_ngg_has_pope_storage()</code>)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 11 — THIRD PARTY ═══════════════════════════════════ -->
+<section id="third-party">
+  <div class="section-header">
+    <div class="section-icon ic-orange">🔗</div>
+    <div>
+      <h2>11. Third-party integrations</h2>
+      <p>Compatibility with other plugins and WordPress hosts.</p>
+    </div>
+  </div>
+
+  <h3>Plugins</h3>
+  <div class="tags">
+    <span class="tag tag-blue">WooCommerce</span>
+    <span class="tag tag-blue">WP Rocket</span>
+    <span class="tag tag-blue">Gravity Forms</span>
+    <span class="tag tag-blue">Formidable Pro</span>
+    <span class="tag tag-blue">Yoast SEO</span>
+    <span class="tag tag-blue">AMP</span>
+    <span class="tag tag-blue">Enable Media Replace</span>
+    <span class="tag tag-blue">Regenerate Thumbnails</span>
+    <span class="tag tag-blue">Amazon S3 &amp; CloudFront</span>
+    <span class="tag tag-blue">Real Media Library</span>
+    <span class="tag tag-blue">Extendify</span>
+    <span class="tag tag-blue">Cloudflare Super Page Cache</span>
+  </div>
+
+  <h3>WooCommerce detail</h3>
+  <p>On variable product pages, WooCommerce dynamically replaces the main image. Imagify fixes the <code>wp-post-image</code> class on generated <code>&lt;picture&gt;</code> tags to maintain compatibility with WooCommerce's image-switching mechanism.</p>
+
+  <h3>Hosts</h3>
+  <div class="tags">
+    <span class="tag tag-gray">WordPress.com</span>
+    <span class="tag tag-gray">WP Engine</span>
+    <span class="tag tag-gray">Flywheel</span>
+    <span class="tag tag-gray">SiteGround</span>
+    <span class="tag tag-gray">Pressable</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 12 — CRON ═══════════════════════════════════ -->
+<section id="cron">
+  <div class="section-header">
+    <div class="section-icon ic-purple">🕐</div>
+    <div>
+      <h2>12. Scheduled tasks (Cron)</h2>
+      <p>Recurring jobs for maintenance and statistics.</p>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Task</th><th>WP Cron hook</th><th>Frequency</th><th>Role</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Imagify_Cron_Rating</code></td>
+        <td><code>imagify_rating_event</code></td>
+        <td>Daily (3:00 PM)</td>
+        <td>Triggers the plugin rating request.</td>
+      </tr>
+      <tr>
+        <td><code>Imagify_Cron_Library_Size</code></td>
+        <td>—</td>
+        <td>Periodic</td>
+        <td>Recalculates media library statistics.</td>
+      </tr>
+      <tr>
+        <td><code>Imagify_Cron_Sync_Files</code></td>
+        <td>—</td>
+        <td>Periodic</td>
+        <td>Synchronises files in custom folders.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>ActionScheduler</h3>
+  <p>The ActionScheduler library is bundled in <code>/inc/Dependencies/ActionScheduler/</code>. It manages asynchronous optimisation jobs:</p>
+  <ul>
+    <li><code>imagify_optimize_media</code> — Processes a single optimisation job.</li>
+    <li><code>imagify_convert_next_gen</code> — Generates next-gen versions.</li>
+  </ul>
+  <p>All jobs are cleaned up when the plugin is deactivated.</p>
+</section>
+
+<!-- ═══════════════════════════════════ 13 — HOOKS ═══════════════════════════════════ -->
+<section id="hooks">
+  <div class="section-header">
+    <div class="section-icon ic-blue">🪝</div>
+    <div>
+      <h2>13. Developer hooks &amp; filters</h2>
+      <p>Extension points for customising the plugin's behaviour.</p>
+    </div>
+  </div>
+
+  <h3>Main actions</h3>
+  <table>
+    <thead>
+      <tr><th>Hook</th><th>When</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>imagify_loaded</code></td><td>Plugin fully loaded and ready.</td></tr>
+      <tr><td><code>imagify_activation</code></td><td>On plugin activation.</td></tr>
+      <tr><td><code>imagify_deactivation</code></td><td>On plugin deactivation.</td></tr>
+      <tr><td><code>imagify_optimize_media</code></td><td>ActionScheduler optimisation job.</td></tr>
+      <tr><td><code>imagify_convert_next_gen</code></td><td>Next-gen generation job.</td></tr>
+      <tr><td><code>imagify_delete_media</code></td><td>Deletion of a media item.</td></tr>
+      <tr><td><code>imagify_settings_on_save</code></td><td>After settings are saved.</td></tr>
+      <tr><td><code>imagify_not_over_quota_anymore</code></td><td>Quota dropped back below 100%.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Main filters</h3>
+  <table>
+    <thead>
+      <tr><th>Filter</th><th>Usage</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>imagify_backup_directory</code></td><td>Change the backup folder.</td></tr>
+      <tr><td><code>imagify_register_context</code></td><td>Register a custom optimisation context.</td></tr>
+      <tr><td><code>imagify_picture_attributes</code></td><td>Modify attributes of the <code>&lt;picture&gt;</code> tag.</td></tr>
+      <tr><td><code>imagify_picture_source_attributes</code></td><td>Modify attributes of <code>&lt;source&gt;</code> tags.</td></tr>
+      <tr><td><code>imagify_picture_img_attributes</code></td><td>Modify attributes of the inner <code>&lt;img&gt;</code>.</td></tr>
+      <tr><td><code>imagify_allow_picture_tags_for_nextgen</code></td><td>Disable the <code>&lt;picture&gt;</code> transformation.</td></tr>
+      <tr><td><code>imagify_buffer</code></td><td>Filter the final HTML page buffer.</td></tr>
+      <tr><td><code>imagify_cdn_source_url</code></td><td>Override the CDN URL.</td></tr>
+      <tr><td><code>imagify_event_recurrence</code></td><td>Change the frequency of Imagify cron jobs.</td></tr>
+      <tr><td><code>imagify_event_time</code></td><td>Change the trigger time for cron jobs.</td></tr>
+      <tr><td><code>imagify_bulk_stats</code></td><td>Modify bulk statistics data.</td></tr>
+      <tr><td><code>imagify_unoptimized_attachment_limit</code></td><td>Limit query results.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════ 14 — QUOTA ═══════════════════════════════════ -->
+<section id="quota">
+  <div class="section-header">
+    <div class="section-icon ic-orange">📊</div>
+    <div>
+      <h2>14. Quota &amp; account management</h2>
+      <p>Subscription plans, quota consumption, and user data cache.</p>
+    </div>
+  </div>
+
+  <h3>Available plans</h3>
+  <div class="grid-3">
+    <div class="card">
+      <h4>Free</h4>
+      <p><code>plan_id = 1</code></p>
+      <p>Limited monthly quota. Blocked at 100% consumption (<code>is_over_quota()</code>).</p>
+    </div>
+    <div class="card">
+      <h4>Growth</h4>
+      <p><code>plan_id = 16 / 18</code></p>
+      <p>Larger monthly quota, additional byte packs available.</p>
+    </div>
+    <div class="card">
+      <h4>Infinite</h4>
+      <p><code>plan_id = 15 / 17</code></p>
+      <p>Unlimited quota — no quota blocking.</p>
+    </div>
+  </div>
+
+  <h3>Data exposed by <code>Imagify\User\User</code></h3>
+  <pre><span class="k">quota</span>                        <span class="c">// Total monthly quota (MB)</span>
+<span class="k">consumed_current_month_quota</span> <span class="c">// Quota consumed this month (MB)</span>
+<span class="k">extra_quota</span>                  <span class="c">// Imagify byte pack (MB)</span>
+<span class="k">extra_quota_consumed</span>         <span class="c">// Pack consumed (MB)</span>
+<span class="k">next_date_update</span>             <span class="c">// Quota reset date</span>
+<span class="k">is_active</span>                    <span class="c">// Account active</span></pre>
+
+  <h3>Cache</h3>
+  <p>User data is cached in a WordPress transient (<code>imagify_user_cache</code>) for <strong>5 minutes</strong>. The cache can be manually cleared via the AJAX action <code>imagify_delete_user_data_cache</code>.</p>
+</section>
+
+<!-- ═══════════════════════════════════ 15 — ROLES ═══════════════════════════════════ -->
+<section id="roles">
+  <div class="section-header">
+    <div class="section-icon ic-red">🔐</div>
+    <div>
+      <h2>15. Roles &amp; access control</h2>
+      <p>WordPress capabilities required for each Imagify action.</p>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>Action</th><th>Required WP capability</th><th>Context</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>manage</code> — Access settings</td><td><code>manage_options</code></td><td>All</td></tr>
+      <tr><td><code>optimize</code> — Optimize a media item</td><td><code>upload_files</code></td><td>All</td></tr>
+      <tr><td><code>bulk-optimize</code> — Launch a bulk run</td><td><code>manage_options</code></td><td>All</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    Capabilities are defined in <code>Imagify\Context\AbstractContext::get_capacity()</code> and can be overridden via the standard WordPress filter <code>option_page_capability_imagify</code>.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ 16 — TOOLS ═══════════════════════════════════ -->
+<section id="tools">
+  <div class="section-header">
+    <div class="section-icon ic-red">🔧</div>
+    <div>
+      <h2>16. Troubleshooting tools</h2>
+      <p>Built-in tools to resolve common issues without technical intervention.</p>
+    </div>
+  </div>
+
+  <h3>Internal state reset</h3>
+  <p>AJAX action: <code>imagify_reset_internal_state</code> (requires the <code>manage</code> capability). This one-click tool unblocks the bulk optimiser when it gets stuck in an inconsistent state.</p>
+
+  <h3>What gets cleaned up</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>Deleted transients</h4>
+      <ul>
+        <li><code>imagify_custom-folders_optimize_running</code></li>
+        <li><code>imagify_wp_optimize_running</code></li>
+        <li><code>imagify_bulk_optimization_complete</code></li>
+        <li><code>imagify_bulk_optimization_result</code></li>
+        <li><code>imagify_missing_next_gen_total</code></li>
+        <li><code>imagify_bulk_optimization_infos</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Deleted locks &amp; jobs</h4>
+      <ul>
+        <li>Auto-optimize locks (<code>_transient_%imagify-auto-optimize-%</code>)</li>
+        <li>RPC locks (<code>_transient_%imagify_rpc_%</code>)</li>
+        <li>Process locks (<code>_transient_imagify_%_process_locked</code>)</li>
+        <li>ActionScheduler jobs: <code>imagify_optimize_media</code></li>
+        <li>ActionScheduler jobs: <code>imagify_convert_next_gen</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout callout-success">
+    The <code>Imagify\Tools\InternalStateList</code> class is the single source of truth for all these items — it is also used by <code>uninstall.php</code> for a full cleanup on uninstallation.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ FOOTER ═══════════════════════════════════ -->
+<footer>
+  Imagify v2.2.8 · wp-media/imagify-plugin · Summary generated on 17 June 2026
+</footer>
+
+</body>
+</html>

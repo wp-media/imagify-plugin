@@ -10,20 +10,34 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+    # The build resolves dependencies on PHP 7.4 (the plugin's minimum) with no
+    # lockfile, and Composer resolves require-dev even with --no-dev.
+    # roave/security-advisories conflicts with every PHP release below 8.2.35
+    # (Roave/SecurityAdvisories#155), so it must be dropped here, as in
+    # test_legacy.yml. Composer still refuses package versions with known
+    # advisories by itself (policy.advisories.block, default on).
+    - name: Drop roave/security-advisories
+      run: |
+        jq --tab 'del(."require-dev"."roave/security-advisories")' composer.json > composer.json.tmp
+        mv composer.json.tmp composer.json
 
     - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
       with:
         php-version: 7.4
         coverage: none  # XDebug can be enabled here 'coverage: xdebug'
         tools: composer:v2
 
+    - name: Install Strauss
+      run: sh -c 'test -f ./bin/strauss.phar || curl -o bin/strauss.phar -L -C - https://github.com/BrianHenryIE/strauss/releases/latest/download/strauss.phar'
+
     - name: Build
-      run: composer install -a --no-dev
+      run: composer install -o --no-dev
 
     - name: WordPress Plugin Deploy
-      uses: 10up/action-wordpress-plugin-deploy@stable
+      uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # v2.3.0
       env:
         SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
         SVN_USERNAME: ${{ secrets.SVN_USERNAME }}

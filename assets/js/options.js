@@ -11,7 +11,7 @@ window.imagify = window.imagify || {};
 		var obj   = $( this ),
 			value = obj.val();
 
-		if ( $.trim( value ) === '' ) {
+		if ( String( value ).trim() === '' ) {
 			return false;
 		}
 
@@ -46,7 +46,10 @@ window.imagify = window.imagify || {};
 						location.reload();
 					} );
 				}
-
+			} )
+			.always( function() {
+				// Always release the lock, even when the request was aborted or failed,
+				// so a following blur can trigger a fresh check instead of staying stuck.
 				busy = false;
 			} );
 	} );
@@ -138,13 +141,58 @@ window.imagify = window.imagify || {};
 	/**
 	 * Fade CDN URL field.
 	 */
-	$( '[name="imagify_settings[display_webp_method]"]' ).on( 'change.imagify init.imagify', function( e ) {
+	$( '[name="imagify_settings[display_nextgen_method]"]' ).on( 'change.imagify init.imagify', function( e ) {
 		if ( 'picture' === e.target.value ) {
 			$( e.target ).closest( '.imagify-radio-group' ).next( '.imagify-options-line' ).removeClass( 'imagify-faded' );
 		} else {
 			$( e.target ).closest( '.imagify-radio-group' ).next( '.imagify-options-line' ).addClass( 'imagify-faded' );
 		}
 	} ).filter( ':checked' ).trigger( 'init.imagify' );
+
+	/**
+	 * Reset Internal State button.
+	 */
+	$( '#imagify-reset-internal-state' ).on( 'click.imagify', function() {
+		var $button   = $( this ),
+			nonce     = $button.data( 'nonce' ),
+			$feedback = $( '#imagify-reset-internal-state-feedback' );
+
+		swal( {
+			title:            imagifyOptions.resetInternalState.confirm,
+			type:             'warning',
+			customClass:      'imagify-sweet-alert',
+			padding:          0,
+			showCancelButton: true,
+			cancelButtonText: imagifySwal.labels.cancelButtonText,
+			reverseButtons:   true
+		} ).then(
+			function() {
+				$button.prop( 'disabled', true );
+				$feedback.text( '' ).removeClass( 'imagify-success imagify-error' );
+
+				$.post( ajaxurl, {
+					'action':   imagifyOptions.resetInternalState.action,
+					'_wpnonce': nonce
+				} )
+					.done( function( response ) {
+						if ( response && response.success ) {
+							$feedback.text( imagifyOptions.resetInternalState.success ).addClass( 'imagify-success' );
+						} else {
+							$feedback.text( imagifyOptions.resetInternalState.error ).addClass( 'imagify-error' );
+						}
+					} )
+					.fail( function() {
+						$feedback.text( imagifyOptions.resetInternalState.error ).addClass( 'imagify-error' );
+					} )
+					.always( function() {
+						$button.prop( 'disabled', false );
+					} );
+			},
+			function() {
+				// User cancelled — do nothing.
+			}
+		);
+	} );
 
 } )(jQuery, document, window);
 
@@ -471,7 +519,7 @@ window.imagify = window.imagify || {};
 		 * Init.
 		 */
 		init: function () {
-			var processed, progress;
+			var progress;
 			this.$missingWebpElement = $('.generate-missing-webp');
 			this.$missingWebpMessage = $('.generate-missing-webp p');
 
@@ -496,7 +544,7 @@ window.imagify = window.imagify || {};
 				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
 				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsImagifybeat );
 
-			if ( false !== imagifyOptions.bulk.progress_webp.total && false !== imagifyOptions.bulk.progress_webp.remaining ) {
+			if ( false !== imagifyOptions.bulk.progress_next_gen.total && false !== imagifyOptions.bulk.progress_next_gen.remaining ) {
 				// Reset properties.
 				w.imagify.optionsBulk.error            = false;
 				w.imagify.optionsBulk.working          = true;
@@ -511,10 +559,9 @@ window.imagify = window.imagify || {};
 
 				this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
 
-				processed = imagifyOptions.bulk.progress_webp.total - imagifyOptions.bulk.progress_webp.remaining;
-				progress = Math.floor( processed / imagifyOptions.bulk.progress_webp.total * 100 );
-				this.$progressBar.css( 'width', progress + '%' );
-				this.$progressText.text( processed + '/' + imagifyOptions.bulk.progress_webp.total );
+				progress = this.getProgress( imagifyOptions.bulk.progress_next_gen.total, imagifyOptions.bulk.progress_next_gen.remaining );
+				this.$progressBar.css( 'width', progress.percent + '%' );
+				this.$progressText.text( progress.processed + '/' + progress.total );
 
 				this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
 			}
@@ -578,6 +625,26 @@ window.imagify = window.imagify || {};
 		},
 
 		/**
+		 * Compute a display-safe progress state.
+		 *
+		 * `total` is a snapshot taken when the run started, while `remaining` is recounted on
+		 * every Imagifybeat tick. Anything that grows the workload mid-run pushes `remaining`
+		 * above `total`: uploading new media while the run is in progress, or switching the
+		 * Next-Gen format so that every media is suddenly missing one. `total - remaining` then
+		 * rendered as a negative count, and a snapshot of 0 divided by zero on top of that.
+		 *
+		 * Track the largest workload seen instead, so the count never goes negative and the
+		 * denominator reflects what is actually left to do.
+		 *
+		 * @param  {number} total     Number of media to process when the run started.
+		 * @param  {number} remaining Number of media still waiting to be processed.
+		 * @return {object}           Object with `processed`, `total` and `percent` keys.
+		 */
+		getProgress: function ( total, remaining ) {
+			return w.imagify.getProgress( total, remaining );
+		},
+
+		/**
 		 * Listen for the custom event "imagifybeat-tick" on $(document).
 		 * It allows to update various data periodically.
 		 *
@@ -585,7 +652,7 @@ window.imagify = window.imagify || {};
 		 * @param {object} data Object containing all Imagifybeat IDs.
 		 */
 		processQueueImagifybeat: function ( e, data ) {
-			var images_status, processed, progress;
+			var images_status, progress;
 
 			if ( e.data.imagifyOptionsBulk && typeof data[ imagifyOptions.bulk.imagifybeatIDs.progress ] === 'undefined' ) {
 				return;
@@ -603,10 +670,9 @@ window.imagify = window.imagify || {};
 				return;
 			}
 
-			processed = images_status.total - images_status.remaining;
-			progress = Math.floor( processed / images_status.total * 100 );
-			e.data.imagifyOptionsBulk.$progressBar.css( 'width', progress + '%' );
-			e.data.imagifyOptionsBulk.$progressText.text( processed + '/' + images_status.total );
+			progress = e.data.imagifyOptionsBulk.getProgress( images_status.total, images_status.remaining );
+			e.data.imagifyOptionsBulk.$progressBar.css( 'width', progress.percent + '%' );
+			e.data.imagifyOptionsBulk.$progressText.text( progress.processed + '/' + progress.total );
 		},
 
 		/**
@@ -655,7 +721,7 @@ window.imagify = window.imagify || {};
 
 			_this = this;
 
-			$.get( this.getAjaxUrl( 'MissingWebp', imagifyOptions.bulk.contexts ) )
+			$.get( this.getAjaxUrl( 'MissingNextGen', imagifyOptions.bulk.contexts ) )
 				.done( function( response ) {
 					var errorMessage;
 
@@ -991,3 +1057,39 @@ window.imagify = window.imagify || {};
 	} );
 
 } )(window, document, jQuery);
+
+// Imagify Analytics opt-in toggle ================================================================
+(function($) {
+
+	var $checkbox = $( '#imagify-analytics-enabled' );
+
+	if ( ! $checkbox.length ) {
+		return;
+	}
+
+	$checkbox.on( 'change.imagify-analytics', function() {
+		var nonce = $( this ).data( 'nonce' );
+
+		$.post( ajaxurl, {
+			action: 'imagify_toggle_tracking_optin',
+			value:  $( this ).prop( 'checked' ) ? 1 : 0,
+			nonce:  nonce
+		} );
+	} );
+
+	$( document ).on( 'click.imagify-analytics', '#imagify-analytics-enable-from-modal', function() {
+		$( '.imagify-modal.modal-is-open .close-btn' ).trigger( 'click.imagify' );
+		$checkbox.prop( 'checked', true ).trigger( 'change.imagify-analytics' );
+	} );
+
+})(jQuery);
+
+// Imagify Analytics opt-in notice: toggle the data preview =======================================
+(function($) {
+
+	$( document ).on( 'click.imagify-analytics', '.imagify-analytics-preview-toggle', function( e ) {
+		e.preventDefault();
+		$( this ).closest( 'p' ).next( '.imagify-analytics-data-container' ).slideToggle();
+	} );
+
+})(jQuery);

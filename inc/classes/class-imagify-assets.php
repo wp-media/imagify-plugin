@@ -1,5 +1,6 @@
 <?php
 use Imagify\Notices\Notices;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that handles stylesheets and JavaScripts.
@@ -7,6 +8,7 @@ use Imagify\Notices\Notices;
  * @since 1.6.10
  */
 class Imagify_Assets extends Imagify_Assets_Deprecated {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -72,13 +74,6 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 	protected static $version;
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @var object
-	 */
-	protected static $_instance;
-
-	/**
 	 * The constructor.
 	 *
 	 * @return void
@@ -93,21 +88,6 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 	/** ----------------------------------------------------------------------------------------- */
 	/** PUBLIC METHODS ========================================================================== */
 	/** ----------------------------------------------------------------------------------------- */
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since 1.6.10
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	/**
 	 * Launch the hooks.
@@ -186,7 +166,7 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 
 		$this->register_script( 'sweetalert', 'sweetalert2', [ 'promise-polyfill' ], '4.6.6' )->localize( 'imagifySwal' );
 
-		$this->register_script( 'chart', 'chart', [], '2.7.1.0' );
+		$this->register_bud_script( 'chart', 'chart', [], '4.6.1' );
 
 		$this->register_script( 'event-move', 'jquery.event.move', [ 'jquery' ], '2.0.1' );
 
@@ -195,7 +175,9 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		 */
 		$this->register_script( 'admin-bar', 'admin-bar', [ 'jquery' ] )->defer_localization( 'imagifyAdminBar' );
 
-		$this->register_script( 'admin', 'admin', [ 'jquery' ] );
+		$this->register_script( 'helpers', 'helpers' );
+
+		$this->register_script( 'admin', 'admin', [ 'jquery', 'helpers' ] );
 
 		$this->register_script( 'notices', 'notices', [ 'jquery', 'admin' ] )->defer_localization( 'imagifyNotices' ); // Needs SweetAlert on some cases.
 
@@ -211,7 +193,7 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 
 		$this->register_script( 'async', 'imagify-gulp' );
 
-		$this->register_script( 'bulk', 'bulk', [ 'jquery', 'beat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ] )->defer_localization( 'imagifyBulk' );
+		$this->register_bud_script( 'bulk', 'bulk', [ 'jquery', 'beat', 'underscore', 'chart', 'sweetalert', 'async', 'admin' ] )->defer_localization( 'imagifyBulk' );
 
 		$this->register_script( 'options', 'options', [ 'jquery', 'beat', 'sweetalert', 'underscore', 'admin' ] )->defer_localization( 'imagifyOptions' );
 
@@ -275,14 +257,14 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		 * Loaded in the bulk optimization page.
 		 */
 		if ( imagify_is_screen( 'bulk' ) ) {
-			$this->enqueue_assets( [ 'pricing-modal', 'bulk' ] );
+			$this->enqueue_assets( 'bulk' );
 		}
 
 		/*
 		 * Loaded in the settings page.
 		 */
 		if ( imagify_is_screen( 'imagify-settings' ) ) {
-			$this->enqueue_assets( [ 'sweetalert', 'notices', 'twentytwenty', 'pricing-modal', 'options' ] );
+			$this->enqueue_assets( [ 'sweetalert', 'notices', 'twentytwenty', 'options' ] );
 		}
 
 		/*
@@ -291,6 +273,8 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		if ( imagify_is_screen( 'files-list' ) ) {
 			$this->enqueue_assets( [ 'files-list', 'twentytwenty' ] );
 		}
+
+		$this->enqueue_assets( 'pricing-modal' );
 
 		/**
 		 * Triggered after Imagify CSS and JS have been enqueued.
@@ -354,10 +338,10 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 		$this->current_handle      = $handle;
 		$this->current_handle_type = 'css';
 
-		$file_name    = $file_name        ? $file_name     : $handle;
-		$version      = $version          ? $version       : IMAGIFY_VERSION;
+		$file_name    = $file_name ? $file_name : $handle;
+		$version      = $version ? $version : IMAGIFY_VERSION;
 		$version      = $this->is_debug() ? self::$version : $version;
-		$extension    = $this->is_debug() ? '.css'         : '.min.css';
+		$extension    = $this->is_debug() ? '.css' : '.min.css';
 		$handle       = self::CSS_PREFIX . $handle;
 		$dependencies = $this->prefix_dependencies( $dependencies, 'css' );
 
@@ -436,21 +420,57 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 	 */
 	public function register_script( $handle, $file_name = null, $dependencies = [], $version = null ) {
 		// If we register it, it's one of our scripts.
-		$this->scripts[ $handle ]  = 1;
+		$this->scripts[ $handle ] = 1;
 		// Set the current handler and handler type.
 		$this->current_handle      = $handle;
 		$this->current_handle_type = 'js';
 
-		$file_name    = $file_name        ? $file_name     : $handle;
-		$version      = $version          ? $version       : IMAGIFY_VERSION;
+		$file_name    = $file_name ? $file_name : $handle;
+		$version      = $version ? $version : IMAGIFY_VERSION;
 		$version      = $this->is_debug() ? self::$version : $version;
-		$extension    = $this->is_debug() ? '.js'          : '.min.js';
+		$extension    = $this->is_debug() ? '.js' : '.min.js';
 		$handle       = self::JS_PREFIX . $handle;
 		$dependencies = $this->prefix_dependencies( $dependencies );
 
 		wp_register_script(
 			$handle,
 			IMAGIFY_URL . 'assets/js/' . $file_name . $extension,
+			$dependencies,
+			$version,
+			true
+		);
+
+		return $this;
+	}
+
+	/**
+	 * Register a bundled script from assets/admin/js/ (built from src/ by `npm run build`).
+	 *
+	 * @since 1.6.10
+	 *
+	 * @param  string      $handle       Name of the script. Should be unique.
+	 * @param  string|null $file_name    The file name, without the extension. If null, $handle is used.
+	 * @param  array       $dependencies An array of registered script handles this script depends on.
+	 * @param  string|null $version      String specifying script version number. If set to null, the plugin version is used. If SCRIPT_DEBUG is true, a random string is used.
+	 * @return object                    This class instance.
+	 */
+	public function register_bud_script( $handle, $file_name = null, $dependencies = [], $version = null ) {
+		// If we register it, it's one of our scripts.
+		$this->scripts[ $handle ] = 1;
+		// Set the current handler and handler type.
+		$this->current_handle      = $handle;
+		$this->current_handle_type = 'js';
+
+		$file_name    = $file_name ? $file_name : $handle;
+		$version      = $version ? $version : IMAGIFY_VERSION;
+		$version      = $this->is_debug() ? self::$version : $version;
+		$extension    = '.js';
+		$handle       = self::JS_PREFIX . $handle;
+		$dependencies = $this->prefix_dependencies( $dependencies );
+
+		wp_register_script(
+			$handle,
+			IMAGIFY_URL . 'assets/admin/js/' . $file_name . $extension,
 			$dependencies,
 			$version,
 			true
@@ -740,7 +760,7 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 	 * @return bool
 	 */
 	protected function is_debug() {
-		return defined( 'IMAGIFY_DEBUG' ) && IMAGIFY_DEBUG || defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
+		return ( defined( 'IMAGIFY_DEBUG' ) && IMAGIFY_DEBUG ) || ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG );
 	}
 
 	/**

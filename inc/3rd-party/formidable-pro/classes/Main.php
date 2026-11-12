@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\ThirdParty\FormidablePro;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Compat class for Formidable Forms Pro plugin.
@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Main {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -34,8 +34,8 @@ class Main {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'parse_query',     array( $this, 'maybe_remove_media_library_filter' ) );
-		add_action( 'posts_selection', array( $this, 'maybe_put_media_library_filter_back' ) );
+		add_action( 'parse_query', [ $this, 'maybe_remove_media_library_filter' ] );
+		add_action( 'posts_selection', [ $this, 'maybe_put_media_library_filter_back' ] );
 	}
 
 	/**

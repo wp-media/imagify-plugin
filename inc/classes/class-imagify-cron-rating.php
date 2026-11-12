@@ -1,5 +1,6 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that handles the plugin rating cron.
@@ -8,6 +9,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Imagify_Cron_Rating extends Imagify_Abstract_Cron {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -43,33 +45,6 @@ class Imagify_Cron_Rating extends Imagify_Abstract_Cron {
 	 * @access protected
 	 */
 	protected $event_time = '15:00';
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.7
-	 * @access protected
-	 */
-	protected static $_instance;
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** HOOKS =================================================================================== */

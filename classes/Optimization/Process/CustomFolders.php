@@ -1,9 +1,7 @@
 <?php
 namespace Imagify\Optimization\Process;
 
-use Imagify\Optimization\File;
-
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use WP_Error;
 
 /**
  * Optimization class for the custom folders.
@@ -53,27 +51,31 @@ class CustomFolders extends AbstractProcess {
 	public function get_missing_sizes() {
 		// The media must have been optimized once and have a backup.
 		if ( ! $this->is_valid() ) {
-			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
 		$media = $this->get_media();
 
+		if ( ! $media ) {
+			return new WP_Error( 'no_media', __( 'No media found.', 'imagify' ) );
+		}
+
 		if ( ! $media->is_supported() ) {
-			return new \WP_Error( 'media_not_supported', __( 'This media is not supported.', 'imagify' ) );
+			return new WP_Error( 'media_not_supported', __( 'This media is not supported.', 'imagify' ) );
 		}
 
 		$data = $this->get_data();
 
 		if ( ! $data->is_optimized() ) {
-			return new \WP_Error( 'media_not_optimized', __( 'This media is not optimized yet.', 'imagify' ) );
+			return new WP_Error( 'media_not_optimized', __( 'This media is not optimized yet.', 'imagify' ) );
 		}
 
 		if ( ! $media->has_backup() ) {
-			return new \WP_Error( 'no_backup', __( 'This file has no backup file.', 'imagify' ) );
+			return new WP_Error( 'no_backup', __( 'This file has no backup file.', 'imagify' ) );
 		}
 
 		if ( ! $media->is_image() ) {
-			return new \WP_Error( 'media_not_an_image', __( 'This media is not an image.', 'imagify' ) );
+			return new WP_Error( 'media_not_an_image', __( 'This media is not an image.', 'imagify' ) );
 		}
 
 		return [];
@@ -91,13 +93,19 @@ class CustomFolders extends AbstractProcess {
 	 */
 	public function optimize_missing_thumbnails() {
 		if ( ! $this->is_valid() ) {
-			return new \WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
+			return new WP_Error( 'invalid_media', __( 'This media is not valid.', 'imagify' ) );
 		}
 
-		if ( ! $this->get_media()->is_supported() ) {
-			return new \WP_Error( 'media_not_supported', __( 'This media is not supported.', 'imagify' ) );
+		$media = $this->get_media();
+
+		if ( ! $media ) {
+			return new WP_Error( 'no_media', __( 'No media found.', 'imagify' ) );
 		}
 
-		return new \WP_Error( 'no_sizes', __( 'No thumbnails seem to be missing.', 'imagify' ) );
+		if ( ! $media->is_supported() ) {
+			return new WP_Error( 'media_not_supported', __( 'This media is not supported.', 'imagify' ) );
+		}
+
+		return new WP_Error( 'no_sizes', __( 'No thumbnails seem to be missing.', 'imagify' ) );
 	}
 }

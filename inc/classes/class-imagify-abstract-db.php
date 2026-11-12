@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Imagify DB base class.
@@ -8,7 +7,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @source https://gist.github.com/pippinsplugins/e220a7f0f0f2fbe64608
  */
 abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implements \Imagify\DB\DBInterface {
-
 	/**
 	 * Class version.
 	 *
@@ -23,15 +21,6 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	 * @since 1.7
 	 */
 	const TABLE_VERSION_OPTION_SUFFIX = '_db_version';
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.5
-	 * @access protected
-	 */
-	protected static $_instance;
 
 	/**
 	 * The suffix used in the name of the database table (so, without the wpdb prefix).
@@ -124,23 +113,6 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	}
 
 	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.6.5
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
 	 * Init:
 	 * - Launch hooks.
 	 *
@@ -149,7 +121,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'admin_init', array( $this, 'maybe_upgrade_table' ) );
+		add_action( 'admin_init', [ $this, 'maybe_upgrade_table' ] );
 	}
 
 	/**
@@ -234,7 +206,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	 */
 	public function get( $row_id ) {
 		if ( $row_id <= 0 ) {
-			return array();
+			return [];
 		}
 
 		return $this->get_by( $this->primary_key, $row_id );
@@ -253,8 +225,8 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	public function get_by( $column_where, $column_value ) {
 		global $wpdb;
 
-		$placeholder   = $this->get_placeholder( $column_where );
-		$column_where  = esc_sql( $column_where );
+		$placeholder  = $this->get_placeholder( $column_where );
+		$column_where = esc_sql( $column_where );
 
 		$result = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE $column_where = $placeholder LIMIT 1;", $column_value ), ARRAY_A ); // WPCS: unprepared SQL ok, PreparedSQLPlaceholders replacement count ok.
 
@@ -447,7 +419,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	 * @param  string $where  A column name.
 	 * @return bool
 	 */
-	public function update( $row_id, $data = array(), $where = '' ) {
+	public function update( $row_id, $data = [], $where = '' ) {
 		global $wpdb;
 
 		if ( $row_id <= 0 ) {
@@ -478,7 +450,7 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 		// Reorder $column_formats to match the order of columns given in $data.
 		$column_formats = array_merge( $data, $column_formats );
 
-		return (bool) $wpdb->update( $this->table_name, $data, array( $where => $row_id ), $column_formats, $this->get_placeholder( $where ) );
+		return (bool) $wpdb->update( $this->table_name, $data, [ $where => $row_id ], $column_formats, $this->get_placeholder( $where ) );
 	}
 
 	/**
@@ -577,13 +549,13 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 	protected function set_table_not_ready() {
 		global $wpdb;
 
-		$this->table_created  = false;
+		$this->table_created = false;
 		unset( $wpdb->{$this->table} );
 
 		if ( $this->table_is_global ) {
-			$wpdb->global_tables = array_diff( $wpdb->global_tables, array( $this->table ) );
+			$wpdb->global_tables = array_diff( $wpdb->global_tables, [ $this->table ] );
 		} else {
-			$wpdb->tables = array_diff( $wpdb->tables, array( $this->table ) );
+			$wpdb->tables = array_diff( $wpdb->tables, [ $this->table ] );
 		}
 	}
 
@@ -873,10 +845,13 @@ abstract class Imagify_Abstract_DB extends Imagify_Abstract_DB_Deprecated implem
 			return $data;
 		}
 
-		$serialized_data = array_map( function( $array ) {
-			// Try not to store empty serialized arrays.
-			return [] === $array ? null : maybe_serialize( $array );
-		}, $serialized_data );
+		$serialized_data = array_map(
+			function ( $value ) {
+				// Try not to store empty serialized arrays.
+				return [] === $value ? null : maybe_serialize( $value );
+			},
+			$serialized_data
+		);
 
 		return array_merge( $data, $serialized_data );
 	}

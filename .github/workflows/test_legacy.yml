@@ -1,0 +1,86 @@
+name: Unit/Integration tests - Legacy
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+# Cancel all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ${{ matrix.operating-system }}
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: ['7.4']
+        wp-versions: ['5.9']
+
+    name: WP ${{ matrix.wp-versions }} with PHP ${{ matrix.php-versions }}
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      IMAGIFY_TESTS_API_KEY: ${{ secrets.IMAGIFY_TESTS_API_KEY }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+    # roave/security-advisories conflicts with every PHP release below 8.2.35, so
+    # end-of-life PHP can never install it (Roave/SecurityAdvisories#155). Drop it
+    # from require-dev on those versions only: Composer still refuses package
+    # versions with known advisories by itself (policy.advisories.block, default on).
+    - name: Drop roave/security-advisories on end-of-life PHP
+      if: contains(fromJSON('["7.4", "8.0", "8.1"]'), matrix.php-versions)
+      run: |
+        jq --tab 'del(."require-dev"."roave/security-advisories")' composer.json > composer.json.tmp
+        mv composer.json.tmp composer.json
+
+    - name: Setup PHP + Composer
+      uses: wp-media/workflows/.github/actions/setup-php-composer@main
+      with:
+        php-version: ${{ matrix.php-versions }}
+        # Empty overrides the action's `--no-scripts` default so Composer runs
+        # post-install/update scripts, i.e. Strauss namespace prefixing, which the
+        # integration tests need to autoload the Imagify\Dependencies\* classes.
+        composer-options: ''
+
+    - name: Setup WordPress test suite
+      uses: wp-media/workflows/.github/actions/setup-wp-tests@main
+      with:
+        wp-version: ${{ matrix.wp-versions }}
+
+    # Registered here, not in the composite action: GitHub removes problem
+    # matchers added inside a composite action when it finishes, so they must
+    # be added in the caller to stay active for the test steps below.
+    - name: Setup problem matchers for PHP
+      run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+
+    - name: Setup problem matchers for PHPUnit
+      run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+    - name: Unit tests
+      run: composer test-unit
+
+    - name: Integration tests
+      run: composer test-integration

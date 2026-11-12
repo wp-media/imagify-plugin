@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Context;
 
-use \Imagify\Traits\InstanceGetterTrait;
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Fallback class for contexts.
@@ -9,7 +9,7 @@ use \Imagify\Traits\InstanceGetterTrait;
  * @since  1.9
  * @author Grégory Viguier
  */
-class Noop implements ContextInterface {
+final class Noop implements ContextInterface {
 	use InstanceGetterTrait;
 
 	/**

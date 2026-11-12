@@ -2,14 +2,10 @@
 
 namespace Imagify\Tests\Integration;
 
-use Brain\Monkey;
 use Imagify;
-use Imagify\Tests\TestCaseTrait;
 use WPMedia\PHPUnit\Integration\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase {
-	use TestCaseTrait;
-
 	protected $useApi = true;
 	protected $api_credentials_config_file = 'imagify-api.php';
 	protected $invalidApiKey = '1234567890abcdefghijklmnopqrstuvwxyz';
@@ -19,9 +15,12 @@ abstract class TestCase extends BaseTestCase {
 	/**
 	 * Prepares the test environment before each test.
 	 */
-	public function setUp() {
-		parent::setUp();
-		Monkey\setUp();
+	public function set_up() {
+		parent::set_up();
+
+		if ( empty( $this->config ) ) {
+			$this->loadTestDataConfig();
+		}
 
 		if ( ! $this->useApi ) {
 			return;
@@ -35,9 +34,8 @@ abstract class TestCase extends BaseTestCase {
 	/**
 	 * Cleans up the test environment after each test.
 	 */
-	public function tearDown() {
-		Monkey\tearDown();
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 
 		if ( ! $this->useApi ) {
 			return;
@@ -85,5 +83,82 @@ abstract class TestCase extends BaseTestCase {
 		}
 
 		return constant( $name );
+	}
+
+	/**
+	 * Set the singleton's `$instance` property to the given instance.
+	 *
+	 * @param string $class    Name of the target class.
+	 * @param mixed  $instance Instance of the target object.
+	 *
+	 * @return mixed            Previous value.
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 *
+	 */
+	protected function setSingletonInstance( $class, $instance ) {
+		return $this->setPropertyValue( 'instance', $class, $instance );
+	}
+
+	/**
+	 * Set the value of a private/protected property.
+	 *
+	 * @param string        $property Property name for which to gain access.
+	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 * @param mixed         $value    The value to set to the property.
+	 *
+	 * @return mixed                   The previous value of the property.
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 *
+	 */
+	protected function setPropertyValue( $property, $class, $value ) {
+		$instance = is_object( $class ) ? $class : null;
+
+		// Read the previous value, then set the new one, delegating to the
+		// wp-media/phpunit trait which handles static properties safely
+		// (ReflectionProperty::setValue() with a single argument is deprecated as of PHP 8.3).
+		$previous = $this->getNonPublicPropertyValue( $property, $class, $instance );
+		$this->set_reflective_property( $value, $property, $class );
+
+		return $previous;
+	}
+
+	/**
+	 * Reset the value of a private/protected property.
+	 *
+	 * @param string        $property Property name for which to gain access.
+	 * @param string|object $class    Class name for a static property, or instance for an instance property.
+	 *
+	 * @return mixed                   The previous value of the property.
+	 * @throws ReflectionException Throws an exception if property does not exist.
+	 *
+	 */
+	protected function resetPropertyValue( $property, $class ) {
+		return $this->setPropertyValue( $property, $class, null );
+	}
+
+	/**
+	 * Skip the test unless it runs on the given type of site.
+	 *
+	 * Multisite runs need `WP_MULTISITE=1`; network-activated runs also need
+	 * `IMAGIFY_TESTS_NETWORK_ACTIVE=1` (see bootstrap.php).
+	 *
+	 * @param string $site 'single', 'multisite' (Imagify not network-activated), 'network-active', or 'any'.
+	 *
+	 * @return void
+	 */
+	protected function skipUnlessSite( string $site ) {
+		if ( 'any' === $site ) {
+			return;
+		}
+
+		$current = 'single';
+
+		if ( is_multisite() ) {
+			$current = imagify_is_active_for_network() ? 'network-active' : 'multisite';
+		}
+
+		if ( $site !== $current ) {
+			$this->markTestSkipped( "Runs on a {$site} site only." );
+		}
 	}
 }

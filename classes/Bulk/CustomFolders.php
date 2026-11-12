@@ -37,9 +37,11 @@ class CustomFolders extends AbstractBulk {
 		/**
 		 * Get the folders from DB.
 		 */
-		$folders = Imagify_Custom_Folders::get_folders( [
-			'active' => true,
-		] );
+		$folders = Imagify_Custom_Folders::get_folders(
+			[
+				'active' => true,
+			]
+		);
 
 		if ( ! $folders ) {
 			return [];
@@ -58,9 +60,12 @@ class CustomFolders extends AbstractBulk {
 		/**
 		 * Get the files from DB, and from the folders.
 		 */
-		$files = Imagify_Custom_Folders::get_files_from_folders( $folders, [
-			'optimization_level' => $optimization_level,
-		] );
+		$files = Imagify_Custom_Folders::get_files_from_folders(
+			$folders,
+			[
+				'optimization_level' => $optimization_level,
+			]
+		);
 
 		if ( ! $files ) {
 			return [];
@@ -74,10 +79,69 @@ class CustomFolders extends AbstractBulk {
 	}
 
 	/**
-	 * Get ids of all optimized media without WebP versions.
+	 * Get all optimized file IDs that have a backup file available for restore.
 	 *
-	 * @since 1.9
-	 * @since 1.9.5 The method doesn't return the IDs directly anymore.
+	 * @return array A list of file IDs.
+	 */
+	public function get_optimized_media_ids(): array {
+		global $wpdb;
+
+		$this->set_no_time_limit();
+
+		$files_table   = Imagify_Files_DB::get_instance()->get_table_name();
+		$folders_table = Imagify_Folders_DB::get_instance()->get_table_name();
+		$files         = $wpdb->get_results(
+			$wpdb->prepare( // WPCS: unprepared SQL ok.
+				"
+				SELECT fi.file_id, fi.path
+				FROM $files_table AS fi
+				INNER JOIN $folders_table AS fo
+					ON ( fi.folder_id = fo.folder_id )
+				WHERE
+					fi.status IN ( 'success', 'already_optimized' )
+				ORDER BY fi.file_id DESC
+				LIMIT 0, %d",
+				imagify_get_unoptimized_attachment_limit()
+			)
+		);
+
+		$wpdb->flush();
+		unset( $files_table, $folders_table );
+
+		if ( ! $files ) {
+			return [];
+		}
+
+		$data = [];
+
+		foreach ( $files as $file ) {
+			$file_id = absint( $file->file_id );
+
+			if ( empty( $file->path ) ) {
+				// Problem.
+				continue;
+			}
+
+			$file_path   = Imagify_Files_Scan::remove_placeholder( $file->path );
+			$backup_path = Imagify_Custom_Folders::get_file_backup_path( $file_path );
+
+			if ( ! $this->filesystem->exists( $backup_path ) ) {
+				// No backup, cannot restore.
+				continue;
+			}
+
+			$data[] = $file_id;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Get ids of all optimized media without Next gen versions.
+	 *
+	 * @since 2.2
+	 *
+	 * @param string $format Format we are looking for. (webp|avif).
 	 *
 	 * @return array {
 	 *     @type array $ids    A list of media IDs.
@@ -87,7 +151,7 @@ class CustomFolders extends AbstractBulk {
 	 *     }
 	 * }
 	 */
-	public function get_optimized_media_ids_without_webp() {
+	public function get_optimized_media_ids_without_format( $format ) {
 		global $wpdb;
 
 		$this->set_no_time_limit();
@@ -95,23 +159,50 @@ class CustomFolders extends AbstractBulk {
 		$files_table   = Imagify_Files_DB::get_instance()->get_table_name();
 		$folders_table = Imagify_Folders_DB::get_instance()->get_table_name();
 		$mime_types    = Imagify_DB::get_mime_types( 'image' );
-		$webp_suffix   = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::WEBP_SUFFIX' );
-		$files         = $wpdb->get_results( $wpdb->prepare( // WPCS: unprepared SQL ok.
-			"
+		// Remove single quotes and explode string into array.
+		$mime_types_array = explode( ',', str_replace( "'", '', $mime_types ) );
+
+		// Iterate over array and check if string contains input.
+		foreach ( $mime_types_array as $item ) {
+			if ( strpos( $item, $format ) !== false ) {
+				$mime = $item;
+				break;
+			}
+		}
+		if ( ! isset( $mime ) && empty( $mime ) ) {
+			$mime = 'image/webp';
+		}
+		$mime           = trim( $mime );
+		$mime_types     = str_replace( [ ", '" . $mime . "'", ",'" . $mime . "'" ], '', $mime_types );
+		$nextgen_suffix = constant( imagify_get_optimization_process_class_name( 'custom-folders' ) . '::' . strtoupper( $format ) . '_SUFFIX' );
+		$files          = $wpdb->get_results(
+			$wpdb->prepare( // WPCS: unprepared SQL ok.
+				"
 			SELECT fi.file_id, fi.path
 			FROM $files_table as fi
 			INNER JOIN $folders_table AS fo
-				ON ( fi.folder_id = fo.folder_id )
+				ON ( fi.folder_id = fo.folder_id AND fo.active = 1 )
 			WHERE
 				fi.mime_type IN ( $mime_types )
 				AND ( fi.status = 'success' OR fi.status = 'already_optimized' )
-				AND ( fi.data NOT LIKE %s OR fi.data IS NULL )
+				AND fi.data NOT LIKE %s
+				AND fi.data NOT LIKE %s
 			ORDER BY fi.file_id DESC",
-			'%' . $wpdb->esc_like( $webp_suffix . '";a:4:{s:7:"success";b:1;' ) . '%'
-		) );
+				'%' . $wpdb->esc_like( $nextgen_suffix . '";a:4:{s:7:"success";b:1;' ) . '%',
+				/**
+				 * Second predicate: skip files the API permanently refused to convert (the next-gen file
+				 * would be heavier than the original, or the file is already compressed). Those are stored
+				 * as `<size><suffix>";a:3:{s:15:"permanent_error";b:1;s:7:"success";b:0;s:5:"error";…`.
+				 * Transient failures serialize as a 2-element array without the `permanent_error` key, so
+				 * they keep being retried. Matching serialized data with LIKE is fragile: the key order
+				 * written in Optimization\Data\CustomFolders must not change.
+				 */
+				'%' . $wpdb->esc_like( $nextgen_suffix . '";a:3:{s:15:"permanent_error";b:1;' ) . '%'
+			)
+		);
 
 		$wpdb->flush();
-		unset( $mime_types, $files_table, $folders_table, $webp_suffix );
+		unset( $mime_types, $files_table, $folders_table, $nextgen_suffix, $mime );
 
 		$data = [
 			'ids'    => [],
@@ -134,7 +225,14 @@ class CustomFolders extends AbstractBulk {
 				continue;
 			}
 
-			$file_path   = Imagify_Files_Scan::remove_placeholder( $file->path );
+			$file_path = Imagify_Files_Scan::remove_placeholder( $file->path );
+
+			// Skip files whose extension already matches the target format
+			// (e.g. a .webp file stored with incorrect post_mime_type).
+			if ( strtolower( pathinfo( $file_path, PATHINFO_EXTENSION ) ) === $format ) {
+				continue;
+			}
+
 			$backup_path = Imagify_Custom_Folders::get_file_backup_path( $file_path );
 
 			if ( ! $this->filesystem->exists( $backup_path ) ) {
@@ -144,7 +242,7 @@ class CustomFolders extends AbstractBulk {
 			}
 
 			$data['ids'][] = $file_id;
-		} // End foreach().
+		}
 
 		return $data;
 	}

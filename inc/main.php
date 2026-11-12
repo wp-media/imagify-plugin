@@ -1,4 +1,5 @@
 <?php
+use Imagify\Dependencies\League\Container\Container;
 use Imagify\Plugin;
 
 defined( 'ABSPATH' ) || exit;
@@ -20,12 +21,27 @@ function imagify_init() {
 		return;
 	}
 
+	$providers = require_once IMAGIFY_PATH . 'config/providers.php';
+
 	$plugin = new Plugin(
-		array(
+		new Container(),
+		[
 			'plugin_path' => IMAGIFY_PATH,
-		)
+		]
 	);
 
-	$plugin->init();
+	$plugin->init( $providers );
+
+	// The MCP Adapter is no longer bundled: boot MCP OAuth only when the standalone plugin is loaded.
+	if (
+		class_exists( 'WP\MCP\Core\McpAdapter' )
+		&& class_exists( \WPMedia\MCP\OAuth\Bootstrap::class )
+		&& function_exists( 'wp_register_ability' )
+		&& function_exists( 'wp_get_ability' )
+		&& function_exists( 'wp_get_abilities' )
+		&& function_exists( 'wp_register_ability_category' )
+	) {
+		\WPMedia\MCP\OAuth\Bootstrap::instance();
+	}
 }
 add_action( 'plugins_loaded', 'imagify_init' );

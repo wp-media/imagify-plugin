@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || die( "Cheatin' uh?" );
 
 /**
  * Get the backup path of a specific attachement.

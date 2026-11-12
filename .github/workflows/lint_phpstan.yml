@@ -1,0 +1,20 @@
+name: PHPStan
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+# Cancel all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    uses: wp-media/workflows/.github/workflows/phpstan.yml@main
+    with:
+      # Empty (not --no-scripts) so Composer runs its post-install/update scripts,
+      # i.e. Strauss namespace prefixing: PHPStan analyses classes/ which reference
+      # the prefixed Imagify\Dependencies\* / Imagify_* classes and needs them
+      # autoloadable to resolve types.
+      composer-options: ''

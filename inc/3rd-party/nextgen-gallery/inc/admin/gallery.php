@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 add_filter( 'ngg_manage_images_number_of_columns', '_imagify_ngg_manage_images_number_of_columns' );
 /**
@@ -12,7 +12,7 @@ add_filter( 'ngg_manage_images_number_of_columns', '_imagify_ngg_manage_images_n
  * @return int Incremented number of columns.
  */
 function _imagify_ngg_manage_images_number_of_columns( $count ) {
-	$count++;
+	++$count;
 	add_filter( 'ngg_manage_images_column_' . $count . '_header', '_imagify_ngg_manage_media_columns' );
 	add_filter( 'ngg_manage_images_column_' . $count . '_content', '_imagify_ngg_manage_media_custom_column', 10, 2 );
 

@@ -3,7 +3,7 @@ namespace Imagify\ThirdParty\NGG\Optimization\Process;
 
 use Imagify\Optimization\File;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || die( "Cheatin' uh?" );
 
 /**
  * Optimization class for NextGen Gallery.

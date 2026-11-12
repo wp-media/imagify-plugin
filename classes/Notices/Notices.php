@@ -10,7 +10,7 @@ use Imagify\Traits\InstanceGetterTrait;
  *
  * @since 1.6.10
  */
-class Notices {
+final class Notices {
 	use InstanceGetterTrait;
 
 	/**
@@ -66,8 +66,6 @@ class Notices {
 		'http-block-external',
 		// This warning is displayed when the grid view is active on the library. Dismissible.
 		'grid-view',
-		// This warning is displayed to warn the user that the quota is almost consumed for the current month. Dismissible.
-		'almost-over-quota',
 		// This warning is displayed if the backup folder is not writable. NOT dismissible.
 		'backup-folder-not-writable',
 		// This notice is displayed to rate the plugin after 100 optimizations & 7 days after the first installation. Dismissible.
@@ -76,6 +74,10 @@ class Notices {
 		'wp-rocket',
 		'bulk-optimization-complete',
 		'bulk-optimization-running',
+		'upsell-banner',
+		'upsell-admin-bar',
+		// Displayed by Imagify\MCP\AdapterNotice.
+		'mcp-adapter',
 	];
 
 	/**
@@ -128,12 +130,12 @@ class Notices {
 	 */
 	public function init() {
 		// For generic purpose.
-		add_action( 'all_admin_notices',                     [ $this, 'render_notices' ] );
-		add_action( 'wp_ajax_imagify_dismiss_notice',        [ $this, 'admin_post_dismiss_notice' ] );
-		add_action( 'admin_post_imagify_dismiss_notice',     [ $this, 'admin_post_dismiss_notice' ] );
+		add_action( 'all_admin_notices', [ $this, 'render_notices' ] );
+		add_action( 'wp_ajax_imagify_dismiss_notice', [ $this, 'admin_post_dismiss_notice' ] );
+		add_action( 'admin_post_imagify_dismiss_notice', [ $this, 'admin_post_dismiss_notice' ] );
 		// For specific notices.
-		add_action( 'imagify_dismiss_notice',                [ $this, 'clear_scheduled_rating' ] );
-		add_action( 'admin_post_imagify_deactivate_plugin',  [ $this, 'deactivate_plugin' ] );
+		add_action( 'imagify_dismiss_notice', [ $this, 'clear_scheduled_rating' ] );
+		add_action( 'admin_post_imagify_deactivate_plugin', [ $this, 'deactivate_plugin' ] );
 		add_action( 'imagify_not_almost_over_quota_anymore', [ $this, 'renew_almost_over_quota_notice' ] );
 	}
 
@@ -177,7 +179,7 @@ class Notices {
 	public function admin_post_dismiss_notice() {
 		imagify_check_nonce( self::DISMISS_NONCE_ACTION );
 
-		$notice  = ! empty( $_GET['notice'] ) ? esc_html( wp_unslash( $_GET['notice'] ) ) : false;
+		$notice  = ! empty( $_GET['notice'] ) ? sanitize_text_field( wp_unslash( $_GET['notice'] ) ) : '';
 		$notices = $this->get_notice_ids();
 		$notices = array_flip( $notices );
 
@@ -192,7 +194,7 @@ class Notices {
 		 *
 		 * @since 1.4.2
 		 *
-		 * @param int $notice The notice slug
+		 * @param string $notice The notice slug
 		*/
 		do_action( 'imagify_dismiss_notice', $notice );
 
@@ -228,7 +230,7 @@ class Notices {
 			imagify_die();
 		}
 
-		$plugin  = esc_html( wp_unslash( $_GET['plugin'] ) );
+		$plugin  = sanitize_text_field( wp_unslash( $_GET['plugin'] ) );
 		$plugins = $this->get_conflicting_plugins();
 		$plugins = array_flip( $plugins );
 
@@ -250,7 +252,7 @@ class Notices {
 	public function renew_almost_over_quota_notice() {
 		global $wpdb;
 
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE %s", self::DISMISS_META_NAME, '%almost-over-quota%' ) );
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT umeta_id, user_id FROM $wpdb->usermeta WHERE meta_key = %s AND meta_value LIKE %s", self::DISMISS_META_NAME, '%upsell%' ) );
 
 		if ( ! $results ) {
 			return;
@@ -271,7 +273,8 @@ class Notices {
 
 		// Renew the notice for all users.
 		foreach ( $results as $result ) {
-			self::renew_notice( 'almost-over-quota', $result->user_id );
+			self::renew_notice( 'upsell-banner', $result->user_id );
+			self::renew_notice( 'upsell-admin-bar', $result->user_id );
 		}
 	}
 
@@ -349,7 +352,7 @@ class Notices {
 	 *
 	 * @since 1.6.10
 	 *
-	 * @return array An array of plugins to deactivate.
+	 * @return array|false An array of plugins to deactivate. false if the notice should not be displayed.
 	 */
 	public function display_plugins_to_deactivate() {
 		static $display;
@@ -436,45 +439,6 @@ class Notices {
 		}
 
 		$display = true;
-		return $display;
-	}
-
-	/**
-	 * Tell if the 'almost-over-quota' notice should be displayed.
-	 *
-	 * @since 1.7.0
-	 *
-	 * @return bool|object An Imagify user object. False otherwise.
-	 */
-	public function display_almost_over_quota() {
-		static $display;
-
-		if ( isset( $display ) ) {
-			return $display;
-		}
-
-		$display = false;
-
-		if ( ! $this->user_can( 'almost-over-quota' ) ) {
-			return $display;
-		}
-
-		if ( ! imagify_is_screen( 'imagify-settings' ) && ! imagify_is_screen( 'bulk' ) ) {
-			return $display;
-		}
-
-		if ( self::notice_is_dismissed( 'almost-over-quota' ) ) {
-			return $display;
-		}
-
-		$user = new \Imagify_User();
-
-		// Don't display the notice if the user's unconsumed quota is superior to 20%.
-		if ( $user->get_percent_unconsumed_quota() > 20 ) {
-			return $display;
-		}
-
-		$display = $user;
 		return $display;
 	}
 
@@ -740,6 +704,13 @@ class Notices {
 			return;
 		}
 
+		// Deduplicate: do not add the same message twice.
+		foreach ( $notices as $existing ) {
+			if ( isset( $existing['message'] ) && $existing['message'] === $notice_data['message'] ) {
+				return;
+			}
+		}
+
 		$notices[] = $notice_data;
 
 		set_site_transient( self::TEMPORARY_NOTICES_TRANSIENT_NAME, $notices, 30 );
@@ -785,6 +756,13 @@ class Notices {
 
 		if ( ! is_array( $notice_data ) || empty( $notice_data['message'] ) ) {
 			return;
+		}
+
+		// Deduplicate: do not add the same message twice.
+		foreach ( $notices as $existing ) {
+			if ( isset( $existing['message'] ) && $existing['message'] === $notice_data['message'] ) {
+				return;
+			}
 		}
 
 		$notices[] = $notice_data;
@@ -906,7 +884,7 @@ class Notices {
 		 *
 		 * @param array $notice_ids An array of notice "IDs".
 		 */
-		return (array) apply_filters( 'imagify_notices', self::$notice_ids );
+		return (array) wpm_apply_filters_typed( 'array', 'imagify_notices', self::$notice_ids );
 	}
 
 	/**
@@ -937,9 +915,9 @@ class Notices {
 		 *
 		 * @since 1.0
 		 *
-		 * @param string $plugins List of recommended plugins to deactivate.
+		 * @param array $plugins List of recommended plugins to deactivate.
 		*/
-		$plugins = apply_filters( 'imagify_plugins_to_deactivate', self::$conflicting_plugins );
+		$plugins = wpm_apply_filters_typed( 'array', 'imagify_plugins_to_deactivate', self::$conflicting_plugins );
 
 		return array_filter( $plugins, 'is_plugin_active' );
 	}

@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin&#8217; uh?' );
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Tell WP what to do when admin is loaded aka upgrader.
@@ -13,7 +13,7 @@ function _imagify_upgrader() {
 	// Version stored on the network.
 	$network_version = Imagify_Options::get_instance()->get( 'version' );
 	// Version stored at the site level.
-	$site_version    = Imagify_Data::get_instance()->get( 'version' );
+	$site_version = Imagify_Data::get_instance()->get( 'version' );
 
 	if ( ! $network_version ) {
 		// First install (network).
@@ -152,7 +152,7 @@ function imagify_upgrader_upgrade() {
 		delete_site_option( 'imagify_old_version' );
 	} else {
 		// Some sites still need to be upgraded.
-		$sites = array_flip( $sites );
+		$sites            = array_flip( $sites );
 		$sites['version'] = $network_version;
 		update_site_option( 'imagify_old_version', $sites );
 	}
@@ -188,18 +188,20 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	// 1.2
 	if ( version_compare( $site_version, '1.2' ) < 0 ) {
 		// Update all already optimized images status from 'error' to 'already_optimized'.
-		$query = new WP_Query( array(
-			'is_imagify'             => true,
-			'post_type'              => 'attachment',
-			'post_status'            => imagify_get_post_statuses(),
-			'post_mime_type'         => imagify_get_mime_types(),
-			'meta_key'               => '_imagify_status',
-			'meta_value'             => 'error',
-			'posts_per_page'         => -1,
-			'update_post_term_cache' => false,
-			'no_found_rows'          => true,
-			'fields'                 => 'ids',
-		) );
+		$query = new WP_Query(
+			[
+				'is_imagify'             => true,
+				'post_type'              => 'attachment',
+				'post_status'            => imagify_get_post_statuses(),
+				'post_mime_type'         => imagify_get_mime_types(),
+				'meta_key'               => '_imagify_status',
+				'meta_value'             => 'error',
+				'posts_per_page'         => -1,
+				'update_post_term_cache' => false,
+				'no_found_rows'          => true,
+				'fields'                 => 'ids',
+			]
+		);
 
 		if ( $query->posts ) {
 			foreach ( (array) $query->posts as $id ) {
@@ -219,27 +221,29 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	// 1.3.2
 	if ( version_compare( $site_version, '1.3.2' ) < 0 ) {
 		// Update all already optimized images status from 'error' to 'already_optimized'.
-		$query = new WP_Query( array(
-			'is_imagify'             => true,
-			'post_type'              => 'attachment',
-			'post_status'            => imagify_get_post_statuses(),
-			'post_mime_type'         => imagify_get_mime_types(),
-			'meta_query'             => array(
-				'relation' => 'AND',
-				array(
-					'key'     => '_imagify_data',
-					'compare' => 'EXISTS',
-				),
-				array(
-					'key'     => '_imagify_optimization_level',
-					'compare' => 'NOT EXISTS',
-				),
-			),
-			'posts_per_page'         => -1,
-			'update_post_term_cache' => false,
-			'no_found_rows'          => true,
-			'fields'                 => 'ids',
-		) );
+		$query = new WP_Query(
+			[
+				'is_imagify'             => true,
+				'post_type'              => 'attachment',
+				'post_status'            => imagify_get_post_statuses(),
+				'post_mime_type'         => imagify_get_mime_types(),
+				'meta_query'             => [
+					'relation' => 'AND',
+					[
+						'key'     => '_imagify_data',
+						'compare' => 'EXISTS',
+					],
+					[
+						'key'     => '_imagify_optimization_level',
+						'compare' => 'NOT EXISTS',
+					],
+				],
+				'posts_per_page'         => -1,
+				'update_post_term_cache' => false,
+				'no_found_rows'          => true,
+				'fields'                 => 'ids',
+			]
+		);
 
 		if ( $query->posts ) {
 			foreach ( (array) $query->posts as $id ) {
@@ -291,12 +295,12 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 
 	// 1.8.2
 	if ( version_compare( $site_version, '1.8.2' ) < 0 ) {
-		Imagify_Options::get_instance()->set( 'partner_links', 1 );
+		$options->set( 'partner_links', 1 );
 	}
 
 	// 1.9.6
 	if ( version_compare( $site_version, '1.9.6' ) < 0 ) {
-		\Imagify\Stats\OptimizedMediaWithoutWebp::get_instance()->clear_cache();
+		\Imagify\Stats\OptimizedMediaWithoutNextGen::get_instance()->clear_cache();
 	}
 
 	// 1.9.11
@@ -305,7 +309,20 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 	}
 
 	if ( version_compare( $site_version, '2.0' ) < 0 ) {
-		Imagify_Options::get_instance()->set( 'optimization_level', 2 );
+		$options->set( 'optimization_level', 2 );
+	}
+
+	if ( version_compare( $site_version, '2.2' ) < 0 ) {
+		$options->set( 'display_nextgen', $options->get( 'display_webp', 0 ) );
+		$options->set( 'display_nextgen_method', $options->get( 'display_webp_method' ) );
+	}
+
+	if ( version_compare( $site_version, '2.2.2', '<' ) ) {
+		if ( $options->get( 'convert_to_avif' ) ) {
+			$options->set( 'optimization_format', 'avif' );
+		} else {
+			$options->set( 'optimization_format', 'webp' );
+		}
 	}
 }
 add_action( 'imagify_upgrade', '_imagify_new_upgrade', 10, 2 );

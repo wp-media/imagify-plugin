@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\ThirdParty\NGG;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that handles the optimization of thumbnails dynamically generated.
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class DynamicThumbnails {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * The queue containing the sizes, grouped by image ID.
@@ -78,13 +78,11 @@ class DynamicThumbnails {
 	 */
 	public function optimize() {
 		if ( empty( static::$sizes ) ) {
-			// ¯\(°_o)/¯
 			return;
 		}
 
 		foreach ( static::$sizes as $image_id => $sizes ) {
 			if ( empty( static::$images[ $image_id ] ) ) {
-				// ¯\(°_o)/¯
 				continue;
 			}
 

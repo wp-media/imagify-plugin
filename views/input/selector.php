@@ -24,11 +24,11 @@ $list_id = 'imagify-' . $list_id . '-selector-list';
 <div class="imagify-selector">
 	<span class="hide-if-js">
 		<?php echo esc_html( $data['current_label'] ); ?>
-		<span class="imagify-selector-current-value-info"><?php echo $data['values'][ $data['value'] ]; ?></span>
+		<span class="imagify-selector-current-value-info"><?php echo $data['values'][ $data['value'] ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 	</span>
 
 	<button aria-controls="<?php echo esc_attr( $list_id ); ?>" type="button" class="button imagify-button-clean hide-if-no-js imagify-selector-button">
-		<span class="imagify-selector-current-value-info"><?php echo $data['values'][ $data['value'] ]; ?></span>
+		<span class="imagify-selector-current-value-info"><?php echo $data['values'][ $data['value'] ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 	</button>
 
 	<ul id="<?php echo esc_attr( $list_id ); ?>" role="listbox" aria-orientation="vertical" aria-hidden="true" class="imagify-selector-list hide-if-no-js">
@@ -38,7 +38,7 @@ $list_id = 'imagify-' . $list_id . '-selector-list';
 			?>
 			<li class="imagify-selector-choice<?php echo $val === $data['value'] ? ' imagify-selector-current-value" aria-current="true' : ''; ?>" role="option">
 				<input type="radio" name="<?php echo esc_attr( $data['name'] ); ?>" value="<?php echo esc_attr( $val ); ?>" id="<?php echo esc_attr( $input_id ); ?>" <?php checked( $val, $data['value'] ); ?> class="screen-reader-text">
-				<label for="<?php echo esc_attr( $input_id ); ?>"><?php echo $label; ?></label>
+				<label for="<?php echo esc_attr( $input_id ); ?>"><?php echo $label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></label>
 			</li>
 			<?php
 		}

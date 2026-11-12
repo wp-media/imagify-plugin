@@ -4,7 +4,7 @@
 	var busy = false;
 
 	$( d ).on( 'mouseenter', '#wp-admin-bar-imagify', function() {
-		var $adminBarProfile, url;
+		var $adminBarProfile, url, $adminBarPricing;
 
 		if ( true === busy ) {
 			return;
@@ -13,6 +13,7 @@
 		busy = true;
 
 		$adminBarProfile = $( '#wp-admin-bar-imagify-profile-content' );
+		$adminBarPricing = $( '#wp-admin-bar-imagify-pricing-content' );
 
 		if ( ! $adminBarProfile.is( ':empty' ) ) {
 			return;
@@ -28,8 +29,18 @@
 
 		$.get( url + 'action=imagify_get_admin_bar_profile&imagifygetadminbarprofilenonce=' + $( '#imagifygetadminbarprofilenonce' ).val() )
 			.done( function( response ) {
-				$adminBarProfile.html( response.data );
+				var $templates = response.data;
 				$( '#wp-admin-bar-imagify-profile-loading' ).remove();
+				if ( $templates.admin_bar_pricing ) {
+					$adminBarPricing.html( $templates.admin_bar_pricing );
+				} else {
+					$adminBarPricing.remove();
+				}
+
+				if ( $templates.admin_bar_status ) {
+					$adminBarProfile.html( $templates.admin_bar_status );
+				}
+
 				busy = false;
 			} );
 	} );

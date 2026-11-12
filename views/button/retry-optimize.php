@@ -38,7 +38,7 @@ if ( ! empty( $data['error'] ) ) {
 	<?php
 }
 ?>
-<a href="<?php echo esc_url( $data['url'] ); ?>"<?php echo $html_atts; ?>>
+<a href="<?php echo esc_url( $data['url'] ); ?>"<?php echo $html_atts; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<?php esc_html_e( 'Try again', 'imagify' ); ?>
 </a>
 

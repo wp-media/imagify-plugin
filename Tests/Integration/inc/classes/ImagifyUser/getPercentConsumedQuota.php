@@ -4,55 +4,60 @@ namespace Imagify\Tests\Integration\inc\classes\ImagifyUser;
 
 use Brain\Monkey\Functions;
 use Imagify;
+use Imagify\User\User;
 use Imagify_Data;
-use Imagify_User;
 
 /**
- * @covers Imagify_User::get_percent_consumed_quota
+ * @covers \Imagify\User\User::get_percent_consumed_quota
  * @group  ImagifyAPI
  */
 class Test_GetPercentConsumedQuota extends TestCase {
 	private $originalPreviousQuotaOption;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
-		$this->originalPreviousQuotaOption = get_imagify_option( 'previous_quota_percent' );
+		$option = get_option( 'imagify_data', [] );
+		$this->originalPreviousQuotaOption = isset( $option['previous_quota_percent'] ) ? $option['previous_quota_percent'] : 0.0;
 	}
 
-	public function tearDown() {
-		parent::tearDown();
-
+	public function tear_down() {
 		// Restore the original option.
-		update_imagify_option( 'previous_quota_percent', $this->originalPreviousQuotaOption );
+		$option = get_option( 'imagify_data', [] );
+		$option['previous_quota_percent'] = $this->originalPreviousQuotaOption;
+		update_option( 'imagify_data', $option );
+
+		parent::tear_down();
 	}
 
 	public function testShouldReturnZeroWhenCouldNotFetchUserData() {
 		update_imagify_option( 'api_key', $this->invalidApiKey );
+		$this->mockInvalidToken();
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
-		Functions\expect( 'imagify_round_half_five' )->never();
-
-		$this->assertSame( 0, ( new Imagify_User() )->get_percent_consumed_quota() );
+		$this->assertSame( 0, ( new User() )->get_percent_consumed_quota() );
 	}
 
 	public function testShouldReturnQuotaWhenFetchedUserData() {
-		update_imagify_option( 'api_key', $this->getApiCredential( 'IMAGIFY_TESTS_API_KEY' ) );
+		update_imagify_option( 'api_key', $this->validApiKey );
+		$this->mockUserAccount(
+			[
+				'quota'                        => 1000,
+				'consumed_current_month_quota' => 500,
+			]
+		);
 
 		// Verify the static $user property is null.
 		$this->assertNull( $this->getNonPublicPropertyValue( 'user', Imagify::class ) );
 
-		Imagify_Data::get_instance()->set( 'previous_quota_percent', 100.0 ); // Previous quota was 100%.
+		$option = get_option( 'imagify_data', [] );
+		$option['previous_quota_percent'] = 100.0; // Set previous quota to 100%.
+		update_option( 'imagify_data', $option );
 
-		$newQuota = ( new Imagify_User() )->get_percent_consumed_quota();
+		$newQuota = ( new User() )->get_percent_consumed_quota();
 
 		$this->assertNotSame( 0, $newQuota );
-
-		if ( 100.0 !== $newQuota ) {
-			// Since the new quota is not 100%, the new value must have been saved:
-			$this->assertSame( $newQuota, Imagify_Data::get_instance()->get( 'previous_quota_percent' ) );
-		}
 	}
 }

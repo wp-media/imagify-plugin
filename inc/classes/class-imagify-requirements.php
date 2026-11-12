@@ -1,4 +1,7 @@
 <?php
+
+use Imagify\User\User;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -16,7 +19,7 @@ class Imagify_Requirements {
 	 * @since  1.7.1
 	 * @author Grégory Viguier
 	 */
-	protected static $supports = array();
+	protected static $supports = [];
 
 
 	/** ----------------------------------------------------------------------------------------- */
@@ -64,22 +67,22 @@ class Imagify_Requirements {
 
 		self::$supports['image_editor'] = false;
 
-		$args = array(
+		$args = [
 			'path'       => IMAGIFY_PATH . 'assets/images/imagify-logo.png',
 			'mime_types' => imagify_get_mime_types( 'image' ),
 			'methods'    => Imagify_Attachment::get_editor_methods(),
-		);
+		];
 
 		/** This filter is documented in /wp-includes/media.php. */
-		$implementations = apply_filters( 'wp_image_editors', array( 'WP_Image_Editor_Imagick', 'WP_Image_Editor_GD' ) );
+		$implementations = apply_filters( 'wp_image_editors', [ 'WP_Image_Editor_Imagick', 'WP_Image_Editor_GD' ] );
 
 		foreach ( $implementations as $implementation ) {
-			if ( ! call_user_func( array( $implementation, 'test' ), $args ) ) {
+			if ( ! call_user_func( [ $implementation, 'test' ], $args ) ) {
 				continue;
 			}
 
 			foreach ( $args['mime_types'] as $mime_type ) {
-				if ( ! call_user_func( array( $implementation, 'supports_mime_type' ), $mime_type ) ) {
+				if ( ! call_user_func( [ $implementation, 'supports_mime_type' ], $mime_type ) ) {
 					continue 2;
 				}
 			}
@@ -94,11 +97,6 @@ class Imagify_Requirements {
 
 		return self::$supports['image_editor'];
 	}
-
-
-	/** ----------------------------------------------------------------------------------------- */
-	/** WORDPRESS =============================================================================== */
-	/** ----------------------------------------------------------------------------------------- */
 
 	/**
 	 * Test for the uploads directory.
@@ -303,7 +301,7 @@ class Imagify_Requirements {
 			return self::$supports['over_quota'];
 		}
 
-		$user = new Imagify_User();
+		$user = new User();
 
 		self::$supports['over_quota'] = $user->get_error() ? false : $user->is_over_quota();
 
@@ -327,10 +325,10 @@ class Imagify_Requirements {
 	public static function reset_cache( $cache_key ) {
 		unset( self::$supports[ $cache_key ] );
 
-		$transients = array(
+		$transients = [
 			'api_up'        => 'imagify_check_api_version',
 			'api_key_valid' => 'imagify_check_licence_1',
-		);
+		];
 
 		if ( isset( $transients[ $cache_key ] ) && get_site_transient( $transients[ $cache_key ] ) ) {
 			delete_site_transient( $transients[ $cache_key ] );

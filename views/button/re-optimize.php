@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 
 $html_atts = '';
 
@@ -22,12 +22,12 @@ $level_labels = [
 	1 => __( 'Smart', 'imagify' ),
 	2 => __( 'Smart', 'imagify' ),
 ];
-$level_label = $level_labels[ $data['optimization_level'] ];
+$level_label  = $level_labels[ $data['optimization_level'] ];
 
 $html_atts = $this->build_attributes( $data['atts'] );
 ?>
 
-<a href="<?php echo esc_url( $data['url'] ); ?>"<?php echo $html_atts; ?>>
+<a href="<?php echo esc_url( $data['url'] ); ?>"<?php echo $html_atts; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<span class="dashicons dashicons-admin-generic"></span>
 	<span class="imagify-hide-if-small">
 		<?php

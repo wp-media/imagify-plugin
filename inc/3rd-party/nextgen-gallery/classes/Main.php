@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\ThirdParty\NGG;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Imagify NextGen Gallery class.
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Jonathan Buttigieg
  */
 class Main {
-	use \Imagify\Traits\InstanceGetterTrait;
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -18,17 +18,6 @@ class Main {
 	 * @var string
 	 */
 	const VERSION = '1.1';
-
-	/**
-	 * The constructor.
-	 *
-	 * @since  1.5
-	 * @since  1.6.5 Doesn't launch the hooks anymore.
-	 * @since  1.9 Visibility set to public.
-	 * @access public
-	 * @author Jonathan Buttigieg
-	 */
-	public function __construct() {}
 
 	/**
 	 * Launch the hooks.
@@ -45,10 +34,10 @@ class Main {
 		}
 		$done = true;
 
-		add_filter( 'imagify_register_context',   [ $this, 'register_context' ] );
+		add_filter( 'imagify_register_context', [ $this, 'register_context' ] );
 		add_filter( 'imagify_context_class_name', [ $this, 'add_context_class_name' ], 10, 2 );
 		add_filter( 'imagify_process_class_name', [ $this, 'add_process_class_name' ], 10, 2 );
-		add_filter( 'imagify_bulk_class_name',    [ $this, 'add_bulk_class_name' ], 10, 2 );
+		add_filter( 'imagify_bulk_class_name', [ $this, 'add_bulk_class_name' ], 10, 2 );
 		add_action( 'init', [ $this, 'add_mixin' ] );
 	}
 
@@ -126,12 +115,19 @@ class Main {
 
 	/**
 	 * Add custom NGG mixin to override its functions.
+	 * No-op on NGG v4.x where the POPE framework (Mixin / C_Gallery_Storage) is absent.
 	 *
 	 * @since  1.5
 	 * @access public
 	 * @author Jonathan Buttigieg
 	 */
 	public function add_mixin() {
+		// @codeCoverageIgnoreStart — requires live NGG v3 POPE classes, not available in unit tests.
+		if ( ! imagify_ngg_has_pope_storage() ) {
+			return;
+		}
+
 		\C_Gallery_Storage::get_instance()->get_wrapped_instance()->add_mixin( '\\Imagify\\ThirdParty\\NGG\\NGGStorage' );
+		// @codeCoverageIgnoreEnd
 	}
 }

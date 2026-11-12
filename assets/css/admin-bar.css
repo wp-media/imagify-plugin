@@ -20,14 +20,14 @@
 }
 #wp-admin-bar-imagify-profile [class^="imagify-bar-"] {
 	position: relative;
-	height: 1.5em;
+	height: 8px;
 	width: 100%;
 	background: #60758D;
 	color: #FFF;
 	font-size: 10px;
 }
 #wp-admin-bar-imagify-profile .imagify-progress {
-	height: 1.5em;
+	height: 8px;
 	font-size: 1em;
 }
 .imagify-progress {
@@ -61,11 +61,10 @@
 }
 #wpadminbar #wp-admin-bar-imagify-profile .ab-item {
 	height: auto;
-	padding: 0 13px;
+	padding: 0;
 }
 #wpadminbar #wp-admin-bar-imagify-profile {
 	min-width: 200px;
-	padding: 15px 0 10px;
 	margin-top: 0.7em;
 	background: #222;
 }
@@ -159,4 +158,65 @@
 	background: #f5a623;
 	color: #FFF;
 	text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+
+#wp-admin-bar-imagify-profile .imagify-upsell-admin-bar {
+	position:relative ;
+	background: #c51161;
+	margin: 10px  -15px -13px -15px;
+	padding: 16px;
+}
+
+#wp-admin-bar-imagify-profile .imagify-upsell-admin-bar p {
+	color: #ebebeb;
+}
+
+#wp-admin-bar-imagify-profile a.imagify-upsell-admin-bar-button {
+	display: block;
+	height: auto !important;
+	border: 1px solid #fff;
+	border-radius: 5px;
+	color: #fff !important;
+	padding: 5px 10px !important;
+	text-align: center;
+	text-decoration: none;
+	margin-top: 10px;
+}
+
+#wpadminbar #wp-admin-bar-imagify-profile a.imagify-upsell-dismiss {
+	display: inline !important;
+	height: auto !important;
+}
+
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-upsell-dismiss::before {
+	position: absolute;
+    top: 5px;
+    right: 5px;
+	color: #fff;
+}
+.imagify-plugin-upgrade {
+	color: #6f9c3b;
+	font-weight: 600;
+}
+
+#wpadminbar #wp-admin-bar-imagify-upgrade-plan .ab-empty-item {
+	padding: 0;
+}
+
+#wpadminbar .imagify-admin-bar-upgrade-plan {
+	background: #8bc34a;
+	box-sizing: border-box;
+	border:none;
+	color: #fff;
+	cursor: pointer;
+	display: block;
+	font-weight: bold !important;
+	padding: 0 10px;
+	text-align: left;
+	width: 100% !important;
+}
+
+#wpadminbar #wp-admin-bar-imagify-profile .imagify-admin-bar-quota {
+	padding: 13px 15px;
 }

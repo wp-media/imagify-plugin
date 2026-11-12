@@ -4,9 +4,9 @@
 	/**
 	 * Close an Imagify notice.
 	 */
-	$( '.imagify-notice-dismiss' ).on( 'click.imagify', function( e ) {
+	$(document).on('click', '.imagify-notice-dismiss', function ( e ) {
 		var $this   = $( this ),
-			$parent = $this.parents( '.imagify-welcome, .imagify-notice, .imagify-rkt-notice' ),
+			$parent = $this.parents( '.imagify-welcome, .imagify-notice, .imagify-rkt-notice, .imagify-upsell, .imagify-upsell-admin-bar' ),
 			href    = $this.attr( 'href' );
 
 		e.preventDefault();
@@ -45,7 +45,7 @@
 			customClass:         'imagify-sweet-alert imagify-sweet-alert-signup',
 			inputValidator:      function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
-					if ( $.trim( inputValue ) === '' || ! inputValue ) {
+					if ( String( inputValue ).trim() === '' || ! inputValue ) {
 						reject( imagifyNotices.labels.signupErrorEmptyEmail );
 					} else {
 						resolve();
@@ -55,13 +55,17 @@
 			preConfirm:          function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
 					setTimeout( function() {
-						$.get( ajaxurl + w.imagify.concat + 'action=imagify_signup&email=' + inputValue + '&imagifysignupnonce=' + $( '#imagifysignupnonce' ).val() )
+						$.get( ajaxurl + w.imagify.concat + 'action=imagify_signup&email=' + encodeURIComponent( String( inputValue ).trim() ) + '&imagifysignupnonce=' + $( '#imagifysignupnonce' ).val() )
 							.done( function( response ) {
 								if ( ! response.success ) {
 									reject( response.data );
 								} else {
 									resolve();
 								}
+							} )
+							.fail( function() {
+								// Without this the promise never settles and the modal spins forever.
+								reject( imagifyNotices.labels.signupErrorRequestFailed );
 							} );
 					}, 2000 );
 				} );
@@ -94,7 +98,7 @@
 			customClass:         'imagify-sweet-alert imagify-sweet-alert-signup',
 			inputValidator:      function( inputValue ) {
 				return new Promise( function( resolve, reject ) {
-					if ( $.trim( inputValue ) === '' || ! inputValue ) {
+					if ( String( inputValue ).trim() === '' || ! inputValue ) {
 						reject( imagifyNotices.labels.ApiKeyErrorEmpty );
 					} else {
 						resolve();

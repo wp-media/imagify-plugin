@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+defined( 'ABSPATH' ) || exit;
 ?>
 <div class="wrap imagify-settings imagify-bulk">
 
@@ -41,7 +41,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 							<p><?php esc_html_e( 'Optimized size', 'imagify' ); ?></p>
 							<div class="imagify-bar-primary base-transparent right-outside-number">
-								<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo max( 100 - $data['optimized_percent'], 0 ); ?>%"><span class="imagify-barnb"><?php echo esc_html( $data['optimized_human'] ); ?></span></div>
+								<div id="imagify-optimized-bar" class="imagify-progress" style="width: <?php echo esc_attr( max( 100 - $data['optimized_percent'], 0 ) ); ?>%"><span class="imagify-barnb"><?php echo esc_html( $data['optimized_human'] ); ?></span></div>
 							</div>
 
 						</div>
@@ -85,8 +85,11 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			<div class="imagify-col imagify-account-info-col">
 
 				<?php
-				if ( ( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || ! IMAGIFY_HIDDEN_ACCOUNT ) && Imagify_Requirements::is_api_key_valid() ) {
-					$user = new Imagify_User();
+				if (
+					( ! defined( 'IMAGIFY_HIDDEN_ACCOUNT' ) || ! IMAGIFY_HIDDEN_ACCOUNT )
+					&&
+					Imagify_Requirements::is_api_key_valid()
+				) {
 					?>
 					<div class="imagify-options-title">
 						<div class="imagify-th-titles imagify-flex imagify-vcenter">
@@ -95,63 +98,10 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 								<?php esc_html_e( 'Your Account', 'imagify' ); ?>
 							</p>
 						</div>
-						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php _e( 'View your profile', 'imagify' ); ?></a>
+						<a href="<?php echo esc_url( imagify_get_external_url( 'subscription' ) ); ?>" target="_blank"><?php esc_html_e( 'View your profile', 'imagify' ); ?></a>
 					</div>
-
-					<?php if ( $user && 1 === $user->plan_id ) { ?>
-						<div class="imagify-col-content">
-							<div class="imagify-flex imagify-vcenter">
-								<span class="imagify-meteo-icon imagify-noshrink"><?php echo $this->get_quota_icon(); ?></span>
-								<div class="imagify-space-left imagify-full-width">
-
-									<p>
-										<?php
-										printf(
-											/* translators: %s is a data quota. */
-											__( 'You have %s space credit left', 'imagify' ),
-											'<span class="imagify-unconsumed-percent">' . $this->get_quota_percent() . '%</span>'
-										);
-										?>
-									</p>
-
-									<div class="<?php echo $this->get_quota_class(); ?>">
-										<div class="imagify-unconsumed-bar imagify-progress" style="width: <?php echo $this->get_quota_percent() . '%'; ?>;"></div>
-									</div>
-								</div>
-							</div>
-							<?php
-							/**
-							 * Filter whether the plan chooser section is displayed.
-							 *
-							 * @param $show_new bool Default to true: display the section.
-							 */
-							if ( apply_filters( 'imagify_show_new_to_imagify', true ) ) {
-								?>
-								<div class="imagify-block-secondary">
-									<p class="imagify-section-title imagify-h3-like">
-										<?php
-										if ( ! $this->get_quota_percent() ) {
-											esc_html_e( 'Oops, It\'s Over!', 'imagify' );
-										} elseif ( $this->get_quota_percent() <= 20 ) {
-											esc_html_e( 'Oops, It\'s almost over!', 'imagify' );
-										} else {
-											esc_html_e( 'You\'re new to Imagify?', 'imagify' );
-										}
-										?>
-									</p>
-									<p><?php esc_html_e( 'Let us help you by analyzing your existing images and determine the best plan for you.', 'imagify' ); ?></p>
-
-									<button id="imagify-get-pricing-modal" data-nonce="<?php echo wp_create_nonce( 'imagify_get_pricing_' . get_current_user_id() ); ?>" data-target="#imagify-pricing-modal" type="button" class="imagify-modal-trigger imagify-button imagify-button-light imagify-button-big imagify-full-width">
-										<i class="dashicons dashicons-dashboard" aria-hidden="true"></i>
-										<span class="button-text"><?php _e( 'What plan do I need?', 'imagify' ); ?></span>
-									</button>
-								</div>
-								<?php
-							}
-							?>
-						</div><!-- .imagify-col-content -->
-					<?php } // End if(). ?>
-				<?php } // End if(). ?>
+					<?php $this->print_template( 'part-upsell' ); ?>
+				<?php } ?>
 
 			</div><!-- .imagify-account-info-col -->
 
@@ -162,7 +112,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 		$this->print_template( 'part-bulk-optimization-table', $data );
 
-		// New Feature!
 		if ( ! empty( $data['no-custom-folders'] ) ) {
 			$this->print_template( 'part-bulk-optimization-newbie' );
 		}
@@ -173,22 +122,28 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 				<p>
 					<?php wp_nonce_field( 'imagify-bulk-optimize', 'imagifybulkuploadnonce' ); ?>
 					<?php
-					$disabled = '';
-					$class    = '';
+					$disabled    = '';
+					$class       = '';
+					$stop_hidden = 'hidden';
 
 					if (
 						false !== get_transient( 'imagify_wp_optimize_running' )
 						||
 						false !== get_transient( 'imagify_custom-folders_optimize_running' )
 					) {
-						$disabled = 'disabled="disabled"';
-						$class    = 'rotate';
+						$disabled    = 'disabled="disabled"';
+						$class       = 'rotate';
+						$stop_hidden = '';
 					}
 
 					?>
-					<button id="imagify-bulk-action" type="button" class="button button-primary" <?php echo $disabled; ?>>
-						<span class="dashicons dashicons-admin-generic <?php echo $class; ?>"></span>
-						<span class="button-text"><?php _e( 'Imagif’em all', 'imagify' ); ?></span>
+					<button id="imagify-bulk-action" type="button" class="button button-primary" <?php echo $disabled; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+						<span class="dashicons dashicons-admin-generic <?php echo esc_attr( $class ); ?>"></span>
+						<span class="button-text"><?php esc_html_e( 'Imagif’em all', 'imagify' ); ?></span>
+					</button>
+					<button id="imagify-bulk-stop" type="button" class="button button-primary <?php echo esc_attr( $stop_hidden ); ?>" aria-hidden="<?php echo esc_attr( $stop_hidden ? 'true' : 'false' ); ?>">
+						<span class="dashicons dashicons-no-alt"></span>
+						<span class="button-text"><?php esc_html_e( 'Stop the optimization', 'imagify' ); ?></span>
 					</button>
 				</p>
 			</div>
@@ -207,8 +162,6 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	</div><!-- .imagify-settings-section -->
 
 	<?php
-	$this->print_template( 'modal-payment' );
-
 	if ( Imagify_Requirements::is_api_key_valid() ) {
 		$display_infos = get_transient( 'imagify_bulk_optimization_infos' );
 
@@ -222,11 +175,14 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 			?>
 			<script type="text/html" id="tmpl-imagify-bulk-infos">
 				<?php
-				$this->print_template( 'part-bulk-optimization-infos', array(
-					'quota'       => $data['unconsumed_quota'],
-					'quota_class' => $data['quota_class'],
-					'library'     => ! empty( $data['groups']['library'] ),
-				) );
+				$this->print_template(
+					'part-bulk-optimization-infos',
+					[
+						'quota'       => $data['unconsumed_quota'],
+						'quota_class' => $data['quota_class'],
+						'library'     => ! empty( $data['groups']['library'] ),
+					]
+				);
 				?>
 			</script>
 			<?php
@@ -234,4 +190,3 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 	}
 	?>
 </div>
-<?php

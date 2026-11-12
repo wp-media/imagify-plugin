@@ -1,5 +1,4 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
  * Class that regroups things about "custom folders".
@@ -147,7 +146,7 @@ class Imagify_Custom_Folders {
 	 * @param  array $args An array of arguments to pass to Imagify_Files_DB::insert(). Required values are 'folder_id' and ( 'path' or 'file_path').
 	 * @return int         The file ID on success. 0 on failure.
 	 */
-	public static function insert_file( $args = array() ) {
+	public static function insert_file( $args = [] ) {
 		if ( empty( $args['folder_id'] ) ) {
 			return 0;
 		}
@@ -180,7 +179,7 @@ class Imagify_Custom_Folders {
 
 		if ( ( empty( $args['width'] ) || empty( $args['height'] ) ) && strpos( $args['mime_type'], 'image/' ) === 0 ) {
 			$file_size      = $filesystem->get_image_size( $args['file_path'] );
-			$args['width']  = $file_size ? $file_size['width']  : 0;
+			$args['width']  = $file_size ? $file_size['width'] : 0;
 			$args['height'] = $file_size ? $file_size['height'] : 0;
 		}
 
@@ -210,13 +209,16 @@ class Imagify_Custom_Folders {
 	 *                    At least: 'file_id'. At best: 'file_id', 'file_path' (or 'path' for the placeholder), and 'backup_path'.
 	 */
 	public static function delete_file( $args = [] ) {
-		$args = array_merge( [
-			'file_id'     => 0,
-			'file_path'   => '',
-			'path'        => '',
-			'backup_path' => '',
-			'process'     => false,
-		], $args );
+		$args = array_merge(
+			[
+				'file_id'     => 0,
+				'file_path'   => '',
+				'path'        => '',
+				'backup_path' => '',
+				'process'     => false,
+			],
+			$args
+		);
 
 		$filesystem = imagify_get_filesystem();
 
@@ -410,18 +412,21 @@ class Imagify_Custom_Folders {
 				$size = false;
 			}
 
-			$new_data = array_merge( $new_data, [
-				'file_date'          => $filesystem->get_date( $file_path ),
-				'width'              => $size ? $size['width']  : 0,
-				'height'             => $size ? $size['height'] : 0,
-				'original_size'      => $filesystem->size( $file_path ),
-				'optimized_size'     => null,
-				'percent'            => null,
-				'optimization_level' => null,
-				'status'             => null,
-				'error'              => null,
-				'data'               => [],
-			] );
+			$new_data = array_merge(
+				$new_data,
+				[
+					'file_date'          => $filesystem->get_date( $file_path ),
+					'width'              => $size ? $size['width'] : 0,
+					'height'             => $size ? $size['height'] : 0,
+					'original_size'      => $filesystem->size( $file_path ),
+					'optimized_size'     => null,
+					'percent'            => null,
+					'optimization_level' => null,
+					'status'             => null,
+					'error'              => null,
+					'data'               => [],
+				]
+			);
 
 			// Delete the backup of the previous file.
 			$process->delete_backup();
@@ -438,12 +443,15 @@ class Imagify_Custom_Folders {
 				$size = false;
 			}
 
-			$new_data = array_merge( $new_data, [
-				'file_date'     => $file_date,
-				'width'         => $size ? $size['width']  : 0,
-				'height'        => $size ? $size['height'] : 0,
-				'original_size' => $filesystem->size( $path ),
-			] );
+			$new_data = array_merge(
+				$new_data,
+				[
+					'file_date'     => $file_date,
+					'width'         => $size ? $size['width'] : 0,
+					'height'        => $size ? $size['height'] : 0,
+					'original_size' => $filesystem->size( $path ),
+				]
+			);
 
 			// WebP.
 			$webp_size = 'full' . $process::WEBP_SUFFIX;
@@ -507,7 +515,7 @@ class Imagify_Custom_Folders {
 	 *                             )
 	 *                         )
 	 */
-	public static function get_folders( $args = array() ) {
+	public static function get_folders( $args = [] ) {
 		global $wpdb;
 
 		$folders_db    = Imagify_Folders_DB::get_instance();
@@ -529,11 +537,11 @@ class Imagify_Custom_Folders {
 		$results = $wpdb->get_results( "SELECT * FROM $folders_table $where_active;", ARRAY_A ); // WPCS: unprepared SQL ok.
 
 		if ( ! $results || ! is_array( $results ) ) {
-			return array();
+			return [];
 		}
 
 		// Cast results, add absolute paths.
-		$folders = array();
+		$folders = [];
 
 		foreach ( $results as $row_fields ) {
 			// Cast the row.
@@ -595,18 +603,18 @@ class Imagify_Custom_Folders {
 	 *                            )
 	 *                            The fields 'optimization_level' and 'status' are set only if the argument 'optimization_level' was set.
 	 */
-	public static function get_files_from_folders( $folders, $args = array() ) {
+	public static function get_files_from_folders( $folders, $args = [] ) {
 		global $wpdb;
 
 		if ( ! $folders ) {
-			return array();
+			return [];
 		}
 
-		$filesystem     = imagify_get_filesystem();
-		$files_db       = Imagify_Files_DB::get_instance();
-		$files_table    = $files_db->get_table_name();
-		$files_key      = $files_db->get_primary_key();
-		$files_key_esc  = esc_sql( $files_key );
+		$filesystem    = imagify_get_filesystem();
+		$files_db      = Imagify_Files_DB::get_instance();
+		$files_table   = $files_db->get_table_name();
+		$files_key     = $files_db->get_primary_key();
+		$files_key_esc = esc_sql( $files_key );
 
 		$optimization              = isset( $args['optimization_level'] ) && is_numeric( $args['optimization_level'] );
 		$no_new_files              = ! empty( $args['return_only_old_files'] );
@@ -626,7 +634,7 @@ class Imagify_Custom_Folders {
 		 *     )
 		 * )
 		 */
-		$files_from_scan = array();
+		$files_from_scan = [];
 
 		foreach ( $folders as $folder_id => $folder ) {
 			$files_from_scan[ $folder_id ] = Imagify_Files_Scan::get_files_from_folder( $folder['folder_path'] );
@@ -641,9 +649,9 @@ class Imagify_Custom_Folders {
 		/**
 		 * Get the files from DB. $files_from_db will be in the same format as the function output.
 		 */
-		$already_optimized = array();
+		$already_optimized = [];
 		$folder_ids        = array_keys( $folders );
-		$files_from_db     = array_fill_keys( $folder_ids, array() );
+		$files_from_db     = array_fill_keys( $folder_ids, [] );
 		$folder_ids        = Imagify_DB::prepare_values_list( $folder_ids );
 		$select_fields     = "$files_key_esc, folder_id, path" . ( $optimization ? ', optimization_level, status' : '' );
 
@@ -697,10 +705,12 @@ class Imagify_Custom_Folders {
 
 				if ( ! $filesystem->exists( $row_fields['file_path'] ) ) {
 					// If the file doesn't exist: remove all traces of it and bail out.
-					self::delete_file( array(
-						'file_id'   => $row_fields[ $files_key ],
-						'file_path' => $row_fields['file_path'],
-					) );
+					self::delete_file(
+						[
+							'file_id'   => $row_fields[ $files_key ],
+							'file_path' => $row_fields['file_path'],
+						]
+					);
 					continue;
 				}
 
@@ -718,7 +728,7 @@ class Imagify_Custom_Folders {
 
 		// Make sure files from the scan are not already in the DB with another folder (shouldn't be possible, but, you know...).
 		if ( $files_from_scan ) {
-			$folders_by_placeholder = array();
+			$folders_by_placeholder = [];
 
 			foreach ( $files_from_scan as $folder_id => $folder_files ) {
 				foreach ( $folder_files as $file_path => $i ) {
@@ -729,10 +739,31 @@ class Imagify_Custom_Folders {
 				}
 			}
 
-			$placeholders  = Imagify_DB::prepare_values_list( array_keys( $folders_by_placeholder ) );
 			$select_fields = "$files_key_esc, folder_id, path" . ( $optimization ? ', optimization_level, status' : '' );
 
-			$results = $wpdb->get_results( "SELECT $select_fields FROM $files_table WHERE path IN ( $placeholders ) ORDER BY folder_id, $files_key_esc;", ARRAY_A ); // WPCS: unprepared SQL ok.
+			$results = [];
+
+			foreach ( Imagify_DB::chunk_in_values( array_keys( $folders_by_placeholder ) ) as $placeholders_chunk ) {
+				$placeholders  = Imagify_DB::prepare_values_list( $placeholders_chunk );
+				$chunk_results = $wpdb->get_results( "SELECT $select_fields FROM $files_table WHERE path IN ( $placeholders );", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+				if ( $chunk_results ) {
+					$results = array_merge( $results, $chunk_results );
+				}
+			}
+
+			if ( $results ) {
+				// Re-apply the ordering that was previously done in SQL (`ORDER BY folder_id, $files_key_esc`).
+				usort(
+					$results,
+					function ( $a, $b ) use ( $files_key_esc ) {
+						if ( $a['folder_id'] !== $b['folder_id'] ) {
+							return $a['folder_id'] <=> $b['folder_id'];
+						}
+						return $a[ $files_key_esc ] <=> $b[ $files_key_esc ];
+					}
+				);
+			}
 
 			if ( $results ) {
 				// Damn...
@@ -779,17 +810,22 @@ class Imagify_Custom_Folders {
 
 					if ( ! $filesystem->exists( $row_fields['file_path'] ) ) {
 						// If the file doesn't exist: remove all traces of it and bail out.
-						self::delete_file( array(
-							'file_id'   => $row_fields[ $files_key ],
-							'file_path' => $row_fields['file_path'],
-						) );
+						self::delete_file(
+							[
+								'file_id'   => $row_fields[ $files_key ],
+								'file_path' => $row_fields['file_path'],
+							]
+						);
 						continue;
 					}
 
 					// Set the correct folder ID in the DB.
-					$success = $files_db->update( $row_fields[ $files_key ], array(
-						'folder_id' => $row_fields['folder_id'],
-					) );
+					$success = $files_db->update(
+						$row_fields[ $files_key ],
+						[
+							'folder_id' => $row_fields['folder_id'],
+						]
+					);
 
 					if ( $success ) {
 						if ( $optimization && 'already_optimized' === $row_fields['status'] ) {
@@ -816,21 +852,23 @@ class Imagify_Custom_Folders {
 				}
 
 				foreach ( $placeholders as $file_path => $placeholder ) {
-					$file_id = self::insert_file( array(
-						'folder_id' => $folder_id,
-						'path'      => $placeholder,
-						'file_path' => $file_path,
-					) );
+					$file_id = self::insert_file(
+						[
+							'folder_id' => $folder_id,
+							'path'      => $placeholder,
+							'file_path' => $file_path,
+						]
+					);
 
 					if ( $file_id && ! $no_new_files ) {
-						$files_from_db[ $folder_id ][ '_' . $file_id ] = array(
+						$files_from_db[ $folder_id ][ '_' . $file_id ] = [
 							'file_id'            => $file_id,
 							'folder_id'          => $folder_id,
 							'path'               => $placeholder,
 							'optimization_level' => null,
 							'status'             => null,
 							'file_path'          => $file_path,
-						);
+						];
 					}
 				}
 
@@ -841,7 +879,7 @@ class Imagify_Custom_Folders {
 		$files_from_db = array_filter( $files_from_db );
 
 		if ( ! $files_from_db ) {
-			return array();
+			return [];
 		}
 
 		$files_from_db = call_user_func_array( 'array_merge', array_values( $files_from_db ) );
@@ -870,9 +908,12 @@ class Imagify_Custom_Folders {
 		/**
 		 * Get the files from DB, and from the folder.
 		 */
-		$files = self::get_files_from_folders( $folders, array(
-			'return_only_old_files' => true,
-		) );
+		$files = self::get_files_from_folders(
+			$folders,
+			[
+				'return_only_old_files' => true,
+			]
+		);
 
 		if ( ! $files ) {
 			// This folder doesn't have (new) images.
@@ -884,13 +925,28 @@ class Imagify_Custom_Folders {
 		$files_key     = $files_db->get_primary_key();
 		$files_key_esc = esc_sql( $files_key );
 		$file_ids      = wp_list_pluck( $files, $files_key );
-		$file_ids      = Imagify_DB::prepare_values_list( $file_ids );
-		$results       = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids ) ORDER BY $files_key_esc;", ARRAY_A ); // WPCS: unprepared SQL ok.
+		$results       = [];
+
+		foreach ( Imagify_DB::chunk_in_values( $file_ids ) as $file_ids_chunk ) {
+			$file_ids_in   = Imagify_DB::prepare_values_list( $file_ids_chunk );
+			$chunk_results = $wpdb->get_results( "SELECT * FROM $files_table WHERE $files_key IN ( $file_ids_in );", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+			if ( $chunk_results ) {
+				$results = array_merge( $results, $chunk_results );
+			}
+		}
 
 		if ( ! $results ) {
-			// WAT?!
 			return;
 		}
+
+		// Re-apply the ordering that was previously done in SQL (`ORDER BY $files_key_esc`).
+		usort(
+			$results,
+			function ( $a, $b ) use ( $files_key_esc ) {
+				return $a[ $files_key_esc ] <=> $b[ $files_key_esc ];
+			}
+		);
 
 		// Caching the folders will prevent unecessary SQL queries in Imagify_Custom_Folders::refresh_file().
 		foreach ( $folders as $folder_id => $folder ) {
@@ -936,7 +992,7 @@ class Imagify_Custom_Folders {
 	 *
 	 * @param array|object|string $selected_paths A list of "placeholdered" paths corresponding to the selected folders.
 	 */
-	public static function deactivate_not_selected_folders( $selected_paths = array() ) {
+	public static function deactivate_not_selected_folders( $selected_paths = [] ) {
 		global $wpdb;
 
 		$folders_table = Imagify_Folders_DB::get_instance()->get_table_name();
@@ -977,10 +1033,17 @@ class Imagify_Custom_Folders {
 		$folders_key   = $folders_db->get_primary_key();
 
 		$selected_paths = (array) $selected_paths;
-		$selected_in    = Imagify_DB::prepare_values_list( $selected_paths );
+		$folders        = [];
 
 		// Get folders that already are in the DB.
-		$folders = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $selected_in );", ARRAY_A ); // WPCS: unprepared SQL ok.
+		foreach ( Imagify_DB::chunk_in_values( $selected_paths ) as $selected_paths_chunk ) {
+			$selected_in   = Imagify_DB::prepare_values_list( $selected_paths_chunk );
+			$chunk_folders = $wpdb->get_results( "SELECT * FROM $folders_table WHERE path IN ( $selected_in );", ARRAY_A ); // WPCS: unprepared SQL ok.
+
+			if ( $chunk_folders ) {
+				$folders = array_merge( $folders, $chunk_folders );
+			}
+		}
 
 		if ( ! $folders ) {
 			return $selected_paths;
@@ -994,15 +1057,21 @@ class Imagify_Custom_Folders {
 			if ( Imagify_Files_Scan::placeholder_path_exists( $folder['path'] ) ) {
 				if ( ! $folder['active'] ) {
 					// Add the active status only if not already set and if the folder exists.
-					$folders_db->update( $folder[ $folders_key ], array(
-						'active' => 1,
-					) );
+					$folders_db->update(
+						$folder[ $folders_key ],
+						[
+							'active' => 1,
+						]
+					);
 				}
 			} else {
 				// Remove the active status if the folder does not exist.
-				$folders_db->update( $folder[ $folders_key ], array(
-					'active' => 0,
-				) );
+				$folders_db->update(
+					$folder[ $folders_key ],
+					[
+						'active' => 0,
+					]
+				);
 			}
 
 			// Remove the path from the selected list, so the remaining will be created.
@@ -1025,10 +1094,10 @@ class Imagify_Custom_Folders {
 	 */
 	public static function insert_folders( $folders ) {
 		if ( ! $folders ) {
-			return array();
+			return [];
 		}
 
-		$folder_ids = array();
+		$folder_ids = [];
 		$filesystem = imagify_get_filesystem();
 		$folders_db = Imagify_Folders_DB::get_instance();
 
@@ -1044,10 +1113,12 @@ class Imagify_Custom_Folders {
 				continue;
 			}
 
-			$folder_ids[] = $folders_db->insert( array(
-				'path'   => $placeholder,
-				'active' => 1,
-			) );
+			$folder_ids[] = $folders_db->insert(
+				[
+					'path'   => $placeholder,
+					'active' => 1,
+				]
+			);
 		}
 
 		return array_filter( $folder_ids );
@@ -1109,7 +1180,7 @@ class Imagify_Custom_Folders {
 			return;
 		}
 
-		$active_folder_ids = array();
+		$active_folder_ids = [];
 		$has_site_root     = false;
 
 		foreach ( $active_folders as $i => $active_folder ) {
@@ -1131,7 +1202,7 @@ class Imagify_Custom_Folders {
 		}
 
 		$filesystem         = imagify_get_filesystem();
-		$file_ids_by_folder = array();
+		$file_ids_by_folder = [];
 		$active_folders     = self::sort_folders( $active_folders, true );
 
 		foreach ( $inactive_files as $inactive_file ) {
@@ -1151,7 +1222,7 @@ class Imagify_Custom_Folders {
 				}
 
 				if ( ! isset( $file_ids_by_folder[ $folder_id ] ) ) {
-					$file_ids_by_folder[ $folder_id ] = array();
+					$file_ids_by_folder[ $folder_id ] = [];
 				}
 
 				if ( '{{ROOT}}/' === $active_folder['path'] ) {
@@ -1254,11 +1325,11 @@ class Imagify_Custom_Folders {
 	 */
 	public static function sort_folders( $folders, $reverse = false ) {
 		if ( ! $folders ) {
-			return array();
+			return [];
 		}
 
-		$keyed_folders = array();
-		$keyed_paths   = array();
+		$keyed_folders = [];
+		$keyed_paths   = [];
 
 		foreach ( $folders as $folder ) {
 			$folder              = (array) $folder;

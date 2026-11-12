@@ -7,58 +7,45 @@
 
 namespace Imagify\Tests\Integration;
 
-use function Imagify\Tests\init_test_suite;
 
-require_once dirname( dirname( __FILE__ ) ) . '/bootstrap-functions.php';
-init_test_suite( 'Integration' );
+define( 'IMAGIFY_PLUGIN_ROOT', dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR );
 
-/**
- * Get the WordPress' tests suite directory.
- *
- * @return string Returns The directory path to the WordPress testing environment.
- */
-function get_wp_tests_dir() {
-	$tests_dir = getenv( 'WP_TESTS_DIR' );
-
-	// Travis CI & Vagrant SSH tests directory.
-	if ( empty( $tests_dir ) ) {
-		$tests_dir = '/tmp/wordpress-tests-lib';
-	}
-
-	// If the tests' includes directory does not exist, try a relative path to Core tests directory.
-	if ( ! file_exists( $tests_dir . '/includes/' ) ) {
-		$tests_dir = '../../../../tests/phpunit';
-	}
-
-	// Check it again. If it doesn't exist, stop here and post a message as to why we stopped.
-	if ( ! file_exists( $tests_dir . '/includes/' ) ) {
-		trigger_error( 'Unable to run the integration tests, because the WordPress test suite could not be located.', E_USER_ERROR ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- Valid use case for our testing suite.
-	}
-
-	// Strip off the trailing directory separator, if it exists.
-	return rtrim( $tests_dir, DIRECTORY_SEPARATOR );
-}
-
-/**
- * Bootstraps the integration testing environment with WordPress and Imagify.
- *
- * @param string $wp_tests_dir The directory path to the WordPress testing environment.
- */
-function bootstrap_integration_suite( $wp_tests_dir ) {
-	// Give access to tests_add_filter() function.
-	require_once $wp_tests_dir . '/includes/functions.php';
-
-	// Manually load the plugin being tested.
+// Opt-in: on a multisite run (WP_MULTISITE=1), IMAGIFY_TESTS_NETWORK_ACTIVE=1 makes Imagify network-activated,
+// so WordPress loads it as a network plugin. imagify_is_active_for_network() caches its result while the plugin
+// loads, so this must be set before. Most tests assume a site administrator manages Imagify, which no longer holds
+// once network-activated: run this mode on the site-aware tests only, e.g. `--filter CheckPermissionsTest`.
+if ( getenv( 'IMAGIFY_TESTS_NETWORK_ACTIVE' ) ) {
 	tests_add_filter(
-		'muplugins_loaded',
+		'pre_site_option_active_sitewide_plugins',
 		function() {
-			// Load the plugin.
-			require IMAGIFY_PLUGIN_ROOT . '/imagify.php';
+			return [ 'imagify/imagify.php' => time() ];
 		}
 	);
-
-	// Start up the WP testing environment.
-	require_once $wp_tests_dir . '/includes/bootstrap.php';
 }
 
-bootstrap_integration_suite( get_wp_tests_dir() );
+// Manually load the plugin being tested.
+tests_add_filter(
+	'muplugins_loaded',
+	function() {
+		// Load the plugin.
+		// Once only: when network-activated, WordPress has already loaded it as a network plugin.
+		require_once IMAGIFY_PLUGIN_ROOT . '/imagify.php';
+	}
+);
+
+// The plugin creates its custom tables on `admin_init`, which never fires during
+// integration tests. Create them once at bootstrap so features that query
+// `imagify_files` / `imagify_folders` (e.g. stats-backed abilities) run against a
+// real, empty table instead of emitting "table doesn't exist" errors.
+tests_add_filter(
+	'wp_loaded',
+	function() {
+		if ( class_exists( '\Imagify_Folders_DB' ) ) {
+			\Imagify_Folders_DB::get_instance()->create_table();
+		}
+
+		if ( class_exists( '\Imagify_Files_DB' ) ) {
+			\Imagify_Files_DB::get_instance()->create_table();
+		}
+	}
+);

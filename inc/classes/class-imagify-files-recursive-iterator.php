@@ -52,7 +52,7 @@ class Imagify_Files_Recursive_Iterator extends RecursiveFilterIterator {
 	 *
 	 * @return bool Returns whether the current element of the iterator is acceptable through this filter.
 	 */
-	public function accept() {
+	public function accept(): bool {
 		static $extensions, $has_extension_method;
 
 		$file_path = $this->current()->getPathname();

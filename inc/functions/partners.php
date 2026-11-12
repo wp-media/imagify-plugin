@@ -4,8 +4,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 /**
  * Get the partner ID stored in the database.
  *
- * @since  1.6.14
- * @author Grégory Viguier
+ * @since 1.6.14
  *
  * @return string|bool The partner ID. False otherwise.
  */
@@ -26,8 +25,7 @@ function imagify_get_partner() {
 /**
  * Delete the partner ID stored in the database.
  *
- * @since  1.6.14
- * @author Grégory Viguier
+ * @since 1.6.14
  */
 function imagify_delete_partner() {
 	if ( class_exists( 'Imagify_Partner' ) ) {

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Imagify\Tests\Unit\inc\classes\ImagifySettings;
 
 use Brain\Monkey\Filters;
@@ -13,7 +15,7 @@ use Imagify\Tests\Unit\TestCase;
  */
 class Test_UpdateSiteOptionOnNetwork extends TestCase {
 
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		if ( ! defined( 'IMAGIFY_SLUG' ) ) {
@@ -21,12 +23,14 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		}
 
 		Functions\when( 'imagify_is_active_for_network' )->justReturn( true );
+
+		$this->stubTranslationFunctions();
 	}
 
-	public function tearDown() {
+	public function tearDown(): void {
 		unset( $_POST['option_page'] );
 
-		return parent::tearDown();
+		parent::tearDown();
 	}
 
 	/**
@@ -39,12 +43,12 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		Functions\when( 'imagify_check_nonce' )->justReturn( $config['nonce_check'] );
 
 		if ( empty( $config['option_page'] )
-			 || 'imagify' !== $config['option_page']
+			|| 'imagify' !== $config['option_page']
 		) {
 			$this->shouldBailOut( $config );
 		} elseif ( $config['missing_options']
-				   || ! $config['user_can']
-				   || ! $config['nonce_check']
+					|| ! $config['user_can']
+					|| ! $config['nonce_check']
 		) {
 			$this->shouldDie( $config );
 		} else {
@@ -60,6 +64,9 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 				->once()
 				->andReturn( $config['user_can'] );
 		}
+
+		Functions\expect( 'add_settings_error' )->never();
+		Functions\expect( 'set_transient' )->never();
 
 		Imagify_Settings::get_instance()->update_site_option_on_network();
 	}
@@ -80,6 +87,9 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 				->andReturn( $config['options'] );
 		}
 
+		Functions\expect( 'add_settings_error' )->never();
+		Functions\expect( 'set_transient' )->never();
+
 		Imagify_Settings::get_instance()->update_site_option_on_network();
 	}
 
@@ -87,7 +97,7 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		$options = [];
 
 		foreach ( $config['options'] as $option => $value ) {
-			$options[] = $option;
+			$options[]        = $option;
 			$_POST[ $option ] = $value;
 			Functions\expect( 'update_site_option' )
 				->once()
@@ -104,7 +114,21 @@ class Test_UpdateSiteOptionOnNetwork extends TestCase {
 		Filters\expectApplied( 'allowed_options' )
 			->once()
 			->andReturn( [ 'imagify' => $options ] );
-		Functions\when('wp_unslash')->returnArg();
+		Functions\when( 'wp_unslash' )->returnArg();
+
+		/*
+		 * Two calls, modelling the real sequence: the guard asks whether anything is
+		 * already queued (nothing is), then the notice is read back for the transient.
+		 */
+		Functions\expect( 'get_settings_errors' )
+			->twice()
+			->andReturn( [], [ 'settings_updated' ] );
+		Functions\expect( 'add_settings_error' )
+			->once()
+			->with( 'general', 'settings_updated', 'Settings saved.', 'success' );
+		Functions\expect( 'set_transient' )
+			->once()
+			->with( 'settings_errors', [ 'settings_updated' ], 30 );
 
 		Functions\expect( 'imagify_maybe_redirect' )
 			->once()

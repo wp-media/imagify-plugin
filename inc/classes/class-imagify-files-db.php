@@ -1,5 +1,6 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * DB class that handles files in "custom folders".
@@ -8,6 +9,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @author Grégory Viguier
  */
 class Imagify_Files_DB extends Imagify_Abstract_DB {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -15,15 +17,6 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 * @var string
 	 */
 	const VERSION = '1.1';
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.7
-	 * @access protected
-	 */
-	protected static $_instance;
 
 	/**
 	 * The suffix used in the name of the database table (so, without the wpdb prefix).
@@ -62,23 +55,6 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	protected $primary_key = 'file_id';
 
 	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7
-	 * @access public
-	 * @author Grégory Viguier
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
 	 * Get the column placeholders.
 	 *
 	 * @since  1.7
@@ -88,7 +64,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 * @return array
 	 */
 	public function get_columns() {
-		return array(
+		return [
 			'file_id'            => '%d',
 			'folder_id'          => '%d',
 			'file_date'          => '%s',
@@ -105,7 +81,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			'status'             => '%s',
 			'error'              => '%s',
 			'data'               => '%s',
-		);
+		];
 	}
 
 	/**
@@ -118,7 +94,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 	 * @return array
 	 */
 	public function get_column_defaults() {
-		return array(
+		return [
 			'file_id'            => 0,
 			'folder_id'          => 0,
 			'file_date'          => '0000-00-00 00:00:00',
@@ -135,7 +111,7 @@ class Imagify_Files_DB extends Imagify_Abstract_DB {
 			'status'             => null,
 			'error'              => null,
 			'data'               => [],
-		);
+		];
 	}
 
 	/**

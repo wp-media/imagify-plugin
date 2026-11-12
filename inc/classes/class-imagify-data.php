@@ -1,5 +1,6 @@
 <?php
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Class that handles the plugin data.
@@ -7,6 +8,7 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since 1.7
  */
 class Imagify_Data extends Imagify_Abstract_Options {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class version.
@@ -34,38 +36,11 @@ class Imagify_Data extends Imagify_Abstract_Options {
 	 * @since  1.7
 	 * @access protected
 	 */
-	protected $default_values = array(
+	protected $default_values = [
 		'total_size_images_library'     => 0.0,
 		'average_size_images_per_month' => 0.0,
 		'previous_quota_percent'        => 0.0,
-	);
-
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var    object
-	 * @since  1.7
-	 * @access protected
-	 */
-	protected static $_instance;
-
-	/**
-	 * Get the main Instance.
-	 *
-	 * @since  1.7
-	 * @author Grégory Viguier
-	 * @access public
-	 *
-	 * @return object Main instance.
-	 */
-	public static function get_instance() {
-		if ( ! isset( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
+	];
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** SANITIZATION, VALIDATION ================================================================ */
@@ -80,10 +55,10 @@ class Imagify_Data extends Imagify_Abstract_Options {
 	 *
 	 * @param  string $key     The option key.
 	 * @param  mixed  $value   The value.
-	 * @param  mixed  $default The default value.
+	 * @param  mixed  $default_value The default value.
 	 * @return mixed
 	 */
-	public function sanitize_and_validate_value( $key, $value, $default ) {
+	public function sanitize_and_validate_value( $key, $value, $default_value ) {
 		switch ( $key ) {
 			case 'total_size_images_library':
 			case 'average_size_images_per_month':

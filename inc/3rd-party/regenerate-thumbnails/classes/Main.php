@@ -69,7 +69,7 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 			return;
 		}
 
-		add_filter( 'rest_dispatch_request',                [ $this, 'maybe_init_attachment' ], 4, 4 );
+		add_filter( 'rest_dispatch_request', [ $this, 'maybe_init_attachment' ], 4, 4 );
 		add_action( 'imagify_after_' . static::HOOK_SUFFIX, [ $this, 'after_regenerate_thumbnails' ], 8, 2 );
 	}
 
@@ -158,19 +158,19 @@ class Main extends \Imagify_Regenerate_Thumbnails_Deprecated {
 		/**
 		 * Optimize the sizes that have been regenerated.
 		 */
-		// If the media has WebP versions, recreate them for the sizes that have been regenerated.
+		// If the media has next-gen versions, recreate them for the sizes that have been regenerated.
 		$data              = $process->get_data();
 		$optimization_data = $data->get_optimization_data();
 
 		if ( ! empty( $optimization_data['sizes'] ) ) {
 			foreach ( $optimization_data['sizes'] as $size_name => $size_data ) {
-				$non_webp_size_name = $process->is_size_webp( $size_name );
+				$non_nextgen_size_name = $process->is_size_next_gen( $size_name );
 
-				if ( ! $non_webp_size_name || ! isset( $sizes[ $non_webp_size_name ] ) ) {
+				if ( ! $non_nextgen_size_name || ! isset( $sizes[ $non_nextgen_size_name ] ) ) {
 					continue;
 				}
 
-				// Add the WebP size.
+				// Add the next-gen size.
 				$sizes[ $size_name ] = [];
 			}
 		}

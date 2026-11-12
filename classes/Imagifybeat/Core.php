@@ -1,7 +1,7 @@
 <?php
 namespace Imagify\Imagifybeat;
 
-defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
+use Imagify\Traits\InstanceGetterTrait;
 
 /**
  * Imagifybeat core.
@@ -9,8 +9,8 @@ defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
  * @since  1.9.3
  * @author Grégory Viguier
  */
-class Core {
-	use \Imagify\Traits\InstanceGetterTrait;
+final class Core {
+	use InstanceGetterTrait;
 
 	/**
 	 * Class init: launch hooks.
@@ -20,7 +20,7 @@ class Core {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'wp_ajax_imagifybeat',        [ $this, 'core_handler' ], 1 );
+		add_action( 'wp_ajax_imagifybeat', [ $this, 'core_handler' ], 1 );
 		add_filter( 'imagifybeat_refresh_nonces', [ $this, 'refresh_imagifybeat_nonces' ] );
 	}
 
@@ -34,13 +34,18 @@ class Core {
 	 * @author Grégory Viguier
 	 */
 	public function core_handler() {
+		// Checked before anything else, so that a user who can't use Imagify gets neither a fresh nonce nor data.
+		if ( ! $this->current_user_can_use_imagifybeat() ) {
+			wp_send_json_error( null, 403 );
+		}
+
 		if ( empty( $_POST['_nonce'] ) ) {
 			wp_send_json_error();
 		}
 
 		$data        = [];
 		$response    = [];
-		$nonce_state = wp_verify_nonce( wp_unslash( $_POST['_nonce'] ), 'imagifybeat-nonce' );
+		$nonce_state = wp_verify_nonce( sanitize_key( wp_unslash( $_POST['_nonce'] ) ), 'imagifybeat-nonce' );
 
 		// Screen_id is the same as $current_screen->id and the JS global 'pagenow'.
 		if ( ! empty( $_POST['screen_id'] ) ) {
@@ -50,21 +55,20 @@ class Core {
 		}
 
 		if ( ! empty( $_POST['data'] ) ) {
-			$data = wp_unslash( (array) $_POST['data'] );
+			$data = wp_unslash( (array) $_POST['data'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		}
 
 		if ( 1 !== $nonce_state ) {
 			/**
 			 * Filters the nonces to send.
 			 *
-			 * @since  1.9.3
-			 * @author Grégory Viguier
+			 * @since 1.9.3
 			 *
 			 * @param array  $response  The Imagifybeat response.
 			 * @param array  $data      The $_POST data sent.
 			 * @param string $screen_id The screen id.
 			 */
-			$response = apply_filters( 'imagifybeat_refresh_nonces', $response, $data, $screen_id );
+			$response = wpm_apply_filters_typed( 'array', 'imagifybeat_refresh_nonces', $response, $data, $screen_id );
 
 			if ( false === $nonce_state ) {
 				// User is logged in but nonces have expired.
@@ -77,26 +81,24 @@ class Core {
 			/**
 			 * Filters the Imagifybeat response received.
 			 *
-			 * @since  1.9.3
-			 * @author Grégory Viguier
+			 * @since 1.9.3
 			 *
 			 * @param array  $response  The Imagifybeat response.
 			 * @param array  $data      The $_POST data sent.
 			 * @param string $screen_id The screen id.
 			 */
-			$response = apply_filters( 'imagifybeat_received', $response, $data, $screen_id );
+			$response = wpm_apply_filters_typed( 'array', 'imagifybeat_received', $response, $data, $screen_id );
 		}
 
 		/**
 		 * Filters the Imagifybeat response sent.
 		 *
-		 * @since  1.9.3
-		 * @author Grégory Viguier
+		 * @since 1.9.3
 		 *
 		 * @param array  $response  The Imagifybeat response.
 		 * @param string $screen_id The screen id.
 		 */
-		$response = apply_filters( 'imagifybeat_send', $response, $screen_id );
+		$response = wpm_apply_filters_typed( 'array', 'imagifybeat_send', $response, $screen_id );
 
 		/**
 		 * Fires when Imagifybeat ticks in logged-in environments.
@@ -115,6 +117,34 @@ class Core {
 		$response['server_time'] = time();
 
 		wp_send_json( $response );
+	}
+
+	/**
+	 * Tell if the current user is allowed to use Imagifybeat.
+	 *
+	 * Imagifybeat is used by the settings page and, in each context (media library, "Other Media", third-party contexts
+	 * like NextGEN Gallery), by the media lists and the bulk optimization pages: the user must be allowed to access at
+	 * least one of them.
+	 * Each Imagifybeat listener then checks the capability required by the data it returns.
+	 *
+	 * @since 2.3.6
+	 *
+	 * @return bool
+	 */
+	public function current_user_can_use_imagifybeat() {
+		if ( imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			return true;
+		}
+
+		foreach ( imagify_get_context_names() as $context_name ) {
+			$context = imagify_get_context( $context_name );
+
+			if ( $context->current_user_can( 'optimize' ) || $context->current_user_can( 'bulk-optimize' ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -162,11 +192,10 @@ class Core {
 		/**
 		 * Filters the Imagifybeat settings.
 		 *
-		 * @since  1.9.3
-		 * @author Grégory Viguier
+		 * @since 1.9.3
 		 *
 		 * @param array $settings Imagifybeat settings array.
 		 */
-		return (array) apply_filters( 'imagifybeat_settings', $settings );
+		return (array) wpm_apply_filters_typed( 'array', 'imagifybeat_settings', $settings );
 	}
 }

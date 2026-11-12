@@ -67,11 +67,11 @@ function _imagify_attachment_submitbox_misc_actions() {
 			?>
 			<div class="misc-pub-section misc-pub-imagify"><h4><?php esc_html_e( 'Imagify', 'imagify' ); ?></h4></div>
 			<div class="misc-pub-section misc-pub-imagify imagify-data-item">
-				<?php echo get_imagify_attachment_optimization_text( $process ); ?>
+				<?php echo get_imagify_attachment_optimization_text( $process ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</div>
 			<?php
 		} else {
-			$url = get_imagify_admin_url( 'optimize', array( 'attachment_id' => $post->ID ) );
+			$url = get_imagify_admin_url( 'optimize', [ 'attachment_id' => $post->ID ] );
 			?>
 			<div class="misc-pub-section misc-pub-imagify">
 				<a class="button-primary" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Optimize', 'imagify' ); ?></a>
@@ -83,7 +83,8 @@ function _imagify_attachment_submitbox_misc_actions() {
 	if ( $media->has_backup() && $data->is_optimized() ) {
 		?>
 		<input id="imagify-full-original" type="hidden" value="<?php echo esc_url( $media->get_backup_url() ); ?>">
-		<input id="imagify-full-original-size" type="hidden" value="<?php echo esc_attr( $data->get_original_size( true, 0 ) ); ?>">
+		<input id="imagify-full-original-size" type="hidden" value="<?php echo esc_attr( $data->get_original_size() ); ?>">
+		<input id="imagify-full-optimized-size" type="hidden" value="<?php echo esc_attr( $data->get_optimized_size() ); ?>">
 		<?php
 	}
 }
