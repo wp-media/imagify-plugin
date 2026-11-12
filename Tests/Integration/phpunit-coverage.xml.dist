@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Coverage-run variant of phpunit.xml.dist (the source of truth for regular runs; keep the two in sync).
+	Covers-annotation strictness is off only because @covers integration tests that boot WordPress would
+	otherwise throw UnintentionallyCoveredCodeException and lose their coverage.
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+		 bootstrap="init-tests.php"
+		 backupGlobals="false"
+		 colors="true"
+		 beStrictAboutCoversAnnotation="false"
+		 beStrictAboutOutputDuringTests="true"
+		 beStrictAboutTestsThatDoNotTestAnything="true"
+		 beStrictAboutTodoAnnotatedTests="true"
+		 convertErrorsToExceptions="true"
+		 convertNoticesToExceptions="true"
+		 convertWarningsToExceptions="true"
+		 verbose="true">
+
+	<coverage includeUncoveredFiles="true">
+		<include>
+			<directory suffix=".php">../../inc</directory>
+			<directory suffix=".php">../../classes</directory>
+		</include>
+	</coverage>
+
+	<testsuites>
+		<testsuite name="integration">
+			<directory suffix=".php">.</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
