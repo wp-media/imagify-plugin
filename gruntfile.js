@@ -29,7 +29,7 @@ module.exports = function( grunt ) {
 			'options': {
 				'processors': [
 					require( 'autoprefixer' )( {
-						'browsers': 'last 3 versions'
+						'overrideBrowserslist': 'last 3 versions'
 					} )
 				]
 			},
@@ -78,7 +78,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-contrib-cssmin' );
 	grunt.loadNpmTasks( 'grunt-contrib-uglify' );
 	grunt.loadNpmTasks( 'grunt-eslint' );
-	grunt.loadNpmTasks( 'grunt-postcss' );
+	grunt.loadNpmTasks( '@lodder/grunt-postcss' );
 
 	// Bundle src/ into assets/admin/js/ with @wordpress/scripts (see webpack.config.js).
 	grunt.registerTask( 'bundle', 'Bundle src/ into assets/admin/js/ with wp-scripts.', function() {
