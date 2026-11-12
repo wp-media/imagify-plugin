@@ -17,13 +17,6 @@ use WP_Error;
  */
 class CompareNextGenFileSizeTest extends TestCase {
 	/**
-	 * This test does not call the Imagify API.
-	 *
-	 * @var bool
-	 */
-	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-
-	/**
 	 * Absolute paths created by the test, removed in tear_down().
 	 *
 	 * @var array
