@@ -4,6 +4,7 @@
 /.wordpress-org export-ignore
 /src export-ignore
 /bin export-ignore
+/docs export-ignore
 /Tests export-ignore
 
 # Files
@@ -15,9 +16,12 @@
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /.jshintrc export-ignore
+/.npmrc export-ignore
+/.nvmrc export-ignore
 /.wp-env.json export-ignore
 /AGENTS.md export-ignore
 /composer.lock export-ignore
+/package.json export-ignore
 /gruntfile.js export-ignore
 /webpack.config.js export-ignore
 /package-lock.json export-ignore
