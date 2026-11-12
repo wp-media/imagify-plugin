@@ -86,11 +86,24 @@ jobs:
     - name: Integration Code Coverage
       run: composer code-coverage-integration
 
+    # The reporter action errors on a missing report file and word-splits globs, so
+    # list only the reports that exist: a failed coverage step then does not block the other upload.
+    - name: List available coverage reports
+      id: coverage-reports
+      if: ${{ !cancelled() }}
+      run: |
+        reports=''
+        for f in tests/report/coverage.clover tests/report/coverage-integration.clover; do
+          if [ -f "$f" ]; then reports="${reports:+$reports,}$f"; fi
+        done
+        echo "list=${reports}" >> "$GITHUB_OUTPUT"
+
     # Dependabot-triggered runs only get Dependabot secrets, so the Codacy token
-    # is empty and the upload always fails. The coverage run above still applies.
+    # is empty and the upload always fails. Also runs when a coverage step failed,
+    # uploading whichever reports were produced; skipped only on cancellation.
     - name: Run codacy-coverage-reporter
-      if: github.actor != 'dependabot[bot]'
+      if: ${{ !cancelled() && github.actor != 'dependabot[bot]' && steps.coverage-reports.outputs.list != '' }}
       uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        coverage-reports: tests/report/coverage.clover,tests/report/coverage-integration.clover
+        coverage-reports: ${{ steps.coverage-reports.outputs.list }}
