@@ -1,11 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Imagify\Tests\Unit\classes\Bulk;
+namespace Imagify\Tests\Integration\classes\Bulk;
 
-use Brain\Monkey\Functions;
 use Imagify\Bulk\Bulk;
-use Imagify\Tests\Unit\TestCase;
+use Imagify\Tests\Integration\TestCase;
 
 /**
  * @covers \Imagify\Bulk\Bulk::get_context
@@ -14,6 +13,8 @@ use Imagify\Tests\Unit\TestCase;
  * @group  Bulk
  */
 class Test_GetContext extends TestCase {
+	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+
 	/**
 	 * Original $_GET and $_POST, restored after each test.
 	 *
@@ -21,28 +22,16 @@ class Test_GetContext extends TestCase {
 	 */
 	private $superglobals = [];
 
-	public function setUp(): void {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->superglobals = [ $_GET, $_POST ];
-
-		Functions\when( 'wp_unslash' )->returnArg();
-		Functions\when( 'sanitize_text_field' )->alias(
-			function ( $value ) {
-				return is_string( $value ) ? trim( strip_tags( $value ) ) : '';
-			}
-		);
-		Functions\when( 'sanitize_key' )->alias(
-			function ( $key ) {
-				return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( (string) $key ) );
-			}
-		);
 	}
 
-	public function tearDown(): void {
+	public function tear_down() {
 		[ $_GET, $_POST ] = $this->superglobals;
 
-		parent::tearDown();
+		parent::tear_down();
 	}
 
 	/**
