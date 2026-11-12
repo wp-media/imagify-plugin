@@ -1,6 +1,0 @@
-{
-  "chart.js": "js/chart.js",
-  "bulk.js": "js/bulk.js",
-  "runtime.js": "js/runtime.js",
-  "entrypoints.json": "entrypoints.json"
-}

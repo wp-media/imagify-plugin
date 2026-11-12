@@ -147,7 +147,7 @@
     "overrides": [
         {
             "files": [
-                "_dev/src/lib/**/*.js",
+                "src/lib/**/*.js",
                 "Tests/js/**/*.js"
             ],
             "parserOptions": {

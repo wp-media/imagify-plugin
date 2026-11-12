@@ -28,7 +28,7 @@ const { execSync } = require('child_process');
 const ROOT        = path.resolve(__dirname, '..');
 const GRAPH_PATH  = path.join(ROOT, '.aiassistant', 'graph', 'dependency-graph.json');
 const SCAN_DIRS   = ['classes', 'inc', 'bin'];
-const ASSET_DIRS  = ['assets', '_dev/src'];
+const ASSET_DIRS  = ['assets', 'src'];
 const EXTENSIONS  = { php: ['.php'], js: ['.js', '.ts', '.tsx', '.jsx'] };
 
 const ARGS     = process.argv.slice(2);

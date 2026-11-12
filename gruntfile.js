@@ -1,10 +1,10 @@
-/* globals module: true, require: false */
+/* globals module: true, require: false, process: false */
 
 module.exports = function( grunt ) {
 	grunt.initConfig( {
 		// JS linter.
 		'eslint': {
-			'all': [ 'gruntfile.js', 'assets/js/*.js', '_dev/src/lib/**/*.js', 'Tests/js/**/*.js', '!**/*.min.js', '!assets/js/es6-promise.auto.js', '!assets/js/imagify-gulp.js', '!assets/js/jquery.event.move.js', '!assets/js/sweetalert2.js' ]
+			'all': [ 'gruntfile.js', 'assets/js/*.js', 'src/lib/**/*.js', 'Tests/js/**/*.js', '!**/*.min.js', '!assets/js/es6-promise.auto.js', '!assets/js/imagify-gulp.js', '!assets/js/jquery.event.move.js', '!assets/js/sweetalert2.js' ]
 		},
 		// JS minify.
 		'uglify': {
@@ -80,11 +80,24 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-eslint' );
 	grunt.loadNpmTasks( 'grunt-postcss' );
 
+	// Bundle src/ into assets/admin/js/ with @wordpress/scripts (see webpack.config.js).
+	grunt.registerTask( 'bundle', 'Bundle src/ into assets/admin/js/ with wp-scripts.', function() {
+		var done = this.async();
+
+		grunt.util.spawn( {
+			cmd:  process.execPath,
+			args: [ require.resolve( '@wordpress/scripts/bin/wp-scripts.js' ), 'build' ],
+			opts: { stdio: 'inherit' }
+		}, function( error ) {
+			done( ! error );
+		} );
+	} );
+
 	// Our custom tasks.
 	grunt.registerTask( 'css',    [ 'postcss', 'cssmin' ] );
 	grunt.registerTask( 'js',     [ 'eslint', 'uglify' ] );
 	grunt.registerTask( 'jsh',    [ 'eslint' ] );
 	grunt.registerTask( 'esl',    [ 'eslint' ] );
 	grunt.registerTask( 'minify', [ 'eslint', 'uglify', 'postcss', 'cssmin' ] );
-	grunt.registerTask('default', ['css', 'minify']);
+	grunt.registerTask('default', ['css', 'minify', 'bundle']);
 };
