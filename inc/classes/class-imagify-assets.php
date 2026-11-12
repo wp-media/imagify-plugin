@@ -166,7 +166,7 @@ class Imagify_Assets extends Imagify_Assets_Deprecated {
 
 		$this->register_script( 'sweetalert', 'sweetalert2', [ 'promise-polyfill' ], '4.6.6' )->localize( 'imagifySwal' );
 
-		$this->register_bud_script( 'chart', 'chart', [], '4.5.1' );
+		$this->register_bud_script( 'chart', 'chart', [], '4.6.1' );
 
 		$this->register_script( 'event-move', 'jquery.event.move', [ 'jquery' ], '2.0.1' );
 
