@@ -14,50 +14,51 @@ use Imagify\Tests\Integration\TestCase;
 class Test_MaybeSetRedirection extends TestCase {
 	protected $useApi = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
+	/**
+	 * Original $_POST and $_REQUEST, restored after each test.
+	 *
+	 * @var array
+	 */
+	private $superglobals = [];
+
 	public function set_up() {
 		parent::set_up();
 
+		$this->superglobals = [ $_POST, $_REQUEST ];
+
 		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
-		unset( $_POST['_wpnonce'], $_POST['submit-goto-bulk'], $_REQUEST['_wp_http_referer'] );
 	}
 
 	public function tear_down() {
-		unset( $_POST['_wpnonce'], $_POST['submit-goto-bulk'], $_REQUEST['_wp_http_referer'] );
+		[ $_POST, $_REQUEST ] = $this->superglobals;
 
 		parent::tear_down();
 	}
 
-	public function testShouldRedirectToBulkWhenNonceIsValid() {
-		$_POST['_wpnonce']         = wp_create_nonce( 'imagify-options' );
-		$_POST['submit-goto-bulk'] = '1';
+	/**
+	 * @dataProvider configTestData
+	 */
+	public function testShouldReturnExpected( $config, $expected ) {
+		$_POST    = [];
+		$_REQUEST = [];
+
+		if ( null !== $config['nonce'] ) {
+			$_POST['_wpnonce'] = wp_create_nonce( $config['nonce'] );
+		}
+
+		if ( $config['submit_goto_bulk'] ) {
+			$_POST['submit-goto-bulk'] = '1';
+		}
 
 		$this->assertSame( [ 'new' ], Imagify_Settings::get_instance()->maybe_set_redirection( [ 'new' ], [ 'old' ] ) );
-		$this->assertSame(
-			esc_url_raw( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) ),
-			$_REQUEST['_wp_http_referer']
-		);
-	}
 
-	public function testShouldNotRedirectWithoutTheBulkButton() {
-		$_POST['_wpnonce'] = wp_create_nonce( 'imagify-options' );
-
-		Imagify_Settings::get_instance()->maybe_set_redirection( [ 'new' ], [ 'old' ] );
-
-		$this->assertArrayNotHasKey( '_wp_http_referer', $_REQUEST );
-	}
-
-	public function testShouldNotRedirectWithoutNonce() {
-		$_POST['submit-goto-bulk'] = '1';
-
-		$this->assertSame( [ 'new' ], Imagify_Settings::get_instance()->maybe_set_redirection( [ 'new' ], [ 'old' ] ) );
-		$this->assertArrayNotHasKey( '_wp_http_referer', $_REQUEST );
-	}
-
-	public function testShouldNotRedirectWithNonceForAnotherAction() {
-		$_POST['_wpnonce']         = wp_create_nonce( 'another-action' );
-		$_POST['submit-goto-bulk'] = '1';
-
-		$this->assertSame( [ 'new' ], Imagify_Settings::get_instance()->maybe_set_redirection( [ 'new' ], [ 'old' ] ) );
-		$this->assertArrayNotHasKey( '_wp_http_referer', $_REQUEST );
+		if ( null === $expected['redirect'] ) {
+			$this->assertArrayNotHasKey( '_wp_http_referer', $_REQUEST );
+		} else {
+			$this->assertSame(
+				esc_url_raw( get_admin_url( get_current_blog_id(), $expected['redirect'] ) ),
+				$_REQUEST['_wp_http_referer']
+			);
+		}
 	}
 }
