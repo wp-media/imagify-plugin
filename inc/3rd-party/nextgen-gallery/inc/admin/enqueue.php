@@ -60,7 +60,8 @@ function _imagify_ngg_admin_print_styles() {
 		imagify_is_screen( 'nggallery-manage-images' )
 		||
 		(
-			isset( $_GET['gid'] ) && ! empty( $_GET['pid'] ) && imagify_is_screen( 'nggallery-manage-gallery' ) // WPCS: CSRF ok.
+			// Read-only screen detection: only decides which assets to enqueue.
+			isset( $_GET['gid'] ) && ! empty( $_GET['pid'] ) && imagify_is_screen( 'nggallery-manage-gallery' ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		)
 	) {
 		$assets->enqueue_style( 'admin' )->enqueue_script( 'library' );

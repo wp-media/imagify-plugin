@@ -642,12 +642,17 @@ final class Bulk implements BulkOptimizerInterface {
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
-		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
+		// Nonce verified by the calling AJAX callback, with imagify_check_nonce().
+		if ( 'POST' === $method ) {
+			$context = isset( $_POST[ $parameter ] ) ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		} else {
+			$context = isset( $_GET[ $parameter ] ) ? sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
+
+		if ( empty( $context ) ) {
 			// No context.
 			return 'noop';
 		}
-
-		$context = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		return imagify_sanitize_context( $context );
 	}

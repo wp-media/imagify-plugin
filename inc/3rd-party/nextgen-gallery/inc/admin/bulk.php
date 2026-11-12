@@ -12,7 +12,8 @@ add_filter( 'imagify_bulk_page_types', 'imagify_ngg_bulk_page_types' );
  * @return array
  */
 function imagify_ngg_bulk_page_types( $types ) {
-	if ( ! empty( $_GET['page'] ) && imagify_get_ngg_bulk_screen_slug() === $_GET['page'] ) { // WPCS: CSRF ok.
+	// Read-only screen detection: no state change, so no nonce to verify.
+	if ( ! empty( $_GET['page'] ) && imagify_get_ngg_bulk_screen_slug() === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$types['library|ngg'] = 1;
 	}
 

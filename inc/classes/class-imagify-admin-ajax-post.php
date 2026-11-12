@@ -1206,12 +1206,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
-		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
+		$context = $this->get_request_param( $method, $parameter );
+
+		if ( empty( $context ) ) {
 			// No context.
 			return 'noop';
 		}
-
-		$context = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		return imagify_sanitize_context( $context );
 	}
@@ -1247,12 +1247,12 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_folder_type( $method = 'GET', $parameter = 'folder_type' ) {
-		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
+		$folder_type = $this->get_request_param( $method, $parameter );
+
+		if ( empty( $folder_type ) ) {
 			// No folder type.
 			return 'noop';
 		}
-
-		$folder_type = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 
 		return $folder_type;
 	}
@@ -1268,14 +1268,30 @@ class Imagify_Admin_Ajax_Post extends Imagify_Admin_Ajax_Post_Deprecated {
 	 * @return string
 	 */
 	public function get_imagify_action( $method = 'GET', $parameter = 'imagify_action' ) {
-		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
-			// No action.
-			return 'optimize';
-		}
-
-		$action = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$action = $this->get_request_param( $method, $parameter );
 
 		return $action ? $action : 'optimize';
+	}
+
+	/**
+	 * Get a sanitized text parameter from the submitted request.
+	 *
+	 * Nonce verification is the caller's job: AJAX callbacks call imagify_check_nonce(), and
+	 * some of them build the nonce action from the very values read here (media ID, context).
+	 *
+	 * @since 2.3.6
+	 *
+	 * @param string $method    The method used: 'GET', or 'POST'.
+	 * @param string $parameter The name of the parameter to look for.
+	 *
+	 * @return string An empty string if the parameter is missing or not a string.
+	 */
+	private function get_request_param( $method, $parameter ) {
+		if ( 'POST' === $method ) {
+			return isset( $_POST[ $parameter ] ) ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by the calling AJAX callback.
+		}
+
+		return isset( $_GET[ $parameter ] ) ? sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verified by the calling AJAX callback.
 	}
 
 	/**
