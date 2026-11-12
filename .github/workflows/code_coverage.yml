@@ -86,8 +86,8 @@ jobs:
     - name: Integration Code Coverage
       run: composer code-coverage-integration
 
-    # The reporter action errors on a missing report file and word-splits globs, so
-    # list only the reports that exist: a failed coverage step then does not block the other upload.
+    # Pass only the reports that exist, so a failed coverage step does not stop
+    # the other report from uploading.
     - name: List available coverage reports
       id: coverage-reports
       if: ${{ !cancelled() }}
