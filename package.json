@@ -14,7 +14,7 @@
 		"@wordpress/babel-preset-default": "^8.56.0",
 		"@wordpress/jest-preset-default": "^14.2.0",
 		"@wordpress/scripts": "^37.1.0",
-		"autoprefixer": "^7.0.1",
+		"autoprefixer": "^10.6.2",
 		"babel-jest": "^30.5.2",
 		"chart.js": "^4.6.1",
 		"grunt": "^1.6.3",
