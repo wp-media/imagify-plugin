@@ -14,6 +14,10 @@ delete_option( 'imagify_data' );
 delete_option( 'ngg_imagify_data_db_version' );
 delete_option( $wpdb->prefix . 'ngg_imagify_data_db_version' );
 
+// Delete the analytics consent, so a reinstall asks for it again.
+delete_option( 'imagify_mixpanel_optin' );
+delete_option( 'imagify_analytics_notice_displayed' );
+
 // Delete all transients.
 delete_site_transient( 'imagify_activation' );
 delete_site_transient( 'imagify_check_licence_1' );
@@ -30,6 +34,7 @@ delete_transient( 'imagify_user' );
 delete_transient( 'imagify_stat_without_next_gen' );
 delete_transient( 'imagify_attachments_number_modal' );
 delete_transient( 'imagify_user_cache' );
+delete_transient( 'imagify_analytics_optin_thanks' );
 foreach ( \Imagify\Tools\InternalStateList::get_bulk_transients() as $transient ) {
 	delete_transient( $transient );
 }

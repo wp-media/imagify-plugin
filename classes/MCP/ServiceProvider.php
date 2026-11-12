@@ -20,7 +20,7 @@ use Imagify\Stats\OptimizedMediaWithoutNextGen;
 /**
  * Service provider for the MCP (Model Context Protocol) module.
  *
- * Wires `ConfigSubscriber` and `AbilitiesSubscriber` into the DI container.
+ * Wires `ConfigSubscriber`, `AbilitiesSubscriber` and `AdapterNotice` into the DI container.
  * For the foundation `AbilitiesSubscriber` is registered with no ability
  * arguments. Downstream sub-issues extend the wiring via `addArguments()`
  * once concrete ability classes are added (see Downstream Wiring Contract
@@ -36,6 +36,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	 * @var array<int, string>
 	 */
 	protected $provides = [
+		AdapterNotice::class,
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
 		Bulk::class,
@@ -59,6 +60,7 @@ class ServiceProvider extends AbstractServiceProvider {
 	public $subscribers = [
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
+		AdapterNotice::class,
 	];
 
 	/**
@@ -90,6 +92,7 @@ class ServiceProvider extends AbstractServiceProvider {
 			->addArgument( Bulk::class )
 			->addArgument( OptimizedMediaWithoutNextGen::class );
 		$this->getContainer()->addShared( ConfigSubscriber::class );
+		$this->getContainer()->addShared( AdapterNotice::class );
 		$this->getContainer()->addShared( GetAccount::class );
 		$this->getContainer()->addShared( GetMediaStatus::class );
 		$this->getContainer()->addShared( GetNextgenCoverage::class )

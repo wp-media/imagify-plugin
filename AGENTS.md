@@ -40,7 +40,8 @@ Things that fail in ways you will not notice.
   and fail with misleading autoload errors.
 - **`WordPress.Security.NonceVerification.Missing` and `.Recommended` are deliberately suppressed**
   in `phpcs.xml`. Do not add `phpcs:ignore` for them and do not restructure code to satisfy them.
-- **`assets/` is build output.** Edit `_dev/` and rebuild, or the next build discards your work.
+- **`assets/admin/js/` is build output.** Edit `src/` and run `npm run build`, or the next build
+  discards your work.
 - **There is no JavaScript unit test runner** (no Jest, no Vitest). Never invent `npm test`. Frontend
   verification is `npm run build` plus Playwright; otherwise report JS tests as `N/A`.
 - **Optimization behaviour sits behind license, API-key and quota guards.** Before reporting that a
@@ -79,7 +80,9 @@ Nonce action naming: `imagify_<feature>_<action>`.
 DI container is Strauss-prefixed: `Imagify\Dependencies\League\Container\Container` — a plain
 `use League\Container\Container;` is wrong here. Async work uses ActionScheduler, not wp-cron.
 
-Frontend source is `_dev/` (Grunt, `gruntfile.js`); `_dev/` also carries its own `bud.config.js`.
+`npm run build` (Grunt, `gruntfile.js`) is the single asset build. It minifies `assets/js/*.js` and
+`assets/css/*.css` in place into `*.min.*`, and its `bundle` task runs `wp-scripts build`
+(`webpack.config.js`) to bundle `src/` into `assets/admin/js/`.
 
 ---
 

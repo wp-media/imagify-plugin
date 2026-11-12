@@ -50,8 +50,7 @@ class AbstractProcessTest extends TestCase {
 		$reflection = new ReflectionClass( ConcreteProcessDouble::class );
 		$instance   = $reflection->newInstanceWithoutConstructor();
 
-		$property = $reflection->getProperty( 'data' );
-		$property->setAccessible( true );
+		$property = $this->get_reflective_property( 'data', ConcreteProcessDouble::class );
 		$property->setValue( $instance, $data );
 
 		return $instance;

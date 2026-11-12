@@ -54,8 +54,7 @@ class CanResizeTest extends TestCase {
 		// is_valid() is get_media() && get_media()->is_valid(), so it cannot be true without a media.
 		$process->shouldReceive( 'is_valid' )->andReturn( null !== $media_id );
 
-		$method = new \ReflectionMethod( get_class( $process ), 'can_resize' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'can_resize', get_class( $process ) );
 
 		return $method->invoke( $process, 'full', $file );
 	}

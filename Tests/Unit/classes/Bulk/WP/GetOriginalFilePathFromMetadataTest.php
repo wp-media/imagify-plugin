@@ -39,8 +39,7 @@ class GetOriginalFilePathFromMetadataTest extends TestCase {
 
 		$wp = ( new \ReflectionClass( WP::class ) )->newInstanceWithoutConstructor();
 
-		$method = new \ReflectionMethod( WP::class, 'get_original_file_path_from_metadata' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'get_original_file_path_from_metadata', WP::class );
 
 		$result = $method->invoke( $wp, $config['file_path'], $config['metadata'] );
 

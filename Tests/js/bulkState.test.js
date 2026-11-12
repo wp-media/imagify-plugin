@@ -1,10 +1,10 @@
 /**
- * Tests for _dev/src/lib/bulk-state.js.
+ * Tests for src/lib/bulk-state.js.
  *
  * bulk.js itself is a jQuery IIFE with import-time side effects and cannot be
  * loaded in a test. This covers the decision logic extracted out of it.
  */
-import { findBlockingError, buildAjaxUrl, normalizeChartData } from '../../_dev/src/lib/bulk-state.js';
+import { findBlockingError, buildAjaxUrl, normalizeChartData } from '../../src/lib/bulk-state.js';
 
 describe( 'findBlockingError', () => {
 	// A config where nothing blocks, used as the baseline.

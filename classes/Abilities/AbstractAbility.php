@@ -45,8 +45,8 @@ abstract class AbstractAbility implements AbilitiesInterface {
 	 * when `has_permission()` denies access.
 	 *
 	 * Overridable so abilities whose `has_permission()` checks a capability
-	 * other than the Imagify `manage` capability (e.g. `manage_options`)
-	 * report the real required capability in tracking/analytics.
+	 * other than the Imagify `manage` capability report the real required
+	 * capability in tracking/analytics.
 	 *
 	 * @return string
 	 */
@@ -55,16 +55,36 @@ abstract class AbstractAbility implements AbilitiesInterface {
 	}
 
 	/**
+	 * Input-aware permission check, evaluated after has_permission().
+	 *
+	 * The WP Abilities API passes the call's input to `permission_callback`
+	 * when the ability declares an input schema. Override this when the
+	 * required capability depends on what the input targets (e.g. a context).
+	 *
+	 * The default allows any input, so `$input` is unused here by design.
+	 *
+	 * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+	 *
+	 * @param array $input Input arguments of the call, or an empty array when none were given.
+	 * @return bool True when the current user may act on the given input.
+	 */
+	protected function has_input_permission( array $input ): bool {
+		return true;
+	}
+
+	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * Delegates the capability check to has_permission() and fires
-	 * `imagify_mcp_permission_denied` when access is denied so that
-	 * tracking and logging subscribers can react.
+	 * Delegates the capability check to has_permission() and
+	 * has_input_permission(), and fires `imagify_mcp_permission_denied` when
+	 * access is denied so that tracking and logging subscribers can react.
+	 * The action reports get_required_capability() whichever check denied.
 	 *
+	 * @param mixed $input Input arguments passed by the WP Abilities API, if any.
 	 * @return bool True when the current user may execute the ability.
 	 */
-	public function check_permissions(): bool {
-		$allowed = $this->has_permission();
+	public function check_permissions( $input = null ): bool {
+		$allowed = $this->has_permission() && $this->has_input_permission( is_array( $input ) ? $input : [] );
 
 		if ( ! $allowed ) {
 			do_action( 'imagify_mcp_permission_denied', $this->get_id(), $this->get_name(), $this->get_required_capability() );

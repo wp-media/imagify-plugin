@@ -10,12 +10,26 @@ namespace Imagify\Tests\Integration;
 
 define( 'IMAGIFY_PLUGIN_ROOT', dirname( dirname( __DIR__ ) ) . DIRECTORY_SEPARATOR );
 
+// Opt-in: on a multisite run (WP_MULTISITE=1), IMAGIFY_TESTS_NETWORK_ACTIVE=1 makes Imagify network-activated,
+// so WordPress loads it as a network plugin. imagify_is_active_for_network() caches its result while the plugin
+// loads, so this must be set before. Most tests assume a site administrator manages Imagify, which no longer holds
+// once network-activated: run this mode on the site-aware tests only, e.g. `--filter CheckPermissionsTest`.
+if ( getenv( 'IMAGIFY_TESTS_NETWORK_ACTIVE' ) ) {
+	tests_add_filter(
+		'pre_site_option_active_sitewide_plugins',
+		function() {
+			return [ 'imagify/imagify.php' => time() ];
+		}
+	);
+}
+
 // Manually load the plugin being tested.
 tests_add_filter(
 	'muplugins_loaded',
 	function() {
 		// Load the plugin.
-		require IMAGIFY_PLUGIN_ROOT . '/imagify.php';
+		// Once only: when network-activated, WordPress has already loaded it as a network plugin.
+		require_once IMAGIFY_PLUGIN_ROOT . '/imagify.php';
 	}
 );
 

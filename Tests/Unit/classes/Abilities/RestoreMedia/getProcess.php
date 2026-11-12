@@ -6,7 +6,6 @@ namespace Imagify\Tests\Unit\classes\Abilities\RestoreMedia;
 use Brain\Monkey\Functions;
 use Imagify\Abilities\RestoreMedia;
 use Imagify\Tests\Unit\TestCase;
-use ReflectionMethod;
 
 /**
  * Tests for \Imagify\Abilities\RestoreMedia::get_process().
@@ -23,8 +22,7 @@ class Test_GetProcess extends TestCase {
 	 * @return mixed
 	 */
 	private function invoke_get_process( int $media_id ) {
-		$method = new ReflectionMethod( RestoreMedia::class, 'get_process' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'get_process', RestoreMedia::class );
 
 		return $method->invoke( new RestoreMedia(), $media_id );
 	}

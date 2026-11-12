@@ -47,8 +47,7 @@ class IsNextGenFileMissingTest extends TestCase {
 
 		$process = $this->make_process( $filesystem );
 
-		$method = ( new \ReflectionClass( WP::class ) )->getMethod( 'is_next_gen_file_missing' );
-		$method->setAccessible( true );
+		$method = $this->get_reflective_method( 'is_next_gen_file_missing', WP::class );
 
 		$result = $method->invoke( $process, $config['size'], $config['original_path'] );
 
