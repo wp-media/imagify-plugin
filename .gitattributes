@@ -11,7 +11,7 @@
 /.claude export-ignore
 /.distignore export-ignore
 /.editorconfig export-ignore
-/.eslintrc.json export-ignore
+/eslint.config.js export-ignore
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /.jshintrc export-ignore
