@@ -295,8 +295,7 @@ window.imagify.drawMeAChart = function( canvas ) {
 		 * @return {string}
 		 */
 		sanitizeContext: function( context ) {
-			context = context.replace( '/[^a-z0-9_-]/gi', '' ).toLowerCase();
-			return context ? context : 'wp';
+			return w.imagify.sanitizeContext( context );
 		},
 
 		// Locks ===================================================================================
