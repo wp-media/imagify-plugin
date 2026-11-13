@@ -16,6 +16,15 @@ use Imagify\Tests\Unit\TestCase;
 class Test_RegisterCategories extends TestCase {
 
 	/**
+	 * Enables MCP in the settings by default.
+	 */
+	protected function setUp(): void {
+		parent::setUp();
+
+		Functions\when( 'get_imagify_option' )->justReturn( 1 );
+	}
+
+	/**
 	 * Tests that register_categories() calls wp_register_ability_category with the 'imagify' id
 	 * when the function exists.
 	 */
@@ -82,6 +91,18 @@ class Test_RegisterCategories extends TestCase {
 		Functions\expect( 'wp_register_ability_category' )
 			->once()
 			->with( 'imagify', \Mockery::type( 'array' ) );
+
+		$subscriber = new AbilitiesSubscriber();
+		$subscriber->register_categories();
+	}
+
+	/**
+	 * Tests that register_categories() does not register the category when MCP is disabled.
+	 */
+	public function testDoesNotRegisterCategoryWhenMcpDisabled(): void {
+		Functions\when( 'get_imagify_option' )->justReturn( 0 );
+
+		Functions\expect( 'wp_register_ability_category' )->never();
 
 		$subscriber = new AbilitiesSubscriber();
 		$subscriber->register_categories();

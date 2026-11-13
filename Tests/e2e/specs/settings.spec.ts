@@ -51,6 +51,33 @@ test.describe( 'Imagify settings', () => {
 		await expect( webpLabel ).toBeVisible();
 	} );
 
+	test( 'MCP toggle has a doc link and keeps its value after save (requires API key)', async ( { page } ) => {
+		test.skip( ! process.env.IMAGIFY_TESTS_API_KEY, 'IMAGIFY_TESTS_API_KEY not set — settings sections hidden without valid key' );
+
+		const settings = new SettingsPage( page );
+		await settings.goto();
+
+		const toggle = page.locator( '#imagify_mcp' );
+		test.skip( ( await toggle.count() ) === 0, 'Abilities API (WordPress 6.9+) not available' );
+
+		await expect( page.getByRole( 'link', { name: 'Learn more about MCP' } ) )
+			.toHaveAttribute( 'href', 'https://imagify.io/documentation/imagify-mcp/' );
+
+		const wasChecked = await toggle.isChecked();
+
+		// The native checkbox is visually hidden behind the toggle, so click its label.
+		await page.locator( 'label[for="imagify_mcp"]' ).click();
+		await settings.saveButton.click();
+		await page.waitForLoadState( 'networkidle' );
+		await expect( page.locator( '#imagify_mcp' ) ).toBeChecked( { checked: ! wasChecked } );
+
+		// Restore the original value.
+		await page.locator( 'label[for="imagify_mcp"]' ).click();
+		await settings.saveButton.click();
+		await page.waitForLoadState( 'networkidle' );
+		await expect( page.locator( '#imagify_mcp' ) ).toBeChecked( { checked: wasChecked } );
+	} );
+
 	test( 'Saving settings without changing values succeeds', async ( { page } ) => {
 		const settings = new SettingsPage( page );
 		await settings.goto();

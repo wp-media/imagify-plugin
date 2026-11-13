@@ -2,6 +2,7 @@
 
 $defaults = [
 	'abilities_api'   => true,
+	'mcp'             => 1,
 	'install_plugins' => true,
 	'manage'          => true,
 	'adapter_loaded'  => false,
@@ -52,6 +53,17 @@ return [
 				[
 					'abilities_api' => false,
 					'meta'          => [ 'mcp_adapter_sessions' => [ 'session-1' ] ],
+				]
+			),
+			'expected' => false,
+		],
+
+		'shouldNotDisplayWhenMcpIsDisabled'              => [
+			'config'   => array_merge(
+				$defaults,
+				[
+					'mcp'  => 0,
+					'meta' => [ 'mcp_adapter_sessions' => [ 'session-1' ] ],
 				]
 			),
 			'expected' => false,

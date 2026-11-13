@@ -42,6 +42,18 @@ return [
 				'not_contains' => [ 'MCP Adapter' ],
 			],
 		],
+		'shouldNotDisplayNoticeWhenMcpIsDisabled'         => [
+			'config'   => [
+				'role'      => 'administrator',
+				'meta'      => [ 'mcp_adapter_sessions' => [ 'session-1' ] ],
+				'dismissed' => false,
+				'mcp'       => 0,
+			],
+			'expected' => [
+				'contains'     => [],
+				'not_contains' => [ 'MCP Adapter' ],
+			],
+		],
 		'shouldNotDisplayNoticeForEditor'                 => [
 			'config'   => [
 				'role'      => 'editor',

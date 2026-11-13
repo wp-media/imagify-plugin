@@ -53,12 +53,13 @@ class AbilitiesSubscriber implements SubscriberInterface {
 	/**
 	 * Registers the `imagify` ability category.
 	 *
-	 * No-ops gracefully when the WP Abilities API is not available (WP < 6.9).
+	 * No-ops gracefully when the WP Abilities API is not available (WP < 6.9)
+	 * or when MCP is disabled in the settings.
 	 *
 	 * @return void
 	 */
 	public function register_categories(): void {
-		if ( ! function_exists( 'wp_register_ability_category' ) ) {
+		if ( ! function_exists( 'wp_register_ability_category' ) || ! $this->is_enabled() ) {
 			return;
 		}
 
@@ -74,17 +75,27 @@ class AbilitiesSubscriber implements SubscriberInterface {
 	/**
 	 * Registers all injected Imagify abilities.
 	 *
-	 * No-ops gracefully when the WP Abilities API is not available (WP < 6.9).
+	 * No-ops gracefully when the WP Abilities API is not available (WP < 6.9)
+	 * or when MCP is disabled in the settings.
 	 *
 	 * @return void
 	 */
 	public function register_abilities(): void {
-		if ( ! function_exists( 'wp_register_ability' ) ) {
+		if ( ! function_exists( 'wp_register_ability' ) || ! $this->is_enabled() ) {
 			return;
 		}
 
 		foreach ( $this->abilities as $ability ) {
 			$ability->register();
 		}
+	}
+
+	/**
+	 * Tells whether MCP is enabled in the plugin settings.
+	 *
+	 * @return bool
+	 */
+	protected function is_enabled(): bool {
+		return (bool) get_imagify_option( 'mcp' );
 	}
 }
