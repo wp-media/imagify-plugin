@@ -138,3 +138,26 @@ describe( 'sanitizeId', () => {
 		expect( Number.isNaN( helpers.sanitizeId( 'abc' ) ) ).toBe( true );
 	} );
 } );
+
+describe( 'sanitizeContext', () => {
+	it( 'strips characters outside a-z, 0-9, "_" and "-"', () => {
+		// Regression guard: the old version passed a string to replace(), not a RegExp, and stripped nothing.
+		expect( helpers.sanitizeContext( 'WP<script>' ) ).toBe( 'wpscript' );
+		expect( helpers.sanitizeContext( 'a b!c' ) ).toBe( 'abc' );
+	} );
+
+	it( 'keeps valid contexts as they are', () => {
+		expect( helpers.sanitizeContext( 'wp' ) ).toBe( 'wp' );
+		expect( helpers.sanitizeContext( 'custom-folders' ) ).toBe( 'custom-folders' );
+		expect( helpers.sanitizeContext( 'my_context_2' ) ).toBe( 'my_context_2' );
+	} );
+
+	it( 'lowercases the context', () => {
+		expect( helpers.sanitizeContext( 'Custom-Folders' ) ).toBe( 'custom-folders' );
+	} );
+
+	it( 'falls back to wp when nothing is left', () => {
+		expect( helpers.sanitizeContext( '' ) ).toBe( 'wp' );
+		expect( helpers.sanitizeContext( '<>!' ) ).toBe( 'wp' );
+	} );
+} );
