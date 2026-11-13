@@ -3,6 +3,7 @@ namespace Imagify\Bulk;
 
 use Exception;
 use Imagify\Traits\InstanceGetterTrait;
+use Imagify\Traits\RequestParamTrait;
 use Imagify\Optimization\Process\ProcessInterface;
 use WP_Error;
 
@@ -11,6 +12,7 @@ use WP_Error;
  */
 final class Bulk implements BulkOptimizerInterface {
 	use InstanceGetterTrait;
+	use RequestParamTrait;
 
 	/**
 	 * Class init: launch hooks.
@@ -642,15 +644,16 @@ final class Bulk implements BulkOptimizerInterface {
 	 * @return string
 	 */
 	public function get_context( $method = 'GET', $parameter = 'context' ) {
-		if ( empty( $_POST[ $parameter ] ) && empty( $_GET[ $parameter ] ) ) {
+		$context = $this->get_request_param( $method, $parameter );
+
+		if ( empty( $context ) ) {
 			// No context.
 			return 'noop';
 		}
 
-		$context = 'POST' === $method ? sanitize_text_field( wp_unslash( $_POST[ $parameter ] ) ) : sanitize_text_field( wp_unslash( $_GET[ $parameter ] ) ); //phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-
 		return imagify_sanitize_context( $context );
 	}
+
 
 	/**
 	 * Get the submitted optimization level.
