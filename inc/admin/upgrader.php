@@ -324,6 +324,16 @@ function _imagify_new_upgrade( $network_version, $site_version ) {
 			$options->set( 'optimization_format', 'webp' );
 		}
 	}
+
+	// MCP was always on before the setting existed: keep it on for existing sites.
+	if ( version_compare( $site_version, '2.3.6', '<' ) ) {
+		$raw_options = $options->get_raw();
+
+		// On a network, the options are shared: do not undo a choice made after another site upgraded.
+		if ( ! is_array( $raw_options ) || ! array_key_exists( 'mcp', $raw_options ) ) {
+			$options->set( 'mcp', 1 );
+		}
+	}
 }
 add_action( 'imagify_upgrade', '_imagify_new_upgrade', 10, 2 );
 
