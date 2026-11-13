@@ -8,7 +8,7 @@ use Imagify\Tests\Integration\TestCase;
 
 /**
  * @covers Imagify_Admin_Ajax_Post::get_folder_type
- * @covers Imagify_Admin_Ajax_Post::get_request_param
+ * @covers \Imagify\Traits\RequestParamTrait::get_request_param
  *
  * @group  ImagifyAdminAjaxPost
  */

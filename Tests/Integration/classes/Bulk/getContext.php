@@ -8,7 +8,7 @@ use Imagify\Tests\Integration\TestCase;
 
 /**
  * @covers \Imagify\Bulk\Bulk::get_context
- * @covers \Imagify\Bulk\Bulk::get_request_param
+ * @covers \Imagify\Traits\RequestParamTrait::get_request_param
  *
  * @group  Bulk
  */
