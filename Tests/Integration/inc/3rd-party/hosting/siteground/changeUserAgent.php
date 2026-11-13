@@ -108,7 +108,7 @@ class Test_ChangeUserAgent extends TestCase {
 	 */
 	public function providerIgnoredUrls(): array {
 		return [
-			'external host'                => [ 'https://example.org/wp-admin/admin-ajax.php' ],
+			'external host'                => [ 'https://external-site.example.com/wp-admin/admin-ajax.php' ],
 			'host differing from site_url' => [ 'https://custom-background.example.net/wp-admin/admin-ajax.php' ],
 			'no host'                      => [ '/wp-admin/admin-ajax.php' ],
 			'non matching path'            => [ site_url( 'wp-json/x' ) ],
