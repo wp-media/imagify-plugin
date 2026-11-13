@@ -20,18 +20,25 @@ import { hasApiKey } from '../fixtures/wp-cli';
  */
 test.describe( 'Upgrade modal — focus handling (#1062)', () => {
 	const MODAL = '#imagify-pricing-modal';
-	const TRIGGER = '.imagify-modal-trigger[data-target="#imagify-pricing-modal"]';
-
-	let blockedAriaHidden: string[];
+	// The settings-page CTA: the admin-bar "Upgrade Plan" item uses the same trigger classes but sits in a hidden hover submenu.
+	const TRIGGER = '.imagify-upsell-cta[data-target="#imagify-pricing-modal"]';
 
 	test.beforeEach( async ( { page } ) => {
 		test.skip( ! hasApiKey(), 'IMAGIFY_TESTS_API_KEY not set — cannot reach an account/quota state that renders the upgrade modal' );
 
-		blockedAriaHidden = [];
-		page.on( 'console', ( message ) => {
-			if ( message.text().includes( 'Blocked aria-hidden' ) ) {
-				blockedAriaHidden.push( message.text() );
-			}
+		// Chrome reports "Blocked aria-hidden" itself, not through `console.*`, so record the condition it blocks
+		// directly: `aria-hidden="true"` set on an element that contains the focused element.
+		await page.addInitScript( () => {
+			const win = window as Window & { imagifyBlockedAriaHidden?: string[] };
+			const setAttribute = Element.prototype.setAttribute;
+
+			win.imagifyBlockedAriaHidden = [];
+			Element.prototype.setAttribute = function ( name: string, value: string ) {
+				if ( 'aria-hidden' === name && 'true' === String( value ) && this.contains( document.activeElement ) && document.activeElement !== document.body ) {
+					win.imagifyBlockedAriaHidden?.push( this.id || this.className || this.tagName );
+				}
+				return setAttribute.call( this, name, value );
+			};
 		} );
 
 		await loginAsAdmin( page );
@@ -43,10 +50,17 @@ test.describe( 'Upgrade modal — focus handling (#1062)', () => {
 	} );
 
 	/**
+	 * Elements that got `aria-hidden="true"` while they contained the focused element.
+	 */
+	function blockedAriaHidden( page: Page ) {
+		return page.evaluate( () => ( window as Window & { imagifyBlockedAriaHidden?: string[] } ).imagifyBlockedAriaHidden ?? [] );
+	}
+
+	/**
 	 * Open the modal from its trigger and go to the payment view, by choosing a plan.
 	 */
 	async function openModalAndChoosePlan( page: Page ) {
-		await page.locator( TRIGGER ).first().click();
+		await page.locator( TRIGGER ).click();
 		await expect( page.locator( MODAL ) ).toBeVisible();
 
 		// The plans come from the Imagify API, wait for them to be listed.
@@ -65,7 +79,7 @@ test.describe( 'Upgrade modal — focus handling (#1062)', () => {
 			return !! view && view.contains( document.activeElement );
 		} ) ).toBe( true );
 
-		expect( blockedAriaHidden ).toEqual( [] );
+		expect( await blockedAriaHidden( page ) ).toEqual( [] );
 	} );
 
 	test( 'closing with the close button gives the focus back to the trigger', async ( { page } ) => {
@@ -74,8 +88,8 @@ test.describe( 'Upgrade modal — focus handling (#1062)', () => {
 		await page.locator( `${ MODAL } .close-btn` ).click();
 
 		await expect( page.locator( MODAL ) ).toBeHidden();
-		await expect( page.locator( TRIGGER ).first() ).toBeFocused();
-		expect( blockedAriaHidden ).toEqual( [] );
+		await expect( page.locator( TRIGGER ) ).toBeFocused();
+		expect( await blockedAriaHidden( page ) ).toEqual( [] );
 	} );
 
 	test( 'closing with Esc gives the focus back to the trigger', async ( { page } ) => {
@@ -84,7 +98,7 @@ test.describe( 'Upgrade modal — focus handling (#1062)', () => {
 		await page.keyboard.press( 'Escape' );
 
 		await expect( page.locator( MODAL ) ).toBeHidden();
-		await expect( page.locator( TRIGGER ).first() ).toBeFocused();
-		expect( blockedAriaHidden ).toEqual( [] );
+		await expect( page.locator( TRIGGER ) ).toBeFocused();
+		expect( await blockedAriaHidden( page ) ).toEqual( [] );
 	} );
 } );
