@@ -121,6 +121,7 @@ function get_imagify_localize_script_translations( $context ) {
 						'overQuotaTitle'                 => __( 'You have used all your credits!', 'imagify' ),
 						'nothingToDoTitle'               => __( 'Hold on!', 'imagify' ),
 						'nothingToDoText'                => __( 'All your optimized images already have a next-gen version. Congratulations!', 'imagify' ),
+						'nextGenDoneText'                => __( 'All missing next-gen versions have been generated.', 'imagify' ),
 						'nothingToDoNoBackupText'        => __( 'Because the selected images did not have a backup copy, Imagify was unable to create next-gen versions.', 'imagify' ),
 						'error'                          => __( 'Error', 'imagify' ),
 						'ajaxErrorText'                  => __( 'The operation failed.', 'imagify' ),
