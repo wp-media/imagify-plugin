@@ -146,6 +146,24 @@ class Display implements SubscriberInterface {
 	}
 
 	/**
+	 * Get the IIS conf writer, when running on IIS.
+	 *
+	 * Lets callers outside this class (e.g. \Imagify\WriteFile\IISSelfHealSubscriber)
+	 * reuse the existing Apache/IIS server detection to act on the AVIF IIS writer,
+	 * without exposing the more general get_server_conf() (which can also return
+	 * the Apache writer, irrelevant to IIS-only callers).
+	 *
+	 * @since 2.3.4
+	 *
+	 * @return IIS|null
+	 */
+	public function get_iis_conf() {
+		$conf = $this->get_server_conf();
+
+		return $conf instanceof IIS ? $conf : null;
+	}
+
+	/**
 	 * Get the server conf instance.
 	 * Note: nothing needed for nginx.
 	 *
