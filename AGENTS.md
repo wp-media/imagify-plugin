@@ -38,8 +38,10 @@ Things that fail in ways you will not notice.
 - **Run `composer install` before any test or lint command.** Strauss namespace-prefixing is a
   Composer post-install hook. Without it, PHPCS and PHPUnit cannot resolve `Imagify\Dependencies\*`
   and fail with misleading autoload errors.
-- **`WordPress.Security.NonceVerification.Missing` and `.Recommended` are deliberately suppressed**
-  in `phpcs.xml`. Do not add `phpcs:ignore` for them and do not restructure code to satisfy them.
+- **`WordPress.Security.NonceVerification.Missing` and `.Recommended` are enforced.** Verify a nonce
+  before any request data drives a state change. A `phpcs:ignore` for them is only for read-only
+  reads (screen detection, list filters) or values a caller reads before its own nonce check; give
+  the reason in a comment. Never use legacy `// WPCS: CSRF ok.` — PHPCS 3 ignores it.
 - **`assets/admin/js/` is build output.** Edit `src/` and run `npm run build`, or the next build
   discards your work.
 - **There is no JavaScript unit test runner** (no Jest, no Vitest). Never invent `npm test`. Frontend

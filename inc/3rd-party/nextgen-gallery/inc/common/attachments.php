@@ -20,9 +20,13 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 		return;
 	}
 
-	$is_maybe_library_import = ! empty( $_POST['action'] ) && 'import_media_library' === $_POST['action'] && ! empty( $_POST['attachment_ids'] ) && is_array( $_POST['attachment_ids'] ); // WPCS: CSRF ok.
+	/**
+	 * Read-only detection of NextGEN Gallery's own "import from media library" request, so those
+	 * images are skipped here. NextGEN verifies that request's nonce; nothing is changed from it.
+	 */
+	$is_maybe_library_import = ! empty( $_POST['action'] ) && 'import_media_library' === $_POST['action'] && ! empty( $_POST['attachment_ids'] ) && is_array( $_POST['attachment_ids'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
-	if ( $is_maybe_library_import && ! empty( $_POST['nextgen_upload_image_sec'] ) ) { // WPCS: CSRF ok.
+	if ( $is_maybe_library_import && ! empty( $_POST['nextgen_upload_image_sec'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		/**
 		 * The images are imported from the library.
 		 * In this case, those images are dealt with in _imagify_ngg_media_library_imported_image_data().
@@ -30,7 +34,7 @@ function _imagify_ngg_optimize_attachment( $gallery_id, $image_ids ) {
 		return;
 	}
 
-	if ( $is_maybe_library_import && ( ! empty( $_POST['gallery_id'] ) || ! empty( $_POST['gallery_name'] ) ) ) { // WPCS: CSRF ok.
+	if ( $is_maybe_library_import && ( ! empty( $_POST['gallery_id'] ) || ! empty( $_POST['gallery_name'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		/**
 		 * Same thing but for NGG 2.0 probably.
 		 */

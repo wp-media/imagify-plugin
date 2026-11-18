@@ -390,6 +390,18 @@ class Imagify_Views {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
+	 * Get the admin page slug from the `page` query argument.
+	 *
+	 * @since 2.3.6
+	 *
+	 * @return string An empty string if no page is requested.
+	 */
+	private function get_requested_page() {
+		// Read-only screen detection: no state change, so no nonce to verify.
+		return isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	}
+
+	/**
 	 * Tell if we’re displaying the settings page.
 	 *
 	 * @since 1.9
@@ -399,11 +411,7 @@ class Imagify_Views {
 	public function is_settings_page() {
 		global $pagenow;
 
-		if ( ! isset( $_GET['page'] ) ) {
-			return false;
-		}
-
-		$page = sanitize_text_field( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$page = $this->get_requested_page();
 
 		if ( $this->get_settings_page_slug() !== $page ) {
 			return false;
@@ -426,11 +434,7 @@ class Imagify_Views {
 	public function is_bulk_page() {
 		global $pagenow;
 
-		if ( ! isset( $_GET['page'] ) ) {
-			return false;
-		}
-
-		$page = sanitize_text_field( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$page = $this->get_requested_page();
 
 		return 'upload.php' === $pagenow && $this->get_bulk_page_slug() === $page;
 	}
@@ -445,11 +449,7 @@ class Imagify_Views {
 	public function is_files_page() {
 		global $pagenow;
 
-		if ( ! isset( $_GET['page'] ) ) {
-			return false;
-		}
-
-		$page = sanitize_text_field( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+		$page = $this->get_requested_page();
 
 		return 'upload.php' === $pagenow && $this->get_files_page_slug() === $page;
 	}

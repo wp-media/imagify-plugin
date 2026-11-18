@@ -297,7 +297,12 @@ class Imagify_Settings {
 	 * @return mixed            The option value.
 	 */
 	public function maybe_set_redirection( $value, $old_value ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
-		if ( isset( $_POST['submit-goto-bulk'] ) ) { // WPCS: CSRF ok.
+		// Only redirect when the option is saved from the settings form, which carries this nonce.
+		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['_wpnonce'] ) ), $this->settings_group . '-options' ) ) {
+			return $value;
+		}
+
+		if ( isset( $_POST['submit-goto-bulk'] ) ) {
 			$_REQUEST['_wp_http_referer'] = esc_url_raw( get_admin_url( get_current_blog_id(), 'upload.php?page=imagify-bulk-optimization' ) );
 		}
 
