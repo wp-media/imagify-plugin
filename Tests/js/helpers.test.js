@@ -160,4 +160,10 @@ describe( 'sanitizeContext', () => {
 		expect( helpers.sanitizeContext( '' ) ).toBe( 'wp' );
 		expect( helpers.sanitizeContext( '<>!' ) ).toBe( 'wp' );
 	} );
+
+	it( 'falls back to wp for non-string input', () => {
+		expect( helpers.sanitizeContext( undefined ) ).toBe( 'wp' );
+		expect( helpers.sanitizeContext( null ) ).toBe( 'wp' );
+		expect( helpers.sanitizeContext( 123 ) ).toBe( '123' );
+	} );
 } );
