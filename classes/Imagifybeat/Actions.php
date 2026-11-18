@@ -37,7 +37,7 @@ final class Actions {
 	 */
 	public function init() {
 		foreach ( $this->imagifybeat_ids as $action => $imagifybeat_id ) {
-			add_filter( 'imagifybeat_received', [ $this, 'add_' . $action . '_to_response' ], 10, 2 );
+			add_filter( 'imagifybeat_received', [ $this, 'add_' . $action . '_to_response' ], 10, 3 );
 		}
 	}
 
@@ -244,15 +244,17 @@ final class Actions {
 
 	/**
 	 * Look for media where status has changed, compared to what Imagifybeat sends.
-	 * This is used in the WP Media Library.
+	 * This is used in the WP Media Library and on the Edit Media screen.
 	 *
 	 * @since 1.9.3
+	 * @since 2.3.6 Added the $screen_id parameter.
 	 *
-	 * @param  array $response The Imagifybeat response.
-	 * @param  array $data     The $_POST data sent.
+	 * @param  array  $response  The Imagifybeat response.
+	 * @param  array  $data      The $_POST data sent.
+	 * @param  string $screen_id The screen ID sent by the browser.
 	 * @return array
 	 */
-	public function add_library_optimization_status_to_response( $response, $data ) {
+	public function add_library_optimization_status_to_response( $response, $data, $screen_id = '' ) {
 		$imagifybeat_id = $this->get_imagifybeat_id_for_callback( __FUNCTION__ );
 
 		if ( ! $imagifybeat_id || empty( $data[ $imagifybeat_id ] ) || ! is_array( $data[ $imagifybeat_id ] ) ) {
@@ -268,8 +270,19 @@ final class Actions {
 
 		$response[ $imagifybeat_id ] = [];
 
+		// This request is not the Edit Media page load, but its panel must keep the Edit Media layout.
+		$is_edit_media = 'attachment' === $screen_id;
+
+		if ( $is_edit_media ) {
+			add_filter( 'imagify_is_media_page', '__return_true' );
+		}
+
 		foreach ( $statuses as $context_id => $process ) {
 			$response[ $imagifybeat_id ][ $context_id ] = get_imagify_media_column_content( $process, false );
+		}
+
+		if ( $is_edit_media ) {
+			remove_filter( 'imagify_is_media_page', '__return_true' );
 		}
 
 		return $response;
