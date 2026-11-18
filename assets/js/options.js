@@ -495,6 +495,13 @@ window.imagify = window.imagify || {};
 		 */
 		launching:        false,
 		/**
+		 * Set to true once the launch request answered, until the next Imagifybeat request is sent.
+		 * A tick answering a request sent before that still carries the count of a previous run.
+		 *
+		 * @var {bool} waitingFreshTick
+		 */
+		waitingFreshTick: false,
+		/**
 		 * The button.
 		 *
 		 * @var {jQuery}
@@ -631,6 +638,15 @@ window.imagify = window.imagify || {};
 		 */
 		addQueueImagifybeat: function ( e, data ) {
 			data[ imagifyOptions.bulk.imagifybeatIDs.progress ] = imagifyOptions.bulk.contexts;
+
+			// The answer to this request is fresh. Imagifybeat can send it from the previous
+			// request's callbacks, right before that previous (stale) tick fires: wait for the
+			// next task so the stale tick is still ignored.
+			if ( e.data.imagifyOptionsBulk && ! e.data.imagifyOptionsBulk.launching && e.data.imagifyOptionsBulk.waitingFreshTick ) {
+				w.setTimeout( function() {
+					e.data.imagifyOptionsBulk.waitingFreshTick = false;
+				}, 0 );
+			}
 		},
 
 		/**
@@ -668,7 +684,7 @@ window.imagify = window.imagify || {};
 			}
 
 			// The server keeps answering while its total is cached, even when no run is shown here.
-			if ( ! e.data.imagifyOptionsBulk.working || e.data.imagifyOptionsBulk.launching ) {
+			if ( ! e.data.imagifyOptionsBulk.working || e.data.imagifyOptionsBulk.launching || e.data.imagifyOptionsBulk.waitingFreshTick ) {
 				return;
 			}
 
@@ -776,6 +792,7 @@ window.imagify = window.imagify || {};
 					_this.$progressText.text( '0' + ( response.data.total ? '/' + response.data.total : '' ) );
 					_this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
 
+					_this.waitingFreshTick = true;
 					w.imagify.beat.connectNow();
 				} )
 				.fail( function() {
@@ -794,7 +811,8 @@ window.imagify = window.imagify || {};
 		 * @param {bool} completed True when every media was processed.
 		 */
 		processFinished: function ( completed ) {
-			var errorArgs = {};
+			var errorArgs = {},
+				missingMessage, doneMessage;
 
 			// Maybe display an error.
 			if ( false !== this.error ) {
@@ -850,6 +868,7 @@ window.imagify = window.imagify || {};
 			// Reset.
 			this.working          = false;
 			this.processIsStopped = false;
+			this.waitingFreshTick = false;
 
 			// Reset Imagifybeat interval and enable suspend.
 			w.imagify.beat.resetInterval();
@@ -859,9 +878,19 @@ window.imagify = window.imagify || {};
 				// Keep the full bar and say it is done, instead of hiding everything without a word.
 				this.$button.hide().find( '.dashicons' ).removeClass( 'rotate' );
 				this.$missingWebpMessage.hide().attr( 'aria-hidden', 'true' );
-				$( '<p role="status"></p>' )
-					.text( imagifyOptions.bulk.labels.nextGenDoneText )
-					.insertAfter( this.$missingWebpMessage );
+
+				missingMessage = this.$missingWebpMessage.get( 0 );
+
+				if ( missingMessage ) {
+					doneMessage = d.createElement( 'p' );
+					doneMessage.setAttribute( 'role', 'status' );
+					missingMessage.after( doneMessage );
+
+					// Fill the live region after it is in the page, or screen readers may not announce it.
+					w.setTimeout( function() {
+						doneMessage.textContent = imagifyOptions.bulk.labels.nextGenDoneText;
+					}, 100 );
+				}
 				return;
 			}
 
