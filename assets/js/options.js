@@ -557,7 +557,8 @@ window.imagify = window.imagify || {};
 				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
 				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsImagifybeat );
 
-			if ( false !== imagifyOptions.bulk.progress_next_gen.total && false !== imagifyOptions.bulk.progress_next_gen.remaining ) {
+			// The total stays cached up to an hour after a run ends: only resume a run that still has work.
+			if ( false !== imagifyOptions.bulk.progress_next_gen.total && 0 < imagifyOptions.bulk.progress_next_gen.remaining ) {
 				// Reset properties.
 				w.imagify.optionsBulk.error            = false;
 				w.imagify.optionsBulk.working          = true;
@@ -639,9 +640,8 @@ window.imagify = window.imagify || {};
 		addQueueImagifybeat: function ( e, data ) {
 			data[ imagifyOptions.bulk.imagifybeatIDs.progress ] = imagifyOptions.bulk.contexts;
 
-			// The answer to this request is fresh. Imagifybeat can send it from the previous
-			// request's callbacks, right before that previous (stale) tick fires: wait for the
-			// next task so the stale tick is still ignored.
+			// Imagifybeat can send this request right before the previous (stale) tick fires:
+			// clear the flag on the next task so that stale tick is still ignored.
 			if ( e.data.imagifyOptionsBulk && ! e.data.imagifyOptionsBulk.launching && e.data.imagifyOptionsBulk.waitingFreshTick ) {
 				w.setTimeout( function() {
 					e.data.imagifyOptionsBulk.waitingFreshTick = false;
