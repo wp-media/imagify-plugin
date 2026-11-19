@@ -125,13 +125,13 @@ class GenerateMissingNextgen extends AbstractAbility implements CreditConsumingA
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * Requires the Imagify `manage` capability, plus `bulk-optimize` on every
+	 * Requires `manage` (or `manage-site` on a network-activated install), plus `bulk-optimize` on every
 	 * context the generation runs on, as the legacy AJAX handler does.
 	 *
 	 * @return bool True if the current user may generate next-gen versions for every context.
 	 */
 	protected function has_permission(): bool {
-		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+		if ( ! $this->has_site_manage_permission() ) {
 			return false;
 		}
 
@@ -160,7 +160,12 @@ class GenerateMissingNextgen extends AbstractAbility implements CreditConsumingA
 	 */
 	public function get_impact_estimate( array $args ): array {
 		$count = (int) $this->stat->get_stat();
-		$total = imagify_count_optimized_attachments() + \Imagify_Files_Stats::count_optimized_files();
+		$total = imagify_count_optimized_attachments();
+
+		if ( in_array( 'custom-folders', $this->bulk->get_contexts(), true ) ) {
+			$total += \Imagify_Files_Stats::count_optimized_files();
+		}
+
 		$count = min( $count, (int) $total );
 
 		return [

@@ -42,7 +42,7 @@ class CheckPermissionsTest extends TestCase {
 	public function testShouldReturnExpected( $config, $expected ): void {
 		$this->skipUnlessSite( $config['site'] );
 
-		// Run on both contexts, whoever the current user is.
+		// Run on the configured contexts, whoever the current user is.
 		\Imagify_Folders_DB::get_instance()->insert(
 			[
 				'path'   => '{{ROOT}}custom-folder/',
@@ -51,11 +51,13 @@ class CheckPermissionsTest extends TestCase {
 		);
 		add_filter(
 			'imagify_bulk_page_types',
-			function () {
-				return [
-					'library|wp'                    => 1,
-					'custom-folders|custom-folders' => 1,
-				];
+			function () use ( $config ) {
+				return $config['custom_folders']
+					? [
+						'library|wp'                    => 1,
+						'custom-folders|custom-folders' => 1,
+					]
+					: [ 'library|wp' => 1 ];
 			}
 		);
 

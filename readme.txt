@@ -327,6 +327,11 @@ You can report any security bugs found in the source code of the site-reviews pl
 4. Other Media Page
 
 == Changelog ==
+= 2.3.6 =
+- Fix: Site admins of a network-activated multisite regain the MCP abilities that act on their own site (optimize, restore, bulk optimize of the media library, status, next-gen generation). Custom folders, settings, account and stats stay network-admin only.
+- Fix: Restoring an unknown media ID through MCP now reports the real error instead of a permission error.
+- Fix: The MCP Adapter migration notice now shows in the network admin.
+
 = 2.3.5 =
 - Enhancement: Imagify no longer bundles the MCP Adapter. To keep using MCP, install the standalone MCP Adapter plugin; a dismissible notice guides existing MCP users.
 - Enhancement: Clearer Next-Gen display settings: rewrite rules are recommended for sites without a CDN, and the layout risks of `<picture>` tags are explained with a link to the documentation.

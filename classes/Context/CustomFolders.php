@@ -77,6 +77,7 @@ final class CustomFolders extends AbstractContext {
 	public function get_capacity( $describer ) {
 		switch ( $describer ) {
 			case 'manage':
+			case 'manage-site':
 				$capacity = imagify_is_active_for_network() ? 'manage_network_options' : 'manage_options';
 				break;
 

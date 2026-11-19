@@ -56,14 +56,14 @@ return [
 			],
 			'expected' => [ 'is_denied' => false ],
 		],
-		'shouldDenySiteAdminMediaLibraryWhenNetworkActive' => [
+		'shouldAllowSiteAdminMediaLibraryWhenNetworkActive' => [
 			'config'   => [
 				'site'                         => 'network-active',
 				'super_admin'                  => false,
 				'deny_custom_folders_capacity' => false,
 				'args'                         => [ 'context' => 'wp' ],
 			],
-			'expected' => [ 'is_denied' => true ],
+			'expected' => [ 'is_denied' => false ],
 		],
 		'shouldAllowSuperAdminMediaLibraryWhenNetworkActive' => [
 			'config'   => [

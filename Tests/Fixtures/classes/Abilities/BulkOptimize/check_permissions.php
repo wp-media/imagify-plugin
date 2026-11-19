@@ -19,7 +19,27 @@ return [
 			],
 			'expected' => [
 				'allowed' => false,
-				'checked' => [ 'wp:manage' ],
+				'checked' => [ 'wp:manage', 'wp:manage-site' ],
+			],
+		],
+		'shouldAllowSiteAdminOnTheWpContext'                 => [
+			'config'   => [
+				'allowed' => [ 'wp:manage-site', 'wp:bulk-optimize' ],
+				'input'   => [ 'context' => 'wp' ],
+			],
+			'expected' => [
+				'allowed' => true,
+				'checked' => [ 'wp:manage', 'wp:manage-site', 'wp:bulk-optimize' ],
+			],
+		],
+		'shouldDenySiteAdminOnCustomFolders'                 => [
+			'config'   => [
+				'allowed' => [ 'wp:manage-site', 'wp:bulk-optimize' ],
+				'input'   => [ 'context' => 'custom-folders' ],
+			],
+			'expected' => [
+				'allowed' => false,
+				'checked' => [ 'wp:manage', 'wp:manage-site', 'custom-folders:bulk-optimize' ],
 			],
 		],
 		'shouldDenyCustomFoldersWithoutTheirCapability'      => [

@@ -55,6 +55,35 @@ abstract class AbstractAbility implements AbilitiesInterface {
 	}
 
 	/**
+	 * Tell if the current user may act on the current site's own media.
+	 *
+	 * True for a `manage` holder, and for a site admin on a network-activated install
+	 * (`manage-site`). Use it only for abilities that touch the current site alone. The
+	 * `imagify_capacity` filter for `manage` can fire up to three times per check, so
+	 * filters must be idempotent.
+	 *
+	 * @return bool
+	 */
+	protected function has_site_manage_permission(): bool {
+		$context = imagify_get_context( 'wp' );
+
+		return $context->current_user_can( 'manage' ) || $context->current_user_can( 'manage-site' );
+	}
+
+	/**
+	 * Tell if the current user holds `manage-site` without holding `manage`.
+	 *
+	 * Such a caller must not see account details (reset date, upgrade link, quota figure).
+	 *
+	 * @return bool
+	 */
+	protected function is_site_only_caller(): bool {
+		$context = imagify_get_context( 'wp' );
+
+		return ! $context->current_user_can( 'manage' ) && $context->current_user_can( 'manage-site' );
+	}
+
+	/**
 	 * Input-aware permission check, evaluated after has_permission().
 	 *
 	 * The WP Abilities API passes the call's input to `permission_callback`
@@ -178,12 +207,14 @@ abstract class AbstractAbility implements AbilitiesInterface {
 	/**
 	 * Builds the `insufficient_quota` guard response.
 	 *
-	 * @return array{status: string, message: string, next_date_update: string, upgrade_url: string}
+	 * Account details are left out for a site-only caller.
+	 *
+	 * @return array{status: string, message: string, next_date_update?: string, upgrade_url?: string}
 	 */
 	private function insufficient_quota_response(): array {
 		$user = $this->fetch_user();
 
-		return [
+		$response = [
 			'status'           => 'insufficient_quota',
 			'message'          => __( 'Your Imagify quota is exhausted. Wait for the next reset date or upgrade your plan to continue.', 'imagify' ),
 			'next_date_update' => $user->next_date_update ? (string) $user->next_date_update : '',
@@ -196,6 +227,12 @@ abstract class AbstractAbility implements AbilitiesInterface {
 				]
 			),
 		];
+
+		if ( $this->is_site_only_caller() ) {
+			unset( $response['next_date_update'], $response['upgrade_url'] );
+		}
+
+		return $response;
 	}
 
 	/**
@@ -269,7 +306,7 @@ abstract class AbstractAbility implements AbilitiesInterface {
 			'confirm_with' => [ 'confirm' => true ],
 		];
 
-		if ( ! $is_infinite ) {
+		if ( ! $is_infinite && ! $this->is_site_only_caller() ) {
 			$response['quota_remaining'] = (float) $user->get_percent_unconsumed_quota();
 		}
 

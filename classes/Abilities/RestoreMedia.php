@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Imagify\Abilities;
 
+use Imagify\Media\CustomFolders as CustomFoldersMedia;
+
 /**
  * MCP ability: restore a media to its original state from backup.
  *
@@ -79,7 +81,8 @@ class RestoreMedia implements AbilitiesInterface {
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * Requires the Imagify `manage` capability, plus `manual-restore` on the
+	 * Requires the Imagify `manage` capability (or `manage-site` on a network-activated
+	 * install, for the current site's own attachments), plus `manual-restore` on the
 	 * context the requested media belongs to, as the legacy AJAX restore
 	 * handlers do. The WP Abilities API passes the call's input here, and
 	 * resolves the media the same way execute() does.
@@ -88,7 +91,9 @@ class RestoreMedia implements AbilitiesInterface {
 	 * @return bool True when the current user may restore the requested media.
 	 */
 	public function check_permissions( $input = null ): bool {
-		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+		$wp_context = imagify_get_context( 'wp' );
+
+		if ( ! $wp_context->current_user_can( 'manage' ) && ! $wp_context->current_user_can( 'manage-site' ) ) {
 			return false;
 		}
 
@@ -141,7 +146,9 @@ class RestoreMedia implements AbilitiesInterface {
 			];
 		}
 
-		if ( ! $process->get_data()->is_optimized() ) {
+		$data = $process->get_data();
+
+		if ( ! $data || ! $data->is_optimized() ) {
 			return [
 				'status'        => 'error',
 				'restored_size' => null,
@@ -171,8 +178,9 @@ class RestoreMedia implements AbilitiesInterface {
 	/**
 	 * Resolve the optimization process for the given media ID.
 	 *
-	 * Tries the `wp` context first, then falls back to `custom-folders`.
-	 * Returns null when neither context recognises the media.
+	 * Tries the `wp` context first, then falls back to `custom-folders` for callers holding
+	 * `manage`. A site-only caller never reaches the custom-folders table, so a custom-folder
+	 * file ID looks like any unknown ID to them. Returns null when no context recognises the media.
 	 *
 	 * Extracted into a protected method so unit tests can inject a mock process.
 	 *
@@ -184,9 +192,16 @@ class RestoreMedia implements AbilitiesInterface {
 			return imagify_get_optimization_process( $media_id, 'wp' );
 		}
 
+		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+			return null;
+		}
+
 		$process = imagify_get_optimization_process( $media_id, 'custom-folders' );
 
-		if ( $process->is_valid() ) {
+		$media = $process->get_media();
+
+		// A custom-folders media is "valid" for any positive ID: only an existing row means the file is known.
+		if ( $media instanceof CustomFoldersMedia && $media->get_row() ) {
 			return $process;
 		}
 

@@ -40,6 +40,15 @@ class Test_Execute extends TestCase {
 		// fetch_user()'s User::init_user() calls get_imagify_user(); avoid a real API/transient call.
 		Functions\when( 'get_imagify_user' )->justReturn( new WP_Error( 'no_api_key', 'No API key.' ) );
 
+		// is_site_only_caller() reads the wp context: the current user holds `manage`.
+		Functions\when( 'imagify_get_context' )->justReturn(
+			new class() {
+				public function current_user_can( $describer ): bool {
+					return 'manage' === $describer;
+				}
+			}
+		);
+
 		$mock = Mockery::mock( 'alias:Imagify_Requirements' );
 		$mock->shouldReceive( 'is_api_key_valid' )->andReturn( $api_key_valid );
 		$mock->shouldReceive( 'is_over_quota' )->andReturn( $over_quota );

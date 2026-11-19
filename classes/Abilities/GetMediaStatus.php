@@ -118,10 +118,10 @@ class GetMediaStatus extends AbstractAbility {
 	 *
 	 * @since 2.3.0
 	 *
-	 * @return bool True when the current user has the Imagify `manage` capability.
+	 * @return bool True when the current user has `manage`, or `manage-site` on a network-activated install.
 	 */
 	protected function has_permission(): bool {
-		return imagify_get_context( 'wp' )->current_user_can( 'manage' );
+		return $this->has_site_manage_permission();
 	}
 
 	/**
