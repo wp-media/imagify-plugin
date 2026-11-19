@@ -319,7 +319,7 @@ Decision (#1322): site admins regain the per-site abilities on network-activated
 |---------|-------|--------------------|---------------------------------|--------------------------------|-------------------------------|
 | `imagify/bulk-optimize` (`wp`) | per site | allowed | allowed | allowed | allowed |
 | `imagify/bulk-optimize` (`custom-folders`) | network-wide | allowed | denied (`manage_network_options` on any multisite) | allowed | denied |
-| `imagify/generate-missing-nextgen` | per site, plus custom folders when the run includes them | allowed | denied while the run includes custom folders (the default on per-site activation) | allowed | allowed: the run covers the media library only |
+| `imagify/generate-missing-nextgen` | per site, plus custom folders when the run includes them | allowed | allowed: the run covers the media library only (custom folders need `manage_network_options`) | allowed | allowed: the run covers the media library only |
 | `imagify/optimize-media` | per site | allowed | allowed | allowed | allowed |
 | `imagify/restore-media` (attachment) | per site | allowed | allowed | allowed | allowed |
 | `imagify/restore-media` (custom-folder file) | network-wide | allowed | denied | allowed | `Invalid media.` error (same as an unknown ID) |
