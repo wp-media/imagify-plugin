@@ -27,7 +27,8 @@ class Upload {
 
 		}
 
-		$status  = isset( $_GET['imagify-status'] ) ? sanitize_text_field( wp_unslash( $_GET['imagify-status'] ) ) : 0;
+		// Read-only: only preselects the current list filter, so there is no nonce to verify.
+		$status  = isset( $_GET['imagify-status'] ) ? sanitize_text_field( wp_unslash( $_GET['imagify-status'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$options = [
 			'optimized'   => _x( 'Optimized', 'Media Files', 'imagify' ),
 			'unoptimized' => _x( 'Unoptimized', 'Media Files', 'imagify' ),
