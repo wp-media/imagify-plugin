@@ -329,7 +329,7 @@ You can report any security bugs found in the source code of the site-reviews pl
 == Changelog ==
 = 2.3.6 =
 - Fix: Site admins of a network-activated multisite regain the MCP abilities that act on their own site (optimize, restore, bulk optimize of the media library, status, next-gen generation). Custom folders, settings, account and stats stay network-admin only.
-- Fix: Restoring an unknown media ID through MCP now reports the real error instead of a permission error.
+- Fix: Restoring an ID that is neither an attachment nor a known custom-folder file through MCP now returns "Invalid media." for every caller, instead of a permission error.
 - Fix: The MCP Adapter migration notice now shows in the network admin.
 
 = 2.3.5 =

@@ -242,11 +242,7 @@ Queues generation of missing next-gen (WebP/AVIF) versions for all optimized med
 | `queued_count` | integer | Number of images queued for next-gen generation. Present only on `scheduled`/`error`. |
 | `error_message` | string \| null | Human-readable error on failure, null on success. Present only on `scheduled`/`error`. |
 
-`get_impact_estimate()`'s `count` comes from the live `Imagify\Stats\OptimizedMediaWithoutNextGen`
-stat service (`get_stat()`, injected via DI — not the 2-day cached `get_cached_stat()`, since a stale
-count could exceed `total` and mislead the credit-spend decision); `total` sums
-`imagify_count_optimized_attachments() + Imagify_Files_Stats::count_optimized_files()`. `count` is
-clamped to `total` as a defensive safeguard.
+When the run includes custom folders, `get_impact_estimate()`'s `count` comes from the live `Imagify\Stats\OptimizedMediaWithoutNextGen` stat service (`get_stat()`, injected via DI, not the 2-day cached `get_cached_stat()`, since a stale count could exceed `total` and mislead the credit-spend decision), and `total` sums `imagify_count_optimized_attachments() + Imagify_Files_Stats::count_optimized_files()`. When it does not (a network-activated install outside the network admin), both only cover the run's contexts: `count` sums `has_optimized_media_without_nextgen()` of each context in `Bulk::get_contexts()`, and `total` leaves custom folders out, so network-wide files are never revealed. `count` is clamped to `total` as a defensive safeguard.
 
 ### `imagify/optimize-media`
 
@@ -295,6 +291,8 @@ a single media always costs exactly one unit, so `impact.total` is omitted from 
 
 Restores an optimized media to its original state using the stored backup file. Requires that backup was enabled (`backup: 1` in settings) at the time of optimization.
 
+An ID that is neither an attachment nor a known custom-folder file (no row in the custom-folders table) returns the `Invalid media.` error for every caller, instead of a permission error or a "not optimized" error.
+
 **Input schema:**
 
 | Field | Type | Required | Description |
@@ -320,8 +318,8 @@ Decision (#1322): site admins regain the per-site abilities on network-activated
 | Ability | Scope | Single site: admin | Per-site activation: site admin | Network-activated: super admin | Network-activated: site admin |
 |---------|-------|--------------------|---------------------------------|--------------------------------|-------------------------------|
 | `imagify/bulk-optimize` (`wp`) | per site | allowed | allowed | allowed | allowed |
-| `imagify/bulk-optimize` (`custom-folders`) | network-wide | allowed | allowed | allowed | denied |
-| `imagify/generate-missing-nextgen` | per site, plus custom folders when the run includes them | allowed | allowed | allowed | allowed for the media library only; denied when the run includes custom folders |
+| `imagify/bulk-optimize` (`custom-folders`) | network-wide | allowed | denied (`manage_network_options` on any multisite) | allowed | denied |
+| `imagify/generate-missing-nextgen` | per site, plus custom folders when the run includes them | allowed | denied while the run includes custom folders (the default on per-site activation) | allowed | allowed: the run covers the media library only |
 | `imagify/optimize-media` | per site | allowed | allowed | allowed | allowed |
 | `imagify/restore-media` (attachment) | per site | allowed | allowed | allowed | allowed |
 | `imagify/restore-media` (custom-folder file) | network-wide | allowed | denied | allowed | `Invalid media.` error (same as an unknown ID) |
