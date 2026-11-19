@@ -51,7 +51,7 @@ class Test_Execute extends TestCase {
 	 * @param StatInterface|null $stat        Stat service; a permissive mock (0) by default.
 	 * @return GenerateMissingNextgen
 	 */
-	private function make_ability( array $bulk_result, ?StatInterface $stat = null, array $contexts = [ 'wp', 'custom-folders' ] ): GenerateMissingNextgen {
+	private function make_ability( array $bulk_result, ?StatInterface $stat = null, array $contexts = [ 'wp', 'custom-folders' ], array $missing = [] ): GenerateMissingNextgen {
 		if ( null === $stat ) {
 			$stat = Mockery::mock( StatInterface::class );
 			$stat->shouldReceive( 'get_stat' )->andReturn( 0 );
@@ -63,7 +63,7 @@ class Test_Execute extends TestCase {
 		// Replace the injected Bulk with a lightweight stub via reflection.
 		// Uses the two-argument ReflectionProperty::setValue( $object, $value ) form,
 		// which does NOT trigger the PHP 8.4 single-argument deprecation.
-		$stub = new class( $bulk_result, $contexts ) {
+		$stub = new class( $bulk_result, $contexts, $missing ) {
 			/**
 			 * Fixed value returned by run_generate_nextgen().
 			 *
@@ -79,14 +79,45 @@ class Test_Execute extends TestCase {
 			private $contexts;
 
 			/**
+			 * Missing next-gen count per context name.
+			 *
+			 * @var array
+			 */
+			private $missing;
+
+			/**
 			 * Constructor.
 			 *
 			 * @param array $result   Value returned by the stubbed run_generate_nextgen().
 			 * @param array $contexts Value returned by the stubbed get_contexts().
+			 * @param array $missing  Missing next-gen count per context name.
 			 */
-			public function __construct( array $result, array $contexts ) {
+			public function __construct( array $result, array $contexts, array $missing ) {
 				$this->result   = $result;
 				$this->contexts = $contexts;
+				$this->missing  = $missing;
+			}
+
+			/**
+			 * Returns a bulk stub reporting the configured missing next-gen count for the context.
+			 *
+			 * @param string $context Context name.
+			 * @return object
+			 */
+			public function get_bulk_instance( string $context ): object {
+				$count = $this->missing[ $context ] ?? 0;
+
+				return new class( $count ) {
+					private $count;
+
+					public function __construct( int $count ) {
+						$this->count = $count;
+					}
+
+					public function has_optimized_media_without_nextgen(): int {
+						return $this->count;
+					}
+				};
 			}
 
 			/**
@@ -240,14 +271,15 @@ class Test_Execute extends TestCase {
 		$mock = Mockery::mock( 'alias:Imagify_Files_Stats' );
 		$mock->shouldReceive( 'count_optimized_files' )->never();
 
+		// The all-contexts stat would reveal custom-folder files: it must not be used.
 		$stat = Mockery::mock( StatInterface::class );
-		$stat->shouldReceive( 'get_stat' )->once()->andReturn( 7 );
+		$stat->shouldReceive( 'get_stat' )->never();
 
-		$ability = $this->make_ability( [ 'success' => true, 'message' => 0 ], $stat, [ 'wp' ] );
+		$ability = $this->make_ability( [ 'success' => true, 'message' => 0 ], $stat, [ 'wp' ], [ 'wp' => 4, 'custom-folders' => 9 ] );
 		$impact  = $ability->get_impact_estimate( [] );
 
 		$this->assertSame( 15, $impact['total'] );
-		$this->assertSame( 7, $impact['count'] );
+		$this->assertSame( 4, $impact['count'] );
 	}
 
 	/**
