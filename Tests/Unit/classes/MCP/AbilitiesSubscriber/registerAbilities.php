@@ -18,6 +18,15 @@ use Mockery;
 class Test_RegisterAbilities extends TestCase {
 
 	/**
+	 * Enables MCP in the settings by default.
+	 */
+	protected function setUp(): void {
+		parent::setUp();
+
+		Functions\when( 'get_imagify_option' )->justReturn( 1 );
+	}
+
+	/**
 	 * Tests that register_abilities() with zero abilities does not call register() on anything
 	 * (foundation state — empty loop).
 	 *
@@ -63,6 +72,19 @@ class Test_RegisterAbilities extends TestCase {
 		Functions\expect( 'wp_register_ability' )->never();
 
 		$subscriber = new AbilitiesSubscriber();
+		$subscriber->register_abilities();
+	}
+
+	/**
+	 * Tests that register_abilities() does not register anything when MCP is disabled.
+	 */
+	public function testDoesNotRegisterWhenMcpDisabled(): void {
+		Functions\when( 'get_imagify_option' )->justReturn( 0 );
+
+		$ability = Mockery::mock( AbilitiesInterface::class );
+		$ability->shouldReceive( 'register' )->never();
+
+		$subscriber = new AbilitiesSubscriber( $ability );
 		$subscriber->register_abilities();
 	}
 }

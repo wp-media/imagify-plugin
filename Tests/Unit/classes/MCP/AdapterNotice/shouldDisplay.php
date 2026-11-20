@@ -40,6 +40,7 @@ class Test_ShouldDisplay extends TestCase {
 				return 'install_plugins' === $capability && $config['install_plugins'];
 			}
 		);
+		Functions\when( 'get_imagify_option' )->justReturn( $config['mcp'] );
 		Functions\when( 'imagify_get_context' )->justReturn( $context );
 		Functions\when( 'get_current_user_id' )->justReturn( $config['user_id'] );
 		Functions\when( 'get_current_blog_id' )->justReturn( $config['blog_id'] );

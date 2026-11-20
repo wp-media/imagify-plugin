@@ -45,6 +45,8 @@ class Test_Display extends TestCase {
 	 * @param array $expected Strings the output must and must not contain.
 	 */
 	public function testShouldDisplayExpected( $config, $expected ): void {
+		\Imagify_Options::get_instance()->set( 'mcp', $config['mcp'] ?? 1 );
+
 		$user_id = self::factory()->user->create( [ 'role' => $config['role'] ] );
 		wp_set_current_user( $user_id );
 
@@ -67,5 +69,14 @@ class Test_Display extends TestCase {
 		foreach ( $expected['not_contains'] as $string ) {
 			$this->assertStringNotContainsString( $string, $output );
 		}
+	}
+
+	/**
+	 * Resets the MCP option.
+	 */
+	public function tear_down() {
+		\Imagify_Options::get_instance()->delete( 'mcp' );
+
+		parent::tear_down();
 	}
 }

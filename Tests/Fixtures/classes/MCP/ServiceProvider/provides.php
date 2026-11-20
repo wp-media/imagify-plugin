@@ -14,11 +14,13 @@ use Imagify\Bulk\Bulk;
 use Imagify\MCP\AbilitiesSubscriber;
 use Imagify\MCP\AdapterNotice;
 use Imagify\MCP\ConfigSubscriber;
+use Imagify\MCP\SettingsSection;
 
 $provided = [
 	AdapterNotice::class,
 	ConfigSubscriber::class,
 	AbilitiesSubscriber::class,
+	SettingsSection::class,
 	Bulk::class,
 	BulkOptimize::class,
 	GenerateMissingNextgen::class,

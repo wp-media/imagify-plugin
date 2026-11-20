@@ -1698,10 +1698,22 @@ ul.imagify-datas-details.imagify-datas-details {
 	border-radius: 4px;
 }
 
-.imagify-analytics-optin {
+.imagify-analytics-optin,
+.imagify-mcp-option {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
+}
+
+/* Analytics and MCP options side by side, stacked on small screens */
+.imagify-settings-after-lossless {
+	display: flex;
+	flex-wrap: wrap;
+	column-gap: 24px;
+}
+
+.imagify-settings-after-lossless > * {
+	flex: 1 1 240px;
 }
 
 .imagify-analytics-label {

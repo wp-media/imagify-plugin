@@ -39,6 +39,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		AdapterNotice::class,
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
+		SettingsSection::class,
 		Bulk::class,
 		BulkOptimize::class,
 		GenerateMissingNextgen::class,
@@ -61,6 +62,7 @@ class ServiceProvider extends AbstractServiceProvider {
 		ConfigSubscriber::class,
 		AbilitiesSubscriber::class,
 		AdapterNotice::class,
+		SettingsSection::class,
 	];
 
 	/**
@@ -93,6 +95,7 @@ class ServiceProvider extends AbstractServiceProvider {
 			->addArgument( OptimizedMediaWithoutNextGen::class );
 		$this->getContainer()->addShared( ConfigSubscriber::class );
 		$this->getContainer()->addShared( AdapterNotice::class );
+		$this->getContainer()->addShared( SettingsSection::class );
 		$this->getContainer()->addShared( GetAccount::class );
 		$this->getContainer()->addShared( GetMediaStatus::class );
 		$this->getContainer()->addShared( GetNextgenCoverage::class )

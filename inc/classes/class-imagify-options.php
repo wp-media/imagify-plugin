@@ -45,6 +45,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'convert_to_avif'        => 0,
 		'convert_to_webp'        => 0,
 		'optimization_format'    => 'webp',
+		'mcp'                    => 0,
 	];
 
 	/**
@@ -60,6 +61,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 		'backup'             => 1,
 		'admin_bar_menu'     => 1,
 		'partner_links'      => 1,
+		'mcp'                => 1,
 	];
 
 	/**
@@ -141,6 +143,7 @@ class Imagify_Options extends Imagify_Abstract_Options {
 			case 'admin_bar_menu':
 			case 'partner_links':
 			case 'convert_to_avif':
+			case 'mcp':
 				return empty( $value ) ? 0 : 1;
 
 			case 'resize_larger_w':

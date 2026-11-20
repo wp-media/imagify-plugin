@@ -53,7 +53,7 @@ class AdapterNotice implements SubscriberInterface {
 	 * @return bool
 	 */
 	public function should_display(): bool {
-		if ( ! $this->is_abilities_api_available() ) {
+		if ( ! $this->is_abilities_api_available() || ! get_imagify_option( 'mcp' ) ) {
 			return false;
 		}
 
