@@ -59,6 +59,7 @@ npm run report           # Open the last HTML report
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `IMAGIFY_BASE_URL` | `http://localhost:8888` | Override the WordPress base URL |
+| `WP_ENV_PORT` | `8888` | Port wp-env runs on. `bin/test-e2e.sh` builds `IMAGIFY_BASE_URL` from it when `IMAGIFY_BASE_URL` is unset |
 | `IMAGIFY_ADMIN_USER` | `admin` | WP admin username |
 | `IMAGIFY_ADMIN_PASS` | `password` | WP admin password |
 | `IMAGIFY_TESTS_API_KEY` | _(unset)_ | Real Imagify API key — required for optimization tests |

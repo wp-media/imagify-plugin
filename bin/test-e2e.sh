@@ -14,6 +14,10 @@
 #
 # First run:
 #   Make sure wp-env is running first:  bin/dev-up.sh
+#
+# Custom port:
+#   If wp-env runs on another port (WP_ENV_PORT=8950 bin/dev-up.sh), run the
+#   suite with the same WP_ENV_PORT. IMAGIFY_BASE_URL, when set, wins over it.
 
 set -euo pipefail
 
@@ -28,9 +32,14 @@ if [[ -f "$ROOT_DIR/.env.local" ]]; then
 	set +o allexport
 fi
 
+# Playwright reads IMAGIFY_BASE_URL (Tests/e2e/playwright.config.ts). Derive it
+# from WP_ENV_PORT so the check below and the suite target the same site.
+WP_ENV_PORT="${WP_ENV_PORT:-8888}"
+export IMAGIFY_BASE_URL="${IMAGIFY_BASE_URL:-http://localhost:${WP_ENV_PORT}}"
+
 # Verify wp-env is reachable.
-if ! curl -sf http://localhost:8888 >/dev/null 2>&1; then
-	echo "❌ wp-env doesn't seem to be running on http://localhost:8888"
+if ! curl -sf "$IMAGIFY_BASE_URL" >/dev/null 2>&1; then
+	echo "❌ wp-env doesn't seem to be running on $IMAGIFY_BASE_URL"
 	echo "   Run: bin/dev-up.sh"
 	exit 1
 fi
