@@ -31,5 +31,19 @@ return [
 			],
 			'expected' => true,
 		],
+		'shouldAllowSiteAdminOnTheWpContext'                  => [
+			'config'   => [
+				'contexts' => [ 'wp' ],
+				'allowed'  => [ 'wp:manage-site', 'wp:bulk-optimize' ],
+			],
+			'expected' => true,
+		],
+		'shouldDenySiteAdminWhenCustomFoldersAreInTheContexts' => [
+			'config'   => [
+				'contexts' => [ 'wp', 'custom-folders' ],
+				'allowed'  => [ 'wp:manage-site', 'wp:bulk-optimize' ],
+			],
+			'expected' => false,
+		],
 	],
 ];

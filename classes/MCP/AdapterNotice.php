@@ -27,7 +27,9 @@ class AdapterNotice implements SubscriberInterface {
 	public static function get_subscribed_events(): array {
 		return [
 			// @action admin_notices
-			'admin_notices' => 'display',
+			'admin_notices'         => 'display',
+			// @action network_admin_notices
+			'network_admin_notices' => 'display',
 		];
 	}
 
@@ -41,8 +43,9 @@ class AdapterNotice implements SubscriberInterface {
 			return;
 		}
 
-		$install_url = admin_url( 'plugin-install.php?s=mcp-adapter&tab=search&type=term' );
-		$dismiss_url = get_imagify_admin_url( 'dismiss-notice', self::NOTICE_ID );
+		$install_path = 'plugin-install.php?s=mcp-adapter&tab=search&type=term';
+		$install_url  = is_network_admin() ? network_admin_url( $install_path ) : admin_url( $install_path );
+		$dismiss_url  = get_imagify_admin_url( 'dismiss-notice', self::NOTICE_ID );
 
 		include IMAGIFY_PATH . 'views/notice-mcp-adapter.php';
 	}

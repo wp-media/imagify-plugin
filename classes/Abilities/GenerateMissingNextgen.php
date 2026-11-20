@@ -125,13 +125,13 @@ class GenerateMissingNextgen extends AbstractAbility implements CreditConsumingA
 	/**
 	 * Check if the current user has permission to execute this ability.
 	 *
-	 * Requires the Imagify `manage` capability, plus `bulk-optimize` on every
+	 * Requires `manage` (or `manage-site` on a network-activated install), plus `bulk-optimize` on every
 	 * context the generation runs on, as the legacy AJAX handler does.
 	 *
 	 * @return bool True if the current user may generate next-gen versions for every context.
 	 */
 	protected function has_permission(): bool {
-		if ( ! imagify_get_context( 'wp' )->current_user_can( 'manage' ) ) {
+		if ( ! $this->has_site_manage_permission() ) {
 			return false;
 		}
 
@@ -147,20 +147,32 @@ class GenerateMissingNextgen extends AbstractAbility implements CreditConsumingA
 	/**
 	 * Returns the credit-consumption impact estimate for generating missing next-gen versions.
 	 *
-	 * `count` is the number of optimized media still missing a next-gen version,
-	 * computed live via `OptimizedMediaWithoutNextGen::get_stat()` (not the
-	 * 2-day cached `get_cached_stat()`) because this preview drives an AI
-	 * credit-spend decision and must not go stale relative to `total`. `total`
-	 * is the number of optimized media across both contexts, summed the same
-	 * way `OptimizedMediaWithoutNextGen::get_stat()` sums its own per-context
-	 * loop. `count` is clamped to `total` as a defensive safeguard.
+	 * `count` is the number of optimized media still missing a next-gen version, computed live
+	 * (not from the 2-day cached stat) because this preview drives an AI credit-spend decision
+	 * and must not go stale relative to `total`. `total` is the number of optimized media in
+	 * the contexts the run covers. When custom folders are part of the run, `count` comes from
+	 * `OptimizedMediaWithoutNextGen::get_stat()`; otherwise it sums the per-context counts of
+	 * the run's contexts only, so network-wide custom-folder files are never revealed. `count`
+	 * is clamped to `total` as a defensive safeguard.
 	 *
 	 * @param array $args Input arguments (unused: the estimate does not depend on input).
 	 * @return array{unit: string, count: int, total: int, label: string}
 	 */
 	public function get_impact_estimate( array $args ): array {
-		$count = (int) $this->stat->get_stat();
-		$total = imagify_count_optimized_attachments() + \Imagify_Files_Stats::count_optimized_files();
+		$contexts = $this->bulk->get_contexts();
+		$total    = imagify_count_optimized_attachments();
+
+		if ( in_array( 'custom-folders', $contexts, true ) ) {
+			$count  = (int) $this->stat->get_stat();
+			$total += \Imagify_Files_Stats::count_optimized_files();
+		} else {
+			$count = 0;
+
+			foreach ( $contexts as $context ) {
+				$count += (int) $this->bulk->get_bulk_instance( $context )->has_optimized_media_without_nextgen();
+			}
+		}
+
 		$count = min( $count, (int) $total );
 
 		return [

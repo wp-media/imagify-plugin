@@ -134,7 +134,9 @@ interface ContextInterface {
 	 * @since  1.9 The describer 'auto-optimize' is not used anymore.
 	 * @author Grégory Viguier
 	 *
-	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
+	 * @param  string $describer Capacity describer. Possible values are like 'manage', 'manage-site', 'bulk-optimize', 'manual-optimize', 'auto-optimize'.
+	 *                           'manage-site' is 'manage' limited to the current site: it differs only in the `wp` context of a
+	 *                           network-activated install, and `user_can()` also applies the 'manage' filters to it.
 	 * @return string
 	 */
 	public function get_capacity( $describer );

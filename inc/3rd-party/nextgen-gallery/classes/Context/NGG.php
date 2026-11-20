@@ -86,6 +86,7 @@ class NGG extends AbstractContext {
 	public function get_capacity( $describer = 'manage' ) {
 		switch ( $describer ) {
 			case 'manage':
+			case 'manage-site':
 				$capacity = 'NextGEN Change options';
 				break;
 

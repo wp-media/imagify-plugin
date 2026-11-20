@@ -34,13 +34,17 @@ return [
 			],
 			'expected' => [ 'is_denied' => true ],
 		],
-		'shouldDenySiteAdminWhenNetworkActive'   => [
+		'shouldReportInvalidMediaToSiteAdminForCustomFolderFileWhenNetworkActive' => [
+			// A site admin never reaches the custom-folders table: the file ID looks like any unknown ID.
 			'config'   => [
 				'site'                         => 'network-active',
 				'super_admin'                  => false,
 				'deny_custom_folders_capacity' => false,
 			],
-			'expected' => [ 'is_denied' => true ],
+			'expected' => [
+				'is_denied' => false,
+				'message'   => 'Invalid media.',
+			],
 		],
 		'shouldAllowSuperAdminWhenNetworkActive' => [
 			'config'   => [

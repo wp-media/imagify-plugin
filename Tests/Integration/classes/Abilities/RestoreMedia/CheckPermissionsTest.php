@@ -37,7 +37,7 @@ class CheckPermissionsTest extends TestCase {
 	 *
 	 * @param array $config   The site type required (see skipUnlessSite()), whether the admin is a super admin, and
 	 *                        whether `imagify_capacity` denies custom folders.
-	 * @param array $expected Whether the call is denied.
+	 * @param array $expected Whether the call is denied, and the error message of a permitted call.
 	 */
 	public function testShouldReturnExpected( $config, $expected ): void {
 		$this->skipUnlessSite( $config['site'] );
@@ -84,9 +84,9 @@ class CheckPermissionsTest extends TestCase {
 			return;
 		}
 
-		// The file is not optimized, so a permitted call fails on that, past the permission check.
+		// A permitted call fails past the permission check: not optimized, or the 'Invalid media.' of a hidden ID.
 		$this->assertIsArray( $result );
 		$this->assertSame( 'error', $result['status'] );
-		$this->assertStringContainsString( 'not optimized', $result['error_message'] );
+		$this->assertStringContainsString( $expected['message'] ?? 'not optimized', $result['error_message'] );
 	}
 }

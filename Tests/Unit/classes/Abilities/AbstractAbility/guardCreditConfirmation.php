@@ -46,20 +46,21 @@ class Test_GuardCreditConfirmation extends TestCase {
 	 *
 	 * @param array     $impact Value returned by get_impact_estimate().
 	 * @param User|null $user   User instance returned by fetch_user(); a permissive mock by default.
+	 * @param bool      $site_only Value returned by is_site_only_caller().
 	 * @return AbstractAbility&GuardCreditConfirmationTestDouble
 	 */
 	private function make_ability( array $impact = [
 		'unit'  => 'image',
 		'count' => 1,
 		'label' => 'this media',
-	], ?User $user = null ) {
+	], ?User $user = null, bool $site_only = false ) {
 		if ( null === $user ) {
 			/** @var User&Mockery\LegacyMockInterface $user */
 			$user                   = Mockery::mock( User::class )->shouldIgnoreMissing();
 			$user->next_date_update = '2026-08-01';
 		}
 
-		return new class( $impact, $user ) extends AbstractAbility implements CreditConsumingAbilityInterface, GuardCreditConfirmationTestDouble {
+		return new class( $impact, $user, $site_only ) extends AbstractAbility implements CreditConsumingAbilityInterface, GuardCreditConfirmationTestDouble {
 			/**
 			 * Fixed impact estimate returned by get_impact_estimate().
 			 *
@@ -75,14 +76,32 @@ class Test_GuardCreditConfirmation extends TestCase {
 			private $user;
 
 			/**
+			 * Value returned by is_site_only_caller().
+			 *
+			 * @var bool
+			 */
+			private $site_only;
+
+			/**
 			 * Constructor.
 			 *
-			 * @param array $impact Value returned by get_impact_estimate().
-			 * @param User  $user   User instance returned by fetch_user().
+			 * @param array $impact    Value returned by get_impact_estimate().
+			 * @param User  $user      User instance returned by fetch_user().
+			 * @param bool  $site_only Value returned by is_site_only_caller().
 			 */
-			public function __construct( array $impact, User $user ) {
-				$this->impact = $impact;
-				$this->user   = $user;
+			public function __construct( array $impact, User $user, bool $site_only ) {
+				$this->impact    = $impact;
+				$this->user      = $user;
+				$this->site_only = $site_only;
+			}
+
+			/**
+			 * Returns the flag passed to the constructor.
+			 *
+			 * @return bool
+			 */
+			protected function is_site_only_caller(): bool {
+				return $this->site_only;
 			}
 
 			/**
@@ -370,5 +389,32 @@ class Test_GuardCreditConfirmation extends TestCase {
 			],
 			$result['echoed_args']
 		);
+	}
+
+	/**
+	 * A site-only caller gets no reset date or upgrade link in the quota-exhausted response.
+	 */
+	public function testInsufficientQuotaResponseOmitsAccountDetailsForSiteOnlyCaller(): void {
+		$this->stub_requirements( true, true );
+
+		$result = $this->make_ability( [ 'unit' => 'image', 'count' => 1, 'label' => 'x' ], null, true )->call_guard( [ 'confirm' => true ], '__return_null' );
+
+		$this->assertSame( 'insufficient_quota', $result['status'] );
+		$this->assertArrayHasKey( 'message', $result );
+		$this->assertArrayNotHasKey( 'next_date_update', $result );
+		$this->assertArrayNotHasKey( 'upgrade_url', $result );
+	}
+
+	/**
+	 * A site-only caller gets no quota figure in the confirmation response.
+	 */
+	public function testConfirmationResponseOmitsQuotaRemainingForSiteOnlyCaller(): void {
+		$this->stub_requirements( true, false );
+
+		$result = $this->make_ability( [ 'unit' => 'image', 'count' => 1, 'label' => 'x' ], null, true )->call_guard( [], '__return_null' );
+
+		$this->assertSame( 'confirmation_required', $result['status'] );
+		$this->assertArrayNotHasKey( 'quota_remaining', $result );
+		$this->assertArrayHasKey( 'impact', $result );
 	}
 }

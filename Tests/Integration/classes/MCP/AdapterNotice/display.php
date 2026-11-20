@@ -41,11 +41,19 @@ class Test_Display extends TestCase {
 	 *
 	 * @dataProvider configTestData
 	 *
-	 * @param array $config   User role, user meta and dismissal state.
+	 * @param array $config   User role, whether the user is a super admin on multisite, user meta and dismissal state.
 	 * @param array $expected Strings the output must and must not contain.
 	 */
 	public function testShouldDisplayExpected( $config, $expected ): void {
+		$this->skipUnlessSite( $config['site'] ?? 'any' );
+
 		$user_id = self::factory()->user->create( [ 'role' => $config['role'] ] );
+
+		// Only super admins can install plugins on multisite.
+		if ( ! empty( $config['super_admin'] ) && is_multisite() ) {
+			grant_super_admin( $user_id );
+		}
+
 		wp_set_current_user( $user_id );
 
 		foreach ( $config['meta'] as $key => $value ) {

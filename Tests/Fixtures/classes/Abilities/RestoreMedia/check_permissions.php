@@ -52,5 +52,29 @@ return [
 			],
 			'expected' => true,
 		],
+		'shouldAllowSiteAdminToRestoreLibraryMedia'       => [
+			'config'   => [
+				'media_context' => 'wp',
+				'input'         => [ 'media_id' => 12 ],
+				'allowed'       => [ 'wp:manage-site', 'wp:manual-restore' ],
+			],
+			'expected' => true,
+		],
+		'shouldDenySiteAdminWithoutManualRestore'         => [
+			'config'   => [
+				'media_context' => 'wp',
+				'input'         => [ 'media_id' => 12 ],
+				'allowed'       => [ 'wp:manage-site' ],
+			],
+			'expected' => false,
+		],
+		'shouldAllowSiteAdminWhenMediaDoesNotResolve'     => [
+			'config'   => [
+				'media_context' => null,
+				'input'         => [ 'media_id' => 12 ],
+				'allowed'       => [ 'wp:manage-site' ],
+			],
+			'expected' => true,
+		],
 	],
 ];

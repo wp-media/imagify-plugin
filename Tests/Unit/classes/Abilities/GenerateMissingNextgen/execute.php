@@ -45,13 +45,13 @@ class Test_Execute extends TestCase {
 	/**
 	 * Returns a GenerateMissingNextgen instance whose internal `$bulk` property
 	 * has been replaced by an anonymous stub that returns `$bulk_result` from
-	 * `run_generate_nextgen()` and `['wp']` from `get_contexts()`.
+	 * `run_generate_nextgen()` and the configured contexts (`wp` and `custom-folders` by default) from `get_contexts()`.
 	 *
 	 * @param array              $bulk_result Value returned by the stubbed run_generate_nextgen().
 	 * @param StatInterface|null $stat        Stat service; a permissive mock (0) by default.
 	 * @return GenerateMissingNextgen
 	 */
-	private function make_ability( array $bulk_result, ?StatInterface $stat = null ): GenerateMissingNextgen {
+	private function make_ability( array $bulk_result, ?StatInterface $stat = null, array $contexts = [ 'wp', 'custom-folders' ], array $missing = [] ): GenerateMissingNextgen {
 		if ( null === $stat ) {
 			$stat = Mockery::mock( StatInterface::class );
 			$stat->shouldReceive( 'get_stat' )->andReturn( 0 );
@@ -63,7 +63,7 @@ class Test_Execute extends TestCase {
 		// Replace the injected Bulk with a lightweight stub via reflection.
 		// Uses the two-argument ReflectionProperty::setValue( $object, $value ) form,
 		// which does NOT trigger the PHP 8.4 single-argument deprecation.
-		$stub = new class( $bulk_result ) {
+		$stub = new class( $bulk_result, $contexts, $missing ) {
 			/**
 			 * Fixed value returned by run_generate_nextgen().
 			 *
@@ -72,21 +72,61 @@ class Test_Execute extends TestCase {
 			private $result;
 
 			/**
+			 * Fixed value returned by get_contexts().
+			 *
+			 * @var array
+			 */
+			private $contexts;
+
+			/**
+			 * Missing next-gen count per context name.
+			 *
+			 * @var array
+			 */
+			private $missing;
+
+			/**
 			 * Constructor.
 			 *
-			 * @param array $result Value returned by the stubbed run_generate_nextgen().
+			 * @param array $result   Value returned by the stubbed run_generate_nextgen().
+			 * @param array $contexts Value returned by the stubbed get_contexts().
+			 * @param array $missing  Missing next-gen count per context name.
 			 */
-			public function __construct( array $result ) {
-				$this->result = $result;
+			public function __construct( array $result, array $contexts, array $missing ) {
+				$this->result   = $result;
+				$this->contexts = $contexts;
+				$this->missing  = $missing;
 			}
 
 			/**
-			 * Returns a fixed single-context list.
+			 * Returns a bulk stub reporting the configured missing next-gen count for the context.
+			 *
+			 * @param string $context Context name.
+			 * @return object
+			 */
+			public function get_bulk_instance( string $context ): object {
+				$count = $this->missing[ $context ] ?? 0;
+
+				return new class( $count ) {
+					private $count;
+
+					public function __construct( int $count ) {
+						$this->count = $count;
+					}
+
+					public function has_optimized_media_without_nextgen(): int {
+						return $this->count;
+					}
+				};
+			}
+
+			/**
+			 * Returns the fixed context list passed to the constructor.
 			 *
 			 * @return array
 			 */
 			public function get_contexts(): array {
-				return [ 'wp' ];
+				return $this->contexts;
 			}
 
 			/**
@@ -119,6 +159,15 @@ class Test_Execute extends TestCase {
 		Functions\when( 'imagify_get_external_url' )->justReturn( 'https://example.com/subscription' );
 		// fetch_user()'s User::init_user() calls get_imagify_user(); avoid a real API/transient call.
 		Functions\when( 'get_imagify_user' )->justReturn( new WP_Error( 'no_api_key', 'No API key.' ) );
+
+		// is_site_only_caller() reads the wp context: the current user holds `manage`.
+		Functions\when( 'imagify_get_context' )->justReturn(
+			new class() {
+				public function current_user_can( $describer ): bool {
+					return 'manage' === $describer;
+				}
+			}
+		);
 
 		$mock = Mockery::mock( 'alias:Imagify_Requirements' );
 		$mock->shouldReceive( 'is_api_key_valid' )->andReturn( $api_key_valid );
@@ -209,6 +258,28 @@ class Test_Execute extends TestCase {
 		$this->assertSame( 'image', $impact['unit'] );
 		$this->assertSame( 7, $impact['count'] );
 		$this->assertSame( 20, $impact['total'] );
+	}
+
+	/**
+	 * When the run omits custom folders (a site-only caller's contexts), the custom-folders count is
+	 * left out of 'total'.
+	 */
+	public function testGetImpactEstimateTotalExcludesCustomFoldersWhenNotInContexts(): void {
+		Functions\stubTranslationFunctions();
+		Functions\when( 'imagify_count_optimized_attachments' )->justReturn( 15 );
+
+		$mock = Mockery::mock( 'alias:Imagify_Files_Stats' );
+		$mock->shouldReceive( 'count_optimized_files' )->never();
+
+		// The all-contexts stat would reveal custom-folder files: it must not be used.
+		$stat = Mockery::mock( StatInterface::class );
+		$stat->shouldReceive( 'get_stat' )->never();
+
+		$ability = $this->make_ability( [ 'success' => true, 'message' => 0 ], $stat, [ 'wp' ], [ 'wp' => 4, 'custom-folders' => 9 ] );
+		$impact  = $ability->get_impact_estimate( [] );
+
+		$this->assertSame( 15, $impact['total'] );
+		$this->assertSame( 4, $impact['count'] );
 	}
 
 	/**
