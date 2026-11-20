@@ -55,7 +55,8 @@ if [[ "$RESET" == "1" ]]; then
 fi
 
 if command -v lsof >/dev/null && lsof -nP -iTCP:"$WP_ENV_PORT" -sTCP:LISTEN >/dev/null 2>&1; then
-	echo "⚠ Port $WP_ENV_PORT is already in use. If another project's wp-env holds it, run again with other ports:"
+	echo "⚠ Port $WP_ENV_PORT is already in use. If Imagify's own wp-env is already running, ignore this."
+	echo "  If another project's wp-env holds it, run again with other ports:"
 	echo "    WP_ENV_PORT=8950 WP_ENV_TESTS_PORT=8951 bin/dev-up.sh"
 fi
 
