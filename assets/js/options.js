@@ -489,6 +489,19 @@ window.imagify = window.imagify || {};
 		 */
 		processIsStopped: false,
 		/**
+		 * Set to true while the request launching the process is pending.
+		 *
+		 * @var {bool} launching
+		 */
+		launching:        false,
+		/**
+		 * Set to true once the launch request answered, until the next Imagifybeat request is sent.
+		 * A tick answering a request sent before that still carries the count of a previous run.
+		 *
+		 * @var {bool} waitingFreshTick
+		 */
+		waitingFreshTick: false,
+		/**
 		 * The button.
 		 *
 		 * @var {jQuery}
@@ -544,7 +557,8 @@ window.imagify = window.imagify || {};
 				.on( 'imagifybeat-send', this.addRequirementsImagifybeat )
 				.on( 'imagifybeat-tick', { imagifyOptionsBulk: this }, this.processRequirementsImagifybeat );
 
-			if ( false !== imagifyOptions.bulk.progress_next_gen.total && false !== imagifyOptions.bulk.progress_next_gen.remaining ) {
+			// The total stays cached up to an hour after a run ends: only resume a run that still has work.
+			if ( false !== imagifyOptions.bulk.progress_next_gen.total && 0 < imagifyOptions.bulk.progress_next_gen.remaining ) {
 				// Reset properties.
 				w.imagify.optionsBulk.error            = false;
 				w.imagify.optionsBulk.working          = true;
@@ -564,6 +578,9 @@ window.imagify = window.imagify || {};
 				this.$progressText.text( progress.processed + '/' + progress.total );
 
 				this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
+
+				// Don't wait 15 seconds for the first count: a small run can be over by then.
+				w.imagify.beat.connectNow();
 			}
 		},
 
@@ -622,6 +639,14 @@ window.imagify = window.imagify || {};
 		 */
 		addQueueImagifybeat: function ( e, data ) {
 			data[ imagifyOptions.bulk.imagifybeatIDs.progress ] = imagifyOptions.bulk.contexts;
+
+			// Imagifybeat can send this request right before the previous (stale) tick fires:
+			// clear the flag on the next task so that stale tick is still ignored.
+			if ( e.data.imagifyOptionsBulk && ! e.data.imagifyOptionsBulk.launching && e.data.imagifyOptionsBulk.waitingFreshTick ) {
+				w.setTimeout( function() {
+					e.data.imagifyOptionsBulk.waitingFreshTick = false;
+				}, 0 );
+			}
 		},
 
 		/**
@@ -658,21 +683,26 @@ window.imagify = window.imagify || {};
 				return;
 			}
 
+			// The server keeps answering while its total is cached, even when no run is shown here.
+			if ( ! e.data.imagifyOptionsBulk.working || e.data.imagifyOptionsBulk.launching || e.data.imagifyOptionsBulk.waitingFreshTick ) {
+				return;
+			}
+
 			if ( e.data.imagifyOptionsBulk.processIsStopped ) {
 				e.data.imagifyOptionsBulk.processFinished();
 				return;
 			}
 
 			images_status = data[ imagifyOptions.bulk.imagifybeatIDs.progress ];
+			progress      = e.data.imagifyOptionsBulk.getProgress( images_status.total, images_status.remaining );
 
-			if ( images_status.remaining === 0 ) {
-				e.data.imagifyOptionsBulk.processFinished();
-				return;
-			}
-
-			progress = e.data.imagifyOptionsBulk.getProgress( images_status.total, images_status.remaining );
 			e.data.imagifyOptionsBulk.$progressBar.css( 'width', progress.percent + '%' );
 			e.data.imagifyOptionsBulk.$progressText.text( progress.processed + '/' + progress.total );
+
+			if ( images_status.remaining === 0 ) {
+				// Paint n/n first, so the run never looks like it stopped at 0.
+				e.data.imagifyOptionsBulk.processFinished( true );
+			}
 		},
 
 		/**
@@ -721,9 +751,14 @@ window.imagify = window.imagify || {};
 
 			_this = this;
 
+			// Until the server answers, a tick may carry the count of a previous run.
+			this.launching = true;
+
 			$.get( this.getAjaxUrl( 'MissingNextGen', imagifyOptions.bulk.contexts ) )
 				.done( function( response ) {
 					var errorMessage;
+
+					_this.launching = false;
 
 					if ( _this.processIsStopped ) {
 						return;
@@ -753,10 +788,16 @@ window.imagify = window.imagify || {};
 					_this.$missingWebpMessage.hide().attr('aria-hidden', 'true');
 
 					// Reset and display the progress bar.
+					_this.$progressBar.css( 'width', '0%' );
 					_this.$progressText.text( '0' + ( response.data.total ? '/' + response.data.total : '' ) );
 					_this.$progressWrap.slideDown().attr( 'aria-hidden', 'false' ).removeClass( 'hidden' );
+
+					_this.waitingFreshTick = true;
+					w.imagify.beat.connectNow();
 				} )
 				.fail( function() {
+					_this.launching = false;
+
 					// Error.
 					if ( ! _this.error ) {
 						_this.stopProcess( 'get-unoptimized-images' );
@@ -766,9 +807,12 @@ window.imagify = window.imagify || {};
 
 		/*
 		 * End.
+		 *
+		 * @param {bool} completed True when every media was processed.
 		 */
-		processFinished: function () {
-			var errorArgs = {};
+		processFinished: function ( completed ) {
+			var errorArgs = {},
+				missingMessage, doneMessage;
 
 			// Maybe display an error.
 			if ( false !== this.error ) {
@@ -824,10 +868,31 @@ window.imagify = window.imagify || {};
 			// Reset.
 			this.working          = false;
 			this.processIsStopped = false;
+			this.waitingFreshTick = false;
 
 			// Reset Imagifybeat interval and enable suspend.
 			w.imagify.beat.resetInterval();
 			w.imagify.beat.enableSuspend();
+
+			if ( true === completed ) {
+				// Keep the full bar and say it is done, instead of hiding everything without a word.
+				this.$button.hide().find( '.dashicons' ).removeClass( 'rotate' );
+				this.$missingWebpMessage.hide().attr( 'aria-hidden', 'true' );
+
+				missingMessage = this.$missingWebpMessage.get( 0 );
+
+				if ( missingMessage ) {
+					doneMessage = d.createElement( 'p' );
+					doneMessage.setAttribute( 'role', 'status' );
+					missingMessage.after( doneMessage );
+
+					// Fill the live region after it is in the page, or screen readers may not announce it.
+					w.setTimeout( function() {
+						doneMessage.textContent = imagifyOptions.bulk.labels.nextGenDoneText;
+					}, 100 );
+				}
+				return;
+			}
 
 			// Reset the progress bar.
 			this.$progressWrap.slideUp().attr( 'aria-hidden', 'true' ).addClass( 'hidden' );
