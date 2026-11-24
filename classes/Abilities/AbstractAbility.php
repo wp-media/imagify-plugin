@@ -58,9 +58,12 @@ abstract class AbstractAbility implements AbilitiesInterface {
 	 * Tell if the current user may act on the current site's own media.
 	 *
 	 * True for a `manage` holder, and for a site admin on a network-activated install
-	 * (`manage-site`). Use it only for abilities that touch the current site alone. The
-	 * `imagify_capacity` filter for `manage` can fire up to three times per check, so
-	 * filters must be idempotent.
+	 * (`manage-site`). Use it only for abilities that touch the current site alone.
+	 *
+	 * When `manage` is denied, the `manage-site` check runs the capability filters again
+	 * (see AbstractContext::user_can()): `imagify_capacity` for `manage` fires up to three
+	 * times in all, and `imagify_current_user_can` / `imagify_user_can` up to three times
+	 * each. Filters must be idempotent.
 	 *
 	 * @return bool
 	 */

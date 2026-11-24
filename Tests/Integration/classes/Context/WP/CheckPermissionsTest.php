@@ -41,6 +41,29 @@ class CheckPermissionsTest extends TestCase {
 				);
 				break;
 
+			case 'capacity-keeps-manage-site-network-only':
+				// The opt-out documented in docs/api/mcp.md.
+				add_filter(
+					'imagify_capacity',
+					function ( $capacity, $describer ) {
+						return 'manage-site' === $describer ? 'manage_network_options' : $capacity;
+					},
+					10,
+					2
+				);
+				break;
+
+			case 'capacity-sets-manage-to-default':
+				add_filter(
+					'imagify_capacity',
+					function ( $capacity, $describer ) {
+						return 'manage' === $describer ? 'manage_network_options' : $capacity;
+					},
+					10,
+					2
+				);
+				break;
+
 			case 'capacity-customizes-manage':
 				add_filter(
 					'imagify_capacity',
@@ -173,6 +196,31 @@ class CheckPermissionsTest extends TestCase {
 		imagify_get_context( 'wp' )->current_user_can( 'manage' );
 		imagify_get_context( 'wp' )->current_user_can( 'manage-site' );
 
+		$this->assertSame( [ 'manage', 'manage-site', 'manage' ], $calls );
+	}
+
+	/**
+	 * Test: one 'manage-site' check resolves the 'manage' capacity twice: inside get_capacity( 'manage-site' ),
+	 * then once for both deny-only passes.
+	 */
+	public function testShouldResolveManageCapacityTwiceForManageSite(): void {
+		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
+
+		$calls = [];
+		add_filter(
+			'imagify_capacity',
+			function ( $capacity, $describer, $context ) use ( &$calls ) {
+				if ( 'wp' === $context ) {
+					$calls[] = $describer;
+				}
+
+				return $capacity;
+			},
+			10,
+			3
+		);
+
+		$this->assertTrue( imagify_get_context( 'wp' )->current_user_can( 'manage-site' ) );
 		$this->assertSame( [ 'manage', 'manage-site', 'manage' ], $calls );
 	}
 }

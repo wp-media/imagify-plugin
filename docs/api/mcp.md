@@ -334,9 +334,16 @@ Decision (#1322): site admins regain the per-site abilities on network-activated
 
 ### The `manage-site` describer
 
-- `Imagify\Context\WP::get_capacity( 'manage-site' )` returns `manage_options` when Imagify is network-activated and `manage` resolves to `manage_network_options`; otherwise it returns what `manage` resolves to. If a site customizes `manage` through `imagify_capacity`, `manage-site` follows that value, so the customization cannot be bypassed.
+- `Imagify\Context\WP::get_capacity( 'manage-site' )` returns `manage_options` when Imagify is network-activated and `manage` resolves to `manage_network_options`; otherwise it returns what `manage` resolves to. If a site customizes `manage` through `imagify_capacity` to another capability, `manage-site` follows that value. A filter that returns `manage_network_options` for `manage` cannot be told apart from the default, so it does not keep site admins out.
+- To keep the per-site abilities super-admin only on a network-activated install, filter `imagify_capacity` for the `manage-site` describer. That filter runs last, so its value is the one checked:
+
+  ```php
+  add_filter( 'imagify_capacity', function ( $capacity, $describer ) {
+  	return 'manage-site' === $describer ? 'manage_network_options' : $capacity;
+  }, 10, 2 );
+  ```
 - `Context\CustomFolders` maps `manage-site` like `manage` (`manage_network_options` on a network-activated install), so it never grants a site admin more than `manage` does there.
-- The `imagify_capacity`, `imagify_current_user_can` and `imagify_user_can` filters all run for `manage-site`. For the two user-can filters, `AbstractContext::user_can()` runs them a second time with the `manage` describer as a deny-only pass: a filter written for `manage` can deny `manage-site` but never grant it. The filters can therefore fire twice for one check and must be idempotent.
+- The `imagify_capacity`, `imagify_current_user_can` and `imagify_user_can` filters all run for `manage-site`. For the two user-can filters, `AbstractContext::user_can()` runs them a second time with the `manage` describer as a deny-only pass: a filter written for `manage` can deny `manage-site` but never grant it. For one `manage-site` check in the `wp` context, each of these filters can therefore fire twice (`imagify_capacity` twice for `manage`, plus once for `manage-site`). An ability that checks `manage` first and then `manage-site` runs each up to three times. Filters must be idempotent.
 - `imagify_mcp_permission_denied` still reports the required capability `manage`.
 
 ### Account details for site-only callers

@@ -169,7 +169,9 @@ abstract class AbstractContext implements ContextInterface {
 	 *
 	 * For the 'manage-site' describer, the `imagify_current_user_can` and `imagify_user_can` filters run a
 	 * second time with the 'manage' describer, as a deny-only pass: a filter written for 'manage' can deny
-	 * 'manage-site' but never grant it. Those filters can therefore fire twice and must be idempotent.
+	 * 'manage-site' but never grant it. Those filters can therefore fire twice and must be idempotent. In the
+	 * `wp` context, `imagify_capacity` also fires twice for 'manage': once inside get_capacity( 'manage-site' ),
+	 * once for the deny-only passes.
 	 *
 	 * @since  1.9
 	 * @author Grégory Viguier
@@ -202,6 +204,8 @@ abstract class AbstractContext implements ContextInterface {
 
 		$media_id = $media_id ? (int) $media_id : null;
 		$capacity = $this->get_capacity( $describer );
+		// The 'manage' capacity passed to the deny-only passes below, resolved once for both.
+		$manage_capacity = 'manage-site' === $describer ? $this->get_capacity( 'manage' ) : '';
 
 		if ( $user_id === $current_user_id ) {
 			$user_can = current_user_can( $capacity, $media_id );
@@ -221,7 +225,7 @@ abstract class AbstractContext implements ContextInterface {
 			$user_can = wpm_apply_filters_typed( 'boolean', 'imagify_current_user_can', $user_can, $capacity, $describer, $media_id, $this->get_name() );
 
 			if ( $user_can && 'manage-site' === $describer ) {
-				$user_can = $this->apply_manage_deny_pass( 'imagify_current_user_can', $user_can, [ $this->get_capacity( 'manage' ), 'manage', $media_id, $this->get_name() ] );
+				$user_can = $this->apply_manage_deny_pass( 'imagify_current_user_can', $user_can, [ $manage_capacity, 'manage', $media_id, $this->get_name() ] );
 			}
 		} else {
 			$user_can = user_can( $user, $capacity, $media_id );
@@ -242,7 +246,7 @@ abstract class AbstractContext implements ContextInterface {
 		$user_can = wpm_apply_filters_typed( 'boolean', 'imagify_user_can', $user_can, $user_id, $capacity, $describer, $media_id, $this->get_name() );
 
 		if ( $user_can && 'manage-site' === $describer ) {
-			$user_can = $this->apply_manage_deny_pass( 'imagify_user_can', $user_can, [ $user_id, $this->get_capacity( 'manage' ), 'manage', $media_id, $this->get_name() ] );
+			$user_can = $this->apply_manage_deny_pass( 'imagify_user_can', $user_can, [ $user_id, $manage_capacity, 'manage', $media_id, $this->get_name() ] );
 		}
 
 		return $user_can;

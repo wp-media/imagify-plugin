@@ -142,6 +142,48 @@ return [
 				'other_user'   => false,
 			],
 		],
+		'shouldDenySiteAdminWithDocumentedOptOutWhenNetworkActive' => [
+			'config'   => [
+				'site'        => 'network-active',
+				'role'        => 'administrator',
+				'super_admin' => false,
+				'context'     => 'wp',
+				'filter'      => 'capacity-keeps-manage-site-network-only',
+			],
+			'expected' => [
+				'capacity'     => 'manage_network_options',
+				'current_user' => false,
+				'other_user'   => false,
+			],
+		],
+		'shouldGrantSuperAdminWithDocumentedOptOutWhenNetworkActive' => [
+			'config'   => [
+				'site'        => 'network-active',
+				'role'        => 'administrator',
+				'super_admin' => true,
+				'context'     => 'wp',
+				'filter'      => 'capacity-keeps-manage-site-network-only',
+			],
+			'expected' => [
+				'capacity'     => 'manage_network_options',
+				'current_user' => true,
+				'other_user'   => true,
+			],
+		],
+		'shouldStillGrantSiteAdminWhenManageIsSetToItsDefault' => [
+			'config'   => [
+				'site'        => 'network-active',
+				'role'        => 'administrator',
+				'super_admin' => false,
+				'context'     => 'wp',
+				'filter'      => 'capacity-sets-manage-to-default',
+			],
+			'expected' => [
+				'capacity'     => 'manage_options',
+				'current_user' => true,
+				'other_user'   => true,
+			],
+		],
 		'shouldFollowCustomizedManageCapacity' => [
 			'config'   => [
 				'site'        => 'network-active',
