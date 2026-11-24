@@ -181,6 +181,7 @@ body[class*="_imagify-ngg-bulk-optimization"] .notice,
  * == Welcome section
  */
 .imagify-welcome {
+	clear: both;
 	margin: 30px 20px 0 0;
 }
 
