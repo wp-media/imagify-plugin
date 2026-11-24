@@ -16,6 +16,9 @@ jQuery.extend( window.imagify, {
 		var target = $link.data( 'target' ) || $link.attr( 'href' ),
 			$target = jQuery( target );
 
+		// Remember the opener, to give the focus back to it when the modal closes.
+		$target.data( 'imagifyOpener', $link.get( 0 ) );
+
 		$target.css( 'display', 'flex' ).hide().fadeIn( 400 ).attr( {
 			'aria-hidden': 'false',
 			'tabindex':    '0'
@@ -62,9 +65,26 @@ jQuery.extend( window.imagify, {
 		} )
 		// On click on close button, close modal.
 		.on( 'click.imagify', '.imagify-modal .close-btn', function() {
-			var $modal = $( this ).closest( '.imagify-modal' );
+			var $modal = $( this ).closest( '.imagify-modal' ),
+				modal    = $modal.get( 0 ),
+				openerEl = $modal.data( 'imagifyOpener' );
 
-			$modal.fadeOut( 400 ).attr( 'aria-hidden', 'true' ).removeClass( 'modal-is-open' ).trigger( 'modalClosed.imagify' );
+			// Leave the open state first, so the close button `blur` handler below does not pull the focus back into the modal.
+			$modal.removeClass( 'modal-is-open' );
+
+			// Move the focus out of the modal before hiding it: Chrome blocks `aria-hidden` on an element that still contains the focused element.
+			if ( modal.contains( d.activeElement ) ) {
+				if ( openerEl && d.body.contains( openerEl ) ) {
+					openerEl.focus();
+				}
+
+				// No usable opener (modal opened by code, or opener not focusable).
+				if ( modal.contains( d.activeElement ) ) {
+					d.activeElement.blur();
+				}
+			}
+
+			$modal.fadeOut( 400 ).attr( 'aria-hidden', 'true' ).trigger( 'modalClosed.imagify' );
 
 			$( 'body' ).removeClass( 'imagify-modal-is-open' );
 		} )
@@ -72,7 +92,7 @@ jQuery.extend( window.imagify, {
 		.on( 'blur.imagify', '.imagify-modal .close-btn', function() {
 			var $modal = $( this ).closest( '.imagify-modal' );
 
-			if ( $modal.attr( 'aria-hidden' ) === 'false' ) {
+			if ( $modal.hasClass( 'modal-is-open' ) && $modal.attr( 'aria-hidden' ) === 'false' ) {
 				$modal.attr( 'tabindex', '0' ).trigger('focus').removeAttr( 'tabindex' );
 			}
 		} )
