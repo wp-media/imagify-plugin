@@ -158,9 +158,21 @@
 		return parseInt( id, 10 );
 	}
 
+	/**
+	 * Sanitize a media context: keep only a-z, 0-9, "_" and "-", like sanitize_key() in PHP.
+	 *
+	 * @param  {*}      context A media context. Non-string values (from jQuery .data()) are cast to a string.
+	 * @return {string}         The sanitized context, or 'wp' if nothing is left.
+	 */
+	function sanitizeContext( context ) {
+		context = String( undefined === context || null === context ? '' : context ).replace( /[^a-z0-9_-]/gi, '' ).toLowerCase();
+		return context ? context : 'wp';
+	}
+
 	var helpers = {
 		getProgress:       getProgress,
 		getPromoAppliesTo: getPromoAppliesTo,
+		sanitizeContext:   sanitizeContext,
 		sanitizeId:        sanitizeId,
 		splitPrice:        splitPrice,
 		humanSize:         humanSize,
